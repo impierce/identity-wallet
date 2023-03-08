@@ -10,7 +10,7 @@ This template should help get you started developing with Tauri, Svelte and Type
 
 ```bash
 cargo install create-tauri-app # v3.1.1
-cargo create-tauri-app --alpha 
+cargo create-tauri-app --alpha
 ✔ Project name · identity-wallet
 ✔ Choose which language to use for your frontend · TypeScript / JavaScript - (pnpm, yarn, npm)
 ✔ Choose your package manager · npm
