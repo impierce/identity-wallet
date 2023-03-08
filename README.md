@@ -1,10 +1,27 @@
-# Tauri + Svelte + Typescript
+# Identity Wallet
 
-This template should help get you started developing with Tauri, Svelte and TypeScript in Vite.
+A Tauri-based Identity Wallet for people to manage Decentralized Identities and Verifiable Credentials.
 
 ## Recommended IDE Setup
 
 [VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer).
+
+## Development
+
+```bash
+npm install
+
+# Desktop
+npm run tauri dev
+
+# Android
+npm run tauri android init
+npm run tauri android dev
+
+# iOS
+npm run tauri ios init
+npm run tauri ios dev
+```
 
 ### How this project was initialized
 
