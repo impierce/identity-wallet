@@ -1,16 +1,16 @@
-use std::sync::{Arc, Mutex};
+use std::sync::Mutex;
 
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone)]
+// #[derive(Clone)]
 pub struct AppState {
-    pub status: Arc<Mutex<StateStatus>>,
+    pub status: Mutex<StateStatus>,
 }
 
 impl AppState {
     pub fn new(status: StateStatus) -> Self {
         AppState {
-            status: Arc::new(Mutex::new(status)),
+            status: Mutex::new(status),
         }
     }
 }
