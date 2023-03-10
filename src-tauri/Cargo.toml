@@ -20,6 +20,10 @@ tauri-build = { version = "2.0.0-alpha.1", features = [] }
 tauri = { version = "2.0.0-alpha.3", features = ["shell-open"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+tracing = "0.1.36"
+tracing-subscriber = "0.3.15"
+tokio = { version = "1.26.0", features = ["macros"] }
+
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
