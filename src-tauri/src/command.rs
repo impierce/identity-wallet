@@ -1,10 +1,12 @@
 use serde::Deserialize;
 use tracing::info;
+use ts_rs::TS;
 
 use crate::state::{AppState, TransferState};
 
 /// Holds the command String and payload String of the command message coming from the frontend.
-#[derive(Deserialize)]
+#[derive(Deserialize, TS)]
+#[ts(export)]
 pub struct CommandMessage {
     pub(crate) command: String,
     pub(crate) payload: String,

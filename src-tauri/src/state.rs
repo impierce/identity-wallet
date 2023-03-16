@@ -1,6 +1,7 @@
 use std::sync::Mutex;
 
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
 // #[derive(Clone)]
 pub struct AppState {
@@ -15,21 +16,24 @@ impl AppState {
     }
 }
 
-#[derive(Clone, Copy, Deserialize, Serialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Serialize, TS)]
+#[serde(rename_all = "UPPERCASE")]
+#[ts(export)]
 pub enum StateStatus {
     Loading,
     Stable,
 }
 
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize, TS)]
+#[ts(export)]
 pub struct TransferState {
-    state: StateStatus,
+    status: StateStatus,
 }
 
 impl From<AppState> for TransferState {
     fn from(state: AppState) -> TransferState {
         TransferState {
-            state: *state.status.lock().unwrap(),
+            status: *state.status.lock().unwrap(),
         }
     }
 }
