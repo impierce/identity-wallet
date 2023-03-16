@@ -7,6 +7,9 @@
   async function greet() {
     // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
     greetMsg = await invoke('greet', { name });
+    await invoke('execute_command', {
+      commandMessage: { command: '[INIT] Get initial state', payload: '' }
+    });
   }
 </script>
 

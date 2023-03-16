@@ -1,5 +1,6 @@
 <script lang="ts">
   import Greet from './lib/Greet.svelte';
+  import { state } from './stores';
 </script>
 
 <main class="container">
@@ -22,6 +23,7 @@
   <div class="row">
     <Greet />
   </div>
+  {JSON.stringify($state)}
 </main>
 
 <style>
