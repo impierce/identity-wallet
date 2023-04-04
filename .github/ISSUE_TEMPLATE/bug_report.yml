@@ -1,0 +1,60 @@
+name: Bug report
+description: Create a report to help us fix issues
+title: "[Bug] "
+labels: ["Bug"]
+body:
+  - type: markdown
+    attributes: 
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: textarea
+    id: description
+    attributes: 
+      label: Description
+      description: Briefly describe the bug.
+    validations:
+      required: true
+  - type: textarea
+    id: hardware
+    attributes:
+      label: Hardware Specification
+      description: What hardware are you using? Please provide what is relevant.
+      value: |
+        Operating system:
+        RAM: 
+        Cores:
+        Device: 
+    validations:
+      required: false
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to Reproduce the Bug
+      description: Explain how the maintainer can reproduce the bug. 
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behaviour
+      description: Describe what you expect to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behaviour
+      description: Describe what actually happens.
+    validations:
+      required: true
+  - type: textarea
+    id: errors
+    attributes:
+      label: Errors
+      description: Paste any errors that you see, including logs, errors, or screenshots.
+    validations:
+      required: true

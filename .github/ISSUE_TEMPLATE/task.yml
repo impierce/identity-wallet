@@ -1,0 +1,43 @@
+name: 'Task'
+description: Add a task (Only use if you are a maintainer)
+labels: []
+body:
+  - type: markdown
+    attributes: 
+      value: |
+        You are writing a task for the maintainers of this repository. If you are not a maintainer yourself, instead submit a bug report or suggestion.
+  - type: textarea
+    id: description
+    attributes: 
+      label: Description
+      description: Describe the task, this may be scoped beyond a single PR.
+    validations:
+      required: true
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Describe the motivation for the feature to be developed.
+    validations:
+      required: false
+  - type: textarea
+    id: resources
+    attributes:
+      label: Resources
+      description: Link to any resources relevant for the task such as issues, PRs, reference implementations, or specifications.
+      placeholder: |
+        Depends on \#1 and \#2
+        [Link to relevant resources](www.impierce.com)
+    validations:
+      required: false
+  - type: textarea
+    id: todo
+    attributes:
+      label: To-do List
+      description: Create a task-specific to-do list. Please link PRs that match the TODO list item behind the item after it has been submitted.
+      value: |
+        - [ ] Item one
+        - [ ] Item two
+        - [ ] Item three
+    validations:
+      required: true
