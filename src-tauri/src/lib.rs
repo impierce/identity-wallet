@@ -1,6 +1,9 @@
 mod command;
 mod state;
 
+use serde_json::json;
+use tauri::Manager;
+use tauri_plugin_store::StoreBuilder;
 use tracing_subscriber;
 
 use command::execute_command;
@@ -17,8 +20,19 @@ pub fn run() {
     tracing_subscriber::fmt::init();
 
     tauri::Builder::default()
-        .manage(AppState::new(StateStatus::Stable))
+        .manage(AppState::new(StateStatus::Stable, None))
         .invoke_handler(tauri::generate_handler![greet, execute_command])
+        .plugin(tauri_plugin_store::Builder::default().build())
+        .setup(|app| {
+            // let mut store = StoreBuilder::new("path/to/store.bin".parse()?).build();
+            // store.save(&app.handle());
+            // let mut store = StoreBuilder::new("path/to/store.bin".parse()?).build();
+            // store.load(app.app_handle())
+            // store.insert("a".to_string(), json!("b"))
+            // StoreBuilder::new("path/to/store.bin".parse()?).build();
+            Ok(())
+            // store.insert("a".to_string(), json!("b"))
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
