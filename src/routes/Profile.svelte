@@ -1,0 +1,3 @@
+<div>
+    Profile page
+</div>
