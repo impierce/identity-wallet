@@ -38,6 +38,7 @@
   {JSON.stringify($state)}
 </main> -->
 
+<div class="bg-gray-100 h-screen">
 <Router>
   <button class="bg-gray-300 text-gray-700 py-2 px-4 rounded shadow" on:click={() => navigate(-1)}
     >back</button
@@ -50,6 +51,7 @@
 
 <div class="text-neutral-500 text-xs">
   <pre>{JSON.stringify($state, null, 2)}</pre>
+</div>
 </div>
 
 <!-- style global breaks tailwind buttons-->

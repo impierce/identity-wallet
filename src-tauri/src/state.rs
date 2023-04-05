@@ -26,15 +26,30 @@ pub enum StateStatus {
     Stable,
 }
 
+impl Default for StateStatus {
+    fn default() -> Self {
+        StateStatus::Stable
+    }
+}
+
 #[derive(Clone, Debug, Deserialize, Serialize, TS)]
 #[ts(export)]
 pub struct TransferState {
-    status: StateStatus,
-    active_profile: Option<Profile>,
+    pub status: StateStatus,
+    pub active_profile: Option<Profile>,
 }
 
 impl From<AppState> for TransferState {
     fn from(state: AppState) -> TransferState {
+        TransferState {
+            status: *state.status.lock().unwrap(),
+            active_profile: state.active_profile.lock().unwrap().clone(),
+        }
+    }
+}
+
+impl From<&AppState> for TransferState {
+    fn from(state: &AppState) -> TransferState {
         TransferState {
             status: *state.status.lock().unwrap(),
             active_profile: state.active_profile.lock().unwrap().clone(),
