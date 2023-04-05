@@ -7,13 +7,15 @@ use ts_rs::TS;
 pub struct AppState {
     pub status: Mutex<StateStatus>,
     pub active_profile: Mutex<Option<Profile>>,
+    pub locale: Mutex<String>, //TODO: move to nested object "user_preferences"?
 }
 
 impl AppState {
-    pub fn new(status: StateStatus, active_profile: Option<Profile>) -> Self {
+    pub fn new(status: StateStatus, active_profile: Option<Profile>, locale: String) -> Self {
         AppState {
             status: Mutex::new(status),
             active_profile: Mutex::new(active_profile),
+            locale: Mutex::new(locale),
         }
     }
 }
@@ -37,6 +39,17 @@ impl Default for StateStatus {
 pub struct TransferState {
     pub status: StateStatus,
     pub active_profile: Option<Profile>,
+    pub locale: String,
+}
+
+impl Default for TransferState {
+    fn default() -> Self {
+        TransferState {
+            status: StateStatus::Stable,
+            active_profile: None,
+            locale: "en".to_string(),
+        }
+    }
 }
 
 impl From<AppState> for TransferState {
@@ -44,6 +57,7 @@ impl From<AppState> for TransferState {
         TransferState {
             status: *state.status.lock().unwrap(),
             active_profile: state.active_profile.lock().unwrap().clone(),
+            locale: (*state.locale.lock().unwrap()).to_string(),
         }
     }
 }
@@ -53,6 +67,7 @@ impl From<&AppState> for TransferState {
         TransferState {
             status: *state.status.lock().unwrap(),
             active_profile: state.active_profile.lock().unwrap().clone(),
+            locale: (*state.locale.lock().unwrap()).to_string(),
         }
     }
 }

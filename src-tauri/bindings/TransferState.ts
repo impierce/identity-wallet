@@ -2,4 +2,4 @@
 import type { Profile } from "./Profile";
 import type { StateStatus } from "./StateStatus";
 
-export interface TransferState { status: StateStatus, active_profile: Profile | null, }
+export interface TransferState { status: StateStatus, active_profile: Profile | null, locale: string, }

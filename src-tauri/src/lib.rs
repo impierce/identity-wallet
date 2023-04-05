@@ -18,9 +18,8 @@ pub fn run() {
     tracing_subscriber::fmt::init();
 
     tauri::Builder::default()
-        .manage(AppState::new(Default::default(), Default::default()))
+        .manage(AppState::new(Default::default(), Default::default(), Default::default()))
         .invoke_handler(tauri::generate_handler![greet, execute_command])
-        // .plugin(tauri_plugin_store::Builder::default().build())
         .setup(|app| {
             // let mut store = StoreBuilder::new("path/to/store.bin".parse()?).build();
             // store.save(&app.handle());

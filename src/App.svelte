@@ -7,12 +7,30 @@
   import { invoke } from '@tauri-apps/api/tauri';
   import Profile from './routes/Profile.svelte';
   import { Button } from '@impierce/ui-components';
+  // import { initI18n } from './i18n/i18n-svelte';
+  // import { initI18nSvelte } from 'typesafe-i18n/svelte';
+  // import { setLocale } from './i18n/i18n-svelte';
+  import { loadAllLocales } from './i18n/i18n-util.sync';
 
   onMount(async () => {
+    // initI18n('en');
+
+    loadAllLocales();
+
     await invoke('execute_command', {
       commandMessage: { command: '[INIT] Get initial state', payload: '' }
     });
+
+    // setLocale($state.locale);
   });
+
+  let selected_locale;
+
+  const setLocale = async () => {
+    await invoke('execute_command', {
+      commandMessage: { command: '[SETTINGS] Set locale', payload: selected_locale }
+    });
+  };
 
   const reset = async () => {
     await invoke('execute_command', {
@@ -38,21 +56,34 @@
   {JSON.stringify($state)}
 </main> -->
 
-<div class="bg-gray-100 h-screen">
-<Router>
-  <button class="bg-gray-300 text-gray-700 py-2 px-4 rounded shadow" on:click={() => navigate(-1)}
-    >back</button
-  >
-  <button class="bg-gray-300 text-gray-700 py-2 px-4 rounded shadow" on:click={reset}>reset</button>
-  <!-- <Link to="">root</Link> -->
-  <Route path="welcome" component={Welcome} />
-  <Route path="profile" component={Profile} primary={false} />
-</Router>
+<main class="h-screen bg-gray-100">
+  <Router>
+    dev mode:
+    <button class="rounded bg-gray-300 px-4 py-2 text-gray-700 shadow" on:click={() => navigate(-1)}
+      >navigate back</button
+    >
+    <button class="rounded bg-gray-300 px-4 py-2 text-gray-700 shadow" on:click={reset}
+      >reset app</button
+    >
+    <hr class="border border-violet-600" />
+    <!-- <Link to="">root</Link> -->
+    <Route path="welcome" component={Welcome} />
+    <Route path="profile" component={Profile} primary={false} />
+  </Router>
 
-<div class="text-neutral-500 text-xs">
-  <pre>{JSON.stringify($state, null, 2)}</pre>
-</div>
-</div>
+  <select bind:value={selected_locale} on:change={() => setLocale()}>
+    <option value="en">en</option>
+    <option value="de">de</option>
+    <option value="nl">nl</option>
+  </select>
+
+  <hr class="border border-violet-600" />
+
+  state:
+  <div class="text-xs text-neutral-500">
+    <pre>{JSON.stringify($state, null, 2)}</pre>
+  </div>
+</main>
 
 <!-- style global breaks tailwind buttons-->
 <!-- <style global>

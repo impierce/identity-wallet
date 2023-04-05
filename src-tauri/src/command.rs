@@ -21,6 +21,7 @@ enum Command {
     GetInitialState,
     Reset,
     CreateNew,
+    SetLocale
 }
 
 /// Maps a given string to a [Command].
@@ -31,6 +32,7 @@ impl FromStr for Command {
             "[INIT] Get initial state" => Ok(Command::GetInitialState),
             "[INIT] Reset" => Ok(Command::Reset),
             "[DID] Create new" => Ok(Command::CreateNew),
+            "[SETTINGS] Set locale" => Ok(Command::SetLocale),
             _ => Err(()),
         }
     }
@@ -59,6 +61,7 @@ pub async fn execute_command(
             // TODO: find a better way to populate all fields with values from json file
             *app_state.status.lock().unwrap() = transfer_state.status;
             *app_state.active_profile.lock().unwrap() = transfer_state.active_profile;
+            *app_state.locale.lock().unwrap() = transfer_state.locale;
 
             let transfer_state = TransferState::from(app_state.inner());
             window.emit("state-changed", &transfer_state).unwrap();
@@ -70,8 +73,12 @@ pub async fn execute_command(
         }
         Command::Reset => {
             remove_file(&state_file_path).await.unwrap();
-            let initial_state = AppState::new(StateStatus::Stable, None);
-            let transfer_state = TransferState::from(initial_state);
+
+            *app_state.status.lock().unwrap() = StateStatus::Stable;
+            *app_state.active_profile.lock().unwrap() = None;
+            *app_state.locale.lock().unwrap() = "en".to_string();
+
+            let transfer_state = TransferState::from(app_state.inner());
             window.emit("state-changed", &transfer_state).unwrap();
             info!(
                 "emitted event `{}` with payload `{:?}`",
@@ -84,14 +91,28 @@ pub async fn execute_command(
                 display_name: payload,
                 primary_did: "did:atoi:123".to_string(),
             };
-            let app_state = AppState::new(StateStatus::Stable, Some(profile));
-            let transfer_state = TransferState::from(app_state);
+
+            *app_state.status.lock().unwrap() = StateStatus::Stable;
+            *app_state.active_profile.lock().unwrap() = Some(profile);
+
+            let transfer_state = TransferState::from(app_state.inner());
             window.emit("state-changed", &transfer_state).unwrap();
             let mut f = File::create(&state_file_path).await.unwrap();
             f.write(serde_json::to_string(&transfer_state).unwrap().as_bytes())
                 .await
                 .unwrap();
             // let file = File::open(&file_path);
+            info!(
+                "emitted event `{}` with payload `{:?}`",
+                "state-changed", &transfer_state
+            );
+            Ok(transfer_state)
+        }
+        Command::SetLocale => {
+            *app_state.locale.lock().unwrap() = payload;
+            
+            let transfer_state = TransferState::from(app_state.inner());
+            window.emit("state-changed", &transfer_state).unwrap();
             info!(
                 "emitted event `{}` with payload `{:?}`",
                 "state-changed", &transfer_state
@@ -123,10 +144,7 @@ async fn load_state(app_handle: tauri::AppHandle) -> TransferState {
                                 "could not load existing state. falling back to default. deserialization error? reason: {}",
                                 error
                             );
-                            TransferState {
-                                status: Default::default(),
-                                active_profile: Default::default(),
-                            }
+                            TransferState::default()
                         }
                     }
                 }
@@ -135,10 +153,7 @@ async fn load_state(app_handle: tauri::AppHandle) -> TransferState {
                         "could not load existing state, falling back to default. reason: {}",
                         error
                     );
-                    TransferState {
-                        status: Default::default(),
-                        active_profile: Default::default(),
-                    }
+                    TransferState::default()
                 }
             }
         }
@@ -147,11 +162,11 @@ async fn load_state(app_handle: tauri::AppHandle) -> TransferState {
                 "could not load existing state, falling back to default. not exists? reason: {}",
                 error
             );
-            TransferState {
-                status: Default::default(),
-                active_profile: Default::default(),
-            }
+            TransferState::default()
         }
     };
     transfer_state
 }
+
+/// Persists a [TransferState] to the app's data directory.
+async fn save_state(app_handle: tauri::AppHandle) {}
