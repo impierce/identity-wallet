@@ -24,6 +24,9 @@ tracing = "0.1.36"
 tracing-subscriber = "0.3.15"
 tokio = { version = "1.26.0", features = ["macros"] }
 ts-rs = "6.2"
+identity_iota = { version = "0.7.0-alpha" }
+iota-client = { version = "2.0.1-rc", default-features = false, features = ["tls", "stronghold"] }
+anyhow = "1.0"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

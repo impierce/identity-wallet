@@ -6,7 +6,9 @@ use tokio::io::{self, AsyncReadExt, AsyncWriteExt};
 use tracing::{info, warn};
 use ts_rs::TS;
 
-use crate::state::{AppState, Profile, StateStatus, TransferState};
+use crate::clients::iota::create_iota_identity;
+use crate::state::persistence::{load_state, save_state};
+use crate::state::state::{AppState, Profile, StateStatus, TransferState};
 
 /// Holds the command String and payload String of the command message coming from the frontend.
 #[derive(Deserialize, TS)]
@@ -21,7 +23,7 @@ enum Command {
     GetInitialState,
     Reset,
     CreateNew,
-    SetLocale
+    SetLocale,
 }
 
 /// Maps a given string to a [Command].
@@ -56,7 +58,7 @@ pub async fn execute_command(
 
     match command {
         Command::GetInitialState => {
-            let transfer_state: TransferState = load_state(app_handle).await;
+            let transfer_state: TransferState = load_state(app_handle).await.unwrap_or_default();
 
             // TODO: find a better way to populate all fields with values from json file
             *app_state.status.lock().unwrap() = transfer_state.status;
@@ -87,6 +89,8 @@ pub async fn execute_command(
             Ok(transfer_state)
         }
         Command::CreateNew => {
+            // let iota_identity = create_iota_identity();
+
             let profile = Profile {
                 display_name: payload,
                 primary_did: "did:atoi:123".to_string(),
@@ -96,12 +100,10 @@ pub async fn execute_command(
             *app_state.active_profile.lock().unwrap() = Some(profile);
 
             let transfer_state = TransferState::from(app_state.inner());
+
+            save_state(app_handle, transfer_state.clone()).await.unwrap();
+
             window.emit("state-changed", &transfer_state).unwrap();
-            let mut f = File::create(&state_file_path).await.unwrap();
-            f.write(serde_json::to_string(&transfer_state).unwrap().as_bytes())
-                .await
-                .unwrap();
-            // let file = File::open(&file_path);
             info!(
                 "emitted event `{}` with payload `{:?}`",
                 "state-changed", &transfer_state
@@ -110,8 +112,11 @@ pub async fn execute_command(
         }
         Command::SetLocale => {
             *app_state.locale.lock().unwrap() = payload;
-            
+
             let transfer_state = TransferState::from(app_state.inner());
+
+            save_state(app_handle, transfer_state.clone()).await.unwrap();
+
             window.emit("state-changed", &transfer_state).unwrap();
             info!(
                 "emitted event `{}` with payload `{:?}`",
@@ -121,52 +126,3 @@ pub async fn execute_command(
         }
     }
 }
-
-/// Loads a [TransferState] from the app's data directory.
-/// If it does not exist or it cannot be parsed, it will fallback to default values.
-async fn load_state(app_handle: tauri::AppHandle) -> TransferState {
-    let state_file_path = app_handle.path_resolver().app_data_dir().unwrap().join("state.json");
-    let bytes = read(state_file_path).await;
-    let transfer_state: TransferState = match bytes {
-        Ok(successful_bytes) => {
-            let content = String::from_utf8(successful_bytes);
-            match content {
-                Ok(successful_content) => {
-                    let transfer_state_result: Result<TransferState, serde_json::Error> =
-                        serde_json::from_str(&successful_content);
-                    match transfer_state_result {
-                        Ok(transfer_state) => {
-                            info!("successfully loaded existing state `{:?}`", transfer_state);
-                            transfer_state
-                        }
-                        Err(error) => {
-                            warn!(
-                                "could not load existing state. falling back to default. deserialization error? reason: {}",
-                                error
-                            );
-                            TransferState::default()
-                        }
-                    }
-                }
-                Err(error) => {
-                    warn!(
-                        "could not load existing state, falling back to default. reason: {}",
-                        error
-                    );
-                    TransferState::default()
-                }
-            }
-        }
-        Err(error) => {
-            warn!(
-                "could not load existing state, falling back to default. not exists? reason: {}",
-                error
-            );
-            TransferState::default()
-        }
-    };
-    transfer_state
-}
-
-/// Persists a [TransferState] to the app's data directory.
-async fn save_state(app_handle: tauri::AppHandle) {}

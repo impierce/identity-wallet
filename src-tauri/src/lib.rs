@@ -1,3 +1,4 @@
+mod clients;
 mod command;
 mod state;
 
@@ -5,7 +6,7 @@ use tauri::Manager;
 use tracing_subscriber;
 
 use command::execute_command;
-use state::{AppState, StateStatus};
+use state::state::{AppState, StateStatus};
 
 // Will be removed in future versions.
 #[tauri::command]
@@ -18,7 +19,11 @@ pub fn run() {
     tracing_subscriber::fmt::init();
 
     tauri::Builder::default()
-        .manage(AppState::new(Default::default(), Default::default(), Default::default()))
+        .manage(AppState::new(
+            Default::default(),
+            Default::default(),
+            Default::default(),
+        ))
         .invoke_handler(tauri::generate_handler![greet, execute_command])
         .setup(|app| {
             // let mut store = StoreBuilder::new("path/to/store.bin".parse()?).build();
