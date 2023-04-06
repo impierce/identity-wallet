@@ -20,6 +20,18 @@ impl AppState {
     }
 }
 
+// TODO: can this be solved differently? looks like boilerplate ...
+impl Default for AppState {
+    fn default() -> Self {
+        AppState {
+            status: Default::default(),
+            active_profile: Default::default(),
+            locale: Default::default(),
+        }
+    }
+}
+
+// TODO: do we really need that?
 #[derive(Clone, Copy, Debug, Deserialize, Serialize, TS)]
 #[serde(rename_all = "UPPERCASE")]
 #[ts(export)]
@@ -42,6 +54,7 @@ pub struct TransferState {
     pub locale: String,
 }
 
+// TODO: only the AppState should have a default
 impl Default for TransferState {
     fn default() -> Self {
         TransferState {

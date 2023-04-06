@@ -11,6 +11,7 @@
   // import { initI18nSvelte } from 'typesafe-i18n/svelte';
   // import { setLocale } from './i18n/i18n-svelte';
   import { loadAllLocales } from './i18n/i18n-util.sync';
+  import type { Action } from '../src-tauri/bindings/Action';
 
   onMount(async () => {
     // initI18n('en');
@@ -18,7 +19,7 @@
     loadAllLocales();
 
     await invoke('execute_command', {
-      commandMessage: { command: '[INIT] Get initial state', payload: '' }
+      action: { type: '[INIT] Get state' } as Action
     });
 
     // setLocale($state.locale);
@@ -28,13 +29,13 @@
 
   const setLocale = async () => {
     await invoke('execute_command', {
-      commandMessage: { command: '[SETTINGS] Set locale', payload: selected_locale }
+      action: { type: '[SETTINGS] Set locale', payload: selected_locale } as Action
     });
   };
 
   const reset = async () => {
     await invoke('execute_command', {
-      commandMessage: { command: '[INIT] Reset', payload: '' }
+      action: { type: '[INIT] Reset' } as Action
     });
   };
 </script>

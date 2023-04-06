@@ -3,6 +3,7 @@
   import { invoke } from '@tauri-apps/api/tauri';
   import { useFocus } from 'svelte-navigator';
   import LL, { locale } from '../i18n/i18n-svelte';
+  import type { Action } from '../../src-tauri/bindings/Action';
 
   const registerFocus = useFocus();
 
@@ -13,7 +14,7 @@
 
   const createProfile = async () => {
     await invoke('execute_command', {
-      commandMessage: { command: '[DID] Create new', payload: usernameInput.value }
+      action: { type: '[DID] Create new', payload: usernameInput.value } as Action
     });
   };
 </script>
