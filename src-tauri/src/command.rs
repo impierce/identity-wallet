@@ -7,6 +7,7 @@ use tracing::{info, warn};
 use crate::clients::iota::create_iota_identity;
 use crate::state::actions::{Action, KnownAction};
 use crate::state::persistence::{load_state, save_state};
+use crate::state::reducers::set_locale;
 use crate::state::state::{AppState, Profile, StateStatus, TransferState};
 
 /// This command handler is the single point of entrance to the business logic in the backend. It will delegate the
@@ -26,7 +27,7 @@ pub async fn execute_command(
     // TODO: better pattern would be to return the state unchanged if the action is unknown
     let action = KnownAction::from_str(&r#type).expect(&format!("Unknown action: `{}`", &r#type));
 
-    // the match structure functions as the "root reducer" in the redux pattern
+    // This match structure functions as the "root reducer" (redux pattern)
     match action {
         KnownAction::GetState => {
             let transfer_state: TransferState = load_state(app_handle).await.unwrap_or_default();
@@ -54,13 +55,18 @@ pub async fn execute_command(
             *app_state.status.lock().unwrap() = StateStatus::Stable;
             *app_state.active_profile.lock().unwrap() = Some(mock_profile);
 
-            save_state(app_handle, TransferState::from(app_state.inner())).await.unwrap();
+            save_state(app_handle, TransferState::from(app_state.inner()))
+                .await
+                .unwrap();
         }
         KnownAction::SetLocale => {
-            *app_state.locale.lock().unwrap() = payload.unwrap();
+            // *app_state.locale.lock().unwrap() = payload.unwrap();
+            set_locale(app_state.inner(), Action { r#type, payload }).unwrap();
 
-            save_state(app_handle, TransferState::from(app_state.inner())).await.unwrap();
-        },
+            save_state(app_handle, TransferState::from(app_state.inner()))
+                .await
+                .unwrap();
+        }
     };
 
     let updated_state = TransferState::from(app_state.inner());

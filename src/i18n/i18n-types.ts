@@ -32,6 +32,10 @@ type RootTranslation = {
 	 * C​r​e​a​t​e​ ​n​e​w​ ​i​d​e​n​t​i​t​y
 	 */
 	CREATE_IDENTITY: string
+	/**
+	 * Y​o​u​ ​h​a​v​e​ ​j​u​s​t​ ​c​r​e​a​t​e​d​ ​a​ ​n​e​w​ ​d​i​g​i​t​a​l​ ​i​d​e​n​t​i​t​y
+	 */
+	CREATE_IDENTITY_SUCCESS: string
 }
 
 export type TranslationFunctions = {
@@ -51,6 +55,10 @@ export type TranslationFunctions = {
 	 * Create new identity
 	 */
 	CREATE_IDENTITY: () => LocalizedString
+	/**
+	 * You have just created a new digital identity
+	 */
+	CREATE_IDENTITY_SUCCESS: () => LocalizedString
 }
 
 export type Formatters = {}
