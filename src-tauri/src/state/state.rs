@@ -3,7 +3,7 @@ use std::sync::Mutex;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
-// #[derive(Clone)]
+#[derive(Default)]
 pub struct AppState {
     pub status: Mutex<StateStatus>,
     pub active_profile: Mutex<Option<Profile>>,
@@ -20,18 +20,7 @@ impl AppState {
     }
 }
 
-// TODO: can this be solved differently? looks like boilerplate ...
-impl Default for AppState {
-    fn default() -> Self {
-        AppState {
-            status: Default::default(),
-            active_profile: Default::default(),
-            locale: Default::default(),
-        }
-    }
-}
-
-// TODO: do we really need that?
+// TODO: do we really need that StateStatus?
 #[derive(Clone, Copy, Debug, Deserialize, Serialize, TS)]
 #[serde(rename_all = "UPPERCASE")]
 #[ts(export)]
