@@ -1,94 +1,74 @@
 <script lang="ts">
-  import { Router, Link, Route, navigate } from 'svelte-navigator';
-  import Greet from './lib/Greet.svelte';
+  import { Router, Route, navigate } from 'svelte-navigator';
   import Welcome from './routes/Welcome.svelte';
   import { state } from './stores';
   import { onMount } from 'svelte';
   import { invoke } from '@tauri-apps/api/tauri';
   import Profile from './routes/Profile.svelte';
-  import { Button } from '@impierce/ui-components';
   // import { initI18n } from './i18n/i18n-svelte';
   // import { initI18nSvelte } from 'typesafe-i18n/svelte';
   // import { setLocale } from './i18n/i18n-svelte';
   import { loadAllLocales } from './i18n/i18n-util.sync';
   import type { Action } from '../src-tauri/bindings/Action';
+  import { ChevronUp, ChevronDown } from 'svelte-heros-v2';
+  import { fly } from 'svelte/transition';
+  import LocaleSelect from './lib/LocaleSelect.svelte';
 
   onMount(async () => {
     // initI18n('en');
 
-    loadAllLocales();
+    loadAllLocales(); //TODO: only load on request?
 
     await invoke('execute_command', {
       action: { type: '[INIT] Get state' } as Action
     });
-
-    // setLocale($state.locale);
   });
-
-  let selected_locale;
-
-  const setLocale = async () => {
-    await invoke('execute_command', {
-      action: { type: '[SETTINGS] Set locale', payload: selected_locale } as Action
-    });
-  };
 
   const reset = async () => {
     await invoke('execute_command', {
       action: { type: '[INIT] Reset' } as Action
     });
   };
+
+  let showDevMode = false;
+
+  $state; // TODO: needs to be called at least once to trigger subscribers --> move somewhere else
 </script>
-
-<!-- <main class="container">
-  <h1>Welcome to Tauri!</h1>
-
-  <div class="row">
-    <a href="https://tauri.app" target="_blank" rel="noreferrer">
-      <img src="/tauri.svg" class="logo tauri" alt="Tauri Logo" />
-    </a>
-  </div>
-
-  <p class="font-semibold text-gray-400 underline">Click on the Tauri logo to learn more.</p>
-
-  <div class="row">
-    <Greet />
-  </div>
-  {JSON.stringify($state)}
-</main> -->
 
 <main class="h-screen bg-gray-100">
   <Router>
-    dev mode:
-    <button class="rounded bg-gray-300 px-4 py-2 text-gray-700 shadow" on:click={() => navigate(-1)}
-      >navigate back</button
+    <!-- dev mode -->
+    {#if showDevMode}
+      <div
+        class="flex space-x-4 bg-gradient-to-r from-red-200 to-red-300 p-4 shadow-md"
+        in:fly={{ y: -64 }}
+        out:fly={{ y: -64 }}
+      >
+        <div class="px-4 py-1 font-medium text-red-700">dev mode</div>
+        <button
+          class="rounded-full bg-red-300 px-4 py-1 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
+          on:click={() => navigate(-1)}>navigate back</button
+        >
+        <button
+          class="rounded-full bg-red-300 px-4 py-1 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
+          on:click={reset}>reset app</button
+        >
+      </div>
+    {/if}
+    <button
+      class="fixed right-3 top-3 rounded-full p-2 hover:bg-red-200"
+      on:click={() => (showDevMode = !showDevMode)}
     >
-    <button class="rounded bg-gray-300 px-4 py-2 text-gray-700 shadow" on:click={reset}
-      >reset app</button
-    >
-    <hr class="border border-violet-600" />
-    <!-- <Link to="">root</Link> -->
-    <Route path="welcome" component={Welcome} />
-    <Route path="profile" component={Profile} primary={false} />
+      {#if showDevMode}
+        <ChevronUp class="text-red-700" strokeWidth="2" />
+      {:else}
+        <ChevronDown class="text-red-700" strokeWidth="2" />
+      {/if}
+    </button>
+    <!-- end: dev mode -->
+    <div class="">
+      <Route path="welcome" component={Welcome} />
+      <Route path="profile" component={Profile} primary={false} />
+    </div>
   </Router>
-
-  <select bind:value={selected_locale} on:change={() => setLocale()}>
-    <option value="en">en</option>
-    <option value="de">de</option>
-    <option value="nl">nl</option>
-  </select>
-
-  <hr class="border border-violet-600" />
-
-  state:
-  <div class="text-xs text-neutral-500">
-    <pre>{JSON.stringify($state, null, 2)}</pre>
-  </div>
 </main>
-
-<!-- style global breaks tailwind buttons-->
-<!-- <style global>
-  @tailwind base;
-  @tailwind components;
-  @tailwind utilities;
-</style> -->
