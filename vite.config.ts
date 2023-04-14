@@ -13,12 +13,16 @@ export default defineConfig(async () => ({
         sveltePreprocess({
           typescript: true
         })
-      ]
+      ],
+      hot: !process.env.VITEST
     })
   ],
   test: {
-    include: ['src/**/*.{test,spec}.{js,ts}']
+    include: ['tests/**/*.{test,spec}.{js,ts}'],
+    globals: true,
+    environment: 'jsdom'
   },
+  optimizeDeps: { exclude: ["svelte-navigator"] }, // otherwise breaks svelte-navigator
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   // prevent vite from obscuring rust errors
   clearScreen: false,

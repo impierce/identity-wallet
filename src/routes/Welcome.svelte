@@ -3,13 +3,10 @@
   import { invoke } from '@tauri-apps/api/tauri';
   import { useFocus } from 'svelte-navigator';
   import LL from '../i18n/i18n-svelte';
-  import type { Action } from '../../src-tauri/bindings/Action';
+  import type { Action } from 'src-tauri/bindings/Action';
   import LocaleSelect from '../lib/LocaleSelect.svelte';
 
   const registerFocus = useFocus();
-
-  //   export let location;
-  //   export let navigate;
 
   let usernameInput: HTMLInputElement;
 
@@ -21,12 +18,13 @@
 </script>
 
 <div class="grid place-items-center space-y-8 p-8">
-  <h1 class="font-serif text-2xl font-semibold text-gray-800">{$LL.WELCOME()}!</h1>
-  <p class="text-gray-600">{$LL.PROMPT_NAME()}</p>
+  <h1 data-testid="label-welcome" class="font-serif text-2xl font-semibold text-gray-800">{$LL.WELCOME()}!</h1>
+  <p data-testid="label-prompt-username" class="text-gray-600">{$LL.PROMPT_NAME()}</p>
   <!-- TODO: replace with ui-components/Input -->
   <div>
     <input
       type="text"
+      data-testid="input-username"
       class="rounded-lg border px-4 py-2 shadow focus:outline-none focus:ring-2 focus:ring-violet-600"
       placeholder=""
       bind:this={usernameInput}

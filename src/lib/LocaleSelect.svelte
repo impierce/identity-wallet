@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Action } from '../../src-tauri/bindings/Action';
+  import type { Action } from 'src-tauri/bindings/Action';
   import { invoke } from '@tauri-apps/api/tauri';
 
   let selected_locale;

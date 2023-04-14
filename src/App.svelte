@@ -5,19 +5,13 @@
   import { onMount } from 'svelte';
   import { invoke } from '@tauri-apps/api/tauri';
   import Profile from './routes/Profile.svelte';
-  // import { initI18n } from './i18n/i18n-svelte';
-  // import { initI18nSvelte } from 'typesafe-i18n/svelte';
-  // import { setLocale } from './i18n/i18n-svelte';
   import { loadAllLocales } from './i18n/i18n-util.sync';
-  import type { Action } from '../src-tauri/bindings/Action';
+  import type { Action } from 'src-tauri/bindings/Action';
   import { ChevronUp, ChevronDown } from 'svelte-heros-v2';
   import { fly } from 'svelte/transition';
-  import LocaleSelect from './lib/LocaleSelect.svelte';
 
   onMount(async () => {
-    // initI18n('en');
-
-    loadAllLocales(); //TODO: only load on request?
+    loadAllLocales(); //TODO: only load locale on user request
 
     await invoke('execute_command', {
       action: { type: '[INIT] Get state' } as Action
