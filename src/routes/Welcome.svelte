@@ -1,20 +1,15 @@
 <script lang="ts">
   import { Button } from '@impierce/ui-components';
-  import { invoke } from '@tauri-apps/api/tauri';
   import { useFocus } from 'svelte-navigator';
   import LL from '../i18n/i18n-svelte';
-  import type { Action } from 'src-tauri/bindings/Action';
   import LocaleSelect from '../lib/LocaleSelect.svelte';
+  import { dispatch } from '../lib/dispatcher';
 
   const registerFocus = useFocus();
 
   let usernameInput: HTMLInputElement;
 
-  const createProfile = async () => {
-    await invoke('execute_command', {
-      action: { type: '[DID] Create new', payload: usernameInput.value } as Action
-    });
-  };
+  const createProfile = async () => dispatch({ type: '[DID] Create new', payload: usernameInput.value });
 </script>
 
 <div class="grid place-items-center space-y-8 p-8">
