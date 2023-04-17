@@ -34,3 +34,13 @@ pub async fn delete_state(app_handle: tauri::AppHandle) -> anyhow::Result<()> {
     info!("state deleted from app_data_dir: {}", state_file_path.display());
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    // use super::*;
+
+    #[test]
+    fn test_load_state() {
+        // TODO: how to mock the app_handle?
+    }
+}

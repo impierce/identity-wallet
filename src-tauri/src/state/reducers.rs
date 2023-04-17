@@ -1,7 +1,7 @@
 // TODO: find abstraction for each reducer (Reducer trait?, problem: reducers are functions, can we have trait-like behavior for functions?)
-use tracing::warn;
 use crate::state::actions::Action;
 use crate::state::state::{AppState, Profile, StateStatus};
+use tracing::warn;
 
 pub fn set_locale(state: &AppState, action: Action) -> anyhow::Result<()> {
     let supported_locales = vec!["en", "nl", "de"];
@@ -74,5 +74,30 @@ mod tests {
                 primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
             })
         );
+    }
+
+    #[test]
+    fn test_reset_state() {
+        let state = AppState {
+            status: StateStatus::Loading.into(),
+            active_profile: Some(Profile {
+                display_name: "Test profile".to_string(),
+                primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
+            }).into(),
+            locale: "nl".to_string().into(),
+        };
+
+        reset_state(
+            &state,
+            Action {
+                r#type: ActionType::Reset,
+                payload: None,
+            },
+        )
+        .unwrap();
+
+        assert_eq!(*state.status.lock().unwrap(), StateStatus::Stable);
+        assert_eq!(*state.active_profile.lock().unwrap(), None);
+        assert_eq!(*state.locale.lock().unwrap(), "en".to_string());
     }
 }
