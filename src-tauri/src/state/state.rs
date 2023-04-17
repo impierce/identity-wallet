@@ -7,21 +7,11 @@ use ts_rs::TS;
 pub struct AppState {
     pub status: Mutex<StateStatus>,
     pub active_profile: Mutex<Option<Profile>>,
-    pub locale: Mutex<String>, //TODO: move to nested object "user_preferences"?
-}
-
-impl AppState {
-    pub fn new(status: StateStatus, active_profile: Option<Profile>, locale: String) -> Self {
-        AppState {
-            status: Mutex::new(status),
-            active_profile: Mutex::new(active_profile),
-            locale: Mutex::new(locale),
-        }
-    }
+    pub locale: Mutex<String>,
 }
 
 // TODO: do we really need that StateStatus?
-#[derive(Clone, Copy, Debug, Deserialize, Serialize, TS)]
+#[derive(Clone, Copy, Debug, Deserialize, Serialize, TS, PartialEq)]
 #[serde(rename_all = "UPPERCASE")]
 #[ts(export)]
 pub enum StateStatus {
@@ -74,7 +64,7 @@ impl From<&AppState> for TransferState {
     }
 }
 
-#[derive(Clone, Serialize, Debug, Deserialize, TS)]
+#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq)]
 #[ts(export)]
 pub struct Profile {
     pub display_name: String,

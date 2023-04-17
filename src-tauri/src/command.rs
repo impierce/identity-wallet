@@ -1,35 +1,27 @@
-use std::str::FromStr;
-
-use tokio::fs::{read, remove_file, File, OpenOptions};
-use tokio::io::{self, AsyncReadExt, AsyncWriteExt};
 use tracing::{info, warn};
 
-use crate::clients::iota::create_iota_identity;
-use crate::state::actions::{Action, KnownAction};
-use crate::state::persistence::{load_state, save_state};
-use crate::state::reducers::set_locale;
+use crate::state::actions::{Action, ActionType};
+use crate::state::persistence::{delete_state, load_state, save_state};
+use crate::state::reducers::{create_did_key, reset_state, set_locale};
 use crate::state::state::{AppState, Profile, StateStatus, TransferState};
 
 /// This command handler is the single point of entrance to the business logic in the backend. It will delegate the
 /// command it receives and delegates its corresponding payload to the designated command function.
 /// NOTE: Testing command handlers is not possible as of yet, see: https://github.com/tauri-apps/tauri/pull/4752
 #[tauri::command]
-pub async fn execute_command(
+pub async fn handle_action(
     Action { r#type, payload }: Action,
     app_handle: tauri::AppHandle,
     app_state: tauri::State<'_, AppState>,
     window: tauri::Window,
-) -> Result<TransferState, String> {
-    info!("received action `{}` with payload `{:?}`", r#type, payload);
+) -> Result<(), String> {
+    info!("received action `{:?}` with payload `{:?}`", r#type, payload);
 
-    let state_file_path = app_handle.path_resolver().app_data_dir().unwrap().join("state.json");
-
-    // TODO: better pattern would be to return the state unchanged if the action is unknown
-    let action = KnownAction::from_str(&r#type).expect(&format!("Unknown action: `{}`", &r#type));
+    // TODO: redux-idiomatic: return the state unchanged if the action is unknown
 
     // This match structure functions as the "root reducer" (redux pattern)
-    match action {
-        KnownAction::GetState => {
+    match r#type {
+        ActionType::GetState => {
             let transfer_state: TransferState = load_state(app_handle).await.unwrap_or_default();
 
             // TODO: find a better way to populate all fields with values from json file
@@ -37,32 +29,18 @@ pub async fn execute_command(
             *app_state.active_profile.lock().unwrap() = transfer_state.active_profile;
             *app_state.locale.lock().unwrap() = transfer_state.locale;
         }
-        KnownAction::Reset => {
-            remove_file(&state_file_path).await.unwrap();
-
-            *app_state.status.lock().unwrap() = Default::default();
-            *app_state.active_profile.lock().unwrap() = None;
-            *app_state.locale.lock().unwrap() = "en".to_string();
+        ActionType::Reset => {
+            reset_state(app_state.inner(), Action { r#type, payload }).unwrap();
+            delete_state(app_handle).await.unwrap();
         }
-        KnownAction::CreateNew => {
-            // let iota_identity = create_iota_identity();
-
-            let mock_profile = Profile {
-                display_name: payload.unwrap(),
-                primary_did: "did:atoi:123".to_string(),
-            };
-
-            *app_state.status.lock().unwrap() = StateStatus::Stable;
-            *app_state.active_profile.lock().unwrap() = Some(mock_profile);
-
+        ActionType::CreateNew => {
+            create_did_key(app_state.inner(), Action { r#type, payload }).unwrap();
             save_state(app_handle, TransferState::from(app_state.inner()))
                 .await
                 .unwrap();
         }
-        KnownAction::SetLocale => {
-            // *app_state.locale.lock().unwrap() = payload.unwrap();
+        ActionType::SetLocale => {
             set_locale(app_state.inner(), Action { r#type, payload }).unwrap();
-
             save_state(app_handle, TransferState::from(app_state.inner()))
                 .await
                 .unwrap();
@@ -71,7 +49,7 @@ pub async fn execute_command(
 
     let updated_state = TransferState::from(app_state.inner());
     emit_event(window, updated_state.clone()).unwrap();
-    Ok(updated_state)
+    Ok(())
 }
 
 fn emit_event(window: tauri::Window, transfer_state: TransferState) -> anyhow::Result<()> {
