@@ -26,6 +26,8 @@ test('shows welcome label and user prompt label', () => {
 });
 
 test('triggers correct event when button is clicked', async () => {
+  const spy = vi.spyOn(window, '__TAURI_IPC__');
+
   renderWithRouter(Welcome, {}, { withRoute: true });
   const button = screen.getByRole('button');
   expect(button).toBeInTheDocument();
@@ -43,7 +45,6 @@ test('triggers correct event when button is clicked', async () => {
   //       break;
   //   }
   // });
-  const spy = vi.spyOn(window, '__TAURI_IPC__');
   // -----------------------------------------
 
   await fireEvent.click(button);
@@ -52,7 +53,7 @@ test('triggers correct event when button is clicked', async () => {
   expect(spy).toHaveBeenCalledWith({
     action: { type: '[DID] Create new', payload: 'Ferris' },
     callback: expect.anything(),
-    cmd: 'execute_command',
+    cmd: 'handle_action',
     error: expect.anything()
   });
 });
@@ -62,7 +63,7 @@ test('input field has focus when rendered', async () => {
 
   const input = screen.getByTestId('input-username');
 
-  // click the heading after render still focuses the input?
+  // TODO: click the heading after render still focuses the input? why?
   const heading = screen.getByTestId('label-welcome');
   await fireEvent.click(heading);
 

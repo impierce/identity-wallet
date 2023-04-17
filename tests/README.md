@@ -13,6 +13,8 @@
     - `@testing-library/jest-dom` for convenient matchers
     - test globals are enabled to reduce boilerplate imports
 
+> We only test the frontend code here, the Tauri API is mocked!
+
 ### Backend
 
 - focus on state changes, especially reducers need to be tested thoroughly
