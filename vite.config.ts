@@ -22,7 +22,7 @@ export default defineConfig(async () => ({
     globals: true,
     environment: 'jsdom'
   },
-  optimizeDeps: { exclude: ["svelte-navigator"] }, // otherwise breaks svelte-navigator
+  optimizeDeps: { exclude: ['svelte-navigator'] }, // otherwise breaks svelte-navigator
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   // prevent vite from obscuring rust errors
   clearScreen: false,

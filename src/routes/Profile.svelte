@@ -8,7 +8,10 @@
     {$LL.WELCOME()}, {$state?.active_profile?.display_name}!
   </h1>
   <p>{$LL.CREATE_IDENTITY_SUCCESS()}!</p>
-  <div class="w-fit rounded-lg bg-gray-300 px-4 py-2 font-mono text-sm font-semibold text-gray-600" data-testid="primary-did">
+  <div
+    class="w-fit rounded-lg bg-gray-300 px-4 py-2 font-mono text-sm font-semibold text-gray-600"
+    data-testid="primary-did"
+  >
     {$state?.active_profile?.primary_did}
   </div>
 </div>
