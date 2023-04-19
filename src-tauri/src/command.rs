@@ -5,8 +5,8 @@ use crate::state::persistence::{delete_state, load_state, save_state};
 use crate::state::reducers::{create_did_key, reset_state, set_locale};
 use crate::state::state::{AppState, TransferState};
 
-/// This command handler is the single point of entrance to the business logic in the backend. It will delegate the
-/// command it receives and delegates its corresponding payload to the designated command function.
+/// This command handler is the single point of entry to the business logic in the backend. It will delegate the
+/// command it receives to the designated functions that modify the state (see: "reducers" in the Redux pattern).
 /// NOTE: Testing command handlers is not possible as of yet, see: https://github.com/tauri-apps/tauri/pull/4752
 #[tauri::command]
 pub async fn handle_action(
@@ -17,9 +17,8 @@ pub async fn handle_action(
 ) -> Result<(), String> {
     info!("received action `{:?}` with payload `{:?}`", r#type, payload);
 
-    // TODO: redux-idiomatic: return the state unchanged if the action is unknown
+    // TODO: be more redux-idiomatic: do not deserialize to "known" actions, but return the state unchanged if the action is unknown
 
-    // This match structure functions as the "root reducer" (redux pattern)
     match r#type {
         ActionType::GetState => {
             let transfer_state: TransferState = load_state(app_handle).await.unwrap_or_default();

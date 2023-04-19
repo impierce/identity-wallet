@@ -1,4 +1,3 @@
-mod clients;
 mod command;
 mod state;
 

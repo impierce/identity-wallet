@@ -8,8 +8,8 @@ use ts_rs::TS;
 #[ts(export)]
 pub struct Action {
     pub(crate) r#type: ActionType,
-    #[ts(optional)]
-    pub(crate) payload: Option<String>, // TODO: payload should be optional json value (or something else easily serde-able)
+    #[ts(optional, type = "object")]
+    pub(crate) payload: Option<serde_json::Value>,
 }
 
 /// Actions that the backend knows how to handle (reduce).

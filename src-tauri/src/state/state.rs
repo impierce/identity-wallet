@@ -10,7 +10,7 @@ pub struct AppState {
     pub locale: Mutex<String>,
 }
 
-// TODO: do we really need that StateStatus?
+// TODO: design: is that StateStatus really needed?
 #[derive(Clone, Copy, Debug, Deserialize, Serialize, TS, PartialEq)]
 #[serde(rename_all = "UPPERCASE")]
 #[ts(export)]
@@ -33,7 +33,7 @@ pub struct TransferState {
     pub locale: String,
 }
 
-// TODO: only the AppState should have a default
+// TODO: design: only the AppState should have a default, the TransferState should just serve as a structure to represent the state outside the backend
 impl Default for TransferState {
     fn default() -> Self {
         TransferState {

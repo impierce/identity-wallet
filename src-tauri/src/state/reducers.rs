@@ -1,29 +1,35 @@
-// TODO: find abstraction for each reducer (Reducer trait?, problem: reducers are functions, can we have trait-like behavior for functions?)
 use crate::state::actions::Action;
 use crate::state::state::{AppState, Profile, StateStatus};
-use tracing::warn;
+use tracing::{warn, info};
 
+/// Sets the locale to the given value. If the locale is not supported yet, the current locale will stay unchanged.
 pub fn set_locale(state: &AppState, action: Action) -> anyhow::Result<()> {
+    let payload = action.payload.unwrap();
+    let locale = payload["locale"].as_str().expect("unable to read locale from json payload");
     let supported_locales = vec!["en", "nl", "de"];
-    if !supported_locales.contains(&action.payload.as_ref().unwrap().as_str()) {
-        warn!("unsupported locale: `{}`", action.payload.unwrap());
+    if !supported_locales.contains(&locale) {
+        warn!("unsupported locale: `{}`", locale);
     } else {
-        *state.locale.lock().unwrap() = action.payload.unwrap();
+        *state.locale.lock().unwrap() = locale.to_string();
+        info!("locale set to: `{}`", locale);
     }
     Ok(())
 }
 
+/// Creates a new profile with a new DID (using the did:key method) and sets it as the active profile.
 pub fn create_did_key(state: &AppState, action: Action) -> anyhow::Result<()> {
+    let payload = action.payload.unwrap();
+    let display_name = payload["display_name"].as_str().expect("unable to read display_name from json payload");
     let mock_profile = Profile {
-        display_name: action.payload.unwrap(),
+        display_name: display_name.to_string(),
         primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
     };
-
     *state.status.lock().unwrap() = StateStatus::Stable;
     *state.active_profile.lock().unwrap() = Some(mock_profile);
     Ok(())
 }
 
+/// Completely resets the state to its default values.
 pub fn reset_state(state: &AppState, _action: Action) -> anyhow::Result<()> {
     *state.status.lock().unwrap() = Default::default();
     *state.active_profile.lock().unwrap() = None;
@@ -33,6 +39,8 @@ pub fn reset_state(state: &AppState, _action: Action) -> anyhow::Result<()> {
 
 #[cfg(test)]
 mod tests {
+    use serde_json::json;
+
     use super::*;
     use crate::state::actions::ActionType;
 
@@ -44,7 +52,7 @@ mod tests {
             &state,
             Action {
                 r#type: ActionType::SetLocale,
-                payload: Some("nl".to_string()),
+                payload: Some(json!({"locale": "nl"})),
             },
         )
         .unwrap();
@@ -61,7 +69,7 @@ mod tests {
             &state,
             Action {
                 r#type: ActionType::CreateNew,
-                payload: Some("Test profile".to_string()),
+                payload: Some(json!({"display_name": "Ferris"})),
             },
         )
         .unwrap();
@@ -70,7 +78,7 @@ mod tests {
         assert_eq!(
             *state.active_profile.lock().unwrap(),
             Some(Profile {
-                display_name: "Test profile".to_string(),
+                display_name: "Ferris".to_string(),
                 primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
             })
         );
@@ -81,7 +89,7 @@ mod tests {
         let state = AppState {
             status: StateStatus::Loading.into(),
             active_profile: Some(Profile {
-                display_name: "Test profile".to_string(),
+                display_name: "Ferris".to_string(),
                 primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
             }).into(),
             locale: "nl".to_string().into(),
