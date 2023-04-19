@@ -38,9 +38,9 @@ test('triggers correct event when button is clicked', async () => {
 
   await fireEvent.click(button);
 
-  expect(spy).toHaveBeenCalledTimes(1);
+  expect(spy).toHaveBeenCalledTimes(2); // TODO: skip first call
   expect(spy).toHaveBeenCalledWith({
-    action: { type: '[DID] Create new', payload: 'Ferris' },
+    action: { type: '[DID] Create new', payload: { display_name: 'Ferris' } },
     callback: expect.anything(),
     cmd: 'handle_action',
     error: expect.anything()

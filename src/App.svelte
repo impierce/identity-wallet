@@ -14,8 +14,6 @@
     dispatch({ type: '[App] Get state' });
   });
 
-  const reset = async () => dispatch({ type: '[App] Reset' });
-
   let showDevMode = false;
 
   $state; // TODO: needs to be called at least once to trigger subscribers --> move somewhere else
@@ -37,7 +35,7 @@
         >
         <button
           class="rounded-full bg-red-300 px-4 py-1 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
-          on:click={reset}>reset app</button
+          on:click={() => dispatch({ type: '[App] Reset' })}>reset app</button
         >
       </div>
     {/if}
