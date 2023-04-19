@@ -5,11 +5,11 @@
   let selected_locale;
 
   const setLocale = async () =>
-    dispatch({ type: '[Settings] Set locale', payload: selected_locale });
+    dispatch({ type: '[Settings] Set locale', payload: { locale: selected_locale } });
 
   $: {
     if ($state?.locale) {
-      console.log('$state.locale', $state.locale)
+      console.log('$state.locale', $state.locale);
     }
   }
 </script>

@@ -36,17 +36,6 @@ test('triggers correct event when button is clicked', async () => {
   expect(input).toBeInTheDocument();
   input.setAttribute('value', 'Ferris');
 
-  // -------- TODO: extract to utils --------
-  // mockIPC((cmd, args) => {
-  //   switch (cmd) {
-  //     case '__execute_command':
-  //       return (args.a as number) + (args.b as number);
-  //     default:
-  //       break;
-  //   }
-  // });
-  // -----------------------------------------
-
   await fireEvent.click(button);
 
   expect(spy).toHaveBeenCalledTimes(1);

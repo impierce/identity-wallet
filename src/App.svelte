@@ -10,7 +10,7 @@
   import { dispatch } from './lib/dispatcher';
 
   onMount(async () => {
-    loadAllLocales(); //TODO: only load locale on user request
+    loadAllLocales(); //TODO: performance: only load locale on user request
     dispatch({ type: '[App] Get state' });
   });
 

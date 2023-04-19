@@ -28,5 +28,5 @@ export const state = readable<State>(undefined, (set) => {
       navigate('profile');
     }
   });
-  // TODO: unsubscribe from listener?
+  // TODO: unsubscribe from listener necessary?
 });
