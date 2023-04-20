@@ -13,7 +13,7 @@
     dispatch({ type: '[DID] Create new', payload: { display_name: usernameInput.value } });
 </script>
 
-<div class="grid place-items-center space-y-8 p-8">
+<div class="flex h-full flex-col items-center justify-center space-y-8 p-8">
   <h1 data-testid="label-welcome" class="font-serif text-2xl font-semibold text-gray-800">
     {$LL.WELCOME()}!
   </h1>
@@ -23,7 +23,7 @@
     <input
       type="text"
       data-testid="input-username"
-      class="rounded-lg border px-4 py-2 shadow focus:outline-none focus:ring-2 focus:ring-violet-600"
+      class="w-full rounded-lg border px-4 py-2 shadow focus:outline-none focus:ring-2 focus:ring-violet-600"
       placeholder=""
       bind:this={usernameInput}
       use:registerFocus
