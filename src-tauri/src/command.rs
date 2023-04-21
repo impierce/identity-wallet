@@ -29,25 +29,28 @@ pub async fn handle_action(
             *app_state.locale.lock().unwrap() = transfer_state.locale;
         }
         ActionType::Reset => {
-            reset_state(app_state.inner(), Action { r#type, payload }).unwrap();
-            delete_state(app_handle).await.unwrap();
+            if reset_state(app_state.inner(), Action { r#type, payload }).is_ok() {
+                delete_state(app_handle).await.ok();
+            }
         }
         ActionType::CreateNew => {
-            create_did_key(app_state.inner(), Action { r#type, payload }).unwrap();
-            save_state(app_handle, TransferState::from(app_state.inner()))
-                .await
-                .unwrap();
+            if create_did_key(app_state.inner(), Action { r#type, payload }).is_ok() {
+                save_state(app_handle, TransferState::from(app_state.inner()))
+                    .await
+                    .ok();
+            }
         }
         ActionType::SetLocale => {
-            set_locale(app_state.inner(), Action { r#type, payload }).unwrap();
-            save_state(app_handle, TransferState::from(app_state.inner()))
-                .await
-                .unwrap();
+            if set_locale(app_state.inner(), Action { r#type, payload }).is_ok() {
+                save_state(app_handle, TransferState::from(app_state.inner()))
+                    .await
+                    .ok();
+            }
         }
     };
 
     let updated_state = TransferState::from(app_state.inner());
-    emit_event(window, updated_state.clone()).unwrap();
+    emit_event(window, updated_state).ok();
     Ok(())
 }
 
