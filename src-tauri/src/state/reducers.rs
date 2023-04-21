@@ -15,7 +15,7 @@ pub fn set_locale(state: &AppState, action: Action) -> anyhow::Result<()> {
 
 /// Creates a new profile with a new DID (using the did:key method) and sets it as the active profile.
 pub fn create_did_key(state: &AppState, action: Action) -> anyhow::Result<()> {
-    let payload = action.payload.unwrap();
+    let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
     let display_name = payload["display_name"]
         .as_str()
         .ok_or(anyhow::anyhow!("unable to read display_name from json payload"))?;
