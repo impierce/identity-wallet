@@ -21,7 +21,10 @@ pub async fn handle_action(
 
     match r#type {
         ActionType::GetState => {
-            let transfer_state: TransferState = load_state(app_handle).await.unwrap_or_default();
+            let transfer_state: TransferState = load_state(app_handle).await.unwrap_or(TransferState {
+                active_profile: None,
+                locale: "en".to_string(),
+            });
 
             // TODO: find a better way to populate all fields with values from json file
             *app_state.active_profile.lock().unwrap() = transfer_state.active_profile;

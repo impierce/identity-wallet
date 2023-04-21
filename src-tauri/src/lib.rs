@@ -1,8 +1,6 @@
 mod command;
 mod state;
 
-use tracing_subscriber;
-
 use command::handle_action;
 use state::AppState;
 
