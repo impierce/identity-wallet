@@ -3,7 +3,7 @@ use tracing::info;
 use crate::state::actions::{Action, ActionType};
 use crate::state::persistence::{delete_state, load_state, save_state};
 use crate::state::reducers::{create_did_key, reset_state, set_locale};
-use crate::state::state::{AppState, TransferState};
+use crate::state::{AppState, TransferState};
 
 /// This command handler is the single point of entry to the business logic in the backend. It will delegate the
 /// command it receives to the designated functions that modify the state (see: "reducers" in the Redux pattern).

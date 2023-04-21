@@ -4,7 +4,7 @@ mod state;
 use tracing_subscriber;
 
 use command::handle_action;
-use state::state::AppState;
+use state::AppState;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {

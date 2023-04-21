@@ -5,7 +5,7 @@ use tokio::{
 };
 use tracing::info;
 
-use crate::state::state::TransferState;
+use crate::state::TransferState;
 
 /// Loads a [TransferState] from the app's data directory.
 /// If it does not exist or it cannot be parsed, it will fallback to default values.

@@ -1,5 +1,5 @@
 use crate::state::actions::Action;
-use crate::state::state::{AppState, Profile};
+use crate::state::{AppState, Profile};
 use tracing::info;
 
 /// Sets the locale to the given value. If the locale is not supported yet, the current locale will stay unchanged.
