@@ -24,7 +24,6 @@ pub async fn handle_action(
             let transfer_state: TransferState = load_state(app_handle).await.unwrap_or_default();
 
             // TODO: find a better way to populate all fields with values from json file
-            *app_state.status.lock().unwrap() = transfer_state.status;
             *app_state.active_profile.lock().unwrap() = transfer_state.active_profile;
             *app_state.locale.lock().unwrap() = transfer_state.locale;
         }

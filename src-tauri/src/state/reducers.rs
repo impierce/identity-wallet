@@ -1,5 +1,5 @@
 use crate::state::actions::Action;
-use crate::state::state::{AppState, Profile, StateStatus};
+use crate::state::state::{AppState, Profile};
 use tracing::info;
 
 /// Sets the locale to the given value. If the locale is not supported yet, the current locale will stay unchanged.
@@ -23,14 +23,12 @@ pub fn create_did_key(state: &AppState, action: Action) -> anyhow::Result<()> {
         display_name: display_name.to_string(),
         primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
     };
-    *state.status.lock().unwrap() = StateStatus::Stable;
     *state.active_profile.lock().unwrap() = Some(mock_profile);
     Ok(())
 }
 
 /// Completely resets the state to its default values.
 pub fn reset_state(state: &AppState, _action: Action) -> anyhow::Result<()> {
-    *state.status.lock().unwrap() = Default::default();
     *state.active_profile.lock().unwrap() = None;
     *state.locale.lock().unwrap() = "en".to_string();
     Ok(())
@@ -55,7 +53,6 @@ mod tests {
             },
         )
         .is_ok());
-        assert_eq!(*state.status.lock().unwrap(), StateStatus::Stable);
         assert_eq!(*state.locale.lock().unwrap(), "nl".to_string());
     }
 
@@ -96,7 +93,6 @@ mod tests {
             },
         )
         .is_ok());
-        assert_eq!(*state.status.lock().unwrap(), StateStatus::Stable);
         assert_eq!(
             *state.active_profile.lock().unwrap(),
             Some(Profile {
@@ -109,7 +105,6 @@ mod tests {
     #[test]
     fn test_reset_state() {
         let state = AppState {
-            status: StateStatus::Loading.into(),
             active_profile: Some(Profile {
                 display_name: "Ferris".to_string(),
                 primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
@@ -126,7 +121,6 @@ mod tests {
             },
         )
         .is_ok());
-        assert_eq!(*state.status.lock().unwrap(), StateStatus::Stable);
         assert_eq!(*state.active_profile.lock().unwrap(), None);
         assert_eq!(*state.locale.lock().unwrap(), "en".to_string());
     }
