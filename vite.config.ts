@@ -1,6 +1,5 @@
+import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
-import { svelte } from '@sveltejs/vite-plugin-svelte';
-import sveltePreprocess from 'svelte-preprocess';
 import { internalIpV4 } from 'internal-ip';
 
 const mobile = process.env.TAURI_PLATFORM === 'android' || process.env.TAURI_PLATFORM === 'ios';
@@ -8,21 +7,13 @@ const mobile = process.env.TAURI_PLATFORM === 'android' || process.env.TAURI_PLA
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
   plugins: [
-    svelte({
-      preprocess: [
-        sveltePreprocess({
-          typescript: true
-        })
-      ],
-      hot: !process.env.VITEST
-    })
+    sveltekit()
   ],
   test: {
     include: ['tests/**/*.{test,spec}.{js,ts}'],
     globals: true,
     environment: 'jsdom'
   },
-  optimizeDeps: { exclude: ['svelte-navigator'] }, // otherwise breaks svelte-navigator
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   // prevent vite from obscuring rust errors
   clearScreen: false,

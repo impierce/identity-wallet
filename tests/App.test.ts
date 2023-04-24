@@ -1,10 +1,10 @@
 import '@testing-library/jest-dom';
 
 import { clearMocks, mockIPC } from '@tauri-apps/api/mocks';
-import renderWithRouter from './utils/svelte-navigator/renderWithRouter';
 import { vi } from 'vitest';
-import App from 'src/App.svelte';
+import App from '../src/routes/+page.svelte';
 import { tick } from 'svelte';
+import { render } from '@testing-library/svelte';
 
 beforeEach(() => {
   // init __TAURI_IPC__
@@ -20,7 +20,7 @@ test('fetches app state on mount', async () => {
 
   await tick();
 
-  renderWithRouter(App, {}, { withRoute: true });
+  render(App, {});
 
   expect(spy).toHaveBeenCalledTimes(1);
   expect(spy).toHaveBeenCalledWith({

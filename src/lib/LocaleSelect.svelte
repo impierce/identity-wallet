@@ -2,7 +2,7 @@
   import { dispatch } from './dispatcher';
   import { state } from '../stores';
 
-  let selected_locale;
+  let selected_locale: string;
 
   const setLocale = async () =>
     dispatch({ type: '[Settings] Set locale', payload: { locale: selected_locale } });
