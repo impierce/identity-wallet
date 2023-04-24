@@ -19,16 +19,14 @@ export default defineConfig(async () => ({
   clearScreen: false,
   // tauri expects a fixed port, fail if that port is not available
   server: {
-    host: mobile ? '0.0.0.0' : false,
-    port: 1420,
-    hmr: mobile
-      ? {
-          protocol: 'ws',
-          host: await internalIpV4(),
-          port: 1421
-        }
-      : undefined,
-    strictPort: true
+    host: '0.0.0.0', // listen on all addresses
+    port: 5173,
+    strictPort: true,
+    hmr: {
+      protocol: 'ws',
+      host: await internalIpV4(),
+      port: 5183,
+    },
   },
   // to make use of `TAURI_DEBUG` and other env variables
   // https://tauri.studio/v1/api/config#buildconfig.beforedevcommand

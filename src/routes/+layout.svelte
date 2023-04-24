@@ -9,6 +9,7 @@
   import { dispatch } from '$lib/dispatcher';
 
   onMount(async () => {
+    console.log('+layout.svelte: onMount');
     loadAllLocales(); //TODO: performance: only load locale on user request
     dispatch({ type: '[App] Get state' });
   });
