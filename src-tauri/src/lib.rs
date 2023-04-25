@@ -24,6 +24,10 @@ pub fn run() {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![handle_action])
+        .setup(|app| {
+            initialize_storage(app.handle()).ok();
+            Ok(())
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
