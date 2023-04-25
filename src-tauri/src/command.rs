@@ -64,7 +64,10 @@ pub async fn handle_action(
             }
         }
         ActionType::Unknown => {
-            warn!("received unknown action type `{:?}` with payload `{:?}`", r#type, payload);
+            warn!(
+                "received unknown action type `{:?}` with payload `{:?}`",
+                r#type, payload
+            );
         }
     };
 
