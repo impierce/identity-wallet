@@ -11,7 +11,7 @@ pub async fn generate_new_did() -> anyhow::Result<Document> {
     Ok(keypair.get_did_document(Config::default()))
 }
 
-/// CAUTION: UNSAFE! - Generates always the same static secret key, saves it disk (unencrypted!) and returns its DID.
+/// CAUTION: UNSAFE! - Uses a static secret key, saves it to disk (unencrypted!) and returns its DID.
 pub async fn generate_dev_did() -> anyhow::Result<Document> {
     let unsafe_dev_secret_key: [u8; 32] = "this-is-a-very-UNSAFE-secret-key".as_bytes().try_into().unwrap();
     save_secret_key(unsafe_dev_secret_key).await?;

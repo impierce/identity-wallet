@@ -13,8 +13,6 @@ edition = "2021"
 name = "identity_wallet"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [build-dependencies]
 tauri-build = { version = "2.0.0-alpha.4", features = [] }
 
@@ -28,8 +26,8 @@ tokio = { version = "1.26.0", features = ["macros"] }
 ts-rs = "6.2"
 anyhow = "1.0"
 did-key = "0.2.1"
-ed25519-dalek = "1.0.1" # dependency of did-key (used for explicit typing)
 rand = "0.8.5"
+lazy_static = "1.4.0"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

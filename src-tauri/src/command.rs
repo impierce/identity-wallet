@@ -1,8 +1,9 @@
 use tracing::info;
 
+use crate::did::persistence::load_existing_keypair;
 use crate::state::actions::{Action, ActionType};
 use crate::state::persistence::{delete_state, load_state, save_state};
-use crate::state::reducers::{create_did_key, reset_state, set_locale, load_dev_profile};
+use crate::state::reducers::{create_did_key, load_dev_profile, reset_state, set_locale};
 use crate::state::{AppState, TransferState};
 
 /// This command handler is the single point of entry to the business logic in the backend. It will delegate the
@@ -11,7 +12,7 @@ use crate::state::{AppState, TransferState};
 #[tauri::command]
 pub async fn handle_action(
     Action { r#type, payload }: Action,
-    app_handle: tauri::AppHandle,
+    _app_handle: tauri::AppHandle,
     app_state: tauri::State<'_, AppState>,
     window: tauri::Window,
 ) -> Result<(), String> {
@@ -21,10 +22,18 @@ pub async fn handle_action(
 
     match r#type {
         ActionType::GetState => {
-            let transfer_state: TransferState = load_state(app_handle).await.unwrap_or(TransferState {
+            let transfer_state: TransferState = load_state().await.unwrap_or(TransferState {
                 active_profile: None,
                 locale: "en".to_string(),
             });
+
+            let _keypair = match load_existing_keypair().await {
+                Ok(keypair) => Some(keypair),
+                Err(_) => {
+                    info!("no existing keypair found");
+                    None
+                },
+            };
 
             // TODO: find a better way to populate all fields with values from json file
             *app_state.active_profile.lock().unwrap() = transfer_state.active_profile;
@@ -32,28 +41,28 @@ pub async fn handle_action(
         }
         ActionType::Reset => {
             if reset_state(app_state.inner(), Action { r#type, payload }).is_ok() {
-                delete_state(app_handle).await.ok();
+                delete_state().await.ok();
             }
         }
         ActionType::CreateNew => {
-            if create_did_key(app_state.inner(), Action { r#type, payload }).await.is_ok() {
-                save_state(app_handle, TransferState::from(app_state.inner()))
-                    .await
-                    .ok();
+            if create_did_key(app_state.inner(), Action { r#type, payload })
+                .await
+                .is_ok()
+            {
+                save_state(TransferState::from(app_state.inner())).await.ok();
             }
         }
         ActionType::SetLocale => {
             if set_locale(app_state.inner(), Action { r#type, payload }).is_ok() {
-                save_state(app_handle, TransferState::from(app_state.inner()))
-                    .await
-                    .ok();
+                save_state(TransferState::from(app_state.inner())).await.ok();
             }
         }
         ActionType::LoadDevProfile => {
-            if load_dev_profile(app_state.inner(), Action { r#type, payload }).await.is_ok() {
-                save_state(app_handle, TransferState::from(app_state.inner()))
-                    .await
-                    .ok();
+            if load_dev_profile(app_state.inner(), Action { r#type, payload })
+                .await
+                .is_ok()
+            {
+                save_state(TransferState::from(app_state.inner())).await.ok();
             }
         }
     };
@@ -64,10 +73,11 @@ pub async fn handle_action(
 }
 
 fn emit_event(window: tauri::Window, transfer_state: TransferState) -> anyhow::Result<()> {
-    window.emit("state-changed", &transfer_state).unwrap();
+    const STATE_CHANGED_EVENT: &str = "state-changed";
+    window.emit(STATE_CHANGED_EVENT, &transfer_state).unwrap();
     info!(
         "emitted event `{}` with payload `{:?}`",
-        "state-changed", &transfer_state
+        STATE_CHANGED_EVENT, &transfer_state
     );
     Ok(())
 }

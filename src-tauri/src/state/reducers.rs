@@ -1,4 +1,4 @@
-use crate::did::did_key::{generate_new_did, generate_dev_did};
+use crate::did::did_key::{generate_dev_did, generate_new_did};
 use crate::state::actions::Action;
 use crate::state::{AppState, Profile};
 use tracing::info;
@@ -37,7 +37,7 @@ pub fn reset_state(state: &AppState, _action: Action) -> anyhow::Result<()> {
     Ok(())
 }
 
-pub async fn load_dev_profile(state: &AppState, action: Action) -> anyhow::Result<()> {
+pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Result<()> {
     let did_document = generate_dev_did().await?;
     let profile = Profile {
         display_name: "Ferris".to_string(),
