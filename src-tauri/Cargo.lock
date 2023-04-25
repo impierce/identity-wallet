@@ -1561,6 +1561,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "did-key",
+ "ed25519-dalek",
  "lazy_static",
  "rand 0.8.5",
  "serde",
