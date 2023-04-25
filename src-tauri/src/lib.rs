@@ -1,4 +1,5 @@
 mod command;
+mod did;
 mod state;
 
 use command::handle_action;

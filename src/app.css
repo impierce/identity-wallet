@@ -16,3 +16,9 @@
     @apply text-xl font-semibold;
   }
 }
+
+@layer utilities {
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}

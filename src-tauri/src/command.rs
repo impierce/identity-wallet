@@ -2,7 +2,7 @@ use tracing::info;
 
 use crate::state::actions::{Action, ActionType};
 use crate::state::persistence::{delete_state, load_state, save_state};
-use crate::state::reducers::{create_did_key, reset_state, set_locale};
+use crate::state::reducers::{create_did_key, reset_state, set_locale, load_dev_profile};
 use crate::state::{AppState, TransferState};
 
 /// This command handler is the single point of entry to the business logic in the backend. It will delegate the
@@ -36,7 +36,7 @@ pub async fn handle_action(
             }
         }
         ActionType::CreateNew => {
-            if create_did_key(app_state.inner(), Action { r#type, payload }).is_ok() {
+            if create_did_key(app_state.inner(), Action { r#type, payload }).await.is_ok() {
                 save_state(app_handle, TransferState::from(app_state.inner()))
                     .await
                     .ok();
@@ -44,6 +44,13 @@ pub async fn handle_action(
         }
         ActionType::SetLocale => {
             if set_locale(app_state.inner(), Action { r#type, payload }).is_ok() {
+                save_state(app_handle, TransferState::from(app_state.inner()))
+                    .await
+                    .ok();
+            }
+        }
+        ActionType::LoadDevProfile => {
+            if load_dev_profile(app_state.inner(), Action { r#type, payload }).await.is_ok() {
                 save_state(app_handle, TransferState::from(app_state.inner()))
                     .await
                     .ok();

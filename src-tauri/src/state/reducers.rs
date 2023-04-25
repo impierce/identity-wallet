@@ -1,3 +1,4 @@
+use crate::did::did_key::{generate_new_did, generate_dev_did};
 use crate::state::actions::Action;
 use crate::state::{AppState, Profile};
 use tracing::info;
@@ -14,16 +15,18 @@ pub fn set_locale(state: &AppState, action: Action) -> anyhow::Result<()> {
 }
 
 /// Creates a new profile with a new DID (using the did:key method) and sets it as the active profile.
-pub fn create_did_key(state: &AppState, action: Action) -> anyhow::Result<()> {
+pub async fn create_did_key(state: &AppState, action: Action) -> anyhow::Result<()> {
     let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
     let display_name = payload["display_name"]
         .as_str()
         .ok_or(anyhow::anyhow!("unable to read display_name from json payload"))?;
-    let mock_profile = Profile {
+
+    let did_document = generate_new_did().await?;
+    let profile = Profile {
         display_name: display_name.to_string(),
-        primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
+        primary_did: did_document.id,
     };
-    *state.active_profile.lock().unwrap() = Some(mock_profile);
+    *state.active_profile.lock().unwrap() = Some(profile);
     Ok(())
 }
 
@@ -31,6 +34,16 @@ pub fn create_did_key(state: &AppState, action: Action) -> anyhow::Result<()> {
 pub fn reset_state(state: &AppState, _action: Action) -> anyhow::Result<()> {
     *state.active_profile.lock().unwrap() = None;
     *state.locale.lock().unwrap() = "en".to_string();
+    Ok(())
+}
+
+pub async fn load_dev_profile(state: &AppState, action: Action) -> anyhow::Result<()> {
+    let did_document = generate_dev_did().await?;
+    let profile = Profile {
+        display_name: "Ferris".to_string(),
+        primary_did: did_document.id,
+    };
+    *state.active_profile.lock().unwrap() = Some(profile);
     Ok(())
 }
 
@@ -81,8 +94,8 @@ mod tests {
         .is_err());
     }
 
-    #[test]
-    fn test_create_did_key() {
+    #[tokio::test]
+    async fn test_create_new_with_method_did_key() {
         let state = AppState::default();
 
         assert!(create_did_key(
@@ -92,12 +105,13 @@ mod tests {
                 payload: Some(json!({"display_name": "Ferris"})),
             },
         )
+        .await
         .is_ok());
         assert_eq!(
             *state.active_profile.lock().unwrap(),
             Some(Profile {
                 display_name: "Ferris".to_string(),
-                primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
+                primary_did: "did:key:z6Mkrkk4KQw9kLHbZ1kgLDA63Fk5XhHDnMQPkD3n8WyKrN9S".to_string(),
             })
         );
     }
