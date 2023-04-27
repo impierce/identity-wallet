@@ -28,7 +28,7 @@ anyhow = "1.0"
 did-key = "0.2.1"
 rand = "0.8.5"
 lazy_static = "1.4.0"
-tempfile = "3.5.0"
+siopv2 = { git = "ssh://git@github.com/impierce/siopv2.git", branch = "feat/claims" }
 
 [dev-dependencies]
 tempfile = "3.5.0"
