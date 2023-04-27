@@ -3,7 +3,7 @@ use tracing::{info, warn};
 use crate::did::persistence::load_existing_keypair;
 use crate::state::actions::{Action, ActionType};
 use crate::state::persistence::{delete_state, load_state, save_state};
-use crate::state::reducers::{create_did_key, load_dev_profile, reset_state, set_locale};
+use crate::state::reducers::{create_did_key, get_request, load_dev_profile, reset_state, send_response, set_locale};
 use crate::state::{AppState, TransferState};
 
 /// This command handler is the single point of entry to the business logic in the backend. It will delegate the
@@ -23,6 +23,7 @@ pub async fn handle_action(
             let transfer_state: TransferState = load_state().await.unwrap_or(TransferState {
                 active_profile: None,
                 locale: "en".to_string(),
+                ..Default::default()
             });
 
             let _keypair = match load_existing_keypair().await {
@@ -63,11 +64,24 @@ pub async fn handle_action(
                 save_state(TransferState::from(app_state.inner())).await.ok();
             }
         }
+        ActionType::GetRequest => {
+            if get_request(app_state.inner(), Action { r#type, payload }).await.is_ok() {
+                save_state(TransferState::from(app_state.inner())).await.ok();
+            }
+        }
+        ActionType::SendResponse => {
+            if send_response(app_state.inner(), Action { r#type, payload })
+                .await
+                .is_ok()
+            {
+                save_state(TransferState::from(app_state.inner())).await.ok();
+            }
+        }
         ActionType::Unknown => {
             warn!(
                 "received unknown action type `{:?}` with payload `{:?}`",
                 r#type, payload
-            );
+            )
         }
     };
 
