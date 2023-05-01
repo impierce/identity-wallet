@@ -6,13 +6,31 @@
   import { Button } from '@impierce/ui-components';
   import { dispatch } from '../lib/dispatcher';
   import { useFocus } from 'svelte-navigator';
+  import { getPhoto, ResultType, Source } from "tauri-plugin-camera-api";
+  import { BrowserQRCodeReader } from '@zxing/browser';
+  
+  let request = "";
+
+  const decodeQRCode = async () => {
+    try {
+      const codeReader = new BrowserQRCodeReader();
+      const { data } = await getPhoto({
+        resultType: ResultType.Base64,
+        source: Source.Camera
+      });
+      let img = new Image();
+      img.src = `data:image/png;base64,${data}`;
+      request = (await codeReader.decodeFromImageElement(img)).getText();
+    } catch (e) {
+      console.error(e);
+    }
+    getRequest();
+  };
 
   const getRequest = async () =>
-    // Dispatches a mock request.
-    dispatch({ type: '[Authenticate] Get request', payload: { request_url: "siopv2://idtoken?claims=%7B%22id_token%22%3A%7B%22email%22%3Anull%2C%22name%22%3Anull%7D%2C%22user_claims%22%3Anull%7D&client_id=did%3Akey%3A1&nonce=n-0S6_WzA2Mj&redirect_uri=https%3A%2F%2Fclient.example.org%2Fcb&registration=%7B%22id_token_signing_alg_values_supported%22%3Anull%2C%22subject_syntax_types_supported%22%3A%5B%22did%3Akey%22%5D%7D&response_mode=post&response_type=id_token&scope=openid" } });
+    dispatch({ type: '[Authenticate] Get request', payload: { request_url: request } });
 
   const sendResponse = async () =>
-    // Dispatches a mock request.
     dispatch({ type: '[Authenticate] Send response', payload: { user_claims: claims } });
 
   const registerFocus = useFocus();
@@ -31,7 +49,6 @@
   }
 
 </script>
-
 <div class="space-y-8 p-8">
   <h1 class="font-serif text-2xl font-semibold">
     {$LL.WELCOME()}, {$state?.active_profile?.display_name}!
@@ -43,9 +60,8 @@
   >
     {$state?.active_profile?.primary_did}
   </div>
-  {#if !$state?.active_requested_claims}
-    <Button label={$LL.SCAN_QRCODE()} on:clicked={getRequest} />
-  {:else}
+
+  {#if $state?.active_requested_claims}
     <div
       class="truncate rounded-lg bg-gray-300 px-4 py-2 font-mono text-sm font-semibold text-gray-600"
       data-testid="claims"
@@ -68,5 +84,8 @@
       {/each}
     </div>
     <Button label={$LL.AUTHENTICATE()} on:clicked={sendResponse} />
+  {:else}
+    <Button label={$LL.SCAN_QRCODE()} on:clicked={decodeQRCode} />
   {/if}
+
 </div>
