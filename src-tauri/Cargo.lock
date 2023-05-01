@@ -1732,6 +1732,7 @@ dependencies = [
  "siopv2",
  "tauri",
  "tauri-build",
+ "tauri-plugin-camera",
  "tempfile",
  "tokio",
  "tracing",
@@ -3665,6 +3666,18 @@ dependencies = [
  "syn 1.0.109",
  "tauri-codegen",
  "tauri-utils",
+]
+
+[[package]]
+name = "tauri-plugin-camera"
+version = "0.0.0"
+source = "git+https://github.com/tauri-apps/plugins-workspace?branch=feat/camera#8f689bcc119d318afe6c16392006608bfd26f8aa"
+dependencies = [
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "thiserror",
 ]
 
 [[package]]

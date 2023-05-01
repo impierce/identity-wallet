@@ -3,7 +3,7 @@ use crate::state::{actions::Action, AppState, ClaimType, Profile};
 use did_key::{generate, Ed25519KeyPair, KeyMaterial};
 use lazy_static::lazy_static;
 use serde_json::Value;
-use siopv2::{key_method::KeySubject, Provider, StandardClaims};
+use siopv2::{key_method::KeySubject, Provider, RequestUrl, StandardClaims};
 use tracing::info;
 
 lazy_static! {
@@ -63,7 +63,6 @@ pub async fn get_request(state: &AppState, action: Action) -> anyhow::Result<()>
     let request_url = payload["request_url"]
         .as_str()
         .ok_or(anyhow::anyhow!("unable to read request_url from json payload"))?;
-    dbg!(&request_url);
 
     // Use private key to create a mock provider.
     let mock_subject = KeySubject::from_keypair(generate::<Ed25519KeyPair>(Some(PRIVATE_KEY_BYTES.as_slice())));
@@ -99,6 +98,8 @@ pub async fn send_response(state: &AppState, action: Action) -> anyhow::Result<(
     let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
     let user_claims: StandardClaims = serde_json::from_value(payload["user_claims"].clone())?;
 
+    dbg!(&user_claims);
+
     let request = state
         .active_authentication_request
         .lock()
@@ -107,16 +108,18 @@ pub async fn send_response(state: &AppState, action: Action) -> anyhow::Result<(
         .ok_or_else(|| anyhow::anyhow!("no active authentication request found"))?
         .clone();
 
+    dbg!(&request);
+
     // Use private key to create a mock provider.
     let mock_subject = KeySubject::from_keypair(generate::<Ed25519KeyPair>(Some(PRIVATE_KEY_BYTES.as_slice())));
 
     let provider = Provider::new(mock_subject).await?;
 
-    let _response = provider.generate_response(request, user_claims).await?;
+    let response = provider.generate_response(request, user_claims).await?;
 
-    info!("response generated: {:?}", _response);
+    info!("response generated: {:?}", response);
 
-    // provider.send_response(response).await?;
+    provider.send_response(response).await?;
 
     // Reset the state parameters.
     *state.active_requested_claims.lock().unwrap() = None;
