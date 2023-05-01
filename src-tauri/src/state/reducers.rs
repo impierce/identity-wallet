@@ -91,6 +91,8 @@ pub async fn send_response(state: &AppState, action: Action) -> anyhow::Result<(
     let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
     let user_claims: StandardClaimsValues = serde_json::from_value(payload["user_claims"].clone())?;
 
+    dbg!(&user_claims);
+
     let request = state
         .active_authentication_request
         .lock()
