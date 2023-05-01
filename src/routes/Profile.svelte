@@ -76,7 +76,6 @@
     });
   }
 </script>
-
 <div class="space-y-8 p-8">
   <h1 class="font-serif text-2xl font-semibold">
     {$LL.WELCOME()}, {$state?.active_profile?.display_name}!
