@@ -3078,7 +3078,7 @@ dependencies = [
 [[package]]
 name = "siopv2"
 version = "0.1.0"
-source = "git+ssh://git@github.com/impierce/siopv2.git?branch=feat/claims#2142cd839e77626eea305aa8538ef9f7c59cba49"
+source = "git+https://git@github.com/impierce/siopv2.git?branch=feat/claims#2142cd839e77626eea305aa8538ef9f7c59cba49"
 dependencies = [
  "anyhow",
  "async-trait",
