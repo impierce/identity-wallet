@@ -7,6 +7,7 @@
   import { onMount } from 'svelte';
   import { loadAllLocales } from '../i18n/i18n-util.sync';
   import { dispatch } from '$lib/dispatcher';
+  import { goto } from '$app/navigation';
 
   onMount(async () => {
     console.log('+layout.svelte: onMount');
@@ -32,7 +33,7 @@
       <div class="flex-shrink-0 px-4 py-1 font-medium text-red-700">dev mode</div>
       <button
         class="rounded-full bg-red-300 px-4 py-1 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
-        >back</button
+        on:click={() => goto} >back</button
       >
       <button
         class="flex-shrink-0 rounded-full bg-red-300 px-4 py-1 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
