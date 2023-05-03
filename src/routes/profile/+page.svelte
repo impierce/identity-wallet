@@ -7,25 +7,54 @@
   import { dispatch } from '../lib/dispatcher';
   import { useFocus } from 'svelte-navigator';
   import { getPhoto, ResultType, Source } from "tauri-plugin-camera-api";
-  import { BrowserQRCodeReader } from '@zxing/browser';
-  
+  import readQR from '@paulmillr/qr/decode';
+
   let request = "";
 
-  const decodeQRCode = async () => {
+  function imageToUint8Array(image: HTMLImageElement): Uint8Array {
+    const canvas = document.createElement('canvas');
+    canvas.width = image.width;
+    canvas.height = image.height;
+
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(image, 0, 0);
+
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = new Uint8Array(imageData.data.buffer);
+
+    return data;
+  }
+
+  async function getDimensionsFromBase64(base64String: string): Promise<{ width: number; height: number }> {
+      const img = new Image();
+      img.src = base64String;
+      await img.decode();
+
+      return { width: img.width, height: img.height };
+  }
+
+  async function decodeQRCode() {
     try {
-      const codeReader = new BrowserQRCodeReader();
       const { data } = await getPhoto({
         resultType: ResultType.Base64,
         source: Source.Camera
       });
-      let img = new Image();
+      const img = new Image();
       img.src = `data:image/png;base64,${data}`;
-      request = (await codeReader.decodeFromImageElement(img)).getText();
+
+      const dimensions = await getDimensionsFromBase64(img.src);
+      img.width = dimensions.width;
+      img.height = dimensions.height;
+      
+      const data2 = imageToUint8Array(img);
+      request = readQR({ height: img.height, width: img.width, data: data2 });
+
     } catch (e) {
       console.error(e);
     }
-    getRequest();
-  };
+
+    await getRequest();
+  }
 
   const getRequest = async () =>
     dispatch({ type: '[Authenticate] Get request', payload: { request_url: request } });
