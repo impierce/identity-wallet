@@ -2,7 +2,7 @@ use tracing::info;
 
 use crate::state::actions::{Action, ActionType};
 use crate::state::persistence::{delete_state, load_state, save_state};
-use crate::state::reducers::{create_did_key, reset_state, set_locale};
+use crate::state::reducers::{create_did_key, get_request, reset_state, send_response, set_locale};
 use crate::state::{AppState, TransferState};
 
 /// This command handler is the single point of entry to the business logic in the backend. It will delegate the
@@ -22,8 +22,8 @@ pub async fn handle_action(
     match r#type {
         ActionType::GetState => {
             let transfer_state: TransferState = load_state(app_handle).await.unwrap_or(TransferState {
-                active_profile: None,
                 locale: "en".to_string(),
+                ..Default::default()
             });
 
             // TODO: find a better way to populate all fields with values from json file
@@ -44,6 +44,23 @@ pub async fn handle_action(
         }
         ActionType::SetLocale => {
             if set_locale(app_state.inner(), Action { r#type, payload }).is_ok() {
+                save_state(app_handle, TransferState::from(app_state.inner()))
+                    .await
+                    .ok();
+            }
+        }
+        ActionType::GetRequest => {
+            if get_request(app_state.inner(), Action { r#type, payload }).await.is_ok() {
+                save_state(app_handle, TransferState::from(app_state.inner()))
+                    .await
+                    .ok();
+            }
+        }
+        ActionType::SendResponse => {
+            if send_response(app_state.inner(), Action { r#type, payload })
+                .await
+                .is_ok()
+            {
                 save_state(app_handle, TransferState::from(app_state.inner()))
                     .await
                     .ok();

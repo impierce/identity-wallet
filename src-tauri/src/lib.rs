@@ -10,6 +10,11 @@ pub fn run() {
 
     tauri::Builder::default()
         .manage(AppState::default())
+        .setup(|app| {
+            #[cfg(mobile)]
+            app.handle().plugin(tauri_plugin_camera::init());
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![handle_action])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

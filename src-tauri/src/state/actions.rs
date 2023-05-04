@@ -24,4 +24,8 @@ pub enum ActionType {
     CreateNew,
     #[serde(rename = "[Settings] Set locale")]
     SetLocale,
+    #[serde(rename = "[Authenticate] Get request")]
+    GetRequest,
+    #[serde(rename = "[Authenticate] Send response")]
+    SendResponse,
 }
