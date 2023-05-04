@@ -1,13 +1,7 @@
 use std::collections::HashMap;
 
 use crate::state::{actions::Action, AppState, ClaimType, Profile};
-use did_key::{generate, Ed25519KeyPair, KeyMaterial};
-use lazy_static::lazy_static;
 use tracing::info;
-
-lazy_static! {
-    pub static ref PRIVATE_KEY_BYTES: Vec<u8> = generate::<Ed25519KeyPair>(None).private_key_bytes();
-}
 
 /// Sets the locale to the given value. If the locale is not supported yet, the current locale will stay unchanged.
 pub fn set_locale(state: &AppState, action: Action) -> anyhow::Result<()> {

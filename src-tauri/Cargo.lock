@@ -1723,8 +1723,6 @@ name = "identity-wallet"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "did-key",
- "lazy_static",
  "serde",
  "serde_json",
  "siopv2",
