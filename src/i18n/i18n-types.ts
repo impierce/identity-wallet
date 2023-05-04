@@ -36,6 +36,18 @@ type RootTranslation = {
 	 * Y​o​u​ ​h​a​v​e​ ​j​u​s​t​ ​c​r​e​a​t​e​d​ ​a​ ​n​e​w​ ​d​i​g​i​t​a​l​ ​i​d​e​n​t​i​t​y
 	 */
 	CREATE_IDENTITY_SUCCESS: string
+	/**
+	 * S​c​a​n​ ​a​ ​Q​R​-​C​o​d​e
+	 */
+	SCAN_QRCODE: string
+	/**
+	 * S​e​n​d​ ​y​o​u​r​ ​r​e​q​u​e​s​t​e​d​ ​d​a​t​a
+	 */
+	AUTHENTICATE: string
+	/**
+	 * E​n​t​e​r​ ​y​o​u​r​ ​r​e​q​u​e​s​t​e​d​ ​d​a​t​a
+	 */
+	ENTER_CLAIMS: string
 }
 
 export type TranslationFunctions = {
@@ -59,6 +71,18 @@ export type TranslationFunctions = {
 	 * You have just created a new digital identity
 	 */
 	CREATE_IDENTITY_SUCCESS: () => LocalizedString
+	/**
+	 * Scan a QR-Code
+	 */
+	SCAN_QRCODE: () => LocalizedString
+	/**
+	 * Send your requested data
+	 */
+	AUTHENTICATE: () => LocalizedString
+	/**
+	 * Enter your requested data
+	 */
+	ENTER_CLAIMS: () => LocalizedString
 }
 
 export type Formatters = {}
