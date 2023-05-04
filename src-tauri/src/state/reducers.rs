@@ -1,6 +1,13 @@
-use crate::state::actions::Action;
-use crate::state::{AppState, Profile};
+use std::collections::HashMap;
+
+use crate::state::{actions::Action, AppState, ClaimType, Profile};
+use did_key::{generate, Ed25519KeyPair, KeyMaterial};
+use lazy_static::lazy_static;
 use tracing::info;
+
+lazy_static! {
+    pub static ref PRIVATE_KEY_BYTES: Vec<u8> = generate::<Ed25519KeyPair>(None).private_key_bytes();
+}
 
 /// Sets the locale to the given value. If the locale is not supported yet, the current locale will stay unchanged.
 pub fn set_locale(state: &AppState, action: Action) -> anyhow::Result<()> {
@@ -30,16 +37,38 @@ pub fn create_did_key(state: &AppState, action: Action) -> anyhow::Result<()> {
 /// Completely resets the state to its default values.
 pub fn reset_state(state: &AppState, _action: Action) -> anyhow::Result<()> {
     *state.active_profile.lock().unwrap() = None;
+    *state.active_requested_claims.lock().unwrap() = None;
+    *state.active_authentication_request.lock().unwrap() = None;
     *state.locale.lock().unwrap() = "en".to_string();
+    Ok(())
+}
+
+// TODO: actually validate the incoming payload.
+pub async fn get_request(state: &AppState, _action: Action) -> anyhow::Result<()> {
+    // For now, initializes a static set of claims for mocking purposes.
+    let mut claims = HashMap::new();
+    claims.insert("name".to_string(), ClaimType::Optional);
+    claims.insert("email".to_string(), ClaimType::Optional);
+
+    // Update the state with the requested claims.
+    *state.active_requested_claims.lock().unwrap() = Some(claims);
+
+    Ok(())
+}
+
+// TODO: actually send the generated response to the RP.
+pub async fn send_response(state: &AppState, _action: Action) -> anyhow::Result<()> {
+    // Reset the state parameters.
+    *state.active_requested_claims.lock().unwrap() = None;
+    *state.active_authentication_request.lock().unwrap() = None;
     Ok(())
 }
 
 #[cfg(test)]
 mod tests {
-    use serde_json::json;
-
     use super::*;
     use crate::state::actions::ActionType;
+    use serde_json::json;
 
     #[test]
     fn test_set_locale() {
@@ -111,6 +140,7 @@ mod tests {
             })
             .into(),
             locale: "nl".to_string().into(),
+            ..Default::default()
         };
 
         assert!(reset_state(
