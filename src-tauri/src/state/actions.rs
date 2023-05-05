@@ -27,6 +27,7 @@ pub enum ActionType {
     #[serde(rename = "[DEV] Load profile")]
     LoadDevProfile,
     #[serde(other)]
+    #[ts(skip)]
     Unknown,
 }
 
