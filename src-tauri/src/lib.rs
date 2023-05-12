@@ -31,11 +31,24 @@ lazy_static! {
 
 /// Initialize the storage file paths.
 fn initialize_storage(app_handle: tauri::AppHandle) -> anyhow::Result<()> {
-    *STATE_FILE.lock().unwrap() = app_handle.path().data_dir()?.join("com.tauri.dev").join("state.json");
+    // TODO: create folder if not exists (not automatically created on macOS)
+    if cfg!(target_os = "android") {
+        *STATE_FILE.lock().unwrap() = app_handle.path().data_dir()?.join("state.json");
+        *UNSAFE_STORAGE.lock().unwrap() = app_handle.path().data_dir()?.join("unsafe.bin");
+    } else {
+        *STATE_FILE.lock().unwrap() = app_handle
+            .path()
+            .data_dir()?
+            .join("com.impierce.identity_wallet")
+            .join("state.json");
+        *UNSAFE_STORAGE.lock().unwrap() = app_handle
+            .path()
+            .data_dir()?
+            .join("com.impierce.identity_wallet")
+            .join("unsafe.bin");
+    }
     info!("STATE_FILE: {}", STATE_FILE.lock().unwrap().display());
-
-    *UNSAFE_STORAGE.lock().unwrap() = app_handle.path().data_dir()?.join("com.tauri.dev").join("unsafe.bin");
     info!("UNSAFE_STORAGE: {}", UNSAFE_STORAGE.lock().unwrap().display());
-    
+
     Ok(())
 }

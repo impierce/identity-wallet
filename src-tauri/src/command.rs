@@ -32,7 +32,7 @@ pub async fn handle_action(
                 Err(_) => {
                     info!("no existing keypair found");
                     None
-                },
+                }
             };
 
             // TODO: find a better way to populate all fields with values from json file
