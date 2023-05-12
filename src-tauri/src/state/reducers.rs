@@ -49,10 +49,10 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
 
 #[cfg(test)]
 mod tests {
-    use serde_json::json;
-
     use super::*;
-    use crate::state::actions::ActionType;
+    use crate::{state::actions::ActionType, UNSAFE_STORAGE};
+    use serde_json::json;
+    use tempfile::NamedTempFile;
 
     #[test]
     fn test_set_locale() {
@@ -96,6 +96,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_create_new_with_method_did_key() {
+        let path = NamedTempFile::new().unwrap().into_temp_path();
+        *UNSAFE_STORAGE.lock().unwrap() = path.as_os_str().into();
+
         let state = AppState::default();
 
         assert!(create_did_key(
@@ -107,13 +110,10 @@ mod tests {
         )
         .await
         .is_ok());
-        assert_eq!(
-            *state.active_profile.lock().unwrap(),
-            Some(Profile {
-                display_name: "Ferris".to_string(),
-                primary_did: "did:key:z6Mkrkk4KQw9kLHbZ1kgLDA63Fk5XhHDnMQPkD3n8WyKrN9S".to_string(),
-            })
-        );
+
+        let profile = state.active_profile.lock().unwrap();
+        assert_eq!(profile.as_ref().unwrap().display_name, "Ferris");
+        assert!(profile.as_ref().unwrap().primary_did.starts_with("did:key:"));
     }
 
     #[test]

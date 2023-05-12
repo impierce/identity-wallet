@@ -22,9 +22,14 @@ pub async fn generate_dev_did() -> anyhow::Result<Document> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::UNSAFE_STORAGE;
+    use tempfile::NamedTempFile;
 
     #[tokio::test]
     async fn test_generate_dev_did() {
+        let path = NamedTempFile::new().unwrap().into_temp_path();
+        *UNSAFE_STORAGE.lock().unwrap() = path.as_os_str().into();
+
         let did_document_json = generate_dev_did().await.unwrap();
         assert_eq!(
             did_document_json.id,

@@ -28,6 +28,7 @@ anyhow = "1.0"
 did-key = "0.2.1"
 rand = "0.8.5"
 lazy_static = "1.4.0"
+tempfile = "3.5.0"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
