@@ -2137,28 +2137,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "merge"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "10bbef93abb1da61525bbc45eeaff6473a41907d19f8f9aa5168d214e10693e9"
-dependencies = [
- "merge_derive",
- "num-traits",
-]
-
-[[package]]
-name = "merge_derive"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "209d075476da2e63b4b29e72a2ef627b840589588e71400a25e3565c4f849d07"
-dependencies = [
- "proc-macro-error",
- "proc-macro2",
- "quote",
- "syn 1.0.109",
-]
-
-[[package]]
 name = "mime"
 version = "0.3.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3267,7 +3245,7 @@ dependencies = [
 [[package]]
 name = "siopv2"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/siopv2.git?branch=feat/claims#2142cd839e77626eea305aa8538ef9f7c59cba49"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/claims#351592a0af5c723b0873537b1b8b2fca251455b2"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3279,7 +3257,6 @@ dependencies = [
  "getset",
  "is_empty",
  "jsonwebtoken",
- "merge",
  "reqwest",
  "serde",
  "serde_json",
