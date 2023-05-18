@@ -93,8 +93,6 @@ pub async fn send_response(state: &AppState, action: Action) -> anyhow::Result<(
 
     dbg!(&user_claims);
 
-    dbg!(&user_claims);
-
     let request = state
         .active_authentication_request
         .lock()
