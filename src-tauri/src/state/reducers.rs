@@ -3,7 +3,7 @@ use crate::state::{actions::Action, AppState, ClaimType, Profile};
 use did_key::{generate, Ed25519KeyPair, KeyMaterial};
 use lazy_static::lazy_static;
 use serde_json::Value;
-use siopv2::{key_method::KeySubject, Provider, RequestUrl, StandardClaims};
+use siopv2::{claims::ClaimValue, key_method::KeySubject, Provider, StandardClaims};
 use tracing::info;
 
 lazy_static! {
@@ -96,7 +96,7 @@ pub async fn get_request(state: &AppState, action: Action) -> anyhow::Result<()>
 
 pub async fn send_response(state: &AppState, action: Action) -> anyhow::Result<()> {
     let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
-    let user_claims: StandardClaims = serde_json::from_value(payload["user_claims"].clone())?;
+    let user_claims: StandardClaims<ClaimValue> = serde_json::from_value(payload["user_claims"].clone())?;
 
     let request = state
         .active_authentication_request
@@ -130,7 +130,7 @@ mod tests {
     use crate::{state::actions::ActionType, UNSAFE_STORAGE};
     use serde_json::json;
     use siopv2::{
-        claims::{Claim, ClaimRequests},
+        claims::{ClaimRequests, IndividualClaimRequest},
         request::ResponseType,
         scope::ScopeValue,
         Registration, RequestUrl, Scope,
@@ -237,7 +237,7 @@ mod tests {
             // Add a claim request to the request with the `name` claim.
             .claims(ClaimRequests {
                 id_token: Some(StandardClaims {
-                    name: Some(Claim::default()),
+                    name: Some(IndividualClaimRequest::default()),
                     ..Default::default()
                 }),
                 ..Default::default()
@@ -257,6 +257,7 @@ mod tests {
         .await
         .is_ok(),);
 
+        // TODO: Add mock relying party.
         assert!(send_response(
             &state,
             Action {
