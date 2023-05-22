@@ -3,5 +3,10 @@
 
 fn main() {
     #[cfg(desktop)]
+    tauri_plugin_deep_link::prepare("com.impierce.dev");
+    #[cfg(desktop)]
+    tauri_plugin_deep_link::register("siopv2", |_| {}).unwrap();
+
+    #[cfg(desktop)]
     identity_wallet::run();
 }

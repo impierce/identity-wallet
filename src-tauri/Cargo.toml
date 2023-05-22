@@ -36,6 +36,9 @@ async-trait = "0.1.51"
 tempfile = "3.5.0"
 ed25519-dalek = "1.0.1" # dependency of did-key (used for explicit typing)
 
+[target.'cfg(all(not(target_os = "android"), not(target_os = "ios")))'.dependencies]
+tauri-plugin-deep-link = "0.1.1"
+
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
 # DO NOT REMOVE!!

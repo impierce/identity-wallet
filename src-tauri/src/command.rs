@@ -37,6 +37,23 @@ pub async fn handle_action(
             // TODO: find a better way to populate all fields with values from json file
             *app_state.active_profile.lock().unwrap() = transfer_state.active_profile;
             *app_state.locale.lock().unwrap() = transfer_state.locale;
+
+            #[cfg(not(target_os = "macos"))]
+            {
+                let args: Vec<String> = std::env::args().collect();
+                // on macos the plugin handles this (macos doesn't use cli args for the uri)
+                if let Some(request_url) = args.get(1) {
+                    get_request(
+                        app_state.inner(),
+                        Action {
+                            r#type: ActionType::GetRequest,
+                            payload: Some(serde_json::json!({ "request_url": request_url })),
+                        },
+                    )
+                    .await
+                    .ok();
+                }
+            }
         }
         ActionType::Reset => {
             if reset_state(app_state.inner(), Action { r#type, payload }).is_ok() {
