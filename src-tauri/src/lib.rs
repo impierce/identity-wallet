@@ -1,5 +1,6 @@
 mod command;
 mod did;
+mod provider;
 mod state;
 
 use command::handle_action;
