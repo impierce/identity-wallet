@@ -1608,6 +1608,7 @@ name = "identity-wallet"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "async-trait",
  "did-key",
  "ed25519-dalek",
  "lazy_static",

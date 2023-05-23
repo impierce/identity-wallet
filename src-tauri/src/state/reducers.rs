@@ -1,14 +1,8 @@
 use crate::did::did_key::{generate_dev_did, generate_new_did};
 use crate::state::{actions::Action, AppState, ClaimType, Profile};
-use did_key::{generate, Ed25519KeyPair, KeyMaterial};
-use lazy_static::lazy_static;
 use serde_json::Value;
-use siopv2::{claims::ClaimValue, key_method::KeySubject, Provider, StandardClaims};
+use siopv2::{claims::ClaimValue, StandardClaims};
 use tracing::info;
-
-lazy_static! {
-    pub static ref PRIVATE_KEY_BYTES: Vec<u8> = generate::<Ed25519KeyPair>(None).private_key_bytes();
-}
 
 /// Sets the locale to the given value. If the locale is not supported yet, the current locale will stay unchanged.
 pub fn set_locale(state: &AppState, action: Action) -> anyhow::Result<()> {
@@ -64,28 +58,27 @@ pub async fn get_request(state: &AppState, action: Action) -> anyhow::Result<()>
         .as_str()
         .ok_or(anyhow::anyhow!("unable to read request_url from json payload"))?;
 
-    // Use private key to create a mock provider.
-    let mock_subject = KeySubject::from_keypair(generate::<Ed25519KeyPair>(Some(PRIVATE_KEY_BYTES.as_slice())));
-
-    // Create a new provider and validate the request.
-    let provider = Provider::new(mock_subject).await?;
+    let provider = crate::provider::provider().await?;
     let request = provider.validate_request(request_url.parse()?).await?;
+    info!("validated request: {:?}", request);
 
     // Collect a map of the requested claims.
-    let claims = match serde_json::to_value(request.id_token_request_claims())? {
-        Value::Object(obj) => Some(
-            obj.into_iter()
-                .map(|(k, v)| {
-                    let claim_type = match v.get("essential") {
-                        Some(Value::Bool(true)) => ClaimType::Required,
-                        _ => ClaimType::Optional,
-                    };
-                    (k, claim_type)
-                })
-                .collect(),
-        ),
-        _ => None,
-    };
+    let claims = serde_json::to_value(request.id_token_request_claims())
+        .ok()
+        .and_then(|v| match v {
+            Value::Object(obj) => Some(
+                obj.into_iter()
+                    .map(|(k, v)| {
+                        let claim_type = match v.get("essential") {
+                            Some(Value::Bool(true)) => ClaimType::Required,
+                            _ => ClaimType::Optional,
+                        };
+                        (k, claim_type)
+                    })
+                    .collect(),
+            ),
+            _ => None,
+        });
 
     // Update the state with the requested claims and the authentication request.
     *state.active_requested_claims.lock().unwrap() = claims;
@@ -106,16 +99,12 @@ pub async fn send_response(state: &AppState, action: Action) -> anyhow::Result<(
         .ok_or_else(|| anyhow::anyhow!("no active authentication request found"))?
         .clone();
 
-    // Use private key to create a mock provider.
-    let mock_subject = KeySubject::from_keypair(generate::<Ed25519KeyPair>(Some(PRIVATE_KEY_BYTES.as_slice())));
-
-    let provider = Provider::new(mock_subject).await?;
-
+    let provider = crate::provider::provider().await?;
     let response = provider.generate_response(request, user_claims).await?;
-
     info!("response generated: {:?}", response);
 
     provider.send_response(response).await?;
+    info!("response successfully sent");
 
     // Reset the state parameters.
     *state.active_requested_claims.lock().unwrap() = None;
