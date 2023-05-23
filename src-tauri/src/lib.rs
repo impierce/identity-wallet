@@ -28,6 +28,7 @@ pub fn run() {
             initialize_storage(app.handle()).ok();
             Ok(())
         })
+        .invoke_handler(tauri::generate_handler![handle_action])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

@@ -4,7 +4,7 @@
   import { Button } from '@impierce/ui-components';
   import { dispatch } from '../lib/dispatcher';
   import { useFocus } from 'svelte-navigator';
-  import { getPhoto, ResultType, Source } from "tauri-plugin-camera-api";
+  // import { getPhoto, ResultType, Source } from "tauri-plugin-camera-api";
   import readQR from '@paulmillr/qr/decode';
 
   let request = "";
@@ -32,24 +32,25 @@
   }
 
   async function decodeQRCode() {
-    try {
-      const { data } = await getPhoto({
-        resultType: ResultType.Base64,
-        source: Source.Camera
-      });
-      const img = new Image();
-      img.src = `data:image/png;base64,${data}`;
+    // try {
+    //   const { data } = await getPhoto({
+    //     resultType: ResultType.Base64,
+    //     source: Source.Camera
+    //   });
+    //   const img = new Image();
+    //   img.src = `data:image/png;base64,${data}`;
 
-      const dimensions = await getDimensionsFromBase64(img.src);
-      img.width = dimensions.width;
-      img.height = dimensions.height;
+    //   const dimensions = await getDimensionsFromBase64(img.src);
+    //   img.width = dimensions.width;
+    //   img.height = dimensions.height;
       
-      const data2 = imageToUint8Array(img);
-      request = readQR({ height: img.height, width: img.width, data: data2 });
+    //   const data2 = imageToUint8Array(img);
+    //   request = readQR({ height: img.height, width: img.width, data: data2 });
 
-    } catch (e) {
-      console.error(e);
-    }
+    // } catch (e) {
+    //   console.error(e);
+    // }
+    request = "siopv2://idtoken?request_uri=http%3A%2F%2F192.168.1.127%3A3000%2Fsiop%2Frequest-uri";
 
     await getRequest();
   }
