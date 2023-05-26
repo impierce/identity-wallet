@@ -1,3 +1,4 @@
+use crate::did::did_key::{generate_dev_did, generate_new_did};
 use crate::state::actions::Action;
 use crate::state::{AppState, Profile};
 use tracing::info;
@@ -14,16 +15,18 @@ pub fn set_locale(state: &AppState, action: Action) -> anyhow::Result<()> {
 }
 
 /// Creates a new profile with a new DID (using the did:key method) and sets it as the active profile.
-pub fn create_did_key(state: &AppState, action: Action) -> anyhow::Result<()> {
+pub async fn create_did_key(state: &AppState, action: Action) -> anyhow::Result<()> {
     let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
     let display_name = payload["display_name"]
         .as_str()
         .ok_or(anyhow::anyhow!("unable to read display_name from json payload"))?;
-    let mock_profile = Profile {
+
+    let did_document = generate_new_did().await?;
+    let profile = Profile {
         display_name: display_name.to_string(),
-        primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
+        primary_did: did_document.id,
     };
-    *state.active_profile.lock().unwrap() = Some(mock_profile);
+    *state.active_profile.lock().unwrap() = Some(profile);
     Ok(())
 }
 
@@ -34,12 +37,22 @@ pub fn reset_state(state: &AppState, _action: Action) -> anyhow::Result<()> {
     Ok(())
 }
 
+pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Result<()> {
+    let did_document = generate_dev_did().await?;
+    let profile = Profile {
+        display_name: "Ferris".to_string(),
+        primary_did: did_document.id,
+    };
+    *state.active_profile.lock().unwrap() = Some(profile);
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
-    use serde_json::json;
-
     use super::*;
-    use crate::state::actions::ActionType;
+    use crate::{state::actions::ActionType, UNSAFE_STORAGE};
+    use serde_json::json;
+    use tempfile::NamedTempFile;
 
     #[test]
     fn test_set_locale() {
@@ -81,8 +94,11 @@ mod tests {
         .is_err());
     }
 
-    #[test]
-    fn test_create_did_key() {
+    #[tokio::test]
+    async fn test_create_new_with_method_did_key() {
+        let path = NamedTempFile::new().unwrap().into_temp_path();
+        *UNSAFE_STORAGE.lock().unwrap() = path.as_os_str().into();
+
         let state = AppState::default();
 
         assert!(create_did_key(
@@ -92,14 +108,12 @@ mod tests {
                 payload: Some(json!({"display_name": "Ferris"})),
             },
         )
+        .await
         .is_ok());
-        assert_eq!(
-            *state.active_profile.lock().unwrap(),
-            Some(Profile {
-                display_name: "Ferris".to_string(),
-                primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
-            })
-        );
+
+        let profile = state.active_profile.lock().unwrap();
+        assert_eq!(profile.as_ref().unwrap().display_name, "Ferris");
+        assert!(profile.as_ref().unwrap().primary_did.starts_with("did:key:"));
     }
 
     #[test]

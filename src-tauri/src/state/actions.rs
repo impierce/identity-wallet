@@ -24,4 +24,6 @@ pub enum ActionType {
     CreateNew,
     #[serde(rename = "[Settings] Set locale")]
     SetLocale,
+    #[serde(rename = "[DEV] Load profile")]
+    LoadDevProfile,
 }

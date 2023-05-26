@@ -24,23 +24,27 @@
     <!-- dev mode -->
     {#if showDevMode}
       <div
-        class="flex space-x-4 bg-gradient-to-r from-red-200 to-red-300 p-4 shadow-md"
+        class="hide-scrollbar flex space-x-4 overflow-x-auto bg-gradient-to-r from-red-200 to-red-300 p-4 shadow-md"
         in:fly={{ y: -64 }}
         out:fly={{ y: -64 }}
       >
-        <div class="px-4 py-1 font-medium text-red-700">dev mode</div>
+        <div class="flex-shrink-0 px-4 py-1 font-medium text-red-700">dev mode</div>
         <button
-          class="rounded-full bg-red-300 px-4 py-1 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
-          on:click={() => navigate(-1)}>navigate back</button
+          class="flex-shrink-0 rounded-full bg-red-300 px-4 py-1 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
+          on:click={() => navigate(-1)}>go back</button
         >
         <button
-          class="rounded-full bg-red-300 px-4 py-1 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
+          class="flex-shrink-0 rounded-full bg-red-300 px-4 py-1 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
           on:click={() => dispatch({ type: '[App] Reset' })}>reset app</button
+        >
+        <button
+          class="flex-shrink-0 rounded-full bg-red-300 px-4 py-1 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
+          on:click={() => dispatch({ type: '[DEV] Load profile' })}>load dev profile</button
         >
       </div>
     {/if}
     <button
-      class="fixed right-3 top-3 rounded-full p-2 hover:bg-red-200"
+      class="fixed right-3 top-3 rounded-full bg-red-200 p-2 hover:bg-red-200"
       on:click={() => (showDevMode = !showDevMode)}
     >
       {#if showDevMode}
@@ -50,7 +54,7 @@
       {/if}
     </button>
     <!-- end: dev mode -->
-    <div class="h-full">
+    <div class="h-auto">
       <Route path="welcome" component={Welcome} />
       <Route path="profile" component={Profile} primary={false} />
     </div>
