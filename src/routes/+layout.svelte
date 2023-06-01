@@ -57,7 +57,7 @@
     {/if}
   </button>
   <!-- end: dev mode -->
-  <div class="h-full">
+  <div class="h-auto">
     <!-- <Route path="welcome" component={Welcome} /> -->
     <!-- <Route path="profile" component={Profile} primary={false} /> -->
     <slot />
