@@ -7,7 +7,7 @@ import type { Action } from '../../src-tauri/bindings/Action';
  * @param {Action} action
  */
 export const dispatch = async (action: Action) => {
-  console.log('Dispatching action: %j', action);
+  console.log(`Dispatching action: ${JSON.stringify(action)}`);
   await invoke('handle_action', { action }).catch((err) => {
     console.error(err);
   });
