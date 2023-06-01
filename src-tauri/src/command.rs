@@ -1,4 +1,4 @@
-use tracing::info;
+use tracing::{info, warn};
 
 use crate::did::persistence::load_existing_keypair;
 use crate::state::actions::{Action, ActionType};
@@ -17,8 +17,6 @@ pub async fn handle_action(
     window: tauri::Window,
 ) -> Result<(), String> {
     info!("received action `{:?}` with payload `{:?}`", r#type, payload);
-
-    // TODO: be more redux-idiomatic: do not deserialize to "known" actions, but return the state unchanged if the action is unknown
 
     match r#type {
         ActionType::GetState => {
@@ -64,6 +62,9 @@ pub async fn handle_action(
             {
                 save_state(TransferState::from(app_state.inner())).await.ok();
             }
+        }
+        ActionType::Unknown => {
+            warn!("received unknown action type `{:?}` with payload `{:?}`", r#type, payload);
         }
     };
 

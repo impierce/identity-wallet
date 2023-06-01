@@ -13,7 +13,7 @@ pub struct Action {
 }
 
 /// Actions that the backend knows how to handle (reduce).
-#[derive(Serialize, Deserialize, Debug, TS)]
+#[derive(Serialize, Deserialize, Debug, TS, PartialEq)]
 #[ts(export)]
 pub enum ActionType {
     #[serde(rename = "[App] Get state")]
@@ -26,4 +26,24 @@ pub enum ActionType {
     SetLocale,
     #[serde(rename = "[DEV] Load profile")]
     LoadDevProfile,
+    #[serde(other)]
+    #[ts(skip)]
+    Unknown,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_action_type_deserialization() {
+        assert_eq!(
+            ActionType::GetState,
+            serde_json::from_str(r#""[App] Get state""#).unwrap(),
+        );
+        assert_eq!(
+            ActionType::Unknown,
+            serde_json::from_str(r#""Unknown action""#).unwrap(),
+        );
+    }
 }
