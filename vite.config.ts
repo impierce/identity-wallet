@@ -6,9 +6,7 @@ const mobile = process.env.TAURI_PLATFORM === 'android' || process.env.TAURI_PLA
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
-  plugins: [
-    sveltekit()
-  ],
+  plugins: [sveltekit()],
   test: {
     include: ['tests/**/*.{test,spec}.{js,ts}'],
     globals: true,
@@ -25,8 +23,8 @@ export default defineConfig(async () => ({
     hmr: {
       protocol: 'ws',
       host: await internalIpV4(),
-      port: 5183,
-    },
+      port: 5183
+    }
   },
   // to make use of `TAURI_DEBUG` and other env variables
   // https://tauri.studio/v1/api/config#buildconfig.beforedevcommand

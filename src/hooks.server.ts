@@ -5,7 +5,7 @@ export const handle = (async ({ event, resolve }) => {
   //     return new Response('custom response');
   // }
 
-//   console.log('hooks.server.ts: event:', event);
+  //   console.log('hooks.server.ts: event:', event);
 
   const response = await resolve(event);
 
