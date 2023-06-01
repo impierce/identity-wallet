@@ -17,6 +17,7 @@
   let showDevMode = true;
 
   $: {
+    // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
     console.log('state', $state);
   }
 </script>
