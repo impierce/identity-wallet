@@ -14,7 +14,7 @@
     dispatch({ type: '[App] Get state' });
   });
 
-  let showDevMode = true;
+  let showDevMode = false;
 
   $: {
     // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
@@ -22,7 +22,7 @@
   }
 </script>
 
-<main class="h-screen bg-gray-100">
+<main class="h-screen bg-slate-100">
   {#if showDevMode}
     <div
       class="hide-scrollbar flex space-x-4 overflow-x-auto bg-gradient-to-r from-red-200 to-red-300 p-4 shadow-md"
@@ -45,7 +45,7 @@
     </div>
   {/if}
   <button
-    class="fixed right-3 top-3 rounded-full bg-red-200 p-2"
+    class="fixed right-3 top-3 z-10 rounded-full bg-red-200 p-2"
     on:click={() => (showDevMode = !showDevMode)}
   >
     {#if showDevMode}
@@ -55,7 +55,7 @@
     {/if}
   </button>
   <!-- end: dev mode -->
-  <div class="h-auto">
+  <div class="h-full">
     <!-- <Route path="welcome" component={Welcome} /> -->
     <!-- <Route path="profile" component={Profile} primary={false} /> -->
     <slot />

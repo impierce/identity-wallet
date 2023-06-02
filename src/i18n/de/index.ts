@@ -5,7 +5,8 @@ const de = {
   WELCOME: 'Willkommen',
   PROMPT_NAME: 'Bitte gib deinen Namen ein',
   CREATE_IDENTITY: 'Neue Identiät anlegen',
-  CREATE_IDENTITY_SUCCESS: 'Du hast eine neue digitale Identität angelegt'
+  CREATE_IDENTITY_SUCCESS:
+    'Du hast eine neue digitale Identität angelegt! Du kannst nun weitere Informationen über dich hinzufügen.'
 } satisfies Translation;
 
 export default de;

@@ -33,7 +33,7 @@ type RootTranslation = {
 	 */
 	CREATE_IDENTITY: string
 	/**
-	 * Y​o​u​ ​h​a​v​e​ ​j​u​s​t​ ​c​r​e​a​t​e​d​ ​a​ ​n​e​w​ ​d​i​g​i​t​a​l​ ​i​d​e​n​t​i​t​y
+	 * Y​o​u​ ​h​a​v​e​ ​j​u​s​t​ ​c​r​e​a​t​e​d​ ​a​ ​n​e​w​ ​d​i​g​i​t​a​l​ ​i​d​e​n​t​i​t​y​!​ ​Y​o​u​ ​c​a​n​ ​n​o​w​ ​a​d​d​ ​m​o​r​e​ ​i​n​f​o​r​m​a​t​i​o​n​ ​a​b​o​u​t​ ​y​o​u​r​s​e​l​f​.
 	 */
 	CREATE_IDENTITY_SUCCESS: string
 }
@@ -56,7 +56,7 @@ export type TranslationFunctions = {
 	 */
 	CREATE_IDENTITY: () => LocalizedString
 	/**
-	 * You have just created a new digital identity
+	 * You have just created a new digital identity! You can now add more information about yourself.
 	 */
 	CREATE_IDENTITY_SUCCESS: () => LocalizedString
 }
