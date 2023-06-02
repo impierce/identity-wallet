@@ -2,9 +2,10 @@
   import { state } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { Avatar, BottomNavigation, CredentialListEntry } from '@impierce/ui-components';
-  import { Plus } from 'svelte-heros-v2';
+  import { Plus, XMark } from 'svelte-heros-v2';
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
+  import { fade, fly, slide } from 'svelte/transition';
 
   let initials: string | undefined;
 
@@ -30,11 +31,14 @@
   <img
     src="blob-scene-haikei-slate.png"
     alt="background-blob-scene"
-    class="absolute w-full opacity-40"
+    class="absolute w-full opacity-50"
   />
   <!-- <div class="absolute -z-10 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div> -->
   <!-- Content overlay -->
-  <div class="absolute bottom-0 h-5/6 w-full rounded-t-3xl bg-slate-100">
+  <div
+    class="absolute bottom-0 h-5/6 w-full rounded-t-3xl bg-slate-100"
+    in:fly={{ y: 24, opacity: 1 }}
+  >
     <div class="relative bottom-12 -mb-6 flex justify-center">
       <Avatar {initials} size="large" />
     </div>
@@ -47,7 +51,8 @@
         {$LL.WELCOME()}, {$state?.active_profile?.display_name}!
       </h1> -->
       <div class="rounded-lg bg-slate-200 p-6">
-        <p class="text-slate-500">{$LL.CREATE_IDENTITY_SUCCESS()}</p>
+        <p class="pb-4 font-semibold text-slate-500">{$LL.CREATE_IDENTITY_SUCCESS_TITLE()}</p>
+        <p class="text-slate-400">{$LL.CREATE_IDENTITY_SUCCESS_BODY()}</p>
       </div>
       <button class="flex w-full justify-center rounded-lg bg-slate-200 p-6">
         <Plus class="text-violet-700" strokeWidth="2" />

@@ -5,8 +5,12 @@ const de = {
   WELCOME: 'Willkommen',
   PROMPT_NAME: 'Bitte gib deinen Namen ein',
   CREATE_IDENTITY: 'Neue Identiät anlegen',
-  CREATE_IDENTITY_SUCCESS:
-    'Du hast eine neue digitale Identität angelegt! Du kannst nun weitere Informationen über dich hinzufügen.'
+  CREATE_IDENTITY_SUCCESS_TITLE: 'Du hast eine neue digitale Identität angelegt!',
+  CREATE_IDENTITY_SUCCESS_BODY:
+    'Du kannst nun weitere Informationen über dich hinzufügen oder einen Credential scannen.',
+  APP_SETTINGS: 'App-Einstellungen',
+  YOUR_DIDS: 'Deine DIDs',
+  RESET_APP: 'App zurücksetzen'
 } satisfies Translation;
 
 export default de;

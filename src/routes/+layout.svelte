@@ -25,9 +25,9 @@
 <main class="h-screen bg-slate-100">
   {#if showDevMode}
     <div
-      class="hide-scrollbar flex space-x-4 overflow-x-auto bg-gradient-to-r from-red-200 to-red-300 p-4 shadow-md"
-      in:fly={{ y: -64 }}
-      out:fly={{ y: -64 }}
+      class="hide-scrollbar fixed z-10 flex space-x-4 overflow-x-auto bg-gradient-to-r from-red-200 to-red-300 p-4 shadow-md"
+      in:fly={{ y: -64, opacity: 1 }}
+      out:fly={{ y: -64, opacity: 1 }}
     >
       <div class="flex-shrink-0 px-4 py-1 font-medium text-red-700">dev mode</div>
       <button

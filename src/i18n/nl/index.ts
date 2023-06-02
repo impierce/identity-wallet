@@ -5,8 +5,12 @@ const nl = {
   WELCOME: 'Welkom',
   PROMPT_NAME: 'Voer uw naam in',
   CREATE_IDENTITY: 'Nieuwe identiteit creëren',
-  CREATE_IDENTITY_SUCCESS:
-    'U heeft zojuist een nieuwe digitale identiteit gecreëerd! U kunt nu meer informatie over uzelf toevoegen.'
+  CREATE_IDENTITY_SUCCESS_TITLE: 'U heeft zojuist een nieuwe digitale identiteit aangemaakt!',
+  CREATE_IDENTITY_SUCCESS_BODY:
+    'Ga verder door meer informatie over uzelf toe te voegen of een Credential te scannen.',
+  APP_SETTINGS: 'App-instellingen',
+  YOUR_DIDS: 'Uw DIDs',
+  RESET_APP: 'App resetten'
 } satisfies Translation;
 
 export default nl;

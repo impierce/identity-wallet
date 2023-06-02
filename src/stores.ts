@@ -13,6 +13,10 @@ interface StateChangedEvent {
   id: number;
 }
 
+// const unlisten = await listen<string>('error', (event) => {
+//   console.log(`Got error in window ${event.windowLabel}, payload: ${event.payload}`);
+// });
+
 export const state = readable<State>(undefined, (set) => {
   listen('state-changed', (event: StateChangedEvent) => {
     const state = event.payload;
@@ -28,5 +32,5 @@ export const state = readable<State>(undefined, (set) => {
       goto('profile');
     }
   });
-  // TODO: unsubscribe from listener necessary?
+  // TODO: unsubscribe from listener!
 });
