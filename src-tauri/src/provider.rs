@@ -1,6 +1,6 @@
 use crate::did::persistence::load_existing_keypair;
 use did_key::{generate, Ed25519KeyPair, KeyMaterial};
-use siopv2::{key_method::KeySubject, Provider};
+use openid4vc::{key_method::KeySubject, Provider};
 
 // TODO: This is a temporary solution to get a `Provider` instance by obtaining a keypair from the unsafe storage.
 //       This should be replaced with a DID method agnostic solution.
