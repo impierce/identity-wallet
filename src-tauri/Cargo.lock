@@ -2184,7 +2184,7 @@ checksum = "624a8340c38c1b80fd549087862da4ba43e08858af025b236e509b6649fc13d5"
 [[package]]
 name = "openid4vc"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/claims#df503474aa7d71dbaddff421a67dc83d733e992c"
+source = "git+https://git@github.com/impierce/openid4vc.git#198e1112daff175482aa14031c0a8b8609b26d51"
 dependencies = [
  "anyhow",
  "async-trait",
