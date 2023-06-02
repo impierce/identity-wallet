@@ -1612,10 +1612,10 @@ dependencies = [
  "did-key",
  "ed25519-dalek",
  "lazy_static",
+ "openid4vc",
  "rand 0.8.5",
  "serde",
  "serde_json",
- "siopv2",
  "tauri",
  "tauri-build",
  "tempfile",
@@ -2180,6 +2180,30 @@ name = "opaque-debug"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "624a8340c38c1b80fd549087862da4ba43e08858af025b236e509b6649fc13d5"
+
+[[package]]
+name = "openid4vc"
+version = "0.1.0"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/claims#df503474aa7d71dbaddff421a67dc83d733e992c"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "base64-url",
+ "chrono",
+ "derive_more",
+ "did-key",
+ "did_url",
+ "getset",
+ "is_empty",
+ "jsonwebtoken",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "serde_urlencoded",
+ "serde_with",
+ "tokio",
+ "url",
+]
 
 [[package]]
 name = "overload"
@@ -3052,30 +3076,6 @@ dependencies = [
  "num-traits",
  "thiserror",
  "time 0.3.21",
-]
-
-[[package]]
-name = "siopv2"
-version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/claims#351592a0af5c723b0873537b1b8b2fca251455b2"
-dependencies = [
- "anyhow",
- "async-trait",
- "base64-url",
- "chrono",
- "derive_more",
- "did-key",
- "did_url",
- "getset",
- "is_empty",
- "jsonwebtoken",
- "reqwest",
- "serde",
- "serde_json",
- "serde_urlencoded",
- "serde_with",
- "tokio",
- "url",
 ]
 
 [[package]]

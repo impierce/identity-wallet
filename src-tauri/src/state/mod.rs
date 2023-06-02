@@ -2,8 +2,8 @@ pub mod actions;
 pub mod persistence;
 pub mod reducers;
 
+use openid4vc::SiopRequest;
 use serde::{Deserialize, Serialize};
-use siopv2::SiopRequest;
 use std::collections::HashMap;
 use std::sync::Mutex;
 use ts_rs::TS;
