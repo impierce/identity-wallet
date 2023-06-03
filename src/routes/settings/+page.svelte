@@ -37,14 +37,14 @@
           ><Link class="text-violet-700" strokeWidth="2" /></button
         >
       </div>
-      <div class="flex space-x-2">
+      <div class="flex items-center space-x-2">
         <div
-          class="flex-grow break-all rounded-lg bg-slate-200 px-4 py-2 font-mono text-sm font-medium text-slate-700"
+          class="flex-grow break-all rounded-lg bg-slate-200 px-4 py-2 font-mono text-sm font-medium text-slate-500"
           data-testid="secondary-did"
         >
-          did:atoi:1234567890
+          {IOTA_DID_SHIMMER_TESTNET}
         </div>
-        <button class="rounded-lg bg-slate-200 p-4"
+        <button class="rounded-full p-4 hover:bg-slate-200 active:bg-slate-300"
           ><Link class="text-violet-700" strokeWidth="2" /></button
         >
       </div>
