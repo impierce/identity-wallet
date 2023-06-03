@@ -10,7 +10,8 @@ const de = {
     'Du kannst nun weitere Informationen über dich hinzufügen oder einen Credential scannen.',
   APP_SETTINGS: 'App-Einstellungen',
   YOUR_DIDS: 'Deine DIDs',
-  RESET_APP: 'App zurücksetzen'
+  RESET_APP: 'App zurücksetzen',
+  NO_HISTORY: `Du hast noch keine Credentials verwendet.`
 } satisfies Translation;
 
 export default de;

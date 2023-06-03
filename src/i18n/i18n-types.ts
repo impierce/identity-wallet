@@ -52,6 +52,10 @@ type RootTranslation = {
 	 * R​e​s​e​t​ ​a​p​p
 	 */
 	RESET_APP: string
+	/**
+	 * Y​o​u​ ​h​a​v​e​n​'​t​ ​u​s​e​d​ ​a​n​y​ ​c​r​e​d​e​n​t​i​a​l​s​ ​y​e​t​.
+	 */
+	NO_HISTORY: string
 }
 
 export type TranslationFunctions = {
@@ -91,6 +95,10 @@ export type TranslationFunctions = {
 	 * Reset app
 	 */
 	RESET_APP: () => LocalizedString
+	/**
+	 * You haven't used any credentials yet.
+	 */
+	NO_HISTORY: () => LocalizedString
 }
 
 export type Formatters = {}

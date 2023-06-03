@@ -61,6 +61,10 @@
   </div>
   <!-- Navigation -->
   <div class="sticky top-[100vh]">
-    <BottomNavigation on:settings={() => goto('/settings')} />
+    <BottomNavigation
+      active="profile"
+      on:settings={() => goto('/settings')}
+      on:history={() => goto('/history')}
+    />
   </div>
 </div>

@@ -45,7 +45,9 @@
     </div>
   {/if}
   <button
-    class="fixed right-3 top-3 z-10 rounded-full bg-red-200 p-2"
+    class="fixed right-3 top-3 z-10 rounded-full p-2 hover:bg-red-200 {showDevMode
+      ? 'bg-red-200'
+      : ''}"
     on:click={() => (showDevMode = !showDevMode)}
   >
     {#if showDevMode}

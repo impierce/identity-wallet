@@ -10,7 +10,8 @@ const en = {
     'Continue by adding more information about yourself or scan a credential.',
   APP_SETTINGS: 'App settings',
   YOUR_DIDS: 'Your DIDs',
-  RESET_APP: 'Reset app'
+  RESET_APP: 'Reset app',
+  NO_HISTORY: `You haven't used any credentials yet.`
 } satisfies BaseTranslation;
 
 export default en;

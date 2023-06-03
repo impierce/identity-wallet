@@ -10,7 +10,8 @@ const nl = {
     'Ga verder door meer informatie over uzelf toe te voegen of een Credential te scannen.',
   APP_SETTINGS: 'App-instellingen',
   YOUR_DIDS: 'Uw DIDs',
-  RESET_APP: 'App resetten'
+  RESET_APP: 'App resetten',
+  NO_HISTORY: `U heeft nog geen Credentials gebruikt.`
 } satisfies Translation;
 
 export default nl;
