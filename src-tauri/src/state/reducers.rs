@@ -40,7 +40,7 @@ pub fn reset_state(state: &AppState, _action: Action) -> anyhow::Result<()> {
 pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Result<()> {
     let did_document = generate_dev_did().await?;
     let profile = Profile {
-        display_name: "Ferris".to_string(),
+        display_name: "Ferris Crabman".to_string(),
         primary_did: did_document.id,
     };
     *state.active_profile.lock().unwrap() = Some(profile);
