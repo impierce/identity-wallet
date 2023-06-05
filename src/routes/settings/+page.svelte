@@ -2,13 +2,12 @@
   import { goto } from '$app/navigation';
   import LL from '../../i18n/i18n-svelte';
   import { BottomNavigation, Button } from '@impierce/ui-components';
-  import { Link } from 'svelte-heros-v2';
+  import { Link, Eye, Heart } from 'svelte-heros-v2';
   import { state } from '../../stores';
   import LocaleSelect from '$lib/LocaleSelect.svelte';
   import { fade, fly } from 'svelte/transition';
 
-  let IOTA_DID_SHIMMER_TESTNET =
-    'did:iota:rms:0xe5d5a7c02874b0284ccc2f28bada68780cad26702e7e8186d521e9615a73bc45';
+  let IOTA_MOCK_DID = 'did:iota:H3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV';
 </script>
 
 <div class="flex min-h-screen flex-col">
@@ -23,7 +22,7 @@
           {$state?.active_profile?.primary_did}
         </div>
         <button class="rounded-full p-4 hover:bg-slate-200 active:bg-slate-300"
-          ><Link class="text-violet-700" strokeWidth="2" /></button
+          ><Eye class="text-violet-700" strokeWidth="2" /></button
         >
       </div>
       <div class="flex items-center space-x-2">
@@ -31,7 +30,7 @@
           class="flex-grow break-all rounded-lg bg-slate-200 px-4 py-2 font-mono text-sm font-medium text-slate-500"
           data-testid="secondary-did"
         >
-          {IOTA_DID_SHIMMER_TESTNET}
+          {IOTA_MOCK_DID}
         </div>
         <button class="rounded-full p-4 hover:bg-slate-200 active:bg-slate-300"
           ><Link class="text-violet-700" strokeWidth="2" /></button
@@ -70,6 +69,10 @@
     </div>
     <div class="flex flex-col items-center text-sm font-medium text-slate-400">
       <div>0.1.0</div>
+      <div class="flex items-center pb-4">
+        <p>Built with Tauri</p>
+        <Heart variation="solid" size="18" class="pl-1" />
+      </div>
       <div>GPL-3.0</div>
       <div>2023 Impierce Technologies</div>
     </div>

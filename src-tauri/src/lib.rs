@@ -2,6 +2,7 @@ mod command;
 mod did;
 mod state;
 
+use argon2::{Argon2, PasswordHasher};
 use command::handle_action;
 use lazy_static::lazy_static;
 use state::AppState;
@@ -20,6 +21,18 @@ pub fn run() {
             initialize_storage(app.handle()).ok();
             Ok(())
         })
+        .plugin(
+            tauri_plugin_stronghold::Builder::new(|password| {
+                let salt = argon2::password_hash::SaltString::from_b64("XHtKjAjwvIfJeO3U8jacgQ").unwrap();
+                let hashed = Argon2::default()
+                    .hash_password(password.as_bytes(), &salt)
+                    .unwrap()
+                    .to_string();
+                info!("tauri_plugin_stronghold: password hash: {}", hashed);
+                hashed.into()
+            })
+            .build(),
+        )
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

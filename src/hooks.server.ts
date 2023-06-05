@@ -1,14 +1,10 @@
 import type { Handle } from '@sveltejs/kit';
 
 export const handle = (async ({ event, resolve }) => {
-  // if (event.url.pathname.startsWith('/custom')) {
-  //     return new Response('custom response');
-  // }
-
-  //   console.log('hooks.server.ts: event:', event);
+  console.log(`hooks.server.ts: event.url: "${event.url}"`);
 
   const response = await resolve(event);
 
-  console.log('hooks.server.ts: response:', response.url);
+  console.log(`hooks.server.ts: response.url: "${response.url}"`);
   return response;
 }) satisfies Handle;
