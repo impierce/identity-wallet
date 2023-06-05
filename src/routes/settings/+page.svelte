@@ -49,7 +49,7 @@
         >
       </div>
     </div>
-    <div class="space-y-4">
+    <div class="grow space-y-4">
       <h2 class="font-semibold text-slate-700">{$LL.APP_SETTINGS()}</h2>
       <div class="flex flex-col items-center justify-center space-y-4">
         <LocaleSelect />
@@ -58,7 +58,8 @@
     </div>
     <div class="flex flex-col items-center text-sm font-medium text-slate-400">
       <div>0.1.0</div>
-      <div>GPL-3.0 2023 Impierce Technologies</div>
+      <div>GPL-3.0</div>
+      <div>2023 Impierce Technologies</div>
     </div>
     <div class="grow space-y-4">
       <h2 class="font-semibold text-slate-700">{$LL.APP_SETTINGS()}</h2>
