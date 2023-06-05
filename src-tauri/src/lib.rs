@@ -17,15 +17,11 @@ pub fn run() {
     tauri::Builder::default()
         .manage(AppState::default())
         .setup(|app| {
-            // #[cfg(mobile)]
-            // app.handle().plugin(tauri_plugin_camera::init());
+            initialize_storage(app.handle()).ok();
 
-            initialize_storage(app.handle()).ok();
-            Ok(())
-        })
-        .invoke_handler(tauri::generate_handler![handle_action])
-        .setup(|app| {
-            initialize_storage(app.handle()).ok();
+            #[cfg(desktop)]
+            tauri_plugin_deep_link::register("siopv2", |_| {}).unwrap();
+
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![handle_action])

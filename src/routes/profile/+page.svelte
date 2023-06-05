@@ -8,18 +8,16 @@
     dispatch({ type: '[Authenticate] Send response', payload: { user_claims: claims } });
 
   let claims = new Map<string, string>();
-  let values: { [key: string]: any } = {};
+  let values: { [key: string]: string } = {};
   
   function updateMap() {
     // Clear the map and add each key-value pair from the object
     claims.clear();
     const requested_claims = $state?.active_requested_claims;
     for (const key in requested_claims) {
-      const claim = requested_claims[key];
       if (values[key]) {
         claims.set(key, values[key]);
       }
-      claims.set(key, claim);
     }
 
   }
