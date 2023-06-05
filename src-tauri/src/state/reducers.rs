@@ -47,12 +47,11 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
         primary_did: did_document.id,
     };
     *state.active_profile.lock().unwrap() = Some(profile);
-
     Ok(())
 }
 
 /// Reads a request from the given URL, validates it and sets the requested user claims.
-pub async fn get_request(state: &AppState, action: Action) -> anyhow::Result<()> {
+pub async fn read_request(state: &AppState, action: Action) -> anyhow::Result<()> {
     let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
     let request_url = payload["request_url"]
         .as_str()
@@ -83,15 +82,12 @@ pub async fn get_request(state: &AppState, action: Action) -> anyhow::Result<()>
     // Update the state with the requested claims and the authentication request.
     *state.active_requested_claims.lock().unwrap() = claims;
     *state.active_authentication_request.lock().unwrap() = Some(request);
-
     Ok(())
 }
 
 pub async fn send_response(state: &AppState, action: Action) -> anyhow::Result<()> {
     let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
     let user_claims: StandardClaimsValues = serde_json::from_value(payload["user_claims"].clone())?;
-
-    dbg!(&user_claims);
 
     let request = state
         .active_authentication_request
@@ -111,7 +107,6 @@ pub async fn send_response(state: &AppState, action: Action) -> anyhow::Result<(
     // Reset the state parameters.
     *state.active_requested_claims.lock().unwrap() = None;
     *state.active_authentication_request.lock().unwrap() = None;
-
     Ok(())
 }
 
@@ -215,7 +210,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_get_request_and_send_response() {
+    async fn test_read_request_and_send_response() {
         let state = AppState::default();
 
         let request_url = RequestUrl::builder()
@@ -238,7 +233,7 @@ mod tests {
             .build()
             .unwrap();
 
-        assert!(get_request(
+        assert!(read_request(
             &state,
             Action {
                 r#type: ActionType::SetLocale,

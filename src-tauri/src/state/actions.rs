@@ -26,8 +26,8 @@ pub enum ActionType {
     SetLocale,
     #[serde(rename = "[DEV] Load profile")]
     LoadDevProfile,
-    #[serde(rename = "[Authenticate] Get request")]
-    GetRequest,
+    #[serde(rename = "[Authenticate] Read request")]
+    ReadRequest,
     #[serde(rename = "[Authenticate] Send response")]
     SendResponse,
     #[serde(other)]

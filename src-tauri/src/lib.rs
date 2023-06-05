@@ -18,10 +18,6 @@ pub fn run() {
         .manage(AppState::default())
         .setup(|app| {
             initialize_storage(app.handle()).ok();
-
-            #[cfg(desktop)]
-            tauri_plugin_deep_link::register("siopv2", |_| {}).unwrap();
-
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![handle_action])

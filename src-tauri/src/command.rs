@@ -3,7 +3,7 @@ use tracing::{info, warn};
 use crate::did::persistence::load_existing_keypair;
 use crate::state::actions::{Action, ActionType};
 use crate::state::persistence::{delete_state, load_state, save_state};
-use crate::state::reducers::{create_did_key, get_request, load_dev_profile, reset_state, send_response, set_locale};
+use crate::state::reducers::{create_did_key, load_dev_profile, read_request, reset_state, send_response, set_locale};
 use crate::state::{AppState, TransferState};
 
 /// This command handler is the single point of entry to the business logic in the backend. It will delegate the
@@ -43,10 +43,10 @@ pub async fn handle_action(
                 let args: Vec<String> = std::env::args().collect();
                 // on macos the plugin handles this (macos doesn't use cli args for the uri)
                 if let Some(request_url) = args.get(1) {
-                    get_request(
+                    read_request(
                         app_state.inner(),
                         Action {
-                            r#type: ActionType::GetRequest,
+                            r#type: ActionType::ReadRequest,
                             payload: Some(serde_json::json!({ "request_url": request_url })),
                         },
                     )
@@ -81,8 +81,11 @@ pub async fn handle_action(
                 save_state(TransferState::from(app_state.inner())).await.ok();
             }
         }
-        ActionType::GetRequest => {
-            if get_request(app_state.inner(), Action { r#type, payload }).await.is_ok() {
+        ActionType::ReadRequest => {
+            if read_request(app_state.inner(), Action { r#type, payload })
+                .await
+                .is_ok()
+            {
                 save_state(TransferState::from(app_state.inner())).await.ok();
             }
         }
