@@ -4,16 +4,33 @@
   import LocaleSelect from '$lib/LocaleSelect.svelte';
   import { dispatch } from '$lib/dispatcher';
   import { onMount } from 'svelte';
+  import { Stronghold, Location } from '@tauri-apps/plugin-stronghold';
+  import Layout from '../+layout.svelte';
 
   //   const registerFocus = useFocus();
 
   let usernameInput: HTMLInputElement;
+  let passwordInput: HTMLInputElement;
 
   const createProfile = async () =>
     dispatch({ type: '[DID] Create new', payload: { display_name: usernameInput.value } });
 
-  onMount(() => {
+  onMount(async () => {
     usernameInput.focus();
+    usernameInput.value = 'Tony Stark';
+    passwordInput.value = 'my-password';
+
+    console.log('Creating a Stronghold ...');
+    const stronghold = new Stronghold(
+      '/Users/daniel/Library/Application Support/com.impierce.identity_wallet/stronghold.bin',
+      passwordInput.value
+    );
+    console.log(stronghold.path);
+    await stronghold.save();
+    // const location = new Location('my-type', { 'my-key': 'my-value' });
+    const client = await stronghold.createClient('my-client');
+    // const store = client.getStore();
+    // await store.insert('my-key', Array.from(new TextEncoder().encode('my-value')));
   });
 </script>
 
@@ -30,6 +47,16 @@
       class="w-full rounded-lg border px-4 py-2 shadow focus:outline-none focus:ring-2 focus:ring-violet-600"
       placeholder=""
       bind:this={usernameInput}
+    />
+  </div>
+  <p data-testid="label-prompt-username" class="text-slate-600">Password</p>
+  <div>
+    <input
+      type="password"
+      data-testid="input-password"
+      class="w-full rounded-lg border px-4 py-2 shadow focus:outline-none focus:ring-2 focus:ring-violet-600"
+      placeholder=""
+      bind:this={passwordInput}
     />
   </div>
   <Button label={$LL.CREATE_IDENTITY()} on:clicked={createProfile} />

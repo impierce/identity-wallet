@@ -2,7 +2,7 @@
   import '../app.css';
 
   import { fly } from 'svelte/transition';
-  import { ChevronUp, ChevronDown } from 'svelte-heros-v2';
+  import { ChevronUp, ChevronDown, ArrowLeft, Trash, UserPlus, Clipboard } from 'svelte-heros-v2';
   import { state } from '../stores';
   import { onMount } from 'svelte';
   import { loadAllLocales } from '../i18n/i18n-util.sync';
@@ -25,22 +25,26 @@
 <main class="h-screen bg-slate-100">
   {#if showDevMode}
     <div
-      class="hide-scrollbar fixed z-10 flex space-x-4 overflow-x-auto bg-gradient-to-r from-red-200 to-red-300 p-4 shadow-md"
+      class="hide-scrollbar fixed z-10 flex w-full space-x-4 overflow-x-auto bg-gradient-to-r from-red-200 to-red-300 p-4 shadow-md"
       in:fly={{ y: -64, opacity: 1 }}
       out:fly={{ y: -64, opacity: 1 }}
     >
-      <div class="flex-shrink-0 px-4 py-1 font-medium text-red-700">dev mode</div>
       <button
         class="rounded-full bg-red-300 px-4 py-1 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
-        >back</button
+      >
+        <ArrowLeft />
+      </button>
+      <button
+        class="flex-shrink-0 rounded-full bg-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
+        on:click={() => dispatch({ type: '[App] Reset' })}><Trash /></button
       >
       <button
-        class="flex-shrink-0 rounded-full bg-red-300 px-4 py-1 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
-        on:click={() => dispatch({ type: '[App] Reset' })}>reset</button
+        class="flex-shrink-0 rounded-full bg-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
+        on:click={() => dispatch({ type: '[DEV] Load profile' })}>🦀</button
       >
       <button
-        class="flex-shrink-0 rounded-full bg-red-300 px-4 py-1 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
-        on:click={() => dispatch({ type: '[DEV] Load profile' })}>load dev profile</button
+        class="flex-shrink-0 rounded-full bg-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
+        on:click={() => dispatch({ type: '[DEV] Paste from clipboard' })}><Clipboard /></button
       >
     </div>
   {/if}
