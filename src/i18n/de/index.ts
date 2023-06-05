@@ -6,7 +6,6 @@ const de = {
   PROMPT_NAME: 'Bitte gib deinen Namen ein',
   CREATE_IDENTITY: 'Neue Identiät anlegen',
   CREATE_IDENTITY_SUCCESS: 'Du hast eine neue digitale Identität angelegt',
-  SCAN_QRCODE: 'Scannen Sie einen QR-Code',
   AUTHENTICATE: 'Senden Sie Ihre angeforderten Daten',
   ENTER_CLAIMS: 'Geben Sie Ihre angeforderten Daten ein'
 } satisfies Translation;
