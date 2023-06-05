@@ -32,8 +32,7 @@
     >
       <div class="flex-shrink-0 px-4 py-1 font-medium text-red-700">dev mode</div>
       <button
-        class="rounded-full bg-red-300 px-4 py-1 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
-        on:click={() => goto} >back</button
+        class="rounded-full bg-red-300 px-4 py-1 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60">back</button
       >
       <button
         class="flex-shrink-0 rounded-full bg-red-300 px-4 py-1 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
