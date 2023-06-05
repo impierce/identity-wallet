@@ -1,9 +1,8 @@
 import '@testing-library/jest-dom';
 
 import { vi } from 'vitest';
-import renderWithRouter from './utils/svelte-navigator/renderWithRouter';
-import { fireEvent, screen } from '@testing-library/svelte';
-import Welcome from 'src/routes/Welcome.svelte';
+import Welcome from '../src/routes/welcome/+page.svelte';
+import { fireEvent, render, screen } from '@testing-library/svelte';
 import { clearMocks, mockIPC } from '@tauri-apps/api/mocks';
 
 beforeEach(() => {
@@ -16,7 +15,7 @@ afterEach(() => {
 });
 
 test('shows welcome label and user prompt label', () => {
-  renderWithRouter(Welcome, {}, { withRoute: true });
+  render(Welcome, {});
 
   const heading = screen.getByTestId('label-welcome');
   expect(heading).toBeInTheDocument();
@@ -28,7 +27,7 @@ test('shows welcome label and user prompt label', () => {
 test('triggers correct event when button is clicked', async () => {
   const spy = vi.spyOn(window, '__TAURI_IPC__');
 
-  renderWithRouter(Welcome, {}, { withRoute: true });
+  render(Welcome, {});
   const button = screen.getByRole('button');
   expect(button).toBeInTheDocument();
 
@@ -48,7 +47,7 @@ test('triggers correct event when button is clicked', async () => {
 });
 
 test('input field has focus when rendered', async () => {
-  renderWithRouter(Welcome, {}, { withRoute: true });
+  render(Welcome, {});
 
   const input = screen.getByTestId('input-username');
 

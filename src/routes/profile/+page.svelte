@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { state } from '../stores';
-  import LL from '../i18n/i18n-svelte';
+  import { state } from '../../stores';
+  import LL from '../../i18n/i18n-svelte';
 </script>
 
 <div class="space-y-8 p-8">

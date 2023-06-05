@@ -1,10 +1,10 @@
 import { readable } from 'svelte/store';
 import { listen } from '@tauri-apps/api/event';
-import { navigate } from 'svelte-navigator';
+import { goto } from '$app/navigation';
 import { setLocale } from './i18n/i18n-svelte';
 import type { Locales } from './i18n/i18n-types';
 // TODO: run some copy task instead of importing across root to make the frontend independent
-import type { TransferState as State } from 'src-tauri/bindings/TransferState';
+import type { TransferState as State } from '../src-tauri/bindings/TransferState';
 
 interface StateChangedEvent {
   event: string;
@@ -23,9 +23,9 @@ export const state = readable<State>(undefined, (set) => {
     setLocale(state.locale as Locales);
 
     if (state.active_profile === null) {
-      navigate('welcome');
+      goto('welcome');
     } else {
-      navigate('profile');
+      goto('profile');
     }
   });
   // TODO: unsubscribe from listener necessary?

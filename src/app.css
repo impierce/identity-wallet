@@ -22,3 +22,12 @@
     display: none;
   }
 }
+
+/* iOS specific styling, https://github.com/tauri-apps/tauri/issues/6961 */
+body {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  height: 100vh;
+  background-color: #1d4ed8;
+  overflow: hidden; /* disables scrolling */
+}

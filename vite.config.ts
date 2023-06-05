@@ -1,43 +1,30 @@
+import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
-import { svelte } from '@sveltejs/vite-plugin-svelte';
-import sveltePreprocess from 'svelte-preprocess';
 import { internalIpV4 } from 'internal-ip';
 
 const mobile = process.env.TAURI_PLATFORM === 'android' || process.env.TAURI_PLATFORM === 'ios';
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
-  plugins: [
-    svelte({
-      preprocess: [
-        sveltePreprocess({
-          typescript: true
-        })
-      ],
-      hot: !process.env.VITEST
-    })
-  ],
+  plugins: [sveltekit()],
   test: {
     include: ['tests/**/*.{test,spec}.{js,ts}'],
     globals: true,
     environment: 'jsdom'
   },
-  optimizeDeps: { exclude: ['svelte-navigator'] }, // otherwise breaks svelte-navigator
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   // prevent vite from obscuring rust errors
   clearScreen: false,
   // tauri expects a fixed port, fail if that port is not available
   server: {
-    host: mobile ? '0.0.0.0' : false,
-    port: 1420,
-    hmr: mobile
-      ? {
-          protocol: 'ws',
-          host: await internalIpV4(),
-          port: 1421
-        }
-      : undefined,
-    strictPort: true
+    host: '0.0.0.0', // listen on all addresses
+    port: 5173,
+    strictPort: true,
+    hmr: {
+      protocol: 'ws',
+      host: await internalIpV4(),
+      port: 5183
+    }
   },
   // to make use of `TAURI_DEBUG` and other env variables
   // https://tauri.studio/v1/api/config#buildconfig.beforedevcommand

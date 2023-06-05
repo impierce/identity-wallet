@@ -1,16 +1,20 @@
 <script lang="ts">
   import { Button } from '@impierce/ui-components';
-  import { useFocus } from 'svelte-navigator';
-  import LL from '../i18n/i18n-svelte';
-  import LocaleSelect from '../lib/LocaleSelect.svelte';
-  import { dispatch } from '../lib/dispatcher';
+  import LL from '../../i18n/i18n-svelte';
+  import LocaleSelect from '$lib/LocaleSelect.svelte';
+  import { dispatch } from '$lib/dispatcher';
+  import { onMount } from 'svelte';
 
-  const registerFocus = useFocus();
+  //   const registerFocus = useFocus();
 
   let usernameInput: HTMLInputElement;
 
   const createProfile = async () =>
     dispatch({ type: '[DID] Create new', payload: { display_name: usernameInput.value } });
+
+  onMount(() => {
+    usernameInput.focus();
+  });
 </script>
 
 <div class="flex h-auto flex-col items-center justify-center space-y-8 p-8">
@@ -26,7 +30,6 @@
       class="w-full rounded-lg border px-4 py-2 shadow focus:outline-none focus:ring-2 focus:ring-violet-600"
       placeholder=""
       bind:this={usernameInput}
-      use:registerFocus
     />
   </div>
   <Button label={$LL.CREATE_IDENTITY()} on:clicked={createProfile} />
