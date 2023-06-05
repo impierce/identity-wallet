@@ -39,7 +39,7 @@
     class="absolute bottom-0 h-5/6 w-full rounded-t-3xl bg-slate-100"
     in:fly={{ y: 24, opacity: 1 }}
   >
-    <div class="relative bottom-12 -mb-6 flex justify-center">
+    <div class="relative bottom-12 -mb-6 flex justify-center" in:fly={{ y: 12, opacity: 1 }}>
       <Avatar {initials} size="large" />
     </div>
     <div class="flex justify-center text-2xl font-semibold">

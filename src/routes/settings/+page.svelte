@@ -11,8 +11,8 @@
     'did:iota:rms:0xe5d5a7c02874b0284ccc2f28bada68780cad26702e7e8186d521e9615a73bc45';
 </script>
 
-<div class="min-h-screen">
-  <div class="flex flex-col space-y-8 p-8" in:fly={{ x: 32, opacity: 1 }}>
+<div class="flex min-h-screen flex-col">
+  <div class="flex grow flex-col space-y-8 p-8" in:fly={{ x: 32, opacity: 1 }}>
     <div class="space-y-4">
       <h2 class="font-semibold text-slate-700">{$LL.YOUR_DIDS()}</h2>
       <div class="flex items-center space-x-2">
@@ -38,7 +38,7 @@
         >
       </div>
     </div>
-    <div class="space-y-4">
+    <div class="grow space-y-4">
       <h2 class="font-semibold text-slate-700">{$LL.APP_SETTINGS()}</h2>
       <div class="flex flex-col items-center justify-center space-y-4">
         <LocaleSelect />
@@ -47,7 +47,8 @@
     </div>
     <div class="flex flex-col items-center text-sm font-medium text-slate-400">
       <div>0.1.0</div>
-      <div>GPL-3.0 2023 Impierce Technologies</div>
+      <div>GPL-3.0</div>
+      <div>2023 Impierce Technologies</div>
     </div>
   </div>
   <div class="sticky top-[100vh]">

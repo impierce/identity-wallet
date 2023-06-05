@@ -5,9 +5,9 @@
   import LL from '../../i18n/i18n-svelte';
 </script>
 
-<div class="min-h-screen">
+<div class="flex flex-col min-h-screen">
   <div
-    class="fixed flex h-screen w-screen flex-col justify-center space-y-8 p-8"
+    class="grow flex w-screen flex-col justify-center space-y-8 p-8"
     in:fly={{ x: -32, opacity: 1 }}
   >
     <div class="rounded-lg bg-slate-200 p-6">
