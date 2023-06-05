@@ -1,81 +1,27 @@
 <script lang="ts">
   import { state } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
-  import { state } from '../stores';
-  import LL from '../i18n/i18n-svelte';
   import { Button } from '@impierce/ui-components';
-  import { dispatch } from '../lib/dispatcher';
-  import { useFocus } from 'svelte-navigator';
-  // import { getPhoto, ResultType, Source } from "tauri-plugin-camera-api";
-  import readQR from '@paulmillr/qr/decode';
-
-  let request = "";
-
-  function imageToUint8Array(image: HTMLImageElement): Uint8Array {
-    const canvas = document.createElement('canvas');
-    canvas.width = image.width;
-    canvas.height = image.height;
-
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(image, 0, 0);
-
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const data = new Uint8Array(imageData.data.buffer);
-
-    return data;
-  }
-
-  async function getDimensionsFromBase64(base64String: string): Promise<{ width: number; height: number }> {
-      const img = new Image();
-      img.src = base64String;
-      await img.decode();
-
-      return { width: img.width, height: img.height };
-  }
-
-  async function decodeQRCode() {
-    // try {
-    //   const { data } = await getPhoto({
-    //     resultType: ResultType.Base64,
-    //     source: Source.Camera
-    //   });
-    //   const img = new Image();
-    //   img.src = `data:image/png;base64,${data}`;
-
-    //   const dimensions = await getDimensionsFromBase64(img.src);
-    //   img.width = dimensions.width;
-    //   img.height = dimensions.height;
-      
-    //   const data2 = imageToUint8Array(img);
-    //   request = readQR({ height: img.height, width: img.width, data: data2 });
-
-    // } catch (e) {
-    //   console.error(e);
-    // }
-    request = "siopv2://idtoken?request_uri=http%3A%2F%2F192.168.1.127%3A3000%2Fsiop%2Frequest-uri";
-
-    await getRequest();
-  }
-
-  const getRequest = async () =>
-    dispatch({ type: '[Authenticate] Get request', payload: { request_url: request } });
+  import { dispatch } from '../../lib/dispatcher';
 
   const sendResponse = async () =>
     dispatch({ type: '[Authenticate] Send response', payload: { user_claims: claims } });
 
-  const registerFocus = useFocus();
-
   let claims = new Map<string, string>();
-  let values = {};
-
+  let values: { [key: string]: any } = {};
+  
   function updateMap() {
     // Clear the map and add each key-value pair from the object
     claims.clear();
-    Object.entries($state?.active_requested_claims).forEach(([key, value]) => {
+    const requested_claims = $state?.active_requested_claims;
+    for (const key in requested_claims) {
+      const claim = requested_claims[key];
       if (values[key]) {
         claims.set(key, values[key]);
       }
-    });
+      claims.set(key, claim);
+    }
+
   }
 </script>
 
@@ -108,14 +54,11 @@
             class="w-full rounded-lg border px-4 py-2 shadow focus:outline-none focus:ring-2 focus:ring-violet-600"
             placeholder=""
             bind:value={values[key]} on:input={updateMap}
-            use:registerFocus
           />
         </div>
       {/each}
     </div>
     <Button label={$LL.AUTHENTICATE()} on:clicked={sendResponse} />
-  {:else}
-    <Button label={$LL.SCAN_QRCODE()} on:clicked={decodeQRCode} />
   {/if}
 
 </div>
