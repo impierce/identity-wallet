@@ -36,6 +36,13 @@ pub async fn delete_state() -> anyhow::Result<()> {
     Ok(())
 }
 
+pub async fn delete_stronghold() -> anyhow::Result<()> {
+    let stronghold_file = crate::STRONGHOLD.lock().unwrap().clone();
+    remove_file(stronghold_file).await?;
+    info!("stronghold deleted from disk");
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     // use super::*;

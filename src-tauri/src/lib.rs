@@ -2,7 +2,7 @@ mod command;
 mod did;
 mod state;
 
-use argon2::{Argon2, PasswordHasher};
+// use argon2::{Argon2, PasswordHasher};
 use command::handle_action;
 use lazy_static::lazy_static;
 use state::AppState;
@@ -23,6 +23,19 @@ pub fn run() {
         })
         .plugin(
             tauri_plugin_stronghold::Builder::new(|password| {
+                let config = argon2::Config {
+                    lanes: 2,
+                    mem_cost: 50_000,
+                    time_cost: 30,
+                    thread_mode: argon2::ThreadMode::from_threads(2),
+                    variant: argon2::Variant::Argon2id,
+                    ..Default::default()
+                  };
+          
+                  let key = argon2::hash_raw(password.as_ref(), b"SALT_IDEALLY_SHOULD_BE_RANDOM", &config)
+                    .expect("failed to hash password");
+          
+                  key.to_vec()
                 // let salt = argon2::password_hash::SaltString::from_b64("XHtKjAjwvIfJeO3U8jacgQ").unwrap();
                 // let hashed = Argon2::default()
                 //     .hash_password(password.as_bytes(), &salt)
@@ -30,7 +43,7 @@ pub fn run() {
                 //     .to_string();
                 // info!("tauri_plugin_stronghold: password hash: {}", hashed);
                 // hashed.into()
-                password.into()
+                // password.into()
             })
             .build(),
         )
@@ -41,6 +54,7 @@ pub fn run() {
 lazy_static! {
     pub static ref STATE_FILE: Mutex<std::path::PathBuf> = Mutex::new(std::path::PathBuf::new());
     pub static ref UNSAFE_STORAGE: Mutex<std::path::PathBuf> = Mutex::new(std::path::PathBuf::new());
+    pub static ref STRONGHOLD: Mutex<std::path::PathBuf> = Mutex::new(std::path::PathBuf::new());
 }
 
 /// Initialize the storage file paths.
@@ -49,6 +63,7 @@ fn initialize_storage(app_handle: tauri::AppHandle) -> anyhow::Result<()> {
     if cfg!(target_os = "android") {
         *STATE_FILE.lock().unwrap() = app_handle.path().data_dir()?.join("state.json");
         *UNSAFE_STORAGE.lock().unwrap() = app_handle.path().data_dir()?.join("unsafe.bin");
+        *STRONGHOLD.lock().unwrap() = app_handle.path().data_dir()?.join("stronghold.bin");
     } else {
         *STATE_FILE.lock().unwrap() = app_handle
             .path()
@@ -60,9 +75,15 @@ fn initialize_storage(app_handle: tauri::AppHandle) -> anyhow::Result<()> {
             .data_dir()?
             .join("com.impierce.identity_wallet")
             .join("unsafe.bin");
+        *STRONGHOLD.lock().unwrap() = app_handle
+            .path()
+            .data_dir()?
+            .join("com.impierce.identity_wallet")
+            .join("stronghold.bin");
     }
     info!("STATE_FILE: {}", STATE_FILE.lock().unwrap().display());
     info!("UNSAFE_STORAGE: {}", UNSAFE_STORAGE.lock().unwrap().display());
+    info!("STRONGHOLD: {}", STRONGHOLD.lock().unwrap().display());
 
     Ok(())
 }
