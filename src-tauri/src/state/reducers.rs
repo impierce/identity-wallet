@@ -34,6 +34,7 @@ pub async fn create_did_key(state: &AppState, action: Action) -> anyhow::Result<
 pub fn reset_state(state: &AppState, _action: Action) -> anyhow::Result<()> {
     *state.active_profile.lock().unwrap() = None;
     *state.locale.lock().unwrap() = "en".to_string();
+    // TODO: remove stronghold file
     Ok(())
 }
 

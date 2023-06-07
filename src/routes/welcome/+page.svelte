@@ -12,22 +12,32 @@
   let usernameInput: HTMLInputElement;
   let passwordInput: HTMLInputElement;
 
+  let loading = false;
+
   const createProfile = async () => {
     // dispatch({ type: '[DID] Create new', payload: { display_name: usernameInput.value, password: passwordInput.value } });
-    
+
     // TODO: Do we even want to speak to Stronghold directly? Or should we only call it in a reducer?
-    console.log('Creating a new Stronghold ...');
+    console.log('Creating or loading a Stronghold ...');
+    loading = true;
     const stronghold = await Stronghold.load(
       '/Users/daniel/Library/Application Support/com.impierce.identity_wallet/stronghold.bin',
       passwordInput.value
-    );
+    ).catch((error) => {
+      console.error(error);
+      loading = false;
+    });
     console.log(stronghold.path);
-    await stronghold.save();
+    const location = Location.generic('my-vault', 'my-record');
+    loading = false;
+
+    dispatch({ type: '[DID] Create new', payload: { display_name: usernameInput.value } });
+    // await stronghold.save();
     // const location = new Location('my-type', { 'my-key': 'my-value' });
-    const client = await stronghold.createClient('my-client');
+    // const client = await stronghold.createClient('my-client');
     // const store = client.getStore();
     // await store.insert('my-key', Array.from(new TextEncoder().encode('my-value')));
-  }
+  };
 
   onMount(async () => {
     usernameInput.focus();
@@ -62,5 +72,8 @@
     />
   </div>
   <Button label={$LL.CREATE_IDENTITY()} on:clicked={createProfile} />
+  {#if loading}
+    Loading ...
+  {/if}
   <LocaleSelect />
 </div>

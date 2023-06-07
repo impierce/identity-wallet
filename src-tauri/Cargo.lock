@@ -106,17 +106,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9c7d0618f0e0b7e8ff11427422b64564d5fb0be1940354bfe2e0529b18a9d9b8"
 
 [[package]]
-name = "argon2"
-version = "0.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "95c2fcf79ad1932ac6269a738109997a83c227c09b75842ae564dc8ede6a861c"
-dependencies = [
- "base64ct",
- "blake2",
- "password-hash",
-]
-
-[[package]]
 name = "arrayref"
 version = "0.3.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1754,10 +1743,10 @@ name = "identity-wallet"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "argon2",
  "did-key",
  "lazy_static",
  "rand 0.8.5",
+ "rust-argon2",
  "serde",
  "serde_json",
  "tauri",
@@ -2440,17 +2429,6 @@ dependencies = [
  "redox_syscall 0.3.5",
  "smallvec",
  "windows-targets 0.48.0",
-]
-
-[[package]]
-name = "password-hash"
-version = "0.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "346f04948ba92c43e8469c1ee6736c7563d71012b17d40745260fe106aac2166"
-dependencies = [
- "base64ct",
- "rand_core 0.6.4",
- "subtle",
 ]
 
 [[package]]

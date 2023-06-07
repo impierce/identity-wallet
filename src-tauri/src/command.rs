@@ -2,7 +2,7 @@ use tracing::{info, warn};
 
 use crate::did::persistence::load_existing_keypair;
 use crate::state::actions::{Action, ActionType};
-use crate::state::persistence::{delete_state, load_state, save_state};
+use crate::state::persistence::{delete_state, load_state, save_state, delete_stronghold};
 use crate::state::reducers::{create_did_key, load_dev_profile, reset_state, set_locale};
 use crate::state::{AppState, TransferState};
 
@@ -40,6 +40,7 @@ pub async fn handle_action(
         ActionType::Reset => {
             if reset_state(app_state.inner(), Action { r#type, payload }).is_ok() {
                 delete_state().await.ok();
+                delete_stronghold().await.ok();
             }
         }
         ActionType::CreateNew => {
