@@ -21,6 +21,7 @@ pub fn run() {
             initialize_storage(app.handle()).ok();
             Ok(())
         })
+        .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(
             tauri_plugin_stronghold::Builder::new(|password| {
                 let config = argon2::Config {
