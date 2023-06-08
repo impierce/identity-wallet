@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import '../app.css';
 
   import { fly } from 'svelte/transition';
@@ -7,6 +7,21 @@
   import { onMount } from 'svelte';
   import { loadAllLocales } from '../i18n/i18n-util.sync';
   import { dispatch } from '$lib/dispatcher';
+  import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+    Button
+  } from '@impierce/ui-components';
+  import { readText } from '@tauri-apps/plugin-clipboard-manager';
+
+  let clipboard: string | undefined;
 
   onMount(async () => {
     console.log('+layout.svelte: onMount');
@@ -42,10 +57,29 @@
         class="flex-shrink-0 rounded-full bg-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
         on:click={() => dispatch({ type: '[DEV] Load profile' })}>🦀</button
       >
-      <button
-        class="flex-shrink-0 rounded-full bg-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
-        on:click={() => dispatch({ type: '[DEV] Paste from clipboard' })}><Clipboard /></button
-      >
+      <!-- Paste from Clipboard -->
+      <AlertDialog>
+        <AlertDialogTrigger>
+          <button
+            class="flex-shrink-0 rounded-full bg-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
+            on:click={async () => (clipboard = await readText())}><Clipboard /></button
+          >
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Paste from clipboard?</AlertDialogTitle>
+            <AlertDialogDescription>
+              <div class="rounded-lg bg-slate-200 p-6">
+                <div class="text-mono break-all text-slate-400">{clipboard}</div>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction>Paste</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   {/if}
   <button

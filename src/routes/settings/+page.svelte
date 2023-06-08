@@ -64,7 +64,7 @@
       <h2 class="font-semibold text-slate-700">{$LL.APP_SETTINGS()}</h2>
       <div class="flex flex-col items-center justify-center space-y-4">
         <LocaleSelect />
-        <Button label={$LL.RESET_APP()} type="cancel" />
+        <Button variant="destructive">{$LL.RESET_APP()}</Button>
       </div>
     </div>
     <div class="flex flex-col items-center text-sm font-medium text-slate-400">

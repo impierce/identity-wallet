@@ -1,8 +1,25 @@
 <script lang="ts">
   import { state } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
-  import { Avatar, BottomNavigation, CredentialListEntry } from '@impierce/ui-components';
-  import { Plus, XMark } from 'svelte-heros-v2';
+  import {
+    Avatar,
+    BottomNavigation,
+    Button,
+    CredentialListEntry,
+    Input,
+    Label
+  } from '@impierce/ui-components';
+  import {
+    Sheet,
+    SheetClose,
+    SheetContent,
+    SheetDescription,
+    SheetFooter,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger
+  } from '@impierce/ui-components';
+  import { Plus, XMark, AtSymbol, Phone } from 'svelte-heros-v2';
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { fade, fly, slide } from 'svelte/transition';
@@ -23,6 +40,12 @@
     }
     console.log('initials', initials);
   }
+
+  let showAlert = false;
+
+  const addInformation = async () => {
+    showAlert = true;
+  };
 </script>
 
 <div class="min-h-screen">
@@ -46,7 +69,7 @@
       {$state?.active_profile?.display_name}
     </div>
 
-    <div class="space-y-8 p-8">
+    <div class="flex flex-col space-y-8 p-8">
       <!-- <h1 class="font-serif text-2xl font-semibold">
         {$LL.WELCOME()}, {$state?.active_profile?.display_name}!
       </h1> -->
@@ -54,9 +77,48 @@
         <p class="pb-4 font-semibold text-slate-500">{$LL.CREATE_IDENTITY_SUCCESS_TITLE()}</p>
         <p class="text-slate-400">{$LL.CREATE_IDENTITY_SUCCESS_BODY()}</p>
       </div>
-      <button class="flex w-full justify-center rounded-lg bg-slate-200 p-6">
+      <!-- <button class="flex w-full justify-center rounded-lg bg-slate-200 p-6">
         <Plus class="text-violet-700" strokeWidth="2" />
-      </button>
+      </button> -->
+
+      <Sheet>
+        <SheetTrigger>
+          <!-- <Button>Add info (sheet)</Button> -->
+          <button class="flex w-full justify-center rounded-lg bg-slate-200 p-6">
+            <Plus class="text-violet-700" strokeWidth="2" />
+          </button>
+        </SheetTrigger>
+        <SheetContent position="bottom" size="content">
+          <SheetHeader>
+            <SheetTitle>Add information</SheetTitle>
+            <SheetDescription>Choose a piece of information you'd like to add.</SheetDescription>
+          </SheetHeader>
+
+          <div class="grid gap-4 py-4">
+            <Button variant="secondary" on:click={addInformation}
+              ><AtSymbol class="mr-2 text-slate-400" variation="solid" size="16" />Email</Button
+            >
+            <Button variant="secondary"
+              ><Phone class="mr-2 text-slate-400" variation="solid" size="16" />Phone</Button
+            >
+            <Button variant="ghost">Custom</Button>
+            <!-- <div class="grid grid-cols-4 items-center gap-4">
+            <Label for="name" class="text-right">Name</Label>
+            <Input id="name" value="Pedro Duarte" class="col-span-3" />
+          </div>
+          <div class="grid grid-cols-4 items-center gap-4">
+            <Label for="username" class="text-right">Username</Label>
+            <Input id="username" value="@peduarte" class="col-span-3" />
+          </div> -->
+          </div>
+
+          <!-- <SheetFooter>
+            <SheetClose>
+              <Button type="submit">Save changes</Button>
+            </SheetClose>
+          </SheetFooter> -->
+        </SheetContent>
+      </Sheet>
     </div>
   </div>
   <!-- Navigation -->

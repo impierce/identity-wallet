@@ -28,6 +28,7 @@ anyhow = "1.0"
 did-key = "0.2.1"
 rand = "0.8.5"
 lazy_static = "1.4.0"
+tauri-plugin-clipboard-manager = "=2.0.0-alpha.0"
 tauri-plugin-stronghold = "=2.0.0-alpha.0"
 rust-argon2 = "=1.0.0"
 
