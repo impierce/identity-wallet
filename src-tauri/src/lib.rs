@@ -31,20 +31,14 @@ pub fn run() {
                     thread_mode: argon2::ThreadMode::from_threads(2),
                     variant: argon2::Variant::Argon2id,
                     ..Default::default()
-                  };
-          
-                  let key = argon2::hash_raw(password.as_ref(), b"SALT_IDEALLY_SHOULD_BE_RANDOM", &config)
+                };
+
+                let config = argon2::Config::default();
+
+                let key = argon2::hash_raw(password.as_ref(), b"SALT_IDEALLY_SHOULD_BE_RANDOM", &config)
                     .expect("failed to hash password");
-          
-                  key.to_vec()
-                // let salt = argon2::password_hash::SaltString::from_b64("XHtKjAjwvIfJeO3U8jacgQ").unwrap();
-                // let hashed = Argon2::default()
-                //     .hash_password(password.as_bytes(), &salt)
-                //     .unwrap()
-                //     .to_string();
-                // info!("tauri_plugin_stronghold: password hash: {}", hashed);
-                // hashed.into()
-                // password.into()
+
+                key.to_vec()
             })
             .build(),
         )

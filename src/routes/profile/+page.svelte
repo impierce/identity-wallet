@@ -19,7 +19,7 @@
     SheetTitle,
     SheetTrigger
   } from '@impierce/ui-components';
-  import { Plus, XMark, AtSymbol, Phone } from 'svelte-heros-v2';
+  import { Plus, XMark, AtSymbol, Phone, Home, Cake } from 'svelte-heros-v2';
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { fade, fly, slide } from 'svelte/transition';
@@ -40,12 +40,6 @@
     }
     console.log('initials', initials);
   }
-
-  let showAlert = false;
-
-  const addInformation = async () => {
-    showAlert = true;
-  };
 </script>
 
 <div class="min-h-screen">
@@ -94,14 +88,20 @@
             <SheetDescription>Choose a piece of information you'd like to add.</SheetDescription>
           </SheetHeader>
 
-          <div class="grid gap-4 py-4">
-            <Button variant="secondary" on:click={addInformation}
+          <div class="grid grid-cols-2 gap-4 py-4">
+            <Button variant="secondary"
               ><AtSymbol class="mr-2 text-slate-400" variation="solid" size="16" />Email</Button
             >
             <Button variant="secondary"
               ><Phone class="mr-2 text-slate-400" variation="solid" size="16" />Phone</Button
             >
-            <Button variant="ghost">Custom</Button>
+            <Button variant="secondary"
+              ><Home class="mr-2 text-slate-400" variation="solid" size="16" />Address</Button
+            >
+            <Button variant="secondary"
+              ><Cake class="mr-2 text-slate-400" variation="solid" size="16" />Date of Birth</Button
+            >
+            <Button variant="outline">Custom</Button>
             <!-- <div class="grid grid-cols-4 items-center gap-4">
             <Label for="name" class="text-right">Name</Label>
             <Input id="name" value="Pedro Duarte" class="col-span-3" />
