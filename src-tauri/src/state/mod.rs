@@ -2,7 +2,7 @@ pub mod actions;
 pub mod persistence;
 pub mod reducers;
 
-use openid4vc::SiopRequest;
+use openid4vc::AuthorizationRequest;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::Mutex;
@@ -12,7 +12,7 @@ use ts_rs::TS;
 #[derive(Default)]
 pub struct AppState {
     pub active_profile: Mutex<Option<Profile>>,
-    pub active_authentication_request: Mutex<Option<SiopRequest>>,
+    pub active_authentication_request: Mutex<Option<AuthorizationRequest>>,
     pub active_requested_claims: Mutex<Option<HashMap<String, ClaimType>>>,
     pub locale: Mutex<String>,
 }
@@ -23,7 +23,7 @@ pub struct AppState {
 pub struct TransferState {
     pub active_profile: Option<Profile>,
     #[ts(type = "Map<string, string>")]
-    pub active_authentication_request: Option<SiopRequest>,
+    pub active_authentication_request: Option<AuthorizationRequest>,
     pub active_requested_claims: Option<HashMap<String, ClaimType>>,
     pub locale: String,
 }
