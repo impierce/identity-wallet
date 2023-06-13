@@ -1,6 +1,7 @@
 <script lang="ts">
   import { dispatch } from './dispatcher';
   import { state } from '../stores';
+  import { Select } from '@impierce/ui-components';
 
   let selected_locale: string;
 

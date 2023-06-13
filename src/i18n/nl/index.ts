@@ -11,7 +11,7 @@ const nl = {
   APP_SETTINGS: 'App-instellingen',
   YOUR_DIDS: 'Jouw DIDs',
   RESET_APP: 'App resetten',
-  NO_HISTORY: `Je hebt nog geen Credentials gebruikt.`
+  NO_HISTORY: 'Je hebt nog geen Credentials gebruikt.'
 } satisfies Translation;
 
 export default nl;
