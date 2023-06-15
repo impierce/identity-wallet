@@ -4,7 +4,7 @@ use ts_rs::TS;
 /// A redux-like Action with an optional payload
 /// See https://redux.js.org/tutorials/fundamentals/part-3-state-actions-reducers
 /// For the type string, we're using ngrx style: "\[Feature\] Action name" (see https://ngrx.io/guide/store/actions)
-#[derive(Deserialize, TS)]
+#[derive(Deserialize, TS, Clone)]
 #[ts(export)]
 pub struct Action {
     pub(crate) r#type: ActionType,
@@ -13,7 +13,7 @@ pub struct Action {
 }
 
 /// Actions that the backend knows how to handle (reduce).
-#[derive(Serialize, Deserialize, Debug, TS, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, TS, PartialEq, Clone)]
 #[ts(export)]
 pub enum ActionType {
     #[serde(rename = "[App] Get state")]

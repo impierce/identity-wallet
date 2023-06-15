@@ -1,8 +1,8 @@
 mod command;
+mod crypto;
 mod did;
 mod state;
 
-// use argon2::{Argon2, PasswordHasher};
 use command::handle_action;
 use lazy_static::lazy_static;
 use state::AppState;
@@ -22,26 +22,6 @@ pub fn run() {
             Ok(())
         })
         .plugin(tauri_plugin_clipboard_manager::init())
-        .plugin(
-            tauri_plugin_stronghold::Builder::new(|password| {
-                let config = argon2::Config {
-                    lanes: 2,
-                    mem_cost: 50_000,
-                    time_cost: 30,
-                    thread_mode: argon2::ThreadMode::from_threads(2),
-                    variant: argon2::Variant::Argon2id,
-                    ..Default::default()
-                };
-
-                let config = argon2::Config::default();
-
-                let key = argon2::hash_raw(password.as_ref(), b"SALT_IDEALLY_SHOULD_BE_RANDOM", &config)
-                    .expect("failed to hash password");
-
-                key.to_vec()
-            })
-            .build(),
-        )
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
