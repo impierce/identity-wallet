@@ -1,4 +1,4 @@
-use crate::crypto::stronghold::{hash_password, create_new_stronghold};
+use crate::crypto::stronghold::{create_new_stronghold, get_public_key, hash_password};
 use crate::did::did_key::{generate_dev_did, generate_new_did};
 use crate::state::actions::Action;
 use crate::state::{AppState, Profile};
@@ -21,8 +21,12 @@ pub async fn create_did_key(state: &AppState, action: Action) -> anyhow::Result<
     let display_name = payload["display_name"]
         .as_str()
         .ok_or(anyhow::anyhow!("unable to read display_name from json payload"))?;
+    let password = payload["password"]
+        .as_str()
+        .ok_or(anyhow::anyhow!("unable to read password from json payload"))?;
 
-    let did_document = generate_new_did().await?;
+    let public_key = get_public_key(password).await?;
+    let did_document = generate_new_did(public_key).await?;
     let profile = Profile {
         display_name: display_name.to_string(),
         primary_did: did_document.id,
@@ -61,7 +65,7 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{state::actions::ActionType, UNSAFE_STORAGE};
+    use crate::{state::actions::ActionType, UNSAFE_DEV_STORAGE};
     use serde_json::json;
     use tempfile::NamedTempFile;
 
@@ -108,7 +112,7 @@ mod tests {
     #[tokio::test]
     async fn test_create_new_with_method_did_key() {
         let path = NamedTempFile::new().unwrap().into_temp_path();
-        *UNSAFE_STORAGE.lock().unwrap() = path.as_os_str().into();
+        *UNSAFE_DEV_STORAGE.lock().unwrap() = path.as_os_str().into();
 
         let state = AppState::default();
 
@@ -116,7 +120,7 @@ mod tests {
             &state,
             Action {
                 r#type: ActionType::CreateNew,
-                payload: Some(json!({"display_name": "Ferris"})),
+                payload: Some(json!({"display_name": "Ferris", "password": "s3cr3t"})),
             },
         )
         .await
