@@ -23,6 +23,7 @@ pub async fn handle_action(
             let transfer_state: TransferState = load_state().await.unwrap_or(TransferState {
                 active_profile: None,
                 locale: "en".to_string(),
+                credentials: None,
             });
 
             let _keypair = match load_existing_keypair().await {
