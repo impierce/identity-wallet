@@ -1,3 +1,4 @@
+use crate::crypto::stronghold::{hash_password, create_new_stronghold};
 use crate::did::did_key::{generate_dev_did, generate_new_did};
 use crate::state::actions::Action;
 use crate::state::{AppState, Profile};
@@ -30,18 +31,27 @@ pub async fn create_did_key(state: &AppState, action: Action) -> anyhow::Result<
     Ok(())
 }
 
+pub async fn initialize_stronghold(state: &AppState, action: Action) -> anyhow::Result<()> {
+    let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
+    let password = payload["password"]
+        .as_str()
+        .ok_or(anyhow::anyhow!("unable to read password from json payload"))?;
+    let password_hash = hash_password(password).await?;
+    create_new_stronghold(password_hash).await?;
+    Ok(())
+}
+
 /// Completely resets the state to its default values.
 pub fn reset_state(state: &AppState, _action: Action) -> anyhow::Result<()> {
     *state.active_profile.lock().unwrap() = None;
     *state.locale.lock().unwrap() = "en".to_string();
-    // TODO: remove stronghold file
     Ok(())
 }
 
 pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Result<()> {
     let did_document = generate_dev_did().await?;
     let profile = Profile {
-        display_name: "Ferris Crabman".to_string(),
+        display_name: "Ferris Crabbington".to_string(),
         primary_did: did_document.id,
     };
     *state.active_profile.lock().unwrap() = Some(profile);

@@ -1,6 +1,11 @@
-use crate::did::persistence::save_secret_key;
-use did_key::{Config, DIDCore, Document, Ed25519KeyPair, Generate};
+use crate::{did::persistence::save_secret_key, STRONGHOLD};
+use did_key::{Config, DIDCore, Document, Ed25519KeyPair, Generate, from_existing_key};
+use iota_stronghold::{Client, Stronghold, procedures::{StrongholdProcedure, GenerateKey, KeyType, ProcedureOutput, PublicKey}, Location};
 use rand::RngCore;
+use tracing::info;
+// use identity_iota::account_storage::Stronghold;
+
+// use iota_stronghold::{Client, Stronghold, KeyProvider, SnapshotPath};
 
 /// CAUTION: UNSAFE! - Generates a new random secret key, saves it to disk (unencrypted!) and returns its DID.
 pub async fn generate_new_did() -> anyhow::Result<Document> {

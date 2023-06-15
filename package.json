@@ -20,8 +20,6 @@
     "@impierce/ui-components": "0.0.12-alpha",
     "@tauri-apps/api": "2.0.0-alpha.4",
     "@tauri-apps/plugin-clipboard-manager": "2.0.0-alpha.0",
-    "@tauri-apps/plugin-stronghold": "2.0.0-alpha.1",
-    "multiformats": "^11.0.2",
     "svelte-heros-v2": "^0.7.1",
     "typesafe-i18n": "^5.24.3"
   },
