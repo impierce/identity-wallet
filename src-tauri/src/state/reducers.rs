@@ -2,6 +2,9 @@ use crate::crypto::stronghold::{create_new_stronghold, get_public_key, hash_pass
 use crate::did::did_key::{generate_dev_did, generate_new_did};
 use crate::state::actions::Action;
 use crate::state::{AppState, Profile};
+use identity_core::common::{Timestamp, Url};
+use identity_credential::credential::{Credential, CredentialBuilder, Issuer, Subject};
+use serde_json::{Value, json};
 use tracing::info;
 
 /// Sets the locale to the given value. If the locale is not supported yet, the current locale will stay unchanged.
@@ -59,6 +62,37 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
         primary_did: did_document.id,
     };
     *state.active_profile.lock().unwrap() = Some(profile);
+
+    // =====================
+    // Construct a `Subject` from json
+    let json_subject: Value = json!({
+      "id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
+      "degree": {
+        "type": "BachelorDegree",
+        "name": "Bachelor of Science and Arts"
+      }
+    });
+    let subject: Subject = serde_json::from_value(json_subject).unwrap();
+
+    // Construct an `Issuer` from json
+    let json_issuer: Value = json!({
+      "id": "did:example:76e12ec712ebc6f1c221ebfeb1f",
+      "name": "Example University"
+    });
+
+    let issuer: Issuer = serde_json::from_value(json_issuer).unwrap();
+
+    let credential: Credential = CredentialBuilder::default()
+        .context(Url::parse("https://www.w3.org/2018/credentials/examples/v1").unwrap())
+        .id(Url::parse("http://example.edu/credentials/3732").unwrap())
+        .type_("UniversityDegreeCredential")
+        .subject(subject)
+        .issuer(issuer)
+        .issuance_date(Timestamp::parse("2010-01-01T00:00:00Z").unwrap())
+        .build()
+        .unwrap();
+    // =====================
+    *state.credentials.lock().unwrap() = Some(vec![credential]);
     Ok(())
 }
 

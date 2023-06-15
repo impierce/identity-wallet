@@ -2,6 +2,7 @@ pub mod actions;
 pub mod persistence;
 pub mod reducers;
 
+use identity_credential::credential::Credential;
 use serde::{Deserialize, Serialize};
 use std::sync::Mutex;
 use ts_rs::TS;
@@ -11,6 +12,7 @@ use ts_rs::TS;
 pub struct AppState {
     pub active_profile: Mutex<Option<Profile>>,
     pub locale: Mutex<String>,
+    pub credentials: Mutex<Option<Vec<Credential>>>,
 }
 
 /// A representation of the current state which is used for serialization.
@@ -19,6 +21,8 @@ pub struct AppState {
 pub struct TransferState {
     pub active_profile: Option<Profile>,
     pub locale: String,
+    #[ts(skip)] // TODO: solve later
+    pub credentials: Option<Vec<Credential>>,
 }
 
 impl From<&AppState> for TransferState {
@@ -26,6 +30,7 @@ impl From<&AppState> for TransferState {
         TransferState {
             active_profile: state.active_profile.lock().unwrap().clone(),
             locale: (*state.locale.lock().unwrap()).to_string(),
+            credentials: state.credentials.lock().unwrap().clone(),
         }
     }
 }

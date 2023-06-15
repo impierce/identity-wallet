@@ -10,6 +10,15 @@
     Label
   } from '@impierce/ui-components';
   import {
+    AlertDialog,
+    AlertDialogTrigger,
+    AlertDialogContent,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogCancel,
+    AlertDialogAction,
     Sheet,
     SheetClose,
     SheetContent,
@@ -19,12 +28,14 @@
     SheetTitle,
     SheetTrigger
   } from '@impierce/ui-components';
-  import { Plus, XMark, AtSymbol, Phone, Home, Cake } from 'svelte-heros-v2';
+  import { Plus, XMark, AtSymbol, Phone, Home, Cake, AcademicCap } from 'svelte-heros-v2';
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { fade, fly, slide } from 'svelte/transition';
 
   let initials: string | undefined;
+
+  let credentials: any[] = [];
 
   $: {
     // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
@@ -39,6 +50,7 @@
       initials = first + '' + last;
     }
     console.log('initials', initials);
+    credentials = $state?.credentials ?? [];
   }
 </script>
 
@@ -52,10 +64,7 @@
   />
   <!-- <div class="absolute -z-10 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div> -->
   <!-- Content overlay -->
-  <div
-    class="absolute bottom-0 h-5/6 w-full rounded-t-3xl bg-slate-100"
-    in:fly={{ y: 24, opacity: 1 }}
-  >
+  <div class="absolute bottom-0 h-5/6 w-full rounded-t-3xl bg-white" in:fly={{ y: 24, opacity: 1 }}>
     <div class="relative bottom-12 -mb-6 flex justify-center" in:fly={{ y: 12, opacity: 1 }}>
       <Avatar {initials} size="large" />
     </div>
@@ -75,11 +84,46 @@
         <Plus class="text-violet-700" strokeWidth="2" />
       </button> -->
 
+      <div>
+        {#if credentials.length > 0}
+          <div class="flex flex-col space-y-4">
+            {#each credentials as credential}
+              <AlertDialog>
+                <AlertDialogTrigger>
+                  <CredentialListEntry
+                    title={credential?.credentialSubject?.degree?.name}
+                    description={credential?.issuer?.name}
+                  >
+                    <span slot="icon"><AcademicCap class="text-violet-500" /></span>
+                  </CredentialListEntry>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle
+                      >{credential?.credentialSubject?.degree?.name}</AlertDialogTitle
+                    >
+                    <AlertDialogDescription>
+                      <div class="">
+                        {JSON.stringify(credential, null, 2)}
+                      </div>
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction>Share</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            {/each}
+          </div>
+        {/if}
+      </div>
+
       <Sheet>
         <SheetTrigger>
           <!-- <Button>Add info (sheet)</Button> -->
-          <button class="flex w-full justify-center rounded-lg bg-slate-200 p-6">
-            <Plus class="text-violet-700" strokeWidth="2" />
+          <button class="flex w-full justify-center rounded-lg bg-violet-500 p-4">
+            <Plus class="text-slate-200" strokeWidth="2" />
           </button>
         </SheetTrigger>
         <SheetContent position="bottom" size="content">

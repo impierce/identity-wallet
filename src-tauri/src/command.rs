@@ -22,6 +22,7 @@ pub async fn handle_action(
             let transfer_state: TransferState = load_state().await.unwrap_or(TransferState {
                 active_profile: None,
                 locale: "en".to_string(),
+                credentials: None,
             });
 
             // TODO: find a better way to populate all fields with values from json file

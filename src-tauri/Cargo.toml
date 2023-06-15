@@ -31,6 +31,8 @@ tauri-plugin-clipboard-manager = "=2.0.0-alpha.0"
 rust-argon2 = { version = "=1.0.0" }
 iota_stronghold = { version = "=1.0.5" }
 base64 = { version = "0.13.0" }
+identity_core = { version = "0.6.2" }
+identity_credential = { version = "0.6.2" }
 
 [dev-dependencies]
 tempfile = "3.5.0"
