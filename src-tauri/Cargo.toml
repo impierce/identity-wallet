@@ -28,11 +28,13 @@ anyhow = "1.0"
 did-key = "0.2.1"
 lazy_static = "1.4.0"
 tauri-plugin-clipboard-manager = "=2.0.0-alpha.0"
+tauri-plugin-log = "=2.0.0-alpha.0"
 rust-argon2 = { version = "=1.0.0" }
 iota_stronghold = { version = "=1.0.5" }
 base64 = { version = "0.13.0" }
 identity_core = { version = "0.6.2" }
 identity_credential = { version = "0.6.2" }
+log = "^0.4"
 
 [dev-dependencies]
 tempfile = "3.5.0"

@@ -20,10 +20,12 @@
     Button
   } from '@impierce/ui-components';
   import { readText } from '@tauri-apps/plugin-clipboard-manager';
+  import { trace, info, error, attachConsole } from "@tauri-apps/plugin-log";
 
   let clipboard: string | undefined;
 
   onMount(async () => {
+  const detach = await attachConsole();
     console.log('+layout.svelte: onMount');
     loadAllLocales(); //TODO: performance: only load locale on user request
     dispatch({ type: '[App] Get state' });

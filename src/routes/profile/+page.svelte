@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { state } from '../../stores';
+  import { state, alert } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import {
     Avatar,
@@ -32,6 +32,7 @@
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { fade, fly, slide } from 'svelte/transition';
+  import QrCodeButton from '$lib/QrCodeButton.svelte';
 
   let initials: string | undefined;
 
@@ -40,6 +41,7 @@
   $: {
     // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
     console.log('state', $state);
+    console.log('interaction-required', $alert);
     let names = $state?.active_profile?.display_name.split(' ');
     if (names?.length === 1) {
       initials = names?.at(0)?.slice(0, 2).toUpperCase();
@@ -64,7 +66,10 @@
   />
   <!-- <div class="absolute -z-10 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div> -->
   <!-- Content overlay -->
-  <div class="absolute bottom-0 h-5/6 w-full rounded-t-3xl bg-white" in:fly={{ y: 24, opacity: 1 }}>
+  <div
+    class="absolute bottom-0 h-5/6 w-full rounded-t-3xl bg-slate-100"
+    in:fly={{ y: 24, opacity: 1 }}
+  >
     <div class="relative bottom-12 -mb-6 flex justify-center" in:fly={{ y: 12, opacity: 1 }}>
       <Avatar {initials} size="large" />
     </div>
@@ -84,26 +89,30 @@
         <Plus class="text-violet-700" strokeWidth="2" />
       </button> -->
 
+      <div class="absolute bottom-28 right-10 z-10">
+        <QrCodeButton />
+      </div>
+
       <div>
         {#if credentials.length > 0}
           <div class="flex flex-col space-y-4">
             {#each credentials as credential}
               <AlertDialog>
                 <AlertDialogTrigger>
-                  <CredentialListEntry
-                    title={credential?.credentialSubject?.degree?.name}
-                    description={credential?.issuer?.name}
-                  >
-                    <span slot="icon"><AcademicCap class="text-violet-500" /></span>
-                  </CredentialListEntry>
+                  <div class="p-2">
+                    <CredentialListEntry
+                      title={credential?.type?.at(1)}
+                      description={credential?.issuer?.name}
+                    >
+                      <span slot="icon"><AcademicCap class="text-violet-500" /></span>
+                    </CredentialListEntry>
+                  </div>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle
-                      >{credential?.credentialSubject?.degree?.name}</AlertDialogTitle
-                    >
+                    <AlertDialogTitle>{credential?.type?.at(1)}</AlertDialogTitle>
                     <AlertDialogDescription>
-                      <div class="">
+                      <div class="break-all">
                         {JSON.stringify(credential, null, 2)}
                       </div>
                     </AlertDialogDescription>
@@ -122,8 +131,8 @@
       <Sheet>
         <SheetTrigger>
           <!-- <Button>Add info (sheet)</Button> -->
-          <button class="flex w-full justify-center rounded-lg bg-violet-500 p-4">
-            <Plus class="text-slate-200" strokeWidth="2" />
+          <button class="flex w-full justify-center rounded-lg bg-slate-200 p-4">
+            <Plus class="text-violet-700" strokeWidth="3" />
           </button>
         </SheetTrigger>
         <SheetContent position="bottom" size="content">

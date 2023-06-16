@@ -34,3 +34,10 @@ export const state = readable<State>(undefined, (set) => {
   });
   // TODO: unsubscribe from listener!
 });
+
+export const alert = readable<any>(undefined, (set) => {
+  listen('interaction-required', (event: StateChangedEvent) => {
+    console.log(event.payload);
+    set(event.payload);
+  });
+});
