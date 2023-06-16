@@ -8,6 +8,7 @@ use lazy_static::lazy_static;
 use state::AppState;
 use std::sync::Mutex;
 use tauri::Manager;
+use tauri_plugin_log::{Target, TargetKind, WEBVIEW_TARGET};
 use tracing::info;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -22,6 +23,22 @@ pub fn run() {
             Ok(())
         })
         .plugin(tauri_plugin_clipboard_manager::init())
+        // .plugin(
+        //     tauri_plugin_log::Builder::new()
+        //         .clear_targets()
+        //         .targets([
+        //             Target::new(TargetKind::Webview),
+        //             Target::new(TargetKind::LogDir {
+        //                 file_name: Some("webview".into()),
+        //             })
+        //             .filter(|metadata| metadata.target() == WEBVIEW_TARGET),
+        //             Target::new(TargetKind::LogDir {
+        //                 file_name: Some("rust".into()),
+        //             })
+        //             .filter(|metadata| metadata.target() != WEBVIEW_TARGET),
+        //         ])
+        //         .build(),
+        // )
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

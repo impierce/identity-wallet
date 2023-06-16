@@ -37,6 +37,7 @@ pub async fn handle_action(
             // TODO: find a better way to populate all fields with values from json file
             *app_state.active_profile.lock().unwrap() = transfer_state.active_profile;
             *app_state.locale.lock().unwrap() = transfer_state.locale;
+            *app_state.credentials.lock().unwrap() = transfer_state.credentials;
         }
         ActionType::Reset => {
             if reset_state(app_state.inner(), Action { r#type, payload }).is_ok() {
@@ -57,6 +58,19 @@ pub async fn handle_action(
             if set_locale(app_state.inner(), Action { r#type, payload }).is_ok() {
                 save_state(TransferState::from(app_state.inner())).await.ok();
             }
+        }
+        ActionType::QrCodeScanned => {
+            info!("qr code scanned: `{:?}`", payload);
+            info!("Now doing some backend business logic with the QR code data...");
+            // TODO: actually do something with the QR code data
+            const INTERACTION_REQUIRED_EVENT: &str = "interaction-required";
+            let payload = "please select the information you want to share: name, birthdate, email";
+            // emit the result to the frontend
+            window.emit(INTERACTION_REQUIRED_EVENT, payload).unwrap();
+            info!(
+                "emitted event `{}` with payload `{:?}`",
+                INTERACTION_REQUIRED_EVENT, payload
+            );
         }
         ActionType::LoadDevProfile => {
             if load_dev_profile(app_state.inner(), Action { r#type, payload })
