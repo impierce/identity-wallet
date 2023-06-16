@@ -684,6 +684,11 @@ dependencies = [
 ]
 
 [[package]]
+name = "dif-presentation-exchange"
+version = "0.1.0"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/multi-did#6e16a6810d52345a5533cf13f8bde415ec784db3"
+
+[[package]]
 name = "digest"
 version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1633,7 +1638,7 @@ dependencies = [
  "did-key",
  "ed25519-dalek",
  "lazy_static",
- "openid4vc",
+ "oid4vc",
  "rand 0.8.5",
  "serde",
  "serde_json",
@@ -1949,9 +1954,9 @@ dependencies = [
 
 [[package]]
 name = "log"
-version = "0.4.18"
+version = "0.4.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "518ef76f2f87365916b142844c16d8fefd85039bc5699050210a7778ee1cd1de"
+checksum = "b06a4cde4c0f271a446782e3eff8de789548ce57dbc8eca9292c27f4a42004b4"
 
 [[package]]
 name = "loom"
@@ -2227,6 +2232,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "oid4vc"
+version = "0.1.0"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/multi-did#6e16a6810d52345a5533cf13f8bde415ec784db3"
+dependencies = [
+ "dif-presentation-exchange",
+ "oid4vci",
+ "oid4vp",
+ "siopv2",
+]
+
+[[package]]
+name = "oid4vci"
+version = "0.1.0"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/multi-did#6e16a6810d52345a5533cf13f8bde415ec784db3"
+
+[[package]]
+name = "oid4vp"
+version = "0.1.0"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/multi-did#6e16a6810d52345a5533cf13f8bde415ec784db3"
+
+[[package]]
 name = "once_cell"
 version = "1.18.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2237,30 +2263,6 @@ name = "opaque-debug"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "624a8340c38c1b80fd549087862da4ba43e08858af025b236e509b6649fc13d5"
-
-[[package]]
-name = "openid4vc"
-version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git#bcd4a0034477dc8abaae1820b341144dbc53e696"
-dependencies = [
- "anyhow",
- "async-trait",
- "base64-url",
- "chrono",
- "derive_more",
- "did-key",
- "did_url",
- "getset",
- "is_empty",
- "jsonwebtoken",
- "reqwest",
- "serde",
- "serde_json",
- "serde_urlencoded",
- "serde_with",
- "tokio",
- "url",
-]
 
 [[package]]
 name = "option-ext"
@@ -2500,9 +2502,9 @@ dependencies = [
 
 [[package]]
 name = "png"
-version = "0.17.8"
+version = "0.17.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aaeebc51f9e7d2c150d3f3bfeb667f2aa985db5ef1e3d212847bdedb488beeaa"
+checksum = "59871cc5b6cce7eaccca5a802b4173377a1c2ba90654246789a8fa2334426d11"
 dependencies = [
  "bitflags",
  "crc32fast",
@@ -2822,9 +2824,9 @@ dependencies = [
 
 [[package]]
 name = "rustix"
-version = "0.37.19"
+version = "0.37.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "acf8729d8542766f1b2cf77eb034d52f40d375bb8b615d0b147089946e16613d"
+checksum = "b96e891d04aa506a6d1f318d2771bcb1c7dfda84e126660ace067c9b474bb2c0"
 dependencies = [
  "bitflags",
  "errno",
@@ -3139,6 +3141,30 @@ dependencies = [
  "num-traits",
  "thiserror",
  "time 0.3.22",
+]
+
+[[package]]
+name = "siopv2"
+version = "0.1.0"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/multi-did#6e16a6810d52345a5533cf13f8bde415ec784db3"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "base64-url",
+ "chrono",
+ "derive_more",
+ "did-key",
+ "did_url",
+ "getset",
+ "is_empty",
+ "jsonwebtoken",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "serde_urlencoded",
+ "serde_with",
+ "tokio",
+ "url",
 ]
 
 [[package]]
@@ -3779,9 +3805,9 @@ dependencies = [
 
 [[package]]
 name = "tokio-rustls"
-version = "0.24.0"
+version = "0.24.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e0d409377ff5b1e3ca6437aa86c1eb7d40c134bfec254e44c830defa92669db5"
+checksum = "c28327cf380ac148141087fbfb9de9d7bd4e84ab5d2c28fbc911d753de8a7081"
 dependencies = [
  "rustls",
  "tokio",

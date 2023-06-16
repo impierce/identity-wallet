@@ -2,7 +2,7 @@ pub mod actions;
 pub mod persistence;
 pub mod reducers;
 
-use openid4vc::AuthorizationRequest;
+use oid4vc::siopv2::AuthorizationRequest;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::Mutex;

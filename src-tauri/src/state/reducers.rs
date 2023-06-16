@@ -1,6 +1,6 @@
 use crate::did::did_key::{generate_dev_did, generate_new_did};
 use crate::state::{actions::Action, AppState, ClaimType, Profile};
-use openid4vc::StandardClaimsValues;
+use oid4vc::siopv2::StandardClaimsValues;
 use serde_json::Value;
 use tracing::info;
 
@@ -112,13 +112,16 @@ pub async fn send_response(state: &AppState, action: Action) -> anyhow::Result<(
 
 #[cfg(test)]
 mod tests {
+    use std::str::FromStr;
+
     use super::*;
     use crate::{state::actions::ActionType, UNSAFE_STORAGE};
-    use openid4vc::{
+    use oid4vc::siopv2::{
         claims::{ClaimRequests, IndividualClaimRequest},
         request::ResponseType,
         scope::ScopeValue,
-        Registration, RequestUrl, Scope, StandardClaimsRequests,
+        subject_syntax_type::DidMethod,
+        ClientMetadata, RequestUrl, Scope, StandardClaimsRequests,
     };
     use serde_json::json;
     use tempfile::NamedTempFile;
@@ -219,7 +222,10 @@ mod tests {
             .scope(Scope::from(vec![ScopeValue::OpenId]))
             .redirect_uri(format!("https://client.example.org/cb"))
             .response_mode("post".to_owned())
-            .registration(Registration::default().with_subject_syntax_types_supported(vec!["did:key".to_owned()]))
+            .client_metadata(
+                ClientMetadata::default()
+                    .with_subject_syntax_types_supported(vec![DidMethod::from_str("did:key").unwrap().into()]),
+            )
             // Add a claim request to the request with the `name` claim.
             .claims(ClaimRequests {
                 id_token: Some(StandardClaimsRequests {
