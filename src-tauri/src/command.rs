@@ -3,6 +3,7 @@ use tracing::{info, warn};
 use crate::state::actions::{Action, ActionType};
 use crate::state::persistence::{delete_state_file, delete_stronghold, load_state, save_state};
 use crate::state::reducers::{create_did_key, initialize_stronghold, load_dev_profile, reset_state, set_locale};
+use crate::state::user_flow::{CurrentUserFlow, CurrentUserFlowType, Redirect, Selection};
 use crate::state::{AppState, TransferState};
 
 /// This command handler is the single point of entry to the business logic in the backend. It will delegate the
@@ -23,12 +24,23 @@ pub async fn handle_action(
                 active_profile: None,
                 locale: "en".to_string(),
                 credentials: None,
+                current_user_flow: Some(CurrentUserFlow::Redirect(Redirect {
+                    r#type: CurrentUserFlowType::Redirect,
+                    target: "welcome".to_string(),
+                })),
             });
 
             // TODO: find a better way to populate all fields with values from json file
             *app_state.active_profile.lock().unwrap() = transfer_state.active_profile;
             *app_state.locale.lock().unwrap() = transfer_state.locale;
             *app_state.credentials.lock().unwrap() = transfer_state.credentials;
+
+            if (*app_state.active_profile.lock().unwrap()).is_some() {
+                *app_state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Redirect(Redirect {
+                    r#type: CurrentUserFlowType::Redirect,
+                    target: "profile".to_string(),
+                }));
+            }
         }
         ActionType::Reset => {
             if reset_state(app_state.inner(), Action { r#type, payload }).is_ok() {
@@ -44,11 +56,19 @@ pub async fn handle_action(
             if create_did_key(app_state.inner(), action).await.is_ok() {
                 save_state(TransferState::from(app_state.inner())).await.ok();
             }
+            // When everything is done, we redirect the user to the profile page
+            *app_state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Redirect(Redirect {
+                r#type: CurrentUserFlowType::Redirect,
+                target: "profile".to_string(),
+            }));
+            save_state(TransferState::from(app_state.inner())).await.ok();
         }
         ActionType::SetLocale => {
             if set_locale(app_state.inner(), Action { r#type, payload }).is_ok() {
                 save_state(TransferState::from(app_state.inner())).await.ok();
             }
+            *app_state.current_user_flow.lock().unwrap() = None;
+            save_state(TransferState::from(app_state.inner())).await.ok();
         }
         ActionType::QrCodeScanned => {
             info!("qr code scanned: `{:?}`", payload);
@@ -62,6 +82,11 @@ pub async fn handle_action(
                 "emitted event `{}` with payload `{:?}`",
                 INTERACTION_REQUIRED_EVENT, payload
             );
+            *app_state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Selection(Selection {
+                r#type: CurrentUserFlowType::Selection,
+                options: vec!["name".to_string(), "birthdate".to_string(), "email".to_string()],
+            }));
+            // save_state(TransferState::from(app_state.inner())).await.ok();
         }
         ActionType::LoadDevProfile => {
             if load_dev_profile(app_state.inner(), Action { r#type, payload })

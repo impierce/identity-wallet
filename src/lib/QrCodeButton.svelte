@@ -9,7 +9,7 @@
 </script>
 
 <button on:click={() => dispatch({ type: '[QR Code] Scanned', payload: { rawString } })}>
-  <div class="flex rounded-full bg-violet-700 p-4 shadow-lg shadow-violet-700">
+  <div class="flex rounded-full bg-violet-700 p-4 shadow-md shadow-violet-700">
     <QrCode class="text-white" size="38" />
   </div>
 </button>

@@ -21,6 +21,7 @@
   } from '@impierce/ui-components';
   import { readText } from '@tauri-apps/plugin-clipboard-manager';
   import { trace, info, error, attachConsole } from "@tauri-apps/plugin-log";
+  import Alert from '$lib/alert/Alert.svelte';
 
   let clipboard: string | undefined;
 
@@ -33,13 +34,22 @@
 
   let showDevMode = false;
 
+  // alert (selection)
+  let alertOpen = false;
+  let alertOptions: string[] = [];
+
   $: {
     // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
     console.log('state', $state);
+    if ($state?.current_user_flow?.Selection) {
+      alertOpen = true;
+      alertOptions = $state.current_user_flow.Selection.options;
+    }
   }
 </script>
 
 <main class="h-screen bg-slate-100">
+  <!-- begin: dev mode -->
   {#if showDevMode}
     <div
       class="hide-scrollbar fixed z-10 flex w-full space-x-4 overflow-x-auto bg-gradient-to-r from-red-200 to-red-300 p-4 shadow-md"
@@ -102,4 +112,5 @@
     <!-- <Route path="profile" component={Profile} primary={false} /> -->
     <slot />
   </div>
+  <Alert rootOpen={alertOpen} title="Select information to share" options={alertOptions}/>
 </main>

@@ -26,11 +26,20 @@ export const state = readable<State>(undefined, (set) => {
 
     setLocale(state.locale as Locales);
 
-    if (state.active_profile === null) {
-      goto('welcome');
-    } else {
-      goto('profile');
+    if (state.current_user_flow?.Redirect?.type === 'redirect') {
+      console.log('redirecting to', state.current_user_flow.Redirect.target);
+      goto(state.current_user_flow.Redirect.target)
     }
+
+    if (state.current_user_flow?.Selection?.type === 'selection') {
+      console.log('please select', state.current_user_flow.Selection.options);
+    }
+
+    // if (state.active_profile === null) {
+    //   goto('welcome');
+    // } else {
+    //   goto('profile');
+    // }
   });
   // TODO: unsubscribe from listener!
 });

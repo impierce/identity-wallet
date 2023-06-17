@@ -2,6 +2,7 @@ use crate::crypto::stronghold::{create_new_stronghold, get_public_key, hash_pass
 use crate::did::did_key::{generate_dev_did, generate_new_did};
 use crate::state::actions::Action;
 use crate::state::{AppState, Profile};
+use crate::state::user_flow::{Redirect, CurrentUserFlow, CurrentUserFlowType};
 use identity_core::common::{Timestamp, Url};
 use identity_credential::credential::{Credential, CredentialBuilder, Issuer, Subject};
 use serde_json::{json, Value};
@@ -52,6 +53,11 @@ pub async fn initialize_stronghold(_state: &AppState, action: Action) -> anyhow:
 pub fn reset_state(state: &AppState, _action: Action) -> anyhow::Result<()> {
     *state.active_profile.lock().unwrap() = None;
     *state.locale.lock().unwrap() = "en".to_string();
+    *state.credentials.lock().unwrap() = None;
+    *state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Redirect(Redirect {
+        r#type: CurrentUserFlowType::Redirect,
+        target: "welcome".to_string(),
+    }));
     Ok(())
 }
 
@@ -199,7 +205,8 @@ mod tests {
             })
             .into(),
             locale: "nl".to_string().into(),
-            credentials: None.into()
+            credentials: None.into(),
+            current_user_flow: None.into(),
         };
 
         assert!(reset_state(
