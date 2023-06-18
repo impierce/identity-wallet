@@ -4,6 +4,7 @@
   import { fly } from 'svelte/transition';
   import { ChevronUp, ChevronDown, ArrowLeft, Trash, UserPlus, Clipboard } from 'svelte-heros-v2';
   import { state } from '../stores';
+  import LL from '../i18n/i18n-svelte';
   import { onMount } from 'svelte';
   import { loadAllLocales } from '../i18n/i18n-util.sync';
   import { dispatch } from '$lib/dispatcher';
@@ -22,6 +23,7 @@
   import { readText } from '@tauri-apps/plugin-clipboard-manager';
   import { trace, info, error, attachConsole } from "@tauri-apps/plugin-log";
   import Alert from '$lib/alert/Alert.svelte';
+  import type { CurrentUserFlowType } from '../../src-tauri/bindings/user-flow/CurrentUserFlowType';
 
   let clipboard: string | undefined;
 
@@ -37,6 +39,7 @@
   // alert (selection)
   let alertOpen = false;
   let alertOptions: string[] = [];
+  let alertTitle: string = 'title';
 
   $: {
     // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
@@ -44,6 +47,9 @@
     if ($state?.current_user_flow?.Selection) {
       alertOpen = true;
       alertOptions = $state.current_user_flow.Selection.options;
+      if (($state.current_user_flow.Selection.type as CurrentUserFlowType) === 'select-credentials') {
+        alertTitle = $LL.SHARE_CREDENTIALS_TITLE();
+      }
     }
   }
 </script>
@@ -112,5 +118,5 @@
     <!-- <Route path="profile" component={Profile} primary={false} /> -->
     <slot />
   </div>
-  <Alert rootOpen={alertOpen} title="Select information to share" options={alertOptions}/>
+  <Alert rootOpen={alertOpen} title={alertTitle} options={alertOptions}/>
 </main>

@@ -82,17 +82,10 @@ pub async fn handle_action(
         ActionType::QrCodeScanned => {
             info!("qr code scanned: `{:?}`", payload);
             info!("Now doing some backend business logic with the QR code data...");
+            std::thread::sleep(std::time::Duration::from_millis(1_000));
             // TODO: actually do something with the QR code data
-            const INTERACTION_REQUIRED_EVENT: &str = "interaction-required";
-            let payload = "please select the information you want to share: name, birthdate, email";
-            // emit the result to the frontend
-            window.emit(INTERACTION_REQUIRED_EVENT, payload).unwrap();
-            info!(
-                "emitted event `{}` with payload `{:?}`",
-                INTERACTION_REQUIRED_EVENT, payload
-            );
             *app_state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Selection(Selection {
-                r#type: CurrentUserFlowType::Selection,
+                r#type: CurrentUserFlowType::SelectCredentials,
                 options: vec!["name".to_string(), "birthdate".to_string(), "email".to_string()],
             }));
             // save_state(TransferState::from(app_state.inner())).await.ok();

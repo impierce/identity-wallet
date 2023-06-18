@@ -5,20 +5,24 @@
 /// Another example would be that the backend requires some user input to continue, but does not want to be specific about what
 /// is displayed to the user exactly.
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
-#[derive(Clone, Serialize, Deserialize, Debug)]
+#[derive(Clone, Serialize, Deserialize, Debug, TS)]
+#[ts(export, export_to="bindings/user-flow/Redirect.ts")]
 pub struct Redirect {
     pub r#type: CurrentUserFlowType,
     pub target: String,
 }
 
-#[derive(Clone, Serialize, Deserialize, Debug)]
+#[derive(Clone, Serialize, Deserialize, Debug, TS)]
+#[ts(export, export_to="bindings/user-flow/Warning.ts")]
 pub struct Warning {
     pub r#type: CurrentUserFlowType,
     pub message: String,
 }
 
-#[derive(Clone, Serialize, Deserialize, Debug)]
+#[derive(Clone, Serialize, Deserialize, Debug, TS)]
+#[ts(export, export_to="bindings/user-flow/Selection.ts")]
 pub struct Selection {
     pub r#type: CurrentUserFlowType,
     pub options: Vec<String>,
@@ -53,19 +57,25 @@ pub struct Selection {
 //     // message: 'be_careful',
 // }
 
-#[derive(Clone, Serialize, Deserialize, Debug)]
+#[derive(Clone, Serialize, Deserialize, Debug, TS)]
+#[ts(export, export_to="bindings/user-flow/CurrentUserFlow.ts")]
 pub enum CurrentUserFlow {
     Redirect(Redirect),
     Warning(Warning),
     Selection(Selection),
 }
 
-#[derive(Clone, Serialize, Deserialize, Debug)]
+#[derive(Clone, Serialize, Deserialize, Debug, TS)]
+#[ts(export, export_to="bindings/user-flow/CurrentUserFlowType.ts")]
 pub enum CurrentUserFlowType {
     #[serde(rename = "redirect")]
     Redirect,
+    // TODO: remove or rename generic warning
     #[serde(rename = "warning")]
     Warning,
+    // TODO: remove or rename generic selection
     #[serde(rename = "selection")]
     Selection,
+    #[serde(rename = "select-credentials")]
+    SelectCredentials,
 }

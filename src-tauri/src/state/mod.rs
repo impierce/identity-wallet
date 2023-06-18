@@ -26,7 +26,6 @@ pub struct TransferState {
     pub locale: String,
     #[ts(skip)] // TODO: solve later
     pub credentials: Option<Vec<Credential>>,
-    #[ts(skip)] // TODO: solve later
     pub current_user_flow: Option<CurrentUserFlow>
 }
 

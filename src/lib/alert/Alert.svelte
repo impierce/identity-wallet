@@ -11,10 +11,12 @@
     AlertDialogAction,
     Checkbox
   } from '@impierce/ui-components';
+  import LL from '../../i18n/i18n-svelte';
+  import { CheckBadge } from 'svelte-heros-v2';
 
   export let rootOpen: boolean = false;
-  export let title: string = 'title';
-  export let options: string[] = [];
+  export let title: string;
+  export let options: string[];
 </script>
 
 <AlertDialog bind:open={rootOpen}>
@@ -26,23 +28,47 @@
       <AlertDialogTitle>{title}</AlertDialogTitle>
       <AlertDialogDescription>
         <div class="flex flex-col space-y-4">
-          {#each options as option, i}
-            <div class="flex items-center space-x-2">
-              <Checkbox id={`${i}-${option}`} />
-              <label
-                for={`${i}-${option}`}
-                class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                {option}
-              </label>
+          <img
+            src="image/undraw_fingerprint_login_re_t71l.svg"
+            alt="undraw_fingerprint"
+            class="mx-auto my-4 w-[180px]"
+          />
+          <div class="flex w-full px-4">
+            <div class="grow items-center justify-center rounded-full bg-slate-100 p-2">
+              <p class="text-slate-400">example.com</p>
             </div>
-          {/each}
+            <CheckBadge
+              size="32"
+              class="ml-2 text-emerald-400 opacity-80"
+              strokeWidth="1"
+              variation="outline"
+            />
+          </div>
+
+          <div class="space-y-4 p-4">
+            {#each options as option, i}
+              <div
+                class="mx-auto flex items-center justify-between space-x-2 rounded-lg bg-slate-200 p-4"
+              >
+                <div class="flex">
+                  <Checkbox id={`${i}-${option}`} />
+                  <label
+                    for={`${i}-${option}`}
+                    class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 pl-3 text-slate-400"
+                  >
+                    {option}
+                  </label>
+                </div>
+                <div class="font-semibold">test</div>
+              </div>
+            {/each}
+          </div>
         </div>
       </AlertDialogDescription>
     </AlertDialogHeader>
     <AlertDialogFooter>
-      <AlertDialogCancel>Cancel</AlertDialogCancel>
-      <AlertDialogAction>Share</AlertDialogAction>
+      <AlertDialogCancel>{$LL.CANCEL()}</AlertDialogCancel>
+      <AlertDialogAction>{$LL.SHARE_CREDENTIALS_CONFIRM()}</AlertDialogAction>
     </AlertDialogFooter>
   </AlertDialogContent>
 </AlertDialog>

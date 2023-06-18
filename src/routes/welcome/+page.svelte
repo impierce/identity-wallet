@@ -29,6 +29,15 @@
     {$LL.WELCOME()}!
   </h1>
 
+  <img
+            src="image/undraw_welcome_re_h3d9.svg"
+            alt="undraw_fingerprint"
+            class="mx-auto my-4 w-[180px]"
+          />
+
+  <LocaleSelect />
+
+
   <div class="grid w-full max-w-sm items-center gap-1.5">
     <Label for="name">Name</Label>
     <Input type="text" id="name" placeholder="" bind:value={display_name} />
@@ -70,5 +79,4 @@
     {/if}
     {$LL.CREATE_IDENTITY()}
   </Button>
-  <LocaleSelect />
 </div>
