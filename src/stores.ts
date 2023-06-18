@@ -5,6 +5,7 @@ import { setLocale } from './i18n/i18n-svelte';
 import type { Locales } from './i18n/i18n-types';
 // TODO: run some copy task instead of importing across root to make the frontend independent
 import type { TransferState as State } from '../src-tauri/bindings/TransferState';
+import type { Redirect } from '../src-tauri/bindings/user-flow/Redirect';
 
 interface StateChangedEvent {
   event: string;
@@ -42,11 +43,4 @@ export const state = readable<State>(undefined, (set) => {
     // }
   });
   // TODO: unsubscribe from listener!
-});
-
-export const alert = readable<any>(undefined, (set) => {
-  listen('interaction-required', (event: StateChangedEvent) => {
-    console.log(event.payload);
-    set(event.payload);
-  });
 });

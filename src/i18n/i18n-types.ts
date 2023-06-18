@@ -56,6 +56,18 @@ type RootTranslation = {
 	 * Y​o​u​ ​h​a​v​e​n​'​t​ ​u​s​e​d​ ​a​n​y​ ​c​r​e​d​e​n​t​i​a​l​s​ ​y​e​t​.
 	 */
 	NO_HISTORY: string
+	/**
+	 * S​e​l​e​c​t​ ​i​n​f​o​r​m​a​t​i​o​n​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​s​h​a​r​e
+	 */
+	SHARE_CREDENTIALS_TITLE: string
+	/**
+	 * S​h​a​r​e
+	 */
+	SHARE_CREDENTIALS_CONFIRM: string
+	/**
+	 * C​a​n​c​e​l
+	 */
+	CANCEL: string
 }
 
 export type TranslationFunctions = {
@@ -99,6 +111,18 @@ export type TranslationFunctions = {
 	 * You haven't used any credentials yet.
 	 */
 	NO_HISTORY: () => LocalizedString
+	/**
+	 * Select information you want to share
+	 */
+	SHARE_CREDENTIALS_TITLE: () => LocalizedString
+	/**
+	 * Share
+	 */
+	SHARE_CREDENTIALS_CONFIRM: () => LocalizedString
+	/**
+	 * Cancel
+	 */
+	CANCEL: () => LocalizedString
 }
 
 export type Formatters = {}

@@ -11,7 +11,10 @@ const nl = {
   APP_SETTINGS: 'App-instellingen',
   YOUR_DIDS: 'Jouw DIDs',
   RESET_APP: 'App resetten',
-  NO_HISTORY: 'Je hebt nog geen Credentials gebruikt.'
+  NO_HISTORY: 'Je hebt nog geen Credentials gebruikt.',
+  SHARE_CREDENTIALS_TITLE: 'Selecteer informatie die je wilt delen',
+  SHARE_CREDENTIALS_CONFIRM: 'Delen',
+  CANCEL: 'Annuleren',
 } satisfies Translation;
 
 export default nl;

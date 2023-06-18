@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { state, alert } from '../../stores';
+  import { state } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import {
     Avatar,
@@ -41,7 +41,6 @@
   $: {
     // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
     console.log('state', $state);
-    console.log('interaction-required', $alert);
     let names = $state?.active_profile?.display_name.split(' ');
     if (names?.length === 1) {
       initials = names?.at(0)?.slice(0, 2).toUpperCase();
@@ -118,7 +117,7 @@
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel>Close</AlertDialogCancel>
                     <AlertDialogAction>Share</AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>

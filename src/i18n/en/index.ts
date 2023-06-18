@@ -11,7 +11,10 @@ const en = {
   APP_SETTINGS: 'App settings',
   YOUR_DIDS: 'Your DIDs',
   RESET_APP: 'Reset app',
-  NO_HISTORY: `You haven't used any credentials yet.`
+  NO_HISTORY: `You haven't used any credentials yet.`,
+  SHARE_CREDENTIALS_TITLE: 'Select information you want to share',
+  SHARE_CREDENTIALS_CONFIRM: 'Share',
+  CANCEL: 'Cancel',
 } satisfies BaseTranslation;
 
 export default en;
