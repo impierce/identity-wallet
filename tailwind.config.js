@@ -6,7 +6,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Satoshi', ...defaultTheme.fontFamily.sans]
+        // sans: ['Satoshi', ...defaultTheme.fontFamily.sans],
+        sans: ['Satoshi', 'sans-serif']
       }
     }
   },

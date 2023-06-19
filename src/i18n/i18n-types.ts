@@ -33,9 +33,29 @@ type RootTranslation = {
 	 */
 	CREATE_IDENTITY: string
 	/**
-	 * Y​o​u​ ​h​a​v​e​ ​j​u​s​t​ ​c​r​e​a​t​e​d​ ​a​ ​n​e​w​ ​d​i​g​i​t​a​l​ ​i​d​e​n​t​i​t​y
+	 * Y​o​u​ ​h​a​v​e​ ​j​u​s​t​ ​c​r​e​a​t​e​d​ ​a​ ​n​e​w​ ​d​i​g​i​t​a​l​ ​i​d​e​n​t​i​t​y​!
 	 */
-	CREATE_IDENTITY_SUCCESS: string
+	CREATE_IDENTITY_SUCCESS_TITLE: string
+	/**
+	 * C​o​n​t​i​n​u​e​ ​b​y​ ​a​d​d​i​n​g​ ​m​o​r​e​ ​i​n​f​o​r​m​a​t​i​o​n​ ​a​b​o​u​t​ ​y​o​u​r​s​e​l​f​ ​o​r​ ​s​c​a​n​ ​a​ ​c​r​e​d​e​n​t​i​a​l​.
+	 */
+	CREATE_IDENTITY_SUCCESS_BODY: string
+	/**
+	 * A​p​p​ ​s​e​t​t​i​n​g​s
+	 */
+	APP_SETTINGS: string
+	/**
+	 * Y​o​u​r​ ​D​I​D​s
+	 */
+	YOUR_DIDS: string
+	/**
+	 * R​e​s​e​t​ ​a​p​p
+	 */
+	RESET_APP: string
+	/**
+	 * Y​o​u​ ​h​a​v​e​n​'​t​ ​u​s​e​d​ ​a​n​y​ ​c​r​e​d​e​n​t​i​a​l​s​ ​y​e​t​.
+	 */
+	NO_HISTORY: string
 }
 
 export type TranslationFunctions = {
@@ -56,9 +76,29 @@ export type TranslationFunctions = {
 	 */
 	CREATE_IDENTITY: () => LocalizedString
 	/**
-	 * You have just created a new digital identity
+	 * You have just created a new digital identity!
 	 */
-	CREATE_IDENTITY_SUCCESS: () => LocalizedString
+	CREATE_IDENTITY_SUCCESS_TITLE: () => LocalizedString
+	/**
+	 * Continue by adding more information about yourself or scan a credential.
+	 */
+	CREATE_IDENTITY_SUCCESS_BODY: () => LocalizedString
+	/**
+	 * App settings
+	 */
+	APP_SETTINGS: () => LocalizedString
+	/**
+	 * Your DIDs
+	 */
+	YOUR_DIDS: () => LocalizedString
+	/**
+	 * Reset app
+	 */
+	RESET_APP: () => LocalizedString
+	/**
+	 * You haven't used any credentials yet.
+	 */
+	NO_HISTORY: () => LocalizedString
 }
 
 export type Formatters = {}
