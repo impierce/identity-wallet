@@ -41,7 +41,7 @@
           class="flex-grow break-all rounded-lg bg-slate-200 px-4 py-2 font-mono text-sm font-medium text-slate-500"
           data-testid="secondary-did"
         >
-          {IOTA_DID_SHIMMER_TESTNET}
+          {IOTA_MOCK_DID}
         </div>
         <button class="rounded-full p-4 hover:bg-slate-200 active:bg-slate-300"
           ><Link class="text-violet-700" strokeWidth="2" /></button
