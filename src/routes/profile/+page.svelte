@@ -28,7 +28,17 @@
     SheetTitle,
     SheetTrigger
   } from '@impierce/ui-components';
-  import { Plus, XMark, AtSymbol, Phone, Home, Cake, AcademicCap } from 'svelte-heros-v2';
+  import {
+    Plus,
+    XMark,
+    AtSymbol,
+    Phone,
+    Home,
+    Cake,
+    User,
+    AcademicCap,
+    QuestionMarkCircle
+  } from 'svelte-heros-v2';
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import { fade, fly, slide } from 'svelte/transition';
@@ -76,14 +86,10 @@
       {$state?.active_profile?.display_name}
     </div>
 
-    <div class="flex flex-col space-y-8 p-8">
+    <div class="flex flex-col space-y-8 px-8">
       <!-- <h1 class="font-serif text-2xl font-semibold">
         {$LL.WELCOME()}, {$state?.active_profile?.display_name}!
       </h1> -->
-      <div class="rounded-lg bg-slate-200 p-6">
-        <p class="pb-4 font-semibold text-slate-500">{$LL.CREATE_IDENTITY_SUCCESS_TITLE()}</p>
-        <p class="text-slate-400">{$LL.CREATE_IDENTITY_SUCCESS_BODY()}</p>
-      </div>
       <!-- <button class="flex w-full justify-center rounded-lg bg-slate-200 p-6">
         <Plus class="text-violet-700" strokeWidth="2" />
       </button> -->
@@ -92,44 +98,51 @@
         <QrCodeButton />
       </div>
 
-      <div>
-        {#if credentials.length > 0}
-          <div class="flex flex-col space-y-4">
-            {#each credentials as credential}
-              <AlertDialog>
-                <AlertDialogTrigger>
-                  <div class="p-2">
-                    <CredentialListEntry
-                      title={credential?.type?.at(1)}
-                      description={credential?.issuer?.name}
-                    >
-                      <span slot="icon"><AcademicCap class="text-violet-500" /></span>
-                    </CredentialListEntry>
-                  </div>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>{credential?.type?.at(1)}</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      <div class="break-all">
-                        {JSON.stringify(credential, null, 2)}
-                      </div>
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Close</AlertDialogCancel>
-                    <AlertDialogAction>Share</AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            {/each}
-          </div>
-        {/if}
-      </div>
+      {#if credentials.length > 0}
+        <!-- Search -->
+        <Input type="text" placeholder="Search credentials" class="focus-visible:ring-violet-600" />
+
+        <!-- Credentials (list) -->
+        <div class="flex flex-col space-y-2">
+          {#each credentials as credential}
+            <AlertDialog>
+              <AlertDialogTrigger>
+                <div class="">
+                  <CredentialListEntry
+                    title={credential?.type?.at(1)}
+                    description={credential?.issuer?.name}
+                  >
+                    <span slot="icon"><User class="text-violet-500" /></span>
+                  </CredentialListEntry>
+                </div>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>{credential?.type?.at(1)}</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    <div class="break-all">
+                      {JSON.stringify(credential, null, 2)}
+                    </div>
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Close</AlertDialogCancel>
+                  <AlertDialogAction>Share</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          {/each}
+        </div>
+      {:else}
+        <!-- Hint -->
+        <div class="rounded-lg bg-slate-200 p-6">
+          <p class="pb-4 font-semibold text-slate-500">{$LL.CREATE_IDENTITY_SUCCESS_TITLE()}</p>
+          <p class="text-slate-400">{$LL.CREATE_IDENTITY_SUCCESS_BODY()}</p>
+        </div>
+      {/if}
 
       <Sheet>
         <SheetTrigger>
-          <!-- <Button>Add info (sheet)</Button> -->
           <button class="flex w-full justify-center rounded-lg bg-slate-200 p-4">
             <Plus class="text-violet-700" strokeWidth="3" />
           </button>
