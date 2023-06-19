@@ -11,6 +11,7 @@
     AlertDialogAction,
     Checkbox
   } from '@impierce/ui-components';
+  import { state } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { CheckBadge } from 'svelte-heros-v2';
 
@@ -35,31 +36,41 @@
           />
           <div class="flex w-full px-4">
             <div class="grow items-center justify-center rounded-full bg-slate-100 p-2">
-              <p class="text-slate-400">example.com</p>
+              <p class="font-medium text-slate-400">example.com</p>
             </div>
             <CheckBadge
               size="32"
               class="ml-2 text-emerald-400 opacity-80"
-              strokeWidth="1"
-              variation="outline"
+              strokeWidth="2"
+              variation="solid"
             />
           </div>
 
           <div class="space-y-4 p-4">
             {#each options as option, i}
-              <div
-                class="mx-auto flex items-center justify-between space-x-2 rounded-lg bg-slate-200 p-4"
-              >
-                <div class="flex">
-                  <Checkbox id={`${i}-${option}`} />
-                  <label
-                    for={`${i}-${option}`}
-                    class="font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 pl-3 text-slate-400"
-                  >
-                    {option}
-                  </label>
+              <div class="flex items-center">
+                <div
+                  class="mx-auto flex grow items-center justify-between space-x-2 rounded-lg bg-slate-100 p-4"
+                >
+                  <div class="flex">
+                    <Checkbox id={`${i}-${option}`} />
+                    <label
+                      for={`${i}-${option}`}
+                      class="pl-3 font-medium leading-none text-slate-300 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      {option.at(0)}
+                    </label>
+                  </div>
+                  <div class="truncate font-semibold">
+                    {$state?.credentials?.at(0)?.credentialSubject?.[option.at(0)]}
+                  </div>
                 </div>
-                <div class="font-semibold">test</div>
+                <!-- <CheckBadge
+                  size="32"
+                  class="ml-2 text-emerald-400 opacity-80"
+                  strokeWidth="2"
+                  variation="solid"
+                /> -->
               </div>
             {/each}
           </div>
