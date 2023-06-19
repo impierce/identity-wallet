@@ -1,8 +1,8 @@
 use crate::crypto::stronghold::{create_new_stronghold, get_public_key, hash_password};
 use crate::did::did_key::{generate_dev_did, generate_new_did};
 use crate::state::actions::Action;
+use crate::state::user_flow::{CurrentUserFlow, CurrentUserFlowType, Redirect};
 use crate::state::{AppState, Profile};
-use crate::state::user_flow::{Redirect, CurrentUserFlow, CurrentUserFlowType};
 use identity_core::common::{Timestamp, Url};
 use identity_credential::credential::{Credential, CredentialBuilder, Issuer, Subject};
 use serde_json::{json, Value};
@@ -88,9 +88,9 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
 
     let issuer: Issuer = serde_json::from_value(json_issuer).unwrap();
 
-    let credential: Credential = CredentialBuilder::default()
+    let credential_personal_information: Credential = CredentialBuilder::default()
         .context(Url::parse("https://www.w3.org/2018/credentials/examples/v1").unwrap())
-        .id(Url::parse("http://example.edu/credentials/3732").unwrap())
+        .id(Url::parse("http://example.org/credentials/1012").unwrap())
         .type_("PersonalInformation")
         .subject(subject)
         .issuer(issuer)
@@ -98,7 +98,23 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
         .build()
         .unwrap();
     // =====================
-    *state.credentials.lock().unwrap() = Some(vec![credential]);
+
+    let credential_university_degree: Credential = CredentialBuilder::default()
+        .id(Url::parse("https://example.edu/credentials/3732")?)
+        .issuer(Url::parse("did:key:a1b2c3d4e5f6")?)
+        .type_("UniversityDegreeCredential")
+        .subject(serde_json::from_value(json!({
+          "id": "did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY",
+          "name": "Ferris Crabman",
+          "degree": {
+            "type": "BachelorDegree",
+            "name": "Bachelor of Science and Arts",
+          },
+          "GPA": "4.0",
+        }))?)
+        .build()?;
+
+    *state.credentials.lock().unwrap() = Some(vec![credential_personal_information, credential_university_degree]);
     Ok(())
 }
 
