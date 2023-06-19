@@ -76,10 +76,8 @@ pub async fn create_new_stronghold(password_hash: Vec<u8>) -> anyhow::Result<()>
 pub async fn get_public_key(password: &str) -> anyhow::Result<Vec<u8>> {
     let stronghold = Stronghold::default();
     let path = STRONGHOLD.lock().unwrap().clone().to_str().unwrap().to_owned();
-    // let client_path = client_path.as_bytes().to_vec();
     let snapshot_path = SnapshotPath::from_path(path.clone());
 
-    // calculate hash from key
     let key = hash_password(password).await?;
     let keyprovider = KeyProvider::try_from(key).expect("failed to load key");
 
@@ -98,7 +96,7 @@ pub async fn get_public_key(password: &str) -> anyhow::Result<Vec<u8>> {
         .unwrap();
 
     let output: Vec<u8> = procedure_result.into();
-    info!(r#"Public key is "{}" (Base64)"#, base64::encode(output.clone()));
+    info!(r#"Public key is "{}" (base64)"#, base64::encode(output.clone()));
 
     Ok(output)
 }

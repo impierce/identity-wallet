@@ -55,7 +55,7 @@ pub fn reset_state(state: &AppState, _action: Action) -> anyhow::Result<()> {
 pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Result<()> {
     let did_document = generate_dev_did().await?;
     let profile = Profile {
-        display_name: "Ferris Crabbington".to_string(),
+        display_name: "Ferris Crabman".to_string(),
         primary_did: did_document.id,
     };
     *state.active_profile.lock().unwrap() = Some(profile);
@@ -65,7 +65,7 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{state::actions::ActionType, STRONGHOLD, UNSAFE_DEV_STORAGE};
+    use crate::{state::actions::ActionType, STRONGHOLD};
     use iota_stronghold::{
         procedures::{GenerateKey, KeyType, StrongholdProcedure},
         Client, KeyProvider, Location, SnapshotPath, Stronghold,

@@ -1,6 +1,5 @@
 use tracing::{info, warn};
 
-use crate::did::persistence::load_existing_keypair;
 use crate::state::actions::{Action, ActionType};
 use crate::state::persistence::{delete_state_file, delete_stronghold, load_state, save_state};
 use crate::state::reducers::{create_did_key, initialize_stronghold, load_dev_profile, reset_state, set_locale};
@@ -24,14 +23,6 @@ pub async fn handle_action(
                 active_profile: None,
                 locale: "en".to_string(),
             });
-
-            let _keypair = match load_existing_keypair().await {
-                Ok(keypair) => Some(keypair),
-                Err(_) => {
-                    info!("no existing keypair found");
-                    None
-                }
-            };
 
             // TODO: find a better way to populate all fields with values from json file
             *app_state.active_profile.lock().unwrap() = transfer_state.active_profile;

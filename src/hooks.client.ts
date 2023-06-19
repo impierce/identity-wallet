@@ -7,6 +7,8 @@ export const handleError = (async ({ error, event }) => {
   // example integration with https://sentry.io/
   // Sentry.captureException(error, { extra: { event, errorId } });
 
+  console.error(error);
+
   return {
     message: 'Whoops!',
     errorId
