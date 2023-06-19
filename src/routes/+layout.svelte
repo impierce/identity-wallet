@@ -21,14 +21,15 @@
     Button
   } from '@impierce/ui-components';
   import { readText } from '@tauri-apps/plugin-clipboard-manager';
-  import { trace, info, error, attachConsole } from "@tauri-apps/plugin-log";
+  import { trace, info, error, attachConsole } from '@tauri-apps/plugin-log';
   import Alert from '$lib/alert/Alert.svelte';
   import type { CurrentUserFlowType } from '../../src-tauri/bindings/user-flow/CurrentUserFlowType';
+  import type { Selection } from '../../src-tauri/bindings/user-flow/Selection';
 
   let clipboard: string | undefined;
 
   onMount(async () => {
-  const detach = await attachConsole();
+    const detach = await attachConsole();
     console.log('+layout.svelte: onMount');
     loadAllLocales(); //TODO: performance: only load locale on user request
     dispatch({ type: '[App] Get state' });
@@ -38,18 +39,16 @@
 
   // alert (selection)
   let alertOpen = false;
-  let alertOptions: string[] = [];
+  let alertOptions: [string, string][] = [];
   let alertTitle: string = 'title';
 
   $: {
     // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
     console.log('state', $state);
-    if ($state?.current_user_flow?.Selection) {
+    if ($state?.current_user_flow?.type === 'select-credentials') {
       alertOpen = true;
-      alertOptions = $state.current_user_flow.Selection.options;
-      if (($state.current_user_flow.Selection.type as CurrentUserFlowType) === 'select-credentials') {
-        alertTitle = $LL.SHARE_CREDENTIALS_TITLE();
-      }
+      alertOptions = ($state.current_user_flow as Selection).options;
+      alertTitle = $LL.SHARE_CREDENTIALS_TITLE();
     }
   }
 </script>
@@ -118,5 +117,5 @@
     <!-- <Route path="profile" component={Profile} primary={false} /> -->
     <slot />
   </div>
-  <Alert rootOpen={alertOpen} title={alertTitle} options={alertOptions}/>
+  <Alert rootOpen={alertOpen} title={alertTitle} options={alertOptions} />
 </main>

@@ -3,4 +3,4 @@ import type { Redirect } from "./Redirect";
 import type { Selection } from "./Selection";
 import type { Warning } from "./Warning";
 
-export type CurrentUserFlow = { Redirect: Redirect } | { Warning: Warning } | { Selection: Selection };
+export type CurrentUserFlow = Redirect | Warning | Selection;

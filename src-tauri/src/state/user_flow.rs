@@ -25,7 +25,8 @@ pub struct Warning {
 #[ts(export, export_to="bindings/user-flow/Selection.ts")]
 pub struct Selection {
     pub r#type: CurrentUserFlowType,
-    pub options: Vec<String>,
+    /// An option is in the form: (<option_name>, <option_value>)
+    pub options: Vec<(String, String)>,
 }
 
 // pub trait UserActionFlow {
@@ -58,6 +59,7 @@ pub struct Selection {
 // }
 
 #[derive(Clone, Serialize, Deserialize, Debug, TS)]
+#[serde(untagged)]
 #[ts(export, export_to="bindings/user-flow/CurrentUserFlow.ts")]
 pub enum CurrentUserFlow {
     Redirect(Redirect),
@@ -74,8 +76,8 @@ pub enum CurrentUserFlowType {
     #[serde(rename = "warning")]
     Warning,
     // TODO: remove or rename generic selection
-    #[serde(rename = "selection")]
-    Selection,
+    // #[serde(rename = "selection")]
+    // Selection,
     #[serde(rename = "select-credentials")]
     SelectCredentials,
 }
