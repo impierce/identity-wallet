@@ -15,6 +15,7 @@ yarn.lock
 # source folders
 src-tauri/
 .github/
+static/
 
 # generated during build
 node_modules/

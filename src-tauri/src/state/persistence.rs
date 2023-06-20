@@ -29,10 +29,17 @@ pub async fn save_state(transfer_state: TransferState) -> anyhow::Result<()> {
 }
 
 // Removes the state file from the app's data directory.
-pub async fn delete_state() -> anyhow::Result<()> {
+pub async fn delete_state_file() -> anyhow::Result<()> {
     let state_file = STATE_FILE.lock().unwrap().clone();
     remove_file(state_file).await?;
     info!("state deleted from disk");
+    Ok(())
+}
+
+pub async fn delete_stronghold() -> anyhow::Result<()> {
+    let stronghold_file = crate::STRONGHOLD.lock().unwrap().clone();
+    remove_file(stronghold_file).await?;
+    info!("stronghold deleted from disk");
     Ok(())
 }
 

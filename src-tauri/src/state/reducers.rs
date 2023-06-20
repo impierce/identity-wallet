@@ -1,3 +1,4 @@
+use crate::crypto::stronghold::{create_new_stronghold, get_public_key, hash_password};
 use crate::did::did_key::{generate_dev_did, generate_new_did};
 use crate::state::actions::Action;
 use crate::state::{AppState, Profile};
@@ -20,13 +21,27 @@ pub async fn create_did_key(state: &AppState, action: Action) -> anyhow::Result<
     let display_name = payload["display_name"]
         .as_str()
         .ok_or(anyhow::anyhow!("unable to read display_name from json payload"))?;
+    let password = payload["password"]
+        .as_str()
+        .ok_or(anyhow::anyhow!("unable to read password from json payload"))?;
 
-    let did_document = generate_new_did().await?;
+    let public_key = get_public_key(password).await?;
+    let did_document = generate_new_did(public_key).await?;
     let profile = Profile {
         display_name: display_name.to_string(),
         primary_did: did_document.id,
     };
     *state.active_profile.lock().unwrap() = Some(profile);
+    Ok(())
+}
+
+pub async fn initialize_stronghold(_state: &AppState, action: Action) -> anyhow::Result<()> {
+    let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
+    let password = payload["password"]
+        .as_str()
+        .ok_or(anyhow::anyhow!("unable to read password from json payload"))?;
+    let password_hash = hash_password(password).await?;
+    create_new_stronghold(password_hash).await?;
     Ok(())
 }
 
@@ -50,7 +65,11 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{state::actions::ActionType, UNSAFE_STORAGE};
+    use crate::{state::actions::ActionType, STRONGHOLD};
+    use iota_stronghold::{
+        procedures::{GenerateKey, KeyType, StrongholdProcedure},
+        Client, KeyProvider, Location, SnapshotPath, Stronghold,
+    };
     use serde_json::json;
     use tempfile::NamedTempFile;
 
@@ -97,7 +116,28 @@ mod tests {
     #[tokio::test]
     async fn test_create_new_with_method_did_key() {
         let path = NamedTempFile::new().unwrap().into_temp_path();
-        *UNSAFE_STORAGE.lock().unwrap() = path.as_os_str().into();
+        *STRONGHOLD.lock().unwrap() = path.as_os_str().into();
+
+        // create new temp stronghold for testing
+        let stronghold = Stronghold::default();
+        let path = STRONGHOLD.lock().unwrap().clone().to_str().unwrap().to_owned();
+        let client: Client = stronghold.create_client(path.clone()).expect("cannot create client");
+        let output_location = Location::counter(path.clone(), 0u8);
+        client
+            .execute_procedure(StrongholdProcedure::GenerateKey(GenerateKey {
+                ty: KeyType::Ed25519,
+                output: output_location.clone(),
+            }))
+            .ok();
+        stronghold
+            .write_client(path.clone())
+            .expect("store client state into snapshot state failed");
+        stronghold
+            .commit_with_keyprovider(
+                &SnapshotPath::from_path(path),
+                &KeyProvider::try_from(hash_password("s3cr3t").await.unwrap()).unwrap(),
+            )
+            .ok();
 
         let state = AppState::default();
 
@@ -105,7 +145,7 @@ mod tests {
             &state,
             Action {
                 r#type: ActionType::CreateNew,
-                payload: Some(json!({"display_name": "Ferris"})),
+                payload: Some(json!({"display_name": "Ferris", "password": "s3cr3t"})),
             },
         )
         .await

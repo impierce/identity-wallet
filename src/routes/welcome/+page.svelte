@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button } from '@impierce/ui-components';
+  import { Button, LoadingSpinner, Input, Label } from '@impierce/ui-components';
   import LL from '../../i18n/i18n-svelte';
   import LocaleSelect from '$lib/LocaleSelect.svelte';
   import { dispatch } from '$lib/dispatcher';
@@ -7,13 +7,20 @@
 
   //   const registerFocus = useFocus();
 
-  let usernameInput: HTMLInputElement;
+  let display_name: string | undefined;
+  let password: string | undefined;
 
-  const createProfile = async () =>
-    dispatch({ type: '[DID] Create new', payload: { display_name: usernameInput.value } });
+  let loading = false;
 
-  onMount(() => {
-    usernameInput.focus();
+  const createProfile = async () => {
+    loading = true;
+    dispatch({ type: '[DID] Create new', payload: { display_name: display_name, password } });
+  };
+
+  onMount(async () => {
+    // usernameInput.focus();
+    display_name = 'Tony Stark';
+    password = 'my-password';
   });
 </script>
 
@@ -21,17 +28,26 @@
   <h1 data-testid="label-welcome" class="font-serif text-2xl font-semibold text-slate-800">
     {$LL.WELCOME()}!
   </h1>
-  <p data-testid="label-prompt-username" class="text-slate-600">{$LL.PROMPT_NAME()}</p>
-  <!-- TODO: replace with ui-components/Input -->
-  <div>
-    <input
-      type="text"
-      data-testid="input-username"
-      class="w-full rounded-lg border px-4 py-2 shadow focus:outline-none focus:ring-2 focus:ring-violet-600"
-      placeholder=""
-      bind:this={usernameInput}
-    />
+
+  <div class="grid w-full max-w-sm items-center gap-1.5">
+    <Label for="name">Name</Label>
+    <Input type="text" id="name" placeholder="" bind:value={display_name} />
+    <p class="text-muted-foreground text-sm">You can change this later.</p>
   </div>
-  <Button label={$LL.CREATE_IDENTITY()} on:clicked={createProfile} />
+
+  <div class="grid w-full max-w-sm items-center gap-1.5">
+    <Label for="password">Password</Label>
+    <Input type="password" id="password" placeholder="" bind:value={password} />
+    <p class="text-muted-foreground text-sm">Please choose a strong password.</p>
+  </div>
+
+  <Button disabled={loading} on:click={createProfile}>
+    {#if loading}
+      <div class="mr-2">
+        <LoadingSpinner />
+      </div>
+    {/if}
+    {$LL.CREATE_IDENTITY()}
+  </Button>
   <LocaleSelect />
 </div>
