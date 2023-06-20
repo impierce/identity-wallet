@@ -1798,7 +1798,6 @@ dependencies = [
  "did-key",
  "iota_stronghold",
  "lazy_static",
- "rand 0.8.5",
  "rust-argon2",
  "serde",
  "serde_json",

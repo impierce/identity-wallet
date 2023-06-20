@@ -26,8 +26,8 @@ pub enum ActionType {
     SetLocale,
     #[serde(rename = "[DEV] Load profile")]
     LoadDevProfile,
-    #[serde(other)]
     #[ts(skip)]
+    #[serde(other)]
     Unknown,
 }
 

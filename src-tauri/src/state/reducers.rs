@@ -35,7 +35,7 @@ pub async fn create_did_key(state: &AppState, action: Action) -> anyhow::Result<
     Ok(())
 }
 
-pub async fn initialize_stronghold(state: &AppState, action: Action) -> anyhow::Result<()> {
+pub async fn initialize_stronghold(_state: &AppState, action: Action) -> anyhow::Result<()> {
     let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
     let password = payload["password"]
         .as_str()

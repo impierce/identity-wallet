@@ -26,7 +26,6 @@ tokio = { version = "1.26.0", features = ["macros"] }
 ts-rs = "6.2"
 anyhow = "1.0"
 did-key = "0.2.1"
-rand = "0.8.5"
 lazy_static = "1.4.0"
 tauri-plugin-clipboard-manager = "=2.0.0-alpha.0"
 rust-argon2 = { version = "=1.0.0" }
