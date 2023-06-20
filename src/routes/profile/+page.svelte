@@ -43,6 +43,7 @@
   import { goto } from '$app/navigation';
   import { fade, fly, slide } from 'svelte/transition';
   import QrCodeButton from '$lib/QrCodeButton.svelte';
+  import CredentialDetails from '$lib/CredentialDetails.svelte';
 
   let initials: string | undefined;
 
@@ -120,9 +121,7 @@
                 <AlertDialogHeader>
                   <AlertDialogTitle>{credential?.type?.at(1)}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    <div class="break-all">
-                      {JSON.stringify(credential, null, 2)}
-                    </div>
+                    <CredentialDetails credential={credential}></CredentialDetails>
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

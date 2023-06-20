@@ -50,13 +50,13 @@
             {#each options as option, i}
               <div class="flex items-center">
                 <div
-                  class="mx-auto flex grow items-center justify-between space-x-2 rounded-lg bg-slate-100 p-4"
+                  class="flex w-[1px] grow items-center justify-between rounded-lg bg-slate-100 p-4"
                 >
                   <div class="flex">
                     <Checkbox id={`${i}-${option}`} />
                     <label
                       for={`${i}-${option}`}
-                      class="pl-3 font-medium leading-none text-slate-300 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                      class="px-3 font-medium leading-none text-slate-300 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                     >
                       {option.at(0)}
                     </label>
