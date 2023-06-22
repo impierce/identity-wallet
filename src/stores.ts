@@ -29,7 +29,7 @@ export const state = readable<State>(undefined, (set) => {
 
     if (state.current_user_flow?.type === 'redirect') {
       console.log('redirecting to', (state.current_user_flow as Redirect).target);
-        goto((state.current_user_flow as Redirect).target);
+      goto((state.current_user_flow as Redirect).target);
     }
   });
   // TODO: unsubscribe from listener!

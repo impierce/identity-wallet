@@ -1,6 +1,6 @@
 use crate::did::persistence::save_secret_key;
 use did_key::{Config, DIDCore, Document, Ed25519KeyPair, Generate};
-use tracing::info;
+use log::info;
 
 /// Generates a DID document with method did:key from an existing public key (unsigned).
 pub async fn generate_new_did(public_key: Vec<u8>) -> anyhow::Result<Document> {

@@ -1,9 +1,9 @@
 use did_key::{Ed25519KeyPair, Generate};
+use log::warn;
 use tokio::{
     fs::{read, File},
     io::AsyncWriteExt,
 };
-use tracing::{info, warn};
 
 use crate::UNSAFE_DEV_STORAGE;
 

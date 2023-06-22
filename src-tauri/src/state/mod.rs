@@ -15,7 +15,7 @@ pub struct AppState {
     pub active_profile: Mutex<Option<Profile>>,
     pub locale: Mutex<String>,
     pub credentials: Mutex<Option<Vec<Credential>>>,
-    pub current_user_flow: Mutex<Option<CurrentUserFlow>>
+    pub current_user_flow: Mutex<Option<CurrentUserFlow>>,
 }
 
 /// A representation of the current state which is used for serialization.
@@ -26,7 +26,7 @@ pub struct TransferState {
     pub locale: String,
     #[ts(skip)] // TODO: solve later
     pub credentials: Option<Vec<Credential>>,
-    pub current_user_flow: Option<CurrentUserFlow>
+    pub current_user_flow: Option<CurrentUserFlow>,
 }
 
 impl From<&AppState> for TransferState {
@@ -35,7 +35,7 @@ impl From<&AppState> for TransferState {
             active_profile: state.active_profile.lock().unwrap().clone(),
             locale: (*state.locale.lock().unwrap()).to_string(),
             credentials: state.credentials.lock().unwrap().clone(),
-            current_user_flow: state.current_user_flow.lock().unwrap().clone()
+            current_user_flow: state.current_user_flow.lock().unwrap().clone(),
         }
     }
 }

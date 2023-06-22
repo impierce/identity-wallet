@@ -1,4 +1,4 @@
-use tracing::{info, warn};
+use log::{info, warn};
 
 use crate::did::persistence::load_existing_keypair;
 use crate::state::actions::{Action, ActionType};
@@ -34,7 +34,7 @@ pub async fn handle_action(
             let _keypair = match load_existing_keypair().await {
                 Ok(keypair) => Some(keypair),
                 Err(_) => {
-                    info!("no existing keypair found");
+                    warn!("no existing keypair found");
                     None
                 }
             };
@@ -43,6 +43,12 @@ pub async fn handle_action(
             *app_state.active_profile.lock().unwrap() = transfer_state.active_profile;
             *app_state.locale.lock().unwrap() = transfer_state.locale;
             *app_state.credentials.lock().unwrap() = transfer_state.credentials;
+
+            // TODO: bug: if state is present, but empty, user will never be redirected to neither welcome or profile page
+            // *app_state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Redirect(Redirect {
+            //     r#type: CurrentUserFlowType::Redirect,
+            //     target: "welcome".to_string(),
+            // }));
 
             if (*app_state.active_profile.lock().unwrap()).is_some() {
                 *app_state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Redirect(Redirect {
@@ -87,9 +93,18 @@ pub async fn handle_action(
             *app_state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Selection(Selection {
                 r#type: CurrentUserFlowType::SelectCredentials,
                 options: vec![
-                    ("givenName".to_string(), "http://example.edu/credentials/3732".to_string()), // claim name, credential id
-                    ("familyName".to_string(), "http://example.edu/credentials/3732".to_string()),
-                    ("birthdate".to_string(), "http://example.edu/credentials/3732".to_string()),
+                    (
+                        "givenName".to_string(),
+                        "http://example.edu/credentials/3732".to_string(),
+                    ), // claim name, credential id
+                    (
+                        "familyName".to_string(),
+                        "http://example.edu/credentials/3732".to_string(),
+                    ),
+                    (
+                        "birthdate".to_string(),
+                        "http://example.edu/credentials/3732".to_string(),
+                    ),
                     ("email".to_string(), "http://example.edu/credentials/3732".to_string()),
                 ],
             }));

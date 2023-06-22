@@ -8,21 +8,21 @@ use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
 #[derive(Clone, Serialize, Deserialize, Debug, TS)]
-#[ts(export, export_to="bindings/user-flow/Redirect.ts")]
+#[ts(export, export_to = "bindings/user-flow/Redirect.ts")]
 pub struct Redirect {
     pub r#type: CurrentUserFlowType,
     pub target: String,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, TS)]
-#[ts(export, export_to="bindings/user-flow/Warning.ts")]
+#[ts(export, export_to = "bindings/user-flow/Warning.ts")]
 pub struct Warning {
     pub r#type: CurrentUserFlowType,
     pub message: String,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, TS)]
-#[ts(export, export_to="bindings/user-flow/Selection.ts")]
+#[ts(export, export_to = "bindings/user-flow/Selection.ts")]
 pub struct Selection {
     pub r#type: CurrentUserFlowType,
     /// An option is in the form: (<option_name>, <option_value>)
@@ -60,7 +60,7 @@ pub struct Selection {
 
 #[derive(Clone, Serialize, Deserialize, Debug, TS)]
 #[serde(untagged)]
-#[ts(export, export_to="bindings/user-flow/CurrentUserFlow.ts")]
+#[ts(export, export_to = "bindings/user-flow/CurrentUserFlow.ts")]
 pub enum CurrentUserFlow {
     Redirect(Redirect),
     Warning(Warning),
@@ -68,7 +68,7 @@ pub enum CurrentUserFlow {
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, TS)]
-#[ts(export, export_to="bindings/user-flow/CurrentUserFlowType.ts")]
+#[ts(export, export_to = "bindings/user-flow/CurrentUserFlowType.ts")]
 pub enum CurrentUserFlowType {
     #[serde(rename = "redirect")]
     Redirect,

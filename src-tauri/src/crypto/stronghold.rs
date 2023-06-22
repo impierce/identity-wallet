@@ -2,7 +2,7 @@ use iota_stronghold::{
     procedures::{GenerateKey, KeyType, ProcedureOutput, PublicKey, StrongholdProcedure},
     Client, KeyProvider, Location, SnapshotPath, Stronghold,
 };
-use tracing::info;
+use log::info;
 
 use crate::STRONGHOLD;
 
@@ -60,15 +60,10 @@ pub async fn create_new_stronghold(password_hash: Vec<u8>) -> anyhow::Result<()>
         .write_client(path.clone())
         .expect("store client state into snapshot state failed");
 
-    info!(
-        "snapshot created successully? {}",
-        stronghold
-            .commit_with_keyprovider(
-                &SnapshotPath::from_path(path),
-                &KeyProvider::try_from(password_hash).unwrap()
-            )
-            .is_ok()
-    );
+    stronghold.commit_with_keyprovider(
+        &SnapshotPath::from_path(path),
+        &KeyProvider::try_from(password_hash).unwrap(),
+    ).expect("stronghold could not commit");
 
     Ok(())
 }
