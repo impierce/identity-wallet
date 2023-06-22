@@ -121,7 +121,7 @@
                 <AlertDialogHeader>
                   <AlertDialogTitle>{credential?.type?.at(1)}</AlertDialogTitle>
                   <AlertDialogDescription>
-                    <CredentialDetails credential={credential}></CredentialDetails>
+                    <CredentialDetails {credential} />
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

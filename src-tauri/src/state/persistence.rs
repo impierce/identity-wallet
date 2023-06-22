@@ -2,7 +2,7 @@ use tokio::{
     fs::{read, remove_file, File},
     io::AsyncWriteExt,
 };
-use tracing::info;
+use log::info;
 
 use crate::state::TransferState;
 use crate::STATE_FILE;

@@ -14,7 +14,7 @@ const nl = {
   NO_HISTORY: 'Je hebt nog geen Credentials gebruikt.',
   SHARE_CREDENTIALS_TITLE: 'Selecteer de informatie die je wilt delen',
   SHARE_CREDENTIALS_CONFIRM: 'Delen',
-  CANCEL: 'Annuleren',
+  CANCEL: 'Annuleren'
 } satisfies Translation;
 
 export default nl;

@@ -1,4 +1,4 @@
-use tracing::{info, warn};
+use log::{info, warn};
 
 use crate::state::actions::{Action, ActionType};
 use crate::state::persistence::{delete_state_file, delete_stronghold, load_state, save_state};
@@ -34,6 +34,12 @@ pub async fn handle_action(
             *app_state.active_profile.lock().unwrap() = transfer_state.active_profile;
             *app_state.locale.lock().unwrap() = transfer_state.locale;
             *app_state.credentials.lock().unwrap() = transfer_state.credentials;
+
+            // TODO: bug: if state is present, but empty, user will never be redirected to neither welcome or profile page
+            // *app_state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Redirect(Redirect {
+            //     r#type: CurrentUserFlowType::Redirect,
+            //     target: "welcome".to_string(),
+            // }));
 
             if (*app_state.active_profile.lock().unwrap()).is_some() {
                 *app_state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Redirect(Redirect {
@@ -78,9 +84,18 @@ pub async fn handle_action(
             *app_state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Selection(Selection {
                 r#type: CurrentUserFlowType::SelectCredentials,
                 options: vec![
-                    ("givenName".to_string(), "http://example.edu/credentials/3732".to_string()), // claim name, credential id
-                    ("familyName".to_string(), "http://example.edu/credentials/3732".to_string()),
-                    ("birthdate".to_string(), "http://example.edu/credentials/3732".to_string()),
+                    (
+                        "givenName".to_string(),
+                        "http://example.edu/credentials/3732".to_string(),
+                    ), // claim name, credential id
+                    (
+                        "familyName".to_string(),
+                        "http://example.edu/credentials/3732".to_string(),
+                    ),
+                    (
+                        "birthdate".to_string(),
+                        "http://example.edu/credentials/3732".to_string(),
+                    ),
                     ("email".to_string(), "http://example.edu/credentials/3732".to_string()),
                 ],
             }));

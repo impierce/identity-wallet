@@ -9,36 +9,37 @@ use state::AppState;
 use std::sync::Mutex;
 use tauri::Manager;
 use tauri_plugin_log::{Target, TargetKind, WEBVIEW_TARGET};
-use tracing::info;
+use log::info;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tracing_subscriber::fmt::init();
-
     tauri::Builder::default()
         .manage(AppState::default())
         .invoke_handler(tauri::generate_handler![handle_action])
         .setup(|app| {
+            info!("setting up tauri app");
             initialize_storage(app.handle()).ok();
             Ok(())
         })
         .plugin(tauri_plugin_clipboard_manager::init())
-        // .plugin(
-        //     tauri_plugin_log::Builder::new()
-        //         .clear_targets()
-        //         .targets([
-        //             Target::new(TargetKind::Webview),
-        //             Target::new(TargetKind::LogDir {
-        //                 file_name: Some("webview".into()),
-        //             })
-        //             .filter(|metadata| metadata.target() == WEBVIEW_TARGET),
-        //             Target::new(TargetKind::LogDir {
-        //                 file_name: Some("rust".into()),
-        //             })
-        //             .filter(|metadata| metadata.target() != WEBVIEW_TARGET),
-        //         ])
-        //         .build(),
-        // )
+        .plugin(
+            tauri_plugin_log::Builder::new()
+                // .clear_targets()
+                .targets([
+                    Target::new(TargetKind::Stdout),
+                    Target::new(TargetKind::Webview),
+                    // Target::new(TargetKind::LogDir {
+                    //     file_name: Some("webview".into()),
+                    // })
+                    // .filter(|metadata| metadata.target() == WEBVIEW_TARGET),
+                    // Target::new(TargetKind::LogDir {
+                    //     file_name: Some("rust".into()),
+                    // })
+                    // .filter(|metadata| metadata.target() != WEBVIEW_TARGET),
+                ])
+                .with_colors(Default::default())
+                .build(),
+        )
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

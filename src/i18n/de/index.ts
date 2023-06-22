@@ -14,7 +14,7 @@ const de = {
   NO_HISTORY: 'Du hast noch keine Credentials verwendet.',
   SHARE_CREDENTIALS_TITLE: 'Wähle Informationen aus, die du teilen möchtest',
   SHARE_CREDENTIALS_CONFIRM: 'Freigeben',
-  CANCEL: 'Abbrechen',
+  CANCEL: 'Abbrechen'
 } satisfies Translation;
 
 export default de;

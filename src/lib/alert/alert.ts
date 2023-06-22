@@ -3,6 +3,4 @@ export interface Alert {
   options: string[];
 }
 
-export const openAlert = (alert: Alert) => {
-    
-};
+export const openAlert = (alert: Alert) => {};

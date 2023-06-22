@@ -30,6 +30,7 @@
 
   onMount(async () => {
     const detach = await attachConsole();
+    info('Hello from Svelte!');
     console.log('+layout.svelte: onMount');
     loadAllLocales(); //TODO: performance: only load locale on user request
     dispatch({ type: '[App] Get state' });
