@@ -22,6 +22,7 @@ pub fn run() {
             Ok(())
         })
         .plugin(tauri_plugin_clipboard_manager::init())
+        .plugin(tauri_plugin_barcode_scanner::init())
         .plugin(
             tauri_plugin_log::Builder::new()
                 // .clear_targets()

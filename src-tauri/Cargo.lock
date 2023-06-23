@@ -1953,6 +1953,7 @@ dependencies = [
  "serde_json",
  "tauri",
  "tauri-build",
+ "tauri-plugin-barcode-scanner",
  "tauri-plugin-clipboard-manager",
  "tauri-plugin-log",
  "tempfile",
@@ -3949,6 +3950,19 @@ dependencies = [
  "syn 1.0.109",
  "tauri-codegen",
  "tauri-utils",
+]
+
+[[package]]
+name = "tauri-plugin-barcode-scanner"
+version = "1.0.0"
+source = "git+https://github.com/lucasfernog/plugins-workspace?branch=feat/scanner#33849701ab7ddb730d2486a2bf5572d6b5230618"
+dependencies = [
+ "log",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "thiserror",
 ]
 
 [[package]]
