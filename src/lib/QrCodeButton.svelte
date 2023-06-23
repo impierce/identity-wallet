@@ -2,6 +2,16 @@
   import { QrCode } from 'svelte-heros-v2';
   import { dispatch } from '$lib/dispatcher';
   import { LoadingSpinner } from '@impierce/ui-components';
+  import { info } from '@tauri-apps/plugin-log';
+
+  // import {
+  //   Format,
+  //   scan,
+  //   cancel,
+  //   checkPermissions,
+  //   openAppSettings
+  //   // Scanned
+  // } from '@tauri-apps/plugin-barcode-scanner';
 
   let loading = false;
 
@@ -15,9 +25,22 @@
 </script>
 
 <button
-  on:click={() => {
-    dispatch({ type: '[QR Code] Scanned', payload: { rawString } });
-    loading = true;
+  on:click={async () => {
+    // // loading = true;
+    // // checkPermissions().then((res) => console.log(res)).catch((err) => console.log(err));
+    // await checkPermissions().then((res) =>
+    //   info(`app has permissions to access the camera: ${res}`)
+    // );
+    // await scan({ windowed: true, formats: [Format.QRCode] })
+    //   .then((scanned) => info(scanned))
+    //   .catch((err) => info(err))
+    //   .finally(() => {
+    //     info('finally');
+    //     cancel();
+    //   });
+    // // dispatch({ type: '[DID] Create new', payload: { display_name: display_name, password } });
+    // // dispatch({ type: '[QR Code] Scanned', payload: { rawString } });
+    // // loading = true;
   }}
 >
   <div class="flex rounded-full bg-violet-700 p-4 shadow-md shadow-violet-700">

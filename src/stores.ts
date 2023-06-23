@@ -22,7 +22,7 @@ export const state = readable<State>(undefined, (set) => {
   listen('state-changed', (event: StateChangedEvent) => {
     const state = event.payload;
 
-    set(state);
+    // set(state);
     console.log(state);
 
     setLocale(state.locale as Locales);
