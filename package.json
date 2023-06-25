@@ -17,7 +17,7 @@
     "typesafe-i18n": "typesafe-i18n --no-watch"
   },
   "dependencies": {
-    "@impierce/ui-components": "0.0.12-alpha",
+    "@impierce/ui-components": "0.0.13-alpha",
     "@tauri-apps/api": "2.0.0-alpha.5",
     "@tauri-apps/plugin-clipboard-manager": "2.0.0-alpha.0",
     "@tauri-apps/plugin-log": "2.0.0-alpha.0",

@@ -15,7 +15,7 @@
       <p class="text-center text-slate-400">{$LL.NO_HISTORY()}</p>
     </div>
   </div>
-  <div class="sticky top-[100vh]">
+  <div class="absolute w-full bottom-[20px]">
     <BottomNavigation
       active="history"
       on:settings={() => goto('/settings')}

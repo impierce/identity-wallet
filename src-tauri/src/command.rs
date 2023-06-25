@@ -36,10 +36,10 @@ pub async fn handle_action(
             *app_state.credentials.lock().unwrap() = transfer_state.credentials;
 
             // TODO: bug: if state is present, but empty, user will never be redirected to neither welcome or profile page
-            // *app_state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Redirect(Redirect {
-            //     r#type: CurrentUserFlowType::Redirect,
-            //     target: "welcome".to_string(),
-            // }));
+            *app_state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Redirect(Redirect {
+                r#type: CurrentUserFlowType::Redirect,
+                target: "welcome".to_string(),
+            }));
 
             if (*app_state.active_profile.lock().unwrap()).is_some() {
                 *app_state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Redirect(Redirect {

@@ -44,6 +44,7 @@
   import { fade, fly, slide } from 'svelte/transition';
   import QrCodeButton from '$lib/QrCodeButton.svelte';
   import CredentialDetails from '$lib/CredentialDetails.svelte';
+  import { info } from '@tauri-apps/plugin-log';
 
   let initials: string | undefined;
 
@@ -52,6 +53,7 @@
   $: {
     // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
     console.log('state', $state);
+    info(`state: ${JSON.stringify($state)}`);
     let names = $state?.active_profile?.display_name.split(' ');
     if (names?.length === 1) {
       initials = names?.at(0)?.slice(0, 2).toUpperCase();
@@ -66,18 +68,20 @@
   }
 </script>
 
-<div class="min-h-screen">
+<div class="flex flex-col">
   <!-- Background -->
   <!-- "absolute -z-10 w-full opacity-60" -->
+  <div class="">
   <img
     src="blob-scene-haikei-slate.png"
     alt="background-blob-scene"
     class="absolute w-full opacity-50"
   />
+  </div>
   <!-- <div class="absolute -z-10 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div> -->
   <!-- Content overlay -->
   <div
-    class="absolute bottom-0 h-5/6 w-full rounded-t-3xl bg-slate-100"
+    class="fixed bottom-0 h-5/6 rounded-t-3xl bg-slate-100 w-full"
     in:fly={{ y: 24, opacity: 1 }}
   >
     <div class="relative bottom-12 -mb-6 flex justify-center" in:fly={{ y: 12, opacity: 1 }}>
@@ -186,7 +190,7 @@
     </div>
   </div>
   <!-- Navigation -->
-  <div class="sticky top-[100vh]">
+  <div class="fixed safe-bottom w-full">
     <BottomNavigation
       active="profile"
       on:settings={() => goto('/settings')}
@@ -194,3 +198,9 @@
     />
   </div>
 </div>
+
+<style>
+  .safe-bottom {
+    bottom: env(safe-area-inset-bottom);
+  }
+</style>

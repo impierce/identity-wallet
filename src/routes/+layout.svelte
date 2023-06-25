@@ -45,7 +45,8 @@
 
   $: {
     // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
-    console.log('state', $state);
+    console.log('+layout.svelte: state', $state);
+    info(`state: ${JSON.stringify($state)}`);
     if ($state?.current_user_flow?.type === 'select-credentials') {
       alertOpen = true;
       alertOptions = ($state.current_user_flow as Selection).options;
@@ -54,7 +55,7 @@
   }
 </script>
 
-<main class="h-screen bg-slate-100">
+<main class="h-screen">
   <!-- begin: dev mode -->
   {#if showDevMode}
     <div
@@ -101,9 +102,7 @@
     </div>
   {/if}
   <button
-    class="fixed right-3 top-3 z-10 rounded-full p-2 hover:bg-red-200 {showDevMode
-      ? 'bg-red-200'
-      : ''}"
+    class="absolute right-3 safe-top z-10 rounded-full p-2 bg-red-200"
     on:click={() => (showDevMode = !showDevMode)}
   >
     {#if showDevMode}
@@ -120,3 +119,9 @@
   </div>
   <Alert rootOpen={alertOpen} title={alertTitle} options={alertOptions} />
 </main>
+
+<style>
+  .safe-top {
+    top: env(safe-area-inset-top);
+  }
+</style>

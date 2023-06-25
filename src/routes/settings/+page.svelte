@@ -54,7 +54,7 @@
       <div>2023 Impierce Technologies</div>
     </div>
   </div>
-  <div class="sticky top-[100vh]">
+  <div class="absolute w-full bottom-[20px]">
     <BottomNavigation
       active="settings"
       on:profile={() => goto('/profile')}

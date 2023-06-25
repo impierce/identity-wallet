@@ -4,14 +4,15 @@
   import { LoadingSpinner } from '@impierce/ui-components';
   import { info } from '@tauri-apps/plugin-log';
 
-  // import {
-  //   Format,
-  //   scan,
-  //   cancel,
-  //   checkPermissions,
-  //   openAppSettings
-  //   // Scanned
-  // } from '@tauri-apps/plugin-barcode-scanner';
+  import {
+    Format,
+    scan,
+    cancel,
+    checkPermissions,
+    openAppSettings
+    // Scanned
+  } from '@tauri-apps/plugin-barcode-scanner';
+  import { goto } from '$app/navigation';
 
   let loading = false;
 
@@ -26,21 +27,24 @@
 
 <button
   on:click={async () => {
-    // // loading = true;
-    // // checkPermissions().then((res) => console.log(res)).catch((err) => console.log(err));
-    // await checkPermissions().then((res) =>
-    //   info(`app has permissions to access the camera: ${res}`)
-    // );
-    // await scan({ windowed: true, formats: [Format.QRCode] })
-    //   .then((scanned) => info(scanned))
-    //   .catch((err) => info(err))
-    //   .finally(() => {
-    //     info('finally');
-    //     cancel();
-    //   });
-    // // dispatch({ type: '[DID] Create new', payload: { display_name: display_name, password } });
-    // // dispatch({ type: '[QR Code] Scanned', payload: { rawString } });
-    // // loading = true;
+    // loading = true;
+    // checkPermissions().then((res) => console.log(res)).catch((err) => console.log(err));
+    const userAgent = navigator.userAgent.toLowerCase();
+    const isMobile = userAgent.includes('android') || userAgent.includes('iphone');
+    info(`userAgent: ${userAgent}, isMobile: ${isMobile}`);
+    if (true) {
+      await checkPermissions().then((res) =>
+        info(`app has permissions to access the camera: ${res}`)
+      );
+      info(
+        `starting scan with parameters: { cameraDirection: 'back', windowed: false, formats: [Format.QRCode] }`
+      );
+      goto('/scanner');
+    } else {
+      dispatch({ type: '[QR Code] Scanned', payload: { rawString: 'MOCK' } });
+    }
+    // dispatch({ type: '[DID] Create new', payload: { display_name: display_name, password } });
+    // loading = false;
   }}
 >
   <div class="flex rounded-full bg-violet-700 p-4 shadow-md shadow-violet-700">

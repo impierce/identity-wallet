@@ -5,24 +5,27 @@ mod state;
 
 use command::handle_action;
 use lazy_static::lazy_static;
+use log::info;
 use state::AppState;
 use std::sync::Mutex;
 use tauri::Manager;
 use tauri_plugin_log::{Target, TargetKind, WEBVIEW_TARGET};
-use log::info;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .manage(AppState::default())
         .invoke_handler(tauri::generate_handler![handle_action])
-        .setup(|app| {
+        .setup(move |app| {
             info!("setting up tauri app");
             initialize_storage(app.handle()).ok();
+            #[cfg(mobile)]
+            {
+                app.handle().plugin(tauri_plugin_barcode_scanner::init())?;
+            }
             Ok(())
         })
         .plugin(tauri_plugin_clipboard_manager::init())
-        .plugin(tauri_plugin_barcode_scanner::init())
         .plugin(
             tauri_plugin_log::Builder::new()
                 // .clear_targets()
