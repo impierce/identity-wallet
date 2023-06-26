@@ -10,13 +10,13 @@
   let IOTA_MOCK_DID = 'did:iota:H3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV';
 </script>
 
-<div class="flex min-h-screen flex-col">
-  <div class="flex grow flex-col space-y-8 p-8" in:fly={{ x: 32, opacity: 1 }}>
+<div class="bg-slate-100">
+  <div class="flex flex-col space-y-8 p-8" in:fly={{ x: 32, opacity: 1 }}>
     <div class="space-y-4">
       <h2 class="font-semibold text-slate-700">{$LL.YOUR_DIDS()}</h2>
       <div class="flex items-center space-x-2">
         <div
-          class="break-all rounded-lg bg-slate-200 px-4 py-2 font-mono text-sm font-medium text-slate-500"
+          class="flex-grow break-all rounded-lg bg-slate-200 px-4 py-2 font-mono text-sm font-medium text-slate-500"
           data-testid="primary-did"
         >
           {$state?.active_profile?.primary_did}
@@ -37,7 +37,7 @@
         >
       </div>
     </div>
-    <div class="grow space-y-4">
+    <div class="space-y-4">
       <h2 class="font-semibold text-slate-700">{$LL.APP_SETTINGS()}</h2>
       <div class="flex flex-col items-center justify-center space-y-4">
         <LocaleSelect />
@@ -54,7 +54,8 @@
       <div>2023 Impierce Technologies</div>
     </div>
   </div>
-  <div class="absolute w-full bottom-[20px]">
+  <!-- Navigation -->
+  <div class="safe-bottom fixed w-full">
     <BottomNavigation
       active="settings"
       on:profile={() => goto('/profile')}
@@ -62,3 +63,9 @@
     />
   </div>
 </div>
+
+<style>
+  .safe-bottom {
+    bottom: env(safe-area-inset-bottom);
+  }
+</style>

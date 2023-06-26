@@ -5,8 +5,8 @@ use crate::state::user_flow::{CurrentUserFlow, CurrentUserFlowType, Redirect};
 use crate::state::{AppState, Profile};
 use identity_core::common::{Timestamp, Url};
 use identity_credential::credential::{Credential, CredentialBuilder, Issuer, Subject};
-use serde_json::{json, Value};
 use log::info;
+use serde_json::{json, Value};
 
 /// Sets the locale to the given value. If the locale is not supported yet, the current locale will stay unchanged.
 pub fn set_locale(state: &AppState, action: Action) -> anyhow::Result<()> {

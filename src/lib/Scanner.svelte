@@ -1,7 +1,7 @@
 <script>
   import { Button } from '@impierce/ui-components';
   import { scan, Format, cancel } from '@tauri-apps/plugin-barcode-scanner';
-  import { onDestroy } from 'svelte';
+  import { onDestroy, onMount } from 'svelte';
 
   export let onMessage;
 
@@ -27,31 +27,25 @@
     await cancel();
     scanning = false;
   });
+
+  //   onMount(() => startScan());
 </script>
 
 <div class="full-height">
   <div class:invisible={scanning}>
-    <div class="p-6">
+    <div>
       <input type="checkbox" id="scanner-windowed" bind:checked={windowed} />
       <label for="scanner-windowed">Windowed</label>
     </div>
-    <!-- <div>
+    <div>
       <select class="input" id="format" multiple bind:value={formats}>
         {#each supportedFormats as f}
           <option value={f}>{f}</option>
         {/each}
       </select>
-    </div> -->
-    <!-- class="btn" -->
-    <!-- <button
-      class=""
-      type="button"
-      on:click={startScan}>Scan</button
-    > -->
-    <Button variant="secondary" on:click={startScan}>SCAN</Button>
+    </div>
+    <button class="btn" type="button" on:click={startScan}>Scan</button>
   </div>
-
-  <!-- scanning in progress -->
   <div class="scanning full-height" class:invisible={!scanning}>
     <div class="scanner-background">
       <!-- this background simulates the camera view -->

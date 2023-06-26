@@ -38,7 +38,7 @@
   {#each Object.entries(credential.credentialSubject) as [key, value]}
     <div class="flex justify-between">
       <p class="font-medium text-slate-300">{key}</p>
-      <p class="w-1/2 text-right font-medium text-slate-500">{value}</p>
+      <p class="w-1/2 text-right font-medium text-slate-500">{JSON.stringify(value)}</p>
     </div>
   {/each}
 
@@ -54,7 +54,7 @@
             </p>
           </div>
 
-          <div class="flex items-start justify-between">
+          <div class="flex justify-between">
             <p class="font-medium text-slate-300">type</p>
             <div class="space-y-1">
               {#each credential.type as type}
@@ -64,15 +64,15 @@
             <!-- <p class="font-medium text-slate-500">{JSON.stringify(credential.type, null, 2)}</p> -->
           </div>
 
-          <div class="flex justify-between">
+          <!-- <div class="flex justify-between">
             <p class="font-medium text-slate-300">type</p>
             <div class="grid grid-flow-row-dense">
               {#each credential.type as type}
                 <p class="rounded-sm bg-slate-200 px-3 py-1 font-medium text-slate-500">{type}</p>
               {/each}
             </div>
-            <!-- <p class="font-medium text-slate-500">{JSON.stringify(credential.type, null, 2)}</p> -->
-          </div>
+            <p class="font-medium text-slate-500">{JSON.stringify(credential.type, null, 2)}</p>
+          </div> -->
 
           <div class="flex items-center justify-between">
             <p class="font-medium text-slate-300">issuanceDate</p>
@@ -81,7 +81,7 @@
             </p>
           </div>
 
-          <div>Issuer</div>
+          <div class="font-medium text-slate-500">Issuer</div>
           {#if typeof credential.issuer === 'string'}
             <div class="flex items-center justify-between">
               <p class="font-medium text-slate-300">issuer</p>

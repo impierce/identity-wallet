@@ -102,7 +102,7 @@
     </div>
   {/if}
   <button
-    class="absolute right-3 safe-top z-10 rounded-full p-2 bg-red-200"
+    class="safe-top-padding absolute right-3 z-10 rounded-full bg-red-200 p-2"
     on:click={() => (showDevMode = !showDevMode)}
   >
     {#if showDevMode}
@@ -121,7 +121,7 @@
 </main>
 
 <style>
-  .safe-top {
-    top: env(safe-area-inset-top);
+  .safe-top-padding {
+    top: calc(env(safe-area-inset-top) + 0.75rem);
   }
 </style>

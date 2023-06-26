@@ -72,16 +72,16 @@
   <!-- Background -->
   <!-- "absolute -z-10 w-full opacity-60" -->
   <div class="">
-  <img
-    src="blob-scene-haikei-slate.png"
-    alt="background-blob-scene"
-    class="absolute w-full opacity-50"
-  />
+    <img
+      src="blob-scene-haikei-slate.png"
+      alt="background-blob-scene"
+      class="absolute w-full opacity-50"
+    />
   </div>
   <!-- <div class="absolute -z-10 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div> -->
   <!-- Content overlay -->
   <div
-    class="fixed bottom-0 h-5/6 rounded-t-3xl bg-slate-100 w-full"
+    class="fixed bottom-0 h-5/6 w-full rounded-t-3xl bg-slate-100"
     in:fly={{ y: 24, opacity: 1 }}
   >
     <div class="relative bottom-12 -mb-6 flex justify-center" in:fly={{ y: 12, opacity: 1 }}>
@@ -99,13 +99,13 @@
         <Plus class="text-violet-700" strokeWidth="2" />
       </button> -->
 
-      <div class="absolute bottom-28 right-10 z-10">
+      <div class="absolute bottom-28 right-[10%] z-10">
         <QrCodeButton />
       </div>
 
       {#if credentials.length > 0}
         <!-- Search -->
-        <Input type="text" placeholder="Search credentials" class="focus-visible:ring-violet-600" />
+        <!-- <Input type="text" placeholder="Search credentials" class="focus-visible:ring-violet-600" /> -->
 
         <!-- Credentials (list) -->
         <div class="flex flex-col space-y-2">
@@ -130,7 +130,7 @@
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Close</AlertDialogCancel>
-                  <AlertDialogAction>Share</AlertDialogAction>
+                  <AlertDialogAction>Ok</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
@@ -190,7 +190,7 @@
     </div>
   </div>
   <!-- Navigation -->
-  <div class="fixed safe-bottom w-full">
+  <div class="safe-bottom fixed w-full">
     <BottomNavigation
       active="profile"
       on:settings={() => goto('/settings')}

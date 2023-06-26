@@ -5,7 +5,7 @@
   import LL from '../../i18n/i18n-svelte';
 </script>
 
-<div class="flex min-h-screen flex-col">
+<div class="flex min-h-screen flex-col bg-slate-100">
   <div
     class="flex w-screen grow flex-col justify-center space-y-8 p-8"
     in:fly={{ x: -32, opacity: 1 }}
@@ -15,7 +15,8 @@
       <p class="text-center text-slate-400">{$LL.NO_HISTORY()}</p>
     </div>
   </div>
-  <div class="absolute w-full bottom-[20px]">
+  <!-- Navigation -->
+  <div class="safe-bottom fixed w-full">
     <BottomNavigation
       active="history"
       on:settings={() => goto('/settings')}
@@ -23,3 +24,9 @@
     />
   </div>
 </div>
+
+<style>
+  .safe-bottom {
+    bottom: env(safe-area-inset-bottom);
+  }
+</style>
