@@ -5,9 +5,15 @@ export default {
   content: ['./src/**/*.{html,js,svelte,ts}'],
   theme: {
     extend: {
-      fontFamily: {
-        // sans: ['Satoshi', ...defaultTheme.fontFamily.sans],
-        sans: ['Satoshi', 'sans-serif']
+      // fontFamily: {
+      //   // sans: ['Satoshi', ...defaultTheme.fontFamily.sans],
+      //   sans: ['Satoshi-Variable', 'sans-serif']
+      // },
+      // colors: {
+      //   sunrise: '#FDDA0D',
+      // },
+      boxShadow: {
+        'neon': '0 0 5px theme("colors.violet.200"), 0 0 20px theme("colors.violet.700")'
       }
     }
   },

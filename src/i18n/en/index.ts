@@ -14,7 +14,11 @@ const en = {
   NO_HISTORY: `You haven't used any credentials yet.`,
   SHARE_CREDENTIALS_TITLE: 'Select information you want to share',
   SHARE_CREDENTIALS_CONFIRM: 'Share',
-  CANCEL: 'Cancel'
+  CANCEL: 'Cancel',
+  PROFILE_NAME: 'Name',
+  PASSWORD: 'Password',
+  CHANGE_LATER: 'You can change this later.',
+  STRONG_PASSWORD: 'Please choose a strong password.'
 } satisfies BaseTranslation;
 
 export default en;

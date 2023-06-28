@@ -26,6 +26,8 @@ pub enum ActionType {
     SetLocale,
     #[serde(rename = "[QR Code] Scanned")]
     QrCodeScanned,
+    #[serde(rename = "[User Flow] Cancel")]
+    CancelUserFlow,
     #[serde(rename = "[DEV] Load profile")]
     LoadDevProfile,
     #[ts(skip)]

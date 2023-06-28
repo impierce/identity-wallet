@@ -28,6 +28,7 @@ did-key = "0.2.1"
 lazy_static = "1.4.0"
 tauri-plugin-clipboard-manager = "=2.0.0-alpha.0"
 tauri-plugin-log = { version = "=2.0.0-alpha.0", features = ["colored"] }
+fern = "0.6.0" # used for colored logs
 rust-argon2 = { version = "=1.0.0" }
 # iota_stronghold = { version = "=1.0.5" }
 iota_stronghold = { path = "/Users/daniel/dev/iotaledger/stronghold.rs/client" }

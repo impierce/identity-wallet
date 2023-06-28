@@ -68,6 +68,22 @@ type RootTranslation = {
 	 * C​a​n​c​e​l
 	 */
 	CANCEL: string
+	/**
+	 * N​a​m​e
+	 */
+	PROFILE_NAME: string
+	/**
+	 * P​a​s​s​w​o​r​d
+	 */
+	PASSWORD: string
+	/**
+	 * Y​o​u​ ​c​a​n​ ​c​h​a​n​g​e​ ​t​h​i​s​ ​l​a​t​e​r​.
+	 */
+	CHANGE_LATER: string
+	/**
+	 * P​l​e​a​s​e​ ​c​h​o​o​s​e​ ​a​ ​s​t​r​o​n​g​ ​p​a​s​s​w​o​r​d​.
+	 */
+	STRONG_PASSWORD: string
 }
 
 export type TranslationFunctions = {
@@ -123,6 +139,22 @@ export type TranslationFunctions = {
 	 * Cancel
 	 */
 	CANCEL: () => LocalizedString
+	/**
+	 * Name
+	 */
+	PROFILE_NAME: () => LocalizedString
+	/**
+	 * Password
+	 */
+	PASSWORD: () => LocalizedString
+	/**
+	 * You can change this later.
+	 */
+	CHANGE_LATER: () => LocalizedString
+	/**
+	 * Please choose a strong password.
+	 */
+	STRONG_PASSWORD: () => LocalizedString
 }
 
 export type Formatters = {}

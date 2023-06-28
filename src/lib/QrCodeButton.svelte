@@ -1,8 +1,10 @@
 <script lang="ts">
-  import { QrCode } from 'svelte-heros-v2';
+  // import { QrCode } from 'svelte-heros-v2';
   import { dispatch } from '$lib/dispatcher';
-  import { LoadingSpinner } from '@impierce/ui-components';
-  import { info } from '@tauri-apps/plugin-log';
+  // import { LoadingSpinner } from '@impierce/ui-components';
+  import { info, warn } from '@tauri-apps/plugin-log';
+  import QrCode from '~icons/heroicons/qr-code';
+  import LoadingSpinner from '~icons/svg-spinners/3-dots-fade';
 
   import {
     Format,
@@ -28,30 +30,29 @@
 <button
   on:click={async () => {
     // loading = true;
-    // checkPermissions().then((res) => console.log(res)).catch((err) => console.log(err));
     const userAgent = navigator.userAgent.toLowerCase();
     const isMobile = userAgent.includes('android') || userAgent.includes('iphone');
     info(`userAgent: ${userAgent}, isMobile: ${isMobile}`);
     if (true) {
-      await checkPermissions().then((res) =>
-        info(`app has permissions to access the camera: ${res}`)
-      );
-      info(
-        `starting scan with parameters: { cameraDirection: 'back', windowed: false, formats: [Format.QRCode] }`
-      );
-      goto('/scanner');
+      await checkPermissions().then((res) => {
+        info(`app has permissions to access the camera: ${res}`);
+        if (res === 'granted') {
+          goto('/scanner');
+        } else {
+          warn('app does not have permissions to access the camera');
+        }
+      });
     } else {
       dispatch({ type: '[QR Code] Scanned', payload: { rawString: 'MOCK' } });
     }
-    // dispatch({ type: '[DID] Create new', payload: { display_name: display_name, password } });
     // loading = false;
   }}
 >
-  <div class="flex rounded-full bg-violet-700 p-4 shadow-md shadow-violet-700">
+  <div class="flex rounded-full bg-violet-700 p-4 shadow-neon">
     {#if loading}
-      <LoadingSpinner class="text-white" size="38" />
+      <LoadingSpinner class="h-9 w-9 text-white" />
     {:else}
-      <QrCode class="text-white" size="38" />
+      <QrCode class="h-9 w-9 text-white" />
     {/if}
   </div>
 </button>

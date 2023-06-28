@@ -115,6 +115,10 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
         .build()?;
 
     *state.credentials.lock().unwrap() = Some(vec![credential_personal_information, credential_university_degree]);
+    *state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Redirect(Redirect {
+        r#type: CurrentUserFlowType::Redirect,
+        target: "profile".to_string(),
+    }));
     Ok(())
 }
 

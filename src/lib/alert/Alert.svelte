@@ -14,6 +14,7 @@
   import { state } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { CheckBadge } from 'svelte-heros-v2';
+  import { dispatch } from '$lib/dispatcher';
 
   export let rootOpen: boolean = false;
   export let title: string;
@@ -78,7 +79,9 @@
       </AlertDialogDescription>
     </AlertDialogHeader>
     <AlertDialogFooter>
-      <AlertDialogCancel>{$LL.CANCEL()}</AlertDialogCancel>
+      <AlertDialogCancel on:click={() => dispatch({ type: '[User Flow] Cancel' })}
+        >{$LL.CANCEL()}</AlertDialogCancel
+      >
       <AlertDialogAction>{$LL.SHARE_CREDENTIALS_CONFIRM()}</AlertDialogAction>
     </AlertDialogFooter>
   </AlertDialogContent>

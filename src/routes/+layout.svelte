@@ -30,8 +30,6 @@
 
   onMount(async () => {
     const detach = await attachConsole();
-    info('Hello from Svelte!');
-    console.log('+layout.svelte: onMount');
     loadAllLocales(); //TODO: performance: only load locale on user request
     dispatch({ type: '[App] Get state' });
   });
@@ -46,7 +44,6 @@
   $: {
     // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
     console.log('+layout.svelte: state', $state);
-    info(`state: ${JSON.stringify($state)}`);
     if ($state?.current_user_flow?.type === 'select-credentials') {
       alertOpen = true;
       alertOptions = ($state.current_user_flow as Selection).options;

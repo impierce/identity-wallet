@@ -25,7 +25,7 @@
   //   }
 
   function onMessage(value) {
-    console.log(value);
+    debug(`scanned: ${value.content}`);
     dispatch({ type: '[QR Code] Scanned', payload: { rawString: value.content } });
     goto('/profile');
   }
@@ -34,10 +34,14 @@
   html.classList.add('transparent');
 
   import { scan, Format, cancel } from '@tauri-apps/plugin-barcode-scanner';
+  import { debug, info } from '@tauri-apps/plugin-log';
   import { onDestroy, onMount } from 'svelte';
   let scanning = false;
 
   function startScan() {
+    info(
+      `starting scan with parameters: { cameraDirection: 'back', windowed: false, formats: [Format.QRCode] }`
+    );
     scanning = true;
     scan({ windowed: true, formats: [Format.QRCode] })
       .then((res) => {

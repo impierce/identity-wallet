@@ -44,17 +44,14 @@
   import { fade, fly, slide } from 'svelte/transition';
   import QrCodeButton from '$lib/QrCodeButton.svelte';
   import CredentialDetails from '$lib/CredentialDetails.svelte';
-  import { info } from '@tauri-apps/plugin-log';
+  import { debug, info } from '@tauri-apps/plugin-log';
 
   let initials: string | undefined;
 
   let credentials: any[] = [];
 
-  $: {
-    // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
-    console.log('state', $state);
-    info(`state: ${JSON.stringify($state)}`);
-    let names = $state?.active_profile?.display_name.split(' ');
+  const calculate_initials = (display_name: string) => {
+    let names = display_name.split(' ');
     if (names?.length === 1) {
       initials = names?.at(0)?.slice(0, 2).toUpperCase();
     } else {
@@ -63,7 +60,15 @@
       // initials = names?.at(0)?.charAt(0) ?? '' + names?.at(1)?.charAt(0) ?? '';
       initials = first + '' + last;
     }
-    console.log('initials', initials);
+    info(`calculate_initials: "${initials}"`);
+  }
+
+  $: {
+    // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
+    console.log('routes/profile/+page.svelte: state', $state);
+    if ($state?.active_profile?.display_name) {
+      calculate_initials($state?.active_profile?.display_name);
+    }
     credentials = $state?.credentials ?? [];
   }
 </script>

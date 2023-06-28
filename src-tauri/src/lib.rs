@@ -4,12 +4,13 @@ mod did;
 mod state;
 
 use command::handle_action;
+use fern::colors::Color;
 use lazy_static::lazy_static;
-use log::info;
+use log::{info, LevelFilter};
 use state::AppState;
 use std::sync::Mutex;
 use tauri::Manager;
-use tauri_plugin_log::{Target, TargetKind, WEBVIEW_TARGET};
+use tauri_plugin_log::{fern::colors::ColoredLevelConfig, Target, TargetKind, WEBVIEW_TARGET};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -41,7 +42,16 @@ pub fn run() {
                     // })
                     // .filter(|metadata| metadata.target() != WEBVIEW_TARGET),
                 ])
-                .with_colors(Default::default())
+                .level(LevelFilter::Debug)
+                .level_for("identity_wallet", LevelFilter::Debug)
+                .with_colors(
+                    ColoredLevelConfig::new()
+                        .trace(Color::White)
+                        .debug(Color::Cyan)
+                        .info(Color::Green)
+                        .warn(Color::Yellow)
+                        .error(Color::Red),
+                )
                 .build(),
         )
         .run(tauri::generate_context!())
@@ -50,7 +60,6 @@ pub fn run() {
 
 lazy_static! {
     pub static ref STATE_FILE: Mutex<std::path::PathBuf> = Mutex::new(std::path::PathBuf::new());
-    pub static ref UNSAFE_DEV_STORAGE: Mutex<std::path::PathBuf> = Mutex::new(std::path::PathBuf::new());
     pub static ref STRONGHOLD: Mutex<std::path::PathBuf> = Mutex::new(std::path::PathBuf::new());
 }
 
@@ -59,7 +68,6 @@ fn initialize_storage(app_handle: tauri::AppHandle) -> anyhow::Result<()> {
     // TODO: create folder if not exists (not automatically created on macOS)
     if cfg!(target_os = "android") {
         *STATE_FILE.lock().unwrap() = app_handle.path().data_dir()?.join("state.json");
-        *UNSAFE_DEV_STORAGE.lock().unwrap() = app_handle.path().data_dir()?.join("unsafe.bin");
         *STRONGHOLD.lock().unwrap() = app_handle.path().data_dir()?.join("stronghold.bin");
     } else {
         *STATE_FILE.lock().unwrap() = app_handle
@@ -67,11 +75,6 @@ fn initialize_storage(app_handle: tauri::AppHandle) -> anyhow::Result<()> {
             .data_dir()?
             .join("com.impierce.identity_wallet")
             .join("state.json");
-        *UNSAFE_DEV_STORAGE.lock().unwrap() = app_handle
-            .path()
-            .data_dir()?
-            .join("com.impierce.identity_wallet")
-            .join("unsafe.bin");
         *STRONGHOLD.lock().unwrap() = app_handle
             .path()
             .data_dir()?
@@ -79,7 +82,6 @@ fn initialize_storage(app_handle: tauri::AppHandle) -> anyhow::Result<()> {
             .join("stronghold.bin");
     }
     info!("STATE_FILE: {}", STATE_FILE.lock().unwrap().display());
-    info!("UNSAFE_STORAGE: {}", UNSAFE_DEV_STORAGE.lock().unwrap().display());
     info!("STRONGHOLD: {}", STRONGHOLD.lock().unwrap().display());
 
     Ok(())

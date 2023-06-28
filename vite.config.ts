@@ -1,12 +1,13 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 import { internalIpV4 } from 'internal-ip';
+import Icons from 'unplugin-icons/vite';
 
 const mobile = process.env.TAURI_PLATFORM === 'android' || process.env.TAURI_PLATFORM === 'ios';
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
-  plugins: [sveltekit()],
+  plugins: [sveltekit(), Icons({ compiler: 'svelte' })],
   test: {
     include: ['tests/**/*.{test,spec}.{js,ts}'],
     globals: true,
@@ -24,6 +25,11 @@ export default defineConfig(async () => ({
       protocol: 'ws',
       host: await internalIpV4(),
       port: 5183
+    },
+    fs: {
+      allow: [
+        '/Users/daniel/.nvm/versions/node/v20.3.0/lib/node_modules/@impierce/ui-components/dist'
+      ]
     }
   },
   // to make use of `TAURI_DEBUG` and other env variables

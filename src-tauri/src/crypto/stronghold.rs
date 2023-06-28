@@ -2,7 +2,7 @@ use iota_stronghold::{
     procedures::{GenerateKey, KeyType, ProcedureOutput, PublicKey, StrongholdProcedure},
     Client, KeyProvider, Location, SnapshotPath, Stronghold,
 };
-use log::info;
+use log::{info, debug};
 
 use crate::STRONGHOLD;
 
@@ -11,7 +11,7 @@ pub async fn hash_password(password: &str) -> anyhow::Result<Vec<u8>> {
 
     let password_hash = argon2::hash_raw(password.as_ref(), b"D4F88D86F2C60DF8AB3EC3821083EF89", &config)
         .expect("failed to hash password");
-    info!("password hashed successfully");
+    debug!("password hashed successfully");
 
     Ok(password_hash)
 }
@@ -41,7 +41,7 @@ pub async fn create_new_stronghold(password_hash: Vec<u8>) -> anyhow::Result<()>
 
     let public_key: [u8; 32] = output.try_into().unwrap();
 
-    info!("public_key (base64): {:?}", base64::encode(public_key));
+    debug!("public_key (base64): {:?}", base64::encode(public_key));
 
     stronghold
         .write_client(&path)
@@ -71,7 +71,7 @@ pub async fn get_public_key(password: &str) -> anyhow::Result<Vec<u8>> {
         .load_client_from_snapshot(path.clone(), &keyprovider, &snapshot_path)
         .expect("Could not load client from Snapshot");
 
-    info!("Creating public key");
+    debug!("Creating public key");
     let procedure_result = client
         .execute_procedure(StrongholdProcedure::PublicKey(PublicKey {
             ty: KeyType::Ed25519,

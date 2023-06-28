@@ -1942,6 +1942,7 @@ dependencies = [
  "anyhow",
  "base64 0.13.1",
  "did-key",
+ "fern",
  "identity_core",
  "identity_credential",
  "iota_stronghold",
@@ -2315,6 +2316,7 @@ dependencies = [
 [[package]]
 name = "libsodium-sys"
 version = "0.2.7"
+source = "git+https://github.com/daniel-mader/sodiumoxide.git#e38c97046754c61de199c686e781b1bb30c09b7c"
 dependencies = [
  "cc",
  "libc",

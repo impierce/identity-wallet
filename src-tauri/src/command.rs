@@ -101,6 +101,10 @@ pub async fn handle_action(
             }));
             // save_state(TransferState::from(app_state.inner())).await.ok();
         }
+        ActionType::CancelUserFlow => {
+            *app_state.current_user_flow.lock().unwrap() = None;
+            save_state(TransferState::from(app_state.inner())).await.ok();
+        }
         ActionType::LoadDevProfile => {
             if load_dev_profile(app_state.inner(), Action { r#type, payload })
                 .await
