@@ -2,7 +2,7 @@ use iota_stronghold::{
     procedures::{GenerateKey, KeyType, ProcedureOutput, PublicKey, StrongholdProcedure},
     Client, KeyProvider, Location, SnapshotPath, Stronghold,
 };
-use log::{info, debug};
+use log::{debug, info};
 
 use crate::STRONGHOLD;
 

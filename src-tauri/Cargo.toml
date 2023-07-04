@@ -28,14 +28,23 @@ did-key = "0.2.1"
 lazy_static = "1.4.0"
 tauri-plugin-clipboard-manager = "=2.0.0-alpha.0"
 tauri-plugin-log = { version = "=2.0.0-alpha.0", features = ["colored"] }
-fern = "0.6.0" # used for colored logs
+# used for colored logs
+fern = "0.6.0"
 rust-argon2 = { version = "=1.0.0" }
-# iota_stronghold = { version = "=1.0.5" }
-iota_stronghold = { path = "/Users/daniel/dev/iotaledger/stronghold.rs/client" }
+
+iota_stronghold = { version = "=1.0.5" }
+#iota_stronghold = { path = "/Users/daniel/dev/iotaledger/stronghold.rs/client" }
+#libsodium-sys = { git = "https://git@github.com/daniel-mader/sodiumoxide" }
+
+oid4vc-manager = { git = "https://git@github.com/impierce/openid4vc.git" }
+siopv2 = { git = "https://git@github.com/impierce/openid4vc.git" }
 base64 = { version = "0.13.0" }
-identity_core = { version = "0.6.2" }
-identity_credential = { version = "0.6.2" }
+identity_iota = "0.6"
+identity_core = { git = "https://git@github.com/iotaledger/identity.rs", rev = "4f27434" }
+identity_credential = { git = "https://git@github.com/iotaledger/identity.rs", rev = "4f27434" }
 tauri-plugin-barcode-scanner = { git = "https://github.com/lucasfernog/plugins-workspace", branch = "feat/scanner" }
+jsonwebtoken = "8.2"
+futures = "0.3"
 
 [dev-dependencies]
 tempfile = "3.5.0"

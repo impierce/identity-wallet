@@ -2,7 +2,9 @@ use log::{info, warn};
 
 use crate::state::actions::{Action, ActionType};
 use crate::state::persistence::{delete_state_file, delete_stronghold, load_state, save_state};
-use crate::state::reducers::{create_did_key, initialize_stronghold, load_dev_profile, reset_state, set_locale};
+use crate::state::reducers::{
+    create_did_key, initialize_stronghold, load_dev_profile, read_request, reset_state, send_response, set_locale,
+};
 use crate::state::user_flow::{CurrentUserFlow, CurrentUserFlowType, Redirect, Selection};
 use crate::state::{AppState, TransferState};
 
@@ -107,6 +109,22 @@ pub async fn handle_action(
         }
         ActionType::LoadDevProfile => {
             if load_dev_profile(app_state.inner(), Action { r#type, payload })
+                .await
+                .is_ok()
+            {
+                save_state(TransferState::from(app_state.inner())).await.ok();
+            }
+        }
+        ActionType::ReadRequest => {
+            if read_request(app_state.inner(), Action { r#type, payload })
+                .await
+                .is_ok()
+            {
+                save_state(TransferState::from(app_state.inner())).await.ok();
+            }
+        }
+        ActionType::SendResponse => {
+            if send_response(app_state.inner(), Action { r#type, payload })
                 .await
                 .is_ok()
             {

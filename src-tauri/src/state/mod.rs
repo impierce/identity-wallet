@@ -6,6 +6,7 @@ pub mod user_flow;
 use crate::state::user_flow::CurrentUserFlow;
 use identity_credential::credential::Credential;
 use serde::{Deserialize, Serialize};
+use siopv2::AuthorizationRequest;
 use std::sync::Mutex;
 use ts_rs::TS;
 
@@ -13,6 +14,7 @@ use ts_rs::TS;
 #[derive(Default)]
 pub struct AppState {
     pub active_profile: Mutex<Option<Profile>>,
+    pub active_authorization_request: Mutex<Option<AuthorizationRequest>>,
     pub locale: Mutex<String>,
     pub credentials: Mutex<Option<Vec<Credential>>>,
     pub current_user_flow: Mutex<Option<CurrentUserFlow>>,

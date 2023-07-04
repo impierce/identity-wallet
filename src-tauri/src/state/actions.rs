@@ -30,6 +30,10 @@ pub enum ActionType {
     CancelUserFlow,
     #[serde(rename = "[DEV] Load profile")]
     LoadDevProfile,
+    #[serde(rename = "[Authenticate] Read request")]
+    ReadRequest,
+    #[serde(rename = "[Authenticate] Send Response")]
+    SendResponse,
     #[ts(skip)]
     #[serde(other)]
     Unknown,
