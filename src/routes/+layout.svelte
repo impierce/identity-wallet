@@ -52,7 +52,7 @@
   }
 </script>
 
-<main class="h-screen">
+<main class="h-screen bg-white dark:bg-black">
   <!-- begin: dev mode -->
   {#if showDevMode}
     <div
@@ -114,7 +114,7 @@
     <!-- <Route path="profile" component={Profile} primary={false} /> -->
     <slot />
   </div>
-  <Alert rootOpen={alertOpen} title={alertTitle} options={alertOptions} />
+  <Alert isOpen={alertOpen} title={alertTitle} options={alertOptions} />
 </main>
 
 <style>

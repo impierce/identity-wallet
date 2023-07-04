@@ -45,6 +45,7 @@
   import QrCodeButton from '$lib/QrCodeButton.svelte';
   import CredentialDetails from '$lib/CredentialDetails.svelte';
   import { debug, info } from '@tauri-apps/plugin-log';
+  import { root } from 'postcss';
 
   let initials: string | undefined;
 
@@ -61,7 +62,7 @@
       initials = first + '' + last;
     }
     info(`calculate_initials: "${initials}"`);
-  }
+  };
 
   $: {
     // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
@@ -75,24 +76,30 @@
 
 <div class="flex flex-col">
   <!-- Background -->
-  <!-- "absolute -z-10 w-full opacity-60" -->
-  <div class="">
+  <!-- <div class="absolute h-[4px] top-0 w-full z-10 bg-gradient-to-r from-blue-500 via-violet-500 to-pink-500" /> -->
+
+  <div class="-z-5 fixed top-0 w-full">
+    <!-- TODO: refactor bg images: use native <picture> element -->
     <img
-      src="blob-scene-haikei-slate.png"
+      src="blob-scene-haikei-slate-dark.png"
       alt="background-blob-scene"
-      class="absolute w-full opacity-50"
+      class="absolute hidden w-full opacity-100 dark:block"
+    />
+    <img
+      src="blob-scene-haikei-slate-light.png"
+      alt="background-blob-scene"
+      class="absolute w-full opacity-60 dark:hidden"
     />
   </div>
-  <!-- <div class="absolute -z-10 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div> -->
-  <!-- Content overlay -->
+  <!-- Content sheet -->
   <div
-    class="fixed bottom-0 h-5/6 w-full rounded-t-3xl bg-slate-100"
+    class="fixed bottom-0 h-5/6 w-full rounded-t-3xl bg-slate-100 dark:bg-slate-700"
     in:fly={{ y: 24, opacity: 1 }}
   >
     <div class="relative bottom-12 -mb-6 flex justify-center" in:fly={{ y: 12, opacity: 1 }}>
       <Avatar {initials} size="large" />
     </div>
-    <div class="flex justify-center text-2xl font-semibold">
+    <div class="flex justify-center text-2xl font-semibold dark:text-neutral-300">
       {$state?.active_profile?.display_name}
     </div>
 
@@ -104,7 +111,7 @@
         <Plus class="text-violet-700" strokeWidth="2" />
       </button> -->
 
-      <div class="absolute bottom-28 right-[10%] z-10">
+      <div class="fixed bottom-28 right-12 z-10">
         <QrCodeButton />
       </div>
 
@@ -151,7 +158,7 @@
 
       <Sheet>
         <SheetTrigger>
-          <button class="flex w-full justify-center rounded-lg bg-slate-200 p-4">
+          <button class="flex w-full justify-center rounded-lg bg-slate-200 p-4 dark:bg-slate-800">
             <Plus class="text-violet-700" strokeWidth="3" />
           </button>
         </SheetTrigger>
@@ -202,6 +209,14 @@
       on:history={() => goto('/history')}
     />
   </div>
+
+  <!-- fill top safe zone with matching color of "slate-blob-scene"  -->
+  <!-- <div class="bg-slate-300 h-[env(safe-area-inset-top)] fixed top-0 w-full z-10"></div> -->
+
+  <!-- fill bottom safe zone with bg-color -->
+  <div
+    class="fixed bottom-0 z-10 h-[env(safe-area-inset-bottom)] w-full bg-white dark:bg-slate-800"
+  />
 </div>
 
 <style>

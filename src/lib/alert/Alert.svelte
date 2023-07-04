@@ -9,19 +9,20 @@
     AlertDialogFooter,
     AlertDialogCancel,
     AlertDialogAction,
-    Checkbox
+    Checkbox,
+    Button
   } from '@impierce/ui-components';
   import { state } from '../../stores';
   import LL from '../../i18n/i18n-svelte';
   import { CheckBadge } from 'svelte-heros-v2';
   import { dispatch } from '$lib/dispatcher';
 
-  export let rootOpen: boolean = false;
+  export let isOpen: boolean;
   export let title: string;
   export let options: string[];
 </script>
 
-<AlertDialog bind:open={rootOpen}>
+<AlertDialog bind:open={isOpen}>
   <!-- <AlertDialogTrigger>
     <button>Open</button>
   </AlertDialogTrigger> -->
@@ -79,10 +80,17 @@
       </AlertDialogDescription>
     </AlertDialogHeader>
     <AlertDialogFooter>
-      <AlertDialogCancel on:click={() => dispatch({ type: '[User Flow] Cancel' })}
-        >{$LL.CANCEL()}</AlertDialogCancel
+      <AlertDialogCancel on:click={(e) => {e.preventDefault(); console.log('cancel')}}>
+        <!-- <Button on:click={() => dispatch({ type: '[User Flow] Cancel' })} class="w-full">button_text</Button> -->
+        {$LL.CANCEL()}
+      </AlertDialogCancel>
+      <AlertDialogAction
+        disabled={true}
+        on:click={(event) => {
+          event.preventDefault();
+          console.log('action');
+        }}>{$LL.SHARE_CREDENTIALS_CONFIRM()}</AlertDialogAction
       >
-      <AlertDialogAction>{$LL.SHARE_CREDENTIALS_CONFIRM()}</AlertDialogAction>
     </AlertDialogFooter>
   </AlertDialogContent>
 </AlertDialog>

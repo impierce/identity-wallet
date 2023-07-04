@@ -41,6 +41,9 @@
         } else {
           warn('app does not have permissions to access the camera');
         }
+      }).catch((err) => {
+        warn(`error checking permissions: ${err}`);
+        dispatch({ type: '[QR Code] Scanned', payload: { rawString: 'MOCK' } });
       });
     } else {
       dispatch({ type: '[QR Code] Scanned', payload: { rawString: 'MOCK' } });
