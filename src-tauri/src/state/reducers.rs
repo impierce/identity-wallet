@@ -1,9 +1,10 @@
 use crate::crypto::stronghold::{create_new_stronghold, get_public_key, hash_password};
 use crate::did::did_key::{generate_dev_did, generate_new_did};
 use crate::state::actions::Action;
-use crate::state::user_flow::{CurrentUserFlow, CurrentUserFlowType, Redirect};
+use crate::state::user_flow::{CurrentUserFlow, CurrentUserFlowType, Redirect, Selection};
 use crate::state::{AppState, Profile};
 use identity_core::common::{Object, Timestamp, Url};
+use identity_core::convert::FromJson;
 use identity_credential::credential::{Credential, CredentialBuilder, Issuer, Jwt, Subject};
 use identity_credential::presentation::JwtPresentation;
 use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
@@ -125,7 +126,17 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
         }))?)
         .build()?;
 
-    *state.credentials.lock().unwrap() = Some(vec![credential_personal_information, credential_university_degree]);
+    // read VC from in-memory storage
+    let key = DecodingKey::from_secret(&[]);
+    let mut validation = Validation::new(Algorithm::EdDSA);
+    validation.insecure_disable_signature_validation();
+    let credential_0_as_json =
+        decode::<serde_json::Value>(&VERIFIABLE_CREDENTIALS.first().unwrap(), &key, &validation)
+            .unwrap()
+            .claims;
+    let credential_0 = serde_json::from_value::<Credential>(credential_0_as_json.get("vc").unwrap().clone()).unwrap();
+
+    *state.credentials.lock().unwrap() = Some(vec![credential_0]);
     *state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Redirect(Redirect {
         r#type: CurrentUserFlowType::Redirect,
         target: "profile".to_string(),
@@ -143,7 +154,9 @@ pub async fn read_request(state: &AppState, action: Action) -> anyhow::Result<()
     let guard = crate::PROVIDER_MANAGER.lock().await;
     let provider = guard.as_ref().unwrap();
 
-    let authorization_request = provider.validate_request(request_url.parse()?).await?;
+    info!("trying to validate request: {:?}", request_url);
+
+    let authorization_request = provider.validate_request(request_url.parse().unwrap()).await.unwrap();
     info!("validated authorization request: {:?}", authorization_request);
 
     // Get the indices of the verifiable credentials that can be used to fulfill the request.
@@ -175,8 +188,17 @@ pub async fn read_request(state: &AppState, action: Action) -> anyhow::Result<()
         })
         .collect();
 
+    info!("indices of VCs that can fulfill the request: {:?}", indices);
+
     // TODO: Make sure that the frontend receives the indices of the credentials that are conforming to the presentation
     // definition. Can The UserFlow be used for this? How?
+
+    *state.active_authorization_request.lock().unwrap() = Some(authorization_request);
+
+    *state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Selection(Selection {
+        r#type: CurrentUserFlowType::SelectCredentials,
+        options: vec![indices.first().unwrap().to_string()],
+    }));
 
     Ok(())
 }
@@ -250,6 +272,8 @@ pub async fn send_response(state: &AppState, action: Action) -> anyhow::Result<(
 
     provider.send_response(response).await?;
     info!("response successfully sent");
+
+    *state.current_user_flow.lock().unwrap() = None;
 
     Ok(())
 }

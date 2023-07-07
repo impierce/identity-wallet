@@ -8,7 +8,7 @@
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "identity-wallet",
+    "productName": "Identity Wallet",
     "version": "0.1.0"
   },
   "tauri": {

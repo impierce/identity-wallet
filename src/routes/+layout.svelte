@@ -38,7 +38,7 @@
 
   // alert (selection)
   let alertOpen = false;
-  let alertOptions: [string, string][] = [];
+  let alertOptions: string[] = [];
   let alertTitle: string = 'title';
 
   $: {
@@ -49,10 +49,13 @@
       alertOptions = ($state.current_user_flow as Selection).options;
       alertTitle = $LL.SHARE_CREDENTIALS_TITLE();
     }
+    if ($state?.current_user_flow === null) {
+      alertOpen = false;
+    }
   }
 </script>
 
-<main class="h-screen bg-white dark:bg-black">
+<main class="h-screen">
   <!-- begin: dev mode -->
   {#if showDevMode}
     <div

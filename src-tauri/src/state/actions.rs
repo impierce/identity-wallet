@@ -32,8 +32,8 @@ pub enum ActionType {
     LoadDevProfile,
     #[serde(rename = "[Authenticate] Read request")]
     ReadRequest,
-    #[serde(rename = "[Authenticate] Send Response")]
-    SendResponse,
+    #[serde(rename = "[Authenticate] Credentials selected")]
+    CredentialsSelected,
     #[ts(skip)]
     #[serde(other)]
     Unknown,

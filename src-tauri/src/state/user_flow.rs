@@ -26,7 +26,8 @@ pub struct Warning {
 pub struct Selection {
     pub r#type: CurrentUserFlowType,
     /// An option is in the form: (<option_name>, <option_value>)
-    pub options: Vec<(String, String)>,
+    // pub options: Vec<(String, String)>,
+    pub options: Vec<String>,
 }
 
 // pub trait UserActionFlow {

@@ -26,7 +26,7 @@ pub struct AppState {
 pub struct TransferState {
     pub active_profile: Option<Profile>,
     pub locale: String,
-    #[ts(skip)] // TODO: solve later
+    #[ts(optional, type = "object")] // TODO: what is the correct type here? Map<String, String>? Object? null? undefined? any? unknown?
     pub credentials: Option<Vec<Credential>>,
     pub current_user_flow: Option<CurrentUserFlow>,
 }

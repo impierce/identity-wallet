@@ -81,24 +81,28 @@ pub async fn handle_action(
         ActionType::QrCodeScanned => {
             info!("qr code scanned: `{:?}`", payload);
             info!("Now doing some backend business logic with the QR code data...");
+
+            // read_request(app_state.inner(), Action { r#type, payload }).await.ok();
+
             std::thread::sleep(std::time::Duration::from_millis(1_000));
             // TODO: actually do something with the QR code data
             *app_state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Selection(Selection {
                 r#type: CurrentUserFlowType::SelectCredentials,
                 options: vec![
-                    (
-                        "givenName".to_string(),
-                        "http://example.edu/credentials/3732".to_string(),
-                    ), // claim name, credential id
-                    (
-                        "familyName".to_string(),
-                        "http://example.edu/credentials/3732".to_string(),
-                    ),
-                    (
-                        "birthdate".to_string(),
-                        "http://example.edu/credentials/3732".to_string(),
-                    ),
-                    ("email".to_string(), "http://example.edu/credentials/3732".to_string()),
+                    "givenName".to_string(),
+                    // (
+                    //     "givenName".to_string(),
+                    //     "http://example.edu/credentials/3732".to_string(),
+                    // ), // claim name, credential id
+                    // (
+                    //     "familyName".to_string(),
+                    //     "http://example.edu/credentials/3732".to_string(),
+                    // ),
+                    // (
+                    //     "birthdate".to_string(),
+                    //     "http://example.edu/credentials/3732".to_string(),
+                    // ),
+                    // ("email".to_string(), "http://example.edu/credentials/3732".to_string()),
                 ],
             }));
             // save_state(TransferState::from(app_state.inner())).await.ok();
@@ -123,7 +127,7 @@ pub async fn handle_action(
                 save_state(TransferState::from(app_state.inner())).await.ok();
             }
         }
-        ActionType::SendResponse => {
+        ActionType::CredentialsSelected => {
             if send_response(app_state.inner(), Action { r#type, payload })
                 .await
                 .is_ok()
