@@ -47,6 +47,103 @@ npm run format
 npm run test
 ```
 
+<!-- ### Run Android app in emulator on macOS
+
+```sh
+brew install openssl@3
+export OPENSSL_INCLUDE_DIR=/opt/homebrew/opt/openssl@3/include
+export OPENSSL_LIB_DIR=/opt/homebrew/opt/openssl@3/lib
+``` -->
+
+## Release
+
+### Signing Android App Bundle (AAB)
+
+https://docs.flutter.dev/deployment/android#signing-the-app
+
+```sh
+# Generate new upload key
+keytool -genkey -v -keystore ./src-tauri/gen/android/upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+```
+
+Create a file `./src-tauri/gen/android/key.properties` with the following content:
+
+```sh
+storePassword=<password-from-previous-step>
+keyPassword=<password-from-previous-step>
+keyAlias=upload
+storeFile=./upload-keystore.jks
+```
+
+Edit `src-tauri/gen/android/app/build.gradle.kts`: follow https://next--tauri.netlify.app/next/guides/distribution/sign-android
+
+<!-- ```kotlin
+import java.util.Properties
+import java.nio.file.Files
+
+plugins { ... }
+
+val keystoreProperties = Properties()
+val keystorePropertiesFile = rootProject.file("key.properties").toPath()
+if (Files.exists(keystorePropertiesFile)) {
+    Files.newBufferedReader(keystorePropertiesFile).use { reader ->
+        keystoreProperties.load(reader)
+    }
+}
+
+android {
+    compileSdk = 33
+    namespace = "com.impierce.identity_wallet"
+    defaultConfig {
+        manifestPlaceholders["usesCleartextTraffic"] = "false"
+        applicationId = "com.impierce.identity_wallet"
+        minSdk = 24
+        targetSdk = 33
+        versionCode = 1
+        versionName = "1.0"
+    }
+    signingConfigs {
+        create("release") {
+            storeFile = file(keystoreProperties["storeFile"])
+            storePassword = keystoreProperties["storePassword"] as String
+            keyAlias = keystoreProperties["keyAlias"] as String
+            keyPassword = keystoreProperties["keyPassword"] as String
+        }
+    }
+    buildTypes {
+        getByName("debug") {
+            manifestPlaceholders["usesCleartextTraffic"] = "true"
+            isDebuggable = true
+            isJniDebuggable = true
+            isMinifyEnabled = false
+            packaging {                jniLibs.keepDebugSymbols.add("*/arm64-v8a/*.so")
+                jniLibs.keepDebugSymbols.add("*/armeabi-v7a/*.so")
+                jniLibs.keepDebugSymbols.add("*/x86/*.so")
+                jniLibs.keepDebugSymbols.add("*/x86_64/*.so")
+            }
+        }
+        getByName("release") {
+            isMinifyEnabled = true
+            proguardFiles(
+                *fileTree(".") { include("**/*.pro") }
+                    .plus(getDefaultProguardFile("proguard-android-optimize.txt"))
+                    .toList().toTypedArray()
+            )
+            signingConfig = signingConfigs.getByName("release")
+        }
+    }
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+rust { ... }
+
+dependencies { ... }
+
+apply(from = "tauri.build.gradle.kts")
+``` -->
+
 ### How this project was initialized
 
 ```sh

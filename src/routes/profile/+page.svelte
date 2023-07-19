@@ -78,6 +78,14 @@
   <!-- Background -->
   <!-- <div class="absolute h-[4px] top-0 w-full z-10 bg-gradient-to-r from-blue-500 via-violet-500 to-pink-500" /> -->
 
+  <!-- Banner image (switches when dark mode) -->
+  <!-- <picture>
+    <source srcset="dark.png" media="(prefers-color-scheme: dark)">
+    <img src="light.png" alt="">
+  </picture> -->
+  <!-- End: Banner image -->
+
+
   <div class="-z-5 fixed top-0 w-full">
     <!-- TODO: refactor bg images: use native <picture> element -->
     <img

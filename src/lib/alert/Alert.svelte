@@ -61,7 +61,7 @@
                   class="flex w-[1px] grow items-center justify-between rounded-lg bg-slate-100 p-4"
                 >
                   <div class="flex">
-                    <Checkbox id={`${i}-${option}`} class="w-6 h-6 rounded-full" />
+                    <!-- <Checkbox id={`${i}-${option}`} class="w-6 h-6 rounded-full" /> -->
                     <label
                       for={`${i}-${option}`}
                       class="px-3 font-medium leading-none text-slate-300 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"

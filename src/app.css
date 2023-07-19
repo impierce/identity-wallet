@@ -39,3 +39,8 @@ body {
 .transparent {
   background-color: transparent;
 }
+
+/**
+ * TODO (when supporting landscape orientation):
+ * https://kulturbanause.de/blog/websites-fuer-das-iphone-x-optimieren-weisse-balken-entfernen-viewport-anpassen-safe-area-festlegen/
+*/
