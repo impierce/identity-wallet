@@ -17,7 +17,7 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "=2.0.0-alpha.6", features = [] }
 
 [dependencies]
-tauri = { version = "=2.0.0-alpha.10", features = [] }
+tauri = { version = "=2.0.0-alpha.10", features = ["rustls-tls"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 log = "^0.4"
@@ -36,12 +36,15 @@ iota_stronghold = { version = "=1.0.5" }
 #iota_stronghold = { path = "/Users/daniel/dev/iotaledger/stronghold.rs/client" }
 #libsodium-sys = { git = "https://git@github.com/daniel-mader/sodiumoxide" }
 
-oid4vc-manager = { git = "https://git@github.com/impierce/openid4vc.git" }
-siopv2 = { git = "https://git@github.com/impierce/openid4vc.git" }
+oid4vc-manager = { git = "https://git@github.com/impierce/openid4vc.git", branch = "fix/quick-fix" }
+siopv2 = { git = "https://git@github.com/impierce/openid4vc.git", branch = "fix/quick-fix" }
 base64 = { version = "0.13.0" }
 identity_iota = "0.6"
 identity_core = { git = "https://git@github.com/iotaledger/identity.rs", rev = "4f27434" }
-identity_credential = { git = "https://git@github.com/iotaledger/identity.rs", rev = "4f27434" }
+identity_credential = { git = "https://git@github.com/iotaledger/identity.rs", rev = "4f27434", default-features = false, features = [
+    "credential",
+    "presentation",
+] }
 tauri-plugin-barcode-scanner = { git = "https://github.com/lucasfernog/plugins-workspace", branch = "feat/scanner" }
 jsonwebtoken = "8.2"
 futures = "0.3"
