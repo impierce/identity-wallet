@@ -135,6 +135,9 @@
           </div>
         </div>
       </div>
+      <div class="absolute bottom-12 left-[45%]">
+        <Button class="shadow bg-red-100 text-red-500 font-semibold" on:click={() => goto('/profile')}>Cancel</Button>
+      </div>
     </div>
   </div>
 </div>
