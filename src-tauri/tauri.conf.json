@@ -35,8 +35,6 @@
         "fullscreen": false,
         "resizable": true,
         "title": "UniMe - Identity Wallet",
-        "hiddenTitle": true,
-        "titleBarStyle": "Overlay",
         "width": 390,
         "height": 844
       }
