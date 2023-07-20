@@ -36,8 +36,8 @@ iota_stronghold = { version = "=1.0.5" }
 #iota_stronghold = { path = "/Users/daniel/dev/iotaledger/stronghold.rs/client" }
 #libsodium-sys = { git = "https://git@github.com/daniel-mader/sodiumoxide" }
 
-oid4vc-manager = { git = "https://git@github.com/impierce/openid4vc.git",  rev = "57624518" }
-siopv2 = { git = "https://git@github.com/impierce/openid4vc.git", rev = "57624518" }
+oid4vc-manager = { git = "https://git@github.com/impierce/openid4vc.git" }
+siopv2 = { git = "https://git@github.com/impierce/openid4vc.git" }
 base64 = { version = "0.13.0" }
 identity_iota = "0.6"
 identity_core = { git = "https://git@github.com/iotaledger/identity.rs", rev = "4f27434" }

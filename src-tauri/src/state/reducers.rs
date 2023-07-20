@@ -266,8 +266,7 @@ pub async fn send_response(state: &AppState, action: Action) -> anyhow::Result<(
             Default::default(),
             Some(verifiable_presentation),
             Some(presentation_submission),
-        )
-        .await?;
+        )?;
     info!("response generated: {:?}", response);
 
     provider.send_response(response).await?;
