@@ -794,9 +794,9 @@ dependencies = [
 
 [[package]]
 name = "clap"
-version = "4.3.15"
+version = "4.3.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8f644d0dac522c8b05ddc39aaaccc5b136d5dc4ff216610c5641e3be5becf56c"
+checksum = "5b0827b011f6f8ab38590295339817b0d26f344aa4932c3ced71b45b0c54b4a9"
 dependencies = [
  "clap_builder",
  "clap_derive",
@@ -805,9 +805,9 @@ dependencies = [
 
 [[package]]
 name = "clap_builder"
-version = "4.3.15"
+version = "4.3.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "af410122b9778e024f9e0fb35682cc09cc3f85cad5e8d3ba8f47a9702df6e73d"
+checksum = "9441b403be87be858db6a23edb493e7f694761acdc3343d5a0fcaafd304cbc9e"
 dependencies = [
  "anstream",
  "anstyle",
@@ -1266,7 +1266,7 @@ dependencies = [
 [[package]]
 name = "dif-presentation-exchange"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?branch=fix/quick-fix#173605bc95c89eb2c3bbedce68cee98b46914606"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=fix/quick-fix#576245183226ed78b84733e4b494d799601ec090"
 dependencies = [
  "getset",
  "jsonpath_lib",
@@ -3101,7 +3101,7 @@ dependencies = [
  "anyhow",
  "base64 0.21.2",
  "bytecount",
- "clap 4.3.15",
+ "clap 4.3.17",
  "fancy-regex",
  "fraction",
  "getrandom 0.2.10",
@@ -3643,7 +3643,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-core"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?branch=fix/quick-fix#173605bc95c89eb2c3bbedce68cee98b46914606"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=fix/quick-fix#576245183226ed78b84733e4b494d799601ec090"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3668,13 +3668,14 @@ dependencies = [
 [[package]]
 name = "oid4vc-manager"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?branch=fix/quick-fix#173605bc95c89eb2c3bbedce68cee98b46914606"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=fix/quick-fix#576245183226ed78b84733e4b494d799601ec090"
 dependencies = [
  "anyhow",
  "async-trait",
  "chrono",
  "did-key",
  "did_url",
+ "futures",
  "getset",
  "identity_core 0.7.0-alpha.6",
  "identity_credential 0.7.0-alpha.6",
@@ -3693,7 +3694,7 @@ dependencies = [
 [[package]]
 name = "oid4vci"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?branch=fix/quick-fix#173605bc95c89eb2c3bbedce68cee98b46914606"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=fix/quick-fix#576245183226ed78b84733e4b494d799601ec090"
 dependencies = [
  "anyhow",
  "getset",
@@ -3705,7 +3706,7 @@ dependencies = [
 [[package]]
 name = "oid4vp"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?branch=fix/quick-fix#173605bc95c89eb2c3bbedce68cee98b46914606"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=fix/quick-fix#576245183226ed78b84733e4b494d799601ec090"
 dependencies = [
  "anyhow",
  "dif-presentation-exchange",
@@ -4542,18 +4543,18 @@ dependencies = [
 
 [[package]]
 name = "serde"
-version = "1.0.171"
+version = "1.0.173"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "30e27d1e4fd7659406c492fd6cfaf2066ba8773de45ca75e855590f856dc34a9"
+checksum = "e91f70896d6720bc714a4a57d22fc91f1db634680e65c8efe13323f1fa38d53f"
 dependencies = [
  "serde_derive",
 ]
 
 [[package]]
 name = "serde_derive"
-version = "1.0.171"
+version = "1.0.173"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "389894603bd18c46fa56231694f8d827779c0951a667087194cf9de94ed24682"
+checksum = "a6250dde8342e0232232be9ca3db7aa40aceb5a3e5dd9bddbc00d99a007cde49"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -4767,7 +4768,7 @@ dependencies = [
 [[package]]
 name = "siopv2"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?branch=fix/quick-fix#173605bc95c89eb2c3bbedce68cee98b46914606"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=fix/quick-fix#576245183226ed78b84733e4b494d799601ec090"
 dependencies = [
  "anyhow",
  "async-trait",
