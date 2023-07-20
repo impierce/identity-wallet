@@ -1,5 +1,6 @@
 <script>
   import { page } from '$app/stores';
+  import { Button } from '@impierce/ui-components';
 </script>
 
 <div class="flex h-screen flex-col items-center justify-center p-4">
@@ -7,4 +8,5 @@
     <h2 class="font-mono text-red-600 text-sm">{$page.error.message}</h2>
     <div class="font-mono text-red-800 opacity-50 font-semibold text-sm pt-4">{$page.error.errorId}</div>
   </div>
+  <Button href="/profile" variant="ghost" class="m-4">Go back</Button>
 </div>

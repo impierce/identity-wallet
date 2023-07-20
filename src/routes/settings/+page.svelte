@@ -1,10 +1,9 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import LL from '../../i18n/i18n-svelte';
-  import { BottomNavigation, Button, LanguageSelect } from '@impierce/ui-components';
+  import { BottomNavigation, Button } from '@impierce/ui-components';
   import { Link, Eye, Heart } from 'svelte-heros-v2';
   import { state } from '../../stores';
-  import LocaleSelect from '$lib/LocaleSelect.svelte';
   import { fade, fly } from 'svelte/transition';
 
   let IOTA_MOCK_DID = 'did:iota:H3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV';
@@ -41,7 +40,6 @@
       <h2 class="font-semibold text-slate-700 dark:text-neutral-300">{$LL.APP_SETTINGS()}</h2>
       <div class="flex flex-col items-center justify-center space-y-4">
         <!-- <LocaleSelect /> -->
-        <LanguageSelect />
         <Button variant="destructive">{$LL.RESET_APP()}</Button>
       </div>
     </div>

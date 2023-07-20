@@ -1266,7 +1266,7 @@ dependencies = [
 [[package]]
 name = "dif-presentation-exchange"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?branch=fix/quick-fix#576245183226ed78b84733e4b494d799601ec090"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=57624518#576245183226ed78b84733e4b494d799601ec090"
 dependencies = [
  "getset",
  "jsonpath_lib",
@@ -3643,7 +3643,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-core"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?branch=fix/quick-fix#576245183226ed78b84733e4b494d799601ec090"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=57624518#576245183226ed78b84733e4b494d799601ec090"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3668,7 +3668,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-manager"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?branch=fix/quick-fix#576245183226ed78b84733e4b494d799601ec090"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=57624518#576245183226ed78b84733e4b494d799601ec090"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3694,7 +3694,7 @@ dependencies = [
 [[package]]
 name = "oid4vci"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?branch=fix/quick-fix#576245183226ed78b84733e4b494d799601ec090"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=57624518#576245183226ed78b84733e4b494d799601ec090"
 dependencies = [
  "anyhow",
  "getset",
@@ -3706,7 +3706,7 @@ dependencies = [
 [[package]]
 name = "oid4vp"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?branch=fix/quick-fix#576245183226ed78b84733e4b494d799601ec090"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=57624518#576245183226ed78b84733e4b494d799601ec090"
 dependencies = [
  "anyhow",
  "dif-presentation-exchange",
@@ -4768,7 +4768,7 @@ dependencies = [
 [[package]]
 name = "siopv2"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?branch=fix/quick-fix#576245183226ed78b84733e4b494d799601ec090"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=57624518#576245183226ed78b84733e4b494d799601ec090"
 dependencies = [
  "anyhow",
  "async-trait",

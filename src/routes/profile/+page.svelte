@@ -104,10 +104,10 @@
     class="fixed bottom-0 h-5/6 w-full rounded-t-3xl bg-slate-100 dark:bg-slate-700"
     in:fly={{ y: 24, opacity: 1 }}
   >
-    <div class="relative bottom-12 -mb-6 flex justify-center" in:fly={{ y: 12, opacity: 1 }}>
+    <div class="relative bottom-12 -mb-6 flex justify-center select-none" in:fly={{ y: 12, opacity: 1 }}>
       <Avatar {initials} size="large" />
     </div>
-    <div class="flex justify-center text-2xl font-semibold dark:text-neutral-300">
+    <div class="flex justify-center text-2xl font-semibold dark:text-neutral-300 select-none">
       {$state?.active_profile?.display_name}
     </div>
 
@@ -158,7 +158,7 @@
         </div>
       {:else}
         <!-- Hint -->
-        <div class="rounded-lg bg-slate-200 p-6">
+        <div class="rounded-lg bg-slate-200 p-6 select-none">
           <p class="pb-4 font-semibold text-slate-500">{$LL.CREATE_IDENTITY_SUCCESS_TITLE()}</p>
           <p class="text-slate-400">{$LL.CREATE_IDENTITY_SUCCESS_BODY()}</p>
         </div>
