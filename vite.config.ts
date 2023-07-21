@@ -44,8 +44,6 @@ export default defineConfig(async () => ({
     sourcemap: !!process.env.TAURI_DEBUG
   },
   optimizeDeps: {
-    exclude: [
-      '~icons/*'
-    ]
+    exclude: ['~icons/*']
   }
 }));

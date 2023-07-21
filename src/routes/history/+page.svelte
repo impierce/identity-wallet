@@ -10,7 +10,7 @@
     class="flex w-screen grow flex-col justify-center space-y-8 p-8"
     in:fly={{ x: -32, opacity: 1 }}
   >
-    <div class="rounded-lg bg-slate-200 p-6 dark:bg-slate-800 select-none">
+    <div class="select-none rounded-lg bg-slate-200 p-6 dark:bg-slate-800">
       <!-- <p class="pb-4 font-semibold text-slate-500">{$LL.CREATE_IDENTITY_SUCCESS_TITLE()}</p> -->
       <p class="text-center text-slate-400">{$LL.NO_HISTORY()}</p>
     </div>

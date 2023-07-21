@@ -112,8 +112,12 @@
         }}
       >
         <!-- TODO: bug in shadcn-svelte: "Alert Dialog does not bind to on:click", https://github.com/huntabyte/shadcn-svelte/issues/137 -->
-        <Button on:click={() => dispatch({ type: '[Authenticate] Credentials selected', payload: { credential_index: 0 } })}
-          >{$LL.SHARE_CREDENTIALS_CONFIRM()}</Button
+        <Button
+          on:click={() =>
+            dispatch({
+              type: '[Authenticate] Credentials selected',
+              payload: { credential_index: 0 }
+            })}>{$LL.SHARE_CREDENTIALS_CONFIRM()}</Button
         >
       </AlertDialogAction>
     </AlertDialogFooter>

@@ -34,19 +34,27 @@
     const isMobile = userAgent.includes('android') || userAgent.includes('iphone');
     info(`userAgent: ${userAgent}, isMobile: ${isMobile}`);
     if (true) {
-      await checkPermissions().then((res) => {
-        info(`app has permissions to access the camera: ${res}`);
-        if (res === 'granted' || res === 'default') {
-          goto('/scanner');
-        } else {
-          warn('app does not have permissions to access the camera');
-        }
-      }).catch((err) => {
-        warn(`error checking permissions: ${err}`);
-        const TEST_SIOP_REQUEST_URL = 'siopv2://idtoken?client_id=did%3Akey%3Az6MkpuwK1TrrssGe7siCiJU2K5CbSu3mDLU4Y3z45wAepg7J&request_uri=http%3A%2F%2F192.168.1.234%3A4242%2Fsiop%2Frequest-uri';
-        // const TEST_SIOP_REQUEST_URL = 'siopv2://idtoken?client_id=did%3Akey%3Az6MkpuwK1TrrssGe7siCiJU2K5CbSu3mDLU4Y3z45wAepg7J&request_uri=http%3A%2F%2F192.168.178.42%3A4242%2Fsiop%2Frequest-uri';
-        dispatch({ type: '[Authenticate] Read request', payload: { request_url: TEST_SIOP_REQUEST_URL } });
-      });
+      await checkPermissions()
+        .then((res) => {
+          info(`app has permissions to access the camera: ${res}`);
+          // TODO: ask user to open settings (https://github.com/impierce/identity-wallet/issues/23)
+          if (res === 'granted' || res === 'default') {
+            goto('/scanner');
+          } else {
+            warn('app does not have permissions to access the camera');
+            openAppSettings();
+          }
+        })
+        .catch((err) => {
+          warn(`error checking permissions: ${err}`);
+          const TEST_SIOP_REQUEST_URL =
+            'siopv2://idtoken?client_id=did%3Akey%3Az6MkpuwK1TrrssGe7siCiJU2K5CbSu3mDLU4Y3z45wAepg7J&request_uri=http%3A%2F%2F192.168.1.234%3A4242%2Fsiop%2Frequest-uri';
+          // const TEST_SIOP_REQUEST_URL = 'siopv2://idtoken?client_id=did%3Akey%3Az6MkpuwK1TrrssGe7siCiJU2K5CbSu3mDLU4Y3z45wAepg7J&request_uri=http%3A%2F%2F192.168.178.42%3A4242%2Fsiop%2Frequest-uri';
+          dispatch({
+            type: '[Authenticate] Read request',
+            payload: { request_url: TEST_SIOP_REQUEST_URL }
+          });
+        });
     } else {
       dispatch({ type: '[QR Code] Scanned', payload: { rawString: 'MOCK' } });
     }

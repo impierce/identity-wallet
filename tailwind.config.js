@@ -13,7 +13,7 @@ export default {
       //   sunrise: '#FDDA0D',
       // },
       boxShadow: {
-        'neon': '0 0 5px theme("colors.violet.200"), 0 0 20px theme("colors.violet.700")'
+        neon: '0 0 5px theme("colors.violet.200"), 0 0 20px theme("colors.violet.700")'
       }
     }
   },

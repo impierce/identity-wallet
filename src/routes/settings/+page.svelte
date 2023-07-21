@@ -40,7 +40,11 @@
     <div class="space-y-4">
       <h2 class="font-semibold text-slate-700 dark:text-neutral-300">{$LL.APP_SETTINGS()}</h2>
       <div class="flex flex-col items-center justify-center space-y-4">
-        <LanguageSelect selected={$state.locale} on:value={(e) => dispatch({ type: '[Settings] Set locale', payload: { locale: e.detail } })} />
+        <LanguageSelect
+          selected={$state.locale}
+          on:value={(e) =>
+            dispatch({ type: '[Settings] Set locale', payload: { locale: e.detail } })}
+        />
         <Button variant="destructive">{$LL.RESET_APP()}</Button>
       </div>
     </div>
