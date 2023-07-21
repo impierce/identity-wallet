@@ -42,5 +42,10 @@ export default defineConfig(async () => ({
     minify: !process.env.TAURI_DEBUG ? 'esbuild' : false,
     // produce sourcemaps for debug builds
     sourcemap: !!process.env.TAURI_DEBUG
+  },
+  optimizeDeps: {
+    exclude: [
+      '~icons/*'
+    ]
   }
 }));
