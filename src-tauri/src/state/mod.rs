@@ -18,6 +18,7 @@ pub struct AppState {
     pub locale: Mutex<String>,
     pub credentials: Mutex<Option<Vec<Credential>>>,
     pub current_user_flow: Mutex<Option<CurrentUserFlow>>,
+    pub debug_messages: Mutex<Vec<String>>,
 }
 
 /// A representation of the current state which is used for serialization.
@@ -26,9 +27,11 @@ pub struct AppState {
 pub struct TransferState {
     pub active_profile: Option<Profile>,
     pub locale: String,
-    #[ts(optional, type = "object")] // TODO: what is the correct type here? Map<String, String>? Object? null? undefined? any? unknown?
+    #[ts(optional, type = "object")]
+    // TODO: what is the correct type here? Map<String, String>? Object? null? undefined? any? unknown?
     pub credentials: Option<Vec<Credential>>,
     pub current_user_flow: Option<CurrentUserFlow>,
+    pub debug_messages: Vec<String>,
 }
 
 impl From<&AppState> for TransferState {
@@ -38,6 +41,7 @@ impl From<&AppState> for TransferState {
             locale: (*state.locale.lock().unwrap()).to_string(),
             credentials: state.credentials.lock().unwrap().clone(),
             current_user_flow: state.current_user_flow.lock().unwrap().clone(),
+            debug_messages: state.debug_messages.lock().unwrap().clone(),
         }
     }
 }

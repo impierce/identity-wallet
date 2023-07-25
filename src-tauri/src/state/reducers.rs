@@ -130,10 +130,9 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
     let key = DecodingKey::from_secret(&[]);
     let mut validation = Validation::new(Algorithm::EdDSA);
     validation.insecure_disable_signature_validation();
-    let credential_0_as_json =
-        decode::<serde_json::Value>(&VERIFIABLE_CREDENTIALS.first().unwrap(), &key, &validation)
-            .unwrap()
-            .claims;
+    let credential_0_as_json = decode::<serde_json::Value>(&VERIFIABLE_CREDENTIALS.first().unwrap(), &key, &validation)
+        .unwrap()
+        .claims;
     let credential_0 = serde_json::from_value::<Credential>(credential_0_as_json.get("vc").unwrap().clone()).unwrap();
 
     *state.credentials.lock().unwrap() = Some(vec![credential_0]);
@@ -205,9 +204,13 @@ pub async fn read_request(state: &AppState, action: Action) -> anyhow::Result<()
 
 // Sends the authorization response including the verifiable credentials.
 pub async fn send_response(state: &AppState, action: Action) -> anyhow::Result<()> {
+    info!("||DEBUG|| unable to read payload");
+    *state.debug_messages.lock().unwrap() = vec!["unable to read payload".into()];
     let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
     let credential_index: usize = serde_json::from_value(payload["credential_index"].clone())?;
 
+    info!("||DEBUG|| no active Authentication Request found");
+    *state.debug_messages.lock().unwrap() = vec!["no active Authentication Request found".into()];
     let authorization_request = state
         .active_authorization_request
         .lock()
@@ -216,10 +219,14 @@ pub async fn send_response(state: &AppState, action: Action) -> anyhow::Result<(
         .ok_or_else(|| anyhow::anyhow!("no active authentication request found"))?
         .clone();
 
+    info!("||DEBUG|| credential not found");
+    *state.debug_messages.lock().unwrap() = vec!["credential not found".into()];
     let verifiable_credential = VERIFIABLE_CREDENTIALS
         .get(credential_index)
         .ok_or(anyhow::anyhow!("credential not found"))?;
 
+    info!("||DEBUG|| decoding the verifiable credential");
+    *state.debug_messages.lock().unwrap() = vec!["decoding the verifiable credential".into()];
     // Decode the verifiable credential from the JWT without validating.
     let key = DecodingKey::from_secret(&[]);
     let mut validation = Validation::new(Algorithm::EdDSA);
@@ -228,6 +235,8 @@ pub async fn send_response(state: &AppState, action: Action) -> anyhow::Result<(
         .unwrap()
         .claims;
 
+    info!("||DEBUG|| presentation definition not found");
+    *state.debug_messages.lock().unwrap() = vec!["presentation definition not found".into()];
     // Create presentation submission using the presentation definition and the verifiable credential.
     let presentation_submission = create_presentation_submission(
         authorization_request
@@ -237,6 +246,8 @@ pub async fn send_response(state: &AppState, action: Action) -> anyhow::Result<(
         &verifiable_credential,
     )?;
 
+    info!("||DEBUG|| get the subject did");
+    *state.debug_messages.lock().unwrap() = vec!["get the subject did".into()];
     let subject_did = state
         .active_profile
         .lock()
@@ -246,6 +257,8 @@ pub async fn send_response(state: &AppState, action: Action) -> anyhow::Result<(
         .primary_did
         .clone();
 
+    info!("||DEBUG|| credential not found");
+    *state.debug_messages.lock().unwrap() = vec!["credential not found".into()];
     // Create a verifiable presentation using the JWT.
     let verifiable_presentation = JwtPresentation::builder(Url::parse(subject_did).unwrap(), Object::new())
         .credential(Jwt::from(
@@ -257,20 +270,23 @@ pub async fn send_response(state: &AppState, action: Action) -> anyhow::Result<(
         .build()
         .unwrap();
 
+    info!("||DEBUG|| get the provider");
+    *state.debug_messages.lock().unwrap() = vec!["get the provider".into()];
     let guard = crate::PROVIDER_MANAGER.lock().await;
     let provider = guard.as_ref().unwrap();
 
-    let response = provider
-        .generate_response(
-            authorization_request,
-            Default::default(),
-            Some(verifiable_presentation),
-            Some(presentation_submission),
-        )?;
-    info!("response generated: {:?}", response);
+    info!("||DEBUG|| generating response");
+    *state.debug_messages.lock().unwrap() = vec!["generating response".into()];
+    let response = provider.generate_response(
+        authorization_request,
+        Default::default(),
+        Some(verifiable_presentation),
+        Some(presentation_submission),
+    )?;
+    info!("||DEBUG|| response generated: {:?}", response);
 
     provider.send_response(response).await?;
-    info!("response successfully sent");
+    info!("||DEBUG|| response successfully sent");
 
     *state.current_user_flow.lock().unwrap() = None;
 
@@ -383,6 +399,7 @@ mod tests {
             locale: "nl".to_string().into(),
             credentials: None.into(),
             current_user_flow: None.into(),
+            debug_messages: None.into(),
         };
 
         assert!(reset_state(

@@ -30,6 +30,7 @@ pub async fn handle_action(
                     r#type: CurrentUserFlowType::Redirect,
                     target: "welcome".to_string(),
                 })),
+                debug_messages: vec![],
             });
 
             // TODO: find a better way to populate all fields with values from json file
