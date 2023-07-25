@@ -2,7 +2,14 @@
   import '../app.css';
 
   import { fly } from 'svelte/transition';
-  import { ChevronUp, ChevronDown, ArrowLeft, Trash, UserPlus, Clipboard } from 'svelte-heros-v2';
+  import {
+    ChevronUp,
+    ChevronDown,
+    ArrowLeft,
+    Trash,
+    Clipboard,
+    ExclamationTriangle
+  } from 'svelte-heros-v2';
   import { state } from '../stores';
   import LL from '../i18n/i18n-svelte';
   import { onMount } from 'svelte';
@@ -40,6 +47,8 @@
   let alertOpen = false;
   let alertOptions: string[] = [];
   let alertTitle: string = 'title';
+
+  let showDebugMessages = false;
 
   $: {
     // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
@@ -99,6 +108,10 @@
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <button
+        class="flex-shrink-0 rounded-full bg-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
+        on:click={() => (showDebugMessages = !showDebugMessages)}><ExclamationTriangle /></button
+      >
     </div>
   {/if}
   <button
@@ -118,6 +131,17 @@
     <slot />
   </div>
   <Alert isOpen={alertOpen} title={alertTitle} options={alertOptions} />
+
+  {#if showDebugMessages}
+    <div class="absolute left-0 top-16 z-50 h-screen w-screen bg-orange-100">
+      <p class="p-4 text-center text-xs font-semibold uppercase text-orange-800">debug messages</p>
+      {#each messages as message}
+        <div class="mx-2 mb-2 rounded bg-orange-200 bg-opacity-60 p-2">
+          <div class="break-all font-mono text-xs text-orange-700">{message}</div>
+        </div>
+      {/each}
+    </div>
+  {/if}
 </main>
 
 <style>
