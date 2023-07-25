@@ -204,26 +204,51 @@ pub async fn read_request(state: &AppState, action: Action) -> anyhow::Result<()
 
 // Sends the authorization response including the verifiable credentials.
 pub async fn send_response(state: &AppState, action: Action) -> anyhow::Result<()> {
-    info!("||DEBUG|| unable to read payload");
-    *state.debug_messages.lock().unwrap() = vec!["unable to read payload".into()];
-    let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
+    // let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
+    let payload = match action.payload {
+        Some(payload) => payload,
+        None => {
+            info!("||DEBUG|| unable to read payload");
+            *state.debug_messages.lock().unwrap() = vec!["unable to read payload".into()];
+            return Err(anyhow::anyhow!("unable to read payload"));
+        }
+    };
     let credential_index: usize = serde_json::from_value(payload["credential_index"].clone())?;
 
-    info!("||DEBUG|| no active Authentication Request found");
-    *state.debug_messages.lock().unwrap() = vec!["no active Authentication Request found".into()];
-    let authorization_request = state
+    // let authorization_request = state
+    //     .active_authorization_request
+    //     .lock()
+    //     .map_err(|_| anyhow::anyhow!("failed to obtain lock on active_authentication_request"))?
+    //     .as_ref()
+    //     .ok_or_else(|| anyhow::anyhow!("no active authentication request found"))?
+    //     .clone();
+    let authorization_request = match state
         .active_authorization_request
         .lock()
         .map_err(|_| anyhow::anyhow!("failed to obtain lock on active_authentication_request"))?
         .as_ref()
-        .ok_or_else(|| anyhow::anyhow!("no active authentication request found"))?
-        .clone();
+    {
+        Some(authorization_request) => authorization_request.clone(),
+        None => {
+            info!("||DEBUG|| no active Authentication Request found");
+            *state.debug_messages.lock().unwrap() = vec!["no active Authentication Request found".into()];
+            return Err(anyhow::anyhow!("no active authentication request found"));
+        }
+    };
 
     info!("||DEBUG|| credential not found");
     *state.debug_messages.lock().unwrap() = vec!["credential not found".into()];
-    let verifiable_credential = VERIFIABLE_CREDENTIALS
-        .get(credential_index)
-        .ok_or(anyhow::anyhow!("credential not found"))?;
+    // let verifiable_credential = VERIFIABLE_CREDENTIALS
+    //     .get(credential_index)
+    //     .ok_or(anyhow::anyhow!("credential not found"))?;
+    let verifiable_credential = match VERIFIABLE_CREDENTIALS.get(credential_index) {
+        Some(verifiable_credential) => verifiable_credential,
+        None => {
+            info!("||DEBUG|| credential not found");
+            *state.debug_messages.lock().unwrap() = vec!["credential not found".into()];
+            return Err(anyhow::anyhow!("credential not found"));
+        }
+    };
 
     info!("||DEBUG|| decoding the verifiable credential");
     *state.debug_messages.lock().unwrap() = vec!["decoding the verifiable credential".into()];
@@ -235,14 +260,23 @@ pub async fn send_response(state: &AppState, action: Action) -> anyhow::Result<(
         .unwrap()
         .claims;
 
-    info!("||DEBUG|| presentation definition not found");
-    *state.debug_messages.lock().unwrap() = vec!["presentation definition not found".into()];
     // Create presentation submission using the presentation definition and the verifiable credential.
+    // let presentation_submission = create_presentation_submission(
+    //     authorization_request
+    //         .presentation_definition()
+    //         .as_ref()
+    //         .expect("presentation definition not found"),
+    //     &verifiable_credential,
+    // )?;
     let presentation_submission = create_presentation_submission(
-        authorization_request
-            .presentation_definition()
-            .as_ref()
-            .expect("presentation definition not found"),
+        match authorization_request.presentation_definition().as_ref() {
+            Some(presentation_definition) => presentation_definition,
+            None => {
+                info!("||DEBUG|| presentation definition not found");
+                *state.debug_messages.lock().unwrap() = vec!["presentation definition not found".into()];
+                return Err(anyhow::anyhow!("presentation definition not found"));
+            }
+        },
         &verifiable_credential,
     )?;
 
