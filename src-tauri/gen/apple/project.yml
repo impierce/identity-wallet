@@ -10,7 +10,7 @@ configs:
 settingGroups:
   app:
     base:
-      PRODUCT_NAME: identity-wallet
+      PRODUCT_NAME: UniMe
       PRODUCT_BUNDLE_IDENTIFIER: com.impierce.identity-wallet
       DEVELOPMENT_TEAM: com.impierce.dev
 targetTemplates:

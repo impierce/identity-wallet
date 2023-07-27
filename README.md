@@ -1,4 +1,4 @@
-# Identity Wallet
+# UniMe - Identity Wallet
 
 A Tauri-based Identity Wallet for people to manage Decentralized Identities and Verifiable Credentials.
 
