@@ -39,7 +39,7 @@
           info(`app has permissions to access the camera: ${res}`);
           // TODO: ask user to open settings (https://github.com/impierce/identity-wallet/issues/23)
           if (res === 'granted' || res === 'default') {
-            goto('/scanner');
+            goto('/scan');
           } else {
             warn('app does not have permissions to access the camera');
             openAppSettings();

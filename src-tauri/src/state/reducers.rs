@@ -76,7 +76,7 @@ pub fn reset_state(state: &AppState, _action: Action) -> anyhow::Result<()> {
 pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Result<()> {
     let did_document = generate_dev_did().await?;
     let profile = Profile {
-        display_name: "Ferris Crabman".to_string(),
+        display_name: "Ferris Rustacean".to_string(),
         primary_did: did_document.id,
     };
     *state.active_profile.lock().unwrap() = Some(profile);
@@ -138,7 +138,7 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
     *state.credentials.lock().unwrap() = Some(vec![credential_0]);
     *state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Redirect(Redirect {
         r#type: CurrentUserFlowType::Redirect,
-        target: "profile".to_string(),
+        target: "home".to_string(),
     }));
     Ok(())
 }

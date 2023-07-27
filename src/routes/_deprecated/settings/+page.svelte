@@ -1,9 +1,9 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import LL from '../../i18n/i18n-svelte';
+  import LL from '../../../i18n/i18n-svelte';
   import { BottomNavigation, Button, LanguageSelect } from '@impierce/ui-components';
   import { Link, Eye, Heart } from 'svelte-heros-v2';
-  import { state } from '../../stores';
+  import { state } from '../../../stores';
   import { fade, fly } from 'svelte/transition';
   import { dispatch } from '$lib/dispatcher';
 
