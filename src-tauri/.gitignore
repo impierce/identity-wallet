@@ -1,5 +1,4 @@
 /target/
-/gen
 .cargo
 
 /gen/android/key.properties
