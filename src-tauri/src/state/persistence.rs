@@ -1,8 +1,8 @@
+use log::debug;
 use tokio::{
     fs::{read, remove_file, File},
     io::AsyncWriteExt,
 };
-use tracing::info;
 
 use crate::state::TransferState;
 use crate::STATE_FILE;
@@ -14,7 +14,7 @@ pub async fn load_state() -> anyhow::Result<TransferState> {
     let bytes = read(state_file).await?;
     let content = String::from_utf8(bytes)?;
     let transfer_state: TransferState = serde_json::from_str(&content)?;
-    info!("state loaded from disk");
+    debug!("state loaded from disk");
     Ok(transfer_state)
 }
 
@@ -24,7 +24,7 @@ pub async fn save_state(transfer_state: TransferState) -> anyhow::Result<()> {
     let mut file = File::create(state_file).await?;
     file.write_all(serde_json::to_string(&transfer_state)?.as_bytes())
         .await?;
-    info!("state saved to disk");
+    debug!("state saved to disk");
     Ok(())
 }
 
@@ -32,14 +32,14 @@ pub async fn save_state(transfer_state: TransferState) -> anyhow::Result<()> {
 pub async fn delete_state_file() -> anyhow::Result<()> {
     let state_file = STATE_FILE.lock().unwrap().clone();
     remove_file(state_file).await?;
-    info!("state deleted from disk");
+    debug!("state deleted from disk");
     Ok(())
 }
 
 pub async fn delete_stronghold() -> anyhow::Result<()> {
     let stronghold_file = crate::STRONGHOLD.lock().unwrap().clone();
     remove_file(stronghold_file).await?;
-    info!("stronghold deleted from disk");
+    debug!("stronghold deleted from disk");
     Ok(())
 }
 

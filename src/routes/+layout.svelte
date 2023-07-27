@@ -2,8 +2,16 @@
   import '../app.css';
 
   import { fly } from 'svelte/transition';
-  import { ChevronUp, ChevronDown, ArrowLeft, Trash, UserPlus, Clipboard } from 'svelte-heros-v2';
+  import {
+    ChevronUp,
+    ChevronDown,
+    ArrowLeft,
+    Trash,
+    Clipboard,
+    ExclamationTriangle
+  } from 'svelte-heros-v2';
   import { state } from '../stores';
+  import LL from '../i18n/i18n-svelte';
   import { onMount } from 'svelte';
   import { loadAllLocales } from '../i18n/i18n-util.sync';
   import { dispatch } from '$lib/dispatcher';
@@ -20,24 +28,44 @@
     Button
   } from '@impierce/ui-components';
   import { readText } from '@tauri-apps/plugin-clipboard-manager';
+  import { trace, info, error, attachConsole } from '@tauri-apps/plugin-log';
+  import Alert from '$lib/alert/Alert.svelte';
+  import type { CurrentUserFlowType } from '../../src-tauri/bindings/user-flow/CurrentUserFlowType';
+  import type { Selection } from '../../src-tauri/bindings/user-flow/Selection';
 
   let clipboard: string | undefined;
 
   onMount(async () => {
-    console.log('+layout.svelte: onMount');
+    const detach = await attachConsole();
     loadAllLocales(); //TODO: performance: only load locale on user request
     dispatch({ type: '[App] Get state' });
   });
 
   let showDevMode = false;
 
+  // alert (selection)
+  let alertOpen = false;
+  let alertOptions: string[] = [];
+  let alertTitle: string = 'title';
+
+  let showDebugMessages = false;
+
   $: {
     // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
-    console.log('state', $state);
+    console.log('+layout.svelte: state', $state);
+    if ($state?.current_user_flow?.type === 'select-credentials') {
+      alertOpen = true;
+      alertOptions = ($state.current_user_flow as Selection).options;
+      alertTitle = $LL.SHARE_CREDENTIALS_TITLE();
+    }
+    if ($state?.current_user_flow === null) {
+      alertOpen = false;
+    }
   }
 </script>
 
-<main class="h-screen bg-slate-100">
+<main class="h-screen">
+  <!-- begin: dev mode -->
   {#if showDevMode}
     <div
       class="hide-scrollbar fixed z-10 flex w-full space-x-4 overflow-x-auto bg-gradient-to-r from-red-200 to-red-300 p-4 shadow-md"
@@ -80,12 +108,14 @@
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <button
+        class="flex-shrink-0 rounded-full bg-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
+        on:click={() => (showDebugMessages = !showDebugMessages)}><ExclamationTriangle /></button
+      >
     </div>
   {/if}
   <button
-    class="fixed right-3 top-3 z-10 rounded-full p-2 hover:bg-red-200 {showDevMode
-      ? 'bg-red-200'
-      : ''}"
+    class="safe-top-padding absolute right-3 z-10 rounded-full bg-red-200 p-2"
     on:click={() => (showDevMode = !showDevMode)}
   >
     {#if showDevMode}
@@ -100,4 +130,22 @@
     <!-- <Route path="profile" component={Profile} primary={false} /> -->
     <slot />
   </div>
+  <Alert isOpen={alertOpen} title={alertTitle} options={alertOptions} />
+
+  {#if showDebugMessages}
+    <div class="absolute left-0 top-16 z-50 h-screen w-screen bg-orange-100">
+      <p class="p-4 text-center text-xs font-semibold uppercase text-orange-800">debug messages</p>
+      {#each messages as message}
+        <div class="mx-2 mb-2 rounded bg-orange-200 bg-opacity-60 p-2">
+          <div class="break-all font-mono text-xs text-orange-700">{message}</div>
+        </div>
+      {/each}
+    </div>
+  {/if}
 </main>
+
+<style>
+  .safe-top-padding {
+    top: calc(env(safe-area-inset-top) + 0.75rem);
+  }
+</style>

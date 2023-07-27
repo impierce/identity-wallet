@@ -56,6 +56,34 @@ type RootTranslation = {
 	 * Y​o​u​ ​h​a​v​e​n​'​t​ ​u​s​e​d​ ​a​n​y​ ​c​r​e​d​e​n​t​i​a​l​s​ ​y​e​t​.
 	 */
 	NO_HISTORY: string
+	/**
+	 * S​e​l​e​c​t​ ​i​n​f​o​r​m​a​t​i​o​n​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​s​h​a​r​e
+	 */
+	SHARE_CREDENTIALS_TITLE: string
+	/**
+	 * S​h​a​r​e
+	 */
+	SHARE_CREDENTIALS_CONFIRM: string
+	/**
+	 * C​a​n​c​e​l
+	 */
+	CANCEL: string
+	/**
+	 * N​a​m​e
+	 */
+	PROFILE_NAME: string
+	/**
+	 * P​a​s​s​w​o​r​d
+	 */
+	PASSWORD: string
+	/**
+	 * Y​o​u​ ​c​a​n​ ​c​h​a​n​g​e​ ​t​h​i​s​ ​l​a​t​e​r​.
+	 */
+	CHANGE_LATER: string
+	/**
+	 * P​l​e​a​s​e​ ​c​h​o​o​s​e​ ​a​ ​s​t​r​o​n​g​ ​p​a​s​s​w​o​r​d​.
+	 */
+	STRONG_PASSWORD: string
 }
 
 export type TranslationFunctions = {
@@ -99,6 +127,34 @@ export type TranslationFunctions = {
 	 * You haven't used any credentials yet.
 	 */
 	NO_HISTORY: () => LocalizedString
+	/**
+	 * Select information you want to share
+	 */
+	SHARE_CREDENTIALS_TITLE: () => LocalizedString
+	/**
+	 * Share
+	 */
+	SHARE_CREDENTIALS_CONFIRM: () => LocalizedString
+	/**
+	 * Cancel
+	 */
+	CANCEL: () => LocalizedString
+	/**
+	 * Name
+	 */
+	PROFILE_NAME: () => LocalizedString
+	/**
+	 * Password
+	 */
+	PASSWORD: () => LocalizedString
+	/**
+	 * You can change this later.
+	 */
+	CHANGE_LATER: () => LocalizedString
+	/**
+	 * Please choose a strong password.
+	 */
+	STRONG_PASSWORD: () => LocalizedString
 }
 
 export type Formatters = {}

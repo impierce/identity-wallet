@@ -11,7 +11,14 @@ const de = {
   APP_SETTINGS: 'App-Einstellungen',
   YOUR_DIDS: 'Deine DIDs',
   RESET_APP: 'App zurücksetzen',
-  NO_HISTORY: 'Du hast noch keine Credentials verwendet.'
+  NO_HISTORY: 'Du hast noch keine Credentials verwendet.',
+  SHARE_CREDENTIALS_TITLE: 'Wähle Informationen aus, die du teilen möchtest',
+  SHARE_CREDENTIALS_CONFIRM: 'Freigeben',
+  CANCEL: 'Abbrechen',
+  PROFILE_NAME: 'Name',
+  PASSWORD: 'Passwort',
+  CHANGE_LATER: 'Du kannst den Namen später ändern.',
+  STRONG_PASSWORD: 'Bitte wähle ein starkes Passwort.'
 } satisfies Translation;
 
 export default de;

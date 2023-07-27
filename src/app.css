@@ -25,9 +25,22 @@
 
 /* iOS specific styling, https://github.com/tauri-apps/tauri/issues/6961 */
 body {
-  padding-top: env(safe-area-inset-top);
-  padding-bottom: env(safe-area-inset-bottom);
+  /* padding-top: env(safe-area-inset-top); */
+  /* padding-bottom: env(safe-area-inset-bottom); */
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+    env(safe-area-inset-left);
   height: 100vh;
-  background-color: #1d4ed8; /* Blue 700 */
+  width: 100vw;
+  /* Blue 700 */
+  /* background-color: #1d4ed8; */
   overflow: hidden; /* disables scrolling */
 }
+
+.transparent {
+  background-color: transparent;
+}
+
+/**
+ * TODO (when supporting landscape orientation):
+ * https://kulturbanause.de/blog/websites-fuer-das-iphone-x-optimieren-weisse-balken-entfernen-viewport-anpassen-safe-area-festlegen/
+*/

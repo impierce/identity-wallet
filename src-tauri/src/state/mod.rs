@@ -1,8 +1,12 @@
 pub mod actions;
 pub mod persistence;
 pub mod reducers;
+pub mod user_flow;
 
+use crate::state::user_flow::CurrentUserFlow;
+use identity_credential::credential::Credential;
 use serde::{Deserialize, Serialize};
+use siopv2::AuthorizationRequest;
 use std::sync::Mutex;
 use ts_rs::TS;
 
@@ -10,7 +14,11 @@ use ts_rs::TS;
 #[derive(Default)]
 pub struct AppState {
     pub active_profile: Mutex<Option<Profile>>,
+    pub active_authorization_request: Mutex<Option<AuthorizationRequest>>,
     pub locale: Mutex<String>,
+    pub credentials: Mutex<Option<Vec<Credential>>>,
+    pub current_user_flow: Mutex<Option<CurrentUserFlow>>,
+    pub debug_messages: Mutex<Vec<String>>,
 }
 
 /// A representation of the current state which is used for serialization.
@@ -19,6 +27,11 @@ pub struct AppState {
 pub struct TransferState {
     pub active_profile: Option<Profile>,
     pub locale: String,
+    #[ts(optional, type = "object")]
+    // TODO: what is the correct type here? Map<String, String>? Object? null? undefined? any? unknown?
+    pub credentials: Option<Vec<Credential>>,
+    pub current_user_flow: Option<CurrentUserFlow>,
+    pub debug_messages: Vec<String>,
 }
 
 impl From<&AppState> for TransferState {
@@ -26,6 +39,9 @@ impl From<&AppState> for TransferState {
         TransferState {
             active_profile: state.active_profile.lock().unwrap().clone(),
             locale: (*state.locale.lock().unwrap()).to_string(),
+            credentials: state.credentials.lock().unwrap().clone(),
+            current_user_flow: state.current_user_flow.lock().unwrap().clone(),
+            debug_messages: state.debug_messages.lock().unwrap().clone(),
         }
     }
 }

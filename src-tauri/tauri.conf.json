@@ -8,8 +8,8 @@
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "identity-wallet",
-    "version": "0.1.0"
+    "productName": "UniMe",
+    "version": "0.1.7"
   },
   "tauri": {
     "bundle": {
@@ -22,7 +22,10 @@
         "icons/icon.ico"
       ],
       "identifier": "com.impierce.dev",
-      "targets": "all"
+      "targets": "all",
+      "iOS": {
+        "developmentTeam": "com.impierce.dev"
+      }
     },
     "security": {
       "csp": null
@@ -31,7 +34,7 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "title": "identity-wallet",
+        "title": "UniMe - Identity Wallet",
         "width": 390,
         "height": 844
       }
