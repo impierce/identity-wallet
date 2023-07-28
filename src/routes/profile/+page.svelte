@@ -157,7 +157,7 @@
               </AlertDialogContent>
             </AlertDialog>
           {/each}
-        </div>
+          </div>
       {:else}
         <!-- Hint -->
         <div class="select-none rounded-lg bg-slate-200 p-6">

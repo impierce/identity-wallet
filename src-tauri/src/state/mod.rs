@@ -5,6 +5,7 @@ pub mod user_flow;
 
 use crate::state::user_flow::CurrentUserFlow;
 use identity_credential::credential::Credential;
+use oid4vci::{credential_format_profiles::CredentialFormats, credential_offer::CredentialOffer};
 use serde::{Deserialize, Serialize};
 use siopv2::AuthorizationRequest;
 use std::sync::Mutex;
@@ -17,6 +18,8 @@ pub struct AppState {
     pub active_authorization_request: Mutex<Option<AuthorizationRequest>>,
     pub locale: Mutex<String>,
     pub credentials: Mutex<Option<Vec<Credential>>>,
+    pub verifiable_credentials: Mutex<Option<Vec<String>>>,
+    pub credential_offers: Mutex<Option<Vec<CredentialOffer<CredentialFormats>>>>,
     pub current_user_flow: Mutex<Option<CurrentUserFlow>>,
     pub debug_messages: Mutex<Vec<String>>,
 }
@@ -30,6 +33,9 @@ pub struct TransferState {
     #[ts(optional, type = "object")]
     // TODO: what is the correct type here? Map<String, String>? Object? null? undefined? any? unknown?
     pub credentials: Option<Vec<Credential>>,
+    pub verifiable_credentials: Option<Vec<String>>,
+    #[ts(optional, type = "Array<Map<string, string>>")]
+    pub credential_offers: Option<Vec<CredentialOffer<CredentialFormats>>>,
     pub current_user_flow: Option<CurrentUserFlow>,
     pub debug_messages: Vec<String>,
 }
@@ -40,6 +46,8 @@ impl From<&AppState> for TransferState {
             active_profile: state.active_profile.lock().unwrap().clone(),
             locale: (*state.locale.lock().unwrap()).to_string(),
             credentials: state.credentials.lock().unwrap().clone(),
+            verifiable_credentials: state.verifiable_credentials.lock().unwrap().clone(),
+            credential_offers: state.credential_offers.lock().unwrap().clone(),
             current_user_flow: state.current_user_flow.lock().unwrap().clone(),
             debug_messages: state.debug_messages.lock().unwrap().clone(),
         }

@@ -32,6 +32,7 @@
   import Alert from '$lib/alert/Alert.svelte';
   import type { CurrentUserFlowType } from '../../src-tauri/bindings/user-flow/CurrentUserFlowType';
   import type { Selection } from '../../src-tauri/bindings/user-flow/Selection';
+  import type { Offer } from '../../src-tauri/bindings/user-flow/Offer';
 
   let clipboard: string | undefined;
 
@@ -57,6 +58,11 @@
       alertOpen = true;
       alertOptions = ($state.current_user_flow as Selection).options;
       alertTitle = $LL.SHARE_CREDENTIALS_TITLE();
+    }
+    if ($state?.current_user_flow?.type === 'offer') {
+      alertOpen = true;
+      alertOptions = ($state.current_user_flow as Offer).options;
+      alertTitle = $LL.SELECT_OFFER_TITLE();
     }
     if ($state?.current_user_flow === null) {
       alertOpen = false;

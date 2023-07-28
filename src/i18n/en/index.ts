@@ -14,6 +14,8 @@ const en = {
   NO_HISTORY: `You haven't used any credentials yet.`,
   SHARE_CREDENTIALS_TITLE: 'Select information you want to share',
   SHARE_CREDENTIALS_CONFIRM: 'Share',
+  SELECT_OFFER_TITLE: 'Select the credential you want to add to your wallet',
+  SELECT_OFFER_CONFIRM: 'Add',
   CANCEL: 'Cancel',
   PROFILE_NAME: 'Name',
   PASSWORD: 'Password',

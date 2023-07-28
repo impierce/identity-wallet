@@ -30,6 +30,16 @@ pub struct Selection {
     pub options: Vec<String>,
 }
 
+#[derive(Clone, Serialize, Deserialize, Debug, TS)]
+#[ts(export, export_to = "bindings/user-flow/Offer.ts")]
+pub struct Offer {
+    pub r#type: CurrentUserFlowType,
+    /// An option is in the form: (<option_name>, <option_value>)
+    // pub options: Vec<(String, String)>,
+    #[ts(type = "Array<any>")]
+    pub options: Vec<serde_json::Value>,
+}
+
 // pub trait UserActionFlow {
 //     fn get_type(&self) -> String;
 // }
@@ -66,6 +76,7 @@ pub enum CurrentUserFlow {
     Redirect(Redirect),
     Warning(Warning),
     Selection(Selection),
+    Offer(Offer),
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, TS)]
@@ -81,4 +92,6 @@ pub enum CurrentUserFlowType {
     // Selection,
     #[serde(rename = "select-credentials")]
     SelectCredentials,
+    #[serde(rename = "offer")]
+    Offer,
 }
