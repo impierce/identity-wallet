@@ -29,7 +29,7 @@
     // dispatch({ type: '[QR Code] Scanned', payload: { rawString: value.content } });
     // let request_uri = decodeURI(value.content.split('request_uri=')[1]);
     dispatch({ type: '[Authenticate] Read request', payload: { request_url: value.content } });
-    goto('/profile');
+    goto('/me');
   }
 
   const html = document.querySelector('body');

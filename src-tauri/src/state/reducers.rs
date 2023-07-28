@@ -138,7 +138,7 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
     *state.credentials.lock().unwrap() = Some(vec![credential_0]);
     *state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Redirect(Redirect {
         r#type: CurrentUserFlowType::Redirect,
-        target: "home".to_string(),
+        target: "me".to_string(),
     }));
     Ok(())
 }

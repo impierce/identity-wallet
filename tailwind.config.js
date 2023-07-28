@@ -5,10 +5,10 @@ export default {
   content: ['./src/**/*.{html,js,svelte,ts}'],
   theme: {
     extend: {
-      // fontFamily: {
-      //   // sans: ['Satoshi', ...defaultTheme.fontFamily.sans],
-      //   sans: ['Satoshi-Variable', 'sans-serif']
-      // },
+      fontFamily: {
+        // sans: ['Satoshi', ...defaultTheme.fontFamily.sans],
+        sans: ['Satoshi-Variable', 'sans-serif']
+      },
       // colors: {
       //   sunrise: '#FDDA0D',
       // },

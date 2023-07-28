@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 
 import { clearMocks, mockIPC } from '@tauri-apps/api/mocks';
 import { render, screen } from '@testing-library/svelte';
-import Profile from '../src/routes/(app)/home/+page.svelte';
+import Profile from '../src/routes/(app)/me/+page.svelte';
 
 beforeEach(() => {
   // init __TAURI_IPC__

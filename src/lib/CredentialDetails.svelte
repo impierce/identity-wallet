@@ -16,6 +16,16 @@
   export let credential: Credential;
 </script>
 
+<!--
+@component
+Accordion containing metadata about a credential such as:
+
+- id
+- type
+- issuanceDate
+- issuer
+
+-->
 <div class="break-all pt-4">
   <div class="flex flex-col space-y-1 pb-4">
     <!-- <div class="flex items-center justify-between">

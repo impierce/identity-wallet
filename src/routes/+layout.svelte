@@ -43,7 +43,8 @@
 
   let showDevMode = false;
 
-  // alert (selection)
+  // Alert (global)
+  // TODO: refactor: move to separate component
   let alertOpen = false;
   let alertOptions: string[] = [];
   let alertTitle: string = 'title';
@@ -65,7 +66,7 @@
 </script>
 
 <main class="h-screen">
-  <!-- begin: dev mode -->
+  <!-- Dev Mode -->
   {#if showDevMode}
     <div
       class="hide-scrollbar fixed z-10 flex w-full space-x-4 overflow-x-auto bg-gradient-to-r from-red-200 to-red-300 p-4 shadow-md"
@@ -124,14 +125,16 @@
       <ChevronDown class="text-red-700" strokeWidth="2" />
     {/if}
   </button>
-  <!-- end: dev mode -->
+
+  <!-- Content -->
   <div class="h-auto">
-    <!-- <Route path="welcome" component={Welcome} /> -->
-    <!-- <Route path="profile" component={Profile} primary={false} /> -->
     <slot />
   </div>
+
+  <!-- Alert -->
   <Alert isOpen={alertOpen} title={alertTitle} options={alertOptions} />
 
+  <!-- Debug messages -->
   {#if showDebugMessages}
     <div class="absolute left-0 top-16 z-50 h-screen w-screen bg-orange-100">
       <p class="p-4 text-center text-xs font-semibold uppercase text-orange-800">debug messages</p>

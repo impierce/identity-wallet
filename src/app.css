@@ -40,6 +40,10 @@ body {
   background-color: transparent;
 }
 
+:root {
+  --safe-area-inset-bottom: 24px; /* TODO: testing only, rather use env() */
+}
+
 /**
  * TODO (when supporting landscape orientation):
  * https://kulturbanause.de/blog/websites-fuer-das-iphone-x-optimieren-weisse-balken-entfernen-viewport-anpassen-safe-area-festlegen/

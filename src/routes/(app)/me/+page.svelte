@@ -3,54 +3,15 @@
   import LL from '../../../i18n/i18n-svelte';
   import {
     Avatar,
-    BottomNavigation,
-    Button,
-    CredentialListEntry,
-    Input,
-    Label
   } from '@impierce/ui-components';
-  import {
-    AlertDialog,
-    AlertDialogTrigger,
-    AlertDialogContent,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogCancel,
-    AlertDialogAction,
-    Sheet,
-    SheetClose,
-    SheetContent,
-    SheetDescription,
-    SheetFooter,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger
-  } from '@impierce/ui-components';
-  import {
-    Plus,
-    XMark,
-    AtSymbol,
-    Phone,
-    Home,
-    Cake,
-    User,
-    AcademicCap,
-    QuestionMarkCircle
-  } from 'svelte-heros-v2';
-  import { onMount } from 'svelte';
-  import { goto } from '$app/navigation';
   import { fade, fly, slide } from 'svelte/transition';
   import QrCodeButton from '$lib/QrCodeButton.svelte';
-  import CredentialDetails from '$lib/CredentialDetails.svelte';
   import { debug, info } from '@tauri-apps/plugin-log';
-  import { root } from 'postcss';
+  import CredentialList from '$lib/CredentialList.svelte';
 
   let initials: string | undefined;
 
-  // let credentials: any[] = [];
-
+  // TODO: refactor
   const calculate_initials = (display_name: string) => {
     let names = display_name.split(' ');
     if (names?.length === 1) {
@@ -70,7 +31,6 @@
     if ($state?.active_profile?.display_name) {
       calculate_initials($state?.active_profile?.display_name);
     }
-    // credentials = $state?.credentials ?? [];
   }
 </script>
 
@@ -120,12 +80,7 @@
       <!-- <button class="flex w-full justify-center rounded-lg bg-slate-200 p-6">
         <Plus class="text-violet-700" strokeWidth="2" />
       </button> -->
-
-      <div class="fixed bottom-28 right-12 z-10">
-        <QrCodeButton />
-      </div>
-
-      
+      <CredentialList />
     </div>
   </div>
   <!-- Navigation -->

@@ -10,5 +10,5 @@
       {$page.error.errorId}
     </div>
   </div>
-  <Button href="/profile" variant="ghost" class="m-4">Go back</Button>
+  <Button href="/me" variant="ghost" class="m-4">Go back</Button>
 </div>

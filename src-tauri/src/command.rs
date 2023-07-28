@@ -47,7 +47,7 @@ pub async fn handle_action(
             if (*app_state.active_profile.lock().unwrap()).is_some() {
                 *app_state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Redirect(Redirect {
                     r#type: CurrentUserFlowType::Redirect,
-                    target: "home".to_string(),
+                    target: "me".to_string(),
                 }));
             }
         }
@@ -68,7 +68,7 @@ pub async fn handle_action(
             // When everything is done, we redirect the user to the home page
             *app_state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Redirect(Redirect {
                 r#type: CurrentUserFlowType::Redirect,
-                target: "home".to_string(),
+                target: "me".to_string(),
             }));
             save_state(TransferState::from(app_state.inner())).await.ok();
         }
