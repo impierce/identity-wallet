@@ -1,7 +1,10 @@
-mod command;
+pub(crate) mod command;
 mod crypto;
 mod did;
 mod state;
+
+#[cfg(test)]
+mod tests;
 
 use command::handle_action;
 use did_key::{generate, Ed25519KeyPair};
@@ -11,7 +14,7 @@ use log::{info, LevelFilter};
 use oid4vc_manager::{methods::key_method::KeySubject, ProviderManager};
 use state::AppState;
 use std::sync::{Arc, Mutex};
-use tauri::Manager;
+use tauri::{Manager, Runtime};
 use tauri_plugin_log::{fern::colors::ColoredLevelConfig, Target, TargetKind, WEBVIEW_TARGET};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -68,7 +71,8 @@ lazy_static! {
 }
 
 /// Initialize the storage file paths.
-fn initialize_storage(app_handle: tauri::AppHandle) -> anyhow::Result<()> {
+fn initialize_storage<R: Runtime>(app_handle: tauri::AppHandle<R>) -> anyhow::Result<()> {
+    dbg!("initialize_storage");
     // TODO: create folder if not exists (not automatically created on macOS)
     if cfg!(target_os = "android") {
         *STATE_FILE.lock().unwrap() = app_handle.path().data_dir()?.join("state.json");

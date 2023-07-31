@@ -17,7 +17,7 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "=2.0.0-alpha.6", features = [] }
 
 [dependencies]
-tauri = { version = "=2.0.0-alpha.10", features = ["rustls-tls"] }
+tauri = { version = "=2.0.0-alpha.10", features = ["rustls-tls", "test"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 log = "^0.4"
@@ -51,9 +51,11 @@ tauri-plugin-barcode-scanner = { git = "https://github.com/lucasfernog/plugins-w
 jsonwebtoken = "8.2"
 futures = "0.3"
 async-recursion = "1.0.4"
+rand = "0.8"
 
 [dev-dependencies]
 tempfile = "3.5.0"
+serial_test = "2.0"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

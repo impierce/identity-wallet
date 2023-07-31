@@ -1,11 +1,9 @@
-use std::str::FromStr;
-
 use anyhow::Ok;
 use log::{info, warn};
 use oid4vci::credential_format_profiles::CredentialFormats;
-use oid4vci::credential_offer::{CredentialOffer, CredentialOfferQuery};
-use serde::{Deserialize, Serialize};
+use oid4vci::credential_offer::CredentialOfferQuery;
 use siopv2::RequestUrl;
+use tauri::Runtime;
 
 use crate::state::actions::{Action, ActionType};
 use crate::state::persistence::{delete_state_file, delete_stronghold, load_state, save_state};
@@ -13,22 +11,14 @@ use crate::state::reducers::{
     create_did_key, initialize_stronghold, load_dev_profile, read_credential_offer, read_request, reset_state,
     send_credential_request, send_response, set_locale,
 };
-use crate::state::user_flow::{CurrentUserFlow, CurrentUserFlowType, Redirect, Selection};
+use crate::state::user_flow::{CurrentUserFlow, CurrentUserFlowType, Redirect};
 use crate::state::{AppState, TransferState};
 
-#[derive(Debug, Deserialize, Serialize)]
-#[serde(untagged)]
-enum FormUrlencoded {
-    AuthorizationRequest(RequestUrl),
-    CredentialOffer(CredentialOffer<CredentialFormats>),
-}
-
 #[async_recursion::async_recursion]
-async fn handle_action_inner(
+pub(crate) async fn handle_action_inner<R: Runtime>(
     Action { r#type, payload }: Action,
-    _app_handle: tauri::AppHandle,
+    _app_handle: tauri::AppHandle<R>,
     app_state: &AppState,
-    window: tauri::Window,
 ) -> Result<(), String> {
     info!("received action `{:?}` with payload `{:?}`", r#type, payload);
 
@@ -39,7 +29,6 @@ async fn handle_action_inner(
                 locale: "en".to_string(),
                 credential_offers: None,
                 credentials: None,
-                verifiable_credentials: None,
                 current_user_flow: Some(CurrentUserFlow::Redirect(Redirect {
                     r#type: CurrentUserFlowType::Redirect,
                     target: "welcome".to_string(),
@@ -99,17 +88,14 @@ async fn handle_action_inner(
             let payload = payload.ok_or(anyhow::anyhow!("unable to read payload")).unwrap();
 
             let form_urlencoded = payload["form_urlencoded"].as_str().unwrap();
-
             if let Result::Ok(request_url) = form_urlencoded.parse::<RequestUrl>() {
                 handle_action_inner(
-                    // ^recursion
                     Action {
                         r#type: ActionType::ReadRequest,
                         payload: Some(serde_json::to_value(request_url).unwrap()),
                     },
                     _app_handle,
                     app_state,
-                    window.clone(),
                 )
                 .await
                 .ok();
@@ -117,14 +103,12 @@ async fn handle_action_inner(
                 form_urlencoded.parse::<CredentialOfferQuery<CredentialFormats>>()
             {
                 handle_action_inner(
-                    // ^recursion
                     Action {
                         r#type: ActionType::ReadCredentialOffer,
                         payload: Some(serde_json::to_value(credential_offer_query).unwrap()),
                     },
                     _app_handle,
                     app_state,
-                    window.clone(),
                 )
                 .await
                 .ok();
@@ -183,22 +167,21 @@ async fn handle_action_inner(
 /// command it receives to the designated functions that modify the state (see: "reducers" in the Redux pattern).
 /// NOTE: Testing command handlers is not possible as of yet, see: https://github.com/tauri-apps/tauri/pull/4752
 #[tauri::command]
-pub async fn handle_action(
+pub async fn handle_action<R: Runtime>(
     action: Action,
-    _app_handle: tauri::AppHandle,
+    _app_handle: tauri::AppHandle<R>,
     app_state: tauri::State<'_, AppState>,
-    window: tauri::Window,
+    window: tauri::Window<R>,
 ) -> Result<(), String> {
-    handle_action_inner(action, _app_handle, app_state.inner(), window.clone())
-        .await
-        .ok();
+    handle_action_inner(action, _app_handle, app_state.inner()).await.ok();
 
     let updated_state = TransferState::from(app_state.inner());
     emit_event(window, updated_state).ok();
+
     Result::Ok(())
 }
 
-fn emit_event(window: tauri::Window, transfer_state: TransferState) -> anyhow::Result<()> {
+fn emit_event<R: Runtime>(window: tauri::Window<R>, transfer_state: TransferState) -> anyhow::Result<()> {
     const STATE_CHANGED_EVENT: &str = "state-changed";
     window.emit(STATE_CHANGED_EVENT, &transfer_state).unwrap();
     info!(

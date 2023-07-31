@@ -1,6 +1,8 @@
 use std::sync::Arc;
 
-use crate::crypto::stronghold::{create_new_stronghold, get_public_key, hash_password};
+use crate::crypto::stronghold::{
+    create_new_stronghold, get_all_from_stronghold, get_public_key, hash_password, insert_into_stronghold,
+};
 use crate::did::did_key::{generate_dev_did, generate_new_did};
 use crate::state::actions::Action;
 use crate::state::user_flow::{CurrentUserFlow, CurrentUserFlowType, Offer, Redirect, Selection};
@@ -65,8 +67,7 @@ pub async fn initialize_stronghold(_state: &AppState, action: Action) -> anyhow:
     let password = payload["password"]
         .as_str()
         .ok_or(anyhow::anyhow!("unable to read password from json payload"))?;
-    let password_hash = hash_password(password).await?;
-    create_new_stronghold(password_hash).await?;
+    create_new_stronghold(password).await?;
     Ok(())
 }
 
@@ -168,7 +169,7 @@ pub async fn read_request(state: &AppState, action: Action) -> anyhow::Result<()
         .unwrap();
     info!("validated authorization request: {:?}", authorization_request);
 
-    let verifiable_credentials = state.verifiable_credentials.lock().unwrap().clone().unwrap();
+    let verifiable_credentials = get_all_from_stronghold("my-password").await?.unwrap();
 
     // Get the indices of the verifiable credentials that can be used to fulfill the request.
     let indices: Vec<usize> = verifiable_credentials
@@ -179,9 +180,10 @@ pub async fn read_request(state: &AppState, action: Action) -> anyhow::Result<()
             let key = DecodingKey::from_secret(&[]);
             let mut validation = Validation::new(Algorithm::EdDSA);
             validation.insecure_disable_signature_validation();
-            let verifiable_credential = decode::<serde_json::Value>(&verifiable_credential, &key, &validation)
-                .unwrap()
-                .claims;
+            let verifiable_credential =
+                decode::<serde_json::Value>(std::str::from_utf8(verifiable_credential).unwrap(), &key, &validation)
+                    .unwrap()
+                    .claims;
 
             // Create presentation submission using the presentation definition and the verifiable credential.
             match create_presentation_submission(
@@ -206,10 +208,12 @@ pub async fn read_request(state: &AppState, action: Action) -> anyhow::Result<()
 
     *state.active_authorization_request.lock().unwrap() = Some(authorization_request);
 
-    *state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Selection(Selection {
-        r#type: CurrentUserFlowType::SelectCredentials,
-        options: vec![indices.first().unwrap().to_string()],
-    }));
+    if let Some(index) = indices.first() {
+        *state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Selection(Selection {
+            r#type: CurrentUserFlowType::SelectCredentials,
+            options: vec![index.to_string()],
+        }));
+    }
 
     Ok(())
 }
@@ -220,12 +224,11 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::
         CredentialOfferQuery::CredentialOffer(credential_offer) => credential_offer,
         _ => unreachable!(),
     };
-
     info!("credential offer: {:?}", credential_offer);
     *state.credential_offers.lock().unwrap() = Some(vec![credential_offer.clone()]);
     *state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Offer(Offer {
         r#type: CurrentUserFlowType::Offer,
-        options: vec![serde_json::to_value(&credential_offer.credentials).unwrap()],
+        options: vec![serde_json::to_value(&credential_offer).unwrap()],
     }));
 
     Ok(())
@@ -302,11 +305,6 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
         .await
         .unwrap();
 
-    dbg!(format!(
-        "HELLOOOOOOO: {}",
-        serde_json::to_string_pretty(&credential_response).unwrap()
-    ));
-
     let key = DecodingKey::from_secret(&[]);
     let mut validation = Validation::new(Algorithm::EdDSA);
     validation.insecure_disable_signature_validation();
@@ -320,12 +318,10 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
     let credential_0 = serde_json::from_value::<Credential>(credential_0_as_json.get("vc").unwrap().clone()).unwrap();
 
     *state.credentials.lock().unwrap() = Some(vec![credential_0]);
-    *state.verifiable_credentials.lock().unwrap() = Some(vec![credential_response
-        .credential
-        .unwrap()
-        .as_str()
-        .unwrap()
-        .to_string()]);
+
+    let buffer = serde_json::to_vec(&credential_response.credential.unwrap())?;
+
+    insert_into_stronghold(b"key".to_vec(), buffer, "my-password").await?;
 
     *state.current_user_flow.lock().unwrap() = None;
     *state.credential_offers.lock().unwrap() = None;
@@ -370,13 +366,13 @@ pub async fn send_response(state: &AppState, action: Action) -> anyhow::Result<(
     info!("||DEBUG|| credential not found");
     *state.debug_messages.lock().unwrap() = vec!["credential not found".into()];
 
-    let verifiable_credentials = state.verifiable_credentials.lock().unwrap().clone().unwrap();
+    let verifiable_credentials = get_all_from_stronghold("my-password").await?.unwrap();
 
     // let verifiable_credential = VERIFIABLE_CREDENTIALS
     //     .get(credential_index)
     //     .ok_or(anyhow::anyhow!("credential not found"))?;
     let verifiable_credential = match verifiable_credentials.get(credential_index) {
-        Some(verifiable_credential) => verifiable_credential,
+        Some(verifiable_credential) => std::str::from_utf8(verifiable_credential).unwrap(),
         None => {
             info!("||DEBUG|| credential not found");
             *state.debug_messages.lock().unwrap() = vec!["credential not found".into()];
@@ -430,10 +426,13 @@ pub async fn send_response(state: &AppState, action: Action) -> anyhow::Result<(
     // Create a verifiable presentation using the JWT.
     let verifiable_presentation = JwtPresentation::builder(Url::parse(subject_did).unwrap(), Object::new())
         .credential(Jwt::from(
-            verifiable_credentials
-                .get(credential_index)
-                .ok_or(anyhow::anyhow!("credential not found"))?
-                .clone(),
+            std::str::from_utf8(
+                verifiable_credentials
+                    .get(credential_index)
+                    .ok_or(anyhow::anyhow!("credential not found"))?,
+            )
+            .unwrap()
+            .to_owned(),
         ))
         .build()
         .unwrap();
@@ -513,8 +512,10 @@ mod tests {
     }
 
     #[tokio::test]
+    #[serial_test::serial]
     async fn test_create_new_with_method_did_key() {
         let path = NamedTempFile::new().unwrap().into_temp_path();
+        dbg!(&path);
         *STRONGHOLD.lock().unwrap() = path.as_os_str().into();
 
         // create new temp stronghold for testing
@@ -555,31 +556,31 @@ mod tests {
         assert!(profile.as_ref().unwrap().primary_did.starts_with("did:key:"));
     }
 
-    // #[test]
-    // fn test_reset_state() {
-    //     let state = AppState {
-    //         active_profile: Some(Profile {
-    //             display_name: "Ferris".to_string(),
-    //             primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
-    //         })
-    //         .into(),
-    //         active_authorization_request: None.into(),
-    //         locale: "nl".to_string().into(),
-    //         credential_offers: None.into(),
-    //         credentials: None.into(),
-    //         current_user_flow: None.into(),
-    //         debug_messages: vec![].into(),
-    //     };
+    #[test]
+    fn test_reset_state() {
+        let state = AppState {
+            active_profile: Some(Profile {
+                display_name: "Ferris".to_string(),
+                primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
+            })
+            .into(),
+            active_authorization_request: None.into(),
+            locale: "nl".to_string().into(),
+            credential_offers: None.into(),
+            credentials: None.into(),
+            current_user_flow: None.into(),
+            debug_messages: vec![].into(),
+        };
 
-    //     assert!(reset_state(
-    //         &state,
-    //         Action {
-    //             r#type: ActionType::Reset,
-    //             payload: None,
-    //         },
-    //     )
-    //     .is_ok());
-    //     assert_eq!(*state.active_profile.lock().unwrap(), None);
-    //     assert_eq!(*state.locale.lock().unwrap(), "en".to_string());
-    // }
+        assert!(reset_state(
+            &state,
+            Action {
+                r#type: ActionType::Reset,
+                payload: None,
+            },
+        )
+        .is_ok());
+        assert_eq!(*state.active_profile.lock().unwrap(), None);
+        assert_eq!(*state.locale.lock().unwrap(), "en".to_string());
+    }
 }
