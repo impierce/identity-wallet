@@ -116,7 +116,7 @@
     </div>
   {/if}
   <button
-    class="safe-top-padding absolute right-3 z-10 rounded-full bg-red-200 p-2"
+    class="safe-top-padding absolute right-3 z-40 rounded-full bg-red-200 p-2"
     on:click={() => (showDevMode = !showDevMode)}
   >
     {#if showDevMode}

@@ -1,14 +1,15 @@
 <script lang="ts">
-  import { state } from '../../../stores';
-  import LL from '../../../i18n/i18n-svelte';
-  import { Avatar } from '@impierce/ui-components';
+  import { state } from '../../../../stores';
+  import LL from '../../../../i18n/i18n-svelte';
+  import {
+    Avatar,
+  } from '@impierce/ui-components';
   import { fade, fly, slide } from 'svelte/transition';
   import QrCodeButton from '$lib/QrCodeButton.svelte';
   import { debug, info } from '@tauri-apps/plugin-log';
   import CredentialList from '$lib/CredentialList.svelte';
-  import { calculate_initials } from './utils';
+  import { calculate_initials } from '../utils';
   import WelcomeHeader from '$lib/WelcomeHeader.svelte';
-  import Favorites from '$lib/Favorites.svelte';
 
   let initials: string | undefined;
 
@@ -16,7 +17,7 @@
     // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
     console.log('routes/profile/+page.svelte: state', $state);
     if ($state?.active_profile?.display_name) {
-      initials = calculate_initials($state?.active_profile?.display_name);
+      calculate_initials($state?.active_profile?.display_name);
     }
   }
 </script>
@@ -32,23 +33,10 @@
   </picture> -->
   <!-- End: Banner image -->
 
-  <div in:fly={{ y: -24, opacity: 1 }} class="sticky top-[-30px] h-[250px] z-10">
-    <WelcomeHeader />
-  </div>
+  <!-- <WelcomeHeader /> -->
 
-  <div in:fly={{ y: 24 }}>
-    <div class="px-8">
-      <Favorites />
-    </div>
-
-    <p class="bg-slate-100 h-[2px] mx-8 my-6"></p>
-
-    <div class="p-8 pt-0">
-      <CredentialList />
-    </div>
-  </div>
-
-  <!-- <div class="-z-5 fixed top-0 w-full">
+  <div class="-z-5 fixed top-0 w-full">
+    <!-- TODO: refactor bg images: use native <picture> element -->
     <img
       src="blob-scene-haikei-slate-dark.png"
       alt="background-blob-scene"
@@ -59,33 +47,33 @@
       alt="background-blob-scene"
       class="absolute w-full opacity-60 dark:hidden"
     />
-  </div> -->
+  </div>
 
   <!-- Content sheet -->
-  <!-- <div
-    class="fixed bottom-0 h-1/3 w-full rounded-t-3xl bg-slate-100 dark:bg-slate-700"
+  <div
+    class="fixed bottom-0 h-5/6 w-full rounded-t-3xl bg-slate-100 dark:bg-slate-700"
     in:fly={{ y: 24, opacity: 1 }}
-  > -->
-  <!-- <div
+  >
+    <div
       class="relative bottom-12 -mb-6 flex select-none justify-center"
       in:fly={{ y: 12, opacity: 1 }}
     >
       <Avatar {initials} size="large" />
-    </div> -->
-  <!-- <div class="flex select-none justify-center text-2xl font-semibold dark:text-neutral-300">
+    </div>
+    <div class="flex select-none justify-center text-2xl font-semibold dark:text-neutral-300">
       {$state?.active_profile?.display_name}
-    </div> -->
+    </div>
 
-  <!-- <div class="flex flex-col space-y-8 px-8"> -->
-  <!-- <h1 class="font-serif text-2xl font-semibold">
+    <div class="flex flex-col space-y-8 px-8">
+      <!-- <h1 class="font-serif text-2xl font-semibold">
         {$LL.WELCOME()}, {$state?.active_profile?.display_name}!
       </h1> -->
-  <!-- <button class="flex w-full justify-center rounded-lg bg-slate-200 p-6">
+      <!-- <button class="flex w-full justify-center rounded-lg bg-slate-200 p-6">
         <Plus class="text-violet-700" strokeWidth="2" />
       </button> -->
-  <!-- <CredentialList /> -->
-  <!-- </div> -->
-  <!-- </div> -->
+      <CredentialList />
+    </div>
+  </div>
   <!-- Navigation -->
   <!-- <div class="safe-bottom fixed w-full">
     <BottomNavbar active="home" />

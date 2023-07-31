@@ -1,16 +1,16 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import Scanner from '$lib/Scanner.svelte';
+  // import Scanner from '$lib/Scanner.svelte';
   import { dispatch } from '$lib/dispatcher';
   import { Button } from '@impierce/ui-components';
 
-  let selected = {
-    label: 'Scanner',
-    component: Scanner
-    // icon: 'i-ph-scan'
-  };
+  // let selected = {
+  //   label: 'Scanner',
+  //   component: Scanner
+  //   // icon: 'i-ph-scan'
+  // };
 
-  let isMobile = true;
+  // let isMobile = true;
 
   //   function insecureRenderHtml(html) {
   //     messages.update((r) => [

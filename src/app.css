@@ -33,7 +33,11 @@ body {
   width: 100vw;
   /* Blue 700 */
   /* background-color: #1d4ed8; */
-  overflow: hidden; /* disables scrolling */
+  /* overflow: hidden; */
+  /* disables scrolling entirely */
+  overflow-x: hidden;
+  /* overflow-y: hidden; */
+  /* max-width: 100%; */
 }
 
 .transparent {
@@ -41,7 +45,8 @@ body {
 }
 
 :root {
-  --safe-area-inset-bottom: 24px; /* TODO: testing only, rather use env() */
+  /* TODO: testing only, rather use env() */
+  --safe-area-inset-bottom: 24px;
 }
 
 /**
