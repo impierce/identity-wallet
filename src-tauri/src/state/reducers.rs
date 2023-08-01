@@ -16,7 +16,7 @@ use lazy_static::lazy_static;
 
 // TODO: this is a temporary solution to store the credentials in memory.
 lazy_static! {
-    static ref VERIFIABLE_CREDENTIALS: Vec<String> =
+    pub static ref VERIFIABLE_CREDENTIALS: Vec<String> =
         vec!["eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDprZXk6ejZNa3RnMkJkVmZRaDNQaEZLdmM0REduRkVndlJWQWpIeWlvelZSRUNNbXNiUURuI3o2TWt0ZzJCZFZmUWgzUGhGS3ZjNERHbkZFZ3ZSVkFqSHlpb3pWUkVDTW1zYlFEbiJ9.eyJpc3MiOiJkaWQ6a2V5Ono2TWt0ZzJCZFZmUWgzUGhGS3ZjNERHbkZFZ3ZSVkFqSHlpb3pWUkVDTW1zYlFEbiIsInN1YiI6ImRpZDprZXk6ejZNa2cxWFhHVXFma2hBS1Uxa1ZkMVBtdzZVRWoxdnhpTGoxeGM5MU1CejVvd05ZIiwiZXhwIjo5OTk5OTk5OTk5LCJpYXQiOjAsInZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIiwiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvZXhhbXBsZXMvdjEiXSwidHlwZSI6WyJWZXJpZmlhYmxlQ3JlZGVudGlhbCIsIlBlcnNvbmFsSW5mb3JtYXRpb24iXSwiaXNzdWFuY2VEYXRlIjoiMjAyMi0wMS0wMVQwMDowMDowMFoiLCJpc3N1ZXIiOiJkaWQ6a2V5Ono2TWt0ZzJCZFZmUWgzUGhGS3ZjNERHbkZFZ3ZSVkFqSHlpb3pWUkVDTW1zYlFEbiIsImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkIjoiZGlkOmtleTp6Nk1rZzFYWEdVcWZraEFLVTFrVmQxUG13NlVFajF2eGlMajF4YzkxTUJ6NW93TlkiLCJnaXZlbk5hbWUiOiJGZXJyaXMiLCJmYW1pbHlOYW1lIjoiQ3JhYm1hbiIsImVtYWlsIjoiZmVycmlzLmNyYWJtYW5AY3JhYm1haWwuY29tIiwiYmlydGhkYXRlIjoiMTk4NS0wNS0yMSJ9fX0.qVbroJgBGplBHLl1lIr5r-FkPdGg-AEMSLw2566IYe6FsB6B51mMOO_e5dMNDfmtuYgoFP3IfV9WCbFufg3lBw".to_string()];
 }
 
@@ -433,7 +433,7 @@ mod tests {
             locale: "nl".to_string().into(),
             credentials: None.into(),
             current_user_flow: None.into(),
-            debug_messages: None.into(),
+            debug_messages: vec![].into(),
         };
 
         assert!(reset_state(

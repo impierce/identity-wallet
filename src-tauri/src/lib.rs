@@ -2,6 +2,8 @@ mod command;
 mod crypto;
 mod did;
 mod state;
+#[cfg(test)]
+mod tests;
 
 use command::handle_action;
 use did_key::{generate, Ed25519KeyPair};

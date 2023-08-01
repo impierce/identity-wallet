@@ -22,7 +22,7 @@ pub struct AppState {
 }
 
 /// A representation of the current state which is used for serialization.
-#[derive(Clone, Debug, Deserialize, Serialize, TS)]
+#[derive(Clone, Debug, Deserialize, Serialize, TS, Default, PartialEq)]
 #[ts(export)]
 pub struct TransferState {
     pub active_profile: Option<Profile>,
