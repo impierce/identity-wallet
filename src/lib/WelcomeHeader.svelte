@@ -1,22 +1,28 @@
 <script>
   import { Avatar, ProgressBar } from '@impierce/ui-components';
-  import { ChevronRight } from 'svelte-heros-v2';
+  import { ChevronRight, Cog } from 'svelte-heros-v2';
   import { state } from '../stores';
+  import { goto } from '$app/navigation';
+  import Settings from '~icons/lucide/settings';
 </script>
 
-<div class="bg-gradient-to-br from-blue-600 to-violet-600 p-8 sticky top-0 h-[220px]">
-  <div class="">
-    <Avatar
-      size="small"
-      initials="FR"
-    />
+<div class="bg-gradient-to-br from-blue-600 to-violet-600 p-8">
+  <div class="flex justify-between">
+    <Avatar size="small" initials="FR" />
+    <button
+      on:click={() => goto('/me/settings')}
+      class="rounded-full p-4 text-white hover:bg-white hover:text-black -mx-4"
+    >
+      <Settings class="h-6 w-6" />
+      <!-- <Cog class="h-6 w-6" /> -->
+    </button>
   </div>
   <p class="py-4 text-xl font-semibold text-white">Welcome back, Ferris!</p>
   <div class="flex items-center justify-between">
     <div class="grow">
       <div class="flex justify-between py-2 text-white">
         <p>Complete your first steps</p>
-        <p>2/5</p>
+        <p>2 / 5</p>
       </div>
       <!-- <ProgressBar value={40} /> -->
       <!-- TODO: begin: custom progress bar, replace with ui-components/ProgressBar -->
@@ -30,7 +36,7 @@
       </div>
       <!-- end: custom progress bar -->
     </div>
-    <button class="rounded-full py-4 pl-8">
+    <button class="rounded-full py-4 pl-8" on:click={() => goto('/goals')}>
       <ChevronRight class="text-white" strokeWidth="2" />
     </button>
   </div>

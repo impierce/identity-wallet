@@ -46,20 +46,43 @@
   // Alert (global)
   // TODO: refactor: move to separate component
   let alertOpen = false;
-  let alertOptions: string[] = [];
-  let alertTitle: string = 'title';
+  // let alertOptions: string[] = [];
+  // let alertTitle: string = 'title';
+
+  let dialog: UserDialog | undefined;
+
+  interface UserDialog {
+    type: 'select-credentials' | 'credential-offer';
+    title: string;
+    imageSrc?: string;
+    options: string[];
+  }
 
   let showDebugMessages = false;
 
   $: {
     // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
     console.log('+layout.svelte: state', $state);
-    if ($state?.current_user_flow?.type === 'select-credentials') {
-      alertOpen = true;
-      alertOptions = ($state.current_user_flow as Selection).options;
-      alertTitle = $LL.SHARE_CREDENTIALS_TITLE();
+    let type = $state?.current_user_flow?.type;
+    console.log('options', ($state?.current_user_flow as Selection)?.options);
+    if (type === 'select-credentials') {
+      dialog = {
+        type: 'select-credentials',
+        title: $LL.SHARE_CREDENTIALS_TITLE(),
+        imageSrc: 'image/undraw_fingerprint_login_re_t71l.svg',
+        options: ($state.current_user_flow as Selection).options
+      };
+    } else if (type === 'credential-offer') {
+      dialog = {
+        type: 'credential-offer',
+        title: 'Credential Offer',
+        imageSrc: 'image/undraw_agreement_re_d4dv.svg',
+        options: ($state.current_user_flow as Selection).options
+      };
     }
+    alertOpen = true;
     if ($state?.current_user_flow === null) {
+      dialog = undefined;
       alertOpen = false;
     }
   }
@@ -132,7 +155,9 @@
   </div>
 
   <!-- Alert -->
-  <Alert isOpen={alertOpen} title={alertTitle} options={alertOptions} />
+  {#if dialog}
+    <Alert isOpen={alertOpen} {...dialog} />
+  {/if}
 
   <!-- Debug messages -->
   {#if showDebugMessages}

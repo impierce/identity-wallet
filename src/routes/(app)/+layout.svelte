@@ -2,7 +2,6 @@
   import { BottomNavigation } from '@impierce/ui-components';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
-  import { checkScanPrerequisites } from './scan/utils';
 
   $: active = $page.route.id?.split('/').at(2) ?? 'me';
 </script>
@@ -19,7 +18,7 @@
     <BottomNavigation
       {active}
       on:me={() => goto('/me')}
-      on:scan={() => checkScanPrerequisites()}
+      on:scan={() => goto('/scan')}
       on:activity={() => goto('/activity')}
     />
   </div>

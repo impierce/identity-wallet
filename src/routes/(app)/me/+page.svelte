@@ -21,7 +21,7 @@
   }
 </script>
 
-<div class="flex flex-col">
+<div class="">
   <!-- Background -->
   <!-- <div class="absolute h-[4px] top-0 w-full z-10 bg-gradient-to-r from-blue-500 via-violet-500 to-pink-500" /> -->
 
@@ -31,21 +31,19 @@
     <img src="light.png" alt="">
   </picture> -->
   <!-- End: Banner image -->
-
-  <div in:fly={{ y: -24, opacity: 1 }} class="sticky top-[-30px] h-[250px] z-10">
-    <WelcomeHeader />
+  
+  <!-- TODO: Shrinking header on scroll: https://css-tricks.com/how-to-create-a-shrinking-header-on-scroll-without-javascript/ -->
+  <div class="sticky top-0 z-10">
+    <div in:fly={{ y: -24, opacity: 1 }} class="">
+      <WelcomeHeader />
+    </div>
   </div>
 
-  <div in:fly={{ y: 24 }}>
-    <div class="px-8">
-      <Favorites />
-    </div>
-
-    <p class="bg-slate-100 h-[2px] mx-8 my-6"></p>
-
-    <div class="p-8 pt-0">
-      <CredentialList />
-    </div>
+  <div in:fly={{ y: 24 }} class="px-8 pt-8">
+    <Favorites />
+    <!-- Divider -->
+    <p class="my-6 h-[2px] bg-slate-100" />
+    <CredentialList />
   </div>
 
   <!-- <div class="-z-5 fixed top-0 w-full">

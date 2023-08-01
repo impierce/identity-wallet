@@ -81,4 +81,6 @@ pub enum CurrentUserFlowType {
     // Selection,
     #[serde(rename = "select-credentials")]
     SelectCredentials,
+    #[serde(rename = "credential-offer")]
+    CredentialOffer,
 }
