@@ -36,8 +36,14 @@ iota_stronghold = { version = "=1.0.5" }
 #iota_stronghold = { path = "/Users/daniel/dev/iotaledger/stronghold.rs/client" }
 #libsodium-sys = { git = "https://git@github.com/daniel-mader/sodiumoxide" }
 
-oid4vc-manager = { git = "https://git@github.com/impierce/openid4vc.git" }
-siopv2 = { git = "https://git@github.com/impierce/openid4vc.git" }
+# oid4vc-manager = { git = "https://git@github.com/impierce/openid4vc.git" }
+# siopv2 = { git = "https://git@github.com/impierce/openid4vc.git" }
+oid4vc-manager =  { path = "../../openid4vc/oid4vc-manager" }
+siopv2 =  { path = "../../openid4vc/siopv2" }
+oid4vci = { path = "../../openid4vc/oid4vci" }
+oid4vc-core = { path = "../../openid4vc/oid4vc-core" }
+oid4vp = { path = "../../openid4vc/oid4vp" }
+
 base64 = { version = "0.13.0" }
 identity_iota = "0.6"
 identity_core = { git = "https://git@github.com/iotaledger/identity.rs", rev = "4f27434" }
@@ -48,11 +54,13 @@ identity_credential = { git = "https://git@github.com/iotaledger/identity.rs", r
 tauri-plugin-barcode-scanner = { git = "https://github.com/lucasfernog/plugins-workspace", branch = "feat/scanner" }
 jsonwebtoken = "8.2"
 futures = "0.3"
+async-recursion = "1.0"
 
 [dev-dependencies]
 tauri = { version = "=2.0.0-alpha.10", features = ["rustls-tls", "test"] }
 tempfile = "3.5.0"
 serial_test = "2.0"
+reqwest = { version = "0.11", default-features = false, features = ["json", "rustls-tls"] }
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

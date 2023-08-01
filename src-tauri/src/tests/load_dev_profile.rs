@@ -24,11 +24,11 @@ async fn test_load_dev_profile() {
 
     assert_state_update(
         AppState::default(),
-        Action {
+        vec![Action {
             r#type: ActionType::LoadDevProfile,
             payload: None,
-        },
-        TransferState {
+        }],
+        vec![Some(TransferState {
             active_profile: Some(Profile {
                 display_name: "Ferris Crabman".to_string(),
                 primary_did: "did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY".to_string(),
@@ -39,6 +39,6 @@ async fn test_load_dev_profile() {
                 target: "profile".to_string(),
             })),
             ..TransferState::default()
-        },
+        })],
     );
 }
