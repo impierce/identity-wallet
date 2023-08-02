@@ -85,14 +85,24 @@ pub async fn handle_action(
 
             // read_request(app_state.inner(), Action { r#type, payload }).await.ok();
 
-            let credential_offer = "%7B%22credential_issuer%22:%22http://127.0.0.1:44657/%22,%22credentials%22:%5B%7B%22format%22:%22jwt_vc_json%22,%22credential_definition%22:%7B%22type%22:%5B%22VerifiableCredential%22,%22UniversityDegreeCredential%22%5D,%22credentialSubject%22:%7B%22given_name%22:%7B%22display%22:%5B%7B%22name%22:%22GivenName%22,%22locale%22:%22en-US%22%7D%5D%7D,%22last_name%22:%7B%22display%22:%5B%7B%22name%22:%22Surname%22,%22locale%22:%22en-US%22%7D%5D%7D,%22degree%22:%7B%7D,%22gpa%22:%7B%22display%22:%5B%7B%22name%22:%22GPA%22%7D%5D%7D%7D%7D%7D%5D,%22grants%22:%7B%22urn:ietf:params:oauth:grant-type:pre-authorized_code%22:%7B%22pre-authorized_code%22:%22709HSpq8YlN2hETr%22,%22user_pin_required%22:false%7D%7D%7D";
+            let option: String = match payload.unwrap().get("data").unwrap().as_str().unwrap() {
+                "single_credential_offer" => {
+                    let encoded = "%7B%22credential_issuer%22:%22http://127.0.0.1:44657/%22,%22credentials%22:%5B%7B%22format%22:%22jwt_vc_json%22,%22credential_definition%22:%7B%22type%22:%5B%22VerifiableCredential%22,%22UniversityDegreeCredential%22%5D,%22credentialSubject%22:%7B%22given_name%22:%7B%22display%22:%5B%7B%22name%22:%22GivenName%22,%22locale%22:%22en-US%22%7D%5D%7D,%22last_name%22:%7B%22display%22:%5B%7B%22name%22:%22Surname%22,%22locale%22:%22en-US%22%7D%5D%7D,%22degree%22:%7B%7D,%22gpa%22:%7B%22display%22:%5B%7B%22name%22:%22GPA%22%7D%5D%7D%7D%7D%7D%5D,%22grants%22:%7B%22urn:ietf:params:oauth:grant-type:pre-authorized_code%22:%7B%22pre-authorized_code%22:%22709HSpq8YlN2hETr%22,%22user_pin_required%22:false%7D%7D%7D";
+                    encoded.to_string()
+                }
+                "multi_credential_offer" => {
+                    let encoded = "%7B%22credential_issuer%22:%22http://127.0.0.1:44657/%22,%22credentials%22:%5B%7B%22format%22:%22jwt_vc_json%22,%22credential_definition%22:%7B%22type%22:%5B%22VerifiableCredential%22,%22UniversityDegreeCredential%22%5D,%22credentialSubject%22:%7B%22given_name%22:%7B%22display%22:%5B%7B%22name%22:%22GivenName%22,%22locale%22:%22en-US%22%7D%5D%7D,%22last_name%22:%7B%22display%22:%5B%7B%22name%22:%22Surname%22,%22locale%22:%22en-US%22%7D%5D%7D,%22degree%22:%7B%7D,%22gpa%22:%7B%22display%22:%5B%7B%22name%22:%22GPA%22%7D%5D%7D%7D%7D%7D,%7B%22format%22:%22jwt_vc_json%22,%22credential_definition%22:%7B%22type%22:%5B%22VerifiableCredential%22%5D,%22credentialSubject%22:%7B%22my_field%22:%7B%22display%22:%5B%7B%22name%22:%22My%20Field%22,%22locale%22:%22en-US%22%7D%5D%7D%7D%7D%7D%5D,%22grants%22:%7B%22urn:ietf:params:oauth:grant-type:pre-authorized_code%22:%7B%22pre-authorized_code%22:%22709HSpq8YlN2hETr%22,%22user_pin_required%22:false%7D%7D%7D";
+                    encoded.to_string()
+                }
+                &_ => todo!()
+            };
 
             // std::thread::sleep(std::time::Duration::from_millis(1_000));
             // TODO: actually do something with the QR code data
             *app_state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Selection(Selection {
                 r#type: CurrentUserFlowType::CredentialOffer,
                 options: vec![
-                    credential_offer.to_string()
+                    option
                     // (
                     //     "givenName".to_string(),
                     //     "http://example.edu/credentials/3732".to_string(),

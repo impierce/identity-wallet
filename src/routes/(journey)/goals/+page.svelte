@@ -35,8 +35,8 @@
     </div>
   </div>
   <div class="flex flex-col items-center justify-center p-8">
-    <p class="pt-8 text-3xl font-semibold">Onboarding</p>
-    <p class="pt-4 font-medium text-slate-500">Let's start your journey with UniMe</p>
+    <p class="pt-8 text-3xl font-semibold">{onboardingJourney.title}</p>
+    <p class="pt-4 font-medium text-slate-500 text-center">{onboardingJourney.description}</p>
 
     <div class="flex flex-col items-start space-y-4 py-12">
       {#each goals as goal}
@@ -71,7 +71,7 @@
     <SheetHeader>
       <SheetTitle>{goals.at(2)?.label}</SheetTitle>
       <SheetDescription>
-        <p class="font-xs font-medium rounded-lg bg-red-200 px-4 py-2 text-red-600">
+        <p class="font-xs font-medium rounded bg-orange-100 px-4 py-2 text-orange-600">
           TODO: bind SheetTrigger to goal.id
         </p>
       </SheetDescription>

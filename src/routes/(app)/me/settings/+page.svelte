@@ -59,14 +59,6 @@
       <div>2023 Impierce Technologies</div>
     </div>
   </div>
-  <!-- Navigation -->
-  <div class="safe-bottom fixed w-full">
-    <BottomNavigation
-      active="settings"
-      on:profile={() => goto('/profile')}
-      on:history={() => goto('/history')}
-    />
-  </div>
 </div>
 
 <style>

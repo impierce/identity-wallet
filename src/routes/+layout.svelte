@@ -92,7 +92,7 @@
   <!-- Dev Mode -->
   {#if showDevMode}
     <div
-      class="hide-scrollbar fixed z-10 flex w-full space-x-4 overflow-x-auto bg-gradient-to-r from-red-200 to-red-300 p-4 shadow-md"
+      class="hide-scrollbar fixed z-20 flex w-full space-x-4 overflow-x-auto bg-gradient-to-r from-red-200 to-red-300 p-4 shadow-md"
       in:fly={{ y: -64, opacity: 1 }}
       out:fly={{ y: -64, opacity: 1 }}
     >
@@ -139,7 +139,7 @@
     </div>
   {/if}
   <button
-    class="safe-top-padding absolute right-3 z-40 rounded-full bg-red-200 p-2"
+    class="safe-top-padding absolute right-3 z-30 rounded-full bg-red-200 p-2"
     on:click={() => (showDevMode = !showDevMode)}
   >
     {#if showDevMode}

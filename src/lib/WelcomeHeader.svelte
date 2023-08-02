@@ -4,6 +4,7 @@
   import { state } from '../stores';
   import { goto } from '$app/navigation';
   import Settings from '~icons/lucide/settings';
+  import onboardingJourney from '../routes/(journey)/journey-definition.json';
 </script>
 
 <div class="bg-gradient-to-br from-blue-600 to-violet-600 p-8">
@@ -21,7 +22,7 @@
   <div class="flex items-center justify-between">
     <div class="grow">
       <div class="flex justify-between py-2 text-white">
-        <p>Complete your first steps</p>
+        <p>{onboardingJourney.description_short}</p>
         <p>2 / 5</p>
       </div>
       <!-- <ProgressBar value={40} /> -->

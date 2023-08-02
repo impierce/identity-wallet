@@ -3,7 +3,7 @@
   import { Input, MeltUiTabs, ActivityTabs } from '@impierce/ui-components';
 </script>
 
-<div class="h-full bg-violet-400">
+<div class="h-full bg-slate-100">
   <MeltUiTabs>
     <div slot="connections" class="bg-white">
       <Input placeholder="Search connections" class="mb-4" />
