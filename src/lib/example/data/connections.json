@@ -1,0 +1,18 @@
+[
+  {
+    "id": "0",
+    "domain": "amazon.com",
+    "displayName": "Amazon",
+    "lastConnected": "2 days ago"
+  },
+  {
+    "id": "1",
+    "domain": "bestdex.com",
+    "lastConnected": "1 hour ago"
+  },
+  {
+    "id": "2",
+    "domain": "groceries-online.co.uk",
+    "lastConnected": "2 weeks ago"
+  }
+]

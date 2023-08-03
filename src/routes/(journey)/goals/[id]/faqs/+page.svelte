@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/stores';
-  import onboardingJourney from '../../../journey-definition.json';
+  import exampleJourneyDefinition from '$lib/example/data/journey-definition.json';
   import type { Goal } from '../../types';
 
   /* TODO: extract to ui-component */
@@ -12,7 +12,7 @@
     Button
   } from '@impierce/ui-components';
 
-  let goal: Goal = onboardingJourney.goals.find((g) => g.id === parseInt($page.params.id))!!;
+  let goal: Goal = exampleJourneyDefinition.goals.find((g) => g.id === parseInt($page.params.id))!!;
 </script>
 
 <div class="flex h-full flex-col items-center justify-evenly p-8 space-y-8">

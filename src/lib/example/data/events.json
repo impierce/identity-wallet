@@ -1,0 +1,26 @@
+[
+  {
+    "id": 0,
+    "timestamp": "2023-08-03T12:23:41.218Z",
+    "type": "initial_connection",
+    "data": {
+      "issuer": {
+        "id": "1",
+        "domain": "bestdex.com",
+        "did": "did:key:7h4y3u49fjfbh294729n2k2j8eh381w4"
+      }
+    }
+  },
+  {
+    "id": 1,
+    "timestamp": "2023-08-03T12:23:42.749Z",
+    "type": "credential_offer",
+    "data": { "issuer": "1", "credentials": ["0", "1", "2"] }
+  },
+  {
+    "id": 2,
+    "timestamp": "2023-08-03T12:25:41.874Z",
+    "type": "login",
+    "data": { "verifier": "1", "credentials": ["1"] }
+  }
+]

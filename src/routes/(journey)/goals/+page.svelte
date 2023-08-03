@@ -2,7 +2,7 @@
   import { Button, ProgressBar } from '@impierce/ui-components';
   import CheckCircle from '~icons/lucide/check-circle';
   import Circle from '~icons/lucide/circle';
-  import onboardingJourney from '../journey-definition.json';
+  import exampleJourneyDefinition from '$lib/example/data/journey-definition.json';
   import type { Goal } from './types';
 
   // TODO: extract component
@@ -18,7 +18,7 @@
   } from '@impierce/ui-components';
   let sheetOpen: boolean = false;
 
-  let goals: Goal[] = onboardingJourney.goals.map((goal) => ({
+  let goals: Goal[] = exampleJourneyDefinition.goals.map((goal) => ({
     ...goal,
     completed: false
   }));
@@ -35,8 +35,8 @@
     </div>
   </div>
   <div class="flex flex-col items-center justify-center p-8">
-    <p class="pt-8 text-3xl font-semibold">{onboardingJourney.title}</p>
-    <p class="pt-4 font-medium text-slate-500 text-center">{onboardingJourney.description}</p>
+    <p class="pt-8 text-3xl font-semibold">{exampleJourneyDefinition.title}</p>
+    <p class="pt-4 font-medium text-slate-500 text-center">{exampleJourneyDefinition.description}</p>
 
     <div class="flex flex-col items-start space-y-4 py-12">
       {#each goals as goal}
