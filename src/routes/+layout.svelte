@@ -89,7 +89,7 @@
 </script>
 
 <main class="h-screen">
-  <!-- Dev Mode -->
+  <!-- Dev Mode: Navbar -->
   {#if showDevMode}
     <div
       class="hide-scrollbar fixed z-20 flex w-full space-x-4 overflow-x-auto bg-gradient-to-r from-red-200 to-red-300 p-4 shadow-md"
@@ -139,7 +139,7 @@
     </div>
   {/if}
   <button
-    class="safe-top-padding absolute right-3 z-30 rounded-full bg-red-200 p-2"
+    class="fixed right-0 top-[var(--safe-area-inset-top)] z-30 rounded-bl-md bg-red-200 p-1"
     on:click={() => (showDevMode = !showDevMode)}
   >
     {#if showDevMode}
@@ -149,19 +149,9 @@
     {/if}
   </button>
 
-  <!-- Content -->
-  <div class="h-auto">
-    <slot />
-  </div>
-
-  <!-- Alert -->
-  {#if dialog}
-    <Alert isOpen={alertOpen} {...dialog} />
-  {/if}
-
-  <!-- Debug messages -->
+  <!-- Dev Mode: Debug messages -->
   {#if showDebugMessages}
-    <div class="absolute left-0 top-16 z-50 h-screen w-screen bg-orange-100">
+    <div class="relative z-10 h-full w-screen bg-orange-100">
       <p class="p-4 text-center text-xs font-semibold uppercase text-orange-800">debug messages</p>
       {#each $state.debug_messages as message}
         <div class="mx-2 mb-2 rounded bg-orange-200 bg-opacity-60 p-2">
@@ -170,10 +160,14 @@
       {/each}
     </div>
   {/if}
-</main>
 
-<style>
-  .safe-top-padding {
-    top: calc(env(safe-area-inset-top) + 0.75rem);
-  }
-</style>
+  <!-- Content -->
+  <div class="fixed top-[var(--safe-area-inset-top)] h-auto w-full">
+    <slot />
+  </div>
+
+  <!-- Alert -->
+  {#if dialog}
+    <Alert isOpen={alertOpen} {...dialog} />
+  {/if}
+</main>

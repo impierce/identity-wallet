@@ -124,7 +124,7 @@
   <Sheet>
     <SheetTrigger class="w-full">
       <button
-        class="fixed bottom-24 right-6 flex justify-center rounded-full bg-violet-500 p-4 shadow-neon dark:bg-slate-800"
+        class="absolute bottom-4 right-4 flex justify-center rounded-full bg-violet-500 p-4 shadow-neon dark:bg-slate-800"
       >
         <Plus class="text-white" strokeWidth="3" />
         <!-- <p class="pl-1 font-semibold text-white uppercase text-lg">add</p> -->

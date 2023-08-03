@@ -88,18 +88,4 @@
   <!-- <div class="safe-bottom fixed w-full">
     <BottomNavbar active="home" />
   </div> -->
-
-  <!-- fill top safe zone with matching color of "slate-blob-scene"  -->
-  <!-- <div class="bg-slate-300 h-[env(safe-area-inset-top)] fixed top-0 w-full z-10"></div> -->
-
-  <!-- fill bottom safe zone with bg-color -->
-  <!-- <div
-    class="fixed bottom-0 z-10 h-[env(safe-area-inset-bottom)] w-full bg-white dark:bg-slate-800"
-  /> -->
 </div>
-
-<!-- <style>
-  .safe-bottom {
-    bottom: env(safe-area-inset-bottom);
-  }
-</style> -->

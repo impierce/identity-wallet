@@ -7,7 +7,7 @@
   import onboardingJourney from '../routes/(journey)/journey-definition.json';
 </script>
 
-<div class="bg-gradient-to-br from-blue-600 to-violet-600 p-8">
+<div class="bg-gradient-to-r from-blue-600 to-violet-600 p-8">
   <div class="flex justify-between">
     <Avatar size="small" initials="FR" />
     <button

@@ -2,20 +2,20 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <!-- <key>method</key>
+    <key>method</key>
     <string>development</string>
     <key>provisioningProfiles</key>
     <dict>
         <key>com.impierce.identity-wallet</key>
         <string>UniMe (alpha) - Internal Test (Development)</string>
-    </dict> -->
+    </dict>
     
-    <key>method</key>
+    <!-- <key>method</key>
     <string>ad-hoc</string>
     <key>provisioningProfiles</key>
     <dict>
         <key>com.impierce.identity-wallet</key>
         <string>UniMe (alpha) - Internal Test (Distribution)</string>
-    </dict>
+    </dict> -->
 </dict>
 </plist>

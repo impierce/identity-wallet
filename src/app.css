@@ -27,8 +27,10 @@
 body {
   /* padding-top: env(safe-area-inset-top); */
   /* padding-bottom: env(safe-area-inset-bottom); */
-  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+  padding: var(--safe-area-inset-top) env(safe-area-inset-right) var(--safe-area-inset-bottom)
     env(safe-area-inset-left);
+  /* padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+    env(safe-area-inset-left); */
   height: 100vh;
   width: 100vw;
   /* Blue 700 */
@@ -45,8 +47,13 @@ body {
 }
 
 :root {
-  /* TODO: testing only, rather use env() */
-  --safe-area-inset-bottom: 24px;
+  /* TODO: development: using variables for easier testing, production: replace var() --> env()? */
+  --safe-area-inset-top: env(safe-area-inset-top);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom);
+
+  /* iPhone 13 Pro */
+  /* --safe-area-inset-top: 47px;
+  --safe-area-inset-bottom: 34px; */
 }
 
 /**

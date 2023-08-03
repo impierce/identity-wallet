@@ -11,7 +11,17 @@ const config = {
     // adapter-auto only supports some environments, see https://kit.svelte.dev/docs/adapter-auto for a list.
     // If your environment is not supported or you settled on a specific environment, switch out the adapter.
     // See https://kit.svelte.dev/docs/adapters for more information about adapters.
-    adapter: adapter()
+    adapter: adapter(),
+    prerender: {
+      entries: [
+        '*',
+        '/activity/connection/0',
+        '/activity/connection/1',
+        '/activity/connection/2',
+        '/goals/2/faqs',
+        '/goals/2/step/0',
+      ]
+    }
   }
 };
 

@@ -60,9 +60,3 @@
     </div>
   </div>
 </div>
-
-<style>
-  .safe-bottom {
-    bottom: env(safe-area-inset-bottom);
-  }
-</style>
