@@ -1,20 +1,22 @@
 <script lang="ts">
   import { fly } from 'svelte/transition';
-  import type { CredentialOffer } from './types';
+  import type { Login } from './types';
   import CircleDashed from '~icons/lucide/circle-dashed';
   import ChevronUp from '~icons/lucide/chevron-up';
   import ChevronDown from '~icons/lucide/chevron-down';
 
-  export let data: CredentialOffer;
+  export let data: Login;
 
   let showCredentials = false;
 </script>
 
 <div class="flex flex-col rounded-lg bg-blue-100 pt-4">
   <span class="text-start text-sm text-blue-500 px-4"
-    >You have received {data.credentials.length} credentials from
-    <span class="font-semibold">{data.issuer.domain}</span>!</span
+    >You have logged in to <span class="font-semibold">{data.verifier.domain}</span>
+    using {data.credentials.length} credentials</span
   >
+  <!-- <span class="text-blue-500">{data.issuer.did}</span> -->
+  <!-- Dropdown button -->
   <button
     class="flex items-center justify-center rounded-b-lg bg-blue-100 p-2"
     on:click={() => (showCredentials = !showCredentials)}
@@ -27,6 +29,7 @@
   </button>
 </div>
 
+<!-- Credentials -->
 {#if showCredentials}
   <div class="space-y-2 px-8 py-2" in:fly={{ y: -24 }}>
     {#each data.credentials as credential}

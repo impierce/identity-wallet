@@ -1,14 +1,25 @@
 export interface InitialConnection {
-  issuer: {
-    id: string;
-    domain: string;
-    did: string;
-  };
+  issuer: Issuer;
 }
 
 export interface CredentialOffer {
-  issuer: {
-    id: string;
-  };
+  issuer: Issuer;
   credentials: string[]; // ids
+}
+
+export interface Login {
+  verifier: Verifier;
+  credentials: string[]; // ids
+}
+
+interface Issuer {
+  id: string;
+  domain: string;
+  did: string;
+}
+
+interface Verifier {
+  id: string;
+  domain: string;
+  did: string;
 }
