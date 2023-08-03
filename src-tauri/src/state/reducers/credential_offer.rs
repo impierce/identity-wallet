@@ -112,7 +112,13 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
 
     *state.credentials.lock().unwrap() = Some(vec![credential_0]);
 
-    let buffer = serde_json::to_vec(&credential_response.credential.unwrap())?;
+    let buffer = credential_response
+        .credential
+        .unwrap()
+        .as_str()
+        .unwrap()
+        .as_bytes()
+        .to_vec();
 
     insert_into_stronghold(b"key".to_vec(), buffer, "my-password").await?;
 
