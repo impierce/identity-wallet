@@ -29,14 +29,14 @@
 </script>
 
 <div class="flex h-full flex-col bg-slate-100">
-  <div class="bg-blue-700">
-    <div class="px-4 pb-1 pt-4">
-      <ProgressBar value={40} />
-    </div>
+  <div class="px-4 pb-1 pt-4">
+    <ProgressBar value={40} />
   </div>
   <div class="flex flex-col items-center justify-center p-8">
     <p class="pt-8 text-3xl font-semibold">{exampleJourneyDefinition.title}</p>
-    <p class="pt-4 font-medium text-slate-500 text-center">{exampleJourneyDefinition.description}</p>
+    <p class="pt-4 text-center font-medium text-slate-500">
+      {exampleJourneyDefinition.description}
+    </p>
 
     <div class="flex flex-col items-start space-y-4 py-12">
       {#each goals as goal}
@@ -59,7 +59,7 @@
         {/if}
       {/each}
     </div>
-    <Button>Continue</Button>
+    <Button on:click={() => (sheetOpen = !sheetOpen)}>Continue</Button>
   </div>
 </div>
 
@@ -71,7 +71,7 @@
     <SheetHeader>
       <SheetTitle>{goals.at(2)?.label}</SheetTitle>
       <SheetDescription>
-        <p class="font-xs font-medium rounded bg-orange-100 px-4 py-2 text-orange-600">
+        <p class="text-sm rounded bg-orange-100 px-4 py-2 font-medium text-orange-600">
           TODO: bind SheetTrigger to goal.id
         </p>
       </SheetDescription>
@@ -86,7 +86,7 @@
         <Input id="username" value="@peduarte" class="col-span-3" />
       </div>
     </div> -->
-    <div class="p-8 text-slate-500 font-medium">
+    <div class="p-8 font-medium text-slate-500">
       {goals.at(2)?.description}
     </div>
     <SheetFooter>

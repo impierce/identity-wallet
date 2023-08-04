@@ -11,7 +11,7 @@
   import HelpCircle from '~icons/lucide/help-circle';
 
   const events: Event[] = exampleEvents
-    .map((e) => ({ ...e, type: e.type as EventType }))
+    .map((e) => ({ ...e, type: e.type as EventType })) // explicit type cast
     .map((e) => ({
       ...e,
       timestamp: new Date(e.timestamp).toLocaleString('en-US', {
@@ -19,7 +19,7 @@
         timeStyle: 'medium'
       })
     }))
-    .reverse();
+    .reverse(); // newest on top
 </script>
 
 <div class="flex flex-col space-y-8">

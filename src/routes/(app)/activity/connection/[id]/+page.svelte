@@ -12,14 +12,14 @@
 </script>
 
 <div class="flex h-full flex-col">
-  <TopNavigation on:back={() => goto('/activity')} title={connection.domain} />
+  <TopNavigation on:back={() => goto('/activity')} title={connection.displayName ?? connection.domain} />
   <div class="grow">
     <MeltUiConnectionTabs>
       <!-- Summary -->
-      <div slot="summary" class="h-full">
+      <div slot="summary" class="h-full p-5">
         <div class="flex flex-col items-center justify-center p-4 space-y-4">
           <div class="text-xl font-semibold text-slate-700 text-center">
-            You are connected to <p class="text-violet-700">{connection.displayName ?? connection.domain}</p>
+            You are connected to <p class="text-violet-700">{connection.domain}</p>
           </div>
           <div class="w-fit rounded-lg border">
             <img src={'/tauri.svg'} alt={connection.domain} class="h-32 w-32 p-4" />
@@ -29,12 +29,12 @@
       </div>
 
       <!-- Data -->
-      <div slot="data" class="h-full">
+      <div slot="data" class="h-full p-5">
         <ConnectionData />
       </div>
 
       <!-- History -->
-      <div slot="history" class="h-full">
+      <div slot="history" class="h-full p-5">
         <!-- TODO: If this turns out to be a costly operation (filtering in backend), consider lazy loading the component -->
         <ConnectionHistory />
       </div>
