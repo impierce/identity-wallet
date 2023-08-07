@@ -3,6 +3,7 @@ use iota_stronghold::{
     Client, KeyProvider, Location, SnapshotPath, Stronghold,
 };
 use log::{debug, info};
+use oid4vci::credential_format_profiles::{CredentialFormats, WithCredential};
 
 use crate::STRONGHOLD;
 
@@ -108,7 +109,7 @@ pub async fn insert_into_stronghold(key: Vec<u8>, value: Vec<u8>, password: &str
     Ok(())
 }
 
-pub async fn get_all_from_stronghold(password: &str) -> anyhow::Result<Option<Vec<Vec<u8>>>> {
+pub async fn get_all_from_stronghold(password: &str) -> anyhow::Result<Option<Vec<CredentialFormats<WithCredential>>>> {
     let stronghold = Stronghold::default();
 
     let path = STRONGHOLD.lock().unwrap().to_str().unwrap().to_owned();
@@ -122,11 +123,13 @@ pub async fn get_all_from_stronghold(password: &str) -> anyhow::Result<Option<Ve
         .load_client_from_snapshot(path.clone(), &keyprovider, &snapshot_path)
         .expect("Could not load client from Snapshot");
 
-    let credentials = client
+    let credentials: Vec<CredentialFormats<WithCredential>> = client
         .store()
         .keys()?
         .iter()
-        .map(|key| client.store().get(key).unwrap().unwrap())
+        .map(|key| {
+            serde_json::from_str(std::str::from_utf8(&client.store().get(key).unwrap().unwrap()).unwrap()).unwrap()
+        })
         .collect();
 
     Ok(Some(credentials))

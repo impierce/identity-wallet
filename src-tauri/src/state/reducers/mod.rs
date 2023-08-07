@@ -1,23 +1,28 @@
 pub mod authorization;
 pub mod credential_offer;
 
-use crate::crypto::stronghold::{create_new_stronghold, get_public_key};
+use crate::crypto::stronghold::{create_new_stronghold, get_public_key, insert_into_stronghold};
 use crate::did::did_key::{generate_dev_did, generate_new_did};
+use crate::get_jwt_claims;
 use crate::state::actions::Action;
 use crate::state::user_flow::{CurrentUserFlow, CurrentUserFlowType, Redirect};
 use crate::state::{AppState, Profile};
 use identity_core::common::{Timestamp, Url};
-use identity_credential::credential::{Credential, CredentialBuilder, Issuer, Subject};
-use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
+use identity_credential::credential::{CredentialBuilder, Issuer, Subject};
 use log::info;
+use oid4vci::credential_format_profiles::w3c_verifiable_credentials::jwt_vc_json::JwtVcJson;
+use oid4vci::credential_format_profiles::{Credential, CredentialFormats, WithCredential};
 use serde_json::{json, Value};
 
 use lazy_static::lazy_static;
 
 // TODO: this is a temporary solution to store the credentials in memory.
 lazy_static! {
-    pub static ref VERIFIABLE_CREDENTIALS: Vec<String> =
-        vec!["eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDprZXk6ejZNa3RnMkJkVmZRaDNQaEZLdmM0REduRkVndlJWQWpIeWlvelZSRUNNbXNiUURuI3o2TWt0ZzJCZFZmUWgzUGhGS3ZjNERHbkZFZ3ZSVkFqSHlpb3pWUkVDTW1zYlFEbiJ9.eyJpc3MiOiJkaWQ6a2V5Ono2TWt0ZzJCZFZmUWgzUGhGS3ZjNERHbkZFZ3ZSVkFqSHlpb3pWUkVDTW1zYlFEbiIsInN1YiI6ImRpZDprZXk6ejZNa2cxWFhHVXFma2hBS1Uxa1ZkMVBtdzZVRWoxdnhpTGoxeGM5MU1CejVvd05ZIiwiZXhwIjo5OTk5OTk5OTk5LCJpYXQiOjAsInZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIiwiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvZXhhbXBsZXMvdjEiXSwidHlwZSI6WyJWZXJpZmlhYmxlQ3JlZGVudGlhbCIsIlBlcnNvbmFsSW5mb3JtYXRpb24iXSwiaXNzdWFuY2VEYXRlIjoiMjAyMi0wMS0wMVQwMDowMDowMFoiLCJpc3N1ZXIiOiJkaWQ6a2V5Ono2TWt0ZzJCZFZmUWgzUGhGS3ZjNERHbkZFZ3ZSVkFqSHlpb3pWUkVDTW1zYlFEbiIsImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkIjoiZGlkOmtleTp6Nk1rZzFYWEdVcWZraEFLVTFrVmQxUG13NlVFajF2eGlMajF4YzkxTUJ6NW93TlkiLCJnaXZlbk5hbWUiOiJGZXJyaXMiLCJmYW1pbHlOYW1lIjoiQ3JhYm1hbiIsImVtYWlsIjoiZmVycmlzLmNyYWJtYW5AY3JhYm1haWwuY29tIiwiYmlydGhkYXRlIjoiMTk4NS0wNS0yMSJ9fX0.qVbroJgBGplBHLl1lIr5r-FkPdGg-AEMSLw2566IYe6FsB6B51mMOO_e5dMNDfmtuYgoFP3IfV9WCbFufg3lBw".to_string()];
+    pub static ref VERIFIABLE_CREDENTIAL: CredentialFormats<WithCredential> =
+        CredentialFormats::<WithCredential>::JwtVcJson(Credential {
+            format: JwtVcJson,
+            credential: json!("eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDprZXk6ejZNa3RnMkJkVmZRaDNQaEZLdmM0REduRkVndlJWQWpIeWlvelZSRUNNbXNiUURuI3o2TWt0ZzJCZFZmUWgzUGhGS3ZjNERHbkZFZ3ZSVkFqSHlpb3pWUkVDTW1zYlFEbiJ9.eyJpc3MiOiJkaWQ6a2V5Ono2TWt0ZzJCZFZmUWgzUGhGS3ZjNERHbkZFZ3ZSVkFqSHlpb3pWUkVDTW1zYlFEbiIsInN1YiI6ImRpZDprZXk6ejZNa2cxWFhHVXFma2hBS1Uxa1ZkMVBtdzZVRWoxdnhpTGoxeGM5MU1CejVvd05ZIiwiZXhwIjo5OTk5OTk5OTk5LCJpYXQiOjAsInZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIiwiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvZXhhbXBsZXMvdjEiXSwidHlwZSI6WyJWZXJpZmlhYmxlQ3JlZGVudGlhbCIsIlBlcnNvbmFsSW5mb3JtYXRpb24iXSwiaXNzdWFuY2VEYXRlIjoiMjAyMi0wMS0wMVQwMDowMDowMFoiLCJpc3N1ZXIiOiJkaWQ6a2V5Ono2TWt0ZzJCZFZmUWgzUGhGS3ZjNERHbkZFZ3ZSVkFqSHlpb3pWUkVDTW1zYlFEbiIsImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkIjoiZGlkOmtleTp6Nk1rZzFYWEdVcWZraEFLVTFrVmQxUG13NlVFajF2eGlMajF4YzkxTUJ6NW93TlkiLCJnaXZlbk5hbWUiOiJGZXJyaXMiLCJmYW1pbHlOYW1lIjoiQ3JhYm1hbiIsImVtYWlsIjoiZmVycmlzLmNyYWJtYW5AY3JhYm1haWwuY29tIiwiYmlydGhkYXRlIjoiMTk4NS0wNS0yMSJ9fX0.qVbroJgBGplBHLl1lIr5r-FkPdGg-AEMSLw2566IYe6FsB6B51mMOO_e5dMNDfmtuYgoFP3IfV9WCbFufg3lBw"),
+        });
 }
 
 /// Sets the locale to the given value. If the locale is not supported yet, the current locale will stay unchanged.
@@ -99,7 +104,7 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
 
     let issuer: Issuer = serde_json::from_value(json_issuer).unwrap();
 
-    let _credential_personal_information: Credential = CredentialBuilder::default()
+    let _credential_personal_information: identity_credential::credential::Credential = CredentialBuilder::default()
         .context(Url::parse("https://www.w3.org/2018/credentials/examples/v1").unwrap())
         .id(Url::parse("http://example.org/credentials/1012").unwrap())
         .type_("PersonalInformation")
@@ -110,7 +115,7 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
         .unwrap();
     // =====================
 
-    let _credential_university_degree: Credential = CredentialBuilder::default()
+    let _credential_university_degree: identity_credential::credential::Credential = CredentialBuilder::default()
         .id(Url::parse("https://example.edu/credentials/3732")?)
         .issuer(Url::parse("did:key:a1b2c3d4e5f6")?)
         .type_("UniversityDegreeCredential")
@@ -125,16 +130,28 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
         }))?)
         .build()?;
 
-    // read VC from in-memory storage
-    let key = DecodingKey::from_secret(&[]);
-    let mut validation = Validation::new(Algorithm::EdDSA);
-    validation.insecure_disable_signature_validation();
-    let credential_0_as_json = decode::<serde_json::Value>(&VERIFIABLE_CREDENTIALS.first().unwrap(), &key, &validation)
-        .unwrap()
-        .claims;
-    let credential_0 = serde_json::from_value::<Credential>(credential_0_as_json.get("vc").unwrap().clone()).unwrap();
+    let credential = VERIFIABLE_CREDENTIAL.clone();
 
-    *state.credentials.lock().unwrap() = Some(vec![credential_0]);
+    insert_into_stronghold(
+        b"key".to_vec(),
+        json!(credential).to_string().as_bytes().to_vec(),
+        "my-password",
+    )
+    .await
+    .unwrap();
+
+    let credential_display = match credential {
+        CredentialFormats::JwtVcJson(credential) => {
+            let credential_display = serde_json::from_value::<identity_credential::credential::Credential>(
+                get_jwt_claims(&credential.credential)["vc"].clone(),
+            )
+            .unwrap();
+            credential_display
+        }
+        _ => unimplemented!(),
+    };
+
+    *state.credentials.lock().unwrap() = Some(vec![credential_display]);
     *state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Redirect(Redirect {
         r#type: CurrentUserFlowType::Redirect,
         target: "profile".to_string(),

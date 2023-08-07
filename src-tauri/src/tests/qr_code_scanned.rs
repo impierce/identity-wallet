@@ -6,9 +6,10 @@ use crate::state::{
 };
 use crate::tests::{assert_state_update, setup_provider_manager, setup_state_file, setup_stronghold};
 use oid4vci::credential_format_profiles::w3c_verifiable_credentials::jwt_vc_json::{self, JwtVcJson};
+use oid4vci::credential_format_profiles::{Credential, Parameters, WithCredential, WithParameters};
 use oid4vci::credential_offer::{Grants, PreAuthorizedCode};
 use oid4vci::{
-    credential_format_profiles::{CredentialFormat, CredentialFormats},
+    credential_format_profiles::CredentialFormats,
     credential_offer::{CredentialOffer, CredentialsObject},
 };
 use serde_json::json;
@@ -38,19 +39,17 @@ async fn test_qr_code_scanned_read_credential_offer() {
             }),
             credential_offer: Some(CredentialOffer {
                 credential_issuer: "http://192.168.1.127:9090".parse().unwrap(),
-                credentials: vec![CredentialsObject::ByValue(CredentialFormats::JwtVcJson(
-                    CredentialFormat {
-                        format: JwtVcJson,
-                        parameters: (
-                            jwt_vc_json::CredentialDefinition {
-                                type_: vec!["VerifiableCredential".to_string(), "PersonalInformation".to_string()],
-                                credential_subject: None,
-                            },
-                            None,
-                        )
-                            .into(),
-                    },
-                ))],
+                credentials: vec![CredentialsObject::ByValue(CredentialFormats::JwtVcJson(Parameters {
+                    format: JwtVcJson,
+                    parameters: (
+                        jwt_vc_json::CredentialDefinition {
+                            type_: vec!["VerifiableCredential".to_string(), "PersonalInformation".to_string()],
+                            credential_subject: None,
+                        },
+                        None,
+                    )
+                        .into(),
+                }))],
                 grants: Some(Grants {
                     authorization_code: None,
                     pre_authorized_code: Some(PreAuthorizedCode {
@@ -63,8 +62,8 @@ async fn test_qr_code_scanned_read_credential_offer() {
                 r#type: CurrentUserFlowType::Offer,
                 options: vec![serde_json::to_value(&CredentialOffer {
                     credential_issuer: "http://192.168.1.127:9090".parse().unwrap(),
-                    credentials: vec![CredentialsObject::ByValue(CredentialFormats::JwtVcJson(
-                        CredentialFormat {
+                    credentials: vec![CredentialsObject::ByValue(
+                        CredentialFormats::<WithParameters>::JwtVcJson(Parameters {
                             format: JwtVcJson,
                             parameters: (
                                 jwt_vc_json::CredentialDefinition {
@@ -74,8 +73,8 @@ async fn test_qr_code_scanned_read_credential_offer() {
                                 None,
                             )
                                 .into(),
-                        },
-                    ))],
+                        }),
+                    )],
                     grants: Some(Grants {
                         authorization_code: None,
                         pre_authorized_code: Some(PreAuthorizedCode {
@@ -98,9 +97,14 @@ async fn test_qr_code_scanned_read_authorization_request() {
     setup_stronghold().await;
     setup_provider_manager().await;
 
+    let credential = CredentialFormats::<WithCredential>::JwtVcJson(Credential {
+        format: JwtVcJson,
+        credential: json!("eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDprZXk6ejZNa3RqWXpmNkd1UVJraDFYczlHcUJIU3JKVU01S3VxcGNKMXVjV0E3cmdINXBoI3o2TWt0all6ZjZHdVFSa2gxWHM5R3FCSFNySlVNNUt1cXBjSjF1Y1dBN3JnSDVwaCJ9.eyJpc3MiOiJkaWQ6a2V5Ono2TWt0all6ZjZHdVFSa2gxWHM5R3FCSFNySlVNNUt1cXBjSjF1Y1dBN3JnSDVwaCIsInN1YiI6ImRpZDprZXk6ejZNa2cxWFhHVXFma2hBS1Uxa1ZkMVBtdzZVRWoxdnhpTGoxeGM5MU1CejVvd05ZIiwiZXhwIjo5OTk5OTk5OTk5LCJpYXQiOjAsInZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIiwiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvZXhhbXBsZXMvdjEiXSwidHlwZSI6WyJWZXJpZmlhYmxlQ3JlZGVudGlhbCIsIlBlcnNvbmFsSW5mb3JtYXRpb24iXSwiaXNzdWFuY2VEYXRlIjoiMjAyMi0wMS0wMVQwMDowMDowMFoiLCJpc3N1ZXIiOiJkaWQ6a2V5Ono2TWt0all6ZjZHdVFSa2gxWHM5R3FCSFNySlVNNUt1cXBjSjF1Y1dBN3JnSDVwaCIsImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkIjoiZGlkOmtleTp6Nk1rZzFYWEdVcWZraEFLVTFrVmQxUG13NlVFajF2eGlMajF4YzkxTUJ6NW93TlkiLCJnaXZlbk5hbWUiOiJGZXJyaXMiLCJmYW1pbHlOYW1lIjoiQ3JhYm1hbiIsImVtYWlsIjoiZmVycmlzLmNyYWJtYW5AY3JhYm1haWwuY29tIiwiYmlydGhkYXRlIjoiMTk4NS0wNS0yMSJ9fX0.ETqRaVMxFZQLN8OmngL1IPGAA2xH9Nsir9vRvJTLLBOJbnGuPdvcMQkN720MQuk9LWmsqNMBrUQegIuJ9IQLBg")
+    });
+
     insert_into_stronghold(
         b"key".to_vec(),
-        b"eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDprZXk6ejZNa3RqWXpmNkd1UVJraDFYczlHcUJIU3JKVU01S3VxcGNKMXVjV0E3cmdINXBoI3o2TWt0all6ZjZHdVFSa2gxWHM5R3FCSFNySlVNNUt1cXBjSjF1Y1dBN3JnSDVwaCJ9.eyJpc3MiOiJkaWQ6a2V5Ono2TWt0all6ZjZHdVFSa2gxWHM5R3FCSFNySlVNNUt1cXBjSjF1Y1dBN3JnSDVwaCIsInN1YiI6ImRpZDprZXk6ejZNa2cxWFhHVXFma2hBS1Uxa1ZkMVBtdzZVRWoxdnhpTGoxeGM5MU1CejVvd05ZIiwiZXhwIjo5OTk5OTk5OTk5LCJpYXQiOjAsInZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIiwiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvZXhhbXBsZXMvdjEiXSwidHlwZSI6WyJWZXJpZmlhYmxlQ3JlZGVudGlhbCIsIlBlcnNvbmFsSW5mb3JtYXRpb24iXSwiaXNzdWFuY2VEYXRlIjoiMjAyMi0wMS0wMVQwMDowMDowMFoiLCJpc3N1ZXIiOiJkaWQ6a2V5Ono2TWt0all6ZjZHdVFSa2gxWHM5R3FCSFNySlVNNUt1cXBjSjF1Y1dBN3JnSDVwaCIsImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkIjoiZGlkOmtleTp6Nk1rZzFYWEdVcWZraEFLVTFrVmQxUG13NlVFajF2eGlMajF4YzkxTUJ6NW93TlkiLCJnaXZlbk5hbWUiOiJGZXJyaXMiLCJmYW1pbHlOYW1lIjoiQ3JhYm1hbiIsImVtYWlsIjoiZmVycmlzLmNyYWJtYW5AY3JhYm1haWwuY29tIiwiYmlydGhkYXRlIjoiMTk4NS0wNS0yMSJ9fX0.ETqRaVMxFZQLN8OmngL1IPGAA2xH9Nsir9vRvJTLLBOJbnGuPdvcMQkN720MQuk9LWmsqNMBrUQegIuJ9IQLBg".to_vec(),
+        json!(credential).to_string().as_bytes().to_vec(),
         "my-password",
     )
     .await

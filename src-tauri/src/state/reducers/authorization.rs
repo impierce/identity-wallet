@@ -1,16 +1,16 @@
-use identity_credential::{credential::Jwt, presentation::JwtPresentation};
-use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
-use log::info;
-use oid4vc_manager::managers::presentation::create_presentation_submission;
-
 use crate::{
     crypto::stronghold::get_all_from_stronghold,
+    get_jwt_claims,
     state::{
         actions::Action,
         user_flow::{CurrentUserFlow, CurrentUserFlowType, Selection},
         AppState,
     },
 };
+use identity_credential::{credential::Jwt, presentation::JwtPresentation};
+use log::info;
+use oid4vc_manager::managers::presentation::create_presentation_submission;
+use oid4vci::credential_format_profiles::CredentialFormats;
 
 // Reads the request url from the payload and validates it.
 pub async fn read_authorization_request(state: &AppState, action: Action) -> anyhow::Result<()> {
@@ -32,17 +32,15 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> any
 
     // Get the indices of the verifiable credentials that can be used to fulfill the request.
     let indices: Vec<usize> = verifiable_credentials
-        .iter()
+        .into_iter()
+        .map(|vc| match vc {
+            CredentialFormats::JwtVcJson(jwt_vc_json) => jwt_vc_json.credential,
+            _ => unimplemented!(),
+        })
         .enumerate()
         .filter_map(|(index, verifiable_credential)| {
             // Decode the verifiable credential from the JWT without validating.
-            let key = DecodingKey::from_secret(&[]);
-            let mut validation = Validation::new(Algorithm::EdDSA);
-            validation.insecure_disable_signature_validation();
-            let verifiable_credential =
-                decode::<serde_json::Value>(std::str::from_utf8(verifiable_credential).unwrap(), &key, &validation)
-                    .unwrap()
-                    .claims;
+            let verifiable_credential = get_jwt_claims(&verifiable_credential);
 
             // Create presentation submission using the presentation definition and the verifiable credential.
             match create_presentation_submission(
@@ -114,13 +112,21 @@ pub async fn send_authorization_response(state: &AppState, action: Action) -> an
     info!("||DEBUG|| credential not found");
     *state.debug_messages.lock().unwrap() = vec!["credential not found".into()];
 
-    let verifiable_credentials = get_all_from_stronghold("my-password").await?.unwrap();
+    let verifiable_credentials: Vec<serde_json::Value> = get_all_from_stronghold("my-password")
+        .await?
+        .unwrap()
+        .into_iter()
+        .map(|vc| match vc {
+            CredentialFormats::JwtVcJson(jwt_vc_json) => jwt_vc_json.credential,
+            _ => unimplemented!(),
+        })
+        .collect();
 
     // let verifiable_credential = VERIFIABLE_CREDENTIALS
     //     .get(credential_index)
     //     .ok_or(anyhow::anyhow!("credential not found"))?;
-    let verifiable_credential = match verifiable_credentials.get(credential_index) {
-        Some(verifiable_credential) => std::str::from_utf8(verifiable_credential).unwrap(),
+    let verifiable_credential_jwt = match verifiable_credentials.get(credential_index) {
+        Some(verifiable_credential) => verifiable_credential,
         None => {
             info!("||DEBUG|| credential not found");
             *state.debug_messages.lock().unwrap() = vec!["credential not found".into()];
@@ -131,12 +137,7 @@ pub async fn send_authorization_response(state: &AppState, action: Action) -> an
     info!("||DEBUG|| decoding the verifiable credential");
     *state.debug_messages.lock().unwrap() = vec!["decoding the verifiable credential".into()];
     // Decode the verifiable credential from the JWT without validating.
-    let key = DecodingKey::from_secret(&[]);
-    let mut validation = Validation::new(Algorithm::EdDSA);
-    validation.insecure_disable_signature_validation();
-    let verifiable_credential = decode::<serde_json::Value>(&verifiable_credential, &key, &validation)
-        .unwrap()
-        .claims;
+    let verifiable_credential = get_jwt_claims(verifiable_credential_jwt);
 
     // Create presentation submission using the presentation definition and the verifiable credential.
     // let presentation_submission = create_presentation_submission(
@@ -173,15 +174,7 @@ pub async fn send_authorization_response(state: &AppState, action: Action) -> an
     *state.debug_messages.lock().unwrap() = vec!["credential not found".into()];
     // Create a verifiable presentation using the JWT.
     let verifiable_presentation = JwtPresentation::builder(subject_did.parse().unwrap(), Default::default())
-        .credential(Jwt::from(
-            std::str::from_utf8(
-                verifiable_credentials
-                    .get(credential_index)
-                    .ok_or(anyhow::anyhow!("credential not found"))?,
-            )
-            .unwrap()
-            .to_owned(),
-        ))
+        .credential(Jwt::from(verifiable_credential_jwt.to_string()))
         .build()
         .unwrap();
 

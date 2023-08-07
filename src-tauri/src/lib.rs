@@ -6,6 +6,7 @@ pub mod state;
 use command::handle_action;
 use did_key::{generate, Ed25519KeyPair};
 use fern::colors::Color;
+use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
 use lazy_static::lazy_static;
 use log::{info, LevelFilter};
 use oid4vc_manager::{methods::key_method::KeySubject, ProviderManager};
@@ -96,4 +97,12 @@ fn initialize_storage(app_handle: tauri::AppHandle) -> anyhow::Result<()> {
     tauri::async_runtime::block_on(async { PROVIDER_MANAGER.lock().await.replace(provider_manager) });
 
     Ok(())
+}
+
+// Get the claims from a JWT without performing validation.
+pub fn get_jwt_claims(jwt: &serde_json::Value) -> serde_json::Value {
+    let key = DecodingKey::from_secret(&[]);
+    let mut validation = Validation::new(Algorithm::EdDSA);
+    validation.insecure_disable_signature_validation();
+    decode(jwt.as_str().unwrap(), &key, &validation).unwrap().claims
 }
