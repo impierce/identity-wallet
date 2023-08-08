@@ -17,7 +17,7 @@
     AccordionContent
   } from '@impierce/ui-components';
   import { state } from '../../stores';
-  import LL from '../../i18n/i18n-svelte';
+  import LL from '$i18n/i18n-svelte';
   import { CheckBadge } from 'svelte-heros-v2';
   import { dispatch } from '$lib/dispatcher';
   import CredentialSubject from './CredentialSubject.svelte';

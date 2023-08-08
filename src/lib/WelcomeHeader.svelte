@@ -5,6 +5,7 @@
   import { goto } from '$app/navigation';
   import Settings from '~icons/lucide/settings';
   import DotsThreeVertical from '~icons/ph/dots-three-vertical-bold';
+  import LL from '$i18n/i18n-svelte';
   // import DotsThreeVertical from '~icons/ph/dots-three-outline-vertical-fill';
 </script>
 
@@ -25,9 +26,7 @@
     </button>
   </div>
   <p class="pt-4 text-3xl font-semibold text-black">
-    Welcome to your UniMe, <span class="text-indigo-500"
-      >{$state?.active_profile?.display_name}.</span
-    >
+    {$LL.WELCOME()}, <span class="text-indigo-500">{$state?.active_profile?.display_name}.</span>
   </p>
 
   {#if $state?.user_journey}

@@ -21,7 +21,7 @@ type RootTranslation = {
 	 */
 	HI: RequiredParams<'name'>
 	/**
-	 * W​e​l​c​o​m​e
+	 * W​e​l​c​o​m​e​ ​t​o​ ​y​o​u​r​ ​U​n​i​M​e
 	 */
 	WELCOME: string
 	/**
@@ -40,6 +40,14 @@ type RootTranslation = {
 	 * W​h​y​ ​n​o​t​ ​a​d​d​ ​s​o​m​e​ ​c​r​e​d​e​n​t​i​a​l​s​ ​t​o​ ​s​t​a​r​t​ ​y​o​u​r​ ​n​e​w​ ​d​i​g​i​t​a​l​ ​m​e​?
 	 */
 	EMPTY_CREDENTIALS_LIST_SUBTITLE: string
+	/**
+	 * S​h​a​l​l​ ​w​e​ ​g​e​t​ ​s​t​a​r​t​e​d​?
+	 */
+	GETTING_STARTED_TITLE: string
+	/**
+	 * S​t​a​r​t​ ​y​o​u​r​ ​f​i​r​s​t​ ​s​t​e​p​s​ ​t​o​ ​a​d​d​ ​s​o​m​e​ ​c​r​e​d​e​n​t​i​a​l​s​ ​t​o​ ​y​o​u​r​ ​d​i​g​i​t​a​l​ ​"​M​e​"​.
+	 */
+	GETTING_STARTED_SUBTITLE: string
 	/**
 	 * A​p​p​ ​s​e​t​t​i​n​g​s
 	 */
@@ -84,6 +92,18 @@ type RootTranslation = {
 	 * P​l​e​a​s​e​ ​c​h​o​o​s​e​ ​a​ ​s​t​r​o​n​g​ ​p​a​s​s​w​o​r​d​.
 	 */
 	STRONG_PASSWORD: string
+	/**
+	 * F​a​v​o​r​i​t​e​s
+	 */
+	FAVORITES: string
+	/**
+	 * M​y​ ​d​a​t​a
+	 */
+	MY_DATA: string
+	/**
+	 * A​d​d
+	 */
+	ADD: string
 }
 
 export type TranslationFunctions = {
@@ -92,7 +112,7 @@ export type TranslationFunctions = {
 	 */
 	HI: (arg: { name: string }) => LocalizedString
 	/**
-	 * Welcome
+	 * Welcome to your UniMe
 	 */
 	WELCOME: () => LocalizedString
 	/**
@@ -111,6 +131,14 @@ export type TranslationFunctions = {
 	 * Why not add some credentials to start your new digital me?
 	 */
 	EMPTY_CREDENTIALS_LIST_SUBTITLE: () => LocalizedString
+	/**
+	 * Shall we get started?
+	 */
+	GETTING_STARTED_TITLE: () => LocalizedString
+	/**
+	 * Start your first steps to add some credentials to your digital "Me".
+	 */
+	GETTING_STARTED_SUBTITLE: () => LocalizedString
 	/**
 	 * App settings
 	 */
@@ -155,6 +183,18 @@ export type TranslationFunctions = {
 	 * Please choose a strong password.
 	 */
 	STRONG_PASSWORD: () => LocalizedString
+	/**
+	 * Favorites
+	 */
+	FAVORITES: () => LocalizedString
+	/**
+	 * My data
+	 */
+	MY_DATA: () => LocalizedString
+	/**
+	 * Add
+	 */
+	ADD: () => LocalizedString
 }
 
 export type Formatters = {}

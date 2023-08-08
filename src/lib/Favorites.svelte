@@ -4,6 +4,7 @@
   import Heart from '~icons/ph/heart-fill';
   import Clapperboard from '~icons/lucide/clapperboard';
   import FilmSlate from '~icons/ph/film-slate-light';
+  import LL from '$i18n/i18n-svelte';
 
   let favorite_credentials: any[] = [
     {
@@ -17,7 +18,7 @@
   <div class="pb-6">
     <div class="flex items-center pb-2">
       <Heart class="mr-2 text-indigo-500" />
-      <p class="font-medium text-slate-600">Favorites</p>
+      <p class="font-medium text-slate-600">{$LL.FAVORITES()}</p>
     </div>
     <!-- <div class="pt-2"> -->
     {#each favorite_credentials as favorite}

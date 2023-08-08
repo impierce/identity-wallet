@@ -2,12 +2,18 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 import { internalIpV4 } from 'internal-ip';
 import Icons from 'unplugin-icons/vite';
+import path from 'path';
 
 const mobile = process.env.TAURI_PLATFORM === 'android' || process.env.TAURI_PLATFORM === 'ios';
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
   plugins: [sveltekit(), Icons({ compiler: 'svelte' })],
+  resolve: {
+    alias: {
+      $i18n: path.resolve('./src/i18n'),
+    }
+  },
   test: {
     include: ['tests/**/*.{test,spec}.{js,ts}'],
     globals: true,

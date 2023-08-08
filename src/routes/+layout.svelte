@@ -11,7 +11,7 @@
     ExclamationTriangle
   } from 'svelte-heros-v2';
   import { state } from '../stores';
-  import LL from '../i18n/i18n-svelte';
+  import LL from '$i18n/i18n-svelte';
   import { onMount } from 'svelte';
   import { loadAllLocales } from '../i18n/i18n-util.sync';
   import { dispatch } from '$lib/dispatcher';

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Button, LoadingSpinner, Input, Label } from '@impierce/ui-components';
-  import LL from '../../i18n/i18n-svelte';
+  import LL from '$i18n/i18n-svelte';
   import LocaleSelect from '$lib/LocaleSelect.svelte';
   import { dispatch } from '$lib/dispatcher';
   import { onMount } from 'svelte';
@@ -38,7 +38,7 @@
 
 <div class="flex h-auto flex-col items-center justify-center space-y-8 p-8">
   <h1 data-testid="label-welcome" class="font-serif text-2xl font-semibold text-slate-800">
-    {$LL.WELCOME()}!
+    Welcome!
   </h1>
 
   <img

@@ -478,6 +478,7 @@ mod tests {
             credentials: None.into(),
             current_user_flow: None.into(),
             debug_messages: Vec::new().into(),
+            user_journey: None.into(),
         };
 
         assert!(reset_state(

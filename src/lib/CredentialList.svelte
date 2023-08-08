@@ -1,6 +1,5 @@
 <script lang="ts">
   import { state } from '../stores';
-  import LL from '../i18n/i18n-svelte';
   import {
     AlertDialog,
     AlertDialogAction,
@@ -36,6 +35,7 @@
   import { fade, fly } from 'svelte/transition';
   import EnvelopeSimple from '~icons/ph/envelope-simple-light';
   import SealCheck from '~icons/ph/seal-check-fill';
+  import LL from '$i18n/i18n-svelte';
 
   import House from '~icons/ph/house-light';
 
@@ -50,7 +50,7 @@
 {#if credentials.length > 0}
   <div class="flex items-center pb-2">
     <SealCheck class="mr-2 text-indigo-500" />
-    <p class="font-medium text-slate-600">My data</p>
+    <p class="font-medium text-slate-600">{$LL.MY_DATA()}</p>
   </div>
   <!-- Search -->
   <!-- <Input type="text" placeholder="Search credentials" class="focus-visible:ring-violet-600" /> -->

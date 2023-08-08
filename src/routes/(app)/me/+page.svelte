@@ -1,6 +1,6 @@
 <script lang="ts">
   import { state } from '../../../stores';
-  import LL from '../../../i18n/i18n-svelte';
+  import LL from '$i18n/i18n-svelte';
   import { Avatar, BottomDrawer } from '@impierce/ui-components';
   import { fade, fly, slide } from 'svelte/transition';
   import QrCodeButton from '$lib/QrCodeButton.svelte';
@@ -13,6 +13,7 @@
   import RocketLaunch from '~icons/ph/rocket-launch-fill';
   import AddButton from '$lib/credentials/AddButton.svelte';
   import { melt } from '@melt-ui/svelte';
+  import '@lottiefiles/lottie-player';
 
   let initials: string | undefined;
 
@@ -54,15 +55,34 @@
     {:else if $state?.user_journey}
       <!-- With active onboarding journey -->
       <div class="flex h-max grow flex-col items-center justify-center text-center">
-        <!-- TODO: extract icon component? -->
-        <div class="rounded-2xl bg-indigo-500 p-4"><RocketLaunch class="h-8 w-8 text-white" /></div>
+        <div class="relative">
+          <!-- TODO: extract icon component? -->
+          <div class="relative z-10">
+            <!-- z-index only applies to elements with explicit position, therefore also "relative" -->
+            <div class="rounded-2xl bg-indigo-500 p-4">
+              <RocketLaunch class="h-8 w-8 text-white" />
+            </div>
+          </div>
+
+          <!-- Confetti -->
+          <div class="absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2">
+            <lottie-player
+              src="lottiefiles/bubble-burst-confetti-idQiUsReAi.json"
+              autoplay
+              loop
+              speed={0.25}
+              mode="normal"
+              style="width: 320px"
+            />
+          </div>
+        </div>
+
         <div class="select-none p-6">
-          <p class="pb-4 text-lg font-semibold text-slate-500">Shall we get started?</p>
-          <p class="text-slate-400">
-            Start your first steps to add some credentials to your digital "Me".
-          </p>
+          <p class="pb-4 text-lg font-semibold text-slate-500">{$LL.GETTING_STARTED_TITLE()}</p>
+          <p class="text-slate-400">{$LL.GETTING_STARTED_SUBTITLE()}</p>
         </div>
       </div>
+
       <BottomDrawer
         titleText="Complete new goals"
         descriptionText="Start your mission here! Goals will lead you (...)"
@@ -89,6 +109,7 @@
           <p class="text-slate-400">{$LL.EMPTY_CREDENTIALS_LIST_SUBTITLE()}</p>
         </div>
       </div>
+
       <AddButton />
     {/if}
   </div>
