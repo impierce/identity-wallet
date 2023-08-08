@@ -1,7 +1,7 @@
 <script lang="ts">
   import { state } from '../../../stores';
   import LL from '../../../i18n/i18n-svelte';
-  import { Avatar } from '@impierce/ui-components';
+  import { Avatar, BottomDrawer } from '@impierce/ui-components';
   import { fade, fly, slide } from 'svelte/transition';
   import QrCodeButton from '$lib/QrCodeButton.svelte';
   import { debug, info } from '@tauri-apps/plugin-log';
@@ -9,6 +9,10 @@
   import { calculate_initials } from './utils';
   import WelcomeHeader from '$lib/WelcomeHeader.svelte';
   import Favorites from '$lib/Favorites.svelte';
+  import Ghost from '~icons/ph/ghost-fill';
+  import RocketLaunch from '~icons/ph/rocket-launch-fill';
+  import AddButton from '$lib/credentials/AddButton.svelte';
+  import { melt } from '@melt-ui/svelte';
 
   let initials: string | undefined;
 
@@ -21,7 +25,7 @@
   }
 </script>
 
-<div class="">
+<div class="flex min-h-full flex-col">
   <!-- Background -->
   <!-- <div class="absolute h-[4px] top-0 w-full z-10 bg-gradient-to-r from-blue-500 via-violet-500 to-pink-500" /> -->
 
@@ -31,19 +35,62 @@
     <img src="light.png" alt="">
   </picture> -->
   <!-- End: Banner image -->
-  
+
   <!-- TODO: Shrinking header on scroll: https://css-tricks.com/how-to-create-a-shrinking-header-on-scroll-without-javascript/ -->
   <div class="sticky top-0 z-10">
-    <div in:fly={{ y: -24, opacity: 1 }} class="">
+    <div in:fly={{ y: -24, opacity: 1 }}>
       <WelcomeHeader />
     </div>
   </div>
 
-  <div in:fly={{ y: 24 }} class="px-8 pt-8">
-    <Favorites />
-    <!-- Divider -->
-    <p class="my-6 h-[2px] bg-slate-100" />
-    <CredentialList />
+  <div
+    in:fly={{ y: 24 }}
+    class="flex grow flex-col items-stretch justify-center rounded-t-3xl bg-neutral-100 p-6"
+  >
+    {#if $state?.credentials && $state?.credentials.length > 0}
+      <Favorites />
+      <CredentialList />
+      <AddButton />
+    {:else if $state?.user_journey}
+      <!-- With active onboarding journey -->
+      <div class="flex h-max grow flex-col items-center justify-center text-center">
+        <!-- TODO: extract icon component? -->
+        <div class="rounded-2xl bg-indigo-500 p-4"><RocketLaunch class="h-8 w-8 text-white" /></div>
+        <div class="select-none p-6">
+          <p class="pb-4 text-lg font-semibold text-slate-500">Shall we get started?</p>
+          <p class="text-slate-400">
+            Start your first steps to add some credentials to your digital "Me".
+          </p>
+        </div>
+      </div>
+      <BottomDrawer
+        titleText="Complete new goals"
+        descriptionText="Start your mission here! Goals will lead you (...)"
+      >
+        <button
+          slot="trigger"
+          let:trigger
+          class="w-full rounded-lg bg-indigo-500 px-4 py-2 text-white"
+          use:melt={trigger}>Start</button
+        >
+        <div slot="content">
+          stepper
+          <button class="w-full rounded-lg bg-indigo-500 px-4 py-2 text-white">Continue</button>
+        </div>
+      </BottomDrawer>
+    {:else}
+      <!-- Skipped onboarding journey -->
+      <div class="flex h-max flex-col items-center justify-center text-center">
+        <div class="rounded-2xl bg-indigo-500 p-4"><Ghost class="h-8 w-8 text-white" /></div>
+        <div class="select-none p-6">
+          <p class="pb-4 text-lg font-semibold text-slate-500">
+            {$LL.EMPTY_CREDENTIALS_LIST_TITLE()}
+          </p>
+          <p class="text-slate-400">{$LL.EMPTY_CREDENTIALS_LIST_SUBTITLE()}</p>
+        </div>
+      </div>
+      <AddButton />
+    {/if}
   </div>
 
   <!-- <div class="-z-5 fixed top-0 w-full">

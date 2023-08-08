@@ -33,13 +33,13 @@ type RootTranslation = {
 	 */
 	CREATE_IDENTITY: string
 	/**
-	 * Y​o​u​ ​h​a​v​e​ ​j​u​s​t​ ​c​r​e​a​t​e​d​ ​a​ ​n​e​w​ ​d​i​g​i​t​a​l​ ​i​d​e​n​t​i​t​y​!
+	 * I​t​'​s​ ​a​ ​b​i​t​ ​q​u​i​e​t​ ​i​n​ ​h​e​r​e
 	 */
-	CREATE_IDENTITY_SUCCESS_TITLE: string
+	EMPTY_CREDENTIALS_LIST_TITLE: string
 	/**
-	 * C​o​n​t​i​n​u​e​ ​b​y​ ​a​d​d​i​n​g​ ​m​o​r​e​ ​i​n​f​o​r​m​a​t​i​o​n​ ​a​b​o​u​t​ ​y​o​u​r​s​e​l​f​ ​o​r​ ​s​c​a​n​ ​a​ ​c​r​e​d​e​n​t​i​a​l​.
+	 * W​h​y​ ​n​o​t​ ​a​d​d​ ​s​o​m​e​ ​c​r​e​d​e​n​t​i​a​l​s​ ​t​o​ ​s​t​a​r​t​ ​y​o​u​r​ ​n​e​w​ ​d​i​g​i​t​a​l​ ​m​e​?
 	 */
-	CREATE_IDENTITY_SUCCESS_BODY: string
+	EMPTY_CREDENTIALS_LIST_SUBTITLE: string
 	/**
 	 * A​p​p​ ​s​e​t​t​i​n​g​s
 	 */
@@ -104,13 +104,13 @@ export type TranslationFunctions = {
 	 */
 	CREATE_IDENTITY: () => LocalizedString
 	/**
-	 * You have just created a new digital identity!
+	 * It's a bit quiet in here
 	 */
-	CREATE_IDENTITY_SUCCESS_TITLE: () => LocalizedString
+	EMPTY_CREDENTIALS_LIST_TITLE: () => LocalizedString
 	/**
-	 * Continue by adding more information about yourself or scan a credential.
+	 * Why not add some credentials to start your new digital me?
 	 */
-	CREATE_IDENTITY_SUCCESS_BODY: () => LocalizedString
+	EMPTY_CREDENTIALS_LIST_SUBTITLE: () => LocalizedString
 	/**
 	 * App settings
 	 */

@@ -1,11 +1,11 @@
 <script>
   import { TopNavigation } from '@impierce/ui-components';
-  import exampleJourneyDefinition from '$lib/example/data/journey-definition.json';
+  import { state } from '../../stores';
   import { page } from '$app/stores';
 </script>
 
-<TopNavigation on:back={() => history.back()} title={exampleJourneyDefinition.title} />
-<div class="h-[calc(100vh-56px-1px)]">
+<TopNavigation on:back={() => history.back()} title={$state.user_journey.title} />
+<div class="h-[calc(100vh-56px)]">
   <slot />
 </div>
 

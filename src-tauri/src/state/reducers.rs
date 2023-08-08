@@ -70,16 +70,60 @@ pub fn reset_state(state: &AppState, _action: Action) -> anyhow::Result<()> {
         r#type: CurrentUserFlowType::Redirect,
         target: "welcome".to_string(),
     }));
+    *state.user_journey.lock().unwrap() = None;
     Ok(())
 }
 
 pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Result<()> {
     let did_document = generate_dev_did().await?;
     let profile = Profile {
-        display_name: "Ferris Rustacean".to_string(),
+        display_name: "Ferris".to_string(),
         primary_did: did_document.id,
     };
     *state.active_profile.lock().unwrap() = Some(profile);
+
+    // add default user onboarding journey
+    let onboarding_journey: Value = json!(
+    {
+        "title": "Onboarding",
+        "description": "Set up your profile and get started with your UniMe app.",
+        "description_short": "Complete your first steps",
+        "creator": "UniMe",
+        "goals": [
+            {
+                "id": 0,
+                "label": "Set up your profile",
+                "description": "",
+                "faqs": [],
+                "prerequisites": []
+            },
+            {
+                "id": 1,
+                "label": "Add a self-signed credential",
+                "description": "",
+                "faqs": [],
+                "prerequisites": []
+            },
+            {
+                "id": 2,
+                "label": "Get your email address verified",
+                "description": "We can send you a verification link to your provided email address. When you confirm the link in the email, we will issue a credential that proves you own that email address.",
+                "faqs": [
+                    { "id": 0, "title": "What can I do with my email?", "content": "Something." },
+                    { "id": 1, "title": "Why should I add my email?", "content": "Because." },
+                    { "id": 2, "title": "Is it verified?", "content": "Absolutely." }
+                ],
+                "prerequisites": [
+                    { "type": "goal", "data": 0 },
+                    { "type": "goal", "data": 1 }
+                ]
+            },
+            { "id": 3, "label": "Log in in to a website", "faqs": [], "prerequisites": [] },
+            { "id": 4, "label": "Check your history", "faqs": [], "prerequisites": [] }
+        ]
+    }
+    );
+    *state.user_journey.lock().unwrap() = Some(onboarding_journey);
 
     // =====================
     // Construct a `Subject` from json
@@ -433,7 +477,7 @@ mod tests {
             locale: "nl".to_string().into(),
             credentials: None.into(),
             current_user_flow: None.into(),
-            debug_messages: None.into(),
+            debug_messages: Vec::new().into(),
         };
 
         assert!(reset_state(

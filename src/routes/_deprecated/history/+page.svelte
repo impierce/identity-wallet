@@ -1,6 +1,6 @@
 <script>
   import { goto } from '$app/navigation';
-  import { BottomNavigation } from '@impierce/ui-components';
+  // import { BottomNavigation } from '@impierce/ui-components';
   import { fly } from 'svelte/transition';
   import LL from '../../../i18n/i18n-svelte';
 </script>
@@ -17,11 +17,11 @@
   </div>
   <!-- Navigation -->
   <div class="safe-bottom fixed w-full">
-    <BottomNavigation
+    <!-- <BottomNavigation
       active="history"
       on:settings={() => goto('/settings')}
       on:profile={() => goto('/profile')}
-    />
+    /> -->
   </div>
 </div>
 

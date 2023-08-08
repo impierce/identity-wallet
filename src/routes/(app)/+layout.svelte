@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { BottomNavigation } from '@impierce/ui-components';
+  import { BottomNavBar } from '@impierce/ui-components';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
 
@@ -20,7 +20,7 @@
   </div>
   <div class="shrink-0">
     <div class="fixed bottom-[var(--safe-area-inset-bottom)] w-full">
-      <BottomNavigation
+      <BottomNavBar
         {active}
         on:me={() => goto('/me')}
         on:scan={() => goto('/scan')}
@@ -30,13 +30,13 @@
   </div>
 
   <!-- safe-area -->
-  <div class="fixed top-0 z-50 h-[var(--safe-area-inset-top)] w-full bg-gradient-to-r from-blue-600 to-violet-600 opacity-80" />
+  <div class="fixed top-0 z-50 h-[var(--safe-area-inset-top)] w-full bg-indigo-500 opacity-80" />
   <div class="fixed bottom-0 z-10 h-[var(--safe-area-inset-bottom)] w-full bg-white dark:bg-slate-800 opacity-80" />
 </div>
 
 <style>
   .content-height {
     /* bottom-navigation: 64px + 2 * 8px (y-padding) + 1px (border top) = 81px */
-    height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom) - 81px);
+    height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom) - 64px);
   }
 </style>

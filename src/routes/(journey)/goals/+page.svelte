@@ -1,24 +1,15 @@
 <script lang="ts">
-  import { Button, ProgressBar } from '@impierce/ui-components';
-  import CheckCircle from '~icons/lucide/check-circle';
-  import Circle from '~icons/lucide/circle';
-  import exampleJourneyDefinition from '$lib/example/data/journey-definition.json';
+  import { BottomDrawer, Button, ProgressBar } from '@impierce/ui-components';
+  import { state } from '../../../stores';
   import type { Goal } from './types';
+  import { melt } from '@melt-ui/svelte';
+  import Trophy from '~icons/ph/trophy-fill';
 
-  // TODO: extract component
-  import {
-    Sheet,
-    SheetClose,
-    SheetContent,
-    SheetDescription,
-    SheetFooter,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger
-  } from '@impierce/ui-components';
-  let sheetOpen: boolean = false;
+  import GoalItem from '$lib/journey/goals/GoalItem.svelte';
 
-  let goals: Goal[] = exampleJourneyDefinition.goals.map((goal) => ({
+  let journeyDefinition = $state?.user_journey;
+
+  let goals: Goal[] = journeyDefinition.goals.map((goal) => ({
     ...goal,
     completed: false
   }));
@@ -28,71 +19,41 @@
   goals.at(1)!!.completed = true;
 </script>
 
-<div class="flex h-full flex-col bg-slate-100">
+<div class="flex h-full flex-col bg-neutral-100">
   <div class="px-4 pb-1 pt-4">
-    <ProgressBar value={40} />
+    <!-- TODO: ProgressBar -->
   </div>
-  <div class="flex flex-col items-center justify-center p-8">
-    <p class="pt-8 text-3xl font-semibold">{exampleJourneyDefinition.title}</p>
+  <div class="flex flex-col items-center justify-center p-6">
+    <div class="rounded-2xl bg-indigo-500 p-4"><Trophy class="h-8 w-8 text-white" /></div>
+
+    <p class="pt-8 text-2xl font-semibold">{journeyDefinition.title}</p>
     <p class="pt-4 text-center font-medium text-slate-500">
-      {exampleJourneyDefinition.description}
+      {journeyDefinition.description}
     </p>
 
-    <div class="flex flex-col items-start space-y-4 py-12">
+    <div class="flex w-full flex-col space-y-4 py-12">
       {#each goals as goal}
-        {#if goal.completed}
+        <BottomDrawer titleText={goal.label} descriptionText={goal.description}>
+          <svelte:fragment slot="trigger" let:trigger>
+            <GoalItem {trigger} {...goal} />
+          </svelte:fragment>
+
+          <svelte:fragment slot="content">
+            <button class="w-full rounded-lg bg-indigo-500 px-4 py-2 text-white">Start</button>
+          </svelte:fragment>
+
           <button
-            class="flex w-full items-center rounded-lg bg-violet-200 px-4 py-4"
-            on:click={() => (sheetOpen = !sheetOpen)}
+            slot="close"
+            let:close
+            class="mt-2 w-full rounded-lg border bg-white px-4 py-2 text-neutral-700"
+            use:melt={close}>Close</button
           >
-            <CheckCircle class="mr-4 h-6 w-6 text-violet-700 " />
-            <p class="font-medium text-violet-700">{goal.label}</p>
-          </button>
-        {:else}
-          <button
-            class="flex w-full items-center rounded-lg bg-slate-200 px-4 py-4"
-            on:click={() => (sheetOpen = !sheetOpen)}
-          >
-            <Circle class="mr-4 h-6 w-6 text-slate-500" />
-            <p class="font-medium text-slate-500">{goal.label}</p>
-          </button>
-        {/if}
+        </BottomDrawer>
       {/each}
     </div>
-    <Button on:click={() => (sheetOpen = !sheetOpen)}>Continue</Button>
+    <button
+      class="w-full rounded-lg bg-indigo-500 px-4 py-2 text-white"
+      on:click={() => console.log('TODO: determine first incomplete item in list')}>Continue</button
+    >
   </div>
 </div>
-
-<Sheet open={sheetOpen}>
-  <!-- <SheetTrigger>
-    <Button variant="outline">Open sheet (current sheetOpen: {sheetOpen})</Button>
-  </SheetTrigger> -->
-  <SheetContent position="bottom" size="content">
-    <SheetHeader>
-      <SheetTitle>{goals.at(2)?.label}</SheetTitle>
-      <SheetDescription>
-        <p class="text-sm rounded bg-orange-100 px-4 py-2 font-medium text-orange-600">
-          TODO: bind SheetTrigger to goal.id
-        </p>
-      </SheetDescription>
-    </SheetHeader>
-    <!-- <div class="grid gap-4 py-4">
-      <div class="grid grid-cols-4 items-center gap-4">
-        <Label for="name" class="text-right">Name</Label>
-        <Input id="name" value="Pedro Duarte" class="col-span-3" />
-      </div>
-      <div class="grid grid-cols-4 items-center gap-4">
-        <Label for="username" class="text-right">Username</Label>
-        <Input id="username" value="@peduarte" class="col-span-3" />
-      </div>
-    </div> -->
-    <div class="p-8 font-medium text-slate-500">
-      {goals.at(2)?.description}
-    </div>
-    <SheetFooter>
-      <SheetClose>
-        <Button href="/goals/2/faqs" class="mb-8">Ok, let's go!</Button>
-      </SheetClose>
-    </SheetFooter>
-  </SheetContent>
-</Sheet>

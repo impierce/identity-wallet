@@ -26,14 +26,18 @@
   } from '@impierce/ui-components';
   import CredentialDetails from '$lib/CredentialDetails.svelte';
   import { AtSymbol, Cake, Home, Phone, Plus, User } from 'svelte-heros-v2';
-  import Car from '~icons/lucide/car';
+  import Car from '~icons/ph/car-light';
   import Clapperboard from '~icons/lucide/clapperboard';
   import MailCheck from '~icons/lucide/mail-check';
-  import GraduationCap from '~icons/lucide/graduation-cap';
+  import GraduationCap from '~icons/ph/graduation-cap-light';
   import HomeLucide from '~icons/lucide/home';
-  import Percent from '~icons/lucide/percent';
+  import Percent from '~icons/ph/percent-light';
   import ArrowDownAZ from '~icons/lucide/arrow-down-a-z';
   import { fade, fly } from 'svelte/transition';
+  import EnvelopeSimple from '~icons/ph/envelope-simple-light';
+  import SealCheck from '~icons/ph/seal-check-fill';
+
+  import House from '~icons/ph/house-light';
 
   // TODO: improve typing
   let credentials: any[] = [];
@@ -44,46 +48,72 @@
 
 <!-- List of existing credentials -->
 {#if credentials.length > 0}
+  <div class="flex items-center pb-2">
+    <SealCheck class="mr-2 text-indigo-500" />
+    <p class="font-medium text-slate-600">My data</p>
+  </div>
   <!-- Search -->
   <!-- <Input type="text" placeholder="Search credentials" class="focus-visible:ring-violet-600" /> -->
 
   <!-- Credentials (list) -->
   <div class="flex w-full flex-col space-y-2">
-    <div class="flex pb-4">
+    <!-- Search -->
+    <!-- <div class="flex pb-4">
       <div class="grow">
         <SearchInput placeholder="Search credentials" />
       </div>
       <button class="ml-2 rounded-full p-2 hover:bg-slate-100"
         ><ArrowDownAZ class="text-slate-500" /></button
       >
-    </div>
+    </div> -->
 
     <!--Mock credentials -->
-    <p class="font-semibold">A</p>
-    <CredentialListEntry title="Address of residence" description="State of Pandora">
-      <span slot="icon"><HomeLucide class="h-6 w-6 text-violet-500" /></span>
+    <!-- <p class="font-semibold">A</p> -->
+    <CredentialListEntry
+      title="Address of residence"
+      description="State of Pandora"
+      color="bg-[#ffe4e6]"
+    >
+      <!-- custom: bg-[#fecdd3] -->
+      <span slot="icon"><House class="h-6 w-6" /></span>
     </CredentialListEntry>
 
-    <p class="font-semibold">B</p>
-    <CredentialListEntry title="Bachelor of Science" description="University of Pandora">
-      <span slot="icon"><GraduationCap class="h-6 w-6 text-violet-500" /></span>
+    <!-- <p class="font-semibold">B</p> -->
+    <CredentialListEntry
+      title="Bachelor of Science"
+      description="University of Pandora"
+      color="bg-blue-100"
+    >
+      <span slot="icon"><GraduationCap class="h-6 w-6" /></span>
     </CredentialListEntry>
 
-    <p class="font-semibold">D</p>
-    <CredentialListEntry title="Discount - 20%" description="Home Supplies & Gardening">
-      <span slot="icon"><Percent class="h-6 w-6 text-violet-500" /></span>
+    <!-- <p class="font-semibold">D</p> -->
+    <CredentialListEntry
+      title="Discount - 20%"
+      description="Home Supplies & Gardening"
+      color="bg-orange-100"
+    >
+      <span slot="icon"><Percent class="h-6 w-6" /></span>
     </CredentialListEntry>
-    <CredentialListEntry title="Driver's license" description="State of Pandora">
-      <span slot="icon"><Car class="h-6 w-6 text-violet-500" /></span>
+    <CredentialListEntry
+      title="Driver's license"
+      description="State of Pandora"
+      color="bg-emerald-100"
+    >
+      <span slot="icon"><Car class="h-6 w-6" /></span>
     </CredentialListEntry>
 
-    <p class="font-semibold">E</p>
-    <CredentialListEntry title="Email address" description="Pandora Email Service">
-      <span slot="icon"><MailCheck class="h-6 w-6 text-violet-500" /></span>
+    <!-- <p class="font-semibold">E</p> -->
+    <CredentialListEntry
+      title="Email address"
+      description="Pandora Email Service"
+      color="bg-slate-400"
+    >
+      <span slot="icon"><EnvelopeSimple class="h-6 w-6 text-slate-100" /></span>
     </CredentialListEntry>
 
-    <!-- Actual credentials -->
-    <p class="font-semibold">P</p>
+    <!-- Actually working credentials -->
+    <!-- <p class="font-semibold">P</p> -->
     {#each credentials as credential}
       <AlertDialog>
         <AlertDialogTrigger>
@@ -112,22 +142,18 @@
     {/each}
   </div>
 {:else}
-  <!-- Hint -->
-  <div class="select-none rounded-lg bg-slate-200 p-6">
-    <p class="pb-4 font-semibold text-slate-500">{$LL.CREATE_IDENTITY_SUCCESS_TITLE()}</p>
-    <p class="text-slate-400">{$LL.CREATE_IDENTITY_SUCCESS_BODY()}</p>
-  </div>
+  <!-- No credentials yet -->
 {/if}
 
 <!-- Add new credential -->
-<div>
+<!-- <div>
   <Sheet>
     <SheetTrigger class="w-full">
       <button
-        class="absolute bottom-4 right-4 flex justify-center rounded-full bg-violet-500 p-4 shadow-neon dark:bg-slate-800"
+        class="absolute bottom-4 right-4 flex justify-center rounded-full bg-indigo-500 p-3 dark:bg-slate-800"
       >
-        <Plus class="text-white" strokeWidth="3" />
-        <!-- <p class="pl-1 font-semibold text-white uppercase text-lg">add</p> -->
+        <PlusCircle class="h-6 w-6 text-white" />
+        <p class="pl-2 pr-1 text-base font-medium text-white">Add</p>
       </button>
     </SheetTrigger>
     <SheetContent position="bottom" size="content">
@@ -151,12 +177,6 @@
         >
         <Button variant="outline">Custom</Button>
       </div>
-
-      <!-- <SheetFooter>
-    <SheetClose>
-      <Button type="submit">Save changes</Button>
-    </SheetClose>
-  </SheetFooter> -->
     </SheetContent>
   </Sheet>
-</div>
+</div> -->

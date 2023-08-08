@@ -5,9 +5,9 @@ const de = {
   WELCOME: 'Willkommen',
   PROMPT_NAME: 'Bitte gib deinen Namen ein',
   CREATE_IDENTITY: 'Neue Identität anlegen',
-  CREATE_IDENTITY_SUCCESS_TITLE: 'Du hast eine neue digitale Identität angelegt!',
-  CREATE_IDENTITY_SUCCESS_BODY:
-    'Du kannst nun weitere Informationen über dich hinzufügen oder einen Credential scannen.',
+  EMPTY_CREDENTIALS_LIST_TITLE: 'Hier ist es noch etwas leer',
+  EMPTY_CREDENTIALS_LIST_SUBTITLE:
+    'Warum fügst du nicht ein paar Credentials hinzu, um mit deiner neuen digitalen Identität zu starten?',
   APP_SETTINGS: 'App-Einstellungen',
   YOUR_DIDS: 'Deine DIDs',
   RESET_APP: 'App zurücksetzen',

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import LL from '../../../../i18n/i18n-svelte';
-  import { BottomNavigation, Button, LanguageSelect, TopNavigation } from '@impierce/ui-components';
+  import { BottomNavBar, Button, LanguageSelect, TopNavigation } from '@impierce/ui-components';
   import { Link, Eye, Heart } from 'svelte-heros-v2';
   import { state } from '../../../../stores';
   import { fade, fly } from 'svelte/transition';

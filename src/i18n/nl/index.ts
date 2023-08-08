@@ -5,9 +5,9 @@ const nl = {
   WELCOME: 'Welkom',
   PROMPT_NAME: 'Voer je naam in',
   CREATE_IDENTITY: 'Nieuwe identiteit creëren',
-  CREATE_IDENTITY_SUCCESS_TITLE: 'Je hebt een nieuwe digitale identiteit gecreëerd!',
-  CREATE_IDENTITY_SUCCESS_BODY:
-    'Ga verder door meer informatie over jezelf toe te voegen of door een Credential te scannen.',
+  EMPTY_CREDENTIALS_LIST_TITLE: 'Het is hier een beetje stil',
+  EMPTY_CREDENTIALS_LIST_SUBTITLE:
+    'Waarom voeg je geen Credentials toe om je nieuwe digitale ik te starten?',
   APP_SETTINGS: 'App-instellingen',
   YOUR_DIDS: 'Jouw DIDs',
   RESET_APP: 'App resetten',

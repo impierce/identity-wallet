@@ -19,6 +19,7 @@ pub struct AppState {
     pub credentials: Mutex<Option<Vec<Credential>>>,
     pub current_user_flow: Mutex<Option<CurrentUserFlow>>,
     pub debug_messages: Mutex<Vec<String>>,
+    pub user_journey: Mutex<Option<serde_json::Value>>,
 }
 
 /// A representation of the current state which is used for serialization.
@@ -32,6 +33,8 @@ pub struct TransferState {
     pub credentials: Option<Vec<Credential>>,
     pub current_user_flow: Option<CurrentUserFlow>,
     pub debug_messages: Vec<String>,
+    #[ts(optional, type = "object")]
+    pub user_journey: Option<serde_json::Value>,
 }
 
 impl From<&AppState> for TransferState {
@@ -42,6 +45,7 @@ impl From<&AppState> for TransferState {
             credentials: state.credentials.lock().unwrap().clone(),
             current_user_flow: state.current_user_flow.lock().unwrap().clone(),
             debug_messages: state.debug_messages.lock().unwrap().clone(),
+            user_journey: state.user_journey.lock().unwrap().clone(),
         }
     }
 }

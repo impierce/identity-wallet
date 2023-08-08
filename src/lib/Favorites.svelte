@@ -1,18 +1,32 @@
 <script lang="ts">
   import { CredentialListEntry } from '@impierce/ui-components';
   import Star from '~icons/lucide/star';
+  import Heart from '~icons/ph/heart-fill';
   import Clapperboard from '~icons/lucide/clapperboard';
+  import FilmSlate from '~icons/ph/film-slate-light';
+
+  let favorite_credentials: any[] = [
+    {
+      title: 'Avatar: The Way of Water',
+      description: 'Downtown Cinema'
+    }
+  ];
 </script>
 
-<div class="">
-  <div class="flex items-center">
-    <p class="font-semibold text-slate-500">Favorites</p>
-    <!-- <Star class="text-amber-500 ml-1" /> -->
+{#if favorite_credentials.length > 0}
+  <div class="pb-6">
+    <div class="flex items-center pb-2">
+      <Heart class="mr-2 text-indigo-500" />
+      <p class="font-medium text-slate-600">Favorites</p>
+    </div>
+    <!-- <div class="pt-2"> -->
+    {#each favorite_credentials as favorite}
+      <CredentialListEntry title={favorite.title} description={favorite.description} color="bg-amber-100">
+        <span slot="icon"><FilmSlate class="h-6 w-6" /></span>
+        <div slot="drawer-body">
+          <div class="bg-orange-100 p-4">content</div>
+        </div>
+      </CredentialListEntry>
+    {/each}
   </div>
-  <div class="pt-2">
-    <CredentialListEntry title="Avatar: The Way of Water" description="Downtown Cinema">
-      <span slot="icon"><Clapperboard class="h-6 w-6 text-violet-500" /></span>
-    </CredentialListEntry>
-  </div>
-  <!-- <p class="text-sm font-medium text-slate-400">No favorites yet.</p> -->
-</div>
+{/if}

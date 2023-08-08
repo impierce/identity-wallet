@@ -31,12 +31,14 @@ pub async fn handle_action(
                     target: "welcome".to_string(),
                 })),
                 debug_messages: vec![],
+                user_journey: None,
             });
 
             // TODO: find a better way to populate all fields with values from json file
             *app_state.active_profile.lock().unwrap() = transfer_state.active_profile;
             *app_state.locale.lock().unwrap() = transfer_state.locale;
             *app_state.credentials.lock().unwrap() = transfer_state.credentials;
+            *app_state.user_journey.lock().unwrap() = transfer_state.user_journey;
 
             // TODO: bug: if state is present, but empty, user will never be redirected to neither welcome or profile page
             *app_state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Redirect(Redirect {
