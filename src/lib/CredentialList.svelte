@@ -47,18 +47,19 @@
 </script>
 
 <!-- List of existing credentials -->
-{#if credentials.length > 0}
-  <div class="flex items-center pb-2">
-    <SealCheck class="mr-2 text-indigo-500" />
-    <p class="font-medium text-slate-600">{$LL.MY_DATA()}</p>
-  </div>
-  <!-- Search -->
-  <!-- <Input type="text" placeholder="Search credentials" class="focus-visible:ring-violet-600" /> -->
-
-  <!-- Credentials (list) -->
-  <div class="flex w-full flex-col space-y-2">
+<div>
+  {#if credentials.length > 0}
+    <div class="flex items-center pb-2">
+      <SealCheck class="mr-2 text-indigo-500" />
+      <p class="font-medium text-slate-600">{$LL.MY_DATA()}</p>
+    </div>
     <!-- Search -->
-    <!-- <div class="flex pb-4">
+    <!-- <Input type="text" placeholder="Search credentials" class="focus-visible:ring-violet-600" /> -->
+
+    <!-- Credentials (list) -->
+    <div class="flex flex-col space-y-2">
+      <!-- Search -->
+      <!-- <div class="flex pb-4">
       <div class="grow">
         <SearchInput placeholder="Search credentials" />
       </div>
@@ -67,86 +68,86 @@
       >
     </div> -->
 
-    <!--Mock credentials -->
-    <!-- <p class="font-semibold">A</p> -->
-    <CredentialListEntry
-      title="Address of residence"
-      description="State of Pandora"
-      color="bg-[#ffe4e6]"
-    >
-      <!-- custom: bg-[#fecdd3] -->
-      <span slot="icon"><House class="h-6 w-6" /></span>
-    </CredentialListEntry>
+      <!--Mock credentials -->
+      <!-- <p class="font-semibold">A</p> -->
+      <CredentialListEntry
+        title="Address of residence"
+        description="State of Pandora"
+        color="bg-[#ffe4e6]"
+      >
+        <!-- custom: bg-[#fecdd3] -->
+        <span slot="icon"><House class="h-6 w-6" /></span>
+      </CredentialListEntry>
 
-    <!-- <p class="font-semibold">B</p> -->
-    <CredentialListEntry
-      title="Bachelor of Science"
-      description="University of Pandora"
-      color="bg-blue-100"
-    >
-      <span slot="icon"><GraduationCap class="h-6 w-6" /></span>
-    </CredentialListEntry>
+      <!-- <p class="font-semibold">B</p> -->
+      <CredentialListEntry
+        title="Bachelor of Science"
+        description="University of Pandora"
+        color="bg-blue-100"
+      >
+        <span slot="icon"><GraduationCap class="h-6 w-6" /></span>
+      </CredentialListEntry>
 
-    <!-- <p class="font-semibold">D</p> -->
-    <CredentialListEntry
-      title="Discount - 20%"
-      description="Home Supplies & Gardening"
-      color="bg-orange-100"
-    >
-      <span slot="icon"><Percent class="h-6 w-6" /></span>
-    </CredentialListEntry>
-    <CredentialListEntry
-      title="Driver's license"
-      description="State of Pandora"
-      color="bg-emerald-100"
-    >
-      <span slot="icon"><Car class="h-6 w-6" /></span>
-    </CredentialListEntry>
+      <!-- <p class="font-semibold">D</p> -->
+      <CredentialListEntry
+        title="Discount - 20%"
+        description="Home Supplies & Gardening"
+        color="bg-orange-100"
+      >
+        <span slot="icon"><Percent class="h-6 w-6" /></span>
+      </CredentialListEntry>
+      <CredentialListEntry
+        title="Driver's license"
+        description="State of Pandora"
+        color="bg-emerald-100"
+      >
+        <span slot="icon"><Car class="h-6 w-6" /></span>
+      </CredentialListEntry>
 
-    <!-- <p class="font-semibold">E</p> -->
-    <CredentialListEntry
-      title="Email address"
-      description="Pandora Email Service"
-      color="bg-slate-400"
-    >
-      <span slot="icon"><EnvelopeSimple class="h-6 w-6 text-slate-100" /></span>
-    </CredentialListEntry>
+      <!-- <p class="font-semibold">E</p> -->
+      <CredentialListEntry
+        title="Email address"
+        description="Pandora Email Service"
+        color="bg-slate-400"
+      >
+        <span slot="icon"><EnvelopeSimple class="h-6 w-6 text-slate-100" /></span>
+      </CredentialListEntry>
 
-    <!-- Actually working credentials -->
-    <!-- <p class="font-semibold">P</p> -->
-    {#each credentials as credential}
-      <AlertDialog>
-        <AlertDialogTrigger>
-          <div class="">
-            <CredentialListEntry
-              title={credential?.type?.at(1)}
-              description={credential?.issuer?.name}
-            >
-              <span slot="icon"><User class="text-violet-500" /></span>
-            </CredentialListEntry>
-          </div>
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{credential?.type?.at(1)}</AlertDialogTitle>
-            <AlertDialogDescription>
-              <CredentialDetails {credential} />
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Close</AlertDialogCancel>
-            <AlertDialogAction>Ok</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    {/each}
-  </div>
-{:else}
-  <!-- No credentials yet -->
-{/if}
+      <!-- Actually working credentials -->
+      <!-- <p class="font-semibold">P</p> -->
+      {#each credentials as credential}
+        <AlertDialog>
+          <AlertDialogTrigger>
+            <div class="">
+              <CredentialListEntry
+                title={credential?.type?.at(1)}
+                description={credential?.issuer?.name}
+              >
+                <span slot="icon"><User class="text-violet-500" /></span>
+              </CredentialListEntry>
+            </div>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>{credential?.type?.at(1)}</AlertDialogTitle>
+              <AlertDialogDescription>
+                <CredentialDetails {credential} />
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Close</AlertDialogCancel>
+              <AlertDialogAction>Ok</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      {/each}
+    </div>
+  {:else}
+    <!-- No credentials yet -->
+  {/if}
 
-<!-- Add new credential -->
-<!-- <div>
+  <!-- Add new credential -->
+  <!-- <div>
   <Sheet>
     <SheetTrigger class="w-full">
       <button
@@ -180,3 +181,4 @@
     </SheetContent>
   </Sheet>
 </div> -->
+</div>

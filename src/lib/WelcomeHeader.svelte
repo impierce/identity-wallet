@@ -7,6 +7,8 @@
   import DotsThreeVertical from '~icons/ph/dots-three-vertical-bold';
   import LL from '$i18n/i18n-svelte';
   // import DotsThreeVertical from '~icons/ph/dots-three-outline-vertical-fill';
+
+  // TODO: if user_journey.goals, then calculate completed percentage
 </script>
 
 <div class="bg-white p-6">
@@ -14,7 +16,7 @@
     <!-- <Avatar size="small" initials="FR" /> -->
     <div class="h-12 w-12 rounded-2xl bg-indigo-600 p-2">
       <div class="flex h-full w-full items-center justify-center font-medium text-neutral-100">
-        FR
+        <!-- TODO: placeholder for avatar or emoji -->
       </div>
     </div>
     <button
@@ -34,7 +36,7 @@
       <div class="grow">
         <div class="flex justify-between py-2 text-black">
           <p>{$state.user_journey.description_short}</p>
-          <p>2 / 5</p>
+          <p>? / {$state.user_journey.goals.length}</p>
         </div>
         <!-- <ProgressBar value={40} /> -->
         <!-- TODO: begin: custom progress bar, replace with ui-components/ProgressBar -->

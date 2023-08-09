@@ -13,8 +13,8 @@
   ----------------------------
   total: 162px
 -->
-<div class="flex content-height flex-col items-stretch">
-<!-- <div class="flex h-screen flex-col items-stretch"> -->
+<div class="content-height flex flex-col items-stretch">
+  <!-- <div class="flex h-screen flex-col items-stretch"> -->
   <div class="hide-scrollbar grow overflow-auto">
     <slot />
   </div>
@@ -30,8 +30,10 @@
   </div>
 
   <!-- safe-area -->
-  <div class="fixed top-0 z-50 h-[var(--safe-area-inset-top)] w-full bg-indigo-500 opacity-80" />
-  <div class="fixed bottom-0 z-10 h-[var(--safe-area-inset-bottom)] w-full bg-white dark:bg-slate-800 opacity-80" />
+  <div class="fixed top-0 z-50 h-[var(--safe-area-inset-top)] w-full bg-white opacity-80" />
+  <div
+    class="fixed bottom-0 z-10 h-[var(--safe-area-inset-bottom)] w-full bg-white opacity-80 dark:bg-slate-800"
+  />
 </div>
 
 <style>

@@ -17,7 +17,7 @@
 >
   <div class="flex items-center">
     <Trophy class="mr-4 h-5 w-5 text-indigo-500" />
-    <p class={`font-medium ${completed ? 'line-through' : ''}`}>{label}</p>
+    <p class={`font-medium text-left ${completed ? 'line-through' : ''}`}>{label}</p>
   </div>
   {#if completed}
     <CheckCircle class="h-6 w-6 text-indigo-500" />

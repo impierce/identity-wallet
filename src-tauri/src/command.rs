@@ -150,6 +150,10 @@ pub async fn handle_action(
                 save_state(TransferState::from(app_state.inner())).await.ok();
             }
         }
+        ActionType::CancelUserJourney => {
+            *app_state.user_journey.lock().unwrap() = None;
+            save_state(TransferState::from(app_state.inner())).await.ok();
+        }
         ActionType::Unknown => {
             warn!(
                 "received unknown action type `{:?}` with payload `{:?}`",

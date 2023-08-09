@@ -34,6 +34,8 @@ pub enum ActionType {
     ReadRequest,
     #[serde(rename = "[Authenticate] Credentials selected")]
     CredentialsSelected,
+    #[serde(rename = "[User Journey] Cancel")]
+    CancelUserJourney,
     #[ts(skip)]
     #[serde(other)]
     Unknown,

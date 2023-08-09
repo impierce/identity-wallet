@@ -14,6 +14,7 @@
   import AddButton from '$lib/credentials/AddButton.svelte';
   import { melt } from '@melt-ui/svelte';
   import '@lottiefiles/lottie-player';
+  import { goto } from '$app/navigation';
 
   let initials: string | undefined;
 
@@ -46,7 +47,7 @@
 
   <div
     in:fly={{ y: 24 }}
-    class="flex grow flex-col items-stretch justify-center rounded-t-3xl bg-neutral-100 p-6"
+    class="flex grow flex-col items-stretch justify-start rounded-t-3xl bg-neutral-100 p-6"
   >
     {#if $state?.credentials && $state?.credentials.length > 0}
       <Favorites />
@@ -85,7 +86,7 @@
 
       <BottomDrawer
         titleText="Complete new goals"
-        descriptionText="Start your mission here! Goals will lead you (...)"
+        descriptionText="Start your mission here! Goals will lead you through important features and possibilities of the UniMe app."
       >
         <button
           slot="trigger"
@@ -93,9 +94,9 @@
           class="w-full rounded-lg bg-indigo-500 px-4 py-2 text-white"
           use:melt={trigger}>Start</button
         >
-        <div slot="content">
-          stepper
-          <button class="w-full rounded-lg bg-indigo-500 px-4 py-2 text-white">Continue</button>
+        <div slot="content" class="flex flex-col">
+          <!-- TODO: add multiple steps inline in drawer -->
+          <button class="w-full rounded-lg bg-indigo-500 px-4 py-2 text-white" on:click={() => goto("/goals")}>Continue</button>
         </div>
       </BottomDrawer>
     {:else}

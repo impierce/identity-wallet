@@ -48,6 +48,39 @@ pub async fn create_did_key(state: &AppState, action: Action) -> anyhow::Result<
         primary_did: did_document.id,
     };
     *state.active_profile.lock().unwrap() = Some(profile);
+
+    // default user onboarding journey
+    let onboarding_journey: Value = json!(
+    {
+        "title": "Onboarding",
+        "description": "Set up your profile and get started with your UniMe app.",
+        "description_short": "Complete your first steps",
+        "creator": "UniMe",
+        "goals": [
+            {
+                "id": 0,
+                "label": "Set up your profile",
+                "description": "Make your UniMe app your own by choosing a profile name and profile picture.",
+                "faqs": [
+                    { "id": 0, "title": "Will this information be shared?", "content": "No. Your profile information will never leave your device." }
+                ],
+                "prerequisites": []
+            },
+            {
+                "id": 1,
+                "label": "Add information about yourself",
+                "description": "The information you provide does not yet need to be verified by a trusted third party.",
+                "faqs": [
+                    { "id": 0, "title": "What is a credential?", "content": "A credential is like a digital proof that verifies something about you, such as your age, education, or memberships." },
+                    { "id": 1, "title": "What does \"self-signed\" mean?", "content": "A self-signed credential is a digital statement you create about yourself, asserting certain information without external verification. It may be less reliable compared to credentials verified by trusted sources. It is like giving yourself a digital thumbs-up." },
+                ],
+                "prerequisites": []
+            },
+            { "id": 2, "label": "Check your history", "faqs": [], "prerequisites": [] }
+        ]
+    }
+    );
+    *state.user_journey.lock().unwrap() = Some(onboarding_journey);
     Ok(())
 }
 

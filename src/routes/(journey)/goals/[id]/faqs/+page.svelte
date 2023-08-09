@@ -12,10 +12,10 @@
     Button
   } from '@impierce/ui-components';
 
-  let goal: Goal = $state?.user_journey.goals.find((g) => g.id === parseInt($page.params.id))!!;
+  let goal: Goal = $state?.user_journey?.goals.find((g) => g.id === parseInt($page.params.id));
 </script>
 
-<div class="flex h-full flex-col items-center justify-evenly p-8 space-y-8">
+<div class="flex h-full flex-col items-center justify-evenly p-8 space-y-8 bg-neutral-100">
   <p class="text-2xl font-semibold text-slate-600">{goal?.label}</p>
   <Accordion type="single" collapsible class="w-full">
     {#each goal?.faqs as faq}
