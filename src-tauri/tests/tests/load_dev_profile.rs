@@ -1,15 +1,13 @@
+use crate::common::assert_state_update::assert_state_update;
 use identity_credential::credential::Credential;
-use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
-
-use crate::state::reducers::VERIFIABLE_CREDENTIALS;
-use crate::state::user_flow::{CurrentUserFlow, CurrentUserFlowType, Redirect};
-use crate::state::Profile;
-use crate::tests::assert_state_update;
-
-use crate::state::{
+use identity_wallet::state::reducers::VERIFIABLE_CREDENTIALS;
+use identity_wallet::state::user_flow::{CurrentUserFlow, CurrentUserFlowType, Redirect};
+use identity_wallet::state::Profile;
+use identity_wallet::state::{
     actions::{Action, ActionType},
     AppState, TransferState,
 };
+use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
 
 #[tokio::test]
 #[serial_test::serial]

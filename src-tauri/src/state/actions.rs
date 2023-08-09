@@ -7,9 +7,9 @@ use ts_rs::TS;
 #[derive(Serialize, Deserialize, TS, Clone)]
 #[ts(export)]
 pub struct Action {
-    pub(crate) r#type: ActionType,
+    pub r#type: ActionType,
     #[ts(optional, type = "object")]
-    pub(crate) payload: Option<serde_json::Value>,
+    pub payload: Option<serde_json::Value>,
 }
 
 /// Actions that the backend knows how to handle (reduce).

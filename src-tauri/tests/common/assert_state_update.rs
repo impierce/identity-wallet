@@ -1,6 +1,4 @@
-mod load_dev_profile;
-
-use crate::state::{actions::Action, AppState, TransferState};
+use identity_wallet::state::{actions::Action, AppState, TransferState};
 use serde_json::json;
 use tauri::Manager;
 
@@ -9,7 +7,7 @@ pub fn assert_state_update(current_state: AppState, action: Action, expected_sta
     // Initialize the app with the given state and action handler.
     let app = tauri::test::mock_builder()
         .manage(current_state)
-        .invoke_handler(tauri::generate_handler![crate::command::handle_action])
+        .invoke_handler(tauri::generate_handler![identity_wallet::command::handle_action])
         .build(tauri::generate_context!())
         .unwrap();
 
