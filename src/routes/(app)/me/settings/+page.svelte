@@ -50,7 +50,7 @@
       </div>
     </div>
     <div class="flex flex-col items-center text-sm font-medium text-slate-400">
-      <div>0.1.0</div>
+      <div>0.2.0</div>
       <div class="flex items-center pb-4">
         <p>Built with Tauri</p>
         <Heart variation="solid" size="18" class="pl-1" />
