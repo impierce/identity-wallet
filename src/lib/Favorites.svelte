@@ -4,12 +4,21 @@
   import Heart from '~icons/ph/heart-fill';
   import Clapperboard from '~icons/lucide/clapperboard';
   import FilmSlate from '~icons/ph/film-slate-light';
+  import AirplaneTilt from '~icons/ph/airplane-tilt-light';
   import LL from '$i18n/i18n-svelte';
 
   let favorite_credentials: any[] = [
     {
       title: 'Avatar: The Way of Water',
-      description: 'Downtown Cinema'
+      description: 'Downtown Cinema',
+      icon: FilmSlate,
+      color: 'bg-amber-100'
+    },
+    {
+      title: 'Flight #1337 to Pandora',
+      description: 'Pandora Airlines',
+      icon: AirplaneTilt,
+      color: 'bg-teal-100'
     }
   ];
 </script>
@@ -20,14 +29,19 @@
       <Heart class="mr-2 text-indigo-500" />
       <p class="font-medium text-slate-600">{$LL.FAVORITES()}</p>
     </div>
-    <!-- <div class="pt-2"> -->
-    {#each favorite_credentials as favorite}
-      <CredentialListEntry title={favorite.title} description={favorite.description} color="bg-amber-100">
-        <span slot="icon"><FilmSlate class="h-6 w-6" /></span>
-        <div slot="drawer-body">
-          <div class="bg-orange-100 p-4">content</div>
-        </div>
-      </CredentialListEntry>
-    {/each}
+    <div class="space-y-2">
+      {#each favorite_credentials as favorite}
+        <CredentialListEntry
+          title={favorite.title}
+          description={favorite.description}
+          color={favorite.color}
+        >
+          <span slot="icon"><svelte:component this={favorite.icon} class="h-6 w-6" /></span>
+          <div slot="drawer-body">
+            <div class="bg-orange-100 p-4">content</div>
+          </div>
+        </CredentialListEntry>
+      {/each}
+    </div>
   </div>
 {/if}

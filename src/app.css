@@ -40,6 +40,9 @@ body {
   overflow-x: hidden;
   /* overflow-y: hidden; */
   /* max-width: 100%; */
+
+  /* Enhancements to touch experience */
+  -webkit-tap-highlight-color: transparent; /* Removes a flashing highlight box on tap */
 }
 
 .transparent {

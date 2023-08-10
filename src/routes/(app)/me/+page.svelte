@@ -52,7 +52,10 @@
     {#if $state?.credentials && $state?.credentials.length > 0}
       <Favorites />
       <CredentialList />
-      <AddButton />
+      <!-- container that animates and places the button -->
+      <div in:fly={{ y: 12, delay: 400, opacity: 0.5 }} class="absolute bottom-4 right-4">
+        <AddButton />
+      </div>
     {:else if $state?.user_journey}
       <!-- With active onboarding journey -->
       <div class="flex h-max grow flex-col items-center justify-center text-center">
@@ -96,7 +99,10 @@
         >
         <div slot="content" class="flex flex-col">
           <!-- TODO: add multiple steps inline in drawer -->
-          <button class="w-full rounded-lg bg-indigo-500 px-4 py-2 text-white" on:click={() => goto("/goals")}>Continue</button>
+          <button
+            class="w-full rounded-lg bg-indigo-500 px-4 py-2 text-white"
+            on:click={() => goto('/goals')}>Continue</button
+          >
         </div>
       </BottomDrawer>
     {:else}

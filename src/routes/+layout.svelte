@@ -32,6 +32,7 @@
   import Alert from '$lib/alert/Alert.svelte';
   import type { CurrentUserFlowType } from '../../src-tauri/bindings/user-flow/CurrentUserFlowType';
   import type { Selection } from '../../src-tauri/bindings/user-flow/Selection';
+  import { goto } from '$app/navigation';
 
   let clipboard: string | undefined;
 
@@ -65,6 +66,11 @@
     console.log('+layout.svelte: state', $state);
     let type = $state?.current_user_flow?.type;
     console.log('options', ($state?.current_user_flow as Selection)?.options);
+
+    if (type && type !== 'redirect') {
+      goto('/prompt');
+    }
+
     if (type === 'select-credentials') {
       dialog = {
         type: 'select-credentials',
@@ -80,7 +86,7 @@
         options: ($state.current_user_flow as Selection).options
       };
     }
-    alertOpen = true;
+    alertOpen = false;
     if ($state?.current_user_flow === null) {
       dialog = undefined;
       alertOpen = false;

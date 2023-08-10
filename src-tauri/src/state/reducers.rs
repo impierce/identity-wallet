@@ -510,7 +510,7 @@ mod tests {
             locale: "nl".to_string().into(),
             credentials: None.into(),
             current_user_flow: None.into(),
-            debug_messages: Vec::new().into(),
+            debug_messages: vec![].into(),
             user_journey: None.into(),
         };
 
