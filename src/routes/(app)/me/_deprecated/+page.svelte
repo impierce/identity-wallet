@@ -9,7 +9,6 @@
   import { debug, info } from '@tauri-apps/plugin-log';
   import CredentialList from '$lib/CredentialList.svelte';
   import { calculate_initials } from '../utils';
-  import WelcomeHeader from '$lib/WelcomeHeader.svelte';
 
   let initials: string | undefined;
 

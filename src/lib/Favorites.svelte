@@ -19,8 +19,12 @@
       description: 'Pandora Airlines',
       icon: AirplaneTilt,
       color: 'bg-teal-100'
-    }
+    },
+    { title: 'something 1', description: 'make the list longer' },
+    { title: 'something 2', description: 'make it even longer' }
   ];
+
+  // favorite_credentials = [];
 </script>
 
 {#if favorite_credentials.length > 0}

@@ -7,7 +7,7 @@
   import { debug, info } from '@tauri-apps/plugin-log';
   import CredentialList from '$lib/CredentialList.svelte';
   import { calculate_initials } from './utils';
-  import WelcomeHeader from '$lib/WelcomeHeader.svelte';
+  import TopBar from '$lib/home-header/TopBar.svelte';
   import Favorites from '$lib/Favorites.svelte';
   import Ghost from '~icons/ph/ghost-fill';
   import RocketLaunch from '~icons/ph/rocket-launch-fill';
@@ -15,6 +15,9 @@
   import { melt } from '@melt-ui/svelte';
   import '@lottiefiles/lottie-player';
   import { goto } from '$app/navigation';
+  import WelcomeMessage from '$lib/home-header/WelcomeMessage.svelte';
+  import UserJourney from '$lib/home-header/UserJourney.svelte';
+  import { onMount } from 'svelte';
 
   let initials: string | undefined;
 
@@ -25,6 +28,29 @@
       initials = calculate_initials($state?.active_profile?.display_name);
     }
   }
+
+  let container_height_px: number = 208;
+  let negative_top_px: number = 160;
+
+  const calc_header_height = () => {
+    console.log('Calculating header height ...');
+    const header_height = document.querySelector('.top-bar')?.getBoundingClientRect().height!!;
+    console.log(`$state?.user_journey: ${$state?.user_journey}`);
+    if ($state?.user_journey) {
+      container_height_px = container_height_px + 64;
+      negative_top_px = container_height_px - header_height;
+    } else {
+      container_height_px = container_height_px; // padding-bottom
+      negative_top_px = 0; //container_height_px - header_height;
+    }
+    console.log('header_height', header_height);
+    console.log('container_height_px', container_height_px);
+    console.log('negative_top_px', negative_top_px);
+  };
+
+  onMount(() => {
+    calc_header_height();
+  });
 </script>
 
 <div class="flex min-h-full flex-col">
@@ -39,15 +65,72 @@
   <!-- End: Banner image -->
 
   <!-- TODO: Shrinking header on scroll: https://css-tricks.com/how-to-create-a-shrinking-header-on-scroll-without-javascript/ -->
-  <div class="sticky top-0 z-10">
+  <!-- <div class="sticky top-0 z-10">
     <div in:fly={{ y: -24, opacity: 1 }}>
       <WelcomeHeader />
     </div>
+  </div> -->
+  <!-- Calculated as follows:
+    112px: 64px + 2*24px (p-6)
+    152px: 264px - 112px
+  -->
+  <!-- <div
+    class="sticky -top-[{negative_top_px}px] flex h-[{container_height_px}px] flex-col items-center"
+  >
+    <div class="top-bar sticky top-0 z-10 h-[112px] w-full">
+      <TopBar />
+    </div>
+    <div class="px-6">
+      {#if $state?.user_journey}
+        <WelcomeMessage />
+        <UserJourney />
+      {:else}
+        <div class="bg-orange-100 pb-6">
+          <WelcomeMessage />
+        </div>
+      {/if}
+    </div>
+  </div> -->
+
+  <div class="sticky top-0 z-10 h-[112px] w-full">
+    <TopBar />
   </div>
 
+  <div class="p-6 pt-0">
+    <div class="">
+      <WelcomeMessage />
+    </div>
+    {#if $state?.user_journey}
+      <UserJourney />
+    {/if}
+  </div>
+
+  <!-- <div
+    class="header-outer sticky -top-[184px] flex max-h-[264px] snap-y snap-mandatory flex-col items-center bg-blue-100"
+  >
+    <div class="header-inner sticky top-0 flex h-[80px] items-center justify-center bg-red-100">
+      <div class="bg-slate-100 p-4">always visible</div>
+    </div>
+    <div class="h-[184px] snap-start snap-always bg-green-100 p-4">should be hidden</div>
+  </div> -->
+
+  <!-- explore snapping the welcome header -->
+  <!-- <div class="flex h-[184px] snap-y snap-mandatory flex-col overflow-y-scroll">
+    <div class="snap-start snap-always">
+      <div class="h-[120px] rounded bg-red-100">1</div>
+    </div>
+    <div class="snap-start snap-always">
+      <div class="h-[120px] rounded bg-blue-100">2</div>
+    </div>
+    <div class="snap-start snap-always">
+      <div class="h-[120px] rounded bg-green-100">3</div>
+    </div>
+  </div> -->
+
+  <!-- should have min height: full screen - smallest possible welcome header - bottom nav - safe areas (top, bottom) -->
   <div
     in:fly={{ y: 24 }}
-    class="flex grow flex-col items-stretch justify-start rounded-t-3xl bg-neutral-100 p-6"
+    class="flex min-h-[calc(100vh-112px-64px)] flex-col items-stretch justify-start rounded-t-3xl bg-neutral-100 p-6"
   >
     {#if $state?.credentials && $state?.credentials.length > 0}
       <Favorites />
