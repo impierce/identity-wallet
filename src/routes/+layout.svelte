@@ -145,7 +145,7 @@
     </div>
   {/if}
   <button
-    class="fixed right-0 top-[var(--safe-area-inset-top)] z-30 rounded-bl-md bg-red-200 p-1"
+    class="fixed left-0 top-[var(--safe-area-inset-top)] z-30 rounded-br-md bg-red-200 p-1"
     on:click={() => (showDevMode = !showDevMode)}
   >
     {#if showDevMode}

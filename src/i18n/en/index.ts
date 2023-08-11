@@ -8,7 +8,12 @@ const en = {
   EMPTY_CREDENTIALS_LIST_TITLE: `It's a bit quiet in here`,
   EMPTY_CREDENTIALS_LIST_SUBTITLE: 'Why not add some credentials to start your new digital me?',
   GETTING_STARTED_TITLE: 'Shall we get started?',
-  GETTING_STARTED_SUBTITLE: 'Start your first steps to add some credentials to your digital "Me".',
+  GETTING_STARTED_SUBTITLE: 'Start your first steps to add some credentials to your "Me".',
+  GETTING_STARTED_DIALOG_0_TITLE: 'Complete new goals',
+  GETTING_STARTED_DIALOG_0_TEXT: 'Start your mission here! Goals will lead you through important features and possibilities of UniMe app.',
+  GETTING_STARTED_DIALOG_1_TITLE: 'Exploring made fun',
+  GETTING_STARTED_DIALOG_1_TEXT: `On completing goals, you'll receive an awesome new achievement badge and level up your first steps.`,
+  GETTING_STARTED_SKIP_TITLE: '',
   APP_SETTINGS: 'App settings',
   YOUR_DIDS: 'Your DIDs',
   RESET_APP: 'Reset app',
@@ -23,6 +28,8 @@ const en = {
   FAVORITES: 'Favorites',
   MY_DATA: 'My data',
   ADD: 'Add',
+  CONTINUE: 'Continue',
+  SKIP: 'Skip'
 } satisfies BaseTranslation;
 
 export default en;

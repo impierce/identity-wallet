@@ -10,6 +10,7 @@
   import { fade } from 'svelte/transition';
   import { dispatch } from '$lib/dispatcher';
   import { goto } from '$app/navigation';
+  import PaddedIcon from '$lib/components/PaddedIcon.svelte';
 
   const {
     elements: { trigger, content, arrow, close },
@@ -21,9 +22,7 @@
   <TopNavigation title={$state?.current_user_flow?.type ?? 'no title'} />
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-6">
-    <div class="rounded-2xl bg-indigo-500 p-4">
-      <PlugsConnected class="h-8 w-8 text-white" />
-    </div>
+    <PaddedIcon icon={PlugsConnected} />
     <p class="text-2xl font-medium">BestDex</p>
 
     <!-- Warning -->

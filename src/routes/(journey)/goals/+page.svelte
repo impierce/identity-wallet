@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { BottomDrawer, Button, ProgressBar, TopNavigation } from '@impierce/ui-components';
+  import { BottomDrawer, Button, TopNavigation } from '@impierce/ui-components';
   import { state } from '../../../stores';
   import type { Goal } from './types';
   import { melt } from '@melt-ui/svelte';
@@ -7,6 +7,9 @@
   import GoalItem from '$lib/journey/goals/GoalItem.svelte';
   import { dispatch } from '$lib/dispatcher';
   import { goto } from '$app/navigation';
+  import PaddedIcon from '$lib/components/PaddedIcon.svelte';
+  import LL from '$i18n/i18n-svelte';
+  import ProgressBar from '$lib/components/ProgressBar.svelte';
 
   let journeyDefinition = $state?.user_journey;
 
@@ -25,7 +28,8 @@
       slot="trigger"
       let:trigger
       use:melt={trigger}
-      class="w-full py-4 text-left text-indigo-500">Skip</button
+      class="w-full py-4 text-left text-[13px]/[24px] font-medium text-indigo-500"
+      >{$LL.SKIP()}</button
     >
     <button
       slot="content"
@@ -44,14 +48,17 @@
 
 <!-- Content -->
 <div class="flex h-full flex-col bg-neutral-100">
-  <div class="px-4 pb-1 pt-4">
-    <!-- TODO: ProgressBar -->
+  <div class="h-[54px] bg-white py-[15px] px-[18px] flex items-center">
+    <span class="grow pr-[15px]">
+      <ProgressBar value={40} />
+    </span>
+    <p class="text-slate-800 font-medium text-[13px]/[24px]">3/7</p>
   </div>
 
   <div class="flex h-full flex-col items-center justify-between p-6">
     <div class="flex flex-col items-center">
       <!-- Header -->
-      <div class="rounded-2xl bg-indigo-500 p-4"><Trophy class="h-8 w-8 text-white" /></div>
+      <PaddedIcon icon={Trophy} />
       <p class="pt-8 text-2xl font-semibold">{journeyDefinition?.title}</p>
       <p class="pt-4 text-center font-medium text-slate-500">
         {journeyDefinition?.description}

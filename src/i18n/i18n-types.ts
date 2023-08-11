@@ -45,9 +45,25 @@ type RootTranslation = {
 	 */
 	GETTING_STARTED_TITLE: string
 	/**
-	 * S​t​a​r​t​ ​y​o​u​r​ ​f​i​r​s​t​ ​s​t​e​p​s​ ​t​o​ ​a​d​d​ ​s​o​m​e​ ​c​r​e​d​e​n​t​i​a​l​s​ ​t​o​ ​y​o​u​r​ ​d​i​g​i​t​a​l​ ​"​M​e​"​.
+	 * S​t​a​r​t​ ​y​o​u​r​ ​f​i​r​s​t​ ​s​t​e​p​s​ ​t​o​ ​a​d​d​ ​s​o​m​e​ ​c​r​e​d​e​n​t​i​a​l​s​ ​t​o​ ​y​o​u​r​ ​"​M​e​"​.
 	 */
 	GETTING_STARTED_SUBTITLE: string
+	/**
+	 * C​o​m​p​l​e​t​e​ ​n​e​w​ ​g​o​a​l​s
+	 */
+	GETTING_STARTED_DIALOG_0_TITLE: string
+	/**
+	 * S​t​a​r​t​ ​y​o​u​r​ ​m​i​s​s​i​o​n​ ​h​e​r​e​!​ ​G​o​a​l​s​ ​w​i​l​l​ ​l​e​a​d​ ​y​o​u​ ​t​h​r​o​u​g​h​ ​i​m​p​o​r​t​a​n​t​ ​f​e​a​t​u​r​e​s​ ​a​n​d​ ​p​o​s​s​i​b​i​l​i​t​i​e​s​ ​o​f​ ​U​n​i​M​e​ ​a​p​p​.
+	 */
+	GETTING_STARTED_DIALOG_0_TEXT: string
+	/**
+	 * E​x​p​l​o​r​i​n​g​ ​m​a​d​e​ ​f​u​n
+	 */
+	GETTING_STARTED_DIALOG_1_TITLE: string
+	/**
+	 * O​n​ ​c​o​m​p​l​e​t​i​n​g​ ​g​o​a​l​s​,​ ​y​o​u​'​l​l​ ​r​e​c​e​i​v​e​ ​a​n​ ​a​w​e​s​o​m​e​ ​n​e​w​ ​a​c​h​i​e​v​e​m​e​n​t​ ​b​a​d​g​e​ ​a​n​d​ ​l​e​v​e​l​ ​u​p​ ​y​o​u​r​ ​f​i​r​s​t​ ​s​t​e​p​s​.
+	 */
+	GETTING_STARTED_DIALOG_1_TEXT: string
 	/**
 	 * A​p​p​ ​s​e​t​t​i​n​g​s
 	 */
@@ -104,6 +120,10 @@ type RootTranslation = {
 	 * A​d​d
 	 */
 	ADD: string
+	/**
+	 * C​o​n​t​i​n​u​e
+	 */
+	CONTINUE: string
 }
 
 export type TranslationFunctions = {
@@ -136,9 +156,25 @@ export type TranslationFunctions = {
 	 */
 	GETTING_STARTED_TITLE: () => LocalizedString
 	/**
-	 * Start your first steps to add some credentials to your digital "Me".
+	 * Start your first steps to add some credentials to your "Me".
 	 */
 	GETTING_STARTED_SUBTITLE: () => LocalizedString
+	/**
+	 * Complete new goals
+	 */
+	GETTING_STARTED_DIALOG_0_TITLE: () => LocalizedString
+	/**
+	 * Start your mission here! Goals will lead you through important features and possibilities of UniMe app.
+	 */
+	GETTING_STARTED_DIALOG_0_TEXT: () => LocalizedString
+	/**
+	 * Exploring made fun
+	 */
+	GETTING_STARTED_DIALOG_1_TITLE: () => LocalizedString
+	/**
+	 * On completing goals, you'll receive an awesome new achievement badge and level up your first steps.
+	 */
+	GETTING_STARTED_DIALOG_1_TEXT: () => LocalizedString
 	/**
 	 * App settings
 	 */
@@ -195,6 +231,10 @@ export type TranslationFunctions = {
 	 * Add
 	 */
 	ADD: () => LocalizedString
+	/**
+	 * Continue
+	 */
+	CONTINUE: () => LocalizedString
 }
 
 export type Formatters = {}
