@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { BottomDrawer, Button, TopNavigation } from '@impierce/ui-components';
+  import { BottomDrawer, TopNavigation } from '@impierce/ui-components';
   import { state } from '../../../stores';
   import type { Goal } from './types';
   import { melt } from '@melt-ui/svelte';
@@ -10,6 +10,7 @@
   import PaddedIcon from '$lib/components/PaddedIcon.svelte';
   import LL from '$i18n/i18n-svelte';
   import ProgressBar from '$lib/components/ProgressBar.svelte';
+  import Button from '$lib/components/Button.svelte';
 
   let journeyDefinition = $state?.user_journey;
 
@@ -48,14 +49,14 @@
 
 <!-- Content -->
 <div class="flex h-full flex-col bg-neutral-100">
-  <div class="h-[54px] bg-white py-[15px] px-[18px] flex items-center">
+  <div class="flex h-[54px] items-center bg-white px-[18px] py-[15px]">
     <span class="grow pr-[15px]">
       <ProgressBar value={40} />
     </span>
-    <p class="text-slate-800 font-medium text-[13px]/[24px]">3/7</p>
+    <p class="text-[13px]/[24px] font-medium text-slate-800">3/7</p>
   </div>
 
-  <div class="flex h-full flex-col items-center justify-between p-6">
+  <div class="flex h-full flex-col items-center justify-between p-6 overflow-y-scroll">
     <div class="flex flex-col items-center">
       <!-- Header -->
       <PaddedIcon icon={Trophy} />
@@ -73,10 +74,11 @@
             </svelte:fragment>
 
             <svelte:fragment slot="content">
-              <button
+              <!-- <button
                 class="w-full rounded-lg bg-indigo-500 px-4 py-2 text-white"
                 on:click={() => goto(`/goals/${goal.id}/faqs`)}>Start</button
-              >
+              > -->
+              <Button label="Start" on:click={() => goto(`/goals/${goal.id}/faqs`)} />
             </svelte:fragment>
 
             <button
@@ -92,9 +94,13 @@
     </div>
 
     <!-- 'TODO: determine first incomplete item in list' -->
-    <button
+    <!-- <button
       class="w-full rounded-lg bg-indigo-500 px-4 py-2 text-white"
       on:click={() => goto('/goals/0/faqs')}>Continue</button
-    >
+    > -->
+    
+  </div>
+  <div class="sticky bottom-[var(--safe-area-inset-bottom)] left-0 p-6">
+    <Button label="Continue" on:click={() => goto('/goals/0/faqs')}/>
   </div>
 </div>

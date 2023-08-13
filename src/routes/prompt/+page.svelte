@@ -11,6 +11,7 @@
   import { dispatch } from '$lib/dispatcher';
   import { goto } from '$app/navigation';
   import PaddedIcon from '$lib/components/PaddedIcon.svelte';
+  import Button from '$lib/components/Button.svelte';
 
   const {
     elements: { trigger, content, arrow, close },
@@ -19,7 +20,10 @@
 </script>
 
 <div class="content-height flex flex-col items-stretch bg-neutral-100">
-  <TopNavigation title={$state?.current_user_flow?.type ?? 'no title'} />
+  <TopNavigation
+    title={$state?.current_user_flow?.type ?? 'no title'}
+    on:back={() => history.back()}
+  />
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-6">
     <PaddedIcon icon={PlugsConnected} />
@@ -51,7 +55,7 @@
             <div
               use:melt={$content}
               transition:fade={{ duration: 200 }}
-              class="z-10 w-1/2 rounded-lg bg-indigo-500 p-2 text-white shadow-md"
+              class="z-10 w-1/2 rounded-2xl bg-[#2F3036] p-[20px] text-[#D4D6DD] shadow-md"
             >
               <div use:melt={$arrow} />
               <div class="break-keep text-sm">
@@ -74,10 +78,11 @@
   </div>
 
   <!-- Controls -->
-  <div class="sticky bottom-0 left-0 rounded-t-2xl bg-white p-6">
-    <button class="w-full rounded-lg bg-indigo-500 px-4 py-2 text-white" on:click={() => {}}
+  <div class="sticky bottom-0 left-0 flex flex-col rounded-t-2xl bg-white p-6">
+    <Button label="Accept connection" />
+    <!-- <button class="w-full rounded-lg bg-indigo-500 px-4 py-2 text-white" on:click={() => {}}
       >Accept connection</button
-    >
+    > -->
     <button
       class="mt-2 w-full rounded-lg border bg-white px-4 py-2 text-neutral-700"
       on:click={() => {

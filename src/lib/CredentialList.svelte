@@ -11,7 +11,6 @@
     AlertDialogTitle,
     AlertDialogTrigger,
     Button,
-    CredentialListEntry,
     Input,
     SearchInput,
     Sheet,
@@ -39,6 +38,7 @@
 
   import House from '~icons/ph/house-light';
   import NoCredentials from './credentials/NoCredentials.svelte';
+  import CredentialListEntry from './components/CredentialListEntry.svelte';
 
   // TODO: improve typing
   let credentials: any[] = [];
@@ -51,7 +51,7 @@
 {#if credentials.length > 0}
   <div class="flex items-center pb-2">
     <SealCheck class="mr-2 text-indigo-500" />
-    <p class="font-medium text-slate-600">{$LL.MY_DATA()}</p>
+    <p class="font-medium text-slate-600 text-[15px]/[24px]">{$LL.MY_DATA()}</p>
   </div>
   <!-- Search -->
   <!-- <Input type="text" placeholder="Search credentials" class="focus-visible:ring-violet-600" /> -->
@@ -76,7 +76,7 @@
       color="bg-[#ffe4e6]"
     >
       <!-- custom: bg-[#fecdd3] -->
-      <span slot="icon"><House class="h-6 w-6" /></span>
+      <span slot="icon"><House class="h-[18px] w-[18px] text-slate-800" /></span>
     </CredentialListEntry>
 
     <!-- <p class="font-semibold">B</p> -->

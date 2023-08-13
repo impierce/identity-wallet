@@ -12,12 +12,12 @@
 {#if trigger}
   <button
     use:melt={trigger}
-    class="custom h-[48px] rounded-xl bg-indigo-500 px-4 py-2 text-white"
+    class="custom h-[48px] rounded-xl bg-indigo-500 px-4 py-2 text-white w-full"
     on:click={() => dispatch('click')}>{label}</button
   >
 {:else}
   <button
-    class="custom h-[48px] rounded-xl bg-indigo-500 px-4 py-2 text-white"
+    class="custom h-[48px] rounded-xl bg-indigo-500 px-4 py-2 text-white w-full"
     on:click={() => dispatch('click')}>{label}</button
   >
 {/if}
