@@ -4,4 +4,4 @@ import type { Redirect } from "./Redirect";
 import type { Selection } from "./Selection";
 import type { Warning } from "./Warning";
 
-export type CurrentUserFlow = Redirect | Warning | Selection | Offer;
+export type CurrentUserPrompt = Redirect | Warning | Selection | Offer;

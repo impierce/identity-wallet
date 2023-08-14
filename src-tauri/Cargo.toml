@@ -59,6 +59,7 @@ tauri-plugin-barcode-scanner = { git = "https://github.com/lucasfernog/plugins-w
 jsonwebtoken = "8.2"
 futures = "0.3"
 async-recursion = "1.0"
+uuid = { version = "1.4", features = ["v4", "fast-rng"] }
 
 [dev-dependencies]
 tauri = { version = "=2.0.0-alpha.10", features = ["rustls-tls", "test"] }

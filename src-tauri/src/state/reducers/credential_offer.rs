@@ -3,7 +3,7 @@ use crate::{
     get_jwt_claims,
     state::{
         actions::Action,
-        user_flow::{CurrentUserFlow, CurrentUserFlowType, Offer},
+        user_prompt::{CurrentUserPrompt, CurrentUserPromptType, Offer},
         AppState,
     },
 };
@@ -19,20 +19,13 @@ use oid4vci::{
 };
 use serde_json::json;
 use std::sync::Arc;
+use uuid::Uuid;
 
 pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::Result<()> {
     info!("read_credential_offer");
     let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
-    let mut credential_offer: CredentialOffer = match serde_json::from_value(payload)? {
-        CredentialOfferQuery::CredentialOffer(credential_offer) => credential_offer,
-        _ => unreachable!(),
-    };
-    info!("credential offer: {:?}", credential_offer);
-
-    // The credential offer contains a credential issuer url.
-    let credential_issuer_url = credential_offer.clone().credential_issuer;
-
     // Create a new subject.
+
     let subject = KeySubject::from_keypair(generate::<Ed25519KeyPair>(Some(
         "this-is-a-very-UNSAFE-secret-key".as_bytes(),
     )));
@@ -40,12 +33,23 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::
     // Create a new wallet.
     let wallet: Wallet = Wallet::new(Arc::new(subject));
 
+    let mut credential_offer: CredentialOffer = match serde_json::from_value(payload)? {
+        CredentialOfferQuery::CredentialOffer(credential_offer) => credential_offer,
+        CredentialOfferQuery::CredentialOfferUri(credential_offer_uri) => {
+            wallet.get_credential_offer(credential_offer_uri).await?
+        }
+    };
+    info!("credential offer: {:?}", credential_offer);
+
+    // The credential offer contains a credential issuer url.
+    let credential_issuer_url = credential_offer.clone().credential_issuer;
+
     // Get the credential issuer metadata.
     let credential_issuer_metadata = wallet
         .get_credential_issuer_metadata(credential_issuer_url.clone())
-        .await
-        .unwrap();
+        .await;
 
+    // For all credentials by reference, replace them with credentials by value using the CredentialIssuerMetadata.
     credential_offer
         .credentials
         .iter_mut()
@@ -53,19 +57,26 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::
             CredentialsObject::ByReference(by_reference) => {
                 *credential = CredentialsObject::ByValue(
                     credential_issuer_metadata
-                        .credentials_supported
-                        .iter()
-                        .find(|credential_supported| credential_supported.id.as_ref().unwrap() == by_reference)
-                        .unwrap()
-                        .credential_format
-                        .to_owned(),
+                        .as_ref()
+                        .map(|credential_issuer_metadata| {
+                            credential_issuer_metadata
+                                .credentials_supported
+                                .iter()
+                                .find(|credential_supported| {
+                                    credential_supported.scope == Some(by_reference.to_owned())
+                                })
+                                .unwrap()
+                                .credential_format
+                                .clone()
+                        })
+                        .unwrap(),
                 );
             }
             _by_value => (),
         });
-    *state.credential_offer.lock().unwrap() = Some(credential_offer.clone());
-    *state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Offer(Offer {
-        r#type: CurrentUserFlowType::Offer,
+
+    *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Offer(Offer {
+        r#type: CurrentUserPromptType::Offer,
         options: vec![serde_json::to_value(&credential_offer).unwrap()],
     }));
     Ok(())
@@ -76,7 +87,13 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
 
     let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
     let offer_indices: Vec<usize> = serde_json::from_value(payload["offer_indices"].clone())?;
-    let credential_offer = state.credential_offer.lock().unwrap().clone().unwrap();
+    let credential_offer = match state.current_user_prompt.lock().unwrap().clone().unwrap() {
+        CurrentUserPrompt::Offer(offer) => {
+            let credential_offer: CredentialOffer = serde_json::from_value(offer.options[0].clone())?;
+            credential_offer
+        }
+        _ => unreachable!(),
+    };
 
     // The credential offer contains a credential issuer url.
     let credential_issuer_url = credential_offer.credential_issuer;
@@ -105,13 +122,6 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
         .into_iter()
         .map(|offer_index| match credential_offer.credentials.get(offer_index) {
             Some(CredentialsObject::ByValue(credential_format)) => credential_format.to_owned(),
-            Some(CredentialsObject::ByReference(credential_reference)) => credential_issuer_metadata
-                .credentials_supported
-                .iter()
-                .find(|credential_supported| credential_supported.id.as_ref().unwrap() == credential_reference)
-                .unwrap()
-                .credential_format
-                .to_owned(),
             _ => unreachable!(),
         })
         .collect::<Vec<CredentialFormats>>();
@@ -171,9 +181,11 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
                 .collect()
         }
     };
+    info!("credentials: {:?}", credentials);
 
+    // Get the decoded JWT claims to be displayed in the frontend.
     let mut credential_displays = vec![];
-    for (fake_uuid, credential) in credentials.iter().enumerate() {
+    for credential in credentials.iter() {
         match credential {
             CredentialFormats::JwtVcJson(credential) => {
                 let credential_display = serde_json::from_value::<identity_credential::credential::Credential>(
@@ -186,12 +198,18 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
         }
 
         let buffer = json!(credential).to_string().as_bytes().to_vec();
-        insert_into_stronghold(fake_uuid.to_ne_bytes().to_vec(), buffer, "my-password").await?;
+        insert_into_stronghold(Uuid::new_v4(), buffer, "my-password")?;
     }
+    info!("credential_displays: {:?}", credential_displays);
 
-    *state.credentials.lock().unwrap() = Some(credential_displays);
-    *state.current_user_flow.lock().unwrap() = None;
-    *state.credential_offer.lock().unwrap() = None;
+    state
+        .credentials
+        .lock()
+        .unwrap()
+        .as_mut()
+        .unwrap()
+        .extend(credential_displays);
+    *state.current_user_prompt.lock().unwrap() = None;
 
     Ok(())
 }

@@ -5,16 +5,16 @@ use crate::crypto::stronghold::{create_new_stronghold, get_public_key, insert_in
 use crate::did::did_key::{generate_dev_did, generate_new_did};
 use crate::get_jwt_claims;
 use crate::state::actions::Action;
-use crate::state::user_flow::{CurrentUserFlow, CurrentUserFlowType, Redirect};
+use crate::state::user_prompt::{CurrentUserPrompt, CurrentUserPromptType, Redirect};
 use crate::state::{AppState, Profile};
 use identity_core::common::{Timestamp, Url};
 use identity_credential::credential::{CredentialBuilder, Issuer, Subject};
+use lazy_static::lazy_static;
 use log::info;
 use oid4vci::credential_format_profiles::w3c_verifiable_credentials::jwt_vc_json::JwtVcJson;
 use oid4vci::credential_format_profiles::{Credential, CredentialFormats, WithCredential};
 use serde_json::{json, Value};
-
-use lazy_static::lazy_static;
+use uuid::Uuid;
 
 // TODO: this is a temporary solution to store the credentials in memory.
 lazy_static! {
@@ -46,7 +46,7 @@ pub async fn create_did_key(state: &AppState, action: Action) -> anyhow::Result<
         .as_str()
         .ok_or(anyhow::anyhow!("unable to read password from json payload"))?;
 
-    let public_key = get_public_key(password).await?;
+    let public_key = get_public_key(password)?;
     let did_document = generate_new_did(public_key).await?;
     let profile = Profile {
         display_name: display_name.to_string(),
@@ -61,7 +61,7 @@ pub async fn initialize_stronghold(_state: &AppState, action: Action) -> anyhow:
     let password = payload["password"]
         .as_str()
         .ok_or(anyhow::anyhow!("unable to read password from json payload"))?;
-    create_new_stronghold(password).await?;
+    create_new_stronghold(password)?;
     Ok(())
 }
 
@@ -70,8 +70,8 @@ pub fn reset_state(state: &AppState, _action: Action) -> anyhow::Result<()> {
     *state.active_profile.lock().unwrap() = None;
     *state.locale.lock().unwrap() = "en".to_string();
     *state.credentials.lock().unwrap() = None;
-    *state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Redirect(Redirect {
-        r#type: CurrentUserFlowType::Redirect,
+    *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect(Redirect {
+        r#type: CurrentUserPromptType::Redirect,
         target: "welcome".to_string(),
     }));
     Ok(())
@@ -133,12 +133,10 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
     let credential = VERIFIABLE_CREDENTIAL.clone();
 
     insert_into_stronghold(
-        b"key".to_vec(),
-        json!(credential).to_string().as_bytes().to_vec(),
+        Uuid::new_v4(),
+        json!(credential.clone()).to_string().as_bytes().to_vec(),
         "my-password",
-    )
-    .await
-    .unwrap();
+    )?;
 
     let credential_display = match credential {
         CredentialFormats::JwtVcJson(credential) => {
@@ -152,8 +150,8 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
     };
 
     *state.credentials.lock().unwrap() = Some(vec![credential_display]);
-    *state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Redirect(Redirect {
-        r#type: CurrentUserFlowType::Redirect,
+    *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect(Redirect {
+        r#type: CurrentUserPromptType::Redirect,
         target: "profile".to_string(),
     }));
     Ok(())
@@ -232,8 +230,8 @@ mod tests {
             .expect("store client state into snapshot state failed");
         stronghold
             .commit_with_keyprovider(
-                &SnapshotPath::from_path(path),
-                &KeyProvider::try_from(hash_password("s3cr3t").await.unwrap()).unwrap(),
+                &SnapshotPath::from_path(format!("{path}.snapshot")),
+                &KeyProvider::try_from(hash_password("s3cr3t").unwrap()).unwrap(),
             )
             .ok();
 

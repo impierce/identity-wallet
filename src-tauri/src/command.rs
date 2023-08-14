@@ -7,7 +7,7 @@ use crate::state::persistence::{delete_state_file, delete_stronghold, load_state
 use crate::state::reducers::authorization::{read_authorization_request, send_authorization_response};
 use crate::state::reducers::credential_offer::{read_credential_offer, send_credential_request};
 use crate::state::reducers::{create_did_key, initialize_stronghold, load_dev_profile, reset_state, set_locale};
-use crate::state::user_flow::{CurrentUserFlow, CurrentUserFlowType, Redirect};
+use crate::state::user_prompt::{CurrentUserPrompt, CurrentUserPromptType, Redirect};
 use crate::state::{AppState, TransferState};
 
 #[async_recursion::async_recursion]
@@ -23,10 +23,9 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             let transfer_state: TransferState = load_state().await.unwrap_or(TransferState {
                 active_profile: None,
                 locale: "en".to_string(),
-                credential_offer: None,
                 credentials: None,
-                current_user_flow: Some(CurrentUserFlow::Redirect(Redirect {
-                    r#type: CurrentUserFlowType::Redirect,
+                current_user_prompt: Some(CurrentUserPrompt::Redirect(Redirect {
+                    r#type: CurrentUserPromptType::Redirect,
                     target: "welcome".to_string(),
                 })),
                 debug_messages: vec![],
@@ -38,14 +37,14 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             *app_state.credentials.lock().unwrap() = transfer_state.credentials;
 
             // TODO: bug: if state is present, but empty, user will never be redirected to neither welcome or profile page
-            *app_state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Redirect(Redirect {
-                r#type: CurrentUserFlowType::Redirect,
+            *app_state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect(Redirect {
+                r#type: CurrentUserPromptType::Redirect,
                 target: "welcome".to_string(),
             }));
 
             if (*app_state.active_profile.lock().unwrap()).is_some() {
-                *app_state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Redirect(Redirect {
-                    r#type: CurrentUserFlowType::Redirect,
+                *app_state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect(Redirect {
+                    r#type: CurrentUserPromptType::Redirect,
                     target: "profile".to_string(),
                 }));
             }
@@ -65,8 +64,8 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
                 save_state(TransferState::from(app_state)).await.ok();
             }
             // When everything is done, we redirect the user to the profile page
-            *app_state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Redirect(Redirect {
-                r#type: CurrentUserFlowType::Redirect,
+            *app_state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect(Redirect {
+                r#type: CurrentUserPromptType::Redirect,
                 target: "profile".to_string(),
             }));
             save_state(TransferState::from(app_state)).await.ok();
@@ -75,7 +74,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             if set_locale(app_state, Action { r#type, payload }).is_ok() {
                 save_state(TransferState::from(app_state)).await.ok();
             }
-            *app_state.current_user_flow.lock().unwrap() = None;
+            *app_state.current_user_prompt.lock().unwrap() = None;
             save_state(TransferState::from(app_state)).await.ok();
         }
         ActionType::QrCodeScanned => {
@@ -129,7 +128,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             }
         }
         ActionType::CancelUserFlow => {
-            *app_state.current_user_flow.lock().unwrap() = None;
+            *app_state.current_user_prompt.lock().unwrap() = None;
             save_state(TransferState::from(app_state)).await.ok();
         }
         ActionType::LoadDevProfile => {

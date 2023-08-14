@@ -1,6 +1,6 @@
 use crate::get_jwt_claims;
 use crate::state::reducers::VERIFIABLE_CREDENTIAL;
-use crate::state::user_flow::{CurrentUserFlow, CurrentUserFlowType, Redirect};
+use crate::state::user_prompt::{CurrentUserPrompt, CurrentUserPromptType, Redirect};
 use crate::state::Profile;
 use crate::state::{
     actions::{Action, ActionType},
@@ -13,7 +13,7 @@ use oid4vci::credential_format_profiles::CredentialFormats;
 #[serial_test::serial]
 async fn test_load_dev_profile() {
     setup_state_file();
-    setup_stronghold().await;
+    setup_stronghold();
 
     let credential = VERIFIABLE_CREDENTIAL.clone();
 
@@ -40,8 +40,8 @@ async fn test_load_dev_profile() {
                 primary_did: "did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY".to_string(),
             }),
             credentials: Some(vec![credential_display]),
-            current_user_flow: Some(CurrentUserFlow::Redirect(Redirect {
-                r#type: CurrentUserFlowType::Redirect,
+            current_user_prompt: Some(CurrentUserPrompt::Redirect(Redirect {
+                r#type: CurrentUserPromptType::Redirect,
                 target: "profile".to_string(),
             })),
             ..TransferState::default()

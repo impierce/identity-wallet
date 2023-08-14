@@ -55,10 +55,10 @@ pub fn setup_state_file() {
     *STATE_FILE.lock().unwrap() = path.as_os_str().into();
 }
 
-pub async fn setup_stronghold() {
+pub fn setup_stronghold() {
     let path = NamedTempFile::new().unwrap().into_temp_path();
     *STRONGHOLD.lock().unwrap() = path.as_os_str().into();
-    create_new_stronghold("my-password").await.unwrap();
+    create_new_stronghold("my-password").unwrap();
 }
 
 pub async fn setup_provider_manager() {
