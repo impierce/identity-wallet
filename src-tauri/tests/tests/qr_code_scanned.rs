@@ -1,10 +1,12 @@
-use crate::crypto::stronghold::insert_into_stronghold;
-use crate::state::{
+use crate::common::assert_state_update::{
+    assert_state_update, setup_provider_manager, setup_state_file, setup_stronghold,
+};
+use identity_wallet::crypto::stronghold::insert_into_stronghold;
+use identity_wallet::state::{
     actions::{Action, ActionType},
     user_prompt::{CurrentUserPrompt, CurrentUserPromptType, Offer, Selection},
     AppState, Profile, TransferState,
 };
-use crate::tests::{assert_state_update, setup_provider_manager, setup_state_file, setup_stronghold};
 use oid4vci::credential_format_profiles::w3c_verifiable_credentials::jwt_vc_json::{self, JwtVcJson};
 use oid4vci::credential_format_profiles::{Credential, Parameters, WithCredential, WithParameters};
 use oid4vci::credential_offer::{Grants, PreAuthorizedCode};

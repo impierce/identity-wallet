@@ -1,5 +1,5 @@
 pub mod command;
-mod crypto;
+pub mod crypto;
 mod did;
 pub mod state;
 
