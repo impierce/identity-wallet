@@ -134,19 +134,14 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
 
     let key = Uuid::default();
 
-    insert_into_stronghold(
-        key,
-        json!(credential.clone()).to_string().as_bytes().to_vec(),
-        "my-password",
-    )?;
+    insert_into_stronghold(key, json!(credential).to_string().as_bytes().to_vec(), "my-password")?;
 
     let credential_display = match credential {
         CredentialFormats::JwtVcJson(credential) => {
-            let credential_display = serde_json::from_value::<identity_credential::credential::Credential>(
+            serde_json::from_value::<identity_credential::credential::Credential>(
                 get_jwt_claims(&credential.credential)["vc"].clone(),
             )
-            .unwrap();
-            credential_display
+            .unwrap()
         }
         _ => unimplemented!(),
     };

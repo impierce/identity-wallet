@@ -66,7 +66,7 @@ pub fn load_stronghold(password: &str) -> anyhow::Result<(Stronghold, Client, St
 
     info!("Loading snapshot");
 
-    let client = stronghold.load_client_from_snapshot(path.clone(), &keyprovider, &snapshot_path)?;
+    let client = stronghold.load_client_from_snapshot(&path, &keyprovider, &snapshot_path)?;
 
     Ok((stronghold, client, path, keyprovider, snapshot_path))
 }
@@ -78,7 +78,7 @@ pub fn get_public_key(password: &str) -> anyhow::Result<Vec<u8>> {
     let procedure_result = client
         .execute_procedure(StrongholdProcedure::PublicKey(PublicKey {
             ty: KeyType::Ed25519,
-            private_key: Location::counter(path.clone(), 0u8),
+            private_key: Location::counter(path, 0u8),
         }))
         .unwrap();
 
@@ -97,7 +97,7 @@ pub fn insert_into_stronghold(key: Uuid, value: Vec<u8>, password: &str) -> anyh
         .unwrap();
 
     stronghold
-        .write_client(&path)
+        .write_client(path)
         .expect("store client state into snapshot state failed");
 
     stronghold
@@ -107,6 +107,7 @@ pub fn insert_into_stronghold(key: Uuid, value: Vec<u8>, password: &str) -> anyh
     Ok(())
 }
 
+// TODO: fix this function's return type.
 pub fn get_all_from_stronghold(
     password: &str,
 ) -> anyhow::Result<Option<Vec<(Uuid, CredentialFormats<WithCredential>)>>> {

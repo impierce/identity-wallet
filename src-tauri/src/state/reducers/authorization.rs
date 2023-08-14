@@ -112,7 +112,7 @@ pub async fn send_authorization_response(state: &AppState, action: Action) -> an
         .iter()
         .filter_map(|(key, vc)| match vc {
             CredentialFormats::JwtVcJson(jwt_vc_json) => {
-                credential_indices.contains(&key).then_some(jwt_vc_json.to_owned())
+                credential_indices.contains(key).then_some(jwt_vc_json.to_owned())
             }
             _ => unimplemented!(),
         })
