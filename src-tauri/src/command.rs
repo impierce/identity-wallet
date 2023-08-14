@@ -12,11 +12,11 @@ use crate::state::{AppState, TransferState};
 /// command it receives to the designated functions that modify the state (see: "reducers" in the Redux pattern).
 /// NOTE: Testing command handlers is not possible as of yet, see: https://github.com/tauri-apps/tauri/pull/4752
 #[tauri::command]
-pub async fn handle_action(
+pub async fn handle_action<R: tauri::Runtime>(
     Action { r#type, payload }: Action,
-    _app_handle: tauri::AppHandle,
+    _app_handle: tauri::AppHandle<R>,
     app_state: tauri::State<'_, AppState>,
-    window: tauri::Window,
+    window: tauri::Window<R>,
 ) -> Result<(), String> {
     info!("received action `{:?}` with payload `{:?}`", r#type, payload);
 
@@ -149,7 +149,7 @@ pub async fn handle_action(
     Ok(())
 }
 
-fn emit_event(window: tauri::Window, transfer_state: TransferState) -> anyhow::Result<()> {
+fn emit_event<R: tauri::Runtime>(window: tauri::Window<R>, transfer_state: TransferState) -> anyhow::Result<()> {
     const STATE_CHANGED_EVENT: &str = "state-changed";
     window.emit(STATE_CHANGED_EVENT, &transfer_state).unwrap();
     info!(

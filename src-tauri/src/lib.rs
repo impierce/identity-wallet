@@ -1,7 +1,7 @@
-mod command;
+pub mod command;
 mod crypto;
 mod did;
-mod state;
+pub mod state;
 
 use command::handle_action;
 use did_key::{generate, Ed25519KeyPair};
