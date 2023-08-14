@@ -16,7 +16,7 @@ pub struct AppState {
     pub active_profile: Mutex<Option<Profile>>,
     pub active_authorization_request: Mutex<Option<AuthorizationRequest>>,
     pub locale: Mutex<String>,
-    pub credentials: Mutex<Option<Vec<Credential>>>,
+    pub credentials: Mutex<Option<Vec<(String, Credential)>>>,
     pub current_user_prompt: Mutex<Option<CurrentUserPrompt>>,
     pub debug_messages: Mutex<Vec<String>>,
 }
@@ -27,9 +27,9 @@ pub struct AppState {
 pub struct TransferState {
     pub active_profile: Option<Profile>,
     pub locale: String,
-    #[ts(optional, type = "object")]
+    #[ts(optional, type = "Array<{id: string, data: object}>")]
     // TODO: what is the correct type here? Map<String, String>? Object? null? undefined? any? unknown?
-    pub credentials: Option<Vec<Credential>>,
+    pub credentials: Option<Vec<(String, Credential)>>,
     pub current_user_prompt: Option<CurrentUserPrompt>,
     pub debug_messages: Vec<String>,
 }

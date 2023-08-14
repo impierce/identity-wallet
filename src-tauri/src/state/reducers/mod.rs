@@ -132,8 +132,10 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
 
     let credential = VERIFIABLE_CREDENTIAL.clone();
 
+    let key = Uuid::default();
+
     insert_into_stronghold(
-        Uuid::new_v4(),
+        key,
         json!(credential.clone()).to_string().as_bytes().to_vec(),
         "my-password",
     )?;
@@ -149,7 +151,7 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
         _ => unimplemented!(),
     };
 
-    *state.credentials.lock().unwrap() = Some(vec![credential_display]);
+    *state.credentials.lock().unwrap() = Some(vec![(key.to_string(), credential_display)]);
     *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect(Redirect {
         r#type: CurrentUserPromptType::Redirect,
         target: "profile".to_string(),

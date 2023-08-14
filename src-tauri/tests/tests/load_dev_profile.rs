@@ -8,6 +8,7 @@ use identity_wallet::state::{
     AppState, TransferState,
 };
 use oid4vci::credential_format_profiles::CredentialFormats;
+use uuid::Uuid;
 
 #[tokio::test]
 #[serial_test::serial]
@@ -39,7 +40,7 @@ async fn test_load_dev_profile() {
                 display_name: "Ferris Crabman".to_string(),
                 primary_did: "did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY".to_string(),
             }),
-            credentials: Some(vec![credential_display]),
+            credentials: Some(vec![(Uuid::default().to_string(), credential_display)]),
             current_user_prompt: Some(CurrentUserPrompt::Redirect(Redirect {
                 r#type: CurrentUserPromptType::Redirect,
                 target: "profile".to_string(),

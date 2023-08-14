@@ -186,19 +186,21 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
     // Get the decoded JWT claims to be displayed in the frontend.
     let mut credential_displays = vec![];
     for credential in credentials.iter() {
+        let key = Uuid::new_v4();
+
         match credential {
             CredentialFormats::JwtVcJson(credential) => {
                 let credential_display = serde_json::from_value::<identity_credential::credential::Credential>(
                     get_jwt_claims(&credential.credential)["vc"].clone(),
                 )
                 .unwrap();
-                credential_displays.push(credential_display);
+                credential_displays.push((key.to_string(), credential_display));
             }
             _ => unimplemented!(),
         }
 
         let buffer = json!(credential).to_string().as_bytes().to_vec();
-        insert_into_stronghold(Uuid::new_v4(), buffer, "my-password")?;
+        insert_into_stronghold(key, buffer, "my-password")?;
     }
     info!("credential_displays: {:?}", credential_displays);
 

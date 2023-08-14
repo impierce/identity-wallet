@@ -164,7 +164,6 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
 
 /// This command handler is the single point of entry to the business logic in the backend. It will delegate the
 /// command it receives to the designated functions that modify the state (see: "reducers" in the Redux pattern).
-/// NOTE: Testing command handlers is not possible as of yet, see: https://github.com/tauri-apps/tauri/pull/4752
 #[tauri::command]
 pub async fn handle_action<R: tauri::Runtime>(
     action: Action,
