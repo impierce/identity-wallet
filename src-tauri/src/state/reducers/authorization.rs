@@ -85,7 +85,7 @@ pub async fn send_authorization_response(state: &AppState, action: Action) -> an
             return Err(anyhow::anyhow!("unable to read payload"));
         }
     };
-    let credential_indices: Vec<Uuid> = serde_json::from_value::<Vec<String>>(payload["credential_indices"].clone())?
+    let credential_uuids: Vec<Uuid> = serde_json::from_value::<Vec<String>>(payload["credential_uuids"].clone())?
         .into_iter()
         .map(|index| index.parse().unwrap())
         .collect();
@@ -112,7 +112,7 @@ pub async fn send_authorization_response(state: &AppState, action: Action) -> an
         .iter()
         .filter_map(|(key, vc)| match vc {
             CredentialFormats::JwtVcJson(jwt_vc_json) => {
-                credential_indices.contains(key).then_some(jwt_vc_json.to_owned())
+                credential_uuids.contains(key).then_some(jwt_vc_json.to_owned())
             }
             _ => unimplemented!(),
         })
