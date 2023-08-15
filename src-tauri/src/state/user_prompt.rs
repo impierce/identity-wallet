@@ -31,13 +31,13 @@ pub struct Selection {
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, TS, PartialEq)]
-#[ts(export, export_to = "bindings/user-prompt/Offer.ts")]
-pub struct Offer {
+#[ts(export, export_to = "bindings/user-prompt/CredentialOffer.ts")]
+pub struct CredentialOffer {
     pub r#type: CurrentUserPromptType,
     /// An option is in the form: (<option_name>, <option_value>)
     // pub options: Vec<(String, String)>,
-    #[ts(type = "Array<any>")]
-    pub options: Vec<serde_json::Value>,
+    #[ts(type = "object")]
+    pub credential_offer: serde_json::Value,
 }
 
 // pub trait UserActionprompt {
@@ -76,7 +76,7 @@ pub enum CurrentUserPrompt {
     Redirect(Redirect),
     Warning(Warning),
     Selection(Selection),
-    Offer(Offer),
+    CredentialOffer(CredentialOffer),
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, TS, PartialEq)]
@@ -92,6 +92,6 @@ pub enum CurrentUserPromptType {
     // Selection,
     #[serde(rename = "select-credentials")]
     SelectCredentials,
-    #[serde(rename = "offer")]
-    Offer,
+    #[serde(rename = "credential-offer")]
+    CredentialOffer,
 }

@@ -3,7 +3,7 @@ use crate::{
     get_jwt_claims,
     state::{
         actions::Action,
-        user_prompt::{CurrentUserPrompt, CurrentUserPromptType, Offer},
+        user_prompt::{CredentialOffer as CredentialOfferPrompt, CurrentUserPrompt, CurrentUserPromptType},
         AppState,
     },
 };
@@ -75,9 +75,9 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::
             _by_value => (),
         });
 
-    *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Offer(Offer {
-        r#type: CurrentUserPromptType::Offer,
-        options: vec![serde_json::to_value(&credential_offer).unwrap()],
+    *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::CredentialOffer(CredentialOfferPrompt {
+        r#type: CurrentUserPromptType::CredentialOffer,
+        credential_offer: serde_json::to_value(&credential_offer).unwrap(),
     }));
     Ok(())
 }
@@ -88,8 +88,8 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
     let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
     let offer_indices: Vec<usize> = serde_json::from_value(payload["offer_indices"].clone())?;
     let credential_offer = match state.current_user_prompt.lock().unwrap().clone().unwrap() {
-        CurrentUserPrompt::Offer(offer) => {
-            let credential_offer: CredentialOffer = serde_json::from_value(offer.options[0].clone())?;
+        CurrentUserPrompt::CredentialOffer(offer) => {
+            let credential_offer: CredentialOffer = serde_json::from_value(offer.credential_offer)?;
             credential_offer
         }
         _ => unreachable!(),

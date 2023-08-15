@@ -4,7 +4,7 @@ use crate::common::assert_state_update::{
 use identity_wallet::crypto::stronghold::insert_into_stronghold;
 use identity_wallet::state::{
     actions::{Action, ActionType},
-    user_prompt::{CurrentUserPrompt, CurrentUserPromptType, Offer, Selection},
+    user_prompt::{CredentialOffer as CredentialOfferPrompt, CurrentUserPrompt, CurrentUserPromptType, Selection},
     AppState, Profile, TransferState,
 };
 use oid4vci::credential_format_profiles::w3c_verifiable_credentials::jwt_vc_json::{self, JwtVcJson};
@@ -43,9 +43,9 @@ async fn test_qr_code_scanned_read_credential_offer() {
                 display_name: "Ferris Crabman".to_string(),
                 primary_did: "did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY".to_string(),
             }),
-            current_user_prompt: Some(CurrentUserPrompt::Offer(Offer {
-                r#type: CurrentUserPromptType::Offer,
-                options: vec![serde_json::to_value(&CredentialOffer {
+            current_user_prompt: Some(CurrentUserPrompt::CredentialOffer(CredentialOfferPrompt {
+                r#type: CurrentUserPromptType::CredentialOffer,
+                credential_offer: serde_json::to_value(&CredentialOffer {
                     credential_issuer: "http://192.168.1.127:9090".parse().unwrap(),
                     credentials: vec![CredentialsObject::ByValue(
                         CredentialFormats::<WithParameters>::JwtVcJson(Parameters {
@@ -68,7 +68,7 @@ async fn test_qr_code_scanned_read_credential_offer() {
                         }),
                     }),
                 })
-                .unwrap()],
+                .unwrap(),
             })),
             ..TransferState::default()
         })],
