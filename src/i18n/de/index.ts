@@ -8,9 +8,20 @@ const de = {
   EMPTY_CREDENTIALS_LIST_TITLE: 'Hier ist es noch etwas leer',
   EMPTY_CREDENTIALS_LIST_SUBTITLE:
     'Warum fügst du nicht ein paar Credentials hinzu, um mit deiner neuen digitalen Identität loszulegen?',
-  GETTING_STARTED_TITLE: 'Sollen wir starten?',
-  GETTING_STARTED_SUBTITLE:
-    'Mache deine ersten Schritte, um ein paar Credentials zu deiner digitalen Identität hinzuzufügen.',
+  GETTING_STARTED: {
+    TITLE: 'Sollen wir starten?',
+    SUBTITLE:
+      'Mache deine ersten Schritte, um ein paar Credentials zu deiner digitalen Identität hinzuzufügen.',
+    DIALOG_0_TITLE: 'Neue Ziele abschließen',
+    DIALOG_0_TEXT:
+      'Starte deine Mission hier! Ziele führen dich durch wichtige Funktionen und Möglichkeiten der UniMe App.',
+    DIALOG_1_TITLE: 'Erkunden macht Spaß',
+    DIALOG_1_TEXT:
+      'Wenn du Ziele abschließt, erhältst du ein tolles neues Abzeichen und steigerst deine ersten Schritte.',
+    SKIP_TITLE: 'Onboarding überspringen',
+    SKIP_TEXT:
+      'Bist du sicher? Du kannst das Onboarding in den App-Einstellungen wieder aktivieren.'
+  },
   APP_SETTINGS: 'App-Einstellungen',
   YOUR_DIDS: 'Deine DIDs',
   RESET_APP: 'App zurücksetzen',
@@ -25,6 +36,8 @@ const de = {
   FAVORITES: 'Favoriten',
   MY_DATA: 'Meine Daten',
   ADD: 'Hinzufügen',
+  CONTINUE: 'Weiter',
+  SKIP: 'Überspringen'
 } satisfies Translation;
 
 export default de;

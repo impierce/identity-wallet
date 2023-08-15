@@ -1,29 +1,39 @@
 <script lang="ts">
-  import { state } from '../../stores';
+  import { state } from '$src/stores';
   import { TopNavigation } from '@impierce/ui-components';
   import PlugsConnected from '~icons/ph/plugs-connected-fill';
   import WarningCircle from '~icons/ph/warning-circle-fill';
   import X from '~icons/ph/x-bold';
   import Check from '~icons/ph/check-bold';
   import Question from '~icons/ph/question';
-  import { createPopover, melt } from '@melt-ui/svelte';
+  import { createCheckbox, createPopover, melt } from '@melt-ui/svelte';
   import { fade } from 'svelte/transition';
   import { dispatch } from '$lib/dispatcher';
   import { goto } from '$app/navigation';
   import PaddedIcon from '$lib/components/PaddedIcon.svelte';
   import Button from '$lib/components/Button.svelte';
+  import CredentialListEntry from '$src/lib/components/CredentialListEntry.svelte';
+  import RocketLaunch from '~icons/ph/rocket-launch';
 
   const {
     elements: { trigger, content, arrow, close },
     states: { open }
   } = createPopover();
+
+  const {
+    elements: { root, input },
+    helpers: { isChecked }
+  } = createCheckbox({});
+
+  let selected_credentials = $state.credentials?.filter(
+    (c) => $state.current_user_flow.options.indexOf(c.id) > -2
+  );
+
+  console.log(selected_credentials);
 </script>
 
 <div class="content-height flex flex-col items-stretch bg-neutral-100">
-  <TopNavigation
-    title={$state?.current_user_flow?.type ?? 'no title'}
-    on:back={() => history.back()}
-  />
+  <TopNavigation title={'Select Credentials'} on:back={() => history.back()} />
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-6">
     <PaddedIcon icon={PlugsConnected} />
@@ -36,7 +46,7 @@
     </div>
 
     <!-- Details -->
-    <div class="w-full space-y-2 rounded-2xl p-3 ring-2 ring-inset ring-white">
+    <!-- <div class="w-full space-y-2 rounded-2xl p-3 ring-2 ring-inset ring-white">
       <div class="flex justify-between rounded-lg bg-white px-4 py-4">
         <p>URL</p>
         <p class="text-neutral-600">bestdex.com</p>
@@ -63,23 +73,52 @@
                   class="underline underline-offset-2">BestDex</span
                 >
                 to provide you with a secure login.
-                <!-- by contacting their
-                <span class="w-fit rounded bg-neutral-200 p-1 font-mono text-xs text-neutral-700">
-                  .well-known
-                </span>
-                endpoint. -->
               </div>
             </div>
           {/if}
         </div>
         <Check class="text-green-600" />
       </div>
+    </div> -->
+    <!-- Credentials selection -->
+    <div class="flex w-full flex-col space-y-2">
+      {#each selected_credentials as credential}
+        <div class="flex items-center">
+          <div class="grow">
+            <CredentialListEntry title={credential.data.type.at(-1)} color="bg-indigo-100">
+              <span slot="icon">
+                <RocketLaunch />
+              </span>
+            </CredentialListEntry>
+          </div>
+          <button
+            use:melt={$root}
+            class={`flex h-6 w-6 appearance-none items-center justify-center
+            rounded-md border-[1.5px] border-[#C5C6CC] p-[6px] text-white ${
+              $isChecked ? 'border-none bg-indigo-500' : 'bg-white'
+            }`}
+            id="checkbox"
+          >
+            {#if $isChecked}
+              <Check class="h-3 w-3" />
+            {/if}
+            <input use:melt={$input} />
+          </button>
+        </div>
+      {/each}
     </div>
   </div>
 
   <!-- Controls -->
-  <div class="sticky bottom-0 left-0 flex flex-col rounded-t-2xl bg-white p-6">
-    <Button label="Accept connection" />
+  <div class="sticky bottom-0 left-0 flex flex-col rounded-t-2xl bg-white p-6 pb-0">
+    <Button
+      label="Accept connection"
+      on:click={() =>
+        dispatch({
+          type: '[Authenticate] Credentials selected',
+          payload: { credential_uuids: selected_credentials.map((c) => c.id) }
+        })}
+    />
     <!-- <button class="w-full rounded-lg bg-indigo-500 px-4 py-2 text-white" on:click={() => {}}
       >Accept connection</button
     > -->
@@ -92,11 +131,8 @@
     >
   </div>
 
-  <!-- safe-area -->
-  <div class="fixed top-0 z-50 h-[var(--safe-area-inset-top)] w-full bg-white opacity-80" />
-  <div
-    class="fixed bottom-0 z-10 h-[var(--safe-area-inset-bottom)] w-full bg-neutral-100 opacity-80 dark:bg-slate-800"
-  />
+  <div class="safe-area-top" />
+  <div class="safe-area-bottom" />
 </div>
 
 <style>

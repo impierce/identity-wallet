@@ -1,6 +1,6 @@
 <script lang="ts">
   import { BottomDrawer, TopNavigation } from '@impierce/ui-components';
-  import { state } from '../../../stores';
+  import { state } from '$src/stores';
   import type { Goal } from './types';
   import { melt } from '@melt-ui/svelte';
   import Trophy from '~icons/ph/trophy-fill';
@@ -8,7 +8,7 @@
   import { dispatch } from '$lib/dispatcher';
   import { goto } from '$app/navigation';
   import PaddedIcon from '$lib/components/PaddedIcon.svelte';
-  import LL from '$i18n/i18n-svelte';
+  import LL from '$src/i18n/i18n-svelte';
   import ProgressBar from '$lib/components/ProgressBar.svelte';
   import Button from '$lib/components/Button.svelte';
 
@@ -24,14 +24,22 @@
 <!-- Navbar -->
 <TopNavigation on:back={() => history.back()} title={$state?.user_journey?.title}>
   <!-- TODO: replace BottomDrawer with AlertDialog -->
-  <BottomDrawer titleText="Skip onboarding" descriptionText="Are you sure?">
+  <BottomDrawer titleText={$LL.GETTING_STARTED.SKIP_TITLE()} descriptionText={$LL.GETTING_STARTED.SKIP_TEXT()}>
     <button
       slot="trigger"
       let:trigger
       use:melt={trigger}
-      class="w-full py-4 text-left text-[13px]/[24px] font-medium text-indigo-500"
+      class="p-2 -mr-2 text-left text-[13px]/[24px] font-medium text-indigo-500"
       >{$LL.SKIP()}</button
     >
+    <!-- <button
+      slot="trigger"
+      let:trigger
+      use:melt={trigger}
+      class="-mr-2 p-2 text-left text-[13px]/[24px] font-medium text-indigo-500"
+    >
+      <div class="h-6 w-6 bg-slate-200" />
+    </button> -->
     <button
       slot="content"
       class="w-full rounded-lg bg-red-100 px-4 py-2 text-red-600"
@@ -56,7 +64,9 @@
     <p class="text-[13px]/[24px] font-medium text-slate-800">3/7</p>
   </div>
 
-  <div class="flex h-full flex-col items-center justify-between p-6 overflow-y-scroll">
+  <div
+    class="hide-scrollbar flex h-full flex-col items-center justify-between overflow-y-scroll p-6"
+  >
     <div class="flex flex-col items-center">
       <!-- Header -->
       <PaddedIcon icon={Trophy} />
@@ -98,9 +108,8 @@
       class="w-full rounded-lg bg-indigo-500 px-4 py-2 text-white"
       on:click={() => goto('/goals/0/faqs')}>Continue</button
     > -->
-    
   </div>
   <div class="sticky bottom-[var(--safe-area-inset-bottom)] left-0 p-6">
-    <Button label="Continue" on:click={() => goto('/goals/0/faqs')}/>
+    <Button label={$LL.CONTINUE()} on:click={() => goto('/goals/0/faqs')} />
   </div>
 </div>

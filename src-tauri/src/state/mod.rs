@@ -16,7 +16,7 @@ pub struct AppState {
     pub active_profile: Mutex<Option<Profile>>,
     pub active_authorization_request: Mutex<Option<AuthorizationRequest>>,
     pub locale: Mutex<String>,
-    pub credentials: Mutex<Option<Vec<Credential>>>,
+    pub credentials: Mutex<Option<Vec<serde_json::Value>>>,
     pub current_user_flow: Mutex<Option<CurrentUserFlow>>,
     pub debug_messages: Mutex<Vec<String>>,
     pub user_journey: Mutex<Option<serde_json::Value>>,
@@ -30,7 +30,7 @@ pub struct TransferState {
     pub locale: String,
     #[ts(optional, type = "Array<object>")]
     // TODO: what is the correct type here? Map<String, String>? Object? null? undefined? any? unknown?
-    pub credentials: Option<Vec<Credential>>,
+    pub credentials: Option<Vec<serde_json::Value>>,
     pub current_user_flow: Option<CurrentUserFlow>,
     pub debug_messages: Vec<String>,
     #[ts(optional, type = "object")]

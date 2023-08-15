@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { state } from '../../stores';
+  import { state } from '$src/stores';
   import CaretRight from '~icons/ph/caret-right-bold';
   import { goto } from '$app/navigation';
   import ProgressBar from '$lib/components/ProgressBar.svelte';

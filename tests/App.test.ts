@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 
 import { clearMocks, mockIPC } from '@tauri-apps/api/mocks';
 import { vi } from 'vitest';
-import App from '../src/routes/+page.svelte';
+import App from '$src/routes/+page.svelte';
 import { tick } from 'svelte';
 import { render } from '@testing-library/svelte';
 

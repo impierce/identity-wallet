@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { state } from '../../../stores';
-  import LL from '$i18n/i18n-svelte';
+  import { state } from '$src/stores';
+  import LL from '$src/i18n/i18n-svelte';
   import { Avatar, BottomDrawer } from '@impierce/ui-components';
   import { fade, fly, slide } from 'svelte/transition';
   import QrCodeButton from '$lib/QrCodeButton.svelte';
@@ -80,14 +80,14 @@
         </div>
 
         <div class="select-none pt-[15px]">
-          <p class="pb-[15px] text-2xl font-semibold text-black">{$LL.GETTING_STARTED_TITLE()}</p>
-          <p class="custom text-slate-500 w-[240px]">{$LL.GETTING_STARTED_SUBTITLE()}</p>
+          <p class="pb-[15px] text-2xl font-semibold text-black">{$LL.GETTING_STARTED.TITLE()}</p>
+          <p class="custom text-slate-500 w-[240px]">{$LL.GETTING_STARTED.SUBTITLE()}</p>
         </div>
       </div>
 
       <BottomDrawer
-        titleText={$LL.GETTING_STARTED_DIALOG_0_TITLE()}
-        descriptionText={$LL.GETTING_STARTED_DIALOG_0_TEXT()}
+        titleText={$LL.GETTING_STARTED.DIALOG_0_TITLE()}
+        descriptionText={$LL.GETTING_STARTED.DIALOG_0_TEXT()}
       >
         <Button slot="trigger" let:trigger {trigger} label="Let's go" />
         <!-- <button

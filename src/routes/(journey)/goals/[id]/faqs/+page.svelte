@@ -2,8 +2,9 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import Button from '$lib/components/Button.svelte';
-  import { state } from '../../../../../stores';
+  import { state } from '$src/stores';
   import type { Goal } from '../../types';
+  import LL from '$src/i18n/i18n-svelte';
 
   /* TODO: extract to ui-component */
   import {
@@ -30,5 +31,5 @@
       {/each}
     </Accordion>
   </div>
-  <Button label="Continue" on:click={() => goto('/goals/2/step/0')} />
+  <Button label={$LL.CONTINUE()} on:click={() => goto('/goals/2/step/0')} />
 </div>

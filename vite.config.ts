@@ -11,7 +11,8 @@ export default defineConfig(async () => ({
   plugins: [sveltekit(), Icons({ compiler: 'svelte' })],
   resolve: {
     alias: {
-      $i18n: path.resolve('./src/i18n'),
+      $src: path.resolve('./src'),
+      $lib: path.resolve('./src/lib'),
     }
   },
   test: {

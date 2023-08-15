@@ -59,6 +59,26 @@ body {
   --safe-area-inset-bottom: 34px;
 }
 
+.safe-area-top {
+  position: fixed;
+  top: 0px;
+  /* z-index: 10; */
+  height: var(--safe-area-inset-top);
+  width: 100%;
+  background-color: white;
+  opacity: 0.8;
+}
+
+.safe-area-bottom {
+  position: fixed;
+  bottom: 0px;
+  /* z-index: 10; */
+  height: var(--safe-area-inset-bottom);
+  width: 100%;
+  background-color: white;
+  opacity: 0.8;
+}
+
 /**
  * TODO (when supporting landscape orientation):
  * https://kulturbanause.de/blog/websites-fuer-das-iphone-x-optimieren-weisse-balken-entfernen-viewport-anpassen-safe-area-festlegen/

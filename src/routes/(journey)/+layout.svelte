@@ -1,6 +1,6 @@
 <script>
   import { TopNavigation } from '@impierce/ui-components';
-  import { state } from '../../stores';
+  import { state } from '$src/stores';
   import { page } from '$app/stores';
   import { dispatch } from '$lib/dispatcher';
 </script>
@@ -13,11 +13,8 @@
     {$page.url.pathname}
   </div>
 
-  <!-- safe-area -->
-  <div class="fixed top-0 z-50 h-[var(--safe-area-inset-top)] w-full bg-white opacity-80" />
-  <div
-    class="fixed bottom-0 z-10 h-[var(--safe-area-inset-bottom)] w-full bg-neutral-100 opacity-80 dark:bg-slate-800"
-  />
+  <div class="safe-area-top" />
+  <div class="safe-area-bottom" />
 </div>
 
 <style>

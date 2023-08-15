@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { state } from '../../stores';
-  import LL from '$i18n/i18n-svelte';
+  import { state } from '$src/stores';
+  import LL from '$src/i18n/i18n-svelte';
 
   const greetings = [
     'Welcome to your UniMe',

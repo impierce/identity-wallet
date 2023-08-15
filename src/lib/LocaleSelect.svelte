@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { dispatch } from './dispatcher';
-  import { state } from '../stores';
+  import { dispatch } from '$src/lib/dispatcher';
+  import { state } from '$src/stores';
 
   let selected_locale: string = 'en';
 

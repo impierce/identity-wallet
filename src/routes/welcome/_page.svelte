@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Button, LoadingSpinner, Input, Label } from '@impierce/ui-components';
-  import LL from '$i18n/i18n-svelte';
+  import LL from '$src/i18n/i18n-svelte';
   import LocaleSelect from '$lib/LocaleSelect.svelte';
   import { dispatch } from '$lib/dispatcher';
   import { onMount } from 'svelte';

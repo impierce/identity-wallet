@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import LL from '$i18n/i18n-svelte';
+  import LL from '$src/i18n/i18n-svelte';
   import {
     BottomDrawer,
     BottomNavBar,
@@ -9,7 +9,7 @@
     TopNavigation
   } from '@impierce/ui-components';
   import { Link, Eye, Heart } from 'svelte-heros-v2';
-  import { state } from '../../../../stores';
+  import { state } from '$src/stores';
   import { fade, fly } from 'svelte/transition';
   import { dispatch } from '$lib/dispatcher';
   import { melt } from '@melt-ui/svelte';
@@ -18,8 +18,8 @@
   let IOTA_MOCK_DID = 'did:iota:H3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV';
 </script>
 
+<TopNavigation on:back={() => history.back()} title="Settings" />
 <div class="flex min-h-full flex-col bg-neutral-100 dark:bg-slate-700">
-  <TopNavigation on:back={() => history.back()} title="Settings" />
   <div class="flex grow flex-col justify-between p-6" in:fly={{ x: 32, opacity: 1 }}>
     <div class="space-y-4">
       <!-- DIDs -->
@@ -101,7 +101,9 @@
         <div class="flex h-14 items-center justify-between rounded-lg bg-white px-4 py-2">
           <p>Theme</p>
           <div class="flex items-center justify-center">
-            <button class="rounded-lg px-2 py-1 font-medium text-indigo-600">Use system settings</button>
+            <button class="rounded-lg px-2 py-1 font-medium text-indigo-600"
+              >Use system settings</button
+            >
           </div>
         </div>
 
@@ -119,7 +121,7 @@
       </div>
     </div>
     <!-- Footer -->
-    <div class="flex flex-col items-center text-sm font-medium text-slate-400 pt-4">
+    <div class="flex flex-col items-center pt-4 text-sm font-medium text-slate-400">
       <div class="pb-4">
         <BottomDrawer
           titleText="Reset app"

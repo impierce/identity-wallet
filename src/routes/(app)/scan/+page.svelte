@@ -2,7 +2,8 @@
   import { goto } from '$app/navigation';
   // import Scanner from '$lib/Scanner.svelte';
   import { dispatch } from '$lib/dispatcher';
-  import { Button } from '@impierce/ui-components';
+  import { Button as ButtonDeprecated } from '@impierce/ui-components';
+  import Button from '$src/lib/components/Button.svelte';
 
   // let selected = {
   //   label: 'Scanner',
@@ -32,7 +33,7 @@
     goto('/me');
   }
 
-  const html = document.querySelector('body');
+  const html = document.querySelector('body')!!;
   html.classList.add('transparent');
 
   import { scan, Format, cancel, openAppSettings } from '@tauri-apps/plugin-barcode-scanner';
@@ -61,6 +62,7 @@
 
   onDestroy(async () => {
     await cancel();
+    html.classList.remove('transparent');
     scanning = false;
   });
 
@@ -153,18 +155,20 @@
     {#if !permissionsGiven}
       <div class="flex flex-col items-center space-y-2">
         <div class="rounded-lg bg-red-100 px-8 py-4 text-red-600">Permissions not given</div>
-        <Button on:click={openAppSettings}>Open settings</Button>
+        <Button label="Open settings" on:click={openAppSettings} />
       </div>
       <p class="my-4 h-[1px] w-full bg-slate-200" />
     {/if}
     <div class="flex flex-col space-y-2">
-      <Button on:click={startScan}>Start new scan</Button>
-      <Button variant="secondary" on:click={mockScanSiopRequest}>Mock SIOP request</Button>
-      <Button variant="secondary" on:click={() => mockScanCredentialOffer(1)}
-        >Mock Credential Offer (single)</Button
+      <ButtonDeprecated variant="secondary" on:click={startScan}>Start new scan</ButtonDeprecated>
+      <ButtonDeprecated variant="secondary" on:click={mockScanSiopRequest}
+        >Mock SIOP request</ButtonDeprecated
       >
-      <Button variant="secondary" on:click={() => mockScanCredentialOffer(2)}
-        >Mock Credential Offer (multi)</Button
+      <ButtonDeprecated variant="secondary" on:click={() => mockScanCredentialOffer(1)}
+        >Mock Credential Offer (single)</ButtonDeprecated
+      >
+      <ButtonDeprecated variant="secondary" on:click={() => mockScanCredentialOffer(2)}
+        >Mock Credential Offer (multi)</ButtonDeprecated
       >
     </div>
   </div>
@@ -185,9 +189,9 @@
         </div>
       </div>
       <div class="absolute bottom-12 left-[45%]">
-        <Button
+        <ButtonDeprecated
           class="bg-red-100 font-semibold text-red-500 shadow"
-          on:click={() => goto('/me')}>Cancel</Button
+          on:click={() => goto('/me')}>Cancel</ButtonDeprecated
         >
       </div>
     </div>

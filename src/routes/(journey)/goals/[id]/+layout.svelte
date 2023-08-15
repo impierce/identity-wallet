@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { state } from '../../../../stores';
+  import { state } from '$src/stores';
   import { page } from '$app/stores';
   import { TopNavigation } from '@impierce/ui-components';
   import type { Goal } from '../types';

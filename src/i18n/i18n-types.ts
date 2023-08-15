@@ -40,30 +40,40 @@ type RootTranslation = {
 	 * W​h​y​ ​n​o​t​ ​a​d​d​ ​s​o​m​e​ ​c​r​e​d​e​n​t​i​a​l​s​ ​t​o​ ​s​t​a​r​t​ ​y​o​u​r​ ​n​e​w​ ​d​i​g​i​t​a​l​ ​m​e​?
 	 */
 	EMPTY_CREDENTIALS_LIST_SUBTITLE: string
-	/**
-	 * S​h​a​l​l​ ​w​e​ ​g​e​t​ ​s​t​a​r​t​e​d​?
-	 */
-	GETTING_STARTED_TITLE: string
-	/**
-	 * S​t​a​r​t​ ​y​o​u​r​ ​f​i​r​s​t​ ​s​t​e​p​s​ ​t​o​ ​a​d​d​ ​s​o​m​e​ ​c​r​e​d​e​n​t​i​a​l​s​ ​t​o​ ​y​o​u​r​ ​"​M​e​"​.
-	 */
-	GETTING_STARTED_SUBTITLE: string
-	/**
-	 * C​o​m​p​l​e​t​e​ ​n​e​w​ ​g​o​a​l​s
-	 */
-	GETTING_STARTED_DIALOG_0_TITLE: string
-	/**
-	 * S​t​a​r​t​ ​y​o​u​r​ ​m​i​s​s​i​o​n​ ​h​e​r​e​!​ ​G​o​a​l​s​ ​w​i​l​l​ ​l​e​a​d​ ​y​o​u​ ​t​h​r​o​u​g​h​ ​i​m​p​o​r​t​a​n​t​ ​f​e​a​t​u​r​e​s​ ​a​n​d​ ​p​o​s​s​i​b​i​l​i​t​i​e​s​ ​o​f​ ​U​n​i​M​e​ ​a​p​p​.
-	 */
-	GETTING_STARTED_DIALOG_0_TEXT: string
-	/**
-	 * E​x​p​l​o​r​i​n​g​ ​m​a​d​e​ ​f​u​n
-	 */
-	GETTING_STARTED_DIALOG_1_TITLE: string
-	/**
-	 * O​n​ ​c​o​m​p​l​e​t​i​n​g​ ​g​o​a​l​s​,​ ​y​o​u​'​l​l​ ​r​e​c​e​i​v​e​ ​a​n​ ​a​w​e​s​o​m​e​ ​n​e​w​ ​a​c​h​i​e​v​e​m​e​n​t​ ​b​a​d​g​e​ ​a​n​d​ ​l​e​v​e​l​ ​u​p​ ​y​o​u​r​ ​f​i​r​s​t​ ​s​t​e​p​s​.
-	 */
-	GETTING_STARTED_DIALOG_1_TEXT: string
+	GETTING_STARTED: {
+		/**
+		 * S​h​a​l​l​ ​w​e​ ​g​e​t​ ​s​t​a​r​t​e​d​?
+		 */
+		TITLE: string
+		/**
+		 * S​t​a​r​t​ ​y​o​u​r​ ​f​i​r​s​t​ ​s​t​e​p​s​ ​t​o​ ​a​d​d​ ​s​o​m​e​ ​c​r​e​d​e​n​t​i​a​l​s​ ​t​o​ ​y​o​u​r​ ​"​M​e​"​.
+		 */
+		SUBTITLE: string
+		/**
+		 * C​o​m​p​l​e​t​e​ ​n​e​w​ ​g​o​a​l​s
+		 */
+		DIALOG_0_TITLE: string
+		/**
+		 * S​t​a​r​t​ ​y​o​u​r​ ​m​i​s​s​i​o​n​ ​h​e​r​e​!​ ​G​o​a​l​s​ ​w​i​l​l​ ​l​e​a​d​ ​y​o​u​ ​t​h​r​o​u​g​h​ ​i​m​p​o​r​t​a​n​t​ ​f​e​a​t​u​r​e​s​ ​a​n​d​ ​p​o​s​s​i​b​i​l​i​t​i​e​s​ ​o​f​ ​U​n​i​M​e​ ​a​p​p​.
+		 */
+		DIALOG_0_TEXT: string
+		/**
+		 * E​x​p​l​o​r​i​n​g​ ​m​a​d​e​ ​f​u​n
+		 */
+		DIALOG_1_TITLE: string
+		/**
+		 * O​n​ ​c​o​m​p​l​e​t​i​n​g​ ​g​o​a​l​s​,​ ​y​o​u​'​l​l​ ​r​e​c​e​i​v​e​ ​a​n​ ​a​w​e​s​o​m​e​ ​n​e​w​ ​a​c​h​i​e​v​e​m​e​n​t​ ​b​a​d​g​e​ ​a​n​d​ ​l​e​v​e​l​ ​u​p​ ​y​o​u​r​ ​f​i​r​s​t​ ​s​t​e​p​s​.
+		 */
+		DIALOG_1_TEXT: string
+		/**
+		 * S​k​i​p​ ​o​n​b​o​a​r​d​i​n​g
+		 */
+		SKIP_TITLE: string
+		/**
+		 * A​r​e​ ​y​o​u​ ​s​u​r​e​?​ ​Y​o​u​ ​c​a​n​ ​r​e​-​e​n​a​b​l​e​ ​t​h​e​ ​o​n​b​o​a​r​d​i​n​g​ ​i​n​ ​t​h​e​ ​a​p​p​ ​s​e​t​t​i​n​g​s​.
+		 */
+		SKIP_TEXT: string
+	}
 	/**
 	 * A​p​p​ ​s​e​t​t​i​n​g​s
 	 */
@@ -124,6 +134,10 @@ type RootTranslation = {
 	 * C​o​n​t​i​n​u​e
 	 */
 	CONTINUE: string
+	/**
+	 * S​k​i​p
+	 */
+	SKIP: string
 }
 
 export type TranslationFunctions = {
@@ -151,30 +165,40 @@ export type TranslationFunctions = {
 	 * Why not add some credentials to start your new digital me?
 	 */
 	EMPTY_CREDENTIALS_LIST_SUBTITLE: () => LocalizedString
-	/**
-	 * Shall we get started?
-	 */
-	GETTING_STARTED_TITLE: () => LocalizedString
-	/**
-	 * Start your first steps to add some credentials to your "Me".
-	 */
-	GETTING_STARTED_SUBTITLE: () => LocalizedString
-	/**
-	 * Complete new goals
-	 */
-	GETTING_STARTED_DIALOG_0_TITLE: () => LocalizedString
-	/**
-	 * Start your mission here! Goals will lead you through important features and possibilities of UniMe app.
-	 */
-	GETTING_STARTED_DIALOG_0_TEXT: () => LocalizedString
-	/**
-	 * Exploring made fun
-	 */
-	GETTING_STARTED_DIALOG_1_TITLE: () => LocalizedString
-	/**
-	 * On completing goals, you'll receive an awesome new achievement badge and level up your first steps.
-	 */
-	GETTING_STARTED_DIALOG_1_TEXT: () => LocalizedString
+	GETTING_STARTED: {
+		/**
+		 * Shall we get started?
+		 */
+		TITLE: () => LocalizedString
+		/**
+		 * Start your first steps to add some credentials to your "Me".
+		 */
+		SUBTITLE: () => LocalizedString
+		/**
+		 * Complete new goals
+		 */
+		DIALOG_0_TITLE: () => LocalizedString
+		/**
+		 * Start your mission here! Goals will lead you through important features and possibilities of UniMe app.
+		 */
+		DIALOG_0_TEXT: () => LocalizedString
+		/**
+		 * Exploring made fun
+		 */
+		DIALOG_1_TITLE: () => LocalizedString
+		/**
+		 * On completing goals, you'll receive an awesome new achievement badge and level up your first steps.
+		 */
+		DIALOG_1_TEXT: () => LocalizedString
+		/**
+		 * Skip onboarding
+		 */
+		SKIP_TITLE: () => LocalizedString
+		/**
+		 * Are you sure? You can re-enable the onboarding in the app settings.
+		 */
+		SKIP_TEXT: () => LocalizedString
+	}
 	/**
 	 * App settings
 	 */
@@ -235,6 +259,10 @@ export type TranslationFunctions = {
 	 * Continue
 	 */
 	CONTINUE: () => LocalizedString
+	/**
+	 * Skip
+	 */
+	SKIP: () => LocalizedString
 }
 
 export type Formatters = {}

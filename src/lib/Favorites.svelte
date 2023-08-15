@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { CredentialListEntry } from '@impierce/ui-components';
   import Star from '~icons/lucide/star';
-  import Heart from '~icons/ph/heart-fill';
+  import Heart from '~icons/ph/heart-straight-fill';
   import Clapperboard from '~icons/lucide/clapperboard';
   import FilmSlate from '~icons/ph/film-slate-light';
   import AirplaneTilt from '~icons/ph/airplane-tilt-light';
-  import LL from '$i18n/i18n-svelte';
+  import LL from '$src/i18n/i18n-svelte';
+  import CredentialListEntry from './components/CredentialListEntry.svelte';
 
   let favorite_credentials: any[] = [
     {
@@ -19,12 +19,10 @@
       description: 'Pandora Airlines',
       icon: AirplaneTilt,
       color: 'bg-teal-100'
-    },
-    { title: 'something 1', description: 'make the list longer' },
-    { title: 'something 2', description: 'make it even longer' }
+    }
   ];
 
-  // favorite_credentials = [];
+  favorite_credentials = [];
 </script>
 
 {#if favorite_credentials.length > 0}
@@ -33,7 +31,7 @@
       <Heart class="mr-2 text-indigo-500" />
       <p class="font-medium text-slate-600">{$LL.FAVORITES()}</p>
     </div>
-    <div class="space-y-2">
+    <div class="flex flex-col space-y-2">
       {#each favorite_credentials as favorite}
         <CredentialListEntry
           title={favorite.title}
@@ -41,9 +39,6 @@
           color={favorite.color}
         >
           <span slot="icon"><svelte:component this={favorite.icon} class="h-6 w-6" /></span>
-          <div slot="drawer-body">
-            <div class="bg-orange-100 p-4">content</div>
-          </div>
         </CredentialListEntry>
       {/each}
     </div>

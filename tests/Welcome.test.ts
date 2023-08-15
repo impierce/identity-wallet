@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 
 import { vi } from 'vitest';
-import Welcome from '../src/routes/welcome/+page.svelte';
+import Welcome from '$src/routes/welcome/+page@.svelte';
 import { fireEvent, render, screen } from '@testing-library/svelte';
 import { clearMocks, mockIPC } from '@tauri-apps/api/mocks';
 

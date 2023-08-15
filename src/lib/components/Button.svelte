@@ -5,19 +5,22 @@
   const dispatch = createEventDispatcher();
 
   export let label: string;
-  export let trigger: any = undefined;
+  export let trigger: any = undefined; // TODO: add type
+  export let disabled: boolean = false;
 </script>
 
 <!-- TODO: does it make sense to pass in the trigger here? -->
 {#if trigger}
   <button
     use:melt={trigger}
-    class="custom h-[48px] rounded-xl bg-indigo-500 px-4 py-2 text-white w-full"
+    class="custom h-[48px] w-full rounded-xl bg-indigo-500 px-4 py-2 text-white disabled:opacity-50"
+    {disabled}
     on:click={() => dispatch('click')}>{label}</button
   >
 {:else}
   <button
-    class="custom h-[48px] rounded-xl bg-indigo-500 px-4 py-2 text-white w-full"
+    class="custom h-[48px] w-full rounded-xl bg-indigo-500 px-4 py-2 text-white disabled:opacity-50"
+    {disabled}
     on:click={() => dispatch('click')}>{label}</button
   >
 {/if}

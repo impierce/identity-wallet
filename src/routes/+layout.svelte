@@ -10,10 +10,10 @@
     Clipboard,
     ExclamationTriangle
   } from 'svelte-heros-v2';
-  import { state } from '../stores';
-  import LL from '$i18n/i18n-svelte';
+  import { state } from '$src/stores';
+  import LL from '$src/i18n/i18n-svelte';
   import { onMount } from 'svelte';
-  import { loadAllLocales } from '../i18n/i18n-util.sync';
+  import { loadAllLocales } from '$src/i18n/i18n-util.sync';
   import { dispatch } from '$lib/dispatcher';
   import {
     AlertDialog,
@@ -47,8 +47,6 @@
   // Alert (global)
   // TODO: refactor: move to separate component
   let alertOpen = false;
-  // let alertOptions: string[] = [];
-  // let alertTitle: string = 'title';
 
   let dialog: UserDialog | undefined;
 
@@ -68,33 +66,36 @@
     console.log('options', ($state?.current_user_flow as Selection)?.options);
 
     if (type && type !== 'redirect') {
-      goto('/prompt');
+      goto(`/prompt/${type}`);
     }
 
-    if (type === 'select-credentials') {
-      dialog = {
-        type: 'select-credentials',
-        title: $LL.SHARE_CREDENTIALS_TITLE(),
-        imageSrc: 'image/undraw_fingerprint_login_re_t71l.svg',
-        options: ($state.current_user_flow as Selection).options
-      };
-    } else if (type === 'credential-offer') {
-      dialog = {
-        type: 'credential-offer',
-        title: 'Credential Offer',
-        imageSrc: 'image/undraw_agreement_re_d4dv.svg',
-        options: ($state.current_user_flow as Selection).options
-      };
-    }
-    alertOpen = false;
-    if ($state?.current_user_flow === null) {
-      dialog = undefined;
-      alertOpen = false;
+    // Enable deprecated "dialog"?
+    if (false) {
+      if (type === 'select-credentials') {
+        dialog = {
+          type: 'select-credentials',
+          title: $LL.SHARE_CREDENTIALS_TITLE(),
+          imageSrc: 'image/undraw_fingerprint_login_re_t71l.svg',
+          options: ($state.current_user_flow as Selection).options
+        };
+      } else if (type === 'credential-offer') {
+        dialog = {
+          type: 'credential-offer',
+          title: 'Credential Offer',
+          imageSrc: 'image/undraw_agreement_re_d4dv.svg',
+          options: ($state.current_user_flow as Selection).options
+        };
+      }
+      alertOpen = true;
+      if ($state?.current_user_flow === null) {
+        dialog = undefined;
+        alertOpen = false;
+      }
     }
   }
 </script>
 
-<main class="h-screen">
+<main class="absolute h-screen">
   <!-- Dev Mode: Navbar -->
   {#if showDevMode}
     <div
@@ -104,6 +105,7 @@
     >
       <button
         class="rounded-full bg-red-300 px-4 py-1 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
+        on:click={() => history.back()}
       >
         <ArrowLeft />
       </button>

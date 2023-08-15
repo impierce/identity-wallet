@@ -1,5 +1,5 @@
 <script>
-  import { state } from '../../stores';
+  import { state } from '$src/stores';
   import { goto } from '$app/navigation';
   import Settings from '~icons/lucide/settings';
   import DotsThreeVertical from '~icons/ph/dots-three-vertical-bold';

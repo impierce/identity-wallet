@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
 
+  export let id: string | undefined = undefined; // TODO: should not be able to be undefined
   export let title = '';
   export let description = '';
   export let color: string | undefined = undefined;
@@ -8,7 +9,7 @@
 
 <button
   class="flex h-[60px] items-center justify-start rounded-xl bg-white p-[5px] pr-[24px]"
-  on:click={() => goto('/credentials/0')}
+  on:click={() => goto(`/credentials/${id}`)}
 >
   <!-- Icon -->
   <div
@@ -17,8 +18,10 @@
     <slot name="icon" />
   </div>
   <!-- Text -->
-  <div class="flex flex-col items-start">
+  <div class="flex grow flex-col items-start">
     <p class="text-[13px]/[24px] font-medium text-slate-800">{title}</p>
-    <p class="text-[12px]/[20px] font-medium text-slate-400">{description}</p>
+    <p class="max-w-[180px] truncate text-[12px]/[20px] font-medium text-slate-400">
+      {description}
+    </p>
   </div>
 </button>

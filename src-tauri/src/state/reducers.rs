@@ -212,7 +212,10 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
         .claims;
     let credential_0 = serde_json::from_value::<Credential>(credential_0_as_json.get("vc").unwrap().clone()).unwrap();
 
-    *state.credentials.lock().unwrap() = Some(vec![credential_0]);
+    *state.credentials.lock().unwrap() = Some(vec![serde_json::from_value(
+        json!({"id":  "84c5f418-2e54-4b2b-9074-59b0f9a7b0f7", "data": credential_0}),
+    )
+    .unwrap()]);
     *state.current_user_flow.lock().unwrap() = Some(CurrentUserFlow::Redirect(Redirect {
         r#type: CurrentUserFlowType::Redirect,
         target: "me".to_string(),

@@ -2,4 +2,4 @@
 import type { CurrentUserFlow } from "./user-flow/CurrentUserFlow";
 import type { Profile } from "./Profile";
 
-export interface TransferState { active_profile: Profile | null, locale: string, credentials?: Array<object>, current_user_flow: CurrentUserFlow | null, debug_messages: Array<string>, user_journey?: object, }
+export interface TransferState { active_profile: Profile | null, locale: string, credentials?: Array<{id: string, data: object}>, current_user_flow: CurrentUserFlow | null, debug_messages: Array<string>, }
