@@ -1,7 +1,8 @@
-use crate::common::assert_state_update::{
-    assert_state_update, setup_provider_manager, setup_state_file, setup_stronghold,
-};
 use crate::common::TEST_PASSWORD;
+use crate::common::{
+    assert_state_update::{assert_state_update, setup_provider_manager, setup_state_file, setup_stronghold},
+    TEST_PASSWORD,
+};
 use identity_wallet::crypto::stronghold::{create_new_stronghold, insert_into_stronghold};
 use identity_wallet::state::{
     actions::{Action, ActionType},
@@ -92,7 +93,10 @@ async fn test_qr_code_scanned_read_authorization_request() {
 
     let uuid = Uuid::new_v4();
 
-    insert_into_stronghold(uuid, json!(credential).to_string().as_bytes().to_vec(), TEST_PASSWORD).unwrap();
+    let stronghold_manager = StrongholdManager::create(TEST_PASSWORD).unwrap();
+    stronghold_manager
+        .insert(uuid, json!(credential).to_string().as_bytes().to_vec())
+        .unwrap();
 
     assert_state_update(
         // Initial state.
@@ -101,6 +105,10 @@ async fn test_qr_code_scanned_read_authorization_request() {
                 display_name: "Ferris Crabman".to_string(),
                 primary_did: "did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY".to_string(),
             })),
+            managers: Mutex::new(Managers {
+                stronghold_manager: Some(stronghold_manager),
+                ..Managers::default()
+            }),
             ..AppState::default()
         },
         // A QR code was scanned containing a authorization request.

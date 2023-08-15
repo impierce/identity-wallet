@@ -1,5 +1,4 @@
 use crate::{
-    crypto::stronghold::insert_into_stronghold,
     get_jwt_claims,
     state::{
         actions::Action,
@@ -199,8 +198,14 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
             _ => unimplemented!(),
         }
 
-        let buffer = json!(credential).to_string().as_bytes().to_vec();
-        insert_into_stronghold(key, buffer, "my-password")?;
+        state
+            .managers
+            .lock()
+            .unwrap()
+            .stronghold_manager
+            .as_ref()
+            .unwrap()
+            .insert(key, json!(credential).to_string().as_bytes().to_vec())?;
     }
     info!("credential_displays: {:?}", credential_displays);
 

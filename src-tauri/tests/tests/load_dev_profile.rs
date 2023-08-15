@@ -1,12 +1,16 @@
+use std::sync::Mutex;
+
 use crate::common::assert_state_update::{assert_state_update, setup_state_file, setup_stronghold};
+use crate::common::TEST_PASSWORD;
+use identity_wallet::crypto::stronghold::StrongholdManager;
 use identity_wallet::get_jwt_claims;
 use identity_wallet::state::reducers::load_dev_profile::{DRIVERS_LICENSE_CREDENTIAL, PERSONAL_INFORMATION};
 use identity_wallet::state::user_prompt::{CurrentUserPrompt, CurrentUserPromptType, Redirect};
-use identity_wallet::state::Profile;
 use identity_wallet::state::{
     actions::{Action, ActionType},
     AppState, TransferState,
 };
+use identity_wallet::state::{Managers, Profile};
 use oid4vci::credential_format_profiles::CredentialFormats;
 
 #[tokio::test]
@@ -49,7 +53,13 @@ async fn test_load_dev_profile() {
     };
 
     assert_state_update(
-        AppState::default(),
+        AppState {
+            managers: Mutex::new(Managers {
+                stronghold_manager: Some(stronghold_manager),
+                ..Managers::default()
+            }),
+            ..AppState::default()
+        },
         vec![Action {
             r#type: ActionType::LoadDevProfile,
             payload: None,

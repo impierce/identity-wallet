@@ -18,7 +18,6 @@ use tauri_plugin_log::{fern::colors::ColoredLevelConfig, Target, TargetKind, WEB
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
-        .manage(AppState::default())
         .invoke_handler(tauri::generate_handler![handle_action])
         .setup(move |app| {
             info!("setting up tauri app");
@@ -29,6 +28,7 @@ pub fn run() {
             }
             Ok(())
         })
+        .manage(AppState::default())
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(
             tauri_plugin_log::Builder::new()

@@ -1,5 +1,4 @@
 use crate::{
-    crypto::stronghold::get_all_from_stronghold,
     get_jwt_claims,
     state::{
         actions::Action,
@@ -32,7 +31,15 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> any
         .unwrap();
     info!("validated authorization request: {:?}", authorization_request);
 
-    let verifiable_credentials = get_all_from_stronghold("my-password")?.unwrap();
+    let verifiable_credentials = state
+        .managers
+        .lock()
+        .unwrap()
+        .stronghold_manager
+        .as_ref()
+        .unwrap()
+        .get_all()?
+        .unwrap();
     info!("verifiable credentials: {:?}", verifiable_credentials);
 
     let uuids: Vec<String> = authorization_request
@@ -103,7 +110,14 @@ pub async fn send_authorization_response(state: &AppState, action: Action) -> an
     info!("||DEBUG|| credential not found");
     *state.debug_messages.lock().unwrap() = vec!["credential not found".into()];
 
-    let verifiable_credentials: Vec<Credential<JwtVcJson>> = get_all_from_stronghold("my-password")?
+    let verifiable_credentials: Vec<Credential<JwtVcJson>> = state
+        .managers
+        .lock()
+        .unwrap()
+        .stronghold_manager
+        .as_ref()
+        .unwrap()
+        .get_all()?
         .unwrap()
         .iter()
         .filter_map(|(key, vc)| match vc {

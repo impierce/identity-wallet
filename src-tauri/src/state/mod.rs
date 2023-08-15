@@ -3,16 +3,22 @@ pub mod persistence;
 pub mod reducers;
 pub mod user_prompt;
 
-use crate::state::user_prompt::CurrentUserPrompt;
+use crate::{crypto::stronghold::StrongholdManager, state::user_prompt::CurrentUserPrompt};
 use identity_credential::credential::Credential;
 use serde::{Deserialize, Serialize};
 use siopv2::AuthorizationRequest;
 use std::sync::Mutex;
 use ts_rs::TS;
 
+#[derive(Default)]
+pub struct Managers {
+    pub stronghold_manager: Option<StrongholdManager>,
+}
+
 /// The inner state of the application managed by Tauri.
 #[derive(Default)]
 pub struct AppState {
+    pub managers: Mutex<Managers>,
     pub active_profile: Mutex<Option<Profile>>,
     pub active_authorization_request: Mutex<Option<AuthorizationRequest>>,
     pub locale: Mutex<String>,
