@@ -7,7 +7,7 @@ use crate::{
         AppState,
     },
 };
-use identity_credential::{credential::Jwt, presentation::JwtPresentation};
+use identity_credential::{credential::Jwt, presentation::Presentation};
 use log::info;
 use oid4vc_manager::managers::presentation::create_presentation_submission;
 use oid4vci::credential_format_profiles::{
@@ -49,12 +49,8 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> any
                         CredentialFormats::JwtVcJson(jwt_vc_json) => jwt_vc_json.credential.clone(),
                         _ => unimplemented!(),
                     };
-
-                    // Decode the verifiable credential from the JWT without validating.
-                    let credential = get_jwt_claims(&verifiable_credential);
-                    dbg!("credential: {:?}", &credential);
-                    dbg!("input_descriptor: {:?}", &input_descriptor);
-                    evaluate_input(input_descriptor, &credential).then_some(uuid.to_string())
+                    evaluate_input(input_descriptor, &get_jwt_claims(&verifiable_credential))
+                        .then_some(uuid.to_string())
                 })
                 .unwrap()
         })
@@ -144,7 +140,7 @@ pub async fn send_authorization_response(state: &AppState, action: Action) -> an
         .primary_did
         .clone();
 
-    let mut presentation_builder = JwtPresentation::builder(subject_did.parse()?, Default::default());
+    let mut presentation_builder = Presentation::builder(subject_did.parse()?, Default::default());
     for verifiable_credential in verifiable_credentials {
         presentation_builder = presentation_builder.credential(Jwt::from(
             verifiable_credential

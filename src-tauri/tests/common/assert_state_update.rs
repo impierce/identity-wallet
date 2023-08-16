@@ -1,6 +1,5 @@
 use did_key::{generate, Ed25519KeyPair};
 use identity_wallet::{
-    crypto::stronghold::create_new_stronghold,
     state::{actions::Action, AppState, TransferState},
     PROVIDER_MANAGER, STATE_FILE, STRONGHOLD,
 };
@@ -54,7 +53,6 @@ pub fn setup_state_file() {
 pub fn setup_stronghold() {
     let path = NamedTempFile::new().unwrap().into_temp_path();
     *STRONGHOLD.lock().unwrap() = path.as_os_str().into();
-    create_new_stronghold("my-password").unwrap();
 }
 
 pub async fn setup_provider_manager() {

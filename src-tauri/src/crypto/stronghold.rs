@@ -113,17 +113,21 @@ pub fn get_all_from_stronghold(
 ) -> anyhow::Result<Option<Vec<(Uuid, CredentialFormats<WithCredential>)>>> {
     let (_, client, _, _, _) = load_stronghold(password)?;
 
-    let credentials: Vec<(Uuid, CredentialFormats<WithCredential>)> = client
-        .store()
-        .keys()?
-        .iter()
-        .map(|key| {
-            (
-                Uuid::parse_str(std::str::from_utf8(key).unwrap()).unwrap(),
-                serde_json::from_str(std::str::from_utf8(&client.store().get(key).unwrap().unwrap()).unwrap()).unwrap(),
-            )
-        })
-        .collect();
-
+    let credentials = {
+        let mut credentials: Vec<(Uuid, CredentialFormats<WithCredential>)> = client
+            .store()
+            .keys()?
+            .iter()
+            .map(|key| {
+                (
+                    Uuid::parse_str(std::str::from_utf8(key).unwrap()).unwrap(),
+                    serde_json::from_str(std::str::from_utf8(&client.store().get(key).unwrap().unwrap()).unwrap())
+                        .unwrap(),
+                )
+            })
+            .collect();
+        credentials.sort_by(|a, b| a.0.cmp(&b.0));
+        credentials
+    };
     Ok(Some(credentials))
 }

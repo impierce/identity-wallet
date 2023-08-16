@@ -204,13 +204,7 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
     }
     info!("credential_displays: {:?}", credential_displays);
 
-    state
-        .credentials
-        .lock()
-        .unwrap()
-        .as_mut()
-        .unwrap()
-        .extend(credential_displays);
+    state.credentials.lock().unwrap().extend(credential_displays);
     *state.current_user_prompt.lock().unwrap() = None;
 
     Ok(())

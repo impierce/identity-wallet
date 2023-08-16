@@ -6,7 +6,8 @@ use crate::state::actions::{Action, ActionType};
 use crate::state::persistence::{delete_state_file, delete_stronghold, load_state, save_state};
 use crate::state::reducers::authorization::{read_authorization_request, send_authorization_response};
 use crate::state::reducers::credential_offer::{read_credential_offer, send_credential_request};
-use crate::state::reducers::{create_did_key, initialize_stronghold, load_dev_profile, reset_state, set_locale};
+use crate::state::reducers::load_dev_profile::load_dev_profile;
+use crate::state::reducers::{create_did_key, initialize_stronghold, reset_state, set_locale};
 use crate::state::user_prompt::{CurrentUserPrompt, CurrentUserPromptType, Redirect};
 use crate::state::{AppState, TransferState};
 
@@ -23,7 +24,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             let transfer_state: TransferState = load_state().await.unwrap_or(TransferState {
                 active_profile: None,
                 locale: "en".to_string(),
-                credentials: None,
+                credentials: vec![],
                 current_user_prompt: Some(CurrentUserPrompt::Redirect(Redirect {
                     r#type: CurrentUserPromptType::Redirect,
                     target: "welcome".to_string(),
@@ -34,7 +35,6 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             // TODO: find a better way to populate all fields with values from json file
             *app_state.active_profile.lock().unwrap() = transfer_state.active_profile;
             *app_state.locale.lock().unwrap() = transfer_state.locale;
-            *app_state.credentials.lock().unwrap() = transfer_state.credentials;
 
             // TODO: bug: if state is present, but empty, user will never be redirected to neither welcome or profile page
             *app_state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect(Redirect {

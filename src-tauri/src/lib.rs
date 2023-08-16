@@ -22,7 +22,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![handle_action])
         .setup(move |app| {
             info!("setting up tauri app");
-            initialize_storage(app.handle()).ok();
+            initialize_storage(&app.handle()).ok();
             #[cfg(mobile)]
             {
                 app.handle().plugin(tauri_plugin_barcode_scanner::init())?;
@@ -69,7 +69,7 @@ lazy_static! {
 }
 
 /// Initialize the storage file paths.
-fn initialize_storage(app_handle: tauri::AppHandle) -> anyhow::Result<()> {
+fn initialize_storage(app_handle: &tauri::AppHandle) -> anyhow::Result<()> {
     // TODO: create folder if not exists (not automatically created on macOS)
     if cfg!(target_os = "android") {
         *STATE_FILE.lock().unwrap() = app_handle.path().data_dir()?.join("state.json");

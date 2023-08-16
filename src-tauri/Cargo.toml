@@ -41,20 +41,26 @@ iota_stronghold = { version = "=1.0.5" }
 #iota_stronghold = { path = "/Users/daniel/dev/iotaledger/stronghold.rs/client" }
 #libsodium-sys = { git = "https://git@github.com/daniel-mader/sodiumoxide" }
 
-oid4vc-manager = { git = "https://git@github.com/impierce/openid4vc.git" }
-siopv2 = { git = "https://git@github.com/impierce/openid4vc.git" }
-oid4vci = { git = "https://git@github.com/impierce/openid4vc.git" }
-oid4vc-core = { git = "https://git@github.com/impierce/openid4vc.git" }
-oid4vp = { git = "https://git@github.com/impierce/openid4vc.git" }
+# oid4vc-manager = { git = "https://git@github.com/impierce/openid4vc.git" }
+# siopv2 = { git = "https://git@github.com/impierce/openid4vc.git" }
+# oid4vci = { git = "https://git@github.com/impierce/openid4vc.git" }
+# oid4vc-core = { git = "https://git@github.com/impierce/openid4vc.git" }
+# oid4vp = { git = "https://git@github.com/impierce/openid4vc.git" }
+
+oid4vc-core = { path = "../../openid4vc/oid4vc-core" }
+oid4vci = { path = "../../openid4vc/oid4vci" }
+oid4vp = { path = "../../openid4vc/oid4vp" }
+siopv2 = { path = "../../openid4vc/siopv2" }
+oid4vc-manager = { path = "../../openid4vc/oid4vc-manager" }
 
 base64 = { version = "0.13.0" }
 identity_iota = "0.6"
-identity_core = { git = "https://git@github.com/iotaledger/identity.rs", rev = "4f27434" }
-identity_credential = { git = "https://git@github.com/iotaledger/identity.rs", rev = "4f27434", default-features = false, features = [
+identity_core = { version = "=0.7.0-alpha.7" }
+identity_credential = { version = "=0.7.0-alpha.7", default-features = false, features = [
     "credential",
     "presentation",
 ] }
-tauri-plugin-barcode-scanner = { git = "https://github.com/lucasfernog/plugins-workspace", branch = "feat/scanner" }
+tauri-plugin-barcode-scanner = { git = "https://github.com/lucasfernog/plugins-workspace", rev = "4024c70f30aebec855ff99ba5b935ec4063a7b5a" }
 jsonwebtoken = "8.2"
 futures = "0.3"
 async-recursion = "1.0"
