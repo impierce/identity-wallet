@@ -3,11 +3,13 @@ use crate::common::{
     assert_state_update::{assert_state_update, setup_provider_manager, setup_state_file, setup_stronghold},
     TEST_PASSWORD,
 };
-use identity_wallet::crypto::stronghold::{create_new_stronghold, insert_into_stronghold};
-use identity_wallet::state::{
-    actions::{Action, ActionType},
-    user_prompt::{CredentialOffer as CredentialOfferPrompt, CurrentUserPrompt, CurrentUserPromptType, Selection},
-    AppState, Profile, TransferState,
+use identity_wallet::{
+    crypto::stronghold::StrongholdManager,
+    state::{
+        actions::{Action, ActionType},
+        user_prompt::{CredentialOffer as CredentialOfferPrompt, CurrentUserPrompt, CurrentUserPromptType, Selection},
+        AppState, Managers, Profile, TransferState,
+    },
 };
 use oid4vci::credential_format_profiles::w3c_verifiable_credentials::jwt_vc_json::{self, JwtVcJson};
 use oid4vci::credential_format_profiles::{Credential, Parameters, WithCredential, WithParameters};

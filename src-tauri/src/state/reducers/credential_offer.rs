@@ -198,6 +198,10 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
             _ => unimplemented!(),
         }
 
+        let temp = state.managers.lock().unwrap().stronghold_manager.is_some();
+
+        info!("stronghold manager is present: {:?}", temp);
+
         state
             .managers
             .lock()
@@ -207,7 +211,6 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
             .unwrap()
             .insert(key, json!(credential).to_string().as_bytes().to_vec())?;
     }
-    info!("credential_displays: {:?}", credential_displays);
 
     state.credentials.lock().unwrap().extend(credential_displays);
     *state.current_user_prompt.lock().unwrap() = None;

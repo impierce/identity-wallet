@@ -34,7 +34,6 @@ pub struct TransferState {
     pub active_profile: Option<Profile>,
     pub locale: String,
     #[ts(type = "Array<{id: string, data: object}>")]
-    // TODO: what is the correct type here? Map<String, String>? Object? null? undefined? any? unknown?
     pub credentials: Vec<(String, Credential)>,
     pub current_user_prompt: Option<CurrentUserPrompt>,
     pub debug_messages: Vec<String>,

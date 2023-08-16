@@ -2,6 +2,7 @@ use log::{info, warn};
 use oid4vci::credential_offer::CredentialOfferQuery;
 use siopv2::RequestUrl;
 
+use crate::crypto::stronghold::StrongholdManager;
 use crate::state::actions::{Action, ActionType};
 use crate::state::persistence::{delete_state_file, delete_stronghold, load_state, save_state};
 use crate::state::reducers::authorization::{read_authorization_request, send_authorization_response};
@@ -9,7 +10,7 @@ use crate::state::reducers::credential_offer::{read_credential_offer, send_crede
 use crate::state::reducers::load_dev_profile::load_dev_profile;
 use crate::state::reducers::{create_did_key, initialize_stronghold, reset_state, set_locale};
 use crate::state::user_prompt::{CurrentUserPrompt, CurrentUserPromptType, Redirect};
-use crate::state::{AppState, TransferState};
+use crate::state::{AppState, Managers, TransferState};
 
 #[async_recursion::async_recursion]
 pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
@@ -18,6 +19,9 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
     app_state: &AppState,
 ) -> Result<(), String> {
     info!("received action `{:?}` with payload `{:?}`", r#type, payload);
+    let temp = app_state.managers.lock().unwrap().stronghold_manager.is_some();
+
+    info!("stronghold manager is present: {:?}", temp);
 
     match r#type {
         ActionType::GetState => {
@@ -32,6 +36,16 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
                 debug_messages: vec![],
             });
 
+            // Check if a Stronghold file already exists in case the user has already created a profile.
+            let stronghold_manager = transfer_state.active_profile.is_some().then_some({
+                if crate::STRONGHOLD.lock().unwrap().exists() {
+                    StrongholdManager::load("my-password").unwrap()
+                } else {
+                    StrongholdManager::create("my-password").unwrap()
+                }
+            });
+
+            *app_state.managers.lock().unwrap() = Managers { stronghold_manager };
             // TODO: find a better way to populate all fields with values from json file
             *app_state.active_profile.lock().unwrap() = transfer_state.active_profile;
             *app_state.locale.lock().unwrap() = transfer_state.locale;
@@ -159,6 +173,10 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             );
         }
     };
+    let temp = app_state.managers.lock().unwrap().stronghold_manager.is_some();
+
+    info!("stronghold manager is present: {:?}", temp);
+
     Result::Ok(())
 }
 

@@ -26,9 +26,6 @@ pub async fn create_did_key(state: &AppState, action: Action) -> anyhow::Result<
     let display_name = payload["display_name"]
         .as_str()
         .ok_or(anyhow::anyhow!("unable to read display_name from json payload"))?;
-    let password = payload["password"]
-        .as_str()
-        .ok_or(anyhow::anyhow!("unable to read password from json payload"))?;
 
     let public_key = state
         .managers
@@ -59,6 +56,8 @@ pub async fn initialize_stronghold(state: &AppState, action: Action) -> anyhow::
         .unwrap()
         .stronghold_manager
         .replace(StrongholdManager::create(password)?);
+
+    info!("stronghold initialized");
 
     Ok(())
 }
