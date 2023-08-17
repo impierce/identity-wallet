@@ -7,10 +7,12 @@ use crate::{
     },
 };
 use did_key::{generate, Ed25519KeyPair};
+use identity_credential::credential;
 use log::info;
 use oid4vc_manager::methods::key_method::KeySubject;
 use oid4vci::{
     credential_format_profiles::{CredentialFormats, WithCredential},
+    credential_issuer::credential_issuer_metadata::CredentialIssuerMetadata,
     credential_offer::{CredentialOffer, CredentialOfferQuery, CredentialsObject, Grants},
     credential_response::CredentialResponseType,
     token_request::{PreAuthorizedCode, TokenRequest},
@@ -44,9 +46,17 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::
     let credential_issuer_url = credential_offer.clone().credential_issuer;
 
     // Get the credential issuer metadata.
-    let credential_issuer_metadata = wallet
-        .get_credential_issuer_metadata(credential_issuer_url.clone())
-        .await;
+    let credential_issuer_metadata = if credential_offer.credentials.iter().any(|credential| match credential {
+        CredentialsObject::ByReference(_) => true,
+        _ => false,
+    }) {
+        wallet
+            .get_credential_issuer_metadata(credential_issuer_url.clone())
+            .await
+            .ok()
+    } else {
+        None
+    };
 
     // For all credentials by reference, replace them with credentials by value using the CredentialIssuerMetadata.
     credential_offer
