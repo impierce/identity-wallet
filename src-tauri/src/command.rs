@@ -155,7 +155,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
         }
         ActionType::CancelUserJourney => {
             *app_state.user_journey.lock().unwrap() = None;
-            save_state(TransferState::from(app_state.inner())).await.ok();
+            save_state(TransferState::from(app_state)).await.ok();
         }
         ActionType::Unknown => {
             warn!(

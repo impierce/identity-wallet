@@ -19,7 +19,8 @@
     helpers: { isChecked }
   } = createCheckbox({});
 
-  let credential_offer: any[] = JSON.parse(decodeURIComponent($state.current_user_flow.options));
+  console.log($state.current_user_prompt);
+  let credential_offer: any[] = $state.current_user_prompt.credential_offer;
   console.log(credential_offer);
 
   let all_offer_indices = credential_offer.credentials.map((_, i) => i);
@@ -30,7 +31,7 @@
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-6">
     <PaddedIcon icon={DownloadSimple} />
-    <p class="text-2xl font-medium">Credential Offer</p>
+    <p class="text-2xl font-medium">{new URL(credential_offer.credential_issuer).hostname}</p>
 
     <!-- Text -->
     <div class="flex w-full items-center rounded-lg bg-white px-4 py-4">

@@ -26,7 +26,7 @@
   } = createCheckbox({});
 
   let selected_credentials = $state.credentials?.filter(
-    (c) => $state.current_user_flow.options.indexOf(c.id) > -2
+    (c) => $state.current_user_prompt.options.indexOf(c.at(0)) > -1
   );
 
   console.log(selected_credentials);
@@ -85,7 +85,7 @@
       {#each selected_credentials as credential}
         <div class="flex items-center">
           <div class="grow">
-            <CredentialListEntry title={credential.data.type.at(-1)} color="bg-indigo-100">
+            <CredentialListEntry title={credential.at(1).type.at(-1)} color="bg-indigo-100">
               <span slot="icon">
                 <RocketLaunch />
               </span>
@@ -116,7 +116,7 @@
       on:click={() =>
         dispatch({
           type: '[Authenticate] Credentials selected',
-          payload: { credential_uuids: selected_credentials.map((c) => c.id) }
+          payload: { credential_uuids: selected_credentials.map((c) => c.at(1)) }
         })}
     />
     <!-- <button class="w-full rounded-lg bg-indigo-500 px-4 py-2 text-white" on:click={() => {}}

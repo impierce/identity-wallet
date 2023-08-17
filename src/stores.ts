@@ -24,8 +24,8 @@ export const state = readable<State>(undefined, (set) => {
 
     setLocale(state.locale as Locales);
 
-    if (state.current_user_flow?.type === 'redirect') {
-      const redirect_target = (state.current_user_flow as Redirect).target;
+    if (state.current_user_prompt?.type === 'redirect') {
+      const redirect_target = (state.current_user_prompt as Redirect).target;
       info(`redirecting to: "/${redirect_target}"`);
       goto(`/${redirect_target}`);
     }

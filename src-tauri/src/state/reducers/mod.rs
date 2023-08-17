@@ -39,7 +39,7 @@ pub async fn create_did_key(state: &AppState, action: Action) -> anyhow::Result<
     *state.active_profile.lock().unwrap() = Some(profile);
 
     // default user onboarding journey
-    let onboarding_journey: Value = json!(
+    let onboarding_journey: serde_json::Value = serde_json::json!(
     {
         "title": "Onboarding",
         "description": "Set up your profile and get started with your UniMe app.",

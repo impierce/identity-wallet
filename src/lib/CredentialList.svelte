@@ -77,7 +77,7 @@
     }
   ];
 
-  // test_credentials = [];
+  test_credentials = [];
 
   // Does this really have to be reactive?
   $: credentials = $state?.credentials ?? [];
@@ -121,11 +121,12 @@
     <!-- Actual (non-mock) credentials -->
     {#each credentials as credential}
       <CredentialListEntry
-        id={credential?.id}
-        title={credential?.data?.type.at(1)}
-        description={credential?.data?.issuer}
+        id={credential?.at(0)}
+        title={credential?.at(1).type.at(1)}
+        description={credential?.at(1).issuer}
+        color="bg-indigo-100"
       >
-        <span slot="icon"><User class="text-violet-500" /></span>
+        <span slot="icon"><User class="text-indigo-500" /></span>
       </CredentialListEntry>
     {/each}
   </div>

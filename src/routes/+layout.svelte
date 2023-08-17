@@ -62,8 +62,8 @@
   $: {
     // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
     console.log('+layout.svelte: state', $state);
-    let type = $state?.current_user_flow?.type;
-    console.log('options', ($state?.current_user_flow as Selection)?.options);
+    let type = $state?.current_user_prompt?.type;
+    console.log('options', ($state?.current_user_prompt as Selection)?.options);
 
     if (type && type !== 'redirect') {
       goto(`/prompt/${type}`);
@@ -76,18 +76,18 @@
           type: 'select-credentials',
           title: $LL.SHARE_CREDENTIALS_TITLE(),
           imageSrc: 'image/undraw_fingerprint_login_re_t71l.svg',
-          options: ($state.current_user_flow as Selection).options
+          options: ($state.current_user_prompt as Selection).options
         };
       } else if (type === 'credential-offer') {
         dialog = {
           type: 'credential-offer',
           title: 'Credential Offer',
           imageSrc: 'image/undraw_agreement_re_d4dv.svg',
-          options: ($state.current_user_flow as Selection).options
+          options: ($state.current_user_prompt as Selection).options
         };
       }
       alertOpen = true;
-      if ($state?.current_user_flow === null) {
+      if ($state?.current_user_prompt === null) {
         dialog = undefined;
         alertOpen = false;
       }
@@ -147,7 +147,7 @@
     </div>
   {/if}
   <button
-    class="fixed left-0 top-[var(--safe-area-inset-top)] z-30 rounded-br-md bg-red-200 p-1"
+    class="fixed left-1/2 top-[var(--safe-area-inset-top)] z-30 rounded-br-md bg-red-200 p-1"
     on:click={() => (showDevMode = !showDevMode)}
   >
     {#if showDevMode}
