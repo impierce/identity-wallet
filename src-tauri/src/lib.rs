@@ -1,11 +1,12 @@
-mod command;
-mod crypto;
+pub mod command;
+pub mod crypto;
 mod did;
-mod state;
+pub mod state;
 
 use command::handle_action;
 use did_key::{generate, Ed25519KeyPair};
 use fern::colors::Color;
+use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
 use lazy_static::lazy_static;
 use log::{info, LevelFilter};
 use oid4vc_manager::{methods::key_method::KeySubject, ProviderManager};
@@ -21,7 +22,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![handle_action])
         .setup(move |app| {
             info!("setting up tauri app");
-            initialize_storage(app.handle()).ok();
+            initialize_storage(&app.handle()).ok();
             #[cfg(mobile)]
             {
                 app.handle().plugin(tauri_plugin_barcode_scanner::init())?;
@@ -68,7 +69,7 @@ lazy_static! {
 }
 
 /// Initialize the storage file paths.
-fn initialize_storage(app_handle: tauri::AppHandle) -> anyhow::Result<()> {
+fn initialize_storage(app_handle: &tauri::AppHandle) -> anyhow::Result<()> {
     // TODO: create folder if not exists (not automatically created on macOS)
     if cfg!(target_os = "android") {
         *STATE_FILE.lock().unwrap() = app_handle.path().data_dir()?.join("state.json");
@@ -96,4 +97,12 @@ fn initialize_storage(app_handle: tauri::AppHandle) -> anyhow::Result<()> {
     tauri::async_runtime::block_on(async { PROVIDER_MANAGER.lock().await.replace(provider_manager) });
 
     Ok(())
+}
+
+// Get the claims from a JWT without performing validation.
+pub fn get_jwt_claims(jwt: &serde_json::Value) -> serde_json::Value {
+    let key = DecodingKey::from_secret(&[]);
+    let mut validation = Validation::new(Algorithm::EdDSA);
+    validation.insecure_disable_signature_validation();
+    decode(jwt.as_str().unwrap(), &key, &validation).unwrap().claims
 }

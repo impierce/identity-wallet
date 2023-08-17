@@ -38,7 +38,8 @@ pub async fn delete_state_file() -> anyhow::Result<()> {
 
 pub async fn delete_stronghold() -> anyhow::Result<()> {
     let stronghold_file = crate::STRONGHOLD.lock().unwrap().clone();
-    remove_file(stronghold_file).await?;
+    remove_file(&stronghold_file).await?;
+    remove_file(stronghold_file.join(".snapshot")).await?;
     debug!("stronghold deleted from disk");
     Ok(())
 }

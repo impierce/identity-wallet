@@ -4,12 +4,12 @@ use ts_rs::TS;
 /// A redux-like Action with an optional payload
 /// See https://redux.js.org/tutorials/fundamentals/part-3-state-actions-reducers
 /// For the type string, we're using ngrx style: "\[Feature\] Action name" (see https://ngrx.io/guide/store/actions)
-#[derive(Deserialize, TS, Clone)]
+#[derive(Serialize, Deserialize, TS, Clone, Debug)]
 #[ts(export)]
 pub struct Action {
-    pub(crate) r#type: ActionType,
+    pub r#type: ActionType,
     #[ts(optional, type = "object")]
-    pub(crate) payload: Option<serde_json::Value>,
+    pub payload: Option<serde_json::Value>,
 }
 
 /// Actions that the backend knows how to handle (reduce).
@@ -30,6 +30,10 @@ pub enum ActionType {
     CancelUserFlow,
     #[serde(rename = "[DEV] Load profile")]
     LoadDevProfile,
+    #[serde(rename = "[Offer] Read credential offer")]
+    ReadCredentialOffer,
+    #[serde(rename = "[Offer] Credential offers selected")]
+    OffersSelected,
     #[serde(rename = "[Authenticate] Read request")]
     ReadRequest,
     #[serde(rename = "[Authenticate] Credentials selected")]
