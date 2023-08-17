@@ -21,7 +21,8 @@ const config = {
         '/activity/connection/1',
         '/activity/connection/2',
         '/goals/2/faqs',
-        '/goals/2/step/0'
+        '/goals/2/step/0',
+        '/credentials/*'
       ]
     }
   }
