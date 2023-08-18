@@ -116,7 +116,7 @@
       on:click={() =>
         dispatch({
           type: '[Authenticate] Credentials selected',
-          payload: { credential_uuids: selected_credentials.map((c) => c.at(1)) }
+          payload: { credential_uuids: selected_credentials.map((c) => c.at(0)) }
         })}
     />
     <!-- <button class="w-full rounded-lg bg-indigo-500 px-4 py-2 text-white" on:click={() => {}}
