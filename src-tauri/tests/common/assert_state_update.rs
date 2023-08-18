@@ -24,6 +24,7 @@ pub fn assert_state_update(current_state: AppState, actions: Vec<Action>, expect
 
     for (action, expected_state) in actions.iter().zip(expected_states.iter()) {
         // Assert that the action is handled successfully.
+
         tauri::test::assert_ipc_response(
             &window,
             tauri::InvokePayload {

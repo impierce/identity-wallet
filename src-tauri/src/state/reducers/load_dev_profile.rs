@@ -1,4 +1,4 @@
-use crate::crypto::stronghold::{create_new_stronghold, get_all_from_stronghold, insert_into_stronghold};
+use crate::crypto::stronghold::StrongholdManager;
 use crate::did::did_key::generate_dev_did;
 use crate::get_jwt_claims;
 use crate::state::actions::Action;
@@ -26,7 +26,8 @@ lazy_static! {
 
 pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Result<()> {
     info!("load dev profile");
-    create_new_stronghold("my-password")?;
+
+    let stronghold_manager = StrongholdManager::create("my-password")?;
 
     let did_document = generate_dev_did().await?;
     let profile = Profile {
@@ -39,11 +40,14 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
         .into_iter()
         .for_each(|(uuid, credential)| {
             info!("inserting credential into stronghold");
-            insert_into_stronghold(uuid, json!(credential).to_string().as_bytes().to_vec(), "my-password").unwrap();
+            stronghold_manager
+                .insert(uuid, json!(credential).to_string().as_bytes().to_vec())
+                .unwrap();
         });
 
     info!("loading credentials from stronghold");
-    get_all_from_stronghold("my-password")?
+    stronghold_manager
+        .get_all()?
         .unwrap()
         .into_iter()
         .for_each(|(uuid, credential)| {
@@ -64,8 +68,12 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
                 .push((uuid.to_string(), credential_display));
         });
 
-    let temp = state.credentials.lock().unwrap().clone();
-    info!("{}", format!("temp credentials after load dev: {:?}", temp));
+    state
+        .managers
+        .lock()
+        .unwrap()
+        .stronghold_manager
+        .replace(stronghold_manager);
 
     *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect(Redirect {
         r#type: CurrentUserPromptType::Redirect,

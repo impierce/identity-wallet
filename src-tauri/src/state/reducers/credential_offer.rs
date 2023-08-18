@@ -46,17 +46,22 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::
     let credential_issuer_url = credential_offer.clone().credential_issuer;
 
     // Get the credential issuer metadata.
-    let credential_issuer_metadata = if credential_offer.credentials.iter().any(|credential| match credential {
-        CredentialsObject::ByReference(_) => true,
-        _ => false,
-    }) {
-        wallet
-            .get_credential_issuer_metadata(credential_issuer_url.clone())
-            .await
-            .ok()
-    } else {
-        None
-    };
+    let credential_issuer_metadata = credential_offer
+        .credentials
+        .iter()
+        .any(|credential| match credential {
+            CredentialsObject::ByReference(_) => true,
+            _ => false,
+        })
+        .then(|| {
+            tauri::async_runtime::block_on(async {
+                wallet
+                    .get_credential_issuer_metadata(credential_issuer_url.clone())
+                    .await
+                    .ok()
+            })
+            .unwrap()
+        });
 
     // For all credentials by reference, replace them with credentials by value using the CredentialIssuerMetadata.
     credential_offer
@@ -207,10 +212,6 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
             }
             _ => unimplemented!(),
         }
-
-        let temp = state.managers.lock().unwrap().stronghold_manager.is_some();
-
-        info!("stronghold manager is present: {:?}", temp);
 
         state
             .managers

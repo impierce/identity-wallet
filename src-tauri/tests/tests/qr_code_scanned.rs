@@ -1,4 +1,3 @@
-use crate::common::TEST_PASSWORD;
 use crate::common::{
     assert_state_update::{assert_state_update, setup_provider_manager, setup_state_file, setup_stronghold},
     TEST_PASSWORD,
@@ -85,8 +84,6 @@ async fn test_qr_code_scanned_read_authorization_request() {
     setup_state_file();
     setup_stronghold();
     setup_provider_manager().await;
-
-    create_new_stronghold(TEST_PASSWORD).unwrap();
 
     let credential = CredentialFormats::<WithCredential>::JwtVcJson(Credential {
         format: JwtVcJson,

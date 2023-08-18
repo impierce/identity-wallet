@@ -30,6 +30,8 @@ impl StrongholdManager {
     pub fn create(password: &str) -> anyhow::Result<Self> {
         let stronghold = Stronghold::default();
         let client_path = STRONGHOLD.lock().unwrap().to_str().unwrap().to_owned();
+        info!("THIS IS THE NAME OF THE PATH: `{}`", format!("{client_path}.snapshot"));
+
         let snapshot_path = SnapshotPath::from_path(format!("{client_path}.snapshot"));
         let key_provider = KeyProvider::try_from(hash_password(password)?).expect("failed to load key");
 
@@ -48,14 +50,14 @@ impl StrongholdManager {
             client,
             client_path,
             key_provider,
-            snapshot_path,
+            snapshot_path: snapshot_path.clone(),
         };
 
         let public_key = stronghold_manager.get_public_key()?;
         debug!("public_key (base64): {:?}", base64::encode(public_key));
 
         stronghold_manager.commit()?;
-
+        info!("THIS IS THE NAME OF THE PATH2: `{}`", snapshot_path.exists());
         Ok(stronghold_manager)
     }
 
@@ -101,6 +103,7 @@ impl StrongholdManager {
 
     // TODO: fix this function's return type.
     pub fn get_all(&self) -> anyhow::Result<Option<Vec<(Uuid, CredentialFormats<WithCredential>)>>> {
+        let client = self.client.clone();
         let mut credentials: Vec<(Uuid, CredentialFormats<WithCredential>)> = self
             .client
             .store()
@@ -109,7 +112,7 @@ impl StrongholdManager {
             .map(|key| {
                 (
                     Uuid::parse_str(std::str::from_utf8(key).unwrap()).unwrap(),
-                    serde_json::from_str(std::str::from_utf8(&self.client.store().get(key).unwrap().unwrap()).unwrap())
+                    serde_json::from_str(std::str::from_utf8(&client.store().get(key).unwrap().unwrap()).unwrap())
                         .unwrap(),
                 )
             })

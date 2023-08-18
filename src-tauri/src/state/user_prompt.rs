@@ -40,6 +40,12 @@ pub struct CredentialOffer {
     pub credential_offer: serde_json::Value,
 }
 
+#[derive(Clone, Serialize, Deserialize, Debug, TS, PartialEq)]
+#[ts(export, export_to = "bindings/user-prompt/CredentialOffer.ts")]
+pub struct PasswordRequired {
+    pub r#type: CurrentUserPromptType,
+}
+
 // pub trait UserActionprompt {
 //     fn get_type(&self) -> String;
 // }
@@ -77,6 +83,7 @@ pub enum CurrentUserPrompt {
     Warning(Warning),
     Selection(Selection),
     CredentialOffer(CredentialOffer),
+    PasswordRequired(PasswordRequired),
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, TS, PartialEq)]
@@ -94,4 +101,6 @@ pub enum CurrentUserPromptType {
     SelectCredentials,
     #[serde(rename = "credential-offer")]
     CredentialOffer,
+    #[serde(rename = "password-required")]
+    PasswordRequired,
 }

@@ -1,6 +1,7 @@
 pub mod authorization;
 pub mod credential_offer;
 pub mod load_dev_profile;
+pub mod storage;
 
 use crate::crypto::stronghold::StrongholdManager;
 use crate::did::did_key::generate_new_did;
