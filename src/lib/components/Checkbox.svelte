@@ -1,0 +1,21 @@
+<script lang="ts">
+  import { melt } from '@melt-ui/svelte';
+  import Check from '~icons/ph/check-bold';
+
+  export let root: any;
+  export let input: any;
+  export let isChecked: boolean;
+</script>
+
+<button
+  use:melt={root}
+  class="flex h-6 w-6 appearance-none items-center justify-center
+            rounded-md border-[1.5px] border-[#C5C6CC] p-[6px] text-white
+            {isChecked ? 'border-none bg-indigo-500' : 'bg-white'}"
+  id="checkbox"
+>
+  {#if isChecked}
+    <Check class="h-3 w-3" />
+  {/if}
+  <input use:melt={input} />
+</button>

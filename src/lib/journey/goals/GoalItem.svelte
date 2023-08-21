@@ -10,14 +10,13 @@
 </script>
 
 <button
-  class={`flex w-full items-center justify-between rounded-lg px-4 py-4 ${
-    completed ? 'border opacity-60' : 'bg-white'
-  }`}
+  class="flex w-full items-center justify-between rounded-lg px-4 py-4
+  {completed ? 'border opacity-60' : 'bg-white'}"
   use:melt={trigger}
 >
   <div class="flex items-center">
     <Trophy class="mr-4 h-5 w-5 text-indigo-500" />
-    <p class={`font-medium text-left ${completed ? 'line-through' : ''}`}>{label}</p>
+    <p class="text-left font-medium {completed ? 'line-through' : ''}">{label}</p>
   </div>
   {#if completed}
     <CheckCircle class="h-6 w-6 text-indigo-500" />

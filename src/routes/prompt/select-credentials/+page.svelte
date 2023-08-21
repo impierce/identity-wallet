@@ -20,11 +20,6 @@
     states: { open }
   } = createPopover();
 
-  const {
-    elements: { root, input },
-    helpers: { isChecked }
-  } = createCheckbox({});
-
   let selected_credentials = $state.credentials?.filter(
     (c) => $state.current_user_prompt.options.indexOf(c.at(0)) > -1
   );
@@ -33,11 +28,11 @@
 </script>
 
 <div class="content-height flex flex-col items-stretch bg-neutral-100">
-  <TopNavigation title={'Select Credentials'} on:back={() => history.back()} />
+  <TopNavigation title={'Connection Request'} on:back={() => history.back()} />
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-6">
     <PaddedIcon icon={PlugsConnected} />
-    <p class="text-2xl font-medium">BestDex</p>
+    <p class="text-2xl font-semibold">BestDex</p>
 
     <!-- Warning -->
     <div class="flex w-full items-center rounded-lg bg-white px-4 py-4">
@@ -46,18 +41,18 @@
     </div>
 
     <!-- Details -->
-    <!-- <div class="w-full space-y-2 rounded-2xl p-3 ring-2 ring-inset ring-white">
+    <div class="w-full space-y-2 rounded-2xl p-3 ring-2 ring-inset ring-white">
       <div class="flex justify-between rounded-lg bg-white px-4 py-4">
-        <p>URL</p>
-        <p class="text-neutral-600">bestdex.com</p>
+        <p class="text-sm text-slate-800">URL</p>
+        <p class="text-sm text-slate-500">bestdex.com</p>
       </div>
       <div class="flex justify-between rounded-lg bg-white px-4 py-4">
-        <p>Connected previously</p>
+        <p class="text-sm text-slate-800">Connected previously</p>
         <X class="text-red-600" />
       </div>
       <div class="flex justify-between rounded-lg bg-white px-4 py-4">
         <div class="flex items-center">
-          <p>Verified</p>
+          <p class="text-sm text-slate-800">Verified</p>
           <button class="-m-2 ml-1 rounded-full p-1" use:melt={$trigger}>
             <Question class="h-6 w-6 text-indigo-500" />
           </button>
@@ -79,56 +74,20 @@
         </div>
         <Check class="text-green-600" />
       </div>
-    </div> -->
-    <!-- Credentials selection -->
-    <div class="flex w-full flex-col space-y-2">
-      {#each selected_credentials as credential}
-        <div class="flex items-center">
-          <div class="grow">
-            <CredentialListEntry title={credential.at(1).type.at(-1)} color="bg-indigo-100">
-              <span slot="icon">
-                <RocketLaunch />
-              </span>
-            </CredentialListEntry>
-          </div>
-          <button
-            use:melt={$root}
-            class={`flex h-6 w-6 appearance-none items-center justify-center
-            rounded-md border-[1.5px] border-[#C5C6CC] p-[6px] text-white ${
-              $isChecked ? 'border-none bg-indigo-500' : 'bg-white'
-            }`}
-            id="checkbox"
-          >
-            {#if $isChecked}
-              <Check class="h-3 w-3" />
-            {/if}
-            <input use:melt={$input} />
-          </button>
-        </div>
-      {/each}
     </div>
   </div>
 
   <!-- Controls -->
-  <div class="sticky bottom-0 left-0 flex flex-col rounded-t-2xl bg-white p-6 pb-0">
+  <div class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 pb-0">
+    <Button label="Accept connection" on:click={() => goto('/prompt/select-credentials/share')} />
     <Button
-      label="Accept connection"
-      on:click={() =>
-        dispatch({
-          type: '[Authenticate] Credentials selected',
-          payload: { credential_uuids: selected_credentials.map((c) => c.at(0)) }
-        })}
-    />
-    <!-- <button class="w-full rounded-lg bg-indigo-500 px-4 py-2 text-white" on:click={() => {}}
-      >Accept connection</button
-    > -->
-    <button
-      class="mt-2 w-full rounded-lg border bg-white px-4 py-2 text-neutral-700"
+      label="Reject"
+      variant="secondary"
       on:click={() => {
         dispatch({ type: '[User Flow] Cancel' });
         goto('/me');
-      }}>Reject</button
-    >
+      }}
+    />
   </div>
 
   <div class="safe-area-top" />

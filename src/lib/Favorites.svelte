@@ -22,7 +22,7 @@
     }
   ];
 
-  // favorite_credentials = [];
+  favorite_credentials = [];
 </script>
 
 {#if favorite_credentials.length > 0}

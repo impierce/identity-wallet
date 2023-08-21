@@ -70,7 +70,17 @@ type RootTranslation = {
 		 */
 		SKIP_TITLE: string
 		/**
-		 * A​r​e​ ​y​o​u​ ​s​u​r​e​?​ ​Y​o​u​ ​c​a​n​ ​r​e​-​e​n​a​b​l​e​ ​t​h​e​ ​o​n​b​o​a​r​d​i​n​g​ ​i​n​ ​t​h​e​ ​a​p​p​ ​s​e​t​t​i​n​g​s​.
+		 * A​r​e​ ​y​o​u​ ​s​u​r​e​?​ ​Y​o​u​ ​c​a​n​ ​r​e​-​e​n​a​b​l​e​ ​t​h​e​ ​o​n​b​o​a​r​d​i​n​g​ ​l​a​t​e​r​ ​i​n​ ​t​h​e​ ​a​p​p​ ​s​e​t​t​i​n​g​s​.
+		 */
+		SKIP_TEXT: string
+	}
+	SETUP: {
+		/**
+		 * S​k​i​p​ ​c​u​s​t​o​m​i​z​a​t​i​o​n
+		 */
+		SKIP_TITLE: string
+		/**
+		 * A​r​e​ ​y​o​u​ ​s​u​r​e​?​ ​Y​o​u​ ​c​a​n​ ​a​d​j​u​s​t​ ​t​h​e​ ​a​p​p​ ​a​p​p​e​a​r​a​n​c​e​ ​l​a​t​e​r​ ​i​n​ ​s​e​t​t​i​n​g​s​.
 		 */
 		SKIP_TEXT: string
 	}
@@ -195,7 +205,17 @@ export type TranslationFunctions = {
 		 */
 		SKIP_TITLE: () => LocalizedString
 		/**
-		 * Are you sure? You can re-enable the onboarding in the app settings.
+		 * Are you sure? You can re-enable the onboarding later in the app settings.
+		 */
+		SKIP_TEXT: () => LocalizedString
+	}
+	SETUP: {
+		/**
+		 * Skip customization
+		 */
+		SKIP_TITLE: () => LocalizedString
+		/**
+		 * Are you sure? You can adjust the app appearance later in settings.
 		 */
 		SKIP_TEXT: () => LocalizedString
 	}

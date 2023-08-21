@@ -10,10 +10,10 @@
 
 <div class="content-height relative flex flex-col bg-neutral-100" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <div class="absolute top-12 w-full">
-    <LanguageSelect
+    <!-- <LanguageSelect
       selected={$state?.locale}
       on:value={(e) => dispatch({ type: '[Settings] Set locale', payload: { locale: e.detail } })}
-    />
+    /> -->
 
     <!-- <div class="grid grid-flow-col space-x-4">
       <button

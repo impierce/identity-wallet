@@ -87,7 +87,7 @@
       <div class="space-y-2">
         <p class="font-medium text-neutral-700 dark:text-neutral-300">{$LL.APP_SETTINGS()}</p>
 
-        <div class="flex items-center justify-between rounded-lg bg-white p-4">
+        <!-- <div class="flex items-center justify-between rounded-lg bg-white p-4">
           <p>Language</p>
           <div class="flex flex-col items-center justify-center space-y-4">
             <LanguageSelect
@@ -96,7 +96,7 @@
                 dispatch({ type: '[Settings] Set locale', payload: { locale: e.detail } })}
             />
           </div>
-        </div>
+        </div> -->
 
         <div class="flex h-14 items-center justify-between rounded-lg bg-white px-4 py-2">
           <p>Theme</p>

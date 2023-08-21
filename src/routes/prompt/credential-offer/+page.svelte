@@ -49,10 +49,9 @@
           <p>{credential.credential_definition.type.at(-1)}</p>
           <button
             use:melt={$root}
-            class={`flex h-6 w-6 appearance-none items-center justify-center
-            rounded-md border-[1.5px] border-[#C5C6CC] p-[6px] text-white ${
-              $isChecked ? 'border-none bg-indigo-500' : 'bg-white'
-            }`}
+            class="flex h-6 w-6 appearance-none items-center justify-center
+              rounded-md border-[1.5px] border-[#C5C6CC] p-[6px] text-white
+              {$isChecked ? 'border-none bg-indigo-500' : 'bg-white'}"
             id="checkbox"
           >
             {#if $isChecked}
@@ -66,7 +65,7 @@
   </div>
 
   <!-- Controls -->
-  <div class="sticky bottom-0 left-0 flex flex-col rounded-t-2xl bg-white p-6 pb-0">
+  <div class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 pb-0">
     <Button
       label="Accept credentials"
       on:click={() => {
@@ -77,16 +76,24 @@
       }}
       disabled={!$isChecked}
     />
+    <Button
+      label="Reject"
+      variant="secondary"
+      on:click={() => {
+        dispatch({ type: '[User Flow] Cancel' });
+        goto('/me');
+      }}
+    />
     <!-- <button class="w-full rounded-lg bg-indigo-500 px-4 py-2 text-white" on:click={() => {}}
         >Accept connection</button
       > -->
-    <button
+    <!-- <button
       class="mt-2 w-full rounded-lg border bg-white px-4 py-2 text-neutral-700"
       on:click={() => {
         dispatch({ type: '[User Flow] Cancel' });
         goto('/me');
       }}>Reject</button
-    >
+    > -->
   </div>
 
   <div class="safe-area-top" />

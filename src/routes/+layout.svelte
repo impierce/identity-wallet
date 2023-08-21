@@ -33,6 +33,8 @@
   import type { CurrentUserFlowType } from '../../src-tauri/bindings/user-flow/CurrentUserFlowType';
   import type { Selection } from '../../src-tauri/bindings/user-flow/Selection';
   import { goto } from '$app/navigation';
+  import CaretDown from '~icons/ph/caret-down-bold';
+  import CaretUp from '~icons/ph/caret-up-bold';
 
   let clipboard: string | undefined;
 
@@ -147,13 +149,13 @@
     </div>
   {/if}
   <button
-    class="fixed left-1/2 top-[var(--safe-area-inset-top)] z-30 rounded-br-md bg-red-200 p-1"
+    class="fixed left-[calc(50%_-_12px)] top-[var(--safe-area-inset-top)] z-30 h-6 w-6 rounded-b-md bg-red-200 p-[2px]"
     on:click={() => (showDevMode = !showDevMode)}
   >
     {#if showDevMode}
-      <ChevronUp class="text-red-700" strokeWidth="2" />
+      <CaretUp class="text-red-700" />
     {:else}
-      <ChevronDown class="text-red-700" strokeWidth="2" />
+      <CaretDown class="text-red-700" />
     {/if}
   </button>
 

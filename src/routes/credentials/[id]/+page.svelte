@@ -8,21 +8,24 @@
   import { goto } from '$app/navigation';
   import { fly } from 'svelte/transition';
   import { page } from '$app/stores';
+  import { state } from '$src/stores';
 
-  let color: string = 'bg-orange-100';
+  let credential = $state.credentials.find((c) => $page.params.id === c.at(0))?.at(1);
+
+  let color: string = 'indigo-100';
   let icon: any = House;
-  let title: string = `Driver's License`;
+  let title: string = credential.type.at(-1);
 
   let isFavorite: boolean = false;
 </script>
 
 <div class="content-height flex w-full flex-col" in:fly={{ x: 24 }}>
   <TopNavigation title="Credential info" on:back={() => history.back()} />
-  <div class="grow px-[15px]">
+  <div class="hide-scrollbar grow overflow-y-scroll px-[15px]">
     <!-- Header -->
     <!-- Background-->
     <div
-      class="absolute left-0 top-[50px] -z-10 h-[250px] w-screen bg-gradient-to-b from-orange-100 to-white"
+      class="absolute left-0 top-[50px] -z-10 h-[250px] w-screen bg-gradient-to-b from-{color} to-white"
     />
     <div class="flex flex-col py-[20px]">
       <!-- Logo -->
@@ -35,7 +38,7 @@
           {/if}
         </button>
         <div
-          class={`${color} flex h-[75px] w-[75px] flex-col items-center justify-center rounded-[20px] border-[5px] border-white`}
+          class="bg-{color} flex h-[75px] w-[75px] flex-col items-center justify-center rounded-[20px] border-[5px] border-white"
         >
           <svelte:component this={icon} class="h-6 w-6 text-slate-800" />
         </div>
@@ -46,20 +49,32 @@
       <!-- Text -->
       <div class="flex flex-col items-center pt-[15px]">
         <p class="text-2xl font-semibold text-black">{title}</p>
-        <p class="text-[13px]/[24px] font-normal text-slate-500">{$page.params.id ?? ''}</p>
+        <p class="text-[13px]/[24px] font-normal text-slate-500">{credential.issuer}</p>
       </div>
     </div>
-    <!-- Data -->
+    <!-- Credential Subject -->
     <div class="divide-y divide-solid divide-gray-200 rounded-xl border border-gray-200 bg-white">
-      <!-- TODO: loop -->
-      <div class="flex flex-col items-start px-4 py-[10px]">
-        <p class="text-[15px]/[24px] font-medium text-gray-600">First name</p>
-        <p class="text-[13px]/[24px] font-medium text-slate-800">Tony</p>
-      </div>
-      <div class="flex flex-col items-start px-4 py-[10px]">
-        <p class="text-[15px]/[24px] font-medium text-gray-600">Last name</p>
-        <p class="text-[13px]/[24px] font-medium text-slate-800">Stark</p>
-      </div>
+      {#each Object.entries(credential.credentialSubject) as entry}
+        <div class="flex flex-col items-start px-4 py-[10px]">
+          <p class="text-[15px]/[24px] font-medium text-gray-600">{entry[0]}</p>
+          <p class="break-all text-[13px]/[24px] font-medium text-slate-800">{entry[1]}</p>
+        </div>
+      {/each}
+    </div>
+    <!-- Issuer -->
+    <div
+      class="mt-[15px] divide-y divide-solid divide-gray-200 rounded-xl border border-gray-200 bg-white"
+    >
+      {#each Object.entries( { issuer: credential.issuer, issuanceDate: credential.issuanceDate } ) as entry}
+        <div class="flex flex-col items-start px-4 py-[10px]">
+          <p class="text-[15px]/[24px] font-medium text-gray-600">{entry[0]}</p>
+          <p class="break-all text-[13px]/[24px] font-medium text-slate-800">{entry[1]}</p>
+        </div>
+      {/each}
+    </div>
+    <!-- ID (unime internal) -->
+    <div class="p-[15px] pb-0 text-center text-xs text-slate-500">
+      <pre>{$page.params.id}</pre>
     </div>
   </div>
   <div class="flex p-6"><Button label="Share" disabled /></div>

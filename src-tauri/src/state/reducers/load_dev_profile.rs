@@ -26,7 +26,7 @@ lazy_static! {
 
 pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Result<()> {
     info!("load dev profile");
-    create_new_stronghold("my-password")?;
+    create_new_stronghold("sup3rs3cr3t")?;
 
     let did_document = generate_dev_did().await?;
     let profile = Profile {
@@ -39,11 +39,11 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
         .into_iter()
         .for_each(|(uuid, credential)| {
             info!("inserting credential into stronghold");
-            insert_into_stronghold(uuid, json!(credential).to_string().as_bytes().to_vec(), "my-password").unwrap();
+            insert_into_stronghold(uuid, json!(credential).to_string().as_bytes().to_vec(), "sup3rs3cr3t").unwrap();
         });
 
     info!("loading credentials from stronghold");
-    get_all_from_stronghold("my-password")?
+    get_all_from_stronghold("sup3rs3cr3t")?
         .unwrap()
         .into_iter()
         .for_each(|(uuid, credential)| {

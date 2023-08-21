@@ -35,6 +35,7 @@
   import EnvelopeSimple from '~icons/ph/envelope-simple-light';
   import SealCheck from '~icons/ph/seal-check-fill';
   import LL from '$src/i18n/i18n-svelte';
+  import UserCircle from '~icons/ph/user-circle-light';
 
   import House from '~icons/ph/house-light';
   import NoCredentials from './credentials/NoCredentials.svelte';
@@ -126,7 +127,7 @@
         description={credential?.at(1).issuer}
         color="bg-indigo-100"
       >
-        <span slot="icon"><User class="text-indigo-500" /></span>
+        <span slot="icon"><UserCircle class="h-[18px] w-[18px] text-slate-800" /></span>
       </CredentialListEntry>
     {/each}
   </div>

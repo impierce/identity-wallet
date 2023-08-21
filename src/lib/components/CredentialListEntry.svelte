@@ -13,7 +13,7 @@
 >
   <!-- Icon -->
   <div
-    class={`mr-[15px] ${color} flex h-[50px] w-[50px] flex-col items-center justify-center rounded-lg`}
+    class="mr-[15px] {color} flex h-[50px] w-[50px] flex-col items-center justify-center rounded-lg"
   >
     <slot name="icon" />
   </div>
