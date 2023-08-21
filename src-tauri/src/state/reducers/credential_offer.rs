@@ -1,6 +1,6 @@
 use crate::{
     crypto::stronghold::insert_into_stronghold,
-    get_jwt_claims,
+    get_unverified_jwt_claims,
     state::{
         actions::Action,
         user_prompt::{CredentialOffer as CredentialOfferPrompt, CurrentUserPrompt, CurrentUserPromptType},
@@ -8,12 +8,10 @@ use crate::{
     },
 };
 use did_key::{generate, Ed25519KeyPair};
-use identity_credential::credential;
 use log::info;
 use oid4vc_manager::methods::key_method::KeySubject;
 use oid4vci::{
     credential_format_profiles::{CredentialFormats, WithCredential},
-    credential_issuer::credential_issuer_metadata::CredentialIssuerMetadata,
     credential_offer::{CredentialOffer, CredentialOfferQuery, CredentialsObject, Grants},
     credential_response::CredentialResponseType,
     token_request::{PreAuthorizedCode, TokenRequest},
@@ -26,8 +24,8 @@ use uuid::Uuid;
 pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::Result<()> {
     info!("read_credential_offer");
     let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
-    // Create a new subject.
 
+    // Create a new subject.
     let subject = KeySubject::from_keypair(generate::<Ed25519KeyPair>(Some(
         "this-is-a-very-UNSAFE-secret-key".as_bytes(),
     )));
@@ -201,7 +199,7 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
         match credential {
             CredentialFormats::JwtVcJson(credential) => {
                 let credential_display = serde_json::from_value::<identity_credential::credential::Credential>(
-                    get_jwt_claims(&credential.credential)["vc"].clone(),
+                    get_unverified_jwt_claims(&credential.credential)["vc"].clone(),
                 )
                 .unwrap();
                 credential_displays.push((key.to_string(), credential_display));

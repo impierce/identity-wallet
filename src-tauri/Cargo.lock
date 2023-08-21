@@ -1436,7 +1436,7 @@ dependencies = [
 [[package]]
 name = "dif-presentation-exchange"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?branch=chore/update-identity#2d7882769a536ad2ace0e151259898d0a74b0b1e"
+source = "git+https://git@github.com/impierce/openid4vc.git#5187657f76abcd43359508098b37dfe853f98b04"
 dependencies = [
  "getset",
  "jsonpath_lib",
@@ -3933,7 +3933,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-core"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?branch=chore/update-identity#2d7882769a536ad2ace0e151259898d0a74b0b1e"
+source = "git+https://git@github.com/impierce/openid4vc.git#5187657f76abcd43359508098b37dfe853f98b04"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3951,7 +3951,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-manager"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?branch=chore/update-identity#2d7882769a536ad2ace0e151259898d0a74b0b1e"
+source = "git+https://git@github.com/impierce/openid4vc.git#5187657f76abcd43359508098b37dfe853f98b04"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3983,7 +3983,7 @@ dependencies = [
 [[package]]
 name = "oid4vci"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?branch=chore/update-identity#2d7882769a536ad2ace0e151259898d0a74b0b1e"
+source = "git+https://git@github.com/impierce/openid4vc.git#5187657f76abcd43359508098b37dfe853f98b04"
 dependencies = [
  "anyhow",
  "derivative",
@@ -4004,7 +4004,7 @@ dependencies = [
 [[package]]
 name = "oid4vp"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?branch=chore/update-identity#2d7882769a536ad2ace0e151259898d0a74b0b1e"
+source = "git+https://git@github.com/impierce/openid4vc.git#5187657f76abcd43359508098b37dfe853f98b04"
 dependencies = [
  "anyhow",
  "dif-presentation-exchange",
@@ -5158,7 +5158,7 @@ dependencies = [
 [[package]]
 name = "siopv2"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?branch=chore/update-identity#2d7882769a536ad2ace0e151259898d0a74b0b1e"
+source = "git+https://git@github.com/impierce/openid4vc.git#5187657f76abcd43359508098b37dfe853f98b04"
 dependencies = [
  "anyhow",
  "async-trait",

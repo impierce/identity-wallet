@@ -30,10 +30,10 @@ pub enum ActionType {
     CancelUserFlow,
     #[serde(rename = "[DEV] Load profile")]
     LoadDevProfile,
-    #[serde(rename = "[Offer] Read credential offer")]
+    #[serde(rename = "[Credential Offer] Read")]
     ReadCredentialOffer,
-    #[serde(rename = "[Offer] Credential offers selected")]
-    OffersSelected,
+    #[serde(rename = "[Credential Offer] Selected")]
+    CredentialOffersSelected,
     #[serde(rename = "[Authenticate] Read request")]
     ReadRequest,
     #[serde(rename = "[Authenticate] Credentials selected")]

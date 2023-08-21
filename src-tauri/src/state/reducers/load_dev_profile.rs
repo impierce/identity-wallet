@@ -1,6 +1,6 @@
 use crate::crypto::stronghold::{create_new_stronghold, get_all_from_stronghold, insert_into_stronghold};
 use crate::did::did_key::generate_dev_did;
-use crate::get_jwt_claims;
+use crate::get_unverified_jwt_claims;
 use crate::state::actions::Action;
 use crate::state::user_prompt::{CurrentUserPrompt, CurrentUserPromptType, Redirect};
 use crate::state::{AppState, Profile};
@@ -50,7 +50,7 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
             let credential_display = match credential {
                 CredentialFormats::JwtVcJson(credential) => {
                     serde_json::from_value::<identity_credential::credential::Credential>(
-                        get_jwt_claims(&credential.credential)["vc"].clone(),
+                        get_unverified_jwt_claims(&credential.credential)["vc"].clone(),
                     )
                     .unwrap()
                 }

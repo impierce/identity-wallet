@@ -1,5 +1,5 @@
 use crate::common::assert_state_update::{assert_state_update, setup_state_file, setup_stronghold};
-use identity_wallet::get_jwt_claims;
+use identity_wallet::get_unverified_jwt_claims;
 use identity_wallet::state::reducers::load_dev_profile::{DRIVERS_LICENSE_CREDENTIAL, PERSONAL_INFORMATION};
 use identity_wallet::state::user_prompt::{CurrentUserPrompt, CurrentUserPromptType, Redirect};
 use identity_wallet::state::Profile;
@@ -19,7 +19,7 @@ async fn test_load_dev_profile() {
     let credential_display1 = match personal_information {
         CredentialFormats::JwtVcJson(credential) => {
             let credential_display1 = serde_json::from_value::<identity_credential::credential::Credential>(
-                get_jwt_claims(&credential.credential)["vc"].clone(),
+                get_unverified_jwt_claims(&credential.credential)["vc"].clone(),
             )
             .unwrap();
             credential_display1
@@ -31,7 +31,7 @@ async fn test_load_dev_profile() {
     let credential_display2 = match drivers_license_credential {
         CredentialFormats::JwtVcJson(credential) => {
             let credential_display2 = serde_json::from_value::<identity_credential::credential::Credential>(
-                get_jwt_claims(&credential.credential)["vc"].clone(),
+                get_unverified_jwt_claims(&credential.credential)["vc"].clone(),
             )
             .unwrap();
             credential_display2

@@ -79,7 +79,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
         }
         ActionType::QrCodeScanned => {
             info!("qr code scanned: `{:?}`", payload);
-            info!("Now doing some backend business logic with the QR code data...");
+
             let payload = payload.ok_or(anyhow::anyhow!("unable to read payload")).unwrap();
 
             let form_urlencoded = payload["form_urlencoded"].as_str().unwrap();
@@ -144,7 +144,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
                 save_state(TransferState::from(app_state)).await.ok();
             }
         }
-        ActionType::OffersSelected => {
+        ActionType::CredentialOffersSelected => {
             if send_credential_request(app_state, Action { r#type, payload })
                 .await
                 .is_ok()
