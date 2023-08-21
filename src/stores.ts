@@ -5,8 +5,9 @@ import { setLocale } from './i18n/i18n-svelte';
 import type { Locales } from './i18n/i18n-types';
 // TODO: run some copy task instead of importing across root to make the frontend independent
 import type { TransferState as State } from '../src-tauri/bindings/TransferState';
-import type { Redirect } from '../src-tauri/bindings/user-flow/Redirect';
+import type { Redirect } from '../src-tauri/bindings/user-prompt/Redirect';
 import { debug, info } from '@tauri-apps/plugin-log';
+import type PasswordRequired from '$lib/password_required/PasswordRequired.svelte';
 
 interface StateChangedEvent {
   event: string;
@@ -24,10 +25,13 @@ export const state = readable<State>(undefined, (set) => {
 
     setLocale(state.locale as Locales);
 
-    if (state.current_user_flow?.type === 'redirect') {
-      const redirect_target = (state.current_user_flow as Redirect).target;
+    if (state.current_user_prompt?.type === 'redirect') {
+      const redirect_target = (state.current_user_prompt as Redirect).target;
       info(`redirecting to: "${redirect_target}"`);
       goto(redirect_target);
+    } else if (state.current_user_prompt?.type === 'password-required') {
+      info(`redirecting to: "login"`);
+      goto('login');
     }
   });
   // TODO: unsubscribe from listener!

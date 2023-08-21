@@ -131,7 +131,7 @@
 
         <!-- Credentials (list) -->
         <div class="flex flex-col space-y-2">
-          {#each credentials as credential}
+          {#each credentials as [uuid, credential]}
             <AlertDialog>
               <AlertDialogTrigger>
                 <div class="">
