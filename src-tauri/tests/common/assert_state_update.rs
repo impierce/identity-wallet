@@ -1,7 +1,7 @@
 use did_key::{generate, Ed25519KeyPair};
 use identity_wallet::{
     state::{actions::Action, AppState, TransferState},
-    PROVIDER_MANAGER, STATE_FILE, STRONGHOLD,
+    STATE_FILE, STRONGHOLD,
 };
 use oid4vc_manager::{methods::key_method::KeySubject, ProviderManager};
 use serde_json::json;
@@ -54,12 +54,4 @@ pub fn setup_state_file() {
 pub fn setup_stronghold() {
     let path = NamedTempFile::new().unwrap().into_temp_path();
     *STRONGHOLD.lock().unwrap() = path.as_os_str().into();
-}
-
-pub async fn setup_provider_manager() {
-    let subject = KeySubject::from_keypair(generate::<Ed25519KeyPair>(Some(
-        "this-is-a-very-UNSAFE-secret-key".as_bytes(),
-    )));
-    let provider_manager = ProviderManager::new([Arc::new(subject)]).unwrap();
-    PROVIDER_MANAGER.lock().await.replace(provider_manager);
 }

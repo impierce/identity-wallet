@@ -8,7 +8,14 @@ use crate::did::did_key::generate_new_did;
 use crate::state::actions::Action;
 use crate::state::user_prompt::{CurrentUserPrompt, CurrentUserPromptType, Redirect};
 use crate::state::{AppState, Profile};
+use did_key::{from_existing_key, Ed25519KeyPair};
 use log::info;
+use oid4vc_manager::methods::key_method::KeySubject;
+use oid4vc_manager::ProviderManager;
+use oid4vci::Wallet;
+use std::sync::Arc;
+
+use super::IdentityManager;
 
 /// Sets the locale to the given value. If the locale is not supported yet, the current locale will stay unchanged.
 pub fn set_locale(state: &AppState, action: Action) -> anyhow::Result<()> {
@@ -23,25 +30,36 @@ pub fn set_locale(state: &AppState, action: Action) -> anyhow::Result<()> {
 
 /// Creates a new profile with a new DID (using the did:key method) and sets it as the active profile.
 pub async fn create_did_key(state: &AppState, action: Action) -> anyhow::Result<()> {
+    let state_guard = state.managers.lock().await;
+    let stronghold_manager = state_guard.stronghold_manager.as_ref().unwrap();
+
     let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
     let display_name = payload["display_name"]
         .as_str()
         .ok_or(anyhow::anyhow!("unable to read display_name from json payload"))?;
 
-    let public_key = state
-        .managers
-        .lock()
-        .unwrap()
-        .stronghold_manager
-        .as_ref()
-        .unwrap()
-        .get_public_key()?;
+    let public_key = stronghold_manager.get_public_key()?;
+
+    let keypair = from_existing_key::<Ed25519KeyPair>(public_key.as_slice(), None);
+    let subject = Arc::new(KeySubject::from_keypair(
+        keypair,
+        Some(state.managers.lock().await.stronghold_manager.as_ref().unwrap().clone()),
+    ));
+
+    let provider_manager = ProviderManager::new([subject.clone()]).unwrap();
+    let wallet: Wallet = Wallet::new(subject.clone());
+
     let did_document = generate_new_did(public_key).await?;
     let profile = Profile {
         display_name: display_name.to_string(),
         primary_did: did_document.id,
     };
-    *state.active_profile.lock().unwrap() = Some(profile);
+
+    state.active_profile.lock().unwrap().replace(profile);
+    state.managers.lock().await.identity_manager.replace(IdentityManager {
+        provider_manager,
+        wallet,
+    });
     Ok(())
 }
 
@@ -54,9 +72,9 @@ pub async fn initialize_stronghold(state: &AppState, action: Action) -> anyhow::
     state
         .managers
         .lock()
-        .unwrap()
+        .await
         .stronghold_manager
-        .replace(StrongholdManager::create(password)?);
+        .replace(Arc::new(StrongholdManager::create(password)?));
 
     info!("stronghold initialized");
 

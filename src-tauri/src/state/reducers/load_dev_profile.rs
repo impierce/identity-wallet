@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use crate::crypto::stronghold::StrongholdManager;
 use crate::did::did_key::generate_dev_did;
 use crate::get_jwt_claims;
@@ -71,9 +73,9 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
     state
         .managers
         .lock()
-        .unwrap()
+        .await
         .stronghold_manager
-        .replace(stronghold_manager);
+        .replace(Arc::new(stronghold_manager));
 
     *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect(Redirect {
         r#type: CurrentUserPromptType::Redirect,

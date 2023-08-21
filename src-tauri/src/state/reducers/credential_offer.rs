@@ -24,15 +24,10 @@ use uuid::Uuid;
 
 pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::Result<()> {
     info!("read_credential_offer");
+    let state_guard = state.managers.lock().await;
+    let wallet = &state_guard.identity_manager.as_ref().unwrap().wallet;
+
     let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
-    // Create a new subject.
-
-    let subject = KeySubject::from_keypair(generate::<Ed25519KeyPair>(Some(
-        "this-is-a-very-UNSAFE-secret-key".as_bytes(),
-    )));
-
-    // Create a new wallet.
-    let wallet: Wallet = Wallet::new(Arc::new(subject));
 
     let mut credential_offer: CredentialOffer = match serde_json::from_value(payload)? {
         CredentialOfferQuery::CredentialOffer(credential_offer) => credential_offer,
@@ -98,6 +93,9 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::
 
 pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow::Result<()> {
     info!("send_credential_request");
+    let state_guard = state.managers.lock().await;
+    let stronghold_manager = state_guard.stronghold_manager.as_ref().unwrap();
+    let wallet = &state_guard.identity_manager.as_ref().unwrap().wallet;
 
     let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
     let offer_indices: Vec<usize> = serde_json::from_value(payload["offer_indices"].clone())?;
@@ -111,14 +109,6 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
 
     // The credential offer contains a credential issuer url.
     let credential_issuer_url = credential_offer.credential_issuer;
-
-    // Create a new subject.
-    let subject = KeySubject::from_keypair(generate::<Ed25519KeyPair>(Some(
-        "this-is-a-very-UNSAFE-secret-key".as_bytes(),
-    )));
-
-    // Create a new wallet.
-    let wallet: Wallet = Wallet::new(Arc::new(subject));
 
     // Get the authorization server metadata.
     let authorization_server_metadata = wallet
@@ -213,14 +203,7 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
             _ => unimplemented!(),
         }
 
-        state
-            .managers
-            .lock()
-            .unwrap()
-            .stronghold_manager
-            .as_ref()
-            .unwrap()
-            .insert(key, json!(credential).to_string().as_bytes().to_vec())?;
+        stronghold_manager.insert(key, json!(credential).to_string().as_bytes().to_vec())?;
     }
 
     state.credentials.lock().unwrap().extend(credential_displays);

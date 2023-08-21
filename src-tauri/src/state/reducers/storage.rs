@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use crate::{
     crypto::stronghold::StrongholdManager,
     get_jwt_claims,
@@ -10,7 +12,7 @@ use crate::{
 use log::info;
 use oid4vci::credential_format_profiles::CredentialFormats;
 
-pub fn unlock_storage(state: &AppState, action: Action) -> anyhow::Result<()> {
+pub async fn unlock_storage(state: &AppState, action: Action) -> anyhow::Result<()> {
     let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
     let password = payload["password"]
         .as_str()
@@ -43,9 +45,9 @@ pub fn unlock_storage(state: &AppState, action: Action) -> anyhow::Result<()> {
     state
         .managers
         .lock()
-        .unwrap()
+        .await
         .stronghold_manager
-        .replace(stronghold_manager);
+        .replace(Arc::new(stronghold_manager));
 
     info!("storage unlocked");
 

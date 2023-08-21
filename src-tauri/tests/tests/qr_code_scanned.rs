@@ -1,24 +1,28 @@
 use crate::common::{
-    assert_state_update::{assert_state_update, setup_provider_manager, setup_state_file, setup_stronghold},
-    TEST_PASSWORD,
+    assert_state_update::{assert_state_update, setup_state_file, setup_stronghold},
+    test_managers, TEST_PASSWORD,
 };
 use identity_wallet::{
     crypto::stronghold::StrongholdManager,
     state::{
         actions::{Action, ActionType},
         user_prompt::{CredentialOffer as CredentialOfferPrompt, CurrentUserPrompt, CurrentUserPromptType, Selection},
-        AppState, Managers, Profile, TransferState,
+        AppState, IdentityManager, Managers, Profile, TransferState,
     },
 };
-use oid4vci::credential_format_profiles::w3c_verifiable_credentials::jwt_vc_json::{self, JwtVcJson};
+use oid4vc_manager::{methods::key_method::KeySubject, ProviderManager};
 use oid4vci::credential_format_profiles::{Credential, Parameters, WithCredential, WithParameters};
 use oid4vci::credential_offer::{Grants, PreAuthorizedCode};
+use oid4vci::{
+    credential_format_profiles::w3c_verifiable_credentials::jwt_vc_json::{self, JwtVcJson},
+    Wallet,
+};
 use oid4vci::{
     credential_format_profiles::CredentialFormats,
     credential_offer::{CredentialOffer, CredentialsObject},
 };
 use serde_json::json;
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 use uuid::Uuid;
 
 #[tokio::test]
@@ -31,6 +35,7 @@ async fn test_qr_code_scanned_read_credential_offer() {
                 display_name: "Ferris Crabman".to_string(),
                 primary_did: "did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY".to_string(),
             })),
+            managers: test_managers(vec![]),
             ..AppState::default()
         },
         // A QR code is scanned containing a credential offer.
@@ -83,20 +88,14 @@ async fn test_qr_code_scanned_read_credential_offer() {
 async fn test_qr_code_scanned_read_authorization_request() {
     setup_state_file();
     setup_stronghold();
-    setup_provider_manager().await;
 
-    let credential = CredentialFormats::<WithCredential>::JwtVcJson(Credential {
+    let uuid = Uuid::new_v4();
+    let verifiable_credential = CredentialFormats::<WithCredential>::JwtVcJson(Credential {
         format: JwtVcJson,
         credential: json!("eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDprZXk6ejZNa3RqWXpmNkd1UVJraDFYczlHcUJIU3JKVU01S3VxcGNKMXVjV0E3cmdINXBoI3o2TWt0all6ZjZHdVFSa2gxWHM5R3FCSFNySlVNNUt1cXBjSjF1Y1dBN3JnSDVwaCJ9.eyJpc3MiOiJkaWQ6a2V5Ono2TWt0all6ZjZHdVFSa2gxWHM5R3FCSFNySlVNNUt1cXBjSjF1Y1dBN3JnSDVwaCIsInN1YiI6ImRpZDprZXk6ejZNa2cxWFhHVXFma2hBS1Uxa1ZkMVBtdzZVRWoxdnhpTGoxeGM5MU1CejVvd05ZIiwiZXhwIjo5OTk5OTk5OTk5LCJpYXQiOjAsInZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIiwiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvZXhhbXBsZXMvdjEiXSwidHlwZSI6WyJWZXJpZmlhYmxlQ3JlZGVudGlhbCIsIlBlcnNvbmFsSW5mb3JtYXRpb24iXSwiaXNzdWFuY2VEYXRlIjoiMjAyMi0wMS0wMVQwMDowMDowMFoiLCJpc3N1ZXIiOiJkaWQ6a2V5Ono2TWt0all6ZjZHdVFSa2gxWHM5R3FCSFNySlVNNUt1cXBjSjF1Y1dBN3JnSDVwaCIsImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkIjoiZGlkOmtleTp6Nk1rZzFYWEdVcWZraEFLVTFrVmQxUG13NlVFajF2eGlMajF4YzkxTUJ6NW93TlkiLCJnaXZlbk5hbWUiOiJGZXJyaXMiLCJmYW1pbHlOYW1lIjoiQ3JhYm1hbiIsImVtYWlsIjoiZmVycmlzLmNyYWJtYW5AY3JhYm1haWwuY29tIiwiYmlydGhkYXRlIjoiMTk4NS0wNS0yMSJ9fX0.ETqRaVMxFZQLN8OmngL1IPGAA2xH9Nsir9vRvJTLLBOJbnGuPdvcMQkN720MQuk9LWmsqNMBrUQegIuJ9IQLBg")
     });
 
-    let uuid = Uuid::new_v4();
-
-    let stronghold_manager = StrongholdManager::create(TEST_PASSWORD).unwrap();
-    stronghold_manager
-        .insert(uuid, json!(credential).to_string().as_bytes().to_vec())
-        .unwrap();
-
+    let managers = test_managers(vec![(uuid, verifiable_credential)]);
     assert_state_update(
         // Initial state.
         AppState {
@@ -104,10 +103,7 @@ async fn test_qr_code_scanned_read_authorization_request() {
                 display_name: "Ferris Crabman".to_string(),
                 primary_did: "did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY".to_string(),
             })),
-            managers: Mutex::new(Managers {
-                stronghold_manager: Some(stronghold_manager),
-                ..Managers::default()
-            }),
+            managers,
             ..AppState::default()
         },
         // A QR code was scanned containing a authorization request.

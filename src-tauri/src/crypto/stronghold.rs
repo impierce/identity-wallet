@@ -1,8 +1,9 @@
 use iota_stronghold::{
-    procedures::{GenerateKey, KeyType, PublicKey, StrongholdProcedure},
+    procedures::{Ed25519Sign, GenerateKey, KeyType, PublicKey, StrongholdProcedure},
     Client, KeyProvider, Location, SnapshotPath, Stronghold,
 };
 use log::{debug, info};
+use oid4vc_core::authentication::sign::ExternalSign;
 use oid4vci::credential_format_profiles::{CredentialFormats, WithCredential};
 use uuid::Uuid;
 
@@ -101,6 +102,20 @@ impl StrongholdManager {
         self.commit()
     }
 
+    pub fn sign(&self, message: &[u8]) -> anyhow::Result<Vec<u8>> {
+        let procedure_result = self
+            .client
+            .execute_procedure(StrongholdProcedure::Ed25519Sign(Ed25519Sign {
+                private_key: Location::counter(self.client_path.as_bytes(), 0u8),
+                msg: message.to_vec(),
+            }))?;
+
+        let output: Vec<u8> = procedure_result.into();
+        info!(r#"Signature is "{}" (base64)"#, base64::encode(&output));
+
+        Ok(output)
+    }
+
     // TODO: fix this function's return type.
     pub fn get_all(&self) -> anyhow::Result<Option<Vec<(Uuid, CredentialFormats<WithCredential>)>>> {
         let client = self.client.clone();
@@ -136,5 +151,11 @@ impl StrongholdManager {
         info!(r#"Public key is "{}" (base64)"#, base64::encode(&output));
 
         Ok(output)
+    }
+}
+
+impl ExternalSign for StrongholdManager {
+    fn sign(&self, message: &str) -> anyhow::Result<Vec<u8>> {
+        self.sign(message.as_bytes())
     }
 }

@@ -17,29 +17,23 @@ use uuid::Uuid;
 
 // Reads the request url from the payload and validates it.
 pub async fn read_authorization_request(state: &AppState, action: Action) -> anyhow::Result<()> {
-    info!("read_request");
-    let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
+    info!("read_authorization_request");
 
-    let guard = crate::PROVIDER_MANAGER.lock().await;
-    let provider = guard.as_ref().unwrap();
+    let state_guard = state.managers.lock().await;
+    let provider_manager = &state_guard.identity_manager.as_ref().unwrap().provider_manager;
+    let stronghold_manager = state_guard.stronghold_manager.as_ref().unwrap();
+
+    let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
 
     info!("trying to validate request: {:?}", payload);
 
-    let authorization_request = provider
+    let authorization_request = provider_manager
         .validate_request(serde_json::from_value(payload).unwrap())
         .await
         .unwrap();
     info!("validated authorization request: {:?}", authorization_request);
 
-    let verifiable_credentials = state
-        .managers
-        .lock()
-        .unwrap()
-        .stronghold_manager
-        .as_ref()
-        .unwrap()
-        .get_all()?
-        .unwrap();
+    let verifiable_credentials = stronghold_manager.get_all()?.unwrap();
     info!("verifiable credentials: {:?}", verifiable_credentials);
 
     let uuids: Vec<String> = authorization_request
@@ -79,7 +73,12 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> any
 
 // Sends the authorization response including the verifiable credentials.
 pub async fn send_authorization_response(state: &AppState, action: Action) -> anyhow::Result<()> {
-    // let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
+    info!("send_authorization_response");
+
+    let state_guard = state.managers.lock().await;
+    let stronghold_manager = state_guard.stronghold_manager.as_ref().unwrap();
+    let provider_manager = &state_guard.identity_manager.as_ref().unwrap().provider_manager;
+
     let payload = match action.payload {
         Some(payload) => payload,
         None => {
@@ -110,13 +109,7 @@ pub async fn send_authorization_response(state: &AppState, action: Action) -> an
     info!("||DEBUG|| credential not found");
     *state.debug_messages.lock().unwrap() = vec!["credential not found".into()];
 
-    let verifiable_credentials: Vec<Credential<JwtVcJson>> = state
-        .managers
-        .lock()
-        .unwrap()
-        .stronghold_manager
-        .as_ref()
-        .unwrap()
+    let verifiable_credentials: Vec<Credential<JwtVcJson>> = stronghold_manager
         .get_all()?
         .unwrap()
         .iter()
@@ -167,14 +160,12 @@ pub async fn send_authorization_response(state: &AppState, action: Action) -> an
 
     let verifiable_presentation = presentation_builder.build()?;
 
-    info!("||DEBUG|| get the provider");
-    *state.debug_messages.lock().unwrap() = vec!["get the provider".into()];
-    let guard = crate::PROVIDER_MANAGER.lock().await;
-    let provider = guard.as_ref().unwrap();
+    info!("||DEBUG|| get the provider_manager");
+    *state.debug_messages.lock().unwrap() = vec!["get the provider_manager".into()];
 
     info!("||DEBUG|| generating response");
     *state.debug_messages.lock().unwrap() = vec!["generating response".into()];
-    let response = provider.generate_response(
+    let response = provider_manager.generate_response(
         authorization_request,
         Default::default(),
         Some(verifiable_presentation),
@@ -182,7 +173,7 @@ pub async fn send_authorization_response(state: &AppState, action: Action) -> an
     )?;
     info!("||DEBUG|| response generated: {:?}", response);
 
-    provider.send_response(response).await?;
+    provider_manager.send_response(response).await?;
     info!("||DEBUG|| response successfully sent");
 
     *state.current_user_prompt.lock().unwrap() = None;
