@@ -3,20 +3,21 @@ use iota_stronghold::{
     Client, KeyProvider, Location, SnapshotPath, Stronghold,
 };
 use log::{debug, info};
+use oid4vci::credential_format_profiles::{CredentialFormats, WithCredential};
+use uuid::Uuid;
 
 use crate::STRONGHOLD;
 
-pub async fn hash_password(password: &str) -> anyhow::Result<Vec<u8>> {
+pub fn hash_password(password: &str) -> anyhow::Result<Vec<u8>> {
     let config = argon2::Config::default();
 
-    let password_hash = argon2::hash_raw(password.as_ref(), b"D4F88D86F2C60DF8AB3EC3821083EF89", &config)
-        .expect("failed to hash password");
+    let password_hash = argon2::hash_raw(password.as_ref(), b"D4F88D86F2C60DF8AB3EC3821083EF89", &config)?;
     debug!("password hashed successfully");
 
     Ok(password_hash)
 }
 
-pub async fn create_new_stronghold(password_hash: Vec<u8>) -> anyhow::Result<()> {
+pub fn create_new_stronghold(password: &str) -> anyhow::Result<()> {
     let stronghold = Stronghold::default();
 
     let path = STRONGHOLD.lock().unwrap().to_str().unwrap().to_owned();
@@ -49,33 +50,35 @@ pub async fn create_new_stronghold(password_hash: Vec<u8>) -> anyhow::Result<()>
 
     stronghold
         .commit_with_keyprovider(
-            &SnapshotPath::from_path(path),
-            &KeyProvider::try_from(password_hash).unwrap(),
+            &SnapshotPath::from_path(format!("{path}.snapshot")),
+            &KeyProvider::try_from(hash_password(password)?)?,
         )
         .expect("stronghold could not commit");
 
     Ok(())
 }
 
-pub async fn get_public_key(password: &str) -> anyhow::Result<Vec<u8>> {
+pub fn load_stronghold(password: &str) -> anyhow::Result<(Stronghold, Client, String, KeyProvider, SnapshotPath)> {
     let stronghold = Stronghold::default();
-    let path = STRONGHOLD.lock().unwrap().clone().to_str().unwrap().to_owned();
-    let snapshot_path = SnapshotPath::from_path(path.clone());
-
-    let key = hash_password(password).await?;
-    let keyprovider = KeyProvider::try_from(key).expect("failed to load key");
+    let path = STRONGHOLD.lock().unwrap().to_str().unwrap().to_owned();
+    let snapshot_path = SnapshotPath::from_path(format!("{path}.snapshot"));
+    let keyprovider = KeyProvider::try_from(hash_password(password)?).expect("failed to load key");
 
     info!("Loading snapshot");
 
-    let client = stronghold
-        .load_client_from_snapshot(path.clone(), &keyprovider, &snapshot_path)
-        .expect("Could not load client from Snapshot");
+    let client = stronghold.load_client_from_snapshot(&path, &keyprovider, &snapshot_path)?;
+
+    Ok((stronghold, client, path, keyprovider, snapshot_path))
+}
+
+pub fn get_public_key(password: &str) -> anyhow::Result<Vec<u8>> {
+    let (_, client, path, _, _) = load_stronghold(password)?;
 
     debug!("Creating public key");
     let procedure_result = client
         .execute_procedure(StrongholdProcedure::PublicKey(PublicKey {
             ty: KeyType::Ed25519,
-            private_key: Location::counter(path.clone(), 0u8),
+            private_key: Location::counter(path, 0u8),
         }))
         .unwrap();
 
@@ -83,4 +86,48 @@ pub async fn get_public_key(password: &str) -> anyhow::Result<Vec<u8>> {
     info!(r#"Public key is "{}" (base64)"#, base64::encode(&output));
 
     Ok(output)
+}
+
+pub fn insert_into_stronghold(key: Uuid, value: Vec<u8>, password: &str) -> anyhow::Result<()> {
+    let (stronghold, client, path, key_provider, snapshot_path) = load_stronghold(password)?;
+
+    client
+        .store()
+        .insert(key.to_string().as_bytes().to_vec(), value, None)
+        .unwrap();
+
+    stronghold
+        .write_client(path)
+        .expect("store client state into snapshot state failed");
+
+    stronghold
+        .commit_with_keyprovider(&snapshot_path, &key_provider)
+        .expect("stronghold could not commit");
+
+    Ok(())
+}
+
+// TODO: fix this function's return type.
+pub fn get_all_from_stronghold(
+    password: &str,
+) -> anyhow::Result<Option<Vec<(Uuid, CredentialFormats<WithCredential>)>>> {
+    let (_, client, _, _, _) = load_stronghold(password)?;
+
+    let credentials = {
+        let mut credentials: Vec<(Uuid, CredentialFormats<WithCredential>)> = client
+            .store()
+            .keys()?
+            .iter()
+            .map(|key| {
+                (
+                    Uuid::parse_str(std::str::from_utf8(key).unwrap()).unwrap(),
+                    serde_json::from_str(std::str::from_utf8(&client.store().get(key).unwrap().unwrap()).unwrap())
+                        .unwrap(),
+                )
+            })
+            .collect();
+        credentials.sort_by(|a, b| a.0.cmp(&b.0));
+        credentials
+    };
+    Ok(Some(credentials))
 }
