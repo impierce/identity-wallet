@@ -210,7 +210,7 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
         }
 
         let buffer = json!(credential).to_string().as_bytes().to_vec();
-        insert_into_stronghold(key, buffer, "sup3rs3cr3t")?;
+        insert_into_stronghold(key, buffer, "sup3rSecr3t")?;
     }
     info!("credential_displays: {:?}", credential_displays);
 

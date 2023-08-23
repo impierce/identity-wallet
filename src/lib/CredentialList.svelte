@@ -23,7 +23,7 @@
     SheetTrigger
   } from '@impierce/ui-components';
   import CredentialDetails from '$lib/CredentialDetails.svelte';
-  import { AtSymbol, Cake, Home, Phone, Plus, User } from 'svelte-heros-v2';
+  import { AtSymbol, Cake, Home, Phone, Plus } from 'svelte-heros-v2';
   import Car from '~icons/ph/car-light';
   import Clapperboard from '~icons/lucide/clapperboard';
   import MailCheck from '~icons/lucide/mail-check';
@@ -35,7 +35,7 @@
   import EnvelopeSimple from '~icons/ph/envelope-simple-light';
   import SealCheck from '~icons/ph/seal-check-fill';
   import LL from '$src/i18n/i18n-svelte';
-  import UserCircle from '~icons/ph/user-circle-light';
+  import User from '~icons/ph/user';
 
   import House from '~icons/ph/house-light';
   import NoCredentials from './credentials/NoCredentials.svelte';
@@ -127,7 +127,7 @@
         description={credential?.at(1).issuer}
         color="bg-indigo-100"
       >
-        <span slot="icon"><UserCircle class="h-[18px] w-[18px] text-slate-800" /></span>
+        <span slot="icon"><User class="h-[18px] w-[18px] text-slate-800" /></span>
       </CredentialListEntry>
     {/each}
   </div>

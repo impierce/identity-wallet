@@ -46,14 +46,15 @@
 
   <!-- should have min height: full screen - smallest possible welcome header - bottom nav - safe areas (top, bottom) -->
   <div
-    in:fly={{ y: 24 }}
+    in:fly={{ y: 24, duration: 200 }}
     class="flex grow flex-col items-stretch justify-start rounded-t-[20px] bg-neutral-100 p-[18px]"
   >
     {#if $state?.credentials && $state?.credentials.length > 0}
       <Favorites />
       <CredentialList />
       <!-- container that animates and places the button -->
-      <div in:fly={{ y: 12, delay: 400, opacity: 0 }} class="absolute bottom-4 right-4">
+      <div in:fly={{ y: 12, delay: 100, opacity: 1, duration: 200 }} class="absolute bottom-4 right-4">
+      <!-- <div in:fade={{ delay: 200, duration: 200 }} class="absolute bottom-4 right-4"> -->
         <AddButton />
       </div>
     {:else if $state?.user_journey}
@@ -63,13 +64,13 @@
           <!-- TODO: extract icon component? -->
           <div class="relative z-10">
             <!-- z-index only applies to elements with explicit position, therefore also "relative" -->
-            <PaddedIcon icon={RocketLaunch}></PaddedIcon>
+            <PaddedIcon icon={RocketLaunch} />
           </div>
 
           <!-- Confetti -->
           <div class="absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2">
             <lottie-player
-              src="lottiefiles/bubble-burst-confetti-idQiUsReAi.json"
+              src="/lottiefiles/bubble-burst-confetti-idQiUsReAi.json"
               autoplay
               loop
               speed={0.25}
@@ -81,7 +82,7 @@
 
         <div class="select-none pt-[15px]">
           <p class="pb-[15px] text-2xl font-semibold text-black">{$LL.GETTING_STARTED.TITLE()}</p>
-          <p class="custom text-slate-500 w-[240px]">{$LL.GETTING_STARTED.SUBTITLE()}</p>
+          <p class="custom w-[240px] text-slate-500">{$LL.GETTING_STARTED.SUBTITLE()}</p>
         </div>
       </div>
 

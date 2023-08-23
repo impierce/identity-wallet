@@ -8,7 +8,7 @@
   import { fade, fly } from 'svelte/transition';
 </script>
 
-<div class="content-height relative flex flex-col bg-neutral-100" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
+<div class="content-height relative flex flex-col bg-neutral-100 dark:bg-slate-700" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <div class="absolute top-12 w-full">
     <!-- <LanguageSelect
       selected={$state?.locale}

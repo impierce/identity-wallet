@@ -16,21 +16,44 @@
   });
 
   // hex codes
-  let predefinedEmojis: Array<string> = [
-    '&#128522;', // smiling-face
-    '&#129412;', // unicorn
-    '&#129312;', // cowboy-hat-face
-    '&#129321;', // star-struck
-    '&#128053', // monkey-face
-    '&#128048', // rabbit-face
-    '&#128060', // panda-face
-    '&#129418', // fox-face
-    '&#128540' // twinking-face-with-tongue
+  let predefinedEmojis: Array<Array<string>> = [
+    // faces
+    [
+      '&#128578', // slightly-smiling-face
+      '&#128522', // smiling-face
+      '&#129312', // cowboy-hat-face
+      '&#129321', // star-struck
+      '&#129395', // partying-face
+      '&#128540', // twinking-face-with-tongue
+      '&#128526', // smiling-face-with-sunglasses
+      '&#129392', // smiling-face-with-3-hearts
+      '&#128527' // smirk
+    ],
+    // animals
+    [
+      '&#128053', // monkey-face
+      '&#128048', // rabbit-face
+      '&#128060', // panda-face
+      '&#129418', // fox-face
+      '&#128040', // koala
+      '&#128037', // baby-chick
+      '&#129417', // owl
+      '&#129412', // unicorn
+      '&#128025' // octopus
+    ],
+    // misc
+    [
+      '&#128161', // light-bulb
+      '&#127807', // herb
+      '&#128218', // books
+      '&#127969', // house-with-garden
+      '&#127965', // desert-island
+      '&#128188', // briefcase
+      '&#128084' // necktie
+    ]
   ];
 
   let emojiChoice: string | undefined = undefined;
-
-  console.log($open);
 </script>
 
 <!-- <TopNavigation title="Avatar" on:back={() => history.back()} /> -->
@@ -70,36 +93,35 @@
               <p class="pt-2 text-[11px]/[14px] font-normal">
                 Customize your UniMe with your own picture or emoji.
               </p>
-              <!-- <div class="break-keep text-sm">
-              Your UniMe app automatically tries to verify the identity of <span
-                class="underline underline-offset-2">BestDex</span
-              >
-              to provide you with a secure login.
-            </div> -->
             </div>
           </div>
         {/if}
-        <div slot="content" class="flex flex-col items-center space-y-4">
-          <div
-            class="grid w-fit grid-cols-3 place-items-center gap-2 rounded-3xl bg-neutral-100 p-2"
-          >
-            {#each predefinedEmojis as emoji}
-              <button
-                class="rounded-2xl border bg-white p-4 text-[32px]/[32px]"
-                on:click={() => {
-                  emojiChoice = emoji;
-                }}
-                >{@html emoji}
-              </button>
-            {/each}
-          </div>
-          <!-- <Button label="Choose from photo library" variant="secondary" disabled /> -->
-          <!-- TODO: add multiple steps inline in drawer -->
-          <!-- <Button label={$LL.CONTINUE()} on:click={() => goto('/goals')} /> -->
-          <!-- <button
+        <div
+          slot="content"
+          class="hide-scrollbar flex snap-x snap-mandatory flex-row items-start space-x-4 overflow-x-scroll"
+        >
+          {#each predefinedEmojis as page}
+            <div
+              class="grid min-w-fit snap-center grid-cols-3 place-items-center gap-2 rounded-3xl bg-neutral-100 p-2"
+            >
+              {#each page as emoji}
+                <button
+                  class="rounded-2xl border bg-white p-4 text-[32px]/[32px]"
+                  on:click={() => {
+                    emojiChoice = emoji;
+                  }}
+                  >{@html emoji}
+                </button>
+              {/each}
+            </div>
+            <!-- <Button label="Choose from photo library" variant="secondary" disabled /> -->
+            <!-- TODO: add multiple steps inline in drawer -->
+            <!-- <Button label={$LL.CONTINUE()} on:click={() => goto('/goals')} /> -->
+            <!-- <button
           class="w-full rounded-lg bg-indigo-500 px-4 py-2 text-white"
           on:click={() => goto('/goals')}>{$LL.CONTINUE()}</button
         > -->
+          {/each}
         </div>
         <button
           slot="close"

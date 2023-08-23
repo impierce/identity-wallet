@@ -42,6 +42,11 @@
     const detach = await attachConsole();
     loadAllLocales(); //TODO: performance: only load locale on user request
     dispatch({ type: '[App] Get state' });
+
+    // TODO: handle case where: user has set light mode explicitly in app state, but has "dark" system settings
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      document.documentElement.classList.add('dark');
+    }
   });
 
   let showDevMode = false;
@@ -117,8 +122,10 @@
       >
       <button
         class="flex-shrink-0 rounded-full bg-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
-        on:click={() => dispatch({ type: '[DEV] Load profile' })}>🦀</button
+        on:click={() => dispatch({ type: '[DEV] Load profile' })}
       >
+        <span class="text-[18px]/[18px]">🦀</span>
+      </button>
       <!-- Paste from Clipboard -->
       <AlertDialog>
         <AlertDialogTrigger>

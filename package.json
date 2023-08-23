@@ -17,12 +17,12 @@
     "typesafe-i18n": "typesafe-i18n --no-watch"
   },
   "dependencies": {
-    "@impierce/ui-components": "0.0.15-alpha",
     "@lottiefiles/lottie-player": "^2.0.2",
     "@melt-ui/svelte": "^0.34.1",
     "@tauri-apps/api": "2.0.0-alpha.5",
     "@tauri-apps/plugin-clipboard-manager": "2.0.0-alpha.0",
     "@tauri-apps/plugin-log": "2.0.0-alpha.0",
+    "qrcode": "^1.5.3",
     "svelte-heros-v2": "^0.7.1",
     "typesafe-i18n": "^5.24.3"
   },
@@ -42,6 +42,7 @@
     "@testing-library/svelte": "^3.2.2",
     "@tsconfig/svelte": "^3.0.0",
     "@types/node": "^18.7.10",
+    "@types/qrcode": "^1.5.1",
     "@typescript-eslint/eslint-plugin": "^5.54.1",
     "@typescript-eslint/parser": "^5.54.1",
     "autoprefixer": "^10.4.14",

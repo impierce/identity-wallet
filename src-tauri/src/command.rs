@@ -40,7 +40,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             // TODO: bug: if state is present, but empty, user will never be redirected to neither welcome or profile page
             *app_state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect(Redirect {
                 r#type: CurrentUserPromptType::Redirect,
-                target: "welcome/customize/avatar".to_string(),
+                target: "welcome".to_string(),
             }));
 
             if (*app_state.active_profile.lock().unwrap()).is_some() {

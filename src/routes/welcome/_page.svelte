@@ -32,7 +32,7 @@
   onMount(async () => {
     // usernameInput.focus();
     display_name = 'Tony Stark';
-    password = 'sup3rs3cr3t';
+    password = 'sup3rSecr3t';
   });
 </script>
 
