@@ -29,8 +29,8 @@ pub struct AppState {
     pub managers: tauri::async_runtime::Mutex<Managers>,
     pub active_profile: Mutex<Option<Profile>>,
     pub active_authorization_request: Mutex<Option<AuthorizationRequest>>,
-    pub locale: Mutex<String>,
-    pub credentials: Mutex<Vec<(String, Credential)>>,
+    pub locale: Mutex<Locale>,
+    pub credentials: Mutex<Vec<(String, serde_json::Value)>>,
     pub current_user_prompt: Mutex<Option<CurrentUserPrompt>>,
     pub debug_messages: Mutex<Vec<String>>,
 }
@@ -40,9 +40,9 @@ pub struct AppState {
 #[ts(export)]
 pub struct TransferState {
     pub active_profile: Option<Profile>,
-    pub locale: String,
+    pub locale: Locale,
     #[ts(type = "Array<{id: string, data: object}>")]
-    pub credentials: Vec<(String, Credential)>,
+    pub credentials: Vec<(String, serde_json::Value)>,
     pub current_user_prompt: Option<CurrentUserPrompt>,
     pub debug_messages: Vec<String>,
 }
@@ -57,6 +57,15 @@ impl From<&AppState> for TransferState {
             debug_messages: state.debug_messages.lock().unwrap().clone(),
         }
     }
+}
+
+#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default)]
+#[serde(rename_all = "lowercase")]
+pub enum Locale {
+    #[default]
+    En,
+    De,
+    Nl,
 }
 
 /// A profile of the current user.

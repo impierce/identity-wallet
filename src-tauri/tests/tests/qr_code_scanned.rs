@@ -1,28 +1,21 @@
 use crate::common::{
     assert_state_update::{assert_state_update, setup_state_file, setup_stronghold},
-    test_managers, TEST_PASSWORD,
+    test_managers,
 };
-use identity_wallet::{
-    crypto::stronghold::StrongholdManager,
-    state::{
-        actions::{Action, ActionType},
-        user_prompt::{CredentialOffer as CredentialOfferPrompt, CurrentUserPrompt, CurrentUserPromptType, Selection},
-        AppState, IdentityManager, Managers, Profile, TransferState,
-    },
+use identity_wallet::state::{
+    actions::{Action, ActionType},
+    user_prompt::{CredentialOffer as CredentialOfferPrompt, CurrentUserPrompt, CurrentUserPromptType, Selection},
+    AppState, Profile, TransferState,
 };
-use oid4vc_manager::{methods::key_method::KeySubject, ProviderManager};
+use oid4vci::credential_format_profiles::w3c_verifiable_credentials::jwt_vc_json::{self, JwtVcJson};
 use oid4vci::credential_format_profiles::{Credential, Parameters, WithCredential, WithParameters};
 use oid4vci::credential_offer::{Grants, PreAuthorizedCode};
-use oid4vci::{
-    credential_format_profiles::w3c_verifiable_credentials::jwt_vc_json::{self, JwtVcJson},
-    Wallet,
-};
 use oid4vci::{
     credential_format_profiles::CredentialFormats,
     credential_offer::{CredentialOffer, CredentialsObject},
 };
 use serde_json::json;
-use std::sync::{Arc, Mutex};
+use std::sync::Mutex;
 use uuid::Uuid;
 
 #[tokio::test]

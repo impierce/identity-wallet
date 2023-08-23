@@ -41,7 +41,7 @@ pub struct CredentialOffer {
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, TS, PartialEq)]
-#[ts(export, export_to = "bindings/user-prompt/CredentialOffer.ts")]
+#[ts(export, export_to = "bindings/user-prompt/PasswordRequired.ts")]
 pub struct PasswordRequired {
     pub r#type: CurrentUserPromptType,
 }

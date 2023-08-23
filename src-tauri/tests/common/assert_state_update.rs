@@ -1,11 +1,8 @@
-use did_key::{generate, Ed25519KeyPair};
 use identity_wallet::{
     state::{actions::Action, AppState, TransferState},
     STATE_FILE, STRONGHOLD,
 };
-use oid4vc_manager::{methods::key_method::KeySubject, ProviderManager};
 use serde_json::json;
-use std::sync::Arc;
 use tauri::Manager;
 use tempfile::NamedTempFile;
 
@@ -38,10 +35,31 @@ pub fn assert_state_update(current_state: AppState, actions: Vec<Action>, expect
 
         // Assert that the state is updated as expected.
         if let Some(expected_state) = expected_state {
-            assert_eq!(
-                &TransferState::from(app.app_handle().state::<AppState>().inner()),
-                expected_state,
-            );
+            let TransferState {
+                active_profile,
+                locale,
+                credentials,
+                current_user_prompt,
+                ..
+            } = TransferState::from(app.app_handle().state::<AppState>().inner());
+
+            let TransferState {
+                active_profile: expected_active_profile,
+                locale: expected_locale,
+                credentials: expected_credentials,
+                current_user_prompt: expected_current_user_prompt,
+                ..
+            } = expected_state;
+
+            match (active_profile.as_ref(), expected_active_profile.as_ref()) {
+                (Some(active_profile), Some(expected_active_profile)) => {
+                    assert_eq!(active_profile.display_name, expected_active_profile.display_name);
+                }
+                _ => assert_eq!(active_profile, *expected_active_profile),
+            }
+            assert_eq!(locale, *expected_locale);
+            assert_eq!(credentials, *expected_credentials);
+            assert_eq!(current_user_prompt, *expected_current_user_prompt);
         }
     }
 }

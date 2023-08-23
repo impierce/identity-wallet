@@ -4,7 +4,7 @@ use crate::state::reducers::authorization::{read_authorization_request, send_aut
 use crate::state::reducers::credential_offer::{read_credential_offer, send_credential_request};
 use crate::state::reducers::load_dev_profile::load_dev_profile;
 use crate::state::reducers::storage::unlock_storage;
-use crate::state::reducers::{create_did_key, initialize_stronghold, reset_state, set_locale};
+use crate::state::reducers::{create_identity, initialize_stronghold, reset_state, set_locale};
 use crate::state::user_prompt::{CurrentUserPrompt, CurrentUserPromptType, PasswordRequired, Redirect};
 use crate::state::{AppState, TransferState};
 use log::{info, warn};
@@ -21,16 +21,8 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
 
     match r#type {
         ActionType::GetState => {
-            let transfer_state: TransferState = load_state().await.unwrap_or(TransferState {
-                active_profile: None,
-                locale: "en".to_string(),
-                credentials: vec![],
-                current_user_prompt: Some(CurrentUserPrompt::Redirect(Redirect {
-                    r#type: CurrentUserPromptType::Redirect,
-                    target: "welcome".to_string(),
-                })),
-                debug_messages: vec![],
-            });
+            save_state(TransferState::from(app_state)).await.ok();
+            let transfer_state: TransferState = load_state().await.unwrap_or_default();
 
             // TODO: find a better way to populate all fields with values from json file
             *app_state.active_profile.lock().unwrap() = transfer_state.active_profile;
@@ -65,7 +57,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             if initialize_stronghold(app_state, action.clone()).await.is_ok() {
                 save_state(TransferState::from(app_state)).await.ok();
             }
-            if create_did_key(app_state, action).await.is_ok() {
+            if create_identity(app_state, action).await.is_ok() {
                 save_state(TransferState::from(app_state)).await.ok();
             }
             // When everything is done, we redirect the user to the profile page

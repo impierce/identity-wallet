@@ -36,26 +36,38 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> any
     let verifiable_credentials = stronghold_manager.get_all()?.unwrap();
     info!("verifiable credentials: {:?}", verifiable_credentials);
 
-    let uuids: Vec<String> = authorization_request
-        .presentation_definition()
-        .as_ref()
-        .unwrap()
-        .input_descriptors()
-        .iter()
-        .map(|input_descriptor| {
-            verifiable_credentials
-                .iter()
-                .find_map(|(uuid, verifiable_credential)| {
-                    let verifiable_credential = match verifiable_credential {
-                        CredentialFormats::JwtVcJson(jwt_vc_json) => jwt_vc_json.credential.clone(),
-                        _ => unimplemented!(),
-                    };
-                    evaluate_input(input_descriptor, &get_jwt_claims(&verifiable_credential))
-                        .then_some(uuid.to_string())
-                })
-                .unwrap()
-        })
-        .collect();
+    let uuids: Vec<String> = if authorization_request.presentation_definition().is_some() {
+        authorization_request
+            .presentation_definition()
+            .as_ref()
+            .unwrap()
+            .input_descriptors()
+            .iter()
+            .map(|input_descriptor| {
+                verifiable_credentials
+                    .iter()
+                    .find_map(|(uuid, verifiable_credential)| {
+                        let verifiable_credential = match verifiable_credential {
+                            CredentialFormats::JwtVcJson(jwt_vc_json) => jwt_vc_json.credential.clone(),
+                            _ => unimplemented!(),
+                        };
+                        evaluate_input(input_descriptor, &get_jwt_claims(&verifiable_credential))
+                            .then_some(uuid.to_string())
+                    })
+                    .unwrap()
+            })
+            .collect()
+    } else {
+        info!("||DEBUG|| generating response");
+        *state.debug_messages.lock().unwrap() = vec!["generating response".into()];
+        let response =
+            provider_manager.generate_response(authorization_request.clone(), Default::default(), None, None)?;
+        info!("||DEBUG|| response generated: {:?}", response);
+
+        provider_manager.send_response(response).await?;
+        info!("||DEBUG|| response successfully sent");
+        return Ok(());
+    };
 
     info!("uuids of VCs that can fulfill the request: {:?}", uuids);
 

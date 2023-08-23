@@ -95,5 +95,6 @@ pub fn get_jwt_claims(jwt: &serde_json::Value) -> serde_json::Value {
     let key = DecodingKey::from_secret(&[]);
     let mut validation = Validation::new(Algorithm::EdDSA);
     validation.insecure_disable_signature_validation();
+    validation.required_spec_claims.clear();
     decode(jwt.as_str().unwrap(), &key, &validation).unwrap().claims
 }

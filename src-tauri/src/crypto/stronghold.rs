@@ -103,10 +103,11 @@ impl StrongholdManager {
     }
 
     pub fn sign(&self, message: &[u8]) -> anyhow::Result<Vec<u8>> {
+        let client_path = STRONGHOLD.lock().unwrap().to_str().unwrap().to_owned();
         let procedure_result = self
             .client
             .execute_procedure(StrongholdProcedure::Ed25519Sign(Ed25519Sign {
-                private_key: Location::counter(self.client_path.as_bytes(), 0u8),
+                private_key: Location::counter(client_path.clone(), 0u8),
                 msg: message.to_vec(),
             }))?;
 

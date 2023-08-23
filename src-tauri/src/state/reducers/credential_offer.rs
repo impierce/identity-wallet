@@ -8,8 +8,10 @@ use crate::{
 };
 use did_key::{generate, Ed25519KeyPair};
 use identity_credential::credential;
+use identity_iota::{account::MethodContent, did::MethodRelationship};
 use log::info;
-use oid4vc_manager::methods::key_method::KeySubject;
+use oid4vc_core::Subject;
+use oid4vc_manager::methods::{iota_method::IotaSubject, key_method::KeySubject};
 use oid4vci::{
     credential_format_profiles::{CredentialFormats, WithCredential},
     credential_issuer::credential_issuer_metadata::CredentialIssuerMetadata,
@@ -40,23 +42,22 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::
     // The credential offer contains a credential issuer url.
     let credential_issuer_url = credential_offer.clone().credential_issuer;
 
+    info!("credential issuer url: {:?}", credential_issuer_url);
+
     // Get the credential issuer metadata.
-    let credential_issuer_metadata = credential_offer
-        .credentials
-        .iter()
-        .any(|credential| match credential {
-            CredentialsObject::ByReference(_) => true,
-            _ => false,
-        })
-        .then(|| {
-            tauri::async_runtime::block_on(async {
-                wallet
-                    .get_credential_issuer_metadata(credential_issuer_url.clone())
-                    .await
-                    .ok()
-            })
-            .unwrap()
-        });
+    let credential_issuer_metadata = if credential_offer.credentials.iter().any(|credential| match credential {
+        CredentialsObject::ByReference(_) => true,
+        _ => false,
+    }) {
+        wallet
+            .get_credential_issuer_metadata(credential_issuer_url.clone())
+            .await
+            .ok()
+    } else {
+        None
+    };
+
+    info!("credential issuer metadata: {:?}", credential_issuer_metadata);
 
     // For all credentials by reference, replace them with credentials by value using the CredentialIssuerMetadata.
     credential_offer
@@ -145,9 +146,11 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
 
     // Get an access token.
     let token_response = wallet
-        .get_access_token(authorization_server_metadata.token_endpoint, token_request)
+        .get_access_token(authorization_server_metadata.token_endpoint.unwrap(), token_request)
         .await
         .unwrap();
+
+    info!("token_response: {:?}", token_response);
 
     let credentials: Vec<CredentialFormats<WithCredential>> = match credential_offer_formats.len() {
         0 => vec![],
@@ -194,10 +197,7 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
 
         match credential {
             CredentialFormats::JwtVcJson(credential) => {
-                let credential_display = serde_json::from_value::<identity_credential::credential::Credential>(
-                    get_jwt_claims(&credential.credential)["vc"].clone(),
-                )
-                .unwrap();
+                let credential_display = get_jwt_claims(&credential.credential)["vc"].clone();
                 credential_displays.push((key.to_string(), credential_display));
             }
             _ => unimplemented!(),

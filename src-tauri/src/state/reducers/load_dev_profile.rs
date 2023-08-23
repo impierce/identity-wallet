@@ -54,12 +54,7 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
         .into_iter()
         .for_each(|(uuid, credential)| {
             let credential_display = match credential {
-                CredentialFormats::JwtVcJson(credential) => {
-                    serde_json::from_value::<identity_credential::credential::Credential>(
-                        get_jwt_claims(&credential.credential)["vc"].clone(),
-                    )
-                    .unwrap()
-                }
+                CredentialFormats::JwtVcJson(credential) => get_jwt_claims(&credential.credential)["vc"].clone(),
                 _ => unimplemented!(),
             };
 

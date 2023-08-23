@@ -18,10 +18,7 @@ async fn test_load_dev_profile() {
     let (key1, personal_information) = PERSONAL_INFORMATION.clone();
     let credential_display1 = match personal_information {
         CredentialFormats::JwtVcJson(credential) => {
-            let credential_display1 = serde_json::from_value::<identity_credential::credential::Credential>(
-                get_jwt_claims(&credential.credential)["vc"].clone(),
-            )
-            .unwrap();
+            let credential_display1 = get_jwt_claims(&credential.credential)["vc"].clone();
             credential_display1
         }
         _ => unimplemented!(),
@@ -30,10 +27,7 @@ async fn test_load_dev_profile() {
     let (key2, drivers_license_credential) = DRIVERS_LICENSE_CREDENTIAL.clone();
     let credential_display2 = match drivers_license_credential {
         CredentialFormats::JwtVcJson(credential) => {
-            let credential_display2 = serde_json::from_value::<identity_credential::credential::Credential>(
-                get_jwt_claims(&credential.credential)["vc"].clone(),
-            )
-            .unwrap();
+            let credential_display2 = get_jwt_claims(&credential.credential)["vc"].clone();
             credential_display2
         }
         _ => unimplemented!(),
@@ -49,7 +43,7 @@ async fn test_load_dev_profile() {
     };
 
     assert_state_update(
-        AppState { ..AppState::default() },
+        AppState::default(),
         vec![Action {
             r#type: ActionType::LoadDevProfile,
             payload: None,

@@ -26,12 +26,7 @@ pub async fn unlock_storage(state: &AppState, action: Action) -> anyhow::Result<
         .into_iter()
         .for_each(|(uuid, credential)| {
             let credential_display = match credential {
-                CredentialFormats::JwtVcJson(credential) => {
-                    serde_json::from_value::<identity_credential::credential::Credential>(
-                        get_jwt_claims(&credential.credential)["vc"].clone(),
-                    )
-                    .unwrap()
-                }
+                CredentialFormats::JwtVcJson(credential) => get_jwt_claims(&credential.credential)["vc"].clone(),
                 _ => unimplemented!(),
             };
 
