@@ -46,35 +46,6 @@ pub struct PasswordRequired {
     pub r#type: CurrentUserPromptType,
 }
 
-// pub trait UserActionprompt {
-//     fn get_type(&self) -> String;
-// }
-
-// #[derive(Clone, Debug, Serialize, Deserialize)]
-// struct UserActionprompt {
-//     r#type: UserActionpromptType,
-// }
-
-// impl UserActionprompt for Redirect {
-//     fn get_type(&self) -> String {
-//         self.r#type.to_string()
-//     }
-// }
-
-// impl<U: UserActionprompt> From<U> for Redirect where U: ?Sized {
-//     fn from(user_action_prompt: U) -> Redirect {
-//         Redirect {
-//             r#type: UserActionpromptType::Redirect,
-//             target: user_action_prompt.get_type()
-//         }
-//     }
-// }
-
-// impl WarningDialog for UserActionprompt {
-//     // user_action_prompt: UserActionprompt,
-//     // message: 'be_careful',
-// }
-
 #[derive(Clone, Serialize, Deserialize, Debug, TS, PartialEq)]
 #[serde(untagged)]
 #[ts(export, export_to = "bindings/user-prompt/CurrentUserPrompt.ts")]

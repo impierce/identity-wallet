@@ -3,6 +3,7 @@ use identity_wallet::{
     STATE_FILE, STRONGHOLD,
 };
 use serde_json::json;
+use std::sync::Arc;
 use tauri::Manager;
 use tempfile::NamedTempFile;
 

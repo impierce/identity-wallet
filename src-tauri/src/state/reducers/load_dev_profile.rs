@@ -1,8 +1,6 @@
-use std::sync::Arc;
-
 use crate::crypto::stronghold::StrongholdManager;
 use crate::did::did_key::generate_dev_did;
-use crate::get_jwt_claims;
+use crate::get_unverified_jwt_claims;
 use crate::state::actions::Action;
 use crate::state::user_prompt::{CurrentUserPrompt, CurrentUserPromptType, Redirect};
 use crate::state::{AppState, Profile};
@@ -11,6 +9,7 @@ use log::info;
 use oid4vci::credential_format_profiles::w3c_verifiable_credentials::jwt_vc_json::JwtVcJson;
 use oid4vci::credential_format_profiles::{Credential, CredentialFormats, WithCredential};
 use serde_json::json;
+use std::sync::Arc;
 use uuid::Uuid;
 
 lazy_static! {
@@ -54,7 +53,9 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
         .into_iter()
         .for_each(|(uuid, credential)| {
             let credential_display = match credential {
-                CredentialFormats::JwtVcJson(credential) => get_jwt_claims(&credential.credential)["vc"].clone(),
+                CredentialFormats::JwtVcJson(credential) => {
+                    get_unverified_jwt_claims(&credential.credential)["vc"].clone()
+                }
                 _ => unimplemented!(),
             };
 

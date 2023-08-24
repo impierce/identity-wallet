@@ -1,5 +1,5 @@
 use crate::{
-    get_jwt_claims,
+    get_unverified_jwt_claims,
     state::{
         actions::Action,
         user_prompt::{CurrentUserPrompt, CurrentUserPromptType, Selection},
@@ -51,7 +51,7 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> any
                             CredentialFormats::JwtVcJson(jwt_vc_json) => jwt_vc_json.credential.clone(),
                             _ => unimplemented!(),
                         };
-                        evaluate_input(input_descriptor, &get_jwt_claims(&verifiable_credential))
+                        evaluate_input(input_descriptor, &get_unverified_jwt_claims(&verifiable_credential))
                             .then_some(uuid.to_string())
                     })
                     .unwrap()
@@ -144,7 +144,7 @@ pub async fn send_authorization_response(state: &AppState, action: Action) -> an
         },
         verifiable_credentials
             .iter()
-            .map(|vc| get_jwt_claims(&vc.credential))
+            .map(|vc| get_unverified_jwt_claims(&vc.credential))
             .collect(),
     )?;
 

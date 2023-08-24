@@ -41,7 +41,7 @@ pub struct AppState {
 pub struct TransferState {
     pub active_profile: Option<Profile>,
     pub locale: Locale,
-    #[ts(type = "Array<{id: string, data: object}>")]
+    #[ts(type = "Array<[string, object]>")]
     pub credentials: Vec<(String, serde_json::Value)>,
     pub current_user_prompt: Option<CurrentUserPrompt>,
     pub debug_messages: Vec<String>,

@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use crate::{
     crypto::stronghold::StrongholdManager,
-    get_jwt_claims,
+    get_unverified_jwt_claims,
     state::{
         actions::Action,
         user_prompt::{CurrentUserPrompt, CurrentUserPromptType, Redirect},
@@ -26,7 +26,9 @@ pub async fn unlock_storage(state: &AppState, action: Action) -> anyhow::Result<
         .into_iter()
         .for_each(|(uuid, credential)| {
             let credential_display = match credential {
-                CredentialFormats::JwtVcJson(credential) => get_jwt_claims(&credential.credential)["vc"].clone(),
+                CredentialFormats::JwtVcJson(credential) => {
+                    get_unverified_jwt_claims(&credential.credential)["vc"].clone()
+                }
                 _ => unimplemented!(),
             };
 

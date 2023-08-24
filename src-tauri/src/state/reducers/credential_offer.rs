@@ -1,5 +1,5 @@
 use crate::{
-    get_jwt_claims,
+    get_unverified_jwt_claims,
     state::{
         actions::Action,
         user_prompt::{CredentialOffer as CredentialOfferPrompt, CurrentUserPrompt, CurrentUserPromptType},
@@ -197,7 +197,7 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
 
         match credential {
             CredentialFormats::JwtVcJson(credential) => {
-                let credential_display = get_jwt_claims(&credential.credential)["vc"].clone();
+                let credential_display = get_unverified_jwt_claims(&credential.credential)["vc"].clone();
                 credential_displays.push((key.to_string(), credential_display));
             }
             _ => unimplemented!(),
