@@ -47,28 +47,6 @@ pub async fn create_identity(state: &AppState, action: Action) -> anyhow::Result
     let keypair = from_existing_key::<Ed25519KeyPair>(public_key.as_slice(), None);
     let subject = Arc::new(KeySubject::from_keypair(keypair, Some(stronghold_manager.clone())));
 
-    let mut subject = IotaSubject::new().await.unwrap();
-    println!("Created new IOTA subject: {:?}", subject.identifier().unwrap());
-
-    // Add a new verification method using the Ed25519 algorithm.
-    subject
-        .add_verification_method(MethodContent::GenerateEd25519, AUTHENTICATION_KEY)
-        .await
-        .unwrap();
-    println!("Added new verification method: {:?}", AUTHENTICATION_KEY);
-
-    // Add the 'authentication' method relationship to the new verification method.
-    subject
-        .add_verification_relationships(AUTHENTICATION_KEY, vec![MethodRelationship::Authentication])
-        .await
-        .unwrap();
-    println!(
-        "Added 'authentication' relationship to verification method: {:?}",
-        AUTHENTICATION_KEY
-    );
-
-    let subject = Arc::new(subject);
-
     let provider_manager = ProviderManager::new([subject.clone()]).unwrap();
     let wallet: Wallet = Wallet::new(subject.clone());
 
