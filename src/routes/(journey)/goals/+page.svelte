@@ -11,6 +11,7 @@
   import LL from '$src/i18n/i18n-svelte';
   import ProgressBar from '$lib/components/ProgressBar.svelte';
   import Button from '$lib/components/Button.svelte';
+  import { fly } from 'svelte/transition';
 
   let journeyDefinition = $state?.user_journey;
 
@@ -24,12 +25,15 @@
 <!-- Navbar -->
 <TopNavigation on:back={() => history.back()} title={$state?.user_journey?.title}>
   <!-- TODO: replace BottomDrawer with AlertDialog -->
-  <BottomDrawer titleText={$LL.GETTING_STARTED.SKIP_TITLE()} descriptionText={$LL.GETTING_STARTED.SKIP_TEXT()}>
+  <BottomDrawer
+    titleText={$LL.GETTING_STARTED.SKIP_TITLE()}
+    descriptionText={$LL.GETTING_STARTED.SKIP_TEXT()}
+  >
     <button
       slot="trigger"
       let:trigger
       use:melt={trigger}
-      class="p-2 -mr-2 text-left text-[13px]/[24px] font-medium text-indigo-500"
+      class="-mr-2 p-2 text-left text-[13px]/[24px] font-medium text-indigo-500"
       >{$LL.SKIP()}</button
     >
     <!-- <button
@@ -66,6 +70,7 @@
 
   <div
     class="hide-scrollbar flex h-full flex-col items-center justify-between overflow-y-scroll p-6"
+    in:fly={{ x: 32, opacity: 1 }}
   >
     <div class="flex flex-col items-center">
       <!-- Header -->

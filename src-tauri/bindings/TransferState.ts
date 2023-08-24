@@ -2,4 +2,4 @@
 import type { CurrentUserPrompt } from "./user-prompt/CurrentUserPrompt";
 import type { Profile } from "./Profile";
 
-export interface TransferState { active_profile: Profile | null, locale: string, credentials: Array<[string, object]>, current_user_prompt: CurrentUserPrompt | null, debug_messages: Array<string>, user_journey?: object, }
+export interface TransferState { active_profile: Profile | null, locale: string, credentials: Array<{id: string, data: object}>, current_user_prompt: CurrentUserPrompt | null, debug_messages: Array<string>, user_journey?: object, }

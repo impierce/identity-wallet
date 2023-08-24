@@ -90,7 +90,7 @@
   in:fade={{ delay: 200 }}
   out:fade={{ duration: 200 }}
 >
-  <Button label="Continue" on:click={() => goto('/welcome/customize/theme')} />
+  <Button label="Continue" on:click={() => goto('/welcome/customize/name')} />
 </div>
 
 <style>

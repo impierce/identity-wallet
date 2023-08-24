@@ -27,6 +27,7 @@ async fn test_qr_code_scanned_read_credential_offer() {
         AppState {
             active_profile: Mutex::new(Some(Profile {
                 display_name: "Ferris".to_string(),
+                profile_picture: "&#129408".to_string(),
                 primary_did: "did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY".to_string(),
             })),
             ..AppState::default()
@@ -42,6 +43,7 @@ async fn test_qr_code_scanned_read_credential_offer() {
         vec![Some(TransferState {
             active_profile: Some(Profile {
                 display_name: "Ferris".to_string(),
+                profile_picture: "&#129408".to_string(),
                 primary_did: "did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY".to_string(),
             }),
             current_user_prompt: Some(CurrentUserPrompt::CredentialOffer(CredentialOfferPrompt {
@@ -99,6 +101,7 @@ async fn test_qr_code_scanned_read_authorization_request() {
         AppState {
             active_profile: Mutex::new(Some(Profile {
                 display_name: "Ferris".to_string(),
+                profile_picture: "&#129408".to_string(),
                 primary_did: "did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY".to_string(),
             })),
             ..AppState::default()
@@ -114,6 +117,7 @@ async fn test_qr_code_scanned_read_authorization_request() {
         vec![Some(TransferState {
             active_profile: Some(Profile {
                 display_name: "Ferris".to_string(),
+                profile_picture: "&#129408".to_string(),
                 primary_did: "did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY".to_string(),
             }),
             current_user_prompt: Some(CurrentUserPrompt::Selection(Selection {

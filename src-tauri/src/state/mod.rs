@@ -55,5 +55,6 @@ impl From<&AppState> for TransferState {
 #[ts(export)]
 pub struct Profile {
     pub display_name: String,
+    pub profile_picture: String,
     pub primary_did: String,
 }

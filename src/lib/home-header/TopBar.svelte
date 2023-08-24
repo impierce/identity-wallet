@@ -9,7 +9,7 @@
 <div class="flex items-center justify-between bg-white px-[18px]">
   <div class="flex h-[44px] w-[44px] items-center justify-center rounded-2xl bg-indigo-500">
     <span class="text-[28px]/[28px]">
-      {@html '&#129312;'} <!-- cowboy-hat-face -->
+      {@html $state?.active_profile?.profile_picture ?? ''}
     </span>
   </div>
   <button

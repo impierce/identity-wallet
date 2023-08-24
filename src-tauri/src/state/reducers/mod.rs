@@ -26,6 +26,9 @@ pub async fn create_did_key(state: &AppState, action: Action) -> anyhow::Result<
     let display_name = payload["display_name"]
         .as_str()
         .ok_or(anyhow::anyhow!("unable to read display_name from json payload"))?;
+    let profile_picture = payload["profile_picture"]
+        .as_str()
+        .ok_or(anyhow::anyhow!("unable to read profile_picture from json payload"))?;
     let password = payload["password"]
         .as_str()
         .ok_or(anyhow::anyhow!("unable to read password from json payload"))?;
@@ -34,6 +37,7 @@ pub async fn create_did_key(state: &AppState, action: Action) -> anyhow::Result<
     let did_document = generate_new_did(public_key).await?;
     let profile = Profile {
         display_name: display_name.to_string(),
+        profile_picture: profile_picture.to_string(),
         primary_did: did_document.id,
     };
     *state.active_profile.lock().unwrap() = Some(profile);
@@ -179,7 +183,7 @@ mod tests {
             &state,
             Action {
                 r#type: ActionType::CreateNew,
-                payload: Some(json!({"display_name": "Ferris", "password": "s3cr3t"})),
+                payload: Some(json!({"display_name": "Ferris", "profile_picture": "&#129408", "password": "s3cr3t"})),
             },
         )
         .await
@@ -187,6 +191,7 @@ mod tests {
 
         let profile = state.active_profile.lock().unwrap();
         assert_eq!(profile.as_ref().unwrap().display_name, "Ferris");
+        assert_eq!(profile.as_ref().unwrap().profile_picture, "&#129408");
         assert!(profile.as_ref().unwrap().primary_did.starts_with("did:key:"));
     }
 
@@ -195,6 +200,7 @@ mod tests {
         let state = AppState {
             active_profile: Some(Profile {
                 display_name: "Ferris".to_string(),
+                profile_picture: "&#129408".to_string(),
                 primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
             })
             .into(),

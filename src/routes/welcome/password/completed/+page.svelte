@@ -13,6 +13,7 @@
   import CheckCircle from '~icons/ph/check-circle-fill';
   import Shield from '~icons/ph/shield-fill';
   import '@lottiefiles/lottie-player';
+  import { onboarding_state } from '$src/stores';
 
   let passwordsEqual = true;
   let showPassword = false;
@@ -66,7 +67,7 @@
       <div class="relative z-10">
         <div class="text-[100px]/[100px]"><Shield class="text-indigo-500" /></div>
         <span class="absolute left-[calc(50%_-_22px)] top-[calc(50%_-_22px)] text-[44px]/[44px]">
-          {@html '&#129312;'}
+          {@html $onboarding_state.profile_picture}
         </span>
       </div>
       <div class="absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2">
@@ -80,7 +81,7 @@
         />
       </div>
     </div>
-    <p class="text-2xl font-semibold text-indigo-500">Nice Job.</p>
+    <p class="text-2xl font-semibold text-indigo-500">Nice Job, {$onboarding_state.profile_name}!</p>
     <!-- Hint: backup -->
     <!-- <div class="bg-slate-100 p-4 rounded-2xl w-full">
       <p class="text-sm text-slate-800">Let's create a quick backup.</p>
@@ -94,7 +95,11 @@
     on:click={() =>
       dispatch({
         type: '[DID] Create new',
-        payload: { display_name: 'Tony', password: 'sup3rSecr3t' }
+        payload: {
+          display_name: $onboarding_state.profile_name,
+          profile_picture: $onboarding_state.profile_picture,
+          password: 'sup3rSecr3t'
+        }
       })}
   />
 </div>

@@ -7,6 +7,7 @@
   import { fade } from 'svelte/transition';
   import Plus from '~icons/ph/plus-bold';
   import LL from '$src/i18n/i18n-svelte';
+  import { onboarding_state } from '$src/stores';
 
   const {
     elements: { trigger, content, arrow, close },
@@ -53,7 +54,9 @@
     ]
   ];
 
-  let emojiChoice: string | undefined = undefined;
+  $: {
+    console.log($onboarding_state);
+  }
 </script>
 
 <!-- <TopNavigation title="Avatar" on:back={() => history.back()} /> -->
@@ -72,9 +75,9 @@
           class="flex h-24 w-24 items-center justify-center rounded-full border border-slate-200 bg-white"
           use:melt={trigger}
         >
-          {#if emojiChoice}
+          {#if $onboarding_state.profile_picture}
             <span class="text-[44px]/[44px]">
-              {@html emojiChoice}
+              {@html $onboarding_state.profile_picture}
             </span>
           {:else}
             <Plus class="h-6 w-6" />
@@ -107,9 +110,7 @@
               {#each page as emoji}
                 <button
                   class="rounded-2xl border bg-white p-4 text-[32px]/[32px]"
-                  on:click={() => {
-                    emojiChoice = emoji;
-                  }}
+                  on:click={() => ($onboarding_state.profile_picture = emoji)}
                   >{@html emoji}
                 </button>
               {/each}
@@ -139,5 +140,9 @@
   in:fade={{ delay: 200 }}
   out:fade={{ duration: 200 }}
 >
-  <Button label="Continue" on:click={() => goto('/welcome/password')} disabled={!emojiChoice} />
+  <Button
+    label="Continue"
+    on:click={() => goto('/welcome/password')}
+    disabled={!$onboarding_state.profile_picture}
+  />
 </div>

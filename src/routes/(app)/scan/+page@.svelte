@@ -2,8 +2,18 @@
   import { goto } from '$app/navigation';
   // import Scanner from '$lib/Scanner.svelte';
   import { dispatch } from '$lib/dispatcher';
-  import { Button as ButtonDeprecated } from '@impierce/ui-components';
+  import { BottomNavBar, Button as ButtonDeprecated } from '@impierce/ui-components';
   import Button from '$src/lib/components/Button.svelte';
+  import {
+    scan,
+    Format,
+    cancel,
+    openAppSettings,
+    type Scanned
+  } from '@tauri-apps/plugin-barcode-scanner';
+  import { debug, info } from '@tauri-apps/plugin-log';
+  import { onDestroy, onMount } from 'svelte';
+  import { checkScanPrerequisites } from './utils';
 
   // let selected = {
   //   label: 'Scanner',
@@ -25,24 +35,16 @@
   //     ]);
   //   }
 
-  function onMessage(value) {
-    debug(`scanned: ${value.content}`);
-    // dispatch({ type: '[QR Code] Scanned', payload: { rawString: value.content } });
-    // let request_uri = decodeURI(value.content.split('request_uri=')[1]);
-    dispatch({ type: '[QR Code] Scanned', payload: { form_urlencoded: value.content } });
+  // variables
+  let scanning = false;
+  let permissionsGiven = false;
+
+  // functions
+  function onMessage(scanned: Scanned) {
+    debug(`scanned: ${scanned.content}`);
+    dispatch({ type: '[QR Code] Scanned', payload: { form_urlencoded: scanned.content } });
     goto('/me');
   }
-
-  const html = document.querySelector('body')!!;
-  html.classList.add('transparent');
-
-  import { scan, Format, cancel, openAppSettings } from '@tauri-apps/plugin-barcode-scanner';
-  import { debug, info } from '@tauri-apps/plugin-log';
-  import { onDestroy, onMount } from 'svelte';
-  import { checkScanPrerequisites } from './utils';
-  let scanning = false;
-
-  let permissionsGiven = false;
 
   function startScan() {
     info(
@@ -50,21 +52,15 @@
     );
     scanning = true;
     scan({ windowed: true, formats: [Format.QRCode] })
-      .then((res) => {
+      .then((scanned) => {
         scanning = false;
-        onMessage(res);
+        onMessage(scanned);
       })
       .catch((error) => {
         scanning = false;
         onMessage(error);
       });
   }
-
-  onDestroy(async () => {
-    await cancel();
-    html.classList.remove('transparent');
-    scanning = false;
-  });
 
   const mockScanSiopRequest = () => {
     const TEST_SIOP_REQUEST_URL_BY_REFERENCE =
@@ -97,7 +93,16 @@
     }
   };
 
+  // lifecycle functions
+  onDestroy(async () => {
+    document.documentElement.querySelector('body')!!.classList.remove('transparent');
+    scanning = false;
+    await cancel();
+  });
+
   onMount(async () => {
+    scanning = true;
+    document.documentElement.querySelector('body')!!.classList.add('transparent');
     permissionsGiven = await checkScanPrerequisites();
     if (permissionsGiven) {
       startScan();
@@ -157,7 +162,11 @@
 <!-- ############ -->
 
 <div class="fill-screen">
-  <div class:invisible={scanning} class="flex h-full flex-col items-center justify-center p-8">
+  <!-- visible when not scanning -->
+  <div
+    class:invisible={scanning}
+    class="relative flex h-full flex-col items-center justify-center bg-neutral-100 p-8"
+  >
     {#if !permissionsGiven}
       <div class="flex flex-col items-center space-y-2">
         <div class="rounded-lg bg-red-100 px-8 py-4 text-red-600">Permissions not given</div>
@@ -166,19 +175,37 @@
       <p class="my-4 h-[1px] w-full bg-slate-200" />
     {/if}
     <div class="flex flex-col space-y-2">
-      <ButtonDeprecated variant="secondary" on:click={startScan}>Start new scan</ButtonDeprecated>
-      <ButtonDeprecated variant="secondary" on:click={mockScanSiopRequest}
+      <ButtonDeprecated variant="secondary" class="bg-neutral-300" on:click={startScan}
+        >Start new scan</ButtonDeprecated
+      >
+      <ButtonDeprecated variant="secondary" class="bg-neutral-300" on:click={mockScanSiopRequest}
         >Mock SIOP request</ButtonDeprecated
       >
-      <ButtonDeprecated variant="secondary" on:click={() => mockScanCredentialOffer(1)} disabled
-        >Mock Credential Offer (single)</ButtonDeprecated
+      <ButtonDeprecated
+        variant="secondary"
+        class="bg-neutral-300"
+        on:click={() => mockScanCredentialOffer(1)}
+        disabled>Mock Credential Offer (single)</ButtonDeprecated
       >
-      <ButtonDeprecated variant="secondary" on:click={() => mockScanCredentialOffer(2)}
-        >Mock Credential Offer (multi)</ButtonDeprecated
+      <ButtonDeprecated
+        variant="secondary"
+        class="bg-neutral-300"
+        on:click={() => mockScanCredentialOffer(2)}>Mock Credential Offer (multi)</ButtonDeprecated
       >
     </div>
+    <div class="absolute bottom-[calc(56px_+_var(--safe-area-inset-bottom)_-_9px)] w-full">
+      <BottomNavBar
+        active="scan"
+        on:me={() => goto('/me')}
+        on:scan={() => goto('/scan')}
+        on:activity={() => goto('/activity')}
+      />
+    </div>
+    <div class="safe-area-top" />
+    <div class="safe-area-bottom" />
   </div>
 
+  <!-- visible during scanning -->
   <div class="scanning full-height" class:invisible={!scanning}>
     <div class="scanner-background">
       <!-- this background simulates the camera view -->
@@ -186,7 +213,7 @@
     <div class="full-height my-container">
       <div class="barcode-scanner--area--container">
         <div class="relative">
-          <p>Aim your camera at a QR code</p>
+          <!-- <p>Aim your camera at a QR code</p> -->
         </div>
         <div class="square surround-cover">
           <div class="barcode-scanner--area--outer surround-cover">
@@ -194,7 +221,7 @@
           </div>
         </div>
       </div>
-      <div class="absolute bottom-12 left-[45%]">
+      <div class="fixed bottom-12 left-[calc(50%_-_42px)]">
         <ButtonDeprecated
           class="bg-red-100 font-semibold text-red-500 shadow"
           on:click={() => goto('/me')}>Cancel</ButtonDeprecated

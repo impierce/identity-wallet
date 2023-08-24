@@ -1,4 +1,4 @@
-import { readable } from 'svelte/store';
+import { readable, writable } from 'svelte/store';
 import { listen } from '@tauri-apps/api/event';
 import { goto } from '$app/navigation';
 import { setLocale } from '$src/i18n/i18n-svelte';
@@ -15,6 +15,10 @@ interface StateChangedEvent {
   id: number;
 }
 
+/**
+ * A read-only state that is updated by the Rust backend.
+ * If the frontend intends to change the state, it must dispatch an action to the backend.
+ */
 export const state = readable<State>(undefined, (set) => {
   const unlisten = listen('state-changed', (event: StateChangedEvent) => {
     const state = event.payload;
@@ -32,3 +36,17 @@ export const state = readable<State>(undefined, (set) => {
   });
   // TODO: unsubscribe from listener!
 });
+
+/**
+ * A state only used by the frontend for storing display logic.
+ * Never touches the Rust backend and is therefore not persisted across app restarts.
+ * This is useful during the onboarding process,
+ * where the user sets their preferences and only in the last step they are pushed to the backend.
+ */
+export const onboarding_state = writable<OnboardingState>({});
+
+interface OnboardingState {
+  profile_name?: string;
+  profile_picture?: string;
+  theme?: string;
+}
