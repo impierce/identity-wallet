@@ -1,5 +1,6 @@
 <script lang="ts">
   import { melt } from '@melt-ui/svelte';
+
   import Check from '~icons/ph/check-bold';
 
   export let root: any;

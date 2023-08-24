@@ -1,7 +1,8 @@
 <script lang="ts">
   import { CredentialListEntry } from '@impierce/ui-components';
-  import MailCheck from '~icons/lucide/mail-check';
+
   import Home from '~icons/lucide/home';
+  import MailCheck from '~icons/lucide/mail-check';
 </script>
 
 <div class="flex flex-col space-y-4">

@@ -1,6 +1,8 @@
 <script lang="ts">
-  import { createDropdownMenu, melt } from '@melt-ui/svelte';
   import { fly } from 'svelte/transition';
+
+  import { createDropdownMenu, melt } from '@melt-ui/svelte';
+
   import DotsThreeVertical from '~icons/ph/dots-three-vertical-bold';
 
   const {

@@ -1,12 +1,15 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+
+  import { TopNavigation } from '@impierce/ui-components';
+  import { createCheckbox, melt } from '@melt-ui/svelte';
+
   import Button from '$src/lib/components/Button.svelte';
   import CredentialListEntry from '$src/lib/components/CredentialListEntry.svelte';
   import PaddedIcon from '$src/lib/components/PaddedIcon.svelte';
   import { dispatch } from '$src/lib/dispatcher';
   import { state } from '$src/stores';
-  import { TopNavigation } from '@impierce/ui-components';
-  import { createCheckbox, melt } from '@melt-ui/svelte';
+
   import Check from '~icons/ph/check-bold';
   import RocketLaunch from '~icons/ph/rocket-launch';
   import SealCheck from '~icons/ph/seal-check-fill';

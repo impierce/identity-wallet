@@ -1,12 +1,15 @@
-import { readable, writable } from 'svelte/store';
-import { listen } from '@tauri-apps/api/event';
 import { goto } from '$app/navigation';
+import { readable, writable } from 'svelte/store';
+
+import { listen } from '@tauri-apps/api/event';
+import { debug, info } from '@tauri-apps/plugin-log';
+
 import { setLocale } from '$src/i18n/i18n-svelte';
 import type { Locales } from '$src/i18n/i18n-types';
+
 // TODO: run some copy task instead of importing across root to make the frontend independent
 import type { TransferState as State } from '../src-tauri/bindings/TransferState';
 import type { Redirect } from '../src-tauri/bindings/user-flow/Redirect';
-import { debug, info } from '@tauri-apps/plugin-log';
 
 interface StateChangedEvent {
   event: string;

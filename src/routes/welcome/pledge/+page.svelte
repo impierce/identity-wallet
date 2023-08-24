@@ -1,11 +1,14 @@
 <script lang="ts">
   import { beforeNavigate, goto } from '$app/navigation';
-  import Button from '$src/lib/components/Button.svelte';
-  import { TopNavigation } from '@impierce/ui-components';
+  import { page } from '$app/stores';
   import { onMount } from 'svelte';
   import { fade, fly, slide } from 'svelte/transition';
-  import { page } from '$app/stores';
+
+  import { TopNavigation } from '@impierce/ui-components';
   import { createAccordion, melt } from '@melt-ui/svelte';
+
+  import Button from '$src/lib/components/Button.svelte';
+
   import CaretDown from '~icons/ph/caret-down-bold';
 
   $: {
@@ -58,7 +61,7 @@
 </div>
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <!-- <div class="mt-12 grow p-4" in:fly={{ x: 300, delay: 300 }} out:fly={{ x: -300, duration: 300 }}> -->
-  <div class="pb-8 pt-4 px-2">
+  <div class="px-2 pb-8 pt-4">
     <p class="pb-4 text-3xl font-semibold text-slate-800">
       No funny <span class="text-indigo-500">business</span>
     </p>

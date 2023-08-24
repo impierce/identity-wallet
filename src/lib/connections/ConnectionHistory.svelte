@@ -1,14 +1,14 @@
 <script lang="ts">
   import exampleEvents from '$lib/example/data/events.json';
   import type { Event, EventType } from '$lib/example/model/event';
-  import InitialConnection from '$lib/history/events/InitialConnection.svelte';
   import CredentialOffer from '$lib/history/events/CredentialOffer.svelte';
+  import InitialConnection from '$lib/history/events/InitialConnection.svelte';
   import Login from '$lib/history/events/Login.svelte';
 
-  import KeyRound from '~icons/lucide/key-round';
-  import Sprout from '~icons/lucide/sprout';
   import Download from '~icons/lucide/download';
   import HelpCircle from '~icons/lucide/help-circle';
+  import KeyRound from '~icons/lucide/key-round';
+  import Sprout from '~icons/lucide/sprout';
 
   const events: Event[] = exampleEvents
     .map((e) => ({ ...e, type: e.type as EventType })) // explicit type cast

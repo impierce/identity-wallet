@@ -40,6 +40,7 @@
     "@tauri-apps/cli": "2.0.0-alpha.10",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/svelte": "^3.2.2",
+    "@trivago/prettier-plugin-sort-imports": "^4.2.0",
     "@tsconfig/svelte": "^3.0.0",
     "@types/node": "^18.7.10",
     "@types/qrcode": "^1.5.1",

@@ -1,6 +1,6 @@
 <script lang="ts">
-  import Pencil from '~icons/lucide/pencil';
   import BadgeCheck from '~icons/lucide/badge-check';
+  import Pencil from '~icons/lucide/pencil';
 
   export let id: string;
   export let domain: string;

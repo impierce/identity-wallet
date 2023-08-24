@@ -1,27 +1,30 @@
 <script lang="ts">
+  import { CheckBadge } from 'svelte-heros-v2';
+
   import {
-    AlertDialog,
-    AlertDialogTrigger,
-    AlertDialogContent,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogCancel,
-    AlertDialogAction,
-    Checkbox,
-    Button,
     Accordion,
+    AccordionContent,
     AccordionItem,
     AccordionTrigger,
-    AccordionContent
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+    Button,
+    Checkbox
   } from '@impierce/ui-components';
-  import { state } from '$src/stores';
-  import LL from '$src/i18n/i18n-svelte';
-  import { CheckBadge } from 'svelte-heros-v2';
+
   import { dispatch } from '$lib/dispatcher';
-  import CredentialSubject from './CredentialSubject.svelte';
+  import LL from '$src/i18n/i18n-svelte';
+  import { state } from '$src/stores';
+
   import CredentialOffer from './CredentialOffer.svelte';
+  import CredentialSubject from './CredentialSubject.svelte';
 
   export let isOpen: boolean;
 
@@ -146,7 +149,7 @@
                       bind:checked={selected[i]}
                     />
                   </div>
-                  <div class="break-all rounded bg-slate-200 px-4 py-2 w-full">
+                  <div class="w-full break-all rounded bg-slate-200 px-4 py-2">
                     <CredentialOffer data={offer.credential_definition} />
                   </div>
                 </div>

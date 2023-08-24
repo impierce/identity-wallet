@@ -1,6 +1,7 @@
 import { invoke } from '@tauri-apps/api/tauri';
-import type { Action } from '../../src-tauri/bindings/Action';
 import { info } from '@tauri-apps/plugin-log';
+
+import type { Action } from '../../src-tauri/bindings/Action';
 
 /**
  * Dispatches an action to the Tauri backend.

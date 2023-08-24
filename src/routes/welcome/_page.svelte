@@ -1,13 +1,15 @@
 <script lang="ts">
-  import { Button, LoadingSpinner, Input, Label } from '@impierce/ui-components';
-  import LL from '$src/i18n/i18n-svelte';
-  import LocaleSelect from '$lib/LocaleSelect.svelte';
-  import { dispatch } from '$lib/dispatcher';
   import { onMount } from 'svelte';
 
+  import { Button, Input, Label, LoadingSpinner } from '@impierce/ui-components';
+
+  import LocaleSelect from '$lib/LocaleSelect.svelte';
+  import { dispatch } from '$lib/dispatcher';
+  import LL from '$src/i18n/i18n-svelte';
+
+  import DE from '~icons/flag/de-4x3';
   import GB from '~icons/flag/gb-4x3';
   import NL from '~icons/flag/nl-4x3';
-  import DE from '~icons/flag/de-4x3';
 
   //   const registerFocus = useFocus();
 

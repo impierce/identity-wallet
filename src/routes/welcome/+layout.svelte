@@ -1,9 +1,12 @@
 <script lang="ts">
-  import { goto, beforeNavigate } from '$app/navigation';
-  import Button from '$src/lib/components/Button.svelte';
-  import { TopNavigation } from '@impierce/ui-components';
-  import { fly } from 'svelte/transition';
+  import { beforeNavigate, goto } from '$app/navigation';
   import { page } from '$app/stores';
+  import { fly } from 'svelte/transition';
+
+  import { TopNavigation } from '@impierce/ui-components';
+
+  import Button from '$src/lib/components/Button.svelte';
+
   import type { LayoutData } from './$types';
 
   export let data: LayoutData;

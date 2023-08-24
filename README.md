@@ -47,14 +47,6 @@ npm run format
 npm run test
 ```
 
-<!-- ### Run Android app in emulator on macOS
-
-```sh
-brew install openssl@3
-export OPENSSL_INCLUDE_DIR=/opt/homebrew/opt/openssl@3/include
-export OPENSSL_LIB_DIR=/opt/homebrew/opt/openssl@3/lib
-``` -->
-
 ## Release
 
 ### Signing Android App Bundle (AAB)

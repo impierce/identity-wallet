@@ -1,8 +1,9 @@
 <script lang="ts">
   import { melt } from '@melt-ui/svelte';
+
+  import CaretRight from '~icons/ph/caret-right-bold';
   import CheckCircle from '~icons/ph/check-circle';
   import Trophy from '~icons/ph/trophy-fill';
-  import CaretRight from '~icons/ph/caret-right-bold';
 
   export let trigger: any;
   export let label: string;

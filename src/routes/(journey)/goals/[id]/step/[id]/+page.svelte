@@ -2,8 +2,8 @@
   import { Button, Input } from '@impierce/ui-components';
 </script>
 
-<div class="flex items-center justify-center flex-col h-full space-y-8 p-8 bg-neutral-100">
-  <p class="text-sm rounded bg-orange-100 px-4 py-2 font-medium text-orange-600">
+<div class="flex h-full flex-col items-center justify-center space-y-8 bg-neutral-100 p-8">
+  <p class="rounded bg-orange-100 px-4 py-2 text-sm font-medium text-orange-600">
     TODO: send email
   </p>
   <Input type="text" placeholder="Enter your email" class="w-fit" />

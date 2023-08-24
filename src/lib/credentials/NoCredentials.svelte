@@ -1,6 +1,7 @@
 <script lang="ts">
-  import LL from '$src/i18n/i18n-svelte';
   import PaddedIcon from '$lib/components/PaddedIcon.svelte';
+  import LL from '$src/i18n/i18n-svelte';
+
   import Ghost from '~icons/ph/ghost-fill';
 </script>
 

@@ -1,9 +1,11 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { fade } from 'svelte/transition';
+
+  import { Input, SearchInput, TopNavigation } from '@impierce/ui-components';
+
   import Button from '$src/lib/components/Button.svelte';
   import { onboarding_state } from '$src/stores';
-  import { Input, SearchInput, TopNavigation } from '@impierce/ui-components';
-  import { fade } from 'svelte/transition';
 
   $: {
     console.log($onboarding_state);

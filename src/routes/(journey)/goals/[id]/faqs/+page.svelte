@@ -1,18 +1,20 @@
 <script lang="ts">
+  /* TODO: extract to ui-component */
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import Button from '$lib/components/Button.svelte';
-  import { state } from '$src/stores';
-  import type { Goal } from '../../types';
-  import LL from '$src/i18n/i18n-svelte';
 
-  /* TODO: extract to ui-component */
   import {
     Accordion,
     AccordionContent,
     AccordionItem,
     AccordionTrigger
   } from '@impierce/ui-components';
+
+  import Button from '$lib/components/Button.svelte';
+  import LL from '$src/i18n/i18n-svelte';
+  import { state } from '$src/stores';
+
+  import type { Goal } from '../../types';
 
   let goal: Goal = $state?.user_journey?.goals.find((g) => g.id === parseInt($page.params.id));
 </script>

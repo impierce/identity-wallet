@@ -1,5 +1,7 @@
 <script lang="ts">
-  import { state } from '$src/stores';
+  import { AtSymbol, Cake, Home, Phone, Plus } from 'svelte-heros-v2';
+  import { fade, fly } from 'svelte/transition';
+
   import {
     AlertDialog,
     AlertDialogAction,
@@ -22,25 +24,26 @@
     SheetTitle,
     SheetTrigger
   } from '@impierce/ui-components';
+
   import CredentialDetails from '$lib/CredentialDetails.svelte';
-  import { AtSymbol, Cake, Home, Phone, Plus } from 'svelte-heros-v2';
-  import Car from '~icons/ph/car-light';
-  import Clapperboard from '~icons/lucide/clapperboard';
-  import MailCheck from '~icons/lucide/mail-check';
-  import GraduationCap from '~icons/ph/graduation-cap-light';
-  import HomeLucide from '~icons/lucide/home';
-  import Percent from '~icons/ph/percent-light';
-  import ArrowDownAZ from '~icons/lucide/arrow-down-a-z';
-  import { fade, fly } from 'svelte/transition';
-  import EnvelopeSimple from '~icons/ph/envelope-simple-light';
-  import SealCheck from '~icons/ph/seal-check-fill';
   import LL from '$src/i18n/i18n-svelte';
+  import { state } from '$src/stores';
+
+  import ArrowDownAZ from '~icons/lucide/arrow-down-a-z';
+  import Clapperboard from '~icons/lucide/clapperboard';
+  import HomeLucide from '~icons/lucide/home';
+  import MailCheck from '~icons/lucide/mail-check';
+  import Car from '~icons/ph/car-light';
+  import EnvelopeSimple from '~icons/ph/envelope-simple-light';
+  import GraduationCap from '~icons/ph/graduation-cap-light';
+  import House from '~icons/ph/house-light';
+  import Percent from '~icons/ph/percent-light';
+  import SealCheck from '~icons/ph/seal-check-fill';
   import User from '~icons/ph/user';
 
-  import House from '~icons/ph/house-light';
-  import NoCredentials from './credentials/NoCredentials.svelte';
-  import CredentialListEntry from './components/CredentialListEntry.svelte';
   import type { TransferState } from '../../src-tauri/bindings/TransferState';
+  import CredentialListEntry from './components/CredentialListEntry.svelte';
+  import NoCredentials from './credentials/NoCredentials.svelte';
 
   // TODO: improve typing
   let credentials: TransferState['credentials'] = [];

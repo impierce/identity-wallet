@@ -1,8 +1,10 @@
 <script lang="ts">
-  import { state } from '$src/stores';
-  import CaretRight from '~icons/ph/caret-right-bold';
   import { goto } from '$app/navigation';
+
   import ProgressBar from '$lib/components/ProgressBar.svelte';
+  import { state } from '$src/stores';
+
+  import CaretRight from '~icons/ph/caret-right-bold';
 
   // TODO: if user_journey.goals, then calculate completed percentage
 </script>

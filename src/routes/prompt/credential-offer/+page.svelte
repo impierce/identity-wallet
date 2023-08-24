@@ -1,18 +1,21 @@
 <script lang="ts">
-  import { state } from '$src/stores';
-  import { TopNavigation } from '@impierce/ui-components';
-  import PlugsConnected from '~icons/ph/plugs-connected-fill';
-  import WarningCircle from '~icons/ph/warning-circle-fill';
-  import DownloadSimple from '~icons/ph/download-simple-fill';
-  import X from '~icons/ph/x-bold';
-  import Check from '~icons/ph/check-bold';
-  import Question from '~icons/ph/question';
-  import { createCheckbox, createPopover, melt } from '@melt-ui/svelte';
-  import { fade } from 'svelte/transition';
-  import { dispatch } from '$lib/dispatcher';
   import { goto } from '$app/navigation';
-  import PaddedIcon from '$lib/components/PaddedIcon.svelte';
+  import { fade } from 'svelte/transition';
+
+  import { TopNavigation } from '@impierce/ui-components';
+  import { createCheckbox, createPopover, melt } from '@melt-ui/svelte';
+
   import Button from '$lib/components/Button.svelte';
+  import PaddedIcon from '$lib/components/PaddedIcon.svelte';
+  import { dispatch } from '$lib/dispatcher';
+  import { state } from '$src/stores';
+
+  import Check from '~icons/ph/check-bold';
+  import DownloadSimple from '~icons/ph/download-simple-fill';
+  import PlugsConnected from '~icons/ph/plugs-connected-fill';
+  import Question from '~icons/ph/question';
+  import WarningCircle from '~icons/ph/warning-circle-fill';
+  import X from '~icons/ph/x-bold';
 
   const {
     elements: { root, input },

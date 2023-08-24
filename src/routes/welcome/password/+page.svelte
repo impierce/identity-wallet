@@ -1,16 +1,20 @@
 <script lang="ts">
-  import { dispatch } from '$src/lib/dispatcher';
+  import { goto } from '$app/navigation';
+  import { fade } from 'svelte/transition';
+
   import { BottomDrawer, TopNavigation } from '@impierce/ui-components';
   import { melt } from '@melt-ui/svelte';
+
   import LL from '$src/i18n/i18n-svelte';
-  import { fade } from 'svelte/transition';
   import Button from '$src/lib/components/Button.svelte';
+  import { dispatch } from '$src/lib/dispatcher';
+
+  import CheckCircle from '~icons/ph/check-circle-fill';
+  import Circle from '~icons/ph/circle';
   import Eye from '~icons/ph/eye';
   import EyeClosed from '~icons/ph/eye-closed';
-  import { goto } from '$app/navigation';
-  import { passwordPolicy, checkPasswordPolicy } from './utils';
-  import Circle from '~icons/ph/circle';
-  import CheckCircle from '~icons/ph/check-circle-fill';
+
+  import { checkPasswordPolicy, passwordPolicy } from './utils';
 
   // TODO: remove
   const initialPasswordValue = 'sup3rSecr3t';
@@ -83,7 +87,7 @@
     </div>
   </div>
   <div class="mt-6">
-    <p class="text-[12px]/[20px] text-slate-500 font-medium">Your password must contain</p>
+    <p class="text-[12px]/[20px] font-medium text-slate-500">Your password must contain</p>
     <div class="flex flex-wrap pt-3">
       {#each passwordPolicy as rule}
         {#if passwordPolicyViolations.indexOf(rule.name) > -1}
@@ -110,10 +114,10 @@
   </div>
 </div>
 
-<div
-  class="rounded-t-3xl bg-white p-6"
-  in:fade={{ delay: 200 }}
-  out:fade={{ duration: 200 }}
->
-  <Button label="Continue" on:click={() => goto('/welcome/password/confirm')} disabled={passwordPolicyViolations.length > 0} />
+<div class="rounded-t-3xl bg-white p-6" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
+  <Button
+    label="Continue"
+    on:click={() => goto('/welcome/password/confirm')}
+    disabled={passwordPolicyViolations.length > 0}
+  />
 </div>

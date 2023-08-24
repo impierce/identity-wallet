@@ -1,6 +1,8 @@
 <script lang="ts">
+  import { ActivityTabs, MeltUiActivityTabs, SearchInput } from '@impierce/ui-components';
+
   import ConnectionsList from '$lib/connections/ConnectionsList.svelte';
-  import { MeltUiActivityTabs, ActivityTabs, SearchInput } from '@impierce/ui-components';
+
   import ArrowDownAZ from '~icons/lucide/arrow-down-a-z';
 </script>
 
@@ -18,7 +20,7 @@
       </div>
       <ConnectionsList />
     </div>
-    <div slot="history" class="h-full p-5 flex justify-center items-center">
+    <div slot="history" class="flex h-full items-center justify-center p-5">
       <div class="font-medium text-slate-400">No history yet</div>
     </div>
   </MeltUiActivityTabs>

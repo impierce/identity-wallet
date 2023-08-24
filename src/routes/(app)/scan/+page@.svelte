@@ -1,18 +1,21 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  // import Scanner from '$lib/Scanner.svelte';
-  import { dispatch } from '$lib/dispatcher';
+  import { onDestroy, onMount } from 'svelte';
+
   import { BottomNavBar, Button as ButtonDeprecated } from '@impierce/ui-components';
-  import Button from '$src/lib/components/Button.svelte';
   import {
-    scan,
     Format,
+    type Scanned,
     cancel,
     openAppSettings,
-    type Scanned
+    scan
   } from '@tauri-apps/plugin-barcode-scanner';
   import { debug, info } from '@tauri-apps/plugin-log';
-  import { onDestroy, onMount } from 'svelte';
+
+  // import Scanner from '$lib/Scanner.svelte';
+  import { dispatch } from '$lib/dispatcher';
+  import Button from '$src/lib/components/Button.svelte';
+
   import { checkScanPrerequisites } from './utils';
 
   // let selected = {

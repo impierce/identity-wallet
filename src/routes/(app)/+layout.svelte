@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { BottomNavBar } from '@impierce/ui-components';
-  import { page } from '$app/stores';
   import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
+
+  import { BottomNavBar } from '@impierce/ui-components';
 
   $: active = $page.route.id?.split('/').at(2) ?? 'me';
 </script>

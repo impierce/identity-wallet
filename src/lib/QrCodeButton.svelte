@@ -1,20 +1,21 @@
 <script lang="ts">
   // import { QrCode } from 'svelte-heros-v2';
-  import { dispatch } from '$lib/dispatcher';
-  // import { LoadingSpinner } from '@impierce/ui-components';
-  import { info, warn } from '@tauri-apps/plugin-log';
-  import QrCode from '~icons/heroicons/qr-code';
-  import LoadingSpinner from '~icons/svg-spinners/3-dots-fade';
+  import { goto } from '$app/navigation';
 
   import {
     Format,
-    scan,
     cancel,
     checkPermissions,
-    openAppSettings
-    // Scanned
+    openAppSettings, // Scanned
+    scan
   } from '@tauri-apps/plugin-barcode-scanner';
-  import { goto } from '$app/navigation';
+  // import { LoadingSpinner } from '@impierce/ui-components';
+  import { info, warn } from '@tauri-apps/plugin-log';
+
+  import { dispatch } from '$lib/dispatcher';
+
+  import QrCode from '~icons/heroicons/qr-code';
+  import LoadingSpinner from '~icons/svg-spinners/3-dots-fade';
 
   let loading = false;
 

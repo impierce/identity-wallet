@@ -1,18 +1,14 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
-  import LL from '$src/i18n/i18n-svelte';
-  import {
-    BottomDrawer,
-    BottomNavBar,
-    Button,
-    LanguageSelect,
-    TopNavigation
-  } from '@impierce/ui-components';
-  import { Link, Eye, Heart } from 'svelte-heros-v2';
-  import { state } from '$src/stores';
-  import { fade, fly } from 'svelte/transition';
-  import { dispatch } from '$lib/dispatcher';
+  import { Eye, Heart } from 'svelte-heros-v2';
+  import { fly } from 'svelte/transition';
+
+  import { BottomDrawer, TopNavigation } from '@impierce/ui-components';
   import { melt } from '@melt-ui/svelte';
+
+  import { dispatch } from '$lib/dispatcher';
+  import LL from '$src/i18n/i18n-svelte';
+  import { state } from '$src/stores';
+
   import WarningCircle from '~icons/ph/warning-circle-fill';
 
   let IOTA_MOCK_DID = 'did:iota:H3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV';

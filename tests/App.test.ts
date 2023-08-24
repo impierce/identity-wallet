@@ -1,10 +1,11 @@
-import '@testing-library/jest-dom';
+import { tick } from 'svelte';
+import { vi } from 'vitest';
 
 import { clearMocks, mockIPC } from '@tauri-apps/api/mocks';
-import { vi } from 'vitest';
-import App from '$src/routes/+page.svelte';
-import { tick } from 'svelte';
+import '@testing-library/jest-dom';
 import { render } from '@testing-library/svelte';
+
+import App from '$src/routes/+page.svelte';
 
 beforeEach(() => {
   // init __TAURI_IPC__

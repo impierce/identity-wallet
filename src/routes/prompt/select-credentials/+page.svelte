@@ -1,19 +1,22 @@
 <script lang="ts">
-  import { state } from '$src/stores';
+  import { goto } from '$app/navigation';
+  import { fade } from 'svelte/transition';
+
   import { TopNavigation } from '@impierce/ui-components';
+  import { createCheckbox, createPopover, melt } from '@melt-ui/svelte';
+
+  import Button from '$lib/components/Button.svelte';
+  import PaddedIcon from '$lib/components/PaddedIcon.svelte';
+  import { dispatch } from '$lib/dispatcher';
+  import CredentialListEntry from '$src/lib/components/CredentialListEntry.svelte';
+  import { state } from '$src/stores';
+
+  import Check from '~icons/ph/check-bold';
   import PlugsConnected from '~icons/ph/plugs-connected-fill';
+  import Question from '~icons/ph/question';
+  import RocketLaunch from '~icons/ph/rocket-launch';
   import WarningCircle from '~icons/ph/warning-circle-fill';
   import X from '~icons/ph/x-bold';
-  import Check from '~icons/ph/check-bold';
-  import Question from '~icons/ph/question';
-  import { createCheckbox, createPopover, melt } from '@melt-ui/svelte';
-  import { fade } from 'svelte/transition';
-  import { dispatch } from '$lib/dispatcher';
-  import { goto } from '$app/navigation';
-  import PaddedIcon from '$lib/components/PaddedIcon.svelte';
-  import Button from '$lib/components/Button.svelte';
-  import CredentialListEntry from '$src/lib/components/CredentialListEntry.svelte';
-  import RocketLaunch from '~icons/ph/rocket-launch';
 
   const {
     elements: { trigger, content, arrow, close },

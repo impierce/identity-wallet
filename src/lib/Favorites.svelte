@@ -1,10 +1,12 @@
 <script lang="ts">
-  import Star from '~icons/lucide/star';
-  import Heart from '~icons/ph/heart-straight-fill';
-  import Clapperboard from '~icons/lucide/clapperboard';
-  import FilmSlate from '~icons/ph/film-slate-light';
-  import AirplaneTilt from '~icons/ph/airplane-tilt-light';
   import LL from '$src/i18n/i18n-svelte';
+
+  import Clapperboard from '~icons/lucide/clapperboard';
+  import Star from '~icons/lucide/star';
+  import AirplaneTilt from '~icons/ph/airplane-tilt-light';
+  import FilmSlate from '~icons/ph/film-slate-light';
+  import Heart from '~icons/ph/heart-straight-fill';
+
   import CredentialListEntry from './components/CredentialListEntry.svelte';
 
   let favorite_credentials: any[] = [

@@ -1,11 +1,14 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { fade } from 'svelte/transition';
+
+  import { TopNavigation } from '@impierce/ui-components';
+  import { createCheckbox, createRadioGroup, melt } from '@melt-ui/svelte';
+
   import Button from '$src/lib/components/Button.svelte';
   import Checkbox from '$src/lib/components/Checkbox.svelte';
   import { dispatch } from '$src/lib/dispatcher';
-  import { TopNavigation } from '@impierce/ui-components';
-  import { createCheckbox, createRadioGroup, melt } from '@melt-ui/svelte';
-  import { fade } from 'svelte/transition';
+
   import Check from '~icons/ph/check-bold';
 
   const {

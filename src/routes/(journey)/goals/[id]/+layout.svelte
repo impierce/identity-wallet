@@ -1,7 +1,10 @@
 <script lang="ts">
-  import { state } from '$src/stores';
   import { page } from '$app/stores';
+
   import { TopNavigation } from '@impierce/ui-components';
+
+  import { state } from '$src/stores';
+
   import type { Goal } from '../types';
 
   let goal: Goal = $state?.user_journey?.goals.find((g) => g.id === parseInt($page.params.id));

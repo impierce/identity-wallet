@@ -1,25 +1,29 @@
 <script lang="ts">
-  import { state } from '$src/stores';
-  import LL from '$src/i18n/i18n-svelte';
-  import { Avatar, BottomDrawer } from '@impierce/ui-components';
-  import { fade, fly, slide } from 'svelte/transition';
-  import QrCodeButton from '$lib/QrCodeButton.svelte';
-  import { debug, info } from '@tauri-apps/plugin-log';
-  import CredentialList from '$lib/CredentialList.svelte';
-  import { calculate_initials } from './utils';
-  import TopBar from '$lib/home-header/TopBar.svelte';
-  import Favorites from '$lib/Favorites.svelte';
-  import RocketLaunch from '~icons/ph/rocket-launch-fill';
-  import AddButton from '$lib/credentials/AddButton.svelte';
-  import { melt } from '@melt-ui/svelte';
-  import '@lottiefiles/lottie-player';
   import { goto } from '$app/navigation';
-  import WelcomeMessage from '$lib/home-header/WelcomeMessage.svelte';
-  import UserJourney from '$lib/home-header/UserJourney.svelte';
   import { onMount } from 'svelte';
-  import NoCredentials from '$lib/credentials/NoCredentials.svelte';
+  import { fade, fly, slide } from 'svelte/transition';
+
+  import { Avatar, BottomDrawer } from '@impierce/ui-components';
+  import '@lottiefiles/lottie-player';
+  import { melt } from '@melt-ui/svelte';
+  import { debug, info } from '@tauri-apps/plugin-log';
+
+  import CredentialList from '$lib/CredentialList.svelte';
+  import Favorites from '$lib/Favorites.svelte';
+  import QrCodeButton from '$lib/QrCodeButton.svelte';
   import Button from '$lib/components/Button.svelte';
   import PaddedIcon from '$lib/components/PaddedIcon.svelte';
+  import AddButton from '$lib/credentials/AddButton.svelte';
+  import NoCredentials from '$lib/credentials/NoCredentials.svelte';
+  import TopBar from '$lib/home-header/TopBar.svelte';
+  import UserJourney from '$lib/home-header/UserJourney.svelte';
+  import WelcomeMessage from '$lib/home-header/WelcomeMessage.svelte';
+  import LL from '$src/i18n/i18n-svelte';
+  import { state } from '$src/stores';
+
+  import RocketLaunch from '~icons/ph/rocket-launch-fill';
+
+  import { calculate_initials } from './utils';
 
   let initials: string | undefined;
 
@@ -53,8 +57,11 @@
       <Favorites />
       <CredentialList />
       <!-- container that animates and places the button -->
-      <div in:fly={{ y: 12, delay: 100, opacity: 1, duration: 200 }} class="absolute bottom-4 right-4">
-      <!-- <div in:fade={{ delay: 200, duration: 200 }} class="absolute bottom-4 right-4"> -->
+      <div
+        in:fly={{ y: 12, delay: 100, opacity: 1, duration: 200 }}
+        class="absolute bottom-4 right-4"
+      >
+        <!-- <div in:fade={{ delay: 200, duration: 200 }} class="absolute bottom-4 right-4"> -->
         <AddButton />
       </div>
     {:else if $state?.user_journey}

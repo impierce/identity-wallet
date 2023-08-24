@@ -1,8 +1,9 @@
-import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig } from 'vite';
 import { internalIpV4 } from 'internal-ip';
-import Icons from 'unplugin-icons/vite';
 import path from 'path';
+import Icons from 'unplugin-icons/vite';
+import { defineConfig } from 'vite';
+
+import { sveltekit } from '@sveltejs/kit/vite';
 
 const mobile = process.env.TAURI_PLATFORM === 'android' || process.env.TAURI_PLATFORM === 'ios';
 
@@ -12,7 +13,7 @@ export default defineConfig(async () => ({
   resolve: {
     alias: {
       $src: path.resolve('./src'),
-      $lib: path.resolve('./src/lib'),
+      $lib: path.resolve('./src/lib')
     }
   },
   test: {

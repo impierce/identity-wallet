@@ -1,9 +1,11 @@
 <script lang="ts">
   import { fly } from 'svelte/transition';
-  import type { CredentialOffer } from './types';
-  import CircleDashed from '~icons/lucide/circle-dashed';
-  import ChevronUp from '~icons/lucide/chevron-up';
+
   import ChevronDown from '~icons/lucide/chevron-down';
+  import ChevronUp from '~icons/lucide/chevron-up';
+  import CircleDashed from '~icons/lucide/circle-dashed';
+
+  import type { CredentialOffer } from './types';
 
   export let data: CredentialOffer;
 
@@ -11,7 +13,7 @@
 </script>
 
 <div class="flex flex-col rounded-lg bg-blue-100 pt-4">
-  <span class="text-start text-sm text-blue-500 px-4"
+  <span class="px-4 text-start text-sm text-blue-500"
     >You have received {data.credentials.length} credentials from
     <span class="font-semibold">{data.issuer.domain}</span>!</span
   >

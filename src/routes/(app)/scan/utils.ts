@@ -1,6 +1,8 @@
 import { goto } from '$app/navigation';
-import { info, warn } from '@tauri-apps/plugin-log';
+
 import { checkPermissions, openAppSettings } from '@tauri-apps/plugin-barcode-scanner';
+import { info, warn } from '@tauri-apps/plugin-log';
+
 import { dispatch } from '$lib/dispatcher';
 
 export const checkScanPrerequisites = async (): Promise<boolean> => {

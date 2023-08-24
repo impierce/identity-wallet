@@ -1,17 +1,21 @@
 <script lang="ts">
-  import { BottomDrawer, TopNavigation } from '@impierce/ui-components';
-  import { state } from '$src/stores';
-  import type { Goal } from './types';
-  import { melt } from '@melt-ui/svelte';
-  import Trophy from '~icons/ph/trophy-fill';
-  import GoalItem from '$lib/journey/goals/GoalItem.svelte';
-  import { dispatch } from '$lib/dispatcher';
   import { goto } from '$app/navigation';
-  import PaddedIcon from '$lib/components/PaddedIcon.svelte';
-  import LL from '$src/i18n/i18n-svelte';
-  import ProgressBar from '$lib/components/ProgressBar.svelte';
-  import Button from '$lib/components/Button.svelte';
   import { fly } from 'svelte/transition';
+
+  import { BottomDrawer, TopNavigation } from '@impierce/ui-components';
+  import { melt } from '@melt-ui/svelte';
+
+  import Button from '$lib/components/Button.svelte';
+  import PaddedIcon from '$lib/components/PaddedIcon.svelte';
+  import ProgressBar from '$lib/components/ProgressBar.svelte';
+  import { dispatch } from '$lib/dispatcher';
+  import GoalItem from '$lib/journey/goals/GoalItem.svelte';
+  import LL from '$src/i18n/i18n-svelte';
+  import { state } from '$src/stores';
+
+  import Trophy from '~icons/ph/trophy-fill';
+
+  import type { Goal } from './types';
 
   let journeyDefinition = $state?.user_journey;
 

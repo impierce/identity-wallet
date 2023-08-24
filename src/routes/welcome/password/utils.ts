@@ -22,12 +22,12 @@ export const passwordPolicy = [
 ];
 
 export const checkPasswordPolicy = (password: string) => {
-    let violations: string[] = [];
-    passwordPolicy.forEach((rule) => {
-        if (!password.match(rule.regex)) {
-            console.warn(`Password does not match: ${rule.name}`);
-            violations.push(rule.name);
-        }
-    });
-    return violations;
+  const violations: string[] = [];
+  passwordPolicy.forEach((rule) => {
+    if (!password.match(rule.regex)) {
+      console.warn(`Password does not match: ${rule.name}`);
+      violations.push(rule.name);
+    }
+  });
+  return violations;
 };

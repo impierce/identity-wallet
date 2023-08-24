@@ -1,20 +1,16 @@
 <script lang="ts">
-  import '../app.css';
-
-  import { fly } from 'svelte/transition';
-  import {
-    ChevronUp,
-    ChevronDown,
-    ArrowLeft,
-    Trash,
-    Clipboard,
-    ExclamationTriangle
-  } from 'svelte-heros-v2';
-  import { state } from '$src/stores';
-  import LL from '$src/i18n/i18n-svelte';
+  import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
-  import { loadAllLocales } from '$src/i18n/i18n-util.sync';
-  import { dispatch } from '$lib/dispatcher';
+  import {
+    ArrowLeft,
+    ChevronDown,
+    ChevronUp,
+    Clipboard,
+    ExclamationTriangle,
+    Trash
+  } from 'svelte-heros-v2';
+  import { fly } from 'svelte/transition';
+
   import {
     AlertDialog,
     AlertDialogAction,
@@ -28,13 +24,20 @@
     Button
   } from '@impierce/ui-components';
   import { readText } from '@tauri-apps/plugin-clipboard-manager';
-  import { trace, info, error, attachConsole } from '@tauri-apps/plugin-log';
+  import { attachConsole, error, info, trace } from '@tauri-apps/plugin-log';
+
   import Alert from '$lib/alert/Alert.svelte';
-  import type { CurrentUserFlowType } from '../../src-tauri/bindings/user-flow/CurrentUserFlowType';
-  import type { Selection } from '../../src-tauri/bindings/user-flow/Selection';
-  import { goto } from '$app/navigation';
+  import { dispatch } from '$lib/dispatcher';
+  import LL from '$src/i18n/i18n-svelte';
+  import { loadAllLocales } from '$src/i18n/i18n-util.sync';
+  import { state } from '$src/stores';
+
   import CaretDown from '~icons/ph/caret-down-bold';
   import CaretUp from '~icons/ph/caret-up-bold';
+
+  import type { CurrentUserFlowType } from '../../src-tauri/bindings/user-flow/CurrentUserFlowType';
+  import type { Selection } from '../../src-tauri/bindings/user-flow/Selection';
+  import '../app.css';
 
   let clipboard: string | undefined;
 

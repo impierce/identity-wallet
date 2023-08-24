@@ -1,18 +1,21 @@
 <script lang="ts">
-  import Button from '$lib/components/Button.svelte';
+  import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
+  import QRCode from 'qrcode';
+  import { fly } from 'svelte/transition';
+
   import { BottomDrawer, TopNavigation } from '@impierce/ui-components';
+  import { melt } from '@melt-ui/svelte';
+
+  import Button from '$lib/components/Button.svelte';
+  import CredentialDetailsDropdownMenu from '$src/lib/components/CredentialDetailsDropdownMenu.svelte';
+  import ShareButton from '$src/lib/credentials/ShareButton.svelte';
+  import { state } from '$src/stores';
+
+  import DotsThreeVertical from '~icons/ph/dots-three-vertical-bold';
   import Heart from '~icons/ph/heart-straight';
   import HeartFill from '~icons/ph/heart-straight-fill';
   import House from '~icons/ph/house-light';
-  import DotsThreeVertical from '~icons/ph/dots-three-vertical-bold';
-  import { goto } from '$app/navigation';
-  import { fly } from 'svelte/transition';
-  import { page } from '$app/stores';
-  import { state } from '$src/stores';
-  import CredentialDetailsDropdownMenu from '$src/lib/components/CredentialDetailsDropdownMenu.svelte';
-  import ShareButton from '$src/lib/credentials/ShareButton.svelte';
-  import { melt } from '@melt-ui/svelte';
-  import QRCode from 'qrcode';
 
   let credential = $state.credentials.find((c) => $page.params.id === c.at(0))?.at(1);
 
@@ -53,8 +56,8 @@
           <svelte:component this={icon} class="h-6 w-6 text-slate-800" />
         </div>
         <div class="-mr-1 -mt-1">
-        <CredentialDetailsDropdownMenu />
-      </div>
+          <CredentialDetailsDropdownMenu />
+        </div>
         <!-- <button class="-mr-1 -mt-1 rounded-full p-1">
           <DotsThreeVertical class="h-6 w-6" />
         </button> -->
@@ -62,7 +65,9 @@
       <!-- Text -->
       <div class="flex flex-col items-center pt-[15px]">
         <p class="text-2xl font-semibold text-black">{title}</p>
-        <p class="text-[13px]/[24px] font-normal text-slate-500">{new URL(credential.issuer).hostname}</p>
+        <p class="text-[13px]/[24px] font-normal text-slate-500">
+          {new URL(credential.issuer).hostname}
+        </p>
       </div>
     </div>
     <!-- Credential Subject -->

@@ -1,13 +1,16 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import Button from '$src/lib/components/Button.svelte';
-  import { dispatch } from '$src/lib/dispatcher';
+  import { fade } from 'svelte/transition';
+
   import { BottomDrawer, TopNavigation } from '@impierce/ui-components';
   import { createPopover, melt } from '@melt-ui/svelte';
-  import { fade } from 'svelte/transition';
-  import Plus from '~icons/ph/plus-bold';
+
   import LL from '$src/i18n/i18n-svelte';
+  import Button from '$src/lib/components/Button.svelte';
+  import { dispatch } from '$src/lib/dispatcher';
   import { onboarding_state } from '$src/stores';
+
+  import Plus from '~icons/ph/plus-bold';
 
   const {
     elements: { trigger, content, arrow, close },

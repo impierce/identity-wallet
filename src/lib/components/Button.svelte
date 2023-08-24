@@ -1,5 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
+
   import { melt } from '@melt-ui/svelte';
 
   const dispatch = createEventDispatcher();
