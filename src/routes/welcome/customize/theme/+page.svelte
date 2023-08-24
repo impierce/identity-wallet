@@ -8,6 +8,7 @@
   import Button from '$src/lib/components/Button.svelte';
   import Checkbox from '$src/lib/components/Checkbox.svelte';
   import { dispatch } from '$src/lib/dispatcher';
+  import { onboarding_state } from '$src/stores';
 
   import Check from '~icons/ph/check-bold';
 
@@ -20,9 +21,12 @@
   });
 
   $: {
-    // TODO: refine logic here
-    console.log(window.matchMedia('(prefers-color-scheme: dark)').matches);
-    if ($value === 'dark') {
+    $onboarding_state.theme = $value;
+  }
+
+  $: {
+    // system dark or explicitly chosen, then set dark
+    if ($value === 'dark' || window.matchMedia('(prefers-color-scheme: dark)').matches) {
       document.documentElement.classList.add('dark');
       console.log('dark mode enabled');
     } else {

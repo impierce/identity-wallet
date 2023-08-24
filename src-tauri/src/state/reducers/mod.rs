@@ -23,12 +23,15 @@ pub fn set_locale(state: &AppState, action: Action) -> anyhow::Result<()> {
 /// Creates a new profile with a new DID (using the did:key method) and sets it as the active profile.
 pub async fn create_did_key(state: &AppState, action: Action) -> anyhow::Result<()> {
     let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
-    let display_name = payload["display_name"]
+    let name = payload["name"]
         .as_str()
-        .ok_or(anyhow::anyhow!("unable to read display_name from json payload"))?;
-    let profile_picture = payload["profile_picture"]
+        .ok_or(anyhow::anyhow!("unable to read name from json payload"))?;
+    let picture = payload["picture"]
         .as_str()
-        .ok_or(anyhow::anyhow!("unable to read profile_picture from json payload"))?;
+        .ok_or(anyhow::anyhow!("unable to read picture from json payload"))?;
+    let theme = payload["theme"]
+        .as_str()
+        .ok_or(anyhow::anyhow!("unable to read theme from json payload"))?;
     let password = payload["password"]
         .as_str()
         .ok_or(anyhow::anyhow!("unable to read password from json payload"))?;
@@ -36,8 +39,9 @@ pub async fn create_did_key(state: &AppState, action: Action) -> anyhow::Result<
     let public_key = get_public_key(password)?;
     let did_document = generate_new_did(public_key).await?;
     let profile = Profile {
-        display_name: display_name.to_string(),
-        profile_picture: profile_picture.to_string(),
+        name: name.to_string(),
+        picture: picture.to_string(),
+        theme: theme.to_string(),
         primary_did: did_document.id,
     };
     *state.active_profile.lock().unwrap() = Some(profile);
@@ -173,7 +177,7 @@ mod tests {
         stronghold
             .commit_with_keyprovider(
                 &SnapshotPath::from_path(format!("{path}.snapshot")),
-                &KeyProvider::try_from(hash_password("s3cr3t").unwrap()).unwrap(),
+                &KeyProvider::try_from(hash_password("sup3rSecr3t").unwrap()).unwrap(),
             )
             .ok();
 
@@ -183,15 +187,21 @@ mod tests {
             &state,
             Action {
                 r#type: ActionType::CreateNew,
-                payload: Some(json!({"display_name": "Ferris", "profile_picture": "&#129408", "password": "s3cr3t"})),
+                payload: Some(json!({
+                  "name": "Ferris",
+                  "picture": "&#129408",
+                  "theme": "system",
+                  "password": "sup3rSecr3t"
+                })),
             },
         )
         .await
         .is_ok());
 
         let profile = state.active_profile.lock().unwrap();
-        assert_eq!(profile.as_ref().unwrap().display_name, "Ferris");
-        assert_eq!(profile.as_ref().unwrap().profile_picture, "&#129408");
+        assert_eq!(profile.as_ref().unwrap().name, "Ferris");
+        assert_eq!(profile.as_ref().unwrap().picture, "&#129408");
+        assert_eq!(profile.as_ref().unwrap().theme, "system");
         assert!(profile.as_ref().unwrap().primary_did.starts_with("did:key:"));
     }
 
@@ -199,8 +209,9 @@ mod tests {
     fn test_reset_state() {
         let state = AppState {
             active_profile: Some(Profile {
-                display_name: "Ferris".to_string(),
-                profile_picture: "&#129408".to_string(),
+                name: "Ferris".to_string(),
+                picture: "&#129408".to_string(),
+                theme: "system".to_string(),
                 primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
             })
             .into(),

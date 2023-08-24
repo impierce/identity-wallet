@@ -54,7 +54,8 @@ impl From<&AppState> for TransferState {
 #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq)]
 #[ts(export)]
 pub struct Profile {
-    pub display_name: String,
-    pub profile_picture: String,
+    pub name: String,
+    pub picture: String,
+    pub theme: String,
     pub primary_did: String,
 }

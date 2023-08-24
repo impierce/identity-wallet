@@ -30,8 +30,9 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
 
     let did_document = generate_dev_did().await?;
     let profile = Profile {
-        display_name: "Ferris".to_string(),
-        profile_picture: "&#129408".to_string(),
+        name: "Ferris".to_string(),
+        picture: "&#129408".to_string(),
+        theme: "system".to_string(),
         primary_did: did_document.id,
     };
     *state.active_profile.lock().unwrap() = Some(profile);

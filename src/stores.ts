@@ -49,7 +49,7 @@ export const state = readable<State>(undefined, (set) => {
 export const onboarding_state = writable<OnboardingState>({});
 
 interface OnboardingState {
-  profile_name?: string;
-  profile_picture?: string;
+  name?: string;
+  picture?: string;
   theme?: string;
 }

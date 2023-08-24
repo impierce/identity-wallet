@@ -38,6 +38,7 @@
   import type { CurrentUserFlowType } from '../../src-tauri/bindings/user-flow/CurrentUserFlowType';
   import type { Selection } from '../../src-tauri/bindings/user-flow/Selection';
   import '../app.css';
+  import { determineTheme } from './utils';
 
   let clipboard: string | undefined;
 
@@ -45,11 +46,6 @@
     const detach = await attachConsole();
     loadAllLocales(); //TODO: performance: only load locale on user request
     dispatch({ type: '[App] Get state' });
-
-    // TODO: handle case where: user has set light mode explicitly in app state, but has "dark" system settings
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      document.documentElement.classList.add('dark');
-    }
   });
 
   let showDevMode = false;
@@ -69,9 +65,21 @@
 
   let showDebugMessages = false;
 
+  // set color scheme
+  const systemColorScheme = window.matchMedia('(prefers-color-scheme: dark)');
+  systemColorScheme.addEventListener('change', (e) => {
+    determineTheme(e.matches, $state?.active_profile?.theme);
+  });
+  systemColorScheme.removeEventListener('change', () => {});
+
   $: {
     // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
     console.log('+layout.svelte: state', $state);
+
+    // needed again?
+    determineTheme(systemColorScheme.matches, $state?.active_profile?.theme);
+
+    // User prompt
     let type = $state?.current_user_prompt?.type;
     console.log('options', ($state?.current_user_prompt as Selection)?.options);
 

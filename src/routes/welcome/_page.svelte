@@ -13,14 +13,14 @@
 
   //   const registerFocus = useFocus();
 
-  let display_name: string | undefined;
+  let name: string | undefined;
   let password: string | undefined;
 
   let loading = false;
 
   const createProfile = async () => {
     loading = true;
-    dispatch({ type: '[DID] Create new', payload: { display_name: display_name, password } });
+    dispatch({ type: '[DID] Create new', payload: { name, password } });
   };
 
   const setLanguage = (locale: string) => {
@@ -33,7 +33,7 @@
 
   onMount(async () => {
     // usernameInput.focus();
-    display_name = 'Tony Stark';
+    name = 'Tony Stark';
     password = 'sup3rSecr3t';
   });
 </script>
@@ -68,7 +68,7 @@
 
   <div class="grid w-full max-w-sm items-center gap-1.5">
     <Label for="name">{$LL.PROFILE_NAME()}</Label>
-    <Input type="text" id="name" placeholder="" bind:value={display_name} />
+    <Input type="text" id="name" placeholder="" bind:value={name} />
     <p class="text-muted-foreground text-sm">{$LL.CHANGE_LATER()}</p>
   </div>
 

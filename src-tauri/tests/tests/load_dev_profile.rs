@@ -56,8 +56,9 @@ async fn test_load_dev_profile() {
         }],
         vec![Some(TransferState {
             active_profile: Some(Profile {
-                display_name: "Ferris".to_string(),
-                profile_picture: "&#129408".to_string(),
+                name: "Ferris".to_string(),
+                picture: "&#129408".to_string(),
+                theme: "system".to_string(),
                 primary_did: "did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY".to_string(),
             }),
             credentials,

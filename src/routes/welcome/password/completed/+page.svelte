@@ -71,7 +71,7 @@
       <div class="relative z-10">
         <div class="text-[100px]/[100px]"><Shield class="text-indigo-500" /></div>
         <span class="absolute left-[calc(50%_-_22px)] top-[calc(50%_-_22px)] text-[44px]/[44px]">
-          {@html $onboarding_state.profile_picture}
+          {@html $onboarding_state.picture}
         </span>
       </div>
       <div class="absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2">
@@ -86,7 +86,7 @@
       </div>
     </div>
     <p class="text-2xl font-semibold text-indigo-500">
-      Nice Job, {$onboarding_state.profile_name}!
+      Nice Job, {$onboarding_state.name}!
     </p>
     <!-- Hint: backup -->
     <!-- <div class="bg-slate-100 p-4 rounded-2xl w-full">
@@ -102,8 +102,9 @@
       dispatch({
         type: '[DID] Create new',
         payload: {
-          display_name: $onboarding_state.profile_name,
-          profile_picture: $onboarding_state.profile_picture,
+          name: $onboarding_state.name,
+          picture: $onboarding_state.picture,
+          theme: $onboarding_state.theme,
           password: 'sup3rSecr3t'
         }
       })}

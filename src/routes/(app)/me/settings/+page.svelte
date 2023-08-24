@@ -57,7 +57,7 @@
             <input
               type="text"
               class="h-[40px] w-[192px] rounded-lg border px-4 py-2 text-right text-base font-medium text-indigo-600 dark:bg-slate-800"
-              value={$state?.active_profile?.display_name}
+              value={$state?.active_profile?.name}
               on:input={(e) => console.log(e.target.value)}
             />
           </div>

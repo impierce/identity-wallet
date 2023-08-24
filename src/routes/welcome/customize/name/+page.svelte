@@ -26,7 +26,7 @@
     <SearchInput
       delay={100}
       placeholder="Enter a profile name"
-      on:value={(e) => ($onboarding_state.profile_name = e.detail)}
+      on:value={(e) => ($onboarding_state.name = e.detail)}
     />
   </div>
 </div>
@@ -34,6 +34,6 @@
   <Button
     label="Continue"
     on:click={() => goto('/welcome/customize/theme')}
-    disabled={!!!$onboarding_state.profile_name}
+    disabled={!!!$onboarding_state.name}
   />
 </div>
