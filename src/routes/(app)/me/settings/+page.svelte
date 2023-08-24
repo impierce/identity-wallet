@@ -145,7 +145,7 @@
         </BottomDrawer>
       </div>
 
-      <div>0.2.1</div>
+      <div>0.2.2</div>
       <div class="flex items-center pb-4">
         <p>Built with Tauri</p>
         <Heart variation="solid" size="18" class="pl-1" />
