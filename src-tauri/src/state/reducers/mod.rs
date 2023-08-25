@@ -3,25 +3,18 @@ pub mod credential_offer;
 pub mod load_dev_profile;
 pub mod storage;
 
+use super::{IdentityManager, Locale};
 use crate::crypto::stronghold::StrongholdManager;
 use crate::did::did_key::generate_new_did;
 use crate::state::actions::Action;
 use crate::state::user_prompt::{CurrentUserPrompt, CurrentUserPromptType, Redirect};
 use crate::state::{AppState, Profile};
 use did_key::{from_existing_key, Ed25519KeyPair};
-use identity_iota::account::MethodContent;
-use identity_iota::did::MethodRelationship;
 use log::info;
-use oid4vc_core::Subject;
-use oid4vc_manager::methods::iota_method::IotaSubject;
 use oid4vc_manager::methods::key_method::KeySubject;
 use oid4vc_manager::ProviderManager;
-use oid4vci::{Proof, ProofType, Wallet};
+use oid4vci::Wallet;
 use std::sync::Arc;
-
-use super::{IdentityManager, Locale};
-
-const AUTHENTICATION_KEY: &'static str = "authentication-key";
 
 /// Sets the locale to the given value. If the locale is not supported yet, the current locale will stay unchanged.
 pub fn set_locale(state: &AppState, action: Action) -> anyhow::Result<()> {
@@ -86,7 +79,7 @@ pub async fn initialize_stronghold(state: &AppState, action: Action) -> anyhow::
 pub fn reset_state(state: &AppState, _action: Action) -> anyhow::Result<()> {
     *state.active_profile.lock().unwrap() = None;
     *state.locale.lock().unwrap() = Locale::default();
-    *state.credentials.lock().unwrap() = vec![];
+    state.credentials.lock().unwrap().clear();
     *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect(Redirect {
         r#type: CurrentUserPromptType::Redirect,
         target: "welcome".to_string(),

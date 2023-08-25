@@ -2,18 +2,17 @@ pub mod command;
 pub mod crypto;
 mod did;
 pub mod state;
+pub mod verifiable_credential_record;
 
 use command::handle_action;
-use did_key::{generate, Ed25519KeyPair};
 use fern::colors::Color;
 use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
 use lazy_static::lazy_static;
 use log::{info, LevelFilter};
-use oid4vc_manager::{methods::key_method::KeySubject, ProviderManager};
 use state::AppState;
-use std::sync::{Arc, Mutex};
+use std::sync::Mutex;
 use tauri::Manager;
-use tauri_plugin_log::{fern::colors::ColoredLevelConfig, Target, TargetKind, WEBVIEW_TARGET};
+use tauri_plugin_log::{fern::colors::ColoredLevelConfig, Target, TargetKind};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {

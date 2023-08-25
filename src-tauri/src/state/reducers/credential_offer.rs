@@ -1,27 +1,19 @@
 use crate::{
-    get_unverified_jwt_claims,
     state::{
         actions::Action,
         user_prompt::{CredentialOffer as CredentialOfferPrompt, CurrentUserPrompt, CurrentUserPromptType},
         AppState,
     },
+    verifiable_credential_record::VerifiableCredentialRecord,
 };
-use did_key::{generate, Ed25519KeyPair};
-use identity_credential::credential;
-use identity_iota::{account::MethodContent, did::MethodRelationship};
 use log::info;
-use oid4vc_core::Subject;
-use oid4vc_manager::methods::{iota_method::IotaSubject, key_method::KeySubject};
 use oid4vci::{
     credential_format_profiles::{CredentialFormats, WithCredential},
-    credential_issuer::credential_issuer_metadata::CredentialIssuerMetadata,
     credential_offer::{CredentialOffer, CredentialOfferQuery, CredentialsObject, Grants},
     credential_response::CredentialResponseType,
     token_request::{PreAuthorizedCode, TokenRequest},
-    Wallet,
 };
 use serde_json::json;
-use std::sync::Arc;
 use uuid::Uuid;
 
 pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::Result<()> {
@@ -191,22 +183,17 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
     info!("credentials: {:?}", credentials);
 
     // Get the decoded JWT claims to be displayed in the frontend.
-    let mut credential_displays = vec![];
-    for credential in credentials.iter() {
-        let key = Uuid::new_v4();
+    let mut display_credentials = vec![];
+    for credential in credentials.into_iter() {
+        let verifiable_credential_record = VerifiableCredentialRecord::from(credential);
+        let key: Uuid = verifiable_credential_record.display_credential.id.parse().unwrap();
 
-        match credential {
-            CredentialFormats::JwtVcJson(credential) => {
-                let credential_display = get_unverified_jwt_claims(&credential.credential)["vc"].clone();
-                credential_displays.push((key.to_string(), credential_display));
-            }
-            _ => unimplemented!(),
-        }
+        display_credentials.push(verifiable_credential_record.display_credential.clone());
 
-        stronghold_manager.insert(key, json!(credential).to_string().as_bytes().to_vec())?;
+        stronghold_manager.insert(key, json!(verifiable_credential_record).to_string().as_bytes().to_vec())?;
     }
 
-    state.credentials.lock().unwrap().extend(credential_displays);
+    state.credentials.lock().unwrap().extend(display_credentials);
     *state.current_user_prompt.lock().unwrap() = None;
 
     Ok(())

@@ -1,13 +1,11 @@
+use crate::{verifiable_credential_record::VerifiableCredentialRecord, STRONGHOLD};
 use iota_stronghold::{
     procedures::{Ed25519Sign, GenerateKey, KeyType, PublicKey, StrongholdProcedure},
     Client, KeyProvider, Location, SnapshotPath, Stronghold,
 };
 use log::{debug, info};
 use oid4vc_core::authentication::sign::ExternalSign;
-use oid4vci::credential_format_profiles::{CredentialFormats, WithCredential};
 use uuid::Uuid;
-
-use crate::STRONGHOLD;
 
 pub fn hash_password(password: &str) -> anyhow::Result<Vec<u8>> {
     let config = argon2::Config::default();
@@ -118,9 +116,9 @@ impl StrongholdManager {
     }
 
     // TODO: fix this function's return type.
-    pub fn get_all(&self) -> anyhow::Result<Option<Vec<(Uuid, CredentialFormats<WithCredential>)>>> {
+    pub fn get_all(&self) -> anyhow::Result<Option<Vec<(Uuid, VerifiableCredentialRecord)>>> {
         let client = self.client.clone();
-        let mut credentials: Vec<(Uuid, CredentialFormats<WithCredential>)> = self
+        let mut credentials: Vec<(Uuid, VerifiableCredentialRecord)> = self
             .client
             .store()
             .keys()?

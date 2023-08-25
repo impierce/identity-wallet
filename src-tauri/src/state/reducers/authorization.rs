@@ -46,8 +46,8 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> any
             .map(|input_descriptor| {
                 verifiable_credentials
                     .iter()
-                    .find_map(|(uuid, verifiable_credential)| {
-                        let verifiable_credential = match verifiable_credential {
+                    .find_map(|(uuid, verifiable_credential_record)| {
+                        let verifiable_credential = match &verifiable_credential_record.verifiable_credential {
                             CredentialFormats::JwtVcJson(jwt_vc_json) => jwt_vc_json.credential.clone(),
                             _ => unimplemented!(),
                         };
@@ -125,12 +125,14 @@ pub async fn send_authorization_response(state: &AppState, action: Action) -> an
         .get_all()?
         .unwrap()
         .iter()
-        .filter_map(|(key, vc)| match vc {
-            CredentialFormats::JwtVcJson(jwt_vc_json) => {
-                credential_uuids.contains(key).then_some(jwt_vc_json.to_owned())
-            }
-            _ => unimplemented!(),
-        })
+        .filter_map(
+            |(key, verifiable_credential_record)| match &verifiable_credential_record.verifiable_credential {
+                CredentialFormats::JwtVcJson(jwt_vc_json) => {
+                    credential_uuids.contains(key).then_some(jwt_vc_json.to_owned())
+                }
+                _ => unimplemented!(),
+            },
+        )
         .collect();
 
     let presentation_submission = create_presentation_submission(

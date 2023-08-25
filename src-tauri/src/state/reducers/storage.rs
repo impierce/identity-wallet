@@ -1,8 +1,5 @@
-use std::sync::Arc;
-
 use crate::{
     crypto::stronghold::StrongholdManager,
-    get_unverified_jwt_claims,
     state::{
         actions::Action,
         user_prompt::{CurrentUserPrompt, CurrentUserPromptType, Redirect},
@@ -10,7 +7,7 @@ use crate::{
     },
 };
 use log::info;
-use oid4vci::credential_format_profiles::CredentialFormats;
+use std::sync::Arc;
 
 pub async fn unlock_storage(state: &AppState, action: Action) -> anyhow::Result<()> {
     let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
@@ -24,19 +21,12 @@ pub async fn unlock_storage(state: &AppState, action: Action) -> anyhow::Result<
         .get_all()?
         .unwrap()
         .into_iter()
-        .for_each(|(uuid, credential)| {
-            let credential_display = match credential {
-                CredentialFormats::JwtVcJson(credential) => {
-                    get_unverified_jwt_claims(&credential.credential)["vc"].clone()
-                }
-                _ => unimplemented!(),
-            };
-
+        .for_each(|(_uuid, verifiable_credential_record)| {
             state
                 .credentials
                 .lock()
                 .unwrap()
-                .push((uuid.to_string(), credential_display));
+                .push(verifiable_credential_record.display_credential);
         });
 
     state

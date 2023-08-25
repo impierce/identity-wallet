@@ -2,30 +2,30 @@ use did_key::{from_existing_key, Ed25519KeyPair};
 use identity_wallet::{
     crypto::stronghold::StrongholdManager,
     state::{IdentityManager, Managers},
+    verifiable_credential_record::VerifiableCredentialRecord,
 };
 use oid4vc_manager::{methods::key_method::KeySubject, ProviderManager};
-use oid4vci::{
-    credential_format_profiles::{CredentialFormats, WithCredential},
-    Wallet,
-};
+use oid4vci::Wallet;
 use serde_json::json;
 use std::sync::Arc;
-use uuid::Uuid;
 
 pub mod assert_state_update;
 
 pub const TEST_PASSWORD: &str = "my-password";
 
 pub fn test_managers(
-    verifiable_credentials: Vec<(Uuid, CredentialFormats<WithCredential>)>,
+    verifiable_credential_records: Vec<VerifiableCredentialRecord>,
 ) -> tauri::async_runtime::Mutex<Managers> {
     let stronghold_manager = Arc::new(StrongholdManager::create(TEST_PASSWORD).unwrap());
 
-    verifiable_credentials
+    verifiable_credential_records
         .into_iter()
-        .for_each(|(uuid, verifiable_credential)| {
+        .for_each(|verifiable_credential_record| {
             stronghold_manager
-                .insert(uuid, json!(verifiable_credential).to_string().as_bytes().to_vec())
+                .insert(
+                    verifiable_credential_record.display_credential.id.parse().unwrap(),
+                    json!(verifiable_credential_record).to_string().as_bytes().to_vec(),
+                )
                 .unwrap();
         });
 
