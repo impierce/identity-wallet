@@ -33,7 +33,7 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> any
         .unwrap();
     info!("validated authorization request: {:?}", authorization_request);
 
-    let verifiable_credentials = stronghold_manager.get_all()?.unwrap();
+    let verifiable_credentials = stronghold_manager.values()?.unwrap();
     info!("verifiable credentials: {:?}", verifiable_credentials);
 
     let uuids: Vec<String> = if authorization_request.presentation_definition().is_some() {
@@ -46,13 +46,13 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> any
             .map(|input_descriptor| {
                 verifiable_credentials
                     .iter()
-                    .find_map(|(uuid, verifiable_credential_record)| {
+                    .find_map(|verifiable_credential_record| {
                         let verifiable_credential = match &verifiable_credential_record.verifiable_credential {
                             CredentialFormats::JwtVcJson(jwt_vc_json) => jwt_vc_json.credential.clone(),
                             _ => unimplemented!(),
                         };
                         evaluate_input(input_descriptor, &get_unverified_jwt_claims(&verifiable_credential))
-                            .then_some(uuid.to_string())
+                            .then_some(verifiable_credential_record.display_credential.id.clone())
                     })
                     .unwrap()
             })
@@ -122,14 +122,14 @@ pub async fn send_authorization_response(state: &AppState, action: Action) -> an
     *state.debug_messages.lock().unwrap() = vec!["credential not found".into()];
 
     let verifiable_credentials: Vec<Credential<JwtVcJson>> = stronghold_manager
-        .get_all()?
+        .values()?
         .unwrap()
         .iter()
         .filter_map(
-            |(key, verifiable_credential_record)| match &verifiable_credential_record.verifiable_credential {
-                CredentialFormats::JwtVcJson(jwt_vc_json) => {
-                    credential_uuids.contains(key).then_some(jwt_vc_json.to_owned())
-                }
+            |verifiable_credential_record| match &verifiable_credential_record.verifiable_credential {
+                CredentialFormats::JwtVcJson(jwt_vc_json) => credential_uuids
+                    .contains(&verifiable_credential_record.display_credential.id.parse().unwrap())
+                    .then_some(jwt_vc_json.to_owned()),
                 _ => unimplemented!(),
             },
         )

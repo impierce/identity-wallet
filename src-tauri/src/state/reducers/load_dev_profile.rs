@@ -50,10 +50,10 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
 
     info!("loading credentials from stronghold");
     stronghold_manager
-        .get_all()?
+        .values()?
         .unwrap()
         .into_iter()
-        .for_each(|(_uuid, verifiable_credential_record)| {
+        .for_each(|verifiable_credential_record| {
             state
                 .credentials
                 .lock()

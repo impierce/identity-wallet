@@ -56,7 +56,8 @@ async fn test_get_state_create_new() {
                 ..TransferState::default()
             }),
         ],
-    );
+    )
+    .await;
 }
 
 #[tokio::test]
@@ -112,5 +113,6 @@ async fn test_get_state_unlock_storage() {
                 ..TransferState::default()
             }),
         ],
-    );
+    )
+    .await;
 }

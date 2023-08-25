@@ -18,10 +18,10 @@ pub async fn unlock_storage(state: &AppState, action: Action) -> anyhow::Result<
     let stronghold_manager = StrongholdManager::load(password).unwrap();
 
     stronghold_manager
-        .get_all()?
+        .values()?
         .unwrap()
         .into_iter()
-        .for_each(|(_uuid, verifiable_credential_record)| {
+        .for_each(|verifiable_credential_record| {
             state
                 .credentials
                 .lock()

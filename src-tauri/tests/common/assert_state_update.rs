@@ -1,5 +1,5 @@
 use identity_wallet::{
-    state::{actions::Action, AppState, TransferState},
+    state::{actions::Action, persistence::save_state, AppState, TransferState},
     STATE_FILE, STRONGHOLD,
 };
 use serde_json::json;
@@ -7,7 +7,14 @@ use tauri::Manager;
 use tempfile::NamedTempFile;
 
 /// Asserts that the state is updated as expected after the given action is handled.
-pub fn assert_state_update(current_state: AppState, actions: Vec<Action>, expected_states: Vec<Option<TransferState>>) {
+pub async fn assert_state_update(
+    current_state: AppState,
+    actions: Vec<Action>,
+    expected_states: Vec<Option<TransferState>>,
+) {
+    // Save the current state to the state file.
+    save_state(TransferState::from(&current_state)).await.unwrap();
+
     // Initialize the app with the given state and action handler.
     let app = tauri::test::mock_builder()
         .manage(current_state)

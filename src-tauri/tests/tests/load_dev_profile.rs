@@ -40,5 +40,6 @@ async fn test_load_dev_profile() {
             })),
             ..TransferState::default()
         })],
-    );
+    )
+    .await;
 }

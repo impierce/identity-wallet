@@ -1,3 +1,5 @@
+use core::panic;
+
 use crate::state::actions::{Action, ActionType};
 use crate::state::persistence::{delete_state_file, delete_stronghold, load_state, save_state};
 use crate::state::reducers::authorization::{read_authorization_request, send_authorization_response};
@@ -21,7 +23,6 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
 
     match r#type {
         ActionType::GetState => {
-            save_state(TransferState::from(app_state)).await.ok();
             let transfer_state: TransferState = load_state().await.unwrap_or_default();
 
             // TODO: find a better way to populate all fields with values from json file
@@ -43,7 +44,11 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
         }
         ActionType::UnlockStorage => {
             if unlock_storage(app_state, Action { r#type, payload }).await.is_ok() {
-                save_state(TransferState::from(app_state)).await.ok();
+                save_state(TransferState::from(app_state))
+                    .await
+                    .expect("unable to save state");
+            } else {
+                panic!("unable to unlock storage");
             }
         }
         ActionType::Reset => {

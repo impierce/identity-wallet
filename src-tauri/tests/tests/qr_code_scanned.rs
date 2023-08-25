@@ -23,6 +23,9 @@ use std::sync::Mutex;
 #[tokio::test]
 #[serial_test::serial]
 async fn test_qr_code_scanned_read_credential_offer() {
+    setup_state_file();
+    setup_stronghold();
+
     assert_state_update(
         // Initial state.
         AppState {
@@ -75,7 +78,7 @@ async fn test_qr_code_scanned_read_credential_offer() {
             })),
             ..TransferState::default()
         })],
-    );
+    ).await;
 }
 
 #[tokio::test]
@@ -120,5 +123,5 @@ async fn test_qr_code_scanned_read_authorization_request() {
             })),
             ..TransferState::default()
         })],
-    )
+    ).await;
 }

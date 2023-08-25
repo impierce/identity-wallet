@@ -91,6 +91,13 @@ impl StrongholdManager {
         Ok(())
     }
 
+    pub fn get(&self, key: Uuid) -> anyhow::Result<Option<Vec<u8>>> {
+        let key = key.to_string().as_bytes().to_vec();
+        let value = self.client.store().get(&key).unwrap();
+
+        Ok(value)
+    }
+
     pub fn insert(&self, key: Uuid, value: Vec<u8>) -> anyhow::Result<()> {
         self.client
             .store()
@@ -100,40 +107,26 @@ impl StrongholdManager {
         self.commit()
     }
 
-    pub fn sign(&self, message: &[u8]) -> anyhow::Result<Vec<u8>> {
-        let client_path = STRONGHOLD.lock().unwrap().to_str().unwrap().to_owned();
-        let procedure_result = self
-            .client
-            .execute_procedure(StrongholdProcedure::Ed25519Sign(Ed25519Sign {
-                private_key: Location::counter(client_path.clone(), 0u8),
-                msg: message.to_vec(),
-            }))?;
-
-        let output: Vec<u8> = procedure_result.into();
-        info!(r#"Signature is "{}" (base64)"#, base64::encode(&output));
-
-        Ok(output)
-    }
-
     // TODO: fix this function's return type.
-    pub fn get_all(&self) -> anyhow::Result<Option<Vec<(Uuid, VerifiableCredentialRecord)>>> {
+    pub fn values(&self) -> anyhow::Result<Option<Vec<VerifiableCredentialRecord>>> {
         let client = self.client.clone();
-        let mut credentials: Vec<(Uuid, VerifiableCredentialRecord)> = self
-            .client
-            .store()
-            .keys()?
+
+        let mut keys = self.client.store().keys()?;
+        keys.sort();
+        let verifiable_credential_record: Vec<VerifiableCredentialRecord> = keys
             .iter()
             .map(|key| {
-                (
-                    Uuid::parse_str(std::str::from_utf8(key).unwrap()).unwrap(),
-                    serde_json::from_str(std::str::from_utf8(&client.store().get(key).unwrap().unwrap()).unwrap())
-                        .unwrap(),
-                )
+                serde_json::from_str(std::str::from_utf8(&client.store().get(key).unwrap().unwrap()).unwrap()).unwrap()
             })
             .collect();
-        credentials.sort_by(|a, b| a.0.cmp(&b.0));
 
-        Ok(Some(credentials))
+        Ok(Some(verifiable_credential_record))
+    }
+
+    pub fn remove(&self, key: Uuid) -> anyhow::Result<()> {
+        self.client.store().delete(key.to_string().as_bytes()).unwrap();
+
+        self.commit()
     }
 
     pub fn get_public_key(&self) -> anyhow::Result<Vec<u8>> {
@@ -155,6 +148,45 @@ impl StrongholdManager {
 
 impl ExternalSign for StrongholdManager {
     fn sign(&self, message: &str) -> anyhow::Result<Vec<u8>> {
-        self.sign(message.as_bytes())
+        let client_path = STRONGHOLD.lock().unwrap().to_str().unwrap().to_owned();
+        let procedure_result = self
+            .client
+            .execute_procedure(StrongholdProcedure::Ed25519Sign(Ed25519Sign {
+                private_key: Location::counter(client_path.clone(), 0u8),
+                msg: message.as_bytes().to_vec(),
+            }))?;
+
+        let output: Vec<u8> = procedure_result.into();
+        info!(r#"Signature is "{}" (base64)"#, base64::encode(&output));
+
+        Ok(output)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use tempfile::NamedTempFile;
+
+    #[test]
+    #[serial_test::serial]
+    fn test_stronghold_manager() {
+        let path = NamedTempFile::new().unwrap().into_temp_path();
+        *STRONGHOLD.lock().unwrap() = path.as_os_str().into();
+
+        let stronghold_manager = StrongholdManager::create("my-password").unwrap();
+
+        let key = Uuid::new_v4();
+        let value = "test".as_bytes().to_vec();
+
+        stronghold_manager.insert(key, value).unwrap();
+
+        let value = stronghold_manager.get(key).unwrap().unwrap();
+        assert_eq!(value, "test".as_bytes().to_vec());
+
+        stronghold_manager.remove(key).unwrap();
+
+        let value = stronghold_manager.get(key).unwrap();
+        assert!(value.is_none());
     }
 }
