@@ -4,6 +4,7 @@ use crate::state::actions::Action;
 use crate::state::user_prompt::{CurrentUserPrompt, CurrentUserPromptType, Redirect};
 use crate::state::{AppState, Profile};
 use crate::verifiable_credential_record::VerifiableCredentialRecord;
+use crate::{STATE_FILE, STRONGHOLD};
 use lazy_static::lazy_static;
 use log::info;
 use oid4vci::credential_format_profiles::w3c_verifiable_credentials::jwt_vc_json::JwtVcJson;
@@ -34,7 +35,8 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
         display_name: "Ferris Crabman".to_string(),
         primary_did: did_document.id,
     };
-    *state.active_profile.lock().unwrap() = Some(profile);
+    state.active_profile.lock().unwrap().replace(profile);
+    state.credentials.lock().unwrap().clear();
 
     vec![PERSONAL_INFORMATION.clone(), DRIVERS_LICENSE_CREDENTIAL.clone()]
         .into_iter()
