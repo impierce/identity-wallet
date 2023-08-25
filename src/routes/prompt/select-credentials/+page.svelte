@@ -57,7 +57,7 @@
         <div class="flex items-center">
           <p class="text-sm text-slate-800">Verified</p>
           <button class="-m-2 ml-1 rounded-full p-1" use:melt={$trigger}>
-            <Question class="h-6 w-6 text-indigo-500" />
+            <Question class="h-6 w-6 text-primary" />
           </button>
           {#if $open}
             <div

@@ -12,7 +12,7 @@
 
 <TopNavigation on:back={() => history.back()} title={goal.label}>
   <!-- <button
-      class="w-full py-4 text-left text-indigo-500"
+      class="w-full py-4 text-left text-primary"
       on:click={() => dispatch({ type: '[User Journey] Cancel' })}>Skip</button
     > -->
 </TopNavigation>

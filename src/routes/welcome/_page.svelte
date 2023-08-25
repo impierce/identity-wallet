@@ -78,7 +78,7 @@
     <p class="text-muted-foreground text-sm">{$LL.STRONG_PASSWORD()}</p>
   </div>
 
-  <Button disabled={loading} on:click={createProfile} class="shadow-neon">
+  <Button disabled={loading} on:click={createProfile} class="shadow-md">
     {#if loading}
       <div class="mr-2">
         <LoadingSpinner />

@@ -9,7 +9,7 @@
 </script>
 
 <button
-  class="absolute bottom-4 right-4 flex h-12 items-center justify-center rounded-full bg-indigo-500 px-4 dark:bg-slate-800"
+  class="absolute bottom-4 right-4 flex h-12 items-center justify-center rounded-full bg-primary px-4 dark:bg-slate-800"
   use:melt={trigger}
 >
   <QrCode class="h-6 w-6 text-white" />

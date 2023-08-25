@@ -38,7 +38,7 @@
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <div class="px-2 pb-8 pt-4">
     <p class="pb-4 text-3xl font-semibold text-slate-800">
-      So here's the <br /><span class="text-indigo-500">less interesting stuff ...</span>
+      So here's the <br /><span class="text-primary">less interesting stuff ...</span>
     </p>
     <p class="text-[15px]/[24px] font-medium text-slate-500">
       Yeah, we know. We still recommend you read this information carefully.
@@ -51,7 +51,7 @@
       <div class="grow">
         <p class="text-[13px]/[24px] font-medium text-slate-800">Data</p>
         <p class="text-[12px]/[20px] font-medium text-slate-500">
-          I have read and accept the <span class="text-indigo-500">terms and conditions</span>
+          I have read and accept the <span class="text-primary">terms and conditions</span>
         </p>
       </div>
       <div>
@@ -59,7 +59,7 @@
           use:melt={$root}
           class="flex h-6 w-6 appearance-none items-center justify-center
             rounded-md border-[1.5px] border-[#C5C6CC] p-[6px] text-white
-            {$isChecked ? 'border-none bg-indigo-500' : 'bg-white'}"
+            {$isChecked ? 'border-none bg-primary' : 'bg-white'}"
           id="checkbox"
         >
           {#if $isChecked}
@@ -73,9 +73,7 @@
       <div class="grow">
         <p class="text-[13px]/[24px] font-medium text-slate-800">Ownership</p>
         <p class="text-[12px]/[20px] font-medium text-slate-500">
-          I understand that I am solely responsible for <span class="text-indigo-500"
-            >my backups</span
-          >
+          I understand that I am solely responsible for <span class="text-primary">my backups</span>
         </p>
       </div>
       <div>

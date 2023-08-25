@@ -40,7 +40,7 @@
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <div class="px-2 pb-8 pt-4">
     <p class="pb-4 text-3xl font-semibold text-slate-800">
-      Let's go! Choose your <span class="text-indigo-500">appearance</span>
+      Let's go! Choose your <span class="text-primary">appearance</span>
     </p>
     <p class="text-[15px]/[24px] font-medium text-slate-500">Are you more of a night owl?</p>
   </div>
@@ -49,7 +49,7 @@
   <div class="mt-4 flex flex-col space-y-4">
     <div
       class="relative flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-4
-        {$isChecked('system') ? 'ring ring-indigo-500' : ''}"
+        {$isChecked('system') ? 'ring ring-primary' : ''}"
     >
       <div class="h-12 grow">
         <p class="text-[13px]/[24px] font-medium text-slate-800">System</p>
@@ -62,7 +62,7 @@
           use:melt={$root}
           class="flex h-6 w-6 appearance-none items-center justify-center
             rounded-md border-[1.5px] border-[#C5C6CC] p-[6px] text-white
-            {$isChecked ? 'border-none bg-indigo-500' : 'bg-white'}"
+            {$isChecked ? 'border-none bg-primary' : 'bg-white'}"
           id="checkbox"
         >
           {#if $isChecked}
@@ -88,7 +88,7 @@
   <div class="mt-4 flex flex-col space-y-4">
     <div
       class="relative flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4
-        {$isChecked('light') ? 'ring ring-indigo-500' : ''}"
+        {$isChecked('light') ? 'ring ring-primary' : ''}"
     >
       <div class="h-12 grow">
         <p class="text-[13px]/[24px] font-medium text-slate-800">Light</p>
@@ -100,7 +100,7 @@
           use:melt={$root}
           class="flex h-6 w-6 appearance-none items-center justify-center
             rounded-md border-[1.5px] border-[#C5C6CC] p-[6px] text-white
-            {$isChecked ? 'border-none bg-indigo-500' : 'bg-white'}"
+            {$isChecked ? 'border-none bg-primary' : 'bg-white'}"
           id="checkbox"
         >
           {#if $isChecked}
@@ -121,7 +121,7 @@
   <div class="mt-4 flex flex-col space-y-4">
     <div
       class="relative flex items-center justify-between rounded-xl border border-slate-800 bg-slate-800 p-4
-        {$isChecked('dark') ? 'ring ring-indigo-500' : ''}"
+        {$isChecked('dark') ? 'ring ring-primary' : ''}"
     >
       <div class="h-12 grow">
         <p class="text-[13px]/[24px] font-medium text-white">Dark</p>
@@ -133,7 +133,7 @@
           use:melt={$root}
           class="flex h-6 w-6 appearance-none items-center justify-center
             rounded-md border-[1.5px] border-[#C5C6CC] p-[6px] text-white
-            {$isChecked ? 'border-none bg-indigo-500' : 'bg-white'}"
+            {$isChecked ? 'border-none bg-primary' : 'bg-white'}"
           id="checkbox"
         >
           {#if $isChecked}

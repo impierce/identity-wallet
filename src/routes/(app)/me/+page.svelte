@@ -58,7 +58,7 @@
       <CredentialList />
       <!-- container that animates and places the button -->
       <div
-        in:fly={{ y: 12, delay: 100, opacity: 1, duration: 200 }}
+        in:fly={{ y: 12, delay: 0, opacity: 1, duration: 200 }}
         class="absolute bottom-4 right-4"
       >
         <!-- <div in:fade={{ delay: 200, duration: 200 }} class="absolute bottom-4 right-4"> -->
@@ -101,14 +101,14 @@
         <!-- <button
           slot="trigger"
           let:trigger
-          class="w-full rounded-lg bg-indigo-500 px-4 py-2 text-white"
+          class="w-full rounded-lg bg-primary px-4 py-2 text-white"
           use:melt={trigger}>Start</button
         > -->
         <div slot="content" class="flex flex-col pt-[20px]">
           <!-- TODO: add multiple steps inline in drawer -->
           <Button label={$LL.CONTINUE()} on:click={() => goto('/goals')} />
           <!-- <button
-            class="w-full rounded-lg bg-indigo-500 px-4 py-2 text-white"
+            class="w-full rounded-lg bg-primary px-4 py-2 text-white"
             on:click={() => goto('/goals')}>{$LL.CONTINUE()}</button
           > -->
         </div>

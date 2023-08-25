@@ -66,7 +66,7 @@
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <div class="px-2 pb-8 pt-4">
     <p class="pb-4 text-3xl font-semibold text-slate-800">
-      Set a display <span class="text-indigo-500">picture</span>
+      Set a display <span class="text-primary">picture</span>
     </p>
     <p class="text-[15px]/[24px] font-medium text-slate-500">Make it yours.</p>
     <div class="mt-[70px] flex w-full items-center justify-center">
@@ -122,7 +122,7 @@
             <!-- TODO: add multiple steps inline in drawer -->
             <!-- <Button label={$LL.CONTINUE()} on:click={() => goto('/goals')} /> -->
             <!-- <button
-          class="w-full rounded-lg bg-indigo-500 px-4 py-2 text-white"
+          class="w-full rounded-lg bg-primary px-4 py-2 text-white"
           on:click={() => goto('/goals')}>{$LL.CONTINUE()}</button
         > -->
           {/each}

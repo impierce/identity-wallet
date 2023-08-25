@@ -30,7 +30,7 @@
               {$state?.active_profile?.primary_did}
             </p>
             <button class="-mr-2 ml-2 rounded-full p-2 hover:bg-slate-200 active:bg-slate-300"
-              ><Eye class="text-indigo-500" strokeWidth="2" /></button
+              ><Eye class="text-primary" strokeWidth="2" /></button
             >
           </div>
         </div>
@@ -56,7 +56,7 @@
           <div class="flex flex-col items-center justify-center space-y-4">
             <input
               type="text"
-              class="h-[40px] w-[192px] rounded-lg border px-4 py-2 text-right text-base font-medium text-indigo-600 dark:bg-slate-800"
+              class="h-[40px] w-[192px] rounded-lg border px-4 py-2 text-right text-base font-medium text-primary dark:bg-slate-800"
               value={$state?.active_profile?.name}
               on:input={(e) => console.log(e.target.value)}
             />
@@ -66,7 +66,7 @@
         <div class="flex h-14 items-center justify-between rounded-lg bg-white px-4 py-2">
           <p>Password</p>
           <div class="flex flex-col items-center justify-center space-y-4">
-            <button class="rounded-lg px-2 py-1 font-medium text-indigo-600">Change</button>
+            <button class="rounded-lg px-2 py-1 font-medium text-primary">Change</button>
           </div>
         </div>
 
@@ -97,7 +97,7 @@
         <div class="flex h-14 items-center justify-between rounded-lg bg-white px-4 py-2">
           <p>Theme</p>
           <div class="flex items-center justify-center">
-            <button class="rounded-lg px-2 py-1 font-medium text-indigo-600"
+            <button class="rounded-lg px-2 py-1 font-medium text-primary"
               >Use system settings</button
             >
           </div>
@@ -111,7 +111,7 @@
               on:value={(e) =>
                 dispatch({ type: '[Settings] Set locale', payload: { locale: e.detail } })}
             /> -->
-            <button class="rounded-lg px-2 py-1 font-medium text-indigo-600">Restart</button>
+            <button class="rounded-lg px-2 py-1 font-medium text-primary">Restart</button>
           </div>
         </div>
       </div>

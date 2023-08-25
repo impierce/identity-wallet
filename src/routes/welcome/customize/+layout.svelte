@@ -12,14 +12,13 @@
       slot="trigger"
       let:trigger
       use:melt={trigger}
-      class="-mr-2 p-2 text-left text-[13px]/[24px] font-medium text-indigo-500"
-      >{$LL.SKIP()}</button
+      class="-mr-2 p-2 text-left text-[13px]/[24px] font-medium text-primary">{$LL.SKIP()}</button
     >
     <!-- <button
         slot="trigger"
         let:trigger
         use:melt={trigger}
-        class="-mr-2 p-2 text-left text-[13px]/[24px] font-medium text-indigo-500"
+        class="-mr-2 p-2 text-left text-[13px]/[24px] font-medium text-primary"
       >
         <div class="h-6 w-6 bg-slate-200" />
       </button> -->

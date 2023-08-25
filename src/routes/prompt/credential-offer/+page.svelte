@@ -40,7 +40,7 @@
     <div class="flex w-full items-center rounded-lg bg-white px-4 py-4">
       <!-- <WarningCircle class="mr-2 h-6 w-6 text-amber-500" /> -->
       <p class="text-sm font-medium text-slate-800">
-        <span class="text-indigo-500">{credential_offer.credential_issuer}</span>
+        <span class="text-primary">{credential_offer.credential_issuer}</span>
         offers you the following credentials
       </p>
     </div>
@@ -54,7 +54,7 @@
             use:melt={$root}
             class="flex h-6 w-6 appearance-none items-center justify-center
               rounded-md border-[1.5px] border-[#C5C6CC] p-[6px] text-white
-              {$isChecked ? 'border-none bg-indigo-500' : 'bg-white'}"
+              {$isChecked ? 'border-none bg-primary' : 'bg-white'}"
             id="checkbox"
           >
             {#if $isChecked}
@@ -87,7 +87,7 @@
         goto('/me');
       }}
     />
-    <!-- <button class="w-full rounded-lg bg-indigo-500 px-4 py-2 text-white" on:click={() => {}}
+    <!-- <button class="w-full rounded-lg bg-primary px-4 py-2 text-white" on:click={() => {}}
         >Accept connection</button
       > -->
     <!-- <button

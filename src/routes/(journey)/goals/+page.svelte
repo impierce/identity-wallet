@@ -37,14 +37,13 @@
       slot="trigger"
       let:trigger
       use:melt={trigger}
-      class="-mr-2 p-2 text-left text-[13px]/[24px] font-medium text-indigo-500"
-      >{$LL.SKIP()}</button
+      class="-mr-2 p-2 text-left text-[13px]/[24px] font-medium text-primary">{$LL.SKIP()}</button
     >
     <!-- <button
       slot="trigger"
       let:trigger
       use:melt={trigger}
-      class="-mr-2 p-2 text-left text-[13px]/[24px] font-medium text-indigo-500"
+      class="-mr-2 p-2 text-left text-[13px]/[24px] font-medium text-primary"
     >
       <div class="h-6 w-6 bg-slate-200" />
     </button> -->
@@ -94,7 +93,7 @@
 
             <svelte:fragment slot="content">
               <!-- <button
-                class="w-full rounded-lg bg-indigo-500 px-4 py-2 text-white"
+                class="w-full rounded-lg bg-primary px-4 py-2 text-white"
                 on:click={() => goto(`/goals/${goal.id}/faqs`)}>Start</button
               > -->
               <Button label="Start" on:click={() => goto(`/goals/${goal.id}/faqs`)} />
@@ -114,7 +113,7 @@
 
     <!-- 'TODO: determine first incomplete item in list' -->
     <!-- <button
-      class="w-full rounded-lg bg-indigo-500 px-4 py-2 text-white"
+      class="w-full rounded-lg bg-primary px-4 py-2 text-white"
       on:click={() => goto('/goals/0/faqs')}>Continue</button
     > -->
   </div>

@@ -62,7 +62,7 @@
     // loading = false;
   }}
 >
-  <div class="flex rounded-full bg-violet-700 p-4 shadow-neon">
+  <div class="flex rounded-full bg-violet-700 p-4 shadow-md">
     {#if loading}
       <LoadingSpinner class="h-9 w-9 text-white" />
     {:else}

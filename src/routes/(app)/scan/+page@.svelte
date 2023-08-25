@@ -104,7 +104,6 @@
   });
 
   onMount(async () => {
-    scanning = true;
     document.documentElement.querySelector('body')!!.classList.add('transparent');
     permissionsGiven = await checkScanPrerequisites();
     if (permissionsGiven) {

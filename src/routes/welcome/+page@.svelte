@@ -39,7 +39,7 @@
     <!-- <div class="flex grow flex-col justify-center" in:fade out:fly={{ x: -300, duration: 300 }}> -->
     <div class="px-4">
       <p class="pb-[30px] text-[36px]/[44px] font-bold text-black">
-        Welcome to <br /><span class="text-indigo-500">UniMe</span>
+        Welcome to <br /><span class="text-primary">UniMe</span>
       </p>
       <p class="text-[15px]/[24px] font-medium text-slate-500">
         UniMe connects your digital world, safely and securely.

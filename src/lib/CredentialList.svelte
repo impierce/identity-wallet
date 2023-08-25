@@ -90,7 +90,7 @@
 <!-- List of existing credentials -->
 {#if credentials?.length > 0}
   <div class="flex items-center pb-2">
-    <SealCheck class="mr-2 text-indigo-500" />
+    <SealCheck class="mr-2 text-primary" />
     <p class="text-[15px]/[24px] font-medium text-slate-600">{$LL.MY_DATA()}</p>
   </div>
   <!-- Search -->
@@ -143,7 +143,7 @@
   <Sheet>
     <SheetTrigger class="w-full">
       <button
-        class="absolute bottom-4 right-4 flex justify-center rounded-full bg-indigo-500 p-3 dark:bg-slate-800"
+        class="absolute bottom-4 right-4 flex justify-center rounded-full bg-primary p-3 dark:bg-slate-800"
       >
         <PlusCircle class="h-6 w-6 text-white" />
         <p class="pl-2 pr-1 text-base font-medium text-white">Add</p>
