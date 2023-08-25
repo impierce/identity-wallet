@@ -4,7 +4,6 @@ use crate::state::actions::Action;
 use crate::state::user_prompt::{CurrentUserPrompt, CurrentUserPromptType, Redirect};
 use crate::state::{AppState, Profile};
 use crate::verifiable_credential_record::VerifiableCredentialRecord;
-use crate::{STATE_FILE, STRONGHOLD};
 use lazy_static::lazy_static;
 use log::info;
 use oid4vci::credential_format_profiles::w3c_verifiable_credentials::jwt_vc_json::JwtVcJson;

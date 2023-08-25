@@ -37,10 +37,11 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::
     info!("credential issuer url: {:?}", credential_issuer_url);
 
     // Get the credential issuer metadata.
-    let credential_issuer_metadata = if credential_offer.credentials.iter().any(|credential| match credential {
-        CredentialsObject::ByReference(_) => true,
-        _ => false,
-    }) {
+    let credential_issuer_metadata = if credential_offer
+        .credentials
+        .iter()
+        .any(|credential| matches!(credential, CredentialsObject::ByReference(_)))
+    {
         wallet
             .get_credential_issuer_metadata(credential_issuer_url.clone())
             .await
