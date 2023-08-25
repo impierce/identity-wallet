@@ -1435,6 +1435,7 @@ dependencies = [
 [[package]]
 name = "dif-presentation-exchange"
 version = "0.1.0"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/external-sign#dccc042d259109c691210b485135ae0158691fe6"
 dependencies = [
  "getset",
  "jsonpath_lib",
@@ -3931,6 +3932,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-core"
 version = "0.1.0"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/external-sign#dccc042d259109c691210b485135ae0158691fe6"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3948,6 +3950,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-manager"
 version = "0.1.0"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/external-sign#dccc042d259109c691210b485135ae0158691fe6"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3979,6 +3982,7 @@ dependencies = [
 [[package]]
 name = "oid4vci"
 version = "0.1.0"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/external-sign#dccc042d259109c691210b485135ae0158691fe6"
 dependencies = [
  "anyhow",
  "derivative",
@@ -3999,6 +4003,7 @@ dependencies = [
 [[package]]
 name = "oid4vp"
 version = "0.1.0"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/external-sign#dccc042d259109c691210b485135ae0158691fe6"
 dependencies = [
  "anyhow",
  "dif-presentation-exchange",
@@ -5152,6 +5157,7 @@ dependencies = [
 [[package]]
 name = "siopv2"
 version = "0.1.0"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/external-sign#dccc042d259109c691210b485135ae0158691fe6"
 dependencies = [
  "anyhow",
  "async-trait",
