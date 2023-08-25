@@ -10,19 +10,23 @@
   let connections: Connection[] = exampleConnections;
 </script>
 
-<div class="flex flex-col space-y-4">
+<div class="flex flex-col space-y-3">
+  <p class="w-full px-4 text-[14px]/[22px] font-medium text-slate-600">A</p>
   {#each connections as connection}
     <button on:click={() => goto(`/activity/connection/${connection.id}`)}>
-      <div class="flex items-center justify-between rounded-lg bg-slate-100 px-6 py-4">
-        <div class="flex flex-col items-start">
-          <div class="font-semibold text-slate-600">
+      <div class="flex h-16 items-center rounded-xl bg-white px-4">
+        <!-- Icon -->
+        <div class="mr-4 h-8 w-8 rounded-full border" />
+        <!-- Text -->
+        <div class="flex grow flex-col items-start">
+          <div class="text-[13px]/[24px] font-medium text-[#1D1B20]">
             {connection.displayName ?? connection.domain}
           </div>
-          <div class="pt-2 text-sm font-light text-slate-400">
+          <div class="text-[12px]/[20px] font-medium text-[#94A3B8]">
             {connection.lastConnected}
           </div>
         </div>
-        <ChevronRight />
+        <!-- <ChevronRight /> -->
       </div>
     </button>
   {/each}

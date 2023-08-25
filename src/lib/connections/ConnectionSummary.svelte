@@ -2,30 +2,26 @@
   import BadgeCheck from '~icons/lucide/badge-check';
   import Pencil from '~icons/lucide/pencil';
 
-  export let id: string;
   export let domain: string;
   export let displayName: string | undefined = undefined;
   export let lastConnected: string;
+
+  let summary = {
+    Domain: domain,
+    // displayName,
+    Verified: 'yes',
+    'First connected': 'n/a',
+    'Last connected': lastConnected
+  };
 </script>
 
 <div
-  class="grid w-full grid-flow-row auto-rows-max grid-cols-2 items-center gap-y-4 bg-slate-100 p-4"
+  class="w-full divide-y divide-solid divide-gray-200 rounded-xl border border-gray-200 bg-white"
 >
-  <!-- <div class="text-slate-400">displayName</div> -->
-  <div class="col-span-2 flex items-center justify-between">
-    <p class="text-lg font-medium">{displayName ?? domain}</p>
-    <button class="rounded-full border p-4"><Pencil class="text-slate-400" /></button>
-  </div>
-
-  <div class="text-slate-400">domain</div>
-  <div class="flex items-center">
-    <p>{domain}</p>
-    <BadgeCheck class="ml-2 h-5 w-5 text-blue-500" />
-  </div>
-
-  <div class="text-slate-400">first connected</div>
-  <div>n/a</div>
-
-  <div class="text-slate-400">lastConnected</div>
-  <div>{lastConnected}</div>
+  {#each Object.entries(summary) as entry}
+    <div class="flex flex-col items-start px-4 py-[10px]">
+      <p class="text-[15px]/[24px] font-medium text-[#6E82A4]">{entry[0]}</p>
+      <p class="break-all text-[13px]/[24px] font-medium text-slate-800">{entry[1]}</p>
+    </div>
+  {/each}
 </div>

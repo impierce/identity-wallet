@@ -70,7 +70,7 @@
         </p>
       </div>
     </div>
-    <!-- Credential Subject -->
+    <!-- Table: Credential Subject -->
     <div class="divide-y divide-solid divide-gray-200 rounded-xl border border-gray-200 bg-white">
       {#each Object.entries(credential.credentialSubject) as entry}
         <div class="flex flex-col items-start px-4 py-[10px]">
@@ -79,7 +79,7 @@
         </div>
       {/each}
     </div>
-    <!-- Issuer -->
+    <!-- Table: Issuer -->
     <div
       class="mt-[15px] divide-y divide-solid divide-gray-200 rounded-xl border border-gray-200 bg-white"
     >
