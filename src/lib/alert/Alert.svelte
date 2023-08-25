@@ -23,7 +23,7 @@
 
   export let isOpen: boolean;
   export let title: string;
-  export let options: string[];
+  export let options: number[];
 
   let selected: number[] = [];
 </script>
@@ -70,8 +70,7 @@
                     </label>
                   </div>
                   <div class="break-all font-semibold">
-                    <div>{JSON.stringify($state.credentials?.find(i => i[0] === option)[1].type)}</div>
-                    <!-- <div>{JSON.stringify($state.credentials[option].data.credentialSubject)}</div> -->
+                    <div>{JSON.stringify($state.credentials[option].credentialSubject)}</div>
                     <!-- <Accordion type="single" collapsible class="w-full">
                       <AccordionItem value="item-1">
                         <AccordionTrigger>{$state.credentials[option].type[1]}</AccordionTrigger>
@@ -117,7 +116,7 @@
           on:click={() =>
             dispatch({
               type: '[Authenticate] Credentials selected',
-              payload: { credential_uuids: [$state.credentials[0][0], $state.credentials[1][0]] }
+              payload: { credential_index: 0 }
             })}>{$LL.SHARE_CREDENTIALS_CONFIRM()}</Button
         >
       </AlertDialogAction>
