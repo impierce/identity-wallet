@@ -1,5 +1,3 @@
-use core::panic;
-
 use crate::state::actions::{Action, ActionType};
 use crate::state::persistence::{delete_state_file, delete_stronghold, load_state, save_state};
 use crate::state::reducers::authorization::{read_authorization_request, send_authorization_response};
