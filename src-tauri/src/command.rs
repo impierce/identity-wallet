@@ -44,11 +44,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
         }
         ActionType::UnlockStorage => {
             if unlock_storage(app_state, Action { r#type, payload }).await.is_ok() {
-                save_state(TransferState::from(app_state))
-                    .await
-                    .expect("unable to save state");
-            } else {
-                panic!("unable to unlock storage");
+                save_state(TransferState::from(app_state)).await.ok();
             }
         }
         ActionType::Reset => {

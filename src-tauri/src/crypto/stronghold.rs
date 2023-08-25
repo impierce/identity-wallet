@@ -29,7 +29,6 @@ impl StrongholdManager {
     pub fn create(password: &str) -> anyhow::Result<Self> {
         let stronghold = Stronghold::default();
         let client_path = STRONGHOLD.lock().unwrap().to_str().unwrap().to_owned();
-        info!("THIS IS THE NAME OF THE PATH: `{}`", format!("{client_path}.snapshot"));
 
         let snapshot_path = SnapshotPath::from_path(format!("{client_path}.snapshot"));
         let key_provider = KeyProvider::try_from(hash_password(password)?).expect("failed to load key");
@@ -56,7 +55,6 @@ impl StrongholdManager {
         debug!("public_key (base64): {:?}", base64::encode(public_key));
 
         stronghold_manager.commit()?;
-        info!("THIS IS THE NAME OF THE PATH2: `{}`", snapshot_path.exists());
         Ok(stronghold_manager)
     }
 
