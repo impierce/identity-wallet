@@ -60,6 +60,12 @@
   $: {
     console.log($onboarding_state);
   }
+
+  let emojiSelectIsOpen = false;
+
+  $: {
+    console.log({ emojiSelectIsOpen });
+  }
 </script>
 
 <!-- <TopNavigation title="Avatar" on:back={() => history.back()} /> -->
@@ -70,13 +76,20 @@
     </p>
     <p class="text-[15px]/[24px] font-medium text-slate-500">Make it yours.</p>
     <div class="mt-[70px] flex w-full items-center justify-center">
-      <BottomDrawer titleText={'Select profile picture'} descriptionText={''}>
-        <!-- <span slot="trigger"> -->
+      <BottomDrawer
+        titleText={'Select profile picture'}
+        descriptionText={''}
+        isOpen={emojiSelectIsOpen}
+      >
+        <!-- <div slot="trigger"> -->
         <button
           slot="trigger"
           let:trigger
           class="flex h-24 w-24 items-center justify-center rounded-full border border-slate-200 bg-white"
           use:melt={trigger}
+          on:click={() => {
+            emojiSelectIsOpen = true;
+          }}
         >
           {#if $onboarding_state.picture}
             <span class="text-[44px]/[44px]">
@@ -86,7 +99,7 @@
             <Plus class="h-6 w-6" />
           {/if}
         </button>
-        <!-- TODO: is never shown, because not in slot -->
+        <!-- TODO: Popover is never shown, because not in slot -->
         {#if $open}
           <div
             use:melt={$content}
@@ -102,6 +115,7 @@
             </div>
           </div>
         {/if}
+        <!-- </div> -->
         <div
           slot="content"
           class="hide-scrollbar flex snap-x snap-mandatory flex-row items-start space-x-4 overflow-x-scroll"
@@ -111,9 +125,13 @@
               class="grid min-w-fit snap-center grid-cols-3 place-items-center gap-2 rounded-3xl bg-neutral-100 p-2"
             >
               {#each page as emoji}
+                <!-- TODO: when button pressed (on picture changes, then close drawer) -->
                 <button
                   class="rounded-2xl border bg-white p-4 text-[32px]/[32px]"
-                  on:click={() => ($onboarding_state.picture = emoji)}
+                  on:click={() => {
+                    $onboarding_state.picture = emoji;
+                    emojiSelectIsOpen = false;
+                  }}
                   >{@html emoji}
                 </button>
               {/each}
@@ -131,7 +149,7 @@
           slot="close"
           let:close
           use:melt={close}
-          class="mt-4 w-full rounded-lg bg-red-100 px-4 py-2 text-[13px]/[24px] font-medium text-red-700"
+          class="mt-4 w-full rounded-lg bg-red-100 px-4 py-2 text-[13px]/[24px] font-medium text-red-500"
           >Close</button
         >
       </BottomDrawer>

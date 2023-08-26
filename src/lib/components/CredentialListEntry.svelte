@@ -8,7 +8,7 @@
 </script>
 
 <button
-  class="flex h-[60px] items-center justify-start rounded-xl bg-white p-[5px] pr-[24px]"
+  class="flex h-[60px] items-center justify-start rounded-xl bg-bg-primary p-[5px] pr-[24px] dark:bg-bg-dark-primary"
   on:click={() => goto(`/credentials/${id}`)}
 >
   <!-- Icon -->
@@ -19,7 +19,7 @@
   </div>
   <!-- Text -->
   <div class="flex grow flex-col items-start">
-    <p class="text-[13px]/[24px] font-medium text-slate-800">{title}</p>
+    <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-white">{title}</p>
     <p class="max-w-[180px] truncate text-[12px]/[20px] font-medium text-slate-400">
       {description}
     </p>

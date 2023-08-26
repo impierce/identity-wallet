@@ -41,11 +41,11 @@ iota_stronghold = { version = "=1.0.5" }
 #iota_stronghold = { path = "/Users/daniel/dev/iotaledger/stronghold.rs/client" }
 #libsodium-sys = { git = "https://git@github.com/daniel-mader/sodiumoxide" }
 
-oid4vc-manager = { git = "https://git@github.com/impierce/openid4vc.git", branch = "chore/update-identity" }
-siopv2 = { git = "https://git@github.com/impierce/openid4vc.git", branch = "chore/update-identity" }
-oid4vci = { git = "https://git@github.com/impierce/openid4vc.git", branch = "chore/update-identity" }
-oid4vc-core = { git = "https://git@github.com/impierce/openid4vc.git", branch = "chore/update-identity" }
-oid4vp = { git = "https://git@github.com/impierce/openid4vc.git", branch = "chore/update-identity" }
+oid4vc-manager = { git = "https://git@github.com/impierce/openid4vc.git", branch = "feat/external-sign" }
+siopv2 = { git = "https://git@github.com/impierce/openid4vc.git", branch = "feat/external-sign" }
+oid4vci = { git = "https://git@github.com/impierce/openid4vc.git", branch = "feat/external-sign" }
+oid4vc-core = { git = "https://git@github.com/impierce/openid4vc.git", branch = "feat/external-sign" }
+oid4vp = { git = "https://git@github.com/impierce/openid4vc.git", branch = "feat/external-sign" }
 
 base64 = { version = "0.13.0" }
 identity_iota = "0.6"
@@ -64,7 +64,10 @@ uuid = { version = "1.4", features = ["v4", "fast-rng"] }
 tauri = { version = "=2.0.0-alpha.10", features = ["rustls-tls", "test"] }
 tempfile = "3.5.0"
 serial_test = "2.0"
-reqwest = { version = "0.11", default-features = false, features = ["json", "rustls-tls"] }
+reqwest = { version = "0.11", default-features = false, features = [
+    "json",
+    "rustls-tls",
+] }
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

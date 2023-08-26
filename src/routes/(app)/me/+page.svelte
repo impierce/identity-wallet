@@ -36,7 +36,7 @@
   }
 </script>
 
-<div class="flex min-h-full flex-col">
+<div class="flex min-h-full flex-col bg-bg-primary dark:bg-bg-dark-primary">
   <div class="sticky top-0 z-10 h-[56px] w-full">
     <TopBar />
   </div>
@@ -51,7 +51,7 @@
   <!-- should have min height: full screen - smallest possible welcome header - bottom nav - safe areas (top, bottom) -->
   <div
     in:fly={{ y: 24, duration: 200 }}
-    class="flex grow flex-col items-stretch justify-start rounded-t-[20px] bg-neutral-100 p-[18px]"
+    class="flex grow flex-col items-stretch justify-start rounded-t-[20px] bg-bg-secondary p-[18px] dark:bg-bg-dark-secondary"
   >
     {#if $state?.credentials && $state?.credentials.length > 0}
       <Favorites />

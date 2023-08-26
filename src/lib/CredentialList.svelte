@@ -42,11 +42,14 @@
   import User from '~icons/ph/user';
 
   import type { TransferState } from '../../src-tauri/bindings/TransferState';
+  import type { DisplayCredential } from '../../src-tauri/bindings/display-credential/DisplayCredential';
   import CredentialListEntry from './components/CredentialListEntry.svelte';
   import NoCredentials from './credentials/NoCredentials.svelte';
 
   // TODO: improve typing
-  let credentials: TransferState['credentials'] = [];
+  let credentials: Array<DisplayCredential> = $state.credentials.filter(
+    (c) => !c.metadata.is_favorite
+  );
 
   let test_credentials = [
     {
@@ -84,14 +87,14 @@
   test_credentials = [];
 
   // Does this really have to be reactive?
-  $: credentials = $state?.credentials ?? [];
+  // $: credentials = $state?.credentials ?? [];
 </script>
 
 <!-- List of existing credentials -->
 {#if credentials?.length > 0}
   <div class="flex items-center pb-2">
     <SealCheck class="mr-2 text-primary" />
-    <p class="text-[15px]/[24px] font-medium text-slate-600">{$LL.MY_DATA()}</p>
+    <p class="text-[15px]/[24px] font-medium text-slate-600 dark:text-white">{$LL.MY_DATA()}</p>
   </div>
   <!-- Search -->
   <!-- <Input type="text" placeholder="Search credentials" class="focus-visible:ring-violet-600" /> -->
@@ -125,16 +128,17 @@
     <!-- Actual (non-mock) credentials -->
     {#each credentials as credential}
       <CredentialListEntry
-        id={credential?.at(0)}
-        title={credential?.at(1).type.at(1)}
-        description={credential?.at(1).issuer}
+        id={credential.id}
+        title={credential.metadata.display.name || credential.data.type.at(1)}
+        description={credential.data.issuer}
         color="bg-indigo-100"
       >
         <span slot="icon"><User class="h-[18px] w-[18px] text-slate-800" /></span>
       </CredentialListEntry>
     {/each}
   </div>
-{:else}
+{:else if $state?.credentials?.length === 0}
+  <!-- Only show "No credentials" when there's also no favorites -->
   <NoCredentials />
 {/if}
 

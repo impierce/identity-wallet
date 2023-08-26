@@ -40,34 +40,11 @@ pub struct CredentialOffer {
     pub credential_offer: serde_json::Value,
 }
 
-// pub trait UserActionprompt {
-//     fn get_type(&self) -> String;
-// }
-
-// #[derive(Clone, Debug, Serialize, Deserialize)]
-// struct UserActionprompt {
-//     r#type: UserActionpromptType,
-// }
-
-// impl UserActionprompt for Redirect {
-//     fn get_type(&self) -> String {
-//         self.r#type.to_string()
-//     }
-// }
-
-// impl<U: UserActionprompt> From<U> for Redirect where U: ?Sized {
-//     fn from(user_action_prompt: U) -> Redirect {
-//         Redirect {
-//             r#type: UserActionpromptType::Redirect,
-//             target: user_action_prompt.get_type()
-//         }
-//     }
-// }
-
-// impl WarningDialog for UserActionprompt {
-//     // user_action_prompt: UserActionprompt,
-//     // message: 'be_careful',
-// }
+#[derive(Clone, Serialize, Deserialize, Debug, TS, PartialEq)]
+#[ts(export, export_to = "bindings/user-prompt/PasswordRequired.ts")]
+pub struct PasswordRequired {
+    pub r#type: CurrentUserPromptType,
+}
 
 #[derive(Clone, Serialize, Deserialize, Debug, TS, PartialEq)]
 #[serde(untagged)]
@@ -77,6 +54,7 @@ pub enum CurrentUserPrompt {
     Warning(Warning),
     Selection(Selection),
     CredentialOffer(CredentialOffer),
+    PasswordRequired(PasswordRequired),
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, TS, PartialEq)]
@@ -94,4 +72,6 @@ pub enum CurrentUserPromptType {
     SelectCredentials,
     #[serde(rename = "credential-offer")]
     CredentialOffer,
+    #[serde(rename = "password-required")]
+    PasswordRequired,
 }

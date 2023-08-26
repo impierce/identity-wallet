@@ -10,6 +10,7 @@
   import Button from '$lib/components/Button.svelte';
   import CredentialDetailsDropdownMenu from '$src/lib/components/CredentialDetailsDropdownMenu.svelte';
   import ShareButton from '$src/lib/credentials/ShareButton.svelte';
+  import { dispatch } from '$src/lib/dispatcher';
   import { state } from '$src/stores';
 
   import DotsThreeVertical from '~icons/ph/dots-three-vertical-bold';
@@ -17,7 +18,7 @@
   import HeartFill from '~icons/ph/heart-straight-fill';
   import House from '~icons/ph/house-light';
 
-  let credential = $state.credentials.find((c) => $page.params.id === c.at(0))?.at(1);
+  let credential = $state.credentials.find((c) => $page.params.id === c.id)!!;
 
   let color = {
     bg: 'bg-indigo-100',
@@ -25,11 +26,11 @@
   };
 
   let icon: any = House;
-  let title: string = credential.type.at(-1);
+  let title: string = credential.metadata.display.name || credential.data.type.at(-1);
 
   let qrcodeText = JSON.stringify(credential, null, 0);
 
-  let isFavorite: boolean = false;
+  let isFavorite: boolean = credential.metadata.is_favorite;
 </script>
 
 <div class="content-height relative flex w-full flex-col" in:fly={{ x: 24 }}>
@@ -43,7 +44,14 @@
     <div class="flex flex-col py-[20px]">
       <!-- Logo -->
       <div class="flex items-start justify-between">
-        <button class="-ml-1 -mt-1 rounded-full p-1" on:click={() => (isFavorite = !isFavorite)}>
+        <button
+          class="-ml-1 -mt-1 rounded-full p-1"
+          on:click={() =>
+            dispatch({
+              type: '[Credential Metadata] Update',
+              payload: { id: credential.id, is_favorite: !isFavorite }
+            })}
+        >
           {#if isFavorite}
             <HeartFill class="h-6 w-6" />
           {:else}
@@ -56,7 +64,7 @@
           <svelte:component this={icon} class="h-6 w-6 text-slate-800" />
         </div>
         <div class="-mr-1 -mt-1">
-          <CredentialDetailsDropdownMenu />
+          <CredentialDetailsDropdownMenu {credential} />
         </div>
         <!-- <button class="-mr-1 -mt-1 rounded-full p-1">
           <DotsThreeVertical class="h-6 w-6" />
@@ -66,13 +74,13 @@
       <div class="flex flex-col items-center pt-[15px]">
         <p class="text-2xl font-semibold text-black">{title}</p>
         <p class="text-[13px]/[24px] font-normal text-slate-500">
-          {new URL(credential.issuer).hostname}
+          {new URL(credential.data.issuer).hostname}
         </p>
       </div>
     </div>
     <!-- Table: Credential Subject -->
     <div class="divide-y divide-solid divide-gray-200 rounded-xl border border-gray-200 bg-white">
-      {#each Object.entries(credential.credentialSubject) as entry}
+      {#each Object.entries(credential.data.credentialSubject) as entry}
         <div class="flex flex-col items-start px-4 py-[10px]">
           <p class="text-[15px]/[24px] font-medium text-[#6E82A4]">{entry[0]}</p>
           <p class="break-all text-[13px]/[24px] font-medium text-slate-800">{entry[1]}</p>
@@ -83,7 +91,7 @@
     <div
       class="mt-[15px] divide-y divide-solid divide-gray-200 rounded-xl border border-gray-200 bg-white"
     >
-      {#each Object.entries( { issuer: credential.issuer, issuanceDate: credential.issuanceDate } ) as entry}
+      {#each Object.entries( { issuer: credential.data.issuer, issuanceDate: credential.data.issuanceDate } ) as entry}
         <div class="flex flex-col items-start px-4 py-[10px]">
           <p class="text-[15px]/[24px] font-medium text-[#6E82A4]">{entry[0]}</p>
           <p class="break-all text-[13px]/[24px] font-medium text-slate-800">{entry[1]}</p>
@@ -108,7 +116,7 @@
       <!-- Description -->
       <div class="flex flex-col items-center">
         <p class="pt-4 text-2xl font-semibold text-black">{title}</p>
-        <p class="text-[13px]/[24px] text-slate-500">{credential.issuer}</p>
+        <p class="text-[13px]/[24px] text-slate-500">{credential.data.issuer}</p>
       </div>
       <!-- QR Code -->
       <div class="flex flex-col items-center p-7">
@@ -118,7 +126,7 @@
           {/await}
         </div>
         <p class="pt-5 text-xl font-semibold text-black">
-          {Object.entries(credential.credentialSubject).at(-1)?.at(1)}
+          {Object.entries(credential.data.credentialSubject).at(-1).at(1)}
         </p>
       </div>
     </span>

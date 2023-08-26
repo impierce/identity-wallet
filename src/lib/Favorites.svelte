@@ -1,30 +1,37 @@
 <script lang="ts">
   import LL from '$src/i18n/i18n-svelte';
+  import { state } from '$src/stores';
 
   import Clapperboard from '~icons/lucide/clapperboard';
   import Star from '~icons/lucide/star';
   import AirplaneTilt from '~icons/ph/airplane-tilt-light';
   import FilmSlate from '~icons/ph/film-slate-light';
   import Heart from '~icons/ph/heart-straight-fill';
+  import User from '~icons/ph/user';
 
+  import type { DisplayCredential } from '../../src-tauri/bindings/display-credential/DisplayCredential';
   import CredentialListEntry from './components/CredentialListEntry.svelte';
 
-  let favorite_credentials: any[] = [
-    {
-      title: 'Avatar: The Way of Water',
-      description: 'Downtown Cinema',
-      icon: FilmSlate,
-      color: 'bg-amber-100'
-    },
-    {
-      title: 'Flight #1337 to Pandora',
-      description: 'Pandora Airlines',
-      icon: AirplaneTilt,
-      color: 'bg-teal-100'
-    }
-  ];
+  // let favorite_credentials: any[] = [
+  //   {
+  //     title: 'Avatar: The Way of Water',
+  //     description: 'Downtown Cinema',
+  //     icon: FilmSlate,
+  //     color: 'bg-amber-100'
+  //   },
+  //   {
+  //     title: 'Flight #1337 to Pandora',
+  //     description: 'Pandora Airlines',
+  //     icon: AirplaneTilt,
+  //     color: 'bg-teal-100'
+  //   }
+  // ];
 
-  favorite_credentials = [];
+  // favorite_credentials = [];
+
+  const favorite_credentials: DisplayCredential[] = $state.credentials.filter(
+    (c) => c.metadata.is_favorite
+  );
 </script>
 
 {#if favorite_credentials.length > 0}
@@ -34,13 +41,15 @@
       <p class="font-medium text-slate-600">{$LL.FAVORITES()}</p>
     </div>
     <div class="flex flex-col space-y-2">
-      {#each favorite_credentials as favorite}
+      {#each favorite_credentials as credential}
         <CredentialListEntry
-          title={favorite.title}
-          description={favorite.description}
-          color={favorite.color}
+          id={credential.id}
+          title={credential.metadata.display.name || credential.data.type.at(1)}
+          description={credential.data.issuer}
+          color="bg-indigo-100"
         >
-          <span slot="icon"><svelte:component this={favorite.icon} class="h-6 w-6" /></span>
+          <!-- <span slot="icon"><svelte:component this={User} class="h-6 w-6" /></span> -->
+          <span slot="icon"><User class="h-[18px] w-[18px] text-slate-800" /></span>
         </CredentialListEntry>
       {/each}
     </div>

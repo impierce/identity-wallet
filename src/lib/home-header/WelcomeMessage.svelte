@@ -12,7 +12,7 @@
   ];
 </script>
 
-<p class="pb-4 pt-[10px] text-3xl font-semibold text-slate-800">
+<p class="pb-4 pt-[10px] text-3xl font-semibold text-slate-800 dark:text-white">
   <!-- {$LL.WELCOME()}, <span class="text-primary">{$state?.active_profile?.display_name}.</span> -->
   {greetings[Math.floor(Math.random() * greetings.length)]},
   <span class="text-primary">{$state?.active_profile?.name}.</span>

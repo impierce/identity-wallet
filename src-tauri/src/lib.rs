@@ -2,23 +2,21 @@ pub mod command;
 pub mod crypto;
 mod did;
 pub mod state;
+pub mod verifiable_credential_record;
 
 use command::handle_action;
-use did_key::{generate, Ed25519KeyPair};
 use fern::colors::Color;
 use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
 use lazy_static::lazy_static;
 use log::{info, LevelFilter};
-use oid4vc_manager::{methods::key_method::KeySubject, ProviderManager};
 use state::AppState;
-use std::sync::{Arc, Mutex};
+use std::sync::Mutex;
 use tauri::Manager;
-use tauri_plugin_log::{fern::colors::ColoredLevelConfig, Target, TargetKind, WEBVIEW_TARGET};
+use tauri_plugin_log::{fern::colors::ColoredLevelConfig, Target, TargetKind};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
-        .manage(AppState::default())
         .invoke_handler(tauri::generate_handler![handle_action])
         .setup(move |app| {
             info!("setting up tauri app");
@@ -29,6 +27,7 @@ pub fn run() {
             }
             Ok(())
         })
+        .manage(AppState::default())
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(
             tauri_plugin_log::Builder::new()
@@ -64,8 +63,6 @@ pub fn run() {
 lazy_static! {
     pub static ref STATE_FILE: Mutex<std::path::PathBuf> = Mutex::new(std::path::PathBuf::new());
     pub static ref STRONGHOLD: Mutex<std::path::PathBuf> = Mutex::new(std::path::PathBuf::new());
-    pub static ref PROVIDER_MANAGER: tauri::async_runtime::Mutex<Option<ProviderManager>> =
-        tauri::async_runtime::Mutex::new(None);
 }
 
 /// Initialize the storage file paths.
@@ -89,18 +86,11 @@ fn initialize_storage(app_handle: &tauri::AppHandle) -> anyhow::Result<()> {
     info!("STATE_FILE: {}", STATE_FILE.lock().unwrap().display());
     info!("STRONGHOLD: {}", STRONGHOLD.lock().unwrap().display());
 
-    // Temporary solution to initialize the provider manager with a keypair.
-    let subject = KeySubject::from_keypair(generate::<Ed25519KeyPair>(Some(
-        "this-is-a-very-UNSAFE-secret-key".as_bytes(),
-    )));
-    let provider_manager = ProviderManager::new([Arc::new(subject)]).unwrap();
-    tauri::async_runtime::block_on(async { PROVIDER_MANAGER.lock().await.replace(provider_manager) });
-
     Ok(())
 }
 
 // Get the claims from a JWT without performing validation.
-pub fn get_jwt_claims(jwt: &serde_json::Value) -> serde_json::Value {
+pub fn get_unverified_jwt_claims(jwt: &serde_json::Value) -> serde_json::Value {
     let key = DecodingKey::from_secret(&[]);
     let mut validation = Validation::new(Algorithm::EdDSA);
     validation.insecure_disable_signature_validation();

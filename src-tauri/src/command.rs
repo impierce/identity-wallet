@@ -1,15 +1,17 @@
-use log::{info, warn};
-use oid4vci::credential_offer::CredentialOfferQuery;
-use siopv2::RequestUrl;
-
 use crate::state::actions::{Action, ActionType};
 use crate::state::persistence::{delete_state_file, delete_stronghold, load_state, save_state};
 use crate::state::reducers::authorization::{read_authorization_request, send_authorization_response};
 use crate::state::reducers::credential_offer::{read_credential_offer, send_credential_request};
 use crate::state::reducers::load_dev_profile::load_dev_profile;
-use crate::state::reducers::{create_did_key, initialize_stronghold, reset_state, set_locale};
-use crate::state::user_prompt::{CurrentUserPrompt, CurrentUserPromptType, Redirect};
+use crate::state::reducers::storage::unlock_storage;
+use crate::state::reducers::{
+    create_identity, initialize_stronghold, reset_state, set_locale, update_credential_metadata,
+};
+use crate::state::user_prompt::{CurrentUserPrompt, CurrentUserPromptType, PasswordRequired, Redirect};
 use crate::state::{AppState, TransferState};
+use log::{info, warn};
+use oid4vci::credential_offer::CredentialOfferQuery;
+use siopv2::RequestUrl;
 
 #[async_recursion::async_recursion]
 pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
@@ -21,33 +23,28 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
 
     match r#type {
         ActionType::GetState => {
-            let transfer_state: TransferState = load_state().await.unwrap_or(TransferState {
-                active_profile: None,
-                locale: "en".to_string(),
-                credentials: vec![],
-                current_user_prompt: Some(CurrentUserPrompt::Redirect(Redirect {
-                    r#type: CurrentUserPromptType::Redirect,
-                    target: "welcome".to_string(),
-                })),
-                debug_messages: vec![],
-                user_journey: None,
-            });
+            let transfer_state: TransferState = load_state().await.unwrap_or_default();
 
             // TODO: find a better way to populate all fields with values from json file
             *app_state.active_profile.lock().unwrap() = transfer_state.active_profile;
             *app_state.locale.lock().unwrap() = transfer_state.locale;
 
-            // TODO: bug: if state is present, but empty, user will never be redirected to neither welcome or profile page
-            *app_state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect(Redirect {
-                r#type: CurrentUserPromptType::Redirect,
-                target: "welcome".to_string(),
-            }));
-
-            if (*app_state.active_profile.lock().unwrap()).is_some() {
+            if app_state.active_profile.lock().unwrap().is_some() {
+                *app_state.current_user_prompt.lock().unwrap() =
+                    Some(CurrentUserPrompt::PasswordRequired(PasswordRequired {
+                        r#type: CurrentUserPromptType::PasswordRequired,
+                    }));
+            } else {
+                // TODO: bug: if state is present, but empty, user will never be redirected to neither welcome or profile page
                 *app_state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect(Redirect {
                     r#type: CurrentUserPromptType::Redirect,
-                    target: "me".to_string(),
+                    target: "welcome".to_string(),
                 }));
+            }
+        }
+        ActionType::UnlockStorage => {
+            if unlock_storage(app_state, Action { r#type, payload }).await.is_ok() {
+                save_state(TransferState::from(app_state)).await.ok();
             }
         }
         ActionType::Reset => {
@@ -61,7 +58,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             if initialize_stronghold(app_state, action.clone()).await.is_ok() {
                 save_state(TransferState::from(app_state)).await.ok();
             }
-            if create_did_key(app_state, action).await.is_ok() {
+            if create_identity(app_state, action).await.is_ok() {
                 save_state(TransferState::from(app_state)).await.ok();
             }
             // When everything is done, we redirect the user to the "me" page
@@ -80,7 +77,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
         }
         ActionType::QrCodeScanned => {
             info!("qr code scanned: `{:?}`", payload);
-            info!("Now doing some backend business logic with the QR code data...");
+
             let payload = payload.ok_or(anyhow::anyhow!("unable to read payload")).unwrap();
 
             let form_urlencoded = payload["form_urlencoded"].as_str().unwrap();
@@ -145,8 +142,16 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
                 save_state(TransferState::from(app_state)).await.ok();
             }
         }
-        ActionType::OffersSelected => {
+        ActionType::CredentialOffersSelected => {
             if send_credential_request(app_state, Action { r#type, payload })
+                .await
+                .is_ok()
+            {
+                save_state(TransferState::from(app_state)).await.ok();
+            }
+        }
+        ActionType::UpdateCredentialMetadata => {
+            if update_credential_metadata(app_state, Action { r#type, payload })
                 .await
                 .is_ok()
             {

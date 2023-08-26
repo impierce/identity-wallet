@@ -9,7 +9,7 @@
 </script>
 
 <div
-  class="content-height relative flex flex-col bg-neutral-100 dark:bg-slate-700"
+  class="content-height relative flex flex-col bg-bg-secondary dark:bg-bg-dark-secondary"
   in:fade={{ delay: 200 }}
   out:fade={{ duration: 200 }}
 >
@@ -38,10 +38,10 @@
   <div class="flex grow flex-col justify-center">
     <!-- <div class="flex grow flex-col justify-center" in:fade out:fly={{ x: -300, duration: 300 }}> -->
     <div class="px-4">
-      <p class="pb-[30px] text-[36px]/[44px] font-bold text-black">
+      <p class="pb-[30px] text-[36px]/[44px] font-bold text-black dark:text-white">
         Welcome to <br /><span class="text-primary">UniMe</span>
       </p>
-      <p class="text-[15px]/[24px] font-medium text-slate-500">
+      <p class="text-[15px]/[24px] font-medium text-slate-500 dark:text-white">
         UniMe connects your digital world, safely and securely.
         <br /><br />
         Create a brand new identity profile or recover an existing one to get started.
