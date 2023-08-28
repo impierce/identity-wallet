@@ -9,7 +9,7 @@ import type { Locales } from '$src/i18n/i18n-types';
 
 // TODO: run some copy task instead of importing across root to make the frontend independent
 import type { TransferState as State } from '../src-tauri/bindings/TransferState';
-import type { Redirect } from '../src-tauri/bindings/user-flow/Redirect';
+import type { Redirect } from '../src-tauri/bindings/user-prompt/Redirect';
 
 interface StateChangedEvent {
   event: string;

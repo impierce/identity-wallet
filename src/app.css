@@ -65,8 +65,7 @@ body {
   /* z-index: 10; */
   height: var(--safe-area-inset-top);
   width: 100%;
-  background-color: white;
-  opacity: 0.8;
+  @apply bg-bg-primary dark:bg-bg-dark-primary;
 }
 
 .safe-area-bottom {
@@ -75,8 +74,7 @@ body {
   /* z-index: 10; */
   height: var(--safe-area-inset-bottom);
   width: 100%;
-  background-color: white;
-  opacity: 0.8;
+  @apply bg-bg-primary dark:bg-bg-dark-primary;
 }
 
 /**

@@ -26,6 +26,7 @@
   } from '@impierce/ui-components';
 
   import CredentialDetails from '$lib/CredentialDetails.svelte';
+  import { icons } from '$lib/credentials/customization/utils';
   import LL from '$src/i18n/i18n-svelte';
   import { state } from '$src/stores';
 
@@ -86,6 +87,8 @@
 
   test_credentials = [];
 
+  console.log(credentials.map((c) => icons[c.metadata.display.icon]));
+
   // Does this really have to be reactive?
   // $: credentials = $state?.credentials ?? [];
 </script>
@@ -131,9 +134,27 @@
         id={credential.id}
         title={credential.metadata.display.name || credential.data.type.at(1)}
         description={credential.data.issuer}
-        color="bg-indigo-100"
+        color={credential.metadata.display.color || 'bg-indigo-100'}
       >
-        <span slot="icon"><User class="h-[18px] w-[18px] text-slate-800" /></span>
+        <!-- Show logo if credential is not mutable (set through issuer's metadata) -->
+        <div slot="logo" class="p-1">
+          {#if !credential.metadata.is_mutable}
+            <img
+              src={`/issuer-metadata/credential-logos/ngdil.svg`}
+              alt="logo"
+              class="object-scale-down"
+            />
+          {/if}
+        </div>
+        <!-- else: show icon -->
+        <span slot="icon">
+          {#if credential.metadata.is_mutable}
+            <svelte:component
+              this={icons[credential.metadata.display.icon] || icons['User']}
+              class="h-[18px] w-[18px] text-slate-800"
+            />
+          {/if}
+        </span>
       </CredentialListEntry>
     {/each}
   </div>

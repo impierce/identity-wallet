@@ -35,8 +35,7 @@
   import CaretDown from '~icons/ph/caret-down-bold';
   import CaretUp from '~icons/ph/caret-up-bold';
 
-  import type { CurrentUserFlowType } from '../../src-tauri/bindings/user-flow/CurrentUserFlowType';
-  import type { Selection } from '../../src-tauri/bindings/user-flow/Selection';
+  import type { Selection } from '../../src-tauri/bindings/user-prompt/Selection';
   import '../app.css';
   import { determineTheme } from './utils';
 

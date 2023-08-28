@@ -4,6 +4,8 @@
   import { BottomDrawer } from '@impierce/ui-components';
   import { createDialog, createDropdownMenu, melt } from '@melt-ui/svelte';
 
+  import { colors, icons } from '$lib/credentials/customization/utils';
+
   import Bank from '~icons/ph/bank-light';
   import Car from '~icons/ph/car-light';
   import Certificate from '~icons/ph/certificate-light';
@@ -12,6 +14,7 @@
   import House from '~icons/ph/house-light';
   import Leaf from '~icons/ph/leaf-light';
   import Question from '~icons/ph/question-light';
+  import User from '~icons/ph/user-light';
 
   import type { DisplayCredential } from '../../../src-tauri/bindings/display-credential/DisplayCredential';
   import { dispatch } from '../dispatcher';
@@ -60,19 +63,10 @@
 
   let displayName: string = credential.metadata.display.name;
 
-  let colors: Array<string> = [
-    'bg-amber-100',
-    'bg-cyan-100',
-    'bg-emerald-100',
-    'bg-pink-100',
-    'bg-indigo-100',
-    'bg-red-100',
-    'bg-slate-300',
-    'bg-white',
-    'bg-lime-100'
-  ];
-
-  let icons: Array<any> = [Bank, EnvelopeSimple, House, Leaf, Car, Question, Certificate];
+  let currentAppearance = {
+    color: credential.metadata.display.color || 'bg-indigo-100',
+    icon: credential.metadata.display.icon || 'User'
+  };
 </script>
 
 <button type="button" class="trigger p-1" use:melt={$trigger} aria-label="Edit credential details">
@@ -124,6 +118,8 @@
       >
     </BottomDrawer> -->
 
+    <!-- TODO: reenable after dev is completed -->
+    <!-- {#if credential.metadata.is_mutable} -->
     <button
       use:melt={$item}
       use:melt={$triggerNameDialog}
@@ -135,8 +131,9 @@
       use:melt={$item}
       use:melt={$triggerAppearanceDialog}
       class="rounded-xl px-3 py-2 font-medium text-slate-800 outline-none active:bg-bg-secondary"
-      >Change appearance</button
+      >Customize appearance</button
     >
+    <!-- {/if} -->
 
     <button
       class="rounded-xl px-3 py-2 font-medium text-red-500 outline-none active:bg-red-100"
@@ -207,20 +204,28 @@
         <!-- Colors -->
         <div class="grid w-fit grid-cols-3 place-items-center gap-1">
           {#each colors as color}
-            <button class="{color} rounded-md border border-slate-300 p-4" />
+            <button
+              class="{color} h-9 w-9 rounded-md border border-slate-300"
+              on:click={() => (currentAppearance.color = color)}
+            />
           {/each}
         </div>
 
         <!-- Combined -->
-        <div class="rounded bg-emerald-100 p-4">
-          <svelte:component this={Bank} class="h-6 w-6" />
+        <div
+          class="rounded-2xl {currentAppearance.color} flex h-14 w-14 items-center justify-center"
+        >
+          <svelte:component this={icons[currentAppearance.icon || 'Bank']} class="h-6 w-6" />
         </div>
 
         <!-- Icons -->
         <div class="grid w-fit grid-cols-3 place-items-center gap-1">
-          {#each icons as icon}
-            <button class="rounded-md border border-slate-300 p-2">
-              <svelte:component this={icon} class="h-5 w-5" />
+          {#each Object.entries(icons) as icon}
+            <button
+              class="h-9 w-9 rounded-md border border-slate-300 p-2"
+              on:click={() => (currentAppearance.icon = icon.at(0))}
+            >
+              <svelte:component this={icon.at(1)} class="h-5 w-5" />
             </button>
           {/each}
         </div>
@@ -231,7 +236,11 @@
         on:click={() => {
           dispatch({
             type: '[Credential Metadata] Update',
-            payload: { id: credential.id, icon: '', color: '' }
+            payload: {
+              id: credential.id,
+              icon: currentAppearance.icon,
+              color: currentAppearance.color
+            }
           });
           openAppearanceDialog.set(false);
         }}

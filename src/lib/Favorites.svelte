@@ -38,7 +38,7 @@
   <div class="pb-6">
     <div class="flex items-center pb-2">
       <Heart class="mr-2 text-primary" />
-      <p class="font-medium text-slate-600">{$LL.FAVORITES()}</p>
+      <p class="font-medium text-slate-600 dark:text-white">{$LL.FAVORITES()}</p>
     </div>
     <div class="flex flex-col space-y-2">
       {#each favorite_credentials as credential}

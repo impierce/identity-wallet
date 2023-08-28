@@ -152,6 +152,24 @@ pub async fn update_credential_metadata(state: &AppState, action: Action) -> any
         }
     };
 
+    // set color if given
+    verifiable_credential_record.display_credential.metadata.display.color = match payload["color"].as_str() {
+        Some(color) => color.to_string(),
+        None => {
+            info!("no color provided, using existing");
+            verifiable_credential_record.display_credential.metadata.display.color
+        }
+    };
+
+    // set icon if given
+    verifiable_credential_record.display_credential.metadata.display.icon = match payload["icon"].as_str() {
+        Some(icon) => icon.to_string(),
+        None => {
+            info!("no icon provided, using existing");
+            verifiable_credential_record.display_credential.metadata.display.icon
+        }
+    };
+
     // set favorite if given
     verifiable_credential_record.display_credential.metadata.is_favorite = match payload["is_favorite"].as_bool() {
         Some(is_favorite) => is_favorite,
@@ -178,6 +196,37 @@ pub async fn update_credential_metadata(state: &AppState, action: Action) -> any
         .into_iter()
         .map(|record| DisplayCredential::from(record.display_credential))
         .collect();
+
+    Ok(())
+}
+
+pub fn update_profile_settings(state: &AppState, action: Action) -> anyhow::Result<()> {
+    let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
+
+    let theme = match payload["theme"].as_str() {
+        Some(theme) => theme.to_string(),
+        None => {
+            info!("no theme provided, using existing");
+            state
+                .active_profile
+                .lock()
+                .unwrap()
+                .clone()
+                .unwrap()
+                .theme
+                .clone()
+                .unwrap()
+        }
+    };
+
+    state
+        .active_profile
+        .lock()
+        .unwrap()
+        .as_mut()
+        .unwrap()
+        .theme
+        .replace(theme);
 
     Ok(())
 }

@@ -6,6 +6,7 @@ use crate::state::reducers::load_dev_profile::load_dev_profile;
 use crate::state::reducers::storage::unlock_storage;
 use crate::state::reducers::{
     create_identity, initialize_stronghold, reset_state, set_locale, update_credential_metadata,
+    update_profile_settings,
 };
 use crate::state::user_prompt::{CurrentUserPrompt, CurrentUserPromptType, PasswordRequired, Redirect};
 use crate::state::{AppState, TransferState};
@@ -72,8 +73,11 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             if set_locale(app_state, Action { r#type, payload }).is_ok() {
                 save_state(TransferState::from(app_state)).await.ok();
             }
-            *app_state.current_user_prompt.lock().unwrap() = None;
-            save_state(TransferState::from(app_state)).await.ok();
+        }
+        ActionType::UpdateProfileSettings => {
+            if update_profile_settings(app_state, Action { r#type, payload }).is_ok() {
+                save_state(TransferState::from(app_state)).await.ok();
+            }
         }
         ActionType::QrCodeScanned => {
             info!("qr code scanned: `{:?}`", payload);

@@ -16,7 +16,9 @@
     class="mr-[15px] {color} flex h-[50px] w-[50px] flex-col items-center justify-center rounded-lg"
   >
     <slot name="icon" />
+    <slot name="logo" />
   </div>
+  <!-- Logo (alternative to Icon) -->
   <!-- Text -->
   <div class="flex grow flex-col items-start">
     <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-white">{title}</p>

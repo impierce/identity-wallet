@@ -10,22 +10,24 @@
   import Button from '$lib/components/Button.svelte';
   import CredentialDetailsDropdownMenu from '$src/lib/components/CredentialDetailsDropdownMenu.svelte';
   import ShareButton from '$src/lib/credentials/ShareButton.svelte';
+  import { icons } from '$src/lib/credentials/customization/utils';
   import { dispatch } from '$src/lib/dispatcher';
   import { state } from '$src/stores';
 
-  import DotsThreeVertical from '~icons/ph/dots-three-vertical-bold';
   import Heart from '~icons/ph/heart-straight';
   import HeartFill from '~icons/ph/heart-straight-fill';
-  import House from '~icons/ph/house-light';
+  import User from '~icons/ph/user-light';
 
   let credential = $state.credentials.find((c) => $page.params.id === c.id)!!;
 
   let color = {
-    bg: 'bg-indigo-100',
-    gradient: 'from-indigo-100'
+    bg: credential.metadata.display.color || 'bg-indigo-100'
+    // gradient: credential.metadata.display.color || 'from-indigo-100'
   };
 
-  let icon: any = House;
+  let logo_location: any = '/issuer-metadata/credential-logos/ngdil.svg';
+
+  let icon: any = credential.metadata.display.icon || 'User';
   let title: string = credential.metadata.display.name || credential.data.type.at(-1);
 
   let qrcodeText = JSON.stringify(credential, null, 0);
@@ -38,9 +40,7 @@
   <div class="hide-scrollbar grow overflow-y-scroll px-[15px]">
     <!-- Header -->
     <!-- Background-->
-    <div
-      class="absolute left-0 top-[50px] -z-10 h-[250px] w-screen bg-gradient-to-b {color.gradient} to-white"
-    />
+    <div class="absolute left-0 top-[50px] -z-10 h-[220px] w-screen {color.bg}" />
     <div class="flex flex-col py-[20px]">
       <!-- Logo -->
       <div class="flex items-start justify-between">
@@ -61,7 +61,12 @@
         <div
           class="{color.bg} flex h-[75px] w-[75px] flex-col items-center justify-center rounded-[20px] border-[5px] border-white"
         >
-          <svelte:component this={icon} class="h-6 w-6 text-slate-800" />
+          <!-- Icon -->
+          <svelte:component this={icons[icon]} class="h-6 w-6 text-slate-800" />
+          <!-- Logo -->
+          <!-- <div class="flex h-full w-full items-center justify-center bg-bg-primary p-1">
+            <img src={logo_location} alt="logo" class="object-scale-down" />
+          </div> -->
         </div>
         <div class="-mr-1 -mt-1">
           <CredentialDetailsDropdownMenu {credential} />

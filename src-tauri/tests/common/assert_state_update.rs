@@ -33,8 +33,8 @@ pub async fn assert_state_update(
             &window,
             tauri::InvokePayload {
                 cmd: "handle_action".into(),
-                callback: tauri::api::ipc::CallbackFn(0),
-                error: tauri::api::ipc::CallbackFn(1),
+                callback: tauri::ipc::CallbackFn(0),
+                error: tauri::ipc::CallbackFn(1),
                 inner: json!({ "action": action }),
             },
             Ok(()),

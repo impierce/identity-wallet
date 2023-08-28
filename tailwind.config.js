@@ -11,13 +11,13 @@ export default {
         sans: ['Satoshi-Variable', 'sans-serif']
       },
       colors: {
-        primary: '#83CCCC',//colors.indigo[500],
+        primary: '#83CCCC',
         secondary: colors.pink[500],
         'bg-primary': colors.white,
         'bg-secondary': colors.neutral[100],
         'bg-dark-primary': '#13243D',
-        'bg-dark-secondary': '#152D49',
-      },
+        'bg-dark-secondary': '#152D49'
+      }
     }
   },
   darkMode: 'class',

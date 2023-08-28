@@ -24,6 +24,8 @@ pub enum ActionType {
     CreateNew,
     #[serde(rename = "[Settings] Set locale")]
     SetLocale,
+    #[serde(rename = "[Settings] Update profile")]
+    UpdateProfileSettings,
     #[serde(rename = "[QR Code] Scanned")]
     QrCodeScanned,
     #[serde(rename = "[User Flow] Cancel")]

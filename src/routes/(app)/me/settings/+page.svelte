@@ -15,7 +15,7 @@
 </script>
 
 <TopNavigation on:back={() => history.back()} title="Settings" />
-<div class="flex min-h-full flex-col bg-neutral-100 dark:bg-slate-700">
+<div class="flex min-h-full flex-col bg-bg-secondary dark:bg-bg-dark-secondary">
   <div class="flex grow flex-col justify-between p-6" in:fly={{ x: 32, opacity: 1 }}>
     <div class="space-y-4">
       <!-- DIDs -->
@@ -51,7 +51,9 @@
       <div class="space-y-2">
         <p class="font-medium text-neutral-700 dark:text-neutral-300">Profile</p>
 
-        <div class="flex h-14 items-center justify-between rounded-lg bg-white px-4 py-2">
+        <div
+          class="flex h-14 items-center justify-between rounded-lg bg-white px-4 py-2 dark:bg-bg-dark-primary"
+        >
           <p>Profile name</p>
           <div class="flex flex-col items-center justify-center space-y-4">
             <input
@@ -63,14 +65,18 @@
           </div>
         </div>
 
-        <div class="flex h-14 items-center justify-between rounded-lg bg-white px-4 py-2">
+        <div
+          class="flex h-14 items-center justify-between rounded-lg bg-white px-4 py-2 dark:bg-bg-dark-primary"
+        >
           <p>Password</p>
           <div class="flex flex-col items-center justify-center space-y-4">
             <button class="rounded-lg px-2 py-1 font-medium text-primary">Change</button>
           </div>
         </div>
 
-        <div class="flex h-14 items-center justify-between rounded-lg bg-white px-4 py-2">
+        <div
+          class="flex h-14 items-center justify-between rounded-lg bg-white px-4 py-2 dark:bg-bg-dark-primary"
+        >
           <p>Backup</p>
           <div class="flex items-center justify-center">
             <WarningCircle class="h-6 w-6 text-red-600" />
@@ -94,16 +100,25 @@
           </div>
         </div> -->
 
-        <div class="flex h-14 items-center justify-between rounded-lg bg-white px-4 py-2">
+        <div
+          class="flex h-14 items-center justify-between rounded-lg bg-white px-4 py-2 dark:bg-bg-dark-primary"
+        >
           <p>Theme</p>
           <div class="flex items-center justify-center">
-            <button class="rounded-lg px-2 py-1 font-medium text-primary"
-              >Use system settings</button
+            <button
+              class="rounded-lg px-2 py-1 font-medium text-primary"
+              on:click={() =>
+                dispatch({
+                  type: '[Settings] Update profile',
+                  payload: { theme: $state.active_profile.theme === 'light' ? 'dark' : 'light' }
+                })}>Toggle dark mode</button
             >
           </div>
         </div>
 
-        <div class="flex h-14 items-center justify-between rounded-lg bg-white p-4">
+        <div
+          class="flex h-14 items-center justify-between rounded-lg bg-white p-4 dark:bg-bg-dark-primary"
+        >
           <p>Onboarding journey</p>
           <div class="flex flex-col items-center justify-center space-y-4">
             <!-- <LanguageSelect
@@ -112,6 +127,20 @@
                 dispatch({ type: '[Settings] Set locale', payload: { locale: e.detail } })}
             /> -->
             <button class="rounded-lg px-2 py-1 font-medium text-primary">Restart</button>
+          </div>
+        </div>
+
+        <div
+          class="flex h-14 items-center justify-between rounded-lg bg-white p-4 dark:bg-bg-dark-primary"
+        >
+          <p>Dismissed hints & tips</p>
+          <div class="flex flex-col items-center justify-center space-y-4">
+            <!-- <LanguageSelect
+              selected={$state?.locale}
+              on:value={(e) =>
+                dispatch({ type: '[Settings] Set locale', payload: { locale: e.detail } })}
+            /> -->
+            <button class="rounded-lg px-2 py-1 font-medium text-primary">Re-enable</button>
           </div>
         </div>
       </div>
