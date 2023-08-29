@@ -57,7 +57,7 @@ pub async fn unlock_storage(state: &AppState, action: Action) -> anyhow::Result<
         .unwrap()
         .replace(CurrentUserPrompt::Redirect(Redirect {
             r#type: CurrentUserPromptType::Redirect,
-            target: "profile".to_string(),
+            target: "me".to_string(),
         }));
 
     Ok(())

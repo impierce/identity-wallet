@@ -36,7 +36,7 @@ async fn test_load_dev_profile() {
             credentials,
             current_user_prompt: Some(CurrentUserPrompt::Redirect(Redirect {
                 r#type: CurrentUserPromptType::Redirect,
-                target: "profile".to_string(),
+                target: "me".to_string(),
             })),
             ..TransferState::default()
         })],
@@ -82,7 +82,7 @@ async fn test_load_dev_profile_twice() {
                 credentials: credentials.clone(),
                 current_user_prompt: Some(CurrentUserPrompt::Redirect(Redirect {
                     r#type: CurrentUserPromptType::Redirect,
-                    target: "profile".to_string(),
+                    target: "me".to_string(),
                 })),
                 ..TransferState::default()
             }),
@@ -94,7 +94,7 @@ async fn test_load_dev_profile_twice() {
                 credentials,
                 current_user_prompt: Some(CurrentUserPrompt::Redirect(Redirect {
                     r#type: CurrentUserPromptType::Redirect,
-                    target: "profile".to_string(),
+                    target: "me".to_string(),
                 })),
                 ..TransferState::default()
             }),

@@ -68,8 +68,10 @@ pub enum CurrentUserPromptType {
     // TODO: remove or rename generic selection
     // #[serde(rename = "selection")]
     // Selection,
-    #[serde(rename = "select-credentials")]
-    SelectCredentials,
+    #[serde(rename = "accept-connection")] // SIOPv2
+    AcceptConnection,
+    #[serde(rename = "share-credentials")] // VP
+    ShareCredentials,
     #[serde(rename = "credential-offer")]
     CredentialOffer,
     #[serde(rename = "password-required")]

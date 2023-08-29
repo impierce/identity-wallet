@@ -51,7 +51,7 @@ async fn test_get_state_create_new() {
                 }),
                 current_user_prompt: Some(CurrentUserPrompt::Redirect(Redirect {
                     r#type: CurrentUserPromptType::Redirect,
-                    target: "profile".to_string(),
+                    target: "me".to_string(),
                 })),
                 ..TransferState::default()
             }),
@@ -108,7 +108,7 @@ async fn test_get_state_unlock_storage() {
                 }),
                 current_user_prompt: Some(CurrentUserPrompt::Redirect(Redirect {
                     r#type: CurrentUserPromptType::Redirect,
-                    target: "profile".to_string(),
+                    target: "me".to_string(),
                 })),
                 ..TransferState::default()
             }),

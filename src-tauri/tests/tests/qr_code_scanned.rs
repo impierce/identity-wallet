@@ -118,7 +118,7 @@ async fn test_qr_code_scanned_read_authorization_request() {
                 primary_did: "did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY".to_string(),
             }),
             current_user_prompt: Some(CurrentUserPrompt::Selection(Selection {
-                r#type: CurrentUserPromptType::SelectCredentials,
+                r#type: CurrentUserPromptType::ShareCredentials,
                 options: vec![uuid],
             })),
             ..TransferState::default()

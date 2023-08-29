@@ -77,7 +77,7 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
 
     *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect(Redirect {
         r#type: CurrentUserPromptType::Redirect,
-        target: "profile".to_string(),
+        target: "me".to_string(),
     }));
     Ok(())
 }

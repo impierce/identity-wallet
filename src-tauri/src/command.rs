@@ -62,7 +62,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             // When everything is done, we redirect the user to the profile page
             *app_state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect(Redirect {
                 r#type: CurrentUserPromptType::Redirect,
-                target: "profile".to_string(),
+                target: "me".to_string(),
             }));
             save_state(TransferState::from(app_state)).await.ok();
         }
