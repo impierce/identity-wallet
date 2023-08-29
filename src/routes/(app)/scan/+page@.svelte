@@ -194,6 +194,18 @@
         class="bg-neutral-300"
         on:click={() => mockScanCredentialOffer(2)}>Mock Credential Offer (multi)</ButtonDeprecated
       >
+      <ButtonDeprecated
+        variant="secondary"
+        class="bg-neutral-300"
+        on:click={() =>
+          dispatch({
+            type: '[QR Code] Scanned',
+            payload: {
+              form_urlencoded:
+                'openid-credential-offer://?credential_offer_uri=https://api.ngdil-demo.tanglelabs.io/api/offers/creds/I0rRaAHi7Rcw0qCuRQMm1'
+            }
+          })}>Dominique (student)</ButtonDeprecated
+      >
     </div>
     <div class="absolute bottom-[calc(56px_+_var(--safe-area-inset-bottom)_-_9px)] w-full">
       <BottomNavBar

@@ -33,6 +33,11 @@
   let qrcodeText = JSON.stringify(credential, null, 0);
 
   let isFavorite: boolean = credential.metadata.is_favorite;
+
+  // create entries to be shown
+  const { id, ...entries } = credential.data.credentialSubject;
+  entries['issuer'] = credential.data.issuer;
+  entries['issuanceDate'] = new Date(credential.data.issuanceDate).toLocaleString('nl-NL');
 </script>
 
 <div class="content-height relative flex w-full flex-col" in:fly={{ x: 24 }}>
@@ -85,7 +90,7 @@
     </div>
     <!-- Table: Credential Subject -->
     <div class="divide-y divide-solid divide-gray-200 rounded-xl border border-gray-200 bg-white">
-      {#each Object.entries(credential.data.credentialSubject) as entry}
+      {#each Object.entries(entries) as entry}
         <div class="flex flex-col items-start px-4 py-[10px]">
           <p class="text-[15px]/[24px] font-medium text-[#6E82A4]">{entry[0]}</p>
           <p class="break-all text-[13px]/[24px] font-medium text-slate-800">{entry[1]}</p>
@@ -93,7 +98,7 @@
       {/each}
     </div>
     <!-- Table: Issuer -->
-    <div
+    <!-- <div
       class="mt-[15px] divide-y divide-solid divide-gray-200 rounded-xl border border-gray-200 bg-white"
     >
       {#each Object.entries( { issuer: credential.data.issuer, issuanceDate: credential.data.issuanceDate } ) as entry}
@@ -102,11 +107,11 @@
           <p class="break-all text-[13px]/[24px] font-medium text-slate-800">{entry[1]}</p>
         </div>
       {/each}
-    </div>
-    <!-- ID (unime internal) -->
-    <div class="p-[15px] pb-0 text-center text-xs text-slate-500">
+    </div> -->
+    <!-- ID (unime internal), TODO: remove this -->
+    <!-- <div class="p-[15px] pb-0 text-center text-xs text-slate-500">
       <pre>{$page.params.id}</pre>
-    </div>
+    </div> -->
   </div>
   <BottomDrawer>
     <!-- TODO: Share functionality currently disabled until decided how sharing works -->

@@ -1,3 +1,4 @@
+// TODO: remove
 export const calculate_initials = (name: string): string => {
   let names = name.split(' ');
   if (names.length === 1) {

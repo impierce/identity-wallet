@@ -25,7 +25,10 @@
       "targets": "all",
       "iOS": {
         "developmentTeam": "com.impierce.dev"
-      }
+      },
+      "resources": [
+        "resources/*"
+      ]
     },
     "security": {
       "csp": null

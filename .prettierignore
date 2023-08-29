@@ -14,6 +14,8 @@ yarn.lock
 
 # source folders
 src-tauri/
+# doesn't work (still ignored)
+!src-tauri/src/state/user_journeys/
 .github/
 static/
 

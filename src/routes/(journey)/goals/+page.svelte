@@ -63,12 +63,12 @@
 </TopNavigation>
 
 <!-- Content -->
-<div class="flex h-full flex-col bg-neutral-100">
-  <div class="flex h-[54px] items-center bg-white px-[18px] py-[15px]">
+<div class="flex h-full flex-col bg-bg-secondary dark:bg-bg-dark-secondary">
+  <div class="flex h-[54px] items-center bg-bg-primary px-[18px] py-[15px] dark:bg-bg-dark-primary">
     <span class="grow pr-[15px]">
       <ProgressBar value={40} />
     </span>
-    <p class="text-[13px]/[24px] font-medium text-slate-800">3/7</p>
+    <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-white">3/7</p>
   </div>
 
   <div
@@ -78,7 +78,7 @@
     <div class="flex flex-col items-center">
       <!-- Header -->
       <PaddedIcon icon={Trophy} />
-      <p class="pt-8 text-2xl font-semibold">{journeyDefinition?.title}</p>
+      <p class="pt-8 text-2xl font-semibold dark:text-white">{journeyDefinition?.title}</p>
       <p class="pt-4 text-center font-medium text-slate-500">
         {journeyDefinition?.description}
       </p>

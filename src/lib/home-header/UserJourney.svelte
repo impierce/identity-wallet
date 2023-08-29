@@ -19,7 +19,7 @@
       <!-- <div class="py-[7px]"> -->
       <div class="flex items-center">
         <div class="grow">
-          <ProgressBar value={40} />
+          <ProgressBar value={(3 / 7) * 100} />
         </div>
         <button class="ml-[15px]" on:click={() => goto('/goals')}>
           <CaretRight class="h-6 w-6 text-primary" />

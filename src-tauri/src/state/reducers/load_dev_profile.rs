@@ -70,50 +70,6 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
         .stronghold_manager
         .replace(Arc::new(stronghold_manager));
 
-    // TODO: read onboarding journey from json file (non-inline)
-    // // add default user onboarding journey
-    // let onboarding_journey: Value = json!(
-    // {
-    //     "title": "Onboarding",
-    //     "description": "Set up your profile and get started with your UniMe app.",
-    //     "description_short": "Complete your first steps",
-    //     "creator": "UniMe",
-    //     "goals": [
-    //         {
-    //             "id": 0,
-    //             "label": "Set up your profile",
-    //             "description": "",
-    //             "faqs": [],
-    //             "prerequisites": []
-    //         },
-    //         {
-    //             "id": 1,
-    //             "label": "Add a self-signed credential",
-    //             "description": "",
-    //             "faqs": [],
-    //             "prerequisites": []
-    //         },
-    //         {
-    //             "id": 2,
-    //             "label": "Get your email address verified",
-    //             "description": "We can send you a verification link to your provided email address. When you confirm the link in the email, we will issue a credential that proves you own that email address.",
-    //             "faqs": [
-    //                 { "id": 0, "title": "What can I do with my email?", "content": "Something." },
-    //                 { "id": 1, "title": "Why should I add my email?", "content": "Because." },
-    //                 { "id": 2, "title": "Is it verified?", "content": "Absolutely." }
-    //             ],
-    //             "prerequisites": [
-    //                 { "type": "goal", "data": 0 },
-    //                 { "type": "goal", "data": 1 }
-    //             ]
-    //         },
-    //         { "id": 3, "label": "Log in in to a website", "faqs": [], "prerequisites": [] },
-    //         { "id": 4, "label": "Check your history", "faqs": [], "prerequisites": [] }
-    //     ]
-    // }
-    // );
-    // *state.user_journey.lock().unwrap() = Some(onboarding_journey);
-
     *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect(Redirect {
         r#type: CurrentUserPromptType::Redirect,
         target: "me".to_string(),

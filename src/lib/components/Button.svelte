@@ -12,7 +12,7 @@
 
   $: variant_classes =
     variant === 'primary'
-      ? 'bg-primary text-white'
+      ? 'bg-primary text-white dark:text-black'
       : 'bg-white text-neutral-700 border border-slate-200';
 </script>
 

@@ -88,7 +88,9 @@
         </div>
 
         <div class="select-none pt-[15px]">
-          <p class="pb-[15px] text-2xl font-semibold text-black">{$LL.GETTING_STARTED.TITLE()}</p>
+          <p class="pb-[15px] text-2xl font-semibold text-black dark:text-white">
+            {$LL.GETTING_STARTED.TITLE()}
+          </p>
           <p class="custom w-[240px] text-slate-500">{$LL.GETTING_STARTED.SUBTITLE()}</p>
         </div>
       </div>

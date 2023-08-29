@@ -1,46 +1,14 @@
 <script lang="ts">
-  import { AtSymbol, Cake, Home, Phone, Plus } from 'svelte-heros-v2';
-  import { fade, fly } from 'svelte/transition';
-
-  import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-    Button,
-    Input,
-    SearchInput,
-    Sheet,
-    SheetClose,
-    SheetContent,
-    SheetDescription,
-    SheetFooter,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger
-  } from '@impierce/ui-components';
-
-  import CredentialDetails from '$lib/CredentialDetails.svelte';
   import { icons } from '$lib/credentials/customization/utils';
   import LL from '$src/i18n/i18n-svelte';
   import { state } from '$src/stores';
 
-  import ArrowDownAZ from '~icons/lucide/arrow-down-a-z';
-  import Clapperboard from '~icons/lucide/clapperboard';
-  import HomeLucide from '~icons/lucide/home';
-  import MailCheck from '~icons/lucide/mail-check';
   import Car from '~icons/ph/car-light';
   import EnvelopeSimple from '~icons/ph/envelope-simple-light';
   import GraduationCap from '~icons/ph/graduation-cap-light';
   import House from '~icons/ph/house-light';
   import Percent from '~icons/ph/percent-light';
   import SealCheck from '~icons/ph/seal-check-fill';
-  import User from '~icons/ph/user';
 
   import type { TransferState } from '../../src-tauri/bindings/TransferState';
   import type { DisplayCredential } from '../../src-tauri/bindings/display-credential/DisplayCredential';
@@ -133,7 +101,7 @@
       <CredentialListEntry
         id={credential.id}
         title={credential.metadata.display.name || credential.data.type.at(1)}
-        description={credential.data.issuer}
+        description={new URL(credential.data.issuer).hostname}
         color={credential.metadata.display.color || 'bg-indigo-100'}
       >
         <!-- Show logo if credential is not mutable (set through issuer's metadata) -->
