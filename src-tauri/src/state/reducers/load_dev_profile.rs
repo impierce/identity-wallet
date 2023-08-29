@@ -36,7 +36,8 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
         theme: Some("system".to_string()),
         primary_did: did_document.id,
     };
-    *state.active_profile.lock().unwrap() = Some(profile);
+    state.active_profile.lock().unwrap().replace(profile);
+    state.credentials.lock().unwrap().clear();
 
     vec![PERSONAL_INFORMATION.clone(), DRIVERS_LICENSE_CREDENTIAL.clone()]
         .into_iter()
