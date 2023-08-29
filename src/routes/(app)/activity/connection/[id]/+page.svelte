@@ -50,3 +50,8 @@
     </MeltUiConnectionTabs>
   </div>
 </div>
+
+<!-- 
+  TODO: remove bottom bar. General rule: only show it in the top level, when navigation one level down, do not show bottom nav anymore
+  Exception: in settings, we keep the bottom nav, because we have a lot of levels there
+  -->

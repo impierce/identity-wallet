@@ -4,8 +4,10 @@
 
 @layer base {
   @font-face {
-    font-family: 'Satoshi-Variable';
-    src: url('/fonts/Satoshi-Variable.woff2') format('woff2');
+    /* font-family: 'Satoshi-Variable';
+    src: url('/fonts/Satoshi-Variable.woff2') format('woff2'); */
+    font-family: 'Inter-Variable';
+    src: url('/fonts/Inter-Variable.ttf') format('ttf');
   }
 
   h1 {

@@ -75,7 +75,7 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> any
 
     if !uuids.is_empty() {
         *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Selection(Selection {
-            r#type: CurrentUserPromptType::SelectCredentials,
+            r#type: CurrentUserPromptType::ShareCredentials,
             options: uuids,
         }));
     }

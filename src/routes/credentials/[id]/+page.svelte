@@ -37,7 +37,10 @@
   // create entries to be shown
   const { id, ...entries } = credential.data.credentialSubject;
   entries['issuer'] = credential.data.issuer;
-  entries['issuanceDate'] = new Date(credential.data.issuanceDate).toLocaleString('nl-NL');
+  entries['issuanceDate'] = new Date(credential.data.issuanceDate).toLocaleString('en-US', {
+    dateStyle: 'long',
+    timeStyle: 'medium'
+  });
 </script>
 
 <div class="content-height relative flex w-full flex-col" in:fly={{ x: 24 }}>

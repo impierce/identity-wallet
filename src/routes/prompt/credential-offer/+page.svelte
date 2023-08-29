@@ -73,7 +73,7 @@
       label="Accept credentials"
       on:click={() => {
         dispatch({
-          type: '[Offer] Credential offers selected',
+          type: '[Credential Offer] Selected',
           payload: { offer_indices: all_offer_indices }
         });
       }}

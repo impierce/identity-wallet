@@ -8,7 +8,8 @@ export default {
     extend: {
       fontFamily: {
         // sans: ['Satoshi', ...defaultTheme.fontFamily.sans],
-        sans: ['Satoshi-Variable', 'sans-serif']
+        // sans: ['Satoshi-Variable', 'sans-serif']
+        sans: ['Inter-Variable', 'sans-serif']
       },
       colors: {
         primary: '#83CCCC',

@@ -15,6 +15,7 @@
   // import Scanner from '$lib/Scanner.svelte';
   import { dispatch } from '$lib/dispatcher';
   import Button from '$src/lib/components/Button.svelte';
+  import { state } from '$src/stores';
 
   import { checkScanPrerequisites } from './utils';
 
@@ -86,11 +87,38 @@
         }
       });
     } else if (amount > 1) {
-      dispatch({
-        type: '[QR Code] Scanned',
-        payload: {
-          form_urlencoded:
-            'openid-credential-offer://?credential_offer=%7B%22credential_issuer%22%3A%22http%3A%2F%2F10.15.185.12%3A9090%2F%22%2C%22credentials%22%3A%5B%7B%22format%22%3A%22jwt_vc_json%22%2C%22credential_definition%22%3A%7B%22type%22%3A%5B%22VerifiableCredential%22%2C%22PersonalInformation%22%5D%7D%7D%2C%7B%22format%22%3A%22jwt_vc_json%22%2C%22credential_definition%22%3A%7B%22type%22%3A%5B%22VerifiableCredential%22%2C%22DriverLicenseCredential%22%5D%7D%7D%5D%2C%22grants%22%3A%7B%22urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Apre-authorized_code%22%3A%7B%22pre-authorized_code%22%3A%22crzhlepEdqjsXD3I%22%2C%22user_pin_required%22%3Afalse%7D%7D%7D'
+      // dispatch({
+      //   type: '[QR Code] Scanned',
+      //   payload: {
+      //     form_urlencoded:
+      //       'openid-credential-offer://?credential_offer=%7B%22credential_issuer%22%3A%22http%3A%2F%2F10.15.185.12%3A9090%2F%22%2C%22credentials%22%3A%5B%7B%22format%22%3A%22jwt_vc_json%22%2C%22credential_definition%22%3A%7B%22type%22%3A%5B%22VerifiableCredential%22%2C%22PersonalInformation%22%5D%7D%7D%2C%7B%22format%22%3A%22jwt_vc_json%22%2C%22credential_definition%22%3A%7B%22type%22%3A%5B%22VerifiableCredential%22%2C%22DriverLicenseCredential%22%5D%7D%7D%5D%2C%22grants%22%3A%7B%22urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Apre-authorized_code%22%3A%7B%22pre-authorized_code%22%3A%22crzhlepEdqjsXD3I%22%2C%22user_pin_required%22%3Afalse%7D%7D%7D'
+      //   }
+      // });
+      state.set({
+        ...$state,
+        current_user_prompt: {
+          type: 'credential-offer',
+          credential_offer: {
+            credential_issuer: 'http://10.15.185.12:9090/',
+            credentials: [
+              {
+                format: 'jwt_vc_json',
+                credential_definition: { type: ['VerifiableCredential', 'PersonalInformation'] }
+              },
+              {
+                format: 'jwt_vc_json',
+                credential_definition: {
+                  type: ['VerifiableCredential', 'DriverLicenseCredential']
+                }
+              }
+            ],
+            grants: {
+              'urn:ietf:params:oauth:grant-type:pre-authorized_code': {
+                'pre-authorized_code': 'crzhlepEdqjsXD3I',
+                user_pin_required: false
+              }
+            }
+          }
         }
       });
     }
@@ -105,6 +133,7 @@
 
   onMount(async () => {
     document.documentElement.querySelector('body')!!.classList.add('transparent');
+    // scanning = true;
     permissionsGiven = await checkScanPrerequisites();
     if (permissionsGiven) {
       startScan();
@@ -163,8 +192,8 @@
 
 <!-- ############ -->
 
-<div class="fill-screen">
-  <!-- visible when not scanning -->
+<div class="h-full w-full">
+  <!-- visible when NOT scanning -->
   <div
     class:invisible={scanning}
     class="relative flex h-full flex-col items-center justify-center bg-neutral-100 p-8"
@@ -177,54 +206,54 @@
       <p class="my-4 h-[1px] w-full bg-slate-200" />
     {/if}
     <div class="flex flex-col space-y-2">
-      <ButtonDeprecated variant="secondary" class="bg-neutral-300" on:click={startScan}
+      <ButtonDeprecated variant="secondary" class="hover:bg-neutral-300" on:click={startScan}
         >Start new scan</ButtonDeprecated
-      >
-      <ButtonDeprecated variant="secondary" class="bg-neutral-300" on:click={mockScanSiopRequest}
-        >Mock SIOP request</ButtonDeprecated
       >
       <ButtonDeprecated
         variant="secondary"
-        class="bg-neutral-300"
+        class="hover:bg-neutral-300"
+        on:click={mockScanSiopRequest}>Mock SIOP request</ButtonDeprecated
+      >
+      <ButtonDeprecated
+        variant="secondary"
+        class="hover:bg-neutral-300"
         on:click={() => mockScanCredentialOffer(1)}
         disabled>Mock Credential Offer (single)</ButtonDeprecated
       >
       <ButtonDeprecated
         variant="secondary"
-        class="bg-neutral-300"
+        class="hover:bg-neutral-300"
         on:click={() => mockScanCredentialOffer(2)}>Mock Credential Offer (multi)</ButtonDeprecated
       >
       <ButtonDeprecated
         variant="secondary"
-        class="bg-neutral-300"
+        class="hover:bg-neutral-300"
         on:click={() =>
           dispatch({
             type: '[QR Code] Scanned',
             payload: {
               form_urlencoded:
-                'openid-credential-offer://?credential_offer_uri=https://api.ngdil-demo.tanglelabs.io/api/offers/creds/I0rRaAHi7Rcw0qCuRQMm1'
+                'openid-credential-offer://?credential_offer_uri=https://api.ngdil-demo.tanglelabs.io/api/offers/creds/u08LmjU8lAcTwx7pLMpy0'
             }
           })}>Dominique (student)</ButtonDeprecated
       >
     </div>
-    <div class="absolute bottom-[calc(56px_+_var(--safe-area-inset-bottom)_-_9px)] w-full">
-      <BottomNavBar
-        active="scan"
-        on:me={() => goto('/me')}
-        on:scan={() => goto('/scan')}
-        on:activity={() => goto('/activity')}
-      />
-    </div>
-    <div class="safe-area-top" />
-    <div class="safe-area-bottom" />
   </div>
 
   <!-- visible during scanning -->
-  <div class="scanning full-height" class:invisible={!scanning}>
+  <div class="fill-screen" class:invisible={!scanning}>
+    <div class="mx-5 mb-6 pt-5">
+      <p class="text-3xl font-semibold text-slate-700">
+        Scan a <span class="text-primary">QR Code</span>
+      </p>
+      <p class="mt-4 text-sm font-medium text-slate-500">
+        Bring a QR Code into view of this screen to start an interaction.
+      </p>
+    </div>
     <div class="scanner-background">
       <!-- this background simulates the camera view -->
     </div>
-    <div class="full-height my-container">
+    <div class=" my-container">
       <div class="barcode-scanner--area--container">
         <div class="relative">
           <!-- <p>Aim your camera at a QR code</p> -->
@@ -252,20 +281,21 @@
 
   .full-height {
     height: 100%;
-    /* border: 1px solid red; */
+    border: 1px solid red;
   }
 
   .fill-screen {
-    height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
-    width: calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right));
+    height: calc(
+      100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom) - 56px - 136px
+    ); /* 56px: Bottom Nav Bar, 136px: Top section */
+    width: calc(100vw - var(--safe-area-inset-left) - var(--safe-area-inset-right));
   }
 
-  p {
-    color: #fff;
+  /* p {
     font-family: sans-serif;
     text-align: center;
     font-weight: 600;
-  }
+  } */
 
   .my-container {
     width: 100%;

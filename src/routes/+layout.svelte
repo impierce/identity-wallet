@@ -56,7 +56,7 @@
   let dialog: UserDialog | undefined;
 
   interface UserDialog {
-    type: 'select-credentials' | 'credential-offer';
+    type: 'share-credentials' | 'credential-offer';
     title: string;
     imageSrc?: string;
     options: string[];

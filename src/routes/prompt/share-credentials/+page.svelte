@@ -7,13 +7,13 @@
   import Button from '$src/lib/components/Button.svelte';
   import CredentialListEntry from '$src/lib/components/CredentialListEntry.svelte';
   import PaddedIcon from '$src/lib/components/PaddedIcon.svelte';
+  import { icons } from '$src/lib/credentials/customization/utils';
   import { dispatch } from '$src/lib/dispatcher';
   import { state } from '$src/stores';
 
   import Check from '~icons/ph/check-bold';
   import RocketLaunch from '~icons/ph/rocket-launch';
   import SealCheck from '~icons/ph/seal-check-fill';
-  import UserCircle from '~icons/ph/user-circle-light';
 
   const {
     elements: { root, input },
@@ -21,16 +21,16 @@
   } = createCheckbox({});
 
   let selected_credentials = $state.credentials?.filter(
-    (c) => $state.current_user_prompt.options.indexOf(c.at(0)) > -1
+    (c) => $state.current_user_prompt.options.indexOf(c.id) > -1
   );
 </script>
 
-<div class="content-height flex flex-col items-stretch bg-neutral-100">
+<div class="content-height flex flex-col items-stretch bg-bg-secondary">
   <TopNavigation title={'Share Information'} on:back={() => history.back()} />
 
-  <div class="flex grow flex-col items-center justify-start space-y-4 p-4">
+  <div class="mt-[40px] flex grow flex-col items-center justify-start p-4">
     <!-- Header -->
-    <div class="w-full rounded-[20px] bg-white p-[10px]">
+    <div class="w-full rounded-[20px] border border-slate-200 bg-bg-primary p-[10px]">
       <!-- Logo -->
       <div class="flex flex-col items-center space-y-[10px]">
         <!-- Placeholder -->
@@ -44,24 +44,30 @@
       </div>
     </div>
 
-    <div class="flex w-full items-center">
+    <div class="mt-[30px] flex w-full items-center">
       <SealCheck class="mr-2 text-primary" />
-      <p class="font-medium text-slate-600">Requested</p>
+      <p class="text-[13px]/[24px] font-medium text-slate-500">Requested</p>
     </div>
 
     <!-- Credentials selection -->
-    <div class="w-full rounded-[20px] bg-white p-[10px]">
+    <div class="mt-3 w-full rounded-[20px] border border-slate-200 bg-bg-primary p-[10px]">
       <div class="flex w-full flex-col space-y-2">
         {#each selected_credentials as credential}
           <div class="flex items-center">
             <div class="grow">
               <CredentialListEntry
-                id={credential?.at(0)}
-                title={credential?.at(1).type.at(1)}
-                description={credential?.at(1).issuer}
-                color="bg-indigo-100"
+                id={credential.id}
+                title={credential.metadata.display.name || credential.data.type.at(-1)}
+                description={new URL(credential.data.issuer).hostname}
+                color={credential.metadata.display.color || 'bg-indigo-100'}
               >
-                <span slot="icon"><UserCircle class="h-[18px] w-[18px] text-slate-800" /></span>
+                <!-- <span slot="icon"><UserCircle class="h-[18px] w-[18px] text-slate-800" /></span> -->
+                <span slot="icon">
+                  <svelte:component
+                    this={icons[credential.metadata.display.icon] || icons['User']}
+                    class="h-[18px] w-[18px] text-slate-800"
+                  />
+                </span>
               </CredentialListEntry>
             </div>
             <div class="px-3">
@@ -91,8 +97,9 @@
       on:click={() =>
         dispatch({
           type: '[Authenticate] Credentials selected',
-          payload: { credential_uuids: selected_credentials.map((c) => c.at(0)) }
+          payload: { credential_uuids: selected_credentials.map((c) => c.id) }
         })}
+      disabled={!$isChecked}
     />
     <Button
       label="Cancel"
