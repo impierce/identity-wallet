@@ -1,59 +1,85 @@
 pub mod authorization;
 pub mod credential_offer;
 pub mod load_dev_profile;
+pub mod storage;
 
-use crate::crypto::stronghold::{create_new_stronghold, get_public_key};
-use crate::did::did_key::generate_new_did;
+use super::{IdentityManager, Locale};
+use crate::crypto::stronghold::StrongholdManager;
+// use crate::did::did_key::generate_new_did;
 use crate::state::actions::Action;
 use crate::state::user_prompt::{CurrentUserPrompt, CurrentUserPromptType, Redirect};
 use crate::state::{AppState, Profile};
+use did_key::{from_existing_key, Ed25519KeyPair};
 use log::info;
+use oid4vc_core::Subject;
+use oid4vc_manager::methods::key_method::KeySubject;
+use oid4vc_manager::ProviderManager;
+use oid4vci::Wallet;
+use std::sync::Arc;
 
 /// Sets the locale to the given value. If the locale is not supported yet, the current locale will stay unchanged.
 pub fn set_locale(state: &AppState, action: Action) -> anyhow::Result<()> {
     let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
-    let locale = payload["locale"]
-        .as_str()
-        .ok_or(anyhow::anyhow!("unable to read locale from json payload"))?;
-    *state.locale.lock().unwrap() = locale.to_string();
+    let locale = &payload["locale"];
+    *state.locale.lock().unwrap() = serde_json::from_value::<Locale>(locale.clone())?;
     info!("locale set to: `{}`", locale);
     Ok(())
 }
 
 /// Creates a new profile with a new DID (using the did:key method) and sets it as the active profile.
-pub async fn create_did_key(state: &AppState, action: Action) -> anyhow::Result<()> {
+pub async fn create_identity(state: &AppState, action: Action) -> anyhow::Result<()> {
+    let mut state_guard = state.managers.lock().await;
+    let stronghold_manager = state_guard.stronghold_manager.as_ref().unwrap();
+
     let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
     let display_name = payload["display_name"]
         .as_str()
         .ok_or(anyhow::anyhow!("unable to read display_name from json payload"))?;
-    let password = payload["password"]
-        .as_str()
-        .ok_or(anyhow::anyhow!("unable to read password from json payload"))?;
 
-    let public_key = get_public_key(password)?;
-    let did_document = generate_new_did(public_key).await?;
+    let public_key = stronghold_manager.get_public_key()?;
+
+    let keypair = from_existing_key::<Ed25519KeyPair>(public_key.as_slice(), None);
+    let subject = Arc::new(KeySubject::from_keypair(keypair, Some(stronghold_manager.clone())));
+
+    let provider_manager = ProviderManager::new([subject.clone()]).unwrap();
+    let wallet: Wallet = Wallet::new(subject.clone());
+
     let profile = Profile {
         display_name: display_name.to_string(),
-        primary_did: did_document.id,
+        primary_did: subject.identifier().unwrap(),
     };
-    *state.active_profile.lock().unwrap() = Some(profile);
+
+    state.active_profile.lock().unwrap().replace(profile);
+    state_guard.identity_manager.replace(IdentityManager {
+        provider_manager,
+        wallet,
+    });
     Ok(())
 }
 
-pub async fn initialize_stronghold(_state: &AppState, action: Action) -> anyhow::Result<()> {
+pub async fn initialize_stronghold(state: &AppState, action: Action) -> anyhow::Result<()> {
     let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
     let password = payload["password"]
         .as_str()
         .ok_or(anyhow::anyhow!("unable to read password from json payload"))?;
-    create_new_stronghold(password)?;
+
+    state
+        .managers
+        .lock()
+        .await
+        .stronghold_manager
+        .replace(Arc::new(StrongholdManager::create(password)?));
+
+    info!("stronghold initialized");
+
     Ok(())
 }
 
 /// Completely resets the state to its default values.
 pub fn reset_state(state: &AppState, _action: Action) -> anyhow::Result<()> {
     *state.active_profile.lock().unwrap() = None;
-    *state.locale.lock().unwrap() = "en".to_string();
-    *state.credentials.lock().unwrap() = vec![];
+    *state.locale.lock().unwrap() = Locale::default();
+    state.credentials.lock().unwrap().clear();
     *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect(Redirect {
         r#type: CurrentUserPromptType::Redirect,
         target: "welcome".to_string(),
@@ -64,13 +90,8 @@ pub fn reset_state(state: &AppState, _action: Action) -> anyhow::Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{crypto::stronghold::hash_password, state::actions::ActionType, STRONGHOLD};
-    use iota_stronghold::{
-        procedures::{GenerateKey, KeyType, StrongholdProcedure},
-        Client, KeyProvider, Location, SnapshotPath, Stronghold,
-    };
+    use crate::state::actions::ActionType;
     use serde_json::json;
-    use tempfile::NamedTempFile;
 
     #[test]
     fn test_set_locale() {
@@ -84,7 +105,7 @@ mod tests {
             },
         )
         .is_ok());
-        assert_eq!(*state.locale.lock().unwrap(), "nl".to_string());
+        assert_eq!(*state.locale.lock().unwrap(), Locale::Nl);
     }
 
     #[test]
@@ -112,50 +133,6 @@ mod tests {
         .is_err());
     }
 
-    #[tokio::test]
-    #[serial_test::serial]
-    async fn test_create_new_with_method_did_key() {
-        let path = NamedTempFile::new().unwrap().into_temp_path();
-        *STRONGHOLD.lock().unwrap() = path.as_os_str().into();
-
-        // create new temp stronghold for testing
-        let stronghold = Stronghold::default();
-        let path = STRONGHOLD.lock().unwrap().clone().to_str().unwrap().to_owned();
-        let client: Client = stronghold.create_client(path.clone()).expect("cannot create client");
-        let output_location = Location::counter(path.clone(), 0u8);
-        client
-            .execute_procedure(StrongholdProcedure::GenerateKey(GenerateKey {
-                ty: KeyType::Ed25519,
-                output: output_location.clone(),
-            }))
-            .ok();
-        stronghold
-            .write_client(path.clone())
-            .expect("store client state into snapshot state failed");
-        stronghold
-            .commit_with_keyprovider(
-                &SnapshotPath::from_path(format!("{path}.snapshot")),
-                &KeyProvider::try_from(hash_password("s3cr3t").unwrap()).unwrap(),
-            )
-            .ok();
-
-        let state = AppState::default();
-
-        assert!(create_did_key(
-            &state,
-            Action {
-                r#type: ActionType::CreateNew,
-                payload: Some(json!({"display_name": "Ferris", "password": "s3cr3t"})),
-            },
-        )
-        .await
-        .is_ok());
-
-        let profile = state.active_profile.lock().unwrap();
-        assert_eq!(profile.as_ref().unwrap().display_name, "Ferris");
-        assert!(profile.as_ref().unwrap().primary_did.starts_with("did:key:"));
-    }
-
     #[test]
     fn test_reset_state() {
         let state = AppState {
@@ -176,6 +153,6 @@ mod tests {
         )
         .is_ok());
         assert_eq!(*state.active_profile.lock().unwrap(), None);
-        assert_eq!(*state.locale.lock().unwrap(), "en".to_string());
+        assert_eq!(*state.locale.lock().unwrap(), Locale::default());
     }
 }

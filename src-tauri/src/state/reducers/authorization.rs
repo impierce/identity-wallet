@@ -1,5 +1,4 @@
 use crate::{
-    crypto::stronghold::get_all_from_stronghold,
     get_unverified_jwt_claims,
     state::{
         actions::Action,
@@ -18,43 +17,57 @@ use uuid::Uuid;
 
 // Reads the request url from the payload and validates it.
 pub async fn read_authorization_request(state: &AppState, action: Action) -> anyhow::Result<()> {
-    info!("read_request");
-    let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
+    info!("read_authorization_request");
 
-    let guard = crate::PROVIDER_MANAGER.lock().await;
-    let provider = guard.as_ref().unwrap();
+    let state_guard = state.managers.lock().await;
+    let provider_manager = &state_guard.identity_manager.as_ref().unwrap().provider_manager;
+    let stronghold_manager = state_guard.stronghold_manager.as_ref().unwrap();
+
+    let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
 
     info!("trying to validate request: {:?}", payload);
 
-    let authorization_request = provider
+    let authorization_request = provider_manager
         .validate_request(serde_json::from_value(payload).unwrap())
         .await
         .unwrap();
     info!("validated authorization request: {:?}", authorization_request);
 
-    let verifiable_credentials = get_all_from_stronghold("my-password")?.unwrap();
+    let verifiable_credentials = stronghold_manager.values()?.unwrap();
     info!("verifiable credentials: {:?}", verifiable_credentials);
 
-    let uuids: Vec<String> = authorization_request
-        .presentation_definition()
-        .as_ref()
-        .unwrap()
-        .input_descriptors()
-        .iter()
-        .map(|input_descriptor| {
-            verifiable_credentials
-                .iter()
-                .find_map(|(uuid, verifiable_credential)| {
-                    let verifiable_credential = match verifiable_credential {
-                        CredentialFormats::JwtVcJson(jwt_vc_json) => jwt_vc_json.credential.clone(),
-                        _ => unimplemented!(),
-                    };
-                    evaluate_input(input_descriptor, &get_unverified_jwt_claims(&verifiable_credential))
-                        .then_some(uuid.to_string())
-                })
-                .unwrap()
-        })
-        .collect();
+    let uuids: Vec<String> = if authorization_request.presentation_definition().is_some() {
+        authorization_request
+            .presentation_definition()
+            .as_ref()
+            .unwrap()
+            .input_descriptors()
+            .iter()
+            .map(|input_descriptor| {
+                verifiable_credentials
+                    .iter()
+                    .find_map(|verifiable_credential_record| {
+                        let verifiable_credential = match &verifiable_credential_record.verifiable_credential {
+                            CredentialFormats::JwtVcJson(jwt_vc_json) => jwt_vc_json.credential.clone(),
+                            _ => unimplemented!(),
+                        };
+                        evaluate_input(input_descriptor, &get_unverified_jwt_claims(&verifiable_credential))
+                            .then_some(verifiable_credential_record.display_credential.id.clone())
+                    })
+                    .unwrap()
+            })
+            .collect()
+    } else {
+        info!("||DEBUG|| generating response");
+        *state.debug_messages.lock().unwrap() = vec!["generating response".into()];
+        let response =
+            provider_manager.generate_response(authorization_request.clone(), Default::default(), None, None)?;
+        info!("||DEBUG|| response generated: {:?}", response);
+
+        provider_manager.send_response(response).await?;
+        info!("||DEBUG|| response successfully sent");
+        return Ok(());
+    };
 
     info!("uuids of VCs that can fulfill the request: {:?}", uuids);
 
@@ -62,7 +75,7 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> any
 
     if !uuids.is_empty() {
         *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Selection(Selection {
-            r#type: CurrentUserPromptType::SelectCredentials,
+            r#type: CurrentUserPromptType::ShareCredentials,
             options: uuids,
         }));
     }
@@ -72,7 +85,12 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> any
 
 // Sends the authorization response including the verifiable credentials.
 pub async fn send_authorization_response(state: &AppState, action: Action) -> anyhow::Result<()> {
-    // let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
+    info!("send_authorization_response");
+
+    let state_guard = state.managers.lock().await;
+    let stronghold_manager = state_guard.stronghold_manager.as_ref().unwrap();
+    let provider_manager = &state_guard.identity_manager.as_ref().unwrap().provider_manager;
+
     let payload = match action.payload {
         Some(payload) => payload,
         None => {
@@ -103,15 +121,18 @@ pub async fn send_authorization_response(state: &AppState, action: Action) -> an
     info!("||DEBUG|| credential not found");
     *state.debug_messages.lock().unwrap() = vec!["credential not found".into()];
 
-    let verifiable_credentials: Vec<Credential<JwtVcJson>> = get_all_from_stronghold("my-password")?
+    let verifiable_credentials: Vec<Credential<JwtVcJson>> = stronghold_manager
+        .values()?
         .unwrap()
         .iter()
-        .filter_map(|(key, vc)| match vc {
-            CredentialFormats::JwtVcJson(jwt_vc_json) => {
-                credential_uuids.contains(key).then_some(jwt_vc_json.to_owned())
-            }
-            _ => unimplemented!(),
-        })
+        .filter_map(
+            |verifiable_credential_record| match &verifiable_credential_record.verifiable_credential {
+                CredentialFormats::JwtVcJson(jwt_vc_json) => credential_uuids
+                    .contains(&verifiable_credential_record.display_credential.id.parse().unwrap())
+                    .then_some(jwt_vc_json.to_owned()),
+                _ => unimplemented!(),
+            },
+        )
         .collect();
 
     let presentation_submission = create_presentation_submission(
@@ -153,14 +174,12 @@ pub async fn send_authorization_response(state: &AppState, action: Action) -> an
 
     let verifiable_presentation = presentation_builder.build()?;
 
-    info!("||DEBUG|| get the provider");
-    *state.debug_messages.lock().unwrap() = vec!["get the provider".into()];
-    let guard = crate::PROVIDER_MANAGER.lock().await;
-    let provider = guard.as_ref().unwrap();
+    info!("||DEBUG|| get the provider_manager");
+    *state.debug_messages.lock().unwrap() = vec!["get the provider_manager".into()];
 
     info!("||DEBUG|| generating response");
     *state.debug_messages.lock().unwrap() = vec!["generating response".into()];
-    let response = provider.generate_response(
+    let response = provider_manager.generate_response(
         authorization_request,
         Default::default(),
         Some(verifiable_presentation),
@@ -168,7 +187,7 @@ pub async fn send_authorization_response(state: &AppState, action: Action) -> an
     )?;
     info!("||DEBUG|| response generated: {:?}", response);
 
-    provider.send_response(response).await?;
+    provider_manager.send_response(response).await?;
     info!("||DEBUG|| response successfully sent");
 
     *state.current_user_prompt.lock().unwrap() = None;

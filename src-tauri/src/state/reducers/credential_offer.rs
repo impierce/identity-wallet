@@ -1,37 +1,27 @@
 use crate::{
-    crypto::stronghold::insert_into_stronghold,
-    get_unverified_jwt_claims,
     state::{
         actions::Action,
         user_prompt::{CredentialOffer as CredentialOfferPrompt, CurrentUserPrompt, CurrentUserPromptType},
         AppState,
     },
+    verifiable_credential_record::VerifiableCredentialRecord,
 };
-use did_key::{generate, Ed25519KeyPair};
 use log::info;
-use oid4vc_manager::methods::key_method::KeySubject;
 use oid4vci::{
     credential_format_profiles::{CredentialFormats, WithCredential},
     credential_offer::{CredentialOffer, CredentialOfferQuery, CredentialsObject, Grants},
     credential_response::CredentialResponseType,
     token_request::{PreAuthorizedCode, TokenRequest},
-    Wallet,
 };
 use serde_json::json;
-use std::sync::Arc;
 use uuid::Uuid;
 
 pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::Result<()> {
     info!("read_credential_offer");
+    let state_guard = state.managers.lock().await;
+    let wallet = &state_guard.identity_manager.as_ref().unwrap().wallet;
+
     let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
-
-    // Create a new subject.
-    let subject = KeySubject::from_keypair(generate::<Ed25519KeyPair>(Some(
-        "this-is-a-very-UNSAFE-secret-key".as_bytes(),
-    )));
-
-    // Create a new wallet.
-    let wallet: Wallet = Wallet::new(Arc::new(subject));
 
     let mut credential_offer: CredentialOffer = match serde_json::from_value(payload)? {
         CredentialOfferQuery::CredentialOffer(credential_offer) => credential_offer,
@@ -44,11 +34,14 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::
     // The credential offer contains a credential issuer url.
     let credential_issuer_url = credential_offer.clone().credential_issuer;
 
+    info!("credential issuer url: {:?}", credential_issuer_url);
+
     // Get the credential issuer metadata.
-    let credential_issuer_metadata = if credential_offer.credentials.iter().any(|credential| match credential {
-        CredentialsObject::ByReference(_) => true,
-        _ => false,
-    }) {
+    let credential_issuer_metadata = if credential_offer
+        .credentials
+        .iter()
+        .any(|credential| matches!(credential, CredentialsObject::ByReference(_)))
+    {
         wallet
             .get_credential_issuer_metadata(credential_issuer_url.clone())
             .await
@@ -56,6 +49,8 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::
     } else {
         None
     };
+
+    info!("credential issuer metadata: {:?}", credential_issuer_metadata);
 
     // For all credentials by reference, replace them with credentials by value using the CredentialIssuerMetadata.
     credential_offer
@@ -92,6 +87,9 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::
 
 pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow::Result<()> {
     info!("send_credential_request");
+    let state_guard = state.managers.lock().await;
+    let stronghold_manager = state_guard.stronghold_manager.as_ref().unwrap();
+    let wallet = &state_guard.identity_manager.as_ref().unwrap().wallet;
 
     let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
     let offer_indices: Vec<usize> = serde_json::from_value(payload["offer_indices"].clone())?;
@@ -105,14 +103,6 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
 
     // The credential offer contains a credential issuer url.
     let credential_issuer_url = credential_offer.credential_issuer;
-
-    // Create a new subject.
-    let subject = KeySubject::from_keypair(generate::<Ed25519KeyPair>(Some(
-        "this-is-a-very-UNSAFE-secret-key".as_bytes(),
-    )));
-
-    // Create a new wallet.
-    let wallet: Wallet = Wallet::new(Arc::new(subject));
 
     // Get the authorization server metadata.
     let authorization_server_metadata = wallet
@@ -149,9 +139,11 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
 
     // Get an access token.
     let token_response = wallet
-        .get_access_token(authorization_server_metadata.token_endpoint, token_request)
+        .get_access_token(authorization_server_metadata.token_endpoint.unwrap(), token_request)
         .await
         .unwrap();
+
+    info!("token_response: {:?}", token_response);
 
     let credentials: Vec<CredentialFormats<WithCredential>> = match credential_offer_formats.len() {
         0 => vec![],
@@ -192,27 +184,17 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
     info!("credentials: {:?}", credentials);
 
     // Get the decoded JWT claims to be displayed in the frontend.
-    let mut credential_displays = vec![];
-    for credential in credentials.iter() {
-        let key = Uuid::new_v4();
+    let mut display_credentials = vec![];
+    for credential in credentials.into_iter() {
+        let verifiable_credential_record = VerifiableCredentialRecord::from(credential);
+        let key: Uuid = verifiable_credential_record.display_credential.id.parse().unwrap();
 
-        match credential {
-            CredentialFormats::JwtVcJson(credential) => {
-                let credential_display = serde_json::from_value::<identity_credential::credential::Credential>(
-                    get_unverified_jwt_claims(&credential.credential)["vc"].clone(),
-                )
-                .unwrap();
-                credential_displays.push((key.to_string(), credential_display));
-            }
-            _ => unimplemented!(),
-        }
+        display_credentials.push(verifiable_credential_record.display_credential.clone());
 
-        let buffer = json!(credential).to_string().as_bytes().to_vec();
-        insert_into_stronghold(key, buffer, "my-password")?;
+        stronghold_manager.insert(key, json!(verifiable_credential_record).to_string().as_bytes().to_vec())?;
     }
-    info!("credential_displays: {:?}", credential_displays);
 
-    state.credentials.lock().unwrap().extend(credential_displays);
+    state.credentials.lock().unwrap().extend(display_credentials);
     *state.current_user_prompt.lock().unwrap() = None;
 
     Ok(())

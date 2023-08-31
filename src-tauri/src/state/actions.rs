@@ -38,6 +38,8 @@ pub enum ActionType {
     ReadRequest,
     #[serde(rename = "[Authenticate] Credentials selected")]
     CredentialsSelected,
+    #[serde(rename = "[Storage] Unlock")]
+    UnlockStorage,
     #[ts(skip)]
     #[serde(other)]
     Unknown,
