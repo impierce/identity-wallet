@@ -5,13 +5,14 @@ pub mod storage;
 
 use super::{IdentityManager, Locale};
 use crate::crypto::stronghold::StrongholdManager;
-use crate::did::did_key::generate_new_did;
+// use crate::did::did_key::generate_new_did;
 use crate::state::actions::Action;
 use crate::state::user_prompt::{CurrentUserPrompt, CurrentUserPromptType, Redirect};
 use crate::state::{AppState, Profile};
 use crate::verifiable_credential_record::{CredentialDisplay, DisplayCredential, VerifiableCredentialRecord};
 use did_key::{from_existing_key, Ed25519KeyPair};
 use log::info;
+use oid4vc_core::Subject;
 use oid4vc_manager::methods::key_method::KeySubject;
 use oid4vc_manager::ProviderManager;
 use oid4vci::Wallet;
@@ -52,12 +53,11 @@ pub async fn create_identity(state: &AppState, action: Action) -> anyhow::Result
     let provider_manager = ProviderManager::new([subject.clone()]).unwrap();
     let wallet: Wallet = Wallet::new(subject.clone());
 
-    let did_document = generate_new_did(public_key).await?;
     let profile = Profile {
         name: name.to_string(),
         picture: Some(picture.to_string()),
         theme: Some(theme.to_string()),
-        primary_did: did_document.id,
+        primary_did: subject.identifier().unwrap(),
     };
 
     state.active_profile.lock().unwrap().replace(profile);

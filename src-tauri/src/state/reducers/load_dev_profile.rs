@@ -1,11 +1,13 @@
 use crate::crypto::stronghold::StrongholdManager;
-use crate::did::did_key::generate_dev_did;
 use crate::state::actions::Action;
 use crate::state::user_prompt::{CurrentUserPrompt, CurrentUserPromptType, Redirect};
 use crate::state::{AppState, Profile};
 use crate::verifiable_credential_record::VerifiableCredentialRecord;
+use did_key::{generate, Ed25519KeyPair};
 use lazy_static::lazy_static;
 use log::info;
+use oid4vc_core::Subject;
+use oid4vc_manager::methods::key_method::KeySubject;
 use oid4vci::credential_format_profiles::w3c_verifiable_credentials::jwt_vc_json::JwtVcJson;
 use oid4vci::credential_format_profiles::{Credential, CredentialFormats, WithCredential};
 use serde_json::json;
@@ -29,12 +31,16 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
 
     let stronghold_manager = StrongholdManager::create("sup3rSecr3t")?;
 
-    let did_document = generate_dev_did().await?;
+    let subject = KeySubject::from_keypair(
+        generate::<Ed25519KeyPair>(Some("this-is-a-very-UNSAFE-secret-key".as_bytes())),
+        None,
+    );
+
     let profile = Profile {
         name: "Ferris".to_string(),
         picture: Some("&#129408".to_string()),
         theme: Some("system".to_string()),
-        primary_did: did_document.id,
+        primary_did: subject.identifier().unwrap(),
     };
     state.active_profile.lock().unwrap().replace(profile);
     state.credentials.lock().unwrap().clear();

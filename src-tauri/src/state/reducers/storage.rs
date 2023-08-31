@@ -5,7 +5,6 @@ use crate::{
         user_prompt::{CurrentUserPrompt, CurrentUserPromptType, Redirect},
         AppState, IdentityManager,
     },
-    verifiable_credential_record::DisplayCredential,
 };
 use did_key::{from_existing_key, Ed25519KeyPair};
 use log::info;
@@ -31,18 +30,17 @@ pub async fn unlock_storage(state: &AppState, action: Action) -> anyhow::Result<
     let provider_manager = ProviderManager::new([subject.clone()]).unwrap();
     let wallet: Wallet = Wallet::new(subject.clone());
 
-    // TEMP fix by Daniel (can be removed)
-    let mut credentials: Vec<DisplayCredential> = vec![];
-
     stronghold_manager
         .values()?
         .unwrap()
         .into_iter()
         .for_each(|verifiable_credential_record| {
-            credentials.push(DisplayCredential::from(verifiable_credential_record.display_credential));
+            state
+                .credentials
+                .lock()
+                .unwrap()
+                .push(verifiable_credential_record.display_credential);
         });
-
-    *state.credentials.lock().unwrap() = credentials;
 
     state_guard.stronghold_manager.replace(stronghold_manager);
 
