@@ -6,6 +6,7 @@
 
   import Button from '$src/lib/components/Button.svelte';
   import CredentialListEntry from '$src/lib/components/CredentialListEntry.svelte';
+  import CredentialOfferEntry from '$src/lib/components/CredentialOfferEntry.svelte';
   import PaddedIcon from '$src/lib/components/PaddedIcon.svelte';
   import { icons } from '$src/lib/credentials/customization/utils';
   import { dispatch } from '$src/lib/dispatcher';
@@ -53,7 +54,20 @@
     <div class="mt-3 w-full rounded-[20px] border border-slate-200 bg-bg-primary p-[10px]">
       <div class="flex w-full flex-col space-y-2">
         {#each selected_credentials as credential}
-          <div class="flex items-center">
+          <CredentialOfferEntry
+            index={credential.id}
+            title={credential.metadata.display.name || credential.data.type.at(-1)}
+            description={new URL(credential.data.issuer).hostname}
+            color={credential.metadata.display.color || 'bg-indigo-100'}
+          >
+            <span slot="icon">
+              <svelte:component
+                this={icons[credential.metadata.display.icon] || icons['User']}
+                class="h-[18px] w-[18px] text-slate-800"
+              />
+            </span>
+          </CredentialOfferEntry>
+          <!-- <div class="flex items-center">
             <div class="grow">
               <CredentialListEntry
                 id={credential.id}
@@ -61,7 +75,6 @@
                 description={new URL(credential.data.issuer).hostname}
                 color={credential.metadata.display.color || 'bg-indigo-100'}
               >
-                <!-- <span slot="icon"><UserCircle class="h-[18px] w-[18px] text-slate-800" /></span> -->
                 <span slot="icon">
                   <svelte:component
                     this={icons[credential.metadata.display.icon] || icons['User']}
@@ -84,7 +97,7 @@
                 <input use:melt={$input} />
               </button>
             </div>
-          </div>
+          </div> -->
         {/each}
       </div>
     </div>

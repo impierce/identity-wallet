@@ -77,6 +77,26 @@
     });
   };
 
+  const mockSiopRequest = () => {
+    state.set({
+      ...$state,
+      current_user_prompt: {
+        type: 'accept-connection'
+        // options: ['c798fc11-e78e-432c-85f2-790be603a581']
+      }
+    });
+  };
+
+  const mockShareRequest = () => {
+    state.set({
+      ...$state,
+      current_user_prompt: {
+        type: 'share-credentials',
+        options: ['c798fc11-e78e-432c-85f2-790be603a581']
+      }
+    });
+  };
+
   const mockScanCredentialOffer = (amount: number) => {
     if (amount == 1) {
       dispatch({
@@ -206,13 +226,17 @@
       <p class="my-4 h-[1px] w-full bg-slate-200" />
     {/if}
     <div class="flex flex-col space-y-2">
-      <ButtonDeprecated variant="secondary" class="hover:bg-neutral-300" on:click={startScan}
-        >Start new scan</ButtonDeprecated
-      >
       <ButtonDeprecated
         variant="secondary"
         class="hover:bg-neutral-300"
-        on:click={mockScanSiopRequest}>Mock SIOP request</ButtonDeprecated
+        on:click={startScan}
+        disabled>Start new scan</ButtonDeprecated
+      >
+      <ButtonDeprecated variant="secondary" class="hover:bg-neutral-300" on:click={mockSiopRequest}
+        >Connection request (SIOPv2)</ButtonDeprecated
+      >
+      <ButtonDeprecated variant="secondary" class="hover:bg-neutral-300" on:click={mockShareRequest}
+        >Share request (VP)</ButtonDeprecated
       >
       <ButtonDeprecated
         variant="secondary"

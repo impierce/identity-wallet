@@ -23,11 +23,11 @@
     states: { open }
   } = createPopover();
 
-  let selected_credentials = $state.credentials?.filter(
-    (c) => $state.current_user_prompt.options.indexOf(c.id) > -1
-  );
+  // let selected_credentials = $state.credentials?.filter(
+  //   (c) => $state.current_user_prompt.options.indexOf(c.id) > -1
+  // );
 
-  console.log(selected_credentials);
+  // console.log(selected_credentials);
 
   console.log($state.current_user_prompt);
 </script>

@@ -19,7 +19,7 @@
     defaultOpen: true
   });
 
-  // hex codes
+  // TODO: switch to Unicode?
   let predefinedEmojis: Array<Array<string>> = [
     // faces
     [

@@ -8,6 +8,7 @@
   import Button from '$lib/components/Button.svelte';
   import PaddedIcon from '$lib/components/PaddedIcon.svelte';
   import { dispatch } from '$lib/dispatcher';
+  import CredentialOfferEntry from '$src/lib/components/CredentialOfferEntry.svelte';
   import { state } from '$src/stores';
 
   import Check from '~icons/ph/check-bold';
@@ -17,14 +18,35 @@
   import WarningCircle from '~icons/ph/warning-circle-fill';
   import X from '~icons/ph/x-bold';
 
-  const {
-    elements: { root, input },
-    helpers: { isChecked }
-  } = createCheckbox({});
+  // const {
+  //   elements: { root, input },
+  //   helpers: { isChecked }
+  // } = createCheckbox({});
 
   console.log($state.current_user_prompt);
   let credential_offer: any[] = $state.current_user_prompt.credential_offer;
-  console.log(credential_offer);
+  console.log({ credential_offer });
+
+  // const checkboxes = credential_offer.credentials.map((c, i) => {
+  //   const {
+  //     elements: { root, input },
+  //     helpers: { isChecked }
+  //   } = createCheckbox();
+  //   return { c, root, input, isChecked };
+  // });
+
+  // console.log(checkboxes);
+
+  // const map = credential_offer.credentials.map((credential, i) => {
+  //   const {
+  //     elements: { root, input },
+  //     helpers: { isChecked }
+  //   } = createCheckbox();
+  //   // return { credential, root, input, isChecked };
+  //   return { credential };
+  // });
+
+  // console.log({ map });
 
   let all_offer_indices = credential_offer.credentials.map((_, i) => i);
 </script>
@@ -46,25 +68,63 @@
     </div>
 
     <!-- Details -->
-    <div class="w-full space-y-2 rounded-2xl p-3 ring-2 ring-inset ring-white">
+    <!-- <div class="w-full space-y-2 rounded-2xl p-3 ring-2 ring-inset ring-white">
       {#each credential_offer.credentials as credential, i}
         <div class="flex justify-between rounded-lg bg-white px-4 py-4">
           <p>{credential.credential_definition.type.at(-1)}</p>
           <button
-            use:melt={$root}
+            use:melt={checkboxes.at(i).$root}
             class="flex h-6 w-6 appearance-none items-center justify-center
               rounded-md border-[1.5px] border-[#C5C6CC] p-[6px] text-white
-              {$isChecked ? 'border-none bg-primary' : 'bg-white'}"
+              {checkboxes.at(i).isChecked ? 'border-none bg-primary' : 'bg-white'}"
             id="checkbox"
           >
-            {#if $isChecked}
+            {#if checkboxes.at(i).$isChecked}
               <Check class="h-3 w-3" />
             {/if}
-            <input use:melt={$input} />
+            <input use:melt={checkboxes.at(i).$input} />
           </button>
         </div>
       {/each}
+    </div> -->
+
+    <div class="w-full space-y-2 rounded-2xl p-3 ring-2 ring-inset ring-white">
+      {#each credential_offer.credentials as credential, index}
+        <CredentialOfferEntry
+          {index}
+          title={credential.credential_definition.type.at(-1)}
+          color={'bg-slate-100'}
+        >
+          <span slot="logo" class="p-1">
+            <img
+              src={`/issuer-metadata/credential-logos/ngdil.svg`}
+              alt="logo"
+              class="object-scale-down"
+            />
+          </span>
+        </CredentialOfferEntry>
+      {/each}
     </div>
+
+    <!-- <div class="w-full space-y-2 rounded-2xl p-3 ring-2 ring-inset ring-white">
+      {#each checkboxes as { c, root, input, isChecked }, i}
+        <div class="flex justify-between rounded-lg bg-white px-4 py-4">
+          <p>{credential_offer.at(i).credential.credential_definition.type.at(-1)}</p>
+          <button
+            use:melt={root}
+            class="flex h-6 w-6 appearance-none items-center justify-center
+              rounded-md border-[1.5px] border-[#C5C6CC] p-[6px] text-white
+              {isChecked ? 'border-none bg-primary' : 'bg-white'}"
+            id="checkbox"
+          >
+            {#if isChecked}
+              <Check class="h-3 w-3" />
+            {/if}
+            <input use:melt={input} />
+          </button>
+        </div>
+      {/each}
+    </div> -->
   </div>
 
   <!-- Controls -->
@@ -77,7 +137,6 @@
           payload: { offer_indices: all_offer_indices }
         });
       }}
-      disabled={!$isChecked}
     />
     <Button
       label="Reject"
