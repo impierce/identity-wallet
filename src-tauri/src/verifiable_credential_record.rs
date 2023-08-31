@@ -20,15 +20,7 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
                     id: Uuid::new_v4().to_string(),
                     format: (&verifiable_credential).try_into().unwrap(),
                     data: credential_display,
-                    metadata: CredentialMetadata {
-                        is_favorite: false,
-                        is_mutable: false,
-                        display: CredentialDisplay {
-                            icon: "".to_string(),
-                            color: "".to_string(),
-                            name: "".to_string(),
-                        },
-                    },
+                    metadata: CredentialMetadata::default(),
                 }
             }
             _ => unimplemented!(),
@@ -52,7 +44,7 @@ pub struct DisplayCredential {
     pub metadata: CredentialMetadata,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, TS)]
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, TS, Default)]
 #[ts(export, export_to = "bindings/display-credential/CredentialMetadata.ts")]
 pub struct CredentialMetadata {
     pub is_favorite: bool,
@@ -60,10 +52,10 @@ pub struct CredentialMetadata {
     pub display: CredentialDisplay,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, TS)]
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, TS, Default)]
 #[ts(export, export_to = "bindings/display-credential/CredentialDisplay.ts")]
 pub struct CredentialDisplay {
-    icon: String,
-    color: String,
-    name: String,
+    icon: Option<String>,
+    color: Option<String>,
+    name: Option<String>,
 }
