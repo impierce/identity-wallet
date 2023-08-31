@@ -29,7 +29,7 @@
             </div>
 
             <div class="text-center text-2xl font-semibold text-black">
-              You are connected to <p class="text-primary">{connection.domain}</p>
+              Connected to <p class="text-primary">{connection.domain}</p>
             </div>
           </div>
 
@@ -39,7 +39,17 @@
 
       <!-- Data -->
       <div slot="data" class="h-full bg-neutral-100 py-5">
-        <ConnectionData />
+        <div class="flex flex-col items-center justify-center space-y-4">
+          <div class="flex w-full flex-col items-center justify-center space-y-4 py-6">
+            <div class="h-[75px] w-[75px] rounded-3xl border bg-white p-2">
+              <img src={'/tauri.svg'} alt={connection.domain} />
+            </div>
+
+            <div class="text-center text-2xl font-semibold text-black">Data shared</div>
+          </div>
+
+          <ConnectionData />
+        </div>
       </div>
 
       <!-- History -->

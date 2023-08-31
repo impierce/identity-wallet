@@ -75,7 +75,7 @@ async fn test_load_dev_profile_twice() {
             },
         ],
         vec![
-            // Each time the dev prfile is loaded, the state should be the same.
+            // Each time the dev profile is loaded, the state should be the same.
             Some(TransferState {
                 active_profile: Some(Profile {
                     display_name: "Ferris Crabman".to_string(),

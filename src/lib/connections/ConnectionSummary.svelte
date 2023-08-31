@@ -20,7 +20,7 @@
 >
   {#each Object.entries(summary) as entry}
     <div class="flex flex-col items-start px-4 py-[10px]">
-      <p class="text-[15px]/[24px] font-medium text-[#6E82A4]">{entry[0]}</p>
+      <p class="text-[13px]/[24px] font-medium text-slate-400">{entry[0]}</p>
       <p class="break-all text-[13px]/[24px] font-medium text-slate-800">{entry[1]}</p>
     </div>
   {/each}
