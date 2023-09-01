@@ -20,7 +20,9 @@
     <slot />
   </div>
   <div class="shrink-0">
-    <div class="fixed bottom-[var(--safe-area-inset-bottom)] w-full">
+    <div
+      class="fixed bottom-[var(--safe-area-inset-bottom)] w-full shadow-[0_-4px_20px_0px_rgba(0,0,0,0.03)]"
+    >
       <BottomNavBar
         {active}
         on:me={() => goto('/me')}

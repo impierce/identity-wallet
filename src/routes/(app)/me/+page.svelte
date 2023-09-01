@@ -37,7 +37,7 @@
 </script>
 
 <div class="flex min-h-full flex-col bg-bg-primary dark:bg-bg-dark-primary">
-  <div class="sticky top-0 z-10 h-[56px] w-full">
+  <div class="sticky top-0 z-10 h-[56px] w-full bg-bg-primary dark:bg-bg-dark-primary">
     <TopBar />
   </div>
 

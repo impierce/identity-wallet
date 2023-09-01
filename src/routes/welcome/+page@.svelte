@@ -6,6 +6,8 @@
   import Button from '$src/lib/components/Button.svelte';
   import { goto } from '$app/navigation';
   import { fade, fly } from 'svelte/transition';
+  import UniMeText from '$src/lib/components/logo/UniMeText.svelte';
+  import MeLarge from '$src/lib/components/logo/MeLarge.svelte';
 </script>
 
 <div
@@ -38,10 +40,14 @@
   <div class="flex grow flex-col justify-center">
     <!-- <div class="flex grow flex-col justify-center" in:fade out:fly={{ x: -300, duration: 300 }}> -->
     <div class="px-4">
-      <p class="pb-[30px] text-[36px]/[44px] font-bold text-black dark:text-white">
-        Welcome to <br /><span class="text-primary">UniMe</span>
-      </p>
-      <p class="text-[15px]/[24px] font-medium text-slate-500 dark:text-white">
+      <div class="pb-[50px]">
+        <p class=" pb-[10px] text-[36px]/[44px] font-bold text-secondary dark:text-white">
+          Welcome to
+        </p>
+        <UniMeText />
+      </div>
+
+      <p class="text-[14px]/[22px] font-medium text-[#323B40] dark:text-white">
         UniMe connects your digital world, safely and securely.
         <br /><br />
         Create a brand new identity profile or recover an existing one to get started.
@@ -49,8 +55,12 @@
     </div>
   </div>
 
+  <div class="relative left-0 top-5 scale-110">
+    <MeLarge />
+  </div>
+
   <!-- Actions -->
-  <div class="space-y-[10px] rounded-t-3xl bg-white p-6">
+  <div class="z-10 space-y-[10px] rounded-t-3xl bg-white p-6">
     <!-- <div
     class="space-y-[10px] rounded-t-3xl bg-white p-6"
     in:fly={{ y: 154 }}
@@ -63,7 +73,8 @@
         goto('/welcome/pledge');
       }}
     />
-    <Button label="Recover existing profile" disabled />
+    <!-- <Button label="Recover existing profile" disabled /> -->
+    <Button label="Recover existing profile" variant="secondary" />
   </div>
 </div>
 

@@ -77,6 +77,10 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
         .stronghold_manager
         .replace(Arc::new(stronghold_manager));
 
+    let journey_definition = std::fs::read_to_string("resources/ngdil.json")?;
+    let onboarding_journey: serde_json::Value = serde_json::from_str(&journey_definition).unwrap();
+    *state.user_journey.lock().unwrap() = Some(onboarding_journey);
+
     *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect(Redirect {
         r#type: CurrentUserPromptType::Redirect,
         target: "me".to_string(),

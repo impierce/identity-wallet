@@ -14,7 +14,7 @@
   </div>
   <button
     on:click={() => goto('/me/settings')}
-    class="-mx-4 rounded-full p-3 pr-0 text-black dark:text-white"
+    class="-mx-3 rounded-full p-3 pr-0 text-black dark:text-white"
   >
     <DotsThreeVertical class="h-8 w-8" />
   </button>

@@ -6,8 +6,10 @@
   @font-face {
     /* font-family: 'Satoshi-Variable';
     src: url('/fonts/Satoshi-Variable.woff2') format('woff2'); */
-    font-family: 'Inter-Variable';
-    src: url('/fonts/Inter-Variable.ttf') format('ttf');
+    /* font-family: 'Inter-Variable';
+    src: url('/fonts/Inter-Variable.ttf') format('truetype'); */
+    font-family: 'Inter';
+    src: url('/fonts/Inter-VariableFont_slnt,wght.ttf') format('truetype');
   }
 
   h1 {
@@ -57,8 +59,8 @@ body {
   --safe-area-inset-bottom: env(safe-area-inset-bottom);
 
   /* iPhone 13 Pro */
-  /* --safe-area-inset-top: 47px; */
-  /* --safe-area-inset-bottom: 34px; */
+  /* --safe-area-inset-top: 47px;
+  --safe-area-inset-bottom: 34px; */
 }
 
 .safe-area-top {

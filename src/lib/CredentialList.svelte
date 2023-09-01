@@ -65,7 +65,7 @@
 {#if credentials?.length > 0}
   <div class="flex items-center pb-2">
     <SealCheck class="mr-2 text-primary" />
-    <p class="text-[15px]/[24px] font-medium text-slate-600 dark:text-white">{$LL.MY_DATA()}</p>
+    <p class="text-[13px]/[24px] font-medium text-slate-500 dark:text-white">{$LL.MY_DATA()}</p>
   </div>
   <!-- Search -->
   <!-- <Input type="text" placeholder="Search credentials" class="focus-visible:ring-violet-600" /> -->

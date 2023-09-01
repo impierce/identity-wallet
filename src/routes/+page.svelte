@@ -1,7 +1,9 @@
-<div class="content-height flex items-center justify-center bg-[#183077]">
-  <!-- Placeholder -->
-  <!-- <div class="aspect-square w-1/4 rounded-3xl border border-slate-200 bg-slate-100" /> -->
-  <img src="/splash.png" alt="splash" />
+<script>
+  import UniMeLogo from '$src/lib/components/logo/UniMeLogo.svelte';
+</script>
+
+<div class="content-height flex items-center justify-center bg-secondary">
+  <UniMeLogo />
 </div>
 
 <style>

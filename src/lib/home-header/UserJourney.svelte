@@ -10,7 +10,7 @@
 </script>
 
 {#if $state?.user_journey}
-  <div class="flex items-center justify-between">
+  <div class="flex items-center justify-between pt-[6px]">
     <div class="grow">
       <div class="flex justify-between text-sm font-medium text-slate-800 dark:text-white">
         <p>{$state.user_journey.description_short}</p>

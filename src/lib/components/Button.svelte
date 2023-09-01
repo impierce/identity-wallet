@@ -13,7 +13,7 @@
   $: variant_classes =
     variant === 'primary'
       ? 'bg-primary text-white dark:text-black'
-      : 'bg-white text-neutral-700 border border-slate-200';
+      : 'bg-white text-[#0F172A] border border-slate-200';
 </script>
 
 <!-- TODO: does it make sense to pass in the trigger here? -->
