@@ -76,7 +76,7 @@
 
 {#if $open}
   <div
-    class="z-10 flex max-h-[300px] flex-col items-end rounded-2xl bg-white p-3 shadow-md outline-none"
+    class="z-10 flex max-h-[300px] flex-col items-end rounded-2xl bg-bg-primary p-3 shadow-md outline-none dark:bg-bg-dark-primary"
     use:melt={$menu}
     transition:fly={{ duration: 150, y: -10 }}
   >
@@ -123,14 +123,14 @@
     <button
       use:melt={$item}
       use:melt={$triggerNameDialog}
-      class="rounded-xl px-3 py-2 font-medium text-slate-800 outline-none active:bg-bg-secondary"
+      class="rounded-xl px-3 py-2 font-medium text-slate-800 outline-none active:bg-bg-secondary dark:text-white dark:active:bg-bg-dark-secondary"
       >Change name</button
     >
 
     <button
       use:melt={$item}
       use:melt={$triggerAppearanceDialog}
-      class="rounded-xl px-3 py-2 font-medium text-slate-800 outline-none active:bg-bg-secondary"
+      class="rounded-xl px-3 py-2 font-medium text-slate-800 outline-none active:bg-bg-secondary dark:text-white dark:active:bg-bg-dark-secondary"
       >Customize appearance</button
     >
     <!-- {/if} -->

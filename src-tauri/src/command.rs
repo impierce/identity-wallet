@@ -159,6 +159,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
                 .await
                 .is_ok()
             {
+                *app_state.current_user_prompt.lock().unwrap() = None;
                 save_state(TransferState::from(app_state)).await.ok();
             }
         }

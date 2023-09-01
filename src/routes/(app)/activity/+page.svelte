@@ -12,7 +12,7 @@
   >
     Connected
   </div>
-  <div class="px-4 pt-5">
+  <div class="h-full px-4 pt-5">
     <MeltUiActivityTabs>
       <div slot="connections" class="h-full bg-bg-secondary pt-5 dark:bg-bg-dark-secondary">
         <!-- Search & Sort -->

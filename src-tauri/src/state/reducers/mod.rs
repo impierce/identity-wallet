@@ -121,7 +121,7 @@ pub async fn update_credential_metadata(state: &AppState, action: Action) -> any
 
     // set name if given
     verifiable_credential_record.display_credential.metadata.display.name = match payload["name"].as_str() {
-        Some(name) => name.to_string(),
+        Some(name) => Some(name.to_string()),
         None => {
             info!("no name provided, using existing");
             verifiable_credential_record.display_credential.metadata.display.name
@@ -130,7 +130,7 @@ pub async fn update_credential_metadata(state: &AppState, action: Action) -> any
 
     // set color if given
     verifiable_credential_record.display_credential.metadata.display.color = match payload["color"].as_str() {
-        Some(color) => color.to_string(),
+        Some(color) => Some(color.to_string()),
         None => {
             info!("no color provided, using existing");
             verifiable_credential_record.display_credential.metadata.display.color
@@ -139,7 +139,7 @@ pub async fn update_credential_metadata(state: &AppState, action: Action) -> any
 
     // set icon if given
     verifiable_credential_record.display_credential.metadata.display.icon = match payload["icon"].as_str() {
-        Some(icon) => icon.to_string(),
+        Some(icon) => Some(icon.to_string()),
         None => {
             info!("no icon provided, using existing");
             verifiable_credential_record.display_credential.metadata.display.icon

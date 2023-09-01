@@ -53,12 +53,12 @@ body {
 
 :root {
   /* TODO: development: using variables for easier testing, production: replace var() --> env()? */
-  /* --safe-area-inset-top: env(safe-area-inset-top);
-  --safe-area-inset-bottom: env(safe-area-inset-bottom); */
+  --safe-area-inset-top: env(safe-area-inset-top);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom);
 
   /* iPhone 13 Pro */
-  --safe-area-inset-top: 47px;
-  --safe-area-inset-bottom: 34px;
+  /* --safe-area-inset-top: 47px; */
+  /* --safe-area-inset-bottom: 34px; */
 }
 
 .safe-area-top {

@@ -26,21 +26,23 @@
   {#each events as event}
     <div class="flex items-start">
       <!-- Dot (type) -->
-      <div class="z-10 mr-5 rounded-full bg-slate-200 p-3 ring-8 ring-white">
+      <div
+        class="z-10 mr-5 rounded-full bg-slate-200 p-3 ring-4 ring-bg-secondary dark:ring-bg-dark-secondary"
+      >
         {#if event.type === 'initial_connection'}
-          <Sprout class="h-6 w-6 text-slate-500" />
+          <Sprout class="h-5 w-5 text-slate-500" />
         {:else if event.type === 'credential_offer'}
-          <Download class="h-6 w-6 text-slate-500" />
+          <Download class="h-5 w-5 text-slate-500" />
         {:else if event.type === 'login'}
-          <KeyRound class="h-6 w-6 text-slate-500" />
+          <KeyRound class="h-5 w-5 text-slate-500" />
         {:else}
-          <HelpCircle class="h-6 w-6 text-slate-500" />
+          <HelpCircle class="h-5 w-5 text-slate-500" />
         {/if}
       </div>
 
       <!-- Line -->
       <!-- TODO: refactor! calculated top (line start): Navbar (56px) + Tabs (44px) -->
-      <div class="top-[calc(56px + 44px)] fixed left-10 h-full w-2 bg-slate-200" />
+      <div class="top-[calc(56px + 44px)] fixed left-[36px] h-full w-[4px] bg-slate-200" />
 
       <!-- Event -->
       <div class="w-full">
