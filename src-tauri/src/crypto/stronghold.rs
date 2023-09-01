@@ -87,7 +87,7 @@ impl StrongholdManager {
 
     pub fn get(&self, key: Uuid) -> anyhow::Result<Option<Vec<u8>>> {
         let key = key.to_string().as_bytes().to_vec();
-        let value = self.client.store().get(&key).unwrap();
+        let value = self.client.store().get(&key)?;
 
         Ok(value)
     }
@@ -95,8 +95,7 @@ impl StrongholdManager {
     pub fn insert(&self, key: Uuid, value: Vec<u8>) -> anyhow::Result<()> {
         self.client
             .store()
-            .insert(key.to_string().as_bytes().to_vec(), value, None)
-            .unwrap();
+            .insert(key.to_string().as_bytes().to_vec(), value, None)?;
 
         self.commit()
     }
@@ -107,18 +106,20 @@ impl StrongholdManager {
 
         let mut keys = self.client.store().keys()?;
         keys.sort();
-        let verifiable_credential_record: Vec<VerifiableCredentialRecord> = keys
-            .iter()
+        keys.iter()
             .map(|key| {
-                serde_json::from_str(std::str::from_utf8(&client.store().get(key).unwrap().unwrap()).unwrap()).unwrap()
+                client
+                    .store()
+                    .get(key)
+                    .map(|value| value.map(|value| serde_json::from_slice(&value)))
             })
-            .collect();
-
-        Ok(Some(verifiable_credential_record))
+            .collect::<Result<Option<serde_json::Result<_>>, _>>()?
+            .transpose()
+            .map_err(|e| anyhow::anyhow!(e))
     }
 
     pub fn remove(&self, key: Uuid) -> anyhow::Result<()> {
-        self.client.store().delete(key.to_string().as_bytes()).unwrap();
+        self.client.store().delete(key.to_string().as_bytes())?;
 
         self.commit()
     }
@@ -130,8 +131,7 @@ impl StrongholdManager {
             .execute_procedure(StrongholdProcedure::PublicKey(PublicKey {
                 ty: KeyType::Ed25519,
                 private_key: Location::counter(self.client_path.as_bytes(), 0u8),
-            }))
-            .unwrap();
+            }))?;
 
         let output: Vec<u8> = procedure_result.into();
         info!(r#"Public key is "{}" (base64)"#, base64::encode(&output));
