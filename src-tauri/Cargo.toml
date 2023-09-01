@@ -33,7 +33,8 @@ tauri-plugin-log = { version = "=2.0.0-alpha.0", features = ["colored"] }
 fern = "0.6.0"
 rust-argon2 = { version = "=1.0.0" }
 
-iota_stronghold = { version = "=1.0.5" }
+iota_stronghold = { version = "=2.0.0" }
+stronghold_engine = "=2.0.0"
 #iota_stronghold = { path = "/Users/daniel/dev/iotaledger/stronghold.rs/client" }
 #libsodium-sys = { git = "https://git@github.com/daniel-mader/sodiumoxide" }
 

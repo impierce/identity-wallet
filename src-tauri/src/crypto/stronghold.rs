@@ -7,15 +7,6 @@ use log::{debug, info};
 use oid4vc_core::authentication::sign::ExternalSign;
 use uuid::Uuid;
 
-pub fn hash_password(password: &str) -> anyhow::Result<Vec<u8>> {
-    let config = argon2::Config::default();
-
-    let password_hash = argon2::hash_raw(password.as_ref(), b"D4F88D86F2C60DF8AB3EC3821083EF89", &config)?;
-    debug!("password hashed successfully");
-
-    Ok(password_hash)
-}
-
 #[derive(Debug)]
 pub struct StrongholdManager {
     stronghold: Stronghold,
@@ -31,7 +22,8 @@ impl StrongholdManager {
         let client_path = STRONGHOLD.lock().unwrap().to_str().unwrap().to_owned();
 
         let snapshot_path = SnapshotPath::from_path(format!("{client_path}.snapshot"));
-        let key_provider = KeyProvider::try_from(hash_password(password)?).expect("failed to load key");
+        let key_provider =
+            KeyProvider::with_passphrase_hashed_blake2b(password.as_bytes().to_vec()).expect("failed to load key");
 
         let client: Client = stronghold.create_client(&client_path).expect("cannot create client");
         let output_location = Location::counter(client_path.clone(), 0u8);
@@ -62,7 +54,8 @@ impl StrongholdManager {
         let stronghold = Stronghold::default();
         let client_path = STRONGHOLD.lock().unwrap().to_str().unwrap().to_owned();
         let snapshot_path = SnapshotPath::from_path(format!("{client_path}.snapshot"));
-        let key_provider = KeyProvider::try_from(hash_password(password)?).expect("failed to load key");
+        let key_provider =
+            KeyProvider::with_passphrase_hashed_blake2b(password.as_bytes().to_vec()).expect("failed to load key");
 
         info!("Loading snapshot");
 
@@ -78,6 +71,9 @@ impl StrongholdManager {
     }
 
     pub fn commit(&self) -> anyhow::Result<()> {
+        // Set the work factor to 10 to speed up the commit.
+        engine::snapshot::try_set_encrypt_work_factor(10)?;
+
         self.stronghold
             .write_client(self.client_path.as_bytes())
             .expect("store client state into snapshot state failed");
