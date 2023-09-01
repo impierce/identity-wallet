@@ -4,7 +4,7 @@ import { clearMocks, mockIPC } from '@tauri-apps/api/mocks';
 import '@testing-library/jest-dom';
 import { fireEvent, render, screen } from '@testing-library/svelte';
 
-import Welcome from '$src/routes/welcome/+page@.svelte';
+import Welcome from '$src/routes/welcome/+page.svelte';
 
 beforeEach(() => {
   // init __TAURI_IPC__

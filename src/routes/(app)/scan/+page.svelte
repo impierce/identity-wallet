@@ -153,7 +153,6 @@
 
   onMount(async () => {
     document.documentElement.querySelector('body')!!.classList.add('transparent');
-    // scanning = true;
     permissionsGiven = await checkScanPrerequisites();
     if (permissionsGiven) {
       startScan();
@@ -226,32 +225,21 @@
       <p class="my-4 h-[1px] w-full bg-slate-200" />
     {/if}
     <div class="flex flex-col space-y-2">
-      <ButtonDeprecated
+      <Button variant="secondary" on:click={mockSiopRequest} label="Connection request (SIOPv2)" />
+      <Button variant="secondary" on:click={mockShareRequest} label="Share request (VP)" />
+      <Button
         variant="secondary"
-        class="hover:bg-neutral-300"
-        on:click={startScan}
-        disabled>Start new scan</ButtonDeprecated
-      >
-      <ButtonDeprecated variant="secondary" class="hover:bg-neutral-300" on:click={mockSiopRequest}
-        >Connection request (SIOPv2)</ButtonDeprecated
-      >
-      <ButtonDeprecated variant="secondary" class="hover:bg-neutral-300" on:click={mockShareRequest}
-        >Share request (VP)</ButtonDeprecated
-      >
-      <ButtonDeprecated
-        variant="secondary"
-        class="hover:bg-neutral-300"
         on:click={() => mockScanCredentialOffer(1)}
-        disabled>Mock Credential Offer (single)</ButtonDeprecated
-      >
-      <ButtonDeprecated
+        disabled
+        label="Mock Credential Offer (single)"
+      />
+      <Button
         variant="secondary"
-        class="hover:bg-neutral-300"
-        on:click={() => mockScanCredentialOffer(2)}>Mock Credential Offer (multi)</ButtonDeprecated
-      >
-      <ButtonDeprecated
+        on:click={() => mockScanCredentialOffer(2)}
+        label="Mock Credential Offer (multi)"
+      />
+      <Button
         variant="secondary"
-        class="hover:bg-neutral-300"
         on:click={() =>
           dispatch({
             type: '[QR Code] Scanned',
@@ -259,8 +247,10 @@
               form_urlencoded:
                 'openid-credential-offer://?credential_offer_uri=https://api.ngdil-demo.tanglelabs.io/api/offers/creds/u08LmjU8lAcTwx7pLMpy0'
             }
-          })}>Dominique (student)</ButtonDeprecated
-      >
+          })}
+        label="Dominique (student)"
+      />
+      <Button variant="primary" on:click={startScan} label="Start new scan" />
     </div>
   </div>
 
@@ -289,9 +279,8 @@
         </div>
       </div>
       <div class="fixed bottom-12 left-[calc(50%_-_42px)]">
-        <ButtonDeprecated
-          class="bg-red-100 font-semibold text-red-500 shadow"
-          on:click={() => goto('/me')}>Cancel</ButtonDeprecated
+        <Button class="bg-red-100 font-semibold text-red-500 shadow" on:click={() => goto('/me')}
+          >Cancel</Button
         >
       </div>
     </div>
