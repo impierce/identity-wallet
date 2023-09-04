@@ -279,8 +279,9 @@
         </div>
       </div>
       <div class="fixed bottom-12 left-[calc(50%_-_42px)]">
-        <Button class="bg-red-100 font-semibold text-red-500 shadow" on:click={() => goto('/me')}
-          >Cancel</Button
+        <ButtonDeprecated
+          class="bg-red-100 font-semibold text-red-500 shadow"
+          on:click={() => goto('/me')}>Cancel</ButtonDeprecated
         >
       </div>
     </div>
