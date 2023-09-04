@@ -1,5 +1,4 @@
 /target/
 .cargo
 
-/gen/android/key.properties
 /gen/android/upload-keystore.jks

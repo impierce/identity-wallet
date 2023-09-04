@@ -32,6 +32,7 @@ targets:
       - path: Sources
       - path: Assets.xcassets
       - path: Externals
+      - path: identity-wallet_iOS
       - path: assets
         buildPhase: resources
         type: folder
@@ -50,8 +51,10 @@ targets:
           - UIInterfaceOrientationPortraitUpsideDown
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
-        CFBundleShortVersionString: 0.1.0
-        CFBundleVersion: 0.1.0
+        CFBundleShortVersionString: 0.2.4
+        CFBundleVersion: 0.2.4
+    entitlements:
+      path: identity-wallet_iOS/identity-wallet_iOS.entitlements
     scheme:
       environmentVariables:
         RUST_BACKTRACE: full
