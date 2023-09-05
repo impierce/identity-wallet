@@ -1,4 +1,4 @@
 /target/
 .cargo
 
-/gen/android/upload-keystore.jks
+/gen/
