@@ -1,4 +1,4 @@
 /target/
 .cargo
 
-/gen/
+/gen
