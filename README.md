@@ -136,6 +136,13 @@ dependencies { ... }
 apply(from = "tauri.build.gradle.kts")
 ``` -->
 
+### Create icons
+
+```sh
+cd src-tauri
+cargo tauri icon
+```
+
 ### How this project was initialized
 
 ```sh
