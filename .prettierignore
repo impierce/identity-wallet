@@ -13,7 +13,7 @@ package-lock.json
 yarn.lock
 
 # source folders
-src-tauri/
+src-tauri/*
 # doesn't work (still ignored)
 !src-tauri/src/state/user_journeys/
 .github/

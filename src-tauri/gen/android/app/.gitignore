@@ -1,5 +1,0 @@
-/src/main/java/com/impierce/identity_wallet/generated
-/src/main/jniLibs/**/*.so
-/src/main/assets/tauri.conf.json
-/tauri.build.gradle.kts
-/proguard-tauri.pro

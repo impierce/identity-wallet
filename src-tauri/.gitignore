@@ -1,4 +1,6 @@
 /target/
 .cargo
 
-/gen
+gen/*
+!gen/apple/identity-wallet_iOS/Info.plist
+!gen/android/app/build.gradle.kts
