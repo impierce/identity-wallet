@@ -154,9 +154,10 @@
   onMount(async () => {
     document.documentElement.querySelector('body')!!.classList.add('transparent');
     permissionsGiven = await checkScanPrerequisites();
-    if (permissionsGiven) {
-      startScan();
-    }
+    // TODO: re-enable automatic start of scan
+    // if (permissionsGiven) {
+    //   startScan();
+    // }
   });
 </script>
 
@@ -278,7 +279,7 @@
           </div>
         </div>
       </div>
-      <div class="fixed bottom-12 left-[calc(50%_-_42px)]">
+      <div class="fixed bottom-[128px] left-[calc(50%_-_42px)]">
         <ButtonDeprecated
           class="bg-red-100 font-semibold text-red-500 shadow"
           on:click={() => goto('/me')}>Cancel</ButtonDeprecated
