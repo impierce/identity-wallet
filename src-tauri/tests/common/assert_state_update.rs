@@ -31,11 +31,12 @@ pub async fn assert_state_update(
 
         tauri::test::assert_ipc_response(
             &window,
-            tauri::InvokePayload {
+            tauri::window::InvokeRequest {
                 cmd: "handle_action".into(),
-                callback: tauri::api::ipc::CallbackFn(0),
-                error: tauri::api::ipc::CallbackFn(1),
-                inner: json!({ "action": action }),
+                callback: tauri::ipc::CallbackFn(0),
+                error: tauri::ipc::CallbackFn(1),
+                body: json!({ "action": action }).into(),
+                headers: Default::default(),
             },
             Ok(()),
         );
