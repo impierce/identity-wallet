@@ -51,19 +51,23 @@
   let all_offer_indices = credential_offer.credentials.map((_, i) => i);
 </script>
 
-<div class="content-height flex flex-col items-stretch bg-neutral-100">
+<div class="content-height flex flex-col items-stretch bg-bg-secondary dark:bg-bg-dark-secondary">
   <TopNavigation title={'Credential Offer'} on:back={() => history.back()} />
 
-  <div class="flex grow flex-col items-center justify-center space-y-6 p-6">
+  <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
     <PaddedIcon icon={DownloadSimple} />
-    <p class="text-2xl font-medium">{new URL(credential_offer.credential_issuer).hostname}</p>
+    <p class="text-2xl font-medium text-slate-800 dark:text-white">
+      {new URL(credential_offer.credential_issuer).hostname}
+    </p>
 
     <!-- Text -->
-    <div class="flex w-full items-center rounded-lg bg-white px-4 py-4">
+    <div
+      class="flex w-full items-center rounded-lg bg-bg-primary px-4 py-4 dark:bg-bg-dark-primary"
+    >
       <!-- <WarningCircle class="mr-2 h-6 w-6 text-amber-500" /> -->
-      <p class="text-sm font-medium text-slate-800">
+      <p class="text-sm font-medium text-slate-800 dark:text-slate-300">
         <span class="text-primary">{credential_offer.credential_issuer}</span>
-        offers you the following credentials
+        is offering you the following credentials
       </p>
     </div>
 
@@ -88,7 +92,10 @@
       {/each}
     </div> -->
 
-    <div class="w-full space-y-2 rounded-2xl p-3 ring-2 ring-inset ring-white">
+    <div
+      class="mt-3 w-full rounded-[20px] border border-slate-200 bg-bg-primary p-[10px] dark:bg-bg-dark-primary"
+    >
+      <!-- <div class="w-full space-y-2 rounded-2xl p-3 ring-2 ring-inset ring-white"> -->
       {#each credential_offer.credentials as credential, index}
         <CredentialOfferEntry
           {index}

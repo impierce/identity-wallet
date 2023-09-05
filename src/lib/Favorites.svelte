@@ -45,7 +45,7 @@
       {#each favorite_credentials as credential}
         <CredentialListEntry
           id={credential.id}
-          title={credential.metadata.display.name || credential.data.type.at(1)}
+          title={credential.metadata.display.name || credential.data.type.at(-1)}
           description={credential.data.issuer}
           color={credential.metadata.display.color || 'bg-indigo-100'}
         >

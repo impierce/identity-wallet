@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation';
   import { onDestroy, onMount } from 'svelte';
 
-  import { BottomNavBar, Button as ButtonDeprecated } from '@impierce/ui-components';
+  import { Button as ButtonDeprecated } from '@impierce/ui-components';
   import {
     Format,
     type Scanned,
@@ -92,7 +92,7 @@
       ...$state,
       current_user_prompt: {
         type: 'share-credentials',
-        options: ['c798fc11-e78e-432c-85f2-790be603a581']
+        options: [$state.credentials[0].id]
       }
     });
   };
@@ -300,8 +300,8 @@
 
   .fill-screen {
     height: calc(
-      100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom) - 56px - 136px
-    ); /* 56px: Bottom Nav Bar, 136px: Top section */
+      100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom) - 64px - 136px
+    ); /* 64px: Bottom Nav Bar, 136px: Top section */
     width: calc(100vw - var(--safe-area-inset-left) - var(--safe-area-inset-right));
   }
 

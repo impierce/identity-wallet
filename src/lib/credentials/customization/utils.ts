@@ -20,14 +20,18 @@ export const icons = {
   File: File
 };
 
+/**
+ * No dynamic class names, therefore explicitly defined background colors.
+ * See: https://tailwindcss.com/docs/content-configuration#dynamic-class-names
+ */
 export const colors: Array<string> = [
-  'bg-amber-100',
-  'bg-cyan-100',
-  'bg-emerald-100',
-  'bg-pink-100',
-  'bg-indigo-100',
-  'bg-red-100',
-  'bg-slate-300',
-  'bg-white',
-  'bg-lime-100'
+  'bg-[#D7E0CC]', // 0: green
+  'bg-[#E3D1B6]', // 1: orange
+  'bg-[#AFCBDD]', // 2: blue
+  'bg-[#ACB7E2]', // 3: purple
+  'bg-[#C6D3D8]', // 4: silver
+  'bg-[#DDDCF1]', // 5: lavender
+  'bg-[#D9CADD]', // 6: pink
+  'bg-[#C9D9D0]', // 7: green
+  'bg-white' // 8: white
 ];

@@ -89,6 +89,7 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
                     "id": 0,
                     "label": "Set up your profile",
                     "description": "Make your UniMe app your own by choosing a profile name and profile picture.",
+                    "icon": "UserCirclePlus",
                     "faqs": [
                         { "id": 0, "title": "Will this information be shared?", "content": "No. Your profile information will never leave your device." }
                     ],
@@ -97,13 +98,22 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
                 {
                     "id": 1,
                     "label": "Receive your first credential",
+                    "type": "hold-credential",
                     "description": "Receive your first credential from a trusted source.",
+                    "icon": "FileArrowDown",
                     "faqs": [
                         { "id": 0, "title": "What is a credential?", "content": "A credential is like a digital proof that verifies something about you, such as your age, education, or memberships." }
                     ],
                     "prerequisites": []
                 },
-                { "id": 2, "type": "login", "label": "Use a credential to sign in to a website", "faqs": [], "prerequisites": [] }
+                {
+                    "id": 2,
+                    "label": "Use a credential to sign in to a website",
+                    "type": "login",
+                    "icon": "Key",
+                    "faqs": [],
+                    "prerequisites": []
+                }
             ]
         }"#;
     // let journey_definition = std::fs::read_to_string("resources/ngdil.json")?;

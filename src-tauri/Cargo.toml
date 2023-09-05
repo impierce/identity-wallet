@@ -54,7 +54,7 @@ identity_credential = { version = "=0.7.0-alpha.7", default-features = false, fe
     "credential",
     "presentation",
 ] }
-tauri-plugin-barcode-scanner = { git = "https://github.com/lucasfernog/plugins-workspace", rev = "4024c70f30aebec855ff99ba5b935ec4063a7b5a" }
+tauri-plugin-barcode-scanner = { git = "https://github.com/lucasfernog/plugins-workspace", rev = "cb448cc2e1f8ff0e4b61bed6e91266f54a2f0ccd" }
 jsonwebtoken = "8.2"
 futures = "0.3"
 async-recursion = "1.0"

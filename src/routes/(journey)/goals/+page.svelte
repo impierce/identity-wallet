@@ -11,6 +11,7 @@
   import { dispatch } from '$lib/dispatcher';
   import GoalItem from '$lib/journey/goals/GoalItem.svelte';
   import LL from '$src/i18n/i18n-svelte';
+  import { icons } from '$src/lib/journey/goals/utils';
   import { state } from '$src/stores';
 
   import Trophy from '~icons/ph/trophy-fill';
@@ -22,8 +23,16 @@
   let goals: Goal[] =
     journeyDefinition?.goals.map((goal) => ({
       ...goal,
-      completed: false // TODO: should be determined by the backend
+      completed: true // TODO: should be determined by the backend
     })) ?? [];
+
+  goals.at(2).completed = false;
+
+  let completedPercentage = Math.round(
+    (goals.filter((goal) => goal.completed).length / goals.length) * 100
+  );
+
+  console.log(completedPercentage);
 </script>
 
 <!-- Navbar -->
@@ -47,18 +56,22 @@
     >
       <div class="h-6 w-6 bg-slate-200" />
     </button> -->
-    <button
+    <!-- <button
       slot="content"
       class="w-full rounded-lg bg-red-100 px-4 py-2 text-red-600"
       on:click={() => dispatch({ type: '[User Journey] Cancel' })}>Yes</button
-    >
-    <button
+    > -->
+    <!-- <button
       slot="close"
       let:close
       use:melt={close}
       class="mt-2 w-full rounded-lg border bg-white px-4 py-2 text-neutral-700"
       >No, let's continue</button
-    >
+    > -->
+    <div slot="content" class="w-full pb-[10px] pt-[20px]">
+      <Button label="Yes" on:click={() => dispatch({ type: '[User Journey] Cancel' })} />
+    </div>
+    <Button variant="secondary" slot="close" let:close trigger={close} label="No, let's continue" />
   </BottomDrawer>
 </TopNavigation>
 
@@ -66,9 +79,11 @@
 <div class="flex h-full flex-col bg-bg-secondary dark:bg-bg-dark-secondary">
   <div class="flex h-[54px] items-center bg-bg-primary px-[18px] py-[15px] dark:bg-bg-dark-primary">
     <span class="grow pr-[15px]">
-      <ProgressBar value={40} />
+      <ProgressBar value={completedPercentage} />
     </span>
-    <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-white">3/7</p>
+    <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-white">
+      {goals.filter((goal) => goal.completed).length}/{goals.length}
+    </p>
   </div>
 
   <div
@@ -78,34 +93,52 @@
     <div class="flex flex-col items-center">
       <!-- Header -->
       <PaddedIcon icon={Trophy} />
-      <p class="pt-8 text-2xl font-semibold dark:text-white">{journeyDefinition?.title}</p>
-      <p class="pt-4 text-center font-medium text-slate-500">
+      <p class="pt-8 text-[22px]/[30px] font-semibold text-slate-800 dark:text-white">
+        {journeyDefinition?.title}
+      </p>
+      <p class="w-3/4 pt-4 text-center text-[13px]/[24px] font-normal text-slate-500">
         {journeyDefinition?.description}
       </p>
 
       <!-- Goal items -->
-      <div class="flex w-full flex-col space-y-4 py-12">
+      <div class="flex w-full flex-col space-y-4 py-8">
         {#each goals as goal}
           <BottomDrawer titleText={goal.label} descriptionText={goal.description}>
             <svelte:fragment slot="trigger" let:trigger>
-              <GoalItem {trigger} label={goal.label} completed={goal.completed} />
+              <GoalItem {trigger} label={goal.label} completed={goal.completed} icon={goal.icon} />
+            </svelte:fragment>
+
+            <svelte:fragment slot="icon">
+              <div
+                class="mb-[15px] flex h-[75px] w-[75px] items-center justify-center rounded-3xl bg-slate-100"
+              >
+                <svelte:component
+                  this={icons[goal.icon] || icons['Trophy']}
+                  class="h-7 w-7 text-primary"
+                />
+              </div>
             </svelte:fragment>
 
             <svelte:fragment slot="content">
-              <!-- <button
+              <div class="w-full pb-[10px] pt-8">
+                <!-- <button
                 class="w-full rounded-lg bg-primary px-4 py-2 text-white"
                 on:click={() => goto(`/goals/${goal.id}/faqs`)}>Start</button
               > -->
-              <Button label="Start" on:click={() => goto(`/goals/${goal.id}/faqs`)} />
+                <Button label="Start" on:click={() => goto(`/goals/${goal.id}/faqs`)} />
+              </div>
             </svelte:fragment>
 
-            <button
+            <!-- <div class="mt-2"> -->
+            <Button variant="secondary" slot="close" let:close trigger={close} label="Close" />
+            <!-- </div> -->
+            <!-- <button
               slot="close"
               let:close
               use:melt={close}
               class="mt-2 w-full rounded-lg border bg-white px-4 py-2 text-neutral-700"
               >Close</button
-            >
+            > -->
           </BottomDrawer>
         {/each}
       </div>

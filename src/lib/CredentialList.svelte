@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { icons } from '$lib/credentials/customization/utils';
+  import { colors, icons } from '$lib/credentials/customization/utils';
   import LL from '$src/i18n/i18n-svelte';
   import { state } from '$src/stores';
 
@@ -55,7 +55,10 @@
 
   test_credentials = [];
 
-  console.log(credentials.map((c) => icons[c.metadata.display.icon]));
+  console.log(
+    'metadata.display.icon',
+    credentials.map((c) => icons[c.metadata.display.icon])
+  );
 
   // Does this really have to be reactive?
   // $: credentials = $state?.credentials ?? [];
@@ -100,9 +103,15 @@
     {#each credentials as credential}
       <CredentialListEntry
         id={credential.id}
-        title={credential.metadata.display.name || credential.data.type.at(1)}
+        title={credential.metadata.display.name || credential.data.type.at(-1)}
         description={new URL(credential.data.issuer).hostname}
-        color={credential.metadata.display.color || 'bg-indigo-100'}
+        color={credential.metadata.display.color ||
+          colors.at(
+            credential.id
+              .match(/[0-9]+/)
+              .at(0)
+              .at(0) % 8 // TODO: omits last value (white)
+          )}
       >
         <!-- Show logo if credential is not mutable (set through issuer's metadata) -->
         <div slot="logo" class="p-1">

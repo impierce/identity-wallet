@@ -2,7 +2,6 @@
   import { goto } from '$app/navigation';
 
   import { TopNavigation } from '@impierce/ui-components';
-  import { createCheckbox, melt } from '@melt-ui/svelte';
 
   import Button from '$src/lib/components/Button.svelte';
   import CredentialListEntry from '$src/lib/components/CredentialListEntry.svelte';
@@ -15,11 +14,6 @@
   import Check from '~icons/ph/check-bold';
   import RocketLaunch from '~icons/ph/rocket-launch';
   import SealCheck from '~icons/ph/seal-check-fill';
-
-  const {
-    elements: { root, input },
-    helpers: { isChecked }
-  } = createCheckbox({});
 
   let selected_credentials = $state.credentials?.filter(
     (c) => $state.current_user_prompt.options.indexOf(c.id) > -1
@@ -51,6 +45,7 @@
     </div>
 
     <!-- Credentials selection -->
+    <!-- <div class="w-full space-y-2 rounded-2xl bg-bg-primary p-3"></div> -->
     <div class="mt-3 w-full rounded-[20px] border border-slate-200 bg-bg-primary p-[10px]">
       <div class="flex w-full flex-col space-y-2">
         {#each selected_credentials as credential}
@@ -112,7 +107,6 @@
           type: '[Authenticate] Credentials selected',
           payload: { credential_uuids: selected_credentials.map((c) => c.id) }
         })}
-      disabled={!$isChecked}
     />
     <Button
       label="Cancel"

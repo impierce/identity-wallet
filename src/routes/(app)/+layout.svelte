@@ -38,7 +38,7 @@
 
 <style>
   .content-height {
-    /* bottom-navigation: 64px + 2 * 8px (y-padding) + 1px (border top) = 81px */
-    height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom) - 56px);
+    /* bottom-navigation: 64px */
+    height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom) - 64px);
   }
 </style>

@@ -25,7 +25,7 @@
         <div class="flex flex-col items-center justify-center space-y-4">
           <div class="flex w-full flex-col items-center justify-center space-y-4 py-6">
             <div class="h-[75px] w-[75px] rounded-3xl border bg-bg-primary p-2">
-              <img src={'/tauri.svg'} alt={connection.domain} />
+              <!-- <img src={'/tauri.svg'} alt={connection.domain} /> -->
             </div>
 
             <div class="text-center text-2xl font-semibold text-black dark:text-white">
@@ -42,7 +42,7 @@
         <div class="flex flex-col items-center justify-center space-y-4">
           <div class="flex w-full flex-col items-center justify-center space-y-4 py-6">
             <div class="h-[75px] w-[75px] rounded-3xl border bg-bg-primary p-2">
-              <img src={'/tauri.svg'} alt={connection.domain} />
+              <!-- <img src={'/tauri.svg'} alt={connection.domain} /> -->
             </div>
 
             <div class="text-center text-2xl font-semibold text-black dark:text-white">

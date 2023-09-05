@@ -35,7 +35,7 @@
 <div class="content-height flex flex-col items-stretch bg-bg-secondary dark:bg-bg-dark-secondary">
   <TopNavigation title={'Connection Request'} on:back={() => history.back()} />
 
-  <div class="flex grow flex-col items-center justify-center space-y-6 p-6">
+  <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
     <PaddedIcon icon={PlugsConnected} />
     <div class="text-center">
       <p class="text-2xl font-semibold">BestDex</p>

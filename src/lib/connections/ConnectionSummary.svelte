@@ -3,10 +3,12 @@
   import Pencil from '~icons/lucide/pencil';
 
   export let domain: string;
-  export let displayName: string | undefined = undefined;
+  export let url: string;
+  // export let displayName: string | undefined = undefined;
   export let lastConnected: string;
 
   let summary = {
+    URL: url,
     Domain: domain,
     // displayName,
     Verified: 'yes',
