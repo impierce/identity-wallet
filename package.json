@@ -17,6 +17,7 @@
     "typesafe-i18n": "typesafe-i18n --no-watch"
   },
   "dependencies": {
+    "@impierce/ui-components": "^0.1.1",
     "@lottiefiles/lottie-player": "^2.0.2",
     "@melt-ui/svelte": "^0.34.1",
     "@tauri-apps/api": "2.0.0-alpha.6",
