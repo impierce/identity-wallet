@@ -17,10 +17,10 @@
     <!-- TODO: comment out, if no functionality given -->
     <!-- Sort & Search -->
     <div class="absolute right-4 -mr-3">
-      <button class="rounded-full p-3 pr-2 hover:bg-white">
+      <button class="rounded-full p-3 pr-2">
         <SortAscending class="h-5 w-5" />
       </button>
-      <button class="rounded-full p-3 pl-2 hover:bg-white">
+      <button class="rounded-full p-3 pl-2">
         <MagnifyingGlass class="h-5 w-5" />
       </button>
     </div>

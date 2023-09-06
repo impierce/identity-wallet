@@ -55,10 +55,10 @@ https://docs.flutter.dev/deployment/android#signing-the-app
 
 ```sh
 # Generate new upload key
-keytool -genkey -v -keystore ./src-tauri/gen/android/upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+keytool -genkey -v -keystore src-tauri/gen/android/upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
 ```
 
-Create a file `./src-tauri/gen/android/key.properties` with the following content:
+Create a file `src-tauri/gen/android/key.properties` with the following content:
 
 ```sh
 storePassword=<password-from-previous-step>

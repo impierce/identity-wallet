@@ -257,7 +257,7 @@
 
   <!-- visible during scanning -->
   <div class="fill-screen" class:invisible={!scanning}>
-    <div class="mx-5 mb-6 pt-5">
+    <div class="bg-white p-5">
       <p class="text-3xl font-semibold text-slate-700">
         Scan a <span class="text-primary">QR Code</span>
       </p>
