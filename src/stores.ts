@@ -22,6 +22,7 @@ interface StateChangedEvent {
  * A read-only state that is updated by the Rust backend.
  * If the frontend intends to change the state, it must dispatch an action to the backend.
  */
+// TODO: make read-only
 export const state = writable<State>(undefined, (set) => {
   const unlisten = listen('state-changed', (event: StateChangedEvent) => {
     const state = event.payload;
