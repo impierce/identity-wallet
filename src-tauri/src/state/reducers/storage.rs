@@ -30,17 +30,13 @@ pub async fn unlock_storage(state: &AppState, action: Action) -> anyhow::Result<
     let provider_manager = ProviderManager::new([subject.clone()]).unwrap();
     let wallet: Wallet = Wallet::new(subject.clone());
 
-    stronghold_manager
+    info!("loading credentials from stronghold");
+    *state.credentials.lock().unwrap() = stronghold_manager
         .values()?
         .unwrap()
         .into_iter()
-        .for_each(|verifiable_credential_record| {
-            state
-                .credentials
-                .lock()
-                .unwrap()
-                .push(verifiable_credential_record.display_credential);
-        });
+        .map(|verifiable_credential_record| verifiable_credential_record.display_credential)
+        .collect();
 
     state_guard.stronghold_manager.replace(stronghold_manager);
 

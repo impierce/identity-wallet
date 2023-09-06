@@ -43,7 +43,6 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
         primary_did: subject.identifier().unwrap(),
     };
     state.active_profile.lock().unwrap().replace(profile);
-    state.credentials.lock().unwrap().clear();
 
     vec![PERSONAL_INFORMATION.clone(), DRIVERS_LICENSE_CREDENTIAL.clone()]
         .into_iter()
@@ -58,17 +57,12 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
         });
 
     info!("loading credentials from stronghold");
-    stronghold_manager
+    *state.credentials.lock().unwrap() = stronghold_manager
         .values()?
         .unwrap()
         .into_iter()
-        .for_each(|verifiable_credential_record| {
-            state
-                .credentials
-                .lock()
-                .unwrap()
-                .push(verifiable_credential_record.display_credential);
-        });
+        .map(|verifiable_credential_record| verifiable_credential_record.display_credential)
+        .collect();
 
     state
         .managers
