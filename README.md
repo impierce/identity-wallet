@@ -52,22 +52,9 @@ npm run test
 ### Signing Android App Bundle (AAB)
 
 https://docs.flutter.dev/deployment/android#signing-the-app
+https://next--tauri.netlify.app/next/guides/distribution/sign-android
 
-```sh
-# Generate new upload key
-keytool -genkey -v -keystore src-tauri/gen/android/upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
-```
-
-Create a file `src-tauri/gen/android/key.properties` with the following content:
-
-```sh
-storePassword=<password-from-previous-step>
-keyPassword=<password-from-previous-step>
-keyAlias=upload
-storeFile=./upload-keystore.jks
-```
-
-Edit `src-tauri/gen/android/app/build.gradle.kts`: follow https://next--tauri.netlify.app/next/guides/distribution/sign-android
+Edit `src-tauri/gen/android/app/build.gradle.kts`:
 
 <!-- ```kotlin
 import java.util.Properties

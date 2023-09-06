@@ -24,7 +24,7 @@
       "identifier": "com.impierce.dev",
       "targets": "all",
       "iOS": {
-        "developmentTeam": "com.impierce.dev"
+        "developmentTeam": "Impierce Technologies B.V."
       },
       "resources": [
         "resources/*"
