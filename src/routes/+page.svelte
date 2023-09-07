@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import UniMeLogo from '$src/lib/components/logo/UniMeLogo.svelte';
 </script>
 

@@ -22,13 +22,18 @@
       Your profile information will never leave your device.
     </p>
   </div>
-  <div class="m-8">
-    <SearchInput
-      delay={100}
-      placeholder="Enter a profile name"
-      on:value={(e) => ($onboarding_state.name = e.detail)}
-    />
-  </div>
+  <!-- <p class="pb-2 text-[14px]/[22px] font-medium text-slate-600">Profile name</p> -->
+  <input
+    class="w-full rounded-xl border border-[#C5C6CC] bg-white px-4 py-3 text-[13px]/[24px] font-normal"
+    placeholder="Enter a profile name"
+    bind:value={$onboarding_state.name}
+  />
+
+  <!-- <SearchInput
+    delay={100}
+    placeholder="First name"
+    on:value={(e) => ($onboarding_state.name = e.detail)}
+  /> -->
 </div>
 <div class="rounded-t-3xl bg-white p-6" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <Button

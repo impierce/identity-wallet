@@ -1,8 +1,10 @@
-<script>
-  import { TopNavigation } from '@impierce/ui-components';
-  import { state } from '$src/stores';
+<script lang="ts">
   import { page } from '$app/stores';
+
+  import { TopNavigation } from '@impierce/ui-components';
+
   import { dispatch } from '$lib/dispatcher';
+  import { state } from '$src/stores';
 </script>
 
 <div class="content-height flex flex-col items-stretch">

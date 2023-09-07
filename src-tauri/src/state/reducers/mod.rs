@@ -228,6 +228,17 @@ pub fn update_profile_settings(state: &AppState, action: Action) -> anyhow::Resu
         .theme
         .replace(theme);
 
+    let name = match payload["name"].as_str() {
+        Some(name) => name.to_string(),
+        None => {
+            info!("no name provided, using existing");
+            state.active_profile.lock().unwrap().clone().unwrap().name.clone()
+        }
+    };
+
+    state.active_profile.lock().unwrap().as_mut().unwrap().name = name;
+
+    *state.current_user_prompt.lock().unwrap() = None;
     Ok(())
 }
 

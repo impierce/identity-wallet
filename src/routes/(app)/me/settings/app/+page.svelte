@@ -1,0 +1,45 @@
+<script lang="ts">
+  import { goto } from '$app/navigation';
+
+  import { TopNavigation } from '@impierce/ui-components';
+
+  import SettingsEntry from '$src/lib/settings/SettingsEntry.svelte';
+  import { developer_mode } from '$src/stores';
+
+  import ChatCircleText from '~icons/ph/chat-circle-text-fill';
+  import Code from '~icons/ph/code-fill';
+  import Confetti from '~icons/ph/confetti-fill';
+  import Password from '~icons/ph/password-fill';
+  import Sun from '~icons/ph/sun-fill';
+  import Translate from '~icons/ph/translate-fill';
+</script>
+
+<TopNavigation on:back={() => history.back()} title="App Settings" />
+<div class="flex min-h-full flex-col bg-bg-secondary dark:bg-bg-dark-secondary">
+  <div class="flex flex-col space-y-[10px] px-4 py-5">
+    <SettingsEntry icon={Sun} title="Language" hasCaretRight={false} textRight="English" todo />
+    <SettingsEntry icon={Sun} title="Theme" on:click={() => goto('/me/settings/app/theme')} />
+    <SettingsEntry icon={Password} title="Password" todo />
+    <SettingsEntry
+      icon={Confetti}
+      title="Onboarding journey"
+      hasCaretRight={false}
+      textRight="Restart"
+      todo
+    />
+    <SettingsEntry
+      icon={ChatCircleText}
+      title="Hints and tips"
+      hasCaretRight={false}
+      textRight="Reset"
+      todo
+    />
+    <SettingsEntry
+      icon={Code}
+      title="Developer mode"
+      hasCaretRight={false}
+      textRight={$developer_mode ? 'On' : 'Off'}
+      on:click={() => developer_mode.set(!$developer_mode)}
+    />
+  </div>
+</div>

@@ -1,7 +1,8 @@
-<script>
-  import { Button } from '@impierce/ui-components';
-  import { scan, Format, cancel } from '@tauri-apps/plugin-barcode-scanner';
+<script lang="ts">
   import { onDestroy, onMount } from 'svelte';
+
+  import { Button } from '@impierce/ui-components';
+  import { Format, cancel, scan } from '@tauri-apps/plugin-barcode-scanner';
 
   export let onMessage;
 

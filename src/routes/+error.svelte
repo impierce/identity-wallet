@@ -1,5 +1,6 @@
-<script>
+<script lang="ts">
   import { page } from '$app/stores';
+
   import { Button } from '@impierce/ui-components';
 </script>
 

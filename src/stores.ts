@@ -54,3 +54,6 @@ interface OnboardingState {
   picture?: string;
   theme?: string;
 }
+
+// TODO: remove for version 1.0
+export const developer_mode = writable<boolean>(true);

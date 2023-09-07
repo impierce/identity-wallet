@@ -1,8 +1,9 @@
-<script>
-  import { dispatch } from '$src/lib/dispatcher';
-  import LL from '$src/i18n/i18n-svelte';
+<script lang="ts">
   import { BottomDrawer, TopNavigation } from '@impierce/ui-components';
   import { melt } from '@melt-ui/svelte';
+
+  import LL from '$src/i18n/i18n-svelte';
+  import { dispatch } from '$src/lib/dispatcher';
 </script>
 
 <TopNavigation on:back={() => history.back()} title="Customization">

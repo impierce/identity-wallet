@@ -1,13 +1,15 @@
-<script>
-  import { onboarding_state, state } from '$src/stores';
-  import { dispatch } from '$src/lib/dispatcher';
-  import LL from '$src/i18n/i18n-svelte';
-  import { LanguageSelect } from '@impierce/ui-components';
-  import Button from '$src/lib/components/Button.svelte';
+<script lang="ts">
   import { goto } from '$app/navigation';
   import { fade, fly } from 'svelte/transition';
-  import UniMeText from '$src/lib/components/logo/UniMeText.svelte';
+
+  import { LanguageSelect } from '@impierce/ui-components';
+
+  import LL from '$src/i18n/i18n-svelte';
+  import Button from '$src/lib/components/Button.svelte';
   import MeLarge from '$src/lib/components/logo/MeLarge.svelte';
+  import UniMeText from '$src/lib/components/logo/UniMeText.svelte';
+  import { dispatch } from '$src/lib/dispatcher';
+  import { onboarding_state, state } from '$src/stores';
 </script>
 
 <div
@@ -41,9 +43,7 @@
     <!-- <div class="flex grow flex-col justify-center" in:fade out:fly={{ x: -300, duration: 300 }}> -->
     <div class="px-4">
       <div class="pb-[50px]">
-        <p class=" pb-[10px] text-[36px]/[44px] font-bold text-secondary dark:text-white">
-          Welcome to
-        </p>
+        <p class=" pb-[10px] text-[36px]/[44px] font-bold text-white dark:text-white">Welcome to</p>
         <UniMeText />
       </div>
 
