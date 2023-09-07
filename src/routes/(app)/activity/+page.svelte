@@ -29,11 +29,7 @@
     <MeltUiActivityTabs>
       <div slot="connections" class="h-full pt-5">
         <!-- Search & Sort -->
-        <!-- <div class="flex pb-4">
         <div class="grow">
-          <SearchInput placeholder="Search connections" />
-        </div>
-        <button class="ml-2 rounded-full p-2 hover:bg-slate-100"
           ><ArrowDownAZ class="text-slate-500" /></button
         >
       </div> -->
