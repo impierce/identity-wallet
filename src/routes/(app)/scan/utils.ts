@@ -1,16 +1,16 @@
-import { goto } from '$app/navigation';
-
-import { checkPermissions, openAppSettings } from '@tauri-apps/plugin-barcode-scanner';
+import { type PermissionState, checkPermissions } from '@tauri-apps/plugin-barcode-scanner';
 import { info, warn } from '@tauri-apps/plugin-log';
-
-import { dispatch } from '$lib/dispatcher';
 
 export const checkScanPrerequisites = async (): Promise<boolean> => {
   return await checkPermissions()
-    .then((res) => {
+    .then((permission: PermissionState) => {
       info(`app has permissions to access the camera: ${res}`);
-      // TODO: ask user to open settings (https://github.com/impierce/identity-wallet/issues/23)
-      if (res === 'granted' || res === 'default') {
+      if (permission === 'prompt') {
+        // TODO: ask user to open settings (https://github.com/impierce/identity-wallet/issues/23)
+        warn('TODO: ask the user');
+        return false;
+      }
+      if (permission === 'granted') {
         return true;
       } else {
         warn('app does not have permissions to access the camera');

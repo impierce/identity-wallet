@@ -7,7 +7,9 @@
     Format,
     type Scanned,
     cancel,
+    checkPermissions,
     openAppSettings,
+    requestPermissions,
     scan
   } from '@tauri-apps/plugin-barcode-scanner';
   import { debug, info } from '@tauri-apps/plugin-log';
@@ -62,8 +64,32 @@
       })
       .catch((error) => {
         scanning = false;
-        onMessage(error);
+        // TODO: display error
+        console.warn(error);
       });
+  }
+
+  // from example in plugin-barcode-scanner repo
+  async function startScan2() {
+    let permission = await checkPermissions();
+    if (permission === 'prompt') {
+      permission = await requestPermissions();
+    }
+    if (permission === 'granted') {
+      scanning = true;
+      scan({ windowed: true, formats: [Format.QRCode] })
+        .then((res) => {
+          scanning = false;
+          onMessage(res);
+        })
+        .catch((error) => {
+          scanning = false;
+          onMessage(error);
+        });
+    } else {
+      console.warn('Permission denied');
+      // onMessage('Permission denied');
+    }
   }
 
   const mockScanSiopRequest = () => {
@@ -144,11 +170,15 @@
     }
   };
 
+  async function cancelScan() {
+    await cancel();
+    scanning = false;
+  }
+
   // lifecycle functions
   onDestroy(async () => {
     document.documentElement.querySelector('body')!!.classList.remove('transparent');
-    scanning = false;
-    await cancel();
+    await cancelScan();
   });
 
   onMount(async () => {
@@ -280,9 +310,8 @@
         </div>
       </div>
       <div class="fixed bottom-[128px] left-[calc(50%_-_42px)]">
-        <ButtonDeprecated
-          class="bg-red-100 font-semibold text-red-500 shadow"
-          on:click={() => goto('/me')}>Cancel</ButtonDeprecated
+        <ButtonDeprecated class="bg-red-100 font-semibold text-red-500 shadow" on:click={cancelScan}
+          >Cancel</ButtonDeprecated
         >
       </div>
     </div>
