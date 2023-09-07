@@ -24,7 +24,7 @@
   </div>
   <!-- <p class="pb-2 text-[14px]/[22px] font-medium text-slate-600">Profile name</p> -->
   <input
-    class="w-full rounded-xl border border-[#C5C6CC] bg-white px-4 py-3 text-[13px]/[24px] font-normal"
+    class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] font-normal"
     placeholder="Enter a profile name"
     bind:value={$onboarding_state.name}
   />
