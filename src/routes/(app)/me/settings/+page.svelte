@@ -42,11 +42,6 @@
     <p class="text-[14px]/[22px] font-medium text-slate-500">{$LL.SUPPORT()}</p>
     <SettingsEntry icon={Info} title="About UniMe" todo />
     <SettingsEntry icon={Envelope} title="Send feedback" hasCaretRight={false} todo />
-  </div>
-
-  <div class="flex grow flex-col justify-between p-6">
-    <!-- Footer -->
-    <div class="flex flex-col items-center pt-4 text-sm font-medium text-slate-400">
       <div class="pb-4" />
 
       <div>0.2.7</div>
