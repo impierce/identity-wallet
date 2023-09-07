@@ -43,7 +43,7 @@
     <!-- <div class="flex grow flex-col justify-center" in:fade out:fly={{ x: -300, duration: 300 }}> -->
     <div class="px-4">
       <div class="pb-[50px]">
-        <p class=" pb-[10px] text-[36px]/[44px] font-bold text-white dark:text-white">Welcome to</p>
+        <p class=" pb-[10px] text-[36px]/[44px] font-bold text-blue dark:text-white">Welcome to</p>
         <UniMeText />
       </div>
 

@@ -16,7 +16,7 @@
       lastConnected: 'n/a'
     },
     title: 'Initial connection',
-    credentials: [$state.credentials.at(0)]
+    credentials: []
   };
 </script>
 
