@@ -14,14 +14,10 @@ name = "identity_wallet"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
-tauri-build = { version = "=2.0.0-alpha.6", features = [] }
+tauri-build = { version = "=2.0.0-alpha.8", features = [] }
 
 [dependencies]
-tauri = { version = "=2.0.0-alpha.10", features = ["rustls-tls"] }
-
-tauri-codegen = { version = "=2.0.0-alpha.6" }
-tauri-macros = { version = "=2.0.0-alpha.6" }
-tauri-utils = { version = "=2.0.0-alpha.6" }
+tauri = { version = "=2.0.0-alpha.12", features = ["rustls-tls"] }
 
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
@@ -31,8 +27,8 @@ ts-rs = "7.0"
 anyhow = "1.0"
 did-key = "0.2.1"
 lazy_static = "1.4.0"
-tauri-plugin-clipboard-manager = "=2.0.0-alpha.0"
-tauri-plugin-log = { version = "=2.0.0-alpha.0", features = ["colored"] }
+tauri-plugin-clipboard-manager = "=2.0.0-alpha.2"
+tauri-plugin-log = { version = "=2.0.0-alpha.2", features = ["colored"] }
 fern = "0.6.0"
 rust-argon2 = { version = "=1.0.0" }
 
@@ -52,14 +48,14 @@ identity_credential = { version = "=0.7.0-alpha.7", default-features = false, fe
     "credential",
     "presentation",
 ] }
-tauri-plugin-barcode-scanner = { git = "https://github.com/lucasfernog/plugins-workspace", rev = "4024c70f30aebec855ff99ba5b935ec4063a7b5a" }
+tauri-plugin-barcode-scanner = { git = "https://github.com/lucasfernog/plugins-workspace", rev = "c684a318c9b3e0a0b0fea06ce23af1510a248a45" }
 jsonwebtoken = "8.2"
 futures = "0.3"
 async-recursion = "1.0"
 uuid = { version = "1.4", features = ["v4", "fast-rng"] }
 
 [dev-dependencies]
-tauri = { version = "=2.0.0-alpha.10", features = ["rustls-tls", "test"] }
+tauri = { version = "=2.0.0-alpha.12", features = ["rustls-tls", "test"] }
 tempfile = "3.5.0"
 serial_test = "2.0"
 reqwest = { version = "0.11", default-features = false, features = [
