@@ -14,9 +14,7 @@
 
 <button
   class="flex w-full items-center justify-between rounded-xl px-4 py-4
-  {completed
-    ? 'border border-slate-200 border-opacity-100 opacity-50'
-    : 'bg-bg-primary dark:bg-bg-dark-primary'}"
+  {completed ? 'border border-slate-200 border-opacity-100 opacity-50' : 'bg-white dark:bg-dark'}"
   use:melt={trigger}
 >
   <div class="flex items-center">

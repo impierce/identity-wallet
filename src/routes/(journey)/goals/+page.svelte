@@ -76,8 +76,8 @@
 </TopNavigation>
 
 <!-- Content -->
-<div class="flex h-full flex-col bg-bg-secondary dark:bg-bg-dark-secondary">
-  <div class="flex h-[54px] items-center bg-bg-primary px-[18px] py-[15px] dark:bg-bg-dark-primary">
+<div class="flex h-full flex-col bg-silver dark:bg-navy">
+  <div class="flex h-[54px] items-center bg-white px-[18px] py-[15px] dark:bg-dark">
     <span class="grow pr-[15px]">
       <ProgressBar value={completedPercentage} />
     </span>

@@ -14,7 +14,7 @@
 </script>
 
 <button
-  class="flex items-center space-x-4 rounded-xl bg-bg-primary p-4 dark:bg-bg-dark-primary {todo
+  class="flex items-center space-x-4 rounded-xl bg-white p-4 dark:bg-dark {todo
     ? 'opacity-30'
     : ''}"
   on:click={() => dispatch('click')}
@@ -24,7 +24,7 @@
     {title}
   </p>
   {#if hasCaretRight}
-    <svelte:component this={CaretRight} class="h-4 w-4 text-[#8F9098]" />
+    <svelte:component this={CaretRight} class="h-4 w-4 text-slate-500" />
   {:else if textRight}
     <p class="text-[13px]/[24px] font-medium text-primary">{textRight}</p>
   {/if}

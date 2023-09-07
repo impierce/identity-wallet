@@ -11,7 +11,7 @@
 </script>
 
 <TopNavigation on:back={() => history.back()} title="Select Theme" />
-<div class="h-full bg-bg-secondary p-4 dark:bg-bg-dark-secondary">
+<div class="h-full bg-silver p-4 dark:bg-navy">
   <ThemeSelect
     defaultValue={currentValue}
     on:change={(e) =>

@@ -26,9 +26,7 @@
   {#each events as event}
     <div class="flex items-start">
       <!-- Dot (type) -->
-      <div
-        class="z-10 mr-5 rounded-full bg-slate-200 p-3 ring-4 ring-bg-secondary dark:ring-bg-dark-secondary"
-      >
+      <div class="z-10 mr-5 rounded-full bg-slate-200 p-3 ring-4 ring-silver dark:ring-navy">
         {#if event.type === 'initial_connection'}
           <Sprout class="h-5 w-5 text-slate-500" />
         {:else if event.type === 'credential_offer'}

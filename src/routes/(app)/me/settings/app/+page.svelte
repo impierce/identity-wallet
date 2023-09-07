@@ -15,7 +15,7 @@
 </script>
 
 <TopNavigation on:back={() => history.back()} title="App Settings" />
-<div class="flex min-h-full flex-col bg-bg-secondary dark:bg-bg-dark-secondary">
+<div class="flex min-h-full flex-col bg-silver dark:bg-navy">
   <div class="flex flex-col space-y-[10px] px-4 py-5">
     <SettingsEntry icon={Sun} title="Language" hasCaretRight={false} textRight="English" todo />
     <SettingsEntry icon={Sun} title="Theme" on:click={() => goto('/me/settings/app/theme')} />

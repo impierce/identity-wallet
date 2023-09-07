@@ -51,7 +51,7 @@
   let all_offer_indices = credential_offer.credentials.map((_, i) => i);
 </script>
 
-<div class="content-height flex flex-col items-stretch bg-bg-secondary dark:bg-bg-dark-secondary">
+<div class="content-height flex flex-col items-stretch bg-silver dark:bg-navy">
   <TopNavigation title={'Credential Offer'} on:back={() => history.back()} />
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
@@ -61,9 +61,7 @@
     </p>
 
     <!-- Text -->
-    <div
-      class="flex w-full items-center rounded-lg bg-bg-primary px-4 py-4 dark:bg-bg-dark-primary"
-    >
+    <div class="flex w-full items-center rounded-lg bg-white px-4 py-4 dark:bg-dark">
       <!-- <WarningCircle class="mr-2 h-6 w-6 text-amber-500" /> -->
       <p class="text-sm font-medium text-slate-800 dark:text-slate-300">
         <span class="text-primary">{credential_offer.credential_issuer}</span>
@@ -79,7 +77,7 @@
           <button
             use:melt={checkboxes.at(i).$root}
             class="flex h-6 w-6 appearance-none items-center justify-center
-              rounded-md border-[1.5px] border-[#C5C6CC] p-[6px] text-white
+              rounded-md border-[1.5px] border-slate-300 p-[6px] text-white
               {checkboxes.at(i).isChecked ? 'border-none bg-primary' : 'bg-white'}"
             id="checkbox"
           >
@@ -92,9 +90,7 @@
       {/each}
     </div> -->
 
-    <div
-      class="mt-3 w-full rounded-[20px] border border-slate-200 bg-bg-primary p-[10px] dark:bg-bg-dark-primary"
-    >
+    <div class="mt-3 w-full rounded-[20px] border border-slate-200 bg-white p-[10px] dark:bg-dark">
       <!-- <div class="w-full space-y-2 rounded-2xl p-3 ring-2 ring-inset ring-white"> -->
       {#each credential_offer.credentials as credential, index}
         <CredentialOfferEntry
@@ -120,7 +116,7 @@
           <button
             use:melt={root}
             class="flex h-6 w-6 appearance-none items-center justify-center
-              rounded-md border-[1.5px] border-[#C5C6CC] p-[6px] text-white
+              rounded-md border-[1.5px] border-slate-300 p-[6px] text-white
               {isChecked ? 'border-none bg-primary' : 'bg-white'}"
             id="checkbox"
           >

@@ -9,9 +9,9 @@
   import SortAscending from '~icons/ph/sort-ascending-bold';
 </script>
 
-<div class="flex flex-col bg-bg-secondary dark:bg-bg-dark-secondary">
+<div class="flex flex-col bg-silver dark:bg-navy">
   <div
-    class="relative flex h-[50px] w-full items-center justify-center bg-bg-secondary text-[13px]/[24px] font-medium text-neutral-900 dark:bg-bg-dark-primary dark:text-white"
+    class="relative flex h-[50px] w-full items-center justify-center bg-silver text-[13px]/[24px] font-medium text-neutral-900 dark:bg-navy dark:text-white"
   >
     <p>Connected</p>
     <!-- TODO: comment out, if no functionality given -->
@@ -27,7 +27,7 @@
   </div>
   <div class="grow px-4 py-5">
     <MeltUiActivityTabs>
-      <div slot="connections" class="h-full bg-bg-secondary pt-5 dark:bg-bg-dark-secondary">
+      <div slot="connections" class="h-full bg-silver pt-5 dark:bg-navy">
         <!-- Search & Sort -->
         <!-- <div class="flex pb-4">
         <div class="grow">

@@ -104,12 +104,12 @@
           <div
             use:melt={$content}
             transition:fade={{ duration: 200 }}
-            class="z-10 w-1/2 rounded-2xl bg-[#2F3036] p-[20px] text-[#D4D6DD] shadow-md"
+            class="z-10 w-1/2 rounded-2xl bg-dark p-[20px] shadow-md"
           >
             <div use:melt={$arrow} />
             <div>
               <p class="text-[12px] font-semibold text-white">Add your profile image</p>
-              <p class="pt-2 text-[11px]/[14px] font-normal">
+              <p class="pt-2 text-[11px]/[14px] font-normal text-grey">
                 Customize your UniMe with your own picture or emoji.
               </p>
             </div>

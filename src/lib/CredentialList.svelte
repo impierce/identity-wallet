@@ -24,7 +24,7 @@
     {
       title: 'Address of residence',
       description: 'State of Pandora',
-      color: 'bg-[#ffe4e6]',
+      color: 'bg-yellow-100',
       icon: House
     },
     {

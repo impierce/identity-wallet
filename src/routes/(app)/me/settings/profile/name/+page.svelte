@@ -11,9 +11,9 @@
 </script>
 
 <TopNavigation title="Change profile name" on:back={() => history.back()} />
-<div class="grow bg-bg-secondary p-4">
+<div class="grow bg-silver p-4 dark:bg-navy">
   <input
-    class="w-full rounded-xl border border-[#C5C6CC] bg-white px-4 py-3 text-[13px]/[24px] font-normal"
+    class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] font-normal"
     placeholder="Enter a profile name"
     bind:value={name}
   />

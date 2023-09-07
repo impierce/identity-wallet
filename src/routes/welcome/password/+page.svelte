@@ -68,7 +68,7 @@
   <div class="relative">
     <input
       type={showPassword ? 'text' : 'password'}
-      class="h-12 w-full rounded-xl border border-[#C5C6CC] px-4 py-3 text-[13px]/[24px] text-[#8F9098]"
+      class="h-12 w-full rounded-xl border border-slate-300 px-4 py-3 text-[13px]/[24px] text-slate-500"
       placeholder="Enter a password"
       value={initialPasswordValue}
       on:input={(e) => {

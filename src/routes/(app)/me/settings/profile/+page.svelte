@@ -14,7 +14,7 @@
 </script>
 
 <TopNavigation on:back={() => history.back()} title="My Profile" />
-<div class="flex min-h-full flex-col bg-bg-secondary dark:bg-bg-dark-secondary">
+<div class="flex min-h-full flex-col bg-silver dark:bg-navy">
   <div class="flex flex-col space-y-[10px] px-4 py-5">
     <SettingsEntry
       icon={Keyboard}
@@ -33,7 +33,7 @@
       <button
         slot="trigger"
         let:trigger
-        class="flex items-center space-x-4 rounded-xl border border-rose-400 bg-bg-primary p-4 dark:bg-bg-dark-primary"
+        class="flex items-center space-x-4 rounded-xl border border-rose-400 bg-white p-4 dark:bg-dark"
         use:melt={trigger}
         on:click={() => {}}
       >

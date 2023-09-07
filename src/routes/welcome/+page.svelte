@@ -13,7 +13,7 @@
 </script>
 
 <div
-  class="content-height relative flex flex-col bg-bg-secondary dark:bg-bg-dark-secondary"
+  class="content-height relative flex flex-col bg-silver dark:bg-navy"
   in:fade={{ delay: 200 }}
   out:fade={{ duration: 200 }}
 >
@@ -47,7 +47,7 @@
         <UniMeText />
       </div>
 
-      <p class="text-[14px]/[22px] font-medium text-[#323B40] dark:text-white">
+      <p class="text-[14px]/[22px] font-medium text-ex-grey-2 dark:text-white">
         UniMe connects your digital world, safely and securely.
         <br /><br />
         Create a brand new identity profile or recover an existing one to get started.

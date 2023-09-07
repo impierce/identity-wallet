@@ -9,11 +9,11 @@
     console.log('Injecting password automatically ...');
     setTimeout(() => {
       dispatch({ type: '[Storage] Unlock', payload: { password: 'sup3rSecr3t' } });
-    }, 0);
+    }, 1000);
   });
 </script>
 
-<div class="content-height flex items-center justify-center bg-secondary">
+<div class="content-height flex items-center justify-center bg-silver dark:bg-navy">
   <!-- Placeholder -->
   <!-- <div class="aspect-square w-1/4 rounded-3xl border border-slate-200 bg-slate-100" /> -->
   <div class="flex flex-col items-center justify-center">

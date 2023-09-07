@@ -5,9 +5,7 @@
   import CredentialListEntry from '../components/CredentialListEntry.svelte';
 </script>
 
-<div
-  class="flex w-full flex-col rounded-2xl border border-slate-200 bg-bg-primary p-1 dark:bg-bg-dark-primary"
->
+<div class="flex w-full flex-col rounded-2xl border border-slate-200 bg-white p-1 dark:bg-dark">
   <CredentialListEntry
     title="Email address"
     description="ferris.rustacean@example.org"

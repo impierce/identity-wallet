@@ -76,7 +76,7 @@
 
 {#if $open}
   <div
-    class="z-10 flex max-h-[300px] flex-col items-end rounded-2xl bg-bg-primary p-3 shadow-md outline-none dark:bg-bg-dark-primary"
+    class="z-10 flex max-h-[300px] flex-col items-end rounded-2xl bg-white p-3 shadow-md outline-none dark:bg-dark"
     use:melt={$menu}
     transition:fly={{ duration: 150, y: -10 }}
   >
@@ -123,14 +123,14 @@
     <button
       use:melt={$item}
       use:melt={$triggerNameDialog}
-      class="rounded-xl px-3 py-2 font-medium text-slate-800 outline-none active:bg-bg-secondary dark:text-white dark:active:bg-bg-dark-secondary"
+      class="rounded-xl px-3 py-2 font-medium text-slate-800 outline-none active:bg-silver dark:text-white dark:active:bg-navy"
       >Change name</button
     >
 
     <button
       use:melt={$item}
       use:melt={$triggerAppearanceDialog}
-      class="rounded-xl px-3 py-2 font-medium text-slate-800 outline-none active:bg-bg-secondary dark:text-white dark:active:bg-bg-dark-secondary"
+      class="rounded-xl px-3 py-2 font-medium text-slate-800 outline-none active:bg-silver dark:text-white dark:active:bg-navy"
       >Customize appearance</button
     >
     <!-- {/if} -->
@@ -151,12 +151,12 @@
       use:melt={$contentNameDialog}
       class="fixed left-[50%] top-[50%] z-50 flex max-h-[85vh]
       w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] flex-col
-      space-y-4 rounded-xl bg-white p-6 shadow-lg"
+      space-y-4 rounded-xl bg-white p-6 shadow-lg dark:bg-dark"
     >
       <!-- Content -->
       <input
         type="text"
-        class="w-full rounded-lg border bg-white px-4 py-2 text-slate-800"
+        class="w-full rounded-lg border bg-white px-4 py-2 text-slate-800 dark:bg-dark dark:text-white"
         placeholder="Enter a new name"
         bind:value={displayName}
       />
@@ -190,7 +190,7 @@
       use:melt={$contentAppearanceDialog}
       class="fixed left-[50%] top-[50%] z-50 flex max-h-[85vh]
       w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] flex-col
-      space-y-4 rounded-xl bg-white p-6 shadow-lg"
+      space-y-4 rounded-xl bg-white p-6 shadow-lg dark:bg-dark"
     >
       <!-- Content -->
       <!-- <input
@@ -225,7 +225,7 @@
               class="h-9 w-9 rounded-md border border-slate-300 p-2"
               on:click={() => (currentAppearance.icon = icon.at(0))}
             >
-              <svelte:component this={icon.at(1)} class="h-5 w-5" />
+              <svelte:component this={icon.at(1)} class="h-5 w-5 text-slate-800 dark:text-white" />
             </button>
           {/each}
         </div>
