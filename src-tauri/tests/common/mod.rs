@@ -11,7 +11,7 @@ use std::sync::Arc;
 
 pub mod assert_state_update;
 
-pub const TEST_PASSWORD: &str = "my-password";
+pub const TEST_PASSWORD: &str = "sup3rSecr3t";
 
 pub fn test_managers(
     verifiable_credential_records: Vec<VerifiableCredentialRecord>,

@@ -1,1 +1,13 @@
-<pre>/routes/+page.svelte</pre>
+<script>
+  import UniMeLogo from '$src/lib/components/logo/UniMeLogo.svelte';
+</script>
+
+<div class="content-height flex items-center justify-center bg-secondary">
+  <UniMeLogo />
+</div>
+
+<style>
+  .content-height {
+    height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom));
+  }
+</style>

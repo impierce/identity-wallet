@@ -2,12 +2,26 @@ import type { Translation } from '../i18n-types';
 
 const de = {
   HI: 'Hallo {name}! Bitte hinterlasse einen Stern, wenn dir das Projekt gefällt: https://github.com/ivanhofer/typesafe-i18n',
-  WELCOME: 'Willkommen',
+  WELCOME: 'Willkommen bei deinem UniMe',
   PROMPT_NAME: 'Bitte gib deinen Namen ein',
   CREATE_IDENTITY: 'Neue Identität anlegen',
-  CREATE_IDENTITY_SUCCESS_TITLE: 'Du hast eine neue digitale Identität angelegt!',
-  CREATE_IDENTITY_SUCCESS_BODY:
-    'Du kannst nun weitere Informationen über dich hinzufügen oder einen Credential scannen.',
+  EMPTY_CREDENTIALS_LIST_TITLE: 'Hier ist es noch etwas leer',
+  EMPTY_CREDENTIALS_LIST_SUBTITLE:
+    'Warum fügst du nicht ein paar Credentials hinzu, um mit deiner neuen digitalen Identität loszulegen?',
+  GETTING_STARTED: {
+    TITLE: 'Sollen wir starten?',
+    SUBTITLE:
+      'Mache deine ersten Schritte, um ein paar Credentials zu deiner digitalen Identität hinzuzufügen.',
+    DIALOG_0_TITLE: 'Neue Ziele abschließen',
+    DIALOG_0_TEXT:
+      'Starte deine Mission hier! Ziele führen dich durch wichtige Funktionen und Möglichkeiten der UniMe App.',
+    DIALOG_1_TITLE: 'Erkunden macht Spaß',
+    DIALOG_1_TEXT:
+      'Wenn du Ziele abschließt, erhältst du ein tolles neues Abzeichen und steigerst deine ersten Schritte.',
+    SKIP_TITLE: 'Onboarding überspringen',
+    SKIP_TEXT:
+      'Bist du sicher? Du kannst das Onboarding in den App-Einstellungen wieder aktivieren.'
+  },
   APP_SETTINGS: 'App-Einstellungen',
   YOUR_DIDS: 'Deine DIDs',
   RESET_APP: 'App zurücksetzen',
@@ -18,7 +32,12 @@ const de = {
   PROFILE_NAME: 'Name',
   PASSWORD: 'Passwort',
   CHANGE_LATER: 'Du kannst den Namen später ändern.',
-  STRONG_PASSWORD: 'Bitte wähle ein starkes Passwort.'
+  STRONG_PASSWORD: 'Bitte wähle ein starkes Passwort.',
+  FAVORITES: 'Favoriten',
+  MY_DATA: 'Meine Daten',
+  ADD: 'Hinzufügen',
+  CONTINUE: 'Weiter',
+  SKIP: 'Überspringen'
 } satisfies Translation;
 
 export default de;

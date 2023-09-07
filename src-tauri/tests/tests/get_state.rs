@@ -29,7 +29,9 @@ async fn test_get_state_create_new() {
             Action {
                 r#type: ActionType::CreateNew,
                 payload: Some(json!({
-                    "display_name": "Ferris Crabman",
+                    "name": "Ferris Crabman",
+                    "picture": "&#129408",
+                    "theme": "system",
                     "password": TEST_PASSWORD
                 })),
             },
@@ -46,7 +48,9 @@ async fn test_get_state_create_new() {
             // The profile was created, so the user is redirected to the profile page.
             Some(TransferState {
                 active_profile: Some(Profile {
-                    display_name: "Ferris Crabman".to_string(),
+                    name: "Ferris Crabman".to_string(),
+                    picture: Some("&#129408".to_string()),
+                    theme: Some("system".to_string()),
                     primary_did: "did:example:placeholder".to_string(),
                 }),
                 current_user_prompt: Some(CurrentUserPrompt::Redirect(Redirect {
@@ -71,7 +75,9 @@ async fn test_get_state_unlock_storage() {
         AppState {
             managers: test_managers(vec![]),
             active_profile: Mutex::new(Some(Profile {
-                display_name: "Ferris Crabman".to_string(),
+                name: "Ferris Crabman".to_string(),
+                picture: Some("&#129408".to_string()),
+                theme: Some("system".to_string()),
                 primary_did: "did:example:placeholder".to_string(),
             })),
             ..AppState::default()
@@ -92,7 +98,9 @@ async fn test_get_state_unlock_storage() {
             // The storage is locked, so the user is prompted to unlock it.
             Some(TransferState {
                 active_profile: Some(Profile {
-                    display_name: "Ferris Crabman".to_string(),
+                    name: "Ferris Crabman".to_string(),
+                    picture: Some("&#129408".to_string()),
+                    theme: Some("system".to_string()),
                     primary_did: "did:example:placeholder".to_string(),
                 }),
                 current_user_prompt: Some(CurrentUserPrompt::PasswordRequired(PasswordRequired {
@@ -103,7 +111,9 @@ async fn test_get_state_unlock_storage() {
             // The storage is unlocked, so the user is redirected to the profile page.
             Some(TransferState {
                 active_profile: Some(Profile {
-                    display_name: "Ferris Crabman".to_string(),
+                    name: "Ferris Crabman".to_string(),
+                    picture: Some("&#129408".to_string()),
+                    theme: Some("system".to_string()),
                     primary_did: "did:example:placeholder".to_string(),
                 }),
                 current_user_prompt: Some(CurrentUserPrompt::Redirect(Redirect {

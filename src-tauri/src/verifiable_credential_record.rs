@@ -55,7 +55,7 @@ pub struct CredentialMetadata {
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, TS, Default)]
 #[ts(export, export_to = "bindings/display-credential/CredentialDisplay.ts")]
 pub struct CredentialDisplay {
-    icon: Option<String>,
-    color: Option<String>,
-    name: Option<String>,
+    pub icon: Option<String>,
+    pub color: Option<String>,
+    pub name: Option<String>,
 }

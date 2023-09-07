@@ -30,7 +30,9 @@ async fn test_load_dev_profile() {
         }],
         vec![Some(TransferState {
             active_profile: Some(Profile {
-                display_name: "Ferris Crabman".to_string(),
+                name: "Ferris".to_string(),
+                picture: Some("&#129408".to_string()),
+                theme: Some("system".to_string()),
                 primary_did: "did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY".to_string(),
             }),
             credentials,
@@ -73,10 +75,12 @@ async fn test_load_dev_profile_twice() {
             },
         ],
         vec![
-            // Each time the dev prfile is loaded, the state should be the same.
+            // Each time the dev profile is loaded, the state should be the same.
             Some(TransferState {
                 active_profile: Some(Profile {
-                    display_name: "Ferris Crabman".to_string(),
+                    name: "Ferris".to_string(),
+                    picture: None,
+                    theme: None,
                     primary_did: "did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY".to_string(),
                 }),
                 credentials: credentials.clone(),
@@ -88,7 +92,9 @@ async fn test_load_dev_profile_twice() {
             }),
             Some(TransferState {
                 active_profile: Some(Profile {
-                    display_name: "Ferris Crabman".to_string(),
+                    name: "Ferris".to_string(),
+                    picture: None,
+                    theme: None,
                     primary_did: "did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY".to_string(),
                 }),
                 credentials,

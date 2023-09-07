@@ -21,7 +21,7 @@ type RootTranslation = {
 	 */
 	HI: RequiredParams<'name'>
 	/**
-	 * W​e​l​c​o​m​e
+	 * W​e​l​c​o​m​e​ ​t​o​ ​y​o​u​r​ ​U​n​i​M​e
 	 */
 	WELCOME: string
 	/**
@@ -33,13 +33,57 @@ type RootTranslation = {
 	 */
 	CREATE_IDENTITY: string
 	/**
-	 * Y​o​u​ ​h​a​v​e​ ​j​u​s​t​ ​c​r​e​a​t​e​d​ ​a​ ​n​e​w​ ​d​i​g​i​t​a​l​ ​i​d​e​n​t​i​t​y​!
+	 * I​t​'​s​ ​a​ ​b​i​t​ ​q​u​i​e​t​ ​i​n​ ​h​e​r​e
 	 */
-	CREATE_IDENTITY_SUCCESS_TITLE: string
+	EMPTY_CREDENTIALS_LIST_TITLE: string
 	/**
-	 * C​o​n​t​i​n​u​e​ ​b​y​ ​a​d​d​i​n​g​ ​m​o​r​e​ ​i​n​f​o​r​m​a​t​i​o​n​ ​a​b​o​u​t​ ​y​o​u​r​s​e​l​f​ ​o​r​ ​s​c​a​n​ ​a​ ​c​r​e​d​e​n​t​i​a​l​.
+	 * W​h​y​ ​n​o​t​ ​a​d​d​ ​s​o​m​e​ ​c​r​e​d​e​n​t​i​a​l​s​ ​t​o​ ​s​t​a​r​t​ ​y​o​u​r​ ​n​e​w​ ​d​i​g​i​t​a​l​ ​m​e​?
 	 */
-	CREATE_IDENTITY_SUCCESS_BODY: string
+	EMPTY_CREDENTIALS_LIST_SUBTITLE: string
+	GETTING_STARTED: {
+		/**
+		 * S​h​a​l​l​ ​w​e​ ​g​e​t​ ​s​t​a​r​t​e​d​?
+		 */
+		TITLE: string
+		/**
+		 * S​t​a​r​t​ ​y​o​u​r​ ​f​i​r​s​t​ ​s​t​e​p​s​ ​t​o​ ​a​d​d​ ​s​o​m​e​ ​c​r​e​d​e​n​t​i​a​l​s​ ​t​o​ ​y​o​u​r​ ​"​M​e​"​.
+		 */
+		SUBTITLE: string
+		/**
+		 * C​o​m​p​l​e​t​e​ ​n​e​w​ ​g​o​a​l​s
+		 */
+		DIALOG_0_TITLE: string
+		/**
+		 * S​t​a​r​t​ ​y​o​u​r​ ​m​i​s​s​i​o​n​ ​h​e​r​e​!​ ​G​o​a​l​s​ ​w​i​l​l​ ​l​e​a​d​ ​y​o​u​ ​t​h​r​o​u​g​h​ ​i​m​p​o​r​t​a​n​t​ ​f​e​a​t​u​r​e​s​ ​a​n​d​ ​p​o​s​s​i​b​i​l​i​t​i​e​s​ ​o​f​ ​U​n​i​M​e​ ​a​p​p​.
+		 */
+		DIALOG_0_TEXT: string
+		/**
+		 * E​x​p​l​o​r​i​n​g​ ​m​a​d​e​ ​f​u​n
+		 */
+		DIALOG_1_TITLE: string
+		/**
+		 * O​n​ ​c​o​m​p​l​e​t​i​n​g​ ​g​o​a​l​s​,​ ​y​o​u​'​l​l​ ​r​e​c​e​i​v​e​ ​a​n​ ​a​w​e​s​o​m​e​ ​n​e​w​ ​a​c​h​i​e​v​e​m​e​n​t​ ​b​a​d​g​e​ ​a​n​d​ ​l​e​v​e​l​ ​u​p​ ​y​o​u​r​ ​f​i​r​s​t​ ​s​t​e​p​s​.
+		 */
+		DIALOG_1_TEXT: string
+		/**
+		 * S​k​i​p​ ​o​n​b​o​a​r​d​i​n​g
+		 */
+		SKIP_TITLE: string
+		/**
+		 * A​r​e​ ​y​o​u​ ​s​u​r​e​?​ ​Y​o​u​ ​c​a​n​ ​r​e​-​e​n​a​b​l​e​ ​t​h​e​ ​o​n​b​o​a​r​d​i​n​g​ ​l​a​t​e​r​ ​i​n​ ​t​h​e​ ​a​p​p​ ​s​e​t​t​i​n​g​s​.
+		 */
+		SKIP_TEXT: string
+	}
+	SETUP: {
+		/**
+		 * S​k​i​p​ ​c​u​s​t​o​m​i​z​a​t​i​o​n
+		 */
+		SKIP_TITLE: string
+		/**
+		 * A​r​e​ ​y​o​u​ ​s​u​r​e​?​ ​Y​o​u​ ​c​a​n​ ​a​d​j​u​s​t​ ​t​h​e​ ​a​p​p​ ​a​p​p​e​a​r​a​n​c​e​ ​l​a​t​e​r​ ​i​n​ ​s​e​t​t​i​n​g​s​.
+		 */
+		SKIP_TEXT: string
+	}
 	/**
 	 * A​p​p​ ​s​e​t​t​i​n​g​s
 	 */
@@ -84,6 +128,26 @@ type RootTranslation = {
 	 * P​l​e​a​s​e​ ​c​h​o​o​s​e​ ​a​ ​s​t​r​o​n​g​ ​p​a​s​s​w​o​r​d​.
 	 */
 	STRONG_PASSWORD: string
+	/**
+	 * F​a​v​o​r​i​t​e​s
+	 */
+	FAVORITES: string
+	/**
+	 * M​y​ ​d​a​t​a
+	 */
+	MY_DATA: string
+	/**
+	 * A​d​d
+	 */
+	ADD: string
+	/**
+	 * C​o​n​t​i​n​u​e
+	 */
+	CONTINUE: string
+	/**
+	 * S​k​i​p
+	 */
+	SKIP: string
 }
 
 export type TranslationFunctions = {
@@ -92,7 +156,7 @@ export type TranslationFunctions = {
 	 */
 	HI: (arg: { name: string }) => LocalizedString
 	/**
-	 * Welcome
+	 * Welcome to your UniMe
 	 */
 	WELCOME: () => LocalizedString
 	/**
@@ -104,13 +168,57 @@ export type TranslationFunctions = {
 	 */
 	CREATE_IDENTITY: () => LocalizedString
 	/**
-	 * You have just created a new digital identity!
+	 * It's a bit quiet in here
 	 */
-	CREATE_IDENTITY_SUCCESS_TITLE: () => LocalizedString
+	EMPTY_CREDENTIALS_LIST_TITLE: () => LocalizedString
 	/**
-	 * Continue by adding more information about yourself or scan a credential.
+	 * Why not add some credentials to start your new digital me?
 	 */
-	CREATE_IDENTITY_SUCCESS_BODY: () => LocalizedString
+	EMPTY_CREDENTIALS_LIST_SUBTITLE: () => LocalizedString
+	GETTING_STARTED: {
+		/**
+		 * Shall we get started?
+		 */
+		TITLE: () => LocalizedString
+		/**
+		 * Start your first steps to add some credentials to your "Me".
+		 */
+		SUBTITLE: () => LocalizedString
+		/**
+		 * Complete new goals
+		 */
+		DIALOG_0_TITLE: () => LocalizedString
+		/**
+		 * Start your mission here! Goals will lead you through important features and possibilities of UniMe app.
+		 */
+		DIALOG_0_TEXT: () => LocalizedString
+		/**
+		 * Exploring made fun
+		 */
+		DIALOG_1_TITLE: () => LocalizedString
+		/**
+		 * On completing goals, you'll receive an awesome new achievement badge and level up your first steps.
+		 */
+		DIALOG_1_TEXT: () => LocalizedString
+		/**
+		 * Skip onboarding
+		 */
+		SKIP_TITLE: () => LocalizedString
+		/**
+		 * Are you sure? You can re-enable the onboarding later in the app settings.
+		 */
+		SKIP_TEXT: () => LocalizedString
+	}
+	SETUP: {
+		/**
+		 * Skip customization
+		 */
+		SKIP_TITLE: () => LocalizedString
+		/**
+		 * Are you sure? You can adjust the app appearance later in settings.
+		 */
+		SKIP_TEXT: () => LocalizedString
+	}
 	/**
 	 * App settings
 	 */
@@ -155,6 +263,26 @@ export type TranslationFunctions = {
 	 * Please choose a strong password.
 	 */
 	STRONG_PASSWORD: () => LocalizedString
+	/**
+	 * Favorites
+	 */
+	FAVORITES: () => LocalizedString
+	/**
+	 * My data
+	 */
+	MY_DATA: () => LocalizedString
+	/**
+	 * Add
+	 */
+	ADD: () => LocalizedString
+	/**
+	 * Continue
+	 */
+	CONTINUE: () => LocalizedString
+	/**
+	 * Skip
+	 */
+	SKIP: () => LocalizedString
 }
 
 export type Formatters = {}

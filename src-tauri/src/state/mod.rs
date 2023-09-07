@@ -35,6 +35,7 @@ pub struct AppState {
     pub credentials: Mutex<Vec<DisplayCredential>>,
     pub current_user_prompt: Mutex<Option<CurrentUserPrompt>>,
     pub debug_messages: Mutex<Vec<String>>,
+    pub user_journey: Mutex<Option<serde_json::Value>>,
 }
 
 /// A representation of the current state which is used for serialization.
@@ -46,6 +47,8 @@ pub struct TransferState {
     pub credentials: Vec<DisplayCredential>,
     pub current_user_prompt: Option<CurrentUserPrompt>,
     pub debug_messages: Vec<String>,
+    #[ts(optional, type = "object")]
+    pub user_journey: Option<serde_json::Value>,
 }
 
 impl From<&AppState> for TransferState {
@@ -56,6 +59,7 @@ impl From<&AppState> for TransferState {
             credentials: state.credentials.lock().unwrap().clone(),
             current_user_prompt: state.current_user_prompt.lock().unwrap().clone(),
             debug_messages: state.debug_messages.lock().unwrap().clone(),
+            user_journey: state.user_journey.lock().unwrap().clone(),
         }
     }
 }
@@ -71,9 +75,11 @@ pub enum Locale {
 }
 
 /// A profile of the current user.
-#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq)]
+#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default)]
 #[ts(export)]
 pub struct Profile {
-    pub display_name: String,
+    pub name: String,
+    pub picture: Option<String>,
+    pub theme: Option<String>,
     pub primary_did: String,
 }

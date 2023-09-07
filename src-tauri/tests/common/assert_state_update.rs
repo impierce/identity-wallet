@@ -61,7 +61,7 @@ pub async fn assert_state_update(
 
             match (active_profile.as_ref(), expected_active_profile.as_ref()) {
                 (Some(active_profile), Some(expected_active_profile)) => {
-                    assert_eq!(active_profile.display_name, expected_active_profile.display_name);
+                    assert_eq!(active_profile.name, expected_active_profile.name);
                 }
                 _ => assert_eq!(active_profile, *expected_active_profile),
             }

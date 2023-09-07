@@ -4,8 +4,12 @@
 
 @layer base {
   @font-face {
-    font-family: 'Satoshi-Variable';
-    src: url('/fonts/Satoshi-Variable.woff2') format('woff2');
+    /* font-family: 'Satoshi-Variable';
+    src: url('/fonts/Satoshi-Variable.woff2') format('woff2'); */
+    /* font-family: 'Inter-Variable';
+    src: url('/fonts/Inter-Variable.ttf') format('truetype'); */
+    font-family: 'Inter';
+    src: url('/fonts/Inter-VariableFont_slnt,wght.ttf') format('truetype');
   }
 
   h1 {
@@ -27,17 +31,54 @@
 body {
   /* padding-top: env(safe-area-inset-top); */
   /* padding-bottom: env(safe-area-inset-bottom); */
-  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+  padding: var(--safe-area-inset-top) env(safe-area-inset-right) var(--safe-area-inset-bottom)
     env(safe-area-inset-left);
+  /* padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+    env(safe-area-inset-left); */
   height: 100vh;
   width: 100vw;
   /* Blue 700 */
   /* background-color: #1d4ed8; */
-  overflow: hidden; /* disables scrolling */
+  /* overflow: hidden; */
+  /* disables scrolling entirely */
+  overflow-x: hidden;
+  /* overflow-y: hidden; */
+  /* max-width: 100%; */
+
+  /* Enhancements to touch experience */
+  -webkit-tap-highlight-color: transparent; /* Removes a flashing highlight box on tap */
 }
 
 .transparent {
   background-color: transparent;
+}
+
+:root {
+  /* TODO: development: using variables for easier testing, production: replace var() --> env()? */
+  --safe-area-inset-top: env(safe-area-inset-top);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom);
+
+  /* iPhone 13 Pro */
+  /* --safe-area-inset-top: 47px;
+  --safe-area-inset-bottom: 34px; */
+}
+
+.safe-area-top {
+  position: fixed;
+  top: 0px;
+  /* z-index: 10; */
+  height: var(--safe-area-inset-top);
+  width: 100%;
+  @apply bg-bg-primary dark:bg-bg-dark-primary;
+}
+
+.safe-area-bottom {
+  position: fixed;
+  bottom: 0px;
+  /* z-index: 10; */
+  height: var(--safe-area-inset-bottom);
+  width: 100%;
+  @apply bg-bg-primary dark:bg-bg-dark-primary;
 }
 
 /**

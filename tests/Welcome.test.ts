@@ -1,9 +1,10 @@
-import '@testing-library/jest-dom';
-
 import { vi } from 'vitest';
-import Welcome from '../src/routes/welcome/+page.svelte';
-import { fireEvent, render, screen } from '@testing-library/svelte';
+
 import { clearMocks, mockIPC } from '@tauri-apps/api/mocks';
+import '@testing-library/jest-dom';
+import { fireEvent, render, screen } from '@testing-library/svelte';
+
+import Welcome from '$src/routes/welcome/+page.svelte';
 
 beforeEach(() => {
   // init __TAURI_IPC__
@@ -39,7 +40,7 @@ test('triggers correct event when button is clicked', async () => {
 
   expect(spy).toHaveBeenCalledTimes(2); // TODO: skip first call
   expect(spy).toHaveBeenCalledWith({
-    action: { type: '[DID] Create new', payload: { display_name: 'Ferris' } },
+    action: { type: '[DID] Create new', payload: { name: 'Ferris' } },
     callback: expect.anything(),
     cmd: 'handle_action',
     error: expect.anything()

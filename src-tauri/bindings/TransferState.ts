@@ -4,4 +4,4 @@ import type { DisplayCredential } from "./display-credential/DisplayCredential";
 import type { Locale } from "./Locale";
 import type { Profile } from "./Profile";
 
-export interface TransferState { active_profile: Profile | null, locale: Locale, credentials: Array<DisplayCredential>, current_user_prompt: CurrentUserPrompt | null, debug_messages: Array<string>, }
+export interface TransferState { active_profile: Profile | null, locale: Locale, credentials: Array<DisplayCredential>, current_user_prompt: CurrentUserPrompt | null, debug_messages: Array<string>, user_journey?: object, }

@@ -1,87 +1,85 @@
-<script lang="ts">
-  import { Button, LoadingSpinner, Input, Label } from '@impierce/ui-components';
-  import LL from '../../i18n/i18n-svelte';
-  import LocaleSelect from '$lib/LocaleSelect.svelte';
-  import { dispatch } from '$lib/dispatcher';
-  import { onMount } from 'svelte';
-
-  import GB from '~icons/flag/gb-4x3';
-  import NL from '~icons/flag/nl-4x3';
-  import DE from '~icons/flag/de-4x3';
-
-  //   const registerFocus = useFocus();
-
-  let display_name: string | undefined;
-  let password: string | undefined;
-
-  let loading = false;
-
-  const createProfile = async () => {
-    loading = true;
-    dispatch({ type: '[DID] Create new', payload: { display_name: display_name, password } });
-  };
-
-  const setLanguage = (locale: string) => {
-    active_language = locale;
-    dispatch({ type: '[Settings] Set locale', payload: { locale } });
-  };
-
-  let active_language = 'en';
-  let active_language_class = 'rounded-lg ring-2 ring-violet-500 ring-offset-4';
-
-  onMount(async () => {
-    // usernameInput.focus();
-    display_name = 'Tony Stark';
-    password = 'my-password';
-  });
+<script>
+  import { onboarding_state, state } from '$src/stores';
+  import { dispatch } from '$src/lib/dispatcher';
+  import LL from '$src/i18n/i18n-svelte';
+  import { LanguageSelect } from '@impierce/ui-components';
+  import Button from '$src/lib/components/Button.svelte';
+  import { goto } from '$app/navigation';
+  import { fade, fly } from 'svelte/transition';
+  import UniMeText from '$src/lib/components/logo/UniMeText.svelte';
+  import MeLarge from '$src/lib/components/logo/MeLarge.svelte';
 </script>
 
-<div class="flex h-auto flex-col items-center justify-center space-y-8 p-8">
-  <h1 data-testid="label-welcome" class="font-serif text-2xl font-semibold text-slate-800">
-    {$LL.WELCOME()}!
-  </h1>
+<div
+  class="content-height relative flex flex-col bg-bg-secondary dark:bg-bg-dark-secondary"
+  in:fade={{ delay: 200 }}
+  out:fade={{ duration: 200 }}
+>
+  <div class="absolute top-12 w-full">
+    <!-- <LanguageSelect
+      selected={$state?.locale}
+      on:value={(e) => dispatch({ type: '[Settings] Set locale', payload: { locale: e.detail } })}
+    /> -->
 
-  <img
-    src="image/undraw_welcome_re_h3d9.svg"
-    alt="undraw_fingerprint"
-    class="mx-auto my-4 w-[180px]"
-  />
-
-  <!-- <LocaleSelect /> -->
-
-  <div class="grid grid-flow-col space-x-4">
-    <button
-      class={active_language === 'en' ? active_language_class : ''}
-      on:click={() => setLanguage('en')}><GB class="h-[27px] w-[36px] rounded-lg" /></button
-    >
-    <button
-      class={active_language === 'nl' ? active_language_class : ''}
-      on:click={() => setLanguage('nl')}><NL class="h-[27px] w-[36px] rounded-lg" /></button
-    >
-    <button
-      class={active_language === 'de' ? active_language_class : ''}
-      on:click={() => setLanguage('de')}><DE class="h-[27px] w-[36px] rounded-lg" /></button
-    >
+    <!-- <div class="grid grid-flow-col space-x-4">
+      <button
+        class={active_language === 'en' ? active_language_class : ''}
+        on:click={() => setLanguage('en')}><GB class="h-[27px] w-[36px] rounded-lg" /></button
+      >
+      <button
+        class={active_language === 'nl' ? active_language_class : ''}
+        on:click={() => setLanguage('nl')}><NL class="h-[27px] w-[36px] rounded-lg" /></button
+      >
+      <button
+        class={active_language === 'de' ? active_language_class : ''}
+        on:click={() => setLanguage('de')}><DE class="h-[27px] w-[36px] rounded-lg" /></button
+      >
+    </div> -->
   </div>
 
-  <div class="grid w-full max-w-sm items-center gap-1.5">
-    <Label for="name">{$LL.PROFILE_NAME()}</Label>
-    <Input type="text" id="name" placeholder="" bind:value={display_name} />
-    <p class="text-muted-foreground text-sm">{$LL.CHANGE_LATER()}</p>
-  </div>
-
-  <div class="grid w-full max-w-sm items-center gap-1.5">
-    <Label for="password">{$LL.PASSWORD()}</Label>
-    <Input type="password" id="password" placeholder="" bind:value={password} />
-    <p class="text-muted-foreground text-sm">{$LL.STRONG_PASSWORD()}</p>
-  </div>
-
-  <Button disabled={loading} on:click={createProfile} class="shadow-neon">
-    {#if loading}
-      <div class="mr-2">
-        <LoadingSpinner />
+  <div class="flex grow flex-col justify-center">
+    <!-- <div class="flex grow flex-col justify-center" in:fade out:fly={{ x: -300, duration: 300 }}> -->
+    <div class="px-4">
+      <div class="pb-[50px]">
+        <p class=" pb-[10px] text-[36px]/[44px] font-bold text-secondary dark:text-white">
+          Welcome to
+        </p>
+        <UniMeText />
       </div>
-    {/if}
-    {$LL.CREATE_IDENTITY()}
-  </Button>
+
+      <p class="text-[14px]/[22px] font-medium text-[#323B40] dark:text-white">
+        UniMe connects your digital world, safely and securely.
+        <br /><br />
+        Create a brand new identity profile or recover an existing one to get started.
+      </p>
+    </div>
+  </div>
+
+  <div class="relative left-0 top-5 scale-110">
+    <MeLarge />
+  </div>
+
+  <!-- Actions -->
+  <div class="z-10 space-y-[10px] rounded-t-3xl bg-white p-6">
+    <!-- <div
+    class="space-y-[10px] rounded-t-3xl bg-white p-6"
+    in:fly={{ y: 154 }}
+    out:fly={{ y: 154, duration: 300, opacity: 1 }}
+  > -->
+    <Button
+      label="Create new profile"
+      on:click={() => {
+        onboarding_state.set({});
+        goto('/welcome/pledge');
+      }}
+    />
+    <!-- <Button label="Recover existing profile" disabled /> -->
+    <Button label="Recover existing profile" variant="secondary" />
+  </div>
 </div>
+
+<style>
+  .content-height {
+    height: calc(100vh - var(--safe-area-inset-top));
+  }
+</style>

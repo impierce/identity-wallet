@@ -30,7 +30,9 @@ async fn test_qr_code_scanned_read_credential_offer() {
         // Initial state.
         AppState {
             active_profile: Mutex::new(Some(Profile {
-                display_name: "Ferris Crabman".to_string(),
+                name: "Ferris".to_string(),
+                picture: Some("&#129408".to_string()),
+                theme: Some("system".to_string()),
                 primary_did: "did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY".to_string(),
             })),
             managers: test_managers(vec![]),
@@ -46,7 +48,9 @@ async fn test_qr_code_scanned_read_credential_offer() {
         // The state is updated with a new user prompt containing the credential offer.
         vec![Some(TransferState {
             active_profile: Some(Profile {
-                display_name: "Ferris Crabman".to_string(),
+                name: "Ferris".to_string(),
+                picture: Some("&#129408".to_string()),
+                theme: Some("system".to_string()),
                 primary_did: "did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY".to_string(),
             }),
             current_user_prompt: Some(CurrentUserPrompt::CredentialOffer(CredentialOfferPrompt {
@@ -98,7 +102,9 @@ async fn test_qr_code_scanned_read_authorization_request() {
         // Initial state.
         AppState {
             active_profile: Mutex::new(Some(Profile {
-                display_name: "Ferris Crabman".to_string(),
+                name: "Ferris".to_string(),
+                picture: Some("&#129408".to_string()),
+                theme: Some("system".to_string()),
                 primary_did: "did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY".to_string(),
             })),
             managers,
@@ -114,7 +120,9 @@ async fn test_qr_code_scanned_read_authorization_request() {
         // The state is updated with a new user prompt containing the uuid's of the candidate verifiable credentials.
         vec![Some(TransferState {
             active_profile: Some(Profile {
-                display_name: "Ferris Crabman".to_string(),
+                name: "Ferris".to_string(),
+                picture: Some("&#129408".to_string()),
+                theme: Some("system".to_string()),
                 primary_did: "did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY".to_string(),
             }),
             current_user_prompt: Some(CurrentUserPrompt::Selection(Selection {

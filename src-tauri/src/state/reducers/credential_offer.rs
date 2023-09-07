@@ -9,6 +9,7 @@ use crate::{
 use log::info;
 use oid4vci::{
     credential_format_profiles::{CredentialFormats, WithCredential},
+    credential_issuer::credential_issuer_metadata::CredentialIssuerMetadata,
     credential_offer::{CredentialOffer, CredentialOfferQuery, CredentialsObject, Grants},
     credential_response::CredentialResponseType,
     token_request::{PreAuthorizedCode, TokenRequest},

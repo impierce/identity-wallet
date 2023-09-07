@@ -9,13 +9,16 @@ use crate::crypto::stronghold::StrongholdManager;
 use crate::state::actions::Action;
 use crate::state::user_prompt::{CurrentUserPrompt, CurrentUserPromptType, Redirect};
 use crate::state::{AppState, Profile};
+use crate::verifiable_credential_record::{CredentialDisplay, DisplayCredential, VerifiableCredentialRecord};
 use did_key::{from_existing_key, Ed25519KeyPair};
 use log::info;
 use oid4vc_core::Subject;
 use oid4vc_manager::methods::key_method::KeySubject;
 use oid4vc_manager::ProviderManager;
 use oid4vci::Wallet;
+use serde_json::{from_str, json};
 use std::sync::Arc;
+use uuid::Uuid;
 
 /// Sets the locale to the given value. If the locale is not supported yet, the current locale will stay unchanged.
 pub fn set_locale(state: &AppState, action: Action) -> anyhow::Result<()> {
@@ -32,9 +35,15 @@ pub async fn create_identity(state: &AppState, action: Action) -> anyhow::Result
     let stronghold_manager = state_guard.stronghold_manager.as_ref().unwrap();
 
     let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
-    let display_name = payload["display_name"]
+    let name = payload["name"]
         .as_str()
-        .ok_or(anyhow::anyhow!("unable to read display_name from json payload"))?;
+        .ok_or(anyhow::anyhow!("unable to read name from json payload"))?;
+    let picture = payload["picture"]
+        .as_str()
+        .ok_or(anyhow::anyhow!("unable to read picture from json payload"))?;
+    let theme = payload["theme"]
+        .as_str()
+        .ok_or(anyhow::anyhow!("unable to read theme from json payload"))?;
 
     let public_key = stronghold_manager.get_public_key()?;
 
@@ -45,7 +54,9 @@ pub async fn create_identity(state: &AppState, action: Action) -> anyhow::Result
     let wallet: Wallet = Wallet::new(subject.clone());
 
     let profile = Profile {
-        display_name: display_name.to_string(),
+        name: name.to_string(),
+        picture: Some(picture.to_string()),
+        theme: Some(theme.to_string()),
         primary_did: subject.identifier().unwrap(),
     };
 
@@ -54,6 +65,39 @@ pub async fn create_identity(state: &AppState, action: Action) -> anyhow::Result
         provider_manager,
         wallet,
     });
+
+    info!("loading journey from string");
+    let journey_definition = r#"
+        {
+            "title": "NGDIL Demo",
+            "description": "Set up your profile and get started with your UniMe app.",
+            "description_short": "Complete your first steps",
+            "creator": "UniMe",
+            "goals": [
+                {
+                    "id": 0,
+                    "label": "Set up your profile",
+                    "description": "Make your UniMe app your own by choosing a profile name and profile picture.",
+                    "faqs": [
+                        { "id": 0, "title": "Will this information be shared?", "content": "No. Your profile information will never leave your device." }
+                    ],
+                    "prerequisites": []
+                },
+                {
+                    "id": 1,
+                    "label": "Receive your first credential",
+                    "description": "Receive your first credential from a trusted source.",
+                    "faqs": [
+                        { "id": 0, "title": "What is a credential?", "content": "A credential is like a digital proof that verifies something about you, such as your age, education, or memberships." }
+                    ],
+                    "prerequisites": []
+                },
+                { "id": 2, "type": "login", "label": "Use a credential to sign in to a website", "faqs": [], "prerequisites": [] }
+            ]
+        }"#;
+    // let journey_definition = std::fs::read_to_string("resources/ngdil.json")?;
+    let onboarding_journey: serde_json::Value = serde_json::from_str(&journey_definition).unwrap();
+    *state.user_journey.lock().unwrap() = Some(onboarding_journey);
     Ok(())
 }
 
@@ -75,6 +119,118 @@ pub async fn initialize_stronghold(state: &AppState, action: Action) -> anyhow::
     Ok(())
 }
 
+pub async fn update_credential_metadata(state: &AppState, action: Action) -> anyhow::Result<()> {
+    let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
+    let credential_id: Uuid = payload["id"]
+        .as_str()
+        .ok_or(anyhow::anyhow!("unable to read credential id from json payload"))?
+        .parse()?;
+
+    let stronghold_manager = state.managers.lock().await.stronghold_manager.as_ref().unwrap().clone();
+
+    let mut verifiable_credential_record: VerifiableCredentialRecord = stronghold_manager
+        .values()
+        .unwrap()
+        .unwrap()
+        .into_iter()
+        .filter(|record| record.display_credential.id == credential_id.to_string())
+        .next()
+        .unwrap()
+        .clone();
+
+    info!(
+        "verifiable_credential_record (before): {:?}",
+        verifiable_credential_record.display_credential.metadata
+    );
+
+    // set name if given
+    verifiable_credential_record.display_credential.metadata.display.name = match payload["name"].as_str() {
+        Some(name) => Some(name.to_string()),
+        None => {
+            info!("no name provided, using existing");
+            verifiable_credential_record.display_credential.metadata.display.name
+        }
+    };
+
+    // set color if given
+    verifiable_credential_record.display_credential.metadata.display.color = match payload["color"].as_str() {
+        Some(color) => Some(color.to_string()),
+        None => {
+            info!("no color provided, using existing");
+            verifiable_credential_record.display_credential.metadata.display.color
+        }
+    };
+
+    // set icon if given
+    verifiable_credential_record.display_credential.metadata.display.icon = match payload["icon"].as_str() {
+        Some(icon) => Some(icon.to_string()),
+        None => {
+            info!("no icon provided, using existing");
+            verifiable_credential_record.display_credential.metadata.display.icon
+        }
+    };
+
+    // set favorite if given
+    verifiable_credential_record.display_credential.metadata.is_favorite = match payload["is_favorite"].as_bool() {
+        Some(is_favorite) => is_favorite,
+        None => {
+            info!("no is_favorite provided, using existing");
+            verifiable_credential_record.display_credential.metadata.is_favorite
+        }
+    };
+
+    info!(
+        "verifiable_credential_record (after): {:?}",
+        verifiable_credential_record.display_credential.metadata
+    );
+
+    stronghold_manager.insert(
+        credential_id,
+        json!(verifiable_credential_record).to_string().as_bytes().to_vec(),
+    )?;
+    info!("credential metadata updated");
+
+    *state.credentials.lock().unwrap() = stronghold_manager
+        .values()?
+        .unwrap()
+        .into_iter()
+        .map(|record| DisplayCredential::from(record.display_credential))
+        .collect();
+
+    Ok(())
+}
+
+pub fn update_profile_settings(state: &AppState, action: Action) -> anyhow::Result<()> {
+    let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
+
+    let theme = match payload["theme"].as_str() {
+        Some(theme) => theme.to_string(),
+        None => {
+            info!("no theme provided, using existing");
+            state
+                .active_profile
+                .lock()
+                .unwrap()
+                .clone()
+                .unwrap()
+                .theme
+                .clone()
+                .unwrap()
+        }
+    };
+
+    state
+        .active_profile
+        .lock()
+        .unwrap()
+        .as_mut()
+        .unwrap()
+        .theme
+        .replace(theme);
+
+    Ok(())
+}
+
 /// Completely resets the state to its default values.
 pub fn reset_state(state: &AppState, _action: Action) -> anyhow::Result<()> {
     *state.active_profile.lock().unwrap() = None;
@@ -84,6 +240,7 @@ pub fn reset_state(state: &AppState, _action: Action) -> anyhow::Result<()> {
         r#type: CurrentUserPromptType::Redirect,
         target: "welcome".to_string(),
     }));
+    *state.user_journey.lock().unwrap() = None;
     Ok(())
 }
 
@@ -137,7 +294,9 @@ mod tests {
     fn test_reset_state() {
         let state = AppState {
             active_profile: Some(Profile {
-                display_name: "Ferris".to_string(),
+                name: "Ferris".to_string(),
+                picture: Some("&#129408".to_string()),
+                theme: Some("system".to_string()),
                 primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
             })
             .into(),

@@ -4,7 +4,10 @@ use crate::state::reducers::authorization::{read_authorization_request, send_aut
 use crate::state::reducers::credential_offer::{read_credential_offer, send_credential_request};
 use crate::state::reducers::load_dev_profile::load_dev_profile;
 use crate::state::reducers::storage::unlock_storage;
-use crate::state::reducers::{create_identity, initialize_stronghold, reset_state, set_locale};
+use crate::state::reducers::{
+    create_identity, initialize_stronghold, reset_state, set_locale, update_credential_metadata,
+    update_profile_settings,
+};
 use crate::state::user_prompt::{CurrentUserPrompt, CurrentUserPromptType, PasswordRequired, Redirect};
 use crate::state::{AppState, TransferState};
 use log::{info, warn};
@@ -59,7 +62,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             if create_identity(app_state, action).await.is_ok() {
                 save_state(TransferState::from(app_state)).await.ok();
             }
-            // When everything is done, we redirect the user to the profile page
+            // When everything is done, we redirect the user to the "me" page
             *app_state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect(Redirect {
                 r#type: CurrentUserPromptType::Redirect,
                 target: "me".to_string(),
@@ -70,8 +73,11 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             if set_locale(app_state, Action { r#type, payload }).is_ok() {
                 save_state(TransferState::from(app_state)).await.ok();
             }
-            *app_state.current_user_prompt.lock().unwrap() = None;
-            save_state(TransferState::from(app_state)).await.ok();
+        }
+        ActionType::UpdateProfileSettings => {
+            if update_profile_settings(app_state, Action { r#type, payload }).is_ok() {
+                save_state(TransferState::from(app_state)).await.ok();
+            }
         }
         ActionType::QrCodeScanned => {
             info!("qr code scanned: `{:?}`", payload);
@@ -147,6 +153,19 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             {
                 save_state(TransferState::from(app_state)).await.ok();
             }
+        }
+        ActionType::UpdateCredentialMetadata => {
+            if update_credential_metadata(app_state, Action { r#type, payload })
+                .await
+                .is_ok()
+            {
+                *app_state.current_user_prompt.lock().unwrap() = None;
+                save_state(TransferState::from(app_state)).await.ok();
+            }
+        }
+        ActionType::CancelUserJourney => {
+            *app_state.user_journey.lock().unwrap() = None;
+            save_state(TransferState::from(app_state)).await.ok();
         }
         ActionType::Unknown => {
             warn!(

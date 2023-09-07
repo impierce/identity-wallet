@@ -9,7 +9,7 @@
   },
   "package": {
     "productName": "UniMe",
-    "version": "0.1.7"
+    "version": "0.2.5"
   },
   "tauri": {
     "bundle": {
@@ -24,8 +24,11 @@
       "identifier": "com.impierce.dev",
       "targets": "all",
       "iOS": {
-        "developmentTeam": "com.impierce.dev"
-      }
+        "developmentTeam": "Impierce Technologies B.V."
+      },
+      "resources": [
+        "resources/*"
+      ]
     },
     "security": {
       "csp": null

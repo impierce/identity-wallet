@@ -14,10 +14,14 @@ name = "identity_wallet"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
-tauri-build = { version = "=2.0.0-alpha.8", features = [] }
+tauri-build = { version = "=2.0.0-alpha.6", features = [] }
 
 [dependencies]
-tauri = { version = "=2.0.0-alpha.11", features = ["rustls-tls"] }
+tauri = { version = "=2.0.0-alpha.10", features = ["rustls-tls"] }
+
+tauri-codegen = { version = "=2.0.0-alpha.6" }
+tauri-macros = { version = "=2.0.0-alpha.6" }
+tauri-utils = { version = "=2.0.0-alpha.6" }
 
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
@@ -29,14 +33,11 @@ did-key = "0.2.1"
 lazy_static = "1.4.0"
 tauri-plugin-clipboard-manager = "=2.0.0-alpha.0"
 tauri-plugin-log = { version = "=2.0.0-alpha.0", features = ["colored"] }
-# used for colored logs
 fern = "0.6.0"
 rust-argon2 = { version = "=1.0.0" }
 
 iota_stronghold = { version = "=2.0.0" }
 stronghold_engine = "=2.0.0"
-#iota_stronghold = { path = "/Users/daniel/dev/iotaledger/stronghold.rs/client" }
-#libsodium-sys = { git = "https://git@github.com/daniel-mader/sodiumoxide" }
 
 oid4vc-manager = { git = "https://git@github.com/impierce/openid4vc.git" }
 siopv2 = { git = "https://git@github.com/impierce/openid4vc.git" }
@@ -58,10 +59,13 @@ async-recursion = "1.0"
 uuid = { version = "1.4", features = ["v4", "fast-rng"] }
 
 [dev-dependencies]
-tauri = { version = "=2.0.0-alpha.11", features = ["rustls-tls", "test"] }
+tauri = { version = "=2.0.0-alpha.10", features = ["rustls-tls", "test"] }
 tempfile = "3.5.0"
 serial_test = "2.0"
-reqwest = { version = "0.11", default-features = false, features = ["json", "rustls-tls"] }
+reqwest = { version = "0.11", default-features = false, features = [
+    "json",
+    "rustls-tls",
+] }
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

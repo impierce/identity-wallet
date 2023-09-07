@@ -1,6 +1,10 @@
 /target/
-/gen
 .cargo
 
-/gen/android/key.properties
-/gen/android/upload-keystore.jks
+gen/*
+!gen/apple/identity-wallet_iOS/Info.plist
+!gen/apple/ExportOptions.plist
+!gen/android/app/build.gradle.kts
+
+# Can be generated through `cargo tauri icon`
+icons/

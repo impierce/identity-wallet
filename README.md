@@ -1,4 +1,4 @@
-# Identity Wallet
+# UniMe - Identity Wallet
 
 A Tauri-based Identity Wallet for people to manage Decentralized Identities and Verifiable Credentials.
 
@@ -47,35 +47,14 @@ npm run format
 npm run test
 ```
 
-<!-- ### Run Android app in emulator on macOS
-
-```sh
-brew install openssl@3
-export OPENSSL_INCLUDE_DIR=/opt/homebrew/opt/openssl@3/include
-export OPENSSL_LIB_DIR=/opt/homebrew/opt/openssl@3/lib
-``` -->
-
 ## Release
 
 ### Signing Android App Bundle (AAB)
 
 https://docs.flutter.dev/deployment/android#signing-the-app
+https://next--tauri.netlify.app/next/guides/distribution/sign-android
 
-```sh
-# Generate new upload key
-keytool -genkey -v -keystore ./src-tauri/gen/android/upload-keystore.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload
-```
-
-Create a file `./src-tauri/gen/android/key.properties` with the following content:
-
-```sh
-storePassword=<password-from-previous-step>
-keyPassword=<password-from-previous-step>
-keyAlias=upload
-storeFile=./upload-keystore.jks
-```
-
-Edit `src-tauri/gen/android/app/build.gradle.kts`: follow https://next--tauri.netlify.app/next/guides/distribution/sign-android
+Edit `src-tauri/gen/android/app/build.gradle.kts`:
 
 <!-- ```kotlin
 import java.util.Properties
@@ -143,6 +122,13 @@ dependencies { ... }
 
 apply(from = "tauri.build.gradle.kts")
 ``` -->
+
+### Create icons
+
+```sh
+cd src-tauri
+cargo tauri icon
+```
 
 ### How this project was initialized
 

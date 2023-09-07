@@ -168,7 +168,7 @@ mod tests {
         let path = NamedTempFile::new().unwrap().into_temp_path();
         *STRONGHOLD.lock().unwrap() = path.as_os_str().into();
 
-        let stronghold_manager = StrongholdManager::create("my-password").unwrap();
+        let stronghold_manager = StrongholdManager::create("sup3rSecr3t").unwrap();
 
         let key = Uuid::new_v4();
         let value = "test".as_bytes().to_vec();

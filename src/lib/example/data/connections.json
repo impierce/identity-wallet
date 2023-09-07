@@ -1,0 +1,44 @@
+[
+  {
+    "id": "0",
+    "domain": "amazon.com",
+    "url": "amazon.com",
+    "lastConnected": "2 days ago"
+  },
+  {
+    "id": "1",
+    "domain": "bestdex.com",
+    "url": "https://bestdex.com",
+    "lastConnected": "1 hour ago"
+  },
+  {
+    "id": "2",
+    "domain": "groceries-online.co.uk",
+    "url": "https://shop.groceries-online.co.uk",
+    "lastConnected": "2 weeks ago"
+  },
+  {
+    "id": "3",
+    "domain": "kw1c.nl",
+    "url": "https://www.kw1c.nl",
+    "lastConnected": "4 minutes ago"
+  },
+  {
+    "id": "4",
+    "domain": "abc.com",
+    "url": "https://login.web3.abc.com",
+    "lastConnected": "8 minutes ago"
+  },
+  {
+    "id": "5",
+    "domain": "bbc.co.uk",
+    "url": "https://bbc.co.uk",
+    "lastConnected": "1 hour ago"
+  },
+  {
+    "id": "6",
+    "domain": "bbc.co.uk",
+    "url": "https://login.bbc.co.uk",
+    "lastConnected": "2 hours ago"
+  }
+]

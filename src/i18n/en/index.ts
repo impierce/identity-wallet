@@ -2,12 +2,26 @@ import type { BaseTranslation } from '../i18n-types';
 
 const en = {
   HI: 'Hi {name:string}! Please leave a star if you like this project: https://github.com/ivanhofer/typesafe-i18n',
-  WELCOME: 'Welcome',
+  WELCOME: 'Welcome to your UniMe',
   PROMPT_NAME: 'Please enter your name',
   CREATE_IDENTITY: 'Create new identity',
-  CREATE_IDENTITY_SUCCESS_TITLE: 'You have just created a new digital identity!',
-  CREATE_IDENTITY_SUCCESS_BODY:
-    'Continue by adding more information about yourself or scan a credential.',
+  EMPTY_CREDENTIALS_LIST_TITLE: `It's a bit quiet in here`,
+  EMPTY_CREDENTIALS_LIST_SUBTITLE: 'Why not add some credentials to start your new digital me?',
+  GETTING_STARTED: {
+    TITLE: 'Shall we get started?',
+    SUBTITLE: 'Start your first steps to add some credentials to your "Me".',
+    DIALOG_0_TITLE: 'Complete new goals',
+    DIALOG_0_TEXT:
+      'Start your mission here! Goals will lead you through important features and possibilities of UniMe app.',
+    DIALOG_1_TITLE: 'Exploring made fun',
+    DIALOG_1_TEXT: `On completing goals, you'll receive an awesome new achievement badge and level up your first steps.`,
+    SKIP_TITLE: 'Skip onboarding',
+    SKIP_TEXT: 'Are you sure? You can re-enable the onboarding later in the app settings.'
+  },
+  SETUP: {
+    SKIP_TITLE: 'Skip customization',
+    SKIP_TEXT: 'Are you sure? You can adjust the app appearance later in settings.'
+  },
   APP_SETTINGS: 'App settings',
   YOUR_DIDS: 'Your DIDs',
   RESET_APP: 'Reset app',
@@ -18,7 +32,12 @@ const en = {
   PROFILE_NAME: 'Name',
   PASSWORD: 'Password',
   CHANGE_LATER: 'You can change this later.',
-  STRONG_PASSWORD: 'Please choose a strong password.'
+  STRONG_PASSWORD: 'Please choose a strong password.',
+  FAVORITES: 'Favorites',
+  MY_DATA: 'My data',
+  ADD: 'Add',
+  CONTINUE: 'Continue',
+  SKIP: 'Skip'
 } satisfies BaseTranslation;
 
 export default en;
