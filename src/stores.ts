@@ -53,6 +53,7 @@ interface OnboardingState {
   name?: string;
   picture?: string;
   theme?: string;
+  password?: string; // TODO: secure enough?
 }
 
 // TODO: remove for version 1.0

@@ -37,7 +37,7 @@
 <!-- <div class="mt-12 grow p-4" in:fly={{ x: 300, delay: 300 }}> -->
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <div class="px-2 pb-8 pt-4">
-    <p class="pb-4 text-3xl font-semibold text-slate-800">
+    <p class="pb-4 text-3xl font-semibold text-slate-700">
       Here's the less<br />interesting <span class="text-primary">stuff</span>
     </p>
     <p class="text-[15px]/[24px] font-medium text-slate-500">

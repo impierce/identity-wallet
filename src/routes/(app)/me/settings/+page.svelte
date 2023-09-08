@@ -24,7 +24,7 @@
 <div class="flex min-h-full flex-col bg-silver dark:bg-navy">
   <div class="flex flex-col space-y-[10px] px-4 py-5" in:fly={{ x: 32, opacity: 1 }}>
     <!-- Account -->
-    <p class="text-[14px]/[22px] font-medium text-slate-500">Account</p>
+    <p class="text-[14px]/[22px] font-medium text-slate-500">{$LL.ACCOUNT()}</p>
     <SettingsEntry
       icon={UserCircle}
       title="My profile"
@@ -39,7 +39,7 @@
     <SettingsEntry icon={SignOut} title="Log out" hasCaretRight={false} todo />
 
     <!-- Support -->
-    <p class="text-[14px]/[22px] font-medium text-slate-500">Support</p>
+    <p class="text-[14px]/[22px] font-medium text-slate-500">{$LL.SUPPORT()}</p>
     <SettingsEntry icon={Info} title="About UniMe" todo />
     <SettingsEntry icon={Envelope} title="Send feedback" hasCaretRight={false} todo />
   </div>

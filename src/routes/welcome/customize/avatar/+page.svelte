@@ -16,6 +16,7 @@
     elements: { trigger, content, arrow, close },
     states: { open }
   } = createPopover({
+    forceVisible: true,
     defaultOpen: true
   });
 
@@ -23,7 +24,7 @@
   let predefinedEmojis: Array<Array<string>> = [
     // faces
     [
-      '&#128578', // slightly-smiling-face
+      '&#x1F642', // slightly-smiling-face
       '&#128522', // smiling-face
       '&#129312', // cowboy-hat-face
       '&#129321', // star-struck
@@ -71,10 +72,10 @@
 <!-- <TopNavigation title="Avatar" on:back={() => history.back()} /> -->
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <div class="px-2 pb-8 pt-4">
-    <p class="pb-4 text-3xl font-semibold text-slate-800">
+    <p class="pb-4 text-3xl font-semibold text-slate-700">
       Set a display <span class="text-primary">picture</span>
     </p>
-    <p class="text-[15px]/[24px] font-medium text-slate-500">Make it yours.</p>
+    <p class="text-[14px]/[22px] font-medium text-slate-500">Make it yours.</p>
     <div class="mt-[70px] flex w-full items-center justify-center">
       <BottomDrawer
         titleText={'Select profile picture'}
@@ -84,9 +85,8 @@
         <!-- <div slot="trigger"> -->
         <button
           slot="trigger"
-          let:trigger
           class="flex h-24 w-24 items-center justify-center rounded-full border border-slate-200 bg-white"
-          use:melt={trigger}
+          use:melt={$trigger}
           on:click={() => {
             emojiSelectIsOpen = true;
           }}
@@ -145,13 +145,16 @@
         > -->
           {/each}
         </div>
-        <button
+        <!-- <button
           slot="close"
           let:close
           use:melt={close}
           class="mt-4 w-full rounded-lg bg-red-100 px-4 py-2 text-[13px]/[24px] font-medium text-red-500"
           >Close</button
-        >
+        > -->
+        <div class="mt-6 w-full" slot="close" let:close>
+          <Button variant="secondary" label="Close" trigger={close} />
+        </div>
       </BottomDrawer>
     </div>
   </div>

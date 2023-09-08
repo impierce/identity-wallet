@@ -8,6 +8,7 @@
   import LL from '$src/i18n/i18n-svelte';
   import Button from '$src/lib/components/Button.svelte';
   import { dispatch } from '$src/lib/dispatcher';
+  import { onboarding_state } from '$src/stores';
 
   import CheckCircle from '~icons/ph/check-circle-fill';
   import Circle from '~icons/ph/circle';
@@ -18,46 +19,17 @@
 
   // TODO: remove
   const initialPasswordValue = 'sup3rSecr3t';
+  onboarding_state.set({ ...$onboarding_state, password: initialPasswordValue });
 
   let passwordPolicyViolations: string[] = checkPasswordPolicy(initialPasswordValue);
   let showPassword = false;
 </script>
 
-<TopNavigation on:back={() => history.back()} title="Password">
-  <BottomDrawer titleText={$LL.SETUP.SKIP_TITLE()} descriptionText={$LL.SETUP.SKIP_TEXT()}>
-    <button
-      slot="trigger"
-      let:trigger
-      use:melt={trigger}
-      class="-mr-2 p-2 text-left text-[13px]/[24px] font-medium text-primary">{$LL.SKIP()}</button
-    >
-    <!-- <button
-        slot="trigger"
-        let:trigger
-        use:melt={trigger}
-        class="-mr-2 p-2 text-left text-[13px]/[24px] font-medium text-primary"
-      >
-        <div class="h-6 w-6 bg-slate-200" />
-      </button> -->
-    <button
-      slot="content"
-      class="w-full rounded-lg bg-red-100 px-4 py-2 text-red-600"
-      on:click={() => dispatch({ type: '[User Journey] Cancel' })}>Yes</button
-    >
-    <button
-      slot="close"
-      let:close
-      use:melt={close}
-      class="mt-2 w-full rounded-lg border bg-white px-4 py-2 text-neutral-700"
-      >No, let's continue</button
-    >
-  </BottomDrawer>
-</TopNavigation>
-
+<TopNavigation on:back={() => history.back()} title="Password" />
 <!-- Content -->
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <div class="pb-8 pt-4">
-    <p class="pb-8 text-3xl font-semibold text-slate-800">
+    <p class="pb-8 text-3xl font-semibold text-slate-700">
       Set your new <span class="text-primary">password</span>
     </p>
     <p class="text-[15px]/[24px] font-medium text-slate-500">
@@ -73,6 +45,10 @@
       value={initialPasswordValue}
       on:input={(e) => {
         passwordPolicyViolations = checkPasswordPolicy(e.target.value);
+        if (passwordPolicyViolations.length === 0) {
+          console.log('Setting password');
+          onboarding_state.set({ ...$onboarding_state, password: e.target.value });
+        }
       }}
     />
     <div class="absolute right-3 top-0 flex h-full items-center">
@@ -86,29 +62,33 @@
     </div>
   </div>
   <div class="mt-6">
-    <p class="text-[12px]/[20px] font-medium text-slate-500">Your password must contain</p>
-    <div class="flex flex-wrap pt-3">
-      {#each passwordPolicy as rule}
-        {#if passwordPolicyViolations.indexOf(rule.name) > -1}
-          <!-- not fulfilled -->
-          <div class="mb-2 mr-2 flex items-center space-x-1 rounded-full bg-white px-2 py-1">
-            <Circle class="h-4 w-4 text-primary" />
-            <p class="text-[12px]/[20px] font-medium text-primary">
-              {rule.count}
-              {rule.name}
-            </p>
-          </div>
-        {:else}
-          <!-- fulfilled -->
-          <div class="mb-2 mr-2 flex items-center space-x-1 rounded-full bg-green-200 px-2 py-1">
-            <CheckCircle class="h-4 w-4 text-primary" />
-            <p class="text-[12px]/[20px] font-medium text-primary">
-              {rule.count}
-              {rule.name}
-            </p>
-          </div>
-        {/if}
-      {/each}
+    <div class="mt-3 rounded-2xl border border-slate-200 bg-white p-4 dark:bg-dark">
+      <p class="mb-[10px] text-[12px]/[20px] font-medium text-slate-500">
+        Your password must contain
+      </p>
+      <div class="flex flex-wrap">
+        {#each passwordPolicy as rule}
+          {#if passwordPolicyViolations.indexOf(rule.name) > -1}
+            <!-- not fulfilled -->
+            <div class="mb-2 mr-2 flex items-center space-x-1 rounded-full bg-white px-2 py-1">
+              <Circle class="h-4 w-4 text-primary" />
+              <p class="text-[12px]/[20px] font-medium text-primary">
+                {rule.count}
+                {rule.name}
+              </p>
+            </div>
+          {:else}
+            <!-- fulfilled -->
+            <div class="mb-2 mr-2 flex items-center space-x-1 rounded-full bg-green-200 px-2 py-1">
+              <CheckCircle class="h-4 w-4 text-primary" />
+              <p class="text-[12px]/[20px] font-medium text-primary">
+                {rule.count}
+                {rule.name}
+              </p>
+            </div>
+          {/if}
+        {/each}
+      </div>
     </div>
   </div>
 </div>

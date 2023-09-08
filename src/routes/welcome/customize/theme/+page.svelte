@@ -39,10 +39,10 @@
 <!-- <TopNavigation title="Appearance" on:back={() => history.back()} /> -->
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <div class="px-2 pb-8 pt-4">
-    <p class="pb-4 text-3xl font-semibold text-slate-800">
-      Let's go! Choose your <span class="text-primary">appearance</span>
+    <p class="pb-4 text-3xl font-semibold text-slate-700">
+      Choose your app <span class="text-primary">appearance</span>
     </p>
-    <p class="text-[15px]/[24px] font-medium text-slate-500">Are you more of a night owl?</p>
+    <p class="text-[14px]/[22px] font-medium text-slate-500">Are you more of a night owl?</p>
   </div>
   <!-- <div use:melt={$root} class="flex flex-col"> -->
   <!-- System -->
