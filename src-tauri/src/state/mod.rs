@@ -7,6 +7,7 @@ use crate::{
     crypto::stronghold::StrongholdManager, state::user_prompt::CurrentUserPrompt,
     verifiable_credential_record::DisplayCredential,
 };
+use oid4vc_core::Subject;
 use oid4vc_manager::ProviderManager;
 use oid4vci::Wallet;
 use serde::{Deserialize, Serialize};
@@ -15,6 +16,7 @@ use std::sync::{Arc, Mutex};
 use ts_rs::TS;
 
 pub struct IdentityManager {
+    pub subject: Arc<dyn Subject>,
     pub provider_manager: ProviderManager,
     pub wallet: Wallet,
 }

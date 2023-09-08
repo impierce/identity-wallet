@@ -5,7 +5,10 @@ use crate::common::{
 use identity_wallet::{
     state::{
         actions::{Action, ActionType},
-        user_prompt::{CredentialOffer as CredentialOfferPrompt, CurrentUserPrompt, CurrentUserPromptType, Selection},
+        user_prompt::{
+            AcceptConnection, CredentialOffer as CredentialOfferPrompt, CurrentUserPrompt, CurrentUserPromptType,
+            ShareCredentials,
+        },
         AppState, Profile, TransferState,
     },
     verifiable_credential_record::VerifiableCredentialRecord,
@@ -26,16 +29,27 @@ async fn test_qr_code_scanned_read_credential_offer() {
     setup_state_file();
     setup_stronghold();
 
+    let managers = test_managers(vec![]);
+    let active_profile = Some(Profile {
+        name: "Ferris".to_string(),
+        picture: Some("&#129408".to_string()),
+        theme: Some("system".to_string()),
+        primary_did: managers
+            .lock()
+            .await
+            .identity_manager
+            .as_ref()
+            .unwrap()
+            .subject
+            .identifier()
+            .unwrap(),
+    });
+
     assert_state_update(
         // Initial state.
         AppState {
-            active_profile: Mutex::new(Some(Profile {
-                name: "Ferris".to_string(),
-                picture: Some("&#129408".to_string()),
-                theme: Some("system".to_string()),
-                primary_did: "did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY".to_string(),
-            })),
-            managers: test_managers(vec![]),
+            active_profile: Mutex::new(active_profile.clone()),
+            managers,
             ..AppState::default()
         },
         // A QR code is scanned containing a credential offer.
@@ -47,12 +61,7 @@ async fn test_qr_code_scanned_read_credential_offer() {
         }],
         // The state is updated with a new user prompt containing the credential offer.
         vec![Some(TransferState {
-            active_profile: Some(Profile {
-                name: "Ferris".to_string(),
-                picture: Some("&#129408".to_string()),
-                theme: Some("system".to_string()),
-                primary_did: "did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY".to_string(),
-            }),
+            active_profile,
             current_user_prompt: Some(CurrentUserPrompt::CredentialOffer(CredentialOfferPrompt {
                 r#type: CurrentUserPromptType::CredentialOffer,
                 credential_offer: serde_json::to_value(&CredentialOffer {
@@ -95,41 +104,67 @@ async fn test_qr_code_scanned_read_authorization_request() {
         format: JwtVcJson,
         credential: json!("eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDprZXk6ejZNa3RqWXpmNkd1UVJraDFYczlHcUJIU3JKVU01S3VxcGNKMXVjV0E3cmdINXBoI3o2TWt0all6ZjZHdVFSa2gxWHM5R3FCSFNySlVNNUt1cXBjSjF1Y1dBN3JnSDVwaCJ9.eyJpc3MiOiJkaWQ6a2V5Ono2TWt0all6ZjZHdVFSa2gxWHM5R3FCSFNySlVNNUt1cXBjSjF1Y1dBN3JnSDVwaCIsInN1YiI6ImRpZDprZXk6ejZNa2cxWFhHVXFma2hBS1Uxa1ZkMVBtdzZVRWoxdnhpTGoxeGM5MU1CejVvd05ZIiwiZXhwIjo5OTk5OTk5OTk5LCJpYXQiOjAsInZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIiwiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvZXhhbXBsZXMvdjEiXSwidHlwZSI6WyJWZXJpZmlhYmxlQ3JlZGVudGlhbCIsIlBlcnNvbmFsSW5mb3JtYXRpb24iXSwiaXNzdWFuY2VEYXRlIjoiMjAyMi0wMS0wMVQwMDowMDowMFoiLCJpc3N1ZXIiOiJkaWQ6a2V5Ono2TWt0all6ZjZHdVFSa2gxWHM5R3FCSFNySlVNNUt1cXBjSjF1Y1dBN3JnSDVwaCIsImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkIjoiZGlkOmtleTp6Nk1rZzFYWEdVcWZraEFLVTFrVmQxUG13NlVFajF2eGlMajF4YzkxTUJ6NW93TlkiLCJnaXZlbk5hbWUiOiJGZXJyaXMiLCJmYW1pbHlOYW1lIjoiQ3JhYm1hbiIsImVtYWlsIjoiZmVycmlzLmNyYWJtYW5AY3JhYm1haWwuY29tIiwiYmlydGhkYXRlIjoiMTk4NS0wNS0yMSJ9fX0.ETqRaVMxFZQLN8OmngL1IPGAA2xH9Nsir9vRvJTLLBOJbnGuPdvcMQkN720MQuk9LWmsqNMBrUQegIuJ9IQLBg")
     }));
+
+    let credentials = vec![verifiable_credential_record.display_credential.clone()];
+
     let uuid = verifiable_credential_record.display_credential.id.clone();
 
     let managers = test_managers(vec![verifiable_credential_record]);
+    let active_profile = Some(Profile {
+        name: "Ferris".to_string(),
+        picture: Some("&#129408".to_string()),
+        theme: Some("system".to_string()),
+        primary_did: managers
+            .lock()
+            .await
+            .identity_manager
+            .as_ref()
+            .unwrap()
+            .subject
+            .identifier()
+            .unwrap(),
+    });
+
     assert_state_update(
         // Initial state.
         AppState {
-            active_profile: Mutex::new(Some(Profile {
-                name: "Ferris".to_string(),
-                picture: Some("&#129408".to_string()),
-                theme: Some("system".to_string()),
-                primary_did: "did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY".to_string(),
-            })),
+            active_profile: Mutex::new(active_profile.clone()),
             managers,
+            credentials: Mutex::new(credentials.clone()),
             ..AppState::default()
         },
         // A QR code was scanned containing a authorization request.
-        vec![Action {
-            r#type: ActionType::QrCodeScanned,
-            payload: Some(json!({
-                "form_urlencoded": "siopv2://idtoken?response_type=id_token+vp_token&client_id=did%3Akey%3Az6Mkm9yeuZK7inXBNjnNH3vAs9uUjqfy3mfNoKBKsKBrv8Tb&scope=openid&presentation_definition=%7B%22id%22%3A%22Verifiable+Presentation+request+for+sign-on%22%2C%22input_descriptors%22%3A%5B%7B%22id%22%3A%22Request+for+Ferris%27s+Verifiable+Credential%22%2C%22constraints%22%3A%7B%22fields%22%3A%5B%7B%22path%22%3A%5B%22%24.vc.type%22%5D%2C%22filter%22%3A%7B%22type%22%3A%22array%22%2C%22contains%22%3A%7B%22const%22%3A%22PersonalInformation%22%7D%7D%7D%2C%7B%22path%22%3A%5B%22%24.vc.credentialSubject.givenName%22%5D%7D%2C%7B%22path%22%3A%5B%22%24.vc.credentialSubject.familyName%22%5D%7D%2C%7B%22path%22%3A%5B%22%24.vc.credentialSubject.email%22%5D%7D%2C%7B%22path%22%3A%5B%22%24.vc.credentialSubject.birthdate%22%5D%7D%5D%7D%7D%5D%7D&redirect_uri=https%3A%2F%2Fexample.com&nonce=nonce"
-            })),
-        }],
+        vec![
+            Action {
+                r#type: ActionType::QrCodeScanned,
+                payload: Some(json!({
+                    "form_urlencoded": "siopv2://idtoken?response_type=id_token+vp_token&client_id=did%3Akey%3Az6Mkm9yeuZK7inXBNjnNH3vAs9uUjqfy3mfNoKBKsKBrv8Tb&scope=openid&presentation_definition=%7B%22id%22%3A%22Verifiable+Presentation+request+for+sign-on%22%2C%22input_descriptors%22%3A%5B%7B%22id%22%3A%22Request+for+Ferris%27s+Verifiable+Credential%22%2C%22constraints%22%3A%7B%22fields%22%3A%5B%7B%22path%22%3A%5B%22%24.vc.type%22%5D%2C%22filter%22%3A%7B%22type%22%3A%22array%22%2C%22contains%22%3A%7B%22const%22%3A%22PersonalInformation%22%7D%7D%7D%2C%7B%22path%22%3A%5B%22%24.vc.credentialSubject.givenName%22%5D%7D%2C%7B%22path%22%3A%5B%22%24.vc.credentialSubject.familyName%22%5D%7D%2C%7B%22path%22%3A%5B%22%24.vc.credentialSubject.email%22%5D%7D%2C%7B%22path%22%3A%5B%22%24.vc.credentialSubject.birthdate%22%5D%7D%5D%7D%7D%5D%7D&redirect_uri=https%3A%2F%2Fexample.com&nonce=nonce"
+                })),
+            },
+            Action {
+                r#type: ActionType::ConnectionAccepted,
+                payload: None,
+            },
+        ],
         // The state is updated with a new user prompt containing the uuid's of the candidate verifiable credentials.
-        vec![Some(TransferState {
-            active_profile: Some(Profile {
-                name: "Ferris".to_string(),
-                picture: Some("&#129408".to_string()),
-                theme: Some("system".to_string()),
-                primary_did: "did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY".to_string(),
+        vec![
+            Some(TransferState {
+                active_profile: active_profile.clone(),
+                credentials: credentials.clone(),
+                current_user_prompt: Some(CurrentUserPrompt::AcceptConnection(AcceptConnection {
+                    r#type: CurrentUserPromptType::AcceptConnection,
+                })),
+                ..TransferState::default()
             }),
-            current_user_prompt: Some(CurrentUserPrompt::Selection(Selection {
-                r#type: CurrentUserPromptType::ShareCredentials,
-                options: vec![uuid],
-            })),
-            ..TransferState::default()
-        })],
+            Some(TransferState {
+                active_profile: active_profile.clone(),
+                credentials,
+                current_user_prompt: Some(CurrentUserPrompt::ShareCredentials(ShareCredentials {
+                    r#type: CurrentUserPromptType::ShareCredentials,
+                    options: vec![uuid],
+                })),
+                ..TransferState::default()
+            }),
+        ],
     ).await;
 }

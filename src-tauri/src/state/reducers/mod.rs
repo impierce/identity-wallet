@@ -5,7 +5,6 @@ pub mod storage;
 
 use super::{IdentityManager, Locale};
 use crate::crypto::stronghold::StrongholdManager;
-// use crate::did::did_key::generate_new_did;
 use crate::state::actions::Action;
 use crate::state::user_prompt::{CurrentUserPrompt, CurrentUserPromptType, Redirect};
 use crate::state::{AppState, Profile};
@@ -62,6 +61,7 @@ pub async fn create_identity(state: &AppState, action: Action) -> anyhow::Result
 
     state.active_profile.lock().unwrap().replace(profile);
     state_guard.identity_manager.replace(IdentityManager {
+        subject,
         provider_manager,
         wallet,
     });
@@ -98,6 +98,7 @@ pub async fn create_identity(state: &AppState, action: Action) -> anyhow::Result
     // let journey_definition = std::fs::read_to_string("resources/ngdil.json")?;
     let onboarding_journey: serde_json::Value = serde_json::from_str(&journey_definition).unwrap();
     *state.user_journey.lock().unwrap() = Some(onboarding_journey);
+
     Ok(())
 }
 
