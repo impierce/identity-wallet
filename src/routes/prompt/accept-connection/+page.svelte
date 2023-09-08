@@ -27,6 +27,8 @@
   //   (c) => $state.current_user_prompt.options.indexOf(c.id) > -1
   // );
 
+  let client_name = $state.current_user_prompt.client_name;
+
   // console.log(selected_credentials);
 
   console.log($state.current_user_prompt);
@@ -45,7 +47,7 @@
     {/if}
     <div class="text-center">
       <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
-        {$state.current_user_prompt.client_name}
+        {client_name}
       </p>
       <!-- <p class="pt-[10px] text-sm font-medium text-slate-500">www.bestdex.com</p> -->
     </div>
@@ -113,7 +115,13 @@
   <div
     class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 dark:bg-dark"
   >
-    <Button label="Accept connection" on:click={() => goto('/prompt/select-credentials/share')} />
+    <Button
+      label="Accept connection"
+      on:click={() =>
+        dispatch({
+          type: '[Authenticate] Connection accepted'
+        })}
+    />
     <Button
       label="Reject"
       variant="secondary"

@@ -77,7 +77,7 @@
     <div class="flex w-full items-center rounded-lg bg-white px-4 py-4 dark:bg-dark">
       <!-- <WarningCircle class="mr-2 h-6 w-6 text-amber-500" /> -->
       <p class="text-sm font-medium text-slate-800 dark:text-slate-300">
-        <span class="text-primary">{credential_offer.credential_issuer}</span>
+        <span class="text-primary">{credential_offer.issuer_name}</span>
         is offering you the following credentials
       </p>
     </div>

@@ -11,8 +11,11 @@ use crate::state::reducers::{
 use crate::state::user_prompt::{CurrentUserPrompt, CurrentUserPromptType, PasswordRequired, Redirect};
 use crate::state::{AppState, TransferState};
 use log::{info, warn};
+use oid4vc_core::authorization_request::AuthorizationRequest;
 use oid4vci::credential_offer::CredentialOfferQuery;
-use siopv2::RequestUrl;
+use oid4vp::OID4VP;
+use serde_json::json;
+use siopv2::SIOPv2;
 
 #[async_recursion::async_recursion]
 pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
@@ -86,11 +89,22 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
 
             let form_urlencoded = payload["form_urlencoded"].as_str().unwrap();
 
-            if let Result::Ok(request_url) = form_urlencoded.parse::<RequestUrl>() {
+            if let Result::Ok(request_url) = form_urlencoded.parse::<AuthorizationRequest<SIOPv2>>() {
                 handle_action_inner(
                     Action {
                         r#type: ActionType::ReadRequest,
-                        payload: Some(serde_json::to_value(request_url).unwrap()),
+                        payload: Some(json!(request_url)),
+                    },
+                    _app_handle,
+                    app_state,
+                )
+                .await
+                .ok();
+            } else if let Result::Ok(request_url) = form_urlencoded.parse::<AuthorizationRequest<OID4VP>>() {
+                handle_action_inner(
+                    Action {
+                        r#type: ActionType::ReadRequest,
+                        payload: Some(json!(request_url)),
                     },
                     _app_handle,
                     app_state,
@@ -101,7 +115,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
                 handle_action_inner(
                     Action {
                         r#type: ActionType::ReadCredentialOffer,
-                        payload: Some(serde_json::to_value(credential_offer_query).unwrap()),
+                        payload: Some(json!(credential_offer_query)),
                     },
                     _app_handle,
                     app_state,

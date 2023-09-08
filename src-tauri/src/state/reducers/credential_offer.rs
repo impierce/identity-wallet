@@ -1,7 +1,8 @@
 use crate::{
     state::{
         actions::Action,
-        user_prompt::{CredentialOffer as CredentialOfferPrompt, CurrentUserPrompt, CurrentUserPromptType},
+        reducers::credential_offer,
+        user_prompt::{CredentialOffer as CredentialOfferPrompt, CurrentUserPrompt, CurrentUserPromptType, Redirect},
         AppState,
     },
     verifiable_credential_record::VerifiableCredentialRecord,
@@ -79,9 +80,18 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::
             _by_value => (),
         });
 
+    // FIX THIS!!
+    let display = credential_issuer_metadata.unwrap().display.as_ref().unwrap()[0].clone();
+
+    let issuer_name = display["client_name"].as_str().unwrap().to_string();
+    let logo_uri = display["logo_uri"].as_str().unwrap().to_string();
+    let credential_offer = serde_json::to_value(credential_offer)?;
+
     *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::CredentialOffer(CredentialOfferPrompt {
         r#type: CurrentUserPromptType::CredentialOffer,
-        credential_offer: serde_json::to_value(&credential_offer).unwrap(),
+        issuer_name,
+        logo_uri,
+        credential_offer,
     }));
     Ok(())
 }
@@ -196,7 +206,131 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
     }
 
     state.credentials.lock().unwrap().extend(display_credentials);
-    *state.current_user_prompt.lock().unwrap() = None;
+    state
+        .current_user_prompt
+        .lock()
+        .unwrap()
+        .replace(CurrentUserPrompt::Redirect(Redirect {
+            r#type: CurrentUserPromptType::Redirect,
+            target: "me".to_string(),
+        }));
 
     Ok(())
+}
+
+#[test]
+fn temp() {
+    let metadata: CredentialIssuerMetadata = serde_json::from_value(json!({
+      "credential_issuer": "https://api.ngdil-demo.tanglelabs.io/",
+      "credential_endpoint": "https://api.ngdil-demo.tanglelabs.io/api/credential",
+      "batch_credential_endpoint": "https://api.ngdil-demo.tanglelabs.io/api/credentials",
+      "credentials_supported": [
+        {
+          "format": "jwt_vc_json",
+          "cryptographic_binding_methods_supported": [
+            "did:key"
+          ],
+          "cryprographic_suites_supported": [
+            "EdDSA"
+          ],
+          "proof_types_supported": [
+            "jwt"
+          ],
+          "credential_definition": {
+            "type": [
+              "VerifiableCredential",
+              "National ID"
+            ]
+          },
+          "scope": "National ID"
+        },
+        {
+          "format": "jwt_vc_json",
+          "cryptographic_binding_methods_supported": [
+            "did:key"
+          ],
+          "cryprographic_suites_supported": [
+            "EdDSA"
+          ],
+          "proof_types_supported": [
+            "jwt"
+          ],
+          "credential_definition": {
+            "type": [
+              "VerifiableCredential",
+              "Volunteer Badge"
+            ]
+          },
+          "scope": "Volunteer Badge"
+        },
+        {
+          "format": "jwt_vc_json",
+          "cryptographic_binding_methods_supported": [
+            "did:key"
+          ],
+          "cryprographic_suites_supported": [
+            "EdDSA"
+          ],
+          "proof_types_supported": [
+            "jwt"
+          ],
+          "credential_definition": {
+            "type": [
+              "VerifiableCredential",
+              "School Course Certificate"
+            ]
+          },
+          "scope": "School Course Certificate"
+        },
+        {
+          "format": "jwt_vc_json",
+          "cryptographic_binding_methods_supported": [
+            "did:key"
+          ],
+          "cryprographic_suites_supported": [
+            "EdDSA"
+          ],
+          "proof_types_supported": [
+            "jwt"
+          ],
+          "credential_definition": {
+            "type": [
+              "VerifiableCredential",
+              "Staff ID"
+            ]
+          },
+          "scope": "Staff ID"
+        },
+        {
+          "format": "jwt_vc_json",
+          "cryptographic_binding_methods_supported": [
+            "did:key"
+          ],
+          "cryprographic_suites_supported": [
+            "EdDSA"
+          ],
+          "proof_types_supported": [
+            "jwt"
+          ],
+          "credential_definition": {
+            "type": [
+              "VerifiableCredential",
+              "Employee ID"
+            ]
+          },
+          "scope": "Employee ID"
+        }
+      ],
+      "display": [
+        {
+          "locale": "en-US",
+          "logo_uri": "https://uploads-ssl.webflow.com/6440ceac338a9203b5100c47/6440ceac338a920197100e60_NGDIL%20Logo%20Dark.svg",
+          "client_name": "NGDIL"
+        }
+      ]
+    })).unwrap();
+
+    let display = metadata.display.unwrap()[0].clone()["client_name"].clone();
+
+    dbg!(display);
 }

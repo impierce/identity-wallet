@@ -18,6 +18,8 @@
   let selected_credentials = $state.credentials?.filter(
     (c) => $state.current_user_prompt.options.indexOf(c.id) > -1
   );
+
+  let client_name = $state.current_user_prompt.client_name;
 </script>
 
 <div class="content-height flex flex-col items-stretch bg-silver dark:bg-navy">
@@ -38,7 +40,7 @@
           <img src={$state.current_user_prompt.logo_uri} alt="logo" class="object-scale-down" />
         </div>
         <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
-          {$state.current_user_prompt.client_name}
+          {client_name}
         </p>
       </div>
       <!-- Data sensitivity -->
@@ -62,7 +64,7 @@
           <CredentialOfferEntry
             index={credential.id}
             title={credential.metadata.display.name || credential.data.type.at(-1)}
-            description={new URL(credential.data.issuer).hostname}
+            description={credential.data.issuer}
             color={credential.metadata.display.color || 'bg-indigo-100'}
           >
             <span slot="icon">
