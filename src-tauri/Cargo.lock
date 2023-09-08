@@ -2968,8 +2968,7 @@ dependencies = [
  "fern",
  "futures",
  "identity_core 0.7.0-alpha.7 (registry+https://github.com/rust-lang/crates.io-index)",
- "identity_credential 0.7.0-alpha.7 (registry+https://github.com/rust-lang/crates.io-index)",
- "identity_iota",
+ "identity_credential 0.7.0-alpha.7",
  "iota_stronghold 2.0.0",
  "jsonwebtoken",
  "lazy_static",
@@ -3096,6 +3095,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "identity_core"
+version = "0.7.0-alpha.7"
+source = "git+https://github.com/iotaledger/identity.rs.git#54a86cf96ab770c34ccdec147e419bc39022536c"
+dependencies = [
+ "iota-crypto 0.23.0",
+ "js-sys",
+ "multibase",
+ "serde",
+ "serde_json",
+ "strum 0.25.0",
+ "thiserror",
+ "time 0.3.28",
+ "url",
+ "zeroize",
+]
+
+[[package]]
 name = "identity_credential"
 version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3118,10 +3134,8 @@ dependencies = [
  "identity_document 0.7.0-alpha.7",
  "identity_verification 0.7.0-alpha.7",
  "indexmap 2.0.0",
- "itertools 0.11.0",
  "once_cell",
  "serde",
- "serde_repr",
  "strum 0.25.0",
  "thiserror",
  "url",
@@ -3130,16 +3144,17 @@ dependencies = [
 [[package]]
 name = "identity_credential"
 version = "0.7.0-alpha.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a0e1f585f57a79224ce2b0b39dcb73cb45194fb78c248c994ddb8565f3cafe23"
+source = "git+https://github.com/iotaledger/identity.rs.git#54a86cf96ab770c34ccdec147e419bc39022536c"
 dependencies = [
- "identity_core 0.7.0-alpha.7 (registry+https://github.com/rust-lang/crates.io-index)",
- "identity_did 0.7.0-alpha.7 (registry+https://github.com/rust-lang/crates.io-index)",
- "identity_document 0.7.0-alpha.7 (registry+https://github.com/rust-lang/crates.io-index)",
- "identity_verification 0.7.0-alpha.7 (registry+https://github.com/rust-lang/crates.io-index)",
+ "identity_core 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git)",
+ "identity_did 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git)",
+ "identity_document 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git)",
+ "identity_verification 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git)",
  "indexmap 2.0.0",
+ "itertools 0.11.0",
  "once_cell",
  "serde",
+ "serde_repr",
  "strum 0.25.0",
  "thiserror",
  "url",
@@ -3178,12 +3193,11 @@ dependencies = [
 [[package]]
 name = "identity_did"
 version = "0.7.0-alpha.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "513ba9872ebb42c1da7abc274ded36f8f055b752c693e596934dac583bb99785"
+source = "git+https://github.com/iotaledger/identity.rs.git#54a86cf96ab770c34ccdec147e419bc39022536c"
 dependencies = [
  "did_url",
  "form_urlencoded",
- "identity_core 0.7.0-alpha.7 (registry+https://github.com/rust-lang/crates.io-index)",
+ "identity_core 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git)",
  "serde",
  "strum 0.25.0",
  "thiserror",
@@ -3206,13 +3220,12 @@ dependencies = [
 [[package]]
 name = "identity_document"
 version = "0.7.0-alpha.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ab5edafebb78ea7cd5bbede1cdb280635cbd8e8387b326f8739844ffdcfe334c"
+source = "git+https://github.com/iotaledger/identity.rs.git#54a86cf96ab770c34ccdec147e419bc39022536c"
 dependencies = [
  "did_url",
- "identity_core 0.7.0-alpha.7 (registry+https://github.com/rust-lang/crates.io-index)",
- "identity_did 0.7.0-alpha.7 (registry+https://github.com/rust-lang/crates.io-index)",
- "identity_verification 0.7.0-alpha.7 (registry+https://github.com/rust-lang/crates.io-index)",
+ "identity_core 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git)",
+ "identity_did 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git)",
+ "identity_verification 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git)",
  "indexmap 2.0.0",
  "serde",
  "strum 0.25.0",
@@ -3294,10 +3307,9 @@ dependencies = [
 [[package]]
 name = "identity_jose"
 version = "0.7.0-alpha.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "13bf3ecb8f47839bd27456b87e1909a17654aab129a6ff1e4a74a0d1f9049dd5"
+source = "git+https://github.com/iotaledger/identity.rs.git#54a86cf96ab770c34ccdec147e419bc39022536c"
 dependencies = [
- "identity_core 0.7.0-alpha.7 (registry+https://github.com/rust-lang/crates.io-index)",
+ "identity_core 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git)",
  "iota-crypto 0.23.0",
  "serde",
  "serde_json",
@@ -3321,12 +3333,11 @@ dependencies = [
 [[package]]
 name = "identity_verification"
 version = "0.7.0-alpha.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f37bfd36e4c4b69714daea50dc4cbf76dadf3e7da7317c8d74075c682e7ae8fc"
+source = "git+https://github.com/iotaledger/identity.rs.git#54a86cf96ab770c34ccdec147e419bc39022536c"
 dependencies = [
- "identity_core 0.7.0-alpha.7 (registry+https://github.com/rust-lang/crates.io-index)",
- "identity_did 0.7.0-alpha.7 (registry+https://github.com/rust-lang/crates.io-index)",
- "identity_jose 0.7.0-alpha.7 (registry+https://github.com/rust-lang/crates.io-index)",
+ "identity_core 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git)",
+ "identity_did 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git)",
+ "identity_jose 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git)",
  "serde",
  "strum 0.25.0",
  "thiserror",
@@ -4456,7 +4467,7 @@ dependencies = [
  "futures",
  "getset",
  "identity_core 0.7.0-alpha.7 (registry+https://github.com/rust-lang/crates.io-index)",
- "identity_credential 0.7.0-alpha.7",
+ "identity_credential 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git)",
  "identity_iota",
  "jsonwebtoken",
  "oid4vc-core",
@@ -4504,7 +4515,7 @@ dependencies = [
  "futures",
  "getset",
  "identity_core 0.7.0-alpha.7 (registry+https://github.com/rust-lang/crates.io-index)",
- "identity_credential 0.7.0-alpha.7",
+ "identity_credential 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git)",
  "is_empty",
  "jsonwebtoken",
  "oid4vc-core",
@@ -5799,7 +5810,7 @@ dependencies = [
  "did_url",
  "futures",
  "getset",
- "identity_credential 0.7.0-alpha.7",
+ "identity_credential 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git)",
  "is_empty",
  "jsonwebtoken",
  "oid4vc-core",

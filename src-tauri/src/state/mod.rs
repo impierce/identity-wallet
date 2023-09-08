@@ -7,11 +7,15 @@ use crate::{
     crypto::stronghold::StrongholdManager, state::user_prompt::CurrentUserPrompt,
     verifiable_credential_record::DisplayCredential,
 };
-use oid4vc_core::Subject;
+use oid4vc_core::{
+    authorization_request::{AuthorizationRequest, AuthorizationRequestObject},
+    Subject,
+};
 use oid4vc_manager::ProviderManager;
 use oid4vci::Wallet;
+use oid4vp::OID4VP;
 use serde::{Deserialize, Serialize};
-use siopv2::AuthorizationRequest;
+use siopv2::SIOPv2;
 use std::sync::{Arc, Mutex};
 use ts_rs::TS;
 
@@ -32,7 +36,8 @@ pub struct Managers {
 pub struct AppState {
     pub managers: tauri::async_runtime::Mutex<Managers>,
     pub active_profile: Mutex<Option<Profile>>,
-    pub active_authorization_request: Mutex<Option<AuthorizationRequest>>,
+    pub active_authorization_request: Mutex<Option<AuthorizationRequestObject<SIOPv2>>>,
+    pub active_authorization_request_oid4vp: Mutex<Option<AuthorizationRequestObject<OID4VP>>>,
     pub locale: Mutex<Locale>,
     pub credentials: Mutex<Vec<DisplayCredential>>,
     pub current_user_prompt: Mutex<Option<CurrentUserPrompt>>,
