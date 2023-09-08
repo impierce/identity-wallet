@@ -47,6 +47,19 @@ pub struct PasswordRequired {
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, TS, PartialEq)]
+#[ts(export, export_to = "bindings/user-prompt/AcceptConnection.ts")]
+pub struct AcceptConnection {
+    pub r#type: CurrentUserPromptType,
+}
+
+#[derive(Clone, Serialize, Deserialize, Debug, TS, PartialEq)]
+#[ts(export, export_to = "bindings/user-prompt/ShareCredentials.ts")]
+pub struct ShareCredentials {
+    pub r#type: CurrentUserPromptType,
+    pub options: Vec<String>,
+}
+
+#[derive(Clone, Serialize, Deserialize, Debug, TS, PartialEq)]
 #[serde(untagged)]
 #[ts(export, export_to = "bindings/user-prompt/CurrentUserPrompt.ts")]
 pub enum CurrentUserPrompt {
@@ -55,6 +68,8 @@ pub enum CurrentUserPrompt {
     Selection(Selection),
     CredentialOffer(CredentialOffer),
     PasswordRequired(PasswordRequired),
+    AcceptConnection(AcceptConnection),
+    ShareCredentials(ShareCredentials),
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, TS, PartialEq)]
@@ -65,9 +80,6 @@ pub enum CurrentUserPromptType {
     // TODO: remove or rename generic warning
     #[serde(rename = "warning")]
     Warning,
-    // TODO: remove or rename generic selection
-    // #[serde(rename = "selection")]
-    // Selection,
     #[serde(rename = "accept-connection")] // SIOPv2
     AcceptConnection,
     #[serde(rename = "share-credentials")] // VP

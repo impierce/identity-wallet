@@ -40,6 +40,7 @@ pub fn test_managers(
     tauri::async_runtime::Mutex::new(Managers {
         stronghold_manager: Some(stronghold_manager),
         identity_manager: Some(IdentityManager {
+            subject,
             provider_manager,
             wallet,
         }),
