@@ -34,8 +34,8 @@ pub struct Selection {
 #[ts(export, export_to = "bindings/user-prompt/CredentialOffer.ts")]
 pub struct CredentialOffer {
     pub r#type: CurrentUserPromptType,
-    /// An option is in the form: (<option_name>, <option_value>)
-    // pub options: Vec<(String, String)>,
+    pub issuer_name: String,
+    pub logo_uri: String,
     #[ts(type = "object")]
     pub credential_offer: serde_json::Value,
 }
@@ -50,12 +50,16 @@ pub struct PasswordRequired {
 #[ts(export, export_to = "bindings/user-prompt/AcceptConnection.ts")]
 pub struct AcceptConnection {
     pub r#type: CurrentUserPromptType,
+    pub client_name: String,
+    pub logo_uri: String,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, TS, PartialEq)]
 #[ts(export, export_to = "bindings/user-prompt/ShareCredentials.ts")]
 pub struct ShareCredentials {
     pub r#type: CurrentUserPromptType,
+    pub client_name: String,
+    pub logo_uri: String,
     pub options: Vec<String>,
 }
 

@@ -104,7 +104,7 @@
       <CredentialListEntry
         id={credential.id}
         title={credential.metadata.display.name || credential.data.type.at(-1)}
-        description={new URL(credential.data.issuer).hostname}
+        description={credential.data.issuer}
         color={credential.metadata.display.color ||
           colors.at(
             credential.id

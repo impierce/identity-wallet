@@ -48,9 +48,14 @@ oid4vc-core = { path = "../../openid4vc/oid4vc-core" }
 oid4vp = { path = "../../openid4vc/oid4vp" }
 
 base64 = { version = "0.13.0" }
-identity_iota = "0.6"
+# identity_iota = "0.6"
 identity_core = { version = "=0.7.0-alpha.7" }
-identity_credential = { version = "=0.7.0-alpha.7", default-features = false, features = [
+
+# identity_credential = { version = "=0.7.0-alpha.7", default-features = false, features = [
+#     "credential",
+#     "presentation",
+# ] }
+identity_credential = { path = "../../identity.rs/identity_credential", default-features = false, features = [
     "credential",
     "presentation",
 ] }

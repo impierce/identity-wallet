@@ -99,7 +99,7 @@
         <div class="flex flex-col items-center pt-[15px]">
           <p class="text-[22px]/[30px] font-semibold text-slate-700">{title}</p>
           <p class="text-[13px]/[24px] font-normal text-slate-500">
-            {new URL(credential.data.issuer).hostname}
+            {credential.data.issuer}
           </p>
         </div>
       </div>
