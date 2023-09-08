@@ -19,7 +19,7 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![handle_action])
         .setup(move |app| {
             info!("setting up tauri app");
-            initialize_storage(&app.handle()).ok();
+            initialize_storage(app.handle()).ok();
             #[cfg(mobile)]
             {
                 app.handle().plugin(tauri_plugin_barcode_scanner::init())?;
