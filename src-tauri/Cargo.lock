@@ -3111,6 +3111,20 @@ dependencies = [
 
 [[package]]
 name = "identity_credential"
+version = "0.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e6215eaefc0f5ccc60d141fb715df6b9bcc15f07329ecaff72277e5a85b3ac19"
+dependencies = [
+ "identity_core 0.6.1",
+ "identity_did 0.6.1",
+ "lazy_static",
+ "serde",
+ "strum 0.24.1",
+ "thiserror",
+]
+
+[[package]]
+name = "identity_credential"
 version = "0.7.0-alpha.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a0e1f585f57a79224ce2b0b39dcb73cb45194fb78c248c994ddb8565f3cafe23"
