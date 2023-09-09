@@ -27,6 +27,9 @@
   let credential_offer: any[] = $state.current_user_prompt.credential_offer;
   console.log({ credential_offer });
 
+  let issuer_name = $state.current_user_prompt.issuer_name;
+
+
   // const checkboxes = credential_offer.credentials.map((c, i) => {
   //   const {
   //     elements: { root, input },
@@ -57,14 +60,14 @@
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
     <PaddedIcon icon={DownloadSimple} />
     <p class="text-2xl font-medium text-slate-800 dark:text-white">
-      {credential_offer.issuer_name}
+      {issuer_name}
     </p>
 
     <!-- Text -->
     <div class="flex w-full items-center rounded-lg bg-white px-4 py-4 dark:bg-dark">
       <!-- <WarningCircle class="mr-2 h-6 w-6 text-amber-500" /> -->
       <p class="text-sm font-medium text-slate-800 dark:text-slate-300">
-        <span class="text-primary">{credential_offer.issuer_name}</span>
+        <span class="text-primary">{issuer_name}</span>
         is offering you the following credentials
       </p>
     </div>

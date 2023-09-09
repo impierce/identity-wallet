@@ -3226,7 +3226,7 @@ version = "0.7.0-alpha.7"
 source = "git+https://github.com/iotaledger/identity.rs.git?branch=fix/verifiable-credential-as-vec#2564010666bfe304176f56e6170a9128fecc7705"
 dependencies = [
  "did_url",
- "identity_core 0.7.0-alpha.7",
+ "identity_core 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git?branch=fix/verifiable-credential-as-vec)",
  "identity_did 0.7.0-alpha.7",
  "identity_verification 0.7.0-alpha.7",
  "indexmap 2.0.0",
@@ -3342,7 +3342,7 @@ name = "identity_verification"
 version = "0.7.0-alpha.7"
 source = "git+https://github.com/iotaledger/identity.rs.git?branch=fix/verifiable-credential-as-vec#2564010666bfe304176f56e6170a9128fecc7705"
 dependencies = [
- "identity_core 0.7.0-alpha.7",
+ "identity_core 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git?branch=fix/verifiable-credential-as-vec)",
  "identity_did 0.7.0-alpha.7",
  "identity_jose 0.7.0-alpha.7",
  "serde",

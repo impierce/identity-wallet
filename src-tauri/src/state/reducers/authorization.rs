@@ -91,6 +91,7 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> any
         }
     };
 
+    info!("client_name in credential_offer: {:?}", client_name);
     info!("logo_uri in read_authorization_request: {:?}", logo_uri);
 
     *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::AcceptConnection(AcceptConnection {
@@ -182,8 +183,7 @@ pub async fn handle_authorization_request(state: &AppState, _action: Action) -> 
         .logo_uri
         .unwrap();
 
-    info!("Client name = {:?}", client_name);
-
+    info!("client_name in credential_offer: {:?}", client_name);
     info!("logo_uri in read_authorization_request: {:?}", logo_uri.to_string());
 
     // TODO: communicate when no credentials are available.
