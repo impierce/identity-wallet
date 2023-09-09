@@ -938,9 +938,9 @@ dependencies = [
 
 [[package]]
 name = "cfg-expr"
-version = "0.15.4"
+version = "0.15.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b40ccee03b5175c18cde8f37e7d2a33bcef6f8ec8f7cc0d81090d1bb380949c9"
+checksum = "03915af431787e6ffdcc74c645077518c6b6e01f80b761e0fbbfa288536311b3"
 dependencies = [
  "smallvec",
  "target-lexicon",
@@ -3109,6 +3109,20 @@ dependencies = [
  "time 0.3.28",
  "url",
  "zeroize",
+]
+
+[[package]]
+name = "identity_credential"
+version = "0.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e6215eaefc0f5ccc60d141fb715df6b9bcc15f07329ecaff72277e5a85b3ac19"
+dependencies = [
+ "identity_core 0.6.1",
+ "identity_did 0.6.1",
+ "lazy_static",
+ "serde",
+ "strum 0.24.1",
+ "thiserror",
 ]
 
 [[package]]
