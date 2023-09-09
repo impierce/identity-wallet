@@ -49,7 +49,7 @@
     <div class="flex flex-col items-center pt-4 text-sm font-medium text-slate-400">
       <div class="pb-4" />
 
-      <div>0.2.6</div>
+      <div>0.2.7</div>
       <div class="flex items-center pb-4">
         <p>Built with Tauri</p>
         <Heart variation="solid" size="18" class="pl-1" />
