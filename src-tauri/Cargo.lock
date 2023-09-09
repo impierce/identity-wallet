@@ -3055,24 +3055,7 @@ dependencies = [
  "serde_json",
  "strum 0.24.1",
  "thiserror",
- "time 0.3.28",
- "url",
- "zeroize",
-]
-
-[[package]]
-name = "identity_core"
-version = "0.7.0-alpha.7"
-dependencies = [
- "iota-crypto 0.23.0",
- "js-sys",
- "multibase",
- "serde",
- "serde_jcs",
- "serde_json",
- "strum 0.25.0",
- "thiserror",
- "time 0.3.28",
+ "time",
  "url",
  "zeroize",
 ]
@@ -3107,23 +3090,9 @@ dependencies = [
  "serde_json",
  "strum 0.25.0",
  "thiserror",
- "time 0.3.28",
+ "time",
  "url",
  "zeroize",
-]
-
-[[package]]
-name = "identity_credential"
-version = "0.6.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e6215eaefc0f5ccc60d141fb715df6b9bcc15f07329ecaff72277e5a85b3ac19"
-dependencies = [
- "identity_core 0.6.1",
- "identity_did 0.6.1",
- "lazy_static",
- "serde",
- "strum 0.24.1",
- "thiserror",
 ]
 
 [[package]]
