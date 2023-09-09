@@ -9,9 +9,9 @@
   import SortAscending from '~icons/ph/sort-ascending-bold';
 </script>
 
-<div class="flex flex-col bg-silver dark:bg-navy">
+<div class="content-height flex flex-col bg-silver dark:bg-navy">
   <div
-    class="relative flex h-[50px] w-full items-center justify-center bg-silver text-[13px]/[24px] font-medium text-neutral-900 dark:bg-navy dark:text-white"
+    class="relative flex h-[50px] min-h-[50px] w-full items-center justify-center bg-silver text-[13px]/[24px] font-medium text-neutral-900 dark:bg-navy dark:text-white"
   >
     <p>Connected</p>
     <!-- TODO: comment out, if no functionality given -->
@@ -25,9 +25,9 @@
       </button>
     </div>
   </div>
-  <div class="grow px-4 py-5">
+  <div class="grow overflow-y-auto px-4 py-5">
     <MeltUiActivityTabs>
-      <div slot="connections" class="h-full bg-silver pt-5 dark:bg-navy">
+      <div slot="connections" class="h-full pt-5">
         <!-- Search & Sort -->
         <!-- <div class="flex pb-4">
         <div class="grow">
@@ -39,10 +39,17 @@
       </div> -->
         <ConnectionsList />
       </div>
-      <div slot="history" class="flex h-full items-center justify-center p-4">
+      <div slot="history" class="h-full pt-5">
         <History />
         <!-- <div class="font-medium text-slate-400">No history yet</div> -->
       </div>
     </MeltUiActivityTabs>
   </div>
 </div>
+
+<style>
+  .content-height {
+    /* bottom-navigation: 64px */
+    height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom) - 64px);
+  }
+</style>

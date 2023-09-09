@@ -8,11 +8,18 @@
   import type { Connection } from './types';
   import { groupConnectionsAlphabetically } from './utils';
 
-  let connections: Map<string, Connection[]> = groupConnectionsAlphabetically(exampleConnections);
+  let connections: Map<string, Connection[]> = groupConnectionsAlphabetically([]);
   console.log(Object.fromEntries(connections));
 </script>
 
-<div class="flex flex-col space-y-3">
+<div class="flex h-full flex-col space-y-3">
+  {#if connections.size === 0}
+    <div class="flex h-full flex-col items-center justify-center">
+      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-white">
+        No connections yet.
+      </p>
+    </div>
+  {/if}
   {#each Object.entries(Object.fromEntries(connections)) as entry}
     <p class="w-full px-4 text-[14px]/[22px] font-medium text-slate-600 dark:text-white">
       {entry[0]}

@@ -113,7 +113,7 @@
               .at(0) % 8 // TODO: omits last value (white)
           )}
       >
-        <!-- Show logo if credential is not mutable (set through issuer's metadata) -->
+        <!-- Show logo if credential is immutable (set through issuer's metadata) -->
         <div slot="logo" class="p-1">
           {#if !credential.metadata.is_mutable}
             <img

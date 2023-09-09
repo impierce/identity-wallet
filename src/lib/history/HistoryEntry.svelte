@@ -17,9 +17,14 @@
 
 <div class="flex flex-col">
   <p class="text-[14px]/[22px] font-medium text-slate-800">{title}</p>
-  <p class="text-[12px]/[20px] font-medium text-slate-500">{timestamp}</p>
+  <p class="text-[12px]/[20px] font-medium text-slate-500">
+    {new Date(timestamp).toLocaleString('en-US', {
+      dateStyle: 'medium',
+      timeStyle: 'medium'
+    })}
+  </p>
   {#if credentials.length > 0}
-    <div class="rounded-xl border border-slate-200">
+    <div class="mt-[12px] w-fit rounded-xl border border-slate-200">
       {#each credentials as credential}
         <CredentialListEntry
           title={credential.metadata.display.name ?? credential.data.type.at(-1)}
