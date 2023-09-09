@@ -87,6 +87,8 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::
     let logo_uri = display["logo_uri"].as_str().unwrap().to_string();
     let credential_offer = serde_json::to_value(credential_offer)?;
 
+    info!("logo_uri in credential_offer: {:?}", logo_uri);
+
     *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::CredentialOffer(CredentialOfferPrompt {
         r#type: CurrentUserPromptType::CredentialOffer,
         issuer_name,
