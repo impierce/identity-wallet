@@ -28,6 +28,8 @@
   let credential_offer: any[] = $state.current_user_prompt.credential_offer;
   console.log({ credential_offer });
 
+  let issuer_name = $state.current_user_prompt.issuer_name;
+
   // const checkboxes = credential_offer.credentials.map((c, i) => {
   //   const {
   //     elements: { root, input },
@@ -66,8 +68,8 @@
       <PaddedIcon icon={DownloadSimple} />
     {/if}
     <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-white">
-      {#if $state.current_user_prompt.issuer_name}
-        {$state.current_user_prompt.issuer_name}
+      {#if issuer_name}
+        {issuer_name}
       {:else}
         {new URL(credential_offer.credential_issuer).hostname}
       {/if}
@@ -77,7 +79,7 @@
     <div class="flex w-full items-center rounded-lg bg-white px-4 py-4 dark:bg-dark">
       <!-- <WarningCircle class="mr-2 h-6 w-6 text-amber-500" /> -->
       <p class="text-sm font-medium text-slate-800 dark:text-slate-300">
-        <span class="text-primary">{credential_offer.issuer_name}</span>
+        <span class="text-primary">{issuer_name}</span>
         is offering you the following credentials
       </p>
     </div>

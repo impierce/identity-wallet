@@ -3143,30 +3143,12 @@ dependencies = [
 [[package]]
 name = "identity_credential"
 version = "0.7.0-alpha.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a0e1f585f57a79224ce2b0b39dcb73cb45194fb78c248c994ddb8565f3cafe23"
-dependencies = [
- "identity_core 0.7.0-alpha.7",
- "identity_did 0.7.0-alpha.7",
- "identity_document",
- "identity_verification",
- "indexmap 2.0.0",
- "once_cell",
- "serde",
- "strum 0.25.0",
- "thiserror",
- "url",
-]
-
-[[package]]
-name = "identity_credential"
-version = "0.7.0-alpha.7"
 source = "git+https://github.com/iotaledger/identity.rs.git?branch=fix/verifiable-credential-as-vec#2564010666bfe304176f56e6170a9128fecc7705"
 dependencies = [
  "identity_core 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git?branch=fix/verifiable-credential-as-vec)",
- "identity_did 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git?branch=fix/verifiable-credential-as-vec)",
- "identity_document 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git?branch=fix/verifiable-credential-as-vec)",
- "identity_verification 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git?branch=fix/verifiable-credential-as-vec)",
+ "identity_did 0.7.0-alpha.7",
+ "identity_document",
+ "identity_verification",
  "indexmap 2.0.0",
  "itertools 0.11.0",
  "once_cell",
@@ -3209,39 +3191,14 @@ dependencies = [
 ]
 
 [[package]]
-name = "identity_did"
-version = "0.7.0-alpha.7"
-source = "git+https://github.com/iotaledger/identity.rs.git?branch=fix/verifiable-credential-as-vec#2564010666bfe304176f56e6170a9128fecc7705"
-dependencies = [
- "did_url",
- "form_urlencoded",
- "identity_core 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git?branch=fix/verifiable-credential-as-vec)",
- "serde",
- "strum 0.25.0",
- "thiserror",
-]
-
-[[package]]
-name = "identity_document"
-version = "0.7.0-alpha.7"
-source = "git+https://github.com/iotaledger/identity.rs.git?branch=fix/verifiable-credential-as-vec#2564010666bfe304176f56e6170a9128fecc7705"
-dependencies = [
- "did_url",
- "identity_core 0.7.0-alpha.7",
- "serde",
- "strum 0.25.0",
- "thiserror",
-]
-
-[[package]]
 name = "identity_document"
 version = "0.7.0-alpha.7"
 source = "git+https://github.com/iotaledger/identity.rs.git?branch=fix/verifiable-credential-as-vec#2564010666bfe304176f56e6170a9128fecc7705"
 dependencies = [
  "did_url",
  "identity_core 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git?branch=fix/verifiable-credential-as-vec)",
- "identity_did 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git?branch=fix/verifiable-credential-as-vec)",
- "identity_verification 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git?branch=fix/verifiable-credential-as-vec)",
+ "identity_did 0.7.0-alpha.7",
+ "identity_verification",
  "indexmap 2.0.0",
  "serde",
  "strum 0.25.0",
@@ -3312,20 +3269,6 @@ name = "identity_jose"
 version = "0.7.0-alpha.7"
 source = "git+https://github.com/iotaledger/identity.rs.git?branch=fix/verifiable-credential-as-vec#2564010666bfe304176f56e6170a9128fecc7705"
 dependencies = [
- "identity_core 0.7.0-alpha.7",
- "iota-crypto 0.23.0",
- "serde",
- "serde_json",
- "subtle",
- "thiserror",
- "zeroize",
-]
-
-[[package]]
-name = "identity_jose"
-version = "0.7.0-alpha.7"
-source = "git+https://github.com/iotaledger/identity.rs.git?branch=fix/verifiable-credential-as-vec#2564010666bfe304176f56e6170a9128fecc7705"
-dependencies = [
  "identity_core 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git?branch=fix/verifiable-credential-as-vec)",
  "iota-crypto 0.23.0",
  "serde",
@@ -3340,22 +3283,9 @@ name = "identity_verification"
 version = "0.7.0-alpha.7"
 source = "git+https://github.com/iotaledger/identity.rs.git?branch=fix/verifiable-credential-as-vec#2564010666bfe304176f56e6170a9128fecc7705"
 dependencies = [
- "identity_core 0.7.0-alpha.7",
+ "identity_core 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git?branch=fix/verifiable-credential-as-vec)",
  "identity_did 0.7.0-alpha.7",
- "identity_jose 0.7.0-alpha.7",
- "serde",
- "strum 0.25.0",
- "thiserror",
-]
-
-[[package]]
-name = "identity_verification"
-version = "0.7.0-alpha.7"
-source = "git+https://github.com/iotaledger/identity.rs.git?branch=fix/verifiable-credential-as-vec#2564010666bfe304176f56e6170a9128fecc7705"
-dependencies = [
- "identity_core 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git?branch=fix/verifiable-credential-as-vec)",
- "identity_did 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git?branch=fix/verifiable-credential-as-vec)",
- "identity_jose 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git?branch=fix/verifiable-credential-as-vec)",
+ "identity_jose",
  "serde",
  "strum 0.25.0",
  "thiserror",
@@ -4484,7 +4414,7 @@ dependencies = [
  "futures",
  "getset",
  "identity_core 0.7.0-alpha.7 (registry+https://github.com/rust-lang/crates.io-index)",
- "identity_credential 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git?branch=fix/verifiable-credential-as-vec)",
+ "identity_credential 0.7.0-alpha.7",
  "identity_iota",
  "jsonwebtoken",
  "oid4vc-core",
@@ -4532,7 +4462,7 @@ dependencies = [
  "futures",
  "getset",
  "identity_core 0.7.0-alpha.7 (registry+https://github.com/rust-lang/crates.io-index)",
- "identity_credential 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git?branch=fix/verifiable-credential-as-vec)",
+ "identity_credential 0.7.0-alpha.7",
  "is_empty",
  "jsonwebtoken",
  "oid4vc-core",
@@ -5828,7 +5758,7 @@ dependencies = [
  "did_url",
  "futures",
  "getset",
- "identity_credential 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git?branch=fix/verifiable-credential-as-vec)",
+ "identity_credential 0.7.0-alpha.7",
  "is_empty",
  "jsonwebtoken",
  "oid4vc-core",
