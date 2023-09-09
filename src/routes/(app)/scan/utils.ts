@@ -1,6 +1,7 @@
 import { type PermissionState, checkPermissions } from '@tauri-apps/plugin-barcode-scanner';
 import { info, warn } from '@tauri-apps/plugin-log';
 
+// TODO: remove (unused)
 export const checkScanPrerequisites = async (): Promise<boolean> => {
   return await checkPermissions()
     .then((permission: PermissionState) => {
