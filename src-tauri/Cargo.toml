@@ -35,11 +35,17 @@ rust-argon2 = { version = "=1.0.0" }
 iota_stronghold = { version = "=2.0.0" }
 stronghold_engine = "=2.0.0"
 
-oid4vc-manager = { git = "https://git@github.com/impierce/openid4vc.git" }
-siopv2 = { git = "https://git@github.com/impierce/openid4vc.git" }
-oid4vci = { git = "https://git@github.com/impierce/openid4vc.git" }
-oid4vc-core = { git = "https://git@github.com/impierce/openid4vc.git" }
-oid4vp = { git = "https://git@github.com/impierce/openid4vc.git" }
+oid4vc-manager = { git = "https://git@github.com/impierce/openid4vc.git", branch = "feat/refactor-request" }
+siopv2 = { git = "https://git@github.com/impierce/openid4vc.git", branch = "feat/refactor-request" }
+oid4vci = { git = "https://git@github.com/impierce/openid4vc.git", branch = "feat/refactor-request" }
+oid4vc-core = { git = "https://git@github.com/impierce/openid4vc.git", branch = "feat/refactor-request" }
+oid4vp = { git = "https://git@github.com/impierce/openid4vc.git", branch = "feat/refactor-request" }
+
+# oid4vc-manager = { path = "../../openid4vc/oid4vc-manager" }
+# siopv2 = { path = "../../openid4vc/siopv2" }
+# oid4vci = { path = "../../openid4vc/oid4vci" }
+# oid4vc-core = { path = "../../openid4vc/oid4vc-core" }
+# oid4vp = { path = "../../openid4vc/oid4vp" }
 
 base64 = { version = "0.13.0" }
 # identity_iota = "0.6"
@@ -49,10 +55,16 @@ identity_core = { version = "=0.7.0-alpha.7" }
 #     "credential",
 #     "presentation",
 # ] }
-identity_credential = { path = "../../identity.rs/identity_credential", default-features = false, features = [
+# identity_credential = { path = "../../identity.rs/identity_credential", default-features = false, features = [
+#     "credential",
+#     "presentation",
+# ] }
+identity_credential = { git = "https://github.com/iotaledger/identity.rs.git", branch = "fix/verifiable-credential-as-vec", default-features = false, features = [
+    "validator",
     "credential",
     "presentation",
 ] }
+
 tauri-plugin-barcode-scanner = { git = "https://github.com/lucasfernog/plugins-workspace", rev = "c684a318c9b3e0a0b0fea06ce23af1510a248a45" }
 jsonwebtoken = "8.2"
 futures = "0.3"

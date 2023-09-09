@@ -1654,7 +1654,7 @@ dependencies = [
 [[package]]
 name = "dif-presentation-exchange"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git#d24cdc18af55915dbdbe0e96f45a01bfe2692b1e"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/refactor-request#ea31994d3b49877b5dfdca78591bf70d07940641"
 dependencies = [
  "getset",
  "jsonpath_lib",
@@ -3055,7 +3055,24 @@ dependencies = [
  "serde_json",
  "strum 0.24.1",
  "thiserror",
- "time",
+ "time 0.3.28",
+ "url",
+ "zeroize",
+]
+
+[[package]]
+name = "identity_core"
+version = "0.7.0-alpha.7"
+dependencies = [
+ "iota-crypto 0.23.0",
+ "js-sys",
+ "multibase",
+ "serde",
+ "serde_jcs",
+ "serde_json",
+ "strum 0.25.0",
+ "thiserror",
+ "time 0.3.28",
  "url",
  "zeroize",
 ]
@@ -3181,10 +3198,11 @@ dependencies = [
 [[package]]
 name = "identity_did"
 version = "0.7.0-alpha.7"
+source = "git+https://github.com/iotaledger/identity.rs.git?branch=fix/verifiable-credential-as-vec#2564010666bfe304176f56e6170a9128fecc7705"
 dependencies = [
  "did_url",
  "form_urlencoded",
- "identity_core 0.7.0-alpha.7",
+ "identity_core 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git?branch=fix/verifiable-credential-as-vec)",
  "serde",
  "strum 0.25.0",
  "thiserror",
@@ -3206,6 +3224,7 @@ dependencies = [
 [[package]]
 name = "identity_document"
 version = "0.7.0-alpha.7"
+source = "git+https://github.com/iotaledger/identity.rs.git?branch=fix/verifiable-credential-as-vec#2564010666bfe304176f56e6170a9128fecc7705"
 dependencies = [
  "did_url",
  "identity_core 0.7.0-alpha.7",
@@ -3291,6 +3310,7 @@ dependencies = [
 [[package]]
 name = "identity_jose"
 version = "0.7.0-alpha.7"
+source = "git+https://github.com/iotaledger/identity.rs.git?branch=fix/verifiable-credential-as-vec#2564010666bfe304176f56e6170a9128fecc7705"
 dependencies = [
  "identity_core 0.7.0-alpha.7",
  "iota-crypto 0.23.0",
@@ -3318,6 +3338,7 @@ dependencies = [
 [[package]]
 name = "identity_verification"
 version = "0.7.0-alpha.7"
+source = "git+https://github.com/iotaledger/identity.rs.git?branch=fix/verifiable-credential-as-vec#2564010666bfe304176f56e6170a9128fecc7705"
 dependencies = [
  "identity_core 0.7.0-alpha.7",
  "identity_did 0.7.0-alpha.7",
@@ -4433,7 +4454,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-core"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git#d24cdc18af55915dbdbe0e96f45a01bfe2692b1e"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/refactor-request#ea31994d3b49877b5dfdca78591bf70d07940641"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -4451,7 +4472,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-manager"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git#d24cdc18af55915dbdbe0e96f45a01bfe2692b1e"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/refactor-request#ea31994d3b49877b5dfdca78591bf70d07940641"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -4483,7 +4504,7 @@ dependencies = [
 [[package]]
 name = "oid4vci"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git#d24cdc18af55915dbdbe0e96f45a01bfe2692b1e"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/refactor-request#ea31994d3b49877b5dfdca78591bf70d07940641"
 dependencies = [
  "anyhow",
  "derivative",
@@ -4504,7 +4525,7 @@ dependencies = [
 [[package]]
 name = "oid4vp"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git#d24cdc18af55915dbdbe0e96f45a01bfe2692b1e"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/refactor-request#ea31994d3b49877b5dfdca78591bf70d07940641"
 dependencies = [
  "anyhow",
  "dif-presentation-exchange",
@@ -5797,7 +5818,7 @@ dependencies = [
 [[package]]
 name = "siopv2"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git#d24cdc18af55915dbdbe0e96f45a01bfe2692b1e"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/refactor-request#ea31994d3b49877b5dfdca78591bf70d07940641"
 dependencies = [
  "anyhow",
  "async-trait",
