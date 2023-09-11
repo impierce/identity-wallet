@@ -101,7 +101,9 @@ pub async fn handle_authorization_request(state: &AppState, _action: Action) -> 
 
             let connection_time = chrono::Utc::now().to_rfc3339();
             let connection_url = authorization_request.redirect_uri.domain().unwrap().to_string();
+
             let client_metadata = authorization_request.extension.client_metadata.as_ref().unwrap();
+            let client_name = client_metadata.client_name.as_ref().unwrap().clone();
             let logo_uri = client_metadata.logo_uri.as_ref().unwrap().to_string();
 
             let result = state
@@ -109,13 +111,14 @@ pub async fn handle_authorization_request(state: &AppState, _action: Action) -> 
                 .lock()
                 .unwrap()
                 .iter_mut()
-                .find(|connection| connection.url == connection_url)
+                .find(|connection| connection.url == connection_url && connection.client_name == client_name)
                 .map(|connection| {
                     connection.last_connected = connection_time.clone();
                 });
 
             if result.is_none() {
                 state.connections.lock().unwrap().push(Connection {
+                    client_name,
                     url: connection_url,
                     logo_uri,
                     verified: false,
@@ -284,6 +287,7 @@ pub async fn handle_presentation_request(state: &AppState, action: Action) -> an
     let connection_time = chrono::Utc::now().to_rfc3339();
     let connection_url = authorization_request.redirect_uri.domain().unwrap().to_string();
     let client_metadata = authorization_request.extension.client_metadata.as_ref().unwrap();
+    let client_name = client_metadata.client_name.as_ref().unwrap().clone();
     let logo_uri = client_metadata.logo_uri.as_ref().unwrap().to_string();
 
     let result = state
@@ -291,13 +295,14 @@ pub async fn handle_presentation_request(state: &AppState, action: Action) -> an
         .lock()
         .unwrap()
         .iter_mut()
-        .find(|connection| connection.url == connection_url)
+        .find(|connection| connection.url == connection_url && connection.client_name == client_name)
         .map(|connection| {
             connection.last_connected = connection_time.clone();
         });
 
     if result.is_none() {
         state.connections.lock().unwrap().push(Connection {
+            client_name,
             url: connection_url,
             logo_uri,
             verified: false,
