@@ -35,27 +35,22 @@ rust-argon2 = { version = "=1.0.0" }
 iota_stronghold = { version = "=2.0.0" }
 stronghold_engine = "=2.0.0"
 
-# oid4vc-manager = { git = "https://git@github.com/impierce/openid4vc.git", branch = "feat/refactor-request" }
-# siopv2 = { git = "https://git@github.com/impierce/openid4vc.git", branch = "feat/refactor-request" }
-# oid4vci = { git = "https://git@github.com/impierce/openid4vc.git", branch = "feat/refactor-request" }
-# oid4vc-core = { git = "https://git@github.com/impierce/openid4vc.git", branch = "feat/refactor-request" }
-# oid4vp = { git = "https://git@github.com/impierce/openid4vc.git", branch = "feat/refactor-request" }
+oid4vc-manager = { git = "https://git@github.com/impierce/openid4vc.git", branch = "feat/refactor-request" }
+siopv2 = { git = "https://git@github.com/impierce/openid4vc.git", branch = "feat/refactor-request" }
+oid4vci = { git = "https://git@github.com/impierce/openid4vc.git", branch = "feat/refactor-request" }
+oid4vc-core = { git = "https://git@github.com/impierce/openid4vc.git", branch = "feat/refactor-request" }
+oid4vp = { git = "https://git@github.com/impierce/openid4vc.git", branch = "feat/refactor-request" }
 
-oid4vc-manager = { path = "../../openid4vc/oid4vc-manager" }
-siopv2 = { path = "../../openid4vc/siopv2" }
-oid4vci = { path = "../../openid4vc/oid4vci" }
-oid4vc-core = { path = "../../openid4vc/oid4vc-core" }
-oid4vp = { path = "../../openid4vc/oid4vp" }
+# oid4vc-manager = { path = "../../openid4vc/oid4vc-manager" }
+# siopv2 = { path = "../../openid4vc/siopv2" }
+# oid4vci = { path = "../../openid4vc/oid4vci" }
+# oid4vc-core = { path = "../../openid4vc/oid4vc-core" }
+# oid4vp = { path = "../../openid4vc/oid4vp" }
 
 base64 = { version = "0.13.0" }
-# identity_iota = "0.6"
 identity_core = { version = "=0.7.0-alpha.7" }
 
 # identity_credential = { version = "=0.7.0-alpha.7", default-features = false, features = [
-#     "credential",
-#     "presentation",
-# ] }
-# identity_credential = { path = "../../identity.rs/identity_credential", default-features = false, features = [
 #     "credential",
 #     "presentation",
 # ] }
@@ -66,6 +61,7 @@ jsonwebtoken = "8.2"
 futures = "0.3"
 async-recursion = "1.0"
 uuid = { version = "1.4", features = ["v4", "fast-rng"] }
+chrono = "0.4"
 
 [dev-dependencies]
 tauri = { version = "=2.0.0-alpha.12", features = ["rustls-tls", "test"] }

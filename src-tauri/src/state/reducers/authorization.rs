@@ -3,7 +3,7 @@ use crate::{
     state::{
         actions::Action,
         user_prompt::{AcceptConnection, CurrentUserPrompt, CurrentUserPromptType, Redirect, ShareCredentials},
-        AppState,
+        AppState, Connection,
     },
 };
 use identity_credential::{credential::Jwt, presentation::Presentation};
@@ -96,8 +96,33 @@ pub async fn handle_authorization_request(state: &AppState, _action: Action) -> 
             let response = provider_manager.generate_response(&authorization_request, Default::default())?;
             info!("||DEBUG|| response generated: {:?}", response);
 
-            provider_manager.send_response(response).await?;
-            info!("||DEBUG|| response successfully sent");
+            let client_response = provider_manager.send_response(response).await?;
+            info!("||DEBUG|| response successfully sent: {:?}", client_response);
+
+            let connection_time = chrono::Utc::now().to_rfc3339();
+            let connection_url = authorization_request.redirect_uri.domain().unwrap().to_string();
+            let client_metadata = authorization_request.extension.client_metadata.as_ref().unwrap();
+            let logo_uri = client_metadata.logo_uri.as_ref().unwrap().to_string();
+
+            let result = state
+                .connections
+                .lock()
+                .unwrap()
+                .iter_mut()
+                .find(|connection| connection.url == connection_url)
+                .map(|connection| {
+                    connection.last_connected = connection_time.clone();
+                });
+
+            if result.is_none() {
+                state.connections.lock().unwrap().push(Connection {
+                    url: connection_url,
+                    logo_uri,
+                    verified: false,
+                    first_connected: connection_time.clone(),
+                    last_connected: connection_time,
+                })
+            };
 
             state
                 .current_user_prompt
@@ -253,8 +278,33 @@ pub async fn handle_presentation_request(state: &AppState, action: Action) -> an
     )?;
     info!("||DEBUG|| response generated: {:?}", response);
 
-    provider_manager.send_response(response).await?;
-    info!("||DEBUG|| response successfully sent");
+    let client_response = provider_manager.send_response(response).await?;
+    info!("||DEBUG|| response successfully sent: {:?}", client_response);
+
+    let connection_time = chrono::Utc::now().to_rfc3339();
+    let connection_url = authorization_request.redirect_uri.domain().unwrap().to_string();
+    let client_metadata = authorization_request.extension.client_metadata.as_ref().unwrap();
+    let logo_uri = client_metadata.logo_uri.as_ref().unwrap().to_string();
+
+    let result = state
+        .connections
+        .lock()
+        .unwrap()
+        .iter_mut()
+        .find(|connection| connection.url == connection_url)
+        .map(|connection| {
+            connection.last_connected = connection_time.clone();
+        });
+
+    if result.is_none() {
+        state.connections.lock().unwrap().push(Connection {
+            url: connection_url,
+            logo_uri,
+            verified: false,
+            first_connected: connection_time.clone(),
+            last_connected: connection_time,
+        })
+    };
 
     state
         .current_user_prompt

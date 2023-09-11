@@ -1654,6 +1654,7 @@ dependencies = [
 [[package]]
 name = "dif-presentation-exchange"
 version = "0.1.0"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/refactor-request#2fdea510a3495c0d4d0023e0f289afbaa5990da3"
 dependencies = [
  "getset",
  "jsonpath_lib",
@@ -2963,6 +2964,7 @@ dependencies = [
  "anyhow",
  "async-recursion",
  "base64 0.13.1",
+ "chrono",
  "did-key",
  "fern",
  "futures",
@@ -4352,6 +4354,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-core"
 version = "0.1.0"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/refactor-request#2fdea510a3495c0d4d0023e0f289afbaa5990da3"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -4372,6 +4375,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-manager"
 version = "0.1.0"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/refactor-request#2fdea510a3495c0d4d0023e0f289afbaa5990da3"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -4404,6 +4408,7 @@ dependencies = [
 [[package]]
 name = "oid4vci"
 version = "0.1.0"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/refactor-request#2fdea510a3495c0d4d0023e0f289afbaa5990da3"
 dependencies = [
  "anyhow",
  "derivative",
@@ -4424,6 +4429,7 @@ dependencies = [
 [[package]]
 name = "oid4vp"
 version = "0.1.0"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/refactor-request#2fdea510a3495c0d4d0023e0f289afbaa5990da3"
 dependencies = [
  "anyhow",
  "chrono",
@@ -5718,6 +5724,7 @@ dependencies = [
 [[package]]
 name = "siopv2"
 version = "0.1.0"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/refactor-request#2fdea510a3495c0d4d0023e0f289afbaa5990da3"
 dependencies = [
  "anyhow",
  "async-trait",
