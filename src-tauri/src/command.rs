@@ -15,9 +15,7 @@ use crate::state::{AppState, TransferState};
 use log::{info, warn};
 use oid4vc_core::authorization_request::AuthorizationRequest;
 use oid4vci::credential_offer::CredentialOfferQuery;
-use oid4vp::OID4VP;
 use serde_json::json;
-use siopv2::SIOPv2;
 
 #[async_recursion::async_recursion]
 pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
@@ -91,22 +89,11 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
 
             let form_urlencoded = payload["form_urlencoded"].as_str().unwrap();
 
-            if let Result::Ok(request_url) = form_urlencoded.parse::<AuthorizationRequest<SIOPv2>>() {
+            if let Result::Ok(authorization_request) = form_urlencoded.parse::<AuthorizationRequest>() {
                 handle_action_inner(
                     Action {
                         r#type: ActionType::ReadRequest,
-                        payload: Some(json!(request_url)),
-                    },
-                    _app_handle,
-                    app_state,
-                )
-                .await
-                .ok();
-            } else if let Result::Ok(request_url) = form_urlencoded.parse::<AuthorizationRequest<OID4VP>>() {
-                handle_action_inner(
-                    Action {
-                        r#type: ActionType::ReadRequest,
-                        payload: Some(json!(request_url)),
+                        payload: Some(json!(authorization_request)),
                     },
                     _app_handle,
                     app_state,
