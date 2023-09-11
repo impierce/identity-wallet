@@ -78,9 +78,8 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::
             _by_value => (),
         });
 
-    // FIX THIS!!
+    // TODO: THis is custom logic for the demo. We need to find a better way to do this.
     let display = credential_issuer_metadata.unwrap().display.as_ref().unwrap()[0].clone();
-
     let issuer_name = display["client_name"].as_str().unwrap().to_string();
     let logo_uri = display["logo_uri"].as_str().unwrap().to_string();
     let credential_offer = serde_json::to_value(credential_offer)?;
