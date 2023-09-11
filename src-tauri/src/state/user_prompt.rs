@@ -72,6 +72,8 @@ pub enum CurrentUserPrompt {
     Selection(Selection),
     CredentialOffer(CredentialOffer),
     PasswordRequired(PasswordRequired),
+    ShareCredentials(ShareCredentials),
+    AcceptConnection(AcceptConnection),
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, TS, PartialEq)]

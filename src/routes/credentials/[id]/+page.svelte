@@ -119,8 +119,8 @@
     </div>
   </div>
   <BottomDrawer>
-    <!-- TODO: Share functionality currently disabled until decided how sharing works -->
-    <ShareButton slot="trigger" let:trigger {trigger} />
+    <!-- TODO: feature disabled: "Share credential" -->
+    <!-- <ShareButton slot="trigger" let:trigger {trigger} /> -->
     <span slot="content" class="flex flex-col items-center justify-center">
       <!-- Logo -->
       <div

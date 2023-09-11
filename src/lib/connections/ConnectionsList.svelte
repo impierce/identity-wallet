@@ -8,7 +8,8 @@
   import type { Connection } from './types';
   import { groupConnectionsAlphabetically } from './utils';
 
-  let connections: Map<string, Connection[]> = groupConnectionsAlphabetically(exampleConnections);
+  // let connections: Map<string, Connection[]> = groupConnectionsAlphabetically(exampleConnections);
+  let connections: Map<string, Connection[]> = groupConnectionsAlphabetically([]);
   console.log(Object.fromEntries(connections));
 </script>
 

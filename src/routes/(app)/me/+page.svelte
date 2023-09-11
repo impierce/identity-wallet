@@ -66,7 +66,8 @@
         class="absolute bottom-4 right-4"
       >
         <!-- <div in:fade={{ delay: 200, duration: 200 }} class="absolute bottom-4 right-4"> -->
-        <AddButton />
+        <!-- TODO: feature disabled: "Add self-signed credential" -->
+        <!-- <AddButton /> -->
       </div>
     {:else if $state?.user_journey}
       <!-- With active onboarding journey -->
@@ -123,9 +124,10 @@
     {:else}
       <!-- Skipped onboarding journey -->
       <NoCredentials />
-      <div in:fly={{ y: 12, delay: 400, opacity: 0 }} class="absolute bottom-4 right-4">
+      <!-- TODO: feature disabled: "Add self-signed credential" -->
+      <!-- <div in:fly={{ y: 12, delay: 400, opacity: 0 }} class="absolute bottom-4 right-4">
         <AddButton />
-      </div>
+      </div> -->
     {/if}
   </div>
 </div>
