@@ -57,4 +57,4 @@ interface OnboardingState {
 }
 
 // TODO: conditional compiling for version 1.0
-export const developer_mode = writable<boolean>(true);
+export const developer_mode = writable<boolean>(false);

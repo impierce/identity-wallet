@@ -100,7 +100,7 @@
           {/if}
         </button>
         <!-- TODO: Popover is never shown, because not in slot -->
-        {#if $open}
+        <!-- {#if $open}
           <div
             use:melt={$content}
             transition:fade={{ duration: 200 }}
@@ -114,7 +114,7 @@
               </p>
             </div>
           </div>
-        {/if}
+        {/if} -->
         <!-- </div> -->
         <div
           slot="content"

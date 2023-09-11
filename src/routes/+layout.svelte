@@ -191,7 +191,7 @@
   {/if}
 
   <!-- Content -->
-  <div class="fixed top-[var(--safe-area-inset-top)] h-auto w-full bg-silver dark:bg-navy">
+  <div class="fixed top-[var(--safe-area-inset-top)] h-auto w-full">
     <slot />
   </div>
 

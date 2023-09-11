@@ -164,7 +164,7 @@
     await cancel();
     scanning = false;
     // TODO: non-scanning view is visible before redirecting to /me
-    goto('/me');
+    // goto('/me');
   }
 
   // lifecycle functions
@@ -317,11 +317,14 @@
           </div>
         </div>
       </div>
-      <div class="fixed bottom-[128px] left-[calc(50%_-_42px)]">
-        <ButtonDeprecated class="bg-red-100 font-semibold text-red-500 shadow" on:click={cancelScan}
-          >Cancel</ButtonDeprecated
-        >
-      </div>
+      {#if $developer_mode}
+        <div class="fixed bottom-[128px] left-[calc(50%_-_42px)]">
+          <ButtonDeprecated
+            class="bg-red-100 font-semibold text-red-500 shadow"
+            on:click={cancelScan}>Cancel</ButtonDeprecated
+          >
+        </div>
+      {/if}
     </div>
   </div>
 </div>

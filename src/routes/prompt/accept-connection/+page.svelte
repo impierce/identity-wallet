@@ -81,7 +81,8 @@
         </p>
         <X class="text-rose-500" />
       </div>
-      <div
+      <!-- TODO: feature disabled: "Verify .well-known" -->
+      <!-- <div
         class="flex justify-between rounded-xl border border-slate-200 bg-white px-4 py-4 dark:border-slate-600 dark:bg-dark"
       >
         <div class="flex items-center">
@@ -107,7 +108,7 @@
           {/if}
         </div>
         <Check class="text-emerald-500" />
-      </div>
+      </div> -->
     </div>
   </div>
 

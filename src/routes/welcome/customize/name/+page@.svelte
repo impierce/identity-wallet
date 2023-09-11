@@ -13,7 +13,8 @@
 </script>
 
 <!-- <TopNavigation title="Appearance" on:back={() => history.back()} /> -->
-<div class="flex h-screen flex-col bg-silver dark:bg-navy">
+<div class="content-height relative flex flex-col bg-silver dark:bg-navy">
+  <!-- TODO: the only reason why we're breaking out of the layout is because we do not want the "Skip" button -->
   <TopNavigation on:back={() => history.back()} title="Customization" />
   <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
     <div class="px-2 pb-8 pt-4">
@@ -48,11 +49,14 @@
       disabled={!!!$onboarding_state.name}
     />
   </div>
+
+  <div class="safe-area-top" />
+  <!-- <div class="safe-area-bottom" /> -->
 </div>
 
 <style>
   .content-height {
     /* bottom-navigation: 64px */
-    height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom));
+    height: calc(100vh - var(--safe-area-inset-top));
   }
 </style>
