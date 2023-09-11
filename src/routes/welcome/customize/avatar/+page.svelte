@@ -72,10 +72,10 @@
 <!-- <TopNavigation title="Avatar" on:back={() => history.back()} /> -->
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <div class="px-2 pb-8 pt-4">
-    <p class="pb-4 text-3xl font-semibold text-slate-700">
+    <p class="pb-4 text-3xl font-semibold text-slate-700 dark:text-grey">
       Set a display <span class="text-primary">picture</span>
     </p>
-    <p class="text-[14px]/[22px] font-medium text-slate-500">Make it yours.</p>
+    <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Make it yours.</p>
     <div class="mt-[70px] flex w-full items-center justify-center">
       <BottomDrawer
         titleText={'Select profile picture'}
@@ -85,7 +85,7 @@
         <!-- <div slot="trigger"> -->
         <button
           slot="trigger"
-          class="flex h-24 w-24 items-center justify-center rounded-full border border-slate-200 bg-white"
+          class="flex h-24 w-24 items-center justify-center rounded-full border border-slate-200 bg-white dark:border-slate-600 dark:bg-dark"
           use:melt={$trigger}
           on:click={() => {
             emojiSelectIsOpen = true;
@@ -96,7 +96,7 @@
               {@html $onboarding_state.picture}
             </span>
           {:else}
-            <Plus class="h-6 w-6" />
+            <Plus class="h-6 w-6 text-slate-700 dark:text-grey" />
           {/if}
         </button>
         <!-- TODO: Popover is never shown, because not in slot -->
@@ -122,12 +122,12 @@
         >
           {#each predefinedEmojis as page}
             <div
-              class="grid min-w-fit snap-center grid-cols-3 place-items-center gap-2 rounded-3xl bg-neutral-100 p-2"
+              class="grid min-w-fit snap-center grid-cols-3 place-items-center gap-2 rounded-3xl bg-silver p-2 dark:bg-navy"
             >
               {#each page as emoji}
                 <!-- TODO: when button pressed (on picture changes, then close drawer) -->
                 <button
-                  class="rounded-2xl border bg-white p-4 text-[32px]/[32px]"
+                  class="rounded-2xl border border-slate-300 bg-white p-4 text-[32px]/[32px] dark:border-slate-600 dark:bg-dark"
                   on:click={() => {
                     $onboarding_state.picture = emoji;
                     emojiSelectIsOpen = false;
@@ -160,7 +160,7 @@
   </div>
 </div>
 <div
-  class="space-y-[10px] rounded-t-3xl bg-white p-6"
+  class="space-y-[10px] rounded-t-3xl bg-white p-6 dark:bg-dark"
   in:fade={{ delay: 200 }}
   out:fade={{ duration: 200 }}
 >

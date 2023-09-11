@@ -18,12 +18,14 @@
 <!-- Content -->
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }}>
   <div class="pb-8 pt-4">
-    <p class="pb-8 text-3xl font-semibold text-slate-700">
+    <p class="pb-8 text-3xl font-semibold text-slate-700 dark:text-grey">
       Your UniMe profile is now <span class="text-primary">protected</span>
     </p>
   </div>
-  <div class="flex flex-col items-center justify-center space-y-6 rounded-3xl bg-white p-5">
-    <p class="text-2xl font-semibold text-primary">Safe & Secure.</p>
+  <div
+    class="flex flex-col items-center justify-center space-y-6 rounded-3xl bg-white p-5 dark:bg-dark"
+  >
+    <p class="text-[22px]/[30px] font-semibold text-primary">Safe & Secure.</p>
     <div class="relative">
       <div class="relative z-10">
         <div class="text-[100px]/[100px]"><Shield class="text-primary" /></div>
@@ -42,7 +44,7 @@
         />
       </div>
     </div>
-    <p class="text-2xl font-semibold text-primary">
+    <p class="text-[22px]/[30px] font-semibold text-primary">
       Nice Job, {$onboarding_state.name}!
     </p>
     <!-- Hint: backup -->
@@ -52,7 +54,7 @@
   </div>
 </div>
 
-<div class="rounded-t-3xl bg-white p-6" in:fade={{ delay: 200 }}>
+<div class="rounded-t-3xl bg-white p-6 dark:bg-dark" in:fade={{ delay: 200 }}>
   <Button
     label="Continue"
     on:click={async () => {
@@ -62,11 +64,9 @@
           name: $onboarding_state.name,
           picture: $onboarding_state.picture,
           theme: $onboarding_state.theme,
-          password: 'sup3rSecr3t'
+          password: $onboarding_state.password
         }
       });
-      // security: clear onboarding state after successful creation
-      onboarding_state.set({});
     }}
   />
 </div>

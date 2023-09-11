@@ -28,10 +28,10 @@
 <!-- Content -->
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <div class="pb-8 pt-4">
-    <p class="pb-8 text-3xl font-semibold text-slate-700">
+    <p class="pb-8 text-3xl font-semibold text-slate-700 dark:text-grey">
       Please confirm your new <span class="text-primary">password</span>
     </p>
-    <p class="text-[15px]/[24px] font-medium text-slate-500">
+    <p class="text-[15px]/[24px] font-medium text-slate-500 dark:text-slate-300">
       You need to create a strong password to secure your backup.
     </p>
     <!-- <div class="mt-[70px] flex w-full items-center justify-center" /> -->
@@ -39,7 +39,7 @@
   <div class="relative">
     <input
       type={showPassword ? 'text' : 'password'}
-      class="h-12 w-full rounded-xl border border-slate-300 px-4 py-3 text-[13px]/[24px] text-slate-500"
+      class="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300"
       placeholder="Retype your password"
       value={initialPasswordValue}
       on:input={(e) => {
@@ -50,9 +50,9 @@
     <div class="absolute right-3 top-0 flex h-full items-center">
       <button class="rounded-full p-2" on:click={() => (showPassword = !showPassword)}>
         {#if showPassword}
-          <Eye />
+          <Eye class="text-slate-700 dark:text-grey" />
         {:else}
-          <EyeClosed />
+          <EyeClosed class="text-slate-700 dark:text-grey" />
         {/if}
       </button>
     </div>
@@ -70,7 +70,11 @@
   {/if}
 </div>
 
-<div class="rounded-t-3xl bg-white p-6" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
+<div
+  class="rounded-t-3xl bg-white p-6 dark:bg-dark"
+  in:fade={{ delay: 200 }}
+  out:fade={{ duration: 200 }}
+>
   <Button
     label="Continue"
     on:click={() => goto('/welcome/password/completed')}

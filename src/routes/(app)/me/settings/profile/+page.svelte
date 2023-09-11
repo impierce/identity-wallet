@@ -33,7 +33,7 @@
       <button
         slot="trigger"
         let:trigger
-        class="flex items-center space-x-4 rounded-xl border border-rose-400 bg-white p-4 dark:bg-dark"
+        class="flex items-center space-x-4 rounded-xl bg-white p-4 dark:bg-dark"
         use:melt={trigger}
         on:click={() => {}}
       >

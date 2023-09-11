@@ -21,32 +21,42 @@
 </script>
 
 <div class="content-height flex flex-col items-stretch bg-silver dark:bg-navy">
-  <TopNavigation title={'Share Information'} on:back={() => history.back()} />
+  <TopNavigation title={'Share Data'} on:back={() => history.back()} />
 
   <div class="mt-[40px] flex grow flex-col items-center justify-start p-4">
     <!-- Header -->
-    <div class="w-full rounded-[20px] border border-slate-200 bg-white p-[10px]">
+    <div
+      class="w-full rounded-[20px] border border-slate-200 bg-white p-[10px] dark:border-slate-600 dark:bg-dark"
+    >
       <!-- Logo -->
       <div class="flex flex-col items-center space-y-[10px]">
         <!-- Placeholder -->
         <!-- <PaddedIcon icon={PlugsConnected} /> -->
-        <div class="h-12 w-12 rounded-2xl border border-slate-300" />
-        <p class="text-2xl font-semibold text-neutral-900">bestdex.com</p>
+        <div
+          class="flex h-[64px] w-[64px] overflow-hidden rounded-2xl border-slate-300 hover:border dark:border-slate-600 dark:bg-silver"
+        >
+          <img src={$state.current_user_prompt.logo_uri} alt="logo" class="object-scale-down" />
+        </div>
+        <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
+          {$state.current_user_prompt.client_name}
+        </p>
       </div>
       <!-- Data sensitivity -->
-      <div>
+      <div class="p-2">
         <!-- TODO: data sensitivity -->
       </div>
     </div>
 
     <div class="mt-[30px] flex w-full items-center">
       <SealCheck class="mr-2 text-primary" />
-      <p class="text-[13px]/[24px] font-medium text-slate-500">Requested</p>
+      <p class="text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">Requested</p>
     </div>
 
     <!-- Credentials selection -->
     <!-- <div class="w-full space-y-2 rounded-2xl bg-white p-3"></div> -->
-    <div class="mt-3 w-full rounded-[20px] border border-slate-200 bg-white p-[10px]">
+    <div
+      class="mt-3 w-full rounded-[20px] border border-slate-200 bg-white p-[10px] dark:border-slate-600 dark:bg-dark"
+    >
       <div class="flex w-full flex-col space-y-2">
         {#each selected_credentials as credential}
           <CredentialOfferEntry
@@ -99,7 +109,7 @@
   </div>
 
   <!-- Controls -->
-  <div class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 pb-0">
+  <div class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6">
     <Button
       label="Approve request"
       on:click={() =>

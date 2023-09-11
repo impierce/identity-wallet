@@ -18,12 +18,12 @@
 </script>
 
 <div
-  class="w-full divide-y divide-solid divide-slate-200 rounded-xl border border-slate-200 bg-white dark:bg-dark"
+  class="w-full divide-y divide-solid divide-slate-200 rounded-xl border border-slate-200 bg-white dark:divide-slate-600 dark:border-slate-600 dark:bg-dark"
 >
   {#each Object.entries(summary) as entry}
     <div class="flex flex-col items-start px-4 py-[10px]">
       <p class="text-[13px]/[24px] font-medium text-slate-400">{entry[0]}</p>
-      <p class="break-all text-[13px]/[24px] font-medium text-slate-800 dark:text-white">
+      <p class="break-all text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
         {entry[1]}
       </p>
     </div>

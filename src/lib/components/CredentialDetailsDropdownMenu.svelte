@@ -118,8 +118,6 @@
       >
     </BottomDrawer> -->
 
-    <!-- TODO: reenable after dev is completed -->
-    <!-- {#if credential.metadata.is_mutable} -->
     <button
       use:melt={$item}
       use:melt={$triggerNameDialog}
@@ -133,7 +131,6 @@
       class="rounded-xl px-3 py-2 font-medium text-slate-800 outline-none active:bg-silver dark:text-white dark:active:bg-navy"
       >Customize appearance</button
     >
-    <!-- {/if} -->
 
     <button
       class="rounded-xl px-3 py-2 font-medium text-red-500 outline-none active:bg-red-100"
@@ -205,7 +202,7 @@
         <div class="grid w-fit grid-cols-3 place-items-center gap-1">
           {#each colors as color}
             <button
-              class="{color} h-9 w-9 rounded-md border border-slate-300"
+              class="{color} h-9 w-9 rounded-md border border-slate-300 dark:border-slate-600"
               on:click={() => (currentAppearance.color = color)}
             />
           {/each}
@@ -222,10 +219,10 @@
         <div class="grid w-fit grid-cols-3 place-items-center gap-1">
           {#each Object.entries(icons) as icon}
             <button
-              class="h-9 w-9 rounded-md border border-slate-300 p-2"
+              class="h-9 w-9 rounded-md border border-slate-300 p-2 dark:border-slate-600"
               on:click={() => (currentAppearance.icon = icon.at(0))}
             >
-              <svelte:component this={icon.at(1)} class="h-5 w-5 text-slate-800 dark:text-white" />
+              <svelte:component this={icon.at(1)} class="h-5 w-5 text-slate-800 dark:text-grey" />
             </button>
           {/each}
         </div>

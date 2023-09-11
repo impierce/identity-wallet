@@ -48,7 +48,6 @@ pub struct DisplayCredential {
 #[ts(export, export_to = "bindings/display-credential/CredentialMetadata.ts")]
 pub struct CredentialMetadata {
     pub is_favorite: bool,
-    pub is_mutable: bool,
     pub display: CredentialDisplay,
 }
 

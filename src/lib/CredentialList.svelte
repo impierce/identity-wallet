@@ -113,24 +113,11 @@
               .at(0) % 8 // TODO: omits last value (white)
           )}
       >
-        <!-- Show logo if credential is immutable (set through issuer's metadata) -->
-        <div slot="logo" class="p-1">
-          {#if !credential.metadata.is_mutable}
-            <img
-              src={`/issuer-metadata/credential-logos/ngdil.svg`}
-              alt="logo"
-              class="object-scale-down"
-            />
-          {/if}
-        </div>
-        <!-- else: show icon -->
         <span slot="icon">
-          {#if credential.metadata.is_mutable}
-            <svelte:component
-              this={icons[credential.metadata.display.icon] || icons['User']}
-              class="h-[18px] w-[18px] text-slate-800"
-            />
-          {/if}
+          <svelte:component
+            this={icons[credential.metadata.display.icon] || icons['User']}
+            class="h-[18px] w-[18px] text-slate-800"
+          />
         </span>
       </CredentialListEntry>
     {/each}

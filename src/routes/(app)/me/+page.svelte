@@ -19,7 +19,7 @@
   import UserJourney from '$lib/home-header/UserJourney.svelte';
   import WelcomeMessage from '$lib/home-header/WelcomeMessage.svelte';
   import LL from '$src/i18n/i18n-svelte';
-  import { state } from '$src/stores';
+  import { onboarding_state, state } from '$src/stores';
 
   import RocketLaunch from '~icons/ph/rocket-launch-fill';
 
@@ -34,6 +34,10 @@
       initials = calculate_initials($state?.active_profile?.name);
     }
   }
+
+  // security: clear onboarding state after successful creation
+  // TODO: move somewhere else
+  onboarding_state.set({});
 </script>
 
 <div class="flex min-h-full flex-col bg-white dark:bg-dark">

@@ -24,7 +24,7 @@
     })}
   </p>
   {#if credentials.length > 0}
-    <div class="mt-[12px] w-fit rounded-xl border border-slate-200">
+    <div class="mt-[12px] w-fit rounded-xl border border-slate-200 dark:border-slate-600">
       {#each credentials as credential}
         <CredentialListEntry
           title={credential.metadata.display.name ?? credential.data.type.at(-1)}
