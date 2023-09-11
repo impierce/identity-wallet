@@ -71,7 +71,9 @@
         class="flex justify-between rounded-xl border border-slate-200 bg-white px-4 py-4 dark:border-slate-600 dark:bg-dark"
       >
         <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">URL</p>
-        <p class="text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">bestdex.com</p>
+        <p class="text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">
+          {$state.current_user_prompt.redirect_uri}
+        </p>
       </div>
       <div
         class="flex justify-between rounded-xl border border-slate-200 bg-white px-4 py-4 dark:border-slate-600 dark:bg-dark"

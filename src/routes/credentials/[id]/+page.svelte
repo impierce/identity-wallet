@@ -18,7 +18,8 @@
   import HeartFill from '~icons/ph/heart-straight-fill';
   import User from '~icons/ph/user-light';
 
-  let credential = $state.credentials.find((c) => $page.params.id === c.id)!!;
+  // let credential = $state.credentials.find((c) => $page.params.id === c.id)!!;
+  let credential = $state.credentials.at($page.params.id);
 
   let color = credential.metadata.display.color || colors.at(0);
 
@@ -30,7 +31,7 @@
   let isFavorite: boolean = credential.metadata.is_favorite;
 
   $: {
-    const credential = $state.credentials.find((c) => $page.params.id === c.id)!!;
+    const credential = $state.credentials.at($page.params.id);
     // TODO: update icon, title, isFavorite when changes in store
     isFavorite = credential.metadata.is_favorite;
     title = credential.metadata.display.name || credential.data.type.at(-1);

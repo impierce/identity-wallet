@@ -9,15 +9,14 @@
   import ConnectionSummary from '$lib/connections/ConnectionSummary.svelte';
   import type { Connection } from '$lib/connections/types';
   import exampleConnections from '$lib/example/data/connections.json';
+  import { state } from '$src/stores';
 
-  let connection: Connection = exampleConnections.find((c) => c.id === $page.params.id)!!;
+  // let connection: Connection = exampleConnections.find((c) => c.id === $page.params.id)!!;
+  let connection: Connection = $state.connections.at($page.params.id)!!;
 </script>
 
 <div class="flex h-full flex-col">
-  <TopNavigation
-    on:back={() => goto('/activity')}
-    title={connection.displayName ?? connection.domain}
-  />
+  <TopNavigation on:back={() => goto('/activity')} title={connection.url} />
   <div class="grow bg-silver px-4 pt-5 dark:bg-navy">
     <MeltUiConnectionTabs>
       <!-- Summary -->
@@ -29,7 +28,7 @@
             </div>
 
             <div class="text-center text-2xl font-semibold text-black dark:text-white">
-              Connected to <p class="text-primary">{connection.domain}</p>
+              Connected to <p class="text-primary">{connection.url}</p>
             </div>
           </div>
 

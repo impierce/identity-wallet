@@ -29,10 +29,9 @@
     <MeltUiActivityTabs>
       <div slot="connections" class="h-full pt-5">
         <!-- Search & Sort -->
-        <div class="grow">
-          ><ArrowDownAZ class="text-slate-500" /></button
-        >
-      </div> -->
+        <!-- <div class="grow">
+          <ArrowDownAZ class="text-slate-500" />
+        </div> -->
         <ConnectionsList />
       </div>
       <div slot="history" class="h-full pt-5">

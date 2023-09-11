@@ -2,18 +2,19 @@
   import BadgeCheck from '~icons/lucide/badge-check';
   import Pencil from '~icons/lucide/pencil';
 
-  export let domain: string;
+  // export let domain: string;
   export let url: string;
   // export let displayName: string | undefined = undefined;
-  export let lastConnected: string;
+  export let last_connected: string;
+  export let first_connected: string;
 
   let summary = {
     URL: url,
-    Domain: domain,
+    // Domain: domain,
     // displayName,
-    Verified: 'yes',
-    'First connected': 'n/a',
-    'Last connected': lastConnected
+    Verified: 'no',
+    'First connected': first_connected,
+    'Last connected': last_connected
   };
 </script>
 

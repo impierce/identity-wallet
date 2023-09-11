@@ -52,6 +52,7 @@ pub struct AcceptConnection {
     pub r#type: CurrentUserPromptType,
     pub client_name: String,
     pub logo_uri: String,
+    pub redirect_uri: String,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, TS, PartialEq)]
