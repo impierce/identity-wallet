@@ -8,14 +8,14 @@ use crate::crypto::stronghold::StrongholdManager;
 use crate::state::actions::Action;
 use crate::state::user_prompt::{CurrentUserPrompt, CurrentUserPromptType, Redirect};
 use crate::state::{AppState, Profile};
-use crate::verifiable_credential_record::{CredentialDisplay, DisplayCredential, VerifiableCredentialRecord};
+use crate::verifiable_credential_record::{DisplayCredential, VerifiableCredentialRecord};
 use did_key::{from_existing_key, Ed25519KeyPair};
 use log::info;
 use oid4vc_core::Subject;
 use oid4vc_manager::methods::key_method::KeySubject;
 use oid4vc_manager::ProviderManager;
 use oid4vci::Wallet;
-use serde_json::{from_str, json};
+use serde_json::json;
 use std::sync::Arc;
 use uuid::Uuid;
 
