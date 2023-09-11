@@ -39,6 +39,7 @@ pub struct AppState {
     pub current_user_prompt: Mutex<Option<CurrentUserPrompt>>,
     pub debug_messages: Mutex<Vec<String>>,
     pub user_journey: Mutex<Option<serde_json::Value>>,
+    pub connections: Mutex<Vec<Connection>>,
 }
 
 /// A representation of the current state which is used for serialization.
@@ -52,6 +53,7 @@ pub struct TransferState {
     pub debug_messages: Vec<String>,
     #[ts(optional, type = "object")]
     pub user_journey: Option<serde_json::Value>,
+    pub connections: Vec<Connection>,
 }
 
 impl From<&AppState> for TransferState {
@@ -63,6 +65,7 @@ impl From<&AppState> for TransferState {
             current_user_prompt: state.current_user_prompt.lock().unwrap().clone(),
             debug_messages: state.debug_messages.lock().unwrap().clone(),
             user_journey: state.user_journey.lock().unwrap().clone(),
+            connections: state.connections.lock().unwrap().clone(),
         }
     }
 }
@@ -85,4 +88,14 @@ pub struct Profile {
     pub picture: Option<String>,
     pub theme: Option<String>,
     pub primary_did: String,
+}
+
+#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default)]
+#[ts(export)]
+pub struct Connection {
+    pub url: String,
+    pub logo_uri: String,
+    pub verified: bool,
+    pub first_connected: String,
+    pub last_connected: String,
 }
