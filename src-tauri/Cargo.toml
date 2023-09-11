@@ -59,7 +59,7 @@ identity_core = { version = "=0.7.0-alpha.7" }
 #     "credential",
 #     "presentation",
 # ] }
-identity_credential = { git = "https://github.com/iotaledger/identity.rs.git", branch = "fix/verifiable-credential-as-vec", default-features = false, features = [
+identity_credential = { git = "https://github.com/iotaledger/identity.rs.git", default-features = false, features = [
     "validator",
     "credential",
     "presentation",
