@@ -32,6 +32,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             // TODO: find a better way to populate all fields with values from json file
             *app_state.active_profile.lock().unwrap() = transfer_state.active_profile;
             *app_state.locale.lock().unwrap() = transfer_state.locale;
+            *app_state.connections.lock().unwrap() = transfer_state.connections;
 
             if app_state.active_profile.lock().unwrap().is_some() {
                 *app_state.current_user_prompt.lock().unwrap() =
