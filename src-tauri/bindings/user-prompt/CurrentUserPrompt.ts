@@ -4,5 +4,7 @@ import type { PasswordRequired } from "./PasswordRequired";
 import type { Redirect } from "./Redirect";
 import type { Selection } from "./Selection";
 import type { Warning } from "./Warning";
+import type { ShareCredentials } from "./ShareCredentials";
+import type { AcceptConnection } from "./AcceptConnection";
 
-export type CurrentUserPrompt = Redirect | Warning | Selection | CredentialOffer | PasswordRequired;
+export type CurrentUserPrompt = Redirect | Warning | Selection | CredentialOffer | PasswordRequired | ShareCredentials | AcceptConnection;
