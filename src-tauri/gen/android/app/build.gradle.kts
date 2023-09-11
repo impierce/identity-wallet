@@ -1,8 +1,23 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("rust")
 }
+
+// val keystoreProperties = Properties()
+// val keystorePropertiesFile = rootProject.file("key.properties").toPath()
+// if (Files.exists(keystorePropertiesFile)) {
+//     Files.newBufferedReader(keystorePropertiesFile).use { reader ->
+//         keystoreProperties.load(reader)
+//     }
+// }
+
+val keyPropertiesFile = rootProject.file("key.properties")
+val keyProperties = Properties()
+keyProperties.load(FileInputStream(keyPropertiesFile))
 
 android {
     compileSdk = 33
@@ -42,6 +57,7 @@ android {
                     .plus(getDefaultProguardFile("proguard-android-optimize.txt"))
                     .toList().toTypedArray()
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     kotlinOptions {
