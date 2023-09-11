@@ -14,9 +14,13 @@ use oid4vci::credential_format_profiles::{
     w3c_verifiable_credentials::jwt_vc_json::JwtVcJson, Credential, CredentialFormats,
 };
 use oid4vp::{evaluate_input, OID4VPUserClaims, OID4VP};
-use serde_json::json;
 use siopv2::SIOPv2;
 use uuid::Uuid;
+
+pub enum ConnectionRequest {
+    SIOPv2(AuthorizationRequestObject<SIOPv2>),
+    OID4VP(AuthorizationRequestObject<OID4VP>),
+}
 
 // Reads the request url from the payload and validates it.
 pub async fn read_authorization_request(state: &AppState, action: Action) -> anyhow::Result<()> {
@@ -30,76 +34,52 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> any
 
     info!("trying to validate request: {:?}", payload);
 
-    let authorization_request: anyhow::Result<AuthorizationRequestObject<SIOPv2>> = provider_manager
-        .validate_request(serde_json::from_value(payload.clone()).unwrap())
-        .await;
-    info!("validated authorization request: {:?}", authorization_request);
+    let (client_name, logo_uri) = if let Result::Ok(siopv2_authorization_request) = provider_manager
+        .validate_request::<SIOPv2>(serde_json::from_value(payload.clone()).unwrap())
+        .await
+    {
+        let client_metadata = siopv2_authorization_request.extension.client_metadata.as_ref().unwrap();
+        let client_name = client_metadata.client_name.as_ref().unwrap().clone();
+        let logo_uri = client_metadata.logo_uri.as_ref().unwrap().clone();
 
-    let (client_name, logo_uri) = match authorization_request {
-        Ok(authorization_request) => {
-            let client_name = authorization_request
-                .extension
-                .client_metadata
-                .clone()
-                .unwrap()
-                .client_name
-                .unwrap();
+        state
+            .active_connection_request
+            .lock()
+            .unwrap()
+            .replace(ConnectionRequest::SIOPv2(siopv2_authorization_request));
 
-            let logo_uri = authorization_request
-                .extension
-                .client_metadata
-                .clone()
-                .unwrap()
-                .logo_uri
-                .unwrap();
+        (client_name, logo_uri.to_string())
+    } else if let Result::Ok(oid4vp_authorization_request) = provider_manager
+        .validate_request::<OID4VP>(serde_json::from_value(payload.clone()).unwrap())
+        .await
+    {
+        let client_metadata = oid4vp_authorization_request.extension.client_metadata.as_ref().unwrap();
+        let client_name = client_metadata.client_name.as_ref().unwrap().clone();
+        let logo_uri = client_metadata.logo_uri.as_ref().unwrap().clone();
 
-            state
-                .active_authorization_request
-                .lock()
-                .unwrap()
-                .replace(authorization_request);
+        state
+            .active_connection_request
+            .lock()
+            .unwrap()
+            .replace(ConnectionRequest::OID4VP(oid4vp_authorization_request));
 
-            (client_name, logo_uri.to_string())
-        }
-        Err(_) => {
-            let authorization_request: AuthorizationRequestObject<OID4VP> = provider_manager
-                .validate_request(serde_json::from_value(payload).unwrap())
-                .await
-                .unwrap();
-            let client_name = authorization_request
-                .extension
-                .client_metadata
-                .clone()
-                .unwrap()
-                .client_name
-                .unwrap();
-
-            let logo_uri = authorization_request
-                .extension
-                .client_metadata
-                .clone()
-                .unwrap()
-                .logo_uri
-                .unwrap();
-
-            state
-                .active_authorization_request_oid4vp
-                .lock()
-                .unwrap()
-                .replace(authorization_request);
-
-            (client_name, logo_uri.to_string())
-        }
+        (client_name, logo_uri.to_string())
+    } else {
+        return Err(anyhow::anyhow!("unable to validate request"));
     };
 
     info!("client_name in credential_offer: {:?}", client_name);
     info!("logo_uri in read_authorization_request: {:?}", logo_uri);
 
-    *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::AcceptConnection(AcceptConnection {
-        r#type: CurrentUserPromptType::AcceptConnection,
-        client_name,
-        logo_uri,
-    }));
+    state
+        .current_user_prompt
+        .lock()
+        .unwrap()
+        .replace(CurrentUserPrompt::AcceptConnection(AcceptConnection {
+            r#type: CurrentUserPromptType::AcceptConnection,
+            client_name,
+            logo_uri,
+        }));
 
     Ok(())
 }
@@ -108,93 +88,78 @@ pub async fn handle_authorization_request(state: &AppState, _action: Action) -> 
     let state_guard = state.managers.lock().await;
     let provider_manager = &state_guard.identity_manager.as_ref().unwrap().provider_manager;
     let stronghold_manager = state_guard.stronghold_manager.as_ref().unwrap();
-    let authorization_request = state.active_authorization_request.lock().unwrap().take();
+    let active_connection_request = state.active_connection_request.lock().unwrap().take().unwrap();
 
-    if let Some(authorization_request) = authorization_request {
-        info!("||DEBUG|| generating response");
-        *state.debug_messages.lock().unwrap() = vec!["generating response".into()];
-        let response = provider_manager.generate_response(authorization_request, Default::default())?;
-        info!("||DEBUG|| response generated: {:?}", response);
+    match active_connection_request {
+        ConnectionRequest::SIOPv2(authorization_request) => {
+            info!("||DEBUG|| generating response");
+            *state.debug_messages.lock().unwrap() = vec!["generating response".into()];
+            let response = provider_manager.generate_response(&authorization_request, Default::default())?;
+            info!("||DEBUG|| response generated: {:?}", response);
 
-        provider_manager.send_response(response).await?;
-        info!("||DEBUG|| response successfully sent");
+            provider_manager.send_response(response).await?;
+            info!("||DEBUG|| response successfully sent");
 
-        state
-            .current_user_prompt
-            .lock()
-            .unwrap()
-            .replace(CurrentUserPrompt::Redirect(Redirect {
-                r#type: CurrentUserPromptType::Redirect,
-                target: "me".to_string(),
-            }));
-
-        return Ok(());
-    }
-
-    let authorization_request = state
-        .active_authorization_request_oid4vp
-        .lock()
-        .unwrap()
-        .take()
-        .unwrap();
-
-    // FIX THIS!!!
-    let temp: AuthorizationRequestObject<OID4VP> = serde_json::from_value(json!(authorization_request)).unwrap();
-    state.active_authorization_request_oid4vp.lock().unwrap().replace(temp);
-
-    let verifiable_credentials = stronghold_manager.values()?.unwrap();
-    info!("verifiable credentials: {:?}", verifiable_credentials);
-
-    let uuids: Vec<String> = authorization_request
-        .extension
-        .presentation_definition
-        .input_descriptors()
-        .iter()
-        .map(|input_descriptor| {
-            verifiable_credentials
-                .iter()
-                .find_map(|verifiable_credential_record| {
-                    evaluate_input(
-                        input_descriptor,
-                        &get_unverified_jwt_claims(
-                            verifiable_credential_record.verifiable_credential.credential().unwrap(),
-                        ),
-                    )
-                    .then_some(verifiable_credential_record.display_credential.id.clone())
-                })
+            state
+                .current_user_prompt
+                .lock()
                 .unwrap()
-        })
-        .collect();
+                .replace(CurrentUserPrompt::Redirect(Redirect {
+                    r#type: CurrentUserPromptType::Redirect,
+                    target: "me".to_string(),
+                }));
+        }
+        ConnectionRequest::OID4VP(authorization_request) => {
+            let verifiable_credentials = stronghold_manager.values()?.unwrap();
+            info!("verifiable credentials: {:?}", verifiable_credentials);
 
-    info!("uuids of VCs that can fulfill the request: {:?}", uuids);
+            let uuids: Vec<String> = authorization_request
+                .extension
+                .presentation_definition
+                .input_descriptors()
+                .iter()
+                .map(|input_descriptor| {
+                    verifiable_credentials
+                        .iter()
+                        .find_map(|verifiable_credential_record| {
+                            evaluate_input(
+                                input_descriptor,
+                                &get_unverified_jwt_claims(
+                                    verifiable_credential_record.verifiable_credential.credential().unwrap(),
+                                ),
+                            )
+                            .then_some(verifiable_credential_record.display_credential.id.clone())
+                        })
+                        .unwrap()
+                })
+                .collect();
 
-    let client_name = authorization_request
-        .extension
-        .client_metadata
-        .clone()
-        .unwrap()
-        .client_name
-        .unwrap();
+            info!("uuids of VCs that can fulfill the request: {:?}", uuids);
 
-    let logo_uri = authorization_request
-        .extension
-        .client_metadata
-        .clone()
-        .unwrap()
-        .logo_uri
-        .unwrap();
+            let client_metadata = authorization_request.extension.client_metadata.as_ref().unwrap();
+            let client_name = client_metadata.client_name.as_ref().unwrap().clone();
+            let logo_uri = client_metadata.logo_uri.as_ref().unwrap().to_string();
 
-    info!("client_name in credential_offer: {:?}", client_name);
-    info!("logo_uri in read_authorization_request: {:?}", logo_uri.to_string());
+            info!("client_name in credential_offer: {:?}", client_name);
+            info!("logo_uri in read_authorization_request: {:?}", logo_uri.to_string());
 
-    // TODO: communicate when no credentials are available.
-    if !uuids.is_empty() {
-        *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Selection(Selection {
-            r#type: CurrentUserPromptType::ShareCredentials,
-            client_name,
-            logo_uri: logo_uri.to_string(),
-            options: uuids,
-        }));
+            state
+                .active_connection_request
+                .lock()
+                .unwrap()
+                .replace(ConnectionRequest::OID4VP(authorization_request));
+
+            // TODO: communicate when no credentials are available.
+            if !uuids.is_empty() {
+                *state.current_user_prompt.lock().unwrap() =
+                    Some(CurrentUserPrompt::ShareCredentials(ShareCredentials {
+                        r#type: CurrentUserPromptType::ShareCredentials,
+                        client_name,
+                        logo_uri,
+                        options: uuids,
+                    }));
+            }
+        }
     }
 
     Ok(())
@@ -221,12 +186,10 @@ pub async fn send_authorization_response(state: &AppState, action: Action) -> an
         .map(|index| index.parse().unwrap())
         .collect();
 
-    let authorization_request = state
-        .active_authorization_request_oid4vp
-        .lock()
-        .unwrap()
-        .take()
-        .unwrap();
+    let authorization_request = match state.active_connection_request.lock().unwrap().take().unwrap() {
+        ConnectionRequest::OID4VP(authorization_request) => authorization_request,
+        ConnectionRequest::SIOPv2(_) => unreachable!(),
+    };
 
     info!("||DEBUG|| credential not found");
     *state.debug_messages.lock().unwrap() = vec!["credential not found".into()];
@@ -283,7 +246,7 @@ pub async fn send_authorization_response(state: &AppState, action: Action) -> an
     info!("||DEBUG|| generating response");
     *state.debug_messages.lock().unwrap() = vec!["generating response".into()];
     let response = provider_manager.generate_response(
-        authorization_request,
+        &authorization_request,
         OID4VPUserClaims {
             verifiable_presentation,
             presentation_submission,
