@@ -7,50 +7,27 @@
     Format,
     type Scanned,
     cancel,
+    checkPermissions,
     openAppSettings,
+    requestPermissions,
     scan
   } from '@tauri-apps/plugin-barcode-scanner';
-  import { debug, info } from '@tauri-apps/plugin-log';
+  import { debug, info, warn } from '@tauri-apps/plugin-log';
 
-  // import Scanner from '$lib/Scanner.svelte';
   import { dispatch } from '$lib/dispatcher';
   import Button from '$src/lib/components/Button.svelte';
-  import { state } from '$src/stores';
+  import { developer_mode, state } from '$src/stores';
 
-  import { checkScanPrerequisites } from './utils';
-
-  // let selected = {
-  //   label: 'Scanner',
-  //   component: Scanner
-  //   // icon: 'i-ph-scan'
-  // };
-
-  // let isMobile = true;
-
-  //   function insecureRenderHtml(html) {
-  //     messages.update((r) => [
-  //       {
-  //         html:
-  //           `<pre><strong class="text-accent dark:text-darkAccent">[${new Date().toLocaleTimeString()}]:</strong> ` +
-  //           html +
-  //           "</pre>",
-  //       },
-  //       ...r,
-  //     ]);
-  //   }
-
-  // variables
   let scanning = false;
-  let permissionsGiven = false;
+  let permissions: 'granted' | 'denied' | 'prompt' | undefined = undefined;
 
-  // functions
   function onMessage(scanned: Scanned) {
     debug(`scanned: ${scanned.content}`);
     dispatch({ type: '[QR Code] Scanned', payload: { form_urlencoded: scanned.content } });
     goto('/me');
   }
 
-  function startScan() {
+  function _startScan() {
     info(
       `starting scan with parameters: { cameraDirection: 'back', windowed: false, formats: [Format.QRCode] }`
     );
@@ -62,8 +39,39 @@
       })
       .catch((error) => {
         scanning = false;
-        onMessage(error);
+        // TODO: display error
+        console.warn(error);
       });
+  }
+
+  // from example in plugin-barcode-scanner repo
+  async function startScan() {
+    let permission = await checkPermissions();
+    permissions = permission;
+    console.log({ permission });
+    if (permission === 'prompt' || permission === 'default') {
+      info('requesting permission');
+      permission = await requestPermissions();
+    }
+    if (permission === 'granted') {
+      info(
+        `starting scan with parameters: { cameraDirection: 'back', windowed: false, formats: [Format.QRCode] }`
+      );
+      scanning = true;
+      scan({ windowed: true, formats: [Format.QRCode] })
+        .then((res) => {
+          scanning = false;
+          onMessage(res);
+        })
+        .catch((error) => {
+          scanning = false;
+          // TODO: display error
+          console.warn(error);
+          // onMessage(error);
+        });
+    } else {
+      warn('permission to use the camera denied');
+    }
   }
 
   const mockScanSiopRequest = () => {
@@ -144,20 +152,27 @@
     }
   };
 
+  async function cancelScan() {
+    await cancel();
+    scanning = false;
+    // TODO: non-scanning view is visible before redirecting to /me
+    goto('/me');
+  }
+
   // lifecycle functions
   onDestroy(async () => {
+    console.log('onDestroy: /scan');
     document.documentElement.querySelector('body')!!.classList.remove('transparent');
-    scanning = false;
-    await cancel();
+    await cancelScan();
   });
 
   onMount(async () => {
+    console.log('onMount: /scan');
     document.documentElement.querySelector('body')!!.classList.add('transparent');
-    permissionsGiven = await checkScanPrerequisites();
-    // TODO: re-enable automatic start of scan
-    // if (permissionsGiven) {
-    //   startScan();
-    // }
+    // permissionsGiven = await checkScanPrerequisites();
+    if (!$developer_mode) {
+      startScan();
+    }
   });
 </script>
 
@@ -216,43 +231,58 @@
   <!-- visible when NOT scanning -->
   <div
     class:invisible={scanning}
-    class="relative flex h-full flex-col items-center justify-center bg-neutral-100 p-8"
+    class="relative flex h-full flex-col items-center justify-center bg-silver p-8 dark:bg-navy"
   >
-    {#if !permissionsGiven}
-      <div class="flex flex-col items-center space-y-2">
-        <div class="rounded-lg bg-red-100 px-8 py-4 text-red-600">Permissions not given</div>
+    {#if permissions === 'denied'}
+      <div class="flex flex-col items-center space-y-4">
+        <div class="rounded-lg bg-rose-100 px-8 py-4 text-rose-500">
+          No permissions to<br />access the camera
+        </div>
         <Button label="Open settings" on:click={openAppSettings} />
       </div>
-      <p class="my-4 h-[1px] w-full bg-slate-200" />
+      <!-- {:else}
+      <div class="rounded-lg bg-emerald-100 px-8 py-4 font-medium text-emerald-500">
+        Permissions: {permissions}
+      </div> -->
     {/if}
-    <div class="flex flex-col space-y-2">
-      <Button variant="secondary" on:click={mockSiopRequest} label="Connection request (SIOPv2)" />
-      <Button variant="secondary" on:click={mockShareRequest} label="Share request (VP)" />
-      <Button
-        variant="secondary"
-        on:click={() => mockScanCredentialOffer(1)}
-        disabled
-        label="Mock Credential Offer (single)"
-      />
-      <Button
-        variant="secondary"
-        on:click={() => mockScanCredentialOffer(2)}
-        label="Mock Credential Offer (multi)"
-      />
-      <Button
-        variant="secondary"
-        on:click={() =>
-          dispatch({
-            type: '[QR Code] Scanned',
-            payload: {
-              form_urlencoded:
-                'openid-credential-offer://?credential_offer_uri=https://api.ngdil-demo.tanglelabs.io/api/offers/creds/u08LmjU8lAcTwx7pLMpy0'
-            }
-          })}
-        label="Dominique (student)"
-      />
-      <Button variant="primary" on:click={startScan} label="Start new scan" />
-    </div>
+
+    <!-- Divider -->
+    <!-- <p class="my-4 h-[1px] w-full bg-slate-200" /> -->
+
+    {#if $developer_mode}
+      <div class="flex flex-col space-y-2">
+        <Button
+          variant="secondary"
+          on:click={mockSiopRequest}
+          label="Connection request (SIOPv2)"
+        />
+        <Button variant="secondary" on:click={mockShareRequest} label="Share request (VP)" />
+        <Button
+          variant="secondary"
+          on:click={() => mockScanCredentialOffer(1)}
+          disabled
+          label="Mock Credential Offer (single)"
+        />
+        <Button
+          variant="secondary"
+          on:click={() => mockScanCredentialOffer(2)}
+          label="Mock Credential Offer (multi)"
+        />
+        <Button
+          variant="secondary"
+          on:click={() =>
+            dispatch({
+              type: '[QR Code] Scanned',
+              payload: {
+                form_urlencoded:
+                  'openid-credential-offer://?credential_offer_uri=https://api.ngdil-demo.tanglelabs.io/api/offers/creds/u08LmjU8lAcTwx7pLMpy0'
+              }
+            })}
+          label="Dominique (student)"
+        />
+        <Button variant="primary" on:click={startScan} label="Start new scan" />
+      </div>
+    {/if}
   </div>
 
   <!-- visible during scanning -->
@@ -280,9 +310,8 @@
         </div>
       </div>
       <div class="fixed bottom-[128px] left-[calc(50%_-_42px)]">
-        <ButtonDeprecated
-          class="bg-red-100 font-semibold text-red-500 shadow"
-          on:click={() => goto('/me')}>Cancel</ButtonDeprecated
+        <ButtonDeprecated class="bg-red-100 font-semibold text-red-500 shadow" on:click={cancelScan}
+          >Cancel</ButtonDeprecated
         >
       </div>
     </div>

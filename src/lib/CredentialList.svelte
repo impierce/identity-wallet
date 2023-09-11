@@ -24,7 +24,7 @@
     {
       title: 'Address of residence',
       description: 'State of Pandora',
-      color: 'bg-[#ffe4e6]',
+      color: 'bg-yellow-100',
       icon: House
     },
     {
@@ -113,7 +113,7 @@
               .at(0) % 8 // TODO: omits last value (white)
           )}
       >
-        <!-- Show logo if credential is not mutable (set through issuer's metadata) -->
+        <!-- Show logo if credential is immutable (set through issuer's metadata) -->
         <div slot="logo" class="p-1">
           {#if !credential.metadata.is_mutable}
             <img

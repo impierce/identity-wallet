@@ -34,7 +34,9 @@ const nl = {
   FAVORITES: 'Favorieten',
   MY_DATA: 'Mijn gegevens',
   ADD: 'Toevoegen',
+  ACCOUNT: 'Account',
   CONTINUE: 'Doorgaan',
+  SUPPORT: 'Ondersteuning',
   SKIP: 'Overslaan'
 } satisfies Translation;
 

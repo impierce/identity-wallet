@@ -18,7 +18,7 @@
 </script>
 
 <div
-  class="w-full divide-y divide-solid divide-gray-200 rounded-xl border border-gray-200 bg-bg-primary dark:bg-bg-dark-primary"
+  class="w-full divide-y divide-solid divide-slate-200 rounded-xl border border-slate-200 bg-white dark:bg-dark"
 >
   {#each Object.entries(summary) as entry}
     <div class="flex flex-col items-start px-4 py-[10px]">

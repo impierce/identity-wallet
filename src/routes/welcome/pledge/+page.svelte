@@ -62,10 +62,10 @@
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <!-- <div class="mt-12 grow p-4" in:fly={{ x: 300, delay: 300 }} out:fly={{ x: -300, duration: 300 }}> -->
   <div class="px-2 pb-8 pt-4">
-    <p class="pb-4 text-3xl font-semibold text-slate-800">
+    <p class="pb-4 text-3xl font-semibold text-slate-700">
       No funny <span class="text-primary">business</span>
     </p>
-    <p class="text-[15px]/[24px] font-medium text-slate-500">Here's our pledge to you.</p>
+    <p class="text-[14px]/[22px] font-medium text-slate-500">Here's our pledge to you.</p>
   </div>
   <!-- Accordion -->
   <div class="mx-auto flex max-w-full flex-col space-y-4" {...$root}>

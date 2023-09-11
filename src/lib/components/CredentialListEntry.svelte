@@ -8,7 +8,7 @@
 </script>
 
 <button
-  class="flex h-[64px] items-center justify-start rounded-xl bg-bg-primary p-[7px] pr-[24px] dark:bg-bg-dark-primary"
+  class="flex h-[64px] items-center justify-start rounded-xl bg-white p-[7px] pr-[24px] dark:bg-dark"
   on:click={() => goto(`/credentials/${id}`)}
 >
   <!-- Icon -->

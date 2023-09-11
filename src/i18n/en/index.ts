@@ -35,6 +35,8 @@ const en = {
   STRONG_PASSWORD: 'Please choose a strong password.',
   FAVORITES: 'Favorites',
   MY_DATA: 'My data',
+  ACCOUNT: 'Account',
+  SUPPORT: 'Support',
   ADD: 'Add',
   CONTINUE: 'Continue',
   SKIP: 'Skip'

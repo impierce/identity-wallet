@@ -18,13 +18,13 @@
     on:back={() => goto('/activity')}
     title={connection.displayName ?? connection.domain}
   />
-  <div class="grow bg-bg-secondary px-4 pt-5 dark:bg-bg-dark-secondary">
+  <div class="grow bg-silver px-4 pt-5 dark:bg-navy">
     <MeltUiConnectionTabs>
       <!-- Summary -->
-      <div slot="summary" class="h-full bg-bg-secondary py-5 dark:bg-bg-dark-secondary">
+      <div slot="summary" class="h-full bg-silver py-5 dark:bg-navy">
         <div class="flex flex-col items-center justify-center space-y-4">
           <div class="flex w-full flex-col items-center justify-center space-y-4 py-6">
-            <div class="h-[75px] w-[75px] rounded-3xl border bg-bg-primary p-2">
+            <div class="h-[75px] w-[75px] rounded-3xl border bg-white p-2">
               <!-- <img src={'/tauri.svg'} alt={connection.domain} /> -->
             </div>
 
@@ -38,10 +38,10 @@
       </div>
 
       <!-- Data -->
-      <div slot="data" class="h-full bg-bg-secondary py-5 dark:bg-bg-dark-secondary">
+      <div slot="data" class="h-full bg-silver py-5 dark:bg-navy">
         <div class="flex flex-col items-center justify-center space-y-4">
           <div class="flex w-full flex-col items-center justify-center space-y-4 py-6">
-            <div class="h-[75px] w-[75px] rounded-3xl border bg-bg-primary p-2">
+            <div class="h-[75px] w-[75px] rounded-3xl border bg-white p-2">
               <!-- <img src={'/tauri.svg'} alt={connection.domain} /> -->
             </div>
 
@@ -55,7 +55,7 @@
       </div>
 
       <!-- History -->
-      <div slot="history" class="h-full bg-bg-secondary py-5 dark:bg-bg-dark-secondary">
+      <div slot="history" class="h-full bg-silver py-5 dark:bg-navy">
         <!-- TODO: If this turns out to be a costly operation (filtering in backend), consider lazy loading the component -->
         <ConnectionHistory />
       </div>

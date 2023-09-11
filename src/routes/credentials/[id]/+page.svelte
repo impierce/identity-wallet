@@ -56,9 +56,7 @@
 
 <div class="content-height relative flex w-full flex-col" in:fly={{ x: 24 }}>
   <TopNavigation title="Credential info" on:back={() => history.back()} />
-  <div
-    class="hide-scrollbar grow overflow-y-scroll bg-bg-secondary px-[15px] dark:bg-bg-dark-secondary"
-  >
+  <div class="hide-scrollbar grow overflow-y-scroll bg-silver px-[15px] dark:bg-navy">
     <!-- Header -->
     <!-- Background-->
     <div class="absolute left-0 top-[50px] h-[220px] w-screen {color.bg}" />
@@ -86,7 +84,7 @@
             <!-- Icon -->
             <svelte:component this={icons[icon]} class="h-6 w-6 text-slate-800" />
             <!-- Logo -->
-            <!-- <div class="flex h-full w-full items-center justify-center bg-bg-primary p-1">
+            <!-- <div class="flex h-full w-full items-center justify-center bg-white p-1">
             <img src={logo_location} alt="logo" class="object-scale-down" />
           </div> -->
           </div>
@@ -99,7 +97,7 @@
         </div>
         <!-- Text -->
         <div class="flex flex-col items-center pt-[15px]">
-          <p class="text-2xl font-semibold text-black">{title}</p>
+          <p class="text-[22px]/[30px] font-semibold text-slate-700">{title}</p>
           <p class="text-[13px]/[24px] font-normal text-slate-500">
             {new URL(credential.data.issuer).hostname}
           </p>
@@ -107,11 +105,11 @@
       </div>
       <!-- Table: Credential Subject -->
       <div
-        class="divide-y divide-solid divide-gray-200 rounded-xl border border-gray-200 bg-bg-primary dark:bg-bg-dark-primary"
+        class="divide-y divide-solid divide-slate-200 rounded-xl border border-slate-200 bg-white dark:bg-dark"
       >
         {#each Object.entries(entries) as entry}
           <div class="flex flex-col items-start px-4 py-[10px]">
-            <p class="text-[15px]/[24px] font-medium text-[#6E82A4]">{entry[0]}</p>
+            <p class="text-[13px]/[24px] font-medium text-slate-500">{entry[0]}</p>
             <p class="break-all text-[13px]/[24px] font-medium text-slate-800 dark:text-white">
               {entry[1]}
             </p>
@@ -119,21 +117,6 @@
         {/each}
       </div>
     </div>
-    <!-- Table: Issuer -->
-    <!-- <div
-      class="mt-[15px] divide-y divide-solid divide-gray-200 rounded-xl border border-gray-200 bg-white"
-    >
-      {#each Object.entries( { issuer: credential.data.issuer, issuanceDate: credential.data.issuanceDate } ) as entry}
-        <div class="flex flex-col items-start px-4 py-[10px]">
-          <p class="text-[15px]/[24px] font-medium text-[#6E82A4]">{entry[0]}</p>
-          <p class="break-all text-[13px]/[24px] font-medium text-slate-800">{entry[1]}</p>
-        </div>
-      {/each}
-    </div> -->
-    <!-- ID (unime internal), TODO: remove this -->
-    <!-- <div class="p-[15px] pb-0 text-center text-xs text-slate-500">
-      <pre>{$page.params.id}</pre>
-    </div> -->
   </div>
   <BottomDrawer>
     <!-- TODO: Share functionality currently disabled until decided how sharing works -->

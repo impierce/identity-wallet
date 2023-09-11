@@ -1,17 +1,19 @@
-<script>
-  import { onboarding_state, state } from '$src/stores';
-  import { dispatch } from '$src/lib/dispatcher';
-  import LL from '$src/i18n/i18n-svelte';
-  import { LanguageSelect } from '@impierce/ui-components';
-  import Button from '$src/lib/components/Button.svelte';
+<script lang="ts">
   import { goto } from '$app/navigation';
   import { fade, fly } from 'svelte/transition';
-  import UniMeText from '$src/lib/components/logo/UniMeText.svelte';
+
+  import { LanguageSelect } from '@impierce/ui-components';
+
+  import LL from '$src/i18n/i18n-svelte';
+  import Button from '$src/lib/components/Button.svelte';
   import MeLarge from '$src/lib/components/logo/MeLarge.svelte';
+  import UniMeText from '$src/lib/components/logo/UniMeText.svelte';
+  import { dispatch } from '$src/lib/dispatcher';
+  import { onboarding_state, state } from '$src/stores';
 </script>
 
 <div
-  class="content-height relative flex flex-col bg-bg-secondary dark:bg-bg-dark-secondary"
+  class="content-height relative flex flex-col bg-silver dark:bg-navy"
   in:fade={{ delay: 200 }}
   out:fade={{ duration: 200 }}
 >
@@ -41,13 +43,11 @@
     <!-- <div class="flex grow flex-col justify-center" in:fade out:fly={{ x: -300, duration: 300 }}> -->
     <div class="px-4">
       <div class="pb-[50px]">
-        <p class=" pb-[10px] text-[36px]/[44px] font-bold text-secondary dark:text-white">
-          Welcome to
-        </p>
+        <p class=" pb-[10px] text-[36px]/[44px] font-bold text-blue dark:text-white">Welcome to</p>
         <UniMeText />
       </div>
 
-      <p class="text-[14px]/[22px] font-medium text-[#323B40] dark:text-white">
+      <p class="text-[14px]/[22px] font-medium text-ex-grey-2 dark:text-white">
         UniMe connects your digital world, safely and securely.
         <br /><br />
         Create a brand new identity profile or recover an existing one to get started.

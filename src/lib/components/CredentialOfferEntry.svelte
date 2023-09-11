@@ -20,9 +20,7 @@
   export let color: string | undefined = undefined;
 </script>
 
-<div
-  class="flex h-[60px] items-center justify-start rounded-xl bg-bg-primary p-[5px] dark:bg-bg-dark-primary"
->
+<div class="flex h-[60px] items-center justify-start rounded-xl bg-white p-[5px] dark:bg-dark">
   <!-- Icon -->
   <div
     class="mr-[15px] {color} flex h-[50px] w-[50px] flex-col items-center justify-center rounded-lg"
@@ -42,7 +40,7 @@
   <!-- Checkbox -->
   <button
     use:melt={$root}
-    class="mr-2 flex h-6 w-6 appearance-none items-center justify-center rounded-md border-[1.5px] border-[#C5C6CC] p-[6px] text-white data-[disabled]:opacity-50
+    class="mr-2 flex h-6 w-6 appearance-none items-center justify-center rounded-md border-[1.5px] border-slate-300 p-[6px] text-white data-[disabled]:opacity-50
     {isChecked ? 'border-none bg-primary' : 'bg-white'}"
     id="checkbox-{index}"
   >

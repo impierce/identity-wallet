@@ -1,8 +1,11 @@
-<script>
-  import { state } from '$src/stores';
+<script lang="ts">
   import { goto } from '$app/navigation';
+
+  import { state } from '$src/stores';
+
   import Settings from '~icons/lucide/settings';
   import DotsThreeVertical from '~icons/ph/dots-three-vertical-bold';
+
   // import DotsThreeVertical from '~icons/ph/dots-three-outline-vertical-fill';
 </script>
 

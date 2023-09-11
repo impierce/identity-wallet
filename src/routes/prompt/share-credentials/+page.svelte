@@ -20,12 +20,12 @@
   );
 </script>
 
-<div class="content-height flex flex-col items-stretch bg-bg-secondary">
+<div class="content-height flex flex-col items-stretch bg-silver dark:bg-navy">
   <TopNavigation title={'Share Information'} on:back={() => history.back()} />
 
   <div class="mt-[40px] flex grow flex-col items-center justify-start p-4">
     <!-- Header -->
-    <div class="w-full rounded-[20px] border border-slate-200 bg-bg-primary p-[10px]">
+    <div class="w-full rounded-[20px] border border-slate-200 bg-white p-[10px]">
       <!-- Logo -->
       <div class="flex flex-col items-center space-y-[10px]">
         <!-- Placeholder -->
@@ -45,8 +45,8 @@
     </div>
 
     <!-- Credentials selection -->
-    <!-- <div class="w-full space-y-2 rounded-2xl bg-bg-primary p-3"></div> -->
-    <div class="mt-3 w-full rounded-[20px] border border-slate-200 bg-bg-primary p-[10px]">
+    <!-- <div class="w-full space-y-2 rounded-2xl bg-white p-3"></div> -->
+    <div class="mt-3 w-full rounded-[20px] border border-slate-200 bg-white p-[10px]">
       <div class="flex w-full flex-col space-y-2">
         {#each selected_credentials as credential}
           <CredentialOfferEntry
@@ -82,7 +82,7 @@
               <button
                 use:melt={$root}
                 class="flex h-6 w-6 appearance-none items-center justify-center
-                  rounded-md border-[1.5px] border-[#C5C6CC] p-[6px] text-white
+                  rounded-md border-[1.5px] border-slate-300 p-[6px] text-white
                   {$isChecked ? 'border-none bg-primary' : 'bg-white'}"
                 id="checkbox"
               >

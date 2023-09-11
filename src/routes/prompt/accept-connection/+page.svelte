@@ -32,7 +32,7 @@
   console.log($state.current_user_prompt);
 </script>
 
-<div class="content-height flex flex-col items-stretch bg-bg-secondary dark:bg-bg-dark-secondary">
+<div class="content-height flex flex-col items-stretch bg-silver dark:bg-navy">
   <TopNavigation title={'Connection Request'} on:back={() => history.back()} />
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
@@ -43,7 +43,7 @@
     </div>
 
     <!-- Details -->
-    <div class="w-full space-y-2 rounded-2xl bg-bg-primary p-3">
+    <div class="w-full space-y-2 rounded-2xl bg-white p-3">
       <!-- Warning -->
       <div class="flex w-full items-center rounded-lg bg-slate-50 px-4 py-4">
         <span class="mr-4 h-6 w-6">
@@ -61,11 +61,11 @@
         <p class="text-sm text-slate-800">URL</p>
         <p class="text-sm text-slate-500">bestdex.com</p>
       </div> -->
-      <div class="flex justify-between rounded-lg border border-slate-200 bg-bg-primary px-4 py-4">
+      <div class="flex justify-between rounded-lg border border-slate-200 bg-white px-4 py-4">
         <p class="text-sm text-slate-800">Connected previously</p>
         <X class="text-rose-500" />
       </div>
-      <div class="flex justify-between rounded-lg border border-slate-200 bg-bg-primary px-4 py-4">
+      <div class="flex justify-between rounded-lg border border-slate-200 bg-white px-4 py-4">
         <div class="flex items-center">
           <p class="text-sm text-slate-800">Verified</p>
           <button class="-m-2 ml-1 rounded-full p-1" use:melt={$trigger}>
@@ -75,7 +75,7 @@
             <div
               use:melt={$content}
               transition:fade={{ duration: 200 }}
-              class="z-10 w-1/2 rounded-2xl bg-[#2F3036] p-[20px] text-[#D4D6DD] shadow-md"
+              class="z-10 w-1/2 rounded-2xl bg-dark p-[20px] text-white shadow-md"
             >
               <div use:melt={$arrow} />
               <div class="break-keep text-sm">
@@ -93,9 +93,7 @@
   </div>
 
   <!-- Controls -->
-  <div
-    class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-bg-primary p-6 pb-0"
-  >
+  <div class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 pb-0">
     <Button label="Accept connection" on:click={() => goto('/prompt/select-credentials/share')} />
     <Button
       label="Reject"

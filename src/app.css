@@ -12,13 +12,18 @@
     src: url('/fonts/Inter-VariableFont_slnt,wght.ttf') format('truetype');
   }
 
-  h1 {
+  html {
+    -webkit-tap-highlight-color: transparent; /* Removes a flashing highlight box on tap */
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* h1 {
     @apply text-2xl font-bold;
   }
 
   h2 {
     @apply text-xl font-semibold;
-  }
+  } */
 }
 
 @layer utilities {
@@ -44,9 +49,6 @@ body {
   overflow-x: hidden;
   /* overflow-y: hidden; */
   /* max-width: 100%; */
-
-  /* Enhancements to touch experience */
-  -webkit-tap-highlight-color: transparent; /* Removes a flashing highlight box on tap */
 }
 
 .transparent {
@@ -69,7 +71,7 @@ body {
   /* z-index: 10; */
   height: var(--safe-area-inset-top);
   width: 100%;
-  @apply bg-bg-primary dark:bg-bg-dark-primary;
+  @apply bg-white dark:bg-dark;
 }
 
 .safe-area-bottom {
@@ -78,7 +80,7 @@ body {
   /* z-index: 10; */
   height: var(--safe-area-inset-bottom);
   width: 100%;
-  @apply bg-bg-primary dark:bg-bg-dark-primary;
+  @apply bg-white dark:bg-dark;
 }
 
 /**

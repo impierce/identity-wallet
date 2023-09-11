@@ -25,7 +25,7 @@
 
 {#key data.pathname}
   <!-- <div in:fly={{ x: 128, delay: 400, opacity: 1 }} out:fly={{ x: -128, opacity: 1 }}> -->
-  <div class="content-height flex flex-col bg-bg-secondary dark:bg-bg-dark-secondary">
+  <div class="content-height flex flex-col bg-silver dark:bg-navy">
     <slot />
     <!-- <TopNavigation title="Terms & Conditions" on:back={() => history.back()} />
     <div class="grow">terms</div>

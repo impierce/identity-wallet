@@ -36,8 +36,8 @@
   }
 </script>
 
-<div class="flex min-h-full flex-col bg-bg-primary dark:bg-bg-dark-primary">
-  <div class="sticky top-0 z-10 h-[56px] w-full bg-bg-primary dark:bg-bg-dark-primary">
+<div class="flex min-h-full flex-col bg-white dark:bg-dark">
+  <div class="sticky top-0 z-10 h-[56px] w-full bg-white dark:bg-dark">
     <TopBar />
   </div>
 
@@ -51,7 +51,7 @@
   <!-- should have min height: full screen - smallest possible welcome header - bottom nav - safe areas (top, bottom) -->
   <div
     in:fly={{ y: 24, duration: 200 }}
-    class="flex grow flex-col items-stretch justify-start rounded-t-[20px] bg-bg-secondary p-[18px] dark:bg-bg-dark-secondary"
+    class="flex grow flex-col items-stretch justify-start rounded-t-[20px] bg-silver p-[18px] dark:bg-navy"
   >
     {#if $state?.credentials && $state?.credentials.length > 0}
       <Favorites />
@@ -77,7 +77,7 @@
           <!-- Confetti -->
           <div class="absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2">
             <lottie-player
-              src="/lottiefiles/bubble-burst-confetti-idQiUsReAi.json"
+              src="/lottiefiles/bubble-burst-confetti-ajgRKUnNJ7.json"
               autoplay
               loop
               speed={0.25}
@@ -99,6 +99,7 @@
         titleText={$LL.GETTING_STARTED.DIALOG_0_TITLE()}
         descriptionText={$LL.GETTING_STARTED.DIALOG_0_TEXT()}
       >
+        <!-- TODO: bug: properly $close the drawer with melt-ui (otherwise two clicks necessary) -->
         <Button slot="trigger" let:trigger {trigger} label="Let's go" />
         <!-- <button
           slot="trigger"
@@ -106,7 +107,7 @@
           class="w-full rounded-lg bg-primary px-4 py-2 text-white"
           use:melt={trigger}>Start</button
         > -->
-        <div slot="content" class="flex flex-col pt-[20px]">
+        <div slot="content" class="flex w-full flex-col pt-[20px]">
           <!-- TODO: add multiple steps inline in drawer -->
           <Button label={$LL.CONTINUE()} on:click={() => goto('/goals')} />
           <!-- <button

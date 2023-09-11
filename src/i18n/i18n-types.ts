@@ -137,6 +137,14 @@ type RootTranslation = {
 	 */
 	MY_DATA: string
 	/**
+	 * A​c​c​o​u​n​t
+	 */
+	ACCOUNT: string
+	/**
+	 * S​u​p​p​o​r​t
+	 */
+	SUPPORT: string
+	/**
 	 * A​d​d
 	 */
 	ADD: string
@@ -271,6 +279,14 @@ export type TranslationFunctions = {
 	 * My data
 	 */
 	MY_DATA: () => LocalizedString
+	/**
+	 * Account
+	 */
+	ACCOUNT: () => LocalizedString
+	/**
+	 * Support
+	 */
+	SUPPORT: () => LocalizedString
 	/**
 	 * Add
 	 */
