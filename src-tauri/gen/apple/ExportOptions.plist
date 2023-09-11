@@ -4,20 +4,20 @@
 <dict>
     <!-- Use "development" for local testing, use "ad-hoc" for TestFlight releases -->
     
-    <!-- <key>method</key>
+    <key>method</key>
     <string>development</string>
     <key>provisioningProfiles</key>
 	<dict>
 		<key>com.impierce.identity-wallet</key>
 		<string>UniMe (alpha) - Internal Test (Development)</string>
-	</dict> -->
+	</dict>
 
-    <key>method</key>
+    <!-- <key>method</key>
 	<string>ad-hoc</string>
 	<key>provisioningProfiles</key>
 	<dict>
 		<key>com.impierce.identity-wallet</key>
 		<string>UniMe (alpha) - Internal Test (Distribution)</string>
-	</dict>
+	</dict> -->
 </dict>
 </plist>
