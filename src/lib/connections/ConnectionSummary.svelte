@@ -7,6 +7,7 @@
   // export let displayName: string | undefined = undefined;
   export let last_connected: string;
   export let first_connected: string;
+  export let logo_uri: string;
 
   let summary = {
     URL: url,

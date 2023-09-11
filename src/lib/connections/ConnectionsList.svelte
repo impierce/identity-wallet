@@ -30,7 +30,11 @@
       <button on:click={() => goto(`/activity/connection/${index}`)}>
         <div class="flex h-16 items-center rounded-xl bg-white px-4 dark:bg-dark">
           <!-- Icon -->
-          <div class="mr-4 h-8 w-8 rounded-full border border-slate-300 dark:border-slate-600" />
+          <div
+            class="mr-4 flex h-8 w-8 overflow-hidden rounded-full border border-slate-300 dark:border-slate-600"
+          >
+            <img src={connection.logo_uri} />
+          </div>
           <!-- Text -->
           <div class="flex grow flex-col items-start">
             <div class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
