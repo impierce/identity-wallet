@@ -119,6 +119,7 @@ pub async fn handle_authorization_request(state: &AppState, _action: Action) -> 
 
             if result.is_none() {
                 state.connections.lock().unwrap().push(Connection {
+                    client_name: "".to_string(),
                     url: connection_url,
                     logo_uri,
                     verified: false,
@@ -301,6 +302,7 @@ pub async fn handle_presentation_request(state: &AppState, action: Action) -> an
 
     if result.is_none() {
         state.connections.lock().unwrap().push(Connection {
+            client_name: "".to_string(),
             url: connection_url,
             logo_uri,
             verified: false,

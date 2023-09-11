@@ -115,6 +115,7 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
     *state.user_journey.lock().unwrap() = Some(onboarding_journey);
 
     *state.connections.lock().unwrap() = vec![Connection {
+        client_name: "NGDIL Demo".to_string(),
         url: "api.ngdil-demo.tanglelabs.io".to_string(),
         logo_uri: "https://recursing-feynman.weeir.com/imgs/kw1c-white.png".to_string(),
         verified: false,

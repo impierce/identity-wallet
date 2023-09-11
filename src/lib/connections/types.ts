@@ -3,6 +3,7 @@ export interface Connection {
   // displayName?: string;
   // domain: string;
   url: string;
+  client_name: string;
   // lastConnected: string;
   logo_uri?: string;
   verified: boolean;

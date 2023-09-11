@@ -93,6 +93,7 @@ pub struct Profile {
 #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default)]
 #[ts(export)]
 pub struct Connection {
+    pub client_name: String,
     pub url: String,
     pub logo_uri: String,
     pub verified: bool,

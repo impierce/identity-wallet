@@ -12,7 +12,6 @@
   let summary = {
     URL: url,
     // Domain: domain,
-    // displayName,
     Verified: 'no',
     'First connected': first_connected,
     'Last connected': last_connected

@@ -28,7 +28,7 @@
             </div>
 
             <div class="text-center text-2xl font-semibold text-black dark:text-white">
-              Connected to <p class="text-primary">{connection.url}</p>
+              Connected to <p class="text-primary">{connection.client_name}</p>
             </div>
           </div>
 
