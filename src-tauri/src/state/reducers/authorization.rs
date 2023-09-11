@@ -28,7 +28,6 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> any
 
     let state_guard = state.managers.lock().await;
     let provider_manager = &state_guard.identity_manager.as_ref().unwrap().provider_manager;
-    let stronghold_manager = state_guard.stronghold_manager.as_ref().unwrap();
 
     let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
 
@@ -191,8 +190,8 @@ pub async fn handle_authorization_request(state: &AppState, _action: Action) -> 
 }
 
 // Sends the authorization response including the verifiable credentials.
-pub async fn send_authorization_response(state: &AppState, action: Action) -> anyhow::Result<()> {
-    info!("send_authorization_response");
+pub async fn handle_presentation_request(state: &AppState, action: Action) -> anyhow::Result<()> {
+    info!("handle_presentation_request");
 
     let state_guard = state.managers.lock().await;
     let stronghold_manager = state_guard.stronghold_manager.as_ref().unwrap();

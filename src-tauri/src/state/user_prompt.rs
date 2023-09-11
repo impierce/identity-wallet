@@ -72,8 +72,8 @@ pub enum CurrentUserPrompt {
     Selection(Selection),
     CredentialOffer(CredentialOffer),
     PasswordRequired(PasswordRequired),
-    ShareCredentials(ShareCredentials),
     AcceptConnection(AcceptConnection),
+    ShareCredentials(ShareCredentials),
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, TS, PartialEq)]
@@ -84,9 +84,6 @@ pub enum CurrentUserPromptType {
     // TODO: remove or rename generic warning
     #[serde(rename = "warning")]
     Warning,
-    // TODO: remove or rename generic selection
-    // #[serde(rename = "selection")]
-    // Selection,
     #[serde(rename = "accept-connection")] // SIOPv2
     AcceptConnection,
     #[serde(rename = "share-credentials")] // VP

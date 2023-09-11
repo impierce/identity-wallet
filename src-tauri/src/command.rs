@@ -1,6 +1,8 @@
 use crate::state::actions::{Action, ActionType};
 use crate::state::persistence::{delete_state_file, delete_stronghold, load_state, save_state};
-use crate::state::reducers::authorization::{read_authorization_request, send_authorization_response};
+use crate::state::reducers::authorization::{
+    handle_authorization_request, handle_presentation_request, read_authorization_request,
+};
 use crate::state::reducers::credential_offer::{read_credential_offer, send_credential_request};
 use crate::state::reducers::load_dev_profile::load_dev_profile;
 use crate::state::reducers::storage::unlock_storage;
@@ -122,6 +124,14 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
                 save_state(TransferState::from(app_state)).await.ok();
             }
         }
+        ActionType::ConnectionAccepted => {
+            if handle_authorization_request(app_state, Action { r#type, payload })
+                .await
+                .is_ok()
+            {
+                save_state(TransferState::from(app_state)).await.ok();
+            }
+        }
         ActionType::ReadCredentialOffer => {
             if read_credential_offer(app_state, Action { r#type, payload })
                 .await
@@ -140,7 +150,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             }
         }
         ActionType::CredentialsSelected => {
-            if send_authorization_response(app_state, Action { r#type, payload })
+            if handle_presentation_request(app_state, Action { r#type, payload })
                 .await
                 .is_ok()
             {

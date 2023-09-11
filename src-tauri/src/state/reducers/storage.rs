@@ -41,6 +41,7 @@ pub async fn unlock_storage(state: &AppState, action: Action) -> anyhow::Result<
     state_guard.stronghold_manager.replace(stronghold_manager);
 
     state_guard.identity_manager.replace(IdentityManager {
+        subject,
         provider_manager,
         wallet,
     });

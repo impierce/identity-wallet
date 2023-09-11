@@ -17,6 +17,7 @@ use ts_rs::TS;
 use self::reducers::authorization::ConnectionRequest;
 
 pub struct IdentityManager {
+    pub subject: Arc<dyn Subject>,
     pub provider_manager: ProviderManager,
     pub wallet: Wallet,
 }
