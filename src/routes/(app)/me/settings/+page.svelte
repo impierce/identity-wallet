@@ -42,9 +42,12 @@
     <p class="text-[14px]/[22px] font-medium text-slate-500">{$LL.SUPPORT()}</p>
     <SettingsEntry icon={Info} title="About UniMe" todo />
     <SettingsEntry icon={Envelope} title="Send feedback" hasCaretRight={false} todo />
-      <div class="pb-4" />
+    <div class="pb-4" />
 
-      <div>0.2.8</div>
+    <div
+      class="flex w-full flex-col items-center justify-center text-[14px]/[22px] font-medium text-slate-500"
+    >
+      <div>0.2.9</div>
       <div class="flex items-center pb-4">
         <p>Built with Tauri</p>
         <Heart variation="solid" size="18" class="pl-1" />

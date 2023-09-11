@@ -1,8 +1,23 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("rust")
 }
+
+// val keystoreProperties = Properties()
+// val keystorePropertiesFile = rootProject.file("key.properties").toPath()
+// if (Files.exists(keystorePropertiesFile)) {
+//     Files.newBufferedReader(keystorePropertiesFile).use { reader ->
+//         keystoreProperties.load(reader)
+//     }
+// }
+
+val keyPropertiesFile = rootProject.file("key.properties")
+val keyProperties = Properties()
+keyProperties.load(FileInputStream(keyPropertiesFile))
 
 android {
     compileSdk = 33
@@ -12,8 +27,8 @@ android {
         applicationId = "com.impierce.identity_wallet"
         minSdk = 24
         targetSdk = 33
-        versionCode = 19
-        versionName = "0.2.8"
+        versionCode = 20
+        versionName = "0.2.9"
     }
     signingConfigs {
         create("release") {
@@ -42,6 +57,7 @@ android {
                     .plus(getDefaultProguardFile("proguard-android-optimize.txt"))
                     .toList().toTypedArray()
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     kotlinOptions {
