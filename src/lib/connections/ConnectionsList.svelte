@@ -57,13 +57,10 @@
           <!-- Text -->
           <div class="flex grow flex-col items-start">
             <div class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
-              {connection.url}
+              {connection.client_name}
             </div>
             <div class="text-[12px]/[20px] font-medium text-slate-400 dark:text-slate-300">
-              {new Date(connection.last_connected).toLocaleString('en-US', {
-                dateStyle: 'long',
-                timeStyle: 'medium'
-              })}
+              {connection.url}
             </div>
           </div>
         </div>

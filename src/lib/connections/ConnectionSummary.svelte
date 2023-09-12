@@ -11,10 +11,15 @@
 
   let summary = {
     URL: url,
-    // Domain: domain,
     Verified: 'no',
-    'First connected': first_connected,
-    'Last connected': last_connected
+    'First connected': new Date(first_connected).toLocaleString('en-US', {
+      dateStyle: 'medium',
+      timeStyle: 'medium'
+    }),
+    'Last connected': new Date(last_connected).toLocaleString('en-US', {
+      dateStyle: 'medium',
+      timeStyle: 'medium'
+    })
   };
 </script>
 

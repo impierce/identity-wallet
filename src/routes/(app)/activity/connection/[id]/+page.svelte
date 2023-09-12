@@ -18,7 +18,7 @@
 </script>
 
 <div class="flex h-full flex-col">
-  <TopNavigation on:back={() => goto('/activity')} title={connection.url} />
+  <TopNavigation on:back={() => goto('/activity')} title={connection.client_name} />
   <div class="grow bg-silver px-4 pt-5 dark:bg-navy">
     <MeltUiConnectionTabs>
       <!-- Summary -->
