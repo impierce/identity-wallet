@@ -52,6 +52,8 @@
     dateStyle: 'long',
     timeStyle: 'medium'
   });
+
+  console.log({ credential });
 </script>
 
 <div class="content-height relative flex w-full flex-col" in:fly={{ x: 24 }}>
