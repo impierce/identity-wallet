@@ -31,8 +31,6 @@
 
   const previously_connected = $state.current_user_prompt.previously_connected;
 
-
-
   // console.log(selected_credentials);
 
   console.log($state.current_user_prompt);
@@ -53,29 +51,35 @@
       <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
         {client_name}
       </p>
-      <!-- <p class="pt-[10px] text-sm font-medium text-slate-500">www.bestdex.com</p> -->
+      <p class="pt-[10px] text-sm font-medium text-slate-500">
+        {new URL($state.current_user_prompt.redirect_uri).hostname}
+      </p>
     </div>
 
     <!-- Details -->
     <div class="w-full space-y-2 rounded-2xl bg-white p-3 dark:bg-dark">
       <!-- Warning -->
-      <div class="flex w-full items-center rounded-lg bg-silver px-4 py-4 dark:bg-navy">
-        <span class="mr-4 h-6 w-6">
-          <WarningCircle class="h-6 w-6 text-amber-500" />
-        </span>
-        <div class="flex flex-col">
-          <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">New connection</p>
-          <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
-            Only accept new connections that you recognize and trust
-          </p>
+      {#if !previously_connected}
+        <div class="flex w-full items-center rounded-lg bg-silver px-4 py-4 dark:bg-navy">
+          <span class="mr-4 h-6 w-6">
+            <WarningCircle class="h-6 w-6 text-amber-500" />
+          </span>
+          <div class="flex flex-col">
+            <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
+              New connection
+            </p>
+            <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
+              Only accept new connections that you recognize and trust
+            </p>
+          </div>
         </div>
-      </div>
+      {/if}
 
       <div
         class="flex justify-between rounded-xl border border-slate-200 bg-white px-4 py-4 dark:border-slate-600 dark:bg-dark"
       >
-        <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">URL</p>
-        <p class="text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">
+        <p class="mr-3 text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">URL</p>
+        <p class="break-all text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">
           {$state.current_user_prompt.redirect_uri}
         </p>
       </div>

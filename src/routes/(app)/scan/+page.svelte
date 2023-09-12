@@ -91,7 +91,9 @@
       current_user_prompt: {
         type: 'accept-connection',
         client_name: 'Some other client',
-        logo_uri: 'https://recursing-feynman.weeir.com/imgs/ngdil.svg'
+        logo_uri: 'https://recursing-feynman.weeir.com/imgs/ngdil.svg',
+        redirect_uri: 'https://recursing-feynman.weeir.com/auth/callback',
+        previously_connected: false
         // logo_uri: 'https://picsum.photos/200'
       }
     });
