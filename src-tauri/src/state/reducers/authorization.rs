@@ -33,14 +33,25 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> any
 
     info!("trying to validate request: {:?}", payload);
 
-    let (client_name, logo_uri, redirect_uri) = if let Result::Ok(siopv2_authorization_request) = provider_manager
-        .validate_request::<SIOPv2>(serde_json::from_value(payload.clone()).unwrap())
-        .await
+    let (client_name, logo_uri, redirect_uri, previously_connected) = if let Result::Ok(siopv2_authorization_request) =
+        provider_manager
+            .validate_request::<SIOPv2>(serde_json::from_value(payload.clone()).unwrap())
+            .await
     {
         let client_metadata = siopv2_authorization_request.extension.client_metadata.as_ref().unwrap();
         let client_name = client_metadata.client_name.as_ref().unwrap().clone();
         let logo_uri = client_metadata.logo_uri.as_ref().unwrap().clone();
         let redirect_uri = siopv2_authorization_request.redirect_uri.to_string();
+
+        let connection_url = siopv2_authorization_request.redirect_uri.domain().unwrap().to_string();
+
+        let previously_connected = state
+            .connections
+            .lock()
+            .unwrap()
+            .iter_mut()
+            .find(|connection| connection.url == connection_url && connection.client_name == client_name)
+            .is_some();
 
         state
             .active_connection_request
@@ -48,7 +59,7 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> any
             .unwrap()
             .replace(ConnectionRequest::SIOPv2(siopv2_authorization_request));
 
-        (client_name, logo_uri.to_string(), redirect_uri)
+        (client_name, logo_uri.to_string(), redirect_uri, previously_connected)
     } else if let Result::Ok(oid4vp_authorization_request) = provider_manager
         .validate_request::<OID4VP>(serde_json::from_value(payload.clone()).unwrap())
         .await
@@ -58,13 +69,23 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> any
         let logo_uri = client_metadata.logo_uri.as_ref().unwrap().clone();
         let redirect_uri = oid4vp_authorization_request.redirect_uri.to_string();
 
+        let connection_url = oid4vp_authorization_request.redirect_uri.domain().unwrap().to_string();
+
+        let previously_connected = state
+            .connections
+            .lock()
+            .unwrap()
+            .iter_mut()
+            .find(|connection| connection.url == connection_url && connection.client_name == client_name)
+            .is_some();
+
         state
             .active_connection_request
             .lock()
             .unwrap()
             .replace(ConnectionRequest::OID4VP(oid4vp_authorization_request));
 
-        (client_name, logo_uri.to_string(), redirect_uri)
+        (client_name, logo_uri.to_string(), redirect_uri, previously_connected)
     } else {
         return Err(anyhow::anyhow!("unable to validate request"));
     };
@@ -81,6 +102,7 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> any
             client_name,
             logo_uri,
             redirect_uri,
+            previously_connected,
         }));
 
     Ok(())

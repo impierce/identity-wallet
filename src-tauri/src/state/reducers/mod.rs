@@ -248,6 +248,7 @@ pub fn reset_state(state: &AppState, _action: Action) -> anyhow::Result<()> {
     *state.active_profile.lock().unwrap() = None;
     *state.locale.lock().unwrap() = Locale::default();
     state.credentials.lock().unwrap().clear();
+    state.connections.lock().unwrap().clear();
     *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect(Redirect {
         r#type: CurrentUserPromptType::Redirect,
         target: "welcome".to_string(),

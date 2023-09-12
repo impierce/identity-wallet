@@ -53,6 +53,7 @@ pub struct AcceptConnection {
     pub client_name: String,
     pub logo_uri: String,
     pub redirect_uri: String,
+    pub previously_connected: bool,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, TS, PartialEq)]

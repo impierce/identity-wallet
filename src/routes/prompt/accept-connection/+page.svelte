@@ -29,6 +29,10 @@
 
   let client_name = $state.current_user_prompt.client_name;
 
+  const previously_connected = $state.current_user_prompt.previously_connected;
+
+
+
   // console.log(selected_credentials);
 
   console.log($state.current_user_prompt);
@@ -81,7 +85,11 @@
         <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
           Connected previously
         </p>
-        <X class="text-rose-500" />
+        {#if previously_connected}
+          <Check class="text-emerald-500" />
+        {:else}
+          <X class="text-rose-500" />
+        {/if}
       </div>
       <!-- TODO: feature disabled: "Verify .well-known" -->
       <!-- <div

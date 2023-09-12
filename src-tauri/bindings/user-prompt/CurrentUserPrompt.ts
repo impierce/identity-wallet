@@ -6,7 +6,5 @@ import type { Redirect } from "./Redirect";
 import type { Selection } from "./Selection";
 import type { ShareCredentials } from "./ShareCredentials";
 import type { Warning } from "./Warning";
-import type { ShareCredentials } from "./ShareCredentials";
-import type { AcceptConnection } from "./AcceptConnection";
 
 export type CurrentUserPrompt = Redirect | Warning | Selection | CredentialOffer | PasswordRequired | AcceptConnection | ShareCredentials;
