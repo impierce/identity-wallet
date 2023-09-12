@@ -18,6 +18,7 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
                 let credential_display = get_unverified_jwt_claims(&credential.credential)["vc"].clone();
                 DisplayCredential {
                     id: Uuid::new_v4().to_string(),
+                    issuer_name: None,
                     format: (&verifiable_credential).try_into().unwrap(),
                     data: credential_display,
                     metadata: CredentialMetadata::default(),
@@ -37,6 +38,7 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
 #[ts(export, export_to = "bindings/display-credential/DisplayCredential.ts")]
 pub struct DisplayCredential {
     pub id: String,
+    pub issuer_name: Option<String>,
     #[ts(type = "string")]
     pub format: CredentialFormats<()>,
     #[ts(type = "object")]
