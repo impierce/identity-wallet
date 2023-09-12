@@ -46,12 +46,12 @@
   }
 
   // create entries to be shown
-  const { id, ...entries } = credential.data.credentialSubject;
-  entries['issuer'] = credential.data.issuer;
-  entries['issuanceDate'] = new Date(credential.data.issuanceDate).toLocaleString('en-US', {
-    dateStyle: 'long',
-    timeStyle: 'medium'
-  });
+  const { id, enrichment, ...entries } = credential.data.credentialSubject;
+  // entries['issuer'] = credential.data.issuer ?? credential.issuer_name;
+  // entries['issuanceDate'] = new Date(credential.data.issuanceDate).toLocaleString('en-US', {
+  //   dateStyle: 'long',
+  //   timeStyle: 'medium'
+  // });
 
   console.log({ credential });
 </script>
@@ -101,7 +101,7 @@
         <div class="flex flex-col items-center pt-[15px]">
           <p class="text-[22px]/[30px] font-semibold text-slate-700">{title}</p>
           <p class="text-[13px]/[24px] font-normal text-slate-500">
-            {credential.data.issuer}
+            {credential.data.issuer ?? credential.issuer_name}
           </p>
         </div>
       </div>
@@ -133,7 +133,9 @@
       <!-- Description -->
       <div class="flex flex-col items-center">
         <p class="pt-4 text-2xl font-semibold text-black">{title}</p>
-        <p class="text-[13px]/[24px] text-slate-500">{credential.data.issuer}</p>
+        <p class="text-[13px]/[24px] text-slate-500">
+          {credential.data.issuer ?? credential.issuer_name}
+        </p>
       </div>
       <!-- QR Code -->
       <div class="flex flex-col items-center p-7">
