@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
 
-  export let id: string | undefined = undefined; // TODO: should not be able to be undefined
+  export let id: string | undefined; // TODO: should not be able to be undefined
   export let title = '';
   export let description = '';
   export let color: string | undefined = undefined;

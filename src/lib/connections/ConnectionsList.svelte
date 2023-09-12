@@ -10,6 +10,25 @@
   import { groupConnectionsAlphabetically } from './utils';
 
   // let connections: Map<string, Connection[]> = groupConnectionsAlphabetically(exampleConnections);
+  // // let connections: Map<string, Connection[]> = groupConnectionsAlphabetically($state.connections);
+  // let connections: Map<string, Connection[]> = groupConnectionsAlphabetically([
+  //   {
+  //     client_name: 'NGDIL Demo',
+  //     url: 'api.ngdil-demo.tanglelabs.io',
+  //     logo_uri: 'https://recursing-feynman.weeir.com/imgs/kw1c-white.png',
+  //     verified: false,
+  //     first_connected: '2023-09-11T19:53:53.937981+00:00',
+  //     last_connected: '2023-09-11T19:53:53.937981+00:00'
+  //   },
+  //   {
+  //     url: 'amazon.com',
+  //     client_name: 'Amazon',
+  //     // logo_uri: '',
+  //     verified: false,
+  //     first_connected: '2023-03-02T11:53:53.937981+00:00',
+  //     last_connected: '2023-04-05T10:01:53.937981+00:00'
+  //   }
+  // ]);
   let connections: Map<string, Connection[]> = groupConnectionsAlphabetically($state.connections);
   console.log(Object.fromEntries(connections));
 </script>

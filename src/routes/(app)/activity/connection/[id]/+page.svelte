@@ -12,6 +12,8 @@
   import { state } from '$src/stores';
 
   // let connection: Connection = exampleConnections.find((c) => c.id === $page.params.id)!!;
+  console.log($page.params.id);
+  console.log($state.connections);
   let connection: Connection = $state.connections.at($page.params.id)!!;
 </script>
 
