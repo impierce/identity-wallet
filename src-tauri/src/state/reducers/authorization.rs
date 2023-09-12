@@ -124,6 +124,7 @@ pub async fn handle_authorization_request(state: &AppState, _action: Action) -> 
                     verified: false,
                     first_connected: connection_time.clone(),
                     last_connected: connection_time,
+                    shared_data: vec![],
                 })
             };
 
@@ -298,6 +299,9 @@ pub async fn handle_presentation_request(state: &AppState, action: Action) -> an
         .find(|connection| connection.url == connection_url && connection.client_name == client_name)
         .map(|connection| {
             connection.last_connected = connection_time.clone();
+            connection
+                .shared_data
+                .extend(credential_uuids.iter().map(|uuid| uuid.to_string()));
         });
 
     if result.is_none() {
@@ -308,6 +312,7 @@ pub async fn handle_presentation_request(state: &AppState, action: Action) -> an
             verified: false,
             first_connected: connection_time.clone(),
             last_connected: connection_time,
+            shared_data: credential_uuids.iter().map(|uuid| uuid.to_string()).collect(),
         })
     };
 

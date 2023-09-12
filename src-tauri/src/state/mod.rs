@@ -99,4 +99,5 @@ pub struct Connection {
     pub verified: bool,
     pub first_connected: String,
     pub last_connected: String,
+    pub shared_data: Vec<String>,
 }
