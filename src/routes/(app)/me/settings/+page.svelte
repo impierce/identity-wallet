@@ -47,7 +47,7 @@
     <div
       class="flex w-full flex-col items-center justify-center text-[14px]/[22px] font-medium text-slate-500"
     >
-      <div>0.2.11</div>
+      <div>0.3.0</div>
       <div class="flex items-center pb-4">
         <p>Built with Tauri</p>
         <Heart variation="solid" size="18" class="pl-1" />

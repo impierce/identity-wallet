@@ -8,8 +8,8 @@
     "withGlobalTauri": false
   },
   "package": {
-    "productName": "UniMe",
-    "version": "0.2.11"
+    "productName": "UniMe Beta",
+    "version": "0.3.0"
   },
   "tauri": {
     "bundle": {
