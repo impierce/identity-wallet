@@ -38,7 +38,9 @@
         on:click={() => {}}
       >
         <svelte:component this={Trash} class="h-5 w-5 text-rose-400" />
-        <p class="grow text-left text-[13px]/[24px] font-medium text-slate-800">Delete profile</p>
+        <p class="grow text-left text-[13px]/[24px] font-medium text-slate-800 dark:text-white">
+          Delete profile
+        </p>
       </button>
 
       <div slot="content" class="flex flex-col">

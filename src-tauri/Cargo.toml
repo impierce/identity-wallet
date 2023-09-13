@@ -5,7 +5,7 @@ description = "Identity Wallet for people to manage Decentralized Identities and
 homepage = "https://www.impierce.com/"
 authors = ["Impierce Technologies"]
 keywords = ["identity", "did", "ssi", "wallet", "siopv2"]
-license = "GPL-3.0"
+license = "Apache-2.0"
 repository = "https://github.com/impierce/identity-wallet"
 edition = "2021"
 

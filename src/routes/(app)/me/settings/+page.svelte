@@ -52,7 +52,7 @@
         <p>Built with Tauri</p>
         <Heart variation="solid" size="18" class="pl-1" />
       </div>
-      <div>GPL-3.0</div>
+      <div>Apache-2.0</div>
       <div>2023 Impierce Technologies</div>
     </div>
   </div>
