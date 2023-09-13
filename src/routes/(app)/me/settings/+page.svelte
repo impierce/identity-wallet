@@ -44,16 +44,20 @@
     <SettingsEntry icon={Envelope} title="Send feedback" hasCaretRight={false} todo />
     <div class="pb-4" />
 
-    <div
-      class="flex w-full flex-col items-center justify-center text-[14px]/[22px] font-medium text-slate-500"
-    >
-      <div>0.3.0</div>
-      <div class="flex items-center pb-4">
-        <p>Built with Tauri</p>
-        <Heart variation="solid" size="18" class="pl-1" />
+    <div class="flex grow flex-col justify-between p-6">
+      <!-- Footer -->
+      <div
+        class="flex flex-col items-center pt-4 text-[13px]/[24px] font-normal text-slate-500 dark:text-slate-300"
+      >
+        <div class="pb-4" />
+        <div>0.3.0</div>
+        <div class="flex items-center pb-4">
+          <p>Built with Tauri</p>
+          <Heart variation="solid" size="18" class="pl-1" />
+        </div>
+        <div>Apache-2.0</div>
+        <div>2023 Impierce Technologies</div>
       </div>
-      <div>Apache-2.0</div>
-      <div>2023 Impierce Technologies</div>
     </div>
   </div>
 </div>

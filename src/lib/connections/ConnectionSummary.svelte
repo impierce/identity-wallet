@@ -11,7 +11,7 @@
 
   let summary = {
     URL: url,
-    Verified: 'no',
+    // Verified: 'no',
     'First connected': new Date(first_connected).toLocaleString('en-US', {
       dateStyle: 'medium',
       timeStyle: 'medium'

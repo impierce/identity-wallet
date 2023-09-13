@@ -111,7 +111,9 @@
   </div>
 
   <!-- Controls -->
-  <div class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6">
+  <div
+    class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 dark:bg-dark"
+  >
     <Button
       label="Approve request"
       on:click={() =>

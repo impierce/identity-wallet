@@ -5,6 +5,7 @@
   import { melt } from '@melt-ui/svelte';
 
   import LL from '$src/i18n/i18n-svelte';
+  import Button from '$src/lib/components/Button.svelte';
   import { dispatch } from '$src/lib/dispatcher';
   import SettingsEntry from '$src/lib/settings/SettingsEntry.svelte';
 
@@ -43,19 +44,19 @@
         </p>
       </button>
 
-      <div slot="content" class="flex flex-col">
-        <!-- more content -->
+      <div slot="content" class="w-full pb-[10px] pt-[20px]">
         <button
-          class="w-full rounded-lg bg-red-600 px-4 py-2 text-white"
+          class="h-[48px] w-full rounded-xl bg-rose-100 px-4 py-2 text-[14px]/[24px] font-medium text-rose-500"
           on:click={() => dispatch({ type: '[App] Reset' })}>Yes, delete everything</button
         >
       </div>
-      <button
+      <Button
+        variant="secondary"
         slot="close"
         let:close
-        use:melt={close}
-        class="mt-2 w-full rounded-lg border bg-white px-4 py-2 text-neutral-700">Cancel</button
-      >
+        trigger={close}
+        label="No, keep my profile"
+      />
     </BottomDrawer>
   </div>
 </div>
