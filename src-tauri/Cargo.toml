@@ -41,19 +41,8 @@ oid4vci = { git = "https://git@github.com/impierce/openid4vc.git", branch = "fea
 oid4vc-core = { git = "https://git@github.com/impierce/openid4vc.git", branch = "feat/refactor-request" }
 oid4vp = { git = "https://git@github.com/impierce/openid4vc.git", branch = "feat/refactor-request" }
 
-# oid4vc-manager = { path = "../../openid4vc/oid4vc-manager" }
-# siopv2 = { path = "../../openid4vc/siopv2" }
-# oid4vci = { path = "../../openid4vc/oid4vci" }
-# oid4vc-core = { path = "../../openid4vc/oid4vc-core" }
-# oid4vp = { path = "../../openid4vc/oid4vp" }
-
 base64 = { version = "0.13.0" }
 identity_core = { version = "=0.7.0-alpha.7" }
-
-# identity_credential = { version = "=0.7.0-alpha.7", default-features = false, features = [
-#     "credential",
-#     "presentation",
-# ] }
 identity_credential = { git = "https://github.com/iotaledger/identity.rs.git", default-features = false, features = ["validator", "credential", "presentation"] }
 
 tauri-plugin-barcode-scanner = { git = "https://github.com/lucasfernog/plugins-workspace", rev = "c684a318c9b3e0a0b0fea06ce23af1510a248a45" }
