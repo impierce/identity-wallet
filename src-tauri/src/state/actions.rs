@@ -38,6 +38,8 @@ pub enum ActionType {
     CredentialOffersSelected,
     #[serde(rename = "[Authenticate] Read request")]
     ReadRequest,
+    #[serde(rename = "[Authenticate] Connection accepted")]
+    ConnectionAccepted,
     #[serde(rename = "[Authenticate] Credentials selected")]
     CredentialsSelected,
     #[serde(rename = "[Storage] Unlock")]

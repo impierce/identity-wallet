@@ -1,6 +1,8 @@
 use crate::state::actions::{Action, ActionType};
 use crate::state::persistence::{delete_state_file, delete_stronghold, load_state, save_state};
-use crate::state::reducers::authorization::{read_authorization_request, send_authorization_response};
+use crate::state::reducers::authorization::{
+    handle_authorization_request, handle_presentation_request, read_authorization_request,
+};
 use crate::state::reducers::credential_offer::{read_credential_offer, send_credential_request};
 use crate::state::reducers::load_dev_profile::load_dev_profile;
 use crate::state::reducers::storage::unlock_storage;
@@ -11,8 +13,9 @@ use crate::state::reducers::{
 use crate::state::user_prompt::{CurrentUserPrompt, CurrentUserPromptType, PasswordRequired, Redirect};
 use crate::state::{AppState, TransferState};
 use log::{info, warn};
+use oid4vc_core::authorization_request::AuthorizationRequest;
 use oid4vci::credential_offer::CredentialOfferQuery;
-use siopv2::RequestUrl;
+use serde_json::json;
 
 #[async_recursion::async_recursion]
 pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
@@ -29,6 +32,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             // TODO: find a better way to populate all fields with values from json file
             *app_state.active_profile.lock().unwrap() = transfer_state.active_profile;
             *app_state.locale.lock().unwrap() = transfer_state.locale;
+            *app_state.connections.lock().unwrap() = transfer_state.connections;
 
             if app_state.active_profile.lock().unwrap().is_some() {
                 *app_state.current_user_prompt.lock().unwrap() =
@@ -86,11 +90,11 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
 
             let form_urlencoded = payload["form_urlencoded"].as_str().unwrap();
 
-            if let Result::Ok(request_url) = form_urlencoded.parse::<RequestUrl>() {
+            if let Result::Ok(authorization_request) = form_urlencoded.parse::<AuthorizationRequest>() {
                 handle_action_inner(
                     Action {
                         r#type: ActionType::ReadRequest,
-                        payload: Some(serde_json::to_value(request_url).unwrap()),
+                        payload: Some(json!(authorization_request)),
                     },
                     _app_handle,
                     app_state,
@@ -101,7 +105,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
                 handle_action_inner(
                     Action {
                         r#type: ActionType::ReadCredentialOffer,
-                        payload: Some(serde_json::to_value(credential_offer_query).unwrap()),
+                        payload: Some(json!(credential_offer_query)),
                     },
                     _app_handle,
                     app_state,
@@ -115,6 +119,14 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
         }
         ActionType::ReadRequest => {
             if read_authorization_request(app_state, Action { r#type, payload })
+                .await
+                .is_ok()
+            {
+                save_state(TransferState::from(app_state)).await.ok();
+            }
+        }
+        ActionType::ConnectionAccepted => {
+            if handle_authorization_request(app_state, Action { r#type, payload })
                 .await
                 .is_ok()
             {
@@ -139,7 +151,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             }
         }
         ActionType::CredentialsSelected => {
-            if send_authorization_response(app_state, Action { r#type, payload })
+            if handle_presentation_request(app_state, Action { r#type, payload })
                 .await
                 .is_ok()
             {

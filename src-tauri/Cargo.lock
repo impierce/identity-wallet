@@ -596,7 +596,7 @@ dependencies = [
  "log",
  "serde",
  "thiserror",
- "time 0.3.28",
+ "time",
 ]
 
 [[package]]
@@ -938,9 +938,9 @@ dependencies = [
 
 [[package]]
 name = "cfg-expr"
-version = "0.15.4"
+version = "0.15.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b40ccee03b5175c18cde8f37e7d2a33bcef6f8ec8f7cc0d81090d1bb380949c9"
+checksum = "03915af431787e6ffdcc74c645077518c6b6e01f80b761e0fbbfa288536311b3"
 dependencies = [
  "smallvec",
  "target-lexicon",
@@ -1003,16 +1003,15 @@ dependencies = [
 
 [[package]]
 name = "chrono"
-version = "0.4.29"
+version = "0.4.30"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d87d9d13be47a5b7c3907137f1290b0459a7f80efb26be8c52afb11963bccb02"
+checksum = "defd4e7873dbddba6c7c91e199c7fcb946abc4a6a4ac3195400bcfb01b5de877"
 dependencies = [
  "android-tzdata",
  "iana-time-zone",
  "js-sys",
  "num-traits",
  "serde",
- "time 0.1.45",
  "wasm-bindgen",
  "windows-targets 0.48.5",
 ]
@@ -1655,7 +1654,7 @@ dependencies = [
 [[package]]
 name = "dif-presentation-exchange"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git#d24cdc18af55915dbdbe0e96f45a01bfe2692b1e"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/refactor-request#2fdea510a3495c0d4d0023e0f289afbaa5990da3"
 dependencies = [
  "getset",
  "jsonpath_lib",
@@ -2965,12 +2964,12 @@ dependencies = [
  "anyhow",
  "async-recursion",
  "base64 0.13.1",
+ "chrono",
  "did-key",
  "fern",
  "futures",
- "identity_core 0.7.0-alpha.7",
+ "identity_core 0.7.0-alpha.7 (registry+https://github.com/rust-lang/crates.io-index)",
  "identity_credential 0.7.0-alpha.7",
- "identity_iota",
  "iota_stronghold 2.0.0",
  "jsonwebtoken",
  "lazy_static",
@@ -3057,7 +3056,7 @@ dependencies = [
  "serde_json",
  "strum 0.24.1",
  "thiserror",
- "time 0.3.28",
+ "time",
  "url",
  "zeroize",
 ]
@@ -3075,7 +3074,24 @@ dependencies = [
  "serde_json",
  "strum 0.25.0",
  "thiserror",
- "time 0.3.28",
+ "time",
+ "url",
+ "zeroize",
+]
+
+[[package]]
+name = "identity_core"
+version = "0.7.0-alpha.7"
+source = "git+https://github.com/iotaledger/identity.rs.git#54a86cf96ab770c34ccdec147e419bc39022536c"
+dependencies = [
+ "iota-crypto 0.23.0",
+ "js-sys",
+ "multibase",
+ "serde",
+ "serde_json",
+ "strum 0.25.0",
+ "thiserror",
+ "time",
  "url",
  "zeroize",
 ]
@@ -3097,10 +3113,9 @@ dependencies = [
 [[package]]
 name = "identity_credential"
 version = "0.7.0-alpha.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a0e1f585f57a79224ce2b0b39dcb73cb45194fb78c248c994ddb8565f3cafe23"
+source = "git+https://github.com/iotaledger/identity.rs.git#54a86cf96ab770c34ccdec147e419bc39022536c"
 dependencies = [
- "identity_core 0.7.0-alpha.7",
+ "identity_core 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git)",
  "identity_did 0.7.0-alpha.7",
  "identity_document",
  "identity_verification",
@@ -3135,12 +3150,11 @@ dependencies = [
 [[package]]
 name = "identity_did"
 version = "0.7.0-alpha.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "513ba9872ebb42c1da7abc274ded36f8f055b752c693e596934dac583bb99785"
+source = "git+https://github.com/iotaledger/identity.rs.git#54a86cf96ab770c34ccdec147e419bc39022536c"
 dependencies = [
  "did_url",
  "form_urlencoded",
- "identity_core 0.7.0-alpha.7",
+ "identity_core 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git)",
  "serde",
  "strum 0.25.0",
  "thiserror",
@@ -3149,11 +3163,10 @@ dependencies = [
 [[package]]
 name = "identity_document"
 version = "0.7.0-alpha.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ab5edafebb78ea7cd5bbede1cdb280635cbd8e8387b326f8739844ffdcfe334c"
+source = "git+https://github.com/iotaledger/identity.rs.git#54a86cf96ab770c34ccdec147e419bc39022536c"
 dependencies = [
  "did_url",
- "identity_core 0.7.0-alpha.7",
+ "identity_core 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git)",
  "identity_did 0.7.0-alpha.7",
  "identity_verification",
  "indexmap 2.0.0",
@@ -3224,10 +3237,9 @@ dependencies = [
 [[package]]
 name = "identity_jose"
 version = "0.7.0-alpha.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "13bf3ecb8f47839bd27456b87e1909a17654aab129a6ff1e4a74a0d1f9049dd5"
+source = "git+https://github.com/iotaledger/identity.rs.git#54a86cf96ab770c34ccdec147e419bc39022536c"
 dependencies = [
- "identity_core 0.7.0-alpha.7",
+ "identity_core 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git)",
  "iota-crypto 0.23.0",
  "serde",
  "serde_json",
@@ -3239,10 +3251,9 @@ dependencies = [
 [[package]]
 name = "identity_verification"
 version = "0.7.0-alpha.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f37bfd36e4c4b69714daea50dc4cbf76dadf3e7da7317c8d74075c682e7ae8fc"
+source = "git+https://github.com/iotaledger/identity.rs.git#54a86cf96ab770c34ccdec147e419bc39022536c"
 dependencies = [
- "identity_core 0.7.0-alpha.7",
+ "identity_core 0.7.0-alpha.7 (git+https://github.com/iotaledger/identity.rs.git)",
  "identity_did 0.7.0-alpha.7",
  "identity_jose",
  "serde",
@@ -3710,7 +3721,7 @@ dependencies = [
  "reqwest",
  "serde",
  "serde_json",
- "time 0.3.28",
+ "time",
  "url",
  "uuid",
 ]
@@ -4343,25 +4354,28 @@ dependencies = [
 [[package]]
 name = "oid4vc-core"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git#d24cdc18af55915dbdbe0e96f45a01bfe2692b1e"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/refactor-request#2fdea510a3495c0d4d0023e0f289afbaa5990da3"
 dependencies = [
  "anyhow",
  "async-trait",
  "base64-url",
+ "derive_more",
  "did_url",
  "getset",
  "is_empty",
  "jsonwebtoken",
- "rand 0.7.3",
+ "rand 0.8.5",
  "serde",
  "serde_json",
+ "serde_urlencoded",
  "serde_with 2.3.3",
+ "url",
 ]
 
 [[package]]
 name = "oid4vc-manager"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git#d24cdc18af55915dbdbe0e96f45a01bfe2692b1e"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/refactor-request#2fdea510a3495c0d4d0023e0f289afbaa5990da3"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -4372,7 +4386,7 @@ dependencies = [
  "did_url",
  "futures",
  "getset",
- "identity_core 0.7.0-alpha.7",
+ "identity_core 0.7.0-alpha.7 (registry+https://github.com/rust-lang/crates.io-index)",
  "identity_credential 0.7.0-alpha.7",
  "identity_iota",
  "jsonwebtoken",
@@ -4388,12 +4402,13 @@ dependencies = [
  "siopv2",
  "tokio",
  "tower-http",
+ "url",
 ]
 
 [[package]]
 name = "oid4vci"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git#d24cdc18af55915dbdbe0e96f45a01bfe2692b1e"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/refactor-request#2fdea510a3495c0d4d0023e0f289afbaa5990da3"
 dependencies = [
  "anyhow",
  "derivative",
@@ -4414,19 +4429,24 @@ dependencies = [
 [[package]]
 name = "oid4vp"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git#d24cdc18af55915dbdbe0e96f45a01bfe2692b1e"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/refactor-request#2fdea510a3495c0d4d0023e0f289afbaa5990da3"
 dependencies = [
  "anyhow",
+ "chrono",
  "dif-presentation-exchange",
  "futures",
  "getset",
+ "identity_core 0.7.0-alpha.7 (registry+https://github.com/rust-lang/crates.io-index)",
  "identity_credential 0.7.0-alpha.7",
+ "is_empty",
+ "jsonwebtoken",
  "oid4vc-core",
  "oid4vci",
  "serde",
  "serde_json",
  "serde_with 3.3.0",
  "tokio",
+ "url",
 ]
 
 [[package]]
@@ -4764,7 +4784,7 @@ dependencies = [
  "line-wrap",
  "quick-xml",
  "serde",
- "time 0.3.28",
+ "time",
 ]
 
 [[package]]
@@ -5499,7 +5519,7 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_with_macros 2.3.3",
- "time 0.3.28",
+ "time",
 ]
 
 [[package]]
@@ -5516,7 +5536,7 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_with_macros 3.3.0",
- "time 0.3.28",
+ "time",
 ]
 
 [[package]]
@@ -5698,19 +5718,18 @@ dependencies = [
  "num-bigint",
  "num-traits",
  "thiserror",
- "time 0.3.28",
+ "time",
 ]
 
 [[package]]
 name = "siopv2"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git#d24cdc18af55915dbdbe0e96f45a01bfe2692b1e"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/refactor-request#2fdea510a3495c0d4d0023e0f289afbaa5990da3"
 dependencies = [
  "anyhow",
  "async-trait",
  "base64-url",
  "chrono",
- "derive_more",
  "did_url",
  "futures",
  "getset",
@@ -6286,7 +6305,7 @@ dependencies = [
  "sha2 0.10.7",
  "tauri-utils",
  "thiserror",
- "time 0.3.28",
+ "time",
  "url",
  "uuid",
  "walkdir",
@@ -6352,7 +6371,7 @@ dependencies = [
  "swift-rs",
  "tauri",
  "tauri-build",
- "time 0.3.28",
+ "time",
 ]
 
 [[package]]
@@ -6527,17 +6546,6 @@ dependencies = [
 
 [[package]]
 name = "time"
-version = "0.1.45"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1b797afad3f312d1c66a56d11d0316f916356d11bd158fbc6ca6389ff6bf805a"
-dependencies = [
- "libc",
- "wasi 0.10.0+wasi-snapshot-preview1",
- "winapi",
-]
-
-[[package]]
-name = "time"
 version = "0.3.28"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "17f6bb557fd245c28e6411aa56b6403c689ad95061f50e4be16c274e70a17e48"
@@ -6644,9 +6652,9 @@ dependencies = [
 
 [[package]]
 name = "toml"
-version = "0.7.6"
+version = "0.7.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c17e963a819c331dcacd7ab957d80bc2b9a9c1e71c804826d2f283dd65306542"
+checksum = "dd79e69d3b627db300ff956027cc6c3798cef26d22526befdfcd12feeb6d2257"
 dependencies = [
  "serde",
  "serde_spanned",
@@ -6665,9 +6673,9 @@ dependencies = [
 
 [[package]]
 name = "toml_edit"
-version = "0.19.14"
+version = "0.19.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f8123f27e969974a3dfba720fdb560be359f57b44302d280ba72e76a74480e8a"
+checksum = "1b5bb770da30e5cbfde35a2d7b9b8a2c4b8ef89548a7a6aeab5c9a576e3e7421"
 dependencies = [
  "indexmap 2.0.0",
  "serde",
@@ -7046,12 +7054,6 @@ name = "wasi"
 version = "0.9.0+wasi-snapshot-preview1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cccddf32554fecc6acb585f82a32a72e28b48f8c4c1883ddfeeeaa96f7d8e519"
-
-[[package]]
-name = "wasi"
-version = "0.10.0+wasi-snapshot-preview1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1a143597ca7c7793eff794def352d41792a93c481eb1042423ff7ff72ba2c31f"
 
 [[package]]
 name = "wasi"

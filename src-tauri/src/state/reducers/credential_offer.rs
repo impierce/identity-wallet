@@ -1,7 +1,7 @@
 use crate::{
     state::{
         actions::Action,
-        user_prompt::{CredentialOffer as CredentialOfferPrompt, CurrentUserPrompt, CurrentUserPromptType},
+        user_prompt::{CredentialOffer as CredentialOfferPrompt, CurrentUserPrompt, CurrentUserPromptType, Redirect},
         AppState,
     },
     verifiable_credential_record::VerifiableCredentialRecord,
@@ -9,7 +9,6 @@ use crate::{
 use log::info;
 use oid4vci::{
     credential_format_profiles::{CredentialFormats, WithCredential},
-    credential_issuer::credential_issuer_metadata::CredentialIssuerMetadata,
     credential_offer::{CredentialOffer, CredentialOfferQuery, CredentialsObject, Grants},
     credential_response::CredentialResponseType,
     token_request::{PreAuthorizedCode, TokenRequest},
@@ -79,9 +78,20 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::
             _by_value => (),
         });
 
+    // TODO: THis is custom logic for the demo. We need to find a better way to do this.
+    let display = credential_issuer_metadata.unwrap().display.as_ref().unwrap()[0].clone();
+    let issuer_name = display["client_name"].as_str().unwrap().to_string();
+    let logo_uri = display["logo_uri"].as_str().unwrap().to_string();
+    let credential_offer = serde_json::to_value(credential_offer)?;
+
+    info!("issuer_name in credential_offer: {:?}", issuer_name);
+    info!("logo_uri in credential_offer: {:?}", logo_uri);
+
     *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::CredentialOffer(CredentialOfferPrompt {
         r#type: CurrentUserPromptType::CredentialOffer,
-        credential_offer: serde_json::to_value(&credential_offer).unwrap(),
+        issuer_name,
+        logo_uri,
+        credential_offer,
     }));
     Ok(())
 }
@@ -196,7 +206,14 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
     }
 
     state.credentials.lock().unwrap().extend(display_credentials);
-    *state.current_user_prompt.lock().unwrap() = None;
+    state
+        .current_user_prompt
+        .lock()
+        .unwrap()
+        .replace(CurrentUserPrompt::Redirect(Redirect {
+            r#type: CurrentUserPromptType::Redirect,
+            target: "me".to_string(),
+        }));
 
     Ok(())
 }

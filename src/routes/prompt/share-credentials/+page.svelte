@@ -18,6 +18,8 @@
   let selected_credentials = $state.credentials?.filter(
     (c) => $state.current_user_prompt.options.indexOf(c.id) > -1
   );
+
+  let client_name = $state.current_user_prompt.client_name;
 </script>
 
 <div class="content-height flex flex-col items-stretch bg-silver dark:bg-navy">
@@ -31,7 +33,7 @@
         <!-- Placeholder -->
         <!-- <PaddedIcon icon={PlugsConnected} /> -->
         <div class="h-12 w-12 rounded-2xl border border-slate-300" />
-        <p class="text-2xl font-semibold text-neutral-900">bestdex.com</p>
+        <p class="text-2xl font-semibold text-neutral-900">{client_name}</p>
       </div>
       <!-- Data sensitivity -->
       <div>
@@ -52,7 +54,7 @@
           <CredentialOfferEntry
             index={credential.id}
             title={credential.metadata.display.name || credential.data.type.at(-1)}
-            description={new URL(credential.data.issuer).hostname}
+            description={credential.data.issuer}
             color={credential.metadata.display.color || 'bg-indigo-100'}
           >
             <span slot="icon">

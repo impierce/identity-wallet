@@ -27,6 +27,8 @@
   //   (c) => $state.current_user_prompt.options.indexOf(c.id) > -1
   // );
 
+  let client_name = $state.current_user_prompt.client_name;
+
   // console.log(selected_credentials);
 
   console.log($state.current_user_prompt);
@@ -38,8 +40,8 @@
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
     <PaddedIcon icon={PlugsConnected} />
     <div class="text-center">
-      <p class="text-2xl font-semibold">BestDex</p>
-      <p class="pt-[10px] text-sm font-medium text-slate-500">www.bestdex.com</p>
+      <p class="text-2xl font-semibold">{client_name}</p>
+      <!-- <p class="pt-[10px] text-sm font-medium text-slate-500">www.bestdex.com</p> -->
     </div>
 
     <!-- Details -->
@@ -93,8 +95,12 @@
   </div>
 
   <!-- Controls -->
-  <div class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 pb-0">
-    <Button label="Accept connection" on:click={() => goto('/prompt/select-credentials/share')} />
+  <div
+    class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-bg-primary p-6 pb-0"
+  >
+    <Button label="Accept connection" on:click={() => dispatch({
+      type: '[Authenticate] Connection accepted'
+    })} />
     <Button
       label="Reject"
       variant="secondary"
