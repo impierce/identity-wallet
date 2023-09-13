@@ -11,7 +11,7 @@
 
   import type { DisplayCredential } from '../../src-tauri/bindings/display-credential/DisplayCredential';
   import CredentialListEntry from './components/CredentialListEntry.svelte';
-  import { icons } from './credentials/customization/utils';
+  import { colors, icons } from './credentials/customization/utils';
 
   // let favorite_credentials: any[] = [
   //   {
@@ -47,7 +47,13 @@
           id={credential.id}
           title={credential.metadata.display.name || credential.data.type.at(-1)}
           description={credential.data.issuer}
-          color={credential.metadata.display.color || 'bg-indigo-100'}
+          color={credential.metadata.display.color ||
+            colors.at(
+              credential.id
+                .match(/[0-9]+/)
+                .at(0)
+                .at(0) % 8 // TODO: omits last value (white)
+            )}
         >
           <span slot="icon">
             <svelte:component

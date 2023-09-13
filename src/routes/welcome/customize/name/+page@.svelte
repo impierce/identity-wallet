@@ -13,20 +13,21 @@
 </script>
 
 <!-- <TopNavigation title="Appearance" on:back={() => history.back()} /> -->
-<div class="flex h-screen flex-col bg-silver dark:bg-navy">
+<div class="content-height relative flex flex-col bg-silver dark:bg-navy">
+  <!-- TODO: the only reason why we're breaking out of the layout is because we do not want the "Skip" button -->
   <TopNavigation on:back={() => history.back()} title="Customization" />
   <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
     <div class="px-2 pb-8 pt-4">
-      <p class="pb-4 text-3xl font-semibold text-slate-700">
+      <p class="pb-4 text-3xl font-semibold text-slate-700 dark:text-grey">
         Let's go! Choose a <span class="text-primary">profile name</span>
       </p>
-      <p class="text-[14px]/[22px] font-medium text-slate-500">
+      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">
         Your profile information will never leave your device.
       </p>
     </div>
     <!-- <p class="pb-2 text-[14px]/[22px] font-medium text-slate-600">Profile name</p> -->
     <input
-      class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] font-normal"
+      class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] font-normal text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300 dark:caret-slate-300"
       placeholder="Enter a profile name"
       bind:value={$onboarding_state.name}
     />
@@ -37,18 +38,25 @@
     on:value={(e) => ($onboarding_state.name = e.detail)}
   /> -->
   </div>
-  <div class="rounded-t-3xl bg-white p-6" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
+  <div
+    class="rounded-t-3xl bg-white p-6 dark:bg-dark"
+    in:fade={{ delay: 200 }}
+    out:fade={{ duration: 200 }}
+  >
     <Button
       label="Continue"
       on:click={() => goto('/welcome/customize/theme')}
       disabled={!!!$onboarding_state.name}
     />
   </div>
+
+  <div class="safe-area-top" />
+  <!-- <div class="safe-area-bottom" /> -->
 </div>
 
 <style>
   .content-height {
     /* bottom-navigation: 64px */
-    height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom));
+    height: calc(100vh - var(--safe-area-inset-top));
   }
 </style>

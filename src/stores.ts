@@ -56,5 +56,5 @@ interface OnboardingState {
   password?: string; // TODO: secure enough?
 }
 
-// TODO: remove for version 1.0
-export const developer_mode = writable<boolean>(true);
+// TODO: conditional compiling for version 1.0
+export const developer_mode = writable<boolean>(false);

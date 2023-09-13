@@ -10,7 +10,7 @@
   import Button from '$lib/components/Button.svelte';
   import CredentialDetailsDropdownMenu from '$src/lib/components/CredentialDetailsDropdownMenu.svelte';
   import ShareButton from '$src/lib/credentials/ShareButton.svelte';
-  import { icons } from '$src/lib/credentials/customization/utils';
+  import { colors, icons } from '$src/lib/credentials/customization/utils';
   import { dispatch } from '$src/lib/dispatcher';
   import { state } from '$src/stores';
 
@@ -20,12 +20,7 @@
 
   let credential = $state.credentials.find((c) => $page.params.id === c.id)!!;
 
-  let color = {
-    bg: credential.metadata.display.color || 'bg-indigo-100'
-    // gradient: credential.metadata.display.color || 'from-indigo-100'
-  };
-
-  let logo_location: any = '/issuer-metadata/credential-logos/ngdil.svg';
+  let color = credential.metadata.display.color || colors.at(0);
 
   let icon: any = credential.metadata.display.icon || 'User';
   let title: string = credential.metadata.display.name || credential.data.type.at(-1);
@@ -40,18 +35,25 @@
     isFavorite = credential.metadata.is_favorite;
     title = credential.metadata.display.name || credential.data.type.at(-1);
     icon = credential.metadata.display.icon || 'User';
-    color = {
-      bg: credential.metadata.display.color || 'bg-indigo-100'
-    };
+    color =
+      credential.metadata.display.color ||
+      colors.at(
+        credential.id
+          .match(/[0-9]+/)
+          .at(0)
+          .at(0) % 8 // TODO: omits last value (white)
+      );
   }
 
   // create entries to be shown
-  const { id, ...entries } = credential.data.credentialSubject;
-  entries['issuer'] = credential.data.issuer;
-  entries['issuanceDate'] = new Date(credential.data.issuanceDate).toLocaleString('en-US', {
-    dateStyle: 'long',
-    timeStyle: 'medium'
-  });
+  const { id, enrichment, ...entries } = credential.data.credentialSubject;
+  // entries['issuer'] = credential.data.issuer ?? credential.issuer_name;
+  // entries['issuanceDate'] = new Date(credential.data.issuanceDate).toLocaleString('en-US', {
+  //   dateStyle: 'long',
+  //   timeStyle: 'medium'
+  // });
+
+  console.log({ credential });
 </script>
 
 <div class="content-height relative flex w-full flex-col" in:fly={{ x: 24 }}>
@@ -59,7 +61,7 @@
   <div class="hide-scrollbar grow overflow-y-scroll bg-silver px-[15px] dark:bg-navy">
     <!-- Header -->
     <!-- Background-->
-    <div class="absolute left-0 top-[50px] h-[220px] w-screen {color.bg}" />
+    <div class="absolute left-0 top-[50px] h-[220px] w-screen {color}" />
     <div class="relative z-10">
       <div class="flex flex-col py-[20px]">
         <!-- Logo -->
@@ -79,7 +81,7 @@
             {/if}
           </button>
           <div
-            class="{color.bg} flex h-[75px] w-[75px] flex-col items-center justify-center rounded-[20px] border-[5px] border-white"
+            class="{color} flex h-[75px] w-[75px] flex-col items-center justify-center rounded-[20px] border-[5px] border-white"
           >
             <!-- Icon -->
             <svelte:component this={icons[icon]} class="h-6 w-6 text-slate-800" />
@@ -99,13 +101,13 @@
         <div class="flex flex-col items-center pt-[15px]">
           <p class="text-[22px]/[30px] font-semibold text-slate-700">{title}</p>
           <p class="text-[13px]/[24px] font-normal text-slate-500">
-            {credential.data.issuer}
+            {credential.data.issuer ?? credential.issuer_name}
           </p>
         </div>
       </div>
       <!-- Table: Credential Subject -->
       <div
-        class="divide-y divide-solid divide-slate-200 rounded-xl border border-slate-200 bg-white dark:bg-dark"
+        class="divide-y divide-solid divide-slate-200 rounded-xl border border-slate-200 bg-white dark:divide-slate-600 dark:border-slate-600 dark:bg-dark"
       >
         {#each Object.entries(entries) as entry}
           <div class="flex flex-col items-start px-4 py-[10px]">
@@ -119,19 +121,21 @@
     </div>
   </div>
   <BottomDrawer>
-    <!-- TODO: Share functionality currently disabled until decided how sharing works -->
-    <ShareButton slot="trigger" let:trigger {trigger} />
+    <!-- TODO: feature disabled: "Share credential" -->
+    <!-- <ShareButton slot="trigger" let:trigger {trigger} /> -->
     <span slot="content" class="flex flex-col items-center justify-center">
       <!-- Logo -->
       <div
-        class="{color.bg} flex h-[75px] w-[75px] flex-col items-center justify-center rounded-[20px] border-[5px] border-white"
+        class="{color} flex h-[75px] w-[75px] flex-col items-center justify-center rounded-[20px] border-[5px] border-white"
       >
         <svelte:component this={icon} class="h-6 w-6 text-slate-800" />
       </div>
       <!-- Description -->
       <div class="flex flex-col items-center">
         <p class="pt-4 text-2xl font-semibold text-black">{title}</p>
-        <p class="text-[13px]/[24px] text-slate-500">{credential.data.issuer}</p>
+        <p class="text-[13px]/[24px] text-slate-500">
+          {credential.data.issuer ?? credential.issuer_name}
+        </p>
       </div>
       <!-- QR Code -->
       <div class="flex flex-col items-center p-7">

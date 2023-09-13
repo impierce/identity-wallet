@@ -78,8 +78,9 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::
             _by_value => (),
         });
 
-    // TODO: THis is custom logic for the demo. We need to find a better way to do this.
+    // FIX THIS!!
     let display = credential_issuer_metadata.unwrap().display.as_ref().unwrap()[0].clone();
+
     let issuer_name = display["client_name"].as_str().unwrap().to_string();
     let logo_uri = display["logo_uri"].as_str().unwrap().to_string();
     let credential_offer = serde_json::to_value(credential_offer)?;
@@ -126,6 +127,10 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
         .get_credential_issuer_metadata(credential_issuer_url.clone())
         .await
         .unwrap();
+
+    // FIX THIS!!
+    let display = credential_issuer_metadata.display.as_ref().unwrap()[0].clone();
+    let issuer_name = display["client_name"].as_str().unwrap().to_string();
 
     let credential_offer_formats = offer_indices
         .into_iter()
@@ -197,7 +202,8 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
     // Get the decoded JWT claims to be displayed in the frontend.
     let mut display_credentials = vec![];
     for credential in credentials.into_iter() {
-        let verifiable_credential_record = VerifiableCredentialRecord::from(credential);
+        let mut verifiable_credential_record = VerifiableCredentialRecord::from(credential);
+        verifiable_credential_record.display_credential.issuer_name = Some(issuer_name.clone());
         let key: Uuid = verifiable_credential_record.display_credential.id.parse().unwrap();
 
         display_credentials.push(verifiable_credential_record.display_credential.clone());

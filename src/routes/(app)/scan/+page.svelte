@@ -89,8 +89,12 @@
     state.set({
       ...$state,
       current_user_prompt: {
-        type: 'accept-connection'
-        // options: ['c798fc11-e78e-432c-85f2-790be603a581']
+        type: 'accept-connection',
+        client_name: 'Some other client',
+        logo_uri: 'https://recursing-feynman.weeir.com/imgs/ngdil.svg',
+        redirect_uri: 'https://recursing-feynman.weeir.com/auth/callback',
+        previously_connected: false
+        // logo_uri: 'https://picsum.photos/200'
       }
     });
   };
@@ -100,6 +104,9 @@
       ...$state,
       current_user_prompt: {
         type: 'share-credentials',
+        client_name: 'My Client Name',
+        logo_uri: 'https://recursing-feynman.weeir.com/imgs/ngdil.svg',
+        // logo_uri: 'https://picsum.photos/200',
         options: [$state.credentials[0].id]
       }
     });
@@ -126,6 +133,9 @@
         ...$state,
         current_user_prompt: {
           type: 'credential-offer',
+          issuer_name: 'Some issuer',
+          // logo_uri: 'https://picsum.photos/200',
+          logo_uri: 'https://recursing-feynman.weeir.com/imgs/ngdil.svg',
           credential_offer: {
             credential_issuer: 'http://10.15.185.12:9090/',
             credentials: [
@@ -156,7 +166,7 @@
     await cancel();
     scanning = false;
     // TODO: non-scanning view is visible before redirecting to /me
-    goto('/me');
+    // goto('/me');
   }
 
   // lifecycle functions
@@ -261,12 +271,12 @@
           variant="secondary"
           on:click={() => mockScanCredentialOffer(1)}
           disabled
-          label="Mock Credential Offer (single)"
+          label="Credential Offer (single)"
         />
         <Button
           variant="secondary"
           on:click={() => mockScanCredentialOffer(2)}
-          label="Mock Credential Offer (multi)"
+          label="Credential Offer (multi)"
         />
         <Button
           variant="secondary"
@@ -309,11 +319,14 @@
           </div>
         </div>
       </div>
-      <div class="fixed bottom-[128px] left-[calc(50%_-_42px)]">
-        <ButtonDeprecated class="bg-red-100 font-semibold text-red-500 shadow" on:click={cancelScan}
-          >Cancel</ButtonDeprecated
-        >
-      </div>
+      {#if $developer_mode}
+        <div class="fixed bottom-[128px] left-[calc(50%_-_42px)]">
+          <ButtonDeprecated
+            class="bg-red-100 font-semibold text-red-500 shadow"
+            on:click={cancelScan}>Cancel</ButtonDeprecated
+          >
+        </div>
+      {/if}
     </div>
   </div>
 </div>

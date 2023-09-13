@@ -62,10 +62,12 @@
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <!-- <div class="mt-12 grow p-4" in:fly={{ x: 300, delay: 300 }} out:fly={{ x: -300, duration: 300 }}> -->
   <div class="px-2 pb-8 pt-4">
-    <p class="pb-4 text-3xl font-semibold text-slate-700">
+    <p class="pb-4 text-3xl font-semibold text-slate-700 dark:text-grey">
       No funny <span class="text-primary">business</span>
     </p>
-    <p class="text-[14px]/[22px] font-medium text-slate-500">Here's our pledge to you.</p>
+    <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">
+      Here's our pledge to you.
+    </p>
   </div>
   <!-- Accordion -->
   <div class="mx-auto flex max-w-full flex-col space-y-4" {...$root}>
@@ -73,15 +75,15 @@
       <div
         use:melt={$item(id)}
         class="overflow-hidden rounded-xl border
-             border-slate-200 transition-colors
-            focus-within:relative focus-within:z-10 focus-within:ring focus-within:ring-orange-400"
+             border-slate-200 transition-colors focus-within:relative
+            focus-within:z-10 focus-within:ring focus-within:ring-orange-400 dark:border-slate-600"
       >
         <h2 class="flex">
           <button
             use:melt={$trigger(id)}
             class="flex h-12 flex-1 cursor-pointer items-center justify-between
-                 bg-white px-5 text-base font-medium
-                 leading-none text-neutral-900 transition-colors hover:bg-opacity-95 focus:!ring-0"
+                 bg-white px-5 text-base font-medium leading-none
+                 text-slate-800 transition-colors hover:bg-opacity-95 focus:!ring-0 dark:bg-dark dark:text-grey"
           >
             <div class="flex w-full items-center justify-between">
               <p class="text-[13px]/[24px] font-medium">{title}</p>
@@ -91,7 +93,7 @@
         </h2>
         {#if $isSelected(id)}
           <div
-            class="overflow-hidden bg-white text-[12px]/[14px] font-medium text-slate-500"
+            class="overflow-hidden bg-white text-[12px]/[14px] font-medium text-slate-500 dark:bg-dark dark:text-slate-300"
             use:melt={$content(id)}
             transition:slide
           >
@@ -105,7 +107,7 @@
   </div>
 </div>
 <div
-  class="space-y-[10px] rounded-t-3xl bg-white p-6"
+  class="space-y-[10px] rounded-t-3xl bg-white p-6 dark:bg-dark"
   in:fade={{ delay: 200 }}
   out:fade={{ duration: 200 }}
 >

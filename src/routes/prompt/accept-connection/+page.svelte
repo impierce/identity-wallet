@@ -29,6 +29,8 @@
 
   let client_name = $state.current_user_prompt.client_name;
 
+  const previously_connected = $state.current_user_prompt.previously_connected;
+
   // console.log(selected_credentials);
 
   console.log($state.current_user_prompt);
@@ -38,38 +40,67 @@
   <TopNavigation title={'Connection Request'} on:back={() => history.back()} />
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
-    <PaddedIcon icon={PlugsConnected} />
+    {#if $state.current_user_prompt.logo_uri}
+      <div class="flex h-[75px] w-[75px] overflow-hidden rounded-3xl bg-white p-2 dark:bg-silver">
+        <img src={$state.current_user_prompt.logo_uri} alt="logo" />
+      </div>
+    {:else}
+      <PaddedIcon icon={PlugsConnected} />
+    {/if}
     <div class="text-center">
-      <p class="text-2xl font-semibold">{client_name}</p>
-      <!-- <p class="pt-[10px] text-sm font-medium text-slate-500">www.bestdex.com</p> -->
+      <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
+        {client_name}
+      </p>
+      <p class="pt-[10px] text-sm font-medium text-slate-500">
+        {new URL($state.current_user_prompt.redirect_uri).hostname}
+      </p>
     </div>
 
     <!-- Details -->
-    <div class="w-full space-y-2 rounded-2xl bg-white p-3">
+    <div class="w-full space-y-2 rounded-2xl bg-white p-3 dark:bg-dark">
       <!-- Warning -->
-      <div class="flex w-full items-center rounded-lg bg-slate-50 px-4 py-4">
-        <span class="mr-4 h-6 w-6">
-          <WarningCircle class="h-6 w-6 text-amber-500" />
-        </span>
-        <div class="flex flex-col">
-          <p class="text-[13px]/[24px] font-medium text-slate-900">New connection</p>
-          <p class="text-[12px]/[20px] font-medium text-slate-500">
-            Only accept new connections that you recognize and trust
-          </p>
+      {#if !previously_connected}
+        <div class="flex w-full items-center rounded-lg bg-silver px-4 py-4 dark:bg-navy">
+          <span class="mr-4 h-6 w-6">
+            <WarningCircle class="h-6 w-6 text-amber-500" />
+          </span>
+          <div class="flex flex-col">
+            <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
+              New connection
+            </p>
+            <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
+              Only accept new connections that you recognize and trust
+            </p>
+          </div>
         </div>
-      </div>
+      {/if}
 
-      <!-- <div class="flex justify-between rounded-lg bg-white px-4 py-4">
-        <p class="text-sm text-slate-800">URL</p>
-        <p class="text-sm text-slate-500">bestdex.com</p>
-      </div> -->
-      <div class="flex justify-between rounded-lg border border-slate-200 bg-white px-4 py-4">
-        <p class="text-sm text-slate-800">Connected previously</p>
-        <X class="text-rose-500" />
+      <div
+        class="flex justify-between rounded-xl border border-slate-200 bg-white px-4 py-4 dark:border-slate-600 dark:bg-dark"
+      >
+        <p class="mr-3 text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">URL</p>
+        <p class="break-all text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">
+          {$state.current_user_prompt.redirect_uri}
+        </p>
       </div>
-      <div class="flex justify-between rounded-lg border border-slate-200 bg-white px-4 py-4">
+      <div
+        class="flex justify-between rounded-xl border border-slate-200 bg-white px-4 py-4 dark:border-slate-600 dark:bg-dark"
+      >
+        <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
+          Connected previously
+        </p>
+        {#if previously_connected}
+          <Check class="text-emerald-500" />
+        {:else}
+          <X class="text-rose-500" />
+        {/if}
+      </div>
+      <!-- TODO: feature disabled: "Verify .well-known" -->
+      <!-- <div
+        class="flex justify-between rounded-xl border border-slate-200 bg-white px-4 py-4 dark:border-slate-600 dark:bg-dark"
+      >
         <div class="flex items-center">
-          <p class="text-sm text-slate-800">Verified</p>
+          <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">Verified</p>
           <button class="-m-2 ml-1 rounded-full p-1" use:melt={$trigger}>
             <Question class="h-6 w-6 text-primary" />
           </button>
@@ -82,7 +113,8 @@
               <div use:melt={$arrow} />
               <div class="break-keep text-sm">
                 Your UniMe app automatically tries to verify the identity of <span
-                  class="underline underline-offset-2">BestDex</span
+                  class="underline underline-offset-2"
+                  >{$state.current_user_prompt.client_name}</span
                 >
                 to provide you with a secure login.
               </div>
@@ -90,17 +122,21 @@
           {/if}
         </div>
         <Check class="text-emerald-500" />
-      </div>
+      </div> -->
     </div>
   </div>
 
   <!-- Controls -->
   <div
-    class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-bg-primary p-6 pb-0"
+    class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 dark:bg-dark"
   >
-    <Button label="Accept connection" on:click={() => dispatch({
-      type: '[Authenticate] Connection accepted'
-    })} />
+    <Button
+      label="Accept connection"
+      on:click={() =>
+        dispatch({
+          type: '[Authenticate] Connection accepted'
+        })}
+    />
     <Button
       label="Reject"
       variant="secondary"

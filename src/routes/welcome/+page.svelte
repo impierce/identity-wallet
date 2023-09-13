@@ -43,11 +43,11 @@
     <!-- <div class="flex grow flex-col justify-center" in:fade out:fly={{ x: -300, duration: 300 }}> -->
     <div class="px-4">
       <div class="pb-[50px]">
-        <p class=" pb-[10px] text-[36px]/[44px] font-bold text-blue dark:text-white">Welcome to</p>
+        <p class=" pb-[10px] text-[36px]/[44px] font-bold text-blue dark:text-silver">Welcome to</p>
         <UniMeText />
       </div>
 
-      <p class="text-[14px]/[22px] font-medium text-ex-grey-2 dark:text-white">
+      <p class="text-[14px]/[22px] font-medium text-ex-grey-2 dark:text-grey">
         UniMe connects your digital world, safely and securely.
         <br /><br />
         Create a brand new identity profile or recover an existing one to get started.
@@ -60,7 +60,7 @@
   </div>
 
   <!-- Actions -->
-  <div class="z-10 space-y-[10px] rounded-t-3xl bg-white p-6">
+  <div class="z-10 space-y-[10px] rounded-t-3xl bg-white p-6 dark:bg-dark">
     <!-- <div
     class="space-y-[10px] rounded-t-3xl bg-white p-6"
     in:fly={{ y: 154 }}

@@ -9,7 +9,7 @@
     console.log('Injecting password automatically ...');
     setTimeout(() => {
       dispatch({ type: '[Storage] Unlock', payload: { password: 'sup3rSecr3t' } });
-    }, 1000);
+    }, 500);
   });
 </script>
 

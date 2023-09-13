@@ -31,8 +31,10 @@
   <!-- Logo (alternative to Icon) -->
   <!-- Text -->
   <div class="flex grow flex-col items-start">
-    <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-white">{title}</p>
-    <p class="max-w-[180px] truncate text-[12px]/[20px] font-medium text-slate-400">
+    <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">{title}</p>
+    <p
+      class="max-w-[180px] truncate text-[12px]/[20px] font-medium text-slate-400 dark:text-slate-300"
+    >
       {description}
     </p>
   </div>
@@ -40,8 +42,8 @@
   <!-- Checkbox -->
   <button
     use:melt={$root}
-    class="mr-2 flex h-6 w-6 appearance-none items-center justify-center rounded-md border-[1.5px] border-slate-300 p-[6px] text-white data-[disabled]:opacity-50
-    {isChecked ? 'border-none bg-primary' : 'bg-white'}"
+    class="mr-2 flex h-6 w-6 appearance-none items-center justify-center rounded-md border-[1.5px] border-slate-300 p-[6px] text-white data-[disabled]:opacity-50 dark:border-slate-600
+    {isChecked ? 'border-none bg-primary' : 'bg-white dark:bg-dark'}"
     id="checkbox-{index}"
   >
     {#if $isChecked}

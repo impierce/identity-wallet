@@ -5,6 +5,7 @@
   import { melt } from '@melt-ui/svelte';
 
   import LL from '$src/i18n/i18n-svelte';
+  import Button from '$src/lib/components/Button.svelte';
   import { dispatch } from '$src/lib/dispatcher';
   import SettingsEntry from '$src/lib/settings/SettingsEntry.svelte';
 
@@ -33,27 +34,29 @@
       <button
         slot="trigger"
         let:trigger
-        class="flex items-center space-x-4 rounded-xl border border-rose-400 bg-white p-4 dark:bg-dark"
+        class="flex items-center space-x-4 rounded-xl bg-white p-4 dark:bg-dark"
         use:melt={trigger}
         on:click={() => {}}
       >
         <svelte:component this={Trash} class="h-5 w-5 text-rose-400" />
-        <p class="grow text-left text-[13px]/[24px] font-medium text-slate-800">Delete profile</p>
+        <p class="grow text-left text-[13px]/[24px] font-medium text-slate-800 dark:text-white">
+          Delete profile
+        </p>
       </button>
 
-      <div slot="content" class="flex flex-col">
-        <!-- more content -->
+      <div slot="content" class="w-full pb-[10px] pt-[20px]">
         <button
-          class="w-full rounded-lg bg-red-600 px-4 py-2 text-white"
+          class="h-[48px] w-full rounded-xl bg-rose-100 px-4 py-2 text-[14px]/[24px] font-medium text-rose-500"
           on:click={() => dispatch({ type: '[App] Reset' })}>Yes, delete everything</button
         >
       </div>
-      <button
+      <Button
+        variant="secondary"
         slot="close"
         let:close
-        use:melt={close}
-        class="mt-2 w-full rounded-lg border bg-white px-4 py-2 text-neutral-700">Cancel</button
-      >
+        trigger={close}
+        label="No, keep my profile"
+      />
     </BottomDrawer>
   </div>
 </div>

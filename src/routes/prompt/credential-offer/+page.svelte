@@ -7,6 +7,7 @@
 
   import Button from '$lib/components/Button.svelte';
   import PaddedIcon from '$lib/components/PaddedIcon.svelte';
+  import { colors, icons } from '$lib/credentials/customization/utils';
   import { dispatch } from '$lib/dispatcher';
   import CredentialOfferEntry from '$src/lib/components/CredentialOfferEntry.svelte';
   import { state } from '$src/stores';
@@ -28,7 +29,6 @@
   console.log({ credential_offer });
 
   let issuer_name = $state.current_user_prompt.issuer_name;
-
 
   // const checkboxes = credential_offer.credentials.map((c, i) => {
   //   const {
@@ -58,9 +58,21 @@
   <TopNavigation title={'Credential Offer'} on:back={() => history.back()} />
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
-    <PaddedIcon icon={DownloadSimple} />
-    <p class="text-2xl font-medium text-slate-800 dark:text-white">
-      {issuer_name}
+    {#if $state.current_user_prompt.logo_uri}
+      <div class="flex h-[75px] w-[75px] overflow-hidden rounded-3xl bg-white p-2 dark:bg-silver">
+        <div class="flex overflow-hidden rounded-2xl">
+          <img src={$state.current_user_prompt.logo_uri} alt="logo" />
+        </div>
+      </div>
+    {:else}
+      <PaddedIcon icon={DownloadSimple} />
+    {/if}
+    <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-white">
+      {#if issuer_name}
+        {issuer_name}
+      {:else}
+        {new URL(credential_offer.credential_issuer).hostname}
+      {/if}
     </p>
 
     <!-- Text -->
@@ -93,20 +105,22 @@
       {/each}
     </div> -->
 
-    <div class="mt-3 w-full rounded-[20px] border border-slate-200 bg-white p-[10px] dark:bg-dark">
+    <div
+      class="mt-3 w-full rounded-[20px] border border-slate-200 bg-white p-[10px] dark:border-slate-600 dark:bg-dark"
+    >
       <!-- <div class="w-full space-y-2 rounded-2xl p-3 ring-2 ring-inset ring-white"> -->
       {#each credential_offer.credentials as credential, index}
         <CredentialOfferEntry
           {index}
           title={credential.credential_definition.type.at(-1)}
-          color={'bg-slate-100'}
+          color={'bg-grey'}
         >
           <span slot="logo" class="p-1">
-            <img
-              src={`/issuer-metadata/credential-logos/ngdil.svg`}
-              alt="logo"
-              class="object-scale-down"
-            />
+            <!-- {#if $state.current_user_prompt.logo_uri}
+              <img src={$state.current_user_prompt.logo_uri} alt="logo" class="object-scale-down" />
+            {:else} -->
+            <svelte:component this={icons['User']} class="h-[18px] w-[18px] text-slate-800" />
+            <!-- {/if} -->
           </span>
         </CredentialOfferEntry>
       {/each}
@@ -134,7 +148,9 @@
   </div>
 
   <!-- Controls -->
-  <div class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 pb-0">
+  <div
+    class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 dark:bg-dark"
+  >
     <Button
       label="Accept credentials"
       on:click={() => {
