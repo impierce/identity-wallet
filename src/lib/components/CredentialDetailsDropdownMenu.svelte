@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { fly } from 'svelte/transition';
+  import { fade, fly } from 'svelte/transition';
 
   import { BottomDrawer } from '@impierce/ui-components';
   import { createDialog, createDropdownMenu, melt } from '@melt-ui/svelte';
@@ -121,21 +121,22 @@
     <button
       use:melt={$item}
       use:melt={$triggerNameDialog}
-      class="rounded-xl px-3 py-2 font-medium text-slate-800 outline-none active:bg-silver dark:text-white dark:active:bg-navy"
+      class="rounded-xl px-3 py-2 text-[14px]/[22px] font-medium text-slate-800 outline-none active:bg-silver dark:text-white dark:active:bg-navy"
       >Change name</button
     >
 
     <button
       use:melt={$item}
       use:melt={$triggerAppearanceDialog}
-      class="rounded-xl px-3 py-2 font-medium text-slate-800 outline-none active:bg-silver dark:text-white dark:active:bg-navy"
+      class="rounded-xl px-3 py-2 text-[14px]/[22px] font-medium text-slate-800 outline-none active:bg-silver dark:text-white dark:active:bg-navy"
       >Customize appearance</button
     >
 
-    <button
+    <!-- TODO: feature disabled: "Delete credential" -->
+    <!-- <button
       class="rounded-xl px-3 py-2 font-medium text-red-500 outline-none active:bg-red-100"
       use:melt={$item}>Delete credential</button
-    >
+    > -->
     <!-- <div use:melt={$arrow} /> -->
   </div>
 {/if}
@@ -143,7 +144,11 @@
 <!-- Dialog to change the name -->
 <div use:melt={$portalledNameDialog}>
   {#if $openNameDialog}
-    <div use:melt={$overlayNameDialog} class="fixed inset-0 z-50 bg-black/50" />
+    <div
+      use:melt={$overlayNameDialog}
+      class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
+      transition:fade={{ duration: 150 }}
+    />
     <div
       use:melt={$contentNameDialog}
       class="fixed left-[50%] top-[50%] z-50 flex max-h-[85vh]
@@ -153,7 +158,7 @@
       <!-- Content -->
       <input
         type="text"
-        class="w-full rounded-lg border bg-white px-4 py-2 text-slate-800 dark:bg-dark dark:text-white"
+        class="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300"
         placeholder="Enter a new name"
         bind:value={displayName}
       />
@@ -182,7 +187,11 @@
 <!-- Dialog to customize the appearance -->
 <div use:melt={$portalledAppearanceDialog}>
   {#if $openAppearanceDialog}
-    <div use:melt={$overlayAppearanceDialog} class="fixed inset-0 z-50 bg-black/50" />
+    <div
+      use:melt={$overlayNameDialog}
+      class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
+      transition:fade={{ duration: 150 }}
+    />
     <div
       use:melt={$contentAppearanceDialog}
       class="fixed left-[50%] top-[50%] z-50 flex max-h-[85vh]

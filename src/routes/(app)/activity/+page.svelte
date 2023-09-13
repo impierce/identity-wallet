@@ -14,16 +14,15 @@
     class="relative flex h-[50px] min-h-[50px] w-full items-center justify-center bg-silver text-[13px]/[24px] font-medium text-neutral-900 dark:bg-navy dark:text-white"
   >
     <p>Connected</p>
-    <!-- TODO: comment out, if no functionality given -->
-    <!-- Sort & Search -->
-    <div class="absolute right-4 -mr-3">
+    <!-- TODO: feature disabled: "Sort & Search" -->
+    <!-- <div class="absolute right-4 -mr-3">
       <button class="rounded-full p-3 pr-2">
         <SortAscending class="h-5 w-5" />
       </button>
       <button class="rounded-full p-3 pl-2">
         <MagnifyingGlass class="h-5 w-5" />
       </button>
-    </div>
+    </div> -->
   </div>
   <div class="grow overflow-y-auto px-4 py-5">
     <MeltUiActivityTabs>

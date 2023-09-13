@@ -50,7 +50,8 @@
       <p class="text-[14px]/[22px] font-medium text-ex-grey-2 dark:text-grey">
         UniMe connects your digital world, safely and securely.
         <br /><br />
-        Create a brand new identity profile or recover an existing one to get started.
+        <!-- Create a brand new identity profile or recover an existing one to get started. -->
+        Create a brand new identity profile to get started.
       </p>
     </div>
   </div>
@@ -73,8 +74,8 @@
         goto('/welcome/pledge');
       }}
     />
-    <!-- <Button label="Recover existing profile" disabled /> -->
-    <Button label="Recover existing profile" variant="secondary" />
+    <!-- TODO: feature disabled: "recover existing profile" -->
+    <!-- <Button label="Recover existing profile" variant="secondary" /> -->
   </div>
 </div>
 

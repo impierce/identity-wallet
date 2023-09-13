@@ -17,9 +17,6 @@
   import Smiley from '~icons/ph/smiley';
   import SmileySad from '~icons/ph/smiley-sad';
 
-  // TODO: remove
-  const initialPasswordValue = 'sup3rSecr3';
-
   let passwordsEqual: boolean | undefined;
   let showPassword = false;
 </script>
@@ -31,7 +28,7 @@
     <p class="pb-8 text-3xl font-semibold text-slate-700 dark:text-grey">
       Please confirm your new <span class="text-primary">password</span>
     </p>
-    <p class="text-[15px]/[24px] font-medium text-slate-500 dark:text-slate-300">
+    <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">
       You need to create a strong password to secure your backup.
     </p>
     <!-- <div class="mt-[70px] flex w-full items-center justify-center" /> -->
@@ -41,7 +38,6 @@
       type={showPassword ? 'text' : 'password'}
       class="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300"
       placeholder="Retype your password"
-      value={initialPasswordValue}
       on:input={(e) => {
         console.log(e.target.value, $onboarding_state.password);
         passwordsEqual = e.target.value === $onboarding_state.password;

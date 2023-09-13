@@ -64,7 +64,7 @@
           name: $onboarding_state.name,
           picture: $onboarding_state.picture,
           theme: $onboarding_state.theme,
-          password: 'sup3rSecr3t'
+          password: $onboarding_state.password
         }
       });
     }}

@@ -17,11 +17,7 @@
 
   import { checkPasswordPolicy, passwordPolicy } from './utils';
 
-  // TODO: remove
-  const initialPasswordValue = 'sup3rSecr3t';
-  onboarding_state.set({ ...$onboarding_state, password: initialPasswordValue });
-
-  let passwordPolicyViolations: string[] = checkPasswordPolicy(initialPasswordValue);
+  let passwordPolicyViolations: string[] = checkPasswordPolicy($onboarding_state.password ?? '');
   let showPassword = false;
 </script>
 
@@ -32,7 +28,7 @@
     <p class="pb-8 text-3xl font-semibold text-slate-700 dark:text-grey">
       Set your new <span class="text-primary">password</span>
     </p>
-    <p class="text-[15px]/[24px] font-medium text-slate-500 dark:text-slate-300">
+    <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">
       You need to create a strong password to secure your backup.
     </p>
     <!-- <div class="mt-[70px] flex w-full items-center justify-center" /> -->
@@ -42,11 +38,10 @@
       type={showPassword ? 'text' : 'password'}
       class="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300"
       placeholder="Enter a password"
-      value={initialPasswordValue}
+      value={$onboarding_state.password ?? ''}
       on:input={(e) => {
         passwordPolicyViolations = checkPasswordPolicy(e.target.value);
         if (passwordPolicyViolations.length === 0) {
-          console.log('Setting password');
           onboarding_state.set({ ...$onboarding_state, password: e.target.value });
         }
       }}
@@ -83,9 +78,11 @@
             </div>
           {:else}
             <!-- fulfilled -->
-            <div class="mb-2 mr-2 flex items-center space-x-1 rounded-full bg-ex-blue-2 px-2 py-1">
-              <CheckCircle class="h-4 w-4 text-primary" />
-              <p class="text-[12px]/[20px] font-medium text-teal">
+            <div
+              class="mb-2 mr-2 flex items-center space-x-1 rounded-full bg-ex-blue-2 px-2 py-1 dark:bg-primary"
+            >
+              <CheckCircle class="h-4 w-4 text-primary dark:text-navy" />
+              <p class="text-[12px]/[20px] font-medium text-teal dark:text-dark">
                 {rule.count}
                 {rule.name}
               </p>

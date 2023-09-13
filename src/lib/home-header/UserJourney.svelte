@@ -12,7 +12,9 @@
 {#if $state?.user_journey}
   <div class="flex items-center justify-between pt-[6px]">
     <div class="grow">
-      <div class="flex justify-between text-sm font-medium text-slate-800 dark:text-white">
+      <div
+        class="flex justify-between text-[13px]/[24px] font-medium text-slate-800 dark:text-grey"
+      >
         <p>{$state.user_journey.description_short}</p>
         <!-- <p>? / {$state.user_journey.goals.length}</p> -->
       </div>
