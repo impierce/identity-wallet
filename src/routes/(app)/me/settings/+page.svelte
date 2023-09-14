@@ -21,7 +21,7 @@
 </script>
 
 <TopNavigation on:back={() => history.back()} title="Settings" />
-<div class="content-height flex flex-col bg-silver dark:bg-navy">
+<div class="content-height flex flex-col justify-between bg-silver dark:bg-navy">
   <div class="flex flex-col space-y-[10px] px-4 py-5" in:fly={{ x: 32, opacity: 1 }}>
     <!-- Account -->
     <p class="text-[14px]/[22px] font-medium text-slate-500">{$LL.ACCOUNT()}</p>
@@ -41,25 +41,9 @@
 
     <!-- Support -->
     <p class="text-[14px]/[22px] font-medium text-slate-500">{$LL.SUPPORT()}</p>
-    <SettingsEntry icon={Info} title="About UniMe" todo />
+    <SettingsEntry icon={Info} title="About UniMe" on:click={() => goto('/me/settings/about')} />
     <SettingsEntry icon={Envelope} title="Send feedback" hasCaretRight={false} todo />
-    <div class="pb-4" />
-
-    <div class="flex grow flex-col justify-between">
-      <!-- Footer -->
-      <div
-        class="flex flex-col items-center pt-4 text-[13px]/[24px] font-normal text-slate-500 opacity-30 dark:text-slate-300"
-      >
-        <div class="pb-4" />
-        <div>0.3.0</div>
-        <div class="flex items-center pb-4">
-          <p>Built with Tauri</p>
-          <Heart variation="solid" size="18" class="pl-1" />
-        </div>
-        <div>Apache-2.0</div>
-        <div>2023 Impierce Technologies</div>
-      </div>
-    </div>
+    <!-- <div class="pb-4" /> -->
   </div>
 </div>
 

@@ -35,6 +35,8 @@
   </div>
 {/key}
 
+<div class="safe-area-top bg-white dark:bg-dark" />
+
 <style>
   .content-height {
     height: calc(100vh - var(--safe-area-inset-top));

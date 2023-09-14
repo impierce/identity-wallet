@@ -71,7 +71,7 @@ body {
   /* z-index: 10; */
   height: var(--safe-area-inset-top);
   width: 100%;
-  @apply bg-white dark:bg-dark;
+  /* @apply bg-white dark:bg-dark; */
 }
 
 .safe-area-bottom {

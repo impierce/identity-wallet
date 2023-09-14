@@ -182,10 +182,10 @@
       }}>Reject</button
     > -->
   </div>
-
-  <div class="safe-area-top" />
-  <div class="safe-area-bottom" />
 </div>
+
+<div class="safe-area-top bg-white dark:bg-dark" />
+<div class="safe-area-bottom" />
 
 <style>
   .content-height {

@@ -127,6 +127,7 @@
   </div>
 
   <!-- Controls -->
+  <!-- TODO: on iOS subtract the --safe-area-inset-bottom from the bottom-padding -->
   <div
     class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 dark:bg-dark"
   >
@@ -146,10 +147,10 @@
       }}
     />
   </div>
-
-  <div class="safe-area-top" />
-  <div class="safe-area-bottom" />
 </div>
+
+<div class="safe-area-top bg-white dark:bg-dark" />
+<div class="safe-area-bottom" />
 
 <style>
   .content-height {

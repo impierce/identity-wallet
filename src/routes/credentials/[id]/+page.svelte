@@ -56,7 +56,8 @@
   console.log({ credential });
 </script>
 
-<div class="content-height relative flex w-full flex-col" in:fly={{ x: 24 }}>
+<div class="content-height relative flex w-full flex-col">
+  <!-- TODO: allow overriding the color of the TopNavigation -->
   <TopNavigation title="Credential info" on:back={() => history.back()} />
   <div class="hide-scrollbar grow overflow-y-scroll bg-silver px-[15px] dark:bg-navy">
     <!-- Header -->
@@ -158,8 +159,9 @@
   </BottomDrawer>
 </div>
 
-<div class="safe-area-top" />
-<div class="safe-area-bottom" />
+<!-- TODO: replace with <div class="safe-area-top {color}" /> -->
+<div class="safe-area-top bg-white dark:bg-dark" />
+<div class="safe-area-bottom bg-silver dark:bg-navy" />
 
 <style>
   .content-height {
