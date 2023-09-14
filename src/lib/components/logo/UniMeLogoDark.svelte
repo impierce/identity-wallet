@@ -1,3 +1,4 @@
+<!-- TODO: unify UniMeLogoDark.svelte and UniMeLogoLight.svelte, pass in styling from outside (width, height, color) -->
 <svg width="171" height="114" viewBox="0 0 171 114" fill="none" xmlns="http://www.w3.org/2000/svg">
   <path
     d="M67.2995 0H101.295C109.269 0 115.748 6.46729 115.748 14.4563V48.4457C115.748 56.4216 109.282 62.902 101.295 62.902H67.2995C59.3253 62.902 52.8462 56.4347 52.8462 48.4457V14.4563C52.8593 6.46729 59.3253 0 67.2995 0Z"

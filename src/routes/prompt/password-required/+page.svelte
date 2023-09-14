@@ -2,7 +2,8 @@
   import { onMount } from 'svelte';
 
   import Button from '$src/lib/components/Button.svelte';
-  import UniMeLogo from '$src/lib/components/logo/UniMeLogo.svelte';
+  import UniMeLogoDark from '$src/lib/components/logo/UniMeLogoDark.svelte';
+  import UniMeLogoLight from '$src/lib/components/logo/UniMeLogoLight.svelte';
   import { dispatch } from '$src/lib/dispatcher';
   import { developer_mode } from '$src/stores';
 
@@ -12,6 +13,9 @@
   let showPassword = false;
 
   let password: string;
+
+  // TODO: make reactive
+  const isDarkModeEnabled = document.documentElement.classList.contains('dark');
 
   onMount(() => {
     if ($developer_mode) {
@@ -23,17 +27,21 @@
   });
 </script>
 
-<div class="content-height flex items-center justify-center bg-navy dark:bg-navy">
+<div class="content-height flex items-center justify-center bg-silver dark:bg-navy">
   <!-- Placeholder -->
   <!-- <div class="aspect-square w-1/4 rounded-3xl border border-slate-200 bg-slate-100" /> -->
   <div class="flex flex-col items-center justify-center">
-    <UniMeLogo />
+    {#if isDarkModeEnabled}
+      <UniMeLogoDark />
+    {:else}
+      <UniMeLogoLight />
+    {/if}
     {#if !$developer_mode}
-      <div class="relative">
+      <div class="relative mb-4 mt-8 w-[240px]">
         <input
           type={showPassword ? 'text' : 'password'}
           class="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300"
-          placeholder="Enter a password"
+          placeholder="Enter your password"
           on:input={(e) => (password = e.target.value)}
         />
         <div class="absolute right-3 top-0 flex h-full items-center">
@@ -47,7 +55,7 @@
         </div>
       </div>
       <Button
-        label="Unlock"
+        label="Unlock wallet"
         on:click={() => dispatch({ type: '[Storage] Unlock', payload: { password } })}
         disabled={!password}
       />
