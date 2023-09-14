@@ -20,14 +20,14 @@ pub async fn unlock_storage(state: &AppState, action: Action) -> anyhow::Result<
         .as_str()
         .ok_or(anyhow::anyhow!("unable to read password from json payload"))?;
 
-    let stronghold_manager = Arc::new(StrongholdManager::load(password).unwrap());
+    let stronghold_manager = Arc::new(StrongholdManager::load(password)?);
 
     let public_key = stronghold_manager.get_public_key()?;
 
     let keypair = from_existing_key::<Ed25519KeyPair>(public_key.as_slice(), None);
     let subject = Arc::new(KeySubject::from_keypair(keypair, Some(stronghold_manager.clone())));
 
-    let provider_manager = ProviderManager::new([subject.clone()]).unwrap();
+    let provider_manager = ProviderManager::new([subject.clone()])?;
     let wallet: Wallet = Wallet::new(subject.clone());
 
     info!("loading credentials from stronghold");

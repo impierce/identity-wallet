@@ -202,21 +202,26 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
     };
     info!("credentials: {:?}", credentials);
 
-    // Get the decoded JWT claims to be displayed in the frontend.
-    let mut display_credentials = vec![];
     for credential in credentials.into_iter() {
         let mut verifiable_credential_record = VerifiableCredentialRecord::from(credential);
         verifiable_credential_record.display_credential.issuer_name = Some(issuer_name.clone());
         let key: Uuid = verifiable_credential_record.display_credential.id.parse().unwrap();
 
-        display_credentials.push(verifiable_credential_record.display_credential.clone());
+        info!("generated hash-key: {:?}", key);
+
+        // Remove the old credential from the stronghold if it exists.
+        stronghold_manager.remove(key)?;
 
         stronghold_manager.insert(key, json!(verifiable_credential_record).to_string().as_bytes().to_vec())?;
     }
 
-    info!("display_credentials: {:?}", display_credentials);
+    *state.credentials.lock().unwrap() = stronghold_manager
+        .values()?
+        .unwrap()
+        .into_iter()
+        .map(|verifiable_credential_record| verifiable_credential_record.display_credential)
+        .collect();
 
-    state.credentials.lock().unwrap().extend(display_credentials);
     state
         .current_user_prompt
         .lock()

@@ -118,10 +118,11 @@ impl StrongholdManager {
             .map_err(|e| anyhow::anyhow!(e))
     }
 
-    pub fn remove(&self, key: Uuid) -> anyhow::Result<()> {
-        self.client.store().delete(key.to_string().as_bytes())?;
+    pub fn remove(&self, key: Uuid) -> anyhow::Result<Option<Vec<u8>>> {
+        let value = self.client.store().delete(key.to_string().as_bytes())?;
+        self.commit()?;
 
-        self.commit()
+        Ok(value)
     }
 
     pub fn get_public_key(&self) -> anyhow::Result<Vec<u8>> {
