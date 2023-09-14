@@ -11,16 +11,16 @@
   let name = $state.active_profile?.name;
 </script>
 
-<div class="content-height flex flex-col">
+<div class="content-height relative flex flex-col">
   <TopNavigation title="Change profile name" on:back={() => history.back()} />
   <div class="grow bg-silver p-4 dark:bg-navy">
     <input
-      class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] font-normal dark:border-slate-600 dark:bg-dark"
+      class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] font-normal text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300"
       placeholder="Enter a profile name"
       bind:value={name}
     />
   </div>
-  <div class="rounded-t-3xl bg-white p-6">
+  <div class="absolute bottom-0 w-full rounded-t-3xl bg-white p-6 dark:bg-dark">
     <Button
       label="Update"
       on:click={async () => {

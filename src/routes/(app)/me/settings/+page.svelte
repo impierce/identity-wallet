@@ -21,7 +21,7 @@
 </script>
 
 <TopNavigation on:back={() => history.back()} title="Settings" />
-<div class="flex min-h-full flex-col bg-silver dark:bg-navy">
+<div class="content-height flex flex-col bg-silver dark:bg-navy">
   <div class="flex flex-col space-y-[10px] px-4 py-5" in:fly={{ x: 32, opacity: 1 }}>
     <!-- Account -->
     <p class="text-[14px]/[22px] font-medium text-slate-500">{$LL.ACCOUNT()}</p>
@@ -35,6 +35,7 @@
       icon={Vault}
       title="Backup and recovery"
       on:click={() => goto('/me/settings/backup')}
+      todo
     />
     <SettingsEntry icon={SignOut} title="Log out" hasCaretRight={false} todo />
 
@@ -44,10 +45,10 @@
     <SettingsEntry icon={Envelope} title="Send feedback" hasCaretRight={false} todo />
     <div class="pb-4" />
 
-    <div class="flex grow flex-col justify-between p-6">
+    <div class="flex grow flex-col justify-between">
       <!-- Footer -->
       <div
-        class="flex flex-col items-center pt-4 text-[13px]/[24px] font-normal text-slate-500 dark:text-slate-300"
+        class="flex flex-col items-center pt-4 text-[13px]/[24px] font-normal text-slate-500 opacity-30 dark:text-slate-300"
       >
         <div class="pb-4" />
         <div>0.3.0</div>
@@ -61,3 +62,10 @@
     </div>
   </div>
 </div>
+
+<style>
+  .content-height {
+    /* bottom-navigation: 64px, top-navigation: 50px */
+    height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom) - 64px - 50px);
+  }
+</style>

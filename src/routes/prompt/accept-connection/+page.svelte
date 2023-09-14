@@ -84,7 +84,7 @@
         </p>
       </div>
       <div
-        class="flex justify-between rounded-xl border border-slate-200 bg-white px-4 py-4 dark:border-slate-600 dark:bg-dark"
+        class="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-4 dark:border-slate-600 dark:bg-dark"
       >
         <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
           Connected previously

@@ -67,7 +67,7 @@
     {:else}
       <PaddedIcon icon={DownloadSimple} />
     {/if}
-    <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-white">
+    <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
       {#if issuer_name}
         {issuer_name}
       {:else}
@@ -75,14 +75,17 @@
       {/if}
     </p>
 
+    <p class="w-full text-center text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">
+      is offering you the following credentials
+    </p>
+
     <!-- Text -->
-    <div class="flex w-full items-center rounded-lg bg-white px-4 py-4 dark:bg-dark">
-      <!-- <WarningCircle class="mr-2 h-6 w-6 text-amber-500" /> -->
+    <!-- <div class="flex w-full items-center rounded-lg bg-white px-4 py-4 dark:bg-dark">
       <p class="text-sm font-medium text-slate-800 dark:text-slate-300">
         <span class="text-primary">{issuer_name}</span>
         is offering you the following credentials
       </p>
-    </div>
+    </div> -->
 
     <!-- Details -->
     <!-- <div class="w-full space-y-2 rounded-2xl p-3 ring-2 ring-inset ring-white">

@@ -2,38 +2,16 @@
   import { goto } from '$app/navigation';
   import { fade } from 'svelte/transition';
 
-  import { TopNavigation } from '@impierce/ui-components';
-  import { createCheckbox, createRadioGroup, melt } from '@melt-ui/svelte';
-
   import Button from '$src/lib/components/Button.svelte';
-  import Checkbox from '$src/lib/components/Checkbox.svelte';
   import ThemeSelect from '$src/lib/customize/ThemeSelect.svelte';
-  import { dispatch } from '$src/lib/dispatcher';
+  import { determineTheme } from '$src/routes/utils';
   import { onboarding_state } from '$src/stores';
 
-  import Check from '~icons/ph/check-bold';
-
-  const {
-    elements: { root, item },
-    helpers: { isChecked },
-    states: { value }
-  } = createRadioGroup({
-    defaultValue: 'system'
-  });
+  let value: 'system' | 'light' | 'dark' = 'system';
 
   $: {
-    $onboarding_state.theme = $value;
-  }
-
-  $: {
-    // system dark or explicitly chosen, then set dark
-    if ($value === 'dark' || window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      document.documentElement.classList.add('dark');
-      console.log('dark mode enabled');
-    } else {
-      document.documentElement.classList.remove('dark');
-      console.log('light mode enabled');
-    }
+    $onboarding_state.theme = value;
+    determineTheme(window.matchMedia('(prefers-color-scheme: dark)').matches, value);
   }
 </script>
 
@@ -48,12 +26,7 @@
     </p>
   </div>
 
-  <ThemeSelect
-    defaultValue={'system'}
-    on:change={(e) => {
-      // dispatch({ type: '[Settings] Update profile', payload: { theme: e.detail.value } })}
-    }}
-  />
+  <ThemeSelect on:change={(e) => (value = e.detail.value)} />
 
   <!-- <div class="mt-4 flex flex-col space-y-4">
     <div

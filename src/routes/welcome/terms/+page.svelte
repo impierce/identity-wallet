@@ -45,7 +45,8 @@
     </p>
   </div>
   <div class="mt-4 flex flex-col space-y-4">
-    <div
+    <!-- TODO: feature disabled: "terms and conditions" -->
+    <!-- <div
       class="flex items-center justify-between space-x-4 rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-600 dark:bg-dark"
     >
       <div class="grow">
@@ -68,14 +69,15 @@
           <input use:melt={$input} />
         </button>
       </div>
-    </div>
+    </div> -->
     <div
       class="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-600 dark:bg-dark"
     >
       <div class="grow">
         <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">Ownership</p>
         <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
-          I understand that I am solely responsible for <span class="text-primary">my backups</span>
+          <!-- I understand that I am solely responsible for <span class="text-primary">my backups</span> -->
+          I understand that I am solely responsible for my data
         </p>
       </div>
       <div>
@@ -98,7 +100,7 @@
   <Button
     label="Continue"
     on:click={() => goto('/welcome/customize/name')}
-    disabled={!($isChecked && $ownership_isChecked)}
+    disabled={!$ownership_isChecked}
   />
 </div>
 

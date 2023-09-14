@@ -7,9 +7,13 @@
   import LL from '$src/i18n/i18n-svelte';
   import Button from '$src/lib/components/Button.svelte';
   import MeLarge from '$src/lib/components/logo/MeLarge.svelte';
-  import UniMeText from '$src/lib/components/logo/UniMeText.svelte';
+  import UniMeTextDark from '$src/lib/components/logo/UniMeTextDark.svelte';
+  import UniMeTextLight from '$src/lib/components/logo/UniMeTextLight.svelte';
   import { dispatch } from '$src/lib/dispatcher';
   import { onboarding_state, state } from '$src/stores';
+
+  // TODO: make reactive
+  const isDarkModeEnabled = document.documentElement.classList.contains('dark');
 </script>
 
 <div
@@ -44,13 +48,18 @@
     <div class="px-4">
       <div class="pb-[50px]">
         <p class=" pb-[10px] text-[36px]/[44px] font-bold text-blue dark:text-silver">Welcome to</p>
-        <UniMeText />
+        {#if isDarkModeEnabled}
+          <UniMeTextDark />
+        {:else}
+          <UniMeTextLight />
+        {/if}
       </div>
 
       <p class="text-[14px]/[22px] font-medium text-ex-grey-2 dark:text-grey">
         UniMe connects your digital world, safely and securely.
         <br /><br />
-        Create a brand new identity profile or recover an existing one to get started.
+        <!-- Create a brand new identity profile or recover an existing one to get started. -->
+        Create a brand new identity profile to get started.
       </p>
     </div>
   </div>
@@ -73,8 +82,8 @@
         goto('/welcome/pledge');
       }}
     />
-    <!-- <Button label="Recover existing profile" disabled /> -->
-    <Button label="Recover existing profile" variant="secondary" />
+    <!-- TODO: feature disabled: "recover existing profile" -->
+    <!-- <Button label="Recover existing profile" variant="secondary" /> -->
   </div>
 </div>
 

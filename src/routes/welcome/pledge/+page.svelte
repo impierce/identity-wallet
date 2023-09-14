@@ -76,7 +76,7 @@
         use:melt={$item(id)}
         class="overflow-hidden rounded-xl border
              border-slate-200 transition-colors focus-within:relative
-            focus-within:z-10 focus-within:ring focus-within:ring-orange-400 dark:border-slate-600"
+            focus-within:z-10 focus-within:ring focus-within:ring-primary dark:border-slate-600"
       >
         <h2 class="flex">
           <button

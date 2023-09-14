@@ -93,10 +93,14 @@
         </div>
 
         <div class="select-none pt-[15px]">
-          <p class="pb-[15px] text-2xl font-semibold text-black dark:text-white">
+          <p
+            class="pb-[15px] text-[22px]/[30px] font-semibold tracking-tight text-slate-800 dark:text-grey"
+          >
             {$LL.GETTING_STARTED.TITLE()}
           </p>
-          <p class="custom w-[240px] text-slate-500">{$LL.GETTING_STARTED.SUBTITLE()}</p>
+          <p class="custom w-[240px] text-slate-500 dark:text-slate-300">
+            {$LL.GETTING_STARTED.SUBTITLE()}
+          </p>
         </div>
       </div>
 
