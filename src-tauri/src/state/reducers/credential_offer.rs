@@ -116,17 +116,21 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
     // The credential offer contains a credential issuer url.
     let credential_issuer_url = credential_offer.credential_issuer;
 
+    info!("credential issuer url: {:?}", credential_issuer_url);
+
     // Get the authorization server metadata.
     let authorization_server_metadata = wallet
         .get_authorization_server_metadata(credential_issuer_url.clone())
-        .await
-        .unwrap();
+        .await?;
+
+    info!("authorization server metadata: {:?}", authorization_server_metadata);
 
     // Get the credential issuer metadata.
     let credential_issuer_metadata = wallet
         .get_credential_issuer_metadata(credential_issuer_url.clone())
-        .await
-        .unwrap();
+        .await?;
+
+    info!("credential issuer metadata: {:?}", credential_issuer_metadata);
 
     // FIX THIS!!
     let display = credential_issuer_metadata.display.as_ref().unwrap()[0].clone();
@@ -139,6 +143,8 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
             _ => unreachable!(),
         })
         .collect::<Vec<CredentialFormats>>();
+
+    info!("credential_offer_formats: {:?}", credential_offer_formats);
 
     // Create a token request with grant_type `pre_authorized_code`.
     let token_request = match credential_offer.grants {
@@ -156,8 +162,7 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
     // Get an access token.
     let token_response = wallet
         .get_access_token(authorization_server_metadata.token_endpoint.unwrap(), token_request)
-        .await
-        .unwrap();
+        .await?;
 
     info!("token_response: {:?}", token_response);
 
@@ -171,8 +176,7 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
                     &token_response,
                     credential_offer_formats[0].to_owned(),
                 )
-                .await
-                .unwrap();
+                .await?;
 
             let credential = match credential_response.credential {
                 CredentialResponseType::Immediate(credential) => credential,
@@ -184,8 +188,7 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
         _batch => {
             let batch_credential_response = wallet
                 .get_batch_credential(credential_issuer_metadata, &token_response, credential_offer_formats)
-                .await
-                .unwrap();
+                .await?;
 
             batch_credential_response
                 .credential_responses
@@ -210,6 +213,8 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
 
         stronghold_manager.insert(key, json!(verifiable_credential_record).to_string().as_bytes().to_vec())?;
     }
+
+    info!("display_credentials: {:?}", display_credentials);
 
     state.credentials.lock().unwrap().extend(display_credentials);
     state
