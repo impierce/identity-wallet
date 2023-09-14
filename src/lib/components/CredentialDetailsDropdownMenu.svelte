@@ -188,7 +188,7 @@
 <div use:melt={$portalledAppearanceDialog}>
   {#if $openAppearanceDialog}
     <div
-      use:melt={$overlayNameDialog}
+      use:melt={$overlayAppearanceDialog}
       class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
       transition:fade={{ duration: 150 }}
     />
