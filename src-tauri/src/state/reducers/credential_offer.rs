@@ -105,7 +105,11 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
 
     let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
     let offer_indices: Vec<usize> = serde_json::from_value(payload["offer_indices"].clone())?;
-    let credential_offer = match state.current_user_prompt.lock().unwrap().clone().unwrap() {
+
+    let current_user_prompt = state.current_user_prompt.lock().unwrap().clone().unwrap();
+    info!("current_user_prompt: {:?}", current_user_prompt);
+
+    let credential_offer = match current_user_prompt {
         CurrentUserPrompt::CredentialOffer(offer) => {
             let credential_offer: CredentialOffer = serde_json::from_value(offer.credential_offer)?;
             credential_offer
