@@ -121,8 +121,17 @@ pub async fn handle_authorization_request(state: &AppState, _action: Action) -> 
             let response = provider_manager.generate_response(&authorization_request, Default::default())?;
             info!("||DEBUG|| response generated: {:?}", response);
 
-            let client_response = provider_manager.send_response(response).await?;
-            info!("||DEBUG|| response successfully sent: {:?}", client_response);
+            if provider_manager.send_response(&response).await.is_err() {
+                info!("||DEBUG|| failed to send response");
+
+                state
+                    .active_connection_request
+                    .lock()
+                    .unwrap()
+                    .replace(ConnectionRequest::SIOPv2(authorization_request));
+                return Err(anyhow::anyhow!("failed to send response"));
+            }
+            info!("||DEBUG|| response successfully sent");
 
             let connection_time = chrono::Utc::now().to_rfc3339();
             let connection_url = authorization_request.redirect_uri.domain().unwrap().to_string();
@@ -306,8 +315,16 @@ pub async fn handle_presentation_request(state: &AppState, action: Action) -> an
     )?;
     info!("||DEBUG|| response generated: {:?}", response);
 
-    let client_response = provider_manager.send_response(response).await?;
-    info!("||DEBUG|| response successfully sent: {:?}", client_response);
+    if provider_manager.send_response(&response).await.is_err() {
+        info!("||DEBUG|| failed to send response");
+        state
+            .active_connection_request
+            .lock()
+            .unwrap()
+            .replace(ConnectionRequest::OID4VP(authorization_request));
+        return Err(anyhow::anyhow!("failed to send response"));
+    }
+    info!("||DEBUG|| response successfully sent");
 
     let connection_time = chrono::Utc::now().to_rfc3339();
     let connection_url = authorization_request.redirect_uri.domain().unwrap().to_string();
