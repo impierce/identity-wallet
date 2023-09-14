@@ -21,7 +21,7 @@
 </script>
 
 <TopNavigation on:back={() => history.back()} title="Settings" />
-<div class="content-height flex flex-col bg-silver dark:bg-navy">
+<div class="content-height flex flex-col justify-between bg-silver dark:bg-navy">
   <div class="flex flex-col space-y-[10px] px-4 py-5" in:fly={{ x: 32, opacity: 1 }}>
     <!-- Account -->
     <p class="text-[14px]/[22px] font-medium text-slate-500">{$LL.ACCOUNT()}</p>
