@@ -55,10 +55,9 @@
     </div>
   </div>
 </div> -->
-<div in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
-  <!-- <div in:fly={{ y: -50, delay: 300 }}> -->
-  <TopNavigation title="UniMe Pledge" on:back={() => history.back()} />
-</div>
+<!-- <div in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}> -->
+<TopNavigation title="UniMe Pledge" on:back={() => history.back()} />
+<!-- </div> -->
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <!-- <div class="mt-12 grow p-4" in:fly={{ x: 300, delay: 300 }} out:fly={{ x: -300, duration: 300 }}> -->
   <div class="px-2 pb-8 pt-4">
