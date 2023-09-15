@@ -1,7 +1,7 @@
 use crate::state::actions::{Action, ActionType};
 use crate::state::persistence::{delete_state_file, delete_stronghold, load_state, save_state};
 use crate::state::reducers::authorization::{
-    handle_authorization_request, handle_presentation_request, read_authorization_request,
+    handle_oid4vp_authorization_request, handle_siopv2_authorization_request, read_authorization_request,
 };
 use crate::state::reducers::credential_offer::{read_credential_offer, send_credential_request};
 use crate::state::reducers::load_dev_profile::load_dev_profile;
@@ -127,7 +127,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             }
         }
         ActionType::ConnectionAccepted => {
-            if handle_authorization_request(app_state, Action { r#type, payload })
+            if handle_siopv2_authorization_request(app_state, Action { r#type, payload })
                 .await
                 .is_ok()
             {
@@ -165,7 +165,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             }
         }
         ActionType::CredentialsSelected => {
-            if handle_presentation_request(app_state, Action { r#type, payload })
+            if handle_oid4vp_authorization_request(app_state, Action { r#type, payload })
                 .await
                 .is_ok()
             {
