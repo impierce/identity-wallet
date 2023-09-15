@@ -188,19 +188,13 @@ pub async fn handle_authorization_request(state: &AppState, _action: Action) -> 
                     verifiable_credentials
                         .iter()
                         .find_map(|verifiable_credential_record| {
-                            verifiable_credential_record
-                                .verifiable_credential
-                                .credential()
-                                .map(|credential| {
-                                    evaluate_input(input_descriptor, &get_unverified_jwt_claims(&credential))
-                                        .then_some(verifiable_credential_record.display_credential.id.clone())
-                                })
-                                .ok()
+                            let jwt = verifiable_credential_record.verifiable_credential.credential().unwrap();
+                            evaluate_input(input_descriptor, &get_unverified_jwt_claims(jwt))
+                                .then_some(verifiable_credential_record.display_credential.id.clone())
                         })
-                        .flatten()
                         .ok_or(anyhow::anyhow!("unable to get credential"))
                 })
-                .collect::<anyhow::Result<_>>()?;
+                .collect::<anyhow::Result<Vec<String>>>()?;
 
             info!("uuids of VCs that can fulfill the request: {:?}", uuids);
 
