@@ -30,7 +30,7 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
                     credential_subject_value["Passport Number"].take();
                     credential_subject_value["Staff Number"].take();
 
-                    md5::compute(
+                    sha256::digest(
                         json!(
                             {
                                 "type": type_value,
@@ -42,7 +42,7 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
                 };
 
                 DisplayCredential {
-                    id: Uuid::from_bytes(hash.into()).to_string(),
+                    id: Uuid::from_slice(&hash.as_bytes()[..16]).unwrap().to_string(),
                     issuer_name: None,
                     format: (&verifiable_credential).try_into().unwrap(),
                     data: credential_display,

@@ -55,7 +55,7 @@ futures = "0.3"
 async-recursion = "1.0"
 uuid = { version = "1.4", features = ["v4", "fast-rng"] }
 chrono = "0.4"
-md5 = "0.7"
+sha256 = "1.4"
 
 [dev-dependencies]
 tauri = { version = "=2.0.0-alpha.12", features = ["rustls-tls", "test"] }

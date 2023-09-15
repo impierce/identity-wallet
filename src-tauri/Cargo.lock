@@ -2974,7 +2974,6 @@ dependencies = [
  "jsonwebtoken",
  "lazy_static",
  "log",
- "md5",
  "oid4vc-core",
  "oid4vc-manager",
  "oid4vci",
@@ -2984,6 +2983,7 @@ dependencies = [
  "serde",
  "serde_json",
  "serial_test",
+ "sha256",
  "siopv2",
  "stronghold_engine 2.0.0",
  "tauri",
@@ -3992,12 +3992,6 @@ name = "matchit"
 version = "0.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ed1202b2a6f884ae56f04cff409ab315c5ce26b5e58d7412e484f01fd52f52ef"
-
-[[package]]
-name = "md5"
-version = "0.7.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "490cc448043f947bae3cbee9c203358d62dbee0db12107a74be5c30ccfd09771"
 
 [[package]]
 name = "memchr"
@@ -5750,6 +5744,19 @@ dependencies = [
  "cfg-if",
  "cpufeatures 0.2.9",
  "digest 0.10.7",
+]
+
+[[package]]
+name = "sha256"
+version = "1.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7895c8ae88588ccead14ff438b939b0c569cd619116f14b4d13fdff7b8333386"
+dependencies = [
+ "async-trait",
+ "bytes",
+ "hex",
+ "sha2 0.10.7",
+ "tokio",
 ]
 
 [[package]]
