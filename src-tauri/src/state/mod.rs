@@ -95,7 +95,7 @@ pub struct Profile {
 pub struct Connection {
     pub client_name: String,
     pub url: String,
-    pub logo_uri: String,
+    pub logo_uri: Option<String>,
     pub verified: bool,
     pub first_connected: String,
     pub last_connected: String,

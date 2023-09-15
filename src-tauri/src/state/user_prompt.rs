@@ -35,7 +35,7 @@ pub struct Selection {
 pub struct CredentialOffer {
     pub r#type: CurrentUserPromptType,
     pub issuer_name: String,
-    pub logo_uri: String,
+    pub logo_uri: Option<String>,
     #[ts(type = "object")]
     pub credential_offer: serde_json::Value,
 }
@@ -51,7 +51,7 @@ pub struct PasswordRequired {
 pub struct AcceptConnection {
     pub r#type: CurrentUserPromptType,
     pub client_name: String,
-    pub logo_uri: String,
+    pub logo_uri: Option<String>,
     pub redirect_uri: String,
     pub previously_connected: bool,
 }

@@ -53,10 +53,8 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::
     info!("credential issuer metadata: {:?}", credential_issuer_metadata);
 
     // For all credentials by reference, replace them with credentials by value using the CredentialIssuerMetadata.
-    credential_offer
-        .credentials
-        .iter_mut()
-        .for_each(|credential| match credential {
+    for credential in credential_offer.credentials.iter_mut() {
+        match credential {
             CredentialsObject::ByReference(by_reference) => {
                 *credential = CredentialsObject::ByValue(
                     credential_issuer_metadata
@@ -68,21 +66,35 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::
                                 .find(|credential_supported| {
                                     credential_supported.scope == Some(by_reference.to_owned())
                                 })
-                                .unwrap()
-                                .credential_format
-                                .clone()
+                                .map(|credential_supported| credential_supported.credential_format.clone())
                         })
-                        .unwrap(),
+                        .flatten()
+                        .ok_or(anyhow::anyhow!("unable to find credential"))?,
                 );
             }
             _by_value => (),
-        });
+        }
+    }
 
-    // FIX THIS!!
-    let display = credential_issuer_metadata.unwrap().display.as_ref().unwrap()[0].clone();
+    // Get the credential issuer display.
+    let display = credential_issuer_metadata
+        .ok_or(anyhow::anyhow!("unable to read credential issuer metadata"))?
+        .display
+        .map(|display| display.first().map(|display| display.clone()))
+        .flatten();
 
-    let issuer_name = display["client_name"].as_str().unwrap().to_string();
-    let logo_uri = display["logo_uri"].as_str().unwrap().to_string();
+    // Get the credential issuer name and logo uri or use the credential issuer url.
+    let (issuer_name, logo_uri) = display
+        .map(|display| {
+            let issuer_name = display["client_name"]
+                .as_str()
+                .map(|s| s.to_string())
+                .unwrap_or(credential_issuer_url.to_string());
+            let logo_uri = display["logo_uri"].as_str().map(|s| s.to_string());
+            (issuer_name, logo_uri)
+        })
+        .unwrap_or((credential_issuer_url.to_string(), None));
+
     let credential_offer = serde_json::to_value(credential_offer)?;
 
     info!("issuer_name in credential_offer: {:?}", issuer_name);
@@ -136,9 +148,23 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
 
     info!("credential issuer metadata: {:?}", credential_issuer_metadata);
 
-    // FIX THIS!!
-    let display = credential_issuer_metadata.display.as_ref().unwrap()[0].clone();
-    let issuer_name = display["client_name"].as_str().unwrap().to_string();
+    // Get the credential issuer display.
+    let display = credential_issuer_metadata
+        .display
+        .as_ref()
+        .map(|display| display.first().map(|display| display.clone()))
+        .flatten();
+
+    // Get the credential issuer name or use the credential issuer url.
+    let issuer_name = display
+        .map(|display| {
+            let issuer_name = display["client_name"]
+                .as_str()
+                .map(|s| s.to_string())
+                .unwrap_or(credential_issuer_url.to_string());
+            issuer_name
+        })
+        .unwrap_or(credential_issuer_url.to_string());
 
     let credential_offer_formats = offer_indices
         .into_iter()
@@ -209,7 +235,11 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
     for credential in credentials.into_iter() {
         let mut verifiable_credential_record = VerifiableCredentialRecord::from(credential);
         verifiable_credential_record.display_credential.issuer_name = Some(issuer_name.clone());
-        let key: Uuid = verifiable_credential_record.display_credential.id.parse().unwrap();
+        let key: Uuid = verifiable_credential_record
+            .display_credential
+            .id
+            .parse()
+            .expect("invalid uuid");
 
         info!("generated hash-key: {:?}", key);
 
