@@ -142,7 +142,20 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             }
         }
         ActionType::CancelUserFlow => {
-            *app_state.current_user_prompt.lock().unwrap() = None;
+            if let Some(payload) = payload {
+                let redirect = payload["redirect"].as_str().unwrap();
+                app_state
+                    .current_user_prompt
+                    .lock()
+                    .unwrap()
+                    .replace(CurrentUserPrompt::Redirect(Redirect {
+                        r#type: CurrentUserPromptType::Redirect,
+                        target: redirect.to_string(),
+                    }));
+            } else {
+                app_state.current_user_prompt.lock().unwrap().take();
+            }
+
             save_state(TransferState::from(app_state)).await.ok();
         }
         ActionType::LoadDevProfile => {
