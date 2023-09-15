@@ -26,6 +26,7 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
                     let credential_subject_key = "credentialSubject";
                     let mut credential_subject_value = credential_display[credential_subject_key].clone();
 
+                    // TODO: Remove this hard-coded logic.
                     // Remove the `Passport Number` and `Staff Number` from the credential subject if they exists.
                     credential_subject_value["Passport Number"].take();
                     credential_subject_value["Staff Number"].take();
