@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation';
   import { onDestroy, onMount } from 'svelte';
 
-  import { Button as ButtonDeprecated } from '@impierce/ui-components';
+  import { BottomNavBar, Button as ButtonDeprecated } from '@impierce/ui-components';
   import {
     Format,
     type Scanned,
@@ -237,101 +237,126 @@
 
 <!-- ############ -->
 
-<div class="h-full w-full">
-  <!-- visible when NOT scanning -->
-  <div
-    class:invisible={scanning}
-    class="relative flex h-full flex-col items-center justify-center bg-silver p-8 dark:bg-navy"
-  >
-    {#if permissions === 'denied'}
-      <div class="flex flex-col items-center space-y-4">
-        <div class="rounded-lg bg-rose-100 px-8 py-4 text-rose-500">
-          No permissions to<br />access the camera
-        </div>
-        <Button label="Open settings" on:click={openAppSettings} />
-      </div>
-      <!-- {:else}
+<div class="content-height flex flex-col items-stretch">
+  <!-- <div class="flex h-screen flex-col items-stretch"> -->
+  <div class="hide-scrollbar grow overflow-x-hidden overflow-y-scroll">
+    <div class="flex h-full w-full flex-col">
+      <!-- visible when NOT scanning -->
+      <div
+        class:invisible={scanning}
+        class="relative flex h-full flex-col items-center justify-center bg-silver p-8 dark:bg-navy"
+      >
+        {#if permissions === 'denied'}
+          <div class="flex flex-col items-center space-y-4">
+            <div class="rounded-lg bg-rose-100 px-8 py-4 text-rose-500">
+              No permissions to<br />access the camera
+            </div>
+            <Button label="Open settings" on:click={openAppSettings} />
+          </div>
+          <!-- {:else}
       <div class="rounded-lg bg-emerald-100 px-8 py-4 font-medium text-emerald-500">
         Permissions: {permissions}
       </div> -->
-    {/if}
+        {/if}
 
-    <!-- Divider -->
-    <!-- <p class="my-4 h-[1px] w-full bg-slate-200" /> -->
+        <!-- Divider -->
+        <!-- <p class="my-4 h-[1px] w-full bg-slate-200" /> -->
 
-    {#if $developer_mode}
-      <div class="flex flex-col space-y-2">
-        <Button
-          variant="secondary"
-          on:click={mockSiopRequest}
-          label="Connection request (SIOPv2)"
-        />
-        <Button variant="secondary" on:click={mockShareRequest} label="Share request (VP)" />
-        <Button
-          variant="secondary"
-          on:click={() => mockScanCredentialOffer(1)}
-          disabled
-          label="Credential Offer (single)"
-        />
-        <Button
-          variant="secondary"
-          on:click={() => mockScanCredentialOffer(2)}
-          label="Credential Offer (multi)"
-        />
-        <Button
-          variant="secondary"
-          on:click={() =>
-            dispatch({
-              type: '[QR Code] Scanned',
-              payload: {
-                form_urlencoded:
-                  'openid-credential-offer://?credential_offer_uri=https://api.ngdil-demo.tanglelabs.io/api/offers/creds/u08LmjU8lAcTwx7pLMpy0'
-              }
-            })}
-          label="Dominique (student)"
-        />
-        <Button variant="primary" on:click={startScan} label="Start new scan" />
-      </div>
-    {/if}
-  </div>
-
-  <!-- visible during scanning -->
-  <div class="fill-screen" class:invisible={!scanning}>
-    <div class="bg-white p-5">
-      <p class="text-3xl font-semibold text-slate-700">
-        Scan a <span class="text-primary">QR Code</span>
-      </p>
-      <p class="mt-4 text-sm font-medium text-slate-500">
-        Bring a QR Code into view of this screen to start an interaction.
-      </p>
-    </div>
-    <div class="scanner-background">
-      <!-- this background simulates the camera view -->
-    </div>
-    <div class=" my-container">
-      <div class="barcode-scanner--area--container">
-        <div class="relative">
-          <!-- <p>Aim your camera at a QR code</p> -->
-        </div>
-        <div class="square surround-cover">
-          <div class="barcode-scanner--area--outer surround-cover">
-            <div class="barcode-scanner--area--inner" />
+        {#if $developer_mode}
+          <div class="flex flex-col space-y-2">
+            <Button
+              variant="secondary"
+              on:click={mockSiopRequest}
+              label="Connection request (SIOPv2)"
+            />
+            <Button variant="secondary" on:click={mockShareRequest} label="Share request (VP)" />
+            <Button
+              variant="secondary"
+              on:click={() => mockScanCredentialOffer(1)}
+              disabled
+              label="Credential Offer (single)"
+            />
+            <Button
+              variant="secondary"
+              on:click={() => mockScanCredentialOffer(2)}
+              label="Credential Offer (multi)"
+            />
+            <Button
+              variant="secondary"
+              on:click={() =>
+                dispatch({
+                  type: '[QR Code] Scanned',
+                  payload: {
+                    form_urlencoded:
+                      'openid-credential-offer://?credential_offer_uri=https://api.ngdil-demo.tanglelabs.io/api/offers/creds/u08LmjU8lAcTwx7pLMpy0'
+                  }
+                })}
+              label="Dominique (student)"
+            />
+            <Button variant="primary" on:click={startScan} label="Start new scan" />
           </div>
+        {/if}
+      </div>
+
+      <!-- visible during scanning -->
+      <div class="flex grow flex-col" class:invisible={!scanning}>
+        <div class="bg-white p-5">
+          <p class="text-3xl font-semibold text-slate-700">
+            Scan a <span class="text-primary">QR Code</span>
+          </p>
+          <p class="mt-4 text-sm font-medium text-slate-500">
+            Bring a QR Code into view of this screen to start an interaction.
+          </p>
+        </div>
+        <div class="scanner-background">
+          <!-- this background simulates the camera view -->
+        </div>
+        <div class="my-container grow">
+          <div class="barcode-scanner--area--container">
+            <div class="relative">
+              <!-- <p>Aim your camera at a QR code</p> -->
+            </div>
+            <div class="square surround-cover">
+              <div class="barcode-scanner--area--outer surround-cover">
+                <div class="barcode-scanner--area--inner" />
+              </div>
+            </div>
+          </div>
+          {#if $developer_mode}
+            <div class="fixed bottom-[128px] left-[calc(50%_-_42px)]">
+              <ButtonDeprecated
+                class="bg-red-100 font-semibold text-red-500 shadow"
+                on:click={cancelScan}>Cancel</ButtonDeprecated
+              >
+            </div>
+          {/if}
         </div>
       </div>
-      {#if $developer_mode}
-        <div class="fixed bottom-[128px] left-[calc(50%_-_42px)]">
-          <ButtonDeprecated
-            class="bg-red-100 font-semibold text-red-500 shadow"
-            on:click={cancelScan}>Cancel</ButtonDeprecated
-          >
-        </div>
-      {/if}
+    </div>
+  </div>
+  <div class="shrink-0">
+    <div
+      class="fixed bottom-[var(--safe-area-inset-bottom)] w-full shadow-[0_-4px_20px_0px_rgba(0,0,0,0.03)]"
+    >
+      <BottomNavBar
+        active={'scan'}
+        on:me={() => goto('/me')}
+        on:scan={() => goto('/scan')}
+        on:activity={() => goto('/activity')}
+      />
     </div>
   </div>
 </div>
 
+<div class="safe-area-top {scanning ? 'bg-white' : 'bg-silver dark:bg-navy'}" />
+<div class="safe-area-bottom" />
+
 <style>
+  .content-height {
+    /* bottom-navigation: 64px */
+    height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom) - 64px);
+  }
+
   .invisible {
     display: none;
   }
@@ -339,13 +364,6 @@
   .full-height {
     height: 100%;
     border: 1px solid red;
-  }
-
-  .fill-screen {
-    height: calc(
-      100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom) - 64px - 136px
-    ); /* 64px: Bottom Nav Bar, 136px: Top section */
-    width: calc(100vw - var(--safe-area-inset-left) - var(--safe-area-inset-right));
   }
 
   /* p {
@@ -356,7 +374,7 @@
 
   .my-container {
     width: 100%;
-    height: 100%;
+    /* height: 100%; */
     overflow: hidden;
     /* border: 1px solid green; */
   }

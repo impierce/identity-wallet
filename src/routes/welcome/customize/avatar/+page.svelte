@@ -12,6 +12,7 @@
 
   import Plus from '~icons/ph/plus-bold';
 
+  // TODO: unused
   const {
     elements: { trigger, content, arrow, close },
     states: { open }
@@ -86,7 +87,8 @@
         <button
           slot="trigger"
           class="flex h-24 w-24 items-center justify-center rounded-full border border-slate-200 bg-white dark:border-slate-600 dark:bg-dark"
-          use:melt={$trigger}
+          use:melt={trigger}
+          let:trigger
           on:click={() => {
             emojiSelectIsOpen = true;
           }}
@@ -170,3 +172,10 @@
     disabled={!$onboarding_state.picture}
   />
 </div>
+
+<style>
+  :global(body) {
+    /* Fixes a UI problem on iOS where there is a white bar at the bottom when the emoji drawer is open */
+    position: unset !important;
+  }
+</style>

@@ -79,7 +79,7 @@
         class="flex justify-between rounded-xl border border-slate-200 bg-white px-4 py-4 dark:border-slate-600 dark:bg-dark"
       >
         <p class="mr-3 text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">URL</p>
-        <p class="break-all text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">
+        <p class="break-all text-[13px]/[24px] font-normal text-slate-500 dark:text-slate-300">
           {$state.current_user_prompt.redirect_uri}
         </p>
       </div>
@@ -127,6 +127,7 @@
   </div>
 
   <!-- Controls -->
+  <!-- TODO: on iOS subtract the --safe-area-inset-bottom from the bottom-padding -->
   <div
     class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 dark:bg-dark"
   >
@@ -146,10 +147,10 @@
       }}
     />
   </div>
-
-  <div class="safe-area-top" />
-  <div class="safe-area-bottom" />
 </div>
+
+<div class="safe-area-top bg-white dark:bg-dark" />
+<div class="safe-area-bottom" />
 
 <style>
   .content-height {

@@ -21,6 +21,7 @@
     "@lottiefiles/lottie-player": "^2.0.2",
     "@melt-ui/svelte": "^0.34.1",
     "@tauri-apps/api": "2.0.0-alpha.6",
+    "@tauri-apps/plugin-barcode-scanner": "2.0.0-alpha.0",
     "@tauri-apps/plugin-clipboard-manager": "2.0.0-alpha.1",
     "@tauri-apps/plugin-log": "2.0.0-alpha.1",
     "qrcode": "^1.5.3",

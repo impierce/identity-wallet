@@ -27,6 +27,7 @@ ts-rs = "7.0"
 anyhow = "1.0"
 did-key = "0.2.1"
 lazy_static = "1.4.0"
+tauri-plugin-barcode-scanner = "=2.0.0-alpha.0"
 tauri-plugin-clipboard-manager = "=2.0.0-alpha.2"
 tauri-plugin-log = { version = "=2.0.0-alpha.2", features = ["colored"] }
 fern = "0.6.0"
@@ -49,7 +50,6 @@ identity_credential = { git = "https://github.com/iotaledger/identity.rs.git", d
     "presentation",
 ] }
 
-tauri-plugin-barcode-scanner = { git = "https://github.com/lucasfernog/plugins-workspace", rev = "c684a318c9b3e0a0b0fea06ce23af1510a248a45" }
 jsonwebtoken = "8.2"
 futures = "0.3"
 async-recursion = "1.0"

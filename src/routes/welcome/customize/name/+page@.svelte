@@ -54,6 +54,8 @@
   <!-- <div class="safe-area-bottom" /> -->
 </div>
 
+<div class="safe-area-top bg-white dark:bg-dark" />
+
 <style>
   .content-height {
     /* bottom-navigation: 64px */

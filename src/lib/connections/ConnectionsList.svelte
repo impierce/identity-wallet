@@ -36,13 +36,13 @@
 <div class="flex h-full flex-col space-y-3">
   {#if connections.size === 0}
     <div class="flex h-full flex-col items-center justify-center">
-      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-white">
+      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">
         No connections yet.
       </p>
     </div>
   {/if}
   {#each Object.entries(Object.fromEntries(connections)) as entry}
-    <p class="w-full px-4 text-[14px]/[22px] font-medium text-slate-600 dark:text-white">
+    <p class="w-full px-4 text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">
       {entry[0]}
     </p>
     {#each entry[1] as connection, index}

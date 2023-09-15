@@ -15,7 +15,7 @@
 </script>
 
 <TopNavigation on:back={() => history.back()} title="App Settings" />
-<div class="flex min-h-full flex-col bg-silver dark:bg-navy">
+<div class="content-height flex flex-col bg-silver dark:bg-navy">
   <div class="flex flex-col space-y-[10px] px-4 py-5">
     <SettingsEntry icon={Sun} title="Language" hasCaretRight={false} textRight="English" todo />
     <SettingsEntry icon={Sun} title="Theme" on:click={() => goto('/me/settings/app/theme')} />
@@ -34,12 +34,20 @@
       textRight="Reset"
       todo
     />
-    <SettingsEntry
+    <!-- TODO: DEV_MODE -->
+    <!-- <SettingsEntry
       icon={Code}
       title="Developer mode"
       hasCaretRight={false}
       textRight={$developer_mode ? 'On' : 'Off'}
       on:click={() => developer_mode.set(!$developer_mode)}
-    />
+    /> -->
   </div>
 </div>
+
+<style>
+  .content-height {
+    /* bottom-navigation: 64px, top-navigation: 50px */
+    height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom) - 64px - 50px);
+  }
+</style>

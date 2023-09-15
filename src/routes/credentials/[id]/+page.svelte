@@ -56,14 +56,19 @@
   console.log({ credential });
 </script>
 
-<div class="content-height relative flex w-full flex-col" in:fly={{ x: 24 }}>
-  <TopNavigation title="Credential info" on:back={() => history.back()} />
+<div class="content-height relative flex w-full flex-col">
+  <!-- TODO: allow overriding the color of the TopNavigation -->
+  <TopNavigation
+    title="Credential info"
+    on:back={() => history.back()}
+    class="{color} dark:{color} text-slate-800 dark:text-slate-800"
+  />
   <div class="hide-scrollbar grow overflow-y-scroll bg-silver px-[15px] dark:bg-navy">
     <!-- Header -->
     <!-- Background-->
     <div class="absolute left-0 top-[50px] h-[220px] w-screen {color}" />
     <div class="relative z-10">
-      <div class="flex flex-col py-[20px]">
+      <div class="flex flex-col px-2 py-[20px]">
         <!-- Logo -->
         <div class="flex items-start justify-between">
           <button
@@ -90,7 +95,7 @@
             <img src={logo_location} alt="logo" class="object-scale-down" />
           </div> -->
           </div>
-          <div class="-mr-1 -mt-1">
+          <div class="-mr-3 -mt-1">
             <CredentialDetailsDropdownMenu {credential} />
           </div>
           <!-- <button class="-mr-1 -mt-1 rounded-full p-1">
@@ -158,8 +163,9 @@
   </BottomDrawer>
 </div>
 
-<div class="safe-area-top" />
-<div class="safe-area-bottom" />
+<!-- TODO: replace with <div class="safe-area-top {color}" /> -->
+<div class="safe-area-top {color}" />
+<div class="safe-area-bottom bg-silver dark:bg-navy" />
 
 <style>
   .content-height {
