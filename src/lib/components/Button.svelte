@@ -20,23 +20,14 @@
 {#if trigger}
   <button
     use:melt={trigger}
-    class="custom h-[48px] w-full rounded-xl px-4 py-2 text-[13px]/[24px] disabled:opacity-50 {variant_classes}"
+    class="custom h-[48px] w-full rounded-xl px-4 py-2 text-[13px]/[24px] font-medium disabled:opacity-50 {variant_classes}"
     {disabled}
     on:click={() => dispatch('click')}>{label}</button
   >
 {:else}
   <button
-    class="custom h-[48px] w-full rounded-xl px-4 py-2 text-[13px]/[24px] disabled:opacity-50 {variant_classes}"
+    class="custom h-[48px] w-full rounded-xl px-4 py-2 text-[13px]/[24px] font-medium disabled:opacity-50 {variant_classes}"
     {disabled}
     on:click={() => dispatch('click')}>{label}</button
   >
 {/if}
-
-<style>
-  .custom {
-    font-size: 14px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: 24px;
-  }
-</style>

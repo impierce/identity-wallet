@@ -1,6 +1,9 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
+  import { BottomDrawer } from '@impierce/ui-components';
+  import { melt } from '@melt-ui/svelte';
+
   import Button from '$src/lib/components/Button.svelte';
   import UniMeLogoDark from '$src/lib/components/logo/UniMeLogoDark.svelte';
   import UniMeLogoLight from '$src/lib/components/logo/UniMeLogoLight.svelte';
@@ -59,6 +62,37 @@
         on:click={() => dispatch({ type: '[Storage] Unlock', payload: { password } })}
         disabled={!password}
       />
+      <!-- Forgot password? Reset app -->
+      <div class="mt-8">
+        <BottomDrawer
+          titleText="Reset app"
+          descriptionText="Are you sure you want to reset the entire app and remove all data?"
+        >
+          <button
+            slot="trigger"
+            let:trigger
+            use:melt={trigger}
+            class="rounded-xl px-4 py-2 text-[13px]/[24px] font-medium text-slate-400 opacity-50 active:bg-grey dark:active:bg-dark"
+            >Forgot password?</button
+          >
+
+          <!-- TODO: bug: after resetting (closing the drawer, main UI is not clickable anymore) -->
+          <div slot="content" class="w-full pb-[10px] pt-[20px]">
+            <button
+              class="h-[48px] w-full rounded-xl bg-rose-100 px-4 py-2 text-[14px]/[24px] font-medium text-rose-500"
+              on:click={() => dispatch({ type: '[App] Reset' })}>Yes, delete everything</button
+            >
+          </div>
+
+          <Button
+            variant="secondary"
+            slot="close"
+            let:close
+            trigger={close}
+            label="No, keep my profile"
+          />
+        </BottomDrawer>
+      </div>
     {/if}
   </div>
 </div>
