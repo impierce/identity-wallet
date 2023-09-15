@@ -126,7 +126,7 @@
       label="Cancel"
       variant="secondary"
       on:click={() => {
-        dispatch({ type: '[User Flow] Cancel' });
+        dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });
         goto('/me');
       }}
     />

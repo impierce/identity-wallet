@@ -31,7 +31,7 @@
 
   const previously_connected = $state.current_user_prompt.previously_connected;
 
-  // console.log(selected_credentials);
+  const hostname = new URL($state.current_user_prompt.redirect_uri).hostname;
 
   console.log($state.current_user_prompt);
 </script>
@@ -52,7 +52,7 @@
         {client_name}
       </p>
       <p class="pt-[10px] text-sm font-medium text-slate-500">
-        {new URL($state.current_user_prompt.redirect_uri).hostname}
+        {hostname}
       </p>
     </div>
 
@@ -142,7 +142,7 @@
       label="Reject"
       variant="secondary"
       on:click={() => {
-        dispatch({ type: '[User Flow] Cancel' });
+        dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });
         goto('/me');
       }}
     />
