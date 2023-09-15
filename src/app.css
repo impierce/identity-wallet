@@ -60,6 +60,7 @@ body {
   --safe-area-inset-top: env(safe-area-inset-top);
   --safe-area-inset-bottom: env(safe-area-inset-bottom);
 
+  /* TODO: testing: uncomment to simulate safe areas on iOS */
   /* iPhone 13 Pro */
   /* --safe-area-inset-top: 47px;
   --safe-area-inset-bottom: 34px; */

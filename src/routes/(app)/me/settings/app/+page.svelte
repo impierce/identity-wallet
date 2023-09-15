@@ -34,13 +34,14 @@
       textRight="Reset"
       todo
     />
-    <SettingsEntry
+    <!-- TODO: DEV_MODE -->
+    <!-- <SettingsEntry
       icon={Code}
       title="Developer mode"
       hasCaretRight={false}
       textRight={$developer_mode ? 'On' : 'Off'}
       on:click={() => developer_mode.set(!$developer_mode)}
-    />
+    /> -->
   </div>
 </div>
 
