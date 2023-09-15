@@ -12,6 +12,7 @@
   import { state } from '$src/stores';
 
   import Check from '~icons/ph/check-bold';
+  import PlugsConnected from '~icons/ph/plugs-connected-fill';
   import RocketLaunch from '~icons/ph/rocket-launch';
   import SealCheck from '~icons/ph/seal-check-fill';
 
@@ -25,56 +26,55 @@
 <div class="content-height flex flex-col items-stretch bg-silver dark:bg-navy">
   <TopNavigation title={'Share Data'} on:back={() => history.back()} />
 
-  <div class="mt-[40px] flex grow flex-col items-center justify-start p-4">
+  <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
     <!-- Header -->
-    <div
-      class="w-full rounded-[20px] border border-slate-200 bg-white p-[10px] dark:border-slate-600 dark:bg-dark"
-    >
-      <!-- Logo -->
-      <div class="flex flex-col items-center space-y-[10px]">
-        <!-- Placeholder -->
-        <!-- <PaddedIcon icon={PlugsConnected} /> -->
-        <div
-          class="flex h-[64px] w-[64px] overflow-hidden rounded-2xl border-slate-300 hover:border dark:border-slate-600 dark:bg-silver"
-        >
-          <img src={$state.current_user_prompt.logo_uri} alt="logo" class="object-scale-down" />
-        </div>
-        <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
-          {client_name}
-        </p>
+    {#if $state.current_user_prompt.logo_uri}
+      <div class="flex h-[75px] w-[75px] overflow-hidden rounded-3xl bg-white p-2 dark:bg-silver">
+        <img src={$state.current_user_prompt.logo_uri} alt="logo" />
       </div>
-      <!-- Data sensitivity -->
-      <div class="p-2">
-        <!-- TODO: data sensitivity -->
-      </div>
+    {:else}
+      <PaddedIcon icon={PlugsConnected} />
+    {/if}
+    <div class="text-center">
+      <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
+        {client_name}
+      </p>
+      <!-- <p class="pt-[10px] text-sm font-medium text-slate-500">
+        {hostname}
+      </p> -->
     </div>
 
-    <div class="mt-[30px] flex w-full items-center">
-      <SealCheck class="mr-2 text-primary" />
-      <p class="text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">Requested</p>
-    </div>
+    <p class="w-full text-center text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">
+      requests the following credentials
+    </p>
 
-    <!-- Credentials selection -->
-    <!-- <div class="w-full space-y-2 rounded-2xl bg-white p-3"></div> -->
-    <div
-      class="mt-3 w-full rounded-[20px] border border-slate-200 bg-white p-[10px] dark:border-slate-600 dark:bg-dark"
-    >
-      <div class="flex w-full flex-col space-y-2">
-        {#each selected_credentials as credential}
-          <CredentialOfferEntry
-            index={credential.id}
-            title={credential.metadata.display.name || credential.data.type.at(-1)}
-            description={credential.data.issuer}
-            color={credential.metadata.display.color || 'bg-indigo-100'}
-          >
-            <span slot="icon">
-              <svelte:component
-                this={icons[credential.metadata.display.icon] || icons['User']}
-                class="h-[18px] w-[18px] text-slate-800"
-              />
-            </span>
-          </CredentialOfferEntry>
-          <!-- <div class="flex items-center">
+    <div class="w-full">
+      <div class="flex items-center">
+        <SealCheck class="mr-2 text-primary" />
+        <p class="text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">Requested</p>
+      </div>
+
+      <!-- Credentials selection -->
+      <!-- <div class="w-full space-y-2 rounded-2xl bg-white p-3"></div> -->
+      <div
+        class="mt-3 w-full rounded-[20px] border border-slate-200 bg-white p-[10px] dark:border-slate-600 dark:bg-dark"
+      >
+        <div class="flex w-full flex-col space-y-2">
+          {#each selected_credentials as credential}
+            <CredentialOfferEntry
+              index={credential.id}
+              title={credential.metadata.display.name || credential.data.type.at(-1)}
+              description={credential.data.issuer}
+              color={credential.metadata.display.color || 'bg-indigo-100'}
+            >
+              <span slot="icon">
+                <svelte:component
+                  this={icons[credential.metadata.display.icon] || icons['User']}
+                  class="h-[18px] w-[18px] text-slate-800"
+                />
+              </span>
+            </CredentialOfferEntry>
+            <!-- <div class="flex items-center">
             <div class="grow">
               <CredentialListEntry
                 id={credential.id}
@@ -105,7 +105,8 @@
               </button>
             </div>
           </div> -->
-        {/each}
+          {/each}
+        </div>
       </div>
     </div>
   </div>
