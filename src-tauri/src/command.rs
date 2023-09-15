@@ -86,9 +86,10 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
         ActionType::QrCodeScanned => {
             info!("qr code scanned: `{:?}`", payload);
 
-            let payload = payload.ok_or(anyhow::anyhow!("unable to read payload")).unwrap();
-
-            let form_urlencoded = payload["form_urlencoded"].as_str().unwrap();
+            let payload = payload.ok_or("unable to read payload")?;
+            let form_urlencoded = payload["form_urlencoded"]
+                .as_str()
+                .ok_or("unable to read form_urlencoded from payload")?;
 
             if let Result::Ok(authorization_request) = form_urlencoded.parse::<AuthorizationRequest>() {
                 handle_action_inner(
@@ -221,7 +222,7 @@ pub async fn handle_action<R: tauri::Runtime>(
 
 fn emit_event<R: tauri::Runtime>(window: tauri::Window<R>, transfer_state: TransferState) -> anyhow::Result<()> {
     const STATE_CHANGED_EVENT: &str = "state-changed";
-    window.emit(STATE_CHANGED_EVENT, &transfer_state).unwrap();
+    window.emit(STATE_CHANGED_EVENT, &transfer_state)?;
     info!(
         "emitted event `{}` with payload `{:?}`",
         STATE_CHANGED_EVENT, &transfer_state

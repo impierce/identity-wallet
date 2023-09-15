@@ -61,7 +61,7 @@ pub struct AcceptConnection {
 pub struct ShareCredentials {
     pub r#type: CurrentUserPromptType,
     pub client_name: String,
-    pub logo_uri: String,
+    pub logo_uri: Option<String>,
     pub options: Vec<String>,
 }
 

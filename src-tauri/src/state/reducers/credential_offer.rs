@@ -19,7 +19,11 @@ use uuid::Uuid;
 pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::Result<()> {
     info!("read_credential_offer");
     let state_guard = state.managers.lock().await;
-    let wallet = &state_guard.identity_manager.as_ref().unwrap().wallet;
+    let wallet = &state_guard
+        .identity_manager
+        .as_ref()
+        .ok_or(anyhow::anyhow!("no identity manager found"))?
+        .wallet;
 
     let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
 
@@ -112,8 +116,15 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::
 pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow::Result<()> {
     info!("send_credential_request");
     let state_guard = state.managers.lock().await;
-    let stronghold_manager = state_guard.stronghold_manager.as_ref().unwrap();
-    let wallet = &state_guard.identity_manager.as_ref().unwrap().wallet;
+    let stronghold_manager = state_guard
+        .stronghold_manager
+        .as_ref()
+        .ok_or(anyhow::anyhow!("no stronghold manager found"))?;
+    let wallet = &state_guard
+        .identity_manager
+        .as_ref()
+        .ok_or(anyhow::anyhow!("no identity manager found"))?
+        .wallet;
 
     let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
     let offer_indices: Vec<usize> = serde_json::from_value(payload["offer_indices"].clone())?;

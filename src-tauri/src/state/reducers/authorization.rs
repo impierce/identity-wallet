@@ -27,7 +27,11 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> any
     info!("read_authorization_request");
 
     let state_guard = state.managers.lock().await;
-    let provider_manager = &state_guard.identity_manager.as_ref().unwrap().provider_manager;
+    let provider_manager = &state_guard
+        .identity_manager
+        .as_ref()
+        .ok_or(anyhow::anyhow!("no identity manager found"))?
+        .provider_manager;
 
     let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
 
@@ -39,10 +43,9 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> any
             .await
     {
         let redirect_uri = siopv2_authorization_request.redirect_uri.to_string();
-        let connection_url = siopv2_authorization_request.redirect_uri.domain().unwrap().to_string();
 
-        let (client_name, logo_uri) =
-            get_siopv2_client_name_and_logo_uri(&siopv2_authorization_request, &connection_url);
+        let (client_name, logo_uri, connection_url) =
+            get_siopv2_client_name_and_logo_uri(&siopv2_authorization_request)?;
 
         let previously_connected = state
             .connections
@@ -60,14 +63,13 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> any
 
         (client_name, logo_uri, redirect_uri, previously_connected)
     } else if let Result::Ok(oid4vp_authorization_request) = provider_manager
-        .validate_request::<OID4VP>(serde_json::from_value(payload.clone()).unwrap())
+        .validate_request::<OID4VP>(serde_json::from_value(payload.clone())?)
         .await
     {
         let redirect_uri = oid4vp_authorization_request.redirect_uri.to_string();
-        let connection_url = oid4vp_authorization_request.redirect_uri.domain().unwrap().to_string();
 
-        let (client_name, logo_uri) =
-            get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request, &connection_url);
+        let (client_name, logo_uri, connection_url) =
+            get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request)?;
 
         let previously_connected = state
             .connections
@@ -108,12 +110,19 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> any
 
 pub async fn handle_authorization_request(state: &AppState, _action: Action) -> anyhow::Result<()> {
     let state_guard = state.managers.lock().await;
-    let provider_manager = &state_guard.identity_manager.as_ref().unwrap().provider_manager;
-    let stronghold_manager = state_guard.stronghold_manager.as_ref().unwrap();
-    let active_connection_request = state.active_connection_request.lock().unwrap().take().unwrap();
+    let provider_manager = &state_guard
+        .identity_manager
+        .as_ref()
+        .ok_or(anyhow::anyhow!("no identity manager found"))?
+        .provider_manager;
+    let stronghold_manager = state_guard
+        .stronghold_manager
+        .as_ref()
+        .ok_or(anyhow::anyhow!("no stronghold manager found"))?;
 
+    let active_connection_request = state.active_connection_request.lock().unwrap().take();
     match active_connection_request {
-        ConnectionRequest::SIOPv2(siopv2_authorization_request) => {
+        Some(ConnectionRequest::SIOPv2(siopv2_authorization_request)) => {
             info!("||DEBUG|| generating response");
             *state.debug_messages.lock().unwrap() = vec!["generating response".into()];
             let response = provider_manager.generate_response(&siopv2_authorization_request, Default::default())?;
@@ -132,10 +141,9 @@ pub async fn handle_authorization_request(state: &AppState, _action: Action) -> 
             info!("||DEBUG|| response successfully sent");
 
             let connection_time = chrono::Utc::now().to_rfc3339();
-            let connection_url = siopv2_authorization_request.redirect_uri.domain().unwrap().to_string();
 
-            let (client_name, logo_uri) =
-                get_siopv2_client_name_and_logo_uri(&siopv2_authorization_request, &connection_url);
+            let (client_name, logo_uri, connection_url) =
+                get_siopv2_client_name_and_logo_uri(&siopv2_authorization_request)?;
 
             let result = state
                 .connections
@@ -167,11 +175,11 @@ pub async fn handle_authorization_request(state: &AppState, _action: Action) -> 
                     target: "me".to_string(),
                 }));
         }
-        ConnectionRequest::OID4VP(authorization_request) => {
+        Some(ConnectionRequest::OID4VP(oid4vp_authorization_request)) => {
             let verifiable_credentials = stronghold_manager.values()?.unwrap();
             info!("verifiable credentials: {:?}", verifiable_credentials);
 
-            let uuids: Vec<String> = authorization_request
+            let uuids: Vec<String> = oid4vp_authorization_request
                 .extension
                 .presentation_definition
                 .input_descriptors()
@@ -180,32 +188,32 @@ pub async fn handle_authorization_request(state: &AppState, _action: Action) -> 
                     verifiable_credentials
                         .iter()
                         .find_map(|verifiable_credential_record| {
-                            evaluate_input(
-                                input_descriptor,
-                                &get_unverified_jwt_claims(
-                                    verifiable_credential_record.verifiable_credential.credential().unwrap(),
-                                ),
-                            )
-                            .then_some(verifiable_credential_record.display_credential.id.clone())
+                            verifiable_credential_record
+                                .verifiable_credential
+                                .credential()
+                                .map(|credential| {
+                                    evaluate_input(input_descriptor, &get_unverified_jwt_claims(&credential))
+                                        .then_some(verifiable_credential_record.display_credential.id.clone())
+                                })
+                                .ok()
                         })
-                        .unwrap()
+                        .flatten()
+                        .ok_or(anyhow::anyhow!("unable to get credential"))
                 })
-                .collect();
+                .collect::<anyhow::Result<_>>()?;
 
             info!("uuids of VCs that can fulfill the request: {:?}", uuids);
 
-            let client_metadata = authorization_request.extension.client_metadata.as_ref().unwrap();
-            let client_name = client_metadata.client_name.as_ref().unwrap().clone();
-            let logo_uri = client_metadata.logo_uri.as_ref().unwrap().to_string();
+            let (client_name, logo_uri, _) = get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request)?;
 
             info!("client_name in credential_offer: {:?}", client_name);
-            info!("logo_uri in read_authorization_request: {:?}", logo_uri.to_string());
+            info!("logo_uri in read_authorization_request: {:?}", logo_uri);
 
             state
                 .active_connection_request
                 .lock()
                 .unwrap()
-                .replace(ConnectionRequest::OID4VP(authorization_request));
+                .replace(ConnectionRequest::OID4VP(oid4vp_authorization_request));
 
             // TODO: communicate when no credentials are available.
             if !uuids.is_empty() {
@@ -218,6 +226,13 @@ pub async fn handle_authorization_request(state: &AppState, _action: Action) -> 
                     }));
             }
         }
+        // If there is no active connection request, redirect to the `me` page.
+        None => {
+            *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect(Redirect {
+                r#type: CurrentUserPromptType::Redirect,
+                target: "me".to_string(),
+            }));
+        }
     }
 
     Ok(())
@@ -228,8 +243,15 @@ pub async fn handle_presentation_request(state: &AppState, action: Action) -> an
     info!("handle_presentation_request");
 
     let state_guard = state.managers.lock().await;
-    let stronghold_manager = state_guard.stronghold_manager.as_ref().unwrap();
-    let provider_manager = &state_guard.identity_manager.as_ref().unwrap().provider_manager;
+    let stronghold_manager = state_guard
+        .stronghold_manager
+        .as_ref()
+        .ok_or(anyhow::anyhow!("no stronghold manager found"))?;
+    let provider_manager = &state_guard
+        .identity_manager
+        .as_ref()
+        .ok_or(anyhow::anyhow!("no identity manager found"))?
+        .provider_manager;
 
     let payload = match action.payload {
         Some(payload) => payload,
@@ -332,9 +354,8 @@ pub async fn handle_presentation_request(state: &AppState, action: Action) -> an
     info!("||DEBUG|| response successfully sent");
 
     let connection_time = chrono::Utc::now().to_rfc3339();
-    let connection_url = oid4vp_authorization_request.redirect_uri.domain().unwrap().to_string();
 
-    let (client_name, logo_uri) = get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request, &connection_url);
+    let (client_name, logo_uri, connection_url) = get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request)?;
 
     let result = state
         .connections
@@ -372,10 +393,15 @@ pub async fn handle_presentation_request(state: &AppState, action: Action) -> an
 // TODO: move this functionality to the oid4vc-manager crate.
 fn get_siopv2_client_name_and_logo_uri(
     siopv2_authorization_request: &AuthorizationRequestObject<SIOPv2>,
-    connection_url: &str,
-) -> (String, Option<String>) {
+) -> anyhow::Result<(String, Option<String>, String)> {
+    let connection_url = siopv2_authorization_request
+        .redirect_uri
+        .domain()
+        .ok_or(anyhow::anyhow!("unable to get domain from redirect_uri"))?
+        .to_string();
+
     // Get the client_name and logo_uri from the client_metadata if it exists.
-    siopv2_authorization_request
+    Ok(siopv2_authorization_request
         .extension
         .client_metadata
         .as_ref()
@@ -387,19 +413,24 @@ fn get_siopv2_client_name_and_logo_uri(
                 .unwrap_or(connection_url.to_string());
             let logo_uri = client_metadata.logo_uri.as_ref().map(|logo_uri| logo_uri.to_string());
 
-            (client_name, logo_uri)
+            (client_name, logo_uri, connection_url.clone())
         })
         // Otherwise use the connection_url as the client_name.
-        .unwrap_or_else(|| (connection_url.to_string(), None))
+        .unwrap_or((connection_url.to_string(), None, connection_url)))
 }
 
 // TODO: move this functionality to the oid4vc-manager crate.
 fn get_oid4vp_client_name_and_logo_uri(
     oid4vp_authorization_request: &AuthorizationRequestObject<OID4VP>,
-    connection_url: &str,
-) -> (String, Option<String>) {
+) -> anyhow::Result<(String, Option<String>, String)> {
+    let connection_url = oid4vp_authorization_request
+        .redirect_uri
+        .domain()
+        .ok_or(anyhow::anyhow!("unable to get domain from redirect_uri"))?
+        .to_string();
+
     // Get the client_name and logo_uri from the client_metadata if it exists.
-    oid4vp_authorization_request
+    Ok(oid4vp_authorization_request
         .extension
         .client_metadata
         .as_ref()
@@ -411,8 +442,8 @@ fn get_oid4vp_client_name_and_logo_uri(
                 .unwrap_or(connection_url.to_string());
             let logo_uri = client_metadata.logo_uri.as_ref().map(|logo_uri| logo_uri.to_string());
 
-            (client_name, logo_uri)
+            (client_name, logo_uri, connection_url.clone())
         })
         // Otherwise use the connection_url as the client_name.
-        .unwrap_or_else(|| (connection_url.to_string(), None))
+        .unwrap_or((connection_url.to_string(), None, connection_url)))
 }

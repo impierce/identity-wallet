@@ -31,7 +31,10 @@ pub fn set_locale(state: &AppState, action: Action) -> anyhow::Result<()> {
 /// Creates a new profile with a new DID (using the did:key method) and sets it as the active profile.
 pub async fn create_identity(state: &AppState, action: Action) -> anyhow::Result<()> {
     let mut state_guard = state.managers.lock().await;
-    let stronghold_manager = state_guard.stronghold_manager.as_ref().unwrap();
+    let stronghold_manager = state_guard
+        .stronghold_manager
+        .as_ref()
+        .ok_or(anyhow::anyhow!("no stronghold manager found"))?;
 
     let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
     let name = payload["name"]
@@ -49,14 +52,14 @@ pub async fn create_identity(state: &AppState, action: Action) -> anyhow::Result
     let keypair = from_existing_key::<Ed25519KeyPair>(public_key.as_slice(), None);
     let subject = Arc::new(KeySubject::from_keypair(keypair, Some(stronghold_manager.clone())));
 
-    let provider_manager = ProviderManager::new([subject.clone()]).unwrap();
+    let provider_manager = ProviderManager::new([subject.clone()])?;
     let wallet: Wallet = Wallet::new(subject.clone());
 
     let profile = Profile {
         name: name.to_string(),
         picture: Some(picture.to_string()),
         theme: Some(theme.to_string()),
-        primary_did: subject.identifier().unwrap(),
+        primary_did: subject.identifier()?,
     };
 
     state.active_profile.lock().unwrap().replace(profile);
@@ -94,17 +97,18 @@ pub async fn update_credential_metadata(state: &AppState, action: Action) -> any
         .ok_or(anyhow::anyhow!("unable to read credential id from json payload"))?
         .parse()?;
 
-    let stronghold_manager = state.managers.lock().await.stronghold_manager.as_ref().unwrap().clone();
+    let state_guard = state.managers.lock().await;
+    let stronghold_manager = state_guard
+        .stronghold_manager
+        .as_ref()
+        .ok_or(anyhow::anyhow!("no stronghold manager found"))?;
 
     let mut verifiable_credential_record: VerifiableCredentialRecord = stronghold_manager
-        .values()
-        .unwrap()
+        .values()?
         .unwrap()
         .into_iter()
-        .filter(|record| record.display_credential.id == credential_id.to_string())
-        .next()
-        .unwrap()
-        .clone();
+        .find(|record| record.display_credential.id == credential_id.to_string())
+        .ok_or(anyhow::anyhow!("credential not found"))?;
 
     info!(
         "verifiable_credential_record (before): {:?}",

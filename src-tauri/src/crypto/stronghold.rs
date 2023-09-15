@@ -19,7 +19,12 @@ pub struct StrongholdManager {
 impl StrongholdManager {
     pub fn create(password: &str) -> anyhow::Result<Self> {
         let stronghold = Stronghold::default();
-        let client_path = STRONGHOLD.lock().unwrap().to_str().unwrap().to_owned();
+        let client_path = STRONGHOLD
+            .lock()
+            .unwrap()
+            .to_str()
+            .ok_or(anyhow::anyhow!("failed to get stronghold path"))?
+            .to_owned();
 
         let snapshot_path = SnapshotPath::from_path(format!("{client_path}.snapshot"));
         let key_provider =
@@ -52,7 +57,12 @@ impl StrongholdManager {
 
     pub fn load(password: &str) -> anyhow::Result<Self> {
         let stronghold = Stronghold::default();
-        let client_path = STRONGHOLD.lock().unwrap().to_str().unwrap().to_owned();
+        let client_path = STRONGHOLD
+            .lock()
+            .unwrap()
+            .to_str()
+            .ok_or(anyhow::anyhow!("failed to get stronghold path"))?
+            .to_owned();
         let snapshot_path = SnapshotPath::from_path(format!("{client_path}.snapshot"));
         let key_provider =
             KeyProvider::with_passphrase_hashed_blake2b(password.as_bytes().to_vec()).expect("failed to load key");
@@ -143,7 +153,12 @@ impl StrongholdManager {
 
 impl ExternalSign for StrongholdManager {
     fn sign(&self, message: &str) -> anyhow::Result<Vec<u8>> {
-        let client_path = STRONGHOLD.lock().unwrap().to_str().unwrap().to_owned();
+        let client_path = STRONGHOLD
+            .lock()
+            .unwrap()
+            .to_str()
+            .ok_or(anyhow::anyhow!("failed to get stronghold path"))?
+            .to_owned();
         let procedure_result = self
             .client
             .execute_procedure(StrongholdProcedure::Ed25519Sign(Ed25519Sign {
