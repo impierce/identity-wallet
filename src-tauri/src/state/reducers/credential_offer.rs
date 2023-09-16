@@ -63,7 +63,7 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::
                 *credential = CredentialsObject::ByValue(
                     credential_issuer_metadata
                         .as_ref()
-                        .map(|credential_issuer_metadata| {
+                        .and_then(|credential_issuer_metadata| {
                             credential_issuer_metadata
                                 .credentials_supported
                                 .iter()
@@ -72,7 +72,6 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::
                                 })
                                 .map(|credential_supported| credential_supported.credential_format.clone())
                         })
-                        .flatten()
                         .ok_or(anyhow::anyhow!("unable to find credential"))?,
                 );
             }
@@ -82,12 +81,11 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::
 
     // Get the credential issuer display if present.
     let display = credential_issuer_metadata
-        .map(|credential_issuer_metadata| {
+        .and_then(|credential_issuer_metadata| {
             credential_issuer_metadata
                 .display
-                .map(|display| display.first().map(|display| display.clone()))
+                .map(|display| display.first().cloned())
         })
-        .flatten()
         .flatten();
 
     // Get the credential issuer name and logo uri or use the credential issuer url.
@@ -174,8 +172,7 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
     let display = credential_issuer_metadata
         .display
         .as_ref()
-        .map(|display| display.first().map(|display| display.clone()))
-        .flatten();
+        .and_then(|display| display.first().cloned());
 
     // Get the credential issuer name or use the credential issuer url.
     let issuer_name = display

@@ -8,7 +8,7 @@ use crate::crypto::stronghold::StrongholdManager;
 use crate::state::actions::Action;
 use crate::state::user_prompt::{CurrentUserPrompt, CurrentUserPromptType, Redirect};
 use crate::state::{AppState, Profile};
-use crate::verifiable_credential_record::{DisplayCredential, VerifiableCredentialRecord};
+use crate::verifiable_credential_record::VerifiableCredentialRecord;
 use did_key::{from_existing_key, Ed25519KeyPair};
 use log::info;
 use oid4vc_core::Subject;
@@ -166,7 +166,7 @@ pub async fn update_credential_metadata(state: &AppState, action: Action) -> any
         .values()?
         .unwrap()
         .into_iter()
-        .map(|record| DisplayCredential::from(record.display_credential))
+        .map(|record| record.display_credential)
         .collect();
 
     Ok(())

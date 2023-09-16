@@ -18,8 +18,8 @@ use siopv2::SIOPv2;
 use uuid::Uuid;
 
 pub enum ConnectionRequest {
-    SIOPv2(AuthorizationRequestObject<SIOPv2>),
-    OID4VP(AuthorizationRequestObject<OID4VP>),
+    SIOPv2(Box<AuthorizationRequestObject<SIOPv2>>),
+    OID4VP(Box<AuthorizationRequestObject<OID4VP>>),
 }
 
 // Reads the request url from the payload and validates it.
@@ -55,14 +55,13 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> any
             .lock()
             .unwrap()
             .iter_mut()
-            .find(|connection| connection.url == connection_url && connection.client_name == client_name)
-            .is_some();
+            .any(|connection| connection.url == connection_url && connection.client_name == client_name);
 
         state
             .active_connection_request
             .lock()
             .unwrap()
-            .replace(ConnectionRequest::SIOPv2(siopv2_authorization_request));
+            .replace(ConnectionRequest::SIOPv2(siopv2_authorization_request.into()));
 
         info!("client_name in credential_offer: {:?}", client_name);
         info!("logo_uri in read_authorization_request: {:?}", logo_uri);
@@ -113,7 +112,7 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> any
             .active_connection_request
             .lock()
             .unwrap()
-            .replace(ConnectionRequest::OID4VP(oid4vp_authorization_request));
+            .replace(ConnectionRequest::OID4VP(oid4vp_authorization_request.into()));
 
         // TODO: communicate when no credentials are available.
         if !uuids.is_empty() {
@@ -377,7 +376,7 @@ fn get_siopv2_client_name_and_logo_uri(
             let client_name = client_metadata
                 .client_name
                 .as_ref()
-                .map(|client_name| client_name.clone())
+                .cloned()
                 .unwrap_or(connection_url.to_string());
             let logo_uri = client_metadata.logo_uri.as_ref().map(|logo_uri| logo_uri.to_string());
 
@@ -406,7 +405,7 @@ fn get_oid4vp_client_name_and_logo_uri(
             let client_name = client_metadata
                 .client_name
                 .as_ref()
-                .map(|client_name| client_name.clone())
+                .cloned()
                 .unwrap_or(connection_url.to_string());
             let logo_uri = client_metadata.logo_uri.as_ref().map(|logo_uri| logo_uri.to_string());
 
