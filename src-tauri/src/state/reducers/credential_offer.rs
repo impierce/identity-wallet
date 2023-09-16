@@ -80,11 +80,14 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::
         }
     }
 
-    // Get the credential issuer display.
+    // Get the credential issuer display if present.
     let display = credential_issuer_metadata
-        .ok_or(anyhow::anyhow!("unable to read credential issuer metadata"))?
-        .display
-        .map(|display| display.first().map(|display| display.clone()))
+        .map(|credential_issuer_metadata| {
+            credential_issuer_metadata
+                .display
+                .map(|display| display.first().map(|display| display.clone()))
+        })
+        .flatten()
         .flatten();
 
     // Get the credential issuer name and logo uri or use the credential issuer url.
