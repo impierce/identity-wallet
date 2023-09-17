@@ -1,7 +1,7 @@
 use crate::state::actions::{Action, ActionType};
 use crate::state::persistence::{delete_state_file, delete_stronghold, load_state, save_state};
 use crate::state::reducers::authorization::{
-    handle_authorization_request, handle_presentation_request, read_authorization_request,
+    handle_oid4vp_authorization_request, handle_siopv2_authorization_request, read_authorization_request,
 };
 use crate::state::reducers::credential_offer::{read_credential_offer, send_credential_request};
 use crate::state::reducers::load_dev_profile::load_dev_profile;
@@ -86,9 +86,10 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
         ActionType::QrCodeScanned => {
             info!("qr code scanned: `{:?}`", payload);
 
-            let payload = payload.ok_or(anyhow::anyhow!("unable to read payload")).unwrap();
-
-            let form_urlencoded = payload["form_urlencoded"].as_str().unwrap();
+            let payload = payload.ok_or("unable to read payload")?;
+            let form_urlencoded = payload["form_urlencoded"]
+                .as_str()
+                .ok_or("unable to read form_urlencoded from payload")?;
 
             if let Result::Ok(authorization_request) = form_urlencoded.parse::<AuthorizationRequest>() {
                 handle_action_inner(
@@ -126,7 +127,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             }
         }
         ActionType::ConnectionAccepted => {
-            if handle_authorization_request(app_state, Action { r#type, payload })
+            if handle_siopv2_authorization_request(app_state, Action { r#type, payload })
                 .await
                 .is_ok()
             {
@@ -164,7 +165,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             }
         }
         ActionType::CredentialsSelected => {
-            if handle_presentation_request(app_state, Action { r#type, payload })
+            if handle_oid4vp_authorization_request(app_state, Action { r#type, payload })
                 .await
                 .is_ok()
             {
@@ -221,7 +222,7 @@ pub async fn handle_action<R: tauri::Runtime>(
 
 fn emit_event<R: tauri::Runtime>(window: tauri::Window<R>, transfer_state: TransferState) -> anyhow::Result<()> {
     const STATE_CHANGED_EVENT: &str = "state-changed";
-    window.emit(STATE_CHANGED_EVENT, &transfer_state).unwrap();
+    window.emit(STATE_CHANGED_EVENT, &transfer_state)?;
     info!(
         "emitted event `{}` with payload `{:?}`",
         STATE_CHANGED_EVENT, &transfer_state

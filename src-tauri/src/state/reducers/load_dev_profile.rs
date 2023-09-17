@@ -111,13 +111,13 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
             ]
         }"#;
     // let journey_definition = std::fs::read_to_string("resources/ngdil.json")?;
-    let onboarding_journey: serde_json::Value = serde_json::from_str(&journey_definition).unwrap();
+    let onboarding_journey: serde_json::Value = serde_json::from_str(journey_definition).unwrap();
     *state.user_journey.lock().unwrap() = Some(onboarding_journey);
 
     *state.connections.lock().unwrap() = vec![Connection {
         client_name: "NGDIL Demo".to_string(),
         url: "api.ngdil-demo.tanglelabs.io".to_string(),
-        logo_uri: "https://recursing-feynman.weeir.com/imgs/kw1c-white.png".to_string(),
+        logo_uri: Some("https://recursing-feynman.weeir.com/imgs/kw1c-white.png".to_string()),
         verified: false,
         first_connected: "2023-09-11T19:53:53.937981+00:00".to_string(),
         last_connected: "2023-09-11T19:53:53.937981+00:00".to_string(),
