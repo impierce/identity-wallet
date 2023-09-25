@@ -25,7 +25,6 @@
     "@tauri-apps/plugin-clipboard-manager": "2.0.0-alpha.1",
     "@tauri-apps/plugin-log": "2.0.0-alpha.1",
     "qrcode": "^1.5.3",
-    "svelte-heros-v2": "^0.7.1",
     "typesafe-i18n": "^5.24.3"
   },
   "devDependencies": {
@@ -64,7 +63,7 @@
     "svelte-sequential-preprocessor": "^2.0.1",
     "tailwindcss": "^3.3.1",
     "tslib": "^2.4.1",
-    "typescript": "^4.6.4",
+    "typescript": "^5.2.0",
     "unplugin-icons": "^0.16.5",
     "vite": "^4.0.0",
     "vite-plugin-static-copy": "^0.14.0",

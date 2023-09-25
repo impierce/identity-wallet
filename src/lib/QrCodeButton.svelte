@@ -1,5 +1,4 @@
 <script lang="ts">
-  // import { QrCode } from 'svelte-heros-v2';
   import { goto } from '$app/navigation';
 
   import {
