@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation';
   import { fade, fly } from 'svelte/transition';
 
-  import { TopNavigation } from '@impierce/ui-components';
+  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import { createCheckbox, melt } from '@melt-ui/svelte';
 
   import Button from '$src/lib/components/Button.svelte';

@@ -2,7 +2,9 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
 
-  import { MeltUiConnectionTabs, TopNavigation } from '@impierce/ui-components';
+  import ConnectionTabs from '$src/lib/components/molecules/tabs/ConnectionTabs.svelte';
+
+  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
 
   import ConnectionData from '$lib/connections/ConnectionData.svelte';
   import ConnectionHistory from '$lib/connections/ConnectionHistory.svelte';
@@ -24,7 +26,7 @@
     class="bg-silver dark:bg-navy"
   />
   <div class="grow bg-silver px-4 pt-5 dark:bg-navy">
-    <MeltUiConnectionTabs>
+    <ConnectionTabs>
       <!-- Summary -->
       <div slot="summary" class="h-full bg-silver py-5 dark:bg-navy">
         <div class="flex flex-col items-center justify-center space-y-4">
@@ -52,7 +54,7 @@
         <!-- TODO: If this turns out to be a costly operation (filtering in backend), consider lazy loading the component -->
         <ConnectionHistory />
       </div>
-    </MeltUiConnectionTabs>
+    </ConnectionTabs>
   </div>
 </div>
 

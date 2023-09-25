@@ -1,7 +1,7 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-
-  import { Button } from '@impierce/ui-components';
+  import Button from '$src/lib/components/Button.svelte';
 </script>
 
 <div class="flex h-screen flex-col items-center justify-center p-4">
@@ -11,5 +11,5 @@
       {$page.error.errorId}
     </div>
   </div>
-  <Button href="/me" variant="ghost" class="m-4">Go back</Button>
+  <Button variant="secondary" on:click={() => goto('/me')} label="Go back"></Button>
 </div>

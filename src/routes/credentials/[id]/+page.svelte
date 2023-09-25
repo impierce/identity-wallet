@@ -4,8 +4,10 @@
   import QRCode from 'qrcode';
   import { fly } from 'svelte/transition';
 
-  import { BottomDrawer, TopNavigation } from '@impierce/ui-components';
   import { melt } from '@melt-ui/svelte';
+
+  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
+  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
 
   import Button from '$lib/components/Button.svelte';
   import CredentialDetailsDropdownMenu from '$src/lib/components/CredentialDetailsDropdownMenu.svelte';

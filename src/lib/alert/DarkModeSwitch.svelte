@@ -31,7 +31,9 @@
 <!-- this belongs in app.css -->
 <style>
   body {
-    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+    transition:
+      background-color 0.2s ease-in-out,
+      color 0.2s ease-in-out;
     @apply bg-white text-center text-black dark:bg-black dark:text-white;
   }
 </style>

@@ -1,7 +1,6 @@
 <script lang="ts">
   import { fade, fly } from 'svelte/transition';
 
-  import { BottomDrawer } from '@impierce/ui-components';
   import { createDialog, createDropdownMenu, melt } from '@melt-ui/svelte';
 
   import { colors, icons } from '$lib/credentials/customization/utils';

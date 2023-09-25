@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
 
-  import { TopNavigation } from '@impierce/ui-components';
+  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
 
   import Button from '$src/lib/components/Button.svelte';
   import CredentialListEntry from '$src/lib/components/CredentialListEntry.svelte';

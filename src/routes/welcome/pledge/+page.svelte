@@ -4,7 +4,7 @@
   import { onMount } from 'svelte';
   import { fade, fly, slide } from 'svelte/transition';
 
-  import { TopNavigation } from '@impierce/ui-components';
+  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import { createAccordion, melt } from '@melt-ui/svelte';
 
   import Button from '$src/lib/components/Button.svelte';

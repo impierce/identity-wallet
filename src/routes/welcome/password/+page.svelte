@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation';
   import { fade } from 'svelte/transition';
 
-  import { BottomDrawer, TopNavigation } from '@impierce/ui-components';
+  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import { melt } from '@melt-ui/svelte';
 
   import LL from '$src/i18n/i18n-svelte';

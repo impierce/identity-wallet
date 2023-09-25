@@ -36,7 +36,7 @@ export default defineConfig(async () => ({
     },
     fs: {
       allow: [
-        '/Users/daniel/.nvm/versions/node/v20.3.0/lib/node_modules/@impierce/ui-components/dist'
+        // '/Users/daniel/.nvm/versions/node/v20.3.0/lib/node_modules/@impierce/ui-components/dist'
       ]
     }
   },

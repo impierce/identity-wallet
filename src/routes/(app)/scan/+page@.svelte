@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation';
   import { onDestroy, onMount } from 'svelte';
 
-  import { BottomNavBar, Button as ButtonDeprecated } from '@impierce/ui-components';
+  import BottomNavBar from '$src/lib/components/molecules/navigation/BottomNavBar.svelte';
   import {
     Format,
     type Scanned,
@@ -49,7 +49,7 @@
     let permission = await checkPermissions();
     permissions = permission;
     console.log({ permission });
-    if (permission === 'prompt' || permission === 'default') {
+    if (permission === 'prompt') {
       info('requesting permission');
       permission = await requestPermissions();
     }
@@ -324,9 +324,9 @@
           </div>
           {#if $developer_mode}
             <div class="fixed bottom-[128px] left-[calc(50%_-_42px)]">
-              <ButtonDeprecated
-                class="bg-red-100 font-semibold text-red-500 shadow"
-                on:click={cancelScan}>Cancel</ButtonDeprecated
+              <button
+                class="rounded-lg bg-rose-100 px-4 py-3 font-medium text-rose-500"
+                on:click={cancelScan}>Cancel</button
               >
             </div>
           {/if}
@@ -424,7 +424,9 @@
     width: 100%;
     margin: 1rem;
     border: 2px solid #fff;
-    box-shadow: 0px 0px 2px 1px rgb(0 0 0 / 0.5), inset 0px 0px 2px 1px rgb(0 0 0 / 0.5);
+    box-shadow:
+      0px 0px 2px 1px rgb(0 0 0 / 0.5),
+      inset 0px 0px 2px 1px rgb(0 0 0 / 0.5);
     border-radius: 1rem;
   }
 

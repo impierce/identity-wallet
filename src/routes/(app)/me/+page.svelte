@@ -3,7 +3,7 @@
   import { onMount } from 'svelte';
   import { fade, fly, slide } from 'svelte/transition';
 
-  import { Avatar, BottomDrawer } from '@impierce/ui-components';
+  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
   import '@lottiefiles/lottie-player';
   import { melt } from '@melt-ui/svelte';
   import { debug, info } from '@tauri-apps/plugin-log';

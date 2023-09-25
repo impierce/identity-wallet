@@ -3,18 +3,6 @@
   import { onMount } from 'svelte';
   import { fly } from 'svelte/transition';
 
-  import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-    Button
-  } from '@impierce/ui-components';
   import { readText } from '@tauri-apps/plugin-clipboard-manager';
   import { attachConsole, error, info, trace } from '@tauri-apps/plugin-log';
 
@@ -33,6 +21,9 @@
   import type { Selection } from '../../src-tauri/bindings/user-prompt/Selection';
   import '../app.css';
   import { determineTheme } from './utils';
+  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
+  import { melt } from '@melt-ui/svelte';
+  import Button from '$src/lib/components/Button.svelte';
 
   let clipboard: string | undefined;
 
@@ -95,30 +86,26 @@
         >
           <span class="text-[18px]/[18px]">🦀</span>
         </button>
+
         <!-- Paste from Clipboard -->
-        <AlertDialog>
-          <AlertDialogTrigger>
-            <button
-              class="flex-shrink-0 rounded-full bg-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
-              on:click={async () => (clipboard = await readText())}
-              ><Clipboard class="h-6 w-6" /></button
-            >
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Paste from clipboard?</AlertDialogTitle>
-              <AlertDialogDescription>
-                <div class="rounded-lg bg-slate-200 p-6">
-                  <div class="text-mono break-all text-slate-400">{clipboard}</div>
-                </div>
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction>Paste</AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <BottomDrawer titleText="Paste from clipboard?">
+          <button
+            slot="trigger"
+            let:trigger
+            use:melt={trigger}
+            class="flex-shrink-0 rounded-full bg-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
+            on:click={async () => (clipboard = await readText())}
+            ><Clipboard class="h-6 w-6" /></button
+          >
+          <div slot="content" class="w-full pb-[10px] pt-[20px]">
+            <div class="mb-4 rounded-2xl bg-slate-200 p-4">
+              <div class="break-all font-mono text-sm text-slate-400">{clipboard}</div>
+            </div>
+            <Button label="Paste" disabled />
+          </div>
+        </BottomDrawer>
+
+        <!-- Debug messages -->
         <button
           class="flex-shrink-0 rounded-full bg-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
           on:click={() => (showDebugMessages = !showDebugMessages)}

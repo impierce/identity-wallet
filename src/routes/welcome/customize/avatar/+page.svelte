@@ -2,7 +2,8 @@
   import { goto } from '$app/navigation';
   import { fade } from 'svelte/transition';
 
-  import { BottomDrawer, TopNavigation } from '@impierce/ui-components';
+  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
+
   import { createPopover, melt } from '@melt-ui/svelte';
 
   import LL from '$src/i18n/i18n-svelte';

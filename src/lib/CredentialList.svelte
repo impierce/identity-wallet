@@ -89,7 +89,6 @@
     <!-- <p class="font-semibold">A</p> -->
     {#each test_credentials as credential}
       <CredentialListEntry
-        id={credential.id}
         title={credential.title}
         description={credential.description}
         color={credential.color}
