@@ -61,7 +61,7 @@
     forceVisible: true
   });
 
-  let displayName: string = credential.metadata.display.name;
+  let displayName: string = credential.metadata.display.name || credential.data.type.at(-1);
 
   let currentAppearance = {
     color: credential.metadata.display.color || 'bg-indigo-100',
