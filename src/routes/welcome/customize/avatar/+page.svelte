@@ -16,10 +16,10 @@
   // TODO: unused
   const {
     elements: { trigger, content, arrow, close },
-    states: { open }
+    states: { open },
   } = createPopover({
     forceVisible: true,
-    defaultOpen: true
+    defaultOpen: true,
   });
 
   // TODO: switch to Unicode?
@@ -34,7 +34,7 @@
       '&#128540', // twinking-face-with-tongue
       '&#128526', // smiling-face-with-sunglasses
       '&#129392', // smiling-face-with-3-hearts
-      '&#128527' // smirk
+      '&#128527', // smirk
     ],
     // animals
     [
@@ -46,7 +46,7 @@
       '&#128037', // baby-chick
       '&#129417', // owl
       '&#129412', // unicorn
-      '&#128025' // octopus
+      '&#128025', // octopus
     ],
     // misc
     [
@@ -56,8 +56,8 @@
       '&#127969', // house-with-garden
       '&#127965', // desert-island
       '&#128188', // briefcase
-      '&#128084' // necktie
-    ]
+      '&#128084', // necktie
+    ],
   ];
 
   $: {

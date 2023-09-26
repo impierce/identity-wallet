@@ -4,7 +4,7 @@
 
   const {
     elements: { trigger, overlay, content, title, description, close, portalled },
-    states: { open }
+    states: { open },
   } = createDialog();
 
   export let titleText = '';
@@ -58,7 +58,7 @@
       transition:fly={{
         y: 350,
         duration: 300,
-        opacity: 1
+        opacity: 1,
       }}
     >
       <!-- <button

@@ -10,7 +10,7 @@
     checkPermissions,
     openAppSettings,
     requestPermissions,
-    scan
+    scan,
   } from '@tauri-apps/plugin-barcode-scanner';
   import { debug, info, warn } from '@tauri-apps/plugin-log';
 
@@ -77,7 +77,7 @@
       'siopv2://idtoken?response_type=id_token+vp_token&response_mode=post&client_id=did%3Akey%3Az6MkpuwK1TrrssGe7siCiJU2K5CbSu3mDLU4Y3z45wAepg7J&scope=openid&presentation_definition=%7B%22id%22%3A%22Verifiable+Presentation+request+for+sign-on%22%2C%22input_descriptors%22%3A%5B%7B%22id%22%3A%22Request+for+Ferris%27s+Verifiable+Credential%22%2C%22constraints%22%3A%7B%22fields%22%3A%5B%7B%22path%22%3A%5B%22%24.vc.type%22%5D%2C%22filter%22%3A%7B%22type%22%3A%22array%22%2C%22contains%22%3A%7B%22const%22%3A%22PersonalInformation%22%7D%7D%7D%2C%7B%22path%22%3A%5B%22%24.vc.credentialSubject.givenName%22%5D%7D%2C%7B%22path%22%3A%5B%22%24.vc.credentialSubject.familyName%22%5D%7D%2C%7B%22path%22%3A%5B%22%24.vc.credentialSubject.email%22%5D%7D%2C%7B%22path%22%3A%5B%22%24.vc.credentialSubject.birthdate%22%5D%7D%5D%7D%7D%5D%7D&redirect_uri=http%3A%2F%2Ftest%3A4243%2Fsiop%2Fresponse&nonce=n-0S6_WzA2Mj&client_metadata=%7B%22subject_syntax_types_supported%22%3A%5B%22did%3Akey%22%5D%7D&state=50f04e4d-632a-48c8-bfe5-1ffa71fc88e5';
     dispatch({
       type: '[QR Code] Scanned',
-      payload: { form_urlencoded: TEST_SIOP_REQUEST_URL_BY_VALUE }
+      payload: { form_urlencoded: TEST_SIOP_REQUEST_URL_BY_VALUE },
     });
   };
 
@@ -89,9 +89,9 @@
         client_name: 'Some other client',
         logo_uri: 'https://recursing-feynman.weeir.com/imgs/ngdil.svg',
         redirect_uri: 'https://recursing-feynman.weeir.com/auth/callback',
-        previously_connected: false
+        previously_connected: false,
         // logo_uri: 'https://picsum.photos/200'
-      }
+      },
     });
   };
 
@@ -103,8 +103,8 @@
         client_name: 'My Client Name',
         logo_uri: 'https://recursing-feynman.weeir.com/imgs/ngdil.svg',
         // logo_uri: 'https://picsum.photos/200',
-        options: [$state.credentials[0].id]
-      }
+        options: [$state.credentials[0].id],
+      },
     });
   };
 
@@ -114,8 +114,8 @@
         type: '[QR Code] Scanned',
         payload: {
           form_urlencoded:
-            'openid-credential-offer://?credential_offer=%7B%22credential_issuer%22%3A%22http%3A%2F%2F192.168.1.127%3A9090%2F%22%2C%22credentials%22%3A%5B%7B%22format%22%3A%22jwt_vc_json%22%2C%22credential_definition%22%3A%7B%22type%22%3A%5B%22VerifiableCredential%22%2C%22PersonalInformation%22%5D%7D%7D%5D%2C%22grants%22%3A%7B%22urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Apre-authorized_code%22%3A%7B%22pre-authorized_code%22%3A%220YI5DXtuCltKyNa5%22%2C%22user_pin_required%22%3Afalse%7D%7D%7D'
-        }
+            'openid-credential-offer://?credential_offer=%7B%22credential_issuer%22%3A%22http%3A%2F%2F192.168.1.127%3A9090%2F%22%2C%22credentials%22%3A%5B%7B%22format%22%3A%22jwt_vc_json%22%2C%22credential_definition%22%3A%7B%22type%22%3A%5B%22VerifiableCredential%22%2C%22PersonalInformation%22%5D%7D%7D%5D%2C%22grants%22%3A%7B%22urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Apre-authorized_code%22%3A%7B%22pre-authorized_code%22%3A%220YI5DXtuCltKyNa5%22%2C%22user_pin_required%22%3Afalse%7D%7D%7D',
+        },
       });
     } else if (amount > 1) {
       // dispatch({
@@ -137,23 +137,23 @@
             credentials: [
               {
                 format: 'jwt_vc_json',
-                credential_definition: { type: ['VerifiableCredential', 'PersonalInformation'] }
+                credential_definition: { type: ['VerifiableCredential', 'PersonalInformation'] },
               },
               {
                 format: 'jwt_vc_json',
                 credential_definition: {
-                  type: ['VerifiableCredential', 'DriverLicenseCredential']
-                }
-              }
+                  type: ['VerifiableCredential', 'DriverLicenseCredential'],
+                },
+              },
             ],
             grants: {
               'urn:ietf:params:oauth:grant-type:pre-authorized_code': {
                 'pre-authorized_code': 'crzhlepEdqjsXD3I',
-                user_pin_required: false
-              }
-            }
-          }
-        }
+                user_pin_required: false,
+              },
+            },
+          },
+        },
       });
     }
   };
@@ -276,8 +276,8 @@
                   type: '[QR Code] Scanned',
                   payload: {
                     form_urlencoded:
-                      'openid-credential-offer://?credential_offer_uri=https://api.ngdil-demo.tanglelabs.io/api/offers/creds/u08LmjU8lAcTwx7pLMpy0'
-                  }
+                      'openid-credential-offer://?credential_offer_uri=https://api.ngdil-demo.tanglelabs.io/api/offers/creds/u08LmjU8lAcTwx7pLMpy0',
+                  },
                 })}
               label="Dominique (student)"
             />

@@ -20,7 +20,7 @@
   <p class="text-[12px]/[20px] font-medium text-slate-500">
     {new Date(timestamp).toLocaleString('en-US', {
       dateStyle: 'medium',
-      timeStyle: 'medium'
+      timeStyle: 'medium',
     })}
   </p>
   {#if credentials.length > 0}

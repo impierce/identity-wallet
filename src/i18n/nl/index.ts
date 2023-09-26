@@ -16,7 +16,7 @@ const nl = {
     DIALOG_1_TITLE: 'Verkenning maakt plezier',
     DIALOG_1_TEXT: `Door doelen te voltooien, ontvang je een geweldig nieuw prestatiebadge en level je je eerste stappen.`,
     SKIP_TITLE: 'Onboarding overslaan',
-    SKIP_TEXT: 'Weet je het zeker? Je kunt de onboarding opnieuw inschakelen in de app-instellingen.'
+    SKIP_TEXT: 'Weet je het zeker? Je kunt de onboarding opnieuw inschakelen in de app-instellingen.',
   },
   APP_SETTINGS: 'App-instellingen',
   YOUR_DIDS: 'Jouw DIDs',
@@ -35,7 +35,7 @@ const nl = {
   ACCOUNT: 'Account',
   CONTINUE: 'Doorgaan',
   SUPPORT: 'Ondersteuning',
-  SKIP: 'Overslaan'
+  SKIP: 'Overslaan',
 } satisfies Translation;
 
 export default nl;

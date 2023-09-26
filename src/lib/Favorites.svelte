@@ -50,7 +50,7 @@
               credential.id
                 .match(/[0-9]+/)
                 .at(0)
-                .at(0) % 8 // TODO: omits last value (white)
+                .at(0) % 8, // TODO: omits last value (white)
             )}
         >
           <span slot="icon">

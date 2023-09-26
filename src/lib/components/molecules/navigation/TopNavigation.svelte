@@ -11,7 +11,7 @@
 <div
   class={twMerge(
     'relative flex h-[50px] items-center justify-between self-stretch bg-white px-6 py-[13px] text-slate-800 dark:bg-dark dark:text-grey',
-    $$props.class
+    $$props.class,
   )}
 >
   <button class="z-10 -ml-2 rounded-full p-2" on:click={() => dispatch('back')}>

@@ -23,39 +23,39 @@
       title: 'Address of residence',
       description: 'State of Pandora',
       color: 'bg-yellow-100',
-      icon: House
+      icon: House,
     },
     {
       title: 'Bachelor of Science',
       description: 'University of Pandora',
       color: 'bg-blue-100',
-      icon: GraduationCap
+      icon: GraduationCap,
     },
     {
       title: 'Discount - 20%',
       description: 'Home Supplies & Gardening',
       color: 'bg-orange-100',
-      icon: Percent
+      icon: Percent,
     },
     {
       title: "Driver's license",
       description: 'State of Pandora',
       color: 'bg-emerald-100',
-      icon: Car
+      icon: Car,
     },
     {
       title: 'Email address',
       description: 'Pandora Email Service',
       color: 'bg-slate-400',
-      icon: EnvelopeSimple
-    }
+      icon: EnvelopeSimple,
+    },
   ];
 
   test_credentials = [];
 
   console.log(
     'metadata.display.icon',
-    credentials.map((c) => icons[c.metadata.display.icon])
+    credentials.map((c) => icons[c.metadata.display.icon]),
   );
 
   // Does this really have to be reactive?
@@ -104,7 +104,7 @@
             credential.id
               .match(/[0-9]+/)
               .at(0)
-              .at(0) % 8 // TODO: omits last value (white)
+              .at(0) % 8, // TODO: omits last value (white)
           )}
       >
         <span slot="icon">

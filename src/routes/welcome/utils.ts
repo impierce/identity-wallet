@@ -7,5 +7,5 @@ export let routeOrder = [
   '/welcome/customize/avatar',
   '/welcome/password',
   '/welcome/password/confirm',
-  '/welcome/password/completed'
+  '/welcome/password/completed',
 ];

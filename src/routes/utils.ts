@@ -1,6 +1,6 @@
 export function determineTheme(
   systemPrefersDark: boolean,
-  userPreference: 'system' | 'light' | 'dark'
+  userPreference: 'system' | 'light' | 'dark',
 ): 'light' | 'dark' {
   if (systemPrefersDark) {
     if (userPreference === 'light') {

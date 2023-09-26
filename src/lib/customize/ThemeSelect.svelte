@@ -12,9 +12,9 @@
   const {
     elements: { root, item },
     helpers: { isChecked },
-    states: { value }
+    states: { value },
   } = createRadioGroup({
-    defaultValue
+    defaultValue,
   });
 
   const dispatch = createEventDispatcher();

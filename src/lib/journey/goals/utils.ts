@@ -11,5 +11,5 @@ export const icons = {
   LockSimpleOpen: LockSimpleOpen,
   UserCirclePlus: UserCirclePlus,
   FileArrowDown: FileArrowDown,
-  Key: Key
+  Key: Key,
 };

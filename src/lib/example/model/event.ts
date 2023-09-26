@@ -8,5 +8,5 @@ export interface Event {
 export enum EventType {
   INITIAL_CONNECTION = 'initial_connection',
   CREDENTIAL_OFFER = 'credential_offer',
-  LOGIN = 'login'
+  LOGIN = 'login',
 }

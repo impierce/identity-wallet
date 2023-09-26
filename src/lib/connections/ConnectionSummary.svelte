@@ -14,12 +14,12 @@
     // Verified: 'no',
     'First connected': new Date(first_connected).toLocaleString('en-US', {
       dateStyle: 'medium',
-      timeStyle: 'medium'
+      timeStyle: 'medium',
     }),
     'Last connected': new Date(last_connected).toLocaleString('en-US', {
       dateStyle: 'medium',
-      timeStyle: 'medium'
-    })
+      timeStyle: 'medium',
+    }),
   };
 </script>
 

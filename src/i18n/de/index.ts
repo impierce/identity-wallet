@@ -18,7 +18,7 @@ const de = {
     DIALOG_1_TEXT:
       'Wenn du Ziele abschließt, erhältst du ein tolles neues Abzeichen und steigerst deine ersten Schritte.',
     SKIP_TITLE: 'Onboarding überspringen',
-    SKIP_TEXT: 'Bist du sicher? Du kannst das Onboarding in den App-Einstellungen wieder aktivieren.'
+    SKIP_TEXT: 'Bist du sicher? Du kannst das Onboarding in den App-Einstellungen wieder aktivieren.',
   },
   APP_SETTINGS: 'App-Einstellungen',
   YOUR_DIDS: 'Deine DIDs',
@@ -35,7 +35,7 @@ const de = {
   MY_DATA: 'Meine Daten',
   ADD: 'Hinzufügen',
   CONTINUE: 'Weiter',
-  SKIP: 'Überspringen'
+  SKIP: 'Überspringen',
 } satisfies Translation;
 
 export default de;

@@ -16,11 +16,11 @@ const en = {
     DIALOG_1_TITLE: 'Exploring made fun',
     DIALOG_1_TEXT: `On completing goals, you'll receive an awesome new achievement badge and level up your first steps.`,
     SKIP_TITLE: 'Skip onboarding',
-    SKIP_TEXT: 'Are you sure? You can re-enable the onboarding later in the app settings.'
+    SKIP_TEXT: 'Are you sure? You can re-enable the onboarding later in the app settings.',
   },
   SETUP: {
     SKIP_TITLE: 'Skip customization',
-    SKIP_TEXT: 'Are you sure? You can adjust the app appearance later in settings.'
+    SKIP_TEXT: 'Are you sure? You can adjust the app appearance later in settings.',
   },
   APP_SETTINGS: 'App settings',
   YOUR_DIDS: 'Your DIDs',
@@ -39,7 +39,7 @@ const en = {
   SUPPORT: 'Support',
   ADD: 'Add',
   CONTINUE: 'Continue',
-  SKIP: 'Skip'
+  SKIP: 'Skip',
 } satisfies BaseTranslation;
 
 export default en;

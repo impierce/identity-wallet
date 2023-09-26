@@ -17,7 +17,7 @@ export const icons = {
   Car: Car,
   Question: Question,
   Certificate: Certificate,
-  File: File
+  File: File,
 };
 
 /**
@@ -33,5 +33,5 @@ export const colors: Array<string> = [
   'bg-credentials-5',
   'bg-credentials-6',
   'bg-credentials-7',
-  'bg-white'
+  'bg-white',
 ];

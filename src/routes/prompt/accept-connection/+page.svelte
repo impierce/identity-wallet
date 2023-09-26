@@ -20,7 +20,7 @@
 
   const {
     elements: { trigger, content, arrow, close },
-    states: { open }
+    states: { open },
   } = createPopover();
 
   // let selected_credentials = $state.credentials?.filter(
@@ -129,7 +129,7 @@
       label="Accept connection"
       on:click={() =>
         dispatch({
-          type: '[Authenticate] Connection accepted'
+          type: '[Authenticate] Connection accepted',
         })}
     />
     <Button

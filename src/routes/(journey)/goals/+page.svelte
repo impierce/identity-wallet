@@ -25,7 +25,7 @@
   let goals: Goal[] =
     journeyDefinition?.goals.map((goal) => ({
       ...goal,
-      completed: true // TODO: should be determined by the backend
+      completed: true, // TODO: should be determined by the backend
     })) ?? [];
 
   goals.at(2).completed = false;

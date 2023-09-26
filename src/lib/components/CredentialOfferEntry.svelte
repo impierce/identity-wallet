@@ -8,10 +8,10 @@
 
   const {
     elements: { root, input },
-    helpers: { isChecked }
+    helpers: { isChecked },
   } = createCheckbox({
     defaultChecked: true,
-    disabled: true
+    disabled: true,
   });
 
   export let index: number | string;

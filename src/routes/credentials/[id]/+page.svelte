@@ -43,7 +43,7 @@
         credential.id
           .match(/[0-9]+/)
           .at(0)
-          .at(0) % 8 // TODO: omits last value (white)
+          .at(0) % 8, // TODO: omits last value (white)
       );
   }
 
@@ -78,7 +78,7 @@
             on:click={() =>
               dispatch({
                 type: '[Credential Metadata] Update',
-                payload: { id: credential.id, is_favorite: !isFavorite }
+                payload: { id: credential.id, is_favorite: !isFavorite },
               })}
           >
             {#if isFavorite}

@@ -153,7 +153,7 @@
       on:click={() => {
         dispatch({
           type: '[Credential Offer] Selected',
-          payload: { offer_indices: all_offer_indices }
+          payload: { offer_indices: all_offer_indices },
         });
       }}
     />

@@ -13,12 +13,12 @@
 
   const {
     elements: { root, input },
-    helpers: { isChecked }
+    helpers: { isChecked },
   } = createCheckbox({});
 
   const {
     elements: { root: ownership_root, input: ownership_input },
-    helpers: { isChecked: ownership_isChecked }
+    helpers: { isChecked: ownership_isChecked },
   } = createCheckbox({});
 </script>
 

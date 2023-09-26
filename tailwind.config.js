@@ -18,7 +18,7 @@ export default {
       fontFamily: {
         // sans: ['Satoshi', ...defaultTheme.fontFamily.sans],
         // sans: ['Satoshi-Variable', 'sans-serif']
-        sans: ['Inter', 'sans-serif']
+        sans: ['Inter', 'sans-serif'],
       },
       colors: {
         // accent
@@ -46,8 +46,8 @@ export default {
           4: '#c6d3d8', // gray
           5: '#dddcf1', // purple
           6: '#d9cadd', // red
-          7: '#c9d9d0' // green
-        }
+          7: '#c9d9d0', // green
+        },
         // slate (Tailwind default)
         /*
         50: #f8fafc,
@@ -61,9 +61,9 @@ export default {
         800: #1e293b,
         900: #0f172a
         */
-      }
-    }
+      },
+    },
   },
   darkMode: 'class',
-  plugins: []
+  plugins: [],
 };

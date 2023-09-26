@@ -21,7 +21,7 @@
 
   const {
     elements: { content, item, trigger, root },
-    helpers: { isSelected }
+    helpers: { isSelected },
   } = createAccordion({});
 
   const items = [
@@ -29,19 +29,19 @@
       id: 'item-0',
       title: 'We will not share your data',
       description:
-        'Your data belongs to you and only you decide who you share it with. Period. In fact, your data never even touches any of our systems - unless you opt-in to one of the cloud storage options.'
+        'Your data belongs to you and only you decide who you share it with. Period. In fact, your data never even touches any of our systems - unless you opt-in to one of the cloud storage options.',
     },
     {
       id: 'item-1',
       title: 'We will not add trackers',
       description:
-        "We do not track your actions behind the scenes. Period. Not for testing or any other reasons. That's our pledge. We also do not collect any anonymous device information or usage statistics. That decision makes developing the app a bit harder for us, but we believe it is the right decision."
+        "We do not track your actions behind the scenes. Period. Not for testing or any other reasons. That's our pledge. We also do not collect any anonymous device information or usage statistics. That decision makes developing the app a bit harder for us, but we believe it is the right decision.",
     },
     {
       id: 'item-2',
       title: 'You own your information',
-      description: "We believe that it's about time you become the owner of your own personal information again."
-    }
+      description: "We believe that it's about time you become the owner of your own personal information again.",
+    },
   ];
 </script>
 

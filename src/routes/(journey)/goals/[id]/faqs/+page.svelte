@@ -14,7 +14,7 @@
 
   const {
     elements: { content, item, trigger, root },
-    helpers: { isSelected }
+    helpers: { isSelected },
   } = createAccordion({});
 
   let goal: Goal = $state?.user_journey?.goals.find((g) => g.id === parseInt($page.params.id));
