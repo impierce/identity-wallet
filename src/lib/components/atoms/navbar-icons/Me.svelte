@@ -1,14 +1,10 @@
-<script lang="ts">
-  export let clazz: string = '';
-</script>
-
 <svg
   width="18"
   height="21"
   viewBox="0 0 18 21"
   fill="none"
   xmlns="http://www.w3.org/2000/svg"
-  class={clazz}
+  class={$$props.class}
 >
   <mask
     id="mask0_958_4655"

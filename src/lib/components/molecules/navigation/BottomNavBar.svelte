@@ -30,7 +30,7 @@
       /> -->
     <Me
       slot="icon"
-      clazz={`h-6 w-6 ${
+      class={`h-6 w-6 ${
         active == 'me' ? 'text-slate-800 dark:text-grey' : 'text-slate-300 dark:text-slate-500'
       }`}
     />
@@ -40,7 +40,7 @@
   <BottomNavItem label="Scan" active={active == 'scan'} on:click={() => dispatch('scan')}>
     <Scan
       slot="icon"
-      clazz={`h-6 w-6 ${
+      class={`h-6 w-6 ${
         active == 'scan' ? 'text-slate-800 dark:text-grey' : 'text-slate-300 dark:text-slate-500'
       }`}
     />
@@ -54,7 +54,7 @@
   >
     <Activity
       slot="icon"
-      clazz={`h-6 w-6 ${
+      class={`h-6 w-6 ${
         active == 'activity'
           ? 'text-slate-800 dark:text-grey'
           : 'text-slate-300 dark:text-slate-500'
