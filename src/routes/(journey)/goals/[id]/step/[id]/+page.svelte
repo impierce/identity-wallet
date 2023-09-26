@@ -1,6 +1,7 @@
 <script lang="ts">
-  import Button from '$src/lib/components/Button.svelte';
   import { goto } from '$app/navigation';
+
+  import Button from '$src/lib/components/Button.svelte';
 </script>
 
 <div class="flex h-full flex-col items-center justify-center space-y-8 bg-neutral-100 p-8">

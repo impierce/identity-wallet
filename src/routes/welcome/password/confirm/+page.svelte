@@ -2,11 +2,11 @@
   import { goto } from '$app/navigation';
   import { fade } from 'svelte/transition';
 
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import { melt } from '@melt-ui/svelte';
 
   import LL from '$src/i18n/i18n-svelte';
   import Button from '$src/lib/components/Button.svelte';
+  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import { dispatch } from '$src/lib/dispatcher';
   import { onboarding_state } from '$src/stores';
 

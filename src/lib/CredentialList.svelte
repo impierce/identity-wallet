@@ -10,8 +10,8 @@
   import Percent from '~icons/ph/percent-light';
   import SealCheck from '~icons/ph/seal-check-fill';
 
-  import type { TransferState } from '../../src-tauri/bindings/TransferState';
   import type { DisplayCredential } from '../../src-tauri/bindings/display-credential/DisplayCredential';
+  import type { TransferState } from '../../src-tauri/bindings/TransferState';
   import CredentialListEntry from './components/CredentialListEntry.svelte';
   import NoCredentials from './credentials/NoCredentials.svelte';
 

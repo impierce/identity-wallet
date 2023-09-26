@@ -1,15 +1,10 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
+
   import BottomNavItem from '$lib/components/atoms/BottomNavItem.svelte';
-
-  import User from '~icons/lucide/user';
-  import Me from '$lib/components/atoms/navbar-icons/Me.svelte';
-
-  // import Scan from '~icons/lucide/scan';
-  import Scan from '$lib/components/atoms/navbar-icons/Scan.svelte';
-
-  // import Activity from '~icons/lucide/activity';
   import Activity from '$lib/components/atoms/navbar-icons/Activity.svelte';
+  import Me from '$lib/components/atoms/navbar-icons/Me.svelte';
+  import Scan from '$lib/components/atoms/navbar-icons/Scan.svelte';
 
   const dispatch = createEventDispatcher();
 

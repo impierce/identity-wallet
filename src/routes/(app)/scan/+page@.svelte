@@ -1,21 +1,22 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import { onDestroy, onMount } from 'svelte';
 
-  import BottomNavBar from '$src/lib/components/molecules/navigation/BottomNavBar.svelte';
+  import { goto } from '$app/navigation';
+
   import {
-    Format,
-    type Scanned,
     cancel,
     checkPermissions,
+    Format,
     openAppSettings,
     requestPermissions,
     scan,
+    type Scanned,
   } from '@tauri-apps/plugin-barcode-scanner';
   import { debug, info, warn } from '@tauri-apps/plugin-log';
 
   import { dispatch } from '$lib/dispatcher';
   import Button from '$src/lib/components/Button.svelte';
+  import BottomNavBar from '$src/lib/components/molecules/navigation/BottomNavBar.svelte';
   import { developer_mode, state } from '$src/stores';
 
   let scanning = false;

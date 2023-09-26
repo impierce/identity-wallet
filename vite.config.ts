@@ -1,5 +1,6 @@
-import { internalIpV4 } from 'internal-ip';
 import path from 'path';
+
+import { internalIpV4 } from 'internal-ip';
 import Icons from 'unplugin-icons/vite';
 import { defineConfig } from 'vite';
 

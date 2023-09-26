@@ -1,13 +1,14 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+
   import { beforeNavigate, goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import { onMount } from 'svelte';
   import { fade, fly, slide } from 'svelte/transition';
 
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import { createAccordion, melt } from '@melt-ui/svelte';
 
   import Button from '$src/lib/components/Button.svelte';
+  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
 
   import CaretDown from '~icons/ph/caret-down-bold';
 

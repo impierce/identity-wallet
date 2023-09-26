@@ -2,11 +2,11 @@
   import { goto } from '$app/navigation';
   import { fade, fly } from 'svelte/transition';
 
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import { createCheckbox, melt } from '@melt-ui/svelte';
 
   import Button from '$src/lib/components/Button.svelte';
   import Checkbox from '$src/lib/components/Checkbox.svelte';
+  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import { dispatch } from '$src/lib/dispatcher';
 
   import Check from '~icons/ph/check-bold';

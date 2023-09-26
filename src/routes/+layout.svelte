@@ -1,6 +1,7 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
+
+  import { goto } from '$app/navigation';
   import { fly } from 'svelte/transition';
 
   import { readText } from '@tauri-apps/plugin-clipboard-manager';
@@ -19,11 +20,15 @@
   import Warning from '~icons/ph/warning';
 
   import type { Selection } from '../../src-tauri/bindings/user-prompt/Selection';
+
   import '../app.css';
-  import { determineTheme } from './utils';
-  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
+
   import { melt } from '@melt-ui/svelte';
+
   import Button from '$src/lib/components/Button.svelte';
+  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
+
+  import { determineTheme } from './utils';
 
   let clipboard: string | undefined;
 

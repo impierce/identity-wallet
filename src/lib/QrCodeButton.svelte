@@ -2,9 +2,9 @@
   import { goto } from '$app/navigation';
 
   import {
-    Format,
     cancel,
     checkPermissions,
+    Format,
     openAppSettings, // Scanned
     scan,
   } from '@tauri-apps/plugin-barcode-scanner';

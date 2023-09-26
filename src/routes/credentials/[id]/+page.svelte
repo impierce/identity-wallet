@@ -6,13 +6,12 @@
 
   import { melt } from '@melt-ui/svelte';
 
-  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
-
   import Button from '$lib/components/Button.svelte';
   import CredentialDetailsDropdownMenu from '$src/lib/components/CredentialDetailsDropdownMenu.svelte';
-  import ShareButton from '$src/lib/credentials/ShareButton.svelte';
+  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
+  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import { colors, icons } from '$src/lib/credentials/customization/utils';
+  import ShareButton from '$src/lib/credentials/ShareButton.svelte';
   import { dispatch } from '$src/lib/dispatcher';
   import { state } from '$src/stores';
 

@@ -2,7 +2,6 @@
   import { page } from '$app/stores';
 
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
-
   import { state } from '$src/stores';
 
   import type { Goal } from '../types';

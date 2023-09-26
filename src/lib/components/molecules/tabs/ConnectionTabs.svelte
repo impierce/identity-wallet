@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { createTabs, melt } from '@melt-ui/svelte';
-  import { crossfade } from 'svelte/transition';
   import { cubicInOut } from 'svelte/easing';
+  import { crossfade } from 'svelte/transition';
+
+  import { createTabs, melt } from '@melt-ui/svelte';
 
   const {
     elements: { root, list, content, trigger },

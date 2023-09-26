@@ -1,8 +1,11 @@
 import { tick } from 'svelte';
+
 import { vi } from 'vitest';
 
 import { clearMocks, mockIPC } from '@tauri-apps/api/mocks';
+
 import '@testing-library/jest-dom';
+
 import { render } from '@testing-library/svelte';
 
 import App from '$src/routes/+page.svelte';

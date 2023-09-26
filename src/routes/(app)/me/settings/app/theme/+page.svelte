@@ -1,7 +1,6 @@
 <script lang="ts">
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
-
   import Button from '$src/lib/components/Button.svelte';
+  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import ThemeSelect from '$src/lib/customize/ThemeSelect.svelte';
   import { dispatch } from '$src/lib/dispatcher';
   import { state } from '$src/stores';

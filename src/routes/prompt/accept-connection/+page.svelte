@@ -2,13 +2,13 @@
   import { goto } from '$app/navigation';
   import { fade } from 'svelte/transition';
 
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import { createCheckbox, createPopover, melt } from '@melt-ui/svelte';
 
   import Button from '$lib/components/Button.svelte';
   import PaddedIcon from '$lib/components/PaddedIcon.svelte';
   import { dispatch } from '$lib/dispatcher';
   import CredentialListEntry from '$src/lib/components/CredentialListEntry.svelte';
+  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import { state } from '$src/stores';
 
   import Check from '~icons/ph/check-bold';

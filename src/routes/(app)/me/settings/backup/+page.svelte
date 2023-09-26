@@ -1,6 +1,5 @@
 <script lang="ts">
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
-
   import SettingsEntry from '$src/lib/settings/SettingsEntry.svelte';
 
   import Keyboard from '~icons/ph/keyboard-fill';

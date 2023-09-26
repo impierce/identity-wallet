@@ -1,5 +1,7 @@
 import { clearMocks, mockIPC } from '@tauri-apps/api/mocks';
+
 import '@testing-library/jest-dom';
+
 import { render, screen } from '@testing-library/svelte';
 
 import Profile from '../src/routes/(app)/me/+page.svelte';

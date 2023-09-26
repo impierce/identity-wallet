@@ -1,6 +1,7 @@
 <script lang="ts">
-  import { createDialog, melt } from '@melt-ui/svelte';
   import { fade, fly } from 'svelte/transition';
+
+  import { createDialog, melt } from '@melt-ui/svelte';
 
   const {
     elements: { trigger, overlay, content, title, description, close, portalled },

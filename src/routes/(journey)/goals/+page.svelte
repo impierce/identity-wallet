@@ -2,9 +2,6 @@
   import { goto } from '$app/navigation';
   import { fly } from 'svelte/transition';
 
-  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
-
   import { melt } from '@melt-ui/svelte';
 
   import Button from '$lib/components/Button.svelte';
@@ -13,6 +10,8 @@
   import { dispatch } from '$lib/dispatcher';
   import GoalItem from '$lib/journey/goals/GoalItem.svelte';
   import LL from '$src/i18n/i18n-svelte';
+  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
+  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import { icons } from '$src/lib/journey/goals/utils';
   import { state } from '$src/stores';
 
