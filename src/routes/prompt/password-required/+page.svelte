@@ -84,13 +84,7 @@
             >
           </div>
 
-          <Button
-            variant="secondary"
-            slot="close"
-            let:close
-            trigger={close}
-            label="No, keep my profile"
-          />
+          <Button variant="secondary" slot="close" let:close trigger={close} label="No, keep my profile" />
         </BottomDrawer>
       </div>
     {/if}

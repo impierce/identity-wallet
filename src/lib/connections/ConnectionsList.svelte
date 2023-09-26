@@ -36,9 +36,7 @@
 <div class="flex h-full flex-col space-y-3">
   {#if connections.size === 0}
     <div class="flex h-full flex-col items-center justify-center">
-      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">
-        No connections yet.
-      </p>
+      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">No connections yet.</p>
     </div>
   {/if}
   {#each Object.entries(Object.fromEntries(connections)) as entry}
@@ -49,9 +47,7 @@
       <button on:click={() => goto(`/activity/connection/${index}`)}>
         <div class="flex h-16 items-center rounded-xl bg-white px-4 dark:bg-dark">
           <!-- Icon -->
-          <div
-            class="mr-4 flex h-8 w-8 overflow-hidden rounded-full border border-slate-300 dark:border-slate-600"
-          >
+          <div class="mr-4 flex h-8 w-8 overflow-hidden rounded-full border border-slate-300 dark:border-slate-600">
             <img src={connection.logo_uri} />
           </div>
           <!-- Text -->

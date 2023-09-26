@@ -38,16 +38,8 @@
     on:value={(e) => ($onboarding_state.name = e.detail)}
   /> -->
   </div>
-  <div
-    class="rounded-t-3xl bg-white p-6 dark:bg-dark"
-    in:fade={{ delay: 200 }}
-    out:fade={{ duration: 200 }}
-  >
-    <Button
-      label="Continue"
-      on:click={() => goto('/welcome/customize/theme')}
-      disabled={!!!$onboarding_state.name}
-    />
+  <div class="rounded-t-3xl bg-white p-6 dark:bg-dark" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
+    <Button label="Continue" on:click={() => goto('/welcome/customize/theme')} disabled={!!!$onboarding_state.name} />
   </div>
 
   <div class="safe-area-top" />

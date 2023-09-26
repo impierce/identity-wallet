@@ -61,10 +61,7 @@
       <Favorites />
       <CredentialList />
       <!-- container that animates and places the button -->
-      <div
-        in:fly={{ y: 12, delay: 0, opacity: 1, duration: 200 }}
-        class="absolute bottom-4 right-4"
-      >
+      <div in:fly={{ y: 12, delay: 0, opacity: 1, duration: 200 }} class="absolute bottom-4 right-4">
         <!-- <div in:fade={{ delay: 200, duration: 200 }} class="absolute bottom-4 right-4"> -->
         <!-- TODO: feature disabled: "Add self-signed credential" -->
         <!-- <AddButton /> -->
@@ -93,9 +90,7 @@
         </div>
 
         <div class="select-none pt-[15px]">
-          <p
-            class="pb-[15px] text-[22px]/[30px] font-semibold tracking-tight text-slate-800 dark:text-grey"
-          >
+          <p class="pb-[15px] text-[22px]/[30px] font-semibold tracking-tight text-slate-800 dark:text-grey">
             {$LL.GETTING_STARTED.TITLE()}
           </p>
           <p class="custom w-[240px] text-slate-500 dark:text-slate-300">

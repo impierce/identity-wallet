@@ -81,27 +81,15 @@
         </p>
       </div>
       <div>
-        <Checkbox
-          root={$ownership_root}
-          input={$ownership_input}
-          isChecked={$ownership_isChecked}
-        />
+        <Checkbox root={$ownership_root} input={$ownership_input} isChecked={$ownership_isChecked} />
       </div>
     </div>
   </div>
 </div>
 <!-- Actions -->
 <!-- <div class="space-y-[10px] rounded-t-3xl bg-white p-6" in:fly={{ y: 154, delay: 300, opacity: 1 }}> -->
-<div
-  class="rounded-t-3xl bg-white p-6 dark:bg-dark"
-  in:fade={{ delay: 200 }}
-  out:fade={{ duration: 200 }}
->
-  <Button
-    label="Continue"
-    on:click={() => goto('/welcome/customize/name')}
-    disabled={!$ownership_isChecked}
-  />
+<div class="rounded-t-3xl bg-white p-6 dark:bg-dark" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
+  <Button label="Continue" on:click={() => goto('/welcome/customize/name')} disabled={!$ownership_isChecked} />
 </div>
 
 <style>

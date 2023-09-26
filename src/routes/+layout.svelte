@@ -94,8 +94,7 @@
             let:trigger
             use:melt={trigger}
             class="flex-shrink-0 rounded-full bg-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
-            on:click={async () => (clipboard = await readText())}
-            ><Clipboard class="h-6 w-6" /></button
+            on:click={async () => (clipboard = await readText())}><Clipboard class="h-6 w-6" /></button
           >
           <div slot="content" class="w-full pb-[10px] pt-[20px]">
             <div class="mb-4 rounded-2xl bg-slate-200 p-4">
@@ -108,8 +107,7 @@
         <!-- Debug messages -->
         <button
           class="flex-shrink-0 rounded-full bg-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
-          on:click={() => (showDebugMessages = !showDebugMessages)}
-          ><Warning class="h-6 w-6" /></button
+          on:click={() => (showDebugMessages = !showDebugMessages)}><Warning class="h-6 w-6" /></button
         >
       </div>
     {/if}

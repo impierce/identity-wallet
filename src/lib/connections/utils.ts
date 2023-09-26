@@ -1,8 +1,6 @@
 import type { Connection } from './types';
 
-export const groupConnectionsAlphabetically = (
-  connections: Connection[]
-): Map<string, Connection[]> => {
+export const groupConnectionsAlphabetically = (connections: Connection[]): Map<string, Connection[]> => {
   const map = new Map<string, Connection[]>();
   connections.forEach((connection) => {
     console.log('connection.url', connection.url);

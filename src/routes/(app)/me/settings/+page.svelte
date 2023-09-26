@@ -24,18 +24,9 @@
   <div class="flex flex-col space-y-[10px] px-4 py-5" in:fly={{ x: 32, opacity: 1 }}>
     <!-- Account -->
     <p class="text-[14px]/[22px] font-medium text-slate-500">{$LL.ACCOUNT()}</p>
-    <SettingsEntry
-      icon={UserCircle}
-      title="My profile"
-      on:click={() => goto('/me/settings/profile')}
-    />
+    <SettingsEntry icon={UserCircle} title="My profile" on:click={() => goto('/me/settings/profile')} />
     <SettingsEntry icon={Gear} title="App settings" on:click={() => goto('/me/settings/app')} />
-    <SettingsEntry
-      icon={Vault}
-      title="Backup and recovery"
-      on:click={() => goto('/me/settings/backup')}
-      todo
-    />
+    <SettingsEntry icon={Vault} title="Backup and recovery" on:click={() => goto('/me/settings/backup')} todo />
     <SettingsEntry icon={SignOut} title="Log out" hasCaretRight={false} todo />
 
     <!-- Support -->

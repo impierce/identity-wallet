@@ -113,11 +113,7 @@
     >
       <!-- <div class="w-full space-y-2 rounded-2xl p-3 ring-2 ring-inset ring-white"> -->
       {#each credential_offer.credentials as credential, index}
-        <CredentialOfferEntry
-          {index}
-          title={credential.credential_definition.type.at(-1)}
-          color={'bg-grey'}
-        >
+        <CredentialOfferEntry {index} title={credential.credential_definition.type.at(-1)} color={'bg-grey'}>
           <span slot="logo" class="p-1">
             <!-- {#if $state.current_user_prompt.logo_uri}
               <img src={$state.current_user_prompt.logo_uri} alt="logo" class="object-scale-down" />
@@ -151,9 +147,7 @@
   </div>
 
   <!-- Controls -->
-  <div
-    class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 dark:bg-dark"
-  >
+  <div class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 dark:bg-dark">
     <Button
       label="Accept credentials"
       on:click={() => {

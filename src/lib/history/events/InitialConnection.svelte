@@ -4,8 +4,8 @@
   export let data: InitialConnection;
 </script>
 
-<div class="flex flex-col rounded bg-blue-100 p-4">
-  <span class="text-start text-sm text-blue-500"
+<div class="bg-blue-100 flex flex-col rounded p-4">
+  <span class="text-blue-500 text-start text-sm"
     >You have connected with <span class="font-semibold">{data.issuer.domain}</span> for the first time!</span
   >
   <!-- <span class="text-blue-500">{data.issuer.did}</span> -->

@@ -16,9 +16,7 @@
   import NoCredentials from './credentials/NoCredentials.svelte';
 
   // TODO: improve typing
-  let credentials: Array<DisplayCredential> = $state.credentials.filter(
-    (c) => !c.metadata.is_favorite
-  );
+  let credentials: Array<DisplayCredential> = $state.credentials.filter((c) => !c.metadata.is_favorite);
 
   let test_credentials = [
     {
@@ -88,11 +86,7 @@
     <!--Mock credentials -->
     <!-- <p class="font-semibold">A</p> -->
     {#each test_credentials as credential}
-      <CredentialListEntry
-        title={credential.title}
-        description={credential.description}
-        color={credential.color}
-      >
+      <CredentialListEntry title={credential.title} description={credential.description} color={credential.color}>
         <span slot="icon">
           <svelte:component this={credential.icon} class="h-[18px] w-[18px] text-slate-800" />
         </span>

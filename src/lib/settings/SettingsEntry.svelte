@@ -14,9 +14,7 @@
 </script>
 
 <button
-  class="flex items-center space-x-4 rounded-xl bg-white p-4 dark:bg-dark {todo
-    ? 'opacity-30'
-    : ''}"
+  class="flex items-center space-x-4 rounded-xl bg-white p-4 dark:bg-dark {todo ? 'opacity-30' : ''}"
   on:click={() => dispatch('click')}
 >
   <svelte:component this={icon} class="h-5 w-5 text-primary" />

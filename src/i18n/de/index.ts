@@ -10,8 +10,7 @@ const de = {
     'Warum fügst du nicht ein paar Credentials hinzu, um mit deiner neuen digitalen Identität loszulegen?',
   GETTING_STARTED: {
     TITLE: 'Sollen wir starten?',
-    SUBTITLE:
-      'Mache deine ersten Schritte, um ein paar Credentials zu deiner digitalen Identität hinzuzufügen.',
+    SUBTITLE: 'Mache deine ersten Schritte, um ein paar Credentials zu deiner digitalen Identität hinzuzufügen.',
     DIALOG_0_TITLE: 'Neue Ziele abschließen',
     DIALOG_0_TEXT:
       'Starte deine Mission hier! Ziele führen dich durch wichtige Funktionen und Möglichkeiten der UniMe App.',
@@ -19,8 +18,7 @@ const de = {
     DIALOG_1_TEXT:
       'Wenn du Ziele abschließt, erhältst du ein tolles neues Abzeichen und steigerst deine ersten Schritte.',
     SKIP_TITLE: 'Onboarding überspringen',
-    SKIP_TEXT:
-      'Bist du sicher? Du kannst das Onboarding in den App-Einstellungen wieder aktivieren.'
+    SKIP_TEXT: 'Bist du sicher? Du kannst das Onboarding in den App-Einstellungen wieder aktivieren.'
   },
   APP_SETTINGS: 'App-Einstellungen',
   YOUR_DIDS: 'Deine DIDs',

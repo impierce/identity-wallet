@@ -28,9 +28,7 @@
   }
 
   function _startScan() {
-    info(
-      `starting scan with parameters: { cameraDirection: 'back', windowed: false, formats: [Format.QRCode] }`
-    );
+    info(`starting scan with parameters: { cameraDirection: 'back', windowed: false, formats: [Format.QRCode] }`);
     scanning = true;
     scan({ windowed: true, formats: [Format.QRCode] })
       .then((scanned) => {
@@ -54,9 +52,7 @@
       permission = await requestPermissions();
     }
     if (permission === 'granted') {
-      info(
-        `starting scan with parameters: { cameraDirection: 'back', windowed: false, formats: [Format.QRCode] }`
-      );
+      info(`starting scan with parameters: { cameraDirection: 'back', windowed: false, formats: [Format.QRCode] }`);
       scanning = true;
       scan({ windowed: true, formats: [Format.QRCode] })
         .then((res) => {
@@ -264,11 +260,7 @@
 
         {#if $developer_mode}
           <div class="flex flex-col space-y-2">
-            <Button
-              variant="secondary"
-              on:click={mockSiopRequest}
-              label="Connection request (SIOPv2)"
-            />
+            <Button variant="secondary" on:click={mockSiopRequest} label="Connection request (SIOPv2)" />
             <Button variant="secondary" on:click={mockShareRequest} label="Share request (VP)" />
             <Button
               variant="secondary"
@@ -276,11 +268,7 @@
               disabled
               label="Credential Offer (single)"
             />
-            <Button
-              variant="secondary"
-              on:click={() => mockScanCredentialOffer(2)}
-              label="Credential Offer (multi)"
-            />
+            <Button variant="secondary" on:click={() => mockScanCredentialOffer(2)} label="Credential Offer (multi)" />
             <Button
               variant="secondary"
               on:click={() =>
@@ -324,9 +312,8 @@
           </div>
           {#if $developer_mode}
             <div class="fixed bottom-[128px] left-[calc(50%_-_42px)]">
-              <button
-                class="rounded-lg bg-rose-100 px-4 py-3 font-medium text-rose-500"
-                on:click={cancelScan}>Cancel</button
+              <button class="rounded-lg bg-rose-100 px-4 py-3 font-medium text-rose-500" on:click={cancelScan}
+                >Cancel</button
               >
             </div>
           {/if}
@@ -335,9 +322,7 @@
     </div>
   </div>
   <div class="shrink-0">
-    <div
-      class="fixed bottom-[var(--safe-area-inset-bottom)] w-full shadow-[0_-4px_20px_0px_rgba(0,0,0,0.03)]"
-    >
+    <div class="fixed bottom-[var(--safe-area-inset-bottom)] w-full shadow-[0_-4px_20px_0px_rgba(0,0,0,0.03)]">
       <BottomNavBar
         active={'scan'}
         on:me={() => goto('/me')}

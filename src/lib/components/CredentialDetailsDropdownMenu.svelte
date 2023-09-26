@@ -217,9 +217,7 @@
         </div>
 
         <!-- Combined -->
-        <div
-          class="rounded-2xl {currentAppearance.color} flex h-14 w-14 items-center justify-center"
-        >
+        <div class="rounded-2xl {currentAppearance.color} flex h-14 w-14 items-center justify-center">
           <svelte:component this={icons[currentAppearance.icon || 'Bank']} class="h-6 w-6" />
         </div>
 

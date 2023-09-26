@@ -30,9 +30,7 @@
 
   goals.at(2).completed = false;
 
-  let completedPercentage = Math.round(
-    (goals.filter((goal) => goal.completed).length / goals.length) * 100
-  );
+  let completedPercentage = Math.round((goals.filter((goal) => goal.completed).length / goals.length) * 100);
 
   console.log(completedPercentage);
 </script>
@@ -40,10 +38,7 @@
 <!-- Navbar -->
 <TopNavigation on:back={() => history.back()} title={$state?.user_journey?.title}>
   <!-- TODO: replace BottomDrawer with AlertDialog -->
-  <BottomDrawer
-    titleText={$LL.GETTING_STARTED.SKIP_TITLE()}
-    descriptionText={$LL.GETTING_STARTED.SKIP_TEXT()}
-  >
+  <BottomDrawer titleText={$LL.GETTING_STARTED.SKIP_TITLE()} descriptionText={$LL.GETTING_STARTED.SKIP_TEXT()}>
     <button
       slot="trigger"
       let:trigger
@@ -111,13 +106,8 @@
             </svelte:fragment>
 
             <svelte:fragment slot="icon">
-              <div
-                class="mb-[15px] flex h-[75px] w-[75px] items-center justify-center rounded-3xl bg-slate-100"
-              >
-                <svelte:component
-                  this={icons[goal.icon] || icons['Trophy']}
-                  class="h-7 w-7 text-primary"
-                />
+              <div class="mb-[15px] flex h-[75px] w-[75px] items-center justify-center rounded-3xl bg-slate-100">
+                <svelte:component this={icons[goal.icon] || icons['Trophy']} class="h-7 w-7 text-primary" />
               </div>
             </svelte:fragment>
 

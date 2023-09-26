@@ -12,7 +12,7 @@
     "test": "vitest run tests",
     "test:watch": "vitest tests",
     "lint": "prettier . --check && eslint .",
-    "format": "prettier . --write --plugin prettier-plugin-svelte",
+    "format": "prettier . --write --plugin prettier-plugin-svelte --plugin prettier-plugin-tailwindcss",
     "tauri": "tauri",
     "typesafe-i18n": "typesafe-i18n --no-watch"
   },

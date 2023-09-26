@@ -65,9 +65,7 @@
             <WarningCircle class="h-6 w-6 text-amber-500" />
           </span>
           <div class="flex flex-col">
-            <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
-              New connection
-            </p>
+            <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">New connection</p>
             <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
               Only accept new connections that you recognize and trust
             </p>
@@ -86,9 +84,7 @@
       <div
         class="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-4 dark:border-slate-600 dark:bg-dark"
       >
-        <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
-          Connected previously
-        </p>
+        <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">Connected previously</p>
         {#if previously_connected}
           <Check class="text-emerald-500" />
         {:else}
@@ -128,9 +124,7 @@
 
   <!-- Controls -->
   <!-- TODO: on iOS subtract the --safe-area-inset-bottom from the bottom-padding -->
-  <div
-    class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 dark:bg-dark"
-  >
+  <div class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 dark:bg-dark">
     <Button
       label="Accept connection"
       on:click={() =>

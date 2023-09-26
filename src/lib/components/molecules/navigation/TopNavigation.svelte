@@ -18,9 +18,7 @@
     <ChevronLeft class="h-6 w-6" />
   </button>
   {#if title}
-    <p
-      class="custom absolute left-0 top-0 flex h-[50px] w-full items-center justify-center font-medium"
-    >
+    <p class="custom absolute left-0 top-0 flex h-[50px] w-full items-center justify-center font-medium">
       {title}
     </p>
   {/if}

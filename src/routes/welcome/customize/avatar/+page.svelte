@@ -79,11 +79,7 @@
     </p>
     <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Make it yours.</p>
     <div class="mt-[70px] flex w-full items-center justify-center">
-      <BottomDrawer
-        titleText={'Select profile picture'}
-        descriptionText={''}
-        isOpen={emojiSelectIsOpen}
-      >
+      <BottomDrawer titleText={'Select profile picture'} descriptionText={''} isOpen={emojiSelectIsOpen}>
         <!-- <div slot="trigger"> -->
         <button
           slot="trigger"
@@ -167,11 +163,7 @@
   in:fade={{ delay: 200 }}
   out:fade={{ duration: 200 }}
 >
-  <Button
-    label="Continue"
-    on:click={() => goto('/welcome/password')}
-    disabled={!$onboarding_state.picture}
-  />
+  <Button label="Continue" on:click={() => goto('/welcome/password')} disabled={!$onboarding_state.picture} />
 </div>
 
 <style>

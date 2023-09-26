@@ -40,8 +40,7 @@
     {
       id: 'item-2',
       title: 'You own your information',
-      description:
-        "We believe that it's about time you become the owner of your own personal information again."
+      description: "We believe that it's about time you become the owner of your own personal information again."
     }
   ];
 </script>
@@ -64,9 +63,7 @@
     <p class="pb-4 text-3xl font-semibold text-slate-700 dark:text-grey">
       No funny <span class="text-primary">business</span>
     </p>
-    <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">
-      Here's our pledge to you.
-    </p>
+    <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Here's our pledge to you.</p>
   </div>
   <!-- Accordion -->
   <div class="mx-auto flex max-w-full flex-col space-y-4" {...$root}>

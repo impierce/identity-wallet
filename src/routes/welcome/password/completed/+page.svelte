@@ -22,9 +22,7 @@
       Your UniMe profile is now <span class="text-primary">protected</span>
     </p>
   </div>
-  <div
-    class="flex flex-col items-center justify-center space-y-6 rounded-3xl bg-white p-5 dark:bg-dark"
-  >
+  <div class="flex flex-col items-center justify-center space-y-6 rounded-3xl bg-white p-5 dark:bg-dark">
     <p class="text-[22px]/[30px] font-semibold text-primary">Safe & Secure.</p>
     <div class="relative">
       <div class="relative z-10">

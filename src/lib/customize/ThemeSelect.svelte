@@ -20,10 +20,7 @@
   const dispatch = createEventDispatcher();
 
   $: {
-    console.log(
-      'prefers-color-scheme: dark?',
-      window.matchMedia('(prefers-color-scheme: dark)').matches
-    );
+    console.log('prefers-color-scheme: dark?', window.matchMedia('(prefers-color-scheme: dark)').matches);
     if ($value === 'dark') {
       // dark
       document.documentElement.classList.add('dark');
@@ -87,9 +84,7 @@
     <!-- </div> -->
     <!-- Theme preview -->
     <!-- Light -->
-    <div
-      class="absolute bottom-0 left-1/4 h-14 w-1/4 rounded-t-xl border border-b-0 border-slate-200 bg-white"
-    >
+    <div class="absolute bottom-0 left-1/4 h-14 w-1/4 rounded-t-xl border border-b-0 border-slate-200 bg-white">
       <p class="p-2 text-sm font-medium text-slate-800">Aa</p>
     </div>
     <!-- Dark -->
@@ -135,9 +130,7 @@
         </button>
       </div> -->
     <!-- Theme preview -->
-    <div
-      class="absolute bottom-0 left-1/4 h-14 w-1/2 rounded-t-xl border border-b-0 border-slate-200 bg-slate-100"
-    >
+    <div class="absolute bottom-0 left-1/4 h-14 w-1/2 rounded-t-xl border border-b-0 border-slate-200 bg-slate-100">
       <p class="p-2 text-sm font-medium text-slate-800">Aa</p>
     </div>
   </div>

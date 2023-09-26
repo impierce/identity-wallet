@@ -5,15 +5,11 @@ const config = {
   singleQuote: true,
   semi: true,
   trailingComma: 'none',
-  printWidth: 100,
+  printWidth: 120,
   importOrder: ['^@(.*)$', '^\\$(src|lib)/(.*)$', '^~icons/(.*)$', '^[./]'],
   importOrderSeparation: true,
   importOrderSortSpecifiers: true,
-  plugins: [
-    'prettier-plugin-svelte',
-    'prettier-plugin-tailwindcss',
-    '@trivago/prettier-plugin-sort-imports'
-  ],
+  plugins: ['prettier-plugin-svelte', 'prettier-plugin-tailwindcss', '@trivago/prettier-plugin-sort-imports'],
   overrides: [{ files: '*.svelte', options: { parser: 'svelte' } }]
 };
 

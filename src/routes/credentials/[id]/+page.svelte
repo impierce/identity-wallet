@@ -147,7 +147,7 @@
       <!-- QR Code -->
       <div class="flex flex-col items-center p-7">
         <div class="rounded-2xl bg-white p-6">
-          {#await QRCode.toDataURL( qrcodeText, { margin: 0, color: { light: '#FFFFFF' } } ) then data_url}
+          {#await QRCode.toDataURL(qrcodeText, { margin: 0, color: { light: '#FFFFFF' } }) then data_url}
             <img src={data_url} alt="qr-code" />
           {/await}
         </div>

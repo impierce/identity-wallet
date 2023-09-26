@@ -66,14 +66,6 @@
   {/if}
 </div>
 
-<div
-  class="rounded-t-3xl bg-white p-6 dark:bg-dark"
-  in:fade={{ delay: 200 }}
-  out:fade={{ duration: 200 }}
->
-  <Button
-    label="Continue"
-    on:click={() => goto('/welcome/password/completed')}
-    disabled={!passwordsEqual}
-  />
+<div class="rounded-t-3xl bg-white p-6 dark:bg-dark" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
+  <Button label="Continue" on:click={() => goto('/welcome/password/completed')} disabled={!passwordsEqual} />
 </div>

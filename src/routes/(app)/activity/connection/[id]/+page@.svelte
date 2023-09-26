@@ -20,11 +20,7 @@
 </script>
 
 <div class="content-height flex flex-col">
-  <TopNavigation
-    on:back={() => goto('/activity')}
-    title={connection.client_name}
-    class="bg-silver dark:bg-navy"
-  />
+  <TopNavigation on:back={() => goto('/activity')} title={connection.client_name} class="bg-silver dark:bg-navy" />
   <div class="grow bg-silver px-4 pt-5 dark:bg-navy">
     <ConnectionTabs>
       <!-- Summary -->

@@ -16,9 +16,7 @@
   import RocketLaunch from '~icons/ph/rocket-launch';
   import SealCheck from '~icons/ph/seal-check-fill';
 
-  let selected_credentials = $state.credentials?.filter(
-    (c) => $state.current_user_prompt.options.indexOf(c.id) > -1
-  );
+  let selected_credentials = $state.credentials?.filter((c) => $state.current_user_prompt.options.indexOf(c.id) > -1);
 
   let client_name = $state.current_user_prompt.client_name;
 </script>
@@ -112,9 +110,7 @@
   </div>
 
   <!-- Controls -->
-  <div
-    class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 dark:bg-dark"
-  >
+  <div class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 dark:bg-dark">
     <Button
       label="Approve request"
       on:click={() =>

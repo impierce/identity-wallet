@@ -30,9 +30,7 @@
 
   // favorite_credentials = [];
 
-  const favorite_credentials: DisplayCredential[] = $state.credentials.filter(
-    (c) => c.metadata.is_favorite
-  );
+  const favorite_credentials: DisplayCredential[] = $state.credentials.filter((c) => c.metadata.is_favorite);
 </script>
 
 {#if favorite_credentials.length > 0}
