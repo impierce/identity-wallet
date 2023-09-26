@@ -163,7 +163,6 @@
   </BottomDrawer>
 </div>
 
-<!-- TODO: replace with <div class="safe-area-top {color}" /> -->
 <div class="safe-area-top {color}" />
 <div class="safe-area-bottom bg-silver dark:bg-navy" />
 

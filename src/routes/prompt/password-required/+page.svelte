@@ -104,4 +104,9 @@
   .content-height {
     height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom));
   }
+
+  :global(body) {
+    /* Fixes a UI problem on iOS where there is a white bar at the bottom when the emoji drawer is open */
+    position: unset !important;
+  }
 </style>
