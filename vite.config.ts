@@ -33,11 +33,6 @@ export default defineConfig(async () => ({
       protocol: 'ws',
       host: await internalIpV4(),
       port: 5183
-    },
-    fs: {
-      allow: [
-        // '/Users/daniel/.nvm/versions/node/v20.3.0/lib/node_modules/@impierce/ui-components/dist'
-      ]
     }
   },
   // to make use of `TAURI_DEBUG` and other env variables
