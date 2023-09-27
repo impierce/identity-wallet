@@ -1,9 +1,8 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { Eye, Heart } from 'svelte-heros-v2';
   import { fly } from 'svelte/transition';
 
-  import { BottomDrawer, TopNavigation } from '@impierce/ui-components';
+  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import { melt } from '@melt-ui/svelte';
 
   import { dispatch } from '$lib/dispatcher';

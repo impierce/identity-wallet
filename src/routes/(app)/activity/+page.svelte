@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { ActivityTabs, MeltUiActivityTabs, SearchInput } from '@impierce/ui-components';
+  import ActivityTabs from '$src/lib/components/molecules/tabs/ActivityTabs.svelte';
 
   import ConnectionsList from '$lib/connections/ConnectionsList.svelte';
   import History from '$src/lib/history/History.svelte';
@@ -25,7 +25,7 @@
     </div> -->
   </div>
   <div class="grow overflow-y-auto px-4 py-5">
-    <MeltUiActivityTabs>
+    <ActivityTabs>
       <div slot="connections" class="h-full pt-5">
         <!-- Search & Sort -->
         <!-- <div class="flex pb-4">
@@ -42,7 +42,7 @@
         <History />
         <!-- <div class="font-medium text-slate-400">No history yet</div> -->
       </div>
-    </MeltUiActivityTabs>
+    </ActivityTabs>
   </div>
 </div>
 

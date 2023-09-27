@@ -2,8 +2,6 @@
   import { goto } from '$app/navigation';
   import { fade, fly } from 'svelte/transition';
 
-  import { LanguageSelect } from '@impierce/ui-components';
-
   import LL from '$src/i18n/i18n-svelte';
   import Button from '$src/lib/components/Button.svelte';
   import MeLarge from '$src/lib/components/logo/MeLarge.svelte';

@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte';
 
-  import { Button } from '@impierce/ui-components';
   import { Format, cancel, scan } from '@tauri-apps/plugin-barcode-scanner';
 
   export let onMessage;
@@ -133,7 +132,9 @@
     width: 100%;
     margin: 1rem;
     border: 2px solid #fff;
-    box-shadow: 0px 0px 2px 1px rgb(0 0 0 / 0.5), inset 0px 0px 2px 1px rgb(0 0 0 / 0.5);
+    box-shadow:
+      0px 0px 2px 1px rgb(0 0 0 / 0.5),
+      inset 0px 0px 2px 1px rgb(0 0 0 / 0.5);
     border-radius: 1rem;
   }
 

@@ -1,5 +1,4 @@
 <script lang="ts">
-  // import { QrCode } from 'svelte-heros-v2';
   import { goto } from '$app/navigation';
 
   import {
@@ -9,7 +8,6 @@
     openAppSettings, // Scanned
     scan
   } from '@tauri-apps/plugin-barcode-scanner';
-  // import { LoadingSpinner } from '@impierce/ui-components';
   import { info, warn } from '@tauri-apps/plugin-log';
 
   import { dispatch } from '$lib/dispatcher';

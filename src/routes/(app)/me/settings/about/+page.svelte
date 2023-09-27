@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { TopNavigation } from '@impierce/ui-components';
+  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
 
   import Heart from '~icons/ph/heart-fill';
 </script>

@@ -1,7 +1,6 @@
 <script lang="ts">
   import { fade, fly } from 'svelte/transition';
 
-  import { BottomDrawer } from '@impierce/ui-components';
   import { createDialog, createDropdownMenu, melt } from '@melt-ui/svelte';
 
   import { colors, icons } from '$lib/credentials/customization/utils';
@@ -61,7 +60,7 @@
     forceVisible: true
   });
 
-  let displayName: string = credential.metadata.display.name;
+  let displayName: string = credential.metadata.display.name || credential.data.type.at(-1);
 
   let currentAppearance = {
     color: credential.metadata.display.color || 'bg-indigo-100',

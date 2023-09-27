@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  import { BottomDrawer } from '@impierce/ui-components';
+  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
   import { melt } from '@melt-ui/svelte';
 
   import Button from '$src/lib/components/Button.svelte';

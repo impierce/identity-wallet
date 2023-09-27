@@ -3,7 +3,7 @@
   import { page } from '$app/stores';
   import { fly } from 'svelte/transition';
 
-  import { TopNavigation } from '@impierce/ui-components';
+  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
 
   import Button from '$src/lib/components/Button.svelte';
 

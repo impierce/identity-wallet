@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
 
-  import { BottomNavBar } from '@impierce/ui-components';
+  import BottomNavBar from '$src/lib/components/molecules/navigation/BottomNavBar.svelte';
 
   $: active = $page.route.id?.split('/').at(2) ?? 'me';
 </script>

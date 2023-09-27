@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { TopNavigation } from '@impierce/ui-components';
+  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
 
   import Button from '$src/lib/components/Button.svelte';
   import ThemeSelect from '$src/lib/customize/ThemeSelect.svelte';

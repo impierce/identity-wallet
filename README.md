@@ -8,20 +8,6 @@ A Tauri-based Identity Wallet for people to manage Decentralized Identities and 
 
 ## Development
 
-### Setup
-
-The npm package `@impierce/ui-components` can only be accessed if you have a [GitHub token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token).
-
-> GitHub > Settings > Developer settings > Personal access tokens > Tokens (classic)
-
-> Name: "Read private packages", Expiration: 90 days, Scopes: "read:packages"
-
-Then add the following line to your local `~/.npmrc`
-
-```sh
-//npm.pkg.github.com/:_authToken=ghp_...
-```
-
 ### Start the app
 
 ```sh
