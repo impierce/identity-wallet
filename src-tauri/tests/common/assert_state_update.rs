@@ -12,6 +12,7 @@ pub async fn assert_state_update(
     actions: Vec<Action>,
     expected_states: Vec<Option<AppState>>,
 ) {
+    println!("assert_state_update with actions: {:#?}", actions);
     // Save the current state to the state file.
     save_state(&current_state).await.unwrap();
 
@@ -75,6 +76,7 @@ pub async fn assert_state_update(
             );
         }
     }
+    println!("assert_state_update done");
 }
 
 pub fn setup_state_file() {

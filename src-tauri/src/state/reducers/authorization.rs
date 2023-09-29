@@ -10,6 +10,7 @@ use oid4vci::credential_format_profiles::{
     w3c_verifiable_credentials::jwt_vc_json::JwtVcJson, Credential, CredentialFormats,
 };
 use oid4vp::{evaluate_input, OID4VPUserClaims, OID4VP};
+use serde::Deserialize;
 use siopv2::SIOPv2;
 use uuid::Uuid;
 

@@ -1,0 +1,76 @@
+WHITESPACE = _{ (" "| "\t")+ }
+
+
+dashline = @{ "-"{3,} }
+
+spaceless = @{!"[" ~ !"]" ~  !"|" ~ !"[\\" ~ !"{"~ !"}" ~!"-" ~!"&" ~!"(" ~ !")" ~ !"`" ~ !"\"" ~ !"`" ~ !NEWLINE ~
+!WHITESPACE ~ ANY}
+
+spacelessword = @{ spaceless+ }
+sentence = @{ (spacelessword ~ WHITESPACE*)+ }
+
+// FIXME
+title = { "title:" ~ sentence }
+direction = { ("LR"|"TD"|"TB"|"RL"|"BT") }
+
+
+bare = { sentence+ }
+markdown = { "\"`" ~ (!"`\"" ~ sentence ~ NEWLINE?)+ ~ "`\""}
+plain = {"\"" ~ (!"\"" ~ sentence )+ ~ "\""}
+
+content = _{ (markdown | plain | bare) }
+
+
+ident_def_boxed = { "[" ~ content ~ "]" }
+ident_def_christmas = { "[/" ~ content ~ "\\]" }
+ident_def_stadium = { "(" ~ content ~ ")" }
+ident_def_circle = { "((" ~ content ~ "))" }
+ident_def_database = { "[(" ~ content ~ ")]" }
+ident_def_diamond = { "{" ~ content ~ "}" }
+ident_def_double_circle = { "(((" ~ content ~ ")))" }
+ident_def_flag = { ">" ~ content ~ "]" }
+ident_def_hexagon = { "{{" ~ content ~ "}}" }
+ident_def_parallel = { "[/" ~ content ~ "/]" }
+ident_def_parallel_alt = { "[\\" ~ content ~ "\\]" }
+ident_def_rounded_box = { "([" ~ content ~ "])" }
+ident_def_shopping = { "[\\" ~ content ~ "/]" }
+ident_def_subroutine = { "[[" ~ content ~ "]]" }
+
+any_ident_def = _{ (ident_def_stadium | ident_def_boxed | ident_def_christmas | ident_def_circle | ident_def_database | ident_def_diamond | ident_def_double_circle | ident_def_flag | ident_def_hexagon | ident_def_parallel | ident_def_parallel_alt | ident_def_rounded_box | ident_def_shopping | ident_def_subroutine) }
+base_ident = @{ ASCII_ALPHA ~ (ASCII_ALPHANUMERIC | "_")* }
+ident = { !"end" ~ base_ident ~ any_ident_def? }
+
+link_annotation_pipes = { "|" ~ content ~ "|" }
+link_annotation_pipeless = { !"|" ~ content  ~ !"|" }
+link_annotation_any = _{ (link_annotation_pipes | link_annotation_pipeless) }
+
+arrow_head = { ("<"|"o"|"x"|">") }
+link_arrow = @{ (arrow_head ~ "-"{2,}) | ("-"{2,} ~ arrow_head) | (arrow_head ~"-"{2,} ~ arrow_head) }
+link_open = @{ "-"{3,} }
+link_arrow_txt = { "-"{2,} ~ link_annotation_any ~ "-"{2,} ~ arrow_head? }
+link_dotted = { "-.-" ~ arrow_head? }
+link_thick = @{ "="{2,} ~ arrow_head }
+link_thick_txt = { "="{2,} ~ link_annotation_any ~ link_thick }
+link_invisible = @{ "~~~" }
+
+link = { (link_arrow | link_open | link_arrow_txt | link_dotted | link_thick | link_thick_txt | link_invisible) ~ link_annotation_pipes? }
+
+and = _{ "&" }
+
+ident_comb = { ident ~ (and ~ ident)* }
+
+chain = { ident_comb ~ (link ~ ident_comb)* }
+
+header = { NEWLINE* ~ dashline ~ NEWLINE ~ title ~ NEWLINE ~ dashline ~ NEWLINE*  }
+
+graph = { chain ~ (NEWLINE ~ chain)* }
+
+subgraph = { "subgraph" ~ base_ident ~ NEWLINE ~ "direction" ~ direction ~ NEWLINE ~ (graph ~ NEWLINE)+ ~ "end" ~ NEWLINE }
+
+body = { "flowchart" ~ direction ~ NEWLINE ~ ( (class_def | payload_assign | class_assign) ~ NEWLINE* )* ~NEWLINE? ~ ( subgraph | graph )+ }
+
+file = { SOI ~ header? ~ body? ~ NEWLINE* ~ EOI }
+
+class_def = { "classDef" ~ ident ~ (!(NEWLINE) ~ ANY)* }
+payload_assign = { ident ~ ("(" ~ markdown ~ ")")? ~ ":::payload" }
+class_assign = { ident ~ ":::" ~ ident }

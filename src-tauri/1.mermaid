@@ -1,0 +1,27 @@
+---
+title: Node
+---
+flowchart LR
+    classDef action fill:#999,color:#000;
+    GetState1:::action
+    GetState2:::action
+    CreateNew(CreateNew):::action
+    UnlockStorage(UnlockStorage):::action
+
+    classDef payload fill:#CCC,color:#555,text-align:left;
+    P1("`name: Ferris Crabman
+        picture: 129408
+        theme: system
+        password: sup3rSecr3t
+    `"):::payload
+    P2("`password: sup3rSecr3t`"):::payload
+
+    subgraph o
+    direction LR
+        Initial[[default_state.json]] --- GetState1(GetState) --> B[[check_state.json]]
+        B --- CreateNew --> C[[new_profile_created.json]]
+        P1 -.-> CreateNew
+        C --- GetState2(GetState) --> D[[password_required.json]]
+        D --- UnlockStorage --> E[[storage_unlocked.json]]
+        P2 -.-> UnlockStorage
+    end

@@ -53,6 +53,30 @@ pub enum ActionType {
     Unknown,
 }
 
+impl ActionType {
+    pub fn from_tag_str(tag_str: &str) -> Self {
+        match tag_str {
+            "GetState" => Self::GetState,
+            "Reset" => Self::Reset,
+            "CreateNew" => Self::CreateNew,
+            "SetLocale" => Self::SetLocale,
+            "UpdateProfileSettings" => Self::UpdateProfileSettings,
+            "QrCodeScanned" => Self::QrCodeScanned,
+            "CancelUserFlow" => Self::CancelUserFlow,
+            "LoadDevProfile" => Self::LoadDevProfile,
+            "ReadCredentialOffer" => Self::ReadCredentialOffer,
+            "CredentialOffersSelected" => Self::CredentialOffersSelected,
+            "ReadRequest" => Self::ReadRequest,
+            "ConnectionAccepted" => Self::ConnectionAccepted,
+            "CredentialsSelected" => Self::CredentialsSelected,
+            "UnlockStorage" => Self::UnlockStorage,
+            "UpdateCredentialMetadata" => Self::UpdateCredentialMetadata,
+            "CancelUserJourney" => Self::CancelUserJourney,
+            _ => Self::Unknown,
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
