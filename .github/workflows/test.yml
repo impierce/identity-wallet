@@ -25,7 +25,6 @@ jobs:
 
     - name: Run Tests
       run: |
-        cargo tauri icon src-tauri/app-icon.png 
         RUSTFLAGS="-Awarnings" cargo test --manifest-path src-tauri/Cargo.toml
       
     - name: Stop Docker Container
