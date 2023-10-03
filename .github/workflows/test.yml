@@ -23,7 +23,7 @@ jobs:
     needs: build
     steps:
     - name: Run Tests
-      run: cargo test --manifest-path src-tauri/tests/common/credential_issuer/Cargo.toml
+      run: cargo test --manifest-path src-tauri/Cargo.toml
 
     - name: Stop Docker Container
       run: docker stop credential_issuer
