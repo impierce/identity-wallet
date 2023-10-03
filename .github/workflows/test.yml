@@ -25,7 +25,7 @@ jobs:
 
     - name: Run Tests
       run: |
-        RUSTFLAGS="-Awarnings" cargo test --manifest-path src-tauri/Cargo.toml
+        cargo test --manifest-path src-tauri/Cargo.toml
       
     - name: Stop Docker Container
       run: docker stop credential_issuer
