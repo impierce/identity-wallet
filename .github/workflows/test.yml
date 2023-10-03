@@ -22,6 +22,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
+    - name: Temp Test
+      run: ls -la
+
     - name: Run Tests
       run: cargo test --manifest-path src-tauri/Cargo.toml
 
