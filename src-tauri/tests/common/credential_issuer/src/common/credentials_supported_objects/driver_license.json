@@ -1,0 +1,32 @@
+{
+    "format": "jwt_vc_json",
+    "id": "DriverLicense_JWT",
+    "cryptographic_binding_methods_supported": [
+        "did:key",
+        "did:iota"
+    ],
+    "cryptographic_suites_supported": [
+        "EdDSA"
+    ],
+    "credential_definition":{
+        "type": [
+            "VerifiableCredential",
+            "DriverLicenseCredential"
+        ]
+    },
+    "proof_types_supported": [
+        "jwt"
+    ],
+    "display": [
+        {
+            "name": "Driver License Credential",
+            "locale": "en-US",
+            "logo": {
+                "url": "https://example.com/public/logo.png",
+                "alt_text": "a square logo of a driver license"
+            },
+            "background_color": "#12107c",
+            "text_color": "#FFFFFF"
+        }
+    ]
+}

@@ -1,0 +1,34 @@
+name: Run Tests
+
+on: 
+    push:
+        branches: [test/mermaid-diagram]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        
+        steps:
+        - name: Checkout Repository
+            uses: actions/checkout@v2
+
+        - name: Build Docker Image
+            run: docker build -t credential_issuer tests/common/credential_issuer .
+        
+        - name: Run Docker Container
+            run: docker run -d --name credential_issuer -p 8000:8000 credential_issuer
+    
+    test:
+        runs-on ubuntu-latest
+    
+    needs: build
+
+    steps:
+    - name: Wait for Credential Issuer Server to Start
+        run: sleep 100
+
+    - name: Run Tests
+        run: cargo test --manifest-path tests/common/Cargo.toml
+
+    - name: Stop Docker Container
+        run: docker stop credential_issuer

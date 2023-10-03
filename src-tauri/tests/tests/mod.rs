@@ -6,8 +6,6 @@ mod qr_code_scanned;
 
 #[cfg(test)]
 mod tests {
-    use std::ops::Deref;
-
     use crate::common::assert_state_update::{assert_state_update, setup_state_file, setup_stronghold};
     use identity_wallet::state::{
         actions::{Action, ActionType},
@@ -25,7 +23,7 @@ mod tests {
         print_mermaid().await;
     }
 
-    async fn print_mermaid() -> anyhow::Result<()> {
+    async fn print_mermaid() {
         use std::collections::HashMap;
         let mut idents = HashMap::new();
         let mut payloads = HashMap::new();
@@ -38,12 +36,10 @@ mod tests {
             .next()
             .unwrap();
 
-        // println!("file: {:#?}", file);
         println!("__________________________________________________________");
         println!("__________________________________________________________");
 
-        let temp2 = file
-            .clone()
+        file.clone()
             .into_inner()
             .find(|pair| pair.as_rule() == Rule::body)
             .map(|body| {
@@ -71,7 +67,7 @@ mod tests {
                     })
             });
 
-        let mut temp = file
+        let temp = file
             .into_inner()
             .find(|pair| pair.as_rule() == Rule::body)
             .map(|body| {
@@ -86,9 +82,6 @@ mod tests {
                                     .into_inner()
                                     .filter(|pair| pair.as_rule() == Rule::chain)
                                     .filter_map(|chain| {
-                                        // println!("graph: {:#?}", chain);
-                                        // println!("__________________________________________________________");
-                                        // println!("__________________________________________________________");
                                         let mut chain = chain.into_inner();
                                         match (
                                             chain.next(),
@@ -125,9 +118,14 @@ mod tests {
                                                     _ => panic!("first"),
                                                 };
 
-                                                let link = PairWrapper(third).child(0)?.child(0)?.0.as_str();
-
-                                                // println!("action: {:#?}", link.as_str());
+                                                let link = third
+                                                    .into_inner()
+                                                    .next()
+                                                    .unwrap()
+                                                    .into_inner()
+                                                    .next()
+                                                    .unwrap()
+                                                    .as_str();
 
                                                 let mut fifth = fifth.into_inner().next().unwrap().into_inner();
                                                 let (ident2, path2) = match (fifth.next(), fifth.next(), fifth.next()) {
@@ -150,7 +148,14 @@ mod tests {
                                                     && second.as_rule() == Rule::link
                                                     && third.as_rule() == Rule::ident_comb =>
                                             {
-                                                let ident = PairWrapper(first).child(0)?.child(0)?.0.as_str();
+                                                let ident = first
+                                                    .into_inner()
+                                                    .next()
+                                                    .unwrap()
+                                                    .into_inner()
+                                                    .next()
+                                                    .unwrap()
+                                                    .as_str();
 
                                                 let payload = payloads.get(ident).unwrap();
 
@@ -186,15 +191,6 @@ mod tests {
                 vec![],
             )
             .await;
-        }
-
-        Ok(())
-    }
-    pub struct PairWrapper(pub pest::iterators::Pair<'static, Rule>);
-
-    impl PairWrapper {
-        pub fn child(self, index: u64) -> Option<Self> {
-            Some(Self(self.0.into_inner().nth(index as usize).unwrap()))
         }
     }
 }
