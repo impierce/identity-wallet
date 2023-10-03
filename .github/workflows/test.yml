@@ -9,29 +9,26 @@ jobs:
     runs-on: ubuntu-latest
         
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v3
+    - name: setup node
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16
+    - name: install Rust stable
+      uses: dtolnay/rust-toolchain@stable
+    - name: install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
+    - uses: tauri-apps/tauri-action@v0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     # - name: Build Docker Image
     #   run: docker build -t credential_issuer src-tauri/tests/common/credential_issuer
     
     # - name: Run Docker Container
     #   run: docker run -d --name credential_issuer -p 8000:8000 credential_issuer
-
-    - name: Install Packages
-      run: |
-        sudo apt update && sudo apt -y install \
-        libwebkit2gtk-4.0-dev \
-        build-essential \
-        curl \
-        wget \
-        libglib2.0-dev \
-        libssl-dev \
-        libgtk-3-dev \
-        libappindicator3-dev \
-        librsvg2-dev \
-        libappindicator-dev \
-        libgdk3.0-cil libatk1.0-dev
 
     - name: Run Tests
       run: cargo test --manifest-path src-tauri/Cargo.toml
