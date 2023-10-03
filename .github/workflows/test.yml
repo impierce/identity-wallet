@@ -12,25 +12,25 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v2
 
-    - name: Build Docker Image
-      run: docker build -t credential_issuer src-tauri/tests/common/credential_issuer
+    # - name: Build Docker Image
+    #   run: docker build -t credential_issuer src-tauri/tests/common/credential_issuer
     
-    - name: Run Docker Container
-      run: docker run -d --name credential_issuer -p 8000:8000 credential_issuer
+    # - name: Run Docker Container
+    #   run: docker run -d --name credential_issuer -p 8000:8000 credential_issuer
 
     - name: Install Packages
       run: |
-        sudo apt update && sudo apt -y install
-        libwebkit2gtk-4.0-dev
-        build-essential
-        curl
-        wget
-        libglib2.0-dev
-        libssl-dev
-        libgtk-3-dev
-        libappindicator3-dev
-        librsvg2-dev
-        libappindicator-dev
+        sudo apt update && sudo apt -y install \
+        libwebkit2gtk-4.0-dev \
+        build-essential \
+        curl \
+        wget \
+        libglib2.0-dev \
+        libssl-dev \
+        libgtk-3-dev \
+        libappindicator3-dev \
+        librsvg2-dev \
+        libappindicator-dev \
         libgdk3.0-cil libatk1.0-dev
 
     - name: Run Tests
