@@ -22,11 +22,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-    - name: Wait for Credential Issuer Server to Start
-      run: sleep 100
-
     - name: Run Tests
-      run: cargo test --manifest-path tests/common/Cargo.toml
+      run: cargo test --manifest-path src-tauri/tests/common/Cargo.toml
 
     - name: Stop Docker Container
       run: docker stop credential_issuer
