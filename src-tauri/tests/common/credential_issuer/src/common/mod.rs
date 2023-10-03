@@ -7,9 +7,8 @@ use anyhow::Result;
 use async_trait::async_trait;
 use derivative::{self, Derivative};
 use ed25519_dalek::{Signature, Signer, SigningKey};
-use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
 use lazy_static::lazy_static;
-use oid4vc_core::{authentication::sign::ExternalSign, JsonValue, Sign, Subject, Verify};
+use oid4vc_core::{authentication::sign::ExternalSign, Sign, Subject, Verify};
 use rand::rngs::OsRng;
 use siopv2::{StandardClaimsRequests, StandardClaimsValues};
 
@@ -24,15 +23,6 @@ pub struct TestSubject {
     #[derivative(Default(value = "did_url::DID::parse(\"did:test:123\").unwrap()"))]
     pub did: did_url::DID,
     pub key_id: String,
-}
-
-impl TestSubject {
-    pub fn new(did: String, key_id: String) -> Result<Self> {
-        Ok(TestSubject {
-            did: did_url::DID::parse(did)?,
-            key_id,
-        })
-    }
 }
 
 #[async_trait]
@@ -66,12 +56,6 @@ impl Subject for TestSubject {
 
 pub struct MockVerifier;
 
-impl MockVerifier {
-    pub fn new() -> Self {
-        MockVerifier {}
-    }
-}
-
 #[async_trait]
 impl Verify for MockVerifier {
     async fn public_key(&self, _kid: &str) -> Result<Vec<u8>> {
@@ -86,12 +70,6 @@ pub trait Storage {
 #[derive(Default, Debug)]
 pub struct MemoryStorage {
     data: StandardClaimsValues,
-}
-
-impl MemoryStorage {
-    pub fn new(data: StandardClaimsValues) -> Self {
-        MemoryStorage { data }
-    }
 }
 
 impl Storage for MemoryStorage {
@@ -128,12 +106,4 @@ impl Storage for MemoryStorage {
 
         present
     }
-}
-
-// Get the claims from a JWT without performing validation.
-pub fn get_jwt_claims(jwt: &JsonValue) -> JsonValue {
-    let key = DecodingKey::from_secret(&[]);
-    let mut validation = Validation::new(Algorithm::EdDSA);
-    validation.insecure_disable_signature_validation();
-    decode(jwt.as_str().unwrap(), &key, &validation).unwrap().claims
 }

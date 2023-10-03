@@ -795,6 +795,7 @@ dependencies = [
  "oid4vci",
  "oid4vp",
  "rand 0.8.5",
+ "reqwest",
  "serde",
  "serde_json",
  "siopv2",
