@@ -24,7 +24,9 @@ jobs:
         sudo apt-get install -y libwebkit2gtk-4.1-dev build-essential curl wget file libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev libsoup-3.0-dev javascriptcoregtk-4.1
 
     - name: Run Tests
-      run: RUSTFLAGS="-Awarnings" cargo test --manifest-path src-tauri/Cargo.toml
+      run: |
+        cargo tauri icon src-tauri/app-icon.png 
+        RUSTFLAGS="-Awarnings" cargo test --manifest-path src-tauri/Cargo.toml
       
     - name: Stop Docker Container
       run: docker stop credential_issuer
