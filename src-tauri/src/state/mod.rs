@@ -7,6 +7,7 @@ use crate::{
     crypto::stronghold::StrongholdManager, state::user_prompt::CurrentUserPrompt,
     verifiable_credential_record::DisplayCredential,
 };
+use derivative::Derivative;
 use oid4vc_core::Subject;
 use oid4vc_manager::ProviderManager;
 use oid4vci::Wallet;
@@ -29,49 +30,24 @@ pub struct Managers {
 }
 
 /// The inner state of the application managed by Tauri.
-#[derive(Default, Serialize, Deserialize)]
-#[serde(default)]
+#[derive(Default, Serialize, Deserialize, Derivative, TS)]
+#[derivative(Debug)]
+#[ts(export)]
 pub struct AppState {
     #[serde(skip)]
+    #[derivative(Debug = "ignore")]
     pub managers: tauri::async_runtime::Mutex<Managers>,
     pub active_profile: Mutex<Option<Profile>>,
     #[serde(skip)]
+    #[derivative(Debug = "ignore")]
     pub active_connection_request: Mutex<Option<ConnectionRequest>>,
     pub locale: Mutex<Locale>,
     pub credentials: Mutex<Vec<DisplayCredential>>,
     pub current_user_prompt: Mutex<Option<CurrentUserPrompt>>,
     pub debug_messages: Mutex<Vec<String>>,
+    #[ts(type = "object")]
     pub user_journey: Mutex<Option<serde_json::Value>>,
     pub connections: Mutex<Vec<Connection>>,
-}
-
-/// A representation of the current state which is used for serialization.
-#[derive(Clone, Debug, Deserialize, Serialize, TS, Default, PartialEq)]
-#[ts(export)]
-#[serde(default)]
-pub struct TransferState {
-    pub active_profile: Option<Profile>,
-    pub locale: Locale,
-    pub credentials: Vec<DisplayCredential>,
-    pub current_user_prompt: Option<CurrentUserPrompt>,
-    pub debug_messages: Vec<String>,
-    #[ts(optional, type = "object")]
-    pub user_journey: Option<serde_json::Value>,
-    pub connections: Vec<Connection>,
-}
-
-impl From<&AppState> for TransferState {
-    fn from(state: &AppState) -> TransferState {
-        TransferState {
-            active_profile: state.active_profile.lock().unwrap().clone(),
-            locale: state.locale.lock().unwrap().clone(),
-            credentials: state.credentials.lock().unwrap().clone(),
-            current_user_prompt: state.current_user_prompt.lock().unwrap().clone(),
-            debug_messages: state.debug_messages.lock().unwrap().clone(),
-            user_journey: state.user_journey.lock().unwrap().clone(),
-            connections: state.connections.lock().unwrap().clone(),
-        }
-    }
 }
 
 #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default)]

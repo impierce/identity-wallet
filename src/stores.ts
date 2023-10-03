@@ -8,7 +8,7 @@ import { setLocale } from '$src/i18n/i18n-svelte';
 import type { Locales } from '$src/i18n/i18n-types';
 
 // TODO: run some copy task instead of importing across root to make the frontend independent
-import type { TransferState as State } from '../src-tauri/bindings/TransferState';
+import type { AppState as State } from '../src-tauri/bindings/AppState';
 
 interface StateChangedEvent {
   event: string;

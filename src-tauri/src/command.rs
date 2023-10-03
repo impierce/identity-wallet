@@ -11,7 +11,7 @@ use crate::state::reducers::{
     update_profile_settings,
 };
 use crate::state::user_prompt::CurrentUserPrompt;
-use crate::state::{AppState, TransferState};
+use crate::state::AppState;
 use log::{info, warn};
 use oid4vc_core::authorization_request::AuthorizationRequest;
 use oid4vci::credential_offer::CredentialOfferQuery;
@@ -27,12 +27,12 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
 
     match r#type {
         ActionType::GetState => {
-            let transfer_state: TransferState = load_state().await.unwrap_or_default();
-
             // TODO: find a better way to populate all fields with values from json file
-            *app_state.active_profile.lock().unwrap() = transfer_state.active_profile;
-            *app_state.locale.lock().unwrap() = transfer_state.locale;
-            *app_state.connections.lock().unwrap() = transfer_state.connections;
+            let loaded_state: AppState = load_state().await.unwrap_or_default();
+
+            *app_state.active_profile.lock().unwrap() = loaded_state.active_profile.lock().unwrap().clone();
+            *app_state.locale.lock().unwrap() = loaded_state.locale.lock().unwrap().clone();
+            *app_state.connections.lock().unwrap() = loaded_state.connections.lock().unwrap().clone();
 
             if app_state.active_profile.lock().unwrap().is_some() {
                 *app_state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::PasswordRequired);
@@ -45,7 +45,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
         }
         ActionType::UnlockStorage => {
             if unlock_storage(app_state, Action { r#type, payload }).await.is_ok() {
-                save_state(TransferState::from(app_state)).await.ok();
+                save_state(app_state).await.ok();
             }
         }
         ActionType::Reset => {
@@ -57,25 +57,25 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
         ActionType::CreateNew => {
             let action = Action { r#type, payload };
             if initialize_stronghold(app_state, action.clone()).await.is_ok() {
-                save_state(TransferState::from(app_state)).await.ok();
+                save_state(app_state).await.ok();
             }
             if create_identity(app_state, action).await.is_ok() {
-                save_state(TransferState::from(app_state)).await.ok();
+                save_state(app_state).await.ok();
             }
             // When everything is done, we redirect the user to the "me" page
             *app_state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect {
                 target: "me".to_string(),
             });
-            save_state(TransferState::from(app_state)).await.ok();
+            save_state(app_state).await.ok();
         }
         ActionType::SetLocale => {
             if set_locale(app_state, Action { r#type, payload }).is_ok() {
-                save_state(TransferState::from(app_state)).await.ok();
+                save_state(app_state).await.ok();
             }
         }
         ActionType::UpdateProfileSettings => {
             if update_profile_settings(app_state, Action { r#type, payload }).is_ok() {
-                save_state(TransferState::from(app_state)).await.ok();
+                save_state(app_state).await.ok();
             }
         }
         ActionType::QrCodeScanned => {
@@ -111,14 +111,14 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             } else {
                 info!("Unable to parse QR code data");
             };
-            save_state(TransferState::from(app_state)).await.ok();
+            save_state(app_state).await.ok();
         }
         ActionType::ReadRequest => {
             if read_authorization_request(app_state, Action { r#type, payload })
                 .await
                 .is_ok()
             {
-                save_state(TransferState::from(app_state)).await.ok();
+                save_state(app_state).await.ok();
             }
         }
         ActionType::ConnectionAccepted => {
@@ -126,7 +126,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
                 .await
                 .is_ok()
             {
-                save_state(TransferState::from(app_state)).await.ok();
+                save_state(app_state).await.ok();
             }
         }
         ActionType::ReadCredentialOffer => {
@@ -134,7 +134,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
                 .await
                 .is_ok()
             {
-                save_state(TransferState::from(app_state)).await.ok();
+                save_state(app_state).await.ok();
             }
         }
         ActionType::CancelUserFlow => {
@@ -151,11 +151,11 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
                 app_state.current_user_prompt.lock().unwrap().take();
             }
 
-            save_state(TransferState::from(app_state)).await.ok();
+            save_state(app_state).await.ok();
         }
         ActionType::LoadDevProfile => {
             if load_dev_profile(app_state, Action { r#type, payload }).await.is_ok() {
-                save_state(TransferState::from(app_state)).await.ok();
+                save_state(app_state).await.ok();
             }
         }
         ActionType::CredentialsSelected => {
@@ -163,7 +163,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
                 .await
                 .is_ok()
             {
-                save_state(TransferState::from(app_state)).await.ok();
+                save_state(app_state).await.ok();
             }
         }
         ActionType::CredentialOffersSelected => {
@@ -171,7 +171,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
                 .await
                 .is_ok()
             {
-                save_state(TransferState::from(app_state)).await.ok();
+                save_state(app_state).await.ok();
             }
         }
         ActionType::UpdateCredentialMetadata => {
@@ -180,12 +180,12 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
                 .is_ok()
             {
                 *app_state.current_user_prompt.lock().unwrap() = None;
-                save_state(TransferState::from(app_state)).await.ok();
+                save_state(app_state).await.ok();
             }
         }
         ActionType::CancelUserJourney => {
             *app_state.user_journey.lock().unwrap() = None;
-            save_state(TransferState::from(app_state)).await.ok();
+            save_state(app_state).await.ok();
         }
         ActionType::Unknown => {
             warn!(
@@ -208,18 +208,14 @@ pub async fn handle_action<R: tauri::Runtime>(
 ) -> Result<(), String> {
     handle_action_inner(action, _app_handle, app_state.inner()).await.ok();
 
-    let updated_state = TransferState::from(app_state.inner());
-    emit_event(window, updated_state).ok();
+    emit_event(window, app_state.inner()).ok();
 
     Result::Ok(())
 }
 
-fn emit_event<R: tauri::Runtime>(window: tauri::Window<R>, transfer_state: TransferState) -> anyhow::Result<()> {
+fn emit_event<R: tauri::Runtime>(window: tauri::Window<R>, app_state: &AppState) -> anyhow::Result<()> {
     const STATE_CHANGED_EVENT: &str = "state-changed";
-    window.emit(STATE_CHANGED_EVENT, &transfer_state)?;
-    info!(
-        "emitted event `{}` with payload `{:?}`",
-        STATE_CHANGED_EVENT, &transfer_state
-    );
+    window.emit(STATE_CHANGED_EVENT, app_state)?;
+    info!("emitted event `{}` with payload `{:?}`", STATE_CHANGED_EVENT, app_state);
     Ok(())
 }

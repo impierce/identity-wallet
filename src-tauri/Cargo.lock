@@ -2993,6 +2993,7 @@ dependencies = [
  "async-recursion",
  "base64 0.13.1",
  "chrono",
+ "derivative",
  "did-key",
  "fern",
  "futures",
