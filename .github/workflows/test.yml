@@ -12,11 +12,11 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v3
 
-    # - name: Build Docker Image
-    #   run: docker build -t credential_issuer src-tauri/tests/common/credential_issuer
+    - name: Build Docker Image
+      run: docker build -t credential_issuer src-tauri/tests/common/credential_issuer
     
-    # - name: Run Docker Container
-    #   run: docker run -d --name credential_issuer -p 8000:8000 credential_issuer
+    - name: Run Docker Container
+      run: docker run -d --name credential_issuer -p 8000:8000 credential_issuer
 
     - name: Install Packages
       run: |
