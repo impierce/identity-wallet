@@ -12,7 +12,10 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v3
 
-    - name: Build Docker Image
+    - name: Login to GitHub Package Registry
+      run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.repository }} --password-stdin
+
+    - name: Pull Docker Image
       run: |
         docker pull ghcr.io/impierce/credential_issuer:latest
     
