@@ -14,7 +14,6 @@ jobs:
 
     - name: Build Docker Image
       run: |
-        echo "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" | docker login ghcr.io -u nanderstabel --password-stdin
         docker pull ghcr.io/impierce/credential_issuer:latest
     
     - name: Run Docker Container
