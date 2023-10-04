@@ -20,7 +20,7 @@ jobs:
         docker pull ghcr.io/impierce/credential_issuer:latest
     
     - name: Run Docker Container
-      run: docker run -d --name credential_issuer -p 8000:8000 credential_issuer
+      run: docker run -d --name ghcr.io/impierce/credential_issuer:latest -p 8000:8000 credential_issuer
 
     - name: Install Packages
       run: |
