@@ -2,7 +2,7 @@ use crate::{
     state::{actions::Action, user_prompt::CurrentUserPrompt, AppState},
     verifiable_credential_record::VerifiableCredentialRecord,
 };
-use log::info;
+// use log::println;
 use oid4vci::{
     credential_format_profiles::{CredentialFormats, WithCredential},
     credential_offer::{CredentialOffer, CredentialOfferQuery, CredentialsObject, Grants},
@@ -13,7 +13,7 @@ use serde_json::json;
 use uuid::Uuid;
 
 pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::Result<()> {
-    info!("read_credential_offer");
+    println!("read_credential_offer");
     let state_guard = state.managers.lock().await;
     let wallet = &state_guard
         .identity_manager
@@ -29,12 +29,12 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::
             wallet.get_credential_offer(credential_offer_uri).await?
         }
     };
-    info!("credential offer: {:?}", credential_offer);
+    println!("credential offer: {:?}", credential_offer);
 
     // The credential offer contains a credential issuer url.
     let credential_issuer_url = credential_offer.clone().credential_issuer;
 
-    info!("credential issuer url: {:?}", credential_issuer_url);
+    println!("credential issuer url: {:?}", credential_issuer_url);
 
     // Get the credential issuer metadata.
     let credential_issuer_metadata = if credential_offer
@@ -50,7 +50,7 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::
         None
     };
 
-    info!("credential issuer metadata: {:?}", credential_issuer_metadata);
+    println!("credential issuer metadata: {:?}", credential_issuer_metadata);
 
     // For all credentials by reference, replace them with credentials by value using the CredentialIssuerMetadata.
     for credential in credential_offer.credentials.iter_mut() {
@@ -108,7 +108,7 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::
 }
 
 pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow::Result<()> {
-    info!("send_credential_request");
+    println!("send_credential_request");
     let state_guard = state.managers.lock().await;
     let stronghold_manager = state_guard
         .stronghold_manager
@@ -132,7 +132,7 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
             "no current user prompt found, unable to send credential request"
         ))?;
 
-    info!("current_user_prompt: {:?}", current_user_prompt);
+    println!("current_user_prompt: {:?}", current_user_prompt);
 
     let credential_offer = match current_user_prompt {
         CurrentUserPrompt::CredentialOffer { credential_offer, .. } => credential_offer,
@@ -142,21 +142,21 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
     // The credential offer contains a credential issuer url.
     let credential_issuer_url = credential_offer.credential_issuer;
 
-    info!("credential issuer url: {:?}", credential_issuer_url);
+    println!("credential issuer url: {:?}", credential_issuer_url);
 
     // Get the authorization server metadata.
     let authorization_server_metadata = wallet
         .get_authorization_server_metadata(credential_issuer_url.clone())
         .await?;
 
-    info!("authorization server metadata: {:?}", authorization_server_metadata);
+    println!("authorization server metadata: {:?}", authorization_server_metadata);
 
     // Get the credential issuer metadata.
     let credential_issuer_metadata = wallet
         .get_credential_issuer_metadata(credential_issuer_url.clone())
         .await?;
 
-    info!("credential issuer metadata: {:?}", credential_issuer_metadata);
+    println!("credential issuer metadata: {:?}", credential_issuer_metadata);
 
     // Get the credential issuer display.
     let display = credential_issuer_metadata
@@ -183,7 +183,7 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
         })
         .collect::<Vec<CredentialFormats>>();
 
-    info!("credential_offer_formats: {:?}", credential_offer_formats);
+    println!("credential_offer_formats: {:?}", credential_offer_formats);
 
     // Create a token request with grant_type `pre_authorized_code`.
     let token_request = match credential_offer.grants {
@@ -196,14 +196,14 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
         },
         None => unreachable!(),
     };
-    info!("token_request: {:?}", token_request);
+    println!("token_request: {:?}", token_request);
 
     // Get an access token.
     let token_response = wallet
         .get_access_token(authorization_server_metadata.token_endpoint.unwrap(), token_request)
         .await?;
 
-    info!("token_response: {:?}", token_response);
+    println!("token_response: {:?}", token_response);
 
     let credentials: Vec<CredentialFormats<WithCredential>> = match credential_offer_formats.len() {
         0 => vec![],
@@ -239,7 +239,7 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
                 .collect()
         }
     };
-    info!("credentials: {:?}", credentials);
+    println!("credentials: {:?}", credentials);
 
     for credential in credentials.into_iter() {
         let mut verifiable_credential_record = VerifiableCredentialRecord::from(credential);
@@ -250,7 +250,7 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
             .parse()
             .expect("invalid uuid");
 
-        info!("generated hash-key: {:?}", key);
+        println!("generated hash-key: {:?}", key);
 
         // Remove the old credential from the stronghold if it exists.
         stronghold_manager.remove(key)?;

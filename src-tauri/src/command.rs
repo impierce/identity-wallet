@@ -23,7 +23,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
     _app_handle: tauri::AppHandle<R>,
     app_state: &AppState,
 ) -> Result<(), String> {
-    info!("received action `{:?}` with payload `{:?}`", r#type, payload);
+    println!("received action `{:?}` with payload `{:?}`", r#type, payload);
 
     match r#type {
         ActionType::GetState => {
@@ -79,7 +79,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             }
         }
         ActionType::QrCodeScanned => {
-            info!("qr code scanned: `{:?}`", payload);
+            println!("qr code scanned: `{:?}`", payload);
 
             let payload = payload.ok_or("unable to read payload")?;
             let form_urlencoded = payload["form_urlencoded"]
@@ -109,7 +109,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
                 .await
                 .ok();
             } else {
-                info!("Unable to parse QR code data");
+                println!("Unable to parse QR code data");
             };
             save_state(app_state).await.ok();
         }
