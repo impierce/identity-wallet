@@ -8,7 +8,33 @@ use identity_wallet::state::{
     actions::{Action, ActionType},
     AppState, TransferState,
 };
+use serde::de::DeserializeOwned;
 use serde_json::json;
+use std::fs::File;
+use std::path::Path;
+
+fn json_example<T>(path: &str) -> T
+where
+    T: DeserializeOwned,
+{
+    let file_path = Path::new(path);
+    let file = File::open(file_path).expect("file does not exist");
+    serde_json::from_reader::<_, T>(file).expect("could not parse json")
+}
+
+#[tokio::test]
+#[serial_test::serial]
+async fn pretty_print_test() {
+    let t_state = TransferState {
+        current_user_prompt: Some(CurrentUserPrompt::Redirect(Redirect {
+            r#type: CurrentUserPromptType::Redirect,
+            target: "welcome".to_string(),
+        })),
+        ..TransferState::default()
+    };
+    let s =  serde_json::to_string_pretty(&t_state).unwrap();
+    println!("{}", s);
+}
 
 #[tokio::test]
 #[serial_test::serial]
@@ -16,6 +42,7 @@ async fn test_get_state_create_new() {
     setup_state_file();
     setup_stronghold();
 
+    let transstate2 = json_example::<TransferState>("tests/tests/states/get_state.json");
     assert_state_update(
         // Initial state.
         AppState::default(),
@@ -46,19 +73,8 @@ async fn test_get_state_create_new() {
                 ..TransferState::default()
             }),
             // The profile was created, so the user is redirected to the profile page.
-            Some(TransferState {
-                active_profile: Some(Profile {
-                    name: "Ferris Crabman".to_string(),
-                    picture: Some("&#129408".to_string()),
-                    theme: Some("system".to_string()),
-                    primary_did: "did:example:placeholder".to_string(),
-                }),
-                current_user_prompt: Some(CurrentUserPrompt::Redirect(Redirect {
-                    r#type: CurrentUserPromptType::Redirect,
-                    target: "me".to_string(),
-                })),
-                ..TransferState::default()
-            }),
+            Some(transstate2
+            ),
         ],
     )
     .await;

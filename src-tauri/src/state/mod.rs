@@ -29,10 +29,13 @@ pub struct Managers {
 }
 
 /// The inner state of the application managed by Tauri.
-#[derive(Default)]
+#[derive(Default, Serialize, Deserialize)]
+#[serde(default)]
 pub struct AppState {
+    #[serde(skip)]
     pub managers: tauri::async_runtime::Mutex<Managers>,
     pub active_profile: Mutex<Option<Profile>>,
+    #[serde(skip)]
     pub active_connection_request: Mutex<Option<ConnectionRequest>>,
     pub locale: Mutex<Locale>,
     pub credentials: Mutex<Vec<DisplayCredential>>,
@@ -45,6 +48,7 @@ pub struct AppState {
 /// A representation of the current state which is used for serialization.
 #[derive(Clone, Debug, Deserialize, Serialize, TS, Default, PartialEq)]
 #[ts(export)]
+#[serde(default)]
 pub struct TransferState {
     pub active_profile: Option<Profile>,
     pub locale: Locale,
@@ -83,6 +87,7 @@ pub enum Locale {
 /// A profile of the current user.
 #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default)]
 #[ts(export)]
+#[serde(default)]
 pub struct Profile {
     pub name: String,
     pub picture: Option<String>,
@@ -92,6 +97,7 @@ pub struct Profile {
 
 #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default)]
 #[ts(export)]
+#[serde(default)]
 pub struct Connection {
     pub client_name: String,
     pub url: String,
