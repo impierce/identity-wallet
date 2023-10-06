@@ -1,40 +1,12 @@
 use std::sync::Mutex;
-
 use crate::common::assert_state_update::{assert_state_update, setup_state_file, setup_stronghold};
-use crate::common::{test_managers, TEST_PASSWORD};
-use identity_wallet::state::user_prompt::{CurrentUserPrompt, CurrentUserPromptType, PasswordRequired, Redirect};
+use crate::common::{test_managers, json_example};
 use identity_wallet::state::Profile;
 use identity_wallet::state::{
-    actions::{Action, ActionType},
+    actions::Action,
     AppState, TransferState,
 };
-use serde::de::DeserializeOwned;
-use serde_json::json;
-use std::fs::File;
-use std::path::Path;
 
-fn json_example<T>(path: &str) -> T
-where
-    T: DeserializeOwned,
-{
-    let file_path = Path::new(path);
-    let file = File::open(file_path).expect("file does not exist");
-    serde_json::from_reader::<_, T>(file).expect("could not parse json")
-}
-
-#[tokio::test]
-#[serial_test::serial]
-async fn pretty_print_test() {
-    let t_state = TransferState {
-        current_user_prompt: Some(CurrentUserPrompt::Redirect(Redirect {
-            r#type: CurrentUserPromptType::Redirect,
-            target: "welcome".to_string(),
-        })),
-        ..TransferState::default()
-    };
-    let s =  serde_json::to_string_pretty(&t_state).unwrap();
-    println!("{}", s);
-}
 
 #[tokio::test]
 #[serial_test::serial]
@@ -42,39 +14,24 @@ async fn test_get_state_create_new() {
     setup_state_file();
     setup_stronghold();
 
-    let transstate2 = json_example::<TransferState>("tests/tests/states/get_state.json");
+    let state1 = json_example::<TransferState>("tests/tests/fixtures-get_state/states/create_new1.json");
+    let state2 = json_example::<TransferState>("tests/tests/fixtures-get_state/states/create_new2.json");
+    let action1 = json_example::<Action>("tests/tests/fixtures-get_state/actions/create_new1.json");
+    let action2 = json_example::<Action>("tests/tests/fixtures-get_state/actions/create_new2.json");
     assert_state_update(
         // Initial state.
         AppState::default(),
         vec![
             // Get the initial state.
-            Action {
-                r#type: ActionType::GetState,
-                payload: None,
-            },
+            action1,
             // Create a new profile.
-            Action {
-                r#type: ActionType::CreateNew,
-                payload: Some(json!({
-                    "name": "Ferris Crabman",
-                    "picture": "&#129408",
-                    "theme": "system",
-                    "password": TEST_PASSWORD
-                })),
-            },
+            action2,
         ],
         vec![
             // There is no profile yet, so the user is redirected to the welcome page.
-            Some(TransferState {
-                current_user_prompt: Some(CurrentUserPrompt::Redirect(Redirect {
-                    r#type: CurrentUserPromptType::Redirect,
-                    target: "welcome".to_string(),
-                })),
-                ..TransferState::default()
-            }),
+            Some(state1),
             // The profile was created, so the user is redirected to the profile page.
-            Some(transstate2
-            ),
+            Some(state2),
         ],
     )
     .await;
@@ -86,6 +43,12 @@ async fn test_get_state_unlock_storage() {
     setup_state_file();
     setup_stronghold();
 
+    
+//    let appstate = json_example::<AppState>("tests/tests/fixtures-get_state/states/unlock_storage-app_state.json");
+    let state1 = json_example::<TransferState>("tests/tests/fixtures-get_state/states/unlock_storage1.json");
+    let state2 = json_example::<TransferState>("tests/tests/fixtures-get_state/states/unlock_storage2.json");
+    let action1 = json_example::<Action>("tests/tests/fixtures-get_state/actions/unlock_storage1.json");
+    let action2 = json_example::<Action>("tests/tests/fixtures-get_state/actions/unlock_storage2.json");
     assert_state_update(
         // Initial state.
         AppState {
@@ -100,44 +63,15 @@ async fn test_get_state_unlock_storage() {
         },
         vec![
             // Get the initial state.
-            Action {
-                r#type: ActionType::GetState,
-                payload: None,
-            },
+            action1,
             // Unlock the storage.
-            Action {
-                r#type: ActionType::UnlockStorage,
-                payload: Some(json!({ "password": TEST_PASSWORD })),
-            },
+            action2
         ],
         vec![
             // The storage is locked, so the user is prompted to unlock it.
-            Some(TransferState {
-                active_profile: Some(Profile {
-                    name: "Ferris Crabman".to_string(),
-                    picture: Some("&#129408".to_string()),
-                    theme: Some("system".to_string()),
-                    primary_did: "did:example:placeholder".to_string(),
-                }),
-                current_user_prompt: Some(CurrentUserPrompt::PasswordRequired(PasswordRequired {
-                    r#type: CurrentUserPromptType::PasswordRequired,
-                })),
-                ..TransferState::default()
-            }),
+            Some(state1),
             // The storage is unlocked, so the user is redirected to the profile page.
-            Some(TransferState {
-                active_profile: Some(Profile {
-                    name: "Ferris Crabman".to_string(),
-                    picture: Some("&#129408".to_string()),
-                    theme: Some("system".to_string()),
-                    primary_did: "did:example:placeholder".to_string(),
-                }),
-                current_user_prompt: Some(CurrentUserPrompt::Redirect(Redirect {
-                    r#type: CurrentUserPromptType::Redirect,
-                    target: "me".to_string(),
-                })),
-                ..TransferState::default()
-            }),
+            Some(state2),
         ],
     )
     .await;

@@ -8,10 +8,22 @@ use oid4vc_manager::{methods::key_method::KeySubject, ProviderManager};
 use oid4vci::Wallet;
 use serde_json::json;
 use std::sync::Arc;
+use serde::de::DeserializeOwned;
+use std::fs::File;
+use std::path::Path;
 
 pub mod assert_state_update;
 
 pub const TEST_PASSWORD: &str = "sup3rSecr3t";
+
+pub fn json_example<T>(path: &str) -> T
+where
+    T: DeserializeOwned,
+{
+    let file_path = Path::new(path);
+    let file = File::open(file_path).expect("file does not exist");
+    serde_json::from_reader::<_, T>(file).expect("could not parse json")
+}
 
 pub fn test_managers(
     verifiable_credential_records: Vec<VerifiableCredentialRecord>,
