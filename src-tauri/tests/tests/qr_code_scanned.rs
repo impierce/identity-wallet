@@ -31,18 +31,40 @@ use std::sync::Mutex;
 async fn pretty_print_test() {
 //    let test = json_example::<Action>("tests/tests/actions/get_state.json");
 
-    let test = Action {
-        r#type: ActionType::QrCodeScanned,
-        payload: Some(json!({
-            "form_urlencoded": "openid-credential-offer://?credential_offer=%7B%22credential_issuer%22%3A%22http%3A%2F%2F192.168.1.127%3A9090%2F%22%2C%22credentials%22%3A%5B%7B%22format%22%3A%22jwt_vc_json%22%2C%22credential_definition%22%3A%7B%22type%22%3A%5B%22VerifiableCredential%22%2C%22PersonalInformation%22%5D%7D%7D%5D%2C%22grants%22%3A%7B%22urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Apre-authorized_code%22%3A%7B%22pre-authorized_code%22%3A%220YI5DXtuCltKyNa5%22%2C%22user_pin_required%22%3Afalse%7D%7D%7D"
-        }))};
+    let managers = test_managers(vec![]);
+    let active_profile = Some(Profile {
+        name: "Ferris".to_string(),
+        picture: Some("&#129408".to_string()),
+        theme: Some("system".to_string()),
+        primary_did: managers
+            .lock()
+            .await
+            .identity_manager
+            .as_ref()
+            .unwrap()
+            .subject
+            .identifier()
+            .unwrap(),
+    });
+
+    let test = TransferState {
+        active_profile: active_profile.clone(),
+        current_user_prompt: Some(CurrentUserPrompt::AcceptConnection(AcceptConnection {
+            r#type: CurrentUserPromptType::AcceptConnection,
+            client_name: "example.com".to_string(),
+            logo_uri: None,
+            redirect_uri: "https://example.com/".to_string(),
+            previously_connected: false,
+        })),
+        ..TransferState::default()
+    };
 
     let s = serde_json::to_string_pretty(&test).unwrap();
     println!("{}", s);
-//    let ds = serde_json::from_str::<AppState>(&s).unwrap();
-//    println!("{:#?}", ds);
-//    let dss = json_example::<Action>("tests/tests/actions/get_state.json");
-//    println!("{:#?}", dss);
+    let ds = serde_json::from_str::<TransferState>(&s).unwrap();
+    println!("{:#?}", ds);
+    let dss = json_example::<TransferState>("tests/tests/fixtures-qr_code_scanned/states/handle_siopv2_1.json");
+    println!("{:#?}", dss);
 }
 
 #[tokio::test]
@@ -67,12 +89,10 @@ async fn test_qr_code_scanned_read_credential_offer() {
             .unwrap(),
     });
 
-    let credential_issuer: url::Url = "http://192.168.1.127:9090".parse().unwrap();
+//    let credential_issuer: url::Url = "http://192.168.1.127:9090".parse().unwrap();
 
-    let state1 = json_example::<TransferState>("tests/tests/fixtures-get_state/states/create_new1.json");
-    let state2 = json_example::<TransferState>("tests/tests/fixtures-get_state/states/create_new2.json");
-    let action1 = json_example::<Action>("tests/tests/fixtures-get_state/actions/create_new1.json");
-    let action2 = json_example::<Action>("tests/tests/fixtures-get_state/actions/create_new2.json");
+    let state = json_example::<TransferState>("tests/tests/fixtures-qr_code_scanned/states/read_cred.json");
+    let action = json_example::<Action>("tests/tests/fixtures-qr_code_scanned/actions/read_cred.json");
     assert_state_update(
         // Initial state.
         AppState {
@@ -81,46 +101,9 @@ async fn test_qr_code_scanned_read_credential_offer() {
             ..AppState::default()
         },
         // A QR code is scanned containing a credential offer.
-        vec![Action {
-            r#type: ActionType::QrCodeScanned,
-            payload: Some(json!({
-                "form_urlencoded": "openid-credential-offer://?credential_offer=%7B%22credential_issuer%22%3A%22http%3A%2F%2F192.168.1.127%3A9090%2F%22%2C%22credentials%22%3A%5B%7B%22format%22%3A%22jwt_vc_json%22%2C%22credential_definition%22%3A%7B%22type%22%3A%5B%22VerifiableCredential%22%2C%22PersonalInformation%22%5D%7D%7D%5D%2C%22grants%22%3A%7B%22urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Apre-authorized_code%22%3A%7B%22pre-authorized_code%22%3A%220YI5DXtuCltKyNa5%22%2C%22user_pin_required%22%3Afalse%7D%7D%7D"
-            })),
-        }],
+        vec![action],
         // The state is updated with a new user prompt containing the credential offer.
-        vec![Some(TransferState {
-            active_profile,
-            current_user_prompt: Some(CurrentUserPrompt::CredentialOffer(CredentialOfferPrompt {
-                r#type: CurrentUserPromptType::CredentialOffer,
-                issuer_name: credential_issuer.to_string(),
-                logo_uri: None,
-                credential_offer: serde_json::to_value(&CredentialOffer {
-                    credential_issuer,
-                    credentials: vec![CredentialsObject::ByValue(
-                        CredentialFormats::<WithParameters>::JwtVcJson(Parameters {
-                            format: JwtVcJson,
-                            parameters: (
-                                jwt_vc_json::CredentialDefinition {
-                                    type_: vec!["VerifiableCredential".to_string(), "PersonalInformation".to_string()],
-                                    credential_subject: None,
-                                },
-                                None,
-                            )
-                                .into(),
-                        }),
-                    )],
-                    grants: Some(Grants {
-                        authorization_code: None,
-                        pre_authorized_code: Some(PreAuthorizedCode {
-                            pre_authorized_code: "0YI5DXtuCltKyNa5".to_string(),
-                            ..PreAuthorizedCode::default()
-                        }),
-                    }),
-                })
-                .unwrap(),
-            })),
-            ..TransferState::default()
-        })],
+        vec![Some(state)],
     ).await;
 }
 
@@ -146,6 +129,10 @@ async fn test_qr_code_scanned_handle_siopv2_authorization_request() {
             .unwrap(),
     });
 
+    let state1 = json_example::<TransferState>("tests/tests/fixtures-qr_code_scanned/states/handle_siopv2_1.json");
+    //let state2 = json_example::<TransferState>("tests/tests/fixtures-qr_code_scanned/states/handle_siopv2_2.json");
+    let action1 = json_example::<Action>("tests/tests/fixtures-qr_code_scanned/actions/handle_siopv2_1.json");
+    let action2 = json_example::<Action>("tests/tests/fixtures-qr_code_scanned/actions/handle_siopv2_2.json");
     assert_state_update(
         // Initial state.
         AppState {
@@ -155,16 +142,8 @@ async fn test_qr_code_scanned_handle_siopv2_authorization_request() {
         },
         // A QR code was scanned containing a SIOPv2 authorization request.
         vec![
-            Action {
-                r#type: ActionType::QrCodeScanned,
-                payload: Some(json!({
-                    "form_urlencoded": "siopv2://idtoken?response_type=id_token&client_id=did%3Akey%3Az6Mkm9yeuZK7inXBNjnNH3vAs9uUjqfy3mfNoKBKsKBrv8Tb&scope=openid&redirect_uri=https%3A%2F%2Fexample.com&nonce=nonce"
-                })),
-            },
-            Action {
-                r#type: ActionType::ConnectionAccepted,
-                payload: None
-            },
+            action1,
+            action2
         ],
         // The state is updated with a new user prompt containing the client's metadata.
         vec![
