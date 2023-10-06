@@ -1,8 +1,10 @@
 use crate::common::json_example;
+use crate::common::json_example;
 use crate::common::{
     assert_state_update::{assert_state_update, setup_state_file, setup_stronghold},
     test_managers,
 };
+use identity_wallet::state::reducers::load_dev_profile::{DRIVERS_LICENSE_CREDENTIAL, PERSONAL_INFORMATION};
 use identity_wallet::{
     state::{actions::Action, AppState, Profile, TransferState},
     verifiable_credential_record::VerifiableCredentialRecord,
@@ -12,6 +14,26 @@ use oid4vci::credential_format_profiles::CredentialFormats;
 use oid4vci::credential_format_profiles::{Credential, WithCredential};
 use serde_json::json;
 use std::sync::Mutex;
+
+#[tokio::test]
+#[serial_test::serial]
+async fn pretty_print_test() {
+    //    let test = json_example::<Action>("tests/tests/actions/get_state.json");
+
+    let test = Action {
+        r#type: ActionType::QrCodeScanned,
+        payload: Some(json!({
+            "form_urlencoded": "openid-credential-offer://?credential_offer=%7B%22credential_issuer%22%3A%22http%3A%2F%2F192.168.1.127%3A9090%2F%22%2C%22credentials%22%3A%5B%7B%22format%22%3A%22jwt_vc_json%22%2C%22credential_definition%22%3A%7B%22type%22%3A%5B%22VerifiableCredential%22%2C%22PersonalInformation%22%5D%7D%7D%5D%2C%22grants%22%3A%7B%22urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Apre-authorized_code%22%3A%7B%22pre-authorized_code%22%3A%220YI5DXtuCltKyNa5%22%2C%22user_pin_required%22%3Afalse%7D%7D%7D"
+        })),
+    };
+
+    let s = serde_json::to_string_pretty(&test).unwrap();
+    println!("{}", s);
+    //    let ds = serde_json::from_str::<AppState>(&s).unwrap();
+    //    println!("{:#?}", ds);
+    //    let dss = json_example::<Action>("tests/tests/actions/get_state.json");
+    //    println!("{:#?}", dss);
+}
 
 #[tokio::test]
 #[serial_test::serial]
