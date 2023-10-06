@@ -6,5 +6,5 @@ gen/*
 !gen/apple/ExportOptions.plist
 !gen/android/app/build.gradle.kts
 
-# # Can be generated through `cargo tauri icon`
-# icons/
+# Can be generated through `cargo tauri icon`
+icons/
