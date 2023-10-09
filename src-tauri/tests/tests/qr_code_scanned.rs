@@ -147,17 +147,7 @@ async fn test_qr_code_scanned_handle_siopv2_authorization_request() {
         ],
         // The state is updated with a new user prompt containing the client's metadata.
         vec![
-            Some(TransferState {
-                active_profile: active_profile.clone(),
-                current_user_prompt: Some(CurrentUserPrompt::AcceptConnection(AcceptConnection {
-                    r#type: CurrentUserPromptType::AcceptConnection,
-                    client_name: "example.com".to_string(),
-                    logo_uri: None,
-                    redirect_uri: "https://example.com/".to_string(),
-                    previously_connected: false,
-                })),
-                ..TransferState::default()
-            }),
+            Some(state1),
             Some(TransferState {
                 active_profile,
                 current_user_prompt: Some(CurrentUserPrompt::Redirect(Redirect {
