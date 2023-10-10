@@ -16,8 +16,6 @@ pub enum CurrentUserPrompt {
     Redirect { target: String },
     #[serde(rename = "warning")]
     Warning { message: String },
-    #[serde(rename = "selection")]
-    Selection { options: Vec<String> },
     #[serde(rename = "password-required")]
     PasswordRequired,
     #[serde(rename = "accept-connection")]
@@ -40,22 +38,4 @@ pub enum CurrentUserPrompt {
         logo_uri: Option<String>,
         options: Vec<String>,
     },
-}
-
-#[test]
-fn test() {
-    // let up = CurrentUserPrompt::CredentialOffer {
-    //     issuer_name: "test".into(),
-    //     logo_uri: None,
-    //     credential_offer: serde_json::json!({}),
-    // };
-
-    let up2 = CurrentUserPrompt::Redirect { target: "test".into() };
-
-    // let json = serde_json::to_string_pretty(&up).unwrap();
-    // println!("{}", json);
-    let json = serde_json::to_string_pretty(&up2).unwrap();
-    println!("{}", json);
-
-    // let cup: CurrentUserPrompt<PasswordRequired> = serde_json::from_str(&json).unwrap();
 }
