@@ -19,14 +19,12 @@
   import Trash from '~icons/ph/trash';
   import Warning from '~icons/ph/warning';
 
-  import type { Selection } from '../../src-tauri/bindings/user-prompt/Selection';
-
   import '../app.css';
 
   import { melt } from '@melt-ui/svelte';
 
   import Button from '$src/lib/components/Button.svelte';
-  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
+  import BottomDrawer from '$srSelectionc/lib/components/molecules/dialogs/BottomDrawer.svelte';
 
   import { determineTheme } from './utils';
 
@@ -58,7 +56,6 @@
 
     // User prompt
     let type = $state?.current_user_prompt?.type;
-    console.log('options', ($state?.current_user_prompt as Selection)?.options);
 
     if (type && type !== 'redirect') {
       goto(`/prompt/${type}`);
