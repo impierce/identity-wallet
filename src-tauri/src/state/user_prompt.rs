@@ -21,6 +21,7 @@ pub enum CurrentUserPrompt {
     #[serde(rename = "accept-connection")]
     AcceptConnection {
         client_name: String,
+        #[ts(optional)]
         logo_uri: Option<String>,
         redirect_uri: String,
         previously_connected: bool,
@@ -28,6 +29,7 @@ pub enum CurrentUserPrompt {
     #[serde(rename = "credential-offer")]
     CredentialOffer {
         issuer_name: String,
+        #[ts(optional)]
         logo_uri: Option<String>,
         #[ts(type = "object")]
         credential_offer: CredentialOffer,
@@ -35,7 +37,48 @@ pub enum CurrentUserPrompt {
     #[serde(rename = "share-credentials")]
     ShareCredentials {
         client_name: String,
+        #[ts(optional)]
         logo_uri: Option<String>,
         options: Vec<String>,
     },
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_serialize_current_user_prompt() {
+        let prompt = CurrentUserPrompt::Redirect {
+            target: "welcome".to_string(),
+        };
+
+        let serialized = serde_json::to_string(&prompt).unwrap();
+        assert_eq!(serialized, r#"{"type":"redirect","target":"welcome"}"#);
+
+        let prompt = CurrentUserPrompt::Warning {
+            message: "This is a warning!".to_string(),
+        };
+        assert_eq!(
+            serde_json::to_string(&prompt).unwrap(),
+            r#"{"type":"warning","message":"This is a warning!"}"#
+        );
+
+        let prompt = CurrentUserPrompt::PasswordRequired;
+        assert_eq!(
+            serde_json::to_string(&prompt).unwrap(),
+            r#"{"type":"password-required"}"#
+        );
+
+        let prompt = CurrentUserPrompt::AcceptConnection {
+            client_name: "Test Client".to_string(),
+            logo_uri: None,
+            redirect_uri: "https://example.com".to_string(),
+            previously_connected: false,
+        };
+        assert_eq!(
+            serde_json::to_string(&prompt).unwrap(),
+            r#"{"type":"accept-connection","client_name":"Test Client","logo_uri":null,"redirect_uri":"https://example.com","previously_connected":false}"#
+        );
+    }
 }
