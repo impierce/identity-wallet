@@ -29,7 +29,7 @@ use std::sync::Mutex;
 #[tokio::test]
 #[serial_test::serial]
 async fn pretty_print_test() {
-
+    // A function to test the serialization and deserialization json output
     let verifiable_credential_record = VerifiableCredentialRecord::from(CredentialFormats::<WithCredential>::JwtVcJson(Credential {
         format: JwtVcJson,
         credential: json!("eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDprZXk6ejZNa3RqWXpmNkd1UVJraDFYczlHcUJIU3JKVU01S3VxcGNKMXVjV0E3cmdINXBoI3o2TWt0all6ZjZHdVFSa2gxWHM5R3FCSFNySlVNNUt1cXBjSjF1Y1dBN3JnSDVwaCJ9.eyJpc3MiOiJkaWQ6a2V5Ono2TWt0all6ZjZHdVFSa2gxWHM5R3FCSFNySlVNNUt1cXBjSjF1Y1dBN3JnSDVwaCIsInN1YiI6ImRpZDprZXk6ejZNa2cxWFhHVXFma2hBS1Uxa1ZkMVBtdzZVRWoxdnhpTGoxeGM5MU1CejVvd05ZIiwiZXhwIjo5OTk5OTk5OTk5LCJpYXQiOjAsInZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIiwiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvZXhhbXBsZXMvdjEiXSwidHlwZSI6WyJWZXJpZmlhYmxlQ3JlZGVudGlhbCIsIlBlcnNvbmFsSW5mb3JtYXRpb24iXSwiaXNzdWFuY2VEYXRlIjoiMjAyMi0wMS0wMVQwMDowMDowMFoiLCJpc3N1ZXIiOiJkaWQ6a2V5Ono2TWt0all6ZjZHdVFSa2gxWHM5R3FCSFNySlVNNUt1cXBjSjF1Y1dBN3JnSDVwaCIsImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkIjoiZGlkOmtleTp6Nk1rZzFYWEdVcWZraEFLVTFrVmQxUG13NlVFajF2eGlMajF4YzkxTUJ6NW93TlkiLCJnaXZlbk5hbWUiOiJGZXJyaXMiLCJmYW1pbHlOYW1lIjoiQ3JhYm1hbiIsImVtYWlsIjoiZmVycmlzLmNyYWJtYW5AY3JhYm1haWwuY29tIiwiYmlydGhkYXRlIjoiMTk4NS0wNS0yMSJ9fX0.ETqRaVMxFZQLN8OmngL1IPGAA2xH9Nsir9vRvJTLLBOJbnGuPdvcMQkN720MQuk9LWmsqNMBrUQegIuJ9IQLBg")
@@ -98,6 +98,7 @@ async fn test_qr_code_scanned_read_credential_offer() {
 
 //    let credential_issuer: url::Url = "http://192.168.1.127:9090".parse().unwrap();
 
+    // Deserializing the Transferstates and Actions from the accompanying json files.
     let state = json_example::<TransferState>("tests/tests/fixtures-qr_code_scanned/states/read_cred.json");
     let action = json_example::<Action>("tests/tests/fixtures-qr_code_scanned/actions/read_cred.json");
     assert_state_update(
@@ -136,6 +137,7 @@ async fn test_qr_code_scanned_handle_siopv2_authorization_request() {
             .unwrap(),
     });
 
+    // Deserializing the Transferstates and Actions from the accompanying json files.
     let state1 = json_example::<TransferState>("tests/tests/fixtures-qr_code_scanned/states/handle_siopv2_1.json");
     let state2 = json_example::<TransferState>("tests/tests/fixtures-qr_code_scanned/states/handle_siopv2_2.json");
     let action1 = json_example::<Action>("tests/tests/fixtures-qr_code_scanned/actions/handle_siopv2_1.json");
@@ -191,6 +193,7 @@ async fn test_qr_code_scanned_handle_oid4vp_authorization_request() {
             .unwrap(),
     });
 
+    // Deserializing the Transferstates and Actions from the accompanying json files.
     let state1 = json_example::<TransferState>("tests/tests/fixtures-qr_code_scanned/states/handle_oid4vp_1.json");
     let state2 = json_example::<TransferState>("tests/tests/fixtures-qr_code_scanned/states/handle_oid4vp_2.json");
     let action1 = json_example::<Action>("tests/tests/fixtures-qr_code_scanned/actions/handle_oid4vp_1.json");

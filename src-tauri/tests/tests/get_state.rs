@@ -14,6 +14,7 @@ async fn test_get_state_create_new() {
     setup_state_file();
     setup_stronghold();
 
+    // Deserializing the Transferstates and Actions from the accompanying json files.
     let state1 = json_example::<TransferState>("tests/tests/fixtures-get_state/states/create_new1.json");
     let state2 = json_example::<TransferState>("tests/tests/fixtures-get_state/states/create_new2.json");
     let action1 = json_example::<Action>("tests/tests/fixtures-get_state/actions/create_new1.json");
@@ -44,7 +45,7 @@ async fn test_get_state_unlock_storage() {
     setup_stronghold();
 
     
-//    let appstate = json_example::<AppState>("tests/tests/fixtures-get_state/states/unlock_storage-app_state.json");
+    // Deserializing the Transferstates and Actions from the accompanying json files.
     let state1 = json_example::<TransferState>("tests/tests/fixtures-get_state/states/unlock_storage1.json");
     let state2 = json_example::<TransferState>("tests/tests/fixtures-get_state/states/unlock_storage2.json");
     let action1 = json_example::<Action>("tests/tests/fixtures-get_state/actions/unlock_storage1.json");
