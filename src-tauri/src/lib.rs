@@ -23,6 +23,7 @@ pub fn run() {
             #[cfg(mobile)]
             {
                 app.handle().plugin(tauri_plugin_barcode_scanner::init())?;
+                app.handle().plugin(tauri_plugin_biometric::init())?;
             }
             Ok(())
         })

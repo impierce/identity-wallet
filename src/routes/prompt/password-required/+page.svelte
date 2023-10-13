@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
 
   import { melt } from '@melt-ui/svelte';
+  import { authenticate, checkStatus } from '@tauri-apps/plugin-biometric';
 
   import Button from '$src/lib/components/Button.svelte';
   import UniMeLogoDark from '$src/lib/components/logo/UniMeLogoDark.svelte';
@@ -23,9 +24,12 @@
   onMount(() => {
     if ($developer_mode) {
       console.log('Developer mode - Injecting password automatically ...');
-      setTimeout(() => {
-        dispatch({ type: '[Storage] Unlock', payload: { password: 'sup3rSecr3t' } });
-      }, 500);
+      authenticate('test').then((result) => {
+        console.log('authenticate', result);
+        setTimeout(() => {
+          dispatch({ type: '[Storage] Unlock', payload: { password: 'sup3rSecr3t' } });
+        }, 500);
+      });
     }
   });
 </script>
