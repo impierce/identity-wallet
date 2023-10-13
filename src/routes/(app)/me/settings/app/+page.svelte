@@ -8,6 +8,8 @@
   import ChatCircleText from '~icons/ph/chat-circle-text-fill';
   import Code from '~icons/ph/code-fill';
   import Confetti from '~icons/ph/confetti-fill';
+  import Eye from '~icons/ph/eye-fill';
+  import LockSimpleOpen from '~icons/ph/lock-key-fill';
   import Password from '~icons/ph/password-fill';
   import Sun from '~icons/ph/sun-fill';
   import Translate from '~icons/ph/translate-fill';
@@ -16,9 +18,9 @@
 <TopNavigation on:back={() => history.back()} title="App Settings" />
 <div class="content-height flex flex-col bg-silver dark:bg-navy">
   <div class="flex flex-col space-y-[10px] px-4 py-5">
-    <SettingsEntry icon={Sun} title="Language" hasCaretRight={false} textRight="English" todo />
+    <SettingsEntry icon={Translate} title="Language" hasCaretRight={false} textRight="English" todo />
     <SettingsEntry icon={Sun} title="Theme" on:click={() => goto('/me/settings/app/theme')} />
-    <SettingsEntry icon={Password} title="Password" todo />
+    <SettingsEntry icon={LockSimpleOpen} title="Security" on:click={() => goto('/me/settings/app/security')} />
     <SettingsEntry icon={Confetti} title="Onboarding journey" hasCaretRight={false} textRight="Restart" todo />
     <SettingsEntry icon={ChatCircleText} title="Hints and tips" hasCaretRight={false} textRight="Reset" todo />
     <!-- TODO: DEV_MODE -->
