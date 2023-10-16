@@ -1,12 +1,8 @@
-use std::sync::Mutex;
 use crate::common::assert_state_update::{assert_state_update, setup_state_file, setup_stronghold};
-use crate::common::{test_managers, json_example};
+use crate::common::{json_example, test_managers};
 use identity_wallet::state::Profile;
-use identity_wallet::state::{
-    actions::Action,
-    AppState, TransferState,
-};
-
+use identity_wallet::state::{actions::Action, AppState, TransferState};
+use std::sync::Mutex;
 
 #[tokio::test]
 #[serial_test::serial]
@@ -15,17 +11,16 @@ async fn test_get_state_create_new() {
     setup_stronghold();
 
     // Deserializing the Transferstates and Actions from the accompanying json files.
-    let state1 = json_example::<TransferState>("tests/tests/fixtures-get_state/states/create_new1.json");
-    let state2 = json_example::<TransferState>("tests/tests/fixtures-get_state/states/create_new2.json");
-    let action1 = json_example::<Action>("tests/tests/fixtures-get_state/actions/create_new1.json");
-    let action2 = json_example::<Action>("tests/tests/fixtures-get_state/actions/create_new2.json");
+    let state1 = json_example::<TransferState>("tests/tests/fixtures/states/no_profile_redirect_welcome.json");
+    let state2 = json_example::<TransferState>("tests/tests/fixtures/states/active_pf_redirect_me.json");
+    let action1 = json_example::<Action>("tests/tests/fixtures/actions/get_state.json");
+    let action2 = json_example::<Action>("tests/tests/fixtures/actions/create_new.json");
     assert_state_update(
         // Initial state.
         AppState::default(),
         vec![
             // Get the initial state.
-            action1,
-            // Create a new profile.
+            action1, // Create a new profile.
             action2,
         ],
         vec![
@@ -44,12 +39,11 @@ async fn test_get_state_unlock_storage() {
     setup_state_file();
     setup_stronghold();
 
-    
     // Deserializing the Transferstates and Actions from the accompanying json files.
-    let state1 = json_example::<TransferState>("tests/tests/fixtures-get_state/states/unlock_storage1.json");
-    let state2 = json_example::<TransferState>("tests/tests/fixtures-get_state/states/unlock_storage2.json");
-    let action1 = json_example::<Action>("tests/tests/fixtures-get_state/actions/unlock_storage1.json");
-    let action2 = json_example::<Action>("tests/tests/fixtures-get_state/actions/unlock_storage2.json");
+    let state1 = json_example::<TransferState>("tests/tests/fixtures/states/active_pf_password_required.json");
+    let state2 = json_example::<TransferState>("tests/tests/fixtures/states/active_pf_redirect_me.json");
+    let action1 = json_example::<Action>("tests/tests/fixtures/actions/get_state.json");
+    let action2 = json_example::<Action>("tests/tests/fixtures/actions/unlock_storage.json");
     assert_state_update(
         // Initial state.
         AppState {
@@ -64,9 +58,8 @@ async fn test_get_state_unlock_storage() {
         },
         vec![
             // Get the initial state.
-            action1,
-            // Unlock the storage.
-            action2
+            action1, // Unlock the storage.
+            action2,
         ],
         vec![
             // The storage is locked, so the user is prompted to unlock it.

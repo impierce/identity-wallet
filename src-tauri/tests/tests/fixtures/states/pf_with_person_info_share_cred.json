@@ -3,9 +3,9 @@
         "name": "Ferris",
         "picture": "&#129408",
         "theme": "system",
-        "primary_did": "did:key:z6Mkj8BwSPPbJFLbky8P62NmUGQmLz7foShA7F6ZB1gUwVj4"
-      },
-      "credentials": [
+        "primary_did": "did:key:z6MkpwhupMkPtjsCXXSCoudH6FnzMUpA9U8JD6sxqvZtquiu"
+    },
+    "credentials": [
         {
           "id": "37626466-3738-6437-6165-623533613665",
           "issuer_name": null,
@@ -30,19 +30,15 @@
               "email": "ferris.crabman@crabmail.com",
               "birthdate": "1985-05-21"
             }
-          },
-          "metadata": {
-            "is_favorite": false,
-            "display": {
-              "icon": null,
-              "color": null,
-              "name": null
-            }
           }
         }
-      ],
-      "current_user_prompt": {
-        "type": "redirect",
-        "target": "me"
-      }
+    ],
+    "current_user_prompt": {
+        "type": "share-credentials",
+        "client_name": "example.com",
+        "logo_uri": null,
+        "options": [
+          "37626466-3738-6437-6165-623533613665"
+        ]
+    }    
 }

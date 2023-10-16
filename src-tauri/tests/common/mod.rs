@@ -6,11 +6,11 @@ use identity_wallet::{
 };
 use oid4vc_manager::{methods::key_method::KeySubject, ProviderManager};
 use oid4vci::Wallet;
-use serde_json::json;
-use std::sync::Arc;
 use serde::de::DeserializeOwned;
+use serde_json::json;
 use std::fs::File;
 use std::path::Path;
+use std::sync::Arc;
 
 pub mod assert_state_update;
 

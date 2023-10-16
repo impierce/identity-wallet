@@ -1,8 +1,0 @@
-{
-    "type": "[Authenticate] Credentials selected",
-    "payload": {
-      "credential_uuids": [
-        "37626466-3738-6437-6165-623533613665"
-      ]
-    }
-  }
