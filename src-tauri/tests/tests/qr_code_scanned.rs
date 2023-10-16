@@ -1,10 +1,8 @@
 use crate::common::json_example;
-use crate::common::json_example;
 use crate::common::{
     assert_state_update::{assert_state_update, setup_state_file, setup_stronghold},
     test_managers,
 };
-use identity_wallet::state::reducers::load_dev_profile::{DRIVERS_LICENSE_CREDENTIAL, PERSONAL_INFORMATION};
 use identity_wallet::{
     state::{actions::Action, AppState, Profile, TransferState},
     verifiable_credential_record::VerifiableCredentialRecord,

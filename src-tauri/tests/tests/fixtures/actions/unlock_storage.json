@@ -1,6 +1,6 @@
 {
     "type": "[Storage] Unlock",
     "payload": {
-      "password": "sup3rSecr3t"
+        "password": "sup3rSecr3t"
     }
-  }
+}

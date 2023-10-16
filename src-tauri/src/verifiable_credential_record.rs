@@ -1,3 +1,5 @@
+use std::default;
+
 use oid4vci::credential_format_profiles::{CredentialFormats, WithCredential};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
