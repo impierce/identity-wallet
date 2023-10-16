@@ -9,7 +9,9 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
-    "types": ["unplugin-icons/types/svelte"],
+    // "dom-view-transitions" is needed because standard TS does not yet contain View Transition API types
+    // status: "Candidate Recommendation Snapshot" (https://drafts.csswg.org/css-view-transitions-1/)
+    "types": ["unplugin-icons/types/svelte", "dom-view-transitions"],
     "baseUrl": ".",
     "paths": {
       "$src": ["src"],

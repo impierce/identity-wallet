@@ -42,6 +42,7 @@
     "@testing-library/jest-dom": "^6.1.0",
     "@testing-library/svelte": "^4.0.0",
     "@tsconfig/svelte": "^5.0.0",
+    "@types/dom-view-transitions": "^1.0.2",
     "@types/node": "^20.6.0",
     "@types/qrcode": "^1.5.1",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
