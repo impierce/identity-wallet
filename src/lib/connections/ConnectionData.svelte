@@ -13,25 +13,13 @@
       <!-- <img src={'/tauri.svg'} alt={connection.domain} /> -->
     </div>
 
-    <div class="text-center text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
-      Data shared
-    </div>
+    <div class="text-center text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">Data shared</div>
   </div>
-  <div
-    class="flex w-full flex-col rounded-2xl border border-slate-200 bg-white p-1 dark:border-slate-600 dark:bg-dark"
-  >
-    <CredentialListEntry
-      title="Email address"
-      description="ferris.rustacean@example.org"
-      color="bg-purple-100"
-    >
+  <div class="flex w-full flex-col rounded-2xl border border-slate-200 bg-white p-1 dark:border-slate-600 dark:bg-dark">
+    <CredentialListEntry title="Email address" description="ferris.rustacean@example.org" color="bg-purple-100">
       <span slot="icon"><EnvelopeSimple class="h-6 w-6" /></span>
     </CredentialListEntry>
-    <CredentialListEntry
-      title="Home address"
-      description="Sunset Rd 1337, Iron Islands"
-      color="bg-green-100"
-    >
+    <CredentialListEntry title="Home address" description="Sunset Rd 1337, Iron Islands" color="bg-green-100">
       <span slot="icon"><House class="h-6 w-6" /></span>
     </CredentialListEntry>
   </div>

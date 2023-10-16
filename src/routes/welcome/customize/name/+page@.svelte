@@ -2,9 +2,8 @@
   import { goto } from '$app/navigation';
   import { fade } from 'svelte/transition';
 
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
-
   import Button from '$src/lib/components/Button.svelte';
+  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import { onboarding_state } from '$src/stores';
 
   $: {
@@ -38,16 +37,8 @@
     on:value={(e) => ($onboarding_state.name = e.detail)}
   /> -->
   </div>
-  <div
-    class="rounded-t-3xl bg-white p-6 dark:bg-dark"
-    in:fade={{ delay: 200 }}
-    out:fade={{ duration: 200 }}
-  >
-    <Button
-      label="Continue"
-      on:click={() => goto('/welcome/customize/theme')}
-      disabled={!!!$onboarding_state.name}
-    />
+  <div class="rounded-t-3xl bg-white p-6 dark:bg-dark" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
+    <Button label="Continue" on:click={() => goto('/welcome/customize/theme')} disabled={!!!$onboarding_state.name} />
   </div>
 
   <div class="safe-area-top" />

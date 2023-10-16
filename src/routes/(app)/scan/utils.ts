@@ -1,4 +1,4 @@
-import { type PermissionState, checkPermissions } from '@tauri-apps/plugin-barcode-scanner';
+import { checkPermissions, type PermissionState } from '@tauri-apps/plugin-barcode-scanner';
 import { info, warn } from '@tauri-apps/plugin-log';
 
 // TODO: remove (unused)

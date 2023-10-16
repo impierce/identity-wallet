@@ -2,19 +2,21 @@
   /* TODO: extract to ui-component */
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
+  import { slide } from 'svelte/transition';
+
+  import { createAccordion, melt } from '@melt-ui/svelte';
 
   import Button from '$lib/components/Button.svelte';
   import LL from '$src/i18n/i18n-svelte';
   import { state } from '$src/stores';
 
-  import type { Goal } from '../../types';
-  import { createAccordion, melt } from '@melt-ui/svelte';
   import CaretDown from '~icons/ph/caret-down-bold';
-  import { slide } from 'svelte/transition';
+
+  import type { Goal } from '../../types';
 
   const {
     elements: { content, item, trigger, root },
-    helpers: { isSelected }
+    helpers: { isSelected },
   } = createAccordion({});
 
   let goal: Goal = $state?.user_journey?.goals.find((g) => g.id === parseInt($page.params.id));

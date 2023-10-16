@@ -6,13 +6,12 @@
 
   import { melt } from '@melt-ui/svelte';
 
-  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
-
   import Button from '$lib/components/Button.svelte';
   import CredentialDetailsDropdownMenu from '$src/lib/components/CredentialDetailsDropdownMenu.svelte';
-  import ShareButton from '$src/lib/credentials/ShareButton.svelte';
+  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
+  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import { colors, icons } from '$src/lib/credentials/customization/utils';
+  import ShareButton from '$src/lib/credentials/ShareButton.svelte';
   import { dispatch } from '$src/lib/dispatcher';
   import { state } from '$src/stores';
 
@@ -43,7 +42,7 @@
         credential.id
           .match(/[0-9]+/)
           .at(0)
-          .at(0) % 8 // TODO: omits last value (white)
+          .at(0) % 8, // TODO: omits last value (white)
       );
   }
 
@@ -78,7 +77,7 @@
             on:click={() =>
               dispatch({
                 type: '[Credential Metadata] Update',
-                payload: { id: credential.id, is_favorite: !isFavorite }
+                payload: { id: credential.id, is_favorite: !isFavorite },
               })}
           >
             {#if isFavorite}
@@ -147,7 +146,7 @@
       <!-- QR Code -->
       <div class="flex flex-col items-center p-7">
         <div class="rounded-2xl bg-white p-6">
-          {#await QRCode.toDataURL( qrcodeText, { margin: 0, color: { light: '#FFFFFF' } } ) then data_url}
+          {#await QRCode.toDataURL(qrcodeText, { margin: 0, color: { light: '#FFFFFF' } }) then data_url}
             <img src={data_url} alt="qr-code" />
           {/await}
         </div>

@@ -1,5 +1,6 @@
-import { internalIpV4 } from 'internal-ip';
 import path from 'path';
+
+import { internalIpV4 } from 'internal-ip';
 import Icons from 'unplugin-icons/vite';
 import { defineConfig } from 'vite';
 
@@ -13,13 +14,13 @@ export default defineConfig(async () => ({
   resolve: {
     alias: {
       $src: path.resolve('./src'),
-      $lib: path.resolve('./src/lib')
-    }
+      $lib: path.resolve('./src/lib'),
+    },
   },
   test: {
     include: ['tests/**/*.{test,spec}.{js,ts}'],
     globals: true,
-    environment: 'jsdom'
+    environment: 'jsdom',
   },
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   // prevent vite from obscuring rust errors
@@ -32,8 +33,13 @@ export default defineConfig(async () => ({
     hmr: {
       protocol: 'ws',
       host: await internalIpV4(),
-      port: 5183
-    }
+      port: 5183,
+    },
+    fs: {
+      allow: [
+        // '/Users/daniel/.nvm/versions/node/v20.3.0/lib/node_modules/@impierce/ui-components/dist'
+      ],
+    },
   },
   // to make use of `TAURI_DEBUG` and other env variables
   // https://tauri.studio/v1/api/config#buildconfig.beforedevcommand
@@ -44,9 +50,9 @@ export default defineConfig(async () => ({
     // don't minify for debug builds
     minify: !process.env.TAURI_DEBUG ? 'esbuild' : false,
     // produce sourcemaps for debug builds
-    sourcemap: !!process.env.TAURI_DEBUG
+    sourcemap: !!process.env.TAURI_DEBUG,
   },
   optimizeDeps: {
-    exclude: ['~icons/*']
-  }
+    exclude: ['~icons/*'],
+  },
 }));

@@ -2,9 +2,8 @@
   import { goto } from '$app/navigation';
   import { fade } from 'svelte/transition';
 
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
-
   import Button from '$src/lib/components/Button.svelte';
+  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import { dispatch } from '$src/lib/dispatcher';
   import { state } from '$src/stores';
 

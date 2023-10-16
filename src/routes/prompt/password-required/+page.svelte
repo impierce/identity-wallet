@@ -1,12 +1,12 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
   import { melt } from '@melt-ui/svelte';
 
   import Button from '$src/lib/components/Button.svelte';
   import UniMeLogoDark from '$src/lib/components/logo/UniMeLogoDark.svelte';
   import UniMeLogoLight from '$src/lib/components/logo/UniMeLogoLight.svelte';
+  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
   import { dispatch } from '$src/lib/dispatcher';
   import { developer_mode } from '$src/stores';
 
@@ -84,13 +84,7 @@
             >
           </div>
 
-          <Button
-            variant="secondary"
-            slot="close"
-            let:close
-            trigger={close}
-            label="No, keep my profile"
-          />
+          <Button variant="secondary" slot="close" let:close trigger={close} label="No, keep my profile" />
         </BottomDrawer>
       </div>
     {/if}

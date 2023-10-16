@@ -1,7 +1,9 @@
 import { vi } from 'vitest';
 
 import { clearMocks, mockIPC } from '@tauri-apps/api/mocks';
+
 import '@testing-library/jest-dom';
+
 import { fireEvent, render, screen } from '@testing-library/svelte';
 
 import Welcome from '$src/routes/welcome/+page.svelte';
@@ -43,7 +45,7 @@ test('triggers correct event when button is clicked', async () => {
     action: { type: '[DID] Create new', payload: { name: 'Ferris' } },
     callback: expect.anything(),
     cmd: 'handle_action',
-    error: expect.anything()
+    error: expect.anything(),
   });
 });
 

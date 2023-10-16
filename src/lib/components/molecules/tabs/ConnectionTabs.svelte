@@ -1,22 +1,23 @@
 <script lang="ts">
-  import { createTabs, melt } from '@melt-ui/svelte';
-  import { crossfade } from 'svelte/transition';
   import { cubicInOut } from 'svelte/easing';
+  import { crossfade } from 'svelte/transition';
+
+  import { createTabs, melt } from '@melt-ui/svelte';
 
   const {
     elements: { root, list, content, trigger },
-    states: { value }
+    states: { value },
   } = createTabs({ defaultValue: 'summary' });
 
   const [send, receive] = crossfade({
     duration: 250,
-    easing: cubicInOut
+    easing: cubicInOut,
   });
 
   const triggers = [
     { id: 'summary', title: 'Summary' },
     { id: 'data', title: 'Data' },
-    { id: 'history', title: 'History' }
+    { id: 'history', title: 'History' },
   ];
 </script>
 

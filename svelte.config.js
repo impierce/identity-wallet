@@ -23,10 +23,10 @@ const config = {
         '/activity/connection/2',
         '/goals/2/faqs',
         '/goals/2/step/0',
-        '/credentials/*'
-      ]
-    }
-  }
+        '/credentials/*',
+      ],
+    },
+  },
 };
 
 export default config;

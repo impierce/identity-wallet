@@ -2,11 +2,11 @@
   import { goto } from '$app/navigation';
 
   import {
-    Format,
     cancel,
     checkPermissions,
+    Format,
     openAppSettings, // Scanned
-    scan
+    scan,
   } from '@tauri-apps/plugin-barcode-scanner';
   import { info, warn } from '@tauri-apps/plugin-log';
 
@@ -51,7 +51,7 @@
           // const TEST_SIOP_REQUEST_URL = 'siopv2://idtoken?client_id=did%3Akey%3Az6MkpuwK1TrrssGe7siCiJU2K5CbSu3mDLU4Y3z45wAepg7J&request_uri=http%3A%2F%2F192.168.178.42%3A4242%2Fsiop%2Frequest-uri';
           dispatch({
             type: '[Authenticate] Read request',
-            payload: { request_url: TEST_SIOP_REQUEST_URL }
+            payload: { request_url: TEST_SIOP_REQUEST_URL },
           });
         });
     } else {

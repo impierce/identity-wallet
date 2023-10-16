@@ -30,9 +30,7 @@
 
   // favorite_credentials = [];
 
-  const favorite_credentials: DisplayCredential[] = $state.credentials.filter(
-    (c) => c.metadata.is_favorite
-  );
+  const favorite_credentials: DisplayCredential[] = $state.credentials.filter((c) => c.metadata.is_favorite);
 </script>
 
 {#if favorite_credentials.length > 0}
@@ -52,7 +50,7 @@
               credential.id
                 .match(/[0-9]+/)
                 .at(0)
-                .at(0) % 8 // TODO: omits last value (white)
+                .at(0) % 8, // TODO: omits last value (white)
             )}
         >
           <span slot="icon">

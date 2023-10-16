@@ -6,29 +6,29 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/stylistic',
     'plugin:svelte/recommended',
-    'prettier'
+    'prettier',
   ],
   root: true,
   // ignorePatterns: ['*.cjs'],
   parserOptions: {
     sourceType: 'module',
-    ecmaVersion: 2020
+    ecmaVersion: 2020,
   },
   overrides: [
     {
       files: ['*.svelte'],
       parser: 'svelte-eslint-parser',
       parserOptions: {
-        parser: '@typescript-eslint/parser'
-      }
-    }
+        parser: '@typescript-eslint/parser',
+      },
+    },
   ],
   env: {
     browser: true,
     es2017: true,
-    node: true
+    node: true,
   },
   rules: {
-    'no-console': 'warn'
-  }
+    'no-console': 'warn',
+  },
 };

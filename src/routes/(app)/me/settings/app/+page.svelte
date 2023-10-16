@@ -2,7 +2,6 @@
   import { goto } from '$app/navigation';
 
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
-
   import SettingsEntry from '$src/lib/settings/SettingsEntry.svelte';
   import { developer_mode } from '$src/stores';
 
@@ -20,20 +19,8 @@
     <SettingsEntry icon={Sun} title="Language" hasCaretRight={false} textRight="English" todo />
     <SettingsEntry icon={Sun} title="Theme" on:click={() => goto('/me/settings/app/theme')} />
     <SettingsEntry icon={Password} title="Password" todo />
-    <SettingsEntry
-      icon={Confetti}
-      title="Onboarding journey"
-      hasCaretRight={false}
-      textRight="Restart"
-      todo
-    />
-    <SettingsEntry
-      icon={ChatCircleText}
-      title="Hints and tips"
-      hasCaretRight={false}
-      textRight="Reset"
-      todo
-    />
+    <SettingsEntry icon={Confetti} title="Onboarding journey" hasCaretRight={false} textRight="Restart" todo />
+    <SettingsEntry icon={ChatCircleText} title="Hints and tips" hasCaretRight={false} textRight="Reset" todo />
     <!-- TODO: DEV_MODE -->
     <!-- <SettingsEntry
       icon={Code}

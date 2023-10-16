@@ -1,8 +1,11 @@
 import { tick } from 'svelte';
+
 import { vi } from 'vitest';
 
 import { clearMocks, mockIPC } from '@tauri-apps/api/mocks';
+
 import '@testing-library/jest-dom';
+
 import { render } from '@testing-library/svelte';
 
 import App from '$src/routes/+page.svelte';
@@ -32,9 +35,9 @@ test('fetches app state on mount', async () => {
       cmd: 'listen',
       event: 'state-changed',
       handler: expect.anything(),
-      windowLabel: null
+      windowLabel: null,
     },
-    __tauriModule: expect.anything()
+    __tauriModule: expect.anything(),
   });
 
   // TODO: assert action "[App] Get state" has been dispatched on mount

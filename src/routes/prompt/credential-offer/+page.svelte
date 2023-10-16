@@ -2,7 +2,6 @@
   import { goto } from '$app/navigation';
   import { fade } from 'svelte/transition';
 
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import { createCheckbox, createPopover, melt } from '@melt-ui/svelte';
 
   import Button from '$lib/components/Button.svelte';
@@ -10,6 +9,7 @@
   import { colors, icons } from '$lib/credentials/customization/utils';
   import { dispatch } from '$lib/dispatcher';
   import CredentialOfferEntry from '$src/lib/components/CredentialOfferEntry.svelte';
+  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import { state } from '$src/stores';
 
   import Check from '~icons/ph/check-bold';
@@ -113,11 +113,7 @@
     >
       <!-- <div class="w-full space-y-2 rounded-2xl p-3 ring-2 ring-inset ring-white"> -->
       {#each credential_offer.credentials as credential, index}
-        <CredentialOfferEntry
-          {index}
-          title={credential.credential_definition.type.at(-1)}
-          color={'bg-grey'}
-        >
+        <CredentialOfferEntry {index} title={credential.credential_definition.type.at(-1)} color={'bg-grey'}>
           <span slot="logo" class="p-1">
             <!-- {#if $state.current_user_prompt.logo_uri}
               <img src={$state.current_user_prompt.logo_uri} alt="logo" class="object-scale-down" />
@@ -151,15 +147,13 @@
   </div>
 
   <!-- Controls -->
-  <div
-    class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 dark:bg-dark"
-  >
+  <div class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 dark:bg-dark">
     <Button
       label="Accept credentials"
       on:click={() => {
         dispatch({
           type: '[Credential Offer] Selected',
-          payload: { offer_indices: all_offer_indices }
+          payload: { offer_indices: all_offer_indices },
         });
       }}
     />

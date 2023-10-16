@@ -2,11 +2,11 @@
   import { goto } from '$app/navigation';
 
   import { melt } from '@melt-ui/svelte';
-  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
 
   import LL from '$src/i18n/i18n-svelte';
   import Button from '$src/lib/components/Button.svelte';
+  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
+  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import { dispatch } from '$src/lib/dispatcher';
   import SettingsEntry from '$src/lib/settings/SettingsEntry.svelte';
 
@@ -18,11 +18,7 @@
 <TopNavigation on:back={() => history.back()} title="My Profile" />
 <div class="content-height flex flex-col bg-silver dark:bg-navy">
   <div class="flex flex-col space-y-[10px] px-4 py-5">
-    <SettingsEntry
-      icon={Keyboard}
-      title="Profile name"
-      on:click={() => goto('/me/settings/profile/name')}
-    />
+    <SettingsEntry icon={Keyboard} title="Profile name" on:click={() => goto('/me/settings/profile/name')} />
     <!-- on:click={() => goto('/welcome/customize/name')} -->
     <SettingsEntry icon={SmileyWink} title="Display picture" todo />
     <!-- on:click={() => goto('/welcome/customize/avatar')} -->
@@ -40,9 +36,7 @@
         on:click={() => {}}
       >
         <svelte:component this={Trash} class="h-5 w-5 text-rose-400" />
-        <p class="grow text-left text-[13px]/[24px] font-medium text-slate-800 dark:text-white">
-          Delete profile
-        </p>
+        <p class="grow text-left text-[13px]/[24px] font-medium text-slate-800 dark:text-white">Delete profile</p>
       </button>
 
       <div slot="content" class="w-full pb-[10px] pt-[20px]">
@@ -51,13 +45,7 @@
           on:click={() => dispatch({ type: '[App] Reset' })}>Yes, delete everything</button
         >
       </div>
-      <Button
-        variant="secondary"
-        slot="close"
-        let:close
-        trigger={close}
-        label="No, keep my profile"
-      />
+      <Button variant="secondary" slot="close" let:close trigger={close} label="No, keep my profile" />
     </BottomDrawer>
   </div>
 </div>

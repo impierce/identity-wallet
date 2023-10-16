@@ -12,21 +12,21 @@
   let showCredentials = false;
 </script>
 
-<div class="flex flex-col rounded-lg bg-blue-100 pt-4">
-  <span class="px-4 text-start text-sm text-blue-500"
+<div class="bg-blue-100 flex flex-col rounded-lg pt-4">
+  <span class="text-blue-500 px-4 text-start text-sm"
     >You have logged in to <span class="font-semibold">{data.verifier.domain}</span>
     using {data.credentials.length} credentials</span
   >
   <!-- <span class="text-blue-500">{data.issuer.did}</span> -->
   <!-- Dropdown button -->
   <button
-    class="flex items-center justify-center rounded-b-lg bg-blue-100 p-2"
+    class="bg-blue-100 flex items-center justify-center rounded-b-lg p-2"
     on:click={() => (showCredentials = !showCredentials)}
   >
     {#if showCredentials}
-      <ChevronUp class="h-6 w-6 text-blue-500" />
+      <ChevronUp class="text-blue-500 h-6 w-6" />
     {:else}
-      <ChevronDown class="h-6 w-6 text-blue-500" />
+      <ChevronDown class="text-blue-500 h-6 w-6" />
     {/if}
   </button>
 </div>

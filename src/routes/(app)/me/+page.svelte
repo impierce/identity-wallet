@@ -1,23 +1,26 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
+
+  import { goto } from '$app/navigation';
   import { fade, fly, slide } from 'svelte/transition';
 
   import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
+
   import '@lottiefiles/lottie-player';
+
   import { melt } from '@melt-ui/svelte';
   import { debug, info } from '@tauri-apps/plugin-log';
 
-  import CredentialList from '$lib/CredentialList.svelte';
-  import Favorites from '$lib/Favorites.svelte';
-  import QrCodeButton from '$lib/QrCodeButton.svelte';
   import Button from '$lib/components/Button.svelte';
   import PaddedIcon from '$lib/components/PaddedIcon.svelte';
+  import CredentialList from '$lib/CredentialList.svelte';
   import AddButton from '$lib/credentials/AddButton.svelte';
   import NoCredentials from '$lib/credentials/NoCredentials.svelte';
+  import Favorites from '$lib/Favorites.svelte';
   import TopBar from '$lib/home-header/TopBar.svelte';
   import UserJourney from '$lib/home-header/UserJourney.svelte';
   import WelcomeMessage from '$lib/home-header/WelcomeMessage.svelte';
+  import QrCodeButton from '$lib/QrCodeButton.svelte';
   import LL from '$src/i18n/i18n-svelte';
   import { onboarding_state, state } from '$src/stores';
 
@@ -61,10 +64,7 @@
       <Favorites />
       <CredentialList />
       <!-- container that animates and places the button -->
-      <div
-        in:fly={{ y: 12, delay: 0, opacity: 1, duration: 200 }}
-        class="absolute bottom-4 right-4"
-      >
+      <div in:fly={{ y: 12, delay: 0, opacity: 1, duration: 200 }} class="absolute bottom-4 right-4">
         <!-- <div in:fade={{ delay: 200, duration: 200 }} class="absolute bottom-4 right-4"> -->
         <!-- TODO: feature disabled: "Add self-signed credential" -->
         <!-- <AddButton /> -->
@@ -93,9 +93,7 @@
         </div>
 
         <div class="select-none pt-[15px]">
-          <p
-            class="pb-[15px] text-[22px]/[30px] font-semibold tracking-tight text-slate-800 dark:text-grey"
-          >
+          <p class="pb-[15px] text-[22px]/[30px] font-semibold tracking-tight text-slate-800 dark:text-grey">
             {$LL.GETTING_STARTED.TITLE()}
           </p>
           <p class="custom w-[240px] text-slate-500 dark:text-slate-300">

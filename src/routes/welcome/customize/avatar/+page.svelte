@@ -2,12 +2,11 @@
   import { goto } from '$app/navigation';
   import { fade } from 'svelte/transition';
 
-  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
-
   import { createPopover, melt } from '@melt-ui/svelte';
 
   import LL from '$src/i18n/i18n-svelte';
   import Button from '$src/lib/components/Button.svelte';
+  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
   import { dispatch } from '$src/lib/dispatcher';
   import { onboarding_state } from '$src/stores';
 
@@ -16,10 +15,10 @@
   // TODO: unused
   const {
     elements: { trigger, content, arrow, close },
-    states: { open }
+    states: { open },
   } = createPopover({
     forceVisible: true,
-    defaultOpen: true
+    defaultOpen: true,
   });
 
   // TODO: switch to Unicode?
@@ -34,7 +33,7 @@
       '&#128540', // twinking-face-with-tongue
       '&#128526', // smiling-face-with-sunglasses
       '&#129392', // smiling-face-with-3-hearts
-      '&#128527' // smirk
+      '&#128527', // smirk
     ],
     // animals
     [
@@ -46,7 +45,7 @@
       '&#128037', // baby-chick
       '&#129417', // owl
       '&#129412', // unicorn
-      '&#128025' // octopus
+      '&#128025', // octopus
     ],
     // misc
     [
@@ -56,8 +55,8 @@
       '&#127969', // house-with-garden
       '&#127965', // desert-island
       '&#128188', // briefcase
-      '&#128084' // necktie
-    ]
+      '&#128084', // necktie
+    ],
   ];
 
   $: {
@@ -79,11 +78,7 @@
     </p>
     <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Make it yours.</p>
     <div class="mt-[70px] flex w-full items-center justify-center">
-      <BottomDrawer
-        titleText={'Select profile picture'}
-        descriptionText={''}
-        isOpen={emojiSelectIsOpen}
-      >
+      <BottomDrawer titleText={'Select profile picture'} descriptionText={''} isOpen={emojiSelectIsOpen}>
         <!-- <div slot="trigger"> -->
         <button
           slot="trigger"
@@ -167,11 +162,7 @@
   in:fade={{ delay: 200 }}
   out:fade={{ duration: 200 }}
 >
-  <Button
-    label="Continue"
-    on:click={() => goto('/welcome/password')}
-    disabled={!$onboarding_state.picture}
-  />
+  <Button label="Continue" on:click={() => goto('/welcome/password')} disabled={!$onboarding_state.picture} />
 </div>
 
 <style>

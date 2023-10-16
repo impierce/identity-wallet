@@ -1,9 +1,8 @@
 <script lang="ts">
   import { page } from '$app/stores';
 
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
-
   import { dispatch } from '$lib/dispatcher';
+  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import { state } from '$src/stores';
 </script>
 

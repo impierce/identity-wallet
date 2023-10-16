@@ -2,9 +2,6 @@
   import { goto } from '$app/navigation';
   import { fly } from 'svelte/transition';
 
-  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
-
   import { melt } from '@melt-ui/svelte';
 
   import Button from '$lib/components/Button.svelte';
@@ -13,6 +10,8 @@
   import { dispatch } from '$lib/dispatcher';
   import GoalItem from '$lib/journey/goals/GoalItem.svelte';
   import LL from '$src/i18n/i18n-svelte';
+  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
+  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import { icons } from '$src/lib/journey/goals/utils';
   import { state } from '$src/stores';
 
@@ -25,14 +24,12 @@
   let goals: Goal[] =
     journeyDefinition?.goals.map((goal) => ({
       ...goal,
-      completed: true // TODO: should be determined by the backend
+      completed: true, // TODO: should be determined by the backend
     })) ?? [];
 
   goals.at(2).completed = false;
 
-  let completedPercentage = Math.round(
-    (goals.filter((goal) => goal.completed).length / goals.length) * 100
-  );
+  let completedPercentage = Math.round((goals.filter((goal) => goal.completed).length / goals.length) * 100);
 
   console.log(completedPercentage);
 </script>
@@ -40,10 +37,7 @@
 <!-- Navbar -->
 <TopNavigation on:back={() => history.back()} title={$state?.user_journey?.title}>
   <!-- TODO: replace BottomDrawer with AlertDialog -->
-  <BottomDrawer
-    titleText={$LL.GETTING_STARTED.SKIP_TITLE()}
-    descriptionText={$LL.GETTING_STARTED.SKIP_TEXT()}
-  >
+  <BottomDrawer titleText={$LL.GETTING_STARTED.SKIP_TITLE()} descriptionText={$LL.GETTING_STARTED.SKIP_TEXT()}>
     <button
       slot="trigger"
       let:trigger
@@ -111,13 +105,8 @@
             </svelte:fragment>
 
             <svelte:fragment slot="icon">
-              <div
-                class="mb-[15px] flex h-[75px] w-[75px] items-center justify-center rounded-3xl bg-slate-100"
-              >
-                <svelte:component
-                  this={icons[goal.icon] || icons['Trophy']}
-                  class="h-7 w-7 text-primary"
-                />
+              <div class="mb-[15px] flex h-[75px] w-[75px] items-center justify-center rounded-3xl bg-slate-100">
+                <svelte:component this={icons[goal.icon] || icons['Trophy']} class="h-7 w-7 text-primary" />
               </div>
             </svelte:fragment>
 

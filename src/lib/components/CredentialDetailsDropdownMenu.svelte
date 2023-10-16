@@ -23,9 +23,9 @@
 
   const {
     elements: { trigger, menu, item, arrow },
-    states: { open }
+    states: { open },
   } = createDropdownMenu({
-    forceVisible: true
+    forceVisible: true,
   });
 
   // Dialog to change the name
@@ -37,11 +37,11 @@
       title,
       description,
       close,
-      portalled: portalledNameDialog
+      portalled: portalledNameDialog,
     },
-    states: { open: openNameDialog }
+    states: { open: openNameDialog },
   } = createDialog({
-    forceVisible: true
+    forceVisible: true,
   });
 
   // Dialog to customize the appearance
@@ -53,18 +53,18 @@
       title: titleAppearanceDialog,
       description: descriptionAppearanceDialog,
       close: closeAppearanceDialog,
-      portalled: portalledAppearanceDialog
+      portalled: portalledAppearanceDialog,
     },
-    states: { open: openAppearanceDialog }
+    states: { open: openAppearanceDialog },
   } = createDialog({
-    forceVisible: true
+    forceVisible: true,
   });
 
   let displayName: string = credential.metadata.display.name || credential.data.type.at(-1);
 
   let currentAppearance = {
     color: credential.metadata.display.color || 'bg-indigo-100',
-    icon: credential.metadata.display.icon || 'User'
+    icon: credential.metadata.display.icon || 'User',
   };
 </script>
 
@@ -166,7 +166,7 @@
         on:click={() => {
           dispatch({
             type: '[Credential Metadata] Update',
-            payload: { id: credential.id, name: displayName }
+            payload: { id: credential.id, name: displayName },
           });
           openNameDialog.set(false);
         }}
@@ -217,9 +217,7 @@
         </div>
 
         <!-- Combined -->
-        <div
-          class="rounded-2xl {currentAppearance.color} flex h-14 w-14 items-center justify-center"
-        >
+        <div class="rounded-2xl {currentAppearance.color} flex h-14 w-14 items-center justify-center">
           <svelte:component this={icons[currentAppearance.icon || 'Bank']} class="h-6 w-6" />
         </div>
 
@@ -244,8 +242,8 @@
             payload: {
               id: credential.id,
               icon: currentAppearance.icon,
-              color: currentAppearance.color
-            }
+              color: currentAppearance.color,
+            },
           });
           openAppearanceDialog.set(false);
         }}

@@ -9,9 +9,7 @@
 
     localStorage.setItem('theme', darkMode ? 'dark' : 'light');
 
-    darkMode
-      ? document.documentElement.classList.add('dark')
-      : document.documentElement.classList.remove('dark');
+    darkMode ? document.documentElement.classList.add('dark') : document.documentElement.classList.remove('dark');
   }
 
   if (browser) {

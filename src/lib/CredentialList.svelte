@@ -10,54 +10,52 @@
   import Percent from '~icons/ph/percent-light';
   import SealCheck from '~icons/ph/seal-check-fill';
 
-  import type { TransferState } from '../../src-tauri/bindings/TransferState';
   import type { DisplayCredential } from '../../src-tauri/bindings/display-credential/DisplayCredential';
+  import type { TransferState } from '../../src-tauri/bindings/TransferState';
   import CredentialListEntry from './components/CredentialListEntry.svelte';
   import NoCredentials from './credentials/NoCredentials.svelte';
 
   // TODO: improve typing
-  let credentials: Array<DisplayCredential> = $state.credentials.filter(
-    (c) => !c.metadata.is_favorite
-  );
+  let credentials: Array<DisplayCredential> = $state.credentials.filter((c) => !c.metadata.is_favorite);
 
   let test_credentials = [
     {
       title: 'Address of residence',
       description: 'State of Pandora',
       color: 'bg-yellow-100',
-      icon: House
+      icon: House,
     },
     {
       title: 'Bachelor of Science',
       description: 'University of Pandora',
       color: 'bg-blue-100',
-      icon: GraduationCap
+      icon: GraduationCap,
     },
     {
       title: 'Discount - 20%',
       description: 'Home Supplies & Gardening',
       color: 'bg-orange-100',
-      icon: Percent
+      icon: Percent,
     },
     {
       title: "Driver's license",
       description: 'State of Pandora',
       color: 'bg-emerald-100',
-      icon: Car
+      icon: Car,
     },
     {
       title: 'Email address',
       description: 'Pandora Email Service',
       color: 'bg-slate-400',
-      icon: EnvelopeSimple
-    }
+      icon: EnvelopeSimple,
+    },
   ];
 
   test_credentials = [];
 
   console.log(
     'metadata.display.icon',
-    credentials.map((c) => icons[c.metadata.display.icon])
+    credentials.map((c) => icons[c.metadata.display.icon]),
   );
 
   // Does this really have to be reactive?
@@ -88,11 +86,7 @@
     <!--Mock credentials -->
     <!-- <p class="font-semibold">A</p> -->
     {#each test_credentials as credential}
-      <CredentialListEntry
-        title={credential.title}
-        description={credential.description}
-        color={credential.color}
-      >
+      <CredentialListEntry title={credential.title} description={credential.description} color={credential.color}>
         <span slot="icon">
           <svelte:component this={credential.icon} class="h-[18px] w-[18px] text-slate-800" />
         </span>
@@ -110,7 +104,7 @@
             credential.id
               .match(/[0-9]+/)
               .at(0)
-              .at(0) % 8 // TODO: omits last value (white)
+              .at(0) % 8, // TODO: omits last value (white)
           )}
       >
         <span slot="icon">

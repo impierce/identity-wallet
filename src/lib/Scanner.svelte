@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte';
 
-  import { Format, cancel, scan } from '@tauri-apps/plugin-barcode-scanner';
+  import { cancel, Format, scan } from '@tauri-apps/plugin-barcode-scanner';
 
   export let onMessage;
 

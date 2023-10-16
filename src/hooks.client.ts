@@ -12,6 +12,6 @@ export const handleError = (async ({ error, event }) => {
 
   return {
     message: error.message,
-    errorId
+    errorId,
   };
 }) satisfies HandleClientError;

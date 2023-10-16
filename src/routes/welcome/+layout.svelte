@@ -3,9 +3,8 @@
   import { page } from '$app/stores';
   import { fly } from 'svelte/transition';
 
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
-
   import Button from '$src/lib/components/Button.svelte';
+  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
 
   import type { LayoutData } from './$types';
 

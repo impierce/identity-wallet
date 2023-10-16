@@ -16,7 +16,6 @@
   </p> -->
   <!-- TODO: remove hard-coded link to NGDIL demo -->
   <p class="w-[280px] font-normal text-slate-400 dark:text-slate-300">
-    Visit <span class="font-medium text-primary">https://demo.ngdil.com</span> on a desktop computer
-    to get started.
+    Visit <span class="font-medium text-primary">https://demo.ngdil.com</span> on a desktop computer to get started.
   </p>
 </div>

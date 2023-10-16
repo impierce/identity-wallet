@@ -2,15 +2,13 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
 
-  import ConnectionTabs from '$src/lib/components/molecules/tabs/ConnectionTabs.svelte';
-
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
-
   import ConnectionData from '$lib/connections/ConnectionData.svelte';
   import ConnectionHistory from '$lib/connections/ConnectionHistory.svelte';
   import ConnectionSummary from '$lib/connections/ConnectionSummary.svelte';
   import type { Connection } from '$lib/connections/types';
   import exampleConnections from '$lib/example/data/connections.json';
+  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
+  import ConnectionTabs from '$src/lib/components/molecules/tabs/ConnectionTabs.svelte';
   import { state } from '$src/stores';
 
   // let connection: Connection = exampleConnections.find((c) => c.id === $page.params.id)!!;
@@ -20,11 +18,7 @@
 </script>
 
 <div class="content-height flex flex-col">
-  <TopNavigation
-    on:back={() => goto('/activity')}
-    title={connection.client_name}
-    class="bg-silver dark:bg-navy"
-  />
+  <TopNavigation on:back={() => goto('/activity')} title={connection.client_name} class="bg-silver dark:bg-navy" />
   <div class="grow bg-silver px-4 pt-5 dark:bg-navy">
     <ConnectionTabs>
       <!-- Summary -->

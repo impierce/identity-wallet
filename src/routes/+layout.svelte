@@ -1,6 +1,7 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import { onMount } from 'svelte';
+
+  import { goto } from '$app/navigation';
   import { fly } from 'svelte/transition';
 
   import { readText } from '@tauri-apps/plugin-clipboard-manager';
@@ -19,11 +20,15 @@
   import Warning from '~icons/ph/warning';
 
   import type { Selection } from '../../src-tauri/bindings/user-prompt/Selection';
+
   import '../app.css';
-  import { determineTheme } from './utils';
-  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
+
   import { melt } from '@melt-ui/svelte';
+
   import Button from '$src/lib/components/Button.svelte';
+  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
+
+  import { determineTheme } from './utils';
 
   let clipboard: string | undefined;
 
@@ -94,8 +99,7 @@
             let:trigger
             use:melt={trigger}
             class="flex-shrink-0 rounded-full bg-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
-            on:click={async () => (clipboard = await readText())}
-            ><Clipboard class="h-6 w-6" /></button
+            on:click={async () => (clipboard = await readText())}><Clipboard class="h-6 w-6" /></button
           >
           <div slot="content" class="w-full pb-[10px] pt-[20px]">
             <div class="mb-4 rounded-2xl bg-slate-200 p-4">
@@ -108,8 +112,7 @@
         <!-- Debug messages -->
         <button
           class="flex-shrink-0 rounded-full bg-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
-          on:click={() => (showDebugMessages = !showDebugMessages)}
-          ><Warning class="h-6 w-6" /></button
+          on:click={() => (showDebugMessages = !showDebugMessages)}><Warning class="h-6 w-6" /></button
         >
       </div>
     {/if}
