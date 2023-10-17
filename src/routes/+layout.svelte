@@ -24,7 +24,7 @@
   import { melt } from '@melt-ui/svelte';
 
   import Button from '$src/lib/components/Button.svelte';
-  import BottomDrawer from '$srSelectionc/lib/components/molecules/dialogs/BottomDrawer.svelte';
+  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
 
   import { determineTheme } from './utils';
 
