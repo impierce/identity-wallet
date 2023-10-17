@@ -36,8 +36,8 @@ async fn test_qr_code_scanned_read_credential_offer() {
     });
 
     // Deserializing the Transferstates and Actions from the accompanying json files.
-    let state = json_example::<TransferState>("tests/tests/fixtures/states/pf_credential_offer.json");
-    let action = json_example::<Action>("tests/tests/fixtures/actions/qr_scanned_openid_cred.json");
+    let state = json_example::<TransferState>("tests/fixtures/states/pf_credential_offer.json");
+    let action = json_example::<Action>("tests/fixtures/actions/qr_scanned_openid_cred.json");
     assert_state_update(
         // Initial state.
         AppState {
@@ -76,10 +76,10 @@ async fn test_qr_code_scanned_handle_siopv2_authorization_request() {
     });
 
     // Deserializing the Transferstates and Actions from the accompanying json files.
-    let state1 = json_example::<TransferState>("tests/tests/fixtures/states/pf_accept_connect.json");
-    let state2 = json_example::<TransferState>("tests/tests/fixtures/states/pf_with_did_redirect_me.json");
-    let action1 = json_example::<Action>("tests/tests/fixtures/actions/qr_scanned_id_token.json");
-    let action2 = json_example::<Action>("tests/tests/fixtures/actions/authenticate_connect_accept.json");
+    let state1 = json_example::<TransferState>("tests/fixtures/states/pf_accept_connect.json");
+    let state2 = json_example::<TransferState>("tests/fixtures/states/pf_with_did_redirect_me.json");
+    let action1 = json_example::<Action>("tests/fixtures/actions/qr_scanned_id_token.json");
+    let action2 = json_example::<Action>("tests/fixtures/actions/authenticate_connect_accept.json");
     assert_state_update(
         // Initial state.
         AppState {
@@ -125,10 +125,10 @@ async fn test_qr_code_scanned_handle_oid4vp_authorization_request() {
     });
 
     // Deserializing the Transferstates and Actions from the accompanying json files.
-    let state1 = json_example::<TransferState>("tests/tests/fixtures/states/pf_with_person_info_share_cred.json");
-    let state2 = json_example::<TransferState>("tests/tests/fixtures/states/pf_with_person_info_redirect_me.json");
-    let action1 = json_example::<Action>("tests/tests/fixtures/actions/qr_scanned_vp_token.json");
-    let action2 = json_example::<Action>("tests/tests/fixtures/actions/authenticate_cred_selected.json");
+    let state1 = json_example::<TransferState>("tests/fixtures/states/pf_with_person_info_share_cred.json");
+    let state2 = json_example::<TransferState>("tests/fixtures/states/pf_with_person_info_redirect_me.json");
+    let action1 = json_example::<Action>("tests/fixtures/actions/qr_scanned_vp_token.json");
+    let action2 = json_example::<Action>("tests/fixtures/actions/authenticate_cred_selected.json");
     assert_state_update(
         // Initial state.
         AppState {
