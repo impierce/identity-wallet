@@ -76,11 +76,11 @@ pub struct ShareCredentials {
 #[serde(untagged)]
 #[ts(export, export_to = "bindings/user-prompt/CurrentUserPrompt.ts")]
 pub enum CurrentUserPrompt {
-    PasswordRequired(PasswordRequired),
     Redirect(Redirect),
     Warning(Warning),
     Selection(Selection),
     CredentialOffer(CredentialOffer),
+    PasswordRequired(PasswordRequired),
     AcceptConnection(AcceptConnection),
     ShareCredentials(ShareCredentials),
 }

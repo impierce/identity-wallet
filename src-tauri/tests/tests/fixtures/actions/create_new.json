@@ -1,9 +1,0 @@
-{
-    "type": "[DID] Create new",
-    "payload": {
-        "name": "Ferris Crabman",
-        "picture": "&#129408",
-        "theme": "system",
-        "password": "sup3rSecr3t"
-    }
-}

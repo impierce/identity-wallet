@@ -1,6 +1,0 @@
-{
-    "current_user_prompt": {
-        "type": "redirect",
-        "target": "welcome"
-      }
-}
