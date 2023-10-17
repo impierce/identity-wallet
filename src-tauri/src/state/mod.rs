@@ -29,7 +29,8 @@ pub struct Managers {
     pub identity_manager: Option<IdentityManager>,
 }
 
-/// The inner state of the application managed by Tauri.
+/// The inner state of the application managed by Tauri. When the state is serialized in order to be sent to the
+/// frontend, the `managers` and `active_connection_request` fields are skipped.
 #[derive(Default, Serialize, Deserialize, Derivative, TS)]
 #[derivative(Debug)]
 #[ts(export)]
