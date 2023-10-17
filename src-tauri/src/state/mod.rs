@@ -82,3 +82,57 @@ pub struct Connection {
     pub first_connected: String,
     pub last_connected: String,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::state::user_prompt::{CurrentUserPromptType, Redirect};
+    use indoc::indoc;
+
+    #[test]
+    fn test_app_state_serialize() {
+        let state = AppState {
+            active_profile: Mutex::new(Some(Profile {
+                name: "John Doe".to_string(),
+                picture: None,
+                theme: None,
+                primary_did: "did:example:123".to_string(),
+            })),
+            locale: Mutex::new(Locale::En),
+            credentials: Mutex::new(vec![]),
+            current_user_prompt: Mutex::new(Some(CurrentUserPrompt::Redirect(Redirect {
+                r#type: CurrentUserPromptType::Redirect,
+                target: "me".to_string(),
+            }))),
+            debug_messages: Mutex::new(vec![]),
+            user_journey: Mutex::new(None),
+            connections: Mutex::new(vec![]),
+            ..Default::default()
+        };
+
+        let serialized = serde_json::to_string_pretty(&state).unwrap();
+
+        // AppState is serialized without the `managers` and `active_connection_request` fields.
+        assert_eq!(
+            serialized,
+            indoc! {
+            r#"{
+                  "active_profile": {
+                    "name": "John Doe",
+                    "picture": null,
+                    "theme": null,
+                    "primary_did": "did:example:123"
+                  },
+                  "locale": "en",
+                  "credentials": [],
+                  "current_user_prompt": {
+                    "type": "redirect",
+                    "target": "me"
+                  },
+                  "debug_messages": [],
+                  "user_journey": null,
+                  "connections": []
+                }"#}
+        );
+    }
+}
