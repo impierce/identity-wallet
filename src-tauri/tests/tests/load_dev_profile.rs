@@ -10,7 +10,7 @@ async fn test_load_dev_profile() {
 
     // Deserializing the Transferstates and Actions from the accompanying json files.
     let state =
-        json_example::<TransferState>("tests/fixtures/states/pf_with_driverl_and_personal_info_redirect_me.json");
+        json_example::<TransferState>("tests/fixtures/states/two_credentials_redirect_me.json");
     let action = json_example::<Action>("tests/fixtures/actions/dev_load_profile.json");
     assert_state_update(AppState::default(), vec![action], vec![Some(state)]).await;
 }
@@ -23,7 +23,7 @@ async fn test_load_dev_profile_twice() {
 
     // Deserializing the Transferstates and Actions from the accompanying json files.
     let state =
-        json_example::<TransferState>("tests/fixtures/states/pf_with_driverl_and_personal_info_redirect_me.json");
+        json_example::<TransferState>("tests/fixtures/states/two_credentials_redirect_me.json");
     let action = json_example::<Action>("tests/fixtures/actions/dev_load_profile.json");
     assert_state_update(
         AppState::default(),
