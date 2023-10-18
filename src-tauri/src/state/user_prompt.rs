@@ -9,6 +9,7 @@ use ts_rs::TS;
 
 #[derive(Clone, Serialize, Deserialize, Debug, TS, PartialEq)]
 #[ts(export, export_to = "bindings/user-prompt/Redirect.ts")]
+#[serde(deny_unknown_fields)]
 pub struct Redirect {
     pub r#type: CurrentUserPromptType,
     pub target: String,
@@ -16,6 +17,7 @@ pub struct Redirect {
 
 #[derive(Clone, Serialize, Deserialize, Debug, TS, PartialEq)]
 #[ts(export, export_to = "bindings/user-prompt/Warning.ts")]
+#[serde(deny_unknown_fields)]
 pub struct Warning {
     pub r#type: CurrentUserPromptType,
     pub message: String,
@@ -23,6 +25,7 @@ pub struct Warning {
 
 #[derive(Clone, Serialize, Deserialize, Debug, TS, PartialEq)]
 #[ts(export, export_to = "bindings/user-prompt/Selection.ts")]
+#[serde(deny_unknown_fields)]
 pub struct Selection {
     pub r#type: CurrentUserPromptType,
     /// An option is in the form: (<option_name>, <option_value>)
@@ -32,6 +35,7 @@ pub struct Selection {
 
 #[derive(Clone, Serialize, Deserialize, Debug, TS, PartialEq)]
 #[ts(export, export_to = "bindings/user-prompt/CredentialOffer.ts")]
+#[serde(deny_unknown_fields)]
 pub struct CredentialOffer {
     pub r#type: CurrentUserPromptType,
     pub issuer_name: String,
@@ -42,12 +46,14 @@ pub struct CredentialOffer {
 
 #[derive(Clone, Serialize, Deserialize, Debug, TS, PartialEq)]
 #[ts(export, export_to = "bindings/user-prompt/PasswordRequired.ts")]
+#[serde(deny_unknown_fields)]
 pub struct PasswordRequired {
     pub r#type: CurrentUserPromptType,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, TS, PartialEq)]
 #[ts(export, export_to = "bindings/user-prompt/AcceptConnection.ts")]
+#[serde(deny_unknown_fields)]
 pub struct AcceptConnection {
     pub r#type: CurrentUserPromptType,
     pub client_name: String,
@@ -58,6 +64,7 @@ pub struct AcceptConnection {
 
 #[derive(Clone, Serialize, Deserialize, Debug, TS, PartialEq)]
 #[ts(export, export_to = "bindings/user-prompt/ShareCredentials.ts")]
+#[serde(deny_unknown_fields)]
 pub struct ShareCredentials {
     pub r#type: CurrentUserPromptType,
     pub client_name: String,
