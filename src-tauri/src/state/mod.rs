@@ -34,6 +34,7 @@ pub struct Managers {
 #[derive(Default, Serialize, Deserialize, Derivative, TS)]
 #[derivative(Debug)]
 #[ts(export)]
+#[serde(default)]
 pub struct AppState {
     #[serde(skip)]
     #[derivative(Debug = "ignore")]
@@ -87,7 +88,6 @@ pub struct Connection {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::state::user_prompt::{CurrentUserPromptType, Redirect};
     use indoc::indoc;
 
     #[test]
@@ -101,10 +101,9 @@ mod tests {
             })),
             locale: Mutex::new(Locale::En),
             credentials: Mutex::new(vec![]),
-            current_user_prompt: Mutex::new(Some(CurrentUserPrompt::Redirect(Redirect {
-                r#type: CurrentUserPromptType::Redirect,
+            current_user_prompt: Mutex::new(Some(CurrentUserPrompt::Redirect {
                 target: "me".to_string(),
-            }))),
+            })),
             debug_messages: Mutex::new(vec![]),
             user_journey: Mutex::new(None),
             connections: Mutex::new(vec![]),
