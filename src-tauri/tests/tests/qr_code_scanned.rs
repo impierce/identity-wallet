@@ -7,14 +7,8 @@ use identity_wallet::{
     state::{actions::Action, AppState, Profile},
     verifiable_credential_record::VerifiableCredentialRecord,
 };
-use jsonwebtoken::{Algorithm, Header};
-use oid4vc_core::{jwt, Subject};
-use oid4vc_manager::methods::key_method::KeySubject;
-use oid4vci::credential_format_profiles::{Credential, CredentialFormats, Parameters, WithCredential, WithParameters};
-use oid4vci::credential_offer::{CredentialOffer, CredentialsObject, Grants, PreAuthorizedCode};
-use oid4vci::{
-    credential_format_profiles::w3c_verifiable_credentials::jwt_vc_json::{self, JwtVcJson},
-    VerifiableCredentialJwt,
+use oid4vci::credential_format_profiles::{
+    w3c_verifiable_credentials::jwt_vc_json::JwtVcJson, Credential, CredentialFormats, WithCredential,
 };
 use serde_json::json;
 use std::sync::Mutex;

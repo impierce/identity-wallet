@@ -105,7 +105,7 @@ mod tests {
                                                 && fifth.as_rule() == Rule::ident_comb =>
                                             {
                                                 let mut first = first.into_inner().next().unwrap().into_inner();
-                                                let (ident, path) = match (first.next(), first.next(), first.next()) {
+                                                let (_ident, path) = match (first.next(), first.next(), first.next()) {
                                                     (Some(ident), Some(path), None) => {
                                                         let path = path.into_inner().nth(0).unwrap().as_str();
                                                         idents.insert(ident.as_str(), path);
@@ -128,7 +128,8 @@ mod tests {
                                                     .as_str();
 
                                                 let mut fifth = fifth.into_inner().next().unwrap().into_inner();
-                                                let (ident2, path2) = match (fifth.next(), fifth.next(), fifth.next()) {
+                                                let (_ident2, path2) = match (fifth.next(), fifth.next(), fifth.next())
+                                                {
                                                     (Some(ident), Some(path), None) => {
                                                         let path = path.into_inner().nth(0).unwrap().as_str();
                                                         idents.insert(ident.as_str(), path);

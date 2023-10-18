@@ -73,7 +73,6 @@ pub struct Profile {
     pub primary_did: String,
 }
 
-#[serde(default)]
 #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default)]
 #[ts(export)]
 #[serde(default)]
