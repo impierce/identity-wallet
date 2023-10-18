@@ -55,10 +55,6 @@ uuid = { version = "1.4", features = ["v4", "fast-rng"] }
 chrono = "0.4"
 sha256 = "1.4"
 derivative = "2.2"
-nom = "7.1.3"
-pest = "2.7"
-pest_derive = "2.7"
-serde_yaml = "0.9"
 
 [dev-dependencies]
 tauri = { version = "=2.0.0-alpha.15", features = ["rustls-tls", "test"] }
@@ -73,6 +69,7 @@ indoc = "2.0"
 pest = "2.7"
 pest_derive = "2.7"
 tokio = { version = "1.26.0", features = ["macros", "process"] }
+serde_yaml = "0.9"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

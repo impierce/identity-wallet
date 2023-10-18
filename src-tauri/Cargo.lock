@@ -2994,7 +2994,6 @@ dependencies = [
  "jsonwebtoken",
  "lazy_static",
  "log",
- "nom",
  "oid4vc-core",
  "oid4vc-manager",
  "oid4vci",
