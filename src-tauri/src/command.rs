@@ -10,7 +10,7 @@ use crate::state::reducers::{
     create_identity, initialize_stronghold, reset_state, set_locale, update_credential_metadata,
     update_profile_settings,
 };
-use crate::state::user_prompt::{CurrentUserPrompt, CurrentUserPromptType, PasswordRequired, Redirect};
+use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, TransferState};
 use log::{info, warn};
 use oid4vc_core::authorization_request::AuthorizationRequest;
@@ -35,16 +35,12 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             *app_state.connections.lock().unwrap() = transfer_state.connections;
 
             if app_state.active_profile.lock().unwrap().is_some() {
-                *app_state.current_user_prompt.lock().unwrap() =
-                    Some(CurrentUserPrompt::PasswordRequired(PasswordRequired {
-                        r#type: CurrentUserPromptType::PasswordRequired,
-                    }));
+                *app_state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::PasswordRequired);
             } else {
                 // TODO: bug: if state is present, but empty, user will never be redirected to neither welcome or profile page
-                *app_state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect(Redirect {
-                    r#type: CurrentUserPromptType::Redirect,
+                *app_state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect {
                     target: "welcome".to_string(),
-                }));
+                });
             }
         }
         ActionType::UnlockStorage => {
@@ -67,10 +63,9 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
                 save_state(TransferState::from(app_state)).await.ok();
             }
             // When everything is done, we redirect the user to the "me" page
-            *app_state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect(Redirect {
-                r#type: CurrentUserPromptType::Redirect,
+            *app_state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect {
                 target: "me".to_string(),
-            }));
+            });
             save_state(TransferState::from(app_state)).await.ok();
         }
         ActionType::SetLocale => {
@@ -149,10 +144,9 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
                     .current_user_prompt
                     .lock()
                     .unwrap()
-                    .replace(CurrentUserPrompt::Redirect(Redirect {
-                        r#type: CurrentUserPromptType::Redirect,
+                    .replace(CurrentUserPrompt::Redirect {
                         target: redirect.to_string(),
-                    }));
+                    });
             } else {
                 app_state.current_user_prompt.lock().unwrap().take();
             }
