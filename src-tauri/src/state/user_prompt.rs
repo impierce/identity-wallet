@@ -9,7 +9,8 @@ use ts_rs::TS;
 /// Another example would be that the backend requires some user input to continue, but does not want to be specific about what
 /// is displayed to the user exactly.
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, TS)]
-#[serde(deny_unknown_fields, tag = "type")]
+#[serde(tag = "type")]
+#[serde(deny_unknown_fields)]
 #[ts(export)]
 pub enum CurrentUserPrompt {
     #[serde(rename = "redirect")]
