@@ -43,6 +43,7 @@ pub struct AppState {
     pub debug_messages: Mutex<Vec<String>>,
     pub user_journey: Mutex<Option<serde_json::Value>>,
     pub connections: Mutex<Vec<Connection>>,
+    pub user_data_query: Mutex<Vec<String>>,
 }
 
 /// A representation of the current state which is used for serialization.
@@ -58,6 +59,7 @@ pub struct TransferState {
     #[ts(optional, type = "object")]
     pub user_journey: Option<serde_json::Value>,
     pub connections: Vec<Connection>,
+    pub user_data_query: Vec<String>
 }
 
 impl From<&AppState> for TransferState {
@@ -70,6 +72,7 @@ impl From<&AppState> for TransferState {
             debug_messages: state.debug_messages.lock().unwrap().clone(),
             user_journey: state.user_journey.lock().unwrap().clone(),
             connections: state.connections.lock().unwrap().clone(),
+            user_data_query: state.user_data_query.lock().unwrap().clone()
         }
     }
 }
@@ -106,3 +109,29 @@ pub struct Connection {
     pub first_connected: String,
     pub last_connected: String,
 }
+
+#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq)]
+#[ts(export)]
+pub enum QueryTarget {
+    Credentials,
+    Connections
+}
+
+#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq)]
+#[ts(export)]
+pub enum SortMethod {
+    NameAZ { reverse: bool},
+    IssuanceNewOld { reverse: bool},
+    AddedNewOld { reverse: bool},
+    FirstConnectedNewOld { reverse: bool},
+    LastConnectedNewOld { reverse: bool},
+}
+
+#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq)]
+#[ts(export)]
+pub struct UserDataQuery {
+    pub target: QueryTarget,
+    pub search_term: Option<String>,
+    pub sort_method: Option<SortMethod>,
+}
+

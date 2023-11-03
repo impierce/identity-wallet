@@ -6,12 +6,14 @@ use crate::state::reducers::authorization::{
 use crate::state::reducers::credential_offer::{read_credential_offer, send_credential_request};
 use crate::state::reducers::load_dev_profile::load_dev_profile;
 use crate::state::reducers::storage::unlock_storage;
+use crate::state::reducers::user_data_query::user_data_query;
 use crate::state::reducers::{
     create_identity, initialize_stronghold, reset_state, set_locale, update_credential_metadata,
     update_profile_settings,
 };
 use crate::state::user_prompt::{CurrentUserPrompt, CurrentUserPromptType, PasswordRequired, Redirect};
-use crate::state::{AppState, TransferState};
+use crate::state::{AppState, Connection, TransferState, UserDataQuery};
+use crate::verifiable_credential_record::DisplayCredential;
 use log::{info, warn};
 use oid4vc_core::authorization_request::AuthorizationRequest;
 use oid4vci::credential_offer::CredentialOfferQuery;
@@ -193,6 +195,71 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             *app_state.user_journey.lock().unwrap() = None;
             save_state(TransferState::from(app_state)).await.ok();
         }
+        ActionType::UserDataQuery => {
+            if user_data_query(app_state, Action { r#type, payload })
+                .await
+                .is_ok()
+            {
+                save_state(TransferState::from(app_state)).await.ok();
+            }
+        }
+        // ActionType::CredentialSort => {
+        //     app_state.credentials.lock().unwrap().1 = app_state.credentials.lock().unwrap().0.clone();
+        //     match payload.unwrap().as_str().unwrap() {
+        //         "SortAZ" => app_state
+        //             .credentials
+        //             .lock()
+        //             .unwrap()
+        //             .1
+        //             .sort_by(|a, b| a.metadata.display.name.cmp(&b.metadata.display.name)),
+        //         "SortZA" => app_state
+        //             .credentials
+        //             .lock()
+        //             .unwrap()
+        //             .1
+        //             .sort_by(|a, b| b.metadata.display.name.cmp(&a.metadata.display.name)),
+        //         "SortNewOld" => {
+        //             //    app_state.credentials.lock().unwrap().1
+        //             //    .sort_by(|a, b| a.metadata.display.name.cmp(&b.metadata.display.name))
+        //             //}     .sort_by(|a, b| a.metadata.display.name.cmp(&b.))
+        //             // } There seems to be no entry for the date in de display credential struct
+        //         }
+        //         "SortOldNew" => {}
+        //         _ => {}
+        //     }
+        //     save_state(TransferState::from(app_state)).await.ok();
+        // }
+        // ActionType::ConnectionSort => {
+        //     app_state.connections.lock().unwrap().1 = app_state.connections.lock().unwrap().0.clone();
+        //     match payload.unwrap().as_str().unwrap() {
+        //         "SortAZ" => app_state
+        //             .connections
+        //             .lock()
+        //             .unwrap()
+        //             .1
+        //             .sort_by(|a, b| a.client_name.cmp(&b.client_name)),
+        //         "SortZA" => app_state
+        //             .connections
+        //             .lock()
+        //             .unwrap()
+        //             .1
+        //             .sort_by(|a, b| b.client_name.cmp(&a.client_name)),
+        //         "SortNewOld" => app_state
+        //             .connections
+        //             .lock()
+        //             .unwrap()
+        //             .1
+        //             .sort_by(|a, b| a.first_connected.cmp(&b.first_connected)),
+        //         "SortOldNew" => app_state
+        //             .connections
+        //             .lock()
+        //             .unwrap()
+        //             .1
+        //             .sort_by(|a, b| a.first_connected.cmp(&b.first_connected)),
+        //         _ => {}
+        //     }
+        //     save_state(TransferState::from(app_state)).await.ok();
+        // }
         ActionType::Unknown => {
             warn!(
                 "received unknown action type `{:?}` with payload `{:?}`",

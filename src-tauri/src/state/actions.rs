@@ -48,10 +48,8 @@ pub enum ActionType {
     UpdateCredentialMetadata,
     #[serde(rename = "[User Journey] Cancel")]
     CancelUserJourney,
-    #[serde(rename = "[Credentials] Search")]
-    CredentialSearch,
-    #[serde(rename = "[Connections] Search")]
-    ConnectionSearch,
+    #[serde(rename = "[User Data] Query")]
+    UserDataQuery,
     #[ts(skip)]
     #[serde(other)]
     Unknown,
