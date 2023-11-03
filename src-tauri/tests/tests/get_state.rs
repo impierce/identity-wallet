@@ -12,7 +12,7 @@ async fn test_get_state_create_new() {
 
     // Deserializing the Transferstates and Actions from the accompanying json files.
     let state1 = json_example::<AppState>("tests/fixtures/states/no_profile_redirect_welcome.json");
-    let state2 = json_example::<AppState>("tests/fixtures/states/active_pf_redirect_me.json");
+    let state2 = json_example::<AppState>("tests/fixtures/states/redirect_me.json");
     let action1 = json_example::<Action>("tests/fixtures/actions/get_state.json");
     let action2 = json_example::<Action>("tests/fixtures/actions/create_new.json");
     assert_state_update(
@@ -40,8 +40,8 @@ async fn test_get_state_unlock_storage() {
     setup_stronghold();
 
     // Deserializing the Transferstates and Actions from the accompanying json files.
-    let state1 = json_example::<AppState>("tests/fixtures/states/active_pf_password_required.json");
-    let state2 = json_example::<AppState>("tests/fixtures/states/active_pf_redirect_me.json");
+    let state1 = json_example::<AppState>("tests/fixtures/states/password_required.json");
+    let state2 = json_example::<AppState>("tests/fixtures/states/redirect_me.json");
     let action1 = json_example::<Action>("tests/fixtures/actions/get_state.json");
     let action2 = json_example::<Action>("tests/fixtures/actions/unlock_storage.json");
     assert_state_update(
