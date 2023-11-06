@@ -59,7 +59,7 @@ pub struct TransferState {
     #[ts(optional, type = "object")]
     pub user_journey: Option<serde_json::Value>,
     pub connections: Vec<Connection>,
-    pub user_data_query: Vec<String>
+    pub user_data_query: Vec<String>,
 }
 
 impl From<&AppState> for TransferState {
@@ -72,7 +72,7 @@ impl From<&AppState> for TransferState {
             debug_messages: state.debug_messages.lock().unwrap().clone(),
             user_journey: state.user_journey.lock().unwrap().clone(),
             connections: state.connections.lock().unwrap().clone(),
-            user_data_query: state.user_data_query.lock().unwrap().clone()
+            user_data_query: state.user_data_query.lock().unwrap().clone(),
         }
     }
 }
@@ -114,17 +114,17 @@ pub struct Connection {
 #[ts(export)]
 pub enum QueryTarget {
     Credentials,
-    Connections
+    Connections,
 }
 
 #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq)]
 #[ts(export)]
 pub enum SortMethod {
-    NameAZ { reverse: bool},
-    IssuanceNewOld { reverse: bool},
-    AddedNewOld { reverse: bool},
-    FirstConnectedNewOld { reverse: bool},
-    LastConnectedNewOld { reverse: bool},
+    NameAZ,
+    IssuanceNewOld,
+    AddedNewOld,
+    FirstConnectedNewOld,
+    LastConnectedNewOld,
 }
 
 #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq)]
@@ -133,5 +133,5 @@ pub struct UserDataQuery {
     pub target: QueryTarget,
     pub search_term: Option<String>,
     pub sort_method: Option<SortMethod>,
+    pub sort_reverse: Option<bool>,
 }
-
