@@ -43,7 +43,7 @@ pub struct AppState {
     pub debug_messages: Mutex<Vec<String>>,
     pub user_journey: Mutex<Option<serde_json::Value>>,
     pub connections: Mutex<Vec<Connection>>,
-    pub user_data_query: Mutex<Vec<String>>,
+    pub user_data_query: Mutex<Option<Vec<String>>>,
 }
 
 /// A representation of the current state which is used for serialization.
