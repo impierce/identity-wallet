@@ -47,7 +47,7 @@ pub struct AppState {
     pub credentials: Mutex<Vec<DisplayCredential>>,
     pub current_user_prompt: Mutex<Option<CurrentUserPrompt>>,
     pub debug_messages: Mutex<Vec<String>>,
-    #[ts(type = "object")]
+    #[ts(type = "object | null")]
     pub user_journey: Mutex<Option<serde_json::Value>>,
     pub connections: Mutex<Vec<Connection>>,
 }
