@@ -4,26 +4,25 @@ use tokio::{
     io::AsyncWriteExt,
 };
 
-use crate::state::TransferState;
+use crate::state::AppState;
 use crate::STATE_FILE;
 
-/// Loads a [TransferState] from the app's data directory.
+/// Loads an [AppState] from the app's data directory.
 /// If it does not exist or it cannot be parsed, it will fallback to default values.
-pub async fn load_state() -> anyhow::Result<TransferState> {
+pub async fn load_state() -> anyhow::Result<AppState> {
     let state_file = STATE_FILE.lock().unwrap().clone();
     let bytes = read(state_file).await?;
     let content = String::from_utf8(bytes)?;
-    let transfer_state: TransferState = serde_json::from_str(&content)?;
+    let app_state: AppState = serde_json::from_str(&content)?;
     debug!("state loaded from disk");
-    Ok(transfer_state)
+    Ok(app_state)
 }
 
-/// Persists a [TransferState] to the app's data directory.
-pub async fn save_state(transfer_state: TransferState) -> anyhow::Result<()> {
+/// Persists a [AppState] to the app's data directory.
+pub async fn save_state(app_state: &AppState) -> anyhow::Result<()> {
     let state_file = STATE_FILE.lock().unwrap().clone();
     let mut file = File::create(state_file).await?;
-    file.write_all(serde_json::to_string(&transfer_state)?.as_bytes())
-        .await?;
+    file.write_all(serde_json::to_string(app_state)?.as_bytes()).await?;
     debug!("state saved to disk");
     Ok(())
 }
