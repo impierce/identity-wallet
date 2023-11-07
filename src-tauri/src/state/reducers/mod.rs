@@ -7,7 +7,7 @@ pub mod user_data_query;
 use super::{IdentityManager, Locale};
 use crate::crypto::stronghold::StrongholdManager;
 use crate::state::actions::Action;
-use crate::state::user_prompt::{CurrentUserPrompt, CurrentUserPromptType, Redirect};
+use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, Profile};
 use crate::verifiable_credential_record::VerifiableCredentialRecord;
 use did_key::{from_existing_key, Ed25519KeyPair};
@@ -221,10 +221,9 @@ pub fn reset_state(state: &AppState, _action: Action) -> anyhow::Result<()> {
     *state.locale.lock().unwrap() = Locale::default();
     state.credentials.lock().unwrap().clear();
     state.connections.lock().unwrap().clear();
-    *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect(Redirect {
-        r#type: CurrentUserPromptType::Redirect,
+    *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect {
         target: "welcome".to_string(),
-    }));
+    });
     *state.user_journey.lock().unwrap() = None;
     Ok(())
 }

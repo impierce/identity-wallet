@@ -19,8 +19,6 @@
   import Trash from '~icons/ph/trash';
   import Warning from '~icons/ph/warning';
 
-  import type { Selection } from '../../src-tauri/bindings/user-prompt/Selection';
-
   import '../app.css';
 
   import { melt } from '@melt-ui/svelte';
@@ -58,7 +56,6 @@
 
     // User prompt
     let type = $state?.current_user_prompt?.type;
-    console.log('options', ($state?.current_user_prompt as Selection)?.options);
 
     if (type && type !== 'redirect') {
       goto(`/prompt/${type}`);

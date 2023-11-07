@@ -2,8 +2,7 @@ use crate::state::actions::Action;
 use crate::state::{AppState, QueryTarget, SortMethod, UserDataQuery};
 
 fn credential_query(state: &AppState, query: UserDataQuery) -> anyhow::Result<()> {
-    let mut user_data_query = state.user_data_query.lock().unwrap().unwrap();
-    user_data_query = vec![];
+    let mut user_data_query: Vec<String> = vec![] ; // = state.user_data_query.lock().unwrap();
 
     if let Some(search_term) = &query.search_term {
         let filtered_creds = state
@@ -57,11 +56,13 @@ fn credential_query(state: &AppState, query: UserDataQuery) -> anyhow::Result<()
             user_data_query = sorted_creds;
         }
     }
+    
+    *state.user_data_query.lock().unwrap() = user_data_query;
     Ok(())
 }
 
 fn connection_query(state: &AppState, query: UserDataQuery) -> anyhow::Result<()> {
-    let mut user_data_query = state.user_data_query.lock().unwrap().unwrap();
+    let mut user_data_query: Vec<String> = vec![]; //state.user_data_query.lock().unwrap().unwrap();
 
     if let Some(search_term) = &query.search_term {
         let filtered_connects: Vec<String> = state
@@ -109,6 +110,8 @@ fn connection_query(state: &AppState, query: UserDataQuery) -> anyhow::Result<()
             user_data_query = sorted_connects;
         }
     }
+
+    *state.user_data_query.lock().unwrap() = user_data_query;
     Ok(())
 }
 

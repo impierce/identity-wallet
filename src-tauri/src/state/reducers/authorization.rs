@@ -1,10 +1,6 @@
 use crate::{
     get_unverified_jwt_claims,
-    state::{
-        actions::Action,
-        user_prompt::{AcceptConnection, CurrentUserPrompt, CurrentUserPromptType, Redirect, ShareCredentials},
-        AppState, Connection,
-    },
+    state::{actions::Action, user_prompt::CurrentUserPrompt, AppState, Connection},
 };
 use identity_credential::{credential::Jwt, presentation::Presentation};
 use log::info;
@@ -70,13 +66,12 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> any
             .current_user_prompt
             .lock()
             .unwrap()
-            .replace(CurrentUserPrompt::AcceptConnection(AcceptConnection {
-                r#type: CurrentUserPromptType::AcceptConnection,
+            .replace(CurrentUserPrompt::AcceptConnection {
                 client_name,
                 logo_uri,
                 redirect_uri,
                 previously_connected,
-            }));
+            });
     } else if let Result::Ok(oid4vp_authorization_request) = provider_manager
         .validate_request::<OID4VP>(serde_json::from_value(payload.clone())?)
         .await
@@ -116,12 +111,11 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> any
 
         // TODO: communicate when no credentials are available.
         if !uuids.is_empty() {
-            *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::ShareCredentials(ShareCredentials {
-                r#type: CurrentUserPromptType::ShareCredentials,
+            *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::ShareCredentials {
                 client_name,
                 logo_uri,
                 options: uuids,
-            }));
+            });
         }
     } else {
         return Err(anyhow::anyhow!("unable to validate request"));
@@ -197,10 +191,9 @@ pub async fn handle_siopv2_authorization_request(state: &AppState, _action: Acti
         .current_user_prompt
         .lock()
         .unwrap()
-        .replace(CurrentUserPrompt::Redirect(Redirect {
-            r#type: CurrentUserPromptType::Redirect,
+        .replace(CurrentUserPrompt::Redirect {
             target: "me".to_string(),
-        }));
+        });
 
     Ok(())
 }
@@ -349,10 +342,9 @@ pub async fn handle_oid4vp_authorization_request(state: &AppState, action: Actio
         .current_user_prompt
         .lock()
         .unwrap()
-        .replace(CurrentUserPrompt::Redirect(Redirect {
-            r#type: CurrentUserPromptType::Redirect,
+        .replace(CurrentUserPrompt::Redirect {
             target: "me".to_string(),
-        }));
+        });
 
     Ok(())
 }

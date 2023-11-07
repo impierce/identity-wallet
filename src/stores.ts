@@ -8,8 +8,7 @@ import { setLocale } from '$src/i18n/i18n-svelte';
 import type { Locales } from '$src/i18n/i18n-types';
 
 // TODO: run some copy task instead of importing across root to make the frontend independent
-import type { TransferState as State } from '../src-tauri/bindings/TransferState';
-import type { Redirect } from '../src-tauri/bindings/user-prompt/Redirect';
+import type { AppState as State } from '../src-tauri/bindings/AppState';
 
 interface StateChangedEvent {
   event: string;
@@ -33,7 +32,7 @@ export const state = writable<State>(undefined, (set) => {
     setLocale(state.locale as Locales);
 
     if (state.current_user_prompt?.type === 'redirect') {
-      const redirect_target = (state.current_user_prompt as Redirect).target;
+      const redirect_target = state.current_user_prompt.target;
       info(`redirecting to: "/${redirect_target}"`);
       goto(`/${redirect_target}`);
     }

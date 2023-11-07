@@ -7,6 +7,7 @@ use crate::{
     crypto::stronghold::StrongholdManager, state::user_prompt::CurrentUserPrompt,
     verifiable_credential_record::DisplayCredential,
 };
+use derivative::Derivative;
 use oid4vc_core::Subject;
 use oid4vc_manager::ProviderManager;
 use oid4vci::Wallet;
@@ -28,53 +29,28 @@ pub struct Managers {
     pub identity_manager: Option<IdentityManager>,
 }
 
-/// The inner state of the application managed by Tauri.
-#[derive(Default, Serialize, Deserialize)]
+/// The inner state of the application managed by Tauri. When the state is serialized in order to be sent to the
+/// frontend, the `managers` and `active_connection_request` fields are skipped.
+#[derive(Default, Serialize, Deserialize, Derivative, TS)]
+#[derivative(Debug)]
+#[ts(export)]
 #[serde(default)]
 pub struct AppState {
     #[serde(skip)]
+    #[derivative(Debug = "ignore")]
     pub managers: tauri::async_runtime::Mutex<Managers>,
     pub active_profile: Mutex<Option<Profile>>,
     #[serde(skip)]
+    #[derivative(Debug = "ignore")]
     pub active_connection_request: Mutex<Option<ConnectionRequest>>,
     pub locale: Mutex<Locale>,
     pub credentials: Mutex<Vec<DisplayCredential>>,
     pub current_user_prompt: Mutex<Option<CurrentUserPrompt>>,
     pub debug_messages: Mutex<Vec<String>>,
+    #[ts(type = "object | null")]
     pub user_journey: Mutex<Option<serde_json::Value>>,
     pub connections: Mutex<Vec<Connection>>,
-    pub user_data_query: Mutex<Option<Vec<String>>>,
-}
-
-/// A representation of the current state which is used for serialization.
-#[derive(Clone, Debug, Deserialize, Serialize, TS, Default, PartialEq)]
-#[ts(export)]
-#[serde(default)]
-pub struct TransferState {
-    pub active_profile: Option<Profile>,
-    pub locale: Locale,
-    pub credentials: Vec<DisplayCredential>,
-    pub current_user_prompt: Option<CurrentUserPrompt>,
-    pub debug_messages: Vec<String>,
-    #[ts(optional, type = "object")]
-    pub user_journey: Option<serde_json::Value>,
-    pub connections: Vec<Connection>,
-    pub user_data_query: Vec<String>,
-}
-
-impl From<&AppState> for TransferState {
-    fn from(state: &AppState) -> TransferState {
-        TransferState {
-            active_profile: state.active_profile.lock().unwrap().clone(),
-            locale: state.locale.lock().unwrap().clone(),
-            credentials: state.credentials.lock().unwrap().clone(),
-            current_user_prompt: state.current_user_prompt.lock().unwrap().clone(),
-            debug_messages: state.debug_messages.lock().unwrap().clone(),
-            user_journey: state.user_journey.lock().unwrap().clone(),
-            connections: state.connections.lock().unwrap().clone(),
-            user_data_query: state.user_data_query.lock().unwrap().clone(),
-        }
-    }
+    pub user_data_query: Mutex<Vec<String>>
 }
 
 #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default)]
@@ -134,4 +110,56 @@ pub struct UserDataQuery {
     pub search_term: Option<String>,
     pub sort_method: Option<SortMethod>,
     pub sort_reverse: Option<bool>,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use indoc::indoc;
+
+    #[test]
+    fn test_app_state_serialize() {
+        let state = AppState {
+            active_profile: Mutex::new(Some(Profile {
+                name: "John Doe".to_string(),
+                picture: None,
+                theme: None,
+                primary_did: "did:example:123".to_string(),
+            })),
+            locale: Mutex::new(Locale::En),
+            credentials: Mutex::new(vec![]),
+            current_user_prompt: Mutex::new(Some(CurrentUserPrompt::Redirect {
+                target: "me".to_string(),
+            })),
+            debug_messages: Mutex::new(vec![]),
+            user_journey: Mutex::new(None),
+            connections: Mutex::new(vec![]),
+            ..Default::default()
+        };
+
+        let serialized = serde_json::to_string_pretty(&state).unwrap();
+
+        // AppState is serialized without the `managers` and `active_connection_request` fields.
+        assert_eq!(
+            serialized,
+            indoc! {
+            r#"{
+                  "active_profile": {
+                    "name": "John Doe",
+                    "picture": null,
+                    "theme": null,
+                    "primary_did": "did:example:123"
+                  },
+                  "locale": "en",
+                  "credentials": [],
+                  "current_user_prompt": {
+                    "type": "redirect",
+                    "target": "me"
+                  },
+                  "debug_messages": [],
+                  "user_journey": null,
+                  "connections": []
+                }"#}
+        );
+    }
 }

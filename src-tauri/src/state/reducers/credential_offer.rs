@@ -1,9 +1,5 @@
 use crate::{
-    state::{
-        actions::Action,
-        user_prompt::{CredentialOffer as CredentialOfferPrompt, CurrentUserPrompt, CurrentUserPromptType, Redirect},
-        AppState,
-    },
+    state::{actions::Action, user_prompt::CurrentUserPrompt, AppState},
     verifiable_credential_record::VerifiableCredentialRecord,
 };
 use log::info;
@@ -100,17 +96,14 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::
         })
         .unwrap_or((credential_issuer_url.to_string(), None));
 
-    let credential_offer = serde_json::to_value(credential_offer)?;
-
     info!("issuer_name in credential_offer: {:?}", issuer_name);
     info!("logo_uri in credential_offer: {:?}", logo_uri);
 
-    *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::CredentialOffer(CredentialOfferPrompt {
-        r#type: CurrentUserPromptType::CredentialOffer,
+    *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::CredentialOffer {
         issuer_name,
         logo_uri,
         credential_offer,
-    }));
+    });
     Ok(())
 }
 
@@ -142,10 +135,7 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
     info!("current_user_prompt: {:?}", current_user_prompt);
 
     let credential_offer = match current_user_prompt {
-        CurrentUserPrompt::CredentialOffer(offer) => {
-            let credential_offer: CredentialOffer = serde_json::from_value(offer.credential_offer)?;
-            credential_offer
-        }
+        CurrentUserPrompt::CredentialOffer { credential_offer, .. } => credential_offer,
         _ => unreachable!(),
     };
 
@@ -279,10 +269,9 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
         .current_user_prompt
         .lock()
         .unwrap()
-        .replace(CurrentUserPrompt::Redirect(Redirect {
-            r#type: CurrentUserPromptType::Redirect,
+        .replace(CurrentUserPrompt::Redirect {
             target: "me".to_string(),
-        }));
+        });
 
     Ok(())
 }

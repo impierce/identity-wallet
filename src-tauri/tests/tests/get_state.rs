@@ -1,7 +1,7 @@
 use crate::common::assert_state_update::{assert_state_update, setup_state_file, setup_stronghold};
 use crate::common::{json_example, test_managers};
 use identity_wallet::state::Profile;
-use identity_wallet::state::{actions::Action, AppState, TransferState};
+use identity_wallet::state::{actions::Action, AppState};
 use std::sync::Mutex;
 
 #[tokio::test]
@@ -11,8 +11,8 @@ async fn test_get_state_create_new() {
     setup_stronghold();
 
     // Deserializing the Transferstates and Actions from the accompanying json files.
-    let state1 = json_example::<TransferState>("tests/fixtures/states/no_profile_redirect_welcome.json");
-    let state2 = json_example::<TransferState>("tests/fixtures/states/redirect_me.json");
+    let state1 = json_example::<AppState>("tests/fixtures/states/no_profile_redirect_welcome.json");
+    let state2 = json_example::<AppState>("tests/fixtures/states/redirect_me.json");
     let action1 = json_example::<Action>("tests/fixtures/actions/get_state.json");
     let action2 = json_example::<Action>("tests/fixtures/actions/create_new.json");
     assert_state_update(
@@ -40,8 +40,8 @@ async fn test_get_state_unlock_storage() {
     setup_stronghold();
 
     // Deserializing the Transferstates and Actions from the accompanying json files.
-    let state1 = json_example::<TransferState>("tests/fixtures/states/password_required.json");
-    let state2 = json_example::<TransferState>("tests/fixtures/states/redirect_me.json");
+    let state1 = json_example::<AppState>("tests/fixtures/states/password_required.json");
+    let state2 = json_example::<AppState>("tests/fixtures/states/redirect_me.json");
     let action1 = json_example::<Action>("tests/fixtures/actions/get_state.json");
     let action2 = json_example::<Action>("tests/fixtures/actions/unlock_storage.json");
     assert_state_update(
