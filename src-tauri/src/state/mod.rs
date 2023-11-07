@@ -107,8 +107,11 @@ pub enum SortMethod {
 #[ts(export)]
 pub struct UserDataQuery {
     pub target: QueryTarget,
+    #[serde(default)]
     pub search_term: Option<String>,
+    #[serde(default)]
     pub sort_method: Option<SortMethod>,
+    #[serde(default)]
     pub sort_reverse: Option<bool>,
 }
 
