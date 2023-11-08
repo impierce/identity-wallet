@@ -1,6 +1,6 @@
 use crate::crypto::stronghold::StrongholdManager;
 use crate::state::actions::Action;
-use crate::state::user_prompt::{CurrentUserPrompt, CurrentUserPromptType, Redirect};
+use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, Connection, Profile};
 use crate::verifiable_credential_record::VerifiableCredentialRecord;
 use did_key::{generate, Ed25519KeyPair};
@@ -123,9 +123,8 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
         last_connected: "2023-09-11T19:53:53.937981+00:00".to_string(),
     }];
 
-    *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect(Redirect {
-        r#type: CurrentUserPromptType::Redirect,
+    *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect {
         target: "me".to_string(),
-    }));
+    });
     Ok(())
 }

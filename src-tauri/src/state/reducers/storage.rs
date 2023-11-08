@@ -1,10 +1,6 @@
 use crate::{
     crypto::stronghold::StrongholdManager,
-    state::{
-        actions::Action,
-        user_prompt::{CurrentUserPrompt, CurrentUserPromptType, Redirect},
-        AppState, IdentityManager,
-    },
+    state::{actions::Action, user_prompt::CurrentUserPrompt, AppState, IdentityManager},
 };
 use did_key::{from_existing_key, Ed25519KeyPair};
 use log::info;
@@ -52,10 +48,9 @@ pub async fn unlock_storage(state: &AppState, action: Action) -> anyhow::Result<
         .current_user_prompt
         .lock()
         .unwrap()
-        .replace(CurrentUserPrompt::Redirect(Redirect {
-            r#type: CurrentUserPromptType::Redirect,
+        .replace(CurrentUserPrompt::Redirect {
             target: "me".to_string(),
-        }));
+        });
 
     Ok(())
 }

@@ -1,5 +1,5 @@
 use identity_wallet::{
-    state::{actions::Action, persistence::save_state, AppState, TransferState},
+    state::{actions::Action, persistence::save_state, AppState},
     STATE_FILE, STRONGHOLD,
 };
 use serde_json::json;
@@ -10,10 +10,10 @@ use tempfile::NamedTempFile;
 pub async fn assert_state_update(
     current_state: AppState,
     actions: Vec<Action>,
-    expected_states: Vec<Option<TransferState>>,
+    expected_states: Vec<Option<AppState>>,
 ) {
     // Save the current state to the state file.
-    save_state(TransferState::from(&current_state)).await.unwrap();
+    save_state(&current_state).await.unwrap();
 
     // Initialize the app with the given state and action handler.
     let app = tauri::test::mock_builder()
@@ -43,15 +43,15 @@ pub async fn assert_state_update(
 
         // Assert that the state is updated as expected.
         if let Some(expected_state) = expected_state {
-            let TransferState {
+            let AppState {
                 active_profile,
                 locale,
                 credentials,
                 current_user_prompt,
                 ..
-            } = TransferState::from(app.app_handle().state::<AppState>().inner());
+            } = app.app_handle().state::<AppState>().inner();
 
-            let TransferState {
+            let AppState {
                 active_profile: expected_active_profile,
                 locale: expected_locale,
                 credentials: expected_credentials,
@@ -59,15 +59,20 @@ pub async fn assert_state_update(
                 ..
             } = expected_state;
 
-            match (active_profile.as_ref(), expected_active_profile.as_ref()) {
+            let active_profile = active_profile.lock().unwrap().clone();
+            let expected_active_profile = expected_active_profile.lock().unwrap().clone();
+            match (active_profile, expected_active_profile) {
                 (Some(active_profile), Some(expected_active_profile)) => {
                     assert_eq!(active_profile.name, expected_active_profile.name);
                 }
-                _ => assert_eq!(active_profile, *expected_active_profile),
+                (active_profile, expected_active_profile) => assert_eq!(active_profile, expected_active_profile),
             }
-            assert_eq!(locale, *expected_locale);
-            assert_eq!(credentials, *expected_credentials);
-            assert_eq!(current_user_prompt, *expected_current_user_prompt);
+            assert_eq!(*locale.lock().unwrap(), *expected_locale.lock().unwrap());
+            assert_eq!(*credentials.lock().unwrap(), *expected_credentials.lock().unwrap());
+            assert_eq!(
+                *current_user_prompt.lock().unwrap(),
+                *expected_current_user_prompt.lock().unwrap()
+            );
         }
     }
 }

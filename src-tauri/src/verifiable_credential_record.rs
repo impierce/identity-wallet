@@ -69,6 +69,7 @@ pub struct DisplayCredential {
     pub format: CredentialFormats<()>,
     #[ts(type = "object")]
     pub data: serde_json::Value,
+    #[serde(default)]
     pub metadata: CredentialMetadata,
 }
 
