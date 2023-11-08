@@ -10,5 +10,6 @@ async fn test_credential_query() {
 
     let state = json_example::<AppState>("tests/fixtures/states/two_credentials_redirect_me.json");
     let action = json_example::<Action>("tests/fixtures/actions/credential_search.json");
-    assert_state_update(AppState::default(), vec![action], vec![Some(state)]).await;        
+    let query = json_example::<AppState>("tests/fixtures/states/two_credentials_query.json");
+    assert_state_update(state, vec![action], vec![Some(query)]).await;        
 }

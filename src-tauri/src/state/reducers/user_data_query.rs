@@ -27,19 +27,19 @@ fn credential_query(state: &AppState, query: UserDataQuery) -> anyhow::Result<()
 
         let mut sorted_creds: Vec<String> = match sort_method {
             SortMethod::NameAZ => {
-                creds.sort_by(|a, b| a.metadata.display.name.cmp(&b.metadata.display.name));
+                creds.sort_by(|a, b| a.issuer_name.cmp(&b.issuer_name));
 
-                creds.iter().map(|s| s.metadata.display.name.clone().unwrap()).collect()
+                creds.iter().map(|s| s.id.clone()).collect()
             }
             SortMethod::IssuanceNewOld => {
-                creds.sort_by(|a, b| a.metadata.display.name.cmp(&b.metadata.display.name));
+                creds.sort_by(|a, b| a.issuer_name.cmp(&b.issuer_name));
 
-                creds.iter().map(|s| s.metadata.display.name.clone().unwrap()).collect()
+                creds.iter().map(|s| s.id.clone()).collect()
             }
             SortMethod::AddedNewOld => {
-                creds.sort_by(|a, b| a.metadata.display.name.cmp(&b.metadata.display.name));
+                creds.sort_by(|a, b| a.issuer_name.cmp(&b.issuer_name));
 
-                creds.iter().map(|s| s.metadata.display.name.clone().unwrap()).collect()
+                creds.iter().map(|s| s.id.clone()).collect()
             }
             _ => Vec::new(),
         };
