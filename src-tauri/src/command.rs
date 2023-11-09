@@ -114,7 +114,9 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
                 .await
                 .ok();
             } else {
-                info!("Unable to parse QR code data");
+                let message = format!("Unable to parse QR code with content: `{:?}`", form_urlencoded);
+                warn!("{message}");
+                app_state.debug_messages.lock().unwrap().push(message);
             };
             save_state(app_state).await.ok();
         }
@@ -215,7 +217,7 @@ pub async fn handle_action<R: tauri::Runtime>(
     _app_handle: tauri::AppHandle<R>,
     app_state: tauri::State<'_, AppState>,
     window: tauri::Window<R>,
-) -> Result<(), String> {
+) -> anyhow::Result<(), String> {
     handle_action_inner(action, _app_handle, app_state.inner()).await.ok();
 
     emit_event(window, app_state.inner()).ok();

@@ -1,8 +1,10 @@
+use std::fmt::Error;
+
 use crate::{
     state::{actions::Action, user_prompt::CurrentUserPrompt, AppState},
     verifiable_credential_record::VerifiableCredentialRecord,
 };
-use log::info;
+use log::{info, warn};
 use oid4vci::{
     credential_format_profiles::{CredentialFormats, WithCredential},
     credential_offer::{CredentialOffer, CredentialOfferQuery, CredentialsObject, Grants},
@@ -45,6 +47,12 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::
         wallet
             .get_credential_issuer_metadata(credential_issuer_url.clone())
             .await
+            .map_err(|err| {
+                let message = format!("SIOPv2 authorization request cannot be validated: {err:?}");
+                warn!("{message}");
+                state.debug_messages.lock().unwrap().push(message);
+                err
+            })
             .ok()
     } else {
         None

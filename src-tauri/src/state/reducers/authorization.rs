@@ -3,7 +3,7 @@ use crate::{
     state::{actions::Action, user_prompt::CurrentUserPrompt, AppState, Connection},
 };
 use identity_credential::{credential::Jwt, presentation::Presentation};
-use log::info;
+use log::{info, warn};
 use oid4vc_core::authorization_request::AuthorizationRequestObject;
 use oid4vc_manager::managers::presentation::create_presentation_submission;
 use oid4vci::credential_format_profiles::{
@@ -38,13 +38,23 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> any
     info!("trying to validate request: {:?}", payload);
 
     if let Result::Ok(siopv2_authorization_request) = provider_manager
-        .validate_request::<SIOPv2>(serde_json::from_value(payload.clone())?)
+        .validate_request::<SIOPv2>(serde_json::from_value(payload.clone()).map_err(|err| {
+            let message = format!("SIOPv2 authorization request cannot be validated: {err:?}");
+            warn!("{message}");
+            state.debug_messages.lock().unwrap().push(message);
+            err
+        })?)
         .await
     {
         let redirect_uri = siopv2_authorization_request.redirect_uri.to_string();
 
         let (client_name, logo_uri, connection_url) =
-            get_siopv2_client_name_and_logo_uri(&siopv2_authorization_request)?;
+            get_siopv2_client_name_and_logo_uri(&siopv2_authorization_request).map_err(|err| {
+                let message = format!("Unable to obtain the `client_name` from the authorization request: {err:?}");
+                warn!("{message}");
+                state.debug_messages.lock().unwrap().push(message);
+                err
+            })?;
 
         let previously_connected = state
             .connections
@@ -73,7 +83,12 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> any
                 previously_connected,
             });
     } else if let Result::Ok(oid4vp_authorization_request) = provider_manager
-        .validate_request::<OID4VP>(serde_json::from_value(payload.clone())?)
+        .validate_request::<OID4VP>(serde_json::from_value(payload.clone()).map_err(|err| {
+            let message = format!("OID4VP authorization request cannot be validated: {err:?}");
+            warn!("{message}");
+            state.debug_messages.lock().unwrap().push(message);
+            err
+        })?)
         .await
     {
         let verifiable_credentials = stronghold_manager.values()?.unwrap();
@@ -98,7 +113,13 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> any
 
         info!("uuids of VCs that can fulfill the request: {:?}", uuids);
 
-        let (client_name, logo_uri, _) = get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request)?;
+        let (client_name, logo_uri, _) =
+            get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request).map_err(|err| {
+                let message = format!("Unable to obtain the `client_name` from the authorization request: {err:?}");
+                warn!("{message}");
+                state.debug_messages.lock().unwrap().push(message);
+                err
+            })?;
 
         info!("client_name in credential_offer: {:?}", client_name);
         info!("logo_uri in read_authorization_request: {:?}", logo_uri);
@@ -118,7 +139,7 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> any
             });
         }
     } else {
-        return Err(anyhow::anyhow!("unable to validate request"));
+        return Err(anyhow::anyhow!("unable to validate authorization request"));
     };
 
     Ok(())
@@ -145,13 +166,13 @@ pub async fn handle_siopv2_authorization_request(state: &AppState, _action: Acti
         ConnectionRequest::OID4VP(_) => unreachable!(),
     };
 
-    info!("||DEBUG|| generating response");
-    *state.debug_messages.lock().unwrap() = vec!["generating response".into()];
+    info!("generating response");
+
     let response = provider_manager.generate_response(&siopv2_authorization_request, Default::default())?;
-    info!("||DEBUG|| response generated: {:?}", response);
+    info!("response generated: {:?}", response);
 
     if provider_manager.send_response(&response).await.is_err() {
-        info!("||DEBUG|| failed to send response");
+        info!("failed to send response");
 
         state
             .active_connection_request
@@ -160,7 +181,7 @@ pub async fn handle_siopv2_authorization_request(state: &AppState, _action: Acti
             .replace(ConnectionRequest::SIOPv2(siopv2_authorization_request));
         return Err(anyhow::anyhow!("failed to send response"));
     }
-    info!("||DEBUG|| response successfully sent");
+    info!("response successfully sent");
 
     let connection_time = chrono::Utc::now().to_rfc3339();
 
@@ -213,14 +234,7 @@ pub async fn handle_oid4vp_authorization_request(state: &AppState, action: Actio
         .ok_or(anyhow::anyhow!("no identity manager found"))?
         .provider_manager;
 
-    let payload = match action.payload {
-        Some(payload) => payload,
-        None => {
-            info!("||DEBUG|| unable to read payload");
-            *state.debug_messages.lock().unwrap() = vec!["unable to read payload".into()];
-            return Err(anyhow::anyhow!("unable to read payload"));
-        }
-    };
+    let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
 
     let credential_uuids: Vec<Uuid> = serde_json::from_value::<Vec<String>>(payload["credential_uuids"].clone())?
         .into_iter()
@@ -238,9 +252,6 @@ pub async fn handle_oid4vp_authorization_request(state: &AppState, action: Actio
         ConnectionRequest::OID4VP(oid4vp_authorization_request) => oid4vp_authorization_request,
         ConnectionRequest::SIOPv2(_) => unreachable!(),
     };
-
-    info!("||DEBUG|| credential not found");
-    *state.debug_messages.lock().unwrap() = vec!["credential not found".into()];
 
     let verifiable_credentials: Vec<Credential<JwtVcJson>> = stronghold_manager
         .values()?
@@ -264,8 +275,8 @@ pub async fn handle_oid4vp_authorization_request(state: &AppState, action: Actio
             .collect(),
     )?;
 
-    info!("||DEBUG|| get the subject did");
-    *state.debug_messages.lock().unwrap() = vec!["get the subject did".into()];
+    info!("get the subject did");
+
     let subject_did = state
         .active_profile
         .lock()
@@ -288,11 +299,9 @@ pub async fn handle_oid4vp_authorization_request(state: &AppState, action: Actio
 
     let verifiable_presentation = presentation_builder.build()?;
 
-    info!("||DEBUG|| get the provider_manager");
-    *state.debug_messages.lock().unwrap() = vec!["get the provider_manager".into()];
+    info!("get the provider_manager");
 
-    info!("||DEBUG|| generating response");
-    *state.debug_messages.lock().unwrap() = vec!["generating response".into()];
+    info!("generating response");
     let response = provider_manager.generate_response(
         &oid4vp_authorization_request,
         OID4VPUserClaims {
@@ -300,10 +309,10 @@ pub async fn handle_oid4vp_authorization_request(state: &AppState, action: Actio
             presentation_submission,
         },
     )?;
-    info!("||DEBUG|| response generated: {:?}", response);
+    info!("response generated: {:?}", response);
 
     if provider_manager.send_response(&response).await.is_err() {
-        info!("||DEBUG|| failed to send response");
+        info!("failed to send response");
         state
             .active_connection_request
             .lock()
@@ -311,7 +320,7 @@ pub async fn handle_oid4vp_authorization_request(state: &AppState, action: Actio
             .replace(ConnectionRequest::OID4VP(oid4vp_authorization_request));
         return Err(anyhow::anyhow!("failed to send response"));
     }
-    info!("||DEBUG|| response successfully sent");
+    info!("response successfully sent");
 
     let connection_time = chrono::Utc::now().to_rfc3339();
 

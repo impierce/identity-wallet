@@ -3,7 +3,7 @@ use crate::{
     state::{actions::Action, user_prompt::CurrentUserPrompt, AppState, IdentityManager},
 };
 use did_key::{from_existing_key, Ed25519KeyPair};
-use log::info;
+use log::{info, warn};
 use oid4vc_manager::{methods::key_method::KeySubject, ProviderManager};
 use oid4vci::Wallet;
 use std::sync::Arc;
@@ -16,7 +16,12 @@ pub async fn unlock_storage(state: &AppState, action: Action) -> anyhow::Result<
         .as_str()
         .ok_or(anyhow::anyhow!("unable to read password from json payload"))?;
 
-    let stronghold_manager = Arc::new(StrongholdManager::load(password)?);
+    let stronghold_manager = Arc::new(StrongholdManager::load(password).map_err(|err| {
+        let message = format!("error loading stronghold manager: {err:?}");
+        warn!("{message}");
+        state.debug_messages.lock().unwrap().push(message);
+        err
+    })?);
 
     let public_key = stronghold_manager.get_public_key()?;
 
