@@ -46,6 +46,7 @@ pub struct AppState {
     pub locale: Mutex<Locale>,
     pub credentials: Mutex<Vec<DisplayCredential>>,
     pub current_user_prompt: Mutex<Option<CurrentUserPrompt>>,
+    pub dev_mode_enabled: Mutex<bool>,
     pub debug_messages: Mutex<Vec<String>>,
     #[ts(type = "object | null")]
     pub user_journey: Mutex<Option<serde_json::Value>>,
@@ -129,6 +130,7 @@ mod tests {
                     "type": "redirect",
                     "target": "me"
                   },
+                  "dev_mode_enabled": false,
                   "debug_messages": [],
                   "user_journey": null,
                   "connections": []

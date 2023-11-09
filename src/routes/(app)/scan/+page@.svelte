@@ -17,7 +17,7 @@
   import { dispatch } from '$lib/dispatcher';
   import Button from '$src/lib/components/Button.svelte';
   import BottomNavBar from '$src/lib/components/molecules/navigation/BottomNavBar.svelte';
-  import { developer_mode, state } from '$src/stores';
+  import { state } from '$src/stores';
 
   let scanning = false;
   let permissions: 'granted' | 'denied' | 'prompt' | undefined = undefined;
@@ -177,7 +177,7 @@
     console.log('onMount: /scan');
     document.documentElement.querySelector('body')!!.classList.add('transparent');
     // permissionsGiven = await checkScanPrerequisites();
-    if (!$developer_mode) {
+    if (!$state?.dev_mode_enabled) {
       startScan();
     }
   });
@@ -259,7 +259,7 @@
         <!-- Divider -->
         <!-- <p class="my-4 h-[1px] w-full bg-slate-200" /> -->
 
-        {#if $developer_mode}
+        {#if $state?.dev_mode_enabled}
           <div class="flex flex-col space-y-2">
             <Button variant="secondary" on:click={mockSiopRequest} label="Connection request (SIOPv2)" />
             <Button variant="secondary" on:click={mockShareRequest} label="Share request (VP)" />
@@ -311,7 +311,7 @@
               </div>
             </div>
           </div>
-          {#if $developer_mode}
+          {#if $state?.dev_mode_enabled}
             <div class="fixed bottom-[128px] left-[calc(50%_-_42px)]">
               <button class="rounded-lg bg-rose-100 px-4 py-3 font-medium text-rose-500" on:click={cancelScan}
                 >Cancel</button

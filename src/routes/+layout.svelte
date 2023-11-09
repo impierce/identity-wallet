@@ -10,7 +10,7 @@
   import { dispatch } from '$lib/dispatcher';
   import LL from '$src/i18n/i18n-svelte';
   import { loadAllLocales } from '$src/i18n/i18n-util.sync';
-  import { developer_mode, state } from '$src/stores';
+  import { state } from '$src/stores';
 
   import ArrowLeft from '~icons/ph/arrow-left';
   import CaretDown from '~icons/ph/caret-down-bold';
@@ -65,7 +65,7 @@
 
 <main class="absolute h-screen">
   <!-- Dev Mode: Navbar -->
-  {#if $developer_mode}
+  {#if $state?.dev_mode_enabled}
     {#if showDevMode}
       <div
         class="hide-scrollbar fixed z-20 flex w-full space-x-4 overflow-x-auto bg-gradient-to-r from-red-200 to-red-300 p-4 shadow-md"

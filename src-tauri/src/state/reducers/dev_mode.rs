@@ -26,6 +26,18 @@ lazy_static! {
         }));
 }
 
+pub async fn set_dev_mode(state: &AppState, action: Action) -> anyhow::Result<()> {
+    let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
+    let value = payload
+        .get("enabled")
+        .ok_or(anyhow::anyhow!("unable to read enabled from json payload"))?
+        .as_bool()
+        .ok_or(anyhow::anyhow!("unable to read bool from json payload"))?;
+    *state.dev_mode_enabled.lock().unwrap() = value;
+    *state.current_user_prompt.lock().unwrap() = None;
+    Ok(())
+}
+
 pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Result<()> {
     info!("load dev profile");
 
@@ -126,5 +138,7 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
     *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect {
         target: "me".to_string(),
     });
+
+    *state.dev_mode_enabled.lock().unwrap() = true;
     Ok(())
 }
