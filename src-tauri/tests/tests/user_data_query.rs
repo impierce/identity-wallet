@@ -10,8 +10,8 @@ async fn test_credential_search_query() {
 
     let state = json_example::<AppState>("tests/fixtures/states/two_credentials_redirect_me.json");
     let action = json_example::<Action>("tests/fixtures/actions/credential_search.json");
-    let query = json_example::<AppState>("tests/fixtures/states/two_credentials_search_query.json");
-    assert_state_update(state, vec![action], vec![Some(query)]).await;
+    let expected_state = json_example::<AppState>("tests/fixtures/states/two_credentials_search_query.json");
+    assert_state_update(state, vec![action], vec![Some(expected_state)]).await;
 
 }
 
@@ -23,8 +23,17 @@ async fn test_credential_sort_query() {
 
     let state = json_example::<AppState>("tests/fixtures/states/two_credentials_redirect_me.json");
     let action = json_example::<Action>("tests/fixtures/actions/credential_sort.json");
-    let query = json_example::<AppState>("tests/fixtures/states/two_credentials_sort_query.json");
-    assert_state_update(state, vec![action], vec![Some(query)]).await;
+    let expected_state = json_example::<AppState>("tests/fixtures/states/two_credentials_sort_query.json");
+    assert_state_update(state, vec![action], vec![Some(expected_state)]).await;
+}
+
+#[tokio::test]
+#[serial_test::serial]
+async fn test_credential_search_sort_query() {
+    setup_state_file();
+    setup_stronghold();
+
+
 }
 
 // There should also be a test checking the search & sort function on the connections.
