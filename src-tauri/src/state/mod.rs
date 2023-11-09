@@ -99,8 +99,8 @@ pub enum SortMethod {
     NameAZ,
     IssuanceNewOld,
     AddedNewOld,
-    FirstConnectedNewOld,
-    LastConnectedNewOld,
+    FirstInteractedNewOld,
+    LastInteractedNewOld,
 }
 
 #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq)]

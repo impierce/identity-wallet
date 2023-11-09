@@ -39,7 +39,38 @@ async fn test_credential_search_sort_query() {
     assert_state_update(state, vec![action], vec![Some(expected_state)]).await;
 }
 
-// There should also be a test checking the search & sort function on the connections.
-// But first the connection handling needs to be finished for this. 
-// --> discussion during weekly sync concluded connections should be like a phonebook
-// (with it's own functionalities to be build later, such as automated log in/active connection)
+#[tokio::test]
+#[serial_test::serial]
+async fn test_connections_search_query() {
+    setup_state_file();
+    setup_stronghold();
+
+    let state = json_example::<AppState>("tests/fixtures/states/three_connections.json");
+    let action = json_example::<Action>("tests/fixtures/actions/connection_search.json");
+    let expected_state = json_example::<AppState>("tests/fixtures/states/three_connections_search.json");
+    assert_state_update(state, vec![action], vec![Some(expected_state)]).await;
+}
+
+#[tokio::test]
+#[serial_test::serial]
+async fn test_connections_sort_query() {
+    setup_state_file();
+    setup_stronghold();
+
+    let state = json_example::<AppState>("tests/fixtures/states/three_connections.json");
+    let action = json_example::<Action>("tests/fixtures/actions/connection_sort.json");
+    let expected_state = json_example::<AppState>("tests/fixtures/states/three_connections_sort.json");
+    assert_state_update(state, vec![action], vec![Some(expected_state)]).await;
+}
+
+#[tokio::test]
+#[serial_test::serial]
+async fn test_connections_search_sort_query() {
+    setup_state_file();
+    setup_stronghold();
+
+    let state = json_example::<AppState>("tests/fixtures/states/three_connections.json");
+    let action = json_example::<Action>("tests/fixtures/actions/connection_search_sort.json");
+    let expected_state = json_example::<AppState>("tests/fixtures/states/three_connections_search_sort.json");
+    assert_state_update(state, vec![action], vec![Some(expected_state)]).await;
+}

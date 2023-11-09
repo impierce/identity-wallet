@@ -12,7 +12,7 @@ fn credential_query(state: &AppState, query: UserDataQuery) -> anyhow::Result<()
             .iter()
             .filter(|cred| {
                 if let Some(issuer_name) = &cred.issuer_name {
-                    issuer_name.contains(search_term)
+                    issuer_name.to_lowercase().contains(&search_term.to_lowercase())
                 } else {
                     false
                 }
@@ -69,7 +69,7 @@ fn connection_query(state: &AppState, query: UserDataQuery) -> anyhow::Result<()
             .lock()
             .unwrap()
             .iter()
-            .filter(|connects| connects.client_name.contains(search_term))
+            .filter(|connects| connects.client_name.to_lowercase().contains(&search_term.to_lowercase()))
             .map(|connects| connects.client_name.clone())
             .collect();
 
@@ -84,12 +84,12 @@ fn connection_query(state: &AppState, query: UserDataQuery) -> anyhow::Result<()
 
                 connects.iter().map(|s| s.client_name.clone()).collect()
             }
-            SortMethod::FirstConnectedNewOld => {
+            SortMethod::FirstInteractedNewOld => {
                 connects.sort_by(|a, b| a.first_interacted.cmp(&b.first_interacted));
 
                 connects.iter().map(|s| s.client_name.clone()).collect()
             }
-            SortMethod::LastConnectedNewOld => {
+            SortMethod::LastInteractedNewOld => {
                 connects.sort_by(|a, b| a.last_interacted.cmp(&b.last_interacted));
 
                 connects.iter().map(|s| s.client_name.clone()).collect()
