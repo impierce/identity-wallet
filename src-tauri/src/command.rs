@@ -16,6 +16,7 @@ use log::{info, warn};
 use oid4vc_core::authorization_request::AuthorizationRequest;
 use oid4vci::credential_offer::CredentialOfferQuery;
 use serde_json::json;
+use tauri::Manager;
 
 #[async_recursion::async_recursion]
 pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
