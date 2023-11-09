@@ -1,4 +1,4 @@
-import { invoke } from '@tauri-apps/api/tauri';
+import { invoke } from '@tauri-apps/api/primitives';
 import { info } from '@tauri-apps/plugin-log';
 
 import type { Action } from '../../src-tauri/bindings/Action';

@@ -26,4 +26,6 @@
   {:else if textRight}
     <p class="text-[13px]/[24px] font-medium text-primary">{textRight}</p>
   {/if}
+  <!-- Slot for any content which is not text or caret, such as a Switch -->
+  <slot />
 </button>
