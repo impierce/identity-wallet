@@ -2,7 +2,7 @@ use crate::state::actions::Action;
 use crate::state::{AppState, QueryTarget, SortMethod, UserDataQuery};
 
 fn credential_query(state: &AppState, query: UserDataQuery) -> anyhow::Result<()> {
-    let mut user_data_query: Vec<String> = vec![] ;
+    let mut user_data_query: Vec<String> = vec![];
 
     if let Some(search_term) = &query.search_term {
         let filtered_creds = state
@@ -50,13 +50,12 @@ fn credential_query(state: &AppState, query: UserDataQuery) -> anyhow::Result<()
 
         if user_data_query.is_empty() && query.search_term.is_none() {
             user_data_query = sorted_creds;
-        }
-        else {
+        } else {
             sorted_creds.retain(|s| user_data_query.contains(s));
             user_data_query = sorted_creds;
         }
     }
-    
+
     *state.user_data_query.lock().unwrap() = user_data_query;
     Ok(())
 }
@@ -86,12 +85,12 @@ fn connection_query(state: &AppState, query: UserDataQuery) -> anyhow::Result<()
                 connects.iter().map(|s| s.client_name.clone()).collect()
             }
             SortMethod::FirstConnectedNewOld => {
-                connects.sort_by(|a, b| a.first_connected.cmp(&b.first_connected));
+                connects.sort_by(|a, b| a.first_interacted.cmp(&b.first_interacted));
 
                 connects.iter().map(|s| s.client_name.clone()).collect()
             }
             SortMethod::LastConnectedNewOld => {
-                connects.sort_by(|a, b| a.last_connected.cmp(&b.last_connected));
+                connects.sort_by(|a, b| a.last_interacted.cmp(&b.last_interacted));
 
                 connects.iter().map(|s| s.client_name.clone()).collect()
             }
@@ -104,8 +103,7 @@ fn connection_query(state: &AppState, query: UserDataQuery) -> anyhow::Result<()
 
         if user_data_query.is_empty() && query.search_term.is_none() {
             user_data_query = sorted_connects;
-        }
-        else {
+        } else {
             sorted_connects.retain(|s| user_data_query.contains(s));
             user_data_query = sorted_connects;
         }

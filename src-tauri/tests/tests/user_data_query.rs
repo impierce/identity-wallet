@@ -43,4 +43,3 @@ async fn test_credential_search_sort_query() {
 // But first the connection handling needs to be finished for this. 
 // --> discussion during weekly sync concluded connections should be like a phonebook
 // (with it's own functionalities to be build later, such as automated log in/active connection)
-// Due to conflicting terminology first_ and last_connected should therefore be renamed first_ and last_interacted

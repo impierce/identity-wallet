@@ -5,18 +5,18 @@
   // export let domain: string;
   export let url: string;
   // export let displayName: string | undefined = undefined;
-  export let last_connected: string;
-  export let first_connected: string;
+  export let last_interacted: string;
+  export let first_interacted: string;
   export let logo_uri: string;
 
   let summary = {
     URL: url,
     // Verified: 'no',
-    'First connected': new Date(first_connected).toLocaleString('en-US', {
+    'First connected': new Date(first_interacted).toLocaleString('en-US', {
       dateStyle: 'medium',
       timeStyle: 'medium',
     }),
-    'Last connected': new Date(last_connected).toLocaleString('en-US', {
+    'Last connected': new Date(last_interacted).toLocaleString('en-US', {
       dateStyle: 'medium',
       timeStyle: 'medium',
     }),

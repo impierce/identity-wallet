@@ -1,0 +1,8 @@
+{
+    "type": "[User Data] Query",
+    "payload": {
+        "target": "Connections",
+        "sort_method: "first_interacted",
+        "sort_reverse": false
+    }    
+}

@@ -11,16 +11,16 @@
           "url":"https://goverment.com",
           "logo_uri":null,
           "verified":false,
-          "first_connected":"2023-11-09T13:52:11.986023042+00:00",
-          "last_connected":"2023-11-09T13:52:19.971552835+00:00"
+          "first_interacted":"2023-11-09T13:52:11.986023042+00:00",
+          "last_interacted":"2023-11-09T13:52:19.971552835+00:00"
        },
        {
           "client_name":"Driver License Organization",
           "url":"https://cbr.nl",
           "logo_uri":null,
           "verified":false,
-          "first_connected":"2023-11-09T13:52:37.991493008+00:00",
-          "last_connected":"2023-11-09T13:52:45.868117252+00:00"
+          "first_interacted":"2023-11-09T13:52:37.991493008+00:00",
+          "last_interacted":"2023-11-09T13:52:45.868117252+00:00"
        }
     ]
 }
