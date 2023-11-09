@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Switch from '$src/lib/components/atoms/Switch.svelte';
   import Button from '$src/lib/components/Button.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import ThemeSelect from '$src/lib/customize/ThemeSelect.svelte';
@@ -18,7 +19,9 @@
 <div class="content-height flex flex-col bg-silver dark:bg-navy">
   <div class="flex flex-col space-y-[10px] px-4 py-5">
     <SettingsEntry icon={Password} title="Password" hasCaretRight={false} textRight="Change" todo />
-    <SettingsEntry icon={Eye} title="Biometrics" todo />
+    <SettingsEntry icon={Eye} title="Biometrics" hasCaretRight={false}>
+      <Switch active on:change={(e) => console.log(e.detail)} />
+    </SettingsEntry>
   </div>
 </div>
 

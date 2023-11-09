@@ -21,15 +21,29 @@
   // TODO: make reactive
   const isDarkModeEnabled = document.documentElement.classList.contains('dark');
 
-  onMount(() => {
+  onMount(async () => {
     if ($developer_mode) {
-      console.log('Developer mode - Injecting password automatically ...');
-      authenticate('test').then((result) => {
-        console.log('authenticate', result);
-        setTimeout(() => {
-          dispatch({ type: '[Storage] Unlock', payload: { password: 'sup3rSecr3t' } });
-        }, 500);
-      });
+      // checkStatus()
+      //   .then((status) => console.log(status))
+      //   .catch((err) => console.warn(err));
+      // console.log(await checkStatus());
+      authenticate('test')
+        .then((result) => {
+          console.log('authenticate', result);
+          setTimeout(() => {
+            dispatch({ type: '[Storage] Unlock', payload: { password: 'sup3rSecr3t' } });
+          }, 500);
+        })
+        .catch((err) => {
+          if (err === '"plugin biometric not found"') {
+            console.warn('Biometric plugin not found, still injecting password automatically ...');
+            dispatch({ type: '[Storage] Unlock', payload: { password: 'sup3rSecr3t' } });
+          }
+        });
+      // console.log('Developer mode - Injecting password automatically ...');
+      // setTimeout(() => {
+      //   dispatch({ type: '[Storage] Unlock', payload: { password: 'sup3rSecr3t' } });
+      // }, 500);
     }
   });
 </script>
