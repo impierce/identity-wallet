@@ -1,3 +1,4 @@
+use chrono::Local;
 use oid4vci::credential_format_profiles::{CredentialFormats, WithCredential};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
@@ -17,20 +18,20 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
         let display_credential = match &verifiable_credential {
             CredentialFormats::JwtVcJson(credential) => {
                 let credential_display = get_unverified_jwt_claims(&credential.credential)["vc"].clone();
-
+                
                 // Derive the hash from the credential display.
                 let hash = {
                     let type_key = "type";
                     let type_value = credential_display[type_key].clone();
-
+                    
                     let credential_subject_key = "credentialSubject";
                     let mut credential_subject_value = credential_display[credential_subject_key].clone();
-
+                    
                     // TODO: Remove this hard-coded logic.
                     // Remove the `Passport Number` and `Staff Number` from the credential subject if they exists.
                     credential_subject_value["Passport Number"].take();
                     credential_subject_value["Staff Number"].take();
-
+                    
                     sha256::digest(
                         json!(
                             {
@@ -41,13 +42,20 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
                         .to_string(),
                     )
                 };
+                
+                let issuance_date = credential_display["issuanceDate"].clone();
 
                 DisplayCredential {
                     id: Uuid::from_slice(&hash.as_bytes()[..16]).unwrap().to_string(),
                     issuer_name: None,
                     format: (&verifiable_credential).try_into().unwrap(),
                     data: credential_display,
-                    metadata: CredentialMetadata::default(),
+                    metadata: CredentialMetadata {
+                        is_favorite: false,
+                        date_added: Local::now().format("%Y-%m-%d").to_string(),
+                        date_issued: issuance_date.to_string(),
+                        display: CredentialDisplay::default()
+                    }
                 }
             }
             _ => unimplemented!(),
@@ -77,6 +85,8 @@ pub struct DisplayCredential {
 #[ts(export, export_to = "bindings/display-credential/CredentialMetadata.ts")]
 pub struct CredentialMetadata {
     pub is_favorite: bool,
+    pub date_added: String,
+    pub date_issued: String,
     pub display: CredentialDisplay,
 }
 

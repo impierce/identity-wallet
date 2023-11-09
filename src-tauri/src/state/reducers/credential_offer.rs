@@ -12,6 +12,7 @@ use oid4vci::{
 use serde_json::json;
 use uuid::Uuid;
 
+/// Reads Credential Offer and prompts the user to accept it.
 pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::Result<()> {
     info!("read_credential_offer");
     let state_guard = state.managers.lock().await;
@@ -107,6 +108,8 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::
     Ok(())
 }
 
+/// This function sends a credential request and receives the credentials from the Credential Issuer.
+/// Then it saves the credential(s) to the storage and the appstate and ultimately redirects User Prompt to `me` page.
 pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow::Result<()> {
     info!("send_credential_request");
     let state_guard = state.managers.lock().await;
@@ -219,7 +222,7 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
 
             let credential = match credential_response.credential {
                 CredentialResponseType::Immediate(credential) => credential,
-                _ => panic!("Credential was not a JWT VC JSON."),
+                _ => panic!("Credential was not a jwt_vc_json."),
             };
 
             vec![credential]
@@ -234,7 +237,7 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
                 .into_iter()
                 .map(|credential_response| match credential_response {
                     CredentialResponseType::Immediate(credential) => credential,
-                    _ => panic!("Credential was not a JWT VC JSON."),
+                    _ => panic!("Credential was not a jwt_vc_json."),
                 })
                 .collect()
         }
