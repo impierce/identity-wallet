@@ -48,6 +48,7 @@ pub async fn assert_state_update(
                 locale,
                 credentials,
                 current_user_prompt,
+                user_data_query,
                 ..
             } = app.app_handle().state::<AppState>().inner();
 
@@ -56,6 +57,7 @@ pub async fn assert_state_update(
                 locale: expected_locale,
                 credentials: expected_credentials,
                 current_user_prompt: expected_current_user_prompt,
+                user_data_query: expected_user_data_query,
                 ..
             } = expected_state;
 
@@ -73,6 +75,7 @@ pub async fn assert_state_update(
                 *current_user_prompt.lock().unwrap(),
                 *expected_current_user_prompt.lock().unwrap()
             );
+            assert_eq!(*user_data_query.lock().unwrap(), *expected_user_data_query.lock().unwrap());
         }
     }
 }

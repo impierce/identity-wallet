@@ -52,7 +52,7 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
                     data: credential_display,
                     metadata: CredentialMetadata {
                         is_favorite: false,
-                        date_added: Local::now().format("%Y-%m-%d").to_string(),
+                        date_added: Local::now().format("%Y-%m-%d").to_string(), // should be same format as date_issued, and all other dates.
                         date_issued: issuance_date.to_string(),
                         display: CredentialDisplay::default()
                     }

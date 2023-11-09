@@ -10,7 +10,7 @@ async fn test_credential_search_query() {
 
     let state = json_example::<AppState>("tests/fixtures/states/two_credentials_redirect_me.json");
     let action = json_example::<Action>("tests/fixtures/actions/credential_search.json");
-    let query = json_example::<AppState>("tests/fixtures/states/two_credentials_query.json");
+    let query = json_example::<AppState>("tests/fixtures/states/two_credentials_search_query.json");
     assert_state_update(state, vec![action], vec![Some(query)]).await;
 
 }
@@ -22,10 +22,13 @@ async fn test_credential_sort_query() {
     setup_stronghold();
 
     let state = json_example::<AppState>("tests/fixtures/states/two_credentials_redirect_me.json");
-    let action = json_example::<Action>("tests/fixtures/actions/credential_search.json");
-    let query = json_example::<AppState>("tests/fixtures/states/two_credentials_search_query.json");
+    let action = json_example::<Action>("tests/fixtures/actions/credential_sort.json");
+    let query = json_example::<AppState>("tests/fixtures/states/two_credentials_sort_query.json");
     assert_state_update(state, vec![action], vec![Some(query)]).await;
 }
 
 // There should also be a test checking the search & sort function on the connections.
-// But first the connection handling needs to be finished for this.
+// But first the connection handling needs to be finished for this. 
+// --> discussion during weekly sync concluded connections should be like a phonebook
+// (with it's own functionalities to be build later, such as automated log in/active connection)
+// Due to conflicting terminology first_ and last_connected should therefore be renamed first_ and last_interacted
