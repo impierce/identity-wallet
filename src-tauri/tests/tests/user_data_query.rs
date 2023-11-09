@@ -33,7 +33,10 @@ async fn test_credential_search_sort_query() {
     setup_state_file();
     setup_stronghold();
 
-
+    let state = json_example::<AppState>("tests/fixtures/states/two_credentials_redirect_me.json");
+    let action = json_example::<Action>("tests/fixtures/actions/credential_search_sort.json");
+    let expected_state = json_example::<AppState>("tests/fixtures/states/two_credentials_search_sort_query.json");
+    assert_state_update(state, vec![action], vec![Some(expected_state)]).await;
 }
 
 // There should also be a test checking the search & sort function on the connections.

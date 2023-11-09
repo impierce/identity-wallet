@@ -51,7 +51,7 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
                     format: (&verifiable_credential).try_into().unwrap(),
                     data: credential_display,
                     metadata: CredentialMetadata {
-                        is_favorite: false,
+                        is_favorite: false, //     let connection_time = chrono::Utc::now().to_rfc3339();
                         date_added: Local::now().format("%Y-%m-%d").to_string(), // should be same format as date_issued, and all other dates.
                         date_issued: issuance_date.to_string(),
                         display: CredentialDisplay::default()
