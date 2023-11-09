@@ -32,12 +32,12 @@ fn credential_query(state: &AppState, query: UserDataQuery) -> anyhow::Result<()
                 creds.iter().map(|s| s.id.clone()).collect()
             }
             SortMethod::IssuanceNewOld => {
-                creds.sort_by(|a, b| a.issuer_name.cmp(&b.issuer_name));
+                creds.sort_by(|a, b| a.metadata.date_issued.cmp(&b.metadata.date_issued));
 
                 creds.iter().map(|s| s.id.clone()).collect()
             }
             SortMethod::AddedNewOld => {
-                creds.sort_by(|a, b| a.issuer_name.cmp(&b.issuer_name));
+                creds.sort_by(|a, b| a.metadata.date_added.cmp(&b.metadata.date_added));
 
                 creds.iter().map(|s| s.id.clone()).collect()
             }
@@ -85,13 +85,13 @@ fn connection_query(state: &AppState, query: UserDataQuery) -> anyhow::Result<()
 
                 connects.iter().map(|s| s.client_name.clone()).collect()
             }
-            SortMethod::IssuanceNewOld => {
-                connects.sort_by(|a, b| a.client_name.cmp(&b.client_name));
+            SortMethod::FirstConnectedNewOld => {
+                connects.sort_by(|a, b| a.first_connected.cmp(&b.first_connected));
 
                 connects.iter().map(|s| s.client_name.clone()).collect()
             }
-            SortMethod::AddedNewOld => {
-                connects.sort_by(|a, b| a.client_name.cmp(&b.client_name));
+            SortMethod::LastConnectedNewOld => {
+                connects.sort_by(|a, b| a.last_connected.cmp(&b.last_connected));
 
                 connects.iter().map(|s| s.client_name.clone()).collect()
             }
