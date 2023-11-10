@@ -37,6 +37,7 @@ fn credential_query(state: &AppState, query: UserDataQuery) -> anyhow::Result<()
             .filter(|id| !filtered_creds_name.contains(id))
             .collect();
 
+        // prevent content search from going through hash/did keys and the likes.
         let filtered_creds_content: Vec<String> = state
             .credentials
             .lock()

@@ -143,6 +143,7 @@ mod tests {
         let serialized = serde_json::to_string_pretty(&state).unwrap();
 
         // AppState is serialized without the `managers` and `active_connection_request` fields.
+        // Probably a basic json file instead of the indoc! is cleaner.
         assert_eq!(
             serialized,
             indoc! {
@@ -161,7 +162,8 @@ mod tests {
                   },
                   "debug_messages": [],
                   "user_journey": null,
-                  "connections": []
+                  "connections": [],
+                  "user_data_query": []
                 }"#}
         );
     }
