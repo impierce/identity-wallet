@@ -1,11 +1,27 @@
 use crate::state::actions::Action;
 use crate::state::{AppState, QueryTarget, SortMethod, UserDataQuery};
+use itertools::concat;
 
 fn credential_query(state: &AppState, query: UserDataQuery) -> anyhow::Result<()> {
     let mut user_data_query: Vec<String> = vec![];
 
     if let Some(search_term) = &query.search_term {
-        let filtered_creds = state
+        let filtered_creds_name: Vec<String> = state
+        .credentials
+        .lock()
+        .unwrap()
+        .iter()
+        .filter(|cred| {
+            if let Some(name) = &cred.metadata.display.name {
+                name.to_lowercase().contains(&search_term.to_lowercase())
+            } else {
+                false
+            }
+        })
+        .map(|cred| cred.id.clone())
+        .collect();
+
+        let filtered_creds_issuer: Vec<String> = state
             .credentials
             .lock()
             .unwrap()
@@ -18,10 +34,28 @@ fn credential_query(state: &AppState, query: UserDataQuery) -> anyhow::Result<()
                 }
             })
             .map(|cred| cred.id.clone())
+            .filter(|id| !filtered_creds_name.contains(id))
             .collect();
 
-        user_data_query = filtered_creds;
+        let filtered_creds_content: Vec<String> = state
+            .credentials
+            .lock()
+            .unwrap()
+            .iter()
+            .filter(|cred| {
+                cred.data.to_string().to_lowercase().contains(&search_term.to_lowercase())
+            })
+            .map(|cred| cred.id.clone())
+            .filter(|id| !filtered_creds_name.contains(id) && !filtered_creds_issuer.contains(id))
+            .collect();
+
+        user_data_query = concat(vec![
+            filtered_creds_name,
+            filtered_creds_issuer,
+            filtered_creds_content,
+        ]);
     }
+    
     if let Some(sort_method) = &query.sort_method {
         let mut creds = state.credentials.lock().unwrap();
 
@@ -50,7 +84,8 @@ fn credential_query(state: &AppState, query: UserDataQuery) -> anyhow::Result<()
 
         if user_data_query.is_empty() && query.search_term.is_none() {
             user_data_query = sorted_creds;
-        } else {
+        } 
+        else {
             sorted_creds.retain(|s| user_data_query.contains(s));
             user_data_query = sorted_creds;
         }
@@ -64,7 +99,7 @@ fn connection_query(state: &AppState, query: UserDataQuery) -> anyhow::Result<()
     let mut user_data_query: Vec<String> = vec![];
 
     if let Some(search_term) = &query.search_term {
-        let filtered_connects: Vec<String> = state
+        let filtered_connects_name: Vec<String> = state
             .connections
             .lock()
             .unwrap()
@@ -73,8 +108,22 @@ fn connection_query(state: &AppState, query: UserDataQuery) -> anyhow::Result<()
             .map(|connects| connects.client_name.clone())
             .collect();
 
-        user_data_query = filtered_connects;
+            let filtered_connects_url: Vec<String> = state
+            .connections
+            .lock()
+            .unwrap()
+            .iter()
+            .filter(|connects| connects.url.to_lowercase().contains(&search_term.to_lowercase()))
+            .map(|connects| connects.client_name.clone())
+            .filter(|client_name| !filtered_connects_name.contains(client_name))
+            .collect();
+
+        user_data_query = concat(vec![
+            filtered_connects_name,
+            filtered_connects_url
+        ]);
     }
+
     if let Some(sort_method) = &query.sort_method {
         let mut connects = state.connections.lock().unwrap();
 
@@ -103,7 +152,8 @@ fn connection_query(state: &AppState, query: UserDataQuery) -> anyhow::Result<()
 
         if user_data_query.is_empty() && query.search_term.is_none() {
             user_data_query = sorted_connects;
-        } else {
+        } 
+        else {
             sorted_connects.retain(|s| user_data_query.contains(s));
             user_data_query = sorted_connects;
         }
