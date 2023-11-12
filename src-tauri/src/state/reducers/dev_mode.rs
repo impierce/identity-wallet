@@ -1,4 +1,5 @@
 use crate::crypto::stronghold::StrongholdManager;
+use crate::error::AppError::{self, *};
 use crate::state::actions::Action;
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, Connection, Profile};
@@ -38,7 +39,7 @@ pub async fn set_dev_mode(state: &AppState, action: Action) -> anyhow::Result<()
     Ok(())
 }
 
-pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Result<()> {
+pub async fn load_dev_profile(state: &AppState, _action: Action) -> Result<(), AppError> {
     info!("load dev profile");
 
     let stronghold_manager = StrongholdManager::create("sup3rSecr3t")?;
@@ -70,7 +71,8 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
 
     info!("loading credentials from stronghold");
     *state.credentials.lock().unwrap() = stronghold_manager
-        .values()?
+        .values()
+        .map_err(StrongholdValuesError)?
         .unwrap()
         .into_iter()
         .map(|verifiable_credential_record| verifiable_credential_record.display_credential)

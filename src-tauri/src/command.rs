@@ -1,3 +1,4 @@
+use crate::error::AppError::{self, *};
 use crate::state::actions::{Action, ActionType};
 use crate::state::persistence::{delete_state_file, delete_stronghold, load_state, save_state};
 use crate::state::reducers::authorization::{
@@ -23,7 +24,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
     Action { r#type, payload }: Action,
     _app_handle: tauri::AppHandle<R>,
     app_state: &AppState,
-) -> Result<(), String> {
+) -> Result<(), AppError> {
     info!("received action `{:?}` with payload `{:?}`", r#type, payload);
 
     match r#type {
@@ -47,49 +48,34 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             *app_state.dev_mode_enabled.lock().unwrap() = loaded_state.dev_mode_enabled.lock().unwrap().clone();
             // TODO: uncomment the following line for LOCAL DEVELOPMENT (DEV_MODE)
             // *app_state.dev_mode_enabled.lock().unwrap() = true;
+            Ok(())
         }
-        ActionType::UnlockStorage => {
-            if unlock_storage(app_state, Action { r#type, payload }).await.is_ok() {
-                save_state(app_state).await.ok();
-            }
-        }
+        ActionType::UnlockStorage => unlock_storage(app_state, Action { r#type, payload }).await,
         ActionType::Reset => {
-            if reset_state(app_state, Action { r#type, payload }).is_ok() {
-                delete_state_file().await.ok();
-                delete_stronghold().await.ok();
-            }
+            reset_state(app_state, Action { r#type, payload })?;
+            delete_state_file().await?;
+            delete_stronghold().await
         }
         ActionType::CreateNew => {
             let action = Action { r#type, payload };
-            if initialize_stronghold(app_state, action.clone()).await.is_ok() {
-                save_state(app_state).await.ok();
-            }
-            if create_identity(app_state, action).await.is_ok() {
-                save_state(app_state).await.ok();
-            }
+            initialize_stronghold(app_state, action.clone()).await?;
+            create_identity(app_state, action).await?;
+
             // When everything is done, we redirect the user to the "me" page
             *app_state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect {
                 target: "me".to_string(),
             });
-            save_state(app_state).await.ok();
+            Ok(())
         }
-        ActionType::SetLocale => {
-            if set_locale(app_state, Action { r#type, payload }).is_ok() {
-                save_state(app_state).await.ok();
-            }
-        }
-        ActionType::UpdateProfileSettings => {
-            if update_profile_settings(app_state, Action { r#type, payload }).is_ok() {
-                save_state(app_state).await.ok();
-            }
-        }
+        ActionType::SetLocale => set_locale(app_state, Action { r#type, payload }),
+        ActionType::UpdateProfileSettings => update_profile_settings(app_state, Action { r#type, payload }),
         ActionType::QrCodeScanned => {
             info!("qr code scanned: `{:?}`", payload);
 
-            let payload = payload.ok_or("unable to read payload")?;
+            let payload = payload.ok_or(MissingPayloadError)?;
             let form_urlencoded = payload["form_urlencoded"]
                 .as_str()
-                .ok_or("unable to read form_urlencoded from payload")?;
+                .ok_or(MissingPayloadValueError("form_urlencoded"))?;
 
             if let Result::Ok(authorization_request) = form_urlencoded.parse::<AuthorizationRequest>() {
                 handle_action_inner(
@@ -101,7 +87,6 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
                     app_state,
                 )
                 .await
-                .ok();
             } else if let Result::Ok(credential_offer_query) = form_urlencoded.parse::<CredentialOfferQuery>() {
                 handle_action_inner(
                     Action {
@@ -112,38 +97,15 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
                     app_state,
                 )
                 .await
-                .ok();
             } else {
-                let message = format!("Unable to parse QR code with content: `{:?}`", form_urlencoded);
-                warn!("{message}");
-                app_state.debug_messages.lock().unwrap().push(message);
-            };
-            save_state(app_state).await.ok();
-        }
-        ActionType::ReadRequest => {
-            if read_authorization_request(app_state, Action { r#type, payload })
-                .await
-                .is_ok()
-            {
-                save_state(app_state).await.ok();
+                Err(InvalidQRCodeError(form_urlencoded))
             }
         }
+        ActionType::ReadRequest => read_authorization_request(app_state, Action { r#type, payload }).await,
         ActionType::ConnectionAccepted => {
-            if handle_siopv2_authorization_request(app_state, Action { r#type, payload })
-                .await
-                .is_ok()
-            {
-                save_state(app_state).await.ok();
-            }
+            handle_siopv2_authorization_request(app_state, Action { r#type, payload }).await
         }
-        ActionType::ReadCredentialOffer => {
-            if read_credential_offer(app_state, Action { r#type, payload })
-                .await
-                .is_ok()
-            {
-                save_state(app_state).await.ok();
-            }
-        }
+        ActionType::ReadCredentialOffer => read_credential_offer(app_state, Action { r#type, payload }).await,
         ActionType::CancelUserFlow => {
             if let Some(payload) = payload {
                 let redirect = payload["redirect"].as_str().unwrap();
@@ -158,55 +120,25 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
                 app_state.current_user_prompt.lock().unwrap().take();
             }
 
-            save_state(app_state).await.ok();
+            Ok(())
         }
-        ActionType::LoadDevProfile => {
-            if load_dev_profile(app_state, Action { r#type, payload }).await.is_ok() {
-                save_state(app_state).await.ok();
-            }
-        }
-        ActionType::SetDevMode => {
-            if set_dev_mode(app_state, Action { r#type, payload }).await.is_ok() {
-                save_state(app_state).await.ok();
-            }
-        }
+        ActionType::SetDevMode => set_dev_mode(app_state, Action { r#type, payload }).await,
+        ActionType::LoadDevProfile => load_dev_profile(app_state, Action { r#type, payload }).await,
         ActionType::CredentialsSelected => {
-            if handle_oid4vp_authorization_request(app_state, Action { r#type, payload })
-                .await
-                .is_ok()
-            {
-                save_state(app_state).await.ok();
-            }
+            handle_oid4vp_authorization_request(app_state, Action { r#type, payload }).await
         }
-        ActionType::CredentialOffersSelected => {
-            if send_credential_request(app_state, Action { r#type, payload })
-                .await
-                .is_ok()
-            {
-                save_state(app_state).await.ok();
-            }
-        }
+        ActionType::CredentialOffersSelected => send_credential_request(app_state, Action { r#type, payload }).await,
         ActionType::UpdateCredentialMetadata => {
-            if update_credential_metadata(app_state, Action { r#type, payload })
-                .await
-                .is_ok()
-            {
-                *app_state.current_user_prompt.lock().unwrap() = None;
-                save_state(app_state).await.ok();
-            }
+            update_credential_metadata(app_state, Action { r#type, payload }).await?;
+            *app_state.current_user_prompt.lock().unwrap() = None;
+            Ok(())
         }
         ActionType::CancelUserJourney => {
             *app_state.user_journey.lock().unwrap() = None;
-            save_state(app_state).await.ok();
+            Ok(())
         }
-        ActionType::Unknown => {
-            warn!(
-                "received unknown action type `{:?}` with payload `{:?}`",
-                r#type, payload
-            );
-        }
-    };
-    Result::Ok(())
+        ActionType::Unknown => Err(UnknownActionTypeError { r#type, payload }),
+    }
 }
 
 /// This command handler is the single point of entry to the business logic in the backend. It will delegate the
@@ -217,9 +149,18 @@ pub async fn handle_action<R: tauri::Runtime>(
     _app_handle: tauri::AppHandle<R>,
     app_state: tauri::State<'_, AppState>,
     window: tauri::Window<R>,
-) -> anyhow::Result<(), String> {
-    handle_action_inner(action, _app_handle, app_state.inner()).await.ok();
+) -> Result<(), String> {
+    match handle_action_inner(action, _app_handle, app_state.inner()).await {
+        Ok(()) => {
+            info!("state updated successfully");
+        }
+        Err(error) => {
+            app_state.debug_messages.lock().unwrap().push(format!("{:?}", error));
+            warn!("state update failed: `{}`", error);
+        }
+    }
 
+    save_state(app_state.inner()).await.ok();
     emit_event(window, app_state.inner()).ok();
 
     Result::Ok(())

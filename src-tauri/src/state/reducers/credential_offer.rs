@@ -1,10 +1,9 @@
-use std::fmt::Error;
-
 use crate::{
+    error::AppError::{self, *},
     state::{actions::Action, user_prompt::CurrentUserPrompt, AppState},
     verifiable_credential_record::VerifiableCredentialRecord,
 };
-use log::{info, warn};
+use log::info;
 use oid4vci::{
     credential_format_profiles::{CredentialFormats, WithCredential},
     credential_offer::{CredentialOffer, CredentialOfferQuery, CredentialsObject, Grants},
@@ -14,22 +13,23 @@ use oid4vci::{
 use serde_json::json;
 use uuid::Uuid;
 
-pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::Result<()> {
+pub async fn read_credential_offer(state: &AppState, action: Action) -> Result<(), AppError> {
     info!("read_credential_offer");
     let state_guard = state.managers.lock().await;
     let wallet = &state_guard
         .identity_manager
         .as_ref()
-        .ok_or(anyhow::anyhow!("no identity manager found"))?
+        .ok_or(MissingManagerError("identity"))?
         .wallet;
 
-    let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
+    let payload = action.payload.ok_or(MissingPayloadError)?;
 
-    let mut credential_offer: CredentialOffer = match serde_json::from_value(payload)? {
+    let mut credential_offer: CredentialOffer = match serde_json::from_value(payload).map_err(InvalidCredentialOffer)? {
         CredentialOfferQuery::CredentialOffer(credential_offer) => credential_offer,
-        CredentialOfferQuery::CredentialOfferUri(credential_offer_uri) => {
-            wallet.get_credential_offer(credential_offer_uri).await?
-        }
+        CredentialOfferQuery::CredentialOfferUri(credential_offer_uri) => wallet
+            .get_credential_offer(credential_offer_uri)
+            .await
+            .map_err(GetCredentialOfferError)?,
     };
     info!("credential offer: {:?}", credential_offer);
 
@@ -47,12 +47,6 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::
         wallet
             .get_credential_issuer_metadata(credential_issuer_url.clone())
             .await
-            .map_err(|err| {
-                let message = format!("SIOPv2 authorization request cannot be validated: {err:?}");
-                warn!("{message}");
-                state.debug_messages.lock().unwrap().push(message);
-                err
-            })
             .ok()
     } else {
         None
@@ -76,7 +70,7 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::
                                 })
                                 .map(|credential_supported| credential_supported.credential_format.clone())
                         })
-                        .ok_or(anyhow::anyhow!("unable to find credential"))?,
+                        .ok_or(MissingCredentialOfferError(by_reference.clone()))?,
                 );
             }
             _by_value => (),
@@ -115,30 +109,29 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> anyhow::
     Ok(())
 }
 
-pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow::Result<()> {
+pub async fn send_credential_request(state: &AppState, action: Action) -> Result<(), AppError> {
     info!("send_credential_request");
     let state_guard = state.managers.lock().await;
     let stronghold_manager = state_guard
         .stronghold_manager
         .as_ref()
-        .ok_or(anyhow::anyhow!("no stronghold manager found"))?;
+        .ok_or(MissingManagerError("stronghold"))?;
     let wallet = &state_guard
         .identity_manager
         .as_ref()
-        .ok_or(anyhow::anyhow!("no identity manager found"))?
+        .ok_or(MissingManagerError("identity"))?
         .wallet;
 
-    let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
-    let offer_indices: Vec<usize> = serde_json::from_value(payload["offer_indices"].clone())?;
+    let payload = action.payload.ok_or(MissingPayloadError)?;
+    let offer_indices: Vec<usize> =
+        serde_json::from_value(payload["offer_indices"].clone()).map_err(InvalidOfferIndicesError)?;
 
     let current_user_prompt = state
         .current_user_prompt
         .lock()
         .unwrap()
         .clone()
-        .ok_or(anyhow::anyhow!(
-            "no current user prompt found, unable to send credential request"
-        ))?;
+        .ok_or(MissingStateParameterError("current user prompt"))?;
 
     info!("current_user_prompt: {:?}", current_user_prompt);
 
@@ -155,14 +148,16 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
     // Get the authorization server metadata.
     let authorization_server_metadata = wallet
         .get_authorization_server_metadata(credential_issuer_url.clone())
-        .await?;
+        .await
+        .map_err(GetAuthorizationServerMetadataError)?;
 
     info!("authorization server metadata: {:?}", authorization_server_metadata);
 
     // Get the credential issuer metadata.
     let credential_issuer_metadata = wallet
         .get_credential_issuer_metadata(credential_issuer_url.clone())
-        .await?;
+        .await
+        .map_err(GetCredentialIssuerMetadataError)?;
 
     info!("credential issuer metadata: {:?}", credential_issuer_metadata);
 
@@ -187,6 +182,7 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
         .into_iter()
         .map(|offer_index| match credential_offer.credentials.get(offer_index) {
             Some(CredentialsObject::ByValue(credential_format)) => credential_format.to_owned(),
+            // Unreachable because we replace all `CredentialsObject::ByReference` with `CredentialsObject::ByValue` in `read_credential_offer`.
             _ => unreachable!(),
         })
         .collect::<Vec<CredentialFormats>>();
@@ -209,7 +205,8 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
     // Get an access token.
     let token_response = wallet
         .get_access_token(authorization_server_metadata.token_endpoint.unwrap(), token_request)
-        .await?;
+        .await
+        .map_err(GetAccessTokenError)?;
 
     info!("token_response: {:?}", token_response);
 
@@ -223,7 +220,8 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
                     &token_response,
                     credential_offer_formats[0].to_owned(),
                 )
-                .await?;
+                .await
+                .map_err(GetCredentialError)?;
 
             let credential = match credential_response.credential {
                 CredentialResponseType::Immediate(credential) => credential,
@@ -235,7 +233,8 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
         _batch => {
             let batch_credential_response = wallet
                 .get_batch_credential(credential_issuer_metadata, &token_response, credential_offer_formats)
-                .await?;
+                .await
+                .map_err(GetBatchCredentialError)?;
 
             batch_credential_response
                 .credential_responses
@@ -261,13 +260,16 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> anyhow
         info!("generated hash-key: {:?}", key);
 
         // Remove the old credential from the stronghold if it exists.
-        stronghold_manager.remove(key)?;
+        stronghold_manager.remove(key).map_err(StrongholdDeletionError)?;
 
-        stronghold_manager.insert(key, json!(verifiable_credential_record).to_string().as_bytes().to_vec())?;
+        stronghold_manager
+            .insert(key, json!(verifiable_credential_record).to_string().as_bytes().to_vec())
+            .map_err(StrongholdInsertionError)?;
     }
 
     *state.credentials.lock().unwrap() = stronghold_manager
-        .values()?
+        .values()
+        .map_err(StrongholdValuesError)?
         .unwrap()
         .into_iter()
         .map(|verifiable_credential_record| verifiable_credential_record.display_credential)
