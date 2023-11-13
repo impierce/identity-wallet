@@ -35,6 +35,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             *app_state.active_profile.lock().unwrap() = loaded_state.active_profile.lock().unwrap().clone();
             *app_state.locale.lock().unwrap() = loaded_state.locale.lock().unwrap().clone();
             *app_state.connections.lock().unwrap() = loaded_state.connections.lock().unwrap().clone();
+            *app_state.debug_messages.lock().unwrap() = loaded_state.debug_messages.lock().unwrap().clone();
 
             if app_state.active_profile.lock().unwrap().is_some() {
                 *app_state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::PasswordRequired);
@@ -156,8 +157,16 @@ pub async fn handle_action<R: tauri::Runtime>(
             info!("state updated successfully");
         }
         Err(error) => {
-            app_state.debug_messages.lock().unwrap().push(format!("{:?}", error));
-            warn!("state update failed: `{}`", error);
+            let debug_messages = &mut app_state.inner().debug_messages.lock().unwrap();
+            while debug_messages.len() > 1000 {
+                debug_messages.remove(0);
+            }
+            debug_messages.push_back(format!(
+                "{}: {:?}",
+                chrono::Utc::now().format("[%Y-%m-%d][%H:%M:%S]").to_string(),
+                error
+            ));
+            warn!("state update failed `{}`", error);
         }
     }
 
