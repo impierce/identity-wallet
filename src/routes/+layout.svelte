@@ -4,7 +4,6 @@
   import { goto } from '$app/navigation';
   import { fly } from 'svelte/transition';
 
-  import { readText } from '@tauri-apps/plugin-clipboard-manager';
   import { attachConsole, error, info, trace } from '@tauri-apps/plugin-log';
 
   import { dispatch } from '$lib/dispatcher';
@@ -15,7 +14,6 @@
   import ArrowLeft from '~icons/ph/arrow-left';
   import CaretDown from '~icons/ph/caret-down-bold';
   import CaretUp from '~icons/ph/caret-up-bold';
-  import Clipboard from '~icons/ph/clipboard';
   import Trash from '~icons/ph/trash';
   import Warning from '~icons/ph/warning';
 
@@ -27,8 +25,6 @@
   import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
 
   import { determineTheme } from './utils';
-
-  let clipboard: string | undefined;
 
   onMount(async () => {
     const detach = await attachConsole();
@@ -88,23 +84,6 @@
         >
           <span class="text-[18px]/[18px]">🦀</span>
         </button>
-
-        <!-- Paste from Clipboard -->
-        <BottomDrawer titleText="Paste from clipboard?">
-          <button
-            slot="trigger"
-            let:trigger
-            use:melt={trigger}
-            class="flex-shrink-0 rounded-full bg-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
-            on:click={async () => (clipboard = await readText())}><Clipboard class="h-6 w-6" /></button
-          >
-          <div slot="content" class="w-full pb-[10px] pt-[20px]">
-            <div class="mb-4 rounded-2xl bg-slate-200 p-4">
-              <div class="break-all font-mono text-sm text-slate-400">{clipboard}</div>
-            </div>
-            <Button label="Paste" disabled />
-          </div>
-        </BottomDrawer>
 
         <!-- Debug messages -->
         <button

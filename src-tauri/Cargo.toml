@@ -19,7 +19,6 @@ tauri-build = { version = "=2.0.0-alpha.11", features = [] }
 [dependencies]
 tauri = { version = "=2.0.0-alpha.17", features = ["rustls-tls"] }
 tauri-plugin-barcode-scanner = "=2.0.0-alpha.2"
-tauri-plugin-clipboard-manager = "=2.0.0-alpha.4"
 tauri-plugin-log = { version = "=2.0.0-alpha.4", features = ["colored"] }
 
 oid4vc-manager = { git = "https://git@github.com/impierce/openid4vc.git", rev = "920b5651bd1372728c977c946ef7b8032059cc70" }
