@@ -24,7 +24,8 @@ use uuid::Uuid;
 pub fn set_locale(state: &AppState, action: Action) -> Result<(), AppError> {
     let payload = action.payload.ok_or(MissingPayloadError)?;
     let locale = &payload["locale"];
-    *state.locale.lock().unwrap() = serde_json::from_value::<Locale>(locale.clone())?;
+    *state.locale.lock().unwrap() =
+        serde_json::from_value::<Locale>(locale.clone()).map_err(|_| MissingPayloadValueError("locale"))?;
     info!("locale set to: `{}`", locale);
     Ok(())
 }
@@ -42,19 +43,19 @@ pub async fn create_identity(state: &AppState, action: Action) -> Result<(), App
     let picture = payload["picture"].as_str().ok_or(MissingPayloadValueError("picture"))?;
     let theme = payload["theme"].as_str().ok_or(MissingPayloadValueError("theme"))?;
 
-    let public_key = stronghold_manager.get_public_key()?;
+    let public_key = stronghold_manager.get_public_key().map_err(StrongholdPublicKeyError)?;
 
     let keypair = from_existing_key::<Ed25519KeyPair>(public_key.as_slice(), None);
     let subject = Arc::new(KeySubject::from_keypair(keypair, Some(stronghold_manager.clone())));
 
-    let provider_manager = ProviderManager::new([subject.clone()])?;
+    let provider_manager = ProviderManager::new([subject.clone()]).map_err(OID4VCProviderManagerError)?;
     let wallet: Wallet = Wallet::new(subject.clone());
 
     let profile = Profile {
         name: name.to_string(),
         picture: Some(picture.to_string()),
         theme: Some(theme.to_string()),
-        primary_did: subject.identifier()?,
+        primary_did: subject.identifier().map_err(OID4VCSubjectIdentifierError)?,
     };
 
     state.active_profile.lock().unwrap().replace(profile);
@@ -73,12 +74,9 @@ pub async fn initialize_stronghold(state: &AppState, action: Action) -> Result<(
         .as_str()
         .ok_or(MissingPayloadValueError("password"))?;
 
-    state
-        .managers
-        .lock()
-        .await
-        .stronghold_manager
-        .replace(Arc::new(StrongholdManager::create(password)?));
+    state.managers.lock().await.stronghold_manager.replace(Arc::new(
+        StrongholdManager::create(password).map_err(StrongholdCreationError)?,
+    ));
 
     info!("stronghold initialized");
 
@@ -89,8 +87,9 @@ pub async fn update_credential_metadata(state: &AppState, action: Action) -> Res
     let payload = action.payload.ok_or(MissingPayloadError)?;
     let credential_id: Uuid = payload["id"]
         .as_str()
-        .ok_or(anyhow::anyhow!("unable to read credential id from json payload"))?
-        .parse()?;
+        .ok_or(MissingPayloadValueError("id"))?
+        .parse()
+        .map_err(InvalidUuidError)?;
 
     let state_guard = state.managers.lock().await;
     let stronghold_manager = state_guard
@@ -104,7 +103,7 @@ pub async fn update_credential_metadata(state: &AppState, action: Action) -> Res
         .unwrap()
         .into_iter()
         .find(|record| record.display_credential.id == credential_id.to_string())
-        .ok_or(anyhow::anyhow!("credential not found"))?;
+        .ok_or(StrongholdMissingCredentialError(credential_id))?;
 
     info!(
         "verifiable_credential_record (before): {:?}",

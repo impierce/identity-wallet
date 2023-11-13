@@ -40,7 +40,7 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> Res
 
     if let Result::Ok(siopv2_authorization_request) = provider_manager
         .validate_request::<SIOPv2>(serde_json::from_value(payload.clone()).map_err(|source| {
-            OID4VCProviderManagerError {
+            OID4VCAuthorizationRequestError {
                 extension: "SIOPv2",
                 source,
             }
@@ -81,7 +81,7 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> Res
             });
     } else if let Result::Ok(oid4vp_authorization_request) = provider_manager
         .validate_request::<OID4VP>(serde_json::from_value(payload.clone()).map_err(|source| {
-            OID4VCProviderManagerError {
+            OID4VCAuthorizationRequestError {
                 extension: "OID4VP",
                 source,
             }

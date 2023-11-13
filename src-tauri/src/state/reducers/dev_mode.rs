@@ -42,7 +42,7 @@ pub async fn set_dev_mode(state: &AppState, action: Action) -> anyhow::Result<()
 pub async fn load_dev_profile(state: &AppState, _action: Action) -> Result<(), AppError> {
     info!("load dev profile");
 
-    let stronghold_manager = StrongholdManager::create("sup3rSecr3t")?;
+    let stronghold_manager = StrongholdManager::create("sup3rSecr3t").map_err(StrongholdCreationError)?;
 
     let subject = KeySubject::from_keypair(
         generate::<Ed25519KeyPair>(Some("this-is-a-very-UNSAFE-secret-key".as_bytes())),

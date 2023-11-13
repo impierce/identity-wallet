@@ -53,8 +53,8 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
         ActionType::UnlockStorage => unlock_storage(app_state, Action { r#type, payload }).await,
         ActionType::Reset => {
             reset_state(app_state, Action { r#type, payload })?;
-            delete_state_file().await?;
-            delete_stronghold().await
+            delete_state_file().await.map_err(StateFileDeletionError)?;
+            delete_stronghold().await.map_err(StrongholdDeletionError)
         }
         ActionType::CreateNew => {
             let action = Action { r#type, payload };
@@ -72,10 +72,11 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
         ActionType::QrCodeScanned => {
             info!("qr code scanned: `{:?}`", payload);
 
-            let payload = payload.ok_or(MissingPayloadError)?;
+            let payload = payload.unwrap();
             let form_urlencoded = payload["form_urlencoded"]
                 .as_str()
-                .ok_or(MissingPayloadValueError("form_urlencoded"))?;
+                .ok_or(MissingPayloadValueError("form_urlencoded"))?
+                .to_string();
 
             if let Result::Ok(authorization_request) = form_urlencoded.parse::<AuthorizationRequest>() {
                 handle_action_inner(

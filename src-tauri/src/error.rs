@@ -1,5 +1,6 @@
 use crate::state::actions::ActionType;
 use std::error::Error;
+use uuid::Uuid;
 
 // TODO: needs revision/refactor + needs oid4vc libs to properly implement error handling.
 #[derive(thiserror::Error)]
@@ -9,7 +10,7 @@ pub enum AppError {
     #[error("Required payload value is missing: {0}")]
     MissingPayloadValueError(&'static str),
     #[error("Unable to parse QR code with content: `{0}`")]
-    InvalidQRCodeError(&'static str),
+    InvalidQRCodeError(String),
     #[error("Received unknown action type `{r#type:?}` with payload: `{payload:?}`")]
     UnknownActionTypeError {
         r#type: ActionType,
@@ -18,10 +19,14 @@ pub enum AppError {
     #[error("No `{0}` manager found in the state")]
     MissingManagerError(&'static str),
     #[error("{extension} authorization request cannot be validated")]
-    OID4VCProviderManagerError {
+    OID4VCAuthorizationRequestError {
         extension: &'static str,
         source: serde_json::Error,
     },
+    #[error("Error while initializing OID4VC provider manager")]
+    OID4VCProviderManagerError(#[source] anyhow::Error),
+    #[error("Error while fetching DID identifier from OID4VC subject")]
+    OID4VCSubjectIdentifierError(#[source] anyhow::Error),
     #[error("Missing required parameter `{0}` in authorization request")]
     MissingAuthorizationRequestParameterError(&'static str),
     #[error("Invalid authorization request: {0}")]
@@ -62,6 +67,8 @@ pub enum AppError {
     InvalidOfferIndicesError(#[source] serde_json::Error),
     #[error("No `{0}` found in the state")]
     MissingStateParameterError(&'static str),
+    #[error("Failed to create stronghold")]
+    StrongholdCreationError(#[source] anyhow::Error),
     #[error("Failed to load stronghold")]
     StrongholdLoadingError(#[source] anyhow::Error),
     #[error("Failed to delete credential from stronghold")]
@@ -70,6 +77,12 @@ pub enum AppError {
     StrongholdInsertionError(#[source] anyhow::Error),
     #[error("Error while loading credentials from stronghold")]
     StrongholdValuesError(#[source] anyhow::Error),
+    #[error("No credential record found for id `{0}`")]
+    StrongholdMissingCredentialError(Uuid),
+    #[error("Failed to retrieve public key from stronghold")]
+    StrongholdPublicKeyError(#[source] anyhow::Error),
+    #[error("Failed to delete state file")]
+    StateFileDeletionError(#[source] anyhow::Error),
 }
 
 impl std::fmt::Debug for AppError {
