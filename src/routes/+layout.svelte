@@ -106,10 +106,10 @@
 
   <!-- Dev Mode: Debug messages -->
   {#if showDebugMessages}
-    <div class="relative z-10 h-full w-screen bg-orange-100">
+    <div class="relative z-10 min-h-full w-screen bg-orange-100">
       <p class="p-4 text-center text-xs font-semibold uppercase text-orange-800">debug messages</p>
       {#each $state.debug_messages as message}
-        <div class="mx-2 mb-2 rounded bg-orange-200 bg-opacity-60 p-2">
+        <div class="mx-2 mb-2 rounded bg-orange-200 p-2">
           <div class="break-all font-mono text-xs text-orange-700">{message}</div>
         </div>
       {/each}
