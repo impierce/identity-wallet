@@ -27,7 +27,6 @@ pub fn run() {
             Ok(())
         })
         .manage(AppState::default())
-        .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(
             tauri_plugin_log::Builder::new()
                 // .clear_targets()

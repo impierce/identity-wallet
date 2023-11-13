@@ -54,7 +54,3 @@ interface OnboardingState {
   theme?: string;
   password?: string; // TODO: secure enough?
 }
-
-// TODO: conditional compiling for version 1.0
-// TODO: DEV_MODE
-export const developer_mode = writable<boolean>(false);

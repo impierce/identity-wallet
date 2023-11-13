@@ -1,6 +1,6 @@
 pub mod authorization;
 pub mod credential_offer;
-pub mod load_dev_profile;
+pub mod dev_mode;
 pub mod storage;
 
 use super::{IdentityManager, Locale};

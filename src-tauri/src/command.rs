@@ -4,7 +4,7 @@ use crate::state::reducers::authorization::{
     handle_oid4vp_authorization_request, handle_siopv2_authorization_request, read_authorization_request,
 };
 use crate::state::reducers::credential_offer::{read_credential_offer, send_credential_request};
-use crate::state::reducers::load_dev_profile::load_dev_profile;
+use crate::state::reducers::dev_mode::{load_dev_profile, set_dev_mode};
 use crate::state::reducers::storage::unlock_storage;
 use crate::state::reducers::{
     create_identity, initialize_stronghold, reset_state, set_locale, update_credential_metadata,
@@ -16,6 +16,7 @@ use log::{info, warn};
 use oid4vc_core::authorization_request::AuthorizationRequest;
 use oid4vci::credential_offer::CredentialOfferQuery;
 use serde_json::json;
+use tauri::Manager;
 
 #[async_recursion::async_recursion]
 pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
@@ -42,6 +43,10 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
                     target: "welcome".to_string(),
                 });
             }
+
+            *app_state.dev_mode_enabled.lock().unwrap() = loaded_state.dev_mode_enabled.lock().unwrap().clone();
+            // TODO: uncomment the following line for LOCAL DEVELOPMENT (DEV_MODE)
+            // *app_state.dev_mode_enabled.lock().unwrap() = true;
         }
         ActionType::UnlockStorage => {
             if unlock_storage(app_state, Action { r#type, payload }).await.is_ok() {
@@ -155,6 +160,11 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
         }
         ActionType::LoadDevProfile => {
             if load_dev_profile(app_state, Action { r#type, payload }).await.is_ok() {
+                save_state(app_state).await.ok();
+            }
+        }
+        ActionType::SetDevMode => {
+            if set_dev_mode(app_state, Action { r#type, payload }).await.is_ok() {
                 save_state(app_state).await.ok();
             }
         }

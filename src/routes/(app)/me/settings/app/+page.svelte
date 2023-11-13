@@ -1,12 +1,14 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
 
+  import Switch from '$src/lib/components/atoms/Switch.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
+  import { dispatch } from '$src/lib/dispatcher';
   import SettingsEntry from '$src/lib/settings/SettingsEntry.svelte';
-  import { developer_mode } from '$src/stores';
+  import { state } from '$src/stores';
 
   import ChatCircleText from '~icons/ph/chat-circle-text-fill';
-  import Code from '~icons/ph/code-fill';
+  import Code from '~icons/ph/code-bold';
   import Confetti from '~icons/ph/confetti-fill';
   import Password from '~icons/ph/password-fill';
   import Sun from '~icons/ph/sun-fill';
@@ -21,14 +23,12 @@
     <SettingsEntry icon={Password} title="Password" todo />
     <SettingsEntry icon={Confetti} title="Onboarding journey" hasCaretRight={false} textRight="Restart" todo />
     <SettingsEntry icon={ChatCircleText} title="Hints and tips" hasCaretRight={false} textRight="Reset" todo />
-    <!-- TODO: DEV_MODE -->
-    <!-- <SettingsEntry
-      icon={Code}
-      title="Developer mode"
-      hasCaretRight={false}
-      textRight={$developer_mode ? 'On' : 'Off'}
-      on:click={() => developer_mode.set(!$developer_mode)}
-    /> -->
+    <SettingsEntry icon={Code} title="Developer mode" hasCaretRight={false}>
+      <Switch
+        active={$state?.dev_mode_enabled}
+        on:change={() => dispatch({ type: '[DEV] Set dev mode', payload: { enabled: !$state?.dev_mode_enabled } })}
+      />
+    </SettingsEntry>
   </div>
 </div>
 
