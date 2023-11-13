@@ -21,7 +21,7 @@
   const isDarkModeEnabled = document.documentElement.classList.contains('dark');
 
   onMount(() => {
-    if ($state?.dev_mode_enabled) {
+    if ($state?.dev_mode_enabled && $state?.active_profile?.name === 'Ferris') {
       console.log('Developer mode - Injecting password automatically ...');
       setTimeout(() => {
         dispatch({ type: '[Storage] Unlock', payload: { password: 'sup3rSecr3t' } });
@@ -39,7 +39,7 @@
     {:else}
       <UniMeLogoLight />
     {/if}
-    {#if !$state?.dev_mode_enabled}
+    {#if !($state?.dev_mode_enabled && $state?.active_profile?.name === 'Ferris')}
       <div class="relative mb-4 mt-8 w-[240px]">
         <input
           type={showPassword ? 'text' : 'password'}
