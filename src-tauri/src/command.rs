@@ -46,7 +46,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
                 });
             }
 
-            *app_state.dev_mode_enabled.lock().unwrap() = loaded_state.dev_mode_enabled.lock().unwrap().clone();
+            *app_state.dev_mode_enabled.lock().unwrap() = *loaded_state.dev_mode_enabled.lock().unwrap();
             // TODO: uncomment the following line for LOCAL DEVELOPMENT (DEV_MODE)
             // *app_state.dev_mode_enabled.lock().unwrap() = true;
             Ok(())
@@ -163,7 +163,7 @@ pub async fn handle_action<R: tauri::Runtime>(
             }
             debug_messages.push_back(format!(
                 "{} {:?}",
-                chrono::Utc::now().format("[%Y-%m-%d][%H:%M:%S]").to_string(),
+                chrono::Utc::now().format("[%Y-%m-%d][%H:%M:%S]"),
                 error
             ));
             warn!("state update failed `{}`", error);

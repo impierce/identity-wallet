@@ -48,6 +48,7 @@ pub async fn assert_state_update(
                 locale,
                 credentials,
                 current_user_prompt,
+                debug_messages,
                 ..
             } = app.app_handle().state::<AppState>().inner();
 
@@ -56,6 +57,7 @@ pub async fn assert_state_update(
                 locale: expected_locale,
                 credentials: expected_credentials,
                 current_user_prompt: expected_current_user_prompt,
+                debug_messages: expected_debug_messages,
                 ..
             } = expected_state;
 
@@ -69,6 +71,10 @@ pub async fn assert_state_update(
             }
             assert_eq!(*locale.lock().unwrap(), *expected_locale.lock().unwrap());
             assert_eq!(*credentials.lock().unwrap(), *expected_credentials.lock().unwrap());
+            assert_eq!(
+                debug_messages.lock().unwrap().len(),
+                expected_debug_messages.lock().unwrap().len()
+            );
             assert_eq!(
                 *current_user_prompt.lock().unwrap(),
                 *expected_current_user_prompt.lock().unwrap()
