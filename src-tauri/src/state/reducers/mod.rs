@@ -210,6 +210,24 @@ pub fn update_profile_settings(state: &AppState, action: Action) -> anyhow::Resu
 
     state.active_profile.lock().unwrap().as_mut().unwrap().name = name;
 
+    let picture = match payload["picture"].as_str() {
+        Some(picture) => picture.to_string(),
+        None => {
+            info!("no picture provided, using existing");
+            state
+                .active_profile
+                .lock()
+                .unwrap()
+                .clone()
+                .unwrap()
+                .picture
+                .clone()
+                .unwrap()
+        }
+    };
+
+    state.active_profile.lock().unwrap().as_mut().unwrap().picture = Some(picture);
+
     *state.current_user_prompt.lock().unwrap() = None;
     Ok(())
 }

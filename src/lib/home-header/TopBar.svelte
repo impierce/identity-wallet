@@ -10,11 +10,14 @@
 </script>
 
 <div class="flex items-center justify-between px-[18px]">
-  <div class="flex h-[44px] w-[44px] items-center justify-center rounded-2xl bg-primary">
+  <button
+    class="flex h-[44px] w-[44px] items-center justify-center rounded-2xl bg-primary"
+    on:click={() => goto('/me/settings/profile/avatar')}
+  >
     <span class="text-[28px]/[28px]">
       {@html $state?.active_profile?.picture ?? ''}
     </span>
-  </div>
+  </button>
   <button on:click={() => goto('/me/settings')} class="-mx-3 rounded-full p-3 pr-0 text-black dark:text-white">
     <DotsThreeVertical class="h-8 w-8" />
   </button>
