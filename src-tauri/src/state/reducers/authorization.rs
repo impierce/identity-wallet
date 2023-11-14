@@ -167,12 +167,6 @@ pub async fn handle_siopv2_authorization_request(state: &AppState, _action: Acti
 
     if provider_manager.send_response(&response).await.is_err() {
         info!("failed to send response");
-
-        state
-            .active_connection_request
-            .lock()
-            .unwrap()
-            .replace(ConnectionRequest::SIOPv2(siopv2_authorization_request));
         return Err(SendAuthorizationResponseError);
     }
     info!("response successfully sent");
@@ -314,11 +308,6 @@ pub async fn handle_oid4vp_authorization_request(state: &AppState, action: Actio
 
     if provider_manager.send_response(&response).await.is_err() {
         info!("failed to send response");
-        state
-            .active_connection_request
-            .lock()
-            .unwrap()
-            .replace(ConnectionRequest::OID4VP(oid4vp_authorization_request));
         return Err(SendAuthorizationResponseError);
     }
     info!("response successfully sent");

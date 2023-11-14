@@ -152,26 +152,35 @@ pub async fn handle_action<R: tauri::Runtime>(
     app_state: tauri::State<'_, AppState>,
     window: tauri::Window<R>,
 ) -> Result<(), String> {
+    // Keep a copy of the state before it is altered, so that we can revert to it if the state update fails.
+    let unaltered_state = app_state.clone();
+
     match handle_action_inner(action, _app_handle, app_state.inner()).await {
         Ok(()) => {
             info!("state updated successfully");
+            save_state(app_state.inner()).await.ok();
+            emit_event(window, app_state.inner()).ok();
         }
         Err(error) => {
-            let debug_messages = &mut app_state.inner().debug_messages.lock().unwrap();
-            while debug_messages.len() > 1000 {
-                debug_messages.remove(0);
+            // If the state update fails, we revert to the unaltered state and add the error to the debug messages.
+            {
+                let debug_messages = &mut unaltered_state.debug_messages.lock().unwrap();
+                while debug_messages.len() > 1000 {
+                    debug_messages.remove(0);
+                }
+                debug_messages.push_back(format!(
+                    "{} {:?}",
+                    chrono::Utc::now().format("[%Y-%m-%d][%H:%M:%S]"),
+                    error
+                ));
             }
-            debug_messages.push_back(format!(
-                "{} {:?}",
-                chrono::Utc::now().format("[%Y-%m-%d][%H:%M:%S]"),
-                error
-            ));
-            warn!("state update failed `{}`", error);
+            warn!("state update failed: {}", error);
+
+            // Save and emit the unaltered state including the error message.
+            save_state(&unaltered_state).await.ok();
+            emit_event(window.clone(), &unaltered_state).ok();
         }
     }
-
-    save_state(app_state.inner()).await.ok();
-    emit_event(window, app_state.inner()).ok();
 
     Result::Ok(())
 }
