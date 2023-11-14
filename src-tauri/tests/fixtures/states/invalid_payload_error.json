@@ -6,6 +6,6 @@
         "primary_did": "did:key:z6Mkr8yRGc8hG7t26CtjSaEfWZZsEDZZ3HECsUdwVyR4NThQ"
     },
     "debug_messages": [
-        "placeholder"
+        "[2023-11-14][22:03:55] Unable to parse QR code with content: `invalid payload`\n"
     ]
 }
