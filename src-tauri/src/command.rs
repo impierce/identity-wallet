@@ -162,7 +162,7 @@ pub async fn handle_action<R: tauri::Runtime>(
                 debug_messages.remove(0);
             }
             debug_messages.push_back(format!(
-                "{}: {:?}",
+                "{} {:?}",
                 chrono::Utc::now().format("[%Y-%m-%d][%H:%M:%S]").to_string(),
                 error
             ));

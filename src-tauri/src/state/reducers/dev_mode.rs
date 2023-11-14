@@ -27,13 +27,11 @@ lazy_static! {
         }));
 }
 
-pub async fn set_dev_mode(state: &AppState, action: Action) -> anyhow::Result<()> {
-    let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
-    let value = payload
-        .get("enabled")
-        .ok_or(anyhow::anyhow!("unable to read enabled from json payload"))?
+pub async fn set_dev_mode(state: &AppState, action: Action) -> Result<(), AppError> {
+    let payload = action.payload.ok_or(MissingPayloadError)?;
+    let value = payload["enabled"]
         .as_bool()
-        .ok_or(anyhow::anyhow!("unable to read bool from json payload"))?;
+        .ok_or(MissingPayloadValueError("enabled"))?;
     *state.dev_mode_enabled.lock().unwrap() = value;
     *state.current_user_prompt.lock().unwrap() = None;
     Ok(())
