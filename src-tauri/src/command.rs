@@ -165,7 +165,7 @@ pub async fn handle_action<R: tauri::Runtime>(
             // If the state update fails, we revert to the unaltered state and add the error to the debug messages.
             {
                 let debug_messages = &mut unaltered_state.debug_messages.lock().unwrap();
-                while debug_messages.len() > 1000 {
+                while debug_messages.len() > 100 {
                     debug_messages.remove(0);
                 }
                 debug_messages.push_back(format!(
@@ -178,7 +178,7 @@ pub async fn handle_action<R: tauri::Runtime>(
 
             // Save and emit the unaltered state including the error message.
             save_state(&unaltered_state).await.ok();
-            emit_event(window.clone(), &unaltered_state).ok();
+            emit_event(window, &unaltered_state).ok();
         }
     }
 
