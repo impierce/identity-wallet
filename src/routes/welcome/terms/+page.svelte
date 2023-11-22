@@ -2,24 +2,11 @@
   import { goto } from '$app/navigation';
   import { fade, fly } from 'svelte/transition';
 
-  import { createCheckbox, melt } from '@melt-ui/svelte';
-
+  import Checkbox from '$src/lib/components/atoms/Checkbox.svelte';
   import Button from '$src/lib/components/Button.svelte';
-  import Checkbox from '$src/lib/components/Checkbox.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
-  import { dispatch } from '$src/lib/dispatcher';
 
-  import Check from '~icons/ph/check-bold';
-
-  const {
-    elements: { root, input },
-    helpers: { isChecked },
-  } = createCheckbox({});
-
-  const {
-    elements: { root: ownership_root, input: ownership_input },
-    helpers: { isChecked: ownership_isChecked },
-  } = createCheckbox({});
+  let ownership_isChecked = false;
 </script>
 
 <!-- <div in:fly={{ x: 128, delay: 400 }} out:fly={{ x: -128, opacity: 1 }}>
@@ -81,7 +68,12 @@
         </p>
       </div>
       <div>
-        <Checkbox root={$ownership_root} input={$ownership_input} isChecked={$ownership_isChecked} />
+        <Checkbox
+          checked={ownership_isChecked}
+          on:change={(e) => {
+            ownership_isChecked = e.detail;
+          }}
+        />
       </div>
     </div>
   </div>
@@ -89,7 +81,7 @@
 <!-- Actions -->
 <!-- <div class="space-y-[10px] rounded-t-3xl bg-white p-6" in:fly={{ y: 154, delay: 300, opacity: 1 }}> -->
 <div class="rounded-t-3xl bg-white p-6 dark:bg-dark" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
-  <Button label="Continue" on:click={() => goto('/welcome/customize/name')} disabled={!$ownership_isChecked} />
+  <Button label="Continue" on:click={() => goto('/welcome/customize/name')} disabled={!ownership_isChecked} />
 </div>
 
 <style>
