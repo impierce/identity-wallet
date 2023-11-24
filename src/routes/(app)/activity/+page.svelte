@@ -6,6 +6,9 @@
   import ArrowDownAZ from '~icons/lucide/arrow-down-a-z';
   import MagnifyingGlass from '~icons/ph/magnifying-glass-bold';
   import SortAscending from '~icons/ph/sort-ascending-bold';
+  import Search from '$src/lib/components/Search.svelte';
+  import Sort from '$src/lib/components/Sort.svelte';
+  import SortModal from '$src/lib/components/SortModal.svelte';
 </script>
 
 <div class="content-height flex flex-col bg-silver dark:bg-navy">
@@ -22,8 +25,15 @@
         <MagnifyingGlass class="h-5 w-5" />
       </button>
     </div> -->
+
+    <div class="absolute top-4 right-12">
+      <Sort></Sort>
+    </div>
   </div>
+ 
   <div class="grow overflow-y-auto px-4 py-5">
+    
+
     <ActivityTabs>
       <div slot="connections" class="h-full pt-5">
         <!-- Search & Sort -->
@@ -35,6 +45,8 @@
           ><ArrowDownAZ class="text-slate-500" /></button
         >
       </div> -->
+    
+     <Search></Search>
         <ConnectionsList />
       </div>
       <div slot="history" class="h-full pt-5">
@@ -43,7 +55,9 @@
       </div>
     </ActivityTabs>
   </div>
+  <SortModal></SortModal>
 </div>
+
 
 <!-- TODO: bug (styling): not applied due to parent layout -->
 <div class="safe-area-top bg-silver dark:bg-navy" />

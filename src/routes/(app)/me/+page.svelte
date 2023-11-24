@@ -28,7 +28,12 @@
 
   import { calculate_initials } from './utils';
   import Search from '$src/lib/components/Search.svelte';
+  import { dispatch } from '$src/lib/dispatcher';
 
+  // Added this just now
+  let credentials = $state.credentials;
+  let indices = $state.user_data_query;
+  let credentials2 = credentials.filter((cred) => indices.includes(cred.id));
   let initials: string | undefined;
 
   $: {
@@ -50,7 +55,7 @@
   </div>
 
   <div class="p-[18px] pt-0">
-    <WelcomeMessage blabla="hello"/>
+    <WelcomeMessage blabla="hello" />
     {#if $state?.user_journey}
       <UserJourney />
     {/if}
@@ -61,8 +66,14 @@
     in:fly={{ y: 24, duration: 200 }}
     class="flex grow flex-col items-stretch justify-start rounded-t-[20px] bg-silver p-[18px] dark:bg-navy"
   >
-  <Search></Search>
-  
+    <div>
+      <Search
+        on:value={(e) => {
+          console.log(e);
+          dispatch({ type: '[User Data] Query', payload: { target: 'Credentials', search_term: e.detail } });
+        }}
+      ></Search>
+    </div>
 
     {#if $state?.credentials && $state?.credentials.length > 0}
       <Favorites />

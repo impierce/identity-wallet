@@ -16,7 +16,15 @@
   import NoCredentials from './credentials/NoCredentials.svelte';
 
   // TODO: improve typing
-  let credentials: Array<DisplayCredential> = $state.credentials.filter((c) => !c.metadata.is_favorite);
+  $: credentials = $state.credentials
+    .filter((c) => !c.metadata.is_favorite)
+    .filter((c) => {
+      console.log($state.user_data_query.includes(c.id));
+     return $state.user_data_query.includes(c.id);
+    })
+    ;
+
+    console.log(credentials);
 
   let test_credentials = [
     {
@@ -53,10 +61,6 @@
 
   test_credentials = [];
 
-  console.log(
-    'metadata.display.icon',
-    credentials.map((c) => icons[c.metadata.display.icon]),
-  );
 
   // Does this really have to be reactive?
   // $: credentials = $state?.credentials ?? [];

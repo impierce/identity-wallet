@@ -1,31 +1,56 @@
 <script lang="ts">
-  import { dispatch } from '../dispatcher';
+  import { state } from '$src/stores';
+  import { createEventDispatcher } from 'svelte';
+  import MagnifyingGlass from '~icons/ph/magnifying-glass-bold';
+  import Clear from '~icons/ph/x-bold';
 
-  //here I will put the import
-  //probably an export..?
+  const dispatch = createEventDispatcher();
+  export let delay = 500;
+  let inputValue: string | undefined;
+  let debouncedValue = '';
+  let timer: any;
+
+  export let placeholder = 'Type something here ...';
+
+  const debounce = (value: string) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      debouncedValue = value;
+      dispatch('value', debouncedValue);
+    }, delay);
+  };
+
+  const clear = () => {
+    inputValue = undefined;
+    dispatch('value', '');
+  };
 </script>
 
 <!-- The HTML and TailwindCSS of the search component-->
-<div class="search_bar">
-  <form>
-    <h3 class="m-2 text-sm font-medium text-gray-100">Search stuff here</h3>
-    <svg
-      class="fixed m-3 mr-5 h-5 w-5"
-      fill="none"
-      stroke="currentColor"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      stroke-width="2"
-      viewBox="0 0 24 24"
-    >
-      <path d="M21 21l-5.2-5.2"></path>
-      <path d="M15 11c0-3.9-3.1-7-7-7s-7 3.1-7 7 3.1 7 7 7 7-3.1 7-7"></path>
-    </svg>
-    <input
-      type="text"
-      class="mb-6 ml-1 w-11/12 rounded-full bg-white px-4 py-3 pl-8 text-sm text-gray-600"
-      placeholder="abc.com..."
-      on:input={(e) => dispatch({ type: '[User Data] Query', payload: { target: 'Credentials', search_term: e.target.value } })}
-    />
-  </form>
-</div>
+<form class="wrapper_search">
+  <div class="relative my-4 flex">
+    <!--This is the magnifying icon-->
+    <div>
+      <MagnifyingGlass class="absolute m-3 fill-slate-800"></MagnifyingGlass>
+    </div>
+    <!--This is the input field-->
+    <div class="w-full">
+      <input
+        type="text"
+        class="h-11 w-full rounded-full bg-white pl-10 text-sm text-slate-600"
+        {placeholder}
+        id="input"
+        bind:value={inputValue}
+        on:input={(e) => debounce(inputValue)}
+      />
+    </div>
+    {#if inputValue}
+      <div on:click={clear}>
+        <!-- <Icons name="x" aria-hidden="true"></Icons> -->
+        <Clear
+          class="pointer-events-auto absolute right-3 top-1/2 -mt-2.5 h-5 w-5 fill-current text-slate-800 hover:cursor-pointer"
+        />
+      </div>
+    {/if}
+  </div>
+</form>
