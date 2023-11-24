@@ -179,7 +179,7 @@ async fn test_qr_code_scanned_invalid_qr_code_error() {
         },
         // A QR code is scanned containing an invalid payload.
         vec![action],
-        // The state is updated with a new user prompt containing the credential offer.
+        // An invalid payload error is added to the state.
         vec![Some(state)],
     )
     .await;

@@ -102,7 +102,7 @@ async fn test_get_state_unlock_storage_invalid_password() {
         vec![
             // The storage is locked, so the user is prompted to unlock it.
             Some(state1),
-            // The storage is unlocked, so the user is redirected to the profile page.
+            // An incorrect password error is added to the state.
             Some(state2),
         ],
     )
