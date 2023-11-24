@@ -1,4 +1,5 @@
 use crate::crypto::stronghold::StrongholdManager;
+use crate::error::AppError::{self, *};
 use crate::state::actions::Action;
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, Connection, Profile};
@@ -26,22 +27,20 @@ lazy_static! {
         }));
 }
 
-pub async fn set_dev_mode(state: &AppState, action: Action) -> anyhow::Result<()> {
-    let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
-    let value = payload
-        .get("enabled")
-        .ok_or(anyhow::anyhow!("unable to read enabled from json payload"))?
+pub async fn set_dev_mode(state: &AppState, action: Action) -> Result<(), AppError> {
+    let payload = action.payload.ok_or(MissingPayloadError)?;
+    let value = payload["enabled"]
         .as_bool()
-        .ok_or(anyhow::anyhow!("unable to read bool from json payload"))?;
+        .ok_or(MissingPayloadValueError("enabled"))?;
     *state.dev_mode_enabled.lock().unwrap() = value;
     *state.current_user_prompt.lock().unwrap() = None;
     Ok(())
 }
 
-pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Result<()> {
+pub async fn load_dev_profile(state: &AppState, _action: Action) -> Result<(), AppError> {
     info!("load dev profile");
 
-    let stronghold_manager = StrongholdManager::create("sup3rSecr3t")?;
+    let stronghold_manager = StrongholdManager::create("sup3rSecr3t").map_err(StrongholdCreationError)?;
 
     let subject = KeySubject::from_keypair(
         generate::<Ed25519KeyPair>(Some("this-is-a-very-UNSAFE-secret-key".as_bytes())),
@@ -70,7 +69,8 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
 
     info!("loading credentials from stronghold");
     *state.credentials.lock().unwrap() = stronghold_manager
-        .values()?
+        .values()
+        .map_err(StrongholdValuesError)?
         .unwrap()
         .into_iter()
         .map(|verifiable_credential_record| verifiable_credential_record.display_credential)
