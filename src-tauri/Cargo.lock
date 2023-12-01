@@ -3026,6 +3026,7 @@ dependencies = [
  "tauri-plugin-barcode-scanner",
  "tauri-plugin-log",
  "tempfile",
+ "thiserror",
  "tokio",
  "ts-rs",
  "url",

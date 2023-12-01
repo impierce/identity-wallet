@@ -5,6 +5,7 @@ pub mod storage;
 
 use super::{IdentityManager, Locale};
 use crate::crypto::stronghold::StrongholdManager;
+use crate::error::AppError::{self, *};
 use crate::state::actions::Action;
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, Profile};
@@ -20,46 +21,41 @@ use std::sync::Arc;
 use uuid::Uuid;
 
 /// Sets the locale to the given value. If the locale is not supported yet, the current locale will stay unchanged.
-pub fn set_locale(state: &AppState, action: Action) -> anyhow::Result<()> {
-    let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
+pub fn set_locale(state: &AppState, action: Action) -> Result<(), AppError> {
+    let payload = action.payload.ok_or(MissingPayloadError)?;
     let locale = &payload["locale"];
-    *state.locale.lock().unwrap() = serde_json::from_value::<Locale>(locale.clone())?;
+    *state.locale.lock().unwrap() =
+        serde_json::from_value::<Locale>(locale.clone()).map_err(|_| MissingPayloadValueError("locale"))?;
     info!("locale set to: `{}`", locale);
     Ok(())
 }
 
 /// Creates a new profile with a new DID (using the did:key method) and sets it as the active profile.
-pub async fn create_identity(state: &AppState, action: Action) -> anyhow::Result<()> {
+pub async fn create_identity(state: &AppState, action: Action) -> Result<(), AppError> {
     let mut state_guard = state.managers.lock().await;
     let stronghold_manager = state_guard
         .stronghold_manager
         .as_ref()
-        .ok_or(anyhow::anyhow!("no stronghold manager found"))?;
+        .ok_or(MissingManagerError("stronghold"))?;
 
-    let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
-    let name = payload["name"]
-        .as_str()
-        .ok_or(anyhow::anyhow!("unable to read name from json payload"))?;
-    let picture = payload["picture"]
-        .as_str()
-        .ok_or(anyhow::anyhow!("unable to read picture from json payload"))?;
-    let theme = payload["theme"]
-        .as_str()
-        .ok_or(anyhow::anyhow!("unable to read theme from json payload"))?;
+    let payload = action.payload.ok_or(MissingPayloadError)?;
+    let name = payload["name"].as_str().ok_or(MissingPayloadValueError("name"))?;
+    let picture = payload["picture"].as_str().ok_or(MissingPayloadValueError("picture"))?;
+    let theme = payload["theme"].as_str().ok_or(MissingPayloadValueError("theme"))?;
 
-    let public_key = stronghold_manager.get_public_key()?;
+    let public_key = stronghold_manager.get_public_key().map_err(StrongholdPublicKeyError)?;
 
     let keypair = from_existing_key::<Ed25519KeyPair>(public_key.as_slice(), None);
     let subject = Arc::new(KeySubject::from_keypair(keypair, Some(stronghold_manager.clone())));
 
-    let provider_manager = ProviderManager::new([subject.clone()])?;
+    let provider_manager = ProviderManager::new([subject.clone()]).map_err(OID4VCProviderManagerError)?;
     let wallet: Wallet = Wallet::new(subject.clone());
 
     let profile = Profile {
         name: name.to_string(),
         picture: Some(picture.to_string()),
         theme: Some(theme.to_string()),
-        primary_did: subject.identifier()?,
+        primary_did: subject.identifier().map_err(OID4VCSubjectIdentifierError)?,
     };
 
     state.active_profile.lock().unwrap().replace(profile);
@@ -72,43 +68,42 @@ pub async fn create_identity(state: &AppState, action: Action) -> anyhow::Result
     Ok(())
 }
 
-pub async fn initialize_stronghold(state: &AppState, action: Action) -> anyhow::Result<()> {
-    let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
+pub async fn initialize_stronghold(state: &AppState, action: Action) -> Result<(), AppError> {
+    let payload = action.payload.ok_or(MissingPayloadError)?;
     let password = payload["password"]
         .as_str()
-        .ok_or(anyhow::anyhow!("unable to read password from json payload"))?;
+        .ok_or(MissingPayloadValueError("password"))?;
 
-    state
-        .managers
-        .lock()
-        .await
-        .stronghold_manager
-        .replace(Arc::new(StrongholdManager::create(password)?));
+    state.managers.lock().await.stronghold_manager.replace(Arc::new(
+        StrongholdManager::create(password).map_err(StrongholdCreationError)?,
+    ));
 
     info!("stronghold initialized");
 
     Ok(())
 }
 
-pub async fn update_credential_metadata(state: &AppState, action: Action) -> anyhow::Result<()> {
-    let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
+pub async fn update_credential_metadata(state: &AppState, action: Action) -> Result<(), AppError> {
+    let payload = action.payload.ok_or(MissingPayloadError)?;
     let credential_id: Uuid = payload["id"]
         .as_str()
-        .ok_or(anyhow::anyhow!("unable to read credential id from json payload"))?
-        .parse()?;
+        .ok_or(MissingPayloadValueError("id"))?
+        .parse()
+        .map_err(InvalidUuidError)?;
 
     let state_guard = state.managers.lock().await;
     let stronghold_manager = state_guard
         .stronghold_manager
         .as_ref()
-        .ok_or(anyhow::anyhow!("no stronghold manager found"))?;
+        .ok_or(MissingManagerError("stronghold"))?;
 
     let mut verifiable_credential_record: VerifiableCredentialRecord = stronghold_manager
-        .values()?
+        .values()
+        .map_err(StrongholdValuesError)?
         .unwrap()
         .into_iter()
         .find(|record| record.display_credential.id == credential_id.to_string())
-        .ok_or(anyhow::anyhow!("credential not found"))?;
+        .ok_or(StrongholdMissingCredentialError(credential_id))?;
 
     info!(
         "verifiable_credential_record (before): {:?}",
@@ -156,14 +151,17 @@ pub async fn update_credential_metadata(state: &AppState, action: Action) -> any
         verifiable_credential_record.display_credential.metadata
     );
 
-    stronghold_manager.insert(
-        credential_id,
-        json!(verifiable_credential_record).to_string().as_bytes().to_vec(),
-    )?;
+    stronghold_manager
+        .insert(
+            credential_id,
+            json!(verifiable_credential_record).to_string().as_bytes().to_vec(),
+        )
+        .map_err(StrongholdInsertionError)?;
     info!("credential metadata updated");
 
     *state.credentials.lock().unwrap() = stronghold_manager
-        .values()?
+        .values()
+        .map_err(StrongholdValuesError)?
         .unwrap()
         .into_iter()
         .map(|record| record.display_credential)
@@ -172,8 +170,8 @@ pub async fn update_credential_metadata(state: &AppState, action: Action) -> any
     Ok(())
 }
 
-pub fn update_profile_settings(state: &AppState, action: Action) -> anyhow::Result<()> {
-    let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
+pub fn update_profile_settings(state: &AppState, action: Action) -> Result<(), AppError> {
+    let payload = action.payload.ok_or(MissingPayloadError)?;
 
     let theme = match payload["theme"].as_str() {
         Some(theme) => theme.to_string(),
@@ -233,7 +231,7 @@ pub fn update_profile_settings(state: &AppState, action: Action) -> anyhow::Resu
 }
 
 /// Completely resets the state to its default values.
-pub fn reset_state(state: &AppState, _action: Action) -> anyhow::Result<()> {
+pub fn reset_state(state: &AppState, _action: Action) -> Result<(), AppError> {
     *state.active_profile.lock().unwrap() = None;
     *state.locale.lock().unwrap() = Locale::default();
     state.credentials.lock().unwrap().clear();

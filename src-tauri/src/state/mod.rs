@@ -3,6 +3,7 @@ pub mod persistence;
 pub mod reducers;
 pub mod user_prompt;
 
+use self::reducers::authorization::ConnectionRequest;
 use crate::{
     crypto::stronghold::StrongholdManager, state::user_prompt::CurrentUserPrompt,
     verifiable_credential_record::DisplayCredential,
@@ -12,10 +13,11 @@ use oid4vc_core::Subject;
 use oid4vc_manager::ProviderManager;
 use oid4vci::Wallet;
 use serde::{Deserialize, Serialize};
-use std::sync::{Arc, Mutex};
+use std::{
+    collections::VecDeque,
+    sync::{Arc, Mutex},
+};
 use ts_rs::TS;
-
-use self::reducers::authorization::ConnectionRequest;
 
 pub struct IdentityManager {
     pub subject: Arc<dyn Subject>,
@@ -47,7 +49,8 @@ pub struct AppState {
     pub credentials: Mutex<Vec<DisplayCredential>>,
     pub current_user_prompt: Mutex<Option<CurrentUserPrompt>>,
     pub dev_mode_enabled: Mutex<bool>,
-    pub debug_messages: Mutex<Vec<String>>,
+    #[ts(type = "Array<string>")]
+    pub debug_messages: Mutex<VecDeque<String>>,
     #[ts(type = "object | null")]
     pub user_journey: Mutex<Option<serde_json::Value>>,
     pub connections: Mutex<Vec<Connection>>,
@@ -105,7 +108,7 @@ mod tests {
             current_user_prompt: Mutex::new(Some(CurrentUserPrompt::Redirect {
                 target: "me".to_string(),
             })),
-            debug_messages: Mutex::new(vec![]),
+            debug_messages: Mutex::new(Default::default()),
             user_journey: Mutex::new(None),
             connections: Mutex::new(vec![]),
             ..Default::default()
