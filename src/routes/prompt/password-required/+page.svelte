@@ -91,8 +91,8 @@
   </div>
 </div>
 
-<div class="safe-area-top bg-silver dark:bg-navy" />
-<div class="safe-area-bottom bg-silver dark:bg-navy" />
+<!-- Overwrite colors from template -->
+<div class="safe-area-bottom z-10 bg-silver dark:bg-navy" />
 
 <style>
   .content-height {

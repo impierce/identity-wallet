@@ -14,7 +14,7 @@
     {$page.url.pathname}
   </div>
 
-  <div class="safe-area-top" />
+  <div class="safe-area-top bg-silver dark:bg-navy" />
   <div class="safe-area-bottom" />
 </div>
 
