@@ -42,7 +42,7 @@
 </script>
 
 <!-- System -->
-<div class="mt-4 flex cursor-default select-none flex-col space-y-4">
+<div class="mt-4 flex flex-col space-y-4">
   <div
     use:melt={$item('system')}
     class="relative flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-600

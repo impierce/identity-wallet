@@ -107,7 +107,7 @@
         <div class="flex flex-col items-center pt-[15px]">
           <p class="text-[22px]/[30px] font-semibold text-slate-700">{title}</p>
           <p class="text-[13px]/[24px] font-normal text-slate-500">
-            {credential.data.issuer ?? credential.issuer_name}
+            {credential.issuer_name ?? credential.data.issuer}
           </p>
         </div>
       </div>
@@ -124,6 +124,9 @@
           </div>
         {/each}
       </div>
+      {#if $state.dev_mode_enabled}
+        <p class="pt-4 text-center text-[13px]/[24px] text-slate-500">{credential.data.issuer}</p>
+      {/if}
     </div>
   </div>
   <BottomDrawer>
@@ -165,7 +168,7 @@
 </div>
 
 <div class="safe-area-top {color}" />
-<div class="safe-area-bottom bg-silver dark:bg-navy" />
+<div class="safe-area-bottom z-10 bg-silver dark:bg-navy" />
 
 <style>
   .content-height {

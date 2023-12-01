@@ -67,7 +67,7 @@
           I understand that I am solely responsible for my data
         </p>
       </div>
-      <div>
+      <div class="pl-4">
         <Checkbox
           checked={ownership_isChecked}
           on:change={(e) => {
