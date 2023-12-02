@@ -2,6 +2,7 @@ pub mod command;
 pub mod crypto;
 pub mod error;
 pub mod state;
+pub mod utils;
 pub mod verifiable_credential_record;
 
 use command::handle_action;
@@ -43,7 +44,7 @@ pub fn run() {
                     // })
                     // .filter(|metadata| metadata.target() != WEBVIEW_TARGET),
                 ])
-                .level(LevelFilter::Debug)
+                .level(LevelFilter::Info)
                 .level_for("identity_wallet", LevelFilter::Debug)
                 .with_colors(
                     ColoredLevelConfig::new()

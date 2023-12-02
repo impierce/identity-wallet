@@ -13,7 +13,7 @@ use crate::state::reducers::{
 };
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::AppState;
-use log::{info, warn};
+use log::{debug, info, warn};
 use oid4vc_core::authorization_request::AuthorizationRequest;
 use oid4vci::credential_offer::CredentialOfferQuery;
 use serde_json::json;
@@ -157,7 +157,7 @@ pub async fn handle_action<R: tauri::Runtime>(
 
     match handle_action_inner(action, _app_handle, app_state.inner()).await {
         Ok(()) => {
-            info!("state updated successfully");
+            debug!("state updated successfully");
             save_state(app_state.inner()).await.ok();
             emit_event(window, app_state.inner()).ok();
         }
@@ -188,6 +188,6 @@ pub async fn handle_action<R: tauri::Runtime>(
 fn emit_event<R: tauri::Runtime>(window: tauri::Window<R>, app_state: &AppState) -> anyhow::Result<()> {
     const STATE_CHANGED_EVENT: &str = "state-changed";
     window.emit(STATE_CHANGED_EVENT, app_state)?;
-    info!("emitted event `{}` with payload `{:?}`", STATE_CHANGED_EVENT, app_state);
+    debug!("emitted event `{}` with payload `{:?}`", STATE_CHANGED_EVENT, app_state);
     Ok(())
 }

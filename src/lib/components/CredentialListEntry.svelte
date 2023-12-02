@@ -1,10 +1,29 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+
   import { goto } from '$app/navigation';
+
+  import { appDataDir, join } from '@tauri-apps/api/path';
+  import { convertFileSrc } from '@tauri-apps/api/primitives';
 
   export let id: string | undefined = undefined; // TODO: should not be able to be undefined
   export let title = '';
   export let description = '';
   export let color: string | undefined = undefined;
+  // export let assetUrl: string | undefined = undefined;
+
+  let assetUrl: string | undefined =
+    'asset://localhost/%2FUsers%2Fdaniel%2FLibrary%2FApplication%20Support%2Fcom.impierce.identity_wallet%2Fassets%2F' +
+    '32x32.png';
+  // 'image.svg';
+
+  onMount(async () => {
+    const appDataDirPath = await appDataDir();
+    const filePath = await join(appDataDirPath, 'assets/32x32.png');
+    console.log({ filePath });
+    const assetUrl = convertFileSrc(filePath);
+    console.log({ assetUrl });
+  });
 </script>
 
 <!--
@@ -22,8 +41,9 @@ List representation of a credential. Input parameters are:
   on:click={() => goto(`/credentials/${id}`)}
 >
   <!-- Icon -->
-  <div class="mr-[15px] min-w-[50px] {color} flex h-[50px] flex-col items-center justify-center rounded-lg">
-    <slot name="icon" />
+  <div class="mr-[15px] w-[50px] {color} flex h-[50px] flex-col items-center justify-center overflow-hidden rounded-lg">
+    <!-- <slot name="icon" /> -->
+    <img src={assetUrl} alt="icon" class="w-full object-cover" />
   </div>
   <!-- Text -->
   <div class="flex grow flex-col items-start overflow-x-auto text-left">

@@ -1,6 +1,7 @@
 use crate::{
     error::AppError::{self, *},
     state::{actions::Action, user_prompt::CurrentUserPrompt, AppState},
+    utils::download_asset,
     verifiable_credential_record::VerifiableCredentialRecord,
 };
 use log::info;
@@ -100,6 +101,9 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> Result<(
 
     info!("issuer_name in credential_offer: {:?}", issuer_name);
     info!("logo_uri in credential_offer: {:?}", logo_uri);
+
+    // use credential_id as file_name, such as "a3fc4f-4ea31-9839fb47.png"
+    let _ = download_asset(logo_uri.clone().unwrap().as_str(), "image.svg").await;
 
     *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::CredentialOffer {
         issuer_name,

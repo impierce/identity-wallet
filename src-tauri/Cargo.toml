@@ -17,7 +17,10 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "=2.0.0-alpha.12", features = [] }
 
 [dependencies]
-tauri = { version = "=2.0.0-alpha.18", features = ["rustls-tls"] }
+tauri = { version = "=2.0.0-alpha.18", features = [
+    "protocol-asset",
+    "rustls-tls",
+] }
 tauri-plugin-barcode-scanner = "=2.0.0-alpha.2"
 tauri-plugin-log = { version = "=2.0.0-alpha.4", features = ["colored"] }
 
@@ -55,15 +58,15 @@ chrono = "0.4"
 sha256 = "1.4"
 derivative = "2.2"
 thiserror = "1.0"
+reqwest = { version = "0.11", default-features = false, features = [
+    "json",
+    "rustls-tls",
+] }
 
 [dev-dependencies]
 tauri = { version = "=2.0.0-alpha.18", features = ["rustls-tls", "test"] }
 tempfile = "3.5.0"
 serial_test = "2.0"
-reqwest = { version = "0.11", default-features = false, features = [
-    "json",
-    "rustls-tls",
-] }
 url = "2.4"
 indoc = "2.0"
 
