@@ -44,14 +44,16 @@
 </script>
 
 <div class="flex min-h-full flex-col bg-white dark:bg-dark">
-  <div class="sticky top-0 z-10 h-[56px] w-full bg-white dark:bg-dark">
+  <div class="sticky top-0 z-10 w-full bg-white px-[20px] dark:bg-dark">
     <TopBar />
   </div>
 
-  <div class="p-[18px] pt-0">
+  <div class="p-5 pt-4">
     <WelcomeMessage />
     {#if $state?.user_journey}
-      <UserJourney />
+      <div class="pt-4">
+        <UserJourney />
+      </div>
     {/if}
   </div>
 
