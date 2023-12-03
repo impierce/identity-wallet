@@ -11,7 +11,7 @@ use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, Profile};
 use crate::verifiable_credential_record::VerifiableCredentialRecord;
 use did_key::{from_existing_key, Ed25519KeyPair};
-use log::info;
+use log::{debug, info};
 use oid4vc_core::Subject;
 use oid4vc_manager::methods::key_method::KeySubject;
 use oid4vc_manager::ProviderManager;
@@ -173,58 +173,34 @@ pub async fn update_credential_metadata(state: &AppState, action: Action) -> Res
 pub fn update_profile_settings(state: &AppState, action: Action) -> Result<(), AppError> {
     let payload = action.payload.ok_or(MissingPayloadError)?;
 
-    let theme = match payload["theme"].as_str() {
-        Some(theme) => theme.to_string(),
-        None => {
-            info!("no theme provided, using existing");
-            state
-                .active_profile
-                .lock()
-                .unwrap()
-                .clone()
-                .unwrap()
-                .theme
-                .clone()
-                .unwrap()
-        }
-    };
+    let _ = payload["theme"].as_str().map(|theme| {
+        state
+            .active_profile
+            .lock()
+            .unwrap()
+            .as_mut()
+            .unwrap()
+            .theme
+            .replace(theme.to_string());
+        debug!("updated theme: {}", theme);
+    });
 
-    state
-        .active_profile
-        .lock()
-        .unwrap()
-        .as_mut()
-        .unwrap()
-        .theme
-        .replace(theme);
+    let _ = payload["name"].as_str().map(|name| {
+        state.active_profile.lock().unwrap().as_mut().unwrap().name = name.to_string();
+        debug!("updated name: {}", name);
+    });
 
-    let name = match payload["name"].as_str() {
-        Some(name) => name.to_string(),
-        None => {
-            info!("no name provided, using existing");
-            state.active_profile.lock().unwrap().clone().unwrap().name.clone()
-        }
-    };
-
-    state.active_profile.lock().unwrap().as_mut().unwrap().name = name;
-
-    let picture = match payload["picture"].as_str() {
-        Some(picture) => picture.to_string(),
-        None => {
-            info!("no picture provided, using existing");
-            state
-                .active_profile
-                .lock()
-                .unwrap()
-                .clone()
-                .unwrap()
-                .picture
-                .clone()
-                .unwrap()
-        }
-    };
-
-    state.active_profile.lock().unwrap().as_mut().unwrap().picture = Some(picture);
+    let _ = payload["picture"].as_str().map(|picture| {
+        state
+            .active_profile
+            .lock()
+            .unwrap()
+            .as_mut()
+            .unwrap()
+            .picture
+            .replace(picture.to_string());
+        debug!("updated picture: {}", picture);
+    });
 
     *state.current_user_prompt.lock().unwrap() = None;
     Ok(())
