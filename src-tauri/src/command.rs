@@ -15,10 +15,8 @@ use crate::state::reducers::{
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, AppStateContainer};
 use async_recursion::async_recursion;
-use log::{debug, info, warn};
-use oid4vc_core::authorization_request::AuthorizationRequest;
+use log::{info, warn};
 use oid4vci::credential_offer::CredentialOfferQuery;
-use serde_json::json;
 use tauri::Manager;
 
 #[async_recursion]
@@ -87,35 +85,28 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
                 .ok_or(MissingManagerError("identity"))?
                 .provider_manager;
 
-            if let Result::Ok(authorization_request) = provider_manager.validate_request(form_urlencoded).await {
+            if let Result::Ok(authorization_request) = provider_manager.validate_request(form_urlencoded.clone()).await
+            {
                 handle_action_inner(Action::ReadRequest { authorization_request }, _app_handle, app_state).await
             } else if let Result::Ok(credential_offer_query) = form_urlencoded.parse::<CredentialOfferQuery>() {
-                handle_action_inner(
-                    app_state,
-                    Action {
-                        r#type: Action::ReadCredentialOffer,
-                        payload: Some(json!(credential_offer_query)),
-                    },
-                    _app_handle,
-                )
-                .await
+                handle_action_inner(Action::ReadCredentialOffer { credential_offer_query }, _app_handle).await
             } else {
                 Err(InvalidQRCodeError(form_urlencoded))
             }
         }
-        Action::ReadRequest => read_authorization_request(app_state, action).await,
+        Action::ReadRequest { .. } => read_authorization_request(app_state, action).await,
         Action::ConnectionAccepted => handle_siopv2_authorization_request(app_state, action).await,
-        Action::ReadCredentialOffer => read_credential_offer(app_state, action).await,
-        Action::CancelUserFlow { .. } => {
-            if let Some(payload) = payload {
-                let redirect = payload["redirect"].as_str().unwrap();
-                app_state.current_user_prompt.replace(CurrentUserPrompt::Redirect {
-                    target: redirect.to_string(),
-                });
+        Action::ReadCredentialOffer { .. } => read_credential_offer(app_state, action).await,
+        Action::CancelUserFlow { redirect } => {
+            if let Some(redirect) = redirect {
+                app_state
+                    .current_user_prompt
+                    .lock()
+                    .unwrap()
+                    .replace(CurrentUserPrompt::Redirect { target: redirect });
             } else {
                 app_state.current_user_prompt.take();
             }
-
             Ok(())
         }
         Action::SetDevMode { .. } => set_dev_mode(app_state, action).await,

@@ -19,14 +19,16 @@ use oid4vc_manager::ProviderManager;
 use oid4vci::Wallet;
 use serde_json::json;
 use std::sync::Arc;
-use uuid::Uuid;
 
 /// Sets the locale to the given value. If the locale is not supported yet, the current locale will stay unchanged.
-pub fn set_locale(state: &mut AppState, action: Action) -> Result<(), AppError> {
-    let payload = action.payload.ok_or(MissingPayloadError)?;
-    let locale = &payload["locale"];
-    state.locale = serde_json::from_value::<Locale>(locale.clone()).map_err(|_| MissingPayloadValueError("locale"))?;
-    info!("locale set to: `{}`", locale);
+pub fn set_locale(state: &AppState, action: Action) -> Result<(), AppError> {
+    let locale = match action {
+        Action::SetLocale { locale } => locale,
+        _ => return Err(InvalidActionError { action }),
+    };
+
+    info!("locale set to: `{:?}`", locale);
+    *state.locale.lock().unwrap() = locale;
     Ok(())
 }
 
@@ -38,10 +40,12 @@ pub async fn create_identity(state: &mut AppState, action: Action) -> Result<(),
         .as_ref()
         .ok_or(MissingManagerError("stronghold"))?;
 
-    let payload = action.payload.ok_or(MissingPayloadError)?;
-    let name = payload["name"].as_str().ok_or(MissingPayloadValueError("name"))?;
-    let picture = payload["picture"].as_str().ok_or(MissingPayloadValueError("picture"))?;
-    let theme = payload["theme"].as_str().ok_or(MissingPayloadValueError("theme"))?;
+    let (name, picture, theme) = match action {
+        Action::CreateNew {
+            name, picture, theme, ..
+        } => (name, picture, theme),
+        _ => return Err(InvalidActionError { action }),
+    };
 
     let public_key = stronghold_manager.get_public_key().map_err(StrongholdPublicKeyError)?;
 
@@ -68,14 +72,14 @@ pub async fn create_identity(state: &mut AppState, action: Action) -> Result<(),
     Ok(())
 }
 
-pub async fn initialize_stronghold(state: &mut AppState, action: Action) -> Result<(), AppError> {
-    let payload = action.payload.ok_or(MissingPayloadError)?;
-    let password = payload["password"]
-        .as_str()
-        .ok_or(MissingPayloadValueError("password"))?;
+pub async fn initialize_stronghold(state: &AppState, action: Action) -> Result<(), AppError> {
+    let password = match action {
+        Action::CreateNew { password, .. } => password,
+        _ => return Err(InvalidActionError { action }),
+    };
 
     state.managers.lock().await.stronghold_manager.replace(Arc::new(
-        StrongholdManager::create(password).map_err(StrongholdCreationError)?,
+        StrongholdManager::create(&password).map_err(StrongholdCreationError)?,
     ));
 
     info!("stronghold initialized");
@@ -83,13 +87,17 @@ pub async fn initialize_stronghold(state: &mut AppState, action: Action) -> Resu
     Ok(())
 }
 
-pub async fn update_credential_metadata(state: &mut AppState, action: Action) -> Result<(), AppError> {
-    let payload = action.payload.ok_or(MissingPayloadError)?;
-    let credential_id: Uuid = payload["id"]
-        .as_str()
-        .ok_or(MissingPayloadValueError("id"))?
-        .parse()
-        .map_err(InvalidUuidError)?;
+pub async fn update_credential_metadata(state: &AppState, action: Action) -> Result<(), AppError> {
+    let (credential_id, name, icon, color, is_favorite) = match action {
+        Action::UpdateCredentialMetadata {
+            id,
+            name,
+            icon,
+            color,
+            is_favorite,
+        } => (id, name, icon, color, is_favorite),
+        _ => return Err(InvalidActionError { action }),
+    };
 
     let state_guard = state.managers.lock().await;
     let stronghold_manager = state_guard
@@ -111,40 +119,24 @@ pub async fn update_credential_metadata(state: &mut AppState, action: Action) ->
     );
 
     // set name if given
-    verifiable_credential_record.display_credential.metadata.display.name = match payload["name"].as_str() {
-        Some(name) => Some(name.to_string()),
-        None => {
-            info!("no name provided, using existing");
-            verifiable_credential_record.display_credential.metadata.display.name
-        }
-    };
+    if let Some(name) = name {
+        verifiable_credential_record.display_credential.metadata.display.name = Some(name.to_string());
+    }
 
     // set color if given
-    verifiable_credential_record.display_credential.metadata.display.color = match payload["color"].as_str() {
-        Some(color) => Some(color.to_string()),
-        None => {
-            info!("no color provided, using existing");
-            verifiable_credential_record.display_credential.metadata.display.color
-        }
-    };
+    if let Some(color) = color {
+        verifiable_credential_record.display_credential.metadata.display.color = Some(color.to_string());
+    }
 
     // set icon if given
-    verifiable_credential_record.display_credential.metadata.display.icon = match payload["icon"].as_str() {
-        Some(icon) => Some(icon.to_string()),
-        None => {
-            info!("no icon provided, using existing");
-            verifiable_credential_record.display_credential.metadata.display.icon
-        }
-    };
+    if let Some(icon) = icon {
+        verifiable_credential_record.display_credential.metadata.display.icon = Some(icon.to_string());
+    }
 
     // set favorite if given
-    verifiable_credential_record.display_credential.metadata.is_favorite = match payload["is_favorite"].as_bool() {
-        Some(is_favorite) => is_favorite,
-        None => {
-            info!("no is_favorite provided, using existing");
-            verifiable_credential_record.display_credential.metadata.is_favorite
-        }
-    };
+    if let Some(is_favorite) = is_favorite {
+        verifiable_credential_record.display_credential.metadata.is_favorite = is_favorite;
+    }
 
     info!(
         "verifiable_credential_record (after): {:?}",
@@ -170,20 +162,30 @@ pub async fn update_credential_metadata(state: &mut AppState, action: Action) ->
     Ok(())
 }
 
-pub fn update_profile_settings(state: &mut AppState, action: Action) -> Result<(), AppError> {
-    let payload = action.payload.ok_or(MissingPayloadError)?;
+pub fn update_profile_settings(state: &AppState, action: Action) -> Result<(), AppError> {
+    let (name, picture, theme) = match action {
+        Action::UpdateProfileSettings { name, picture, theme } => (name, picture, theme),
+        _ => return Err(InvalidActionError { action }),
+    };
 
-    let _ = payload["theme"].as_str().map(|theme| {
-        state.active_profile.as_mut().unwrap().theme.replace(theme.to_string());
+    let _ = theme.map(|theme| {
+        state
+            .active_profile
+            .lock()
+            .unwrap()
+            .as_mut()
+            .unwrap()
+            .theme
+            .replace(theme.to_string());
         debug!("updated theme: {}", theme);
     });
 
-    let _ = payload["name"].as_str().map(|name| {
-        state.active_profile.as_mut().unwrap().name = name.to_string();
+    let _ = name.map(|name| {
+        state.active_profile.lock().unwrap().as_mut().unwrap().name = name.to_string();
         debug!("updated name: {}", name);
     });
 
-    let _ = payload["picture"].as_str().map(|picture| {
+    let _ = picture.map(|picture| {
         state
             .active_profile
             .as_mut()
@@ -219,7 +221,7 @@ mod tests {
     fn test_set_locale() {
         let mut state = AppState::default();
 
-        assert!(set_locale(&state, Action::SetLocale { locale: Locale::En }).is_ok());
+        assert!(set_locale(&state, Action::SetLocale { locale: Locale::Nl }).is_ok());
         assert_eq!(*state.locale.lock().unwrap(), Locale::Nl);
     }
 

@@ -37,11 +37,21 @@ pub enum Action {
     #[serde(rename = "[Settings] Set Locale")]
     SetLocale { locale: Locale },
     #[serde(rename = "[Settings] Update Profile")]
-    UpdateProfileSettings { theme: String },
+    UpdateProfileSettings {
+        #[ts(optional)]
+        name: Option<String>,
+        #[ts(optional)]
+        picture: Option<String>,
+        #[ts(optional)]
+        theme: Option<String>,
+    },
     #[serde(rename = "[QR Code] Scanned")]
     QrCodeScanned { form_urlencoded: String },
     #[serde(rename = "[User Flow] Cancel")]
-    CancelUserFlow { redirect: String },
+    CancelUserFlow {
+        #[ts(optional)]
+        redirect: Option<String>,
+    },
     #[serde(rename = "[Dev] Set Dev Mode")]
     SetDevMode { enabled: bool },
     #[serde(rename = "[DEV] Load Profile")]
@@ -54,7 +64,6 @@ pub enum Action {
     #[serde(rename = "[Credential Offer] Selected")]
     CredentialOffersSelected { offer_indices: Vec<usize> },
     #[serde(rename = "[Authenticate] Read Request")]
-    // TODO: fix this
     ReadRequest {
         #[ts(type = "object")]
         authorization_request: AuthorizationRequest<Object<Generic>>,
@@ -70,9 +79,16 @@ pub enum Action {
     UnlockStorage { password: String },
     #[serde(rename = "[Credential Metadata] Update")]
     UpdateCredentialMetadata {
-        // TODO: fix this
-        #[ts(type = "object")]
-        payload: serde_json::Value,
+        #[ts(type = "string")]
+        id: uuid::Uuid,
+        #[ts(optional)]
+        name: Option<String>,
+        #[ts(optional)]
+        icon: Option<String>,
+        #[ts(optional)]
+        color: Option<String>,
+        #[ts(optional)]
+        is_favorite: Option<bool>,
     },
     #[serde(rename = "[User Journey] Cancel")]
     CancelUserJourney,
@@ -81,22 +97,4 @@ pub enum Action {
     #[ts(skip)]
     #[serde(other)]
     Unknown,
-}
-
-#[test]
-fn test() {
-    let action: Action = serde_json::from_str(
-        r#"{
-            "type": "[Authenticate] Credentials Selected",
-            "credential_uuids": ["uuid1", "uuid2"],
-            "sfvsfb": "srbwb"
-        }"#,
-    )
-    .unwrap();
-
-    dbg!(&action);
-
-    let string = serde_json::to_string_pretty(&action).unwrap();
-
-    println!("{string}");
 }
