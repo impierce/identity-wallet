@@ -129,9 +129,6 @@
   </div>
 </div>
 
-<div class="safe-area-top bg-white dark:bg-dark" />
-<div class="safe-area-bottom" />
-
 <style>
   .content-height {
     /* bottom-navigation: 64px + 2 * 8px (y-padding) + 1px (border top) = 81px */

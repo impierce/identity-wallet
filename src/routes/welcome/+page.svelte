@@ -41,9 +41,9 @@
     </div> -->
   </div>
 
-  <div class="flex grow flex-col justify-center">
+  <div class="grow">
     <!-- <div class="flex grow flex-col justify-center" in:fade out:fly={{ x: -300, duration: 300 }}> -->
-    <div class="px-4">
+    <div class="mt-[calc(100vh/6)] px-4 py-6">
       <div class="pb-[50px]">
         <p class=" pb-[10px] text-[36px]/[44px] font-bold text-blue dark:text-silver">Welcome to</p>
         {#if isDarkModeEnabled}
@@ -62,8 +62,8 @@
     </div>
   </div>
 
-  <div class="relative left-0 top-5 scale-110">
-    <MeLarge />
+  <div class="absolute bottom-16 left-0">
+    <MeLarge class="h-auto w-screen" />
   </div>
 
   <!-- Actions -->
@@ -84,9 +84,6 @@
     <!-- <Button label="Recover existing profile" variant="secondary" /> -->
   </div>
 </div>
-
-<!-- TODO: bug (styling): not applied due to parent layout -->
-<div class="safe-area-top bg-silver dark:bg-navy" />
 
 <style>
   .content-height {

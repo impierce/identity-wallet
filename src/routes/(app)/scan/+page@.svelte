@@ -289,11 +289,11 @@
 
       <!-- visible during scanning -->
       <div class="flex grow flex-col" class:invisible={!scanning}>
-        <div class="bg-white p-5">
-          <p class="text-3xl font-semibold text-slate-700">
+        <div class="bg-white p-5 dark:bg-dark">
+          <p class="text-3xl font-semibold text-slate-700 dark:text-grey">
             Scan a <span class="text-primary">QR Code</span>
           </p>
-          <p class="mt-4 text-sm font-medium text-slate-500">
+          <p class="mt-4 text-sm font-medium text-slate-500 dark:text-slate-300">
             Bring a QR Code into view of this screen to start an interaction.
           </p>
         </div>
@@ -334,8 +334,8 @@
   </div>
 </div>
 
-<div class="safe-area-top {scanning ? 'bg-white' : 'bg-silver dark:bg-navy'}" />
-<div class="safe-area-bottom" />
+<div class="safe-area-top {scanning ? 'bg-white dark:bg-dark' : 'bg-silver dark:bg-navy'}" />
+<div class="safe-area-bottom bg-white dark:bg-dark" />
 
 <style>
   .content-height {

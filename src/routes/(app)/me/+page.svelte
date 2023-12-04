@@ -92,7 +92,7 @@
           </div>
         </div>
 
-        <div class="select-none pt-[15px]">
+        <div class="pt-[15px]">
           <p class="pb-[15px] text-[22px]/[30px] font-semibold tracking-tight text-slate-800 dark:text-grey">
             {$LL.GETTING_STARTED.TITLE()}
           </p>
@@ -133,6 +133,9 @@
     {/if}
   </div>
 </div>
+
+<!-- Overwrite colors from layout -->
+<div class="safe-area-top z-10 bg-white dark:bg-dark" />
 
 <style>
   .custom {

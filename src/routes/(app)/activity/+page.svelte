@@ -45,9 +45,6 @@
   </div>
 </div>
 
-<!-- TODO: bug (styling): not applied due to parent layout -->
-<div class="safe-area-top bg-silver dark:bg-navy" />
-
 <style>
   .content-height {
     /* bottom-navigation: 64px */

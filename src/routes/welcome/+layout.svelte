@@ -34,10 +34,13 @@
   </div>
 {/key}
 
-<div class="safe-area-top bg-white dark:bg-dark" />
+<div class="safe-area-top bg-silver dark:bg-navy" />
+
+<!-- <div class="safe-area-bottom bg-white dark:bg-dark" /> -->
 
 <style>
   .content-height {
     height: calc(100vh - var(--safe-area-inset-top));
+    /* height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom)); */
   }
 </style>

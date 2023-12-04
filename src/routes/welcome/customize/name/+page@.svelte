@@ -13,7 +13,7 @@
 
 <!-- <TopNavigation title="Appearance" on:back={() => history.back()} /> -->
 <div class="content-height relative flex flex-col bg-silver dark:bg-navy">
-  <!-- TODO: the only reason why we're breaking out of the layout is because we do not want the "Skip" button -->
+  <!-- TODO: the only reason why we're breaking out of the layout is because we do not want to inherit the "Skip" button -->
   <TopNavigation on:back={() => history.back()} title="Customization" />
   <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
     <div class="px-2 pb-8 pt-4">
@@ -30,26 +30,16 @@
       placeholder="Enter a profile name"
       bind:value={$onboarding_state.name}
     />
-
-    <!-- <SearchInput
-    delay={100}
-    placeholder="First name"
-    on:value={(e) => ($onboarding_state.name = e.detail)}
-  /> -->
   </div>
   <div class="rounded-t-3xl bg-white p-6 dark:bg-dark" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
     <Button label="Continue" on:click={() => goto('/welcome/customize/theme')} disabled={!!!$onboarding_state.name} />
   </div>
-
-  <div class="safe-area-top" />
-  <!-- <div class="safe-area-bottom" /> -->
 </div>
 
-<div class="safe-area-top bg-white dark:bg-dark" />
+<div class="safe-area-top bg-silver dark:bg-navy" />
 
 <style>
   .content-height {
-    /* bottom-navigation: 64px */
     height: calc(100vh - var(--safe-area-inset-top));
   }
 </style>

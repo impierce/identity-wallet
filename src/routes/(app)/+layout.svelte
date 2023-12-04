@@ -31,8 +31,8 @@
   </div>
 </div>
 
-<div class="safe-area-top bg-white dark:bg-dark" />
-<div class="safe-area-bottom" />
+<div class="safe-area-top bg-silver dark:bg-navy" />
+<div class="safe-area-bottom bg-white dark:bg-dark" />
 
 <style>
   .content-height {
