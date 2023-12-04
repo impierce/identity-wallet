@@ -213,47 +213,14 @@ pub fn reset_state(state: &mut AppState, _action: Action) -> Result<(), AppError
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::state::actions::ActionType;
-    use serde_json::json;
+    use crate::state::actions::Action;
 
     #[test]
     fn test_set_locale() {
         let mut state = AppState::default();
 
-        assert!(set_locale(
-            &mut state,
-            Action {
-                r#type: ActionType::SetLocale,
-                payload: Some(json!({"locale": "nl"})),
-            },
-        )
-        .is_ok());
-        assert_eq!(state.locale, Locale::Nl);
-    }
-
-    #[test]
-    fn test_set_locale_with_invalid_payload() {
-        let mut state = AppState::default();
-
-        // Assert that a `SetLocale` action without a payload returns an error.
-        assert!(set_locale(
-            &mut state,
-            Action {
-                r#type: ActionType::SetLocale,
-                payload: None,
-            },
-        )
-        .is_err());
-
-        // Assert that a `SetLocale` action with an invalid payload returns an error.
-        assert!(set_locale(
-            &mut state,
-            Action {
-                r#type: ActionType::SetLocale,
-                payload: Some(json!({"foo": "bar"})),
-            },
-        )
-        .is_err());
+        assert!(set_locale(&state, Action::SetLocale { locale: Locale::En }).is_ok());
+        assert_eq!(*state.locale.lock().unwrap(), Locale::Nl);
     }
 
     #[test]
@@ -269,15 +236,8 @@ mod tests {
             ..AppState::default()
         };
 
-        assert!(reset_state(
-            &mut state,
-            Action {
-                r#type: ActionType::Reset,
-                payload: None,
-            },
-        )
-        .is_ok());
-        assert_eq!(state.active_profile, None);
-        assert_eq!(state.locale, Locale::default());
+        assert!(reset_state(&state, Action::Reset).is_ok());
+        assert_eq!(*state.active_profile.lock().unwrap(), None);
+        assert_eq!(*state.locale.lock().unwrap(), Locale::default());
     }
 }

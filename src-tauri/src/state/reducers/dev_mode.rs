@@ -38,13 +38,14 @@ lazy_static! {
     );
 }
 
-pub async fn set_dev_mode(state: &mut AppState, action: Action) -> Result<(), AppError> {
-    let payload = action.payload.ok_or(MissingPayloadError)?;
-    let value = payload["enabled"]
-        .as_bool()
-        .ok_or(MissingPayloadValueError("enabled"))?;
-    state.dev_mode_enabled = value;
-    state.current_user_prompt = None;
+pub async fn set_dev_mode(state: &AppState, action: Action) -> Result<(), AppError> {
+    let enabled = match action {
+        Action::SetDevMode { enabled } => enabled,
+        _ => return Err(InvalidActionError { action }),
+    };
+
+    *state.dev_mode_enabled.lock().unwrap() = enabled;
+    *state.current_user_prompt.lock().unwrap() = None;
     Ok(())
 }
 
