@@ -21,7 +21,7 @@ tauri = { version = "=2.0.0-alpha.18", features = [
     "protocol-asset",
     "rustls-tls",
 ] }
-tauri-plugin-barcode-scanner = "=2.0.0-alpha.2"
+tauri-plugin-barcode-scanner = { version = "=2.0.0-alpha.2" }
 tauri-plugin-log = { version = "=2.0.0-alpha.4", features = ["colored"] }
 
 oid4vc-manager = { git = "https://git@github.com/impierce/openid4vc.git", rev = "920b5651bd1372728c977c946ef7b8032059cc70" }
