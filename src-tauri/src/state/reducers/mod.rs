@@ -21,17 +21,16 @@ use std::sync::Arc;
 use uuid::Uuid;
 
 /// Sets the locale to the given value. If the locale is not supported yet, the current locale will stay unchanged.
-pub fn set_locale(state: &AppState, action: Action) -> Result<(), AppError> {
+pub fn set_locale(state: &mut AppState, action: Action) -> Result<(), AppError> {
     let payload = action.payload.ok_or(MissingPayloadError)?;
     let locale = &payload["locale"];
-    *state.locale.lock().unwrap() =
-        serde_json::from_value::<Locale>(locale.clone()).map_err(|_| MissingPayloadValueError("locale"))?;
+    state.locale = serde_json::from_value::<Locale>(locale.clone()).map_err(|_| MissingPayloadValueError("locale"))?;
     info!("locale set to: `{}`", locale);
     Ok(())
 }
 
 /// Creates a new profile with a new DID (using the did:key method) and sets it as the active profile.
-pub async fn create_identity(state: &AppState, action: Action) -> Result<(), AppError> {
+pub async fn create_identity(state: &mut AppState, action: Action) -> Result<(), AppError> {
     let mut state_guard = state.managers.lock().await;
     let stronghold_manager = state_guard
         .stronghold_manager
@@ -58,7 +57,7 @@ pub async fn create_identity(state: &AppState, action: Action) -> Result<(), App
         primary_did: subject.identifier().map_err(OID4VCSubjectIdentifierError)?,
     };
 
-    state.active_profile.lock().unwrap().replace(profile);
+    state.active_profile.replace(profile);
     state_guard.identity_manager.replace(IdentityManager {
         subject,
         provider_manager,
@@ -68,7 +67,7 @@ pub async fn create_identity(state: &AppState, action: Action) -> Result<(), App
     Ok(())
 }
 
-pub async fn initialize_stronghold(state: &AppState, action: Action) -> Result<(), AppError> {
+pub async fn initialize_stronghold(state: &mut AppState, action: Action) -> Result<(), AppError> {
     let payload = action.payload.ok_or(MissingPayloadError)?;
     let password = payload["password"]
         .as_str()
@@ -83,7 +82,7 @@ pub async fn initialize_stronghold(state: &AppState, action: Action) -> Result<(
     Ok(())
 }
 
-pub async fn update_credential_metadata(state: &AppState, action: Action) -> Result<(), AppError> {
+pub async fn update_credential_metadata(state: &mut AppState, action: Action) -> Result<(), AppError> {
     let payload = action.payload.ok_or(MissingPayloadError)?;
     let credential_id: Uuid = payload["id"]
         .as_str()
@@ -159,7 +158,7 @@ pub async fn update_credential_metadata(state: &AppState, action: Action) -> Res
         .map_err(StrongholdInsertionError)?;
     info!("credential metadata updated");
 
-    *state.credentials.lock().unwrap() = stronghold_manager
+    state.credentials = stronghold_manager
         .values()
         .map_err(StrongholdValuesError)?
         .unwrap()
@@ -170,31 +169,22 @@ pub async fn update_credential_metadata(state: &AppState, action: Action) -> Res
     Ok(())
 }
 
-pub fn update_profile_settings(state: &AppState, action: Action) -> Result<(), AppError> {
+pub fn update_profile_settings(state: &mut AppState, action: Action) -> Result<(), AppError> {
     let payload = action.payload.ok_or(MissingPayloadError)?;
 
     let _ = payload["theme"].as_str().map(|theme| {
-        state
-            .active_profile
-            .lock()
-            .unwrap()
-            .as_mut()
-            .unwrap()
-            .theme
-            .replace(theme.to_string());
+        state.active_profile.as_mut().unwrap().theme.replace(theme.to_string());
         debug!("updated theme: {}", theme);
     });
 
     let _ = payload["name"].as_str().map(|name| {
-        state.active_profile.lock().unwrap().as_mut().unwrap().name = name.to_string();
+        state.active_profile.as_mut().unwrap().name = name.to_string();
         debug!("updated name: {}", name);
     });
 
     let _ = payload["picture"].as_str().map(|picture| {
         state
             .active_profile
-            .lock()
-            .unwrap()
             .as_mut()
             .unwrap()
             .picture
@@ -202,20 +192,20 @@ pub fn update_profile_settings(state: &AppState, action: Action) -> Result<(), A
         debug!("updated picture: {}", picture);
     });
 
-    *state.current_user_prompt.lock().unwrap() = None;
+    state.current_user_prompt = None;
     Ok(())
 }
 
 /// Completely resets the state to its default values.
-pub fn reset_state(state: &AppState, _action: Action) -> Result<(), AppError> {
-    *state.active_profile.lock().unwrap() = None;
-    *state.locale.lock().unwrap() = Locale::default();
-    state.credentials.lock().unwrap().clear();
-    state.connections.lock().unwrap().clear();
-    *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect {
+pub fn reset_state(state: &mut AppState, _action: Action) -> Result<(), AppError> {
+    state.active_profile = None;
+    state.locale = Locale::default();
+    state.credentials.clear();
+    state.connections.clear();
+    state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
         target: "welcome".to_string(),
     });
-    *state.user_journey.lock().unwrap() = None;
+    state.user_journey = None;
     Ok(())
 }
 
@@ -227,26 +217,26 @@ mod tests {
 
     #[test]
     fn test_set_locale() {
-        let state = AppState::default();
+        let mut state = AppState::default();
 
         assert!(set_locale(
-            &state,
+            &mut state,
             Action {
                 r#type: ActionType::SetLocale,
                 payload: Some(json!({"locale": "nl"})),
             },
         )
         .is_ok());
-        assert_eq!(*state.locale.lock().unwrap(), Locale::Nl);
+        assert_eq!(state.locale, Locale::Nl);
     }
 
     #[test]
     fn test_set_locale_with_invalid_payload() {
-        let state = AppState::default();
+        let mut state = AppState::default();
 
         // Assert that a `SetLocale` action without a payload returns an error.
         assert!(set_locale(
-            &state,
+            &mut state,
             Action {
                 r#type: ActionType::SetLocale,
                 payload: None,
@@ -256,7 +246,7 @@ mod tests {
 
         // Assert that a `SetLocale` action with an invalid payload returns an error.
         assert!(set_locale(
-            &state,
+            &mut state,
             Action {
                 r#type: ActionType::SetLocale,
                 payload: Some(json!({"foo": "bar"})),
@@ -267,7 +257,7 @@ mod tests {
 
     #[test]
     fn test_reset_state() {
-        let state = AppState {
+        let mut state = AppState {
             active_profile: Some(Profile {
                 name: "Ferris".to_string(),
                 picture: Some("&#129408".to_string()),
@@ -279,14 +269,14 @@ mod tests {
         };
 
         assert!(reset_state(
-            &state,
+            &mut state,
             Action {
                 r#type: ActionType::Reset,
                 payload: None,
             },
         )
         .is_ok());
-        assert_eq!(*state.active_profile.lock().unwrap(), None);
-        assert_eq!(*state.locale.lock().unwrap(), Locale::default());
+        assert_eq!(state.active_profile, None);
+        assert_eq!(state.locale, Locale::default());
     }
 }

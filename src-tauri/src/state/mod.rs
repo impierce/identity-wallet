@@ -13,10 +13,7 @@ use oid4vc_core::Subject;
 use oid4vc_manager::ProviderManager;
 use oid4vci::Wallet;
 use serde::{Deserialize, Serialize};
-use std::{
-    collections::VecDeque,
-    sync::{Arc, Mutex},
-};
+use std::{collections::VecDeque, sync::Arc};
 use ts_rs::TS;
 
 pub struct IdentityManager {
@@ -41,20 +38,22 @@ pub struct AppState {
     #[serde(skip)]
     #[derivative(Debug = "ignore")]
     pub managers: tauri::async_runtime::Mutex<Managers>,
-    pub active_profile: Mutex<Option<Profile>>,
+    pub active_profile: Option<Profile>,
     #[serde(skip)]
     #[derivative(Debug = "ignore")]
-    pub active_connection_request: Mutex<Option<ConnectionRequest>>,
-    pub locale: Mutex<Locale>,
-    pub credentials: Mutex<Vec<DisplayCredential>>,
-    pub current_user_prompt: Mutex<Option<CurrentUserPrompt>>,
-    pub dev_mode_enabled: Mutex<bool>,
+    pub active_connection_request: Option<ConnectionRequest>,
+    pub locale: Locale,
+    pub credentials: Vec<DisplayCredential>,
+    pub current_user_prompt: Option<CurrentUserPrompt>,
+    pub dev_mode_enabled: bool,
     #[ts(type = "Array<string>")]
-    pub debug_messages: Mutex<VecDeque<String>>,
+    pub debug_messages: VecDeque<String>,
     #[ts(type = "object | null")]
-    pub user_journey: Mutex<Option<serde_json::Value>>,
-    pub connections: Mutex<Vec<Connection>>,
+    pub user_journey: Option<serde_json::Value>,
+    pub connections: Vec<Connection>,
 }
+
+pub struct AppStateContainer(pub tokio::sync::Mutex<AppState>);
 
 #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default)]
 #[serde(rename_all = "lowercase")]
@@ -97,20 +96,20 @@ mod tests {
     #[test]
     fn test_app_state_serialize() {
         let state = AppState {
-            active_profile: Mutex::new(Some(Profile {
+            active_profile: Some(Profile {
                 name: "John Doe".to_string(),
                 picture: None,
                 theme: None,
                 primary_did: "did:example:123".to_string(),
-            })),
-            locale: Mutex::new(Locale::En),
-            credentials: Mutex::new(vec![]),
-            current_user_prompt: Mutex::new(Some(CurrentUserPrompt::Redirect {
+            }),
+            locale: Locale::En,
+            credentials: vec![],
+            current_user_prompt: Some(CurrentUserPrompt::Redirect {
                 target: "me".to_string(),
-            })),
-            debug_messages: Mutex::new(Default::default()),
-            user_journey: Mutex::new(None),
-            connections: Mutex::new(vec![]),
+            }),
+            debug_messages: Default::default(),
+            user_journey: None,
+            connections: vec![],
             ..Default::default()
         };
 
