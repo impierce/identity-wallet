@@ -1,0 +1,447 @@
+use crate::common::test_managers;
+use identity_wallet::state::actions::ActionType;
+use identity_wallet::state::reducers::credential_offer::read_credential_offer;
+use identity_wallet::state::{actions::Action, AppState};
+use oid4vci::credential_format_profiles::w3c_verifiable_credentials::jwt_vc_json::{self, JwtVcJson};
+use oid4vci::credential_format_profiles::{CredentialFormats, Parameters};
+use oid4vci::credential_issuer::credential_issuer_metadata::{self, CredentialIssuerMetadata};
+use oid4vci::credential_issuer::credentials_supported::CredentialsSupportedObject;
+use oid4vci::credential_offer::{CredentialOffer, CredentialsObject};
+use serde_json::json;
+use url::Url;
+use wiremock::matchers::{method, path};
+use wiremock::{Mock, MockServer, ResponseTemplate};
+
+#[tokio::test]
+async fn downloads_the_credential_logo() {
+    let mock_server = MockServer::start().await;
+    Mock::given(method("GET"))
+        .and(path("/offer/1"))
+        .respond_with(
+            ResponseTemplate::new(200).set_body_json(CredentialOffer::<CredentialFormats> {
+                credential_issuer: format!("{}", &mock_server.uri()).parse().unwrap(),
+                credentials: vec![CredentialsObject::ByReference("UniversityDegreeCredential".to_string())],
+                grants: None,
+            }),
+        )
+        .expect(1)
+        .mount(&mock_server)
+        .await;
+
+    Mock::given(method("GET"))
+        .and(path("/.well-known/openid-credential-issuer"))
+        .respond_with(
+            ResponseTemplate::new(200).set_body_json(CredentialIssuerMetadata::<CredentialFormats> {
+                credential_endpoint: Url::parse("https://server.example.com/credential").unwrap(),
+                credentials_supported: vec![CredentialsSupportedObject {
+                    id: None,
+                    credential_format: CredentialFormats::JwtVcJson(Parameters {
+                        format: JwtVcJson,
+                        parameters: (
+                            jwt_vc_json::CredentialDefinition {
+                                type_: vec![
+                                    "VerifiableCredential".to_string(),
+                                    "UniversityDegreeCredential".to_string(),
+                                ],
+                                credential_subject: Some(json!({
+                                    "given_name": {
+                                        "display": [
+                                            {
+                                                "name": "Given Name",
+                                                "locale": "en-US"
+                                            },
+                                            {
+                                                "name": "名前",
+                                                "locale": "ja-JP"
+                                            }
+                                        ]
+                                    },
+                                    "family_name": {
+                                        "display": [
+                                            {
+                                                "name": "Surname",
+                                                "locale": "en-US"
+                                            }
+                                        ]
+                                    },
+                                    "degree": {},
+                                    "gpa": {
+                                        "display": [
+                                            {
+                                                "name": "GPA"
+                                            }
+                                        ]
+                                    }
+                                })),
+                            },
+                            None,
+                        )
+                            .into(),
+                    }),
+                    scope: Some("UniversityDegreeCredential".to_string()),
+                    cryptographic_binding_methods_supported: Some(vec!["did".to_string()]),
+                    cryptographic_suites_supported: Some(vec!["ES256K".to_string()]),
+                    proof_types_supported: None,
+                    display: Some(vec![json!({
+                        "name": "University Credential",
+                        "locale": "en-US",
+                        "logo": {
+                            "url": format!("{}/logo/2", &mock_server.uri()),
+                            "alternative_text": "a square logo of a university"
+                        },
+                        "background_color": "#12107c",
+                        "text_color": "#FFFFFF"
+                    })]),
+                }],
+                credential_issuer: "https://server.example.com".parse().unwrap(),
+                authorization_server: None,
+                batch_credential_endpoint: None,
+                deferred_credential_endpoint: None,
+                display: None,
+            }),
+        )
+        .expect(1)
+        .mount(&mock_server)
+        .await;
+
+    Mock::given(method("GET"))
+        .and(path("/logo/2"))
+        .respond_with(
+            ResponseTemplate::new(200).set_body_raw(include_bytes!("../res/planet.svg").to_vec(), "image/svg+xml"),
+        )
+        .expect(1)
+        .mount(&mock_server)
+        .await;
+
+    let state = AppState {
+        managers: test_managers(vec![]),
+        ..AppState::default()
+    };
+
+    let _ = read_credential_offer(
+        &state,
+        Action {
+            r#type: ActionType::ReadCredentialOffer,
+            payload: Some(json!({"credential_offer_uri": format!("{}/offer/1", &mock_server.uri())})),
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn downloads_the_issuer_logo() {
+    let mock_server = MockServer::start().await;
+    Mock::given(method("GET"))
+        .and(path("/offer/1"))
+        .respond_with(
+            ResponseTemplate::new(200).set_body_json(CredentialOffer::<CredentialFormats> {
+                credential_issuer: format!("{}", &mock_server.uri()).parse().unwrap(),
+                credentials: vec![CredentialsObject::ByReference("UniversityDegreeCredential".to_string())],
+                grants: None,
+            }),
+        )
+        .expect(1)
+        .mount(&mock_server)
+        .await;
+
+    Mock::given(method("GET"))
+        .and(path("/.well-known/openid-credential-issuer"))
+        .respond_with(
+            ResponseTemplate::new(200).set_body_json(CredentialIssuerMetadata::<CredentialFormats> {
+                credential_endpoint: Url::parse("https://server.example.com/credential").unwrap(),
+                credentials_supported: vec![CredentialsSupportedObject {
+                    id: None,
+                    credential_format: CredentialFormats::JwtVcJson(Parameters {
+                        format: JwtVcJson,
+                        parameters: (
+                            jwt_vc_json::CredentialDefinition {
+                                type_: vec![
+                                    "VerifiableCredential".to_string(),
+                                    "UniversityDegreeCredential".to_string(),
+                                ],
+                                credential_subject: Some(json!({
+                                    "given_name": {
+                                        "display": [
+                                            {
+                                                "name": "Given Name",
+                                                "locale": "en-US"
+                                            },
+                                            {
+                                                "name": "名前",
+                                                "locale": "ja-JP"
+                                            }
+                                        ]
+                                    },
+                                    "family_name": {
+                                        "display": [
+                                            {
+                                                "name": "Surname",
+                                                "locale": "en-US"
+                                            }
+                                        ]
+                                    },
+                                    "degree": {},
+                                    "gpa": {
+                                        "display": [
+                                            {
+                                                "name": "GPA"
+                                            }
+                                        ]
+                                    }
+                                })),
+                            },
+                            None,
+                        )
+                            .into(),
+                    }),
+                    scope: Some("UniversityDegreeCredential".to_string()),
+                    cryptographic_binding_methods_supported: Some(vec!["did".to_string()]),
+                    cryptographic_suites_supported: Some(vec!["ES256K".to_string()]),
+                    proof_types_supported: None,
+                    display: None,
+                }],
+                credential_issuer: "https://server.example.com".parse().unwrap(),
+                authorization_server: None,
+                batch_credential_endpoint: None,
+                deferred_credential_endpoint: None,
+                display: Some(vec![json!({
+                    "client_name": "University",
+                    "logo_uri": format!("{}/logo/3", &mock_server.uri()),
+                })]),
+            }),
+        )
+        .expect(1)
+        .mount(&mock_server)
+        .await;
+
+    Mock::given(method("GET"))
+        .and(path("/logo/3"))
+        .respond_with(ResponseTemplate::new(200).set_body_raw(include_bytes!("../res/unime.png").to_vec(), "image/png"))
+        .expect(1)
+        .mount(&mock_server)
+        .await;
+
+    let state = AppState {
+        managers: test_managers(vec![]),
+        ..AppState::default()
+    };
+
+    let _ = read_credential_offer(
+        &state,
+        Action {
+            r#type: ActionType::ReadCredentialOffer,
+            payload: Some(json!({"credential_offer_uri": format!("{}/offer/1", &mock_server.uri())})),
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn downloads_the_favicon_svg_from_issuer_website() {
+    let mock_server = MockServer::start().await;
+    Mock::given(method("GET"))
+        .and(path("/offer/1"))
+        .respond_with(
+            ResponseTemplate::new(200).set_body_json(CredentialOffer::<CredentialFormats> {
+                credential_issuer: format!("{}", &mock_server.uri()).parse().unwrap(),
+                credentials: vec![CredentialsObject::ByReference("UniversityDegreeCredential".to_string())],
+                grants: None,
+            }),
+        )
+        .expect(1)
+        .mount(&mock_server)
+        .await;
+
+    Mock::given(method("GET"))
+        .and(path("/.well-known/openid-credential-issuer"))
+        .respond_with(
+            ResponseTemplate::new(200).set_body_json(CredentialIssuerMetadata::<CredentialFormats> {
+                credential_endpoint: Url::parse("https://server.example.com/credential").unwrap(),
+                credentials_supported: vec![CredentialsSupportedObject {
+                    id: None,
+                    credential_format: CredentialFormats::JwtVcJson(Parameters {
+                        format: JwtVcJson,
+                        parameters: (
+                            jwt_vc_json::CredentialDefinition {
+                                type_: vec![
+                                    "VerifiableCredential".to_string(),
+                                    "UniversityDegreeCredential".to_string(),
+                                ],
+                                credential_subject: Some(json!({
+                                    "given_name": {
+                                        "display": [
+                                            {
+                                                "name": "Given Name",
+                                                "locale": "en-US"
+                                            },
+                                            {
+                                                "name": "名前",
+                                                "locale": "ja-JP"
+                                            }
+                                        ]
+                                    },
+                                    "family_name": {
+                                        "display": [
+                                            {
+                                                "name": "Surname",
+                                                "locale": "en-US"
+                                            }
+                                        ]
+                                    },
+                                    "degree": {},
+                                    "gpa": {
+                                        "display": [
+                                            {
+                                                "name": "GPA"
+                                            }
+                                        ]
+                                    }
+                                })),
+                            },
+                            None,
+                        )
+                            .into(),
+                    }),
+                    scope: Some("UniversityDegreeCredential".to_string()),
+                    cryptographic_binding_methods_supported: Some(vec!["did".to_string()]),
+                    cryptographic_suites_supported: Some(vec!["ES256K".to_string()]),
+                    proof_types_supported: None,
+                    display: None,
+                }],
+                credential_issuer: "https://server.example.com".parse().unwrap(),
+                authorization_server: None,
+                batch_credential_endpoint: None,
+                deferred_credential_endpoint: None,
+                display: None,
+            }),
+        )
+        .expect(1)
+        .mount(&mock_server)
+        .await;
+
+    Mock::given(method("GET"))
+        .and(path("/favicon.ico"))
+        .respond_with(ResponseTemplate::new(200).set_body_raw(include_bytes!("../res/unime.png").to_vec(), "image/png"))
+        .expect(1)
+        .mount(&mock_server)
+        .await;
+
+    let state = AppState {
+        managers: test_managers(vec![]),
+        ..AppState::default()
+    };
+
+    let _ = read_credential_offer(
+        &state,
+        Action {
+            r#type: ActionType::ReadCredentialOffer,
+            payload: Some(json!({"credential_offer_uri": format!("{}/offer/1", &mock_server.uri())})),
+        },
+    )
+    .await;
+}
+
+#[tokio::test]
+async fn no_downloads_when_favicon_is_png_or_ico() {
+    let mock_server = MockServer::start().await;
+    Mock::given(method("GET"))
+        .and(path("/offer/1"))
+        .respond_with(
+            ResponseTemplate::new(200).set_body_json(CredentialOffer::<CredentialFormats> {
+                credential_issuer: format!("{}", &mock_server.uri()).parse().unwrap(),
+                credentials: vec![CredentialsObject::ByReference("UniversityDegreeCredential".to_string())],
+                grants: None,
+            }),
+        )
+        .expect(1)
+        .mount(&mock_server)
+        .await;
+
+    Mock::given(method("GET"))
+        .and(path("/.well-known/openid-credential-issuer"))
+        .respond_with(
+            ResponseTemplate::new(200).set_body_json(CredentialIssuerMetadata::<CredentialFormats> {
+                credential_endpoint: Url::parse("https://server.example.com/credential").unwrap(),
+                credentials_supported: vec![CredentialsSupportedObject {
+                    id: None,
+                    credential_format: CredentialFormats::JwtVcJson(Parameters {
+                        format: JwtVcJson,
+                        parameters: (
+                            jwt_vc_json::CredentialDefinition {
+                                type_: vec![
+                                    "VerifiableCredential".to_string(),
+                                    "UniversityDegreeCredential".to_string(),
+                                ],
+                                credential_subject: Some(json!({
+                                    "given_name": {
+                                        "display": [
+                                            {
+                                                "name": "Given Name",
+                                                "locale": "en-US"
+                                            },
+                                            {
+                                                "name": "名前",
+                                                "locale": "ja-JP"
+                                            }
+                                        ]
+                                    },
+                                    "family_name": {
+                                        "display": [
+                                            {
+                                                "name": "Surname",
+                                                "locale": "en-US"
+                                            }
+                                        ]
+                                    },
+                                    "degree": {},
+                                    "gpa": {
+                                        "display": [
+                                            {
+                                                "name": "GPA"
+                                            }
+                                        ]
+                                    }
+                                })),
+                            },
+                            None,
+                        )
+                            .into(),
+                    }),
+                    scope: Some("UniversityDegreeCredential".to_string()),
+                    cryptographic_binding_methods_supported: Some(vec!["did".to_string()]),
+                    cryptographic_suites_supported: Some(vec!["ES256K".to_string()]),
+                    proof_types_supported: None,
+                    display: None,
+                }],
+                credential_issuer: "https://server.example.com".parse().unwrap(),
+                authorization_server: None,
+                batch_credential_endpoint: None,
+                deferred_credential_endpoint: None,
+                display: None,
+            }),
+        )
+        .expect(1)
+        .mount(&mock_server)
+        .await;
+
+    Mock::given(method("GET"))
+        .and(path("/favicon.ico"))
+        .respond_with(ResponseTemplate::new(200).set_body_raw(include_bytes!("../res/unime.png").to_vec(), "image/png"))
+        .expect(0)
+        .mount(&mock_server)
+        .await;
+
+    let state = AppState {
+        managers: test_managers(vec![]),
+        ..AppState::default()
+    };
+
+    let _ = read_credential_offer(
+        &state,
+        Action {
+            r#type: ActionType::ReadCredentialOffer,
+            payload: Some(json!({"credential_offer_uri": format!("{}/offer/1", &mock_server.uri())})),
+        },
+    )
+    .await;
+}

@@ -1,12 +1,18 @@
+use std::f32::consts::E;
+
 use crate::{
     error::AppError::{self, *},
     state::{actions::Action, user_prompt::CurrentUserPrompt, AppState},
     utils::download_asset,
     verifiable_credential_record::VerifiableCredentialRecord,
 };
-use log::info;
+use identity_credential::credential;
+use log::{debug, info};
 use oid4vci::{
     credential_format_profiles::{CredentialFormats, WithCredential},
+    credential_issuer::{
+        credential_issuer_metadata::CredentialIssuerMetadata, credentials_supported::CredentialsSupportedObject,
+    },
     credential_offer::{CredentialOffer, CredentialOfferQuery, CredentialsObject, Grants},
     credential_response::CredentialResponseType,
     token_request::{PreAuthorizedCode, TokenRequest},
@@ -55,6 +61,27 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> Result<(
 
     info!("credential issuer metadata: {:?}", credential_issuer_metadata);
 
+    let credentials_supported_objects: Vec<CredentialsSupportedObject> = credential_offer
+        .credentials
+        .iter()
+        .map(|credential| {
+            match credential {
+                CredentialsObject::ByReference(by_reference) => credential_issuer_metadata
+                    .as_ref()
+                    .and_then(|credential_issuer_metadata| {
+                        credential_issuer_metadata
+                            .credentials_supported
+                            .iter()
+                            .find(|credential_supported| credential_supported.scope == Some(by_reference.to_owned()))
+                    })
+                    .ok_or(MissingCredentialOfferError(by_reference.clone())),
+                _by_value => Err(MissingCredentialOfferError("".to_string())),
+            }
+            .unwrap()
+            .to_owned()
+        })
+        .collect();
+
     // For all credentials by reference, replace them with credentials by value using the CredentialIssuerMetadata.
     for credential in credential_offer.credentials.iter_mut() {
         match credential {
@@ -102,8 +129,28 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> Result<(
     info!("issuer_name in credential_offer: {:?}", issuer_name);
     info!("logo_uri in credential_offer: {:?}", logo_uri);
 
+    let first_credentials_supported_object = credentials_supported_objects
+        .first()
+        .expect("TODO: handle empty credential offer");
+
+    let credential_logo_url = first_credentials_supported_object.display.as_ref().and_then(|display| {
+        display
+            .first()
+            .and_then(|value| value.get("logo").and_then(|value| value.get("url")))
+    });
+
+    info!("credential_logo_url: {:?}", credential_logo_url);
+
     // use credential_id as file_name, such as "a3fc4f-4ea31-9839fb47.png"
-    let _ = download_asset(logo_uri.clone().unwrap().as_str(), "image.svg").await;
+    if credential_logo_url.is_some() {
+        println!("Downloading credential logo ...");
+        let _ = download_asset(credential_logo_url.unwrap().as_str().unwrap(), "credential.svg").await;
+    } else if logo_uri.is_some() {
+        println!("Downloading issuer logo ...");
+        let _ = download_asset(logo_uri.as_ref().unwrap().as_str(), "issuer.png").await;
+    } else {
+        println!("No logo found.");
+    }
 
     *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::CredentialOffer {
         issuer_name,

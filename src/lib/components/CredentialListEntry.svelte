@@ -14,12 +14,12 @@
 
   let assetUrl: string | undefined =
     'asset://localhost/%2FUsers%2Fdaniel%2FLibrary%2FApplication%20Support%2Fcom.impierce.identity_wallet%2Fassets%2F' +
-    '32x32.png';
-  // 'image.svg';
+    // 'credential.svg';
+    'issuer.png';
 
   onMount(async () => {
     const appDataDirPath = await appDataDir();
-    const filePath = await join(appDataDirPath, 'assets/32x32.png');
+    const filePath = await join(appDataDirPath, 'assets/issuer.png');
     console.log({ filePath });
     const assetUrl = convertFileSrc(filePath);
     console.log({ assetUrl });
