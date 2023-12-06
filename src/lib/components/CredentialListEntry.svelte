@@ -18,7 +18,7 @@ List representation of a credential. Input parameters are:
 
 -->
 <button
-  class="flex h-[64px] items-center justify-start rounded-xl bg-white p-[7px] pr-[24px] dark:bg-dark"
+  class="flex h-[64px] w-full items-center justify-start rounded-xl bg-white p-[7px] pr-[24px] dark:bg-dark"
   on:click={() => goto(`/credentials/${id}`)}
 >
   <!-- Icon -->

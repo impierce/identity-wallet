@@ -11,20 +11,17 @@
   import SealCheck from '~icons/ph/seal-check-fill';
 
   import type { DisplayCredential } from '../../src-tauri/bindings/display-credential/DisplayCredential';
-  import type { TransferState } from '../../src-tauri/bindings/TransferState';
   import CredentialListEntry from './components/CredentialListEntry.svelte';
-  import NoCredentials from './credentials/NoMatch.svelte';
+  import NoCredentials from './credentials/NoCredentials.svelte';
 
   // TODO: improve typing
-  $: credentials = $state.credentials
-    .filter((c) => !c.metadata.is_favorite)
-    .filter((c) => {
-      console.log($state.user_data_query.includes(c.id));
-     return $state.user_data_query.includes(c.id);
-    })
-    ;
+  $: credentials = $state.credentials.filter((c) => !c.metadata.is_favorite);
+  //  .filter((c) => {
+  //   console.log($state.user_data_query.includes(c.id));
+  //    return $state.user_data_query.includes(c.id);
+  //   })
 
-    console.log(credentials);
+  console.log(credentials);
 
   let test_credentials = [
     {
@@ -60,7 +57,6 @@
   ];
 
   test_credentials = [];
-
 
   // Does this really have to be reactive?
   // $: credentials = $state?.credentials ?? [];
@@ -121,7 +117,7 @@
     {/each}
   </div>
 {:else if $state?.credentials?.length === 0}
-   <p>"No results found for your search"</p>
+  <p>"No results found for your search"</p>
   <!-- Only show "No credentials" when there's also no favorites -->
   <NoCredentials />
 {/if}

@@ -15,7 +15,7 @@
   import PaddedIcon from '$lib/components/PaddedIcon.svelte';
   import CredentialList from '$lib/CredentialList.svelte';
   import AddButton from '$lib/credentials/AddButton.svelte';
-  import NoCredentials from '$src/lib/credentials/NoMatch.svelte';
+  import NoCredentials from '$src/lib/credentials/NoCredentials.svelte';
   import Favorites from '$lib/Favorites.svelte';
   import TopBar from '$lib/home-header/TopBar.svelte';
   import UserJourney from '$lib/home-header/UserJourney.svelte';
@@ -68,8 +68,6 @@
     in:fly={{ y: 24, duration: 200 }}
     class="flex grow flex-col items-stretch justify-start rounded-t-[20px] bg-silver p-[18px] dark:bg-navy"
   >
-  
-
     {#if $state?.credentials && $state?.credentials.length > 0}
       <Favorites />
       <CredentialList />

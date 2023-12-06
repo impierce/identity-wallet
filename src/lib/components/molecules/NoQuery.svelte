@@ -7,9 +7,10 @@
 <div class="flex grow flex-col items-center justify-center space-y-[15px] text-center">
   <PaddedIcon icon={MagnifyingGlass} />
   <p class="text-[22px]/[30px] font-semibold tracking-tight text-slate-700 dark:text-grey">
-   <!--{$LL.EMPTY_CREDENTIALS_LIST_TITLE()}  --> 
-    What shall we search for?</p>
-  
+    <!--{$LL.EMPTY_CREDENTIALS_LIST_TITLE()}  -->
+    What shall we search for?
+  </p>
+
   <!-- TODO: uncomment when hard-coded link is removed -->
   <!--<p class="w-[240px] text-[13px]/[24px] text-slate-500 dark:text-slate-300">
       {$LL.EMPTY_CREDENTIALS_LIST_SUBTITLE()}

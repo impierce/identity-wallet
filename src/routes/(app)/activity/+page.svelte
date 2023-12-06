@@ -26,14 +26,12 @@
       </button>
     </div> -->
 
-    <div class="absolute right-5">
+    <div class="absolute right-5 py-4">
       <Sort></Sort>
     </div>
   </div>
- 
-  <div class="grow overflow-y-auto px-4 py-5">
-    
 
+  <div class="grow overflow-y-auto px-4 py-5">
     <ActivityTabs>
       <div slot="connections" class="h-full pt-5">
         <!-- Search & Sort -->
@@ -45,8 +43,7 @@
           ><ArrowDownAZ class="text-slate-500" /></button
         >
       </div> -->
-    
-    
+
         <ConnectionsList />
       </div>
       <div slot="history" class="h-full pt-5">
@@ -57,7 +54,6 @@
   </div>
   <SortModal></SortModal>
 </div>
-
 
 <!-- TODO: bug (styling): not applied due to parent layout -->
 <div class="safe-area-top bg-silver dark:bg-navy" />

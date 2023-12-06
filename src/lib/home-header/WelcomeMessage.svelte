@@ -2,7 +2,6 @@
   import LL from '$src/i18n/i18n-svelte';
   import { state } from '$src/stores';
 
-  export let blabla : string; 
 
   const greetings = [
     'Welcome to your UniMe',
@@ -18,5 +17,4 @@
   <!-- {$LL.WELCOME()}, <span class="text-primary">{$state?.active_profile?.display_name}.</span> -->
   {greetings[Math.floor(Math.random() * greetings.length)]},
   <span class="text-primary">{$state?.active_profile?.name}.</span>
-  {blabla}
 </p>

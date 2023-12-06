@@ -3,6 +3,7 @@
   import { createEventDispatcher } from 'svelte';
   import MagnifyingGlass from '~icons/ph/magnifying-glass-bold';
   import Clear from '~icons/ph/x-bold';
+  import { goto } from '$app/navigation';
 
   const dispatch = createEventDispatcher();
   export let delay = 500;
@@ -10,7 +11,7 @@
   let debouncedValue = '';
   let timer: any;
 
-  export let placeholder = 'Look for something';
+  export let placeholder = 'Look for something ...';
 
   const debounce = (value: string) => {
     clearTimeout(timer);
@@ -47,5 +48,5 @@
       <Clear class="absolute right-4 m-3 text-slate-800 hover:cursor-pointer" on:click={clear} />
     {/if}
   </form>
-  <button class="pl-2 text-sm text-slate-500 dark:text-grey" on:click={clear}>Cancel</button>
+  <button class="pl-2 text-sm text-slate-500 dark:text-grey" on:click={() => goto('/me')}>Cancel</button>
 </div>
