@@ -53,6 +53,7 @@ pub struct AppState {
     pub connections: Vec<Connection>,
 }
 
+#[derive(Default)]
 pub struct AppStateContainer(pub tokio::sync::Mutex<AppState>);
 
 #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default)]

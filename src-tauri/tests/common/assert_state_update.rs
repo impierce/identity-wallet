@@ -1,5 +1,5 @@
 use identity_wallet::{
-    state::{actions::Action, persistence::save_state, AppState},
+    state::{actions::Action, persistence::save_state, AppState, AppStateContainer},
     STATE_FILE, STRONGHOLD,
 };
 use serde_json::json;
@@ -8,12 +8,16 @@ use tempfile::NamedTempFile;
 
 /// Asserts that the state is updated as expected after the given action is handled.
 pub async fn assert_state_update(
-    current_state: AppState,
+    current_state: AppStateContainer,
     actions: Vec<Action>,
     expected_states: Vec<Option<AppState>>,
 ) {
-    // Save the current state to the state file.
-    save_state(&current_state).await.unwrap();
+    {
+        let current_state = current_state.0.lock().await;
+
+        // Save the current state to the state file.
+        save_state(&current_state).await.unwrap();
+    }
 
     // Initialize the app with the given state and action handler.
     let app = tauri::test::mock_builder()
@@ -43,6 +47,9 @@ pub async fn assert_state_update(
 
         // Assert that the state is updated as expected.
         if let Some(expected_state) = expected_state {
+            let container = app.app_handle().state::<AppStateContainer>().inner();
+            let mut guard = container.0.lock().await;
+
             let AppState {
                 active_profile,
                 locale,
@@ -50,7 +57,7 @@ pub async fn assert_state_update(
                 current_user_prompt,
                 debug_messages,
                 ..
-            } = app.app_handle().state::<AppState>().inner();
+            } = &mut *guard;
 
             let AppState {
                 active_profile: expected_active_profile,
@@ -61,38 +68,33 @@ pub async fn assert_state_update(
                 ..
             } = expected_state;
 
-            let active_profile = active_profile.lock().unwrap().clone();
-            let expected_active_profile = expected_active_profile.lock().unwrap().clone();
+            let active_profile = active_profile.clone();
+            let expected_active_profile = expected_active_profile.clone();
+
             match (active_profile, expected_active_profile) {
                 (Some(active_profile), Some(expected_active_profile)) => {
                     assert_eq!(active_profile.name, expected_active_profile.name);
                 }
                 (active_profile, expected_active_profile) => assert_eq!(active_profile, expected_active_profile),
             }
-            assert_eq!(*locale.lock().unwrap(), *expected_locale.lock().unwrap());
-            assert_eq!(*credentials.lock().unwrap(), *expected_credentials.lock().unwrap());
 
-            dbg!(debug_messages.lock().unwrap().clone());
-            debug_messages
-                .lock()
-                .unwrap()
-                .iter()
-                .zip(expected_debug_messages.lock().unwrap().iter())
-                .for_each(|(debug_message, expected_debug_message)| {
+            assert_eq!(locale, expected_locale);
+            assert_eq!(credentials, expected_credentials);
+
+            dbg!(debug_messages.clone());
+            debug_messages.iter().zip(expected_debug_messages.iter()).for_each(
+                |(debug_message, expected_debug_message)| {
                     assert_eq!(
                         debug_message.split_once(' ').unwrap().1,
                         expected_debug_message.split_once(' ').unwrap().1
                     );
-                });
+                },
+            );
 
-            assert_eq!(
-                debug_messages.lock().unwrap().len(),
-                expected_debug_messages.lock().unwrap().len()
-            );
-            assert_eq!(
-                *current_user_prompt.lock().unwrap(),
-                *expected_current_user_prompt.lock().unwrap()
-            );
+            dbg!("curry {:?}", debug_messages.len());
+            dbg!("expected up {:?}", expected_debug_messages.len());
+            assert_eq!(debug_messages.len(), expected_debug_messages.len());
+            assert_eq!(current_user_prompt, expected_current_user_prompt);
         }
     }
 }

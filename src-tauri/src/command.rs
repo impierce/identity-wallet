@@ -14,7 +14,7 @@ use crate::state::reducers::{
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, AppStateContainer};
 use async_recursion::async_recursion;
-use log::info;
+use log::{info, warn};
 use oid4vc_core::authorization_request::AuthorizationRequest;
 use oid4vci::credential_offer::CredentialOfferQuery;
 use serde_json::json;
@@ -153,7 +153,6 @@ pub async fn handle_action<R: tauri::Runtime>(
     // Keep a copy of the state before it is altered, so that we can revert to it if the state update fails.
     let mut guard = container.0.lock().await;
     let app_state = &mut *guard;
-    //let unaltered_state = app_state.clone();
 
     match handle_action_inner(app_state, action, _app_handle).await {
         Ok(()) => {
@@ -163,22 +162,22 @@ pub async fn handle_action<R: tauri::Runtime>(
         }
         Err(error) => {
             // If the state update fails, we revert to the unaltered state and add the error to the debug messages.
-            //{
-            //let debug_messages = &mut unaltered_state.debug_messages.lock().unwrap();
-            //while debug_messages.len() > 100 {
-            //debug_messages.remove(0);
-            //}
-            //debug_messages.push_back(format!(
-            //"{} {:?}",
-            //chrono::Utc::now().format("[%Y-%m-%d][%H:%M:%S]"),
-            //error
-            //));
-            //}
-            //warn!("state update failed: {}", error);
+            {
+                let debug_messages = &mut app_state.debug_messages;
+                while debug_messages.len() > 100 {
+                    debug_messages.remove(0);
+                }
+                debug_messages.push_back(format!(
+                    "{} {:?}",
+                    chrono::Utc::now().format("[%Y-%m-%d][%H:%M:%S]"),
+                    error
+                ));
+            }
+            warn!("state update failed: {}", error);
 
-            //// Save and emit the unaltered state including the error message.
-            //save_state(&unaltered_state).await.ok();
-            //emit_event(window, &unaltered_state).ok();
+            // Save and emit the unaltered state including the error message.
+            save_state(app_state).await.ok();
+            emit_event(window, app_state).ok();
         }
     }
 

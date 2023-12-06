@@ -3,6 +3,7 @@ use crate::common::{
     assert_state_update::{assert_state_update, setup_state_file, setup_stronghold},
     test_managers,
 };
+use identity_wallet::state::AppStateContainer;
 use identity_wallet::{
     state::{actions::Action, AppState, Profile},
     verifiable_credential_record::VerifiableCredentialRecord,
@@ -11,7 +12,7 @@ use oid4vci::credential_format_profiles::w3c_verifiable_credentials::jwt_vc_json
 use oid4vci::credential_format_profiles::CredentialFormats;
 use oid4vci::credential_format_profiles::{Credential, WithCredential};
 use serde_json::json;
-use std::sync::Mutex;
+use tokio::sync::Mutex;
 
 #[tokio::test]
 #[serial_test::serial]
@@ -38,13 +39,16 @@ async fn test_qr_code_scanned_read_credential_offer() {
     // Deserializing the Appstates and Actions from the accompanying json files.
     let state = json_example::<AppState>("tests/fixtures/states/credential_offer.json");
     let action = json_example::<Action>("tests/fixtures/actions/qr_scanned_openid_cred.json");
+
+    let container = AppStateContainer(Mutex::new(AppState {
+        active_profile: active_profile.clone(),
+        managers,
+        ..AppState::default()
+    }));
+
     assert_state_update(
         // Initial state.
-        AppState {
-            active_profile: Mutex::new(active_profile.clone()),
-            managers,
-            ..AppState::default()
-        },
+        container,
         // A QR code is scanned containing a credential offer.
         vec![action],
         // The state is updated with a new user prompt containing the credential offer.
@@ -80,13 +84,16 @@ async fn test_qr_code_scanned_handle_siopv2_authorization_request() {
     let state2 = json_example::<AppState>("tests/fixtures/states/did_redirect_me.json");
     let action1 = json_example::<Action>("tests/fixtures/actions/qr_scanned_id_token.json");
     let action2 = json_example::<Action>("tests/fixtures/actions/authenticate_connect_accept.json");
+
+    let container = AppStateContainer(Mutex::new(AppState {
+        active_profile: active_profile.clone(),
+        managers,
+        ..AppState::default()
+    }));
+
     assert_state_update(
         // Initial state.
-        AppState {
-            active_profile: Mutex::new(active_profile.clone()),
-            managers,
-            ..AppState::default()
-        },
+        container,
         // A QR code was scanned containing a SIOPv2 authorization request.
         vec![action1, action2],
         // The state is updated with a new user prompt containing the client's metadata.
@@ -129,14 +136,17 @@ async fn test_qr_code_scanned_handle_oid4vp_authorization_request() {
     let state2 = json_example::<AppState>("tests/fixtures/states/credential_redirect_me.json");
     let action1 = json_example::<Action>("tests/fixtures/actions/qr_scanned_vp_token.json");
     let action2 = json_example::<Action>("tests/fixtures/actions/authenticate_cred_selected.json");
+
+    let container = AppStateContainer(Mutex::new(AppState {
+        active_profile: active_profile.clone(),
+        managers,
+        credentials: credentials.clone(),
+        ..AppState::default()
+    }));
+
     assert_state_update(
         // Initial state.
-        AppState {
-            active_profile: Mutex::new(active_profile.clone()),
-            managers,
-            credentials: Mutex::new(credentials.clone()),
-            ..AppState::default()
-        },
+        container,
         // A QR code was scanned containing a OID4VP authorization request.
         vec![action1, action2],
         // The state is updated with a new user prompt containing the uuid's of the candidate verifiable credentials.
@@ -170,13 +180,16 @@ async fn test_qr_code_scanned_invalid_qr_code_error() {
     // Deserializing the Appstates and Actions from the accompanying json files.
     let state = json_example::<AppState>("tests/fixtures/states/invalid_payload_error.json");
     let action = json_example::<Action>("tests/fixtures/actions/qr_scanned_invalid_payload.json");
+
+    let container = AppStateContainer(Mutex::new(AppState {
+        active_profile: active_profile.clone(),
+        managers,
+        ..AppState::default()
+    }));
+
     assert_state_update(
         // Initial state.
-        AppState {
-            active_profile: Mutex::new(active_profile.clone()),
-            managers,
-            ..AppState::default()
-        },
+        container,
         // A QR code is scanned containing an invalid payload.
         vec![action],
         // An invalid payload error is added to the state.
