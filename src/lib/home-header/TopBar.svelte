@@ -3,19 +3,22 @@
 
   import { state } from '$src/stores';
 
-  import Settings from '~icons/lucide/settings';
-  import DotsThreeVertical from '~icons/ph/dots-three-vertical-bold';
-
-  // import DotsThreeVertical from '~icons/ph/dots-three-outline-vertical-fill';
+  import MagnifyingGlass from '~icons/ph/magnifying-glass';
 </script>
 
-<div class="flex items-center justify-between px-[18px]">
-  <div class="flex h-[44px] w-[44px] items-center justify-center rounded-2xl bg-primary">
+<div class="flex items-center justify-between">
+  <button
+    class="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary"
+    on:click={() => goto('/me/settings')}
+  >
     <span class="text-[28px]/[28px]">
       {@html $state?.active_profile?.picture ?? ''}
     </span>
-  </div>
-  <button on:click={() => goto('/me/settings')} class="-mx-3 rounded-full p-3 pr-0 text-black dark:text-white">
-    <DotsThreeVertical class="h-8 w-8" />
+  </button>
+  <button
+    on:click={() => goto('/me')}
+    class="-mr-3 flex h-11 w-11 items-center justify-center rounded-2xl text-black active:bg-silver dark:text-white active:dark:bg-navy"
+  >
+    <MagnifyingGlass class="h-6 w-6" />
   </button>
 </div>

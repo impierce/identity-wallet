@@ -50,15 +50,16 @@
 </script>
 
 <div class="flex min-h-full flex-col bg-white dark:bg-dark">
-  <div class="sticky top-0 z-10 h-[56px] w-full bg-white dark:bg-dark">
-    <TopBar /> 
-    <button class="text-orange-500 p-4 bg-orange-200" on:click={()=>goto('/me/search')}>search</button>
+  <div class="sticky top-0 z-10 w-full bg-white px-[20px] py-4 dark:bg-dark">
+    <TopBar />
   </div>
 
-  <div class="p-[18px] pt-0">
-    <WelcomeMessage blabla="hello" />
+  <div class="p-5 pt-0">
+    <WelcomeMessage />
     {#if $state?.user_journey}
-      <UserJourney />
+      <div class="pt-4">
+        <UserJourney />
+      </div>
     {/if}
   </div>
 
