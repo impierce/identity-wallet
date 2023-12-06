@@ -26,7 +26,7 @@
       </button>
     </div> -->
 
-    <div class="absolute top-4 right-12">
+    <div class="absolute right-5">
       <Sort></Sort>
     </div>
   </div>
@@ -46,7 +46,7 @@
         >
       </div> -->
     
-     <Search></Search>
+    
         <ConnectionsList />
       </div>
       <div slot="history" class="h-full pt-5">

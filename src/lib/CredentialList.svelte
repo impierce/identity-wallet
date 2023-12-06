@@ -13,7 +13,7 @@
   import type { DisplayCredential } from '../../src-tauri/bindings/display-credential/DisplayCredential';
   import type { TransferState } from '../../src-tauri/bindings/TransferState';
   import CredentialListEntry from './components/CredentialListEntry.svelte';
-  import NoCredentials from './credentials/NoCredentials.svelte';
+  import NoCredentials from './credentials/NoMatch.svelte';
 
   // TODO: improve typing
   $: credentials = $state.credentials
@@ -121,6 +121,7 @@
     {/each}
   </div>
 {:else if $state?.credentials?.length === 0}
+   <p>"No results found for your search"</p>
   <!-- Only show "No credentials" when there's also no favorites -->
   <NoCredentials />
 {/if}

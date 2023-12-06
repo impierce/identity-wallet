@@ -15,7 +15,7 @@
   import PaddedIcon from '$lib/components/PaddedIcon.svelte';
   import CredentialList from '$lib/CredentialList.svelte';
   import AddButton from '$lib/credentials/AddButton.svelte';
-  import NoCredentials from '$lib/credentials/NoCredentials.svelte';
+  import NoCredentials from '$src/lib/credentials/NoMatch.svelte';
   import Favorites from '$lib/Favorites.svelte';
   import TopBar from '$lib/home-header/TopBar.svelte';
   import UserJourney from '$lib/home-header/UserJourney.svelte';
@@ -30,7 +30,7 @@
   import Search from '$src/lib/components/Search.svelte';
   import { dispatch } from '$src/lib/dispatcher';
 
-  // Added this just now
+  // Search through credentials
   let credentials = $state.credentials;
   let indices = $state.user_data_query;
   let credentials2 = credentials.filter((cred) => indices.includes(cred.id));
@@ -51,7 +51,8 @@
 
 <div class="flex min-h-full flex-col bg-white dark:bg-dark">
   <div class="sticky top-0 z-10 h-[56px] w-full bg-white dark:bg-dark">
-    <TopBar />
+    <TopBar /> 
+    <button class="text-orange-500 p-4 bg-orange-200" on:click={()=>goto('/me/search')}>search</button>
   </div>
 
   <div class="p-[18px] pt-0">
@@ -66,14 +67,7 @@
     in:fly={{ y: 24, duration: 200 }}
     class="flex grow flex-col items-stretch justify-start rounded-t-[20px] bg-silver p-[18px] dark:bg-navy"
   >
-    <div>
-      <Search
-        on:value={(e) => {
-          console.log(e);
-          dispatch({ type: '[User Data] Query', payload: { target: 'Credentials', search_term: e.detail } });
-        }}
-      ></Search>
-    </div>
+  
 
     {#if $state?.credentials && $state?.credentials.length > 0}
       <Favorites />

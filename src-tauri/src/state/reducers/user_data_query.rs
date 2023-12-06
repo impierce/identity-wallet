@@ -93,6 +93,7 @@ fn credential_query(state: &AppState, query: UserDataQuery) -> anyhow::Result<()
     }
 
     *state.user_data_query.lock().unwrap() = user_data_query;
+    *state.current_user_prompt.lock().unwrap() = None;
     Ok(())
 }
 

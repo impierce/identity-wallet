@@ -10,7 +10,7 @@
   let debouncedValue = '';
   let timer: any;
 
-  export let placeholder = 'Type something here ...';
+  export let placeholder = 'Look for something';
 
   const debounce = (value: string) => {
     clearTimeout(timer);
@@ -26,18 +26,16 @@
   };
 </script>
 
-<!-- The HTML and TailwindCSS of the search component-->
-<form class="wrapper_search">
-  <div class="relative my-4 flex">
-    <!--This is the magnifying icon-->
-    <div>
-      <MagnifyingGlass class="absolute m-3 fill-slate-800"></MagnifyingGlass>
-    </div>
-    <!--This is the input field-->
-    <div class="w-full">
+<!-- Search compontent for the credentials-->
+<div class="flex flex-row p-4">
+  <!--input field-->
+  <form class="relative flex w-full">
+    <MagnifyingGlass class="absolute m-3 fill-slate-800"></MagnifyingGlass>
+
+    <div class="">
       <input
         type="text"
-        class="h-11 w-full rounded-full bg-white pl-10 text-sm text-slate-600"
+        class="h-11 rounded-3xl bg-white px-10 text-sm text-slate-500"
         {placeholder}
         id="input"
         bind:value={inputValue}
@@ -45,12 +43,9 @@
       />
     </div>
     {#if inputValue}
-      <div on:click={clear}>
-        <!-- <Icons name="x" aria-hidden="true"></Icons> -->
-        <Clear
-          class="pointer-events-auto absolute right-3 top-1/2 -mt-2.5 h-5 w-5 fill-current text-slate-800 hover:cursor-pointer"
-        />
-      </div>
+      <!-- <Icons name="x" aria-hidden="true"></Icons> -->
+      <Clear class="absolute right-4 m-3 text-slate-800 hover:cursor-pointer" on:click={clear} />
     {/if}
-  </div>
-</form>
+  </form>
+  <button class="pl-2 text-sm text-slate-500 dark:text-grey" on:click={clear}>Cancel</button>
+</div>
