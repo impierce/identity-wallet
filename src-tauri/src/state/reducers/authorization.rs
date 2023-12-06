@@ -22,7 +22,7 @@ pub enum ConnectionRequest {
 pub async fn read_authorization_request(state: &mut AppState, action: Action) -> Result<(), AppError> {
     info!("read_authorization_request");
 
-    let generic_authorization_request = match action {
+    let authorization_request = match action {
         Action::ReadRequest { authorization_request } => authorization_request,
         _ => return Err(InvalidActionError { action }),
     };
@@ -32,6 +32,16 @@ pub async fn read_authorization_request(state: &mut AppState, action: Action) ->
         .stronghold_manager
         .as_ref()
         .ok_or(MissingManagerError("stronghold"))?;
+    let provider_manager = &state_guard
+        .identity_manager
+        .as_ref()
+        .ok_or(MissingManagerError("identity"))?
+        .provider_manager;
+
+    let generic_authorization_request = provider_manager
+        .validate_request(authorization_request.clone())
+        .await
+        .map_err(|_| InvalidQRCodeError(authorization_request))?;
 
     if let Result::Ok(siopv2_authorization_request) =
         AuthorizationRequest::<Object<SIOPv2>>::from_generic(&generic_authorization_request)
@@ -109,7 +119,7 @@ pub async fn read_authorization_request(state: &mut AppState, action: Action) ->
             });
         }
     } else {
-        return Err(InvalidAuthorizationRequest(generic_authorization_request));
+        return Err(InvalidAuthorizationRequest(Box::new(generic_authorization_request)));
     };
 
     Ok(())

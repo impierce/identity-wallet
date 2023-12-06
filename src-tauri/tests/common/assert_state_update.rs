@@ -84,14 +84,17 @@ pub async fn assert_state_update(
             assert_eq!(credentials, expected_credentials);
 
             dbg!(debug_messages.clone());
-            debug_messages.iter().zip(expected_debug_messages.iter()).for_each(
-                |(debug_message, expected_debug_message)| {
+            debug_messages
+                .lock()
+                .unwrap()
+                .iter()
+                .zip(expected_debug_messages.lock().unwrap().iter())
+                .for_each(|(debug_message, expected_debug_message)| {
                     assert_eq!(
                         debug_message.split_once(' ').unwrap().1,
                         expected_debug_message.split_once(' ').unwrap().1
                     );
-                },
-            );
+                });
 
             assert_eq!(user_data_query, expected_user_data_query);
             dbg!("curry {:?}", debug_messages.len());

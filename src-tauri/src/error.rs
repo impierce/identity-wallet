@@ -34,7 +34,7 @@ pub enum AppError {
     #[error("Missing required parameter `{0}` in authorization request")]
     MissingAuthorizationRequestParameterError(&'static str),
     #[error("Invalid authorization request: {0}")]
-    InvalidAuthorizationRequest(AuthorizationRequest<Object>),
+    InvalidAuthorizationRequest(Box<AuthorizationRequest<Object>>),
     #[error("Invalid credential offer")]
     InvalidCredentialOffer(#[source] serde_json::Error),
     #[error("Could not find a matching credential for input descriptor")]

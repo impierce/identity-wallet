@@ -78,16 +78,26 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
         Action::QrCodeScanned { form_urlencoded } => {
             info!("qr code scanned: `{:?}`", form_urlencoded);
 
-            let state_guard = app_state.managers.lock().await;
-            let provider_manager = &state_guard
-                .identity_manager
-                .as_ref()
-                .ok_or(MissingManagerError("identity"))?
-                .provider_manager;
+            let is_authorization_request = {
+                let state_guard = app_state.managers.lock().await;
+                let provider_manager = &state_guard
+                    .identity_manager
+                    .as_ref()
+                    .ok_or(MissingManagerError("identity"))?
+                    .provider_manager;
 
-            if let Result::Ok(authorization_request) = provider_manager.validate_request(form_urlencoded.clone()).await
-            {
-                handle_action_inner(Action::ReadRequest { authorization_request }, _app_handle, app_state).await
+                provider_manager.validate_request(form_urlencoded.clone()).await.is_ok()
+            };
+
+            if is_authorization_request {
+                handle_action_inner(
+                    Action::ReadRequest {
+                        authorization_request: form_urlencoded,
+                    },
+                    _app_handle,
+                    app_state,
+                )
+                .await
             } else if let Result::Ok(credential_offer_query) = form_urlencoded.parse::<CredentialOfferQuery>() {
                 handle_action_inner(Action::ReadCredentialOffer { credential_offer_query }, _app_handle).await
             } else {
