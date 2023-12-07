@@ -21,14 +21,14 @@ use serde_json::json;
 use std::sync::Arc;
 
 /// Sets the locale to the given value. If the locale is not supported yet, the current locale will stay unchanged.
-pub fn set_locale(state: &AppState, action: Action) -> Result<(), AppError> {
+pub fn set_locale(state: &mut AppState, action: Action) -> Result<(), AppError> {
     let locale = match action {
         Action::SetLocale { locale } => locale,
         _ => return Err(InvalidActionError { action }),
     };
 
     info!("locale set to: `{:?}`", locale);
-    *state.locale.lock().unwrap() = locale;
+    state.locale = locale;
     Ok(())
 }
 
@@ -72,7 +72,7 @@ pub async fn create_identity(state: &mut AppState, action: Action) -> Result<(),
     Ok(())
 }
 
-pub async fn initialize_stronghold(state: &AppState, action: Action) -> Result<(), AppError> {
+pub async fn initialize_stronghold(state: &mut AppState, action: Action) -> Result<(), AppError> {
     let password = match action {
         Action::CreateNew { password, .. } => password,
         _ => return Err(InvalidActionError { action }),
@@ -87,7 +87,7 @@ pub async fn initialize_stronghold(state: &AppState, action: Action) -> Result<(
     Ok(())
 }
 
-pub async fn update_credential_metadata(state: &AppState, action: Action) -> Result<(), AppError> {
+pub async fn update_credential_metadata(state: &mut AppState, action: Action) -> Result<(), AppError> {
     let (credential_id, name, icon, color, is_favorite) = match action {
         Action::UpdateCredentialMetadata {
             id,
@@ -162,26 +162,19 @@ pub async fn update_credential_metadata(state: &AppState, action: Action) -> Res
     Ok(())
 }
 
-pub fn update_profile_settings(state: &AppState, action: Action) -> Result<(), AppError> {
+pub fn update_profile_settings(state: &mut AppState, action: Action) -> Result<(), AppError> {
     let (name, picture, theme) = match action {
         Action::UpdateProfileSettings { name, picture, theme } => (name, picture, theme),
         _ => return Err(InvalidActionError { action }),
     };
 
     let _ = theme.map(|theme| {
-        state
-            .active_profile
-            .lock()
-            .unwrap()
-            .as_mut()
-            .unwrap()
-            .theme
-            .replace(theme.to_string());
+        state.active_profile.as_mut().unwrap().theme.replace(theme.to_string());
         debug!("updated theme: {}", theme);
     });
 
     let _ = name.map(|name| {
-        state.active_profile.lock().unwrap().as_mut().unwrap().name = name.to_string();
+        state.active_profile.as_mut().unwrap().name = name.to_string();
         debug!("updated name: {}", name);
     });
 
@@ -221,8 +214,8 @@ mod tests {
     fn test_set_locale() {
         let mut state = AppState::default();
 
-        assert!(set_locale(&state, Action::SetLocale { locale: Locale::Nl }).is_ok());
-        assert_eq!(*state.locale.lock().unwrap(), Locale::Nl);
+        assert!(set_locale(&mut state, Action::SetLocale { locale: Locale::Nl }).is_ok());
+        assert_eq!(state.locale, Locale::Nl);
     }
 
     #[test]
@@ -238,8 +231,8 @@ mod tests {
             ..AppState::default()
         };
 
-        assert!(reset_state(&state, Action::Reset).is_ok());
-        assert_eq!(*state.active_profile.lock().unwrap(), None);
-        assert_eq!(*state.locale.lock().unwrap(), Locale::default());
+        assert!(reset_state(&mut state, Action::Reset).is_ok());
+        assert_eq!(state.active_profile, None);
+        assert_eq!(state.locale, Locale::default());
     }
 }

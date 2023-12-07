@@ -21,6 +21,7 @@ use tauri::Manager;
 
 #[async_recursion]
 pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
+    app_state: &mut AppState,
     action: Action,
     _app_handle: tauri::AppHandle<R>,
 ) -> Result<(), AppError> {
@@ -91,15 +92,20 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
 
             if is_authorization_request {
                 handle_action_inner(
+                    app_state,
                     Action::ReadRequest {
                         authorization_request: form_urlencoded,
                     },
                     _app_handle,
-                    app_state,
                 )
                 .await
             } else if let Result::Ok(credential_offer_query) = form_urlencoded.parse::<CredentialOfferQuery>() {
-                handle_action_inner(Action::ReadCredentialOffer { credential_offer_query }, _app_handle).await
+                handle_action_inner(
+                    app_state,
+                    Action::ReadCredentialOffer { credential_offer_query },
+                    _app_handle,
+                )
+                .await
             } else {
                 Err(InvalidQRCodeError(form_urlencoded))
             }
@@ -111,8 +117,6 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             if let Some(redirect) = redirect {
                 app_state
                     .current_user_prompt
-                    .lock()
-                    .unwrap()
                     .replace(CurrentUserPrompt::Redirect { target: redirect });
             } else {
                 app_state.current_user_prompt.take();
@@ -125,11 +129,11 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
         Action::CredentialOffersSelected { .. } => send_credential_request(app_state, action).await,
         Action::UpdateCredentialMetadata { .. } => {
             update_credential_metadata(app_state, action).await?;
-            *app_state.current_user_prompt.lock().unwrap() = None;
+            app_state.current_user_prompt = None;
             Ok(())
         }
         Action::CancelUserJourney => {
-            *app_state.user_journey.lock().unwrap() = None;
+            app_state.user_journey = None;
             Ok(())
         }
         Action::UserDataQuery => user_data_query(app_state, action).await,

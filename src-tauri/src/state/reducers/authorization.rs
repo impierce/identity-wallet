@@ -64,16 +64,12 @@ pub async fn read_authorization_request(state: &mut AppState, action: Action) ->
         info!("client_name in credential_offer: {:?}", client_name);
         info!("logo_uri in read_authorization_request: {:?}", logo_uri);
 
-        state
-            .current_user_prompt
-            .lock()
-            .unwrap()
-            .replace(CurrentUserPrompt::AcceptConnection {
-                client_name,
-                logo_uri,
-                redirect_uri,
-                previously_connected,
-            });
+        state.current_user_prompt.replace(CurrentUserPrompt::AcceptConnection {
+            client_name,
+            logo_uri,
+            redirect_uri,
+            previously_connected,
+        });
     } else if let Result::Ok(oid4vp_authorization_request) =
         AuthorizationRequest::<Object<OID4VP>>::from_generic(&generic_authorization_request)
     {
