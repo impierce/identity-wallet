@@ -12,45 +12,46 @@ use crate::state::reducers::{
     update_profile_settings,
 };
 use crate::state::user_prompt::CurrentUserPrompt;
-use crate::state::AppState;
+use crate::state::{AppState, AppStateContainer};
+use async_recursion::async_recursion;
 use log::{info, warn};
 use oid4vc_core::authorization_request::AuthorizationRequest;
 use oid4vci::credential_offer::CredentialOfferQuery;
 use serde_json::json;
 use tauri::Manager;
 
-#[async_recursion::async_recursion]
+#[async_recursion]
 pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
+    app_state: &mut AppState,
     Action { r#type, payload }: Action,
     _app_handle: tauri::AppHandle<R>,
-    app_state: &AppState,
 ) -> Result<(), AppError> {
     info!("received action `{:?}` with payload `{:?}`", r#type, payload);
 
     match r#type {
         ActionType::GetState => {
             // TODO: find a better way to populate all fields with values from json file
-            let loaded_state: AppState = load_state().await.unwrap_or_default();
+            let loaded_state = load_state().await.unwrap_or_default();
 
-            *app_state.active_profile.lock().unwrap() = loaded_state.active_profile.lock().unwrap().clone();
-            *app_state.locale.lock().unwrap() = loaded_state.locale.lock().unwrap().clone();
-            *app_state.connections.lock().unwrap() = loaded_state.connections.lock().unwrap().clone();
-            *app_state.debug_messages.lock().unwrap() = loaded_state.debug_messages.lock().unwrap().clone();
+            app_state.active_profile = loaded_state.active_profile.clone();
+            app_state.locale = loaded_state.locale.clone();
+            app_state.connections = loaded_state.connections.clone();
+            app_state.debug_messages = loaded_state.debug_messages.clone();
 
-            if app_state.active_profile.lock().unwrap().is_some() {
-                *app_state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::PasswordRequired);
+            if app_state.active_profile.is_some() {
+                app_state.current_user_prompt = Some(CurrentUserPrompt::PasswordRequired);
             } else {
                 // TODO: bug: if state is present, but empty, user will never be redirected to neither welcome or profile page
-                *app_state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect {
+                app_state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
                     target: "welcome".to_string(),
                 });
             }
 
-            *app_state.dev_mode_enabled.lock().unwrap() = *loaded_state.dev_mode_enabled.lock().unwrap();
             // TODO: uncomment the following line for LOCAL DEVELOPMENT (DEV_MODE)
-            // *app_state.dev_mode_enabled.lock().unwrap() = true;
+            //app_state.dev_mode_enabled = loaded_state.dev_mode_enabled;
             Ok(())
         }
+
         ActionType::UnlockStorage => unlock_storage(app_state, Action { r#type, payload }).await,
         ActionType::Reset => {
             reset_state(app_state, Action { r#type, payload })?;
@@ -59,11 +60,12 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
         }
         ActionType::CreateNew => {
             let action = Action { r#type, payload };
+
             initialize_stronghold(app_state, action.clone()).await?;
             create_identity(app_state, action).await?;
 
             // When everything is done, we redirect the user to the "me" page
-            *app_state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect {
+            app_state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
                 target: "me".to_string(),
             });
             Ok(())
@@ -81,22 +83,22 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
 
             if let Result::Ok(authorization_request) = form_urlencoded.parse::<AuthorizationRequest>() {
                 handle_action_inner(
+                    app_state,
                     Action {
                         r#type: ActionType::ReadRequest,
                         payload: Some(json!(authorization_request)),
                     },
                     _app_handle,
-                    app_state,
                 )
                 .await
             } else if let Result::Ok(credential_offer_query) = form_urlencoded.parse::<CredentialOfferQuery>() {
                 handle_action_inner(
+                    app_state,
                     Action {
                         r#type: ActionType::ReadCredentialOffer,
                         payload: Some(json!(credential_offer_query)),
                     },
                     _app_handle,
-                    app_state,
                 )
                 .await
             } else {
@@ -111,15 +113,11 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
         ActionType::CancelUserFlow => {
             if let Some(payload) = payload {
                 let redirect = payload["redirect"].as_str().unwrap();
-                app_state
-                    .current_user_prompt
-                    .lock()
-                    .unwrap()
-                    .replace(CurrentUserPrompt::Redirect {
-                        target: redirect.to_string(),
-                    });
+                app_state.current_user_prompt.replace(CurrentUserPrompt::Redirect {
+                    target: redirect.to_string(),
+                });
             } else {
-                app_state.current_user_prompt.lock().unwrap().take();
+                app_state.current_user_prompt.take();
             }
 
             Ok(())
@@ -132,11 +130,11 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
         ActionType::CredentialOffersSelected => send_credential_request(app_state, Action { r#type, payload }).await,
         ActionType::UpdateCredentialMetadata => {
             update_credential_metadata(app_state, Action { r#type, payload }).await?;
-            *app_state.current_user_prompt.lock().unwrap() = None;
+            app_state.current_user_prompt = None;
             Ok(())
         }
         ActionType::CancelUserJourney => {
-            *app_state.user_journey.lock().unwrap() = None;
+            app_state.user_journey = None;
             Ok(())
         }
         ActionType::Unknown => Err(UnknownActionTypeError { r#type, payload }),
@@ -149,22 +147,23 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
 pub async fn handle_action<R: tauri::Runtime>(
     action: Action,
     _app_handle: tauri::AppHandle<R>,
-    app_state: tauri::State<'_, AppState>,
+    container: tauri::State<'_, AppStateContainer>,
     window: tauri::Window<R>,
 ) -> Result<(), String> {
     // Keep a copy of the state before it is altered, so that we can revert to it if the state update fails.
-    let unaltered_state = app_state.clone();
+    let mut guard = container.0.lock().await;
+    let app_state = &mut *guard;
 
-    match handle_action_inner(action, _app_handle, app_state.inner()).await {
+    match handle_action_inner(app_state, action, _app_handle).await {
         Ok(()) => {
             info!("state updated successfully");
-            save_state(app_state.inner()).await.ok();
-            emit_event(window, app_state.inner()).ok();
+            save_state(app_state).await.ok();
+            emit_event(window, app_state).ok();
         }
         Err(error) => {
             // If the state update fails, we revert to the unaltered state and add the error to the debug messages.
             {
-                let debug_messages = &mut unaltered_state.debug_messages.lock().unwrap();
+                let debug_messages = &mut app_state.debug_messages;
                 while debug_messages.len() > 100 {
                     debug_messages.remove(0);
                 }
@@ -177,8 +176,8 @@ pub async fn handle_action<R: tauri::Runtime>(
             warn!("state update failed: {}", error);
 
             // Save and emit the unaltered state including the error message.
-            save_state(&unaltered_state).await.ok();
-            emit_event(window, &unaltered_state).ok();
+            save_state(app_state).await.ok();
+            emit_event(window, app_state).ok();
         }
     }
 

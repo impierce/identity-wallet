@@ -27,17 +27,17 @@ lazy_static! {
         }));
 }
 
-pub async fn set_dev_mode(state: &AppState, action: Action) -> Result<(), AppError> {
+pub async fn set_dev_mode(state: &mut AppState, action: Action) -> Result<(), AppError> {
     let payload = action.payload.ok_or(MissingPayloadError)?;
     let value = payload["enabled"]
         .as_bool()
         .ok_or(MissingPayloadValueError("enabled"))?;
-    *state.dev_mode_enabled.lock().unwrap() = value;
-    *state.current_user_prompt.lock().unwrap() = None;
+    state.dev_mode_enabled = value;
+    state.current_user_prompt = None;
     Ok(())
 }
 
-pub async fn load_dev_profile(state: &AppState, _action: Action) -> Result<(), AppError> {
+pub async fn load_dev_profile(state: &mut AppState, _action: Action) -> Result<(), AppError> {
     info!("load dev profile");
 
     let stronghold_manager = StrongholdManager::create("sup3rSecr3t").map_err(StrongholdCreationError)?;
@@ -53,7 +53,7 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> Result<(), A
         theme: Some("system".to_string()),
         primary_did: subject.identifier().unwrap(),
     };
-    state.active_profile.lock().unwrap().replace(profile);
+    state.active_profile.replace(profile);
 
     vec![PERSONAL_INFORMATION.clone(), DRIVERS_LICENSE_CREDENTIAL.clone()]
         .into_iter()
@@ -68,7 +68,7 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> Result<(), A
         });
 
     info!("loading credentials from stronghold");
-    *state.credentials.lock().unwrap() = stronghold_manager
+    state.credentials = stronghold_manager
         .values()
         .map_err(StrongholdValuesError)?
         .unwrap()
@@ -124,9 +124,9 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> Result<(), A
         }"#;
     // let journey_definition = std::fs::read_to_string("resources/ngdil.json")?;
     let onboarding_journey: serde_json::Value = serde_json::from_str(journey_definition).unwrap();
-    *state.user_journey.lock().unwrap() = Some(onboarding_journey);
+    state.user_journey = Some(onboarding_journey);
 
-    *state.connections.lock().unwrap() = vec![Connection {
+    state.connections = vec![Connection {
         client_name: "NGDIL Demo".to_string(),
         url: "api.ngdil-demo.tanglelabs.io".to_string(),
         logo_uri: Some("https://recursing-feynman.weeir.com/imgs/kw1c-white.png".to_string()),
@@ -135,10 +135,10 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> Result<(), A
         last_connected: "2023-09-11T19:53:53.937981+00:00".to_string(),
     }];
 
-    *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect {
+    state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
         target: "me".to_string(),
     });
 
-    *state.dev_mode_enabled.lock().unwrap() = true;
+    state.dev_mode_enabled = true;
     Ok(())
 }

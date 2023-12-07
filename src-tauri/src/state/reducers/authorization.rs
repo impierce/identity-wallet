@@ -20,7 +20,7 @@ pub enum ConnectionRequest {
 }
 
 // Reads the request url from the payload and validates it.
-pub async fn read_authorization_request(state: &AppState, action: Action) -> Result<(), AppError> {
+pub async fn read_authorization_request(state: &mut AppState, action: Action) -> Result<(), AppError> {
     info!("read_authorization_request");
 
     let state_guard = state.managers.lock().await;
@@ -55,30 +55,22 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> Res
 
         let previously_connected = state
             .connections
-            .lock()
-            .unwrap()
             .iter_mut()
             .any(|connection| connection.url == connection_url && connection.client_name == client_name);
 
         state
             .active_connection_request
-            .lock()
-            .unwrap()
             .replace(ConnectionRequest::SIOPv2(siopv2_authorization_request.into()));
 
         info!("client_name in credential_offer: {:?}", client_name);
         info!("logo_uri in read_authorization_request: {:?}", logo_uri);
 
-        state
-            .current_user_prompt
-            .lock()
-            .unwrap()
-            .replace(CurrentUserPrompt::AcceptConnection {
-                client_name,
-                logo_uri,
-                redirect_uri,
-                previously_connected,
-            });
+        state.current_user_prompt.replace(CurrentUserPrompt::AcceptConnection {
+            client_name,
+            logo_uri,
+            redirect_uri,
+            previously_connected,
+        });
     } else if let Result::Ok(oid4vp_authorization_request) = provider_manager
         .validate_request::<OID4VP>(serde_json::from_value(payload.clone()).map_err(|source| {
             OID4VCAuthorizationRequestError {
@@ -118,13 +110,11 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> Res
 
         state
             .active_connection_request
-            .lock()
-            .unwrap()
             .replace(ConnectionRequest::OID4VP(oid4vp_authorization_request.into()));
 
         // TODO: communicate when no credentials are available.
         if !uuids.is_empty() {
-            *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::ShareCredentials {
+            state.current_user_prompt = Some(CurrentUserPrompt::ShareCredentials {
                 client_name,
                 logo_uri,
                 options: uuids,
@@ -138,7 +128,7 @@ pub async fn read_authorization_request(state: &AppState, action: Action) -> Res
 }
 
 // Sends the authorization response.
-pub async fn handle_siopv2_authorization_request(state: &AppState, _action: Action) -> Result<(), AppError> {
+pub async fn handle_siopv2_authorization_request(state: &mut AppState, _action: Action) -> Result<(), AppError> {
     let state_guard = state.managers.lock().await;
     let provider_manager = &state_guard
         .identity_manager
@@ -148,8 +138,6 @@ pub async fn handle_siopv2_authorization_request(state: &AppState, _action: Acti
 
     let active_connection_request = state
         .active_connection_request
-        .lock()
-        .unwrap()
         .take()
         .ok_or(MissingStateParameterError("active connection request"))?;
 
@@ -178,8 +166,6 @@ pub async fn handle_siopv2_authorization_request(state: &AppState, _action: Acti
 
     let result = state
         .connections
-        .lock()
-        .unwrap()
         .iter_mut()
         .find(|connection| connection.url == connection_url && connection.client_name == client_name)
         .map(|connection| {
@@ -187,7 +173,7 @@ pub async fn handle_siopv2_authorization_request(state: &AppState, _action: Acti
         });
 
     if result.is_none() {
-        state.connections.lock().unwrap().push(Connection {
+        state.connections.push(Connection {
             client_name,
             url: connection_url,
             logo_uri,
@@ -197,19 +183,15 @@ pub async fn handle_siopv2_authorization_request(state: &AppState, _action: Acti
         })
     };
 
-    state
-        .current_user_prompt
-        .lock()
-        .unwrap()
-        .replace(CurrentUserPrompt::Redirect {
-            target: "me".to_string(),
-        });
+    state.current_user_prompt.replace(CurrentUserPrompt::Redirect {
+        target: "me".to_string(),
+    });
 
     Ok(())
 }
 
 // Sends the authorization response including the verifiable credentials.
-pub async fn handle_oid4vp_authorization_request(state: &AppState, action: Action) -> Result<(), AppError> {
+pub async fn handle_oid4vp_authorization_request(state: &mut AppState, action: Action) -> Result<(), AppError> {
     info!("handle_presentation_request");
 
     let state_guard = state.managers.lock().await;
@@ -233,8 +215,6 @@ pub async fn handle_oid4vp_authorization_request(state: &AppState, action: Actio
 
     let active_connection_request = state
         .active_connection_request
-        .lock()
-        .unwrap()
         .take()
         .ok_or(MissingStateParameterError("active connection request"))?;
 
@@ -271,8 +251,6 @@ pub async fn handle_oid4vp_authorization_request(state: &AppState, action: Actio
 
     let subject_did = state
         .active_profile
-        .lock()
-        .unwrap()
         .as_ref()
         .ok_or(MissingStateParameterError("active profile"))?
         .primary_did
@@ -319,8 +297,6 @@ pub async fn handle_oid4vp_authorization_request(state: &AppState, action: Actio
 
     let result = state
         .connections
-        .lock()
-        .unwrap()
         .iter_mut()
         .find(|connection| connection.url == connection_url && connection.client_name == client_name)
         .map(|connection| {
@@ -328,7 +304,7 @@ pub async fn handle_oid4vp_authorization_request(state: &AppState, action: Actio
         });
 
     if result.is_none() {
-        state.connections.lock().unwrap().push(Connection {
+        state.connections.push(Connection {
             client_name,
             url: connection_url,
             logo_uri,
@@ -338,13 +314,9 @@ pub async fn handle_oid4vp_authorization_request(state: &AppState, action: Actio
         })
     };
 
-    state
-        .current_user_prompt
-        .lock()
-        .unwrap()
-        .replace(CurrentUserPrompt::Redirect {
-            target: "me".to_string(),
-        });
+    state.current_user_prompt.replace(CurrentUserPrompt::Redirect {
+        target: "me".to_string(),
+    });
 
     Ok(())
 }

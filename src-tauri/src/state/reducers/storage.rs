@@ -9,7 +9,7 @@ use oid4vc_manager::{methods::key_method::KeySubject, ProviderManager};
 use oid4vci::Wallet;
 use std::sync::Arc;
 
-pub async fn unlock_storage(state: &AppState, action: Action) -> Result<(), AppError> {
+pub async fn unlock_storage(state: &mut AppState, action: Action) -> Result<(), AppError> {
     let mut state_guard = state.managers.lock().await;
 
     let payload = action.payload.ok_or(MissingPayloadError)?;
@@ -28,7 +28,7 @@ pub async fn unlock_storage(state: &AppState, action: Action) -> Result<(), AppE
     let wallet: Wallet = Wallet::new(subject.clone());
 
     info!("loading credentials from stronghold");
-    *state.credentials.lock().unwrap() = stronghold_manager
+    state.credentials = stronghold_manager
         .values()
         .map_err(StrongholdValuesError)?
         .unwrap()
@@ -46,13 +46,9 @@ pub async fn unlock_storage(state: &AppState, action: Action) -> Result<(), AppE
 
     info!("storage unlocked");
 
-    state
-        .current_user_prompt
-        .lock()
-        .unwrap()
-        .replace(CurrentUserPrompt::Redirect {
-            target: "me".to_string(),
-        });
+    state.current_user_prompt.replace(CurrentUserPrompt::Redirect {
+        target: "me".to_string(),
+    });
 
     Ok(())
 }

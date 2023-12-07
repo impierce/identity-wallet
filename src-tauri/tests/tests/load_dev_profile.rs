@@ -1,5 +1,6 @@
 use crate::common::assert_state_update::{assert_state_update, setup_state_file, setup_stronghold};
 use crate::common::json_example;
+use identity_wallet::state::AppStateContainer;
 use identity_wallet::state::{actions::Action, AppState};
 
 #[tokio::test]
@@ -11,7 +12,7 @@ async fn test_load_dev_profile() {
     // Deserializing the Appstates and Actions from the accompanying json files.
     let state = json_example::<AppState>("tests/fixtures/states/two_credentials_redirect_me.json");
     let action = json_example::<Action>("tests/fixtures/actions/dev_load_profile.json");
-    assert_state_update(AppState::default(), vec![action], vec![Some(state)]).await;
+    assert_state_update(AppStateContainer::default(), vec![action], vec![Some(state)]).await;
 }
 
 #[tokio::test]
@@ -25,7 +26,7 @@ async fn test_load_dev_profile_twice() {
     let state2 = json_example::<AppState>("tests/fixtures/states/two_credentials_redirect_me.json");
     let action = json_example::<Action>("tests/fixtures/actions/dev_load_profile.json");
     assert_state_update(
-        AppState::default(),
+        AppStateContainer::default(),
         vec![
             // Load the profile twice.
             action.clone(),
