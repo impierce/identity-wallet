@@ -1,7 +1,7 @@
 use crate::{
     error::AppError::{self, *},
     state::{actions::Action, user_prompt::CurrentUserPrompt, AppState},
-    utils::download_asset,
+    utils::{download_asset, persist_asset},
     verifiable_credential_record::VerifiableCredentialRecord,
 };
 use log::{debug, info};
@@ -305,8 +305,6 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> Result
     };
     info!("credentials: {:?}", credentials);
 
-    // TODO: after credential_id is known, rename the image assets.
-
     for credential in credentials.into_iter() {
         let mut verifiable_credential_record = VerifiableCredentialRecord::from(credential);
         verifiable_credential_record.display_credential.issuer_name = Some(issuer_name.clone());
@@ -317,6 +315,11 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> Result
             .expect("invalid uuid");
 
         info!("generated hash-key: {:?}", key);
+
+        persist_asset(
+            "6440ceac338a920197100e60_NGDIL%20Logo%20Dark.svg",
+            key.to_string().as_str(),
+        );
 
         // Remove the old credential from the stronghold if it exists.
         stronghold_manager.remove(key).map_err(StrongholdDeletionError)?;

@@ -55,7 +55,7 @@
     },
   ];
 
-  // test_credentials = [];
+  test_credentials = [];
 
   console.log(
     'metadata.display.icon',

@@ -1,6 +1,6 @@
 use crate::common::test_managers;
 use identity_wallet::state::actions::ActionType;
-use identity_wallet::state::reducers::credential_offer::read_credential_offer;
+use identity_wallet::state::reducers::credential_offer::{read_credential_offer, send_credential_request};
 use identity_wallet::state::{actions::Action, AppState};
 use identity_wallet::ASSETS_DIR;
 use oid4vci::credential_format_profiles::w3c_verifiable_credentials::jwt_vc_json::{self, JwtVcJson};
@@ -118,14 +118,15 @@ async fn download_credential_logo() {
         ..AppState::default()
     };
 
-    let _ = read_credential_offer(
+    assert!(read_credential_offer(
         &state,
         Action {
             r#type: ActionType::ReadCredentialOffer,
             payload: Some(json!({"credential_offer_uri": format!("{}/offer/1", &mock_server.uri())})),
         },
     )
-    .await;
+    .await
+    .is_ok());
 }
 
 #[tokio::test]
@@ -224,14 +225,15 @@ async fn download_issuer_logo() {
         ..AppState::default()
     };
 
-    let _ = read_credential_offer(
+    assert!(read_credential_offer(
         &state,
         Action {
             r#type: ActionType::ReadCredentialOffer,
             payload: Some(json!({"credential_offer_uri": format!("{}/offer/1", &mock_server.uri())})),
         },
     )
-    .await;
+    .await
+    .is_ok());
 }
 
 #[tokio::test]
@@ -322,12 +324,33 @@ async fn no_download_when_no_logo_in_metadata() {
         ..AppState::default()
     };
 
-    let _ = read_credential_offer(
+    assert!(read_credential_offer(
         &state,
         Action {
             r#type: ActionType::ReadCredentialOffer,
             payload: Some(json!({"credential_offer_uri": format!("{}/offer/1", &mock_server.uri())})),
         },
     )
-    .await;
+    .await
+    .is_ok());
+}
+
+#[tokio::test]
+async fn move_downloaded_logo_asset_out_of_tmp_folder() {
+    *ASSETS_DIR.lock().unwrap() = TempDir::new().unwrap().into_path();
+
+    let state = AppState {
+        managers: test_managers(vec![]),
+        ..AppState::default()
+    };
+
+    assert!(send_credential_request(
+        &state,
+        Action {
+            r#type: ActionType::CredentialOffersSelected,
+            payload: Some(json!({"offer_indices": [0]})),
+        },
+    )
+    .await
+    .is_ok());
 }

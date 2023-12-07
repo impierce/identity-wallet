@@ -5,6 +5,9 @@ use uuid::Uuid;
 // TODO: needs revision/refactor + needs oid4vc libs to properly implement error handling.
 #[derive(thiserror::Error)]
 pub enum AppError {
+    // Generic error (all purpose)
+    #[error("Error: {0}")]
+    Error(&'static str),
     #[error("Required payload is missing")]
     MissingPayloadError,
     #[error("Required payload value is missing: {0}")]

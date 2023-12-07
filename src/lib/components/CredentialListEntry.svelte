@@ -10,18 +10,15 @@
   export let title = '';
   export let description = '';
   export let color: string | undefined = undefined;
-  // export let assetUrl: string | undefined = undefined;
 
-  let assetUrl: string | undefined =
-    'asset://localhost/%2FUsers%2Fdaniel%2FLibrary%2FApplication%20Support%2Fcom.impierce.identity_wallet%2Fassets%2F' +
-    // 'credential.svg';
-    'issuer.png';
+  $: assetUrl = undefined;
 
   onMount(async () => {
     const appDataDirPath = await appDataDir();
-    const filePath = await join(appDataDirPath, 'assets/issuer.png');
-    console.log({ filePath });
-    const assetUrl = convertFileSrc(filePath);
+
+    const filePath = await join(appDataDirPath, `assets/${id}.svg`);
+    // console.log({ filePath });
+    assetUrl = convertFileSrc(filePath);
     console.log({ assetUrl });
   });
 </script>
