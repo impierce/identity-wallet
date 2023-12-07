@@ -70,6 +70,7 @@ serial_test = "2.0"
 url = "2.4"
 indoc = "2.0"
 wiremock = "0.5"
+rand = "0.8"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

@@ -15,6 +15,8 @@ use std::sync::Mutex;
 use tauri::Manager;
 use tauri_plugin_log::{fern::colors::ColoredLevelConfig, Target, TargetKind};
 
+use crate::utils::clear_assets_tmp_folder;
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -22,6 +24,7 @@ pub fn run() {
         .setup(move |app| {
             info!("setting up tauri app");
             initialize_storage(app.handle()).ok();
+            clear_assets_tmp_folder().ok();
             #[cfg(mobile)]
             {
                 app.handle().plugin(tauri_plugin_barcode_scanner::init())?;
@@ -63,6 +66,7 @@ pub fn run() {
 lazy_static! {
     pub static ref STATE_FILE: Mutex<std::path::PathBuf> = Mutex::new(std::path::PathBuf::new());
     pub static ref STRONGHOLD: Mutex<std::path::PathBuf> = Mutex::new(std::path::PathBuf::new());
+    pub static ref ASSETS_DIR: Mutex<std::path::PathBuf> = Mutex::new(std::path::PathBuf::new());
 }
 
 /// Initialize the storage file paths.
@@ -71,6 +75,7 @@ fn initialize_storage(app_handle: &tauri::AppHandle) -> anyhow::Result<()> {
     if cfg!(target_os = "android") {
         *STATE_FILE.lock().unwrap() = app_handle.path().data_dir()?.join("state.json");
         *STRONGHOLD.lock().unwrap() = app_handle.path().data_dir()?.join("stronghold.bin");
+        *ASSETS_DIR.lock().unwrap() = app_handle.path().data_dir()?.join("assets");
     } else {
         *STATE_FILE.lock().unwrap() = app_handle
             .path()
@@ -82,6 +87,11 @@ fn initialize_storage(app_handle: &tauri::AppHandle) -> anyhow::Result<()> {
             .data_dir()?
             .join("com.impierce.identity_wallet")
             .join("stronghold.bin");
+        *ASSETS_DIR.lock().unwrap() = app_handle
+            .path()
+            .data_dir()?
+            .join("com.impierce.identity_wallet")
+            .join("assets");
     }
     info!("STATE_FILE: {}", STATE_FILE.lock().unwrap().display());
     info!("STRONGHOLD: {}", STRONGHOLD.lock().unwrap().display());

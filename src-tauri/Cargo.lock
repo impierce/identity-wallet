@@ -3086,6 +3086,7 @@ dependencies = [
  "oid4vc-manager",
  "oid4vci",
  "oid4vp",
+ "rand 0.8.5",
  "reqwest",
  "rust-argon2",
  "serde",

@@ -1,18 +1,13 @@
-use std::f32::consts::E;
-
 use crate::{
     error::AppError::{self, *},
     state::{actions::Action, user_prompt::CurrentUserPrompt, AppState},
     utils::download_asset,
     verifiable_credential_record::VerifiableCredentialRecord,
 };
-use identity_credential::credential;
 use log::{debug, info};
 use oid4vci::{
     credential_format_profiles::{CredentialFormats, WithCredential},
-    credential_issuer::{
-        credential_issuer_metadata::CredentialIssuerMetadata, credentials_supported::CredentialsSupportedObject,
-    },
+    credential_issuer::credentials_supported::CredentialsSupportedObject,
     credential_offer::{CredentialOffer, CredentialOfferQuery, CredentialsObject, Grants},
     credential_response::CredentialResponseType,
     token_request::{PreAuthorizedCode, TokenRequest},
@@ -141,15 +136,26 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> Result<(
 
     info!("credential_logo_url: {:?}", credential_logo_url);
 
-    // use credential_id as file_name, such as "a3fc4f-4ea31-9839fb47.png"
     if credential_logo_url.is_some() {
-        println!("Downloading credential logo ...");
-        let _ = download_asset(credential_logo_url.unwrap().as_str().unwrap(), "credential.svg").await;
+        debug!(
+            "{}",
+            format!(
+                "Downloading credential logo from url: {}",
+                credential_logo_url.unwrap().as_str().unwrap()
+            )
+        );
+        let _ = download_asset(credential_logo_url.unwrap().as_str().unwrap()).await;
     } else if logo_uri.is_some() {
-        println!("Downloading issuer logo ...");
-        let _ = download_asset(logo_uri.as_ref().unwrap().as_str(), "issuer.png").await;
+        debug!(
+            "{}",
+            format!(
+                "Downloading issuer logo from url: {}",
+                logo_uri.clone().unwrap().as_str()
+            )
+        );
+        let _ = download_asset(logo_uri.as_ref().unwrap().as_str()).await;
     } else {
-        println!("No logo found.");
+        debug!("No logo found in metadata.");
     }
 
     *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::CredentialOffer {
@@ -298,6 +304,8 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> Result
         }
     };
     info!("credentials: {:?}", credentials);
+
+    // TODO: after credential_id is known, rename the image assets.
 
     for credential in credentials.into_iter() {
         let mut verifiable_credential_record = VerifiableCredentialRecord::from(credential);

@@ -25,6 +25,8 @@ pub enum AppError {
     },
     #[error("Failed to download the file: {0}")]
     DownloadFailed(#[from] reqwest::Error),
+    #[error("Failed to download the file: {0}")]
+    DownloadAborted(&'static str),
     #[error("Failed to write to the file: {0}")]
     WriteFailed(#[from] std::io::Error),
     #[error("Error while initializing OID4VC provider manager")]
