@@ -15,7 +15,7 @@
   import PaddedIcon from '$lib/components/PaddedIcon.svelte';
   import CredentialList from '$lib/CredentialList.svelte';
   import AddButton from '$lib/credentials/AddButton.svelte';
-  import NoCredentials from '$src/lib/credentials/NoCredentials.svelte';
+  import NoCredentials from '$lib/credentials/NoCredentials.svelte';
   import Favorites from '$lib/Favorites.svelte';
   import TopBar from '$lib/home-header/TopBar.svelte';
   import UserJourney from '$lib/home-header/UserJourney.svelte';
@@ -27,13 +27,7 @@
   import RocketLaunch from '~icons/ph/rocket-launch-fill';
 
   import { calculate_initials } from './utils';
-  import Search from '$src/lib/components/Search.svelte';
-  import { dispatch } from '$src/lib/dispatcher';
 
-  // Search through credentials
-  let credentials = $state.credentials;
-  let indices = $state.user_data_query;
-  let credentials2 = credentials.filter((cred) => indices.includes(cred.id));
   let initials: string | undefined;
 
   $: {

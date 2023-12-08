@@ -48,8 +48,9 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
                 });
             }
 
-            // TODO: uncomment the following line for LOCAL DEVELOPMENT (DEV_MODE)
             app_state.dev_mode_enabled = loaded_state.dev_mode_enabled;
+            // TODO: uncomment the following line for LOCAL DEVELOPMENT (DEV_MODE)
+            // app_state.dev_mode_enabled = true;
             Ok(())
         }
 
@@ -139,9 +140,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             Ok(())
         }
         ActionType::UserDataQuery => {
-            if user_data_query(app_state, Action { r#type, payload }).await.is_ok() {
-                save_state(app_state).await.ok();
-            }
+            user_data_query(app_state, Action { r#type, payload }).await?;
             Ok(())
         }
         ActionType::Unknown => Err(UnknownActionTypeError { r#type, payload }),

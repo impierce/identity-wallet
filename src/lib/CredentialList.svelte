@@ -16,12 +16,6 @@
 
   // TODO: improve typing
   $: credentials = $state.credentials.filter((c) => !c.metadata.is_favorite);
-  //  .filter((c) => {
-  //   console.log($state.user_data_query.includes(c.id));
-  //    return $state.user_data_query.includes(c.id);
-  //   })
-
-  console.log(credentials);
 
   let test_credentials = [
     {
@@ -117,7 +111,6 @@
     {/each}
   </div>
 {:else if $state?.credentials?.length === 0}
-  <p>"No results found for your search"</p>
   <!-- Only show "No credentials" when there's also no favorites -->
   <NoCredentials />
 {/if}

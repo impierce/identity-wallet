@@ -10,8 +10,6 @@
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import ConnectionTabs from '$src/lib/components/molecules/tabs/ConnectionTabs.svelte';
   import { state } from '$src/stores';
-  import Sort from '$src/lib/components/Sort.svelte';
-
 
   // let connection: Connection = exampleConnections.find((c) => c.id === $page.params.id)!!;
   console.log($page.params.id);
@@ -21,7 +19,6 @@
 
 <div class="content-height flex flex-col">
   <TopNavigation on:back={() => goto('/activity')} title={connection.client_name} class="bg-silver dark:bg-navy" />
-
   <div class="grow bg-silver px-4 pt-5 dark:bg-navy">
     <ConnectionTabs>
       <!-- Summary -->
@@ -45,7 +42,7 @@
       <div slot="data" class="h-full bg-silver py-5 dark:bg-navy">
         <ConnectionData />
       </div>
-   
+
       <!-- History -->
       <div slot="history" class="h-full bg-silver py-5 dark:bg-navy">
         <!-- TODO: If this turns out to be a costly operation (filtering in backend), consider lazy loading the component -->
@@ -54,7 +51,6 @@
     </ConnectionTabs>
   </div>
 </div>
-
 
 <div class="safe-area-top bg-silver dark:bg-navy" />
 <div class="safe-area-bottom bg-silver dark:bg-navy" />

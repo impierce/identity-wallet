@@ -2,15 +2,7 @@
   import LL from '$src/i18n/i18n-svelte';
   import { state } from '$src/stores';
 
-
-  const greetings = [
-    'Welcome to your UniMe',
-    'Hey',
-    "What's up",
-    'How are you',
-    'Welcome back',
-    'Hello'
-  ];
+  const greetings = ['Welcome to your UniMe', 'Hey', "What's up", 'How are you', 'Welcome back', 'Hello'];
 </script>
 
 <p class="text-3xl font-semibold tracking-tight text-slate-700 dark:text-grey">

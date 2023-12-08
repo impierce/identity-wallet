@@ -1,8 +1,9 @@
+use crate::error::AppError;
 use crate::state::actions::Action;
 use crate::state::{AppState, QueryTarget, SortMethod, UserDataQuery};
 use itertools::concat;
 
-fn credential_query(state: &mut AppState, query: UserDataQuery) -> anyhow::Result<()> {
+fn credential_query(state: &mut AppState, query: UserDataQuery) -> Result<(), AppError> {
     let mut user_data_query: Vec<String> = vec![];
 
     if let Some(search_term) = &query.search_term {
@@ -89,7 +90,7 @@ fn credential_query(state: &mut AppState, query: UserDataQuery) -> anyhow::Resul
     Ok(())
 }
 
-fn connection_query(state: &mut AppState, query: UserDataQuery) -> anyhow::Result<()> {
+fn connection_query(state: &mut AppState, query: UserDataQuery) -> Result<(), AppError> {
     let mut user_data_query: Vec<String> = vec![];
 
     if let Some(search_term) = &query.search_term {
@@ -154,7 +155,7 @@ fn connection_query(state: &mut AppState, query: UserDataQuery) -> anyhow::Resul
     Ok(())
 }
 
-pub async fn user_data_query(state: &mut AppState, action: Action) -> anyhow::Result<()> {
+pub async fn user_data_query(state: &mut AppState, action: Action) -> Result<(), AppError> {
     let query: UserDataQuery = serde_json::from_value(action.payload.unwrap()).unwrap();
 
     match query.target {
