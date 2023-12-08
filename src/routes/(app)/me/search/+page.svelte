@@ -5,7 +5,6 @@
   import NoQuery from '$src/lib/components/molecules/NoQuery.svelte';
   import Search from '$src/lib/components/Search.svelte';
   import { dispatch } from '$src/lib/dispatcher';
-  import Favorites from '$src/lib/Favorites.svelte';
   import { state } from '$src/stores';
 
   let searchTerm: string | undefined;
@@ -57,8 +56,6 @@
     </div>
   {/if}
 </div>
-
-<!--Show search results?-->
 
 <style>
   .content-height {
