@@ -44,10 +44,12 @@ body {
   /* Blue 700 */
   /* background-color: #1d4ed8; */
   /* overflow: hidden; */
-  /* disables scrolling entirely */
+  /* Cuts off all overflowing content on the x-axis */
   overflow-x: hidden;
   /* overflow-y: hidden; */
   /* max-width: 100%; */
+  /* Globally disables any text to be selectable by the user */
+  user-select: none;
 }
 
 .transparent {
@@ -68,19 +70,15 @@ body {
 .safe-area-top {
   position: fixed;
   top: 0px;
-  /* z-index: 10; */
   height: var(--safe-area-inset-top);
   width: 100%;
-  /* @apply bg-white dark:bg-dark; */
 }
 
 .safe-area-bottom {
   position: fixed;
   bottom: 0px;
-  /* z-index: 10; */
   height: var(--safe-area-inset-bottom);
   width: 100%;
-  @apply bg-white dark:bg-dark;
 }
 
 /**

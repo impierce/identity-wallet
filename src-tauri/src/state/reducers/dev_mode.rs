@@ -1,4 +1,5 @@
 use crate::crypto::stronghold::StrongholdManager;
+use crate::error::AppError::{self, *};
 use crate::state::actions::Action;
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, Connection, Profile};
@@ -26,10 +27,20 @@ lazy_static! {
         }));
 }
 
-pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Result<()> {
+pub async fn set_dev_mode(state: &mut AppState, action: Action) -> Result<(), AppError> {
+    let payload = action.payload.ok_or(MissingPayloadError)?;
+    let value = payload["enabled"]
+        .as_bool()
+        .ok_or(MissingPayloadValueError("enabled"))?;
+    state.dev_mode_enabled = value;
+    state.current_user_prompt = None;
+    Ok(())
+}
+
+pub async fn load_dev_profile(state: &mut AppState, _action: Action) -> Result<(), AppError> {
     info!("load dev profile");
 
-    let stronghold_manager = StrongholdManager::create("sup3rSecr3t")?;
+    let stronghold_manager = StrongholdManager::create("sup3rSecr3t").map_err(StrongholdCreationError)?;
 
     let subject = KeySubject::from_keypair(
         generate::<Ed25519KeyPair>(Some("this-is-a-very-UNSAFE-secret-key".as_bytes())),
@@ -42,7 +53,7 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
         theme: Some("system".to_string()),
         primary_did: subject.identifier().unwrap(),
     };
-    state.active_profile.lock().unwrap().replace(profile);
+    state.active_profile.replace(profile);
 
     vec![PERSONAL_INFORMATION.clone(), DRIVERS_LICENSE_CREDENTIAL.clone()]
         .into_iter()
@@ -57,8 +68,9 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
         });
 
     info!("loading credentials from stronghold");
-    *state.credentials.lock().unwrap() = stronghold_manager
-        .values()?
+    state.credentials = stronghold_manager
+        .values()
+        .map_err(StrongholdValuesError)?
         .unwrap()
         .into_iter()
         .map(|verifiable_credential_record| verifiable_credential_record.display_credential)
@@ -112,9 +124,9 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
         }"#;
     // let journey_definition = std::fs::read_to_string("resources/ngdil.json")?;
     let onboarding_journey: serde_json::Value = serde_json::from_str(journey_definition).unwrap();
-    *state.user_journey.lock().unwrap() = Some(onboarding_journey);
+    state.user_journey = Some(onboarding_journey);
 
-    *state.connections.lock().unwrap() = vec![Connection {
+    state.connections = vec![Connection {
         client_name: "NGDIL Demo".to_string(),
         url: "api.ngdil-demo.tanglelabs.io".to_string(),
         logo_uri: Some("https://recursing-feynman.weeir.com/imgs/kw1c-white.png".to_string()),
@@ -123,8 +135,10 @@ pub async fn load_dev_profile(state: &AppState, _action: Action) -> anyhow::Resu
         last_interacted: "2023-09-11T19:53:53.937981+00:00".to_string(),
     }];
 
-    *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::Redirect {
+    state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
         target: "me".to_string(),
     });
+
+    state.dev_mode_enabled = true;
     Ok(())
 }

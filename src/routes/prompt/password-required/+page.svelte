@@ -8,7 +8,7 @@
   import UniMeLogoLight from '$src/lib/components/logo/UniMeLogoLight.svelte';
   import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
   import { dispatch } from '$src/lib/dispatcher';
-  import { developer_mode } from '$src/stores';
+  import { state } from '$src/stores';
 
   import Eye from '~icons/ph/eye';
   import EyeClosed from '~icons/ph/eye-closed';
@@ -21,7 +21,7 @@
   const isDarkModeEnabled = document.documentElement.classList.contains('dark');
 
   onMount(() => {
-    if ($developer_mode) {
+    if ($state?.dev_mode_enabled && $state?.active_profile?.name === 'Ferris') {
       console.log('Developer mode - Injecting password automatically ...');
       setTimeout(() => {
         dispatch({ type: '[Storage] Unlock', payload: { password: 'sup3rSecr3t' } });
@@ -39,7 +39,7 @@
     {:else}
       <UniMeLogoLight />
     {/if}
-    {#if !$developer_mode}
+    {#if !($state?.dev_mode_enabled && $state?.active_profile?.name === 'Ferris')}
       <div class="relative mb-4 mt-8 w-[240px]">
         <input
           type={showPassword ? 'text' : 'password'}
@@ -91,8 +91,8 @@
   </div>
 </div>
 
-<div class="safe-area-top bg-silver dark:bg-navy" />
-<div class="safe-area-bottom bg-silver dark:bg-navy" />
+<!-- Overwrite colors from template -->
+<div class="safe-area-bottom z-10 bg-silver dark:bg-navy" />
 
 <style>
   .content-height {

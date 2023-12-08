@@ -73,7 +73,7 @@
 
 <!-- Content -->
 <div class="flex h-full flex-col bg-silver dark:bg-navy">
-  <div class="flex h-[54px] items-center bg-white px-[18px] py-[15px] dark:bg-dark">
+  <div class="flex h-[54px] items-center bg-silver px-[18px] py-[15px] dark:bg-navy">
     <span class="grow pr-[15px]">
       <ProgressBar value={completedPercentage} />
     </span>

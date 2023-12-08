@@ -23,14 +23,14 @@
 <div class="content-height flex flex-col bg-silver dark:bg-navy">
   <div class="flex flex-col space-y-[10px] px-4 py-5" in:fly={{ x: 32, opacity: 1 }}>
     <!-- Account -->
-    <p class="text-[14px]/[22px] font-medium text-slate-500">{$LL.ACCOUNT()}</p>
+    <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">{$LL.ACCOUNT()}</p>
     <SettingsEntry icon={UserCircle} title="My profile" on:click={() => goto('/me/settings/profile')} />
     <SettingsEntry icon={Gear} title="App settings" on:click={() => goto('/me/settings/app')} />
     <SettingsEntry icon={Vault} title="Backup and recovery" on:click={() => goto('/me/settings/backup')} todo />
     <SettingsEntry icon={SignOut} title="Log out" hasCaretRight={false} todo />
 
     <!-- Support -->
-    <p class="text-[14px]/[22px] font-medium text-slate-500">{$LL.SUPPORT()}</p>
+    <p class="pt-[15px] text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">{$LL.SUPPORT()}</p>
     <SettingsEntry icon={Info} title="About UniMe" on:click={() => goto('/me/settings/about')} />
     <SettingsEntry icon={Envelope} title="Send feedback" hasCaretRight={false} todo />
   </div>

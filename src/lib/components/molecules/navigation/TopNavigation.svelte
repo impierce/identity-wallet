@@ -12,7 +12,7 @@
 
 <div
   class={twMerge(
-    'relative flex h-[50px] items-center justify-between self-stretch bg-white px-6 py-[13px] text-slate-800 dark:bg-dark dark:text-grey',
+    'relative flex h-[50px] items-center justify-between self-stretch bg-silver px-6 py-[13px] text-slate-800 dark:bg-navy dark:text-grey',
     $$props.class,
   )}
 >

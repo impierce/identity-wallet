@@ -1,5 +1,6 @@
 use crate::{
     crypto::stronghold::StrongholdManager,
+    error::AppError::{self, *},
     state::{actions::Action, user_prompt::CurrentUserPrompt, AppState, IdentityManager},
 };
 use did_key::{from_existing_key, Ed25519KeyPair};
@@ -8,27 +9,28 @@ use oid4vc_manager::{methods::key_method::KeySubject, ProviderManager};
 use oid4vci::Wallet;
 use std::sync::Arc;
 
-pub async fn unlock_storage(state: &AppState, action: Action) -> anyhow::Result<()> {
+pub async fn unlock_storage(state: &mut AppState, action: Action) -> Result<(), AppError> {
     let mut state_guard = state.managers.lock().await;
 
-    let payload = action.payload.ok_or(anyhow::anyhow!("unable to read payload"))?;
+    let payload = action.payload.ok_or(MissingPayloadError)?;
     let password = payload["password"]
         .as_str()
-        .ok_or(anyhow::anyhow!("unable to read password from json payload"))?;
+        .ok_or(MissingPayloadValueError("password"))?;
 
-    let stronghold_manager = Arc::new(StrongholdManager::load(password)?);
+    let stronghold_manager = Arc::new(StrongholdManager::load(password).map_err(StrongholdLoadingError)?);
 
-    let public_key = stronghold_manager.get_public_key()?;
+    let public_key = stronghold_manager.get_public_key().map_err(StrongholdPublicKeyError)?;
 
     let keypair = from_existing_key::<Ed25519KeyPair>(public_key.as_slice(), None);
     let subject = Arc::new(KeySubject::from_keypair(keypair, Some(stronghold_manager.clone())));
 
-    let provider_manager = ProviderManager::new([subject.clone()])?;
+    let provider_manager = ProviderManager::new([subject.clone()]).map_err(OID4VCProviderManagerError)?;
     let wallet: Wallet = Wallet::new(subject.clone());
 
     info!("loading credentials from stronghold");
-    *state.credentials.lock().unwrap() = stronghold_manager
-        .values()?
+    state.credentials = stronghold_manager
+        .values()
+        .map_err(StrongholdValuesError)?
         .unwrap()
         .into_iter()
         .map(|verifiable_credential_record| verifiable_credential_record.display_credential)
@@ -44,13 +46,9 @@ pub async fn unlock_storage(state: &AppState, action: Action) -> anyhow::Result<
 
     info!("storage unlocked");
 
-    state
-        .current_user_prompt
-        .lock()
-        .unwrap()
-        .replace(CurrentUserPrompt::Redirect {
-            target: "me".to_string(),
-        });
+    state.current_user_prompt.replace(CurrentUserPrompt::Redirect {
+        target: "me".to_string(),
+    });
 
     Ok(())
 }

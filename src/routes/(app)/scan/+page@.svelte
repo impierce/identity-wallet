@@ -17,7 +17,7 @@
   import { dispatch } from '$lib/dispatcher';
   import Button from '$src/lib/components/Button.svelte';
   import BottomNavBar from '$src/lib/components/molecules/navigation/BottomNavBar.svelte';
-  import { developer_mode, state } from '$src/stores';
+  import { state } from '$src/stores';
 
   let scanning = false;
   let permissions: 'granted' | 'denied' | 'prompt' | undefined = undefined;
@@ -177,7 +177,7 @@
     console.log('onMount: /scan');
     document.documentElement.querySelector('body')!!.classList.add('transparent');
     // permissionsGiven = await checkScanPrerequisites();
-    if (!$developer_mode) {
+    if (!$state?.dev_mode_enabled) {
       startScan();
     }
   });
@@ -259,7 +259,7 @@
         <!-- Divider -->
         <!-- <p class="my-4 h-[1px] w-full bg-slate-200" /> -->
 
-        {#if $developer_mode}
+        {#if $state?.dev_mode_enabled}
           <div class="flex flex-col space-y-2">
             <Button variant="secondary" on:click={mockSiopRequest} label="Connection request (SIOPv2)" />
             <Button variant="secondary" on:click={mockShareRequest} label="Share request (VP)" />
@@ -289,11 +289,11 @@
 
       <!-- visible during scanning -->
       <div class="flex grow flex-col" class:invisible={!scanning}>
-        <div class="bg-white p-5">
-          <p class="text-3xl font-semibold text-slate-700">
+        <div class="bg-white p-5 dark:bg-dark">
+          <p class="text-3xl font-semibold text-slate-700 dark:text-grey">
             Scan a <span class="text-primary">QR Code</span>
           </p>
-          <p class="mt-4 text-sm font-medium text-slate-500">
+          <p class="mt-4 text-sm font-medium text-slate-500 dark:text-slate-300">
             Bring a QR Code into view of this screen to start an interaction.
           </p>
         </div>
@@ -311,7 +311,7 @@
               </div>
             </div>
           </div>
-          {#if $developer_mode}
+          {#if $state?.dev_mode_enabled}
             <div class="fixed bottom-[128px] left-[calc(50%_-_42px)]">
               <button class="rounded-lg bg-rose-100 px-4 py-3 font-medium text-rose-500" on:click={cancelScan}
                 >Cancel</button
@@ -334,8 +334,8 @@
   </div>
 </div>
 
-<div class="safe-area-top {scanning ? 'bg-white' : 'bg-silver dark:bg-navy'}" />
-<div class="safe-area-bottom" />
+<div class="safe-area-top {scanning ? 'bg-white dark:bg-dark' : 'bg-silver dark:bg-navy'}" />
+<div class="safe-area-bottom bg-white dark:bg-dark" />
 
 <style>
   .content-height {

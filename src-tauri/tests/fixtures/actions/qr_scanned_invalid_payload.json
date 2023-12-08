@@ -1,0 +1,6 @@
+{
+    "type": "[QR Code] Scanned",
+    "payload": {
+        "form_urlencoded": "invalid payload"
+    }
+}
