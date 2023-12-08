@@ -22,7 +22,7 @@
 
 <div class="flex h-[60px] items-center justify-start rounded-xl bg-white p-[5px] dark:bg-dark">
   <!-- Icon -->
-  <div class="mr-[15px] {color} flex h-[50px] w-[50px] flex-col items-center justify-center rounded-lg">
+  <div class="mr-[15px] {color} flex h-[50px] w-[50px] flex-col items-center justify-center overflow-hidden rounded-lg">
     <slot name="icon" />
     <slot name="logo" />
   </div>

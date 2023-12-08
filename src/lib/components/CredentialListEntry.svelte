@@ -3,23 +3,17 @@
 
   import { goto } from '$app/navigation';
 
-  import { appDataDir, join } from '@tauri-apps/api/path';
-  import { convertFileSrc } from '@tauri-apps/api/primitives';
+  import { getImageAsset } from '../connections/utils';
 
   export let id: string | undefined = undefined; // TODO: should not be able to be undefined
   export let title = '';
   export let description = '';
   export let color: string | undefined = undefined;
 
-  $: assetUrl = undefined;
+  $: assetUrl = '';
 
   onMount(async () => {
-    const appDataDirPath = await appDataDir();
-
-    const filePath = await join(appDataDirPath, `assets/${id}.svg`);
-    // console.log({ filePath });
-    assetUrl = convertFileSrc(filePath);
-    console.log({ assetUrl });
+    assetUrl = await getImageAsset(id!!);
   });
 </script>
 

@@ -4,10 +4,11 @@ use crate::{
     utils::{download_asset, persist_asset},
     verifiable_credential_record::VerifiableCredentialRecord,
 };
+use identity_credential::credential;
 use log::{debug, info};
 use oid4vci::{
     credential_format_profiles::{CredentialFormats, WithCredential},
-    credential_issuer::credentials_supported::CredentialsSupportedObject,
+    credential_issuer::{credential_issuer_metadata, credentials_supported::CredentialsSupportedObject},
     credential_offer::{CredentialOffer, CredentialOfferQuery, CredentialsObject, Grants},
     credential_response::CredentialResponseType,
     token_request::{PreAuthorizedCode, TokenRequest},
@@ -54,6 +55,11 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> Result<(
         None
     };
 
+    let credential_issuer_metadata = wallet
+        .get_credential_issuer_metadata(credential_issuer_url.clone())
+        .await
+        .ok();
+
     info!("credential issuer metadata: {:?}", credential_issuer_metadata);
 
     let credentials_supported_objects: Vec<CredentialsSupportedObject> = credential_offer
@@ -70,9 +76,12 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> Result<(
                             .find(|credential_supported| credential_supported.scope == Some(by_reference.to_owned()))
                     })
                     .ok_or(MissingCredentialOfferError(by_reference.clone())),
-                _by_value => Err(MissingCredentialOfferError("".to_string())),
+                _by_value => credential_issuer_metadata
+                    .as_ref()
+                    .and_then(|credential_issuer_metadata| credential_issuer_metadata.credentials_supported.first())
+                    .ok_or(MissingCredentialOfferError("nothing found".to_string())),
             }
-            .unwrap()
+            .expect("TODO: handle missing")
             .to_owned()
         })
         .collect();
@@ -145,7 +154,9 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> Result<(
             )
         );
         let _ = download_asset(credential_logo_url.unwrap().as_str().unwrap()).await;
-    } else if logo_uri.is_some() {
+    };
+
+    if logo_uri.is_some() {
         debug!(
             "{}",
             format!(
@@ -154,7 +165,9 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> Result<(
             )
         );
         let _ = download_asset(logo_uri.as_ref().unwrap().as_str()).await;
-    } else {
+    }
+
+    if credential_logo_url.is_none() && logo_uri.is_none() {
         debug!("No logo found in metadata.");
     }
 
