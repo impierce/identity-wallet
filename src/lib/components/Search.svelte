@@ -45,7 +45,9 @@
     </div>
     {#if inputValue}
       <!-- <Icons name="x" aria-hidden="true"></Icons> -->
-      <Clear class="absolute right-4 m-3 text-slate-800 hover:cursor-pointer" on:click={clear} />
+      <button class="absolute right-3 m-3" on:click={clear}>
+        <Clear class="text-slate-800" />
+      </button>
     {/if}
   </form>
   <button class="pl-2 text-sm text-slate-500 dark:text-grey" on:click={() => goto('/me')}>Cancel</button>
