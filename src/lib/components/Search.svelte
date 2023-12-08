@@ -1,17 +1,19 @@
 <script lang="ts">
-  import { state } from '$src/stores';
   import { createEventDispatcher } from 'svelte';
-  import MagnifyingGlass from '~icons/ph/magnifying-glass-bold';
-  import Clear from '~icons/ph/x-bold';
+
   import { goto } from '$app/navigation';
 
+  import MagnifyingGlass from '~icons/ph/magnifying-glass-bold';
+  import Clear from '~icons/ph/x-bold';
+
   const dispatch = createEventDispatcher();
+
   export let delay = 500;
+  export let placeholder = 'Look for something';
+
   let inputValue: string | undefined;
   let debouncedValue = '';
   let timer: any;
-
-  export let placeholder = 'Look for something ...';
 
   const debounce = (value: string) => {
     clearTimeout(timer);
@@ -27,28 +29,28 @@
   };
 </script>
 
-<!-- Search compontent for the credentials-->
-<div class="flex flex-row p-4">
-  <!--input field-->
-  <form class="relative flex w-full">
-    <MagnifyingGlass class="absolute m-3 fill-slate-800"></MagnifyingGlass>
+<div class="flex">
+  <div class="group relative flex grow items-center">
+    <MagnifyingGlass class="absolute left-4 h-4 w-4 text-slate-800"></MagnifyingGlass>
 
-    <div class="">
-      <input
-        type="text"
-        class="h-11 rounded-3xl bg-white px-10 text-sm text-slate-500"
-        {placeholder}
-        id="input"
-        bind:value={inputValue}
-        on:input={(e) => debounce(inputValue)}
-      />
-    </div>
+    <!-- TODO: apply "appearance-none" and style everything manually? -->
+    <input
+      type="text"
+      class="h-11 w-full rounded-full bg-white pl-12 text-sm leading-6 text-slate-500 placeholder-opacity-50"
+      {placeholder}
+      id="input"
+      bind:value={inputValue}
+      on:input={(e) => debounce(inputValue)}
+    />
     {#if inputValue}
-      <!-- <Icons name="x" aria-hidden="true"></Icons> -->
-      <button class="absolute right-3 m-3" on:click={clear}>
-        <Clear class="text-slate-800" />
+      <button
+        class="absolute right-2 inline-flex h-4 w-4 items-center justify-center rounded-full p-4 active:bg-silver"
+        on:click={clear}
+      >
+        <Clear class="absolute text-slate-800" />
       </button>
     {/if}
-  </form>
-  <button class="pl-2 text-sm text-slate-500 dark:text-grey" on:click={() => goto('/me')}>Cancel</button>
+  </div>
+
+  <button class="pl-4 text-sm text-slate-500 dark:text-slate-300" on:click={() => goto('/me')}>Cancel</button>
 </div>

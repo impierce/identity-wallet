@@ -1,25 +1,28 @@
 <script lang="ts">
   import { colors, icons } from '$lib/credentials/customization/utils';
-  import Favorites from '$src/lib/Favorites.svelte';
+  import CredentialListEntry from '$src/lib/components/CredentialListEntry.svelte';
+  import NoMatch from '$src/lib/components/molecules/NoMatch.svelte';
+  import NoQuery from '$src/lib/components/molecules/NoQuery.svelte';
   import Search from '$src/lib/components/Search.svelte';
   import { dispatch } from '$src/lib/dispatcher';
-  import NoQuery from '$src/lib/components/molecules/NoQuery.svelte';
-  import NoMatch from '$src/lib/components/molecules/NoMatch.svelte';
+  import Favorites from '$src/lib/Favorites.svelte';
   import { state } from '$src/stores';
-  import CredentialListEntry from '$src/lib/components/CredentialListEntry.svelte';
+
   let searchTerm: string | undefined;
   $: indices = $state.user_data_query;
   $: credentials = $state.credentials.filter((cred) => indices.includes(cred.id));
 </script>
 
 <div class="content-height bg-silver dark:bg-navy">
-  <Search
-    on:value={(e) => {
-      searchTerm = e.detail;
-      console.log(e);
-      dispatch({ type: '[User Data] Query', payload: { target: 'Credentials', search_term: e.detail } });
-    }}
-  ></Search>
+  <div class="p-4">
+    <Search
+      on:value={(e) => {
+        searchTerm = e.detail;
+        console.log(e);
+        dispatch({ type: '[User Data] Query', payload: { target: 'Credentials', search_term: e.detail } });
+      }}
+    ></Search>
+  </div>
   {#if !searchTerm}
     <div class="pt-12">
       <NoQuery />
