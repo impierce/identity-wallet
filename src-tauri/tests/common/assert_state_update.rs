@@ -93,10 +93,7 @@ pub async fn assert_state_update(
                 },
             );
 
-            assert_eq!(
-                *user_data_query.lock().unwrap(),
-                *expected_user_data_query.lock().unwrap()
-            );
+            assert_eq!(user_data_query, expected_user_data_query);
             dbg!("curry {:?}", debug_messages.len());
             dbg!("expected up {:?}", expected_debug_messages.len());
             assert_eq!(debug_messages.len(), expected_debug_messages.len());
