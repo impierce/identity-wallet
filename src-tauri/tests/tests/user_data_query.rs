@@ -9,7 +9,7 @@ async fn test_credential_search_query() {
     setup_state_file();
     setup_stronghold();
 
-    let state = json_example::<AppState>("tests/fixtures/states/two_credentials_redirect_me.json");
+    let state = json_example::<AppState>("tests/fixtures/states/two_credentials_redirect_me_query.json");
     let action = json_example::<Action>("tests/fixtures/actions/credential_search.json");
     let expected_state = json_example::<AppState>("tests/fixtures/states/two_credentials_search_query.json");
     assert_state_update(
@@ -26,7 +26,7 @@ async fn test_credential_sort_query() {
     setup_state_file();
     setup_stronghold();
 
-    let state = json_example::<AppState>("tests/fixtures/states/two_credentials_redirect_me.json");
+    let state = json_example::<AppState>("tests/fixtures/states/two_credentials_redirect_me_query.json");
     let action = json_example::<Action>("tests/fixtures/actions/credential_sort.json");
     let expected_state = json_example::<AppState>("tests/fixtures/states/two_credentials_sort_query.json");
     assert_state_update(
@@ -43,7 +43,7 @@ async fn test_credential_search_sort_query() {
     setup_state_file();
     setup_stronghold();
 
-    let state = json_example::<AppState>("tests/fixtures/states/two_credentials_redirect_me.json");
+    let state = json_example::<AppState>("tests/fixtures/states/two_credentials_redirect_me_query.json");
     let action = json_example::<Action>("tests/fixtures/actions/credential_search_sort.json");
     let expected_state = json_example::<AppState>("tests/fixtures/states/two_credentials_search_sort_query.json");
     assert_state_update(

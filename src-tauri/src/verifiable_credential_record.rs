@@ -1,3 +1,4 @@
+use derivative::Derivative;
 use oid4vci::credential_format_profiles::{CredentialFormats, WithCredential};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
@@ -17,20 +18,20 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
         let display_credential = match &verifiable_credential {
             CredentialFormats::JwtVcJson(credential) => {
                 let credential_display = get_unverified_jwt_claims(&credential.credential)["vc"].clone();
-                
+
                 // Derive the hash from the credential display.
                 let hash = {
                     let type_key = "type";
                     let type_value = credential_display[type_key].clone();
-                    
+
                     let credential_subject_key = "credentialSubject";
                     let mut credential_subject_value = credential_display[credential_subject_key].clone();
-                    
+
                     // TODO: Remove this hard-coded logic.
                     // Remove the `Passport Number` and `Staff Number` from the credential subject if they exists.
                     credential_subject_value["Passport Number"].take();
                     credential_subject_value["Staff Number"].take();
-                    
+
                     sha256::digest(
                         json!(
                             {
@@ -41,7 +42,7 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
                         .to_string(),
                     )
                 };
-                
+
                 let issuance_date = credential_display["issuanceDate"].clone();
 
                 DisplayCredential {
@@ -53,8 +54,8 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
                         is_favorite: false,
                         date_added: chrono::Utc::now().to_rfc3339(),
                         date_issued: issuance_date.to_string(),
-                        display: CredentialDisplay::default()
-                    }
+                        display: CredentialDisplay::default(),
+                    },
                 }
             }
             _ => unimplemented!(),
@@ -80,11 +81,14 @@ pub struct DisplayCredential {
     pub metadata: CredentialMetadata,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, TS, Default)]
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, TS, Default, Derivative)]
+#[derivative(PartialEq)]
 #[ts(export, export_to = "bindings/display-credential/CredentialMetadata.ts")]
 pub struct CredentialMetadata {
     pub is_favorite: bool,
+    #[derivative(PartialEq = "ignore")]
     pub date_added: String,
+    #[derivative(PartialEq = "ignore")]
     pub date_issued: String,
     pub display: CredentialDisplay,
 }

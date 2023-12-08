@@ -49,7 +49,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             }
 
             // TODO: uncomment the following line for LOCAL DEVELOPMENT (DEV_MODE)
-            //app_state.dev_mode_enabled = loaded_state.dev_mode_enabled;
+            app_state.dev_mode_enabled = loaded_state.dev_mode_enabled;
             Ok(())
         }
 
