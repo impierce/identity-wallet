@@ -114,14 +114,14 @@
       on:click={() =>
         dispatch({
           type: '[Authenticate] Credentials selected',
-          payload: { credential_uuids: selected_credentials.map((c) => c.id) },
+          credential_uuids: selected_credentials.map((c) => c.id),
         })}
     />
     <Button
       label="Cancel"
       variant="secondary"
       on:click={() => {
-        dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });
+        dispatch({ type: '[User Flow] Cancel', redirect: 'me' });
         goto('/me');
       }}
     />

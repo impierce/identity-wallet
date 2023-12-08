@@ -103,7 +103,7 @@
           on:click={() =>
             dispatch({
               type: '[Credential Metadata] Update',
-              payload: { id: credential.id, name: displayName }
+              id: credential.id, name: displayName
             })}
         />
       </div>
@@ -166,7 +166,7 @@
         on:click={() => {
           dispatch({
             type: '[Credential Metadata] Update',
-            payload: { id: credential.id, name: displayName },
+            id: credential.id, name: displayName,
           });
           openNameDialog.set(false);
         }}
@@ -239,11 +239,9 @@
         on:click={() => {
           dispatch({
             type: '[Credential Metadata] Update',
-            payload: {
-              id: credential.id,
-              icon: currentAppearance.icon,
-              color: currentAppearance.color,
-            },
+            id: credential.id,
+            icon: currentAppearance.icon,
+            color: currentAppearance.color,
           });
           openAppearanceDialog.set(false);
         }}

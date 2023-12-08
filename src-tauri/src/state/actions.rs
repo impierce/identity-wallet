@@ -9,6 +9,7 @@ use super::Locale;
 /// For the type string, we're using ngrx style: "\[Feature\] Action name" (see https://ngrx.io/guide/store/actions)
 #[derive(Serialize, Deserialize, Debug, TS, PartialEq, Clone)]
 #[serde(tag = "type")]
+#[ts(export)]
 pub enum Action {
     #[serde(rename = "[App] Get state")]
     GetState,
@@ -22,7 +23,10 @@ pub enum Action {
         password: String,
     },
     #[serde(rename = "[Settings] Set locale")]
-    SetLocale { locale: Locale },
+    SetLocale {
+        #[ts(type = "string")]
+        locale: Locale,
+    },
     #[serde(rename = "[Settings] Update profile")]
     UpdateProfileSettings {
         #[ts(optional)]
@@ -49,14 +53,17 @@ pub enum Action {
         credential_offer_query: CredentialOfferQuery,
     },
     #[serde(rename = "[Credential Offer] Selected")]
-    CredentialOffersSelected { offer_indices: Vec<usize> },
+    CredentialOffersSelected {
+        #[ts(type = "Array<string>")]
+        offer_indices: Vec<usize>,
+    },
     #[serde(rename = "[Authenticate] Read request")]
     ReadRequest { authorization_request: String },
     #[serde(rename = "[Authenticate] Connection accepted")]
     ConnectionAccepted,
     #[serde(rename = "[Authenticate] Credentials selected")]
     CredentialsSelected {
-        #[ts(type = "string")]
+        #[ts(type = "Array<string>")]
         credential_uuids: Vec<uuid::Uuid>,
     },
     #[serde(rename = "[Storage] Unlock")]
