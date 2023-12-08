@@ -119,18 +119,18 @@ pub async fn update_credential_metadata(state: &mut AppState, action: Action) ->
     );
 
     // set name if given
-    if let Some(name) = name {
-        verifiable_credential_record.display_credential.metadata.display.name = Some(name.to_string());
+    if name.is_some() {
+        verifiable_credential_record.display_credential.metadata.display.name = name;
     }
 
     // set color if given
-    if let Some(color) = color {
-        verifiable_credential_record.display_credential.metadata.display.color = Some(color.to_string());
+    if color.is_some() {
+        verifiable_credential_record.display_credential.metadata.display.color = color;
     }
 
     // set icon if given
-    if let Some(icon) = icon {
-        verifiable_credential_record.display_credential.metadata.display.icon = Some(icon.to_string());
+    if icon.is_some() {
+        verifiable_credential_record.display_credential.metadata.display.icon = icon;
     }
 
     // set favorite if given

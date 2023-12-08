@@ -25,7 +25,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
     action: Action,
     _app_handle: tauri::AppHandle<R>,
 ) -> Result<(), AppError> {
-    // info!("received action `{:?}` with payload `{:?}`", r#type, payload);
+    info!("received action `{action:?}`");
 
     match action {
         Action::GetState => {

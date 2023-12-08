@@ -1,8 +1,6 @@
 <script lang="ts">
   import { dispatch } from '$src/lib/dispatcher';
   import { state } from '$src/stores';
-  import type { Action } from '../../src-tauri/bindings/Action';
-
 
   let selected_locale: string = 'en';
 

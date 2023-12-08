@@ -16,8 +16,6 @@ async fn test_get_state_create_new() {
     let action1 = json_example::<Action>("tests/fixtures/actions/get_state.json");
     let action2 = json_example::<Action>("tests/fixtures/actions/create_new.json");
 
-    println!("state1: {:?}", state1);
-    println!("state2: {:?}", state2);
     assert_state_update(
         // Initial state.
         AppStateContainer::default(),
