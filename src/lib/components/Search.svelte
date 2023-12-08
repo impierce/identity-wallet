@@ -12,7 +12,7 @@
   export let placeholder = 'Look for something';
 
   let inputValue: string | undefined;
-  let debouncedValue = '';
+  let debouncedValue: string | undefined;
   let timer: any;
 
   const debounce = (value: string) => {
@@ -31,12 +31,12 @@
 
 <div class="flex">
   <div class="group relative flex grow items-center">
-    <MagnifyingGlass class="absolute left-4 h-4 w-4 text-slate-800"></MagnifyingGlass>
+    <MagnifyingGlass class="absolute left-4 h-4 w-4 text-slate-800 dark:text-grey"></MagnifyingGlass>
 
     <!-- TODO: apply "appearance-none" and style everything manually? -->
     <input
       type="text"
-      class="h-11 w-full rounded-full bg-white pl-12 text-sm leading-6 text-slate-500 placeholder-opacity-50"
+      class="h-11 w-full rounded-full bg-white pl-12 text-sm text-slate-500 placeholder-slate-500 placeholder-opacity-50 dark:bg-dark dark:text-slate-300"
       {placeholder}
       id="input"
       bind:value={inputValue}
@@ -44,10 +44,10 @@
     />
     {#if inputValue}
       <button
-        class="absolute right-2 inline-flex h-4 w-4 items-center justify-center rounded-full p-4 active:bg-silver"
+        class="absolute right-2 inline-flex h-4 w-4 items-center justify-center rounded-full p-4 active:bg-silver dark:active:bg-navy"
         on:click={clear}
       >
-        <Clear class="absolute text-slate-800" />
+        <Clear class="absolute text-slate-800 dark:text-grey" />
       </button>
     {/if}
   </div>
