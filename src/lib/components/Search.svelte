@@ -40,7 +40,7 @@
       {placeholder}
       id="input"
       bind:value={inputValue}
-      on:input={(e) => debounce(inputValue)}
+      on:input={() => debounce(inputValue)}
     />
     {#if inputValue}
       <button

@@ -43,7 +43,7 @@ pub fn run() {
                     // })
                     // .filter(|metadata| metadata.target() != WEBVIEW_TARGET),
                 ])
-                .level(LevelFilter::Debug)
+                .level(LevelFilter::Info)
                 .level_for("identity_wallet", LevelFilter::Debug)
                 .with_colors(
                     ColoredLevelConfig::new()

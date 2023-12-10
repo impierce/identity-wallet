@@ -10,6 +10,10 @@
   let searchTerm: string | undefined;
   $: indices = $state.user_data_query;
   $: credentials = $state.credentials.filter((cred) => indices.includes(cred.id));
+
+  // TODO: known issue regarding reactive variables:
+  // quick "flash" of all credentials before filter is applied and correct results are shown
+  // further investigation: redefine variables? adjust if/else in HTML?
 </script>
 
 <div class="content-height bg-silver dark:bg-navy">
@@ -17,7 +21,6 @@
     <Search
       on:value={(e) => {
         searchTerm = e.detail;
-        console.log(e);
         dispatch({ type: '[User Data] Query', payload: { target: 'Credentials', search_term: e.detail } });
       }}
     ></Search>
