@@ -14,10 +14,7 @@
   {/if}
 
   <!-- Button -->
-  <button
-    class={`rounded-full px-6 active:bg-silver dark:active:bg-navy ${active ? 'pt-2' : 'pt-3'}`}
-    on:click={() => dispatch('click')}
-  >
+  <button class={`rounded-full px-6 ${active ? 'pt-2' : 'pt-3'}`} on:click={() => dispatch('click')}>
     <div class="flex h-12 w-10 flex-col items-center justify-center">
       <!-- Currently, there is no better way of applying conditional Tailwind classes to a named slot inside a component. -->
       <slot name="icon" />

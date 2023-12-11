@@ -120,14 +120,14 @@
     <button
       use:melt={$item}
       use:melt={$triggerNameDialog}
-      class="rounded-xl px-3 py-2 text-[14px]/[22px] font-medium text-slate-800 outline-none active:bg-silver dark:text-white dark:active:bg-navy"
+      class="rounded-xl px-3 py-2 text-[14px]/[22px] font-medium text-slate-800 outline-none dark:text-white"
       >Change name</button
     >
 
     <button
       use:melt={$item}
       use:melt={$triggerAppearanceDialog}
-      class="rounded-xl px-3 py-2 text-[14px]/[22px] font-medium text-slate-800 outline-none active:bg-silver dark:text-white dark:active:bg-navy"
+      class="rounded-xl px-3 py-2 text-[14px]/[22px] font-medium text-slate-800 outline-none dark:text-white"
       >Customize appearance</button
     >
 

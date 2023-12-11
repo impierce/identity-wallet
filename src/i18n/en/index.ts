@@ -33,7 +33,7 @@ const en = {
   PASSWORD: 'Password',
   CHANGE_LATER: 'You can change this later.',
   STRONG_PASSWORD: 'Please choose a strong password.',
-  FAVORITES: 'Favorites',
+  FAVORITES: 'My favorites',
   MY_DATA: 'My data',
   ACCOUNT: 'Account',
   SUPPORT: 'Support',

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+
   import LL from '$src/i18n/i18n-svelte';
   import { state } from '$src/stores';
 
@@ -12,6 +14,8 @@
   import type { DisplayCredential } from '../../src-tauri/bindings/display-credential/DisplayCredential';
   import CredentialListEntry from './components/CredentialListEntry.svelte';
   import { colors, icons } from './credentials/customization/utils';
+
+  export let credentialType: 'all' | 'data' | 'badges' = 'all';
 
   // let favorite_credentials: any[] = [
   //   {
@@ -30,37 +34,50 @@
 
   // favorite_credentials = [];
 
-  const favorite_credentials: DisplayCredential[] = $state.credentials.filter((c) => c.metadata.is_favorite);
+  let favorite_credentials: DisplayCredential[] = $state.credentials.filter((c) => c.metadata.is_favorite);
+
+  onMount(async () => {
+    if (credentialType === 'badges') {
+      favorite_credentials = favorite_credentials.filter((c) =>
+        (c.data.type as string[]).includes('OpenBadgeCredential'),
+      );
+    } else if (credentialType === 'data') {
+      favorite_credentials = favorite_credentials.filter(
+        (c) => !(c.data.type as string[]).includes('OpenBadgeCredential'),
+      );
+    }
+  });
 </script>
 
 {#if favorite_credentials.length > 0}
-  <div class="pb-6">
-    <div class="flex items-center pb-2">
-      <Heart class="mr-2 text-primary" />
-      <p class="text-[13px]/[24px] font-medium text-slate-500 dark:text-white">{$LL.FAVORITES()}</p>
-    </div>
-    <div class="flex flex-col space-y-2">
-      {#each favorite_credentials as credential}
-        <CredentialListEntry
-          id={credential.id}
-          title={credential.metadata.display.name || credential.data.type.at(-1)}
-          description={credential.data.issuer}
-          color={credential.metadata.display.color ||
-            colors.at(
-              credential.id
-                .match(/[0-9]+/)
-                .at(0)
-                .at(0) % 8, // TODO: omits last value (white)
-            )}
-        >
-          <span slot="icon">
-            <svelte:component
-              this={icons[credential.metadata.display.icon] || icons['User']}
-              class="h-[18px] w-[18px] text-slate-800"
-            />
-          </span>
-        </CredentialListEntry>
-      {/each}
-    </div>
+  <div class="flex items-center pb-2">
+    <Heart class="mr-2 text-primary" />
+    <p class="text-[13px]/[24px] font-medium text-slate-500 dark:text-white">{$LL.FAVORITES()}</p>
   </div>
+  <div class="flex flex-col space-y-2">
+    {#each favorite_credentials as credential}
+      <CredentialListEntry
+        id={credential.id}
+        title={credential.metadata.display.name || credential.data.type.at(-1)}
+        description={credential.data.issuer}
+        color={credential.metadata.display.color ||
+          colors.at(
+            credential.id
+              .match(/[0-9]+/)
+              .at(0)
+              .at(0) % 8, // TODO: omits last value (white)
+          )}
+      >
+        <span slot="icon">
+          <svelte:component
+            this={icons[credential.metadata.display.icon] || icons['User']}
+            class="h-[18px] w-[18px] text-slate-800"
+          />
+        </span>
+      </CredentialListEntry>
+    {/each}
+  </div>
+  <!-- TODO: make conditional? only show when there are also some non-favorite credentials -->
+  <!-- Horizontal line -->
+  <div class="my-5 h-0.5 bg-grey dark:bg-blue"></div>
 {/if}

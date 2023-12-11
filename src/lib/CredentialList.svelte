@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+
   import { colors, icons } from '$lib/credentials/customization/utils';
   import LL from '$src/i18n/i18n-svelte';
   import { state } from '$src/stores';
@@ -13,6 +15,8 @@
   import type { DisplayCredential } from '../../src-tauri/bindings/display-credential/DisplayCredential';
   import CredentialListEntry from './components/CredentialListEntry.svelte';
   import NoCredentials from './credentials/NoCredentials.svelte';
+
+  export let credentialType: 'all' | 'data' | 'badges' = 'all';
 
   // TODO: improve typing
   let credentials: Array<DisplayCredential> = $state.credentials.filter((c) => !c.metadata.is_favorite);
@@ -64,16 +68,22 @@
 
   // Does this really have to be reactive?
   // $: credentials = $state?.credentials ?? [];
+
+  onMount(async () => {
+    if (credentialType === 'badges') {
+      credentials = credentials.filter((c) => (c.data.type as string[]).includes('OpenBadgeCredential'));
+    } else if (credentialType === 'data') {
+      credentials = credentials.filter((c) => !(c.data.type as string[]).includes('OpenBadgeCredential'));
+    }
+  });
 </script>
 
 <!-- List of existing credentials -->
 {#if credentials?.length > 0}
-  <div class="flex items-center pb-2">
+  <!-- <div class="flex items-center pb-2">
     <SealCheck class="mr-2 text-primary" />
     <p class="text-[13px]/[24px] font-medium text-slate-500 dark:text-white">{$LL.MY_DATA()}</p>
-  </div>
-  <!-- Search -->
-  <!-- <Input type="text" placeholder="Search credentials" class="focus-visible:ring-violet-600" /> -->
+  </div> -->
 
   <!-- Credentials (list) -->
   <div class="flex flex-col space-y-2">

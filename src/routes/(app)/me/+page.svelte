@@ -22,6 +22,7 @@
   import WelcomeMessage from '$lib/home-header/WelcomeMessage.svelte';
   import QrCodeButton from '$lib/QrCodeButton.svelte';
   import LL from '$src/i18n/i18n-svelte';
+  import CredentialTabs from '$src/lib/components/molecules/tabs/CredentialTabs.svelte';
   import { onboarding_state, state } from '$src/stores';
 
   import RocketLaunch from '~icons/ph/rocket-launch-fill';
@@ -63,8 +64,34 @@
     class="flex grow flex-col items-stretch justify-start rounded-t-[20px] bg-silver p-[18px] dark:bg-navy"
   >
     {#if $state?.credentials && $state?.credentials.length > 0}
-      <Favorites />
-      <CredentialList />
+      <!-- <div class="flex pb-5"> -->
+      <!-- <div class="grow"> -->
+      <CredentialTabs>
+        <!-- All -->
+        <div slot="all" class="pt-5">
+          <Favorites />
+          <CredentialList />
+        </div>
+
+        <!-- Data -->
+        <div slot="data" class="pt-5">
+          <Favorites credentialType="data" />
+          <CredentialList credentialType="data" />
+        </div>
+
+        <!-- Badges -->
+        <div slot="badges" class="pt-5">
+          <Favorites credentialType="badges" />
+          <CredentialList credentialType="badges" />
+        </div>
+      </CredentialTabs>
+      <!-- </div> -->
+      <!-- <button class="ml-3 flex h-10 w-10 items-center justify-center rounded-xl bg-white font-semibold dark:bg-dark">
+          <SlidersHorizontal class="h-5 w-5 text-black dark:text-white" />
+        </button> -->
+      <!-- </div> -->
+      <!-- <Favorites /> -->
+      <!-- <CredentialList /> -->
       <!-- container that animates and places the button -->
       <div in:fly={{ y: 12, delay: 0, opacity: 1, duration: 200 }} class="absolute bottom-4 right-4">
         <!-- <div in:fade={{ delay: 200, duration: 200 }} class="absolute bottom-4 right-4"> -->
