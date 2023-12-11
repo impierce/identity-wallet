@@ -16,7 +16,7 @@ use oid4vci::{
 use serde_json::json;
 use uuid::Uuid;
 
-pub async fn read_credential_offer(state: &AppState, action: Action) -> Result<(), AppError> {
+pub async fn read_credential_offer(state: &mut AppState, action: Action) -> Result<(), AppError> {
     info!("read_credential_offer");
     let state_guard = state.managers.lock().await;
     let wallet = &state_guard
@@ -171,15 +171,16 @@ pub async fn read_credential_offer(state: &AppState, action: Action) -> Result<(
         debug!("No logo found in metadata.");
     }
 
-    *state.current_user_prompt.lock().unwrap() = Some(CurrentUserPrompt::CredentialOffer {
+    state.current_user_prompt = Some(CurrentUserPrompt::CredentialOffer {
         issuer_name,
         logo_uri,
         credential_offer,
     });
+
     Ok(())
 }
 
-pub async fn send_credential_request(state: &AppState, action: Action) -> Result<(), AppError> {
+pub async fn send_credential_request(state: &mut AppState, action: Action) -> Result<(), AppError> {
     info!("send_credential_request");
     let state_guard = state.managers.lock().await;
     let stronghold_manager = state_guard
@@ -198,8 +199,6 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> Result
 
     let current_user_prompt = state
         .current_user_prompt
-        .lock()
-        .unwrap()
         .clone()
         .ok_or(MissingStateParameterError("current user prompt"))?;
 
@@ -342,7 +341,7 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> Result
             .map_err(StrongholdInsertionError)?;
     }
 
-    *state.credentials.lock().unwrap() = stronghold_manager
+    state.credentials = stronghold_manager
         .values()
         .map_err(StrongholdValuesError)?
         .unwrap()
@@ -350,13 +349,9 @@ pub async fn send_credential_request(state: &AppState, action: Action) -> Result
         .map(|verifiable_credential_record| verifiable_credential_record.display_credential)
         .collect();
 
-    state
-        .current_user_prompt
-        .lock()
-        .unwrap()
-        .replace(CurrentUserPrompt::Redirect {
-            target: "me".to_string(),
-        });
+    state.current_user_prompt.replace(CurrentUserPrompt::Redirect {
+        target: "me".to_string(),
+    });
 
     Ok(())
 }

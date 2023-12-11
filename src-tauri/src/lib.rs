@@ -10,7 +10,7 @@ use fern::colors::Color;
 use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
 use lazy_static::lazy_static;
 use log::{info, LevelFilter};
-use state::AppState;
+use state::AppStateContainer;
 use std::sync::Mutex;
 use tauri::Manager;
 use tauri_plugin_log::{fern::colors::ColoredLevelConfig, Target, TargetKind};
@@ -31,7 +31,7 @@ pub fn run() {
             }
             Ok(())
         })
-        .manage(AppState::default())
+        .manage(AppStateContainer(Default::default()))
         .plugin(
             tauri_plugin_log::Builder::new()
                 // .clear_targets()
