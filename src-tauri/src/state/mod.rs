@@ -116,7 +116,7 @@ pub struct UserDataQuery {
     #[serde(default)]
     pub sort_method: Option<SortMethod>,
     #[serde(default)]
-    pub sort_reverse: Option<bool>,
+    pub sort_reverse: bool,
 }
 
 #[cfg(test)]

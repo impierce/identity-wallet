@@ -2,4 +2,4 @@
 import type { QueryTarget } from "./QueryTarget";
 import type { SortMethod } from "./SortMethod";
 
-export interface UserDataQuery { target: QueryTarget, search_term: string | null, sort_method: SortMethod | null, sort_reverse: boolean | null, }
+export interface UserDataQuery { target: QueryTarget, search_term: string | null, sort_method: SortMethod | null, sort_reverse: boolean, }
