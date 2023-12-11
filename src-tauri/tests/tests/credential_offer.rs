@@ -9,6 +9,7 @@ use oid4vci::credential_issuer::credential_issuer_metadata::CredentialIssuerMeta
 use oid4vci::credential_issuer::credentials_supported::CredentialsSupportedObject;
 use oid4vci::credential_offer::{CredentialOffer, CredentialsObject};
 use serde_json::json;
+use std::borrow::BorrowMut;
 use tempfile::TempDir;
 use url::Url;
 use wiremock::matchers::{method, path};
@@ -100,7 +101,7 @@ async fn download_credential_logo() {
                 display: None,
             }),
         )
-        .expect(1)
+        .expect(2)
         .mount(&mock_server)
         .await;
 
@@ -113,13 +114,13 @@ async fn download_credential_logo() {
         .mount(&mock_server)
         .await;
 
-    let state = AppState {
+    let mut state = AppState {
         managers: test_managers(vec![]),
         ..AppState::default()
     };
 
     assert!(read_credential_offer(
-        &state,
+        state.borrow_mut(),
         Action {
             r#type: ActionType::ReadCredentialOffer,
             payload: Some(json!({"credential_offer_uri": format!("{}/offer/1", &mock_server.uri())})),
@@ -209,7 +210,7 @@ async fn download_issuer_logo() {
                 })]),
             }),
         )
-        .expect(1)
+        .expect(2)
         .mount(&mock_server)
         .await;
 
@@ -220,13 +221,13 @@ async fn download_issuer_logo() {
         .mount(&mock_server)
         .await;
 
-    let state = AppState {
+    let mut state = AppState {
         managers: test_managers(vec![]),
         ..AppState::default()
     };
 
     assert!(read_credential_offer(
-        &state,
+        state.borrow_mut(),
         Action {
             r#type: ActionType::ReadCredentialOffer,
             payload: Some(json!({"credential_offer_uri": format!("{}/offer/1", &mock_server.uri())})),
@@ -313,19 +314,19 @@ async fn no_download_when_no_logo_in_metadata() {
                 display: None,
             }),
         )
-        .expect(1)
+        .expect(2)
         .mount(&mock_server)
         .await;
 
     // TODO: assert that function download_asset() is never called (through spy?)
 
-    let state = AppState {
+    let mut state = AppState {
         managers: test_managers(vec![]),
         ..AppState::default()
     };
 
     assert!(read_credential_offer(
-        &state,
+        state.borrow_mut(),
         Action {
             r#type: ActionType::ReadCredentialOffer,
             payload: Some(json!({"credential_offer_uri": format!("{}/offer/1", &mock_server.uri())})),
@@ -339,13 +340,13 @@ async fn no_download_when_no_logo_in_metadata() {
 async fn move_downloaded_logo_asset_out_of_tmp_folder() {
     *ASSETS_DIR.lock().unwrap() = TempDir::new().unwrap().into_path();
 
-    let state = AppState {
+    let mut state = AppState {
         managers: test_managers(vec![]),
         ..AppState::default()
     };
 
     assert!(send_credential_request(
-        &state,
+        state.borrow_mut(),
         Action {
             r#type: ActionType::CredentialOffersSelected,
             payload: Some(json!({"offer_indices": [0]})),
