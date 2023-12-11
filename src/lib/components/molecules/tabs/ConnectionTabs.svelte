@@ -30,7 +30,7 @@
     {#each triggers as triggerItem}
       <button
         use:melt={$trigger(triggerItem.id)}
-        class="trigger relative m-1 rounded-xl px-3 py-2 text-xs font-semibold text-slate-500 dark:text-slate-400"
+        class="trigger relative m-1 rounded-lg px-3 py-2 text-xs font-semibold text-slate-500 data-[state=active]:bg-primary data-[state=active]:text-white dark:text-slate-400 dark:data-[state=active]:text-slate-800"
       >
         {triggerItem.title}
         <!-- Indicator: active navigation item -->
@@ -60,13 +60,6 @@
 
 <style lang="postcss">
   .trigger {
-    /* display: flex;
-      align-items: center;
-      justify-content: center; */
-
-    cursor: default;
-    user-select: none;
-
     flex: 1;
 
     &:focus {
@@ -79,9 +72,6 @@
 
     &[data-state='active'] {
       @apply focus:relative;
-      /* TODO: set to white in light mode, dark:slate-800 */
-      color: theme('colors.slate.800');
-      background-color: theme('colors.primary');
     }
   }
 </style>

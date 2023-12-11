@@ -121,6 +121,7 @@
               .at(0)
               .at(0) % 8, // TODO: omits last value (white)
           )}
+        type={credential.data.type.includes('OpenBadgeCredential') ? 'badge' : 'data'}
       >
         <span slot="icon">
           <svelte:component

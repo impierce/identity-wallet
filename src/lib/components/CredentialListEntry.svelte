@@ -9,6 +9,7 @@
   export let title = '';
   export let description = '';
   export let color: string | undefined = undefined;
+  export let type: 'data' | 'badge' = 'data';
 
   $: assetUrl = '';
 
@@ -29,7 +30,7 @@ List representation of a credential. Input parameters are:
 -->
 <button
   class="flex h-[64px] items-center justify-start rounded-xl bg-white p-[7px] pr-[24px] dark:bg-dark"
-  on:click={() => goto(`/credentials/${id}`)}
+  on:click={() => (type == 'data' ? goto(`/credentials/${id}`) : goto(`/badges/${id}`))}
 >
   <!-- Icon -->
   <div class="mr-[15px] w-[50px] {color} flex h-[50px] flex-col items-center justify-center overflow-hidden rounded-lg">

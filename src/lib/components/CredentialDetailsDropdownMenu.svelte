@@ -69,7 +69,7 @@
 </script>
 
 <button type="button" class="trigger p-1" use:melt={$trigger} aria-label="Edit credential details">
-  <DotsThreeVertical class="h-6 w-6" />
+  <DotsThreeVertical class="h-6 w-6 {$$props.class}" />
   <span class="sr-only">Open Dropdown Menu</span>
 </button>
 
