@@ -4,6 +4,7 @@ use crate::state::actions::Action;
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, Connection, Profile};
 use crate::verifiable_credential_record::VerifiableCredentialRecord;
+use crate::ASSETS_DIR;
 use did_key::{generate, Ed25519KeyPair};
 use lazy_static::lazy_static;
 use log::info;
@@ -12,6 +13,8 @@ use oid4vc_manager::methods::key_method::KeySubject;
 use oid4vci::credential_format_profiles::w3c_verifiable_credentials::jwt_vc_json::JwtVcJson;
 use oid4vci::credential_format_profiles::{Credential, CredentialFormats, WithCredential};
 use serde_json::json;
+use std::fs::File;
+use std::io::copy;
 use std::sync::Arc;
 
 lazy_static! {
@@ -88,6 +91,14 @@ pub async fn load_dev_profile(state: &mut AppState, _action: Action) -> Result<(
         .map(|verifiable_credential_record| verifiable_credential_record.display_credential)
         .collect();
 
+    load_credential_images(
+        "university".to_string(),
+        DRIVERS_LICENSE_CREDENTIAL.clone().display_credential.id,
+        PERSONAL_INFORMATION.clone().display_credential.id,
+        OPEN_BADGE.clone().display_credential.id,
+    )
+    .await?;
+
     state
         .managers
         .lock()
@@ -152,5 +163,36 @@ pub async fn load_dev_profile(state: &mut AppState, _action: Action) -> Result<(
     });
 
     state.dev_mode_enabled = true;
+    Ok(())
+}
+
+async fn load_credential_images(
+    issuer_id: String,
+    driver_license_id: String,
+    personal_information_id: String,
+    badge_id: String,
+) -> Result<(), AppError> {
+    // Issuers
+    let mut image_bytes: &[u8] = include_bytes!("../../../resources/images/issuer-university.png");
+    let file_name = format!("{}.png", issuer_id);
+    let mut file = File::create(ASSETS_DIR.lock().unwrap().as_path().to_owned().join(file_name))?;
+    copy(&mut image_bytes, &mut file)?;
+
+    // Credentials
+    let mut image_bytes: &[u8] = include_bytes!("../../../resources/images/cuddlyferris.svg");
+    let file_name = format!("{}.svg", personal_information_id);
+    let mut file = File::create(ASSETS_DIR.lock().unwrap().as_path().to_owned().join(file_name))?;
+    copy(&mut image_bytes, &mut file)?;
+
+    let mut image_bytes: &[u8] = include_bytes!("../../../resources/images/credential-driver-license.png");
+    let file_name = format!("{}.png", driver_license_id);
+    let mut file = File::create(ASSETS_DIR.lock().unwrap().as_path().to_owned().join(file_name))?;
+    copy(&mut image_bytes, &mut file)?;
+
+    // Badges
+    let mut image_bytes: &[u8] = include_bytes!("../../../resources/images/badge-university-green.png");
+    let file_name = format!("{}.png", badge_id);
+    let mut file = File::create(ASSETS_DIR.lock().unwrap().as_path().to_owned().join(file_name))?;
+    copy(&mut image_bytes, &mut file)?;
     Ok(())
 }

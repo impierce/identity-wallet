@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import QRCode from 'qrcode';
@@ -10,6 +12,7 @@
   import CredentialDetailsDropdownMenu from '$src/lib/components/CredentialDetailsDropdownMenu.svelte';
   import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
+  import { getImageAsset } from '$src/lib/connections/utils';
   import { colors, icons } from '$src/lib/credentials/customization/utils';
   import ShareButton from '$src/lib/credentials/ShareButton.svelte';
   import { dispatch } from '$src/lib/dispatcher';
@@ -55,6 +58,12 @@
   // });
 
   console.log({ credential });
+
+  let credentialLogoUrl: string;
+
+  onMount(async () => {
+    credentialLogoUrl = await getImageAsset($page.params.id!!);
+  });
 </script>
 
 <div class="content-height relative flex w-full flex-col">
@@ -87,14 +96,15 @@
             {/if}
           </button>
           <div
-            class="{color} flex h-[75px] w-[75px] flex-col items-center justify-center rounded-[20px] border-[5px] border-white"
+            class="{color} mr-2 flex h-[75px] w-[75px] flex-col items-center justify-center overflow-hidden rounded-[20px] border-[5px] border-white"
           >
             <!-- Icon -->
-            <svelte:component this={icons[icon]} class="h-6 w-6 text-slate-800" />
+            <!-- <svelte:component this={icons[icon]} class="h-6 w-6 text-slate-800" /> -->
             <!-- Logo -->
             <!-- <div class="flex h-full w-full items-center justify-center bg-white p-1">
             <img src={logo_location} alt="logo" class="object-scale-down" />
           </div> -->
+            <img src={credentialLogoUrl} class="bg-white" />
           </div>
           <div class="-mr-3 -mt-1">
             <CredentialDetailsDropdownMenu {credential} />
@@ -118,7 +128,7 @@
         {#each Object.entries(entries) as entry}
           <div class="flex flex-col items-start px-4 py-[10px]">
             <p class="text-[13px]/[24px] font-medium text-slate-500">{entry[0]}</p>
-            <p class="break-all text-[13px]/[24px] font-medium text-slate-800 dark:text-white">
+            <p class="break-words text-[13px]/[24px] font-medium text-slate-800 dark:text-white">
               {entry[1]}
             </p>
           </div>

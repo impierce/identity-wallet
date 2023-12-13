@@ -25,6 +25,7 @@
 
 <div use:melt={$root} class="flex h-full flex-col overflow-hidden">
   <div class="flex">
+    <!-- Tabs -->
     <div
       use:melt={$list}
       class="flex h-[39px] shrink-0 grow overflow-x-auto rounded-xl bg-white dark:bg-dark"
@@ -33,21 +34,23 @@
       {#each triggers as triggerItem}
         <button
           use:melt={$trigger(triggerItem.id)}
-          class="trigger relative m-1 rounded-lg px-3 py-2 text-xs font-medium text-slate-500 first:font-semibold data-[state=active]:bg-primary data-[state=active]:text-white dark:text-slate-400 dark:data-[state=active]:text-slate-800"
+          class="trigger relative m-1 px-3 py-2 text-xs font-medium text-slate-500 first:font-semibold data-[state=active]:text-white dark:text-slate-400 dark:data-[state=active]:text-slate-800"
         >
-          {triggerItem.title}
-          <!-- Indicator: active navigation item -->
-          <!-- {#if $value === triggerItem.id}
+          <p class="relative z-10">
+            {triggerItem.title}
+          </p>
+          {#if $value === triggerItem.id}
             <div
               in:send={{ key: 'trigger' }}
               out:receive={{ key: 'trigger' }}
-              class="absolute bottom-1 left-1/2 h-1 w-6 -translate-x-1/2 rounded-full bg-red-500"
+              class="absolute left-0 top-0 h-full w-full rounded-lg bg-primary"
             />
-          {/if} -->
+          {/if}
         </button>
       {/each}
     </div>
 
+    <!-- Sort Preferences -->
     <button class="ml-3 flex h-10 w-10 items-center justify-center rounded-xl bg-white font-semibold dark:bg-dark">
       <SlidersHorizontal class="h-5 w-5 text-black dark:text-white" />
     </button>

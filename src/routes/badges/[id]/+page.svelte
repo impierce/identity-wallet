@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import QRCode from 'qrcode';
@@ -7,6 +9,7 @@
   import { melt } from '@melt-ui/svelte';
 
   import Button from '$lib/components/Button.svelte';
+  import { getImageAsset } from '$lib/connections/utils';
   import CredentialDetailsDropdownMenu from '$src/lib/components/CredentialDetailsDropdownMenu.svelte';
   import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
@@ -26,6 +29,9 @@
 
   let icon: any = credential.metadata.display.icon || 'User';
   let title: string = credential.metadata.display.name || credential.data.type.at(-1);
+
+  let credentialLogoUrl: string;
+  let issuerLogoUrl: string;
 
   let qrcodeText = JSON.stringify(credential, null, 0);
 
@@ -56,6 +62,11 @@
   // });
 
   console.log({ credential });
+
+  onMount(async () => {
+    credentialLogoUrl = await getImageAsset($page.params.id!!);
+    issuerLogoUrl = await getImageAsset('university');
+  });
 </script>
 
 <div class="content-height relative flex w-full flex-col">
@@ -67,8 +78,9 @@
   />
   <div class="hide-scrollbar grow overflow-y-scroll bg-white dark:bg-dark">
     <!-- Logo -->
-    <div class="flex flex-col bg-silver px-[15px] py-[20px] dark:bg-navy">
-      <div class="flex items-start justify-between px-2">
+    <div class="relative flex flex-col overflow-hidden bg-silver px-[15px] py-[20px] dark:bg-navy">
+      <img src={credentialLogoUrl} class="absolute -top-1/4 left-0 scale-[1.75] opacity-50 blur-xl" />
+      <div class="z-10 flex items-start justify-between px-2">
         <button
           class="-ml-1 -mt-1 rounded-full p-1"
           on:click={() =>
@@ -83,10 +95,12 @@
             <Heart class="h-6 w-6 dark:text-white" />
           {/if}
         </button>
-        <div class="flex h-[180px] w-[180px] flex-col items-center justify-center rounded-3xl bg-white">
+        <div
+          class="mr-2 flex h-[180px] w-[180px] flex-col items-center justify-center rounded-3xl bg-white dark:bg-white"
+        >
           <!-- Icon -->
           <!-- <svelte:component this={icons[icon]} class="h-[128px] w-[128px] text-slate-800" /> -->
-          <img src="/badge_student_rep.png" class="h-[128px] w-[128px]" alt="logo" />
+          <img src={credentialLogoUrl} class="h-[128px] w-[128px] overflow-hidden rounded-xl object-cover" alt="logo" />
           <!-- Logo -->
           <!-- <div class="flex h-full w-full items-center justify-center bg-white p-1">
               <img src={logo_location} alt="logo" class="object-scale-down" />
@@ -100,7 +114,7 @@
           </button> -->
       </div>
       <!-- Text -->
-      <div class="flex flex-col items-center pt-[15px]">
+      <div class="z-10 flex flex-col items-center pt-[15px]">
         <p class="text-[13px]/[24px] font-normal text-slate-500 dark:text-slate-300">
           {credential.issuer_name ?? credential.data.issuer}
         </p>
@@ -123,7 +137,7 @@
         <div class="flex w-full flex-col items-center space-y-1">
           <p class="text-xs text-black dark:text-white">Issued By</p>
           <div class="flex w-full justify-center rounded-xl bg-silver py-5 dark:bg-navy">
-            <img src="/tauri.svg" class="h-7 w-7" alt="issuer" />
+            <img src={issuerLogoUrl} class="h-7 w-7" alt="issuer" />
           </div>
           <p class="text-xs text-black dark:text-white">SSSC</p>
         </div>
@@ -147,7 +161,7 @@
           {#each Object.entries(entries) as entry}
             <div class="flex flex-col items-start px-4 py-[10px]">
               <p class="text-[13px]/[24px] font-medium text-slate-500">{entry[0]}</p>
-              <p class="break-all text-[13px]/[24px] font-medium text-slate-800 dark:text-white">
+              <p class="break-words text-[13px]/[24px] font-medium text-slate-800 dark:text-white">
                 {entry[1]}
               </p>
             </div>
