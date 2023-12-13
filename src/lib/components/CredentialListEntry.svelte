@@ -33,11 +33,17 @@ List representation of a credential. Input parameters are:
   on:click={() => (type == 'data' ? goto(`/credentials/${id}`) : goto(`/badges/${id}`))}
 >
   <!-- Icon -->
-  <div
-    class="mr-[15px] w-[50px] {color} flex h-[50px] flex-col items-center justify-center overflow-hidden rounded-lg bg-white dark:bg-dark"
-  >
-    <!-- <slot name="icon" /> -->
-    <img src={assetUrl} alt="icon" class="w-full object-cover" />
+  <div class="mr-[15px] w-[50px] {color} flex h-[50px] flex-col items-center justify-center overflow-hidden rounded-lg">
+    {#if !assetUrl}
+      <slot name="icon" />
+    {:else}
+      <img
+        src={assetUrl}
+        alt="icon"
+        class="w-full bg-white object-cover dark:bg-dark"
+        on:error={() => (assetUrl = '')}
+      />
+    {/if}
   </div>
   <!-- Text -->
   <div class="flex grow flex-col items-start overflow-x-auto text-left">

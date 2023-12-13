@@ -67,16 +67,19 @@
 </script>
 
 <div class="content-height relative flex w-full flex-col">
-  <!-- TODO: allow overriding the color of the TopNavigation -->
-  <TopNavigation
-    title="Credential info"
-    on:back={() => history.back()}
-    class="{color} dark:{color} text-slate-800 dark:text-slate-800"
-  />
+  <!-- Background (scaled, blurred, transparent) -->
+  <div class="absolute left-0 z-10 {credentialLogoUrl ? 'top-0 h-[270px]' : 'top-[50px] h-[220px]'}">
+    {#if !credentialLogoUrl}
+      <div class="{color} relative h-[-webkit-fill-available] w-screen"></div>
+    {:else}
+      <img src={credentialLogoUrl} class="scale-[1.75] opacity-40 blur-xl" on:error={() => (credentialLogoUrl = '')} />
+    {/if}
+  </div>
+  <TopNavigation title="Credential info" on:back={() => history.back()} class={credentialLogoUrl ? '' : color} />
   <div class="hide-scrollbar grow overflow-y-scroll bg-silver px-[15px] dark:bg-navy">
     <!-- Header -->
     <!-- Background-->
-    <div class="absolute left-0 top-[50px] h-[220px] w-screen {color}" />
+    <!-- <div class="absolute left-0 top-[50px] h-[220px] w-screen {color}" /> -->
     <div class="relative z-10">
       <div class="flex flex-col px-2 py-[20px]">
         <!-- Logo -->
@@ -90,24 +93,28 @@
               })}
           >
             {#if isFavorite}
-              <HeartFill class="h-6 w-6" />
+              <HeartFill class="h-6 w-6 dark:text-white" />
             {:else}
-              <Heart class="h-6 w-6" />
+              <Heart class="h-6 w-6 dark:text-white" />
             {/if}
           </button>
           <div
             class="{color} mr-2 flex h-[75px] w-[75px] flex-col items-center justify-center overflow-hidden rounded-[20px] border-[5px] border-white"
           >
+            {#if !credentialLogoUrl}
+              <svelte:component this={icons[icon]} class="h-6 w-6 text-slate-800" />
+            {:else}
+              <img src={credentialLogoUrl} class="bg-white" alt="credential-logo" />
+            {/if}
             <!-- Icon -->
             <!-- <svelte:component this={icons[icon]} class="h-6 w-6 text-slate-800" /> -->
             <!-- Logo -->
             <!-- <div class="flex h-full w-full items-center justify-center bg-white p-1">
             <img src={logo_location} alt="logo" class="object-scale-down" />
           </div> -->
-            <img src={credentialLogoUrl} class="bg-white" />
           </div>
           <div class="-mr-3 -mt-1">
-            <CredentialDetailsDropdownMenu {credential} />
+            <CredentialDetailsDropdownMenu {credential} class="dark:text-white" />
           </div>
           <!-- <button class="-mr-1 -mt-1 rounded-full p-1">
           <DotsThreeVertical class="h-6 w-6" />
@@ -115,20 +122,24 @@
         </div>
         <!-- Text -->
         <div class="flex flex-col items-center pt-[15px]">
-          <p class="text-[22px]/[30px] font-semibold text-slate-700">{title}</p>
-          <p class="text-[13px]/[24px] font-normal text-slate-500">
+          <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">{title}</p>
+          <p class="text-[13px]/[24px] font-normal text-slate-500 dark:text-slate-300">
             {credential.issuer_name ?? credential.data.issuer}
           </p>
         </div>
       </div>
+      <!-- TODO: Overlays the blurred background, because "overflow-hidden" on the background also crops off at the safe-area-top -->
+      <div
+        class="absolute left-0 top-[220px] -z-10 -ml-[15px] h-full w-screen overflow-hidden bg-silver dark:bg-navy"
+      ></div>
       <!-- Table: Credential Subject -->
       <div
         class="divide-y divide-solid divide-slate-200 rounded-xl border border-slate-200 bg-white dark:divide-slate-600 dark:border-slate-600 dark:bg-dark"
       >
         {#each Object.entries(entries) as entry}
           <div class="flex flex-col items-start px-4 py-[10px]">
-            <p class="text-[13px]/[24px] font-medium text-slate-500">{entry[0]}</p>
-            <p class="break-words text-[13px]/[24px] font-medium text-slate-800 dark:text-white">
+            <p class="dark:text-300 text-[13px]/[24px] font-medium text-slate-500">{entry[0]}</p>
+            <p class="break-words text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
               {entry[1]}
             </p>
           </div>
@@ -177,7 +188,7 @@
   </BottomDrawer>
 </div>
 
-<div class="safe-area-top {color}" />
+<div class="safe-area-top {credentialLogoUrl ? 'bg-silver dark:bg-navy' : color}" />
 <div class="safe-area-bottom z-10 bg-silver dark:bg-navy" />
 
 <style>

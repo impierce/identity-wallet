@@ -7,6 +7,7 @@
   import { dispatch } from '$lib/dispatcher';
   import LL from '$src/i18n/i18n-svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
+  import EmojiAvatarSelect from '$src/lib/customize/EmojiAvatarSelect.svelte';
   import SettingsEntry from '$src/lib/settings/SettingsEntry.svelte';
   import { state } from '$src/stores';
 
@@ -21,18 +22,29 @@
 
 <TopNavigation on:back={() => history.back()} title="Settings" />
 <div class="content-height flex flex-col bg-silver dark:bg-navy">
-  <div class="flex flex-col space-y-[10px] px-4 py-5" in:fly={{ x: 32, opacity: 1 }}>
+  <div class="flex flex-col space-y-[15px] px-4 py-5" in:fly={{ x: 32, opacity: 1 }}>
+    <!-- Avatar -->
+    <div class="flex justify-center">
+      <EmojiAvatarSelect
+        selected={$state?.active_profile?.picture ?? undefined}
+        on:change={(e) => dispatch({ type: '[Settings] Update profile', payload: { picture: e.detail } })}
+      />
+    </div>
     <!-- Account -->
-    <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">{$LL.ACCOUNT()}</p>
-    <SettingsEntry icon={UserCircle} title="My profile" on:click={() => goto('/me/settings/profile')} />
-    <SettingsEntry icon={Gear} title="App settings" on:click={() => goto('/me/settings/app')} />
-    <SettingsEntry icon={Vault} title="Backup and recovery" on:click={() => goto('/me/settings/backup')} todo />
-    <SettingsEntry icon={SignOut} title="Log out" hasCaretRight={false} todo />
+    <div class="flex flex-col space-y-[10px]">
+      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">{$LL.ACCOUNT()}</p>
+      <SettingsEntry icon={UserCircle} title="My profile" on:click={() => goto('/me/settings/profile')} />
+      <SettingsEntry icon={Gear} title="App settings" on:click={() => goto('/me/settings/app')} />
+      <SettingsEntry icon={Vault} title="Backup and recovery" on:click={() => goto('/me/settings/backup')} todo />
+      <SettingsEntry icon={SignOut} title="Log out" hasCaretRight={false} todo />
+    </div>
 
     <!-- Support -->
-    <p class="pt-[15px] text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">{$LL.SUPPORT()}</p>
-    <SettingsEntry icon={Info} title="About UniMe" on:click={() => goto('/me/settings/about')} />
-    <SettingsEntry icon={Envelope} title="Send feedback" hasCaretRight={false} todo />
+    <div class="flex flex-col space-y-[10px]">
+      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">{$LL.SUPPORT()}</p>
+      <SettingsEntry icon={Info} title="About UniMe" on:click={() => goto('/me/settings/about')} />
+      <SettingsEntry icon={Envelope} title="Send feedback" hasCaretRight={false} todo />
+    </div>
   </div>
 </div>
 

@@ -79,7 +79,7 @@
   <div class="hide-scrollbar grow overflow-y-scroll bg-white dark:bg-dark">
     <!-- Logo -->
     <div class="relative flex flex-col overflow-hidden bg-silver px-[15px] py-[20px] dark:bg-navy">
-      <img src={credentialLogoUrl} class="absolute -top-1/4 left-0 scale-[1.75] opacity-50 blur-xl" />
+      <img src={credentialLogoUrl} class="absolute -top-1/4 left-0 scale-[1.75] opacity-40 blur-xl" />
       <div class="z-10 flex items-start justify-between px-2">
         <button
           class="-ml-1 -mt-1 rounded-full p-1"
@@ -212,7 +212,7 @@
 </div>
 
 <div class="safe-area-top bg-white dark:bg-dark" />
-<div class="safe-area-bottom z-10 bg-silver dark:bg-navy" />
+<div class="safe-area-bottom z-10 bg-white dark:bg-dark" />
 
 <style>
   .content-height {

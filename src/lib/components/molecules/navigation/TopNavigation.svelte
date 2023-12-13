@@ -16,11 +16,11 @@
     $$props.class,
   )}
 >
-  <button class="z-10 -ml-2 rounded-full p-2" on:click={() => dispatch('back')}>
+  <button class="z-30 -ml-2 rounded-full p-2" on:click={() => dispatch('back')}>
     <ChevronLeft class="h-6 w-6" />
   </button>
   {#if title}
-    <p class="custom absolute left-0 top-0 flex h-[50px] w-full items-center justify-center font-medium">
+    <p class="custom absolute left-0 top-0 z-10 flex h-[50px] w-full items-center justify-center font-medium">
       {title}
     </p>
   {/if}

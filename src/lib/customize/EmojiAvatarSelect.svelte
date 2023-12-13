@@ -59,7 +59,9 @@
   <!-- <div slot="trigger"> -->
   <button
     slot="trigger"
-    class="flex h-24 w-24 items-center justify-center rounded-full border border-slate-200 bg-white dark:border-slate-600 dark:bg-dark"
+    class="flex h-24 w-24 items-center justify-center rounded-full {selected
+      ? 'bg-primary'
+      : 'border border-slate-200 bg-white dark:border-slate-600 dark:bg-dark'}"
     use:melt={trigger}
     let:trigger
     on:click={() => {
@@ -100,9 +102,10 @@
         class="grid min-w-fit snap-center grid-cols-3 place-items-center gap-2 rounded-3xl bg-silver p-2 dark:bg-navy"
       >
         {#each page as emoji}
-          <!-- TODO: when button pressed (on picture changes, then close drawer) -->
           <button
-            class="rounded-2xl border border-slate-300 bg-white p-4 text-[32px]/[32px] dark:border-slate-600 dark:bg-dark"
+            class="rounded-2xl border-2 p-4 text-[32px]/[32px] {emoji === selected
+              ? 'border-primary'
+              : 'border-grey dark:border-blue'}"
             on:click={() => {
               dispatch('change', emoji);
               emojiSelectIsOpen = false;

@@ -51,9 +51,9 @@
     </div>
 
     <!-- Sort Preferences -->
-    <button class="ml-3 flex h-10 w-10 items-center justify-center rounded-xl bg-white font-semibold dark:bg-dark">
+    <!-- <button class="ml-3 flex h-10 w-10 items-center justify-center rounded-xl bg-white font-semibold dark:bg-dark">
       <SlidersHorizontal class="h-5 w-5 text-black dark:text-white" />
-    </button>
+    </button> -->
   </div>
 
   <div use:melt={$content('all')} class="hide-scrollbar grow overflow-y-scroll">
