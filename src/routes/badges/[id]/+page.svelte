@@ -18,6 +18,7 @@
   import { dispatch } from '$src/lib/dispatcher';
   import { state } from '$src/stores';
 
+  import DotsThreeVertical from '~icons/ph/dots-three-vertical-bold';
   import Heart from '~icons/ph/heart-straight';
   import HeartFill from '~icons/ph/heart-straight-fill';
   import SealCheck from '~icons/ph/seal-check';
@@ -54,7 +55,7 @@
   }
 
   // create entries to be shown
-  const { id, enrichment, ...entries } = credential.data.credentialSubject;
+  const { enrichment, ...entries } = credential.data.credentialSubject.achievement;
   // entries['issuer'] = credential.data.issuer ?? credential.issuer_name;
   // entries['issuanceDate'] = new Date(credential.data.issuanceDate).toLocaleString('en-US', {
   //   dateStyle: 'long',
@@ -107,22 +108,23 @@
             </div> -->
         </div>
         <div class="-mr-3 -mt-1">
-          <CredentialDetailsDropdownMenu {credential} class="dark:text-white" />
+          <!-- <CredentialDetailsDropdownMenu {credential} class="dark:text-white" /> -->
+          <!-- Editing the appearance of a badge is not supported, therefore the menu is hidden -->
+          <DotsThreeVertical class="m-1 h-6 w-6 opacity-0 dark:text-white" />
         </div>
-        <!-- <button class="-mr-1 -mt-1 rounded-full p-1">
-            <DotsThreeVertical class="h-6 w-6" />
-          </button> -->
       </div>
       <!-- Text -->
       <div class="z-10 flex flex-col items-center pt-[15px]">
         <p class="text-[13px]/[24px] font-normal text-slate-500 dark:text-slate-300">
-          {credential.issuer_name ?? credential.data.issuer}
+          {credential.issuer_name ?? credential.data.issuer.name}
         </p>
-        <p class="text-[22px]/[30px] font-semibold tracking-tight text-black dark:text-white">{title}</p>
+        <p class="text-[22px]/[30px] font-semibold tracking-tight text-black dark:text-white">
+          {credential.data.credentialSubject.achievement?.name ?? title}
+        </p>
       </div>
     </div>
     <!-- Text -->
-    <div class="flex flex-col space-y-5 px-[15px]">
+    <div class="flex flex-col space-y-5 px-[15px] pb-[15px]">
       <!-- Valid, Issued By -->
       <div class="flex space-x-3 pt-8">
         <!-- Valid -->
@@ -139,7 +141,7 @@
           <div class="flex w-full justify-center rounded-xl bg-silver py-5 dark:bg-navy">
             <img src={issuerLogoUrl} class="h-7 w-7 rounded-md" alt="issuer" />
           </div>
-          <p class="text-xs text-black dark:text-white">SSSC</p>
+          <p class="text-xs text-black dark:text-white">{credential.data.issuer.name}</p>
         </div>
       </div>
 
@@ -147,8 +149,7 @@
       <div>
         <p class="text-lg font-semibold text-black dark:text-white">Description</p>
         <p class="text-[13px]/[24px] text-slate-800 dark:text-grey">
-          You can earn this badge by watching our 10 short video tutorials about getting started with badges. The
-          tutorials show you how to create your SSSC Open Badges account, find badges and submit evidence for them.
+          {credential.data.credentialSubject.achievement?.description}
         </p>
       </div>
 
@@ -162,7 +163,7 @@
             <div class="flex flex-col items-start px-4 py-[10px]">
               <p class="text-[13px]/[24px] font-medium text-slate-500">{entry[0]}</p>
               <p class="break-words text-[13px]/[24px] font-medium text-slate-800 dark:text-white">
-                {entry[1]}
+                {JSON.stringify(entry[1])}
               </p>
             </div>
           {/each}
@@ -171,7 +172,7 @@
     </div>
 
     {#if $state.dev_mode_enabled}
-      <p class="py-5 text-center text-[13px]/[24px] text-slate-500">{credential.data.issuer}</p>
+      <p class="py-5 text-center text-[13px]/[24px] text-slate-500">{JSON.stringify(credential.data.issuer)}</p>
     {/if}
   </div>
   <!-- </div> -->

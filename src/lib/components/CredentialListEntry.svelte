@@ -11,11 +11,11 @@
   export let color: string | undefined = undefined;
   export let type: 'data' | 'badge' = 'data';
 
-  let assetUrl = '';
+  let assetUrlPromise: Promise<string> | undefined = getImageAsset(id!!);
 
-  onMount(async () => {
-    assetUrl = await getImageAsset(id!!);
-  });
+  // onMount(async () => {
+  //   assetUrl = await getImageAsset(id!!);
+  // });
 </script>
 
 <!--
@@ -28,30 +28,34 @@ List representation of a credential. Input parameters are:
 - color
 
 -->
-<button
-  class="flex h-[64px] w-full items-center justify-start rounded-xl bg-white p-[7px] pr-[24px] dark:bg-dark"
-  on:click={() => (type == 'data' ? goto(`/credentials/${id}`) : goto(`/badges/${id}`))}
->
-  <!-- Icon -->
-  <div class="mr-[15px] w-[50px] {color} flex h-[50px] flex-col items-center justify-center overflow-hidden rounded-lg">
-    {#if !assetUrl}
-      <slot name="icon" />
-    {:else}
-      <img
-        src={assetUrl}
-        alt="icon"
-        class="w-full bg-white object-cover dark:bg-dark"
-        on:error={() => (assetUrl = '')}
-      />
-    {/if}
-  </div>
-  <!-- Text -->
-  <div class="flex grow flex-col items-start overflow-x-auto text-left">
-    <p class="w-full truncate text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
-      {title}
-    </p>
-    <p class="max-w-[180px] truncate text-[12px]/[20px] font-medium text-slate-400 dark:text-slate-300">
-      {description}
-    </p>
-  </div>
-</button>
+{#await assetUrlPromise then assetUrl}
+  <button
+    class="flex h-[64px] w-full items-center justify-start rounded-xl bg-white p-[7px] pr-[24px] dark:bg-dark"
+    on:click={() => (type == 'data' ? goto(`/credentials/${id}`) : goto(`/badges/${id}`))}
+  >
+    <!-- Icon -->
+    <div
+      class="mr-[15px] w-[50px] {color} flex h-[50px] flex-col items-center justify-center overflow-hidden rounded-lg"
+    >
+      {#if !assetUrl}
+        <slot name="icon" />
+      {:else}
+        <img
+          src={assetUrl}
+          alt="icon"
+          class="w-full bg-white object-cover dark:bg-dark"
+          on:error={() => (assetUrlPromise = undefined)}
+        />
+      {/if}
+    </div>
+    <!-- Text -->
+    <div class="flex grow flex-col items-start overflow-x-auto text-left">
+      <p class="w-full truncate text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
+        {title}
+      </p>
+      <p class="max-w-[180px] truncate text-[12px]/[20px] font-medium text-slate-400 dark:text-slate-300">
+        {description}
+      </p>
+    </div>
+  </button>
+{/await}

@@ -118,8 +118,8 @@ body {
 
   /* TODO: testing: uncomment to simulate safe areas on iOS */
   /* iPhone 13 Pro */
-  /* --safe-area-inset-top: 47px;
-  --safe-area-inset-bottom: 34px; */
+  --safe-area-inset-top: 47px;
+  --safe-area-inset-bottom: 34px;
 }
 
 .safe-area-top {

@@ -109,8 +109,10 @@
     {#each credentials as credential}
       <CredentialListEntry
         id={credential.id}
-        title={credential.metadata.display.name || credential.data.type.at(-1)}
-        description={credential.issuer_name ?? credential.data.issuer}
+        title={credential.metadata.display.name ??
+          credential.data.credentialSubject.achievement?.name ??
+          credential.data.type.at(-1)}
+        description={credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
         color={credential.metadata.display.color ||
           colors.at(
             credential.id
