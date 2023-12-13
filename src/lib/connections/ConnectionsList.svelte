@@ -13,14 +13,6 @@
   // // let connections: Map<string, Connection[]> = groupConnectionsAlphabetically($state.connections);
   // let connections: Map<string, Connection[]> = groupConnectionsAlphabetically([
   //   {
-  //     client_name: 'NGDIL Demo',
-  //     url: 'api.ngdil-demo.tanglelabs.io',
-  //     logo_uri: 'https://recursing-feynman.weeir.com/imgs/kw1c-white.png',
-  //     verified: false,
-  //     first_connected: '2023-09-11T19:53:53.937981+00:00',
-  //     last_connected: '2023-09-11T19:53:53.937981+00:00'
-  //   },
-  //   {
   //     url: 'amazon.com',
   //     client_name: 'Amazon',
   //     // logo_uri: '',
@@ -47,7 +39,9 @@
       <button on:click={() => goto(`/activity/connection/${index}`)}>
         <div class="flex h-16 items-center rounded-xl bg-white px-4 dark:bg-dark">
           <!-- Icon -->
-          <div class="mr-4 flex h-8 w-8 overflow-hidden rounded-full border border-slate-300 dark:border-slate-600">
+          <div
+            class="mr-4 flex h-8 w-8 overflow-hidden rounded-full border-none border-slate-300 dark:border-slate-600"
+          >
             <img src={connection.logo_uri} />
           </div>
           <!-- Text -->

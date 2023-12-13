@@ -11,7 +11,7 @@
   export let color: string | undefined = undefined;
   export let type: 'data' | 'badge' = 'data';
 
-  $: assetUrl = '';
+  let assetUrl = '';
 
   onMount(async () => {
     assetUrl = await getImageAsset(id!!);

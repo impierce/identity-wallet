@@ -19,7 +19,8 @@
   export let credentialType: 'all' | 'data' | 'badges' = 'all';
 
   // TODO: improve typing
-  let credentials: Array<DisplayCredential> = $state.credentials.filter((c) => !c.metadata.is_favorite);
+  let credentials: Array<DisplayCredential> = []; // = $state.credentials.filter((c) => !c.metadata.is_favorite);
+  // $: credentials = $state.credentials.filter((c) => !c.metadata.is_favorite);
 
   let test_credentials = [
     {
@@ -61,15 +62,16 @@
 
   test_credentials = [];
 
-  console.log(
-    'metadata.display.icon',
-    credentials.map((c) => icons[c.metadata.display.icon]),
-  );
+  // console.log(
+  //   'metadata.display.icon',
+  //   credentials.map((c) => icons[c.metadata.display.icon]),
+  // );
 
   // Does this really have to be reactive?
   // $: credentials = $state?.credentials ?? [];
 
   onMount(async () => {
+    credentials = $state.credentials.filter((c) => !c.metadata.is_favorite);
     if (credentialType === 'badges') {
       credentials = credentials.filter((c) => (c.data.type as string[]).includes('OpenBadgeCredential'));
     } else if (credentialType === 'data') {

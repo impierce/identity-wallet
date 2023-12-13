@@ -152,7 +152,7 @@ pub async fn load_dev_profile(state: &mut AppState, _action: Action) -> Result<(
     state.connections = vec![Connection {
         client_name: "NGDIL Demo".to_string(),
         url: "api.ngdil-demo.tanglelabs.io".to_string(),
-        logo_uri: Some("https://recursing-feynman.weeir.com/imgs/kw1c-white.png".to_string()),
+        logo_uri: Some("https://demo.ngdil.com/imgs/kw1c-white.png".to_string()),
         verified: false,
         first_connected: "2023-09-11T19:53:53.937981+00:00".to_string(),
         last_connected: "2023-09-11T19:53:53.937981+00:00".to_string(),

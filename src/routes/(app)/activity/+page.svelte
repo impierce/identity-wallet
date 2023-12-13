@@ -37,7 +37,7 @@
       </div> -->
         <ConnectionsList />
       </div>
-      <div slot="history" class="h-full pt-5">
+      <div slot="timeline" class="h-full pt-5">
         <History />
         <!-- <div class="font-medium text-slate-400">No history yet</div> -->
       </div>

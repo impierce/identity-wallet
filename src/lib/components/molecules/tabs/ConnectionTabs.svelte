@@ -17,7 +17,7 @@
   const triggers = [
     { id: 'summary', title: 'Summary' },
     { id: 'data', title: 'Data' },
-    { id: 'history', title: 'History' },
+    { id: 'activity', title: 'Activity' },
   ];
 </script>
 
@@ -30,17 +30,18 @@
     {#each triggers as triggerItem}
       <button
         use:melt={$trigger(triggerItem.id)}
-        class="trigger relative m-1 rounded-lg px-3 py-2 text-xs font-semibold text-slate-500 data-[state=active]:bg-primary data-[state=active]:text-white dark:text-slate-400 dark:data-[state=active]:text-slate-800"
+        class="trigger relative m-1 px-3 py-2 text-xs font-semibold text-slate-500 data-[state=active]:text-white dark:text-slate-400 dark:data-[state=active]:text-slate-800"
       >
-        {triggerItem.title}
-        <!-- Indicator: active navigation item -->
-        <!-- {#if $value === triggerItem.id}
-            <div
-              in:send={{ key: 'trigger' }}
-              out:receive={{ key: 'trigger' }}
-              class="absolute bottom-1 left-1/2 h-1 w-6 -translate-x-1/2 rounded-full bg-red-500"
-            />
-          {/if} -->
+        <p class="relative z-10">
+          {triggerItem.title}
+        </p>
+        {#if $value === triggerItem.id}
+          <div
+            in:send={{ key: 'trigger' }}
+            out:receive={{ key: 'trigger' }}
+            class="absolute left-0 top-0 h-full w-full rounded-lg bg-primary"
+          />
+        {/if}
       </button>
     {/each}
   </div>
@@ -53,8 +54,8 @@
     <slot name="data" />
   </div>
 
-  <div use:melt={$content('history')} class="hide-scrollbar grow overflow-y-scroll">
-    <slot name="history" />
+  <div use:melt={$content('activity')} class="hide-scrollbar grow overflow-y-scroll">
+    <slot name="activity" />
   </div>
 </div>
 

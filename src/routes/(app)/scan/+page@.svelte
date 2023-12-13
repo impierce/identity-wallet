@@ -88,8 +88,8 @@
       current_user_prompt: {
         type: 'accept-connection',
         client_name: 'Some other client',
-        logo_uri: 'https://recursing-feynman.weeir.com/imgs/ngdil.svg',
-        redirect_uri: 'https://recursing-feynman.weeir.com/auth/callback',
+        logo_uri: 'https://demo.ngdil.com/imgs/ngdil.svg',
+        redirect_uri: 'https://demo.ngdil.com/auth/callback',
         previously_connected: false,
         // logo_uri: 'https://picsum.photos/200'
       },
@@ -102,7 +102,7 @@
       current_user_prompt: {
         type: 'share-credentials',
         client_name: 'My Client Name',
-        logo_uri: 'https://recursing-feynman.weeir.com/imgs/ngdil.svg',
+        logo_uri: 'https://demo.ngdil.com/imgs/ngdil.svg',
         // logo_uri: 'https://picsum.photos/200',
         options: [$state.credentials[0].id],
       },
@@ -132,7 +132,7 @@
           type: 'credential-offer',
           issuer_name: 'Some issuer',
           // logo_uri: 'https://picsum.photos/200',
-          logo_uri: 'https://recursing-feynman.weeir.com/imgs/ngdil.svg',
+          logo_uri: 'https://demo.ngdil.com/imgs/ngdil.svg',
           credential_offer: {
             credential_issuer: 'http://10.15.185.12:9090/',
             credentials: [

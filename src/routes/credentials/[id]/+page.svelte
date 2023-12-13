@@ -75,7 +75,11 @@
       <img src={credentialLogoUrl} class="scale-[1.75] opacity-40 blur-xl" on:error={() => (credentialLogoUrl = '')} />
     {/if}
   </div>
-  <TopNavigation title="Credential info" on:back={() => history.back()} class={credentialLogoUrl ? '' : color} />
+  <TopNavigation
+    title="Credential info"
+    on:back={() => history.back()}
+    class={credentialLogoUrl ? '' : `${color} dark:${color} text-slate-800 dark:text-slate-800`}
+  />
   <div class="hide-scrollbar grow overflow-y-scroll bg-silver px-[15px] dark:bg-navy">
     <!-- Header -->
     <!-- Background-->
@@ -93,9 +97,9 @@
               })}
           >
             {#if isFavorite}
-              <HeartFill class="h-6 w-6 dark:text-white" />
+              <HeartFill class="h-6 w-6 {credentialLogoUrl ? 'dark:text-white' : ''}" />
             {:else}
-              <Heart class="h-6 w-6 dark:text-white" />
+              <Heart class="h-6 w-6 {credentialLogoUrl ? 'dark:text-white' : ''}" />
             {/if}
           </button>
           <div
@@ -114,7 +118,7 @@
           </div> -->
           </div>
           <div class="-mr-3 -mt-1">
-            <CredentialDetailsDropdownMenu {credential} class="dark:text-white" />
+            <CredentialDetailsDropdownMenu {credential} class={credentialLogoUrl ? 'dark:text-white' : ''} />
           </div>
           <!-- <button class="-mr-1 -mt-1 rounded-full p-1">
           <DotsThreeVertical class="h-6 w-6" />
@@ -122,8 +126,18 @@
         </div>
         <!-- Text -->
         <div class="flex flex-col items-center pt-[15px]">
-          <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">{title}</p>
-          <p class="text-[13px]/[24px] font-normal text-slate-500 dark:text-slate-300">
+          <p
+            class="text-[22px]/[30px] font-semibold {credentialLogoUrl
+              ? 'text-slate-700 dark:text-grey'
+              : 'text-slate-700'}"
+          >
+            {title}
+          </p>
+          <p
+            class="text-[13px]/[24px] font-normal {credentialLogoUrl
+              ? 'text-slate-500 dark:text-slate-300'
+              : 'text-slate-500'}"
+          >
             {credential.issuer_name ?? credential.data.issuer}
           </p>
         </div>

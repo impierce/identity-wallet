@@ -96,7 +96,7 @@
           {/if}
         </button>
         <div
-          class="mr-2 flex h-[180px] w-[180px] flex-col items-center justify-center rounded-3xl bg-white dark:bg-white"
+          class="mr-2 flex h-[180px] w-[180px] flex-col items-center justify-center rounded-3xl bg-white dark:bg-dark"
         >
           <!-- Icon -->
           <!-- <svelte:component this={icons[icon]} class="h-[128px] w-[128px] text-slate-800" /> -->
@@ -137,7 +137,7 @@
         <div class="flex w-full flex-col items-center space-y-1">
           <p class="text-xs text-black dark:text-white">Issued By</p>
           <div class="flex w-full justify-center rounded-xl bg-silver py-5 dark:bg-navy">
-            <img src={issuerLogoUrl} class="h-7 w-7" alt="issuer" />
+            <img src={issuerLogoUrl} class="h-7 w-7 rounded-md" alt="issuer" />
           </div>
           <p class="text-xs text-black dark:text-white">SSSC</p>
         </div>
@@ -187,7 +187,7 @@
       <div class="flex flex-col items-center">
         <p class="pt-4 text-2xl font-semibold text-black">{title}</p>
         <p class="text-[13px]/[24px] text-slate-500">
-          {credential.data.issuer ?? credential.issuer_name}
+          {credential.issuer_name ?? credential.data.issuer}
         </p>
       </div>
       <!-- QR Code -->
@@ -212,11 +212,12 @@
 </div>
 
 <div class="safe-area-top bg-white dark:bg-dark" />
-<div class="safe-area-bottom z-10 bg-white dark:bg-dark" />
+
+<!-- <div class="safe-area-bottom z-10 bg-white dark:bg-dark" /> -->
 
 <style>
   .content-height {
     /* bottom-navigation: 64px + 2 * 8px (y-padding) + 1px (border top) = 81px */
-    height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom));
+    height: calc(100vh - var(--safe-area-inset-top));
   }
 </style>

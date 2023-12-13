@@ -86,9 +86,6 @@
         </div>
       </CredentialTabs>
       <!-- </div> -->
-      <!-- <button class="ml-3 flex h-10 w-10 items-center justify-center rounded-xl bg-white font-semibold dark:bg-dark">
-          <SlidersHorizontal class="h-5 w-5 text-black dark:text-white" />
-        </button> -->
       <!-- </div> -->
       <!-- <Favorites /> -->
       <!-- <CredentialList /> -->
