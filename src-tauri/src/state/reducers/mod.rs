@@ -2,6 +2,7 @@ pub mod authorization;
 pub mod credential_offer;
 pub mod dev_mode;
 pub mod storage;
+pub mod user_data_query;
 
 use super::{IdentityManager, Locale};
 use crate::crypto::stronghold::StrongholdManager;

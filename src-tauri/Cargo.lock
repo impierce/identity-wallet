@@ -3006,6 +3006,7 @@ dependencies = [
  "identity_credential 1.0.0",
  "indoc",
  "iota_stronghold 2.0.0",
+ "itertools 0.10.5",
  "jsonwebtoken",
  "lazy_static",
  "log",

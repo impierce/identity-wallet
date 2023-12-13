@@ -11,12 +11,11 @@
   import SealCheck from '~icons/ph/seal-check-fill';
 
   import type { DisplayCredential } from '../../src-tauri/bindings/display-credential/DisplayCredential';
-  import type { TransferState } from '../../src-tauri/bindings/TransferState';
   import CredentialListEntry from './components/CredentialListEntry.svelte';
   import NoCredentials from './credentials/NoCredentials.svelte';
 
   // TODO: improve typing
-  let credentials: Array<DisplayCredential> = $state.credentials.filter((c) => !c.metadata.is_favorite);
+  $: credentials = $state.credentials.filter((c) => !c.metadata.is_favorite);
 
   let test_credentials = [
     {
@@ -52,11 +51,6 @@
   ];
 
   test_credentials = [];
-
-  console.log(
-    'metadata.display.icon',
-    credentials.map((c) => icons[c.metadata.display.icon]),
-  );
 
   // Does this really have to be reactive?
   // $: credentials = $state?.credentials ?? [];

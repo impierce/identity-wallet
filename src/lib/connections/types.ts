@@ -7,6 +7,6 @@ export interface Connection {
   // lastConnected: string;
   logo_uri?: string;
   verified: boolean;
-  first_connected: string;
-  last_connected: string;
+  first_interacted: string;
+  last_interacted: string;
 }

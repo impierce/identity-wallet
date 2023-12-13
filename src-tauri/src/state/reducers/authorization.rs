@@ -169,7 +169,7 @@ pub async fn handle_siopv2_authorization_request(state: &mut AppState, _action: 
         .iter_mut()
         .find(|connection| connection.url == connection_url && connection.client_name == client_name)
         .map(|connection| {
-            connection.last_connected = connection_time.clone();
+            connection.last_interacted = connection_time.clone();
         });
 
     if result.is_none() {
@@ -178,8 +178,8 @@ pub async fn handle_siopv2_authorization_request(state: &mut AppState, _action: 
             url: connection_url,
             logo_uri,
             verified: false,
-            first_connected: connection_time.clone(),
-            last_connected: connection_time,
+            first_interacted: connection_time.clone(),
+            last_interacted: connection_time,
         })
     };
 
@@ -300,7 +300,7 @@ pub async fn handle_oid4vp_authorization_request(state: &mut AppState, action: A
         .iter_mut()
         .find(|connection| connection.url == connection_url && connection.client_name == client_name)
         .map(|connection| {
-            connection.last_connected = connection_time.clone();
+            connection.last_interacted = connection_time.clone();
         });
 
     if result.is_none() {
@@ -309,8 +309,8 @@ pub async fn handle_oid4vp_authorization_request(state: &mut AppState, action: A
             url: connection_url,
             logo_uri,
             verified: false,
-            first_connected: connection_time.clone(),
-            last_connected: connection_time,
+            first_interacted: connection_time.clone(),
+            last_interacted: connection_time,
         })
     };
 
