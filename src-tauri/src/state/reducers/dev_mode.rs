@@ -154,8 +154,8 @@ pub async fn load_dev_profile(state: &mut AppState, _action: Action) -> Result<(
         url: "api.ngdil-demo.tanglelabs.io".to_string(),
         logo_uri: Some("https://demo.ngdil.com/imgs/kw1c-white.png".to_string()),
         verified: false,
-        first_connected: "2023-09-11T19:53:53.937981+00:00".to_string(),
-        last_connected: "2023-09-11T19:53:53.937981+00:00".to_string(),
+        first_interacted: "2023-09-11T19:53:53.937981+00:00".to_string(),
+        last_interacted: "2023-09-11T19:53:53.937981+00:00".to_string(),
     }];
 
     state.current_user_prompt = Some(CurrentUserPrompt::Redirect {

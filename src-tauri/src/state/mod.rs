@@ -51,6 +51,7 @@ pub struct AppState {
     #[ts(type = "object | null")]
     pub user_journey: Option<serde_json::Value>,
     pub connections: Vec<Connection>,
+    pub user_data_query: Vec<String>,
 }
 
 #[derive(Default)]
@@ -85,8 +86,37 @@ pub struct Connection {
     pub url: String,
     pub logo_uri: Option<String>,
     pub verified: bool,
-    pub first_connected: String,
-    pub last_connected: String,
+    pub first_interacted: String,
+    pub last_interacted: String,
+}
+
+#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq)]
+#[ts(export)]
+pub enum QueryTarget {
+    Credentials,
+    Connections,
+}
+
+#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq)]
+#[ts(export)]
+pub enum SortMethod {
+    NameAZ,
+    IssuanceNewOld,
+    AddedNewOld,
+    FirstInteractedNewOld,
+    LastInteractedNewOld,
+}
+
+#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq)]
+#[ts(export)]
+pub struct UserDataQuery {
+    pub target: QueryTarget,
+    #[serde(default)]
+    pub search_term: Option<String>,
+    #[serde(default)]
+    pub sort_method: Option<SortMethod>,
+    #[serde(default)]
+    pub sort_reverse: bool,
 }
 
 #[cfg(test)]
@@ -117,6 +147,7 @@ mod tests {
         let serialized = serde_json::to_string_pretty(&state).unwrap();
 
         // AppState is serialized without the `managers` and `active_connection_request` fields.
+        // Probably a basic json file instead of the indoc! is cleaner.
         assert_eq!(
             serialized,
             indoc! {
@@ -136,7 +167,8 @@ mod tests {
                   "dev_mode_enabled": false,
                   "debug_messages": [],
                   "user_journey": null,
-                  "connections": []
+                  "connections": [],
+                  "user_data_query": []
                 }"#}
         );
     }

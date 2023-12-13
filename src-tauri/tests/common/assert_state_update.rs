@@ -55,6 +55,7 @@ pub async fn assert_state_update(
                 locale,
                 credentials,
                 current_user_prompt,
+                user_data_query,
                 debug_messages,
                 ..
             } = &mut *guard;
@@ -64,6 +65,7 @@ pub async fn assert_state_update(
                 locale: expected_locale,
                 credentials: expected_credentials,
                 current_user_prompt: expected_current_user_prompt,
+                user_data_query: expected_user_data_query,
                 debug_messages: expected_debug_messages,
                 ..
             } = expected_state;
@@ -91,6 +93,7 @@ pub async fn assert_state_update(
                 },
             );
 
+            assert_eq!(user_data_query, expected_user_data_query);
             dbg!("curry {:?}", debug_messages.len());
             dbg!("expected up {:?}", expected_debug_messages.len());
             assert_eq!(debug_messages.len(), expected_debug_messages.len());

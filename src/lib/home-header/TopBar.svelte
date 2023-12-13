@@ -16,7 +16,7 @@
     </span>
   </button>
   <button
-    on:click={() => goto('/me')}
+    on:click={() => goto('/me/search')}
     class="-mr-3 flex h-11 w-11 items-center justify-center rounded-2xl text-black dark:text-white"
   >
     <MagnifyingGlass class="h-6 w-6" />

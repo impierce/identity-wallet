@@ -294,7 +294,7 @@ pub async fn send_credential_request(state: &mut AppState, action: Action) -> Re
 
             let credential = match credential_response.credential {
                 CredentialResponseType::Immediate(credential) => credential,
-                _ => panic!("Credential was not a JWT VC JSON."),
+                _ => panic!("Credential was not a jwt_vc_json."),
             };
 
             vec![credential]
@@ -310,7 +310,7 @@ pub async fn send_credential_request(state: &mut AppState, action: Action) -> Re
                 .into_iter()
                 .map(|credential_response| match credential_response {
                     CredentialResponseType::Immediate(credential) => credential,
-                    _ => panic!("Credential was not a JWT VC JSON."),
+                    _ => panic!("Credential was not a jwt_vc_json."),
                 })
                 .collect()
         }

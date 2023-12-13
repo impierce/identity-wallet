@@ -7,6 +7,7 @@ use crate::state::reducers::authorization::{
 use crate::state::reducers::credential_offer::{read_credential_offer, send_credential_request};
 use crate::state::reducers::dev_mode::{load_dev_profile, set_dev_mode};
 use crate::state::reducers::storage::unlock_storage;
+use crate::state::reducers::user_data_query::user_data_query;
 use crate::state::reducers::{
     create_identity, initialize_stronghold, reset_state, set_locale, update_credential_metadata,
     update_profile_settings,
@@ -47,8 +48,9 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
                 });
             }
 
+            app_state.dev_mode_enabled = loaded_state.dev_mode_enabled;
             // TODO: uncomment the following line for LOCAL DEVELOPMENT (DEV_MODE)
-            //app_state.dev_mode_enabled = loaded_state.dev_mode_enabled;
+            // app_state.dev_mode_enabled = true;
             Ok(())
         }
 
@@ -135,6 +137,10 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
         }
         ActionType::CancelUserJourney => {
             app_state.user_journey = None;
+            Ok(())
+        }
+        ActionType::UserDataQuery => {
+            user_data_query(app_state, Action { r#type, payload }).await?;
             Ok(())
         }
         ActionType::Unknown => Err(UnknownActionTypeError { r#type, payload }),

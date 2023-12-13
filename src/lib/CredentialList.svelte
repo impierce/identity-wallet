@@ -62,11 +62,6 @@
 
   test_credentials = [];
 
-  // console.log(
-  //   'metadata.display.icon',
-  //   credentials.map((c) => icons[c.metadata.display.icon]),
-  // );
-
   // Does this really have to be reactive?
   // $: credentials = $state?.credentials ?? [];
 
