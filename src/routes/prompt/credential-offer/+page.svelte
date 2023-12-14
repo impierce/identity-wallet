@@ -1,7 +1,6 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onDestroy, onMount } from 'svelte';
 
-  import { goto } from '$app/navigation';
   import { fade } from 'svelte/transition';
 
   import { createCheckbox, createPopover, melt } from '@melt-ui/svelte';
@@ -62,6 +61,10 @@
   onMount(async () => {
     issuerLogoUrl = await getImageAsset('issuer', true);
     credentialLogoUrl = await getImageAsset('credential', true);
+  });
+
+  onDestroy(async () => {
+    dispatch({ type: '[User Flow] Cancel' });
   });
 </script>
 
@@ -191,7 +194,6 @@
       variant="secondary"
       on:click={() => {
         dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });
-        goto('/me');
       }}
     />
     <!-- <button class="w-full rounded-lg bg-primary px-4 py-2 text-white" on:click={() => {}}

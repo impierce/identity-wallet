@@ -1,6 +1,8 @@
 use crate::error::AppError::{self, *};
 use crate::state::actions::{Action, ActionType};
-use crate::state::persistence::{delete_state_file, delete_stronghold, load_state, save_state};
+use crate::state::persistence::{
+    clear_assets_tmp_folder, delete_state_file, delete_stronghold, load_state, save_state,
+};
 use crate::state::reducers::authorization::{
     handle_oid4vp_authorization_request, handle_siopv2_authorization_request, read_authorization_request,
 };
@@ -113,6 +115,8 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
         }
         ActionType::ReadCredentialOffer => read_credential_offer(app_state, Action { r#type, payload }).await,
         ActionType::CancelUserFlow => {
+            clear_assets_tmp_folder().ok();
+
             if let Some(payload) = payload {
                 let redirect = payload["redirect"].as_str().unwrap();
                 app_state.current_user_prompt.replace(CurrentUserPrompt::Redirect {

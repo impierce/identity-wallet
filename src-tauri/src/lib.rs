@@ -15,7 +15,7 @@ use std::sync::Mutex;
 use tauri::Manager;
 use tauri_plugin_log::{fern::colors::ColoredLevelConfig, Target, TargetKind};
 
-use crate::utils::clear_assets_tmp_folder;
+use crate::state::persistence::clear_assets_tmp_folder;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -59,6 +59,7 @@ pub fn run() {
                 )
                 .build(),
         )
+        .plugin(tauri_plugin_fs::init())
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

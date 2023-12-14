@@ -35,7 +35,9 @@ List representation of a credential. Input parameters are:
   >
     <!-- Icon -->
     <div
-      class="mr-[15px] w-[50px] {color} flex h-[50px] flex-col items-center justify-center overflow-hidden rounded-lg"
+      class="mr-[15px] flex h-[50px] w-[50px] min-w-[50px] flex-col items-center justify-center overflow-hidden rounded-lg {assetUrl
+        ? 'bg-white dark:bg-dark'
+        : { color }}"
     >
       {#if !assetUrl}
         <slot name="icon" />
@@ -43,7 +45,7 @@ List representation of a credential. Input parameters are:
         <img
           src={assetUrl}
           alt="icon"
-          class="w-full bg-white object-cover dark:bg-dark"
+          class="w-full bg-white object-cover p-1 dark:bg-dark"
           on:error={() => (assetUrlPromise = undefined)}
         />
       {/if}

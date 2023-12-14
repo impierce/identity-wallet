@@ -68,9 +68,9 @@
 
 <div class="content-height relative flex w-full flex-col">
   <!-- Background (scaled, blurred, transparent) -->
-  <div class="absolute left-0 z-10 {credentialLogoUrl ? 'top-0 h-[270px]' : 'top-[50px] h-[220px]'}">
+  <div class="absolute left-0 z-10 {credentialLogoUrl ? 'top-0 h-[270px]' : 'top-[50px] h-[220px]'} w-screen">
     {#if !credentialLogoUrl}
-      <div class="{color} relative h-[-webkit-fill-available] w-screen"></div>
+      <div class="{color} relative h-[220px]"></div>
     {:else}
       <img src={credentialLogoUrl} class="scale-[1.75] opacity-40 blur-xl" on:error={() => (credentialLogoUrl = '')} />
     {/if}
@@ -103,12 +103,12 @@
             {/if}
           </button>
           <div
-            class="{color} mr-2 flex h-[75px] w-[75px] flex-col items-center justify-center overflow-hidden rounded-[20px] border-[5px] border-white"
+            class="{color} mr-2 flex h-[75px] w-[75px] flex-col items-center justify-center overflow-hidden rounded-[20px] border-[5px] border-white bg-silver p-1"
           >
             {#if !credentialLogoUrl}
               <svelte:component this={icons[icon]} class="h-6 w-6 text-slate-800" />
             {:else}
-              <img src={credentialLogoUrl} class="bg-white" alt="credential-logo" />
+              <img src={credentialLogoUrl} class="" alt="credential-logo" />
             {/if}
             <!-- Icon -->
             <!-- <svelte:component this={icons[icon]} class="h-6 w-6 text-slate-800" /> -->
@@ -154,7 +154,7 @@
           <div class="flex flex-col items-start px-4 py-[10px]">
             <p class="dark:text-300 text-[13px]/[24px] font-medium text-slate-500">{entry[0]}</p>
             <p class="break-words text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
-              {entry[1]}
+              {JSON.stringify(entry[1])}
             </p>
           </div>
         {/each}

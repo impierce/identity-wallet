@@ -1,7 +1,7 @@
 use crate::{
     error::AppError::{self, *},
-    state::{actions::Action, user_prompt::CurrentUserPrompt, AppState},
-    utils::{download_asset, persist_asset, LogoType},
+    state::{actions::Action, persistence::persist_asset, user_prompt::CurrentUserPrompt, AppState},
+    utils::{download_asset, LogoType},
     verifiable_credential_record::VerifiableCredentialRecord,
 };
 use identity_credential::credential;
@@ -343,7 +343,8 @@ pub async fn send_credential_request(state: &mut AppState, action: Action) -> Re
         persist_asset(
             "6440ceac338a920197100e60_NGDIL%20Logo%20Dark.svg",
             key.to_string().as_str(),
-        );
+        )
+        .ok();
 
         // Remove the old credential from the stronghold if it exists.
         stronghold_manager.remove(key).map_err(StrongholdDeletionError)?;

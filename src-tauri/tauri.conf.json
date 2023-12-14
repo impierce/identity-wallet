@@ -49,5 +49,12 @@
         "height": 844
       }
     ]
+  },
+  "plugins": {
+    "fs": {
+      "scope": [
+        "$APPDATA/assets/**/*"
+      ]
+    }
   }
 }

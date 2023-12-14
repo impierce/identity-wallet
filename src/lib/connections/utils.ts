@@ -1,5 +1,6 @@
 import { appDataDir, join } from '@tauri-apps/api/path';
 import { convertFileSrc } from '@tauri-apps/api/primitives';
+import { BaseDirectory, exists } from '@tauri-apps/plugin-fs';
 
 import type { Connection } from './types';
 
@@ -33,18 +34,31 @@ export const groupConnectionsAlphabetically = (connections: Connection[]): Map<s
 export const getImageAsset = async (id: string, tmp: boolean = false): Promise<string> => {
   const appDataDirPath = await appDataDir();
 
-  // find by id (any file extension)
-  const extension = 'png';
+  const extensions = ['svg', 'png'];
 
   if (tmp) {
-    const tmpFilePath = await join(appDataDirPath, `assets/tmp/${id}.${extension}`);
-    const assetUrl = convertFileSrc(tmpFilePath);
-    console.log({ assetUrl });
-    return assetUrl;
+    for (let extension of extensions) {
+      const tmpFilePath = await join(appDataDirPath, `assets/tmp/${id}.${extension}`);
+      if (await exists(tmpFilePath)) {
+        const assetUrl = convertFileSrc(tmpFilePath);
+        console.log({ assetUrl });
+        return assetUrl;
+      } else {
+        console.warn(`File does not exist: ${tmpFilePath}`);
+      }
+    }
   }
 
-  const filePath = await join(appDataDirPath, `assets/${id}.${extension}`);
-  const assetUrl = convertFileSrc(filePath);
-  console.log({ assetUrl });
-  return assetUrl;
+  for (let extension of extensions) {
+    const filePath = await join(appDataDirPath, `assets/${id}.${extension}`);
+    if (await exists(filePath)) {
+      const assetUrl = convertFileSrc(filePath);
+      console.log({ assetUrl });
+      return assetUrl;
+    } else {
+      console.warn(`File does not exist: ${filePath}`);
+    }
+  }
+
+  return '';
 };

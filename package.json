@@ -20,6 +20,7 @@
     "@lottiefiles/lottie-player": "^2.0.2",
     "@tauri-apps/api": "2.0.0-alpha.12",
     "@tauri-apps/plugin-barcode-scanner": "2.0.0-alpha.2",
+    "@tauri-apps/plugin-fs": "2.0.0-alpha.3",
     "@tauri-apps/plugin-log": "2.0.0-alpha.3",
     "qrcode": "^1.5.3",
     "typesafe-i18n": "^5.24.3"
