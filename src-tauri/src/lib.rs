@@ -11,7 +11,7 @@ use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
 use lazy_static::lazy_static;
 use log::{info, LevelFilter};
 use state::AppStateContainer;
-use std::sync::Mutex;
+use std::{fs, sync::Mutex};
 use tauri::Manager;
 use tauri_plugin_log::{fern::colors::ColoredLevelConfig, Target, TargetKind};
 
@@ -96,6 +96,7 @@ fn initialize_storage(app_handle: &tauri::AppHandle) -> anyhow::Result<()> {
     }
     info!("STATE_FILE: {}", STATE_FILE.lock().unwrap().display());
     info!("STRONGHOLD: {}", STRONGHOLD.lock().unwrap().display());
+    fs::create_dir(ASSETS_DIR.lock().unwrap().as_path()).ok();
 
     Ok(())
 }
