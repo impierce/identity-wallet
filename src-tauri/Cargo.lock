@@ -3096,6 +3096,7 @@ dependencies = [
  "sha256",
  "siopv2",
  "stronghold_engine 2.0.0",
+ "strum 0.25.0",
  "tauri",
  "tauri-build",
  "tauri-plugin-barcode-scanner",

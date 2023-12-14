@@ -1,10 +1,11 @@
 use log::debug;
-
-use crate::{error::AppError, ASSETS_DIR};
 use std::{
     fs::File,
     io::{copy, Cursor},
 };
+use strum::Display;
+
+use crate::{error::AppError, ASSETS_DIR};
 
 /// Downloads an asset to the system-specific data directory.
 /// The file is saved into the `assets/tmp` folder.
@@ -14,13 +15,14 @@ use std::{
 /// Restrictions:
 /// - max. file size: 2MB
 /// - supported file types: `.png`, `.svg`
-pub async fn download_asset(url: &str) -> Result<(), AppError> {
+pub async fn download_asset(url: &str, logo_type: LogoType) -> Result<(), AppError> {
     let url: reqwest::Url = url.parse().unwrap();
 
     let file_name = url.path_segments().unwrap().last().unwrap();
+    let extension = file_name.split('.').last().unwrap();
 
     // Abort download if file type is not supported
-    if !["png", "svg"].contains(&file_name.split('.').last().unwrap()) {
+    if !["png", "svg"].contains(&extension) {
         return Err(AppError::DownloadAborted("MIME type is not supported"));
     }
 
@@ -32,7 +34,8 @@ pub async fn download_asset(url: &str) -> Result<(), AppError> {
         std::fs::create_dir(&tmp_dir)?;
     }
 
-    let mut file = File::create(tmp_dir.join(file_name))?;
+    // TODO: in batch offer, use format!("{}_{}.{}", logo_type, index, extension)
+    let mut file = File::create(tmp_dir.join(format!("{}.{}", logo_type.to_string(), extension)))?;
 
     let response = reqwest::get(url.clone()).await?;
     let mut content = Cursor::new(response.bytes().await?);
@@ -45,6 +48,14 @@ pub async fn download_asset(url: &str) -> Result<(), AppError> {
     copy(&mut content, &mut file)?;
 
     Ok(())
+}
+
+#[derive(Display)]
+pub enum LogoType {
+    #[strum(serialize = "issuer")]
+    IssuerLogo,
+    #[strum(serialize = "credential")]
+    CredentialLogo,
 }
 
 /// Clears the `/assets/tmp` folder inside the system-specific data directory.

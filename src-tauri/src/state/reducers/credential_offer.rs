@@ -1,7 +1,7 @@
 use crate::{
     error::AppError::{self, *},
     state::{actions::Action, user_prompt::CurrentUserPrompt, AppState},
-    utils::{download_asset, persist_asset},
+    utils::{download_asset, persist_asset, LogoType},
     verifiable_credential_record::VerifiableCredentialRecord,
 };
 use identity_credential::credential;
@@ -126,6 +126,18 @@ pub async fn read_credential_offer(state: &mut AppState, action: Action) -> Resu
                 .map(|s| s.to_string())
                 .unwrap_or(credential_issuer_url.to_string());
             let logo_uri = display["logo_uri"].as_str().map(|s| s.to_string());
+            // ===== OpenID for Verifiable Credential Issuance - draft 12 (26 November 2023) =====
+            // let issuer_name = display["name"]
+            //     .as_str()
+            //     .map(|s| s.to_string())
+            //     .unwrap_or(credential_issuer_url.to_string());
+            // let logo_uri = display["logo"]
+            //     .as_object()
+            //     .unwrap()
+            //     .get("url")
+            //     .unwrap()
+            //     .as_str()
+            //     .map(|s| s.to_string());
             (issuer_name, logo_uri)
         })
         .unwrap_or((credential_issuer_url.to_string(), None));
@@ -153,7 +165,7 @@ pub async fn read_credential_offer(state: &mut AppState, action: Action) -> Resu
                 credential_logo_url.unwrap().as_str().unwrap()
             )
         );
-        let _ = download_asset(credential_logo_url.unwrap().as_str().unwrap()).await;
+        let _ = download_asset(credential_logo_url.unwrap().as_str().unwrap(), LogoType::CredentialLogo).await;
     };
 
     if logo_uri.is_some() {
@@ -164,7 +176,7 @@ pub async fn read_credential_offer(state: &mut AppState, action: Action) -> Resu
                 logo_uri.clone().unwrap().as_str()
             )
         );
-        let _ = download_asset(logo_uri.as_ref().unwrap().as_str()).await;
+        let _ = download_asset(logo_uri.as_ref().unwrap().as_str(), LogoType::IssuerLogo).await;
     }
 
     if credential_logo_url.is_none() && logo_uri.is_none() {

@@ -56,12 +56,12 @@
 
   let all_offer_indices = credential_offer.credentials.map((_, i) => i);
 
-  $: issuerLogoUrl = '';
-  $: credentialLogoUrl = ''; // TODO: batch credentials
+  let issuerLogoUrl: string | undefined;
+  let credentialLogoUrl: string | undefined; // TODO: batch credentials, see "all_offer_indices"
 
   onMount(async () => {
-    issuerLogoUrl = await getImageAsset('256', true);
-    credentialLogoUrl = await getImageAsset('128', true);
+    issuerLogoUrl = await getImageAsset('issuer', true);
+    credentialLogoUrl = await getImageAsset('credential', true);
   });
 </script>
 
@@ -125,16 +125,31 @@
       <!-- <div class="w-full space-y-2 rounded-2xl p-3 ring-2 ring-inset ring-white"> -->
       {#each credential_offer.credentials as credential, index}
         <CredentialOfferEntry {index} title={credential.credential_definition.type.at(-1)} color={'bg-grey'}>
+          <!-- {#if !credentialLogoUrl}
+            <div class="{color} relative h-[-webkit-fill-available] w-screen"></div>
+          {:else}
+            <img
+              src={credentialLogoUrl}
+              class="scale-[1.75] opacity-40 blur-xl"
+              on:error={() => (credentialLogoUrl = '')}
+            />
+          {/if} -->
           <span slot="logo">
-            <img src={credentialLogoUrl} alt="logo" />
+            {#if credentialLogoUrl}
+              <img src={credentialLogoUrl} alt="logo" on:error={() => (credentialLogoUrl = undefined)} />
+            {:else}
+              <svelte:component this={icons['User']} class="h-[18px] w-[18px] text-slate-800" />
+            {/if}
           </span>
-          <span slot="icon">
-            <!-- {#if $state.current_user_prompt.logo_uri}
+
+          <!-- <span slot="logo">
+            <img src={credentialLogoUrl} alt="logo" />
+          </span> -->
+          <!-- {#if $state.current_user_prompt.logo_uri}
               <img src={$state.current_user_prompt.logo_uri} alt="logo" class="object-scale-down" />
             {:else} -->
-            <!-- <svelte:component this={icons['User']} class="h-[18px] w-[18px] text-slate-800" /> -->
-            <!-- {/if} -->
-          </span>
+          <!-- <svelte:component this={icons['User']} class="h-[18px] w-[18px] text-slate-800" /> -->
+          <!-- {/if} -->
         </CredentialOfferEntry>
       {/each}
     </div>

@@ -44,13 +44,15 @@
     ],
     // misc
     [
-      '&#128161', // light-bulb
-      '&#127807', // herb
-      '&#128218', // books
-      '&#127969', // house-with-garden
-      '&#127965', // desert-island
-      '&#128188', // briefcase
-      '&#128084', // necktie
+      '&#x1F4A1', // light-bulb
+      '&#x1F33F', // herb
+      '&#x1F6E9', // small-airplane
+      '&#x1F3E1', // house-with-garden
+      '&#x1F3DD', // desert-island
+      '&#x1F4BC', // briefcase
+      '&#x1F454', // necktie
+      '&#x1F680', // rocket
+      '&#x1F3B8', // guitar
     ],
   ];
 </script>
