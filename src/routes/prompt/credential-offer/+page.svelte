@@ -9,9 +9,9 @@
   import PaddedIcon from '$lib/components/PaddedIcon.svelte';
   import { colors, icons } from '$lib/credentials/customization/utils';
   import { dispatch } from '$lib/dispatcher';
+  import { getImageAsset } from '$lib/utils';
   import CredentialOfferEntry from '$src/lib/components/CredentialOfferEntry.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
-  import { getImageAsset } from '$src/lib/connections/utils';
   import { state } from '$src/stores';
 
   import Check from '~icons/ph/check-bold';
@@ -55,8 +55,8 @@
 
   let all_offer_indices = credential_offer.credentials.map((_, i) => i);
 
-  let issuerLogoUrl: string | undefined;
-  let credentialLogoUrl: string | undefined; // TODO: batch credentials, see "all_offer_indices"
+  let issuerLogoUrl: string | null;
+  let credentialLogoUrl: string | null; // TODO: batch credentials, see "all_offer_indices"
 
   onMount(async () => {
     issuerLogoUrl = await getImageAsset('issuer', true);
@@ -74,8 +74,12 @@
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
     {#if $state.current_user_prompt.logo_uri}
       <div class="flex h-[75px] w-[75px] overflow-hidden rounded-3xl bg-white p-2 dark:bg-silver">
-        <div class="flex overflow-hidden rounded-2xl">
-          <img src={issuerLogoUrl} alt="logo" />
+        <div class="flex w-full items-center justify-center overflow-hidden rounded-2xl">
+          {#if issuerLogoUrl}
+            <img src={issuerLogoUrl} alt="logo" on:error={() => (issuerLogoUrl = null)} />
+          {:else}
+            <svelte:component this={icons['User']} class="h-6 w-6 text-slate-800" />
+          {/if}
         </div>
       </div>
     {:else}
@@ -127,6 +131,7 @@
     >
       <!-- <div class="w-full space-y-2 rounded-2xl p-3 ring-2 ring-inset ring-white"> -->
       {#each credential_offer.credentials as credential, index}
+        <!-- TODO: careful with long list! -->
         <CredentialOfferEntry {index} title={credential.credential_definition.type.at(-1)} color={'bg-grey'}>
           <!-- {#if !credentialLogoUrl}
             <div class="{color} relative h-[-webkit-fill-available] w-screen"></div>
@@ -139,7 +144,7 @@
           {/if} -->
           <span slot="logo">
             {#if credentialLogoUrl}
-              <img src={credentialLogoUrl} alt="logo" on:error={() => (credentialLogoUrl = undefined)} />
+              <img src={credentialLogoUrl} alt="logo" on:error={() => (credentialLogoUrl = null)} />
             {:else}
               <svelte:component this={icons['User']} class="h-[18px] w-[18px] text-slate-800" />
             {/if}

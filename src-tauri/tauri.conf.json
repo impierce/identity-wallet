@@ -53,7 +53,8 @@
   "plugins": {
     "fs": {
       "scope": [
-        "$APPDATA/assets/**/*"
+        "$APPDATA/assets/**/*.png",
+        "$APPDATA/assets/**/*.svg"
       ]
     }
   }

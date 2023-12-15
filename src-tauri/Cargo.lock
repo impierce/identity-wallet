@@ -6654,9 +6654,9 @@ dependencies = [
 
 [[package]]
 name = "tauri-plugin-barcode-scanner"
-version = "2.0.0-alpha.2"
+version = "2.0.0-alpha.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5347effff10b49a1270469a8e7837f696cdc344c9d0426e2a63d9c6b890f8106"
+checksum = "185de80cfa4750bf3cc17a9c2efaecdc46fe41239e1e0a0b8ab59d05a497e115"
 dependencies = [
  "log",
  "serde",
@@ -6668,9 +6668,9 @@ dependencies = [
 
 [[package]]
 name = "tauri-plugin-fs"
-version = "2.0.0-alpha.4"
+version = "2.0.0-alpha.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "03d163d4478343c26b90b3573980f02c717af5ea482c8d04c64e84a6dadcfc02"
+checksum = "330c81479fdc92bab8609d896249e016404f9fac24a27ddf66e1daafd4db1a35"
 dependencies = [
  "anyhow",
  "glob",
@@ -6682,9 +6682,9 @@ dependencies = [
 
 [[package]]
 name = "tauri-plugin-log"
-version = "2.0.0-alpha.4"
+version = "2.0.0-alpha.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "40cd319644b398c7a525bcb5e3a7b5bad13f2becaadb21c60aa1f8e7fc3c3077"
+checksum = "467e96d6022f8601fe97f9f6223142aad31af83dcf0dc172d3fd6b47dca2dbd6"
 dependencies = [
  "android_logger",
  "byte-unit",

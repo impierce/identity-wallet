@@ -3,7 +3,7 @@
 
   import { goto } from '$app/navigation';
 
-  import { getImageAsset } from '../connections/utils';
+  import { getImageAsset } from '$lib/utils';
 
   export let id: string | undefined = undefined; // TODO: should not be able to be undefined
   export let title = '';
@@ -11,10 +11,13 @@
   export let color: string | undefined = undefined;
   export let type: 'data' | 'badge' = 'data';
 
-  let assetUrlPromise: Promise<string> | undefined = getImageAsset(id!!);
+  let assetUrlPromise: Promise<string | null> = getImageAsset(id!!);
 
   // onMount(async () => {
-  //   assetUrl = await getImageAsset(id!!);
+  //   getImageAsset(id!!)
+  //     .then((url) => console.warn('Promise success'))
+  //     .catch((err) => console.warn('Promise error'))
+  //     .finally(() => console.warn('Promise finally'));
   // });
 </script>
 
@@ -46,7 +49,7 @@ List representation of a credential. Input parameters are:
           src={assetUrl}
           alt="icon"
           class="w-full bg-white object-cover p-1 dark:bg-dark"
-          on:error={() => (assetUrlPromise = undefined)}
+          on:error={() => console.error('error loading image')}
         />
       {/if}
     </div>

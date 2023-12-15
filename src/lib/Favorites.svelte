@@ -72,7 +72,7 @@
         <span slot="icon">
           <svelte:component
             this={icons[credential.metadata.display.icon] || icons['User']}
-            class="h-[18px] w-[18px] text-slate-800"
+            class="h-[18px] w-[18px] text-slate-800 dark:text-grey"
           />
         </span>
       </CredentialListEntry>

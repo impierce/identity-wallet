@@ -9,10 +9,10 @@
   import { melt } from '@melt-ui/svelte';
 
   import Button from '$lib/components/Button.svelte';
+  import { getImageAsset } from '$lib/utils';
   import CredentialDetailsDropdownMenu from '$src/lib/components/CredentialDetailsDropdownMenu.svelte';
   import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
-  import { getImageAsset } from '$src/lib/connections/utils';
   import { colors, icons } from '$src/lib/credentials/customization/utils';
   import ShareButton from '$src/lib/credentials/ShareButton.svelte';
   import { dispatch } from '$src/lib/dispatcher';
@@ -59,7 +59,7 @@
 
   console.log({ credential });
 
-  let credentialLogoUrl: string;
+  let credentialLogoUrl: string | null;
 
   onMount(async () => {
     credentialLogoUrl = await getImageAsset($page.params.id!!);
@@ -72,7 +72,11 @@
     {#if !credentialLogoUrl}
       <div class="{color} relative h-[220px]"></div>
     {:else}
-      <img src={credentialLogoUrl} class="scale-[1.75] opacity-40 blur-xl" on:error={() => (credentialLogoUrl = '')} />
+      <img
+        src={credentialLogoUrl}
+        class="scale-[1.75] opacity-40 blur-xl"
+        on:error={() => (credentialLogoUrl = null)}
+      />
     {/if}
   </div>
   <TopNavigation
@@ -106,7 +110,7 @@
             class="{color} mr-2 flex h-[75px] w-[75px] flex-col items-center justify-center overflow-hidden rounded-[20px] border-[5px] border-white bg-silver p-1"
           >
             {#if !credentialLogoUrl}
-              <svelte:component this={icons[icon]} class="h-6 w-6 text-slate-800" />
+              <svelte:component this={icons['User']} class="h-6 w-6 text-slate-800" />
             {:else}
               <img src={credentialLogoUrl} class="" alt="credential-logo" />
             {/if}
@@ -154,7 +158,7 @@
           <div class="flex flex-col items-start px-4 py-[10px]">
             <p class="dark:text-300 text-[13px]/[24px] font-medium text-slate-500">{entry[0]}</p>
             <p class="break-words text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
-              {JSON.stringify(entry[1])}
+              {entry[1]}
             </p>
           </div>
         {/each}

@@ -9,7 +9,7 @@
   import { melt } from '@melt-ui/svelte';
 
   import Button from '$lib/components/Button.svelte';
-  import { getImageAsset } from '$lib/connections/utils';
+  import { getImageAsset } from '$lib/utils';
   import CredentialDetailsDropdownMenu from '$src/lib/components/CredentialDetailsDropdownMenu.svelte';
   import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
@@ -31,8 +31,8 @@
   let icon: any = credential.metadata.display.icon || 'User';
   let title: string = credential.metadata.display.name || credential.data.type.at(-1);
 
-  let credentialLogoUrl: string;
-  let issuerLogoUrl: string;
+  let credentialLogoUrl: string | null;
+  let issuerLogoUrl: string | null;
 
   let qrcodeText = JSON.stringify(credential, null, 0);
 
@@ -80,7 +80,13 @@
   <div class="hide-scrollbar grow overflow-y-scroll bg-white dark:bg-dark">
     <!-- Logo -->
     <div class="relative flex flex-col overflow-hidden bg-silver px-[15px] py-[20px] dark:bg-navy">
-      <img src={credentialLogoUrl} class="absolute -top-1/4 left-0 scale-[1.75] opacity-40 blur-xl" />
+      {#if credentialLogoUrl}
+        <img
+          src={credentialLogoUrl}
+          class="absolute -top-1/4 left-0 scale-[1.75] opacity-40 blur-xl"
+          on:error={() => (credentialLogoUrl = null)}
+        />
+      {/if}
       <div class="z-10 flex items-start justify-between px-2">
         <button
           class="-ml-1 -mt-1 rounded-full p-1"
@@ -101,7 +107,16 @@
         >
           <!-- Icon -->
           <!-- <svelte:component this={icons[icon]} class="h-[128px] w-[128px] text-slate-800" /> -->
-          <img src={credentialLogoUrl} class="h-[128px] w-[128px] overflow-hidden rounded-xl object-cover" alt="logo" />
+          {#if credentialLogoUrl}
+            <img
+              src={credentialLogoUrl}
+              class="h-[128px] w-[128px] overflow-hidden rounded-xl object-cover"
+              alt="badge"
+              on:error={() => (credentialLogoUrl = null)}
+            />
+          {:else}
+            <svelte:component this={icons['User']} class="h-6 w-6 text-slate-800" />
+          {/if}
           <!-- Logo -->
           <!-- <div class="flex h-full w-full items-center justify-center bg-white p-1">
               <img src={logo_location} alt="logo" class="object-scale-down" />
@@ -139,7 +154,16 @@
         <div class="flex w-full flex-col items-center space-y-1">
           <p class="text-xs text-black dark:text-white">Issued By</p>
           <div class="flex w-full justify-center rounded-xl bg-silver py-5 dark:bg-navy">
-            <img src={issuerLogoUrl} class="h-7 w-7 rounded-md" alt="issuer" />
+            {#if issuerLogoUrl}
+              <img
+                src={issuerLogoUrl}
+                class="h-7 w-7 rounded-md"
+                alt="issuer"
+                on:error={() => (issuerLogoUrl = null)}
+              />
+            {:else}
+              <User class="h-7 w-7 text-slate-800 dark:text-grey" />
+            {/if}
           </div>
           <p class="text-xs text-black dark:text-white">{credential.data.issuer.name}</p>
         </div>
@@ -163,7 +187,8 @@
             <div class="flex flex-col items-start px-4 py-[10px]">
               <p class="text-[13px]/[24px] font-medium text-slate-500">{entry[0]}</p>
               <p class="break-words text-[13px]/[24px] font-medium text-slate-800 dark:text-white">
-                {JSON.stringify(entry[1])}
+                <!-- TODO: this is a hacky way to display nested data, but also to remove enclosing quotes for regular strings -->
+                {JSON.stringify(entry[1]).slice(1, -1)}
               </p>
             </div>
           {/each}

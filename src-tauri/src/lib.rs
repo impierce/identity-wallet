@@ -96,7 +96,10 @@ fn initialize_storage(app_handle: &tauri::AppHandle) -> anyhow::Result<()> {
     }
     info!("STATE_FILE: {}", STATE_FILE.lock().unwrap().display());
     info!("STRONGHOLD: {}", STRONGHOLD.lock().unwrap().display());
-    fs::create_dir(ASSETS_DIR.lock().unwrap().as_path()).ok();
+    match fs::create_dir(ASSETS_DIR.lock().unwrap().as_path()) {
+        Ok(_) => info!("ASSETS_DIR: {}", ASSETS_DIR.lock().unwrap().as_path().display()),
+        Err(e) => info!("ASSETS_DIR: {}", e),
+    };
 
     Ok(())
 }
