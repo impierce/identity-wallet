@@ -24,6 +24,7 @@ const config = {
         '/goals/2/faqs',
         '/goals/2/step/0',
         '/credentials/*',
+        '/badges/*',
       ],
     },
   },
