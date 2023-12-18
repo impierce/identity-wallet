@@ -81,17 +81,17 @@ fn initialize_storage(app_handle: &tauri::AppHandle) -> anyhow::Result<()> {
         *STATE_FILE.lock().unwrap() = app_handle
             .path()
             .data_dir()?
-            .join("com.impierce.identity_wallet")
+            .join("com.impierce.identity-wallet")
             .join("state.json");
         *STRONGHOLD.lock().unwrap() = app_handle
             .path()
             .data_dir()?
-            .join("com.impierce.identity_wallet")
+            .join("com.impierce.identity-wallet")
             .join("stronghold.bin");
         *ASSETS_DIR.lock().unwrap() = app_handle
             .path()
             .data_dir()?
-            .join("com.impierce.identity_wallet")
+            .join("com.impierce.identity-wallet")
             .join("assets");
     }
     info!("STATE_FILE: {}", STATE_FILE.lock().unwrap().display());
