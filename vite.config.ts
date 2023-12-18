@@ -35,24 +35,27 @@ export default defineConfig(async () => ({
       host: await internalIpV4(),
       port: 5183,
     },
-    fs: {
-      allow: [
-        // '/Users/daniel/.nvm/versions/node/v20.3.0/lib/node_modules/@impierce/ui-components/dist'
-      ],
-    },
+    // fs: {
+    //   allow: [
+    //     // '/Users/daniel/.nvm/versions/node/v20.3.0/lib/node_modules/@impierce/ui-components/dist'
+    //   ],
+    // },
   },
   // to make use of `TAURI_DEBUG` and other env variables
   // https://tauri.studio/v1/api/config#buildconfig.beforedevcommand
   envPrefix: ['VITE_', 'TAURI_'],
   build: {
     // Tauri supports es2021
-    target: process.env.TAURI_PLATFORM == 'windows' ? 'chrome105' : 'safari13',
+    target: process.env.TAURI_PLATFORM == 'windows' ? 'chrome105' : 'safari14',
     // don't minify for debug builds
-    minify: !process.env.TAURI_DEBUG ? 'esbuild' : false,
+    minify: false,
     // produce sourcemaps for debug builds
     sourcemap: !!process.env.TAURI_DEBUG,
   },
+  // optimizeDeps: {
+  //   exclude: ['~icons/*'],
+  // },
   optimizeDeps: {
-    exclude: ['~icons/*'],
+    disabled: true,
   },
 }));

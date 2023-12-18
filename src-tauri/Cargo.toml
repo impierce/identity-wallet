@@ -20,6 +20,7 @@ tauri-build = { version = "=2.0.0-alpha.12", features = [] }
 tauri = { version = "=2.0.0-alpha.18", features = [
     "protocol-asset",
     "rustls-tls",
+    "devtools",
 ] }
 tauri-plugin-barcode-scanner = { version = "=2.0.0-alpha.3" }
 tauri-plugin-log = { version = "=2.0.0-alpha.5", features = ["colored"] }
