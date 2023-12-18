@@ -46,16 +46,13 @@ export default defineConfig(async () => ({
   envPrefix: ['VITE_', 'TAURI_'],
   build: {
     // Tauri supports es2021
-    target: process.env.TAURI_PLATFORM == 'windows' ? 'chrome105' : 'safari14',
+    target: process.env.TAURI_PLATFORM == 'windows' ? 'chrome105' : 'safari13',
     // don't minify for debug builds
-    minify: false,
+    minify: !process.env.TAURI_DEBUG ? 'esbuild' : false,
     // produce sourcemaps for debug builds
     sourcemap: !!process.env.TAURI_DEBUG,
   },
-  // optimizeDeps: {
-  //   exclude: ['~icons/*'],
-  // },
   optimizeDeps: {
-    disabled: true,
+    exclude: ['~icons/*'],
   },
 }));

@@ -38,9 +38,6 @@ pub fn run() {
                 .targets([
                     Target::new(TargetKind::Stdout),
                     Target::new(TargetKind::Webview),
-                    Target::new(TargetKind::LogDir {
-                        file_name: Some("unime".into()),
-                    }),
                     // Target::new(TargetKind::LogDir {
                     //     file_name: Some("webview".into()),
                     // })
