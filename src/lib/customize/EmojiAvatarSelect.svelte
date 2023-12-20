@@ -9,6 +9,7 @@
   import Plus from '~icons/ph/plus-bold';
 
   export let selected: string | undefined;
+  export let showEditButton = false;
 
   //export let defaultValue = '&#x1F642'; // slightly-smiling-face
 
@@ -61,9 +62,9 @@
   <!-- <div slot="trigger"> -->
   <button
     slot="trigger"
-    class="flex h-24 w-24 items-center justify-center rounded-full {selected
-      ? 'bg-primary'
-      : 'border border-slate-200 bg-white dark:border-slate-600 dark:bg-dark'}"
+    class="relative flex h-24 w-24 items-center justify-center rounded-full
+      {selected ? 'bg-primary' : 'border border-slate-200 bg-white dark:border-slate-600 dark:bg-dark'}
+      {showEditButton ? 'mb-[34px]' : ''}"
     use:melt={trigger}
     let:trigger
     on:click={() => {
@@ -74,6 +75,9 @@
       <span class="text-[44px]/[44px]">
         {@html selected}
       </span>
+      {#if showEditButton}
+        <div class="absolute -bottom-[34px] text-[13px]/[24px] text-slate-500 dark:text-slate-300">Edit</div>
+      {/if}
     {:else}
       <Plus class="h-6 w-6 text-slate-700 dark:text-grey" />
     {/if}

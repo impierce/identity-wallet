@@ -147,7 +147,14 @@ pub async fn load_dev_profile(state: &mut AppState, _action: Action) -> Result<(
         }"#;
     // let journey_definition = std::fs::read_to_string("resources/ngdil.json")?;
     let onboarding_journey: serde_json::Value = serde_json::from_str(journey_definition).unwrap();
-    state.user_journey = Some(onboarding_journey);
+
+    if std::env::var("FEATURE_USER_JOURNEYS_ENABLED")
+        .unwrap_or("false".to_string())
+        .parse()
+        .unwrap_or(false)
+    {
+        state.user_journey = Some(onboarding_journey);
+    }
 
     state.connections = vec![Connection {
         client_name: "NGDIL Demo".to_string(),

@@ -18,10 +18,10 @@
   },
   "dependencies": {
     "@lottiefiles/lottie-player": "^2.0.2",
-    "@tauri-apps/api": "2.0.0-alpha.12",
-    "@tauri-apps/plugin-barcode-scanner": "2.0.0-alpha.3",
-    "@tauri-apps/plugin-fs": "2.0.0-alpha.4",
-    "@tauri-apps/plugin-log": "2.0.0-alpha.4",
+    "@tauri-apps/api": "2.0.0-alpha.13",
+    "@tauri-apps/plugin-barcode-scanner": "2.0.0-alpha.4",
+    "@tauri-apps/plugin-fs": "2.0.0-alpha.5",
+    "@tauri-apps/plugin-log": "2.0.0-alpha.5",
     "qrcode": "^1.5.3",
     "typesafe-i18n": "^5.24.3"
   },
@@ -38,7 +38,7 @@
     "@sveltejs/adapter-static": "^2.0.0",
     "@sveltejs/kit": "^1.30.0",
     "@sveltejs/vite-plugin-svelte": "^2.5.0",
-    "@tauri-apps/cli": "2.0.0-alpha.18",
+    "@tauri-apps/cli": "2.0.0-alpha.20",
     "@testing-library/jest-dom": "^6.1.0",
     "@testing-library/svelte": "^4.0.0",
     "@tsconfig/svelte": "^5.0.0",

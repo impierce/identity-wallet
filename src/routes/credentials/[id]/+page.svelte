@@ -107,10 +107,10 @@
             {/if}
           </button>
           <div
-            class="{color} mr-2 flex h-[75px] w-[75px] flex-col items-center justify-center overflow-hidden rounded-[20px] border-[5px] border-white bg-silver p-1"
+            class="{color} mr-2 flex h-[75px] w-[75px] flex-col items-center justify-center overflow-hidden rounded-[20px] border-[5px] border-white bg-white p-1 dark:border-dark dark:bg-dark"
           >
             {#if !credentialLogoUrl}
-              <svelte:component this={icons['User']} class="h-6 w-6 text-slate-800" />
+              <svelte:component this={icons['User']} class="h-6 w-6 text-slate-800 dark:text-grey" />
             {:else}
               <img src={credentialLogoUrl} class="" alt="credential-logo" />
             {/if}
@@ -131,7 +131,7 @@
         <!-- Text -->
         <div class="flex flex-col items-center pt-[15px]">
           <p
-            class="text-[22px]/[30px] font-semibold {credentialLogoUrl
+            class="line-clamp-2 text-center text-[22px]/[30px] font-semibold {credentialLogoUrl
               ? 'text-slate-700 dark:text-grey'
               : 'text-slate-700'}"
           >

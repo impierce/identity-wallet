@@ -47,10 +47,12 @@
                   .at(0)
                   .at(0) % 8, // TODO: omits last value (white)
               )}
+            type={credential.data.type.includes('OpenBadgeCredential') ? 'badge' : 'data'}
           >
             <span slot="icon">
               <svelte:component
-                this={icons[credential.metadata.display.icon] || icons['User']}
+                this={icons[credential.metadata.display.icon] ||
+                  (credential.data.type.includes('OpenBadgeCredential') ? icons['Certificate'] : icons['User'])}
                 class="h-[18px] w-[18px] text-slate-800 dark:text-grey"
               />
             </span>
@@ -63,6 +65,6 @@
 
 <style>
   .content-height {
-    height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom));
+    height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom) - 64px);
   }
 </style>

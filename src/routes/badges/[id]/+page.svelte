@@ -22,7 +22,6 @@
   import Heart from '~icons/ph/heart-straight';
   import HeartFill from '~icons/ph/heart-straight-fill';
   import SealCheck from '~icons/ph/seal-check';
-  import User from '~icons/ph/user-light';
 
   let credential = $state.credentials.find((c) => $page.params.id === c.id)!!;
 
@@ -115,7 +114,7 @@
               on:error={() => (credentialLogoUrl = null)}
             />
           {:else}
-            <svelte:component this={icons['User']} class="h-6 w-6 text-slate-800" />
+            <svelte:component this={icons['Certificate']} class="h-10 w-10 text-slate-800 dark:text-grey" />
           {/if}
           <!-- Logo -->
           <!-- <div class="flex h-full w-full items-center justify-center bg-white p-1">
@@ -133,7 +132,7 @@
         <p class="text-[13px]/[24px] font-normal text-slate-500 dark:text-slate-300">
           {credential.issuer_name ?? credential.data.issuer.name}
         </p>
-        <p class="text-[22px]/[30px] font-semibold tracking-tight text-black dark:text-white">
+        <p class="line-clamp-2 text-center text-[22px]/[30px] font-semibold tracking-tight text-black dark:text-white">
           {credential.data.credentialSubject.achievement?.name ?? title}
         </p>
       </div>
@@ -148,7 +147,7 @@
           <div class="flex w-full justify-center rounded-xl bg-silver py-5 dark:bg-navy">
             <SealCheck class="h-7 w-7 text-slate-800 dark:text-grey" />
           </div>
-          <p class="text-xs text-black dark:text-white">03.11.2010</p>
+          <p class="text-xs text-black dark:text-white"></p>
         </div>
         <!-- Issued By -->
         <div class="flex w-full flex-col items-center space-y-1">
@@ -162,7 +161,7 @@
                 on:error={() => (issuerLogoUrl = null)}
               />
             {:else}
-              <User class="h-7 w-7 text-slate-800 dark:text-grey" />
+              <svelte:component this={icons['Bank']} class="h-7 w-7 text-slate-800 dark:text-grey" />
             {/if}
           </div>
           <p class="text-xs text-black dark:text-white">{credential.data.issuer.name}</p>

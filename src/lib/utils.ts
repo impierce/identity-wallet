@@ -1,5 +1,5 @@
+import { convertFileSrc } from '@tauri-apps/api/core';
 import { appDataDir, join } from '@tauri-apps/api/path';
-import { convertFileSrc } from '@tauri-apps/api/primitives';
 import { BaseDirectory, exists } from '@tauri-apps/plugin-fs';
 
 /**
@@ -10,9 +10,6 @@ import { BaseDirectory, exists } from '@tauri-apps/plugin-fs';
  * @returns
  */
 export const getImageAsset = async (id: string, tmp: boolean = false): Promise<string | null> => {
-  // TODO: this disables all assets on Android. Can be removed once Tauri fixed the file path issues.
-  if (window.navigator.userAgent.includes('Android')) return null;
-
   const appDataDirPath = await appDataDir();
 
   const extensions = ['svg', 'png'];

@@ -40,7 +40,7 @@ List representation of a credential. Input parameters are:
     <div
       class="mr-[15px] flex h-[50px] w-[50px] min-w-[50px] flex-col items-center justify-center overflow-hidden rounded-lg {assetUrl
         ? 'bg-white dark:bg-dark'
-        : { color }}"
+        : 'bg-silver dark:bg-navy'}"
     >
       {#if !assetUrl}
         <slot name="icon" />

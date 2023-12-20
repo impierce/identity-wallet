@@ -124,7 +124,8 @@
       >
         <span slot="icon">
           <svelte:component
-            this={icons[credential.metadata.display.icon] || icons['User']}
+            this={icons[credential.metadata.display.icon] ||
+              (credential.data.type.includes('OpenBadgeCredential') ? icons['Certificate'] : icons['User'])}
             class="h-[18px] w-[18px] text-slate-800 dark:text-grey"
           />
         </span>

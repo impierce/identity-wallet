@@ -25,6 +25,7 @@ pub fn run() {
             info!("setting up tauri app");
             initialize_storage(app.handle()).ok();
             clear_assets_tmp_folder().ok();
+            dotenvy::dotenv().ok();
             #[cfg(mobile)]
             {
                 app.handle().plugin(tauri_plugin_barcode_scanner::init())?;
