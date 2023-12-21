@@ -31,6 +31,7 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
                     // Remove the `Passport Number` and `Staff Number` from the credential subject if they exists.
                     credential_subject_value["Passport Number"].take();
                     credential_subject_value["Staff Number"].take();
+                    credential_subject_value["achievement"]["id"].take();
 
                     sha256::digest(
                         json!(
