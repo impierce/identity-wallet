@@ -281,7 +281,7 @@
                   type: '[QR Code] Scanned',
                   payload: {
                     form_urlencoded:
-                      'openid-credential-offer://?credential_offer_uri=https://api.demo.ngdil.com/api/offers/creds/UJiHs1xPscMpTXqcpWIkB',
+                      'openid-credential-offer://?credential_offer_uri=https://api.demo.ngdil.com/api/offers/creds/bT2hyXuCC8_Hyntg4a1Gz',
                   },
                 })}
               label="Dominique (student)"

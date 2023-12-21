@@ -60,12 +60,22 @@ pub fn persist_asset(file_name: &str, id: &str) -> Result<(), AppError> {
     let assets_dir = ASSETS_DIR.lock().unwrap().as_path().to_owned();
     let tmp_dir = assets_dir.join("tmp");
 
-    let parts = file_name.split(".").collect::<Vec<&str>>();
+    let extensions = ["svg", "png"];
 
-    let new_file_name = format!("{}.{}", id, parts.get(1).unwrap());
+    if let Some(extension) = extensions
+        .iter()
+        .find(|&e| tmp_dir.join(&format!("{}.{}", file_name, e)).exists())
+    {
+        let new_file_name = format!("{}.{}", id, extension);
+        std::fs::rename(
+            tmp_dir.join(format!("{}.{}", file_name, extension)),
+            assets_dir.join(&new_file_name),
+        )?;
+        debug!("Successfully persisted asset `{}` --> `{}`.", file_name, new_file_name);
+    } else {
+        debug!("No asset found for file_name: `{}`", file_name)
+    };
 
-    std::fs::rename(tmp_dir.join(file_name), assets_dir.join(&new_file_name))?;
-    debug!("Successfully persisted asset `{}` --> `{}`.", file_name, new_file_name);
     Ok(())
 }
 

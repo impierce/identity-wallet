@@ -347,7 +347,7 @@ pub async fn send_credential_request(state: &mut AppState, action: Action) -> Re
     };
     info!("credentials: {:?}", credentials);
 
-    for credential in credentials.into_iter() {
+    for (i, credential) in credentials.into_iter().enumerate() {
         let mut verifiable_credential_record = VerifiableCredentialRecord::from(credential);
         verifiable_credential_record.display_credential.issuer_name = Some(issuer_name.clone());
         let key: Uuid = verifiable_credential_record
@@ -358,11 +358,7 @@ pub async fn send_credential_request(state: &mut AppState, action: Action) -> Re
 
         info!("generated hash-key: {:?}", key);
 
-        persist_asset(
-            "6440ceac338a920197100e60_NGDIL%20Logo%20Dark.svg",
-            key.to_string().as_str(),
-        )
-        .ok();
+        persist_asset(format!("credential_{}", i).as_str(), key.to_string().as_str()).ok();
 
         // Remove the old credential from the stronghold if it exists.
         stronghold_manager.remove(key).map_err(StrongholdDeletionError)?;
