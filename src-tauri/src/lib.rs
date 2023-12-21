@@ -97,6 +97,9 @@ fn initialize_storage(app_handle: &tauri::AppHandle) -> anyhow::Result<()> {
     }
     info!("STATE_FILE: {}", STATE_FILE.lock().unwrap().display());
     info!("STRONGHOLD: {}", STRONGHOLD.lock().unwrap().display());
+    // TODO: on iOS, when running the app for the first time,
+    // is the assets folder even created?
+    // bug: images are not downloaded/displayed for a credential offer (only on first start of the app)
     match fs::create_dir(ASSETS_DIR.lock().unwrap().as_path()) {
         Ok(_) => info!("ASSETS_DIR: created"),
         Err(e) => info!("ASSETS_DIR: {}", e),
