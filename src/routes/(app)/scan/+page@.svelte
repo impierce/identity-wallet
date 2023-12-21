@@ -156,12 +156,13 @@
           },
           display: [
             {
-              name: 'text',
+              name: 'My first Credential',
+              logo: { url: 'https://picsum.photos/200.svg' },
             },
             {
-              name: 'text',
+              name: 'My second Credential',
             },
-          ]
+          ],
         },
       });
     }
