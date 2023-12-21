@@ -183,10 +183,19 @@ pub async fn read_credential_offer(state: &mut AppState, action: Action) -> Resu
         debug!("No logo found in metadata.");
     }
 
+    let display = first_credentials_supported_object
+        .display
+        .as_ref()
+        .unwrap()
+        .first()
+        .unwrap()
+        .clone();
+
     state.current_user_prompt = Some(CurrentUserPrompt::CredentialOffer {
         issuer_name,
         logo_uri,
         credential_offer,
+        display,
     });
 
     Ok(())

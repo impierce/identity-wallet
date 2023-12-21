@@ -12,7 +12,7 @@
       class="flex flex-col items-center pt-4 text-[13px]/[24px] font-normal text-slate-500 opacity-50 dark:text-slate-300"
     >
       <!-- <div class="pb-4" /> -->
-      <div>0.4.3</div>
+      <div>0.4.4</div>
       <div class="flex items-center pb-4">
         <p>Built with Tauri</p>
         <Heart class="pl-1" />

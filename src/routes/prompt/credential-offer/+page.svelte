@@ -129,10 +129,19 @@
     <div
       class="mt-3 w-full rounded-[20px] border border-slate-200 bg-white p-[10px] dark:border-slate-600 dark:bg-dark"
     >
+      <CredentialOfferEntry index="0" title={$state.current_user_prompt.display.name} color={'bg-white'}>
+        <span slot="logo" class="w-full p-1">
+          {#if credentialLogoUrl}
+            <img src={credentialLogoUrl} alt="logo" />
+          {:else}
+            <svelte:component this={icons['User']} class="h-[18px] w-[18px] text-slate-800" />
+          {/if}
+        </span>
+      </CredentialOfferEntry>
       <!-- <div class="w-full space-y-2 rounded-2xl p-3 ring-2 ring-inset ring-white"> -->
-      {#each credential_offer.credentials as credential, index}
+      {#each credential_offer.credentials.slice(1) as credential, index}
         <!-- TODO: careful with long list! -->
-        <CredentialOfferEntry {index} title={credential.credential_definition.type.at(-1)} color={'bg-grey'}>
+        <CredentialOfferEntry {index} title={credential.credential_definition.type.at(-1)} color={'bg-white'}>
           <!-- {#if !credentialLogoUrl}
             <div class="{color} relative h-[-webkit-fill-available] w-screen"></div>
           {:else}
@@ -142,12 +151,12 @@
               on:error={() => (credentialLogoUrl = '')}
             />
           {/if} -->
-          <span slot="logo">
-            {#if credentialLogoUrl}
+          <span slot="logo" class="flex h-full w-full items-center justify-center bg-silver p-1 dark:bg-navy">
+            <!-- {#if credentialLogoUrl}
               <img src={credentialLogoUrl} alt="logo" on:error={() => (credentialLogoUrl = null)} />
-            {:else}
-              <svelte:component this={icons['User']} class="h-[18px] w-[18px] text-slate-800" />
-            {/if}
+            {:else} -->
+            <svelte:component this={icons['User']} class="h-[18px] w-[18px] text-slate-800" />
+            <!-- {/if} -->
           </span>
 
           <!-- <span slot="logo">
