@@ -129,7 +129,7 @@
     <div
       class="mt-3 w-full rounded-[20px] border border-slate-200 bg-white p-[10px] dark:border-slate-600 dark:bg-dark"
     >
-      <CredentialOfferEntry index="0" title={$state?.current_user_prompt?.display?.name ?? ''} color={'bg-white'}>
+      <CredentialOfferEntry index="0" title={$state?.current_user_prompt?.display?.at(0).name ?? 'display.name'} color={'bg-white'}>
         <span slot="logo" class="flex h-full w-full items-center justify-center bg-silver p-1 dark:bg-navy">
           {#if credentialLogoUrl}
             <img src={credentialLogoUrl} alt="logo" />
@@ -141,7 +141,7 @@
       <!-- <div class="w-full space-y-2 rounded-2xl p-3 ring-2 ring-inset ring-white"> -->
       {#each credential_offer.credentials.slice(1) as credential, index}
         <!-- TODO: careful with long list! -->
-        <CredentialOfferEntry {index} title={credential.credential_definition.type.at(-1)} color={'bg-white'}>
+        <CredentialOfferEntry {index} title={$state?.current_user_prompt?.display?.at(index).name ?? credential.credential_definition.type.at(-1)} color={'bg-white'}>
           <!-- {#if !credentialLogoUrl}
             <div class="{color} relative h-[-webkit-fill-available] w-screen"></div>
           {:else}

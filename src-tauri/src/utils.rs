@@ -14,7 +14,7 @@ use crate::{error::AppError, ASSETS_DIR};
 /// Restrictions:
 /// - max. file size: 2MB
 /// - supported file types: `.png`, `.svg`
-pub async fn download_asset(url: &str, logo_type: LogoType) -> Result<(), AppError> {
+pub async fn download_asset(url: &str, logo_type: LogoType, index: usize) -> Result<(), AppError> {
     let url: reqwest::Url = url.parse().unwrap();
 
     let file_name = url.path_segments().unwrap().last().unwrap();
@@ -34,7 +34,7 @@ pub async fn download_asset(url: &str, logo_type: LogoType) -> Result<(), AppErr
     }
 
     // TODO: in batch offer, use format!("{}_{}.{}", logo_type, index, extension)
-    let mut file = File::create(tmp_dir.join(format!("{}.{}", logo_type.to_string(), extension)))?;
+    let mut file = File::create(tmp_dir.join(format!("{}_{}.{}", logo_type.to_string(), index, extension)))?;
 
     let response = reqwest::get(url.clone()).await?;
     let mut content = Cursor::new(response.bytes().await?);

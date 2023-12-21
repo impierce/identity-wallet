@@ -35,8 +35,8 @@ pub enum CurrentUserPrompt {
         logo_uri: Option<String>,
         #[ts(type = "object")]
         credential_offer: CredentialOffer,
-        #[ts(type = "object")]
-        display: Value,
+        #[ts(type = "Array<object>")]
+        display: Vec<Option<Value>>,
     },
     #[serde(rename = "share-credentials")]
     ShareCredentials {

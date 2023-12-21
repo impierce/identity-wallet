@@ -145,28 +145,47 @@ pub async fn read_credential_offer(state: &mut AppState, action: Action) -> Resu
     info!("issuer_name in credential_offer: {:?}", issuer_name);
     info!("logo_uri in credential_offer: {:?}", logo_uri);
 
-    let first_credentials_supported_object = credentials_supported_objects
-        .first()
-        .expect("TODO: handle empty credential offer");
+    let mut display = vec![];
+    for (index, credential_supported_object) in credentials_supported_objects.iter().enumerate() {
+        let credential_logo_url = credential_supported_object.display.as_ref().and_then(|display| {
+            display
+                .first()
+                .and_then(|value| value.get("logo").and_then(|value| value.get("url")))
+        });
 
-    let credential_logo_url = first_credentials_supported_object.display.as_ref().and_then(|display| {
-        display
-            .first()
-            .and_then(|value| value.get("logo").and_then(|value| value.get("url")))
-    });
+        info!("credential_logo_url: {:?}", credential_logo_url);
 
-    info!("credential_logo_url: {:?}", credential_logo_url);
-
-    if credential_logo_url.is_some() {
-        debug!(
-            "{}",
-            format!(
-                "Downloading credential logo from url: {}",
-                credential_logo_url.unwrap().as_str().unwrap()
+        if credential_logo_url.is_some() {
+            debug!(
+                "{}",
+                format!(
+                    "Downloading credential logo from url: {}",
+                    credential_logo_url.unwrap().as_str().unwrap()
+                )
+            );
+            let _ = download_asset(
+                credential_logo_url.unwrap().as_str().unwrap(),
+                LogoType::CredentialLogo,
+                index,
             )
+            .await;
+        };
+
+        if credential_logo_url.is_none() && logo_uri.is_none() {
+            debug!("No logo found in metadata.");
+        }
+
+        display.push(
+            credential_supported_object
+                .display
+                .as_ref()
+                .and_then(|display| display.first().cloned()),
         );
-        let _ = download_asset(credential_logo_url.unwrap().as_str().unwrap(), LogoType::CredentialLogo).await;
-    };
+    }
+
+    // let first_credentials_supported_object = credentials_supported_objects
+    //     .first()
+    //     .expect("TODO: handle empty credential offer");
 
     if logo_uri.is_some() {
         debug!(
@@ -176,20 +195,10 @@ pub async fn read_credential_offer(state: &mut AppState, action: Action) -> Resu
                 logo_uri.clone().unwrap().as_str()
             )
         );
-        let _ = download_asset(logo_uri.as_ref().unwrap().as_str(), LogoType::IssuerLogo).await;
+        let _ = download_asset(logo_uri.as_ref().unwrap().as_str(), LogoType::IssuerLogo, 0).await;
     }
 
-    if credential_logo_url.is_none() && logo_uri.is_none() {
-        debug!("No logo found in metadata.");
-    }
-
-    let display = first_credentials_supported_object
-        .display
-        .as_ref()
-        .unwrap()
-        .first()
-        .unwrap()
-        .clone();
+    // let display = first_credentials_supported_object.display.as_ref().cloned();
 
     state.current_user_prompt = Some(CurrentUserPrompt::CredentialOffer {
         issuer_name,
