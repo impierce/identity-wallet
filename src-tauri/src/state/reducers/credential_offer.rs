@@ -4,11 +4,10 @@ use crate::{
     utils::{download_asset, LogoType},
     verifiable_credential_record::VerifiableCredentialRecord,
 };
-use identity_credential::credential;
 use log::{debug, info};
 use oid4vci::{
     credential_format_profiles::{CredentialFormats, WithCredential},
-    credential_issuer::{credential_issuer_metadata, credentials_supported::CredentialsSupportedObject},
+    credential_issuer::credentials_supported::CredentialsSupportedObject,
     credential_offer::{CredentialOffer, CredentialOfferQuery, CredentialsObject, Grants},
     credential_response::CredentialResponseType,
     token_request::{PreAuthorizedCode, TokenRequest},
@@ -40,20 +39,6 @@ pub async fn read_credential_offer(state: &mut AppState, action: Action) -> Resu
     let credential_issuer_url = credential_offer.clone().credential_issuer;
 
     info!("credential issuer url: {:?}", credential_issuer_url);
-
-    // Get the credential issuer metadata.
-    let credential_issuer_metadata = if credential_offer
-        .credentials
-        .iter()
-        .any(|credential| matches!(credential, CredentialsObject::ByReference(_)))
-    {
-        wallet
-            .get_credential_issuer_metadata(credential_issuer_url.clone())
-            .await
-            .ok()
-    } else {
-        None
-    };
 
     let credential_issuer_metadata = wallet
         .get_credential_issuer_metadata(credential_issuer_url.clone())

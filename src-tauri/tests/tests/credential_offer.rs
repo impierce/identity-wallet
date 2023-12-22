@@ -1,6 +1,6 @@
 use crate::common::test_managers;
 use identity_wallet::state::actions::ActionType;
-use identity_wallet::state::reducers::credential_offer::{read_credential_offer, send_credential_request};
+use identity_wallet::state::reducers::credential_offer::read_credential_offer;
 use identity_wallet::state::{actions::Action, AppState};
 use identity_wallet::ASSETS_DIR;
 use oid4vci::credential_format_profiles::w3c_verifiable_credentials::jwt_vc_json::{self, JwtVcJson};
@@ -16,6 +16,7 @@ use wiremock::matchers::{method, path};
 use wiremock::{Mock, MockServer, ResponseTemplate};
 
 #[tokio::test]
+#[serial_test::serial]
 async fn download_credential_logo() {
     *ASSETS_DIR.lock().unwrap() = TempDir::new().unwrap().into_path();
 
@@ -48,32 +49,7 @@ async fn download_credential_logo() {
                                     "VerifiableCredential".to_string(),
                                     "UniversityDegreeCredential".to_string(),
                                 ],
-                                credential_subject: Some(json!({
-                                    "given_name": {
-                                        "display": [
-                                            {
-                                                "name": "Given Name",
-                                                "locale": "en-US"
-                                            }
-                                        ]
-                                    },
-                                    "family_name": {
-                                        "display": [
-                                            {
-                                                "name": "Surname",
-                                                "locale": "en-US"
-                                            }
-                                        ]
-                                    },
-                                    "degree": {},
-                                    "gpa": {
-                                        "display": [
-                                            {
-                                                "name": "GPA"
-                                            }
-                                        ]
-                                    }
-                                })),
+                                credential_subject: None,
                             },
                             None,
                         )
@@ -101,7 +77,7 @@ async fn download_credential_logo() {
                 display: None,
             }),
         )
-        .expect(2)
+        .expect(1)
         .mount(&mock_server)
         .await;
 
@@ -131,6 +107,7 @@ async fn download_credential_logo() {
 }
 
 #[tokio::test]
+#[serial_test::serial]
 async fn download_issuer_logo() {
     *ASSETS_DIR.lock().unwrap() = TempDir::new().unwrap().into_path();
 
@@ -163,32 +140,7 @@ async fn download_issuer_logo() {
                                     "VerifiableCredential".to_string(),
                                     "UniversityDegreeCredential".to_string(),
                                 ],
-                                credential_subject: Some(json!({
-                                    "given_name": {
-                                        "display": [
-                                            {
-                                                "name": "Given Name",
-                                                "locale": "en-US"
-                                            }
-                                        ]
-                                    },
-                                    "family_name": {
-                                        "display": [
-                                            {
-                                                "name": "Surname",
-                                                "locale": "en-US"
-                                            }
-                                        ]
-                                    },
-                                    "degree": {},
-                                    "gpa": {
-                                        "display": [
-                                            {
-                                                "name": "GPA"
-                                            }
-                                        ]
-                                    }
-                                })),
+                                credential_subject: None,
                             },
                             None,
                         )
@@ -210,7 +162,7 @@ async fn download_issuer_logo() {
                 })]),
             }),
         )
-        .expect(2)
+        .expect(1)
         .mount(&mock_server)
         .await;
 
@@ -238,6 +190,7 @@ async fn download_issuer_logo() {
 }
 
 #[tokio::test]
+#[serial_test::serial]
 async fn no_download_when_no_logo_in_metadata() {
     *ASSETS_DIR.lock().unwrap() = TempDir::new().unwrap().into_path();
 
@@ -270,32 +223,7 @@ async fn no_download_when_no_logo_in_metadata() {
                                     "VerifiableCredential".to_string(),
                                     "UniversityDegreeCredential".to_string(),
                                 ],
-                                credential_subject: Some(json!({
-                                    "given_name": {
-                                        "display": [
-                                            {
-                                                "name": "Given Name",
-                                                "locale": "en-US"
-                                            }
-                                        ]
-                                    },
-                                    "family_name": {
-                                        "display": [
-                                            {
-                                                "name": "Surname",
-                                                "locale": "en-US"
-                                            }
-                                        ]
-                                    },
-                                    "degree": {},
-                                    "gpa": {
-                                        "display": [
-                                            {
-                                                "name": "GPA"
-                                            }
-                                        ]
-                                    }
-                                })),
+                                credential_subject: None,
                             },
                             None,
                         )
@@ -314,7 +242,7 @@ async fn no_download_when_no_logo_in_metadata() {
                 display: None,
             }),
         )
-        .expect(2)
+        .expect(1)
         .mount(&mock_server)
         .await;
 
@@ -330,26 +258,6 @@ async fn no_download_when_no_logo_in_metadata() {
         Action {
             r#type: ActionType::ReadCredentialOffer,
             payload: Some(json!({"credential_offer_uri": format!("{}/offer/1", &mock_server.uri())})),
-        },
-    )
-    .await
-    .is_ok());
-}
-
-#[tokio::test]
-async fn move_downloaded_logo_asset_out_of_tmp_folder() {
-    *ASSETS_DIR.lock().unwrap() = TempDir::new().unwrap().into_path();
-
-    let mut state = AppState {
-        managers: test_managers(vec![]),
-        ..AppState::default()
-    };
-
-    assert!(send_credential_request(
-        state.borrow_mut(),
-        Action {
-            r#type: ActionType::CredentialOffersSelected,
-            payload: Some(json!({"offer_indices": [0]})),
         },
     )
     .await

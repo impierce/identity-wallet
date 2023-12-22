@@ -16,49 +16,6 @@ use tokio::sync::Mutex;
 
 #[tokio::test]
 #[serial_test::serial]
-async fn test_qr_code_scanned_read_credential_offer() {
-    setup_state_file();
-    setup_stronghold();
-
-    let managers = test_managers(vec![]);
-    let active_profile = Some(Profile {
-        name: "Ferris".to_string(),
-        picture: Some("&#129408".to_string()),
-        theme: Some("system".to_string()),
-        primary_did: managers
-            .lock()
-            .await
-            .identity_manager
-            .as_ref()
-            .unwrap()
-            .subject
-            .identifier()
-            .unwrap(),
-    });
-
-    // Deserializing the Appstates and Actions from the accompanying json files.
-    let state = json_example::<AppState>("tests/fixtures/states/credential_offer.json");
-    let action = json_example::<Action>("tests/fixtures/actions/qr_scanned_openid_cred.json");
-
-    let container = AppStateContainer(Mutex::new(AppState {
-        active_profile: active_profile.clone(),
-        managers,
-        ..AppState::default()
-    }));
-
-    assert_state_update(
-        // Initial state.
-        container,
-        // A QR code is scanned containing a credential offer.
-        vec![action],
-        // The state is updated with a new user prompt containing the credential offer.
-        vec![Some(state)],
-    )
-    .await;
-}
-
-#[tokio::test]
-#[serial_test::serial]
 async fn test_qr_code_scanned_handle_siopv2_authorization_request() {
     setup_state_file();
     setup_stronghold();

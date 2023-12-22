@@ -1,4 +1,4 @@
-use identity_wallet::utils::download_asset;
+use identity_wallet::utils::{download_asset, LogoType};
 use wiremock::matchers::{method, path};
 use wiremock::{Mock, MockServer, ResponseTemplate};
 
@@ -16,9 +16,13 @@ async fn when_size_is_less_than_2mb_then_download_should_start() {
         .mount(&mock_server)
         .await;
 
-    assert!(download_asset(format!("{}/image.png", &mock_server.uri()).as_str())
-        .await
-        .is_ok());
+    assert!(download_asset(
+        format!("{}/image.png", &mock_server.uri()).as_str(),
+        LogoType::CredentialLogo,
+        0
+    )
+    .await
+    .is_ok());
 }
 
 #[tokio::test]
@@ -35,9 +39,13 @@ async fn when_size_is_bigger_than_2mb_then_download_should_fail() {
         .mount(&mock_server)
         .await;
 
-    assert!(download_asset(format!("{}/image.png", &mock_server.uri()).as_str())
-        .await
-        .is_err());
+    assert!(download_asset(
+        format!("{}/image.png", &mock_server.uri()).as_str(),
+        LogoType::CredentialLogo,
+        0
+    )
+    .await
+    .is_err());
 }
 
 #[tokio::test]
@@ -51,9 +59,13 @@ async fn when_mime_type_is_supported_then_download_should_start() {
         .mount(&mock_server)
         .await;
 
-    assert!(download_asset(format!("{}/image.svg", &mock_server.uri()).as_str())
-        .await
-        .is_ok());
+    assert!(download_asset(
+        format!("{}/image.svg", &mock_server.uri()).as_str(),
+        LogoType::CredentialLogo,
+        0
+    )
+    .await
+    .is_ok());
 }
 
 #[tokio::test]
@@ -67,7 +79,11 @@ async fn when_mime_type_is_not_supported_then_download_should_fail() {
         .mount(&mock_server)
         .await;
 
-    assert!(download_asset(format!("{}/image.jpeg", &mock_server.uri()).as_str())
-        .await
-        .is_err());
+    assert!(download_asset(
+        format!("{}/image.jpeg", &mock_server.uri()).as_str(),
+        LogoType::CredentialLogo,
+        0
+    )
+    .await
+    .is_err());
 }
