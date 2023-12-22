@@ -32,7 +32,7 @@ pub async fn download_asset(url: reqwest::Url, logo_type: LogoType, index: usize
     }
 
     // TODO: in batch offer, use format!("{}_{}.{}", logo_type, index, extension)
-    let mut file = File::create(tmp_dir.join(format!("{}_{}.{}", logo_type.to_string(), index, extension)))?;
+    let mut file = File::create(tmp_dir.join(format!("{}_{}.{}", logo_type, index, extension)))?;
 
     let response = reqwest::get(url.clone()).await?;
     let mut content = Cursor::new(response.bytes().await?);

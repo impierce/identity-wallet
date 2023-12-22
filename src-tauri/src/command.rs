@@ -52,10 +52,12 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
 
             app_state.dev_mode_enabled = loaded_state.dev_mode_enabled;
             // Overwrite dev_mode_enabled if environment variable is set
-            std::env::var("DEV_MODE_ENABLED")
+            if let Some(b) = std::env::var("DEV_MODE_ENABLED")
                 .ok()
                 .and_then(|s| s.parse::<bool>().ok())
-                .map(|b| app_state.dev_mode_enabled = b);
+            {
+                app_state.dev_mode_enabled = b;
+            }
 
             Ok(())
         }

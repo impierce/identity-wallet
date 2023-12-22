@@ -64,7 +64,7 @@ pub fn persist_asset(file_name: &str, id: &str) -> Result<(), AppError> {
 
     if let Some(extension) = extensions
         .iter()
-        .find(|&e| tmp_dir.join(&format!("{}.{}", file_name, e)).exists())
+        .find(|&e| tmp_dir.join(format!("{}.{}", file_name, e)).exists())
     {
         let new_file_name = format!("{}.{}", id, extension);
         std::fs::rename(
