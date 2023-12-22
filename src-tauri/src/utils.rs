@@ -14,9 +14,7 @@ use crate::{error::AppError, ASSETS_DIR};
 /// Restrictions:
 /// - max. file size: 2MB
 /// - supported file types: `.png`, `.svg`
-pub async fn download_asset(url: &str, logo_type: LogoType, index: usize) -> Result<(), AppError> {
-    let url: reqwest::Url = url.parse().unwrap();
-
+pub async fn download_asset(url: reqwest::Url, logo_type: LogoType, index: usize) -> Result<(), AppError> {
     let file_name = url.path_segments().unwrap().last().unwrap();
     let extension = file_name.split('.').last().unwrap();
 

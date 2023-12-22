@@ -17,7 +17,7 @@ async fn when_size_is_less_than_2mb_then_download_should_start() {
         .await;
 
     assert!(download_asset(
-        format!("{}/image.png", &mock_server.uri()).as_str(),
+        format!("{}/image.png", &mock_server.uri()).parse().unwrap(),
         LogoType::CredentialLogo,
         0
     )
@@ -40,7 +40,7 @@ async fn when_size_is_bigger_than_2mb_then_download_should_fail() {
         .await;
 
     assert!(download_asset(
-        format!("{}/image.png", &mock_server.uri()).as_str(),
+        format!("{}/image.png", &mock_server.uri()).parse().unwrap(),
         LogoType::CredentialLogo,
         0
     )
@@ -60,7 +60,7 @@ async fn when_mime_type_is_supported_then_download_should_start() {
         .await;
 
     assert!(download_asset(
-        format!("{}/image.svg", &mock_server.uri()).as_str(),
+        format!("{}/image.svg", &mock_server.uri()).parse().unwrap(),
         LogoType::CredentialLogo,
         0
     )
@@ -80,7 +80,7 @@ async fn when_mime_type_is_not_supported_then_download_should_fail() {
         .await;
 
     assert!(download_asset(
-        format!("{}/image.jpeg", &mock_server.uri()).as_str(),
+        format!("{}/image.jpeg", &mock_server.uri()).parse().unwrap(),
         LogoType::CredentialLogo,
         0
     )

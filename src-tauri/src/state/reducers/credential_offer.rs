@@ -140,21 +140,18 @@ pub async fn read_credential_offer(state: &mut AppState, action: Action) -> Resu
 
         info!("credential_logo_url: {:?}", credential_logo_url);
 
-        if credential_logo_url.is_some() {
+        if let Some(credential_logo_url) = credential_logo_url {
             debug!(
                 "{}",
-                format!(
-                    "Downloading credential logo from url: {}",
-                    credential_logo_url.unwrap().as_str().unwrap()
-                )
+                format!("Downloading credential logo from url: {}", credential_logo_url)
             );
-            let _ = download_asset(
-                credential_logo_url.unwrap().as_str().unwrap(),
-                LogoType::CredentialLogo,
-                index,
-            )
-            .await;
-        };
+            if let Some(credential_logo_url) = credential_logo_url
+                .as_str()
+                .and_then(|s| s.parse::<reqwest::Url>().ok())
+            {
+                let _ = download_asset(credential_logo_url, LogoType::CredentialLogo, index).await;
+            }
+        }
 
         if credential_logo_url.is_none() && logo_uri.is_none() {
             debug!("No logo found in metadata.");
@@ -168,10 +165,6 @@ pub async fn read_credential_offer(state: &mut AppState, action: Action) -> Resu
         );
     }
 
-    // let first_credentials_supported_object = credentials_supported_objects
-    //     .first()
-    //     .expect("TODO: handle empty credential offer");
-
     if logo_uri.is_some() {
         debug!(
             "{}",
@@ -180,10 +173,10 @@ pub async fn read_credential_offer(state: &mut AppState, action: Action) -> Resu
                 logo_uri.clone().unwrap().as_str()
             )
         );
-        let _ = download_asset(logo_uri.as_ref().unwrap().as_str(), LogoType::IssuerLogo, 0).await;
+        if let Some(logo_uri) = logo_uri.as_ref().and_then(|s| s.parse::<reqwest::Url>().ok()) {
+            let _ = download_asset(logo_uri, LogoType::CredentialLogo, 0).await;
+        }
     }
-
-    // let display = first_credentials_supported_object.display.as_ref().cloned();
 
     state.current_user_prompt = Some(CurrentUserPrompt::CredentialOffer {
         issuer_name,
