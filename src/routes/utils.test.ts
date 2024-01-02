@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import { determineTheme } from '$src/routes/utils';
+import { determineTheme } from './utils';
 
-describe('Me', () => {
+describe('app', () => {
   it('determines correct theme', () => {
     expect(determineTheme(true, 'system')).toBe('dark');
     expect(determineTheme(true, 'dark')).toBe('dark');

@@ -8,7 +8,7 @@ A Tauri-based Identity Wallet for people to manage Decentralized Identities and 
 
 ## Development
 
-### Start the app
+### Run
 
 ```sh
 npm install
@@ -24,6 +24,24 @@ npm run tauri android dev
 npm run tauri ios init
 npm run tauri ios dev
 ```
+
+### Test
+
+#### e2e
+
+Install browsers
+
+```sh
+npx playwright install --with-deps chromium   # Android
+npx playwright install --with-deps webkit     # iOS
+```
+
+```sh
+npx playwright test
+npx playwright test --ui
+```
+
+### Code style
 
 Before commiting, please make sure to run
 
