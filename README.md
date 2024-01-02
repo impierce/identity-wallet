@@ -116,6 +116,18 @@ cd src-tauri
 cargo tauri icon
 ```
 
+### Troubleshooting
+If you have issues with `cargo tauri build` run the following command.
+Linux / Mac:
+```shell
+rm -rf ~/.cargo/git/checkouts/*
+```
+Windows:
+```cmd  
+rd /s /q "%USERPROFILE%\.cargo\git\checkouts"
+```
+
+
 ### How this project was initialized
 
 ```sh
