@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-
   import { goto } from '$app/navigation';
 
   import { getImageAsset } from '$lib/utils';
@@ -12,13 +10,6 @@
   export let type: 'data' | 'badge' = 'data';
 
   let assetUrlPromise: Promise<string | null> = getImageAsset(id!!);
-
-  // onMount(async () => {
-  //   getImageAsset(id!!)
-  //     .then((url) => console.warn('Promise success'))
-  //     .catch((err) => console.warn('Promise error'))
-  //     .finally(() => console.warn('Promise finally'));
-  // });
 </script>
 
 <!--
