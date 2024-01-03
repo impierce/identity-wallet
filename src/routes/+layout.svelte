@@ -27,6 +27,7 @@
   import { determineTheme } from './utils';
 
   onMount(async () => {
+    window.state = state;
     const detach = await attachConsole();
     loadAllLocales(); //TODO: performance: only load locale on user request
     dispatch({ type: '[App] Get state' });

@@ -6,10 +6,9 @@
 
 - `vitest`
 - only test frontend-specific logic (such as "determine if dark theme needs to be applied" or "format date")
+- component tests: all dependencies are mocked
 
-#### Component tests
-
-- `vitest` (every dependency is mocked)
+#### Integration tests
 
 - `playwright`
 - Tests should include (but not limited to):
@@ -35,3 +34,7 @@
 - `webdriver.io`, `appium`
 - Since all business logic is handled entirely in the Rust backend, the need for extensive e2e testing is not given.
   Some smoke tests should be enough.
+
+```sh
+cargo install tauri-driver
+```
