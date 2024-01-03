@@ -1,4 +1,4 @@
-import { goto } from '$app/navigation';
+// import { goto } from '$app/navigation';
 import { readable, writable } from 'svelte/store';
 
 import { listen } from '@tauri-apps/api/event';
@@ -34,7 +34,7 @@ export const state = writable<State>(undefined, (set) => {
     if (state.current_user_prompt?.type === 'redirect') {
       const redirect_target = state.current_user_prompt.target;
       info(`redirecting to: "/${redirect_target}"`);
-      goto(`/${redirect_target}`);
+      // goto(`/${redirect_target}`);
     }
   });
   // TODO: unsubscribe from listener!
