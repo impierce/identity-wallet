@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
+  import { onDestroy, onMount } from 'svelte';
+
   import { fade } from 'svelte/transition';
 
   import { createCheckbox, createPopover, melt } from '@melt-ui/svelte';
@@ -8,6 +9,7 @@
   import PaddedIcon from '$lib/components/PaddedIcon.svelte';
   import { colors, icons } from '$lib/credentials/customization/utils';
   import { dispatch } from '$lib/dispatcher';
+  import { getImageAsset } from '$lib/utils';
   import CredentialOfferEntry from '$src/lib/components/CredentialOfferEntry.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import { state } from '$src/stores';
@@ -52,6 +54,33 @@
   // console.log({ map });
 
   let all_offer_indices = credential_offer.credentials.map((_, i) => i);
+
+  let issuerLogoUrl: string | null;
+  // let credentialLogoUrl: string | null; // TODO: batch credentials, see "all_offer_indices"
+
+  // let images = new Map<string, string>();
+
+  let credentialLogoUrls = {};
+
+  onMount(async () => {
+    issuerLogoUrl = await getImageAsset('issuer_0', true);
+    // credentialLogoUrl = await getImageAsset('credential', true);
+
+    // $state?.current_user_prompt?.display?.forEach(async (display, i) => {
+    //   if (display.logo_uri) {
+    //     credentialLogoUrl = await getImageAsset('credential', true, display.logo_uri);
+    //   }
+    // });
+    $state.current_user_prompt.display.forEach(async (display, i) => {
+      if (display.logo?.url) {
+        credentialLogoUrls[i] = await getImageAsset(`credential_${i}`, true);
+      }
+    });
+  });
+
+  onDestroy(async () => {
+    dispatch({ type: '[User Flow] Cancel' });
+  });
 </script>
 
 <div class="content-height flex flex-col items-stretch bg-silver dark:bg-navy">
@@ -60,8 +89,12 @@
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
     {#if $state.current_user_prompt.logo_uri}
       <div class="flex h-[75px] w-[75px] overflow-hidden rounded-3xl bg-white p-2 dark:bg-silver">
-        <div class="flex overflow-hidden rounded-2xl">
-          <img src={$state.current_user_prompt.logo_uri} alt="logo" />
+        <div class="flex w-full items-center justify-center overflow-hidden rounded-2xl">
+          {#if issuerLogoUrl}
+            <img src={issuerLogoUrl} alt="logo" on:error={() => (issuerLogoUrl = null)} />
+          {:else}
+            <svelte:component this={icons['User']} class="h-6 w-6 text-slate-800" />
+          {/if}
         </div>
       </div>
     {:else}
@@ -111,16 +144,55 @@
     <div
       class="mt-3 w-full rounded-[20px] border border-slate-200 bg-white p-[10px] dark:border-slate-600 dark:bg-dark"
     >
+      <!-- <CredentialOfferEntry index="0" title={$state?.current_user_prompt?.display?.at(0).name ?? 'display.name'} color={'bg-white'}>
+        <span slot="logo" class="flex h-full w-full items-center justify-center bg-silver p-1 dark:bg-navy">
+          {#if credentialLogoUrl}
+            <img src={credentialLogoUrl} alt="logo" />
+          {:else}
+            <svelte:component this={icons['User']} class="h-[18px] w-[18px] text-slate-800 dark:text-grey" />
+          {/if}
+        </span>
+      </CredentialOfferEntry> -->
       <!-- <div class="w-full space-y-2 rounded-2xl p-3 ring-2 ring-inset ring-white"> -->
       {#each credential_offer.credentials as credential, index}
-        <CredentialOfferEntry {index} title={credential.credential_definition.type.at(-1)} color={'bg-grey'}>
-          <span slot="logo" class="p-1">
-            <!-- {#if $state.current_user_prompt.logo_uri}
+        <!-- TODO: careful with long list! -->
+        <CredentialOfferEntry
+          {index}
+          title={$state?.current_user_prompt?.display?.at(index)?.name ?? credential.credential_definition.type.at(-1)}
+          color={'bg-white'}
+        >
+          <!-- {#if !credentialLogoUrl}
+            <div class="{color} relative h-[-webkit-fill-available] w-screen"></div>
+          {:else}
+            <img
+              src={credentialLogoUrl}
+              class="scale-[1.75] opacity-40 blur-xl"
+              on:error={() => (credentialLogoUrl = '')}
+            />
+          {/if} -->
+          <span slot="logo" class="flex h-full w-full items-center justify-center bg-silver p-1 dark:bg-navy">
+            <!-- {#if credentialLogoUrl}
+              <img src={credentialLogoUrl} alt="logo" on:error={() => (credentialLogoUrl = null)} />
+            {:else} -->
+            {#if credentialLogoUrls[index]}
+              <img
+                src={credentialLogoUrls[index]}
+                alt="logo-{index}"
+                on:error={() => console.warn('error opening the image')}
+              />
+            {:else}
+              <svelte:component this={icons['User']} class="h-[18px] w-[18px] text-slate-800 dark:text-grey" />
+            {/if}
+          </span>
+
+          <!-- <span slot="logo">
+            <img src={credentialLogoUrl} alt="logo" />
+          </span> -->
+          <!-- {#if $state.current_user_prompt.logo_uri}
               <img src={$state.current_user_prompt.logo_uri} alt="logo" class="object-scale-down" />
             {:else} -->
-            <svelte:component this={icons['User']} class="h-[18px] w-[18px] text-slate-800" />
-            <!-- {/if} -->
-          </span>
+          <!-- <svelte:component this={icons['User']} class="h-[18px] w-[18px] text-slate-800" /> -->
+          <!-- {/if} -->
         </CredentialOfferEntry>
       {/each}
     </div>
@@ -162,7 +234,6 @@
       variant="secondary"
       on:click={() => {
         dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });
-        goto('/me');
       }}
     />
     <!-- <button class="w-full rounded-lg bg-primary px-4 py-2 text-white" on:click={() => {}}

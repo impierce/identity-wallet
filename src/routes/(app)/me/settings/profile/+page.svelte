@@ -20,8 +20,8 @@
   <div class="flex flex-col space-y-[10px] px-4 py-5">
     <SettingsEntry icon={Keyboard} title="Profile name" on:click={() => goto('/me/settings/profile/name')} />
     <!-- on:click={() => goto('/welcome/customize/name')} -->
-    <SettingsEntry icon={SmileyWink} title="Display picture" on:click={() => goto('/me/settings/profile/avatar')} />
-    <!-- on:click={() => goto('/welcome/customize/avatar')} -->
+    <SettingsEntry icon={SmileyWink} title="Display picture" todo />
+    <!-- on:click={() => goto('/me/settings/profile/avatar')} -->
 
     <BottomDrawer
       titleText="Reset app"

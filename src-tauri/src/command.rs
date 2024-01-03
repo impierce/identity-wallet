@@ -1,6 +1,8 @@
 use crate::error::AppError::{self, *};
 use crate::state::actions::{Action, ActionType};
-use crate::state::persistence::{delete_state_file, delete_stronghold, load_state, save_state};
+use crate::state::persistence::{
+    clear_assets_tmp_folder, delete_state_file, delete_stronghold, load_state, save_state,
+};
 use crate::state::reducers::authorization::{
     handle_oid4vp_authorization_request, handle_siopv2_authorization_request, read_authorization_request,
 };
@@ -15,7 +17,7 @@ use crate::state::reducers::{
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, AppStateContainer};
 use async_recursion::async_recursion;
-use log::{info, warn};
+use log::{debug, info, warn};
 use oid4vc_core::authorization_request::AuthorizationRequest;
 use oid4vci::credential_offer::CredentialOfferQuery;
 use serde_json::json;
@@ -49,8 +51,14 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             }
 
             app_state.dev_mode_enabled = loaded_state.dev_mode_enabled;
-            // TODO: uncomment the following line for LOCAL DEVELOPMENT (DEV_MODE)
-            // app_state.dev_mode_enabled = true;
+            // Overwrite dev_mode_enabled if environment variable is set
+            if let Some(b) = std::env::var("DEV_MODE_ENABLED")
+                .ok()
+                .and_then(|s| s.parse::<bool>().ok())
+            {
+                app_state.dev_mode_enabled = b;
+            }
+
             Ok(())
         }
 
@@ -113,6 +121,8 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
         }
         ActionType::ReadCredentialOffer => read_credential_offer(app_state, Action { r#type, payload }).await,
         ActionType::CancelUserFlow => {
+            clear_assets_tmp_folder().ok();
+
             if let Some(payload) = payload {
                 let redirect = payload["redirect"].as_str().unwrap();
                 app_state.current_user_prompt.replace(CurrentUserPrompt::Redirect {
@@ -162,7 +172,7 @@ pub async fn handle_action<R: tauri::Runtime>(
 
     match handle_action_inner(app_state, action, _app_handle).await {
         Ok(()) => {
-            info!("state updated successfully");
+            debug!("state updated successfully");
             save_state(app_state).await.ok();
             emit_event(window, app_state).ok();
         }
@@ -193,6 +203,6 @@ pub async fn handle_action<R: tauri::Runtime>(
 fn emit_event<R: tauri::Runtime>(window: tauri::Window<R>, app_state: &AppState) -> anyhow::Result<()> {
     const STATE_CHANGED_EVENT: &str = "state-changed";
     window.emit(STATE_CHANGED_EVENT, app_state)?;
-    info!("emitted event `{}` with payload `{:?}`", STATE_CHANGED_EVENT, app_state);
+    debug!("emitted event `{}` with payload `{:?}`", STATE_CHANGED_EVENT, app_state);
     Ok(())
 }

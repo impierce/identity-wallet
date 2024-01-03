@@ -2,6 +2,7 @@ pub mod command;
 pub mod crypto;
 pub mod error;
 pub mod state;
+pub mod utils;
 pub mod verifiable_credential_record;
 
 use command::handle_action;
@@ -10,9 +11,11 @@ use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
 use lazy_static::lazy_static;
 use log::{info, LevelFilter};
 use state::AppStateContainer;
-use std::sync::Mutex;
+use std::{fs, sync::Mutex};
 use tauri::Manager;
 use tauri_plugin_log::{fern::colors::ColoredLevelConfig, Target, TargetKind};
+
+use crate::state::persistence::clear_assets_tmp_folder;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -21,6 +24,8 @@ pub fn run() {
         .setup(move |app| {
             info!("setting up tauri app");
             initialize_storage(app.handle()).ok();
+            clear_assets_tmp_folder().ok();
+            dotenvy::dotenv().ok();
             #[cfg(mobile)]
             {
                 app.handle().plugin(tauri_plugin_barcode_scanner::init())?;
@@ -55,6 +60,7 @@ pub fn run() {
                 )
                 .build(),
         )
+        .plugin(tauri_plugin_fs::init())
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
@@ -62,6 +68,7 @@ pub fn run() {
 lazy_static! {
     pub static ref STATE_FILE: Mutex<std::path::PathBuf> = Mutex::new(std::path::PathBuf::new());
     pub static ref STRONGHOLD: Mutex<std::path::PathBuf> = Mutex::new(std::path::PathBuf::new());
+    pub static ref ASSETS_DIR: Mutex<std::path::PathBuf> = Mutex::new(std::path::PathBuf::new());
 }
 
 /// Initialize the storage file paths.
@@ -70,20 +77,33 @@ fn initialize_storage(app_handle: &tauri::AppHandle) -> anyhow::Result<()> {
     if cfg!(target_os = "android") {
         *STATE_FILE.lock().unwrap() = app_handle.path().data_dir()?.join("state.json");
         *STRONGHOLD.lock().unwrap() = app_handle.path().data_dir()?.join("stronghold.bin");
+        *ASSETS_DIR.lock().unwrap() = app_handle.path().data_dir()?.join("assets");
     } else {
         *STATE_FILE.lock().unwrap() = app_handle
             .path()
             .data_dir()?
-            .join("com.impierce.identity_wallet")
+            .join("com.impierce.identity-wallet")
             .join("state.json");
         *STRONGHOLD.lock().unwrap() = app_handle
             .path()
             .data_dir()?
-            .join("com.impierce.identity_wallet")
+            .join("com.impierce.identity-wallet")
             .join("stronghold.bin");
+        *ASSETS_DIR.lock().unwrap() = app_handle
+            .path()
+            .data_dir()?
+            .join("com.impierce.identity-wallet")
+            .join("assets");
     }
     info!("STATE_FILE: {}", STATE_FILE.lock().unwrap().display());
     info!("STRONGHOLD: {}", STRONGHOLD.lock().unwrap().display());
+    // TODO: on iOS, when running the app for the first time,
+    // is the assets folder even created?
+    // bug: images are not downloaded/displayed for a credential offer (only on first start of the app)
+    match fs::create_dir(ASSETS_DIR.lock().unwrap().as_path()) {
+        Ok(_) => info!("ASSETS_DIR: created"),
+        Err(e) => info!("ASSETS_DIR: {}", e),
+    };
 
     Ok(())
 }

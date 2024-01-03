@@ -61,10 +61,9 @@
             <CredentialOfferEntry
               index={credential.id}
               title={credential.metadata.display.name || credential.data.type.at(-1)}
-              description={credential.data.issuer}
               color={credential.metadata.display.color || 'bg-indigo-100'}
             >
-              <span slot="icon">
+              <span slot="logo">
                 <svelte:component
                   this={icons[credential.metadata.display.icon] || icons['User']}
                   class="h-[18px] w-[18px] text-slate-800"

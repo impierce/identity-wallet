@@ -1,11 +1,13 @@
 use crate::{
     error::AppError::{self, *},
-    state::{actions::Action, user_prompt::CurrentUserPrompt, AppState},
+    state::{actions::Action, persistence::persist_asset, user_prompt::CurrentUserPrompt, AppState},
+    utils::{download_asset, LogoType},
     verifiable_credential_record::VerifiableCredentialRecord,
 };
-use log::info;
+use log::{debug, info};
 use oid4vci::{
     credential_format_profiles::{CredentialFormats, WithCredential},
+    credential_issuer::credentials_supported::CredentialsSupportedObject,
     credential_offer::{CredentialOffer, CredentialOfferQuery, CredentialsObject, Grants},
     credential_response::CredentialResponseType,
     token_request::{PreAuthorizedCode, TokenRequest},
@@ -38,21 +40,36 @@ pub async fn read_credential_offer(state: &mut AppState, action: Action) -> Resu
 
     info!("credential issuer url: {:?}", credential_issuer_url);
 
-    // Get the credential issuer metadata.
-    let credential_issuer_metadata = if credential_offer
-        .credentials
-        .iter()
-        .any(|credential| matches!(credential, CredentialsObject::ByReference(_)))
-    {
-        wallet
-            .get_credential_issuer_metadata(credential_issuer_url.clone())
-            .await
-            .ok()
-    } else {
-        None
-    };
+    let credential_issuer_metadata = wallet
+        .get_credential_issuer_metadata(credential_issuer_url.clone())
+        .await
+        .ok();
 
     info!("credential issuer metadata: {:?}", credential_issuer_metadata);
+
+    let credentials_supported_objects: Vec<CredentialsSupportedObject> = credential_offer
+        .credentials
+        .iter()
+        .map(|credential| {
+            match credential {
+                CredentialsObject::ByReference(by_reference) => credential_issuer_metadata
+                    .as_ref()
+                    .and_then(|credential_issuer_metadata| {
+                        credential_issuer_metadata
+                            .credentials_supported
+                            .iter()
+                            .find(|credential_supported| credential_supported.scope == Some(by_reference.to_owned()))
+                    })
+                    .ok_or(MissingCredentialOfferError(by_reference.clone())),
+                _by_value => credential_issuer_metadata
+                    .as_ref()
+                    .and_then(|credential_issuer_metadata| credential_issuer_metadata.credentials_supported.first())
+                    .ok_or(MissingCredentialOfferError("nothing found".to_string())),
+            }
+            .expect("TODO: handle missing")
+            .to_owned()
+        })
+        .collect();
 
     // For all credentials by reference, replace them with credentials by value using the CredentialIssuerMetadata.
     for credential in credential_offer.credentials.iter_mut() {
@@ -94,6 +111,18 @@ pub async fn read_credential_offer(state: &mut AppState, action: Action) -> Resu
                 .map(|s| s.to_string())
                 .unwrap_or(credential_issuer_url.to_string());
             let logo_uri = display["logo_uri"].as_str().map(|s| s.to_string());
+            // ===== OpenID for Verifiable Credential Issuance - draft 12 (26 November 2023) =====
+            // let issuer_name = display["name"]
+            //     .as_str()
+            //     .map(|s| s.to_string())
+            //     .unwrap_or(credential_issuer_url.to_string());
+            // let logo_uri = display["logo"]
+            //     .as_object()
+            //     .unwrap()
+            //     .get("url")
+            //     .unwrap()
+            //     .as_str()
+            //     .map(|s| s.to_string());
             (issuer_name, logo_uri)
         })
         .unwrap_or((credential_issuer_url.to_string(), None));
@@ -101,10 +130,59 @@ pub async fn read_credential_offer(state: &mut AppState, action: Action) -> Resu
     info!("issuer_name in credential_offer: {:?}", issuer_name);
     info!("logo_uri in credential_offer: {:?}", logo_uri);
 
+    let mut display = vec![];
+    for (index, credential_supported_object) in credentials_supported_objects.iter().enumerate() {
+        let credential_logo_url = credential_supported_object.display.as_ref().and_then(|display| {
+            display
+                .first()
+                .and_then(|value| value.get("logo").and_then(|value| value.get("url")))
+        });
+
+        info!("credential_logo_url: {:?}", credential_logo_url);
+
+        if let Some(credential_logo_url) = credential_logo_url {
+            debug!(
+                "{}",
+                format!("Downloading credential logo from url: {}", credential_logo_url)
+            );
+            if let Some(credential_logo_url) = credential_logo_url
+                .as_str()
+                .and_then(|s| s.parse::<reqwest::Url>().ok())
+            {
+                let _ = download_asset(credential_logo_url, LogoType::CredentialLogo, index).await;
+            }
+        }
+
+        if credential_logo_url.is_none() && logo_uri.is_none() {
+            debug!("No logo found in metadata.");
+        }
+
+        display.push(
+            credential_supported_object
+                .display
+                .as_ref()
+                .and_then(|display| display.first().cloned()),
+        );
+    }
+
+    if logo_uri.is_some() {
+        debug!(
+            "{}",
+            format!(
+                "Downloading issuer logo from url: {}",
+                logo_uri.clone().unwrap().as_str()
+            )
+        );
+        if let Some(logo_uri) = logo_uri.as_ref().and_then(|s| s.parse::<reqwest::Url>().ok()) {
+            let _ = download_asset(logo_uri, LogoType::CredentialLogo, 0).await;
+        }
+    }
+
     state.current_user_prompt = Some(CurrentUserPrompt::CredentialOffer {
         issuer_name,
         logo_uri,
         credential_offer,
+        display,
     });
 
     Ok(())
@@ -247,7 +325,7 @@ pub async fn send_credential_request(state: &mut AppState, action: Action) -> Re
     };
     info!("credentials: {:?}", credentials);
 
-    for credential in credentials.into_iter() {
+    for (i, credential) in credentials.into_iter().enumerate() {
         let mut verifiable_credential_record = VerifiableCredentialRecord::from(credential);
         verifiable_credential_record.display_credential.issuer_name = Some(issuer_name.clone());
         let key: Uuid = verifiable_credential_record
@@ -257,6 +335,8 @@ pub async fn send_credential_request(state: &mut AppState, action: Action) -> Re
             .expect("invalid uuid");
 
         info!("generated hash-key: {:?}", key);
+
+        persist_asset(format!("credential_{}", i).as_str(), key.to_string().as_str()).ok();
 
         // Remove the old credential from the stronghold if it exists.
         stronghold_manager.remove(key).map_err(StrongholdDeletionError)?;

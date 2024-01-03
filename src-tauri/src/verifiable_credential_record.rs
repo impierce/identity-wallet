@@ -31,6 +31,7 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
                     // Remove the `Passport Number` and `Staff Number` from the credential subject if they exists.
                     credential_subject_value["Passport Number"].take();
                     credential_subject_value["Staff Number"].take();
+                    credential_subject_value["achievement"]["id"].take();
 
                     sha256::digest(
                         json!(
@@ -68,9 +69,11 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, TS)]
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, Derivative, TS)]
+#[derivative(PartialEq)]
 #[ts(export, export_to = "bindings/display-credential/DisplayCredential.ts")]
 pub struct DisplayCredential {
+    // #[derivative(PartialEq = "ignore")]
     pub id: String,
     pub issuer_name: Option<String>,
     #[ts(type = "string")]

@@ -5,6 +5,9 @@ use uuid::Uuid;
 // TODO: needs revision/refactor + needs oid4vc libs to properly implement error handling.
 #[derive(thiserror::Error)]
 pub enum AppError {
+    // Generic error (all purpose)
+    #[error("Error: {0}")]
+    Error(&'static str),
     #[error("Required payload is missing")]
     MissingPayloadError,
     #[error("Required payload value is missing: {0}")]
@@ -23,6 +26,12 @@ pub enum AppError {
         extension: &'static str,
         source: serde_json::Error,
     },
+    #[error("Failed to download the file: {0}")]
+    DownloadFailed(#[from] reqwest::Error),
+    #[error("Failed to download the file: {0}")]
+    DownloadAborted(&'static str),
+    #[error("Failed to write to the file: {0}")]
+    WriteFailed(#[from] std::io::Error),
     #[error("Error while initializing OID4VC provider manager")]
     OID4VCProviderManagerError(#[source] anyhow::Error),
     #[error("Error while fetching DID identifier from OID4VC subject")]

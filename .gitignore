@@ -7,7 +7,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
+/node_modules
 /build
 /.svelte-kit
 /package
@@ -18,14 +18,17 @@ vite.config.ts.timestamp-*
 .vscode/*
 !.vscode/extensions.json
 .idea
-.DS_Store
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
+# OS-generated files
+.DS_Store
+.snapshot
+
+# Environment variables
 .env
 .env.*
 !.env.example
-.snapshot

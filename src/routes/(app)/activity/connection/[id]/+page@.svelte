@@ -44,7 +44,7 @@
       </div>
 
       <!-- History -->
-      <div slot="history" class="h-full bg-silver py-5 dark:bg-navy">
+      <div slot="activity" class="h-full bg-silver py-5 dark:bg-navy">
         <!-- TODO: If this turns out to be a costly operation (filtering in backend), consider lazy loading the component -->
         <ConnectionHistory />
       </div>

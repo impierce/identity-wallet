@@ -1,5 +1,6 @@
 use oid4vci::credential_offer::CredentialOffer;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use ts_rs::TS;
 
 /// "User prompts" are a way for the backend to communicate a desired/required user interaction to the frontend.
@@ -34,6 +35,8 @@ pub enum CurrentUserPrompt {
         logo_uri: Option<String>,
         #[ts(type = "object")]
         credential_offer: CredentialOffer,
+        #[ts(type = "Array<object>")]
+        display: Vec<Option<Value>>,
     },
     #[serde(rename = "share-credentials")]
     ShareCredentials {

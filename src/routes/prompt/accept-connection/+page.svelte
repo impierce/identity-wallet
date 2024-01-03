@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { onDestroy } from 'svelte';
+
   import { goto } from '$app/navigation';
   import { fade } from 'svelte/transition';
 
@@ -34,6 +36,10 @@
   const hostname = new URL($state.current_user_prompt.redirect_uri).hostname;
 
   console.log($state.current_user_prompt);
+
+  onDestroy(async () => {
+    dispatch({ type: '[User Flow] Cancel' });
+  });
 </script>
 
 <div class="content-height flex flex-col items-stretch bg-silver dark:bg-navy">

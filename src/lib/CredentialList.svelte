@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+
   import { colors, icons } from '$lib/credentials/customization/utils';
   import LL from '$src/i18n/i18n-svelte';
   import { state } from '$src/stores';
@@ -14,8 +16,11 @@
   import CredentialListEntry from './components/CredentialListEntry.svelte';
   import NoCredentials from './credentials/NoCredentials.svelte';
 
+  export let credentialType: 'all' | 'data' | 'badges' = 'all';
+
   // TODO: improve typing
-  $: credentials = $state.credentials.filter((c) => !c.metadata.is_favorite);
+  let credentials: Array<DisplayCredential> = []; // = $state.credentials.filter((c) => !c.metadata.is_favorite);
+  // $: credentials = $state.credentials.filter((c) => !c.metadata.is_favorite);
 
   let test_credentials = [
     {
@@ -29,18 +34,21 @@
       description: 'University of Pandora',
       color: 'bg-blue-100',
       icon: GraduationCap,
+      image: 'https://placehold.co/400',
     },
     {
       title: 'Discount - 20%',
       description: 'Home Supplies & Gardening',
       color: 'bg-orange-100',
       icon: Percent,
+      image: 'https://placehold.co/32',
     },
     {
       title: "Driver's license",
       description: 'State of Pandora',
       color: 'bg-emerald-100',
       icon: Car,
+      image: 'https://placehold.co/250x100',
     },
     {
       title: 'Email address',
@@ -54,16 +62,23 @@
 
   // Does this really have to be reactive?
   // $: credentials = $state?.credentials ?? [];
+
+  onMount(async () => {
+    credentials = $state.credentials.filter((c) => !c.metadata.is_favorite);
+    if (credentialType === 'badges') {
+      credentials = credentials.filter((c) => (c.data.type as string[]).includes('OpenBadgeCredential'));
+    } else if (credentialType === 'data') {
+      credentials = credentials.filter((c) => !(c.data.type as string[]).includes('OpenBadgeCredential'));
+    }
+  });
 </script>
 
 <!-- List of existing credentials -->
 {#if credentials?.length > 0}
-  <div class="flex items-center pb-2">
+  <!-- <div class="flex items-center pb-2">
     <SealCheck class="mr-2 text-primary" />
     <p class="text-[13px]/[24px] font-medium text-slate-500 dark:text-white">{$LL.MY_DATA()}</p>
-  </div>
-  <!-- Search -->
-  <!-- <Input type="text" placeholder="Search credentials" class="focus-visible:ring-violet-600" /> -->
+  </div> -->
 
   <!-- Credentials (list) -->
   <div class="flex flex-col space-y-2">
@@ -81,8 +96,9 @@
     <!-- <p class="font-semibold">A</p> -->
     {#each test_credentials as credential}
       <CredentialListEntry title={credential.title} description={credential.description} color={credential.color}>
-        <span slot="icon">
-          <svelte:component this={credential.icon} class="h-[18px] w-[18px] text-slate-800" />
+        <span slot="icon" class="h-full">
+          <!-- <img src={credential.image} class="h-full object-cover" /> -->
+          <!-- <svelte:component this={credential.icon} class="h-[18px] w-[18px] text-slate-800" /> -->
         </span>
       </CredentialListEntry>
     {/each}
@@ -91,8 +107,10 @@
     {#each credentials as credential}
       <CredentialListEntry
         id={credential.id}
-        title={credential.metadata.display.name || credential.data.type.at(-1)}
-        description={credential.issuer_name ?? credential.data.issuer}
+        title={credential.metadata.display.name ??
+          credential.data.credentialSubject.achievement?.name ??
+          credential.data.type.at(-1)}
+        description={credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
         color={credential.metadata.display.color ||
           colors.at(
             credential.id
@@ -100,11 +118,13 @@
               .at(0)
               .at(0) % 8, // TODO: omits last value (white)
           )}
+        type={credential.data.type.includes('OpenBadgeCredential') ? 'badge' : 'data'}
       >
         <span slot="icon">
           <svelte:component
-            this={icons[credential.metadata.display.icon] || icons['User']}
-            class="h-[18px] w-[18px] text-slate-800"
+            this={icons[credential.metadata.display.icon] ||
+              (credential.data.type.includes('OpenBadgeCredential') ? icons['Certificate'] : icons['User'])}
+            class="h-[18px] w-[18px] text-slate-800 dark:text-grey"
           />
         </span>
       </CredentialListEntry>

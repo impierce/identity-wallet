@@ -10,10 +10,6 @@
   let searchTerm: string | undefined;
   $: indices = $state.user_data_query;
   $: credentials = $state.credentials.filter((cred) => indices.includes(cred.id));
-
-  // TODO: known issue regarding reactive variables:
-  // quick "flash" of all credentials before filter is applied and correct results are shown
-  // further investigation: redefine variables? adjust if/else in HTML?
 </script>
 
 <div class="content-height bg-silver dark:bg-navy">
@@ -35,33 +31,40 @@
     </div>
   {:else}
     <div class="w-full space-y-2 p-5">
-      {#each credentials as credential}
-        <CredentialListEntry
-          id={credential.id}
-          title={credential.metadata.display.name || credential.data.type.at(-1)}
-          description={credential.data.issuer}
-          color={credential.metadata.display.color ||
-            colors.at(
-              credential.id
-                .match(/[0-9]+/)
-                .at(0)
-                .at(0) % 8, // TODO: omits last value (white)
-            )}
-        >
-          <span slot="icon">
-            <svelte:component
-              this={icons[credential.metadata.display.icon] || icons['User']}
-              class="h-[18px] w-[18px] text-slate-800"
-            />
-          </span>
-        </CredentialListEntry>
-      {/each}
+      <!-- using "key" to destroy & recreate the complete credentials list to enforce a refresh of logos -->
+      {#key indices}
+        {#each credentials as credential}
+          <CredentialListEntry
+            id={credential.id}
+            title={credential.metadata.display.name ??
+              credential.data.credentialSubject.achievement?.name ??
+              credential.data.type.at(-1)}
+            description={credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
+            color={credential.metadata.display.color ||
+              colors.at(
+                credential.id
+                  .match(/[0-9]+/)
+                  .at(0)
+                  .at(0) % 8, // TODO: omits last value (white)
+              )}
+            type={credential.data.type.includes('OpenBadgeCredential') ? 'badge' : 'data'}
+          >
+            <span slot="icon">
+              <svelte:component
+                this={icons[credential.metadata.display.icon] ||
+                  (credential.data.type.includes('OpenBadgeCredential') ? icons['Certificate'] : icons['User'])}
+                class="h-[18px] w-[18px] text-slate-800 dark:text-grey"
+              />
+            </span>
+          </CredentialListEntry>
+        {/each}
+      {/key}
     </div>
   {/if}
 </div>
 
 <style>
   .content-height {
-    height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom));
+    height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom) - 64px);
   }
 </style>

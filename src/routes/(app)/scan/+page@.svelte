@@ -88,8 +88,8 @@
       current_user_prompt: {
         type: 'accept-connection',
         client_name: 'Some other client',
-        logo_uri: 'https://recursing-feynman.weeir.com/imgs/ngdil.svg',
-        redirect_uri: 'https://recursing-feynman.weeir.com/auth/callback',
+        logo_uri: 'https://demo.ngdil.com/imgs/ngdil.svg',
+        redirect_uri: 'https://demo.ngdil.com/auth/callback',
         previously_connected: false,
         // logo_uri: 'https://picsum.photos/200'
       },
@@ -102,7 +102,7 @@
       current_user_prompt: {
         type: 'share-credentials',
         client_name: 'My Client Name',
-        logo_uri: 'https://recursing-feynman.weeir.com/imgs/ngdil.svg',
+        logo_uri: 'https://demo.ngdil.com/imgs/ngdil.svg',
         // logo_uri: 'https://picsum.photos/200',
         options: [$state.credentials[0].id],
       },
@@ -115,7 +115,7 @@
         type: '[QR Code] Scanned',
         payload: {
           form_urlencoded:
-            'openid-credential-offer://?credential_offer=%7B%22credential_issuer%22%3A%22http%3A%2F%2F192.168.1.127%3A9090%2F%22%2C%22credentials%22%3A%5B%7B%22format%22%3A%22jwt_vc_json%22%2C%22credential_definition%22%3A%7B%22type%22%3A%5B%22VerifiableCredential%22%2C%22PersonalInformation%22%5D%7D%7D%5D%2C%22grants%22%3A%7B%22urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Apre-authorized_code%22%3A%7B%22pre-authorized_code%22%3A%220YI5DXtuCltKyNa5%22%2C%22user_pin_required%22%3Afalse%7D%7D%7D',
+            'openid-credential-offer://?credential_offer=%7B%22credential_issuer%22%3A%22http%3A%2F%2F192.168.1.234%3A3033%2F%22%2C%22credentials%22%3A%5B%7B%22format%22%3A%22jwt_vc_json%22%2C%22credential_definition%22%3A%7B%22type%22%3A%5B%22VerifiableCredential%22%2C%22OpenBadgeCredential%22%5D%7D%7D%5D%2C%22grants%22%3A%7B%22urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Apre-authorized_code%22%3A%7B%22pre-authorized_code%22%3A%22unique_subject_string%22%2C%22user_pin_required%22%3Afalse%7D%7D%7D',
         },
       });
     } else if (amount > 1) {
@@ -132,7 +132,7 @@
           type: 'credential-offer',
           issuer_name: 'Some issuer',
           // logo_uri: 'https://picsum.photos/200',
-          logo_uri: 'https://recursing-feynman.weeir.com/imgs/ngdil.svg',
+          logo_uri: 'https://demo.ngdil.com/imgs/ngdil.svg',
           credential_offer: {
             credential_issuer: 'http://10.15.185.12:9090/',
             credentials: [
@@ -154,6 +154,15 @@
               },
             },
           },
+          display: [
+            {
+              name: 'My first Credential',
+              logo: { url: 'https://picsum.photos/200.svg' },
+            },
+            {
+              name: 'My second Credential',
+            },
+          ],
         },
       });
     }
@@ -263,12 +272,7 @@
           <div class="flex flex-col space-y-2">
             <Button variant="secondary" on:click={mockSiopRequest} label="Connection request (SIOPv2)" />
             <Button variant="secondary" on:click={mockShareRequest} label="Share request (VP)" />
-            <Button
-              variant="secondary"
-              on:click={() => mockScanCredentialOffer(1)}
-              disabled
-              label="Credential Offer (single)"
-            />
+            <Button variant="secondary" on:click={() => mockScanCredentialOffer(1)} label="Credential Offer (single)" />
             <Button variant="secondary" on:click={() => mockScanCredentialOffer(2)} label="Credential Offer (multi)" />
             <Button
               variant="secondary"
@@ -277,7 +281,7 @@
                   type: '[QR Code] Scanned',
                   payload: {
                     form_urlencoded:
-                      'openid-credential-offer://?credential_offer_uri=https://api.ngdil-demo.tanglelabs.io/api/offers/creds/u08LmjU8lAcTwx7pLMpy0',
+                      'openid-credential-offer://?credential_offer_uri=https://api.demo.ngdil.com/api/offers/creds/bT2hyXuCC8_Hyntg4a1Gz',
                   },
                 })}
               label="Dominique (student)"

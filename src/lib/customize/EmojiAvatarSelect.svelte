@@ -9,6 +9,7 @@
   import Plus from '~icons/ph/plus-bold';
 
   export let selected: string | undefined;
+  export let showEditButton = false;
 
   //export let defaultValue = '&#x1F642'; // slightly-smiling-face
 
@@ -44,13 +45,15 @@
     ],
     // misc
     [
-      '&#128161', // light-bulb
-      '&#127807', // herb
-      '&#128218', // books
-      '&#127969', // house-with-garden
-      '&#127965', // desert-island
-      '&#128188', // briefcase
-      '&#128084', // necktie
+      '&#x1F4A1', // light-bulb
+      '&#x1F33F', // herb
+      '&#x1F6E9', // small-airplane
+      '&#x1F3E1', // house-with-garden
+      '&#x1F3DD', // desert-island
+      '&#x1F4BC', // briefcase
+      '&#x1F454', // necktie
+      '&#x1F680', // rocket
+      '&#x1F3B8', // guitar
     ],
   ];
 </script>
@@ -59,7 +62,9 @@
   <!-- <div slot="trigger"> -->
   <button
     slot="trigger"
-    class="flex h-24 w-24 items-center justify-center rounded-full border border-slate-200 bg-white dark:border-slate-600 dark:bg-dark"
+    class="relative flex h-24 w-24 items-center justify-center rounded-full
+      {selected ? 'bg-primary' : 'border border-slate-200 bg-white dark:border-slate-600 dark:bg-dark'}
+      {showEditButton ? 'mb-[34px]' : ''}"
     use:melt={trigger}
     let:trigger
     on:click={() => {
@@ -70,6 +75,9 @@
       <span class="text-[44px]/[44px]">
         {@html selected}
       </span>
+      {#if showEditButton}
+        <div class="absolute -bottom-[34px] text-[13px]/[24px] text-slate-500 dark:text-slate-300">Edit</div>
+      {/if}
     {:else}
       <Plus class="h-6 w-6 text-slate-700 dark:text-grey" />
     {/if}
@@ -100,9 +108,10 @@
         class="grid min-w-fit snap-center grid-cols-3 place-items-center gap-2 rounded-3xl bg-silver p-2 dark:bg-navy"
       >
         {#each page as emoji}
-          <!-- TODO: when button pressed (on picture changes, then close drawer) -->
           <button
-            class="rounded-2xl border border-slate-300 bg-white p-4 text-[32px]/[32px] dark:border-slate-600 dark:bg-dark"
+            class="rounded-2xl border-2 p-4 text-[32px]/[32px] {emoji === selected
+              ? 'border-primary'
+              : 'border-grey dark:border-blue'}"
             on:click={() => {
               dispatch('change', emoji);
               emojiSelectIsOpen = false;
