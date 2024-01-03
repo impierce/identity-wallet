@@ -14,7 +14,8 @@
     "lint": "prettier . --check && eslint .",
     "format": "prettier . --write --plugin prettier-plugin-svelte --plugin prettier-plugin-tailwindcss --plugin @ianvs/prettier-plugin-sort-imports",
     "tauri": "tauri",
-    "typesafe-i18n": "typesafe-i18n --no-watch"
+    "typesafe-i18n": "typesafe-i18n --no-watch",
+    "test-ct": "playwright test -c playwright-ct.config.ts"
   },
   "dependencies": {
     "@lottiefiles/lottie-player": "^2.0.2",
@@ -35,6 +36,7 @@
     "@iconify-json/svg-spinners": "^1.1.1",
     "@melt-ui/pp": "^0.1.2",
     "@melt-ui/svelte": "^0.65.0",
+    "@playwright/experimental-ct-svelte": "^1.40.1",
     "@playwright/test": "^1.40.1",
     "@sveltejs/adapter-static": "^2.0.0",
     "@sveltejs/kit": "^1.30.0",
