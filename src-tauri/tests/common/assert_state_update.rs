@@ -94,6 +94,7 @@ pub async fn assert_state_update(
 
             assert_eq!(debug_messages.len(), expected_debug_messages.len());
             assert_eq!(current_user_prompt, expected_current_user_prompt);
+            assert_eq!(user_data_query, expected_user_data_query);
         }
     }
 }

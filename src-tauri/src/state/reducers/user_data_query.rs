@@ -1,4 +1,4 @@
-use crate::error::AppError;
+use crate::error::AppError::{self, *};
 use crate::state::actions::Action;
 use crate::state::{AppState, Connection, QueryTarget, SortMethod, UserDataQuery};
 use crate::verifiable_credential_record::DisplayCredential;
@@ -124,7 +124,10 @@ fn connection_query(state: &mut AppState, query: UserDataQuery) -> Result<(), Ap
 }
 
 pub async fn user_data_query(state: &mut AppState, action: Action) -> Result<(), AppError> {
-    let query: UserDataQuery = serde_json::from_value(action.payload.unwrap()).unwrap();
+    let query = match action {
+        Action::UserDataQuery(query) => query,
+        _ => return Err(InvalidActionError { action }),
+    };
 
     state.current_user_prompt = None;
     match query.target {

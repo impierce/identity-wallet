@@ -6,7 +6,7 @@ use crate::{
 };
 use log::{debug, info};
 use oid4vci::{
-    credential_format_profiles::{CredentialFormats, WithCredential},
+    credential_format_profiles::{CredentialFormats, WithCredential, WithParameters},
     credential_issuer::credentials_supported::CredentialsSupportedObject,
     credential_offer::{CredentialOffer, CredentialOfferQuery, CredentialsObject, Grants},
     credential_response::CredentialResponseType,
@@ -18,8 +18,8 @@ use uuid::Uuid;
 pub async fn read_credential_offer(state: &mut AppState, action: Action) -> Result<(), AppError> {
     info!("read_credential_offer");
 
-    let credential_offer_query = match action {
-        Action::ReadCredentialOffer { credential_offer_query } => credential_offer_query,
+    let credential_offer_uri = match action {
+        Action::ReadCredentialOffer { credential_offer_uri } => credential_offer_uri,
         _ => return Err(InvalidActionError { action }),
     };
 
@@ -30,7 +30,7 @@ pub async fn read_credential_offer(state: &mut AppState, action: Action) -> Resu
         .ok_or(MissingManagerError("identity"))?
         .wallet;
 
-    let mut credential_offer: CredentialOffer = match credential_offer_query {
+    let mut credential_offer: CredentialOffer = match credential_offer_uri {
         CredentialOfferQuery::CredentialOffer(credential_offer) => credential_offer,
         CredentialOfferQuery::CredentialOfferUri(credential_offer_uri) => wallet
             .get_credential_offer(credential_offer_uri)

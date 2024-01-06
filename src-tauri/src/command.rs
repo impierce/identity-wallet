@@ -15,7 +15,7 @@ use crate::state::reducers::{
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, AppStateContainer};
 use async_recursion::async_recursion;
-use log::{info, warn};
+use log::{debug, info, warn};
 use oid4vci::credential_offer::CredentialOfferQuery;
 use tauri::Manager;
 
@@ -99,10 +99,10 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
                     _app_handle,
                 )
                 .await
-            } else if let Result::Ok(credential_offer_query) = form_urlencoded.parse::<CredentialOfferQuery>() {
+            } else if let Result::Ok(credential_offer_uri) = form_urlencoded.parse::<CredentialOfferQuery>() {
                 handle_action_inner(
                     app_state,
-                    Action::ReadCredentialOffer { credential_offer_query },
+                    Action::ReadCredentialOffer { credential_offer_uri },
                     _app_handle,
                 )
                 .await
@@ -136,7 +136,7 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             app_state.user_journey = None;
             Ok(())
         }
-        Action::UserDataQuery => user_data_query(app_state, action).await,
+        Action::UserDataQuery(_) => user_data_query(app_state, action).await,
         Action::Unknown => Err(InvalidActionError { action }),
     }
 }

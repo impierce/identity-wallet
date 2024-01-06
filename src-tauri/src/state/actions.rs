@@ -2,7 +2,7 @@ use oid4vci::credential_offer::CredentialOfferQuery;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
-use super::Locale;
+use super::{Locale, UserDataQuery};
 
 /// A redux-like Action that the backend knows how to handle (reduce), with an optional payload
 /// See https://redux.js.org/tutorials/fundamentals/part-3-state-actions-reducers
@@ -50,7 +50,7 @@ pub enum Action {
     #[serde(rename = "[Credential Offer] Read")]
     ReadCredentialOffer {
         #[ts(type = "object")]
-        credential_offer_query: CredentialOfferQuery,
+        credential_offer_uri: CredentialOfferQuery,
     },
     #[serde(rename = "[Credential Offer] Selected")]
     CredentialOffersSelected {
@@ -84,7 +84,7 @@ pub enum Action {
     #[serde(rename = "[User Journey] Cancel")]
     CancelUserJourney,
     #[serde(rename = "[User Data] Query")]
-    UserDataQuery,
+    UserDataQuery(UserDataQuery),
     #[ts(skip)]
     #[serde(other)]
     Unknown,
@@ -105,7 +105,7 @@ mod tests {
         );
         assert_eq!(
             Action::CredentialsSelected {
-                credential_uuids: vec!["37626466-3738-6437-6165-623533613665".parse().unwrap()]
+                credential_uuids: vec!["39373933-3863-3339-3864-646234373631".parse().unwrap()]
             },
             serde_json::from_str(include_str!(
                 "../../tests/fixtures/actions/authenticate_cred_selected.json"

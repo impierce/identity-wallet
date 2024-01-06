@@ -1,13 +1,12 @@
 use crate::common::test_managers;
-use identity_wallet::state::actions::ActionType;
 use identity_wallet::state::reducers::credential_offer::read_credential_offer;
 use identity_wallet::state::{actions::Action, AppState};
 use identity_wallet::ASSETS_DIR;
 use oid4vci::credential_format_profiles::w3c_verifiable_credentials::jwt_vc_json::{self, JwtVcJson};
-use oid4vci::credential_format_profiles::{CredentialFormats, Parameters};
+use oid4vci::credential_format_profiles::{CredentialFormats, Parameters, WithParameters};
 use oid4vci::credential_issuer::credential_issuer_metadata::CredentialIssuerMetadata;
 use oid4vci::credential_issuer::credentials_supported::CredentialsSupportedObject;
-use oid4vci::credential_offer::{CredentialOffer, CredentialsObject};
+use oid4vci::credential_offer::{CredentialOffer, CredentialOfferQuery, CredentialsObject};
 use serde_json::json;
 use std::borrow::BorrowMut;
 use tempfile::TempDir;
@@ -36,12 +35,11 @@ async fn download_credential_logo() {
 
     Mock::given(method("GET"))
         .and(path("/.well-known/openid-credential-issuer"))
-        .respond_with(
-            ResponseTemplate::new(200).set_body_json(CredentialIssuerMetadata::<CredentialFormats> {
-                credential_endpoint: Url::parse("https://server.example.com/credential").unwrap(),
-                credentials_supported: vec![CredentialsSupportedObject {
+        .respond_with(ResponseTemplate::new(200).set_body_json(CredentialIssuerMetadata {
+            credential_endpoint: Url::parse("https://server.example.com/credential").unwrap(),
+            credentials_supported: vec![CredentialsSupportedObject {
                     id: None,
-                    credential_format: CredentialFormats::JwtVcJson(Parameters {
+                    credential_format: CredentialFormats::<WithParameters>::JwtVcJson(Parameters {
                         format: JwtVcJson,
                         parameters: (
                             jwt_vc_json::CredentialDefinition {
@@ -70,13 +68,12 @@ async fn download_credential_logo() {
                         "text_color": "#FFFFFF"
                     })]),
                 }],
-                credential_issuer: "https://server.example.com".parse().unwrap(),
-                authorization_server: None,
-                batch_credential_endpoint: None,
-                deferred_credential_endpoint: None,
-                display: None,
-            }),
-        )
+            credential_issuer: "https://server.example.com".parse().unwrap(),
+            authorization_server: None,
+            batch_credential_endpoint: None,
+            deferred_credential_endpoint: None,
+            display: None,
+        }))
         .expect(1)
         .mount(&mock_server)
         .await;
@@ -97,9 +94,10 @@ async fn download_credential_logo() {
 
     assert!(read_credential_offer(
         state.borrow_mut(),
-        Action {
-            r#type: ActionType::ReadCredentialOffer,
-            payload: Some(json!({"credential_offer_uri": format!("{}/offer/1", &mock_server.uri())})),
+        Action::ReadCredentialOffer {
+            credential_offer_uri: CredentialOfferQuery::CredentialOfferUri(
+                format!("{}/offer/1", &mock_server.uri()).parse().unwrap()
+            )
         },
     )
     .await
@@ -127,12 +125,11 @@ async fn download_issuer_logo() {
 
     Mock::given(method("GET"))
         .and(path("/.well-known/openid-credential-issuer"))
-        .respond_with(
-            ResponseTemplate::new(200).set_body_json(CredentialIssuerMetadata::<CredentialFormats> {
-                credential_endpoint: Url::parse("https://server.example.com/credential").unwrap(),
-                credentials_supported: vec![CredentialsSupportedObject {
+        .respond_with(ResponseTemplate::new(200).set_body_json(CredentialIssuerMetadata {
+            credential_endpoint: Url::parse("https://server.example.com/credential").unwrap(),
+            credentials_supported: vec![CredentialsSupportedObject {
                     id: None,
-                    credential_format: CredentialFormats::JwtVcJson(Parameters {
+                    credential_format: CredentialFormats::<WithParameters>::JwtVcJson(Parameters {
                         format: JwtVcJson,
                         parameters: (
                             jwt_vc_json::CredentialDefinition {
@@ -152,16 +149,15 @@ async fn download_issuer_logo() {
                     proof_types_supported: None,
                     display: None,
                 }],
-                credential_issuer: "https://server.example.com".parse().unwrap(),
-                authorization_server: None,
-                batch_credential_endpoint: None,
-                deferred_credential_endpoint: None,
-                display: Some(vec![json!({
-                    "client_name": "University",
-                    "logo_uri": format!("{}/logo/issuer.png", &mock_server.uri()),
-                })]),
-            }),
-        )
+            credential_issuer: "https://server.example.com".parse().unwrap(),
+            authorization_server: None,
+            batch_credential_endpoint: None,
+            deferred_credential_endpoint: None,
+            display: Some(vec![json!({
+                "client_name": "University",
+                "logo_uri": format!("{}/logo/issuer.png", &mock_server.uri()),
+            })]),
+        }))
         .expect(1)
         .mount(&mock_server)
         .await;
@@ -180,9 +176,10 @@ async fn download_issuer_logo() {
 
     assert!(read_credential_offer(
         state.borrow_mut(),
-        Action {
-            r#type: ActionType::ReadCredentialOffer,
-            payload: Some(json!({"credential_offer_uri": format!("{}/offer/1", &mock_server.uri())})),
+        Action::ReadCredentialOffer {
+            credential_offer_uri: CredentialOfferQuery::CredentialOfferUri(
+                format!("{}/offer/1", &mock_server.uri()).parse().unwrap()
+            )
         },
     )
     .await
@@ -210,12 +207,11 @@ async fn no_download_when_no_logo_in_metadata() {
 
     Mock::given(method("GET"))
         .and(path("/.well-known/openid-credential-issuer"))
-        .respond_with(
-            ResponseTemplate::new(200).set_body_json(CredentialIssuerMetadata::<CredentialFormats> {
-                credential_endpoint: Url::parse("https://server.example.com/credential").unwrap(),
-                credentials_supported: vec![CredentialsSupportedObject {
+        .respond_with(ResponseTemplate::new(200).set_body_json(CredentialIssuerMetadata {
+            credential_endpoint: Url::parse("https://server.example.com/credential").unwrap(),
+            credentials_supported: vec![CredentialsSupportedObject {
                     id: None,
-                    credential_format: CredentialFormats::JwtVcJson(Parameters {
+                    credential_format: CredentialFormats::<WithParameters>::JwtVcJson(Parameters {
                         format: JwtVcJson,
                         parameters: (
                             jwt_vc_json::CredentialDefinition {
@@ -235,13 +231,12 @@ async fn no_download_when_no_logo_in_metadata() {
                     proof_types_supported: None,
                     display: None,
                 }],
-                credential_issuer: "https://server.example.com".parse().unwrap(),
-                authorization_server: None,
-                batch_credential_endpoint: None,
-                deferred_credential_endpoint: None,
-                display: None,
-            }),
-        )
+            credential_issuer: "https://server.example.com".parse().unwrap(),
+            authorization_server: None,
+            batch_credential_endpoint: None,
+            deferred_credential_endpoint: None,
+            display: None,
+        }))
         .expect(1)
         .mount(&mock_server)
         .await;
@@ -255,9 +250,10 @@ async fn no_download_when_no_logo_in_metadata() {
 
     assert!(read_credential_offer(
         state.borrow_mut(),
-        Action {
-            r#type: ActionType::ReadCredentialOffer,
-            payload: Some(json!({"credential_offer_uri": format!("{}/offer/1", &mock_server.uri())})),
+        Action::ReadCredentialOffer {
+            credential_offer_uri: CredentialOfferQuery::CredentialOfferUri(
+                format!("{}/offer/1", &mock_server.uri()).parse().unwrap()
+            )
         },
     )
     .await
