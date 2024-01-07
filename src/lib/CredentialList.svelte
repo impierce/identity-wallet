@@ -15,7 +15,7 @@
   import SealCheck from '~icons/ph/seal-check-fill';
 
   import type { DisplayCredential } from '../../src-tauri/bindings/display-credential/DisplayCredential';
-  import CredentialListEntry from './components/CredentialListEntry.svelte';
+  import CredentialListItem from './components/CredentialListItem.svelte';
   import NoCredentials from './credentials/NoCredentials.svelte';
 
   export let credentialType: 'all' | 'data' | 'badges' = 'all';
@@ -97,12 +97,12 @@
     <!--Mock credentials -->
     <!-- <p class="font-semibold">A</p> -->
     {#each test_credentials as credential}
-      <CredentialListEntry title={credential.title} description={credential.description}></CredentialListEntry>
+      <CredentialListItem title={credential.title} description={credential.description}></CredentialListItem>
     {/each}
 
     <!-- Actual (non-mock) credentials -->
     {#each credentials as credential}
-      <CredentialListEntry
+      <CredentialListItem
         id={credential.id}
         title={credential.metadata.display.name ??
           credential.data.credentialSubject.achievement?.name ??
@@ -121,7 +121,7 @@
             class="h-[18px] w-[18px] text-slate-800 dark:text-grey"
           />
         </span> -->
-      </CredentialListEntry>
+      </CredentialListItem>
     {/each}
   </div>
 {:else if $state?.credentials?.length === 0}

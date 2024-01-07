@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation';
 
   import { colors, icons } from '$lib/credentials/customization/utils';
-  import CredentialListEntry from '$src/lib/components/CredentialListEntry.svelte';
+  import CredentialListItem from '$src/lib/components/CredentialListItem.svelte';
   import NoMatch from '$src/lib/components/molecules/NoMatch.svelte';
   import NoQuery from '$src/lib/components/molecules/NoQuery.svelte';
   import Search from '$src/lib/components/Search.svelte';
@@ -36,7 +36,7 @@
       <!-- using "key" to destroy & recreate the complete credentials list to enforce a refresh of logos -->
       {#key indices}
         {#each credentials as credential}
-          <!-- <CredentialListEntry
+          <!-- <CredentialListItem
             id={credential.id}
             title={credential.metadata.display.name ??
               credential.data.credentialSubject.achievement?.name ??
@@ -44,9 +44,9 @@
             description={credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
             type={credential.data.type.includes('OpenBadgeCredential') ? 'badge' : 'data'}
           >
-          </CredentialListEntry> -->
+          </CredentialListItem> -->
 
-          <CredentialListEntry
+          <CredentialListItem
             id={credential.id}
             title={credential.metadata.display.name ??
               credential.data.credentialSubject.achievement?.name ??

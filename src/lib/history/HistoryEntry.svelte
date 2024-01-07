@@ -6,7 +6,7 @@
 
   import EnvelopeSimple from '~icons/ph/envelope-simple-light';
 
-  import CredentialListEntry from '../components/CredentialListEntry.svelte';
+  import CredentialListItem from '../components/CredentialListItem.svelte';
   import { colors } from '../credentials/customization/utils';
 
   export let connection: Connection;
@@ -26,9 +26,9 @@
   {#if credentials.length > 0}
     <div class="mt-[12px] w-fit rounded-xl border border-slate-200 dark:border-slate-600">
       {#each credentials as credential}
-        <CredentialListEntry title={credential.metadata.display.name ?? credential.data.type.at(-1)}>
+        <CredentialListItem title={credential.metadata.display.name ?? credential.data.type.at(-1)}>
           <!-- <span slot="icon"><EnvelopeSimple class="h-6 w-6" /></span> -->
-        </CredentialListEntry>
+        </CredentialListItem>
       {/each}
     </div>
   {/if}

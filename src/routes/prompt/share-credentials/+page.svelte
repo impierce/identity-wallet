@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation';
 
   import Button from '$src/lib/components/Button.svelte';
-  import CredentialListEntry from '$src/lib/components/CredentialListEntry.svelte';
+  import CredentialListItem from '$src/lib/components/CredentialListItem.svelte';
   import CredentialOfferEntry from '$src/lib/components/CredentialOfferEntry.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import PaddedIcon from '$src/lib/components/PaddedIcon.svelte';
@@ -58,7 +58,7 @@
       >
         <div class="flex w-full flex-col space-y-2">
           {#each selected_credentials as credential}
-            <CredentialListEntry
+            <CredentialListItem
               id={credential.id}
               title={credential.metadata.display.name || credential.data.type.at(-1)}
               hasCheckbox={true}
@@ -67,7 +67,7 @@
             />
             <!-- <div class="flex items-center">
             <div class="grow">
-              <CredentialListEntry
+              <CredentialListItem
                 id={credential.id}
                 title={credential.metadata.display.name || credential.data.type.at(-1)}
                 description={new URL(credential.data.issuer).hostname}
@@ -79,7 +79,7 @@
                     class="h-[18px] w-[18px] text-slate-800"
                   />
                 </span>
-              </CredentialListEntry>
+              </CredentialListItem>
             </div>
             <div class="px-3">
               <button

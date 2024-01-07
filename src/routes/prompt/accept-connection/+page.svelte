@@ -10,7 +10,7 @@
   import Image from '$lib/components/Image.svelte';
   import PaddedIcon from '$lib/components/PaddedIcon.svelte';
   import { dispatch } from '$lib/dispatcher';
-  import CredentialListEntry from '$src/lib/components/CredentialListEntry.svelte';
+  import CredentialListItem from '$src/lib/components/CredentialListItem.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import { state } from '$src/stores';
 

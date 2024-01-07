@@ -10,7 +10,7 @@
   import { colors, icons } from '$lib/credentials/customization/utils';
   import { dispatch } from '$lib/dispatcher';
   import { getImageAsset } from '$lib/utils';
-  import CredentialListEntry from '$src/lib/components/CredentialListEntry.svelte';
+  import CredentialListItem from '$src/lib/components/CredentialListItem.svelte';
   import CredentialOfferEntry from '$src/lib/components/CredentialOfferEntry.svelte';
   import Image from '$src/lib/components/Image.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
@@ -165,7 +165,7 @@
       <!-- <div class="w-full space-y-2 rounded-2xl p-3 ring-2 ring-inset ring-white"> -->
       {#each credential_offer.credentials as credential, index}
         <!-- TODO: careful with long list! -->
-        <CredentialListEntry
+        <CredentialListItem
           id={`credential_${index}`}
           title={$state?.current_user_prompt?.display?.at(index)?.name ?? credential.credential_definition.type.at(-1)}
           hasCheckbox={true}

@@ -14,7 +14,7 @@
   import User from '~icons/ph/user';
 
   import type { DisplayCredential } from '../../src-tauri/bindings/display-credential/DisplayCredential';
-  import CredentialListEntry from './components/CredentialListEntry.svelte';
+  import CredentialListItem from './components/CredentialListItem.svelte';
   import { colors, icons } from './credentials/customization/utils';
 
   export let credentialType: 'all' | 'data' | 'badges' = 'all';
@@ -58,7 +58,7 @@
   </div>
   <div class="flex flex-col space-y-2">
     {#each favorite_credentials as credential}
-      <!-- <CredentialListEntry
+      <!-- <CredentialListItem
         id={credential.id}
         title={credential.metadata.display.name || credential.data.type.at(-1)}
         description={credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
@@ -70,9 +70,9 @@
             class="h-[18px] w-[18px] text-slate-800 dark:text-grey"
           />
         </span>
-      </CredentialListEntry> -->
+      </CredentialListItem> -->
 
-      <CredentialListEntry
+      <CredentialListItem
         id={credential.id}
         title={credential.metadata.display.name ??
           credential.data.credentialSubject.achievement?.name ??
