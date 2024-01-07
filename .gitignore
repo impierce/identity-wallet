@@ -13,6 +13,7 @@ lerna-debug.log*
 /package
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+/coverage
 
 # Editor directories and files
 .vscode/*

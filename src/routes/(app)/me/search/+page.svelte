@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
+
   import { colors, icons } from '$lib/credentials/customization/utils';
   import CredentialListEntry from '$src/lib/components/CredentialListEntry.svelte';
   import NoMatch from '$src/lib/components/molecules/NoMatch.svelte';
@@ -34,29 +36,28 @@
       <!-- using "key" to destroy & recreate the complete credentials list to enforce a refresh of logos -->
       {#key indices}
         {#each credentials as credential}
+          <!-- <CredentialListEntry
+            id={credential.id}
+            title={credential.metadata.display.name ??
+              credential.data.credentialSubject.achievement?.name ??
+              credential.data.type.at(-1)}
+            description={credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
+            type={credential.data.type.includes('OpenBadgeCredential') ? 'badge' : 'data'}
+          >
+          </CredentialListEntry> -->
+
           <CredentialListEntry
             id={credential.id}
             title={credential.metadata.display.name ??
               credential.data.credentialSubject.achievement?.name ??
               credential.data.type.at(-1)}
             description={credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
-            color={credential.metadata.display.color ||
-              colors.at(
-                credential.id
-                  .match(/[0-9]+/)
-                  .at(0)
-                  .at(0) % 8, // TODO: omits last value (white)
-              )}
             type={credential.data.type.includes('OpenBadgeCredential') ? 'badge' : 'data'}
-          >
-            <span slot="icon">
-              <svelte:component
-                this={icons[credential.metadata.display.icon] ||
-                  (credential.data.type.includes('OpenBadgeCredential') ? icons['Certificate'] : icons['User'])}
-                class="h-[18px] w-[18px] text-slate-800 dark:text-grey"
-              />
-            </span>
-          </CredentialListEntry>
+            on:click={() =>
+              credential.data.type.includes('OpenBadgeCredential')
+                ? goto(`/badges/${credential.id}`)
+                : goto(`/credentials/${credential.id}`)}
+          />
         {/each}
       {/key}
     </div>

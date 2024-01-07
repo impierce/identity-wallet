@@ -1,8 +1,7 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
-  import { writable } from 'svelte/store';
-
   import { createCheckbox, melt } from '@melt-ui/svelte';
+
+  import Image from '$src/lib/components/Image.svelte';
 
   import Check from '~icons/ph/check-bold';
 
@@ -17,15 +16,16 @@
   export let index: number | string;
   export let title = '';
   export let description = '';
-  export let color: string | undefined = undefined;
 </script>
 
 <div class="flex h-[60px] items-center justify-start rounded-xl bg-white p-[5px] dark:bg-dark">
   <!-- Logo -->
   <div
-    class="mr-[15px] {color} flex h-[50px] w-[50px] min-w-[50px] flex-col items-center justify-center overflow-hidden rounded-lg"
+    class="mr-[15px] flex h-[50px] w-[50px] min-w-[50px] flex-col items-center justify-center overflow-hidden rounded-lg"
   >
-    <slot name="logo" />
+    <span class="flex h-full w-full items-center justify-center bg-silver dark:bg-navy">
+      <Image id={`credential_${index}`} isTempAsset={true} />
+    </span>
   </div>
   <!-- Text -->
   <div class="flex grow flex-col items-start">

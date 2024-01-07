@@ -1,6 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
+  import { goto } from '$app/navigation';
+
   import { colors, icons } from '$lib/credentials/customization/utils';
   import LL from '$src/i18n/i18n-svelte';
   import { state } from '$src/stores';
@@ -95,12 +97,7 @@
     <!--Mock credentials -->
     <!-- <p class="font-semibold">A</p> -->
     {#each test_credentials as credential}
-      <CredentialListEntry title={credential.title} description={credential.description} color={credential.color}>
-        <span slot="icon" class="h-full">
-          <!-- <img src={credential.image} class="h-full object-cover" /> -->
-          <!-- <svelte:component this={credential.icon} class="h-[18px] w-[18px] text-slate-800" /> -->
-        </span>
-      </CredentialListEntry>
+      <CredentialListEntry title={credential.title} description={credential.description}></CredentialListEntry>
     {/each}
 
     <!-- Actual (non-mock) credentials -->
@@ -111,22 +108,19 @@
           credential.data.credentialSubject.achievement?.name ??
           credential.data.type.at(-1)}
         description={credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
-        color={credential.metadata.display.color ||
-          colors.at(
-            credential.id
-              .match(/[0-9]+/)
-              .at(0)
-              .at(0) % 8, // TODO: omits last value (white)
-          )}
         type={credential.data.type.includes('OpenBadgeCredential') ? 'badge' : 'data'}
+        on:click={() =>
+          credential.data.type.includes('OpenBadgeCredential')
+            ? goto(`/badges/${credential.id}`)
+            : goto(`/credentials/${credential.id}`)}
       >
-        <span slot="icon">
+        <!-- <span slot="icon">
           <svelte:component
             this={icons[credential.metadata.display.icon] ||
               (credential.data.type.includes('OpenBadgeCredential') ? icons['Certificate'] : icons['User'])}
             class="h-[18px] w-[18px] text-slate-800 dark:text-grey"
           />
-        </span>
+        </span> -->
       </CredentialListEntry>
     {/each}
   </div>

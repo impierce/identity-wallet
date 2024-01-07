@@ -18,7 +18,9 @@ export const icons = {
   Question: Question,
   Certificate: Certificate,
   File: File,
-};
+} as const;
+
+export type Icon = keyof typeof icons;
 
 /**
  * No dynamic class names, therefore explicitly defined background colors.

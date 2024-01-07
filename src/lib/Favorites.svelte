@@ -1,6 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
+  import { goto } from '$app/navigation';
+
   import LL from '$src/i18n/i18n-svelte';
   import { state } from '$src/stores';
 
@@ -56,17 +58,10 @@
   </div>
   <div class="flex flex-col space-y-2">
     {#each favorite_credentials as credential}
-      <CredentialListEntry
+      <!-- <CredentialListEntry
         id={credential.id}
         title={credential.metadata.display.name || credential.data.type.at(-1)}
         description={credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
-        color={credential.metadata.display.color ||
-          colors.at(
-            credential.id
-              .match(/[0-9]+/)
-              .at(0)
-              .at(0) % 8, // TODO: omits last value (white)
-          )}
         type={credential.data.type.includes('OpenBadgeCredential') ? 'badge' : 'data'}
       >
         <span slot="icon">
@@ -75,7 +70,20 @@
             class="h-[18px] w-[18px] text-slate-800 dark:text-grey"
           />
         </span>
-      </CredentialListEntry>
+      </CredentialListEntry> -->
+
+      <CredentialListEntry
+        id={credential.id}
+        title={credential.metadata.display.name ??
+          credential.data.credentialSubject.achievement?.name ??
+          credential.data.type.at(-1)}
+        description={credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
+        type={credential.data.type.includes('OpenBadgeCredential') ? 'badge' : 'data'}
+        on:click={() =>
+          credential.data.type.includes('OpenBadgeCredential')
+            ? goto(`/badges/${credential.id}`)
+            : goto(`/credentials/${credential.id}`)}
+      />
     {/each}
   </div>
   <!-- TODO: make conditional? only show when there are also some non-favorite credentials -->

@@ -11,6 +11,7 @@
   import Button from '$lib/components/Button.svelte';
   import { getImageAsset } from '$lib/utils';
   import CredentialDetailsDropdownMenu from '$src/lib/components/CredentialDetailsDropdownMenu.svelte';
+  import Image from '$src/lib/components/Image.svelte';
   import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import { colors, icons } from '$src/lib/credentials/customization/utils';
@@ -101,25 +102,13 @@
             <Heart class="h-6 w-6 dark:text-white" />
           {/if}
         </button>
-        <div
-          class="mr-2 flex h-[180px] w-[180px] flex-col items-center justify-center rounded-3xl bg-white dark:bg-dark"
-        >
-          <!-- Icon -->
-          <!-- <svelte:component this={icons[icon]} class="h-[128px] w-[128px] text-slate-800" /> -->
-          {#if credentialLogoUrl}
-            <img
-              src={credentialLogoUrl}
-              class="h-[128px] w-[128px] overflow-hidden rounded-xl object-cover"
-              alt="badge"
-              on:error={() => (credentialLogoUrl = null)}
-            />
-          {:else}
-            <svelte:component this={icons['Certificate']} class="h-10 w-10 text-slate-800 dark:text-grey" />
-          {/if}
-          <!-- Logo -->
-          <!-- <div class="flex h-full w-full items-center justify-center bg-white p-1">
-              <img src={logo_location} alt="logo" class="object-scale-down" />
-            </div> -->
+        <div class="mr-2 flex h-[165px] w-[165px] flex-col items-center justify-center rounded-3xl bg-white">
+          <Image
+            id={$page.params.id}
+            imgClass="h-[128px] w-[128px] rounded-xl"
+            iconFallback="Certificate"
+            iconClass="h-10 w-10 dark:text-slate-800"
+          />
         </div>
         <div class="-mr-3 -mt-1">
           <!-- <CredentialDetailsDropdownMenu {credential} class="dark:text-white" /> -->
@@ -144,25 +133,21 @@
         <!-- Valid -->
         <div class="flex w-full flex-col items-center space-y-1">
           <p class="text-xs text-black dark:text-white">Valid</p>
-          <div class="flex w-full justify-center rounded-xl bg-silver py-5 dark:bg-navy">
-            <SealCheck class="h-7 w-7 text-slate-800 dark:text-grey" />
+          <div class="flex w-full justify-center rounded-xl bg-silver py-5 dark:bg-white">
+            <SealCheck class="h-7 w-7 text-slate-800" />
           </div>
           <p class="text-xs text-black dark:text-white"></p>
         </div>
         <!-- Issued By -->
         <div class="flex w-full flex-col items-center space-y-1">
           <p class="text-xs text-black dark:text-white">Issued By</p>
-          <div class="flex w-full justify-center rounded-xl bg-silver py-5 dark:bg-navy">
-            {#if issuerLogoUrl}
-              <img
-                src={issuerLogoUrl}
-                class="h-7 w-7 rounded-md"
-                alt="issuer"
-                on:error={() => (issuerLogoUrl = null)}
-              />
-            {:else}
-              <svelte:component this={icons['Bank']} class="h-7 w-7 text-slate-800 dark:text-grey" />
-            {/if}
+          <div class="w- flex h-[68px] w-full justify-center rounded-xl bg-silver dark:bg-white">
+            <Image
+              id={'university'}
+              iconFallback="Bank"
+              imgClass="w-auto rounded-lg m-2"
+              iconClass="h-7 w-7 dark:text-slate-800"
+            />
           </div>
           <p class="text-xs text-black dark:text-white">{credential.data.issuer.name}</p>
         </div>

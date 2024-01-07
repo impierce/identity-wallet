@@ -58,18 +58,13 @@
       >
         <div class="flex w-full flex-col space-y-2">
           {#each selected_credentials as credential}
-            <CredentialOfferEntry
-              index={credential.id}
+            <CredentialListEntry
+              id={credential.id}
               title={credential.metadata.display.name || credential.data.type.at(-1)}
-              color={credential.metadata.display.color || 'bg-indigo-100'}
-            >
-              <span slot="logo">
-                <svelte:component
-                  this={icons[credential.metadata.display.icon] || icons['User']}
-                  class="h-[18px] w-[18px] text-slate-800"
-                />
-              </span>
-            </CredentialOfferEntry>
+              hasCheckbox={true}
+              isChecked={true}
+              isDisabled={true}
+            />
             <!-- <div class="flex items-center">
             <div class="grow">
               <CredentialListEntry

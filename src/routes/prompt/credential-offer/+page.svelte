@@ -10,7 +10,9 @@
   import { colors, icons } from '$lib/credentials/customization/utils';
   import { dispatch } from '$lib/dispatcher';
   import { getImageAsset } from '$lib/utils';
+  import CredentialListEntry from '$src/lib/components/CredentialListEntry.svelte';
   import CredentialOfferEntry from '$src/lib/components/CredentialOfferEntry.svelte';
+  import Image from '$src/lib/components/Image.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import { state } from '$src/stores';
 
@@ -87,7 +89,23 @@
   <TopNavigation title={'Credential Offer'} on:back={() => history.back()} />
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
-    {#if $state.current_user_prompt.logo_uri}
+    <div class="flex h-[75px] w-[75px] overflow-hidden rounded-3xl">
+      <!-- <div class="flex w-full items-center justify-center overflow-hidden rounded-2xl"> -->
+      <!-- TODO: should fallback to <PaddedIcon> instead of icon -->
+
+      <Image
+        id={'issuer_0'}
+        isTempAsset={true}
+        iconClass="dark:text-slate-800"
+        imgClass="flex w-full items-center justify-center overflow-hidden rounded-3xl p-2"
+      >
+        <div slot="fallback">
+          <PaddedIcon icon={DownloadSimple} />
+        </div>
+      </Image>
+      <!-- </div> -->
+    </div>
+    <!-- {#if $state.current_user_prompt.logo_uri}
       <div class="flex h-[75px] w-[75px] overflow-hidden rounded-3xl bg-white p-2 dark:bg-silver">
         <div class="flex w-full items-center justify-center overflow-hidden rounded-2xl">
           {#if issuerLogoUrl}
@@ -99,7 +117,7 @@
       </div>
     {:else}
       <PaddedIcon icon={DownloadSimple} />
-    {/if}
+    {/if} -->
     <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
       {#if issuer_name}
         {issuer_name}
@@ -144,24 +162,27 @@
     <div
       class="mt-3 w-full rounded-[20px] border border-slate-200 bg-white p-[10px] dark:border-slate-600 dark:bg-dark"
     >
-      <!-- <CredentialOfferEntry index="0" title={$state?.current_user_prompt?.display?.at(0).name ?? 'display.name'} color={'bg-white'}>
-        <span slot="logo" class="flex h-full w-full items-center justify-center bg-silver p-1 dark:bg-navy">
-          {#if credentialLogoUrl}
-            <img src={credentialLogoUrl} alt="logo" />
-          {:else}
-            <svelte:component this={icons['User']} class="h-[18px] w-[18px] text-slate-800 dark:text-grey" />
-          {/if}
-        </span>
-      </CredentialOfferEntry> -->
       <!-- <div class="w-full space-y-2 rounded-2xl p-3 ring-2 ring-inset ring-white"> -->
       {#each credential_offer.credentials as credential, index}
         <!-- TODO: careful with long list! -->
+        <CredentialListEntry
+          id={`credential_${index}`}
+          title={$state?.current_user_prompt?.display?.at(index)?.name ?? credential.credential_definition.type.at(-1)}
+          hasCheckbox={true}
+          isChecked={true}
+          isDisabled={true}
+          isTempAsset={true}
+        />
+        <!-- <CredentialOfferEntry
+          index={'_0'}
+          title={$state?.current_user_prompt?.display?.at(index)?.name ?? credential.credential_definition.type.at(-1)}
+          description="CredentialOfferEntry"
+        />
         <CredentialOfferEntry
           {index}
           title={$state?.current_user_prompt?.display?.at(index)?.name ?? credential.credential_definition.type.at(-1)}
-          color={'bg-white'}
-        >
-          <!-- {#if !credentialLogoUrl}
+        /> -->
+        <!-- {#if !credentialLogoUrl}
             <div class="{color} relative h-[-webkit-fill-available] w-screen"></div>
           {:else}
             <img
@@ -170,11 +191,14 @@
               on:error={() => (credentialLogoUrl = '')}
             />
           {/if} -->
-          <span slot="logo" class="flex h-full w-full items-center justify-center bg-silver p-1 dark:bg-navy">
-            <!-- {#if credentialLogoUrl}
+        <!-- <span slot="logo" class="flex h-full w-full items-center justify-center bg-silver p-1 dark:bg-navy">
+            <Image id={'credential_0'} isTempAsset={true} /> -->
+
+        <!-- {#if credentialLogoUrl}
               <img src={credentialLogoUrl} alt="logo" on:error={() => (credentialLogoUrl = null)} />
             {:else} -->
-            {#if credentialLogoUrls[index]}
+
+        <!-- {#if credentialLogoUrls[index]}
               <img
                 src={credentialLogoUrls[index]}
                 alt="logo-{index}"
@@ -182,18 +206,18 @@
               />
             {:else}
               <svelte:component this={icons['User']} class="h-[18px] w-[18px] text-slate-800 dark:text-grey" />
-            {/if}
-          </span>
+            {/if} -->
+        <!-- </span> -->
 
-          <!-- <span slot="logo">
+        <!-- <span slot="logo">
             <img src={credentialLogoUrl} alt="logo" />
           </span> -->
-          <!-- {#if $state.current_user_prompt.logo_uri}
+        <!-- {#if $state.current_user_prompt.logo_uri}
               <img src={$state.current_user_prompt.logo_uri} alt="logo" class="object-scale-down" />
             {:else} -->
-          <!-- <svelte:component this={icons['User']} class="h-[18px] w-[18px] text-slate-800" /> -->
-          <!-- {/if} -->
-        </CredentialOfferEntry>
+        <!-- <svelte:component this={icons['User']} class="h-[18px] w-[18px] text-slate-800" /> -->
+        <!-- {/if} -->
+        <!-- </CredentialOfferEntry> -->
       {/each}
     </div>
 

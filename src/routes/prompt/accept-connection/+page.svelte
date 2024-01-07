@@ -7,6 +7,7 @@
   import { createCheckbox, createPopover, melt } from '@melt-ui/svelte';
 
   import Button from '$lib/components/Button.svelte';
+  import Image from '$lib/components/Image.svelte';
   import PaddedIcon from '$lib/components/PaddedIcon.svelte';
   import { dispatch } from '$lib/dispatcher';
   import CredentialListEntry from '$src/lib/components/CredentialListEntry.svelte';

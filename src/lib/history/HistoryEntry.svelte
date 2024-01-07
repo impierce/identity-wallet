@@ -26,10 +26,7 @@
   {#if credentials.length > 0}
     <div class="mt-[12px] w-fit rounded-xl border border-slate-200 dark:border-slate-600">
       {#each credentials as credential}
-        <CredentialListEntry
-          title={credential.metadata.display.name ?? credential.data.type.at(-1)}
-          color={colors.at(0)}
-        >
+        <CredentialListEntry title={credential.metadata.display.name ?? credential.data.type.at(-1)}>
           <!-- <span slot="icon"><EnvelopeSimple class="h-6 w-6" /></span> -->
         </CredentialListEntry>
       {/each}
