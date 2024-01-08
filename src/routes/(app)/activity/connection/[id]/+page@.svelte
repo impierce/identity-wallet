@@ -6,9 +6,9 @@
   import ConnectionHistory from '$lib/connections/ConnectionHistory.svelte';
   import ConnectionSummary from '$lib/connections/ConnectionSummary.svelte';
   import type { Connection } from '$lib/connections/types';
-  import exampleConnections from '$lib/example/data/connections.json';
   import ConnectionTabs from '$src/lib/components/molecules/navigation/tabs/ConnectionTabs.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
+  import exampleConnections from '$src/lib/connections/mock-data.json';
   import { state } from '$src/stores';
 
   // let connection: Connection = exampleConnections.find((c) => c.id === $page.params.id)!!;

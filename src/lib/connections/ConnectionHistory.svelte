@@ -1,27 +1,27 @@
 <script lang="ts">
-  import exampleEvents from '$lib/example/data/events.json';
-  import type { Event, EventType } from '$lib/example/model/event';
-  import CredentialOffer from '$lib/history/events/CredentialOffer.svelte';
-  import InitialConnection from '$lib/history/events/InitialConnection.svelte';
-  import Login from '$lib/history/events/Login.svelte';
+  import type { Event, EventType } from '$lib/events';
+  import InitialConnection from '$lib/events/InitialConnection.svelte';
+  import Login from '$lib/events/Login.svelte';
+  import CredentialOffer from '$src/lib/events/CredentialOffer.svelte';
+  import exampleEvents from '$src/lib/events/mock-data.json';
 
   import Download from '~icons/lucide/download';
   import HelpCircle from '~icons/lucide/help-circle';
   import KeyRound from '~icons/lucide/key-round';
   import Sprout from '~icons/lucide/sprout';
 
-  // const events: Event[] = exampleEvents
-  //   .map((e) => ({ ...e, type: e.type as EventType })) // explicit type cast
-  //   .map((e) => ({
-  //     ...e,
-  //     timestamp: new Date(e.timestamp).toLocaleString('en-US', {
-  //       dateStyle: 'medium',
-  //       timeStyle: 'medium'
-  //     })
-  //   }))
-  //   .reverse(); // newest on top
+  const events: Event[] = exampleEvents
+    .map((e) => ({ ...e, type: e.type as EventType })) // explicit type cast
+    .map((e) => ({
+      ...e,
+      timestamp: new Date(e.timestamp).toLocaleString('en-US', {
+        dateStyle: 'medium',
+        timeStyle: 'medium',
+      }),
+    }))
+    .reverse(); // newest on top
 
-  const events: Event[] = [];
+  // const events: Event[] = [];
 </script>
 
 <div class="flex h-full flex-col space-y-8">

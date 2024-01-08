@@ -12,7 +12,6 @@
   import { debug, info } from '@tauri-apps/plugin-log';
 
   import CredentialList from '$lib/CredentialList.svelte';
-  import AddButton from '$lib/credentials/AddButton.svelte';
   import Favorites from '$lib/Favorites.svelte';
   import TopBar from '$lib/home-header/TopBar.svelte';
   import UserJourney from '$lib/home-header/UserJourney.svelte';
@@ -20,12 +19,14 @@
   import QrCodeButton from '$lib/QrCodeButton.svelte';
   import LL from '$src/i18n/i18n-svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
+  import ButtonRounded from '$src/lib/components/atoms/ButtonRounded.svelte';
   import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
   import IconMessage from '$src/lib/components/molecules/IconMessage.svelte';
   import CredentialTabs from '$src/lib/components/molecules/navigation/tabs/CredentialTabs.svelte';
   import { onboarding_state, state } from '$src/stores';
 
   import Ghost from '~icons/ph/ghost-fill';
+  import PlusCircle from '~icons/ph/plus-circle';
   import RocketLaunch from '~icons/ph/rocket-launch-fill';
 
   import { calculateInitials } from './utils';
@@ -94,7 +95,7 @@
       <div in:fly={{ y: 12, delay: 0, opacity: 1, duration: 200 }} class="absolute bottom-4 right-4">
         <!-- <div in:fade={{ delay: 200, duration: 200 }} class="absolute bottom-4 right-4"> -->
         <!-- TODO: feature disabled: "Add self-signed credential" -->
-        <!-- <AddButton /> -->
+        <!-- <ButtonRounded label="Add" icon={PlusCircle} /> -->
       </div>
     {:else if $state?.user_journey}
       <!-- With active onboarding journey -->
@@ -159,9 +160,9 @@
         </p>
       </div>
       <!-- TODO: feature disabled: "Add self-signed credential" -->
-      <!-- <div in:fly={{ y: 12, delay: 400, opacity: 0 }} class="absolute bottom-4 right-4">
-        <AddButton />
-      </div> -->
+      <div in:fly={{ y: 12, delay: 400, opacity: 0 }} class="absolute bottom-4 right-4">
+        <!-- <ButtonRounded label="Add" icon={PlusCircle} /> -->
+      </div>
     {/if}
   </div>
 </div>

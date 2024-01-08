@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createCheckbox, melt } from '@melt-ui/svelte';
 
-  import Image from '$src/lib/components/Image.svelte';
+  import Image from '$src/lib/components/atoms/Image.svelte';
 
   import Check from '~icons/ph/check-bold';
 

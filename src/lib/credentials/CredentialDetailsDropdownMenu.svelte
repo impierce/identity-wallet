@@ -3,7 +3,8 @@
 
   import { createDialog, createDropdownMenu, melt } from '@melt-ui/svelte';
 
-  import { colors, icons } from '$lib/credentials/customization/utils';
+  import { colors } from '$src/lib/colors';
+  import { icons } from '$src/lib/icons';
 
   import Bank from '~icons/ph/bank-light';
   import Car from '~icons/ph/car-light';
@@ -16,8 +17,8 @@
   import User from '~icons/ph/user-light';
 
   import type { DisplayCredential } from '../../../src-tauri/bindings/display-credential/DisplayCredential';
+  import Button from '../components/atoms/Button.svelte';
   import { dispatch } from '../dispatcher';
-  import Button from './atoms/Button.svelte';
 
   export let credential: DisplayCredential;
 

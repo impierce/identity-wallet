@@ -9,19 +9,21 @@
   import { melt } from '@melt-ui/svelte';
 
   import { getImageAsset } from '$lib/utils';
+  import { colors } from '$src/lib/colors';
   import Button from '$src/lib/components/atoms/Button.svelte';
-  import CredentialDetailsDropdownMenu from '$src/lib/components/CredentialDetailsDropdownMenu.svelte';
-  import Image from '$src/lib/components/Image.svelte';
+  import ButtonRounded from '$src/lib/components/atoms/ButtonRounded.svelte';
+  import Image from '$src/lib/components/atoms/Image.svelte';
   import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
-  import { colors, icons } from '$src/lib/credentials/customization/utils';
-  import ShareButton from '$src/lib/credentials/ShareButton.svelte';
+  import CredentialDetailsDropdownMenu from '$src/lib/credentials/CredentialDetailsDropdownMenu.svelte';
   import { dispatch } from '$src/lib/dispatcher';
+  import { icons } from '$src/lib/icons';
   import { state } from '$src/stores';
 
   import DotsThreeVertical from '~icons/ph/dots-three-vertical-bold';
   import Heart from '~icons/ph/heart-straight';
   import HeartFill from '~icons/ph/heart-straight-fill';
+  import QrCode from '~icons/ph/qr-code';
   import SealCheck from '~icons/ph/seal-check';
 
   let credential = $state.credentials.find((c) => $page.params.id === c.id)!!;
@@ -187,7 +189,7 @@
   <!-- </div> -->
   <BottomDrawer>
     <!-- TODO: feature disabled: "Share credential" -->
-    <!-- <ShareButton slot="trigger" let:trigger {trigger} /> -->
+    <!-- <ButtonRounded slot="trigger" let:trigger {trigger} label="Share" icon={QrCode} class="absolute bottom-4 right-4" /> -->
     <span slot="content" class="flex flex-col items-center justify-center">
       <!-- Logo -->
       <div class="flex h-[75px] w-[75px] flex-col items-center justify-center rounded-[20px] border-[5px] border-white">

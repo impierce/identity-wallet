@@ -3,8 +3,8 @@
 
   import { twMerge } from 'tailwind-merge';
 
-  import { icons, type Icon } from '$lib/credentials/customization/utils';
   import { getImageAsset } from '$lib/utils';
+  import { icons, type Icon } from '$src/lib/icons';
 
   export let id: string | null = null;
 

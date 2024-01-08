@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
 
-  import ProgressBar from '$lib/components/ProgressBar.svelte';
+  import ProgressBar from '$src/lib/ProgressBar.svelte';
   import { state } from '$src/stores';
 
   import CaretRight from '~icons/ph/caret-right-bold';

@@ -2,7 +2,7 @@
   import EnvelopeSimple from '~icons/ph/envelope-simple-light';
   import House from '~icons/ph/house-light';
 
-  import CredentialListItem from '../components/CredentialListItem.svelte';
+  import CredentialListItem from '../credentials/CredentialListItem.svelte';
 
   const data = [];
 </script>

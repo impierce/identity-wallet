@@ -1,12 +1,11 @@
 <script lang="ts">
   import type { SvelteComponent } from 'svelte';
 
+  import type { SvelteHTMLElements } from 'svelte/elements';
+
   import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
 
-  // TODO: type accordingly
-  // `typeof SvelteComponent` is not compatible with imports used in unplugin-icons,
-  // namely `SvelteComponent<SvelteHTMLElements['svg']>`
-  export let icon: any;
+  export let icon: typeof SvelteComponent<SvelteHTMLElements['svg']>;
   export let title: string;
   export let description: string | undefined = undefined;
 </script>

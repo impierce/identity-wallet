@@ -1,11 +1,12 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
 
-  import { colors, icons } from '$lib/credentials/customization/utils';
-  import CredentialListItem from '$src/lib/components/CredentialListItem.svelte';
+  import { colors } from '$src/lib/colors';
   import IconMessage from '$src/lib/components/molecules/IconMessage.svelte';
-  import Search from '$src/lib/components/Search.svelte';
+  import CredentialListItem from '$src/lib/credentials/CredentialListItem.svelte';
   import { dispatch } from '$src/lib/dispatcher';
+  import { icons } from '$src/lib/icons';
+  import Search from '$src/lib/Search.svelte';
   import { state } from '$src/stores';
 
   import Ghost from '~icons/ph/ghost-fill';

@@ -1,12 +1,12 @@
 <script lang="ts">
-  import exampleEvents from '$lib/example/data/events.json';
-  import type { Event, EventType } from '$lib/example/model/event';
+  import type { Event, EventType } from '$lib/events';
+  import exampleEvents from '$src/lib/events/mock-data.json';
   import { state } from '$src/stores';
 
   import HistoryEntry from './HistoryEntry.svelte';
 
-  // const events: Event[] = exampleEvents.map((e) => ({ ...e, type: e.type as EventType }));
-  const events: Event[] = [];
+  const events: Event[] = exampleEvents.map((e) => ({ ...e, type: e.type as EventType }));
+  // const events: Event[] = [];
 
   const data_0 = {
     ...events[0],

@@ -1,11 +1,11 @@
 <script lang="ts">
   import { fly } from 'svelte/transition';
 
+  import type { CredentialOffer } from '$lib/events/types';
+
   import ChevronDown from '~icons/lucide/chevron-down';
   import ChevronUp from '~icons/lucide/chevron-up';
   import CircleDashed from '~icons/lucide/circle-dashed';
-
-  import type { CredentialOffer } from './types';
 
   export let data: CredentialOffer;
 

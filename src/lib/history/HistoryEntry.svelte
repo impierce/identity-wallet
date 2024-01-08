@@ -2,12 +2,12 @@
   import type { DisplayCredential } from 'src-tauri/bindings/display-credential/DisplayCredential';
 
   import type { Connection } from '$lib/connections/types';
+  import { colors } from '$src/lib/colors';
   import { state } from '$src/stores';
 
   import EnvelopeSimple from '~icons/ph/envelope-simple-light';
 
-  import CredentialListItem from '../components/CredentialListItem.svelte';
-  import { colors } from '../credentials/customization/utils';
+  import CredentialListItem from '../credentials/CredentialListItem.svelte';
 
   export let connection: Connection;
   export let title: string;

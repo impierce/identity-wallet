@@ -2,7 +2,7 @@
   import { createEventDispatcher } from 'svelte';
 
   import Checkbox from '$lib/components/atoms/Checkbox.svelte';
-  import Image from '$lib/components/Image.svelte';
+  import Image from '$lib/components/atoms/Image.svelte';
   import { getImageAsset } from '$lib/utils';
 
   export let id: string | undefined = undefined; // TODO: should not be able to be undefined

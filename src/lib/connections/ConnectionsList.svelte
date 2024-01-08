@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
 
-  import exampleConnections from '$lib/example/data/connections.json';
+  import exampleConnections from '$src/lib/connections/mock-data.json';
   import { state } from '$src/stores';
 
   import ChevronRight from '~icons/lucide/chevron-right';

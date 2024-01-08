@@ -3,11 +3,10 @@
 
   import Button from '$src/lib/components/atoms/Button.svelte';
   import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
-  import CredentialListItem from '$src/lib/components/CredentialListItem.svelte';
-  import CredentialOfferEntry from '$src/lib/components/CredentialOfferEntry.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
-  import { icons } from '$src/lib/credentials/customization/utils';
+  import CredentialListItem from '$src/lib/credentials/CredentialListItem.svelte';
   import { dispatch } from '$src/lib/dispatcher';
+  import { icons } from '$src/lib/icons';
   import { state } from '$src/stores';
 
   import Check from '~icons/ph/check-bold';

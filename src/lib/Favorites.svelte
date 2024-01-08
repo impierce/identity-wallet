@@ -4,6 +4,7 @@
   import { goto } from '$app/navigation';
 
   import LL from '$src/i18n/i18n-svelte';
+  import { colors } from '$src/lib/colors';
   import { state } from '$src/stores';
 
   import Clapperboard from '~icons/lucide/clapperboard';
@@ -14,8 +15,8 @@
   import User from '~icons/ph/user';
 
   import type { DisplayCredential } from '../../src-tauri/bindings/display-credential/DisplayCredential';
-  import CredentialListItem from './components/CredentialListItem.svelte';
-  import { colors, icons } from './credentials/customization/utils';
+  import CredentialListItem from './credentials/CredentialListItem.svelte';
+  import { icons } from './icons';
 
   export let credentialType: 'all' | 'data' | 'badges' = 'all';
 

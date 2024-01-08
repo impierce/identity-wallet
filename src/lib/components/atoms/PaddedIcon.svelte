@@ -1,7 +1,9 @@
 <script lang="ts">
   import type { SvelteComponent } from 'svelte';
 
-  export let icon: typeof SvelteComponent;
+  import type { SvelteHTMLElements } from 'svelte/elements';
+
+  export let icon: typeof SvelteComponent<SvelteHTMLElements['svg']>;
 </script>
 
 <!--

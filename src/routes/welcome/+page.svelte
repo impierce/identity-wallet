@@ -5,9 +5,9 @@
   import LL from '$src/i18n/i18n-svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
   import { dispatch } from '$src/lib/dispatcher';
-  import MeLarge from '$src/lib/svg/logo/MeLarge.svelte';
-  import UniMeTextDark from '$src/lib/svg/logo/UniMeTextDark.svelte';
-  import UniMeTextLight from '$src/lib/svg/logo/UniMeTextLight.svelte';
+  import MeLarge from '$src/lib/static/svg/logo/MeLarge.svelte';
+  import UniMeTextDark from '$src/lib/static/svg/logo/UniMeTextDark.svelte';
+  import UniMeTextLight from '$src/lib/static/svg/logo/UniMeTextLight.svelte';
   import { onboarding_state, state } from '$src/stores';
 
   // TODO: make reactive

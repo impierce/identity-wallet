@@ -5,15 +5,14 @@
 
   import { createCheckbox, createPopover, melt } from '@melt-ui/svelte';
 
-  import { colors, icons } from '$lib/credentials/customization/utils';
   import { dispatch } from '$lib/dispatcher';
   import { getImageAsset } from '$lib/utils';
+  import { colors } from '$src/lib/colors';
   import Button from '$src/lib/components/atoms/Button.svelte';
+  import Image from '$src/lib/components/atoms/Image.svelte';
   import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
-  import CredentialListItem from '$src/lib/components/CredentialListItem.svelte';
-  import CredentialOfferEntry from '$src/lib/components/CredentialOfferEntry.svelte';
-  import Image from '$src/lib/components/Image.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
+  import CredentialListItem from '$src/lib/credentials/CredentialListItem.svelte';
   import { state } from '$src/stores';
 
   import Check from '~icons/ph/check-bold';
@@ -173,15 +172,6 @@
           isDisabled={true}
           isTempAsset={true}
         />
-        <!-- <CredentialOfferEntry
-          index={'_0'}
-          title={$state?.current_user_prompt?.display?.at(index)?.name ?? credential.credential_definition.type.at(-1)}
-          description="CredentialOfferEntry"
-        />
-        <CredentialOfferEntry
-          {index}
-          title={$state?.current_user_prompt?.display?.at(index)?.name ?? credential.credential_definition.type.at(-1)}
-        /> -->
         <!-- {#if !credentialLogoUrl}
             <div class="{color} relative h-[-webkit-fill-available] w-screen"></div>
           {:else}
@@ -217,7 +207,6 @@
             {:else} -->
         <!-- <svelte:component this={icons['User']} class="h-[18px] w-[18px] text-slate-800" /> -->
         <!-- {/if} -->
-        <!-- </CredentialOfferEntry> -->
       {/each}
     </div>
 
