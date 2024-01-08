@@ -23,7 +23,7 @@
     <Button
       label="Update"
       on:click={async () => {
-        await dispatch({ type: '[Settings] Update profile', payload: { name } });
+        await dispatch({ type: '[Settings] Update profile', name });
         goto('/me/settings');
       }}
       disabled={!!!name}

@@ -83,7 +83,6 @@ pub async fn assert_state_update(
             assert_eq!(locale, expected_locale);
             assert_eq!(credentials, expected_credentials);
 
-            dbg!(debug_messages.clone());
             debug_messages.iter().zip(expected_debug_messages.iter()).for_each(
                 |(debug_message, expected_debug_message)| {
                     assert_eq!(
@@ -93,11 +92,9 @@ pub async fn assert_state_update(
                 },
             );
 
-            assert_eq!(user_data_query, expected_user_data_query);
-            dbg!("curry {:?}", debug_messages.len());
-            dbg!("expected up {:?}", expected_debug_messages.len());
             assert_eq!(debug_messages.len(), expected_debug_messages.len());
             assert_eq!(current_user_prompt, expected_current_user_prompt);
+            assert_eq!(user_data_query, expected_user_data_query);
         }
     }
 }

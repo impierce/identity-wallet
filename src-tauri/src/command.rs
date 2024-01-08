@@ -1,8 +1,6 @@
 use crate::error::AppError::{self, *};
-use crate::state::actions::{Action, ActionType};
-use crate::state::persistence::{
-    clear_assets_tmp_folder, delete_state_file, delete_stronghold, load_state, save_state,
-};
+use crate::state::actions::Action;
+use crate::state::persistence::{delete_state_file, delete_stronghold, load_state, save_state};
 use crate::state::reducers::authorization::{
     handle_oid4vp_authorization_request, handle_siopv2_authorization_request, read_authorization_request,
 };
@@ -18,21 +16,19 @@ use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, AppStateContainer};
 use async_recursion::async_recursion;
 use log::{debug, info, warn};
-use oid4vc_core::authorization_request::AuthorizationRequest;
 use oid4vci::credential_offer::CredentialOfferQuery;
-use serde_json::json;
 use tauri::Manager;
 
 #[async_recursion]
 pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
     app_state: &mut AppState,
-    Action { r#type, payload }: Action,
+    action: Action,
     _app_handle: tauri::AppHandle<R>,
 ) -> Result<(), AppError> {
-    info!("received action `{:?}` with payload `{:?}`", r#type, payload);
+    info!("received action `{action:?}`");
 
-    match r#type {
-        ActionType::GetState => {
+    match action {
+        Action::GetState => {
             // TODO: find a better way to populate all fields with values from json file
             let loaded_state = load_state().await.unwrap_or_default();
 
@@ -61,16 +57,14 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
 
             Ok(())
         }
-
-        ActionType::UnlockStorage => unlock_storage(app_state, Action { r#type, payload }).await,
-        ActionType::Reset => {
-            reset_state(app_state, Action { r#type, payload })?;
+        Action::UnlockStorage { .. } => unlock_storage(app_state, action).await,
+        Action::Reset => {
+            reset_state(app_state, action)?;
             delete_state_file().await.map_err(StateFileDeletionError)?;
             delete_stronghold().await.map_err(StrongholdDeletionError)
         }
-        ActionType::CreateNew => {
-            let action = Action { r#type, payload };
-
+        Action::CreateNew { .. } => {
+            let action = action;
             initialize_stronghold(app_state, action.clone()).await?;
             create_identity(app_state, action).await?;
 
@@ -80,34 +74,35 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
             });
             Ok(())
         }
-        ActionType::SetLocale => set_locale(app_state, Action { r#type, payload }),
-        ActionType::UpdateProfileSettings => update_profile_settings(app_state, Action { r#type, payload }),
-        ActionType::QrCodeScanned => {
-            info!("qr code scanned: `{:?}`", payload);
+        Action::SetLocale { .. } => set_locale(app_state, action),
+        Action::UpdateProfileSettings { .. } => update_profile_settings(app_state, action),
+        Action::QrCodeScanned { form_urlencoded } => {
+            info!("qr code scanned: `{:?}`", form_urlencoded);
 
-            let payload = payload.unwrap();
-            let form_urlencoded = payload["form_urlencoded"]
-                .as_str()
-                .ok_or(MissingPayloadValueError("form_urlencoded"))?
-                .to_string();
+            let is_authorization_request = {
+                let state_guard = app_state.managers.lock().await;
+                let provider_manager = &state_guard
+                    .identity_manager
+                    .as_ref()
+                    .ok_or(MissingManagerError("identity"))?
+                    .provider_manager;
 
-            if let Result::Ok(authorization_request) = form_urlencoded.parse::<AuthorizationRequest>() {
+                provider_manager.validate_request(form_urlencoded.clone()).await.is_ok()
+            };
+
+            if is_authorization_request {
                 handle_action_inner(
                     app_state,
-                    Action {
-                        r#type: ActionType::ReadRequest,
-                        payload: Some(json!(authorization_request)),
+                    Action::ReadRequest {
+                        authorization_request: form_urlencoded,
                     },
                     _app_handle,
                 )
                 .await
-            } else if let Result::Ok(credential_offer_query) = form_urlencoded.parse::<CredentialOfferQuery>() {
+            } else if let Result::Ok(credential_offer_uri) = form_urlencoded.parse::<CredentialOfferQuery>() {
                 handle_action_inner(
                     app_state,
-                    Action {
-                        r#type: ActionType::ReadCredentialOffer,
-                        payload: Some(json!(credential_offer_query)),
-                    },
+                    Action::ReadCredentialOffer { credential_offer_uri },
                     _app_handle,
                 )
                 .await
@@ -115,45 +110,34 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
                 Err(InvalidQRCodeError(form_urlencoded))
             }
         }
-        ActionType::ReadRequest => read_authorization_request(app_state, Action { r#type, payload }).await,
-        ActionType::ConnectionAccepted => {
-            handle_siopv2_authorization_request(app_state, Action { r#type, payload }).await
-        }
-        ActionType::ReadCredentialOffer => read_credential_offer(app_state, Action { r#type, payload }).await,
-        ActionType::CancelUserFlow => {
-            clear_assets_tmp_folder().ok();
-
-            if let Some(payload) = payload {
-                let redirect = payload["redirect"].as_str().unwrap();
-                app_state.current_user_prompt.replace(CurrentUserPrompt::Redirect {
-                    target: redirect.to_string(),
-                });
+        Action::ReadRequest { .. } => read_authorization_request(app_state, action).await,
+        Action::ConnectionAccepted => handle_siopv2_authorization_request(app_state, action).await,
+        Action::ReadCredentialOffer { .. } => read_credential_offer(app_state, action).await,
+        Action::CancelUserFlow { redirect } => {
+            if let Some(redirect) = redirect {
+                app_state
+                    .current_user_prompt
+                    .replace(CurrentUserPrompt::Redirect { target: redirect });
             } else {
                 app_state.current_user_prompt.take();
             }
-
             Ok(())
         }
-        ActionType::SetDevMode => set_dev_mode(app_state, Action { r#type, payload }).await,
-        ActionType::LoadDevProfile => load_dev_profile(app_state, Action { r#type, payload }).await,
-        ActionType::CredentialsSelected => {
-            handle_oid4vp_authorization_request(app_state, Action { r#type, payload }).await
-        }
-        ActionType::CredentialOffersSelected => send_credential_request(app_state, Action { r#type, payload }).await,
-        ActionType::UpdateCredentialMetadata => {
-            update_credential_metadata(app_state, Action { r#type, payload }).await?;
+        Action::SetDevMode { .. } => set_dev_mode(app_state, action).await,
+        Action::LoadDevProfile => load_dev_profile(app_state, action).await,
+        Action::CredentialsSelected { .. } => handle_oid4vp_authorization_request(app_state, action).await,
+        Action::CredentialOffersSelected { .. } => send_credential_request(app_state, action).await,
+        Action::UpdateCredentialMetadata { .. } => {
+            update_credential_metadata(app_state, action).await?;
             app_state.current_user_prompt = None;
             Ok(())
         }
-        ActionType::CancelUserJourney => {
+        Action::CancelUserJourney => {
             app_state.user_journey = None;
             Ok(())
         }
-        ActionType::UserDataQuery => {
-            user_data_query(app_state, Action { r#type, payload }).await?;
-            Ok(())
-        }
-        ActionType::Unknown => Err(UnknownActionTypeError { r#type, payload }),
+        Action::UserDataQuery(_) => user_data_query(app_state, action).await,
+        Action::Unknown => Err(InvalidActionError { action }),
     }
 }
 

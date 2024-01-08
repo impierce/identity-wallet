@@ -4,7 +4,7 @@
 
   let selected_locale: string = 'en';
 
-  const setLocale = async () => dispatch({ type: '[Settings] Set locale', payload: { locale: selected_locale } });
+  const setLocale = async () => dispatch({ type: '[Settings] Set locale', locale: selected_locale });
 
   $: {
     if ($state?.locale) {

@@ -1,7 +1,5 @@
 {
     "type": "[User Data] Query",
-    "payload": {
-        "target": "Connections",
-        "search_term": "M"
-    }    
+    "target": "Connections",
+    "search_term": "M" 
 }

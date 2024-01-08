@@ -6,17 +6,23 @@ use crate::{
 };
 use log::{debug, info};
 use oid4vci::{
-    credential_format_profiles::{CredentialFormats, WithCredential},
+    credential_format_profiles::{CredentialFormats, WithCredential, WithParameters},
     credential_issuer::credentials_supported::CredentialsSupportedObject,
     credential_offer::{CredentialOffer, CredentialOfferQuery, CredentialsObject, Grants},
     credential_response::CredentialResponseType,
-    token_request::{PreAuthorizedCode, TokenRequest},
+    token_request::TokenRequest,
 };
 use serde_json::json;
 use uuid::Uuid;
 
 pub async fn read_credential_offer(state: &mut AppState, action: Action) -> Result<(), AppError> {
     info!("read_credential_offer");
+
+    let credential_offer_uri = match action {
+        Action::ReadCredentialOffer { credential_offer_uri } => credential_offer_uri,
+        _ => return Err(InvalidActionError { action }),
+    };
+
     let state_guard = state.managers.lock().await;
     let wallet = &state_guard
         .identity_manager
@@ -24,9 +30,7 @@ pub async fn read_credential_offer(state: &mut AppState, action: Action) -> Resu
         .ok_or(MissingManagerError("identity"))?
         .wallet;
 
-    let payload = action.payload.ok_or(MissingPayloadError)?;
-
-    let mut credential_offer: CredentialOffer = match serde_json::from_value(payload).map_err(InvalidCredentialOffer)? {
+    let mut credential_offer: CredentialOffer = match credential_offer_uri {
         CredentialOfferQuery::CredentialOffer(credential_offer) => credential_offer,
         CredentialOfferQuery::CredentialOfferUri(credential_offer_uri) => wallet
             .get_credential_offer(credential_offer_uri)
@@ -190,6 +194,12 @@ pub async fn read_credential_offer(state: &mut AppState, action: Action) -> Resu
 
 pub async fn send_credential_request(state: &mut AppState, action: Action) -> Result<(), AppError> {
     info!("send_credential_request");
+
+    let offer_indices = match action {
+        Action::CredentialOffersSelected { offer_indices } => offer_indices,
+        _ => return Err(InvalidActionError { action }),
+    };
+
     let state_guard = state.managers.lock().await;
     let stronghold_manager = state_guard
         .stronghold_manager
@@ -200,10 +210,6 @@ pub async fn send_credential_request(state: &mut AppState, action: Action) -> Re
         .as_ref()
         .ok_or(MissingManagerError("identity"))?
         .wallet;
-
-    let payload = action.payload.ok_or(MissingPayloadError)?;
-    let offer_indices: Vec<usize> =
-        serde_json::from_value(payload["offer_indices"].clone()).map_err(InvalidOfferIndicesError)?;
 
     let current_user_prompt = state
         .current_user_prompt
@@ -262,7 +268,7 @@ pub async fn send_credential_request(state: &mut AppState, action: Action) -> Re
             // Unreachable because we replace all `CredentialsObject::ByReference` with `CredentialsObject::ByValue` in `read_credential_offer`.
             _ => unreachable!(),
         })
-        .collect::<Vec<CredentialFormats>>();
+        .collect::<Vec<CredentialFormats<WithParameters>>>();
 
     info!("credential_offer_formats: {:?}", credential_offer_formats);
 
@@ -271,7 +277,6 @@ pub async fn send_credential_request(state: &mut AppState, action: Action) -> Re
         Some(Grants {
             pre_authorized_code, ..
         }) => TokenRequest::PreAuthorizedCode {
-            grant_type: PreAuthorizedCode,
             pre_authorized_code: pre_authorized_code.unwrap().pre_authorized_code,
             user_pin: None,
         },
