@@ -3,11 +3,13 @@
 
   import { colors, icons } from '$lib/credentials/customization/utils';
   import CredentialListItem from '$src/lib/components/CredentialListItem.svelte';
-  import NoMatch from '$src/lib/components/molecules/NoMatch.svelte';
-  import NoQuery from '$src/lib/components/molecules/NoQuery.svelte';
+  import IconMessage from '$src/lib/components/molecules/IconMessage.svelte';
   import Search from '$src/lib/components/Search.svelte';
   import { dispatch } from '$src/lib/dispatcher';
   import { state } from '$src/stores';
+
+  import Ghost from '~icons/ph/ghost-fill';
+  import MagnifyingGlass from '~icons/ph/magnifying-glass-fill';
 
   let searchTerm: string | undefined;
   $: indices = $state.user_data_query;
@@ -25,11 +27,15 @@
   </div>
   {#if !searchTerm}
     <div class="pt-12">
-      <NoQuery />
+      <IconMessage
+        icon={MagnifyingGlass}
+        title="What shall we search for?"
+        description="Search for any of your credentials and badges here."
+      />
     </div>
   {:else if credentials.length == 0}
     <div class="pt-12">
-      <NoMatch />
+      <IconMessage icon={Ghost} title="No results found" description="Try searching for something else." />
     </div>
   {:else}
     <div class="w-full space-y-2 p-5">

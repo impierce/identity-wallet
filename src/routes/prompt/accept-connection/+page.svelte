@@ -6,10 +6,10 @@
 
   import { createCheckbox, createPopover, melt } from '@melt-ui/svelte';
 
-  import Button from '$lib/components/Button.svelte';
   import Image from '$lib/components/Image.svelte';
-  import PaddedIcon from '$lib/components/PaddedIcon.svelte';
   import { dispatch } from '$lib/dispatcher';
+  import Button from '$src/lib/components/atoms/Button.svelte';
+  import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
   import CredentialListItem from '$src/lib/components/CredentialListItem.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import { state } from '$src/stores';

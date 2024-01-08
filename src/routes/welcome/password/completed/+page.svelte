@@ -7,7 +7,7 @@
   import '@lottiefiles/lottie-player';
 
   import LL from '$src/i18n/i18n-svelte';
-  import Button from '$src/lib/components/Button.svelte';
+  import Button from '$src/lib/components/atoms/Button.svelte';
   import { dispatch } from '$src/lib/dispatcher';
   import { onboarding_state } from '$src/stores';
 

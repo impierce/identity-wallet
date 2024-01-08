@@ -4,7 +4,7 @@
   import { melt } from '@melt-ui/svelte';
 
   import LL from '$src/i18n/i18n-svelte';
-  import Button from '$src/lib/components/Button.svelte';
+  import Button from '$src/lib/components/atoms/Button.svelte';
   import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import { dispatch } from '$src/lib/dispatcher';

@@ -1,11 +1,11 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
 
-  import Button from '$src/lib/components/Button.svelte';
+  import Button from '$src/lib/components/atoms/Button.svelte';
+  import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
   import CredentialListItem from '$src/lib/components/CredentialListItem.svelte';
   import CredentialOfferEntry from '$src/lib/components/CredentialOfferEntry.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
-  import PaddedIcon from '$src/lib/components/PaddedIcon.svelte';
   import { icons } from '$src/lib/credentials/customization/utils';
   import { dispatch } from '$src/lib/dispatcher';
   import { state } from '$src/stores';

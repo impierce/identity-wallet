@@ -4,7 +4,7 @@
   import { melt } from '@melt-ui/svelte';
 
   import BottomDrawer from '$lib/components/molecules/dialogs/BottomDrawer.svelte';
-  import Button from '$src/lib/components/Button.svelte';
+  import Button from '$src/lib/components/atoms/Button.svelte';
 
   import Plus from '~icons/ph/plus-bold';
 

@@ -2,9 +2,9 @@
   import { createEventDispatcher } from 'svelte';
 
   import BottomNavItem from '$lib/components/atoms/BottomNavItem.svelte';
-  import Activity from '$lib/components/atoms/navbar-icons/Activity.svelte';
-  import Me from '$lib/components/atoms/navbar-icons/Me.svelte';
-  import Scan from '$lib/components/atoms/navbar-icons/Scan.svelte';
+  import Activity from '$src/lib/svg/navbar-icons/Activity.svelte';
+  import Me from '$src/lib/svg/navbar-icons/Me.svelte';
+  import Scan from '$src/lib/svg/navbar-icons/Scan.svelte';
 
   const dispatch = createEventDispatcher();
 

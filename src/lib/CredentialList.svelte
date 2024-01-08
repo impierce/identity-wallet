@@ -5,10 +5,12 @@
 
   import { colors, icons } from '$lib/credentials/customization/utils';
   import LL from '$src/i18n/i18n-svelte';
+  import IconMessage from '$src/lib/components/molecules/IconMessage.svelte';
   import { state } from '$src/stores';
 
   import Car from '~icons/ph/car-light';
   import EnvelopeSimple from '~icons/ph/envelope-simple-light';
+  import Ghost from '~icons/ph/ghost-fill';
   import GraduationCap from '~icons/ph/graduation-cap-light';
   import House from '~icons/ph/house-light';
   import Percent from '~icons/ph/percent-light';
@@ -16,7 +18,6 @@
 
   import type { DisplayCredential } from '../../src-tauri/bindings/display-credential/DisplayCredential';
   import CredentialListItem from './components/CredentialListItem.svelte';
-  import NoCredentials from './credentials/NoCredentials.svelte';
 
   export let credentialType: 'all' | 'data' | 'badges' = 'all';
 
@@ -126,7 +127,12 @@
   </div>
 {:else if $state?.credentials?.length === 0}
   <!-- Only show "No credentials" when there's also no favorites -->
-  <NoCredentials />
+  <div class="flex grow flex-col items-center justify-center">
+    <IconMessage icon={Ghost} title={$LL.EMPTY_CREDENTIALS_LIST_TITLE()} />
+    <p class="w-[280px] pt-[15px] text-center text-[13px]/[24px] font-normal text-slate-500 dark:text-slate-300">
+      Visit <span class="font-semibold text-primary">https://demo.ngdil.com</span> on a desktop computer to get started.
+    </p>
+  </div>
 {/if}
 
 <!-- Add new credential -->

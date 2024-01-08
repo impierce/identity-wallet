@@ -1,6 +1,6 @@
 <script lang="ts">
   import ConnectionsList from '$lib/connections/ConnectionsList.svelte';
-  import ActivityTabs from '$src/lib/components/molecules/tabs/ActivityTabs.svelte';
+  import ActivityTabs from '$src/lib/components/molecules/navigation/tabs/ActivityTabs.svelte';
   import History from '$src/lib/history/History.svelte';
 
   import ArrowDownAZ from '~icons/lucide/arrow-down-a-z';

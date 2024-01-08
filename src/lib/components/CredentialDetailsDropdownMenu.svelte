@@ -17,7 +17,7 @@
 
   import type { DisplayCredential } from '../../../src-tauri/bindings/display-credential/DisplayCredential';
   import { dispatch } from '../dispatcher';
-  import Button from './Button.svelte';
+  import Button from './atoms/Button.svelte';
 
   export let credential: DisplayCredential;
 

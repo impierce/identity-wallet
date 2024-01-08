@@ -8,8 +8,8 @@
 
   import { melt } from '@melt-ui/svelte';
 
-  import Button from '$lib/components/Button.svelte';
   import { getImageAsset } from '$lib/utils';
+  import Button from '$src/lib/components/atoms/Button.svelte';
   import CredentialDetailsDropdownMenu from '$src/lib/components/CredentialDetailsDropdownMenu.svelte';
   import Image from '$src/lib/components/Image.svelte';
   import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';

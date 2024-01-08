@@ -15,7 +15,7 @@
   import { debug, info, warn } from '@tauri-apps/plugin-log';
 
   import { dispatch } from '$lib/dispatcher';
-  import Button from '$src/lib/components/Button.svelte';
+  import Button from '$src/lib/components/atoms/Button.svelte';
   import BottomNavBar from '$src/lib/components/molecules/navigation/BottomNavBar.svelte';
   import { state } from '$src/stores';
 

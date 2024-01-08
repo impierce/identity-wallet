@@ -11,20 +11,21 @@
   import { melt } from '@melt-ui/svelte';
   import { debug, info } from '@tauri-apps/plugin-log';
 
-  import Button from '$lib/components/Button.svelte';
-  import PaddedIcon from '$lib/components/PaddedIcon.svelte';
   import CredentialList from '$lib/CredentialList.svelte';
   import AddButton from '$lib/credentials/AddButton.svelte';
-  import NoCredentials from '$lib/credentials/NoCredentials.svelte';
   import Favorites from '$lib/Favorites.svelte';
   import TopBar from '$lib/home-header/TopBar.svelte';
   import UserJourney from '$lib/home-header/UserJourney.svelte';
   import WelcomeMessage from '$lib/home-header/WelcomeMessage.svelte';
   import QrCodeButton from '$lib/QrCodeButton.svelte';
   import LL from '$src/i18n/i18n-svelte';
-  import CredentialTabs from '$src/lib/components/molecules/tabs/CredentialTabs.svelte';
+  import Button from '$src/lib/components/atoms/Button.svelte';
+  import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
+  import IconMessage from '$src/lib/components/molecules/IconMessage.svelte';
+  import CredentialTabs from '$src/lib/components/molecules/navigation/tabs/CredentialTabs.svelte';
   import { onboarding_state, state } from '$src/stores';
 
+  import Ghost from '~icons/ph/ghost-fill';
   import RocketLaunch from '~icons/ph/rocket-launch-fill';
 
   import { calculateInitials } from './utils';
@@ -151,7 +152,12 @@
       </BottomDrawer>
     {:else}
       <!-- Skipped onboarding journey -->
-      <NoCredentials />
+      <div class="flex grow flex-col items-center justify-center">
+        <IconMessage icon={Ghost} title={$LL.EMPTY_CREDENTIALS_LIST_TITLE()} />
+        <p class="w-[280px] pt-[15px] text-center text-[13px]/[24px] font-normal text-slate-500 dark:text-slate-300">
+          Visit <span class="font-semibold text-primary">https://demo.ngdil.com</span> on a desktop computer to get started.
+        </p>
+      </div>
       <!-- TODO: feature disabled: "Add self-signed credential" -->
       <!-- <div in:fly={{ y: 12, delay: 400, opacity: 0 }} class="absolute bottom-4 right-4">
         <AddButton />

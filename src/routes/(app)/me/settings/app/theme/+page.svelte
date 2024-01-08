@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Button from '$src/lib/components/Button.svelte';
+  import Button from '$src/lib/components/atoms/Button.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import ThemeSelect from '$src/lib/customize/ThemeSelect.svelte';
   import { dispatch } from '$src/lib/dispatcher';

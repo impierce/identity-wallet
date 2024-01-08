@@ -2,8 +2,8 @@
   import { goto } from '$app/navigation';
   import { fade, fly } from 'svelte/transition';
 
+  import Button from '$src/lib/components/atoms/Button.svelte';
   import Checkbox from '$src/lib/components/atoms/Checkbox.svelte';
-  import Button from '$src/lib/components/Button.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
 
   let ownership_isChecked = false;

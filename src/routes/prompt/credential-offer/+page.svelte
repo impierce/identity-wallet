@@ -5,11 +5,11 @@
 
   import { createCheckbox, createPopover, melt } from '@melt-ui/svelte';
 
-  import Button from '$lib/components/Button.svelte';
-  import PaddedIcon from '$lib/components/PaddedIcon.svelte';
   import { colors, icons } from '$lib/credentials/customization/utils';
   import { dispatch } from '$lib/dispatcher';
   import { getImageAsset } from '$lib/utils';
+  import Button from '$src/lib/components/atoms/Button.svelte';
+  import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
   import CredentialListItem from '$src/lib/components/CredentialListItem.svelte';
   import CredentialOfferEntry from '$src/lib/components/CredentialOfferEntry.svelte';
   import Image from '$src/lib/components/Image.svelte';

@@ -7,7 +7,7 @@
 
   import { createAccordion, melt } from '@melt-ui/svelte';
 
-  import Button from '$src/lib/components/Button.svelte';
+  import Button from '$src/lib/components/atoms/Button.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
 
   import CaretDown from '~icons/ph/caret-down-bold';
