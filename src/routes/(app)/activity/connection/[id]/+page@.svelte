@@ -9,6 +9,7 @@
   import ConnectionTabs from '$src/lib/components/molecules/navigation/tabs/ConnectionTabs.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import exampleConnections from '$src/lib/connections/mock-data.json';
+  import History from '$src/lib/events/History.svelte';
   import { state } from '$src/stores';
 
   // let connection: Connection = exampleConnections.find((c) => c.id === $page.params.id)!!;
@@ -46,7 +47,8 @@
       <!-- History -->
       <div slot="activity" class="h-full bg-silver py-5 dark:bg-navy">
         <!-- TODO: If this turns out to be a costly operation (filtering in backend), consider lazy loading the component -->
-        <ConnectionHistory />
+        <!-- <ConnectionHistory /> -->
+        <History />
       </div>
     </ConnectionTabs>
   </div>

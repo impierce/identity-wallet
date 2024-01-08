@@ -2,9 +2,9 @@
   import { goto } from '$app/navigation';
   import { fade } from 'svelte/transition';
 
+  import { dispatch } from '$lib/dispatcher';
   import Button from '$src/lib/components/atoms/Button.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
-  import { dispatch } from '$src/lib/dispatcher';
   import { state } from '$src/stores';
 
   let name = $state.active_profile?.name;

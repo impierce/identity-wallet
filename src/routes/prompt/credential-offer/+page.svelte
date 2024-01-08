@@ -7,7 +7,6 @@
 
   import { dispatch } from '$lib/dispatcher';
   import { getImageAsset } from '$lib/utils';
-  import { colors } from '$src/lib/colors';
   import Button from '$src/lib/components/atoms/Button.svelte';
   import Image from '$src/lib/components/atoms/Image.svelte';
   import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';

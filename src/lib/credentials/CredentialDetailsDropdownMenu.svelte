@@ -3,6 +3,7 @@
 
   import { createDialog, createDropdownMenu, melt } from '@melt-ui/svelte';
 
+  import { dispatch } from '$lib/dispatcher';
   import { colors } from '$src/lib/colors';
   import { icons } from '$src/lib/icons';
 
@@ -18,7 +19,6 @@
 
   import type { DisplayCredential } from '../../../src-tauri/bindings/display-credential/DisplayCredential';
   import Button from '../components/atoms/Button.svelte';
-  import { dispatch } from '../dispatcher';
 
   export let credential: DisplayCredential;
 

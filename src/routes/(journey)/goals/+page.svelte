@@ -11,7 +11,7 @@
   import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import GoalItem from '$src/lib/journeys/goals/GoalItem.svelte';
-  import { icons } from '$src/lib/journeys/goals/utils';
+  import { icons } from '$src/lib/journeys/goals/icons';
   import ProgressBar from '$src/lib/ProgressBar.svelte';
   import { state } from '$src/stores';
 

@@ -2,9 +2,9 @@
   import { goto } from '$app/navigation';
   import { fade, fly } from 'svelte/transition';
 
+  import { dispatch } from '$lib/dispatcher';
   import LL from '$src/i18n/i18n-svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
-  import { dispatch } from '$src/lib/dispatcher';
   import MeLarge from '$src/lib/static/svg/logo/MeLarge.svelte';
   import UniMeTextDark from '$src/lib/static/svg/logo/UniMeTextDark.svelte';
   import UniMeTextLight from '$src/lib/static/svg/logo/UniMeTextLight.svelte';

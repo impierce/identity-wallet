@@ -1,9 +1,9 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
 
+  import { dispatch } from '$lib/dispatcher';
   import Switch from '$src/lib/components/atoms/Switch.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
-  import { dispatch } from '$src/lib/dispatcher';
   import SettingsEntry from '$src/lib/settings/SettingsEntry.svelte';
   import { state } from '$src/stores';
 

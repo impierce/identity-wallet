@@ -1,11 +1,9 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
 
-  import { colors } from '$src/lib/colors';
+  import { dispatch } from '$lib/dispatcher';
   import IconMessage from '$src/lib/components/molecules/IconMessage.svelte';
   import CredentialListItem from '$src/lib/credentials/CredentialListItem.svelte';
-  import { dispatch } from '$src/lib/dispatcher';
-  import { icons } from '$src/lib/icons';
   import Search from '$src/lib/Search.svelte';
   import { state } from '$src/stores';
 

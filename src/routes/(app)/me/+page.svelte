@@ -13,9 +13,6 @@
 
   import CredentialList from '$lib/CredentialList.svelte';
   import Favorites from '$lib/Favorites.svelte';
-  import TopBar from '$lib/home-header/TopBar.svelte';
-  import UserJourney from '$lib/home-header/UserJourney.svelte';
-  import WelcomeMessage from '$lib/home-header/WelcomeMessage.svelte';
   import QrCodeButton from '$lib/QrCodeButton.svelte';
   import LL from '$src/i18n/i18n-svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
@@ -23,6 +20,9 @@
   import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
   import IconMessage from '$src/lib/components/molecules/IconMessage.svelte';
   import CredentialTabs from '$src/lib/components/molecules/navigation/tabs/CredentialTabs.svelte';
+  import UserJourney from '$src/lib/journeys/UserJourney.svelte';
+  import TopBar from '$src/lib/TopBar.svelte';
+  import WelcomeMessage from '$src/lib/WelcomeMessage.svelte';
   import { onboarding_state, state } from '$src/stores';
 
   import Ghost from '~icons/ph/ghost-fill';

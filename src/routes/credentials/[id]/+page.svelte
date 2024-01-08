@@ -8,6 +8,7 @@
 
   import { melt } from '@melt-ui/svelte';
 
+  import { dispatch } from '$lib/dispatcher';
   import { getImageAsset } from '$lib/utils';
   import { colors } from '$src/lib/colors';
   import Button from '$src/lib/components/atoms/Button.svelte';
@@ -16,8 +17,6 @@
   import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import CredentialDetailsDropdownMenu from '$src/lib/credentials/CredentialDetailsDropdownMenu.svelte';
-  import { dispatch } from '$src/lib/dispatcher';
-  import { icons } from '$src/lib/icons';
   import { state } from '$src/stores';
 
   import Heart from '~icons/ph/heart-straight';

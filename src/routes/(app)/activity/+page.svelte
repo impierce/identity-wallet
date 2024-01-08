@@ -1,7 +1,7 @@
 <script lang="ts">
   import ConnectionsList from '$lib/connections/ConnectionsList.svelte';
   import ActivityTabs from '$src/lib/components/molecules/navigation/tabs/ActivityTabs.svelte';
-  import History from '$src/lib/history/History.svelte';
+  import History from '$src/lib/events/History.svelte';
 
   import ArrowDownAZ from '~icons/lucide/arrow-down-a-z';
   import MagnifyingGlass from '~icons/ph/magnifying-glass-bold';

@@ -1,6 +1,6 @@
 <script lang="ts">
+  import { dispatch } from '$lib/dispatcher';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
-  import { dispatch } from '$src/lib/dispatcher';
   import EmojiAvatarSelect from '$src/lib/settings/EmojiAvatarSelect.svelte';
   import { state } from '$src/stores';
 </script>

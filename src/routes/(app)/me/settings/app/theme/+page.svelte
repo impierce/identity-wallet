@@ -1,7 +1,7 @@
 <script lang="ts">
+  import { dispatch } from '$lib/dispatcher';
   import Button from '$src/lib/components/atoms/Button.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
-  import { dispatch } from '$src/lib/dispatcher';
   import ThemeSelect from '$src/lib/settings/ThemeSelect.svelte';
   import { state } from '$src/stores';
 

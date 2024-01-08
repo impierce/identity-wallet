@@ -1,10 +1,10 @@
 <script lang="ts">
   import { melt } from '@melt-ui/svelte';
 
+  import { icons } from '$src/lib/journeys/goals/icons';
+
   import CaretRight from '~icons/ph/caret-right-bold';
   import CheckCircle from '~icons/ph/check-circle';
-
-  import { icons } from './utils';
 
   export let trigger: any;
   export let label: string;

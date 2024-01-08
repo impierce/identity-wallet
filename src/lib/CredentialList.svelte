@@ -4,9 +4,7 @@
   import { goto } from '$app/navigation';
 
   import LL from '$src/i18n/i18n-svelte';
-  import { colors } from '$src/lib/colors';
   import IconMessage from '$src/lib/components/molecules/IconMessage.svelte';
-  import { icons } from '$src/lib/icons';
   import { state } from '$src/stores';
 
   import Car from '~icons/ph/car-light';

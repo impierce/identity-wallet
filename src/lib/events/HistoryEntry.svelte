@@ -2,7 +2,6 @@
   import type { DisplayCredential } from 'src-tauri/bindings/display-credential/DisplayCredential';
 
   import type { Connection } from '$lib/connections/types';
-  import { colors } from '$src/lib/colors';
   import { state } from '$src/stores';
 
   import EnvelopeSimple from '~icons/ph/envelope-simple-light';
@@ -12,7 +11,7 @@
   export let connection: Connection;
   export let title: string;
   export let timestamp: string;
-  export let credentials: DisplayCredential[];
+  export let credentials: DisplayCredential[] = [];
 </script>
 
 <div class="flex flex-col">
@@ -24,9 +23,13 @@
     })}
   </p>
   {#if credentials.length > 0}
-    <div class="mt-[12px] w-fit rounded-xl border border-slate-200 dark:border-slate-600">
+    <div class="mt-[12px] rounded-xl border border-slate-200 bg-white p-[3px] dark:border-slate-600">
       {#each credentials as credential}
-        <CredentialListItem title={credential.metadata.display.name ?? credential.data.type.at(-1)}>
+        <CredentialListItem
+          id={credential.id}
+          title={credential.metadata.display.name ?? credential.data.type.at(-1)}
+          description="Lorem ipsum dolor"
+        >
           <!-- <span slot="icon"><EnvelopeSimple class="h-6 w-6" /></span> -->
         </CredentialListItem>
       {/each}

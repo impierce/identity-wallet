@@ -1,12 +1,11 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
 
+  import { dispatch } from '$lib/dispatcher';
   import Button from '$src/lib/components/atoms/Button.svelte';
   import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import CredentialListItem from '$src/lib/credentials/CredentialListItem.svelte';
-  import { dispatch } from '$src/lib/dispatcher';
-  import { icons } from '$src/lib/icons';
   import { state } from '$src/stores';
 
   import Check from '~icons/ph/check-bold';

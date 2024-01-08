@@ -8,16 +8,14 @@
 
   import { melt } from '@melt-ui/svelte';
 
+  import { dispatch } from '$lib/dispatcher';
   import { getImageAsset } from '$lib/utils';
-  import { colors } from '$src/lib/colors';
   import Button from '$src/lib/components/atoms/Button.svelte';
   import ButtonRounded from '$src/lib/components/atoms/ButtonRounded.svelte';
   import Image from '$src/lib/components/atoms/Image.svelte';
   import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import CredentialDetailsDropdownMenu from '$src/lib/credentials/CredentialDetailsDropdownMenu.svelte';
-  import { dispatch } from '$src/lib/dispatcher';
-  import { icons } from '$src/lib/icons';
   import { state } from '$src/stores';
 
   import DotsThreeVertical from '~icons/ph/dots-three-vertical-bold';
