@@ -3,13 +3,13 @@
   import { page } from '$app/stores';
 
   import ConnectionData from '$lib/connections/ConnectionData.svelte';
-  import ConnectionHistory from '$lib/connections/ConnectionHistory.svelte';
   import ConnectionSummary from '$lib/connections/ConnectionSummary.svelte';
   import type { Connection } from '$lib/connections/types';
   import ConnectionTabs from '$src/lib/components/molecules/navigation/tabs/ConnectionTabs.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import exampleConnections from '$src/lib/connections/mock-data.json';
   import History from '$src/lib/events/History.svelte';
+  import ConnectionHistory from '$src/lib/events/types/ConnectionHistory.svelte';
   import { state } from '$src/stores';
 
   // let connection: Connection = exampleConnections.find((c) => c.id === $page.params.id)!!;
@@ -27,7 +27,7 @@
         <div class="flex flex-col items-center justify-center space-y-4">
           <div class="flex w-full flex-col items-center justify-center space-y-4 py-6">
             <div class="flex h-[75px] w-[75px] rounded-3xl border bg-white p-2">
-              <img src={connection.logo_uri} />
+              <img src={connection.logo_uri} class="h-full object-contain" />
             </div>
 
             <div class="text-center text-2xl font-semibold text-black dark:text-white">

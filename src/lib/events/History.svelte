@@ -32,17 +32,29 @@
     timestamp: '2023-08-03T12:23:42.749Z',
     credentials: [$state.credentials[0], $state.credentials[1]],
   };
+
+  let eventsList = [data_1, data_0];
 </script>
 
-<div class="flex h-full flex-col items-end pr-4">
+<div class="relative flex h-full flex-col pr-4 pt-4">
   {#if events.length === 0}
     <div class="flex h-full flex-col items-center justify-center">
       <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Coming soon ...</p>
     </div>
   {:else}
-    <div class="flex w-3/4 flex-col space-y-8">
-      <HistoryEntry {...data_1} />
-      <HistoryEntry {...data_0} />
+    <div class="flex grow flex-col space-y-8">
+      {#each eventsList as event}
+        <div class="flex justify-between">
+          <div class="z-10 mr-3 h-6 w-6 overflow-hidden rounded-full bg-white ring-8 ring-silver">
+            <img src="https://demo.ngdil.com/imgs/kw1c-white.png" alt="" class="h-full object-contain" />
+          </div>
+          <div class="grow">
+            <HistoryEntry {...event} />
+          </div>
+        </div>
+      {/each}
     </div>
+    <!-- Timeline -->
+    <div class="absolute left-3 top-4 h-full w-0.5 -translate-x-1/2 transform bg-slate-200"></div>
   {/if}
 </div>

@@ -2,13 +2,10 @@
   import type { DisplayCredential } from 'src-tauri/bindings/display-credential/DisplayCredential';
 
   import type { Connection } from '$lib/connections/types';
-  import { state } from '$src/stores';
-
-  import EnvelopeSimple from '~icons/ph/envelope-simple-light';
 
   import CredentialListItem from '../credentials/CredentialListItem.svelte';
 
-  export let connection: Connection;
+  // export let connection: Connection;
   export let title: string;
   export let timestamp: string;
   export let credentials: DisplayCredential[] = [];

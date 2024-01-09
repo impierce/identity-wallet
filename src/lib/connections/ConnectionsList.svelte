@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
 
+  import CredentialListItem from '$lib/credentials/CredentialListItem.svelte';
   import exampleConnections from '$src/lib/connections/mock-data.json';
   import { state } from '$src/stores';
 
@@ -22,7 +23,7 @@
   //   }
   // ]);
   let connections: Map<string, Connection[]> = groupConnectionsAlphabetically($state.connections);
-  console.log(Object.fromEntries(connections));
+  console.log(connections);
 </script>
 
 <div class="flex h-full flex-col space-y-3">
@@ -42,7 +43,7 @@
           <div
             class="mr-4 flex h-8 w-8 overflow-hidden rounded-full border-none border-slate-300 dark:border-slate-600"
           >
-            <img src={connection.logo_uri} />
+            <img src={connection.logo_uri} class="h-full object-contain" />
           </div>
           <!-- Text -->
           <div class="flex grow flex-col items-start">
@@ -55,6 +56,9 @@
           </div>
         </div>
       </button>
+      <CredentialListItem id={'university'} title={connection.client_name} description={connection.url}>
+        <div slot="right" class="h-full pr-2 pt-1 text-[12px]/[20px] font-medium text-slate-400">Tue 09.01.24</div>
+      </CredentialListItem>
     {/each}
   {/each}
 </div>

@@ -3,6 +3,7 @@
 
   import { dispatch } from '$lib/dispatcher';
   import Button from '$src/lib/components/atoms/Button.svelte';
+  import Checkbox from '$src/lib/components/atoms/Checkbox.svelte';
   import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import CredentialListItem from '$src/lib/credentials/CredentialListItem.svelte';
@@ -59,10 +60,11 @@
             <CredentialListItem
               id={credential.id}
               title={credential.metadata.display.name || credential.data.type.at(-1)}
-              hasCheckbox={true}
-              isChecked={true}
-              isDisabled={true}
-            />
+            >
+              <div slot="right" class="mr-2">
+                <Checkbox checked={true} disabled={true} />
+              </div>
+            </CredentialListItem>
             <!-- <div class="flex items-center">
             <div class="grow">
               <CredentialListItem

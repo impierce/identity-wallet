@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { InitialConnection } from './types';
+  import type { InitialConnection } from '.';
 
   export let data: InitialConnection;
 </script>

@@ -8,6 +8,7 @@
   import { dispatch } from '$lib/dispatcher';
   import { getImageAsset } from '$lib/utils';
   import Button from '$src/lib/components/atoms/Button.svelte';
+  import Checkbox from '$src/lib/components/atoms/Checkbox.svelte';
   import Image from '$src/lib/components/atoms/Image.svelte';
   import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
@@ -166,11 +167,12 @@
         <CredentialListItem
           id={`credential_${index}`}
           title={$state?.current_user_prompt?.display?.at(index)?.name ?? credential.credential_definition.type.at(-1)}
-          hasCheckbox={true}
-          isChecked={true}
-          isDisabled={true}
           isTempAsset={true}
-        />
+        >
+          <div slot="right" class="mr-2">
+            <Checkbox checked={true} disabled={true} />
+          </div>
+        </CredentialListItem>
         <!-- {#if !credentialLogoUrl}
             <div class="{color} relative h-[-webkit-fill-available] w-screen"></div>
           {:else}

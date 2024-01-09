@@ -1,9 +1,9 @@
 <script lang="ts">
   import type { Event, EventType } from '$lib/events';
-  import InitialConnection from '$lib/events/InitialConnection.svelte';
-  import Login from '$lib/events/Login.svelte';
-  import CredentialOffer from '$src/lib/events/CredentialOffer.svelte';
   import exampleEvents from '$src/lib/events/mock-data.json';
+  import CredentialOffer from '$src/lib/events/types/CredentialOffer.svelte';
+  import InitialConnection from '$src/lib/events/types/InitialConnection.svelte';
+  import Login from '$src/lib/events/types/Login.svelte';
 
   import Download from '~icons/lucide/download';
   import HelpCircle from '~icons/lucide/help-circle';

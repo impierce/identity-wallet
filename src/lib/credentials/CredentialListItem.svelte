@@ -1,19 +1,16 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
 
-  import Checkbox from '$lib/components/atoms/Checkbox.svelte';
   import Image from '$lib/components/atoms/Image.svelte';
   import { getImageAsset } from '$lib/utils';
 
+  // TODO: make more generic "ListItem" with slots: "image", "right"
+
   export let id: string | undefined = undefined; // TODO: should not be able to be undefined
-  export let title = '';
-  export let description = '';
+  export let title: string;
+  export let description: string | undefined = undefined;
   export let type: 'data' | 'badge' = 'data';
 
-  // TODO: use a generic slot instead?
-  export let hasCheckbox = false;
-  export let isChecked = false;
-  export let isDisabled = false;
   export let isTempAsset = false;
 
   const dispatch = createEventDispatcher();
@@ -29,19 +26,20 @@ List representation of a credential.
 
 - id
 - title
-- description
+- description (optional)
 - type
+- isTempAsset
 
 ### Slots
 
-- action
+- right
 -->
 {#await assetUrlPromise then assetUrl}
   <button
     class="flex h-[64px] w-full items-center justify-start rounded-xl bg-white p-[7px] dark:bg-dark"
     on:click={() => dispatch('click')}
   >
-    <!-- Icon -->
+    <!-- Image or icon -->
     <div
       class="mr-[15px] flex h-[50px] w-[50px] min-w-[50px] flex-col items-center justify-center overflow-hidden rounded-lg {assetUrl
         ? 'bg-white'
@@ -54,16 +52,13 @@ List representation of a credential.
       <p class="line-clamp-2 w-full pr-[15px] text-[13px]/[18px] font-medium text-slate-800 dark:text-grey">
         {title}
       </p>
-      <p class="max-w-[180px] truncate text-[12px]/[20px] font-medium text-slate-400 dark:text-slate-300">
-        {description}
-      </p>
+      {#if description}
+        <p class="max-w-[180px] truncate text-[12px]/[20px] font-medium text-slate-400 dark:text-slate-300">
+          {description}
+        </p>
+      {/if}
     </div>
-    <!-- Checkbox (optional) -->
-    {#if hasCheckbox}
-      <div class="mr-2">
-        <!-- <Checkbox checked={$isChecked('system')} /> -->
-        <Checkbox checked={isChecked} disabled={isDisabled} />
-      </div>
-    {/if}
+    <!-- Slot -->
+    <slot name="right" />
   </button>
 {/await}
