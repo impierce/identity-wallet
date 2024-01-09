@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
 
   import { goto } from '$app/navigation';
+  import type { DisplayCredential } from 'src-tauri/bindings/display-credential/DisplayCredential';
 
   import LL from '$src/i18n/i18n-svelte';
   import { state } from '$src/stores';
@@ -13,7 +14,6 @@
   import Heart from '~icons/ph/heart-straight-fill';
   import User from '~icons/ph/user';
 
-  import type { DisplayCredential } from '../../src-tauri/bindings/display-credential/DisplayCredential';
   import CredentialListItem from './credentials/CredentialListItem.svelte';
 
   export let credentialType: 'all' | 'data' | 'badges' = 'all';

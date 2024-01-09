@@ -7,7 +7,6 @@
   // export let displayName: string | undefined = undefined;
   export let last_interacted: string;
   export let first_interacted: string;
-  export let logo_uri: string;
 
   let summary = {
     URL: url,

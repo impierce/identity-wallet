@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { DisplayCredential } from 'src-tauri/bindings/display-credential/DisplayCredential';
   import { fade, fly } from 'svelte/transition';
 
   import { createDialog, createDropdownMenu, melt } from '@melt-ui/svelte';
@@ -17,7 +18,6 @@
   import Question from '~icons/ph/question-light';
   import User from '~icons/ph/user-light';
 
-  import type { DisplayCredential } from '../../../src-tauri/bindings/display-credential/DisplayCredential';
   import Button from '../components/atoms/Button.svelte';
 
   export let credential: DisplayCredential;

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte';
 
+  import { goto } from '$app/navigation';
   import { fade } from 'svelte/transition';
 
   import { createCheckbox, createPopover, melt } from '@melt-ui/svelte';
@@ -27,11 +28,16 @@
   //   helpers: { isChecked }
   // } = createCheckbox({});
 
+  // if ($state.current_user_prompt == null) {
+  //   goto('/scan');
+  // }
+
   console.log($state.current_user_prompt);
-  let credential_offer: any[] = $state.current_user_prompt.credential_offer;
+  // TODO: type
+  let credential_offer: any = $state.current_user_prompt?.credential_offer ?? {};
   console.log({ credential_offer });
 
-  let issuer_name = $state.current_user_prompt.issuer_name;
+  let issuer_name = $state.current_user_prompt?.issuer_name;
 
   // const checkboxes = credential_offer.credentials.map((c, i) => {
   //   const {

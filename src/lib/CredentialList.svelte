@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
 
   import { goto } from '$app/navigation';
+  import type { DisplayCredential } from 'src-tauri/bindings/display-credential/DisplayCredential';
 
   import LL from '$src/i18n/i18n-svelte';
   import IconMessage from '$src/lib/components/molecules/IconMessage.svelte';
@@ -15,7 +16,6 @@
   import Percent from '~icons/ph/percent-light';
   import SealCheck from '~icons/ph/seal-check-fill';
 
-  import type { DisplayCredential } from '../../src-tauri/bindings/display-credential/DisplayCredential';
   import CredentialListItem from './credentials/CredentialListItem.svelte';
 
   export let credentialType: 'all' | 'data' | 'badges' = 'all';

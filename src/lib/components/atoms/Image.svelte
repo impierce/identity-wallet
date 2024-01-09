@@ -59,7 +59,7 @@ Usage:
   {#if assetUrl}
     <img
       src={assetUrl}
-      alt="img"
+      alt="img_{id}"
       class={twMerge('max-h-full w-full overflow-hidden bg-white object-cover', $$props.imgClass)}
       on:error={() => {
         id = null;

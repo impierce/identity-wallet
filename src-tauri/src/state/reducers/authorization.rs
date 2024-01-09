@@ -2,9 +2,10 @@ use crate::{
     error::AppError::{self, *},
     get_unverified_jwt_claims,
     state::{actions::Action, user_prompt::CurrentUserPrompt, AppState, Connection},
+    utils::{download_asset, LogoType},
 };
 use identity_credential::{credential::Jwt, presentation::Presentation};
-use log::info;
+use log::{debug, info};
 use oid4vc_core::authorization_request::AuthorizationRequestObject;
 use oid4vc_manager::managers::presentation::create_presentation_submission;
 use oid4vci::credential_format_profiles::{
@@ -108,6 +109,19 @@ pub async fn read_authorization_request(state: &mut AppState, action: Action) ->
         info!("client_name in credential_offer: {:?}", client_name);
         info!("logo_uri in read_authorization_request: {:?}", logo_uri);
 
+        if logo_uri.is_some() {
+            debug!(
+                "{}",
+                format!(
+                    "Downloading client logo from url: {}",
+                    logo_uri.clone().unwrap().as_str()
+                )
+            );
+            if let Some(logo_uri) = logo_uri.as_ref().and_then(|s| s.parse::<reqwest::Url>().ok()) {
+                let _ = download_asset(logo_uri, LogoType::IssuerLogo, 0).await;
+            }
+        }
+
         state
             .active_connection_request
             .replace(ConnectionRequest::OID4VP(oid4vp_authorization_request.into()));
@@ -164,6 +178,19 @@ pub async fn handle_siopv2_authorization_request(state: &mut AppState, _action: 
     let (client_name, logo_uri, connection_url) = get_siopv2_client_name_and_logo_uri(&siopv2_authorization_request)
         .map_err(|_| MissingAuthorizationRequestParameterError("connection_url"))?;
 
+    if logo_uri.is_some() {
+        debug!(
+            "{}",
+            format!(
+                "Downloading issuer logo from url: {}",
+                logo_uri.clone().unwrap().as_str()
+            )
+        );
+        if let Some(logo_uri) = logo_uri.as_ref().and_then(|s| s.parse::<reqwest::Url>().ok()) {
+            let _ = download_asset(logo_uri, LogoType::IssuerLogo, 0).await;
+        }
+    }
+
     let result = state
         .connections
         .iter_mut()
@@ -174,9 +201,9 @@ pub async fn handle_siopv2_authorization_request(state: &mut AppState, _action: 
 
     if result.is_none() {
         state.connections.push(Connection {
+            id: "TODO".to_string(),
             client_name,
             url: connection_url,
-            logo_uri,
             verified: false,
             first_interacted: connection_time.clone(),
             last_interacted: connection_time,
@@ -305,9 +332,9 @@ pub async fn handle_oid4vp_authorization_request(state: &mut AppState, action: A
 
     if result.is_none() {
         state.connections.push(Connection {
+            id: "TODO".to_string(),
             client_name,
             url: connection_url,
-            logo_uri,
             verified: false,
             first_interacted: connection_time.clone(),
             last_interacted: connection_time,

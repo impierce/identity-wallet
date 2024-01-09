@@ -5,17 +5,17 @@
   import ConnectionData from '$lib/connections/ConnectionData.svelte';
   import ConnectionSummary from '$lib/connections/ConnectionSummary.svelte';
   import type { Connection } from '$lib/connections/types';
+  import Image from '$src/lib/components/atoms/Image.svelte';
   import ConnectionTabs from '$src/lib/components/molecules/navigation/tabs/ConnectionTabs.svelte';
   import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
   import exampleConnections from '$src/lib/connections/mock-data.json';
   import History from '$src/lib/events/History.svelte';
-  import ConnectionHistory from '$src/lib/events/types/ConnectionHistory.svelte';
   import { state } from '$src/stores';
 
   // let connection: Connection = exampleConnections.find((c) => c.id === $page.params.id)!!;
   console.log($page.params.id);
   console.log($state.connections);
-  let connection: Connection = $state.connections.at($page.params.id)!!;
+  let connection: Connection = $state.connections.find((c) => c.id === $page.params.id)!!;
 </script>
 
 <div class="content-height flex flex-col">
@@ -27,10 +27,10 @@
         <div class="flex flex-col items-center justify-center space-y-4">
           <div class="flex w-full flex-col items-center justify-center space-y-4 py-6">
             <div class="flex h-[75px] w-[75px] rounded-3xl border bg-white p-2">
-              <img src={connection.logo_uri} class="h-full object-contain" />
+              <Image id={connection.id} iconClass="hidden" />
             </div>
 
-            <div class="text-center text-2xl font-semibold text-black dark:text-white">
+            <div class="text-center text-2xl font-semibold text-slate-700 dark:text-grey">
               Connected to <p class="text-primary">{connection.client_name}</p>
             </div>
           </div>
@@ -47,7 +47,6 @@
       <!-- History -->
       <div slot="activity" class="h-full bg-silver py-5 dark:bg-navy">
         <!-- TODO: If this turns out to be a costly operation (filtering in backend), consider lazy loading the component -->
-        <!-- <ConnectionHistory /> -->
         <History />
       </div>
     </ConnectionTabs>

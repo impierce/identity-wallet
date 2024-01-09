@@ -2,11 +2,19 @@ import path from 'path';
 
 import { internalIpV4 } from 'internal-ip';
 import Icons from 'unplugin-icons/vite';
-import { defineConfig } from 'vite';
+import { defineConfig, type PluginOption } from 'vite';
 
 import { sveltekit } from '@sveltejs/kit/vite';
 
 const mobile = process.env.TAURI_PLATFORM === 'android' || process.env.TAURI_PLATFORM === 'ios';
+
+const full_reload_always: PluginOption = {
+  name: 'full-reload-always',
+  handleHotUpdate({ server }) {
+    server.ws.send({ type: 'full-reload' });
+    return [];
+  },
+};
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({

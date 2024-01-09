@@ -20,10 +20,9 @@
       }),
     }))
     .reverse(); // newest on top
-
-  // const events: Event[] = [];
 </script>
 
+<!-- TODO: unused component, can be removed -->
 <div class="flex h-full flex-col space-y-8">
   {#if events.length > 0}
     {#each events as event}

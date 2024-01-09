@@ -156,14 +156,40 @@ pub async fn load_dev_profile(state: &mut AppState, _action: Action) -> Result<(
         state.user_journey = Some(onboarding_journey);
     }
 
-    state.connections = vec![Connection {
-        client_name: "NGDIL Demo".to_string(),
-        url: "api.ngdil-demo.tanglelabs.io".to_string(),
-        logo_uri: Some("https://demo.ngdil.com/imgs/kw1c-white.png".to_string()),
-        verified: false,
-        first_interacted: "2023-09-11T19:53:53.937981+00:00".to_string(),
-        last_interacted: "2023-09-11T19:53:53.937981+00:00".to_string(),
-    }];
+    state.connections = vec![
+        Connection {
+            id: "kw1c".to_string(),
+            client_name: "NGDIL Demo".to_string(),
+            url: "api.ngdil-demo.tanglelabs.io".to_string(),
+            verified: false,
+            first_interacted: "2023-09-11T19:53:53.937981+00:00".to_string(),
+            last_interacted: "2023-09-11T19:53:53.937981+00:00".to_string(),
+        },
+        Connection {
+            id: "impierce".to_string(),
+            client_name: "Impierce Demo Portal".to_string(),
+            url: "https://demo.impierce.com".to_string(),
+            verified: true,
+            first_interacted: "2024-01-09T07:36:41.382948+00:00".to_string(),
+            last_interacted: "2024-01-09T07:36:41.382948+00:00".to_string(),
+        },
+        Connection {
+            id: "webshop".to_string(),
+            client_name: "my-webshop.com".to_string(),
+            url: "https://shop.example.com".to_string(),
+            verified: false,
+            first_interacted: "2022-02-03T12:33:54.191824+00:00".to_string(),
+            last_interacted: "2023-11-13T19:26:40.049239+00:00".to_string(),
+        },
+        Connection {
+            id: "iota".to_string(),
+            client_name: "IOTA".to_string(),
+            url: "https://www.iota.org".to_string(),
+            verified: true,
+            first_interacted: "2024-01-09T08:45:44.217Z".to_string(),
+            last_interacted: "2024-01-09T08:45:44.217Z".to_string(),
+        },
+    ];
 
     state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
         target: "me".to_string(),
@@ -182,6 +208,27 @@ async fn load_credential_images(
     // Issuers
     let mut image_bytes: &[u8] = include_bytes!("../../../resources/images/issuer-university.png");
     let file_name = format!("{}.png", issuer_id);
+    let mut file = File::create(ASSETS_DIR.lock().unwrap().as_path().to_owned().join(file_name))?;
+    copy(&mut image_bytes, &mut file)?;
+
+    // Connections
+    let mut image_bytes: &[u8] = include_bytes!("../../../resources/images/impierce_white.png");
+    let file_name = format!("{}.png", "impierce");
+    let mut file = File::create(ASSETS_DIR.lock().unwrap().as_path().to_owned().join(file_name))?;
+    copy(&mut image_bytes, &mut file)?;
+
+    let mut image_bytes: &[u8] = include_bytes!("../../../resources/images/iota-icon-dark.svg");
+    let file_name = format!("{}.svg", "iota");
+    let mut file = File::create(ASSETS_DIR.lock().unwrap().as_path().to_owned().join(file_name))?;
+    copy(&mut image_bytes, &mut file)?;
+
+    let mut image_bytes: &[u8] = include_bytes!("../../../resources/images/kw1c-white.png");
+    let file_name = format!("{}.png", "kw1c");
+    let mut file = File::create(ASSETS_DIR.lock().unwrap().as_path().to_owned().join(file_name))?;
+    copy(&mut image_bytes, &mut file)?;
+
+    let mut image_bytes: &[u8] = include_bytes!("../../../resources/images/ngdil.svg");
+    let file_name = format!("{}.svg", "ngdil");
     let mut file = File::create(ASSETS_DIR.lock().unwrap().as_path().to_owned().join(file_name))?;
     copy(&mut image_bytes, &mut file)?;
 
