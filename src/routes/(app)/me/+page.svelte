@@ -11,21 +11,20 @@
   import { melt } from '@melt-ui/svelte';
   import { debug, info } from '@tauri-apps/plugin-log';
 
-  import CredentialList from '$lib/CredentialList.svelte';
-  import Favorites from '$lib/Favorites.svelte';
-  import QrCodeButton from '$lib/QrCodeButton.svelte';
   import LL from '$src/i18n/i18n-svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
   import ButtonRounded from '$src/lib/components/atoms/ButtonRounded.svelte';
   import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
   import IconMessage from '$src/lib/components/molecules/IconMessage.svelte';
   import CredentialTabs from '$src/lib/components/molecules/navigation/tabs/CredentialTabs.svelte';
+  import CredentialList from '$src/lib/credentials/CredentialList.svelte';
+  import Favorites from '$src/lib/credentials/Favorites.svelte';
   import UserJourney from '$src/lib/journeys/UserJourney.svelte';
-  import TopBar from '$src/lib/TopBar.svelte';
   import WelcomeMessage from '$src/lib/WelcomeMessage.svelte';
   import { onboarding_state, state } from '$src/stores';
 
   import Ghost from '~icons/ph/ghost-fill';
+  import MagnifyingGlass from '~icons/ph/magnifying-glass';
   import PlusCircle from '~icons/ph/plus-circle';
   import RocketLaunch from '~icons/ph/rocket-launch-fill';
 
@@ -48,7 +47,23 @@
 
 <div class="flex min-h-full flex-col bg-white dark:bg-dark">
   <div class="sticky top-0 z-10 w-full bg-white px-[20px] py-4 dark:bg-dark">
-    <TopBar />
+    <!-- Top Bar -->
+    <div class="flex items-center justify-between">
+      <button
+        class="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary"
+        on:click={() => goto('/me/settings')}
+      >
+        <span class="text-[28px]/[28px]">
+          {@html $state?.active_profile?.picture ?? ''}
+        </span>
+      </button>
+      <button
+        on:click={() => goto('/me/search')}
+        class="-mr-3 flex h-11 w-11 items-center justify-center rounded-2xl text-black dark:text-white"
+      >
+        <MagnifyingGlass class="h-6 w-6" />
+      </button>
+    </div>
   </div>
 
   <div class="p-5 pt-0">

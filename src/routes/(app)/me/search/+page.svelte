@@ -1,10 +1,10 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
 
+  import IconMessage from '$lib/components/molecules/IconMessage.svelte';
+  import Search from '$lib/components/molecules/Search.svelte';
+  import CredentialListItem from '$lib/credentials/CredentialListItem.svelte';
   import { dispatch } from '$lib/dispatcher';
-  import IconMessage from '$src/lib/components/molecules/IconMessage.svelte';
-  import CredentialListItem from '$src/lib/credentials/CredentialListItem.svelte';
-  import Search from '$src/lib/Search.svelte';
   import { state } from '$src/stores';
 
   import Ghost from '~icons/ph/ghost-fill';

@@ -7,7 +7,7 @@
   import type { Connection } from '$lib/connections/types';
   import Image from '$src/lib/components/atoms/Image.svelte';
   import ConnectionTabs from '$src/lib/components/molecules/navigation/tabs/ConnectionTabs.svelte';
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
+  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
   import exampleConnections from '$src/lib/connections/mock-data.json';
   import History from '$src/lib/events/History.svelte';
   import { state } from '$src/stores';
@@ -19,7 +19,7 @@
 </script>
 
 <div class="content-height flex flex-col">
-  <TopNavigation on:back={() => goto('/activity')} title={connection.client_name} class="bg-silver dark:bg-navy" />
+  <TopNavBar on:back={() => goto('/activity')} title={connection.client_name} class="bg-silver dark:bg-navy" />
   <div class="grow bg-silver px-4 pt-5 dark:bg-navy">
     <ConnectionTabs>
       <!-- Summary -->

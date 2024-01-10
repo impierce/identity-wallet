@@ -5,7 +5,7 @@
   import Button from '$src/lib/components/atoms/Button.svelte';
   import Checkbox from '$src/lib/components/atoms/Checkbox.svelte';
   import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
+  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
   import CredentialListItem from '$src/lib/credentials/CredentialListItem.svelte';
   import { state } from '$src/stores';
 
@@ -20,7 +20,7 @@
 </script>
 
 <div class="content-height flex flex-col items-stretch bg-silver dark:bg-navy">
-  <TopNavigation title={'Share Data'} on:back={() => history.back()} />
+  <TopNavBar title={'Share Data'} on:back={() => history.back()} />
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
     <!-- Header -->

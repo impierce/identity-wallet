@@ -3,7 +3,7 @@
   import { fade } from 'svelte/transition';
 
   import Button from '$src/lib/components/atoms/Button.svelte';
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
+  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
   import { onboarding_state } from '$src/stores';
 
   $: {
@@ -11,10 +11,10 @@
   }
 </script>
 
-<!-- <TopNavigation title="Appearance" on:back={() => history.back()} /> -->
+<!-- <TopNavBar title="Appearance" on:back={() => history.back()} /> -->
 <div class="content-height relative flex flex-col bg-silver dark:bg-navy">
   <!-- TODO: the only reason why we're breaking out of the layout is because we do not want to inherit the "Skip" button -->
-  <TopNavigation on:back={() => history.back()} title="Customization" />
+  <TopNavBar on:back={() => history.back()} title="Customization" />
   <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
     <div class="px-2 pb-8 pt-4">
       <p class="pb-4 text-3xl font-semibold text-slate-700 dark:text-grey">

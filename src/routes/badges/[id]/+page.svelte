@@ -14,7 +14,7 @@
   import ButtonRounded from '$src/lib/components/atoms/ButtonRounded.svelte';
   import Image from '$src/lib/components/atoms/Image.svelte';
   import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
+  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
   import CredentialDetailsDropdownMenu from '$src/lib/credentials/CredentialDetailsDropdownMenu.svelte';
   import { state } from '$src/stores';
 
@@ -71,8 +71,8 @@
 </script>
 
 <div class="content-height relative flex w-full flex-col">
-  <!-- TODO: allow overriding the color of the TopNavigation -->
-  <TopNavigation
+  <!-- TODO: allow overriding the color of the TopNavBar -->
+  <TopNavBar
     title="Badge information"
     on:back={() => history.back()}
     class="bg-white text-slate-800 dark:bg-dark dark:text-grey"

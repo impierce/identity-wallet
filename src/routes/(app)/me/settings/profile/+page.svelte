@@ -7,7 +7,7 @@
   import LL from '$src/i18n/i18n-svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
   import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
+  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
   import SettingsEntry from '$src/lib/settings/SettingsEntry.svelte';
 
   import Keyboard from '~icons/ph/keyboard-fill';
@@ -15,7 +15,7 @@
   import Trash from '~icons/ph/trash-fill';
 </script>
 
-<TopNavigation on:back={() => history.back()} title="My Profile" />
+<TopNavBar on:back={() => history.back()} title="My Profile" />
 <div class="content-height flex flex-col bg-silver dark:bg-navy">
   <div class="flex flex-col space-y-[10px] px-4 py-5">
     <SettingsEntry icon={Keyboard} title="Profile name" on:click={() => goto('/me/settings/profile/name')} />

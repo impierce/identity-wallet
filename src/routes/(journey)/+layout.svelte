@@ -2,7 +2,7 @@
   import { page } from '$app/stores';
 
   import { dispatch } from '$lib/dispatcher';
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
+  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
   import { state } from '$src/stores';
 </script>
 

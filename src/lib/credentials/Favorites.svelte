@@ -14,7 +14,7 @@
   import Heart from '~icons/ph/heart-straight-fill';
   import User from '~icons/ph/user';
 
-  import CredentialListItem from './credentials/CredentialListItem.svelte';
+  import CredentialListItem from './CredentialListItem.svelte';
 
   export let credentialType: 'all' | 'data' | 'badges' = 'all';
 

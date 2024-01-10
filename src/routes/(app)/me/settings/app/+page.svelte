@@ -3,7 +3,7 @@
 
   import { dispatch } from '$lib/dispatcher';
   import Switch from '$src/lib/components/atoms/Switch.svelte';
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
+  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
   import SettingsEntry from '$src/lib/settings/SettingsEntry.svelte';
   import { state } from '$src/stores';
 
@@ -15,7 +15,7 @@
   import Translate from '~icons/ph/translate-fill';
 </script>
 
-<TopNavigation on:back={() => history.back()} title="App Settings" />
+<TopNavBar on:back={() => history.back()} title="App Settings" />
 <div class="content-height flex flex-col bg-silver dark:bg-navy">
   <div class="flex flex-col space-y-[10px] px-4 py-5">
     <SettingsEntry icon={Sun} title="Language" hasCaretRight={false} textRight="English" todo />

@@ -4,7 +4,7 @@
   import { fly } from 'svelte/transition';
 
   import Button from '$src/lib/components/atoms/Button.svelte';
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
+  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
 
   import type { LayoutData } from './$types';
 
@@ -26,7 +26,7 @@
   <!-- <div in:fly={{ x: 128, delay: 400, opacity: 1 }} out:fly={{ x: -128, opacity: 1 }}> -->
   <div class="content-height flex flex-col bg-silver dark:bg-navy">
     <slot />
-    <!-- <TopNavigation title="Terms & Conditions" on:back={() => history.back()} />
+    <!-- <TopNavBar title="Terms & Conditions" on:back={() => history.back()} />
     <div class="grow">terms</div>
     <div class="space-y-[10px] rounded-t-3xl bg-white p-6">
       <Button label="Continue" on:click={() => goto('/welcome/terms')} disabled />

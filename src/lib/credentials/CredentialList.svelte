@@ -16,7 +16,7 @@
   import Percent from '~icons/ph/percent-light';
   import SealCheck from '~icons/ph/seal-check-fill';
 
-  import CredentialListItem from './credentials/CredentialListItem.svelte';
+  import CredentialListItem from './CredentialListItem.svelte';
 
   export let credentialType: 'all' | 'data' | 'badges' = 'all';
 
@@ -24,43 +24,43 @@
   let credentials: Array<DisplayCredential> = []; // = $state.credentials.filter((c) => !c.metadata.is_favorite);
   // $: credentials = $state.credentials.filter((c) => !c.metadata.is_favorite);
 
-  let test_credentials = [
-    {
-      title: 'Address of residence',
-      description: 'State of Pandora',
-      color: 'bg-yellow-100',
-      icon: House,
-    },
-    {
-      title: 'Bachelor of Science',
-      description: 'University of Pandora',
-      color: 'bg-blue-100',
-      icon: GraduationCap,
-      image: 'https://placehold.co/400',
-    },
-    {
-      title: 'Discount - 20%',
-      description: 'Home Supplies & Gardening',
-      color: 'bg-orange-100',
-      icon: Percent,
-      image: 'https://placehold.co/32',
-    },
-    {
-      title: "Driver's license",
-      description: 'State of Pandora',
-      color: 'bg-emerald-100',
-      icon: Car,
-      image: 'https://placehold.co/250x100',
-    },
-    {
-      title: 'Email address',
-      description: 'Pandora Email Service',
-      color: 'bg-slate-400',
-      icon: EnvelopeSimple,
-    },
-  ];
+  // let test_credentials = [
+  //   {
+  //     title: 'Address of residence',
+  //     description: 'State of Pandora',
+  //     color: 'bg-yellow-100',
+  //     icon: House,
+  //   },
+  //   {
+  //     title: 'Bachelor of Science',
+  //     description: 'University of Pandora',
+  //     color: 'bg-blue-100',
+  //     icon: GraduationCap,
+  //     image: 'https://placehold.co/400',
+  //   },
+  //   {
+  //     title: 'Discount - 20%',
+  //     description: 'Home Supplies & Gardening',
+  //     color: 'bg-orange-100',
+  //     icon: Percent,
+  //     image: 'https://placehold.co/32',
+  //   },
+  //   {
+  //     title: "Driver's license",
+  //     description: 'State of Pandora',
+  //     color: 'bg-emerald-100',
+  //     icon: Car,
+  //     image: 'https://placehold.co/250x100',
+  //   },
+  //   {
+  //     title: 'Email address',
+  //     description: 'Pandora Email Service',
+  //     color: 'bg-slate-400',
+  //     icon: EnvelopeSimple,
+  //   },
+  // ];
 
-  test_credentials = [];
+  // test_credentials = [];
 
   // Does this really have to be reactive?
   // $: credentials = $state?.credentials ?? [];
@@ -96,9 +96,9 @@
 
     <!--Mock credentials -->
     <!-- <p class="font-semibold">A</p> -->
-    {#each test_credentials as credential}
+    <!-- {#each test_credentials as credential}
       <CredentialListItem title={credential.title} description={credential.description}></CredentialListItem>
-    {/each}
+    {/each} -->
 
     <!-- Actual (non-mock) credentials -->
     {#each credentials as credential}
