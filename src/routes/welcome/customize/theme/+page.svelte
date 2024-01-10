@@ -2,8 +2,8 @@
   import { goto } from '$app/navigation';
   import { fade } from 'svelte/transition';
 
+  import ThemeSelect from '$src/lib/app/settings/ThemeSelect.svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
-  import ThemeSelect from '$src/lib/settings/ThemeSelect.svelte';
   import { determineTheme } from '$src/routes/utils';
   import { onboarding_state } from '$src/stores';
 

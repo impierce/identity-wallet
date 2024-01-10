@@ -12,6 +12,7 @@
   import { debug, info } from '@tauri-apps/plugin-log';
 
   import LL from '$src/i18n/i18n-svelte';
+  import WelcomeMessage from '$src/lib/app/WelcomeMessage.svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
   import ButtonRounded from '$src/lib/components/atoms/ButtonRounded.svelte';
   import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
@@ -20,7 +21,6 @@
   import CredentialList from '$src/lib/credentials/CredentialList.svelte';
   import Favorites from '$src/lib/credentials/Favorites.svelte';
   import UserJourney from '$src/lib/journeys/UserJourney.svelte';
-  import WelcomeMessage from '$src/lib/WelcomeMessage.svelte';
   import { onboarding_state, state } from '$src/stores';
 
   import Ghost from '~icons/ph/ghost-fill';

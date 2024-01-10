@@ -5,8 +5,8 @@
   import { createPopover, melt } from '@melt-ui/svelte';
 
   import LL from '$src/i18n/i18n-svelte';
+  import EmojiAvatarSelect from '$src/lib/app/settings/EmojiAvatarSelect.svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
-  import EmojiAvatarSelect from '$src/lib/settings/EmojiAvatarSelect.svelte';
   import { onboarding_state } from '$src/stores';
 
   // TODO: unused

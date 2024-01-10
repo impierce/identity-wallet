@@ -5,10 +5,10 @@
 
   import { dispatch } from '$lib/dispatcher';
   import LL from '$src/i18n/i18n-svelte';
+  import SettingsEntry from '$src/lib/app/settings/SettingsEntry.svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
   import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
-  import SettingsEntry from '$src/lib/settings/SettingsEntry.svelte';
 
   import Keyboard from '~icons/ph/keyboard-fill';
   import SmileyWink from '~icons/ph/smiley-wink-fill';

@@ -1,8 +1,8 @@
 <script lang="ts">
   import { dispatch } from '$lib/dispatcher';
+  import ThemeSelect from '$src/lib/app/settings/ThemeSelect.svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
-  import ThemeSelect from '$src/lib/settings/ThemeSelect.svelte';
   import { state } from '$src/stores';
 
   let currentValue = $state.active_profile?.theme ?? 'system';

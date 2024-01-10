@@ -10,7 +10,7 @@
 
   import { dispatch } from '$lib/dispatcher';
   import { getImageAsset } from '$lib/utils';
-  import { colors } from '$src/lib/colors';
+  import { colors } from '$src/lib/app/colors';
   import Button from '$src/lib/components/atoms/Button.svelte';
   import ButtonRounded from '$src/lib/components/atoms/ButtonRounded.svelte';
   import Image from '$src/lib/components/atoms/Image.svelte';

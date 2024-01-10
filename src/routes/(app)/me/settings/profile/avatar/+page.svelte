@@ -1,7 +1,7 @@
 <script lang="ts">
   import { dispatch } from '$lib/dispatcher';
+  import EmojiAvatarSelect from '$src/lib/app/settings/EmojiAvatarSelect.svelte';
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
-  import EmojiAvatarSelect from '$src/lib/settings/EmojiAvatarSelect.svelte';
   import { state } from '$src/stores';
 </script>
 

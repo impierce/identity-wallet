@@ -6,6 +6,7 @@
   import { state } from '$src/stores';
 </script>
 
+<!-- TODO: refactor routes/(journey) to routes/journey/[id]/goals/[id] as there could be multiple journeys -->
 <div class="content-height flex flex-col items-stretch">
   <slot />
 

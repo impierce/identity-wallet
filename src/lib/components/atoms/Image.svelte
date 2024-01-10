@@ -4,7 +4,7 @@
   import { twMerge } from 'tailwind-merge';
 
   import { getImageAsset } from '$lib/utils';
-  import { icons, type Icon } from '$src/lib/icons';
+  import { icons, type Icon } from '$src/lib/app/icons';
 
   export let id: string | null = null;
 

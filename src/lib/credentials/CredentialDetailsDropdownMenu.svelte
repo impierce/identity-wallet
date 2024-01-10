@@ -5,8 +5,8 @@
   import { createDialog, createDropdownMenu, melt } from '@melt-ui/svelte';
 
   import { dispatch } from '$lib/dispatcher';
-  import { colors } from '$src/lib/colors';
-  import { icons } from '$src/lib/icons';
+  import { colors } from '$src/lib/app/colors';
+  import { icons } from '$src/lib/app/icons';
 
   import Bank from '~icons/ph/bank-light';
   import Car from '~icons/ph/car-light';

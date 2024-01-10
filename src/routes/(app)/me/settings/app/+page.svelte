@@ -2,9 +2,9 @@
   import { goto } from '$app/navigation';
 
   import { dispatch } from '$lib/dispatcher';
+  import SettingsEntry from '$src/lib/app/settings/SettingsEntry.svelte';
   import Switch from '$src/lib/components/atoms/Switch.svelte';
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
-  import SettingsEntry from '$src/lib/settings/SettingsEntry.svelte';
   import { state } from '$src/stores';
 
   import ChatCircleText from '~icons/ph/chat-circle-text-fill';
