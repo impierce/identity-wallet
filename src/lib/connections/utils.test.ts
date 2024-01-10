@@ -1,49 +1,30 @@
 import type { Connection } from './types';
 import { groupConnectionsAlphabetically } from './utils';
 
+const connection: Connection = {
+  id: '0',
+  url: '',
+  client_name: '',
+  verified: false,
+  first_interacted: '',
+  last_interacted: '',
+};
+
 describe('connections', () => {
-  test('should be grouped alphabetically by url', () => {
+  test('should be grouped alphabetically by client_name', () => {
     const given: Connection[] = [
-      {
-        id: '0',
-        url: 'https://auth.example.org',
-        client_name: 'ACME Corp.',
-        verified: false,
-        first_interacted: '',
-        last_interacted: '',
-      },
-      {
-        id: '1',
-        url: 'https://api.ngdil.com',
-        client_name: 'NGDIL Demo',
-        verified: false,
-        first_interacted: '',
-        last_interacted: '',
-      },
-      {
-        id: '2',
-        url: 'https://auth2.example.org',
-        client_name: 'ACME Corporation',
-        verified: false,
-        first_interacted: '',
-        last_interacted: '',
-      },
-      {
-        id: '3',
-        url: 'https://ecorp.com',
-        client_name: 'ECorp',
-        verified: false,
-        first_interacted: '',
-        last_interacted: '',
-      },
+      { ...connection, id: '0', url: 'https://auth2.example.org', client_name: 'acme Corporation' },
+      { ...connection, id: '1', url: 'https://api.ngdil.com', client_name: 'NGDIL Demo' },
+      { ...connection, id: '2', url: 'https://auth.example.org', client_name: 'ACME Corp.' },
+      { ...connection, id: '3', url: 'https://ecorp.com', client_name: 'ECorp' },
     ];
 
-    expect(groupConnectionsAlphabetically(given)).toEqual(
-      new Map<string, Array<any>>([
-        ['A', [given.at(0), given.at(2)]],
-        ['E', [given.at(3)]],
-        ['N', [given.at(1)]],
-      ]),
-    );
+    const expected = new Map<string, Array<Connection>>([
+      ['A', [given.at(2)!!, given.at(0)!!]],
+      ['E', [given.at(3)!!]],
+      ['N', [given.at(1)!!]],
+    ]);
+
+    expect(groupConnectionsAlphabetically(given)).toEqual(expected);
   });
 });
