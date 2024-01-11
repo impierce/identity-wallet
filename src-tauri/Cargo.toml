@@ -25,11 +25,11 @@ tauri-plugin-barcode-scanner = { version = "=2.0.0-alpha.4" }
 tauri-plugin-log = { version = "=2.0.0-alpha.6", features = ["colored"] }
 tauri-plugin-fs = { version = "=2.0.0-alpha.6" }
 
-oid4vc-manager = { git = "https://git@github.com/impierce/openid4vc.git", rev = "920b5651bd1372728c977c946ef7b8032059cc70" }
-siopv2 = { git = "https://git@github.com/impierce/openid4vc.git", rev = "920b5651bd1372728c977c946ef7b8032059cc70" }
-oid4vci = { git = "https://git@github.com/impierce/openid4vc.git", rev = "920b5651bd1372728c977c946ef7b8032059cc70" }
-oid4vc-core = { git = "https://git@github.com/impierce/openid4vc.git", rev = "920b5651bd1372728c977c946ef7b8032059cc70" }
-oid4vp = { git = "https://git@github.com/impierce/openid4vc.git", rev = "920b5651bd1372728c977c946ef7b8032059cc70" }
+oid4vc-manager = { git = "https://git@github.com/impierce/openid4vc.git", rev = "ebd7a83f8494d55b57f569e43e3001d32cda583a" }
+siopv2 = { git = "https://git@github.com/impierce/openid4vc.git", rev = "ebd7a83f8494d55b57f569e43e3001d32cda583a" }
+oid4vci = { git = "https://git@github.com/impierce/openid4vc.git", rev = "ebd7a83f8494d55b57f569e43e3001d32cda583a" }
+oid4vc-core = { git = "https://git@github.com/impierce/openid4vc.git", rev = "ebd7a83f8494d55b57f569e43e3001d32cda583a" }
+oid4vp = { git = "https://git@github.com/impierce/openid4vc.git", rev = "ebd7a83f8494d55b57f569e43e3001d32cda583a" }
 
 identity_core = { version = "=0.7.0-alpha.7" }
 identity_credential = { git = "https://github.com/iotaledger/identity.rs.git", default-features = false, features = [
@@ -54,7 +54,7 @@ base64 = { version = "0.13.0" }
 jsonwebtoken = "8.2"
 futures = "0.3"
 async-recursion = "1.0"
-uuid = { version = "1.4", features = ["v4", "fast-rng"] }
+uuid = { version = "1.4", features = ["v4", "fast-rng", "serde"] }
 chrono = "0.4"
 itertools = "0.10.5"
 sha256 = "1.4"

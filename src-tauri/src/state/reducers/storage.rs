@@ -12,12 +12,12 @@ use std::sync::Arc;
 pub async fn unlock_storage(state: &mut AppState, action: Action) -> Result<(), AppError> {
     let mut state_guard = state.managers.lock().await;
 
-    let payload = action.payload.ok_or(MissingPayloadError)?;
-    let password = payload["password"]
-        .as_str()
-        .ok_or(MissingPayloadValueError("password"))?;
+    let password = match action {
+        Action::UnlockStorage { password } => password,
+        _ => return Err(InvalidActionError { action }),
+    };
 
-    let stronghold_manager = Arc::new(StrongholdManager::load(password).map_err(StrongholdLoadingError)?);
+    let stronghold_manager = Arc::new(StrongholdManager::load(&password).map_err(StrongholdLoadingError)?);
 
     let public_key = stronghold_manager.get_public_key().map_err(StrongholdPublicKeyError)?;
 

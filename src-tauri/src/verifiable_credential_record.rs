@@ -49,7 +49,7 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
                 DisplayCredential {
                     id: Uuid::from_slice(&hash.as_bytes()[..16]).unwrap().to_string(),
                     issuer_name: None,
-                    format: (&verifiable_credential).try_into().unwrap(),
+                    format: verifiable_credential.format().unwrap(),
                     data: credential_display,
                     metadata: CredentialMetadata {
                         is_favorite: false,
@@ -77,7 +77,7 @@ pub struct DisplayCredential {
     pub id: String,
     pub issuer_name: Option<String>,
     #[ts(type = "string")]
-    pub format: CredentialFormats<()>,
+    pub format: CredentialFormats,
     #[ts(type = "object")]
     pub data: serde_json::Value,
     #[serde(default)]

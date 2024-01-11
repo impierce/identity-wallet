@@ -59,12 +59,10 @@
     on:click={async () => {
       await dispatch({
         type: '[DID] Create new',
-        payload: {
-          name: $onboarding_state.name,
-          picture: $onboarding_state.picture,
-          theme: $onboarding_state.theme,
-          password: $onboarding_state.password,
-        },
+        name: $onboarding_state.name ?? '',
+        picture: $onboarding_state.picture ?? '',
+        theme: $onboarding_state.theme ?? '',
+        password: $onboarding_state.password ?? '',
       });
     }}
   />

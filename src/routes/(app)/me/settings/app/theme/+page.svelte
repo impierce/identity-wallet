@@ -13,6 +13,6 @@
 <div class="h-full bg-silver p-4 dark:bg-navy">
   <ThemeSelect
     defaultValue={currentValue}
-    on:change={(e) => dispatch({ type: '[Settings] Update profile', payload: { theme: e.detail.value } })}
+    on:change={(e) => dispatch({ type: '[Settings] Update profile', theme: e.detail.value })}
   />
 </div>

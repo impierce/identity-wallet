@@ -1,6 +1,8 @@
-use crate::state::actions::ActionType;
+use oid4vc_core::authorization_request::{AuthorizationRequest, Object};
 use std::error::Error;
 use uuid::Uuid;
+
+use crate::state::actions::Action;
 
 // TODO: needs revision/refactor + needs oid4vc libs to properly implement error handling.
 #[derive(thiserror::Error)]
@@ -8,17 +10,10 @@ pub enum AppError {
     // Generic error (all purpose)
     #[error("Error: {0}")]
     Error(&'static str),
-    #[error("Required payload is missing")]
-    MissingPayloadError,
-    #[error("Required payload value is missing: {0}")]
-    MissingPayloadValueError(&'static str),
+    #[error("Invalid action found: `{action:?}`")]
+    InvalidActionError { action: Action },
     #[error("Unable to parse QR code with content: `{0}`")]
     InvalidQRCodeError(String),
-    #[error("Received unknown action type `{r#type:?}` with payload: `{payload:?}`")]
-    UnknownActionTypeError {
-        r#type: ActionType,
-        payload: Option<serde_json::Value>,
-    },
     #[error("No `{0}` manager found in the state")]
     MissingManagerError(&'static str),
     #[error("{extension} authorization request cannot be validated")]
@@ -39,7 +34,7 @@ pub enum AppError {
     #[error("Missing required parameter `{0}` in authorization request")]
     MissingAuthorizationRequestParameterError(&'static str),
     #[error("Invalid authorization request: {0}")]
-    InvalidAuthorizationRequest(serde_json::Value),
+    InvalidAuthorizationRequest(Box<AuthorizationRequest<Object>>),
     #[error("Invalid credential offer")]
     InvalidCredentialOffer(#[source] serde_json::Error),
     #[error("Could not find a matching credential for input descriptor")]
