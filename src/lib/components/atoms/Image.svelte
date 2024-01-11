@@ -50,7 +50,7 @@ Displays an image (loaded from disk) or a fallback component.
 ### Slots
 - fallback (_default_: `User` icon)
 
-Usage:
+### Usage
 ```tsx
 <Image id={'3cf73ecb'} iconFallback={'Bank'} imgClass="h-[64px] w-[64px]" />
 ```

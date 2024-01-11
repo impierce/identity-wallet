@@ -17,7 +17,7 @@
   import ButtonRounded from '$src/lib/components/atoms/ButtonRounded.svelte';
   import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
   import IconMessage from '$src/lib/components/molecules/IconMessage.svelte';
-  import CredentialTabs from '$src/lib/components/molecules/navigation/tabs/CredentialTabs.svelte';
+  import Tabs from '$src/lib/components/molecules/navigation/Tabs.svelte';
   import CredentialList from '$src/lib/credentials/CredentialList.svelte';
   import Favorites from '$src/lib/credentials/Favorites.svelte';
   import UserJourney from '$src/lib/journeys/UserJourney.svelte';
@@ -81,31 +81,26 @@
     class="flex grow flex-col items-stretch justify-start rounded-t-[20px] bg-silver p-[18px] dark:bg-navy"
   >
     {#if $state?.credentials && $state?.credentials.length > 0}
-      <!-- <div class="flex pb-5"> -->
-      <!-- <div class="grow"> -->
-      <CredentialTabs>
+      <Tabs triggers={['All', 'Data', 'Badges']}>
         <!-- All -->
-        <div slot="all" class="pt-5">
+        <div slot="0" class="h-full pt-5">
           <Favorites />
           <CredentialList />
         </div>
 
         <!-- Data -->
-        <div slot="data" class="pt-5">
+        <div slot="1" class="h-full pt-5">
           <Favorites credentialType="data" />
           <CredentialList credentialType="data" />
         </div>
 
         <!-- Badges -->
-        <div slot="badges" class="pt-5">
+        <div slot="2" class="h-full pt-5">
           <Favorites credentialType="badges" />
           <CredentialList credentialType="badges" />
         </div>
-      </CredentialTabs>
-      <!-- </div> -->
-      <!-- </div> -->
-      <!-- <Favorites /> -->
-      <!-- <CredentialList /> -->
+      </Tabs>
+
       <!-- container that animates and places the button -->
       <div in:fly={{ y: 12, delay: 0, opacity: 1, duration: 200 }} class="absolute bottom-4 right-4">
         <!-- <div in:fade={{ delay: 200, duration: 200 }} class="absolute bottom-4 right-4"> -->

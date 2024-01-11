@@ -6,7 +6,7 @@
   import ConnectionSummary from '$lib/connections/ConnectionSummary.svelte';
   import type { Connection } from '$lib/connections/types';
   import Image from '$src/lib/components/atoms/Image.svelte';
-  import ConnectionTabs from '$src/lib/components/molecules/navigation/tabs/ConnectionTabs.svelte';
+  import Tabs from '$src/lib/components/molecules/navigation/Tabs.svelte';
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
   import exampleConnections from '$src/lib/connections/mock-data.json';
   import History from '$src/lib/events/History.svelte';
@@ -20,40 +20,20 @@
 
 <div class="content-height flex flex-col">
   <TopNavBar on:back={() => goto('/activity')} title={connection.client_name} class="bg-silver dark:bg-navy" />
-  <div class="grow bg-silver px-4 pt-5 dark:bg-navy">
-    <ConnectionTabs>
-      <!-- Summary -->
-      <div slot="summary" class="h-full bg-silver py-5 dark:bg-navy">
-        <div class="flex flex-col items-center justify-center space-y-4">
-          <div class="flex w-full flex-col items-center justify-center space-y-4 py-6">
-            <div class="flex h-[75px] w-[75px] items-center justify-center overflow-hidden rounded-3xl bg-white p-4">
-              <Image
-                id={connection.id}
-                imgClass="h-full w-full rounded-2xl"
-                iconFallback="Bank"
-                iconClass="h-6 w-6 dark:text-slate-800"
-              />
-            </div>
-            <div class="text-center text-2xl font-semibold text-slate-700 dark:text-grey">
-              Connected to <p class="text-primary">{connection.client_name}</p>
-            </div>
-          </div>
-
-          <ConnectionSummary {...connection} />
-        </div>
+  <div class="flex grow flex-col overflow-y-auto bg-silver px-4 py-5 dark:bg-navy">
+    <Tabs triggers={['Summary', 'Data', 'Activity']}>
+      <div slot="0" class="h-full pt-5">
+        <ConnectionSummary {connection} />
+      </div>
+      <div slot="1" class="h-full bg-silver py-5 dark:bg-navy">
+        <ConnectionData id={connection.id} />
       </div>
 
-      <!-- Data -->
-      <div slot="data" class="h-full bg-silver py-5 dark:bg-navy">
-        <ConnectionData />
-      </div>
-
-      <!-- History -->
-      <div slot="activity" class="h-full bg-silver py-5 dark:bg-navy">
+      <div slot="2" class="h-full bg-silver py-5 dark:bg-navy">
         <!-- TODO: If this turns out to be a costly operation (filtering in backend), consider lazy loading the component -->
         <History />
       </div>
-    </ConnectionTabs>
+    </Tabs>
   </div>
 </div>
 
