@@ -6,7 +6,7 @@
 
   import LL from '$src/i18n/i18n-svelte';
   import IconMessage from '$src/lib/components/molecules/IconMessage.svelte';
-  import ListItemCard from '$src/lib/credentials/ListItemCard.svelte';
+  import ListItemCard from '$src/lib/components/molecules/ListItemCard.svelte';
   import { state } from '$src/stores';
 
   import Car from '~icons/ph/car-light';

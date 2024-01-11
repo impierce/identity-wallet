@@ -1,9 +1,8 @@
 <script lang="ts">
   import type { DisplayCredential } from 'src-tauri/bindings/display-credential/DisplayCredential';
 
+  import ListItemCard from '$lib/components/molecules/ListItemCard.svelte';
   import type { Connection } from '$lib/connections/types';
-
-  import ListItemCard from '../credentials/ListItemCard.svelte';
 
   // export let connection: Connection;
   export let title: string;

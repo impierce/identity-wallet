@@ -4,6 +4,7 @@
   import { goto } from '$app/navigation';
   import type { DisplayCredential } from 'src-tauri/bindings/display-credential/DisplayCredential';
 
+  import ListItemCard from '$lib/components/molecules/ListItemCard.svelte';
   import LL from '$src/i18n/i18n-svelte';
   import { state } from '$src/stores';
 
@@ -13,8 +14,6 @@
   import FilmSlate from '~icons/ph/film-slate-light';
   import Heart from '~icons/ph/heart-straight-fill';
   import User from '~icons/ph/user';
-
-  import ListItemCard from './ListItemCard.svelte';
 
   export let credentialType: 'all' | 'data' | 'badges' = 'all';
 

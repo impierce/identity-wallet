@@ -1,5 +1,5 @@
 <script lang="ts">
-  import ListItemCard from '$src/lib/credentials/ListItemCard.svelte';
+  import ListItemCard from '$src/lib/components/molecules/ListItemCard.svelte';
 
   const data = [];
 </script>

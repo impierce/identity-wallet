@@ -3,7 +3,7 @@
 
   import Image from '$lib/components/atoms/Image.svelte';
   import exampleConnections from '$lib/connections/mock-data.json';
-  import ListItemCard from '$src/lib/credentials/ListItemCard.svelte';
+  import ListItemCard from '$src/lib/components/molecules/ListItemCard.svelte';
   import { state } from '$src/stores';
 
   import type { Connection } from './types';

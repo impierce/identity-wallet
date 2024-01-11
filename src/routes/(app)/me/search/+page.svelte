@@ -4,7 +4,7 @@
   import IconMessage from '$lib/components/molecules/IconMessage.svelte';
   import Search from '$lib/components/molecules/Search.svelte';
   import { dispatch } from '$lib/dispatcher';
-  import ListItemCard from '$src/lib/credentials/ListItemCard.svelte';
+  import ListItemCard from '$src/lib/components/molecules/ListItemCard.svelte';
   import { state } from '$src/stores';
 
   import Ghost from '~icons/ph/ghost-fill';
