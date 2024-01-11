@@ -46,7 +46,7 @@ export const state = writable<State>(undefined, (set) => {
     set(state);
     info(`stores.ts: ${JSON.stringify(state)}`);
 
-    setLocale(state.locale as Locales);
+    setLocale('de' as Locales);
 
     if (state.current_user_prompt?.type === 'redirect') {
       const redirect_target = state.current_user_prompt.target;

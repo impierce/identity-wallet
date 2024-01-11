@@ -15,6 +15,102 @@ export type Translation = RootTranslation
 export type Translations = RootTranslation
 
 type RootTranslation = {
+	ONBOARDING: {
+		WELCOME: {
+			/**
+			 * W​e​l​c​o​m​e​ ​t​o
+			 */
+			GREETING: string
+			/**
+			 * U​n​i​M​e​ ​c​o​n​n​e​c​t​s​ ​y​o​u​r​ ​d​i​g​i​t​a​l​ ​w​o​r​l​d​,​ ​s​a​f​e​l​y​ ​a​n​d​ ​s​e​c​u​r​e​l​y​.
+			 */
+			WHAT_IS_UNIME_1: string
+			/**
+			 * C​r​e​a​t​e​ ​a​ ​b​r​a​n​d​ ​n​e​w​ ​i​d​e​n​t​i​t​y​ ​p​r​o​f​i​l​e​ ​t​o​ ​g​e​t​ ​s​t​a​r​t​e​d​.
+			 */
+			WHAT_IS_UNIME_2: string
+			/**
+			 * C​r​e​a​t​e​ ​n​e​w​ ​p​r​o​f​i​l​e
+			 */
+			CREATE_NEW_PROFILE: string
+		}
+		PLEDGE: {
+			/**
+			 * U​n​i​M​e​ ​P​l​e​d​g​e
+			 */
+			NAVBAR_TITLE: string
+			/**
+			 * N​o​ ​f​u​n​n​y
+			 */
+			TITLE_1: string
+			/**
+			 * b​u​s​i​n​e​s​s
+			 */
+			TITLE_2: string
+			/**
+			 * H​e​r​e​'​s​ ​o​u​r​ ​p​l​e​d​g​e​ ​t​o​ ​y​o​u​.
+			 */
+			SUBTITLE: string
+			ITEM_1: {
+				/**
+				 * W​e​ ​w​i​l​l​ ​n​o​t​ ​s​h​a​r​e​ ​y​o​u​r​ ​d​a​t​a
+				 */
+				TITLE: string
+				/**
+				 * Y​o​u​r​ ​d​a​t​a​ ​b​e​l​o​n​g​s​ ​t​o​ ​y​o​u​ ​a​n​d​ ​o​n​l​y​ ​y​o​u​ ​d​e​c​i​d​e​ ​w​h​o​ ​y​o​u​ ​s​h​a​r​e​ ​i​t​ ​w​i​t​h​.​ ​P​e​r​i​o​d​.​ ​I​n​ ​f​a​c​t​,​ ​y​o​u​r​ ​d​a​t​a​ ​n​e​v​e​r​ ​e​v​e​n​ ​t​o​u​c​h​e​s​ ​a​n​y​ ​o​f​ ​o​u​r​ ​s​y​s​t​e​m​s​ ​-​ ​u​n​l​e​s​s​ ​y​o​u​ ​o​p​t​-​i​n​ ​t​o​ ​o​n​e​ ​o​f​ ​t​h​e​ ​c​l​o​u​d​ ​s​t​o​r​a​g​e​ ​o​p​t​i​o​n​s​.
+				 */
+				DESCRIPTION: string
+			}
+			ITEM_2: {
+				/**
+				 * W​e​ ​w​i​l​l​ ​n​o​t​ ​a​d​d​ ​t​r​a​c​k​e​r​s
+				 */
+				TITLE: string
+				/**
+				 * W​e​ ​d​o​ ​n​o​t​ ​t​r​a​c​k​ ​y​o​u​r​ ​a​c​t​i​o​n​s​ ​b​e​h​i​n​d​ ​t​h​e​ ​s​c​e​n​e​s​.​ ​P​e​r​i​o​d​.​ ​N​o​t​ ​f​o​r​ ​t​e​s​t​i​n​g​ ​o​r​ ​a​n​y​ ​o​t​h​e​r​ ​r​e​a​s​o​n​s​.​ ​T​h​a​t​'​s​ ​o​u​r​ ​p​l​e​d​g​e​.​ ​W​e​ ​a​l​s​o​ ​d​o​ ​n​o​t​ ​c​o​l​l​e​c​t​ ​a​n​y​ ​a​n​o​n​y​m​o​u​s​ ​d​e​v​i​c​e​ ​i​n​f​o​r​m​a​t​i​o​n​ ​o​r​ ​u​s​a​g​e​ ​s​t​a​t​i​s​t​i​c​s​.​ ​T​h​a​t​ ​d​e​c​i​s​i​o​n​ ​m​a​k​e​s​ ​d​e​v​e​l​o​p​i​n​g​ ​t​h​e​ ​a​p​p​ ​a​ ​b​i​t​ ​h​a​r​d​e​r​ ​f​o​r​ ​u​s​,​ ​b​u​t​ ​w​e​ ​b​e​l​i​e​v​e​ ​i​t​ ​i​s​ ​t​h​e​ ​r​i​g​h​t​ ​d​e​c​i​s​i​o​n​.
+				 */
+				DESCRIPTION: string
+			}
+			ITEM_3: {
+				/**
+				 * Y​o​u​ ​o​w​n​ ​y​o​u​r​ ​i​n​f​o​r​m​a​t​i​o​n
+				 */
+				TITLE: string
+				/**
+				 * W​e​ ​b​e​l​i​e​v​e​ ​t​h​a​t​ ​i​t​'​s​ ​a​b​o​u​t​ ​t​i​m​e​ ​y​o​u​ ​b​e​c​o​m​e​ ​t​h​e​ ​o​w​n​e​r​ ​o​f​ ​y​o​u​r​ ​o​w​n​ ​p​e​r​s​o​n​a​l​ ​i​n​f​o​r​m​a​t​i​o​n​ ​a​g​a​i​n​.
+				 */
+				DESCRIPTION: string
+			}
+		}
+		TERMS: {
+			/**
+			 * T​e​r​m​s​ ​&​ ​C​o​n​d​i​t​i​o​n​s
+			 */
+			NAVBAR_TITLE: string
+			/**
+			 * H​e​r​e​'​s​ ​t​h​e​ ​l​e​s​s​ ​i​n​t​e​r​e​s​t​i​n​g
+			 */
+			TITLE_1: string
+			/**
+			 * s​t​u​f​f
+			 */
+			TITLE_2: string
+			/**
+			 * Y​e​a​h​,​ ​w​e​ ​k​n​o​w​.​ ​W​e​ ​s​t​i​l​l​ ​r​e​c​o​m​m​e​n​d​ ​y​o​u​ ​r​e​a​d​ ​t​h​i​s​ ​i​n​f​o​r​m​a​t​i​o​n​ ​c​a​r​e​f​u​l​l​y​.
+			 */
+			SUBTITLE: string
+			OWNERSHIP: {
+				/**
+				 * O​w​n​e​r​s​h​i​p
+				 */
+				TITLE: string
+				/**
+				 * I​ ​u​n​d​e​r​s​t​a​n​d​ ​t​h​a​t​ ​I​ ​a​m​ ​s​o​l​e​l​y​ ​r​e​s​p​o​n​s​i​b​l​e​ ​f​o​r​ ​m​y​ ​d​a​t​a​.
+				 */
+				DESCRIPTION: string
+			}
+		}
+	}
 	/**
 	 * H​i​ ​{​n​a​m​e​}​!​ ​P​l​e​a​s​e​ ​l​e​a​v​e​ ​a​ ​s​t​a​r​ ​i​f​ ​y​o​u​ ​l​i​k​e​ ​t​h​i​s​ ​p​r​o​j​e​c​t​:​ ​h​t​t​p​s​:​/​/​g​i​t​h​u​b​.​c​o​m​/​i​v​a​n​h​o​f​e​r​/​t​y​p​e​s​a​f​e​-​i​1​8​n
 	 * @param {string} name
@@ -129,7 +225,7 @@ type RootTranslation = {
 	 */
 	STRONG_PASSWORD: string
 	/**
-	 * F​a​v​o​r​i​t​e​s
+	 * M​y​ ​f​a​v​o​r​i​t​e​s
 	 */
 	FAVORITES: string
 	/**
@@ -159,6 +255,102 @@ type RootTranslation = {
 }
 
 export type TranslationFunctions = {
+	ONBOARDING: {
+		WELCOME: {
+			/**
+			 * Welcome to
+			 */
+			GREETING: () => LocalizedString
+			/**
+			 * UniMe connects your digital world, safely and securely.
+			 */
+			WHAT_IS_UNIME_1: () => LocalizedString
+			/**
+			 * Create a brand new identity profile to get started.
+			 */
+			WHAT_IS_UNIME_2: () => LocalizedString
+			/**
+			 * Create new profile
+			 */
+			CREATE_NEW_PROFILE: () => LocalizedString
+		}
+		PLEDGE: {
+			/**
+			 * UniMe Pledge
+			 */
+			NAVBAR_TITLE: () => LocalizedString
+			/**
+			 * No funny
+			 */
+			TITLE_1: () => LocalizedString
+			/**
+			 * business
+			 */
+			TITLE_2: () => LocalizedString
+			/**
+			 * Here's our pledge to you.
+			 */
+			SUBTITLE: () => LocalizedString
+			ITEM_1: {
+				/**
+				 * We will not share your data
+				 */
+				TITLE: () => LocalizedString
+				/**
+				 * Your data belongs to you and only you decide who you share it with. Period. In fact, your data never even touches any of our systems - unless you opt-in to one of the cloud storage options.
+				 */
+				DESCRIPTION: () => LocalizedString
+			}
+			ITEM_2: {
+				/**
+				 * We will not add trackers
+				 */
+				TITLE: () => LocalizedString
+				/**
+				 * We do not track your actions behind the scenes. Period. Not for testing or any other reasons. That's our pledge. We also do not collect any anonymous device information or usage statistics. That decision makes developing the app a bit harder for us, but we believe it is the right decision.
+				 */
+				DESCRIPTION: () => LocalizedString
+			}
+			ITEM_3: {
+				/**
+				 * You own your information
+				 */
+				TITLE: () => LocalizedString
+				/**
+				 * We believe that it's about time you become the owner of your own personal information again.
+				 */
+				DESCRIPTION: () => LocalizedString
+			}
+		}
+		TERMS: {
+			/**
+			 * Terms & Conditions
+			 */
+			NAVBAR_TITLE: () => LocalizedString
+			/**
+			 * Here's the less interesting
+			 */
+			TITLE_1: () => LocalizedString
+			/**
+			 * stuff
+			 */
+			TITLE_2: () => LocalizedString
+			/**
+			 * Yeah, we know. We still recommend you read this information carefully.
+			 */
+			SUBTITLE: () => LocalizedString
+			OWNERSHIP: {
+				/**
+				 * Ownership
+				 */
+				TITLE: () => LocalizedString
+				/**
+				 * I understand that I am solely responsible for my data.
+				 */
+				DESCRIPTION: () => LocalizedString
+			}
+		}
+	}
 	/**
 	 * Hi {name}! Please leave a star if you like this project: https://github.com/ivanhofer/typesafe-i18n
 	 */
@@ -272,7 +464,7 @@ export type TranslationFunctions = {
 	 */
 	STRONG_PASSWORD: () => LocalizedString
 	/**
-	 * Favorites
+	 * My favorites
 	 */
 	FAVORITES: () => LocalizedString
 	/**

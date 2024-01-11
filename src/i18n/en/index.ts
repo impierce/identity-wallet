@@ -1,6 +1,44 @@
 import type { BaseTranslation } from '../i18n-types';
 
 const en = {
+  ONBOARDING: {
+    WELCOME: {
+      GREETING: 'Welcome to',
+      WHAT_IS_UNIME_1: 'UniMe connects your digital world, safely and securely.',
+      WHAT_IS_UNIME_2: 'Create a brand new identity profile to get started.',
+      CREATE_NEW_PROFILE: 'Create new profile',
+    },
+    PLEDGE: {
+      NAVBAR_TITLE: 'UniMe Pledge',
+      TITLE_1: 'No funny',
+      TITLE_2: 'business',
+      SUBTITLE: "Here's our pledge to you.",
+      ITEM_1: {
+        TITLE: 'We will not share your data',
+        DESCRIPTION:
+          'Your data belongs to you and only you decide who you share it with. Period. In fact, your data never even touches any of our systems - unless you opt-in to one of the cloud storage options.',
+      },
+      ITEM_2: {
+        TITLE: 'We will not add trackers',
+        DESCRIPTION:
+          "We do not track your actions behind the scenes. Period. Not for testing or any other reasons. That's our pledge. We also do not collect any anonymous device information or usage statistics. That decision makes developing the app a bit harder for us, but we believe it is the right decision.",
+      },
+      ITEM_3: {
+        TITLE: 'You own your information',
+        DESCRIPTION: "We believe that it's about time you become the owner of your own personal information again.",
+      },
+    },
+    TERMS: {
+      NAVBAR_TITLE: 'Terms & Conditions',
+      TITLE_1: "Here's the less interesting",
+      TITLE_2: 'stuff',
+      SUBTITLE: 'Yeah, we know. We still recommend you read this information carefully.',
+      OWNERSHIP: {
+        TITLE: 'Ownership',
+        DESCRIPTION: 'I understand that I am solely responsible for my data.',
+      },
+    },
+  },
   HI: 'Hi {name:string}! Please leave a star if you like this project: https://github.com/ivanhofer/typesafe-i18n',
   WELCOME: 'Welcome to your UniMe',
   PROMPT_NAME: 'Please enter your name',

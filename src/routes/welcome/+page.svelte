@@ -45,7 +45,9 @@
     <!-- <div class="flex grow flex-col justify-center" in:fade out:fly={{ x: -300, duration: 300 }}> -->
     <div class="mt-[calc(100vh/6)] px-4 py-6">
       <div class="pb-[50px]">
-        <p class=" pb-[10px] text-[36px]/[44px] font-bold text-blue dark:text-silver">Welcome to</p>
+        <p class=" pb-[10px] text-[36px]/[44px] font-bold text-blue dark:text-silver">
+          {$LL.ONBOARDING.WELCOME.GREETING()}
+        </p>
         {#if isDarkModeEnabled}
           <UniMeTextDark />
         {:else}
@@ -54,10 +56,9 @@
       </div>
 
       <p class="text-[14px]/[22px] font-medium text-ex-grey-2 dark:text-grey">
-        UniMe connects your digital world, safely and securely.
+        {$LL.ONBOARDING.WELCOME.WHAT_IS_UNIME_1()}
         <br /><br />
-        <!-- Create a brand new identity profile or recover an existing one to get started. -->
-        Create a brand new identity profile to get started.
+        {$LL.ONBOARDING.WELCOME.WHAT_IS_UNIME_2()}
       </p>
     </div>
   </div>
@@ -74,7 +75,7 @@
     out:fly={{ y: 154, duration: 300, opacity: 1 }}
   > -->
     <Button
-      label="Create new profile"
+      label={$LL.ONBOARDING.WELCOME.CREATE_NEW_PROFILE()}
       on:click={() => {
         onboarding_state.set({});
         goto('/welcome/pledge');

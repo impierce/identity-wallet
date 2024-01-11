@@ -7,6 +7,7 @@
 
   import { createAccordion, melt } from '@melt-ui/svelte';
 
+  import LL from '$src/i18n/i18n-svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
 
@@ -27,21 +28,19 @@
 
   const items = [
     {
-      id: 'item-0',
-      title: 'We will not share your data',
-      description:
-        'Your data belongs to you and only you decide who you share it with. Period. In fact, your data never even touches any of our systems - unless you opt-in to one of the cloud storage options.',
-    },
-    {
       id: 'item-1',
-      title: 'We will not add trackers',
-      description:
-        "We do not track your actions behind the scenes. Period. Not for testing or any other reasons. That's our pledge. We also do not collect any anonymous device information or usage statistics. That decision makes developing the app a bit harder for us, but we believe it is the right decision.",
+      title: $LL.ONBOARDING.PLEDGE.ITEM_1.TITLE(),
+      description: $LL.ONBOARDING.PLEDGE.ITEM_1.DESCRIPTION(),
     },
     {
       id: 'item-2',
-      title: 'You own your information',
-      description: "We believe that it's about time you become the owner of your own personal information again.",
+      title: $LL.ONBOARDING.PLEDGE.ITEM_2.TITLE(),
+      description: $LL.ONBOARDING.PLEDGE.ITEM_2.DESCRIPTION(),
+    },
+    {
+      id: 'item-3',
+      title: $LL.ONBOARDING.PLEDGE.ITEM_3.TITLE(),
+      description: $LL.ONBOARDING.PLEDGE.ITEM_3.DESCRIPTION(),
     },
   ];
 </script>
@@ -56,15 +55,15 @@
   </div>
 </div> -->
 <!-- <div in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}> -->
-<TopNavBar title="UniMe Pledge" on:back={() => history.back()} />
+<TopNavBar title={$LL.ONBOARDING.PLEDGE.NAVBAR_TITLE()} on:back={() => history.back()} />
 <!-- </div> -->
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <!-- <div class="mt-12 grow p-4" in:fly={{ x: 300, delay: 300 }} out:fly={{ x: -300, duration: 300 }}> -->
   <div class="px-2 pb-8 pt-4">
     <p class="pb-4 text-3xl font-semibold text-slate-700 dark:text-grey">
-      No funny <span class="text-primary">business</span>
+      {$LL.ONBOARDING.PLEDGE.TITLE_1()} <span class="text-primary">{$LL.ONBOARDING.PLEDGE.TITLE_2()}</span>
     </p>
-    <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Here's our pledge to you.</p>
+    <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">{$LL.ONBOARDING.PLEDGE.SUBTITLE()}</p>
   </div>
   <!-- Accordion -->
   <div class="mx-auto flex max-w-full flex-col space-y-4" {...$root}>
@@ -113,7 +112,7 @@
   in:fly={{ y: 96, delay: 300, opacity: 1 }}
   out:fly={{ y: 96, duration: 300, opacity: 1 }}
 > -->
-  <Button label="Continue" on:click={() => goto('/welcome/terms')} />
+  <Button label={$LL.CONTINUE()} on:click={() => goto('/welcome/terms')} />
 </div>
 
 <style>
