@@ -24,20 +24,21 @@
       {entry[0]}
     </p>
     {#each entry[1] as connection}
-      <button on:click={() => goto(`/activity/connection/${connection.id}`)}>
-        <div class="flex h-[60px] items-center rounded-xl bg-white px-4 dark:bg-dark">
-          <!-- Icon -->
+      <!-- <button on:click={() => goto(`/activity/connection/${connection.id}`)}>
+        <div class="flex h-[64px] items-center rounded-xl bg-white px-4 dark:bg-dark">
           <div
-            class="mr-4 flex h-8 w-8 overflow-hidden rounded-full border-none border-slate-300 dark:border-slate-600"
+            class="mr-4 flex h-9 w-9 overflow-hidden rounded-full border-none border-slate-300 dark:border-slate-600"
           >
-            <div class="flex h-full w-full items-center">
-              <Image id={connection.id}>
-                <div slot="fallback" class="h-full w-full rounded-full ring-1 ring-inset ring-slate-200" />
+            <div class="flex h-full w-full items-center bg-white">
+              <Image id={connection.id} imgClass="p-1">
+                <div
+                  slot="fallback"
+                  class="h-full w-full rounded-full ring-1 ring-inset ring-slate-200 dark:bg-dark dark:ring-slate-600"
+                />
               </Image>
             </div>
           </div>
-          <!-- <Image /> -->
-          <!-- Text -->
+
           <div class="flex grow flex-col items-start">
             <div class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
               {connection.client_name}
@@ -47,10 +48,27 @@
             </div>
           </div>
         </div>
-      </button>
-      <!-- <CredentialListItem id={'university'} title={connection.client_name} description={connection.url}>
+      </button> -->
+
+      <CredentialListItem
+        id={connection.id}
+        title={connection.client_name}
+        description={connection.url}
+        on:click={() => goto(`/activity/connection/${connection.id}`)}
+      >
+        <div
+          slot="image"
+          class="ml-2 mr-4 flex h-9 w-9 overflow-hidden rounded-full border-none border-slate-300 dark:border-slate-600"
+        >
+          <Image id={connection.id} imgClass="p-1">
+            <div
+              slot="fallback"
+              class="h-full w-full rounded-full ring-1 ring-inset ring-slate-200 dark:bg-dark dark:ring-slate-600"
+            />
+          </Image>
+        </div>
         <div slot="right" class="h-full pr-2 pt-1 text-[12px]/[20px] font-medium text-slate-400">Tue 09.01.24</div>
-      </CredentialListItem> -->
+      </CredentialListItem>
     {/each}
   {/each}
 </div>

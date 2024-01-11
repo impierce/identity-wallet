@@ -102,7 +102,7 @@
         id={'issuer_0'}
         isTempAsset={true}
         iconClass="dark:text-slate-800"
-        imgClass="flex w-full items-center justify-center overflow-hidden rounded-3xl p-2"
+        imgClass="flex w-full items-center justify-center overflow-hidden rounded-3xl p-2 object-contain"
       >
         <div slot="fallback">
           <PaddedIcon icon={DownloadSimple} />

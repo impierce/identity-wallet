@@ -65,37 +65,6 @@
                 <Checkbox checked={true} disabled={true} />
               </div>
             </CredentialListItem>
-            <!-- <div class="flex items-center">
-            <div class="grow">
-              <CredentialListItem
-                id={credential.id}
-                title={credential.metadata.display.name || credential.data.type.at(-1)}
-                description={new URL(credential.data.issuer).hostname}
-                color={credential.metadata.display.color || 'bg-indigo-100'}
-              >
-                <span slot="icon">
-                  <svelte:component
-                    this={icons[credential.metadata.display.icon] || icons['User']}
-                    class="h-[18px] w-[18px] text-slate-800"
-                  />
-                </span>
-              </CredentialListItem>
-            </div>
-            <div class="px-3">
-              <button
-                use:melt={$root}
-                class="flex h-6 w-6 appearance-none items-center justify-center
-                  rounded-md border-[1.5px] border-slate-300 p-[6px] text-white
-                  {$isChecked ? 'border-none bg-primary' : 'bg-white'}"
-                id="checkbox"
-              >
-                {#if $isChecked}
-                  <Check class="h-3 w-3" />
-                {/if}
-                <input use:melt={$input} />
-              </button>
-            </div>
-          </div> -->
           {/each}
         </div>
       </div>

@@ -110,7 +110,7 @@
           </button>
           <!-- TODO: remove border entirely? -->
           <div
-            class="{color} mr-2 flex h-[75px] w-[75px] flex-col items-center justify-center overflow-hidden rounded-[20px] border-[5px] border-white bg-white p-1"
+            class="{color} mr-2 flex h-[75px] w-[75px] items-center justify-center overflow-hidden rounded-3xl border-[5px] border-white bg-white p-2"
           >
             <Image id={$page.params.id} iconClass={'h-6 w-6 dark:text-slate-800'} />
           </div>

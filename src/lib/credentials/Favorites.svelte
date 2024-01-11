@@ -57,20 +57,6 @@
   </div>
   <div class="flex flex-col space-y-2">
     {#each favorite_credentials as credential}
-      <!-- <CredentialListItem
-        id={credential.id}
-        title={credential.metadata.display.name || credential.data.type.at(-1)}
-        description={credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
-        type={credential.data.type.includes('OpenBadgeCredential') ? 'badge' : 'data'}
-      >
-        <span slot="icon">
-          <svelte:component
-            this={icons[credential.metadata.display.icon] || icons['User']}
-            class="h-[18px] w-[18px] text-slate-800 dark:text-grey"
-          />
-        </span>
-      </CredentialListItem> -->
-
       <CredentialListItem
         id={credential.id}
         title={credential.metadata.display.name ??

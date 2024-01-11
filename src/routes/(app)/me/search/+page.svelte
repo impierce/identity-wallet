@@ -41,16 +41,6 @@
       <!-- using "key" to destroy & recreate the complete credentials list to enforce a refresh of logos -->
       {#key indices}
         {#each credentials as credential}
-          <!-- <CredentialListItem
-            id={credential.id}
-            title={credential.metadata.display.name ??
-              credential.data.credentialSubject.achievement?.name ??
-              credential.data.type.at(-1)}
-            description={credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
-            type={credential.data.type.includes('OpenBadgeCredential') ? 'badge' : 'data'}
-          >
-          </CredentialListItem> -->
-
           <CredentialListItem
             id={credential.id}
             title={credential.metadata.display.name ??

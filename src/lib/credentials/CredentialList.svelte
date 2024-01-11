@@ -4,6 +4,7 @@
   import { goto } from '$app/navigation';
   import type { DisplayCredential } from 'src-tauri/bindings/display-credential/DisplayCredential';
 
+  import CredentialListItem from '$lib/credentials/CredentialListItem.svelte';
   import LL from '$src/i18n/i18n-svelte';
   import IconMessage from '$src/lib/components/molecules/IconMessage.svelte';
   import { state } from '$src/stores';
@@ -15,8 +16,6 @@
   import House from '~icons/ph/house-light';
   import Percent from '~icons/ph/percent-light';
   import SealCheck from '~icons/ph/seal-check-fill';
-
-  import CredentialListItem from './CredentialListItem.svelte';
 
   export let credentialType: 'all' | 'data' | 'badges' = 'all';
 
@@ -94,12 +93,6 @@
       >
     </div> -->
 
-    <!--Mock credentials -->
-    <!-- <p class="font-semibold">A</p> -->
-    <!-- {#each test_credentials as credential}
-      <CredentialListItem title={credential.title} description={credential.description}></CredentialListItem>
-    {/each} -->
-
     <!-- Actual (non-mock) credentials -->
     {#each credentials as credential}
       <CredentialListItem
@@ -113,15 +106,7 @@
           credential.data.type.includes('OpenBadgeCredential')
             ? goto(`/badges/${credential.id}`)
             : goto(`/credentials/${credential.id}`)}
-      >
-        <!-- <span slot="icon">
-          <svelte:component
-            this={icons[credential.metadata.display.icon] ||
-              (credential.data.type.includes('OpenBadgeCredential') ? icons['Certificate'] : icons['User'])}
-            class="h-[18px] w-[18px] text-slate-800 dark:text-grey"
-          />
-        </span> -->
-      </CredentialListItem>
+      ></CredentialListItem>
     {/each}
   </div>
 {:else if $state?.credentials?.length === 0}

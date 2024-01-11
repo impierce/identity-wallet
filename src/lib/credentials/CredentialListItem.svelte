@@ -2,25 +2,20 @@
   import { createEventDispatcher } from 'svelte';
 
   import Image from '$lib/components/atoms/Image.svelte';
-  import { getImageAsset } from '$lib/utils';
-
-  // TODO: make more generic "ListItem" with slots: "image", "right"
-
-  export let id: string | undefined = undefined; // TODO: should not be able to be undefined
-  export let title: string;
-  export let description: string | undefined = undefined;
-  export let type: 'data' | 'badge' = 'data';
-
-  export let isTempAsset = false;
 
   const dispatch = createEventDispatcher();
 
-  let assetUrlPromise: Promise<string | null> = getImageAsset(id!!);
+  export let id: string;
+  export let title: string;
+  export let description: string | undefined = undefined;
+  export let type: 'data' | 'badge' = 'data';
+  export let isTempAsset = false;
 </script>
 
 <!--
 @component
-List representation of a credential.
+A list entry in a card style.
+Can be used for credentials, connections, etc.
 
 ### Props
 
@@ -31,34 +26,41 @@ List representation of a credential.
 - isTempAsset
 
 ### Slots
-
+- image
 - right
+
+### Usage
+```tsx
+<CredentialListItem id={'3cf73ecb'} />
+```
 -->
-{#await assetUrlPromise then assetUrl}
-  <button
-    class="flex h-[64px] w-full items-center justify-start rounded-xl bg-white p-[7px] dark:bg-dark"
-    on:click={() => dispatch('click')}
-  >
-    <!-- Image or icon -->
-    <div
-      class="mr-[15px] flex h-[50px] w-[50px] min-w-[50px] flex-col items-center justify-center overflow-hidden rounded-lg {assetUrl
-        ? 'bg-white'
-        : 'bg-silver dark:bg-navy'}"
-    >
-      <Image {id} iconFallback={type === 'data' ? 'User' : 'Certificate'} {isTempAsset} />
+<button
+  class="flex h-16 w-full items-center justify-start rounded-xl bg-white p-2 dark:bg-dark"
+  on:click={() => dispatch('click')}
+>
+  <!-- min-h-[64px] needed? -->
+  <!-- Image or icon -->
+  <slot name="image">
+    <div class="mr-4 flex h-12 w-12 min-w-[48px] items-center justify-center overflow-hidden rounded-lg bg-white p-1">
+      <Image
+        {id}
+        iconFallback={type === 'data' ? 'User' : 'Certificate'}
+        {isTempAsset}
+        iconClass="dark:text-slate-800"
+      />
     </div>
-    <!-- Text -->
-    <div class="flex grow flex-col items-start overflow-x-auto text-left">
-      <p class="line-clamp-2 w-full pr-[15px] text-[13px]/[18px] font-medium text-slate-800 dark:text-grey">
-        {title}
+  </slot>
+  <!-- Text -->
+  <div class="flex grow flex-col items-start overflow-x-auto text-left">
+    <p class="line-clamp-2 w-full pr-4 text-[13px]/[18px] font-medium text-slate-800 dark:text-grey">
+      {title}
+    </p>
+    {#if description}
+      <p class="max-w-[180px] truncate text-[12px]/[20px] font-medium text-slate-400 dark:text-slate-300">
+        {description}
       </p>
-      {#if description}
-        <p class="max-w-[180px] truncate text-[12px]/[20px] font-medium text-slate-400 dark:text-slate-300">
-          {description}
-        </p>
-      {/if}
-    </div>
-    <!-- Slot -->
-    <slot name="right" />
-  </button>
-{/await}
+    {/if}
+  </div>
+  <!-- Right slot (e.g. for a checkbox)-->
+  <slot name="right" />
+</button>
