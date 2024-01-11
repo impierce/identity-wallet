@@ -3,8 +3,8 @@
 
   import IconMessage from '$lib/components/molecules/IconMessage.svelte';
   import Search from '$lib/components/molecules/Search.svelte';
-  import CredentialListItem from '$lib/credentials/CredentialListItem.svelte';
   import { dispatch } from '$lib/dispatcher';
+  import ListItemCard from '$src/lib/credentials/ListItemCard.svelte';
   import { state } from '$src/stores';
 
   import Ghost from '~icons/ph/ghost-fill';
@@ -41,7 +41,7 @@
       <!-- using "key" to destroy & recreate the complete credentials list to enforce a refresh of logos -->
       {#key indices}
         {#each credentials as credential}
-          <CredentialListItem
+          <ListItemCard
             id={credential.id}
             title={credential.metadata.display.name ??
               credential.data.credentialSubject.achievement?.name ??

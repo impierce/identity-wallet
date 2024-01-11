@@ -14,7 +14,7 @@
   import Heart from '~icons/ph/heart-straight-fill';
   import User from '~icons/ph/user';
 
-  import CredentialListItem from './CredentialListItem.svelte';
+  import ListItemCard from './ListItemCard.svelte';
 
   export let credentialType: 'all' | 'data' | 'badges' = 'all';
 
@@ -57,7 +57,7 @@
   </div>
   <div class="flex flex-col space-y-2">
     {#each favorite_credentials as credential}
-      <CredentialListItem
+      <ListItemCard
         id={credential.id}
         title={credential.metadata.display.name ??
           credential.data.credentialSubject.achievement?.name ??

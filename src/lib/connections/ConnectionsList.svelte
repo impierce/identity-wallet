@@ -3,7 +3,7 @@
 
   import Image from '$lib/components/atoms/Image.svelte';
   import exampleConnections from '$lib/connections/mock-data.json';
-  import CredentialListItem from '$lib/credentials/CredentialListItem.svelte';
+  import ListItemCard from '$src/lib/credentials/ListItemCard.svelte';
   import { state } from '$src/stores';
 
   import type { Connection } from './types';
@@ -50,7 +50,7 @@
         </div>
       </button> -->
 
-      <CredentialListItem
+      <ListItemCard
         id={connection.id}
         title={connection.client_name}
         description={connection.url}
@@ -68,7 +68,7 @@
           </Image>
         </div>
         <div slot="right" class="h-full pr-2 pt-1 text-[12px]/[20px] font-medium text-slate-400">Tue 09.01.24</div>
-      </CredentialListItem>
+      </ListItemCard>
     {/each}
   {/each}
 </div>

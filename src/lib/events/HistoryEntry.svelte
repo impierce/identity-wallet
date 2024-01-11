@@ -3,7 +3,7 @@
 
   import type { Connection } from '$lib/connections/types';
 
-  import CredentialListItem from '../credentials/CredentialListItem.svelte';
+  import ListItemCard from '../credentials/ListItemCard.svelte';
 
   // export let connection: Connection;
   export let title: string;
@@ -22,13 +22,13 @@
   {#if credentials.length > 0}
     <div class="mt-[12px] rounded-xl border border-slate-200 bg-white p-[3px] dark:border-slate-600">
       {#each credentials as credential}
-        <CredentialListItem
+        <ListItemCard
           id={credential.id}
           title={credential.metadata.display.name ?? credential.data.type.at(-1)}
           description="Lorem ipsum dolor"
         >
           <!-- <span slot="icon"><EnvelopeSimple class="h-6 w-6" /></span> -->
-        </CredentialListItem>
+        </ListItemCard>
       {/each}
     </div>
   {/if}

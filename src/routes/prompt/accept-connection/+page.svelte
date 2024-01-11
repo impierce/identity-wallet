@@ -11,7 +11,7 @@
   import Button from '$src/lib/components/atoms/Button.svelte';
   import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
-  import CredentialListItem from '$src/lib/credentials/CredentialListItem.svelte';
+  import ListItemCard from '$src/lib/credentials/ListItemCard.svelte';
   import { state } from '$src/stores';
 
   import Check from '~icons/ph/check-bold';

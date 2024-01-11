@@ -31,7 +31,7 @@ Can be used for credentials, connections, etc.
 
 ### Usage
 ```tsx
-<CredentialListItem id={'3cf73ecb'} />
+<ListItemCard id={'3cf73ecb'} />
 ```
 -->
 <button

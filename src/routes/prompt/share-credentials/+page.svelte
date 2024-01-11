@@ -6,7 +6,7 @@
   import Checkbox from '$src/lib/components/atoms/Checkbox.svelte';
   import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
-  import CredentialListItem from '$src/lib/credentials/CredentialListItem.svelte';
+  import ListItemCard from '$src/lib/credentials/ListItemCard.svelte';
   import { state } from '$src/stores';
 
   import Check from '~icons/ph/check-bold';
@@ -57,14 +57,11 @@
       >
         <div class="flex w-full flex-col space-y-2">
           {#each selected_credentials as credential}
-            <CredentialListItem
-              id={credential.id}
-              title={credential.metadata.display.name || credential.data.type.at(-1)}
-            >
+            <ListItemCard id={credential.id} title={credential.metadata.display.name || credential.data.type.at(-1)}>
               <div slot="right" class="mr-2">
                 <Checkbox checked={true} disabled={true} />
               </div>
-            </CredentialListItem>
+            </ListItemCard>
           {/each}
         </div>
       </div>

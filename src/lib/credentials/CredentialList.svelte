@@ -4,9 +4,9 @@
   import { goto } from '$app/navigation';
   import type { DisplayCredential } from 'src-tauri/bindings/display-credential/DisplayCredential';
 
-  import CredentialListItem from '$lib/credentials/CredentialListItem.svelte';
   import LL from '$src/i18n/i18n-svelte';
   import IconMessage from '$src/lib/components/molecules/IconMessage.svelte';
+  import ListItemCard from '$src/lib/credentials/ListItemCard.svelte';
   import { state } from '$src/stores';
 
   import Car from '~icons/ph/car-light';
@@ -95,7 +95,7 @@
 
     <!-- Actual (non-mock) credentials -->
     {#each credentials as credential}
-      <CredentialListItem
+      <ListItemCard
         id={credential.id}
         title={credential.metadata.display.name ??
           credential.data.credentialSubject.achievement?.name ??
@@ -106,7 +106,7 @@
           credential.data.type.includes('OpenBadgeCredential')
             ? goto(`/badges/${credential.id}`)
             : goto(`/credentials/${credential.id}`)}
-      ></CredentialListItem>
+      ></ListItemCard>
     {/each}
   </div>
 {:else if $state?.credentials?.length === 0}

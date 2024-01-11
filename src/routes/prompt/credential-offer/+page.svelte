@@ -13,7 +13,7 @@
   import Image from '$src/lib/components/atoms/Image.svelte';
   import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
-  import CredentialListItem from '$src/lib/credentials/CredentialListItem.svelte';
+  import ListItemCard from '$src/lib/credentials/ListItemCard.svelte';
   import { state } from '$src/stores';
 
   import Check from '~icons/ph/check-bold';
@@ -170,7 +170,7 @@
       <!-- <div class="w-full space-y-2 rounded-2xl p-3 ring-2 ring-inset ring-white"> -->
       {#each credential_offer.credentials as credential, index}
         <!-- TODO: careful with long list! -->
-        <CredentialListItem
+        <ListItemCard
           id={`credential_${index}`}
           title={$state?.current_user_prompt?.display?.at(index)?.name ?? credential.credential_definition.type.at(-1)}
           isTempAsset={true}
@@ -178,7 +178,7 @@
           <div slot="right" class="mr-2">
             <Checkbox checked={true} disabled={true} />
           </div>
-        </CredentialListItem>
+        </ListItemCard>
         <!-- {#if !credentialLogoUrl}
             <div class="{color} relative h-[-webkit-fill-available] w-screen"></div>
           {:else}

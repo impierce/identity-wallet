@@ -1,5 +1,5 @@
 <script lang="ts">
-  import CredentialListItem from '$lib/credentials/CredentialListItem.svelte';
+  import ListItemCard from '$src/lib/credentials/ListItemCard.svelte';
 
   const data = [];
 </script>
@@ -13,8 +13,8 @@
     <div class="text-center text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">Data shared</div>
   </div>
   <div class="flex w-full flex-col rounded-2xl border border-slate-200 bg-white p-1 dark:border-slate-600 dark:bg-dark">
-    <CredentialListItem id={'_'} title="Email address" description="ferris.rustacean@example.org" />
-    <CredentialListItem id={'_'} title="Home address" description="Sunset Rd 1337, Iron Islands" />
+    <ListItemCard id={'_'} title="Email address" description="ferris.rustacean@example.org" />
+    <ListItemCard id={'_'} title="Home address" description="Sunset Rd 1337, Iron Islands" />
   </div>
 {:else}
   <div class="flex h-full flex-col items-center justify-center">
