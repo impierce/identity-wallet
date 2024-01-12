@@ -21,15 +21,16 @@
   let showPassword = false;
 </script>
 
-<TopNavBar on:back={() => history.back()} title="Confirm Password" />
+<TopNavBar on:back={() => history.back()} title={$LL.ONBOARDING.PASSWORD.CONFIRM.NAVBAR_TITLE()} />
 <!-- Content -->
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <div class="pb-8 pt-4">
     <p class="pb-8 text-3xl font-semibold text-slate-700 dark:text-grey">
-      Please confirm your new <span class="text-primary">password</span>
+      {$LL.ONBOARDING.PASSWORD.CONFIRM.TITLE_1()}
+      <span class="text-primary">{$LL.ONBOARDING.PASSWORD.CONFIRM.TITLE_2()}</span>
     </p>
     <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">
-      You need to create a strong password to secure your backup.
+      {$LL.ONBOARDING.PASSWORD.CONFIRM.SUBTITLE()}
     </p>
     <!-- <div class="mt-[70px] flex w-full items-center justify-center" /> -->
   </div>
@@ -37,7 +38,7 @@
     <input
       type={showPassword ? 'text' : 'password'}
       class="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300"
-      placeholder="Retype your password"
+      placeholder={$LL.ONBOARDING.PASSWORD.CONFIRM.INPUT_PLACEHOLDER()}
       on:input={(e) => {
         console.log(e.target.value, $onboarding_state.password);
         passwordsEqual = e.target.value === $onboarding_state.password;
@@ -57,15 +58,15 @@
     <div class="mt-8 flex items-center justify-center">
       {#if passwordsEqual}
         <Smiley class="mr-[10px] h-5 w-5 text-primary" />
-        <p class="text-[13px]/[24px] font-medium text-primary">Passwords match</p>
+        <p class="text-[13px]/[24px] font-medium text-primary">{$LL.ONBOARDING.PASSWORD.CONFIRM.MATCH()}</p>
       {:else}
         <SmileySad class="mr-[10px] h-5 w-5 text-rose-500" />
-        <p class="text-[13px]/[24px] font-medium text-rose-500">Passwords do not match</p>
+        <p class="text-[13px]/[24px] font-medium text-rose-500">{$LL.ONBOARDING.PASSWORD.CONFIRM.NO_MATCH()}</p>
       {/if}
     </div>
   {/if}
 </div>
 
 <div class="rounded-t-3xl bg-white p-6 dark:bg-dark" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
-  <Button label="Continue" on:click={() => goto('/welcome/password/completed')} disabled={!passwordsEqual} />
+  <Button label={$LL.CONTINUE()} on:click={() => goto('/welcome/password/completed')} disabled={!passwordsEqual} />
 </div>

@@ -4,6 +4,7 @@
   import { melt } from '@melt-ui/svelte';
 
   import { dispatch } from '$lib/dispatcher';
+  import LL from '$src/i18n/i18n-svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
   import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
   import UniMeLogoDark from '$src/lib/static/svg/logo/UniMeLogoDark.svelte';
@@ -44,7 +45,7 @@
         <input
           type={showPassword ? 'text' : 'password'}
           class="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300"
-          placeholder="Enter your password"
+          placeholder={$LL.LOCK_SCREEN.PASSWORD_INPUT_PLACEHOLDER()}
           on:input={(e) => (password = e.target.value)}
         />
         <div class="absolute right-3 top-0 flex h-full items-center">
@@ -58,33 +59,30 @@
         </div>
       </div>
       <Button
-        label="Unlock wallet"
+        label={$LL.LOCK_SCREEN.BUTTON_TEXT()}
         on:click={() => dispatch({ type: '[Storage] Unlock', password })}
         disabled={!password}
       />
       <!-- Forgot password? Reset app -->
       <div class="mt-8">
-        <BottomDrawer
-          titleText="Reset app"
-          descriptionText="Are you sure you want to reset the entire app and remove all data?"
-        >
+        <BottomDrawer titleText={$LL.SETTINGS.RESET_APP.TITLE()} descriptionText={$LL.SETTINGS.RESET_APP.DESCRIPTION()}>
           <button
             slot="trigger"
             let:trigger
             use:melt={trigger}
             class="rounded-xl px-4 py-2 text-[13px]/[24px] font-medium text-slate-400 opacity-50 active:bg-grey dark:active:bg-dark"
-            >Forgot password?</button
+            >{$LL.LOCK_SCREEN.FORGOT_PASSWORD()}</button
           >
 
           <!-- TODO: bug: after resetting (closing the drawer, main UI is not clickable anymore) -->
           <div slot="content" class="w-full pb-[10px] pt-[20px]">
             <button
               class="h-[48px] w-full rounded-xl bg-rose-100 px-4 py-2 text-[14px]/[24px] font-medium text-rose-500"
-              on:click={() => dispatch({ type: '[App] Reset' })}>Yes, delete everything</button
+              on:click={() => dispatch({ type: '[App] Reset' })}>{$LL.SETTINGS.RESET_APP.CONFIRM()}</button
             >
           </div>
 
-          <Button variant="secondary" slot="close" let:close trigger={close} label="No, keep my profile" />
+          <Button variant="secondary" slot="close" let:close trigger={close} label={$LL.SETTINGS.RESET_APP.CANCEL()} />
         </BottomDrawer>
       </div>
     {/if}

@@ -110,6 +110,222 @@ type RootTranslation = {
 				DESCRIPTION: string
 			}
 		}
+		CUSTOMIZE: {
+			/**
+			 * C​u​s​t​o​m​i​z​a​t​i​o​n
+			 */
+			NAVBAR_TITLE: string
+			NAME: {
+				/**
+				 * L​e​t​'​s​ ​g​o​!​ ​C​h​o​o​s​e​ ​a
+				 */
+				TITLE_1: string
+				/**
+				 * p​r​o​f​i​l​e​ ​n​a​m​e
+				 */
+				TITLE_2: string
+				/**
+				 * Y​o​u​r​ ​p​r​o​f​i​l​e​ ​i​n​f​o​r​m​a​t​i​o​n​ ​w​i​l​l​ ​n​e​v​e​r​ ​l​e​a​v​e​ ​y​o​u​r​ ​d​e​v​i​c​e​.
+				 */
+				SUBTITLE: string
+				/**
+				 * E​n​t​e​r​ ​a​ ​p​r​o​f​i​l​e​ ​n​a​m​e
+				 */
+				INPUT_PLACEHOLDER: string
+			}
+			THEME: {
+				/**
+				 * C​h​o​o​s​e​ ​y​o​u​r​ ​a​p​p
+				 */
+				TITLE_1: string
+				/**
+				 * a​p​p​e​a​r​a​n​c​e
+				 */
+				TITLE_2: string
+				/**
+				 * A​r​e​ ​y​o​u​ ​m​o​r​e​ ​o​f​ ​a​ ​n​i​g​h​t​ ​o​w​l​?
+				 */
+				SUBTITLE: string
+			}
+			PICTURE: {
+				/**
+				 * S​e​t​ ​a​ ​d​i​s​p​l​a​y
+				 */
+				TITLE_1: string
+				/**
+				 * p​i​c​t​u​r​e
+				 */
+				TITLE_2: string
+				/**
+				 * M​a​k​e​ ​i​t​ ​y​o​u​r​s​.
+				 */
+				SUBTITLE: string
+			}
+			SKIP: {
+				/**
+				 * S​k​i​p​ ​c​u​s​t​o​m​i​z​a​t​i​o​n
+				 */
+				TITLE: string
+				/**
+				 * A​r​e​ ​y​o​u​ ​s​u​r​e​?​ ​Y​o​u​ ​c​a​n​ ​a​d​j​u​s​t​ ​t​h​e​ ​a​p​p​ ​a​p​p​e​a​r​a​n​c​e​ ​l​a​t​e​r​ ​i​n​ ​s​e​t​t​i​n​g​s​.
+				 */
+				TEXT: string
+				/**
+				 * Y​e​s
+				 */
+				CONFIRM: string
+				/**
+				 * N​o​,​ ​l​e​t​'​s​ ​c​o​n​t​i​n​u​e
+				 */
+				ABORT: string
+			}
+		}
+		PASSWORD: {
+			/**
+			 * P​a​s​s​w​o​r​d
+			 */
+			NAVBAR_TITLE: string
+			/**
+			 * S​e​t​ ​y​o​u​r​ ​n​e​w
+			 */
+			TITLE_1: string
+			/**
+			 * p​a​s​s​w​o​r​d
+			 */
+			TITLE_2: string
+			/**
+			 * Y​o​u​ ​n​e​e​d​ ​t​o​ ​c​h​o​o​s​e​ ​a​ ​s​t​r​o​n​g​ ​p​a​s​s​w​o​r​d​ ​t​o​ ​s​e​c​u​r​e​l​y​ ​e​n​c​r​y​p​t​ ​y​o​u​r​ ​d​a​t​a​.
+			 */
+			SUBTITLE: string
+			/**
+			 * E​n​t​e​r​ ​a​ ​p​a​s​s​w​o​r​d
+			 */
+			INPUT_PLACEHOLDER: string
+			CONFIRM: {
+				/**
+				 * C​o​n​f​i​r​m​ ​P​a​s​s​w​o​r​d
+				 */
+				NAVBAR_TITLE: string
+				/**
+				 * P​l​e​a​s​e​ ​c​o​n​f​i​r​m​ ​y​o​u​r​ ​n​e​w
+				 */
+				TITLE_1: string
+				/**
+				 * p​a​s​s​w​o​r​d
+				 */
+				TITLE_2: string
+				/**
+				 * Y​o​u​ ​n​e​e​d​ ​t​o​ ​c​o​n​f​i​r​m​ ​y​o​u​r​ ​p​a​s​s​w​o​r​d​ ​t​o​ ​m​a​k​e​ ​s​u​r​e​ ​y​o​u​ ​t​y​p​e​d​ ​i​t​ ​c​o​r​r​e​c​t​l​y​.
+				 */
+				SUBTITLE: string
+				/**
+				 * R​e​t​y​p​e​ ​y​o​u​r​ ​p​a​s​s​w​o​r​d
+				 */
+				INPUT_PLACEHOLDER: string
+				/**
+				 * P​a​s​s​w​o​r​d​s​ ​m​a​t​c​h
+				 */
+				MATCH: string
+				/**
+				 * P​a​s​s​w​o​r​d​s​ ​d​o​ ​n​o​t​ ​m​a​t​c​h
+				 */
+				NO_MATCH: string
+			}
+			COMPLETED: {
+				/**
+				 * P​a​s​s​w​o​r​d​ ​S​e​t
+				 */
+				NAVBAR_TITLE: string
+				/**
+				 * Y​o​u​r​ ​U​n​i​M​e​ ​p​r​o​f​i​l​e​ ​i​s​ ​n​o​w
+				 */
+				TITLE_1: string
+				/**
+				 * p​r​o​t​e​c​t​e​d
+				 */
+				TITLE_2: string
+				/**
+				 * S​a​f​e​ ​&​ ​S​e​c​u​r​e​.
+				 */
+				MESSAGE_1: string
+				/**
+				 * N​i​c​e​ ​J​o​b
+				 */
+				MESSAGE_2: string
+			}
+		}
+	}
+	SETTINGS: {
+		THEME: {
+			/**
+			 * S​y​s​t​e​m
+			 */
+			SYSTEM: string
+			/**
+			 * L​i​g​h​t
+			 */
+			LIGHT: string
+			/**
+			 * D​a​r​k
+			 */
+			DARK: string
+		}
+		PASSWORD: {
+			POLICY: {
+				/**
+				 * Y​o​u​r​ ​p​a​s​s​w​o​r​d​ ​m​u​s​t​ ​c​o​n​t​a​i​n
+				 */
+				TITLE: string
+				/**
+				 * u​p​p​e​r​c​a​s​e​ ​l​e​t​t​e​r
+				 */
+				UPPERCASE_LETTER: string
+				/**
+				 * l​o​w​e​r​c​a​s​e​ ​l​e​t​t​e​r
+				 */
+				LOWERCASE_LETTER: string
+				/**
+				 * n​u​m​b​e​r
+				 */
+				NUMBER: string
+				/**
+				 * c​h​a​r​a​c​t​e​r​s
+				 */
+				CHARACTERS: string
+			}
+		}
+		RESET_APP: {
+			/**
+			 * R​e​s​e​t​ ​a​p​p
+			 */
+			TITLE: string
+			/**
+			 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​r​e​s​e​t​ ​t​h​e​ ​a​p​p​?
+			 */
+			DESCRIPTION: string
+			/**
+			 * Y​e​s​,​ ​d​e​l​e​t​e​ ​e​v​e​r​y​t​h​i​n​g
+			 */
+			CONFIRM: string
+			/**
+			 * N​o​,​ ​k​e​e​p​ ​m​y​ ​p​r​o​f​i​l​e
+			 */
+			CANCEL: string
+		}
+	}
+	LOCK_SCREEN: {
+		/**
+		 * E​n​t​e​r​ ​y​o​u​r​ ​p​a​s​s​w​o​r​d
+		 */
+		PASSWORD_INPUT_PLACEHOLDER: string
+		/**
+		 * U​n​l​o​c​k​ ​w​a​l​l​e​t
+		 */
+		BUTTON_TEXT: string
+		/**
+		 * F​o​r​g​o​t​ ​p​a​s​s​w​o​r​d​?
+		 */
+		FORGOT_PASSWORD: string
 	}
 	/**
 	 * H​i​ ​{​n​a​m​e​}​!​ ​P​l​e​a​s​e​ ​l​e​a​v​e​ ​a​ ​s​t​a​r​ ​i​f​ ​y​o​u​ ​l​i​k​e​ ​t​h​i​s​ ​p​r​o​j​e​c​t​:​ ​h​t​t​p​s​:​/​/​g​i​t​h​u​b​.​c​o​m​/​i​v​a​n​h​o​f​e​r​/​t​y​p​e​s​a​f​e​-​i​1​8​n
@@ -167,16 +383,6 @@ type RootTranslation = {
 		SKIP_TITLE: string
 		/**
 		 * A​r​e​ ​y​o​u​ ​s​u​r​e​?​ ​Y​o​u​ ​c​a​n​ ​r​e​-​e​n​a​b​l​e​ ​t​h​e​ ​o​n​b​o​a​r​d​i​n​g​ ​l​a​t​e​r​ ​i​n​ ​t​h​e​ ​a​p​p​ ​s​e​t​t​i​n​g​s​.
-		 */
-		SKIP_TEXT: string
-	}
-	SETUP: {
-		/**
-		 * S​k​i​p​ ​c​u​s​t​o​m​i​z​a​t​i​o​n
-		 */
-		SKIP_TITLE: string
-		/**
-		 * A​r​e​ ​y​o​u​ ​s​u​r​e​?​ ​Y​o​u​ ​c​a​n​ ​a​d​j​u​s​t​ ​t​h​e​ ​a​p​p​ ​a​p​p​e​a​r​a​n​c​e​ ​l​a​t​e​r​ ​i​n​ ​s​e​t​t​i​n​g​s​.
 		 */
 		SKIP_TEXT: string
 	}
@@ -350,6 +556,222 @@ export type TranslationFunctions = {
 				DESCRIPTION: () => LocalizedString
 			}
 		}
+		CUSTOMIZE: {
+			/**
+			 * Customization
+			 */
+			NAVBAR_TITLE: () => LocalizedString
+			NAME: {
+				/**
+				 * Let's go! Choose a
+				 */
+				TITLE_1: () => LocalizedString
+				/**
+				 * profile name
+				 */
+				TITLE_2: () => LocalizedString
+				/**
+				 * Your profile information will never leave your device.
+				 */
+				SUBTITLE: () => LocalizedString
+				/**
+				 * Enter a profile name
+				 */
+				INPUT_PLACEHOLDER: () => LocalizedString
+			}
+			THEME: {
+				/**
+				 * Choose your app
+				 */
+				TITLE_1: () => LocalizedString
+				/**
+				 * appearance
+				 */
+				TITLE_2: () => LocalizedString
+				/**
+				 * Are you more of a night owl?
+				 */
+				SUBTITLE: () => LocalizedString
+			}
+			PICTURE: {
+				/**
+				 * Set a display
+				 */
+				TITLE_1: () => LocalizedString
+				/**
+				 * picture
+				 */
+				TITLE_2: () => LocalizedString
+				/**
+				 * Make it yours.
+				 */
+				SUBTITLE: () => LocalizedString
+			}
+			SKIP: {
+				/**
+				 * Skip customization
+				 */
+				TITLE: () => LocalizedString
+				/**
+				 * Are you sure? You can adjust the app appearance later in settings.
+				 */
+				TEXT: () => LocalizedString
+				/**
+				 * Yes
+				 */
+				CONFIRM: () => LocalizedString
+				/**
+				 * No, let's continue
+				 */
+				ABORT: () => LocalizedString
+			}
+		}
+		PASSWORD: {
+			/**
+			 * Password
+			 */
+			NAVBAR_TITLE: () => LocalizedString
+			/**
+			 * Set your new
+			 */
+			TITLE_1: () => LocalizedString
+			/**
+			 * password
+			 */
+			TITLE_2: () => LocalizedString
+			/**
+			 * You need to choose a strong password to securely encrypt your data.
+			 */
+			SUBTITLE: () => LocalizedString
+			/**
+			 * Enter a password
+			 */
+			INPUT_PLACEHOLDER: () => LocalizedString
+			CONFIRM: {
+				/**
+				 * Confirm Password
+				 */
+				NAVBAR_TITLE: () => LocalizedString
+				/**
+				 * Please confirm your new
+				 */
+				TITLE_1: () => LocalizedString
+				/**
+				 * password
+				 */
+				TITLE_2: () => LocalizedString
+				/**
+				 * You need to confirm your password to make sure you typed it correctly.
+				 */
+				SUBTITLE: () => LocalizedString
+				/**
+				 * Retype your password
+				 */
+				INPUT_PLACEHOLDER: () => LocalizedString
+				/**
+				 * Passwords match
+				 */
+				MATCH: () => LocalizedString
+				/**
+				 * Passwords do not match
+				 */
+				NO_MATCH: () => LocalizedString
+			}
+			COMPLETED: {
+				/**
+				 * Password Set
+				 */
+				NAVBAR_TITLE: () => LocalizedString
+				/**
+				 * Your UniMe profile is now
+				 */
+				TITLE_1: () => LocalizedString
+				/**
+				 * protected
+				 */
+				TITLE_2: () => LocalizedString
+				/**
+				 * Safe & Secure.
+				 */
+				MESSAGE_1: () => LocalizedString
+				/**
+				 * Nice Job
+				 */
+				MESSAGE_2: () => LocalizedString
+			}
+		}
+	}
+	SETTINGS: {
+		THEME: {
+			/**
+			 * System
+			 */
+			SYSTEM: () => LocalizedString
+			/**
+			 * Light
+			 */
+			LIGHT: () => LocalizedString
+			/**
+			 * Dark
+			 */
+			DARK: () => LocalizedString
+		}
+		PASSWORD: {
+			POLICY: {
+				/**
+				 * Your password must contain
+				 */
+				TITLE: () => LocalizedString
+				/**
+				 * uppercase letter
+				 */
+				UPPERCASE_LETTER: () => LocalizedString
+				/**
+				 * lowercase letter
+				 */
+				LOWERCASE_LETTER: () => LocalizedString
+				/**
+				 * number
+				 */
+				NUMBER: () => LocalizedString
+				/**
+				 * characters
+				 */
+				CHARACTERS: () => LocalizedString
+			}
+		}
+		RESET_APP: {
+			/**
+			 * Reset app
+			 */
+			TITLE: () => LocalizedString
+			/**
+			 * Are you sure you want to reset the app?
+			 */
+			DESCRIPTION: () => LocalizedString
+			/**
+			 * Yes, delete everything
+			 */
+			CONFIRM: () => LocalizedString
+			/**
+			 * No, keep my profile
+			 */
+			CANCEL: () => LocalizedString
+		}
+	}
+	LOCK_SCREEN: {
+		/**
+		 * Enter your password
+		 */
+		PASSWORD_INPUT_PLACEHOLDER: () => LocalizedString
+		/**
+		 * Unlock wallet
+		 */
+		BUTTON_TEXT: () => LocalizedString
+		/**
+		 * Forgot password?
+		 */
+		FORGOT_PASSWORD: () => LocalizedString
 	}
 	/**
 	 * Hi {name}! Please leave a star if you like this project: https://github.com/ivanhofer/typesafe-i18n
@@ -406,16 +828,6 @@ export type TranslationFunctions = {
 		SKIP_TITLE: () => LocalizedString
 		/**
 		 * Are you sure? You can re-enable the onboarding later in the app settings.
-		 */
-		SKIP_TEXT: () => LocalizedString
-	}
-	SETUP: {
-		/**
-		 * Skip customization
-		 */
-		SKIP_TITLE: () => LocalizedString
-		/**
-		 * Are you sure? You can adjust the app appearance later in settings.
 		 */
 		SKIP_TEXT: () => LocalizedString
 	}

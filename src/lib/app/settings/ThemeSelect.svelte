@@ -3,6 +3,7 @@
 
   import { createRadioGroup, melt } from '@melt-ui/svelte';
 
+  import LL from '$src/i18n/i18n-svelte';
   import Checkbox from '$src/lib/components/atoms/Checkbox.svelte';
 
   export let defaultValue = 'system';
@@ -49,7 +50,7 @@
         {$isChecked('system') ? 'ring ring-primary' : ''}"
   >
     <div class="h-12 grow">
-      <p class="text-[13px]/[24px] font-medium text-slate-800">System</p>
+      <p class="text-[13px]/[24px] font-medium text-slate-800">{$LL.SETTINGS.THEME.SYSTEM()}</p>
     </div>
     <Checkbox checked={$isChecked('system')} />
     <!-- Light -->
@@ -71,7 +72,7 @@
         {$isChecked('light') ? 'ring ring-primary' : ''}"
   >
     <div class="h-12 grow">
-      <p class="text-[13px]/[24px] font-medium text-slate-800">Light</p>
+      <p class="text-[13px]/[24px] font-medium text-slate-800">{$LL.SETTINGS.THEME.LIGHT()}</p>
     </div>
     <Checkbox checked={$isChecked('light')} />
     <div class="absolute bottom-0 left-1/4 h-14 w-1/2 rounded-t-xl border border-b-0 border-slate-200 bg-slate-100">
@@ -88,7 +89,7 @@
         {$isChecked('dark') ? 'ring ring-primary' : ''}"
   >
     <div class="h-12 grow">
-      <p class="text-[13px]/[24px] font-medium text-white">Dark</p>
+      <p class="text-[13px]/[24px] font-medium text-white">{$LL.SETTINGS.THEME.DARK()}</p>
     </div>
     <Checkbox checked={$isChecked('dark')} />
     <div class="absolute bottom-0 left-1/4 h-14 w-1/2 rounded-t-xl bg-slate-600">
