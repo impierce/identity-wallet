@@ -107,7 +107,39 @@ const nl = {
       CANCEL: '',
     },
     ACCOUNT: '',
-    SUPPORT: '',
+    SUPPORT: {
+      TITLE: '',
+      ABOUT: {
+        TITLE: '',
+      },
+      FEEDBACK: {
+        TITLE: '',
+      },
+    },
+    NAVBAR_TITLE: '',
+    PROFILE: {
+      TITLE: '',
+      PROFILE_NAME: {
+        TITLE: '',
+      },
+      DISPLAY_PICTURE: {
+        TITLE: '',
+        EDIT: '',
+        CHANGE: '',
+      },
+      DELETE_PROFILE: {
+        TITLE: '',
+      },
+    },
+    APP: {
+      TITLE: '',
+    },
+    BACKUP_RECOVERY: {
+      TITLE: '',
+    },
+    LOG_OUT: {
+      TITLE: '',
+    },
   },
   LOCK_SCREEN: {
     PASSWORD_INPUT_PLACEHOLDER: '',
@@ -170,6 +202,7 @@ const nl = {
     },
   },
   CANCEL: 'Annuleren',
+  CLOSE: 'Sluiten',
   CONTINUE: 'Doorgaan',
   SKIP: 'Overslaan',
 } satisfies Translation;

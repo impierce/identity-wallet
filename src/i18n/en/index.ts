@@ -88,6 +88,30 @@ const en = {
     },
   },
   SETTINGS: {
+    NAVBAR_TITLE: 'Settings',
+    PROFILE: {
+      TITLE: 'My profile',
+      PROFILE_NAME: {
+        TITLE: 'Profile name',
+      },
+      DISPLAY_PICTURE: {
+        TITLE: 'Display picture',
+        EDIT: 'Edit',
+        CHANGE: 'Select a profile picture',
+      },
+      DELETE_PROFILE: {
+        TITLE: 'Delete profile',
+      },
+    },
+    APP: {
+      TITLE: 'App settings',
+    },
+    BACKUP_RECOVERY: {
+      TITLE: 'Backup and recovery',
+    },
+    LOG_OUT: {
+      TITLE: 'Log out',
+    },
     THEME: {
       SYSTEM: 'System',
       LIGHT: 'Light',
@@ -109,7 +133,15 @@ const en = {
       CANCEL: 'No, keep my profile',
     },
     ACCOUNT: 'Account',
-    SUPPORT: 'Support',
+    SUPPORT: {
+      TITLE: 'Support',
+      ABOUT: {
+        TITLE: 'About UniMe',
+      },
+      FEEDBACK: {
+        TITLE: 'Send feedback',
+      },
+    },
   },
   LOCK_SCREEN: {
     PASSWORD_INPUT_PLACEHOLDER: 'Enter your password',
@@ -172,6 +204,7 @@ const en = {
     },
   },
   CANCEL: 'Cancel',
+  CLOSE: 'Close',
   CONTINUE: 'Continue',
   SKIP: 'Skip',
 } satisfies BaseTranslation;

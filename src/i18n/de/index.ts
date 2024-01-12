@@ -89,6 +89,30 @@ const de = {
     },
   },
   SETTINGS: {
+    NAVBAR_TITLE: 'Einstellungen',
+    PROFILE: {
+      TITLE: 'Mein Profil',
+      PROFILE_NAME: {
+        TITLE: 'Profilname',
+      },
+      DISPLAY_PICTURE: {
+        TITLE: 'Profilbild',
+        EDIT: 'Ändern',
+        CHANGE: 'Wähle ein Profilbild',
+      },
+      DELETE_PROFILE: {
+        TITLE: 'Profil löschen',
+      },
+    },
+    APP: {
+      TITLE: 'App-Einstellungen',
+    },
+    BACKUP_RECOVERY: {
+      TITLE: 'Sicherung und Wiederherstellung',
+    },
+    LOG_OUT: {
+      TITLE: 'Ausloggen',
+    },
     THEME: {
       SYSTEM: 'System',
       LIGHT: 'Hell',
@@ -110,7 +134,15 @@ const de = {
       CANCEL: 'Nein, mein Profil behalten',
     },
     ACCOUNT: 'Account',
-    SUPPORT: 'Support',
+    SUPPORT: {
+      TITLE: 'Support',
+      ABOUT: {
+        TITLE: 'Über UniMe',
+      },
+      FEEDBACK: {
+        TITLE: 'Feedback senden',
+      },
+    },
   },
   LOCK_SCREEN: {
     PASSWORD_INPUT_PLACEHOLDER: 'Passwort eingeben',
@@ -173,6 +205,7 @@ const de = {
     },
   },
   CANCEL: 'Abbrechen',
+  CLOSE: 'Schließen',
   CONTINUE: 'Weiter',
   SKIP: 'Überspringen',
 } satisfies Translation;

@@ -20,7 +20,7 @@
   import WarningCircle from '~icons/ph/warning-circle-fill';
 </script>
 
-<TopNavBar on:back={() => history.back()} title="Settings" />
+<TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.NAVBAR_TITLE()} />
 <div class="content-height flex flex-col bg-silver dark:bg-navy">
   <div class="hide-scrollbar flex flex-col space-y-[15px] overflow-y-scroll px-4 py-5" in:fly={{ x: 32, opacity: 1 }}>
     <!-- Avatar -->
@@ -34,17 +34,30 @@
     <!-- Account -->
     <div class="flex flex-col space-y-[10px]">
       <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">{$LL.SETTINGS.ACCOUNT()}</p>
-      <SettingsEntry icon={UserCircle} title="My profile" on:click={() => goto('/me/settings/profile')} />
-      <SettingsEntry icon={Gear} title="App settings" on:click={() => goto('/me/settings/app')} />
-      <SettingsEntry icon={Vault} title="Backup and recovery" on:click={() => goto('/me/settings/backup')} todo />
-      <SettingsEntry icon={SignOut} title="Log out" hasCaretRight={false} todo />
+      <SettingsEntry
+        icon={UserCircle}
+        title={$LL.SETTINGS.PROFILE.TITLE()}
+        on:click={() => goto('/me/settings/profile')}
+      />
+      <SettingsEntry icon={Gear} title={$LL.SETTINGS.APP.TITLE()} on:click={() => goto('/me/settings/app')} />
+      <SettingsEntry
+        icon={Vault}
+        title={$LL.SETTINGS.BACKUP_RECOVERY.TITLE()}
+        on:click={() => goto('/me/settings/backup')}
+        todo
+      />
+      <SettingsEntry icon={SignOut} title={$LL.SETTINGS.LOG_OUT.TITLE()} hasCaretRight={false} todo />
     </div>
 
     <!-- Support -->
     <div class="flex flex-col space-y-[10px]">
-      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">{$LL.SETTINGS.SUPPORT()}</p>
-      <SettingsEntry icon={Info} title="About UniMe" on:click={() => goto('/me/settings/about')} />
-      <SettingsEntry icon={Envelope} title="Send feedback" hasCaretRight={false} todo />
+      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">{$LL.SETTINGS.SUPPORT.TITLE()}</p>
+      <SettingsEntry
+        icon={Info}
+        title={$LL.SETTINGS.SUPPORT.ABOUT.TITLE()}
+        on:click={() => goto('/me/settings/about')}
+      />
+      <SettingsEntry icon={Envelope} title={$LL.SETTINGS.SUPPORT.FEEDBACK.TITLE()} hasCaretRight={false} todo />
     </div>
   </div>
 </div>

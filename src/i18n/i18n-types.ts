@@ -256,6 +256,60 @@ type RootTranslation = {
 		}
 	}
 	SETTINGS: {
+		/**
+		 * S​e​t​t​i​n​g​s
+		 */
+		NAVBAR_TITLE: string
+		PROFILE: {
+			/**
+			 * M​y​ ​p​r​o​f​i​l​e
+			 */
+			TITLE: string
+			PROFILE_NAME: {
+				/**
+				 * P​r​o​f​i​l​e​ ​n​a​m​e
+				 */
+				TITLE: string
+			}
+			DISPLAY_PICTURE: {
+				/**
+				 * D​i​s​p​l​a​y​ ​p​i​c​t​u​r​e
+				 */
+				TITLE: string
+				/**
+				 * E​d​i​t
+				 */
+				EDIT: string
+				/**
+				 * S​e​l​e​c​t​ ​a​ ​p​r​o​f​i​l​e​ ​p​i​c​t​u​r​e
+				 */
+				CHANGE: string
+			}
+			DELETE_PROFILE: {
+				/**
+				 * D​e​l​e​t​e​ ​p​r​o​f​i​l​e
+				 */
+				TITLE: string
+			}
+		}
+		APP: {
+			/**
+			 * A​p​p​ ​s​e​t​t​i​n​g​s
+			 */
+			TITLE: string
+		}
+		BACKUP_RECOVERY: {
+			/**
+			 * B​a​c​k​u​p​ ​a​n​d​ ​r​e​c​o​v​e​r​y
+			 */
+			TITLE: string
+		}
+		LOG_OUT: {
+			/**
+			 * L​o​g​ ​o​u​t
+			 */
+			TITLE: string
+		}
 		THEME: {
 			/**
 			 * S​y​s​t​e​m
@@ -316,10 +370,24 @@ type RootTranslation = {
 		 * A​c​c​o​u​n​t
 		 */
 		ACCOUNT: string
-		/**
-		 * S​u​p​p​o​r​t
-		 */
-		SUPPORT: string
+		SUPPORT: {
+			/**
+			 * S​u​p​p​o​r​t
+			 */
+			TITLE: string
+			ABOUT: {
+				/**
+				 * A​b​o​u​t​ ​U​n​i​M​e
+				 */
+				TITLE: string
+			}
+			FEEDBACK: {
+				/**
+				 * S​e​n​d​ ​f​e​e​d​b​a​c​k
+				 */
+				TITLE: string
+			}
+		}
 	}
 	LOCK_SCREEN: {
 		/**
@@ -475,6 +543,10 @@ type RootTranslation = {
 	 * C​a​n​c​e​l
 	 */
 	CANCEL: string
+	/**
+	 * C​l​o​s​e
+	 */
+	CLOSE: string
 	/**
 	 * C​o​n​t​i​n​u​e
 	 */
@@ -727,6 +799,60 @@ export type TranslationFunctions = {
 		}
 	}
 	SETTINGS: {
+		/**
+		 * Settings
+		 */
+		NAVBAR_TITLE: () => LocalizedString
+		PROFILE: {
+			/**
+			 * My profile
+			 */
+			TITLE: () => LocalizedString
+			PROFILE_NAME: {
+				/**
+				 * Profile name
+				 */
+				TITLE: () => LocalizedString
+			}
+			DISPLAY_PICTURE: {
+				/**
+				 * Display picture
+				 */
+				TITLE: () => LocalizedString
+				/**
+				 * Edit
+				 */
+				EDIT: () => LocalizedString
+				/**
+				 * Select a profile picture
+				 */
+				CHANGE: () => LocalizedString
+			}
+			DELETE_PROFILE: {
+				/**
+				 * Delete profile
+				 */
+				TITLE: () => LocalizedString
+			}
+		}
+		APP: {
+			/**
+			 * App settings
+			 */
+			TITLE: () => LocalizedString
+		}
+		BACKUP_RECOVERY: {
+			/**
+			 * Backup and recovery
+			 */
+			TITLE: () => LocalizedString
+		}
+		LOG_OUT: {
+			/**
+			 * Log out
+			 */
+			TITLE: () => LocalizedString
+		}
 		THEME: {
 			/**
 			 * System
@@ -787,10 +913,24 @@ export type TranslationFunctions = {
 		 * Account
 		 */
 		ACCOUNT: () => LocalizedString
-		/**
-		 * Support
-		 */
-		SUPPORT: () => LocalizedString
+		SUPPORT: {
+			/**
+			 * Support
+			 */
+			TITLE: () => LocalizedString
+			ABOUT: {
+				/**
+				 * About UniMe
+				 */
+				TITLE: () => LocalizedString
+			}
+			FEEDBACK: {
+				/**
+				 * Send feedback
+				 */
+				TITLE: () => LocalizedString
+			}
+		}
 	}
 	LOCK_SCREEN: {
 		/**
@@ -946,6 +1086,10 @@ export type TranslationFunctions = {
 	 * Cancel
 	 */
 	CANCEL: () => LocalizedString
+	/**
+	 * Close
+	 */
+	CLOSE: () => LocalizedString
 	/**
 	 * Continue
 	 */
