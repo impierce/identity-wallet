@@ -1,3 +1,7 @@
+import type { Locale } from 'src-tauri/bindings/Locale';
+
+import { dispatch } from '$src/lib/dispatcher';
+
 export const calculateInitials = (name: string): string => {
   let parts = name.split(' ').filter((n) => n.length > 0);
   if (parts.length === 1) {
@@ -9,4 +13,10 @@ export const calculateInitials = (name: string): string => {
     // initials = names?.at(0)?.charAt(0) ?? '' + names?.at(1)?.charAt(0) ?? '';
     return `${first}${last}`.toUpperCase();
   }
+};
+
+export const setNextLanguage = (current: Locale) => {
+  const locales = ['en', 'de', 'nl'];
+  const next: string = locales[(locales.indexOf(current) + 1) % locales.length];
+  dispatch({ type: '[Settings] Set locale', locale: next });
 };

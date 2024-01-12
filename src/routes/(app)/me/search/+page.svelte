@@ -4,6 +4,7 @@
   import IconMessage from '$lib/components/molecules/IconMessage.svelte';
   import Search from '$lib/components/molecules/Search.svelte';
   import { dispatch } from '$lib/dispatcher';
+  import LL from '$src/i18n/i18n-svelte';
   import ListItemCard from '$src/lib/components/molecules/ListItemCard.svelte';
   import { state } from '$src/stores';
 
@@ -20,7 +21,7 @@
     <Search
       on:value={(e) => {
         searchTerm = e.detail;
-        dispatch({ type: '[User Data] Query', payload: { target: 'Credentials', search_term: e.detail } });
+        dispatch({ type: '[User Data] Query', target: 'Credentials', search_term: e.detail });
       }}
     ></Search>
   </div>
@@ -28,13 +29,17 @@
     <div class="pt-12">
       <IconMessage
         icon={MagnifyingGlass}
-        title="What shall we search for?"
-        description="Search for any of your credentials and badges here."
+        title={$LL.SEARCH.NO_QUERY.TITLE()}
+        description={$LL.SEARCH.NO_QUERY.DESCRIPTION()}
       />
     </div>
   {:else if credentials.length == 0}
     <div class="pt-12">
-      <IconMessage icon={Ghost} title="No results found" description="Try searching for something else." />
+      <IconMessage
+        icon={Ghost}
+        title={$LL.SEARCH.NO_RESULTS.TITLE()}
+        description={$LL.SEARCH.NO_RESULTS.DESCRIPTION()}
+      />
     </div>
   {:else}
     <div class="w-full space-y-2 p-5">

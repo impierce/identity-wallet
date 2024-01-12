@@ -13,20 +13,28 @@
   import Password from '~icons/ph/password-fill';
   import Sun from '~icons/ph/sun-fill';
   import Translate from '~icons/ph/translate-fill';
+
+  import { setNextLanguage } from '../../utils';
 </script>
 
 <TopNavBar on:back={() => history.back()} title="App Settings" />
 <div class="content-height flex flex-col bg-silver dark:bg-navy">
   <div class="flex flex-col space-y-[10px] px-4 py-5">
-    <SettingsEntry icon={Sun} title="Language" hasCaretRight={false} textRight="English" todo />
+    <SettingsEntry
+      icon={Translate}
+      title="Language"
+      hasCaretRight={false}
+      textRight={$state.locale}
+      on:click={() => setNextLanguage($state.locale)}
+    />
     <SettingsEntry icon={Sun} title="Theme" on:click={() => goto('/me/settings/app/theme')} />
     <SettingsEntry icon={Password} title="Password" todo />
     <SettingsEntry icon={Confetti} title="Onboarding journey" hasCaretRight={false} textRight="Restart" todo />
     <SettingsEntry icon={ChatCircleText} title="Hints and tips" hasCaretRight={false} textRight="Reset" todo />
     <SettingsEntry icon={Code} title="Developer mode" hasCaretRight={false}>
       <Switch
-        active={$state?.dev_mode_enabled}
-        on:change={() => dispatch({ type: '[DEV] Set dev mode', enabled: !$state?.dev_mode_enabled })}
+        active={$state.dev_mode_enabled}
+        on:change={() => dispatch({ type: '[DEV] Set dev mode', enabled: !$state.dev_mode_enabled })}
       />
     </SettingsEntry>
   </div>

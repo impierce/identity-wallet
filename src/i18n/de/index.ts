@@ -109,47 +109,70 @@ const de = {
       CONFIRM: 'Ja, alle Daten löschen',
       CANCEL: 'Nein, mein Profil behalten',
     },
+    ACCOUNT: 'Account',
+    SUPPORT: 'Support',
   },
   LOCK_SCREEN: {
     PASSWORD_INPUT_PLACEHOLDER: 'Passwort eingeben',
     BUTTON_TEXT: 'Wallet entsperren',
     FORGOT_PASSWORD: 'Passwort vergessen?',
   },
-  HI: 'Hallo {name}! Bitte hinterlasse einen Stern, wenn dir das Projekt gefällt: https://github.com/ivanhofer/typesafe-i18n',
-  WELCOME: 'Willkommen bei deinem UniMe',
-  PROMPT_NAME: 'Bitte gib deinen Namen ein',
-  CREATE_IDENTITY: 'Neue Identität anlegen',
-  EMPTY_CREDENTIALS_LIST_TITLE: 'Hier ist es noch etwas leer',
-  EMPTY_CREDENTIALS_LIST_SUBTITLE:
-    'Warum fügst du nicht ein paar Credentials hinzu, um mit deiner neuen digitalen Identität loszulegen?',
-  GETTING_STARTED: {
-    TITLE: 'Sollen wir starten?',
-    SUBTITLE: 'Mache deine ersten Schritte, um ein paar Credentials zu deiner digitalen Identität hinzuzufügen.',
-    DIALOG_0_TITLE: 'Neue Ziele abschließen',
-    DIALOG_0_TEXT:
-      'Starte deine Mission hier! Ziele führen dich durch wichtige Funktionen und Möglichkeiten der UniMe App.',
-    DIALOG_1_TITLE: 'Erkunden macht Spaß',
-    DIALOG_1_TEXT:
-      'Wenn du Ziele abschließt, erhältst du ein tolles neues Abzeichen und steigerst deine ersten Schritte.',
-    SKIP_TITLE: 'Onboarding überspringen',
-    SKIP_TEXT: 'Bist du sicher? Du kannst das Onboarding in den App-Einstellungen wieder aktivieren.',
+  ME: {
+    GREETINGS: {
+      GREETING_0: 'Hey',
+      GREETING_1: "Wie geht's",
+      GREETING_2: 'Willkommen zurück',
+      GREETING_3: 'Hallo',
+      GREETING_4: 'Hi',
+    },
+    CREDENTIAL_TABS: {
+      ALL: 'Alle',
+      DATA: 'Daten',
+      BADGES: 'Badges',
+    },
+    EMPTY_CREDENTIALS: {
+      TITLE: 'Hier ist es noch etwas leer',
+      SUBTITLE: 'Warum fügst du nicht ein paar Daten zu deiner neuen digitalen Identität hinzu?',
+    },
+    FAVORITES: 'Meine Favoriten',
   },
-  APP_SETTINGS: 'App-Einstellungen',
-  YOUR_DIDS: 'Deine DIDs',
-  RESET_APP: 'App zurücksetzen',
-  NO_HISTORY: 'Du hast noch keine Credentials verwendet.',
-  SHARE_CREDENTIALS_TITLE: 'Wähle Informationen aus, die du teilen möchtest',
-  SHARE_CREDENTIALS_CONFIRM: 'Freigeben',
+  ACTIVITY: {
+    NAVBAR_TITLE: 'Verbunden',
+    TABS: {
+      CONNECTIONS: 'Verbindungen',
+      TIMELINE: 'Verlauf',
+    },
+  },
+  CONNECTION: {
+    TABS: {
+      SUMMARY: 'Übersicht',
+      DATA: 'Daten',
+      ACTIVITY: 'Verlauf',
+    },
+    SUMMARY: {
+      TITLE: 'Verbunden mit',
+      FIRST_CONNECTED: 'Erstmalig verbunden',
+      LAST_CONNECTED: 'Zuletzt verbunden',
+    },
+    DATA: {
+      EMPTY: 'Noch keine Daten.',
+    },
+  },
+  TIMELINE: {
+    EMPTY: 'Noch keine Aktivitäten.',
+  },
+  SEARCH: {
+    INPUT_PLACEHOLDER: 'Gib einen Suchbegriff ein',
+    NO_QUERY: {
+      TITLE: 'Wonach suchst du?',
+      DESCRIPTION: 'Durchsuche deine Credentials und Badges.',
+    },
+    NO_RESULTS: {
+      TITLE: 'Keine Ergebnisse',
+      DESCRIPTION: 'Versuche es mit einem anderen Suchbegriff.',
+    },
+  },
   CANCEL: 'Abbrechen',
-  PROFILE_NAME: 'Name',
-  PASSWORD: 'Passwort',
-  CHANGE_LATER: 'Du kannst den Namen später ändern.',
-  STRONG_PASSWORD: 'Bitte wähle ein starkes Passwort.',
-  FAVORITES: 'Favoriten',
-  MY_DATA: 'Meine Daten',
-  ACCOUNT: 'Account',
-  SUPPORT: 'Support',
-  ADD: 'Hinzufügen',
   CONTINUE: 'Weiter',
   SKIP: 'Überspringen',
 } satisfies Translation;

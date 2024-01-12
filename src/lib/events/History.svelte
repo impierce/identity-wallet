@@ -2,6 +2,7 @@
   import Image from '$lib/components/atoms/Image.svelte';
   import type { Event, EventType } from '$lib/events';
   import HistoryEntry from '$lib/events/HistoryEntry.svelte';
+  import LL from '$src/i18n/i18n-svelte';
   import exampleEvents from '$src/lib/events/mock-data.json';
   import { state } from '$src/stores';
 
@@ -49,7 +50,7 @@
 <div class="relative flex h-full flex-col">
   {#if events.length === 0}
     <div class="flex h-full flex-col items-center justify-center">
-      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">No activity yet.</p>
+      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">{$LL.TIMELINE.EMPTY()}</p>
     </div>
   {:else}
     <div class="flex grow flex-col space-y-8 pr-4 pt-4">

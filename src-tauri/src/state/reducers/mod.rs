@@ -27,8 +27,10 @@ pub fn set_locale(state: &mut AppState, action: Action) -> Result<(), AppError> 
         _ => return Err(InvalidActionError { action }),
     };
 
-    info!("locale set to: `{:?}`", locale);
     state.locale = locale;
+    debug!("locale set to: `{:?}`", state.locale);
+
+    state.current_user_prompt = None;
     Ok(())
 }
 

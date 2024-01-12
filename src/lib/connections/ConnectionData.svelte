@@ -1,4 +1,5 @@
 <script lang="ts">
+  import LL from '$src/i18n/i18n-svelte';
   import Image from '$src/lib/components/atoms/Image.svelte';
   import ListItemCard from '$src/lib/components/molecules/ListItemCard.svelte';
 
@@ -20,6 +21,6 @@
   </div>
 {:else}
   <div class="flex h-full flex-col items-center justify-center">
-    <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">No data yet.</p>
+    <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">{$LL.CONNECTION.DATA.EMPTY()}</p>
   </div>
 {/if}

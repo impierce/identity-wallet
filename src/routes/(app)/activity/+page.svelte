@@ -1,5 +1,6 @@
 <script lang="ts">
   import ConnectionsList from '$lib/connections/ConnectionsList.svelte';
+  import LL from '$src/i18n/i18n-svelte';
   import Tabs from '$src/lib/components/molecules/navigation/Tabs.svelte';
   import History from '$src/lib/events/History.svelte';
 
@@ -12,7 +13,7 @@
   <div
     class="relative flex h-[50px] min-h-[50px] w-full items-center justify-center bg-silver text-[13px]/[24px] font-medium text-neutral-900 dark:bg-navy dark:text-white"
   >
-    <p>Connected</p>
+    <p>{$LL.ACTIVITY.NAVBAR_TITLE()}</p>
     <!-- TODO: feature disabled: "Sort & Search" -->
     <!-- <div class="absolute right-4 -mr-3">
       <button class="rounded-full p-3 pr-2">
@@ -24,7 +25,7 @@
     </div> -->
   </div>
   <div class="flex grow flex-col overflow-y-auto px-4 py-5">
-    <Tabs triggers={['Connections', 'Timeline']}>
+    <Tabs triggers={[$LL.ACTIVITY.TABS.CONNECTIONS(), $LL.ACTIVITY.TABS.TIMELINE()]}>
       <div slot="0" class="h-full pt-5">
         <!-- Search & Sort -->
         <!-- <div class="flex pb-4">

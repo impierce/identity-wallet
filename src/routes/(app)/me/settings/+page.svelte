@@ -28,12 +28,12 @@
       <EmojiAvatarSelect
         selected={$state?.active_profile?.picture ?? undefined}
         showEditButton={true}
-        on:change={(e) => dispatch({ type: '[Settings] Update profile', payload: { picture: e.detail } })}
+        on:change={(e) => dispatch({ type: '[Settings] Update profile', picture: e.detail })}
       />
     </div>
     <!-- Account -->
     <div class="flex flex-col space-y-[10px]">
-      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">{$LL.ACCOUNT()}</p>
+      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">{$LL.SETTINGS.ACCOUNT()}</p>
       <SettingsEntry icon={UserCircle} title="My profile" on:click={() => goto('/me/settings/profile')} />
       <SettingsEntry icon={Gear} title="App settings" on:click={() => goto('/me/settings/app')} />
       <SettingsEntry icon={Vault} title="Backup and recovery" on:click={() => goto('/me/settings/backup')} todo />
@@ -42,7 +42,7 @@
 
     <!-- Support -->
     <div class="flex flex-col space-y-[10px]">
-      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">{$LL.SUPPORT()}</p>
+      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">{$LL.SETTINGS.SUPPORT()}</p>
       <SettingsEntry icon={Info} title="About UniMe" on:click={() => goto('/me/settings/about')} />
       <SettingsEntry icon={Envelope} title="Send feedback" hasCaretRight={false} todo />
     </div>

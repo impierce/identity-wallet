@@ -81,7 +81,7 @@
     class="flex grow flex-col items-stretch justify-start rounded-t-[20px] bg-silver p-[18px] dark:bg-navy"
   >
     {#if $state?.credentials && $state?.credentials.length > 0}
-      <Tabs triggers={['All', 'Data', 'Badges']}>
+      <Tabs triggers={[$LL.ME.CREDENTIAL_TABS.ALL(), $LL.ME.CREDENTIAL_TABS.DATA(), $LL.ME.CREDENTIAL_TABS.BADGES()]}>
         <!-- All -->
         <div slot="0" class="h-full pt-5">
           <Favorites />
@@ -132,17 +132,17 @@
 
         <div class="pt-[15px]">
           <p class="pb-[15px] text-[22px]/[30px] font-semibold tracking-tight text-slate-800 dark:text-grey">
-            {$LL.GETTING_STARTED.TITLE()}
+            Shall we get started?
           </p>
           <p class="custom w-[240px] text-slate-500 dark:text-slate-300">
-            {$LL.GETTING_STARTED.SUBTITLE()}
+            Start your first steps to add some credentials to your "Me".
           </p>
         </div>
       </div>
 
       <BottomDrawer
-        titleText={$LL.GETTING_STARTED.DIALOG_0_TITLE()}
-        descriptionText={$LL.GETTING_STARTED.DIALOG_0_TEXT()}
+        titleText="Complete new goals"
+        descriptionText="Start your mission here! Goals will lead you through important features and possibilities of UniMe app."
       >
         <!-- TODO: bug: properly $close the drawer with melt-ui (otherwise two clicks necessary) -->
         <Button slot="trigger" let:trigger {trigger} label="Let's go" />
@@ -164,7 +164,7 @@
     {:else}
       <!-- Skipped onboarding journey -->
       <div class="flex grow flex-col items-center justify-center">
-        <IconMessage icon={Ghost} title={$LL.EMPTY_CREDENTIALS_LIST_TITLE()} />
+        <IconMessage icon={Ghost} title={$LL.ME.EMPTY_CREDENTIALS.TITLE()} />
         <p class="w-[280px] pt-[15px] text-center text-[13px]/[24px] font-normal text-slate-500 dark:text-slate-300">
           Visit <span class="font-semibold text-primary">https://demo.ngdil.com</span> on a desktop computer to get started.
         </p>

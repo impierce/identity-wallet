@@ -112,7 +112,7 @@
 {:else if $state?.credentials?.length === 0}
   <!-- Only show "No credentials" when there's also no favorites -->
   <div class="flex grow flex-col items-center justify-center">
-    <IconMessage icon={Ghost} title={$LL.EMPTY_CREDENTIALS_LIST_TITLE()} />
+    <IconMessage icon={Ghost} title={$LL.ME.EMPTY_CREDENTIALS.TITLE()} />
     <p class="w-[280px] pt-[15px] text-center text-[13px]/[24px] font-normal text-slate-500 dark:text-slate-300">
       Visit <span class="font-semibold text-primary">https://demo.ngdil.com</span> on a desktop computer to get started.
     </p>
