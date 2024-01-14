@@ -3,11 +3,11 @@
 
   import { melt } from '@melt-ui/svelte';
 
+  import { dispatch } from '$lib/dispatcher';
   import LL from '$src/i18n/i18n-svelte';
-  import Button from '$src/lib/components/Button.svelte';
+  import Button from '$src/lib/components/atoms/Button.svelte';
   import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
-  import { dispatch } from '$src/lib/dispatcher';
+  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
   import { onboarding_state } from '$src/stores';
 
   function skipCustomization() {
@@ -16,7 +16,7 @@
   }
 </script>
 
-<TopNavigation on:back={() => history.back()} title="Customization">
+<TopNavBar on:back={() => history.back()} title="Customization">
   <!-- TODO: replace BottomDrawer with AlertDialog -->
   <BottomDrawer titleText={$LL.SETUP.SKIP_TITLE()} descriptionText={$LL.SETUP.SKIP_TEXT()}>
     <button
@@ -30,5 +30,5 @@
     </div>
     <Button variant="secondary" slot="close" let:close trigger={close} label="No, let's continue" />
   </BottomDrawer>
-</TopNavigation>
+</TopNavBar>
 <slot />

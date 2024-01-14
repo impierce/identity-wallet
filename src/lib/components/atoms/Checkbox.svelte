@@ -6,6 +6,7 @@
   import Check from '~icons/ph/check-bold';
 
   export let checked = false;
+  export let disabled = false;
 
   const dispatch = createEventDispatcher();
 
@@ -15,6 +16,7 @@
     states: { checked: _checked }, // renaming inner "checked", because the export value is also called "checked"
   } = createCheckbox({
     defaultChecked: checked,
+    disabled,
   });
 
   // react when checked value is updated from the outside
@@ -30,8 +32,8 @@
 
 <button
   use:melt={$root}
-  class="flex h-6 w-6 appearance-none items-center justify-center
-            rounded-md border-[1.5px] border-slate-300 p-[6px] text-white
+  class="flex h-6 w-6 appearance-none items-center justify-center rounded-md border-[1.5px]
+            border-slate-300 p-[6px] text-white data-[disabled]:opacity-50
             {$isChecked ? 'border-none bg-primary' : 'bg-transparent'}"
   id="checkbox"
 >

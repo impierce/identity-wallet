@@ -1,15 +1,15 @@
 <script lang="ts">
-  import Button from '$src/lib/components/Button.svelte';
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
-  import ThemeSelect from '$src/lib/customize/ThemeSelect.svelte';
-  import { dispatch } from '$src/lib/dispatcher';
+  import { dispatch } from '$lib/dispatcher';
+  import ThemeSelect from '$src/lib/app/settings/ThemeSelect.svelte';
+  import Button from '$src/lib/components/atoms/Button.svelte';
+  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
   import { state } from '$src/stores';
 
   let currentValue = $state.active_profile?.theme ?? 'system';
   let selected: string;
 </script>
 
-<TopNavigation on:back={() => history.back()} title="Select Theme" />
+<TopNavBar on:back={() => history.back()} title="Select Theme" />
 <div class="h-full bg-silver p-4 dark:bg-navy">
   <ThemeSelect
     defaultValue={currentValue}

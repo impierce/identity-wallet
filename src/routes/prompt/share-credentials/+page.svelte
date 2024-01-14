@@ -1,13 +1,12 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
 
-  import Button from '$src/lib/components/Button.svelte';
-  import CredentialListEntry from '$src/lib/components/CredentialListEntry.svelte';
-  import CredentialOfferEntry from '$src/lib/components/CredentialOfferEntry.svelte';
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
-  import PaddedIcon from '$src/lib/components/PaddedIcon.svelte';
-  import { icons } from '$src/lib/credentials/customization/utils';
-  import { dispatch } from '$src/lib/dispatcher';
+  import { dispatch } from '$lib/dispatcher';
+  import Button from '$src/lib/components/atoms/Button.svelte';
+  import Checkbox from '$src/lib/components/atoms/Checkbox.svelte';
+  import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
+  import ListItemCard from '$src/lib/components/molecules/ListItemCard.svelte';
+  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
   import { state } from '$src/stores';
 
   import Check from '~icons/ph/check-bold';
@@ -21,7 +20,7 @@
 </script>
 
 <div class="content-height flex flex-col items-stretch bg-silver dark:bg-navy">
-  <TopNavigation title={'Share Data'} on:back={() => history.back()} />
+  <TopNavBar title={'Share Data'} on:back={() => history.back()} />
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
     <!-- Header -->
@@ -58,49 +57,11 @@
       >
         <div class="flex w-full flex-col space-y-2">
           {#each selected_credentials as credential}
-            <CredentialOfferEntry
-              index={credential.id}
-              title={credential.metadata.display.name || credential.data.type.at(-1)}
-              color={credential.metadata.display.color || 'bg-indigo-100'}
-            >
-              <span slot="logo">
-                <svelte:component
-                  this={icons[credential.metadata.display.icon] || icons['User']}
-                  class="h-[18px] w-[18px] text-slate-800"
-                />
-              </span>
-            </CredentialOfferEntry>
-            <!-- <div class="flex items-center">
-            <div class="grow">
-              <CredentialListEntry
-                id={credential.id}
-                title={credential.metadata.display.name || credential.data.type.at(-1)}
-                description={new URL(credential.data.issuer).hostname}
-                color={credential.metadata.display.color || 'bg-indigo-100'}
-              >
-                <span slot="icon">
-                  <svelte:component
-                    this={icons[credential.metadata.display.icon] || icons['User']}
-                    class="h-[18px] w-[18px] text-slate-800"
-                  />
-                </span>
-              </CredentialListEntry>
-            </div>
-            <div class="px-3">
-              <button
-                use:melt={$root}
-                class="flex h-6 w-6 appearance-none items-center justify-center
-                  rounded-md border-[1.5px] border-slate-300 p-[6px] text-white
-                  {$isChecked ? 'border-none bg-primary' : 'bg-white'}"
-                id="checkbox"
-              >
-                {#if $isChecked}
-                  <Check class="h-3 w-3" />
-                {/if}
-                <input use:melt={$input} />
-              </button>
-            </div>
-          </div> -->
+            <ListItemCard id={credential.id} title={credential.metadata.display.name || credential.data.type.at(-1)}>
+              <div slot="right" class="mr-2">
+                <Checkbox checked={true} disabled={true} />
+              </div>
+            </ListItemCard>
           {/each}
         </div>
       </div>

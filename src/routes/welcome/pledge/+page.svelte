@@ -7,8 +7,8 @@
 
   import { createAccordion, melt } from '@melt-ui/svelte';
 
-  import Button from '$src/lib/components/Button.svelte';
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
+  import Button from '$src/lib/components/atoms/Button.svelte';
+  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
 
   import CaretDown from '~icons/ph/caret-down-bold';
 
@@ -48,7 +48,7 @@
 
 <!-- <div in:fly={{ x: 128, delay: 400 }} out:fly={{ x: -128, opacity: 1 }}>
   <div class="content-height flex flex-col bg-neutral-100">
-    <TopNavigation title="UniMe pledge" on:back={() => history.back()} />
+    <TopNavBar title="UniMe pledge" on:back={() => history.back()} />
     <div class="grow">pledge</div>
     <div class="space-y-[10px] rounded-t-3xl bg-white p-6">
       <Button label="Continue" on:click={() => goto('/welcome/terms')} />
@@ -56,7 +56,7 @@
   </div>
 </div> -->
 <!-- <div in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}> -->
-<TopNavigation title="UniMe Pledge" on:back={() => history.back()} />
+<TopNavBar title="UniMe Pledge" on:back={() => history.back()} />
 <!-- </div> -->
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <!-- <div class="mt-12 grow p-4" in:fly={{ x: 300, delay: 300 }} out:fly={{ x: -300, duration: 300 }}> -->

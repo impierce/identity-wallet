@@ -8,18 +8,20 @@
 
   import { melt } from '@melt-ui/svelte';
 
-  import Button from '$lib/components/Button.svelte';
+  import { dispatch } from '$lib/dispatcher';
   import { getImageAsset } from '$lib/utils';
-  import CredentialDetailsDropdownMenu from '$src/lib/components/CredentialDetailsDropdownMenu.svelte';
+  import { colors } from '$src/lib/app/colors';
+  import Button from '$src/lib/components/atoms/Button.svelte';
+  import ButtonRounded from '$src/lib/components/atoms/ButtonRounded.svelte';
+  import Image from '$src/lib/components/atoms/Image.svelte';
   import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
-  import { colors, icons } from '$src/lib/credentials/customization/utils';
-  import ShareButton from '$src/lib/credentials/ShareButton.svelte';
-  import { dispatch } from '$src/lib/dispatcher';
+  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
+  import CredentialDetailsDropdownMenu from '$src/lib/credentials/CredentialDetailsDropdownMenu.svelte';
   import { state } from '$src/stores';
 
   import Heart from '~icons/ph/heart-straight';
   import HeartFill from '~icons/ph/heart-straight-fill';
+  import QrCode from '~icons/ph/qr-code';
   import User from '~icons/ph/user-light';
 
   let credential = $state.credentials.find((c) => $page.params.id === c.id)!!;
@@ -79,7 +81,7 @@
       />
     {/if}
   </div>
-  <TopNavigation
+  <TopNavBar
     title="Credential info"
     on:back={() => history.back()}
     class={credentialLogoUrl ? '' : `${color} dark:${color} text-slate-800 dark:text-slate-800`}
@@ -106,20 +108,11 @@
               <Heart class="h-6 w-6 {credentialLogoUrl ? 'dark:text-white' : ''}" />
             {/if}
           </button>
+          <!-- TODO: remove border entirely? -->
           <div
-            class="{color} mr-2 flex h-[75px] w-[75px] flex-col items-center justify-center overflow-hidden rounded-[20px] border-[5px] border-white bg-white p-1 dark:border-dark dark:bg-dark"
+            class="{color} mr-2 flex h-[75px] w-[75px] items-center justify-center overflow-hidden rounded-3xl border-[5px] border-white bg-white p-2"
           >
-            {#if !credentialLogoUrl}
-              <svelte:component this={icons['User']} class="h-6 w-6 text-slate-800 dark:text-grey" />
-            {:else}
-              <img src={credentialLogoUrl} class="" alt="credential-logo" />
-            {/if}
-            <!-- Icon -->
-            <!-- <svelte:component this={icons[icon]} class="h-6 w-6 text-slate-800" /> -->
-            <!-- Logo -->
-            <!-- <div class="flex h-full w-full items-center justify-center bg-white p-1">
-            <img src={logo_location} alt="logo" class="object-scale-down" />
-          </div> -->
+            <Image id={$page.params.id} iconClass={'h-6 w-6 dark:text-slate-800'} />
           </div>
           <div class="-mr-3 -mt-1">
             <CredentialDetailsDropdownMenu {credential} class={credentialLogoUrl ? 'dark:text-white' : ''} />
@@ -170,13 +163,13 @@
   </div>
   <BottomDrawer>
     <!-- TODO: feature disabled: "Share credential" -->
-    <!-- <ShareButton slot="trigger" let:trigger {trigger} /> -->
+    <!-- <ButtonRounded slot="trigger" let:trigger {trigger} label="Share" icon={QrCode} class="absolute bottom-4 right-4" /> -->
     <span slot="content" class="flex flex-col items-center justify-center">
       <!-- Logo -->
       <div
         class="{color} flex h-[75px] w-[75px] flex-col items-center justify-center rounded-[20px] border-[5px] border-white"
       >
-        <svelte:component this={icon} class="h-6 w-6 text-slate-800" />
+        <!-- <svelte:component this={icon} class="h-6 w-6 text-slate-800" /> -->
       </div>
       <!-- Description -->
       <div class="flex flex-col items-center">

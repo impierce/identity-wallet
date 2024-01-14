@@ -178,7 +178,7 @@ pub async fn read_credential_offer(state: &mut AppState, action: Action) -> Resu
             )
         );
         if let Some(logo_uri) = logo_uri.as_ref().and_then(|s| s.parse::<reqwest::Url>().ok()) {
-            let _ = download_asset(logo_uri, LogoType::CredentialLogo, 0).await;
+            let _ = download_asset(logo_uri, LogoType::IssuerLogo, 0).await;
         }
     }
 

@@ -1,10 +1,10 @@
 <script lang="ts">
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
+  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
 
   import Heart from '~icons/ph/heart-fill';
 </script>
 
-<TopNavigation on:back={() => history.back()} title="About UniMe" />
+<TopNavBar on:back={() => history.back()} title="About UniMe" />
 <div class="content-height flex flex-col bg-silver dark:bg-navy">
   <div class="flex flex-col p-8">
     <!-- Footer -->

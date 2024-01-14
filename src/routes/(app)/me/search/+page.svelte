@@ -1,11 +1,14 @@
 <script lang="ts">
-  import { colors, icons } from '$lib/credentials/customization/utils';
-  import CredentialListEntry from '$src/lib/components/CredentialListEntry.svelte';
-  import NoMatch from '$src/lib/components/molecules/NoMatch.svelte';
-  import NoQuery from '$src/lib/components/molecules/NoQuery.svelte';
-  import Search from '$src/lib/components/Search.svelte';
-  import { dispatch } from '$src/lib/dispatcher';
+  import { goto } from '$app/navigation';
+
+  import IconMessage from '$lib/components/molecules/IconMessage.svelte';
+  import Search from '$lib/components/molecules/Search.svelte';
+  import { dispatch } from '$lib/dispatcher';
+  import ListItemCard from '$src/lib/components/molecules/ListItemCard.svelte';
   import { state } from '$src/stores';
+
+  import Ghost from '~icons/ph/ghost-fill';
+  import MagnifyingGlass from '~icons/ph/magnifying-glass-fill';
 
   let searchTerm: string | undefined;
   $: indices = $state.user_data_query;
@@ -23,40 +26,33 @@
   </div>
   {#if !searchTerm}
     <div class="pt-12">
-      <NoQuery />
+      <IconMessage
+        icon={MagnifyingGlass}
+        title="What shall we search for?"
+        description="Search for any of your credentials and badges here."
+      />
     </div>
   {:else if credentials.length == 0}
     <div class="pt-12">
-      <NoMatch />
+      <IconMessage icon={Ghost} title="No results found" description="Try searching for something else." />
     </div>
   {:else}
     <div class="w-full space-y-2 p-5">
       <!-- using "key" to destroy & recreate the complete credentials list to enforce a refresh of logos -->
       {#key indices}
         {#each credentials as credential}
-          <CredentialListEntry
+          <ListItemCard
             id={credential.id}
             title={credential.metadata.display.name ??
               credential.data.credentialSubject.achievement?.name ??
               credential.data.type.at(-1)}
             description={credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
-            color={credential.metadata.display.color ||
-              colors.at(
-                credential.id
-                  .match(/[0-9]+/)
-                  .at(0)
-                  .at(0) % 8, // TODO: omits last value (white)
-              )}
             type={credential.data.type.includes('OpenBadgeCredential') ? 'badge' : 'data'}
-          >
-            <span slot="icon">
-              <svelte:component
-                this={icons[credential.metadata.display.icon] ||
-                  (credential.data.type.includes('OpenBadgeCredential') ? icons['Certificate'] : icons['User'])}
-                class="h-[18px] w-[18px] text-slate-800 dark:text-grey"
-              />
-            </span>
-          </CredentialListEntry>
+            on:click={() =>
+              credential.data.type.includes('OpenBadgeCredential')
+                ? goto(`/badges/${credential.id}`)
+                : goto(`/credentials/${credential.id}`)}
+          />
         {/each}
       {/key}
     </div>

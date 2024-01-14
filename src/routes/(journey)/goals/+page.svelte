@@ -4,15 +4,15 @@
 
   import { melt } from '@melt-ui/svelte';
 
-  import Button from '$lib/components/Button.svelte';
-  import PaddedIcon from '$lib/components/PaddedIcon.svelte';
-  import ProgressBar from '$lib/components/ProgressBar.svelte';
   import { dispatch } from '$lib/dispatcher';
-  import GoalItem from '$lib/journey/goals/GoalItem.svelte';
   import LL from '$src/i18n/i18n-svelte';
+  import Button from '$src/lib/components/atoms/Button.svelte';
+  import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
+  import ProgressBar from '$src/lib/components/atoms/ProgressBar.svelte';
   import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
-  import { icons } from '$src/lib/journey/goals/utils';
+  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
+  import GoalItem from '$src/lib/journeys/goals/GoalItem.svelte';
+  import { icons } from '$src/lib/journeys/goals/icons';
   import { state } from '$src/stores';
 
   import Trophy from '~icons/ph/trophy-fill';
@@ -35,7 +35,7 @@
 </script>
 
 <!-- Navbar -->
-<TopNavigation on:back={() => history.back()} title={$state?.user_journey?.title}>
+<TopNavBar on:back={() => history.back()} title={$state?.user_journey?.title}>
   <!-- TODO: replace BottomDrawer with AlertDialog -->
   <BottomDrawer titleText={$LL.GETTING_STARTED.SKIP_TITLE()} descriptionText={$LL.GETTING_STARTED.SKIP_TEXT()}>
     <button
@@ -69,7 +69,7 @@
     </div>
     <Button variant="secondary" slot="close" let:close trigger={close} label="No, let's continue" />
   </BottomDrawer>
-</TopNavigation>
+</TopNavBar>
 
 <!-- Content -->
 <div class="flex h-full flex-col bg-silver dark:bg-navy">

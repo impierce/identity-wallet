@@ -3,19 +3,19 @@
 
   import { melt } from '@melt-ui/svelte';
 
+  import { dispatch } from '$lib/dispatcher';
   import LL from '$src/i18n/i18n-svelte';
-  import Button from '$src/lib/components/Button.svelte';
+  import SettingsEntry from '$src/lib/app/settings/SettingsEntry.svelte';
+  import Button from '$src/lib/components/atoms/Button.svelte';
   import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
-  import { dispatch } from '$src/lib/dispatcher';
-  import SettingsEntry from '$src/lib/settings/SettingsEntry.svelte';
+  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
 
   import Keyboard from '~icons/ph/keyboard-fill';
   import SmileyWink from '~icons/ph/smiley-wink-fill';
   import Trash from '~icons/ph/trash-fill';
 </script>
 
-<TopNavigation on:back={() => history.back()} title="My Profile" />
+<TopNavBar on:back={() => history.back()} title="My Profile" />
 <div class="content-height flex flex-col bg-silver dark:bg-navy">
   <div class="flex flex-col space-y-[10px] px-4 py-5">
     <SettingsEntry icon={Keyboard} title="Profile name" on:click={() => goto('/me/settings/profile/name')} />

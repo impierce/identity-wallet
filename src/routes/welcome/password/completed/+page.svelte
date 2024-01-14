@@ -2,20 +2,20 @@
   import { goto } from '$app/navigation';
   import { fade } from 'svelte/transition';
 
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
+  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
 
   import '@lottiefiles/lottie-player';
 
+  import { dispatch } from '$lib/dispatcher';
   import LL from '$src/i18n/i18n-svelte';
-  import Button from '$src/lib/components/Button.svelte';
-  import { dispatch } from '$src/lib/dispatcher';
+  import Button from '$src/lib/components/atoms/Button.svelte';
   import { onboarding_state } from '$src/stores';
 
   import Shield from '~icons/ph/shield-fill';
 </script>
 
 <!-- TODO: should we show this screen AFTER a successful creation of a stronghold? -->
-<TopNavigation on:back={() => history.back()} title="Confirm Password" />
+<TopNavBar on:back={() => history.back()} title="Confirm Password" />
 <!-- Content -->
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }}>
   <div class="pb-8 pt-4">

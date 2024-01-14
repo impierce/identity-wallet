@@ -2,16 +2,16 @@
   import { goto } from '$app/navigation';
   import { fade, fly } from 'svelte/transition';
 
+  import Button from '$src/lib/components/atoms/Button.svelte';
   import Checkbox from '$src/lib/components/atoms/Checkbox.svelte';
-  import Button from '$src/lib/components/Button.svelte';
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
+  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
 
   let ownership_isChecked = false;
 </script>
 
 <!-- <div in:fly={{ x: 128, delay: 400 }} out:fly={{ x: -128, opacity: 1 }}>
   <div class="content-height flex flex-col bg-neutral-100">
-    <TopNavigation title="Terms & Conditions" on:back={() => history.back()} />
+    <TopNavBar title="Terms & Conditions" on:back={() => history.back()} />
     <div class="grow">terms</div>
     <div class="space-y-[10px] rounded-t-3xl bg-white p-6">
       <Button label="Continue" on:click={() => goto('/welcome/terms')} disabled />
@@ -19,7 +19,7 @@
   </div>
 </div> -->
 <!-- <div in:fade={{ delay: 300 }}> -->
-<TopNavigation title="Terms & Conditions" on:back={() => history.back()} />
+<TopNavBar title="Terms & Conditions" on:back={() => history.back()} />
 <!-- </div> -->
 <!-- <div class="mt-12 grow p-4" in:fly={{ x: 300, delay: 300 }}> -->
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>

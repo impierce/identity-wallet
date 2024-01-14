@@ -82,9 +82,9 @@ pub struct Profile {
 #[ts(export)]
 #[serde(default)]
 pub struct Connection {
+    pub id: String,
     pub client_name: String,
     pub url: String,
-    pub logo_uri: Option<String>,
     pub verified: bool,
     pub first_interacted: String,
     pub last_interacted: String,

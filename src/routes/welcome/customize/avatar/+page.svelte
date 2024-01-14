@@ -5,8 +5,8 @@
   import { createPopover, melt } from '@melt-ui/svelte';
 
   import LL from '$src/i18n/i18n-svelte';
-  import Button from '$src/lib/components/Button.svelte';
-  import EmojiAvatarSelect from '$src/lib/customize/EmojiAvatarSelect.svelte';
+  import EmojiAvatarSelect from '$src/lib/app/settings/EmojiAvatarSelect.svelte';
+  import Button from '$src/lib/components/atoms/Button.svelte';
   import { onboarding_state } from '$src/stores';
 
   // TODO: unused
@@ -29,7 +29,7 @@
   }
 </script>
 
-<!-- <TopNavigation title="Avatar" on:back={() => history.back()} /> -->
+<!-- <TopNavBar title="Avatar" on:back={() => history.back()} /> -->
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <div class="px-2 pb-8 pt-4">
     <p class="pb-4 text-3xl font-semibold text-slate-700 dark:text-grey">

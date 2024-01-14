@@ -3,11 +3,11 @@
 
   import { melt } from '@melt-ui/svelte';
 
-  import Button from '$src/lib/components/Button.svelte';
-  import UniMeLogoDark from '$src/lib/components/logo/UniMeLogoDark.svelte';
-  import UniMeLogoLight from '$src/lib/components/logo/UniMeLogoLight.svelte';
+  import { dispatch } from '$lib/dispatcher';
+  import Button from '$src/lib/components/atoms/Button.svelte';
   import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
-  import { dispatch } from '$src/lib/dispatcher';
+  import UniMeLogoDark from '$src/lib/static/svg/logo/UniMeLogoDark.svelte';
+  import UniMeLogoLight from '$src/lib/static/svg/logo/UniMeLogoLight.svelte';
   import { state } from '$src/stores';
 
   import Eye from '~icons/ph/eye';

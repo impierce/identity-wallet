@@ -1,21 +1,22 @@
 import type { Connection } from './types';
 
-export const groupConnectionsAlphabetically = (connections: Connection[]): Map<string, Connection[]> => {
-  const map = new Map<string, Connection[]>();
-  connections.forEach((connection) => {
-    console.log('connection.url', connection.url);
-    let firstLetter: string = connection.url[0].toUpperCase();
-    let displayName = connection.displayName;
-    try {
-      const hostname = new URL(connection.url).hostname;
-      firstLetter = hostname[0].toUpperCase();
-      displayName = hostname;
-    } catch (e) {
-      console.warn(`could not create new URL from: ${connection.url}`);
+// TODO: replace with native "Object.groupBy" once available
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/groupBy
+function groupBy(list: Array<any>, keyGetter) {
+  const map = new Map();
+  list.forEach((item) => {
+    const key = keyGetter(item);
+    const collection = map.get(key);
+    if (!collection) {
+      map.set(key, [item]);
+    } else {
+      collection.push(item);
     }
-    const connections = map.get(firstLetter) || [];
-    connections.push({ ...connection, displayName });
-    map.set(firstLetter, connections);
   });
   return map;
+}
+
+export const groupConnectionsAlphabetically = (connections: Connection[]): Map<string, Connection[]> => {
+  const sorted = connections.sort((a, b) => a.client_name.localeCompare(b.client_name));
+  return groupBy(sorted, (connection: Connection) => connection.client_name[0].toUpperCase());
 };

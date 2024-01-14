@@ -6,11 +6,12 @@
 
   import { createCheckbox, createPopover, melt } from '@melt-ui/svelte';
 
-  import Button from '$lib/components/Button.svelte';
-  import PaddedIcon from '$lib/components/PaddedIcon.svelte';
+  import Image from '$lib/components/atoms/Image.svelte';
   import { dispatch } from '$lib/dispatcher';
-  import CredentialListEntry from '$src/lib/components/CredentialListEntry.svelte';
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
+  import Button from '$src/lib/components/atoms/Button.svelte';
+  import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
+  import ListItemCard from '$src/lib/components/molecules/ListItemCard.svelte';
+  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
   import { state } from '$src/stores';
 
   import Check from '~icons/ph/check-bold';
@@ -43,7 +44,7 @@
 </script>
 
 <div class="content-height flex flex-col items-stretch bg-silver dark:bg-navy">
-  <TopNavigation title={'Connection Request'} on:back={() => history.back()} />
+  <TopNavBar title={'Connection Request'} on:back={() => history.back()} />
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
     {#if $state.current_user_prompt.logo_uri}

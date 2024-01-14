@@ -6,8 +6,8 @@
 
   import { createAccordion, melt } from '@melt-ui/svelte';
 
-  import Button from '$lib/components/Button.svelte';
   import LL from '$src/i18n/i18n-svelte';
+  import Button from '$src/lib/components/atoms/Button.svelte';
   import { state } from '$src/stores';
 
   import CaretDown from '~icons/ph/caret-down-bold';

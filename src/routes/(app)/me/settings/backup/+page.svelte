@@ -1,11 +1,11 @@
 <script lang="ts">
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
-  import SettingsEntry from '$src/lib/settings/SettingsEntry.svelte';
+  import SettingsEntry from '$src/lib/app/settings/SettingsEntry.svelte';
+  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
 
   import Keyboard from '~icons/ph/keyboard-fill';
 </script>
 
-<TopNavigation on:back={() => history.back()} title="Backup and recovery" />
+<TopNavBar on:back={() => history.back()} title="Backup and recovery" />
 <div class="content-height flex flex-col bg-silver dark:bg-navy">
   <div class="flex flex-col space-y-[10px] px-4 py-5">
     <SettingsEntry icon={Keyboard} title="Your DID" todo />

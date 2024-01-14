@@ -2,12 +2,12 @@
   import { goto } from '$app/navigation';
   import { fade, fly } from 'svelte/transition';
 
+  import { dispatch } from '$lib/dispatcher';
   import LL from '$src/i18n/i18n-svelte';
-  import Button from '$src/lib/components/Button.svelte';
-  import MeLarge from '$src/lib/components/logo/MeLarge.svelte';
-  import UniMeTextDark from '$src/lib/components/logo/UniMeTextDark.svelte';
-  import UniMeTextLight from '$src/lib/components/logo/UniMeTextLight.svelte';
-  import { dispatch } from '$src/lib/dispatcher';
+  import Button from '$src/lib/components/atoms/Button.svelte';
+  import MeLarge from '$src/lib/static/svg/logo/MeLarge.svelte';
+  import UniMeTextDark from '$src/lib/static/svg/logo/UniMeTextDark.svelte';
+  import UniMeTextLight from '$src/lib/static/svg/logo/UniMeTextLight.svelte';
   import { onboarding_state, state } from '$src/stores';
 
   // TODO: make reactive

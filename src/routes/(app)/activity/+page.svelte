@@ -1,7 +1,7 @@
 <script lang="ts">
   import ConnectionsList from '$lib/connections/ConnectionsList.svelte';
-  import ActivityTabs from '$src/lib/components/molecules/tabs/ActivityTabs.svelte';
-  import History from '$src/lib/history/History.svelte';
+  import Tabs from '$src/lib/components/molecules/navigation/Tabs.svelte';
+  import History from '$src/lib/events/History.svelte';
 
   import ArrowDownAZ from '~icons/lucide/arrow-down-a-z';
   import MagnifyingGlass from '~icons/ph/magnifying-glass-bold';
@@ -23,25 +23,22 @@
       </button>
     </div> -->
   </div>
-  <div class="grow overflow-y-auto px-4 py-5">
-    <ActivityTabs>
-      <div slot="connections" class="h-full pt-5">
+  <div class="flex grow flex-col overflow-y-auto px-4 py-5">
+    <Tabs triggers={['Connections', 'Timeline']}>
+      <div slot="0" class="h-full pt-5">
         <!-- Search & Sort -->
         <!-- <div class="flex pb-4">
-        <div class="grow">
-          <SearchInput placeholder="Search connections" />
-        </div>
-        <button class="ml-2 rounded-full p-2 hover:bg-slate-100"
-          ><ArrowDownAZ class="text-slate-500" /></button
-        >
-      </div> -->
+          <div class="grow">
+            <SearchInput placeholder="Search connections" />
+          </div>
+          <button class="ml-2 rounded-full p-2 hover:bg-slate-100"><ArrowDownAZ class="text-slate-500" /></button>
+        </div> -->
         <ConnectionsList />
       </div>
-      <div slot="timeline" class="h-full pt-5">
+      <div slot="1" class="h-full pt-5">
         <History />
-        <!-- <div class="font-medium text-slate-400">No history yet</div> -->
       </div>
-    </ActivityTabs>
+    </Tabs>
   </div>
 </div>
 

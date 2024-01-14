@@ -1,11 +1,11 @@
 <script lang="ts">
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
-  import EmojiAvatarSelect from '$src/lib/customize/EmojiAvatarSelect.svelte';
-  import { dispatch } from '$src/lib/dispatcher';
+  import { dispatch } from '$lib/dispatcher';
+  import EmojiAvatarSelect from '$src/lib/app/settings/EmojiAvatarSelect.svelte';
+  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
   import { state } from '$src/stores';
 </script>
 
-<TopNavigation on:back={() => history.back()} title="Select display picture" />
+<TopNavBar on:back={() => history.back()} title="Select display picture" />
 <div class="h-full bg-silver p-4 dark:bg-navy">
   <div class="flex justify-center pt-12">
     <EmojiAvatarSelect

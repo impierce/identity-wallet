@@ -2,10 +2,11 @@
   import { page } from '$app/stores';
 
   import { dispatch } from '$lib/dispatcher';
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
+  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
   import { state } from '$src/stores';
 </script>
 
+<!-- TODO: refactor routes/(journey) to routes/journey/[id]/goals/[id] as there could be multiple journeys -->
 <div class="content-height flex flex-col items-stretch">
   <slot />
 

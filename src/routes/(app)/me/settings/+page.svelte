@@ -6,9 +6,9 @@
 
   import { dispatch } from '$lib/dispatcher';
   import LL from '$src/i18n/i18n-svelte';
-  import TopNavigation from '$src/lib/components/molecules/navigation/TopNavigation.svelte';
-  import EmojiAvatarSelect from '$src/lib/customize/EmojiAvatarSelect.svelte';
-  import SettingsEntry from '$src/lib/settings/SettingsEntry.svelte';
+  import EmojiAvatarSelect from '$src/lib/app/settings/EmojiAvatarSelect.svelte';
+  import SettingsEntry from '$src/lib/app/settings/SettingsEntry.svelte';
+  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
   import { state } from '$src/stores';
 
   import Envelope from '~icons/ph/envelope-fill';
@@ -20,9 +20,9 @@
   import WarningCircle from '~icons/ph/warning-circle-fill';
 </script>
 
-<TopNavigation on:back={() => history.back()} title="Settings" />
+<TopNavBar on:back={() => history.back()} title="Settings" />
 <div class="content-height flex flex-col bg-silver dark:bg-navy">
-  <div class="flex flex-col space-y-[15px] px-4 py-5" in:fly={{ x: 32, opacity: 1 }}>
+  <div class="hide-scrollbar flex flex-col space-y-[15px] overflow-y-scroll px-4 py-5" in:fly={{ x: 32, opacity: 1 }}>
     <!-- Avatar -->
     <div class="flex justify-center">
       <EmojiAvatarSelect
