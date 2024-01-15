@@ -99,7 +99,7 @@ mod tests {
         assert_eq!(
             Action::ConnectionAccepted,
             serde_json::from_str(include_str!(
-                "../../tests/fixtures/actions/authenticate_connect_accept.json"
+                "../../../tests/fixtures/actions/authenticate_connect_accept.json"
             ))
             .unwrap(),
         );
@@ -108,7 +108,7 @@ mod tests {
                 credential_uuids: vec!["39373933-3863-3339-3864-646234373631".parse().unwrap()]
             },
             serde_json::from_str(include_str!(
-                "../../tests/fixtures/actions/authenticate_cred_selected.json"
+                "../../../tests/fixtures/actions/authenticate_cred_selected.json"
             ))
             .unwrap(),
         );
@@ -119,27 +119,27 @@ mod tests {
                 theme: "system".to_string(),
                 password: "sup3rSecr3t".to_string(),
             },
-            serde_json::from_str(include_str!("../../tests/fixtures/actions/create_new.json")).unwrap(),
+            serde_json::from_str(include_str!("../../../tests/fixtures/actions/create_new.json")).unwrap(),
         );
         assert_eq!(
             Action::LoadDevProfile,
-            serde_json::from_str(include_str!("../../tests/fixtures/actions/dev_load_profile.json")).unwrap(),
+            serde_json::from_str(include_str!("../../../tests/fixtures/actions/dev_load_profile.json")).unwrap(),
         );
         assert_eq!(
             Action::GetState,
-            serde_json::from_str(include_str!("../../tests/fixtures/actions/get_state.json")).unwrap(),
+            serde_json::from_str(include_str!("../../../tests/fixtures/actions/get_state.json")).unwrap(),
         );
         assert_eq!(
             Action::QrCodeScanned {
                 form_urlencoded: "siopv2://idtoken?response_type=id_token&client_id=did%3Akey%3Az6Mkm9yeuZK7inXBNjnNH3vAs9uUjqfy3mfNoKBKsKBrv8Tb&scope=openid&redirect_uri=https%3A%2F%2Fexample.com&nonce=nonce".to_string()
             },
-            serde_json::from_str(include_str!("../../tests/fixtures/actions/qr_scanned_id_token.json")).unwrap(),
+            serde_json::from_str(include_str!("../../../tests/fixtures/actions/qr_scanned_id_token.json")).unwrap(),
         );
         assert_eq!(
             Action::UnlockStorage {
                 password: "sup3rSecr3t".to_string()
             },
-            serde_json::from_str(include_str!("../../tests/fixtures/actions/unlock_storage.json")).unwrap(),
+            serde_json::from_str(include_str!("../../../tests/fixtures/actions/unlock_storage.json")).unwrap(),
         );
     }
 }

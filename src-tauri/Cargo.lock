@@ -2768,10 +2768,6 @@ dependencies = [
  "chrono",
  "derivative",
  "did-key",
- "dotenvy",
- "fern",
- "futures",
- "identity_core 0.7.0-alpha.7",
  "identity_credential",
  "indoc",
  "iota_stronghold",
@@ -2785,7 +2781,6 @@ dependencies = [
  "oid4vp",
  "rand 0.8.5",
  "reqwest",
- "rust-argon2",
  "serde",
  "serde_json",
  "serial_test",
@@ -2794,10 +2789,6 @@ dependencies = [
  "stronghold_engine",
  "strum",
  "tauri",
- "tauri-build",
- "tauri-plugin-barcode-scanner",
- "tauri-plugin-fs",
- "tauri-plugin-log",
  "tempfile",
  "thiserror",
  "tokio",
@@ -2805,24 +2796,6 @@ dependencies = [
  "url",
  "uuid",
  "wiremock",
-]
-
-[[package]]
-name = "identity_core"
-version = "0.7.0-alpha.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a6c772f883804aa1df6c7686edf81b807d1cebcb759f9924f99de0c7379c95d8"
-dependencies = [
- "iota-crypto",
- "js-sys",
- "multibase",
- "serde",
- "serde_json",
- "strum",
- "thiserror",
- "time",
- "url",
- "zeroize",
 ]
 
 [[package]]
@@ -6491,6 +6464,36 @@ name = "unicode-segmentation"
 version = "1.10.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1dd624098567895118886609431a7c3b8f516e41d30e0643f03d94592a147e36"
+
+[[package]]
+name = "unime"
+version = "0.1.0"
+dependencies = [
+ "did-key",
+ "dotenvy",
+ "fern",
+ "identity-wallet",
+ "indoc",
+ "log",
+ "oid4vc-core",
+ "oid4vc-manager",
+ "oid4vci",
+ "oid4vp",
+ "rand 0.8.5",
+ "serde",
+ "serde_json",
+ "serial_test",
+ "siopv2",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-barcode-scanner",
+ "tauri-plugin-fs",
+ "tauri-plugin-log",
+ "tempfile",
+ "tokio",
+ "url",
+ "wiremock",
+]
 
 [[package]]
 name = "universal-hash"

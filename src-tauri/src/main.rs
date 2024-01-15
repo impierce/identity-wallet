@@ -3,5 +3,5 @@
 
 fn main() {
     #[cfg(desktop)]
-    identity_wallet::run();
+    unime::run();
 }

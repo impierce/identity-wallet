@@ -16,35 +16,44 @@ fn credential_query(state: &mut AppState, query: UserDataQuery) -> Result<(), Ap
         .as_ref()
         .filter(|search_term| !search_term.is_empty())
         .map(|search_term| {
-            let (filtered_creds_name, credentials): (Vec<_>, Vec<_>) = state
-                .credentials
-                .iter()
-                .partition(|credential| contains_search_term(credential.metadata.display.name.as_ref(), search_term));
+            let (filtered_creds_name, credentials): (Vec<_>, Vec<_>) =
+                state.credentials.iter().partition(|credential| {
+                    contains_search_term(credential.metadata.display.name.as_ref(), search_term)
+                });
 
-            let (filtered_creds_issuer, credentials): (Vec<_>, Vec<_>) = credentials
-                .into_iter()
-                .partition(|credential| contains_search_term(credential.issuer_name.as_ref(), search_term));
+            let (filtered_creds_issuer, credentials): (Vec<_>, Vec<_>) =
+                credentials.into_iter().partition(|credential| {
+                    contains_search_term(credential.issuer_name.as_ref(), search_term)
+                });
 
-            let (filtered_creds_content, _): (Vec<_>, Vec<_>) = credentials
-                .into_iter()
-                .partition(|credential| contains_search_term(Some(credential.data.to_string()).as_ref(), search_term));
+            let (filtered_creds_content, _): (Vec<_>, Vec<_>) =
+                credentials.into_iter().partition(|credential| {
+                    contains_search_term(Some(credential.data.to_string()).as_ref(), search_term)
+                });
 
-            concat(vec![filtered_creds_name, filtered_creds_issuer, filtered_creds_content])
-                .iter()
-                .map(|credential| credential.id.clone())
-                .collect()
+            concat(vec![
+                filtered_creds_name,
+                filtered_creds_issuer,
+                filtered_creds_content,
+            ])
+            .iter()
+            .map(|credential| credential.id.clone())
+            .collect()
         })
         .unwrap_or_default();
 
     state.user_data_query = if let Some(sort_method) = &query.sort_method {
         let mut creds: Vec<&DisplayCredential> = state.credentials.iter().collect();
 
-        let name_az =
-            |a: &&DisplayCredential, b: &&DisplayCredential| a.metadata.display.name.cmp(&b.metadata.display.name);
-        let issuance_new_old =
-            |a: &&DisplayCredential, b: &&DisplayCredential| a.metadata.date_issued.cmp(&b.metadata.date_issued);
-        let added_new_old =
-            |a: &&DisplayCredential, b: &&DisplayCredential| a.metadata.date_added.cmp(&b.metadata.date_added);
+        let name_az = |a: &&DisplayCredential, b: &&DisplayCredential| {
+            a.metadata.display.name.cmp(&b.metadata.display.name)
+        };
+        let issuance_new_old = |a: &&DisplayCredential, b: &&DisplayCredential| {
+            a.metadata.date_issued.cmp(&b.metadata.date_issued)
+        };
+        let added_new_old = |a: &&DisplayCredential, b: &&DisplayCredential| {
+            a.metadata.date_added.cmp(&b.metadata.date_added)
+        };
 
         creds.sort_by(match sort_method {
             SortMethod::NameAZ => name_az,
@@ -76,10 +85,10 @@ fn connection_query(state: &mut AppState, query: UserDataQuery) -> Result<(), Ap
         .as_ref()
         .filter(|search_term| !search_term.is_empty())
         .map(|search_term| {
-            let (filtered_connects_name, connections): (Vec<_>, Vec<_>) = state
-                .connections
-                .iter()
-                .partition(|connection| contains_search_term(Some(&connection.client_name), search_term));
+            let (filtered_connects_name, connections): (Vec<_>, Vec<_>) =
+                state.connections.iter().partition(|connection| {
+                    contains_search_term(Some(&connection.client_name), search_term)
+                });
 
             let (filtered_connects_url, _): (Vec<_>, Vec<_>) = connections
                 .into_iter()
@@ -96,8 +105,10 @@ fn connection_query(state: &mut AppState, query: UserDataQuery) -> Result<(), Ap
         let mut connections: Vec<&Connection> = state.connections.iter().collect();
 
         let name_az = |a: &&Connection, b: &&Connection| a.client_name.cmp(&b.client_name);
-        let first_interacted_new_old = |a: &&Connection, b: &&Connection| a.first_interacted.cmp(&b.first_interacted);
-        let last_interacted_new_old = |a: &&Connection, b: &&Connection| a.last_interacted.cmp(&b.last_interacted);
+        let first_interacted_new_old =
+            |a: &&Connection, b: &&Connection| a.first_interacted.cmp(&b.first_interacted);
+        let last_interacted_new_old =
+            |a: &&Connection, b: &&Connection| a.last_interacted.cmp(&b.last_interacted);
 
         connections.sort_by(match sort_method {
             SortMethod::NameAZ => name_az,
@@ -106,7 +117,8 @@ fn connection_query(state: &mut AppState, query: UserDataQuery) -> Result<(), Ap
             _ => name_az,
         });
 
-        let mut sorted_connect: Vec<String> = connections.iter().map(|s| s.client_name.clone()).collect();
+        let mut sorted_connect: Vec<String> =
+            connections.iter().map(|s| s.client_name.clone()).collect();
 
         query.sort_reverse.then(|| sorted_connect.reverse());
 
@@ -144,7 +156,9 @@ mod tests {
         w3c_verifiable_credentials::jwt_vc_json::JwtVcJson, CredentialFormats, Profile,
     };
 
-    use crate::verifiable_credential_record::{CredentialDisplay, CredentialMetadata, DisplayCredential};
+    use crate::verifiable_credential_record::{
+        CredentialDisplay, CredentialMetadata, DisplayCredential,
+    };
 
     use super::*;
 
@@ -152,8 +166,14 @@ mod tests {
     fn test_contains_search_term() {
         assert!(contains_search_term(Some(&"John Doe".to_string()), "john"));
         assert!(contains_search_term(Some(&"John Doe".to_string()), "doe"));
-        assert!(contains_search_term(Some(&"John Doe".to_string()), "john doe"));
-        assert!(contains_search_term(Some(&"John Doe".to_string()), "JOHN DOE"));
+        assert!(contains_search_term(
+            Some(&"John Doe".to_string()),
+            "john doe"
+        ));
+        assert!(contains_search_term(
+            Some(&"John Doe".to_string()),
+            "JOHN DOE"
+        ));
         assert!(contains_search_term(Some(&"John Doe".to_string()), "JOHN"));
         assert!(contains_search_term(Some(&"John Doe".to_string()), "DOE"));
         assert!(!contains_search_term(None, "john doe"));

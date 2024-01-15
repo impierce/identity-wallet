@@ -44,17 +44,26 @@ pub async fn create_identity(state: &mut AppState, action: Action) -> Result<(),
 
     let (name, picture, theme) = match action {
         Action::CreateNew {
-            name, picture, theme, ..
+            name,
+            picture,
+            theme,
+            ..
         } => (name, picture, theme),
         _ => return Err(InvalidActionError { action }),
     };
 
-    let public_key = stronghold_manager.get_public_key().map_err(StrongholdPublicKeyError)?;
+    let public_key = stronghold_manager
+        .get_public_key()
+        .map_err(StrongholdPublicKeyError)?;
 
     let keypair = from_existing_key::<Ed25519KeyPair>(public_key.as_slice(), None);
-    let subject = Arc::new(KeySubject::from_keypair(keypair, Some(stronghold_manager.clone())));
+    let subject = Arc::new(KeySubject::from_keypair(
+        keypair,
+        Some(stronghold_manager.clone()),
+    ));
 
-    let provider_manager = ProviderManager::new([subject.clone()]).map_err(OID4VCProviderManagerError)?;
+    let provider_manager =
+        ProviderManager::new([subject.clone()]).map_err(OID4VCProviderManagerError)?;
     let wallet: Wallet = Wallet::new(subject.clone());
 
     let profile = Profile {
@@ -80,16 +89,24 @@ pub async fn initialize_stronghold(state: &mut AppState, action: Action) -> Resu
         _ => return Err(InvalidActionError { action }),
     };
 
-    state.managers.lock().await.stronghold_manager.replace(Arc::new(
-        StrongholdManager::create(&password).map_err(StrongholdCreationError)?,
-    ));
+    state
+        .managers
+        .lock()
+        .await
+        .stronghold_manager
+        .replace(Arc::new(
+            StrongholdManager::create(&password).map_err(StrongholdCreationError)?,
+        ));
 
     info!("stronghold initialized");
 
     Ok(())
 }
 
-pub async fn update_credential_metadata(state: &mut AppState, action: Action) -> Result<(), AppError> {
+pub async fn update_credential_metadata(
+    state: &mut AppState,
+    action: Action,
+) -> Result<(), AppError> {
     let (credential_id, name, icon, color, is_favorite) = match action {
         Action::UpdateCredentialMetadata {
             id,
@@ -122,22 +139,37 @@ pub async fn update_credential_metadata(state: &mut AppState, action: Action) ->
 
     // set name if given
     if name.is_some() {
-        verifiable_credential_record.display_credential.metadata.display.name = name;
+        verifiable_credential_record
+            .display_credential
+            .metadata
+            .display
+            .name = name;
     }
 
     // set color if given
     if color.is_some() {
-        verifiable_credential_record.display_credential.metadata.display.color = color;
+        verifiable_credential_record
+            .display_credential
+            .metadata
+            .display
+            .color = color;
     }
 
     // set icon if given
     if icon.is_some() {
-        verifiable_credential_record.display_credential.metadata.display.icon = icon;
+        verifiable_credential_record
+            .display_credential
+            .metadata
+            .display
+            .icon = icon;
     }
 
     // set favorite if given
     if let Some(is_favorite) = is_favorite {
-        verifiable_credential_record.display_credential.metadata.is_favorite = is_favorite;
+        verifiable_credential_record
+            .display_credential
+            .metadata
+            .is_favorite = is_favorite;
     }
 
     info!(
@@ -148,7 +180,10 @@ pub async fn update_credential_metadata(state: &mut AppState, action: Action) ->
     stronghold_manager
         .insert(
             credential_id,
-            json!(verifiable_credential_record).to_string().as_bytes().to_vec(),
+            json!(verifiable_credential_record)
+                .to_string()
+                .as_bytes()
+                .to_vec(),
         )
         .map_err(StrongholdInsertionError)?;
     info!("credential metadata updated");
@@ -166,12 +201,21 @@ pub async fn update_credential_metadata(state: &mut AppState, action: Action) ->
 
 pub fn update_profile_settings(state: &mut AppState, action: Action) -> Result<(), AppError> {
     let (name, picture, theme) = match action {
-        Action::UpdateProfileSettings { name, picture, theme } => (name, picture, theme),
+        Action::UpdateProfileSettings {
+            name,
+            picture,
+            theme,
+        } => (name, picture, theme),
         _ => return Err(InvalidActionError { action }),
     };
 
     let _ = theme.map(|theme| {
-        state.active_profile.as_mut().unwrap().theme.replace(theme.to_string());
+        state
+            .active_profile
+            .as_mut()
+            .unwrap()
+            .theme
+            .replace(theme.to_string());
         debug!("updated theme: {}", theme);
     });
 
@@ -227,7 +271,8 @@ mod tests {
                 name: "Ferris".to_string(),
                 picture: Some("&#129408".to_string()),
                 theme: Some("system".to_string()),
-                primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
+                primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK"
+                    .to_string(),
             })
             .into(),
             ..AppState::default()

@@ -1,1 +1,1 @@
-export type { Connection } from 'src-tauri/bindings/Connection';
+export type { Connection } from 'src-tauri/identity_wallet/bindings/Connection';

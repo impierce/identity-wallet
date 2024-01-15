@@ -73,7 +73,6 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
 #[derivative(PartialEq)]
 #[ts(export, export_to = "bindings/display-credential/DisplayCredential.ts")]
 pub struct DisplayCredential {
-    // #[derivative(PartialEq = "ignore")]
     pub id: String,
     pub issuer_name: Option<String>,
     #[ts(type = "string")]

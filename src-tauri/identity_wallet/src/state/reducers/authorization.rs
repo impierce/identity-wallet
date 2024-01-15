@@ -286,7 +286,7 @@ pub async fn handle_oid4vp_authorization_request(state: &mut AppState, action: A
         ));
     }
 
-    let verifiable_presentation: Presentation<Jwt, identity_core::common::Object> =
+    let verifiable_presentation: Presentation<Jwt, _> =
         presentation_builder.build().map_err(PresentationBuilderError)?;
 
     info!("get the provider_manager");
@@ -311,8 +311,9 @@ pub async fn handle_oid4vp_authorization_request(state: &mut AppState, action: A
 
     let connection_time = chrono::Utc::now().to_rfc3339();
 
-    let (client_name, logo_uri, connection_url) = get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request)
-        .map_err(|_| MissingAuthorizationRequestParameterError("connection_url"))?;
+    let (client_name, _logo_uri, connection_url) =
+        get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request)
+            .map_err(|_| MissingAuthorizationRequestParameterError("connection_url"))?;
 
     let result = state
         .connections
