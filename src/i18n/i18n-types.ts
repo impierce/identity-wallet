@@ -270,6 +270,18 @@ type RootTranslation = {
 				 * P​r​o​f​i​l​e​ ​n​a​m​e
 				 */
 				TITLE: string
+				/**
+				 * C​h​a​n​g​e​ ​p​r​o​f​i​l​e​ ​n​a​m​e
+				 */
+				NAVBAR_TITLE: string
+				/**
+				 * E​n​t​e​r​ ​a​ ​p​r​o​f​i​l​e​ ​n​a​m​e
+				 */
+				INPUT_PLACEHOLDER: string
+				/**
+				 * U​p​d​a​t​e
+				 */
+				CONFIRM: string
 			}
 			DISPLAY_PICTURE: {
 				/**
@@ -297,6 +309,58 @@ type RootTranslation = {
 			 * A​p​p​ ​s​e​t​t​i​n​g​s
 			 */
 			TITLE: string
+			/**
+			 * A​p​p​ ​S​e​t​t​i​n​g​s
+			 */
+			NAVBAR_TITLE: string
+			LANGUAGE: {
+				/**
+				 * L​a​n​g​u​a​g​e
+				 */
+				TITLE: string
+			}
+			THEME: {
+				/**
+				 * T​h​e​m​e
+				 */
+				TITLE: string
+				/**
+				 * S​e​l​e​c​t​ ​T​h​e​m​e
+				 */
+				NAVBAR_TITLE: string
+			}
+			PASSWORD: {
+				/**
+				 * P​a​s​s​w​o​r​d
+				 */
+				TITLE: string
+			}
+			ONBOARDING_JOURNEY: {
+				/**
+				 * O​n​b​o​a​r​d​i​n​g​ ​j​o​u​r​n​e​y
+				 */
+				TITLE: string
+				/**
+				 * R​e​s​t​a​r​t
+				 */
+				BUTTON_TEXT: string
+			}
+			HINTS_AND_TIPS: {
+				/**
+				 * H​i​n​t​s​ ​a​n​d​ ​t​i​p​s
+				 */
+				TITLE: string
+				/**
+				 * R​e​s​e​t
+				 */
+				BUTTON_TEXT: string
+			}
+			DEVELOPER_MODE: {
+				/**
+				 * D​e​v​e​l​o​p​e​r​ ​m​o​d​e
+				 */
+				TITLE: string
+			}
 		}
 		BACKUP_RECOVERY: {
 			/**
@@ -354,7 +418,7 @@ type RootTranslation = {
 			 */
 			TITLE: string
 			/**
-			 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​r​e​s​e​t​ ​t​h​e​ ​a​p​p​?
+			 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​r​e​s​e​t​ ​t​h​e​ ​a​p​p​ ​a​n​d​ ​r​e​m​o​v​e​ ​a​l​l​ ​d​a​t​a​?
 			 */
 			DESCRIPTION: string
 			/**
@@ -813,6 +877,18 @@ export type TranslationFunctions = {
 				 * Profile name
 				 */
 				TITLE: () => LocalizedString
+				/**
+				 * Change profile name
+				 */
+				NAVBAR_TITLE: () => LocalizedString
+				/**
+				 * Enter a profile name
+				 */
+				INPUT_PLACEHOLDER: () => LocalizedString
+				/**
+				 * Update
+				 */
+				CONFIRM: () => LocalizedString
 			}
 			DISPLAY_PICTURE: {
 				/**
@@ -840,6 +916,58 @@ export type TranslationFunctions = {
 			 * App settings
 			 */
 			TITLE: () => LocalizedString
+			/**
+			 * App Settings
+			 */
+			NAVBAR_TITLE: () => LocalizedString
+			LANGUAGE: {
+				/**
+				 * Language
+				 */
+				TITLE: () => LocalizedString
+			}
+			THEME: {
+				/**
+				 * Theme
+				 */
+				TITLE: () => LocalizedString
+				/**
+				 * Select Theme
+				 */
+				NAVBAR_TITLE: () => LocalizedString
+			}
+			PASSWORD: {
+				/**
+				 * Password
+				 */
+				TITLE: () => LocalizedString
+			}
+			ONBOARDING_JOURNEY: {
+				/**
+				 * Onboarding journey
+				 */
+				TITLE: () => LocalizedString
+				/**
+				 * Restart
+				 */
+				BUTTON_TEXT: () => LocalizedString
+			}
+			HINTS_AND_TIPS: {
+				/**
+				 * Hints and tips
+				 */
+				TITLE: () => LocalizedString
+				/**
+				 * Reset
+				 */
+				BUTTON_TEXT: () => LocalizedString
+			}
+			DEVELOPER_MODE: {
+				/**
+				 * Developer mode
+				 */
+				TITLE: () => LocalizedString
+			}
 		}
 		BACKUP_RECOVERY: {
 			/**
@@ -897,7 +1025,7 @@ export type TranslationFunctions = {
 			 */
 			TITLE: () => LocalizedString
 			/**
-			 * Are you sure you want to reset the app?
+			 * Are you sure you want to reset the app and remove all data?
 			 */
 			DESCRIPTION: () => LocalizedString
 			/**

@@ -121,6 +121,9 @@ const nl = {
       TITLE: '',
       PROFILE_NAME: {
         TITLE: '',
+        NAVBAR_TITLE: '',
+        INPUT_PLACEHOLDER: '',
+        CONFIRM: '',
       },
       DISPLAY_PICTURE: {
         TITLE: '',
@@ -133,6 +136,28 @@ const nl = {
     },
     APP: {
       TITLE: '',
+      NAVBAR_TITLE: '',
+      LANGUAGE: {
+        TITLE: '',
+      },
+      THEME: {
+        TITLE: '',
+        NAVBAR_TITLE: '',
+      },
+      PASSWORD: {
+        TITLE: '',
+      },
+      ONBOARDING_JOURNEY: {
+        TITLE: '',
+        BUTTON_TEXT: '',
+      },
+      HINTS_AND_TIPS: {
+        TITLE: '',
+        BUTTON_TEXT: '',
+      },
+      DEVELOPER_MODE: {
+        TITLE: '',
+      },
     },
     BACKUP_RECOVERY: {
       TITLE: '',

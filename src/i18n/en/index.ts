@@ -93,6 +93,9 @@ const en = {
       TITLE: 'My profile',
       PROFILE_NAME: {
         TITLE: 'Profile name',
+        NAVBAR_TITLE: 'Change profile name',
+        INPUT_PLACEHOLDER: 'Enter a profile name',
+        CONFIRM: 'Update',
       },
       DISPLAY_PICTURE: {
         TITLE: 'Display picture',
@@ -105,6 +108,28 @@ const en = {
     },
     APP: {
       TITLE: 'App settings',
+      NAVBAR_TITLE: 'App Settings',
+      LANGUAGE: {
+        TITLE: 'Language',
+      },
+      THEME: {
+        TITLE: 'Theme',
+        NAVBAR_TITLE: 'Select Theme',
+      },
+      PASSWORD: {
+        TITLE: 'Password',
+      },
+      ONBOARDING_JOURNEY: {
+        TITLE: 'Onboarding journey',
+        BUTTON_TEXT: 'Restart',
+      },
+      HINTS_AND_TIPS: {
+        TITLE: 'Hints and tips',
+        BUTTON_TEXT: 'Reset',
+      },
+      DEVELOPER_MODE: {
+        TITLE: 'Developer mode',
+      },
     },
     BACKUP_RECOVERY: {
       TITLE: 'Backup and recovery',
@@ -128,7 +153,7 @@ const en = {
     },
     RESET_APP: {
       TITLE: 'Reset app',
-      DESCRIPTION: 'Are you sure you want to reset the app?',
+      DESCRIPTION: 'Are you sure you want to reset the app and remove all data?',
       CONFIRM: 'Yes, delete everything',
       CANCEL: 'No, keep my profile',
     },

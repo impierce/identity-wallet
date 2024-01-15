@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { get } from 'svelte/store';
-
   import LL from '$src/i18n/i18n-svelte';
   import Image from '$src/lib/components/atoms/Image.svelte';
 

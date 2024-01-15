@@ -94,6 +94,9 @@ const de = {
       TITLE: 'Mein Profil',
       PROFILE_NAME: {
         TITLE: 'Profilname',
+        NAVBAR_TITLE: 'Profilname ändern',
+        INPUT_PLACEHOLDER: 'Gib einen Profilnamen ein',
+        CONFIRM: 'Aktualisieren',
       },
       DISPLAY_PICTURE: {
         TITLE: 'Profilbild',
@@ -106,6 +109,28 @@ const de = {
     },
     APP: {
       TITLE: 'App-Einstellungen',
+      NAVBAR_TITLE: 'App-Einstellungen',
+      LANGUAGE: {
+        TITLE: 'Sprache',
+      },
+      THEME: {
+        TITLE: 'Erscheinungsbild',
+        NAVBAR_TITLE: 'Erscheinungsbild anpassen',
+      },
+      PASSWORD: {
+        TITLE: 'Passwort',
+      },
+      ONBOARDING_JOURNEY: {
+        TITLE: 'Einführung',
+        BUTTON_TEXT: 'Erneut starten',
+      },
+      HINTS_AND_TIPS: {
+        TITLE: 'Hinweise und Tipps',
+        BUTTON_TEXT: 'Zurücksetzen',
+      },
+      DEVELOPER_MODE: {
+        TITLE: 'Entwicklermodus',
+      },
     },
     BACKUP_RECOVERY: {
       TITLE: 'Sicherung und Wiederherstellung',

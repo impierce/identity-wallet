@@ -15,8 +15,14 @@ export const calculateInitials = (name: string): string => {
   }
 };
 
+export const languages: { locale: string; displayName: string }[] = [
+  { locale: 'en', displayName: 'English (US)' },
+  { locale: 'de', displayName: 'Deutsch' },
+  { locale: 'nl', displayName: 'Nederlands' },
+];
+
 export const setNextLanguage = (current: Locale) => {
-  const locales = ['en', 'de', 'nl'];
+  const locales = languages.map((l) => l.locale);
   const next: string = locales[(locales.indexOf(current) + 1) % locales.length];
   dispatch({ type: '[Settings] Set locale', locale: next });
 };
