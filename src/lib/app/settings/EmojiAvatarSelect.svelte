@@ -4,6 +4,7 @@
   import { melt } from '@melt-ui/svelte';
 
   import BottomDrawer from '$lib/components/molecules/dialogs/BottomDrawer.svelte';
+  import LL from '$src/i18n/i18n-svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
 
   import Plus from '~icons/ph/plus-bold';
@@ -58,7 +59,7 @@
   ];
 </script>
 
-<BottomDrawer titleText={'Select profile picture'} descriptionText={''} isOpen={emojiSelectIsOpen}>
+<BottomDrawer titleText={$LL.SETTINGS.PROFILE.DISPLAY_PICTURE.CHANGE()} descriptionText={''} isOpen={emojiSelectIsOpen}>
   <!-- <div slot="trigger"> -->
   <button
     slot="trigger"
@@ -76,7 +77,9 @@
         {@html selected}
       </span>
       {#if showEditButton}
-        <div class="absolute -bottom-[34px] text-[13px]/[24px] text-slate-500 dark:text-slate-300">Edit</div>
+        <div class="absolute -bottom-[34px] text-[13px]/[24px] text-slate-500 dark:text-slate-300">
+          {$LL.SETTINGS.PROFILE.DISPLAY_PICTURE.EDIT()}
+        </div>
       {/if}
     {:else}
       <Plus class="h-6 w-6 text-slate-700 dark:text-grey" />
@@ -137,7 +140,7 @@
       >Close</button
     > -->
   <div class="mt-6 w-full" slot="close" let:close>
-    <Button variant="secondary" label="Close" trigger={close} />
+    <Button variant="secondary" label={$LL.CLOSE()} trigger={close} />
   </div>
 </BottomDrawer>
 

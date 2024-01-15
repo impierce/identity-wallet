@@ -15,18 +15,19 @@
   import Trash from '~icons/ph/trash-fill';
 </script>
 
-<TopNavBar on:back={() => history.back()} title="My Profile" />
+<TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.PROFILE.TITLE()} />
 <div class="content-height flex flex-col bg-silver dark:bg-navy">
   <div class="flex flex-col space-y-[10px] px-4 py-5">
-    <SettingsEntry icon={Keyboard} title="Profile name" on:click={() => goto('/me/settings/profile/name')} />
+    <SettingsEntry
+      icon={Keyboard}
+      title={$LL.SETTINGS.PROFILE.PROFILE_NAME.TITLE()}
+      on:click={() => goto('/me/settings/profile/name')}
+    />
     <!-- on:click={() => goto('/welcome/customize/name')} -->
-    <SettingsEntry icon={SmileyWink} title="Display picture" todo />
+    <SettingsEntry icon={SmileyWink} title={$LL.SETTINGS.PROFILE.DISPLAY_PICTURE.TITLE()} todo />
     <!-- on:click={() => goto('/me/settings/profile/avatar')} -->
 
-    <BottomDrawer
-      titleText="Reset app"
-      descriptionText="Are you sure you want to reset the entire app and remove all data?"
-    >
+    <BottomDrawer titleText={$LL.SETTINGS.RESET_APP.TITLE()} descriptionText={$LL.SETTINGS.RESET_APP.DESCRIPTION()}>
       <!-- Delete profile (based on SettingsEntry) -->
       <button
         slot="trigger"
@@ -36,16 +37,18 @@
         on:click={() => {}}
       >
         <svelte:component this={Trash} class="h-5 w-5 text-rose-400" />
-        <p class="grow text-left text-[13px]/[24px] font-medium text-slate-800 dark:text-white">Delete profile</p>
+        <p class="grow text-left text-[13px]/[24px] font-medium text-slate-800 dark:text-white">
+          {$LL.SETTINGS.PROFILE.DELETE_PROFILE.TITLE()}
+        </p>
       </button>
 
       <div slot="content" class="w-full pb-[10px] pt-[20px]">
         <button
           class="h-[48px] w-full rounded-xl bg-rose-100 px-4 py-2 text-[14px]/[24px] font-medium text-rose-500"
-          on:click={() => dispatch({ type: '[App] Reset' })}>Yes, delete everything</button
+          on:click={() => dispatch({ type: '[App] Reset' })}>{$LL.SETTINGS.RESET_APP.CONFIRM()}</button
         >
       </div>
-      <Button variant="secondary" slot="close" let:close trigger={close} label="No, keep my profile" />
+      <Button variant="secondary" slot="close" let:close trigger={close} label={$LL.SETTINGS.RESET_APP.CANCEL()} />
     </BottomDrawer>
   </div>
 </div>

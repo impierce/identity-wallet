@@ -13,7 +13,7 @@ use crate::state::reducers::{
     update_profile_settings,
 };
 use crate::state::user_prompt::CurrentUserPrompt;
-use crate::state::{AppState, AppStateContainer};
+use crate::state::{AppState, AppStateContainer, Locale};
 use async_recursion::async_recursion;
 use log::{debug, info, warn};
 use oid4vci::credential_offer::CredentialOfferQuery;

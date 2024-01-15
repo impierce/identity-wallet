@@ -33,9 +33,12 @@
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <div class="px-2 pb-8 pt-4">
     <p class="pb-4 text-3xl font-semibold text-slate-700 dark:text-grey">
-      Set a display <span class="text-primary">picture</span>
+      {$LL.ONBOARDING.CUSTOMIZE.PICTURE.TITLE_1()}
+      <span class="text-primary">{$LL.ONBOARDING.CUSTOMIZE.PICTURE.TITLE_2()}</span>
     </p>
-    <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Make it yours.</p>
+    <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">
+      {$LL.ONBOARDING.CUSTOMIZE.PICTURE.SUBTITLE()}
+    </p>
     <div class="mt-[70px] flex w-full items-center justify-center">
       <EmojiAvatarSelect
         selected={$onboarding_state.picture}
@@ -49,7 +52,7 @@
   in:fade={{ delay: 200 }}
   out:fade={{ duration: 200 }}
 >
-  <Button label="Continue" on:click={() => goto('/welcome/password')} disabled={!$onboarding_state.picture} />
+  <Button label={$LL.CONTINUE()} on:click={() => goto('/welcome/password')} disabled={!$onboarding_state.picture} />
 </div>
 
 <!-- TODO: needed here or in component? -->

@@ -21,15 +21,16 @@
   let showPassword = false;
 </script>
 
-<TopNavBar on:back={() => history.back()} title="Password" />
+<TopNavBar on:back={() => history.back()} title={$LL.ONBOARDING.PASSWORD.NAVBAR_TITLE()} />
 <!-- Content -->
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <div class="pb-8 pt-4">
     <p class="pb-8 text-3xl font-semibold text-slate-700 dark:text-grey">
-      Set your new <span class="text-primary">password</span>
+      {$LL.ONBOARDING.PASSWORD.TITLE_1()}
+      <span class="text-primary">{$LL.ONBOARDING.PASSWORD.TITLE_2()}</span>
     </p>
     <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">
-      You need to create a strong password to secure your backup.
+      {$LL.ONBOARDING.PASSWORD.SUBTITLE()}
     </p>
     <!-- <div class="mt-[70px] flex w-full items-center justify-center" /> -->
   </div>
@@ -37,7 +38,7 @@
     <input
       type={showPassword ? 'text' : 'password'}
       class="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300"
-      placeholder="Enter a password"
+      placeholder={$LL.ONBOARDING.PASSWORD.INPUT_PLACEHOLDER()}
       value={$onboarding_state.password ?? ''}
       on:input={(e) => {
         passwordPolicyViolations = checkPasswordPolicy(e.target.value);
@@ -59,7 +60,7 @@
   <div class="mt-6">
     <div class="mt-3 rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-600 dark:bg-dark">
       <p class="mb-[10px] text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
-        Your password must contain
+        {$LL.SETTINGS.PASSWORD.POLICY.TITLE()}
       </p>
       <div class="flex flex-wrap">
         {#each passwordPolicy as rule}
@@ -90,7 +91,7 @@
 
 <div class="rounded-t-3xl bg-white p-6 dark:bg-dark" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <Button
-    label="Continue"
+    label={$LL.CONTINUE()}
     on:click={() => goto('/welcome/password/confirm')}
     disabled={passwordPolicyViolations.length > 0}
   />

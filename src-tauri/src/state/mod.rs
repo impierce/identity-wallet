@@ -14,6 +14,7 @@ use oid4vc_manager::ProviderManager;
 use oid4vci::Wallet;
 use serde::{Deserialize, Serialize};
 use std::{collections::VecDeque, sync::Arc};
+use strum::EnumString;
 use ts_rs::TS;
 
 pub struct IdentityManager {
@@ -57,7 +58,7 @@ pub struct AppState {
 #[derive(Default)]
 pub struct AppStateContainer(pub tokio::sync::Mutex<AppState>);
 
-#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default)]
+#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default, EnumString)]
 #[serde(rename_all = "lowercase")]
 #[ts(export)]
 pub enum Locale {

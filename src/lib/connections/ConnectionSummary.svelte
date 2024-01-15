@@ -1,4 +1,5 @@
 <script lang="ts">
+  import LL from '$src/i18n/i18n-svelte';
   import Image from '$src/lib/components/atoms/Image.svelte';
 
   import BadgeCheck from '~icons/lucide/badge-check';
@@ -11,11 +12,11 @@
   let summary = {
     URL: connection.url,
     // Verified: 'no',
-    'First connected': new Date(connection.first_interacted).toLocaleString('en-US', {
+    [$LL.CONNECTION.SUMMARY.FIRST_CONNECTED()]: new Date(connection.first_interacted).toLocaleString('en-US', {
       dateStyle: 'medium',
       timeStyle: 'medium',
     }),
-    'Last connected': new Date(connection.last_interacted).toLocaleString('en-US', {
+    [$LL.CONNECTION.SUMMARY.LAST_CONNECTED()]: new Date(connection.last_interacted).toLocaleString('en-US', {
       dateStyle: 'medium',
       timeStyle: 'medium',
     }),
@@ -33,7 +34,8 @@
       />
     </div>
     <div class="text-center text-2xl font-semibold text-slate-700 dark:text-grey">
-      Connected to <p class="text-primary">{connection.client_name}</p>
+      {$LL.CONNECTION.SUMMARY.TITLE()}
+      <p class="text-primary">{connection.client_name}</p>
     </div>
   </div>
   <!-- Details -->

@@ -3,13 +3,15 @@
 
   import { goto } from '$app/navigation';
 
+  import LL from '$src/i18n/i18n-svelte';
+
   import MagnifyingGlass from '~icons/ph/magnifying-glass-bold';
   import Clear from '~icons/ph/x-bold';
 
   const dispatch = createEventDispatcher();
 
   export let delay = 500;
-  export let placeholder = 'Look for something';
+  export let placeholder = $LL.SEARCH.INPUT_PLACEHOLDER();
 
   let inputValue: string | undefined;
   let debouncedValue: string | undefined;
@@ -52,5 +54,5 @@
     {/if}
   </div>
 
-  <button class="pl-4 text-sm text-slate-500 dark:text-slate-300" on:click={() => goto('/me')}>Cancel</button>
+  <button class="pl-4 text-sm text-slate-500 dark:text-slate-300" on:click={() => goto('/me')}>{$LL.CANCEL()}</button>
 </div>
