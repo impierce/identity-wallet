@@ -17,21 +17,14 @@ pub async fn unlock_storage(state: &mut AppState, action: Action) -> Result<(), 
         _ => return Err(InvalidActionError { action }),
     };
 
-    let stronghold_manager =
-        Arc::new(StrongholdManager::load(&password).map_err(StrongholdLoadingError)?);
+    let stronghold_manager = Arc::new(StrongholdManager::load(&password).map_err(StrongholdLoadingError)?);
 
-    let public_key = stronghold_manager
-        .get_public_key()
-        .map_err(StrongholdPublicKeyError)?;
+    let public_key = stronghold_manager.get_public_key().map_err(StrongholdPublicKeyError)?;
 
     let keypair = from_existing_key::<Ed25519KeyPair>(public_key.as_slice(), None);
-    let subject = Arc::new(KeySubject::from_keypair(
-        keypair,
-        Some(stronghold_manager.clone()),
-    ));
+    let subject = Arc::new(KeySubject::from_keypair(keypair, Some(stronghold_manager.clone())));
 
-    let provider_manager =
-        ProviderManager::new([subject.clone()]).map_err(OID4VCProviderManagerError)?;
+    let provider_manager = ProviderManager::new([subject.clone()]).map_err(OID4VCProviderManagerError)?;
     let wallet: Wallet = Wallet::new(subject.clone());
 
     info!("loading credentials from stronghold");
@@ -53,11 +46,9 @@ pub async fn unlock_storage(state: &mut AppState, action: Action) -> Result<(), 
 
     info!("storage unlocked");
 
-    state
-        .current_user_prompt
-        .replace(CurrentUserPrompt::Redirect {
-            target: "me".to_string(),
-        });
+    state.current_user_prompt.replace(CurrentUserPrompt::Redirect {
+        target: "me".to_string(),
+    });
 
     Ok(())
 }
