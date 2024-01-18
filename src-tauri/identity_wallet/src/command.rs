@@ -13,14 +13,14 @@ use crate::state::reducers::{
     update_profile_settings,
 };
 use crate::state::user_prompt::CurrentUserPrompt;
-use crate::state::{AppState, AppStateContainer, Locale};
+use crate::state::{AppState, AppStateContainer};
 use async_recursion::async_recursion;
 use log::{debug, info, warn};
 use oid4vci::credential_offer::CredentialOfferQuery;
 use tauri::Manager;
 
 #[async_recursion]
-pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
+pub async fn handle_action_inner<R: tauri::Runtime>(
     app_state: &mut AppState,
     action: Action,
     _app_handle: tauri::AppHandle<R>,
@@ -143,7 +143,6 @@ pub(crate) async fn handle_action_inner<R: tauri::Runtime>(
 
 /// This command handler is the single point of entry to the business logic in the backend. It will delegate the
 /// command it receives to the designated functions that modify the state (see: "reducers" in the Redux pattern).
-#[tauri::command]
 pub async fn handle_action<R: tauri::Runtime>(
     action: Action,
     _app_handle: tauri::AppHandle<R>,
@@ -184,7 +183,7 @@ pub async fn handle_action<R: tauri::Runtime>(
     Result::Ok(())
 }
 
-fn emit_event<R: tauri::Runtime>(window: tauri::Window<R>, app_state: &AppState) -> anyhow::Result<()> {
+pub fn emit_event<R: tauri::Runtime>(window: tauri::Window<R>, app_state: &AppState) -> anyhow::Result<()> {
     const STATE_CHANGED_EVENT: &str = "state-changed";
     window.emit(STATE_CHANGED_EVENT, app_state)?;
     debug!("emitted event `{}` with payload `{:?}`", STATE_CHANGED_EVENT, app_state);

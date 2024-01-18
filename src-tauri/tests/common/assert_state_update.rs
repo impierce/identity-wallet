@@ -22,7 +22,7 @@ pub async fn assert_state_update(
     // Initialize the app with the given state and action handler.
     let app = tauri::test::mock_builder()
         .manage(current_state)
-        .invoke_handler(tauri::generate_handler![identity_wallet::command::handle_action])
+        .invoke_handler(tauri::generate_handler![unime::tauri_command::handle_action])
         .build(tauri::generate_context!())
         .unwrap();
 

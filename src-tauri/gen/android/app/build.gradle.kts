@@ -21,14 +21,14 @@ keyProperties.load(FileInputStream(keyPropertiesFile))
 
 android {
     compileSdk = 33
-    namespace = "com.impierce.identity_wallet"
+    namespace = "com.impierce.unime"
     defaultConfig {
         manifestPlaceholders["usesCleartextTraffic"] = "false"
         applicationId = "com.impierce.identity_wallet"
         minSdk = 24
         targetSdk = 33
-        versionCode = 31
-        versionName = "0.4.6"
+        versionCode = 32
+        versionName = "0.4.7"
     }
     signingConfigs {
         create("release") {

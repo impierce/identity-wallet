@@ -58,10 +58,10 @@ if (Files.exists(keystorePropertiesFile)) {
 
 android {
     compileSdk = 33
-    namespace = "com.impierce.identity_wallet"
+    namespace = "com.impierce.unime"
     defaultConfig {
         manifestPlaceholders["usesCleartextTraffic"] = "false"
-        applicationId = "com.impierce.identity_wallet"
+        applicationId = "com.impierce.unime"
         minSdk = 24
         targetSdk = 33
         versionCode = 1
@@ -136,7 +136,7 @@ rd /s /q "%USERPROFILE%\.cargo\git\checkouts"
 ```sh
 cargo install create-tauri-app # v3.1.1
 cargo create-tauri-app --alpha
-✔ Project name · identity-wallet
+✔ Project name · unime
 ✔ Choose which language to use for your frontend · TypeScript / JavaScript - (pnpm, yarn, npm)
 ✔ Choose your package manager · npm
 ✔ Choose your UI template · Svelte - (https://svelte.dev/)

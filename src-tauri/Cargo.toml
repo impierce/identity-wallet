@@ -1,6 +1,6 @@
 [package]
-name = "identity-wallet"
-version = "0.1.0"
+name = "unime"
+version = "0.4.7"
 description = "Identity Wallet for people to manage Decentralized Identities and Verifiable Credentials"
 homepage = "https://www.impierce.com/"
 authors = ["Impierce Technologies"]
@@ -9,21 +9,16 @@ license = "Apache-2.0"
 repository = "https://github.com/impierce/identity-wallet"
 edition = "2021"
 
-[lib]
-name = "identity_wallet"
-crate-type = ["staticlib", "cdylib", "rlib"]
+[workspace]
+members = [
+    "identity_wallet",
+]
 
-[build-dependencies]
-tauri-build = { version = "=2.0.0-alpha.13", features = [] }
-
-[dependencies]
+[workspace.dependencies]
 tauri = { version = "=2.0.0-alpha.20", features = [
     "protocol-asset",
     "rustls-tls",
 ] }
-tauri-plugin-barcode-scanner = { version = "=2.0.0-alpha.4" }
-tauri-plugin-log = { version = "=2.0.0-alpha.6", features = ["colored"] }
-tauri-plugin-fs = { version = "=2.0.0-alpha.6" }
 
 oid4vc-manager = { git = "https://git@github.com/impierce/openid4vc.git", rev = "ebd7a83f8494d55b57f569e43e3001d32cda583a" }
 siopv2 = { git = "https://git@github.com/impierce/openid4vc.git", rev = "ebd7a83f8494d55b57f569e43e3001d32cda583a" }
@@ -31,50 +26,47 @@ oid4vci = { git = "https://git@github.com/impierce/openid4vc.git", rev = "ebd7a8
 oid4vc-core = { git = "https://git@github.com/impierce/openid4vc.git", rev = "ebd7a83f8494d55b57f569e43e3001d32cda583a" }
 oid4vp = { git = "https://git@github.com/impierce/openid4vc.git", rev = "ebd7a83f8494d55b57f569e43e3001d32cda583a" }
 
-identity_core = { version = "=0.7.0-alpha.7" }
-identity_credential = { git = "https://github.com/iotaledger/identity.rs.git", default-features = false, features = [
-    "validator",
-    "credential",
-    "presentation",
-] }
-iota_stronghold = { version = "=2.0.0" }
-stronghold_engine = "=2.0.0"
-
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
 log = "^0.4"
-tokio = { version = "1.26.0", features = ["macros"] }
-ts-rs = "7.0"
-anyhow = "1.0"
-did-key = "0.2.1"
-lazy_static = "1.4.0"
-fern = "0.6.0"
-rust-argon2 = { version = "=1.0.0" }
-base64 = { version = "0.13.0" }
-jsonwebtoken = "8.2"
-futures = "0.3"
-async-recursion = "1.0"
-uuid = { version = "1.4", features = ["v4", "fast-rng", "serde"] }
-chrono = "0.4"
-itertools = "0.10.5"
-sha256 = "1.4"
-derivative = "2.2"
-thiserror = "1.0"
-reqwest = { version = "0.11", default-features = false, features = [
-    "json",
-    "rustls-tls",
-] }
-strum = { version = "0.25", features = ["derive"] }
+serde_json = "1.0"
+
+[lib]
+name = "unime"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "=2.0.0-alpha.13", features = [] }
+
+[dependencies]
+identity-wallet = { path = "./identity_wallet" }
+
+tauri.workspace = true
+tauri-plugin-barcode-scanner = { version = "=2.0.0-alpha.4" }
+tauri-plugin-log = { version = "=2.0.0-alpha.6", features = ["colored"] }
+tauri-plugin-fs = { version = "=2.0.0-alpha.6" }
+
 dotenvy = { version = "0.15" }
+fern = "0.6.0"
+log.workspace = true
+serde_json.workspace = true
 
 [dev-dependencies]
 tauri = { version = "=2.0.0-alpha.20", features = ["rustls-tls", "test"] }
-tempfile = "3.5.0"
-serial_test = "2.0"
-url = "2.4"
+
+oid4vc-manager.workspace = true
+siopv2.workspace = true
+oid4vci.workspace = true
+oid4vc-core.workspace = true
+oid4vp.workspace = true
+
+did-key = "0.2.1"
 indoc = "2.0"
-wiremock = "0.5"
 rand = "0.8"
+serde = { version = "1.0", features = ["derive"] }
+serial_test = "2.0"
+tempfile = "3.5.0"
+tokio = { version = "1.26.0", features = ["macros"] }
+url = "2.4"
+wiremock = "0.5"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
