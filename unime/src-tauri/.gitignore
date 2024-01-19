@@ -1,0 +1,9 @@
+target/
+
+gen/*
+!gen/apple/unime_iOS/Info.plist
+!gen/apple/ExportOptions.plist
+!gen/android/app/build.gradle.kts
+
+# Can be generated through `cargo tauri icon`
+icons/

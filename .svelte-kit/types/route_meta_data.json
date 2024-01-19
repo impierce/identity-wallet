@@ -1,0 +1,125 @@
+{
+	"/(journey)": [
+		"src/routes/+layout.ts"
+	],
+	"/(app)": [
+		"src/routes/+layout.ts"
+	],
+	"/": [
+		"src/routes/+layout.ts",
+		"src/routes/+layout.ts"
+	],
+	"/(app)/activity": [
+		"src/routes/+layout.ts"
+	],
+	"/(app)/activity/connection/[id]": [
+		"src/routes/+layout.ts"
+	],
+	"/badges/[id]": [
+		"src/routes/+layout.ts"
+	],
+	"/credentials/[id]": [
+		"src/routes/+layout.ts"
+	],
+	"/(journey)/goals": [
+		"src/routes/+layout.ts"
+	],
+	"/(journey)/goals/[id]": [
+		"src/routes/+layout.ts"
+	],
+	"/(journey)/goals/[id]/faqs": [
+		"src/routes/+layout.ts"
+	],
+	"/(journey)/goals/[id]/step/[id]": [
+		"src/routes/+layout.ts"
+	],
+	"/(app)/me": [
+		"src/routes/+layout.ts"
+	],
+	"/(app)/me/search": [
+		"src/routes/+layout.ts"
+	],
+	"/(app)/me/settings": [
+		"src/routes/+layout.ts"
+	],
+	"/(app)/me/settings/about": [
+		"src/routes/+layout.ts"
+	],
+	"/(app)/me/settings/app": [
+		"src/routes/+layout.ts"
+	],
+	"/(app)/me/settings/app/theme": [
+		"src/routes/+layout.ts"
+	],
+	"/(app)/me/settings/backup": [
+		"src/routes/+layout.ts"
+	],
+	"/(app)/me/settings/profile": [
+		"src/routes/+layout.ts"
+	],
+	"/(app)/me/settings/profile/avatar": [
+		"src/routes/+layout.ts"
+	],
+	"/(app)/me/settings/profile/name": [
+		"src/routes/+layout.ts"
+	],
+	"/prompt": [
+		"src/routes/+layout.ts"
+	],
+	"/prompt/accept-connection": [
+		"src/routes/+layout.ts"
+	],
+	"/prompt/credential-offer": [
+		"src/routes/+layout.ts"
+	],
+	"/prompt/password-required": [
+		"src/routes/+layout.ts"
+	],
+	"/prompt/share-credentials": [
+		"src/routes/+layout.ts"
+	],
+	"/(app)/scan": [
+		"src/routes/+layout.ts"
+	],
+	"/welcome": [
+		"src/routes/welcome/+layout.ts",
+		"src/routes/+layout.ts",
+		"src/routes/welcome/+layout.ts",
+		"src/routes/+layout.ts"
+	],
+	"/welcome/customize": [
+		"src/routes/welcome/+layout.ts",
+		"src/routes/+layout.ts"
+	],
+	"/welcome/customize/avatar": [
+		"src/routes/welcome/+layout.ts",
+		"src/routes/+layout.ts"
+	],
+	"/welcome/customize/name": [
+		"src/routes/+layout.ts"
+	],
+	"/welcome/customize/theme": [
+		"src/routes/welcome/+layout.ts",
+		"src/routes/+layout.ts"
+	],
+	"/welcome/password": [
+		"src/routes/welcome/+layout.ts",
+		"src/routes/+layout.ts"
+	],
+	"/welcome/password/completed": [
+		"src/routes/welcome/+layout.ts",
+		"src/routes/+layout.ts"
+	],
+	"/welcome/password/confirm": [
+		"src/routes/welcome/+layout.ts",
+		"src/routes/+layout.ts"
+	],
+	"/welcome/pledge": [
+		"src/routes/welcome/+layout.ts",
+		"src/routes/+layout.ts"
+	],
+	"/welcome/terms": [
+		"src/routes/welcome/+layout.ts",
+		"src/routes/+layout.ts"
+	]
+}

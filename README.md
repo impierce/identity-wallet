@@ -143,3 +143,9 @@ cargo create-tauri-app --alpha
 ✔ Choose your UI flavor · TypeScript
 ✔ Would you like to setup the project for mobile as well? · yes
 ```
+
+### Today in new structure
+
+In the file `android/gen/android/app/build.gradle.kt` 
+
+change applicationId -> `unime` to `identity-wallet`
