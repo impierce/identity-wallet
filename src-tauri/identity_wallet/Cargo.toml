@@ -2,6 +2,7 @@
 name = "identity-wallet"
 version = "0.4.7"
 edition = "2021"
+rust-version = "1.75.0"
 
 [dependencies]
 tauri.workspace = true
