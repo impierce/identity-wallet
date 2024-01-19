@@ -14,13 +14,27 @@ use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, Profile};
 use crate::verifiable_credential_record::VerifiableCredentialRecord;
 use did_key::{from_existing_key, Ed25519KeyPair};
+use futures::Future;
 use log::{debug, info};
 use oid4vc_core::Subject;
 use oid4vc_manager::methods::key_method::KeySubject;
 use oid4vc_manager::ProviderManager;
 use oid4vci::Wallet;
 use serde_json::json;
+use std::pin::Pin;
 use std::sync::Arc;
+
+/// A macro to wrap a reducer function in a Box and a Pin.
+#[macro_export]
+macro_rules! reducer {
+    ($reducer:expr) => {
+        Box::new(move |app_state, action| Box::pin(async move { $reducer(app_state, action).await }))
+    };
+}
+
+/// A reducer is a function that takes the current state and an action and returns the new state.
+pub type Reducer<'a> =
+    Box<dyn Fn(AppState, Action) -> Pin<Box<dyn Future<Output = Result<AppState, AppError>> + Send>> + Send>;
 
 pub async fn get_state(_state: AppState, _action: Action) -> Result<AppState, AppError> {
     println!("get_state reducer called");
@@ -234,6 +248,13 @@ pub async fn reset_state(_state: AppState, _action: Action) -> Result<AppState, 
             target: "welcome".to_string(),
         }),
         ..Default::default()
+    })
+}
+
+pub async fn cancel_user_journey(state: AppState, _action: Action) -> Result<AppState, AppError> {
+    Ok(AppState {
+        user_journey: None,
+        ..state
     })
 }
 

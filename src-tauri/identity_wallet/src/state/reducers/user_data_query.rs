@@ -1,6 +1,6 @@
 use crate::error::AppError;
-use crate::state::actions::{listen, Action, UserDataQuery};
-use crate::state::{AppState, Connection, QueryTarget, SortMethod};
+use crate::state::actions::{listen, Action, QueryTarget, SortMethod, UserDataQuery};
+use crate::state::{AppState, Connection};
 use crate::verifiable_credential_record::DisplayCredential;
 use itertools::concat;
 
@@ -148,7 +148,10 @@ mod tests {
         w3c_verifiable_credentials::jwt_vc_json::JwtVcJson, CredentialFormats, Profile,
     };
 
-    use crate::verifiable_credential_record::{CredentialDisplay, CredentialMetadata, DisplayCredential};
+    use crate::{
+        state::actions::QueryTarget,
+        verifiable_credential_record::{CredentialDisplay, CredentialMetadata, DisplayCredential},
+    };
 
     use super::*;
 
