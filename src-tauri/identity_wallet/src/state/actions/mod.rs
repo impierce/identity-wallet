@@ -47,6 +47,7 @@ pub type Action = Arc<dyn ActionTrait>;
 /// A trait that all Actions must implement.
 #[typetag::serde(tag = "type", content = "payload")]
 pub trait ActionTrait: Send + std::fmt::Debug + DowncastSync {
+    /// Returns the reducers that should be called when this action is dispatched.
     fn reducers<'a>(&self) -> Vec<Reducer<'a>>;
 }
 impl_downcast!(sync ActionTrait);
