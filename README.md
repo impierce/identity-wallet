@@ -149,3 +149,7 @@ cargo create-tauri-app --alpha
 In the file `android/gen/android/app/build.gradle.kt` 
 
 change applicationId -> `unime` to `identity-wallet`
+
+### Issues
+
+- Sometimes after initially creating account it doesn't store correctly
