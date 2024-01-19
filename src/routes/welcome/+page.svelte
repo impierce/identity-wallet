@@ -4,6 +4,7 @@
 
   import { dispatch } from '$lib/dispatcher';
   import LL from '$src/i18n/i18n-svelte';
+  import LanguageSelect from '$src/lib/app/LanguageSelect.svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
   import MeLarge from '$src/lib/static/svg/logo/MeLarge.svelte';
   import UniMeTextDark from '$src/lib/static/svg/logo/UniMeTextDark.svelte';
@@ -43,8 +44,8 @@
 
   <div class="grow">
     <!-- <div class="flex grow flex-col justify-center" in:fade out:fly={{ x: -300, duration: 300 }}> -->
-    <div class="mt-[calc(100vh/6)] px-4 py-6">
-      <div class="pb-[50px]">
+    <div class="mt-[calc(100vh/8)] px-4 py-6">
+      <div class="pb-9">
         <p class=" pb-[10px] text-[36px]/[44px] font-bold text-blue dark:text-silver">
           {$LL.ONBOARDING.WELCOME.GREETING()}
         </p>
@@ -60,6 +61,10 @@
         <br /><br />
         {$LL.ONBOARDING.WELCOME.WHAT_IS_UNIME_2()}
       </p>
+    </div>
+
+    <div class="flex justify-center">
+      <LanguageSelect />
     </div>
   </div>
 

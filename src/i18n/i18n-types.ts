@@ -33,6 +33,10 @@ type RootTranslation = {
 			 * C​r​e​a​t​e​ ​n​e​w​ ​p​r​o​f​i​l​e
 			 */
 			CREATE_NEW_PROFILE: string
+			/**
+			 * S​e​l​e​c​t​ ​l​a​n​g​u​a​g​e
+			 */
+			SELECT_LANGUAGE: string
 		}
 		PLEDGE: {
 			/**
@@ -603,6 +607,26 @@ type RootTranslation = {
 			DESCRIPTION: string
 		}
 	}
+	BADGE: {
+		DETAILS: {
+			/**
+			 * V​a​l​i​d
+			 */
+			VALID: string
+			/**
+			 * I​s​s​u​e​d​ ​b​y
+			 */
+			ISSUED_BY: string
+			/**
+			 * D​e​s​c​r​i​p​t​i​o​n
+			 */
+			DESCRIPTION: string
+			/**
+			 * M​e​t​a​d​a​t​a
+			 */
+			METADATA: string
+		}
+	}
 	/**
 	 * C​a​n​c​e​l
 	 */
@@ -640,6 +664,10 @@ export type TranslationFunctions = {
 			 * Create new profile
 			 */
 			CREATE_NEW_PROFILE: () => LocalizedString
+			/**
+			 * Select language
+			 */
+			SELECT_LANGUAGE: () => LocalizedString
 		}
 		PLEDGE: {
 			/**
@@ -1208,6 +1236,26 @@ export type TranslationFunctions = {
 			 * Try searching for something else.
 			 */
 			DESCRIPTION: () => LocalizedString
+		}
+	}
+	BADGE: {
+		DETAILS: {
+			/**
+			 * Valid
+			 */
+			VALID: () => LocalizedString
+			/**
+			 * Issued by
+			 */
+			ISSUED_BY: () => LocalizedString
+			/**
+			 * Description
+			 */
+			DESCRIPTION: () => LocalizedString
+			/**
+			 * Metadata
+			 */
+			METADATA: () => LocalizedString
 		}
 	}
 	/**

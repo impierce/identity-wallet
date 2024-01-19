@@ -7,6 +7,7 @@ const de = {
       WHAT_IS_UNIME_1: 'UniMe verbindet deine digitale Welt, sicher und geschützt.',
       WHAT_IS_UNIME_2: 'Erstelle ein brandneues Profil, um loszulegen.',
       CREATE_NEW_PROFILE: 'Neues Profil erstellen',
+      SELECT_LANGUAGE: 'Sprache auswählen',
     },
     PLEDGE: {
       NAVBAR_TITLE: 'UniMes Versprechen',
@@ -227,6 +228,14 @@ const de = {
     NO_RESULTS: {
       TITLE: 'Keine Ergebnisse',
       DESCRIPTION: 'Versuche es mit einem anderen Suchbegriff.',
+    },
+  },
+  BADGE: {
+    DETAILS: {
+      VALID: 'Gültig',
+      ISSUED_BY: 'Ausgestellt von',
+      DESCRIPTION: 'Beschreibung',
+      METADATA: 'Metadaten',
     },
   },
   CANCEL: 'Abbrechen',

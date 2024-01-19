@@ -7,6 +7,7 @@ const nl = {
       WHAT_IS_UNIME_1: 'UniMe verbindt je digitale wereld, veilig en beschermd.',
       WHAT_IS_UNIME_2: 'Maak een gloednieuw profiel aan om te beginnen.',
       CREATE_NEW_PROFILE: 'Maak nieuw profiel aan',
+      SELECT_LANGUAGE: 'Selecteer taal',
     },
     PLEDGE: {
       NAVBAR_TITLE: '',
@@ -224,6 +225,14 @@ const nl = {
     NO_RESULTS: {
       TITLE: '',
       DESCRIPTION: '',
+    },
+  },
+  BADGE: {
+    DETAILS: {
+      VALID: '',
+      ISSUED_BY: '',
+      DESCRIPTION: '',
+      METADATA: '',
     },
   },
   CANCEL: 'Annuleren',
