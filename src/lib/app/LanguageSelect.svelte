@@ -36,12 +36,12 @@
     use:melt={trigger}
     let:trigger
     on:click={() => (isOpen = true)}
-    class="flex w-fit items-center justify-center rounded-lg border border-grey bg-silver px-[15px] py-3"
+    class="flex w-fit items-center justify-center rounded-lg border border-grey bg-silver px-[15px] py-3 dark:border-blue dark:bg-navy"
   >
     <div class="pr-[10px]">
       <svelte:component this={selected.flag} class="h-5 w-5 rounded-full" />
     </div>
-    <div class="text-[13px]/[24px] font-medium text-slate-800">{selected.displayName}</div>
+    <div class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">{selected.displayName}</div>
   </button>
 
   <div slot="content" class="flex w-full flex-col space-y-[5px]">
@@ -52,13 +52,13 @@
           isOpen = false;
         }}
         class="flex items-center rounded-lg p-[10px] {language.locale === selected.locale
-          ? 'border border-grey bg-silver'
+          ? 'border border-grey bg-silver dark:border-blue dark:bg-navy'
           : ''}"
       >
         <div class="pr-[10px]">
           <svelte:component this={language.flag} class="h-5 w-5 rounded-full" />
         </div>
-        <div class="text-[13px]/[24px] font-medium text-slate-800">{language.displayName}</div>
+        <div class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">{language.displayName}</div>
       </button>
     {/each}
   </div>
