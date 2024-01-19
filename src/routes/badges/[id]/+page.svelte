@@ -10,6 +10,7 @@
 
   import { dispatch } from '$lib/dispatcher';
   import { getImageAsset } from '$lib/utils';
+  import LL from '$src/i18n/i18n-svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
   import ButtonRounded from '$src/lib/components/atoms/ButtonRounded.svelte';
   import Image from '$src/lib/components/atoms/Image.svelte';
@@ -120,7 +121,7 @@
       <!-- Text -->
       <div class="z-10 flex flex-col items-center pt-[15px]">
         <p class="text-[13px]/[24px] font-normal text-slate-500 dark:text-slate-300">
-          {credential.issuer_name ?? credential.data.issuer.name}
+          {credential.data.issuer.name ?? credential.issuer_name}
         </p>
         <p class="line-clamp-2 text-center text-[22px]/[30px] font-semibold tracking-tight text-black dark:text-white">
           {credential.data.credentialSubject.achievement?.name ?? title}
@@ -133,7 +134,7 @@
       <div class="flex space-x-3 pt-8">
         <!-- Valid -->
         <div class="flex w-full flex-col items-center space-y-1">
-          <p class="text-xs text-black dark:text-white">Valid</p>
+          <p class="text-xs text-black dark:text-white">{$LL.BADGE.DETAILS.VALID()}</p>
           <div class="flex w-full justify-center rounded-xl bg-silver py-5 dark:bg-white">
             <SealCheck class="h-7 w-7 text-slate-800" />
           </div>
@@ -141,7 +142,7 @@
         </div>
         <!-- Issued By -->
         <div class="flex w-full flex-col items-center space-y-1">
-          <p class="text-xs text-black dark:text-white">Issued By</p>
+          <p class="text-xs text-black dark:text-white">{$LL.BADGE.DETAILS.ISSUED_BY()}</p>
           <div class="w- flex h-[68px] w-full justify-center rounded-xl bg-silver dark:bg-white">
             <Image
               id={'university'}
@@ -150,13 +151,13 @@
               iconClass="h-7 w-7 dark:text-slate-800"
             />
           </div>
-          <p class="text-xs text-black dark:text-white">{credential.data.issuer.name}</p>
+          <p class="text-xs text-black dark:text-white">{credential.data.issuer.name ?? credential.issuer_name}</p>
         </div>
       </div>
 
       <!-- Description -->
       <div>
-        <p class="text-lg font-semibold text-black dark:text-white">Description</p>
+        <p class="text-lg font-semibold text-black dark:text-white">{$LL.BADGE.DETAILS.DESCRIPTION()}</p>
         <p class="text-[13px]/[24px] text-slate-800 dark:text-grey">
           {credential.data.credentialSubject.achievement?.description}
         </p>
@@ -164,7 +165,7 @@
 
       <!-- Metadata (Table: Credential Subject) -->
       <div>
-        <p class="pb-2 text-lg font-semibold text-black dark:text-white">Metadata</p>
+        <p class="pb-2 text-lg font-semibold text-black dark:text-white">{$LL.BADGE.DETAILS.METADATA()}</p>
         <div
           class="divide-y divide-solid divide-slate-200 rounded-xl border border-slate-200 bg-white dark:divide-slate-600 dark:border-slate-600 dark:bg-dark"
         >
