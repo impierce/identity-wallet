@@ -38,7 +38,7 @@ pub struct Managers {
 pub struct AppState {
     #[serde(skip)]
     #[derivative(Debug = "ignore")]
-    pub managers: tauri::async_runtime::Mutex<Managers>,
+    pub managers: Arc<tauri::async_runtime::Mutex<Managers>>,
     pub active_profile: Option<Profile>,
     #[serde(skip)]
     #[derivative(Debug = "ignore")]
@@ -106,18 +106,6 @@ pub enum SortMethod {
     AddedNewOld,
     FirstInteractedNewOld,
     LastInteractedNewOld,
-}
-
-#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq)]
-#[ts(export)]
-pub struct UserDataQuery {
-    pub target: QueryTarget,
-    #[serde(default)]
-    pub search_term: Option<String>,
-    #[serde(default)]
-    pub sort_method: Option<SortMethod>,
-    #[serde(default)]
-    pub sort_reverse: bool,
 }
 
 #[cfg(test)]
