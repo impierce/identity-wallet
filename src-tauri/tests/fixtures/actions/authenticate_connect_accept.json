@@ -1,3 +1,4 @@
 {
-    "type": "[Authenticate] Connection accepted"
+    "type": "[Authenticate] Connection accepted",
+    "payload": null
 }

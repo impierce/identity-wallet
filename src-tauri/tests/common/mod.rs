@@ -1,11 +1,11 @@
 use did_key::{from_existing_key, Ed25519KeyPair};
+use identity_wallet::oid4vc_manager::{methods::key_method::KeySubject, ProviderManager};
+use identity_wallet::oid4vci::Wallet;
 use identity_wallet::{
     crypto::stronghold::StrongholdManager,
     state::{IdentityManager, Managers},
     verifiable_credential_record::VerifiableCredentialRecord,
 };
-use oid4vc_manager::{methods::key_method::KeySubject, ProviderManager};
-use oid4vci::Wallet;
 use serde::de::DeserializeOwned;
 use serde_json::json;
 use std::fs::File;
@@ -27,7 +27,7 @@ where
 
 pub fn test_managers(
     verifiable_credential_records: Vec<VerifiableCredentialRecord>,
-) -> tauri::async_runtime::Mutex<Managers> {
+) -> Arc<tauri::async_runtime::Mutex<Managers>> {
     let stronghold_manager = Arc::new(StrongholdManager::create(TEST_PASSWORD).unwrap());
 
     verifiable_credential_records
@@ -49,12 +49,12 @@ pub fn test_managers(
     let provider_manager = ProviderManager::new([subject.clone()]).unwrap();
     let wallet: Wallet = Wallet::new(subject.clone());
 
-    tauri::async_runtime::Mutex::new(Managers {
+    Arc::new(tauri::async_runtime::Mutex::new(Managers {
         stronghold_manager: Some(stronghold_manager),
         identity_manager: Some(IdentityManager {
             subject,
             provider_manager,
             wallet,
         }),
-    })
+    }))
 }

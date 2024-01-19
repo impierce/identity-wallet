@@ -3,14 +3,14 @@ use crate::common::{
     assert_state_update::{assert_state_update, setup_state_file, setup_stronghold},
     test_managers,
 };
+use identity_wallet::oid4vci::credential_format_profiles::{
+    w3c_verifiable_credentials::jwt_vc_json::JwtVcJson, Credential, CredentialFormats, WithCredential,
+};
 use identity_wallet::state::AppStateContainer;
 use identity_wallet::{
     state::{actions::Action, AppState, Profile},
     verifiable_credential_record::VerifiableCredentialRecord,
 };
-use oid4vci::credential_format_profiles::w3c_verifiable_credentials::jwt_vc_json::JwtVcJson;
-use oid4vci::credential_format_profiles::CredentialFormats;
-use oid4vci::credential_format_profiles::{Credential, WithCredential};
 use serde_json::json;
 use tokio::sync::Mutex;
 
