@@ -25,7 +25,7 @@
     if ($state?.dev_mode_enabled && $state?.active_profile?.name === 'Ferris') {
       console.log('Developer mode - Injecting password automatically ...');
       setTimeout(() => {
-        dispatch({ type: '[Storage] Unlock', password: 'sup3rSecr3t' });
+        dispatch({ type: '[Storage] Unlock', payload: { password: 'sup3rSecr3t' } });
       }, 500);
     }
   });
@@ -60,7 +60,7 @@
       </div>
       <Button
         label={$LL.LOCK_SCREEN.BUTTON_TEXT()}
-        on:click={() => dispatch({ type: '[Storage] Unlock', password })}
+        on:click={() => dispatch({ type: '[Storage] Unlock', payload: { password } })}
         disabled={!password}
       />
       <!-- Forgot password? Reset app -->
@@ -78,7 +78,7 @@
           <div slot="content" class="w-full pb-[10px] pt-[20px]">
             <button
               class="h-[48px] w-full rounded-xl bg-rose-100 px-4 py-2 text-[14px]/[24px] font-medium text-rose-500"
-              on:click={() => dispatch({ type: '[App] Reset' })}>{$LL.SETTINGS.RESET_APP.CONFIRM()}</button
+              on:click={() => dispatch({ type: '[App] Reset', payload: null })}>{$LL.SETTINGS.RESET_APP.CONFIRM()}</button
             >
           </div>
 

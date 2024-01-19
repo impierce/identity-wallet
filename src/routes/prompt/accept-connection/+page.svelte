@@ -39,7 +39,7 @@
   console.log($state.current_user_prompt);
 
   onDestroy(async () => {
-    dispatch({ type: '[User Flow] Cancel' });
+    dispatch({ type: '[User Flow] Cancel', payload: { } });
   });
 </script>
 
@@ -137,13 +137,14 @@
       on:click={() =>
         dispatch({
           type: '[Authenticate] Connection accepted',
+          payload: null
         })}
     />
     <Button
       label="Reject"
       variant="secondary"
       on:click={() => {
-        dispatch({ type: '[User Flow] Cancel', redirect: 'me' });
+        dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });
         goto('/me');
       }}
     />

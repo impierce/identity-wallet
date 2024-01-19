@@ -50,8 +50,51 @@ pub fn listen<T: ActionTrait + Clone>(action: Action) -> Option<T> {
     action.downcast_arc::<T>().ok().map(|action| (*action).clone())
 }
 
+// TODO: remove this once we have a better way to export the TS types.
+mod bindings {
+    use super::*;
+
+    #[derive(Serialize, Deserialize, TS)]
+    #[serde(tag = "type")]
+    #[ts(export, export_to = "bindings/actions/Action.ts")]
+    pub enum Action {
+        #[serde(rename = "[App] Get state")]
+        GetState { payload: GetState },
+        #[serde(rename = "[Storage] Unlock")]
+        UnlockStorage { payload: UnlockStorage },
+        #[serde(rename = "[App] Reset")]
+        Reset { payload: Reset },
+        #[serde(rename = "[DID] Create new")]
+        CreateNew { payload: CreateNew },
+        #[serde(rename = "[Settings] Set locale")]
+        SetLocale { payload: SetLocale },
+        #[serde(rename = "[Settings] Update profile")]
+        UpdateProfileSettings { payload: UpdateProfileSettings },
+        #[serde(rename = "[QR Code] Scanned")]
+        QrCodeScanned { payload: QrCodeScanned },
+        #[serde(rename = "[Authenticate] Connection accepted")]
+        ConnectionAccepted { payload: ConnectionAccepted },
+        #[serde(rename = "[User Flow] Cancel")]
+        CancelUserFlow { payload: CancelUserFlow },
+        #[serde(rename = "[DEV] Set dev mode")]
+        SetDevMode { payload: SetDevMode },
+        #[serde(rename = "[DEV] Load profile")]
+        LoadDevProfile { payload: LoadDevProfile },
+        #[serde(rename = "[Authenticate] Credentials selected")]
+        CredentialsSelected { payload: CredentialsSelected },
+        #[serde(rename = "[Credential Offer] Selected")]
+        CredentialOffersSelected { payload: CredentialOffersSelected },
+        #[serde(rename = "[Credential Metadata] Update")]
+        UpdateCredentialMetadata { payload: UpdateCredentialMetadata },
+        #[serde(rename = "[User Journey] Cancel")]
+        CancelUserJourney { payload: CancelUserJourney },
+        #[serde(rename = "[User Data] Query")]
+        UserDataQuery { payload: UserDataQuery },
+    }
+}
+
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export)]
+#[ts(export, export_to = "bindings/actions/GetState.ts")]
 pub struct GetState;
 
 #[typetag::serde(name = "[App] Get state")]
@@ -62,7 +105,7 @@ impl ActionTrait for GetState {
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export)]
+#[ts(export, export_to = "bindings/actions/UnlockStorage.ts")]
 pub struct UnlockStorage {
     pub password: String,
 }
@@ -75,7 +118,7 @@ impl ActionTrait for UnlockStorage {
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export)]
+#[ts(export, export_to = "bindings/actions/Reset.ts")]
 pub struct Reset;
 
 #[typetag::serde(name = "[App] Reset")]
@@ -86,7 +129,7 @@ impl ActionTrait for Reset {
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export)]
+#[ts(export, export_to = "bindings/actions/CreateNew.ts")]
 pub struct CreateNew {
     pub name: String,
     pub picture: String,
@@ -102,7 +145,7 @@ impl ActionTrait for CreateNew {
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export)]
+#[ts(export, export_to = "bindings/actions/SetLocale.ts")]
 pub struct SetLocale {
     #[ts(type = "string")]
     pub locale: Locale,
@@ -116,7 +159,7 @@ impl ActionTrait for SetLocale {
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export)]
+#[ts(export, export_to = "bindings/actions/UpdateProfileSettings.ts")]
 pub struct UpdateProfileSettings {
     #[ts(optional)]
     pub name: Option<String>,
@@ -134,7 +177,7 @@ impl ActionTrait for UpdateProfileSettings {
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export)]
+#[ts(export, export_to = "bindings/actions/QrCodeScanned.ts")]
 pub struct QrCodeScanned {
     pub form_urlencoded: String,
 }
@@ -147,7 +190,7 @@ impl ActionTrait for QrCodeScanned {
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export)]
+#[ts(export, export_to = "bindings/actions/ConnectionAccepted.ts")]
 pub struct ConnectionAccepted;
 
 #[typetag::serde(name = "[Authenticate] Connection accepted")]
@@ -158,7 +201,7 @@ impl ActionTrait for ConnectionAccepted {
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export)]
+#[ts(export, export_to = "bindings/actions/CancelUserFlow.ts")]
 pub struct CancelUserFlow {
     #[ts(optional)]
     pub redirect: Option<String>,
@@ -172,7 +215,7 @@ impl ActionTrait for CancelUserFlow {
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export)]
+#[ts(export, export_to = "bindings/actions/SetDevMode.ts")]
 pub struct SetDevMode {
     pub enabled: bool,
 }
@@ -185,7 +228,7 @@ impl ActionTrait for SetDevMode {
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export)]
+#[ts(export, export_to = "bindings/actions/LoadDevProfile.ts")]
 pub struct LoadDevProfile;
 
 #[typetag::serde(name = "[DEV] Load profile")]
@@ -196,7 +239,7 @@ impl ActionTrait for LoadDevProfile {
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export)]
+#[ts(export, export_to = "bindings/actions/CredentialsSelected.ts")]
 pub struct CredentialsSelected {
     #[ts(type = "Array<string>")]
     pub credential_uuids: Vec<uuid::Uuid>,
@@ -210,7 +253,7 @@ impl ActionTrait for CredentialsSelected {
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export)]
+#[ts(export, export_to = "bindings/actions/CredentialOffersSelected.ts")]
 pub struct CredentialOffersSelected {
     #[ts(type = "Array<string>")]
     pub offer_indices: Vec<usize>,
@@ -224,7 +267,7 @@ impl ActionTrait for CredentialOffersSelected {
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export)]
+#[ts(export, export_to = "bindings/actions/UpdateCredentialMetadata.ts")]
 pub struct UpdateCredentialMetadata {
     #[ts(type = "string")]
     pub id: uuid::Uuid,
@@ -246,7 +289,7 @@ impl ActionTrait for UpdateCredentialMetadata {
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export)]
+#[ts(export, export_to = "bindings/actions/CancelUserJourney.ts")]
 pub struct CancelUserJourney;
 
 #[typetag::serde(name = "[User Journey] Cancel")]
@@ -257,7 +300,7 @@ impl ActionTrait for CancelUserJourney {
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export)]
+#[ts(export, export_to = "bindings/actions/UserDataQuery.ts")]
 pub struct UserDataQuery {
     pub target: QueryTarget,
     #[ts(optional)]

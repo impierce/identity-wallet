@@ -24,5 +24,5 @@ export const languages: { locale: string; displayName: string }[] = [
 export const setNextLanguage = (current: Locale) => {
   const locales = languages.map((l) => l.locale);
   const next: string = locales[(locales.indexOf(current) + 1) % locales.length];
-  dispatch({ type: '[Settings] Set locale', locale: next });
+  dispatch({ type: '[Settings] Set locale', payload: { locale: next } });
 };
