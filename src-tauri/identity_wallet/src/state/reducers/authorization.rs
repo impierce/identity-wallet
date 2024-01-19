@@ -29,7 +29,10 @@ pub enum ConnectionRequest {
 pub async fn read_authorization_request(state: AppState, action: Action) -> Result<AppState, AppError> {
     info!("read_authorization_request");
 
-    if let Some(qr_code_scanned) = listen::<QrCodeScanned>(action).map(|payload| payload.form_urlencoded) {
+    if let Some(qr_code_scanned) = listen::<QrCodeScanned>(action)
+        .map(|payload| payload.form_urlencoded)
+        .filter(|s| !s.starts_with("openid-credential-offer"))
+    {
         let state_guard = state.managers.lock().await;
         let stronghold_manager = state_guard
             .stronghold_manager
