@@ -16,7 +16,7 @@ android {
     namespace = "com.impierce.unime"
     defaultConfig {
         manifestPlaceholders["usesCleartextTraffic"] = "false"
-        applicationId = "com.impierce.unime"
+        applicationId = "com.impierce.identity_wallet"
         minSdk = 24
         targetSdk = 33
         versionCode = 1
@@ -43,7 +43,7 @@ android {
             }
         }
         getByName("release") {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 *fileTree(".") { include("**/*.pro") }
                     .plus(getDefaultProguardFile("proguard-android-optimize.txt"))
