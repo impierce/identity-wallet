@@ -26,6 +26,7 @@
             "iOS": {
                 "developmentTeam": "Impierce Technologies B.V."
             },
+            "android": {},
             "resources": [
                 "resources/*"
             ]
