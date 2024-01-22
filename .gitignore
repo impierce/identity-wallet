@@ -14,3 +14,8 @@ target/
 # OS-generated files
 .DS_Store
 .snapshot
+
+**/target/
+**/.cargo
+**/unime/src-tauri/Cargo.lock
+!Cargo.lock
