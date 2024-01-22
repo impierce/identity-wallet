@@ -8,15 +8,8 @@ tauri = { version = "=2.0.0-alpha.21", features = [
     "rustls-tls",
 ] }
 
-#oid4vc-manager = { git = "https://git@github.com/impierce/openid4vc.git", rev = "ebd7a83f8494d55b57f569e43e3001d32cda583a" }
-#siopv2 = { git = "https://git@github.com/impierce/openid4vc.git", rev = "ebd7a83f8494d55b57f569e43e3001d32cda583a" }
-#oid4vci = { git = "https://git@github.com/impierce/openid4vc.git", rev = "ebd7a83f8494d55b57f569e43e3001d32cda583a" }
-#oid4vc-core = { git = "https://git@github.com/impierce/openid4vc.git", rev = "ebd7a83f8494d55b57f569e43e3001d32cda583a" }
-#oid4vp = { git = "https://git@github.com/impierce/openid4vc.git", rev = "ebd7a83f8494d55b57f569e43e3001d32cda583a" }
-
-#oid4vc = { git = "https://git@github.com/impierce/openid4vc.git", rev = "ebd7a83f8494d55b57f569e43e3001d32cda583a" }
-#oid4vc = { path = "../openid4vc" }
 oid4vc = { git = "https://git@github.com/impierce/openid4vc.git", branch = "feat/refactor-request-timeout" }
+
 log = "^0.4"
 serde_json = "1.0"
 did-key = "0.2.1"
