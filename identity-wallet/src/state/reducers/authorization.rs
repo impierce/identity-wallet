@@ -15,7 +15,7 @@ use oid4vc::oid4vc_manager::managers::presentation::create_presentation_submissi
 use oid4vc::oid4vci::credential_format_profiles::{
     w3c_verifiable_credentials::jwt_vc_json::JwtVcJson, Credential, CredentialFormats,
 };
-use oid4vc::oid4vp::oid4vp::{evaluate_input, OID4VP};
+use oid4vc::oid4vp::{evaluate_input, oid4vp::OID4VP};
 use oid4vc::siopv2::siopv2::SIOPv2;
 use serde::{Deserialize, Serialize};
 
@@ -29,7 +29,10 @@ pub enum ConnectionRequest {
 pub async fn read_authorization_request(state: AppState, action: Action) -> Result<AppState, AppError> {
     info!("read_authorization_request");
 
-    if let Some(qr_code_scanned) = listen::<QrCodeScanned>(action).map(|payload| payload.form_urlencoded) {
+    if let Some(qr_code_scanned) = listen::<QrCodeScanned>(action)
+        .map(|payload| payload.form_urlencoded)
+        .filter(|s| !s.starts_with("openid-credential-offer"))
+    {
         let state_guard = state.managers.lock().await;
         let stronghold_manager = state_guard
             .stronghold_manager

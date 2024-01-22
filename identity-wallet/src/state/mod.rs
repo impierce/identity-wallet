@@ -91,23 +91,6 @@ pub struct Connection {
     pub last_interacted: String,
 }
 
-#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq)]
-#[ts(export)]
-pub enum QueryTarget {
-    Credentials,
-    Connections,
-}
-
-#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq)]
-#[ts(export)]
-pub enum SortMethod {
-    NameAZ,
-    IssuanceNewOld,
-    AddedNewOld,
-    FirstInteractedNewOld,
-    LastInteractedNewOld,
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;

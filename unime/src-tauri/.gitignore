@@ -1,5 +1,3 @@
-target/
-
 gen/*
 !gen/apple/unime_iOS/Info.plist
 !gen/apple/ExportOptions.plist

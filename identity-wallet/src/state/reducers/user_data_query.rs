@@ -1,6 +1,6 @@
 use crate::error::AppError;
-use crate::state::actions::{listen, Action, UserDataQuery};
-use crate::state::{AppState, Connection, QueryTarget, SortMethod};
+use crate::state::actions::{listen, Action, QueryTarget, SortMethod, UserDataQuery};
+use crate::state::{AppState, Connection};
 use crate::verifiable_credential_record::DisplayCredential;
 use itertools::concat;
 
@@ -144,11 +144,14 @@ pub async fn connection_query(state: AppState, action: Action) -> Result<AppStat
 mod tests {
     use std::{sync::Arc, vec};
 
-    use oid4vci::credential_format_profiles::{
+    use oid4vc::oid4vci::credential_format_profiles::{
         w3c_verifiable_credentials::jwt_vc_json::JwtVcJson, CredentialFormats, Profile,
     };
 
-    use crate::verifiable_credential_record::{CredentialDisplay, CredentialMetadata, DisplayCredential};
+    use crate::{
+        state::actions::QueryTarget,
+        verifiable_credential_record::{CredentialDisplay, CredentialMetadata, DisplayCredential},
+    };
 
     use super::*;
 

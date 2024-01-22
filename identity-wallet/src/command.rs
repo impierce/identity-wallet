@@ -9,13 +9,6 @@ use itertools::Itertools;
 use log::{debug, error, info, warn};
 use tauri::Manager;
 
-pub async fn cancel_user_journey(state: AppState, _action: Action) -> Result<AppState, AppError> {
-    Ok(AppState {
-        user_journey: None,
-        ..state
-    })
-}
-
 /// This function represents the root reducer of the application. It will delegate the state update to the reducers that
 /// are listening to the action.
 async fn reduce(state: AppState, action: Action) -> Result<AppState, AppError> {

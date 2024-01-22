@@ -2,6 +2,7 @@
 name = "identity_wallet"
 version = "0.4.7"
 edition = "2021"
+rust-version = "1.75.0"
 
 [lib]
 name = "identity_wallet"
@@ -50,4 +51,4 @@ wiremock.workspace = true
 serial_test.workspace = true
 tempfile.workspace = true
 
-tauri = { version = "=2.0.0-alpha.20", features = ["rustls-tls", "test"] }
+tauri = { version = "=2.0.0-alpha.21", features = ["rustls-tls", "test"] }
