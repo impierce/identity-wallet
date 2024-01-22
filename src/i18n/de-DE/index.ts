@@ -113,6 +113,7 @@ const de = {
       NAVBAR_TITLE: 'App-Einstellungen',
       LANGUAGE: {
         TITLE: 'Sprache',
+        NAVBAR_TITLE: 'Sprache auswählen',
       },
       THEME: {
         TITLE: 'Erscheinungsbild',

@@ -1,31 +1,14 @@
 <script lang="ts">
-  import type { SvelteComponent } from 'svelte';
-
-  import type { SvelteHTMLElements } from 'svelte/elements';
-
   import { melt } from '@melt-ui/svelte';
 
+  import { locales } from '$lib/app/locales';
   import Button from '$lib/components/atoms/Button.svelte';
   import BottomDrawer from '$lib/components/molecules/dialogs/BottomDrawer.svelte';
   import { dispatch } from '$lib/dispatcher';
   import LL from '$src/i18n/i18n-svelte';
   import { state } from '$src/stores';
 
-  import DE from '~icons/flag/de-1x1';
-  import NL from '~icons/flag/nl-1x1';
-  import US from '~icons/flag/us-1x1';
-
-  const languages: {
-    locale: string;
-    flag: typeof SvelteComponent<SvelteHTMLElements['svg']>;
-    displayName: string;
-  }[] = [
-    { locale: 'en', flag: US, displayName: 'English (US)' },
-    { locale: 'nl', flag: NL, displayName: 'Nederlands' },
-    { locale: 'de', flag: DE, displayName: 'Deutsch' },
-  ];
-
-  $: selected = languages.find((l) => l.locale === $state?.locale) ?? languages.at(0)!!;
+  $: selected = locales.find((l) => l.locale === $state?.locale) ?? locales.at(0)!!;
 
   let isOpen = false;
 </script>
@@ -45,20 +28,20 @@
   </button>
 
   <div slot="content" class="flex w-full flex-col space-y-[5px]">
-    {#each languages as language}
+    {#each locales as l}
       <button
         on:click={() => {
-          dispatch({ type: '[Settings] Set locale', locale: language.locale });
+          dispatch({ type: '[Settings] Set locale', locale: l.locale });
           isOpen = false;
         }}
-        class="flex items-center rounded-lg p-[10px] {language.locale === selected.locale
+        class="flex items-center rounded-lg p-[10px] {l.locale === selected.locale
           ? 'border border-grey bg-silver dark:border-blue dark:bg-navy'
           : ''}"
       >
         <div class="pr-[10px]">
-          <svelte:component this={language.flag} class="h-5 w-5 rounded-full" />
+          <svelte:component this={l.flag} class="h-5 w-5 rounded-full" />
         </div>
-        <div class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">{language.displayName}</div>
+        <div class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">{l.displayName}</div>
       </button>
     {/each}
   </div>

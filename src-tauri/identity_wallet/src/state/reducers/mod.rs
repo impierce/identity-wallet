@@ -216,8 +216,8 @@ mod tests {
     fn test_set_locale() {
         let mut state = AppState::default();
 
-        assert!(set_locale(&mut state, Action::SetLocale { locale: Locale::Nl }).is_ok());
-        assert_eq!(state.locale, Locale::Nl);
+        assert!(set_locale(&mut state, Action::SetLocale { locale: Locale::nl_NL }).is_ok());
+        assert_eq!(state.locale, Locale::nl_NL);
     }
 
     #[test]

@@ -6,9 +6,11 @@ export type BaseTranslation = BaseTranslationType
 export type BaseLocale = 'en'
 
 export type Locales =
-	| 'de'
+	| 'de-DE'
 	| 'en'
-	| 'nl'
+	| 'en-GB'
+	| 'en-US'
+	| 'nl-NL'
 
 export type Translation = RootTranslation
 
@@ -322,6 +324,10 @@ type RootTranslation = {
 				 * L​a​n​g​u​a​g​e
 				 */
 				TITLE: string
+				/**
+				 * S​e​l​e​c​t​ ​L​a​n​g​u​a​g​e
+				 */
+				NAVBAR_TITLE: string
 			}
 			THEME: {
 				/**
@@ -953,6 +959,10 @@ export type TranslationFunctions = {
 				 * Language
 				 */
 				TITLE: () => LocalizedString
+				/**
+				 * Select Language
+				 */
+				NAVBAR_TITLE: () => LocalizedString
 			}
 			THEME: {
 				/**

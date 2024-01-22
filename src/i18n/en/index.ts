@@ -112,6 +112,7 @@ const en = {
       NAVBAR_TITLE: 'App Settings',
       LANGUAGE: {
         TITLE: 'Language',
+        NAVBAR_TITLE: 'Select Language',
       },
       THEME: {
         TITLE: 'Theme',

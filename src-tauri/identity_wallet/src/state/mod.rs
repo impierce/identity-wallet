@@ -58,14 +58,20 @@ pub struct AppState {
 #[derive(Default)]
 pub struct AppStateContainer(pub tokio::sync::Mutex<AppState>);
 
+/// Format of a locale string: `ll_CC` - where ll is the language code (ISO 639) and CC is the country code (ISO 3166).
 #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default, EnumString)]
-#[serde(rename_all = "lowercase")]
 #[ts(export)]
+#[allow(non_camel_case_types)]
 pub enum Locale {
     #[default]
-    En,
-    De,
-    Nl,
+    #[serde(rename = "en-US")]
+    en_US,
+    #[serde(rename = "en-GB")]
+    en_GB,
+    #[serde(rename = "de-DE")]
+    de_DE,
+    #[serde(rename = "nl-NL")]
+    nl_NL,
 }
 
 /// A profile of the current user.
@@ -134,7 +140,7 @@ mod tests {
                 theme: None,
                 primary_did: "did:example:123".to_string(),
             }),
-            locale: Locale::En,
+            locale: Locale::en_US,
             credentials: vec![],
             current_user_prompt: Some(CurrentUserPrompt::Redirect {
                 target: "me".to_string(),
