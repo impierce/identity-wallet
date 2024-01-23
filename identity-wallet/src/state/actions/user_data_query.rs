@@ -31,8 +31,8 @@ pub struct UserDataQuery {
     pub search_term: Option<String>,
     #[ts(optional)]
     pub sort_method: Option<SortMethod>,
-    #[serde(default)]
-    pub sort_reverse: bool,
+    #[ts(optional)]
+    pub sort_reverse: Option<bool>,
 }
 
 #[typetag::serde(name = "[User Data] Query")]
