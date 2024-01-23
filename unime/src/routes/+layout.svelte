@@ -1,5 +1,4 @@
 <script lang="ts">
-  import './safe-logging.ts';
   import '../app.css';
 
   import { onMount } from 'svelte';
