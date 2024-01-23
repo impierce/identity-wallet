@@ -56,7 +56,11 @@ pub async fn credential_query(state: AppState, action: Action) -> Result<AppStat
 
             let mut sorted_credentials: Vec<String> = creds.iter().map(|s| s.id.clone()).collect();
 
-            query.sort_reverse.then(|| sorted_credentials.reverse());
+            query.sort_reverse.map(|sort_reverse| {
+                if sort_reverse {
+                    sorted_credentials.reverse();
+                }
+            });
 
             if user_data_query.is_empty() && query.search_term.is_none() {
                 sorted_credentials
@@ -118,7 +122,11 @@ pub async fn connection_query(state: AppState, action: Action) -> Result<AppStat
 
             let mut sorted_connect: Vec<String> = connections.iter().map(|s| s.client_name.clone()).collect();
 
-            query.sort_reverse.then(|| sorted_connect.reverse());
+            query.sort_reverse.map(|sort_reverse| {
+                if sort_reverse {
+                    sorted_connect.reverse();
+                }
+            });
 
             if user_data_query.is_empty() && query.search_term.is_none() {
                 sorted_connect
@@ -178,7 +186,7 @@ mod tests {
                 target: QueryTarget::Credentials,
                 search_term: Some("".to_string()),
                 sort_method: None,
-                sort_reverse: false,
+                sort_reverse: None,
             }) as Action,
         )
         .await
@@ -192,7 +200,7 @@ mod tests {
                 target: QueryTarget::Credentials,
                 search_term: Some("John".to_string()),
                 sort_method: None,
-                sort_reverse: false,
+                sort_reverse: None,
             }) as Action,
         )
         .await
@@ -206,7 +214,7 @@ mod tests {
                 target: QueryTarget::Credentials,
                 search_term: None,
                 sort_method: Some(SortMethod::NameAZ),
-                sort_reverse: false,
+                sort_reverse: None,
             }) as Action,
         )
         .await

@@ -25,8 +25,7 @@
           type: '[User Data] Query',
           payload: {
             target: 'Credentials',
-            search_term: e.detail,
-            sort_reverse: false,
+            search_term: e.detail
           }
         });
       }}
