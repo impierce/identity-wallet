@@ -1,263 +1,269 @@
-// use crate::common::test_managers;
-// use identity_wallet::oid4vci::credential_format_profiles::{
-//     w3c_verifiable_credentials::jwt_vc_json::{self, JwtVcJson},
-//     CredentialFormats, Parameters, WithParameters,
-// };
-// use identity_wallet::oid4vci::credential_issuer::{
-//     credential_issuer_metadata::CredentialIssuerMetadata, credentials_supported::CredentialsSupportedObject,
-// };
-// use identity_wallet::oid4vci::credential_offer::{CredentialOffer, CredentialOfferQuery, CredentialsObject};
-// use identity_wallet::state::{actions::Action::*, reducers::credential_offer::read_credential_offer, AppState};
-// use identity_wallet::ASSETS_DIR;
-// use serde_json::json;
-// use std::borrow::BorrowMut;
-// use tempfile::TempDir;
-// use url::Url;
-// use wiremock::matchers::{method, path};
-// use wiremock::{Mock, MockServer, ResponseTemplate};
+use crate::common::test_managers;
+use identity_wallet::oid4vci::credential_issuer::{
+    credential_issuer_metadata::CredentialIssuerMetadata, credentials_supported::CredentialsSupportedObject,
+};
+use identity_wallet::oid4vci::credential_offer::{CredentialOffer, CredentialOfferQuery, CredentialsObject};
+use identity_wallet::state::{reducers::credential_offer::read_credential_offer, AppState};
+use identity_wallet::ASSETS_DIR;
+use identity_wallet::{
+    oid4vci::credential_format_profiles::{
+        w3c_verifiable_credentials::jwt_vc_json::{self, JwtVcJson},
+        CredentialFormats, Parameters, WithParameters,
+    },
+    state::actions::{Action, QrCodeScanned},
+};
+use serde_json::json;
+use std::sync::Arc;
+use tempfile::TempDir;
+use url::Url;
+use wiremock::matchers::{method, path};
+use wiremock::{Mock, MockServer, ResponseTemplate};
 
-// #[tokio::test]
-// #[serial_test::serial]
-// async fn download_credential_logo() {
-//     *ASSETS_DIR.lock().unwrap() = TempDir::new().unwrap().into_path();
+#[tokio::test]
+#[serial_test::serial]
+async fn download_credential_logo() {
+    *ASSETS_DIR.lock().unwrap() = TempDir::new().unwrap().into_path();
 
-//     let mock_server = MockServer::start().await;
-//     Mock::given(method("GET"))
-//         .and(path("/offer/1"))
-//         .respond_with(
-//             ResponseTemplate::new(200).set_body_json(CredentialOffer::<CredentialFormats> {
-//                 credential_issuer: format!("{}", &mock_server.uri()).parse().unwrap(),
-//                 credentials: vec![CredentialsObject::ByReference("UniversityDegreeCredential".to_string())],
-//                 grants: None,
-//             }),
-//         )
-//         .expect(1)
-//         .mount(&mock_server)
-//         .await;
+    let mock_server = MockServer::start().await;
+    Mock::given(method("GET"))
+        .and(path("/offer/1"))
+        .respond_with(
+            ResponseTemplate::new(200).set_body_json(CredentialOffer::<CredentialFormats> {
+                credential_issuer: format!("{}", &mock_server.uri()).parse().unwrap(),
+                credentials: vec![CredentialsObject::ByReference("UniversityDegreeCredential".to_string())],
+                grants: None,
+            }),
+        )
+        .expect(1)
+        .mount(&mock_server)
+        .await;
 
-//     Mock::given(method("GET"))
-//         .and(path("/.well-known/openid-credential-issuer"))
-//         .respond_with(ResponseTemplate::new(200).set_body_json(CredentialIssuerMetadata {
-//             credential_endpoint: Url::parse("https://server.example.com/credential").unwrap(),
-//             credentials_supported: vec![CredentialsSupportedObject {
-//                     id: None,
-//                     credential_format: CredentialFormats::<WithParameters>::JwtVcJson(Parameters {
-//                         format: JwtVcJson,
-//                         parameters: (
-//                             jwt_vc_json::CredentialDefinition {
-//                                 type_: vec![
-//                                     "VerifiableCredential".to_string(),
-//                                     "UniversityDegreeCredential".to_string(),
-//                                 ],
-//                                 credential_subject: None,
-//                             },
-//                             None,
-//                         )
-//                             .into(),
-//                     }),
-//                     scope: Some("UniversityDegreeCredential".to_string()),
-//                     cryptographic_binding_methods_supported: Some(vec!["did".to_string()]),
-//                     cryptographic_suites_supported: Some(vec!["ES256K".to_string()]),
-//                     proof_types_supported: None,
-//                     display: Some(vec![json!({
-//                         "name": "University Credential",
-//                         "locale": "en-US",
-//                         "logo": {
-//                             "url": format!("{}/logo/credential.svg", &mock_server.uri()),
-//                             "alternative_text": "a square logo of a university"
-//                         },
-//                         "background_color": "#12107c",
-//                         "text_color": "#FFFFFF"
-//                     })]),
-//                 }],
-//             credential_issuer: "https://server.example.com".parse().unwrap(),
-//             authorization_server: None,
-//             batch_credential_endpoint: None,
-//             deferred_credential_endpoint: None,
-//             display: None,
-//         }))
-//         .expect(1)
-//         .mount(&mock_server)
-//         .await;
+    Mock::given(method("GET"))
+        .and(path("/.well-known/openid-credential-issuer"))
+        .respond_with(ResponseTemplate::new(200).set_body_json(CredentialIssuerMetadata {
+            credential_endpoint: Url::parse("https://server.example.com/credential").unwrap(),
+            credentials_supported: vec![CredentialsSupportedObject {
+                    id: None,
+                    credential_format: CredentialFormats::<WithParameters>::JwtVcJson(Parameters {
+                        format: JwtVcJson,
+                        parameters: (
+                            jwt_vc_json::CredentialDefinition {
+                                type_: vec![
+                                    "VerifiableCredential".to_string(),
+                                    "UniversityDegreeCredential".to_string(),
+                                ],
+                                credential_subject: None,
+                            },
+                            None,
+                        )
+                            .into(),
+                    }),
+                    scope: Some("UniversityDegreeCredential".to_string()),
+                    cryptographic_binding_methods_supported: Some(vec!["did".to_string()]),
+                    cryptographic_suites_supported: Some(vec!["ES256K".to_string()]),
+                    proof_types_supported: None,
+                    display: Some(vec![json!({
+                        "name": "University Credential",
+                        "locale": "en-US",
+                        "logo": {
+                            "url": format!("{}/logo/credential.svg", &mock_server.uri()),
+                            "alternative_text": "a square logo of a university"
+                        },
+                        "background_color": "#12107c",
+                        "text_color": "#FFFFFF"
+                    })]),
+                }],
+            credential_issuer: "https://server.example.com".parse().unwrap(),
+            authorization_server: None,
+            batch_credential_endpoint: None,
+            deferred_credential_endpoint: None,
+            display: None,
+        }))
+        .expect(1)
+        .mount(&mock_server)
+        .await;
 
-//     Mock::given(method("GET"))
-//         .and(path("/logo/credential.svg"))
-//         .respond_with(
-//             ResponseTemplate::new(200).set_body_raw(include_bytes!("../res/planet.svg").to_vec(), "image/svg+xml"),
-//         )
-//         .expect(1)
-//         .mount(&mock_server)
-//         .await;
+    Mock::given(method("GET"))
+        .and(path("/logo/credential.svg"))
+        .respond_with(
+            ResponseTemplate::new(200).set_body_raw(include_bytes!("../res/planet.svg").to_vec(), "image/svg+xml"),
+        )
+        .expect(1)
+        .mount(&mock_server)
+        .await;
 
-//     let mut state = AppState {
-//         managers: test_managers(vec![]),
-//         ..AppState::default()
-//     };
+    let app_state = AppState {
+        managers: test_managers(vec![]),
+        ..AppState::default()
+    };
 
-//     assert!(read_credential_offer(
-//         state,
-//         ReadCredentialOffer {
-//             credential_offer_uri: CredentialOfferQuery::CredentialOfferUri(
-//                 format!("{}/offer/1", &mock_server.uri()).parse().unwrap()
-//             )
-//         },
-//     )
-//     .await
-//     .is_ok());
-// }
+    assert!(read_credential_offer(
+        app_state,
+        Arc::new(QrCodeScanned {
+            form_urlencoded: CredentialOfferQuery::<CredentialFormats>::CredentialOfferUri(
+                format!("{}/offer/1", &mock_server.uri()).parse().unwrap()
+            )
+            .to_string()
+        }) as Action,
+    )
+    .await
+    .is_ok());
+}
 
-// #[tokio::test]
-// #[serial_test::serial]
-// async fn download_issuer_logo() {
-//     *ASSETS_DIR.lock().unwrap() = TempDir::new().unwrap().into_path();
+#[tokio::test]
+#[serial_test::serial]
+async fn download_issuer_logo() {
+    *ASSETS_DIR.lock().unwrap() = TempDir::new().unwrap().into_path();
 
-//     let mock_server = MockServer::start().await;
-//     Mock::given(method("GET"))
-//         .and(path("/offer/1"))
-//         .respond_with(
-//             ResponseTemplate::new(200).set_body_json(CredentialOffer::<CredentialFormats> {
-//                 credential_issuer: format!("{}", &mock_server.uri()).parse().unwrap(),
-//                 credentials: vec![CredentialsObject::ByReference("UniversityDegreeCredential".to_string())],
-//                 grants: None,
-//             }),
-//         )
-//         .expect(1)
-//         .mount(&mock_server)
-//         .await;
+    let mock_server = MockServer::start().await;
+    Mock::given(method("GET"))
+        .and(path("/offer/1"))
+        .respond_with(
+            ResponseTemplate::new(200).set_body_json(CredentialOffer::<CredentialFormats> {
+                credential_issuer: format!("{}", &mock_server.uri()).parse().unwrap(),
+                credentials: vec![CredentialsObject::ByReference("UniversityDegreeCredential".to_string())],
+                grants: None,
+            }),
+        )
+        .expect(1)
+        .mount(&mock_server)
+        .await;
 
-//     Mock::given(method("GET"))
-//         .and(path("/.well-known/openid-credential-issuer"))
-//         .respond_with(ResponseTemplate::new(200).set_body_json(CredentialIssuerMetadata {
-//             credential_endpoint: Url::parse("https://server.example.com/credential").unwrap(),
-//             credentials_supported: vec![CredentialsSupportedObject {
-//                     id: None,
-//                     credential_format: CredentialFormats::<WithParameters>::JwtVcJson(Parameters {
-//                         format: JwtVcJson,
-//                         parameters: (
-//                             jwt_vc_json::CredentialDefinition {
-//                                 type_: vec![
-//                                     "VerifiableCredential".to_string(),
-//                                     "UniversityDegreeCredential".to_string(),
-//                                 ],
-//                                 credential_subject: None,
-//                             },
-//                             None,
-//                         )
-//                             .into(),
-//                     }),
-//                     scope: Some("UniversityDegreeCredential".to_string()),
-//                     cryptographic_binding_methods_supported: Some(vec!["did".to_string()]),
-//                     cryptographic_suites_supported: Some(vec!["ES256K".to_string()]),
-//                     proof_types_supported: None,
-//                     display: None,
-//                 }],
-//             credential_issuer: "https://server.example.com".parse().unwrap(),
-//             authorization_server: None,
-//             batch_credential_endpoint: None,
-//             deferred_credential_endpoint: None,
-//             display: Some(vec![json!({
-//                 "client_name": "University",
-//                 "logo_uri": format!("{}/logo/issuer.png", &mock_server.uri()),
-//             })]),
-//         }))
-//         .expect(1)
-//         .mount(&mock_server)
-//         .await;
+    Mock::given(method("GET"))
+        .and(path("/.well-known/openid-credential-issuer"))
+        .respond_with(ResponseTemplate::new(200).set_body_json(CredentialIssuerMetadata {
+            credential_endpoint: Url::parse("https://server.example.com/credential").unwrap(),
+            credentials_supported: vec![CredentialsSupportedObject {
+                    id: None,
+                    credential_format: CredentialFormats::<WithParameters>::JwtVcJson(Parameters {
+                        format: JwtVcJson,
+                        parameters: (
+                            jwt_vc_json::CredentialDefinition {
+                                type_: vec![
+                                    "VerifiableCredential".to_string(),
+                                    "UniversityDegreeCredential".to_string(),
+                                ],
+                                credential_subject: None,
+                            },
+                            None,
+                        )
+                            .into(),
+                    }),
+                    scope: Some("UniversityDegreeCredential".to_string()),
+                    cryptographic_binding_methods_supported: Some(vec!["did".to_string()]),
+                    cryptographic_suites_supported: Some(vec!["ES256K".to_string()]),
+                    proof_types_supported: None,
+                    display: None,
+                }],
+            credential_issuer: "https://server.example.com".parse().unwrap(),
+            authorization_server: None,
+            batch_credential_endpoint: None,
+            deferred_credential_endpoint: None,
+            display: Some(vec![json!({
+                "client_name": "University",
+                "logo_uri": format!("{}/logo/issuer.png", &mock_server.uri()),
+            })]),
+        }))
+        .expect(1)
+        .mount(&mock_server)
+        .await;
 
-//     Mock::given(method("GET"))
-//         .and(path("/logo/issuer.png"))
-//         .respond_with(ResponseTemplate::new(200).set_body_raw(include_bytes!("../res/unime.png").to_vec(), "image/png"))
-//         .expect(1)
-//         .mount(&mock_server)
-//         .await;
+    Mock::given(method("GET"))
+        .and(path("/logo/issuer.png"))
+        .respond_with(ResponseTemplate::new(200).set_body_raw(include_bytes!("../res/unime.png").to_vec(), "image/png"))
+        .expect(1)
+        .mount(&mock_server)
+        .await;
 
-//     let mut state = AppState {
-//         managers: test_managers(vec![]),
-//         ..AppState::default()
-//     };
+    let app_state = AppState {
+        managers: test_managers(vec![]),
+        ..AppState::default()
+    };
 
-//     assert!(read_credential_offer(
-//         state,
-//         ReadCredentialOffer {
-//             credential_offer_uri: CredentialOfferQuery::CredentialOfferUri(
-//                 format!("{}/offer/1", &mock_server.uri()).parse().unwrap()
-//             )
-//         },
-//     )
-//     .await
-//     .is_ok());
-// }
+    assert!(read_credential_offer(
+        app_state,
+        Arc::new(QrCodeScanned {
+            form_urlencoded: CredentialOfferQuery::<CredentialFormats>::CredentialOfferUri(
+                format!("{}/offer/1", &mock_server.uri()).parse().unwrap()
+            )
+            .to_string()
+        }) as Action,
+    )
+    .await
+    .is_ok());
+}
 
-// #[tokio::test]
-// #[serial_test::serial]
-// async fn no_download_when_no_logo_in_metadata() {
-//     *ASSETS_DIR.lock().unwrap() = TempDir::new().unwrap().into_path();
+#[tokio::test]
+#[serial_test::serial]
+async fn no_download_when_no_logo_in_metadata() {
+    *ASSETS_DIR.lock().unwrap() = TempDir::new().unwrap().into_path();
 
-//     let mock_server = MockServer::start().await;
-//     Mock::given(method("GET"))
-//         .and(path("/offer/1"))
-//         .respond_with(
-//             ResponseTemplate::new(200).set_body_json(CredentialOffer::<CredentialFormats> {
-//                 credential_issuer: format!("{}", &mock_server.uri()).parse().unwrap(),
-//                 credentials: vec![CredentialsObject::ByReference("UniversityDegreeCredential".to_string())],
-//                 grants: None,
-//             }),
-//         )
-//         .expect(1)
-//         .mount(&mock_server)
-//         .await;
+    let mock_server = MockServer::start().await;
+    Mock::given(method("GET"))
+        .and(path("/offer/1"))
+        .respond_with(
+            ResponseTemplate::new(200).set_body_json(CredentialOffer::<CredentialFormats> {
+                credential_issuer: format!("{}", &mock_server.uri()).parse().unwrap(),
+                credentials: vec![CredentialsObject::ByReference("UniversityDegreeCredential".to_string())],
+                grants: None,
+            }),
+        )
+        .expect(1)
+        .mount(&mock_server)
+        .await;
 
-//     Mock::given(method("GET"))
-//         .and(path("/.well-known/openid-credential-issuer"))
-//         .respond_with(ResponseTemplate::new(200).set_body_json(CredentialIssuerMetadata {
-//             credential_endpoint: Url::parse("https://server.example.com/credential").unwrap(),
-//             credentials_supported: vec![CredentialsSupportedObject {
-//                     id: None,
-//                     credential_format: CredentialFormats::<WithParameters>::JwtVcJson(Parameters {
-//                         format: JwtVcJson,
-//                         parameters: (
-//                             jwt_vc_json::CredentialDefinition {
-//                                 type_: vec![
-//                                     "VerifiableCredential".to_string(),
-//                                     "UniversityDegreeCredential".to_string(),
-//                                 ],
-//                                 credential_subject: None,
-//                             },
-//                             None,
-//                         )
-//                             .into(),
-//                     }),
-//                     scope: Some("UniversityDegreeCredential".to_string()),
-//                     cryptographic_binding_methods_supported: Some(vec!["did".to_string()]),
-//                     cryptographic_suites_supported: Some(vec!["ES256K".to_string()]),
-//                     proof_types_supported: None,
-//                     display: None,
-//                 }],
-//             credential_issuer: "https://server.example.com".parse().unwrap(),
-//             authorization_server: None,
-//             batch_credential_endpoint: None,
-//             deferred_credential_endpoint: None,
-//             display: None,
-//         }))
-//         .expect(1)
-//         .mount(&mock_server)
-//         .await;
+    Mock::given(method("GET"))
+        .and(path("/.well-known/openid-credential-issuer"))
+        .respond_with(ResponseTemplate::new(200).set_body_json(CredentialIssuerMetadata {
+            credential_endpoint: Url::parse("https://server.example.com/credential").unwrap(),
+            credentials_supported: vec![CredentialsSupportedObject {
+                    id: None,
+                    credential_format: CredentialFormats::<WithParameters>::JwtVcJson(Parameters {
+                        format: JwtVcJson,
+                        parameters: (
+                            jwt_vc_json::CredentialDefinition {
+                                type_: vec![
+                                    "VerifiableCredential".to_string(),
+                                    "UniversityDegreeCredential".to_string(),
+                                ],
+                                credential_subject: None,
+                            },
+                            None,
+                        )
+                            .into(),
+                    }),
+                    scope: Some("UniversityDegreeCredential".to_string()),
+                    cryptographic_binding_methods_supported: Some(vec!["did".to_string()]),
+                    cryptographic_suites_supported: Some(vec!["ES256K".to_string()]),
+                    proof_types_supported: None,
+                    display: None,
+                }],
+            credential_issuer: "https://server.example.com".parse().unwrap(),
+            authorization_server: None,
+            batch_credential_endpoint: None,
+            deferred_credential_endpoint: None,
+            display: None,
+        }))
+        .expect(1)
+        .mount(&mock_server)
+        .await;
 
-//     // TODO: assert that function download_asset() is never called (through spy?)
+    // TODO: assert that function download_asset() is never called (through spy?)
 
-//     let mut state = AppState {
-//         managers: test_managers(vec![]),
-//         ..AppState::default()
-//     };
+    let app_state = AppState {
+        managers: test_managers(vec![]),
+        ..AppState::default()
+    };
 
-//     assert!(read_credential_offer(
-//         state,
-//         ReadCredentialOffer {
-//             credential_offer_uri: CredentialOfferQuery::CredentialOfferUri(
-//                 format!("{}/offer/1", &mock_server.uri()).parse().unwrap()
-//             )
-//         },
-//     )
-//     .await
-//     .is_ok());
-// }
+    assert!(read_credential_offer(
+        app_state,
+        Arc::new(QrCodeScanned {
+            form_urlencoded: CredentialOfferQuery::<CredentialFormats>::CredentialOfferUri(
+                format!("{}/offer/1", &mock_server.uri()).parse().unwrap(),
+            )
+            .to_string()
+        }) as Action,
+    )
+    .await
+    .is_ok());
+}
