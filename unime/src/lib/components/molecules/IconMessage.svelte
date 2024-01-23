@@ -22,8 +22,12 @@ Highlighted message with padded icon.
 -->
 <div class="flex flex-col items-center justify-center space-y-[15px] text-center">
   <PaddedIcon {icon} />
-  <p class="text-[22px]/[30px] font-semibold tracking-tight text-slate-700 dark:text-grey">{title}</p>
+  <p class="text-[22px]/[30px] font-semibold tracking-tight text-slate-700 dark:text-grey">
+    {title}
+  </p>
   {#if description}
-    <p class="w-[280px] text-[13px]/[24px] font-normal text-slate-500 dark:text-slate-300">{description}</p>
+    <p class="w-[280px] text-[13px]/[24px] font-normal text-slate-500 dark:text-slate-300">
+      {description}
+    </p>
   {/if}
 </div>

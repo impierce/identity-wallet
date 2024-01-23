@@ -21,12 +21,12 @@
     <Search
       on:value={(e) => {
         searchTerm = e.detail;
-        dispatch({ 
+        dispatch({
           type: '[User Data] Query',
           payload: {
             target: 'Credentials',
-            search_term: e.detail
-          }
+            search_term: e.detail,
+          },
         });
       }}
     ></Search>

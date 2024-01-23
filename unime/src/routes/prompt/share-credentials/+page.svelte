@@ -77,7 +77,7 @@
           type: '[Authenticate] Credentials selected',
           payload: {
             credential_uuids: selected_credentials.map((c) => c.id),
-          }
+          },
         })}
     />
     <Button

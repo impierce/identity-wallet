@@ -96,7 +96,7 @@
               payload: {
                 id: credential.id,
                 is_favorite: !isFavorite,
-              }
+              },
             })}
         >
           {#if isFavorite}
@@ -152,7 +152,9 @@
               iconClass="h-7 w-7 dark:text-slate-800"
             />
           </div>
-          <p class="text-xs text-black dark:text-white">{credential.data.issuer.name}</p>
+          <p class="text-xs text-black dark:text-white">
+            {credential.data.issuer.name}
+          </p>
         </div>
       </div>
 
@@ -172,7 +174,9 @@
         >
           {#each Object.entries(entries) as entry}
             <div class="flex flex-col items-start px-4 py-[10px]">
-              <p class="text-[13px]/[24px] font-medium text-slate-500">{entry[0]}</p>
+              <p class="text-[13px]/[24px] font-medium text-slate-500">
+                {entry[0]}
+              </p>
               <p class="break-words text-[13px]/[24px] font-medium text-slate-800 dark:text-white">
                 <!-- TODO: this is a hacky way to display nested data, but also to remove enclosing quotes for regular strings -->
                 {JSON.stringify(entry[1]).slice(1, -1)}
@@ -184,7 +188,9 @@
     </div>
 
     {#if $state.dev_mode_enabled}
-      <p class="py-5 text-center text-[13px]/[24px] text-slate-500">{JSON.stringify(credential.data.issuer)}</p>
+      <p class="py-5 text-center text-[13px]/[24px] text-slate-500">
+        {JSON.stringify(credential.data.issuer)}
+      </p>
     {/if}
   </div>
   <!-- </div> -->

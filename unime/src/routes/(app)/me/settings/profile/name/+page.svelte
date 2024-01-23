@@ -24,7 +24,10 @@
     <Button
       label={$LL.SETTINGS.PROFILE.PROFILE_NAME.CONFIRM()}
       on:click={async () => {
-        await dispatch({ type: '[Settings] Update profile', payload: { name } });
+        await dispatch({
+          type: '[Settings] Update profile',
+          payload: { name },
+        });
         goto('/me/settings');
       }}
       disabled={!!!name}

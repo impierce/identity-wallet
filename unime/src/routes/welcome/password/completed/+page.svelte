@@ -25,7 +25,9 @@
     </p>
   </div>
   <div class="flex flex-col items-center justify-center space-y-6 rounded-3xl bg-white p-5 dark:bg-dark">
-    <p class="text-[22px]/[30px] font-semibold text-primary">{$LL.ONBOARDING.PASSWORD.COMPLETED.MESSAGE_1()}</p>
+    <p class="text-[22px]/[30px] font-semibold text-primary">
+      {$LL.ONBOARDING.PASSWORD.COMPLETED.MESSAGE_1()}
+    </p>
     <div class="relative">
       <div class="relative z-10">
         <div class="text-[100px]/[100px]"><Shield class="text-primary" /></div>
@@ -65,7 +67,7 @@
           picture: $onboarding_state.picture ?? '',
           theme: $onboarding_state.theme ?? '',
           password: $onboarding_state.password ?? '',
-        }
+        },
       });
     }}
   />

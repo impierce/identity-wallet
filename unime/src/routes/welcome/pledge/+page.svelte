@@ -61,9 +61,12 @@
   <!-- <div class="mt-12 grow p-4" in:fly={{ x: 300, delay: 300 }} out:fly={{ x: -300, duration: 300 }}> -->
   <div class="px-2 pb-8 pt-4">
     <p class="pb-4 text-3xl font-semibold text-slate-700 dark:text-grey">
-      {$LL.ONBOARDING.PLEDGE.TITLE_1()} <span class="text-primary">{$LL.ONBOARDING.PLEDGE.TITLE_2()}</span>
+      {$LL.ONBOARDING.PLEDGE.TITLE_1()}
+      <span class="text-primary">{$LL.ONBOARDING.PLEDGE.TITLE_2()}</span>
     </p>
-    <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">{$LL.ONBOARDING.PLEDGE.SUBTITLE()}</p>
+    <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">
+      {$LL.ONBOARDING.PLEDGE.SUBTITLE()}
+    </p>
   </div>
   <!-- Accordion -->
   <div class="mx-auto flex max-w-full flex-col space-y-4" {...$root}>

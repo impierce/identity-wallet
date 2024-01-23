@@ -19,7 +19,6 @@ async fn reduce(state: AppState, action: Action) -> Result<AppState, AppError> {
         .map(|reducer| (reducer, action.clone()))
         .collect_vec();
 
-    // Apply the reducers to the state.
     #[allow(clippy::manual_try_fold)]
     futures::stream::iter(reducers)
         .fold(Ok(state), |app_state, (reducer, action)| async move {

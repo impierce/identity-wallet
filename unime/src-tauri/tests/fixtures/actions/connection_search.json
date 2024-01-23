@@ -1,7 +1,7 @@
 {
-    "type": "[User Data] Query",
-    "payload": {
-        "target": "Connections",
-        "search_term": "M"
-    }
+  "type": "[User Data] Query",
+  "payload": {
+    "target": "Connections",
+    "search_term": "M"
+  }
 }

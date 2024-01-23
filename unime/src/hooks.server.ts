@@ -1,5 +1,4 @@
 import type { Handle, HandleServerError } from '@sveltejs/kit';
-import { info } from '@tauri-apps/plugin-log';
 
 export const handle = (async ({ event, resolve }) => {
   // info(`hooks.server.ts: event.url: "${event.url}"`);

@@ -10,6 +10,7 @@ import { info } from '@tauri-apps/plugin-log';
  */
 export const dispatch = async (action: Action) => {
   info(`Dispatching action: ${JSON.stringify(action)}`);
+
   await invoke('handle_action', { action }).catch((err) => {
     console.error(err);
   });

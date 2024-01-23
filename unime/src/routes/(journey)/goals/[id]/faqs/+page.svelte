@@ -23,7 +23,9 @@
 </script>
 
 <div class="flex h-full flex-col items-center justify-evenly space-y-8 bg-silver p-6 dark:bg-navy">
-  <p class="text-center text-2xl font-semibold text-slate-700 dark:text-grey">{goal?.label}</p>
+  <p class="text-center text-2xl font-semibold text-slate-700 dark:text-grey">
+    {goal?.label}
+  </p>
 
   <div class="mx-auto flex w-full grow flex-col space-y-4" {...$root}>
     <!-- {#each items as { id, title, description }, i} -->

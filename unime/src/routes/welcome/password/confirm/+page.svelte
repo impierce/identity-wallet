@@ -58,10 +58,14 @@
     <div class="mt-8 flex items-center justify-center">
       {#if passwordsEqual}
         <Smiley class="mr-[10px] h-5 w-5 text-primary" />
-        <p class="text-[13px]/[24px] font-medium text-primary">{$LL.ONBOARDING.PASSWORD.CONFIRM.MATCH()}</p>
+        <p class="text-[13px]/[24px] font-medium text-primary">
+          {$LL.ONBOARDING.PASSWORD.CONFIRM.MATCH()}
+        </p>
       {:else}
         <SmileySad class="mr-[10px] h-5 w-5 text-rose-500" />
-        <p class="text-[13px]/[24px] font-medium text-rose-500">{$LL.ONBOARDING.PASSWORD.CONFIRM.NO_MATCH()}</p>
+        <p class="text-[13px]/[24px] font-medium text-rose-500">
+          {$LL.ONBOARDING.PASSWORD.CONFIRM.NO_MATCH()}
+        </p>
       {/if}
     </div>
   {/if}

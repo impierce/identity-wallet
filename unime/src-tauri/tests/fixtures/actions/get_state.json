@@ -1,4 +1,4 @@
 {
-    "type": "[App] Get state",
-    "payload": null
+  "type": "[App] Get state",
+  "payload": null
 }

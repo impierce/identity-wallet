@@ -28,12 +28,18 @@
       <EmojiAvatarSelect
         selected={$state?.active_profile?.picture ?? undefined}
         showEditButton={true}
-        on:change={(e) => dispatch({ type: '[Settings] Update profile', payload: { picture: e.detail } })}
+        on:change={(e) =>
+          dispatch({
+            type: '[Settings] Update profile',
+            payload: { picture: e.detail },
+          })}
       />
     </div>
     <!-- Account -->
     <div class="flex flex-col space-y-[10px]">
-      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">{$LL.SETTINGS.ACCOUNT()}</p>
+      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">
+        {$LL.SETTINGS.ACCOUNT()}
+      </p>
       <SettingsEntry
         icon={UserCircle}
         title={$LL.SETTINGS.PROFILE.TITLE()}
@@ -51,7 +57,9 @@
 
     <!-- Support -->
     <div class="flex flex-col space-y-[10px]">
-      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">{$LL.SETTINGS.SUPPORT.TITLE()}</p>
+      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">
+        {$LL.SETTINGS.SUPPORT.TITLE()}
+      </p>
       <SettingsEntry
         icon={Info}
         title={$LL.SETTINGS.SUPPORT.ABOUT.TITLE()}

@@ -21,6 +21,8 @@
   </div>
 {:else}
   <div class="flex h-full flex-col items-center justify-center">
-    <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">{$LL.CONNECTION.DATA.EMPTY()}</p>
+    <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">
+      {$LL.CONNECTION.DATA.EMPTY()}
+    </p>
   </div>
 {/if}

@@ -1,13 +1,15 @@
 <script lang="ts">
+  import './safe-logging.ts';
+  import '../app.css';
+
   import { onMount } from 'svelte';
 
   import { goto } from '$app/navigation';
   import { fly } from 'svelte/transition';
 
-  import { attachConsole, error, info, trace } from '@tauri-apps/plugin-log';
+  import { attachConsole } from '@tauri-apps/plugin-log';
 
   import { dispatch } from '$lib/dispatcher';
-  import LL from '$src/i18n/i18n-svelte';
   import { loadAllLocales } from '$src/i18n/i18n-util.sync';
   import { state } from '$src/stores';
 
@@ -16,13 +18,6 @@
   import CaretUp from '~icons/ph/caret-up-bold';
   import Trash from '~icons/ph/trash';
   import Warning from '~icons/ph/warning';
-
-  import '../app.css';
-
-  import { melt } from '@melt-ui/svelte';
-
-  import Button from '$src/lib/components/atoms/Button.svelte';
-  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
 
   import { determineTheme } from './utils';
 
@@ -110,7 +105,9 @@
       <p class="p-4 text-center text-xs font-semibold uppercase text-orange-800">debug messages</p>
       {#each $state.debug_messages as message}
         <div class="mx-2 mb-2 rounded bg-orange-200 p-2">
-          <div class="break-all font-mono text-xs text-orange-700">{message}</div>
+          <div class="break-all font-mono text-xs text-orange-700">
+            {message}
+          </div>
         </div>
       {/each}
     </div>

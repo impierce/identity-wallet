@@ -102,7 +102,7 @@
                 payload: {
                   id: credential.id,
                   is_favorite: !isFavorite,
-                }
+                },
               })}
           >
             {#if isFavorite}
@@ -152,7 +152,9 @@
       >
         {#each Object.entries(entries) as entry}
           <div class="flex flex-col items-start px-4 py-[10px]">
-            <p class="dark:text-300 text-[13px]/[24px] font-medium text-slate-500">{entry[0]}</p>
+            <p class="dark:text-300 text-[13px]/[24px] font-medium text-slate-500">
+              {entry[0]}
+            </p>
             <p class="break-words text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
               {entry[1]}
             </p>
@@ -160,7 +162,9 @@
         {/each}
       </div>
       {#if $state.dev_mode_enabled}
-        <p class="pt-4 text-center text-[13px]/[24px] text-slate-500">{credential.data.issuer}</p>
+        <p class="pt-4 text-center text-[13px]/[24px] text-slate-500">
+          {credential.data.issuer}
+        </p>
       {/if}
     </div>
   </div>

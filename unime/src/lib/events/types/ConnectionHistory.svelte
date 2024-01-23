@@ -61,7 +61,9 @@
           {/if}
 
           <!-- Timestamp -->
-          <div class="text-right text-sm font-medium text-slate-400">{event.timestamp}</div>
+          <div class="text-right text-sm font-medium text-slate-400">
+            {event.timestamp}
+          </div>
         </div>
       </div>
     {/each}

@@ -25,7 +25,10 @@
     if ($state?.dev_mode_enabled && $state?.active_profile?.name === 'Ferris') {
       console.log('Developer mode - Injecting password automatically ...');
       setTimeout(() => {
-        dispatch({ type: '[Storage] Unlock', payload: { password: 'sup3rSecr3t' } });
+        dispatch({
+          type: '[Storage] Unlock',
+          payload: { password: 'sup3rSecr3t' },
+        });
       }, 500);
     }
   });

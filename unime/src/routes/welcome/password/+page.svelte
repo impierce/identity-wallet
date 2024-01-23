@@ -43,7 +43,10 @@
       on:input={(e) => {
         passwordPolicyViolations = checkPasswordPolicy(e.target.value);
         if (passwordPolicyViolations.length === 0) {
-          onboarding_state.set({ ...$onboarding_state, password: e.target.value });
+          onboarding_state.set({
+            ...$onboarding_state,
+            password: e.target.value,
+          });
         }
       }}
     />

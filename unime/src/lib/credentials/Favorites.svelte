@@ -52,7 +52,9 @@
 {#if favorite_credentials.length > 0}
   <div class="flex items-center pb-2">
     <Heart class="mr-2 text-primary" />
-    <p class="text-[13px]/[24px] font-medium text-slate-500 dark:text-white">{$LL.ME.FAVORITES()}</p>
+    <p class="text-[13px]/[24px] font-medium text-slate-500 dark:text-white">
+      {$LL.ME.FAVORITES()}
+    </p>
   </div>
   <div class="flex flex-col space-y-2">
     {#each favorite_credentials as credential}

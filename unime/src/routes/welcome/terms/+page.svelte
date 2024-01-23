@@ -26,7 +26,8 @@
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <div class="px-2 pb-8 pt-4">
     <p class="pb-4 text-3xl font-semibold text-slate-700 dark:text-grey">
-      {$LL.ONBOARDING.TERMS.TITLE_1()} <span class="text-primary">{$LL.ONBOARDING.TERMS.TITLE_2()}</span>
+      {$LL.ONBOARDING.TERMS.TITLE_1()}
+      <span class="text-primary">{$LL.ONBOARDING.TERMS.TITLE_2()}</span>
     </p>
     <p class="text-[15px]/[24px] font-medium text-slate-500 dark:text-slate-300">
       {$LL.ONBOARDING.TERMS.SUBTITLE()}
