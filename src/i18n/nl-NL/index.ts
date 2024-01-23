@@ -141,6 +141,7 @@ const nl = {
       LANGUAGE: {
         TITLE: '',
         NAVBAR_TITLE: '',
+        COMING_SOON: '',
       },
       THEME: {
         TITLE: '',

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { melt } from '@melt-ui/svelte';
 
-  import { locales } from '$lib/app/locales';
+  import { incompleteLocales, locales } from '$lib/app/locales';
   import Button from '$lib/components/atoms/Button.svelte';
   import BottomDrawer from '$lib/components/molecules/dialogs/BottomDrawer.svelte';
   import { dispatch } from '$lib/dispatcher';
@@ -34,14 +34,20 @@
           dispatch({ type: '[Settings] Set locale', locale: l.locale });
           isOpen = false;
         }}
-        class="flex items-center rounded-lg p-[10px] {l.locale === selected.locale
-          ? 'border border-grey bg-silver dark:border-blue dark:bg-navy'
-          : ''}"
+        class="flex items-center rounded-lg border p-[10px]
+          {l.locale === selected.locale ? 'border-grey bg-silver dark:border-blue dark:bg-navy' : 'border-transparent'}
+          {incompleteLocales.includes(l.locale) ? 'opacity-30 grayscale' : ''}"
+        disabled={incompleteLocales.includes(l.locale)}
       >
         <div class="pr-[10px]">
           <svelte:component this={l.flag} class="h-5 w-5 rounded-full" />
         </div>
         <div class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">{l.displayName}</div>
+        {#if incompleteLocales.includes(l.locale)}
+          <div class="ml-auto text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
+            {$LL.SETTINGS.APP.LANGUAGE.COMING_SOON()}
+          </div>
+        {/if}
       </button>
     {/each}
   </div>

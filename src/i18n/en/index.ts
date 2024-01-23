@@ -113,6 +113,7 @@ const en = {
       LANGUAGE: {
         TITLE: 'Language',
         NAVBAR_TITLE: 'Select Language',
+        COMING_SOON: 'Coming soon',
       },
       THEME: {
         TITLE: 'Theme',

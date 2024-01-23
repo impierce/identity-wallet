@@ -18,3 +18,5 @@ export const locales: {
   { locale: 'nl-NL', flag: NL, displayName: 'Nederlands' },
   { locale: 'de-DE', flag: DE, displayName: 'Deutsch' },
 ];
+
+export const incompleteLocales: Locale[] = ['en-GB', 'nl-NL'];

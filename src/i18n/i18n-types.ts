@@ -328,6 +328,10 @@ type RootTranslation = {
 				 * S​e​l​e​c​t​ ​L​a​n​g​u​a​g​e
 				 */
 				NAVBAR_TITLE: string
+				/**
+				 * C​o​m​i​n​g​ ​s​o​o​n
+				 */
+				COMING_SOON: string
 			}
 			THEME: {
 				/**
@@ -963,6 +967,10 @@ export type TranslationFunctions = {
 				 * Select Language
 				 */
 				NAVBAR_TITLE: () => LocalizedString
+				/**
+				 * Coming soon
+				 */
+				COMING_SOON: () => LocalizedString
 			}
 			THEME: {
 				/**

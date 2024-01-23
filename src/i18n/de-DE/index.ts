@@ -114,6 +114,7 @@ const de = {
       LANGUAGE: {
         TITLE: 'Sprache',
         NAVBAR_TITLE: 'Sprache auswählen',
+        COMING_SOON: 'Bald verfügbar',
       },
       THEME: {
         TITLE: 'Erscheinungsbild',
