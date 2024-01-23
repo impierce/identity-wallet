@@ -68,11 +68,17 @@ mod bindings {
     #[ts(export, export_to = "bindings/actions/Action.ts")]
     pub enum Action {
         #[serde(rename = "[App] Get state")]
-        GetState { payload: GetState },
+        GetState {
+            #[ts(optional)]
+            payload: Option<GetState>,
+        },
         #[serde(rename = "[Storage] Unlock")]
         UnlockStorage { payload: UnlockStorage },
         #[serde(rename = "[App] Reset")]
-        Reset { payload: Reset },
+        Reset {
+            #[ts(optional)]
+            payload: Option<Reset>,
+        },
         #[serde(rename = "[DID] Create new")]
         CreateNew { payload: CreateNew },
         #[serde(rename = "[Settings] Set locale")]
@@ -82,13 +88,22 @@ mod bindings {
         #[serde(rename = "[QR Code] Scanned")]
         QrCodeScanned { payload: QrCodeScanned },
         #[serde(rename = "[Authenticate] Connection accepted")]
-        ConnectionAccepted { payload: ConnectionAccepted },
+        ConnectionAccepted {
+            #[ts(optional)]
+            payload: Option<ConnectionAccepted>,
+        },
         #[serde(rename = "[User Flow] Cancel")]
-        CancelUserFlow { payload: CancelUserFlow },
+        CancelUserFlow {
+            #[ts(optional)]
+            payload: Option<CancelUserFlow>,
+        },
         #[serde(rename = "[DEV] Set dev mode")]
         SetDevMode { payload: SetDevMode },
         #[serde(rename = "[DEV] Load profile")]
-        LoadDevProfile { payload: LoadDevProfile },
+        LoadDevProfile {
+            #[ts(optional)]
+            payload: Option<LoadDevProfile>,
+        },
         #[serde(rename = "[Authenticate] Credentials selected")]
         CredentialsSelected { payload: CredentialsSelected },
         #[serde(rename = "[Credential Offer] Selected")]
@@ -96,7 +111,10 @@ mod bindings {
         #[serde(rename = "[Credential Metadata] Update")]
         UpdateCredentialMetadata { payload: UpdateCredentialMetadata },
         #[serde(rename = "[User Journey] Cancel")]
-        CancelUserJourney { payload: CancelUserJourney },
+        CancelUserJourney {
+            #[ts(optional)]
+            payload: Option<CancelUserJourney>,
+        },
         #[serde(rename = "[User Data] Query")]
         UserDataQuery { payload: UserDataQuery },
     }

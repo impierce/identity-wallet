@@ -55,7 +55,7 @@
     <!-- <button
       slot="content"
       class="w-full rounded-lg bg-red-100 px-4 py-2 text-red-600"
-      on:click={() => dispatch({ type: '[User Journey] Cancel', payload: null })}>Yes</button
+      on:click={() => dispatch({ type: '[User Journey] Cancel' })}>Yes</button
     > -->
     <!-- <button
       slot="close"
@@ -65,7 +65,7 @@
       >No, let's continue</button
     > -->
     <div slot="content" class="w-full pb-[10px] pt-[20px]">
-      <Button label="Yes" on:click={() => dispatch({ type: '[User Journey] Cancel', payload: null })} />
+      <Button label="Yes" on:click={() => dispatch({ type: '[User Journey] Cancel' })} />
     </div>
     <Button variant="secondary" slot="close" let:close trigger={close} label="No, let's continue" />
   </BottomDrawer>
