@@ -1477,7 +1477,7 @@ dependencies = [
 [[package]]
 name = "dif-presentation-exchange"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=ebd7a83f8494d55b57f569e43e3001d32cda583a#ebd7a83f8494d55b57f569e43e3001d32cda583a"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/refactor-request-timeout#a7772273456228eb63be3bfdae2c6e3f6c182907"
 dependencies = [
  "getset",
  "jsonpath_lib",
@@ -3906,7 +3906,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-core"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=ebd7a83f8494d55b57f569e43e3001d32cda583a#ebd7a83f8494d55b57f569e43e3001d32cda583a"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/refactor-request-timeout#a7772273456228eb63be3bfdae2c6e3f6c182907"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3929,7 +3929,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-manager"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=ebd7a83f8494d55b57f569e43e3001d32cda583a#ebd7a83f8494d55b57f569e43e3001d32cda583a"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/refactor-request-timeout#a7772273456228eb63be3bfdae2c6e3f6c182907"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3961,7 +3961,7 @@ dependencies = [
 [[package]]
 name = "oid4vci"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=ebd7a83f8494d55b57f569e43e3001d32cda583a#ebd7a83f8494d55b57f569e43e3001d32cda583a"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/refactor-request-timeout#a7772273456228eb63be3bfdae2c6e3f6c182907"
 dependencies = [
  "anyhow",
  "derivative",
@@ -3984,7 +3984,7 @@ dependencies = [
 [[package]]
 name = "oid4vp"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=ebd7a83f8494d55b57f569e43e3001d32cda583a#ebd7a83f8494d55b57f569e43e3001d32cda583a"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/refactor-request-timeout#a7772273456228eb63be3bfdae2c6e3f6c182907"
 dependencies = [
  "anyhow",
  "chrono",
@@ -5374,7 +5374,7 @@ dependencies = [
 [[package]]
 name = "siopv2"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=ebd7a83f8494d55b57f569e43e3001d32cda583a#ebd7a83f8494d55b57f569e43e3001d32cda583a"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/refactor-request-timeout#a7772273456228eb63be3bfdae2c6e3f6c182907"
 dependencies = [
  "anyhow",
  "async-trait",
