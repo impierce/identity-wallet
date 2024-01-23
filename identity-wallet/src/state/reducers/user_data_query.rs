@@ -56,11 +56,11 @@ pub async fn credential_query(state: AppState, action: Action) -> Result<AppStat
 
             let mut sorted_credentials: Vec<String> = creds.iter().map(|s| s.id.clone()).collect();
 
-            query.sort_reverse.map(|sort_reverse| {
+            if let Some(sort_reverse) = query.sort_reverse {
                 if sort_reverse {
                     sorted_credentials.reverse();
                 }
-            });
+            }
 
             if user_data_query.is_empty() && query.search_term.is_none() {
                 sorted_credentials
@@ -122,11 +122,11 @@ pub async fn connection_query(state: AppState, action: Action) -> Result<AppStat
 
             let mut sorted_connect: Vec<String> = connections.iter().map(|s| s.client_name.clone()).collect();
 
-            query.sort_reverse.map(|sort_reverse| {
+            if let Some(sort_reverse) = query.sort_reverse {
                 if sort_reverse {
                     sorted_connect.reverse();
                 }
-            });
+            }
 
             if user_data_query.is_empty() && query.search_term.is_none() {
                 sorted_connect
