@@ -4,7 +4,7 @@ use crate::state::persistence::save_state;
 use crate::state::{AppState, AppStateContainer};
 use futures::StreamExt;
 use itertools::Itertools;
-use log::{debug, warn};
+use log::{debug, info, warn};
 use tauri::Manager;
 
 /// This function represents the root reducer of the application. It will delegate the state update to the reducers that
@@ -37,9 +37,9 @@ pub async fn handle_action<R: tauri::Runtime>(
     container: tauri::State<'_, AppStateContainer>,
     window: tauri::Window<R>,
 ) -> Result<(), String> {
-    let mut guard = container.0.lock().await;
+    info!("received action: `{action:?}`");
 
-    println!("Action: {action:?}\n\n");
+    let mut guard = container.0.lock().await;
 
     // Get a copy of the current state and pass it to the root reducer.
     match reduce(
