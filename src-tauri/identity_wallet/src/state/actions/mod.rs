@@ -60,7 +60,6 @@ pub fn listen<T: ActionTrait + Clone>(action: Action) -> Option<T> {
 // TODO: remove this once we have a better way to export the TS types.
 mod bindings {
     use super::*;
-    use crate::state::actions::get_state::GetState;
     use serde::{Deserialize, Serialize};
 
     #[derive(Serialize, Deserialize, TS)]
@@ -68,17 +67,11 @@ mod bindings {
     #[ts(export, export_to = "bindings/actions/Action.ts")]
     pub enum Action {
         #[serde(rename = "[App] Get state")]
-        GetState {
-            #[ts(optional)]
-            payload: Option<GetState>,
-        },
+        GetState,
         #[serde(rename = "[Storage] Unlock")]
         UnlockStorage { payload: UnlockStorage },
         #[serde(rename = "[App] Reset")]
-        Reset {
-            #[ts(optional)]
-            payload: Option<Reset>,
-        },
+        Reset,
         #[serde(rename = "[DID] Create new")]
         CreateNew { payload: CreateNew },
         #[serde(rename = "[Settings] Set locale")]
@@ -88,10 +81,7 @@ mod bindings {
         #[serde(rename = "[QR Code] Scanned")]
         QrCodeScanned { payload: QrCodeScanned },
         #[serde(rename = "[Authenticate] Connection accepted")]
-        ConnectionAccepted {
-            #[ts(optional)]
-            payload: Option<ConnectionAccepted>,
-        },
+        ConnectionAccepted,
         #[serde(rename = "[User Flow] Cancel")]
         CancelUserFlow {
             #[ts(optional)]
@@ -100,10 +90,7 @@ mod bindings {
         #[serde(rename = "[DEV] Set dev mode")]
         SetDevMode { payload: SetDevMode },
         #[serde(rename = "[DEV] Load profile")]
-        LoadDevProfile {
-            #[ts(optional)]
-            payload: Option<LoadDevProfile>,
-        },
+        LoadDevProfile,
         #[serde(rename = "[Authenticate] Credentials selected")]
         CredentialsSelected { payload: CredentialsSelected },
         #[serde(rename = "[Credential Offer] Selected")]
@@ -111,10 +98,7 @@ mod bindings {
         #[serde(rename = "[Credential Metadata] Update")]
         UpdateCredentialMetadata { payload: UpdateCredentialMetadata },
         #[serde(rename = "[User Journey] Cancel")]
-        CancelUserJourney {
-            #[ts(optional)]
-            payload: Option<CancelUserJourney>,
-        },
+        CancelUserJourney,
         #[serde(rename = "[User Data] Query")]
         UserDataQuery { payload: UserDataQuery },
     }

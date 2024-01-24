@@ -3,10 +3,7 @@ use crate::state::actions::ActionTrait;
 use crate::state::actions::Reducer;
 use crate::state::reducers::get_state;
 
-use ts_rs::TS;
-
-#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export, export_to = "bindings/actions/GetState.ts")]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct GetState;
 
 #[typetag::serde(name = "[App] Get state")]
