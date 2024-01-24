@@ -17,7 +17,7 @@
       <button
         class="flex h-14 items-center space-x-4 rounded-xl bg-white p-4 dark:bg-dark
           {incompleteLocales.includes(l.locale) ? 'opacity-30 grayscale' : ''}"
-        on:click={() => dispatch({ type: '[Settings] Set locale', locale: l.locale })}
+        on:click={() => dispatch({ type: '[Settings] Set locale', payload: { locale: l.locale } })}
         disabled={incompleteLocales.includes(l.locale)}
       >
         <svelte:component this={l.flag} class="h-5 w-5 rounded-full" />

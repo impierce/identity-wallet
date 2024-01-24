@@ -46,7 +46,7 @@
     <SettingsEntry icon={Code} title={$LL.SETTINGS.APP.DEVELOPER_MODE.TITLE()} hasCaretRight={false}>
       <Switch
         active={$state.dev_mode_enabled}
-        on:change={() => dispatch({ type: '[DEV] Set dev mode', enabled: !$state.dev_mode_enabled })}
+        on:change={() => dispatch({ type: '[DEV] Set dev mode', payload: { enabled: !$state.dev_mode_enabled } })}
       />
     </SettingsEntry>
   </div>

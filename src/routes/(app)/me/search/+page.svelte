@@ -21,7 +21,13 @@
     <Search
       on:value={(e) => {
         searchTerm = e.detail;
-        dispatch({ type: '[User Data] Query', target: 'Credentials', search_term: e.detail });
+        dispatch({
+          type: '[User Data] Query',
+          payload: {
+            target: 'Credentials',
+            search_term: e.detail,
+          },
+        });
       }}
     ></Search>
   </div>

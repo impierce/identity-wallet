@@ -23,7 +23,7 @@
   <div class="absolute top-12 w-full">
     <!-- <LanguageSelect
       selected={$state?.locale}
-      on:value={(e) => dispatch({ type: '[Settings] Set locale', locale: e.detail })}
+      on:value={(e) => dispatch({ type: '[Settings] Set locale', payload: { locale: e.detail } })}
     /> -->
 
     <!-- <div class="grid grid-flow-col space-x-4">

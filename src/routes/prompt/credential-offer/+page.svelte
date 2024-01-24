@@ -245,7 +245,9 @@
       on:click={() => {
         dispatch({
           type: '[Credential Offer] Selected',
-          offer_indices: all_offer_indices,
+          payload: {
+            offer_indices: all_offer_indices,
+          },
         });
       }}
     />
@@ -253,7 +255,7 @@
       label="Reject"
       variant="secondary"
       on:click={() => {
-        dispatch({ type: '[User Flow] Cancel', redirect: 'me' });
+        dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });
       }}
     />
     <!-- <button class="w-full rounded-lg bg-primary px-4 py-2 text-white" on:click={() => {}}

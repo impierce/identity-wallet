@@ -1,7 +1,9 @@
 {
     "type": "[User Data] Query",
-    "target": "Connections",
-    "search_term": "M",
-    "sort_method": "FirstInteractedNewOld",
-    "sort_reverse": false
+    "payload": {
+        "target": "Connections",
+        "search_term": "M",
+        "sort_method": "FirstInteractedNewOld",
+        "sort_reverse": false
+    }
 }

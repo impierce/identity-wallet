@@ -31,7 +31,7 @@
     {#each locales as l}
       <button
         on:click={() => {
-          dispatch({ type: '[Settings] Set locale', locale: l.locale });
+          dispatch({ type: '[Settings] Set locale', payload: { locale: l.locale } });
           isOpen = false;
         }}
         class="flex items-center rounded-lg border p-[10px]
