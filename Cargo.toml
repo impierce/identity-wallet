@@ -1,0 +1,28 @@
+[workspace]
+resolver = "2"
+members = ["identity-wallet", "unime/src-tauri"]
+
+[workspace.dependencies]
+tauri = { version = "=2.0.0-alpha.21", features = [
+    "protocol-asset",
+    "rustls-tls",
+] }
+
+oid4vc = { git = "https://git@github.com/impierce/openid4vc.git", branch = "feat/refactor-request-timeout" }
+log = "^0.4"
+serde_json = "1.0"
+did-key = "0.2.1"
+indoc = "2.0"
+rand = "0.8"
+wiremock = "0.5"
+serial_test = "2.0"
+tempfile = "3.5.0"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[workspace.package]
+name = "Unime"
+version = "0.1.0"
+edition = "2021"
+keywords = ["SSI", "Impierce"]
+authors = ["Impierce"]
+license = "Apache 2.0"
