@@ -16,16 +16,16 @@ members = [
 ]
 
 [workspace.dependencies]
-tauri = { version = "=2.0.0-alpha.20", features = [
+tauri = { version = "=2.0.0-alpha.21", features = [
     "protocol-asset",
     "rustls-tls",
 ] }
 
-oid4vc-manager = { git = "https://git@github.com/impierce/openid4vc.git", branch = "feat/refactor-request-timeout" }
-siopv2 = { git = "https://git@github.com/impierce/openid4vc.git", branch = "feat/refactor-request-timeout" }
-oid4vci = { git = "https://git@github.com/impierce/openid4vc.git", branch = "feat/refactor-request-timeout" }
-oid4vc-core = { git = "https://git@github.com/impierce/openid4vc.git", branch = "feat/refactor-request-timeout" }
-oid4vp = { git = "https://git@github.com/impierce/openid4vc.git", branch = "feat/refactor-request-timeout" }
+oid4vc-manager = { git = "https://git@github.com/impierce/openid4vc.git", rev = "af7c5118a45c59f310eb3aab7dac68caafc8fa53" }
+siopv2 = { git = "https://git@github.com/impierce/openid4vc.git", rev = "af7c5118a45c59f310eb3aab7dac68caafc8fa53" }
+oid4vci = { git = "https://git@github.com/impierce/openid4vc.git", rev = "af7c5118a45c59f310eb3aab7dac68caafc8fa53" }
+oid4vc-core = { git = "https://git@github.com/impierce/openid4vc.git", rev = "af7c5118a45c59f310eb3aab7dac68caafc8fa53" }
+oid4vp = { git = "https://git@github.com/impierce/openid4vc.git", rev = "af7c5118a45c59f310eb3aab7dac68caafc8fa53" }
 
 log = "^0.4"
 serde_json = "1.0"
@@ -35,7 +35,7 @@ name = "unime"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
-tauri-build = { version = "=2.0.0-alpha.13", features = [] }
+tauri-build = { version = "=2.0.0-alpha.14", features = [] }
 
 [dependencies]
 identity-wallet = { path = "./identity_wallet" }
@@ -51,7 +51,7 @@ log.workspace = true
 serde_json.workspace = true
 
 [dev-dependencies]
-tauri = { version = "=2.0.0-alpha.20", features = ["rustls-tls", "test"] }
+tauri = { version = "=2.0.0-alpha.21", features = ["rustls-tls", "test"] }
 
 oid4vc-manager.workspace = true
 siopv2.workspace = true
