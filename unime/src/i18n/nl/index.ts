@@ -101,9 +101,9 @@ const nl = {
       },
     },
     RESET_APP: {
-      TITLE: 'Opnieuw instellen app',
-      DESCRIPTION: 'Weet je zeker dat je de app wilt resetten en alle gegevens wilt verwijderen? ',
-      CONFIRM: 'Ja, reset alles',
+      TITLE: 'App opnieuw instellen',
+      DESCRIPTION: 'Weet je zeker dat je de app opnieuw wilt instellen en alle gegevens wilt verwijderen? ',
+      CONFIRM: 'Ja, verwijder alles',
       CANCEL: 'Nee, bewaar mijn profiel',
     },
     ACCOUNT: 'Profiel',
