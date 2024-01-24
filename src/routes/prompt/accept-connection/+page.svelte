@@ -143,7 +143,7 @@
       label="Reject"
       variant="secondary"
       on:click={() => {
-        dispatch({ type: '[User Flow] Cancel', redirect: 'me' });
+        dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });
         goto('/me');
       }}
     />

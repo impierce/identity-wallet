@@ -1,6 +1,6 @@
 use crate::crypto::stronghold::StrongholdManager;
 use crate::error::AppError::{self, *};
-use crate::state::actions::Action;
+use crate::state::actions::{listen, Action, SetDevMode};
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, Connection, Profile};
 use crate::verifiable_credential_record::VerifiableCredentialRecord;
@@ -38,19 +38,21 @@ lazy_static! {
     );
 }
 
-pub async fn set_dev_mode(state: &mut AppState, action: Action) -> Result<(), AppError> {
-    let enabled = match action {
-        Action::SetDevMode { enabled } => enabled,
-        _ => return Err(InvalidActionError { action }),
-    };
-
-    state.dev_mode_enabled = enabled;
-    state.current_user_prompt = None;
-    Ok(())
+pub async fn set_dev_mode(state: AppState, action: Action) -> Result<AppState, AppError> {
+    if let Some(enabled) = listen::<SetDevMode>(action).map(|payload| payload.enabled) {
+        return Ok(AppState {
+            dev_mode_enabled: enabled,
+            current_user_prompt: None,
+            ..state
+        });
+    }
+    Ok(state)
 }
 
-pub async fn load_dev_profile(state: &mut AppState, _action: Action) -> Result<(), AppError> {
+pub async fn load_dev_profile(_state: AppState, _action: Action) -> Result<AppState, AppError> {
     info!("load dev profile");
+
+    let mut state = AppState::default();
 
     let stronghold_manager = StrongholdManager::create("sup3rSecr3t").map_err(StrongholdCreationError)?;
 
@@ -197,7 +199,7 @@ pub async fn load_dev_profile(state: &mut AppState, _action: Action) -> Result<(
     });
 
     state.dev_mode_enabled = true;
-    Ok(())
+    Ok(state)
 }
 
 async fn load_credential_images(

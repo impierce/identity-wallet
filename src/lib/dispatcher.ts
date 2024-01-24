@@ -1,4 +1,4 @@
-import type { Action } from 'src-tauri/identity_wallet/bindings/Action';
+import type { Action } from 'src-tauri/identity_wallet/bindings/actions/Action';
 
 import { invoke } from '@tauri-apps/api/core';
 import { info } from '@tauri-apps/plugin-log';

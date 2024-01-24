@@ -1,14 +1,19 @@
 use crate::common::test_managers;
-use identity_wallet::state::reducers::credential_offer::read_credential_offer;
-use identity_wallet::state::{actions::Action, AppState};
+use identity_wallet::oid4vci::credential_issuer::{
+    credential_issuer_metadata::CredentialIssuerMetadata, credentials_supported::CredentialsSupportedObject,
+};
+use identity_wallet::oid4vci::credential_offer::{CredentialOffer, CredentialOfferQuery, CredentialsObject};
+use identity_wallet::state::{reducers::credential_offer::read_credential_offer, AppState};
 use identity_wallet::ASSETS_DIR;
-use oid4vci::credential_format_profiles::w3c_verifiable_credentials::jwt_vc_json::{self, JwtVcJson};
-use oid4vci::credential_format_profiles::{CredentialFormats, Parameters, WithParameters};
-use oid4vci::credential_issuer::credential_issuer_metadata::CredentialIssuerMetadata;
-use oid4vci::credential_issuer::credentials_supported::CredentialsSupportedObject;
-use oid4vci::credential_offer::{CredentialOffer, CredentialOfferQuery, CredentialsObject};
+use identity_wallet::{
+    oid4vci::credential_format_profiles::{
+        w3c_verifiable_credentials::jwt_vc_json::{self, JwtVcJson},
+        CredentialFormats, Parameters, WithParameters,
+    },
+    state::actions::QrCodeScanned,
+};
 use serde_json::json;
-use std::borrow::BorrowMut;
+use std::sync::Arc;
 use tempfile::TempDir;
 use url::Url;
 use wiremock::matchers::{method, path};
@@ -87,18 +92,19 @@ async fn download_credential_logo() {
         .mount(&mock_server)
         .await;
 
-    let mut state = AppState {
+    let app_state = AppState {
         managers: test_managers(vec![]),
         ..AppState::default()
     };
 
     assert!(read_credential_offer(
-        state.borrow_mut(),
-        Action::ReadCredentialOffer {
-            credential_offer_uri: CredentialOfferQuery::CredentialOfferUri(
+        app_state,
+        Arc::new(QrCodeScanned {
+            form_urlencoded: CredentialOfferQuery::<CredentialFormats>::CredentialOfferUri(
                 format!("{}/offer/1", &mock_server.uri()).parse().unwrap()
             )
-        },
+            .to_string()
+        }),
     )
     .await
     .is_ok());
@@ -169,18 +175,19 @@ async fn download_issuer_logo() {
         .mount(&mock_server)
         .await;
 
-    let mut state = AppState {
+    let app_state = AppState {
         managers: test_managers(vec![]),
         ..AppState::default()
     };
 
     assert!(read_credential_offer(
-        state.borrow_mut(),
-        Action::ReadCredentialOffer {
-            credential_offer_uri: CredentialOfferQuery::CredentialOfferUri(
+        app_state,
+        Arc::new(QrCodeScanned {
+            form_urlencoded: CredentialOfferQuery::<CredentialFormats>::CredentialOfferUri(
                 format!("{}/offer/1", &mock_server.uri()).parse().unwrap()
             )
-        },
+            .to_string()
+        }),
     )
     .await
     .is_ok());
@@ -243,18 +250,19 @@ async fn no_download_when_no_logo_in_metadata() {
 
     // TODO: assert that function download_asset() is never called (through spy?)
 
-    let mut state = AppState {
+    let app_state = AppState {
         managers: test_managers(vec![]),
         ..AppState::default()
     };
 
     assert!(read_credential_offer(
-        state.borrow_mut(),
-        Action::ReadCredentialOffer {
-            credential_offer_uri: CredentialOfferQuery::CredentialOfferUri(
-                format!("{}/offer/1", &mock_server.uri()).parse().unwrap()
+        app_state,
+        Arc::new(QrCodeScanned {
+            form_urlencoded: CredentialOfferQuery::<CredentialFormats>::CredentialOfferUri(
+                format!("{}/offer/1", &mock_server.uri()).parse().unwrap(),
             )
-        },
+            .to_string()
+        }),
     )
     .await
     .is_ok());

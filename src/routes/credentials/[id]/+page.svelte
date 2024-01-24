@@ -99,7 +99,10 @@
             on:click={() =>
               dispatch({
                 type: '[Credential Metadata] Update',
-                id: credential.id, is_favorite: !isFavorite,
+                payload: {
+                  id: credential.id,
+                  is_favorite: !isFavorite,
+                },
               })}
           >
             {#if isFavorite}
