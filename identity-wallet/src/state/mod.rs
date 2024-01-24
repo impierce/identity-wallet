@@ -9,9 +9,9 @@ use crate::{
     verifiable_credential_record::DisplayCredential,
 };
 use derivative::Derivative;
-use oid4vc_core::Subject;
-use oid4vc_manager::ProviderManager;
-use oid4vci::Wallet;
+use oid4vc::oid4vc_core::Subject;
+use oid4vc::oid4vc_manager::ProviderManager;
+use oid4vc::oid4vci::Wallet;
 use serde::{Deserialize, Serialize};
 use std::{collections::VecDeque, sync::Arc};
 use strum::EnumString;

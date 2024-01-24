@@ -4,7 +4,7 @@ use iota_stronghold::{
     Client, KeyProvider, Location, SnapshotPath, Stronghold,
 };
 use log::{debug, info};
-use oid4vc_core::authentication::sign::ExternalSign;
+use oid4vc::oid4vc_core::authentication::sign::ExternalSign;
 use uuid::Uuid;
 
 #[derive(Debug)]

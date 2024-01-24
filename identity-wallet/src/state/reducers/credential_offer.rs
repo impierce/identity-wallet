@@ -10,7 +10,7 @@ use crate::{
     verifiable_credential_record::VerifiableCredentialRecord,
 };
 use log::{debug, info};
-use oid4vci::{
+use oid4vc::oid4vci::{
     credential_format_profiles::{CredentialFormats, WithCredential, WithParameters},
     credential_issuer::credentials_supported::CredentialsSupportedObject,
     credential_offer::{CredentialOffer, CredentialOfferQuery, CredentialsObject, Grants},

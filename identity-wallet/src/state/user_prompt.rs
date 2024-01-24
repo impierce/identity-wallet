@@ -1,4 +1,4 @@
-use oid4vci::credential_offer::CredentialOffer;
+use oid4vc::oid4vci::credential_offer::CredentialOffer;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use ts_rs::TS;

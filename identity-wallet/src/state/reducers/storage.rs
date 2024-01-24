@@ -9,8 +9,8 @@ use crate::{
 };
 use did_key::{from_existing_key, Ed25519KeyPair};
 use log::info;
-use oid4vc_manager::{methods::key_method::KeySubject, ProviderManager};
-use oid4vci::Wallet;
+use oid4vc::oid4vc_manager::{methods::key_method::KeySubject, ProviderManager};
+use oid4vc::oid4vci::Wallet;
 use std::sync::Arc;
 
 pub async fn unlock_storage(state: AppState, action: Action) -> Result<AppState, AppError> {

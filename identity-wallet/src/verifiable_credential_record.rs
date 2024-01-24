@@ -1,5 +1,5 @@
 use derivative::Derivative;
-use oid4vci::credential_format_profiles::{CredentialFormats, WithCredential};
+use oid4vc::oid4vci::credential_format_profiles::{CredentialFormats, WithCredential};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use ts_rs::TS;
