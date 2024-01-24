@@ -262,9 +262,50 @@ pub async fn cancel_user_journey(state: AppState, _action: Action) -> Result<App
 mod tests {
     use super::*;
     use crate::state::{
-        actions::{Action, Reset},
+        actions::{Action, CancelUserJourney, Reset},
         Locale,
     };
+
+    #[tokio::test]
+    async fn test_cancel_user_flow() {
+        let current_user_prompt = Some(CurrentUserPrompt::ShareCredentials {
+            client_name: "Impierce Technologies".to_string(),
+            logo_uri: Some("logo.png".to_string()),
+            options: vec![],
+        });
+
+        let mut app_state = AppState {
+            current_user_prompt: current_user_prompt.clone(),
+            ..AppState::default()
+        };
+
+        app_state = cancel_user_flow(app_state, Arc::new(CancelUserFlow { redirect: None }) as Action)
+            .await
+            .unwrap();
+
+        assert_eq!(app_state.current_user_prompt, None);
+
+        let mut app_state = AppState {
+            current_user_prompt,
+            ..AppState::default()
+        };
+
+        app_state = cancel_user_flow(
+            app_state,
+            Arc::new(CancelUserFlow {
+                redirect: Some("welcome".to_string()),
+            }) as Action,
+        )
+        .await
+        .unwrap();
+
+        assert_eq!(
+            app_state.current_user_prompt,
+            Some(CurrentUserPrompt::Redirect {
+                target: "welcome".to_string(),
+            })
+        );
+    }
 
     #[tokio::test]
     async fn test_set_locale() {
@@ -275,25 +316,6 @@ mod tests {
             .unwrap();
 
         assert_eq!(app_state.locale, Locale::Nl);
-    }
-
-    #[tokio::test]
-    async fn test_reset_state() {
-        let mut app_state = AppState {
-            active_profile: Some(Profile {
-                name: "Ferris".to_string(),
-                picture: Some("&#129408".to_string()),
-                theme: Some("system".to_string()),
-                primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
-            })
-            .into(),
-            ..AppState::default()
-        };
-
-        app_state = reset_state(app_state, Arc::new(Reset)).await.unwrap();
-
-        assert_eq!(app_state.active_profile, None);
-        assert_eq!(app_state.locale, Locale::default());
     }
 
     #[tokio::test]
@@ -328,5 +350,38 @@ mod tests {
                 ..active_profile
             })
         );
+    }
+
+    #[tokio::test]
+    async fn test_cancel_user_journey() {
+        let mut app_state = AppState {
+            user_journey: Some(json!("Some Journey")),
+            ..AppState::default()
+        };
+
+        app_state = cancel_user_journey(app_state, Arc::new(CancelUserJourney) as Action)
+            .await
+            .unwrap();
+
+        assert_eq!(app_state.user_journey, None);
+    }
+
+    #[tokio::test]
+    async fn test_reset_state() {
+        let mut app_state = AppState {
+            active_profile: Some(Profile {
+                name: "Ferris".to_string(),
+                picture: Some("&#129408".to_string()),
+                theme: Some("system".to_string()),
+                primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
+            })
+            .into(),
+            ..AppState::default()
+        };
+
+        app_state = reset_state(app_state, Arc::new(Reset)).await.unwrap();
+
+        assert_eq!(app_state.active_profile, None);
+        assert_eq!(app_state.locale, Locale::default());
     }
 }
