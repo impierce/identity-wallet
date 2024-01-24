@@ -214,7 +214,11 @@ pub async fn update_credential_metadata(state: AppState, action: Action) -> Resu
             .collect();
 
         drop(state_guard);
-        return Ok(AppState { credentials, ..state });
+        return Ok(AppState {
+            credentials,
+            current_user_prompt: None,
+            ..state
+        });
     };
 
     Ok(state)
@@ -255,6 +259,7 @@ pub async fn reset_state(_state: AppState, _action: Action) -> Result<AppState, 
 pub async fn cancel_user_journey(state: AppState, _action: Action) -> Result<AppState, AppError> {
     Ok(AppState {
         user_journey: None,
+        current_user_prompt: None,
         ..state
     })
 }
