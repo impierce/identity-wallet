@@ -262,7 +262,7 @@ pub async fn cancel_user_journey(state: AppState, _action: Action) -> Result<App
 mod tests {
     use super::*;
     use crate::state::{
-        actions::{Action, CancelUserJourney, Reset},
+        actions::{CancelUserJourney, Reset},
         Locale,
     };
 
@@ -279,7 +279,7 @@ mod tests {
             ..AppState::default()
         };
 
-        app_state = cancel_user_flow(app_state, Arc::new(CancelUserFlow { redirect: None }) as Action)
+        app_state = cancel_user_flow(app_state, Arc::new(CancelUserFlow { redirect: None }))
             .await
             .unwrap();
 
@@ -294,7 +294,7 @@ mod tests {
             app_state,
             Arc::new(CancelUserFlow {
                 redirect: Some("welcome".to_string()),
-            }) as Action,
+            }),
         )
         .await
         .unwrap();
@@ -311,7 +311,7 @@ mod tests {
     async fn test_set_locale() {
         let mut app_state = AppState::default();
 
-        app_state = set_locale(app_state, Arc::new(SetLocale { locale: Locale::Nl }) as Action)
+        app_state = set_locale(app_state, Arc::new(SetLocale { locale: Locale::Nl }))
             .await
             .unwrap();
 
@@ -338,7 +338,7 @@ mod tests {
                 name: None,
                 picture: None,
                 theme: Some("light".to_string()),
-            }) as Action,
+            }),
         )
         .await
         .unwrap();
@@ -359,7 +359,7 @@ mod tests {
             ..AppState::default()
         };
 
-        app_state = cancel_user_journey(app_state, Arc::new(CancelUserJourney) as Action)
+        app_state = cancel_user_journey(app_state, Arc::new(CancelUserJourney))
             .await
             .unwrap();
 

@@ -187,7 +187,7 @@ mod tests {
                 search_term: Some("".to_string()),
                 sort_method: None,
                 sort_reverse: None,
-            }) as Action,
+            }),
         )
         .await
         .unwrap();
@@ -201,7 +201,7 @@ mod tests {
                 search_term: Some("John".to_string()),
                 sort_method: None,
                 sort_reverse: None,
-            }) as Action,
+            }),
         )
         .await
         .unwrap();
@@ -215,7 +215,7 @@ mod tests {
                 search_term: None,
                 sort_method: Some(SortMethod::NameAZ),
                 sort_reverse: None,
-            }) as Action,
+            }),
         )
         .await
         .unwrap();

@@ -10,7 +10,7 @@ use identity_wallet::{
         w3c_verifiable_credentials::jwt_vc_json::{self, JwtVcJson},
         CredentialFormats, Parameters, WithParameters,
     },
-    state::actions::{Action, QrCodeScanned},
+    state::actions::QrCodeScanned,
 };
 use serde_json::json;
 use std::sync::Arc;
@@ -104,7 +104,7 @@ async fn download_credential_logo() {
                 format!("{}/offer/1", &mock_server.uri()).parse().unwrap()
             )
             .to_string()
-        }) as Action,
+        }),
     )
     .await
     .is_ok());
@@ -187,7 +187,7 @@ async fn download_issuer_logo() {
                 format!("{}/offer/1", &mock_server.uri()).parse().unwrap()
             )
             .to_string()
-        }) as Action,
+        }),
     )
     .await
     .is_ok());
@@ -262,7 +262,7 @@ async fn no_download_when_no_logo_in_metadata() {
                 format!("{}/offer/1", &mock_server.uri()).parse().unwrap(),
             )
             .to_string()
-        }) as Action,
+        }),
     )
     .await
     .is_ok());
