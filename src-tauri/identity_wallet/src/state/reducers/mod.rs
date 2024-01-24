@@ -226,8 +226,8 @@ pub async fn update_profile_settings(state: AppState, action: Action) -> Result<
             return Ok(AppState {
                 active_profile: Some(Profile {
                     name: name.unwrap_or(profile.name),
-                    picture,
-                    theme,
+                    picture: picture.or(profile.picture),
+                    theme: theme.or(profile.theme),
                     ..profile
                 }),
                 ..state
@@ -294,5 +294,39 @@ mod tests {
 
         assert_eq!(app_state.active_profile, None);
         assert_eq!(app_state.locale, Locale::default());
+    }
+
+    #[tokio::test]
+    async fn test_update_profile_settings() {
+        let active_profile = Profile {
+            name: "Ferris".to_string(),
+            picture: Some("&#129408".to_string()),
+            theme: Some("system".to_string()),
+            primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
+        };
+
+        let mut app_state = AppState {
+            active_profile: Some(active_profile.clone()),
+            ..AppState::default()
+        };
+
+        app_state = update_profile_settings(
+            app_state,
+            Arc::new(UpdateProfileSettings {
+                name: None,
+                picture: None,
+                theme: Some("light".to_string()),
+            }) as Action,
+        )
+        .await
+        .unwrap();
+
+        assert_eq!(
+            app_state.active_profile,
+            Some(Profile {
+                theme: Some("light".to_string()),
+                ..active_profile
+            })
+        );
     }
 }
