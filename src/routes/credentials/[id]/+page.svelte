@@ -102,7 +102,7 @@
                 payload: {
                   id: credential.id,
                   is_favorite: !isFavorite,
-                }
+                },
               })}
           >
             {#if isFavorite}

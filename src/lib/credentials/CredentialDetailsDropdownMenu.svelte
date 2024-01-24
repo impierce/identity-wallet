@@ -173,7 +173,7 @@
             payload: {
               id: credential.id,
               name: displayName,
-            }
+            },
           });
           openNameDialog.set(false);
         }}
@@ -250,7 +250,7 @@
               id: credential.id,
               icon: currentAppearance.icon,
               color: currentAppearance.color,
-            }
+            },
           });
           openAppearanceDialog.set(false);
         }}

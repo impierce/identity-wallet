@@ -65,7 +65,7 @@
           picture: $onboarding_state.picture ?? '',
           theme: $onboarding_state.theme ?? '',
           password: $onboarding_state.password ?? '',
-        }
+        },
       });
     }}
   />
