@@ -101,12 +101,12 @@ const nl = {
       },
     },
     RESET_APP: {
-      TITLE: 'Reset app',
+      TITLE: 'Opnieuw instellen app',
       DESCRIPTION: 'Weet je zeker dat je de app wilt resetten en alle gegevens wilt verwijderen? ',
       CONFIRM: 'Ja, reset alles',
       CANCEL: 'Nee, bewaar mijn profiel',
     },
-    ACCOUNT: 'Account',
+    ACCOUNT: 'Profiel',
     SUPPORT: {
       TITLE: 'Support',
       ABOUT: {
@@ -123,12 +123,12 @@ const nl = {
         TITLE: 'Profielnaam',
         NAVBAR_TITLE: 'Bewerk profielfoto',
         INPUT_PLACEHOLDER: 'Profielnaam invoeren',
-        CONFIRM: 'Updaten',
+        CONFIRM: 'Wijzigingen opslaan',
       },
       DISPLAY_PICTURE: {
         TITLE: 'Toon afbeelding',
         EDIT: 'Bewerk',
-        CHANGE: 'Updaten',
+        CHANGE: 'Opslaan',
       },
       DELETE_PROFILE: {
         TITLE: 'Verwijder profiel',
@@ -153,10 +153,10 @@ const nl = {
       },
       HINTS_AND_TIPS: {
         TITLE: 'Hints en tips',
-        BUTTON_TEXT: 'Reset',
+        BUTTON_TEXT: 'Opnieuw instellen',
       },
       DEVELOPER_MODE: {
-        TITLE: 'Developer modus',
+        TITLE: 'Ontwikkelaarsmodus',
       },
     },
     BACKUP_RECOVERY: {
@@ -185,8 +185,8 @@ const nl = {
       BADGES: 'Badges',
     },
     EMPTY_CREDENTIALS: {
-      TITLE: 'Het is hier een beetje stil',
-      SUBTITLE: 'Waarom voeg je geen nieuwe credentials toe om te starten met je digitale "me"?',
+      TITLE: 'Geen credentials gevonden',
+      SUBTITLE: 'Voeg credentials toe om je digitale "me" te starten.',
     },
     FAVORITES: 'Mijn favorieten',
   },
@@ -216,9 +216,9 @@ const nl = {
     EMPTY: 'Nog geen activiteit.',
   },
   SEARCH: {
-    INPUT_PLACEHOLDER: 'Zoek voor iets',
+    INPUT_PLACEHOLDER: 'Zoeken',
     NO_QUERY: {
-      TITLE: 'Waar zullen we zoeken?',
+      TITLE: 'Geef een zoekopdracht op.',
       DESCRIPTION: 'Zoek hier naar je credentials en badges.',
     },
     NO_RESULTS: {
