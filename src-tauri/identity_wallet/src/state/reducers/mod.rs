@@ -230,6 +230,7 @@ pub async fn update_profile_settings(state: AppState, action: Action) -> Result<
                     theme: theme.or(profile.theme),
                     ..profile
                 }),
+                current_user_prompt: None,
                 ..state
             });
         }
