@@ -63,7 +63,7 @@ pub async fn handle_action<R: tauri::Runtime>(
     {
         // If the state update succeeds, we replace the old state with the new one.
         Ok(app_state) => {
-            println!("APP STATE: {app_state:?}\n\n");
+            debug!("{app_state:?}");
             *guard = app_state
         }
         // If the state update fails, we log the error and keep the old state.
