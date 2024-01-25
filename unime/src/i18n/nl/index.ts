@@ -10,8 +10,8 @@ const nl = {
     },
     PLEDGE: {
       NAVBAR_TITLE: 'UniMe Belofte',
-      TITLE_1: 'Geen gekke',
-      TITLE_2: 'zaken',
+      TITLE_1: 'Geen rare',
+      TITLE_2: 'toestanden',
       SUBTITLE: 'Hier is onze belofte aan jou',
       ITEM_1: {
         TITLE: 'Wij delen jouw gegevens niet',
@@ -19,7 +19,7 @@ const nl = {
       },
       ITEM_2: {
         TITLE: 'We zullen geen trackers toevoegen',
-        DESCRIPTION: 'We volgen je acties niet achter de schermen. Punt. Niet om te testen of om welke reden dan ook. Dat beloven we. We verzamelen ook geen anonieme apparaatinformatie or gebruiksstatistieken. Die beslissing maakt de ontwikkeling van de app wat moeilijker voor ons, maar we geloven dat het de juiste beslissing is.',
+        DESCRIPTION: 'We volgen je acties niet achter de schermen. Punt. Niet om te testen of om welke reden dan ook. Dat beloven we. We verzamelen ook geen anonieme apparaatinformatie or gebruiksstatistieken. Deze beslissing maakt de ontwikkeling van de app wat moeilijker voor ons, maar we geloven dat het de juiste beslissing is.',
       },
       ITEM_3: {
         TITLE: 'Je bezit jouw informatie',
@@ -39,7 +39,7 @@ const nl = {
     CUSTOMIZE: {
       NAVBAR_TITLE: 'Personalisatie',
       NAME: {
-        TITLE_1: 'Laten we gaan! Kies een',
+        TITLE_1: 'Laten we beginnen! Kies een',
         TITLE_2: 'profielnaam',
         SUBTITLE: 'Jouw profielinformatie verlaat nooit jouw apparaat',
         INPUT_PLACEHOLDER: 'Profielnaam invoeren',
@@ -185,8 +185,8 @@ const nl = {
       BADGES: 'Badges',
     },
     EMPTY_CREDENTIALS: {
-      TITLE: 'Het is hier een beetje stil',
-      SUBTITLE: 'Waarom voeg je geen credentials toe om je nieuwe digitale "me" te starten?',
+      TITLE: 'Momenteel is het hier wat rustig',
+      SUBTITLE: 'Wat denk je ervan om nieuwe credentials toe te voegen om je digitale "me" te starten?',
     },
     FAVORITES: 'Mijn favorieten',
   },
