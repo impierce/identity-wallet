@@ -1,3 +1,5 @@
+use std::time::Duration;
+use log::error;
 use crate::error::AppError;
 use crate::state::actions::Action;
 use crate::state::persistence::save_state;
@@ -29,9 +31,14 @@ async fn reduce(state: AppState, action: Action) -> Result<AppState, AppError> {
         .await
 }
 
+async fn deadlock_safety() {
+    tokio::time::sleep(Duration::from_secs(6)).await;
+}
+
+
 /// This command handler is the single point of entry to the business logic in the backend. It will delegate the
 /// command it receives to the designated functions that modify the state (see: "reducers" in the Redux pattern).
-pub async fn handle_action<R: tauri::Runtime>(
+pub async fn main_exec<R: tauri::Runtime>(
     action: Action,
     _app_handle: tauri::AppHandle<R>,
     container: tauri::State<'_, AppStateContainer>,
@@ -88,6 +95,24 @@ pub async fn handle_action<R: tauri::Runtime>(
     emit_event(&window, &guard).ok();
 
     Result::Ok(())
+}
+
+pub async fn handle_action<R: tauri::Runtime>(
+    action: Action,
+    app_handle: tauri::AppHandle<R>,
+    container: tauri::State<'_, AppStateContainer>,
+    window: tauri::Window<R>,
+) -> Result<(), String> {
+    tokio::select! {
+        res = main_exec(action, app_handle, container, window) => {
+            info!("Finish invoke");
+            res
+        }
+        _ = deadlock_safety() => {
+            error!("Operation timed out");
+            Err("timed out".to_string())
+        }
+    }
 }
 
 pub fn emit_event<R: tauri::Runtime>(window: &tauri::Window<R>, app_state: &AppState) -> anyhow::Result<()> {
