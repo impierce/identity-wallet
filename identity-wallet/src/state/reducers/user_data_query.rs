@@ -152,7 +152,7 @@ pub async fn connection_query(state: AppState, action: Action) -> Result<AppStat
 mod tests {
     use std::{sync::Arc, vec};
 
-    use oid4vci::credential_format_profiles::{
+    use oid4vc::oid4vci::credential_format_profiles::{
         w3c_verifiable_credentials::jwt_vc_json::JwtVcJson, CredentialFormats, Profile,
     };
 
