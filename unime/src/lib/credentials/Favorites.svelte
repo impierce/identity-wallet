@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
 
   import { goto } from '$app/navigation';
-  import type { DisplayCredential } from 'src-tauri/identity_wallet/bindings/display-credential/DisplayCredential';
+  import type { DisplayCredential } from '@bindings/display-credential/DisplayCredential';
 
   import ListItemCard from '$lib/components/molecules/ListItemCard.svelte';
   import LL from '$src/i18n/i18n-svelte';

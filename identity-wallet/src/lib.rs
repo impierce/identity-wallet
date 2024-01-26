@@ -6,7 +6,7 @@ pub mod utils;
 pub mod verifiable_credential_record;
 
 // Re-exports
-pub use oid4vc::*;
+pub use oid4vc::{oid4vc_core, oid4vc_manager, oid4vci, oid4vp, siopv2};
 
 use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
 use lazy_static::lazy_static;

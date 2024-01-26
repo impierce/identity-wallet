@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { DisplayCredential } from 'src-tauri/identity_wallet/bindings/display-credential/DisplayCredential';
+  import type { DisplayCredential } from '@bindings/display-credential/DisplayCredential';
 
   import ListItemCard from '$lib/components/molecules/ListItemCard.svelte';
   import type { Connection } from '$lib/connections/types';

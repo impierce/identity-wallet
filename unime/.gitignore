@@ -15,8 +15,6 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 /coverage
 
-target/
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
