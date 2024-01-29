@@ -91,6 +91,8 @@ mod bindings {
         CancelUserJourney { payload: CancelUserJourney },
         #[serde(rename = "[User Data] Query")]
         UserDataQuery { payload: UserDataQuery },
+        #[serde(rename = "[Test] Test")]
+        Test { payload: Test },
     }
 }
 
@@ -318,3 +320,18 @@ impl ActionTrait for UserDataQuery {
         vec![reducer!(credential_query), reducer!(connection_query)]
     }
 }
+
+#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
+#[ts(export, export_to = "bindings/actions/Test.ts")]
+pub struct Test {
+    pub test_term: Option<String>,
+    #[serde(default)]
+    pub test_bool: bool,
+}
+
+#[typetag::serde(name = "[Test] Test")]
+impl ActionTrait for Test {
+    fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
+        vec![reducer!(set_locale)]
+    }
+}   

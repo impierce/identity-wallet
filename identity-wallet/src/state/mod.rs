@@ -29,6 +29,29 @@ pub struct Managers {
     pub identity_manager: Option<IdentityManager>,
 }
 
+#[typetag::serde(tag = "type")]
+pub trait ExtensionTrait: Send + Sync + std::fmt::Debug + DynClone {}
+
+dyn_clone::clone_trait_object!(ExtensionTrait);
+
+#[derive(Debug, Serialize, Deserialize, TS, PartialEq, Default, Clone)]
+pub struct CustomExtension {
+    pub name: String,
+    pub value: String,
+}
+
+use dyn_clone::DynClone;
+
+#[typetag::serde(name = "custom")]
+impl ExtensionTrait for CustomExtension {}
+
+async fn get_state(state: AppState, action: actions::GetState) -> Result<AppState, String> {
+    Ok(state)
+}
+
+#[derive(Default)]
+pub struct AppStateContainer(pub tokio::sync::Mutex<AppState>);
+
 /// The inner state of the application managed by Tauri. When the state is serialized in order to be sent to the
 /// frontend, the `managers` and `active_connection_request` fields are skipped.
 #[derive(Default, Serialize, Deserialize, Derivative, TS)]
@@ -53,10 +76,9 @@ pub struct AppState {
     pub user_journey: Option<serde_json::Value>,
     pub connections: Vec<Connection>,
     pub user_data_query: Vec<String>,
+    #[ts(skip)]
+    pub extensions: std::collections::HashMap<String, Box<dyn ExtensionTrait>>,
 }
-
-#[derive(Default)]
-pub struct AppStateContainer(pub tokio::sync::Mutex<AppState>);
 
 #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default, EnumString)]
 #[serde(rename_all = "lowercase")]
