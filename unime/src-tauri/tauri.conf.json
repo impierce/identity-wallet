@@ -1,0 +1,61 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/schema.json",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build",
+    "devPath": "http://localhost:5173",
+    "distDir": "../build",
+    "withGlobalTauri": false
+  },
+  "package": {
+    "productName": "UniMe Beta",
+    "version": "0.4.9"
+  },
+  "tauri": {
+    "bundle": {
+      "active": true,
+      "icon": [
+        "icons/32x32.png",
+        "icons/128x128.png",
+        "icons/128x128@2x.png",
+        "icons/icon.icns",
+        "icons/icon.ico"
+      ],
+      "identifier": "com.impierce.unime",
+      "targets": "all",
+      "iOS": {
+        "developmentTeam": "Impierce Technologies B.V."
+      },
+      "resources": [
+        "resources/*"
+      ]
+    },
+    "security": {
+      "csp": "default-src 'self' ipc: http://ipc.localhost; style-src 'unsafe-inline' 'self'; img-src 'self' asset: http://asset.localhost",
+      "assetProtocol": {
+        "enable": true,
+        "scope": [
+          "$APPDATA/assets/**/*.png",
+          "$APPDATA/assets/**/*.svg"
+        ]
+      }
+    },
+    "windows": [
+      {
+        "fullscreen": false,
+        "resizable": true,
+        "title": "UniMe - Identity Wallet",
+        "width": 390,
+        "height": 844
+      }
+    ]
+  },
+  "plugins": {
+    "fs": {
+      "scope": [
+        "$APPDATA/assets/**/*.png",
+        "$APPDATA/assets/**/*.svg"
+      ]
+    }
+  }
+}
