@@ -21,7 +21,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.impierce.unime",
+      "identifier": "com.impierce.identity-wallet",
       "targets": "all",
       "iOS": {
         "developmentTeam": "Impierce Technologies B.V."
