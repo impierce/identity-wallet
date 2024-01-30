@@ -121,14 +121,14 @@ const nl = {
       TITLE: 'Mijn profiel',
       PROFILE_NAME: {
         TITLE: 'Profielnaam',
-        NAVBAR_TITLE: 'Bewerk profielfoto',
+        NAVBAR_TITLE: 'Bewerk profielnaam',
         INPUT_PLACEHOLDER: 'Profielnaam invoeren',
         CONFIRM: 'Wijzigingen opslaan',
       },
       DISPLAY_PICTURE: {
-        TITLE: 'Toon afbeelding',
+        TITLE: 'Profielfoto',
         EDIT: 'Bewerk',
-        CHANGE: 'Opslaan',
+        CHANGE: 'Selecteer een nieuwe afbeelding',
       },
       DELETE_PROFILE: {
         TITLE: 'Verwijder profiel',
