@@ -22,7 +22,12 @@ pub async fn load_state() -> anyhow::Result<AppState> {
 pub async fn save_state(app_state: &AppState) -> anyhow::Result<()> {
     let state_file = STATE_FILE.lock().unwrap().clone();
     let mut file = File::create(state_file).await?;
-    file.write_all(serde_json::to_string(app_state)?.as_bytes()).await?;
+
+    let mut json_app_state = serde_json::to_value(app_state)?;
+    json_app_state["credentials"].take();
+
+    println!("json_app_state: {:?}", json_app_state);
+    file.write_all(json_app_state.to_string().as_bytes()).await?;
     debug!("state saved to disk");
     Ok(())
 }
@@ -77,14 +82,4 @@ pub fn persist_asset(file_name: &str, id: &str) -> Result<(), AppError> {
     };
 
     Ok(())
-}
-
-#[cfg(test)]
-mod tests {
-    // use super::*;
-
-    #[test]
-    fn test_load_state() {
-        // TODO: how to mock the app_handle?
-    }
 }
