@@ -26,7 +26,6 @@ pub async fn save_state(app_state: &AppState) -> anyhow::Result<()> {
     let mut json_app_state = serde_json::to_value(app_state)?;
     json_app_state["credentials"].take();
 
-    println!("json_app_state: {:?}", json_app_state);
     file.write_all(json_app_state.to_string().as_bytes()).await?;
     debug!("state saved to disk");
     Ok(())

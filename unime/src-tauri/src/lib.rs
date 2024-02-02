@@ -1,13 +1,22 @@
 use fern::colors::Color;
 use identity_wallet::{
     initialize_storage,
-    state::{persistence::clear_assets_tmp_folder, AppStateContainer},
+    state::{persistence::clear_assets_tmp_folder, AppStateContainer, CustomExtension},
 };
 use log::{info, LevelFilter};
 use tauri_plugin_log::{fern::colors::ColoredLevelConfig, Target, TargetKind};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    let mut app_state = AppStateContainer(Default::default());
+    app_state.add_extension("test", Box::new(CustomExtension{
+        name: "test".to_string(),
+        value: "test".to_string(),
+    }));
+
+    //add_extensions(app_state);
+
+
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![tauri_command::handle_action])
         .setup(move |app| {
@@ -21,7 +30,7 @@ pub fn run() {
             }
             Ok(())
         })
-        .manage(AppStateContainer(Default::default()))
+        .manage(app_state)
         .plugin(
             tauri_plugin_log::Builder::new()
                 // .clear_targets()

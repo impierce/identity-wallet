@@ -29,6 +29,8 @@ pub struct Managers {
     pub identity_manager: Option<IdentityManager>,
 }
 
+/////////
+
 #[typetag::serde(tag = "type")]
 pub trait ExtensionTrait: Send + Sync + std::fmt::Debug + DynClone {}
 
@@ -45,12 +47,31 @@ use dyn_clone::DynClone;
 #[typetag::serde(name = "custom")]
 impl ExtensionTrait for CustomExtension {}
 
-async fn get_state(state: AppState, action: actions::GetState) -> Result<AppState, String> {
-    Ok(state)
-}
+// async fn get_state(state: AppState, action: actions::GetState) -> Result<AppState, String> {
+//     Ok(state)
+// }
+
+////////////
 
 #[derive(Default)]
 pub struct AppStateContainer(pub tokio::sync::Mutex<AppState>);
+
+impl AppStateContainer{
+    pub fn add_extension (&mut self, key: &str, extension: Box<dyn ExtensionTrait>) -> &mut Self
+    {
+        let rt = tokio::runtime::Runtime::new().unwrap();
+
+        // Run an async block within the synchronous function
+        rt.block_on(async {
+            // Your asynchronous code here
+            self.0.lock().await.extensions.insert(key.to_string(), extension);
+
+        });
+        self
+
+        //Ok(())
+    }
+}
 
 /// The inner state of the application managed by Tauri. When the state is serialized in order to be sent to the
 /// frontend, the `managers` and `active_connection_request` fields are skipped.
