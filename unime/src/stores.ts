@@ -8,7 +8,7 @@ import { debug, info } from '@tauri-apps/plugin-log';
 
 import { setLocale } from '$src/i18n/i18n-svelte';
 import type { Locales } from '$src/i18n/i18n-types';
-import { sanitize_stringify } from './lib/safe-logging';
+import { sanitizeStringify } from './lib/safe-logging';
 
 interface StateChangedEvent {
   event: string;
@@ -45,7 +45,7 @@ export const state = writable<State>(undefined, (set) => {
     const state = event.payload;
 
     set(state);
-    info(`stores.ts: ${sanitize_stringify(state)}`);
+    info(`stores.ts: ${sanitizeStringify(state)}`);
 
     setLocale(state.locale as Locales);
 
