@@ -19,9 +19,13 @@ serial_test = "2.0"
 tempfile = "3.5.0"
 
 [workspace.package]
-name = "Unime"
-version = "0.1.0"
+name = "unime"
+version = "0.4.9"
+description = "Identity Wallet for people to manage Decentralized Identities and Verifiable Credentials"
+homepage = "https://www.impierce.com/"
+authors = ["Impierce Technologies"]
+keywords = ["identity", "did", "ssi", "wallet", "siopv2"]
+license = "Apache-2.0"
+repository = "https://github.com/impierce/identity-wallet"
 edition = "2021"
-keywords = ["SSI", "Impierce"]
-authors = ["Impierce"]
-license = "Apache 2.0"
+rust-version = "1.75.0"
