@@ -15,11 +15,13 @@ const nl = {
       SUBTITLE: 'Hier is onze belofte aan jou',
       ITEM_1: {
         TITLE: 'Wij delen jouw gegevens niet',
-        DESCRIPTION: 'Jouw gegevens zijn van jou en alleen jij bepaalt met wie je ze deelt. Punt. Sterker nog, jouw gegevens komen nooit in aanraking met een van onze systemen — tenzij je kiest voor een van de cloudopslag opties.',
+        DESCRIPTION:
+          'Jouw gegevens zijn van jou en alleen jij bepaalt met wie je ze deelt. Punt. Sterker nog, jouw gegevens komen nooit in aanraking met een van onze systemen — tenzij je kiest voor een van de cloudopslag opties.',
       },
       ITEM_2: {
         TITLE: 'We zullen geen trackers toevoegen',
-        DESCRIPTION: 'We volgen je acties niet achter de schermen. Punt. Niet om te testen of om welke reden dan ook. Dat beloven we. We verzamelen ook geen anonieme apparaatinformatie or gebruiksstatistieken. Deze beslissing maakt de ontwikkeling van de app wat moeilijker voor ons, maar we geloven dat het de juiste beslissing is.',
+        DESCRIPTION:
+          'We volgen je acties niet achter de schermen. Punt. Niet om te testen of om welke reden dan ook. Dat beloven we. We verzamelen ook geen anonieme apparaatinformatie or gebruiksstatistieken. Deze beslissing maakt de ontwikkeling van de app wat moeilijker voor ons, maar we geloven dat het de juiste beslissing is.',
       },
       ITEM_3: {
         TITLE: 'Je bezit jouw informatie',
