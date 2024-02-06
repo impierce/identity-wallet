@@ -1,0 +1,31 @@
+[workspace]
+resolver = "2"
+members = ["identity-wallet", "unime/src-tauri"]
+
+[workspace.dependencies]
+tauri = { version = "=2.0.0-alpha.21", features = [
+    "protocol-asset",
+    "rustls-tls",
+] }
+
+oid4vc = { git = "https://git@github.com/impierce/openid4vc.git", rev = "af7c5118a45c59f310eb3aab7dac68caafc8fa53" }
+log = "^0.4"
+serde_json = "1.0"
+did-key = "0.2.1"
+indoc = "2.0"
+rand = "0.8"
+wiremock = "0.5"
+serial_test = "2.0"
+tempfile = "3.5.0"
+
+[workspace.package]
+name = "unime"
+version = "0.4.9"
+description = "Identity Wallet for people to manage Decentralized Identities and Verifiable Credentials"
+homepage = "https://www.impierce.com/"
+authors = ["Impierce Technologies"]
+keywords = ["identity", "did", "ssi", "wallet", "siopv2"]
+license = "Apache-2.0"
+repository = "https://github.com/impierce/identity-wallet"
+edition = "2021"
+rust-version = "1.75.0"
