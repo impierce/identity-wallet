@@ -3,7 +3,7 @@
 const defaultBadWords = ['password', 'pass', 'token', 'auth', 'secret', 'passphrase', 'card'];
 
 const sanitizeStringifyRecursively = function (object: any, replacer: any, space: any): any {
-  if (object !== null && object !== undefined) {
+  if (object === null || object === undefined) {
     return object;
   }
 
