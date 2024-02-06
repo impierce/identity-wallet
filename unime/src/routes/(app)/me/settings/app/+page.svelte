@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { fade } from 'svelte/transition';
 
   import { locales } from '$lib/app/locales';
   import { dispatch } from '$lib/dispatcher';
@@ -12,6 +13,7 @@
   import ChatCircleText from '~icons/ph/chat-circle-text-fill';
   import Code from '~icons/ph/code-bold';
   import Confetti from '~icons/ph/confetti-fill';
+  import Files from '~icons/ph/files-fill';
   import Password from '~icons/ph/password-fill';
   import Sun from '~icons/ph/sun-fill';
   import Translate from '~icons/ph/translate-fill';
@@ -24,7 +26,7 @@
 </script>
 
 <TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.APP.NAVBAR_TITLE()} />
-<div class="content-height flex flex-col bg-silver dark:bg-navy">
+<div class="content-height bg-silver dark:bg-navy flex flex-col">
   <div class="flex flex-col space-y-[10px] px-4 py-5">
     <SettingsEntry
       icon={Translate}
@@ -53,6 +55,16 @@
     <SettingsEntry icon={Code} title={$LL.SETTINGS.APP.DEVELOPER_MODE.TITLE()} hasCaretRight={false}>
       <Switch active={$state?.dev_mode !== 'Off'} on:change={toggleDevSettings} />
     </SettingsEntry>
+    {#if $state.dev_mode_enabled}
+      <div transition:fade={{ duration: 200 }}>
+        <SettingsEntry
+          icon={Files}
+          title={'DID management'}
+          hasCaretRight={true}
+          on:click={() => goto('/me/settings/app/did')}
+        />
+      </div>
+    {/if}
   </div>
 </div>
 
