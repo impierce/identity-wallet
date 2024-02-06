@@ -4,7 +4,7 @@
 
 # UniMe - Identity Wallet
 
-Identity Wallet for people to manage Decentralized Identities and Verifiable Credentials.
+Identity Wallet for people to manage Decentralized Identities and Verifiable Credentials
 
 ### Tech stack
 

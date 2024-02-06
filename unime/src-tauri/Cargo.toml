@@ -15,14 +15,10 @@ name = "unime"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
-tauri-build = { version = "=2.0.0-alpha.14", features = [] }
+tauri-build = { version = "=2.0.0-beta.1", features = [] }
 
 [dependencies]
-tauri = { version = "=2.0.0-alpha.21", features = [
-    "protocol-asset",
-    "rustls-tls",
-] }
-
+tauri.workspace = true
 oid4vc.workspace = true
 log.workspace = true
 serde_json.workspace = true
@@ -30,9 +26,9 @@ did-key.workspace = true
 
 identity-wallet = { path = "../../identity-wallet" }
 
-tauri-plugin-barcode-scanner = { version = "=2.0.0-alpha.4" }
-tauri-plugin-log = { version = "=2.0.0-alpha.6", features = ["colored"] }
-tauri-plugin-fs = { version = "=2.0.0-alpha.6" }
+tauri-plugin-barcode-scanner = { version = "=2.0.0-beta.0" }
+tauri-plugin-log = { version = "=2.0.0-beta.0", features = ["colored"] }
+tauri-plugin-fs = { version = "=2.0.0-beta.0" }
 
 dotenvy = { version = "0.15" }
 fern = "0.6.0"
@@ -44,7 +40,7 @@ wiremock.workspace = true
 serial_test.workspace = true
 tempfile.workspace = true
 
-tauri = { version = "=2.0.0-alpha.21", features = ["rustls-tls", "test"] }
+tauri = { version = "=2.0.0-beta.2", features = ["rustls-tls", "test"] }
 serde = { version = "1.0", features = ["derive"] }
 tokio = { version = "1.26.0", features = ["macros"] }
 url = "2.4"
