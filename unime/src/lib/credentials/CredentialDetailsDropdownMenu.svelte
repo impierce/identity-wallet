@@ -1,7 +1,7 @@
 <script lang="ts">
-  import type { DisplayCredential } from '@bindings/display-credential/DisplayCredential';
   import { fade, fly } from 'svelte/transition';
 
+  import type { DisplayCredential } from '@bindings/display-credential/DisplayCredential';
   import { createDialog, createDropdownMenu, melt } from '@melt-ui/svelte';
 
   import { dispatch } from '$lib/dispatcher';

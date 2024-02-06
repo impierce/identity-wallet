@@ -10,15 +10,15 @@ use crate::{
 };
 use identity_credential::{credential::Jwt, presentation::Presentation};
 use log::{debug, info};
-use oid4vc::oid4vp::oid4vp;
 use oid4vc::oid4vc_core::authorization_request::{AuthorizationRequest, Object};
 use oid4vc::oid4vc_manager::managers::presentation::create_presentation_submission;
 use oid4vc::oid4vci::credential_format_profiles::{
     w3c_verifiable_credentials::jwt_vc_json::JwtVcJson, Credential, CredentialFormats,
 };
+use oid4vc::oid4vp::oid4vp;
 use oid4vc::oid4vp::{evaluate_input, oid4vp::OID4VP};
-use serde::{Deserialize, Serialize};
 use oid4vc::siopv2::siopv2::SIOPv2;
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
 pub enum ConnectionRequest {

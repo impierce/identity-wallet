@@ -1,5 +1,4 @@
 import type { Action } from '@bindings/actions/Action';
-
 import { invoke } from '@tauri-apps/api/core';
 import { info } from '@tauri-apps/plugin-log';
 
