@@ -1,12 +1,12 @@
-use std::time::Duration;
-use log::error;
 use crate::error::AppError;
 use crate::state::actions::Action;
 use crate::state::persistence::save_state;
 use crate::state::{AppState, AppStateContainer};
 use futures::StreamExt;
 use itertools::Itertools;
+use log::error;
 use log::{debug, info, warn};
+use std::time::Duration;
 use tauri::Manager;
 
 /// This function represents the root reducer of the application. It will delegate the state update to the reducers that
@@ -35,7 +35,6 @@ async fn deadlock_safety() {
     tokio::time::sleep(Duration::from_secs(6)).await;
 }
 
-
 /// This command handler is the single point of entry to the business logic in the backend. It will delegate the
 /// command it receives to the designated functions that modify the state (see: "reducers" in the Redux pattern).
 pub async fn main_exec<R: tauri::Runtime>(
@@ -49,25 +48,7 @@ pub async fn main_exec<R: tauri::Runtime>(
     let mut guard = container.0.lock().await;
 
     // Get a copy of the current state and pass it to the root reducer.
-    match reduce(
-        AppState {
-            managers: guard.managers.clone(),
-            active_profile: guard.active_profile.clone(),
-            active_connection_request: serde_json::from_value(serde_json::json!(guard.active_connection_request))
-                .unwrap(),
-            locale: guard.locale.clone(),
-            credentials: guard.credentials.clone(),
-            current_user_prompt: guard.current_user_prompt.clone(),
-            debug_messages: guard.debug_messages.clone(),
-            user_journey: guard.user_journey.clone(),
-            connections: guard.connections.clone(),
-            user_data_query: guard.user_data_query.clone(),
-            dev_mode_enabled: guard.dev_mode_enabled,
-        },
-        action,
-    )
-    .await
-    {
+    match reduce(guard.clone(), action).await {
         // If the state update succeeds, we replace the old state with the new one.
         Ok(app_state) => {
             debug!("{app_state:?}");
