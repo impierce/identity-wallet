@@ -19,4 +19,4 @@ export const locales: {
   { locale: 'de-DE', flag: DE, displayName: 'Deutsch' },
 ];
 
-export const incompleteLocales: Locale[] = ['en-GB', 'nl-NL'];
+export const incompleteLocales: Locale[] = ['en-GB'];
