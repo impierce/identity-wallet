@@ -9,6 +9,7 @@ use crate::{
     verifiable_credential_record::DisplayCredential,
 };
 use derivative::Derivative;
+use downcast_rs::{impl_downcast, DowncastSync};
 use oid4vc::oid4vc_core::Subject;
 use oid4vc::oid4vc_manager::ProviderManager;
 use oid4vc::oid4vci::Wallet;
@@ -32,9 +33,12 @@ pub struct Managers {
 /////////
 
 #[typetag::serde(tag = "type")]
-pub trait ExtensionTrait: Send + Sync + std::fmt::Debug + DynClone {}
+pub trait ExtensionTrait: Send + Sync + std::fmt::Debug + DynClone + DowncastSync{}
 
 dyn_clone::clone_trait_object!(ExtensionTrait);
+
+impl_downcast!(sync ExtensionTrait);
+
 
 #[derive(Debug, Serialize, Deserialize, TS, PartialEq, Default, Clone)]
 pub struct CustomExtension {
@@ -47,29 +51,21 @@ use dyn_clone::DynClone;
 #[typetag::serde(name = "custom")]
 impl ExtensionTrait for CustomExtension {}
 
-// async fn get_state(state: AppState, action: actions::GetState) -> Result<AppState, String> {
-//     Ok(state)
-// }
-
 ////////////
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct AppStateContainer(pub tokio::sync::Mutex<AppState>);
 
 impl AppStateContainer{
-    pub fn add_extension (&mut self, key: &str, extension: Box<dyn ExtensionTrait>) -> &mut Self
+    pub async fn add_extension (self, key: &str, extension: Box<dyn ExtensionTrait>) -> Self
     {
-        let rt = tokio::runtime::Runtime::new().unwrap();
+        // let rt = tokio::runtime::Runtime::new().unwrap();
 
-        // Run an async block within the synchronous function
-        rt.block_on(async {
-            // Your asynchronous code here
+        // rt.block_on(async {
             self.0.lock().await.extensions.insert(key.to_string(), extension);
 
-        });
+        // });
         self
-
-        //Ok(())
     }
 }
 

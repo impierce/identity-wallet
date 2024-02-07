@@ -14,7 +14,7 @@ name = "unime"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
-tauri-build = { version = "=2.0.0-alpha.13", features = [] }
+tauri-build = { version = "=2.0.0-alpha.14", features = [] }
 
 [dependencies]
 tauri.workspace = true
@@ -39,7 +39,7 @@ wiremock.workspace = true
 serial_test.workspace = true
 tempfile.workspace = true
 
-tauri = { version = "=2.0.0-alpha.20", features = ["rustls-tls", "test"] }
+tauri = { version = "=2.0.0-alpha.21", features = ["rustls-tls", "test"] }
 serde = { version = "1.0", features = ["derive"] }
 tokio = { version = "1.26.0", features = ["macros"] }
 url = "2.4"

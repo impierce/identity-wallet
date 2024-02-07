@@ -3,7 +3,7 @@ resolver = "2"
 members = ["identity-wallet", "unime/src-tauri"]
 
 [workspace.dependencies]
-tauri = { version = "=2.0.0-alpha.20", features = [
+tauri = { version = "=2.0.0-alpha.21", features = [
     "protocol-asset",
     "rustls-tls",
 ] }

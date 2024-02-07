@@ -4,7 +4,7 @@ pub mod dev_mode;
 pub mod storage;
 pub mod user_data_query;
 
-use super::actions::{listen, CancelUserFlow, SetLocale, UpdateCredentialMetadata, UpdateProfileSettings};
+use super::actions::{listen, Test, CancelUserFlow, SetLocale, UpdateCredentialMetadata, UpdateProfileSettings};
 use super::persistence::{delete_state_file, delete_stronghold, load_state};
 use super::IdentityManager;
 use crate::crypto::stronghold::StrongholdManager;
@@ -21,6 +21,15 @@ use oid4vc::oid4vc_manager::ProviderManager;
 use oid4vc::oid4vci::Wallet;
 use serde_json::json;
 use std::sync::Arc;
+
+pub async fn test_feat_state(state: AppState, action: Test) -> Result<AppState, String> {
+    let mut ext = state.extensions.get("test").unwrap().clone().downcast_mut::<super::CustomExtension>().unwrap().clone();
+    ext.name = action.test_term.unwrap();
+    if action.test_bool {
+        ext.value = "new".to_string();
+    }
+    Ok(state)
+}
 
 pub async fn get_state(_state: AppState, _action: Action) -> Result<AppState, AppError> {
     println!("get_state reducer called");

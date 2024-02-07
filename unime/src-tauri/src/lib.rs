@@ -8,8 +8,7 @@ use tauri_plugin_log::{fern::colors::ColoredLevelConfig, Target, TargetKind};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    let mut app_state = AppStateContainer(Default::default());
-    app_state.add_extension("test", Box::new(CustomExtension{
+    let app_state = AppStateContainer(Default::default()).add_extension("test", Box::new(CustomExtension{
         name: "test".to_string(),
         value: "test".to_string(),
     }));

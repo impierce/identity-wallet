@@ -1,6 +1,5 @@
 use std::{future::Future, pin::Pin};
 use ts_rs::TS;
-
 use crate::{
     command::cancel_user_journey,
     error::AppError,
@@ -17,13 +16,9 @@ use crate::{
         user_data_query::{connection_query, credential_query},
     },
 };
-
 use super::{AppState, Locale};
-
 use downcast_rs::{impl_downcast, DowncastSync};
-
 use crate::state::{QueryTarget, SortMethod};
-
 use super::*;
 
 #[macro_export]
@@ -93,6 +88,7 @@ mod bindings {
         UserDataQuery { payload: UserDataQuery },
         #[serde(rename = "[Test] Test")]
         Test { payload: Test },
+        
     }
 }
 
