@@ -444,6 +444,22 @@ type RootTranslation = {
 				 * A​b​o​u​t​ ​U​n​i​M​e
 				 */
 				TITLE: string
+				/**
+				 * A​b​o​u​t​ ​U​n​i​M​e
+				 */
+				NAVBAR_TITLE: string
+				/**
+				 * 0​.​4​.​9
+				 */
+				VERSION: string
+				/**
+				 * B​u​i​l​t​ ​w​i​t​h​ ​T​a​u​r​i
+				 */
+				TITLE_1: string
+				/**
+				 * A​p​a​c​h​e​ ​2​.​0
+				 */
+				TITLE_2: string
 			}
 			FEEDBACK: {
 				/**
@@ -468,6 +484,10 @@ type RootTranslation = {
 		FORGOT_PASSWORD: string
 	}
 	ME: {
+		/**
+		 * M​e
+		 */
+		BOTTOM_NAVIGATION_TITLE: string
 		GREETINGS: {
 			/**
 			 * H​e​y
@@ -521,6 +541,10 @@ type RootTranslation = {
 	}
 	ACTIVITY: {
 		/**
+		 * A​c​t​i​v​i​t​y
+		 */
+		BOTTOM_NAVIGATION_TITLE: string
+		/**
 		 * C​o​n​n​e​c​t​e​d
 		 */
 		NAVBAR_TITLE: string
@@ -534,6 +558,12 @@ type RootTranslation = {
 			 */
 			TIMELINE: string
 		}
+	}
+	SCAN: {
+		/**
+		 * S​c​a​n
+		 */
+		BOTTOM_NAVIGATION_TITLE: string
 	}
 	CONNECTION: {
 		TABS: {
@@ -551,6 +581,10 @@ type RootTranslation = {
 			ACTIVITY: string
 		}
 		SUMMARY: {
+			/**
+			 * N​o​ ​c​o​n​n​e​c​t​i​o​n​s​ ​y​e​t​.
+			 */
+			EMPTY: string
 			/**
 			 * C​o​n​n​e​c​t​e​d​ ​t​o
 			 */
@@ -1051,6 +1085,22 @@ export type TranslationFunctions = {
 				 * About UniMe
 				 */
 				TITLE: () => LocalizedString
+				/**
+				 * About UniMe
+				 */
+				NAVBAR_TITLE: () => LocalizedString
+				/**
+				 * 0.4.9
+				 */
+				VERSION: () => LocalizedString
+				/**
+				 * Built with Tauri
+				 */
+				TITLE_1: () => LocalizedString
+				/**
+				 * Apache 2.0
+				 */
+				TITLE_2: () => LocalizedString
 			}
 			FEEDBACK: {
 				/**
@@ -1075,6 +1125,10 @@ export type TranslationFunctions = {
 		FORGOT_PASSWORD: () => LocalizedString
 	}
 	ME: {
+		/**
+		 * Me
+		 */
+		BOTTOM_NAVIGATION_TITLE: () => LocalizedString
 		GREETINGS: {
 			/**
 			 * Hey
@@ -1128,6 +1182,10 @@ export type TranslationFunctions = {
 	}
 	ACTIVITY: {
 		/**
+		 * Activity
+		 */
+		BOTTOM_NAVIGATION_TITLE: () => LocalizedString
+		/**
 		 * Connected
 		 */
 		NAVBAR_TITLE: () => LocalizedString
@@ -1141,6 +1199,12 @@ export type TranslationFunctions = {
 			 */
 			TIMELINE: () => LocalizedString
 		}
+	}
+	SCAN: {
+		/**
+		 * Scan
+		 */
+		BOTTOM_NAVIGATION_TITLE: () => LocalizedString
 	}
 	CONNECTION: {
 		TABS: {
@@ -1158,6 +1222,10 @@ export type TranslationFunctions = {
 			ACTIVITY: () => LocalizedString
 		}
 		SUMMARY: {
+			/**
+			 * No connections yet.
+			 */
+			EMPTY: () => LocalizedString
 			/**
 			 * Connected to
 			 */

@@ -7,7 +7,7 @@
   import { fly } from 'svelte/transition';
 
   import { melt } from '@melt-ui/svelte';
-
+  import LL from '$src/i18n/i18n-svelte';
   import { dispatch } from '$lib/dispatcher';
   import { getImageAsset } from '$lib/utils';
   import { colors } from '$src/lib/app/colors';
@@ -82,7 +82,7 @@
     {/if}
   </div>
   <TopNavBar
-    title="Credential info"
+    title={$LL.ME.CREDENTIAL.NAVBAR_TITLE()}
     on:back={() => history.back()}
     class={credentialLogoUrl ? '' : `${color} dark:${color} text-slate-800 dark:text-slate-800`}
   />

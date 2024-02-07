@@ -162,6 +162,10 @@ const en = {
       TITLE: 'Support',
       ABOUT: {
         TITLE: 'About UniMe',
+        NAVBAR_TITLE: 'About UniMe',
+        VERSION: '0.4.9',
+        TITLE_1: 'Built with Tauri',
+        TITLE_2: 'Apache 2.0',
       },
       FEEDBACK: {
         TITLE: 'Send feedback',
@@ -174,6 +178,7 @@ const en = {
     FORGOT_PASSWORD: 'Forgot password?',
   },
   ME: {
+    BOTTOM_NAVIGATION_TITLE: 'Me',
     GREETINGS: {
       GREETING_0: 'Hey',
       GREETING_1: "What's up",
@@ -186,6 +191,15 @@ const en = {
       DATA: 'Data',
       BADGES: 'Badges',
     },
+    CREDENTIAL: {
+      NAVBAR_TITLE: 'Credential info',
+      NAME: '',
+    },
+    BADGE: {
+      NAVBAR_TITLE: 'Badge info',
+      DESCRIPTION: 'Description',
+      METADATA: 'Metadata',
+    },
     EMPTY_CREDENTIALS: {
       TITLE: "It's a bit quiet in here",
       SUBTITLE: 'Why not add some credentials to start your new digital me?',
@@ -193,11 +207,15 @@ const en = {
     FAVORITES: 'My favorites',
   },
   ACTIVITY: {
+    BOTTOM_NAVIGATION_TITLE: 'Activity',
     NAVBAR_TITLE: 'Connected',
     TABS: {
       CONNECTIONS: 'Connections',
       TIMELINE: 'Timeline',
     },
+  },
+  SCAN: {
+    BOTTOM_NAVIGATION_TITLE: 'Scan',
   },
   CONNECTION: {
     TABS: {
@@ -206,6 +224,7 @@ const en = {
       ACTIVITY: 'Activity',
     },
     SUMMARY: {
+      EMPTY: 'No connections yet.',
       TITLE: 'Connected to',
       FIRST_CONNECTED: 'First connected',
       LAST_CONNECTED: 'Last connected',

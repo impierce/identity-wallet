@@ -111,6 +111,10 @@ const nl = {
       TITLE: 'Support',
       ABOUT: {
         TITLE: 'Over UniMe',
+        NAVBAR_TITLE: 'Over UniMe',
+        VERSION: '0.4.9',
+        TITLE_1: 'Gebouwd met Tauri',
+        TITLE_2: 'Apache 2.0',
       },
       FEEDBACK: {
         TITLE: 'Stuur feedback',
@@ -172,6 +176,7 @@ const nl = {
     FORGOT_PASSWORD: 'Wachtwoord vergeten?',
   },
   ME: {
+    BOTTOM_NAVIGATION_TITLE: 'Me',
     GREETINGS: {
       GREETING_0: 'Hey',
       GREETING_1: 'Hallo',
@@ -183,6 +188,14 @@ const nl = {
       ALL: 'Alle',
       DATA: 'Data',
       BADGES: 'Badges',
+    }, 
+    CREDENTIAL: {
+      NAVBAR_TITLE: 'Credential informatie',
+    },
+    BADGE: {
+      NAVBAR_TITLE: 'Badge informatie',
+      DESCRIPTION: 'Description',
+      METADATA: 'Metadata',
     },
     EMPTY_CREDENTIALS: {
       TITLE: 'Momenteel is het hier wat rustig',
@@ -191,19 +204,24 @@ const nl = {
     FAVORITES: 'Mijn favorieten',
   },
   ACTIVITY: {
+    BOTTOM_NAVIGATION_TITLE: 'Activiteiten',
     NAVBAR_TITLE: 'Verbonden',
     TABS: {
       CONNECTIONS: 'Verbindingen',
-      TIMELINE: 'Cursus',
+      TIMELINE: 'Tijdlijn',
     },
+  },
+  SCAN: {
+    BOTTOM_NAVIGATION_TITLE: 'Scan',
   },
   CONNECTION: {
     TABS: {
       SUMMARY: 'Overzicht',
       DATA: 'Data',
-      ACTIVITY: 'Cursus',
+      ACTIVITY: 'Tijdlijn',
     },
     SUMMARY: {
+      EMPTY: 'Nog geen verbindingen.',
       TITLE: 'Verbonden met',
       FIRST_CONNECTED: 'Eerst verbonden',
       LAST_CONNECTED: 'Laatst verbonden',

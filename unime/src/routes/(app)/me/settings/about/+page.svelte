@@ -1,11 +1,12 @@
 <script lang="ts">
+  import LL from '$src/i18n/i18n-svelte';
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
 
   import Heart from '~icons/ph/heart-fill';
 </script>
 
-<TopNavBar on:back={() => history.back()} title="About UniMe" />
-<div class="content-height flex flex-col bg-silver dark:bg-navy">
+<TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.SUPPORT.ABOUT.NAVBAR_TITLE()} />
+<div class="content-height bg-silver dark:bg-navy flex flex-col">
   <div class="flex flex-col p-8">
     <!-- Footer -->
     <div

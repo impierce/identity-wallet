@@ -7,7 +7,7 @@
   import { fly } from 'svelte/transition';
 
   import { melt } from '@melt-ui/svelte';
-
+  import LL from '$src/i18n/i18n-svelte';
   import { dispatch } from '$lib/dispatcher';
   import { getImageAsset } from '$lib/utils';
   import Button from '$src/lib/components/atoms/Button.svelte';
@@ -73,7 +73,7 @@
 <div class="content-height relative flex w-full flex-col">
   <!-- TODO: allow overriding the color of the TopNavBar -->
   <TopNavBar
-    title="Badge information"
+    title={$LL.ME.BADGE.NAVBAR_TITLE()}
     on:back={() => history.back()}
     class="bg-white text-slate-800 dark:bg-dark dark:text-grey"
   />
