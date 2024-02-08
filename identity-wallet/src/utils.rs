@@ -1,3 +1,4 @@
+use log::warn;
 use std::{
     fs::File,
     io::{copy, Cursor},
@@ -18,11 +19,6 @@ pub async fn download_asset(url: reqwest::Url, logo_type: LogoType, index: usize
     let file_name = url.path_segments().unwrap().last().unwrap();
     let extension = file_name.split('.').last().unwrap();
 
-    // Abort download if file type is not supported
-    if !["png", "svg"].contains(&extension) {
-        // return Err(AppError::DownloadAborted("Media type is not supported"));
-    }
-
     let assets_dir = ASSETS_DIR.lock().unwrap().as_path().to_owned();
     let tmp_dir = assets_dir.join("tmp");
 
@@ -38,7 +34,7 @@ pub async fn download_asset(url: reqwest::Url, logo_type: LogoType, index: usize
 
     if let Some(content_type) = response.headers().get("content-type") {
         if !["image/png", "image/svg+xml"].contains(&content_type.to_str().unwrap()) {
-            println!("content_type: {:?}", content_type);
+            warn!("content_type: {:?}", content_type);
             return Err(AppError::DownloadAborted("content-type is not supported"));
         }
     } else {
