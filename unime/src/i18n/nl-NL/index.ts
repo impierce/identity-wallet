@@ -236,7 +236,7 @@ const nl = {
       VALID: 'Geldig',
       ISSUED_BY: 'Uitgegeven door',
       DESCRIPTION: 'Beschrijving',
-      METADATA: 'Metagegevens',
+      METADATA: 'Metadata',
     },
   },
   CANCEL: 'Annuleren',
