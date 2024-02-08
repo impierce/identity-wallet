@@ -1,1 +1,4 @@
 target/
+/unime/node_modules
+/unime/build
+/unime/.svelte-kit

@@ -1,5 +1,5 @@
 use identity_wallet::{
-    state::{actions::Action, persistence::save_state, AppState, AppStateContainer},
+    state::{actions::Action, persistence::save_state, AppState, AppStateContainer, CustomExtension},
     STATE_FILE, STRONGHOLD,
 };
 use serde_json::json;
@@ -14,7 +14,7 @@ pub async fn assert_state_update(
 ) {
     {
         let current_state = current_state.0.lock().await;
-
+        
         // Save the current state to the state file.
         save_state(&current_state).await.unwrap();
     }
@@ -57,6 +57,7 @@ pub async fn assert_state_update(
                 current_user_prompt,
                 user_data_query,
                 debug_messages,
+                extensions,
                 ..
             } = &mut *guard;
 
@@ -67,6 +68,7 @@ pub async fn assert_state_update(
                 current_user_prompt: expected_current_user_prompt,
                 user_data_query: expected_user_data_query,
                 debug_messages: expected_debug_messages,
+                extensions: expected_extensions,
                 ..
             } = expected_state;
 
@@ -95,6 +97,9 @@ pub async fn assert_state_update(
             assert_eq!(debug_messages.len(), expected_debug_messages.len());
             assert_eq!(current_user_prompt, expected_current_user_prompt);
             assert_eq!(user_data_query, expected_user_data_query);
+            if (extensions.len() != 0) || (expected_extensions.len() != 0) {
+                assert_eq!(extensions.get("test").unwrap().clone().downcast::<CustomExtension>().unwrap(), expected_extensions.get("test").unwrap().clone().downcast::<CustomExtension>().unwrap());
+            }
         }
     }
 }

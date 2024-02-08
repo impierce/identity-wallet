@@ -30,8 +30,6 @@ pub struct Managers {
     pub identity_manager: Option<IdentityManager>,
 }
 
-/////////
-
 #[typetag::serde(tag = "type")]
 pub trait ExtensionTrait: Send + Sync + std::fmt::Debug + DynClone + DowncastSync{}
 
@@ -51,21 +49,18 @@ use dyn_clone::DynClone;
 #[typetag::serde(name = "custom")]
 impl ExtensionTrait for CustomExtension {}
 
-////////////
-
 #[derive(Default, Debug)]
 pub struct AppStateContainer(pub tokio::sync::Mutex<AppState>);
 
 impl AppStateContainer{
     pub async fn add_extension (self, key: &str, extension: Box<dyn ExtensionTrait>) -> Self
     {
-        // let rt = tokio::runtime::Runtime::new().unwrap();
-
-        // rt.block_on(async {
-            self.0.lock().await.extensions.insert(key.to_string(), extension);
-
-        // });
+        self.0.lock().await.extensions.insert(key.to_string(), extension);
         self
+    }
+    pub fn from_appstate(appstate: AppState) -> AppStateContainer {
+        let appstate_container = AppStateContainer {0: tokio::sync::Mutex::new(appstate)};
+        appstate_container
     }
 }
 

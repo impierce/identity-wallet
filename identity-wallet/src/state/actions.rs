@@ -4,6 +4,7 @@ use crate::{
     command::cancel_user_journey,
     error::AppError,
     state::reducers::{
+        test_feat_state,
         authorization::{
             handle_oid4vp_authorization_request, handle_siopv2_authorization_request, read_authorization_request,
         },
@@ -87,7 +88,7 @@ mod bindings {
         #[serde(rename = "[User Data] Query")]
         UserDataQuery { payload: UserDataQuery },
         #[serde(rename = "[Test] Test")]
-        Test { payload: Test },
+        CustomExtensionTest { payload: CustomExtensionTest },
         
     }
 }
@@ -319,15 +320,15 @@ impl ActionTrait for UserDataQuery {
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/Test.ts")]
-pub struct Test {
+pub struct CustomExtensionTest {
     pub test_term: Option<String>,
     #[serde(default)]
     pub test_bool: bool,
 }
 
 #[typetag::serde(name = "[Test] Test")]
-impl ActionTrait for Test {
+impl ActionTrait for CustomExtensionTest {
     fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
-        vec![reducer!(set_locale)]
+        vec![reducer!(test_feat_state)]
     }
 }   

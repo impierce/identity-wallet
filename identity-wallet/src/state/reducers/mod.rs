@@ -4,7 +4,7 @@ pub mod dev_mode;
 pub mod storage;
 pub mod user_data_query;
 
-use super::actions::{listen, Test, CancelUserFlow, SetLocale, UpdateCredentialMetadata, UpdateProfileSettings};
+use super::actions::{listen, CustomExtensionTest, CancelUserFlow, SetLocale, UpdateCredentialMetadata, UpdateProfileSettings};
 use super::persistence::{delete_state_file, delete_stronghold, load_state};
 use super::IdentityManager;
 use crate::crypto::stronghold::StrongholdManager;
@@ -22,11 +22,21 @@ use oid4vc::oid4vci::Wallet;
 use serde_json::json;
 use std::sync::Arc;
 
-pub async fn test_feat_state(state: AppState, action: Test) -> Result<AppState, String> {
-    let mut ext = state.extensions.get("test").unwrap().clone().downcast_mut::<super::CustomExtension>().unwrap().clone();
-    ext.name = action.test_term.unwrap();
-    if action.test_bool {
-        ext.value = "new".to_string();
+pub async fn test_feat_state(state: AppState, action: Action) -> Result<AppState, AppError> {
+    if let Some(test_feat_state) = listen::<CustomExtensionTest>(action) {
+        
+        let mut new_state = AppState {
+            ..state
+        };
+
+        new_state.extensions.insert("test".to_string(), Box::new(super::CustomExtension{
+            name: "new".to_string(),
+            value: if test_feat_state.test_bool { "new".to_string() } else { "old".to_string() }
+        }));
+
+        return Ok(AppState {
+            ..new_state
+        });
     }
     Ok(state)
 }
