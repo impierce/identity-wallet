@@ -1,5 +1,6 @@
 // Because logging of svelte can end up in Tauri when stringified. This function will provide some safety
 
+// Its from a package online, its just the keywords that are often used for sensitive data. Its not a bulletproof solution.
 const defaultBadWords = ['password', 'pass', 'token', 'auth', 'secret', 'passphrase', 'card'];
 
 const sanitizeStringifyRecursively = function (object: any, replacer: any, space: any): any {

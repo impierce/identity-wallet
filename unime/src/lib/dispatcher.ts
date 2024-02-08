@@ -2,7 +2,7 @@ import type { Action } from '@bindings/actions/Action';
 import { invoke } from '@tauri-apps/api/core';
 import { info } from '@tauri-apps/plugin-log';
 
-import { sanitizeStringify } from './secure-logging';
+import { sanitizeStringify } from './sensitive-logging';
 
 /**
  * Dispatches an action to the Tauri backend.

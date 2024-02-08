@@ -1,7 +1,7 @@
-import { sanitizeStringify } from './secure-logging';
+import { sanitizeStringify } from './sensitive-logging';
 
 describe('secure-logging', () => {
-  test('Check if secure logged', () => {
+  test('Check if sensitive data is not logged', () => {
     let credentialObj = {
       name: 'John doe',
       age: 44,
@@ -10,15 +10,15 @@ describe('secure-logging', () => {
 
     let sampleStr = JSON.stringify(credentialObj);
 
-    let secureStr = sanitizeStringify(credentialObj);
+    let sensitiveStr = sanitizeStringify(credentialObj);
 
-    console.log(secureStr);
+    console.log(sensitiveStr);
 
     expect(sampleStr).toContain('please_dont_log');
-    expect(secureStr).not.toContain('please_dont_log');
+    expect(sensitiveStr).not.toContain('please_dont_log');
   });
 
-  test('Check if recursively works', () => {
+  test('Check if sensitive objects recursively is not logged', () => {
     let pw1 = 'please_dont_log';
     let pw2 = 'please_dont_log_as_well';
     let pw3 = 'dont_log';
@@ -36,11 +36,11 @@ describe('secure-logging', () => {
     };
 
     let sampleStr = JSON.stringify(credentialObj);
-    let secureStr = sanitizeStringify(credentialObj);
+    let sensitiveStr = sanitizeStringify(credentialObj);
 
-    expect(secureStr).not.toContain(pw1);
-    expect(secureStr).not.toContain(pw2);
-    expect(secureStr).not.toContain(pw3);
+    expect(sensitiveStr).not.toContain(pw1);
+    expect(sensitiveStr).not.toContain(pw2);
+    expect(sensitiveStr).not.toContain(pw3);
 
     expect(sampleStr).toContain(pw1);
     expect(sampleStr).toContain(pw2);

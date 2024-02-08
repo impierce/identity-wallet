@@ -31,8 +31,11 @@ async fn reduce(state: AppState, action: Action) -> Result<AppState, AppError> {
         .await
 }
 
+// This value is based on an estimated guess. Can be adjusted in case lower/higher timeouts are desired.
+const TIMEOUT_SECS: u64 = 6;
+
 async fn deadlock_safety() {
-    tokio::time::sleep(Duration::from_secs(6)).await;
+    tokio::time::sleep(Duration::from_secs(TIMEOUT_SECS)).await;
 }
 
 /// This command handler is the single point of entry to the business logic in the backend. It will delegate the
@@ -86,7 +89,7 @@ pub async fn handle_action<R: tauri::Runtime>(
 ) -> Result<(), String> {
     tokio::select! {
         res = main_exec(action, app_handle, container, window) => {
-            info!("Finish invoke");
+            debug!("Finish invoke");
             res
         }
         _ = deadlock_safety() => {
