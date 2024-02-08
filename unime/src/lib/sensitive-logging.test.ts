@@ -1,6 +1,6 @@
 import { sanitizeStringify } from './sensitive-logging';
 
-describe('secure-logging', () => {
+describe('sensitive-logging', () => {
   test('Check if sensitive data is not logged', () => {
     let credentialObj = {
       name: 'John doe',
