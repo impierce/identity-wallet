@@ -26,7 +26,7 @@ const empty_state: State = {
     theme: 'system',
     primary_did: '',
   },
-  locale: 'en',
+  locale: 'en-US',
   credentials: [],
   current_user_prompt: null,
   dev_mode_enabled: false,

@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
 
+  import { locales } from '$lib/app/locales';
   import { dispatch } from '$lib/dispatcher';
   import LL from '$src/i18n/i18n-svelte';
   import SettingsEntry from '$src/lib/app/settings/SettingsEntry.svelte';
@@ -14,8 +15,6 @@
   import Password from '~icons/ph/password-fill';
   import Sun from '~icons/ph/sun-fill';
   import Translate from '~icons/ph/translate-fill';
-
-  import { languages, setNextLanguage } from '../../utils';
 </script>
 
 <TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.APP.NAVBAR_TITLE()} />
@@ -25,8 +24,8 @@
       icon={Translate}
       title={$LL.SETTINGS.APP.LANGUAGE.TITLE()}
       hasCaretRight={false}
-      textRight={languages.find((l) => l.locale === $state.locale)?.displayName ?? $state.locale}
-      on:click={() => setNextLanguage($state.locale)}
+      textRight={locales.find((l) => l.locale === $state.locale)?.displayName ?? $state.locale}
+      on:click={() => goto('/me/settings/app/language')}
     />
     <SettingsEntry icon={Sun} title={$LL.SETTINGS.APP.THEME.TITLE()} on:click={() => goto('/me/settings/app/theme')} />
     <SettingsEntry icon={Password} title={$LL.SETTINGS.APP.PASSWORD.TITLE()} todo />

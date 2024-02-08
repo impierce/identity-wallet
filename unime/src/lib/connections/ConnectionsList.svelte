@@ -67,7 +67,12 @@
             />
           </Image>
         </div>
-        <div slot="right" class="h-full pr-2 pt-1 text-[12px]/[20px] font-medium text-slate-400">Tue 09.01.24</div>
+        <div slot="right" class="h-full pr-2 pt-1 text-[12px]/[20px] font-medium text-slate-400">
+          {new Date().toLocaleString($state.locale, {
+            dateStyle: 'short',
+            timeStyle: 'short',
+          })}
+        </div>
       </ListItemCard>
     {/each}
   {/each}
