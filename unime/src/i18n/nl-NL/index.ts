@@ -199,14 +199,14 @@ const nl = {
     NAVBAR_TITLE: 'Verbonden',
     TABS: {
       CONNECTIONS: 'Verbindingen',
-      TIMELINE: 'Cursus',
+      TIMELINE: 'Tijdlijn',
     },
   },
   CONNECTION: {
     TABS: {
       SUMMARY: 'Overzicht',
       DATA: 'Data',
-      ACTIVITY: 'Cursus',
+      ACTIVITY: 'Activiteit',
     },
     SUMMARY: {
       TITLE: 'Verbonden met',
