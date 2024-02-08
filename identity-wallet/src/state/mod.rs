@@ -191,7 +191,8 @@ mod tests {
                   "debug_messages": [],
                   "user_journey": null,
                   "connections": [],
-                  "user_data_query": []
+                  "user_data_query": [],
+                  "extensions": {}
                 }"#}
         );
     }
