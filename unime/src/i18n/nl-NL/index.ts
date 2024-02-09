@@ -115,9 +115,6 @@ const nl = {
       ABOUT: {
         TITLE: 'Over UniMe',
         NAVBAR_TITLE: 'Over UniMe',
-        VERSION: '0.4.9',
-        TITLE_1: 'Gebouwd met Tauri',
-        TITLE_2: 'Apache 2.0',
       },
       FEEDBACK: {
         TITLE: 'Stuur feedback',
@@ -218,30 +215,26 @@ const nl = {
   },
   SCAN: {
     BOTTOM_NAVIGATION_TITLE: 'Scan',
-    TITLE: 'Scan een',
-    TITLE1: 'QR Code',
+    TITLE_1: 'Scan een',
+    TITLE_2: 'QR Code',
     SUBTITLE: 'Breng een QR-code in beeld op dit scherm om een interactie te starten.',
-    PERMISSION: 'Geen recht om toegang',
-    PERMISSION1: 'te krijgen tot de camera',
-    LABELS: {
-      CONNECTION: 'Verbinding Aanvraag (SIOPv2)',
-      SHARE: 'Deel Aanvraag (VP)',
-      SINGLE: 'Credential Aanbod (single)',
-      MULTI: 'Credential Aanbod (multi)',
-      STUDENT: 'Dominique (student)',
-      NEW_SCAN: 'Start nieuwe scan',
-    },
+    PERMISSION_1: 'Geen recht om toegang',
+    PERMISSION_2: 'te krijgen tot de camera',
     CONNECTION_OFFER: {
       NAVBAR_TITLE: 'Credential Aanbod',
       DESCRIPTION: 'biedt u de volgende credentials',
     },
     CONNECTION_REQUEST: {
       NAVBAR_TITLE: 'Credential Aanvraag',
-      DESCRIPTION: 'Nieuwe verbinding',
-      DESCRIPTION1: 'Accepteer alleen nieuwe verbindingen die je herkent en vertrouwt',
+      TITLE_1: 'Nieuwe verbinding',
+      TITLE_2: 'Accepteer alleen nieuwe verbindingen die je herkent en vertrouwt',
       URL: 'URL',
       PREVIOUSLY: 'Eerder verbonden',
     },
+    SHARE_CREDENTIALS: {
+      TITLE_1: 'vraagt de volgende credentials op',
+      TITLE_2: 'Aangevraagd',
+    }
   },
   CONNECTION: {
     TABS: {
@@ -287,6 +280,7 @@ const nl = {
   SKIP: 'Overslaan',
   REJECT: 'Weigeren',
   ACCEPT: 'Accepteren',
+  APPROVE: 'Aanvaard aanvraag',
 } satisfies Translation;
 
 export default nl;

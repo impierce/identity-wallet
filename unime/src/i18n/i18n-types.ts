@@ -462,18 +462,6 @@ type RootTranslation = {
 				 * A​b​o​u​t​ ​U​n​i​M​e
 				 */
 				NAVBAR_TITLE: string
-				/**
-				 * 0​.​4​.​9
-				 */
-				VERSION: string
-				/**
-				 * B​u​i​l​t​ ​w​i​t​h​ ​T​a​u​r​i
-				 */
-				TITLE_1: string
-				/**
-				 * A​p​a​c​h​e​ ​2​.​0
-				 */
-				TITLE_2: string
 			}
 			FEEDBACK: {
 				/**
@@ -602,11 +590,11 @@ type RootTranslation = {
 		/**
 		 * S​c​a​n​ ​a
 		 */
-		TITLE: string
+		TITLE_1: string
 		/**
 		 * Q​R​ ​C​o​d​e
 		 */
-		TITLE1: string
+		TITLE_2: string
 		/**
 		 * B​r​i​n​g​ ​a​ ​Q​R​ ​C​o​d​e​ ​i​n​t​o​ ​v​i​e​w​ ​o​f​ ​t​h​i​s​ ​s​c​r​e​e​n​ ​t​o​ ​s​t​a​r​t​ ​a​n​ ​i​n​t​e​r​a​c​t​i​o​n​.
 		 */
@@ -614,37 +602,11 @@ type RootTranslation = {
 		/**
 		 * N​o​ ​p​e​r​m​i​s​s​i​o​n​s​ ​t​o
 		 */
-		PERMISSION: string
+		PERMISSION_1: string
 		/**
 		 * a​c​c​e​s​s​ ​t​h​e​ ​c​a​m​e​r​a
 		 */
-		PERMISSION1: string
-		LABELS: {
-			/**
-			 * C​o​n​n​e​c​t​i​o​n​ ​R​e​q​u​e​s​t​ ​(​S​I​O​P​v​2​)
-			 */
-			CONNECTION: string
-			/**
-			 * S​h​a​r​e​ ​R​e​q​u​e​s​t​ ​(​V​P​)
-			 */
-			SHARE: string
-			/**
-			 * C​r​e​d​e​n​t​i​a​l​ ​O​f​f​e​r​ ​(​s​i​n​g​l​e​)
-			 */
-			SINGLE: string
-			/**
-			 * C​r​e​d​e​n​t​i​a​l​ ​O​f​f​e​r​ ​(​m​u​l​t​i​)
-			 */
-			MULTI: string
-			/**
-			 * D​o​m​i​n​i​q​u​e​ ​(​s​t​u​d​e​n​t​)
-			 */
-			STUDENT: string
-			/**
-			 * S​t​a​r​t​ ​n​e​w​ ​s​c​a​n
-			 */
-			NEW_SCAN: string
-		}
+		PERMISSION_2: string
 		CONNECTION_OFFER: {
 			/**
 			 * C​r​e​d​e​n​t​i​a​l​ ​O​f​f​e​r
@@ -663,11 +625,11 @@ type RootTranslation = {
 			/**
 			 * N​e​w​ ​c​o​n​n​e​c​t​i​o​n
 			 */
-			DESCRIPTION: string
+			TITLE_1: string
 			/**
 			 * O​n​l​y​ ​a​c​c​e​p​t​ ​n​e​w​ ​c​o​n​n​e​c​t​i​o​n​s​ ​t​h​a​t​ ​y​o​u​ ​r​e​c​o​g​n​i​z​e​ ​a​n​d​ ​t​r​u​s​t
 			 */
-			DESCRIPTION1: string
+			TITLE_2: string
 			/**
 			 * U​R​L
 			 */
@@ -676,6 +638,16 @@ type RootTranslation = {
 			 * C​o​n​n​e​c​t​e​d​ ​p​r​e​v​i​o​u​s​l​y
 			 */
 			PREVIOUSLY: string
+		}
+		SHARE_CREDENTIALS: {
+			/**
+			 * r​e​q​u​e​s​t​s​ ​t​h​e​ ​f​o​l​l​o​w​i​n​g​ ​c​r​e​d​e​n​t​i​a​l​s
+			 */
+			TITLE_1: string
+			/**
+			 * R​e​q​u​e​s​t​e​d
+			 */
+			TITLE_2: string
 		}
 	}
 	CONNECTION: {
@@ -794,6 +766,10 @@ type RootTranslation = {
 	 * A​c​c​e​p​t
 	 */
 	ACCEPT: string
+	/**
+	 * A​p​p​r​o​v​e​ ​r​e​q​u​e​s​t
+	 */
+	APPROVE: string
 }
 
 export type TranslationFunctions = {
@@ -1242,18 +1218,6 @@ export type TranslationFunctions = {
 				 * About UniMe
 				 */
 				NAVBAR_TITLE: () => LocalizedString
-				/**
-				 * 0.4.9
-				 */
-				VERSION: () => LocalizedString
-				/**
-				 * Built with Tauri
-				 */
-				TITLE_1: () => LocalizedString
-				/**
-				 * Apache 2.0
-				 */
-				TITLE_2: () => LocalizedString
 			}
 			FEEDBACK: {
 				/**
@@ -1382,11 +1346,11 @@ export type TranslationFunctions = {
 		/**
 		 * Scan a
 		 */
-		TITLE: () => LocalizedString
+		TITLE_1: () => LocalizedString
 		/**
 		 * QR Code
 		 */
-		TITLE1: () => LocalizedString
+		TITLE_2: () => LocalizedString
 		/**
 		 * Bring a QR Code into view of this screen to start an interaction.
 		 */
@@ -1394,37 +1358,11 @@ export type TranslationFunctions = {
 		/**
 		 * No permissions to
 		 */
-		PERMISSION: () => LocalizedString
+		PERMISSION_1: () => LocalizedString
 		/**
 		 * access the camera
 		 */
-		PERMISSION1: () => LocalizedString
-		LABELS: {
-			/**
-			 * Connection Request (SIOPv2)
-			 */
-			CONNECTION: () => LocalizedString
-			/**
-			 * Share Request (VP)
-			 */
-			SHARE: () => LocalizedString
-			/**
-			 * Credential Offer (single)
-			 */
-			SINGLE: () => LocalizedString
-			/**
-			 * Credential Offer (multi)
-			 */
-			MULTI: () => LocalizedString
-			/**
-			 * Dominique (student)
-			 */
-			STUDENT: () => LocalizedString
-			/**
-			 * Start new scan
-			 */
-			NEW_SCAN: () => LocalizedString
-		}
+		PERMISSION_2: () => LocalizedString
 		CONNECTION_OFFER: {
 			/**
 			 * Credential Offer
@@ -1443,11 +1381,11 @@ export type TranslationFunctions = {
 			/**
 			 * New connection
 			 */
-			DESCRIPTION: () => LocalizedString
+			TITLE_1: () => LocalizedString
 			/**
 			 * Only accept new connections that you recognize and trust
 			 */
-			DESCRIPTION1: () => LocalizedString
+			TITLE_2: () => LocalizedString
 			/**
 			 * URL
 			 */
@@ -1456,6 +1394,16 @@ export type TranslationFunctions = {
 			 * Connected previously
 			 */
 			PREVIOUSLY: () => LocalizedString
+		}
+		SHARE_CREDENTIALS: {
+			/**
+			 * requests the following credentials
+			 */
+			TITLE_1: () => LocalizedString
+			/**
+			 * Requested
+			 */
+			TITLE_2: () => LocalizedString
 		}
 	}
 	CONNECTION: {
@@ -1574,6 +1522,10 @@ export type TranslationFunctions = {
 	 * Accept
 	 */
 	ACCEPT: () => LocalizedString
+	/**
+	 * Approve request
+	 */
+	APPROVE: () => LocalizedString
 }
 
 export type Formatters = {}

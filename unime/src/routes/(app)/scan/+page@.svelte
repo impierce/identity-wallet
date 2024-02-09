@@ -257,7 +257,7 @@
         {#if permissions === 'denied'}
           <div class="flex flex-col items-center space-y-4">
             <div class="rounded-lg bg-rose-100 px-8 py-4 text-rose-500">
-              {$LL.SCAN.PERMISSION()}<br />{$LL.SCAN.PERMISSION1()}
+              {$LL.SCAN.PERMISSION_1()}<br />{$LL.SCAN.PERMISSION_2()}
             </div>
             <Button label="Open settings" on:click={openAppSettings} />
           </div>
@@ -272,10 +272,10 @@
 
         {#if $state?.dev_mode_enabled}
           <div class="flex flex-col space-y-2">
-            <Button variant="secondary" on:click={mockSiopRequest} label={$LL.SCAN.LABELS.CONNECTION()} />
-            <Button variant="secondary" on:click={mockShareRequest} label={$LL.SCAN.LABELS.SHARE()} />
-            <Button variant="secondary" on:click={() => mockScanCredentialOffer(1)} label={$LL.SCAN.LABELS.SINGLE()} />
-            <Button variant="secondary" on:click={() => mockScanCredentialOffer(2)} label={$LL.SCAN.LABELS.MULTI()} />
+            <Button variant="secondary" on:click={mockSiopRequest} label="Connection request (SIOPv2)" />
+            <Button variant="secondary" on:click={mockShareRequest} label="Share request (VP)" />
+            <Button variant="secondary" on:click={() => mockScanCredentialOffer(1)} label="Credential Offer (single)" />
+            <Button variant="secondary" on:click={() => mockScanCredentialOffer(2)} label="Credential Offer (multi)" />
             <Button
               variant="secondary"
               on:click={() =>
@@ -286,9 +286,9 @@
                       'openid-credential-offer://?credential_offer_uri=https://api.ngdil-demo.tanglelabs.io/api/offers/creds/u08LmjU8lAcTwx7pLMpy0',
                   },
                 })}
-              label={$LL.SCAN.LABELS.STUDENT()}
+              label="Dominique (student)"
             />
-            <Button variant="primary" on:click={startScan} label={$LL.SCAN.LABELS.NEW_SCAN()} />
+            <Button variant="primary" on:click={startScan} label="Start new scan" />
           </div>
         {/if}
       </div>
@@ -297,7 +297,7 @@
       <div class="flex grow flex-col" class:invisible={!scanning}>
         <div class="dark:bg-dark bg-white p-5">
           <p class="dark:text-grey text-3xl font-semibold text-slate-700">
-            {$LL.SCAN.TITLE()} <span class="text-primary"> {$LL.SCAN.TITLE1()}</span>
+            {$LL.SCAN.TITLE_1()} <span class="text-primary"> {$LL.SCAN.TITLE_2()}</span>
           </p>
           <p class="mt-4 text-sm font-medium text-slate-500 dark:text-slate-300">
             {$LL.SCAN.SUBTITLE()}

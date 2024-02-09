@@ -74,10 +74,10 @@
           </span>
           <div class="flex flex-col">
             <p class="dark:text-grey text-[13px]/[24px] font-medium text-slate-800">
-              {$LL.SCAN.CONNECTION_REQUEST.DESCRIPTION()}
+              {$LL.SCAN.CONNECTION_REQUEST.TITLE_1()}
             </p>
             <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
-              {$LL.SCAN.CONNECTION_REQUEST.DESCRIPTION1()}
+              {$LL.SCAN.CONNECTION_REQUEST.TITLE_2()}
             </p>
           </div>
         </div>

@@ -166,9 +166,6 @@ const en = {
       ABOUT: {
         TITLE: 'About UniMe',
         NAVBAR_TITLE: 'About UniMe',
-        VERSION: '0.4.9',
-        TITLE_1: 'Built with Tauri',
-        TITLE_2: 'Apache 2.0',
       },
       FEEDBACK: {
         TITLE: 'Send feedback',
@@ -219,30 +216,26 @@ const en = {
   },
   SCAN: {
     BOTTOM_NAVIGATION_TITLE: 'Scan',
-    TITLE: 'Scan a',
-    TITLE1: 'QR Code',
+    TITLE_1: 'Scan a',
+    TITLE_2:'QR Code',
     SUBTITLE: 'Bring a QR Code into view of this screen to start an interaction.',
-    PERMISSION: 'No permissions to',
-    PERMISSION1: 'access the camera',
-    LABELS: {
-      CONNECTION: 'Connection Request (SIOPv2)',
-      SHARE: 'Share Request (VP)',
-      SINGLE: 'Credential Offer (single)',
-      MULTI: 'Credential Offer (multi)',
-      STUDENT: 'Dominique (student)',
-      NEW_SCAN: 'Start new scan',
-    },
+    PERMISSION_1: 'No permissions to',
+    PERMISSION_2: 'access the camera',
     CONNECTION_OFFER: {
       NAVBAR_TITLE: 'Credential Offer',
       DESCRIPTION: 'is offering you the following credentials',
     },
     CONNECTION_REQUEST: {
       NAVBAR_TITLE: 'Credential Request',
-      DESCRIPTION: 'New connection',
-      DESCRIPTION1: 'Only accept new connections that you recognize and trust',
+      TITLE_1: 'New connection',
+      TITLE_2: 'Only accept new connections that you recognize and trust',
       URL: 'URL',
       PREVIOUSLY: 'Connected previously'
     },
+    SHARE_CREDENTIALS: {
+      TITLE_1: 'requests the following credentials',
+      TITLE_2: 'Requested',
+    }
   },
   CONNECTION: {
     TABS: {
@@ -288,6 +281,7 @@ const en = {
   SKIP: 'Skip',
   REJECT: 'Reject',
   ACCEPT: 'Accept',
+  APPROVE: 'Approve request',
 } satisfies BaseTranslation;
 
 export default en;

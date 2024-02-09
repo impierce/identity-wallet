@@ -42,13 +42,15 @@
     </div>
 
     <p class="w-full text-center text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">
-      requests the following credentials
+      {$LL.SCAN.SHARE_CREDENTIALS.TITLE_1()}
     </p>
 
     <div class="w-full">
       <div class="flex items-center">
         <SealCheck class="text-primary mr-2" />
-        <p class="text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">Requested</p>
+        <p class="text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">
+          {$LL.SCAN.SHARE_CREDENTIALS.TITLE_2()}
+        </p>
       </div>
 
       <!-- Credentials selection -->
@@ -72,7 +74,7 @@
   <!-- Controls -->
   <div class="dark:bg-dark sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6">
     <Button
-      label={$LL.ACCEPT()}
+      label={$LL.APPROVE()}
       on:click={() =>
         dispatch({
           type: '[Authenticate] Credentials selected',
