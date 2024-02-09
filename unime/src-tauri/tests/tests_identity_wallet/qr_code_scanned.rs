@@ -21,7 +21,7 @@ async fn test_qr_code_scanned_handle_siopv2_authorization_request() {
     setup_stronghold();
 
     let managers = test_managers(vec![]);
-    let active_profile = Some(Profile {
+    let active_profile = Profile {
         name: "Ferris".to_string(),
         picture: Some("&#129408".to_string()),
         theme: Some("system".to_string()),
@@ -34,7 +34,7 @@ async fn test_qr_code_scanned_handle_siopv2_authorization_request() {
             .subject
             .identifier()
             .unwrap(),
-    });
+    };
 
     // Deserializing the Appstates and Actions from the accompanying json files.
     let state1 = json_example::<AppState>("tests/fixtures/states/accept_connection.json");
@@ -43,10 +43,10 @@ async fn test_qr_code_scanned_handle_siopv2_authorization_request() {
     let action2 = json_example::<Action>("tests/fixtures/actions/authenticate_connect_accept.json");
 
     let container = AppStateContainer(Mutex::new(AppState {
-        active_profile: active_profile.clone(),
         managers,
         ..AppState::default()
-    }));
+    }
+    .add_feat_state("profile", Box::new(active_profile))));
 
     assert_state_update(
         // Initial state.
@@ -73,7 +73,7 @@ async fn test_qr_code_scanned_handle_oid4vp_authorization_request() {
     let credentials = vec![verifiable_credential_record.display_credential.clone()];
 
     let managers = test_managers(vec![verifiable_credential_record]);
-    let active_profile = Some(Profile {
+    let active_profile = Profile {
         name: "Ferris".to_string(),
         picture: Some("&#129408".to_string()),
         theme: Some("system".to_string()),
@@ -86,7 +86,7 @@ async fn test_qr_code_scanned_handle_oid4vp_authorization_request() {
             .subject
             .identifier()
             .unwrap(),
-    });
+    };
 
     // Deserializing the Appstates and Actions from the accompanying json files.
     let state1 = json_example::<AppState>("tests/fixtures/states/credential_share_credential.json");
@@ -95,11 +95,11 @@ async fn test_qr_code_scanned_handle_oid4vp_authorization_request() {
     let action2 = json_example::<Action>("tests/fixtures/actions/authenticate_cred_selected.json");
 
     let container = AppStateContainer(Mutex::new(AppState {
-        active_profile: active_profile.clone(),
         managers,
         credentials: credentials.clone(),
         ..AppState::default()
-    }));
+    }
+    .add_feat_state("profile", Box::new(active_profile))));
 
     assert_state_update(
         // Initial state.
@@ -119,7 +119,7 @@ async fn test_qr_code_scanned_invalid_qr_code_error() {
     setup_stronghold();
 
     let managers = test_managers(vec![]);
-    let active_profile = Some(Profile {
+    let active_profile = Profile {
         name: "Ferris".to_string(),
         picture: Some("&#129408".to_string()),
         theme: Some("system".to_string()),
@@ -132,17 +132,17 @@ async fn test_qr_code_scanned_invalid_qr_code_error() {
             .subject
             .identifier()
             .unwrap(),
-    });
+    };
 
     // Deserializing the Appstates and Actions from the accompanying json files.
     let state = json_example::<AppState>("tests/fixtures/states/invalid_payload_error.json");
     let action = json_example::<Action>("tests/fixtures/actions/qr_scanned_invalid_payload.json");
 
     let container = AppStateContainer(Mutex::new(AppState {
-        active_profile: active_profile.clone(),
         managers,
         ..AppState::default()
-    }));
+    }
+    .add_feat_state("profile", Box::new(active_profile))));
 
     assert_state_update(
         // Initial state.

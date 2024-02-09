@@ -1,2 +1,3 @@
 pub mod common;
-mod tests;
+mod tests_identity_wallet;
+mod tests_unime;

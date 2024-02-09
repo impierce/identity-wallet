@@ -288,6 +288,7 @@ mod tests {
         app_state = reset_state(app_state, Arc::new(Reset)).await.unwrap();
 
         assert_eq!(app_state.feat_states.is_empty(), true);
+        assert_eq!(app_state.extensions.is_empty(), true);
         assert_eq!(app_state.locale, Locale::default());
     }
 }

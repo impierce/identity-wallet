@@ -1,9 +1,0 @@
-{
-    "extensions": {
-        "test": {
-            "type": "custom",
-            "name": "new",
-            "value": "new"
-        }
-    }
-}

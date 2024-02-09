@@ -24,7 +24,7 @@ use dyn_clone::DynClone;
 pub struct AppStateContainer(pub tokio::sync::Mutex<AppState>);
 
 impl AppStateContainer{
-    pub(crate) async fn add_feat_state (self, key: &str, feat_state: Box<dyn FeatStateTrait>) -> Self
+    pub async fn add_feat_state (self, key: &str, feat_state: Box<dyn FeatStateTrait>) -> Self
     {
         self.0.lock().await.feat_states.insert(key.to_string(), feat_state);
         self
@@ -67,7 +67,7 @@ pub struct AppState {
 }
 
 impl AppState{
-    pub(crate) fn add_feat_state (mut self, key: &str, feat_state: Box<dyn FeatStateTrait>) -> Self
+    pub fn add_feat_state (mut self, key: &str, feat_state: Box<dyn FeatStateTrait>) -> Self
     {
         self.feat_states.insert(key.to_string(), feat_state);
         self
@@ -204,12 +204,6 @@ mod tests {
             serialized,
             indoc! {
             r#"{
-                  "active_profile": {
-                    "name": "John Doe",
-                    "picture": null,
-                    "theme": null,
-                    "primary_did": "did:example:123"
-                  },
                   "locale": "en",
                   "credentials": [],
                   "current_user_prompt": {
@@ -221,6 +215,15 @@ mod tests {
                   "user_journey": null,
                   "connections": [],
                   "user_data_query": [],
+                  "feat_states": {
+                    "profile": {
+                      "feat_state_type": "profile",
+                      "name": "John Doe",
+                      "picture": null,
+                      "theme": null,
+                      "primary_did": "did:example:123"
+                    }
+                  },
                   "extensions": {}
                 }"#}
         );
