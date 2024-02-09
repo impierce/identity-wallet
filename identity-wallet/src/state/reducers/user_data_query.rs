@@ -1,5 +1,5 @@
 use crate::error::AppError;
-use crate::state::actions::{listen, Action, UserDataQuery};
+use crate::state::actions::actions::{listen, Action, UserDataQuery};
 use crate::state::{AppState, Connection, QueryTarget, SortMethod};
 use crate::verifiable_credential_record::DisplayCredential;
 use itertools::concat;

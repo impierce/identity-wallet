@@ -2,7 +2,7 @@ use crate::{
     crypto::stronghold::StrongholdManager,
     error::AppError::{self, *},
     state::{
-        actions::{listen, Action, UnlockStorage},
+        actions::actions::{listen, Action, UnlockStorage},
         user_prompt::CurrentUserPrompt,
         AppState, IdentityManager,
     },

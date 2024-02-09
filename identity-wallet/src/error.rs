@@ -2,7 +2,7 @@ use oid4vc::oid4vc_core::authorization_request::{AuthorizationRequest, Object};
 use std::error::Error;
 use uuid::Uuid;
 
-use crate::state::actions::Action;
+use crate::state::actions::actions::Action;
 
 // TODO: needs revision/refactor + needs oid4vc libs to properly implement error handling.
 #[derive(thiserror::Error)]

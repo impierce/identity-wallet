@@ -2,7 +2,7 @@ use crate::{
     error::AppError::{self, *},
     get_unverified_jwt_claims,
     state::{
-        actions::{listen, Action, CredentialsSelected, QrCodeScanned},
+        actions::actions::{listen, Action, CredentialsSelected, QrCodeScanned},
         user_prompt::CurrentUserPrompt,
         AppState, Connection,
     },

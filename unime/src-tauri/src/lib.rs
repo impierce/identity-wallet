@@ -58,7 +58,7 @@ pub fn run() {
 }
 
 pub mod tauri_command {
-    use identity_wallet::state::{actions::Action, AppStateContainer};
+    use identity_wallet::state::{actions::actions::Action, AppStateContainer};
 
     #[tauri::command]
     pub async fn handle_action<R: tauri::Runtime>(

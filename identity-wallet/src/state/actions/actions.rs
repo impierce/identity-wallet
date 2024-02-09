@@ -17,10 +17,9 @@ use crate::{
         user_data_query::{connection_query, credential_query},
     },
 };
-use super::{AppState, Locale};
 use downcast_rs::{impl_downcast, DowncastSync};
 use crate::state::{QueryTarget, SortMethod};
-use super::*;
+use super::super::*;
 
 #[macro_export]
 macro_rules! reducer {
