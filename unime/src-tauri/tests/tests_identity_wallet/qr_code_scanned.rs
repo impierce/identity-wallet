@@ -22,7 +22,7 @@ async fn test_qr_code_scanned_handle_siopv2_authorization_request() {
 
     let managers = test_managers(vec![]);
     let active_profile = Profile {
-        name: "Ferris".to_string(),
+        name: "Ferris Crabman".to_string(),
         picture: Some("&#129408".to_string()),
         theme: Some("system".to_string()),
         primary_did: managers
@@ -74,7 +74,7 @@ async fn test_qr_code_scanned_handle_oid4vp_authorization_request() {
 
     let managers = test_managers(vec![verifiable_credential_record]);
     let active_profile = Profile {
-        name: "Ferris".to_string(),
+        name: "Ferris Crabman".to_string(),
         picture: Some("&#129408".to_string()),
         theme: Some("system".to_string()),
         primary_did: managers
@@ -120,7 +120,7 @@ async fn test_qr_code_scanned_invalid_qr_code_error() {
 
     let managers = test_managers(vec![]);
     let active_profile = Profile {
-        name: "Ferris".to_string(),
+        name: "Ferris Crabman".to_string(),
         picture: Some("&#129408".to_string()),
         theme: Some("system".to_string()),
         primary_did: managers

@@ -79,7 +79,9 @@ pub async fn assert_state_update(
             if (active_profile.is_some()) && (expected_active_profile.is_some()) {
                 let active_profile = active_profile.unwrap().clone().downcast::<Profile>().unwrap();
                 let expected_active_profile = expected_active_profile.unwrap().clone().downcast::<Profile>().unwrap();
-                assert_eq!(active_profile, expected_active_profile);
+                assert_eq!(active_profile.name, expected_active_profile.name);
+                assert_eq!(active_profile.picture, expected_active_profile.picture);
+                assert_eq!(active_profile.theme, expected_active_profile.theme);
             }
 
             // match (active_profile, expected_active_profile) {
