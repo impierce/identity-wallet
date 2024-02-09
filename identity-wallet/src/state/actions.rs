@@ -19,7 +19,7 @@ use crate::{
 };
 use downcast_rs::{impl_downcast, DowncastSync};
 use crate::state::{QueryTarget, SortMethod};
-use super::super::*;
+use super::*;
 
 #[macro_export]
 macro_rules! reducer {

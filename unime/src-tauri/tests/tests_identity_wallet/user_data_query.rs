@@ -1,6 +1,6 @@
 use crate::common::assert_state_update::{assert_state_update, setup_state_file, setup_stronghold};
 use crate::common::json_example;
-use identity_wallet::state::{actions::actions::Action, AppState, AppStateContainer};
+use identity_wallet::state::{actions::Action, AppState, AppStateContainer};
 use tokio::sync::Mutex;
 
 #[tokio::test]

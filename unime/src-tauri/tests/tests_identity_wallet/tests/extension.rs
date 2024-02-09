@@ -1,6 +1,6 @@
 use crate::tests::common::assert_state_update::{assert_state_update, setup_state_file, setup_stronghold};
 use crate::tests::common::json_example;
-use crate::state::{actions::actions::Action, AppState, AppStateContainer, CustomExtension};
+use crate::state::{actions::Action, AppState, AppStateContainer, CustomExtension};
 
 #[tokio::test]
 #[serial_test::serial]

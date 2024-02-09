@@ -5,6 +5,7 @@ pub mod persistence;
 pub mod user_prompt;
 
 use self::reducers::authorization::ConnectionRequest;
+use self::feat_states::profile::Profile;
 use crate::{
     crypto::stronghold::StrongholdManager, state::user_prompt::CurrentUserPrompt,
     verifiable_credential_record::DisplayCredential,
@@ -46,7 +47,6 @@ pub struct AppState {
     #[serde(skip)]
     #[derivative(Debug = "ignore")]
     pub managers: Arc<tauri::async_runtime::Mutex<Managers>>,
-    //pub active_profile: Option<Profile>,
     #[serde(skip)]
     #[derivative(Debug = "ignore")]
     pub active_connection_request: Option<ConnectionRequest>,
@@ -136,19 +136,6 @@ pub trait FeatStateTrait: Send + Sync + std::fmt::Debug + DynClone + DowncastSyn
 dyn_clone::clone_trait_object!(FeatStateTrait);
 impl_downcast!(sync FeatStateTrait);
 
-/// A profile of the current user.
-#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default)]
-#[ts(export)]
-#[serde(default)]
-pub struct Profile {
-    pub name: String,
-    pub picture: Option<String>,
-    pub theme: Option<String>,
-    pub primary_did: String,
-}
-
-#[typetag::serde(name = "profile")]
-impl FeatStateTrait for Profile {}
 
 // "CustomExtension" meant for testing
 

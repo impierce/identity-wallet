@@ -1,7 +1,7 @@
 use std::time::Duration;
 
 use crate::error::AppError;
-use crate::state::actions::actions::Action;
+use crate::state::actions::Action;
 use crate::state::persistence::save_state;
 use crate::state::{AppState, AppStateContainer};
 use futures::StreamExt;

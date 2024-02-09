@@ -4,7 +4,7 @@ pub mod dev_mode;
 pub mod storage;
 pub mod user_data_query;
 
-use super::actions::actions::{listen, Action, CreateNew, CustomExtensionTest, CancelUserFlow, SetLocale, UpdateCredentialMetadata, UpdateProfileSettings};
+use super::actions::{listen, Action, CreateNew, CustomExtensionTest, CancelUserFlow, SetLocale, UpdateCredentialMetadata, UpdateProfileSettings};
 use super::persistence::{delete_state_file, delete_stronghold, load_state};
 use super::IdentityManager;
 use crate::crypto::stronghold::StrongholdManager;
@@ -259,7 +259,7 @@ pub async fn reset_state(_state: AppState, _action: Action) -> Result<AppState, 
 mod tests {
     use super::*;
     use crate::state::{
-        actions::actions::{Action, Reset},
+        actions::{Action, Reset},
         Locale,
     };
 

@@ -1,6 +1,6 @@
 use crate::crypto::stronghold::StrongholdManager;
 use crate::error::AppError::{self, *};
-use crate::state::actions::actions::{listen, Action, SetDevMode};
+use crate::state::actions::{listen, Action, SetDevMode};
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, Connection, Profile};
 use crate::verifiable_credential_record::VerifiableCredentialRecord;

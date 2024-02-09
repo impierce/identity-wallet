@@ -1,5 +1,5 @@
 use identity_wallet::{
-    state::{actions::actions::Action, persistence::save_state, AppState, AppStateContainer, CustomExtension, Profile},
+    state::{actions::Action, persistence::save_state, AppState, AppStateContainer, CustomExtension, feat_states::profile::Profile},
     STATE_FILE, STRONGHOLD,
 };
 use serde_json::json;

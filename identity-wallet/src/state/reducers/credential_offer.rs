@@ -1,7 +1,7 @@
 use crate::{
     error::AppError::{self, *},
     state::{
-        actions::actions::{listen, Action, CredentialOffersSelected, QrCodeScanned},
+        actions::{listen, Action, CredentialOffersSelected, QrCodeScanned},
         persistence::persist_asset,
         user_prompt::CurrentUserPrompt,
         AppState,
