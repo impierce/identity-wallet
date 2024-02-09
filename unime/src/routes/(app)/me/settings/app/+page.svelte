@@ -8,6 +8,8 @@
   import Switch from '$src/lib/components/atoms/Switch.svelte';
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
   import { state } from '$src/stores';
+  import type { SetDevMode } from '@bindings/actions/SetDevMode';
+  import { onMount } from 'svelte';
 
   import ChatCircleText from '~icons/ph/chat-circle-text-fill';
   import Code from '~icons/ph/code-bold';
@@ -15,6 +17,24 @@
   import Password from '~icons/ph/password-fill';
   import Sun from '~icons/ph/sun-fill';
   import Translate from '~icons/ph/translate-fill';
+
+  onMount(() => {
+    console.log($state.dev_profile);
+  });
+
+  async function setDevProfile() {
+    let payload: SetDevMode = {
+        enabled: true,
+        profile: "Turtle"
+    };
+
+    hasDevProfile = true;
+
+    await dispatch({ type: '[DEV] Set dev profile', payload });
+  }
+
+  let hasDevProfile = false;
+
 </script>
 
 <TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.APP.NAVBAR_TITLE()} />
@@ -45,8 +65,8 @@
     />
     <SettingsEntry icon={Code} title={$LL.SETTINGS.APP.DEVELOPER_MODE.TITLE()} hasCaretRight={false}>
       <Switch
-        active={$state.dev_mode_enabled}
-        on:change={() => dispatch({ type: '[DEV] Set dev mode', payload: { enabled: !$state.dev_mode_enabled } })}
+        active={hasDevProfile}
+        on:change={setDevProfile}
       />
     </SettingsEntry>
   </div>

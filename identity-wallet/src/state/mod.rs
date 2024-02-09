@@ -3,7 +3,7 @@ pub mod persistence;
 pub mod reducers;
 pub mod user_prompt;
 
-use self::reducers::authorization::ConnectionRequest;
+use self::{actions::ProfileType, reducers::authorization::ConnectionRequest};
 use crate::{
     crypto::stronghold::StrongholdManager, state::user_prompt::CurrentUserPrompt,
     verifiable_credential_record::DisplayCredential,
@@ -46,7 +46,7 @@ pub struct AppState {
     pub locale: Locale,
     pub credentials: Vec<DisplayCredential>,
     pub current_user_prompt: Option<CurrentUserPrompt>,
-    pub dev_mode_enabled: bool,
+    pub dev_profile: Option<ProfileType>,
     #[ts(type = "Array<string>")]
     pub debug_messages: VecDeque<String>,
     #[ts(type = "object | null")]
@@ -69,7 +69,7 @@ impl Clone for AppState {
             user_journey: self.user_journey.clone(),
             connections: self.connections.clone(),
             user_data_query: self.user_data_query.clone(),
-            dev_mode_enabled: self.dev_mode_enabled,
+            dev_profile: self.dev_profile.clone(),
         }
     }
 }
@@ -161,7 +161,7 @@ mod tests {
                     "type": "redirect",
                     "target": "me"
                   },
-                  "dev_mode_enabled": false,
+                  "dev_profile": null,
                   "debug_messages": [],
                   "user_journey": null,
                   "connections": [],

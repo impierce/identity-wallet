@@ -61,7 +61,7 @@
 
 <main class="absolute h-screen">
   <!-- Dev Mode: Navbar -->
-  {#if $state?.dev_mode_enabled}
+  {#if $state?.dev_profile}
     {#if showDevMode}
       <div
         class="hide-scrollbar fixed z-20 flex w-full space-x-4 overflow-x-auto bg-gradient-to-r from-red-200 to-red-300 p-4 shadow-md"
