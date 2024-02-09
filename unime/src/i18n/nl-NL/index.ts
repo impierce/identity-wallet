@@ -7,7 +7,7 @@ const nl = {
       WHAT_IS_UNIME_1: 'UniMe verbindt je digitale wereld, veilig en beschermd.',
       WHAT_IS_UNIME_2: 'Maak een gloednieuw profiel aan om te beginnen.',
       CREATE_NEW_PROFILE: 'Maak nieuw profiel aan',
-      SELECT_LANGUAGE: '',
+      SELECT_LANGUAGE: 'Selecteer taal',
     },
     PLEDGE: {
       NAVBAR_TITLE: 'UniMe Belofte',
@@ -71,7 +71,7 @@ const nl = {
       SUBTITLE: 'Je moet een sterk wachtwoord kiezen om je gegevens veilig te versleutelen.',
       INPUT_PLACEHOLDER: 'Voer wachtwoord in',
       CONFIRM: {
-        NAVBAR_TITLE: '',
+        NAVBAR_TITLE: 'Wachtwoord Bevestigen',
         TITLE_1: 'Bevestig je nieuwe',
         TITLE_2: 'wachtwoord',
         SUBTITLE: 'Je moet je wachtwoord bevestigen om er zeker van te zijn dat je het correct hebt getypt.',
@@ -80,7 +80,7 @@ const nl = {
         NO_MATCH: 'Wachtwoorden komen niet overeen',
       },
       COMPLETED: {
-        NAVBAR_TITLE: 'Wachtwoord instellen',
+        NAVBAR_TITLE: 'Wachtwoord Instellen',
         TITLE_1: 'Je UniMe profiel is nu',
         TITLE_2: 'beschermd',
         MESSAGE_1: 'Veilig & Beveiligd',
@@ -139,15 +139,15 @@ const nl = {
     },
     APP: {
       TITLE: 'App instellingen',
-      NAVBAR_TITLE: 'App instellingen',
+      NAVBAR_TITLE: 'App Instellingen',
       LANGUAGE: {
         TITLE: 'Taal',
-        NAVBAR_TITLE: '',
-        COMING_SOON: '',
+        NAVBAR_TITLE: 'Selecteer taal',
+        COMING_SOON: 'Binnenkort beschikbaar',
       },
       THEME: {
         TITLE: 'Thema',
-        NAVBAR_TITLE: 'Selecteer thema',
+        NAVBAR_TITLE: 'Selecteer Thema',
       },
       PASSWORD: {
         TITLE: 'Wachtwoord',
@@ -199,14 +199,14 @@ const nl = {
     NAVBAR_TITLE: 'Verbonden',
     TABS: {
       CONNECTIONS: 'Verbindingen',
-      TIMELINE: 'Cursus',
+      TIMELINE: 'Tijdlijn',
     },
   },
   CONNECTION: {
     TABS: {
       SUMMARY: 'Overzicht',
       DATA: 'Data',
-      ACTIVITY: 'Cursus',
+      ACTIVITY: 'Activiteit',
     },
     SUMMARY: {
       TITLE: 'Verbonden met',
@@ -233,10 +233,10 @@ const nl = {
   },
   BADGE: {
     DETAILS: {
-      VALID: '',
-      ISSUED_BY: '',
-      DESCRIPTION: '',
-      METADATA: '',
+      VALID: 'Geldig',
+      ISSUED_BY: 'Uitgegeven door',
+      DESCRIPTION: 'Beschrijving',
+      METADATA: 'Metadata',
     },
   },
   CANCEL: 'Annuleren',

@@ -1,3 +1,4 @@
+use identity_wallet::error::AppError;
 use identity_wallet::utils::{download_asset, LogoType};
 use wiremock::matchers::{method, path};
 use wiremock::{Mock, MockServer, ResponseTemplate};
@@ -49,56 +50,12 @@ async fn when_size_is_bigger_than_2mb_then_download_should_fail() {
 }
 
 #[tokio::test]
-async fn when_media_type_is_supported_then_download_should_start() {
-    let mock_server = MockServer::start().await;
-
-    Mock::given(method("GET"))
-        .and(path("/image.svg"))
-        .respond_with(ResponseTemplate::new(200).set_body_raw(vec![], "image/svg+xml"))
-        .expect(1)
-        .mount(&mock_server)
-        .await;
-
-    assert!(download_asset(
-        format!("{}/image.svg", &mock_server.uri()).parse().unwrap(),
-        LogoType::CredentialLogo,
-        0
-    )
-    .await
-    .is_ok());
-}
-
-#[tokio::test]
-async fn when_media_type_is_not_supported_then_download_should_fail() {
-    let mock_server = MockServer::start().await;
-
-    Mock::given(method("GET"))
-        .and(path("/image.jpeg"))
-        .respond_with(ResponseTemplate::new(200).set_body_raw(vec![], "image/jpeg"))
-        .expect(0)
-        .mount(&mock_server)
-        .await;
-
-    assert!(download_asset(
-        format!("{}/image.jpeg", &mock_server.uri()).parse().unwrap(),
-        LogoType::CredentialLogo,
-        0
-    )
-    .await
-    .is_err());
-}
-
-#[tokio::test]
 async fn when_content_type_is_supported_then_download_should_start() {
     let mock_server = MockServer::start().await;
 
     Mock::given(method("GET"))
         .and(path("/image"))
-        .respond_with(
-            ResponseTemplate::new(200)
-                .append_header("content-type", "image/png")
-                .set_body_raw(vec![], "image/png"),
-        )
+        .respond_with(ResponseTemplate::new(200).set_body_raw(vec![], "image/svg+xml"))
         .expect(1)
         .mount(&mock_server)
         .await;
@@ -117,21 +74,19 @@ async fn when_content_type_is_not_supported_then_download_should_fail() {
     let mock_server = MockServer::start().await;
 
     Mock::given(method("GET"))
-        .and(path("/image"))
-        .respond_with(
-            ResponseTemplate::new(200)
-                .append_header("content-type", "image/jpeg")
-                .set_body_raw(vec![], "image/jpeg"),
-        )
+        .and(path("/image.png")) // file extension is ignored (even if it's supported), only content-type is checked
+        .respond_with(ResponseTemplate::new(200).set_body_raw(vec![], "image/jpeg"))
         .expect(1)
         .mount(&mock_server)
         .await;
 
-    assert!(download_asset(
-        format!("{}/image", &mock_server.uri()).parse().unwrap(),
-        LogoType::CredentialLogo,
-        0
-    )
-    .await
-    .is_err());
+    assert!(matches!(
+        download_asset(
+            format!("{}/image.png", &mock_server.uri()).parse().unwrap(),
+            LogoType::CredentialLogo,
+            0
+        )
+        .await,
+        Err(AppError::DownloadAborted("content-type is not supported"))
+    ));
 }
