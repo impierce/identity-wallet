@@ -8,7 +8,6 @@
   import Switch from '$src/lib/components/atoms/Switch.svelte';
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
   import { state } from '$src/stores';
-  import type { SetDevMode } from '@bindings/actions/SetDevMode';
   import { onMount } from 'svelte';
 
   import ChatCircleText from '~icons/ph/chat-circle-text-fill';
@@ -22,15 +21,10 @@
     console.log($state.dev_profile);
   });
 
-  async function setDevProfile() {
-    let payload: SetDevMode = {
-        enabled: true,
-        profile: "Turtle"
-    };
-
+  async function loadDevProfile() {
     hasDevProfile = true;
 
-    await dispatch({ type: '[DEV] Set dev profile', payload });
+    await dispatch({ type: '[DEV] Set DEV mode' });
   }
 
   let hasDevProfile = false;
@@ -66,7 +60,7 @@
     <SettingsEntry icon={Code} title={$LL.SETTINGS.APP.DEVELOPER_MODE.TITLE()} hasCaretRight={false}>
       <Switch
         active={hasDevProfile}
-        on:change={setDevProfile}
+        on:change={loadDevProfile}
       />
     </SettingsEntry>
   </div>

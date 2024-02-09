@@ -87,10 +87,10 @@ mod bindings {
             #[ts(optional)]
             payload: Option<CancelUserFlow>,
         },
-        #[serde(rename = "[DEV] Set dev profile")]
-        SetDevProfile { payload: DevProfileSettings },
-        #[serde(rename = "[DEV] Load profile")]
-        LoadDevProfile,
+        #[serde(rename = "[DEV] Set DEV mode")]
+        SetDevProfile,
+        #[serde(rename = "[DEV] Load DEV profile")]
+        LoadDevProfile { payload: DevProfile },
         #[serde(rename = "[Authenticate] Credentials selected")]
         CredentialsSelected { payload: CredentialsSelected },
         #[serde(rename = "[Credential Offer] Selected")]

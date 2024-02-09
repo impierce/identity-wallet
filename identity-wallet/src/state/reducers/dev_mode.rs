@@ -1,6 +1,6 @@
 use crate::crypto::stronghold::StrongholdManager;
 use crate::error::AppError::{self, *};
-use crate::state::actions::{listen, Action, DevProfileSettings, ProfileType};
+use crate::state::actions::{listen, Action, ProfileType, SetDevMode};
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, Connection, Profile};
 use crate::verifiable_credential_record::VerifiableCredentialRecord;
@@ -41,26 +41,19 @@ lazy_static! {
 pub async fn set_dev_profile(state: AppState, action: Action) -> Result<AppState, AppError> {
     info!("Set DEV profile: {:?}", action);
 
-    if let Some(payload) = listen::<DevProfileSettings>(action) {
-        if payload.enabled {
-            return Ok(AppState {
-                dev_profile: Some(payload.profile),
-                current_user_prompt: None,
-                ..state
-            });
-        } else {
-            return Ok(AppState {
-                dev_profile: None,
-                current_user_prompt: None,
-                ..state
-            });
-        }
+    if let Some(_) = listen::<SetDevMode>(action) {
+        return Ok(AppState {
+            dev_profile: Some(ProfileType::None),
+            current_user_prompt: None,
+            ..state
+        });
     }
+
     Ok(state)
 }
 
-pub async fn load_dev_profile(state: AppState, _action: Action) -> Result<AppState, AppError> {
-    info!("Load dev profile: {:?}", state.dev_profile);
+pub async fn load_dev_profile(state: AppState, action: Action) -> Result<AppState, AppError> {
+    info!("Load dev profile: {:?}", action);
 
     let mut state = AppState::default();
 
