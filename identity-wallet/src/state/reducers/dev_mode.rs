@@ -67,7 +67,7 @@ pub async fn load_dev_profile(_state: AppState, _action: Action) -> Result<AppSt
         theme: Some("system".to_string()),
         primary_did: subject.identifier().unwrap(),
     };
-    state.active_profile.replace(profile);
+    state.feat_states.insert("profile".to_string(), Box::new(profile));
 
     vec![
         PERSONAL_INFORMATION.clone(),

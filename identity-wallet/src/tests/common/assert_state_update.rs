@@ -72,16 +72,11 @@ pub async fn assert_state_update(
                 ..
             } = expected_state;
 
-            let active_profile = feat_states.get("profile"); //.unwrap().clone().downcast::<Profile>().unwrap();
-            let expected_active_profile = expected_feat_states.get("profile"); //.unwrap().clone().downcast::<Profile>().unwrap();
+            let active_profile = feat_states.get("profile").unwrap().clone().downcast::<Profile>().unwrap();
+            let expected_active_profile = expected_feat_states.get("profile").unwrap().clone().downcast::<Profile>().unwrap();
 
-            assert_eq!(active_profile.is_none(), expected_active_profile.is_none());
-            if (active_profile.is_some()) && (expected_active_profile.is_some()) {
-                let active_profile = active_profile.unwrap().clone().downcast::<Profile>().unwrap();
-                let expected_active_profile = expected_active_profile.unwrap().clone().downcast::<Profile>().unwrap();
-                assert_eq!(active_profile, expected_active_profile);
-            }
-
+            assert_eq!(*active_profile, *expected_active_profile);
+            
             // match (active_profile, expected_active_profile) {
             //     (Some(active_profile), Some(expected_active_profile)) => {
             //         assert_eq!(active_profile.name, expected_active_profile.name);

@@ -51,14 +51,13 @@ async fn test_get_state_unlock_storage() {
 
     let container = AppStateContainer(Mutex::new(AppState {
         managers: test_managers(vec![]),
-        active_profile: Some(Profile {
-            name: "Ferris Crabman".to_string(),
-            picture: Some("&#129408".to_string()),
-            theme: Some("system".to_string()),
-            primary_did: "did:example:placeholder".to_string(),
-        }),
         ..AppState::default()
-    }));
+    }.add_feat_state("profile", Box::new(Profile {
+        name: "Ferris Crabman".to_string(),
+        picture: Some("&#129408".to_string()),
+        theme: Some("system".to_string()),
+        primary_did: "did:example:placeholder".to_string(),
+    }))));
 
     assert_state_update(
         // Initial state.

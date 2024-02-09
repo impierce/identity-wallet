@@ -1,7 +1,7 @@
 {
     "extensions": {
         "test": {
-            "extension_type": "customextension",
+            "type": "custom",
             "name": "new",
             "value": "new"
         }

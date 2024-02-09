@@ -1,6 +1,7 @@
+pub mod feat_states;
 pub mod actions;
-pub mod persistence;
 pub mod reducers;
+pub mod persistence;
 pub mod user_prompt;
 
 use self::reducers::authorization::ConnectionRequest;
@@ -17,50 +18,21 @@ use serde::{Deserialize, Serialize};
 use std::{collections::VecDeque, sync::Arc};
 use strum::EnumString;
 use ts_rs::TS;
-
-pub struct IdentityManager {
-    pub subject: Arc<dyn Subject>,
-    pub provider_manager: ProviderManager,
-    pub wallet: Wallet,
-}
-
-#[derive(Default)]
-pub struct Managers {
-    pub stronghold_manager: Option<Arc<StrongholdManager>>,
-    pub identity_manager: Option<IdentityManager>,
-}
-
-#[typetag::serde(tag = "type")]
-pub trait ExtensionTrait: Send + Sync + std::fmt::Debug + DynClone + DowncastSync{}
-
-dyn_clone::clone_trait_object!(ExtensionTrait);
-
-impl_downcast!(sync ExtensionTrait);
-
-
-#[derive(Debug, Serialize, Deserialize, TS, PartialEq, Default, Clone)]
-pub struct CustomExtension {
-    pub name: String,
-    pub value: String,
-}
-
 use dyn_clone::DynClone;
-
-#[typetag::serde(name = "custom")]
-impl ExtensionTrait for CustomExtension {}
 
 #[derive(Default, Debug)]
 pub struct AppStateContainer(pub tokio::sync::Mutex<AppState>);
 
 impl AppStateContainer{
+    pub(crate) async fn add_feat_state (self, key: &str, feat_state: Box<dyn FeatStateTrait>) -> Self
+    {
+        self.0.lock().await.feat_states.insert(key.to_string(), feat_state);
+        self
+    }
     pub async fn add_extension (self, key: &str, extension: Box<dyn ExtensionTrait>) -> Self
     {
         self.0.lock().await.extensions.insert(key.to_string(), extension);
         self
-    }
-    pub fn from_appstate(appstate: AppState) -> AppStateContainer {
-        let appstate_container = AppStateContainer {0: tokio::sync::Mutex::new(appstate)};
-        appstate_container
     }
 }
 
@@ -74,7 +46,7 @@ pub struct AppState {
     #[serde(skip)]
     #[derivative(Debug = "ignore")]
     pub managers: Arc<tauri::async_runtime::Mutex<Managers>>,
-    pub active_profile: Option<Profile>,
+    //pub active_profile: Option<Profile>,
     #[serde(skip)]
     #[derivative(Debug = "ignore")]
     pub active_connection_request: Option<ConnectionRequest>,
@@ -89,7 +61,34 @@ pub struct AppState {
     pub connections: Vec<Connection>,
     pub user_data_query: Vec<String>,
     #[ts(skip)]
+    pub feat_states: std::collections::HashMap<String, Box<dyn FeatStateTrait>>,
+    #[ts(skip)]
     pub extensions: std::collections::HashMap<String, Box<dyn ExtensionTrait>>,
+}
+
+impl AppState{
+    pub(crate) fn add_feat_state (mut self, key: &str, feat_state: Box<dyn FeatStateTrait>) -> Self
+    {
+        self.feat_states.insert(key.to_string(), feat_state);
+        self
+    }
+    pub fn add_extension (mut self, key: &str, extension: Box<dyn ExtensionTrait>) -> Self
+    {
+        self.extensions.insert(key.to_string(), extension);
+        self
+    }
+}
+
+pub struct IdentityManager {
+    pub subject: Arc<dyn Subject>,
+    pub provider_manager: ProviderManager,
+    pub wallet: Wallet,
+}
+
+#[derive(Default)]
+pub struct Managers {
+    pub stronghold_manager: Option<Arc<StrongholdManager>>,
+    pub identity_manager: Option<IdentityManager>,
 }
 
 #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default, EnumString)]
@@ -100,17 +99,6 @@ pub enum Locale {
     En,
     De,
     Nl,
-}
-
-/// A profile of the current user.
-#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default)]
-#[ts(export)]
-#[serde(default)]
-pub struct Profile {
-    pub name: String,
-    pub picture: Option<String>,
-    pub theme: Option<String>,
-    pub primary_did: String,
 }
 
 #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default)]
@@ -142,20 +130,51 @@ pub enum SortMethod {
     LastInteractedNewOld,
 }
 
+// Feat_state experimenting 
+#[typetag::serde(tag = "feat_state_type")]
+pub trait FeatStateTrait: Send + Sync + std::fmt::Debug + DynClone + DowncastSync{}
+dyn_clone::clone_trait_object!(FeatStateTrait);
+impl_downcast!(sync FeatStateTrait);
+
+/// A profile of the current user.
+#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default)]
+#[ts(export)]
+#[serde(default)]
+pub struct Profile {
+    pub name: String,
+    pub picture: Option<String>,
+    pub theme: Option<String>,
+    pub primary_did: String,
+}
+
+#[typetag::serde(name = "profile")]
+impl FeatStateTrait for Profile {}
+
+// "CustomExtension" meant for testing
+
+#[typetag::serde(tag = "extension_type")]
+pub trait ExtensionTrait: Send + Sync + std::fmt::Debug + DynClone + DowncastSync{}
+dyn_clone::clone_trait_object!(ExtensionTrait);
+impl_downcast!(sync ExtensionTrait);
+
+#[derive(Debug, Serialize, Deserialize, TS, PartialEq, Default, Clone)]
+pub struct CustomExtension {
+    pub name: String,
+    pub value: String,
+}
+
+#[typetag::serde(name = "customextension")]
+impl ExtensionTrait for CustomExtension {}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use indoc::indoc;
+    //use tokio::runtime::Runtime;
 
     #[test]
     fn test_app_state_serialize() {
         let state = AppState {
-            active_profile: Some(Profile {
-                name: "John Doe".to_string(),
-                picture: None,
-                theme: None,
-                primary_did: "did:example:123".to_string(),
-            }),
             locale: Locale::En,
             credentials: vec![],
             current_user_prompt: Some(CurrentUserPrompt::Redirect {
@@ -165,9 +184,19 @@ mod tests {
             user_journey: None,
             connections: vec![],
             ..Default::default()
-        };
+        }
+        .add_feat_state("profile", Box::new(Profile {
+            name: "John Doe".to_string(),
+            picture: None,
+            theme: None,
+            primary_did: "did:example:123".to_string(),
+        }));
 
-        let serialized = serde_json::to_string_pretty(&state).unwrap();
+        //let mut serialized = String::new();
+        //let rt = Runtime::new().unwrap();
+        //rt.block_on(async {
+            let serialized = serde_json::to_string_pretty(&state).unwrap();
+        //});
 
         // AppState is serialized without the `managers` and `active_connection_request` fields.
         // Probably a basic json file instead of the indoc! is cleaner.

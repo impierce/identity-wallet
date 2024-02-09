@@ -4,7 +4,7 @@ use crate::{
     state::{
         actions::actions::{listen, Action, CredentialsSelected, QrCodeScanned},
         user_prompt::CurrentUserPrompt,
-        AppState, Connection,
+        AppState, Connection, Profile,
     },
     utils::{download_asset, LogoType},
 };
@@ -265,12 +265,8 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
 
         info!("get the subject did");
 
-        let subject_did = state
-            .active_profile
-            .as_ref()
-            .ok_or(MissingStateParameterError("active profile"))?
-            .primary_did
-            .clone();
+        let subject_did = state.feat_states.get("profile").ok_or(MissingStateParameterError("active profile"))?.clone()
+        .downcast::<Profile>().unwrap().primary_did.clone();
 
         let mut presentation_builder =
             Presentation::builder(subject_did.parse().map_err(|_| DidParseError)?, Default::default());

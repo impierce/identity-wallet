@@ -44,7 +44,7 @@ pub async fn get_state(_state: AppState, _action: Action) -> Result<AppState, Ap
     println!("get_state reducer called");
     let mut state = load_state().await.unwrap_or_default();
 
-    if state.active_profile.is_some() {
+    if state.feat_states.get("profile").is_some() {
         state.current_user_prompt = Some(CurrentUserPrompt::PasswordRequired);
     } else {
         // TODO: bug: if state is present, but empty, user will never be redirected to neither welcome or profile page
@@ -124,12 +124,11 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
 
         drop(state_guard);
         return Ok(AppState {
-            active_profile: Some(profile),
             current_user_prompt: Some(CurrentUserPrompt::Redirect {
                 target: "me".to_string(),
             }),
             ..state
-        });
+        }.add_feat_state("profile", Box::new(profile)));
     }
 
     Ok(state)
@@ -226,17 +225,18 @@ pub async fn update_credential_metadata(state: AppState, action: Action) -> Resu
 
 pub async fn update_profile_settings(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(UpdateProfileSettings { theme, name, picture }) = listen::<UpdateProfileSettings>(action) {
-        if let Some(profile) = state.active_profile.clone() {
-            return Ok(AppState {
-                active_profile: Some(Profile {
-                    name: name.unwrap_or(profile.name),
-                    picture,
-                    theme,
-                    ..profile
-                }),
-                ..state
-            });
-        }
+        let profile = state.feat_states.get("profile").ok_or(MissingStateParameterError("active profile"))?.clone()
+        .downcast::<Profile>().unwrap();
+
+        return Ok(AppState {
+            ..state
+            }.add_feat_state("profile", Box::new(Profile {
+                name: name.unwrap_or(profile.name),
+                picture,
+                theme,
+                ..*profile
+            })));
+        
     }
 
     Ok(state)
@@ -277,19 +277,17 @@ mod tests {
     #[tokio::test]
     async fn test_reset_state() {
         let mut app_state = AppState {
-            active_profile: Some(Profile {
-                name: "Ferris".to_string(),
-                picture: Some("&#129408".to_string()),
-                theme: Some("system".to_string()),
-                primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
-            })
-            .into(),
             ..AppState::default()
-        };
+        }.add_feat_state("profile", Box::new(Profile {
+            name: "Ferris".to_string(),
+            picture: Some("&#129408".to_string()),
+            theme: Some("system".to_string()),
+            primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
+        }));
 
         app_state = reset_state(app_state, Arc::new(Reset)).await.unwrap();
 
-        assert_eq!(app_state.active_profile, None);
+        assert_eq!(app_state.feat_states.is_empty(), true);
         assert_eq!(app_state.locale, Locale::default());
     }
 }
