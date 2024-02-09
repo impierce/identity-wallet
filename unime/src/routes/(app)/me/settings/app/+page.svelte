@@ -18,7 +18,7 @@
 </script>
 
 <TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.APP.NAVBAR_TITLE()} />
-<div class="content-height bg-silver dark:bg-navy flex flex-col">
+<div class="content-height flex flex-col bg-silver dark:bg-navy">
   <div class="flex flex-col space-y-[10px] px-4 py-5">
     <SettingsEntry
       icon={Translate}

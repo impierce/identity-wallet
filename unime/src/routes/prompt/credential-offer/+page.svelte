@@ -8,6 +8,7 @@
 
   import { dispatch } from '$lib/dispatcher';
   import { getImageAsset } from '$lib/utils';
+  import LL from '$src/i18n/i18n-svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
   import Checkbox from '$src/lib/components/atoms/Checkbox.svelte';
   import Image from '$src/lib/components/atoms/Image.svelte';
@@ -90,8 +91,8 @@
   });
 </script>
 
-<div class="content-height flex flex-col items-stretch bg-silver dark:bg-navy">
-  <TopNavBar title={'Credential Offer'} on:back={() => history.back()} />
+<div class="content-height bg-silver dark:bg-navy flex flex-col items-stretch">
+  <TopNavBar title={$LL.SCAN.CONNECTION_OFFER.NAVBAR_TITLE()} on:back={() => history.back()} />
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
     <div class="flex h-[75px] w-[75px] overflow-hidden rounded-3xl">
@@ -123,7 +124,7 @@
     {:else}
       <PaddedIcon icon={DownloadSimple} />
     {/if} -->
-    <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
+    <p class="dark:text-grey text-[22px]/[30px] font-semibold text-slate-700">
       {#if issuer_name}
         {issuer_name}
       {:else}
@@ -132,7 +133,7 @@
     </p>
 
     <p class="w-full text-center text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">
-      is offering you the following credentials
+      {$LL.SCAN.CONNECTION_OFFER.DESCRIPTION()}
     </p>
 
     <!-- Text -->
@@ -165,7 +166,7 @@
     </div> -->
 
     <div
-      class="mt-3 w-full rounded-[20px] border border-slate-200 bg-white p-[10px] dark:border-slate-600 dark:bg-dark"
+      class="dark:bg-dark mt-3 w-full rounded-[20px] border border-slate-200 bg-white p-[10px] dark:border-slate-600"
     >
       <!-- <div class="w-full space-y-2 rounded-2xl p-3 ring-2 ring-inset ring-white"> -->
       {#each credential_offer.credentials as credential, index}
@@ -239,9 +240,9 @@
   </div>
 
   <!-- Controls -->
-  <div class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 dark:bg-dark">
+  <div class="dark:bg-dark sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6">
     <Button
-      label="Accept credentials"
+      label={$LL.ACCEPT()}
       on:click={() => {
         dispatch({
           type: '[Credential Offer] Selected',
@@ -252,7 +253,7 @@
       }}
     />
     <Button
-      label="Reject"
+      label={$LL.REJECT()}
       variant="secondary"
       on:click={() => {
         dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });

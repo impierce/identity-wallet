@@ -193,7 +193,7 @@ const nl = {
       ALL: 'Alle',
       DATA: 'Data',
       BADGES: 'Badges',
-    }, 
+    },
     CREDENTIAL: {
       NAVBAR_TITLE: 'Credential informatie',
     },
@@ -218,6 +218,30 @@ const nl = {
   },
   SCAN: {
     BOTTOM_NAVIGATION_TITLE: 'Scan',
+    TITLE: 'Scan een',
+    TITLE1: 'QR Code',
+    SUBTITLE: 'Breng een QR-code in beeld op dit scherm om een interactie te starten.',
+    PERMISSION: 'Geen recht om toegang',
+    PERMISSION1: 'te krijgen tot de camera',
+    LABELS: {
+      CONNECTION: 'Verbinding Aanvraag (SIOPv2)',
+      SHARE: 'Deel Aanvraag (VP)',
+      SINGLE: 'Credential Aanbod (single)',
+      MULTI: 'Credential Aanbod (multi)',
+      STUDENT: 'Dominique (student)',
+      NEW_SCAN: 'Start nieuwe scan',
+    },
+    CONNECTION_OFFER: {
+      NAVBAR_TITLE: 'Credential Aanbod',
+      DESCRIPTION: 'biedt u de volgende credentials',
+    },
+    CONNECTION_REQUEST: {
+      NAVBAR_TITLE: 'Credential Aanvraag',
+      DESCRIPTION: 'Nieuwe verbinding',
+      DESCRIPTION1: 'Accepteer alleen nieuwe verbindingen die je herkent en vertrouwt',
+      URL: 'URL',
+      PREVIOUSLY: 'Eerder verbonden',
+    },
   },
   CONNECTION: {
     TABS: {
@@ -261,6 +285,8 @@ const nl = {
   CLOSE: 'Sluiten',
   CONTINUE: 'Doorgaan',
   SKIP: 'Overslaan',
+  REJECT: 'Weigeren',
+  ACCEPT: 'Accepteren',
 } satisfies Translation;
 
 export default nl;

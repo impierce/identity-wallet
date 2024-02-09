@@ -219,6 +219,30 @@ const en = {
   },
   SCAN: {
     BOTTOM_NAVIGATION_TITLE: 'Scan',
+    TITLE: 'Scan a',
+    TITLE1: 'QR Code',
+    SUBTITLE: 'Bring a QR Code into view of this screen to start an interaction.',
+    PERMISSION: 'No permissions to',
+    PERMISSION1: 'access the camera',
+    LABELS: {
+      CONNECTION: 'Connection Request (SIOPv2)',
+      SHARE: 'Share Request (VP)',
+      SINGLE: 'Credential Offer (single)',
+      MULTI: 'Credential Offer (multi)',
+      STUDENT: 'Dominique (student)',
+      NEW_SCAN: 'Start new scan',
+    },
+    CONNECTION_OFFER: {
+      NAVBAR_TITLE: 'Credential Offer',
+      DESCRIPTION: 'is offering you the following credentials',
+    },
+    CONNECTION_REQUEST: {
+      NAVBAR_TITLE: 'Credential Request',
+      DESCRIPTION: 'New connection',
+      DESCRIPTION1: 'Only accept new connections that you recognize and trust',
+      URL: 'URL',
+      PREVIOUSLY: 'Connected previously'
+    },
   },
   CONNECTION: {
     TABS: {
@@ -262,6 +286,8 @@ const en = {
   CLOSE: 'Close',
   CONTINUE: 'Continue',
   SKIP: 'Skip',
+  REJECT: 'Reject',
+  ACCEPT: 'Accept',
 } satisfies BaseTranslation;
 
 export default en;

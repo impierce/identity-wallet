@@ -80,11 +80,11 @@
   <TopNavBar
     title={$LL.ME.BADGE.NAVBAR_TITLE()}
     on:back={() => history.back()}
-    class="dark:bg-dark dark:text-grey bg-white text-slate-800"
+    class="bg-white text-slate-800 dark:bg-dark dark:text-grey"
   />
-  <div class="hide-scrollbar dark:bg-dark grow overflow-y-scroll bg-white">
+  <div class="hide-scrollbar grow overflow-y-scroll bg-white dark:bg-dark">
     <!-- Logo -->
-    <div class="bg-silver dark:bg-navy relative flex flex-col overflow-hidden px-[15px] py-[20px]">
+    <div class="relative flex flex-col overflow-hidden bg-silver px-[15px] py-[20px] dark:bg-navy">
       {#if credentialLogoUrl}
         <img
           src={credentialLogoUrl}
@@ -141,7 +141,7 @@
         <!-- Valid -->
         <div class="flex w-full flex-col items-center space-y-1">
           <p class="text-xs text-black dark:text-white">{$LL.BADGE.DETAILS.VALID()}</p>
-          <div class="bg-silver flex w-full justify-center rounded-xl py-5 dark:bg-white">
+          <div class="flex w-full justify-center rounded-xl bg-silver py-5 dark:bg-white">
             <SealCheck class="h-7 w-7 text-slate-800" />
           </div>
           <p class="text-xs text-black dark:text-white">
@@ -156,7 +156,7 @@
         <!-- Issued By -->
         <div class="flex w-full flex-col items-center space-y-1">
           <p class="text-xs text-black dark:text-white">{$LL.BADGE.DETAILS.ISSUED_BY()}</p>
-          <div class="w- bg-silver flex h-[68px] w-full justify-center rounded-xl dark:bg-white">
+          <div class="w- flex h-[68px] w-full justify-center rounded-xl bg-silver dark:bg-white">
             <Image
               id={'university'}
               iconFallback="Bank"
@@ -173,7 +173,7 @@
       <!-- Description -->
       <div>
         <!-- <p class="text-lg font-semibold text-black dark:text-white">{$LL.BADGE.DETAILS.DESCRIPTION()}</p> -->
-        <p class="dark:text-grey text-[13px]/[24px] text-slate-800">
+        <p class="text-[13px]/[24px] text-slate-800 dark:text-grey">
           {@html markdown.render(credential.data.credentialSubject.achievement?.description ?? '')}
         </p>
       </div>
@@ -182,7 +182,7 @@
       <div>
         <p class="pb-2 text-lg font-semibold text-black dark:text-white">{$LL.BADGE.DETAILS.METADATA()}</p>
         <div
-          class="dark:bg-dark divide-y divide-solid divide-slate-200 rounded-xl border border-slate-200 bg-white dark:divide-slate-600 dark:border-slate-600"
+          class="divide-y divide-solid divide-slate-200 rounded-xl border border-slate-200 bg-white dark:divide-slate-600 dark:border-slate-600 dark:bg-dark"
         >
           {#each Object.entries(entries) as entry}
             <div class="flex flex-col items-start px-4 py-[10px]">
@@ -240,7 +240,7 @@
   </BottomDrawer>
 </div>
 
-<div class="safe-area-top dark:bg-dark bg-white" />
+<div class="safe-area-top bg-white dark:bg-dark" />
 
 <!-- <div class="safe-area-bottom z-10 bg-white dark:bg-dark" /> -->
 

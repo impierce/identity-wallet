@@ -8,6 +8,7 @@
 
   import Image from '$lib/components/atoms/Image.svelte';
   import { dispatch } from '$lib/dispatcher';
+  import LL from '$src/i18n/i18n-svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
   import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
   import ListItemCard from '$src/lib/components/molecules/ListItemCard.svelte';
@@ -43,19 +44,19 @@
   });
 </script>
 
-<div class="content-height flex flex-col items-stretch bg-silver dark:bg-navy">
-  <TopNavBar title={'Connection Request'} on:back={() => history.back()} />
+<div class="content-height bg-silver dark:bg-navy flex flex-col items-stretch">
+  <TopNavBar title={$LL.SCAN.CONNECTION_REQUEST.NAVBAR_TITLE()} on:back={() => history.back()} />
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
     {#if $state.current_user_prompt.logo_uri}
-      <div class="flex h-[75px] w-[75px] overflow-hidden rounded-3xl bg-white p-2 dark:bg-silver">
+      <div class="dark:bg-silver flex h-[75px] w-[75px] overflow-hidden rounded-3xl bg-white p-2">
         <img src={$state.current_user_prompt.logo_uri} alt="logo" />
       </div>
     {:else}
       <PaddedIcon icon={PlugsConnected} />
     {/if}
     <div class="text-center">
-      <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
+      <p class="dark:text-grey text-[22px]/[30px] font-semibold text-slate-700">
         {client_name}
       </p>
       <p class="pt-[10px] text-sm font-medium text-slate-500">
@@ -64,34 +65,40 @@
     </div>
 
     <!-- Details -->
-    <div class="w-full space-y-2 rounded-2xl bg-white p-3 dark:bg-dark">
+    <div class="dark:bg-dark w-full space-y-2 rounded-2xl bg-white p-3">
       <!-- Warning -->
       {#if !previously_connected}
-        <div class="flex w-full items-center rounded-lg bg-silver px-4 py-4 dark:bg-navy">
+        <div class="bg-silver dark:bg-navy flex w-full items-center rounded-lg px-4 py-4">
           <span class="mr-4 h-6 w-6">
             <WarningCircle class="h-6 w-6 text-amber-500" />
           </span>
           <div class="flex flex-col">
-            <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">New connection</p>
+            <p class="dark:text-grey text-[13px]/[24px] font-medium text-slate-800">
+              {$LL.SCAN.CONNECTION_REQUEST.DESCRIPTION()}
+            </p>
             <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
-              Only accept new connections that you recognize and trust
+              {$LL.SCAN.CONNECTION_REQUEST.DESCRIPTION1()}
             </p>
           </div>
         </div>
       {/if}
 
       <div
-        class="flex justify-between rounded-xl border border-slate-200 bg-white px-4 py-4 dark:border-slate-600 dark:bg-dark"
+        class="dark:bg-dark flex justify-between rounded-xl border border-slate-200 bg-white px-4 py-4 dark:border-slate-600"
       >
-        <p class="mr-3 text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">URL</p>
+        <p class="dark:text-grey mr-3 text-[13px]/[24px] font-medium text-slate-800">
+          {$LL.SCAN.CONNECTION_REQUEST.URL()}
+        </p>
         <p class="break-all text-[13px]/[24px] font-normal text-slate-500 dark:text-slate-300">
           {$state.current_user_prompt.redirect_uri}
         </p>
       </div>
       <div
-        class="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-4 dark:border-slate-600 dark:bg-dark"
+        class="dark:bg-dark flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-4 dark:border-slate-600"
       >
-        <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">Connected previously</p>
+        <p class="dark:text-grey text-[13px]/[24px] font-medium text-slate-800">
+          {$LL.SCAN.CONNECTION_REQUEST.PREVIOUSLY()}
+        </p>
         {#if previously_connected}
           <Check class="text-emerald-500" />
         {:else}
@@ -131,16 +138,16 @@
 
   <!-- Controls -->
   <!-- TODO: on iOS subtract the --safe-area-inset-bottom from the bottom-padding -->
-  <div class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 dark:bg-dark">
+  <div class="dark:bg-dark sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6">
     <Button
-      label="Accept connection"
+      label={$LL.ACCEPT()}
       on:click={() =>
         dispatch({
           type: '[Authenticate] Connection accepted',
         })}
     />
     <Button
-      label="Reject"
+      label={$LL.REJECT()}
       variant="secondary"
       on:click={() => {
         dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });

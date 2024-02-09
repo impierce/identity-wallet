@@ -538,6 +538,27 @@ type RootTranslation = {
 			 */
 			BADGES: string
 		}
+		CREDENTIAL: {
+			/**
+			 * C​r​e​d​e​n​t​i​a​l​ ​i​n​f​o
+			 */
+			NAVBAR_TITLE: string
+			NAME: string
+		}
+		BADGE: {
+			/**
+			 * B​a​d​g​e​ ​i​n​f​o
+			 */
+			NAVBAR_TITLE: string
+			/**
+			 * D​e​s​c​r​i​p​t​i​o​n
+			 */
+			DESCRIPTION: string
+			/**
+			 * M​e​t​a​d​a​t​a
+			 */
+			METADATA: string
+		}
 		EMPTY_CREDENTIALS: {
 			/**
 			 * I​t​'​s​ ​a​ ​b​i​t​ ​q​u​i​e​t​ ​i​n​ ​h​e​r​e
@@ -578,6 +599,84 @@ type RootTranslation = {
 		 * S​c​a​n
 		 */
 		BOTTOM_NAVIGATION_TITLE: string
+		/**
+		 * S​c​a​n​ ​a
+		 */
+		TITLE: string
+		/**
+		 * Q​R​ ​C​o​d​e
+		 */
+		TITLE1: string
+		/**
+		 * B​r​i​n​g​ ​a​ ​Q​R​ ​C​o​d​e​ ​i​n​t​o​ ​v​i​e​w​ ​o​f​ ​t​h​i​s​ ​s​c​r​e​e​n​ ​t​o​ ​s​t​a​r​t​ ​a​n​ ​i​n​t​e​r​a​c​t​i​o​n​.
+		 */
+		SUBTITLE: string
+		/**
+		 * N​o​ ​p​e​r​m​i​s​s​i​o​n​s​ ​t​o
+		 */
+		PERMISSION: string
+		/**
+		 * a​c​c​e​s​s​ ​t​h​e​ ​c​a​m​e​r​a
+		 */
+		PERMISSION1: string
+		LABELS: {
+			/**
+			 * C​o​n​n​e​c​t​i​o​n​ ​R​e​q​u​e​s​t​ ​(​S​I​O​P​v​2​)
+			 */
+			CONNECTION: string
+			/**
+			 * S​h​a​r​e​ ​R​e​q​u​e​s​t​ ​(​V​P​)
+			 */
+			SHARE: string
+			/**
+			 * C​r​e​d​e​n​t​i​a​l​ ​O​f​f​e​r​ ​(​s​i​n​g​l​e​)
+			 */
+			SINGLE: string
+			/**
+			 * C​r​e​d​e​n​t​i​a​l​ ​O​f​f​e​r​ ​(​m​u​l​t​i​)
+			 */
+			MULTI: string
+			/**
+			 * D​o​m​i​n​i​q​u​e​ ​(​s​t​u​d​e​n​t​)
+			 */
+			STUDENT: string
+			/**
+			 * S​t​a​r​t​ ​n​e​w​ ​s​c​a​n
+			 */
+			NEW_SCAN: string
+		}
+		CONNECTION_OFFER: {
+			/**
+			 * C​r​e​d​e​n​t​i​a​l​ ​O​f​f​e​r
+			 */
+			NAVBAR_TITLE: string
+			/**
+			 * i​s​ ​o​f​f​e​r​i​n​g​ ​y​o​u​ ​t​h​e​ ​f​o​l​l​o​w​i​n​g​ ​c​r​e​d​e​n​t​i​a​l​s
+			 */
+			DESCRIPTION: string
+		}
+		CONNECTION_REQUEST: {
+			/**
+			 * C​r​e​d​e​n​t​i​a​l​ ​R​e​q​u​e​s​t
+			 */
+			NAVBAR_TITLE: string
+			/**
+			 * N​e​w​ ​c​o​n​n​e​c​t​i​o​n
+			 */
+			DESCRIPTION: string
+			/**
+			 * O​n​l​y​ ​a​c​c​e​p​t​ ​n​e​w​ ​c​o​n​n​e​c​t​i​o​n​s​ ​t​h​a​t​ ​y​o​u​ ​r​e​c​o​g​n​i​z​e​ ​a​n​d​ ​t​r​u​s​t
+			 */
+			DESCRIPTION1: string
+			/**
+			 * U​R​L
+			 */
+			URL: string
+			/**
+			 * C​o​n​n​e​c​t​e​d​ ​p​r​e​v​i​o​u​s​l​y
+			 */
+			PREVIOUSLY: string
+		}
 	}
 	CONNECTION: {
 		TABS: {
@@ -687,6 +786,14 @@ type RootTranslation = {
 	 * S​k​i​p
 	 */
 	SKIP: string
+	/**
+	 * R​e​j​e​c​t
+	 */
+	REJECT: string
+	/**
+	 * A​c​c​e​p​t
+	 */
+	ACCEPT: string
 }
 
 export type TranslationFunctions = {
@@ -1211,6 +1318,27 @@ export type TranslationFunctions = {
 			 */
 			BADGES: () => LocalizedString
 		}
+		CREDENTIAL: {
+			/**
+			 * Credential info
+			 */
+			NAVBAR_TITLE: () => LocalizedString
+			NAME: () => LocalizedString
+		}
+		BADGE: {
+			/**
+			 * Badge info
+			 */
+			NAVBAR_TITLE: () => LocalizedString
+			/**
+			 * Description
+			 */
+			DESCRIPTION: () => LocalizedString
+			/**
+			 * Metadata
+			 */
+			METADATA: () => LocalizedString
+		}
 		EMPTY_CREDENTIALS: {
 			/**
 			 * It's a bit quiet in here
@@ -1251,6 +1379,84 @@ export type TranslationFunctions = {
 		 * Scan
 		 */
 		BOTTOM_NAVIGATION_TITLE: () => LocalizedString
+		/**
+		 * Scan a
+		 */
+		TITLE: () => LocalizedString
+		/**
+		 * QR Code
+		 */
+		TITLE1: () => LocalizedString
+		/**
+		 * Bring a QR Code into view of this screen to start an interaction.
+		 */
+		SUBTITLE: () => LocalizedString
+		/**
+		 * No permissions to
+		 */
+		PERMISSION: () => LocalizedString
+		/**
+		 * access the camera
+		 */
+		PERMISSION1: () => LocalizedString
+		LABELS: {
+			/**
+			 * Connection Request (SIOPv2)
+			 */
+			CONNECTION: () => LocalizedString
+			/**
+			 * Share Request (VP)
+			 */
+			SHARE: () => LocalizedString
+			/**
+			 * Credential Offer (single)
+			 */
+			SINGLE: () => LocalizedString
+			/**
+			 * Credential Offer (multi)
+			 */
+			MULTI: () => LocalizedString
+			/**
+			 * Dominique (student)
+			 */
+			STUDENT: () => LocalizedString
+			/**
+			 * Start new scan
+			 */
+			NEW_SCAN: () => LocalizedString
+		}
+		CONNECTION_OFFER: {
+			/**
+			 * Credential Offer
+			 */
+			NAVBAR_TITLE: () => LocalizedString
+			/**
+			 * is offering you the following credentials
+			 */
+			DESCRIPTION: () => LocalizedString
+		}
+		CONNECTION_REQUEST: {
+			/**
+			 * Credential Request
+			 */
+			NAVBAR_TITLE: () => LocalizedString
+			/**
+			 * New connection
+			 */
+			DESCRIPTION: () => LocalizedString
+			/**
+			 * Only accept new connections that you recognize and trust
+			 */
+			DESCRIPTION1: () => LocalizedString
+			/**
+			 * URL
+			 */
+			URL: () => LocalizedString
+			/**
+			 * Connected previously
+			 */
+			PREVIOUSLY: () => LocalizedString
+		}
 	}
 	CONNECTION: {
 		TABS: {
@@ -1360,6 +1566,14 @@ export type TranslationFunctions = {
 	 * Skip
 	 */
 	SKIP: () => LocalizedString
+	/**
+	 * Reject
+	 */
+	REJECT: () => LocalizedString
+	/**
+	 * Accept
+	 */
+	ACCEPT: () => LocalizedString
 }
 
 export type Formatters = {}
