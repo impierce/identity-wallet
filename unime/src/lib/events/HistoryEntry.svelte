@@ -3,6 +3,7 @@
 
   import ListItemCard from '$lib/components/molecules/ListItemCard.svelte';
   import type { Connection } from '$lib/connections/types';
+  import { state } from '$src/stores';
 
   // export let connection: Connection;
   export let title: string;
@@ -13,7 +14,7 @@
 <div class="flex flex-col">
   <p class="text-[14px]/[22px] font-medium text-slate-800">{title}</p>
   <p class="text-[12px]/[20px] font-medium text-slate-500">
-    {new Date(timestamp).toLocaleString('en-US', {
+    {new Date(timestamp).toLocaleString($state.locale, {
       dateStyle: 'medium',
       timeStyle: 'medium',
     })}

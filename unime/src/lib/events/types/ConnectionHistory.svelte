@@ -4,6 +4,7 @@
   import CredentialOffer from '$src/lib/events/types/CredentialOffer.svelte';
   import InitialConnection from '$src/lib/events/types/InitialConnection.svelte';
   import Login from '$src/lib/events/types/Login.svelte';
+  import { state } from '$src/stores';
 
   import Download from '~icons/lucide/download';
   import HelpCircle from '~icons/lucide/help-circle';
@@ -14,7 +15,7 @@
     .map((e) => ({ ...e, type: e.type as EventType })) // explicit type cast
     .map((e) => ({
       ...e,
-      timestamp: new Date(e.timestamp).toLocaleString('en-US', {
+      timestamp: new Date(e.timestamp).toLocaleString($state.locale, {
         dateStyle: 'medium',
         timeStyle: 'medium',
       }),

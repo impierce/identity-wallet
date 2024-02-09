@@ -55,17 +55,42 @@ pub struct AppState {
     pub user_data_query: Vec<String>,
 }
 
+impl Clone for AppState {
+    fn clone(&self) -> Self {
+        Self {
+            managers: self.managers.clone(),
+            active_profile: self.active_profile.clone(),
+            active_connection_request: serde_json::from_value(serde_json::json!(self.active_connection_request))
+                .unwrap(),
+            locale: self.locale.clone(),
+            credentials: self.credentials.clone(),
+            current_user_prompt: self.current_user_prompt.clone(),
+            debug_messages: self.debug_messages.clone(),
+            user_journey: self.user_journey.clone(),
+            connections: self.connections.clone(),
+            user_data_query: self.user_data_query.clone(),
+            dev_mode_enabled: self.dev_mode_enabled,
+        }
+    }
+}
+
 #[derive(Default)]
 pub struct AppStateContainer(pub tokio::sync::Mutex<AppState>);
 
+/// Format of a locale string: `ll_CC` - where ll is the language code (ISO 639) and CC is the country code (ISO 3166).
 #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default, EnumString)]
-#[serde(rename_all = "lowercase")]
 #[ts(export)]
+#[allow(non_camel_case_types)]
 pub enum Locale {
     #[default]
-    En,
-    De,
-    Nl,
+    #[serde(rename = "en-US")]
+    en_US,
+    #[serde(rename = "en-GB")]
+    en_GB,
+    #[serde(rename = "de-DE")]
+    de_DE,
+    #[serde(rename = "nl-NL")]
+    nl_NL,
 }
 
 /// A profile of the current user.
@@ -105,7 +130,7 @@ mod tests {
                 theme: None,
                 primary_did: "did:example:123".to_string(),
             }),
-            locale: Locale::En,
+            locale: Locale::en_US,
             credentials: vec![],
             current_user_prompt: Some(CurrentUserPrompt::Redirect {
                 target: "me".to_string(),
@@ -130,7 +155,7 @@ mod tests {
                     "theme": null,
                     "primary_did": "did:example:123"
                   },
-                  "locale": "en",
+                  "locale": "en-US",
                   "credentials": [],
                   "current_user_prompt": {
                     "type": "redirect",

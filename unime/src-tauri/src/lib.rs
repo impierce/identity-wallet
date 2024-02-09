@@ -39,6 +39,7 @@ pub fn run() {
                 ])
                 .level(LevelFilter::Info)
                 .level_for("unime", LevelFilter::Debug)
+                .level_for("identity_wallet", LevelFilter::Debug)
                 .with_colors(
                     ColoredLevelConfig::new()
                         .trace(Color::White)

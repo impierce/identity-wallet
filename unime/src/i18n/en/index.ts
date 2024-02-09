@@ -7,6 +7,7 @@ const en = {
       WHAT_IS_UNIME_1: 'UniMe connects your digital world, safely and securely.',
       WHAT_IS_UNIME_2: 'Create a brand new identity profile to get started.',
       CREATE_NEW_PROFILE: 'Create new profile',
+      SELECT_LANGUAGE: 'Select language',
     },
     PLEDGE: {
       NAVBAR_TITLE: 'UniMe Pledge',
@@ -111,6 +112,8 @@ const en = {
       NAVBAR_TITLE: 'App Settings',
       LANGUAGE: {
         TITLE: 'Language',
+        NAVBAR_TITLE: 'Select Language',
+        COMING_SOON: 'Coming soon',
       },
       THEME: {
         TITLE: 'Theme',
@@ -245,6 +248,14 @@ const en = {
     NO_RESULTS: {
       TITLE: 'No results found',
       DESCRIPTION: 'Try searching for something else.',
+    },
+  },
+  BADGE: {
+    DETAILS: {
+      VALID: 'Valid',
+      ISSUED_BY: 'Issued by',
+      DESCRIPTION: 'Description',
+      METADATA: 'Metadata',
     },
   },
   CANCEL: 'Cancel',

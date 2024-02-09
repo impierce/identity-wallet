@@ -317,11 +317,11 @@ mod tests {
     async fn test_set_locale() {
         let mut app_state = AppState::default();
 
-        app_state = set_locale(app_state, Arc::new(SetLocale { locale: Locale::Nl }))
+        app_state = set_locale(app_state, Arc::new(SetLocale { locale: Locale::nl_NL }))
             .await
             .unwrap();
 
-        assert_eq!(app_state.locale, Locale::Nl);
+        assert_eq!(app_state.locale, Locale::nl_NL);
     }
 
     #[tokio::test]
