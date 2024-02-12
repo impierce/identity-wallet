@@ -15,9 +15,10 @@
   import CaretDown from '~icons/ph/caret-down-bold';
   import CaretUp from '~icons/ph/caret-up-bold';
   import Trash from '~icons/ph/trash';
-  import Warning from '~icons/ph/warning';
 
   import '../app.css';
+
+  import type { ProfileType } from '@bindings/actions/DevProfileType';
 
   import { determineTheme } from './utils';
 
@@ -29,6 +30,7 @@
 
   let showDevMode = $state?.dev_profile !== null;
   let showDebugMessages = false;
+  let showProfilePopup = false;
 
   // set color scheme
   const systemColorScheme = window.matchMedia('(prefers-color-scheme: dark)');
@@ -51,6 +53,22 @@
       goto(`/prompt/${type}`);
     }
   }
+
+  const menuItemCss = 'flex flex-col content-start justify-center mr-4';
+  const buttonCss =
+    'flex content-center m-0 h-10 w-10 rounded-full bg-red-300 p-0 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60';
+  const menuTextCss = 'text-center text-xs mt-1';
+
+  async function loadProfile(profile: ProfileType) {
+    await dispatch({ type: '[DEV] Load DEV profile', payload: { profile } });
+    showProfilePopup = false;
+
+    // Reload page
+    setTimeout(async () => {
+            await goto('/'); //.then(() => goto(window.location.pathname));
+            await goto('/me'); //.then(() => goto(window.location.pathname));
+    }, 500)
+  }
 </script>
 
 <main class="absolute h-screen">
@@ -58,34 +76,44 @@
   {#if showDevMode}
     {#if showDevMode}
       <div
-        class="hide-scrollbar fixed z-20 flex w-full space-x-4 overflow-x-auto bg-gradient-to-r from-red-200 to-red-300 p-4 shadow-md"
+        class="hide-scrollbar fixed z-20 flex w-full content-center overflow-x-auto bg-gradient-to-r from-red-200 to-red-300 p-4 shadow-md"
         in:fly={{ y: -64, opacity: 1 }}
         out:fly={{ y: -64, opacity: 1 }}
       >
-        <button
-          class="rounded-full bg-red-300 px-4 py-1 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
-          on:click={() => history.back()}
-        >
-          <ArrowLeft class="h-6 w-6" />
-        </button>
-        <button
-          class="flex-shrink-0 rounded-full bg-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
-          on:click={() => dispatch({ type: '[App] Reset' })}><Trash class="h-6 w-6" /></button
-        >
-        <button
-          class="flex-shrink-0 rounded-full bg-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
-          on:click={() => dispatch({ type: '[DEV] Load DEV profile', payload: {profile: "Turtle"} })}
-        >
-          <span class="text-[18px]/[18px]">🦀</span>
-        </button>
+        <!-- Back button !-->
+        <div class={menuItemCss}>
+          <button class={buttonCss} on:click={() => history.back()}>
+            <ArrowLeft class="m-auto block" />
+          </button>
+          <span class={menuTextCss}>Back</span>
+        </div>
+
+        <!-- Reset button !-->
+        <div class={menuItemCss}>
+          <button class={buttonCss} on:click={() => dispatch({ type: '[App] Reset' })}
+            ><Trash class="m-auto block" /></button
+          >
+          <span class={menuTextCss}>Reset</span>
+        </div>
+
+        <!-- Select DEV profile !-->
+        <div class={menuItemCss}>
+          <button class={buttonCss} on:click={() => (showProfilePopup = true)}>
+            <iconify-icon class="m-auto block" icon="iconoir:developer"></iconify-icon>
+          </button>
+          <span class={menuTextCss}>DEV profile</span>
+        </div>
 
         <!-- Debug messages -->
-        <button
-          class="flex-shrink-0 rounded-full bg-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
-          on:click={() => (showDebugMessages = !showDebugMessages)}><Warning class="h-6 w-6" /></button
-        >
+        <div class={menuItemCss}>
+          <button class={buttonCss} on:click={() => (showDebugMessages = !showDebugMessages)}>
+            <iconify-icon class="m-auto block" icon="octicon:log-24"></iconify-icon>
+          </button>
+          <span class={menuTextCss}>Logs</span>
+        </div>
       </div>
     {/if}
+
     <button
       class="fixed left-[calc(50%_-_12px)] top-[var(--safe-area-inset-top)] z-30 h-6 w-6 rounded-b-md bg-red-200 p-[2px]"
       on:click={() => (showDevMode = !showDevMode)}
@@ -114,4 +142,12 @@
   <div class="fixed top-[var(--safe-area-inset-top)] h-auto w-full">
     <slot />
   </div>
+
+  {#if showProfilePopup}
+    <div class="relative z-10 flex min-h-full w-screen flex-col bg-orange-100 pt-28">
+      <button class="mb-2" on:click={() => loadProfile('Turtle')}>Select Turtle</button>
+      <hr class="s-divider svelte-syn7p7 inset" aria-orientation="horizontal" />
+      <button class="mt-2" on:click={() => loadProfile('Ferris')}>Select Ferris</button>
+    </div>
+  {/if}
 </main>

@@ -54,9 +54,9 @@ pub async fn load_dev_profile(state: AppState, action: Action) -> Result<AppStat
 
     if let Some(dev_profile) = listen::<DevProfile>(action) {
         match dev_profile.profile {
-            ProfileType::None => {}
             ProfileType::Ferris => return load_ferris_profile().await,
             ProfileType::Turtle => return load_turtle_profile(state).await,
+            ProfileType::None => {}
         }
     }
 
@@ -64,9 +64,13 @@ pub async fn load_dev_profile(state: AppState, action: Action) -> Result<AppStat
 }
 
 pub async fn login_profile(state: AppState) -> Result<AppState, AppError> {
-    command::reduce(state, Arc::new(UnlockStorage {
-        password: PROFILE_PW.to_string()
-    })).await
+    command::reduce(
+        state,
+        Arc::new(UnlockStorage {
+            password: PROFILE_PW.to_string(),
+        }),
+    )
+    .await
 }
 
 async fn reset_profile(state: AppState) -> Result<AppState, AppError> {
@@ -290,10 +294,6 @@ async fn load_ferris_profile() -> Result<AppState, AppError> {
             last_interacted: "2024-01-09T08:45:44.217Z".to_string(),
         },
     ];
-
-    state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
-        target: "me".to_string(),
-    });
 
     state.dev_profile = Some(ProfileType::Ferris);
 
