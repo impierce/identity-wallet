@@ -50,18 +50,6 @@ pub async fn get_state(_state: AppState, _action: Action) -> Result<AppState, Ap
         });
     }
 
-    // Overwrite dev_mode_enabled if environment variable is set
-    if let Some(enabled) = std::env::var("DEV_MODE_ENABLED")
-        .ok()
-        .and_then(|s| s.parse::<bool>().ok())
-    {
-        debug!("has dev mode enabled");
-
-        if enabled && state.dev_profile == ProfileType::Turtle {
-            state = load_turtle_profile(state).await?;
-        }  
-    }
-
     Ok(state)
 }
 
