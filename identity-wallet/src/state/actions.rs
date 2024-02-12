@@ -1,7 +1,7 @@
 use std::{future::Future, pin::Pin};
 use ts_rs::TS;
 use crate::{
-    command::cancel_user_journey,
+    state::user_journey::redux::cancel_user_journey,
     error::AppError,
     state::reducers::{
         test_feat_state,
@@ -128,54 +128,6 @@ impl ActionTrait for Reset {
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export, export_to = "bindings/actions/CreateNew.ts")]
-pub struct CreateNew {
-    pub name: String,
-    pub picture: String,
-    pub theme: String,
-    pub password: String,
-}
-
-#[typetag::serde(name = "[DID] Create new")]
-impl ActionTrait for CreateNew {
-    fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
-        vec![reducer!(initialize_stronghold), reducer!(create_identity)]
-    }
-}
-
-#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export, export_to = "bindings/actions/SetLocale.ts")]
-pub struct SetLocale {
-    #[ts(type = "string")]
-    pub locale: Locale,
-}
-
-#[typetag::serde(name = "[Settings] Set locale")]
-impl ActionTrait for SetLocale {
-    fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
-        vec![reducer!(set_locale)]
-    }
-}
-
-#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export, export_to = "bindings/actions/UpdateProfileSettings.ts")]
-pub struct UpdateProfileSettings {
-    #[ts(optional)]
-    pub name: Option<String>,
-    #[ts(optional)]
-    pub picture: Option<String>,
-    #[ts(optional)]
-    pub theme: Option<String>,
-}
-
-#[typetag::serde(name = "[Settings] Update profile")]
-impl ActionTrait for UpdateProfileSettings {
-    fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
-        vec![reducer!(update_profile_settings)]
-    }
-}
-
-#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/QrCodeScanned.ts")]
 pub struct QrCodeScanned {
     pub form_urlencoded: String,
@@ -210,30 +162,6 @@ pub struct CancelUserFlow {
 impl ActionTrait for CancelUserFlow {
     fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
         vec![reducer!(cancel_user_flow)]
-    }
-}
-
-#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export, export_to = "bindings/actions/SetDevMode.ts")]
-pub struct SetDevMode {
-    pub enabled: bool,
-}
-
-#[typetag::serde(name = "[DEV] Set dev mode")]
-impl ActionTrait for SetDevMode {
-    fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
-        vec![reducer!(set_dev_mode)]
-    }
-}
-
-#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export, export_to = "bindings/actions/LoadDevProfile.ts")]
-pub struct LoadDevProfile;
-
-#[typetag::serde(name = "[DEV] Load profile")]
-impl ActionTrait for LoadDevProfile {
-    fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
-        vec![reducer!(load_dev_profile)]
     }
 }
 
@@ -284,17 +212,6 @@ pub struct UpdateCredentialMetadata {
 impl ActionTrait for UpdateCredentialMetadata {
     fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
         vec![reducer!(update_credential_metadata)]
-    }
-}
-
-#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export, export_to = "bindings/actions/CancelUserJourney.ts")]
-pub struct CancelUserJourney;
-
-#[typetag::serde(name = "[User Journey] Cancel")]
-impl ActionTrait for CancelUserJourney {
-    fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
-        vec![reducer!(cancel_user_journey)]
     }
 }
 

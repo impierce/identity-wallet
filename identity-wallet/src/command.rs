@@ -9,12 +9,6 @@ use itertools::Itertools;
 use log::{debug, error, info, warn};
 use tauri::Manager;
 
-pub async fn cancel_user_journey(state: AppState, _action: Action) -> Result<AppState, AppError> {
-    Ok(AppState {
-        user_journey: None,
-        ..state
-    })
-}
 
 /// This function represents the root reducer of the application. It will delegate the state update to the reducers that
 /// are listening to the action.
@@ -59,15 +53,16 @@ async fn main_exec<R: tauri::Runtime>(
             //active_profile: guard.active_profile.clone(),
             active_connection_request: serde_json::from_value(serde_json::json!(guard.active_connection_request))
                 .unwrap(),
-            locale: guard.locale.clone(),
             credentials: guard.credentials.clone(),
             current_user_prompt: guard.current_user_prompt.clone(),
             debug_messages: guard.debug_messages.clone(),
-            user_journey: guard.user_journey.clone(),
             connections: guard.connections.clone(),
             user_data_query: guard.user_data_query.clone(),
-            dev_mode_enabled: guard.dev_mode_enabled,
+            locale: guard.locale.clone(),
+            profile: guard.profile.clone(),
+            user_journey: guard.user_journey.clone(),
             extensions: guard.extensions.clone(),
+            dev_mode_enabled: guard.dev_mode_enabled,
         },
         action,
     )

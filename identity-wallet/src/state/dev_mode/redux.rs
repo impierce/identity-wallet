@@ -1,21 +1,23 @@
 use crate::crypto::stronghold::StrongholdManager;
 use crate::error::AppError::{self, *};
-use crate::state::actions::{listen, Action, SetDevMode};
+use crate::state::actions::{listen, Action, ActionTrait, Reducer};
+use crate::state::profile::Profile;
 use crate::state::user_prompt::CurrentUserPrompt;
-use crate::state::{AppState, Connection, Profile};
+use crate::state::{AppState, Connection};
 use crate::verifiable_credential_record::VerifiableCredentialRecord;
-use crate::ASSETS_DIR;
+use crate::{reducer, ASSETS_DIR};
 use did_key::{generate, Ed25519KeyPair};
-use lazy_static::lazy_static;
 use log::info;
 use oid4vc::oid4vc_core::Subject;
 use oid4vc::oid4vc_manager::methods::key_method::KeySubject;
 use oid4vc::oid4vci::credential_format_profiles::w3c_verifiable_credentials::jwt_vc_json::JwtVcJson;
 use oid4vc::oid4vci::credential_format_profiles::{Credential, CredentialFormats, WithCredential};
 use serde_json::json;
+use ts_rs::TS;
 use std::fs::File;
 use std::io::copy;
 use std::sync::Arc;
+use lazy_static::lazy_static;
 
 lazy_static! {
     pub static ref PERSONAL_INFORMATION: VerifiableCredentialRecord = VerifiableCredentialRecord::from(
@@ -38,6 +40,38 @@ lazy_static! {
     );
 }
 
+/// Actions
+
+/// Action to set the dev mode to the given value.
+
+#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
+#[ts(export, export_to = "bindings/actions/SetDevMode.ts")]
+pub struct SetDevMode {
+    pub enabled: bool,
+}
+
+#[typetag::serde(name = "[DEV] Set dev mode")]
+impl ActionTrait for SetDevMode {
+    fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
+        vec![reducer!(set_dev_mode)]
+    }
+}
+
+/// Action to load the dev profile.
+#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
+#[ts(export, export_to = "bindings/actions/LoadDevProfile.ts")]
+pub struct LoadDevProfile;
+
+#[typetag::serde(name = "[DEV] Load profile")]
+impl ActionTrait for LoadDevProfile {
+    fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
+        vec![reducer!(load_dev_profile)]
+    }
+}
+
+/// Reducers
+
+/// Reducer to set the dev mode to the given value.
 pub async fn set_dev_mode(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(enabled) = listen::<SetDevMode>(action).map(|payload| payload.enabled) {
         return Ok(AppState {
@@ -49,6 +83,7 @@ pub async fn set_dev_mode(state: AppState, action: Action) -> Result<AppState, A
     Ok(state)
 }
 
+/// Reducer to load the dev profile.
 pub async fn load_dev_profile(_state: AppState, _action: Action) -> Result<AppState, AppError> {
     info!("load dev profile");
 
@@ -67,7 +102,7 @@ pub async fn load_dev_profile(_state: AppState, _action: Action) -> Result<AppSt
         theme: Some("system".to_string()),
         primary_did: subject.identifier().unwrap(),
     };
-    state.feat_states.insert("profile".to_string(), Box::new(profile));
+    state.profile = Some(profile);
 
     vec![
         PERSONAL_INFORMATION.clone(),
@@ -202,6 +237,10 @@ pub async fn load_dev_profile(_state: AppState, _action: Action) -> Result<AppSt
     Ok(state)
 }
 
+
+/// Helpers
+
+/// Helper to load the credential images in reducer load_dev_profile.
 async fn load_credential_images(
     issuer_id: String,
     driver_license_id: String,

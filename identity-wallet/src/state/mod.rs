@@ -1,11 +1,13 @@
-pub mod features;
+pub mod profile;
+pub mod user_journey;
+pub mod dev_mode;
 pub mod actions;
 pub mod reducers;
 pub mod persistence;
 pub mod user_prompt;
 
 use self::reducers::authorization::ConnectionRequest;
-use self::features::profile::Profile;
+use self::profile::Profile;
 use crate::{
     crypto::stronghold::StrongholdManager, state::user_prompt::CurrentUserPrompt,
     verifiable_credential_record::DisplayCredential,
@@ -45,17 +47,17 @@ pub struct AppState {
     #[serde(skip)]
     #[derivative(Debug = "ignore")]
     pub active_connection_request: Option<ConnectionRequest>,
-    pub locale: Locale,
     pub credentials: Vec<DisplayCredential>,
     pub current_user_prompt: Option<CurrentUserPrompt>,
     #[ts(type = "Array<string>")]
     pub debug_messages: VecDeque<String>,
-    #[ts(type = "object | null")]
-    pub user_journey: Option<serde_json::Value>,
     pub connections: Vec<Connection>,
     pub user_data_query: Vec<String>,
     ////
+    pub locale: Locale,
     pub profile: Option<Profile>,
+    #[ts(type = "object | null")]
+    pub user_journey: Option<serde_json::Value>,
     #[ts(skip)]
     pub extensions: std::collections::HashMap<String, Box<dyn FeatTrait>>,
     pub dev_mode_enabled: bool,
@@ -79,16 +81,6 @@ pub struct IdentityManager {
 pub struct Managers {
     pub stronghold_manager: Option<Arc<StrongholdManager>>,
     pub identity_manager: Option<IdentityManager>,
-}
-
-#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default, EnumString)]
-#[serde(rename_all = "lowercase")]
-#[ts(export)]
-pub enum Locale {
-    #[default]
-    En,
-    De,
-    Nl,
 }
 
 #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default)]
@@ -146,22 +138,22 @@ mod tests {
     #[test]
     fn test_app_state_serialize() {
         let state = AppState {
-            locale: Locale::En,
             credentials: vec![],
             current_user_prompt: Some(CurrentUserPrompt::Redirect {
                 target: "me".to_string(),
             }),
             debug_messages: Default::default(),
-            user_journey: None,
             connections: vec![],
+            locale: Locale::En,
+            profile: Some(Profile {
+                name: "John Doe".to_string(),
+                picture: None,
+                theme: None,
+                primary_did: "did:example:123".to_string(),
+            }),
+            user_journey: None,
             ..Default::default()
-        }
-        .add_feat_state("profile", Box::new(Profile {
-            name: "John Doe".to_string(),
-            picture: None,
-            theme: None,
-            primary_did: "did:example:123".to_string(),
-        }));
+        };
 
         //let mut serialized = String::new();
         //let rt = Runtime::new().unwrap();

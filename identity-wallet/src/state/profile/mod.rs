@@ -1,4 +1,7 @@
+pub mod redux;
+
 use serde::{Deserialize, Serialize};
+use strum::EnumString;
 use ts_rs::TS;
 use crate::state::FeatTrait;
 
@@ -15,3 +18,14 @@ pub struct Profile {
 
 #[typetag::serde(name = "profile")]
 impl FeatTrait for Profile {}
+
+
+#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default, EnumString)]
+#[serde(rename_all = "lowercase")]
+#[ts(export)]
+pub enum Locale {
+    #[default]
+    En,
+    De,
+    Nl,
+}

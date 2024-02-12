@@ -10,7 +10,7 @@ use super::IdentityManager;
 use crate::crypto::stronghold::StrongholdManager;
 use crate::error::AppError::{self, *};
 use crate::state::user_prompt::CurrentUserPrompt;
-use crate::state::{AppState, Profile};
+use crate::state::{AppState, profile};
 use crate::verifiable_credential_record::VerifiableCredentialRecord;
 use did_key::{from_existing_key, Ed25519KeyPair};
 use log::{debug, info};
@@ -71,77 +71,6 @@ pub async fn cancel_user_flow(state: AppState, action: Action) -> Result<AppStat
                 .map(|target| CurrentUserPrompt::Redirect { target }),
             ..state
         });
-    }
-
-    Ok(state)
-}
-
-/// Sets the locale to the given value. If the locale is not supported yet, the current locale will stay unchanged.
-pub async fn set_locale(state: AppState, action: Action) -> Result<AppState, AppError> {
-    if let Some(locale) = listen::<SetLocale>(action).map(|payload| payload.locale) {
-        debug!("locale set to: `{:?}`", locale);
-        return Ok(AppState {
-            locale,
-            current_user_prompt: None,
-            ..state
-        });
-    }
-    Ok(state)
-}
-
-/// Creates a new profile with a new DID (using the did:key method) and sets it as the active profile.
-pub async fn create_identity(state: AppState, action: Action) -> Result<AppState, AppError> {
-    if let Some(CreateNew {
-        name, picture, theme, ..
-    }) = listen::<CreateNew>(action)
-    {
-        let mut state_guard = state.managers.lock().await;
-        let stronghold_manager = state_guard
-            .stronghold_manager
-            .as_ref()
-            .ok_or(MissingManagerError("stronghold"))?;
-
-        let public_key = stronghold_manager.get_public_key().map_err(StrongholdPublicKeyError)?;
-
-        let keypair = from_existing_key::<Ed25519KeyPair>(public_key.as_slice(), None);
-        let subject = Arc::new(KeySubject::from_keypair(keypair, Some(stronghold_manager.clone())));
-
-        let provider_manager = ProviderManager::new([subject.clone()]).map_err(OID4VCProviderManagerError)?;
-        let wallet: Wallet = Wallet::new(subject.clone());
-
-        let profile = Profile {
-            name: name.to_string(),
-            picture: Some(picture.to_string()),
-            theme: Some(theme.to_string()),
-            primary_did: subject.identifier().map_err(OID4VCSubjectIdentifierError)?,
-        };
-
-        state_guard.identity_manager.replace(IdentityManager {
-            subject,
-            provider_manager,
-            wallet,
-        });
-
-        drop(state_guard);
-        return Ok(AppState {
-            current_user_prompt: Some(CurrentUserPrompt::Redirect {
-                target: "me".to_string(),
-            }),
-            ..state
-        }.add_feat_state("profile", Box::new(profile)));
-    }
-
-    Ok(state)
-}
-
-pub async fn initialize_stronghold(state: AppState, action: Action) -> Result<AppState, AppError> {
-    if let Some(password) = listen::<CreateNew>(action).map(|payload| payload.password) {
-        state.managers.lock().await.stronghold_manager.replace(Arc::new(
-            StrongholdManager::create(&password).map_err(StrongholdCreationError)?,
-        ));
-
-        info!("stronghold initialized");
-        return Ok(state);
     }
 
     Ok(state)
@@ -223,24 +152,6 @@ pub async fn update_credential_metadata(state: AppState, action: Action) -> Resu
     Ok(state)
 }
 
-pub async fn update_profile_settings(state: AppState, action: Action) -> Result<AppState, AppError> {
-    if let Some(UpdateProfileSettings { theme, name, picture }) = listen::<UpdateProfileSettings>(action) {
-        let profile = state.feat_states.get("profile").ok_or(MissingStateParameterError("active profile"))?.clone()
-        .downcast::<Profile>().unwrap();
-
-        return Ok(AppState {
-            ..state
-            }.add_feat_state("profile", Box::new(Profile {
-                name: name.unwrap_or(profile.name),
-                picture,
-                theme,
-                ..*profile
-            })));
-        
-    }
-
-    Ok(state)
-}
 
 /// Completely resets the state to its default values.
 pub async fn reset_state(_state: AppState, _action: Action) -> Result<AppState, AppError> {
@@ -278,7 +189,7 @@ mod tests {
     async fn test_reset_state() {
         let mut app_state = AppState {
             ..AppState::default()
-        }.add_feat_state("profile", Box::new(Profile {
+        }.add_feat_state("profile", Box::new(profile {
             name: "Ferris".to_string(),
             picture: Some("&#129408".to_string()),
             theme: Some("system".to_string()),

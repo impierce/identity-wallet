@@ -8,7 +8,7 @@ use identity_wallet::oid4vci::credential_format_profiles::{
 };
 use identity_wallet::state::AppStateContainer;
 use identity_wallet::{
-    state::{actions::Action, AppState, features::profile::Profile},
+    state::{actions::Action, AppState, profile::redux::Profile},
     verifiable_credential_record::VerifiableCredentialRecord,
 };
 use serde_json::json;
