@@ -19,11 +19,6 @@
 
   import '../app.css';
 
-  import { melt } from '@melt-ui/svelte';
-
-  import Button from '$src/lib/components/atoms/Button.svelte';
-  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
-
   import { determineTheme } from './utils';
 
   onMount(async () => {
@@ -32,8 +27,7 @@
     dispatch({ type: '[App] Get state' });
   });
 
-  let showDevMode = false;
-
+  let showDevMode = $state?.dev_profile !== null;
   let showDebugMessages = false;
 
   // set color scheme
@@ -61,7 +55,7 @@
 
 <main class="absolute h-screen">
   <!-- Dev Mode: Navbar -->
-  {#if $state?.dev_profile}
+  {#if showDevMode}
     {#if showDevMode}
       <div
         class="hide-scrollbar fixed z-20 flex w-full space-x-4 overflow-x-auto bg-gradient-to-r from-red-200 to-red-300 p-4 shadow-md"

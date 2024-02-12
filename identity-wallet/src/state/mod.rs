@@ -46,7 +46,7 @@ pub struct AppState {
     pub locale: Locale,
     pub credentials: Vec<DisplayCredential>,
     pub current_user_prompt: Option<CurrentUserPrompt>,
-    pub dev_profile: ProfileType,
+    pub dev_profile: Option<ProfileType>,
     #[ts(type = "Array<string>")]
     pub debug_messages: VecDeque<String>,
     #[ts(type = "object | null")]

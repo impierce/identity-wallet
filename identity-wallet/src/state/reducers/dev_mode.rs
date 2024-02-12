@@ -2,7 +2,7 @@ use crate::crypto::stronghold::StrongholdManager;
 use crate::error::AppError::{self, *};
 use crate::state::actions::{
     listen, Action, ConnectionAccepted, CreateNew, CredentialOffersSelected, CredentialsSelected, DevProfile,
-    ProfileType, QrCodeScanned, Reset,
+    ProfileType, QrCodeScanned, Reset, UnlockStorage,
 };
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, Connection, Profile};
@@ -63,13 +63,19 @@ pub async fn load_dev_profile(state: AppState, action: Action) -> Result<AppStat
     Ok(state)
 }
 
+pub async fn login_profile(state: AppState) -> Result<AppState, AppError> {
+    command::reduce(state, Arc::new(UnlockStorage {
+        password: PROFILE_PW.to_string()
+    })).await
+}
+
 async fn reset_profile(state: AppState) -> Result<AppState, AppError> {
     command::reduce(state, Arc::new(Reset)).await
 }
 
 async fn create_new_profile(state: AppState) -> Result<AppState, AppError> {
     let create_new = CreateNew {
-        name: "Turtle Koopa Troopa".to_string(),
+        name: "Turtle".to_string(),
         picture: "&#x1F6E9".to_string(),
         theme: "dark".to_string(),
         password: PROFILE_PW.to_string(),
@@ -137,7 +143,7 @@ pub async fn load_turtle_profile(state: AppState) -> Result<AppState, AppError> 
     // Add & accept presentation
     let mut state = add_presentation_request(state).await?;
 
-    state.dev_profile = ProfileType::Turtle;
+    state.dev_profile = Some(ProfileType::Turtle);
 
     Ok(state)
 }
@@ -289,7 +295,7 @@ async fn load_ferris_profile() -> Result<AppState, AppError> {
         target: "me".to_string(),
     });
 
-    state.dev_profile = ProfileType::Ferris;
+    state.dev_profile = Some(ProfileType::Ferris);
 
     Ok(state)
 }

@@ -159,7 +159,7 @@
           </div>
         {/each}
       </div>
-      {#if $state.dev_mode_enabled}
+      {#if $state?.dev_profile !== null}
         <p class="pt-4 text-center text-[13px]/[24px] text-slate-500">{credential.data.issuer}</p>
       {/if}
     </div>

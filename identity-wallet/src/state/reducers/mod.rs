@@ -9,7 +9,8 @@ use super::persistence::{delete_state_file, delete_stronghold, load_state};
 use super::IdentityManager;
 use crate::crypto::stronghold::StrongholdManager;
 use crate::error::AppError::{self, *};
-use crate::state::actions::{Action, CreateNew};
+use crate::state::actions::{Action, CreateNew, ProfileType};
+use crate::state::reducers::dev_mode::login_profile;
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, Profile};
 use crate::verifiable_credential_record::VerifiableCredentialRecord;
@@ -47,6 +48,20 @@ pub async fn get_state(_state: AppState, _action: Action) -> Result<AppState, Ap
         state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
             target: "welcome".to_string(),
         });
+    }
+
+    // Overwrite dev_mode_enabled if environment variable is set
+    if let Some(dev_mode) = std::env::var("DEV_MODE_ENABLED")
+        .ok()
+        .and_then(|s| s.parse::<bool>().ok())
+    {
+        if dev_mode {
+            if state.dev_profile.is_none() {
+                state.dev_profile = Some(ProfileType::None);
+            } else if state.dev_profile != Some(ProfileType::None) {
+                return login_profile(state).await;
+            }
+        }
     }
 
     Ok(state)
