@@ -11,7 +11,7 @@ use tauri::Manager;
 
 /// This function represents the root reducer of the application. It will delegate the state update to the reducers that
 /// are listening to the action.
-async fn reduce(state: AppState, action: Action) -> Result<AppState, AppError> {
+pub async fn reduce(state: AppState, action: Action) -> Result<AppState, AppError> {
     // Extract the reducers listening to this action.
     let reducers = action
         .reducers()

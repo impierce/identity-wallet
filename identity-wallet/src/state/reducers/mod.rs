@@ -10,6 +10,7 @@ use super::IdentityManager;
 use crate::crypto::stronghold::StrongholdManager;
 use crate::error::AppError::{self, *};
 use crate::state::actions::{Action, CreateNew, ProfileType};
+use crate::state::reducers::dev_mode::load_turtle_profile;
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, Profile};
 use crate::verifiable_credential_record::VerifiableCredentialRecord;
@@ -37,7 +38,7 @@ pub type Reducer<'a> =
     Box<dyn Fn(AppState, Action) -> Pin<Box<dyn Future<Output = Result<AppState, AppError>> + Send>> + Send>;
 
 pub async fn get_state(_state: AppState, _action: Action) -> Result<AppState, AppError> {
-    println!("get_state reducer called");
+    debug!("get_state reducer called");
     let mut state = load_state().await.unwrap_or_default();
 
     if state.active_profile.is_some() {
@@ -54,13 +55,11 @@ pub async fn get_state(_state: AppState, _action: Action) -> Result<AppState, Ap
         .ok()
         .and_then(|s| s.parse::<bool>().ok())
     {
-        if enabled {
-            state.dev_profile = Some(ProfileType::None);
-        } else {
-            state.dev_profile = None;
-        }
-    } else {
-        state.dev_profile = None;
+        debug!("has dev mode enabled");
+
+        if enabled && state.dev_profile == ProfileType::Turtle {
+            state = load_turtle_profile(state).await?;
+        }  
     }
 
     Ok(state)

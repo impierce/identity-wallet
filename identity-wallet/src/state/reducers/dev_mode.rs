@@ -1,10 +1,10 @@
 use crate::crypto::stronghold::StrongholdManager;
 use crate::error::AppError::{self, *};
-use crate::state::actions::{listen, Action, ProfileType, SetDevMode};
+use crate::state::actions::{listen, Action, CreateNew, DevProfile, ProfileType, QrCodeScanned, Reset};
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, Connection, Profile};
 use crate::verifiable_credential_record::VerifiableCredentialRecord;
-use crate::ASSETS_DIR;
+use crate::{command, ASSETS_DIR};
 use did_key::{generate, Ed25519KeyPair};
 use lazy_static::lazy_static;
 use log::info;
@@ -12,10 +12,13 @@ use oid4vc::oid4vc_core::Subject;
 use oid4vc::oid4vc_manager::methods::key_method::KeySubject;
 use oid4vc::oid4vci::credential_format_profiles::w3c_verifiable_credentials::jwt_vc_json::JwtVcJson;
 use oid4vc::oid4vci::credential_format_profiles::{Credential, CredentialFormats, WithCredential};
+use oid4vc::oid4vci::credential_offer::CredentialOfferQuery;
 use serde_json::json;
 use std::fs::File;
 use std::io::copy;
 use std::sync::Arc;
+
+use super::credential_offer::read_credential_offer;
 
 lazy_static! {
     pub static ref PERSONAL_INFORMATION: VerifiableCredentialRecord = VerifiableCredentialRecord::from(
@@ -38,23 +41,64 @@ lazy_static! {
     );
 }
 
-pub async fn set_dev_profile(state: AppState, action: Action) -> Result<AppState, AppError> {
-    info!("Set DEV profile: {:?}", action);
+const PROFILE_PW: &str = "sup3rSecr3t";
 
-    if let Some(_) = listen::<SetDevMode>(action) {
-        return Ok(AppState {
-            dev_profile: Some(ProfileType::None),
-            current_user_prompt: None,
-            ..state
-        });
+pub async fn load_dev_profile(state: AppState, action: Action) -> Result<AppState, AppError> {
+    info!("Load dev profile: {:?}", action);
+
+    if let Some(dev_profile) = listen::<DevProfile>(action) {
+        match dev_profile.profile {
+            ProfileType::None => {}
+            ProfileType::Ferris => return load_ferris_profile().await,
+            ProfileType::Turtle => return load_turtle_profile(state).await,
+        }
     }
 
     Ok(state)
 }
 
-pub async fn load_dev_profile(state: AppState, action: Action) -> Result<AppState, AppError> {
-    info!("Load dev profile: {:?}", action);
+async fn reset_profile(state: AppState) -> Result<AppState, AppError> {
+    command::reduce(state.clone(), Arc::new(Reset)).await
+}
 
+async fn create_new_profile(state: AppState) -> Result<AppState, AppError> {
+    let create_new = CreateNew {
+        name: "Turtle".to_string(),
+        picture: "&#x1F6E9".to_string(),
+        theme: "dark".to_string(),
+        password: PROFILE_PW.to_string(),
+    };
+
+    command::reduce(state.clone(), Arc::new(create_new)).await
+}
+
+async fn add_credential(state: AppState) -> Result<AppState, AppError> {
+    let qr_code = QrCodeScanned {
+        form_urlencoded: CredentialOfferQuery::<CredentialFormats>::CredentialOfferUri(
+            "openid-credential-offer://?credential_offer_uri=https://api.ngdil-demo.tanglelabs.io/api/offers/creds/u08LmjU8lAcTwx7pLMpy0".parse().unwrap(),
+        )
+        .to_string(),
+    };
+
+    read_credential_offer(state, Arc::new(qr_code)).await
+}
+
+pub async fn load_turtle_profile(state: AppState) -> Result<AppState, AppError> {
+    // Reset
+    let state = reset_profile(state).await?;
+
+    // Create new
+    let mut state = create_new_profile(state).await?;
+
+    // Add credential
+    //let mut state = add_credential(state).await?;
+
+    state.dev_profile = ProfileType::Turtle;
+
+    Ok(state)
+}
+
+async fn load_ferris_profile() -> Result<AppState, AppError> {
     let mut state = AppState::default();
 
     let stronghold_manager = StrongholdManager::create("sup3rSecr3t").map_err(StrongholdCreationError)?;
@@ -201,7 +245,7 @@ pub async fn load_dev_profile(state: AppState, action: Action) -> Result<AppStat
         target: "me".to_string(),
     });
 
-    state.dev_profile = Some(ProfileType::Ferris);
+    state.dev_profile = ProfileType::Ferris;
 
     Ok(state)
 }

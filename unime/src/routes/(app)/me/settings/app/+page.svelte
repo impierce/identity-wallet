@@ -2,13 +2,11 @@
   import { goto } from '$app/navigation';
 
   import { locales } from '$lib/app/locales';
-  import { dispatch } from '$lib/dispatcher';
   import LL from '$src/i18n/i18n-svelte';
   import SettingsEntry from '$src/lib/app/settings/SettingsEntry.svelte';
   import Switch from '$src/lib/components/atoms/Switch.svelte';
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
   import { state } from '$src/stores';
-  import { onMount } from 'svelte';
 
   import ChatCircleText from '~icons/ph/chat-circle-text-fill';
   import Code from '~icons/ph/code-bold';
@@ -16,16 +14,6 @@
   import Password from '~icons/ph/password-fill';
   import Sun from '~icons/ph/sun-fill';
   import Translate from '~icons/ph/translate-fill';
-
-  onMount(() => {
-    console.log($state.dev_profile);
-  });
-
-  async function loadDevProfile() {
-    hasDevProfile = true;
-
-    await dispatch({ type: '[DEV] Set DEV mode' });
-  }
 
   let hasDevProfile = false;
 
@@ -60,7 +48,6 @@
     <SettingsEntry icon={Code} title={$LL.SETTINGS.APP.DEVELOPER_MODE.TITLE()} hasCaretRight={false}>
       <Switch
         active={hasDevProfile}
-        on:change={loadDevProfile}
       />
     </SettingsEntry>
   </div>
