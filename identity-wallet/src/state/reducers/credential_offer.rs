@@ -9,7 +9,7 @@ use crate::{
     utils::{download_asset, LogoType},
     verifiable_credential_record::VerifiableCredentialRecord,
 };
-use log::{debug, info};
+use log::{debug, error, info};
 use oid4vc::oid4vci::{
     credential_format_profiles::{CredentialFormats, WithCredential, WithParameters},
     credential_issuer::credentials_supported::CredentialsSupportedObject,
@@ -23,9 +23,12 @@ use uuid::Uuid;
 pub async fn read_credential_offer(state: AppState, action: Action) -> Result<AppState, AppError> {
     info!("read_credential_offer");
 
-    if let Some(credential_offer_uri) =
-        listen::<QrCodeScanned>(action).and_then(|payload| payload.form_urlencoded.parse::<CredentialOfferQuery>().ok())
-    {
+    if let Some(payload) = listen::<QrCodeScanned>(action) {
+        let credential = payload.form_urlencoded.parse::<CredentialOfferQuery>();
+        
+        match credential {
+            Ok(credential_offer_uri) => {
+
         let state_guard = state.managers.lock().await;
         let wallet = &state_guard
             .identity_manager
@@ -197,6 +200,12 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
             }),
             ..state
         });
+            }
+            Err(e) => {
+                error!("Can't parse uri: {:?}", e.to_string());
+            }
+        }
+
     }
 
     Ok(state)

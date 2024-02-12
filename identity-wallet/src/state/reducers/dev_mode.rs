@@ -73,12 +73,9 @@ async fn create_new_profile(state: AppState) -> Result<AppState, AppError> {
 }
 
 async fn add_credential(state: AppState) -> Result<AppState, AppError> {
-    let qr_code = QrCodeScanned {
-        form_urlencoded: CredentialOfferQuery::<CredentialFormats>::CredentialOfferUri(
-            "openid-credential-offer://?credential_offer_uri=https://api.ngdil-demo.tanglelabs.io/api/offers/creds/u08LmjU8lAcTwx7pLMpy0".parse().unwrap(),
-        )
-        .to_string(),
-    };
+    let url = "openid-credential-offer://?credential_offer_uri=https://api.ngdil-demo.tanglelabs.io/api/offers/creds/u08LmjU8lAcTwx7pLMpy0".to_string();
+
+    let qr_code = QrCodeScanned { form_urlencoded: url };
 
     read_credential_offer(state, Arc::new(qr_code)).await
 }
@@ -88,10 +85,10 @@ pub async fn load_turtle_profile(state: AppState) -> Result<AppState, AppError> 
     let state = reset_profile(state).await?;
 
     // Create new
-    let mut state = create_new_profile(state).await?;
+    let state = create_new_profile(state).await?;
 
     // Add credential
-    //let mut state = add_credential(state).await?;
+    let mut state = add_credential(state).await?;
 
     state.dev_profile = ProfileType::Turtle;
 
