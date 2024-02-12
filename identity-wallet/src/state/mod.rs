@@ -1,11 +1,11 @@
-pub mod feat_states;
+pub mod features;
 pub mod actions;
 pub mod reducers;
 pub mod persistence;
 pub mod user_prompt;
 
 use self::reducers::authorization::ConnectionRequest;
-use self::feat_states::profile::Profile;
+use self::features::profile::Profile;
 use crate::{
     crypto::stronghold::StrongholdManager, state::user_prompt::CurrentUserPrompt,
     verifiable_credential_record::DisplayCredential,
@@ -25,12 +25,7 @@ use dyn_clone::DynClone;
 pub struct AppStateContainer(pub tokio::sync::Mutex<AppState>);
 
 impl AppStateContainer{
-    pub async fn add_feat_state (self, key: &str, feat_state: Box<dyn FeatStateTrait>) -> Self
-    {
-        self.0.lock().await.feat_states.insert(key.to_string(), feat_state);
-        self
-    }
-    pub async fn add_extension (self, key: &str, extension: Box<dyn ExtensionTrait>) -> Self
+    pub async fn insert_extension (self, key: &str, extension: Box<dyn FeatTrait>) -> Self
     {
         self.0.lock().await.extensions.insert(key.to_string(), extension);
         self
@@ -53,26 +48,21 @@ pub struct AppState {
     pub locale: Locale,
     pub credentials: Vec<DisplayCredential>,
     pub current_user_prompt: Option<CurrentUserPrompt>,
-    pub dev_mode_enabled: bool,
     #[ts(type = "Array<string>")]
     pub debug_messages: VecDeque<String>,
     #[ts(type = "object | null")]
     pub user_journey: Option<serde_json::Value>,
     pub connections: Vec<Connection>,
     pub user_data_query: Vec<String>,
+    ////
+    pub profile: Option<Profile>,
     #[ts(skip)]
-    pub feat_states: std::collections::HashMap<String, Box<dyn FeatStateTrait>>,
-    #[ts(skip)]
-    pub extensions: std::collections::HashMap<String, Box<dyn ExtensionTrait>>,
+    pub extensions: std::collections::HashMap<String, Box<dyn FeatTrait>>,
+    pub dev_mode_enabled: bool,
 }
 
 impl AppState{
-    pub fn add_feat_state (mut self, key: &str, feat_state: Box<dyn FeatStateTrait>) -> Self
-    {
-        self.feat_states.insert(key.to_string(), feat_state);
-        self
-    }
-    pub fn add_extension (mut self, key: &str, extension: Box<dyn ExtensionTrait>) -> Self
+    pub fn insert_extension (mut self, key: &str, extension: Box<dyn FeatTrait>) -> Self
     {
         self.extensions.insert(key.to_string(), extension);
         self
@@ -130,19 +120,13 @@ pub enum SortMethod {
     LastInteractedNewOld,
 }
 
-// Feat_state experimenting 
+// Trait which each field of the appstate has to implement.
 #[typetag::serde(tag = "feat_state_type")]
-pub trait FeatStateTrait: Send + Sync + std::fmt::Debug + DynClone + DowncastSync{}
-dyn_clone::clone_trait_object!(FeatStateTrait);
-impl_downcast!(sync FeatStateTrait);
+pub trait FeatTrait: Send + Sync + std::fmt::Debug + DynClone + DowncastSync{}
+dyn_clone::clone_trait_object!(FeatTrait);
+impl_downcast!(sync FeatTrait);
 
-
-// "CustomExtension" meant for testing
-
-#[typetag::serde(tag = "extension_type")]
-pub trait ExtensionTrait: Send + Sync + std::fmt::Debug + DynClone + DowncastSync{}
-dyn_clone::clone_trait_object!(ExtensionTrait);
-impl_downcast!(sync ExtensionTrait);
+// Testing extensions
 
 #[derive(Debug, Serialize, Deserialize, TS, PartialEq, Default, Clone)]
 pub struct CustomExtension {
@@ -151,7 +135,7 @@ pub struct CustomExtension {
 }
 
 #[typetag::serde(name = "customextension")]
-impl ExtensionTrait for CustomExtension {}
+impl FeatTrait for CustomExtension {}
 
 #[cfg(test)]
 mod tests {

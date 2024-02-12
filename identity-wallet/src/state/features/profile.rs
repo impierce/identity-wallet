@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
-use crate::state::FeatStateTrait;
+use crate::state::FeatTrait;
 
 /// A profile of the current user.
 #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default)]
@@ -14,4 +14,4 @@ pub struct Profile {
 }
 
 #[typetag::serde(name = "profile")]
-impl FeatStateTrait for Profile {}
+impl FeatTrait for Profile {}

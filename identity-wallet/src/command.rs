@@ -67,7 +67,6 @@ async fn main_exec<R: tauri::Runtime>(
             connections: guard.connections.clone(),
             user_data_query: guard.user_data_query.clone(),
             dev_mode_enabled: guard.dev_mode_enabled,
-            feat_states: guard.feat_states.clone(),
             extensions: guard.extensions.clone(),
         },
         action,

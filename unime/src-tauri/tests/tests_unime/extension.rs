@@ -10,7 +10,7 @@ async fn test_extension() {
     setup_stronghold();
 
     // Deserializing the AppStates and Actions from the accompanying json files.
-    let state = AppStateContainer::default().add_extension("test", Box::new(CustomExtension{ name: "test".to_string(), value: "test".to_string() })).await;
+    let state = AppStateContainer::default().insert_extension("test", Box::new(CustomExtension{ name: "test".to_string(), value: "test".to_string() })).await;
     let state2 = json_example::<AppState>("tests/fixtures/states/test_extension.json");
     let action1 = json_example::<Action>("tests/fixtures/actions/test_extension.json");
 
