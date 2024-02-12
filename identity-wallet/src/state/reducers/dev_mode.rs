@@ -1,6 +1,9 @@
 use crate::crypto::stronghold::StrongholdManager;
 use crate::error::AppError::{self, *};
-use crate::state::actions::{listen, Action, CreateNew, DevProfile, ProfileType, QrCodeScanned, Reset};
+use crate::state::actions::{
+    listen, Action, ConnectionAccepted, CreateNew, CredentialOffersSelected, CredentialsSelected, DevProfile,
+    ProfileType, QrCodeScanned, Reset,
+};
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, Connection, Profile};
 use crate::verifiable_credential_record::VerifiableCredentialRecord;
@@ -12,14 +15,16 @@ use oid4vc::oid4vc_core::Subject;
 use oid4vc::oid4vc_manager::methods::key_method::KeySubject;
 use oid4vc::oid4vci::credential_format_profiles::w3c_verifiable_credentials::jwt_vc_json::JwtVcJson;
 use oid4vc::oid4vci::credential_format_profiles::{Credential, CredentialFormats, WithCredential};
-use oid4vc::oid4vci::credential_offer::CredentialOfferQuery;
 use serde_json::json;
 use std::fs::File;
 use std::io::copy;
 use std::sync::Arc;
+use uuid::Uuid;
 
-use super::authorization::read_authorization_request;
-use super::credential_offer::read_credential_offer;
+use super::authorization::{
+    handle_oid4vp_authorization_request, handle_siopv2_authorization_request, read_authorization_request,
+};
+use super::credential_offer::{read_credential_offer, send_credential_request};
 
 lazy_static! {
     pub static ref PERSONAL_INFORMATION: VerifiableCredentialRecord = VerifiableCredentialRecord::from(
@@ -59,18 +64,18 @@ pub async fn load_dev_profile(state: AppState, action: Action) -> Result<AppStat
 }
 
 async fn reset_profile(state: AppState) -> Result<AppState, AppError> {
-    command::reduce(state.clone(), Arc::new(Reset)).await
+    command::reduce(state, Arc::new(Reset)).await
 }
 
 async fn create_new_profile(state: AppState) -> Result<AppState, AppError> {
     let create_new = CreateNew {
-        name: "Turtle".to_string(),
+        name: "Turtle Koopa Troopa".to_string(),
         picture: "&#x1F6E9".to_string(),
         theme: "dark".to_string(),
         password: PROFILE_PW.to_string(),
     };
 
-    command::reduce(state.clone(), Arc::new(create_new)).await
+    command::reduce(state, Arc::new(create_new)).await
 }
 
 async fn add_credential(state: AppState) -> Result<AppState, AppError> {
@@ -78,7 +83,13 @@ async fn add_credential(state: AppState) -> Result<AppState, AppError> {
 
     let qr_code = QrCodeScanned { form_urlencoded: url };
 
-    read_credential_offer(state, Arc::new(qr_code)).await
+    let state = read_credential_offer(state, Arc::new(qr_code)).await?;
+
+    let cr_selected = CredentialOffersSelected {
+        offer_indices: vec![0, 1, 2, 3, 4],
+    };
+
+    send_credential_request(state, Arc::new(cr_selected)).await
 }
 
 async fn add_connection(state: AppState) -> Result<AppState, AppError> {
@@ -87,7 +98,27 @@ async fn add_connection(state: AppState) -> Result<AppState, AppError> {
 
     let qr_code = QrCodeScanned { form_urlencoded: url };
 
-    read_authorization_request(state, Arc::new(qr_code)).await
+    let state = read_authorization_request(state, Arc::new(qr_code)).await?;
+
+    handle_siopv2_authorization_request(state, Arc::new(ConnectionAccepted)).await
+}
+
+async fn add_presentation_request(state: AppState) -> Result<AppState, AppError> {
+    let url =
+        "siopv2://idtoken?client_id=did:key:z6MkquY2TrE7KeuBNRAJ4eZbPqtYeCyGXe8seQNfK1ZXAumj&request_uri=https://api.demo.ngdil.com/api/offers/siop/UNrxa0IZf8tFT9t0_TZrj".to_string();
+
+    let qr_code = QrCodeScanned { form_urlencoded: url };
+
+    let state = read_authorization_request(state, Arc::new(qr_code)).await?;
+
+    let uuid_1 = Uuid::parse_str("37323764-3935-3531-3636-386334326265").expect("UUID 1 turtle profile not correct");
+    let uuid_2 = Uuid::parse_str("65313633-6666-3135-6464-636630373861").expect("UUID 2 turtle profile not correct");
+
+    let cr_selected = CredentialsSelected {
+        credential_uuids: vec![uuid_1, uuid_2],
+    };
+
+    handle_oid4vp_authorization_request(state, Arc::new(cr_selected)).await
 }
 
 pub async fn load_turtle_profile(state: AppState) -> Result<AppState, AppError> {
@@ -97,11 +128,14 @@ pub async fn load_turtle_profile(state: AppState) -> Result<AppState, AppError> 
     // Create new
     let state = create_new_profile(state).await?;
 
-    // Add credential
-    let mut state = add_credential(state).await?;
+    // Add & accept connection
+    let state = add_connection(state).await?;
 
-    // Add connection
-    let mut state = add_connection(state).await?;
+    // Add & accept credential
+    let state = add_credential(state).await?;
+
+    // Add & accept presentation
+    let mut state = add_presentation_request(state).await?;
 
     state.dev_profile = ProfileType::Turtle;
 
