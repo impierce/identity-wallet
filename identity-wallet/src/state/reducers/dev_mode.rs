@@ -18,6 +18,7 @@ use std::fs::File;
 use std::io::copy;
 use std::sync::Arc;
 
+use super::authorization::read_authorization_request;
 use super::credential_offer::read_credential_offer;
 
 lazy_static! {
@@ -80,6 +81,15 @@ async fn add_credential(state: AppState) -> Result<AppState, AppError> {
     read_credential_offer(state, Arc::new(qr_code)).await
 }
 
+async fn add_connection(state: AppState) -> Result<AppState, AppError> {
+    let url =
+        "siopv2://idtoken?client_id=did:key:z6MkquY2TrE7KeuBNRAJ4eZbPqtYeCyGXe8seQNfK1ZXAumj&request_uri=https://api.demo.ngdil.com/api/offers/siop/l_u775bqOP-5-EBehF3nb".to_string();
+
+    let qr_code = QrCodeScanned { form_urlencoded: url };
+
+    read_authorization_request(state, Arc::new(qr_code)).await
+}
+
 pub async fn load_turtle_profile(state: AppState) -> Result<AppState, AppError> {
     // Reset
     let state = reset_profile(state).await?;
@@ -89,6 +99,9 @@ pub async fn load_turtle_profile(state: AppState) -> Result<AppState, AppError> 
 
     // Add credential
     let mut state = add_credential(state).await?;
+
+    // Add connection
+    let mut state = add_connection(state).await?;
 
     state.dev_profile = ProfileType::Turtle;
 
