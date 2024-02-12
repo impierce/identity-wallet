@@ -73,7 +73,7 @@ async fn create_new_profile(state: AppState) -> Result<AppState, AppError> {
 }
 
 async fn add_credential(state: AppState) -> Result<AppState, AppError> {
-    let url = "openid-credential-offer://?credential_offer_uri=https://api.ngdil-demo.tanglelabs.io/api/offers/creds/u08LmjU8lAcTwx7pLMpy0".to_string();
+    let url = "openid-credential-offer://?credential_offer_uri=https://api.demo.ngdil.com/api/offers/creds/oUNS7XbwNP7Z8-rTdWJn8".to_string();
 
     let qr_code = QrCodeScanned { form_urlencoded: url };
 
