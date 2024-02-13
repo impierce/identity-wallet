@@ -236,7 +236,7 @@ const en = {
       VALID: 'Valid',
       ISSUED_BY: 'Issued by',
       DESCRIPTION: 'Description',
-      METADATA: 'Metadata',
+      CONTENTS: 'Contents',
     },
   },
   CANCEL: 'Cancel',

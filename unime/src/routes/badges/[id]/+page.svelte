@@ -167,7 +167,7 @@
 
       <!-- Metadata (Table: Credential Subject) -->
       <div>
-        <p class="pb-2 text-lg font-semibold text-black dark:text-white">{$LL.BADGE.DETAILS.METADATA()}</p>
+        <p class="pb-2 text-lg font-semibold text-black dark:text-white">{$LL.BADGE.DETAILS.CONTENTS()}</p>
         <div
           class="divide-y divide-solid divide-slate-200 rounded-xl border border-slate-200 bg-white dark:divide-slate-600 dark:border-slate-600 dark:bg-dark"
         >
