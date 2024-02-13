@@ -5,7 +5,7 @@ pub mod storage;
 pub mod user_data_query;
 
 use super::actions::{listen, CancelUserFlow, SetLocale, UpdateCredentialMetadata, UpdateProfileSettings};
-use super::persistence::{delete_state_file, delete_stronghold, load_state};
+use super::persistence::{clear_all_assets, delete_state_file, delete_stronghold, load_state};
 use super::IdentityManager;
 use crate::crypto::stronghold::StrongholdManager;
 use crate::error::AppError::{self, *};
@@ -247,6 +247,7 @@ pub async fn update_profile_settings(state: AppState, action: Action) -> Result<
 pub async fn reset_state(_state: AppState, _action: Action) -> Result<AppState, AppError> {
     delete_state_file().await.ok();
     delete_stronghold().await.ok();
+    clear_all_assets().ok();
 
     Ok(AppState {
         current_user_prompt: Some(CurrentUserPrompt::Redirect {

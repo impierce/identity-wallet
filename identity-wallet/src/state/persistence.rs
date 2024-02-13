@@ -56,6 +56,18 @@ pub fn clear_assets_tmp_folder() -> Result<(), AppError> {
     Ok(())
 }
 
+/// Clears the `/assets` folder inside the system-specific data directory.
+/// This is only used when resetting the app to factory defaults.
+pub fn clear_all_assets() -> Result<(), AppError> {
+    let assets_dir = ASSETS_DIR.lock().unwrap().as_path().to_owned();
+    if assets_dir.exists() {
+        std::fs::remove_dir_all(assets_dir.clone())?;
+        std::fs::create_dir_all(assets_dir)?;
+    }
+    debug!("Successfully removed all items inside `/assets` folder.");
+    Ok(())
+}
+
 pub fn persist_asset(file_name: &str, id: &str) -> Result<(), AppError> {
     let assets_dir = ASSETS_DIR.lock().unwrap().as_path().to_owned();
     let tmp_dir = assets_dir.join("tmp");
