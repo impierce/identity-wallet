@@ -21,7 +21,8 @@ const sanitizeStringifyRecursively = function (object: any, replacer: any, space
 
 export const sanitizeStringify = function (value: any, replacer?: any, space?: string | number | undefined): string {
   if (typeof value === 'object') {
-    const result = sanitizeStringifyRecursively({ ...value }, replacer, space);
+    let clone = structuredClone(value);
+    const result = sanitizeStringifyRecursively(clone, replacer, space);
     return JSON.stringify(result, replacer, space);
   } else {
     return JSON.stringify(value, replacer, space);
