@@ -187,7 +187,7 @@
     console.log('onMount: /scan');
     document.documentElement.querySelector('body')!!.classList.add('transparent');
     // permissionsGiven = await checkScanPrerequisites();
-    if ($state?.dev_profile !== null) {
+    if ($state && $state.dev_profile === null) {
       startScan();
     }
   });
@@ -269,7 +269,7 @@
         <!-- Divider -->
         <!-- <p class="my-4 h-[1px] w-full bg-slate-200" /> -->
 
-        {#if $state?.dev_profile !== null}
+        {#if $state?.dev_profile}
           <div class="flex flex-col space-y-2">
             <Button variant="secondary" on:click={mockSiopRequest} label="Connection request (SIOPv2)" />
             <Button variant="secondary" on:click={mockShareRequest} label="Share request (VP)" />
@@ -316,7 +316,7 @@
               </div>
             </div>
           </div>
-          {#if $state?.dev_profile !== null}
+          {#if $state?.dev_profile}
             <div class="fixed bottom-[128px] left-[calc(50%_-_42px)]">
               <button class="rounded-lg bg-rose-100 px-4 py-3 font-medium text-rose-500" on:click={cancelScan}
                 >Cancel</button

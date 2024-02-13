@@ -197,7 +197,7 @@
       </div>
     </div>
 
-    {#if $state?.dev_profile !== null}
+    {#if $state?.dev_profile}
       <p class="break-all px-4 pb-5 text-center text-[13px]/[24px] text-slate-500">
         {JSON.stringify(credential.data.issuer)}
       </p>

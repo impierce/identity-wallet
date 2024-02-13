@@ -28,7 +28,6 @@
     dispatch({ type: '[App] Get state' });
   });
 
-  let showDevMode = $state?.dev_profile && $state.dev_profile !== null;
   let expandDevMenu = true;
   let showDebugMessages = false;
   let showProfilePopup = false;
@@ -69,7 +68,7 @@
 
 <main class="absolute h-screen">
   <!-- Dev Mode: Navbar -->
-  {#if showDevMode}
+  {#if $state?.dev_profile}
     {#if expandDevMenu}
       <div
         class="hide-scrollbar fixed z-20 flex w-full content-center overflow-x-auto bg-gradient-to-r from-red-200 to-red-300 p-4 shadow-md"

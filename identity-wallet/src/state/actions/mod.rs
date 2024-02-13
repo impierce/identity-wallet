@@ -13,6 +13,7 @@ pub mod unlock_storage;
 pub mod update_credential_metadata;
 pub mod update_profile_settings;
 pub mod user_data_query;
+pub mod toggle_dev_settings;
 
 pub use cancel_user_flow::*;
 pub use cancel_user_journey::*;
@@ -87,6 +88,8 @@ mod bindings {
         },
         #[serde(rename = "[DEV] Load DEV profile")]
         LoadDevProfile { payload: DevProfile },
+        #[serde(rename = "[DEV] Toggle DEV settings")]
+        ToggleDevSettings,
         #[serde(rename = "[Authenticate] Credentials selected")]
         CredentialsSelected { payload: CredentialsSelected },
         #[serde(rename = "[Credential Offer] Selected")]

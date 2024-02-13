@@ -2,8 +2,9 @@ use crate::crypto::stronghold::StrongholdManager;
 use crate::error::AppError::{self, *};
 use crate::state::actions::{
     listen, Action, ConnectionAccepted, CreateNew, CredentialOffersSelected, CredentialsSelected, DevProfile,
-    ProfileType, QrCodeScanned, Reset, UnlockStorage,
+    ProfileType, QrCodeScanned, UnlockStorage,
 };
+use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, Connection, Profile};
 use crate::verifiable_credential_record::VerifiableCredentialRecord;
 use crate::{command, ASSETS_DIR};
@@ -49,9 +50,21 @@ pub async fn load_dev_profile(state: AppState, action: Action) -> Result<AppStat
     if let Some(dev_profile) = listen::<DevProfile>(action) {
         match dev_profile.profile {
             ProfileType::Ferris => return load_ferris_profile().await,
-            ProfileType::Turtle => return load_turtle_profile(state).await,
-            ProfileType::None => {}
+            ProfileType::Turtle => return load_turtle_profile().await,
+            ProfileType::None => {},
         }
+    }
+
+    Ok(state)
+}
+
+pub async fn toggle_dev_settings(mut state: AppState, _action: Action) -> Result<AppState, AppError> {
+    info!("Toggle dev settings");
+
+    if state.dev_profile.is_some() {
+        state.dev_profile = None;
+    } else {
+        state.dev_profile = Some(ProfileType::None);
     }
 
     Ok(state)
@@ -67,10 +80,6 @@ pub async fn login_profile(state: AppState) -> Result<AppState, AppError> {
     .await
 }
 
-async fn reset_profile(state: AppState) -> Result<AppState, AppError> {
-    command::reduce(state, Arc::new(Reset)).await
-}
-
 async fn create_new_profile(state: AppState) -> Result<AppState, AppError> {
     let create_new = CreateNew {
         name: "Turtle".to_string(),
@@ -83,6 +92,7 @@ async fn create_new_profile(state: AppState) -> Result<AppState, AppError> {
 }
 
 async fn add_credential(state: AppState) -> Result<AppState, AppError> {
+    // Hardcoded URL (from NGDIL demo)
     let url = "openid-credential-offer://?credential_offer_uri=https://api.demo.ngdil.com/api/offers/creds/oUNS7XbwNP7Z8-rTdWJn8".to_string();
 
     let qr_code = QrCodeScanned { form_urlencoded: url };
@@ -97,6 +107,7 @@ async fn add_credential(state: AppState) -> Result<AppState, AppError> {
 }
 
 async fn add_connection(state: AppState) -> Result<AppState, AppError> {
+    // Hardcoded URL (from NGDIL demo)
     let url =
         "siopv2://idtoken?client_id=did:key:z6MkquY2TrE7KeuBNRAJ4eZbPqtYeCyGXe8seQNfK1ZXAumj&request_uri=https://api.demo.ngdil.com/api/offers/siop/l_u775bqOP-5-EBehF3nb".to_string();
 
@@ -108,6 +119,7 @@ async fn add_connection(state: AppState) -> Result<AppState, AppError> {
 }
 
 async fn add_presentation_request(state: AppState) -> Result<AppState, AppError> {
+    // Hardcoded URL (from NGDIL demo)
     let url =
         "siopv2://idtoken?client_id=did:key:z6MkquY2TrE7KeuBNRAJ4eZbPqtYeCyGXe8seQNfK1ZXAumj&request_uri=https://api.demo.ngdil.com/api/offers/siop/UNrxa0IZf8tFT9t0_TZrj".to_string();
 
@@ -125,9 +137,8 @@ async fn add_presentation_request(state: AppState) -> Result<AppState, AppError>
     command::reduce(state, Arc::new(cr_selected)).await
 }
 
-pub async fn load_turtle_profile(state: AppState) -> Result<AppState, AppError> {
-    // Reset
-    let state = reset_profile(state).await?;
+pub async fn load_turtle_profile() -> Result<AppState, AppError> {
+    let state = AppState::default();
 
     // Create new
     let state = create_new_profile(state).await?;
@@ -288,6 +299,11 @@ async fn load_ferris_profile() -> Result<AppState, AppError> {
             last_interacted: "2024-01-09T08:45:44.217Z".to_string(),
         },
     ];
+
+    
+    state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
+        target: "me".to_string(),
+    });
 
     state.dev_profile = Some(ProfileType::Ferris);
 
