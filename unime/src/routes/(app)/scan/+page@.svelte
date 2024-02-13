@@ -270,23 +270,46 @@
         <!-- <p class="my-4 h-[1px] w-full bg-slate-200" /> -->
 
         {#if $state?.dev_mode_enabled}
-          <div class="flex flex-col space-y-2">
-            <Button variant="secondary" on:click={mockSiopRequest} label="Connection request (SIOPv2)" />
-            <Button variant="secondary" on:click={mockShareRequest} label="Share request (VP)" />
-            <Button variant="secondary" on:click={() => mockScanCredentialOffer(1)} label="Credential Offer (single)" />
-            <Button variant="secondary" on:click={() => mockScanCredentialOffer(2)} label="Credential Offer (multi)" />
-            <Button
-              variant="secondary"
-              on:click={() =>
-                dispatch({
-                  type: '[QR Code] Scanned',
-                  payload: {
-                    form_urlencoded:
-                      'openid-credential-offer://?credential_offer_uri=https://api.ngdil-demo.tanglelabs.io/api/offers/creds/u08LmjU8lAcTwx7pLMpy0',
-                  },
-                })}
-              label="Dominique (student)"
-            />
+          <div class="flex flex-col space-y-4">
+            <!-- Mock -->
+            <div class="flex flex-col space-y-2">
+              <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Mock</p>
+              <Button variant="secondary" on:click={mockSiopRequest} label="New connection" />
+              <Button variant="secondary" on:click={mockShareRequest} label="Share credentials" />
+            </div>
+            <!-- UniCore (local) -->
+            <div class="flex flex-col space-y-2">
+              <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">UniCore (local)</p>
+              <Button
+                variant="secondary"
+                on:click={() => mockScanCredentialOffer(1)}
+                label="Credential Offer (single)"
+              />
+              <Button
+                variant="secondary"
+                on:click={() => mockScanCredentialOffer(2)}
+                label="Credential Offer (multi)"
+              />
+            </div>
+            <!-- NGDIL (remote) -->
+            <div class="flex flex-col space-y-2">
+              <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">NGDIL (remote)</p>
+
+              <Button
+                variant="secondary"
+                on:click={() =>
+                  dispatch({
+                    type: '[QR Code] Scanned',
+                    payload: {
+                      form_urlencoded:
+                        'openid-credential-offer://?credential_offer_uri=https://api.ngdil-demo.tanglelabs.io/api/offers/creds/u08LmjU8lAcTwx7pLMpy0',
+                    },
+                  })}
+                label="Credential Offer"
+              />
+            </div>
+            <!-- Divider -->
+            <hr />
             <Button variant="primary" on:click={startScan} label="Start new scan" />
           </div>
         {/if}
