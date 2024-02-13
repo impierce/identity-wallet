@@ -93,13 +93,13 @@ async fn add_credential(state: AppState) -> Result<AppState, AppError> {
 
     let qr_code = QrCodeScanned { form_urlencoded: url };
 
-    let state = read_credential_offer(state, Arc::new(qr_code)).await?;
+    let state = command::reduce(state, Arc::new(qr_code)).await?;
 
     let cr_selected = CredentialOffersSelected {
         offer_indices: vec![0, 1, 2, 3, 4],
     };
 
-    send_credential_request(state, Arc::new(cr_selected)).await
+    command::reduce(state, Arc::new(cr_selected)).await
 }
 
 async fn add_connection(state: AppState) -> Result<AppState, AppError> {
@@ -108,9 +108,9 @@ async fn add_connection(state: AppState) -> Result<AppState, AppError> {
 
     let qr_code = QrCodeScanned { form_urlencoded: url };
 
-    let state = read_authorization_request(state, Arc::new(qr_code)).await?;
+    let state = command::reduce(state, Arc::new(qr_code)).await?;
 
-    handle_siopv2_authorization_request(state, Arc::new(ConnectionAccepted)).await
+    command::reduce(state, Arc::new(ConnectionAccepted)).await
 }
 
 async fn add_presentation_request(state: AppState) -> Result<AppState, AppError> {
@@ -119,7 +119,7 @@ async fn add_presentation_request(state: AppState) -> Result<AppState, AppError>
 
     let qr_code = QrCodeScanned { form_urlencoded: url };
 
-    let state = read_authorization_request(state, Arc::new(qr_code)).await?;
+    let state = command::reduce(state, Arc::new(qr_code)).await?;
 
     let uuid_1 = Uuid::parse_str("37323764-3935-3531-3636-386334326265").expect("UUID 1 turtle profile not correct");
     let uuid_2 = Uuid::parse_str("65313633-6666-3135-6464-636630373861").expect("UUID 2 turtle profile not correct");
@@ -128,7 +128,7 @@ async fn add_presentation_request(state: AppState) -> Result<AppState, AppError>
         credential_uuids: vec![uuid_1, uuid_2],
     };
 
-    handle_oid4vp_authorization_request(state, Arc::new(cr_selected)).await
+    command::reduce(state, Arc::new(cr_selected)).await
 }
 
 pub async fn load_turtle_profile(state: AppState) -> Result<AppState, AppError> {

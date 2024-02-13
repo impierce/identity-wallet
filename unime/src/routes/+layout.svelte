@@ -65,8 +65,8 @@
 
     // Reload page
     setTimeout(async () => {
-            await goto('/'); //.then(() => goto(window.location.pathname));
-            await goto('/me'); //.then(() => goto(window.location.pathname));
+            await goto('/');
+            await goto('/me');
     }, 500)
   }
 </script>
@@ -98,7 +98,7 @@
 
         <!-- Select DEV profile !-->
         <div class={menuItemCss}>
-          <button class={buttonCss} on:click={() => (showProfilePopup = true)}>
+          <button class={buttonCss} on:click={() => (showProfilePopup = !showProfilePopup)}>
             <iconify-icon class="m-auto block" icon="iconoir:developer"></iconify-icon>
           </button>
           <span class={menuTextCss}>DEV profile</span>
