@@ -1,8 +1,7 @@
 use crate::crypto::stronghold::StrongholdManager;
 use crate::error::AppError::{self, *};
 use crate::state::actions::{
-    listen, Action, ConnectionAccepted, CreateNew, CredentialOffersSelected, CredentialsSelected, DevProfile,
-    ProfileType, QrCodeScanned, UnlockStorage,
+    listen, Action, ConnectionAccepted, CreateNew, CredentialOffersSelected, CredentialsSelected, DevProfile, ProfileType, QrCodeScanned, Reset, UnlockStorage
 };
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, Connection, Profile};
@@ -50,7 +49,7 @@ pub async fn load_dev_profile(state: AppState, action: Action) -> Result<AppStat
     if let Some(dev_profile) = listen::<DevProfile>(action) {
         match dev_profile.profile {
             ProfileType::Ferris => return load_ferris_profile().await,
-            ProfileType::Turtle => return load_turtle_profile().await,
+            ProfileType::Turtle => return load_turtle_profile(state).await,
             ProfileType::None => {},
         }
     }
@@ -137,8 +136,13 @@ async fn add_presentation_request(state: AppState) -> Result<AppState, AppError>
     command::reduce(state, Arc::new(cr_selected)).await
 }
 
-pub async fn load_turtle_profile() -> Result<AppState, AppError> {
-    let state = AppState::default();
+async fn reset_settings(state: AppState) -> Result<AppState, AppError> {
+    command::reduce(state, Arc::new(Reset)).await
+}
+
+pub async fn load_turtle_profile(state: AppState) -> Result<AppState, AppError> {
+    // Reset
+    let state = reset_settings(state).await?;
 
     // Create new
     let state = create_new_profile(state).await?;
@@ -147,10 +151,10 @@ pub async fn load_turtle_profile() -> Result<AppState, AppError> {
     let state = add_connection(state).await?;
 
     // Add & accept credential
-    let state = add_credential(state).await?;
+    let mut state = add_credential(state).await?;
 
     // Add & accept presentation
-    let mut state = add_presentation_request(state).await?;
+    //let mut state = add_presentation_request(state).await?;
 
     state.dev_profile = Some(ProfileType::Turtle);
 
