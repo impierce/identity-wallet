@@ -189,6 +189,8 @@
         {JSON.stringify(credential.data.issuer)}
       </p>
     {/if}
+
+    <div class="h-[var(--safe-area-inset-bottom)]"></div>
   </div>
   <!-- </div> -->
   <BottomDrawer>
