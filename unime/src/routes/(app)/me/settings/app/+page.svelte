@@ -15,7 +15,7 @@
   import Sun from '~icons/ph/sun-fill';
   import Translate from '~icons/ph/translate-fill';
 
-  let hasDevProfile = false;
+  let hasDevProfile = $state.dev_profile !== null;
 
 </script>
 

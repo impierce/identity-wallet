@@ -29,52 +29,51 @@
     {:else}
       <UniMeLogoLight />
     {/if}
-    {#if ($state?.dev_profile !== null && $state?.dev_profile !== "None")}
-      <div class="relative mb-4 mt-8 w-[240px]">
-        <input
-          type={showPassword ? 'text' : 'password'}
-          class="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300"
-          placeholder={$LL.LOCK_SCREEN.PASSWORD_INPUT_PLACEHOLDER()}
-          on:input={(e) => (password = e.target.value)}
-        />
-        <div class="absolute right-3 top-0 flex h-full items-center">
-          <button class="rounded-full p-2" on:click={() => (showPassword = !showPassword)}>
-            {#if showPassword}
-              <Eye class="text-slate-700 dark:text-grey" />
-            {:else}
-              <EyeClosed class="text-slate-700 dark:text-grey" />
-            {/if}
-          </button>
-        </div>
-      </div>
-      <Button
-        label={$LL.LOCK_SCREEN.BUTTON_TEXT()}
-        on:click={() => dispatch({ type: '[Storage] Unlock', payload: { password } })}
-        disabled={!password}
+
+    <div class="relative mb-4 mt-8 w-[240px]">
+      <input
+        type={showPassword ? 'text' : 'password'}
+        class="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300"
+        placeholder={$LL.LOCK_SCREEN.PASSWORD_INPUT_PLACEHOLDER()}
+        on:input={(e) => (password = e.target.value)}
       />
-      <!-- Forgot password? Reset app -->
-      <div class="mt-8">
-        <BottomDrawer titleText={$LL.SETTINGS.RESET_APP.TITLE()} descriptionText={$LL.SETTINGS.RESET_APP.DESCRIPTION()}>
-          <button
-            slot="trigger"
-            let:trigger
-            use:melt={trigger}
-            class="rounded-xl px-4 py-2 text-[13px]/[24px] font-medium text-slate-400 opacity-50 active:bg-grey dark:active:bg-dark"
-            >{$LL.LOCK_SCREEN.FORGOT_PASSWORD()}</button
-          >
-
-          <!-- TODO: bug: after resetting (closing the drawer, main UI is not clickable anymore) -->
-          <div slot="content" class="w-full pb-[10px] pt-[20px]">
-            <button
-              class="h-[48px] w-full rounded-xl bg-rose-100 px-4 py-2 text-[14px]/[24px] font-medium text-rose-500"
-              on:click={() => dispatch({ type: '[App] Reset' })}>{$LL.SETTINGS.RESET_APP.CONFIRM()}</button
-            >
-          </div>
-
-          <Button variant="secondary" slot="close" let:close trigger={close} label={$LL.SETTINGS.RESET_APP.CANCEL()} />
-        </BottomDrawer>
+      <div class="absolute right-3 top-0 flex h-full items-center">
+        <button class="rounded-full p-2" on:click={() => (showPassword = !showPassword)}>
+          {#if showPassword}
+            <Eye class="text-slate-700 dark:text-grey" />
+          {:else}
+            <EyeClosed class="text-slate-700 dark:text-grey" />
+          {/if}
+        </button>
       </div>
-    {/if}
+    </div>
+    <Button
+      label={$LL.LOCK_SCREEN.BUTTON_TEXT()}
+      on:click={() => dispatch({ type: '[Storage] Unlock', payload: { password } })}
+      disabled={!password}
+    />
+    <!-- Forgot password? Reset app -->
+    <div class="mt-8">
+      <BottomDrawer titleText={$LL.SETTINGS.RESET_APP.TITLE()} descriptionText={$LL.SETTINGS.RESET_APP.DESCRIPTION()}>
+        <button
+          slot="trigger"
+          let:trigger
+          use:melt={trigger}
+          class="rounded-xl px-4 py-2 text-[13px]/[24px] font-medium text-slate-400 opacity-50 active:bg-grey dark:active:bg-dark"
+          >{$LL.LOCK_SCREEN.FORGOT_PASSWORD()}</button
+        >
+
+        <!-- TODO: bug: after resetting (closing the drawer, main UI is not clickable anymore) -->
+        <div slot="content" class="w-full pb-[10px] pt-[20px]">
+          <button
+            class="h-[48px] w-full rounded-xl bg-rose-100 px-4 py-2 text-[14px]/[24px] font-medium text-rose-500"
+            on:click={() => dispatch({ type: '[App] Reset' })}>{$LL.SETTINGS.RESET_APP.CONFIRM()}</button
+          >
+        </div>
+
+        <Button variant="secondary" slot="close" let:close trigger={close} label={$LL.SETTINGS.RESET_APP.CANCEL()} />
+      </BottomDrawer>
+    </div>
   </div>
 </div>
 

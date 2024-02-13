@@ -4,7 +4,6 @@ use crate::state::actions::{
     listen, Action, ConnectionAccepted, CreateNew, CredentialOffersSelected, CredentialsSelected, DevProfile,
     ProfileType, QrCodeScanned, Reset, UnlockStorage,
 };
-use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, Connection, Profile};
 use crate::verifiable_credential_record::VerifiableCredentialRecord;
 use crate::{command, ASSETS_DIR};
@@ -20,11 +19,6 @@ use std::fs::File;
 use std::io::copy;
 use std::sync::Arc;
 use uuid::Uuid;
-
-use super::authorization::{
-    handle_oid4vp_authorization_request, handle_siopv2_authorization_request, read_authorization_request,
-};
-use super::credential_offer::{read_credential_offer, send_credential_request};
 
 lazy_static! {
     pub static ref PERSONAL_INFORMATION: VerifiableCredentialRecord = VerifiableCredentialRecord::from(

@@ -28,23 +28,18 @@
     dispatch({ type: '[App] Get state' });
   });
 
-  let showDevMode = $state?.dev_profile !== null;
+  let showDevMode = $state?.dev_profile && $state.dev_profile !== null;
   let expandDevMenu = true;
   let showDebugMessages = false;
   let showProfilePopup = false;
 
-  // set color scheme
   const systemColorScheme = window.matchMedia('(prefers-color-scheme: dark)');
-  systemColorScheme.addEventListener('change', (e) => {
-    determineTheme(e.matches, $state?.active_profile?.theme);
-  });
-  systemColorScheme.removeEventListener('change', () => {});
 
   $: {
     // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
     console.log('+layout.svelte: state', $state);
 
-    // needed again?
+    // Set color scheme
     determineTheme(systemColorScheme.matches, $state?.active_profile?.theme);
 
     // User prompt

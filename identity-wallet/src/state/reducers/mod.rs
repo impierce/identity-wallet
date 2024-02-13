@@ -61,7 +61,11 @@ pub async fn get_state(_state: AppState, _action: Action) -> Result<AppState, Ap
             } else if state.dev_profile != Some(ProfileType::None) {
                 return login_profile(state).await;
             }
+        } else {
+            state.dev_profile = None;
         }
+    } else {
+        println!("Komt hier??");
     }
 
     Ok(state)
