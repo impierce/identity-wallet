@@ -151,10 +151,10 @@ pub async fn load_turtle_profile(state: AppState) -> Result<AppState, AppError> 
     let state = add_connection(state).await?;
 
     // Add & accept credential
-    let mut state = add_credential(state).await?;
+    let state = add_credential(state).await?;
 
     // Add & accept presentation
-    //let mut state = add_presentation_request(state).await?;
+    let mut state = add_presentation_request(state).await?;
 
     state.dev_profile = Some(ProfileType::Turtle);
 

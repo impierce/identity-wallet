@@ -1,8 +1,5 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-
-  import type { DevProfile } from '@bindings/actions/DevProfile';
-
   import { locales } from '$lib/app/locales';
   import LL from '$src/i18n/i18n-svelte';
   import SettingsEntry from '$src/lib/app/settings/SettingsEntry.svelte';
@@ -10,7 +7,6 @@
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
   import { dispatch } from '$src/lib/dispatcher';
   import { state } from '$src/stores';
-
   import ChatCircleText from '~icons/ph/chat-circle-text-fill';
   import Code from '~icons/ph/code-bold';
   import Confetti from '~icons/ph/confetti-fill';
@@ -19,13 +15,8 @@
   import Translate from '~icons/ph/translate-fill';
 
   async function toggleDevSettings() {
-    let profile: DevProfile = {
-      profile: 'None',
-    };
-
     await dispatch({
-      type: '[DEV] ',
-      payload: profile,
+      type: '[DEV] Toggle DEV settings',
     });
   }
 </script>
