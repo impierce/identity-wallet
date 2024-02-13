@@ -8,9 +8,11 @@ describe('sensitive-logging', () => {
       password: 'please_dont_log',
     };
 
+    let sensitiveStr = sanitizeStringify(credentialObj);
+
+    // Sample after because it shouldn't modify the passed object.
     let sampleStr = JSON.stringify(credentialObj);
 
-    let sensitiveStr = sanitizeStringify(credentialObj);
 
     console.log(sensitiveStr);
 
@@ -35,8 +37,10 @@ describe('sensitive-logging', () => {
       },
     };
 
-    let sampleStr = JSON.stringify(credentialObj);
     let sensitiveStr = sanitizeStringify(credentialObj);
+
+    // Sample after because it shouldn't modify the passed object.
+    let sampleStr = JSON.stringify(credentialObj);
 
     expect(sensitiveStr).not.toContain(pw1);
     expect(sensitiveStr).not.toContain(pw2);
