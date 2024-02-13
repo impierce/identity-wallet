@@ -29,6 +29,7 @@
   });
 
   let showDevMode = $state?.dev_profile !== null;
+  let expandDevMenu = true;
   let showDebugMessages = false;
   let showProfilePopup = false;
 
@@ -74,7 +75,7 @@
 <main class="absolute h-screen">
   <!-- Dev Mode: Navbar -->
   {#if showDevMode}
-    {#if showDevMode}
+    {#if expandDevMenu}
       <div
         class="hide-scrollbar fixed z-20 flex w-full content-center overflow-x-auto bg-gradient-to-r from-red-200 to-red-300 p-4 shadow-md"
         in:fly={{ y: -64, opacity: 1 }}
@@ -116,9 +117,9 @@
 
     <button
       class="fixed left-[calc(50%_-_12px)] top-[var(--safe-area-inset-top)] z-30 h-6 w-6 rounded-b-md bg-red-200 p-[2px]"
-      on:click={() => (showDevMode = !showDevMode)}
+      on:click={() => (expandDevMenu = !expandDevMenu)}
     >
-      {#if showDevMode}
+      {#if expandDevMenu}
         <CaretUp class="text-red-700" />
       {:else}
         <CaretDown class="text-red-700" />
