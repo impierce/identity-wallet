@@ -29,13 +29,13 @@
 
   let credential = $state.credentials.find((c) => $page.params.id === c.id)!!;
 
-  //   let color = credential.metadata.display.color || colors.at(0);
-
   let icon: any = credential.metadata.display.icon || 'User';
   let title: string = credential.metadata.display.name || credential.data.type.at(-1);
 
   let credentialLogoUrl: string | null;
-  let issuerLogoUrl: string | null;
+
+  // TODO: add issuer id which can then be used to link to the connection
+  let issuerId: string | undefined;
 
   let qrcodeText = JSON.stringify(credential, null, 0);
 
@@ -49,14 +49,6 @@
     isFavorite = credential.metadata.is_favorite;
     title = credential.metadata.display.name || credential.data.type.at(-1);
     icon = credential.metadata.display.icon || 'User';
-    // color =
-    //   credential.metadata.display.color ||
-    //   colors.at(
-    //     credential.id
-    //       .match(/[0-9]+/)
-    //       .at(0)
-    //       .at(0) % 8, // TODO: omits last value (white)
-    //   );
   }
 
   // create entries to be shown
@@ -71,7 +63,6 @@
 
   onMount(async () => {
     credentialLogoUrl = await getImageAsset($page.params.id!!);
-    issuerLogoUrl = await getImageAsset('university');
   });
 </script>
 
@@ -136,7 +127,6 @@
     </div>
     <!-- Text -->
     <div class="flex flex-col space-y-5 px-[15px] pb-[15px]">
-      <!-- Valid, Issued By -->
       <div class="flex space-x-3 pt-8">
         <!-- Valid -->
         <div class="flex w-full flex-col items-center space-y-1">
@@ -153,18 +143,18 @@
             {/if}
           </p>
         </div>
-        <!-- Issued By -->
+        <!-- Issued by -->
         <div class="flex w-full flex-col items-center space-y-1">
           <p class="text-xs text-black dark:text-white">{$LL.BADGE.DETAILS.ISSUED_BY()}</p>
-          <div class="w- flex h-[68px] w-full justify-center rounded-xl bg-silver dark:bg-white">
+          <div class="flex h-[68px] w-full items-center justify-center rounded-xl bg-silver p-2 dark:bg-white">
             <Image
-              id={'university'}
+              id={issuerId}
               iconFallback="Bank"
               imgClass="w-auto rounded-lg m-2"
               iconClass="h-7 w-7 dark:text-slate-800"
             />
           </div>
-          <p class="break-all text-xs text-black dark:text-white">
+          <p class="break-words text-center text-xs text-black dark:text-white">
             {credential.data.issuer.name ?? credential.data.issuer ?? credential.issuer_name}
           </p>
         </div>
