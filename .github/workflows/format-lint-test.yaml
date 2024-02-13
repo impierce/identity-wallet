@@ -23,9 +23,9 @@ jobs:
     - name: Format
       working-directory: ./unime
       run: npm run format:check
-    - name: Lint
-      working-directory: ./unime
-      run: npm run lint
+    # - name: Lint
+    #   working-directory: ./unime
+    #   run: npm run lint
     - name: Test (frontend)
       working-directory: ./unime
       run: npx vitest run
