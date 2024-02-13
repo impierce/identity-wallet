@@ -117,9 +117,6 @@
       </div>
       <!-- Text -->
       <div class="z-10 flex flex-col items-center pt-[15px]">
-        <p class="break-all text-center text-[13px]/[24px] font-normal text-slate-500 dark:text-slate-300">
-          {credential.data.issuer.name ?? credential.data.issuer ?? credential.issuer_name}
-        </p>
         <p class="line-clamp-2 text-center text-[22px]/[30px] font-semibold tracking-tight text-black dark:text-white">
           {credential.data.credentialSubject.achievement?.name ?? title}
         </p>
