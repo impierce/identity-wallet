@@ -1,7 +1,7 @@
 {
     "extensions": {
         "test": {
-            "extension_type": "customextension",
+            "feat_state_type": "customextension",
             "name": "new",
             "value": "new"
         }

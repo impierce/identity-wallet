@@ -1,5 +1,5 @@
 use identity_wallet::{
-    state::{actions::Action, persistence::save_state, AppState, AppStateContainer, CustomExtension, profile::reducers::Profile},
+    state::{actions::Action, extension::CustomExtension, persistence::save_state, AppState, AppStateContainer},
     STATE_FILE, STRONGHOLD,
 };
 use serde_json::json;
@@ -52,44 +52,35 @@ pub async fn assert_state_update(
 
             let AppState {
                 locale,
+                profile,
                 credentials,
                 current_user_prompt,
                 user_data_query,
                 debug_messages,
-                feat_states,
                 extensions,
                 ..
             } = &mut *guard;
 
             let AppState {
                 locale: expected_locale,
+                profile: expected_profile,
                 credentials: expected_credentials,
                 current_user_prompt: expected_current_user_prompt,
                 user_data_query: expected_user_data_query,
                 debug_messages: expected_debug_messages,
-                feat_states: expected_feat_states,
                 extensions: expected_extensions,
                 ..
             } = expected_state;
 
-            let active_profile = feat_states.get("profile"); 
-            let expected_active_profile = expected_feat_states.get("profile");
+            let active_profile = profile; 
+            let expected_active_profile = expected_profile;
 
-            assert_eq!(active_profile.is_none(), expected_active_profile.is_none());
-            if (active_profile.is_some()) && (expected_active_profile.is_some()) {
-                let active_profile = active_profile.unwrap().clone().downcast::<Profile>().unwrap();
-                let expected_active_profile = expected_active_profile.unwrap().clone().downcast::<Profile>().unwrap();
-                assert_eq!(active_profile.name, expected_active_profile.name);
-                assert_eq!(active_profile.picture, expected_active_profile.picture);
-                assert_eq!(active_profile.theme, expected_active_profile.theme);
+            match (active_profile, expected_active_profile) {
+                (Some(active_profile), Some(expected_active_profile)) => {
+                    assert_eq!(active_profile.name, expected_active_profile.name);
+                }
+                (active_profile, expected_active_profile) => assert_eq!(active_profile, expected_active_profile),
             }
-
-            // match (active_profile, expected_active_profile) {
-            //     (Some(active_profile), Some(expected_active_profile)) => {
-            //         assert_eq!(active_profile.name, expected_active_profile.name);
-            //     }
-            //     (active_profile, expected_active_profile) => assert_eq!(active_profile, expected_active_profile),
-            // }
 
             assert_eq!(locale, expected_locale);
             assert_eq!(credentials, expected_credentials);

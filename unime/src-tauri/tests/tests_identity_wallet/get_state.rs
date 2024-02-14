@@ -1,6 +1,7 @@
 use crate::common::assert_state_update::{assert_state_update, setup_state_file, setup_stronghold};
 use crate::common::{json_example, test_managers};
-use identity_wallet::state::{actions::Action, AppState, AppStateContainer, profile::reducers::Profile};
+use identity_wallet::state::profile::Profile;
+use identity_wallet::state::{actions::Action, AppState, AppStateContainer};
 use tokio::sync::Mutex;
 
 #[tokio::test]
@@ -50,13 +51,14 @@ async fn test_get_state_unlock_storage() {
 
     let container = AppStateContainer(Mutex::new(AppState {
         managers: test_managers(vec![]),
+        profile: Some(Profile {
+            name: "Ferris Crabman".to_string(),
+            picture: Some("&#129408".to_string()),
+            theme: Some("system".to_string()),
+            primary_did: "did:example:placeholder".to_string(),
+        }),
         ..AppState::default()
-    }.add_feat_state("profile", Box::new(Profile {
-        name: "Ferris Crabman".to_string(),
-        picture: Some("&#129408".to_string()),
-        theme: Some("system".to_string()),
-        primary_did: "did:example:placeholder".to_string(),
-    }))));
+    }));
 
     assert_state_update(
         // Initial state.
@@ -90,14 +92,14 @@ async fn test_get_state_unlock_storage_invalid_password() {
 
     let container = AppStateContainer(Mutex::new(AppState {
         managers: test_managers(vec![]),
+        profile: Some(Profile {
+            name: "Ferris Crabman".to_string(),
+            picture: Some("&#129408".to_string()),
+            theme: Some("system".to_string()),
+            primary_did: "did:example:placeholder".to_string(),
+        }),
         ..AppState::default()
-    }
-    .add_feat_state("profile", Box::new(Profile {
-        name: "Ferris Crabman".to_string(),
-        picture: Some("&#129408".to_string()),
-        theme: Some("system".to_string()),
-        primary_did: "did:example:placeholder".to_string(),
-    }))));
+    }));
 
     assert_state_update(
         // Initial state.

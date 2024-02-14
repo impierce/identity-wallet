@@ -6,13 +6,10 @@
         "redirect_uri": "https://example.com/",
         "previously_connected": false
     },
-    "feat_states": {
-        "profile": {
-            "feat_state_type": "profile",
-            "name": "Ferris Crabman",
-            "picture": "&#129408",
-            "theme": "system",
-            "primary_did": "did:example:placeholder"
-        }
+    "profile": {
+        "name": "Ferris Crabman",
+        "picture": "&#129408",
+        "theme": "system",
+        "primary_did": "did:example:placeholder"
     }
 }

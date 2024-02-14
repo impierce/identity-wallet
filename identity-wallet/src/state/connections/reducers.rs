@@ -2,9 +2,7 @@ use crate::{
     error::AppError::{self, *},
     get_unverified_jwt_claims,
     state::{
-        actions::{listen, Action, CredentialsSelected, QrCodeScanned},
-        user_prompt::CurrentUserPrompt,
-        AppState, Connection, profile,
+        actions::{listen, Action}, connections::Connection, credentials::actions::CredentialsSelected, shared::actions::QrCodeScanned, user_prompt::CurrentUserPrompt, AppState
     },
     utils::{download_asset, LogoType},
 };
@@ -265,8 +263,8 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
 
         info!("get the subject did");
 
-        let subject_did = state.feat_states.get("profile").ok_or(MissingStateParameterError("active profile"))?.clone()
-        .downcast::<profile>().unwrap().primary_did.clone();
+        let subject_did = state.profile.clone().ok_or(MissingStateParameterError("active profile"))?
+        .primary_did.clone();
 
         let mut presentation_builder =
             Presentation::builder(subject_did.parse().map_err(|_| DidParseError)?, Default::default());

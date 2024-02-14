@@ -6,9 +6,10 @@ use crate::common::{
 use identity_wallet::oid4vci::credential_format_profiles::{
     w3c_verifiable_credentials::jwt_vc_json::JwtVcJson, Credential, CredentialFormats, WithCredential,
 };
+use identity_wallet::state::profile::Profile;
 use identity_wallet::state::AppStateContainer;
 use identity_wallet::{
-    state::{actions::Action, AppState, profile::reducers::Profile},
+    state::{actions::Action, AppState},
     verifiable_credential_record::VerifiableCredentialRecord,
 };
 use serde_json::json;
@@ -44,9 +45,9 @@ async fn test_qr_code_scanned_handle_siopv2_authorization_request() {
 
     let container = AppStateContainer(Mutex::new(AppState {
         managers,
+        profile: Some(active_profile),
         ..AppState::default()
-    }
-    .add_feat_state("profile", Box::new(active_profile))));
+    }));
 
     assert_state_update(
         // Initial state.
@@ -96,10 +97,10 @@ async fn test_qr_code_scanned_handle_oid4vp_authorization_request() {
 
     let container = AppStateContainer(Mutex::new(AppState {
         managers,
+        profile: Some(active_profile),
         credentials: credentials.clone(),
         ..AppState::default()
-    }
-    .add_feat_state("profile", Box::new(active_profile))));
+    }));
 
     assert_state_update(
         // Initial state.
@@ -140,9 +141,9 @@ async fn test_qr_code_scanned_invalid_qr_code_error() {
 
     let container = AppStateContainer(Mutex::new(AppState {
         managers,
+        profile: Some(active_profile),
         ..AppState::default()
-    }
-    .add_feat_state("profile", Box::new(active_profile))));
+    }));
 
     assert_state_update(
         // Initial state.

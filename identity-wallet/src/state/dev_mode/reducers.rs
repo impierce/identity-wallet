@@ -1,9 +1,10 @@
 use crate::crypto::stronghold::StrongholdManager;
 use crate::error::AppError::{self, *};
 use crate::state::actions::{listen, Action};
+use crate::state::connections::Connection;
 use crate::state::profile::Profile;
 use crate::state::user_prompt::CurrentUserPrompt;
-use crate::state::{AppState, Connection};
+use crate::state::AppState;
 use crate::verifiable_credential_record::VerifiableCredentialRecord;
 use crate::ASSETS_DIR;
 use did_key::{generate, Ed25519KeyPair};
@@ -69,7 +70,7 @@ pub async fn load_dev_profile(_state: AppState, _action: Action) -> Result<AppSt
     );
 
     let profile = Profile {
-        name: "Ferris".to_string(),
+        name: "Ferris Crabman".to_string(),
         picture: Some("&#129408".to_string()),
         theme: Some("system".to_string()),
         primary_did: subject.identifier().unwrap(),

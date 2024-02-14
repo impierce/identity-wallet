@@ -1,6 +1,10 @@
 use ts_rs::TS;
-use crate::{reducer, state::{actions::{ActionTrait, Reducer}, boot::reducers::{unlock_storage, get_state, reset_state}}};
+use crate::{reducer,
+    state::{actions::{ActionTrait, Reducer},
+    boot::reducers::{cancel_user_flow, get_state, reset_state, unlock_storage}}
+};
 
+/// Action to retrieve the state from the storage.
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/GetState.ts")]
 pub struct GetState;
@@ -12,6 +16,7 @@ impl ActionTrait for GetState {
     }
 }
 
+/// Action to unlock the storage.
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/UnlockStorage.ts")]
 pub struct UnlockStorage {
@@ -25,6 +30,22 @@ impl ActionTrait for UnlockStorage {
     }
 }
 
+/// Action to cancel the user flow and redirect to the given target.
+#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
+#[ts(export, export_to = "bindings/actions/CancelUserFlow.ts")]
+pub struct CancelUserFlow {
+    #[ts(optional)]
+    pub redirect: Option<String>,
+}
+
+#[typetag::serde(name = "[User Flow] Cancel")]
+impl ActionTrait for CancelUserFlow {
+    fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
+        vec![reducer!(cancel_user_flow)]
+    }
+}
+
+/// Action to completely purge and reset the app state.
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/Reset.ts")]
 pub struct Reset;

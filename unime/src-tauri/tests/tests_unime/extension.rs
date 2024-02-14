@@ -1,7 +1,8 @@
 use crate::common::assert_state_update::{assert_state_update, setup_state_file, setup_stronghold};
 use crate::common::json_example;
+use identity_wallet::state::extension::CustomExtension;
 use identity_wallet::state::{actions::Action, AppState};
-use identity_wallet::state::{AppStateContainer, CustomExtension};
+use identity_wallet::state::AppStateContainer;
 
 #[tokio::test]
 #[serial_test::serial]

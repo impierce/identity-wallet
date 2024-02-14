@@ -1,25 +1,8 @@
+use crate::error::AppError;
+use super::*;
+use downcast_rs::{impl_downcast, DowncastSync};
 use std::{future::Future, pin::Pin};
 use ts_rs::TS;
-use crate::{
-    state::user_journey::redux::cancel_user_journey,
-    error::AppError,
-    state::reducers::{
-        test_feat_state,
-        authorization::{
-            handle_oid4vp_authorization_request, handle_siopv2_authorization_request, read_authorization_request,
-        },
-        cancel_user_flow, create_identity,
-        credential_offer::{read_credential_offer, send_credential_request},
-        dev_mode::{load_dev_profile, set_dev_mode},
-        get_state, initialize_stronghold, reset_state, set_locale,
-        storage::unlock_storage,
-        update_credential_metadata, update_profile_settings,
-        user_data_query::{connection_query, credential_query},
-    },
-};
-use downcast_rs::{impl_downcast, DowncastSync};
-use crate::state::{QueryTarget, SortMethod};
-use super::*;
 
 #[macro_export]
 macro_rules! reducer {
@@ -36,7 +19,6 @@ pub type Reducer<'a> =
     Box<dyn Fn(AppState, Action) -> Pin<Box<dyn Future<Output = Result<AppState, AppError>> + Send>> + Send>;
 
 #[typetag::serde(tag = "type", content = "payload")]
-//pub trait ActionTrait: Send + std::fmt::Debug + DowncastSync {
 pub trait ActionTrait: Send + std::fmt::Debug + DowncastSync {
     fn reducers<'a>(&self) -> Vec<Reducer<'a>>;
 }
@@ -48,6 +30,8 @@ pub fn listen<T: ActionTrait + Clone>(action: Action) -> Option<T> {
 
 // TODO: remove this once we have a better way to export the TS types.
 mod bindings {
+    use self::{boot::actions::{CancelUserFlow, GetState, Reset, UnlockStorage}, connections::actions::ConnectionAccepted, credentials::actions::{CredentialOffersSelected, CredentialsSelected, UpdateCredentialMetadata}, dev_mode::actions::{LoadDevProfile, SetDevMode}, extension::actions::CustomExtensionTest, profile::actions::{CreateNew, SetLocale, UpdateProfileSettings}, shared::actions::QrCodeScanned, user_data_query::actions::UserDataQuery, user_journey::actions::CancelUserJourney};
+
     use super::*;
 
     #[derive(Serialize, Deserialize, TS)]
@@ -92,124 +76,3 @@ mod bindings {
     }
 }
 
-#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export, export_to = "bindings/actions/QrCodeScanned.ts")]
-pub struct QrCodeScanned {
-    pub form_urlencoded: String,
-}
-
-#[typetag::serde(name = "[QR Code] Scanned")]
-impl ActionTrait for QrCodeScanned {
-    fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
-        vec![reducer!(read_authorization_request), reducer!(read_credential_offer)]
-    }
-}
-
-#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export, export_to = "bindings/actions/ConnectionAccepted.ts")]
-pub struct ConnectionAccepted;
-
-#[typetag::serde(name = "[Authenticate] Connection accepted")]
-impl ActionTrait for ConnectionAccepted {
-    fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
-        vec![reducer!(handle_siopv2_authorization_request)]
-    }
-}
-
-#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export, export_to = "bindings/actions/CancelUserFlow.ts")]
-pub struct CancelUserFlow {
-    #[ts(optional)]
-    pub redirect: Option<String>,
-}
-
-#[typetag::serde(name = "[User Flow] Cancel")]
-impl ActionTrait for CancelUserFlow {
-    fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
-        vec![reducer!(cancel_user_flow)]
-    }
-}
-
-#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export, export_to = "bindings/actions/CredentialsSelected.ts")]
-pub struct CredentialsSelected {
-    #[ts(type = "Array<string>")]
-    pub credential_uuids: Vec<uuid::Uuid>,
-}
-
-#[typetag::serde(name = "[Authenticate] Credentials selected")]
-impl ActionTrait for CredentialsSelected {
-    fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
-        vec![reducer!(handle_oid4vp_authorization_request)]
-    }
-}
-
-#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export, export_to = "bindings/actions/CredentialOffersSelected.ts")]
-pub struct CredentialOffersSelected {
-    #[ts(type = "Array<string>")]
-    pub offer_indices: Vec<usize>,
-}
-
-#[typetag::serde(name = "[Credential Offer] Selected")]
-impl ActionTrait for CredentialOffersSelected {
-    fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
-        vec![reducer!(send_credential_request)]
-    }
-}
-
-#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export, export_to = "bindings/actions/UpdateCredentialMetadata.ts")]
-pub struct UpdateCredentialMetadata {
-    #[ts(type = "string")]
-    pub id: uuid::Uuid,
-    #[ts(optional)]
-    pub name: Option<String>,
-    #[ts(optional)]
-    pub icon: Option<String>,
-    #[ts(optional)]
-    pub color: Option<String>,
-    #[ts(optional)]
-    pub is_favorite: Option<bool>,
-}
-
-#[typetag::serde(name = "[Credential Metadata] Update")]
-impl ActionTrait for UpdateCredentialMetadata {
-    fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
-        vec![reducer!(update_credential_metadata)]
-    }
-}
-
-#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export, export_to = "bindings/actions/UserDataQuery.ts")]
-pub struct UserDataQuery {
-    pub target: QueryTarget,
-    #[ts(optional)]
-    pub search_term: Option<String>,
-    #[ts(optional)]
-    pub sort_method: Option<SortMethod>,
-    #[serde(default)]
-    pub sort_reverse: bool,
-}
-
-#[typetag::serde(name = "[User Data] Query")]
-impl ActionTrait for UserDataQuery {
-    fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
-        vec![reducer!(credential_query), reducer!(connection_query)]
-    }
-}
-
-#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export, export_to = "bindings/actions/Test.ts")]
-pub struct CustomExtensionTest {
-    pub test_term: Option<String>,
-    #[serde(default)]
-    pub test_bool: bool,
-}
-
-#[typetag::serde(name = "[Test] Test")]
-impl ActionTrait for CustomExtensionTest {
-    fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
-        vec![reducer!(test_feat_state)]
-    }
-}   

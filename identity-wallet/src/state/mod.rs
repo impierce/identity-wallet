@@ -2,12 +2,19 @@ pub mod profile;
 pub mod user_journey;
 pub mod dev_mode;
 pub mod boot;
+pub mod credentials;
+pub mod connections;
+pub mod shared;
+pub mod extension;
+pub mod user_data_query;
+//
 pub mod actions;
-pub mod reducers;
 pub mod persistence;
 pub mod user_prompt;
 
-use self::{profile::Locale, reducers::authorization::ConnectionRequest};
+use self::connections::reducers::ConnectionRequest;
+use crate::state::connections::Connection;
+use self::profile::Locale;
 use self::profile::Profile;
 use crate::{
     crypto::stronghold::StrongholdManager, state::user_prompt::CurrentUserPrompt,
@@ -20,9 +27,14 @@ use oid4vc::oid4vc_manager::ProviderManager;
 use oid4vc::oid4vci::Wallet;
 use serde::{Deserialize, Serialize};
 use std::{collections::VecDeque, sync::Arc};
-use strum::EnumString;
 use ts_rs::TS;
 use dyn_clone::DynClone;
+
+/// Trait which each field of the appstate has to implement.
+#[typetag::serde(tag = "feat_state_type")]
+pub trait FeatTrait: Send + Sync + std::fmt::Debug + DynClone + DowncastSync{}
+dyn_clone::clone_trait_object!(FeatTrait);
+impl_downcast!(sync FeatTrait);
 
 #[derive(Default, Debug)]
 pub struct AppStateContainer(pub tokio::sync::Mutex<AppState>);
@@ -52,8 +64,6 @@ pub struct AppState {
     pub current_user_prompt: Option<CurrentUserPrompt>,
     pub connections: Vec<Connection>,
     pub user_data_query: Vec<String>,
-    ////
-
     /// Locale is a separate field from the profile only because of onboarding, 
     /// where the user needs to be able to choose the language before anything else.
     /// Locale and Profile are grouped together in the feature folder.
@@ -89,52 +99,6 @@ pub struct Managers {
     pub stronghold_manager: Option<Arc<StrongholdManager>>,
     pub identity_manager: Option<IdentityManager>,
 }
-
-#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default)]
-#[ts(export)]
-#[serde(default)]
-pub struct Connection {
-    pub id: String,
-    pub client_name: String,
-    pub url: String,
-    pub verified: bool,
-    pub first_interacted: String,
-    pub last_interacted: String,
-}
-
-#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq)]
-#[ts(export)]
-pub enum QueryTarget {
-    Credentials,
-    Connections,
-}
-
-#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq)]
-#[ts(export)]
-pub enum SortMethod {
-    NameAZ,
-    IssuanceNewOld,
-    AddedNewOld,
-    FirstInteractedNewOld,
-    LastInteractedNewOld,
-}
-
-// Trait which each field of the appstate has to implement.
-#[typetag::serde(tag = "feat_state_type")]
-pub trait FeatTrait: Send + Sync + std::fmt::Debug + DynClone + DowncastSync{}
-dyn_clone::clone_trait_object!(FeatTrait);
-impl_downcast!(sync FeatTrait);
-
-// Testing extensions
-
-#[derive(Debug, Serialize, Deserialize, TS, PartialEq, Default, Clone)]
-pub struct CustomExtension {
-    pub name: String,
-    pub value: String,
-}
-
-#[typetag::serde(name = "customextension")]
-impl FeatTrait for CustomExtension {}
 
 #[cfg(test)]
 mod tests {
@@ -174,27 +138,24 @@ mod tests {
             serialized,
             indoc! {
             r#"{
-                  "locale": "en",
                   "credentials": [],
                   "current_user_prompt": {
                     "type": "redirect",
                     "target": "me"
                   },
-                  "dev_mode_enabled": false,
-                  "debug_messages": [],
-                  "user_journey": null,
                   "connections": [],
                   "user_data_query": [],
-                  "feat_states": {
-                    "profile": {
-                      "feat_state_type": "profile",
-                      "name": "John Doe",
-                      "picture": null,
-                      "theme": null,
-                      "primary_did": "did:example:123"
-                    }
+                  "locale": "en",
+                  "profile": {
+                    "name": "John Doe",
+                    "picture": null,
+                    "theme": null,
+                    "primary_did": "did:example:123"
                   },
-                  "extensions": {}
+                  "user_journey": null,
+                  "debug_messages": [],
+                  "extensions": {},
+                  "dev_mode_enabled": false
                 }"#}
         );
     }

@@ -2,16 +2,20 @@ use crate::{
     crypto::stronghold::StrongholdManager,
     error::AppError::{self, *},
     state::{
-        actions::{listen, Action}, persistence::{delete_state_file, delete_stronghold, load_state}, user_prompt::CurrentUserPrompt, AppState, IdentityManager
+        AppState, IdentityManager,
+        actions::{listen, Action}, 
+        persistence::{delete_state_file, delete_stronghold, load_state}, 
+        user_prompt::CurrentUserPrompt,
     },
 };
-use super::actions::UnlockStorage;
+use super::actions::{CancelUserFlow, UnlockStorage};
 use did_key::{from_existing_key, Ed25519KeyPair};
 use log::info;
 use oid4vc::oid4vc_manager::{methods::key_method::KeySubject, ProviderManager};
 use oid4vc::oid4vci::Wallet;
 use std::sync::Arc;
 
+/// Reducer to retrieve the state from the storage.
 pub async fn get_state(_state: AppState, _action: Action) -> Result<AppState, AppError> {
     println!("get_state reducer called");
     let mut state = load_state().await.unwrap_or_default();
@@ -35,6 +39,7 @@ pub async fn get_state(_state: AppState, _action: Action) -> Result<AppState, Ap
     Ok(state)
 }
 
+/// Reducer to unlock the storage.
 pub async fn unlock_storage(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(password) = listen::<UnlockStorage>(action).map(|payload| payload.password) {
         let mut state_guard = state.managers.lock().await;
@@ -74,6 +79,20 @@ pub async fn unlock_storage(state: AppState, action: Action) -> Result<AppState,
             current_user_prompt: Some(CurrentUserPrompt::Redirect {
                 target: "me".to_string(),
             }),
+            ..state
+        });
+    }
+
+    Ok(state)
+}
+
+/// Cancels the current user flow and redirects to the specified target.
+pub async fn cancel_user_flow(state: AppState, action: Action) -> Result<AppState, AppError> {
+    if let Some(cancel_user_flow) = listen::<CancelUserFlow>(action) {
+        return Ok(AppState {
+            current_user_prompt: cancel_user_flow
+                .redirect
+                .map(|target| CurrentUserPrompt::Redirect { target }),
             ..state
         });
     }
