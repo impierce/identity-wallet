@@ -12,8 +12,8 @@
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "lint": "eslint .",
-    "format": "prettier . --write --plugin prettier-plugin-svelte --plugin prettier-plugin-tailwindcss --plugin @ianvs/prettier-plugin-sort-imports",
-    "format:check": "prettier . --check --plugin prettier-plugin-svelte --plugin prettier-plugin-tailwindcss --plugin @ianvs/prettier-plugin-sort-imports",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
     "tauri": "tauri",
     "typesafe-i18n": "typesafe-i18n --no-watch"
   },
