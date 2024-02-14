@@ -50,7 +50,7 @@ pub async fn load_dev_profile(state: AppState, action: Action) -> Result<AppStat
     if let Some(dev_profile) = listen::<DevProfile>(action) {
         match dev_profile.profile {
             ProfileType::Ferris => return load_ferris_profile().await,
-            ProfileType::Turtle => return load_turtle_profile(state).await,
+            ProfileType::Dragon => return load_dragon_profile(state).await,
             ProfileType::None => {}
         }
     }
@@ -67,6 +67,8 @@ pub async fn toggle_dev_settings(mut state: AppState, _action: Action) -> Result
         state.dev_profile = Some(ProfileType::None);
     }
 
+    state.current_user_prompt = None;
+
     Ok(state)
 }
 
@@ -82,8 +84,8 @@ pub async fn login_profile(state: AppState) -> Result<AppState, AppError> {
 
 async fn create_new_profile(state: AppState) -> Result<AppState, AppError> {
     let create_new = CreateNew {
-        name: "Turtle".to_string(),
-        picture: "&#x1F6E9".to_string(),
+        name: "Dragon".to_string(),
+        picture: "🐲".to_string(),
         theme: "dark".to_string(),
         password: PROFILE_PW.to_string(),
     };
@@ -233,7 +235,7 @@ async fn reset_settings(state: AppState) -> Result<AppState, AppError> {
     command::reduce(state, Arc::new(Reset)).await
 }
 
-pub async fn load_turtle_profile(state: AppState) -> Result<AppState, AppError> {
+pub async fn load_dragon_profile(state: AppState) -> Result<AppState, AppError> {
     // Reset
     let state = reset_settings(state).await?;
 
@@ -249,7 +251,7 @@ pub async fn load_turtle_profile(state: AppState) -> Result<AppState, AppError> 
     // Add & accept presentation
     let mut state = add_presentation_request(state).await?;
 
-    state.dev_profile = Some(ProfileType::Turtle);
+    state.dev_profile = Some(ProfileType::Dragon);
 
     Ok(state)
 }

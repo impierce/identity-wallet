@@ -9,7 +9,7 @@ use crate::{
     utils::{download_asset, LogoType},
     verifiable_credential_record::VerifiableCredentialRecord,
 };
-use log::{debug, error, info};
+use log::{debug, info};
 use oid4vc::oid4vci::{
     credential_format_profiles::{CredentialFormats, WithCredential, WithParameters},
     credential_issuer::credentials_supported::CredentialsSupportedObject,

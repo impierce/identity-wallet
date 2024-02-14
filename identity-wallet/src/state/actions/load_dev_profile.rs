@@ -11,13 +11,12 @@ pub enum ProfileType {
     Ferris,
 
     /// Dev profile which recreate steps
-    Turtle,
+    Dragon,
 
     /// No dev profile loaded
     #[default]
     None,
 }
-
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/DevProfile.ts")]

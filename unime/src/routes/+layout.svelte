@@ -11,10 +11,12 @@
   import { loadAllLocales } from '$src/i18n/i18n-util.sync';
   import { state } from '$src/stores';
 
+  import ScrollText from '~icons/lucide/scroll-text';
   import ArrowLeft from '~icons/ph/arrow-left';
   import CaretDown from '~icons/ph/caret-down-bold';
   import CaretUp from '~icons/ph/caret-up-bold';
   import Trash from '~icons/ph/trash';
+  import UserCircleGear from '~icons/ph/user-circle-gear';
 
   import '../app.css';
 
@@ -30,7 +32,6 @@
 
   let expandDevMenu = true;
   let showDebugMessages = false;
-  let showProfilePopup = false;
 
   const systemColorScheme = window.matchMedia('(prefers-color-scheme: dark)');
 
@@ -52,17 +53,16 @@
   const menuItemCss = 'flex flex-col content-start justify-center mr-4';
   const buttonCss =
     'flex content-center m-0 h-10 w-10 rounded-full bg-red-300 p-0 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60';
-  const menuTextCss = 'text-center text-xs mt-1';
+  const iconCss = 'm-auto block text-xl';
 
   async function loadProfile(profile: ProfileType) {
-    await dispatch({ type: '[DEV] Load DEV profile', payload: { profile } });
-    showProfilePopup = false;
-
-    // Reload page
-    setTimeout(async () => {
-            await goto('/');
-            await goto('/me');
-    }, 500)
+    dispatch({ type: '[DEV] Load DEV profile', payload: { profile } }).then(() => {
+      // Reload page
+      setTimeout(async () => {
+        await goto('/');
+        await goto('/me');
+      }, 500);
+    });
   }
 </script>
 
@@ -71,40 +71,43 @@
   {#if $state?.dev_profile}
     {#if expandDevMenu}
       <div
-        class="hide-scrollbar fixed z-20 flex w-full content-center overflow-x-auto bg-gradient-to-r from-red-200 to-red-300 p-4 shadow-md"
+        class="hide-scrollbar fixed z-20 flex w-full content-center overflow-x-auto bg-gradient-to-r from-red-200 to-red-300 p-4 pt-8 shadow-md"
         in:fly={{ y: -64, opacity: 1 }}
         out:fly={{ y: -64, opacity: 1 }}
       >
         <!-- Back button !-->
         <div class={menuItemCss}>
           <button class={buttonCss} on:click={() => history.back()}>
-            <ArrowLeft class="m-auto block" />
+            <ArrowLeft class={iconCss} />
           </button>
-          <span class={menuTextCss}>Back</span>
         </div>
 
         <!-- Reset button !-->
         <div class={menuItemCss}>
-          <button class={buttonCss} on:click={() => dispatch({ type: '[App] Reset' })}
-            ><Trash class="m-auto block" /></button
-          >
-          <span class={menuTextCss}>Reset</span>
+          <button class={buttonCss} on:click={() => dispatch({ type: '[App] Reset' })}>
+            <Trash class={iconCss} />
+          </button>
         </div>
 
-        <!-- Select DEV profile !-->
+        <!-- Select Ferris profile !-->
         <div class={menuItemCss}>
-          <button class={buttonCss} on:click={() => (showProfilePopup = !showProfilePopup)}>
-            <iconify-icon class="m-auto block" icon="iconoir:developer"></iconify-icon>
+          <button class={buttonCss} on:click={() => loadProfile('Ferris')}>
+            <span class={iconCss}>🦀</span>
           </button>
-          <span class={menuTextCss}>DEV profile</span>
+        </div>
+
+        <!-- Select Dragon profile !-->
+        <div class={menuItemCss}>
+          <button class={buttonCss} on:click={() => loadProfile('Dragon')}>
+            <span class={iconCss}>🐲</span>
+          </button>
         </div>
 
         <!-- Debug messages -->
         <div class={menuItemCss}>
           <button class={buttonCss} on:click={() => (showDebugMessages = !showDebugMessages)}>
-            <iconify-icon class="m-auto block" icon="octicon:log-24"></iconify-icon>
+            <ScrollText class={iconCss} />
           </button>
-          <span class={menuTextCss}>Logs</span>
         </div>
       </div>
     {/if}
@@ -137,12 +140,4 @@
   <div class="fixed top-[var(--safe-area-inset-top)] h-auto w-full">
     <slot />
   </div>
-
-  {#if showProfilePopup}
-    <div class="relative z-10 flex min-h-full w-screen flex-col bg-orange-100 pt-28">
-      <button class="mb-2" on:click={() => loadProfile('Turtle')}>Select Turtle</button>
-      <hr class="s-divider svelte-syn7p7 inset" aria-orientation="horizontal" />
-      <button class="mt-2" on:click={() => loadProfile('Ferris')}>Select Ferris</button>
-    </div>
-  {/if}
 </main>
