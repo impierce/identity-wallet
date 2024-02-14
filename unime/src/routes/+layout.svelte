@@ -4,10 +4,9 @@
   import { goto } from '$app/navigation';
   import { fly } from 'svelte/transition';
 
-  import { attachConsole, error, info, trace } from '@tauri-apps/plugin-log';
+  import { attachConsole, error, info } from '@tauri-apps/plugin-log';
 
   import { dispatch } from '$lib/dispatcher';
-  import LL from '$src/i18n/i18n-svelte';
   import { loadAllLocales } from '$src/i18n/i18n-util.sync';
   import { state } from '$src/stores';
 
@@ -16,7 +15,6 @@
   import CaretDown from '~icons/ph/caret-down-bold';
   import CaretUp from '~icons/ph/caret-up-bold';
   import Trash from '~icons/ph/trash';
-  import UserCircleGear from '~icons/ph/user-circle-gear';
 
   import '../app.css';
 
@@ -35,11 +33,16 @@
 
   const systemColorScheme = window.matchMedia('(prefers-color-scheme: dark)');
 
+  systemColorScheme.addEventListener('change', (e) => {
+    determineTheme(e.matches, $state?.active_profile?.theme);
+    systemColorScheme.removeEventListener('change', () => {});
+  });
+
   $: {
     // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
     console.log('+layout.svelte: state', $state);
 
-    // Set color scheme
+    // needed again?
     determineTheme(systemColorScheme.matches, $state?.active_profile?.theme);
 
     // User prompt

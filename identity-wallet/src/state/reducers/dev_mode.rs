@@ -208,24 +208,20 @@ async fn add_presentation_request(state: AppState) -> Result<AppState, AppError>
 
     let state = command::reduce(state, Arc::new(qr_code)).await?;
 
-    if let Some(up) = &state.current_user_prompt {
-        match up {
-            CurrentUserPrompt::ShareCredentials {
-                client_name: _,
-                logo_uri: _,
-                options,
-            } => {
-                let credential_uuids: Vec<Uuid> = options
-                    .iter()
-                    .map(|uuid_str| Uuid::parse_str(uuid_str).unwrap())
-                    .collect();
+    if let Some(CurrentUserPrompt::ShareCredentials {
+        client_name: _,
+        logo_uri: _,
+        options,
+    }) = &state.current_user_prompt
+    {
+        let credential_uuids: Vec<Uuid> = options
+            .iter()
+            .map(|uuid_str| Uuid::parse_str(uuid_str).unwrap())
+            .collect();
 
-                let cr_selected = CredentialsSelected { credential_uuids };
+        let cr_selected = CredentialsSelected { credential_uuids };
 
-                return command::reduce(state, Arc::new(cr_selected)).await;
-            }
-            _ => {}
-        }
+        return command::reduce(state, Arc::new(cr_selected)).await;
     }
 
     Err(AppError::DevError("Presentation not accepted".to_string()))

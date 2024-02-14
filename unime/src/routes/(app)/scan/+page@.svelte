@@ -187,7 +187,7 @@
     console.log('onMount: /scan');
     document.documentElement.querySelector('body')!!.classList.add('transparent');
     // permissionsGiven = await checkScanPrerequisites();
-    if ($state && $state.dev_profile === null) {
+    if (!$state?.dev_profile) {
       startScan();
     }
   });
