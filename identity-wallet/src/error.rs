@@ -10,6 +10,8 @@ pub enum AppError {
     // Generic error (all purpose)
     #[error("Error: {0}")]
     Error(&'static str),
+    #[error("Error: {0}")]
+    DevError(String),
     #[error("Invalid action found: `{action:?}`")]
     InvalidActionError { action: Action },
     #[error("Unable to parse QR code with content: `{0}`")]

@@ -1,7 +1,8 @@
 use crate::crypto::stronghold::StrongholdManager;
 use crate::error::AppError::{self, *};
 use crate::state::actions::{
-    listen, Action, ConnectionAccepted, CreateNew, CredentialOffersSelected, CredentialsSelected, DevProfile, ProfileType, QrCodeScanned, Reset, UnlockStorage
+    listen, Action, ConnectionAccepted, CreateNew, CredentialOffersSelected, CredentialsSelected, DevProfile,
+    ProfileType, QrCodeScanned, Reset, UnlockStorage,
 };
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, Connection, Profile};
@@ -9,16 +10,19 @@ use crate::verifiable_credential_record::VerifiableCredentialRecord;
 use crate::{command, ASSETS_DIR};
 use did_key::{generate, Ed25519KeyPair};
 use lazy_static::lazy_static;
-use log::info;
+use log::{error, info};
 use oid4vc::oid4vc_core::Subject;
 use oid4vc::oid4vc_manager::methods::key_method::KeySubject;
 use oid4vc::oid4vci::credential_format_profiles::w3c_verifiable_credentials::jwt_vc_json::JwtVcJson;
 use oid4vc::oid4vci::credential_format_profiles::{Credential, CredentialFormats, WithCredential};
+use reqwest::header::{HeaderMap, HeaderValue};
 use serde_json::json;
 use std::fs::File;
 use std::io::copy;
 use std::sync::Arc;
 use uuid::Uuid;
+
+use super::credential_offer::{read_credential_offer, send_credential_request};
 
 lazy_static! {
     pub static ref PERSONAL_INFORMATION: VerifiableCredentialRecord = VerifiableCredentialRecord::from(
@@ -50,7 +54,7 @@ pub async fn load_dev_profile(state: AppState, action: Action) -> Result<AppStat
         match dev_profile.profile {
             ProfileType::Ferris => return load_ferris_profile().await,
             ProfileType::Turtle => return load_turtle_profile(state).await,
-            ProfileType::None => {},
+            ProfileType::None => {}
         }
     }
 
@@ -90,11 +94,47 @@ async fn create_new_profile(state: AppState) -> Result<AppState, AppError> {
     command::reduce(state, Arc::new(create_new)).await
 }
 
+#[derive(serde::Serialize, serde::Deserialize)]
+struct CredentialPayload {
+    credentials: Vec<String>,
+}
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+struct CredentialResponse {
+    uri: String,
+    pin: serde_json::Value,
+    offer: serde_json::Value,
+}
+
 async fn add_credential(state: AppState) -> Result<AppState, AppError> {
     // Hardcoded URL (from NGDIL demo)
-    let url = "openid-credential-offer://?credential_offer_uri=https://api.demo.ngdil.com/api/offers/creds/oUNS7XbwNP7Z8-rTdWJn8".to_string();
+    let url = "https://api.demo.ngdil.com/api/starting-offer";
 
-    let qr_code = QrCodeScanned { form_urlencoded: url };
+    let payload = CredentialPayload {
+        credentials: vec![
+            "National ID".to_string(),
+            "School Course Certificate".to_string(),
+            "Volunteer Badge".to_string(),
+            "Higher Education Information Literacy Level 1".to_string(),
+            "Business Innovation & Interdisciplinair Samenwerken".to_string(),
+        ],
+    };
+
+    let response: CredentialResponse = reqwest::Client::new()
+        .post(url)
+        .json(&payload)
+        .send()
+        .await
+        .map_err(|err| AppError::DevError(err.to_string()))?
+        .json()
+        .await
+        .map_err(|err| AppError::DevError(err.to_string()))?;
+
+    info!("Response: {:?}", response);
+
+    let qr_code = QrCodeScanned {
+        form_urlencoded: response.uri,
+    };
 
     let state = command::reduce(state, Arc::new(qr_code)).await?;
 
@@ -105,35 +145,109 @@ async fn add_credential(state: AppState) -> Result<AppState, AppError> {
     command::reduce(state, Arc::new(cr_selected)).await
 }
 
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+struct ConnectionResponse {
+    uri: String,
+    request: serde_json::Value,
+    #[serde(rename = "requestOptions")]
+    request_options: serde_json::Value,
+}
+
 async fn add_connection(state: AppState) -> Result<AppState, AppError> {
     // Hardcoded URL (from NGDIL demo)
-    let url =
-        "siopv2://idtoken?client_id=did:key:z6MkquY2TrE7KeuBNRAJ4eZbPqtYeCyGXe8seQNfK1ZXAumj&request_uri=https://api.demo.ngdil.com/api/offers/siop/l_u775bqOP-5-EBehF3nb".to_string();
+    let url = "https://api.demo.ngdil.com/siop";
 
-    let qr_code = QrCodeScanned { form_urlencoded: url };
+    let payload = serde_json::json!({
+        "clientMetadata": {
+            "logoUri": "https://demo.ngdil.com/imgs/kw1c-white.png",
+            "clientName": "Koning Willem I College"
+        }
+    });
+
+    let response: ConnectionResponse = reqwest::Client::new()
+        .post(url)
+        .json(&payload)
+        .send()
+        .await
+        .map_err(|err| AppError::DevError(err.to_string()))?
+        .json()
+        .await
+        .map_err(|err| AppError::DevError(err.to_string()))?;
+
+    let qr_code = QrCodeScanned {
+        form_urlencoded: response.uri,
+    };
 
     let state = command::reduce(state, Arc::new(qr_code)).await?;
 
     command::reduce(state, Arc::new(ConnectionAccepted)).await
 }
 
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+struct PresentationResponse {
+    uri: String,
+    request: serde_json::Value,
+    #[serde(rename = "requestOptions")]
+    request_options: serde_json::Value,
+}
+
 async fn add_presentation_request(state: AppState) -> Result<AppState, AppError> {
     // Hardcoded URL (from NGDIL demo)
-    let url =
-        "siopv2://idtoken?client_id=did:key:z6MkquY2TrE7KeuBNRAJ4eZbPqtYeCyGXe8seQNfK1ZXAumj&request_uri=https://api.demo.ngdil.com/api/offers/siop/UNrxa0IZf8tFT9t0_TZrj".to_string();
+    let url = "https://api.demo.ngdil.com/api/oid4vp";
 
-    let qr_code = QrCodeScanned { form_urlencoded: url };
+    let payload = serde_json::json!({
+        "presentationStage":"dominiqueEnrolCourse",
+        "clientMetadata":{"logoUri":"https://demo.ngdil.com/imgs/kw1c-white.png","clientName":"Koning Willem I College"}
+    });
+
+    let response: PresentationResponse = reqwest::Client::new()
+        .post(url)
+        .json(&payload)
+        .send()
+        .await
+        .map_err(|err| AppError::DevError(err.to_string()))?
+        .json()
+        .await
+        .map_err(|err| AppError::DevError(err.to_string()))?;
+
+    error!("URI: {:?}", response.uri); // JUST FOR DEBUG
+
+    let qr_code = QrCodeScanned {
+        form_urlencoded: response.uri,
+    };
 
     let state = command::reduce(state, Arc::new(qr_code)).await?;
 
-    let uuid_1 = Uuid::parse_str("37323764-3935-3531-3636-386334326265").expect("UUID 1 turtle profile not correct");
-    let uuid_2 = Uuid::parse_str("65313633-6666-3135-6464-636630373861").expect("UUID 2 turtle profile not correct");
+    //Ok(state)
 
-    let cr_selected = CredentialsSelected {
-        credential_uuids: vec![uuid_1, uuid_2],
-    };
+    // uuids of VCs that can fulfill the request: ["65313633-6666-3135-6464-636630373861", "37323764-3935-3531-3636-386334326265"]
 
-    command::reduce(state, Arc::new(cr_selected)).await
+    //let uuid_1 = Uuid::parse_str("37323764-3935-3531-3636-386334326265").expect("UUID 1 turtle profile not correct");
+    //let uuid_2 = Uuid::parse_str("65313633-6666-3135-6464-636630373861").expect("UUID 2 turtle profile not correct");
+
+    if let Some(up) = &state.current_user_prompt {
+        info!("IS SOMETHING");
+        match up {
+            CurrentUserPrompt::ShareCredentials {
+                client_name: _,
+                logo_uri: _,
+                options,
+            } => {
+                info!("JAJA");
+                let credential_uuids: Vec<Uuid> = options
+                    .iter()
+                    .map(|uuid_str| Uuid::parse_str(uuid_str).unwrap())
+                    .collect();
+
+                let cr_selected = CredentialsSelected { credential_uuids };
+
+                return command::reduce(state, Arc::new(cr_selected)).await;
+            }
+            _ => {}
+        }
+    }
+
+    Err(AppError::DevError("Presentation not accepted".to_string()))
 }
 
 async fn reset_settings(state: AppState) -> Result<AppState, AppError> {
@@ -147,11 +261,11 @@ pub async fn load_turtle_profile(state: AppState) -> Result<AppState, AppError> 
     // Create new
     let state = create_new_profile(state).await?;
 
-    // Add & accept connection
-    let state = add_connection(state).await?;
-
     // Add & accept credential
     let state = add_credential(state).await?;
+
+    // Add & accept connection
+    let state = add_connection(state).await?;
 
     // Add & accept presentation
     let mut state = add_presentation_request(state).await?;
@@ -304,7 +418,6 @@ async fn load_ferris_profile() -> Result<AppState, AppError> {
         },
     ];
 
-    
     state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
         target: "me".to_string(),
     });
