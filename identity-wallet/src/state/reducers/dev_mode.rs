@@ -10,19 +10,16 @@ use crate::verifiable_credential_record::VerifiableCredentialRecord;
 use crate::{command, ASSETS_DIR};
 use did_key::{generate, Ed25519KeyPair};
 use lazy_static::lazy_static;
-use log::{error, info};
+use log::info;
 use oid4vc::oid4vc_core::Subject;
 use oid4vc::oid4vc_manager::methods::key_method::KeySubject;
 use oid4vc::oid4vci::credential_format_profiles::w3c_verifiable_credentials::jwt_vc_json::JwtVcJson;
 use oid4vc::oid4vci::credential_format_profiles::{Credential, CredentialFormats, WithCredential};
-use reqwest::header::{HeaderMap, HeaderValue};
 use serde_json::json;
 use std::fs::File;
 use std::io::copy;
 use std::sync::Arc;
 use uuid::Uuid;
-
-use super::credential_offer::{read_credential_offer, send_credential_request};
 
 lazy_static! {
     pub static ref PERSONAL_INFORMATION: VerifiableCredentialRecord = VerifiableCredentialRecord::from(
@@ -94,11 +91,6 @@ async fn create_new_profile(state: AppState) -> Result<AppState, AppError> {
     command::reduce(state, Arc::new(create_new)).await
 }
 
-#[derive(serde::Serialize, serde::Deserialize)]
-struct CredentialPayload {
-    credentials: Vec<String>,
-}
-
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 struct CredentialResponse {
     uri: String,
@@ -107,18 +99,18 @@ struct CredentialResponse {
 }
 
 async fn add_credential(state: AppState) -> Result<AppState, AppError> {
-    // Hardcoded URL (from NGDIL demo)
+    // URL from NGDIL demo
     let url = "https://api.demo.ngdil.com/api/starting-offer";
 
-    let payload = CredentialPayload {
-        credentials: vec![
-            "National ID".to_string(),
-            "School Course Certificate".to_string(),
-            "Volunteer Badge".to_string(),
-            "Higher Education Information Literacy Level 1".to_string(),
-            "Business Innovation & Interdisciplinair Samenwerken".to_string(),
-        ],
-    };
+    let payload = serde_json::json!({
+        "credentials": [
+            "National ID",
+            "School Course Certificate",
+            "Volunteer Badge",
+            "Higher Education Information Literacy Level 1",
+            "Business Innovation & Interdisciplinair Samenwerken"
+        ]
+    });
 
     let response: CredentialResponse = reqwest::Client::new()
         .post(url)
@@ -129,8 +121,6 @@ async fn add_credential(state: AppState) -> Result<AppState, AppError> {
         .json()
         .await
         .map_err(|err| AppError::DevError(err.to_string()))?;
-
-    info!("Response: {:?}", response);
 
     let qr_code = QrCodeScanned {
         form_urlencoded: response.uri,
@@ -154,7 +144,7 @@ struct ConnectionResponse {
 }
 
 async fn add_connection(state: AppState) -> Result<AppState, AppError> {
-    // Hardcoded URL (from NGDIL demo)
+    // URL from NGDIL demo
     let url = "https://api.demo.ngdil.com/siop";
 
     let payload = serde_json::json!({
@@ -192,7 +182,7 @@ struct PresentationResponse {
 }
 
 async fn add_presentation_request(state: AppState) -> Result<AppState, AppError> {
-    // Hardcoded URL (from NGDIL demo)
+    // URL from NGDIL demo
     let url = "https://api.demo.ngdil.com/api/oid4vp";
 
     let payload = serde_json::json!({
@@ -210,30 +200,19 @@ async fn add_presentation_request(state: AppState) -> Result<AppState, AppError>
         .await
         .map_err(|err| AppError::DevError(err.to_string()))?;
 
-    error!("URI: {:?}", response.uri); // JUST FOR DEBUG
-
     let qr_code = QrCodeScanned {
         form_urlencoded: response.uri,
     };
 
     let state = command::reduce(state, Arc::new(qr_code)).await?;
 
-    //Ok(state)
-
-    // uuids of VCs that can fulfill the request: ["65313633-6666-3135-6464-636630373861", "37323764-3935-3531-3636-386334326265"]
-
-    //let uuid_1 = Uuid::parse_str("37323764-3935-3531-3636-386334326265").expect("UUID 1 turtle profile not correct");
-    //let uuid_2 = Uuid::parse_str("65313633-6666-3135-6464-636630373861").expect("UUID 2 turtle profile not correct");
-
     if let Some(up) = &state.current_user_prompt {
-        info!("IS SOMETHING");
         match up {
             CurrentUserPrompt::ShareCredentials {
                 client_name: _,
                 logo_uri: _,
                 options,
             } => {
-                info!("JAJA");
                 let credential_uuids: Vec<Uuid> = options
                     .iter()
                     .map(|uuid_str| Uuid::parse_str(uuid_str).unwrap())

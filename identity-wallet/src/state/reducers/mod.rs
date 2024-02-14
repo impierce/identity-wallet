@@ -256,14 +256,22 @@ pub async fn update_profile_settings(state: AppState, action: Action) -> Result<
 }
 
 /// Completely resets the state to its default values.
-pub async fn reset_state(_state: AppState, _action: Action) -> Result<AppState, AppError> {
+pub async fn reset_state(state: AppState, _action: Action) -> Result<AppState, AppError> {
     delete_state_file().await.ok();
     delete_stronghold().await.ok();
+
+    // Keep maintaing dev profile state
+    let dev_profile = if state.dev_profile.is_some() {
+        Some(ProfileType::None)
+    } else {
+        None
+    };
 
     Ok(AppState {
         current_user_prompt: Some(CurrentUserPrompt::Redirect {
             target: "welcome".to_string(),
         }),
+        dev_profile,
         ..Default::default()
     })
 }
