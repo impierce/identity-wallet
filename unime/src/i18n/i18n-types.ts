@@ -462,6 +462,10 @@ type RootTranslation = {
 				 * A​b​o​u​t​ ​U​n​i​M​e
 				 */
 				NAVBAR_TITLE: string
+				/**
+				 * B​u​i​l​t​ ​w​i​t​h​ ​T​a​u​r​i
+				 */
+				BUILT_WITH: string
 			}
 			FEEDBACK: {
 				/**
@@ -512,6 +516,16 @@ type RootTranslation = {
 			 */
 			GREETING_4: string
 		}
+		DEMO: {
+			/**
+			 * V​i​s​i​t
+			 */
+			TITLE: string
+			/**
+			 * o​n​ ​a​ ​d​e​s​k​t​o​p​ ​c​o​m​p​u​t​e​r​ ​t​o​ ​g​e​t​ ​s​t​a​r​t​e​d​.
+			 */
+			TITLE_2: string
+		}
 		CREDENTIAL_TABS: {
 			/**
 			 * A​l​l
@@ -525,27 +539,6 @@ type RootTranslation = {
 			 * B​a​d​g​e​s
 			 */
 			BADGES: string
-		}
-		CREDENTIAL: {
-			/**
-			 * C​r​e​d​e​n​t​i​a​l​ ​i​n​f​o
-			 */
-			NAVBAR_TITLE: string
-			NAME: string
-		}
-		BADGE: {
-			/**
-			 * B​a​d​g​e​ ​i​n​f​o
-			 */
-			NAVBAR_TITLE: string
-			/**
-			 * D​e​s​c​r​i​p​t​i​o​n
-			 */
-			DESCRIPTION: string
-			/**
-			 * M​e​t​a​d​a​t​a
-			 */
-			METADATA: string
 		}
 		EMPTY_CREDENTIALS: {
 			/**
@@ -602,11 +595,11 @@ type RootTranslation = {
 		/**
 		 * N​o​ ​p​e​r​m​i​s​s​i​o​n​s​ ​t​o
 		 */
-		PERMISSION_1: string
+		NO_PERMISSION_1: string
 		/**
 		 * a​c​c​e​s​s​ ​t​h​e​ ​c​a​m​e​r​a
 		 */
-		PERMISSION_2: string
+		NO_PERMISSION_2: string
 		CONNECTION_OFFER: {
 			/**
 			 * C​r​e​d​e​n​t​i​a​l​ ​O​f​f​e​r
@@ -625,29 +618,33 @@ type RootTranslation = {
 			/**
 			 * N​e​w​ ​c​o​n​n​e​c​t​i​o​n
 			 */
-			TITLE_1: string
+			TITLE: string
 			/**
 			 * O​n​l​y​ ​a​c​c​e​p​t​ ​n​e​w​ ​c​o​n​n​e​c​t​i​o​n​s​ ​t​h​a​t​ ​y​o​u​ ​r​e​c​o​g​n​i​z​e​ ​a​n​d​ ​t​r​u​s​t
 			 */
-			TITLE_2: string
-			/**
-			 * U​R​L
-			 */
-			URL: string
+			DESCRIPTION: string
 			/**
 			 * C​o​n​n​e​c​t​e​d​ ​p​r​e​v​i​o​u​s​l​y
 			 */
-			PREVIOUSLY: string
+			CONNECTED_PREVIOUSLY: string
 		}
 		SHARE_CREDENTIALS: {
 			/**
+			 * S​h​a​r​e​ ​D​a​t​a
+			 */
+			NAVBAR_TITLE: string
+			/**
 			 * r​e​q​u​e​s​t​s​ ​t​h​e​ ​f​o​l​l​o​w​i​n​g​ ​c​r​e​d​e​n​t​i​a​l​s
 			 */
-			TITLE_1: string
+			DESCRIPTION: string
 			/**
 			 * R​e​q​u​e​s​t​e​d
 			 */
-			TITLE_2: string
+			REQUESTED: string
+			/**
+			 * A​p​p​r​o​v​e​ ​r​e​q​u​e​s​t
+			 */
+			APPROVE: string
 		}
 	}
 	CONNECTION: {
@@ -722,7 +719,17 @@ type RootTranslation = {
 			DESCRIPTION: string
 		}
 	}
+	CREDENTIAL: {
+		/**
+		 * C​r​e​d​e​n​t​i​a​l​ ​i​n​f​o
+		 */
+		NAVBAR_TITLE: string
+	}
 	BADGE: {
+		/**
+		 * B​a​d​g​e​ ​i​n​f​o
+		 */
+		NAVBAR_TITLE: string
 		DETAILS: {
 			/**
 			 * V​a​l​i​d
@@ -766,10 +773,6 @@ type RootTranslation = {
 	 * A​c​c​e​p​t
 	 */
 	ACCEPT: string
-	/**
-	 * A​p​p​r​o​v​e​ ​r​e​q​u​e​s​t
-	 */
-	APPROVE: string
 }
 
 export type TranslationFunctions = {
@@ -1218,6 +1221,10 @@ export type TranslationFunctions = {
 				 * About UniMe
 				 */
 				NAVBAR_TITLE: () => LocalizedString
+				/**
+				 * Built with Tauri
+				 */
+				BUILT_WITH: () => LocalizedString
 			}
 			FEEDBACK: {
 				/**
@@ -1268,6 +1275,16 @@ export type TranslationFunctions = {
 			 */
 			GREETING_4: () => LocalizedString
 		}
+		DEMO: {
+			/**
+			 * Visit
+			 */
+			TITLE: () => LocalizedString
+			/**
+			 * on a desktop computer to get started.
+			 */
+			TITLE_2: () => LocalizedString
+		}
 		CREDENTIAL_TABS: {
 			/**
 			 * All
@@ -1281,27 +1298,6 @@ export type TranslationFunctions = {
 			 * Badges
 			 */
 			BADGES: () => LocalizedString
-		}
-		CREDENTIAL: {
-			/**
-			 * Credential info
-			 */
-			NAVBAR_TITLE: () => LocalizedString
-			NAME: () => LocalizedString
-		}
-		BADGE: {
-			/**
-			 * Badge info
-			 */
-			NAVBAR_TITLE: () => LocalizedString
-			/**
-			 * Description
-			 */
-			DESCRIPTION: () => LocalizedString
-			/**
-			 * Metadata
-			 */
-			METADATA: () => LocalizedString
 		}
 		EMPTY_CREDENTIALS: {
 			/**
@@ -1358,11 +1354,11 @@ export type TranslationFunctions = {
 		/**
 		 * No permissions to
 		 */
-		PERMISSION_1: () => LocalizedString
+		NO_PERMISSION_1: () => LocalizedString
 		/**
 		 * access the camera
 		 */
-		PERMISSION_2: () => LocalizedString
+		NO_PERMISSION_2: () => LocalizedString
 		CONNECTION_OFFER: {
 			/**
 			 * Credential Offer
@@ -1381,29 +1377,33 @@ export type TranslationFunctions = {
 			/**
 			 * New connection
 			 */
-			TITLE_1: () => LocalizedString
+			TITLE: () => LocalizedString
 			/**
 			 * Only accept new connections that you recognize and trust
 			 */
-			TITLE_2: () => LocalizedString
-			/**
-			 * URL
-			 */
-			URL: () => LocalizedString
+			DESCRIPTION: () => LocalizedString
 			/**
 			 * Connected previously
 			 */
-			PREVIOUSLY: () => LocalizedString
+			CONNECTED_PREVIOUSLY: () => LocalizedString
 		}
 		SHARE_CREDENTIALS: {
 			/**
+			 * Share Data
+			 */
+			NAVBAR_TITLE: () => LocalizedString
+			/**
 			 * requests the following credentials
 			 */
-			TITLE_1: () => LocalizedString
+			DESCRIPTION: () => LocalizedString
 			/**
 			 * Requested
 			 */
-			TITLE_2: () => LocalizedString
+			REQUESTED: () => LocalizedString
+			/**
+			 * Approve request
+			 */
+			APPROVE: () => LocalizedString
 		}
 	}
 	CONNECTION: {
@@ -1478,7 +1478,17 @@ export type TranslationFunctions = {
 			DESCRIPTION: () => LocalizedString
 		}
 	}
+	CREDENTIAL: {
+		/**
+		 * Credential info
+		 */
+		NAVBAR_TITLE: () => LocalizedString
+	}
 	BADGE: {
+		/**
+		 * Badge info
+		 */
+		NAVBAR_TITLE: () => LocalizedString
 		DETAILS: {
 			/**
 			 * Valid
@@ -1522,10 +1532,6 @@ export type TranslationFunctions = {
 	 * Accept
 	 */
 	ACCEPT: () => LocalizedString
-	/**
-	 * Approve request
-	 */
-	APPROVE: () => LocalizedString
 }
 
 export type Formatters = {}

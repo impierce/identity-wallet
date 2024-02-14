@@ -166,6 +166,7 @@ const en = {
       ABOUT: {
         TITLE: 'About UniMe',
         NAVBAR_TITLE: 'About UniMe',
+        BUILT_WITH: 'Built with Tauri',
       },
       FEEDBACK: {
         TITLE: 'Send feedback',
@@ -186,19 +187,14 @@ const en = {
       GREETING_3: 'Welcome back',
       GREETING_4: 'Hello',
     },
+    DEMO: {
+      TITLE: 'Visit',
+      TITLE_2: 'on a desktop computer to get started.',
+    },
     CREDENTIAL_TABS: {
       ALL: 'All',
       DATA: 'Data',
       BADGES: 'Badges',
-    },
-    CREDENTIAL: {
-      NAVBAR_TITLE: 'Credential info',
-      NAME: '',
-    },
-    BADGE: {
-      NAVBAR_TITLE: 'Badge info',
-      DESCRIPTION: 'Description',
-      METADATA: 'Metadata',
     },
     EMPTY_CREDENTIALS: {
       TITLE: "It's a bit quiet in here",
@@ -217,25 +213,26 @@ const en = {
   SCAN: {
     BOTTOM_NAVIGATION_TITLE: 'Scan',
     TITLE_1: 'Scan a',
-    TITLE_2:'QR Code',
+    TITLE_2: 'QR Code',
     SUBTITLE: 'Bring a QR Code into view of this screen to start an interaction.',
-    PERMISSION_1: 'No permissions to',
-    PERMISSION_2: 'access the camera',
+    NO_PERMISSION_1: 'No permissions to',
+    NO_PERMISSION_2: 'access the camera',
     CONNECTION_OFFER: {
       NAVBAR_TITLE: 'Credential Offer',
       DESCRIPTION: 'is offering you the following credentials',
     },
     CONNECTION_REQUEST: {
       NAVBAR_TITLE: 'Credential Request',
-      TITLE_1: 'New connection',
-      TITLE_2: 'Only accept new connections that you recognize and trust',
-      URL: 'URL',
-      PREVIOUSLY: 'Connected previously'
+      TITLE: 'New connection',
+      DESCRIPTION: 'Only accept new connections that you recognize and trust',
+      CONNECTED_PREVIOUSLY: 'Connected previously',
     },
     SHARE_CREDENTIALS: {
-      TITLE_1: 'requests the following credentials',
-      TITLE_2: 'Requested',
-    }
+      NAVBAR_TITLE: 'Share Data',
+      DESCRIPTION: 'requests the following credentials',
+      REQUESTED: 'Requested',
+      APPROVE: 'Approve request',
+    },
   },
   CONNECTION: {
     TABS: {
@@ -267,7 +264,11 @@ const en = {
       DESCRIPTION: 'Try searching for something else.',
     },
   },
+  CREDENTIAL: {
+    NAVBAR_TITLE: 'Credential info',
+  },
   BADGE: {
+    NAVBAR_TITLE: 'Badge info',
     DETAILS: {
       VALID: 'Valid',
       ISSUED_BY: 'Issued by',
@@ -281,7 +282,6 @@ const en = {
   SKIP: 'Skip',
   REJECT: 'Reject',
   ACCEPT: 'Accept',
-  APPROVE: 'Approve request',
 } satisfies BaseTranslation;
 
 export default en;

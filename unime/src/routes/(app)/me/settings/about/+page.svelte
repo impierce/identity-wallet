@@ -15,7 +15,7 @@
       <!-- <div class="pb-4" /> -->
       <div>0.4.9</div>
       <div class="flex items-center pb-4">
-        <p>Built with Tauri</p>
+        <p>{$LL.SETTINGS.SUPPORT.ABOUT.BUILT_WITH()}</p>
         <Heart class="pl-1" />
       </div>
       <div>Apache-2.0</div>

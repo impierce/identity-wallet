@@ -89,37 +89,6 @@ const nl = {
     },
   },
   SETTINGS: {
-    THEME: {
-      SYSTEM: 'Systeem',
-      LIGHT: 'Licht',
-      DARK: 'Donker',
-    },
-    PASSWORD: {
-      POLICY: {
-        TITLE: 'Wachtwoord',
-        UPPERCASE_LETTER: 'Hoofdletters',
-        LOWERCASE_LETTER: 'Kleine letters',
-        NUMBER: 'Nummers',
-        CHARACTERS: 'Karakters',
-      },
-    },
-    RESET_APP: {
-      TITLE: 'App opnieuw instellen',
-      DESCRIPTION: 'Weet je zeker dat je de app opnieuw wilt instellen en alle gegevens wilt verwijderen?',
-      CONFIRM: 'Ja, verwijder alles',
-      CANCEL: 'Nee, bewaar mijn profiel',
-    },
-    ACCOUNT: 'Profiel',
-    SUPPORT: {
-      TITLE: 'Support',
-      ABOUT: {
-        TITLE: 'Over UniMe',
-        NAVBAR_TITLE: 'Over UniMe',
-      },
-      FEEDBACK: {
-        TITLE: 'Stuur feedback',
-      },
-    },
     NAVBAR_TITLE: 'Instellingen',
     PROFILE: {
       TITLE: 'Mijn profiel',
@@ -171,6 +140,38 @@ const nl = {
     LOG_OUT: {
       TITLE: 'Log uit',
     },
+    THEME: {
+      SYSTEM: 'Systeem',
+      LIGHT: 'Licht',
+      DARK: 'Donker',
+    },
+    PASSWORD: {
+      POLICY: {
+        TITLE: 'Wachtwoord',
+        UPPERCASE_LETTER: 'Hoofdletters',
+        LOWERCASE_LETTER: 'Kleine letters',
+        NUMBER: 'Nummers',
+        CHARACTERS: 'Karakters',
+      },
+    },
+    RESET_APP: {
+      TITLE: 'App opnieuw instellen',
+      DESCRIPTION: 'Weet je zeker dat je de app opnieuw wilt instellen en alle gegevens wilt verwijderen?',
+      CONFIRM: 'Ja, verwijder alles',
+      CANCEL: 'Nee, bewaar mijn profiel',
+    },
+    ACCOUNT: 'Profiel',
+    SUPPORT: {
+      TITLE: 'Support',
+      ABOUT: {
+        TITLE: 'Over UniMe',
+        NAVBAR_TITLE: 'Over UniMe',
+        BUILT_WITH: 'Gebouwd with Tauri',
+      },
+      FEEDBACK: {
+        TITLE: 'Stuur feedback',
+      },
+    },
   },
   LOCK_SCREEN: {
     PASSWORD_INPUT_PLACEHOLDER: 'Voer je wachtwoord in',
@@ -186,18 +187,14 @@ const nl = {
       GREETING_3: 'Hoi',
       GREETING_4: 'Dag',
     },
+    DEMO: {
+      TITLE: 'Bezoek',
+      TITLE_2: 'op een desktopcomputer om te beginnen.',
+    },
     CREDENTIAL_TABS: {
       ALL: 'Alle',
       DATA: 'Data',
       BADGES: 'Badges',
-    },
-    CREDENTIAL: {
-      NAVBAR_TITLE: 'Credential informatie',
-    },
-    BADGE: {
-      NAVBAR_TITLE: 'Badge informatie',
-      DESCRIPTION: 'Description',
-      METADATA: 'Metadata',
     },
     EMPTY_CREDENTIALS: {
       TITLE: 'Momenteel is het hier wat rustig',
@@ -218,23 +215,24 @@ const nl = {
     TITLE_1: 'Scan een',
     TITLE_2: 'QR Code',
     SUBTITLE: 'Breng een QR-code in beeld op dit scherm om een interactie te starten.',
-    PERMISSION_1: 'Geen recht om toegang',
-    PERMISSION_2: 'te krijgen tot de camera',
+    NO_PERMISSION_1: 'Geen recht om toegang',
+    NO_PERMISSION_2: 'te krijgen tot de camera',
     CONNECTION_OFFER: {
       NAVBAR_TITLE: 'Credential Aanbod',
-      DESCRIPTION: 'biedt u de volgende credentials',
+      DESCRIPTION: 'biedt u de volgende credentials aan',
     },
     CONNECTION_REQUEST: {
       NAVBAR_TITLE: 'Credential Aanvraag',
-      TITLE_1: 'Nieuwe verbinding',
-      TITLE_2: 'Accepteer alleen nieuwe verbindingen die je herkent en vertrouwt',
-      URL: 'URL',
-      PREVIOUSLY: 'Eerder verbonden',
+      TITLE: 'Nieuwe connectie',
+      DESCRIPTION: 'Accepteer alleen nieuwe connecties die je herkent en vertrouwt',
+      CONNECTED_PREVIOUSLY: 'Eerder verbonden',
     },
     SHARE_CREDENTIALS: {
-      TITLE_1: 'vraagt de volgende credentials op',
-      TITLE_2: 'Aangevraagd',
-    }
+      NAVBAR_TITLE: 'Gegevens Delen',
+      DESCRIPTION: 'vraagt de volgende credentials op',
+      REQUESTED: 'Aangevraagd',
+      APPROVE: 'Aanvaard aanvraag',
+    },
   },
   CONNECTION: {
     TABS: {
@@ -266,7 +264,11 @@ const nl = {
       DESCRIPTION: 'Probeer iets anders te zoeken.',
     },
   },
+  CREDENTIAL: {
+    NAVBAR_TITLE: 'Credential informatie',
+  },
   BADGE: {
+    NAVBAR_TITLE: 'Badge informatie',
     DETAILS: {
       VALID: 'Geldig',
       ISSUED_BY: 'Uitgegeven door',
@@ -280,7 +282,6 @@ const nl = {
   SKIP: 'Overslaan',
   REJECT: 'Weigeren',
   ACCEPT: 'Accepteren',
-  APPROVE: 'Aanvaard aanvraag',
 } satisfies Translation;
 
 export default nl;

@@ -20,20 +20,20 @@
   let client_name = $state.current_user_prompt.client_name;
 </script>
 
-<div class="content-height bg-silver dark:bg-navy flex flex-col items-stretch">
-  <TopNavBar title={'Share Data'} on:back={() => history.back()} />
+<div class="content-height flex flex-col items-stretch bg-silver dark:bg-navy">
+  <TopNavBar title={$LL.SCAN.SHARE_CREDENTIALS.NAVBAR_TITLE()} on:back={() => history.back()} />
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
     <!-- Header -->
     {#if $state.current_user_prompt.logo_uri}
-      <div class="dark:bg-silver flex h-[75px] w-[75px] overflow-hidden rounded-3xl bg-white p-2">
+      <div class="flex h-[75px] w-[75px] overflow-hidden rounded-3xl bg-white p-2 dark:bg-silver">
         <img src={$state.current_user_prompt.logo_uri} alt="logo" />
       </div>
     {:else}
       <PaddedIcon icon={PlugsConnected} />
     {/if}
     <div class="text-center">
-      <p class="dark:text-grey text-[22px]/[30px] font-semibold text-slate-700">
+      <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
         {client_name}
       </p>
       <!-- <p class="pt-[10px] text-sm font-medium text-slate-500">
@@ -42,21 +42,21 @@
     </div>
 
     <p class="w-full text-center text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">
-      {$LL.SCAN.SHARE_CREDENTIALS.TITLE_1()}
+      {$LL.SCAN.SHARE_CREDENTIALS.DESCRIPTION()}
     </p>
 
     <div class="w-full">
       <div class="flex items-center">
-        <SealCheck class="text-primary mr-2" />
+        <SealCheck class="mr-2 text-primary" />
         <p class="text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">
-          {$LL.SCAN.SHARE_CREDENTIALS.TITLE_2()}
+          {$LL.SCAN.SHARE_CREDENTIALS.REQUESTED()}
         </p>
       </div>
 
       <!-- Credentials selection -->
       <!-- <div class="w-full space-y-2 rounded-2xl bg-white p-3"></div> -->
       <div
-        class="dark:bg-dark mt-3 w-full rounded-[20px] border border-slate-200 bg-white p-[10px] dark:border-slate-600"
+        class="mt-3 w-full rounded-[20px] border border-slate-200 bg-white p-[10px] dark:border-slate-600 dark:bg-dark"
       >
         <div class="flex w-full flex-col space-y-2">
           {#each selected_credentials as credential}
@@ -72,9 +72,9 @@
   </div>
 
   <!-- Controls -->
-  <div class="dark:bg-dark sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6">
+  <div class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 dark:bg-dark">
     <Button
-      label={$LL.APPROVE()}
+      label={$LL.SCAN.SHARE_CREDENTIALS.APPROVE()}
       on:click={() =>
         dispatch({
           type: '[Authenticate] Credentials selected',

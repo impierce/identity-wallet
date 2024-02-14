@@ -252,12 +252,12 @@
       <!-- visible when NOT scanning -->
       <div
         class:invisible={scanning}
-        class="bg-silver dark:bg-navy relative flex h-full flex-col items-center justify-center p-8"
+        class="relative flex h-full flex-col items-center justify-center bg-silver p-8 dark:bg-navy"
       >
         {#if permissions === 'denied'}
           <div class="flex flex-col items-center space-y-4">
             <div class="rounded-lg bg-rose-100 px-8 py-4 text-rose-500">
-              {$LL.SCAN.PERMISSION_1()}<br />{$LL.SCAN.PERMISSION_2()}
+              {$LL.SCAN.NO_PERMISSION_1()}<br />{$LL.SCAN.NO_PERMISSION_2()}
             </div>
             <Button label="Open settings" on:click={openAppSettings} />
           </div>
@@ -295,8 +295,8 @@
 
       <!-- visible during scanning -->
       <div class="flex grow flex-col" class:invisible={!scanning}>
-        <div class="dark:bg-dark bg-white p-5">
-          <p class="dark:text-grey text-3xl font-semibold text-slate-700">
+        <div class="bg-white p-5 dark:bg-dark">
+          <p class="text-3xl font-semibold text-slate-700 dark:text-grey">
             {$LL.SCAN.TITLE_1()} <span class="text-primary"> {$LL.SCAN.TITLE_2()}</span>
           </p>
           <p class="mt-4 text-sm font-medium text-slate-500 dark:text-slate-300">
@@ -340,8 +340,8 @@
   </div>
 </div>
 
-<div class="safe-area-top {scanning ? 'dark:bg-dark bg-white' : 'bg-silver dark:bg-navy'}" />
-<div class="safe-area-bottom dark:bg-dark bg-white" />
+<div class="safe-area-top {scanning ? 'bg-white dark:bg-dark' : 'bg-silver dark:bg-navy'}" />
+<div class="safe-area-bottom bg-white dark:bg-dark" />
 
 <style>
   .content-height {

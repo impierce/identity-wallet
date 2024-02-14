@@ -83,7 +83,7 @@
     {/if}
   </div>
   <TopNavBar
-    title={$LL.ME.CREDENTIAL.NAVBAR_TITLE()}
+    title={$LL.CREDENTIAL.NAVBAR_TITLE()}
     on:back={() => history.back()}
     class={credentialLogoUrl ? '' : `${color} dark:${color} text-slate-800 dark:text-slate-800`}
   />

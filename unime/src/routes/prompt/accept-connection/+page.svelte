@@ -74,10 +74,10 @@
           </span>
           <div class="flex flex-col">
             <p class="dark:text-grey text-[13px]/[24px] font-medium text-slate-800">
-              {$LL.SCAN.CONNECTION_REQUEST.TITLE_1()}
+              {$LL.SCAN.CONNECTION_REQUEST.TITLE()}
             </p>
             <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
-              {$LL.SCAN.CONNECTION_REQUEST.TITLE_2()}
+              {$LL.SCAN.CONNECTION_REQUEST.DESCRIPTION()}
             </p>
           </div>
         </div>
@@ -86,9 +86,7 @@
       <div
         class="dark:bg-dark flex justify-between rounded-xl border border-slate-200 bg-white px-4 py-4 dark:border-slate-600"
       >
-        <p class="dark:text-grey mr-3 text-[13px]/[24px] font-medium text-slate-800">
-          {$LL.SCAN.CONNECTION_REQUEST.URL()}
-        </p>
+        <p class="dark:text-grey mr-3 text-[13px]/[24px] font-medium text-slate-800">URL</p>
         <p class="break-all text-[13px]/[24px] font-normal text-slate-500 dark:text-slate-300">
           {$state.current_user_prompt.redirect_uri}
         </p>
@@ -97,7 +95,7 @@
         class="dark:bg-dark flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-4 dark:border-slate-600"
       >
         <p class="dark:text-grey text-[13px]/[24px] font-medium text-slate-800">
-          {$LL.SCAN.CONNECTION_REQUEST.PREVIOUSLY()}
+          {$LL.SCAN.CONNECTION_REQUEST.CONNECTED_PREVIOUSLY()}
         </p>
         {#if previously_connected}
           <Check class="text-emerald-500" />
