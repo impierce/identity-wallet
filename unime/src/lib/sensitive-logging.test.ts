@@ -13,7 +13,6 @@ describe('sensitive-logging', () => {
     // Sample after because it shouldn't modify the passed object.
     let sampleStr = JSON.stringify(credentialObj);
 
-
     console.log(sensitiveStr);
 
     expect(sampleStr).toContain('please_dont_log');
