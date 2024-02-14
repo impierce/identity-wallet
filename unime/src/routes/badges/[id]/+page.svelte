@@ -51,13 +51,11 @@
     icon = credential.metadata.display.icon || 'User';
   }
 
-  // create entries to be shown
-  const { enrichment, ...entries } = credential.data.credentialSubject.achievement;
-  // entries['issuer'] = credential.data.issuer ?? credential.issuer_name;
-  // entries['issuanceDate'] = new Date(credential.data.issuanceDate).toLocaleString('en-US', {
-  //   dateStyle: 'long',
-  //   timeStyle: 'medium'
-  // });
+  const hiddenStandardFields: string[] = ['id', 'type', 'name', 'description', 'image'];
+  const hiddenCustomFields: string[] = ['enrichment'];
+
+  const entries = { ...credential.data.credentialSubject.achievement };
+  hiddenStandardFields.concat(hiddenCustomFields).forEach((key) => delete entries[key]);
 
   console.log({ credential });
 
@@ -79,6 +77,7 @@
       {#if credentialLogoUrl}
         <img
           src={credentialLogoUrl}
+          alt=""
           class="absolute -top-1/4 left-0 scale-[1.75] opacity-40 blur-xl"
           on:error={() => (credentialLogoUrl = null)}
         />
@@ -151,7 +150,7 @@
               iconClass="h-7 w-7 dark:text-slate-800"
             />
           </div>
-          <p class="break-words text-center text-xs text-black dark:text-white">
+          <p class="text-center text-xs text-black [word-break:break-word] dark:text-white">
             {credential.data.issuer.name ?? credential.data.issuer ?? credential.issuer_name}
           </p>
         </div>
@@ -165,7 +164,7 @@
         </p>
       </div>
 
-      <!-- Metadata (Table: Credential Subject) -->
+      <!-- Contents (Table: Credential Subject) -->
       <div>
         <p class="pb-2 text-lg font-semibold text-black dark:text-white">{$LL.BADGE.DETAILS.CONTENTS()}</p>
         <div
@@ -174,10 +173,10 @@
           {#each Object.entries(entries) as entry}
             <div class="flex flex-col items-start px-4 py-[10px]">
               <p class="text-[13px]/[24px] font-medium text-slate-500">{entry[0]}</p>
-              <p class="w-full break-words text-[13px]/[24px] font-medium text-slate-800 dark:text-white">
-                <!-- TODO: this is a hacky way to display nested data, but also to remove enclosing quotes for regular strings -->
-                {JSON.stringify(entry[1]).slice(1, -1)}
-              </p>
+              <div class="w-full break-words text-[13px]/[24px] font-medium text-slate-800 dark:text-white">
+                <!-- TODO: this is a hacky way to display nested data -->
+                <pre class="whitespace-pre-wrap [font-family:inherit]">{JSON.stringify(entry[1], null, 2)}</pre>
+              </div>
             </div>
           {/each}
         </div>
