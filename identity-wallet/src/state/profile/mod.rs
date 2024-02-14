@@ -1,4 +1,5 @@
-pub mod redux;
+pub mod actions;
+pub mod reducers;
 
 use serde::{Deserialize, Serialize};
 use strum::EnumString;
@@ -28,4 +29,24 @@ pub enum Locale {
     En,
     De,
     Nl,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use super::actions::SetLocale;
+    use super::reducers::set_locale;
+    use crate::state::{actions::Action, AppState};
+    use std::sync::Arc;
+
+    #[tokio::test]
+    async fn test_set_locale() {
+        let mut app_state = AppState::default();
+
+        app_state = set_locale(app_state, Arc::new(SetLocale { locale: Locale::Nl }) as Action)
+            .await
+            .unwrap();
+
+        assert_eq!(app_state.locale, Locale::Nl);
+    }
 }

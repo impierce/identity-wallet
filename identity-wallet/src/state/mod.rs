@@ -1,12 +1,13 @@
 pub mod profile;
 pub mod user_journey;
 pub mod dev_mode;
+pub mod boot;
 pub mod actions;
 pub mod reducers;
 pub mod persistence;
 pub mod user_prompt;
 
-use self::reducers::authorization::ConnectionRequest;
+use self::{profile::Locale, reducers::authorization::ConnectionRequest};
 use self::profile::Profile;
 use crate::{
     crypto::stronghold::StrongholdManager, state::user_prompt::CurrentUserPrompt,
@@ -49,15 +50,21 @@ pub struct AppState {
     pub active_connection_request: Option<ConnectionRequest>,
     pub credentials: Vec<DisplayCredential>,
     pub current_user_prompt: Option<CurrentUserPrompt>,
-    #[ts(type = "Array<string>")]
-    pub debug_messages: VecDeque<String>,
     pub connections: Vec<Connection>,
     pub user_data_query: Vec<String>,
     ////
+
+    /// Locale is a separate field from the profile only because of onboarding, 
+    /// where the user needs to be able to choose the language before anything else.
+    /// Locale and Profile are grouped together in the feature folder.
     pub locale: Locale,
     pub profile: Option<Profile>,
     #[ts(type = "object | null")]
     pub user_journey: Option<serde_json::Value>,
+    /// Handled in command.rs, so no feature folder nor redux pattern needed.
+    #[ts(type = "Array<string>")]
+    pub debug_messages: VecDeque<String>,
+    /// Extensions will bring in their own redux compliant code, in the unime folder.
     #[ts(skip)]
     pub extensions: std::collections::HashMap<String, Box<dyn FeatTrait>>,
     pub dev_mode_enabled: bool,

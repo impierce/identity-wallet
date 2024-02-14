@@ -1,63 +1,9 @@
-use std::sync::Arc;
-use crate::{error::AppError::{self, *}, crypto::stronghold::StrongholdManager, reducer, state::{actions::{listen, Action, ActionTrait, Reducer}, user_prompt::CurrentUserPrompt, AppState}};
+use super::{actions::{CreateNew, SetLocale, UpdateProfileSettings}, Profile};
+use crate::{crypto::stronghold::StrongholdManager, error::AppError::{self, *}, state::{actions::{listen, Action}, user_prompt::CurrentUserPrompt, AppState, IdentityManager}};
+use oid4vc::{oid4vc_core::Subject, oid4vc_manager::{methods::key_method::KeySubject, ProviderManager}, oid4vci::Wallet};
 use did_key::{from_existing_key, Ed25519KeyPair};
 use log::{debug, info};
-use oid4vc::{oid4vc_core::Subject, oid4vc_manager::{methods::key_method::KeySubject, ProviderManager}, oid4vci::Wallet};
-use ts_rs::TS;
-use super::{Locale, Profile};
-
-/// Actions
-
-/// Action to set the locale to the given value.
-#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export, export_to = "bindings/actions/SetLocale.ts")]
-pub struct SetLocale {
-    #[ts(type = "string")]
-    pub locale: Locale,
-}
-
-#[typetag::serde(name = "[Settings] Set locale")]
-impl ActionTrait for SetLocale {
-    fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
-        vec![reducer!(set_locale)]
-    }
-}
-
-/// Action to create a new profile.
-#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export, export_to = "bindings/actions/CreateNew.ts")]
-pub struct CreateNew {
-    pub name: String,
-    pub picture: String,
-    pub theme: String,
-    pub password: String,
-}
-
-#[typetag::serde(name = "[DID] Create new")]
-impl ActionTrait for CreateNew {
-    fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
-        vec![reducer!(initialize_stronghold), reducer!(create_identity)]
-    }
-}
-
-/// Action to update the profile settings.
-#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export, export_to = "bindings/actions/UpdateProfileSettings.ts")]
-pub struct UpdateProfileSettings {
-    #[ts(optional)]
-    pub name: Option<String>,
-    #[ts(optional)]
-    pub picture: Option<String>,
-    #[ts(optional)]
-    pub theme: Option<String>,
-}
-
-#[typetag::serde(name = "[Settings] Update profile")]
-impl ActionTrait for UpdateProfileSettings {
-    fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
-        vec![reducer!(update_profile_settings)]
-    }
-}
+use std::sync::Arc;
 
 /// Reducers
 

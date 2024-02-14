@@ -1,11 +1,11 @@
 use crate::crypto::stronghold::StrongholdManager;
 use crate::error::AppError::{self, *};
-use crate::state::actions::{listen, Action, ActionTrait, Reducer};
+use crate::state::actions::{listen, Action};
 use crate::state::profile::Profile;
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, Connection};
 use crate::verifiable_credential_record::VerifiableCredentialRecord;
-use crate::{reducer, ASSETS_DIR};
+use crate::ASSETS_DIR;
 use did_key::{generate, Ed25519KeyPair};
 use log::info;
 use oid4vc::oid4vc_core::Subject;
@@ -13,11 +13,12 @@ use oid4vc::oid4vc_manager::methods::key_method::KeySubject;
 use oid4vc::oid4vci::credential_format_profiles::w3c_verifiable_credentials::jwt_vc_json::JwtVcJson;
 use oid4vc::oid4vci::credential_format_profiles::{Credential, CredentialFormats, WithCredential};
 use serde_json::json;
-use ts_rs::TS;
 use std::fs::File;
 use std::io::copy;
 use std::sync::Arc;
 use lazy_static::lazy_static;
+
+use super::actions::SetDevMode;
 
 lazy_static! {
     pub static ref PERSONAL_INFORMATION: VerifiableCredentialRecord = VerifiableCredentialRecord::from(
@@ -38,35 +39,6 @@ lazy_static! {
             credential: json!("eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDprZXk6ejZNa2toUDQzTENTWGFqM1NRQm92eTF1RTJuWHZTQm5SUFdaMndoUExxblo4UGdEI3o2TWtraFA0M0xDU1hhajNTUUJvdnkxdUUyblh2U0JuUlBXWjJ3aFBMcW5aOFBnRCJ9.eyJpc3MiOiJodHRwOi8vMTkyLjE2OC4xLjEyNzo5MDkwLyIsInN1YiI6ImRpZDprZXk6ejZNa2cxWFhHVXFma2hBS1Uxa1ZkMVBtdzZVRWoxdnhpTGoxeGM5MU1CejVvd05ZIiwiZXhwIjo5OTk5OTk5OTk5LCJpYXQiOjAsInZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIiwiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvZXhhbXBsZXMvdjEiLCJodHRwczovL3B1cmwuaW1zZ2xvYmFsLm9yZy9zcGVjL29iL3YzcDAvY29udGV4dC0zLjAuMi5qc29uIl0sImlkIjoiaHR0cDovL2V4YW1wbGUuZWR1L2NyZWRlbnRpYWxzLzM3MzIiLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIiwiT3BlbkJhZGdlQ3JlZGVudGlhbCJdLCJpc3N1ZXIiOnsiaWQiOiJodHRwczovL2V4YW1wbGUuZWR1L2lzc3VlcnMvNTY1MDQ5IiwidHlwZSI6WyJJc3N1ZXJQcm9maWxlIl0sIm5hbWUiOiJFeGFtcGxlIFVuaXZlcnNpdHkifSwiaXNzdWFuY2VEYXRlIjoiMjAxMC0wMS0wMVQwMDowMDowMFoiLCJuYW1lIjoiVGVhbXdvcmsgQmFkZ2UiLCJjcmVkZW50aWFsU3ViamVjdCI6eyJpZCI6ImRpZDpleGFtcGxlOmViZmViMWY3MTJlYmM2ZjFjMjc2ZTEyZWMyMSIsInR5cGUiOlsiQWNoaWV2ZW1lbnRTdWJqZWN0Il0sImFjaGlldmVtZW50Ijp7ImlkIjoiaHR0cHM6Ly9leGFtcGxlLmNvbS9hY2hpZXZlbWVudHMvMjFzdC1jZW50dXJ5LXNraWxscy90ZWFtd29yayIsInR5cGUiOlsiQWNoaWV2ZW1lbnQiXSwiY3JpdGVyaWEiOnsibmFycmF0aXZlIjoiVGVhbSBtZW1iZXJzIGFyZSBub21pbmF0ZWQgZm9yIHRoaXMgYmFkZ2UgYnkgdGhlaXIgcGVlcnMgYW5kIHJlY29nbml6ZWQgdXBvbiByZXZpZXcgYnkgRXhhbXBsZSBDb3JwIG1hbmFnZW1lbnQuIn0sImRlc2NyaXB0aW9uIjoiVGhpcyBiYWRnZSByZWNvZ25pemVzIHRoZSBkZXZlbG9wbWVudCBvZiB0aGUgY2FwYWNpdHkgdG8gY29sbGFib3JhdGUgd2l0aGluIGEgZ3JvdXAgZW52aXJvbm1lbnQuIiwibmFtZSI6IlRlYW13b3JrIn19fX0.OZCcZt5JTJcBhoLPIyrQuvZuc2dnVN65f8GvKQ3earAzJEgGMA9ZjKRNHEjI73wLwvG5MJBN7Zs_rWiNLEZ5Dg"),
         })
     );
-}
-
-/// Actions
-
-/// Action to set the dev mode to the given value.
-
-#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export, export_to = "bindings/actions/SetDevMode.ts")]
-pub struct SetDevMode {
-    pub enabled: bool,
-}
-
-#[typetag::serde(name = "[DEV] Set dev mode")]
-impl ActionTrait for SetDevMode {
-    fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
-        vec![reducer!(set_dev_mode)]
-    }
-}
-
-/// Action to load the dev profile.
-#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export, export_to = "bindings/actions/LoadDevProfile.ts")]
-pub struct LoadDevProfile;
-
-#[typetag::serde(name = "[DEV] Load profile")]
-impl ActionTrait for LoadDevProfile {
-    fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
-        vec![reducer!(load_dev_profile)]
-    }
 }
 
 /// Reducers

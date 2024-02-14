@@ -1,1 +1,2 @@
-pub mod redux;
+pub mod actions;
+pub mod reducers;

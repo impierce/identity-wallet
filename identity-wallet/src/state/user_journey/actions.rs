@@ -1,4 +1,4 @@
-use crate::{error::AppError, reducer, state::{actions::{Action, ActionTrait, Reducer}, AppState}};
+use crate::{reducer, state::{actions::{ActionTrait, Reducer}, user_journey::reducers::cancel_user_journey}};
 use ts_rs::TS;
 
 /// Actions
@@ -13,14 +13,4 @@ impl ActionTrait for CancelUserJourney {
     fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
         vec![reducer!(cancel_user_journey)]
     }
-}
-
-/// Reducers
-
-/// Reducer to cancel the user journey.
-pub async fn cancel_user_journey(state: AppState, _action: Action) -> Result<AppState, AppError> {
-    Ok(AppState {
-        user_journey: None,
-        ..state
-    })
 }

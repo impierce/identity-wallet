@@ -1,25 +1,16 @@
 pub mod authorization;
 pub mod credential_offer;
-pub mod dev_mode;
 pub mod storage;
 pub mod user_data_query;
 
-use super::actions::{listen, Action, CreateNew, CustomExtensionTest, CancelUserFlow, SetLocale, UpdateCredentialMetadata, UpdateProfileSettings};
+use super::actions::{listen, Action, CustomExtensionTest, CancelUserFlow, UpdateCredentialMetadata};
 use super::persistence::{delete_state_file, delete_stronghold, load_state};
-use super::IdentityManager;
-use crate::crypto::stronghold::StrongholdManager;
 use crate::error::AppError::{self, *};
 use crate::state::user_prompt::CurrentUserPrompt;
-use crate::state::{AppState, profile};
+use crate::state::AppState;
 use crate::verifiable_credential_record::VerifiableCredentialRecord;
-use did_key::{from_existing_key, Ed25519KeyPair};
-use log::{debug, info};
-use oid4vc::oid4vc_core::Subject;
-use oid4vc::oid4vc_manager::methods::key_method::KeySubject;
-use oid4vc::oid4vc_manager::ProviderManager;
-use oid4vc::oid4vci::Wallet;
+use log::info;
 use serde_json::json;
-use std::sync::Arc;
 
 pub async fn test_feat_state(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(test_feat_state) = listen::<CustomExtensionTest>(action) {
@@ -36,29 +27,6 @@ pub async fn test_feat_state(state: AppState, action: Action) -> Result<AppState
         return Ok(AppState {
             ..new_state
         });
-    }
-    Ok(state)
-}
-
-pub async fn get_state(_state: AppState, _action: Action) -> Result<AppState, AppError> {
-    println!("get_state reducer called");
-    let mut state = load_state().await.unwrap_or_default();
-
-    if state.feat_states.get("profile").is_some() {
-        state.current_user_prompt = Some(CurrentUserPrompt::PasswordRequired);
-    } else {
-        // TODO: bug: if state is present, but empty, user will never be redirected to neither welcome or profile page
-        state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
-            target: "welcome".to_string(),
-        });
-    }
-
-    // Overwrite dev_mode_enabled if environment variable is set
-    if let Some(b) = std::env::var("DEV_MODE_ENABLED")
-        .ok()
-        .and_then(|s| s.parse::<bool>().ok())
-    {
-        state.dev_mode_enabled = b;
     }
     Ok(state)
 }
@@ -150,20 +118,6 @@ pub async fn update_credential_metadata(state: AppState, action: Action) -> Resu
     };
 
     Ok(state)
-}
-
-
-/// Completely resets the state to its default values.
-pub async fn reset_state(_state: AppState, _action: Action) -> Result<AppState, AppError> {
-    delete_state_file().await.ok();
-    delete_stronghold().await.ok();
-
-    Ok(AppState {
-        current_user_prompt: Some(CurrentUserPrompt::Redirect {
-            target: "welcome".to_string(),
-        }),
-        ..Default::default()
-    })
 }
 
 #[cfg(test)]
