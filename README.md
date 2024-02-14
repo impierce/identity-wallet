@@ -116,11 +116,7 @@ cd src-tauri
 cargo tauri icon
 ```
 
-### Adding icons
-Use phosphoricons: https://phosphoricons.com/
-
 ### Troubleshooting
-
 If you have issues with `cargo tauri build` run the following command.
 Linux / Mac:
 
