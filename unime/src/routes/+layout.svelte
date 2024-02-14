@@ -126,8 +126,11 @@
 
   <!-- Dev Mode: Debug messages -->
   {#if showDebugMessages}
-    <div class="relative z-10 min-h-full w-screen bg-orange-100">
-      <p class="p-4 text-center text-xs font-semibold uppercase text-orange-800">debug messages</p>
+    <div class="relative z-10 min-h-full w-screen bg-orange-100 pt-24">
+      <p class="pt-2 pb-2 text-center text-xs font-semibold uppercase text-orange-800">debug messages</p>
+
+      <hr class="mx-8 h-0.5 border-t-0 bg-orange-400 opacity-100" />
+
       {#each $state.debug_messages as message}
         <div class="mx-2 mb-2 rounded bg-orange-200 p-2">
           <div class="break-all font-mono text-xs text-orange-700">{message}</div>
