@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, SvelteComponent } from 'svelte';
+  import { onMount } from 'svelte';
 
   import { goto } from '$app/navigation';
   import { fly } from 'svelte/transition';
@@ -10,11 +10,8 @@
   import { loadAllLocales } from '$src/i18n/i18n-util.sync';
   import { state } from '$src/stores';
 
-  import ScrollText from '~icons/lucide/scroll-text';
-  import ArrowLeft from '~icons/ph/arrow-left';
   import CaretDown from '~icons/ph/caret-down-bold';
   import CaretUp from '~icons/ph/caret-up-bold';
-  import Trash from '~icons/ph/trash';
 
   import '../app.css';
 
@@ -56,19 +53,18 @@
   }
 
   interface DevModeButton {
-    svelteIcon?: typeof SvelteComponent<SvelteHTMLElements['svg']>;
     stringIcon?: string;
     onClick: () => void;
   }
 
   function createDevButtons(): DevModeButton[] {
     const backBtn: DevModeButton = {
-      svelteIcon: ArrowLeft,
+      stringIcon: '👈',
       onClick: () => history.back(),
     };
 
     const resetBtn: DevModeButton = {
-      svelteIcon: Trash,
+      stringIcon: '🗑️',
       onClick: () => dispatch({ type: '[App] Reset' }),
     };
 
@@ -83,7 +79,7 @@
     };
 
     const debugBtn: DevModeButton = {
-      svelteIcon: ScrollText,
+      stringIcon: '📜',
       onClick: () => (showDebugMessages = !showDebugMessages),
     };
 
@@ -119,11 +115,7 @@
                 font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
               on:click={btn.onClick}
             >
-              {#if btn.svelteIcon}
-                <svelte:component this={btn.svelteIcon} class="m-auto block text-xl" />
-              {:else}
-                <span class="m-auto block text-xl">{btn.stringIcon}</span>
-              {/if}
+              <span class="m-auto block text-xl">{btn.stringIcon}</span>
             </button>
           </div>
         {/each}
