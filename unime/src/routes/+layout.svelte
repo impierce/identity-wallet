@@ -4,7 +4,7 @@
   import { goto } from '$app/navigation';
   import { fly } from 'svelte/transition';
 
-  import { attachConsole, error, info } from '@tauri-apps/plugin-log';
+  import { attachConsole } from '@tauri-apps/plugin-log';
 
   import { dispatch } from '$lib/dispatcher';
   import { loadAllLocales } from '$src/i18n/i18n-util.sync';
@@ -52,7 +52,7 @@
       goto(`/prompt/${type}`);
     }
   }
-
+    
   const menuItemCss = 'flex flex-col content-start justify-center mr-4';
   const buttonCss =
     'flex content-center m-0 h-10 w-10 rounded-full bg-red-300 p-0 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60';

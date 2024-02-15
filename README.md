@@ -117,6 +117,7 @@ cargo tauri icon
 ```
 
 ### Troubleshooting
+
 If you have issues with `cargo tauri build` run the following command.
 Linux / Mac:
 

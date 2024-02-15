@@ -42,7 +42,7 @@ lazy_static! {
     );
 }
 
-const PROFILE_PW: &str = "sup3rSecr3t";
+const PASSWORD: &str = "sup3rSecr3t";
 
 pub async fn load_dev_profile(state: AppState, action: Action) -> Result<AppState, AppError> {
     info!("Load dev profile: {:?}", action);
@@ -76,7 +76,7 @@ pub async fn login_profile(state: AppState) -> Result<AppState, AppError> {
     command::reduce(
         state,
         Arc::new(UnlockStorage {
-            password: PROFILE_PW.to_string(),
+            password: PASSWORD.to_string(),
         }),
     )
     .await
@@ -84,10 +84,10 @@ pub async fn login_profile(state: AppState) -> Result<AppState, AppError> {
 
 async fn create_new_profile(state: AppState) -> Result<AppState, AppError> {
     let create_new = CreateNew {
-        name: "Dragon".to_string(),
-        picture: "🐲".to_string(),
+        name: "Shenron".to_string(),
+        picture: "&#x1F432".to_string(),
         theme: "dark".to_string(),
-        password: PROFILE_PW.to_string(),
+        password: PASSWORD.to_string(),
     };
 
     command::reduce(state, Arc::new(create_new)).await
