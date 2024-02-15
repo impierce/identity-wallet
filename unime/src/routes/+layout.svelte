@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, SvelteComponent } from 'svelte';
 
   import { goto } from '$app/navigation';
   import { fly } from 'svelte/transition';
@@ -17,6 +17,8 @@
   import Trash from '~icons/ph/trash';
 
   import '../app.css';
+
+  import type { MouseEventHandler, SvelteHTMLElements } from 'svelte/elements';
 
   import type { ProfileType } from '@bindings/actions/DevProfileType';
 
@@ -52,11 +54,43 @@
       goto(`/prompt/${type}`);
     }
   }
-    
-  const menuItemCss = 'flex flex-col content-start justify-center mr-4';
-  const buttonCss =
-    'flex content-center m-0 h-10 w-10 rounded-full bg-red-300 p-0 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60';
-  const iconCss = 'm-auto block text-xl';
+
+  interface DevModeButton {
+    svelteIcon?: typeof SvelteComponent<SvelteHTMLElements['svg']>;
+    stringIcon?: string;
+    onClick: () => void;
+  }
+
+  function createDevButtons(): DevModeButton[] {
+    const backBtn: DevModeButton = {
+      svelteIcon: ArrowLeft,
+      onClick: () => history.back(),
+    };
+
+    const resetBtn: DevModeButton = {
+      svelteIcon: Trash,
+      onClick: () => dispatch({ type: '[App] Reset' }),
+    };
+
+    const ferrisBtn: DevModeButton = {
+      stringIcon: '🦀',
+      onClick: () => loadProfile('Ferris'),
+    };
+
+    const dragonBtn: DevModeButton = {
+      stringIcon: '🐲',
+      onClick: () => loadProfile('Dragon'),
+    };
+
+    const debugBtn: DevModeButton = {
+      svelteIcon: ScrollText,
+      onClick: () => (showDebugMessages = !showDebugMessages),
+    };
+
+    return [backBtn, resetBtn, ferrisBtn, dragonBtn, debugBtn];
+  }
+
+  const devButtons = createDevButtons();
 
   async function loadProfile(profile: ProfileType) {
     dispatch({ type: '[DEV] Load DEV profile', payload: { profile } }).then(() => {
@@ -78,40 +112,21 @@
         in:fly={{ y: -64, opacity: 1 }}
         out:fly={{ y: -64, opacity: 1 }}
       >
-        <!-- Back button !-->
-        <div class={menuItemCss}>
-          <button class={buttonCss} on:click={() => history.back()}>
-            <ArrowLeft class={iconCss} />
-          </button>
-        </div>
-
-        <!-- Reset button !-->
-        <div class={menuItemCss}>
-          <button class={buttonCss} on:click={() => dispatch({ type: '[App] Reset' })}>
-            <Trash class={iconCss} />
-          </button>
-        </div>
-
-        <!-- Select Ferris profile !-->
-        <div class={menuItemCss}>
-          <button class={buttonCss} on:click={() => loadProfile('Ferris')}>
-            <span class={iconCss}>🦀</span>
-          </button>
-        </div>
-
-        <!-- Select Dragon profile !-->
-        <div class={menuItemCss}>
-          <button class={buttonCss} on:click={() => loadProfile('Dragon')}>
-            <span class={iconCss}>🐲</span>
-          </button>
-        </div>
-
-        <!-- Debug messages -->
-        <div class={menuItemCss}>
-          <button class={buttonCss} on:click={() => (showDebugMessages = !showDebugMessages)}>
-            <ScrollText class={iconCss} />
-          </button>
-        </div>
+        {#each devButtons as btn}
+          <div class="mr-4 flex flex-col content-start justify-center">
+            <button
+              class="m-0 flex h-10 w-10 content-center rounded-full bg-red-300 p-0 text-sm
+                font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
+              on:click={btn.onClick}
+            >
+              {#if btn.svelteIcon}
+                <svelte:component this={btn.svelteIcon} class="m-auto block text-xl" />
+              {:else}
+                <span class="m-auto block text-xl">{btn.stringIcon}</span>
+              {/if}
+            </button>
+          </div>
+        {/each}
       </div>
     {/if}
 
