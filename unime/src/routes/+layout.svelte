@@ -18,7 +18,7 @@
 
   import '../app.css';
 
-  import type { MouseEventHandler, SvelteHTMLElements } from 'svelte/elements';
+  import type { SvelteHTMLElements } from 'svelte/elements';
 
   import type { ProfileType } from '@bindings/actions/DevProfileType';
 
