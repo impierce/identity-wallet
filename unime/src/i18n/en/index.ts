@@ -188,8 +188,8 @@ const en = {
       GREETING_4: 'Hello',
     },
     DEMO: {
-      TITLE: 'Visit',
-      TITLE_2: 'on a desktop computer to get started.',
+      TEXT_1: 'Visit',
+      TEXT_2: 'on a desktop computer to get started.',
     },
     CREDENTIAL_TABS: {
       ALL: 'All',
@@ -217,15 +217,17 @@ const en = {
     SUBTITLE: 'Bring a QR Code into view of this screen to start an interaction.',
     NO_PERMISSION_1: 'No permissions to',
     NO_PERMISSION_2: 'access the camera',
-    CONNECTION_OFFER: {
+    CREDENTIAL_OFFER: {
       NAVBAR_TITLE: 'Credential Offer',
       DESCRIPTION: 'is offering you the following credentials',
+      ACCEPT: 'Accept credentials',
     },
     CONNECTION_REQUEST: {
-      NAVBAR_TITLE: 'Credential Request',
+      NAVBAR_TITLE: 'Connection Request',
       TITLE: 'New connection',
       DESCRIPTION: 'Only accept new connections that you recognize and trust',
       CONNECTED_PREVIOUSLY: 'Connected previously',
+      ACCEPT: 'Accept connection',
     },
     SHARE_CREDENTIALS: {
       NAVBAR_TITLE: 'Share Data',
@@ -265,10 +267,10 @@ const en = {
     },
   },
   CREDENTIAL: {
-    NAVBAR_TITLE: 'Credential info',
+    NAVBAR_TITLE: 'Credential Information',
   },
   BADGE: {
-    NAVBAR_TITLE: 'Badge info',
+    NAVBAR_TITLE: 'Badge Information',
     DETAILS: {
       VALID: 'Valid',
       ISSUED_BY: 'Issued by',

@@ -520,11 +520,11 @@ type RootTranslation = {
 			/**
 			 * V​i​s​i​t
 			 */
-			TITLE: string
+			TEXT_1: string
 			/**
 			 * o​n​ ​a​ ​d​e​s​k​t​o​p​ ​c​o​m​p​u​t​e​r​ ​t​o​ ​g​e​t​ ​s​t​a​r​t​e​d​.
 			 */
-			TITLE_2: string
+			TEXT_2: string
 		}
 		CREDENTIAL_TABS: {
 			/**
@@ -600,7 +600,7 @@ type RootTranslation = {
 		 * a​c​c​e​s​s​ ​t​h​e​ ​c​a​m​e​r​a
 		 */
 		NO_PERMISSION_2: string
-		CONNECTION_OFFER: {
+		CREDENTIAL_OFFER: {
 			/**
 			 * C​r​e​d​e​n​t​i​a​l​ ​O​f​f​e​r
 			 */
@@ -609,10 +609,14 @@ type RootTranslation = {
 			 * i​s​ ​o​f​f​e​r​i​n​g​ ​y​o​u​ ​t​h​e​ ​f​o​l​l​o​w​i​n​g​ ​c​r​e​d​e​n​t​i​a​l​s
 			 */
 			DESCRIPTION: string
+			/**
+			 * A​c​c​e​p​t​ ​c​r​e​d​e​n​t​i​a​l​s
+			 */
+			ACCEPT: string
 		}
 		CONNECTION_REQUEST: {
 			/**
-			 * C​r​e​d​e​n​t​i​a​l​ ​R​e​q​u​e​s​t
+			 * C​o​n​n​e​c​t​i​o​n​ ​R​e​q​u​e​s​t
 			 */
 			NAVBAR_TITLE: string
 			/**
@@ -627,6 +631,10 @@ type RootTranslation = {
 			 * C​o​n​n​e​c​t​e​d​ ​p​r​e​v​i​o​u​s​l​y
 			 */
 			CONNECTED_PREVIOUSLY: string
+			/**
+			 * A​c​c​e​p​t​ ​c​o​n​n​e​c​t​i​o​n
+			 */
+			ACCEPT: string
 		}
 		SHARE_CREDENTIALS: {
 			/**
@@ -721,13 +729,13 @@ type RootTranslation = {
 	}
 	CREDENTIAL: {
 		/**
-		 * C​r​e​d​e​n​t​i​a​l​ ​i​n​f​o
+		 * C​r​e​d​e​n​t​i​a​l​ ​I​n​f​o​r​m​a​t​i​o​n
 		 */
 		NAVBAR_TITLE: string
 	}
 	BADGE: {
 		/**
-		 * B​a​d​g​e​ ​i​n​f​o
+		 * B​a​d​g​e​ ​I​n​f​o​r​m​a​t​i​o​n
 		 */
 		NAVBAR_TITLE: string
 		DETAILS: {
@@ -1279,11 +1287,11 @@ export type TranslationFunctions = {
 			/**
 			 * Visit
 			 */
-			TITLE: () => LocalizedString
+			TEXT_1: () => LocalizedString
 			/**
 			 * on a desktop computer to get started.
 			 */
-			TITLE_2: () => LocalizedString
+			TEXT_2: () => LocalizedString
 		}
 		CREDENTIAL_TABS: {
 			/**
@@ -1359,7 +1367,7 @@ export type TranslationFunctions = {
 		 * access the camera
 		 */
 		NO_PERMISSION_2: () => LocalizedString
-		CONNECTION_OFFER: {
+		CREDENTIAL_OFFER: {
 			/**
 			 * Credential Offer
 			 */
@@ -1368,10 +1376,14 @@ export type TranslationFunctions = {
 			 * is offering you the following credentials
 			 */
 			DESCRIPTION: () => LocalizedString
+			/**
+			 * Accept credentials
+			 */
+			ACCEPT: () => LocalizedString
 		}
 		CONNECTION_REQUEST: {
 			/**
-			 * Credential Request
+			 * Connection Request
 			 */
 			NAVBAR_TITLE: () => LocalizedString
 			/**
@@ -1386,6 +1398,10 @@ export type TranslationFunctions = {
 			 * Connected previously
 			 */
 			CONNECTED_PREVIOUSLY: () => LocalizedString
+			/**
+			 * Accept connection
+			 */
+			ACCEPT: () => LocalizedString
 		}
 		SHARE_CREDENTIALS: {
 			/**
@@ -1480,13 +1496,13 @@ export type TranslationFunctions = {
 	}
 	CREDENTIAL: {
 		/**
-		 * Credential info
+		 * Credential Information
 		 */
 		NAVBAR_TITLE: () => LocalizedString
 	}
 	BADGE: {
 		/**
-		 * Badge info
+		 * Badge Information
 		 */
 		NAVBAR_TITLE: () => LocalizedString
 		DETAILS: {

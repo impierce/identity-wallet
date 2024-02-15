@@ -112,7 +112,7 @@ const nl = {
       NAVBAR_TITLE: 'App Instellingen',
       LANGUAGE: {
         TITLE: 'Taal',
-        NAVBAR_TITLE: 'Selecteer taal',
+        NAVBAR_TITLE: 'Selecteer Taal',
         COMING_SOON: 'Binnenkort beschikbaar',
       },
       THEME: {
@@ -166,7 +166,7 @@ const nl = {
       ABOUT: {
         TITLE: 'Over UniMe',
         NAVBAR_TITLE: 'Over UniMe',
-        BUILT_WITH: 'Gebouwd with Tauri',
+        BUILT_WITH: 'Ontwikkeld met Tauri',
       },
       FEEDBACK: {
         TITLE: 'Stuur feedback',
@@ -188,8 +188,8 @@ const nl = {
       GREETING_4: 'Dag',
     },
     DEMO: {
-      TITLE: 'Bezoek',
-      TITLE_2: 'op een desktopcomputer om te beginnen.',
+      TEXT_1: 'Bezoek',
+      TEXT_2: 'op een desktopcomputer om te beginnen.',
     },
     CREDENTIAL_TABS: {
       ALL: 'Alle',
@@ -206,7 +206,7 @@ const nl = {
     BOTTOM_NAVIGATION_TITLE: 'Activiteiten',
     NAVBAR_TITLE: 'Verbonden',
     TABS: {
-      CONNECTIONS: 'Verbindingen',
+      CONNECTIONS: 'Connecties',
       TIMELINE: 'Tijdlijn',
     },
   },
@@ -217,21 +217,23 @@ const nl = {
     SUBTITLE: 'Breng een QR-code in beeld op dit scherm om een interactie te starten.',
     NO_PERMISSION_1: 'Geen recht om toegang',
     NO_PERMISSION_2: 'te krijgen tot de camera',
-    CONNECTION_OFFER: {
+    CREDENTIAL_OFFER: {
       NAVBAR_TITLE: 'Credential Aanbod',
       DESCRIPTION: 'biedt u de volgende credentials aan',
+      ACCEPT: 'Accepteer credentials'
     },
     CONNECTION_REQUEST: {
       NAVBAR_TITLE: 'Credential Aanvraag',
       TITLE: 'Nieuwe connectie',
       DESCRIPTION: 'Accepteer alleen nieuwe connecties die je herkent en vertrouwt',
       CONNECTED_PREVIOUSLY: 'Eerder verbonden',
+      ACCEPT: 'Accepteer connectie',
     },
     SHARE_CREDENTIALS: {
       NAVBAR_TITLE: 'Gegevens Delen',
       DESCRIPTION: 'vraagt de volgende credentials op',
       REQUESTED: 'Aangevraagd',
-      APPROVE: 'Aanvaard aanvraag',
+      APPROVE: 'Accepteer verzoek',
     },
   },
   CONNECTION: {
@@ -241,10 +243,10 @@ const nl = {
       ACTIVITY: 'Activiteit',
     },
     SUMMARY: {
-      EMPTY: 'Nog geen verbindingen.',
+      EMPTY: 'Nog geen connecties.',
       TITLE: 'Verbonden met',
-      FIRST_CONNECTED: 'Eerst verbonden',
-      LAST_CONNECTED: 'Laatst verbonden',
+      FIRST_CONNECTED: 'Eerst gebruikt',
+      LAST_CONNECTED: 'Laatst gebruikt',
     },
     DATA: {
       EMPTY: 'Nog geen data.',
@@ -265,10 +267,10 @@ const nl = {
     },
   },
   CREDENTIAL: {
-    NAVBAR_TITLE: 'Credential informatie',
+    NAVBAR_TITLE: 'Credential Informatie',
   },
   BADGE: {
-    NAVBAR_TITLE: 'Badge informatie',
+    NAVBAR_TITLE: 'Badge Informatie',
     DETAILS: {
       VALID: 'Geldig',
       ISSUED_BY: 'Uitgegeven door',
