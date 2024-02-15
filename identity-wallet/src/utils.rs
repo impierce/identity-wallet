@@ -61,5 +61,3 @@ pub enum LogoType {
     #[strum(serialize = "credential")]
     CredentialLogo,
 }
-
-// TODO: add tests
