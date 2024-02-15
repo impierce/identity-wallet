@@ -227,6 +227,34 @@ async fn add_presentation_request(state: AppState) -> Result<AppState, AppError>
     Err(AppError::DevError("Presentation not accepted".to_string()))
 }
 
+async fn add_future_engineer(state: AppState) -> Result<AppState, AppError> {
+    let url = "https://api.demo.ngdil.com/api/credential-offer";
+
+    let payload = json!({"credential":"Future Engineer","issuer":"kw1c"});
+
+    let response: CredentialResponse = reqwest::Client::new()
+        .post(url)
+        .json(&payload)
+        .send()
+        .await
+        .map_err(|err| AppError::DevError(err.to_string()))?
+        .json()
+        .await
+        .map_err(|err| AppError::DevError(err.to_string()))?;
+
+    let qr_code = QrCodeScanned {
+        form_urlencoded: response.uri,
+    };
+
+    let state = command::reduce(state, Arc::new(qr_code)).await?;
+
+    let cr_selected = CredentialOffersSelected {
+        offer_indices: vec![0],
+    };
+
+    command::reduce(state, Arc::new(cr_selected)).await
+}
+
 async fn reset_settings(state: AppState) -> Result<AppState, AppError> {
     command::reduce(state, Arc::new(Reset)).await
 }
@@ -245,7 +273,10 @@ pub async fn load_dragon_profile(state: AppState) -> Result<AppState, AppError> 
     let state = add_connection(state).await?;
 
     // Add & accept presentation
-    let mut state = add_presentation_request(state).await?;
+    let state = add_presentation_request(state).await?;
+
+    // Add & accept future engineer
+    let mut state = add_future_engineer(state).await?;
 
     state.dev_profile = Some(ProfileType::Dragon);
 
