@@ -51,6 +51,7 @@
   }
 
   const hiddenStandardFields: string[] = ['id', 'type', 'name', 'description', 'image'];
+  // TODO: custom metadata field related to NGDIL demo
   const hiddenCustomFields: string[] = ['enrichment'];
 
   const entries = { ...credential.data.credentialSubject.achievement };
