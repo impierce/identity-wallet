@@ -5,4 +5,4 @@ import type { DisplayCredential } from "./display-credential/DisplayCredential";
 import type { Locale } from "./Locale";
 import type { Profile } from "./Profile";
 
-export interface AppState { credentials: Array<DisplayCredential>, current_user_prompt: CurrentUserPrompt | null, connections: Array<Connection>, user_data_query: Array<string>, locale: Locale, profile: Profile | null, user_journey: object | null, debug_messages: Array<string>, dev_mode_enabled: boolean, }
+export interface AppState { current_user_prompt: CurrentUserPrompt | null, credentials: Array<DisplayCredential>, connections: Array<Connection>, user_data_query: Array<string>, locale: Locale, profile: Profile | null, user_journey: object | null, debug_messages: Array<string>, dev_mode_enabled: boolean, }

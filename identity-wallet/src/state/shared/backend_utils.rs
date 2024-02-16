@@ -1,11 +1,53 @@
-use derivative::Derivative;
-use oid4vc::oid4vci::credential_format_profiles::{CredentialFormats, WithCredential};
+use crate::state::credentials::{CredentialDisplay, CredentialMetadata, DisplayCredential};
+use crate::state::FeatTrait;
+use crate::stronghold::StrongholdManager;
+use oid4vc::{oid4vc_core::Subject, 
+    oid4vc_manager::ProviderManager, 
+    oid4vci::{Wallet, credential_format_profiles::{CredentialFormats, WithCredential}}};
+use oid4vc::oid4vc_core::authorization_request::{AuthorizationRequest, Object}; ///
+use oid4vc::oid4vp::oid4vp::OID4VP;
+use oid4vc::siopv2::siopv2::SIOPv2;
+use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
 use serde::{Deserialize, Serialize};
+use derivative::Derivative;
 use serde_json::json;
-use ts_rs::TS;
+use std::sync::Arc;
 use uuid::Uuid;
+use ts_rs::TS;
 
-use crate::get_unverified_jwt_claims;
+/// Utils used only in the backend.
+#[derive(Default, Deserialize, Derivative, TS, Clone, PartialEq, Debug)]
+#[ts(export)]
+#[serde(default)]
+pub struct BackEndUtils {
+    pub managers: Arc<tauri::async_runtime::Mutex<Managers>>,
+    pub active_connection_request: Option<ConnectionRequest>
+}
+
+
+#[derive(Serialize, Deserialize)]
+pub enum ConnectionRequest {
+    SIOPv2(Box<AuthorizationRequest<Object<SIOPv2>>>),
+    OID4VP(Box<AuthorizationRequest<Object<OID4VP>>>),
+}
+
+#[derive(Default, Deserialize, Derivative, TS, Clone, PartialEq, Debug)]
+#[ts(export)]
+#[serde(default)]
+pub struct IdentityManager {
+    pub subject: Arc<dyn Subject>,
+    pub provider_manager: ProviderManager,
+    pub wallet: Wallet,
+}
+
+
+#[derive(Default, Deserialize, Derivative, TS, Clone, PartialEq, Debug)]
+#[ts(export)]
+#[serde(default)]
+pub struct Managers {
+    pub stronghold_manager: Option<Arc<StrongholdManager>>,
+    pub identity_manager: Option<IdentityManager>,
+}
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
 pub struct VerifiableCredentialRecord {
@@ -69,36 +111,12 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, Eq, Derivative, TS)]
-#[derivative(PartialEq)]
-#[ts(export, export_to = "bindings/display-credential/DisplayCredential.ts")]
-pub struct DisplayCredential {
-    pub id: String,
-    pub issuer_name: Option<String>,
-    #[ts(type = "string")]
-    pub format: CredentialFormats,
-    #[ts(type = "object")]
-    pub data: serde_json::Value,
-    #[serde(default)]
-    pub metadata: CredentialMetadata,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone, Eq, TS, Default, Derivative)]
-#[derivative(PartialEq)]
-#[ts(export, export_to = "bindings/display-credential/CredentialMetadata.ts")]
-pub struct CredentialMetadata {
-    pub is_favorite: bool,
-    #[derivative(PartialEq = "ignore")]
-    pub date_added: String,
-    #[derivative(PartialEq = "ignore")]
-    pub date_issued: String,
-    pub display: CredentialDisplay,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, TS, Default)]
-#[ts(export, export_to = "bindings/display-credential/CredentialDisplay.ts")]
-pub struct CredentialDisplay {
-    pub icon: Option<String>,
-    pub color: Option<String>,
-    pub name: Option<String>,
+// Get the claims from a JWT without performing validation.
+pub fn get_unverified_jwt_claims(jwt: &serde_json::Value) -> serde_json::Value {
+    let key = DecodingKey::from_secret(&[]);
+    let mut validation = Validation::new(Algorithm::EdDSA);
+    validation.insecure_disable_signature_validation();
+    validation.validate_exp = false;
+    validation.required_spec_claims.clear();
+    decode(jwt.as_str().unwrap(), &key, &validation).unwrap().claims
 }

@@ -1,8 +1,6 @@
 use crate::{reducer, state::{actions::{ActionTrait, Reducer}, extension::reducers::test_feat_state}};
 use ts_rs::TS;
 
-
-
 /// Action to test the extension field.
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/Test.ts")]

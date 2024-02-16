@@ -4,7 +4,6 @@ use ts_rs::TS;
 pub mod actions;
 pub mod reducers;
 
-
 #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq)]
 #[ts(export)]
 pub enum QueryTarget {
@@ -25,13 +24,13 @@ pub enum SortMethod {
 
 #[cfg(test)]
 mod tests {
+    use crate::state::{actions::Action, credentials::{CredentialDisplay, CredentialMetadata, DisplayCredential}, AppState};
+    use super::*;
     use oid4vc::oid4vci::credential_format_profiles::{
         w3c_verifiable_credentials::jwt_vc_json::JwtVcJson, CredentialFormats, Profile,
     };
     use tests::{actions::UserDataQuery, reducers::{contains_search_term, credential_query}};
-    use crate::{state::{actions::Action, AppState}, verifiable_credential_record::{CredentialDisplay, CredentialMetadata, DisplayCredential}};
     use std::{sync::Arc, vec};
-    use super::*;
 
     #[test]
     fn test_contains_search_term() {
@@ -95,52 +94,52 @@ mod tests {
     fn app_state() -> AppState {
         AppState {
             credentials: vec![
-                DisplayCredential {
-                    id: "1".to_string(),
-                    issuer_name: Some("Example Organization".to_string()),
-                    format: CredentialFormats::JwtVcJson(Profile { format: JwtVcJson }),
-                    data: serde_json::json!({"last_name": "Ferris"}),
-                    metadata: CredentialMetadata {
-                        date_issued: "2021-01-01".to_string(),
-                        date_added: "2021-01-01".to_string(),
-                        display: CredentialDisplay {
-                            name: Some("John".to_string()),
+                    DisplayCredential {
+                        id: "1".to_string(),
+                        issuer_name: Some("Example Organization".to_string()),
+                        format: CredentialFormats::JwtVcJson(Profile { format: JwtVcJson }),
+                        data: serde_json::json!({"last_name": "Ferris"}),
+                        metadata: CredentialMetadata {
+                            date_issued: "2021-01-01".to_string(),
+                            date_added: "2021-01-01".to_string(),
+                            display: CredentialDisplay {
+                                name: Some("John".to_string()),
+                                ..Default::default()
+                            },
                             ..Default::default()
                         },
-                        ..Default::default()
                     },
-                },
-                DisplayCredential {
-                    id: "2".to_string(),
-                    issuer_name: Some("Example Organization".to_string()),
-                    format: CredentialFormats::JwtVcJson(Profile { format: JwtVcJson }),
-                    data: serde_json::json!({"last_name": "John"}),
-                    metadata: CredentialMetadata {
-                        date_issued: "2021-01-02".to_string(),
-                        date_added: "2021-02-01".to_string(),
-                        display: CredentialDisplay {
-                            name: Some("Jane".to_string()),
+                    DisplayCredential {
+                        id: "2".to_string(),
+                        issuer_name: Some("Example Organization".to_string()),
+                        format: CredentialFormats::JwtVcJson(Profile { format: JwtVcJson }),
+                        data: serde_json::json!({"last_name": "John"}),
+                        metadata: CredentialMetadata {
+                            date_issued: "2021-01-02".to_string(),
+                            date_added: "2021-02-01".to_string(),
+                            display: CredentialDisplay {
+                                name: Some("Jane".to_string()),
+                                ..Default::default()
+                            },
                             ..Default::default()
                         },
-                        ..Default::default()
                     },
-                },
-                DisplayCredential {
-                    id: "3".to_string(),
-                    issuer_name: Some("John Organization".to_string()),
-                    format: CredentialFormats::JwtVcJson(Profile { format: JwtVcJson }),
-                    data: serde_json::json!({"last_name": "Ferris"}),
-                    metadata: CredentialMetadata {
-                        date_issued: "2021-01-03".to_string(),
-                        date_added: "2021-03-01".to_string(),
-                        display: CredentialDisplay {
-                            name: Some("Jeff".to_string()),
+                    DisplayCredential {
+                        id: "3".to_string(),
+                        issuer_name: Some("John Organization".to_string()),
+                        format: CredentialFormats::JwtVcJson(Profile { format: JwtVcJson }),
+                        data: serde_json::json!({"last_name": "Ferris"}),
+                        metadata: CredentialMetadata {
+                            date_issued: "2021-01-03".to_string(),
+                            date_added: "2021-03-01".to_string(),
+                            display: CredentialDisplay {
+                                name: Some("Jeff".to_string()),
+                                ..Default::default()
+                            },
                             ..Default::default()
                         },
-                        ..Default::default()
                     },
-                },
-            ],
+                ],
             ..Default::default()
         }
     }

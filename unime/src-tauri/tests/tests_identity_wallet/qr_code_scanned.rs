@@ -6,7 +6,7 @@ use crate::common::{
 use identity_wallet::oid4vci::credential_format_profiles::{
     w3c_verifiable_credentials::jwt_vc_json::JwtVcJson, Credential, CredentialFormats, WithCredential,
 };
-use identity_wallet::state::profile::Profile;
+use identity_wallet::state::profile_settings::Profile;
 use identity_wallet::state::AppStateContainer;
 use identity_wallet::{
     state::{actions::Action, AppState},

@@ -1,9 +1,5 @@
-use ts_rs::TS;
-
 use crate::{reducer, state::{actions::{ActionTrait, Reducer}, connections::reducers::handle_siopv2_authorization_request}};
-
-
-/// Actions
+use ts_rs::TS;
 
 /// Action to accept a connection request.
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]

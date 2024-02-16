@@ -30,8 +30,16 @@ pub fn listen<T: ActionTrait + Clone>(action: Action) -> Option<T> {
 
 // TODO: remove this once we have a better way to export the TS types.
 mod bindings {
-    use self::{boot::actions::{CancelUserFlow, GetState, Reset, UnlockStorage}, connections::actions::ConnectionAccepted, credentials::actions::{CredentialOffersSelected, CredentialsSelected, UpdateCredentialMetadata}, dev_mode::actions::{LoadDevProfile, SetDevMode}, extension::actions::CustomExtensionTest, profile::actions::{CreateNew, SetLocale, UpdateProfileSettings}, shared::actions::QrCodeScanned, user_data_query::actions::UserDataQuery, user_journey::actions::CancelUserJourney};
-
+    use self::{common::actions::{CancelUserFlow, GetState, Reset, UnlockStorage}, 
+        connections::actions::ConnectionAccepted, 
+        credentials::actions::{CredentialOffersSelected, CredentialsSelected, UpdateCredentialMetadata}, 
+        dev_mode::actions::{LoadDevProfile, SetDevMode}, 
+        extension::actions::CustomExtensionTest, 
+        profile_settings::actions::{CreateNew, SetLocale, UpdateProfileSettings}, 
+        shared::actions::QrCodeScanned, 
+        user_data_query::actions::UserDataQuery, 
+        user_journey::actions::CancelUserJourney
+    };
     use super::*;
 
     #[derive(Serialize, Deserialize, TS)]

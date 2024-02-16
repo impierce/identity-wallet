@@ -1,7 +1,7 @@
 use ts_rs::TS;
 use crate::{reducer,
     state::{actions::{ActionTrait, Reducer},
-    boot::reducers::{cancel_user_flow, get_state, reset_state, unlock_storage}}
+    common::reducers::{cancel_user_flow, get_state, reset_state, unlock_storage}}
 };
 
 /// Action to retrieve the state from the storage.

@@ -1,25 +1,23 @@
-use crate::crypto::stronghold::StrongholdManager;
 use crate::error::AppError::{self, *};
-use crate::state::actions::{listen, Action};
-use crate::state::connections::Connection;
-use crate::state::profile::Profile;
-use crate::state::user_prompt::CurrentUserPrompt;
-use crate::state::AppState;
-use crate::verifiable_credential_record::VerifiableCredentialRecord;
-use crate::ASSETS_DIR;
-use did_key::{generate, Ed25519KeyPair};
-use log::info;
+use crate::persistence::ASSETS_DIR;
+use crate::stronghold::StrongholdManager;
+use crate::state::{AppState,
+    actions::{listen, Action},
+    connections::Connection,
+    profile_settings::Profile,
+    user_prompt::CurrentUserPrompt,
+    shared::backend_utils::VerifiableCredentialRecord};
+use super::actions::SetDevMode;
 use oid4vc::oid4vc_core::Subject;
 use oid4vc::oid4vc_manager::methods::key_method::KeySubject;
 use oid4vc::oid4vci::credential_format_profiles::w3c_verifiable_credentials::jwt_vc_json::JwtVcJson;
 use oid4vc::oid4vci::credential_format_profiles::{Credential, CredentialFormats, WithCredential};
-use serde_json::json;
-use std::fs::File;
-use std::io::copy;
-use std::sync::Arc;
+use did_key::{generate, Ed25519KeyPair};
 use lazy_static::lazy_static;
+use serde_json::json;
+use std::{fs::File, io::copy, sync::Arc};
+use log::info;
 
-use super::actions::SetDevMode;
 
 lazy_static! {
     pub static ref PERSONAL_INFORMATION: VerifiableCredentialRecord = VerifiableCredentialRecord::from(
@@ -75,7 +73,7 @@ pub async fn load_dev_profile(_state: AppState, _action: Action) -> Result<AppSt
         theme: Some("system".to_string()),
         primary_did: subject.identifier().unwrap(),
     };
-    state.profile = Some(profile);
+    state.profile_settings.profile = Some(profile);
 
     vec![
         PERSONAL_INFORMATION.clone(),
@@ -111,6 +109,7 @@ pub async fn load_dev_profile(_state: AppState, _action: Action) -> Result<AppSt
     .await?;
 
     state
+        .back_end_utils
         .managers
         .lock()
         .await

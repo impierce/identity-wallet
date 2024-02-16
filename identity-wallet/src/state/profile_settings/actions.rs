@@ -1,8 +1,6 @@
-use crate::{reducer, state::{actions::{ActionTrait, Reducer}, profile::reducers::{create_identity, initialize_stronghold, set_locale, update_profile_settings}}};
+use crate::{reducer, state::{actions::{ActionTrait, Reducer}, profile_settings::reducers::{create_identity, initialize_stronghold, set_locale, update_profile_settings}}};
 use super::Locale;
 use ts_rs::TS;
-
-/// Actions
 
 /// Action to set the locale to the given value.
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]

@@ -1,8 +1,6 @@
 use crate::{reducer, state::{actions::{ActionTrait, Reducer}, connections::reducers::handle_oid4vp_authorization_request, credentials::reducers::{send_credential_request, update_credential_metadata}}};
 use ts_rs::TS;
 
-/// Actions
-
 /// Action to update the credential metadata.
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/UpdateCredentialMetadata.ts")]

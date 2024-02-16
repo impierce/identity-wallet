@@ -1,18 +1,20 @@
 use super::{actions::{CreateNew, SetLocale, UpdateProfileSettings}, Profile};
-use crate::{crypto::stronghold::StrongholdManager, error::AppError::{self, *}, state::{actions::{listen, Action}, user_prompt::CurrentUserPrompt, AppState, IdentityManager}};
+use crate::{error::AppError::{self, *}, state::{actions::{listen, Action}, profile_settings::ProfileSettings, shared::backend_utils::IdentityManager, user_prompt::CurrentUserPrompt, AppState}, stronghold::StrongholdManager};
 use oid4vc::{oid4vc_core::Subject, oid4vc_manager::{methods::key_method::KeySubject, ProviderManager}, oid4vci::Wallet};
 use did_key::{from_existing_key, Ed25519KeyPair};
 use log::{debug, info};
 use std::sync::Arc;
-
-/// Reducers
 
 /// Reducer to set the locale to the given value. If the locale is not supported yet, the current locale will stay unchanged.
 pub async fn set_locale(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(locale) = listen::<SetLocale>(action).map(|payload| payload.locale) {
         debug!("locale set to: `{:?}`", locale);
         return Ok(AppState {
-            locale,
+            profile_settings: ProfileSettings {
+                locale,
+                ..state.profile_settings
+            },
+            //profile_settings: locale,
             current_user_prompt: None,
             ..state
         });
@@ -26,7 +28,7 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
         name, picture, theme, ..
     }) = listen::<CreateNew>(action)
     {
-        let mut state_guard = state.managers.lock().await;
+        let mut state_guard = state.back_end_utils.managers.lock().await;
         let stronghold_manager = state_guard
             .stronghold_manager
             .as_ref()
@@ -40,11 +42,14 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
         let provider_manager = ProviderManager::new([subject.clone()]).map_err(OID4VCProviderManagerError)?;
         let wallet: Wallet = Wallet::new(subject.clone());
 
-        let profile = Profile {
-            name: name.to_string(),
-            picture: Some(picture.to_string()),
-            theme: Some(theme.to_string()),
-            primary_did: subject.identifier().map_err(OID4VCSubjectIdentifierError)?,
+        let profile_settings = ProfileSettings {
+            profile: Some(Profile {
+                name: name.to_string(),
+                picture: Some(picture.to_string()),
+                theme: Some(theme.to_string()),
+                primary_did: subject.identifier().map_err(OID4VCSubjectIdentifierError)?
+            }),
+            ..Default::default()
         };
 
         state_guard.identity_manager.replace(IdentityManager {
@@ -55,7 +60,7 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
 
         drop(state_guard);
         return Ok(AppState {
-            profile: Some(profile),
+            profile_settings: profile_settings,
             current_user_prompt: Some(CurrentUserPrompt::Redirect {
                 target: "me".to_string(),
             }),
@@ -69,7 +74,7 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
 /// Reducer to initialize the stronghold manager.
 pub async fn initialize_stronghold(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(password) = listen::<CreateNew>(action).map(|payload| payload.password) {
-        state.managers.lock().await.stronghold_manager.replace(Arc::new(
+        state.back_end_utils.managers.lock().await.stronghold_manager.replace(Arc::new(
             StrongholdManager::create(&password).map_err(StrongholdCreationError)?,
         ));
 
@@ -83,15 +88,16 @@ pub async fn initialize_stronghold(state: AppState, action: Action) -> Result<Ap
 /// Reducer to update the profile settings.
 pub async fn update_profile_settings(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(UpdateProfileSettings { theme, name, picture }) = listen::<UpdateProfileSettings>(action) {
-        let profile = state.profile.ok_or(MissingStateParameterError("active profile"))?.clone();
+        let profile = state.profile_settings.profile.ok_or(MissingStateParameterError("active profile"))?.clone();
 
         return Ok(AppState {
-            profile: Some(Profile {
+            profile_settings: {Some(Profile {
                 name: name.unwrap_or(profile.name),
                 picture,
                 theme,
                 ..profile
             }),
+            ..profile_settings},
             ..state
             });
     }

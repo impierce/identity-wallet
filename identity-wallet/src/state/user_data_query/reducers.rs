@@ -1,9 +1,10 @@
+use crate::state::{AppState,
+    actions::{listen, Action}, 
+    connections::Connection, 
+    credentials::DisplayCredential};
 use crate::error::AppError;
-use crate::state::actions::{listen, Action};
-use crate::state::{AppState, Connection};
-use crate::verifiable_credential_record::DisplayCredential;
-use super::actions::UserDataQuery;
 use super::{QueryTarget, SortMethod};
+use super::actions::UserDataQuery;
 use itertools::concat;
 
 pub async fn credential_query(state: AppState, action: Action) -> Result<AppState, AppError> {

@@ -1,10 +1,9 @@
-pub mod actions;
-pub mod reducers;
-
+use super::FeatTrait;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
-use super::FeatTrait;
+pub mod actions;
+pub mod reducers;
 
 // This module is soly for testing and demonstrating the extension system.
 #[derive(Debug, Serialize, Deserialize, TS, PartialEq, Default, Clone)]

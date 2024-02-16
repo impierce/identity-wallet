@@ -1,12 +1,13 @@
 use crate::{
-    crypto::stronghold::StrongholdManager,
     error::AppError::{self, *},
+    stronghold::StrongholdManager,
+    persistence::{delete_state_file, delete_stronghold, load_state},
     state::{
-        AppState, IdentityManager,
+        AppState,
         actions::{listen, Action}, 
-        persistence::{delete_state_file, delete_stronghold, load_state}, 
-        user_prompt::CurrentUserPrompt,
-    },
+        shared::backend_utils::IdentityManager, 
+        user_prompt::CurrentUserPrompt
+    }, 
 };
 use super::actions::{CancelUserFlow, UnlockStorage};
 use did_key::{from_existing_key, Ed25519KeyPair};
@@ -20,7 +21,7 @@ pub async fn get_state(_state: AppState, _action: Action) -> Result<AppState, Ap
     println!("get_state reducer called");
     let mut state = load_state().await.unwrap_or_default();
 
-    if state.profile.is_some() {
+    if state.profile_settings.profile.is_some() {
         state.current_user_prompt = Some(CurrentUserPrompt::PasswordRequired);
     } else {
         // TODO: bug: if state is present, but empty, user will never be redirected to neither welcome or profile page
@@ -42,7 +43,7 @@ pub async fn get_state(_state: AppState, _action: Action) -> Result<AppState, Ap
 /// Reducer to unlock the storage.
 pub async fn unlock_storage(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(password) = listen::<UnlockStorage>(action).map(|payload| payload.password) {
-        let mut state_guard = state.managers.lock().await;
+        let mut state_guard = state.back_end_utils.managers.lock().await;
 
         let stronghold_manager = Arc::new(StrongholdManager::load(&password).map_err(StrongholdLoadingError)?);
 

@@ -1,14 +1,11 @@
-use std::time::Duration;
-
+use crate::state::{actions::Action, AppState, AppStateContainer};
 use crate::error::AppError;
-use crate::state::actions::Action;
-use crate::state::persistence::save_state;
-use crate::state::{AppState, AppStateContainer};
+use crate::persistence::save_state;
+use log::{debug, error, info, warn};
+use std::time::Duration;
 use futures::StreamExt;
 use itertools::Itertools;
-use log::{debug, error, info, warn};
 use tauri::Manager;
-
 
 /// This function represents the root reducer of the application. It will delegate the state update to the reducers that
 /// are listening to the action.
@@ -49,17 +46,13 @@ async fn main_exec<R: tauri::Runtime>(
     // Get a copy of the current state and pass it to the root reducer.
     match reduce(
         AppState {
-            managers: guard.managers.clone(),
-            //active_profile: guard.active_profile.clone(),
-            active_connection_request: serde_json::from_value(serde_json::json!(guard.active_connection_request))
-                .unwrap(),
+            connections: guard.connections.clone(),
             credentials: guard.credentials.clone(),
+            user_data_query: guard.user_data_query.clone(),
+            back_end_utils: guard.back_end_utils.clone(),
+            profile_settings: guard.profile_settings.clone(),
             current_user_prompt: guard.current_user_prompt.clone(),
             debug_messages: guard.debug_messages.clone(),
-            connections: guard.connections.clone(),
-            user_data_query: guard.user_data_query.clone(),
-            locale: guard.locale.clone(),
-            profile: guard.profile.clone(),
             user_journey: guard.user_journey.clone(),
             extensions: guard.extensions.clone(),
             dev_mode_enabled: guard.dev_mode_enabled,

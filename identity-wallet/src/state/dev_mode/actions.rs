@@ -1,8 +1,6 @@
-use ts_rs::TS;
 use crate::{reducer, state::{actions::{ActionTrait, Reducer}, 
     dev_mode::reducers::{load_dev_profile, set_dev_mode}}};
-
-/// Actions
+use ts_rs::TS;
 
 /// Action to set the dev mode to the given value.
 

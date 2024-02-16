@@ -1,11 +1,10 @@
+use crate::{reducer, state::{actions::{ActionTrait, Reducer},
+    user_data_query::reducers::{connection_query, credential_query}}};
+use super::{QueryTarget, SortMethod};
 use ts_rs::TS;
 
-use crate::{reducer, state::{actions::{ActionTrait, Reducer}, user_data_query::reducers::{connection_query, credential_query}}};
 
-use super::{QueryTarget, SortMethod};
-
-
-
+/// Action to query user data, currently that's either connections or credentials.
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/UserDataQuery.ts")]
 pub struct UserDataQuery {

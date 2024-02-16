@@ -1,10 +1,10 @@
-use crate::{verifiable_credential_record::VerifiableCredentialRecord, STRONGHOLD};
+use crate::{persistence::STRONGHOLD, state::shared::backend_utils::VerifiableCredentialRecord};
 use iota_stronghold::{
     procedures::{Ed25519Sign, GenerateKey, KeyType, PublicKey, StrongholdProcedure},
     Client, KeyProvider, Location, SnapshotPath, Stronghold,
 };
-use log::{debug, info};
 use oid4vc::oid4vc_core::authentication::sign::ExternalSign;
+use log::{debug, info};
 use uuid::Uuid;
 
 #[derive(Debug)]

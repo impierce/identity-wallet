@@ -1,10 +1,10 @@
-use crate::{error::AppError::{self, *},
-    state::{actions::{listen, Action},
-    credentials::actions::CredentialOffersSelected,
-    persistence::persist_asset, shared::actions::QrCodeScanned,
-    user_prompt::CurrentUserPrompt, AppState},
-    utils::{download_asset, LogoType}, 
-    verifiable_credential_record::VerifiableCredentialRecord
+use crate::{error::AppError::{self, *}, 
+    persistence::{download_asset, persist_asset, LogoType}, 
+    state::{actions::{listen, Action}, 
+        credentials::actions::CredentialOffersSelected, 
+        shared::{actions::QrCodeScanned, backend_utils::VerifiableCredentialRecord}, 
+        user_prompt::CurrentUserPrompt, 
+        AppState}
 };
 use super::actions::UpdateCredentialMetadata;
 use oid4vc::oid4vci::{
@@ -18,8 +18,6 @@ use log::{debug, info};
 use serde_json::json;
 use uuid::Uuid;
 
-/// Reducers
-
 /// Reducer to update the credential metadata.
 pub async fn update_credential_metadata(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(UpdateCredentialMetadata {
@@ -30,7 +28,7 @@ pub async fn update_credential_metadata(state: AppState, action: Action) -> Resu
         is_favorite,
     }) = listen::<UpdateCredentialMetadata>(action)
     {
-        let state_guard = state.managers.lock().await;
+        let state_guard = state.back_end_utils.managers.lock().await;
         let stronghold_manager = state_guard
             .stronghold_manager
             .as_ref()
@@ -104,7 +102,7 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
     if let Some(credential_offer_uri) =
         listen::<QrCodeScanned>(action).and_then(|payload| payload.form_urlencoded.parse::<CredentialOfferQuery>().ok())
     {
-        let state_guard = state.managers.lock().await;
+        let state_guard = state.back_end_utils.managers.lock().await;
         let wallet = &state_guard
             .identity_manager
             .as_ref()
@@ -285,7 +283,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
     info!("send_credential_request");
 
     if let Some(offer_indices) = listen::<CredentialOffersSelected>(action).map(|payload| payload.offer_indices) {
-        let state_guard = state.managers.lock().await;
+        let state_guard = state.back_end_utils.managers.lock().await;
         let stronghold_manager = state_guard
             .stronghold_manager
             .as_ref()
