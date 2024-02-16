@@ -9,12 +9,7 @@
   import LL from '$src/i18n/i18n-svelte';
   import { state } from '$src/stores';
 
-  import Clapperboard from '~icons/lucide/clapperboard';
-  import Star from '~icons/lucide/star';
-  import AirplaneTilt from '~icons/ph/airplane-tilt-light';
-  import FilmSlate from '~icons/ph/film-slate-light';
   import Heart from '~icons/ph/heart-straight-fill';
-  import User from '~icons/ph/user';
 
   export let credentialType: 'all' | 'data' | 'badges' = 'all';
 
@@ -59,9 +54,7 @@
     {#each favorite_credentials as credential}
       <ListItemCard
         id={credential.id}
-        title={credential.metadata.display.name ??
-          credential.data.credentialSubject.achievement?.name ??
-          credential.data.type.at(-1)}
+        title={credential.display_name ?? "" }
         description={credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
         type={credential.data.type.includes('OpenBadgeCredential') ? 'badge' : 'data'}
         on:click={() =>

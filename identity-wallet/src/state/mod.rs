@@ -49,7 +49,7 @@ pub struct AppState {
     pub dev_mode: DevMode,
     #[ts(type = "Array<string>")]
     pub debug_messages: VecDeque<String>,
-    #[ts(type = "object | null")]
+    #[ts(type = "any | null")]
     pub user_journey: Option<serde_json::Value>,
     pub connections: Vec<Connection>,
     pub user_data_query: Vec<String>,
