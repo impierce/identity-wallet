@@ -1,10 +1,11 @@
 <script lang="ts">
+  import LL from '$src/i18n/i18n-svelte';
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
 
   import Heart from '~icons/ph/heart-fill';
 </script>
 
-<TopNavBar on:back={() => history.back()} title="About UniMe" />
+<TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.SUPPORT.ABOUT.NAVBAR_TITLE()} />
 <div class="content-height flex flex-col bg-silver dark:bg-navy">
   <div class="flex flex-col p-8">
     <!-- Footer -->
@@ -14,7 +15,7 @@
       <!-- <div class="pb-4" /> -->
       <div>0.4.9</div>
       <div class="flex items-center pb-4">
-        <p>Built with Tauri</p>
+        <p>{$LL.SETTINGS.SUPPORT.ABOUT.BUILT_WITH()}</p>
         <Heart class="pl-1" />
       </div>
       <div>Apache-2.0</div>
