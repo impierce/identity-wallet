@@ -15,6 +15,7 @@
   import { debug, info, warn } from '@tauri-apps/plugin-log';
 
   import { dispatch } from '$lib/dispatcher';
+  import LL from '$src/i18n/i18n-svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
   import BottomNavBar from '$src/lib/components/molecules/navigation/BottomNavBar.svelte';
   import { state } from '$src/stores';
@@ -256,7 +257,7 @@
         {#if permissions === 'denied'}
           <div class="flex flex-col items-center space-y-4">
             <div class="rounded-lg bg-rose-100 px-8 py-4 text-rose-500">
-              No permissions to<br />access the camera
+              {$LL.SCAN.NO_PERMISSION_1()}<br />{$LL.SCAN.NO_PERMISSION_2()}
             </div>
             <Button label="Open settings" on:click={openAppSettings} />
           </div>
@@ -296,10 +297,10 @@
       <div class="flex grow flex-col" class:invisible={!scanning}>
         <div class="bg-white p-5 dark:bg-dark">
           <p class="text-3xl font-semibold text-slate-700 dark:text-grey">
-            Scan a <span class="text-primary">QR Code</span>
+            {$LL.SCAN.TITLE_1()} <span class="text-primary">{$LL.SCAN.TITLE_2()}</span>
           </p>
           <p class="mt-4 text-sm font-medium text-slate-500 dark:text-slate-300">
-            Bring a QR Code into view of this screen to start an interaction.
+            {$LL.SCAN.SUBTITLE()}
           </p>
         </div>
         <div class="scanner-background">
@@ -319,7 +320,7 @@
           {#if $state?.dev_mode_enabled}
             <div class="fixed bottom-[128px] left-[calc(50%_-_42px)]">
               <button class="rounded-lg bg-rose-100 px-4 py-3 font-medium text-rose-500" on:click={cancelScan}
-                >Cancel</button
+                >{$LL.CANCEL()}</button
               >
             </div>
           {/if}

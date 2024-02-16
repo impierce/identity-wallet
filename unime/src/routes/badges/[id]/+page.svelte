@@ -78,7 +78,7 @@
 <div class="content-height relative flex w-full flex-col">
   <!-- TODO: allow overriding the color of the TopNavBar -->
   <TopNavBar
-    title="Badge information"
+    title={$LL.BADGE.NAVBAR_TITLE()}
     on:back={() => history.back()}
     class="bg-white text-slate-800 dark:bg-dark dark:text-grey"
   />
