@@ -101,14 +101,7 @@ pub async fn load_dev_profile(_state: AppState, _action: Action) -> Result<AppSt
         .map(|verifiable_credential_record| verifiable_credential_record.display_credential)
         .collect();
 
-    load_credential_images(
-        "university".to_string(),
-        DRIVERS_LICENSE_CREDENTIAL.clone().display_credential.id,
-        PERSONAL_INFORMATION.clone().display_credential.id,
-        OPEN_BADGE.clone().display_credential.id,
-        EDU_BADGE.clone().display_credential.id,
-    )
-    .await?;
+    load_predefined_images().await?;
 
     state
         .managers
@@ -210,16 +203,10 @@ pub async fn load_dev_profile(_state: AppState, _action: Action) -> Result<AppSt
     Ok(state)
 }
 
-async fn load_credential_images(
-    issuer_id: String,
-    driver_license_id: String,
-    personal_information_id: String,
-    badge_id: String,
-    edubadge_id: String,
-) -> Result<(), AppError> {
+async fn load_predefined_images() -> Result<(), AppError> {
     // Issuers
     let mut image_bytes: &[u8] = include_bytes!("../../../resources/images/issuer-university.png");
-    let file_name = format!("{}.png", issuer_id);
+    let file_name = format!("{}.png", "university");
     let mut file = File::create(ASSETS_DIR.lock().unwrap().as_path().to_owned().join(file_name))?;
     copy(&mut image_bytes, &mut file)?;
 
@@ -246,23 +233,23 @@ async fn load_credential_images(
 
     // Credentials
     let mut image_bytes: &[u8] = include_bytes!("../../../resources/images/cuddlyferris.svg");
-    let file_name = format!("{}.svg", personal_information_id);
+    let file_name = format!("{}.svg", PERSONAL_INFORMATION.clone().display_credential.id);
     let mut file = File::create(ASSETS_DIR.lock().unwrap().as_path().to_owned().join(file_name))?;
     copy(&mut image_bytes, &mut file)?;
 
     let mut image_bytes: &[u8] = include_bytes!("../../../resources/images/credential-driver-license.png");
-    let file_name = format!("{}.png", driver_license_id);
+    let file_name = format!("{}.png", DRIVERS_LICENSE_CREDENTIAL.clone().display_credential.id);
     let mut file = File::create(ASSETS_DIR.lock().unwrap().as_path().to_owned().join(file_name))?;
     copy(&mut image_bytes, &mut file)?;
 
     // Badges
     let mut image_bytes: &[u8] = include_bytes!("../../../resources/images/badge-university-green.png");
-    let file_name = format!("{}.png", badge_id);
+    let file_name = format!("{}.png", OPEN_BADGE.clone().display_credential.id);
     let mut file = File::create(ASSETS_DIR.lock().unwrap().as_path().to_owned().join(file_name))?;
     copy(&mut image_bytes, &mut file)?;
 
     let mut image_bytes: &[u8] = include_bytes!("../../../resources/images/edubadge-1.png");
-    let file_name = format!("{}.png", edubadge_id);
+    let file_name = format!("{}.png", EDU_BADGE.clone().display_credential.id);
     let mut file = File::create(ASSETS_DIR.lock().unwrap().as_path().to_owned().join(file_name))?;
     copy(&mut image_bytes, &mut file)?;
 
