@@ -777,10 +777,6 @@ type RootTranslation = {
 	 * R​e​j​e​c​t
 	 */
 	REJECT: string
-	/**
-	 * A​c​c​e​p​t
-	 */
-	ACCEPT: string
 }
 
 export type TranslationFunctions = {
@@ -1544,10 +1540,6 @@ export type TranslationFunctions = {
 	 * Reject
 	 */
 	REJECT: () => LocalizedString
-	/**
-	 * Accept
-	 */
-	ACCEPT: () => LocalizedString
 }
 
 export type Formatters = {}
