@@ -170,6 +170,16 @@
     }
   };
 
+  const mockNgdilCredentialOffer = () => {
+    dispatch({
+      type: '[QR Code] Scanned',
+      payload: {
+        form_urlencoded:
+          'openid-credential-offer://?credential_offer_uri=https://api.ngdil-demo.tanglelabs.io/api/offers/creds/u08LmjU8lAcTwx7pLMpy0',
+      },
+    });
+  };
+
   async function cancelScan() {
     await cancel();
     scanning = false;
@@ -295,19 +305,7 @@
             <!-- NGDIL (remote) -->
             <div class="flex flex-col space-y-2">
               <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">NGDIL (remote)</p>
-
-              <Button
-                variant="secondary"
-                on:click={() =>
-                  dispatch({
-                    type: '[QR Code] Scanned',
-                    payload: {
-                      form_urlencoded:
-                        'openid-credential-offer://?credential_offer_uri=https://api.ngdil-demo.tanglelabs.io/api/offers/creds/u08LmjU8lAcTwx7pLMpy0',
-                    },
-                  })}
-                label="Credential Offer"
-              />
+              <Button variant="secondary" on:click={() => mockNgdilCredentialOffer()} label="Credential Offer" />
             </div>
             <!-- Divider -->
             <hr />
