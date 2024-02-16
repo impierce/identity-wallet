@@ -220,7 +220,7 @@ const nl = {
     CREDENTIAL_OFFER: {
       NAVBAR_TITLE: 'Credential Aanbod',
       DESCRIPTION: 'biedt u de volgende credentials aan',
-      ACCEPT: 'Accepteer credentials'
+      ACCEPT: 'Accepteer credentials',
     },
     CONNECTION_REQUEST: {
       NAVBAR_TITLE: 'Credential Aanvraag',
@@ -283,7 +283,6 @@ const nl = {
   CONTINUE: 'Doorgaan',
   SKIP: 'Overslaan',
   REJECT: 'Weigeren',
-  ACCEPT: 'Accepteren',
 } satisfies Translation;
 
 export default nl;

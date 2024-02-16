@@ -91,7 +91,7 @@
   });
 </script>
 
-<div class="content-height bg-silver dark:bg-navy flex flex-col items-stretch">
+<div class="content-height flex flex-col items-stretch bg-silver dark:bg-navy">
   <TopNavBar title={$LL.SCAN.CREDENTIAL_OFFER.NAVBAR_TITLE()} on:back={() => history.back()} />
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
@@ -124,7 +124,7 @@
     {:else}
       <PaddedIcon icon={DownloadSimple} />
     {/if} -->
-    <p class="dark:text-grey text-[22px]/[30px] font-semibold text-slate-700">
+    <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
       {#if issuer_name}
         {issuer_name}
       {:else}
@@ -166,7 +166,7 @@
     </div> -->
 
     <div
-      class="dark:bg-dark mt-3 w-full rounded-[20px] border border-slate-200 bg-white p-[10px] dark:border-slate-600"
+      class="mt-3 w-full rounded-[20px] border border-slate-200 bg-white p-[10px] dark:border-slate-600 dark:bg-dark"
     >
       <!-- <div class="w-full space-y-2 rounded-2xl p-3 ring-2 ring-inset ring-white"> -->
       {#each credential_offer.credentials as credential, index}
@@ -240,7 +240,7 @@
   </div>
 
   <!-- Controls -->
-  <div class="dark:bg-dark sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6">
+  <div class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 dark:bg-dark">
     <Button
       label={$LL.SCAN.CREDENTIAL_OFFER.ACCEPT()}
       on:click={() => {

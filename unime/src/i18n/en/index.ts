@@ -283,7 +283,6 @@ const en = {
   CONTINUE: 'Continue',
   SKIP: 'Skip',
   REJECT: 'Reject',
-  ACCEPT: 'Accept',
 } satisfies BaseTranslation;
 
 export default en;

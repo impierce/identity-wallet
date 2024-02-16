@@ -297,7 +297,7 @@
       <div class="flex grow flex-col" class:invisible={!scanning}>
         <div class="bg-white p-5 dark:bg-dark">
           <p class="text-3xl font-semibold text-slate-700 dark:text-grey">
-            {$LL.SCAN.TITLE_1()}<span class="text-primary">{$LL.SCAN.TITLE_2()}</span>
+            {$LL.SCAN.TITLE_1()} <span class="text-primary">{$LL.SCAN.TITLE_2()}</span>
           </p>
           <p class="mt-4 text-sm font-medium text-slate-500 dark:text-slate-300">
             {$LL.SCAN.SUBTITLE()}
