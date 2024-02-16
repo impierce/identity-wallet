@@ -46,7 +46,6 @@ pub async fn download_asset(url: reqwest::Url, logo_type: LogoType, index: usize
         return Err(AppError::DownloadAborted("File size is bigger than 2MB"));
     }
 
-    // TODO: in batch offer, use format!("{}_{}.{}", logo_type, index, extension)
     let mut file = File::create(tmp_dir.join(format!("{}_{}.{}", logo_type, index, file_extension)))?;
 
     copy(&mut content, &mut file)?;
