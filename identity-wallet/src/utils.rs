@@ -53,6 +53,17 @@ pub async fn download_asset(url: reqwest::Url, logo_type: LogoType, index: usize
     Ok(())
 }
 
+
+pub trait AsStr {
+    fn as_str(&self) -> Option<&str>;
+}
+
+impl AsStr for Option<String> {
+    fn as_str(&self) -> Option<&str> {
+        self.as_ref().map(|x| x.as_str())
+    }
+}
+
 #[derive(Display)]
 pub enum LogoType {
     #[strum(serialize = "issuer")]

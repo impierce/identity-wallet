@@ -179,27 +179,37 @@ pub async fn update_credential_metadata(state: AppState, action: Action) -> Resu
             .find(|record| record.display_credential.id == credential_id.to_string())
             .ok_or(StrongholdMissingCredentialError(credential_id))?;
 
+        let display_credential = &mut verifiable_credential_record.display_credential;
+
         info!(
             "verifiable_credential_record (before): {:?}",
-            verifiable_credential_record.display_credential.metadata
+            display_credential.metadata
         );
 
-        // set name if given
+        // Set name if given
         if name.is_some() {
-            verifiable_credential_record.display_credential.metadata.display.name = name;
+            display_credential.display_name = name;
+        } else {
+            let display_name = display_credential
+                .get_achievement_name_from_data()
+                .or(display_credential.get_type_name_from_data());
+
+            if display_name.is_some() {
+                display_credential.display_name = display_name;
+            }
         }
 
-        // set color if given
+        // Set color
         if color.is_some() {
-            verifiable_credential_record.display_credential.metadata.display.color = color;
+            display_credential.display_color = color;
         }
 
-        // set icon if given
+        // Set icon
         if icon.is_some() {
-            verifiable_credential_record.display_credential.metadata.display.icon = icon;
+            display_credential.display_icon = icon;
         }
 
-        // set favorite if given
+        // Set favorite if given
         if let Some(is_favorite) = is_favorite {
             verifiable_credential_record.display_credential.metadata.is_favorite = is_favorite;
         }
@@ -259,7 +269,6 @@ pub async fn update_profile_settings(state: AppState, action: Action) -> Result<
 pub async fn reset_state(state: AppState, _action: Action) -> Result<AppState, AppError> {
     delete_state_file().await.ok();
     delete_stronghold().await.ok();
-
 
     Ok(AppState {
         current_user_prompt: Some(CurrentUserPrompt::Redirect {

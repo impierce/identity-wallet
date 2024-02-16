@@ -1,7 +1,7 @@
 use derivative::Derivative;
 use oid4vc::oid4vci::credential_format_profiles::{CredentialFormats, WithCredential};
 use serde::{Deserialize, Serialize};
-use serde_json::json;
+use serde_json::{json, Value};
 use ts_rs::TS;
 use uuid::Uuid;
 
@@ -55,8 +55,10 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
                         is_favorite: false,
                         date_added: chrono::Utc::now().to_rfc3339(),
                         date_issued: issuance_date.to_string(),
-                        display: CredentialDisplay::default(),
                     },
+                    display_name: None,
+                    display_icon: None,
+                    display_color: None,
                 }
             }
             _ => unimplemented!(),
@@ -81,6 +83,32 @@ pub struct DisplayCredential {
     pub data: serde_json::Value,
     #[serde(default)]
     pub metadata: CredentialMetadata,
+
+    pub display_icon: Option<String>,
+    pub display_color: Option<String>,
+    pub display_name: Option<String>,
+}
+
+impl DisplayCredential {
+    pub fn get_achievement_name_from_data(&self) -> Option<String> {
+        let cred_subject = self.data.get("credentialSubject")?;
+        let achievement = cred_subject.get("achievement")?;
+        let name = achievement.get("name")?;
+
+        Some(name.to_string())
+    }
+
+    pub fn get_type_name_from_data(&self) -> Option<String> {
+        let data_type = self.data.get("type")?;
+
+        match data_type {
+            Value::Array(array) => {
+                let last = array.last()?;
+                Some(last.to_string())
+            }
+            _ => None,
+        }
+    }
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, TS, Default, Derivative)]
@@ -92,13 +120,4 @@ pub struct CredentialMetadata {
     pub date_added: String,
     #[derivative(PartialEq = "ignore")]
     pub date_issued: String,
-    pub display: CredentialDisplay,
-}
-
-#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, TS, Default)]
-#[ts(export, export_to = "bindings/display-credential/CredentialDisplay.ts")]
-pub struct CredentialDisplay {
-    pub icon: Option<String>,
-    pub color: Option<String>,
-    pub name: Option<String>,
 }
