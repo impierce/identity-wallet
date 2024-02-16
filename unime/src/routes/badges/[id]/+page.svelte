@@ -59,6 +59,11 @@
 
   console.log({ credential });
 
+  // TODO: this is a simple way to display any (potentially nested) data, since we don't have a proper UI design for it yet
+  const prettyPrint = (object: any): string => {
+    return JSON.stringify(object, null, 2);
+  };
+
   onMount(async () => {
     credentialLogoUrl = await getImageAsset($page.params.id!!);
   });
@@ -174,8 +179,7 @@
             <div class="flex flex-col items-start px-4 py-[10px]">
               <p class="text-[13px]/[24px] font-medium text-slate-500">{entry[0]}</p>
               <div class="w-full break-words text-[13px]/[24px] font-medium text-slate-800 dark:text-white">
-                <!-- TODO: this is a hacky way to display nested data -->
-                <pre class="whitespace-pre-wrap [font-family:inherit]">{JSON.stringify(entry[1], null, 2)}</pre>
+                <pre class="whitespace-pre-wrap [font-family:inherit]">{prettyPrint(entry[1])}</pre>
               </div>
             </div>
           {/each}
