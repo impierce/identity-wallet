@@ -1,5 +1,4 @@
 use crate::state::credentials::{CredentialDisplay, CredentialMetadata, DisplayCredential};
-use crate::state::FeatTrait;
 use crate::stronghold::StrongholdManager;
 use oid4vc::{oid4vc_core::Subject, 
     oid4vc_manager::ProviderManager, 
@@ -9,21 +8,16 @@ use oid4vc::oid4vp::oid4vp::OID4VP;
 use oid4vc::siopv2::siopv2::SIOPv2;
 use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
 use serde::{Deserialize, Serialize};
-use derivative::Derivative;
 use serde_json::json;
 use std::sync::Arc;
 use uuid::Uuid;
-use ts_rs::TS;
 
 /// Utils used only in the backend.
-#[derive(Default, Deserialize, Derivative, TS, Clone, PartialEq, Debug)]
-#[ts(export)]
-#[serde(default)]
+#[derive(Default)]
 pub struct BackEndUtils {
     pub managers: Arc<tauri::async_runtime::Mutex<Managers>>,
     pub active_connection_request: Option<ConnectionRequest>
 }
-
 
 #[derive(Serialize, Deserialize)]
 pub enum ConnectionRequest {
@@ -31,19 +25,13 @@ pub enum ConnectionRequest {
     OID4VP(Box<AuthorizationRequest<Object<OID4VP>>>),
 }
 
-#[derive(Default, Deserialize, Derivative, TS, Clone, PartialEq, Debug)]
-#[ts(export)]
-#[serde(default)]
 pub struct IdentityManager {
     pub subject: Arc<dyn Subject>,
     pub provider_manager: ProviderManager,
     pub wallet: Wallet,
 }
 
-
-#[derive(Default, Deserialize, Derivative, TS, Clone, PartialEq, Debug)]
-#[ts(export)]
-#[serde(default)]
+#[derive(Default)]
 pub struct Managers {
     pub stronghold_manager: Option<Arc<StrongholdManager>>,
     pub identity_manager: Option<IdentityManager>,
