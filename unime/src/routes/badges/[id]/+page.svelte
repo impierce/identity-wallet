@@ -34,8 +34,7 @@
 
   let credentialLogoUrl: string | null;
 
-  // TODO: add issuer id which can then be used to link to the connection
-  let issuerId: string | undefined;
+  let issuerId: string;
 
   let qrcodeText = JSON.stringify(credential, null, 0);
 
@@ -145,11 +144,12 @@
           </p>
         </div>
         <!-- Issued by -->
+        <!-- TODO: read connection_id (issuer_id) from credential so it can link to the connection -->
         <div class="flex w-full flex-col items-center space-y-1">
           <p class="text-xs text-black dark:text-white">{$LL.BADGE.DETAILS.ISSUED_BY()}</p>
           <div class="flex h-[68px] w-full items-center justify-center rounded-xl bg-silver p-2 dark:bg-white">
             <Image
-              id={issuerId}
+              id={null}
               iconFallback="Bank"
               imgClass="w-auto rounded-lg m-2"
               iconClass="h-7 w-7 dark:text-slate-800"
