@@ -32,10 +32,9 @@
 
   const systemColorScheme = window.matchMedia('(prefers-color-scheme: dark)');
 
-  systemColorScheme.addEventListener('change', (e) => {
+  systemColorScheme.addEventListener('change', (e) => { 
     determineTheme(e.matches, $state?.active_profile?.theme);
-    systemColorScheme.removeEventListener('change', () => {});
-  });
+  }, { once: true });
 
   $: {
     // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
@@ -101,7 +100,7 @@
 
 <main class="absolute h-screen">
   <!-- Dev Mode: Navbar -->
-  {#if $state?.dev_profile}
+  {#if $state?.dev_mode !== "Off"}
     {#if expandDevMenu}
       <div
         class="hide-scrollbar fixed z-20 flex w-full content-center overflow-x-auto bg-gradient-to-r from-red-200 to-red-300 p-4 pt-8 shadow-md"

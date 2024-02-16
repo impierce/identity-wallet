@@ -50,7 +50,7 @@
       todo
     />
     <SettingsEntry icon={Code} title={$LL.SETTINGS.APP.DEVELOPER_MODE.TITLE()} hasCaretRight={false}>
-      <Switch active={$state.dev_profile !== null} on:change={toggleDevSettings} />
+      <Switch active={$state?.dev_mode !== "Off"} on:change={toggleDevSettings} />
     </SettingsEntry>
   </div>
 </div>

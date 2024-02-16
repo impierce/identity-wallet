@@ -4,7 +4,7 @@ use crate::state::actions::ActionTrait;
 use crate::state::actions::Reducer;
 use crate::state::reducers::dev_mode::load_dev_profile;
 
-#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone, Default, PartialEq, Eq)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone, PartialEq, Eq)]
 #[ts(export, export_to = "bindings/actions/DevProfileType.ts")]
 pub enum ProfileType {
     /// Dev profile which preloads data
@@ -12,10 +12,6 @@ pub enum ProfileType {
 
     /// Dev profile which recreate steps
     Dragon,
-
-    /// No dev profile loaded
-    #[default]
-    None,
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]

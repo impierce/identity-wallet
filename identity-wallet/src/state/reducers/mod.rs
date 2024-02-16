@@ -9,10 +9,10 @@ use super::persistence::{delete_state_file, delete_stronghold, load_state};
 use super::IdentityManager;
 use crate::crypto::stronghold::StrongholdManager;
 use crate::error::AppError::{self, *};
-use crate::state::actions::{Action, CreateNew, ProfileType};
-use crate::state::reducers::dev_mode::login_profile;
+use crate::state::actions::{Action, CreateNew};
+use crate::state::reducers::dev_mode::unlock_storage;
 use crate::state::user_prompt::CurrentUserPrompt;
-use crate::state::{AppState, Profile};
+use crate::state::{AppState, DevMode, Profile};
 use crate::verifiable_credential_record::VerifiableCredentialRecord;
 use did_key::{from_existing_key, Ed25519KeyPair};
 use futures::Future;
@@ -56,16 +56,16 @@ pub async fn get_state(_state: AppState, _action: Action) -> Result<AppState, Ap
         .and_then(|s| s.parse::<bool>().ok())
     {
         if dev_mode {
-            if state.dev_profile.is_none() {
-                state.dev_profile = Some(ProfileType::None);
-            } else if state.dev_profile != Some(ProfileType::None) {
-                return login_profile(state).await;
+            if state.dev_mode == DevMode::Off {
+                state.dev_mode = DevMode::On;
+            } else if state.dev_mode == DevMode::OnWithAutologin {
+                return unlock_storage(state).await;
             }
         } else {
-            state.dev_profile = None;
+            state.dev_mode = DevMode::Off;
         }
     } else {
-        state.dev_profile = None;
+        state.dev_mode = DevMode::Off;
     }
 
     Ok(state)
@@ -260,18 +260,13 @@ pub async fn reset_state(state: AppState, _action: Action) -> Result<AppState, A
     delete_state_file().await.ok();
     delete_stronghold().await.ok();
 
-    // Keep maintaing dev profile state
-    let dev_profile = if state.dev_profile.is_some() {
-        Some(ProfileType::None)
-    } else {
-        None
-    };
 
     Ok(AppState {
         current_user_prompt: Some(CurrentUserPrompt::Redirect {
             target: "welcome".to_string(),
         }),
-        dev_profile,
+        // Keep maintaing dev_mode state
+        dev_mode: state.dev_mode,
         ..Default::default()
     })
 }

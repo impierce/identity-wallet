@@ -27,7 +27,7 @@ const empty_state: State = {
   locale: 'en-US',
   credentials: [],
   current_user_prompt: null,
-  dev_profile: null,
+  dev_mode: "Off",
   debug_messages: [],
   user_journey: null,
   connections: [],

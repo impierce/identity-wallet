@@ -5,7 +5,7 @@ use crate::state::actions::{
     ProfileType, QrCodeScanned, Reset, UnlockStorage,
 };
 use crate::state::user_prompt::CurrentUserPrompt;
-use crate::state::{AppState, Connection, Profile};
+use crate::state::{AppState, Connection, DevMode, Profile};
 use crate::verifiable_credential_record::VerifiableCredentialRecord;
 use crate::{command, ASSETS_DIR};
 use did_key::{generate, Ed25519KeyPair};
@@ -48,10 +48,10 @@ pub async fn load_dev_profile(state: AppState, action: Action) -> Result<AppStat
     info!("Load dev profile: {:?}", action);
 
     if let Some(dev_profile) = listen::<DevProfile>(action) {
+        // All dev profiles need to use the const PASSWORD so it can automatically unlock storage.
         match dev_profile.profile {
             ProfileType::Ferris => return load_ferris_profile().await,
             ProfileType::Dragon => return load_dragon_profile(state).await,
-            ProfileType::None => {}
         }
     }
 
@@ -61,10 +61,12 @@ pub async fn load_dev_profile(state: AppState, action: Action) -> Result<AppStat
 pub async fn toggle_dev_settings(mut state: AppState, _action: Action) -> Result<AppState, AppError> {
     info!("Toggle dev settings");
 
-    if state.dev_profile.is_some() {
-        state.dev_profile = None;
+    if state.dev_mode != DevMode::Off {
+        state.dev_mode = DevMode::Off;
     } else {
-        state.dev_profile = Some(ProfileType::None);
+        // We don't preserve if user had autologin enabled
+        // So we just put it back to default (reload profile if you want to enable autologin again)
+        state.dev_mode = DevMode::On;
     }
 
     state.current_user_prompt = None;
@@ -72,7 +74,7 @@ pub async fn toggle_dev_settings(mut state: AppState, _action: Action) -> Result
     Ok(state)
 }
 
-pub async fn login_profile(state: AppState) -> Result<AppState, AppError> {
+pub async fn unlock_storage(state: AppState) -> Result<AppState, AppError> {
     command::reduce(
         state,
         Arc::new(UnlockStorage {
@@ -278,7 +280,7 @@ pub async fn load_dragon_profile(state: AppState) -> Result<AppState, AppError> 
     // Add & accept future engineer
     let mut state = add_future_engineer(state).await?;
 
-    state.dev_profile = Some(ProfileType::Dragon);
+    state.dev_mode = DevMode::OnWithAutologin;
 
     Ok(state)
 }
@@ -430,7 +432,7 @@ async fn load_ferris_profile() -> Result<AppState, AppError> {
         target: "me".to_string(),
     });
 
-    state.dev_profile = Some(ProfileType::Ferris);
+    state.dev_mode = DevMode::OnWithAutologin;
 
     Ok(state)
 }
