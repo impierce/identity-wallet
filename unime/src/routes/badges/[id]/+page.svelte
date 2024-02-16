@@ -82,7 +82,7 @@
       {#if credentialLogoUrl}
         <img
           src={credentialLogoUrl}
-          alt=""
+          alt="logo"
           class="absolute -top-1/4 left-0 scale-[1.75] opacity-40 blur-xl"
           on:error={() => (credentialLogoUrl = null)}
         />
