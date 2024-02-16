@@ -60,7 +60,7 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
 
         drop(state_guard);
         return Ok(AppState {
-            profile_settings: profile_settings,
+            profile_settings,
             current_user_prompt: Some(CurrentUserPrompt::Redirect {
                 target: "me".to_string(),
             }),
@@ -91,13 +91,14 @@ pub async fn update_profile_settings(state: AppState, action: Action) -> Result<
         let profile = state.profile_settings.profile.ok_or(MissingStateParameterError("active profile"))?.clone();
 
         return Ok(AppState {
-            profile_settings: {Some(Profile {
-                name: name.unwrap_or(profile.name),
-                picture,
-                theme,
-                ..profile
-            }),
-            ..profile_settings},
+            profile_settings: ProfileSettings {
+                profile: Some(Profile {
+                    name: name.unwrap_or(profile.name),
+                    picture,
+                    theme,
+                    ..profile
+                }),
+                ..Default::default()},
             ..state
             });
     }

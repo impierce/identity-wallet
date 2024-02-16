@@ -1,8 +1,5 @@
 use fern::colors::Color;
-use identity_wallet::{
-    initialize_storage,
-    state::{persistence::clear_assets_tmp_folder, AppStateContainer},
-};
+use identity_wallet::{persistence::{clear_assets_tmp_folder, initialize_storage}, state::AppStateContainer};
 use log::{info, LevelFilter};
 use tauri_plugin_log::{fern::colors::ColoredLevelConfig, Target, TargetKind};
 

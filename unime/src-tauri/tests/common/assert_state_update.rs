@@ -1,6 +1,5 @@
 use identity_wallet::{
-    state::{actions::Action, extension::CustomExtension, persistence::save_state, AppState, AppStateContainer},
-    STATE_FILE, STRONGHOLD,
+    persistence::{save_state, STATE_FILE, STRONGHOLD}, state::{actions::Action, extension::CustomExtension, AppState, AppStateContainer}
 };
 use serde_json::json;
 use tauri::Manager;
@@ -51,8 +50,7 @@ pub async fn assert_state_update(
             let mut guard = container.0.lock().await;
 
             let AppState {
-                locale,
-                profile,
+                profile_settings,
                 credentials,
                 current_user_prompt,
                 user_data_query,
@@ -62,8 +60,7 @@ pub async fn assert_state_update(
             } = &mut *guard;
 
             let AppState {
-                locale: expected_locale,
-                profile: expected_profile,
+                profile_settings: expected_profile_settings,
                 credentials: expected_credentials,
                 current_user_prompt: expected_current_user_prompt,
                 user_data_query: expected_user_data_query,
@@ -72,8 +69,8 @@ pub async fn assert_state_update(
                 ..
             } = expected_state;
 
-            let active_profile = profile; 
-            let expected_active_profile = expected_profile;
+            let active_profile = &profile_settings.profile; 
+            let expected_active_profile = &expected_profile_settings.profile;
 
             match (active_profile, expected_active_profile) {
                 (Some(active_profile), Some(expected_active_profile)) => {
@@ -82,7 +79,7 @@ pub async fn assert_state_update(
                 (active_profile, expected_active_profile) => assert_eq!(active_profile, expected_active_profile),
             }
 
-            assert_eq!(locale, expected_locale);
+            assert_eq!(profile_settings.locale, expected_profile_settings.locale);
             assert_eq!(credentials, expected_credentials);
 
             debug_messages.iter().zip(expected_debug_messages.iter()).for_each(

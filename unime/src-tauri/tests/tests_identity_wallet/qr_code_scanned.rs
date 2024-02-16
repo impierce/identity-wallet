@@ -6,12 +6,10 @@ use crate::common::{
 use identity_wallet::oid4vci::credential_format_profiles::{
     w3c_verifiable_credentials::jwt_vc_json::JwtVcJson, Credential, CredentialFormats, WithCredential,
 };
-use identity_wallet::state::profile_settings::Profile;
+use identity_wallet::state::profile_settings::{Profile, ProfileSettings};
+use identity_wallet::state::shared::backend_utils::{BackEndUtils, VerifiableCredentialRecord};
 use identity_wallet::state::AppStateContainer;
-use identity_wallet::{
-    state::{actions::Action, AppState},
-    verifiable_credential_record::VerifiableCredentialRecord,
-};
+use identity_wallet::state::{actions::Action, AppState};
 use serde_json::json;
 use tokio::sync::Mutex;
 
@@ -44,8 +42,14 @@ async fn test_qr_code_scanned_handle_siopv2_authorization_request() {
     let action2 = json_example::<Action>("tests/fixtures/actions/authenticate_connect_accept.json");
 
     let container = AppStateContainer(Mutex::new(AppState {
-        managers,
-        profile: Some(active_profile),
+        back_end_utils: BackEndUtils {
+            managers: test_managers(vec![]),
+            ..Default::default()
+        },
+        profile_settings: ProfileSettings {
+            profile: Some(active_profile),
+            ..Default::default()
+        },
         ..AppState::default()
     }));
 
@@ -96,8 +100,14 @@ async fn test_qr_code_scanned_handle_oid4vp_authorization_request() {
     let action2 = json_example::<Action>("tests/fixtures/actions/authenticate_cred_selected.json");
 
     let container = AppStateContainer(Mutex::new(AppState {
-        managers,
-        profile: Some(active_profile),
+        back_end_utils: BackEndUtils {
+            managers: test_managers(vec![]),
+            ..Default::default()
+        },
+        profile_settings: ProfileSettings {
+            profile: Some(active_profile),
+            ..Default::default()
+        },    
         credentials: credentials.clone(),
         ..AppState::default()
     }));
@@ -140,8 +150,14 @@ async fn test_qr_code_scanned_invalid_qr_code_error() {
     let action = json_example::<Action>("tests/fixtures/actions/qr_scanned_invalid_payload.json");
 
     let container = AppStateContainer(Mutex::new(AppState {
-        managers,
-        profile: Some(active_profile),
+        back_end_utils: BackEndUtils {
+            managers: test_managers(vec![]),
+            ..Default::default()
+        },
+        profile_settings: ProfileSettings {
+            profile: Some(active_profile),
+            ..Default::default()
+        },
         ..AppState::default()
     }));
 

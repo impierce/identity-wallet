@@ -1,6 +1,7 @@
 use crate::common::assert_state_update::{assert_state_update, setup_state_file, setup_stronghold};
 use crate::common::{json_example, test_managers};
-use identity_wallet::state::profile_settings::Profile;
+use identity_wallet::state::profile_settings::{Profile, ProfileSettings};
+use identity_wallet::state::shared::backend_utils::BackEndUtils;
 use identity_wallet::state::{actions::Action, AppState, AppStateContainer};
 use tokio::sync::Mutex;
 
@@ -50,13 +51,19 @@ async fn test_get_state_unlock_storage() {
     let action2 = json_example::<Action>("tests/fixtures/actions/unlock_storage.json");
 
     let container = AppStateContainer(Mutex::new(AppState {
-        managers: test_managers(vec![]),
-        profile: Some(Profile {
-            name: "Ferris Crabman".to_string(),
-            picture: Some("&#129408".to_string()),
-            theme: Some("system".to_string()),
-            primary_did: "did:example:placeholder".to_string(),
-        }),
+        back_end_utils: BackEndUtils {
+            managers: test_managers(vec![]),
+            ..Default::default()
+        },
+        profile_settings: ProfileSettings {
+            profile: Some(Profile {
+                name: "Ferris Crabman".to_string(),
+                picture: Some("&#129408".to_string()),
+                theme: Some("system".to_string()),
+                primary_did: "did:example:placeholder".to_string(),
+            }),
+            ..Default::default()
+        },
         ..AppState::default()
     }));
 
@@ -91,13 +98,19 @@ async fn test_get_state_unlock_storage_invalid_password() {
     let action2 = json_example::<Action>("tests/fixtures/actions/unlock_storage_incorrect_password.json");
 
     let container = AppStateContainer(Mutex::new(AppState {
-        managers: test_managers(vec![]),
-        profile: Some(Profile {
-            name: "Ferris Crabman".to_string(),
-            picture: Some("&#129408".to_string()),
-            theme: Some("system".to_string()),
-            primary_did: "did:example:placeholder".to_string(),
-        }),
+        back_end_utils: BackEndUtils {
+            managers: test_managers(vec![]),
+            ..Default::default()
+        },
+        profile_settings: ProfileSettings {
+            profile: Some(Profile {
+                name: "Ferris Crabman".to_string(),
+                picture: Some("&#129408".to_string()),
+                theme: Some("system".to_string()),
+                primary_did: "did:example:placeholder".to_string(),
+            }),
+            ..Default::default()
+        },
         ..AppState::default()
     }));
 

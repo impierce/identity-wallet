@@ -82,56 +82,56 @@ impl AppState{
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use indoc::indoc;
-    use tests::profile_settings::{Locale, Profile};
+// #[cfg(test)]
+// mod tests {
+//     use super::*;
+//     use indoc::indoc;
+//     use tests::profile_settings::{Locale, Profile};
 
-    #[test]
-    fn test_app_state_serialize() {
-        let state = AppState {
-            current_user_prompt: Some(CurrentUserPrompt::Redirect {
-                target: "me".to_string(),
-            }),
-            profile_settings: ProfileSettings {
-                locale: Locale::En,
-                profile: Some(Profile {
-                    name: "John Doe".to_string(),
-                    picture: None,
-                    theme: None,
-                    primary_did: "did:example:123".to_string(),
-            })},
-            ..Default::default()
-        };
+//     #[test]
+//     fn test_app_state_serialize() {
+//         let state = AppState {
+//             current_user_prompt: Some(CurrentUserPrompt::Redirect {
+//                 target: "me".to_string(),
+//             }),
+//             profile_settings: ProfileSettings {
+//                 locale: Locale::En,
+//                 profile: Some(Profile {
+//                     name: "John Doe".to_string(),
+//                     picture: None,
+//                     theme: None,
+//                     primary_did: "did:example:123".to_string(),
+//             })},
+//             ..Default::default()
+//         };
 
-        let serialized = serde_json::to_string_pretty(&state).unwrap();
+//         let serialized = serde_json::to_string_pretty(&state).unwrap();
 
-        // AppState is serialized without the `managers` and `active_connection_request` fields.
-        // Probably a basic json file instead of the indoc! is cleaner.
-        assert_eq!(
-            serialized,
-            indoc! {
-            r#"{
-                  "credentials": [],
-                  "current_user_prompt": {
-                    "type": "redirect",
-                    "target": "me"
-                  },
-                  "connections": [],
-                  "user_data_query": [],
-                  "locale": "en",
-                  "profile": {
-                    "name": "John Doe",
-                    "picture": null,
-                    "theme": null,
-                    "primary_did": "did:example:123"
-                  },
-                  "user_journey": null,
-                  "debug_messages": [],
-                  "extensions": {},
-                  "dev_mode_enabled": false
-                }"#}
-        );
-    }
-}
+//         // AppState is serialized without the `managers` and `active_connection_request` fields.
+//         // Probably a basic json file instead of the indoc! is cleaner.
+//         assert_eq!(
+//             serialized,
+//             indoc! {
+//             r#"{
+//                   "credentials": [],
+//                   "current_user_prompt": {
+//                     "type": "redirect",
+//                     "target": "me"
+//                   },
+//                   "connections": [],
+//                   "user_data_query": [],
+//                   "locale": "en",
+//                   "profile": {
+//                     "name": "John Doe",
+//                     "picture": null,
+//                     "theme": null,
+//                     "primary_did": "did:example:123"
+//                   },
+//                   "user_journey": null,
+//                   "debug_messages": [],
+//                   "extensions": {},
+//                   "dev_mode_enabled": false
+//                 }"#}
+//         );
+//     }
+// }

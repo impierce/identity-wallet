@@ -1,3 +1,4 @@
+use crate::state::shared::backend_utils::BackEndUtils;
 use crate::state::{actions::Action, AppState, AppStateContainer};
 use crate::error::AppError;
 use crate::persistence::save_state;
@@ -49,7 +50,10 @@ async fn main_exec<R: tauri::Runtime>(
             connections: guard.connections.clone(),
             credentials: guard.credentials.clone(),
             user_data_query: guard.user_data_query.clone(),
-            back_end_utils: guard.back_end_utils.clone(),
+            back_end_utils: BackEndUtils {
+                managers: guard.back_end_utils.managers.clone(),
+                active_connection_request: serde_json::from_value(serde_json::json!(guard.back_end_utils.active_connection_request)).unwrap()
+            },
             profile_settings: guard.profile_settings.clone(),
             current_user_prompt: guard.current_user_prompt.clone(),
             debug_messages: guard.debug_messages.clone(),
