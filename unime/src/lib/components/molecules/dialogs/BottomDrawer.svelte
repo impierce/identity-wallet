@@ -118,7 +118,7 @@
   {/if}
 </div>
 
-<style>
+<style lang="css">
   .custom {
     font-size: 13px;
     font-style: normal;

@@ -1,8 +1,8 @@
 use crate::crypto::stronghold::StrongholdManager;
 use crate::error::AppError::{self, *};
 use crate::state::actions::{
-    listen, Action, ConnectionAccepted, CreateNew, CredentialOffersSelected, CredentialsSelected, DevProfile,
-    ProfileType, QrCodeScanned, Reset, UnlockStorage,
+    listen, Action, DevProfile,
+    ProfileSteps, ProfileType, UnlockStorage,
 };
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, Connection, DevMode, Profile};
@@ -10,7 +10,7 @@ use crate::verifiable_credential_record::VerifiableCredentialRecord;
 use crate::{command, ASSETS_DIR};
 use did_key::{generate, Ed25519KeyPair};
 use lazy_static::lazy_static;
-use log::info;
+use log::{debug, info};
 use oid4vc::oid4vc_core::Subject;
 use oid4vc::oid4vc_manager::methods::key_method::KeySubject;
 use oid4vc::oid4vci::credential_format_profiles::w3c_verifiable_credentials::jwt_vc_json::JwtVcJson;
@@ -19,7 +19,7 @@ use serde_json::json;
 use std::fs::File;
 use std::io::copy;
 use std::sync::Arc;
-use uuid::Uuid;
+use super::dragon_profile::*;
 
 lazy_static! {
     pub static ref PERSONAL_INFORMATION: VerifiableCredentialRecord = VerifiableCredentialRecord::from(
@@ -42,7 +42,7 @@ lazy_static! {
     );
 }
 
-const PASSWORD: &str = "sup3rSecr3t";
+pub(super) const PASSWORD: &str = "sup3rSecr3t";
 
 pub async fn load_dev_profile(state: AppState, action: Action) -> Result<AppState, AppError> {
     info!("Load dev profile: {:?}", action);
@@ -51,7 +51,7 @@ pub async fn load_dev_profile(state: AppState, action: Action) -> Result<AppStat
         // All dev profiles need to use the const PASSWORD so it can automatically unlock storage.
         match dev_profile.profile {
             ProfileType::Ferris => return load_ferris_profile().await,
-            ProfileType::Dragon => return load_dragon_profile(state).await,
+            ProfileType::Dragon => return load_dragon_profile(state, dev_profile).await,
         }
     }
 
@@ -84,201 +84,55 @@ pub async fn unlock_storage(state: AppState) -> Result<AppState, AppError> {
     .await
 }
 
-async fn create_new_profile(state: AppState) -> Result<AppState, AppError> {
-    let create_new = CreateNew {
-        name: "Shenron".to_string(),
-        picture: "&#x1F432".to_string(),
-        theme: "dark".to_string(),
-        password: PASSWORD.to_string(),
-    };
+pub async fn load_dragon_profile(mut state: AppState, dev_profile: DevProfile) -> Result<AppState, AppError> {
+    let steps = dev_profile
+        .execute_steps
+        .expect("For dragon profile steps are expected");
 
-    command::reduce(state, Arc::new(create_new)).await
-}
+    info!("Profile steps executed: {:?}", steps);
 
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-struct CredentialResponse {
-    uri: String,
-    pin: serde_json::Value,
-    offer: serde_json::Value,
-}
+    state = reset_settings(state).await?;
+    state = create_new_profile(state).await?;
 
-async fn add_credential(state: AppState) -> Result<AppState, AppError> {
-    // URL from NGDIL demo
-    let url = "https://api.demo.ngdil.com/api/starting-offer";
-
-    let payload = serde_json::json!({
-        "credentials": [
-            "National ID",
-            "School Course Certificate",
-            "Volunteer Badge",
-            "Higher Education Information Literacy Level 1",
-            "Business Innovation & Interdisciplinair Samenwerken"
-        ]
-    });
-
-    let response: CredentialResponse = reqwest::Client::new()
-        .post(url)
-        .json(&payload)
-        .send()
-        .await
-        .map_err(|err| AppError::DevError(err.to_string()))?
-        .json()
-        .await
-        .map_err(|err| AppError::DevError(err.to_string()))?;
-
-    let qr_code = QrCodeScanned {
-        form_urlencoded: response.uri,
-    };
-
-    let state = command::reduce(state, Arc::new(qr_code)).await?;
-
-    let cr_selected = CredentialOffersSelected {
-        offer_indices: vec![0, 1, 2, 3, 4],
-    };
-
-    command::reduce(state, Arc::new(cr_selected)).await
-}
-
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-struct ConnectionResponse {
-    uri: String,
-    request: serde_json::Value,
-    #[serde(rename = "requestOptions")]
-    request_options: serde_json::Value,
-}
-
-async fn add_connection(state: AppState) -> Result<AppState, AppError> {
-    // URL from NGDIL demo
-    let url = "https://api.demo.ngdil.com/siop";
-
-    let payload = serde_json::json!({
-        "clientMetadata": {
-            "logoUri": "https://demo.ngdil.com/imgs/kw1c-white.png",
-            "clientName": "Koning Willem I College"
-        }
-    });
-
-    let response: ConnectionResponse = reqwest::Client::new()
-        .post(url)
-        .json(&payload)
-        .send()
-        .await
-        .map_err(|err| AppError::DevError(err.to_string()))?
-        .json()
-        .await
-        .map_err(|err| AppError::DevError(err.to_string()))?;
-
-    let qr_code = QrCodeScanned {
-        form_urlencoded: response.uri,
-    };
-
-    let state = command::reduce(state, Arc::new(qr_code)).await?;
-
-    command::reduce(state, Arc::new(ConnectionAccepted)).await
-}
-
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-struct PresentationResponse {
-    uri: String,
-    request: serde_json::Value,
-    #[serde(rename = "requestOptions")]
-    request_options: serde_json::Value,
-}
-
-async fn add_presentation_request(state: AppState) -> Result<AppState, AppError> {
-    // URL from NGDIL demo
-    let url = "https://api.demo.ngdil.com/api/oid4vp";
-
-    let payload = serde_json::json!({
-        "presentationStage":"dominiqueEnrolCourse",
-        "clientMetadata":{"logoUri":"https://demo.ngdil.com/imgs/kw1c-white.png","clientName":"Koning Willem I College"}
-    });
-
-    let response: PresentationResponse = reqwest::Client::new()
-        .post(url)
-        .json(&payload)
-        .send()
-        .await
-        .map_err(|err| AppError::DevError(err.to_string()))?
-        .json()
-        .await
-        .map_err(|err| AppError::DevError(err.to_string()))?;
-
-    let qr_code = QrCodeScanned {
-        form_urlencoded: response.uri,
-    };
-
-    let state = command::reduce(state, Arc::new(qr_code)).await?;
-
-    if let Some(CurrentUserPrompt::ShareCredentials {
-        client_name: _,
-        logo_uri: _,
-        options,
-    }) = &state.current_user_prompt
-    {
-        let credential_uuids: Vec<Uuid> = options
-            .iter()
-            .map(|uuid_str| Uuid::parse_str(uuid_str).unwrap())
-            .collect();
-
-        let cr_selected = CredentialsSelected { credential_uuids };
-
-        return command::reduce(state, Arc::new(cr_selected)).await;
+    if ProfileSteps::AddCredentials <= steps {
+        debug!("Add credentials step executed");
+        state = add_credential(state).await?;
     }
 
-    Err(AppError::DevError("Presentation not accepted".to_string()))
-}
+    if ProfileSteps::AcceptCredentials <= steps {
+        debug!("Accept credentials step executed");
+        state = accept_credential(state).await?;
+    }
 
-async fn add_future_engineer(state: AppState) -> Result<AppState, AppError> {
-    let url = "https://api.demo.ngdil.com/api/credential-offer";
+    if ProfileSteps::AddConnection <= steps {
+        debug!("Add connection step executed");
+        state = add_connection(state).await?;
+    }
 
-    let payload = json!({"credential":"Future Engineer","issuer":"kw1c"});
+    if ProfileSteps::AcceptConnection <= steps {
+        debug!("Accept connection step executed");
+        state = accept_connection(state).await?;
+    }
 
-    let response: CredentialResponse = reqwest::Client::new()
-        .post(url)
-        .json(&payload)
-        .send()
-        .await
-        .map_err(|err| AppError::DevError(err.to_string()))?
-        .json()
-        .await
-        .map_err(|err| AppError::DevError(err.to_string()))?;
+    if ProfileSteps::AddPresentation <= steps {
+        debug!("Add presentation step executed");
+        state = add_presentation_request(state).await?;
+    }
 
-    let qr_code = QrCodeScanned {
-        form_urlencoded: response.uri,
-    };
+    if ProfileSteps::ShareCredentails <= steps {
+        debug!("Share credentials step executed");
+        state = share_credentials(state).await?;
+    }
 
-    let state = command::reduce(state, Arc::new(qr_code)).await?;
+    if ProfileSteps::AddFutureEngineer <= steps {
+        debug!("Add future engineer step executed");
+        state = add_future_engineer(state).await?;
+    }
 
-    let cr_selected = CredentialOffersSelected {
-        offer_indices: vec![0],
-    };
-
-    command::reduce(state, Arc::new(cr_selected)).await
-}
-
-async fn reset_settings(state: AppState) -> Result<AppState, AppError> {
-    command::reduce(state, Arc::new(Reset)).await
-}
-
-pub async fn load_dragon_profile(state: AppState) -> Result<AppState, AppError> {
-    // Reset
-    let state = reset_settings(state).await?;
-
-    // Create new
-    let state = create_new_profile(state).await?;
-
-    // Add & accept credential
-    let state = add_credential(state).await?;
-
-    // Add & accept connection
-    let state = add_connection(state).await?;
-
-    // Add & accept presentation
-    let state = add_presentation_request(state).await?;
-
-    // Add & accept future engineer
-    let mut state = add_future_engineer(state).await?;
+    if ProfileSteps::CompleteFlow <= steps {
+        debug!("Accept future engineer step executed");
+        state = accept_future_engineer(state).await?;
+    }
 
     state.dev_mode = DevMode::OnWithAutologin;
 

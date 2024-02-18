@@ -17,6 +17,7 @@
 
   import type { SvelteHTMLElements } from 'svelte/elements';
 
+  import type { ProfileSteps } from '@bindings/actions/DevProfileSteps';
   import type { ProfileType } from '@bindings/actions/DevProfileType';
 
   import { determineTheme } from './utils';
@@ -29,6 +30,7 @@
 
   let expandDevMenu = true;
   let showDebugMessages = false;
+  let showDragonProfileSteps = false;
 
   const systemColorScheme = window.matchMedia('(prefers-color-scheme: dark)');
 
@@ -73,12 +75,12 @@
 
     const ferrisBtn: DevModeButton = {
       stringIcon: '🦀',
-      onClick: () => loadProfile('Ferris'),
+      onClick: () => loadFerrisProfile(),
     };
 
     const dragonBtn: DevModeButton = {
       stringIcon: '🐲',
-      onClick: () => loadProfile('Dragon'),
+      onClick: () => (showDragonProfileSteps = !showDragonProfileSteps),
     };
 
     const debugBtn: DevModeButton = {
@@ -91,14 +93,47 @@
 
   const devButtons = createDevButtons();
 
-  async function loadProfile(profile: ProfileType) {
-    dispatch({ type: '[DEV] Load DEV profile', payload: { profile } }).then(() => {
+  // Order needs to match the BE enum.
+  const profileSteps: ProfileSteps[] = [
+    'CreateProfile',
+    'AddCredentials',
+    'AcceptCredentials',
+    'AddConnection',
+    'AcceptConnection',
+    'AddPresentation',
+    'ShareCredentails',
+    'AddFutureEngineer',
+    'CompleteFlow',
+  ];
+
+  async function loadFerrisProfile() {
+    dispatch({ type: '[DEV] Load DEV profile', payload: { profile: 'Ferris', execute_steps: null } }).then(() => {
       // Reload page
       setTimeout(async () => {
         await goto('/');
         await goto('/me');
       }, 500);
     });
+  }
+
+  async function loadDragonProfile(steps: ProfileSteps) {
+    await dispatch({
+      type: '[DEV] Load DEV profile',
+      payload: {
+        profile: 'Dragon',
+        execute_steps: steps,
+      },
+    });
+
+    showDragonProfileSteps = false;
+
+    if (steps == 'CompleteFlow') {
+      // Reload page
+      setTimeout(async () => {
+        await goto('/');
+        await goto('/me');
+      }, 500);
+    }
   }
 </script>
 
@@ -142,13 +177,30 @@
     <div class="relative z-10 min-h-full w-screen bg-orange-100 pt-24">
       <p class="pb-2 pt-2 text-center text-xs font-semibold uppercase text-orange-800">debug messages</p>
 
-      <hr class="mx-8 h-0.5 border-t-0 bg-orange-400 opacity-100" />
+      <hr class="mx-8 h-0.5 border-t-0 bg-orange-800 opacity-100" />
 
       {#each $state.debug_messages as message}
         <div class="mx-2 mb-2 rounded bg-orange-200 p-2">
           <div class="break-all font-mono text-xs text-orange-700">{message}</div>
         </div>
       {/each}
+    </div>
+  {/if}
+
+  {#if showDragonProfileSteps}
+    <div class="fixed z-10 flex h-screen w-screen justify-center bg-black/50 pt-24">
+      <div class="ml-10 mr-10 mt-10 h-fit w-full rounded bg-white pb-4">
+        <p class="pb-2 pt-2 text-center text-orange-800">Profile steps</p>
+
+        {#each profileSteps as steps, i}
+          <button
+            class="mx-auto mb-2 block w-11/12 rounded bg-orange-200 p-2"
+            on:click={() => loadDragonProfile(steps)}
+          >
+            <div class="break-all font-mono text-xs text-orange-700">{i + 1}: {steps}</div>
+          </button>
+        {/each}
+      </div>
     </div>
   {/if}
 
