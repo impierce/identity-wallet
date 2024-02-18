@@ -233,23 +233,23 @@ async fn load_predefined_images() -> Result<(), AppError> {
 
     // Credentials
     let mut image_bytes: &[u8] = include_bytes!("../../../resources/images/cuddlyferris.svg");
-    let file_name = format!("{}.svg", PERSONAL_INFORMATION.clone().display_credential.id);
+    let file_name = format!("{}.svg", PERSONAL_INFORMATION.display_credential.id);
     let mut file = File::create(ASSETS_DIR.lock().unwrap().as_path().to_owned().join(file_name))?;
     copy(&mut image_bytes, &mut file)?;
 
     let mut image_bytes: &[u8] = include_bytes!("../../../resources/images/credential-driver-license.png");
-    let file_name = format!("{}.png", DRIVERS_LICENSE_CREDENTIAL.clone().display_credential.id);
+    let file_name = format!("{}.png", DRIVERS_LICENSE_CREDENTIAL.display_credential.id);
     let mut file = File::create(ASSETS_DIR.lock().unwrap().as_path().to_owned().join(file_name))?;
     copy(&mut image_bytes, &mut file)?;
 
     // Badges
     let mut image_bytes: &[u8] = include_bytes!("../../../resources/images/badge-university-green.png");
-    let file_name = format!("{}.png", OPEN_BADGE.clone().display_credential.id);
+    let file_name = format!("{}.png", OPEN_BADGE.display_credential.id);
     let mut file = File::create(ASSETS_DIR.lock().unwrap().as_path().to_owned().join(file_name))?;
     copy(&mut image_bytes, &mut file)?;
 
     let mut image_bytes: &[u8] = include_bytes!("../../../resources/images/edubadge-1.png");
-    let file_name = format!("{}.png", EDU_BADGE.clone().display_credential.id);
+    let file_name = format!("{}.png", EDU_BADGE.display_credential.id);
     let mut file = File::create(ASSETS_DIR.lock().unwrap().as_path().to_owned().join(file_name))?;
     copy(&mut image_bytes, &mut file)?;
 
