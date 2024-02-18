@@ -14,7 +14,7 @@ use oid4vc::oid4vci::credential_format_profiles::w3c_verifiable_credentials::jwt
 use oid4vc::oid4vci::credential_format_profiles::{Credential, CredentialFormats, WithCredential};
 use serde_json::json;
 use std::fs::File;
-use std::io::copy;
+use std::io::Write;
 use std::sync::Arc;
 
 lazy_static! {
@@ -205,53 +205,49 @@ pub async fn load_dev_profile(_state: AppState, _action: Action) -> Result<AppSt
 
 async fn load_predefined_images() -> Result<(), AppError> {
     // Issuers
-    let mut image_bytes: &[u8] = include_bytes!("../../../resources/images/issuer-university.png");
-    let file_name = format!("{}.png", "university");
-    let mut file = File::create(ASSETS_DIR.lock().unwrap().as_path().to_owned().join(file_name))?;
-    copy(&mut image_bytes, &mut file)?;
+    write_bytes_to_file(
+        include_bytes!("../../../resources/images/issuer-university.png"),
+        "university.png",
+    )?;
 
     // Connections
-    let mut image_bytes: &[u8] = include_bytes!("../../../resources/images/impierce_white.png");
-    let file_name = format!("{}.png", "impierce");
-    let mut file = File::create(ASSETS_DIR.lock().unwrap().as_path().to_owned().join(file_name))?;
-    copy(&mut image_bytes, &mut file)?;
-
-    let mut image_bytes: &[u8] = include_bytes!("../../../resources/images/iota-icon-dark.svg");
-    let file_name = format!("{}.svg", "iota");
-    let mut file = File::create(ASSETS_DIR.lock().unwrap().as_path().to_owned().join(file_name))?;
-    copy(&mut image_bytes, &mut file)?;
-
-    let mut image_bytes: &[u8] = include_bytes!("../../../resources/images/kw1c-white.png");
-    let file_name = format!("{}.png", "kw1c");
-    let mut file = File::create(ASSETS_DIR.lock().unwrap().as_path().to_owned().join(file_name))?;
-    copy(&mut image_bytes, &mut file)?;
-
-    let mut image_bytes: &[u8] = include_bytes!("../../../resources/images/ngdil.svg");
-    let file_name = format!("{}.svg", "ngdil");
-    let mut file = File::create(ASSETS_DIR.lock().unwrap().as_path().to_owned().join(file_name))?;
-    copy(&mut image_bytes, &mut file)?;
+    write_bytes_to_file(
+        include_bytes!("../../../resources/images/impierce_white.png"),
+        "impierce.png",
+    )?;
+    write_bytes_to_file(
+        include_bytes!("../../../resources/images/iota-icon-dark.svg"),
+        "iota.svg",
+    )?;
+    write_bytes_to_file(include_bytes!("../../../resources/images/kw1c-white.png"), "kw1c.png")?;
+    write_bytes_to_file(include_bytes!("../../../resources/images/ngdil.svg"), "ngdil.svg")?;
 
     // Credentials
-    let mut image_bytes: &[u8] = include_bytes!("../../../resources/images/cuddlyferris.svg");
-    let file_name = format!("{}.svg", PERSONAL_INFORMATION.display_credential.id);
-    let mut file = File::create(ASSETS_DIR.lock().unwrap().as_path().to_owned().join(file_name))?;
-    copy(&mut image_bytes, &mut file)?;
-
-    let mut image_bytes: &[u8] = include_bytes!("../../../resources/images/credential-driver-license.png");
-    let file_name = format!("{}.png", DRIVERS_LICENSE_CREDENTIAL.display_credential.id);
-    let mut file = File::create(ASSETS_DIR.lock().unwrap().as_path().to_owned().join(file_name))?;
-    copy(&mut image_bytes, &mut file)?;
+    write_bytes_to_file(
+        include_bytes!("../../../resources/images/cuddlyferris.svg"),
+        &format!("{}.svg", PERSONAL_INFORMATION.display_credential.id),
+    )?;
+    write_bytes_to_file(
+        include_bytes!("../../../resources/images/credential-driver-license.png"),
+        &format!("{}.png", DRIVERS_LICENSE_CREDENTIAL.display_credential.id),
+    )?;
 
     // Badges
-    let mut image_bytes: &[u8] = include_bytes!("../../../resources/images/badge-university-green.png");
-    let file_name = format!("{}.png", OPEN_BADGE.display_credential.id);
-    let mut file = File::create(ASSETS_DIR.lock().unwrap().as_path().to_owned().join(file_name))?;
-    copy(&mut image_bytes, &mut file)?;
-
-    let mut image_bytes: &[u8] = include_bytes!("../../../resources/images/edubadge-1.png");
-    let file_name = format!("{}.png", EDU_BADGE.display_credential.id);
-    let mut file = File::create(ASSETS_DIR.lock().unwrap().as_path().to_owned().join(file_name))?;
-    copy(&mut image_bytes, &mut file)?;
+    write_bytes_to_file(
+        include_bytes!("../../../resources/images/badge-university-green.png"),
+        &format!("{}.png", OPEN_BADGE.display_credential.id),
+    )?;
+    write_bytes_to_file(
+        include_bytes!("../../../resources/images/edubadge-1.png"),
+        &format!("{}.png", EDU_BADGE.display_credential.id),
+    )?;
 
     Ok(())
+}
+
+/// Helper function for load_predefined_images()
+fn write_bytes_to_file(bytes: &[u8], file_name: &str) -> Result<File, std::io::Error> {
+    let mut file = File::create(ASSETS_DIR.lock().unwrap().as_path().to_owned().join(file_name))?;
+    file.write_all(bytes)?;
+    Ok(file)
 }
