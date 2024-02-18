@@ -1,7 +1,6 @@
 use crate::error::AppError;
 use crate::state::actions::{listen, Action, QueryTarget, SortMethod, UserDataQuery};
 use crate::state::{AppState, Connection};
-use crate::utils::AsStr;
 use crate::verifiable_credential_record::DisplayCredential;
 use itertools::concat;
 
@@ -23,11 +22,11 @@ pub async fn credential_query(state: AppState, action: Action) -> Result<AppStat
                 let (filtered_creds_name, credentials): (Vec<_>, Vec<_>) = state
                     .credentials
                     .iter()
-                    .partition(|credential| contains_search_term(credential.display_name.as_str(), search_term));
+                    .partition(|credential| contains_search_term(Some(&credential.display_name), search_term));
 
                 let (filtered_creds_issuer, credentials): (Vec<_>, Vec<_>) = credentials
                     .into_iter()
-                    .partition(|credential| contains_search_term(credential.issuer_name.as_str(), search_term));
+                    .partition(|credential| contains_search_term(Some(&credential.issuer_name), search_term));
 
                 let filtered_creds_content: Vec<_> = credentials
                     .into_iter()
@@ -235,7 +234,7 @@ mod tests {
             credentials: vec![
                 DisplayCredential {
                     id: "1".to_string(),
-                    issuer_name: Some("Example Organization".to_string()),
+                    issuer_name: "Example Organization".to_string(),
                     format: CredentialFormats::JwtVcJson(Profile { format: JwtVcJson }),
                     data: serde_json::json!({"last_name": "Ferris"}),
                     metadata: CredentialMetadata {
@@ -243,13 +242,11 @@ mod tests {
                         date_added: "2021-01-01".to_string(),
                         ..Default::default()
                     },
-                    display_name: Some("John".to_string()),
-                    display_icon: None,
-                    display_color: None,
+                    display_name: "John".to_string(),
                 },
                 DisplayCredential {
                     id: "2".to_string(),
-                    issuer_name: Some("Example Organization".to_string()),
+                    issuer_name: "Example Organization".to_string(),
                     format: CredentialFormats::JwtVcJson(Profile { format: JwtVcJson }),
                     data: serde_json::json!({"last_name": "John"}),
                     metadata: CredentialMetadata {
@@ -257,13 +254,11 @@ mod tests {
                         date_added: "2021-02-01".to_string(),
                         ..Default::default()
                     },
-                    display_name: Some("Jane".to_string()),
-                    display_icon: None,
-                    display_color: None,
+                    display_name: "Jane".to_string(),
                 },
                 DisplayCredential {
                     id: "3".to_string(),
-                    issuer_name: Some("John Organization".to_string()),
+                    issuer_name: "John Organization".to_string(),
                     format: CredentialFormats::JwtVcJson(Profile { format: JwtVcJson }),
                     data: serde_json::json!({"last_name": "Ferris"}),
                     metadata: CredentialMetadata {
@@ -271,9 +266,7 @@ mod tests {
                         date_added: "2021-03-01".to_string(),
                         ..Default::default()
                     },
-                    display_name: Some("Jane".to_string()),
-                    display_icon: None,
-                    display_color: None,
+                    display_name: "Jane".to_string(),
                 },
             ],
             ..Default::default()

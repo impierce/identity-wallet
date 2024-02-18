@@ -98,7 +98,7 @@
     {#each credentials as credential}
       <ListItemCard
         id={credential.id}
-        title={credential.display_name ?? ""}
+        title={credential.display_name}
         description={credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
         type={credential.data.type.includes('OpenBadgeCredential') ? 'badge' : 'data'}
         on:click={() =>

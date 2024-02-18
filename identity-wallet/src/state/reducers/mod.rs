@@ -160,8 +160,8 @@ pub async fn update_credential_metadata(state: AppState, action: Action) -> Resu
     if let Some(UpdateCredentialMetadata {
         id: credential_id,
         name,
-        color,
-        icon,
+        color: _,
+        icon: _,
         is_favorite,
     }) = listen::<UpdateCredentialMetadata>(action)
     {
@@ -187,27 +187,9 @@ pub async fn update_credential_metadata(state: AppState, action: Action) -> Resu
         );
 
         // Set name if given
-        if name.is_some() {
+        if let Some(name) = name {
             display_credential.display_name = name;
-        } else {
-            let display_name = display_credential
-                .get_achievement_name_from_data()
-                .or(display_credential.get_type_name_from_data());
-
-            if display_name.is_some() {
-                display_credential.display_name = display_name;
-            }
-        }
-
-        // Set color
-        if color.is_some() {
-            display_credential.display_color = color;
-        }
-
-        // Set icon
-        if icon.is_some() {
-            display_credential.display_icon = icon;
-        }
+        }  
 
         // Set favorite if given
         if let Some(is_favorite) = is_favorite {

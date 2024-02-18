@@ -46,9 +46,13 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
 
                 let issuance_date = credential_display["issuanceDate"].clone();
 
+                let display_name = get_achievement_name_from_data(&credential_display)
+                    .or(get_type_name_from_data(&credential_display))
+                    .unwrap_or("".to_string());
+
                 DisplayCredential {
                     id: Uuid::from_slice(&hash.as_bytes()[..16]).unwrap().to_string(),
-                    issuer_name: None,
+                    issuer_name: "".to_string(),
                     format: verifiable_credential.format().unwrap(),
                     data: credential_display,
                     metadata: CredentialMetadata {
@@ -56,9 +60,7 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
                         date_added: chrono::Utc::now().to_rfc3339(),
                         date_issued: issuance_date.to_string(),
                     },
-                    display_name: None,
-                    display_icon: None,
-                    display_color: None,
+                    display_name,
                 }
             }
             _ => unimplemented!(),
@@ -71,12 +73,30 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
     }
 }
 
+fn get_achievement_name_from_data(credential_display: &serde_json::Value) -> Option<String> {
+    let cred_subject = credential_display.get("credentialSubject")?;
+    let achievement = cred_subject.get("achievement")?;
+    let name = achievement.get("name")?;
+
+    // Don't use the to_string for the name variable as it add's "" around the string
+    name.as_str().map(|name| name.to_string())
+}
+
+fn get_type_name_from_data(credential_display: &serde_json::Value) -> Option<String> {
+    match credential_display.get("type")? {
+        // Don't use the to_string for the name variable as it add's "" around the string
+        Value::Array(array) => array.last()?.as_str().map(|name| name.to_string()),
+        _ => None,
+    }
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, Derivative, TS)]
 #[derivative(PartialEq)]
 #[ts(export, export_to = "bindings/display-credential/DisplayCredential.ts")]
 pub struct DisplayCredential {
+    /// Also display_icon
     pub id: String,
-    pub issuer_name: Option<String>,
+    pub issuer_name: String,
     #[ts(type = "string")]
     pub format: CredentialFormats,
     #[ts(type = "any")]
@@ -84,31 +104,7 @@ pub struct DisplayCredential {
     #[serde(default)]
     pub metadata: CredentialMetadata,
 
-    pub display_icon: Option<String>,
-    pub display_color: Option<String>,
-    pub display_name: Option<String>,
-}
-
-impl DisplayCredential {
-    pub fn get_achievement_name_from_data(&self) -> Option<String> {
-        let cred_subject = self.data.get("credentialSubject")?;
-        let achievement = cred_subject.get("achievement")?;
-        let name = achievement.get("name")?;
-
-        Some(name.to_string())
-    }
-
-    pub fn get_type_name_from_data(&self) -> Option<String> {
-        let data_type = self.data.get("type")?;
-
-        match data_type {
-            Value::Array(array) => {
-                let last = array.last()?;
-                Some(last.to_string())
-            }
-            _ => None,
-        }
-    }
+    pub display_name: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, TS, Default, Derivative)]

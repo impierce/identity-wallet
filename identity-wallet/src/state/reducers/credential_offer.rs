@@ -47,7 +47,7 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
         info!("credential offer: {:?}", credential_offer);
 
         // The credential offer contains a credential issuer url.
-        let credential_issuer_url = credential_offer.clone().credential_issuer;
+        let credential_issuer_url = credential_offer.credential_issuer.clone();
 
         info!("credential issuer url: {:?}", credential_issuer_url);
 
@@ -123,6 +123,7 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
                     .as_str()
                     .map(|s| s.to_string())
                     .unwrap_or(credential_issuer_url.to_string());
+
                 let logo_uri = display["logo_uri"].as_str().map(|s| s.to_string());
                 // ===== OpenID for Verifiable Credential Issuance - draft 12 (26 November 2023) =====
                 // let issuer_name = display["name"]
@@ -215,6 +216,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
             .stronghold_manager
             .as_ref()
             .ok_or(MissingManagerError("stronghold"))?;
+
         let wallet = &state_guard
             .identity_manager
             .as_ref()
@@ -341,8 +343,9 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
         info!("credentials: {:?}", credentials);
 
         for (i, credential) in credentials.into_iter().enumerate() {
-            let mut verifiable_credential_record = VerifiableCredentialRecord::from(credential);
-            verifiable_credential_record.display_credential.issuer_name = Some(issuer_name.clone());
+            let mut verifiable_credential_record: VerifiableCredentialRecord = credential.into();
+            verifiable_credential_record.display_credential.issuer_name = issuer_name.clone();
+
             let key: Uuid = verifiable_credential_record
                 .display_credential
                 .id
