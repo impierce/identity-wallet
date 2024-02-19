@@ -11,12 +11,13 @@ use strum::Display;
 // This file uses both std::fs::File and tokio::fs::File, please be aware of the difference.
 // One is imported (tokio::fs::File) and the other is qualified in line 129 (std::fs::File).
 
-
 lazy_static! {
     pub static ref STATE_FILE: Mutex<std::path::PathBuf> = Mutex::new(std::path::PathBuf::new());
     pub static ref STRONGHOLD: Mutex<std::path::PathBuf> = Mutex::new(std::path::PathBuf::new());
     pub static ref ASSETS_DIR: Mutex<std::path::PathBuf> = Mutex::new(std::path::PathBuf::new());
 }
+
+/// The persistence.rs is where we define our app persistence functions.
 
 /// Initialize the storage file paths.
 pub fn initialize_storage(app_handle: &tauri::AppHandle) -> anyhow::Result<()> {
@@ -63,7 +64,7 @@ pub async fn load_state() -> anyhow::Result<AppState> {
     Ok(app_state)
 }
 
-/// Persists a [AppState] to the app's data directory.
+/// Persists an [AppState] to the app's data directory.
 pub async fn save_state(app_state: &AppState) -> anyhow::Result<()> {
     let state_file = STATE_FILE.lock().unwrap().clone();
     let mut file = File::create(state_file).await?;
@@ -84,6 +85,7 @@ pub async fn delete_state_file() -> anyhow::Result<()> {
     Ok(())
 }
 
+/// Removes the stronghold file from the app's data directory.
 pub async fn delete_stronghold() -> anyhow::Result<()> {
     let stronghold_file = STRONGHOLD.lock().unwrap().clone();
     remove_file(&stronghold_file).await?;
@@ -159,7 +161,8 @@ pub enum LogoType {
     CredentialLogo,
 }
 
-
+/// Moves an asset from the `/assets/tmp` folder to the `/assets` folder, 
+/// conversing it from temporary to persistent.
 pub fn persist_asset(file_name: &str, id: &str) -> Result<(), AppError> {
     let assets_dir = ASSETS_DIR.lock().unwrap().as_path().to_owned();
     let tmp_dir = assets_dir.join("tmp");

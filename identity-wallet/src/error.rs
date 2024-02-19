@@ -2,6 +2,9 @@ use crate::state::actions::Action;
 use oid4vc::oid4vc_core::authorization_request::{AuthorizationRequest, Object};
 use std::error::Error;
 use uuid::Uuid;
+
+/// The error.rs defines our app_error types, implemented throughout the code using the thiserror crate.
+
 // TODO: needs revision/refactor + needs oid4vc libs to properly implement error handling.
 #[derive(thiserror::Error)]
 pub enum AppError {
