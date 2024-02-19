@@ -276,7 +276,7 @@ const de = {
       VALID: 'Gültig',
       ISSUED_BY: 'Ausgestellt von',
       DESCRIPTION: 'Beschreibung',
-      METADATA: 'Metadaten',
+      CONTENTS: 'Inhalt',
     },
   },
   CANCEL: 'Abbrechen',

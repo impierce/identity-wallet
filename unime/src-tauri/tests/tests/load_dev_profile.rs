@@ -10,7 +10,7 @@ async fn test_load_dev_profile() {
     setup_stronghold();
 
     // Deserializing the Appstates and Actions from the accompanying json files.
-    let state = json_example::<AppState>("tests/fixtures/states/three_credentials_redirect_me.json");
+    let state = json_example::<AppState>("tests/fixtures/states/four_credentials_redirect_me.json");
     let action = json_example::<Action>("tests/fixtures/actions/dev_load_profile.json");
     assert_state_update(AppStateContainer::default(), vec![action], vec![Some(state)]).await;
 }
@@ -22,8 +22,8 @@ async fn test_load_dev_profile_twice() {
     setup_stronghold();
 
     // Deserializing the Appstates and Actions from the accompanying json files.
-    let state1 = json_example::<AppState>("tests/fixtures/states/three_credentials_redirect_me.json");
-    let state2 = json_example::<AppState>("tests/fixtures/states/three_credentials_redirect_me.json");
+    let state1 = json_example::<AppState>("tests/fixtures/states/four_credentials_redirect_me.json");
+    let state2 = json_example::<AppState>("tests/fixtures/states/four_credentials_redirect_me.json");
     let action = json_example::<Action>("tests/fixtures/actions/dev_load_profile.json");
     assert_state_update(
         AppStateContainer::default(),

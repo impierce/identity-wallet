@@ -56,3 +56,11 @@
     <Button label={$LL.CLOSE()} trigger={close} />
   </div>
 </BottomDrawer>
+
+<!-- TODO: find a better (global) solution -->
+<style>
+  :global(body) {
+    /* Fixes a UI problem on iOS where there is a white bar at the bottom when the drawer is open */
+    position: unset !important;
+  }
+</style>

@@ -752,9 +752,9 @@ type RootTranslation = {
 			 */
 			DESCRIPTION: string
 			/**
-			 * M​e​t​a​d​a​t​a
+			 * C​o​n​t​e​n​t​s
 			 */
-			METADATA: string
+			CONTENTS: string
 		}
 	}
 	/**
@@ -1515,9 +1515,9 @@ export type TranslationFunctions = {
 			 */
 			DESCRIPTION: () => LocalizedString
 			/**
-			 * Metadata
+			 * Contents
 			 */
-			METADATA: () => LocalizedString
+			CONTENTS: () => LocalizedString
 		}
 	}
 	/**
