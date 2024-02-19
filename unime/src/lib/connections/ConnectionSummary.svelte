@@ -1,6 +1,7 @@
 <script lang="ts">
   import LL from '$src/i18n/i18n-svelte';
   import Image from '$src/lib/components/atoms/Image.svelte';
+  import { state } from '$src/stores';
 
   import BadgeCheck from '~icons/lucide/badge-check';
   import Pencil from '~icons/lucide/pencil';
@@ -12,11 +13,11 @@
   let summary = {
     URL: connection.url,
     // Verified: 'no',
-    [$LL.CONNECTION.SUMMARY.FIRST_CONNECTED()]: new Date(connection.first_interacted).toLocaleString('en-US', {
+    [$LL.CONNECTION.SUMMARY.FIRST_CONNECTED()]: new Date(connection.first_interacted).toLocaleString($state.locale, {
       dateStyle: 'medium',
       timeStyle: 'medium',
     }),
-    [$LL.CONNECTION.SUMMARY.LAST_CONNECTED()]: new Date(connection.last_interacted).toLocaleString('en-US', {
+    [$LL.CONNECTION.SUMMARY.LAST_CONNECTED()]: new Date(connection.last_interacted).toLocaleString($state.locale, {
       dateStyle: 'medium',
       timeStyle: 'medium',
     }),

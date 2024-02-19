@@ -74,6 +74,27 @@ pub struct AppState {
     pub dev_mode_enabled: bool,
 }
 
+impl Clone for AppState {
+    fn clone(&self) -> Self {
+        Self {
+            back_end_utils: BackEndUtils {            
+                managers: self.managers.clone(),
+                active_connection_request: serde_json::from_value(serde_json::json!(self.active_connection_request))
+                    .unwrap(),
+            },
+            profile_settings: self.profile_settings.clone(),
+            credentials: self.credentials.clone(),
+            current_user_prompt: self.current_user_prompt.clone(),
+            debug_messages: self.debug_messages.clone(),
+            user_journey: self.user_journey.clone(),
+            connections: self.connections.clone(),
+            user_data_query: self.user_data_query.clone(),
+            extensions: self.extensions.clone(),
+            dev_mode_enabled: self.dev_mode_enabled,
+        }
+    }
+}
+
 impl AppState{
     pub fn insert_extension (mut self, key: &str, extension: Box<dyn FeatTrait>) -> Self
     {

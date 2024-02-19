@@ -8,6 +8,7 @@
 
   import { dispatch } from '$lib/dispatcher';
   import { getImageAsset } from '$lib/utils';
+  import LL from '$src/i18n/i18n-svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
   import Checkbox from '$src/lib/components/atoms/Checkbox.svelte';
   import Image from '$src/lib/components/atoms/Image.svelte';
@@ -91,7 +92,7 @@
 </script>
 
 <div class="content-height flex flex-col items-stretch bg-silver dark:bg-navy">
-  <TopNavBar title={'Credential Offer'} on:back={() => history.back()} />
+  <TopNavBar title={$LL.SCAN.CREDENTIAL_OFFER.NAVBAR_TITLE()} on:back={() => history.back()} />
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
     <div class="flex h-[75px] w-[75px] overflow-hidden rounded-3xl">
@@ -132,7 +133,7 @@
     </p>
 
     <p class="w-full text-center text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">
-      is offering you the following credentials
+      {$LL.SCAN.CREDENTIAL_OFFER.DESCRIPTION()}
     </p>
 
     <!-- Text -->
@@ -241,7 +242,7 @@
   <!-- Controls -->
   <div class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 dark:bg-dark">
     <Button
-      label="Accept credentials"
+      label={$LL.SCAN.CREDENTIAL_OFFER.ACCEPT()}
       on:click={() => {
         dispatch({
           type: '[Credential Offer] Selected',
@@ -252,7 +253,7 @@
       }}
     />
     <Button
-      label="Reject"
+      label={$LL.REJECT()}
       variant="secondary"
       on:click={() => {
         dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });

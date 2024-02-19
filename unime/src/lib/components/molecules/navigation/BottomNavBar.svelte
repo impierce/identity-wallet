@@ -1,6 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
 
+  import LL from '$src/i18n/i18n-svelte';
   import BottomNavItem from '$src/lib/components/molecules/navigation/BottomNavItem.svelte';
   import Activity from '$src/lib/static/svg/navbar-icons/Activity.svelte';
   import Me from '$src/lib/static/svg/navbar-icons/Me.svelte';
@@ -13,7 +14,7 @@
 
 <div class="flex h-[64px] justify-evenly bg-white py-0 dark:bg-dark sm:justify-center sm:space-x-24">
   <!-- 1: Me -->
-  <BottomNavItem label="Me" active={active == 'me'} on:click={() => dispatch('me')}>
+  <BottomNavItem label={$LL.ME.BOTTOM_NAVIGATION_TITLE()} active={active == 'me'} on:click={() => dispatch('me')}>
     <!-- Currently, there is no better way of applying conditional Tailwind classes to a named slot inside a component. -->
     <!-- <User
         slot="icon"
@@ -28,7 +29,7 @@
   </BottomNavItem>
 
   <!-- 2: Scan -->
-  <BottomNavItem label="Scan" active={active == 'scan'} on:click={() => dispatch('scan')}>
+  <BottomNavItem label={$LL.SCAN.BOTTOM_NAVIGATION_TITLE()} active={active == 'scan'} on:click={() => dispatch('scan')}>
     <Scan
       slot="icon"
       class={`h-6 w-6 ${active == 'scan' ? 'text-slate-800 dark:text-grey' : 'text-slate-300 dark:text-slate-500'}`}
@@ -36,7 +37,11 @@
   </BottomNavItem>
 
   <!-- 3: Activity -->
-  <BottomNavItem label="Activity" active={active == 'activity'} on:click={() => dispatch('activity')}>
+  <BottomNavItem
+    label={$LL.ACTIVITY.BOTTOM_NAVIGATION_TITLE()}
+    active={active == 'activity'}
+    on:click={() => dispatch('activity')}
+  >
     <Activity
       slot="icon"
       class={`h-6 w-6 ${active == 'activity' ? 'text-slate-800 dark:text-grey' : 'text-slate-300 dark:text-slate-500'}`}

@@ -7,6 +7,7 @@ const de = {
       WHAT_IS_UNIME_1: 'UniMe verbindet deine digitale Welt, sicher und geschützt.',
       WHAT_IS_UNIME_2: 'Erstelle ein brandneues Profil, um loszulegen.',
       CREATE_NEW_PROFILE: 'Neues Profil erstellen',
+      SELECT_LANGUAGE: 'Sprache auswählen',
     },
     PLEDGE: {
       NAVBAR_TITLE: 'UniMes Versprechen',
@@ -112,6 +113,8 @@ const de = {
       NAVBAR_TITLE: 'App-Einstellungen',
       LANGUAGE: {
         TITLE: 'Sprache',
+        NAVBAR_TITLE: 'Sprache auswählen',
+        COMING_SOON: 'Bald verfügbar',
       },
       THEME: {
         TITLE: 'Erscheinungsbild',
@@ -163,6 +166,8 @@ const de = {
       TITLE: 'Support',
       ABOUT: {
         TITLE: 'Über UniMe',
+        NAVBAR_TITLE: 'Über UniMe',
+        BUILT_WITH: 'Gebaut mit',
       },
       FEEDBACK: {
         TITLE: 'Feedback senden',
@@ -175,12 +180,17 @@ const de = {
     FORGOT_PASSWORD: 'Passwort vergessen?',
   },
   ME: {
+    BOTTOM_NAVIGATION_TITLE: 'Me',
     GREETINGS: {
       GREETING_0: 'Hey',
       GREETING_1: "Wie geht's",
       GREETING_2: 'Willkommen zurück',
       GREETING_3: 'Hallo',
       GREETING_4: 'Hi',
+    },
+    DEMO: {
+      TEXT_1: 'Besuche',
+      TEXT_2: 'auf einem Desktop-Computer um loszulegen.',
     },
     CREDENTIAL_TABS: {
       ALL: 'Alle',
@@ -194,10 +204,37 @@ const de = {
     FAVORITES: 'Meine Favoriten',
   },
   ACTIVITY: {
+    BOTTOM_NAVIGATION_TITLE: 'Aktivität',
     NAVBAR_TITLE: 'Verbunden',
     TABS: {
       CONNECTIONS: 'Verbindungen',
       TIMELINE: 'Verlauf',
+    },
+  },
+  SCAN: {
+    BOTTOM_NAVIGATION_TITLE: 'Scan',
+    TITLE_1: 'Scanne einen',
+    TITLE_2: 'QR-Code',
+    SUBTITLE: 'Bringe einen QR-Code in den Fokus, um eine Interaktion zu starten.',
+    NO_PERMISSION_1: 'Keine Berechtigung',
+    NO_PERMISSION_2: 'zum Zugriff auf die Kamera',
+    CREDENTIAL_OFFER: {
+      NAVBAR_TITLE: 'Credential-Angebot',
+      DESCRIPTION: 'bietet dir die folgenden Credentials an',
+      ACCEPT: 'Credentials annehmen',
+    },
+    CONNECTION_REQUEST: {
+      NAVBAR_TITLE: 'Verbindungsanfrage',
+      TITLE: 'Neue Verbindung',
+      DESCRIPTION: 'Akzeptiere nur Verbindungen, die du erwartest und denen du vertraust.',
+      CONNECTED_PREVIOUSLY: 'Zuvor verbunden',
+      ACCEPT: 'Verbindung akzeptieren',
+    },
+    SHARE_CREDENTIALS: {
+      NAVBAR_TITLE: 'Daten teilen',
+      DESCRIPTION: 'fragt nach den folgenden Daten',
+      REQUESTED: 'Angefragt',
+      APPROVE: 'Anfrage genehmigen',
     },
   },
   CONNECTION: {
@@ -210,6 +247,7 @@ const de = {
       TITLE: 'Verbunden mit',
       FIRST_CONNECTED: 'Erstmalig verbunden',
       LAST_CONNECTED: 'Zuletzt verbunden',
+      EMPTY: 'Noch keine Verbindungen.',
     },
     DATA: {
       EMPTY: 'Noch keine Daten.',
@@ -229,10 +267,23 @@ const de = {
       DESCRIPTION: 'Versuche es mit einem anderen Suchbegriff.',
     },
   },
+  CREDENTIAL: {
+    NAVBAR_TITLE: 'Credential Informationen',
+  },
+  BADGE: {
+    NAVBAR_TITLE: 'Badge Informationen',
+    DETAILS: {
+      VALID: 'Gültig',
+      ISSUED_BY: 'Ausgestellt von',
+      DESCRIPTION: 'Beschreibung',
+      METADATA: 'Metadaten',
+    },
+  },
   CANCEL: 'Abbrechen',
   CLOSE: 'Schließen',
   CONTINUE: 'Weiter',
   SKIP: 'Überspringen',
+  REJECT: 'Ablehnen',
 } satisfies Translation;
 
 export default de;

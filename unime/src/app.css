@@ -79,7 +79,15 @@
   h2 {
     @apply text-xl font-semibold;
   } */
+
+  h3 {
+    @apply text-lg font-semibold;
+  }
 }
+
+/* h3 {
+  @apply text-lg font-semibold;
+} */
 
 @layer utilities {
   .hide-scrollbar::-webkit-scrollbar {
