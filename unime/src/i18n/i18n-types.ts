@@ -593,13 +593,13 @@ type RootTranslation = {
 		 */
 		SUBTITLE: string
 		/**
-		 * N​o​ ​p​e​r​m​i​s​s​i​o​n​s​ ​t​o
+		 * N​o​ ​p​e​r​m​i​s​s​i​o​n​s​ ​t​o​ ​a​c​c​e​s​s​ ​t​h​e​ ​c​a​m​e​r​a
 		 */
-		NO_PERMISSION_1: string
+		NO_PERMISSION: string
 		/**
-		 * a​c​c​e​s​s​ ​t​h​e​ ​c​a​m​e​r​a
+		 * O​p​e​n​ ​s​e​t​t​i​n​g​s
 		 */
-		NO_PERMISSION_2: string
+		OPEN_SETTINGS: string
 		CREDENTIAL_OFFER: {
 			/**
 			 * C​r​e​d​e​n​t​i​a​l​ ​O​f​f​e​r
@@ -1356,13 +1356,13 @@ export type TranslationFunctions = {
 		 */
 		SUBTITLE: () => LocalizedString
 		/**
-		 * No permissions to
+		 * No permissions to access the camera
 		 */
-		NO_PERMISSION_1: () => LocalizedString
+		NO_PERMISSION: () => LocalizedString
 		/**
-		 * access the camera
+		 * Open settings
 		 */
-		NO_PERMISSION_2: () => LocalizedString
+		OPEN_SETTINGS: () => LocalizedString
 		CREDENTIAL_OFFER: {
 			/**
 			 * Credential Offer

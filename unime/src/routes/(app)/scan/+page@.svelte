@@ -90,9 +90,9 @@
       ...$state,
       current_user_prompt: {
         type: 'accept-connection',
-        client_name: 'Some other client',
-        logo_uri: 'https://demo.ngdil.com/imgs/ngdil.svg',
-        redirect_uri: 'https://demo.ngdil.com/auth/callback',
+        client_name: 'Example',
+        logo_uri: 'https://avatars.githubusercontent.com/u/122438622?s=200&v=4',
+        redirect_uri: 'https://demo.example.com/auth/callback',
         previously_connected: false,
         // logo_uri: 'https://picsum.photos/200'
       },
@@ -255,11 +255,11 @@
         class="relative flex h-full flex-col items-center justify-center bg-silver p-8 dark:bg-navy"
       >
         {#if permissions === 'denied'}
-          <div class="flex flex-col items-center space-y-4">
-            <div class="rounded-lg bg-rose-100 px-8 py-4 text-rose-500">
-              {$LL.SCAN.NO_PERMISSION_1()}<br />{$LL.SCAN.NO_PERMISSION_2()}
+          <div class="flex w-3/4 flex-col items-center space-y-4 text-center">
+            <div class="rounded-lg bg-rose-100 px-8 py-4 text-[13px]/[24px] font-medium text-rose-500">
+              {$LL.SCAN.NO_PERMISSION()}
             </div>
-            <Button label="Open settings" on:click={openAppSettings} />
+            <Button label={$LL.SCAN.OPEN_SETTINGS()} on:click={openAppSettings} />
           </div>
           <!-- {:else}
       <div class="rounded-lg bg-emerald-100 px-8 py-4 font-medium text-emerald-500">
