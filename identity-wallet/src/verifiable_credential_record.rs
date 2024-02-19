@@ -61,6 +61,7 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
                         date_issued: issuance_date.to_string(),
                     },
                     display_name,
+                    credential_type: CredentialType::Credential,
                 }
             }
             _ => unimplemented!(),
@@ -72,6 +73,23 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
         }
     }
 }
+
+//fn recursively_look_credential_type(field: &serde_json::Value) -> CredentialType {
+    
+//}
+
+//fn get_credential_type(credential_display: &serde_json::Value) -> CredentialType {
+    //let cred_type = credential_display.get("type");
+
+    //if let Some(cred_type) = cred_type {
+        //if cred_type.is_object() {
+
+        //}
+        //cred_type.as_object(); .map(|obj| obj.contains_key("OpenBadgeCredential"))
+    //} else {
+        //return CredentialType::Credential;
+    //}
+//}
 
 fn get_achievement_name_from_data(credential_display: &serde_json::Value) -> Option<String> {
     let cred_subject = credential_display.get("credentialSubject")?;
@@ -90,6 +108,13 @@ fn get_type_name_from_data(credential_display: &serde_json::Value) -> Option<Str
     }
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, TS)]
+#[ts(export, export_to = "bindings/display-credential/CredentialType.ts")]
+pub enum CredentialType {
+    Badge,
+    Credential
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, Derivative, TS)]
 #[derivative(PartialEq)]
 #[ts(export, export_to = "bindings/display-credential/DisplayCredential.ts")]
@@ -105,6 +130,7 @@ pub struct DisplayCredential {
     pub metadata: CredentialMetadata,
 
     pub display_name: String,
+    pub credential_type: CredentialType,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, TS, Default, Derivative)]
