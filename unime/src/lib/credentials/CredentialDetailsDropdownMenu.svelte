@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { DisplayCredential } from 'src-tauri/identity_wallet/bindings/display-credential/DisplayCredential';
+  import type { DisplayCredential } from '@bindings/display-credential/DisplayCredential';
   import { fade, fly } from 'svelte/transition';
 
   import { createDialog, createDropdownMenu, melt } from '@melt-ui/svelte';
@@ -173,7 +173,7 @@
             payload: {
               id: credential.id,
               name: displayName,
-            }
+            },
           });
           openNameDialog.set(false);
         }}
@@ -250,7 +250,7 @@
               id: credential.id,
               icon: currentAppearance.icon,
               color: currentAppearance.color,
-            }
+            },
           });
           openAppearanceDialog.set(false);
         }}

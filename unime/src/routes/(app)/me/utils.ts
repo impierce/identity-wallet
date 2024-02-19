@@ -1,4 +1,4 @@
-import type { Locale } from 'src-tauri/identity_wallet/bindings/Locale';
+import type { Locale } from '@bindings/Locale';
 
 import { dispatch } from '$src/lib/dispatcher';
 

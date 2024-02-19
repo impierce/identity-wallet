@@ -1,11 +1,10 @@
-use crate::state::shared::backend_utils::BackEndUtils;
-use crate::state::{actions::Action, AppState, AppStateContainer};
 use crate::error::AppError;
-use crate::persistence::save_state;
-use log::{debug, error, info, warn};
-use std::time::Duration;
+use crate::state::actions::Action;
+use crate::state::persistence::save_state;
+use crate::state::{AppState, AppStateContainer};
 use futures::StreamExt;
 use itertools::Itertools;
+use log::{debug, info, warn};
 use tauri::Manager;
 
 /// This function represents the root reducer of the application. It will delegate the state update to the reducers that
@@ -30,44 +29,42 @@ async fn reduce(state: AppState, action: Action) -> Result<AppState, AppError> {
         .await
 }
 
-async fn deadlock_safety() {
-    tokio::time::sleep(Duration::from_secs(6)).await;
-}
-
-async fn main_exec<R: tauri::Runtime>(
+/// This command handler is the single point of entry to the business logic in the backend. It will delegate the
+/// command it receives to the designated functions that modify the state (see: "reducers" in the Redux pattern).
+pub async fn handle_action<R: tauri::Runtime>(
     action: Action,
     _app_handle: tauri::AppHandle<R>,
     container: tauri::State<'_, AppStateContainer>,
     window: tauri::Window<R>,
 ) -> Result<(), String> {
-    let mut guard = container.0.lock().await;
+    info!("received action: `{action:?}`");
 
-    println!("Action: {action:?}\n\n");
+    let mut guard = container.0.lock().await;
 
     // Get a copy of the current state and pass it to the root reducer.
     match reduce(
-        AppState {
-            connections: guard.connections.clone(),
-            credentials: guard.credentials.clone(),
-            user_data_query: guard.user_data_query.clone(),
-            back_end_utils: BackEndUtils {
-                managers: guard.back_end_utils.managers.clone(),
-                active_connection_request: serde_json::from_value(serde_json::json!(guard.back_end_utils.active_connection_request)).unwrap()
+            AppState {
+                connections: guard.connections.clone(),
+                credentials: guard.credentials.clone(),
+                user_data_query: guard.user_data_query.clone(),
+                back_end_utils: BackEndUtils {
+                    managers: guard.back_end_utils.managers.clone(),
+                    active_connection_request: serde_json::from_value(serde_json::json!(guard.back_end_utils.active_connection_request)).unwrap()
+                },
+                profile_settings: guard.profile_settings.clone(),
+                current_user_prompt: guard.current_user_prompt.clone(),
+                debug_messages: guard.debug_messages.clone(),
+                user_journey: guard.user_journey.clone(),
+                extensions: guard.extensions.clone(),
+                dev_mode_enabled: guard.dev_mode_enabled,
             },
-            profile_settings: guard.profile_settings.clone(),
-            current_user_prompt: guard.current_user_prompt.clone(),
-            debug_messages: guard.debug_messages.clone(),
-            user_journey: guard.user_journey.clone(),
-            extensions: guard.extensions.clone(),
-            dev_mode_enabled: guard.dev_mode_enabled,
-        },
         action,
     )
     .await
     {
         // If the state update succeeds, we replace the old state with the new one.
         Ok(app_state) => {
-            println!("APP STATE: {app_state:?}\n\n");
+            debug!("{app_state:?}");
             *guard = app_state
         }
         // If the state update fails, we log the error and keep the old state.
@@ -92,26 +89,6 @@ async fn main_exec<R: tauri::Runtime>(
     emit_event(&window, &guard).ok();
 
     Result::Ok(())
-}
-
-/// This command handler is the single point of entry to the business logic in the backend. It will delegate the
-/// command it receives to the designated functions that modify the state (see: "reducers" in the Redux pattern).
-pub async fn handle_action<R: tauri::Runtime>(
-    action: Action,
-    app_handle: tauri::AppHandle<R>,
-    container: tauri::State<'_, AppStateContainer>,
-    window: tauri::Window<R>,
-) -> Result<(), String> {
-    tokio::select! {
-        res = main_exec(action, app_handle, container, window) => {
-            info!("Finish invoke");
-            res
-        }
-        _ = deadlock_safety() => {
-            error!("Operation timed out");
-            Err("timed out".to_string())
-        }
-    }
 }
 
 pub fn emit_event<R: tauri::Runtime>(window: &tauri::Window<R>, app_state: &AppState) -> anyhow::Result<()> {

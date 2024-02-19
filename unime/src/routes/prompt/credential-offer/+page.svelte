@@ -247,7 +247,7 @@
           type: '[Credential Offer] Selected',
           payload: {
             offer_indices: all_offer_indices,
-          }
+          },
         });
       }}
     />

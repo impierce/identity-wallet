@@ -1,6 +1,6 @@
 [package]
 name = "unime"
-version = "0.4.7"
+version = "0.4.9"
 description = "Identity Wallet for people to manage Decentralized Identities and Verifiable Credentials"
 homepage = "https://www.impierce.com/"
 authors = ["Impierce Technologies"]
@@ -8,6 +8,7 @@ keywords = ["identity", "did", "ssi", "wallet", "siopv2"]
 license = "Apache-2.0"
 repository = "https://github.com/impierce/identity-wallet"
 edition = "2021"
+rust-version = "1.75.0"
 
 [lib]
 name = "unime"
@@ -17,13 +18,17 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 tauri-build = { version = "=2.0.0-alpha.14", features = [] }
 
 [dependencies]
-tauri.workspace = true
+tauri = { version = "=2.0.0-alpha.21", features = [
+    "protocol-asset",
+    "rustls-tls",
+] }
+
 oid4vc.workspace = true
 log.workspace = true
 serde_json.workspace = true
 did-key.workspace = true
 
-identity_wallet = { path = "../../identity-wallet" }
+identity-wallet = { path = "../../identity-wallet" }
 
 tauri-plugin-barcode-scanner = { version = "=2.0.0-alpha.4" }
 tauri-plugin-log = { version = "=2.0.0-alpha.6", features = ["colored"] }
