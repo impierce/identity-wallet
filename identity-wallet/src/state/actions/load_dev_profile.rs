@@ -5,17 +5,17 @@ use crate::state::actions::Reducer;
 use crate::state::reducers::dev_mode::load_dev_profile;
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone, PartialEq, Eq)]
-#[ts(export, export_to = "bindings/actions/DevProfileType.ts")]
+#[ts(export, export_to = "bindings/dev/ProfileType.ts")]
 pub enum ProfileType {
     /// Dev profile which preloads data
     Ferris,
 
-    /// Dev profile which recreate steps
+    /// Dev profile which recreates steps
     Dragon,
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone, PartialEq, Eq, PartialOrd)]
-#[ts(export, export_to = "bindings/actions/DevProfileSteps.ts")]
+#[ts(export, export_to = "bindings/dev/ProfileSteps.ts")]
 pub enum ProfileSteps {
     /// Step 1
     CreateProfile,

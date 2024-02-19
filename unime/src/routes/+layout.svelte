@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, SvelteComponent } from 'svelte';
 
   import { goto } from '$app/navigation';
   import { fly } from 'svelte/transition';
@@ -10,15 +10,18 @@
   import { loadAllLocales } from '$src/i18n/i18n-util.sync';
   import { state } from '$src/stores';
 
+  import ScrollText from '~icons/lucide/scroll-text';
+  import ArrowLeft from '~icons/ph/arrow-left';
   import CaretDown from '~icons/ph/caret-down-bold';
   import CaretUp from '~icons/ph/caret-up-bold';
+  import Trash from '~icons/ph/trash';
 
   import '../app.css';
 
   import type { SvelteHTMLElements } from 'svelte/elements';
 
-  import type { ProfileSteps } from '@bindings/actions/DevProfileSteps';
-  import type { ProfileType } from '@bindings/actions/DevProfileType';
+  import type { ProfileSteps } from '@bindings/dev/ProfileSteps';
+  import type { ProfileType } from '@bindings/dev/ProfileType';
 
   import { determineTheme } from './utils';
 
@@ -59,17 +62,18 @@
 
   interface DevModeButton {
     stringIcon?: string;
+    svelteIcon?: typeof SvelteComponent<SvelteHTMLElements['svg']>;
     onClick: () => void;
   }
 
   function createDevButtons(): DevModeButton[] {
     const backBtn: DevModeButton = {
-      stringIcon: '👈',
+      svelteIcon: ArrowLeft,
       onClick: () => history.back(),
     };
 
     const resetBtn: DevModeButton = {
-      stringIcon: '🗑️',
+      svelteIcon: Trash,
       onClick: () => dispatch({ type: '[App] Reset' }),
     };
 
@@ -84,16 +88,17 @@
     };
 
     const debugBtn: DevModeButton = {
-      stringIcon: '📜',
+      svelteIcon: ScrollText,
       onClick: () => (showDebugMessages = !showDebugMessages),
     };
 
-    return [backBtn, resetBtn, ferrisBtn, dragonBtn, debugBtn];
+    return [backBtn, resetBtn, debugBtn, ferrisBtn, dragonBtn];
   }
 
   const devButtons = createDevButtons();
 
-  // Order needs to match the BE enum.
+  // Order needs to match the BE: 'ProfileSteps' enum, it needs to be the same order because every step is based upon the previous.
+  // 'AddCredentials' is ran after 'CreateProfile' and 'AcceptCredentials' after 'AddCredentials', etc.
   const profileSteps: ProfileSteps[] = [
     'CreateProfile',
     'AddCredentials',
@@ -153,7 +158,11 @@
                 font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
               on:click={btn.onClick}
             >
-              <span class="m-auto block text-xl">{btn.stringIcon}</span>
+              {#if btn.stringIcon}
+                <span class="m-auto block text-xl">{btn.stringIcon}</span>
+              {:else}
+                <svelte:component this={btn.svelteIcon} class="m-auto block text-xl" />
+              {/if}
             </button>
           </div>
         {/each}
