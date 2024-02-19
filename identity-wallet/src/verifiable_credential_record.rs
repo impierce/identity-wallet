@@ -1,4 +1,5 @@
 use derivative::Derivative;
+use log::info;
 use oid4vc::oid4vci::credential_format_profiles::{CredentialFormats, WithCredential};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
@@ -50,6 +51,8 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
                     .or(get_type_name_from_data(&credential_display))
                     .unwrap_or("".to_string());
 
+                let credential_type = get_credential_type(&credential_display);
+
                 DisplayCredential {
                     id: Uuid::from_slice(&hash.as_bytes()[..16]).unwrap().to_string(),
                     issuer_name: "".to_string(),
@@ -61,7 +64,7 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
                         date_issued: issuance_date.to_string(),
                     },
                     display_name,
-                    credential_type: CredentialType::Credential,
+                    credential_type,
                 }
             }
             _ => unimplemented!(),
@@ -74,22 +77,29 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
     }
 }
 
-//fn recursively_look_credential_type(field: &serde_json::Value) -> CredentialType {
-    
-//}
+fn get_credential_type_recursively(field: &serde_json::Value) -> CredentialType {
+    if field.to_string().contains("OpenBadgeCredential") {
+        CredentialType::Badge
+    } else {
+        CredentialType::Credential
+    }
+}
 
-//fn get_credential_type(credential_display: &serde_json::Value) -> CredentialType {
-    //let cred_type = credential_display.get("type");
+fn get_credential_type(credential_display: &serde_json::Value) -> CredentialType {
+    let cred_type = credential_display.get("type");
 
-    //if let Some(cred_type) = cred_type {
-        //if cred_type.is_object() {
+    if let Some(cred_type) = cred_type {
+        let cred_type_str = cred_type.to_string();
 
-        //}
-        //cred_type.as_object(); .map(|obj| obj.contains_key("OpenBadgeCredential"))
-    //} else {
-        //return CredentialType::Credential;
-    //}
-//}
+        info!("Cred type str: {:?}", cred_type_str);
+
+        if cred_type_str.to_string().contains("OpenBadgeCredential") {
+            return CredentialType::Badge;
+        }
+    }
+
+    CredentialType::Credential
+}
 
 fn get_achievement_name_from_data(credential_display: &serde_json::Value) -> Option<String> {
     let cred_subject = credential_display.get("credentialSubject")?;
@@ -112,7 +122,7 @@ fn get_type_name_from_data(credential_display: &serde_json::Value) -> Option<Str
 #[ts(export, export_to = "bindings/display-credential/CredentialType.ts")]
 pub enum CredentialType {
     Badge,
-    Credential
+    Credential,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, Derivative, TS)]
