@@ -3,6 +3,7 @@ pub mod credential_offer;
 pub mod dev_mode;
 pub mod storage;
 pub mod user_data_query;
+pub mod dragon_profile;
 
 use super::actions::{listen, CancelUserFlow, SetLocale, UpdateCredentialMetadata, UpdateProfileSettings};
 use super::persistence::{delete_state_file, delete_stronghold, load_state};

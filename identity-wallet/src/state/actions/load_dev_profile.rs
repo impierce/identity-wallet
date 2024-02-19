@@ -14,10 +14,34 @@ pub enum ProfileType {
     Dragon,
 }
 
+#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone, PartialEq, Eq, PartialOrd)]
+#[ts(export, export_to = "bindings/actions/DevProfileSteps.ts")]
+pub enum ProfileSteps {
+    /// Step 1
+    CreateProfile,
+    /// Step 2
+    AddCredentials,
+    /// Step 3
+    AcceptCredentials,
+    /// Step 4
+    AddConnection,
+    /// Step 5
+    AcceptConnection,
+    /// Step 6
+    AddPresentation,
+    /// Step 7
+    ShareCredentails,
+    /// Step 8
+    AddFutureEngineer,
+    /// Step 9
+    CompleteFlow,
+}
+
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/DevProfile.ts")]
 pub struct DevProfile {
     pub profile: ProfileType,
+    pub execute_steps: Option<ProfileSteps>,
 }
 
 #[typetag::serde(name = "[DEV] Load DEV profile")]
