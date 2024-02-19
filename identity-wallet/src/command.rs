@@ -1,7 +1,6 @@
 use crate::error::AppError;
 use crate::state::actions::Action;
 use crate::persistence::save_state;
-use crate::state::shared::backend_utils::BackEndUtils;
 use crate::state::{AppState, AppStateContainer};
 use futures::StreamExt;
 use itertools::Itertools;

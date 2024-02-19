@@ -4,10 +4,12 @@ use tokio::{
     io::AsyncWriteExt,
 };
 use lazy_static::lazy_static;
-use log::{debug, info};
+use log::{debug, info, warn};
 use std::{fs, io::{copy, Cursor}, sync::Mutex};
 use tauri::Manager;
 use strum::Display;
+// This file uses both std::fs::File and tokio::fs::File, please be aware of the difference.
+// One is imported (tokio::fs::File) and the other is qualified in line 129 (std::fs::File).
 
 
 lazy_static! {
@@ -115,11 +117,6 @@ pub async fn download_asset(url: reqwest::Url, logo_type: LogoType, index: usize
     let file_name = url.path_segments().unwrap().last().unwrap();
     let extension = file_name.split('.').last().unwrap();
 
-    // Abort download if file type is not supported
-    if !["png", "svg"].contains(&extension) {
-        return Err(AppError::DownloadAborted("MIME type is not supported"));
-    }
-
     let assets_dir = ASSETS_DIR.lock().unwrap().as_path().to_owned();
     let tmp_dir = assets_dir.join("tmp");
 
@@ -132,6 +129,16 @@ pub async fn download_asset(url: reqwest::Url, logo_type: LogoType, index: usize
     let mut file = std::fs::File::create(tmp_dir.join(format!("{}_{}.{}", logo_type, index, extension)))?;
 
     let response = reqwest::get(url.clone()).await?;
+
+    if let Some(content_type) = response.headers().get("content-type") {
+        if !["image/png", "image/svg+xml"].contains(&content_type.to_str().unwrap()) {
+            warn!("content_type: {:?}", content_type);
+            return Err(AppError::DownloadAborted("content-type is not supported"));
+        }
+    } else {
+        return Err(AppError::DownloadAborted("content-type is not set"));
+    };
+
     let mut content = Cursor::new(response.bytes().await?);
 
     // Abort download if file size is bigger than 2MB
@@ -174,4 +181,101 @@ pub fn persist_asset(file_name: &str, id: &str) -> Result<(), AppError> {
     };
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use wiremock::matchers::{method, path};
+    use wiremock::{Mock, MockServer, ResponseTemplate};
+
+    use crate::error::AppError;
+    use crate::persistence::{download_asset, LogoType};
+
+    #[tokio::test]
+    async fn when_size_is_less_than_2mb_then_download_should_start() {
+        let mock_server = MockServer::start().await;
+
+        // generate 1MB of random bytes
+        let random_bytes: Vec<u8> = (0..(1_024 * 1_024)).map(|_| rand::random::<u8>()).collect();
+
+        Mock::given(method("GET"))
+            .and(path("/image.png"))
+            .respond_with(ResponseTemplate::new(200).set_body_raw(random_bytes, "image/png"))
+            .expect(1)
+            .mount(&mock_server)
+            .await;
+
+        assert!(download_asset(
+            format!("{}/image.png", &mock_server.uri()).parse().unwrap(),
+            LogoType::CredentialLogo,
+            0
+        )
+        .await
+        .is_ok());
+    }
+
+    #[tokio::test]
+    async fn when_size_is_bigger_than_2mb_then_download_should_fail() {
+        let mock_server = MockServer::start().await;
+
+        // generate 3MB of random bytes
+        let random_bytes: Vec<u8> = (0..(1_024 * 1_024 * 3)).map(|_| rand::random::<u8>()).collect();
+
+        Mock::given(method("GET"))
+            .and(path("/image.png"))
+            .respond_with(ResponseTemplate::new(200).set_body_raw(random_bytes, "image/png"))
+            .expect(1)
+            .mount(&mock_server)
+            .await;
+
+        assert!(download_asset(
+            format!("{}/image.png", &mock_server.uri()).parse().unwrap(),
+            LogoType::CredentialLogo,
+            0
+        )
+        .await
+        .is_err());
+    }
+
+    #[tokio::test]
+    async fn when_content_type_is_supported_then_download_should_start() {
+        let mock_server = MockServer::start().await;
+
+        Mock::given(method("GET"))
+            .and(path("/image"))
+            .respond_with(ResponseTemplate::new(200).set_body_raw(vec![], "image/svg+xml"))
+            .expect(1)
+            .mount(&mock_server)
+            .await;
+
+        assert!(download_asset(
+            format!("{}/image", &mock_server.uri()).parse().unwrap(),
+            LogoType::CredentialLogo,
+            0
+        )
+        .await
+        .is_ok());
+    }
+
+    #[tokio::test]
+    async fn when_content_type_is_not_supported_then_download_should_fail() {
+        let mock_server = MockServer::start().await;
+
+        Mock::given(method("GET"))
+            .and(path("/image.png")) // file extension is ignored (even if it's supported), only content-type is checked
+            .respond_with(ResponseTemplate::new(200).set_body_raw(vec![], "image/jpeg"))
+            .expect(1)
+            .mount(&mock_server)
+            .await;
+
+        assert!(matches!(
+            download_asset(
+                format!("{}/image.png", &mock_server.uri()).parse().unwrap(),
+                LogoType::CredentialLogo,
+                0
+            )
+            .await,
+            Err(AppError::DownloadAborted("content-type is not supported"))
+        ));
+    }
 }

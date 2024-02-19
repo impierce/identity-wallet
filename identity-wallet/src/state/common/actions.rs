@@ -1,8 +1,9 @@
-use ts_rs::TS;
 use crate::{reducer,
     state::{actions::{ActionTrait, Reducer},
     common::reducers::{cancel_user_flow, get_state, reset_state, unlock_storage}}
 };
+use std::fmt::Formatter;
+use ts_rs::TS;
 
 /// Action to retrieve the state from the storage.
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
@@ -17,10 +18,16 @@ impl ActionTrait for GetState {
 }
 
 /// Action to unlock the storage.
-#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/UnlockStorage.ts")]
 pub struct UnlockStorage {
     pub password: String,
+}
+
+impl std::fmt::Debug for UnlockStorage {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("UnlockStorage").field("password", &"*****").finish()
+    }
 }
 
 #[typetag::serde(name = "[Storage] Unlock")]

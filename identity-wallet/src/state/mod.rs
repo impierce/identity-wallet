@@ -78,8 +78,8 @@ impl Clone for AppState {
     fn clone(&self) -> Self {
         Self {
             back_end_utils: BackEndUtils {            
-                managers: self.managers.clone(),
-                active_connection_request: serde_json::from_value(serde_json::json!(self.active_connection_request))
+                managers: self.back_end_utils.managers.clone(),
+                active_connection_request: serde_json::from_value(serde_json::json!(self.back_end_utils.active_connection_request))
                     .unwrap(),
             },
             profile_settings: self.profile_settings.clone(),

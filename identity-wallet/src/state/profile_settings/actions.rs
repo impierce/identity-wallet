@@ -1,5 +1,6 @@
 use crate::{reducer, state::{actions::{ActionTrait, Reducer}, profile_settings::reducers::{create_identity, initialize_stronghold, set_locale, update_profile_settings}}};
 use super::Locale;
+use std::fmt::Formatter;
 use ts_rs::TS;
 
 /// Action to set the locale to the given value.
@@ -18,7 +19,7 @@ impl ActionTrait for SetLocale {
 }
 
 /// Action to create a new profile.
-#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
+#[derive(serde::Serialize, serde::Deserialize, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/CreateNew.ts")]
 pub struct CreateNew {
     pub name: String,
@@ -27,12 +28,24 @@ pub struct CreateNew {
     pub password: String,
 }
 
+impl std::fmt::Debug for CreateNew {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("CreateNew")
+            .field("name", &self.name)
+            .field("picture", &self.picture)
+            .field("theme", &self.theme)
+            .field("password", &"*****")
+            .finish()
+    }
+}
+
 #[typetag::serde(name = "[DID] Create new")]
 impl ActionTrait for CreateNew {
     fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
         vec![reducer!(initialize_stronghold), reducer!(create_identity)]
     }
 }
+
 
 /// Action to update the profile settings.
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]

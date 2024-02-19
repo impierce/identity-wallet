@@ -7,9 +7,7 @@ pub mod reducers;
 #[cfg(test)]
 mod tests {
     use crate::state::{
-        common::{actions::Reset, reducers::reset_state},
-        profile_settings::{ProfileSettings, Locale, Profile},
-        AppState
+        common::{actions::{CancelUserFlow, Reset}, reducers::{cancel_user_flow, reset_state}}, profile_settings::{Locale, Profile, ProfileSettings}, user_prompt::CurrentUserPrompt, AppState
     };
     use std::sync::Arc;
 
@@ -32,5 +30,46 @@ mod tests {
 
         assert_eq!(app_state.extensions.is_empty(), true);
         assert_eq!(app_state.profile_settings.locale, Locale::default());
+    }
+
+    #[tokio::test]
+    async fn test_cancel_user_flow() {
+        let current_user_prompt = Some(CurrentUserPrompt::ShareCredentials {
+            client_name: "Impierce Technologies".to_string(),
+            logo_uri: Some("logo.png".to_string()),
+            options: vec![],
+        });
+
+        let mut app_state = AppState {
+            current_user_prompt: current_user_prompt.clone(),
+            ..AppState::default()
+        };
+
+        app_state = cancel_user_flow(app_state, Arc::new(CancelUserFlow { redirect: None }))
+            .await
+            .unwrap();
+
+        assert_eq!(app_state.current_user_prompt, None);
+
+        let mut app_state = AppState {
+            current_user_prompt,
+            ..AppState::default()
+        };
+
+        app_state = cancel_user_flow(
+            app_state,
+            Arc::new(CancelUserFlow {
+                redirect: Some("welcome".to_string()),
+            }),
+        )
+        .await
+        .unwrap();
+
+        assert_eq!(
+            app_state.current_user_prompt,
+            Some(CurrentUserPrompt::Redirect {
+                target: "welcome".to_string(),
+            })
+        );
     }
 }
