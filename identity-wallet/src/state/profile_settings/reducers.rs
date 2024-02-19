@@ -14,7 +14,6 @@ pub async fn set_locale(state: AppState, action: Action) -> Result<AppState, App
                 locale,
                 ..state.profile_settings
             },
-            //profile_settings: locale,
             current_user_prompt: None,
             ..state
         });
