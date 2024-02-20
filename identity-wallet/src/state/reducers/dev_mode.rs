@@ -1,16 +1,14 @@
+use super::dynamic_dev_profile::*;
 use crate::crypto::stronghold::StrongholdManager;
 use crate::error::AppError::{self, *};
-use crate::state::actions::{
-    listen, Action, DevProfile,
-    ProfileSteps, ProfileType, UnlockStorage,
-};
+use crate::state::actions::{listen, Action, DevProfile, ProfileType, UnlockStorage};
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, Connection, DevMode, Profile};
 use crate::verifiable_credential_record::VerifiableCredentialRecord;
 use crate::{command, ASSETS_DIR};
 use did_key::{generate, Ed25519KeyPair};
 use lazy_static::lazy_static;
-use log::{debug, info};
+use log::info;
 use oid4vc::oid4vc_core::Subject;
 use oid4vc::oid4vc_manager::methods::key_method::KeySubject;
 use oid4vc::oid4vci::credential_format_profiles::w3c_verifiable_credentials::jwt_vc_json::JwtVcJson;
@@ -19,7 +17,6 @@ use serde_json::json;
 use std::fs::File;
 use std::io::copy;
 use std::sync::Arc;
-use super::dynamic_dev_profile::*;
 
 lazy_static! {
     pub static ref PERSONAL_INFORMATION: VerifiableCredentialRecord = VerifiableCredentialRecord::from(
@@ -82,61 +79,6 @@ pub async fn unlock_storage(state: AppState) -> Result<AppState, AppError> {
         }),
     )
     .await
-}
-
-pub async fn load_dragon_profile(mut state: AppState, dev_profile: DevProfile) -> Result<AppState, AppError> {
-    let steps = dev_profile
-        .execute_step
-        .expect("For dragon profile steps are expected");
-
-    info!("Profile steps executed: {:?}", steps);
-
-    state = reset_settings(state).await?;
-    state = create_new_profile(state).await?;
-
-    if ProfileSteps::AddCredentials <= steps {
-        debug!("Add credentials step executed");
-        state = add_credential(state).await?;
-    }
-
-    if ProfileSteps::AcceptCredentials <= steps {
-        debug!("Accept credentials step executed");
-        state = accept_credential(state).await?;
-    }
-
-    if ProfileSteps::AddConnection <= steps {
-        debug!("Add connection step executed");
-        state = add_connection(state).await?;
-    }
-
-    if ProfileSteps::AcceptConnection <= steps {
-        debug!("Accept connection step executed");
-        state = accept_connection(state).await?;
-    }
-
-    if ProfileSteps::AddPresentation <= steps {
-        debug!("Add presentation step executed");
-        state = add_presentation_request(state).await?;
-    }
-
-    if ProfileSteps::ShareCredentails <= steps {
-        debug!("Share credentials step executed");
-        state = share_credentials(state).await?;
-    }
-
-    if ProfileSteps::AddFutureEngineer <= steps {
-        debug!("Add future engineer step executed");
-        state = add_future_engineer(state).await?;
-    }
-
-    if ProfileSteps::CompleteFlow <= steps {
-        debug!("Accept future engineer step executed");
-        state = accept_future_engineer(state).await?;
-    }
-
-    state.dev_mode = DevMode::OnWithAutologin;
-
-    Ok(state)
 }
 
 async fn load_ferris_profile() -> Result<AppState, AppError> {
