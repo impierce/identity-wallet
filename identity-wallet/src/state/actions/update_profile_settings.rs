@@ -2,6 +2,7 @@ use crate::reducer;
 use crate::state::actions::ActionTrait;
 use crate::state::actions::Reducer;
 use crate::state::reducers::update_profile_settings;
+use crate::state::AppTheme;
 
 use ts_rs::TS;
 
@@ -13,7 +14,7 @@ pub struct UpdateProfileSettings {
     #[ts(optional)]
     pub picture: Option<String>,
     #[ts(optional)]
-    pub theme: Option<String>,
+    pub theme: Option<AppTheme>,
 }
 
 #[typetag::serde(name = "[Settings] Update profile")]

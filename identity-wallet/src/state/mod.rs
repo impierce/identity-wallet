@@ -102,6 +102,17 @@ pub enum Locale {
     nl_NL,
 }
 
+#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone, PartialEq, Eq)]
+#[ts(export, export_to = "bindings/theme.ts")]
+pub enum AppTheme {
+    #[serde(rename = "system")]
+    System,
+    #[serde(rename = "dark")]
+    Dark,
+    #[serde(rename = "light")]
+    Light
+}
+
 /// A profile of the current user.
 #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default)]
 #[ts(export)]
@@ -109,7 +120,7 @@ pub enum Locale {
 pub struct Profile {
     pub name: String,
     pub picture: Option<String>,
-    pub theme: Option<String>,
+    pub theme: Option<AppTheme>,
     pub primary_did: String,
 }
 

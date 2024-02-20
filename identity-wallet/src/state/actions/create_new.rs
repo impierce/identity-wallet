@@ -3,6 +3,7 @@ use crate::reducer;
 use crate::state::actions::ActionTrait;
 use crate::state::actions::Reducer;
 use crate::state::reducers::{create_identity, initialize_stronghold};
+use crate::state::AppTheme;
 use ts_rs::TS;
 
 #[derive(serde::Serialize, serde::Deserialize, TS, Clone)]
@@ -10,7 +11,7 @@ use ts_rs::TS;
 pub struct CreateNew {
     pub name: String,
     pub picture: String,
-    pub theme: String,
+    pub theme: AppTheme,
     pub password: String,
 }
 

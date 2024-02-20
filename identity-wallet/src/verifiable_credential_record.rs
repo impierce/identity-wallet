@@ -77,14 +77,6 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
     }
 }
 
-fn get_credential_type_recursively(field: &serde_json::Value) -> CredentialType {
-    if field.to_string().contains("OpenBadgeCredential") {
-        CredentialType::Badge
-    } else {
-        CredentialType::Credential
-    }
-}
-
 fn get_credential_type(credential_display: &serde_json::Value) -> CredentialType {
     let cred_type = credential_display.get("type");
 
@@ -93,7 +85,7 @@ fn get_credential_type(credential_display: &serde_json::Value) -> CredentialType
 
         info!("Cred type str: {:?}", cred_type_str);
 
-        if cred_type_str.to_string().contains("OpenBadgeCredential") {
+        if cred_type_str.contains("OpenBadgeCredential") {
             return CredentialType::Badge;
         }
     }

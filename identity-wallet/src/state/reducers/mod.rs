@@ -121,7 +121,7 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
         let profile = Profile {
             name: name.to_string(),
             picture: Some(picture.to_string()),
-            theme: Some(theme.to_string()),
+            theme: Some(theme),
             primary_did: subject.identifier().map_err(OID4VCSubjectIdentifierError)?,
         };
 
@@ -275,8 +275,7 @@ pub async fn cancel_user_journey(state: AppState, _action: Action) -> Result<App
 mod tests {
     use super::*;
     use crate::state::{
-        actions::{CancelUserJourney, Reset},
-        Locale,
+        actions::{CancelUserJourney, Reset}, AppTheme, Locale
     };
 
     #[tokio::test]
@@ -336,7 +335,7 @@ mod tests {
         let active_profile = Profile {
             name: "Ferris".to_string(),
             picture: Some("&#129408".to_string()),
-            theme: Some("system".to_string()),
+            theme: Some(AppTheme::System),
             primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
         };
 
@@ -350,7 +349,7 @@ mod tests {
             Arc::new(UpdateProfileSettings {
                 name: None,
                 picture: None,
-                theme: Some("light".to_string()),
+                theme: Some(AppTheme::Light),
             }),
         )
         .await
@@ -359,7 +358,7 @@ mod tests {
         assert_eq!(
             app_state.active_profile,
             Some(Profile {
-                theme: Some("light".to_string()),
+                theme: Some(AppTheme::Light),
                 ..active_profile
             })
         );
@@ -385,7 +384,7 @@ mod tests {
             active_profile: Some(Profile {
                 name: "Ferris".to_string(),
                 picture: Some("&#129408".to_string()),
-                theme: Some("system".to_string()),
+                theme: Some(AppTheme::System),
                 primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
             })
             .into(),

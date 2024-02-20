@@ -1,7 +1,7 @@
 use crate::common::assert_state_update::{assert_state_update, setup_state_file, setup_stronghold};
 use crate::common::{json_example, test_managers};
 use identity_wallet::state::{actions::Action, AppState};
-use identity_wallet::state::{AppStateContainer, Profile};
+use identity_wallet::state::{AppStateContainer, AppTheme, Profile};
 use tokio::sync::Mutex;
 
 #[tokio::test]
@@ -51,7 +51,7 @@ async fn test_get_state_unlock_storage() {
         active_profile: Some(Profile {
             name: "Ferris Crabman".to_string(),
             picture: Some("&#129408".to_string()),
-            theme: Some("system".to_string()),
+            theme: Some(AppTheme::System),
             primary_did: "did:example:placeholder".to_string(),
         }),
         ..AppState::default()
@@ -92,7 +92,7 @@ async fn test_get_state_unlock_storage_invalid_password() {
         active_profile: Some(Profile {
             name: "Ferris Crabman".to_string(),
             picture: Some("&#129408".to_string()),
-            theme: Some("system".to_string()),
+            theme: Some(AppTheme::System),
             primary_did: "did:example:placeholder".to_string(),
         }),
         ..AppState::default()

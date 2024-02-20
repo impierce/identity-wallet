@@ -5,7 +5,7 @@ use crate::{
     state::{
         actions::{ConnectionAccepted, CreateNew, CredentialOffersSelected, CredentialsSelected, QrCodeScanned, Reset},
         user_prompt::CurrentUserPrompt,
-        AppState,
+        AppState, AppTheme,
     },
 };
 use serde_json::json;
@@ -16,7 +16,7 @@ pub(super) async fn create_new_profile(state: AppState) -> Result<AppState, AppE
     let create_new = CreateNew {
         name: "Shenron".to_string(),
         picture: "&#x1F432".to_string(),
-        theme: "dark".to_string(),
+        theme: AppTheme::Dark,
         password: PASSWORD.to_string(),
     };
 

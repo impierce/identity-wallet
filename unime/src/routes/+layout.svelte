@@ -40,7 +40,9 @@
   systemColorScheme.addEventListener(
     'change',
     (e) => {
-      determineTheme(e.matches, $state?.active_profile?.theme);
+      if ($state?.active_profile?.theme) {
+        determineTheme(e.matches, $state.active_profile.theme);
+      }
     },
     { once: true },
   );
