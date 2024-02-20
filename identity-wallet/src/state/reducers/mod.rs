@@ -65,9 +65,7 @@ pub async fn get_state(_state: AppState, _action: Action) -> Result<AppState, Ap
         } else {
             state.dev_mode = DevMode::Off;
         }
-    } else {
-        state.dev_mode = DevMode::Off;
-    }
+    } 
 
     Ok(state)
 }

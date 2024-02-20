@@ -110,10 +110,13 @@
   ];
 
   async function loadFerrisProfile() {
-    dispatch({ type: '[DEV] Load DEV profile', payload: { profile: 'Ferris', execute_step: null } }).then(() => {
-      // Reload page
-      window.location.reload();
-    });
+    await dispatch({ type: '[DEV] Load DEV profile', payload: { profile: 'Ferris', execute_step: null } });
+
+    // Reload page, see why not just location.reload()
+    // https://stackoverflow.com/questions/75960306/sveltekit-how-to-reload-current-page-via-the-client-side-router-using-goto'
+    const thisPage = window.location.pathname;
+    await goto('/');
+    await goto(thisPage);
   }
 
   async function loadDragonProfile(steps: ProfileSteps) {
@@ -128,8 +131,11 @@
     showDragonProfileSteps = false;
 
     if (steps == 'CompleteFlow') {
-      // Reload page
-      window.location.reload();
+      // Reload page, see why not just location.reload()
+      // https://stackoverflow.com/questions/75960306/sveltekit-how-to-reload-current-page-via-the-client-side-router-using-goto'
+      const thisPage = window.location.pathname;
+      await goto('/');
+      await goto(thisPage);
     }
   }
 </script>
