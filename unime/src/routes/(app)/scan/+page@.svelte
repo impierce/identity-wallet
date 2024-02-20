@@ -48,10 +48,12 @@
     let permission = await checkPermissions();
     permissions = permission;
     console.log({ permission });
+
     if (permission === 'prompt') {
       info('requesting permission');
       permission = await requestPermissions();
     }
+
     if (permission === 'granted') {
       info(`starting scan with parameters: { cameraDirection: 'back', windowed: false, formats: [Format.QRCode] }`);
       scanning = true;
@@ -187,9 +189,9 @@
     console.log('onMount: /scan');
     document.documentElement.querySelector('body')!!.classList.add('transparent');
     // permissionsGiven = await checkScanPrerequisites();
-    if ($state?.dev_mode !== 'Off') {
-      startScan();
-    }
+
+    // TODO find a good way to test if not dev_mode. This will have to be checked after $state is loaded.
+    startScan();
   });
 </script>
 

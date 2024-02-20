@@ -49,10 +49,10 @@ pub(super) async fn add_credential(state: AppState) -> Result<AppState, AppError
         .json(&payload)
         .send()
         .await
-        .map_err(|err| AppError::DevError(err.to_string()))?
+        .map_err(|err| AppError::Error(err.to_string()))?
         .json()
         .await
-        .map_err(|err| AppError::DevError(err.to_string()))?;
+        .map_err(|err| AppError::Error(err.to_string()))?;
 
     let qr_code = QrCodeScanned {
         form_urlencoded: response.uri,
@@ -93,10 +93,10 @@ pub(super) async fn add_connection(state: AppState) -> Result<AppState, AppError
         .json(&payload)
         .send()
         .await
-        .map_err(|err| AppError::DevError(err.to_string()))?
+        .map_err(|err| AppError::Error(err.to_string()))?
         .json()
         .await
-        .map_err(|err| AppError::DevError(err.to_string()))?;
+        .map_err(|err| AppError::Error(err.to_string()))?;
 
     let qr_code = QrCodeScanned {
         form_urlencoded: response.uri,
@@ -131,10 +131,10 @@ pub(super) async fn add_presentation_request(state: AppState) -> Result<AppState
         .json(&payload)
         .send()
         .await
-        .map_err(|err| AppError::DevError(err.to_string()))?
+        .map_err(|err| AppError::Error(err.to_string()))?
         .json()
         .await
-        .map_err(|err| AppError::DevError(err.to_string()))?;
+        .map_err(|err| AppError::Error(err.to_string()))?;
 
     let qr_code = QrCodeScanned {
         form_urlencoded: response.uri,
@@ -159,7 +159,7 @@ pub(super) async fn share_credentials(state: AppState) -> Result<AppState, AppEr
 
         command::reduce(state, Arc::new(cr_selected)).await
     } else {
-        Err(AppError::DevError("Presentation not accepted".to_string()))
+        Err(AppError::Error("Presentation not accepted".to_string()))
     }
 }
 
@@ -173,10 +173,10 @@ pub(super) async fn add_future_engineer(state: AppState) -> Result<AppState, App
         .json(&payload)
         .send()
         .await
-        .map_err(|err| AppError::DevError(err.to_string()))?
+        .map_err(|err| AppError::Error(err.to_string()))?
         .json()
         .await
-        .map_err(|err| AppError::DevError(err.to_string()))?;
+        .map_err(|err| AppError::Error(err.to_string()))?;
 
     let qr_code = QrCodeScanned {
         form_urlencoded: response.uri,

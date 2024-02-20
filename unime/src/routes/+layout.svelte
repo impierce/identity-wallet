@@ -60,34 +60,33 @@
   }
 
   interface DevModeButton {
-    stringIcon?: string;
-    svelteIcon?: typeof SvelteComponent<SvelteHTMLElements['svg']>;
+    icon?: typeof SvelteComponent<SvelteHTMLElements['svg']> | string;
     onClick: () => void;
   }
 
   function createDevButtons(): DevModeButton[] {
     const backButton: DevModeButton = {
-      svelteIcon: ArrowLeft,
+      icon: ArrowLeft,
       onClick: () => history.back(),
     };
 
     const resetButton: DevModeButton = {
-      svelteIcon: Trash,
+      icon: Trash,
       onClick: () => dispatch({ type: '[App] Reset' }),
     };
 
     const ferrisButton: DevModeButton = {
-      stringIcon: '🦀',
+      icon: '🦀',
       onClick: () => loadFerrisProfile(),
     };
 
     const dragonButton: DevModeButton = {
-      stringIcon: '🐲',
+      icon: '🐲',
       onClick: () => (showDragonProfileSteps = !showDragonProfileSteps),
     };
 
     const debugButton: DevModeButton = {
-      svelteIcon: ScrollText,
+      icon: ScrollText,
       onClick: () => (showDebugMessages = !showDebugMessages),
     };
 
@@ -144,15 +143,15 @@
         in:fly={{ y: -64, opacity: 1 }}
         out:fly={{ y: -64, opacity: 1 }}
       >
-        {#each devButtons as btn}
+        {#each devButtons as button}
           <button
             class="rounded-full bg-red-300 px-4 py-1 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
-            on:click={btn.onClick}
+            on:click={button.onClick}
           >
-            {#if btn.stringIcon}
-              <span class="m-auto block text-xl">{btn.stringIcon}</span>
+            {#if typeof button.icon === 'string'}
+              <span class="m-auto block text-xl">{button.icon}</span>
             {:else}
-              <svelte:component this={btn.svelteIcon} class="m-auto block text-xl" />
+              <svelte:component this={button.icon} class="m-auto block text-xl" />
             {/if}
           </button>
         {/each}
@@ -176,7 +175,7 @@
     <div class="relative z-10 min-h-full w-screen bg-orange-100 pt-24">
       <p class="pb-2 pt-2 text-center text-xs font-semibold uppercase text-orange-800">debug messages</p>
 
-      <hr class="mx-8 h-0.5 border-t-0 bg-orange-800" />
+      <hr class="mx-8 h-1 bg-orange-800" />
 
       {#each $state.debug_messages as message}
         <div class="mx-2 mb-2 rounded bg-orange-200 p-2">
