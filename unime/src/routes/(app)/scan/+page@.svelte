@@ -269,7 +269,7 @@
         <!-- Divider -->
         <!-- <p class="my-4 h-[1px] w-full bg-slate-200" /> -->
 
-        {#if $state?.dev_mode != 'Off'}
+        {#if $state?.dev_mode !== 'Off'}
           <div class="flex flex-col space-y-2">
             <Button variant="secondary" on:click={mockSiopRequest} label="Connection request (SIOPv2)" />
             <Button variant="secondary" on:click={mockShareRequest} label="Share request (VP)" />

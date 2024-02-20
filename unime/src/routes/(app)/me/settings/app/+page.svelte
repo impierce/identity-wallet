@@ -2,11 +2,11 @@
   import { goto } from '$app/navigation';
 
   import { locales } from '$lib/app/locales';
+  import { dispatch } from '$lib/dispatcher';
   import LL from '$src/i18n/i18n-svelte';
   import SettingsEntry from '$src/lib/app/settings/SettingsEntry.svelte';
   import Switch from '$src/lib/components/atoms/Switch.svelte';
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
-  import { dispatch } from '$src/lib/dispatcher';
   import { state } from '$src/stores';
 
   import ChatCircleText from '~icons/ph/chat-circle-text-fill';
@@ -18,7 +18,7 @@
 
   async function toggleDevSettings() {
     await dispatch({
-      type: '[DEV] Toggle DEV settings',
+      type: '[DEV] Toggle DEV mode',
     });
   }
 </script>

@@ -21,7 +21,6 @@
   import type { SvelteHTMLElements } from 'svelte/elements';
 
   import type { ProfileSteps } from '@bindings/dev/ProfileSteps';
-  import type { ProfileType } from '@bindings/dev/ProfileType';
 
   import { determineTheme } from './utils';
 
@@ -31,7 +30,7 @@
     dispatch({ type: '[App] Get state' });
   });
 
-  let expandDevMenu = true;
+  let expandedDevMenu = true;
   let showDebugMessages = false;
   let showDragonProfileSteps = false;
 
@@ -67,37 +66,37 @@
   }
 
   function createDevButtons(): DevModeButton[] {
-    const backBtn: DevModeButton = {
+    const backButton: DevModeButton = {
       svelteIcon: ArrowLeft,
       onClick: () => history.back(),
     };
 
-    const resetBtn: DevModeButton = {
+    const resetButton: DevModeButton = {
       svelteIcon: Trash,
       onClick: () => dispatch({ type: '[App] Reset' }),
     };
 
-    const ferrisBtn: DevModeButton = {
+    const ferrisButton: DevModeButton = {
       stringIcon: '🦀',
       onClick: () => loadFerrisProfile(),
     };
 
-    const dragonBtn: DevModeButton = {
+    const dragonButton: DevModeButton = {
       stringIcon: '🐲',
       onClick: () => (showDragonProfileSteps = !showDragonProfileSteps),
     };
 
-    const debugBtn: DevModeButton = {
+    const debugButton: DevModeButton = {
       svelteIcon: ScrollText,
       onClick: () => (showDebugMessages = !showDebugMessages),
     };
 
-    return [backBtn, resetBtn, debugBtn, ferrisBtn, dragonBtn];
+    return [backButton, resetButton, ferrisButton, dragonButton, debugButton];
   }
 
   const devButtons = createDevButtons();
 
-  // Order needs to match the BE: 'ProfileSteps' enum, it needs to be the same order because every step is based upon the previous.
+  // Order needs to match the rust side: 'ProfileSteps' enum, it needs to be the same order because every step is based upon the previous.
   // 'AddCredentials' is ran after 'CreateProfile' and 'AcceptCredentials' after 'AddCredentials', etc.
   const profileSteps: ProfileSteps[] = [
     'CreateProfile',
@@ -112,12 +111,9 @@
   ];
 
   async function loadFerrisProfile() {
-    dispatch({ type: '[DEV] Load DEV profile', payload: { profile: 'Ferris', execute_steps: null } }).then(() => {
+    dispatch({ type: '[DEV] Load DEV profile', payload: { profile: 'Ferris', execute_step: null } }).then(() => {
       // Reload page
-      setTimeout(async () => {
-        await goto('/');
-        await goto('/me');
-      }, 500);
+      window.location.reload();
     });
   }
 
@@ -126,7 +122,7 @@
       type: '[DEV] Load DEV profile',
       payload: {
         profile: 'Dragon',
-        execute_steps: steps,
+        execute_step: steps,
       },
     });
 
@@ -134,10 +130,7 @@
 
     if (steps == 'CompleteFlow') {
       // Reload page
-      setTimeout(async () => {
-        await goto('/');
-        await goto('/me');
-      }, 500);
+      window.location.reload();
     }
   }
 </script>
@@ -145,35 +138,32 @@
 <main class="absolute h-screen">
   <!-- Dev Mode: Navbar -->
   {#if $state?.dev_mode !== 'Off'}
-    {#if expandDevMenu}
+    {#if expandedDevMenu}
       <div
-        class="hide-scrollbar fixed z-20 flex w-full content-center overflow-x-auto bg-gradient-to-r from-red-200 to-red-300 p-4 pt-8 shadow-md"
+        class="hide-scrollbar fixed z-20 flex w-full space-x-4 overflow-x-auto bg-gradient-to-r from-red-200 to-red-300 p-4 shadow-md"
         in:fly={{ y: -64, opacity: 1 }}
         out:fly={{ y: -64, opacity: 1 }}
       >
         {#each devButtons as btn}
-          <div class="mr-4 flex flex-col content-start justify-center">
-            <button
-              class="m-0 flex h-10 w-10 content-center rounded-full bg-red-300 p-0 text-sm
-                font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
-              on:click={btn.onClick}
-            >
-              {#if btn.stringIcon}
-                <span class="m-auto block text-xl">{btn.stringIcon}</span>
-              {:else}
-                <svelte:component this={btn.svelteIcon} class="m-auto block text-xl" />
-              {/if}
-            </button>
-          </div>
+          <button
+            class="rounded-full bg-red-300 px-4 py-1 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
+            on:click={btn.onClick}
+          >
+            {#if btn.stringIcon}
+              <span class="m-auto block text-xl">{btn.stringIcon}</span>
+            {:else}
+              <svelte:component this={btn.svelteIcon} class="m-auto block text-xl" />
+            {/if}
+          </button>
         {/each}
       </div>
     {/if}
 
     <button
       class="fixed left-[calc(50%_-_12px)] top-[var(--safe-area-inset-top)] z-30 h-6 w-6 rounded-b-md bg-red-200 p-[2px]"
-      on:click={() => (expandDevMenu = !expandDevMenu)}
+      on:click={() => (expandedDevMenu = !expandedDevMenu)}
     >
-      {#if expandDevMenu}
+      {#if expandedDevMenu}
         <CaretUp class="text-red-700" />
       {:else}
         <CaretDown class="text-red-700" />
@@ -186,7 +176,7 @@
     <div class="relative z-10 min-h-full w-screen bg-orange-100 pt-24">
       <p class="pb-2 pt-2 text-center text-xs font-semibold uppercase text-orange-800">debug messages</p>
 
-      <hr class="mx-8 h-0.5 border-t-0 bg-orange-800 opacity-100" />
+      <hr class="mx-8 h-0.5 border-t-0 bg-orange-800" />
 
       {#each $state.debug_messages as message}
         <div class="mx-2 mb-2 rounded bg-orange-200 p-2">

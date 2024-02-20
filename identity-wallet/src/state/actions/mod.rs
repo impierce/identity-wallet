@@ -88,8 +88,8 @@ mod bindings {
         },
         #[serde(rename = "[DEV] Load DEV profile")]
         LoadDevProfile { payload: DevProfile },
-        #[serde(rename = "[DEV] Toggle DEV settings")]
-        ToggleDevSettings,
+        #[serde(rename = "[DEV] Toggle DEV mode")]
+        ToggleDevMode,
         #[serde(rename = "[Authenticate] Credentials selected")]
         CredentialsSelected { payload: CredentialsSelected },
         #[serde(rename = "[Credential Offer] Selected")]

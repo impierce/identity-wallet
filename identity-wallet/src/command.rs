@@ -4,14 +4,13 @@ use crate::state::persistence::save_state;
 use crate::state::{AppState, AppStateContainer};
 use futures::StreamExt;
 use itertools::Itertools;
-use log::error;
-use log::{debug, info};
+use log::{debug, info, error};
 use std::time::Duration;
 use tauri::Manager;
 
 /// This function represents the root reducer of the application. It will delegate the state update to the reducers that
 /// are listening to the action.
-pub async fn reduce(state: AppState, action: Action) -> Result<AppState, AppError> {
+pub(crate) async fn reduce(state: AppState, action: Action) -> Result<AppState, AppError> {
     // Extract the reducers listening to this action.
     let reducers = action
         .reducers()

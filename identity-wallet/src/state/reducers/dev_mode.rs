@@ -19,7 +19,7 @@ use serde_json::json;
 use std::fs::File;
 use std::io::copy;
 use std::sync::Arc;
-use super::dragon_profile::*;
+use super::dynamic_dev_profile::*;
 
 lazy_static! {
     pub static ref PERSONAL_INFORMATION: VerifiableCredentialRecord = VerifiableCredentialRecord::from(
@@ -58,8 +58,8 @@ pub async fn load_dev_profile(state: AppState, action: Action) -> Result<AppStat
     Ok(state)
 }
 
-pub async fn toggle_dev_settings(mut state: AppState, _action: Action) -> Result<AppState, AppError> {
-    info!("Toggle dev settings");
+pub async fn toggle_dev_mode(mut state: AppState, _action: Action) -> Result<AppState, AppError> {
+    info!("Toggle dev mode");
 
     if state.dev_mode != DevMode::Off {
         state.dev_mode = DevMode::Off;
@@ -86,7 +86,7 @@ pub async fn unlock_storage(state: AppState) -> Result<AppState, AppError> {
 
 pub async fn load_dragon_profile(mut state: AppState, dev_profile: DevProfile) -> Result<AppState, AppError> {
     let steps = dev_profile
-        .execute_steps
+        .execute_step
         .expect("For dragon profile steps are expected");
 
     info!("Profile steps executed: {:?}", steps);
