@@ -55,28 +55,26 @@ Displays an image (loaded from disk) or a fallback component.
 <Image id={'3cf73ecb'} iconFallback={'Bank'} imgClass="h-[64px] w-[64px]" />
 ```
 -->
-{#if id}
-  {#if assetUrl}
-    <img
-      src={assetUrl}
-      alt="img_{id}"
-      class={twMerge('max-h-full w-full overflow-hidden bg-white object-cover', $$props.imgClass)}
-      on:error={() => {
-        id = null;
-        console.warn(`could not load image for id=[${id}]`);
-      }}
-      on:load={() => console.log('loading complete')}
-      data-testid="image"
+{#if assetUrl}
+  <img
+    src={assetUrl}
+    alt="img_{id}"
+    class={twMerge('max-h-full w-full overflow-hidden bg-white object-cover', $$props.imgClass)}
+    on:error={() => {
+      id = null;
+      console.warn(`could not load image for id=[${id}]`);
+    }}
+    on:load={() => console.log('loading complete')}
+    data-testid="image"
+  />
+{:else}
+  <slot name="fallback">
+    <svelte:component
+      this={icons[iconFallback]}
+      class={twMerge('h-[18px] w-[18px] text-slate-800 dark:text-grey', $$props.iconClass)}
+      data-testid="icon"
     />
-  {:else}
-    <slot name="fallback">
-      <svelte:component
-        this={icons[iconFallback]}
-        class={twMerge('h-[18px] w-[18px] text-slate-800 dark:text-grey', $$props.iconClass)}
-        data-testid="icon"
-      />
-    </slot>
-  {/if}
+  </slot>
 {/if}
 
 <!-- TODO: make fallback more generic, default is SvelteComponent with icon -->
