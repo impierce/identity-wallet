@@ -9,11 +9,11 @@ pub mod load_dev_profile;
 pub mod qr_code_scanned;
 pub mod reset;
 pub mod set_locale;
+pub mod toggle_dev_settings;
 pub mod unlock_storage;
 pub mod update_credential_metadata;
 pub mod update_profile_settings;
 pub mod user_data_query;
-pub mod toggle_dev_settings;
 
 pub use cancel_user_flow::*;
 pub use cancel_user_journey::*;

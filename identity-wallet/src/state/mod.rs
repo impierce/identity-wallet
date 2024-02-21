@@ -61,7 +61,7 @@ pub enum DevMode {
     On,
     #[default]
     Off,
-    OnWithAutologin
+    OnWithAutologin,
 }
 
 impl Clone for AppState {

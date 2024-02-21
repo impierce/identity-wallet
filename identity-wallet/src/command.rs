@@ -4,7 +4,7 @@ use crate::state::persistence::save_state;
 use crate::state::{AppState, AppStateContainer};
 use futures::StreamExt;
 use itertools::Itertools;
-use log::{debug, info, error};
+use log::{debug, error, info};
 use std::time::Duration;
 use tauri::Manager;
 

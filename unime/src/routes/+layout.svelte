@@ -114,9 +114,8 @@
 
     // Reload page, see why not just location.reload()
     // https://stackoverflow.com/questions/75960306/sveltekit-how-to-reload-current-page-via-the-client-side-router-using-goto'
-    const thisPage = window.location.pathname;
     await goto('/');
-    await goto(thisPage);
+    await goto('/me');
   }
 
   async function loadDragonProfile(steps: ProfileSteps) {
@@ -133,9 +132,8 @@
     if (steps == 'CompleteFlow') {
       // Reload page, see why not just location.reload()
       // https://stackoverflow.com/questions/75960306/sveltekit-how-to-reload-current-page-via-the-client-side-router-using-goto'
-      const thisPage = window.location.pathname;
       await goto('/');
-      await goto(thisPage);
+      await goto('/me');
     }
   }
 </script>

@@ -3,7 +3,10 @@ use crate::{
     command,
     error::AppError,
     state::{
-        actions::{ConnectionAccepted, CreateNew, CredentialOffersSelected, CredentialsSelected, DevProfile, ProfileSteps, QrCodeScanned, Reset},
+        actions::{
+            ConnectionAccepted, CreateNew, CredentialOffersSelected, CredentialsSelected, DevProfile, ProfileSteps,
+            QrCodeScanned, Reset,
+        },
         user_prompt::CurrentUserPrompt,
         AppState, DevMode,
     },
@@ -14,9 +17,7 @@ use std::sync::Arc;
 use uuid::Uuid;
 
 pub async fn load_dragon_profile(mut state: AppState, dev_profile: DevProfile) -> Result<AppState, AppError> {
-    let steps = dev_profile
-        .execute_step
-        .expect("For dragon profile steps are expected");
+    let steps = dev_profile.execute_step.expect("For dragon profile steps are expected");
 
     info!("Profile steps executed: {:?}", steps);
 
@@ -67,7 +68,6 @@ pub async fn load_dragon_profile(mut state: AppState, dev_profile: DevProfile) -
 
     Ok(state)
 }
-
 
 async fn create_new_profile(state: AppState) -> Result<AppState, AppError> {
     let create_new = CreateNew {
