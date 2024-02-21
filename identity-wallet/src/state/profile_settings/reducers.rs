@@ -87,19 +87,21 @@ pub async fn initialize_stronghold(state: AppState, action: Action) -> Result<Ap
 /// Reducer to update the profile settings.
 pub async fn update_profile_settings(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(UpdateProfileSettings { theme, name, picture }) = listen::<UpdateProfileSettings>(action) {
-        let profile = state.profile_settings.profile.ok_or(MissingStateParameterError("active profile"))?.clone();
-
-        return Ok(AppState {
-            profile_settings: ProfileSettings {
-                profile: Some(Profile {
-                    name: name.unwrap_or(profile.name),
-                    picture,
-                    theme,
-                    ..profile
-                }),
-                ..Default::default()},
-            ..state
+        if let Some(profile) = state.profile_settings.profile.clone() {
+            return Ok(AppState {
+                profile_settings: ProfileSettings {
+                    profile: Some(Profile {
+                        name: name.unwrap_or(profile.name),
+                        picture: picture.or(profile.picture),
+                        theme: theme.or(profile.theme),
+                        ..profile
+                    }),
+                    ..Default::default()
+                },
+                current_user_prompt: None,
+                ..state
             });
+        }
     }
 
     Ok(state)

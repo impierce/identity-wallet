@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
+use super::FeatTrait;
+
 pub mod actions;
 pub mod reducers;
 
@@ -15,3 +17,6 @@ pub struct Connection {
     pub first_interacted: String,
     pub last_interacted: String,
 }
+
+#[typetag::serde(name = "connection")]
+impl FeatTrait for Connection {}

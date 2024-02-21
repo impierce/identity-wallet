@@ -87,7 +87,7 @@
   });
 
   onDestroy(async () => {
-    dispatch({ type: '[User Flow] Cancel', payload: { } });
+    dispatch({ type: '[User Flow] Cancel' });
   });
 </script>
 
@@ -265,7 +265,7 @@
     <!-- <button
       class="mt-2 w-full rounded-lg border bg-white px-4 py-2 text-neutral-700"
       on:click={() => {
-        dispatch({ type: '[User Flow] Cancel', payload: { } });
+        dispatch({ type: '[User Flow] Cancel' });
         goto('/me');
       }}>Reject</button
     > -->

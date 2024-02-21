@@ -2,6 +2,7 @@ use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
 use serde::{Deserialize, Serialize};
 use derivative::Derivative;
 use ts_rs::TS;
+use super::FeatTrait;
 
 pub mod actions;
 pub mod reducers;
@@ -20,6 +21,9 @@ pub struct DisplayCredential {
     #[serde(default)]
     pub metadata: CredentialMetadata,
 }
+
+#[typetag::serde(name = "display_credential")]
+impl FeatTrait for DisplayCredential {}
 
 /// Metadata for a credential.
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, TS, Default, Derivative)]

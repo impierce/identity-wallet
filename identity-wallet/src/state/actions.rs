@@ -4,6 +4,8 @@ use downcast_rs::{impl_downcast, DowncastSync};
 use std::{future::Future, pin::Pin};
 use ts_rs::TS;
 
+/// This macro_rule pairs and simultaneously checks the reducers for its signature,
+///  as it should comply with our standard signature for reducers.
 #[macro_export]
 macro_rules! reducer {
     ($reducer:expr) => {
@@ -83,4 +85,28 @@ mod bindings {
         
     }
 }
+
+// Below is an example of how to add an action to the app
+//
+// Example:
+// pub struct NewAction {
+//  The optonial fields will be it's payload.  
+// }
+// 
+// #[typetag::serde(name = "[New] New Action")]
+// impl ActionTrait for NewAction {
+//     fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
+//         vec![reducer!(new_reducer)]
+//     }
+// }
+//
+// pub async fn new_reducer(state: AppState, action: Action) -> Result<AppState, AppError> {
+//  -- your code --
+//      return ( AppState {
+//                  the changes,
+//                  ..state     // Sets the rest to the same values as the old state.
+//             })
+//      }
+// Ok(state)        // Returns the old state if the state update fails.
+// }
 

@@ -29,7 +29,7 @@
   onMount(async () => {
     const detach = await attachConsole();
     loadAllLocales(); //TODO: performance: only load locale on user request
-    dispatch({ type: '[App] Get state', payload: null });
+    dispatch({ type: '[App] Get state' });
   });
 
   let showDevMode = false;
@@ -76,11 +76,11 @@
         </button>
         <button
           class="flex-shrink-0 rounded-full bg-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
-          on:click={() => dispatch({ type: '[App] Reset', payload: null })}><Trash class="h-6 w-6" /></button
+          on:click={() => dispatch({ type: '[App] Reset' })}><Trash class="h-6 w-6" /></button
         >
         <button
           class="flex-shrink-0 rounded-full bg-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
-          on:click={() => dispatch({ type: '[DEV] Load profile', payload: null })}
+          on:click={() => dispatch({ type: '[DEV] Load profile' })}
         >
           <span class="text-[18px]/[18px]">🦀</span>
         </button>

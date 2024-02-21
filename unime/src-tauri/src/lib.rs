@@ -1,13 +1,13 @@
 use fern::colors::Color;
-use identity_wallet::{persistence::{clear_assets_tmp_folder, initialize_storage}, state::AppStateContainer};
+use identity_wallet::{
+    initialize_storage,
+    state::{persistence::clear_assets_tmp_folder, AppStateContainer},
+};
 use log::{info, LevelFilter};
 use tauri_plugin_log::{fern::colors::ColoredLevelConfig, Target, TargetKind};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    // Add extensions here when necessary with the .add_extension() method
-    let app_state = AppStateContainer(Default::default());
-
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![tauri_command::handle_action])
         .setup(move |app| {
@@ -21,7 +21,7 @@ pub fn run() {
             }
             Ok(())
         })
-        .manage(app_state)
+        .manage(AppStateContainer(Default::default()))
         .plugin(
             tauri_plugin_log::Builder::new()
                 // .clear_targets()
@@ -61,10 +61,10 @@ pub mod tauri_command {
     #[tauri::command]
     pub async fn handle_action<R: tauri::Runtime>(
         action: Action,
-        app_handle: tauri::AppHandle<R>,
+        _app_handle: tauri::AppHandle<R>,
         container: tauri::State<'_, AppStateContainer>,
         window: tauri::Window<R>,
     ) -> Result<(), String> {
-        identity_wallet::command::handle_action(action, app_handle, container, window).await
+        identity_wallet::command::handle_action(action, _app_handle, container, window).await
     }
 }

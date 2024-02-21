@@ -40,7 +40,7 @@
   console.log($state.current_user_prompt);
 
   onDestroy(async () => {
-    dispatch({ type: '[User Flow] Cancel', payload: { } });
+    dispatch({ type: '[User Flow] Cancel' });
   });
 </script>
 
@@ -142,7 +142,6 @@
       on:click={() =>
         dispatch({
           type: '[Authenticate] Connection accepted',
-          payload: null
         })}
     />
     <Button

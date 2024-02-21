@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
+use super::FeatTrait;
+
 pub mod actions;
 pub mod reducers;
 
@@ -10,6 +12,9 @@ pub enum QueryTarget {
     Credentials,
     Connections,
 }
+
+#[typetag::serde(name = "query_target")]
+impl FeatTrait for QueryTarget {}
 
 #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq)]
 #[ts(export)]

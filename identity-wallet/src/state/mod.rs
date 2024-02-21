@@ -22,6 +22,18 @@ pub mod user_journey;
 pub mod actions;
 pub mod user_prompt;
 
+/// The AppState is the main state of the application shared between the backend and the frontend.
+/// We have structured the state and its operations following the redux pattern.
+/// To safeguard this pattern we have introduced the FeatTrait, ActionTrait and a macro_rule for the Reducers.
+/// All fields in the AppState have to implement the FeatTrait.
+/// This is to ensure that the state is serializable/deserializable and cloneable among other things.
+/// All actions have to implement the ActionTrait.
+/// This ensures that all actions have at least one reducer, implement a debug method,
+///  and are downcastable (necessary when receiving the action from the frontend)
+/// The reducers are paired with the actions using our macro_rule.
+/// This ensures that all reducers have the same signature and therefore follow the redux pattern and our error handling.
+/// All the above goes for extensions (values) which are added to the extensions field.
+
 /// Trait which each field of the appstate has to implement.
 #[typetag::serde(tag = "feat_state_type")]
 pub trait FeatTrait: Send + Sync + std::fmt::Debug + DynClone + DowncastSync{}
@@ -102,6 +114,21 @@ impl AppState{
         self
     }
 }
+
+// Below is an example of how to add a field to the AppState.
+// How to interact with this field using Actions & Reducers will be explained further in actions.rs
+//
+// Example:
+// pub struct AppState {
+//  ..,
+//  new_field: NewField,
+//  ..  
+// }
+//
+// pub struct NewField {}
+//
+// impl FeatTrait for NewField {}
+// 
 
 // #[cfg(test)]
 // mod tests {
