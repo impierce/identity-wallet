@@ -11,7 +11,6 @@ use super::IdentityManager;
 use crate::crypto::stronghold::StrongholdManager;
 use crate::error::AppError::{self, *};
 use crate::state::actions::{Action, CreateNew};
-use crate::state::reducers::dev_mode::unlock_storage;
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, DevMode, Profile};
 use crate::verifiable_credential_record::VerifiableCredentialRecord;
@@ -59,7 +58,7 @@ pub async fn get_state(_state: AppState, _action: Action) -> Result<AppState, Ap
         if dev_mode {
             if state.dev_mode == DevMode::Off {
                 state.dev_mode = DevMode::On;
-            }  
+            }
         } else {
             state.dev_mode = DevMode::Off;
         }
