@@ -51,8 +51,6 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
                     .or(get_type_name_from_data(&credential_display))
                     .unwrap_or("".to_string());
 
-                let credential_type = get_credential_type(&credential_display);
-
                 DisplayCredential {
                     id: Uuid::from_slice(&hash.as_bytes()[..16]).unwrap().to_string(),
                     issuer_name: "".to_string(),
@@ -64,7 +62,6 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
                         date_issued: issuance_date.to_string(),
                     },
                     display_name,
-                    credential_type,
                 }
             }
             _ => unimplemented!(),
@@ -75,22 +72,6 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
             display_credential,
         }
     }
-}
-
-fn get_credential_type(credential_display: &serde_json::Value) -> CredentialType {
-    let cred_type = credential_display.get("type");
-
-    if let Some(cred_type) = cred_type {
-        let cred_type_str = cred_type.to_string();
-
-        info!("Cred type str: {:?}", cred_type_str);
-
-        if cred_type_str.contains("OpenBadgeCredential") {
-            return CredentialType::Badge;
-        }
-    }
-
-    CredentialType::Credential
 }
 
 fn get_achievement_name_from_data(credential_display: &serde_json::Value) -> Option<String> {
@@ -110,13 +91,6 @@ fn get_type_name_from_data(credential_display: &serde_json::Value) -> Option<Str
     }
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, TS)]
-#[ts(export, export_to = "bindings/display-credential/CredentialType.ts")]
-pub enum CredentialType {
-    Badge,
-    Credential,
-}
-
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, Derivative, TS)]
 #[derivative(PartialEq)]
 #[ts(export, export_to = "bindings/display-credential/DisplayCredential.ts")]
@@ -132,7 +106,6 @@ pub struct DisplayCredential {
     pub metadata: CredentialMetadata,
 
     pub display_name: String,
-    pub credential_type: CredentialType,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, TS, Default, Derivative)]

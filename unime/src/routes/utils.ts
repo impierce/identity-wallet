@@ -1,6 +1,8 @@
+import type { AppTheme } from "@bindings/theme";
+
 export function determineTheme(
   systemPrefersDark: boolean,
-  userPreference: 'system' | 'light' | 'dark',
+  userPreference: AppTheme,
 ): 'light' | 'dark' {
   if (systemPrefersDark) {
     if (userPreference === 'light') {

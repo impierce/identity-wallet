@@ -51,7 +51,9 @@
     console.log('+layout.svelte: state', $state);
 
     // needed again?
-    determineTheme(systemColorScheme.matches, $state?.active_profile?.theme);
+    if ($state?.active_profile?.theme) {
+      determineTheme(systemColorScheme.matches, $state?.active_profile?.theme);
+    }
 
     // User prompt
     let type = $state?.current_user_prompt?.type;
