@@ -59,9 +59,7 @@ pub async fn get_state(_state: AppState, _action: Action) -> Result<AppState, Ap
         if dev_mode {
             if state.dev_mode == DevMode::Off {
                 state.dev_mode = DevMode::On;
-            } else if state.dev_mode == DevMode::OnWithAutologin {
-                return unlock_storage(state).await;
-            }
+            }  
         } else {
             state.dev_mode = DevMode::Off;
         }

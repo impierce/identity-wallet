@@ -11,6 +11,7 @@
 
   import Eye from '~icons/ph/eye';
   import EyeClosed from '~icons/ph/eye-closed';
+  import { onMount } from 'svelte';
 
   let showPassword = false;
 
@@ -18,6 +19,16 @@
 
   // TODO: make reactive
   const isDarkModeEnabled = document.documentElement.classList.contains('dark');
+
+  // TODO move to the backend
+  onMount(() => {
+    if ($state?.dev_mode === 'OnWithAutologin') {
+      console.log('Developer mode - Injecting password automatically ...');
+      setTimeout(() => {
+        dispatch({ type: '[Storage] Unlock', payload: { password: 'sup3rSecr3t' } });
+      }, 500);
+    }
+  });
 </script>
 
 <div class="content-height flex items-center justify-center bg-silver dark:bg-navy">
