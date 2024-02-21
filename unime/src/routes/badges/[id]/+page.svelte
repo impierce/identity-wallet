@@ -188,7 +188,7 @@
       </div>
     </div>
 
-    {#if $state.dev_mode_enabled}
+    {#if $state?.dev_mode !== 'Off'}
       <p class="break-all px-4 pb-5 text-center text-[13px]/[24px] text-slate-500">
         {JSON.stringify(credential.data.issuer)}
       </p>

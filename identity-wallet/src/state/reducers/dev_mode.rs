@@ -1,10 +1,11 @@
+use super::dynamic_dev_profile::*;
 use crate::crypto::stronghold::StrongholdManager;
 use crate::error::AppError::{self, *};
-use crate::state::actions::{listen, Action, SetDevMode};
+use crate::state::actions::{listen, Action, DevProfile, ProfileType, UnlockStorage};
 use crate::state::user_prompt::CurrentUserPrompt;
-use crate::state::{AppState, Connection, Profile};
+use crate::state::{AppState, Connection, DevMode, Profile};
 use crate::verifiable_credential_record::VerifiableCredentialRecord;
-use crate::ASSETS_DIR;
+use crate::{command, ASSETS_DIR};
 use did_key::{generate, Ed25519KeyPair};
 use lazy_static::lazy_static;
 use log::info;
@@ -44,20 +45,49 @@ lazy_static! {
     );
 }
 
-pub async fn set_dev_mode(state: AppState, action: Action) -> Result<AppState, AppError> {
-    if let Some(enabled) = listen::<SetDevMode>(action).map(|payload| payload.enabled) {
-        return Ok(AppState {
-            dev_mode_enabled: enabled,
-            current_user_prompt: None,
-            ..state
-        });
+pub(super) const PASSWORD: &str = "sup3rSecr3t";
+
+pub async fn load_dev_profile(state: AppState, action: Action) -> Result<AppState, AppError> {
+    info!("Load dev profile: {:?}", action);
+
+    if let Some(dev_profile) = listen::<DevProfile>(action) {
+        // All dev profiles need to use the const PASSWORD so it can automatically unlock storage.
+        match dev_profile.profile {
+            ProfileType::Ferris => return load_ferris_profile().await,
+            ProfileType::Dragon => return load_dragon_profile(state, dev_profile).await,
+        }
     }
+
     Ok(state)
 }
 
-pub async fn load_dev_profile(_state: AppState, _action: Action) -> Result<AppState, AppError> {
-    info!("load dev profile");
+pub async fn toggle_dev_mode(mut state: AppState, _action: Action) -> Result<AppState, AppError> {
+    info!("Toggle dev mode");
 
+    if state.dev_mode != DevMode::Off {
+        state.dev_mode = DevMode::Off;
+    } else {
+        // We don't preserve if user had autologin enabled
+        // So we just put it back to default (reload profile if you want to enable autologin again)
+        state.dev_mode = DevMode::On;
+    }
+
+    state.current_user_prompt = None;
+
+    Ok(state)
+}
+
+pub async fn unlock_storage(state: AppState) -> Result<AppState, AppError> {
+    command::reduce(
+        state,
+        Arc::new(UnlockStorage {
+            password: PASSWORD.to_string(),
+        }),
+    )
+    .await
+}
+
+async fn load_ferris_profile() -> Result<AppState, AppError> {
     let mut state = AppState::default();
 
     let stronghold_manager = StrongholdManager::create("sup3rSecr3t").map_err(StrongholdCreationError)?;
@@ -199,7 +229,8 @@ pub async fn load_dev_profile(_state: AppState, _action: Action) -> Result<AppSt
         target: "me".to_string(),
     });
 
-    state.dev_mode_enabled = true;
+    state.dev_mode = DevMode::OnWithAutologin;
+
     Ok(state)
 }
 

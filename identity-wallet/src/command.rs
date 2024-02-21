@@ -4,14 +4,13 @@ use crate::state::persistence::save_state;
 use crate::state::{AppState, AppStateContainer};
 use futures::StreamExt;
 use itertools::Itertools;
-use log::error;
-use log::{debug, info, warn};
+use log::{debug, error, info};
 use std::time::Duration;
 use tauri::Manager;
 
 /// This function represents the root reducer of the application. It will delegate the state update to the reducers that
 /// are listening to the action.
-async fn reduce(state: AppState, action: Action) -> Result<AppState, AppError> {
+pub(crate) async fn reduce(state: AppState, action: Action) -> Result<AppState, AppError> {
     // Extract the reducers listening to this action.
     let reducers = action
         .reducers()
@@ -53,10 +52,7 @@ pub async fn main_exec<R: tauri::Runtime>(
     // Get a copy of the current state and pass it to the root reducer.
     match reduce(guard.clone(), action).await {
         // If the state update succeeds, we replace the old state with the new one.
-        Ok(app_state) => {
-            debug!("{app_state:?}");
-            *guard = app_state
-        }
+        Ok(app_state) => *guard = app_state,
         // If the state update fails, we log the error and keep the old state.
         Err(error) => {
             {
@@ -70,7 +66,7 @@ pub async fn main_exec<R: tauri::Runtime>(
                     error
                 ));
             }
-            warn!("state update failed: {}", error);
+            error!("state update failed: {}", error);
         }
     };
 

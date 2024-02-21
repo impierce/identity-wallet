@@ -8,8 +8,8 @@ pub mod get_state;
 pub mod load_dev_profile;
 pub mod qr_code_scanned;
 pub mod reset;
-pub mod set_dev_mode;
 pub mod set_locale;
+pub mod toggle_dev_settings;
 pub mod unlock_storage;
 pub mod update_credential_metadata;
 pub mod update_profile_settings;
@@ -25,7 +25,6 @@ pub use get_state::*;
 pub use load_dev_profile::*;
 pub use qr_code_scanned::*;
 pub use reset::*;
-pub use set_dev_mode::*;
 pub use set_locale::*;
 pub use unlock_storage::*;
 pub use update_credential_metadata::*;
@@ -87,10 +86,10 @@ mod bindings {
             #[ts(optional)]
             payload: Option<CancelUserFlow>,
         },
-        #[serde(rename = "[DEV] Set dev mode")]
-        SetDevMode { payload: SetDevMode },
-        #[serde(rename = "[DEV] Load profile")]
-        LoadDevProfile,
+        #[serde(rename = "[DEV] Load DEV profile")]
+        LoadDevProfile { payload: DevProfile },
+        #[serde(rename = "[DEV] Toggle DEV mode")]
+        ToggleDevMode,
         #[serde(rename = "[Authenticate] Credentials selected")]
         CredentialsSelected { payload: CredentialsSelected },
         #[serde(rename = "[Credential Offer] Selected")]

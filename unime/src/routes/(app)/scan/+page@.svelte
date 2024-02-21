@@ -49,10 +49,12 @@
     let permission = await checkPermissions();
     permissions = permission;
     console.log({ permission });
+
     if (permission === 'prompt') {
       info('requesting permission');
       permission = await requestPermissions();
     }
+
     if (permission === 'granted') {
       info(`starting scan with parameters: { cameraDirection: 'back', windowed: false, formats: [Format.QRCode] }`);
       scanning = true;
@@ -188,9 +190,9 @@
     console.log('onMount: /scan');
     document.documentElement.querySelector('body')!!.classList.add('transparent');
     // permissionsGiven = await checkScanPrerequisites();
-    if (!$state?.dev_mode_enabled) {
-      startScan();
-    }
+
+    // TODO find a good way to test if not dev_mode. This will have to be checked after $state is loaded.
+    startScan();
   });
 </script>
 
@@ -270,7 +272,7 @@
         <!-- Divider -->
         <!-- <p class="my-4 h-[1px] w-full bg-slate-200" /> -->
 
-        {#if $state?.dev_mode_enabled}
+        {#if $state?.dev_mode !== 'Off'}
           <div class="flex flex-col space-y-4">
             <!-- Mock -->
             <div class="flex flex-col space-y-2">
@@ -323,7 +325,7 @@
               </div>
             </div>
           </div>
-          {#if $state?.dev_mode_enabled}
+          {#if $state?.dev_mode !== 'Off'}
             <div class="fixed bottom-[128px] left-[calc(50%_-_42px)]">
               <button class="rounded-lg bg-rose-100 px-4 py-3 font-medium text-rose-500" on:click={cancelScan}
                 >{$LL.CANCEL()}</button

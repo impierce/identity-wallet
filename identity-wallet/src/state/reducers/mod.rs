@@ -1,6 +1,7 @@
 pub mod authorization;
 pub mod credential_offer;
 pub mod dev_mode;
+pub mod dynamic_dev_profile;
 pub mod storage;
 pub mod user_data_query;
 
@@ -11,7 +12,7 @@ use crate::crypto::stronghold::StrongholdManager;
 use crate::error::AppError::{self, *};
 use crate::state::actions::{Action, CreateNew};
 use crate::state::user_prompt::CurrentUserPrompt;
-use crate::state::{AppState, Profile};
+use crate::state::{AppState, DevMode, Profile};
 use crate::verifiable_credential_record::VerifiableCredentialRecord;
 use did_key::{from_existing_key, Ed25519KeyPair};
 use futures::Future;
@@ -37,7 +38,7 @@ pub type Reducer<'a> =
     Box<dyn Fn(AppState, Action) -> Pin<Box<dyn Future<Output = Result<AppState, AppError>> + Send>> + Send>;
 
 pub async fn get_state(_state: AppState, _action: Action) -> Result<AppState, AppError> {
-    println!("get_state reducer called");
+    debug!("get_state reducer called");
     let mut state = load_state().await.unwrap_or_default();
 
     if state.active_profile.is_some() {
@@ -50,12 +51,19 @@ pub async fn get_state(_state: AppState, _action: Action) -> Result<AppState, Ap
     }
 
     // Overwrite dev_mode_enabled if environment variable is set
-    if let Some(b) = std::env::var("DEV_MODE_ENABLED")
+    if let Some(dev_mode) = std::env::var("DEV_MODE_ENABLED")
         .ok()
         .and_then(|s| s.parse::<bool>().ok())
     {
-        state.dev_mode_enabled = b;
+        if dev_mode {
+            if state.dev_mode == DevMode::Off {
+                state.dev_mode = DevMode::On;
+            }
+        } else {
+            state.dev_mode = DevMode::Off;
+        }
     }
+
     Ok(state)
 }
 
@@ -244,7 +252,7 @@ pub async fn update_profile_settings(state: AppState, action: Action) -> Result<
 }
 
 /// Completely resets the state to its default values.
-pub async fn reset_state(_state: AppState, _action: Action) -> Result<AppState, AppError> {
+pub async fn reset_state(state: AppState, _action: Action) -> Result<AppState, AppError> {
     delete_state_file().await.ok();
     delete_stronghold().await.ok();
     clear_all_assets().ok();
@@ -253,6 +261,8 @@ pub async fn reset_state(_state: AppState, _action: Action) -> Result<AppState, 
         current_user_prompt: Some(CurrentUserPrompt::Redirect {
             target: "welcome".to_string(),
         }),
+        // Keep maintaing dev_mode state
+        dev_mode: state.dev_mode,
         ..Default::default()
     })
 }

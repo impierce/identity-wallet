@@ -1,5 +1,5 @@
 import { goto } from '$app/navigation';
-import { readable, writable } from 'svelte/store';
+import { writable } from 'svelte/store';
 
 // TODO: run some copy task instead of importing across root to make the frontend independent
 import type { AppState as State } from '@bindings/AppState';
@@ -8,8 +8,6 @@ import { info } from '@tauri-apps/plugin-log';
 
 import { setLocale } from '$src/i18n/i18n-svelte';
 import type { Locales } from '$src/i18n/i18n-types';
-
-import { sanitizeStringify } from './lib/sensitive-logging';
 
 interface StateChangedEvent {
   event: string;
@@ -29,7 +27,7 @@ const empty_state: State = {
   locale: 'en-US',
   credentials: [],
   current_user_prompt: null,
-  dev_mode_enabled: false,
+  dev_mode: 'Off',
   debug_messages: [],
   user_journey: null,
   connections: [],
@@ -46,8 +44,6 @@ export const state = writable<State>(undefined, (set) => {
     const state = event.payload;
 
     set(state);
-    info(`stores.ts: ${sanitizeStringify(state)}`);
-
     setLocale(state.locale as Locales);
 
     if (state.current_user_prompt?.type === 'redirect') {

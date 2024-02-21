@@ -23,6 +23,9 @@ use uuid::Uuid;
 pub async fn read_credential_offer(state: AppState, action: Action) -> Result<AppState, AppError> {
     info!("read_credential_offer");
 
+    // Sometimes reducers are connected to actions that they shouldn't execute
+    // Therefore its also checked if it can parse to credential offer query
+    // TODO find a better way to connect to the right reducer
     if let Some(credential_offer_uri) =
         listen::<QrCodeScanned>(action).and_then(|payload| payload.form_urlencoded.parse::<CredentialOfferQuery>().ok())
     {
@@ -40,6 +43,7 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
                 .await
                 .map_err(GetCredentialOfferError)?,
         };
+
         info!("credential offer: {:?}", credential_offer);
 
         // The credential offer contains a credential issuer url.
