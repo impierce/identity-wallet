@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+
   import { melt } from '@melt-ui/svelte';
 
   import { dispatch } from '$lib/dispatcher';
@@ -11,7 +13,6 @@
 
   import Eye from '~icons/ph/eye';
   import EyeClosed from '~icons/ph/eye-closed';
-  import { onMount } from 'svelte';
 
   let showPassword = false;
 
