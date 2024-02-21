@@ -1,9 +1,9 @@
-use std::fmt::Formatter;
 use crate::reducer;
 use crate::state::actions::ActionTrait;
 use crate::state::actions::Reducer;
 use crate::state::reducers::{create_identity, initialize_stronghold};
 use crate::state::AppTheme;
+use std::fmt::Formatter;
 use ts_rs::TS;
 
 #[derive(serde::Serialize, serde::Deserialize, TS, Clone)]

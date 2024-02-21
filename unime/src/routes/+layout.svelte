@@ -21,7 +21,6 @@
   import type { SvelteHTMLElements } from 'svelte/elements';
 
   import type { ProfileSteps } from '@bindings/dev/ProfileSteps';
-  import type { ProfileType } from '@bindings/dev/ProfileType';
 
   import { determineTheme } from './utils';
 
@@ -31,7 +30,7 @@
     dispatch({ type: '[App] Get state' });
   });
 
-  let expandDevMenu = true;
+  let expandedDevMenu = true;
   let showDebugMessages = false;
   let showDragonProfileSteps = false;
 
@@ -63,43 +62,42 @@
   }
 
   interface DevModeButton {
-    stringIcon?: string;
-    svelteIcon?: typeof SvelteComponent<SvelteHTMLElements['svg']>;
+    icon?: typeof SvelteComponent<SvelteHTMLElements['svg']> | string;
     onClick: () => void;
   }
 
   function createDevButtons(): DevModeButton[] {
-    const backBtn: DevModeButton = {
-      svelteIcon: ArrowLeft,
+    const backButton: DevModeButton = {
+      icon: ArrowLeft,
       onClick: () => history.back(),
     };
 
-    const resetBtn: DevModeButton = {
-      svelteIcon: Trash,
+    const resetButton: DevModeButton = {
+      icon: Trash,
       onClick: () => dispatch({ type: '[App] Reset' }),
     };
 
-    const ferrisBtn: DevModeButton = {
-      stringIcon: '🦀',
+    const ferrisButton: DevModeButton = {
+      icon: '🦀',
       onClick: () => loadFerrisProfile(),
     };
 
-    const dragonBtn: DevModeButton = {
-      stringIcon: '🐲',
+    const dragonButton: DevModeButton = {
+      icon: '🐲',
       onClick: () => (showDragonProfileSteps = !showDragonProfileSteps),
     };
 
-    const debugBtn: DevModeButton = {
-      svelteIcon: ScrollText,
+    const debugButton: DevModeButton = {
+      icon: ScrollText,
       onClick: () => (showDebugMessages = !showDebugMessages),
     };
 
-    return [backBtn, resetBtn, debugBtn, ferrisBtn, dragonBtn];
+    return [backButton, resetButton, ferrisButton, dragonButton, debugButton];
   }
 
   const devButtons = createDevButtons();
 
-  // Order needs to match the BE: 'ProfileSteps' enum, it needs to be the same order because every step is based upon the previous.
+  // Order needs to match the rust side: 'ProfileSteps' enum, it needs to be the same order because every step is based upon the previous.
   // 'AddCredentials' is ran after 'CreateProfile' and 'AcceptCredentials' after 'AddCredentials', etc.
   const profileSteps: ProfileSteps[] = [
     'CreateProfile',
@@ -114,13 +112,12 @@
   ];
 
   async function loadFerrisProfile() {
-    dispatch({ type: '[DEV] Load DEV profile', payload: { profile: 'Ferris', execute_steps: null } }).then(() => {
-      // Reload page
-      setTimeout(async () => {
-        await goto('/');
-        await goto('/me');
-      }, 500);
-    });
+    await dispatch({ type: '[DEV] Load DEV profile', payload: { profile: 'Ferris', execute_step: null } });
+
+    // Reload page, see why not just location.reload()
+    // https://stackoverflow.com/questions/75960306/sveltekit-how-to-reload-current-page-via-the-client-side-router-using-goto'
+    await goto('/');
+    await goto('/me');
   }
 
   async function loadDragonProfile(steps: ProfileSteps) {
@@ -128,18 +125,17 @@
       type: '[DEV] Load DEV profile',
       payload: {
         profile: 'Dragon',
-        execute_steps: steps,
+        execute_step: steps,
       },
     });
 
     showDragonProfileSteps = false;
 
     if (steps == 'CompleteFlow') {
-      // Reload page
-      setTimeout(async () => {
-        await goto('/');
-        await goto('/me');
-      }, 500);
+      // Reload page, see why not just location.reload()
+      // https://stackoverflow.com/questions/75960306/sveltekit-how-to-reload-current-page-via-the-client-side-router-using-goto'
+      await goto('/');
+      await goto('/me');
     }
   }
 </script>
@@ -147,35 +143,32 @@
 <main class="absolute h-screen">
   <!-- Dev Mode: Navbar -->
   {#if $state?.dev_mode !== 'Off'}
-    {#if expandDevMenu}
+    {#if expandedDevMenu}
       <div
-        class="hide-scrollbar fixed z-20 flex w-full content-center overflow-x-auto bg-gradient-to-r from-red-200 to-red-300 p-4 pt-8 shadow-md"
+        class="hide-scrollbar fixed z-20 flex w-full space-x-4 overflow-x-auto bg-gradient-to-r from-red-200 to-red-300 p-4 shadow-md"
         in:fly={{ y: -64, opacity: 1 }}
         out:fly={{ y: -64, opacity: 1 }}
       >
-        {#each devButtons as btn}
-          <div class="mr-4 flex flex-col content-start justify-center">
-            <button
-              class="m-0 flex h-10 w-10 content-center rounded-full bg-red-300 p-0 text-sm
-                font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
-              on:click={btn.onClick}
-            >
-              {#if btn.stringIcon}
-                <span class="m-auto block text-xl">{btn.stringIcon}</span>
-              {:else}
-                <svelte:component this={btn.svelteIcon} class="m-auto block text-xl" />
-              {/if}
-            </button>
-          </div>
+        {#each devButtons as button}
+          <button
+            class="rounded-full bg-red-300 px-4 py-1 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
+            on:click={button.onClick}
+          >
+            {#if typeof button.icon === 'string'}
+              <span class="m-auto block text-xl">{button.icon}</span>
+            {:else}
+              <svelte:component this={button.icon} class="m-auto block text-xl" />
+            {/if}
+          </button>
         {/each}
       </div>
     {/if}
 
     <button
       class="fixed left-[calc(50%_-_12px)] top-[var(--safe-area-inset-top)] z-30 h-6 w-6 rounded-b-md bg-red-200 p-[2px]"
-      on:click={() => (expandDevMenu = !expandDevMenu)}
+      on:click={() => (expandedDevMenu = !expandedDevMenu)}
     >
-      {#if expandDevMenu}
+      {#if expandedDevMenu}
         <CaretUp class="text-red-700" />
       {:else}
         <CaretDown class="text-red-700" />
@@ -188,7 +181,7 @@
     <div class="relative z-10 min-h-full w-screen bg-orange-100 pt-24">
       <p class="pb-2 pt-2 text-center text-xs font-semibold uppercase text-orange-800">debug messages</p>
 
-      <hr class="mx-8 h-0.5 border-t-0 bg-orange-800 opacity-100" />
+      <hr class="mx-8 h-1 bg-orange-800" />
 
       {#each $state.debug_messages as message}
         <div class="mx-2 mb-2 rounded bg-orange-200 p-2">

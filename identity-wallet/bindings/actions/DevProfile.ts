@@ -2,4 +2,4 @@
 import type { ProfileSteps } from "../dev/ProfileSteps";
 import type { ProfileType } from "../dev/ProfileType";
 
-export interface DevProfile { profile: ProfileType, execute_steps: ProfileSteps | null, }
+export interface DevProfile { profile: ProfileType, execute_step: ProfileSteps | null, }

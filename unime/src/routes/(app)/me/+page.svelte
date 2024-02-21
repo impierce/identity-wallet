@@ -164,7 +164,8 @@
       <div class="flex grow flex-col items-center justify-center">
         <IconMessage icon={Ghost} title={$LL.ME.EMPTY_CREDENTIALS.TITLE()} />
         <p class="w-[280px] pt-[15px] text-center text-[13px]/[24px] font-normal text-slate-500 dark:text-slate-300">
-          Visit <span class="font-semibold text-primary">https://demo.ngdil.com</span> on a desktop computer to get started.
+          {$LL.ME.DEMO.TEXT_1()} <span class="font-semibold text-primary">https://demo.ngdil.com</span>
+          {$LL.ME.DEMO.TEXT_2()}
         </p>
       </div>
       <!-- TODO: feature disabled: "Add self-signed credential" -->

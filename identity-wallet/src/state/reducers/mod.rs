@@ -1,17 +1,16 @@
 pub mod authorization;
 pub mod credential_offer;
 pub mod dev_mode;
+pub mod dynamic_dev_profile;
 pub mod storage;
 pub mod user_data_query;
-pub mod dragon_profile;
 
 use super::actions::{listen, CancelUserFlow, SetLocale, UpdateCredentialMetadata, UpdateProfileSettings};
-use super::persistence::{delete_state_file, delete_stronghold, load_state};
+use super::persistence::{clear_all_assets, delete_state_file, delete_stronghold, load_state};
 use super::IdentityManager;
 use crate::crypto::stronghold::StrongholdManager;
 use crate::error::AppError::{self, *};
 use crate::state::actions::{Action, CreateNew};
-use crate::state::reducers::dev_mode::unlock_storage;
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, DevMode, Profile};
 use crate::verifiable_credential_record::VerifiableCredentialRecord;
@@ -59,14 +58,10 @@ pub async fn get_state(_state: AppState, _action: Action) -> Result<AppState, Ap
         if dev_mode {
             if state.dev_mode == DevMode::Off {
                 state.dev_mode = DevMode::On;
-            } else if state.dev_mode == DevMode::OnWithAutologin {
-                return unlock_storage(state).await;
             }
         } else {
             state.dev_mode = DevMode::Off;
         }
-    } else {
-        state.dev_mode = DevMode::Off;
     }
 
     Ok(state)
@@ -252,6 +247,7 @@ pub async fn update_profile_settings(state: AppState, action: Action) -> Result<
 pub async fn reset_state(state: AppState, _action: Action) -> Result<AppState, AppError> {
     delete_state_file().await.ok();
     delete_stronghold().await.ok();
+    clear_all_assets().ok();
 
     Ok(AppState {
         current_user_prompt: Some(CurrentUserPrompt::Redirect {

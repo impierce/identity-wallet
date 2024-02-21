@@ -15,6 +15,7 @@
   import { debug, info, warn } from '@tauri-apps/plugin-log';
 
   import { dispatch } from '$lib/dispatcher';
+  import LL from '$src/i18n/i18n-svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
   import BottomNavBar from '$src/lib/components/molecules/navigation/BottomNavBar.svelte';
   import { state } from '$src/stores';
@@ -48,10 +49,12 @@
     let permission = await checkPermissions();
     permissions = permission;
     console.log({ permission });
+
     if (permission === 'prompt') {
       info('requesting permission');
       permission = await requestPermissions();
     }
+
     if (permission === 'granted') {
       info(`starting scan with parameters: { cameraDirection: 'back', windowed: false, formats: [Format.QRCode] }`);
       scanning = true;
@@ -187,9 +190,9 @@
     console.log('onMount: /scan');
     document.documentElement.querySelector('body')!!.classList.add('transparent');
     // permissionsGiven = await checkScanPrerequisites();
-    if ($state?.dev_mode !== 'Off') {
-      startScan();
-    }
+
+    // TODO find a good way to test if not dev_mode. This will have to be checked after $state is loaded.
+    startScan();
   });
 </script>
 
@@ -256,7 +259,7 @@
         {#if permissions === 'denied'}
           <div class="flex flex-col items-center space-y-4">
             <div class="rounded-lg bg-rose-100 px-8 py-4 text-rose-500">
-              No permissions to<br />access the camera
+              {$LL.SCAN.NO_PERMISSION_1()}<br />{$LL.SCAN.NO_PERMISSION_2()}
             </div>
             <Button label="Open settings" on:click={openAppSettings} />
           </div>
@@ -269,24 +272,30 @@
         <!-- Divider -->
         <!-- <p class="my-4 h-[1px] w-full bg-slate-200" /> -->
 
-        {#if $state?.dev_mode != 'Off'}
-          <div class="flex flex-col space-y-2">
-            <Button variant="secondary" on:click={mockSiopRequest} label="Connection request (SIOPv2)" />
-            <Button variant="secondary" on:click={mockShareRequest} label="Share request (VP)" />
-            <Button variant="secondary" on:click={() => mockScanCredentialOffer(1)} label="Credential Offer (single)" />
-            <Button variant="secondary" on:click={() => mockScanCredentialOffer(2)} label="Credential Offer (multi)" />
-            <Button
-              variant="secondary"
-              on:click={() =>
-                dispatch({
-                  type: '[QR Code] Scanned',
-                  payload: {
-                    form_urlencoded:
-                      'openid-credential-offer://?credential_offer_uri=https://api.ngdil-demo.tanglelabs.io/api/offers/creds/u08LmjU8lAcTwx7pLMpy0',
-                  },
-                })}
-              label="Dominique (student)"
-            />
+        {#if $state?.dev_mode !== 'Off'}
+          <div class="flex flex-col space-y-4">
+            <!-- Mock -->
+            <div class="flex flex-col space-y-2">
+              <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Mock</p>
+              <Button variant="secondary" on:click={mockSiopRequest} label="New connection" />
+              <Button variant="secondary" on:click={mockShareRequest} label="Share credentials" />
+            </div>
+            <!-- UniCore (local) -->
+            <div class="flex flex-col space-y-2">
+              <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">UniCore (local)</p>
+              <Button
+                variant="secondary"
+                on:click={() => mockScanCredentialOffer(1)}
+                label="Credential Offer (single)"
+              />
+              <Button
+                variant="secondary"
+                on:click={() => mockScanCredentialOffer(2)}
+                label="Credential Offer (multi)"
+              />
+            </div>
+            <!-- Divider -->
+            <hr />
             <Button variant="primary" on:click={startScan} label="Start new scan" />
           </div>
         {/if}
@@ -296,10 +305,10 @@
       <div class="flex grow flex-col" class:invisible={!scanning}>
         <div class="bg-white p-5 dark:bg-dark">
           <p class="text-3xl font-semibold text-slate-700 dark:text-grey">
-            Scan a <span class="text-primary">QR Code</span>
+            {$LL.SCAN.TITLE_1()} <span class="text-primary">{$LL.SCAN.TITLE_2()}</span>
           </p>
           <p class="mt-4 text-sm font-medium text-slate-500 dark:text-slate-300">
-            Bring a QR Code into view of this screen to start an interaction.
+            {$LL.SCAN.SUBTITLE()}
           </p>
         </div>
         <div class="scanner-background">
@@ -319,7 +328,7 @@
           {#if $state?.dev_mode !== 'Off'}
             <div class="fixed bottom-[128px] left-[calc(50%_-_42px)]">
               <button class="rounded-lg bg-rose-100 px-4 py-3 font-medium text-rose-500" on:click={cancelScan}
-                >Cancel</button
+                >{$LL.CANCEL()}</button
               >
             </div>
           {/if}

@@ -1,16 +1,16 @@
 use crate::reducer;
-use ts_rs::TS;
 use crate::state::actions::ActionTrait;
 use crate::state::actions::Reducer;
 use crate::state::reducers::dev_mode::load_dev_profile;
+use ts_rs::TS;
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone, PartialEq, Eq)]
 #[ts(export, export_to = "bindings/dev/ProfileType.ts")]
 pub enum ProfileType {
-    /// Dev profile which preloads data
+    /// Dev profile with predefined static data
     Ferris,
 
-    /// Dev profile which recreates steps
+    /// Dev profile that can dynamically interact with the NGDIL demo by executing `ProfileSteps`
     Dragon,
 }
 
@@ -41,7 +41,7 @@ pub enum ProfileSteps {
 #[ts(export, export_to = "bindings/actions/DevProfile.ts")]
 pub struct DevProfile {
     pub profile: ProfileType,
-    pub execute_steps: Option<ProfileSteps>,
+    pub execute_step: Option<ProfileSteps>,
 }
 
 #[typetag::serde(name = "[DEV] Load DEV profile")]
