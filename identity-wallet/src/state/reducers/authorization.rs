@@ -210,9 +210,11 @@ pub async fn handle_siopv2_authorization_request(state: AppState, _action: Actio
     // since we currently lack a unique identitfier to distinguish connections.
     let connection_id = base64::encode_config(&client_name, base64::URL_SAFE);
 
+    persist_asset("issuer_0", &connection_id).ok();
+
     if result.is_none() {
         connections.push(Connection {
-            id: connection_id.clone(),
+            id: connection_id,
             client_name,
             url: connection_url,
             verified: false,
@@ -220,8 +222,6 @@ pub async fn handle_siopv2_authorization_request(state: AppState, _action: Actio
             last_interacted: connection_time,
         })
     };
-
-    persist_asset("issuer_0", &connection_id).ok();
 
     drop(state_guard);
     Ok(AppState {
