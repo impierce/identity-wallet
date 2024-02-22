@@ -216,7 +216,7 @@ const de = {
     TITLE_1: 'Scanne einen',
     TITLE_2: 'QR-Code',
     SUBTITLE: 'Bringe einen QR-Code in das Sichtfeld, um eine Interaktion zu starten.',
-    PERMISSION_DENIED: 'Keine Berechtigung auf die Kamera zuzugreifen',
+    PERMISSION_DENIED: 'Keine Berechtigung zum Zugriff auf die Kamera',
     OPEN_SETTINGS: 'Einstellungen öffnen',
     CREDENTIAL_OFFER: {
       NAVBAR_TITLE: 'Credential-Angebot',

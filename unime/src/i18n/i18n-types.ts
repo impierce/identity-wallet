@@ -593,7 +593,7 @@ type RootTranslation = {
 		 */
 		SUBTITLE: string
 		/**
-		 * N​o​ ​p​e​r​m​i​s​s​i​o​n​s​ ​t​o​ ​a​c​c​e​s​s​ ​t​h​e​ ​c​a​m​e​r​a
+		 * N​o​ ​p​e​r​m​i​s​s​i​o​n​ ​t​o​ ​a​c​c​e​s​s​ ​t​h​e​ ​c​a​m​e​r​a
 		 */
 		PERMISSION_DENIED: string
 		/**
@@ -1356,7 +1356,7 @@ export type TranslationFunctions = {
 		 */
 		SUBTITLE: () => LocalizedString
 		/**
-		 * No permissions to access the camera
+		 * No permission to access the camera
 		 */
 		PERMISSION_DENIED: () => LocalizedString
 		/**
