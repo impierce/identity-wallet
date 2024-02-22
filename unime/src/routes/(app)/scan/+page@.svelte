@@ -100,64 +100,6 @@
     });
   };
 
-  const mockScanCredentialOffer = (amount: number) => {
-    if (amount == 1) {
-      dispatch({
-        type: '[QR Code] Scanned',
-        payload: {
-          form_urlencoded:
-            'openid-credential-offer://?credential_offer=%7B%22credential_issuer%22%3A%22http%3A%2F%2F192.168.1.127%3A9090%2F%22%2C%22credentials%22%3A%5B%7B%22format%22%3A%22jwt_vc_json%22%2C%22credential_definition%22%3A%7B%22type%22%3A%5B%22VerifiableCredential%22%2C%22PersonalInformation%22%5D%7D%7D%5D%2C%22grants%22%3A%7B%22urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Apre-authorized_code%22%3A%7B%22pre-authorized_code%22%3A%220YI5DXtuCltKyNa5%22%2C%22user_pin_required%22%3Afalse%7D%7D%7D',
-        },
-      });
-    } else if (amount > 1) {
-      // dispatch({
-      //   type: '[QR Code] Scanned',
-      //   payload: {
-      //     'openid-credential-offer://?credential_offer=%7B%22credential_issuer%22%3A%22http%3A%2F%2F10.15.185.12%3A9090%2F%22%2C%22credentials%22%3A%5B%7B%22format%22%3A%22jwt_vc_json%22%2C%22credential_definition%22%3A%7B%22type%22%3A%5B%22VerifiableCredential%22%2C%22PersonalInformation%22%5D%7D%7D%2C%7B%22format%22%3A%22jwt_vc_json%22%2C%22credential_definition%22%3A%7B%22type%22%3A%5B%22VerifiableCredential%22%2C%22DriverLicenseCredential%22%5D%7D%7D%5D%2C%22grants%22%3A%7B%22urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Apre-authorized_code%22%3A%7B%22pre-authorized_code%22%3A%22crzhlepEdqjsXD3I%22%2C%22user_pin_required%22%3Afalse%7D%7D%7D'
-      //   }
-      // });
-      state.set({
-        ...$state,
-        current_user_prompt: {
-          type: 'credential-offer',
-          issuer_name: 'Some issuer',
-          // logo_uri: 'https://picsum.photos/200',
-          logo_uri: 'https://demo.ngdil.com/imgs/ngdil.svg',
-          credential_offer: {
-            credential_issuer: 'http://10.15.185.12:9090/',
-            credentials: [
-              {
-                format: 'jwt_vc_json',
-                credential_definition: { type: ['VerifiableCredential', 'PersonalInformation'] },
-              },
-              {
-                format: 'jwt_vc_json',
-                credential_definition: {
-                  type: ['VerifiableCredential', 'DriverLicenseCredential'],
-                },
-              },
-            ],
-            grants: {
-              'urn:ietf:params:oauth:grant-type:pre-authorized_code': {
-                'pre-authorized_code': 'crzhlepEdqjsXD3I',
-                user_pin_required: false,
-              },
-            },
-          },
-          display: [
-            {
-              name: 'My first Credential',
-              logo: { url: 'https://picsum.photos/200.svg' },
-            },
-            {
-              name: 'My second Credential',
-            },
-          ],
-        },
-      });
-    }
-  };
-
   async function cancelScan() {
     await cancel();
     scanning = false;
@@ -190,7 +132,7 @@
         class="relative flex h-full flex-col items-center justify-center space-y-4 bg-silver p-8 dark:bg-navy"
       >
         {#if permissions_nullable !== 'granted'}
-          <div class="flex w-3/4 flex-col items-center space-y-4">
+          <div class="flex w-3/4 flex-col space-y-4">
             <div class="flex flex-col items-center rounded-lg bg-rose-100 px-8 py-4 text-rose-500">
               <CameraSlash class="m-2 h-8 w-8" />
               <p class="text-center text-[13px]/[24px] font-semibold">{$LL.SCAN.PERMISSION_DENIED()}</p>
@@ -200,26 +142,12 @@
         {/if}
 
         {#if $state?.dev_mode !== 'Off'}
-          <div class="flex flex-col space-y-4">
-            <!-- Mock -->
+          <div class="flex w-3/4 flex-col space-y-4">
+            <!-- Mocks -->
             <div class="flex flex-col space-y-2">
-              <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Mock</p>
+              <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Mock scans</p>
               <Button variant="secondary" on:click={mockSiopRequest} label="New connection" />
               <Button variant="secondary" on:click={mockShareRequest} label="Share credentials" />
-            </div>
-            <!-- UniCore (local) -->
-            <div class="flex flex-col space-y-2">
-              <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">UniCore (local)</p>
-              <Button
-                variant="secondary"
-                on:click={() => mockScanCredentialOffer(1)}
-                label="Credential Offer (single)"
-              />
-              <Button
-                variant="secondary"
-                on:click={() => mockScanCredentialOffer(2)}
-                label="Credential Offer (multi)"
-              />
             </div>
             <!-- Divider -->
             <hr />
