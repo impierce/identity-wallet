@@ -33,21 +33,6 @@
     goto('/me');
   }
 
-  function _startScan() {
-    info(`starting scan with parameters: { cameraDirection: 'back', windowed: false, formats: [Format.QRCode] }`);
-    scanning = true;
-    scan({ windowed: true, formats: [Format.QRCode] })
-      .then((scanned) => {
-        scanning = false;
-        onMessage(scanned);
-      })
-      .catch((error) => {
-        scanning = false;
-        // TODO: display error
-        console.warn(error);
-      });
-  }
-
   // from example in plugin-barcode-scanner repo
   async function startScan() {
     let permissions = await checkPermissions()
@@ -87,19 +72,6 @@
         });
     }
   }
-
-  const mockScanSiopRequest = () => {
-    const TEST_SIOP_REQUEST_URL_BY_REFERENCE =
-      'siopv2://idtoken?client_id=did%3Akey%3Az6MkpuwK1TrrssGe7siCiJU2K5CbSu3mDLU4Y3z45wAepg7J&request_uri=http%3A%2F%2F192.168.1.234%3A4243%2Fsiop%2Frequest-uri';
-    const TEST_SIOP_REQUEST_URL_BY_VALUE =
-      'siopv2://idtoken?response_type=id_token+vp_token&response_mode=post&client_id=did%3Akey%3Az6MkpuwK1TrrssGe7siCiJU2K5CbSu3mDLU4Y3z45wAepg7J&scope=openid&presentation_definition=%7B%22id%22%3A%22Verifiable+Presentation+request+for+sign-on%22%2C%22input_descriptors%22%3A%5B%7B%22id%22%3A%22Request+for+Ferris%27s+Verifiable+Credential%22%2C%22constraints%22%3A%7B%22fields%22%3A%5B%7B%22path%22%3A%5B%22%24.vc.type%22%5D%2C%22filter%22%3A%7B%22type%22%3A%22array%22%2C%22contains%22%3A%7B%22const%22%3A%22PersonalInformation%22%7D%7D%7D%2C%7B%22path%22%3A%5B%22%24.vc.credentialSubject.givenName%22%5D%7D%2C%7B%22path%22%3A%5B%22%24.vc.credentialSubject.familyName%22%5D%7D%2C%7B%22path%22%3A%5B%22%24.vc.credentialSubject.email%22%5D%7D%2C%7B%22path%22%3A%5B%22%24.vc.credentialSubject.birthdate%22%5D%7D%5D%7D%7D%5D%7D&redirect_uri=http%3A%2F%2Ftest%3A4243%2Fsiop%2Fresponse&nonce=n-0S6_WzA2Mj&client_metadata=%7B%22subject_syntax_types_supported%22%3A%5B%22did%3Akey%22%5D%7D&state=50f04e4d-632a-48c8-bfe5-1ffa71fc88e5';
-    dispatch({
-      type: '[QR Code] Scanned',
-      payload: {
-        form_urlencoded: TEST_SIOP_REQUEST_URL_BY_VALUE,
-      },
-    });
-  };
 
   const mockSiopRequest = () => {
     state.set({
@@ -203,72 +175,19 @@
   onMount(async () => {
     console.log('onMount: /scan');
     document.documentElement.querySelector('body')!!.classList.add('transparent');
-    // permissionsGiven = await checkScanPrerequisites();
 
     // TODO find a good way to test if not dev_mode. This will have to be checked after $state is loaded.
     startScan();
   });
 </script>
 
-<!-- <main
-  class="transition-colors-250 grid flex-1 grid-rows-[2fr_auto] bg-orange-300 transition-transform"
-  class:transparent={isMobile}
->
-  <div class="flex flex-col items-center p-6">
-    <h1 class="p-6 text-3xl font-medium">{selected.label}</h1>
-    <div class="overflow-y-auto">
-      <div class="mr-2">
-        <svelte:component this={selected.component} {onMessage} />
-      </div>
-    </div>
-  </div>
-</main> -->
-
-<!-- ############ -->
-<!-- <div class="h-screen">
-  <p class="absolute m-4 w-fit rounded-full bg-slate-600 px-4 py-2 text-slate-200">
-    scanning: {scanning}
-  </p>
-
-  {#if !scanning}
-    <div class="h-screen bg-orange-300" class:invisible={scanning}>
-      <Button variant="secondary" on:click={startScan}>SCAN</Button>
-    </div>
-  {:else}
-
-  <div class="h-screen bg-gradient-to-r from-violet-600 via-green-400 to-violet-500">
-        <div class="">
-            <p>Aim your camera at a QR code</p>
-        </div>
-        <div class="absolute top-1/2 left-1/2">
-            <div class="w-20 h-20 bg-slate-300 rounded overflow-hidden"></div>
-        </div>
-    </div>
-  {/if}
-</div> -->
-
-<!-- {#if scanning}
-    scanning
-    <div class="h-screen bg-gradient-to-br from-violet-600 to-transparent" />
-  {/if} -->
-
-<!-- scanning in progress -->
-<!-- <div
-    class="h-screen bg-gradient-to-br from-violet-600 to-transparent"
-    class:invisible={!scanning}
-  />
-  <div class="h-full w-full">test123</div> -->
-
-<!-- ############ -->
-
 <div class="content-height flex flex-col items-stretch">
-  <!-- <div class="flex h-screen flex-col items-stretch"> -->
   <div class="hide-scrollbar grow overflow-x-hidden overflow-y-scroll">
     <div class="flex h-full w-full flex-col">
       <!-- visible when NOT scanning -->
       <div
         class:invisible={scanning}
-        class="bg-silver dark:bg-navy relative flex h-full flex-col items-center justify-center space-y-4 p-8"
+        class="relative flex h-full flex-col items-center justify-center space-y-4 bg-silver p-8 dark:bg-navy"
       >
         {#if permissions_nullable !== 'granted'}
           <div class="flex w-3/4 flex-col items-center space-y-4">
@@ -311,8 +230,8 @@
 
       <!-- visible during scanning -->
       <div class="flex grow flex-col" class:invisible={!scanning}>
-        <div class="dark:bg-dark bg-white p-5">
-          <p class="dark:text-grey text-3xl font-semibold text-slate-700">
+        <div class="bg-white p-5 dark:bg-dark">
+          <p class="text-3xl font-semibold text-slate-700 dark:text-grey">
             {$LL.SCAN.TITLE_1()} <span class="text-primary">{$LL.SCAN.TITLE_2()}</span>
           </p>
           <p class="mt-4 text-sm font-medium text-slate-500 dark:text-slate-300">
@@ -356,8 +275,8 @@
   </div>
 </div>
 
-<div class="safe-area-top {scanning ? 'dark:bg-dark bg-white' : 'bg-silver dark:bg-navy'}" />
-<div class="safe-area-bottom dark:bg-dark bg-white" />
+<div class="safe-area-top {scanning ? 'bg-white dark:bg-dark' : 'bg-silver dark:bg-navy'}" />
+<div class="safe-area-bottom bg-white dark:bg-dark" />
 
 <style>
   .content-height {
@@ -369,22 +288,9 @@
     display: none;
   }
 
-  .full-height {
-    height: 100%;
-    border: 1px solid red;
-  }
-
-  /* p {
-    font-family: sans-serif;
-    text-align: center;
-    font-weight: 600;
-  } */
-
   .my-container {
     width: 100%;
-    /* height: 100%; */
     overflow: hidden;
-    /* border: 1px solid green; */
   }
   .my-container {
     display: flex;
@@ -443,6 +349,5 @@
     background-position: 45% 50%;
     background-size: cover;
     background-repeat: no-repeat;
-    /* border: 1px solid blue; */
   }
 </style>
