@@ -3,7 +3,33 @@ use super::*;
 use downcast_rs::{impl_downcast, DowncastSync};
 use std::{future::Future, pin::Pin};
 use ts_rs::TS;
-
+/// Below is an example of how to add an action to the app
+///
+/// Example:
+/// ```
+/// pub struct ExampleAction {
+///     ExampleField: String,
+///     ExampleField2: Bool,
+/// }
+/// 
+/// #[typetag::serde(name = "[Example] Example Action")]
+/// impl ActionTrait for ExampleAction {
+///     fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
+///         vec![reducer!(example_reducer)]
+///     }
+/// }
+/// ```
+/// 
+/// pub async fn new_reducer(state: AppState, action: Action) -> Result<AppState, AppError> {
+///  -- your code --
+///      return ( AppState {
+///                  the changes,
+///                  ..state     // Sets the rest to the same values as the old state.
+///             })
+///      }
+///  Ok(state)        // Returns the old state if the state update fails.
+/// }
+/// 
 /// This macro_rule pairs and simultaneously checks the reducers for its signature,
 ///  as it should comply with our standard signature for reducers.
 #[macro_export]
@@ -85,28 +111,3 @@ mod bindings {
         
     }
 }
-
-// Below is an example of how to add an action to the app
-//
-// Example:
-// pub struct NewAction {
-//  The optonial fields will be it's payload.  
-// }
-// 
-// #[typetag::serde(name = "[New] New Action")]
-// impl ActionTrait for NewAction {
-//     fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
-//         vec![reducer!(new_reducer)]
-//     }
-// }
-//
-// pub async fn new_reducer(state: AppState, action: Action) -> Result<AppState, AppError> {
-//  -- your code --
-//      return ( AppState {
-//                  the changes,
-//                  ..state     // Sets the rest to the same values as the old state.
-//             })
-//      }
-// Ok(state)        // Returns the old state if the state update fails.
-// }
-
