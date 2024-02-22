@@ -337,9 +337,14 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
                 connection.last_interacted = connection_time.clone();
             });
 
+        // TODO: This is a HORRIBLE solution to determine the connection_id by the non-unique "issuer name".
+        // It is a TEMPORARY solution and should only be used in DEMO environments,
+        // since we currently lack a unique identitfier to distinguish connections.
+        let connection_id = base64::encode_config(&client_name, base64::URL_SAFE);
+
         if result.is_none() {
             connections.push(Connection {
-                id: "TODO".to_string(),
+                id: connection_id,
                 client_name,
                 url: connection_url,
                 verified: false,
