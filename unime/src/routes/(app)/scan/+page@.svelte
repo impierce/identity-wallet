@@ -20,8 +20,10 @@
   import BottomNavBar from '$src/lib/components/molecules/navigation/BottomNavBar.svelte';
   import { state } from '$src/stores';
 
+  import CameraSlash from '~icons/ph/camera-slash';
+
   let scanning = false;
-  let permissions: 'granted' | 'denied' | 'prompt' | undefined = undefined;
+  let permissions: 'granted' | 'denied' | 'prompt' | null;
 
   function onMessage(scanned: Scanned) {
     debug(`scanned: ${scanned.content}`);
@@ -46,9 +48,16 @@
 
   // from example in plugin-barcode-scanner repo
   async function startScan() {
-    let permission = await checkPermissions();
+    let permission = await checkPermissions()
+      .then((permission) => {
+        info(`Permissions to use the camera: ${permission}`);
+        return permission;
+      })
+      .catch((error) => {
+        warn(`Error checking for permissions to use the camera: ${error}`);
+        return null; // possibly "denied"? or does that imply that the check has been successful, but was actively denied?
+      });
     permissions = permission;
-    console.log({ permission });
 
     if (permission === 'prompt') {
       info('requesting permission');
@@ -56,21 +65,23 @@
     }
 
     if (permission === 'granted') {
-      info(`starting scan with parameters: { cameraDirection: 'back', windowed: false, formats: [Format.QRCode] }`);
+      // Scanning parameters
+      const formats = [Format.QRCode];
+      const windowed = true;
+
+      info(`starting scan with parameters: { formats: ${formats}, windowed: ${windowed} }`);
       scanning = true;
-      scan({ windowed: true, formats: [Format.QRCode] })
+      scan({ formats, windowed })
         .then((res) => {
-          scanning = false;
           onMessage(res);
         })
         .catch((error) => {
+          // TODO: display error to user
+          warn(error);
+        })
+        .finally(() => {
           scanning = false;
-          // TODO: display error
-          console.warn(error);
-          // onMessage(error);
         });
-    } else {
-      warn('permission to use the camera denied');
     }
   }
 
@@ -254,23 +265,21 @@
       <!-- visible when NOT scanning -->
       <div
         class:invisible={scanning}
-        class="relative flex h-full flex-col items-center justify-center bg-silver p-8 dark:bg-navy"
+        class="relative flex h-full flex-col items-center justify-center space-y-4 bg-silver p-8 dark:bg-navy"
       >
-        {#if permissions === 'denied'}
-          <div class="flex flex-col items-center space-y-4">
-            <div class="rounded-lg bg-rose-100 px-8 py-4 text-rose-500">
-              {$LL.SCAN.NO_PERMISSION_1()}<br />{$LL.SCAN.NO_PERMISSION_2()}
+        {#if permissions !== 'granted'}
+          <div class="flex w-3/4 flex-col items-center space-y-4">
+            <div class="flex flex-col items-center rounded-lg bg-rose-100 px-8 py-4 text-rose-500">
+              <CameraSlash class="m-2 h-8 w-8" />
+              <p class="text-center text-[13px]/[24px] font-semibold">{$LL.SCAN.PERMISSION_DENIED()}</p>
             </div>
-            <Button label="Open settings" on:click={openAppSettings} />
+            <Button label={$LL.SCAN.OPEN_SETTINGS()} on:click={openAppSettings} />
           </div>
           <!-- {:else}
       <div class="rounded-lg bg-emerald-100 px-8 py-4 font-medium text-emerald-500">
         Permissions: {permissions}
       </div> -->
         {/if}
-
-        <!-- Divider -->
-        <!-- <p class="my-4 h-[1px] w-full bg-slate-200" /> -->
 
         {#if $state?.dev_mode !== 'Off'}
           <div class="flex flex-col space-y-4">
