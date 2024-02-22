@@ -19,7 +19,7 @@
         <Heart class="pl-1" />
       </div>
       <div>Apache-2.0</div>
-      <div>2023 Impierce Technologies</div>
+      <div>2024 Impierce Technologies</div>
     </div>
   </div>
 </div>
