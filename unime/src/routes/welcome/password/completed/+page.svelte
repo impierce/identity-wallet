@@ -29,7 +29,7 @@
     <div class="relative">
       <div class="relative z-10">
         <div class="text-[100px]/[100px]"><Shield class="text-primary" /></div>
-        <span class="absolute left-[calc(50%_-_22px)] top-[calc(50%_-_22px)] text-[44px]/[44px]">
+        <span class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[44px]/[44px]">
           {@html $onboarding_state.picture ?? ''}
         </span>
       </div>

@@ -3,13 +3,14 @@ use crate::{
     get_unverified_jwt_claims,
     state::{
         actions::{listen, Action, CredentialsSelected, QrCodeScanned},
+        persistence::persist_asset,
         user_prompt::CurrentUserPrompt,
         AppState, Connection,
     },
     utils::{download_asset, LogoType},
 };
 use identity_credential::{credential::Jwt, presentation::Presentation};
-use log::{debug, info};
+use log::{debug, info, warn};
 use oid4vc::oid4vc_core::authorization_request::{AuthorizationRequest, Object};
 use oid4vc::oid4vc_manager::managers::presentation::create_presentation_submission;
 use oid4vc::oid4vci::credential_format_profiles::{
@@ -66,6 +67,19 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
 
             info!("client_name in credential_offer: {:?}", client_name);
             info!("logo_uri in read_authorization_request: {:?}", logo_uri);
+
+            if logo_uri.is_some() {
+                debug!(
+                    "{}",
+                    format!(
+                        "Downloading client logo from url: {}",
+                        logo_uri.clone().unwrap().as_str()
+                    )
+                );
+                if let Some(logo_uri) = logo_uri.as_ref().and_then(|s| s.parse::<reqwest::Url>().ok()) {
+                    let _ = download_asset(logo_uri, LogoType::IssuerLogo, 0).await;
+                }
+            }
 
             drop(state_guard);
             return Ok(AppState {
@@ -179,16 +193,7 @@ pub async fn handle_siopv2_authorization_request(state: AppState, _action: Actio
         .map_err(|_| MissingAuthorizationRequestParameterError("connection_url"))?;
 
     if logo_uri.is_some() {
-        debug!(
-            "{}",
-            format!(
-                "Downloading issuer logo from url: {}",
-                logo_uri.clone().unwrap().as_str()
-            )
-        );
-        if let Some(logo_uri) = logo_uri.as_ref().and_then(|s| s.parse::<reqwest::Url>().ok()) {
-            let _ = download_asset(logo_uri, LogoType::IssuerLogo, 0).await;
-        }
+        warn!("Skipping download of client logo as it should have already been downloaded in `read_authorization_request()` and be present in /assets/tmp folder");
     }
 
     let mut connections = state.connections.clone();
@@ -200,9 +205,16 @@ pub async fn handle_siopv2_authorization_request(state: AppState, _action: Actio
             connection.last_interacted = connection_time.clone();
         });
 
+    // TODO: This is a HORRIBLE solution to determine the connection_id by the non-unique "issuer name".
+    // It is a TEMPORARY solution and should only be used in DEMO environments,
+    // since we currently lack a unique identitfier to distinguish connections.
+    let connection_id = base64::encode_config(&client_name, base64::URL_SAFE);
+
+    persist_asset("issuer_0", &connection_id).ok();
+
     if result.is_none() {
         connections.push(Connection {
-            id: "TODO".to_string(),
+            id: connection_id,
             client_name,
             url: connection_url,
             verified: false,
@@ -325,9 +337,14 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
                 connection.last_interacted = connection_time.clone();
             });
 
+        // TODO: This is a HORRIBLE solution to determine the connection_id by the non-unique "issuer name".
+        // It is a TEMPORARY solution and should only be used in DEMO environments,
+        // since we currently lack a unique identitfier to distinguish connections.
+        let connection_id = base64::encode_config(&client_name, base64::URL_SAFE);
+
         if result.is_none() {
             connections.push(Connection {
-                id: "TODO".to_string(),
+                id: connection_id,
                 client_name,
                 url: connection_url,
                 verified: false,
