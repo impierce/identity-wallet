@@ -192,7 +192,7 @@ async fn load_ferris_profile() -> Result<AppState, AppError> {
 
     state.connections = vec![
         Connection {
-            id: "kw1c".to_string(),
+            id: "ngdil".to_string(),
             client_name: "NGDIL Demo".to_string(),
             url: "api.ngdil-demo.tanglelabs.io".to_string(),
             verified: false,
