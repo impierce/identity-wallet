@@ -215,9 +215,9 @@ const de = {
     BOTTOM_NAVIGATION_TITLE: 'Scan',
     TITLE_1: 'Scanne einen',
     TITLE_2: 'QR-Code',
-    SUBTITLE: 'Bringe einen QR-Code in den Fokus, um eine Interaktion zu starten.',
-    NO_PERMISSION_1: 'Keine Berechtigung',
-    NO_PERMISSION_2: 'zum Zugriff auf die Kamera',
+    SUBTITLE: 'Bringe einen QR-Code in das Sichtfeld, um eine Interaktion zu starten.',
+    PERMISSION_DENIED: 'Keine Berechtigung auf die Kamera zuzugreifen',
+    OPEN_SETTINGS: 'Einstellungen öffnen',
     CREDENTIAL_OFFER: {
       NAVBAR_TITLE: 'Credential-Angebot',
       DESCRIPTION: 'bietet dir die folgenden Credentials an',

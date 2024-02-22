@@ -215,8 +215,8 @@ const en = {
     TITLE_1: 'Scan a',
     TITLE_2: 'QR Code',
     SUBTITLE: 'Bring a QR Code into view of this screen to start an interaction.',
-    NO_PERMISSION_1: 'No permissions to',
-    NO_PERMISSION_2: 'access the camera',
+    PERMISSION_DENIED: 'No permissions to access the camera',
+    OPEN_SETTINGS: 'Open settings',
     CREDENTIAL_OFFER: {
       NAVBAR_TITLE: 'Credential Offer',
       DESCRIPTION: 'is offering you the following credentials',
