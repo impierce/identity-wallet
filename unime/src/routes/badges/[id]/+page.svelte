@@ -157,7 +157,7 @@
             />
           </div>
           <p class="text-center text-xs text-black [word-break:break-word] dark:text-white">
-            {credential.data.issuer.name ?? credential.data.issuer ?? credential.issuer_name}
+            {credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
           </p>
         </div>
       </div>
