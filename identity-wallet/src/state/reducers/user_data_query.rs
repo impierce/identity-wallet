@@ -12,8 +12,6 @@ fn contains_search_term(opt_str: Option<&str>, search_term: &str) -> bool {
 
 pub async fn credential_query(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(query) = listen::<UserDataQuery>(action).filter(|payload| payload.target == QueryTarget::Credentials) {
-        println!("query: {:?}", query);
-
         let user_data_query: Vec<String> = query
             .search_term
             .as_ref()

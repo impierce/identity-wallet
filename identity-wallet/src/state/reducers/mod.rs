@@ -187,12 +187,12 @@ pub async fn update_credential_metadata(state: AppState, action: Action) -> Resu
             display_credential.display_name = name;
         }
 
-        // set color if given
+        // Set color if given
         if color.is_some() {
             display_credential.display_color = color;
         }
 
-        // set icon if given
+        // Set icon if given
         if icon.is_some() {
             display_credential.display_icon = icon;
         }
