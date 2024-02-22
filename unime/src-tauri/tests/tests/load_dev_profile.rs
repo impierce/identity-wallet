@@ -11,7 +11,9 @@ async fn test_load_dev_profile() {
 
     // Deserializing the Appstates and Actions from the accompanying json files.
     let state = json_example::<AppState>("tests/fixtures/states/four_credentials_redirect_me.json");
+    println!("Komt hier 4");
     let action = json_example::<Action>("tests/fixtures/actions/dev_load_profile.json");
+    println!("Komt hier 5");
     assert_state_update(AppStateContainer::default(), vec![action], vec![Some(state)]).await;
 }
 

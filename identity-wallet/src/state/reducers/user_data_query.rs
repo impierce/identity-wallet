@@ -165,7 +165,7 @@ mod tests {
 
     use crate::{
         state::actions::QueryTarget,
-        verifiable_credential_record::{CredentialMetadata, CredentialType, DisplayCredential},
+        verifiable_credential_record::{CredentialMetadata, DisplayCredential},
     };
 
     use super::*;
@@ -243,7 +243,6 @@ mod tests {
                         ..Default::default()
                     },
                     display_name: "John".to_string(),
-                    credential_type: CredentialType::Credential
                 },
                 DisplayCredential {
                     id: "2".to_string(),
@@ -256,7 +255,6 @@ mod tests {
                         ..Default::default()
                     },
                     display_name: "Jane".to_string(),
-                    credential_type: CredentialType::Credential
                 },
                 DisplayCredential {
                     id: "3".to_string(),
@@ -269,7 +267,6 @@ mod tests {
                         ..Default::default()
                     },
                     display_name: "Jane".to_string(),
-                    credential_type: CredentialType::Credential
                 },
             ],
             ..Default::default()
