@@ -10,6 +10,7 @@
     openAppSettings,
     requestPermissions,
     scan,
+    type PermissionState,
     type Scanned,
   } from '@tauri-apps/plugin-barcode-scanner';
   import { debug, info, warn } from '@tauri-apps/plugin-log';
@@ -23,7 +24,8 @@
   import CameraSlash from '~icons/ph/camera-slash';
 
   let scanning = false;
-  let permissions: 'granted' | 'denied' | 'prompt' | null;
+  // We temporarily introduce this type that extends `PermissionState` to handle a possible error when checking for permissions.
+  let permissions_nullable: PermissionState | null;
 
   function onMessage(scanned: Scanned) {
     debug(`scanned: ${scanned.content}`);
@@ -48,23 +50,24 @@
 
   // from example in plugin-barcode-scanner repo
   async function startScan() {
-    let permission = await checkPermissions()
-      .then((permission) => {
-        info(`Permissions to use the camera: ${permission}`);
-        return permission;
+    let permissions = await checkPermissions()
+      .then((permissions) => {
+        info(`Permissions to use the camera: ${permissions}`);
+        return permissions;
       })
       .catch((error) => {
         warn(`Error checking for permissions to use the camera: ${error}`);
-        return null; // possibly "denied"? or does that imply that the check has been successful, but was actively denied?
+        return null; // possibly return "denied"? or does that imply that the check has been successful, but was actively denied?
       });
-    permissions = permission;
 
-    if (permission === 'prompt') {
-      info('requesting permission');
-      permission = await requestPermissions();
+    if (permissions === 'prompt') {
+      info('Requesting camera permissions');
+      permissions = await requestPermissions(); // handle in more detail?
     }
 
-    if (permission === 'granted') {
+    permissions_nullable = permissions;
+
+    if (permissions === 'granted') {
       // Scanning parameters
       const formats = [Format.QRCode];
       const windowed = true;
@@ -265,9 +268,9 @@
       <!-- visible when NOT scanning -->
       <div
         class:invisible={scanning}
-        class="relative flex h-full flex-col items-center justify-center space-y-4 bg-silver p-8 dark:bg-navy"
+        class="bg-silver dark:bg-navy relative flex h-full flex-col items-center justify-center space-y-4 p-8"
       >
-        {#if permissions !== 'granted'}
+        {#if permissions_nullable !== 'granted'}
           <div class="flex w-3/4 flex-col items-center space-y-4">
             <div class="flex flex-col items-center rounded-lg bg-rose-100 px-8 py-4 text-rose-500">
               <CameraSlash class="m-2 h-8 w-8" />
@@ -275,10 +278,6 @@
             </div>
             <Button label={$LL.SCAN.OPEN_SETTINGS()} on:click={openAppSettings} />
           </div>
-          <!-- {:else}
-      <div class="rounded-lg bg-emerald-100 px-8 py-4 font-medium text-emerald-500">
-        Permissions: {permissions}
-      </div> -->
         {/if}
 
         {#if $state?.dev_mode !== 'Off'}
@@ -312,8 +311,8 @@
 
       <!-- visible during scanning -->
       <div class="flex grow flex-col" class:invisible={!scanning}>
-        <div class="bg-white p-5 dark:bg-dark">
-          <p class="text-3xl font-semibold text-slate-700 dark:text-grey">
+        <div class="dark:bg-dark bg-white p-5">
+          <p class="dark:text-grey text-3xl font-semibold text-slate-700">
             {$LL.SCAN.TITLE_1()} <span class="text-primary">{$LL.SCAN.TITLE_2()}</span>
           </p>
           <p class="mt-4 text-sm font-medium text-slate-500 dark:text-slate-300">
@@ -357,8 +356,8 @@
   </div>
 </div>
 
-<div class="safe-area-top {scanning ? 'bg-white dark:bg-dark' : 'bg-silver dark:bg-navy'}" />
-<div class="safe-area-bottom bg-white dark:bg-dark" />
+<div class="safe-area-top {scanning ? 'dark:bg-dark bg-white' : 'bg-silver dark:bg-navy'}" />
+<div class="safe-area-bottom dark:bg-dark bg-white" />
 
 <style>
   .content-height {
