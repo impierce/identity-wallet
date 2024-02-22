@@ -215,8 +215,8 @@ const nl = {
     TITLE_1: 'Scan een',
     TITLE_2: 'QR Code',
     SUBTITLE: 'Breng een QR-code in beeld op dit scherm om een interactie te starten.',
-    NO_PERMISSION_1: 'Geen recht om toegang',
-    NO_PERMISSION_2: 'te krijgen tot de camera',
+    PERMISSION_DENIED: 'Geen toestemming om toegang te krijgen tot de camera',
+    OPEN_SETTINGS: 'Open instellingen',
     CREDENTIAL_OFFER: {
       NAVBAR_TITLE: 'Credential Aanbod',
       DESCRIPTION: 'biedt u de volgende credentials aan',
