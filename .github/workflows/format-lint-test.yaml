@@ -7,7 +7,7 @@ on:
     branches: [ "dev" ]
 
 jobs:
-  build:
+  unime_frontend:
 
     runs-on: ubuntu-latest
 
@@ -23,9 +23,29 @@ jobs:
     - name: Format
       working-directory: ./unime
       run: npm run format:check
+    # TODO: enable liniting for frontend  
     # - name: Lint
     #   working-directory: ./unime
     #   run: npm run lint
-    - name: Test (frontend)
+    - name: Test
       working-directory: ./unime
       run: npx vitest run
+  
+  unime_core:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: dtolnay/rust-toolchain@stable
+    - name: Format
+      working-directory: ./unime
+      run: cargo fmt --all -- --check
+    - name: Lint
+      working-directory: ./unime
+      run: cargo clippy --all-targets --all-features
+      # TODO: add "-- -D warnings" to make clippy fail on warnings
+    - name: Test
+      working-directory: ./unime
+      run: cargo test
+      #run: cargo test --all
