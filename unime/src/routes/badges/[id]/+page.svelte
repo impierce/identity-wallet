@@ -64,6 +64,32 @@
     return JSON.stringify(object, null, 2);
   };
 
+  // TODO: This is a HORRIBLE solution to determine the connection_id by the non-unique "issuer name".
+  // It is a TEMPORARY solution and should only be used in DEMO environments,
+  // since we currently lack a unique identitfier to distinguish connections.
+  function determineConnectionId(): string | null {
+    // First collect possible sources of the issuer name
+    const name_from_credential: string | undefined = credential.data.issuer?.name;
+    const name_from_oid4vc = credential.issuer_name;
+    // We prefer the name from the credential, but fallback to the issuer name during oid4vc process
+    const issuer_name = name_from_credential ?? name_from_oid4vc;
+
+    if (issuer_name) {
+      // base64url encode
+      const connectionId = btoa(issuer_name).replace('+', '-').replace('/', '_');
+      // verify that the connection exists
+      if ($state.connections.find((c) => c.id === connectionId)) {
+        return connectionId;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
+
+  const connectionId = determineConnectionId();
+
   onMount(async () => {
     credentialLogoUrl = await getImageAsset($page.params.id!!);
   });
@@ -148,14 +174,24 @@
         <!-- TODO: read connection_id (issuer_id) from credential so it can link to the connection -->
         <div class="flex w-full flex-col items-center space-y-1">
           <p class="text-xs text-black dark:text-white">{$LL.BADGE.DETAILS.ISSUED_BY()}</p>
-          <div class="flex h-[68px] w-full items-center justify-center rounded-xl bg-silver p-2 dark:bg-white">
-            <Image
-              id={null}
-              iconFallback="Bank"
-              imgClass="w-auto rounded-lg m-2"
-              iconClass="h-7 w-7 dark:text-slate-800"
-            />
-          </div>
+          <!-- If the connection exists, make the logo clickable and redirect to the connection. -->
+          {#if connectionId}
+            <button
+              class="flex h-[68px] w-full items-center justify-center rounded-xl bg-silver p-2 dark:bg-white"
+              on:click={() => goto(`/activity/connection/${connectionId}`)}
+            >
+              <Image
+                id={connectionId}
+                iconFallback="Bank"
+                imgClass="w-16 m-2"
+                iconClass="h-7 w-7 dark:text-slate-800"
+              />
+            </button>
+          {:else}
+            <div class="flex h-[68px] w-full items-center justify-center rounded-xl bg-silver p-2 dark:bg-white">
+              <Image iconFallback="Bank" imgClass="w-auto rounded-lg m-2" iconClass="h-7 w-7 dark:text-slate-800" />
+            </div>
+          {/if}
           <p class="text-center text-xs text-black [word-break:break-word] dark:text-white">
             {credential.data.issuer.name ?? credential.data.issuer ?? credential.issuer_name}
           </p>
