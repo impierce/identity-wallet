@@ -45,9 +45,11 @@
         return null; // possibly return "denied"? or does that imply that the check has been successful, but was actively denied?
       });
 
+    // TODO: handle receiving "prompt-with-rationale" (issue: https://github.com/tauri-apps/plugins-workspace/issues/979)
     if (permissions === 'prompt') {
       info('Requesting camera permissions');
       permissions = await requestPermissions(); // handle in more detail?
+      info(`Permissions to use the camera: ${permissions}`);
     }
 
     permissions_nullable = permissions;
@@ -131,7 +133,7 @@
         class:invisible={scanning}
         class="relative flex h-full flex-col items-center justify-center space-y-4 bg-silver p-8 dark:bg-navy"
       >
-        {#if permissions_nullable !== 'granted'}
+        {#if permissions_nullable && permissions_nullable !== 'granted'}
           <div class="flex w-3/4 flex-col space-y-4">
             <div class="flex flex-col items-center rounded-lg bg-rose-100 px-8 py-4 text-rose-500">
               <CameraSlash class="m-2 h-8 w-8" />
