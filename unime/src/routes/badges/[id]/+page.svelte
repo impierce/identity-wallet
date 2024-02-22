@@ -78,7 +78,7 @@
       // base64url encode
       const connectionId = btoa(issuer_name).replace('+', '-').replace('/', '_');
       // verify that the connection exists
-      if ($state.connections.find((c) => c.id === connectionId)) {
+      if ($state.connections.some((c) => c.id === connectionId)) {
         return connectionId;
       } else {
         return null;
