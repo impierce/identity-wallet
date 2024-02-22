@@ -165,7 +165,6 @@
             {#if credential.data.issuanceDate}
               {new Date(credential.data.issuanceDate).toLocaleString($state.locale, {
                 dateStyle: 'long',
-                // timeStyle: 'medium',
               })}
             {/if}
           </p>
