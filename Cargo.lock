@@ -2772,7 +2772,7 @@ checksum = "b9e0384b61958566e926dc50660321d12159025e767c18e043daf26b70104c39"
 
 [[package]]
 name = "identity-wallet"
-version = "0.4.10"
+version = "0.4.11"
 dependencies = [
  "anyhow",
  "base64 0.13.1",
@@ -6519,7 +6519,7 @@ checksum = "1dd624098567895118886609431a7c3b8f516e41d30e0643f03d94592a147e36"
 
 [[package]]
 name = "unime"
-version = "0.4.10"
+version = "0.4.11"
 dependencies = [
  "did-key",
  "dotenvy",

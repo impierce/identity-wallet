@@ -13,7 +13,7 @@
       class="flex flex-col items-center pt-4 text-[13px]/[24px] font-normal text-slate-500 opacity-50 dark:text-slate-300"
     >
       <!-- <div class="pb-4" /> -->
-      <div>0.4.10</div>
+      <div>0.4.11</div>
       <div class="flex items-center pb-4">
         <p>{$LL.SETTINGS.SUPPORT.ABOUT.BUILT_WITH()}</p>
         <Heart class="pl-1" />
