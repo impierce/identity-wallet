@@ -61,6 +61,8 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
                         date_issued: issuance_date.to_string(),
                     },
                     display_name,
+                    display_color: None,
+                    display_icon: None,
                 }
             }
             _ => unimplemented!(),
@@ -105,6 +107,8 @@ pub struct DisplayCredential {
     pub metadata: CredentialMetadata,
 
     pub display_name: String,
+    pub display_color: Option<String>,
+    pub display_icon: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, TS, Default, Derivative)]

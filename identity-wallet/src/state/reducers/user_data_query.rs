@@ -243,6 +243,8 @@ mod tests {
                         ..Default::default()
                     },
                     display_name: "John".to_string(),
+                    display_icon: None,
+                    display_color: None,
                 },
                 DisplayCredential {
                     id: "2".to_string(),
@@ -255,6 +257,8 @@ mod tests {
                         ..Default::default()
                     },
                     display_name: "Jane".to_string(),
+                    display_icon: None,
+                    display_color: None,
                 },
                 DisplayCredential {
                     id: "3".to_string(),
@@ -266,7 +270,9 @@ mod tests {
                         date_added: "2021-03-01".to_string(),
                         ..Default::default()
                     },
-                    display_name: "Jane".to_string(),
+                    display_name: "Jeff".to_string(),
+                    display_icon: None,
+                    display_color: None,
                 },
             ],
             ..Default::default()

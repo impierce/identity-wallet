@@ -156,8 +156,8 @@ pub async fn update_credential_metadata(state: AppState, action: Action) -> Resu
     if let Some(UpdateCredentialMetadata {
         id: credential_id,
         name,
-        color: _,
-        icon: _,
+        color,
+        icon,
         is_favorite,
     }) = listen::<UpdateCredentialMetadata>(action)
     {
@@ -185,7 +185,17 @@ pub async fn update_credential_metadata(state: AppState, action: Action) -> Resu
         // Set name if given
         if let Some(name) = name {
             display_credential.display_name = name;
-        }  
+        }
+
+        // set color if given
+        if color.is_some() {
+            display_credential.display_color = color;
+        }
+
+        // set icon if given
+        if icon.is_some() {
+            display_credential.display_icon = icon;
+        }
 
         // Set favorite if given
         if let Some(is_favorite) = is_favorite {
@@ -271,7 +281,8 @@ pub async fn cancel_user_journey(state: AppState, _action: Action) -> Result<App
 mod tests {
     use super::*;
     use crate::state::{
-        actions::{CancelUserJourney, Reset}, AppTheme, Locale
+        actions::{CancelUserJourney, Reset},
+        AppTheme, Locale,
     };
 
     #[tokio::test]
