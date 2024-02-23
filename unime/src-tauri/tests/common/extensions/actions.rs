@@ -2,13 +2,11 @@ use identity_wallet::{
     reducer,
     state::{actions::ActionTrait, reducers::Reducer},
 };
-use ts_rs::TS;
 
 use crate::common::extensions::reducers::test_feat_state;
 
 /// Action to test the extension field.
-#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
-#[ts(export, export_to = "bindings/actions/Test.ts")]
+#[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct CustomExtensionTest {
     pub test_term: Option<String>,
     #[serde(default)]
