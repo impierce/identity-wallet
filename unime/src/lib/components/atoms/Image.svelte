@@ -59,7 +59,7 @@ Displays an image (loaded from disk) or a fallback component.
   <img
     src={assetUrl}
     alt="img_{id}"
-    class={twMerge('max-h-full w-full overflow-hidden bg-white object-cover', $$props.imgClass)}
+    class={twMerge('max-h-full w-full overflow-hidden bg-white object-contain', $$props.imgClass)}
     on:error={() => {
       id = null;
       console.warn(`could not load image for id=[${id}]`);

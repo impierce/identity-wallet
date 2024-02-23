@@ -57,7 +57,7 @@
       {#each eventsList as event}
         <div class="flex justify-between">
           <div class="z-10 mr-3 h-6 w-6 overflow-hidden rounded-full bg-white p-0.5 ring-8 ring-silver">
-            <Image id={event.connection.id} imgClass="h-full w-full object-contain" />
+            <Image id={event.connection.id} imgClass="h-full w-full" />
           </div>
           <div class="grow">
             <HistoryEntry {...event} />
