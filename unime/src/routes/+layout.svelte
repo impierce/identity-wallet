@@ -64,7 +64,7 @@
   }
 
   interface DevModeButton {
-    icon?: typeof SvelteComponent<SvelteHTMLElements['svg']> | string;
+    icon: typeof SvelteComponent<SvelteHTMLElements['svg']> | string;
     onClick: () => void;
   }
 

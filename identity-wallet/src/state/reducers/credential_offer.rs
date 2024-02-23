@@ -3,11 +3,12 @@ use crate::{
     state::{
         actions::{listen, Action, CredentialOffersSelected, QrCodeScanned},
         persistence::persist_asset,
+        reducers::history::{EventType, HistoryCredential, HistoryEvent},
         user_prompt::CurrentUserPrompt,
         AppState,
     },
     utils::{download_asset, LogoType},
-    verifiable_credential_record::VerifiableCredentialRecord,
+    verifiable_credential_record::{DisplayCredential, VerifiableCredentialRecord},
 };
 use log::{debug, info};
 use oid4vc::oid4vci::{
@@ -207,7 +208,7 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
     Ok(state)
 }
 
-pub async fn send_credential_request(state: AppState, action: Action) -> Result<AppState, AppError> {
+pub async fn send_credential_request(mut state: AppState, action: Action) -> Result<AppState, AppError> {
     info!("send_credential_request");
 
     if let Some(offer_indices) = listen::<CredentialOffersSelected>(action).map(|payload| payload.offer_indices) {
@@ -340,7 +341,10 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                     .collect()
             }
         };
+
         info!("credentials: {:?}", credentials);
+
+        let mut history_credentials = vec![];
 
         for (i, credential) in credentials.into_iter().enumerate() {
             let mut verifiable_credential_record: VerifiableCredentialRecord = credential.into();
@@ -362,9 +366,18 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
             stronghold_manager
                 .insert(key, json!(verifiable_credential_record).to_string().as_bytes().to_vec())
                 .map_err(StrongholdInsertionError)?;
+
+            // Add history event
+            let display = &verifiable_credential_record.display_credential;
+
+            history_credentials.push(HistoryCredential {
+                title: display.display_name.to_string(),
+                sub_title: display.issuer_name.to_string(),
+                image_id: display.id.to_string(),
+            });
         }
 
-        let credentials = stronghold_manager
+        let credentials: Vec<DisplayCredential> = stronghold_manager
             .values()
             .map_err(StrongholdValuesError)?
             .unwrap()
@@ -372,15 +385,20 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
             .map(|verifiable_credential_record| verifiable_credential_record.display_credential)
             .collect();
 
-        let current_user_prompt = CurrentUserPrompt::Redirect {
-            target: "me".to_string(),
-        };
+        // History
+        if !history_credentials.is_empty() {
+            state.history.push(HistoryEvent {
+                issuer_name: issuer_name.clone(),
+                event_type: EventType::AddedCredentials,
+                date: credentials[0].metadata.date_added.clone(),
+                credentials: history_credentials,
+            });
+        }
 
-        drop(state_guard);
-        return Ok(AppState {
-            credentials,
-            current_user_prompt: Some(current_user_prompt),
-            ..state
+        state.credentials = credentials;
+
+        state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
+            target: "me".to_string(),
         });
     }
 

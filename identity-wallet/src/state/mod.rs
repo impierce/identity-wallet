@@ -3,9 +3,10 @@ pub mod persistence;
 pub mod reducers;
 pub mod user_prompt;
 
-use self::reducers::authorization::ConnectionRequest;
 use crate::{
-    crypto::stronghold::StrongholdManager, state::user_prompt::CurrentUserPrompt,
+    crypto::stronghold::StrongholdManager,
+    state::reducers::{authorization::ConnectionRequest, history::HistoryEvent},
+    state::user_prompt::CurrentUserPrompt,
     verifiable_credential_record::DisplayCredential,
 };
 use derivative::Derivative;
@@ -53,6 +54,7 @@ pub struct AppState {
     pub user_journey: Option<serde_json::Value>,
     pub connections: Vec<Connection>,
     pub user_data_query: Vec<String>,
+    pub history: Vec<HistoryEvent>,
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone, PartialEq, Eq, Default)]
@@ -79,6 +81,7 @@ impl Clone for AppState {
             connections: self.connections.clone(),
             user_data_query: self.user_data_query.clone(),
             dev_mode: self.dev_mode.clone(),
+            history: self.history.clone(),
         }
     }
 }
@@ -110,7 +113,7 @@ pub enum AppTheme {
     #[serde(rename = "dark")]
     Dark,
     #[serde(rename = "light")]
-    Light
+    Light,
 }
 
 /// A profile of the current user.
@@ -185,7 +188,8 @@ mod tests {
                   "debug_messages": [],
                   "user_journey": null,
                   "connections": [],
-                  "user_data_query": []
+                  "user_data_query": [],
+                  "history": []
                 }"#}
         );
     }

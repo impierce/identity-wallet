@@ -4,6 +4,7 @@ pub mod dev_mode;
 pub mod dynamic_dev_profile;
 pub mod storage;
 pub mod user_data_query;
+pub mod history;
 
 use super::actions::{listen, CancelUserFlow, SetLocale, UpdateCredentialMetadata, UpdateProfileSettings};
 use super::persistence::{clear_all_assets, delete_state_file, delete_stronghold, load_state};
