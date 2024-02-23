@@ -167,7 +167,7 @@ const de = {
       ABOUT: {
         TITLE: 'Über UniMe',
         NAVBAR_TITLE: 'Über UniMe',
-        BUILT_WITH: 'Gebaut mit',
+        BUILT_WITH: 'Gebaut mit Tauri',
       },
       FEEDBACK: {
         TITLE: 'Feedback senden',
