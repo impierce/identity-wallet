@@ -3,6 +3,8 @@
 
   import type { SvelteHTMLElements } from 'svelte/elements';
 
+  import type { HistoryCredential } from '@bindings/HistoryCredential';
+
   import HistoryEntry from '$lib/events/HistoryEntry.svelte';
   import LL from '$src/i18n/i18n-svelte';
   import { state } from '$src/stores';
@@ -10,15 +12,14 @@
   import DownloadSimple from '~icons/ph/download-simple';
   import PlugsConnected from '~icons/ph/plugs-connected';
   import ShareFat from '~icons/ph/share-fat';
-  import type { HistoryCredential } from '@bindings/HistoryCredential';
 
   // const events: Event[] = exampleEvents.map((e) => ({ ...e, type: e.type as EventType }));
 
   interface DisplayEvent {
-    title: string,
-    date: string,
-    icon: typeof SvelteComponent<SvelteHTMLElements['svg']>,
-    credentials: Array<HistoryCredential>
+    title: string;
+    date: string;
+    icon: typeof SvelteComponent<SvelteHTMLElements['svg']>;
+    credentials: Array<HistoryCredential>;
   }
 
   const events: DisplayEvent[] = $state.history.map((history) => {
@@ -49,9 +50,13 @@
       title,
       icon,
       date,
-      credentials
+      credentials,
     } as DisplayEvent;
   });
+
+  function hasNextElement(i: number): boolean {
+    return i + 1 < events.length;
+  }
 </script>
 
 <div class="relative flex h-full flex-col">
@@ -60,19 +65,23 @@
       <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">{$LL.TIMELINE.EMPTY()}</p>
     </div>
   {:else}
-    <div class="flex grow flex-col space-y-8 pr-4 pt-4">
-      {#each events as event}
-        <div class="flex justify-between">
-          <div class="z-10 mr-3 h-6 w-6 overflow-hidden rounded-full bg-white p-0.5 ring-8 ring-silver">
-            <svelte:component this={event.icon} class="h-full w-full object-contain" />
+    {#each events as event, i}
+      <div class="flex flex-row ml-4">
+        <div class="flex flex-col items-center">
+          <div class="z-10 h-6 w-6 rounded-full bg-white p-0.5 ring-8 ring-silver">
+            <svelte:component this={event.icon} class="" />
           </div>
+          {#if hasNextElement(i)}
+            <div class="h-full mt-4 mb-4 border border-slate-200 rounded-full"></div>
+          {/if}
+        </div>
+        <div class="ml-6 mt-[-8px] pb-10 flex justify-between">
           <div class="grow">
             <HistoryEntry {...event} />
           </div>
         </div>
-      {/each}
-    </div>
+      </div>
+    {/each}
     <!-- Timeline -->
-    <div class="absolute left-3 top-4 h-full w-0.5 -translate-x-1/2 transform bg-slate-200"></div>
   {/if}
 </div>
