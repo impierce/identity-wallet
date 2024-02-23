@@ -37,9 +37,10 @@
 
   const hostname = new URL($state.current_user_prompt.redirect_uri).hostname;
 
-  console.log($state.current_user_prompt);
+  console.log({ '$state.current_user_prompt': $state.current_user_prompt });
 
   onDestroy(async () => {
+    // TODO: is onDestroy also called when user accepts since the component itself is destroyed?
     dispatch({ type: '[User Flow] Cancel' });
   });
 </script>
@@ -50,7 +51,7 @@
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
     {#if $state.current_user_prompt.logo_uri}
       <div class="flex h-[75px] w-[75px] overflow-hidden rounded-3xl bg-white p-2 dark:bg-silver">
-        <img src={$state.current_user_prompt.logo_uri} alt="logo" />
+        <Image id={'issuer_0'} isTempAsset={true} />
       </div>
     {:else}
       <PaddedIcon icon={PlugsConnected} />
