@@ -3,6 +3,7 @@ use crate::{
     get_unverified_jwt_claims,
     state::{
         actions::{listen, Action, CredentialsSelected, QrCodeScanned},
+        reducers::history::{EventType, HistoryCredential, HistoryEvent},
         user_prompt::CurrentUserPrompt,
         AppState, Connection,
     },
@@ -146,7 +147,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
 }
 
 // Sends the authorization response.
-pub async fn handle_siopv2_authorization_request(state: AppState, _action: Action) -> Result<AppState, AppError> {
+pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: Action) -> Result<AppState, AppError> {
     let state_guard = state.managers.lock().await;
     let provider_manager = &state_guard
         .identity_manager
@@ -203,13 +204,21 @@ pub async fn handle_siopv2_authorization_request(state: AppState, _action: Actio
     if result.is_none() {
         connections.push(Connection {
             id: "TODO".to_string(),
-            client_name,
+            client_name: client_name.clone(),
             url: connection_url,
             verified: false,
             first_interacted: connection_time.clone(),
-            last_interacted: connection_time,
+            last_interacted: connection_time.clone(),
         })
     };
+
+    // History
+    state.history.push(HistoryEvent {
+        issuer_name: client_name.clone(),
+        event_type: EventType::AddedConnection,
+        date: connection_time,
+        credentials: vec![],
+    });
 
     drop(state_guard);
     Ok(AppState {
@@ -222,11 +231,12 @@ pub async fn handle_siopv2_authorization_request(state: AppState, _action: Actio
 }
 
 // Sends the authorization response including the verifiable credentials.
-pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action) -> Result<AppState, AppError> {
+pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Action) -> Result<AppState, AppError> {
     info!("handle_presentation_request");
 
     if let Some(credential_uuids) = listen::<CredentialsSelected>(action).map(|payload| payload.credential_uuids) {
         let state_guard = state.managers.lock().await;
+
         let stronghold_manager = state_guard
             .stronghold_manager
             .as_ref()
@@ -243,19 +253,33 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
                 ConnectionRequest::SIOPv2(_) => unreachable!(),
             };
 
+        let mut history_credentials = Vec::new();
+
         let verifiable_credentials: Vec<Credential<JwtVcJson>> = stronghold_manager
             .values()
             .map_err(StrongholdValuesError)?
             .unwrap()
             .iter()
-            .filter_map(
-                |verifiable_credential_record| match &verifiable_credential_record.verifiable_credential {
+            .filter_map(|verifiable_credential_record| {
+                let share_cred = match &verifiable_credential_record.verifiable_credential {
                     CredentialFormats::JwtVcJson(jwt_vc_json) => credential_uuids
                         .contains(&verifiable_credential_record.display_credential.id.parse().unwrap())
                         .then_some(jwt_vc_json.to_owned()),
                     _ => unimplemented!(),
-                },
-            )
+                };
+
+                if share_cred.is_some() {
+                    let display = &verifiable_credential_record.display_credential;
+
+                    history_credentials.push(HistoryCredential {
+                        title: display.display_name.to_string(),
+                        sub_title: display.issuer_name.to_string(),
+                        image_id: display.id.to_string(),
+                    });
+                }
+
+                share_cred
+            })
             .collect();
 
         let presentation_submission = create_presentation_submission(
@@ -328,21 +352,26 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
         if result.is_none() {
             connections.push(Connection {
                 id: "TODO".to_string(),
-                client_name,
+                client_name: client_name.to_string(),
                 url: connection_url,
                 verified: false,
                 first_interacted: connection_time.clone(),
-                last_interacted: connection_time,
+                last_interacted: connection_time.clone(),
             })
         };
 
-        drop(state_guard);
-        return Ok(AppState {
-            connections,
-            current_user_prompt: Some(CurrentUserPrompt::Redirect {
-                target: "me".to_string(),
-            }),
-            ..state
+        state.connections = connections;
+
+        // History
+        state.history.push(HistoryEvent {
+            issuer_name: client_name,
+            date: connection_time,
+            event_type: EventType::SharedCredentials,
+            credentials: history_credentials,
+        });
+
+        state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
+            target: "me".to_string(),
         });
     }
 

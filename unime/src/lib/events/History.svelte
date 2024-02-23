@@ -3,15 +3,14 @@
 
   import type { SvelteHTMLElements } from 'svelte/elements';
 
-  import type { HistoryEvent } from '@bindings/HistoryEvent';
-
-  import Image from '$lib/components/atoms/Image.svelte';
   import HistoryEntry from '$lib/events/HistoryEntry.svelte';
   import LL from '$src/i18n/i18n-svelte';
   import exampleEvents from '$src/lib/events/mock-data.json';
   import { state } from '$src/stores';
 
   import DownloadSimple from '~icons/ph/download-simple';
+  import PlugsConnected from '~icons/ph/plugs-connected';
+  import ShareFat from '~icons/ph/share-fat';
   import type { HistoryCredential } from '@bindings/HistoryCredential';
 
   // const events: Event[] = exampleEvents.map((e) => ({ ...e, type: e.type as EventType }));
@@ -38,12 +37,12 @@
       }
       case 'shared_credentials': {
         title = 'Shared credentials with ' + history.issuer_name;
-        icon = DownloadSimple;
+        icon = ShareFat;
         break;
       }
       case 'added_connection': {
-        title = 'Shared credentials with ' + history.issuer_name;
-        icon = DownloadSimple;
+        title = 'First connection with ' + history.issuer_name;
+        icon = PlugsConnected;
         break;
       }
     }
