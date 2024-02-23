@@ -11,7 +11,6 @@ pub mod verifiable_credential_record;
 /// The error.rs defines our app_error types, implemented throughout the code using the thiserror crate.
 /// The persistence.rs is where we define our app persistence functions.
 /// The stronghold.rs is where we implement the stronghold library for our app, which is used to store sensitive data.
-
 // Re-exports
 pub use oid4vc::{oid4vc_core, oid4vc_manager, oid4vci, oid4vp, siopv2};
 

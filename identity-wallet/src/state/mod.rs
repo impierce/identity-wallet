@@ -10,12 +10,12 @@ use crate::{
 };
 use derivative::Derivative;
 use downcast_rs::{impl_downcast, DowncastSync};
+use dyn_clone::DynClone;
 use oid4vc::oid4vc_core::Subject;
 use oid4vc::oid4vc_manager::ProviderManager;
 use oid4vc::oid4vci::Wallet;
 use serde::{Deserialize, Serialize};
 use std::{collections::VecDeque, sync::Arc};
-use dyn_clone::DynClone;
 use strum::EnumString;
 use ts_rs::TS;
 
@@ -33,7 +33,7 @@ use ts_rs::TS;
 
 /// Trait which each field of the appstate has to implement.
 #[typetag::serde(tag = "feat_state_type")]
-pub trait FeatTrait: Send + Sync + std::fmt::Debug + DynClone + DowncastSync{}
+pub trait FeatTrait: Send + Sync + std::fmt::Debug + DynClone + DowncastSync {}
 dyn_clone::clone_trait_object!(FeatTrait);
 impl_downcast!(sync FeatTrait);
 
@@ -107,9 +107,8 @@ impl Clone for AppState {
     }
 }
 
-impl AppState{
-    pub fn insert_extension (mut self, key: &str, extension: Box<dyn FeatTrait>) -> Self
-    {
+impl AppState {
+    pub fn insert_extension(mut self, key: &str, extension: Box<dyn FeatTrait>) -> Self {
         self.extensions.insert(key.to_string(), extension);
         self
     }
@@ -118,9 +117,8 @@ impl AppState{
 #[derive(Default, Debug)]
 pub struct AppStateContainer(pub tokio::sync::Mutex<AppState>);
 
-impl AppStateContainer{
-    pub async fn insert_extension (self, key: &str, extension: Box<dyn FeatTrait>) -> Self
-    {
+impl AppStateContainer {
+    pub async fn insert_extension(self, key: &str, extension: Box<dyn FeatTrait>) -> Self {
         self.0.lock().await.extensions.insert(key.to_string(), extension);
         self
     }
