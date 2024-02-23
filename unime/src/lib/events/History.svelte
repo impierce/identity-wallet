@@ -5,7 +5,6 @@
 
   import HistoryEntry from '$lib/events/HistoryEntry.svelte';
   import LL from '$src/i18n/i18n-svelte';
-  import exampleEvents from '$src/lib/events/mock-data.json';
   import { state } from '$src/stores';
 
   import DownloadSimple from '~icons/ph/download-simple';
