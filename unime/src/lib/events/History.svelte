@@ -65,23 +65,24 @@
       <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">{$LL.TIMELINE.EMPTY()}</p>
     </div>
   {:else}
-    {#each events as event, i}
-      <div class="flex flex-row ml-4">
-        <div class="flex flex-col items-center">
-          <div class="z-10 h-6 w-6 rounded-full bg-white p-0.5 ring-8 ring-silver">
-            <svelte:component this={event.icon} class="" />
+    <div class="ml-2 mt-6">
+      {#each events as event, i}
+        <div class="flex flex-row">
+          <div class="mt-2 flex flex-col items-center">
+            <div class="z-10 flex items-center justify-center rounded-full bg-white ring-8 ring-silver">
+              <svelte:component this={event.icon} class="h-4 w-4 " />
+            </div>
+            {#if hasNextElement(i)}
+              <div class="mb-2 mt-4 h-full rounded-full border border-slate-200"></div>
+            {/if}
           </div>
-          {#if hasNextElement(i)}
-            <div class="h-full mt-4 mb-4 border border-slate-200 rounded-full"></div>
-          {/if}
-        </div>
-        <div class="ml-6 mt-[-8px] pb-10 flex justify-between">
-          <div class="grow">
-            <HistoryEntry {...event} />
+          <div class="ml-6 mt-[-8px] flex justify-between pb-10">
+            <div class="grow">
+              <HistoryEntry {...event} />
+            </div>
           </div>
         </div>
-      </div>
-    {/each}
-    <!-- Timeline -->
+      {/each}
+    </div>
   {/if}
 </div>
