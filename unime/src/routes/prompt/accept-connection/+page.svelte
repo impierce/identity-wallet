@@ -37,9 +37,10 @@
 
   const hostname = new URL($state.current_user_prompt.redirect_uri).hostname;
 
-  console.log($state.current_user_prompt);
+  console.log({ '$state.current_user_prompt': $state.current_user_prompt });
 
   onDestroy(async () => {
+    // TODO: is onDestroy also called when user accepts since the component itself is destroyed?
     dispatch({ type: '[User Flow] Cancel' });
   });
 </script>
