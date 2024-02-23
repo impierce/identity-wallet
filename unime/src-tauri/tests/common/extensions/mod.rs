@@ -1,7 +1,6 @@
-use super::FeatTrait;
+use identity_wallet::state::FeatTrait;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
-
 
 pub mod actions;
 pub mod reducers;
@@ -13,5 +12,5 @@ pub struct CustomExtension {
     pub value: String,
 }
 
-#[typetag::serde(name = "customextension")]
+#[typetag::serde(name = "custom_extension")]
 impl FeatTrait for CustomExtension {}

@@ -1,6 +1,10 @@
-use crate::{reducer, state::{actions::ActionTrait, extensions::reducers::test_feat_state, reducers::Reducer}};
+use identity_wallet::{
+    reducer,
+    state::{actions::ActionTrait, reducers::Reducer},
+};
 use ts_rs::TS;
 
+use crate::common::extensions::reducers::test_feat_state;
 
 /// Action to test the extension field.
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
@@ -16,4 +20,4 @@ impl ActionTrait for CustomExtensionTest {
     fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
         vec![reducer!(test_feat_state)]
     }
-}   
+}

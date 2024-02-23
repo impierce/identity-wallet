@@ -6546,6 +6546,8 @@ dependencies = [
  "tauri-plugin-log",
  "tempfile",
  "tokio",
+ "ts-rs",
+ "typetag",
  "url",
  "wiremock",
 ]

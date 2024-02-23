@@ -1,7 +1,6 @@
 pub mod actions;
 pub mod persistence;
 pub mod reducers;
-pub mod extensions;
 pub mod user_prompt;
 
 use self::reducers::authorization::ConnectionRequest;

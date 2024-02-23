@@ -36,6 +36,8 @@ tauri-plugin-fs = { version = "=2.0.0-alpha.6" }
 
 dotenvy = { version = "0.15" }
 fern = "0.6.0"
+ts-rs = "7.0"
+typetag = "0.2"
 
 [dev-dependencies]
 indoc.workspace = true
