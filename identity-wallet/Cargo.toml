@@ -1,6 +1,6 @@
 [package]
 name = "identity-wallet"
-version = "0.4.10"
+version = "0.4.12"
 edition = "2021"
 rust-version = "1.75.0"
 
