@@ -11,6 +11,8 @@ use crate::{
 use derivative::Derivative;
 use downcast_rs::{impl_downcast, DowncastSync};
 use dyn_clone::DynClone;
+use downcast_rs::{impl_downcast, DowncastSync};
+use dyn_clone::DynClone;
 use oid4vc::oid4vc_core::Subject;
 use oid4vc::oid4vc_manager::ProviderManager;
 use oid4vc::oid4vci::Wallet;
@@ -131,6 +133,12 @@ pub enum DevMode {
     OnWithAutologin,
 }
 
+impl AppStateContainer {
+    pub async fn insert_extension(self, key: &str, extension: Box<dyn FeatTrait>) -> Self {
+        self.0.lock().await.extensions.insert(key.to_string(), extension);
+        self
+    }
+}
 /// Format of a locale string: `ll_CC` - where ll is the language code (ISO 639) and CC is the country code (ISO 3166).
 #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default, EnumString)]
 #[ts(export)]
@@ -219,6 +227,8 @@ mod tests {
                   "debug_messages": [],
                   "user_journey": null,
                   "connections": [],
+                  "user_data_query": [],
+                  "extensions": {}
                   "user_data_query": [],
                   "extensions": {}
                 }"#}
