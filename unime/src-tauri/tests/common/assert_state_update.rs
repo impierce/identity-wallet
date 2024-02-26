@@ -1,10 +1,9 @@
-use identity_wallet::{
-    state::{actions::Action, persistence::save_state, AppState, AppStateContainer},
-    STATE_FILE, STRONGHOLD,
-};
+use identity_wallet::{state::{actions::Action, persistence::save_state, AppState, AppStateContainer}, STATE_FILE, STRONGHOLD};
 use serde_json::json;
 use tauri::Manager;
 use tempfile::NamedTempFile;
+
+use crate::common::extensions::CustomExtension;
 
 /// Asserts that the state is updated as expected after the given action is handled.
 pub async fn assert_state_update(
@@ -14,7 +13,7 @@ pub async fn assert_state_update(
 ) {
     {
         let current_state = current_state.0.lock().await;
-
+        
         // Save the current state to the state file.
         save_state(&current_state).await.unwrap();
     }
@@ -51,27 +50,27 @@ pub async fn assert_state_update(
             let mut guard = container.0.lock().await;
 
             let AppState {
-                active_profile,
-                locale,
+                profile_settings,
                 credentials,
                 current_user_prompt,
                 user_data_query,
                 debug_messages,
+                extensions,
                 ..
             } = &mut *guard;
 
             let AppState {
-                active_profile: expected_active_profile,
-                locale: expected_locale,
+                profile_settings: expected_profile_settings,
                 credentials: expected_credentials,
                 current_user_prompt: expected_current_user_prompt,
                 user_data_query: expected_user_data_query,
                 debug_messages: expected_debug_messages,
+                extensions: expected_extensions,
                 ..
             } = expected_state;
 
-            let active_profile = active_profile.clone();
-            let expected_active_profile = expected_active_profile.clone();
+            let active_profile = &profile_settings.profile; 
+            let expected_active_profile = &expected_profile_settings.profile;
 
             match (active_profile, expected_active_profile) {
                 (Some(active_profile), Some(expected_active_profile)) => {
@@ -80,7 +79,7 @@ pub async fn assert_state_update(
                 (active_profile, expected_active_profile) => assert_eq!(active_profile, expected_active_profile),
             }
 
-            assert_eq!(locale, expected_locale);
+            assert_eq!(profile_settings.locale, expected_profile_settings.locale);
             assert_eq!(credentials, expected_credentials);
 
             debug_messages.iter().zip(expected_debug_messages.iter()).for_each(
@@ -95,6 +94,9 @@ pub async fn assert_state_update(
             assert_eq!(debug_messages.len(), expected_debug_messages.len());
             assert_eq!(current_user_prompt, expected_current_user_prompt);
             assert_eq!(user_data_query, expected_user_data_query);
+            if (extensions.len() != 0) || (expected_extensions.len() != 0) {
+                assert_eq!(extensions.get("test").unwrap().clone().downcast::<CustomExtension>().unwrap(), expected_extensions.get("test").unwrap().clone().downcast::<CustomExtension>().unwrap());
+            }
         }
     }
 }

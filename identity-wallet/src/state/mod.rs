@@ -11,8 +11,6 @@ use crate::{
 use derivative::Derivative;
 use downcast_rs::{impl_downcast, DowncastSync};
 use dyn_clone::DynClone;
-use downcast_rs::{impl_downcast, DowncastSync};
-use dyn_clone::DynClone;
 use oid4vc::oid4vc_core::Subject;
 use oid4vc::oid4vc_manager::ProviderManager;
 use oid4vc::oid4vci::Wallet;
@@ -34,6 +32,7 @@ use ts_rs::TS;
 /// All the above goes for extensions (values) which are added to the extensions field.
 
 /// Trait which each field of the appstate has to implement.
+/// Some fields are simple values and not structs, so they don't need to implement this trait.
 #[typetag::serde(tag = "feat_state_type")]
 pub trait FeatTrait: Send + Sync + std::fmt::Debug + DynClone + DowncastSync {}
 dyn_clone::clone_trait_object!(FeatTrait);
@@ -81,26 +80,26 @@ pub struct AppState {
     #[ts(skip)]
     pub extensions: std::collections::HashMap<String, Box<dyn FeatTrait>>,
     /// A simple boolean to enable dev mode,
-    pub dev_mode_enabled: bool,
+    pub dev_mode_enabled: DevMode,
 }
-
 
 impl Clone for AppState {
     fn clone(&self) -> Self {
         Self {
-            managers: self.managers.clone(),
-            active_profile: self.active_profile.clone(),
-            active_connection_request: serde_json::from_value(serde_json::json!(self.active_connection_request))
-                .unwrap(),
-            locale: self.locale.clone(),
+            back_end_utils: BackEndUtils {            
+                managers: self.back_end_utils.managers.clone(),
+                active_connection_request: serde_json::from_value(serde_json::json!(self.back_end_utils.active_connection_request))
+                    .unwrap(),
+            },
+            profile_settings: self.profile_settings.clone(),
             credentials: self.credentials.clone(),
             current_user_prompt: self.current_user_prompt.clone(),
             debug_messages: self.debug_messages.clone(),
             user_journey: self.user_journey.clone(),
             connections: self.connections.clone(),
             user_data_query: self.user_data_query.clone(),
-            dev_mode: self.dev_mode.clone(),
             extensions: self.extensions.clone(),
+            dev_mode_enabled: self.dev_mode_enabled.clone(),
         }
     }
 }
@@ -112,33 +111,39 @@ impl AppState {
     }
 }
 
-pub struct IdentityManager {
-    pub subject: Arc<dyn Subject>,
-    pub provider_manager: ProviderManager,
-    pub wallet: Wallet,
+/// BackEndUtils is a struct that contains all the utils that only the backend needs to perform its tasks.
+#[derive(Default)]
+pub struct BackEndUtils {
+    pub managers: Arc<tauri::async_runtime::Mutex<Managers>>,
+    pub active_connection_request: Option<ConnectionRequest>,
 }
 
+/// Managers contains both the stronghold manager and the identity manager needed to perform operations on connections & credentials.
 #[derive(Default)]
 pub struct Managers {
     pub stronghold_manager: Option<Arc<StrongholdManager>>,
     pub identity_manager: Option<IdentityManager>,
 }
 
-#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone, PartialEq, Eq, Default)]
-#[ts(export, export_to = "bindings/DevMode.ts")]
-pub enum DevMode {
-    On,
-    #[default]
-    Off,
-    OnWithAutologin,
+/// IdentityManager contains the subject, provider_manager and wallet needed to perform operations within the oid4vc library.
+pub struct IdentityManager {
+    pub subject: Arc<dyn Subject>,
+    pub provider_manager: ProviderManager,
+    pub wallet: Wallet,
 }
 
-impl AppStateContainer {
-    pub async fn insert_extension(self, key: &str, extension: Box<dyn FeatTrait>) -> Self {
-        self.0.lock().await.extensions.insert(key.to_string(), extension);
-        self
-    }
+/// ProfileSettings contains all matters concerning the user profile and its settings.
+#[derive(Default, Serialize, Deserialize, Derivative, TS, Clone, PartialEq, Debug)]
+#[ts(export)]
+#[serde(default)]
+pub struct ProfileSettings {
+    pub locale: Locale,
+    pub profile: Option<Profile>,
 }
+
+#[typetag::serde(name = "profile_settings")]
+impl FeatTrait for ProfileSettings {}
+
 /// Format of a locale string: `ll_CC` - where ll is the language code (ISO 639) and CC is the country code (ISO 3166).
 #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default, EnumString)]
 #[ts(export)]
@@ -155,6 +160,9 @@ pub enum Locale {
     nl_NL,
 }
 
+#[typetag::serde(name = "locale")]
+impl FeatTrait for Locale {}
+
 /// A profile of the current user.
 #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default)]
 #[ts(export)]
@@ -166,6 +174,23 @@ pub struct Profile {
     pub primary_did: String,
 }
 
+#[typetag::serde(name = "profile")]
+impl FeatTrait for Profile {}
+
+/// DevMode is a simple enum to enable dev mode for developers to test the app.
+#[derive(Serialize, Deserialize, Debug, TS, Clone, PartialEq, Eq, Default)]
+#[ts(export, export_to = "bindings/DevMode.ts")]
+pub enum DevMode {
+    On,
+    #[default]
+    Off,
+    OnWithAutologin,
+}
+
+#[typetag::serde(name = "dev_mode")]
+impl FeatTrait for DevMode {}
+
+/// Connection contains the ID and information of a connection.
 #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default)]
 #[ts(export)]
 #[serde(default)]
@@ -178,6 +203,9 @@ pub struct Connection {
     pub last_interacted: String,
 }
 
+#[typetag::serde(name = "connection")]
+impl FeatTrait for Connection {}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -186,13 +214,14 @@ mod tests {
     #[test]
     fn test_app_state_serialize() {
         let state = AppState {
-            active_profile: Some(Profile {
-                name: "John Doe".to_string(),
-                picture: None,
-                theme: None,
-                primary_did: "did:example:123".to_string(),
-            }),
-            locale: Locale::en_US,
+            profile_settings: ProfileSettings {
+                locale: Locale::en_US,
+                profile: Some(Profile {
+                    name: "John Doe".to_string(),
+                    picture: None,
+                    theme: None,
+                    primary_did: "did:example:123".to_string(),
+            })},
             credentials: vec![],
             current_user_prompt: Some(CurrentUserPrompt::Redirect {
                 target: "me".to_string(),

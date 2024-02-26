@@ -4,8 +4,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 use ts_rs::TS;
 use uuid::Uuid;
-
-use crate::get_unverified_jwt_claims;
+use crate::{get_unverified_jwt_claims, state::FeatTrait};
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
 pub struct VerifiableCredentialRecord {
@@ -82,6 +81,9 @@ pub struct DisplayCredential {
     #[serde(default)]
     pub metadata: CredentialMetadata,
 }
+
+#[typetag::serde(name = "display_credential")]
+impl FeatTrait for DisplayCredential {}
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, TS, Default, Derivative)]
 #[derivative(PartialEq)]

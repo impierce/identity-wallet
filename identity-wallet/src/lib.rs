@@ -13,12 +13,12 @@ use log::info;
 use std::{fs, sync::Mutex};
 use tauri::Manager;
 
-/// This folder is where the main backend rust code lives together with all the business logic.
-/// The folder state is where our appstate and it's features are defined, completely according to the redux pattern.
-/// The command.rs holds the functions through which the front and backend comminicate using actions and reducers.
-/// The error.rs defines our app_error types, implemented throughout the code using the thiserror crate.
-/// The persistence.rs is where we define our app persistence functions.
-/// The stronghold.rs is where we implement the stronghold library for our app, which is used to store sensitive data.
+// This folder is where the main backend rust code lives together with all the business logic.
+// The folder state is where our appstate and it's features are defined, completely according to the redux pattern.
+// The command.rs holds the functions through which the front and backend comminicate using actions and reducers.
+// The error.rs defines our app_error types, implemented throughout the code using the thiserror crate.
+// The persistence.rs is where we define our app persistence functions.
+// The stronghold.rs is where we implement the stronghold library for our app, which is used to store sensitive data.
 
 lazy_static! {
     pub static ref STATE_FILE: Mutex<std::path::PathBuf> = Mutex::new(std::path::PathBuf::new());

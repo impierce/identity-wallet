@@ -64,12 +64,12 @@ pub async fn load_dev_profile(state: AppState, action: Action) -> Result<AppStat
 pub async fn toggle_dev_mode(mut state: AppState, _action: Action) -> Result<AppState, AppError> {
     info!("Toggle dev mode");
 
-    if state.dev_mode != DevMode::Off {
-        state.dev_mode = DevMode::Off;
+    if state.dev_mode_enabled != DevMode::Off {
+        state.dev_mode_enabled = DevMode::Off;
     } else {
         // We don't preserve if user had autologin enabled
         // So we just put it back to default (reload profile if you want to enable autologin again)
-        state.dev_mode = DevMode::On;
+        state.dev_mode_enabled = DevMode::On;
     }
 
     state.current_user_prompt = None;
@@ -103,7 +103,7 @@ async fn load_ferris_profile() -> Result<AppState, AppError> {
         theme: Some("system".to_string()),
         primary_did: subject.identifier().unwrap(),
     };
-    state.active_profile.replace(profile);
+    state.profile_settings.profile.replace(profile);
 
     vec![
         PERSONAL_INFORMATION.clone(),
@@ -134,6 +134,7 @@ async fn load_ferris_profile() -> Result<AppState, AppError> {
     load_predefined_images().await?;
 
     state
+        .back_end_utils
         .managers
         .lock()
         .await
@@ -229,7 +230,7 @@ async fn load_ferris_profile() -> Result<AppState, AppError> {
         target: "me".to_string(),
     });
 
-    state.dev_mode = DevMode::OnWithAutologin;
+    state.dev_mode_enabled = DevMode::OnWithAutologin;
 
     Ok(state)
 }

@@ -64,7 +64,7 @@ pub async fn load_dragon_profile(mut state: AppState, dev_profile: DevProfile) -
         state = accept_future_engineer(state).await?;
     }
 
-    state.dev_mode = DevMode::OnWithAutologin;
+    state.dev_mode_enabled = DevMode::OnWithAutologin;
 
     Ok(state)
 }
