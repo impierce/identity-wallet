@@ -27,7 +27,7 @@ pub async fn save_state(app_state: &AppState) -> anyhow::Result<()> {
     Ok(())
 }
 
-// Removes the state file from the app's data directory.
+/// Removes the state file from the app's data directory.
 pub async fn delete_state_file() -> anyhow::Result<()> {
     let state_file = STATE_FILE.lock().unwrap().clone();
     remove_file(state_file).await?;
@@ -35,6 +35,7 @@ pub async fn delete_state_file() -> anyhow::Result<()> {
     Ok(())
 }
 
+/// Removes the stronghold file from the app's data directory.
 pub async fn delete_stronghold() -> anyhow::Result<()> {
     let stronghold_file = crate::STRONGHOLD.lock().unwrap().clone();
     remove_file(&stronghold_file).await?;
@@ -68,6 +69,7 @@ pub fn clear_all_assets() -> Result<(), AppError> {
     Ok(())
 }
 
+/// Persists an asset from the `/assets/tmp` folder to the `/assets` folder inside the system-specific data directory.
 pub fn persist_asset(file_name: &str, id: &str) -> Result<(), AppError> {
     let assets_dir = ASSETS_DIR.lock().unwrap().as_path().to_owned();
     let tmp_dir = assets_dir.join("tmp");

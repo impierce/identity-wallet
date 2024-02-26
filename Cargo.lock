@@ -1586,6 +1586,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "56ce8c6da7551ec6c462cbaf3bfbc75131ebbfa1c944aeaa9dab51ca1c5f0c3b"
 
 [[package]]
+name = "dyn-clone"
+version = "1.0.16"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "545b22097d44f8a9581187cdf93de7a71e4722bf51200cfaba810865b49a495d"
+
+[[package]]
 name = "ecdsa"
 version = "0.14.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2780,6 +2786,7 @@ dependencies = [
  "derivative",
  "did-key",
  "downcast-rs",
+ "dyn-clone",
  "futures",
  "identity_credential",
  "indoc",
@@ -6539,6 +6546,7 @@ dependencies = [
  "tauri-plugin-log",
  "tempfile",
  "tokio",
+ "typetag",
  "url",
  "wiremock",
 ]

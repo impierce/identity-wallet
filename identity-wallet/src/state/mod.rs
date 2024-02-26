@@ -9,6 +9,8 @@ use crate::{
     verifiable_credential_record::DisplayCredential,
 };
 use derivative::Derivative;
+use downcast_rs::{impl_downcast, DowncastSync};
+use dyn_clone::DynClone;
 use oid4vc::oid4vc_core::Subject;
 use oid4vc::oid4vc_manager::ProviderManager;
 use oid4vc::oid4vci::Wallet;
@@ -16,6 +18,24 @@ use serde::{Deserialize, Serialize};
 use std::{collections::VecDeque, sync::Arc};
 use strum::EnumString;
 use ts_rs::TS;
+
+/// The AppState is the main state of the application shared between the backend and the frontend.
+/// We have structured the state and its operations following the redux pattern.
+/// To safeguard this pattern we have introduced the FeatTrait, ActionTrait and a macro_rule for the Reducers.
+/// All fields in the AppState have to implement the FeatTrait.
+/// This is to ensure that the state is serializable/deserializable and cloneable among other things.
+/// All actions have to implement the ActionTrait.
+/// This ensures that all actions have at least one reducer, implement a debug method,
+///  and are downcastable (necessary when receiving the action from the frontend)
+/// The reducers are paired with the actions using our macro_rule.
+/// This ensures that all reducers have the same signature and therefore follow the redux pattern and our error handling.
+/// All the above goes for extensions (values) which are added to the extensions field.
+
+/// Trait which each field of the appstate has to implement.
+#[typetag::serde(tag = "feat_state_type")]
+pub trait FeatTrait: Send + Sync + std::fmt::Debug + DynClone + DowncastSync {}
+dyn_clone::clone_trait_object!(FeatTrait);
+impl_downcast!(sync FeatTrait);
 
 pub struct IdentityManager {
     pub subject: Arc<dyn Subject>,
@@ -53,6 +73,9 @@ pub struct AppState {
     pub user_journey: Option<serde_json::Value>,
     pub connections: Vec<Connection>,
     pub user_data_query: Vec<String>,
+    /// Extensions will bring along their own redux compliant code, in the unime folder.
+    #[ts(skip)]
+    pub extensions: std::collections::HashMap<String, Box<dyn FeatTrait>>,
 }
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone, PartialEq, Eq, Default)]
@@ -79,13 +102,27 @@ impl Clone for AppState {
             connections: self.connections.clone(),
             user_data_query: self.user_data_query.clone(),
             dev_mode: self.dev_mode.clone(),
+            extensions: self.extensions.clone(),
         }
     }
 }
 
-#[derive(Default)]
+impl AppState {
+    pub fn insert_extension(mut self, key: &str, extension: Box<dyn FeatTrait>) -> Self {
+        self.extensions.insert(key.to_string(), extension);
+        self
+    }
+}
+
+#[derive(Default, Debug)]
 pub struct AppStateContainer(pub tokio::sync::Mutex<AppState>);
 
+impl AppStateContainer {
+    pub async fn insert_extension(self, key: &str, extension: Box<dyn FeatTrait>) -> Self {
+        self.0.lock().await.extensions.insert(key.to_string(), extension);
+        self
+    }
+}
 /// Format of a locale string: `ll_CC` - where ll is the language code (ISO 639) and CC is the country code (ISO 3166).
 #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default, EnumString)]
 #[ts(export)]
@@ -174,7 +211,8 @@ mod tests {
                   "debug_messages": [],
                   "user_journey": null,
                   "connections": [],
-                  "user_data_query": []
+                  "user_data_query": [],
+                  "extensions": {}
                 }"#}
         );
     }
