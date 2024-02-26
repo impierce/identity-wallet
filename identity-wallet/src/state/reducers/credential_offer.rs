@@ -185,7 +185,7 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
                 "{}",
                 format!(
                     "Downloading issuer logo from url: {}",
-                    logo_uri.clone().unwrap().as_str()
+                    logo_uri.as_ref().unwrap().as_str()
                 )
             );
             if let Some(logo_uri) = logo_uri.as_ref().and_then(|s| s.parse::<reqwest::Url>().ok()) {

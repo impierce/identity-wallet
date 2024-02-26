@@ -16,9 +16,9 @@
       "$src/*": ["src/*"],
       "$lib": ["src/lib"],
       "$lib/*": ["src/lib/*"],
-      "@bindings/*": ["../identity-wallet/bindings/*"]
-    }
-  }
+      "@bindings/*": ["../identity-wallet/bindings/*"],
+    },
+  },
   // Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
   //
   // If you want to overwrite includes/excludes, make sure to copy over the relevant includes/excludes

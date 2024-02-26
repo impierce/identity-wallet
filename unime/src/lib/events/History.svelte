@@ -13,8 +13,6 @@
   import PlugsConnected from '~icons/ph/plugs-connected';
   import ShareFat from '~icons/ph/share-fat';
 
-  // const events: Event[] = exampleEvents.map((e) => ({ ...e, type: e.type as EventType }));
-
   interface DisplayEvent {
     title: string;
     date: string;
@@ -25,6 +23,7 @@
   const events: DisplayEvent[] = $state.history.map((history) => {
     let title: string;
     let icon: typeof SvelteComponent<SvelteHTMLElements['svg']>;
+
     // TODO dynamic parsing Intl.
     let date = history.date;
     let credentials = history.credentials;
