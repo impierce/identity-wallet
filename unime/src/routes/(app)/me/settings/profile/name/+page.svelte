@@ -8,7 +8,7 @@
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
   import { state } from '$src/stores';
 
-  let name = $state.active_profile?.name;
+  let name = $state.profile_settings.profile?.name;
 </script>
 
 <div class="content-height relative flex flex-col">

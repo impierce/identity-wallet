@@ -69,7 +69,7 @@
           </Image>
         </div>
         <div slot="right" class="h-full pr-2 pt-1 text-[12px]/[20px] font-medium text-slate-400">
-          {new Date(connection.last_interacted).toLocaleString($state.locale, {
+          {new Date(connection.last_interacted).toLocaleString($state.profile_settings.locale, {
             dateStyle: 'short',
             timeStyle: 'short',
           })}

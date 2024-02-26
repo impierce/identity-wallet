@@ -6,7 +6,7 @@
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
   import { state } from '$src/stores';
 
-  let currentValue = $state.active_profile?.theme ?? 'system';
+  let currentValue = $state.profile_settings.profile?.theme ?? 'system';
   let selected: string;
 </script>
 

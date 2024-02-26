@@ -14,7 +14,7 @@
 <div class="flex flex-col">
   <p class="text-[14px]/[22px] font-medium text-slate-800">{title}</p>
   <p class="text-[12px]/[20px] font-medium text-slate-500">
-    {new Date(timestamp).toLocaleString($state.locale, {
+    {new Date(timestamp).toLocaleString($state.profile_settings.locale, {
       dateStyle: 'medium',
       timeStyle: 'medium',
     })}

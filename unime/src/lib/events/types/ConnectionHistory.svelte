@@ -15,7 +15,7 @@
     .map((e) => ({ ...e, type: e.type as EventType })) // explicit type cast
     .map((e) => ({
       ...e,
-      timestamp: new Date(e.timestamp).toLocaleString($state.locale, {
+      timestamp: new Date(e.timestamp).toLocaleString($state.profile_settings.locale, {
         dateStyle: 'medium',
         timeStyle: 'medium',
       }),
