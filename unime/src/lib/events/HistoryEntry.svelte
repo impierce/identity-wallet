@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { formatDistanceToNow, type Locale } from 'date-fns';
+  import { de, enGB, enUS, nl } from 'date-fns/locale';
+
   import type { HistoryCredential } from '@bindings/HistoryCredential';
 
   import ListItemCard from '$lib/components/molecules/ListItemCard.svelte';
@@ -7,15 +10,42 @@
   export let title: string;
   export let date: string;
   export let credentials: HistoryCredential[] = [];
+
+  function getRelativeDate() {
+    let locale: Locale;
+
+    switch ($state.locale) {
+      case 'en-US': {
+        locale = enUS;
+        break;
+      }
+      case 'en-GB': {
+        locale = enGB;
+        break;
+      }
+      case 'de-DE': {
+        locale = de;
+        break;
+      }
+      case 'nl-NL': {
+        locale = nl;
+        break;
+      }
+    }
+
+    function capitalizeFirstLetter(str: string) {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }
+
+    const dateStr = formatDistanceToNow(new Date(date), { locale, addSuffix: true });
+    return capitalizeFirstLetter(dateStr);
+  }
 </script>
 
 <div class="flex flex-col">
   <p class="text-[14px]/[22px] font-medium text-slate-800 dark:text-grey">{title}</p>
   <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
-    {new Date(date).toLocaleString($state.locale, {
-      dateStyle: 'medium',
-      timeStyle: 'medium',
-    })}
+    {getRelativeDate()}
   </p>
   {#if credentials.length > 0}
     <div class="mt-[12px] rounded-xl border border-y-gray-200 bg-white p-[3px] dark:border-dark dark:bg-dark">
