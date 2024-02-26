@@ -79,17 +79,19 @@ pub struct AppState {
     /// Extensions will bring along their own redux compliant code, in the unime folder.
     #[ts(skip)]
     pub extensions: std::collections::HashMap<String, Box<dyn FeatTrait>>,
-    /// A simple boolean to enable dev mode,
-    pub dev_mode_enabled: DevMode,
+    /// A simple enum to set dev mode,
+    pub dev_mode: DevMode,
 }
 
 impl Clone for AppState {
     fn clone(&self) -> Self {
         Self {
-            back_end_utils: BackEndUtils {            
+            back_end_utils: BackEndUtils {
                 managers: self.back_end_utils.managers.clone(),
-                active_connection_request: serde_json::from_value(serde_json::json!(self.back_end_utils.active_connection_request))
-                    .unwrap(),
+                active_connection_request: serde_json::from_value(serde_json::json!(
+                    self.back_end_utils.active_connection_request
+                ))
+                .unwrap(),
             },
             profile_settings: self.profile_settings.clone(),
             credentials: self.credentials.clone(),
@@ -99,7 +101,7 @@ impl Clone for AppState {
             connections: self.connections.clone(),
             user_data_query: self.user_data_query.clone(),
             extensions: self.extensions.clone(),
-            dev_mode_enabled: self.dev_mode_enabled.clone(),
+            dev_mode: self.dev_mode.clone(),
         }
     }
 }
@@ -221,7 +223,8 @@ mod tests {
                     picture: None,
                     theme: None,
                     primary_did: "did:example:123".to_string(),
-            })},
+                }),
+            },
             credentials: vec![],
             current_user_prompt: Some(CurrentUserPrompt::Redirect {
                 target: "me".to_string(),
@@ -240,26 +243,26 @@ mod tests {
             serialized,
             indoc! {
             r#"{
-                  "active_profile": {
+                "connections": [],
+                "credentials": [],
+                "user_data_query": [],
+                "profile_settings": {
+                  "locale": "en-US",
+                  "profile": {
                     "name": "John Doe",
                     "picture": null,
                     "theme": null,
                     "primary_did": "did:example:123"
-                  },
-                  "locale": "en-US",
-                  "credentials": [],
-                  "current_user_prompt": {
-                    "type": "redirect",
-                    "target": "me"
-                  },
-                  "dev_mode": "Off",
-                  "debug_messages": [],
-                  "user_journey": null,
-                  "connections": [],
-                  "user_data_query": [],
-                  "extensions": {}
-                  "user_data_query": [],
-                  "extensions": {}
+                  }
+                },
+                "current_user_prompt": {
+                  "type": "redirect",
+                  "target": "me"
+                },
+                "user_journey": null,
+                "debug_messages": [],
+                "extensions": {},
+                "dev_mode": "Off"
                 }"#}
         );
     }

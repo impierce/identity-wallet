@@ -3,7 +3,6 @@ import type { Connection } from "./Connection";
 import type { CurrentUserPrompt } from "./CurrentUserPrompt";
 import type { DevMode } from "./DevMode";
 import type { DisplayCredential } from "./display-credential/DisplayCredential";
-import type { Locale } from "./Locale";
-import type { Profile } from "./Profile";
+import type { ProfileSettings } from "./ProfileSettings";
 
-export interface AppState { active_profile: Profile | null, locale: Locale, credentials: Array<DisplayCredential>, current_user_prompt: CurrentUserPrompt | null, dev_mode: DevMode, debug_messages: Array<string>, user_journey: object | null, connections: Array<Connection>, user_data_query: Array<string>, }
+export interface AppState { connections: Array<Connection>, credentials: Array<DisplayCredential>, user_data_query: Array<string>, profile_settings: ProfileSettings, current_user_prompt: CurrentUserPrompt | null, user_journey: object | null, debug_messages: Array<string>, dev_mode: DevMode, }

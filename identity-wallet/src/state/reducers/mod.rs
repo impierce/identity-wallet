@@ -58,11 +58,11 @@ pub async fn get_state(_state: AppState, _action: Action) -> Result<AppState, Ap
         .and_then(|s| s.parse::<bool>().ok())
     {
         if dev_mode {
-            if state.dev_mode_enabled == DevMode::Off {
-                state.dev_mode_enabled = DevMode::On;
+            if state.dev_mode == DevMode::Off {
+                state.dev_mode = DevMode::On;
             }
         } else {
-            state.dev_mode_enabled = DevMode::Off;
+            state.dev_mode = DevMode::Off;
         }
     }
 
@@ -273,7 +273,7 @@ pub async fn reset_state(state: AppState, _action: Action) -> Result<AppState, A
             target: "welcome".to_string(),
         }),
         // Keep maintaing dev_mode state
-        dev_mode_enabled: state.dev_mode_enabled,
+        dev_mode: state.dev_mode,
         ..Default::default()
     })
 }
