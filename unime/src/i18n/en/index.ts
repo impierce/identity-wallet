@@ -254,6 +254,9 @@ const en = {
   },
   TIMELINE: {
     EMPTY: 'No activity yet.',
+    ADDED_CREDENTIALS: 'Received credentials from',
+    SHARED_CREDENTIALS: 'Shared credentials with',
+    ADDED_CONNECTION: 'First connection with'
   },
   SEARCH: {
     INPUT_PLACEHOLDER: 'Look for something',

@@ -30,17 +30,17 @@
 
     switch (history.event_type) {
       case 'added_credentials': {
-        title = 'Received credentials from ' + history.issuer_name;
+        title = $LL.TIMELINE.ADDED_CREDENTIALS() + ' ' + history.issuer_name;
         icon = DownloadSimple;
         break;
       }
       case 'shared_credentials': {
-        title = 'Shared credentials with ' + history.issuer_name;
+        title = $LL.TIMELINE.SHARED_CREDENTIALS() + ' ' + history.issuer_name;
         icon = ShareFat;
         break;
       }
       case 'added_connection': {
-        title = 'First connection with ' + history.issuer_name;
+        title = $LL.TIMELINE.ADDED_CONNECTION() + ' ' + history.issuer_name;
         icon = PlugsConnected;
         break;
       }

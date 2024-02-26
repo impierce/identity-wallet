@@ -700,6 +700,18 @@ type RootTranslation = {
 		 * N​o​ ​a​c​t​i​v​i​t​y​ ​y​e​t​.
 		 */
 		EMPTY: string
+		/**
+		 * R​e​c​e​i​v​e​d​ ​c​r​e​d​e​n​t​i​a​l​s​ ​f​r​o​m
+		 */
+		ADDED_CREDENTIALS: string
+		/**
+		 * S​h​a​r​e​d​ ​c​r​e​d​e​n​t​i​a​l​s​ ​w​i​t​h
+		 */
+		SHARED_CREDENTIALS: string
+		/**
+		 * F​i​r​s​t​ ​c​o​n​n​e​c​t​i​o​n​ ​w​i​t​h
+		 */
+		ADDED_CONNECTION: string
 	}
 	SEARCH: {
 		/**
@@ -1463,6 +1475,18 @@ export type TranslationFunctions = {
 		 * No activity yet.
 		 */
 		EMPTY: () => LocalizedString
+		/**
+		 * Received credentials from
+		 */
+		ADDED_CREDENTIALS: () => LocalizedString
+		/**
+		 * Shared credentials with
+		 */
+		SHARED_CREDENTIALS: () => LocalizedString
+		/**
+		 * First connection with
+		 */
+		ADDED_CONNECTION: () => LocalizedString
 	}
 	SEARCH: {
 		/**
