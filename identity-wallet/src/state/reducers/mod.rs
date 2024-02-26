@@ -26,6 +26,8 @@ use std::pin::Pin;
 use std::sync::Arc;
 
 /// A macro to wrap a reducer function in a Box and a Pin.
+/// It checks the reducers for its signature,
+///  as it should comply with our standard for reducers.
 #[macro_export]
 macro_rules! reducer {
     ($reducer:expr) => {

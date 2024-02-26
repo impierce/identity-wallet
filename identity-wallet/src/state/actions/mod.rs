@@ -102,3 +102,30 @@ mod bindings {
         UserDataQuery { payload: UserDataQuery },
     }
 }
+
+/// Below is an example of how to add an action to the app
+///
+/// Example:
+/// ```
+/// pub struct ExampleAction {
+///     ExampleField: String,
+///     ExampleField2: Bool,
+/// }
+/// 
+/// #[typetag::serde(name = "[Example] Example Action")]
+/// impl ActionTrait for ExampleAction {
+///     fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
+///         vec![reducer!(example_reducer)]
+///     }
+/// }
+/// ```
+/// 
+/// pub async fn new_reducer(state: AppState, action: Action) -> Result<AppState, AppError> {
+///  -- your code --
+///      return ( AppState {
+///                  the changes,
+///                  ..state     // Sets the rest to the same values as the old state.
+///             })
+///      }
+///  Ok(state)        // Returns the old state if the state update fails.
+/// 
