@@ -59,7 +59,7 @@
   }
 </script>
 
-<div class="relative flex h-full flex-col">
+<div class="relative mt-6 flex h-full flex-col">
   {#if $state.history.length === 0}
     <div class="flex h-full flex-col items-center justify-center">
       <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">{$LL.TIMELINE.EMPTY()}</p>
@@ -69,7 +69,7 @@
       {#each events as event, i}
         <div class="flex flex-row">
           <div class="mt-2 flex flex-col items-center">
-            <div class="z-10 flex items-center justify-center rounded-full bg-white ring-8 ring-silver">
+            <div class="z-10 flex items-center justify-center rounded-full bg-white ring-8 ring-white dark:ring-silver">
               <svelte:component this={event.icon} class="h-4 w-4 " />
             </div>
             {#if hasNextElement(i)}
@@ -77,7 +77,7 @@
               <div class="mb-2 mt-4 h-full rounded-full border border-slate-200 border-y-gray-200"></div>
             {/if}
           </div>
-          <div class="ml-6 mt-[-8px] flex justify-between pb-10 grow">
+          <div class="ml-6 mt-[-8px] flex grow justify-between pb-10">
             <div class="grow">
               <HistoryEntry {...event} />
             </div>

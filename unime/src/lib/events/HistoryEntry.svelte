@@ -18,7 +18,7 @@
     })}
   </p>
   {#if credentials.length > 0}
-    <div class="mt-[12px] rounded-xl border border-white border-y-gray-200 p-[3px] dark:border-dark dark:bg-dark">
+    <div class="mt-[12px] rounded-xl border border-y-gray-200 bg-white p-[3px] dark:border-dark dark:bg-dark">
       {#each credentials as credential}
         <ListItemCard
           id={credential.image_id}
