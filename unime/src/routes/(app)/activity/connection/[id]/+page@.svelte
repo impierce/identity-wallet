@@ -30,7 +30,7 @@
         <ConnectionData id={connection.id} />
       </div>
 
-      <div slot="2" class="h-full bg-silver py-5 dark:bg-navy">
+      <div slot="2" class="h-full bg-silver pt-5 dark:bg-navy">
         <!-- TODO: If this turns out to be a costly operation (filtering in backend), consider lazy loading the component -->
         <History />
       </div>

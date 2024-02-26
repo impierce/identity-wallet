@@ -73,10 +73,11 @@
               <svelte:component this={event.icon} class="h-4 w-4 " />
             </div>
             {#if hasNextElement(i)}
-              <div class="mb-2 mt-4 h-full rounded-full border border-slate-200"></div>
+              <!-- Vertical line on the left -->
+              <div class="mb-2 mt-4 h-full rounded-full border border-slate-200 border-y-gray-200"></div>
             {/if}
           </div>
-          <div class="ml-6 mt-[-8px] flex justify-between pb-10">
+          <div class="ml-6 mt-[-8px] flex justify-between pb-10 grow">
             <div class="grow">
               <HistoryEntry {...event} />
             </div>
