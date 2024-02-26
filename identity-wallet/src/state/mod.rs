@@ -37,16 +37,15 @@ pub trait FeatTrait: Send + Sync + std::fmt::Debug + DynClone + DowncastSync {}
 dyn_clone::clone_trait_object!(FeatTrait);
 impl_downcast!(sync FeatTrait);
 
-pub struct IdentityManager {
-    pub subject: Arc<dyn Subject>,
-    pub provider_manager: ProviderManager,
-    pub wallet: Wallet,
-}
+/// The container for the application state, simplifying the code to only need one mutex.
+#[derive(Default, Debug)]
+pub struct AppStateContainer(pub tokio::sync::Mutex<AppState>);
 
-#[derive(Default)]
-pub struct Managers {
-    pub stronghold_manager: Option<Arc<StrongholdManager>>,
-    pub identity_manager: Option<IdentityManager>,
+impl AppStateContainer {
+    pub async fn insert_extension(self, key: &str, extension: Box<dyn FeatTrait>) -> Self {
+        self.0.lock().await.extensions.insert(key.to_string(), extension);
+        self
+    }
 }
 
 /// The inner state of the application managed by Tauri. When the state is serialized in order to be sent to the
@@ -56,36 +55,33 @@ pub struct Managers {
 #[ts(export)]
 #[serde(default)]
 pub struct AppState {
-    #[serde(skip)]
-    #[derivative(Debug = "ignore")]
-    pub managers: Arc<tauri::async_runtime::Mutex<Managers>>,
-    pub active_profile: Option<Profile>,
-    #[serde(skip)]
-    #[derivative(Debug = "ignore")]
-    pub active_connection_request: Option<ConnectionRequest>,
-    pub locale: Locale,
+    /// This field contains the connections, containing the useable info for the frontend.
+    pub connections: Vec<Connection>,
+    /// This field contains the display credentials, containing the useable info for the frontend.
     pub credentials: Vec<DisplayCredential>,
+    /// This field contains the query result, which is queried from credentials or connections.
+    pub user_data_query: Vec<String>,
+    /// This field contains utils needed for the backend to perform its tasks.
+    #[serde(skip)]
+    #[derivative(Debug = "ignore")]
+    pub back_end_utils: BackEndUtils,
+    /// This field contains the profile settings, including Locale.
+    pub profile_settings: ProfileSettings,
+    /// User prompts are a way for the backend to communicate a desired/required user interaction to the frontend.
     pub current_user_prompt: Option<CurrentUserPrompt>,
-    pub dev_mode: DevMode,
-    #[ts(type = "Array<string>")]
-    pub debug_messages: VecDeque<String>,
+    /// Here user_journeys can be loaded from json_files or strings, to give the user a guided experience.
     #[ts(type = "object | null")]
     pub user_journey: Option<serde_json::Value>,
-    pub connections: Vec<Connection>,
-    pub user_data_query: Vec<String>,
+    /// Handled in command.rs, so no feature folder nor redux pattern needed.
+    #[ts(type = "Array<string>")]
+    pub debug_messages: VecDeque<String>,
     /// Extensions will bring along their own redux compliant code, in the unime folder.
     #[ts(skip)]
     pub extensions: std::collections::HashMap<String, Box<dyn FeatTrait>>,
+    /// A simple boolean to enable dev mode,
+    pub dev_mode_enabled: bool,
 }
 
-#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone, PartialEq, Eq, Default)]
-#[ts(export, export_to = "bindings/DevMode.ts")]
-pub enum DevMode {
-    On,
-    #[default]
-    Off,
-    OnWithAutologin,
-}
 
 impl Clone for AppState {
     fn clone(&self) -> Self {
@@ -114,15 +110,27 @@ impl AppState {
     }
 }
 
-#[derive(Default, Debug)]
-pub struct AppStateContainer(pub tokio::sync::Mutex<AppState>);
-
-impl AppStateContainer {
-    pub async fn insert_extension(self, key: &str, extension: Box<dyn FeatTrait>) -> Self {
-        self.0.lock().await.extensions.insert(key.to_string(), extension);
-        self
-    }
+pub struct IdentityManager {
+    pub subject: Arc<dyn Subject>,
+    pub provider_manager: ProviderManager,
+    pub wallet: Wallet,
 }
+
+#[derive(Default)]
+pub struct Managers {
+    pub stronghold_manager: Option<Arc<StrongholdManager>>,
+    pub identity_manager: Option<IdentityManager>,
+}
+
+#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone, PartialEq, Eq, Default)]
+#[ts(export, export_to = "bindings/DevMode.ts")]
+pub enum DevMode {
+    On,
+    #[default]
+    Off,
+    OnWithAutologin,
+}
+
 /// Format of a locale string: `ll_CC` - where ll is the language code (ISO 639) and CC is the country code (ISO 3166).
 #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default, EnumString)]
 #[ts(export)]
