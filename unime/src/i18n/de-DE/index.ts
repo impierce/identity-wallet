@@ -257,7 +257,7 @@ const de = {
     EMPTY: 'Noch keine Aktivitäten.',
     ADDED_CREDENTIALS: 'TODO',
     SHARED_CREDENTIALS: 'TODO',
-    ADDED_CONNECTION: 'TODO'
+    ADDED_CONNECTION: 'TODO',
   },
   SEARCH: {
     INPUT_PLACEHOLDER: 'Gib einen Suchbegriff ein',

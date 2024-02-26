@@ -226,7 +226,7 @@ mod tests {
                   "user_journey": null,
                   "connections": [],
                   "user_data_query": [],
-                  "history": []
+                  "history": [],
                   "extensions": {}
                 }"#}
         );

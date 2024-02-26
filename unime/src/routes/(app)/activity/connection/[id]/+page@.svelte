@@ -6,14 +6,11 @@
   import ConnectionSummary from '$lib/connections/ConnectionSummary.svelte';
   import type { Connection } from '$lib/connections/types';
   import LL from '$src/i18n/i18n-svelte';
-  import Image from '$src/lib/components/atoms/Image.svelte';
   import Tabs from '$src/lib/components/molecules/navigation/Tabs.svelte';
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
-  import exampleConnections from '$src/lib/connections/mock-data.json';
   import History from '$src/lib/events/History.svelte';
   import { state } from '$src/stores';
 
-  // let connection: Connection = exampleConnections.find((c) => c.id === $page.params.id)!!;
   console.log($page.params.id);
   console.log($state.connections);
   let connection: Connection = $state.connections.find((c) => c.id === $page.params.id)!!;
@@ -30,9 +27,9 @@
         <ConnectionData id={connection.id} />
       </div>
 
-      <div slot="2" class="h-full bg-silver pt-5 dark:bg-navy">
+      <div slot="2" class="bg-silver pt-5 dark:bg-navy">
         <!-- TODO: If this turns out to be a costly operation (filtering in backend), consider lazy loading the component -->
-        <History />
+        <History connectionId={connection.id} />
       </div>
     </Tabs>
   </div>

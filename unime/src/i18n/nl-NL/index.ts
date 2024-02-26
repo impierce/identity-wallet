@@ -256,7 +256,7 @@ const nl = {
     EMPTY: 'Nog geen activiteit.',
     ADDED_CREDENTIALS: 'Credentials gekregen van',
     SHARED_CREDENTIALS: 'Credentials gedeeld met',
-    ADDED_CONNECTION: 'Eerste keer verbonden met'
+    ADDED_CONNECTION: 'Eerste keer verbonden met',
   },
   SEARCH: {
     INPUT_PLACEHOLDER: 'Zoeken',

@@ -4,6 +4,7 @@
   import type { SvelteHTMLElements } from 'svelte/elements';
 
   import type { HistoryCredential } from '@bindings/HistoryCredential';
+  import type { HistoryEvent } from '@bindings/HistoryEvent';
 
   import HistoryEntry from '$lib/events/HistoryEntry.svelte';
   import LL from '$src/i18n/i18n-svelte';
@@ -13,6 +14,8 @@
   import PlugsConnected from '~icons/ph/plugs-connected';
   import ShareFat from '~icons/ph/share-fat';
 
+  export let connectionId: string | undefined;
+
   interface DisplayEvent {
     title: string;
     date: string;
@@ -20,7 +23,15 @@
     credentials: Array<HistoryCredential>;
   }
 
-  const events: DisplayEvent[] = $state.history.map((history) => {
+  let filteredEvents: HistoryEvent[];
+
+  if (connectionId) {
+    filteredEvents = $state.history.filter((his) => his.connection_id === connectionId);
+  } else {
+    filteredEvents = $state.history;
+  }
+
+  const events: DisplayEvent[] = filteredEvents.reverse().map((history) => {
     let title: string;
     let icon: typeof SvelteComponent<SvelteHTMLElements['svg']>;
 

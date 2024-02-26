@@ -391,6 +391,7 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
                 issuer_name: issuer_name.clone(),
                 event_type: EventType::AddedCredentials,
                 date: credentials[0].metadata.date_added.clone(),
+                connection_id: None,
                 credentials: history_credentials,
             });
         }

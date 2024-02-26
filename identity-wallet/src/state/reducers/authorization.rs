@@ -215,7 +215,7 @@ pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: A
 
     if result.is_none() {
         connections.push(Connection {
-            id: connection_id,
+            id: connection_id.to_string(),
             client_name: client_name.to_string(),
             url: connection_url,
             verified: false,
@@ -228,6 +228,7 @@ pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: A
     state.history.push(HistoryEvent {
         issuer_name: client_name.clone(),
         event_type: EventType::AddedConnection,
+        connection_id: Some(connection_id),
         date: connection_time,
         credentials: vec![],
     });
@@ -368,7 +369,7 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
 
         if result.is_none() {
             connections.push(Connection {
-                id: connection_id,
+                id: connection_id.to_string(),
                 client_name: client_name.to_string(),
                 url: connection_url,
                 verified: false,
@@ -384,6 +385,7 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
             issuer_name: client_name,
             date: connection_time,
             event_type: EventType::SharedCredentials,
+            connection_id: Some(connection_id),
             credentials: history_credentials,
         });
 

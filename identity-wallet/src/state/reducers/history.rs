@@ -17,6 +17,7 @@ pub enum EventType {
 pub struct HistoryEvent {
     pub issuer_name: String,
     pub event_type: EventType,
+    pub connection_id: Option<String>,
     pub date: String,
     pub credentials: Vec<HistoryCredential>,
 }
