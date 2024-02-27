@@ -10,6 +10,17 @@
   $: {
     console.log($onboarding_state);
   }
+
+  let keyboardView = false;
+
+  function setFocus() {
+    keyboardView = true;
+  }
+
+  function unsetFocus() {
+    // Small delay to keep button available.
+    setTimeout(() => keyboardView = false, 200);
+  }
 </script>
 
 <!-- <TopNavBar title="Appearance" on:back={() => history.back()} /> -->
@@ -17,7 +28,7 @@
   <!-- TODO: the only reason why we're breaking out of the layout is because we do not want to inherit the "Skip" button -->
   <TopNavBar on:back={() => history.back()} title={$LL.ONBOARDING.CUSTOMIZE.NAVBAR_TITLE()} />
   <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
-    <div class="px-2 pb-8 pt-4">
+    <div class="px-2 pb-8 pt-4 {keyboardView ? 'shrink-height' : 'expand-height'}">
       <p class="pb-4 text-3xl font-semibold text-slate-700 dark:text-grey">
         {$LL.ONBOARDING.CUSTOMIZE.NAME.TITLE_1()}
         <span class="text-primary">{$LL.ONBOARDING.CUSTOMIZE.NAME.TITLE_2()}</span>
@@ -26,20 +37,36 @@
         {$LL.ONBOARDING.CUSTOMIZE.NAME.SUBTITLE()}
       </p>
     </div>
-    <!-- <p class="pb-2 text-[14px]/[22px] font-medium text-slate-600">Profile name</p> -->
+
     <input
       class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] font-normal text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300 dark:caret-slate-300"
       placeholder={$LL.ONBOARDING.CUSTOMIZE.NAME.INPUT_PLACEHOLDER()}
+      on:focus={() => setFocus()}
+      on:blur={() => unsetFocus()}
       bind:value={$onboarding_state.name}
     />
+
+    {#if keyboardView}
+      <div class="mt-8" in:fade={{ delay: 200 }}>
+        <Button
+          label={$LL.CONTINUE()}
+          on:click={() => goto('/welcome/customize/theme')}
+          disabled={!!!$onboarding_state.name}
+        />
+      </div>
+    {/if}
   </div>
-  <div class="rounded-t-3xl bg-white p-6 dark:bg-dark" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
-    <Button
-      label={$LL.CONTINUE()}
-      on:click={() => goto('/welcome/customize/theme')}
-      disabled={!!!$onboarding_state.name}
-    />
-  </div>
+
+  <!-- Continue button !-->
+  {#if !keyboardView}
+    <div class="rounded-t-3xl bg-white p-6 dark:bg-dark" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
+      <Button
+        label={$LL.CONTINUE()}
+        on:click={() => goto('/welcome/customize/theme')}
+        disabled={!!!$onboarding_state.name}
+      />
+    </div>
+  {/if}
 </div>
 
 <div class="safe-area-top bg-silver dark:bg-navy" />
@@ -47,5 +74,21 @@
 <style>
   .content-height {
     height: calc(100vh - var(--safe-area-inset-top));
+  }
+
+  .expand-height {
+    max-height: unset;
+    transition:
+      padding 0.5s ease-in,
+      max-height 0.5s ease-in;
+  }
+
+  .shrink-height {
+    max-height: 0;
+    padding: 0;
+    overflow: hidden;
+    transition:
+      padding 0.5s ease-out,
+      max-height 0.5s ease-out;
   }
 </style>
