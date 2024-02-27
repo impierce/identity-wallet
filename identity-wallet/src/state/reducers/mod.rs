@@ -115,8 +115,8 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
         let wallet: Wallet = Wallet::new(subject.clone());
 
         let profile = Profile {
-            name: name.to_string(),
-            picture: Some(picture.to_string()),
+            name,
+            picture: Some(picture),
             theme: Some(theme),
             primary_did: subject.identifier().map_err(OID4VCSubjectIdentifierError)?,
         };

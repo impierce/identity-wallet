@@ -27,5 +27,6 @@ pub struct HistoryEvent {
 pub struct HistoryCredential {
     pub title: String,
     pub sub_title: String,
-    pub image_id: String,
+    /// Is also the image id
+    pub id: String,
 }

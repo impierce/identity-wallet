@@ -373,7 +373,7 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
             history_credentials.push(HistoryCredential {
                 title: display.display_name.to_string(),
                 sub_title: display.issuer_name.to_string(),
-                image_id: display.id.to_string(),
+                id: display.id.to_string(),
             });
         }
 

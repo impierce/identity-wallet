@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import { formatDistanceToNow, type Locale } from 'date-fns';
   import { de, enGB, enUS, nl } from 'date-fns/locale';
 
@@ -40,6 +41,18 @@
     const dateStr = formatDistanceToNow(new Date(date), { locale, addSuffix: true });
     return capitalizeFirstLetter(dateStr);
   }
+
+  function navigateToCredential(credentialId: string) {
+    const credential = $state.credentials.find((cred) => cred.id === credentialId);
+
+    if (credential) {
+      if (credential.data.type.includes('OpenBadgeCredential')) {
+        goto(`/badges/${credential.id}`);
+      } else {
+        goto(`/credentials/${credential.id}`);
+      }
+    }
+  }
 </script>
 
 <div class="flex flex-col">
@@ -51,10 +64,11 @@
     <div class="mt-[12px] rounded-xl border border-y-gray-200 bg-white p-[3px] dark:border-dark dark:bg-dark">
       {#each credentials as credential}
         <ListItemCard
-          id={credential.image_id}
+          id={credential.id}
           title={credential.title}
           description={credential.sub_title}
           hasBorderRadius={false}
+          on:click={() => navigateToCredential(credential.id)}
         />
       {/each}
     </div>
