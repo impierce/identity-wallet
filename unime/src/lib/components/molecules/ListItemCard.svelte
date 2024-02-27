@@ -1,6 +1,8 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
 
+  import { twMerge } from 'tailwind-merge';
+
   import Image from '$lib/components/atoms/Image.svelte';
 
   const dispatch = createEventDispatcher();
@@ -10,15 +12,6 @@
   export let description: string | undefined = undefined;
   export let type: 'data' | 'badge' = 'data';
   export let isTempAsset = false;
-  export let hasBorderRadius = true;
-
-  function addRoundedBorder() {
-    if (hasBorderRadius) {
-      return 'rounded-xl';
-    } else {
-      return '';
-    }
-  }
 </script>
 
 <!--
@@ -44,7 +37,7 @@ Can be used for credentials, connections, etc.
 ```
 -->
 <button
-  class="flex h-16 w-full items-center justify-start bg-white p-2 dark:bg-dark {addRoundedBorder()}"
+  class={twMerge('flex h-16 w-full items-center justify-start rounded-xl bg-white p-2 dark:bg-dark', $$props.class)}
   on:click={() => dispatch('click')}
 >
   <!-- min-h-[64px] needed? -->

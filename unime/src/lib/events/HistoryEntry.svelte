@@ -67,7 +67,7 @@
           id={credential.id}
           title={credential.title}
           description={credential.sub_title}
-          hasBorderRadius={false}
+          class="rounded-none"
           on:click={() => navigateToCredential(credential.id)}
         />
       {/each}
