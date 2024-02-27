@@ -2,7 +2,10 @@ use crate::{
     error::AppError::{self, *},
     get_unverified_jwt_claims,
     state::{
-        actions::{listen, Action, CredentialsSelected, QrCodeScanned}, persistence::persist_asset, user_prompt::CurrentUserPrompt, AppState, BackEndUtils, Connection
+        actions::{listen, Action, CredentialsSelected, QrCodeScanned},
+        persistence::persist_asset,
+        user_prompt::CurrentUserPrompt,
+        AppState, BackEndUtils, Connection,
     },
     utils::{download_asset, LogoType},
 };
@@ -83,7 +86,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                 back_end_utils: BackEndUtils {
                     active_connection_request: Some(ConnectionRequest::SIOPv2(siopv2_authorization_request.into())),
                     ..state.back_end_utils
-                },          
+                },
                 connections,
                 current_user_prompt: Some(CurrentUserPrompt::AcceptConnection {
                     client_name,
@@ -145,7 +148,8 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                     back_end_utils: BackEndUtils {
                         active_connection_request: Some(ConnectionRequest::OID4VP(oid4vp_authorization_request.into())),
                         ..state.back_end_utils
-                    },                    current_user_prompt: Some(CurrentUserPrompt::ShareCredentials {
+                    },
+                    current_user_prompt: Some(CurrentUserPrompt::ShareCredentials {
                         client_name,
                         logo_uri,
                         options: uuids,

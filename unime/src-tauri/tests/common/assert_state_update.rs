@@ -1,4 +1,7 @@
-use identity_wallet::{state::{actions::Action, persistence::save_state, AppState, AppStateContainer}, STATE_FILE, STRONGHOLD};
+use identity_wallet::{
+    state::{actions::Action, persistence::save_state, AppState, AppStateContainer},
+    STATE_FILE, STRONGHOLD,
+};
 use serde_json::json;
 use tauri::Manager;
 use tempfile::NamedTempFile;
@@ -13,7 +16,7 @@ pub async fn assert_state_update(
 ) {
     {
         let current_state = current_state.0.lock().await;
-        
+
         // Save the current state to the state file.
         save_state(&current_state).await.unwrap();
     }
@@ -69,7 +72,7 @@ pub async fn assert_state_update(
                 ..
             } = expected_state;
 
-            let active_profile = &profile_settings.profile; 
+            let active_profile = &profile_settings.profile;
             let expected_active_profile = &expected_profile_settings.profile;
 
             match (active_profile, expected_active_profile) {
@@ -95,7 +98,20 @@ pub async fn assert_state_update(
             assert_eq!(current_user_prompt, expected_current_user_prompt);
             assert_eq!(user_data_query, expected_user_data_query);
             if (extensions.len() != 0) || (expected_extensions.len() != 0) {
-                assert_eq!(extensions.get("test").unwrap().clone().downcast::<CustomExtension>().unwrap(), expected_extensions.get("test").unwrap().clone().downcast::<CustomExtension>().unwrap());
+                assert_eq!(
+                    extensions
+                        .get("test")
+                        .unwrap()
+                        .clone()
+                        .downcast::<CustomExtension>()
+                        .unwrap(),
+                    expected_extensions
+                        .get("test")
+                        .unwrap()
+                        .clone()
+                        .downcast::<CustomExtension>()
+                        .unwrap()
+                );
             }
         }
     }

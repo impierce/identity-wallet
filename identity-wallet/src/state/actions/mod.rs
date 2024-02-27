@@ -31,27 +31,27 @@ pub use update_credential_metadata::*;
 pub use update_profile_settings::*;
 pub use user_data_query::*;
 
-use downcast_rs::{impl_downcast, DowncastSync};
 use super::reducers::Reducer;
+use downcast_rs::{impl_downcast, DowncastSync};
 use std::sync::Arc;
 use ts_rs::TS;
 
 /// Below is an example of how to add an action to the app
 ///
 /// Example:
-/// 
+///
 /// pub struct ExampleAction {
 ///     ExampleField: String,
 ///     ExampleField2: Bool,
 /// }
-/// 
+///
 /// #[typetag::serde(name = "[Example] Example Action")]
 /// impl ActionTrait for ExampleAction {
 ///     fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
 ///         vec![reducer!(example_reducer)]
 ///     }
 /// }
-/// 
+///
 /// pub async fn new_reducer(state: AppState, action: Action) -> Result<AppState, AppError> {
 ///  -- your code -- {
 ///      return ( AppState {

@@ -1,10 +1,10 @@
+use crate::{get_unverified_jwt_claims, state::FeatTrait};
 use derivative::Derivative;
 use oid4vc::oid4vci::credential_format_profiles::{CredentialFormats, WithCredential};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use ts_rs::TS;
 use uuid::Uuid;
-use crate::{get_unverified_jwt_claims, state::FeatTrait};
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
 pub struct VerifiableCredentialRecord {

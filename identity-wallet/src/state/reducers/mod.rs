@@ -123,7 +123,7 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
                 name: name.to_string(),
                 picture: Some(picture.to_string()),
                 theme: Some(theme.to_string()),
-                primary_did: subject.identifier().map_err(OID4VCSubjectIdentifierError)?
+                primary_did: subject.identifier().map_err(OID4VCSubjectIdentifierError)?,
             }),
             ..Default::default()
         };
@@ -149,9 +149,15 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
 
 pub async fn initialize_stronghold(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(password) = listen::<CreateNew>(action).map(|payload| payload.password) {
-        state.back_end_utils.managers.lock().await.stronghold_manager.replace(Arc::new(
-            StrongholdManager::create(&password).map_err(StrongholdCreationError)?,
-        ));
+        state
+            .back_end_utils
+            .managers
+            .lock()
+            .await
+            .stronghold_manager
+            .replace(Arc::new(
+                StrongholdManager::create(&password).map_err(StrongholdCreationError)?,
+            ));
 
         info!("stronghold initialized");
         return Ok(state);
@@ -356,7 +362,7 @@ mod tests {
         };
 
         let mut app_state = AppState {
-            profile_settings: ProfileSettings{
+            profile_settings: ProfileSettings {
                 profile: Some(active_profile.clone()),
                 ..ProfileSettings::default()
             },
@@ -400,7 +406,7 @@ mod tests {
     #[tokio::test]
     async fn test_reset_state() {
         let mut app_state = AppState {
-            profile_settings: ProfileSettings { 
+            profile_settings: ProfileSettings {
                 profile: Some(Profile {
                     name: "Ferris".to_string(),
                     picture: Some("&#129408".to_string()),
