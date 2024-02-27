@@ -39,7 +39,7 @@ use ts_rs::TS;
 /// Below is an example of how to add an action to the app
 ///
 /// Example:
-/// ```
+/// 
 /// pub struct ExampleAction {
 ///     ExampleField: String,
 ///     ExampleField2: Bool,
@@ -51,16 +51,16 @@ use ts_rs::TS;
 ///         vec![reducer!(example_reducer)]
 ///     }
 /// }
-/// ```
 /// 
 /// pub async fn new_reducer(state: AppState, action: Action) -> Result<AppState, AppError> {
-///  -- your code --
+///  -- your code -- {
 ///      return ( AppState {
 ///                  the changes,
 ///                  ..state     // Sets the rest to the same values as the old state.
 ///             })
 ///      }
 ///  Ok(state)        // Returns the old state if the state update fails.
+/// }
 
 /// A redux-like Action that the backend knows how to handle (reduce), with an optional payload
 /// See https://redux.js.org/tutorials/fundamentals/part-3-state-actions-reducers

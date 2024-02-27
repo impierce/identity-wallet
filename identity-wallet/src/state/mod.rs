@@ -243,27 +243,30 @@ mod tests {
             serialized,
             indoc! {
             r#"{
-                "connections": [],
-                "credentials": [],
-                "user_data_query": [],
-                "profile_settings": {
-                  "locale": "en-US",
-                  "profile": {
-                    "name": "John Doe",
-                    "picture": null,
-                    "theme": null,
-                    "primary_did": "did:example:123"
-                  }
-                },
-                "current_user_prompt": {
-                  "type": "redirect",
-                  "target": "me"
-                },
-                "user_journey": null,
-                "debug_messages": [],
-                "extensions": {},
-                "dev_mode": "Off"
+                  "connections": [],
+                  "credentials": [],
+                  "user_data_query": [],
+                  "profile_settings": {
+                    "locale": "en-US",
+                    "profile": {
+                      "name": "John Doe",
+                      "picture": null,
+                      "theme": null,
+                      "primary_did": "did:example:123"
+                    }
+                  },
+                  "current_user_prompt": {
+                    "type": "redirect",
+                    "target": "me"
+                  },
+                  "user_journey": null,
+                  "debug_messages": [],
+                  "extensions": {},
+                  "dev_mode": "Off"
                 }"#}
         );
     }
 }
+
+// left: "{\n  \"connections\": [],\n  \"credentials\": [],\n  \"user_data_query\": [],\n  \"profile_settings\": {\n    \"locale\": \"en-US\",\n    \"profile\": {\n      \"name\": \"John Doe\",\n      \"picture\": null,\n      \"theme\": null,\n      \"primary_did\": \"did:example:123\"\n    }\n  },\n  \"current_user_prompt\": {\n    \"type\": \"redirect\",\n    \"target\": \"me\"\n  },\n  \"user_journey\": null,\n  \"debug_messages\": [],\n  \"extensions\": {},\n  \"dev_mode\": \"Off\"\n}"
+// right: "{\n\"connections\": [],\n\"credentials\": [],\n\"user_data_query\": [],\n\"profile_settings\": {\n  \"locale\": \"en-US\",\n  \"profile\": {\n    \"name\": \"John Doe\",\n    \"picture\": null,\n    \"theme\": null,\n    \"primary_did\": \"did:example:123\"\n  }\n},\n\"current_user_prompt\": {\n  \"type\": \"redirect\",\n  \"target\": \"me\"\n},\n\"user_journey\": null,\n\"debug_messages\": [],\n\"extensions\": {},\n\"dev_mode\": \"Off\"\n}"
