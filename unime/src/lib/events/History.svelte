@@ -40,22 +40,23 @@
     let credentials = history.credentials;
 
     switch (history.event_type) {
-      case 'added_credentials': {
-        title = $LL.TIMELINE.ADDED_CREDENTIALS() + ' ' + history.issuer_name;
+      case 'credentials_added': {
+        title = $LL.TIMELINE.CREDENTIALS_ADDED() + ' ' + history.issuer_name;
         icon = DownloadSimple;
         break;
       }
-      case 'shared_credentials': {
-        title = $LL.TIMELINE.SHARED_CREDENTIALS() + ' ' + history.issuer_name;
+      case 'credentials_shared': {
+        title = $LL.TIMELINE.CREDENTIALS_SHARED() + ' ' + history.issuer_name;
         icon = ShareFat;
         break;
       }
-      case 'added_connection': {
-        title = $LL.TIMELINE.ADDED_CONNECTION() + ' ' + history.issuer_name;
+      case 'connection_added': {
+        title = $LL.TIMELINE.CONNECTION_ADDED() + ' ' + history.issuer_name;
         icon = PlugsConnected;
         break;
       }
     }
+
     return {
       title,
       icon,

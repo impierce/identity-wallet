@@ -703,15 +703,15 @@ type RootTranslation = {
 		/**
 		 * R​e​c​e​i​v​e​d​ ​c​r​e​d​e​n​t​i​a​l​s​ ​f​r​o​m
 		 */
-		ADDED_CREDENTIALS: string
+		CREDENTIALS_ADDED: string
 		/**
 		 * S​h​a​r​e​d​ ​c​r​e​d​e​n​t​i​a​l​s​ ​w​i​t​h
 		 */
-		SHARED_CREDENTIALS: string
+		CREDENTIALS_SHARED: string
 		/**
 		 * F​i​r​s​t​ ​c​o​n​n​e​c​t​i​o​n​ ​w​i​t​h
 		 */
-		ADDED_CONNECTION: string
+		CONNECTION_ADDED: string
 	}
 	SEARCH: {
 		/**
@@ -1478,15 +1478,15 @@ export type TranslationFunctions = {
 		/**
 		 * Received credentials from
 		 */
-		ADDED_CREDENTIALS: () => LocalizedString
+		CREDENTIALS_ADDED: () => LocalizedString
 		/**
 		 * Shared credentials with
 		 */
-		SHARED_CREDENTIALS: () => LocalizedString
+		CREDENTIALS_SHARED: () => LocalizedString
 		/**
 		 * First connection with
 		 */
-		ADDED_CONNECTION: () => LocalizedString
+		CONNECTION_ADDED: () => LocalizedString
 	}
 	SEARCH: {
 		/**

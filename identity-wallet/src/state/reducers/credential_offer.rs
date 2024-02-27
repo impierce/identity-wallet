@@ -389,7 +389,7 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
         if !history_credentials.is_empty() {
             state.history.push(HistoryEvent {
                 issuer_name: issuer_name.clone(),
-                event_type: EventType::AddedCredentials,
+                event_type: EventType::CredentialsAdded,
                 date: credentials[0].metadata.date_added.clone(),
                 connection_id: None,
                 credentials: history_credentials,

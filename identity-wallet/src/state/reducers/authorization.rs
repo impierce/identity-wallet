@@ -227,7 +227,7 @@ pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: A
     // History
     state.history.push(HistoryEvent {
         issuer_name: client_name.clone(),
-        event_type: EventType::AddedConnection,
+        event_type: EventType::ConnectionAdded,
         connection_id: Some(connection_id),
         date: connection_time,
         credentials: vec![],
@@ -384,7 +384,7 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
         state.history.push(HistoryEvent {
             issuer_name: client_name,
             date: connection_time,
-            event_type: EventType::SharedCredentials,
+            event_type: EventType::CredentialsShared,
             connection_id: Some(connection_id),
             credentials: history_credentials,
         });

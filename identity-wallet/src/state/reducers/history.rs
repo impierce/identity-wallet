@@ -4,12 +4,12 @@ use ts_rs::TS;
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq, TS)]
 #[ts(export)]
 pub enum EventType {
-    #[serde(rename = "added_connection")]
-    AddedConnection,
-    #[serde(rename = "added_credentials")]
-    AddedCredentials,
-    #[serde(rename = "shared_credentials")]
-    SharedCredentials,
+    #[serde(rename = "connection_added")]
+    ConnectionAdded,
+    #[serde(rename = "credentials_added")]
+    CredentialsAdded,
+    #[serde(rename = "credentials_shared")]
+    CredentialsShared,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq, TS)]
