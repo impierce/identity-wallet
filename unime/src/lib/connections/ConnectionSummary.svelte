@@ -13,14 +13,20 @@
   let summary = {
     URL: connection.url,
     // Verified: 'no',
-    [$LL.CONNECTION.SUMMARY.FIRST_CONNECTED()]: new Date(connection.first_interacted).toLocaleString($state.profile_settings.locale, {
-      dateStyle: 'medium',
-      timeStyle: 'medium',
-    }),
-    [$LL.CONNECTION.SUMMARY.LAST_CONNECTED()]: new Date(connection.last_interacted).toLocaleString($state.profile_settings.locale, {
-      dateStyle: 'medium',
-      timeStyle: 'medium',
-    }),
+    [$LL.CONNECTION.SUMMARY.FIRST_CONNECTED()]: new Date(connection.first_interacted).toLocaleString(
+      $state.profile_settings.locale,
+      {
+        dateStyle: 'medium',
+        timeStyle: 'medium',
+      },
+    ),
+    [$LL.CONNECTION.SUMMARY.LAST_CONNECTED()]: new Date(connection.last_interacted).toLocaleString(
+      $state.profile_settings.locale,
+      {
+        dateStyle: 'medium',
+        timeStyle: 'medium',
+      },
+    ),
   };
 </script>
 

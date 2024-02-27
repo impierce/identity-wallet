@@ -30,7 +30,8 @@
       icon={Translate}
       title={$LL.SETTINGS.APP.LANGUAGE.TITLE()}
       hasCaretRight={false}
-      textRight={locales.find((l) => l.locale === $state.profile_settings.locale)?.displayName ?? $state.profile_settings.locale}
+      textRight={locales.find((l) => l.locale === $state.profile_settings.locale)?.displayName ??
+        $state.profile_settings.locale}
       on:click={() => goto('/me/settings/app/language')}
     />
     <SettingsEntry icon={Sun} title={$LL.SETTINGS.APP.THEME.TITLE()} on:click={() => goto('/me/settings/app/theme')} />
