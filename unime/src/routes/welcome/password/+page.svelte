@@ -2,7 +2,6 @@
   import { goto } from '$app/navigation';
   import { fade } from 'svelte/transition';
 
-
   import LL from '$src/i18n/i18n-svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
@@ -19,35 +18,34 @@
   let showPassword = false;
   let keyboardView = false;
 
-  function setFocus() {
-    keyboardView = true;
-  }
-
-  function unsetFocus() {
-    // Small delay to keep button available.
-    setTimeout(() => (keyboardView = false), 300);
+  function setFocus(value: boolean) {
+    keyboardView = value;
   }
 
   function setOnboardingPassword(e: Event) {
-        const input = e.target as HTMLInputElement;
+    const input = e.target as HTMLInputElement;
 
-        passwordPolicyViolations = checkPasswordPolicy(input.value);
+    passwordPolicyViolations = checkPasswordPolicy(input.value);
 
-        if (passwordPolicyViolations.length === 0) {
-          onboarding_state.set({ ...$onboarding_state, password: input.value });
-        }
+    if (passwordPolicyViolations.length === 0) {
+      onboarding_state.set({ ...$onboarding_state, password: input.value });
+    }
   }
 </script>
 
 <TopNavBar on:back={() => history.back()} title={$LL.ONBOARDING.PASSWORD.NAVBAR_TITLE()} />
 <!-- Content -->
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
-  <div class="pb-8 pt-4 {keyboardView ? 'shrink-height' : 'expand-height'}">
+  <div class={keyboardView ? 'shrink-top-space' : 'expand-top-space'}>
     <p class="pb-8 text-3xl font-semibold text-slate-700 dark:text-grey">
       {$LL.ONBOARDING.PASSWORD.TITLE_1()}
       <span class="text-primary">{$LL.ONBOARDING.PASSWORD.TITLE_2()}</span>
     </p>
-    <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">
+    <p
+      class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300 {keyboardView
+        ? 'shrink-sub-title-height'
+        : 'expand-sub-title-height'}"
+    >
       {$LL.ONBOARDING.PASSWORD.SUBTITLE()}
     </p>
     <!-- <div class="mt-[70px] flex w-full items-center justify-center" /> -->
@@ -59,8 +57,8 @@
       class="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300"
       placeholder={$LL.ONBOARDING.PASSWORD.INPUT_PLACEHOLDER()}
       value={$onboarding_state.password ?? ''}
-      on:focus={setFocus}
-      on:blur={unsetFocus}
+      on:focus={() => setFocus(true)}
+      on:blur={() => setFocus(false)}
       on:input={setOnboardingPassword}
     />
     <div class="absolute right-3 top-0 flex h-full items-center">
@@ -104,42 +102,37 @@
       </div>
     </div>
   </div>
-
-  {#if keyboardView}
-    <div class="mt-8" transition:fade={{ delay: 200 }}>
-      <Button
-        label={$LL.CONTINUE()}
-        on:click={() => goto('/welcome/password/confirm')}
-        disabled={passwordPolicyViolations.length > 0}
-      />
-    </div>
-  {/if}
 </div>
 
-{#if !keyboardView}
-  <div class="rounded-t-3xl bg-white p-6 dark:bg-dark" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
-    <Button
-      label={$LL.CONTINUE()}
-      on:click={() => goto('/welcome/password/confirm')}
-      disabled={passwordPolicyViolations.length > 0}
-    />
-  </div>
-{/if}
+<div class="rounded-t-3xl bg-white p-6 dark:bg-dark" out:fade={{ duration: 200 }}>
+  <Button
+    label={$LL.CONTINUE()}
+    on:click={() => goto('/welcome/password/confirm')}
+    disabled={passwordPolicyViolations.length > 0}
+  />
+</div>
 
 <style>
-  .expand-height {
-    max-height: unset;
-    transition:
-      padding 0.5s ease-in,
-      max-height 0.5s ease-in;
+  .expand-top-space {
+    padding-bottom: 2rem; 
+    padding-top: 1rem; 
+    transition: padding 0.5s ease-in;
   }
 
-  .shrink-height {
-    max-height: 0;
-    padding: 0;
+  .shrink-top-space {
+    padding-bottom: 0; 
+    padding-top: 0; 
+    transition: padding 0.5s ease-in;
+  }
+
+  .expand-sub-title-height {
+    line-height: unset;
+    transition: line-height 0.5s ease-in;
+  }
+
+  .shrink-sub-title-height {
+    line-height: 0;
     overflow: hidden;
-    transition:
-      padding 0.5s ease-out,
-      max-height 0.5s ease-out;
+    transition: line-height 0.5s ease-out;
   }
 </style>

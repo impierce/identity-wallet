@@ -15,16 +15,11 @@
   import EyeClosed from '~icons/ph/eye-closed';
 
   let showPassword = false;
-  let keyboardView = false;
   let password: string;
 
-  function setFocus() {
-    keyboardView = true;
-  }
-
-  function unsetFocus() {
-    // Small delay to keep button available.
-    setTimeout(() => keyboardView = false, 200);
+  function setPassword(e: Event) {
+    const input = e.target as HTMLInputElement;
+    password = input.value;
   }
 
   // TODO: make reactive
@@ -56,9 +51,7 @@
         type={showPassword ? 'text' : 'password'}
         class="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300"
         placeholder={$LL.LOCK_SCREEN.PASSWORD_INPUT_PLACEHOLDER()}
-        on:input={(e) => (password = e.target.value)}
-        on:focus={setFocus}
-        on:blur={unsetFocus}
+        on:input={setPassword}
       />
       <div class="absolute right-3 top-0 flex h-full items-center">
         <button class="rounded-full p-2" on:click={() => (showPassword = !showPassword)}>
@@ -111,21 +104,5 @@
   :global(body) {
     /* Fixes a UI problem on iOS where there is a white bar at the bottom when the emoji drawer is open */
     position: unset !important;
-  }
-
-  .expand-height {
-    max-height: unset;
-    transition:
-      padding 0.5s ease-in,
-      max-height 0.5s ease-in;
-  }
-
-  .shrink-height {
-    max-height: 0;
-    padding: 0;
-    overflow: hidden;
-    transition:
-      padding 0.5s ease-out,
-      max-height 0.5s ease-out;
   }
 </style>

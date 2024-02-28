@@ -18,13 +18,8 @@
   let showPassword = false;
   let keyboardView = false;
 
-  function setFocus() {
-    keyboardView = true;
-  }
-
-  function unsetFocus() {
-    // Small delay to keep button available.
-    setTimeout(() => (keyboardView = false), 300);
+  function setFocus(value: boolean) {
+    keyboardView = value;
   }
 
   function comparePasswords(e: Event) {
@@ -37,12 +32,12 @@
 <TopNavBar on:back={() => history.back()} title={$LL.ONBOARDING.PASSWORD.CONFIRM.NAVBAR_TITLE()} />
 <!-- Content -->
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
-  <div class="pb-8 pt-4 {keyboardView ? 'shrink-height' : 'expand-height'}">
+  <div class="pb-8 pt-4">
     <p class="pb-8 text-3xl font-semibold text-slate-700 dark:text-grey">
       {$LL.ONBOARDING.PASSWORD.CONFIRM.TITLE_1()}
       <span class="text-primary">{$LL.ONBOARDING.PASSWORD.CONFIRM.TITLE_2()}</span>
     </p>
-    <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">
+    <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300 {keyboardView ? 'shrink-sub-title-height' : 'expand-sub-title-height'}">
       {$LL.ONBOARDING.PASSWORD.CONFIRM.SUBTITLE()}
     </p>
     <!-- <div class="mt-[70px] flex w-full items-center justify-center" /> -->
@@ -52,8 +47,8 @@
       type={showPassword ? 'text' : 'password'}
       class="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300"
       placeholder={$LL.ONBOARDING.PASSWORD.CONFIRM.INPUT_PLACEHOLDER()}
-      on:focus={setFocus}
-      on:blur={unsetFocus}
+      on:focus={() => setFocus(true)}
+      on:blur={() => setFocus(false)}
       on:input={comparePasswords}
     />
     <div class="absolute right-3 top-0 flex h-full items-center">
@@ -92,19 +87,14 @@
 {/if}
 
 <style>
-  .expand-height {
-    max-height: unset;
-    transition:
-      padding 0.5s ease-in,
-      max-height 0.5s ease-in;
+  .expand-sub-title-height {
+    line-height: unset;
+    transition: line-height 0.5s ease-in;
   }
 
-  .shrink-height {
-    max-height: 0;
-    padding: 0;
+  .shrink-sub-title-height {
+    line-height: 0;
     overflow: hidden;
-    transition:
-      padding 0.5s ease-out,
-      max-height 0.5s ease-out;
+    transition: line-height 0.5s ease-out;
   }
 </style>

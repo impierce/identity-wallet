@@ -15,6 +15,7 @@ pub fn run() {
             initialize_storage(app.handle()).ok();
             clear_assets_tmp_folder().ok();
             dotenvy::dotenv().ok();
+
             #[cfg(mobile)]
             {
                 app.handle().plugin(tauri_plugin_barcode_scanner::init())?;
@@ -61,10 +62,10 @@ pub mod tauri_command {
     #[tauri::command]
     pub async fn handle_action<R: tauri::Runtime>(
         action: Action,
-        _app_handle: tauri::AppHandle<R>,
+        app_handle: tauri::AppHandle<R>,
         container: tauri::State<'_, AppStateContainer>,
         window: tauri::Window<R>,
     ) -> Result<(), String> {
-        identity_wallet::command::handle_action(action, _app_handle, container, window).await
+        identity_wallet::command::handle_action(action, app_handle, container, window).await
     }
 }
