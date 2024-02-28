@@ -14,7 +14,7 @@
   import PlugsConnected from '~icons/ph/plugs-connected';
   import ShareFat from '~icons/ph/share-fat';
 
-  export let connectionId: string | undefined;
+  export let connectionId: string | undefined = undefined;
 
   interface DisplayEvent {
     title: string;
@@ -35,7 +35,6 @@
     let title: string;
     let icon: typeof SvelteComponent<SvelteHTMLElements['svg']>;
 
-    // TODO dynamic parsing Intl.
     let date = history.date;
     let credentials = history.credentials;
 
