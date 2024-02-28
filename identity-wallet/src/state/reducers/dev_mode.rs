@@ -134,7 +134,7 @@ async fn load_ferris_profile() -> Result<AppState, AppError> {
     load_predefined_images().await?;
 
     state
-        .back_end_utils
+        .core_state
         .managers
         .lock()
         .await

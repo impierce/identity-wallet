@@ -4,7 +4,7 @@ use crate::{
     state::{
         actions::{listen, Action, CredentialsSelected, QrCodeScanned},
         user_prompt::CurrentUserPrompt,
-        AppState, BackEndUtils, Connection,
+        AppState, CoreState, Connection,
     },
     persistence::{persist_asset, download_asset, LogoType},
 };
@@ -34,7 +34,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
         .map(|payload| payload.form_urlencoded)
         .filter(|s| !s.starts_with("openid-credential-offer"))
     {
-        let state_guard = state.back_end_utils.managers.lock().await;
+        let state_guard = state.core_state.managers.lock().await;
         let stronghold_manager = state_guard
             .stronghold_manager
             .as_ref()
@@ -82,9 +82,9 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
 
             drop(state_guard);
             return Ok(AppState {
-                back_end_utils: BackEndUtils {
+                core_state: CoreState {
                     active_connection_request: Some(ConnectionRequest::SIOPv2(siopv2_authorization_request.into())),
-                    ..state.back_end_utils
+                    ..state.core_state
                 },
                 connections,
                 current_user_prompt: Some(CurrentUserPrompt::AcceptConnection {
@@ -144,9 +144,9 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
             if !uuids.is_empty() {
                 drop(state_guard);
                 return Ok(AppState {
-                    back_end_utils: BackEndUtils {
+                    core_state: CoreState {
                         active_connection_request: Some(ConnectionRequest::OID4VP(oid4vp_authorization_request.into())),
-                        ..state.back_end_utils
+                        ..state.core_state
                     },
                     current_user_prompt: Some(CurrentUserPrompt::ShareCredentials {
                         client_name,
@@ -166,7 +166,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
 
 // Sends the authorization response.
 pub async fn handle_siopv2_authorization_request(state: AppState, _action: Action) -> Result<AppState, AppError> {
-    let state_guard = state.back_end_utils.managers.lock().await;
+    let state_guard = state.core_state.managers.lock().await;
     let provider_manager = &state_guard
         .identity_manager
         .as_ref()
@@ -174,7 +174,7 @@ pub async fn handle_siopv2_authorization_request(state: AppState, _action: Actio
         .provider_manager;
 
     let siopv2_authorization_request =
-        match serde_json::from_value(serde_json::json!(state.back_end_utils.active_connection_request)).unwrap() {
+        match serde_json::from_value(serde_json::json!(state.core_state.active_connection_request)).unwrap() {
             Some(ConnectionRequest::SIOPv2(siopv2_authorization_request)) => siopv2_authorization_request,
             _ => unreachable!(),
         };
@@ -243,7 +243,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
     info!("handle_presentation_request");
 
     if let Some(credential_uuids) = listen::<CredentialsSelected>(action).map(|payload| payload.credential_uuids) {
-        let state_guard = state.back_end_utils.managers.lock().await;
+        let state_guard = state.core_state.managers.lock().await;
         let stronghold_manager = state_guard
             .stronghold_manager
             .as_ref()
@@ -255,7 +255,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             .provider_manager;
 
         let oid4vp_authorization_request =
-            match serde_json::from_value(serde_json::json!(state.back_end_utils.active_connection_request)).unwrap() {
+            match serde_json::from_value(serde_json::json!(state.core_state.active_connection_request)).unwrap() {
                 ConnectionRequest::OID4VP(oid4vp_authorization_request) => oid4vp_authorization_request,
                 ConnectionRequest::SIOPv2(_) => unreachable!(),
             };

@@ -6,8 +6,8 @@ pub mod storage;
 pub mod user_data_query;
 
 use super::actions::{listen, CancelUserFlow, SetLocale, UpdateCredentialMetadata, UpdateProfileSettings};
-use crate::persistence::{clear_all_assets, delete_state_file, delete_stronghold, load_state};
 use super::{IdentityManager, ProfileSettings};
+use crate::persistence::{clear_all_assets, delete_state_file, delete_stronghold, load_state};
 use crate::stronghold::StrongholdManager;
 use crate::error::AppError::{self, *};
 use crate::state::actions::{Action, CreateNew};
@@ -104,7 +104,7 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
         name, picture, theme, ..
     }) = listen::<CreateNew>(action)
     {
-        let mut state_guard = state.back_end_utils.managers.lock().await;
+        let mut state_guard = state.core_state.managers.lock().await;
         let stronghold_manager = state_guard
             .stronghold_manager
             .as_ref()
@@ -150,7 +150,7 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
 pub async fn initialize_stronghold(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(password) = listen::<CreateNew>(action).map(|payload| payload.password) {
         state
-            .back_end_utils
+            .core_state
             .managers
             .lock()
             .await
@@ -175,7 +175,7 @@ pub async fn update_credential_metadata(state: AppState, action: Action) -> Resu
         is_favorite,
     }) = listen::<UpdateCredentialMetadata>(action)
     {
-        let state_guard = state.back_end_utils.managers.lock().await;
+        let state_guard = state.core_state.managers.lock().await;
         let stronghold_manager = state_guard
             .stronghold_manager
             .as_ref()
