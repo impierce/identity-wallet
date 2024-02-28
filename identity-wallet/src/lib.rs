@@ -1,6 +1,6 @@
 pub mod command;
-pub mod crypto;
 pub mod error;
+pub mod stronghold;
 pub mod state;
 pub mod utils;
 pub mod verifiable_credential_record;

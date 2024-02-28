@@ -5,7 +5,7 @@ pub mod user_prompt;
 
 use self::reducers::authorization::ConnectionRequest;
 use crate::{
-    crypto::stronghold::StrongholdManager, state::user_prompt::CurrentUserPrompt,
+    stronghold::StrongholdManager, state::user_prompt::CurrentUserPrompt,
     verifiable_credential_record::DisplayCredential,
 };
 use derivative::Derivative;

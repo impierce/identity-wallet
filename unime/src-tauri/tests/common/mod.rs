@@ -2,7 +2,7 @@ use did_key::{from_existing_key, Ed25519KeyPair};
 use identity_wallet::oid4vc_manager::{methods::key_method::KeySubject, ProviderManager};
 use identity_wallet::oid4vci::Wallet;
 use identity_wallet::{
-    crypto::stronghold::StrongholdManager,
+    stronghold::StrongholdManager,
     state::{IdentityManager, Managers},
     verifiable_credential_record::VerifiableCredentialRecord,
 };

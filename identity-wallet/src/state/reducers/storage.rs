@@ -1,5 +1,5 @@
 use crate::{
-    crypto::stronghold::StrongholdManager,
+    stronghold::StrongholdManager,
     error::AppError::{self, *},
     state::{
         actions::{listen, Action, UnlockStorage},

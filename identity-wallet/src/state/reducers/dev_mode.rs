@@ -1,5 +1,5 @@
 use super::dynamic_dev_profile::*;
-use crate::crypto::stronghold::StrongholdManager;
+use crate::stronghold::StrongholdManager;
 use crate::error::AppError::{self, *};
 use crate::state::actions::{listen, Action, DevProfile, ProfileType, UnlockStorage};
 use crate::state::user_prompt::CurrentUserPrompt;
