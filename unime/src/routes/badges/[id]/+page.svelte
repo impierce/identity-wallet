@@ -163,7 +163,7 @@
           </div>
           <p class="text-xs text-black dark:text-white">
             {#if credential.data.issuanceDate}
-              {new Date(credential.data.issuanceDate).toLocaleString($state.locale, {
+              {new Date(credential.data.issuanceDate).toLocaleString($state.profile_settings.locale, {
                 dateStyle: 'long',
               })}
             {/if}

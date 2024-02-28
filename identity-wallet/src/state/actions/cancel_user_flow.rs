@@ -2,9 +2,9 @@ use crate::reducer;
 use crate::state::actions::ActionTrait;
 use crate::state::actions::Reducer;
 use crate::state::reducers::cancel_user_flow;
-
 use ts_rs::TS;
 
+/// Action to cancel the user flow and redirect to a specific route.
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/CancelUserFlow.ts")]
 pub struct CancelUserFlow {

@@ -1,11 +1,12 @@
+use crate::STATE_FILE;
+use crate::{error::AppError, state::AppState, ASSETS_DIR};
 use log::debug;
 use tokio::{
     fs::{read, remove_file, File},
     io::AsyncWriteExt,
 };
 
-use crate::STATE_FILE;
-use crate::{error::AppError, state::AppState, ASSETS_DIR};
+/// The persistence.rs is where we define our app persistence functions.
 
 /// Loads an [AppState] from the app's data directory.
 /// If it does not exist or it cannot be parsed, it will fallback to default values.
@@ -22,6 +23,12 @@ pub async fn load_state() -> anyhow::Result<AppState> {
 pub async fn save_state(app_state: &AppState) -> anyhow::Result<()> {
     let state_file = STATE_FILE.lock().unwrap().clone();
     let mut file = File::create(state_file).await?;
+
+    // Here we take out the credentials field before saving the state, 
+    // being sensitive data they should only be stored in the stronghold, nowhere else.
+    let mut json_app_state = serde_json::to_value(app_state)?;
+    json_app_state["credentials"] = serde_json::Value::Array(Vec::new());
+
     file.write_all(serde_json::to_string(app_state)?.as_bytes()).await?;
     debug!("state saved to disk");
     Ok(())

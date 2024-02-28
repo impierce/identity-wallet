@@ -6,6 +6,7 @@ use crate::state::Locale;
 
 use ts_rs::TS;
 
+/// Action to set the language of the app.
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/SetLocale.ts")]
 pub struct SetLocale {
