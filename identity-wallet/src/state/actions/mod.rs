@@ -49,8 +49,8 @@ use ts_rs::TS;
 ///
 /// #[derive(Debug, Serialize, Deserialize, Clone)]
 /// pub struct TestExampleAction {
-///     ExampleField: String,
-///     ExampleField2: bool,
+///     example_field: String,
+///     example_field_2: bool,
 /// }
 ///
 /// #[typetag::serde(name = "[Example] Example Action")]
