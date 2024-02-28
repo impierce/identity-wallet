@@ -19,7 +19,7 @@
 
   function unsetFocus() {
     // Small delay to keep button available.
-    setTimeout(() => keyboardView = false, 200);
+    setTimeout(() => keyboardView = false, 300);
   }
 </script>
 
