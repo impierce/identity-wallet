@@ -65,7 +65,7 @@ pub struct AppState {
     /// This field contains utils needed for the backend to perform its tasks.
     #[serde(skip)]
     #[derivative(Debug = "ignore")]
-    pub back_end_utils: BackEndUtils,
+    pub core_state: CoreState,
     /// This field contains the profile settings, including Locale.
     pub profile_settings: ProfileSettings,
     /// User prompts are a way for the backend to communicate a desired/required user interaction to the frontend.
@@ -86,10 +86,10 @@ pub struct AppState {
 impl Clone for AppState {
     fn clone(&self) -> Self {
         Self {
-            back_end_utils: BackEndUtils {
-                managers: self.back_end_utils.managers.clone(),
+            core_state: CoreState {
+                managers: self.core_state.managers.clone(),
                 active_connection_request: serde_json::from_value(serde_json::json!(
-                    self.back_end_utils.active_connection_request
+                    self.core_state.active_connection_request
                 ))
                 .unwrap(),
             },
@@ -115,7 +115,7 @@ impl AppState {
 
 /// BackEndUtils is a struct that contains all the utils that only the backend needs to perform its tasks.
 #[derive(Default)]
-pub struct BackEndUtils {
+pub struct CoreState {
     pub managers: Arc<tauri::async_runtime::Mutex<Managers>>,
     pub active_connection_request: Option<ConnectionRequest>,
 }
