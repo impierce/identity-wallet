@@ -3,13 +3,14 @@ use crate::{
     get_unverified_jwt_claims,
     state::{
         actions::{listen, Action, CredentialsSelected, QrCodeScanned},
+        persistence::persist_asset,
         user_prompt::CurrentUserPrompt,
-        AppState, Connection,
+        AppState, CoreState, Connection,
     },
     utils::{download_asset, LogoType},
 };
 use identity_credential::{credential::Jwt, presentation::Presentation};
-use log::{debug, info};
+use log::{debug, info, warn};
 use oid4vc::oid4vc_core::authorization_request::{AuthorizationRequest, Object};
 use oid4vc::oid4vc_manager::managers::presentation::create_presentation_submission;
 use oid4vc::oid4vci::credential_format_profiles::{
@@ -34,7 +35,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
         .map(|payload| payload.form_urlencoded)
         .filter(|s| !s.starts_with("openid-credential-offer"))
     {
-        let state_guard = state.managers.lock().await;
+        let state_guard = state.core_state.managers.lock().await;
         let stronghold_manager = state_guard
             .stronghold_manager
             .as_ref()
@@ -67,9 +68,25 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
             info!("client_name in credential_offer: {:?}", client_name);
             info!("logo_uri in read_authorization_request: {:?}", logo_uri);
 
+            if logo_uri.is_some() {
+                debug!(
+                    "{}",
+                    format!(
+                        "Downloading client logo from url: {}",
+                        logo_uri.as_ref().unwrap().as_str()
+                    )
+                );
+                if let Some(logo_uri) = logo_uri.as_ref().and_then(|s| s.parse::<reqwest::Url>().ok()) {
+                    let _ = download_asset(logo_uri, LogoType::IssuerLogo, 0).await;
+                }
+            }
+
             drop(state_guard);
             return Ok(AppState {
-                active_connection_request: Some(ConnectionRequest::SIOPv2(siopv2_authorization_request.into())),
+                core_state: CoreState {
+                    active_connection_request: Some(ConnectionRequest::SIOPv2(siopv2_authorization_request.into())),
+                    ..state.core_state
+                },
                 connections,
                 current_user_prompt: Some(CurrentUserPrompt::AcceptConnection {
                     client_name,
@@ -116,7 +133,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                     "{}",
                     format!(
                         "Downloading client logo from url: {}",
-                        logo_uri.clone().unwrap().as_str()
+                        logo_uri.as_ref().unwrap().as_str()
                     )
                 );
                 if let Some(logo_uri) = logo_uri.as_ref().and_then(|s| s.parse::<reqwest::Url>().ok()) {
@@ -128,7 +145,10 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
             if !uuids.is_empty() {
                 drop(state_guard);
                 return Ok(AppState {
-                    active_connection_request: Some(ConnectionRequest::OID4VP(oid4vp_authorization_request.into())),
+                    core_state: CoreState {
+                        active_connection_request: Some(ConnectionRequest::OID4VP(oid4vp_authorization_request.into())),
+                        ..state.core_state
+                    },
                     current_user_prompt: Some(CurrentUserPrompt::ShareCredentials {
                         client_name,
                         logo_uri,
@@ -147,7 +167,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
 
 // Sends the authorization response.
 pub async fn handle_siopv2_authorization_request(state: AppState, _action: Action) -> Result<AppState, AppError> {
-    let state_guard = state.managers.lock().await;
+    let state_guard = state.core_state.managers.lock().await;
     let provider_manager = &state_guard
         .identity_manager
         .as_ref()
@@ -155,7 +175,7 @@ pub async fn handle_siopv2_authorization_request(state: AppState, _action: Actio
         .provider_manager;
 
     let siopv2_authorization_request =
-        match serde_json::from_value(serde_json::json!(state.active_connection_request)).unwrap() {
+        match serde_json::from_value(serde_json::json!(state.core_state.active_connection_request)).unwrap() {
             Some(ConnectionRequest::SIOPv2(siopv2_authorization_request)) => siopv2_authorization_request,
             _ => unreachable!(),
         };
@@ -179,16 +199,7 @@ pub async fn handle_siopv2_authorization_request(state: AppState, _action: Actio
         .map_err(|_| MissingAuthorizationRequestParameterError("connection_url"))?;
 
     if logo_uri.is_some() {
-        debug!(
-            "{}",
-            format!(
-                "Downloading issuer logo from url: {}",
-                logo_uri.clone().unwrap().as_str()
-            )
-        );
-        if let Some(logo_uri) = logo_uri.as_ref().and_then(|s| s.parse::<reqwest::Url>().ok()) {
-            let _ = download_asset(logo_uri, LogoType::IssuerLogo, 0).await;
-        }
+        warn!("Skipping download of client logo as it should have already been downloaded in `read_authorization_request()` and be present in /assets/tmp folder");
     }
 
     let mut connections = state.connections.clone();
@@ -200,9 +211,16 @@ pub async fn handle_siopv2_authorization_request(state: AppState, _action: Actio
             connection.last_interacted = connection_time.clone();
         });
 
+    // TODO: This is a HORRIBLE solution to determine the connection_id by the non-unique "issuer name".
+    // It is a TEMPORARY solution and should only be used in DEMO environments,
+    // since we currently lack a unique identitfier to distinguish connections.
+    let connection_id = base64::encode_config(&client_name, base64::URL_SAFE);
+
+    persist_asset("issuer_0", &connection_id).ok();
+
     if result.is_none() {
         connections.push(Connection {
-            id: "TODO".to_string(),
+            id: connection_id,
             client_name,
             url: connection_url,
             verified: false,
@@ -226,7 +244,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
     info!("handle_presentation_request");
 
     if let Some(credential_uuids) = listen::<CredentialsSelected>(action).map(|payload| payload.credential_uuids) {
-        let state_guard = state.managers.lock().await;
+        let state_guard = state.core_state.managers.lock().await;
         let stronghold_manager = state_guard
             .stronghold_manager
             .as_ref()
@@ -238,7 +256,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             .provider_manager;
 
         let oid4vp_authorization_request =
-            match serde_json::from_value(serde_json::json!(state.active_connection_request)).unwrap() {
+            match serde_json::from_value(serde_json::json!(state.core_state.active_connection_request)).unwrap() {
                 ConnectionRequest::OID4VP(oid4vp_authorization_request) => oid4vp_authorization_request,
                 ConnectionRequest::SIOPv2(_) => unreachable!(),
             };
@@ -270,7 +288,8 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
         info!("get the subject did");
 
         let subject_did = state
-            .active_profile
+            .profile_settings
+            .profile
             .as_ref()
             .ok_or(MissingStateParameterError("active profile"))?
             .primary_did
@@ -325,9 +344,14 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
                 connection.last_interacted = connection_time.clone();
             });
 
+        // TODO: This is a HORRIBLE solution to determine the connection_id by the non-unique "issuer name".
+        // It is a TEMPORARY solution and should only be used in DEMO environments,
+        // since we currently lack a unique identitfier to distinguish connections.
+        let connection_id = base64::encode_config(&client_name, base64::URL_SAFE);
+
         if result.is_none() {
             connections.push(Connection {
-                id: "TODO".to_string(),
+                id: connection_id,
                 client_name,
                 url: connection_url,
                 verified: false,

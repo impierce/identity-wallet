@@ -1,6 +1,6 @@
 [package]
 name = "unime"
-version = "0.4.9"
+version = "0.4.12"
 description = "Identity Wallet for people to manage Decentralized Identities and Verifiable Credentials"
 homepage = "https://www.impierce.com/"
 authors = ["Impierce Technologies"]
@@ -48,6 +48,7 @@ tauri = { version = "=2.0.0-alpha.21", features = ["rustls-tls", "test"] }
 serde = { version = "1.0", features = ["derive"] }
 tokio = { version = "1.26.0", features = ["macros"] }
 url = "2.4"
+typetag = "0.2"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem

@@ -89,36 +89,6 @@ const nl = {
     },
   },
   SETTINGS: {
-    THEME: {
-      SYSTEM: 'Systeem',
-      LIGHT: 'Licht',
-      DARK: 'Donker',
-    },
-    PASSWORD: {
-      POLICY: {
-        TITLE: 'Wachtwoord',
-        UPPERCASE_LETTER: 'Hoofdletters',
-        LOWERCASE_LETTER: 'Kleine letters',
-        NUMBER: 'Nummers',
-        CHARACTERS: 'Karakters',
-      },
-    },
-    RESET_APP: {
-      TITLE: 'App opnieuw instellen',
-      DESCRIPTION: 'Weet je zeker dat je de app opnieuw wilt instellen en alle gegevens wilt verwijderen?',
-      CONFIRM: 'Ja, verwijder alles',
-      CANCEL: 'Nee, bewaar mijn profiel',
-    },
-    ACCOUNT: 'Profiel',
-    SUPPORT: {
-      TITLE: 'Support',
-      ABOUT: {
-        TITLE: 'Over UniMe',
-      },
-      FEEDBACK: {
-        TITLE: 'Stuur feedback',
-      },
-    },
     NAVBAR_TITLE: 'Instellingen',
     PROFILE: {
       TITLE: 'Mijn profiel',
@@ -142,7 +112,7 @@ const nl = {
       NAVBAR_TITLE: 'App Instellingen',
       LANGUAGE: {
         TITLE: 'Taal',
-        NAVBAR_TITLE: 'Selecteer taal',
+        NAVBAR_TITLE: 'Selecteer Taal',
         COMING_SOON: 'Binnenkort beschikbaar',
       },
       THEME: {
@@ -170,6 +140,38 @@ const nl = {
     LOG_OUT: {
       TITLE: 'Log uit',
     },
+    THEME: {
+      SYSTEM: 'Systeem',
+      LIGHT: 'Licht',
+      DARK: 'Donker',
+    },
+    PASSWORD: {
+      POLICY: {
+        TITLE: 'Wachtwoord',
+        UPPERCASE_LETTER: 'Hoofdletters',
+        LOWERCASE_LETTER: 'Kleine letters',
+        NUMBER: 'Nummers',
+        CHARACTERS: 'Karakters',
+      },
+    },
+    RESET_APP: {
+      TITLE: 'App opnieuw instellen',
+      DESCRIPTION: 'Weet je zeker dat je de app opnieuw wilt instellen en alle gegevens wilt verwijderen?',
+      CONFIRM: 'Ja, verwijder alles',
+      CANCEL: 'Nee, bewaar mijn profiel',
+    },
+    ACCOUNT: 'Profiel',
+    SUPPORT: {
+      TITLE: 'Support',
+      ABOUT: {
+        TITLE: 'Over UniMe',
+        NAVBAR_TITLE: 'Over UniMe',
+        BUILT_WITH: 'Ontwikkeld met Tauri',
+      },
+      FEEDBACK: {
+        TITLE: 'Stuur feedback',
+      },
+    },
   },
   LOCK_SCREEN: {
     PASSWORD_INPUT_PLACEHOLDER: 'Voer je wachtwoord in',
@@ -177,12 +179,17 @@ const nl = {
     FORGOT_PASSWORD: 'Wachtwoord vergeten?',
   },
   ME: {
+    BOTTOM_NAVIGATION_TITLE: 'Me',
     GREETINGS: {
       GREETING_0: 'Hey',
       GREETING_1: 'Hallo',
       GREETING_2: 'Welkom terug',
       GREETING_3: 'Hoi',
       GREETING_4: 'Dag',
+    },
+    DEMO: {
+      TEXT_1: 'Bezoek',
+      TEXT_2: 'op een desktopcomputer om te beginnen.',
     },
     CREDENTIAL_TABS: {
       ALL: 'Alle',
@@ -196,10 +203,37 @@ const nl = {
     FAVORITES: 'Mijn favorieten',
   },
   ACTIVITY: {
+    BOTTOM_NAVIGATION_TITLE: 'Activiteiten',
     NAVBAR_TITLE: 'Verbonden',
     TABS: {
-      CONNECTIONS: 'Verbindingen',
+      CONNECTIONS: 'Connecties',
       TIMELINE: 'Tijdlijn',
+    },
+  },
+  SCAN: {
+    BOTTOM_NAVIGATION_TITLE: 'Scan',
+    TITLE_1: 'Scan een',
+    TITLE_2: 'QR Code',
+    SUBTITLE: 'Breng een QR-code in beeld op dit scherm om een interactie te starten.',
+    PERMISSION_DENIED: 'Geen toestemming om toegang te krijgen tot de camera',
+    OPEN_SETTINGS: 'Open instellingen',
+    CREDENTIAL_OFFER: {
+      NAVBAR_TITLE: 'Credential Aanbod',
+      DESCRIPTION: 'biedt u de volgende credentials aan',
+      ACCEPT: 'Accepteer credentials',
+    },
+    CONNECTION_REQUEST: {
+      NAVBAR_TITLE: 'Credential Aanvraag',
+      TITLE: 'Nieuwe connectie',
+      DESCRIPTION: 'Accepteer alleen nieuwe connecties die je herkent en vertrouwt',
+      CONNECTED_PREVIOUSLY: 'Eerder verbonden',
+      ACCEPT: 'Accepteer connectie',
+    },
+    SHARE_CREDENTIALS: {
+      NAVBAR_TITLE: 'Gegevens Delen',
+      DESCRIPTION: 'vraagt de volgende credentials op',
+      REQUESTED: 'Aangevraagd',
+      APPROVE: 'Accepteer verzoek',
     },
   },
   CONNECTION: {
@@ -209,9 +243,10 @@ const nl = {
       ACTIVITY: 'Activiteit',
     },
     SUMMARY: {
+      EMPTY: 'Nog geen connecties.',
       TITLE: 'Verbonden met',
-      FIRST_CONNECTED: 'Eerst verbonden',
-      LAST_CONNECTED: 'Laatst verbonden',
+      FIRST_CONNECTED: 'Eerst gebruikt',
+      LAST_CONNECTED: 'Laatst gebruikt',
     },
     DATA: {
       EMPTY: 'Nog geen data.',
@@ -231,18 +266,23 @@ const nl = {
       DESCRIPTION: 'Probeer iets anders te zoeken.',
     },
   },
+  CREDENTIAL: {
+    NAVBAR_TITLE: 'Credential Informatie',
+  },
   BADGE: {
+    NAVBAR_TITLE: 'Badge Informatie',
     DETAILS: {
       VALID: 'Geldig',
       ISSUED_BY: 'Uitgegeven door',
       DESCRIPTION: 'Beschrijving',
-      METADATA: 'Metadata',
+      CONTENTS: 'Inhoud',
     },
   },
   CANCEL: 'Annuleren',
   CLOSE: 'Sluiten',
   CONTINUE: 'Doorgaan',
   SKIP: 'Overslaan',
+  REJECT: 'Weigeren',
 } satisfies Translation;
 
 export default nl;

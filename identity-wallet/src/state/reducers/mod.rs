@@ -1,17 +1,18 @@
 pub mod authorization;
 pub mod credential_offer;
 pub mod dev_mode;
+pub mod dynamic_dev_profile;
 pub mod storage;
 pub mod user_data_query;
 
 use super::actions::{listen, CancelUserFlow, SetLocale, UpdateCredentialMetadata, UpdateProfileSettings};
-use super::persistence::{delete_state_file, delete_stronghold, load_state};
-use super::IdentityManager;
+use super::persistence::{clear_all_assets, delete_state_file, delete_stronghold, load_state};
+use super::{IdentityManager, ProfileSettings};
 use crate::crypto::stronghold::StrongholdManager;
 use crate::error::AppError::{self, *};
 use crate::state::actions::{Action, CreateNew};
 use crate::state::user_prompt::CurrentUserPrompt;
-use crate::state::{AppState, Profile};
+use crate::state::{AppState, DevMode, Profile};
 use crate::verifiable_credential_record::VerifiableCredentialRecord;
 use did_key::{from_existing_key, Ed25519KeyPair};
 use futures::Future;
@@ -25,6 +26,8 @@ use std::pin::Pin;
 use std::sync::Arc;
 
 /// A macro to wrap a reducer function in a Box and a Pin.
+/// It checks the reducers for its signature,
+///  as it should comply with our standard for reducers.
 #[macro_export]
 macro_rules! reducer {
     ($reducer:expr) => {
@@ -37,10 +40,10 @@ pub type Reducer<'a> =
     Box<dyn Fn(AppState, Action) -> Pin<Box<dyn Future<Output = Result<AppState, AppError>> + Send>> + Send>;
 
 pub async fn get_state(_state: AppState, _action: Action) -> Result<AppState, AppError> {
-    println!("get_state reducer called");
+    debug!("get_state reducer called");
     let mut state = load_state().await.unwrap_or_default();
 
-    if state.active_profile.is_some() {
+    if state.profile_settings.profile.is_some() {
         state.current_user_prompt = Some(CurrentUserPrompt::PasswordRequired);
     } else {
         // TODO: bug: if state is present, but empty, user will never be redirected to neither welcome or profile page
@@ -50,12 +53,19 @@ pub async fn get_state(_state: AppState, _action: Action) -> Result<AppState, Ap
     }
 
     // Overwrite dev_mode_enabled if environment variable is set
-    if let Some(b) = std::env::var("DEV_MODE_ENABLED")
+    if let Some(dev_mode) = std::env::var("DEV_MODE_ENABLED")
         .ok()
         .and_then(|s| s.parse::<bool>().ok())
     {
-        state.dev_mode_enabled = b;
+        if dev_mode {
+            if state.dev_mode == DevMode::Off {
+                state.dev_mode = DevMode::On;
+            }
+        } else {
+            state.dev_mode = DevMode::Off;
+        }
     }
+
     Ok(state)
 }
 
@@ -77,7 +87,10 @@ pub async fn set_locale(state: AppState, action: Action) -> Result<AppState, App
     if let Some(locale) = listen::<SetLocale>(action).map(|payload| payload.locale) {
         debug!("locale set to: `{:?}`", locale);
         return Ok(AppState {
-            locale,
+            profile_settings: ProfileSettings {
+                locale,
+                ..state.profile_settings
+            },
             current_user_prompt: None,
             ..state
         });
@@ -91,7 +104,7 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
         name, picture, theme, ..
     }) = listen::<CreateNew>(action)
     {
-        let mut state_guard = state.managers.lock().await;
+        let mut state_guard = state.core_state.managers.lock().await;
         let stronghold_manager = state_guard
             .stronghold_manager
             .as_ref()
@@ -105,11 +118,14 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
         let provider_manager = ProviderManager::new([subject.clone()]).map_err(OID4VCProviderManagerError)?;
         let wallet: Wallet = Wallet::new(subject.clone());
 
-        let profile = Profile {
-            name: name.to_string(),
-            picture: Some(picture.to_string()),
-            theme: Some(theme.to_string()),
-            primary_did: subject.identifier().map_err(OID4VCSubjectIdentifierError)?,
+        let profile_settings = ProfileSettings {
+            profile: Some(Profile {
+                name: name.to_string(),
+                picture: Some(picture.to_string()),
+                theme: Some(theme.to_string()),
+                primary_did: subject.identifier().map_err(OID4VCSubjectIdentifierError)?,
+            }),
+            ..Default::default()
         };
 
         state_guard.identity_manager.replace(IdentityManager {
@@ -120,7 +136,7 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
 
         drop(state_guard);
         return Ok(AppState {
-            active_profile: Some(profile),
+            profile_settings,
             current_user_prompt: Some(CurrentUserPrompt::Redirect {
                 target: "me".to_string(),
             }),
@@ -133,9 +149,15 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
 
 pub async fn initialize_stronghold(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(password) = listen::<CreateNew>(action).map(|payload| payload.password) {
-        state.managers.lock().await.stronghold_manager.replace(Arc::new(
-            StrongholdManager::create(&password).map_err(StrongholdCreationError)?,
-        ));
+        state
+            .core_state
+            .managers
+            .lock()
+            .await
+            .stronghold_manager
+            .replace(Arc::new(
+                StrongholdManager::create(&password).map_err(StrongholdCreationError)?,
+            ));
 
         info!("stronghold initialized");
         return Ok(state);
@@ -153,7 +175,7 @@ pub async fn update_credential_metadata(state: AppState, action: Action) -> Resu
         is_favorite,
     }) = listen::<UpdateCredentialMetadata>(action)
     {
-        let state_guard = state.managers.lock().await;
+        let state_guard = state.core_state.managers.lock().await;
         let stronghold_manager = state_guard
             .stronghold_manager
             .as_ref()
@@ -226,14 +248,17 @@ pub async fn update_credential_metadata(state: AppState, action: Action) -> Resu
 
 pub async fn update_profile_settings(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(UpdateProfileSettings { theme, name, picture }) = listen::<UpdateProfileSettings>(action) {
-        if let Some(profile) = state.active_profile.clone() {
+        if let Some(profile) = state.profile_settings.profile.clone() {
             return Ok(AppState {
-                active_profile: Some(Profile {
-                    name: name.unwrap_or(profile.name),
-                    picture: picture.or(profile.picture),
-                    theme: theme.or(profile.theme),
-                    ..profile
-                }),
+                profile_settings: ProfileSettings {
+                    profile: Some(Profile {
+                        name: name.unwrap_or(profile.name),
+                        picture: picture.or(profile.picture),
+                        theme: theme.or(profile.theme),
+                        ..profile
+                    }),
+                    ..state.profile_settings
+                },
                 current_user_prompt: None,
                 ..state
             });
@@ -244,14 +269,17 @@ pub async fn update_profile_settings(state: AppState, action: Action) -> Result<
 }
 
 /// Completely resets the state to its default values.
-pub async fn reset_state(_state: AppState, _action: Action) -> Result<AppState, AppError> {
+pub async fn reset_state(state: AppState, _action: Action) -> Result<AppState, AppError> {
     delete_state_file().await.ok();
     delete_stronghold().await.ok();
+    clear_all_assets().ok();
 
     Ok(AppState {
         current_user_prompt: Some(CurrentUserPrompt::Redirect {
             target: "welcome".to_string(),
         }),
+        // Keep maintaing dev_mode state
+        dev_mode: state.dev_mode,
         ..Default::default()
     })
 }
@@ -321,7 +349,7 @@ mod tests {
             .await
             .unwrap();
 
-        assert_eq!(app_state.locale, Locale::nl_NL);
+        assert_eq!(app_state.profile_settings.locale, Locale::nl_NL);
     }
 
     #[tokio::test]
@@ -334,7 +362,10 @@ mod tests {
         };
 
         let mut app_state = AppState {
-            active_profile: Some(active_profile.clone()),
+            profile_settings: ProfileSettings {
+                profile: Some(active_profile.clone()),
+                ..ProfileSettings::default()
+            },
             ..AppState::default()
         };
 
@@ -350,7 +381,7 @@ mod tests {
         .unwrap();
 
         assert_eq!(
-            app_state.active_profile,
+            app_state.profile_settings.profile,
             Some(Profile {
                 theme: Some("light".to_string()),
                 ..active_profile
@@ -375,19 +406,21 @@ mod tests {
     #[tokio::test]
     async fn test_reset_state() {
         let mut app_state = AppState {
-            active_profile: Some(Profile {
-                name: "Ferris".to_string(),
-                picture: Some("&#129408".to_string()),
-                theme: Some("system".to_string()),
-                primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
-            })
-            .into(),
-            ..AppState::default()
+            profile_settings: ProfileSettings {
+                profile: Some(Profile {
+                    name: "Ferris".to_string(),
+                    picture: Some("&#129408".to_string()),
+                    theme: Some("system".to_string()),
+                    primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
+                }),
+                ..Default::default()
+            },
+            ..Default::default()
         };
 
         app_state = reset_state(app_state, Arc::new(Reset)).await.unwrap();
 
-        assert_eq!(app_state.active_profile, None);
-        assert_eq!(app_state.locale, Locale::default());
+        assert_eq!(app_state.profile_settings.profile, None);
+        assert_eq!(app_state.profile_settings.locale, Locale::default());
     }
 }

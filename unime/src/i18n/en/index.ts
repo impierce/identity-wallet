@@ -165,6 +165,8 @@ const en = {
       TITLE: 'Support',
       ABOUT: {
         TITLE: 'About UniMe',
+        NAVBAR_TITLE: 'About UniMe',
+        BUILT_WITH: 'Built with Tauri',
       },
       FEEDBACK: {
         TITLE: 'Send feedback',
@@ -177,12 +179,17 @@ const en = {
     FORGOT_PASSWORD: 'Forgot password?',
   },
   ME: {
+    BOTTOM_NAVIGATION_TITLE: 'Me',
     GREETINGS: {
       GREETING_0: 'Hey',
       GREETING_1: "What's up",
       GREETING_2: 'How are you',
       GREETING_3: 'Welcome back',
       GREETING_4: 'Hello',
+    },
+    DEMO: {
+      TEXT_1: 'Visit',
+      TEXT_2: 'on a desktop computer to get started.',
     },
     CREDENTIAL_TABS: {
       ALL: 'All',
@@ -196,10 +203,37 @@ const en = {
     FAVORITES: 'My favorites',
   },
   ACTIVITY: {
+    BOTTOM_NAVIGATION_TITLE: 'Activity',
     NAVBAR_TITLE: 'Connected',
     TABS: {
       CONNECTIONS: 'Connections',
       TIMELINE: 'Timeline',
+    },
+  },
+  SCAN: {
+    BOTTOM_NAVIGATION_TITLE: 'Scan',
+    TITLE_1: 'Scan a',
+    TITLE_2: 'QR Code',
+    SUBTITLE: 'Bring a QR Code into view of this screen to start an interaction.',
+    PERMISSION_DENIED: 'No permission to access the camera',
+    OPEN_SETTINGS: 'Open settings',
+    CREDENTIAL_OFFER: {
+      NAVBAR_TITLE: 'Credential Offer',
+      DESCRIPTION: 'is offering you the following credentials',
+      ACCEPT: 'Accept credentials',
+    },
+    CONNECTION_REQUEST: {
+      NAVBAR_TITLE: 'Connection Request',
+      TITLE: 'New connection',
+      DESCRIPTION: 'Only accept new connections that you recognize and trust',
+      CONNECTED_PREVIOUSLY: 'Connected previously',
+      ACCEPT: 'Accept connection',
+    },
+    SHARE_CREDENTIALS: {
+      NAVBAR_TITLE: 'Share Data',
+      DESCRIPTION: 'requests the following credentials',
+      REQUESTED: 'Requested',
+      APPROVE: 'Approve request',
     },
   },
   CONNECTION: {
@@ -209,6 +243,7 @@ const en = {
       ACTIVITY: 'Activity',
     },
     SUMMARY: {
+      EMPTY: 'No connections yet.',
       TITLE: 'Connected to',
       FIRST_CONNECTED: 'First connected',
       LAST_CONNECTED: 'Last connected',
@@ -231,18 +266,23 @@ const en = {
       DESCRIPTION: 'Try searching for something else.',
     },
   },
+  CREDENTIAL: {
+    NAVBAR_TITLE: 'Credential Information',
+  },
   BADGE: {
+    NAVBAR_TITLE: 'Badge Information',
     DETAILS: {
       VALID: 'Valid',
       ISSUED_BY: 'Issued by',
       DESCRIPTION: 'Description',
-      METADATA: 'Metadata',
+      CONTENTS: 'Contents',
     },
   },
   CANCEL: 'Cancel',
   CLOSE: 'Close',
   CONTINUE: 'Continue',
   SKIP: 'Skip',
+  REJECT: 'Reject',
 } satisfies BaseTranslation;
 
 export default en;

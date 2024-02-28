@@ -29,13 +29,12 @@
 
   let credential = $state.credentials.find((c) => $page.params.id === c.id)!!;
 
-  //   let color = credential.metadata.display.color || colors.at(0);
-
   let icon: any = credential.metadata.display.icon || 'User';
   let title: string = credential.metadata.display.name || credential.data.type.at(-1);
 
   let credentialLogoUrl: string | null;
-  let issuerLogoUrl: string | null;
+
+  let issuerId: string;
 
   let qrcodeText = JSON.stringify(credential, null, 0);
 
@@ -49,36 +48,57 @@
     isFavorite = credential.metadata.is_favorite;
     title = credential.metadata.display.name || credential.data.type.at(-1);
     icon = credential.metadata.display.icon || 'User';
-    // color =
-    //   credential.metadata.display.color ||
-    //   colors.at(
-    //     credential.id
-    //       .match(/[0-9]+/)
-    //       .at(0)
-    //       .at(0) % 8, // TODO: omits last value (white)
-    //   );
   }
 
-  // create entries to be shown
-  const { enrichment, ...entries } = credential.data.credentialSubject.achievement;
-  // entries['issuer'] = credential.data.issuer ?? credential.issuer_name;
-  // entries['issuanceDate'] = new Date(credential.data.issuanceDate).toLocaleString('en-US', {
-  //   dateStyle: 'long',
-  //   timeStyle: 'medium'
-  // });
+  const hiddenStandardFields: string[] = ['id', 'type', 'name', 'description', 'image'];
+  // TODO: custom metadata field related to NGDIL demo
+  const hiddenCustomFields: string[] = ['enrichment'];
+
+  const entries = { ...credential.data.credentialSubject.achievement };
+  hiddenStandardFields.concat(hiddenCustomFields).forEach((key) => delete entries[key]);
 
   console.log({ credential });
 
+  // TODO: this is a simple way to display any (potentially nested) data, since we don't have a proper UI design for it yet
+  const prettyPrint = (object: any): string => {
+    return JSON.stringify(object, null, 2);
+  };
+
+  // TODO: This is a HORRIBLE solution to determine the connection_id by the non-unique "issuer name".
+  // It is a TEMPORARY solution and should only be used in DEMO environments,
+  // since we currently lack a unique identitfier to distinguish connections.
+  function determineConnectionId(): string | null {
+    // First collect possible sources of the issuer name
+    const name_from_credential: string | undefined = credential.data.issuer?.name;
+    const name_from_oid4vc = credential.issuer_name;
+    // We prefer the name from the credential, but fallback to the issuer name during oid4vc process
+    const issuer_name = name_from_credential ?? name_from_oid4vc;
+
+    if (issuer_name) {
+      // base64url encode
+      const connectionId = btoa(issuer_name).replace('+', '-').replace('/', '_');
+      // verify that the connection exists
+      if ($state.connections.some((c) => c.id === connectionId)) {
+        return connectionId;
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  }
+
+  const connectionId = determineConnectionId();
+
   onMount(async () => {
     credentialLogoUrl = await getImageAsset($page.params.id!!);
-    issuerLogoUrl = await getImageAsset('university');
   });
 </script>
 
 <div class="content-height relative flex w-full flex-col">
   <!-- TODO: allow overriding the color of the TopNavBar -->
   <TopNavBar
-    title="Badge information"
+    title={$LL.BADGE.NAVBAR_TITLE()}
     on:back={() => history.back()}
     class="bg-white text-slate-800 dark:bg-dark dark:text-grey"
   />
@@ -88,6 +108,7 @@
       {#if credentialLogoUrl}
         <img
           src={credentialLogoUrl}
+          alt="logo"
           class="absolute -top-1/4 left-0 scale-[1.75] opacity-40 blur-xl"
           on:error={() => (credentialLogoUrl = null)}
         />
@@ -126,9 +147,6 @@
       </div>
       <!-- Text -->
       <div class="z-10 flex flex-col items-center pt-[15px]">
-        <p class="break-all text-center text-[13px]/[24px] font-normal text-slate-500 dark:text-slate-300">
-          {credential.data.issuer.name ?? credential.data.issuer ?? credential.issuer_name}
-        </p>
         <p class="line-clamp-2 text-center text-[22px]/[30px] font-semibold tracking-tight text-black dark:text-white">
           {credential.data.credentialSubject.achievement?.name ?? title}
         </p>
@@ -136,7 +154,6 @@
     </div>
     <!-- Text -->
     <div class="flex flex-col space-y-5 px-[15px] pb-[15px]">
-      <!-- Valid, Issued By -->
       <div class="flex space-x-3 pt-8">
         <!-- Valid -->
         <div class="flex w-full flex-col items-center space-y-1">
@@ -146,25 +163,35 @@
           </div>
           <p class="text-xs text-black dark:text-white">
             {#if credential.data.issuanceDate}
-              {new Date(credential.data.issuanceDate).toLocaleString($state.locale, {
+              {new Date(credential.data.issuanceDate).toLocaleString($state.profile_settings.locale, {
                 dateStyle: 'long',
-                // timeStyle: 'medium',
               })}
             {/if}
           </p>
         </div>
-        <!-- Issued By -->
+        <!-- Issued by -->
+        <!-- TODO: read connection_id (issuer_id) from credential so it can link to the connection -->
         <div class="flex w-full flex-col items-center space-y-1">
           <p class="text-xs text-black dark:text-white">{$LL.BADGE.DETAILS.ISSUED_BY()}</p>
-          <div class="w- flex h-[68px] w-full justify-center rounded-xl bg-silver dark:bg-white">
-            <Image
-              id={'university'}
-              iconFallback="Bank"
-              imgClass="w-auto rounded-lg m-2"
-              iconClass="h-7 w-7 dark:text-slate-800"
-            />
-          </div>
-          <p class="break-all text-xs text-black dark:text-white">
+          <!-- If the connection exists, make the logo clickable and redirect to the connection. -->
+          {#if connectionId}
+            <button
+              class="flex h-[68px] w-full items-center justify-center rounded-xl bg-silver p-2 dark:bg-white"
+              on:click={() => goto(`/activity/connection/${connectionId}`)}
+            >
+              <Image
+                id={connectionId}
+                iconFallback="Bank"
+                imgClass="w-16 m-2"
+                iconClass="h-7 w-7 dark:text-slate-800"
+              />
+            </button>
+          {:else}
+            <div class="flex h-[68px] w-full items-center justify-center rounded-xl bg-silver p-2 dark:bg-white">
+              <Image iconFallback="Bank" imgClass="w-auto rounded-lg m-2" iconClass="h-7 w-7 dark:text-slate-800" />
+            </div>
+          {/if}
+          <p class="text-center text-xs text-black [word-break:break-word] dark:text-white">
             {credential.data.issuer.name ?? credential.data.issuer ?? credential.issuer_name}
           </p>
         </div>
@@ -178,30 +205,31 @@
         </p>
       </div>
 
-      <!-- Metadata (Table: Credential Subject) -->
+      <!-- Contents (Table: Credential Subject) -->
       <div>
-        <p class="pb-2 text-lg font-semibold text-black dark:text-white">{$LL.BADGE.DETAILS.METADATA()}</p>
+        <p class="pb-2 text-lg font-semibold text-black dark:text-white">{$LL.BADGE.DETAILS.CONTENTS()}</p>
         <div
           class="divide-y divide-solid divide-slate-200 rounded-xl border border-slate-200 bg-white dark:divide-slate-600 dark:border-slate-600 dark:bg-dark"
         >
           {#each Object.entries(entries) as entry}
             <div class="flex flex-col items-start px-4 py-[10px]">
               <p class="text-[13px]/[24px] font-medium text-slate-500">{entry[0]}</p>
-              <p class="w-full break-words text-[13px]/[24px] font-medium text-slate-800 dark:text-white">
-                <!-- TODO: this is a hacky way to display nested data, but also to remove enclosing quotes for regular strings -->
-                {JSON.stringify(entry[1]).slice(1, -1)}
-              </p>
+              <div class="w-full break-words text-[13px]/[24px] font-medium text-slate-800 dark:text-white">
+                <pre class="whitespace-pre-wrap [font-family:inherit]">{prettyPrint(entry[1])}</pre>
+              </div>
             </div>
           {/each}
         </div>
       </div>
     </div>
 
-    {#if $state.dev_mode_enabled}
+    {#if $state?.dev_mode !== 'Off'}
       <p class="break-all px-4 pb-5 text-center text-[13px]/[24px] text-slate-500">
         {JSON.stringify(credential.data.issuer)}
       </p>
     {/if}
+
+    <div class="h-[var(--safe-area-inset-bottom)]"></div>
   </div>
   <!-- </div> -->
   <BottomDrawer>

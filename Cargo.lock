@@ -1586,6 +1586,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "56ce8c6da7551ec6c462cbaf3bfbc75131ebbfa1c944aeaa9dab51ca1c5f0c3b"
 
 [[package]]
+name = "dyn-clone"
+version = "1.0.16"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "545b22097d44f8a9581187cdf93de7a71e4722bf51200cfaba810865b49a495d"
+
+[[package]]
 name = "ecdsa"
 version = "0.14.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2772,7 +2778,7 @@ checksum = "b9e0384b61958566e926dc50660321d12159025e767c18e043daf26b70104c39"
 
 [[package]]
 name = "identity-wallet"
-version = "0.4.9"
+version = "0.4.12"
 dependencies = [
  "anyhow",
  "base64 0.13.1",
@@ -2780,6 +2786,7 @@ dependencies = [
  "derivative",
  "did-key",
  "downcast-rs",
+ "dyn-clone",
  "futures",
  "identity_credential",
  "indoc",
@@ -6519,7 +6526,7 @@ checksum = "1dd624098567895118886609431a7c3b8f516e41d30e0643f03d94592a147e36"
 
 [[package]]
 name = "unime"
-version = "0.4.9"
+version = "0.4.12"
 dependencies = [
  "did-key",
  "dotenvy",
@@ -6539,6 +6546,7 @@ dependencies = [
  "tauri-plugin-log",
  "tempfile",
  "tokio",
+ "typetag",
  "url",
  "wiremock",
 ]

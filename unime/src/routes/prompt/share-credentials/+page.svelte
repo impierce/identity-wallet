@@ -1,9 +1,13 @@
 <script lang="ts">
+  import { onDestroy } from 'svelte';
+
   import { goto } from '$app/navigation';
 
   import { dispatch } from '$lib/dispatcher';
+  import LL from '$src/i18n/i18n-svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
   import Checkbox from '$src/lib/components/atoms/Checkbox.svelte';
+  import Image from '$src/lib/components/atoms/Image.svelte';
   import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
   import ListItemCard from '$src/lib/components/molecules/ListItemCard.svelte';
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
@@ -17,16 +21,23 @@
   let selected_credentials = $state.credentials?.filter((c) => $state.current_user_prompt.options.indexOf(c.id) > -1);
 
   let client_name = $state.current_user_prompt.client_name;
+
+  console.log({ '$state.current_user_prompt': $state.current_user_prompt });
+
+  onDestroy(async () => {
+    // TODO: is onDestroy also called when user accepts since the component itself is destroyed?
+    dispatch({ type: '[User Flow] Cancel' });
+  });
 </script>
 
 <div class="content-height flex flex-col items-stretch bg-silver dark:bg-navy">
-  <TopNavBar title={'Share Data'} on:back={() => history.back()} />
+  <TopNavBar title={$LL.SCAN.SHARE_CREDENTIALS.NAVBAR_TITLE()} on:back={() => history.back()} />
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
     <!-- Header -->
     {#if $state.current_user_prompt.logo_uri}
       <div class="flex h-[75px] w-[75px] overflow-hidden rounded-3xl bg-white p-2 dark:bg-silver">
-        <img src={$state.current_user_prompt.logo_uri} alt="logo" />
+        <Image id={'issuer_0'} isTempAsset={true} />
       </div>
     {:else}
       <PaddedIcon icon={PlugsConnected} />
@@ -41,13 +52,15 @@
     </div>
 
     <p class="w-full text-center text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">
-      requests the following credentials
+      {$LL.SCAN.SHARE_CREDENTIALS.DESCRIPTION()}
     </p>
 
     <div class="w-full">
       <div class="flex items-center">
         <SealCheck class="mr-2 text-primary" />
-        <p class="text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">Requested</p>
+        <p class="text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">
+          {$LL.SCAN.SHARE_CREDENTIALS.REQUESTED()}
+        </p>
       </div>
 
       <!-- Credentials selection -->
@@ -71,7 +84,7 @@
   <!-- Controls -->
   <div class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 dark:bg-dark">
     <Button
-      label="Approve request"
+      label={$LL.SCAN.SHARE_CREDENTIALS.APPROVE()}
       on:click={() =>
         dispatch({
           type: '[Authenticate] Credentials selected',
@@ -81,7 +94,7 @@
         })}
     />
     <Button
-      label="Cancel"
+      label={$LL.CANCEL()}
       variant="secondary"
       on:click={() => {
         dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });

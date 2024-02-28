@@ -13,6 +13,7 @@ use std::path::Path;
 use std::sync::Arc;
 
 pub mod assert_state_update;
+pub mod extensions;
 
 pub const TEST_PASSWORD: &str = "sup3rSecr3t";
 

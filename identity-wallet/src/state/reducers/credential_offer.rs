@@ -23,10 +23,13 @@ use uuid::Uuid;
 pub async fn read_credential_offer(state: AppState, action: Action) -> Result<AppState, AppError> {
     info!("read_credential_offer");
 
+    // Sometimes reducers are connected to actions that they shouldn't execute
+    // Therefore its also checked if it can parse to credential offer query
+    // TODO find a better way to connect to the right reducer
     if let Some(credential_offer_uri) =
         listen::<QrCodeScanned>(action).and_then(|payload| payload.form_urlencoded.parse::<CredentialOfferQuery>().ok())
     {
-        let state_guard = state.managers.lock().await;
+        let state_guard = state.core_state.managers.lock().await;
         let wallet = &state_guard
             .identity_manager
             .as_ref()
@@ -40,6 +43,7 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
                 .await
                 .map_err(GetCredentialOfferError)?,
         };
+
         info!("credential offer: {:?}", credential_offer);
 
         // The credential offer contains a credential issuer url.
@@ -179,7 +183,7 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
                 "{}",
                 format!(
                     "Downloading issuer logo from url: {}",
-                    logo_uri.clone().unwrap().as_str()
+                    logo_uri.as_ref().unwrap().as_str()
                 )
             );
             if let Some(logo_uri) = logo_uri.as_ref().and_then(|s| s.parse::<reqwest::Url>().ok()) {
@@ -206,7 +210,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
     info!("send_credential_request");
 
     if let Some(offer_indices) = listen::<CredentialOffersSelected>(action).map(|payload| payload.offer_indices) {
-        let state_guard = state.managers.lock().await;
+        let state_guard = state.core_state.managers.lock().await;
         let stronghold_manager = state_guard
             .stronghold_manager
             .as_ref()

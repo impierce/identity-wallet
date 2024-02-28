@@ -3,6 +3,7 @@
 
   import Image from '$lib/components/atoms/Image.svelte';
   import exampleConnections from '$lib/connections/mock-data.json';
+  import LL from '$src/i18n/i18n-svelte';
   import ListItemCard from '$src/lib/components/molecules/ListItemCard.svelte';
   import { state } from '$src/stores';
 
@@ -16,7 +17,7 @@
 <div class="flex h-full flex-col space-y-3">
   {#if connections.size === 0}
     <div class="flex h-full flex-col items-center justify-center">
-      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">No connections yet.</p>
+      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">{$LL.CONNECTION.SUMMARY.EMPTY()}</p>
     </div>
   {/if}
   {#each Object.entries(Object.fromEntries(connections)) as entry}
@@ -68,7 +69,7 @@
           </Image>
         </div>
         <div slot="right" class="h-full pr-2 pt-1 text-[12px]/[20px] font-medium text-slate-400">
-          {new Date().toLocaleString($state.locale, {
+          {new Date(connection.last_interacted).toLocaleString($state.profile_settings.locale, {
             dateStyle: 'short',
             timeStyle: 'short',
           })}

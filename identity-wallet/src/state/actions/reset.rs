@@ -3,6 +3,7 @@ use crate::state::actions::ActionTrait;
 use crate::state::actions::Reducer;
 use crate::state::reducers::reset_state;
 
+/// Action to completely purge and reset the app state.
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct Reset;
 

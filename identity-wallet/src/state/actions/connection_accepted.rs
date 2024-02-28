@@ -3,6 +3,7 @@ use crate::state::actions::ActionTrait;
 use crate::state::actions::Reducer;
 use crate::state::reducers::authorization::handle_siopv2_authorization_request;
 
+/// Action to accept a connection request.
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct ConnectionAccepted;
 

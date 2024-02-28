@@ -10,6 +10,7 @@
 
   import { dispatch } from '$lib/dispatcher';
   import { getImageAsset } from '$lib/utils';
+  import LL from '$src/i18n/i18n-svelte';
   import { colors } from '$src/lib/app/colors';
   import Button from '$src/lib/components/atoms/Button.svelte';
   import ButtonRounded from '$src/lib/components/atoms/ButtonRounded.svelte';
@@ -82,7 +83,7 @@
     {/if}
   </div>
   <TopNavBar
-    title="Credential info"
+    title={$LL.CREDENTIAL.NAVBAR_TITLE()}
     on:back={() => history.back()}
     class={credentialLogoUrl ? '' : `${color} dark:${color} text-slate-800 dark:text-slate-800`}
   />
@@ -159,7 +160,7 @@
           </div>
         {/each}
       </div>
-      {#if $state.dev_mode_enabled}
+      {#if $state?.dev_mode !== 'Off'}
         <p class="pt-4 text-center text-[13px]/[24px] text-slate-500">{credential.data.issuer}</p>
       {/if}
     </div>
