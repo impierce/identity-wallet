@@ -56,9 +56,9 @@ impl AppStateContainer {
 #[ts(export)]
 #[serde(default)]
 pub struct AppState {
-    /// This field contains the connections, containing the useable info for the frontend.
+    /// This field contains the connections.
     pub connections: Vec<Connection>,
-    /// This field contains the display credentials, containing the useable info for the frontend.
+    /// This field contains the display credentials.
     pub credentials: Vec<DisplayCredential>,
     /// This field contains the query result, which is queried from credentials or connections.
     pub user_data_query: Vec<String>,
@@ -267,6 +267,3 @@ mod tests {
         );
     }
 }
-
-// left: "{\n  \"connections\": [],\n  \"credentials\": [],\n  \"user_data_query\": [],\n  \"profile_settings\": {\n    \"locale\": \"en-US\",\n    \"profile\": {\n      \"name\": \"John Doe\",\n      \"picture\": null,\n      \"theme\": null,\n      \"primary_did\": \"did:example:123\"\n    }\n  },\n  \"current_user_prompt\": {\n    \"type\": \"redirect\",\n    \"target\": \"me\"\n  },\n  \"user_journey\": null,\n  \"debug_messages\": [],\n  \"extensions\": {},\n  \"dev_mode\": \"Off\"\n}"
-// right: "{\n\"connections\": [],\n\"credentials\": [],\n\"user_data_query\": [],\n\"profile_settings\": {\n  \"locale\": \"en-US\",\n  \"profile\": {\n    \"name\": \"John Doe\",\n    \"picture\": null,\n    \"theme\": null,\n    \"primary_did\": \"did:example:123\"\n  }\n},\n\"current_user_prompt\": {\n  \"type\": \"redirect\",\n  \"target\": \"me\"\n},\n\"user_journey\": null,\n\"debug_messages\": [],\n\"extensions\": {},\n\"dev_mode\": \"Off\"\n}"

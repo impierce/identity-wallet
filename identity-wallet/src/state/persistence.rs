@@ -24,6 +24,8 @@ pub async fn save_state(app_state: &AppState) -> anyhow::Result<()> {
     let state_file = STATE_FILE.lock().unwrap().clone();
     let mut file = File::create(state_file).await?;
 
+    // Here we take out the credentials field before saving the state, 
+    // being sensitive data they should only be stored in the stronghold, nowhere else.
     let mut json_app_state = serde_json::to_value(app_state)?;
     json_app_state["credentials"] = serde_json::Value::Array(Vec::new());
 

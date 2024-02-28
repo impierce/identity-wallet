@@ -5,13 +5,14 @@ pub mod state;
 pub mod utils;
 pub mod verifiable_credential_record;
 
-// Re-exports
 use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
 use lazy_static::lazy_static;
 use log::info;
-pub use oid4vc::{oid4vc_core, oid4vc_manager, oid4vci, oid4vp, siopv2};
 use std::{fs, sync::Mutex};
 use tauri::Manager;
+
+// Re-exports
+pub use oid4vc::{oid4vc_core, oid4vc_manager, oid4vci, oid4vp, siopv2};
 
 // This folder is where the main backend rust code lives together with all the business logic.
 // The folder state is where our appstate and it's features are defined, completely according to the redux pattern.
