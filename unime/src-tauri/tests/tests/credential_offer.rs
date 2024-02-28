@@ -5,7 +5,7 @@ use identity_wallet::oid4vci::credential_issuer::{
 use identity_wallet::oid4vci::credential_offer::{CredentialOffer, CredentialOfferQuery, CredentialsObject};
 use identity_wallet::state::BackEndUtils;
 use identity_wallet::state::{reducers::credential_offer::read_credential_offer, AppState};
-use identity_wallet::ASSETS_DIR;
+use identity_wallet::persistence::ASSETS_DIR;
 use identity_wallet::{
     oid4vci::credential_format_profiles::{
         w3c_verifiable_credentials::jwt_vc_json::{self, JwtVcJson},

@@ -1,5 +1,5 @@
 use identity_wallet::error::AppError;
-use identity_wallet::utils::{download_asset, LogoType};
+use identity_wallet::persistence::{download_asset, LogoType};
 use wiremock::matchers::{method, path};
 use wiremock::{Mock, MockServer, ResponseTemplate};
 

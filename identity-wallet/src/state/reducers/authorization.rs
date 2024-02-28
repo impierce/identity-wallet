@@ -3,11 +3,10 @@ use crate::{
     get_unverified_jwt_claims,
     state::{
         actions::{listen, Action, CredentialsSelected, QrCodeScanned},
-        persistence::persist_asset,
         user_prompt::CurrentUserPrompt,
         AppState, BackEndUtils, Connection,
     },
-    utils::{download_asset, LogoType},
+    persistence::{persist_asset, download_asset, LogoType},
 };
 use identity_credential::{credential::Jwt, presentation::Presentation};
 use log::{debug, info, warn};

@@ -6,7 +6,7 @@ pub mod storage;
 pub mod user_data_query;
 
 use super::actions::{listen, CancelUserFlow, SetLocale, UpdateCredentialMetadata, UpdateProfileSettings};
-use super::persistence::{clear_all_assets, delete_state_file, delete_stronghold, load_state};
+use crate::persistence::{clear_all_assets, delete_state_file, delete_stronghold, load_state};
 use super::{IdentityManager, ProfileSettings};
 use crate::stronghold::StrongholdManager;
 use crate::error::AppError::{self, *};

@@ -1,6 +1,6 @@
 use crate::error::AppError;
+use crate::persistence::save_state;
 use crate::state::actions::Action;
-use crate::state::persistence::save_state;
 use crate::state::{AppState, AppStateContainer};
 use futures::StreamExt;
 use itertools::Itertools;
@@ -8,7 +8,7 @@ use log::{debug, error, info};
 use std::time::Duration;
 use tauri::Manager;
 
-/// The command.rs holds the functions through which the front and backend communicate using actions and reducers.
+// The command.rs holds the functions through which the front and backend communicate using actions and reducers.
 
 /// This function represents the root reducer of the application. It will delegate the state update to the reducers that
 /// are listening to the action.

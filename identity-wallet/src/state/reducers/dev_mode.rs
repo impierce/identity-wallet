@@ -5,7 +5,7 @@ use crate::state::actions::{listen, Action, DevProfile, ProfileType, UnlockStora
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, Connection, DevMode, Profile};
 use crate::verifiable_credential_record::VerifiableCredentialRecord;
-use crate::{command, ASSETS_DIR};
+use crate::{command, persistence::ASSETS_DIR};
 use did_key::{generate, Ed25519KeyPair};
 use lazy_static::lazy_static;
 use log::info;

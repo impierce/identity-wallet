@@ -2,11 +2,10 @@ use crate::{
     error::AppError::{self, *},
     state::{
         actions::{listen, Action, CredentialOffersSelected, QrCodeScanned},
-        persistence::persist_asset,
         user_prompt::CurrentUserPrompt,
         AppState,
     },
-    utils::{download_asset, LogoType},
+    persistence::{persist_asset, download_asset, LogoType},
     verifiable_credential_record::VerifiableCredentialRecord,
 };
 use log::{debug, info};

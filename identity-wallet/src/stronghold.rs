@@ -1,4 +1,4 @@
-use crate::{verifiable_credential_record::VerifiableCredentialRecord, STRONGHOLD};
+use crate::{verifiable_credential_record::VerifiableCredentialRecord, persistence::STRONGHOLD};
 use iota_stronghold::{
     procedures::{Ed25519Sign, GenerateKey, KeyType, PublicKey, StrongholdProcedure},
     Client, KeyProvider, Location, SnapshotPath, Stronghold,
@@ -7,7 +7,7 @@ use log::{debug, info};
 use oid4vc::oid4vc_core::authentication::sign::ExternalSign;
 use uuid::Uuid;
 
-/// This file is where we implement the stronghold library for our app, which is used to store sensitive data.
+// This file is where we implement the stronghold library for our app, which is used to store sensitive data.
 
 /// This struct is the main point of communication between our appstate and the stronghold library.
 #[derive(Debug)]
