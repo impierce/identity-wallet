@@ -3,10 +3,10 @@ use crate::{
     get_unverified_jwt_claims,
     state::{
         actions::{listen, Action, CredentialsSelected, QrCodeScanned},
-        reducers::history::{EventType, HistoryCredential, HistoryEvent},
         persistence::persist_asset,
+        reducers::history::{EventType, HistoryCredential, HistoryEvent},
         user_prompt::CurrentUserPrompt,
-        AppState, Connection,
+        AppState, Connection, CoreState,
     },
     utils::{download_asset, LogoType},
 };
@@ -36,7 +36,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
         .map(|payload| payload.form_urlencoded)
         .filter(|s| !s.starts_with("openid-credential-offer"))
     {
-        let state_guard = state.managers.lock().await;
+        let state_guard = state.core_state.managers.lock().await;
         let stronghold_manager = state_guard
             .stronghold_manager
             .as_ref()
@@ -84,7 +84,10 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
 
             drop(state_guard);
             return Ok(AppState {
-                active_connection_request: Some(ConnectionRequest::SIOPv2(siopv2_authorization_request.into())),
+                core_state: CoreState {
+                    active_connection_request: Some(ConnectionRequest::SIOPv2(siopv2_authorization_request.into())),
+                    ..state.core_state
+                },
                 connections,
                 current_user_prompt: Some(CurrentUserPrompt::AcceptConnection {
                     client_name,
@@ -143,7 +146,10 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
             if !uuids.is_empty() {
                 drop(state_guard);
                 return Ok(AppState {
-                    active_connection_request: Some(ConnectionRequest::OID4VP(oid4vp_authorization_request.into())),
+                    core_state: CoreState {
+                        active_connection_request: Some(ConnectionRequest::OID4VP(oid4vp_authorization_request.into())),
+                        ..state.core_state
+                    },
                     current_user_prompt: Some(CurrentUserPrompt::ShareCredentials {
                         client_name,
                         logo_uri,
@@ -162,7 +168,8 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
 
 // Sends the authorization response.
 pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: Action) -> Result<AppState, AppError> {
-    let state_guard = state.managers.lock().await;
+    let state_guard = state.core_state.managers.lock().await;
+
     let provider_manager = &state_guard
         .identity_manager
         .as_ref()
@@ -170,7 +177,7 @@ pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: A
         .provider_manager;
 
     let siopv2_authorization_request =
-        match serde_json::from_value(serde_json::json!(state.active_connection_request)).unwrap() {
+        match serde_json::from_value(serde_json::json!(state.core_state.active_connection_request)).unwrap() {
             Some(ConnectionRequest::SIOPv2(siopv2_authorization_request)) => siopv2_authorization_request,
             _ => unreachable!(),
         };
@@ -233,14 +240,14 @@ pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: A
         credentials: vec![],
     });
 
+    state.connections = connections;
+    state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
+        target: "me".to_string(),
+    });
+
     drop(state_guard);
-    Ok(AppState {
-        connections,
-        current_user_prompt: Some(CurrentUserPrompt::Redirect {
-            target: "me".to_string(),
-        }),
-        ..state
-    })
+
+    Ok(state)
 }
 
 // Sends the authorization response including the verifiable credentials.
@@ -248,7 +255,7 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
     info!("handle_presentation_request");
 
     if let Some(credential_uuids) = listen::<CredentialsSelected>(action).map(|payload| payload.credential_uuids) {
-        let state_guard = state.managers.lock().await;
+        let state_guard = state.core_state.managers.lock().await;
 
         let stronghold_manager = state_guard
             .stronghold_manager
@@ -261,7 +268,7 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
             .provider_manager;
 
         let oid4vp_authorization_request =
-            match serde_json::from_value(serde_json::json!(state.active_connection_request)).unwrap() {
+            match serde_json::from_value(serde_json::json!(state.core_state.active_connection_request)).unwrap() {
                 ConnectionRequest::OID4VP(oid4vp_authorization_request) => oid4vp_authorization_request,
                 ConnectionRequest::SIOPv2(_) => unreachable!(),
             };
@@ -307,7 +314,8 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
         info!("get the subject did");
 
         let subject_did = state
-            .active_profile
+            .profile_settings
+            .profile
             .as_ref()
             .ok_or(MissingStateParameterError("active profile"))?
             .primary_did

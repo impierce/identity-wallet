@@ -7,7 +7,7 @@
 
   import Check from '~icons/ph/check-bold';
 
-  $: selected = locales.find((l) => l.locale === $state?.locale);
+  $: selected = locales.find((l) => l.locale === $state?.profile_settings.locale);
 </script>
 
 <TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.APP.LANGUAGE.NAVBAR_TITLE()} />

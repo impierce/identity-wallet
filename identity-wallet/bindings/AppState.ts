@@ -4,7 +4,6 @@ import type { CurrentUserPrompt } from "./CurrentUserPrompt";
 import type { DevMode } from "./DevMode";
 import type { DisplayCredential } from "./display-credential/DisplayCredential";
 import type { HistoryEvent } from "./HistoryEvent";
-import type { Locale } from "./Locale";
-import type { Profile } from "./Profile";
+import type { ProfileSettings } from "./ProfileSettings";
 
-export interface AppState { active_profile: Profile | null, locale: Locale, credentials: Array<DisplayCredential>, current_user_prompt: CurrentUserPrompt | null, dev_mode: DevMode, debug_messages: Array<string>, user_journey: any | null, connections: Array<Connection>, user_data_query: Array<string>, history: Array<HistoryEvent>, }
+export interface AppState { connections: Array<Connection>, credentials: Array<DisplayCredential>, user_data_query: Array<string>, profile_settings: ProfileSettings, current_user_prompt: CurrentUserPrompt | null, user_journey: any | null, debug_messages: Array<string>, history: Array<HistoryEvent>, dev_mode: DevMode, }

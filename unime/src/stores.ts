@@ -44,7 +44,7 @@ export const state = writable<State>(undefined, (set) => {
     const state = event.payload;
 
     set(state);
-    setLocale(state.locale as Locales);
+    setLocale(state.profile_settings.locale as Locales);
 
     if (state.current_user_prompt?.type === 'redirect') {
       const redirect_target = state.current_user_prompt.target;

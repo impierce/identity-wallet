@@ -6,6 +6,7 @@ use crate::state::AppTheme;
 
 use ts_rs::TS;
 
+/// Action to update the profile settings.
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/UpdateProfileSettings.ts")]
 pub struct UpdateProfileSettings {

@@ -31,12 +31,47 @@ pub use update_credential_metadata::*;
 pub use update_profile_settings::*;
 pub use user_data_query::*;
 
+use super::reducers::Reducer;
+use downcast_rs::{impl_downcast, DowncastSync};
 use std::sync::Arc;
 use ts_rs::TS;
 
-use downcast_rs::{impl_downcast, DowncastSync};
-
-use super::reducers::Reducer;
+/// Below is an example of how to add an action to the app
+///
+/// Example:
+/// ```
+/// use crate::identity_wallet::state::actions::{Action, ActionTrait, listen};
+/// use crate::identity_wallet::reducer;
+/// use crate::identity_wallet::state::reducers::Reducer;
+/// use crate::identity_wallet::state::AppState;
+/// use crate::identity_wallet::error::AppError;
+/// use serde::{Deserialize, Serialize};
+///
+/// #[derive(Debug, Serialize, Deserialize, Clone)]
+/// pub struct TestExampleAction {
+///     example_field: String,
+///     example_field_2: bool,
+/// }
+///
+/// #[typetag::serde(name = "[Example] Example Action")]
+/// impl ActionTrait for TestExampleAction {
+///     fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
+///         vec![reducer!(test_example_reducer)]
+///     }
+/// }
+///
+/// pub async fn test_example_reducer(state: AppState, action: Action) -> Result<AppState, AppError> {
+///     if let Some(test_example_action) = listen::<TestExampleAction>(action) {
+///         // Reducer logic goes here
+///         return Ok(AppState {
+///             // Add changes to the state here
+///             ..state
+///         });
+///     }
+/// 
+///     Ok(state)
+/// }
+/// ```
 
 /// A redux-like Action that the backend knows how to handle (reduce), with an optional payload
 /// See https://redux.js.org/tutorials/fundamentals/part-3-state-actions-reducers

@@ -2,9 +2,9 @@ use crate::reducer;
 use crate::state::actions::ActionTrait;
 use crate::state::actions::Reducer;
 use crate::state::reducers::credential_offer::send_credential_request;
-
 use ts_rs::TS;
 
+/// Action to handle the selection of credential offers.
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/CredentialOffersSelected.ts")]
 pub struct CredentialOffersSelected {

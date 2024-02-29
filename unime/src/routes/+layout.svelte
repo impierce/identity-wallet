@@ -39,8 +39,8 @@
   systemColorScheme.addEventListener(
     'change',
     (e) => {
-      if ($state?.active_profile?.theme) {
-        determineTheme(e.matches, $state.active_profile.theme);
+      if ($state?.profile_settings.profile?.theme) {
+        determineTheme(e.matches, $state.profile_settings.profile.theme);
       }
     },
     { once: true },
@@ -51,8 +51,8 @@
     console.log('+layout.svelte: state', $state);
 
     // needed again?
-    if ($state?.active_profile?.theme) {
-      determineTheme(systemColorScheme.matches, $state?.active_profile?.theme);
+    if ($state?.profile_settings.profile?.theme) {
+      determineTheme(systemColorScheme.matches, $state.profile_settings.profile.theme);
     }
 
     // User prompt

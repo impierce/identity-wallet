@@ -23,6 +23,7 @@ pub enum SortMethod {
     LastInteractedNewOld,
 }
 
+/// Action to query user data.
 #[derive(Serialize, Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/UserDataQuery.ts")]
 pub struct UserDataQuery {

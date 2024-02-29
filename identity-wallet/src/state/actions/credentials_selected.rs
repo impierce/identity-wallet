@@ -5,6 +5,7 @@ use crate::state::reducers::authorization::handle_oid4vp_authorization_request;
 
 use ts_rs::TS;
 
+/// Action to authenticate the selected credentials.
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/CredentialsSelected.ts")]
 pub struct CredentialsSelected {

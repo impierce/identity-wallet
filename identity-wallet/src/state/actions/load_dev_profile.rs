@@ -37,6 +37,7 @@ pub enum ProfileSteps {
     CompleteFlow,
 }
 
+/// Action to load a dev profile.
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/DevProfile.ts")]
 pub struct DevProfile {

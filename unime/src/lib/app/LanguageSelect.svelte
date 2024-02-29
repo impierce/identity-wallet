@@ -8,7 +8,7 @@
   import LL from '$src/i18n/i18n-svelte';
   import { state } from '$src/stores';
 
-  $: selected = locales.find((l) => l.locale === $state?.locale) ?? locales.at(0)!!;
+  $: selected = locales.find((l) => l.locale === $state?.profile_settings.locale) ?? locales.at(0)!!;
 
   let isOpen = false;
 </script>

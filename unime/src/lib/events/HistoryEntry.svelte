@@ -15,7 +15,7 @@
   function getRelativeDate() {
     let locale: Locale;
 
-    switch ($state.locale) {
+    switch ($state.profile_settings.locale) {
       case 'en-US': {
         locale = enUS;
         break;

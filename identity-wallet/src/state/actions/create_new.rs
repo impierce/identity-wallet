@@ -6,6 +6,7 @@ use crate::state::AppTheme;
 use std::fmt::Formatter;
 use ts_rs::TS;
 
+/// Action to create a new profile.
 #[derive(serde::Serialize, serde::Deserialize, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/CreateNew.ts")]
 pub struct CreateNew {
