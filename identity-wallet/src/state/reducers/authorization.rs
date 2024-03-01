@@ -238,7 +238,7 @@ pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: A
         .all(|his| his.connection_id != Some(connection_id.clone()))
     {
         state.history.push(HistoryEvent {
-            issuer_name: client_name.clone(),
+            connection_name: client_name.clone(),
             event_type: EventType::ConnectionAdded,
             connection_id: Some(connection_id),
             date: connection_time,
@@ -287,24 +287,24 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
             .unwrap()
             .iter()
             .filter_map(|verifiable_credential_record| {
-                let share_cred = match &verifiable_credential_record.verifiable_credential {
+                let share_credential = match &verifiable_credential_record.verifiable_credential {
                     CredentialFormats::JwtVcJson(jwt_vc_json) => credential_uuids
                         .contains(&verifiable_credential_record.display_credential.id.parse().unwrap())
                         .then_some(jwt_vc_json.to_owned()),
                     _ => unimplemented!(),
                 };
 
-                if share_cred.is_some() {
+                if share_credential.is_some() {
                     let display = &verifiable_credential_record.display_credential;
 
                     history_credentials.push(HistoryCredential {
                         title: display.display_name.to_string(),
-                        sub_title: display.issuer_name.to_string(),
+                        issuer_name: display.issuer_name.to_string(),
                         id: display.id.to_string(),
                     });
                 }
 
-                share_cred
+                share_credential
             })
             .collect();
 
@@ -396,7 +396,7 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
 
         // History
         state.history.push(HistoryEvent {
-            issuer_name: client_name,
+            connection_name: client_name,
             date: connection_time,
             event_type: EventType::CredentialsShared,
             connection_id: Some(connection_id),

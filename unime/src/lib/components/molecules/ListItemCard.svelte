@@ -37,7 +37,7 @@ Can be used for credentials, connections, etc.
 ```
 -->
 <button
-  class={twMerge('flex h-16 w-full items-center justify-start rounded-xl bg-white p-2 dark:bg-dark', $$props.class)}
+  class="flex h-16 w-full items-center justify-start rounded-xl bg-white p-2 dark:bg-dark"
   on:click={() => dispatch('click')}
 >
   <!-- min-h-[64px] needed? -->

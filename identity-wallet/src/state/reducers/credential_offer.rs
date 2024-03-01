@@ -372,7 +372,7 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
 
             history_credentials.push(HistoryCredential {
                 title: display.display_name.to_string(),
-                sub_title: display.issuer_name.to_string(),
+                issuer_name: display.issuer_name.to_string(),
                 id: display.id.to_string(),
             });
         }
@@ -388,7 +388,7 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
         // History
         if !history_credentials.is_empty() {
             state.history.push(HistoryEvent {
-                issuer_name: issuer_name.clone(),
+                connection_name: issuer_name,
                 event_type: EventType::CredentialsAdded,
                 date: credentials[0].metadata.date_added.clone(),
                 connection_id: None,

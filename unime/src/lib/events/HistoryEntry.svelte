@@ -61,13 +61,12 @@
     {getRelativeDate()}
   </p>
   {#if credentials.length > 0}
-    <div class="mt-[12px] rounded-xl border border-y-gray-200 bg-white p-[3px] dark:border-dark dark:bg-dark">
+    <div class="mt-[12px] rounded-xl border border-slate-200 bg-white p-[3px] dark:border-slate-600 dark:bg-dark">
       {#each credentials as credential}
         <ListItemCard
           id={credential.id}
           title={credential.title}
-          description={credential.sub_title}
-          class="rounded-none"
+          description={credential.issuer_name}
           on:click={() => navigateToCredential(credential.id)}
         />
       {/each}
