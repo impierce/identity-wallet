@@ -114,14 +114,14 @@
 
 <style>
   .expand-top-space {
-    padding-bottom: 2rem; 
-    padding-top: 1rem; 
+    padding-bottom: 2rem;
+    padding-top: 1rem;
     transition: padding 0.5s ease-in;
   }
 
   .shrink-top-space {
-    padding-bottom: 0; 
-    padding-top: 0; 
+    padding-bottom: 0;
+    padding-top: 0;
     transition: padding 0.5s ease-in;
   }
 

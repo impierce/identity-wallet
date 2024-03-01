@@ -28,7 +28,11 @@
         {$LL.ONBOARDING.CUSTOMIZE.NAME.TITLE_1()}
         <span class="text-primary">{$LL.ONBOARDING.CUSTOMIZE.NAME.TITLE_2()}</span>
       </p>
-      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300 {keyboardView ? 'shrink-height' : 'expand-height'}">
+      <p
+        class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300 {keyboardView
+          ? 'shrink-height'
+          : 'expand-height'}"
+      >
         {$LL.ONBOARDING.CUSTOMIZE.NAME.SUBTITLE()}
       </p>
     </div>
@@ -60,14 +64,12 @@
 
   .expand-height {
     line-height: unset;
-    transition:
-      line-height 0.5s ease-in;
+    transition: line-height 0.5s ease-in;
   }
 
   .shrink-height {
     line-height: 0;
     overflow: hidden;
-    transition:
-      line-height 0.5s ease-out;
+    transition: line-height 0.5s ease-out;
   }
 </style>
