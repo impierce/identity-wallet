@@ -19,7 +19,7 @@
 </script>
 
 <!-- <TopNavBar title="Appearance" on:back={() => history.back()} /> -->
-<div id="test-123" class="content-height relative flex flex-col bg-silver dark:bg-navy">
+<div class="content-height relative flex flex-col bg-silver dark:bg-navy">
   <!-- TODO: the only reason why we're breaking out of the layout is because we do not want to inherit the "Skip" button -->
   <TopNavBar on:back={() => history.back()} title={$LL.ONBOARDING.CUSTOMIZE.NAVBAR_TITLE()} />
   <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
@@ -46,7 +46,7 @@
     />
   </div>
 
-  <div class="rounded-t-3xl bg-white p-6 dark:bg-dark" transition:fade={{ delay: 200 }}>
+  <div class="rounded-t-3xl bg-white p-6 dark:bg-dark" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
     <Button
       label={$LL.CONTINUE()}
       on:click={() => goto('/welcome/customize/theme')}
@@ -55,7 +55,7 @@
   </div>
 </div>
 
-<div class="safe-area-inset-top bg-silver dark:bg-navy" />
+<div class="safe-area-top bg-silver dark:bg-navy" />
 
 <style>
   .content-height {
