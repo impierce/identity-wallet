@@ -256,7 +256,7 @@ const en = {
     EMPTY: 'No activity yet.',
     CREDENTIALS_ADDED: 'Received credentials from',
     CREDENTIALS_SHARED: 'Shared credentials with',
-    CONNECTION_ADDED: 'First connection with',
+    CONNECTION_ADDED: 'Connected to',
   },
   SEARCH: {
     INPUT_PLACEHOLDER: 'Look for something',
