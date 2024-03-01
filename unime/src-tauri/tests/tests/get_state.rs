@@ -1,7 +1,11 @@
 use crate::common::assert_state_update::{assert_state_update, setup_state_file, setup_stronghold};
 use crate::common::{json_example, test_managers};
-use identity_wallet::state::{actions::Action, AppState};
-use identity_wallet::state::{AppStateContainer, CoreState, Profile, ProfileSettings};
+use identity_wallet::state::{
+    actions::Action,
+    core_utils::CoreUtils,
+    profile_settings::{Profile, ProfileSettings},
+    AppState, AppStateContainer,
+};
 use tokio::sync::Mutex;
 
 #[tokio::test]
@@ -47,7 +51,7 @@ async fn test_get_state_unlock_storage() {
     let action2 = json_example::<Action>("tests/fixtures/actions/unlock_storage.json");
 
     let container = AppStateContainer(Mutex::new(AppState {
-        core_state: CoreState {
+        core_utils: CoreUtils {
             managers: test_managers(vec![]),
             ..Default::default()
         },
@@ -94,7 +98,7 @@ async fn test_get_state_unlock_storage_invalid_password() {
     let action2 = json_example::<Action>("tests/fixtures/actions/unlock_storage_incorrect_password.json");
 
     let container = AppStateContainer(Mutex::new(AppState {
-        core_state: CoreState {
+        core_utils: CoreUtils {
             managers: test_managers(vec![]),
             ..Default::default()
         },

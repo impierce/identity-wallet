@@ -1,15 +1,15 @@
 use crate::{error::AppError, state::AppState};
+use lazy_static::lazy_static;
+use log::info;
+use log::{debug, warn};
+use std::io::{copy, Cursor};
+use std::{fs, sync::Mutex};
+use strum::Display;
+use tauri::Manager;
 use tokio::{
     fs::{read, remove_file, File},
     io::AsyncWriteExt,
 };
-use std::io::{Cursor, copy};
-use log::{debug, warn};
-use strum::Display;
-use lazy_static::lazy_static;
-use log::info;
-use std::{fs, sync::Mutex};
-use tauri::Manager;
 // This file uses both std::fs::File and tokio::fs::File, please be aware of the difference.
 // One is imported above (tokio::fs::File) and the other is qualified in line 134 (std::fs::File).
 
@@ -72,7 +72,7 @@ pub async fn save_state(app_state: &AppState) -> anyhow::Result<()> {
     let state_file = STATE_FILE.lock().unwrap().clone();
     let mut file = File::create(state_file).await?;
 
-    // Here we take out the credentials field before saving the state, 
+    // Here we take out the credentials field before saving the state,
     // being sensitive data they should only be stored in the stronghold, nowhere else.
     let mut json_app_state = serde_json::to_value(app_state)?;
     json_app_state["credentials"] = serde_json::Value::Array(Vec::new());
@@ -99,7 +99,7 @@ pub async fn delete_stronghold() -> anyhow::Result<()> {
     Ok(())
 }
 
-// Asset persistence functions 
+// Asset persistence functions
 
 #[derive(Display)]
 pub enum LogoType {

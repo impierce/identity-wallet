@@ -1,21 +1,31 @@
 pub mod actions;
-pub mod reducers;
+pub mod common;
+pub mod connections;
+pub mod core_utils;
+pub mod credentials;
+pub mod dev_mode;
+pub mod profile_settings;
+pub mod shared;
+pub mod user_data_query;
+pub mod user_journey;
 pub mod user_prompt;
 
-use self::reducers::authorization::ConnectionRequest;
-use crate::{
-    stronghold::StrongholdManager, state::user_prompt::CurrentUserPrompt,
-    verifiable_credential_record::DisplayCredential,
+use self::{
+    actions::Action,
+    core_utils::CoreUtils,
+    dev_mode::DevMode,
+    profile_settings::{Locale, Profile, ProfileSettings},
+    user_prompt::CurrentUserPrompt,
 };
+use crate::state::credentials::DisplayCredential;
+use crate::{error::AppError, state::connections::Connection};
+
 use derivative::Derivative;
 use downcast_rs::{impl_downcast, DowncastSync};
 use dyn_clone::DynClone;
-use oid4vc::oid4vc_core::Subject;
-use oid4vc::oid4vc_manager::ProviderManager;
-use oid4vc::oid4vci::Wallet;
+use futures::Future;
 use serde::{Deserialize, Serialize};
-use std::{collections::VecDeque, sync::Arc};
-use strum::EnumString;
+use std::{collections::VecDeque, pin::Pin};
 use ts_rs::TS;
 
 /// The AppState is the main state of the application shared between the backend and the frontend.
@@ -64,7 +74,7 @@ pub struct AppState {
     /// This field contains utils needed for the backend to perform its tasks.
     #[serde(skip)]
     #[derivative(Debug = "ignore")]
-    pub core_state: CoreState,
+    pub core_utils: CoreUtils,
     /// This field contains the profile settings, including Locale.
     pub profile_settings: ProfileSettings,
     /// User prompts are a way for the backend to communicate a desired/required user interaction to the frontend.
@@ -85,10 +95,10 @@ pub struct AppState {
 impl Clone for AppState {
     fn clone(&self) -> Self {
         Self {
-            core_state: CoreState {
-                managers: self.core_state.managers.clone(),
+            core_utils: CoreUtils {
+                managers: self.core_utils.managers.clone(),
                 active_connection_request: serde_json::from_value(serde_json::json!(
-                    self.core_state.active_connection_request
+                    self.core_utils.active_connection_request
                 ))
                 .unwrap(),
             },
@@ -112,100 +122,19 @@ impl AppState {
     }
 }
 
-/// BackEndUtils is a struct that contains all the utils that only the backend needs to perform its tasks.
-#[derive(Default)]
-pub struct CoreState {
-    pub managers: Arc<tauri::async_runtime::Mutex<Managers>>,
-    pub active_connection_request: Option<ConnectionRequest>,
+/// A macro to wrap a reducer function in a Box and a Pin.
+/// It checks the reducers for its signature,
+///  as it should comply with our standard for reducers.
+#[macro_export]
+macro_rules! reducer {
+    ($reducer:expr) => {
+        Box::new(move |app_state, action| Box::pin(async move { $reducer(app_state, action).await }))
+    };
 }
 
-/// Managers contains both the stronghold manager and the identity manager needed to perform operations on connections & credentials.
-#[derive(Default)]
-pub struct Managers {
-    pub stronghold_manager: Option<Arc<StrongholdManager>>,
-    pub identity_manager: Option<IdentityManager>,
-}
-
-/// IdentityManager contains the subject, provider_manager and wallet needed to perform operations within the oid4vc library.
-pub struct IdentityManager {
-    pub subject: Arc<dyn Subject>,
-    pub provider_manager: ProviderManager,
-    pub wallet: Wallet,
-}
-
-/// ProfileSettings contains all matters concerning the user profile and its settings.
-#[derive(Default, Serialize, Deserialize, Derivative, TS, Clone, PartialEq, Debug)]
-#[ts(export)]
-#[serde(default)]
-pub struct ProfileSettings {
-    pub locale: Locale,
-    pub profile: Option<Profile>,
-}
-
-#[typetag::serde(name = "profile_settings")]
-impl FeatTrait for ProfileSettings {}
-
-/// Format of a locale string: `ll_CC` - where ll is the language code (ISO 639) and CC is the country code (ISO 3166).
-#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default, EnumString)]
-#[ts(export)]
-#[allow(non_camel_case_types)]
-pub enum Locale {
-    #[default]
-    #[serde(rename = "en-US")]
-    en_US,
-    #[serde(rename = "en-GB")]
-    en_GB,
-    #[serde(rename = "de-DE")]
-    de_DE,
-    #[serde(rename = "nl-NL")]
-    nl_NL,
-}
-
-#[typetag::serde(name = "locale")]
-impl FeatTrait for Locale {}
-
-/// A profile of the current user.
-#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default)]
-#[ts(export)]
-#[serde(default)]
-pub struct Profile {
-    pub name: String,
-    pub picture: Option<String>,
-    pub theme: Option<String>,
-    pub primary_did: String,
-}
-
-#[typetag::serde(name = "profile")]
-impl FeatTrait for Profile {}
-
-/// DevMode is a simple enum to enable dev mode for developers to test the app.
-#[derive(Serialize, Deserialize, Debug, TS, Clone, PartialEq, Eq, Default)]
-#[ts(export, export_to = "bindings/DevMode.ts")]
-pub enum DevMode {
-    On,
-    #[default]
-    Off,
-    OnWithAutologin,
-}
-
-#[typetag::serde(name = "dev_mode")]
-impl FeatTrait for DevMode {}
-
-/// Connection contains the ID and information of a connection.
-#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default)]
-#[ts(export)]
-#[serde(default)]
-pub struct Connection {
-    pub id: String,
-    pub client_name: String,
-    pub url: String,
-    pub verified: bool,
-    pub first_interacted: String,
-    pub last_interacted: String,
-}
-
-#[typetag::serde(name = "connection")]
-impl FeatTrait for Connection {}
+/// A reducer is a function that takes the current state and an action and returns the new state.
+pub type Reducer<'a> =
+    Box<dyn Fn(AppState, Action) -> Pin<Box<dyn Future<Output = Result<AppState, AppError>> + Send>> + Send>;
 
 #[cfg(test)]
 mod tests {
