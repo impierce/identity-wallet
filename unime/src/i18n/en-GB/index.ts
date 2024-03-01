@@ -8,6 +8,9 @@ const en_GB = extendDictionary(en, {
   ONBOARDING: {
     CUSTOMIZE: {
       NAVBAR_TITLE: 'Customisation',
+      SKIP: {
+        TITLE: 'Skip customisation',
+      },
     },
     PLEDGE: {
       ITEM_1: {
@@ -19,12 +22,9 @@ const en_GB = extendDictionary(en, {
           "We do not track your actions behind the scenes. Full stop. Not for testing or any other reasons. That's our pledge. We also do not collect any anonymous device information or usage statistics. That decision makes developing the app a bit harder for us, but we believe it is the right decision.",
       },
     },
-    SKIP: {
-        TITLE: 'Skip customisation',
-      },
-    SETTINGS: {
-        FAVORITES: 'My favourites',
-      },
+  },
+  ME: {
+    FAVORITES: 'My favourites',
   },
 }) satisfies Translation;
 
