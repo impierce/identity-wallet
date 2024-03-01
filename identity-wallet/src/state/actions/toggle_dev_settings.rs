@@ -3,6 +3,7 @@ use crate::state::actions::ActionTrait;
 use crate::state::actions::Reducer;
 use crate::state::reducers::dev_mode::toggle_dev_mode;
 
+/// Action to toggle the DEV mode.
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct ToggleDevMode;
 

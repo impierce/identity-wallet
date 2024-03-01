@@ -3,6 +3,7 @@ use crate::state::actions::ActionTrait;
 use crate::state::actions::Reducer;
 use crate::state::reducers::get_state;
 
+/// Action to retrieve the state from the storage.
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]
 pub struct GetState;
 

@@ -103,7 +103,7 @@ async fn load_ferris_profile() -> Result<AppState, AppError> {
         theme: Some("system".to_string()),
         primary_did: subject.identifier().unwrap(),
     };
-    state.active_profile.replace(profile);
+    state.profile_settings.profile.replace(profile);
 
     vec![
         PERSONAL_INFORMATION.clone(),
@@ -134,6 +134,7 @@ async fn load_ferris_profile() -> Result<AppState, AppError> {
     load_predefined_images().await?;
 
     state
+        .core_state
         .managers
         .lock()
         .await
