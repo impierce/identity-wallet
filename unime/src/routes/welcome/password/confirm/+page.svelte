@@ -7,8 +7,6 @@
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
   import { onboarding_state } from '$src/stores';
 
-  import CheckCircle from '~icons/ph/check-circle-fill';
-  import Circle from '~icons/ph/circle';
   import Eye from '~icons/ph/eye';
   import EyeClosed from '~icons/ph/eye-closed';
   import Smiley from '~icons/ph/smiley';
@@ -37,7 +35,11 @@
       {$LL.ONBOARDING.PASSWORD.CONFIRM.TITLE_1()}
       <span class="text-primary">{$LL.ONBOARDING.PASSWORD.CONFIRM.TITLE_2()}</span>
     </p>
-    <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300 {keyboardView ? 'shrink-sub-title-height' : 'expand-sub-title-height'}">
+    <p
+      class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300 {keyboardView
+        ? 'shrink-sub-title-height'
+        : 'expand-sub-title-height'}"
+    >
       {$LL.ONBOARDING.PASSWORD.CONFIRM.SUBTITLE()}
     </p>
     <!-- <div class="mt-[70px] flex w-full items-center justify-center" /> -->
@@ -72,19 +74,11 @@
       {/if}
     </div>
   {/if}
-
-  {#if keyboardView}
-    <div class="mt-8" transition:fade={{ delay: 200 }}>
-      <Button label={$LL.CONTINUE()} on:click={() => goto('/welcome/password/completed')} disabled={!passwordsEqual} />
-    </div>
-  {/if}
 </div>
 
-{#if !keyboardView}
-  <div class="rounded-t-3xl bg-white p-6 dark:bg-dark" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
-    <Button label={$LL.CONTINUE()} on:click={() => goto('/welcome/password/completed')} disabled={!passwordsEqual} />
-  </div>
-{/if}
+<div class="rounded-t-3xl bg-white p-6 dark:bg-dark" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
+  <Button label={$LL.CONTINUE()} on:click={() => goto('/welcome/password/completed')} disabled={!passwordsEqual} />
+</div>
 
 <style>
   .expand-sub-title-height {
