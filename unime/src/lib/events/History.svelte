@@ -10,9 +10,9 @@
   import LL from '$src/i18n/i18n-svelte';
   import { state } from '$src/stores';
 
-  import DownloadSimple from '~icons/ph/download-simple';
-  import PlugsConnected from '~icons/ph/plugs-connected';
-  import ShareFat from '~icons/ph/share-fat';
+  import DownloadSimple from '~icons/ph/download-simple-fill';
+  import PlugsConnected from '~icons/ph/plugs-connected-fill';
+  import ShareFat from '~icons/ph/share-fat-fill';
 
   export let connectionId: string | undefined = undefined;
 
@@ -40,17 +40,17 @@
 
     switch (history.event_type) {
       case 'CredentialsAdded': {
-        title = $LL.TIMELINE.CREDENTIALS_ADDED() + ' ' + history.issuer_name;
+        title = $LL.TIMELINE.CREDENTIALS_ADDED() + ' ' + history.connection_name;
         icon = DownloadSimple;
         break;
       }
       case 'CredentialsShared': {
-        title = $LL.TIMELINE.CREDENTIALS_SHARED() + ' ' + history.issuer_name;
+        title = $LL.TIMELINE.CREDENTIALS_SHARED() + ' ' + history.connection_name;
         icon = ShareFat;
         break;
       }
       case 'ConnectionAdded': {
-        title = $LL.TIMELINE.CONNECTION_ADDED() + ' ' + history.issuer_name;
+        title = $LL.TIMELINE.CONNECTION_ADDED() + ' ' + history.connection_name;
         icon = PlugsConnected;
         break;
       }
@@ -79,15 +79,17 @@
       {#each events as event, i}
         <div class="flex flex-row">
           <div class="mt-2 flex flex-col items-center">
-            <div class="z-10 flex items-center justify-center rounded-full bg-white ring-8 ring-white dark:ring-silver">
+            <div
+              class="z-10 flex items-center justify-center rounded-full bg-grey text-slate-800 ring-8 ring-grey dark:bg-blue dark:text-grey dark:ring-blue"
+            >
               <svelte:component this={event.icon} class="h-4 w-4 " />
             </div>
             {#if hasNextElement(i)}
               <!-- Vertical line on the left -->
-              <div class="mb-2 mt-4 h-full rounded-full border border-slate-200 border-y-gray-200"></div>
+              <div class="mb-2 mt-4 h-full w-[2px] bg-grey dark:bg-blue"></div>
             {/if}
           </div>
-          <div class="ml-6 mt-[-8px] flex grow justify-between pb-10">
+          <div class="ml-6 mt-[-5px] flex grow justify-between pb-10">
             <div class="grow">
               <HistoryEntry {...event} />
             </div>

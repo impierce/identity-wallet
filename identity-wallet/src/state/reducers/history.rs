@@ -12,9 +12,9 @@ pub enum EventType {
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq, TS)]
 #[ts(export)]
 pub struct HistoryEvent {
-    pub issuer_name: String,
-    pub event_type: EventType,
     pub connection_id: Option<String>,
+    pub connection_name: String,
+    pub event_type: EventType,
     pub date: String,
     pub credentials: Vec<HistoryCredential>,
 }
@@ -23,7 +23,7 @@ pub struct HistoryEvent {
 #[ts(export)]
 pub struct HistoryCredential {
     pub title: String,
-    pub sub_title: String,
+    pub issuer_name: String,
     /// This id is also used as the image asset id
     pub id: String,
 }
