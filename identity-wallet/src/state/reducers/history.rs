@@ -4,11 +4,8 @@ use ts_rs::TS;
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq, TS)]
 #[ts(export)]
 pub enum EventType {
-    #[serde(rename = "connection_added")]
     ConnectionAdded,
-    #[serde(rename = "credentials_added")]
     CredentialsAdded,
-    #[serde(rename = "credentials_shared")]
     CredentialsShared,
 }
 
@@ -27,6 +24,6 @@ pub struct HistoryEvent {
 pub struct HistoryCredential {
     pub title: String,
     pub sub_title: String,
-    /// Is also the image id
+    /// This id is also used as the image asset id
     pub id: String,
 }

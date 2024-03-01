@@ -232,13 +232,19 @@ pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: A
     };
 
     // History
-    state.history.push(HistoryEvent {
-        issuer_name: client_name.clone(),
-        event_type: EventType::ConnectionAdded,
-        connection_id: Some(connection_id),
-        date: connection_time,
-        credentials: vec![],
-    });
+    if state
+        .history
+        .iter()
+        .all(|his| his.connection_id != Some(connection_id.clone()))
+    {
+        state.history.push(HistoryEvent {
+            issuer_name: client_name.clone(),
+            event_type: EventType::ConnectionAdded,
+            connection_id: Some(connection_id),
+            date: connection_time,
+            credentials: vec![],
+        });
+    }
 
     state.connections = connections;
     state.current_user_prompt = Some(CurrentUserPrompt::Redirect {

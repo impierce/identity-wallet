@@ -39,17 +39,17 @@
     let credentials = history.credentials;
 
     switch (history.event_type) {
-      case 'credentials_added': {
+      case 'CredentialsAdded': {
         title = $LL.TIMELINE.CREDENTIALS_ADDED() + ' ' + history.issuer_name;
         icon = DownloadSimple;
         break;
       }
-      case 'credentials_shared': {
+      case 'CredentialsShared': {
         title = $LL.TIMELINE.CREDENTIALS_SHARED() + ' ' + history.issuer_name;
         icon = ShareFat;
         break;
       }
-      case 'connection_added': {
+      case 'ConnectionAdded': {
         title = $LL.TIMELINE.CONNECTION_ADDED() + ' ' + history.issuer_name;
         icon = PlugsConnected;
         break;

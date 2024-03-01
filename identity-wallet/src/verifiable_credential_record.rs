@@ -95,7 +95,7 @@ fn get_type_name_from_data(credential_display: &serde_json::Value) -> Option<Str
 #[derivative(PartialEq)]
 #[ts(export, export_to = "bindings/display-credential/DisplayCredential.ts")]
 pub struct DisplayCredential {
-    /// Also display_icon
+    /// This id is also used as the image asset id
     pub id: String,
     pub issuer_name: String,
     #[ts(type = "string")]
