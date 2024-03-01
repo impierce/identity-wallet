@@ -31,7 +31,7 @@
     filteredEvents = $state.history;
   }
 
-  const events: DisplayEvent[] = filteredEvents.reverse().map((history) => {
+  const events: DisplayEvent[] = filteredEvents.map((history) => {
     let title: string;
     let icon: typeof SvelteComponent<SvelteHTMLElements['svg']>;
 
@@ -76,7 +76,7 @@
     </div>
   {:else}
     <div class="ml-2 mt-6">
-      {#each events as event, i}
+      {#each events.reverse() as event, i}
         <div class="flex flex-row">
           <div class="mt-2 flex flex-col items-center">
             <div
