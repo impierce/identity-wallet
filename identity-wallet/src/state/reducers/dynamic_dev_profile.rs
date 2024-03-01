@@ -21,7 +21,10 @@ pub async fn load_dragon_profile(mut state: AppState, dev_profile: DevProfile) -
 
     info!("Profile steps executed: {:?}", steps);
 
-    state = reset_settings(state).await?;
+    if dev_profile.reset_profile {
+        state = reset_settings(state).await?;
+    }
+
     state = create_new_profile(state).await?;
 
     if ProfileSteps::AddCredentials <= steps {
