@@ -1,20 +1,22 @@
 <script lang="ts">
-  import LL from '$src/i18n/i18n-svelte';
-  import Button from '$src/lib/components/atoms/Button.svelte';
-  import Slider from '~icons/ph/sliders-horizontal';
-  //import Arrows from '~icons/ph/arrows-down-up';
-  import Issued from '~icons/ph/calendar-check';
-  import Added from '~icons/ph/calendar-plus';
-  import List from '~icons/ph/list-dashes';
-  import Ascending from '~icons/ph/sort-ascending';
-  import Grid from '~icons/ph/squares-four';
-  import BottomDrawer from './dialogs/BottomDrawer.svelte';
   import { onMount } from 'svelte';
 
   import { melt } from '@melt-ui/svelte';
 
-  import { dispatch } from '$lib/dispatcher';   
+  import { dispatch } from '$lib/dispatcher';
+  import LL from '$src/i18n/i18n-svelte';
+  import Button from '$src/lib/components/atoms/Button.svelte';
   import { state } from '$src/stores';
+
+  //import Arrows from '~icons/ph/arrows-down-up';
+  import Issued from '~icons/ph/calendar-check';
+  import Added from '~icons/ph/calendar-plus';
+  import List from '~icons/ph/list-dashes';
+  import Slider from '~icons/ph/sliders-horizontal';
+  import Ascending from '~icons/ph/sort-ascending';
+  import Grid from '~icons/ph/squares-four';
+
+  import BottomDrawer from './dialogs/BottomDrawer.svelte';
 </script>
 
 <!-- To do: add dark version (dark:bg-dark), overlay, focus, close and open bottomdrawer-->
@@ -63,16 +65,14 @@
 
 <!-- Button for sorting -->
 <div class="mt-8">
-  <BottomDrawer titleText='Sorting' >
+  <BottomDrawer titleText="Sorting">
     <button
       slot="trigger"
       let:trigger
       use:melt={trigger}
       class=" flex h-10 w-10 items-center justify-center rounded-xl bg-white dark:bg-dark dark:text-gray-100"
-      ><Slider/></button
+      ><Slider /></button
     >
     <Button variant="primary" slot="close" let:close trigger={close} label={$LL.CLOSE()} />
   </BottomDrawer>
 </div>
-
-

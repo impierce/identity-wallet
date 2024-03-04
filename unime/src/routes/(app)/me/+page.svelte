@@ -93,7 +93,7 @@
             <div slot="0" class="h-full pt-5">
               <Favorites />
               <CredentialList />
-                 <!--  <SortModal /> -->
+              <!--  <SortModal /> -->
             </div>
 
             <!-- Data -->
