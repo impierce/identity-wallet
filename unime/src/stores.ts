@@ -1,8 +1,8 @@
 import { goto } from '$app/navigation';
-// TODO: run some copy task instead of importing across root to make the frontend independent
-import type { AppState as State } from '@bindings/AppState';
 import { readable, writable } from 'svelte/store';
 
+// TODO: run some copy task instead of importing across root to make the frontend independent
+import type { AppState as State } from '@bindings/AppState';
 import { listen } from '@tauri-apps/api/event';
 import { debug, info } from '@tauri-apps/plugin-log';
 
