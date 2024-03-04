@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { formatDistanceToNow, type Locale } from 'date-fns';
+  import { formatRelative, type Locale } from 'date-fns';
   import { de, enGB, enUS, nl } from 'date-fns/locale';
 
   import type { HistoryCredential } from '@bindings/HistoryCredential';
@@ -38,7 +38,7 @@
       return str.charAt(0).toUpperCase() + str.slice(1);
     }
 
-    const dateStr = formatDistanceToNow(new Date(date), { locale, addSuffix: true });
+    const dateStr = formatRelative(date, Date.now(), { locale });
     return capitalizeFirstLetter(dateStr);
   }
 

@@ -709,7 +709,7 @@ type RootTranslation = {
 		 */
 		CREDENTIALS_SHARED: string
 		/**
-		 * F​i​r​s​t​ ​c​o​n​n​e​c​t​i​o​n​ ​w​i​t​h
+		 * C​o​n​n​e​c​t​e​d​ ​t​o
 		 */
 		CONNECTION_ADDED: string
 	}
@@ -1484,7 +1484,7 @@ export type TranslationFunctions = {
 		 */
 		CREDENTIALS_SHARED: () => LocalizedString
 		/**
-		 * First connection with
+		 * Connected to
 		 */
 		CONNECTION_ADDED: () => LocalizedString
 	}

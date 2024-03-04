@@ -3,7 +3,7 @@ use crate::{
     state::{
         actions::{listen, Action, CredentialOffersSelected, QrCodeScanned},
         persistence::persist_asset,
-        reducers::history::{EventType, HistoryCredential, HistoryEvent},
+        history::{EventType, HistoryCredential, HistoryEvent},
         user_prompt::CurrentUserPrompt,
         AppState,
     },
