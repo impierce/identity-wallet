@@ -1,8 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
 
-  import { twMerge } from 'tailwind-merge';
-
   import Image from '$lib/components/atoms/Image.svelte';
 
   const dispatch = createEventDispatcher();
