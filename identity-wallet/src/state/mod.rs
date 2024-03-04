@@ -2,10 +2,12 @@ pub mod actions;
 pub mod persistence;
 pub mod reducers;
 pub mod user_prompt;
+pub mod history;
 
 use crate::{
     crypto::stronghold::StrongholdManager,
-    state::reducers::{authorization::ConnectionRequest, history::HistoryEvent},
+    state::reducers::authorization::ConnectionRequest, 
+    state::history::HistoryEvent,
     state::user_prompt::CurrentUserPrompt,
     verifiable_credential_record::DisplayCredential,
 };
