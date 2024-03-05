@@ -4,7 +4,7 @@ use crate::{
     state::{
         actions::{listen, Action, CredentialsSelected, QrCodeScanned},
         persistence::persist_asset,
-        history::{EventType, HistoryCredential, HistoryEvent},
+        history_event::{EventType, HistoryCredential, HistoryEvent},
         user_prompt::CurrentUserPrompt,
         AppState, Connection, CoreState,
     },
@@ -289,13 +289,7 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
                 };
 
                 if share_credential.is_some() {
-                    let display = &verifiable_credential_record.display_credential;
-
-                    history_credentials.push(HistoryCredential {
-                        title: display.display_name.to_string(),
-                        issuer_name: display.issuer_name.to_string(),
-                        id: display.id.to_string(),
-                    });
+                    history_credentials.push(HistoryCredential::from_credential(&verifiable_credential_record));
                 }
 
                 share_credential

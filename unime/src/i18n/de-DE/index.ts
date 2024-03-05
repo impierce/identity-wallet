@@ -208,7 +208,7 @@ const de = {
     NAVBAR_TITLE: 'Verbunden',
     TABS: {
       CONNECTIONS: 'Verbindungen',
-      TIMELINE: 'Verlauf',
+      HISTORY: 'Verlauf',
     },
   },
   SCAN: {
@@ -253,7 +253,7 @@ const de = {
       EMPTY: 'Noch keine Daten.',
     },
   },
-  TIMELINE: {
+  HISTORY: {
     EMPTY: 'Noch keine Aktivitäten.',
   },
   SEARCH: {
