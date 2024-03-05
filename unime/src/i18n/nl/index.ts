@@ -228,6 +228,16 @@ const nl = {
       DESCRIPTION: 'Probeer iets anders te zoeken.',
     },
   },
+  SORT: {
+    TITLE: 'Sorteer',
+    PREFERENCES: {
+      LIST_VIEW: '',
+      GRID_VIEW: '',
+      ALPHABETICAL: '',
+      DATE_ISSUED: '',
+      DATE_ADDED: '',
+    },
+  },
   CANCEL: 'Annuleren',
   CLOSE: 'Sluiten',
   CONTINUE: 'Doorgaan',

@@ -603,6 +603,34 @@ type RootTranslation = {
 			DESCRIPTION: string
 		}
 	}
+	SORT: {
+		/**
+		 * S​o​r​t​i​n​g
+		 */
+		TITLE: string
+		PREFERENCES: {
+			/**
+			 * L​i​s​t​ ​V​i​e​w
+			 */
+			LIST_VIEW: string
+			/**
+			 * G​r​i​d​ ​V​i​e​w
+			 */
+			GRID_VIEW: string
+			/**
+			 * A​l​p​h​a​b​e​t​i​c​a​l
+			 */
+			ALPHABETICAL: string
+			/**
+			 * D​a​t​e​ ​I​s​s​u​e​d
+			 */
+			DATE_ISSUED: string
+			/**
+			 * D​a​t​e​ ​A​d​d​e​d
+			 */
+			DATE_ADDED: string
+		}
+	}
 	/**
 	 * C​a​n​c​e​l
 	 */
@@ -1208,6 +1236,34 @@ export type TranslationFunctions = {
 			 * Try searching for something else.
 			 */
 			DESCRIPTION: () => LocalizedString
+		}
+	}
+	SORT: {
+		/**
+		 * Sorting
+		 */
+		TITLE: () => LocalizedString
+		PREFERENCES: {
+			/**
+			 * List View
+			 */
+			LIST_VIEW: () => LocalizedString
+			/**
+			 * Grid View
+			 */
+			GRID_VIEW: () => LocalizedString
+			/**
+			 * Alphabetical
+			 */
+			ALPHABETICAL: () => LocalizedString
+			/**
+			 * Date Issued
+			 */
+			DATE_ISSUED: () => LocalizedString
+			/**
+			 * Date Added
+			 */
+			DATE_ADDED: () => LocalizedString
 		}
 	}
 	/**
