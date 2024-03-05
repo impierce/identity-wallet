@@ -8,7 +8,7 @@ use crate::{
             QrCodeScanned, Reset,
         },
         user_prompt::CurrentUserPrompt,
-        AppState, DevMode,
+        AppState, AppTheme, DevMode,
     },
 };
 use log::{debug, info};
@@ -73,7 +73,7 @@ async fn create_new_profile(state: AppState) -> Result<AppState, AppError> {
     let create_new = CreateNew {
         name: "Shenron".to_string(),
         picture: "&#x1F432".to_string(),
-        theme: "dark".to_string(),
+        theme: AppTheme::Dark,
         password: PASSWORD.to_string(),
     };
 

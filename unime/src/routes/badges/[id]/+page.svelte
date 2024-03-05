@@ -29,8 +29,8 @@
 
   let credential = $state.credentials.find((c) => $page.params.id === c.id)!!;
 
-  let icon: any = credential.metadata.display.icon || 'User';
-  let title: string = credential.metadata.display.name || credential.data.type.at(-1);
+  let icon = credential.display_icon || 'User';
+  let title = credential.display_name;
 
   let credentialLogoUrl: string | null;
 
@@ -46,8 +46,8 @@
     const credential = $state.credentials.find((c) => $page.params.id === c.id)!!;
     // TODO: update icon, title, isFavorite when changes in store
     isFavorite = credential.metadata.is_favorite;
-    title = credential.metadata.display.name || credential.data.type.at(-1);
-    icon = credential.metadata.display.icon || 'User';
+    title = credential.display_name;
+    icon = credential.display_icon || 'User';
   }
 
   const hiddenStandardFields: string[] = ['id', 'type', 'name', 'description', 'image'];
@@ -192,7 +192,7 @@
             </div>
           {/if}
           <p class="text-center text-xs text-black [word-break:break-word] dark:text-white">
-            {credential.data.issuer.name ?? credential.data.issuer ?? credential.issuer_name}
+            {credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
           </p>
         </div>
       </div>
@@ -255,7 +255,7 @@
           {/await}
         </div>
         <p class="pt-5 text-xl font-semibold text-black">
-          {Object.entries(credential.data.credentialSubject).at(-1).at(1)}
+          {Object.entries(credential.data.credentialSubject).at(-1)?.at(1)}
         </p>
       </div>
     </span>

@@ -2,10 +2,13 @@ pub mod actions;
 pub mod persistence;
 pub mod reducers;
 pub mod user_prompt;
+pub mod history_event;
 
-use self::reducers::authorization::ConnectionRequest;
 use crate::{
-    crypto::stronghold::StrongholdManager, state::user_prompt::CurrentUserPrompt,
+    crypto::stronghold::StrongholdManager,
+    state::reducers::authorization::ConnectionRequest, 
+    state::history_event::HistoryEvent,
+    state::user_prompt::CurrentUserPrompt,
     verifiable_credential_record::DisplayCredential,
 };
 use derivative::Derivative;
@@ -71,11 +74,13 @@ pub struct AppState {
     /// User prompts are a way for the backend to communicate a desired/required user interaction to the frontend.
     pub current_user_prompt: Option<CurrentUserPrompt>,
     /// Here user_journeys can be loaded from json_files or strings, to give the user a guided experience.
-    #[ts(type = "object | null")]
+    #[ts(type = "any | null")]
     pub user_journey: Option<serde_json::Value>,
     /// Handled in command.rs, so no feature folder nor redux pattern needed.
     #[ts(type = "Array<string>")]
     pub debug_messages: VecDeque<String>,
+    /// History events
+    pub history: Vec<HistoryEvent>,
     /// Extensions will bring along their own redux compliant code, in the unime folder.
     #[ts(skip)]
     pub extensions: std::collections::HashMap<String, Box<dyn FeatTrait>>,
@@ -100,6 +105,7 @@ impl Clone for AppState {
             user_journey: self.user_journey.clone(),
             connections: self.connections.clone(),
             user_data_query: self.user_data_query.clone(),
+            history: self.history.clone(),
             extensions: self.extensions.clone(),
             dev_mode: self.dev_mode.clone(),
         }
@@ -162,6 +168,17 @@ pub enum Locale {
     nl_NL,
 }
 
+#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone, PartialEq, Eq)]
+#[ts(export, export_to = "bindings/theme.ts")]
+pub enum AppTheme {
+    #[serde(rename = "system")]
+    System,
+    #[serde(rename = "dark")]
+    Dark,
+    #[serde(rename = "light")]
+    Light,
+}
+
 #[typetag::serde(name = "locale")]
 impl FeatTrait for Locale {}
 
@@ -172,7 +189,7 @@ impl FeatTrait for Locale {}
 pub struct Profile {
     pub name: String,
     pub picture: Option<String>,
-    pub theme: Option<String>,
+    pub theme: Option<AppTheme>,
     pub primary_did: String,
 }
 
@@ -261,6 +278,7 @@ mod tests {
                   },
                   "user_journey": null,
                   "debug_messages": [],
+                  "history": [],
                   "extensions": {},
                   "dev_mode": "Off"
                 }"#}

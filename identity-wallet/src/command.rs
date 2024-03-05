@@ -102,6 +102,9 @@ pub async fn handle_action<R: tauri::Runtime>(
 pub fn emit_event<R: tauri::Runtime>(window: &tauri::Window<R>, app_state: &AppState) -> anyhow::Result<()> {
     const STATE_CHANGED_EVENT: &str = "state-changed";
     window.emit(STATE_CHANGED_EVENT, app_state)?;
-    debug!("emitted event `{}` with payload `{:?}`", STATE_CHANGED_EVENT, app_state);
+
+    let app_state_json_str = serde_json::to_string(app_state).unwrap();
+
+    debug!("emitted event `{}` with payload:\n {}", STATE_CHANGED_EVENT, app_state_json_str);
     Ok(())
 }

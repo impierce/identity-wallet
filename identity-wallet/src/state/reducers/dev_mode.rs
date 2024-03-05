@@ -3,7 +3,7 @@ use crate::crypto::stronghold::StrongholdManager;
 use crate::error::AppError::{self, *};
 use crate::state::actions::{listen, Action, DevProfile, ProfileType, UnlockStorage};
 use crate::state::user_prompt::CurrentUserPrompt;
-use crate::state::{AppState, Connection, DevMode, Profile};
+use crate::state::{AppState, AppTheme, Connection, DevMode, Profile};
 use crate::verifiable_credential_record::VerifiableCredentialRecord;
 use crate::{command, ASSETS_DIR};
 use did_key::{generate, Ed25519KeyPair};
@@ -100,7 +100,7 @@ async fn load_ferris_profile() -> Result<AppState, AppError> {
     let profile = Profile {
         name: "Ferris".to_string(),
         picture: Some("&#129408".to_string()),
-        theme: Some("system".to_string()),
+        theme: Some(AppTheme::Dark),
         primary_did: subject.identifier().unwrap(),
     };
     state.profile_settings.profile.replace(profile);

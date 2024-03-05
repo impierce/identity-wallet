@@ -570,9 +570,9 @@ type RootTranslation = {
 			 */
 			CONNECTIONS: string
 			/**
-			 * T​i​m​e​l​i​n​e
+			 * H​i​s​t​o​r​y
 			 */
-			TIMELINE: string
+			HISTORY: string
 		}
 	}
 	SCAN: {
@@ -695,11 +695,23 @@ type RootTranslation = {
 			EMPTY: string
 		}
 	}
-	TIMELINE: {
+	HISTORY: {
 		/**
 		 * N​o​ ​a​c​t​i​v​i​t​y​ ​y​e​t​.
 		 */
 		EMPTY: string
+		/**
+		 * R​e​c​e​i​v​e​d​ ​d​a​t​a​ ​f​r​o​m
+		 */
+		DATA_RECEIVED: string
+		/**
+		 * S​h​a​r​e​d​ ​d​a​t​a​ ​w​i​t​h
+		 */
+		DATA_SHARED: string
+		/**
+		 * C​o​n​n​e​c​t​e​d​ ​t​o
+		 */
+		CONNECTION_ADDED: string
 	}
 	SEARCH: {
 		/**
@@ -1333,9 +1345,9 @@ export type TranslationFunctions = {
 			 */
 			CONNECTIONS: () => LocalizedString
 			/**
-			 * Timeline
+			 * History
 			 */
-			TIMELINE: () => LocalizedString
+			HISTORY: () => LocalizedString
 		}
 	}
 	SCAN: {
@@ -1458,11 +1470,23 @@ export type TranslationFunctions = {
 			EMPTY: () => LocalizedString
 		}
 	}
-	TIMELINE: {
+	HISTORY: {
 		/**
 		 * No activity yet.
 		 */
 		EMPTY: () => LocalizedString
+		/**
+		 * Received data from
+		 */
+		DATA_RECEIVED: () => LocalizedString
+		/**
+		 * Shared data with
+		 */
+		DATA_SHARED: () => LocalizedString
+		/**
+		 * Connected to
+		 */
+		CONNECTION_ADDED: () => LocalizedString
 	}
 	SEARCH: {
 		/**

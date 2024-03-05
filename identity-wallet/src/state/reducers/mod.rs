@@ -99,7 +99,7 @@ pub async fn set_locale(state: AppState, action: Action) -> Result<AppState, App
 }
 
 /// Creates a new profile with a new DID (using the did:key method) and sets it as the active profile.
-pub async fn create_identity(state: AppState, action: Action) -> Result<AppState, AppError> {
+pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(CreateNew {
         name, picture, theme, ..
     }) = listen::<CreateNew>(action)
@@ -120,9 +120,9 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
 
         let profile_settings = ProfileSettings {
             profile: Some(Profile {
-                name: name.to_string(),
-                picture: Some(picture.to_string()),
-                theme: Some(theme.to_string()),
+                name,
+                picture: Some(picture),
+                theme: Some(theme),
                 primary_did: subject.identifier().map_err(OID4VCSubjectIdentifierError)?,
             }),
             ..Default::default()
@@ -134,13 +134,9 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
             wallet,
         });
 
-        drop(state_guard);
-        return Ok(AppState {
-            profile_settings,
-            current_user_prompt: Some(CurrentUserPrompt::Redirect {
-                target: "me".to_string(),
-            }),
-            ..state
+        state.profile_settings = profile_settings;
+        state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
+            target: "me".to_string(),
         });
     }
 
@@ -189,27 +185,29 @@ pub async fn update_credential_metadata(state: AppState, action: Action) -> Resu
             .find(|record| record.display_credential.id == credential_id.to_string())
             .ok_or(StrongholdMissingCredentialError(credential_id))?;
 
+        let display_credential = &mut verifiable_credential_record.display_credential;
+
         info!(
             "verifiable_credential_record (before): {:?}",
-            verifiable_credential_record.display_credential.metadata
+            display_credential.metadata
         );
 
-        // set name if given
-        if name.is_some() {
-            verifiable_credential_record.display_credential.metadata.display.name = name;
+        // Set name if given
+        if let Some(name) = name {
+            display_credential.display_name = name;
         }
 
-        // set color if given
+        // Set color if given
         if color.is_some() {
-            verifiable_credential_record.display_credential.metadata.display.color = color;
+            display_credential.display_color = color;
         }
 
-        // set icon if given
+        // Set icon if given
         if icon.is_some() {
-            verifiable_credential_record.display_credential.metadata.display.icon = icon;
+            display_credential.display_icon = icon;
         }
 
-        // set favorite if given
+        // Set favorite if given
         if let Some(is_favorite) = is_favorite {
             verifiable_credential_record.display_credential.metadata.is_favorite = is_favorite;
         }
@@ -297,7 +295,7 @@ mod tests {
     use super::*;
     use crate::state::{
         actions::{CancelUserJourney, Reset},
-        Locale,
+        AppTheme, Locale,
     };
 
     #[tokio::test]
@@ -357,7 +355,7 @@ mod tests {
         let active_profile = Profile {
             name: "Ferris".to_string(),
             picture: Some("&#129408".to_string()),
-            theme: Some("system".to_string()),
+            theme: Some(AppTheme::System),
             primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
         };
 
@@ -374,7 +372,7 @@ mod tests {
             Arc::new(UpdateProfileSettings {
                 name: None,
                 picture: None,
-                theme: Some("light".to_string()),
+                theme: Some(AppTheme::Light),
             }),
         )
         .await
@@ -383,7 +381,7 @@ mod tests {
         assert_eq!(
             app_state.profile_settings.profile,
             Some(Profile {
-                theme: Some("light".to_string()),
+                theme: Some(AppTheme::Light),
                 ..active_profile
             })
         );
@@ -410,7 +408,7 @@ mod tests {
                 profile: Some(Profile {
                     name: "Ferris".to_string(),
                     picture: Some("&#129408".to_string()),
-                    theme: Some("system".to_string()),
+                    theme: Some(AppTheme::System),
                     primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
                 }),
                 ..Default::default()
