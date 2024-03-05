@@ -40,17 +40,17 @@
 
     switch (history.event_type) {
       case 'CredentialsAdded': {
-        title = $LL.TIMELINE.CREDENTIALS_ADDED() + ' ' + history.connection_name;
+        title = $LL.HISTORY.DATA_RECEIVED() + ' ' + history.connection_name;
         icon = DownloadSimple;
         break;
       }
       case 'CredentialsShared': {
-        title = $LL.TIMELINE.CREDENTIALS_SHARED() + ' ' + history.connection_name;
+        title = $LL.HISTORY.DATA_SHARED() + ' ' + history.connection_name;
         icon = ShareFat;
         break;
       }
       case 'ConnectionAdded': {
-        title = $LL.TIMELINE.CONNECTION_ADDED() + ' ' + history.connection_name;
+        title = $LL.HISTORY.CONNECTION_ADDED() + ' ' + history.connection_name;
         icon = PlugsConnected;
         break;
       }
@@ -72,7 +72,7 @@
 <div class="relative mt-6 flex h-full flex-col">
   {#if $state.history.length === 0}
     <div class="flex h-full flex-col items-center justify-center">
-      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">{$LL.TIMELINE.EMPTY()}</p>
+      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">{$LL.HISTORY.EMPTY()}</p>
     </div>
   {:else}
     <div class="ml-2 mt-6">

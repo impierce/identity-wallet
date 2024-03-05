@@ -254,8 +254,8 @@ const nl = {
   },
   TIMELINE: {
     EMPTY: 'Nog geen activiteit.',
-    CREDENTIALS_ADDED: 'Credentials gekregen van',
-    CREDENTIALS_SHARED: 'Credentials gedeeld met',
+    DATA_RECEIVED: 'Data gekregen van',
+    DATA_SHARED: 'Data gedeeld met',
     CONNECTION_ADDED: 'Verbonden met',
   },
   SEARCH: {
