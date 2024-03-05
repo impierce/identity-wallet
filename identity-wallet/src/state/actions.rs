@@ -60,17 +60,23 @@ pub fn listen<T: ActionTrait + Clone>(action: Action) -> Option<T> {
 
 // TODO: remove this once we have a better way to export the TS types.
 mod bindings {
-    use crate::state::{
-        common::actions::{CancelUserFlow, UnlockStorage},
-        credentials::actions::{CredentialOffersSelected, CredentialsSelected, UpdateCredentialMetadata},
-        dev_mode::actions::DevProfile,
-        profile_settings::actions::{CreateNew, SetLocale, UpdateProfileSettings},
-        shared::actions::QrCodeScanned,
-        user_data_query::actions::UserDataQuery,
-    };
 
     use serde::{Deserialize, Serialize};
     use ts_rs::TS;
+
+    use crate::state::{
+        common::actions::{cancel_user_flow::CancelUserFlow, unlock_storage::UnlockStorage},
+        credentials::actions::{
+            credential_offers_selected::CredentialOffersSelected, credentials_selected::CredentialsSelected,
+            update_credential_metadata::UpdateCredentialMetadata,
+        },
+        dev_mode::actions::dev_profile::DevProfile,
+        profile_settings::actions::{
+            create_new::CreateNew, set_locale::SetLocale, update_profile_settings::UpdateProfileSettings,
+        },
+        shared::actions::qrcode_scanned::QrCodeScanned,
+        user_data_query::actions::user_data_query::UserDataQuery,
+    };
 
     #[derive(Serialize, Deserialize, TS)]
     #[serde(tag = "type")]

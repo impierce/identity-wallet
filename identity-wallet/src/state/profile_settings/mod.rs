@@ -59,8 +59,8 @@ mod tests {
     use super::*;
     use crate::state::AppState;
     use tests::{
-        actions::{SetLocale, UpdateProfileSettings},
-        reducers::{set_locale, update_profile_settings},
+        actions::{set_locale::SetLocale, update_profile_settings::UpdateProfileSettings},
+        reducers::{set_locale::set_locale, update_profile_settings::update_profile_settings},
     };
 
     use std::sync::Arc;

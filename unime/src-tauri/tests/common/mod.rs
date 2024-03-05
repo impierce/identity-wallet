@@ -3,7 +3,7 @@ pub mod extensions;
 
 use identity_wallet::oid4vc_manager::{methods::key_method::KeySubject, ProviderManager};
 use identity_wallet::oid4vci::Wallet;
-use identity_wallet::state::shared::core_state::VerifiableCredentialRecord;
+use identity_wallet::state::shared::core_utils::VerifiableCredentialRecord;
 use identity_wallet::{
     state::core_utils::{IdentityManager, Managers},
     stronghold::StrongholdManager,

@@ -1,6 +1,4 @@
 pub mod actions;
-pub mod dragon_dynamic_profile;
-pub mod ferris_static_profile;
 pub mod reducers;
 
 use super::FeatTrait;

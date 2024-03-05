@@ -1,5 +1,6 @@
-pub mod actions;
-pub mod reducers;
+// pub mod actions;
+// pub mod reducers;
+// Currently CoreUtils only contains feature structs used in the AppState struct, no actions, no reducers.
 
 use super::connections::ConnectionRequest;
 use crate::stronghold::StrongholdManager;

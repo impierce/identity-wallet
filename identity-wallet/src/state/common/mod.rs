@@ -6,8 +6,8 @@ mod tests {
 
     use crate::state::{
         common::{
-            actions::{CancelUserFlow, Reset},
-            reducers::{cancel_user_flow, reset_state},
+            actions::{cancel_user_flow::CancelUserFlow, reset::Reset},
+            reducers::{cancel_user_flow::cancel_user_flow, reset_state::reset_state},
         },
         profile_settings::{Locale, Profile, ProfileSettings},
         user_prompt::CurrentUserPrompt,
