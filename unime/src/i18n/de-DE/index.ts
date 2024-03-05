@@ -253,7 +253,7 @@ const de = {
       EMPTY: 'Noch keine Daten.',
     },
   },
-  TIMELINE: {
+  HISTORY: {
     EMPTY: 'Noch keine Aktivitäten.',
   },
   SEARCH: {
