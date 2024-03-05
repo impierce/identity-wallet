@@ -25,7 +25,7 @@
     </div> -->
   </div>
   <div class="flex grow flex-col overflow-y-auto px-4 pt-5">
-    <Tabs triggers={[$LL.ACTIVITY.TABS.CONNECTIONS(), $LL.ACTIVITY.TABS.TIMELINE()]}>
+    <Tabs triggers={[$LL.ACTIVITY.TABS.CONNECTIONS(), $LL.ACTIVITY.TABS.HISTORY()]}>
       <div slot="0" class="h-full pt-5">
         <!-- Search & Sort -->
         <!-- <div class="flex pb-4">
