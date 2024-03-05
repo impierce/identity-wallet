@@ -231,11 +231,11 @@ const nl = {
   SORT: {
     TITLE: 'Sorteer',
     PREFERENCES: {
-      LIST_VIEW: '',
-      GRID_VIEW: '',
-      ALPHABETICAL: '',
-      DATE_ISSUED: '',
-      DATE_ADDED: '',
+      LIST_VIEW: 'Lijstweergave',
+      GRID_VIEW: 'Rasterweergave',
+      ALPHABETICAL: 'Alfabetische Volgorde',
+      DATE_ISSUED: 'Datum Uitgegeven',
+      DATE_ADDED: 'Datum Toegevoegd',
     },
   },
   CANCEL: 'Annuleren',

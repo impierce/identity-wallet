@@ -229,6 +229,16 @@ const de = {
       DESCRIPTION: 'Versuche es mit einem anderen Suchbegriff.',
     },
   },
+  SORT: {
+    TITLE: '',
+    PREFERENCES: {
+      LIST_VIEW: '',
+      GRID_VIEW: '',
+      ALPHABETICAL: '',
+      DATE_ISSUED: '',
+      DATE_ADDED: '',
+    },
+  },
   CANCEL: 'Abbrechen',
   CLOSE: 'Schließen',
   CONTINUE: 'Weiter',
