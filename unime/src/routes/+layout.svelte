@@ -202,7 +202,7 @@
 
   {#if showDragonProfileSteps}
     <div class="fixed z-10 flex h-screen w-screen justify-center bg-black/50 pt-24">
-      <div class="ml-10 mr-10 mt-10 flex h-fit w-full flex-col rounded bg-white pl-4 pr-4 pb-4">
+      <div class="ml-10 mr-10 mt-10 flex h-fit w-full flex-col rounded bg-white pb-4 pl-4 pr-4">
         <p class="pb-2 pt-2 text-center text-orange-800">Profile steps</p>
 
         <div class="flex items-center justify-end pb-2">
