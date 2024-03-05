@@ -15,26 +15,24 @@
 
   let preferredView: 'list' | 'grid' = 'list';
   let preferences: 'alphabetical' | 'issued' | 'added';
-
-
 </script>
-
-
+<!-- bottom drawer and sorting button-->
 <div class="sort_wrapper">
   <BottomDrawer titleText={$LL.SORT.TITLE()}>
     <button
       slot="trigger"
       let:trigger
       use:melt={trigger}
-      class="flex h-10 w-10 items-center justify-center rounded-xl bg-white dark:bg-dark dark:text-gray-100"
+      class="flex h-10 w-10 items-center justify-center rounded-xl bg-white dark:bg-dark dark:text-grey"
       ><Slider /></button
     >
+    <!-- bottom drawer and list items with preferred view and sorting preferences-->
     <div slot="content" class="w-full">
       <ul class="relative pb-5">
         <li
           on:click={() => (preferredView = 'list')}
-          class={`flex gap-2 border p-[10px] my-1 text-slate-800 dark:text-gray-100 ${
-            preferredView == 'list' ? 'rounded-lg border-grey bg-silver' : 'border-transparent'
+          class={`my-1 flex gap-2 border p-[10px] text-slate-800 dark:text-grey ${
+            preferredView == 'list' ? 'rounded-lg border-grey bg-silver dark:border-slate-600 dark:bg-navy' : 'border-transparent'
           }`}
         >
           <List />
@@ -42,8 +40,8 @@
         </li>
         <li
           on:click={() => (preferredView = 'grid')}
-          class={`flex gap-2 border p-[10px] my-1 text-slate-800 dark:text-gray-100 ${
-            preferredView == 'grid' ? 'rounded-lg border-grey bg-silver' : 'border-transparent'
+          class={`my-1 flex gap-2 border p-[10px] text-slate-800 dark:text-grey ${
+            preferredView == 'grid' ? 'rounded-lg border-grey bg-silver dark:border-slate-600 dark:bg-navy' : 'border-transparent'
           }`}
         >
           <Grid />
@@ -52,23 +50,32 @@
 
         <hr class="full-width fill-[#efefef]" />
 
-        <li on:click={() => (preferences = 'alphabetical')} class={`flex gap-2 border p-[10px] my-1 text-slate-800 dark:text-gray-100 ${
-          preferences == 'alphabetical' ? 'rounded-lg border-grey bg-silver' : 'border-transparent'
-        }`}>
+        <li
+          on:click={() => (preferences = 'alphabetical')}
+          class={`my-1 flex gap-2 border p-[10px] text-slate-800 dark:text-grey ${
+            preferences == 'alphabetical' ? 'rounded-lg border-grey bg-silver dark:border-slate-600 dark:bg-navy' : 'border-transparent'
+          }`}
+        >
           <Ascending />
           <p class="text-sm font-medium">{$LL.SORT.PREFERENCES.ALPHABETICAL()}</p>
         </li>
 
-        <li on:click={() => (preferences = 'issued')} class={`flex gap-2 border p-[10px] my-1 text-slate-800 dark:text-gray-100 ${
-          preferences == 'issued' ? 'rounded-lg border-grey bg-silver' : 'border-transparent'
-        }`}>
+        <li
+          on:click={() => (preferences = 'issued')}
+          class={`my-1 flex gap-2 border p-[10px] text-slate-800 dark:text-grey ${
+            preferences == 'issued' ? 'rounded-lg border-grey bg-silver dark:border-slate-600 dark:bg-navy' : 'border-transparent'
+          }`}
+        >
           <Issued />
           <p class="text-sm font-medium">{$LL.SORT.PREFERENCES.DATE_ISSUED()}</p>
         </li>
 
-        <li on:click={() => (preferences = 'added')} class={`flex gap-2 border p-[10px] my-1 text-slate-800 dark:text-gray-100 ${
-          preferences == 'added' ? 'rounded-lg border-grey bg-silver' : 'border-transparent'
-        }`}>
+        <li
+          on:click={() => (preferences = 'added')}
+          class={`my-1 flex gap-2 border p-[10px] text-slate-800 dark:text-grey ${
+            preferences == 'added' ? 'rounded-lg border-grey bg-silver dark:border-slate-600 dark:bg-navy' : 'border-transparent'
+          }`}
+        >
           <Added />
           <p class="text-sm font-medium">{$LL.SORT.PREFERENCES.DATE_ADDED()}</p>
         </li>
