@@ -207,7 +207,7 @@ const nl = {
     NAVBAR_TITLE: 'Verbonden',
     TABS: {
       CONNECTIONS: 'Connecties',
-      TIMELINE: 'Tijdlijn',
+      HISTORY: 'Tijdlijn',
     },
   },
   SCAN: {

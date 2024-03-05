@@ -208,7 +208,7 @@ const de = {
     NAVBAR_TITLE: 'Verbunden',
     TABS: {
       CONNECTIONS: 'Verbindungen',
-      TIMELINE: 'Verlauf',
+      HISTORY: 'Verlauf',
     },
   },
   SCAN: {

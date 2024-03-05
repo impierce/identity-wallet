@@ -3,7 +3,7 @@ use crate::{
     state::{
         actions::{listen, Action, CredentialOffersSelected, QrCodeScanned},
         persistence::persist_asset,
-        history::{EventType, HistoryCredential, HistoryEvent},
+        history_event::{EventType, HistoryCredential, HistoryEvent},
         user_prompt::CurrentUserPrompt,
         AppState,
     },
@@ -368,13 +368,7 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
                 .map_err(StrongholdInsertionError)?;
 
             // Add history event
-            let display = &verifiable_credential_record.display_credential;
-
-            history_credentials.push(HistoryCredential {
-                title: display.display_name.to_string(),
-                issuer_name: display.issuer_name.to_string(),
-                id: display.id.to_string(),
-            });
+            history_credentials.push(HistoryCredential::from_credential(&verifiable_credential_record));
         }
 
         let credentials: Vec<DisplayCredential> = stronghold_manager
