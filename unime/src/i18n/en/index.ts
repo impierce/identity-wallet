@@ -207,7 +207,7 @@ const en = {
     NAVBAR_TITLE: 'Connected',
     TABS: {
       CONNECTIONS: 'Connections',
-      TIMELINE: 'Timeline',
+      HISTORY: 'History',
     },
   },
   SCAN: {
@@ -252,8 +252,11 @@ const en = {
       EMPTY: 'No data yet.',
     },
   },
-  TIMELINE: {
+  HISTORY: {
     EMPTY: 'No activity yet.',
+    DATA_RECEIVED: 'Received data from',
+    DATA_SHARED: 'Shared data with',
+    CONNECTION_ADDED: 'Connected to',
   },
   SEARCH: {
     INPUT_PLACEHOLDER: 'Look for something',

@@ -36,3 +36,31 @@ pub async fn reset_state(state: AppState, _action: Action) -> Result<AppState, A
         ..Default::default()
     })
 }
+
+#[cfg(test)]
+mod tests {
+    use std::sync::Arc;
+
+    use crate::state::{common::reset::{reset_state, Reset}, profile_settings::{Locale, Profile, ProfileSettings}, AppState, AppTheme};
+
+    #[tokio::test]
+    async fn test_reset_state() {
+        let mut app_state = AppState {
+            profile_settings: ProfileSettings {
+                profile: Some(Profile {
+                    name: "Ferris".to_string(),
+                    picture: Some("&#129408".to_string()),
+                    theme: Some(AppTheme::System),
+                    primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
+                }),
+                ..Default::default()
+            },
+            ..Default::default()
+        };
+
+        app_state = reset_state(app_state, Arc::new(Reset)).await.unwrap();
+
+        assert_eq!(app_state.profile_settings.profile, None);
+        assert_eq!(app_state.profile_settings.locale, Locale::default());
+    }
+}

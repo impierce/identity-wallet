@@ -1,11 +1,11 @@
 use crate::{
     get_unverified_jwt_claims,
-    state::credentials::{CredentialDisplay, CredentialMetadata, DisplayCredential},
+    state::credentials::{CredentialMetadata, DisplayCredential},
 };
 
 use oid4vc::oid4vci::credential_format_profiles::{CredentialFormats, WithCredential};
 use serde::{Deserialize, Serialize};
-use serde_json::json;
+use serde_json::{json, Value};
 use uuid::Uuid;
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
@@ -47,17 +47,23 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
 
                 let issuance_date = credential_display["issuanceDate"].clone();
 
+                let display_name = get_achievement_name_from_data(&credential_display)
+                    .or(get_type_name_from_data(&credential_display))
+                    .unwrap_or("".to_string());
+
                 DisplayCredential {
                     id: Uuid::from_slice(&hash.as_bytes()[..16]).unwrap().to_string(),
-                    issuer_name: None,
+                    issuer_name: "".to_string(),
                     format: verifiable_credential.format().unwrap(),
                     data: credential_display,
                     metadata: CredentialMetadata {
                         is_favorite: false,
                         date_added: chrono::Utc::now().to_rfc3339(),
                         date_issued: issuance_date.to_string(),
-                        display: CredentialDisplay::default(),
                     },
+                    display_name,
+                    display_color: None,
+                    display_icon: None,
                 }
             }
             _ => unimplemented!(),
@@ -67,5 +73,22 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
             verifiable_credential,
             display_credential,
         }
+    }
+}
+
+fn get_achievement_name_from_data(credential_display: &serde_json::Value) -> Option<String> {
+    let cred_subject = credential_display.get("credentialSubject")?;
+    let achievement = cred_subject.get("achievement")?;
+    let name = achievement.get("name")?;
+
+    // Don't use the to_string for the name variable as it add's "" around the string
+    name.as_str().map(|name| name.to_string())
+}
+
+fn get_type_name_from_data(credential_display: &serde_json::Value) -> Option<String> {
+    match credential_display.get("type")? {
+        // Don't use the to_string for the name variable as it add's "" around the string
+        Value::Array(array) => array.last()?.as_str().map(|name| name.to_string()),
+        _ => None,
     }
 }

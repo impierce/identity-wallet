@@ -1,11 +1,4 @@
 use crate::{
-    reducer,
-    state::{
-        actions::ActionTrait,
-        Reducer,
-    },
-};
-use crate::{
     error::AppError::{self, *},
     state::{
         actions::{listen, Action},
@@ -15,6 +8,10 @@ use crate::{
         AppState,
     },
     stronghold::StrongholdManager,
+};
+use crate::{
+    reducer,
+    state::{actions::ActionTrait, AppTheme, Reducer},
 };
 
 use did_key::{from_existing_key, Ed25519KeyPair};
@@ -36,7 +33,7 @@ use ts_rs::TS;
 pub struct CreateNew {
     pub name: String,
     pub picture: String,
-    pub theme: String,
+    pub theme: AppTheme,
     pub password: String,
 }
 
@@ -59,7 +56,7 @@ impl ActionTrait for CreateNew {
 }
 
 /// Creates a new profile with a new DID (using the did:key method) and sets it as the active profile.
-pub async fn create_identity(state: AppState, action: Action) -> Result<AppState, AppError> {
+async fn create_identity(mut state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(CreateNew {
         name, picture, theme, ..
     }) = listen::<CreateNew>(action)
@@ -80,9 +77,9 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
 
         let profile_settings = ProfileSettings {
             profile: Some(Profile {
-                name: name.to_string(),
-                picture: Some(picture.to_string()),
-                theme: Some(theme.to_string()),
+                name,
+                picture: Some(picture),
+                theme: Some(theme),
                 primary_did: subject.identifier().map_err(OID4VCSubjectIdentifierError)?,
             }),
             ..Default::default()
@@ -94,13 +91,9 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
             wallet,
         });
 
-        drop(state_guard);
-        return Ok(AppState {
-            profile_settings,
-            current_user_prompt: Some(CurrentUserPrompt::Redirect {
-                target: "me".to_string(),
-            }),
-            ..state
+        state.profile_settings = profile_settings;
+        state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
+            target: "me".to_string(),
         });
     }
 
@@ -120,9 +113,7 @@ pub async fn initialize_stronghold(state: AppState, action: Action) -> Result<Ap
             ));
 
         info!("stronghold initialized");
-        return Ok(state);
     }
 
     Ok(state)
 }
-

@@ -3,7 +3,6 @@ pub mod error;
 pub mod persistence;
 pub mod state;
 pub mod stronghold;
-pub mod verifiable_credential_record;
 
 use jsonwebtoken::{decode, Algorithm, DecodingKey, Validation};
 

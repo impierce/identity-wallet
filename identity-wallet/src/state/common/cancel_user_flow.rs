@@ -36,3 +36,52 @@ pub async fn cancel_user_flow(state: AppState, action: Action) -> Result<AppStat
 
     Ok(state)
 }
+
+#[cfg(test)]
+mod tests {
+    use std::sync::Arc;
+
+    use super::*;
+    use crate::state::AppTheme;
+
+    #[tokio::test]
+    async fn test_cancel_user_flow() {
+        let current_user_prompt = Some(CurrentUserPrompt::ShareCredentials {
+            client_name: "Impierce Technologies".to_string(),
+            logo_uri: Some("logo.png".to_string()),
+            options: vec![],
+        });
+
+        let mut app_state = AppState {
+            current_user_prompt: current_user_prompt.clone(),
+            ..AppState::default()
+        };
+
+        app_state = cancel_user_flow(app_state, Arc::new(CancelUserFlow { redirect: None }))
+            .await
+            .unwrap();
+
+        assert_eq!(app_state.current_user_prompt, None);
+
+        let mut app_state = AppState {
+            current_user_prompt,
+            ..AppState::default()
+        };
+
+        app_state = cancel_user_flow(
+            app_state,
+            Arc::new(CancelUserFlow {
+                redirect: Some("welcome".to_string()),
+            }),
+        )
+        .await
+        .unwrap();
+
+        assert_eq!(
+            app_state.current_user_prompt,
+            Some(CurrentUserPrompt::Redirect {
+                target: "welcome".to_string(),
+            })
+        );
+    }
+}

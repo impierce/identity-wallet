@@ -29,17 +29,35 @@ impl ActionTrait for SetLocale {
 }
 
 /// Sets the locale to the given value. If the locale is not supported yet, the current locale will stay unchanged.
-pub async fn set_locale(state: AppState, action: Action) -> Result<AppState, AppError> {
+pub async fn set_locale(mut state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(locale) = listen::<SetLocale>(action).map(|payload| payload.locale) {
         debug!("locale set to: `{:?}`", locale);
-        return Ok(AppState {
-            profile_settings: ProfileSettings {
-                locale,
-                ..state.profile_settings
-            },
-            current_user_prompt: None,
-            ..state
-        });
+
+        state.profile_settings = ProfileSettings {
+            locale,
+            ..state.profile_settings
+        };
+
+        state.current_user_prompt = None;
     }
     Ok(state)
+}
+
+#[cfg(test)]
+mod tests {
+    use std::sync::Arc;
+
+    use super::*;
+    use crate::state::AppTheme;
+
+    #[tokio::test]
+    async fn test_set_locale() {
+        let mut app_state = AppState::default();
+
+        app_state = set_locale(app_state, Arc::new(SetLocale { locale: Locale::nl_NL }))
+            .await
+            .unwrap();
+
+        assert_eq!(app_state.profile_settings.locale, Locale::nl_NL);
+    }
 }

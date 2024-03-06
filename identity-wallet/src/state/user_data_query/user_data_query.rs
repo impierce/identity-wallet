@@ -1,15 +1,15 @@
-use crate::reducer;
-use crate::state::{actions::ActionTrait, Reducer};
-use serde::{Deserialize, Serialize};
-use ts_rs::TS;
 use crate::error::AppError;
+use crate::reducer;
 use crate::state::connections::Connection;
 use crate::state::credentials::DisplayCredential;
+use crate::state::{actions::ActionTrait, Reducer};
 use crate::state::{
     actions::{listen, Action},
     AppState,
 };
 use itertools::concat;
+use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
 #[typetag::serde(name = "[User Data] Query")]
 impl ActionTrait for UserDataQuery {
@@ -48,6 +48,13 @@ pub struct UserDataQuery {
     pub sort_reverse: Option<bool>,
 }
 
+/// Helper for connection/credential_query to check if a string contains a search term.
+fn contains_search_term(opt_str: Option<&str>, search_term: &str) -> bool {
+    opt_str
+        .map(|str| str.to_lowercase().contains(&search_term.to_lowercase()))
+        .unwrap_or_default()
+}
+
 pub async fn credential_query(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(query) = listen::<UserDataQuery>(action).filter(|payload| payload.target == QueryTarget::Credentials) {
         let user_data_query: Vec<String> = query
@@ -55,18 +62,23 @@ pub async fn credential_query(state: AppState, action: Action) -> Result<AppStat
             .as_ref()
             .filter(|search_term| !search_term.is_empty())
             .map(|search_term| {
-                let (filtered_creds_name, credentials): (Vec<_>, Vec<_>) =
-                    state.credentials.iter().partition(|credential| {
-                        contains_search_term(credential.metadata.display.name.as_ref(), search_term)
-                    });
+                let (filtered_creds_name, credentials): (Vec<_>, Vec<_>) = state
+                    .credentials
+                    .iter()
+                    .partition(|credential| contains_search_term(Some(&credential.display_name), search_term));
 
                 let (filtered_creds_issuer, credentials): (Vec<_>, Vec<_>) = credentials
                     .into_iter()
-                    .partition(|credential| contains_search_term(credential.issuer_name.as_ref(), search_term));
+                    .partition(|credential| contains_search_term(Some(&credential.issuer_name), search_term));
 
-                let (filtered_creds_content, _): (Vec<_>, Vec<_>) = credentials.into_iter().partition(|credential| {
-                    contains_search_term(Some(credential.data.to_string()).as_ref(), search_term)
-                });
+                let filtered_creds_content: Vec<_> = credentials
+                    .into_iter()
+                    .filter(|credential| {
+                        // Use the to_string function instead of as_str, because the as_str function for Value
+                        // works differently than the as_str function from String.
+                        contains_search_term(Some(&credential.data.to_string()), search_term)
+                    })
+                    .collect();
 
                 concat(vec![filtered_creds_name, filtered_creds_issuer, filtered_creds_content])
                     .iter()
@@ -78,8 +90,7 @@ pub async fn credential_query(state: AppState, action: Action) -> Result<AppStat
         let user_data_query = if let Some(sort_method) = &query.sort_method {
             let mut creds: Vec<&DisplayCredential> = state.credentials.iter().collect();
 
-            let name_az =
-                |a: &&DisplayCredential, b: &&DisplayCredential| a.metadata.display.name.cmp(&b.metadata.display.name);
+            let name_az = |a: &&DisplayCredential, b: &&DisplayCredential| a.display_name.cmp(&b.display_name);
             let issuance_new_old =
                 |a: &&DisplayCredential, b: &&DisplayCredential| a.metadata.date_issued.cmp(&b.metadata.date_issued);
             let added_new_old =
@@ -132,9 +143,10 @@ pub async fn connection_query(state: AppState, action: Action) -> Result<AppStat
                     .iter()
                     .partition(|connection| contains_search_term(Some(&connection.client_name), search_term));
 
-                let (filtered_connects_url, _): (Vec<_>, Vec<_>) = connections
+                let filtered_connects_url: Vec<_> = connections
                     .into_iter()
-                    .partition(|connection| contains_search_term(Some(&connection.url), search_term));
+                    .filter(|connection| contains_search_term(Some(&connection.url), search_term))
+                    .collect();
 
                 concat(vec![filtered_connects_name, filtered_connects_url])
                     .iter()
@@ -186,18 +198,10 @@ pub async fn connection_query(state: AppState, action: Action) -> Result<AppStat
     Ok(state)
 }
 
-/// Helper for connection/credential_query to check if a string contains a search term.
-fn contains_search_term(string: Option<&String>, search_term: &str) -> bool {
-    string
-        .map(|string| string.to_lowercase().contains(&search_term.to_lowercase()))
-        .unwrap_or_default()
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::state::credentials::{CredentialDisplay, CredentialMetadata};
-
+    use crate::state::credentials::CredentialMetadata;
     use oid4vc::oid4vci::credential_format_profiles::{
         w3c_verifiable_credentials::jwt_vc_json::JwtVcJson, CredentialFormats, Profile,
     };
@@ -205,12 +209,12 @@ mod tests {
 
     #[test]
     fn test_contains_search_term() {
-        assert!(contains_search_term(Some(&"John Doe".to_string()), "john"));
-        assert!(contains_search_term(Some(&"John Doe".to_string()), "doe"));
-        assert!(contains_search_term(Some(&"John Doe".to_string()), "john doe"));
-        assert!(contains_search_term(Some(&"John Doe".to_string()), "JOHN DOE"));
-        assert!(contains_search_term(Some(&"John Doe".to_string()), "JOHN"));
-        assert!(contains_search_term(Some(&"John Doe".to_string()), "DOE"));
+        assert!(contains_search_term(Some("John Doe"), "john"));
+        assert!(contains_search_term(Some("John Doe"), "doe"));
+        assert!(contains_search_term(Some("John Doe"), "john doe"));
+        assert!(contains_search_term(Some("John Doe"), "JOHN DOE"));
+        assert!(contains_search_term(Some("John Doe"), "JOHN"));
+        assert!(contains_search_term(Some("John Doe"), "DOE"));
         assert!(!contains_search_term(None, "john doe"));
         assert!(!contains_search_term(None, ""));
     }
@@ -267,52 +271,48 @@ mod tests {
             credentials: vec![
                 DisplayCredential {
                     id: "1".to_string(),
-                    issuer_name: Some("Example Organization".to_string()),
+                    issuer_name: "Example Organization".to_string(),
                     format: CredentialFormats::JwtVcJson(Profile { format: JwtVcJson }),
                     data: serde_json::json!({"last_name": "Ferris"}),
                     metadata: CredentialMetadata {
                         date_issued: "2021-01-01".to_string(),
                         date_added: "2021-01-01".to_string(),
-                        display: CredentialDisplay {
-                            name: Some("John".to_string()),
-                            ..Default::default()
-                        },
                         ..Default::default()
                     },
+                    display_name: "John".to_string(),
+                    display_icon: None,
+                    display_color: None,
                 },
                 DisplayCredential {
                     id: "2".to_string(),
-                    issuer_name: Some("Example Organization".to_string()),
+                    issuer_name: "Example Organization".to_string(),
                     format: CredentialFormats::JwtVcJson(Profile { format: JwtVcJson }),
                     data: serde_json::json!({"last_name": "John"}),
                     metadata: CredentialMetadata {
                         date_issued: "2021-01-02".to_string(),
                         date_added: "2021-02-01".to_string(),
-                        display: CredentialDisplay {
-                            name: Some("Jane".to_string()),
-                            ..Default::default()
-                        },
                         ..Default::default()
                     },
+                    display_name: "Jane".to_string(),
+                    display_icon: None,
+                    display_color: None,
                 },
                 DisplayCredential {
                     id: "3".to_string(),
-                    issuer_name: Some("John Organization".to_string()),
+                    issuer_name: "John Organization".to_string(),
                     format: CredentialFormats::JwtVcJson(Profile { format: JwtVcJson }),
                     data: serde_json::json!({"last_name": "Ferris"}),
                     metadata: CredentialMetadata {
                         date_issued: "2021-01-03".to_string(),
                         date_added: "2021-03-01".to_string(),
-                        display: CredentialDisplay {
-                            name: Some("Jeff".to_string()),
-                            ..Default::default()
-                        },
                         ..Default::default()
                     },
+                    display_name: "Jeff".to_string(),
+                    display_icon: None,
+                    display_color: None,
                 },
             ],
             ..Default::default()
         }
     }
 }
-

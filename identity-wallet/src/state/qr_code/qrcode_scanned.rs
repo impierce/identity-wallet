@@ -177,6 +177,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
 
     Ok(state)
 }
+
 pub async fn read_credential_offer(state: AppState, action: Action) -> Result<AppState, AppError> {
     info!("read_credential_offer");
 
@@ -280,6 +281,7 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
                     .as_str()
                     .map(|s| s.to_string())
                     .unwrap_or(credential_issuer_url.to_string());
+
                 let logo_uri = display["logo_uri"].as_str().map(|s| s.to_string());
                 // ===== OpenID for Verifiable Credential Issuance - draft 12 (26 November 2023) =====
                 // let issuer_name = display["name"]

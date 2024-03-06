@@ -2,7 +2,7 @@ pub mod create_new;
 pub mod set_locale;
 pub mod update_profile_settings;
 
-use super::FeatTrait;
+use super::{AppTheme, FeatTrait};
 
 use derivative::Derivative;
 use serde::{Deserialize, Serialize};
@@ -28,7 +28,7 @@ impl FeatTrait for ProfileSettings {}
 pub struct Profile {
     pub name: String,
     pub picture: Option<String>,
-    pub theme: Option<String>,
+    pub theme: Option<AppTheme>,
     pub primary_did: String,
 }
 
@@ -53,64 +53,3 @@ pub enum Locale {
 
 #[typetag::serde(name = "locale")]
 impl FeatTrait for Locale {}
-
-#[cfg(test)]
-mod tests {
-
-    use super::*;
-    use crate::state::AppState;
-    use tests::{
-        actions::{set_locale::SetLocale, update_profile_settings::UpdateProfileSettings},
-        reducers::{set_locale::set_locale, update_profile_settings::update_profile_settings},
-    };
-
-    use std::sync::Arc;
-
-    #[tokio::test]
-    async fn test_set_locale() {
-        let mut app_state = AppState::default();
-
-        app_state = set_locale(app_state, Arc::new(SetLocale { locale: Locale::nl_NL }))
-            .await
-            .unwrap();
-
-        assert_eq!(app_state.profile_settings.locale, Locale::nl_NL);
-    }
-
-    #[tokio::test]
-    async fn test_update_profile_settings() {
-        let active_profile = Profile {
-            name: "Ferris".to_string(),
-            picture: Some("&#129408".to_string()),
-            theme: Some("system".to_string()),
-            primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
-        };
-
-        let mut app_state = AppState {
-            profile_settings: ProfileSettings {
-                profile: Some(active_profile.clone()),
-                ..ProfileSettings::default()
-            },
-            ..AppState::default()
-        };
-
-        app_state = update_profile_settings(
-            app_state,
-            Arc::new(UpdateProfileSettings {
-                name: None,
-                picture: None,
-                theme: Some("light".to_string()),
-            }),
-        )
-        .await
-        .unwrap();
-
-        assert_eq!(
-            app_state.profile_settings.profile,
-            Some(Profile {
-                theme: Some("light".to_string()),
-                ..active_profile
-            })
-        );
-    }
-}

@@ -15,26 +15,35 @@ pub enum ProfileType {
     Dragon,
 }
 
-#[derive(Serialize, Deserialize, Debug, TS, Clone, PartialEq, Eq, PartialOrd)]
+#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone, PartialEq, Eq, PartialOrd)]
 #[ts(export, export_to = "bindings/dev/ProfileSteps.ts")]
 pub enum ProfileSteps {
     /// Step 1
+    #[serde(rename = "Create profile")]
     CreateProfile,
     /// Step 2
+    #[serde(rename = "Add credentials")]
     AddCredentials,
     /// Step 3
+    #[serde(rename = "Accept credentials")]
     AcceptCredentials,
     /// Step 4
+    #[serde(rename = "Add connection")]
     AddConnection,
     /// Step 5
+    #[serde(rename = "Accept connection")]
     AcceptConnection,
     /// Step 6
+    #[serde(rename = "Add presentation")]
     AddPresentation,
     /// Step 7
+    #[serde(rename = "Share credentials")]
     ShareCredentails,
     /// Step 8
+    #[serde(rename = "Add future engineer")]
     AddFutureEngineer,
     /// Step 9
+    #[serde(rename = "Complete flow")]
     CompleteFlow,
 }
 
@@ -44,6 +53,7 @@ pub enum ProfileSteps {
 pub struct DevProfile {
     pub profile: ProfileType,
     pub execute_step: Option<ProfileSteps>,
+    pub reset_profile: bool
 }
 
 pub(super) const PASSWORD: &str = "sup3rSecr3t";

@@ -17,14 +17,19 @@ use ts_rs::TS;
 #[derivative(PartialEq)]
 #[ts(export, export_to = "bindings/display-credential/DisplayCredential.ts")]
 pub struct DisplayCredential {
+    /// This id is also used as the image asset id
     pub id: String,
-    pub issuer_name: Option<String>,
+    pub issuer_name: String,
     #[ts(type = "string")]
     pub format: CredentialFormats,
-    #[ts(type = "object")]
+    #[ts(type = "any")]
     pub data: serde_json::Value,
     #[serde(default)]
     pub metadata: CredentialMetadata,
+
+    pub display_name: String,
+    pub display_color: Option<String>,
+    pub display_icon: Option<String>,
 }
 
 #[typetag::serde(name = "display_credential")]
@@ -40,14 +45,4 @@ pub struct CredentialMetadata {
     pub date_added: String,
     #[derivative(PartialEq = "ignore")]
     pub date_issued: String,
-    pub display: CredentialDisplay,
-}
-
-/// Info concerning the display of a credential.
-#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, TS, Default)]
-#[ts(export, export_to = "bindings/display-credential/CredentialDisplay.ts")]
-pub struct CredentialDisplay {
-    pub icon: Option<String>,
-    pub color: Option<String>,
-    pub name: Option<String>,
 }

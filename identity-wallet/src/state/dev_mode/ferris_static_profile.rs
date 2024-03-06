@@ -2,11 +2,10 @@ use crate::{
     error::AppError::{self, *},
     persistence::ASSETS_DIR,
     state::{
-        connections::Connection, credentials::verifiable_credential_record::VerifiableCredentialRecord, dev_mode::DevMode, profile_settings::Profile, user_prompt::CurrentUserPrompt, AppState
+        connections::Connection, credentials::verifiable_credential_record::VerifiableCredentialRecord, dev_mode::DevMode, profile_settings::Profile, user_prompt::CurrentUserPrompt, AppState, AppTheme
     },
     stronghold::StrongholdManager,
 };
-
 use did_key::{generate, Ed25519KeyPair};
 use lazy_static::lazy_static;
 use log::info;
@@ -60,7 +59,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
     let profile = Profile {
         name: "Ferris".to_string(),
         picture: Some("&#129408".to_string()),
-        theme: Some("system".to_string()),
+        theme: Some(AppTheme::Dark),
         primary_did: subject.identifier().unwrap(),
     };
     state.profile_settings.profile.replace(profile);
