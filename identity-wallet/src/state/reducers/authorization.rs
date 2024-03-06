@@ -289,7 +289,7 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
                 };
 
                 if share_credential.is_some() {
-                    history_credentials.push(HistoryCredential::from_credential(&verifiable_credential_record));
+                    history_credentials.push(HistoryCredential::from_credential(verifiable_credential_record));
                 }
 
                 share_credential
