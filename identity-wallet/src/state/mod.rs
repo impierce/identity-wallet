@@ -6,10 +6,10 @@ pub mod credentials;
 pub mod dev_mode;
 pub mod profile_settings;
 pub mod qr_code;
-pub mod user_data_query;
 pub mod user_journey;
 pub mod user_prompt;
 pub mod history_event;
+pub mod search;
 
 use self::{
     actions::Action, core_utils::CoreUtils, dev_mode::DevMode, profile_settings::ProfileSettings,
