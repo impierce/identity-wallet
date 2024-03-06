@@ -1,11 +1,12 @@
-use super::FeatTrait;
-use serde::{Deserialize, Serialize};
-use ts_rs::TS;
-
 mod dragon_dynamic_profile;
 mod ferris_static_profile;
 pub mod load_dev_profile;
 pub mod toggle_dev_mode;
+
+use super::FeatTrait;
+
+use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
 /// DevMode is a simple enum to enable dev mode for developers to test the app.
 #[derive(Serialize, Deserialize, Debug, TS, Clone, PartialEq, Eq, Default)]

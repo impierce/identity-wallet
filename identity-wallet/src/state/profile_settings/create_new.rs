@@ -10,6 +10,7 @@ use crate::{
     },
     stronghold::StrongholdManager,
 };
+
 use did_key::{from_existing_key, Ed25519KeyPair};
 use log::info;
 use oid4vc::{

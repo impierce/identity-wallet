@@ -8,6 +8,7 @@ use crate::{
     reducer,
     state::{actions::ActionTrait, Reducer},
 };
+
 use did_key::{from_existing_key, Ed25519KeyPair};
 use log::info;
 use oid4vc::oid4vc_manager::{methods::key_method::KeySubject, ProviderManager};

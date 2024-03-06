@@ -6,6 +6,7 @@ pub mod verifiable_credential_record;
 pub use verifiable_credential_record::VerifiableCredentialRecord;
 
 use super::FeatTrait;
+
 use derivative::Derivative;
 use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
 use serde::{Deserialize, Serialize};
