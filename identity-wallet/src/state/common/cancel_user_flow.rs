@@ -39,8 +39,8 @@ pub async fn cancel_user_flow(state: AppState, action: Action) -> Result<AppStat
 
 #[cfg(test)]
 mod tests {
-    use std::sync::Arc;
     use super::*;
+    use std::sync::Arc;
 
     #[tokio::test]
     async fn test_cancel_user_flow() {

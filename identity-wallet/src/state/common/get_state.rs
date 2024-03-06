@@ -1,13 +1,13 @@
-use crate::{
-    reducer,
-    state::{actions::ActionTrait, Reducer},
-};
 use crate::error::AppError::{self};
 use crate::persistence::load_state;
 use crate::state::actions::Action;
 use crate::state::dev_mode::DevMode;
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::AppState;
+use crate::{
+    reducer,
+    state::{actions::ActionTrait, Reducer},
+};
 use log::debug;
 use serde::{Deserialize, Serialize};
 
@@ -51,4 +51,3 @@ pub async fn get_state(_state: AppState, _action: Action) -> Result<AppState, Ap
 
     Ok(state)
 }
-

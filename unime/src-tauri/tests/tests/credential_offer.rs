@@ -1,26 +1,23 @@
 use crate::common::test_managers;
+use identity_wallet::oid4vci::credential_format_profiles::{
+    w3c_verifiable_credentials::jwt_vc_json::{self, JwtVcJson},
+    CredentialFormats, Parameters, WithParameters,
+};
 use identity_wallet::oid4vci::credential_issuer::{
     credential_issuer_metadata::CredentialIssuerMetadata, credentials_supported::CredentialsSupportedObject,
 };
 use identity_wallet::oid4vci::credential_offer::{CredentialOffer, CredentialOfferQuery, CredentialsObject};
 use identity_wallet::persistence::ASSETS_DIR;
 use identity_wallet::state::core_utils::CoreUtils;
-use identity_wallet::state::credentials::reducers::read_credential_offer::read_credential_offer;
+use identity_wallet::state::qr_code::qrcode_scanned::read_credential_offer;
+use identity_wallet::state::qr_code::QrCodeScanned;
 use identity_wallet::state::AppState;
-use identity_wallet::{
-    oid4vci::credential_format_profiles::{
-        w3c_verifiable_credentials::jwt_vc_json::{self, JwtVcJson},
-        CredentialFormats, Parameters, WithParameters,
-    },
-    state::shared::actions::qrcode_scanned::QrCodeScanned,
-};
-
-use wiremock::{Mock, MockServer, ResponseTemplate};
-use wiremock::matchers::{method, path};
 use serde_json::json;
 use std::sync::Arc;
 use tempfile::TempDir;
 use url::Url;
+use wiremock::matchers::{method, path};
+use wiremock::{Mock, MockServer, ResponseTemplate};
 
 #[tokio::test]
 #[serial_test::serial]

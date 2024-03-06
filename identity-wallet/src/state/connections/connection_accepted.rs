@@ -4,7 +4,11 @@ use crate::{
     persistence::persist_asset,
     reducer,
     state::{
-        actions::{Action, ActionTrait}, connections::{get_siopv2_client_name_and_logo_uri, Connection}, history_event::{EventType, HistoryEvent}, user_prompt::CurrentUserPrompt, AppState, Reducer
+        actions::{Action, ActionTrait},
+        connections::{get_siopv2_client_name_and_logo_uri, Connection},
+        history_event::{EventType, HistoryEvent},
+        user_prompt::CurrentUserPrompt,
+        AppState, Reducer,
     },
 };
 use log::{info, warn};

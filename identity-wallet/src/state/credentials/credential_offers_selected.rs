@@ -188,7 +188,9 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
             persist_asset(format!("credential_{}", i).as_str(), key.to_string().as_str()).ok();
 
             // Remove the old credential from the stronghold if it exists.
-            stronghold_manager.remove(key).map_err(AppError::StrongholdDeletionError)?;
+            stronghold_manager
+                .remove(key)
+                .map_err(AppError::StrongholdDeletionError)?;
 
             stronghold_manager
                 .insert(key, json!(verifiable_credential_record).to_string().as_bytes().to_vec())

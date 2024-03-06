@@ -1,8 +1,8 @@
 use crate::{
-    reducer,
-    state::{actions::ActionTrait,  Reducer},
     error::AppError,
+    reducer,
     state::{actions::Action, dev_mode::DevMode, AppState},
+    state::{actions::ActionTrait, Reducer},
 };
 use log::info;
 use serde::{Deserialize, Serialize};

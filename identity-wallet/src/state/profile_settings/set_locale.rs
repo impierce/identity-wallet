@@ -45,10 +45,8 @@ pub async fn set_locale(mut state: AppState, action: Action) -> Result<AppState,
 
 #[cfg(test)]
 mod tests {
-    use std::sync::Arc;
-
     use super::*;
-    use crate::state::AppTheme;
+    use std::sync::Arc;
 
     #[tokio::test]
     async fn test_set_locale() {

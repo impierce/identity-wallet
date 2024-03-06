@@ -4,16 +4,16 @@ pub mod connections;
 pub mod core_utils;
 pub mod credentials;
 pub mod dev_mode;
+pub mod history_event;
 pub mod profile_settings;
 pub mod qr_code;
+pub mod search;
 pub mod user_journey;
 pub mod user_prompt;
-pub mod history_event;
-pub mod search;
 
 use self::{
-    actions::Action, core_utils::CoreUtils, dev_mode::DevMode, profile_settings::ProfileSettings,
-    user_prompt::CurrentUserPrompt, history_event::HistoryEvent
+    actions::Action, core_utils::CoreUtils, dev_mode::DevMode, history_event::HistoryEvent,
+    profile_settings::ProfileSettings, user_prompt::CurrentUserPrompt,
 };
 use crate::state::credentials::DisplayCredential;
 use crate::{error::AppError, state::connections::Connection};

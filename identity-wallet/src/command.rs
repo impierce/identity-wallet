@@ -105,6 +105,9 @@ pub fn emit_event<R: tauri::Runtime>(window: &tauri::Window<R>, app_state: &AppS
 
     let app_state_json_str = serde_json::to_string(app_state).unwrap();
 
-    debug!("emitted event `{}` with payload:\n {}", STATE_CHANGED_EVENT, app_state_json_str);
+    debug!(
+        "emitted event `{}` with payload:\n {}",
+        STATE_CHANGED_EVENT, app_state_json_str
+    );
     Ok(())
 }
