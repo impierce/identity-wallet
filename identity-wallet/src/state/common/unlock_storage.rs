@@ -1,22 +1,21 @@
-use crate::{
-    reducer,
-    state::{actions::ActionTrait, Reducer},
-};
-use serde::{Deserialize, Serialize};
-use std::fmt::Formatter;
-use ts_rs::TS;
 use crate::error::AppError::{self, *};
 use crate::state::actions::{listen, Action};
 use crate::state::core_utils::IdentityManager;
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::AppState;
 use crate::stronghold::StrongholdManager;
-
+use crate::{
+    reducer,
+    state::{actions::ActionTrait, Reducer},
+};
 use did_key::{from_existing_key, Ed25519KeyPair};
 use log::info;
 use oid4vc::oid4vc_manager::{methods::key_method::KeySubject, ProviderManager};
 use oid4vc::oid4vci::Wallet;
+use serde::{Deserialize, Serialize};
+use std::fmt::Formatter;
 use std::sync::Arc;
+use ts_rs::TS;
 
 /// Action to unlock the storage.
 #[derive(Serialize, Deserialize, TS, Clone)]
@@ -83,4 +82,3 @@ pub async fn unlock_storage(state: AppState, action: Action) -> Result<AppState,
 
     Ok(state)
 }
-

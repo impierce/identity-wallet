@@ -1,19 +1,15 @@
 use crate::{
     error::AppError::{self, *},
+    reducer,
     state::{
-        actions::{listen, Action},
+        actions::{listen, Action, ActionTrait},
         core_utils::IdentityManager,
         profile_settings::{Profile, ProfileSettings},
         user_prompt::CurrentUserPrompt,
-        AppState,
+        AppState, AppTheme, Reducer,
     },
     stronghold::StrongholdManager,
 };
-use crate::{
-    reducer,
-    state::{actions::ActionTrait, AppTheme, Reducer},
-};
-
 use did_key::{from_existing_key, Ed25519KeyPair};
 use log::info;
 use oid4vc::{
@@ -21,10 +17,9 @@ use oid4vc::{
     oid4vc_manager::{methods::key_method::KeySubject, ProviderManager},
     oid4vci::Wallet,
 };
-use std::sync::Arc;
-
 use serde::{Deserialize, Serialize};
 use std::fmt::Formatter;
+use std::sync::Arc;
 use ts_rs::TS;
 
 /// Action to create a new profile.

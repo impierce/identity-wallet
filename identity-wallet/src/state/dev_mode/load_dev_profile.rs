@@ -1,9 +1,18 @@
-use std::sync::Arc;
-use super::{ferris_static_profile::load_ferris_profile, dragon_dynamic_profile::load_dragon_profile};
+use super::{dragon_dynamic_profile::load_dragon_profile, ferris_static_profile::load_ferris_profile};
+use crate::{
+    command,
+    error::AppError,
+    reducer,
+    state::{
+        actions::{listen, Action, ActionTrait},
+        common::unlock_storage::UnlockStorage,
+        AppState, Reducer,
+    },
+};
 use log::info;
 use serde::{Deserialize, Serialize};
+use std::sync::Arc;
 use ts_rs::TS;
-use crate::{command, error::AppError, reducer, state::{actions::{listen, Action, ActionTrait}, common::unlock_storage::UnlockStorage, AppState, Reducer}};
 
 #[derive(Serialize, Deserialize, Debug, TS, Clone, PartialEq, Eq)]
 #[ts(export, export_to = "bindings/dev/ProfileType.ts")]
@@ -53,7 +62,7 @@ pub enum ProfileSteps {
 pub struct DevProfile {
     pub profile: ProfileType,
     pub execute_step: Option<ProfileSteps>,
-    pub reset_profile: bool
+    pub reset_profile: bool,
 }
 
 pub(super) const PASSWORD: &str = "sup3rSecr3t";

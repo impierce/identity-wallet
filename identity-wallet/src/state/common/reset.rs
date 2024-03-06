@@ -1,12 +1,12 @@
-use crate::{
-    reducer,
-    state::{actions::ActionTrait, Reducer},
-};
 use crate::error::AppError::{self};
 use crate::persistence::{clear_all_assets, delete_state_file, delete_stronghold};
 use crate::state::actions::Action;
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::AppState;
+use crate::{
+    reducer,
+    state::{actions::ActionTrait, Reducer},
+};
 
 use serde::{Deserialize, Serialize};
 
@@ -39,9 +39,12 @@ pub async fn reset_state(state: AppState, _action: Action) -> Result<AppState, A
 
 #[cfg(test)]
 mod tests {
+    use crate::state::{
+        common::reset::{reset_state, Reset},
+        profile_settings::{Locale, Profile, ProfileSettings},
+        AppState, AppTheme,
+    };
     use std::sync::Arc;
-
-    use crate::state::{common::reset::{reset_state, Reset}, profile_settings::{Locale, Profile, ProfileSettings}, AppState, AppTheme};
 
     #[tokio::test]
     async fn test_reset_state() {

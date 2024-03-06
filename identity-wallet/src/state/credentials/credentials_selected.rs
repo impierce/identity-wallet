@@ -1,23 +1,20 @@
-use crate::reducer;
-use crate::state::connections::{get_oid4vp_client_name_and_logo_uri, Connection, ConnectionRequest};
-use crate::state::history_event::{EventType, HistoryCredential, HistoryEvent};
-use crate::state::{actions::ActionTrait, Reducer};
 use crate::{
     error::AppError::{self, *},
-    get_unverified_jwt_claims,
+    get_unverified_jwt_claims, reducer,
     state::{
-        actions::{listen, Action},
+        actions::{listen, Action, ActionTrait},
+        connections::{get_oid4vp_client_name_and_logo_uri, Connection, ConnectionRequest},
+        history_event::{EventType, HistoryCredential, HistoryEvent},
         user_prompt::CurrentUserPrompt,
-        AppState,
+        AppState, Reducer,
     },
 };
-
 use identity_credential::{credential::Jwt, presentation::Presentation};
+use log::info;
 use oid4vc::oid4vc_manager::managers::presentation::create_presentation_submission;
 use oid4vc::oid4vci::credential_format_profiles::w3c_verifiable_credentials::jwt_vc_json::JwtVcJson;
 use oid4vc::oid4vci::credential_format_profiles::{Credential, CredentialFormats};
 use oid4vc::oid4vp::oid4vp;
-use log::info;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 

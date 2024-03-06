@@ -2,15 +2,17 @@ use crate::{
     error::AppError::{self, *},
     persistence::ASSETS_DIR,
     state::{
-        connections::Connection, credentials::verifiable_credential_record::VerifiableCredentialRecord, dev_mode::DevMode, profile_settings::Profile, user_prompt::CurrentUserPrompt, AppState, AppTheme
+        connections::Connection, credentials::verifiable_credential_record::VerifiableCredentialRecord,
+        dev_mode::DevMode, profile_settings::Profile, user_prompt::CurrentUserPrompt, AppState, AppTheme,
     },
     stronghold::StrongholdManager,
 };
 use did_key::{generate, Ed25519KeyPair};
 use lazy_static::lazy_static;
 use log::info;
-use oid4vc::oid4vc_core::Subject;
+
 use oid4vc::{
+    oid4vc_core::Subject,
     oid4vc_manager::methods::key_method::KeySubject,
     oid4vci::credential_format_profiles::{
         w3c_verifiable_credentials::jwt_vc_json::JwtVcJson, Credential, CredentialFormats, WithCredential,
@@ -210,10 +212,7 @@ async fn load_predefined_images() -> Result<(), AppError> {
         include_bytes!("../../../resources/images/iota-icon-dark.svg"),
         "iota.svg",
     )?;
-    write_bytes_to_file(
-        include_bytes!("../../../resources/images/kw1c-white.png"),
-        "kw1c.png",
-    )?;
+    write_bytes_to_file(include_bytes!("../../../resources/images/kw1c-white.png"), "kw1c.png")?;
     write_bytes_to_file(include_bytes!("../../../resources/images/ngdil.svg"), "ngdil.svg")?;
 
     // Credentials

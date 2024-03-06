@@ -1,3 +1,4 @@
+use super::load_dev_profile::DevProfile;
 use crate::{
     command,
     error::AppError,
@@ -14,13 +15,10 @@ use crate::{
         AppState, AppTheme,
     },
 };
-
 use log::{debug, info};
 use serde_json::json;
 use std::sync::Arc;
 use uuid::Uuid;
-
-use super::load_dev_profile::DevProfile;
 
 pub(super) const PASSWORD: &str = "sup3rSecr3t";
 

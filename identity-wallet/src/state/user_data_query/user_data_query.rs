@@ -2,10 +2,9 @@ use crate::error::AppError;
 use crate::reducer;
 use crate::state::connections::Connection;
 use crate::state::credentials::DisplayCredential;
-use crate::state::{actions::ActionTrait, Reducer};
 use crate::state::{
-    actions::{listen, Action},
-    AppState,
+    actions::{listen, Action, ActionTrait},
+    AppState, Reducer,
 };
 use itertools::concat;
 use serde::{Deserialize, Serialize};
