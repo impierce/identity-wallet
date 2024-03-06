@@ -16,6 +16,7 @@ pub struct CoreUtils {
     pub managers: Arc<tauri::async_runtime::Mutex<Managers>>,
     pub active_connection_request: Option<ConnectionRequest>,
 }
+
 /// Managers contains both the stronghold manager and the identity manager needed to perform operations on connections & credentials.
 #[derive(Default)]
 pub struct Managers {

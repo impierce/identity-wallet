@@ -5,21 +5,17 @@ pub mod core_utils;
 pub mod credentials;
 pub mod dev_mode;
 pub mod profile_settings;
-pub mod shared;
+pub mod qr_code;
 pub mod user_data_query;
 pub mod user_journey;
 pub mod user_prompt;
 
 use self::{
-    actions::Action,
-    core_utils::CoreUtils,
-    dev_mode::DevMode,
-    profile_settings::{Locale, Profile, ProfileSettings},
+    actions::Action, core_utils::CoreUtils, dev_mode::DevMode, profile_settings::ProfileSettings,
     user_prompt::CurrentUserPrompt,
 };
 use crate::state::credentials::DisplayCredential;
 use crate::{error::AppError, state::connections::Connection};
-
 use derivative::Derivative;
 use downcast_rs::{impl_downcast, DowncastSync};
 use dyn_clone::DynClone;
@@ -140,6 +136,7 @@ pub type Reducer<'a> =
 mod tests {
     use super::*;
     use indoc::indoc;
+    use tests::profile_settings::{Locale, Profile};
 
     #[test]
     fn test_app_state_serialize() {

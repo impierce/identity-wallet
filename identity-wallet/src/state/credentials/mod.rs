@@ -1,5 +1,9 @@
-pub mod actions;
-pub mod reducers;
+pub mod credential_offers_selected;
+pub mod credentials_selected;
+pub mod update_credential_metadata;
+pub mod verifiable_credential_record;
+
+pub use verifiable_credential_record::VerifiableCredentialRecord;
 
 use super::FeatTrait;
 

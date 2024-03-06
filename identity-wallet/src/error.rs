@@ -1,5 +1,4 @@
 use crate::state::actions::Action;
-
 use oid4vc::oid4vc_core::authorization_request::{AuthorizationRequest, Object};
 use std::error::Error;
 use uuid::Uuid;
