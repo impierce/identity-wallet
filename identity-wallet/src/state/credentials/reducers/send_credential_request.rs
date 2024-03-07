@@ -3,8 +3,7 @@ use crate::{
     persistence::persist_asset,
     state::{
         actions::{listen, Action},
-        credentials::actions::credential_offers_selected::CredentialOffersSelected,
-        shared::core_utils::VerifiableCredentialRecord,
+        credentials::{actions::credential_offers_selected::CredentialOffersSelected, VerifiableCredentialRecord},
         user_prompt::CurrentUserPrompt,
         AppState,
     },

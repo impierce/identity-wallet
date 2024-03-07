@@ -5,7 +5,7 @@ pub mod core_utils;
 pub mod credentials;
 pub mod dev_mode;
 pub mod profile_settings;
-pub mod shared;
+pub mod qr_code;
 pub mod user_data_query;
 pub mod user_journey;
 pub mod user_prompt;
@@ -40,6 +40,22 @@ use ts_rs::TS;
 /// This ensures that all reducers have the same signature and therefore follow the redux pattern and our error handling.
 /// All the above goes for extensions (values) which are added to the extensions field.
 
+
+/// A macro to wrap a reducer function in a Box and a Pin.
+/// It checks the reducers for its signature,
+///  as it should comply with our standard for reducers.
+#[macro_export]
+macro_rules! reducer {
+    ($reducer:expr) => {
+        Box::new(move |app_state, action| Box::pin(async move { $reducer(app_state, action).await }))
+    };
+}
+
+/// A reducer is a function that takes the current state and an action and returns the new state.
+pub type Reducer<'a> =
+    Box<dyn Fn(AppState, Action) -> Pin<Box<dyn Future<Output = Result<AppState, AppError>> + Send>> + Send>;
+
+    
 /// Trait which each field of the appstate has to implement.
 /// Some fields are simple values and not structs, so they don't need to implement this trait.
 #[typetag::serde(tag = "feat_state_type")]
@@ -121,20 +137,6 @@ impl AppState {
         self
     }
 }
-
-/// A macro to wrap a reducer function in a Box and a Pin.
-/// It checks the reducers for its signature,
-///  as it should comply with our standard for reducers.
-#[macro_export]
-macro_rules! reducer {
-    ($reducer:expr) => {
-        Box::new(move |app_state, action| Box::pin(async move { $reducer(app_state, action).await }))
-    };
-}
-
-/// A reducer is a function that takes the current state and an action and returns the new state.
-pub type Reducer<'a> =
-    Box<dyn Fn(AppState, Action) -> Pin<Box<dyn Future<Output = Result<AppState, AppError>> + Send>> + Send>;
 
 #[cfg(test)]
 mod tests {

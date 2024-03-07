@@ -74,7 +74,7 @@ mod bindings {
         profile_settings::actions::{
             create_new::CreateNew, set_locale::SetLocale, update_profile_settings::UpdateProfileSettings,
         },
-        shared::actions::qrcode_scanned::QrCodeScanned,
+        qr_code::actions::qrcode_scanned::QrCodeScanned,
         user_data_query::actions::user_data_query::UserDataQuery,
     };
 

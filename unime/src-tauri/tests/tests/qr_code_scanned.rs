@@ -10,7 +10,7 @@ use identity_wallet::state::{
     actions::Action,
     core_utils::CoreUtils,
     profile_settings::{Profile, ProfileSettings},
-    shared::core_utils::VerifiableCredentialRecord,
+    credentials::VerifiableCredentialRecord,
     AppState, AppStateContainer,
 };
 

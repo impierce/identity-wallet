@@ -2,16 +2,9 @@ use crate::{
     command,
     error::AppError,
     state::{
-        common::actions::reset::Reset,
-        connections::actions::connection_accepted::ConnectionAccepted,
-        credentials::actions::{
+        common::actions::reset::Reset, connections::actions::connection_accepted::ConnectionAccepted, credentials::actions::{
             credential_offers_selected::CredentialOffersSelected, credentials_selected::CredentialsSelected,
-        },
-        dev_mode::{actions::dev_profile::DevProfile, DevMode, ProfileSteps},
-        profile_settings::actions::create_new::CreateNew,
-        shared::actions::qrcode_scanned::QrCodeScanned,
-        user_prompt::CurrentUserPrompt,
-        AppState,
+        }, dev_mode::{actions::dev_profile::DevProfile, DevMode, ProfileSteps}, profile_settings::actions::create_new::CreateNew, qr_code::actions::qrcode_scanned::QrCodeScanned, user_prompt::CurrentUserPrompt, AppState
     },
 };
 

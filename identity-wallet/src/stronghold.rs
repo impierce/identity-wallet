@@ -1,4 +1,4 @@
-use crate::{persistence::STRONGHOLD, state::shared::core_utils::VerifiableCredentialRecord};
+use crate::{persistence::STRONGHOLD, state::credentials::VerifiableCredentialRecord};
 
 use iota_stronghold::{
     procedures::{Ed25519Sign, GenerateKey, KeyType, PublicKey, StrongholdProcedure},

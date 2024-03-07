@@ -2,8 +2,7 @@ use crate::{
     error::AppError::{self, *},
     persistence::{download_asset, LogoType},
     state::{
-        actions::listen, actions::Action, shared::actions::qrcode_scanned::QrCodeScanned,
-        user_prompt::CurrentUserPrompt, AppState,
+        actions::{listen, Action}, qr_code::actions::qrcode_scanned::QrCodeScanned, user_prompt::CurrentUserPrompt, AppState
     },
 };
 

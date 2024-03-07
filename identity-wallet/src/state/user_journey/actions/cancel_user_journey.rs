@@ -1,5 +1,5 @@
 use crate::reducer;
-use crate::state::user_journey::reducers::cancel_user_journey;
+use crate::state::user_journey::reducers::cancel_user_journey::cancel_user_journey;
 use crate::state::{actions::ActionTrait, Reducer};
 
 /// Action to cancel the user journey.

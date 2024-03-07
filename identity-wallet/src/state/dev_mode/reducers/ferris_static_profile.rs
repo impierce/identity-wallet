@@ -3,7 +3,7 @@ use crate::{
     persistence::ASSETS_DIR,
     state::{
         connections::Connection, dev_mode::DevMode, profile_settings::Profile,
-        shared::core_utils::VerifiableCredentialRecord, user_prompt::CurrentUserPrompt, AppState,
+        credentials::VerifiableCredentialRecord, user_prompt::CurrentUserPrompt, AppState,
     },
     stronghold::StrongholdManager,
 };

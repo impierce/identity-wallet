@@ -1,6 +1,6 @@
 use crate::state::actions::ActionTrait;
-use crate::state::connections::reducers::read_authorization_request::read_authorization_request;
-use crate::state::credentials::reducers::read_credential_offer::read_credential_offer;
+use crate::state::qr_code::reducers::read_authorization_request::read_authorization_request;
+use crate::state::qr_code::reducers::read_credential_offer::read_credential_offer;
 use crate::{reducer, state::Reducer};
 
 use serde::{Deserialize, Serialize};

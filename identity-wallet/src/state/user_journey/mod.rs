@@ -5,7 +5,7 @@ pub mod reducers;
 mod tests {
 
     use crate::state::{
-        user_journey::{actions::CancelUserJourney, reducers::cancel_user_journey},
+        user_journey::{actions::cancel_user_journey::CancelUserJourney, reducers::cancel_user_journey::cancel_user_journey},
         AppState,
     };
 

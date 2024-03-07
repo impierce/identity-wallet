@@ -1,13 +1,16 @@
-// pub mod actions;
-// pub mod reducers;
-// Currently CoreUtils only contains feature structs used in the AppState struct, no actions, no reducers.
+pub mod helpers;
 
-use super::connections::ConnectionRequest;
 use crate::stronghold::StrongholdManager;
 
-use oid4vc::oid4vc_core::Subject;
-use oid4vc::oid4vc_manager::ProviderManager;
-use oid4vc::oid4vci::Wallet;
+use oid4vc::{
+    oid4vc_core::{Subject, authorization_request::{AuthorizationRequest, Object}},
+    oid4vp::oid4vp::OID4VP,
+    siopv2::siopv2::SIOPv2,
+    oid4vc_manager::ProviderManager,
+    oid4vci::Wallet,
+};
+
+use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 
 /// CoreUtils is a struct that contains all the utils that only the rustside needs to perform its tasks.
@@ -28,4 +31,10 @@ pub struct IdentityManager {
     pub subject: Arc<dyn Subject>,
     pub provider_manager: ProviderManager,
     pub wallet: Wallet,
+}
+
+#[derive(Serialize, Deserialize)]
+pub enum ConnectionRequest {
+    SIOPv2(Box<AuthorizationRequest<Object<SIOPv2>>>),
+    OID4VP(Box<AuthorizationRequest<Object<OID4VP>>>),
 }

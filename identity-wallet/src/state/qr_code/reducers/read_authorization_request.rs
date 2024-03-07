@@ -1,17 +1,8 @@
 use crate::{
     error::AppError::{self, *},
-    get_unverified_jwt_claims,
     persistence::{download_asset, LogoType},
     state::{
-        actions::{listen, Action},
-        connections::{
-            reducers::{get_oid4vp_client_name_and_logo_uri, get_siopv2_client_name_and_logo_uri},
-            ConnectionRequest,
-        },
-        core_utils::CoreUtils,
-        shared::actions::qrcode_scanned::QrCodeScanned,
-        user_prompt::CurrentUserPrompt,
-        AppState,
+        actions::{listen, Action}, connections::reducers::handle_siopv2_authorization_request::get_siopv2_client_name_and_logo_uri, core_utils::{helpers::get_unverified_jwt_claims, ConnectionRequest, CoreUtils}, credentials::reducers::handle_oid4vp_authorization_request::get_oid4vp_client_name_and_logo_uri, qr_code::actions::qrcode_scanned::QrCodeScanned, user_prompt::CurrentUserPrompt, AppState
     },
 };
 

@@ -5,14 +5,14 @@ use identity_wallet::oid4vci::credential_issuer::{
 use identity_wallet::oid4vci::credential_offer::{CredentialOffer, CredentialOfferQuery, CredentialsObject};
 use identity_wallet::persistence::ASSETS_DIR;
 use identity_wallet::state::core_utils::CoreUtils;
-use identity_wallet::state::credentials::reducers::read_credential_offer::read_credential_offer;
+use identity_wallet::state::qr_code::reducers::read_credential_offer::read_credential_offer;
 use identity_wallet::state::AppState;
 use identity_wallet::{
     oid4vci::credential_format_profiles::{
         w3c_verifiable_credentials::jwt_vc_json::{self, JwtVcJson},
         CredentialFormats, Parameters, WithParameters,
     },
-    state::shared::actions::qrcode_scanned::QrCodeScanned,
+    state::qr_code::actions::qrcode_scanned::QrCodeScanned,
 };
 
 use wiremock::{Mock, MockServer, ResponseTemplate};

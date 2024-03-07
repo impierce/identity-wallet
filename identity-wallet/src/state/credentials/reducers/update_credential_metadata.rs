@@ -2,8 +2,7 @@ use crate::{
     error::AppError::{self, *},
     state::{
         actions::{listen, Action},
-        credentials::actions::update_credential_metadata::UpdateCredentialMetadata,
-        shared::core_utils::VerifiableCredentialRecord,
+        credentials::{actions::update_credential_metadata::UpdateCredentialMetadata, VerifiableCredentialRecord},
         AppState,
     },
 };
