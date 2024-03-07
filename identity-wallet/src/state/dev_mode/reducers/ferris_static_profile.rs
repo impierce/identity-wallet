@@ -2,8 +2,12 @@ use crate::{
     error::AppError::{self, *},
     persistence::ASSETS_DIR,
     state::{
-        connections::Connection, dev_mode::DevMode, profile_settings::Profile,
-        credentials::VerifiableCredentialRecord, user_prompt::CurrentUserPrompt, AppState,
+        connections::Connection,
+        credentials::VerifiableCredentialRecord,
+        dev_mode::DevMode,
+        profile_settings::{AppTheme, Profile},
+        user_prompt::CurrentUserPrompt,
+        AppState,
     },
     stronghold::StrongholdManager,
 };
@@ -61,7 +65,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
     let profile = Profile {
         name: "Ferris".to_string(),
         picture: Some("&#129408".to_string()),
-        theme: Some("system".to_string()),
+        theme: Some(AppTheme::Dark),
         primary_did: subject.identifier().unwrap(),
     };
     state.profile_settings.profile.replace(profile);

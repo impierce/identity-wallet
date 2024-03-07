@@ -15,12 +15,12 @@ use identity_wallet::{
     state::qr_code::actions::qrcode_scanned::QrCodeScanned,
 };
 
-use wiremock::{Mock, MockServer, ResponseTemplate};
-use wiremock::matchers::{method, path};
 use serde_json::json;
 use std::sync::Arc;
 use tempfile::TempDir;
 use url::Url;
+use wiremock::matchers::{method, path};
+use wiremock::{Mock, MockServer, ResponseTemplate};
 
 #[tokio::test]
 #[serial_test::serial]

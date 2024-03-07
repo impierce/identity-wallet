@@ -155,7 +155,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
 
         for (i, credential) in credentials.into_iter().enumerate() {
             let mut verifiable_credential_record = VerifiableCredentialRecord::from(credential);
-            verifiable_credential_record.display_credential.issuer_name = Some(issuer_name.clone());
+            verifiable_credential_record.display_credential.issuer_name = issuer_name.clone();
             let key: Uuid = verifiable_credential_record
                 .display_credential
                 .id

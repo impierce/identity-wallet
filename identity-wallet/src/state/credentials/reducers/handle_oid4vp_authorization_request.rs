@@ -1,26 +1,32 @@
 use crate::{
     error::AppError::{self, *},
     state::{
-        actions::{listen, Action}, connections::Connection, core_utils::ConnectionRequest, credentials::actions::credentials_selected::CredentialsSelected, core_utils::helpers::get_unverified_jwt_claims, user_prompt::CurrentUserPrompt, AppState
+        actions::{listen, Action},
+        connections::Connection,
+        core_utils::{helpers::get_unverified_jwt_claims, ConnectionRequest, history_event::{EventType, HistoryCredential, HistoryEvent}},
+        credentials::actions::credentials_selected::CredentialsSelected,
+        user_prompt::CurrentUserPrompt,
+        AppState,
     },
 };
 
-use oid4vc::oid4vc_core::authorization_request::{AuthorizationRequest, Object};
-use oid4vc::oid4vp::oid4vp::OID4VP;
 use identity_credential::{credential::Jwt, presentation::Presentation};
 use log::info;
+use oid4vc::oid4vc_core::authorization_request::{AuthorizationRequest, Object};
 use oid4vc::oid4vc_manager::managers::presentation::create_presentation_submission;
 use oid4vc::oid4vci::credential_format_profiles::{
     w3c_verifiable_credentials::jwt_vc_json::JwtVcJson, Credential, CredentialFormats,
 };
 use oid4vc::oid4vp::oid4vp;
+use oid4vc::oid4vp::oid4vp::OID4VP;
 
 // Sends the authorization response including the verifiable credentials.
-pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action) -> Result<AppState, AppError> {
+pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Action) -> Result<AppState, AppError> {
     info!("handle_presentation_request");
 
     if let Some(credential_uuids) = listen::<CredentialsSelected>(action).map(|payload| payload.credential_uuids) {
         let state_guard = state.core_utils.managers.lock().await;
+
         let stronghold_manager = state_guard
             .stronghold_manager
             .as_ref()
@@ -37,19 +43,27 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
                 ConnectionRequest::SIOPv2(_) => unreachable!(),
             };
 
+        let mut history_credentials = Vec::new();
+
         let verifiable_credentials: Vec<Credential<JwtVcJson>> = stronghold_manager
             .values()
             .map_err(StrongholdValuesError)?
             .unwrap()
             .iter()
-            .filter_map(
-                |verifiable_credential_record| match &verifiable_credential_record.verifiable_credential {
+            .filter_map(|verifiable_credential_record| {
+                let share_credential = match &verifiable_credential_record.verifiable_credential {
                     CredentialFormats::JwtVcJson(jwt_vc_json) => credential_uuids
                         .contains(&verifiable_credential_record.display_credential.id.parse().unwrap())
                         .then_some(jwt_vc_json.to_owned()),
                     _ => unimplemented!(),
-                },
-            )
+                };
+
+                if share_credential.is_some() {
+                    history_credentials.push(HistoryCredential::from_credential(verifiable_credential_record));
+                }
+
+                share_credential
+            })
             .collect();
 
         let presentation_submission = create_presentation_submission(
@@ -127,22 +141,28 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
 
         if result.is_none() {
             connections.push(Connection {
-                id: connection_id,
-                client_name,
+                id: connection_id.to_string(),
+                client_name: client_name.to_string(),
                 url: connection_url,
                 verified: false,
                 first_interacted: connection_time.clone(),
-                last_interacted: connection_time,
+                last_interacted: connection_time.clone(),
             })
         };
 
-        drop(state_guard);
-        return Ok(AppState {
-            connections,
-            current_user_prompt: Some(CurrentUserPrompt::Redirect {
-                target: "me".to_string(),
-            }),
-            ..state
+        state.connections = connections;
+
+        // History
+        state.history.push(HistoryEvent {
+            connection_name: client_name,
+            date: connection_time,
+            event_type: EventType::CredentialsShared,
+            connection_id: Some(connection_id),
+            credentials: history_credentials,
+        });
+
+        state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
+            target: "me".to_string(),
         });
     }
 

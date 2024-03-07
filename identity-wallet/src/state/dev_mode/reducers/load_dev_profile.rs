@@ -3,9 +3,8 @@ use crate::{
     state::{
         actions::{listen, Action},
         dev_mode::{
-            actions::dev_profile::DevProfile,
+            actions::dev_profile::{DevProfile, ProfileType},
             reducers::{dragon_dynamic_profile::load_dragon_profile, ferris_static_profile::load_ferris_profile},
-            ProfileType,
         },
         AppState,
     },

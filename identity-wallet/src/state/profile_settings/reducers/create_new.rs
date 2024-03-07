@@ -43,7 +43,7 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
             profile: Some(Profile {
                 name: name.to_string(),
                 picture: Some(picture.to_string()),
-                theme: Some(theme.to_string()),
+                theme: Some(theme),
                 primary_did: subject.identifier().map_err(OID4VCSubjectIdentifierError)?,
             }),
             ..Default::default()

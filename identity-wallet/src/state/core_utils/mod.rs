@@ -1,13 +1,17 @@
+pub mod history_event;
 pub mod helpers;
 
 use crate::stronghold::StrongholdManager;
 
 use oid4vc::{
-    oid4vc_core::{Subject, authorization_request::{AuthorizationRequest, Object}},
-    oid4vp::oid4vp::OID4VP,
-    siopv2::siopv2::SIOPv2,
+    oid4vc_core::{
+        authorization_request::{AuthorizationRequest, Object},
+        Subject,
+    },
     oid4vc_manager::ProviderManager,
     oid4vci::Wallet,
+    oid4vp::oid4vp::OID4VP,
+    siopv2::siopv2::SIOPv2,
 };
 
 use serde::{Deserialize, Serialize};

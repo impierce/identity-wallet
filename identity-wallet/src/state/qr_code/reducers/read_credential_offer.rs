@@ -2,7 +2,10 @@ use crate::{
     error::AppError::{self, *},
     persistence::{download_asset, LogoType},
     state::{
-        actions::{listen, Action}, qr_code::actions::qrcode_scanned::QrCodeScanned, user_prompt::CurrentUserPrompt, AppState
+        actions::{listen, Action},
+        qr_code::actions::qrcode_scanned::QrCodeScanned,
+        user_prompt::CurrentUserPrompt,
+        AppState,
     },
 };
 
@@ -39,7 +42,7 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
         info!("credential offer: {:?}", credential_offer);
 
         // The credential offer contains a credential issuer url.
-        let credential_issuer_url = credential_offer.clone().credential_issuer;
+        let credential_issuer_url = credential_offer.credential_issuer.clone();
 
         info!("credential issuer url: {:?}", credential_issuer_url);
 
@@ -115,6 +118,7 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
                     .as_str()
                     .map(|s| s.to_string())
                     .unwrap_or(credential_issuer_url.to_string());
+
                 let logo_uri = display["logo_uri"].as_str().map(|s| s.to_string());
                 // ===== OpenID for Verifiable Credential Issuance - draft 12 (26 November 2023) =====
                 // let issuer_name = display["name"]

@@ -30,7 +30,7 @@ A tab component.
 <Tabs triggers={['First', 'Second', 'Third']} />
 ```
 -->
-<div use:melt={$root} class="flex flex-col overflow-hidden">
+<div use:melt={$root} class="flex flex-col">
   <div use:melt={$list} class="flex h-[39px] shrink-0 overflow-x-auto rounded-xl bg-white dark:bg-dark">
     {#each triggers as triggerItem}
       <button

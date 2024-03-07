@@ -1,5 +1,6 @@
 use crate::common::assert_state_update::{assert_state_update, setup_state_file, setup_stronghold};
 use crate::common::{json_example, test_managers};
+use identity_wallet::state::profile_settings::AppTheme;
 use identity_wallet::state::{
     actions::Action,
     core_utils::CoreUtils,
@@ -59,7 +60,7 @@ async fn test_get_state_unlock_storage() {
             profile: Some(Profile {
                 name: "Ferris Crabman".to_string(),
                 picture: Some("&#129408".to_string()),
-                theme: Some("system".to_string()),
+                theme: Some(AppTheme::System),
                 primary_did: "did:example:placeholder".to_string(),
             }),
             ..Default::default()
@@ -106,7 +107,7 @@ async fn test_get_state_unlock_storage_invalid_password() {
             profile: Some(Profile {
                 name: "Ferris Crabman".to_string(),
                 picture: Some("&#129408".to_string()),
-                theme: Some("system".to_string()),
+                theme: Some(AppTheme::System),
                 primary_did: "did:example:placeholder".to_string(),
             }),
             ..Default::default()

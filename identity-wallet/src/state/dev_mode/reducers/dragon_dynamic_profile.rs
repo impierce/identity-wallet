@@ -2,9 +2,19 @@ use crate::{
     command,
     error::AppError,
     state::{
-        common::actions::reset::Reset, connections::actions::connection_accepted::ConnectionAccepted, credentials::actions::{
+        common::actions::reset::Reset,
+        connections::actions::connection_accepted::ConnectionAccepted,
+        credentials::actions::{
             credential_offers_selected::CredentialOffersSelected, credentials_selected::CredentialsSelected,
-        }, dev_mode::{actions::dev_profile::DevProfile, DevMode, ProfileSteps}, profile_settings::actions::create_new::CreateNew, qr_code::actions::qrcode_scanned::QrCodeScanned, user_prompt::CurrentUserPrompt, AppState
+        },
+        dev_mode::{
+            actions::dev_profile::{DevProfile, ProfileSteps},
+            DevMode,
+        },
+        profile_settings::{actions::create_new::CreateNew, AppTheme},
+        qr_code::actions::qrcode_scanned::QrCodeScanned,
+        user_prompt::CurrentUserPrompt,
+        AppState,
     },
 };
 
@@ -20,7 +30,10 @@ pub async fn load_dragon_profile(mut state: AppState, dev_profile: DevProfile) -
 
     info!("Profile steps executed: {:?}", steps);
 
-    state = reset_settings(state).await?;
+    if dev_profile.reset_profile {
+        state = reset_settings(state).await?;
+    }
+
     state = create_new_profile(state).await?;
 
     if ProfileSteps::AddCredentials <= steps {
@@ -72,7 +85,7 @@ async fn create_new_profile(state: AppState) -> Result<AppState, AppError> {
     let create_new = CreateNew {
         name: "Shenron".to_string(),
         picture: "&#x1F432".to_string(),
-        theme: "dark".to_string(),
+        theme: AppTheme::Dark,
         password: PASSWORD.to_string(),
     };
 

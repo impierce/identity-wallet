@@ -9,7 +9,7 @@ mod tests {
             actions::{cancel_user_flow::CancelUserFlow, reset::Reset},
             reducers::{cancel_user_flow::cancel_user_flow, reset_state::reset_state},
         },
-        profile_settings::{Locale, Profile, ProfileSettings},
+        profile_settings::{AppTheme, Locale, Profile, ProfileSettings},
         user_prompt::CurrentUserPrompt,
         AppState,
     };
@@ -64,7 +64,7 @@ mod tests {
                 profile: Some(Profile {
                     name: "Ferris".to_string(),
                     picture: Some("&#129408".to_string()),
-                    theme: Some("system".to_string()),
+                    theme: Some(AppTheme::System),
                     primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
                 }),
                 ..Default::default()

@@ -2,7 +2,10 @@ use crate::{
     reducer,
     state::{
         actions::ActionTrait,
-        profile_settings::reducers::create_new::{create_identity, initialize_stronghold},
+        profile_settings::{
+            reducers::create_new::{create_identity, initialize_stronghold},
+            AppTheme,
+        },
         Reducer,
     },
 };
@@ -17,7 +20,7 @@ use ts_rs::TS;
 pub struct CreateNew {
     pub name: String,
     pub picture: String,
-    pub theme: String,
+    pub theme: AppTheme,
     pub password: String,
 }
 

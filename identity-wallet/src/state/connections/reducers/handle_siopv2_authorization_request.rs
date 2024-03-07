@@ -2,17 +2,22 @@ use crate::{
     error::AppError::{self, *},
     persistence::persist_asset,
     state::{
-        actions::Action, connections::Connection, core_utils::ConnectionRequest, user_prompt::CurrentUserPrompt, AppState
+        actions::Action,
+        connections::Connection,
+        core_utils::{ConnectionRequest, history_event::{EventType, HistoryEvent}},
+        user_prompt::CurrentUserPrompt,
+        AppState,
     },
 };
 
+use log::{info, warn};
 use oid4vc::oid4vc_core::authorization_request::{AuthorizationRequest, Object};
 use oid4vc::siopv2::siopv2::SIOPv2;
-use log::{info, warn};
 
 // Sends the authorization response.
-pub async fn handle_siopv2_authorization_request(state: AppState, _action: Action) -> Result<AppState, AppError> {
+pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: Action) -> Result<AppState, AppError> {
     let state_guard = state.core_utils.managers.lock().await;
+
     let provider_manager = &state_guard
         .identity_manager
         .as_ref()
@@ -65,23 +70,32 @@ pub async fn handle_siopv2_authorization_request(state: AppState, _action: Actio
 
     if result.is_none() {
         connections.push(Connection {
-            id: connection_id,
-            client_name,
+            id: connection_id.to_string(),
+            client_name: client_name.to_string(),
             url: connection_url,
             verified: false,
             first_interacted: connection_time.clone(),
-            last_interacted: connection_time,
+            last_interacted: connection_time.clone(),
         })
     };
 
+    // History
+    state.history.push(HistoryEvent {
+        connection_name: client_name.clone(),
+        event_type: EventType::ConnectionAdded,
+        connection_id: Some(connection_id),
+        date: connection_time,
+        credentials: vec![],
+    });
+
+    state.connections = connections;
+    state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
+        target: "me".to_string(),
+    });
+
     drop(state_guard);
-    Ok(AppState {
-        connections,
-        current_user_prompt: Some(CurrentUserPrompt::Redirect {
-            target: "me".to_string(),
-        }),
-        ..state
-    })
+
+    Ok(state)
 }
 
 // Helpers

@@ -18,6 +18,7 @@ use self::{
     user_prompt::CurrentUserPrompt,
 };
 use crate::state::credentials::DisplayCredential;
+use crate::state::core_utils::history_event::HistoryEvent;
 use crate::{error::AppError, state::connections::Connection};
 
 use derivative::Derivative;
@@ -40,7 +41,6 @@ use ts_rs::TS;
 /// This ensures that all reducers have the same signature and therefore follow the redux pattern and our error handling.
 /// All the above goes for extensions (values) which are added to the extensions field.
 
-
 /// A macro to wrap a reducer function in a Box and a Pin.
 /// It checks the reducers for its signature,
 ///  as it should comply with our standard for reducers.
@@ -55,7 +55,6 @@ macro_rules! reducer {
 pub type Reducer<'a> =
     Box<dyn Fn(AppState, Action) -> Pin<Box<dyn Future<Output = Result<AppState, AppError>> + Send>> + Send>;
 
-    
 /// Trait which each field of the appstate has to implement.
 /// Some fields are simple values and not structs, so they don't need to implement this trait.
 #[typetag::serde(tag = "feat_state_type")]
@@ -96,11 +95,13 @@ pub struct AppState {
     /// User prompts are a way for the backend to communicate a desired/required user interaction to the frontend.
     pub current_user_prompt: Option<CurrentUserPrompt>,
     /// Here user_journeys can be loaded from json_files or strings, to give the user a guided experience.
-    #[ts(type = "object | null")]
+    #[ts(type = "any | null")]
     pub user_journey: Option<serde_json::Value>,
     /// Handled in command.rs, so no feature folder nor redux pattern needed.
     #[ts(type = "Array<string>")]
     pub debug_messages: VecDeque<String>,
+    /// History events
+    pub history: Vec<HistoryEvent>,
     /// Extensions will bring along their own redux compliant code, in the unime folder.
     #[ts(skip)]
     pub extensions: std::collections::HashMap<String, Box<dyn FeatTrait>>,
@@ -125,6 +126,7 @@ impl Clone for AppState {
             user_journey: self.user_journey.clone(),
             connections: self.connections.clone(),
             user_data_query: self.user_data_query.clone(),
+            history: self.history.clone(),
             extensions: self.extensions.clone(),
             dev_mode: self.dev_mode.clone(),
         }
@@ -191,6 +193,7 @@ mod tests {
                   },
                   "user_journey": null,
                   "debug_messages": [],
+                  "history": [],
                   "extensions": {},
                   "dev_mode": "Off"
                 }"#}

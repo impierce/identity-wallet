@@ -3,12 +3,12 @@ pub mod reducers;
 
 use super::{core_utils::helpers::get_unverified_jwt_claims, FeatTrait};
 
+use derivative::Derivative;
 use oid4vc::oid4vci::credential_format_profiles::{CredentialFormats, WithCredential};
 use serde::{Deserialize, Serialize};
-use derivative::Derivative;
-use serde_json::json;
-use uuid::Uuid;
+use serde_json::{json, Value};
 use ts_rs::TS;
+use uuid::Uuid;
 
 /// A credential displayable by the frontend.
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, Derivative, TS)]
@@ -16,13 +16,17 @@ use ts_rs::TS;
 #[ts(export, export_to = "bindings/display-credential/DisplayCredential.ts")]
 pub struct DisplayCredential {
     pub id: String,
-    pub issuer_name: Option<String>,
+    pub issuer_name: String,
     #[ts(type = "string")]
     pub format: CredentialFormats,
     #[ts(type = "object")]
     pub data: serde_json::Value,
     #[serde(default)]
     pub metadata: CredentialMetadata,
+
+    pub display_name: String,
+    pub display_color: Option<String>,
+    pub display_icon: Option<String>,
 }
 
 #[typetag::serde(name = "display_credential")]
@@ -38,16 +42,6 @@ pub struct CredentialMetadata {
     pub date_added: String,
     #[derivative(PartialEq = "ignore")]
     pub date_issued: String,
-    pub display: CredentialDisplay,
-}
-
-/// Info concerning the display of a credential.
-#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, TS, Default)]
-#[ts(export, export_to = "bindings/display-credential/CredentialDisplay.ts")]
-pub struct CredentialDisplay {
-    pub icon: Option<String>,
-    pub color: Option<String>,
-    pub name: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
@@ -89,17 +83,23 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
 
                 let issuance_date = credential_display["issuanceDate"].clone();
 
+                let display_name = get_achievement_name_from_data(&credential_display)
+                    .or(get_type_name_from_data(&credential_display))
+                    .unwrap_or("".to_string());
+
                 DisplayCredential {
                     id: Uuid::from_slice(&hash.as_bytes()[..16]).unwrap().to_string(),
-                    issuer_name: None,
+                    issuer_name: "".to_string(),
                     format: verifiable_credential.format().unwrap(),
                     data: credential_display,
                     metadata: CredentialMetadata {
                         is_favorite: false,
                         date_added: chrono::Utc::now().to_rfc3339(),
                         date_issued: issuance_date.to_string(),
-                        display: CredentialDisplay::default(),
                     },
+                    display_name,
+                    display_color: None,
+                    display_icon: None,
                 }
             }
             _ => unimplemented!(),
@@ -109,5 +109,22 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
             verifiable_credential,
             display_credential,
         }
+    }
+}
+
+fn get_achievement_name_from_data(credential_display: &serde_json::Value) -> Option<String> {
+    let cred_subject = credential_display.get("credentialSubject")?;
+    let achievement = cred_subject.get("achievement")?;
+    let name = achievement.get("name")?;
+
+    // Don't use the to_string for the name variable as it add's "" around the string
+    name.as_str().map(|name| name.to_string())
+}
+
+fn get_type_name_from_data(credential_display: &serde_json::Value) -> Option<String> {
+    match credential_display.get("type")? {
+        // Don't use the to_string for the name variable as it add's "" around the string
+        Value::Array(array) => array.last()?.as_str().map(|name| name.to_string()),
+        _ => None,
     }
 }

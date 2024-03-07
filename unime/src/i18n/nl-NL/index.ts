@@ -207,7 +207,7 @@ const nl = {
     NAVBAR_TITLE: 'Verbonden',
     TABS: {
       CONNECTIONS: 'Connecties',
-      TIMELINE: 'Tijdlijn',
+      HISTORY: 'Tijdlijn',
     },
   },
   SCAN: {
@@ -252,8 +252,11 @@ const nl = {
       EMPTY: 'Nog geen data.',
     },
   },
-  TIMELINE: {
+  HISTORY: {
     EMPTY: 'Nog geen activiteit.',
+    DATA_RECEIVED: 'Data gekregen van',
+    DATA_SHARED: 'Data gedeeld met',
+    CONNECTION_ADDED: 'Verbonden met',
   },
   SEARCH: {
     INPUT_PLACEHOLDER: 'Zoeken',

@@ -6,11 +6,12 @@ use crate::common::{
 use identity_wallet::oid4vci::credential_format_profiles::{
     w3c_verifiable_credentials::jwt_vc_json::JwtVcJson, Credential, CredentialFormats, WithCredential,
 };
+use identity_wallet::state::profile_settings::AppTheme;
 use identity_wallet::state::{
     actions::Action,
     core_utils::CoreUtils,
-    profile_settings::{Profile, ProfileSettings},
     credentials::VerifiableCredentialRecord,
+    profile_settings::{Profile, ProfileSettings},
     AppState, AppStateContainer,
 };
 
@@ -27,7 +28,7 @@ async fn test_qr_code_scanned_handle_siopv2_authorization_request() {
     let active_profile = Some(Profile {
         name: "Ferris".to_string(),
         picture: Some("&#129408".to_string()),
-        theme: Some("system".to_string()),
+        theme: Some(AppTheme::System),
         primary_did: managers
             .lock()
             .await
@@ -85,7 +86,7 @@ async fn test_qr_code_scanned_handle_oid4vp_authorization_request() {
     let active_profile = Some(Profile {
         name: "Ferris".to_string(),
         picture: Some("&#129408".to_string()),
-        theme: Some("system".to_string()),
+        theme: Some(AppTheme::System),
         primary_did: managers
             .lock()
             .await
@@ -137,7 +138,7 @@ async fn test_qr_code_scanned_invalid_qr_code_error() {
     let active_profile = Some(Profile {
         name: "Ferris".to_string(),
         picture: Some("&#129408".to_string()),
-        theme: Some("system".to_string()),
+        theme: Some(AppTheme::System),
         primary_did: managers
             .lock()
             .await

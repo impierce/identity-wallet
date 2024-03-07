@@ -27,7 +27,7 @@ impl FeatTrait for ProfileSettings {}
 pub struct Profile {
     pub name: String,
     pub picture: Option<String>,
-    pub theme: Option<String>,
+    pub theme: Option<AppTheme>,
     pub primary_did: String,
 }
 
@@ -52,6 +52,17 @@ pub enum Locale {
 
 #[typetag::serde(name = "locale")]
 impl FeatTrait for Locale {}
+
+#[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone, PartialEq, Eq)]
+#[ts(export, export_to = "bindings/theme.ts")]
+pub enum AppTheme {
+    #[serde(rename = "system")]
+    System,
+    #[serde(rename = "dark")]
+    Dark,
+    #[serde(rename = "light")]
+    Light,
+}
 
 #[cfg(test)]
 mod tests {
@@ -81,7 +92,7 @@ mod tests {
         let active_profile = Profile {
             name: "Ferris".to_string(),
             picture: Some("&#129408".to_string()),
-            theme: Some("system".to_string()),
+            theme: Some(AppTheme::System),
             primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
         };
 
@@ -98,7 +109,7 @@ mod tests {
             Arc::new(UpdateProfileSettings {
                 name: None,
                 picture: None,
-                theme: Some("light".to_string()),
+                theme: Some(AppTheme::Light),
             }),
         )
         .await
@@ -107,7 +118,7 @@ mod tests {
         assert_eq!(
             app_state.profile_settings.profile,
             Some(Profile {
-                theme: Some("light".to_string()),
+                theme: Some(AppTheme::Light),
                 ..active_profile
             })
         );
