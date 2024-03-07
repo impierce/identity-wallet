@@ -7,10 +7,10 @@ use crate::{
     },
     stronghold::StrongholdManager,
 };
+
 use did_key::{generate, Ed25519KeyPair};
 use lazy_static::lazy_static;
 use log::info;
-
 use oid4vc::{
     oid4vc_core::Subject,
     oid4vc_manager::methods::key_method::KeySubject,

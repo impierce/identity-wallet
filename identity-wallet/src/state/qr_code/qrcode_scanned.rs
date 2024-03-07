@@ -1,11 +1,5 @@
 use crate::state::actions::ActionTrait;
 use crate::state::connections::{get_oid4vp_client_name_and_logo_uri, get_siopv2_client_name_and_logo_uri};
-use log::{debug, info};
-use oid4vc::oid4vci::{
-    credential_issuer::credentials_supported::CredentialsSupportedObject,
-    credential_offer::{CredentialOffer, CredentialOfferQuery, CredentialsObject},
-};
-
 use crate::{
     error::AppError::{self, *},
     get_unverified_jwt_claims,
@@ -19,12 +13,17 @@ use crate::{
     },
 };
 use crate::{reducer, state::Reducer};
-use serde::{Deserialize, Serialize};
-use ts_rs::TS;
 
+use log::{debug, info};
 use oid4vc::oid4vc_core::authorization_request::{AuthorizationRequest, Object};
+use oid4vc::oid4vci::{
+    credential_issuer::credentials_supported::CredentialsSupportedObject,
+    credential_offer::{CredentialOffer, CredentialOfferQuery, CredentialsObject},
+};
 use oid4vc::oid4vp::{evaluate_input, oid4vp::OID4VP};
 use oid4vc::siopv2::siopv2::SIOPv2;
+use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
 /// Action to handle the scanning of a QR code.
 #[derive(Serialize, Deserialize, Debug, TS, Clone)]

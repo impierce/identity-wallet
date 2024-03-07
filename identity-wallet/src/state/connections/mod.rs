@@ -1,6 +1,7 @@
 pub mod connection_accepted;
 
 use super::FeatTrait;
+
 use oid4vc::{
     oid4vc_core::authorization_request::{AuthorizationRequest, Object},
     oid4vp::oid4vp::OID4VP,
