@@ -52,7 +52,7 @@ impl ActionTrait for CreateNew {
 }
 
 /// Creates a new profile with a new DID (using the did:key method) and sets it as the active profile.
-async fn create_identity(mut state: AppState, action: Action) -> Result<AppState, AppError> {
+async fn create_identity(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(CreateNew {
         name, picture, theme, ..
     }) = listen::<CreateNew>(action)
@@ -87,10 +87,17 @@ async fn create_identity(mut state: AppState, action: Action) -> Result<AppState
             wallet,
         });
 
-        state.profile_settings = profile_settings;
-        state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
+        let current_user_prompt = Some(CurrentUserPrompt::Redirect {
             target: "me".to_string(),
         });
+
+        drop(state_guard);
+
+        return Ok(AppState {
+            profile_settings,
+            current_user_prompt,
+            ..state
+        })
     }
 
     Ok(state)

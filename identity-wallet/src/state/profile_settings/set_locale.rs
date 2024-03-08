@@ -30,16 +30,22 @@ impl ActionTrait for SetLocale {
 }
 
 /// Sets the locale to the given value. If the locale is not supported yet, the current locale will stay unchanged.
-pub async fn set_locale(mut state: AppState, action: Action) -> Result<AppState, AppError> {
+pub async fn set_locale(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(locale) = listen::<SetLocale>(action).map(|payload| payload.locale) {
         debug!("locale set to: `{:?}`", locale);
 
-        state.profile_settings = ProfileSettings {
+        let profile_settings = ProfileSettings {
             locale,
             ..state.profile_settings
         };
 
-        state.current_user_prompt = None;
+        let current_user_prompt = None;
+
+        return Ok(AppState {
+            profile_settings,
+            current_user_prompt,
+            ..state
+        });
     }
     Ok(state)
 }

@@ -19,18 +19,23 @@ impl ActionTrait for ToggleDevMode {
     }
 }
 
-pub async fn toggle_dev_mode(mut state: AppState, _action: Action) -> Result<AppState, AppError> {
+pub async fn toggle_dev_mode(state: AppState, _action: Action) -> Result<AppState, AppError> {
     info!("Toggle dev mode");
+    let dev_mode;
 
     if state.dev_mode != DevMode::Off {
-        state.dev_mode = DevMode::Off;
+        dev_mode = DevMode::Off;
     } else {
         // We don't preserve if user had autologin enabled
         // So we just put it back to default (reload profile if you want to enable autologin again)
-        state.dev_mode = DevMode::On;
+        dev_mode = DevMode::On;
     }
 
-    state.current_user_prompt = None;
+    let current_user_prompt = None;
 
-    Ok(state)
+    Ok(AppState {
+        dev_mode,
+        current_user_prompt,
+        ..state
+    })
 }

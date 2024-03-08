@@ -27,7 +27,7 @@ impl ActionTrait for ConnectionAccepted {
 }
 
 // Sends the authorization response.
-pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: Action) -> Result<AppState, AppError> {
+pub async fn handle_siopv2_authorization_request(state: AppState, _action: Action) -> Result<AppState, AppError> {
     let state_guard = state.core_utils.managers.lock().await;
 
     let provider_manager = &state_guard
@@ -92,7 +92,9 @@ pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: A
     };
 
     // History
-    state.history.push(HistoryEvent {
+    let mut history = state.history.clone();
+
+    history.push(HistoryEvent {
         connection_name: client_name.clone(),
         event_type: EventType::ConnectionAdded,
         connection_id: Some(connection_id),
@@ -100,12 +102,16 @@ pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: A
         credentials: vec![],
     });
 
-    state.connections = connections;
-    state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
+    let current_user_prompt = Some(CurrentUserPrompt::Redirect {
         target: "me".to_string(),
     });
 
     drop(state_guard);
 
-    Ok(state)
+    Ok(AppState {
+        history,
+        connections,
+        current_user_prompt,
+        ..state
+    })
 }

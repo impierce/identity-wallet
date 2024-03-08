@@ -34,7 +34,7 @@ impl ActionTrait for CredentialOffersSelected {
     }
 }
 
-pub async fn send_credential_request(mut state: AppState, action: Action) -> Result<AppState, AppError> {
+pub async fn send_credential_request(state: AppState, action: Action) -> Result<AppState, AppError> {
     info!("send_credential_request");
 
     if let Some(offer_indices) = listen::<CredentialOffersSelected>(action).map(|payload| payload.offer_indices) {
@@ -209,8 +209,10 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
             .collect();
 
         // History
+        let mut history = state.history.clone();
+
         if !history_credentials.is_empty() {
-            state.history.push(HistoryEvent {
+            history.push(HistoryEvent {
                 connection_name: issuer_name,
                 event_type: EventType::CredentialsAdded,
                 date: credentials[0].metadata.date_added.clone(),
@@ -219,10 +221,17 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
             });
         }
 
-        state.credentials = credentials;
-
-        state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
+        let current_user_prompt = Some(CurrentUserPrompt::Redirect {
             target: "me".to_string(),
+        });
+
+        drop(state_guard);
+
+        return Ok(AppState {
+            history,
+            current_user_prompt,
+            credentials,
+            ..state
         });
     }
 

@@ -35,7 +35,7 @@ impl ActionTrait for CredentialsSelected {
 }
 
 // Sends the authorization response including the verifiable credentials.
-pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Action) -> Result<AppState, AppError> {
+pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action) -> Result<AppState, AppError> {
     info!("handle_presentation_request");
 
     if let Some(credential_uuids) = listen::<CredentialsSelected>(action).map(|payload| payload.credential_uuids) {
@@ -164,10 +164,10 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
             })
         };
 
-        state.connections = connections;
+        let mut history = state.history.clone();
 
         // History
-        state.history.push(HistoryEvent {
+        history.push(HistoryEvent {
             connection_name: client_name,
             date: connection_time,
             event_type: EventType::CredentialsShared,
@@ -175,8 +175,17 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
             credentials: history_credentials,
         });
 
-        state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
+        let current_user_prompt = Some(CurrentUserPrompt::Redirect {
             target: "me".to_string(),
+        });
+
+        drop(state_guard);
+
+        return Ok(AppState {
+            history,
+            connections,
+            current_user_prompt,
+            ..state
         });
     }
 
