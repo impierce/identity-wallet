@@ -7,9 +7,7 @@
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
   import { onboarding_state } from '$src/stores';
 
-  $: {
-    console.log($onboarding_state);
-  }
+  $onboarding_state.name = $onboarding_state.name || 'Me';
 </script>
 
 <!-- <TopNavBar title="Appearance" on:back={() => history.back()} /> -->
