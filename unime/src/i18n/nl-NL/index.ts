@@ -47,21 +47,10 @@ const nl = {
         SUBTITLE: 'Jouw profielinformatie verlaat nooit jouw apparaat',
         INPUT_PLACEHOLDER: 'Profielnaam invoeren',
       },
-      THEME: {
-        TITLE_1: 'Kies het uiterlijk',
-        TITLE_2: 'van je app',
-        SUBTITLE: 'Ben jij meer een nachtuil?',
-      },
       PICTURE: {
         TITLE_1: 'Stel een',
         TITLE_2: 'profielfoto in',
         SUBTITLE: 'Maak het je eigen.',
-      },
-      SKIP: {
-        TITLE: 'Sla personalisatie over',
-        TEXT: 'Weet je het zeker? Je kunt het uiterlijk van de app later aanpassen in de instellingen.',
-        CONFIRM: 'Ja',
-        ABORT: 'Nee, ga door',
       },
     },
     PASSWORD: {
@@ -116,8 +105,11 @@ const nl = {
         COMING_SOON: 'Binnenkort beschikbaar',
       },
       THEME: {
-        TITLE: 'Thema',
+        LABEL: 'Thema',
         NAVBAR_TITLE: 'Selecteer Thema',
+        TITLE_1: 'Kies het uiterlijk',
+        TITLE_2: 'van je app',
+        SUBTITLE: 'Ben jij meer een nachtuil?',
       },
       PASSWORD: {
         TITLE: 'Wachtwoord',

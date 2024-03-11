@@ -48,21 +48,10 @@ const de = {
         SUBTITLE: 'Deine Profilinformationen verlassen niemals dein Gerät.',
         INPUT_PLACEHOLDER: 'Gib einen Profilnamen ein',
       },
-      THEME: {
-        TITLE_1: 'Wähle das',
-        TITLE_2: 'Erscheinungsbild',
-        SUBTITLE: 'Bist du eher eine Nachteule?',
-      },
       PICTURE: {
         TITLE_1: 'Wähle ein',
         TITLE_2: 'Profilbild',
         SUBTITLE: 'Mach es zu deinem.',
-      },
-      SKIP: {
-        TITLE: 'Personalisierung überspringen',
-        TEXT: 'Bist du sicher? Du kannst das Erscheinungsbild der App später in den Einstellungen anpassen.',
-        CONFIRM: 'Ja',
-        ABORT: 'Nein, lass uns weitermachen',
       },
     },
     PASSWORD: {
@@ -117,8 +106,11 @@ const de = {
         COMING_SOON: 'Bald verfügbar',
       },
       THEME: {
-        TITLE: 'Erscheinungsbild',
+        LABEL: 'Erscheinungsbild',
         NAVBAR_TITLE: 'Erscheinungsbild anpassen',
+        TITLE_1: 'Wähle das',
+        TITLE_2: 'Erscheinungsbild',
+        SUBTITLE: 'Bist du eher eine Nachteule?',
       },
       PASSWORD: {
         TITLE: 'Passwort',

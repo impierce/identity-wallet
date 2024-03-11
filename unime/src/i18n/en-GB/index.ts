@@ -8,9 +8,6 @@ const en_GB = extendDictionary(en, {
   ONBOARDING: {
     CUSTOMIZE: {
       NAVBAR_TITLE: 'Customisation',
-      SKIP: {
-        TITLE: 'Skip customisation',
-      },
     },
     PLEDGE: {
       ITEM_1: {
