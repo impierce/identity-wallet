@@ -3,11 +3,12 @@ use crate::{
     state::{
         actions::{listen, Action, CredentialOffersSelected, QrCodeScanned},
         persistence::persist_asset,
+        history_event::{EventType, HistoryCredential, HistoryEvent},
         user_prompt::CurrentUserPrompt,
         AppState,
     },
     utils::{download_asset, LogoType},
-    verifiable_credential_record::VerifiableCredentialRecord,
+    verifiable_credential_record::{DisplayCredential, VerifiableCredentialRecord},
 };
 use log::{debug, info};
 use oid4vc::oid4vci::{
@@ -23,10 +24,13 @@ use uuid::Uuid;
 pub async fn read_credential_offer(state: AppState, action: Action) -> Result<AppState, AppError> {
     info!("read_credential_offer");
 
+    // Sometimes reducers are connected to actions that they shouldn't execute
+    // Therefore its also checked if it can parse to credential offer query
+    // TODO find a better way to connect to the right reducer
     if let Some(credential_offer_uri) =
         listen::<QrCodeScanned>(action).and_then(|payload| payload.form_urlencoded.parse::<CredentialOfferQuery>().ok())
     {
-        let state_guard = state.managers.lock().await;
+        let state_guard = state.core_state.managers.lock().await;
         let wallet = &state_guard
             .identity_manager
             .as_ref()
@@ -40,10 +44,11 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
                 .await
                 .map_err(GetCredentialOfferError)?,
         };
+
         info!("credential offer: {:?}", credential_offer);
 
         // The credential offer contains a credential issuer url.
-        let credential_issuer_url = credential_offer.clone().credential_issuer;
+        let credential_issuer_url = credential_offer.credential_issuer.clone();
 
         info!("credential issuer url: {:?}", credential_issuer_url);
 
@@ -119,6 +124,7 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
                     .as_str()
                     .map(|s| s.to_string())
                     .unwrap_or(credential_issuer_url.to_string());
+
                 let logo_uri = display["logo_uri"].as_str().map(|s| s.to_string());
                 // ===== OpenID for Verifiable Credential Issuance - draft 12 (26 November 2023) =====
                 // let issuer_name = display["name"]
@@ -179,7 +185,7 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
                 "{}",
                 format!(
                     "Downloading issuer logo from url: {}",
-                    logo_uri.clone().unwrap().as_str()
+                    logo_uri.as_ref().unwrap().as_str()
                 )
             );
             if let Some(logo_uri) = logo_uri.as_ref().and_then(|s| s.parse::<reqwest::Url>().ok()) {
@@ -202,15 +208,16 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
     Ok(state)
 }
 
-pub async fn send_credential_request(state: AppState, action: Action) -> Result<AppState, AppError> {
+pub async fn send_credential_request(mut state: AppState, action: Action) -> Result<AppState, AppError> {
     info!("send_credential_request");
 
     if let Some(offer_indices) = listen::<CredentialOffersSelected>(action).map(|payload| payload.offer_indices) {
-        let state_guard = state.managers.lock().await;
+        let state_guard = state.core_state.managers.lock().await;
         let stronghold_manager = state_guard
             .stronghold_manager
             .as_ref()
             .ok_or(MissingManagerError("stronghold"))?;
+
         let wallet = &state_guard
             .identity_manager
             .as_ref()
@@ -334,11 +341,15 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                     .collect()
             }
         };
+
         info!("credentials: {:?}", credentials);
 
+        let mut history_credentials = vec![];
+
         for (i, credential) in credentials.into_iter().enumerate() {
-            let mut verifiable_credential_record = VerifiableCredentialRecord::from(credential);
-            verifiable_credential_record.display_credential.issuer_name = Some(issuer_name.clone());
+            let mut verifiable_credential_record: VerifiableCredentialRecord = credential.into();
+            verifiable_credential_record.display_credential.issuer_name = issuer_name.clone();
+
             let key: Uuid = verifiable_credential_record
                 .display_credential
                 .id
@@ -355,9 +366,12 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
             stronghold_manager
                 .insert(key, json!(verifiable_credential_record).to_string().as_bytes().to_vec())
                 .map_err(StrongholdInsertionError)?;
+
+            // Add history event
+            history_credentials.push(HistoryCredential::from_credential(&verifiable_credential_record));
         }
 
-        let credentials = stronghold_manager
+        let credentials: Vec<DisplayCredential> = stronghold_manager
             .values()
             .map_err(StrongholdValuesError)?
             .unwrap()
@@ -365,15 +379,21 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
             .map(|verifiable_credential_record| verifiable_credential_record.display_credential)
             .collect();
 
-        let current_user_prompt = CurrentUserPrompt::Redirect {
-            target: "me".to_string(),
-        };
+        // History
+        if !history_credentials.is_empty() {
+            state.history.push(HistoryEvent {
+                connection_name: issuer_name,
+                event_type: EventType::CredentialsAdded,
+                date: credentials[0].metadata.date_added.clone(),
+                connection_id: None,
+                credentials: history_credentials,
+            });
+        }
 
-        drop(state_guard);
-        return Ok(AppState {
-            credentials,
-            current_user_prompt: Some(current_user_prompt),
-            ..state
+        state.credentials = credentials;
+
+        state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
+            target: "me".to_string(),
         });
     }
 

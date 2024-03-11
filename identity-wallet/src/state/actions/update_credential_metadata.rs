@@ -5,6 +5,7 @@ use crate::state::reducers::update_credential_metadata;
 
 use ts_rs::TS;
 
+/// Action to update the credential metadata.
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/UpdateCredentialMetadata.ts")]
 pub struct UpdateCredentialMetadata {

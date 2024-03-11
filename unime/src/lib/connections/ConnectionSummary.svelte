@@ -13,20 +13,26 @@
   let summary = {
     URL: connection.url,
     // Verified: 'no',
-    [$LL.CONNECTION.SUMMARY.FIRST_CONNECTED()]: new Date(connection.first_interacted).toLocaleString($state.locale, {
-      dateStyle: 'medium',
-      timeStyle: 'medium',
-    }),
-    [$LL.CONNECTION.SUMMARY.LAST_CONNECTED()]: new Date(connection.last_interacted).toLocaleString($state.locale, {
-      dateStyle: 'medium',
-      timeStyle: 'medium',
-    }),
+    [$LL.CONNECTION.SUMMARY.FIRST_CONNECTED()]: new Date(connection.first_interacted).toLocaleString(
+      $state.profile_settings.locale,
+      {
+        dateStyle: 'medium',
+        timeStyle: 'medium',
+      },
+    ),
+    [$LL.CONNECTION.SUMMARY.LAST_CONNECTED()]: new Date(connection.last_interacted).toLocaleString(
+      $state.profile_settings.locale,
+      {
+        dateStyle: 'medium',
+        timeStyle: 'medium',
+      },
+    ),
   };
 </script>
 
 <div class="flex flex-col items-center justify-center space-y-4">
   <div class="flex w-full flex-col items-center justify-center space-y-4 py-6">
-    <div class="flex h-[75px] w-[75px] items-center justify-center overflow-hidden rounded-3xl bg-white p-4">
+    <div class="flex h-[75px] w-[75px] items-center justify-center overflow-hidden rounded-3xl bg-white p-2">
       <Image
         id={connection.id}
         imgClass="h-full w-full rounded-2xl"

@@ -1,71 +1,101 @@
 <script lang="ts">
-  import Image from '$lib/components/atoms/Image.svelte';
-  import type { Event, EventType } from '$lib/events';
+  import type { SvelteComponent } from 'svelte';
+
+  import type { SvelteHTMLElements } from 'svelte/elements';
+
+  import type { HistoryCredential } from '@bindings/HistoryCredential';
+  import type { HistoryEvent } from '@bindings/HistoryEvent';
+
   import HistoryEntry from '$lib/events/HistoryEntry.svelte';
   import LL from '$src/i18n/i18n-svelte';
-  import exampleEvents from '$src/lib/events/mock-data.json';
   import { state } from '$src/stores';
 
-  // const events: Event[] = exampleEvents.map((e) => ({ ...e, type: e.type as EventType }));
-  const events: Event[] = [];
+  import DownloadSimple from '~icons/ph/download-simple-fill';
+  import PlugsConnected from '~icons/ph/plugs-connected-fill';
+  import ShareFat from '~icons/ph/share-fat-fill';
 
-  const data_0 = {
-    ...events[0],
-    connection: {
-      domain: 'kw1c.nl',
-      id: 'kw1c',
-      url: 'https://kw1c.nl',
-      lastConnected: 'n/a',
-    },
-    title: 'Initial connection',
-    timestamp: '2023-08-03T12:23:41.218Z',
-    credentials: [],
-  };
+  export let connectionId: string | undefined = undefined;
 
-  const data_1 = {
-    ...events[0],
-    connection: {
-      domain: 'impierce.com',
-      id: 'impierce',
-      url: 'https://impierce.com',
-      lastConnected: 'n/a',
-    },
-    title: 'Data shared',
-    timestamp: '2023-08-03T12:23:42.749Z',
-    credentials: [$state.credentials[0], $state.credentials[1]],
-  };
+  interface DisplayEvent {
+    title: string;
+    date: string;
+    icon: typeof SvelteComponent<SvelteHTMLElements['svg']>;
+    credentials: Array<HistoryCredential>;
+  }
 
-  const data_2 = {
-    connection: {
-      id: 'iota',
-    },
-    title: 'Initial connection',
-    timestamp: '2024-01-09T11:53:53.937+00:00',
-    credentials: [$state.credentials[2]],
-  };
+  let filteredEvents: HistoryEvent[];
 
-  let eventsList = [data_1, data_0, data_2];
+  if (connectionId) {
+    filteredEvents = $state.history.filter((his) => his.connection_id === connectionId);
+  } else {
+    filteredEvents = $state.history;
+  }
+
+  const events: DisplayEvent[] = filteredEvents.map((history) => {
+    let title: string;
+    let icon: typeof SvelteComponent<SvelteHTMLElements['svg']>;
+
+    let date = history.date;
+    let credentials = history.credentials;
+
+    switch (history.event_type) {
+      case 'CredentialsAdded': {
+        title = $LL.HISTORY.DATA_RECEIVED() + ' ' + history.connection_name;
+        icon = DownloadSimple;
+        break;
+      }
+      case 'CredentialsShared': {
+        title = $LL.HISTORY.DATA_SHARED() + ' ' + history.connection_name;
+        icon = ShareFat;
+        break;
+      }
+      case 'ConnectionAdded': {
+        title = $LL.HISTORY.CONNECTION_ADDED() + ' ' + history.connection_name;
+        icon = PlugsConnected;
+        break;
+      }
+    }
+
+    return {
+      title,
+      icon,
+      date,
+      credentials,
+    } as DisplayEvent;
+  });
+
+  function hasNextElement(i: number): boolean {
+    return i + 1 < events.length;
+  }
 </script>
 
-<div class="relative flex h-full flex-col">
-  {#if events.length === 0}
+<div class="relative mt-6 flex h-full flex-col">
+  {#if $state.history.length === 0}
     <div class="flex h-full flex-col items-center justify-center">
-      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">{$LL.TIMELINE.EMPTY()}</p>
+      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">{$LL.HISTORY.EMPTY()}</p>
     </div>
   {:else}
-    <div class="flex grow flex-col space-y-8 pr-4 pt-4">
-      {#each eventsList as event}
-        <div class="flex justify-between">
-          <div class="z-10 mr-3 h-6 w-6 overflow-hidden rounded-full bg-white p-0.5 ring-8 ring-silver">
-            <Image id={event.connection.id} imgClass="h-full w-full object-contain" />
+    <div class="ml-2 mt-6">
+      {#each events.reverse() as event, i}
+        <div class="flex flex-row">
+          <div class="mt-2 flex flex-col items-center">
+            <div
+              class="z-10 flex items-center justify-center rounded-full bg-grey text-slate-800 ring-8 ring-grey dark:bg-blue dark:text-grey dark:ring-blue"
+            >
+              <svelte:component this={event.icon} class="h-4 w-4 " />
+            </div>
+            {#if hasNextElement(i)}
+              <!-- Vertical line on the left -->
+              <div class="mb-2 mt-4 h-full w-[2px] bg-grey dark:bg-blue"></div>
+            {/if}
           </div>
-          <div class="grow">
-            <HistoryEntry {...event} />
+          <div class="ml-6 mt-[-5px] flex grow justify-between pb-10">
+            <div class="grow">
+              <HistoryEntry {...event} />
+            </div>
           </div>
         </div>
       {/each}
     </div>
-    <!-- Timeline -->
-    <div class="absolute left-3 top-4 h-full w-0.5 -translate-x-1/2 transform bg-slate-200"></div>
   {/if}
 </div>

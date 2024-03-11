@@ -7,6 +7,9 @@ use log::{debug, info};
 use oid4vc::oid4vc_core::authentication::sign::ExternalSign;
 use uuid::Uuid;
 
+/// This file is where we implement the stronghold library for our app, which is used to store sensitive data.
+
+/// This struct is the main point of communication between our appstate and the stronghold library.
 #[derive(Debug)]
 pub struct StrongholdManager {
     stronghold: Stronghold,

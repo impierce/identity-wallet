@@ -10,6 +10,7 @@
 
   import { dispatch } from '$lib/dispatcher';
   import { getImageAsset } from '$lib/utils';
+  import LL from '$src/i18n/i18n-svelte';
   import { colors } from '$src/lib/app/colors';
   import Button from '$src/lib/components/atoms/Button.svelte';
   import ButtonRounded from '$src/lib/components/atoms/ButtonRounded.svelte';
@@ -26,10 +27,10 @@
 
   let credential = $state.credentials.find((c) => $page.params.id === c.id)!!;
 
-  let color = credential.metadata.display.color || colors.at(0);
+  let color = credential.display_color || colors.at(0);
 
-  let icon: any = credential.metadata.display.icon || 'User';
-  let title: string = credential.metadata.display.name || credential.data.type.at(-1);
+  let icon: any = credential.display_icon || 'User';
+  let title: string = credential.display_name;
 
   let qrcodeText = JSON.stringify(credential, null, 0);
 
@@ -39,10 +40,10 @@
     const credential = $state.credentials.find((c) => $page.params.id === c.id)!!;
     // TODO: update icon, title, isFavorite when changes in store
     isFavorite = credential.metadata.is_favorite;
-    title = credential.metadata.display.name || credential.data.type.at(-1);
-    icon = credential.metadata.display.icon || 'User';
+    title = credential.display_name;
+    icon = credential.display_icon || 'User';
     color =
-      credential.metadata.display.color ||
+      credential.display_color ||
       colors.at(
         credential.id
           .match(/[0-9]+/)
@@ -76,13 +77,14 @@
     {:else}
       <img
         src={credentialLogoUrl}
+        alt="credential logo"
         class="scale-[1.75] opacity-40 blur-xl"
         on:error={() => (credentialLogoUrl = null)}
       />
     {/if}
   </div>
   <TopNavBar
-    title="Credential info"
+    title={$LL.CREDENTIAL.NAVBAR_TITLE()}
     on:back={() => history.back()}
     class={credentialLogoUrl ? '' : `${color} dark:${color} text-slate-800 dark:text-slate-800`}
   />
@@ -159,7 +161,7 @@
           </div>
         {/each}
       </div>
-      {#if $state.dev_mode_enabled}
+      {#if $state?.dev_mode !== 'Off'}
         <p class="pt-4 text-center text-[13px]/[24px] text-slate-500">{credential.data.issuer}</p>
       {/if}
     </div>

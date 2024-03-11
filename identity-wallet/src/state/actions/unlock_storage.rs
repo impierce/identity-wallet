@@ -1,12 +1,11 @@
-use std::fmt::Formatter;
-
 use crate::reducer;
 use crate::state::actions::ActionTrait;
 use crate::state::actions::Reducer;
 use crate::state::reducers::storage::unlock_storage;
-
+use std::fmt::Formatter;
 use ts_rs::TS;
 
+/// Action to unlock the storage.
 #[derive(serde::Serialize, serde::Deserialize, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/UnlockStorage.ts")]
 pub struct UnlockStorage {

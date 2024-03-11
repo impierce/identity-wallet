@@ -1,11 +1,12 @@
+use crate::STATE_FILE;
+use crate::{error::AppError, state::AppState, ASSETS_DIR};
 use log::debug;
 use tokio::{
     fs::{read, remove_file, File},
     io::AsyncWriteExt,
 };
 
-use crate::STATE_FILE;
-use crate::{error::AppError, state::AppState, ASSETS_DIR};
+/// The persistence.rs is where we define our app persistence functions.
 
 /// Loads an [AppState] from the app's data directory.
 /// If it does not exist or it cannot be parsed, it will fallback to default values.
@@ -22,12 +23,18 @@ pub async fn load_state() -> anyhow::Result<AppState> {
 pub async fn save_state(app_state: &AppState) -> anyhow::Result<()> {
     let state_file = STATE_FILE.lock().unwrap().clone();
     let mut file = File::create(state_file).await?;
+
+    // Here we take out the credentials field before saving the state, 
+    // being sensitive data they should only be stored in the stronghold, nowhere else.
+    let mut json_app_state = serde_json::to_value(app_state)?;
+    json_app_state["credentials"] = serde_json::Value::Array(Vec::new());
+
     file.write_all(serde_json::to_string(app_state)?.as_bytes()).await?;
     debug!("state saved to disk");
     Ok(())
 }
 
-// Removes the state file from the app's data directory.
+/// Removes the state file from the app's data directory.
 pub async fn delete_state_file() -> anyhow::Result<()> {
     let state_file = STATE_FILE.lock().unwrap().clone();
     remove_file(state_file).await?;
@@ -35,6 +42,7 @@ pub async fn delete_state_file() -> anyhow::Result<()> {
     Ok(())
 }
 
+/// Removes the stronghold file from the app's data directory.
 pub async fn delete_stronghold() -> anyhow::Result<()> {
     let stronghold_file = crate::STRONGHOLD.lock().unwrap().clone();
     remove_file(&stronghold_file).await?;
@@ -56,6 +64,19 @@ pub fn clear_assets_tmp_folder() -> Result<(), AppError> {
     Ok(())
 }
 
+/// Clears the `/assets` folder inside the system-specific data directory.
+/// This is only used when resetting the app to factory defaults.
+pub fn clear_all_assets() -> Result<(), AppError> {
+    let assets_dir = ASSETS_DIR.lock().unwrap().as_path().to_owned();
+    if assets_dir.exists() {
+        std::fs::remove_dir_all(assets_dir.clone())?;
+        std::fs::create_dir_all(assets_dir)?;
+    }
+    debug!("Successfully removed all items inside `/assets` folder.");
+    Ok(())
+}
+
+/// Persists an asset from the `/assets/tmp` folder to the `/assets` folder inside the system-specific data directory.
 pub fn persist_asset(file_name: &str, id: &str) -> Result<(), AppError> {
     let assets_dir = ASSETS_DIR.lock().unwrap().as_path().to_owned();
     let tmp_dir = assets_dir.join("tmp");

@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-
   import { goto } from '$app/navigation';
   import { fade, fly, slide } from 'svelte/transition';
 
@@ -35,8 +33,8 @@
   $: {
     // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
     console.log('routes/(app)/me/+page.svelte: state', $state);
-    if ($state?.active_profile?.name) {
-      initials = calculateInitials($state?.active_profile?.name);
+    if ($state?.profile_settings.profile?.name) {
+      initials = calculateInitials($state?.profile_settings.profile?.name);
     }
   }
 
@@ -54,7 +52,7 @@
         on:click={() => goto('/me/settings')}
       >
         <span class="text-[28px]/[28px]">
-          {@html $state?.active_profile?.picture ?? ''}
+          {@html $state?.profile_settings.profile?.picture ?? ''}
         </span>
       </button>
       <button
@@ -166,7 +164,8 @@
       <div class="flex grow flex-col items-center justify-center">
         <IconMessage icon={Ghost} title={$LL.ME.EMPTY_CREDENTIALS.TITLE()} />
         <p class="w-[280px] pt-[15px] text-center text-[13px]/[24px] font-normal text-slate-500 dark:text-slate-300">
-          Visit <span class="font-semibold text-primary">https://demo.ngdil.com</span> on a desktop computer to get started.
+          {$LL.ME.DEMO.TEXT_1()} <span class="font-semibold text-primary">https://demo.ngdil.com</span>
+          {$LL.ME.DEMO.TEXT_2()}
         </p>
       </div>
       <!-- TODO: feature disabled: "Add self-signed credential" -->

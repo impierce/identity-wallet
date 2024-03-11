@@ -6,7 +6,7 @@ use crate::common::{
 use identity_wallet::oid4vci::credential_format_profiles::{
     w3c_verifiable_credentials::jwt_vc_json::JwtVcJson, Credential, CredentialFormats, WithCredential,
 };
-use identity_wallet::state::AppStateContainer;
+use identity_wallet::state::{AppStateContainer, AppTheme, CoreState, ProfileSettings};
 use identity_wallet::{
     state::{actions::Action, AppState, Profile},
     verifiable_credential_record::VerifiableCredentialRecord,
@@ -24,7 +24,7 @@ async fn test_qr_code_scanned_handle_siopv2_authorization_request() {
     let active_profile = Some(Profile {
         name: "Ferris".to_string(),
         picture: Some("&#129408".to_string()),
-        theme: Some("system".to_string()),
+        theme: Some(AppTheme::System),
         primary_did: managers
             .lock()
             .await
@@ -43,8 +43,14 @@ async fn test_qr_code_scanned_handle_siopv2_authorization_request() {
     let action2 = json_example::<Action>("tests/fixtures/actions/authenticate_connect_accept.json");
 
     let container = AppStateContainer(Mutex::new(AppState {
-        active_profile: active_profile.clone(),
-        managers,
+        core_state: CoreState {
+            managers,
+            ..Default::default()
+        },
+        profile_settings: ProfileSettings {
+            profile: active_profile.clone(),
+            ..Default::default()
+        },
         ..AppState::default()
     }));
 
@@ -76,7 +82,7 @@ async fn test_qr_code_scanned_handle_oid4vp_authorization_request() {
     let active_profile = Some(Profile {
         name: "Ferris".to_string(),
         picture: Some("&#129408".to_string()),
-        theme: Some("system".to_string()),
+        theme: Some(AppTheme::System),
         primary_did: managers
             .lock()
             .await
@@ -95,8 +101,14 @@ async fn test_qr_code_scanned_handle_oid4vp_authorization_request() {
     let action2 = json_example::<Action>("tests/fixtures/actions/authenticate_cred_selected.json");
 
     let container = AppStateContainer(Mutex::new(AppState {
-        active_profile: active_profile.clone(),
-        managers,
+        core_state: CoreState {
+            managers,
+            ..Default::default()
+        },
+        profile_settings: ProfileSettings {
+            profile: active_profile.clone(),
+            ..Default::default()
+        },
         credentials: credentials.clone(),
         ..AppState::default()
     }));
@@ -122,7 +134,7 @@ async fn test_qr_code_scanned_invalid_qr_code_error() {
     let active_profile = Some(Profile {
         name: "Ferris".to_string(),
         picture: Some("&#129408".to_string()),
-        theme: Some("system".to_string()),
+        theme: Some(AppTheme::System),
         primary_did: managers
             .lock()
             .await
@@ -139,8 +151,14 @@ async fn test_qr_code_scanned_invalid_qr_code_error() {
     let action = json_example::<Action>("tests/fixtures/actions/qr_scanned_invalid_payload.json");
 
     let container = AppStateContainer(Mutex::new(AppState {
-        active_profile: active_profile.clone(),
-        managers,
+        core_state: CoreState {
+            managers: managers,
+            ..Default::default()
+        },
+        profile_settings: ProfileSettings {
+            profile: active_profile.clone(),
+            ..Default::default()
+        },
         ..AppState::default()
     }));
 

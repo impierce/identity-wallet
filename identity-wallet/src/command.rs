@@ -4,14 +4,15 @@ use crate::state::persistence::save_state;
 use crate::state::{AppState, AppStateContainer};
 use futures::StreamExt;
 use itertools::Itertools;
-use log::error;
-use log::{debug, info, warn};
+use log::{debug, error, info};
 use std::time::Duration;
 use tauri::Manager;
 
+/// The command.rs holds the functions through which the front and backend communicate using actions and reducers.
+
 /// This function represents the root reducer of the application. It will delegate the state update to the reducers that
 /// are listening to the action.
-async fn reduce(state: AppState, action: Action) -> Result<AppState, AppError> {
+pub(crate) async fn reduce(state: AppState, action: Action) -> Result<AppState, AppError> {
     // Extract the reducers listening to this action.
     let reducers = action
         .reducers()
@@ -34,6 +35,7 @@ async fn reduce(state: AppState, action: Action) -> Result<AppState, AppError> {
 // This value is based on an estimated guess. Can be adjusted in case lower/higher timeouts are desired.
 const TIMEOUT_SECS: u64 = 6;
 
+/// This function is used to prevent deadlocks in the backend. It will sleep for a certain amount of time and then return.
 async fn deadlock_safety() {
     tokio::time::sleep(Duration::from_secs(TIMEOUT_SECS)).await;
 }
@@ -53,10 +55,7 @@ pub async fn main_exec<R: tauri::Runtime>(
     // Get a copy of the current state and pass it to the root reducer.
     match reduce(guard.clone(), action).await {
         // If the state update succeeds, we replace the old state with the new one.
-        Ok(app_state) => {
-            debug!("{app_state:?}");
-            *guard = app_state
-        }
+        Ok(app_state) => *guard = app_state,
         // If the state update fails, we log the error and keep the old state.
         Err(error) => {
             {
@@ -70,7 +69,7 @@ pub async fn main_exec<R: tauri::Runtime>(
                     error
                 ));
             }
-            warn!("state update failed: {}", error);
+            error!("state update failed: {}", error);
         }
     };
 
@@ -99,9 +98,13 @@ pub async fn handle_action<R: tauri::Runtime>(
     }
 }
 
+/// This function emits an event to the frontend with the updated state.
 pub fn emit_event<R: tauri::Runtime>(window: &tauri::Window<R>, app_state: &AppState) -> anyhow::Result<()> {
     const STATE_CHANGED_EVENT: &str = "state-changed";
     window.emit(STATE_CHANGED_EVENT, app_state)?;
-    debug!("emitted event `{}` with payload `{:?}`", STATE_CHANGED_EVENT, app_state);
+
+    let app_state_json_str = serde_json::to_string(app_state).unwrap();
+
+    debug!("emitted event `{}` with payload:\n {}", STATE_CHANGED_EVENT, app_state_json_str);
     Ok(())
 }

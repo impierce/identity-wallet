@@ -1,15 +1,16 @@
+use crate::state::actions::Action;
 use oid4vc::oid4vc_core::authorization_request::{AuthorizationRequest, Object};
 use std::error::Error;
 use uuid::Uuid;
 
-use crate::state::actions::Action;
+/// The error.rs defines our app_error types, implemented throughout the code using the thiserror crate.
 
 // TODO: needs revision/refactor + needs oid4vc libs to properly implement error handling.
 #[derive(thiserror::Error)]
 pub enum AppError {
     // Generic error (all purpose)
     #[error("Error: {0}")]
-    Error(&'static str),
+    Error(String),
     #[error("Invalid action found: `{action:?}`")]
     InvalidActionError { action: Action },
     #[error("Unable to parse QR code with content: `{0}`")]

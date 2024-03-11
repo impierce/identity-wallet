@@ -1,7 +1,7 @@
 {
   "name": "unime",
   "private": true,
-  "version": "0.4.9",
+  "version": "0.4.12",
   "type": "module",
   "scripts": {
     "dev": "vite dev",
@@ -11,8 +11,9 @@
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "test": "vitest",
     "coverage": "vitest run --coverage",
-    "lint": "prettier . --check && eslint .",
-    "format": "prettier . --write --plugin prettier-plugin-svelte --plugin prettier-plugin-tailwindcss --plugin @ianvs/prettier-plugin-sort-imports",
+    "lint": "eslint .",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
     "tauri": "tauri",
     "typesafe-i18n": "typesafe-i18n --no-watch"
   },
@@ -22,6 +23,7 @@
     "@tauri-apps/plugin-barcode-scanner": "2.0.0-beta.1",
     "@tauri-apps/plugin-fs": "2.0.0-beta.1",
     "@tauri-apps/plugin-log": "2.0.0-beta.1",
+    "date-fns": "^3.3.1",
     "markdown-it": "^14.0.0",
     "qrcode": "^1.5.3",
     "typesafe-i18n": "^5.26.2"

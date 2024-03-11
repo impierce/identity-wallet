@@ -15,6 +15,12 @@
   import Password from '~icons/ph/password-fill';
   import Sun from '~icons/ph/sun-fill';
   import Translate from '~icons/ph/translate-fill';
+
+  async function toggleDevSettings() {
+    await dispatch({
+      type: '[DEV] Toggle DEV mode',
+    });
+  }
 </script>
 
 <TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.APP.NAVBAR_TITLE()} />
@@ -24,7 +30,8 @@
       icon={Translate}
       title={$LL.SETTINGS.APP.LANGUAGE.TITLE()}
       hasCaretRight={false}
-      textRight={locales.find((l) => l.locale === $state.locale)?.displayName ?? $state.locale}
+      textRight={locales.find((l) => l.locale === $state.profile_settings.locale)?.displayName ??
+        $state.profile_settings.locale}
       on:click={() => goto('/me/settings/app/language')}
     />
     <SettingsEntry icon={Sun} title={$LL.SETTINGS.APP.THEME.TITLE()} on:click={() => goto('/me/settings/app/theme')} />
@@ -44,10 +51,7 @@
       todo
     />
     <SettingsEntry icon={Code} title={$LL.SETTINGS.APP.DEVELOPER_MODE.TITLE()} hasCaretRight={false}>
-      <Switch
-        active={$state.dev_mode_enabled}
-        on:change={() => dispatch({ type: '[DEV] Set dev mode', payload: { enabled: !$state.dev_mode_enabled } })}
-      />
+      <Switch active={$state?.dev_mode !== 'Off'} on:change={toggleDevSettings} />
     </SettingsEntry>
   </div>
 </div>
