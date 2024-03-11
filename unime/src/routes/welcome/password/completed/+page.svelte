@@ -63,7 +63,7 @@
         payload: {
           name: $onboarding_state.name ?? '',
           picture: $onboarding_state.picture ?? '',
-          theme: $onboarding_state.theme ?? '',
+          theme: 'system',
           password: $onboarding_state.password ?? '',
         },
       });

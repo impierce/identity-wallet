@@ -3,7 +3,6 @@ export let routeOrder = [
   '/welcome/pledge',
   '/welcome/terms',
   '/welcome/customize/name',
-  '/welcome/customize/theme',
   '/welcome/customize/avatar',
   '/welcome/password',
   '/welcome/password/confirm',

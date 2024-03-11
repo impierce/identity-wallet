@@ -11,7 +11,7 @@
   import { onboarding_state } from '$src/stores';
 
   function skipCustomization() {
-    onboarding_state.set({ ...$onboarding_state, theme: 'system', picture: '&#x1F642' });
+    onboarding_state.set({ ...$onboarding_state, picture: '&#x1F642' });
     goto('/welcome/password');
   }
 </script>
