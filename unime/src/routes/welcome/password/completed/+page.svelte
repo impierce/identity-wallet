@@ -31,7 +31,9 @@
       <div class="relative z-10">
         <div class="text-[100px]/[100px]"><Shield class="text-primary" /></div>
         <span class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[36px]/[36px]">
-          <p class="font-semibold text-white">{calculateInitials($onboarding_state.name ?? '')}</p>
+          <p class="font-semibold tracking-tight text-white dark:text-dark">
+            {calculateInitials($onboarding_state.name ?? '')}
+          </p>
         </span>
       </div>
       <div class="absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2">
