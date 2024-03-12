@@ -1,19 +1,20 @@
-use did_key::{from_existing_key, Ed25519KeyPair};
+pub mod assert_state_update;
+pub mod extensions;
+
 use identity_wallet::oid4vc_manager::{methods::key_method::KeySubject, ProviderManager};
 use identity_wallet::oid4vci::Wallet;
+use identity_wallet::state::credentials::VerifiableCredentialRecord;
 use identity_wallet::{
-    crypto::stronghold::StrongholdManager,
-    state::{IdentityManager, Managers},
-    verifiable_credential_record::VerifiableCredentialRecord,
+    state::core_utils::{IdentityManager, Managers},
+    stronghold::StrongholdManager,
 };
+
+use did_key::{from_existing_key, Ed25519KeyPair};
 use serde::de::DeserializeOwned;
 use serde_json::json;
 use std::fs::File;
 use std::path::Path;
 use std::sync::Arc;
-
-pub mod assert_state_update;
-pub mod extensions;
 
 pub const TEST_PASSWORD: &str = "sup3rSecr3t";
 

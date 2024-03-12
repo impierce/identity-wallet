@@ -6,11 +6,15 @@ use crate::common::{
 use identity_wallet::oid4vci::credential_format_profiles::{
     w3c_verifiable_credentials::jwt_vc_json::JwtVcJson, Credential, CredentialFormats, WithCredential,
 };
-use identity_wallet::state::{AppStateContainer, AppTheme, CoreState, ProfileSettings};
-use identity_wallet::{
-    state::{actions::Action, AppState, Profile},
-    verifiable_credential_record::VerifiableCredentialRecord,
+use identity_wallet::state::profile_settings::AppTheme;
+use identity_wallet::state::{
+    actions::Action,
+    core_utils::CoreState,
+    credentials::VerifiableCredentialRecord,
+    profile_settings::{Profile, ProfileSettings},
+    AppState, AppStateContainer,
 };
+
 use serde_json::json;
 use tokio::sync::Mutex;
 
@@ -152,7 +156,7 @@ async fn test_qr_code_scanned_invalid_qr_code_error() {
 
     let container = AppStateContainer(Mutex::new(AppState {
         core_state: CoreState {
-            managers: managers,
+            managers,
             ..Default::default()
         },
         profile_settings: ProfileSettings {
