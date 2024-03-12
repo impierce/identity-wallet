@@ -100,7 +100,7 @@ async fn load_ferris_profile() -> Result<AppState, AppError> {
     let profile = Profile {
         name: "Ferris".to_string(),
         picture: Some("&#129408".to_string()),
-        theme: Some(AppTheme::Dark),
+        theme: Some(AppTheme::System),
         primary_did: subject.identifier().unwrap(),
     };
     state.profile_settings.profile.replace(profile);
