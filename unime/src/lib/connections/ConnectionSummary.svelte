@@ -1,12 +1,12 @@
 <script lang="ts">
+  import type { Connection } from '@bindings/Connection';
+
   import LL from '$src/i18n/i18n-svelte';
   import Image from '$src/lib/components/atoms/Image.svelte';
   import { state } from '$src/stores';
 
   import BadgeCheck from '~icons/lucide/badge-check';
   import Pencil from '~icons/lucide/pencil';
-
-  import type { Connection } from './types';
 
   export let connection: Connection;
 
