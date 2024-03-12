@@ -1,5 +1,5 @@
-pub mod history_event;
 pub mod helpers;
+pub mod history_event;
 
 use crate::stronghold::StrongholdManager;
 

@@ -4,7 +4,10 @@ use crate::{
     state::{
         actions::Action,
         connections::Connection,
-        core_utils::{ConnectionRequest, history_event::{EventType, HistoryEvent}},
+        core_utils::{
+            history_event::{EventType, HistoryEvent},
+            ConnectionRequest,
+        },
         user_prompt::CurrentUserPrompt,
         AppState,
     },

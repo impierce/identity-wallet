@@ -3,7 +3,11 @@ use crate::{
     state::{
         actions::{listen, Action},
         connections::Connection,
-        core_utils::{helpers::get_unverified_jwt_claims, ConnectionRequest, history_event::{EventType, HistoryCredential, HistoryEvent}},
+        core_utils::{
+            helpers::get_unverified_jwt_claims,
+            history_event::{EventType, HistoryCredential, HistoryEvent},
+            ConnectionRequest,
+        },
         credentials::actions::credentials_selected::CredentialsSelected,
         user_prompt::CurrentUserPrompt,
         AppState,

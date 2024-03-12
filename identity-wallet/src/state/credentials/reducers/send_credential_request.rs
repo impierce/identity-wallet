@@ -3,7 +3,11 @@ use crate::{
     persistence::persist_asset,
     state::{
         actions::{listen, Action},
-        credentials::{actions::credential_offers_selected::CredentialOffersSelected, VerifiableCredentialRecord},
+        core_utils::history_event::{EventType, HistoryCredential, HistoryEvent},
+        credentials::{
+            actions::credential_offers_selected::CredentialOffersSelected, DisplayCredential,
+            VerifiableCredentialRecord,
+        },
         user_prompt::CurrentUserPrompt,
         AppState,
     },
@@ -19,7 +23,7 @@ use oid4vc::oid4vci::{
 use serde_json::json;
 use uuid::Uuid;
 
-pub async fn send_credential_request(state: AppState, action: Action) -> Result<AppState, AppError> {
+pub async fn send_credential_request(mut state: AppState, action: Action) -> Result<AppState, AppError> {
     info!("send_credential_request");
 
     if let Some(offer_indices) = listen::<CredentialOffersSelected>(action).map(|payload| payload.offer_indices) {
@@ -28,6 +32,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
             .stronghold_manager
             .as_ref()
             .ok_or(MissingManagerError("stronghold"))?;
+
         let wallet = &state_guard
             .identity_manager
             .as_ref()
@@ -151,11 +156,15 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                     .collect()
             }
         };
+
         info!("credentials: {:?}", credentials);
 
+        let mut history_credentials = vec![];
+
         for (i, credential) in credentials.into_iter().enumerate() {
-            let mut verifiable_credential_record = VerifiableCredentialRecord::from(credential);
+            let mut verifiable_credential_record: VerifiableCredentialRecord = credential.into();
             verifiable_credential_record.display_credential.issuer_name = issuer_name.clone();
+
             let key: Uuid = verifiable_credential_record
                 .display_credential
                 .id
@@ -172,9 +181,12 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
             stronghold_manager
                 .insert(key, json!(verifiable_credential_record).to_string().as_bytes().to_vec())
                 .map_err(StrongholdInsertionError)?;
+
+            // Add history event
+            history_credentials.push(HistoryCredential::from_credential(&verifiable_credential_record));
         }
 
-        let credentials = stronghold_manager
+        let credentials: Vec<DisplayCredential> = stronghold_manager
             .values()
             .map_err(StrongholdValuesError)?
             .unwrap()
@@ -182,15 +194,21 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
             .map(|verifiable_credential_record| verifiable_credential_record.display_credential)
             .collect();
 
-        let current_user_prompt = CurrentUserPrompt::Redirect {
-            target: "me".to_string(),
-        };
+        // History
+        if !history_credentials.is_empty() {
+            state.history.push(HistoryEvent {
+                connection_name: issuer_name,
+                event_type: EventType::CredentialsAdded,
+                date: credentials[0].metadata.date_added.clone(),
+                connection_id: None,
+                credentials: history_credentials,
+            });
+        }
 
-        drop(state_guard);
-        return Ok(AppState {
-            credentials,
-            current_user_prompt: Some(current_user_prompt),
-            ..state
+        state.credentials = credentials;
+
+        state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
+            target: "me".to_string(),
         });
     }
 

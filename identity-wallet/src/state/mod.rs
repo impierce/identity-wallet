@@ -11,14 +11,11 @@ pub mod user_journey;
 pub mod user_prompt;
 
 use self::{
-    actions::Action,
-    core_utils::CoreState,
-    dev_mode::DevMode,
-    profile_settings::ProfileSettings,
+    actions::Action, core_utils::CoreState, dev_mode::DevMode, profile_settings::ProfileSettings,
     user_prompt::CurrentUserPrompt,
 };
-use crate::state::credentials::DisplayCredential;
 use crate::state::core_utils::history_event::HistoryEvent;
+use crate::state::credentials::DisplayCredential;
 use crate::{error::AppError, state::connections::Connection};
 
 use derivative::Derivative;
@@ -143,9 +140,9 @@ impl AppState {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use indoc::indoc;
     use crate::state::profile_settings::Locale;
     use crate::state::profile_settings::Profile;
+    use indoc::indoc;
 
     #[test]
     fn test_app_state_serialize() {
