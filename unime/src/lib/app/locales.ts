@@ -1,7 +1,8 @@
 import type { SvelteComponent } from 'svelte';
 
-import type { Locale } from 'src-tauri/identity_wallet/bindings/Locale';
 import type { SvelteHTMLElements } from 'svelte/elements';
+
+import type { Locale } from '@bindings/Locale';
 
 import DE from '~icons/circle-flags/de';
 import GB from '~icons/circle-flags/gb';
