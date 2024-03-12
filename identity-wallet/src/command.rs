@@ -1,6 +1,6 @@
 use crate::error::AppError;
+use crate::persistence::save_state;
 use crate::state::actions::Action;
-use crate::state::persistence::save_state;
 use crate::state::{AppState, AppStateContainer};
 use futures::StreamExt;
 use itertools::Itertools;
@@ -8,7 +8,7 @@ use log::{debug, error, info};
 use std::time::Duration;
 use tauri::Manager;
 
-/// The command.rs holds the functions through which the front and backend communicate using actions and reducers.
+// The command.rs holds the functions through which the front and backend communicate using actions and reducers.
 
 /// This function represents the root reducer of the application. It will delegate the state update to the reducers that
 /// are listening to the action.
@@ -105,6 +105,9 @@ pub fn emit_event<R: tauri::Runtime>(window: &tauri::Window<R>, app_state: &AppS
 
     let app_state_json_str = serde_json::to_string(app_state).unwrap();
 
-    debug!("emitted event `{}` with payload:\n {}", STATE_CHANGED_EVENT, app_state_json_str);
+    debug!(
+        "emitted event `{}` with payload:\n {}",
+        STATE_CHANGED_EVENT, app_state_json_str
+    );
     Ok(())
 }

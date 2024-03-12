@@ -1,6 +1,6 @@
 use identity_wallet::{
-    state::{actions::Action, persistence::save_state, AppState, AppStateContainer},
-    STATE_FILE, STRONGHOLD,
+    persistence::{save_state, STATE_FILE, STRONGHOLD},
+    state::{actions::Action, AppState, AppStateContainer},
 };
 use serde_json::json;
 use tauri::Manager;
