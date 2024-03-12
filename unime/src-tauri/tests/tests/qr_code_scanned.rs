@@ -48,7 +48,7 @@ async fn test_qr_code_scanned_handle_siopv2_authorization_request() {
 
     let container = AppStateContainer(Mutex::new(AppState {
         core_state: CoreState {
-            managers: managers,
+            managers,
             ..Default::default()
         },
         profile_settings: ProfileSettings {
@@ -106,7 +106,7 @@ async fn test_qr_code_scanned_handle_oid4vp_authorization_request() {
 
     let container = AppStateContainer(Mutex::new(AppState {
         core_state: CoreState {
-            managers: managers,
+            managers,
             ..Default::default()
         },
         profile_settings: ProfileSettings {
@@ -156,7 +156,7 @@ async fn test_qr_code_scanned_invalid_qr_code_error() {
 
     let container = AppStateContainer(Mutex::new(AppState {
         core_state: CoreState {
-            managers: managers,
+            managers,
             ..Default::default()
         },
         profile_settings: ProfileSettings {
