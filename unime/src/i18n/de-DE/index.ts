@@ -247,6 +247,9 @@ const de = {
   },
   HISTORY: {
     EMPTY: 'Noch keine Aktivitäten.',
+    DATA_RECEIVED: 'Daten empfangen von',
+    DATA_SHARED: 'Daten geteilt mit',
+    CONNECTION_ADDED: 'Verbunden mit',
   },
   SEARCH: {
     INPUT_PLACEHOLDER: 'Gib einen Suchbegriff ein',
