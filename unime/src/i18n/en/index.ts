@@ -88,9 +88,9 @@ const en = {
         CONFIRM: 'Update',
       },
       DISPLAY_PICTURE: {
-        TITLE: 'Display picture',
         EDIT: 'Edit',
         CHANGE: 'Select a profile picture',
+        REMOVE: 'Remove',
       },
       DELETE_PROFILE: {
         TITLE: 'Delete profile',

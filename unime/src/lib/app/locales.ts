@@ -19,4 +19,7 @@ export const locales: {
   { locale: 'de-DE', flag: DE, displayName: 'Deutsch' },
 ];
 
+// To disable a locale, it can be added to the array
 export const incompleteLocales: Locale[] = ['en-GB'];
+// TODO: extended locales (such as 'en-GB') cannot be enabled until this issue is resolved:
+// https://github.com/ivanhofer/typesafe-i18n/issues/741

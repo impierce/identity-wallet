@@ -89,9 +89,9 @@ const de = {
         CONFIRM: 'Aktualisieren',
       },
       DISPLAY_PICTURE: {
-        TITLE: 'Profilbild',
         EDIT: 'Ändern',
         CHANGE: 'Wähle ein Profilbild',
+        REMOVE: 'Entfernen',
       },
       DELETE_PROFILE: {
         TITLE: 'Profil löschen',

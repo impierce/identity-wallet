@@ -88,9 +88,9 @@ const nl = {
         CONFIRM: 'Wijzigingen opslaan',
       },
       DISPLAY_PICTURE: {
-        TITLE: 'Profielfoto',
         EDIT: 'Bewerk',
         CHANGE: 'Selecteer een nieuwe afbeelding',
+        REMOVE: 'Verwijder',
       },
       DELETE_PROFILE: {
         TITLE: 'Verwijder profiel',

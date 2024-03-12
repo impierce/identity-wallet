@@ -259,10 +259,6 @@ type RootTranslation = {
 			}
 			DISPLAY_PICTURE: {
 				/**
-				 * D​i​s​p​l​a​y​ ​p​i​c​t​u​r​e
-				 */
-				TITLE: string
-				/**
 				 * E​d​i​t
 				 */
 				EDIT: string
@@ -270,6 +266,10 @@ type RootTranslation = {
 				 * S​e​l​e​c​t​ ​a​ ​p​r​o​f​i​l​e​ ​p​i​c​t​u​r​e
 				 */
 				CHANGE: string
+				/**
+				 * R​e​m​o​v​e
+				 */
+				REMOVE: string
 			}
 			DELETE_PROFILE: {
 				/**
@@ -1014,10 +1014,6 @@ export type TranslationFunctions = {
 			}
 			DISPLAY_PICTURE: {
 				/**
-				 * Display picture
-				 */
-				TITLE: () => LocalizedString
-				/**
 				 * Edit
 				 */
 				EDIT: () => LocalizedString
@@ -1025,6 +1021,10 @@ export type TranslationFunctions = {
 				 * Select a profile picture
 				 */
 				CHANGE: () => LocalizedString
+				/**
+				 * Remove
+				 */
+				REMOVE: () => LocalizedString
 			}
 			DELETE_PROFILE: {
 				/**
