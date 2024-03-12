@@ -29,7 +29,7 @@
 
       <div slot="2" class="bg-silver pt-5 dark:bg-navy">
         <!-- TODO: If this turns out to be a costly operation (filtering in backend), consider lazy loading the component -->
-        <History connectionId={connection.id} />
+        <History connectionName={connection.client_name} />
       </div>
     </Tabs>
   </div>
