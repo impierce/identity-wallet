@@ -20,7 +20,7 @@ use oid4vc::{
 use std::sync::Arc;
 
 /// Creates a new profile with a new DID (using the did:key method) and sets it as the active profile.
-pub async fn create_identity(state: AppState, action: Action) -> Result<AppState, AppError> {
+pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(CreateNew {
         name, picture, theme, ..
     }) = listen::<CreateNew>(action)
@@ -41,8 +41,8 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
 
         let profile_settings = ProfileSettings {
             profile: Some(Profile {
-                name: name.to_string(),
-                picture: Some(picture.to_string()),
+                name,
+                picture: Some(picture),
                 theme: Some(theme),
                 primary_did: subject.identifier().map_err(OID4VCSubjectIdentifierError)?,
             }),
@@ -55,13 +55,9 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
             wallet,
         });
 
-        drop(state_guard);
-        return Ok(AppState {
-            profile_settings,
-            current_user_prompt: Some(CurrentUserPrompt::Redirect {
-                target: "me".to_string(),
-            }),
-            ..state
+        state.profile_settings = profile_settings;
+        state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
+            target: "me".to_string(),
         });
     }
 
