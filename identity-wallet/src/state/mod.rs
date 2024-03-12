@@ -12,9 +12,9 @@ pub mod user_prompt;
 
 use self::{
     actions::Action,
-    core_utils::CoreUtils,
+    core_utils::CoreState,
     dev_mode::DevMode,
-    profile_settings::{Locale, Profile, ProfileSettings},
+    profile_settings::ProfileSettings,
     user_prompt::CurrentUserPrompt,
 };
 use crate::state::credentials::DisplayCredential;
@@ -89,7 +89,7 @@ pub struct AppState {
     /// This field contains utils needed for the backend to perform its tasks.
     #[serde(skip)]
     #[derivative(Debug = "ignore")]
-    pub core_utils: CoreUtils,
+    pub core_state: CoreState,
     /// This field contains the profile settings, including Locale.
     pub profile_settings: ProfileSettings,
     /// User prompts are a way for the backend to communicate a desired/required user interaction to the frontend.
@@ -112,10 +112,10 @@ pub struct AppState {
 impl Clone for AppState {
     fn clone(&self) -> Self {
         Self {
-            core_utils: CoreUtils {
-                managers: self.core_utils.managers.clone(),
+            core_state: CoreState {
+                managers: self.core_state.managers.clone(),
                 active_connection_request: serde_json::from_value(serde_json::json!(
-                    self.core_utils.active_connection_request
+                    self.core_state.active_connection_request
                 ))
                 .unwrap(),
             },
@@ -144,6 +144,8 @@ impl AppState {
 mod tests {
     use super::*;
     use indoc::indoc;
+    use crate::state::profile_settings::Locale;
+    use crate::state::profile_settings::Profile;
 
     #[test]
     fn test_app_state_serialize() {

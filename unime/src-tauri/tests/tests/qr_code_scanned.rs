@@ -9,7 +9,7 @@ use identity_wallet::oid4vci::credential_format_profiles::{
 use identity_wallet::state::profile_settings::AppTheme;
 use identity_wallet::state::{
     actions::Action,
-    core_utils::CoreUtils,
+    core_utils::CoreState,
     credentials::VerifiableCredentialRecord,
     profile_settings::{Profile, ProfileSettings},
     AppState, AppStateContainer,
@@ -47,7 +47,7 @@ async fn test_qr_code_scanned_handle_siopv2_authorization_request() {
     let action2 = json_example::<Action>("tests/fixtures/actions/authenticate_connect_accept.json");
 
     let container = AppStateContainer(Mutex::new(AppState {
-        core_utils: CoreUtils {
+        core_state: CoreState {
             managers: managers,
             ..Default::default()
         },
@@ -105,7 +105,7 @@ async fn test_qr_code_scanned_handle_oid4vp_authorization_request() {
     let action2 = json_example::<Action>("tests/fixtures/actions/authenticate_cred_selected.json");
 
     let container = AppStateContainer(Mutex::new(AppState {
-        core_utils: CoreUtils {
+        core_state: CoreState {
             managers: managers,
             ..Default::default()
         },
@@ -155,7 +155,7 @@ async fn test_qr_code_scanned_invalid_qr_code_error() {
     let action = json_example::<Action>("tests/fixtures/actions/qr_scanned_invalid_payload.json");
 
     let container = AppStateContainer(Mutex::new(AppState {
-        core_utils: CoreUtils {
+        core_state: CoreState {
             managers: managers,
             ..Default::default()
         },

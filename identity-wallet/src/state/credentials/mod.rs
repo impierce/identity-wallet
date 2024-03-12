@@ -19,7 +19,7 @@ pub struct DisplayCredential {
     pub issuer_name: String,
     #[ts(type = "string")]
     pub format: CredentialFormats,
-    #[ts(type = "object")]
+    #[ts(type = "any")]
     pub data: serde_json::Value,
     #[serde(default)]
     pub metadata: CredentialMetadata,
