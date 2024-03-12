@@ -56,7 +56,7 @@
             {@html $state.profile_settings.profile?.picture}
           </span>
         {:else}
-          <span class="text-[20px]/[20px] font-semibold text-white">
+          <span class="text-[20px]/[20px] font-semibold text-white dark:text-dark">
             {initials}
           </span>
         {/if}
