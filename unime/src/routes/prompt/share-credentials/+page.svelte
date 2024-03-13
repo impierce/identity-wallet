@@ -70,7 +70,7 @@
       >
         <div class="flex w-full flex-col space-y-2">
           {#each selected_credentials as credential}
-            <ListItemCard id={credential.id} title={credential.metadata.display.name || credential.data.type.at(-1)}>
+            <ListItemCard id={credential.id} title={credential.display_name}>
               <div slot="right" class="mr-2">
                 <Checkbox checked={true} disabled={true} />
               </div>

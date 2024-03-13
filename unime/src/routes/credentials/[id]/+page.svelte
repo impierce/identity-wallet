@@ -27,10 +27,10 @@
 
   let credential = $state.credentials.find((c) => $page.params.id === c.id)!!;
 
-  let color = credential.metadata.display.color || colors.at(0);
+  let color = credential.display_color || colors.at(0);
 
-  let icon: any = credential.metadata.display.icon || 'User';
-  let title: string = credential.metadata.display.name || credential.data.type.at(-1);
+  let icon: any = credential.display_icon || 'User';
+  let title: string = credential.display_name;
 
   let qrcodeText = JSON.stringify(credential, null, 0);
 
@@ -40,10 +40,10 @@
     const credential = $state.credentials.find((c) => $page.params.id === c.id)!!;
     // TODO: update icon, title, isFavorite when changes in store
     isFavorite = credential.metadata.is_favorite;
-    title = credential.metadata.display.name || credential.data.type.at(-1);
-    icon = credential.metadata.display.icon || 'User';
+    title = credential.display_name;
+    icon = credential.display_icon || 'User';
     color =
-      credential.metadata.display.color ||
+      credential.display_color ||
       colors.at(
         credential.id
           .match(/[0-9]+/)
@@ -77,6 +77,7 @@
     {:else}
       <img
         src={credentialLogoUrl}
+        alt="credential logo"
         class="scale-[1.75] opacity-40 blur-xl"
         on:error={() => (credentialLogoUrl = null)}
       />

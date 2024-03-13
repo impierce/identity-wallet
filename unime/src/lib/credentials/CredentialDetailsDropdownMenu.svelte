@@ -61,11 +61,11 @@
     forceVisible: true,
   });
 
-  let displayName: string = credential.metadata.display.name || credential.data.type.at(-1);
+  let displayName: string = credential.display_name;
 
   let currentAppearance = {
-    color: credential.metadata.display.color || 'bg-indigo-100',
-    icon: credential.metadata.display.icon || 'User',
+    color: credential.display_color || 'bg-indigo-100',
+    icon: credential.display_icon || 'User',
   };
 </script>
 
