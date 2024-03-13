@@ -2,15 +2,11 @@ use crate::{
     error::AppError::{self, *},
     persistence::persist_asset,
     state::{
-        actions::{listen, Action},
-        core_utils::history_event::{EventType, HistoryCredential, HistoryEvent},
-        credentials::{
+        actions::{listen, Action}, connections::Connection, core_utils::history_event::{EventType, HistoryCredential, HistoryEvent}, credentials::{
             actions::credential_offers_selected::CredentialOffersSelected, DisplayCredential,
             VerifiableCredentialRecord,
-        },
-        user_prompt::CurrentUserPrompt,
-        AppState,
-    },
+        }, user_prompt::CurrentUserPrompt, AppState
+    }, DateUtils,
 };
 
 use log::info;
@@ -160,19 +156,10 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
         info!("credentials: {:?}", credentials);
 
         let mut history_credentials = vec![];
-        let mut history_date = "".to_string();
 
         for (i, credential) in credentials.into_iter().enumerate() {
             let mut verifiable_credential_record: VerifiableCredentialRecord = credential.into();
             verifiable_credential_record.display_credential.issuer_name = issuer_name.clone();
-
-            if i == 0 {
-                history_date = verifiable_credential_record
-                    .display_credential
-                    .metadata
-                    .date_added
-                    .clone();
-            }
 
             let key: Uuid = verifiable_credential_record
                 .display_credential
@@ -205,11 +192,13 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
 
         // History
         if !history_credentials.is_empty() {
+            let connection_id = Connection::create_connection_id(&issuer_name);
+
             state.history.push(HistoryEvent {
                 connection_name: issuer_name,
                 event_type: EventType::CredentialsAdded,
-                date: history_date,
-                connection_id: None,
+                date: DateUtils::new_date_string(),
+                connection_id,
                 credentials: history_credentials,
             });
         }

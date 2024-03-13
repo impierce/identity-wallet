@@ -14,7 +14,7 @@
   import PlugsConnected from '~icons/ph/plugs-connected-fill';
   import ShareFat from '~icons/ph/share-fat-fill';
 
-  export let connectionName: string | undefined = undefined;
+  export let connectionId: string | undefined = undefined;
 
   interface DisplayEvent {
     title: string;
@@ -25,8 +25,8 @@
 
   let filteredEvents: HistoryEvent[];
 
-  if (connectionName) {
-    filteredEvents = $state.history.filter((his) => his.connection_id === connectionName);
+  if (connectionId) {
+    filteredEvents = $state.history.filter((his) => his.connection_id === connectionId);
   } else {
     filteredEvents = $state.history;
   }

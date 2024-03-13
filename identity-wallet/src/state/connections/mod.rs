@@ -21,3 +21,12 @@ pub struct Connection {
 
 #[typetag::serde(name = "connection")]
 impl FeatTrait for Connection {}
+
+impl Connection {
+    // TODO: This is a HORRIBLE solution to determine the connection_id by the non-unique "issuer name".
+    // It is a TEMPORARY solution and should only be used in DEMO environments,
+    // since we currently lack a unique identitfier to distinguish connections.
+    pub fn create_connection_id(client_name: &str) -> String {
+        base64::encode_config(&client_name, base64::URL_SAFE)
+    }
+}

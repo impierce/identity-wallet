@@ -3,6 +3,9 @@ pub mod error;
 pub mod persistence;
 pub mod state;
 pub mod stronghold;
+pub mod date_utils;
+
+pub use date_utils::DateUtils;
 
 // Re-exports
 pub use oid4vc::{oid4vc_core, oid4vc_manager, oid4vci, oid4vp, siopv2};

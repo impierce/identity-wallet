@@ -161,7 +161,7 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
             connection_name: client_name,
             date: connection_time,
             event_type: EventType::CredentialsShared,
-            connection_id: Some(connection_id),
+            connection_id,
             credentials: history_credentials,
         });
 

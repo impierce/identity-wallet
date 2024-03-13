@@ -14,7 +14,7 @@ pub enum EventType {
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq, TS)]
 #[ts(export)]
 pub struct HistoryEvent {
-    pub connection_id: Option<String>,
+    pub connection_id: String,
     pub connection_name: String,
     pub event_type: EventType,
     pub date: String,
