@@ -26,7 +26,7 @@
   let filteredEvents: HistoryEvent[];
 
   if (connectionName) {
-    filteredEvents = $state.history.filter((his) => his.connection_name === connectionName);
+    filteredEvents = $state.history.filter((his) => his.connection_id === connectionName);
   } else {
     filteredEvents = $state.history;
   }

@@ -160,10 +160,19 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
         info!("credentials: {:?}", credentials);
 
         let mut history_credentials = vec![];
+        let mut history_date = "".to_string();
 
         for (i, credential) in credentials.into_iter().enumerate() {
             let mut verifiable_credential_record: VerifiableCredentialRecord = credential.into();
             verifiable_credential_record.display_credential.issuer_name = issuer_name.clone();
+
+            if i == 0 {
+                history_date = verifiable_credential_record
+                    .display_credential
+                    .metadata
+                    .date_added
+                    .clone();
+            }
 
             let key: Uuid = verifiable_credential_record
                 .display_credential
@@ -199,7 +208,7 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
             state.history.push(HistoryEvent {
                 connection_name: issuer_name,
                 event_type: EventType::CredentialsAdded,
-                date: credentials[0].metadata.date_added.clone(),
+                date: history_date,
                 connection_id: None,
                 credentials: history_credentials,
             });
