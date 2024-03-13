@@ -24,7 +24,7 @@ impl FeatTrait for Connection {}
 
 impl Connection {
     // TODO(ngdil): Temporary solution to support NGDIL demo, replace with different unique identifier to distinguish connection
-    pub fn create_connection_id(client_name: &str) -> String {
-        base64::encode_config(&client_name, base64::URL_SAFE)
+    pub fn create_connection_id(connection_name: &str) -> String {
+        base64::encode_config(connection_name, base64::URL_SAFE)
     }
 }
