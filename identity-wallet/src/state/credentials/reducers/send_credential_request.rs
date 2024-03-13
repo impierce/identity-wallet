@@ -2,11 +2,17 @@ use crate::{
     error::AppError::{self, *},
     persistence::persist_asset,
     state::{
-        actions::{listen, Action}, connections::Connection, core_utils::history_event::{EventType, HistoryCredential, HistoryEvent}, credentials::{
+        actions::{listen, Action},
+        connections::Connection,
+        core_utils::history_event::{EventType, HistoryCredential, HistoryEvent},
+        credentials::{
             actions::credential_offers_selected::CredentialOffersSelected, DisplayCredential,
             VerifiableCredentialRecord,
-        }, user_prompt::CurrentUserPrompt, AppState
-    }, DateUtils,
+        },
+        user_prompt::CurrentUserPrompt,
+        AppState,
+    },
+    DateUtils,
 };
 
 use log::info;
