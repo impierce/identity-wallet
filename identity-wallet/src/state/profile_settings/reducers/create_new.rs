@@ -43,7 +43,7 @@ pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppS
             profile: Some(Profile {
                 name,
                 picture: Some(picture),
-                theme: Some(theme),
+                theme,
                 primary_did: subject.identifier().map_err(OID4VCSubjectIdentifierError)?,
             }),
             ..Default::default()
