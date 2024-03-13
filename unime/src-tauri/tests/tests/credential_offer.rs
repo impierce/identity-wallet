@@ -9,8 +9,7 @@ use identity_wallet::state::qr_code::reducers::read_credential_offer::read_crede
 use identity_wallet::state::AppState;
 use identity_wallet::{
     oid4vci::credential_format_profiles::{
-        w3c_verifiable_credentials::jwt_vc_json::{self, JwtVcJson},
-        CredentialFormats, Parameters, WithParameters,
+        w3c_verifiable_credentials::jwt_vc_json, CredentialFormats, Parameters, WithParameters,
     },
     state::qr_code::actions::qrcode_scanned::QrCodeScanned,
 };
@@ -48,7 +47,6 @@ async fn download_credential_logo() {
             credentials_supported: vec![CredentialsSupportedObject {
                     id: None,
                     credential_format: CredentialFormats::<WithParameters>::JwtVcJson(Parameters {
-                        format: JwtVcJson,
                         parameters: (
                             jwt_vc_json::CredentialDefinition {
                                 type_: vec![
@@ -142,7 +140,6 @@ async fn download_issuer_logo() {
             credentials_supported: vec![CredentialsSupportedObject {
                     id: None,
                     credential_format: CredentialFormats::<WithParameters>::JwtVcJson(Parameters {
-                        format: JwtVcJson,
                         parameters: (
                             jwt_vc_json::CredentialDefinition {
                                 type_: vec![
@@ -228,7 +225,6 @@ async fn no_download_when_no_logo_in_metadata() {
             credentials_supported: vec![CredentialsSupportedObject {
                     id: None,
                     credential_format: CredentialFormats::<WithParameters>::JwtVcJson(Parameters {
-                        format: JwtVcJson,
                         parameters: (
                             jwt_vc_json::CredentialDefinition {
                                 type_: vec![

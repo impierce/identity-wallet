@@ -92,7 +92,7 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
                 DisplayCredential {
                     id: Uuid::from_slice(&hash.as_bytes()[..16]).unwrap().to_string(),
                     issuer_name: "".to_string(),
-                    format: verifiable_credential.format().unwrap(),
+                    format: verifiable_credential.format(),
                     data: credential_display,
                     metadata: CredentialMetadata {
                         is_favorite: false,
