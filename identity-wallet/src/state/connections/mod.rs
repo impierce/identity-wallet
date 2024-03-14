@@ -1,7 +1,7 @@
 pub mod actions;
 pub mod reducers;
 
-use super::FeatTrait;
+use super::{core_utils::DateUtils, FeatTrait};
 
 use log::info;
 use serde::{Deserialize, Serialize};
@@ -85,7 +85,7 @@ impl Connection {
     pub fn new(name: String, url: String) -> Self {
         // TODO(ngdil): Temporary solution to support NGDIL demo, replace with different unique identifier to distinguish connection
         let id = base64::encode_config([name.as_bytes(), url.as_bytes()].concat(), base64::URL_SAFE);
-        let current_datetime = chrono::Utc::now().to_rfc3339();
+        let current_datetime = DateUtils::new_date_string();
         Self {
             id,
             name,
@@ -97,6 +97,6 @@ impl Connection {
     }
 
     pub fn update_last_interaction_time(&mut self) {
-        self.last_interacted = chrono::Utc::now().to_rfc3339();
+        self.last_interacted = DateUtils::new_date_string();
     }
 }
