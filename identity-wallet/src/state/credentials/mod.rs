@@ -1,6 +1,8 @@
 pub mod actions;
 pub mod reducers;
 
+use crate::state::core_utils::DateUtils;
+
 use super::{core_utils::helpers::get_unverified_jwt_claims, FeatTrait};
 
 use derivative::Derivative;
@@ -94,7 +96,7 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
                     data: credential_display,
                     metadata: CredentialMetadata {
                         is_favorite: false,
-                        date_added: chrono::Utc::now().to_rfc3339(),
+                        date_added: DateUtils::new_date_string(),
                         date_issued: issuance_date.to_string(),
                     },
                     display_name,

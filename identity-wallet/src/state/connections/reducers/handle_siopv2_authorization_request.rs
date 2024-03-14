@@ -64,10 +64,7 @@ pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: A
             connection.last_interacted = connection_time.clone();
         });
 
-    // TODO: This is a HORRIBLE solution to determine the connection_id by the non-unique "issuer name".
-    // It is a TEMPORARY solution and should only be used in DEMO environments,
-    // since we currently lack a unique identitfier to distinguish connections.
-    let connection_id = base64::encode_config(&client_name, base64::URL_SAFE);
+    let connection_id = Connection::create_connection_id(&client_name);
 
     persist_asset("issuer_0", &connection_id).ok();
 
@@ -86,7 +83,7 @@ pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: A
     state.history.push(HistoryEvent {
         connection_name: client_name.clone(),
         event_type: EventType::ConnectionAdded,
-        connection_id: Some(connection_id),
+        connection_id,
         date: connection_time,
         credentials: vec![],
     });

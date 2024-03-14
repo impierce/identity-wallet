@@ -1,6 +1,8 @@
 pub mod helpers;
 pub mod history_event;
 
+pub use helpers::DateUtils;
+
 use crate::stronghold::StrongholdManager;
 
 use oid4vc::{
