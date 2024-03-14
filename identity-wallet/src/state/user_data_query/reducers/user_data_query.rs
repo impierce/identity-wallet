@@ -2,6 +2,7 @@ use crate::error::AppError;
 use crate::state::connections::Connection;
 use crate::state::credentials::DisplayCredential;
 use crate::state::user_data_query::actions::user_data_query::{QueryTarget, SortMethod, UserDataQuery};
+use crate::state::user_data_query::UserDataQueryResults;
 use crate::state::{
     actions::{listen, Action},
     AppState,
@@ -75,8 +76,17 @@ pub async fn credential_query(state: AppState, action: Action) -> Result<AppStat
             user_data_query
         };
 
+        let mut user_data_query_results = UserDataQueryResults {
+            results: user_data_query,
+            ..state.user_data_query_results
+        };
+
+        if let Some(q) = &query.search_term {
+            add_search_to_recents(&mut user_data_query_results, q.clone());
+        }
+
         return Ok(AppState {
-            user_data_query,
+            user_data_query_results,
             current_user_prompt: None,
             ..state
         });
@@ -142,8 +152,17 @@ pub async fn connection_query(state: AppState, action: Action) -> Result<AppStat
             user_data_query
         };
 
+        let mut user_data_query_results = UserDataQueryResults {
+            results: user_data_query,
+            ..state.user_data_query_results
+        };
+
+        if let Some(q) = &query.search_term {
+            add_search_to_recents(&mut user_data_query_results, q.clone());
+        }
+
         return Ok(AppState {
-            user_data_query,
+            user_data_query_results,
             current_user_prompt: None,
             ..state
         });
@@ -157,6 +176,27 @@ fn contains_search_term(string: Option<&str>, search_term: &str) -> bool {
     string
         .map(|string| string.to_lowercase().contains(&search_term.to_lowercase()))
         .unwrap_or_default()
+}
+
+/// Add the search term to the recents list, with a max of 20.
+fn add_search_to_recents(user_data_query_results: &mut UserDataQueryResults, search_term: String) {
+    let lowercase_search_term = search_term.to_lowercase();
+
+    // Check if the lowercase search term exists in the recents list
+    if let Some(index) = user_data_query_results
+        .recents
+        .iter()
+        .position(|x| x.to_lowercase() == lowercase_search_term)
+    {
+        user_data_query_results.recents.remove(index);
+    }
+
+    user_data_query_results.recents.insert(0, search_term);
+
+    // Ensure the recents list does not exceed the maximum size of 20
+    if user_data_query_results.recents.len() > 20 {
+        user_data_query_results.recents.remove(21);
+    }
 }
 
 #[cfg(test)]
@@ -197,7 +237,7 @@ mod tests {
         )
         .await
         .unwrap();
-        assert_eq!(app_state.user_data_query, Vec::<String>::new());
+        assert_eq!(app_state.user_data_query_results.results, Vec::<String>::new());
 
         // Assert that the `user_data_query` results are returned in their order of search relevance.
         app_state = credential_query(
@@ -211,7 +251,7 @@ mod tests {
         )
         .await
         .unwrap();
-        assert_eq!(app_state.user_data_query, vec!["1", "3", "2"]);
+        assert_eq!(app_state.user_data_query_results.results, vec!["1", "3", "2"]);
 
         // Assert that the `user_data_query` results are sorted by name in ascending order.
         app_state = credential_query(
@@ -225,7 +265,7 @@ mod tests {
         )
         .await
         .unwrap();
-        assert_eq!(app_state.user_data_query, vec!["2", "3", "1"]);
+        assert_eq!(app_state.user_data_query_results.results, vec!["2", "3", "1"]);
     }
 
     fn app_state() -> AppState {

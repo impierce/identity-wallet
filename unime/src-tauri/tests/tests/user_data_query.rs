@@ -12,10 +12,29 @@ async fn test_credential_search_query() {
     let state = json_example::<AppState>("tests/fixtures/states/two_credentials_redirect_me_query.json");
     let action = json_example::<Action>("tests/fixtures/actions/credential_search.json");
     let expected_state = json_example::<AppState>("tests/fixtures/states/two_credentials_search_query.json");
+
     assert_state_update(
-        AppStateContainer(Mutex::new(state)),
+        AppStateContainer(Mutex::new(state.clone())),
+        vec![action.clone()],
+        vec![Some(expected_state.clone())],
+    )
+    .await;
+
+    // To check wether searching the same search_term isn't registered twice.
+    assert_state_update(
+        AppStateContainer(Mutex::new(expected_state.clone())),
         vec![action],
-        vec![Some(expected_state)],
+        vec![Some(expected_state.clone())],
+    )
+    .await;
+
+    // Checking an extra search_term
+    let action = json_example::<Action>("tests/fixtures/actions/credential_search_similar.json");
+    let expected_state_2 = json_example::<AppState>("tests/fixtures/states/two_credentials_search_query_similar.json");
+    assert_state_update(
+        AppStateContainer(Mutex::new(expected_state.clone())),
+        vec![action],
+        vec![Some(expected_state_2)],
     )
     .await;
 }
@@ -65,8 +84,29 @@ async fn test_connections_search_query() {
     let expected_state = json_example::<AppState>("tests/fixtures/states/three_connections_search.json");
     assert_state_update(
         AppStateContainer(Mutex::new(state)),
+        vec![action.clone()],
+        vec![Some(expected_state.clone())],
+    )
+    .await;
+
+    // To check wether searching the same term isn't registered twice.
+    assert_state_update(
+        AppStateContainer(Mutex::new(expected_state.clone())),
         vec![action],
-        vec![Some(expected_state)],
+        vec![Some(expected_state.clone())],
+    )
+    .await;
+
+    // Checking a similar search_term with only a lower/upper case difference.
+    // In this case the search_term won't be registered twice either,
+    //  but it will be inserted back on top and in lower/upper case style of the most recent search.
+    let action = json_example::<Action>("tests/fixtures/actions/connection_search_case_difference.json");
+    let expected_state_2 =
+        json_example::<AppState>("tests/fixtures/states/three_connections_search_case_difference.json");
+    assert_state_update(
+        AppStateContainer(Mutex::new(expected_state)),
+        vec![action],
+        vec![Some(expected_state_2)],
     )
     .await;
 }

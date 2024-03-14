@@ -10,8 +10,9 @@ pub mod user_data_query;
 pub mod user_journey;
 pub mod user_prompt;
 
+use self::user_data_query::UserDataQueryResults;
 use self::{
-    actions::Action, core_utils::CoreState, dev_mode::DevMode, profile_settings::ProfileSettings,
+    actions::Action, core_utils::CoreUtils, dev_mode::DevMode, profile_settings::ProfileSettings,
     user_prompt::CurrentUserPrompt,
 };
 use crate::state::core_utils::history_event::HistoryEvent;
@@ -82,11 +83,11 @@ pub struct AppState {
     /// This field contains the display credentials.
     pub credentials: Vec<DisplayCredential>,
     /// This field contains the query result, which is queried from credentials or connections.
-    pub user_data_query: Vec<String>,
+    pub user_data_query_results: UserDataQueryResults,
     /// This field contains utils needed for the backend to perform its tasks.
     #[serde(skip)]
     #[derivative(Debug = "ignore")]
-    pub core_state: CoreState,
+    pub core_utils: CoreUtils,
     /// This field contains the profile settings, including Locale.
     pub profile_settings: ProfileSettings,
     /// User prompts are a way for the backend to communicate a desired/required user interaction to the frontend.
@@ -109,10 +110,10 @@ pub struct AppState {
 impl Clone for AppState {
     fn clone(&self) -> Self {
         Self {
-            core_state: CoreState {
-                managers: self.core_state.managers.clone(),
+            core_utils: CoreUtils {
+                managers: self.core_utils.managers.clone(),
                 active_connection_request: serde_json::from_value(serde_json::json!(
-                    self.core_state.active_connection_request
+                    self.core_utils.active_connection_request
                 ))
                 .unwrap(),
             },
@@ -122,7 +123,7 @@ impl Clone for AppState {
             debug_messages: self.debug_messages.clone(),
             user_journey: self.user_journey.clone(),
             connections: self.connections.clone(),
-            user_data_query: self.user_data_query.clone(),
+            user_data_query_results: self.user_data_query_results.clone(),
             history: self.history.clone(),
             extensions: self.extensions.clone(),
             dev_mode: self.dev_mode.clone(),
@@ -176,7 +177,10 @@ mod tests {
             r#"{
                   "connections": [],
                   "credentials": [],
-                  "user_data_query": [],
+                  "user_data_query_results": {
+                    "results": [],
+                    "recents": []
+                  },
                   "profile_settings": {
                     "locale": "en-US",
                     "profile": {
