@@ -4,7 +4,10 @@ use crate::{
     state::{
         actions::{listen, Action},
         connections::Connection,
-        core_utils::history_event::{EventType, HistoryCredential, HistoryEvent},
+        core_utils::{
+            history_event::{EventType, HistoryCredential, HistoryEvent},
+            DateUtils,
+        },
         credentials::{
             actions::credential_offers_selected::CredentialOffersSelected, DisplayCredential,
             VerifiableCredentialRecord,
@@ -12,7 +15,6 @@ use crate::{
         user_prompt::CurrentUserPrompt,
         AppState,
     },
-    DateUtils,
 };
 
 use log::info;

@@ -1,7 +1,7 @@
 pub mod actions;
 pub mod reducers;
 
-use crate::DateUtils;
+use crate::state::core_utils::DateUtils;
 
 use super::{core_utils::helpers::get_unverified_jwt_claims, FeatTrait};
 
