@@ -2,7 +2,7 @@ use crate::{
     error::AppError::{self, *},
     persistence::ASSETS_DIR,
     state::{
-        connections::Connection,
+        connections::{Connection, Connections},
         credentials::VerifiableCredentialRecord,
         dev_mode::DevMode,
         profile_settings::{AppTheme, Profile},
@@ -156,7 +156,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         state.user_journey = Some(onboarding_journey);
     }
 
-    state.connections = vec![
+    state.connections = Connections(vec![
         Connection {
             id: "ngdil".to_string(),
             name: "NGDIL Demo".to_string(),
@@ -189,7 +189,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             first_interacted: "2024-01-09T08:45:44.217Z".to_string(),
             last_interacted: "2024-01-09T08:45:44.217Z".to_string(),
         },
-    ];
+    ]);
 
     state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
         target: "me".to_string(),

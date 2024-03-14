@@ -94,6 +94,7 @@ pub async fn connection_query(state: AppState, action: Action) -> Result<AppStat
             .map(|search_term| {
                 let (filtered_connects_name, connections): (Vec<_>, Vec<_>) = state
                     .connections
+                    .0
                     .iter()
                     .partition(|connection| contains_search_term(Some(&connection.name), search_term));
 
@@ -110,7 +111,7 @@ pub async fn connection_query(state: AppState, action: Action) -> Result<AppStat
             .unwrap_or_default();
 
         let user_data_query = if let Some(sort_method) = &query.sort_method {
-            let mut connections: Vec<&Connection> = state.connections.iter().collect();
+            let mut connections: Vec<&Connection> = state.connections.0.iter().collect();
 
             let name_az = |a: &&Connection, b: &&Connection| a.name.cmp(&b.name);
             let first_interacted_new_old =
