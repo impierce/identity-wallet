@@ -1,4 +1,5 @@
-import type { Connection } from './types';
+import type { Connection } from '@bindings/Connection';
+
 import { groupConnectionsAlphabetically } from './utils';
 
 const connection: Connection = {

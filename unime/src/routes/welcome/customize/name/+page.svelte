@@ -7,9 +7,9 @@
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
   import { onboarding_state } from '$src/stores';
 
-  $: {
-    console.log($onboarding_state);
-  }
+  const defaultName = 'Me';
+
+  $onboarding_state.name = $onboarding_state.name || defaultName;
 </script>
 
 <!-- <TopNavBar title="Appearance" on:back={() => history.back()} /> -->
@@ -31,14 +31,11 @@
       class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] font-normal text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300 dark:caret-slate-300"
       placeholder={$LL.ONBOARDING.CUSTOMIZE.NAME.INPUT_PLACEHOLDER()}
       bind:value={$onboarding_state.name}
+      autofocus={$onboarding_state.name === defaultName}
     />
   </div>
   <div class="rounded-t-3xl bg-white p-6 dark:bg-dark" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
-    <Button
-      label={$LL.CONTINUE()}
-      on:click={() => goto('/welcome/customize/theme')}
-      disabled={!!!$onboarding_state.name}
-    />
+    <Button label={$LL.CONTINUE()} on:click={() => goto('/welcome/password')} disabled={!!!$onboarding_state.name} />
   </div>
 </div>
 

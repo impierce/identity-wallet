@@ -3,7 +3,11 @@ use crate::{
     persistence::persist_asset,
     state::{
         actions::{listen, Action},
-        core_utils::history_event::{EventType, HistoryCredential, HistoryEvent},
+        connections::Connection,
+        core_utils::{
+            history_event::{EventType, HistoryCredential, HistoryEvent},
+            DateUtils,
+        },
         credentials::{
             actions::credential_offers_selected::CredentialOffersSelected, DisplayCredential,
             VerifiableCredentialRecord,
@@ -196,11 +200,13 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
 
         // History
         if !history_credentials.is_empty() {
+            let connection_id = Connection::create_connection_id(&issuer_name);
+
             state.history.push(HistoryEvent {
                 connection_name: issuer_name,
                 event_type: EventType::CredentialsAdded,
-                date: credentials[0].metadata.date_added.clone(),
-                connection_id: None,
+                date: DateUtils::new_date_string(),
+                connection_id,
                 credentials: history_credentials,
             });
         }

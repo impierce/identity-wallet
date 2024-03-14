@@ -9,3 +9,11 @@ pub fn get_unverified_jwt_claims(jwt: &serde_json::Value) -> serde_json::Value {
     validation.required_spec_claims.clear();
     decode(jwt.as_str().unwrap(), &key, &validation).unwrap().claims
 }
+
+pub struct DateUtils;
+
+impl DateUtils {
+    pub fn new_date_string() -> String {
+        chrono::Utc::now().to_rfc3339()
+    }
+}

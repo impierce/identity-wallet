@@ -23,12 +23,9 @@
       title={$LL.SETTINGS.PROFILE.PROFILE_NAME.TITLE()}
       on:click={() => goto('/me/settings/profile/name')}
     />
-    <!-- on:click={() => goto('/welcome/customize/name')} -->
-    <SettingsEntry icon={SmileyWink} title={$LL.SETTINGS.PROFILE.DISPLAY_PICTURE.TITLE()} todo />
-    <!-- on:click={() => goto('/me/settings/profile/avatar')} -->
 
+    <!-- Delete profile -->
     <BottomDrawer titleText={$LL.SETTINGS.RESET_APP.TITLE()} descriptionText={$LL.SETTINGS.RESET_APP.DESCRIPTION()}>
-      <!-- Delete profile (based on SettingsEntry) -->
       <button
         slot="trigger"
         let:trigger

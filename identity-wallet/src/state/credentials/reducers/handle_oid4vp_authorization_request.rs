@@ -138,10 +138,7 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
                 connection.last_interacted = connection_time.clone();
             });
 
-        // TODO: This is a HORRIBLE solution to determine the connection_id by the non-unique "issuer name".
-        // It is a TEMPORARY solution and should only be used in DEMO environments,
-        // since we currently lack a unique identitfier to distinguish connections.
-        let connection_id = base64::encode_config(&client_name, base64::URL_SAFE);
+        let connection_id = Connection::create_connection_id(&client_name);
 
         if result.is_none() {
             connections.push(Connection {
@@ -161,7 +158,7 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
             connection_name: client_name,
             date: connection_time,
             event_type: EventType::CredentialsShared,
-            connection_id: Some(connection_id),
+            connection_id,
             credentials: history_credentials,
         });
 
