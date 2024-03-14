@@ -95,7 +95,7 @@ pub async fn connection_query(state: AppState, action: Action) -> Result<AppStat
                 let (filtered_connects_name, connections): (Vec<_>, Vec<_>) = state
                     .connections
                     .iter()
-                    .partition(|connection| contains_search_term(Some(&connection.client_name), search_term));
+                    .partition(|connection| contains_search_term(Some(&connection.name), search_term));
 
                 let filtered_connects_url: Vec<_> = connections
                     .into_iter()
@@ -104,7 +104,7 @@ pub async fn connection_query(state: AppState, action: Action) -> Result<AppStat
 
                 concat(vec![filtered_connects_name, filtered_connects_url])
                     .iter()
-                    .map(|connection| connection.client_name.clone())
+                    .map(|connection| connection.name.clone())
                     .collect()
             })
             .unwrap_or_default();
@@ -112,7 +112,7 @@ pub async fn connection_query(state: AppState, action: Action) -> Result<AppStat
         let user_data_query = if let Some(sort_method) = &query.sort_method {
             let mut connections: Vec<&Connection> = state.connections.iter().collect();
 
-            let name_az = |a: &&Connection, b: &&Connection| a.client_name.cmp(&b.client_name);
+            let name_az = |a: &&Connection, b: &&Connection| a.name.cmp(&b.name);
             let first_interacted_new_old =
                 |a: &&Connection, b: &&Connection| a.first_interacted.cmp(&b.first_interacted);
             let last_interacted_new_old = |a: &&Connection, b: &&Connection| a.last_interacted.cmp(&b.last_interacted);
@@ -124,7 +124,7 @@ pub async fn connection_query(state: AppState, action: Action) -> Result<AppStat
                 _ => name_az,
             });
 
-            let mut sorted_connect: Vec<String> = connections.iter().map(|s| s.client_name.clone()).collect();
+            let mut sorted_connect: Vec<String> = connections.iter().map(|s| s.name.clone()).collect();
 
             if let Some(sort_reverse) = query.sort_reverse {
                 if sort_reverse {

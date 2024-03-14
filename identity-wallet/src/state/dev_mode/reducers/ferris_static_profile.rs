@@ -159,7 +159,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
     state.connections = vec![
         Connection {
             id: "ngdil".to_string(),
-            client_name: "NGDIL Demo".to_string(),
+            name: "NGDIL Demo".to_string(),
             url: "api.ngdil-demo.tanglelabs.io".to_string(),
             verified: false,
             first_interacted: "2023-09-11T19:53:53.937981+00:00".to_string(),
@@ -167,7 +167,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         },
         Connection {
             id: "impierce".to_string(),
-            client_name: "Impierce Demo Portal".to_string(),
+            name: "Impierce Demo Portal".to_string(),
             url: "https://demo.impierce.com".to_string(),
             verified: true,
             first_interacted: "2024-01-09T07:36:41.382948+00:00".to_string(),
@@ -175,7 +175,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         },
         Connection {
             id: "webshop".to_string(),
-            client_name: "my-webshop.com".to_string(),
+            name: "my-webshop.com".to_string(),
             url: "https://shop.example.com".to_string(),
             verified: false,
             first_interacted: "2022-02-03T12:33:54.191824+00:00".to_string(),
@@ -183,7 +183,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         },
         Connection {
             id: "iota".to_string(),
-            client_name: "IOTA".to_string(),
+            name: "IOTA".to_string(),
             url: "https://www.iota.org".to_string(),
             verified: true,
             first_interacted: "2024-01-09T08:45:44.217Z".to_string(),

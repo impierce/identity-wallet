@@ -17,6 +17,6 @@ function groupBy(list: Array<any>, keyGetter) {
 }
 
 export const groupConnectionsAlphabetically = (connections: Connection[]): Map<string, Connection[]> => {
-  const sorted = connections.sort((a, b) => a.client_name.localeCompare(b.client_name));
-  return groupBy(sorted, (connection: Connection) => connection.client_name[0].toUpperCase());
+  const sorted = connections.sort((a, b) => a.name.localeCompare(b.name));
+  return groupBy(sorted, (connection: Connection) => connection.name[0].toUpperCase());
 };
