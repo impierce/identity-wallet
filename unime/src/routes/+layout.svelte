@@ -39,17 +39,13 @@
 
   const systemColorScheme = window.matchMedia('(prefers-color-scheme: dark)');
 
-  systemColorScheme.addEventListener(
-    'change',
-    (e) => {
-      if ($state?.profile_settings.profile?.theme) {
-        determineTheme(e.matches, $state.profile_settings.profile.theme);
-      } else {
-        determineTheme(systemColorScheme.matches, 'system');
-      }
-    },
-    { once: true },
-  );
+  systemColorScheme.addEventListener('change', (e) => {
+    if ($state?.profile_settings.profile?.theme) {
+      determineTheme(e.matches, $state.profile_settings.profile.theme);
+    } else {
+      determineTheme(systemColorScheme.matches, 'system');
+    }
+  });
 
   $: {
     // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
