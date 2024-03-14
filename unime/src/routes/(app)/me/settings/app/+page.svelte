@@ -34,7 +34,7 @@
         $state.profile_settings.locale}
       on:click={() => goto('/me/settings/app/language')}
     />
-    <SettingsEntry icon={Sun} title={$LL.SETTINGS.APP.THEME.TITLE()} on:click={() => goto('/me/settings/app/theme')} />
+    <SettingsEntry icon={Sun} title={$LL.SETTINGS.APP.THEME.LABEL()} on:click={() => goto('/me/settings/app/theme')} />
     <SettingsEntry icon={Password} title={$LL.SETTINGS.APP.PASSWORD.TITLE()} todo />
     <SettingsEntry
       icon={Confetti}
