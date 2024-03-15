@@ -143,6 +143,7 @@ mod tests {
     use crate::state::profile_settings::Locale;
     use crate::state::profile_settings::Profile;
     use indoc::indoc;
+    use tests::profile_settings::AppTheme;
 
     #[test]
     fn test_app_state_serialize() {
@@ -152,7 +153,7 @@ mod tests {
                 profile: Some(Profile {
                     name: "John Doe".to_string(),
                     picture: None,
-                    theme: None,
+                    theme: AppTheme::System,
                     primary_did: "did:example:123".to_string(),
                 }),
             },
@@ -182,7 +183,7 @@ mod tests {
                     "profile": {
                       "name": "John Doe",
                       "picture": null,
-                      "theme": null,
+                      "theme": "system",
                       "primary_did": "did:example:123"
                     }
                   },
