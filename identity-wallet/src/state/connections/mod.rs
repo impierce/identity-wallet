@@ -92,7 +92,7 @@ impl Connection {
             url,
             verified: false,
             first_interacted: current_datetime.clone(),
-            last_interacted: current_datetime.clone(),
+            last_interacted: current_datetime,
         }
     }
 
