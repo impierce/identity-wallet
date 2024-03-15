@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use std::ops::Not;
 use ts_rs::TS;
 
-#[derive(Default, Serialize, Deserialize, Clone, Debug, TS)]
+#[derive(Default, Serialize, Deserialize, Clone, Debug, TS, PartialEq)]
 #[ts(export)]
 pub struct Connections(pub Vec<Connection>);
 
@@ -69,7 +69,7 @@ impl FeatTrait for Connections {}
 /// More information can be found here:
 /// - [Relying Party](https://github.com/impierce/openid4vc/tree/dev/siopv2)
 /// - [Credential Issuer](https://github.com/impierce/openid4vc/tree/dev/oid4vci)
-#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default)]
+#[derive(Clone, Serialize, Debug, Deserialize, TS, Default)]
 #[ts(export)]
 #[serde(default)]
 pub struct Connection {
@@ -98,5 +98,12 @@ impl Connection {
 
     pub fn update_last_interaction_time(&mut self) {
         self.last_interacted = DateUtils::new_date_string();
+    }
+}
+
+/// Implement PartialEq for Connection to allow for comparison of Connection instances for testing purposes.
+impl PartialEq for Connection {
+    fn eq(&self, other: &Self) -> bool {
+        self.id == other.id && self.name == other.name && self.url == other.url && self.verified == other.verified
     }
 }

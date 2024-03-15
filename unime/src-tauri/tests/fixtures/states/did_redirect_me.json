@@ -1,4 +1,14 @@
 {
+    "connections": [
+        {
+            "id": "ZXhhbXBsZS5jb21leGFtcGxlLmNvbQ==",
+            "name": "example.com",
+            "url": "example.com",
+            "verified": false,
+            "first_interacted": "2024-03-15T01:16:28.712260354+00:00",
+            "last_interacted": "2024-03-15T01:16:28.712260354+00:00"
+        }
+    ],
     "profile_settings": {
         "profile": {
             "name": "Ferris",
@@ -10,5 +20,14 @@
     "current_user_prompt": {
         "type": "redirect",
         "target": "me"
-    }
+    },
+    "history": [
+        {
+            "connection_id": "ZXhhbXBsZS5jb21leGFtcGxlLmNvbQ==",
+            "connection_name": "example.com",
+            "event_type": "ConnectionAdded",
+            "date": "2024-03-15T01:17:34.692691163+00:00",
+            "credentials": []
+        }
+    ]
 }
