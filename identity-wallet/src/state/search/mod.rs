@@ -10,10 +10,10 @@ use ts_rs::TS;
 #[derive(Default, Serialize, Deserialize, Derivative, TS, Clone, PartialEq, Debug)]
 #[ts(export)]
 #[serde(default)]
-pub struct UserDataQueryResults {
-    pub results: Vec<String>,
+pub struct SearchResults {
+    pub current: Vec<String>,
     pub recents: Vec<String>,
 }
 
 #[typetag::serde(name = "UserDataQueryResults")]
-impl FeatTrait for UserDataQueryResults {}
+impl FeatTrait for SearchResults {}

@@ -1,5 +1,5 @@
 use crate::reducer;
-use crate::state::user_data_query::reducers::user_data_query::{connection_query, credential_query};
+use crate::state::search::reducers::user_data_query::{connection_query, credential_query};
 use crate::state::{actions::ActionTrait, Reducer};
 
 use serde::{Deserialize, Serialize};
@@ -8,7 +8,7 @@ use ts_rs::TS;
 /// Action to query user data.
 #[derive(Serialize, Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/UserDataQuery.ts")]
-pub struct UserDataQuery {
+pub struct SearchQuery {
     pub target: QueryTarget,
     #[ts(optional)]
     pub search_term: Option<String>,
@@ -19,7 +19,7 @@ pub struct UserDataQuery {
 }
 
 #[typetag::serde(name = "[User Data] Query")]
-impl ActionTrait for UserDataQuery {
+impl ActionTrait for SearchQuery {
     fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
         vec![reducer!(credential_query), reducer!(connection_query)]
     }

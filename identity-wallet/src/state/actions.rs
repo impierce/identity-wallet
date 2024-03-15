@@ -75,7 +75,7 @@ mod bindings {
             create_new::CreateNew, set_locale::SetLocale, update_profile_settings::UpdateProfileSettings,
         },
         qr_code::actions::qrcode_scanned::QrCodeScanned,
-        user_data_query::actions::user_data_query::UserDataQuery,
+        search::actions::search_query::SearchQuery,
     };
 
     #[derive(Serialize, Deserialize, TS)]
@@ -116,6 +116,6 @@ mod bindings {
         #[serde(rename = "[User Journey] Cancel")]
         CancelUserJourney,
         #[serde(rename = "[User Data] Query")]
-        UserDataQuery { payload: UserDataQuery },
+        UserDataQuery { payload: SearchQuery },
     }
 }

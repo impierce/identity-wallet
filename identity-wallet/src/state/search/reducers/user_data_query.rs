@@ -1,8 +1,8 @@
 use crate::error::AppError;
 use crate::state::connections::Connection;
 use crate::state::credentials::DisplayCredential;
-use crate::state::user_data_query::actions::user_data_query::{QueryTarget, SortMethod, UserDataQuery};
-use crate::state::user_data_query::UserDataQueryResults;
+use crate::state::search::actions::search_query::{QueryTarget, SortMethod, SearchQuery};
+use crate::state::search::SearchResults;
 use crate::state::{
     actions::{listen, Action},
     AppState,
@@ -11,7 +11,7 @@ use crate::state::{
 use itertools::concat;
 
 pub async fn credential_query(state: AppState, action: Action) -> Result<AppState, AppError> {
-    if let Some(query) = listen::<UserDataQuery>(action).filter(|payload| payload.target == QueryTarget::Credentials) {
+    if let Some(query) = listen::<SearchQuery>(action).filter(|payload| payload.target == QueryTarget::Credentials) {
         let user_data_query: Vec<String> = query
             .search_term
             .as_ref()
@@ -76,17 +76,19 @@ pub async fn credential_query(state: AppState, action: Action) -> Result<AppStat
             user_data_query
         };
 
-        let mut user_data_query_results = UserDataQueryResults {
-            results: user_data_query,
-            ..state.user_data_query_results
+        let mut user_data_query_results = SearchResults {
+            current: user_data_query,
+            ..state.search_results
         };
 
         if let Some(q) = &query.search_term {
-            add_search_to_recents(&mut user_data_query_results, q.clone());
+            if !user_data_query_results.current.is_empty() {
+                add_search_to_recents(&mut user_data_query_results, q.clone());
+            }
         }
 
         return Ok(AppState {
-            user_data_query_results,
+            search_results: user_data_query_results,
             current_user_prompt: None,
             ..state
         });
@@ -96,7 +98,7 @@ pub async fn credential_query(state: AppState, action: Action) -> Result<AppStat
 }
 
 pub async fn connection_query(state: AppState, action: Action) -> Result<AppState, AppError> {
-    if let Some(query) = listen::<UserDataQuery>(action).filter(|payload| payload.target == QueryTarget::Connections) {
+    if let Some(query) = listen::<SearchQuery>(action).filter(|payload| payload.target == QueryTarget::Connections) {
         let user_data_query: Vec<String> = query
             .search_term
             .as_ref()
@@ -152,17 +154,19 @@ pub async fn connection_query(state: AppState, action: Action) -> Result<AppStat
             user_data_query
         };
 
-        let mut user_data_query_results = UserDataQueryResults {
-            results: user_data_query,
-            ..state.user_data_query_results
+        let mut user_data_query_results = SearchResults {
+            current: user_data_query,
+            ..state.search_results
         };
 
         if let Some(q) = &query.search_term {
-            add_search_to_recents(&mut user_data_query_results, q.clone());
+            if !user_data_query_results.current.is_empty() {
+                add_search_to_recents(&mut user_data_query_results, q.clone());
+            }
         }
 
         return Ok(AppState {
-            user_data_query_results,
+            search_results: user_data_query_results,
             current_user_prompt: None,
             ..state
         });
@@ -179,7 +183,7 @@ fn contains_search_term(string: Option<&str>, search_term: &str) -> bool {
 }
 
 /// Add the search term to the recents list, with a max of 20.
-fn add_search_to_recents(user_data_query_results: &mut UserDataQueryResults, search_term: String) {
+fn add_search_to_recents(user_data_query_results: &mut SearchResults, search_term: String) {
     let lowercase_search_term = search_term.to_lowercase();
 
     // Check if the lowercase search term exists in the recents list
@@ -228,7 +232,7 @@ mod tests {
         // Assert that the `user_data_query` is empty when the `search_term` is empty.
         app_state = credential_query(
             app_state,
-            Arc::new(UserDataQuery {
+            Arc::new(SearchQuery {
                 target: QueryTarget::Credentials,
                 search_term: Some("".to_string()),
                 sort_method: None,
@@ -237,12 +241,12 @@ mod tests {
         )
         .await
         .unwrap();
-        assert_eq!(app_state.user_data_query_results.results, Vec::<String>::new());
+        assert_eq!(app_state.search_results.current, Vec::<String>::new());
 
         // Assert that the `user_data_query` results are returned in their order of search relevance.
         app_state = credential_query(
             app_state,
-            Arc::new(UserDataQuery {
+            Arc::new(SearchQuery {
                 target: QueryTarget::Credentials,
                 search_term: Some("John".to_string()),
                 sort_method: None,
@@ -251,12 +255,12 @@ mod tests {
         )
         .await
         .unwrap();
-        assert_eq!(app_state.user_data_query_results.results, vec!["1", "3", "2"]);
+        assert_eq!(app_state.search_results.current, vec!["1", "3", "2"]);
 
         // Assert that the `user_data_query` results are sorted by name in ascending order.
         app_state = credential_query(
             app_state,
-            Arc::new(UserDataQuery {
+            Arc::new(SearchQuery {
                 target: QueryTarget::Credentials,
                 search_term: None,
                 sort_method: Some(SortMethod::NameAZ),
@@ -265,7 +269,7 @@ mod tests {
         )
         .await
         .unwrap();
-        assert_eq!(app_state.user_data_query_results.results, vec!["2", "3", "1"]);
+        assert_eq!(app_state.search_results.current, vec!["2", "3", "1"]);
     }
 
     fn app_state() -> AppState {

@@ -6,11 +6,11 @@ pub mod credentials;
 pub mod dev_mode;
 pub mod profile_settings;
 pub mod qr_code;
-pub mod user_data_query;
+pub mod search;
 pub mod user_journey;
 pub mod user_prompt;
 
-use self::user_data_query::UserDataQueryResults;
+use self::search::SearchResults;
 use self::{
     actions::Action, core_utils::CoreUtils, dev_mode::DevMode, profile_settings::ProfileSettings,
     user_prompt::CurrentUserPrompt,
@@ -83,7 +83,7 @@ pub struct AppState {
     /// This field contains the display credentials.
     pub credentials: Vec<DisplayCredential>,
     /// This field contains the query result, which is queried from credentials or connections.
-    pub user_data_query_results: UserDataQueryResults,
+    pub search_results: SearchResults,
     /// This field contains utils needed for the backend to perform its tasks.
     #[serde(skip)]
     #[derivative(Debug = "ignore")]
@@ -123,7 +123,7 @@ impl Clone for AppState {
             debug_messages: self.debug_messages.clone(),
             user_journey: self.user_journey.clone(),
             connections: self.connections.clone(),
-            user_data_query_results: self.user_data_query_results.clone(),
+            search_results: self.search_results.clone(),
             history: self.history.clone(),
             extensions: self.extensions.clone(),
             dev_mode: self.dev_mode.clone(),
