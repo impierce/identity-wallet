@@ -2,7 +2,6 @@ use crate::{
     error::AppError::{self, *},
     state::{
         actions::{listen, Action},
-        connections::Connection,
         core_utils::{
             helpers::get_unverified_jwt_claims,
             history_event::{EventType, HistoryCredential, HistoryEvent},
@@ -124,19 +123,26 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
         }
         info!("response successfully sent");
 
-        let connection_time = chrono::Utc::now().to_rfc3339();
-
         let (client_name, _logo_uri, connection_url) =
             get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request)
                 .map_err(|_| MissingAuthorizationRequestParameterError("connection_url"))?;
 
+        let previously_connected = state.connections.contains(connection_url.as_str(), &client_name);
         let mut connections = state.connections;
         let connection = connections.insert_or_update(&connection_url, &client_name);
 
         // History
+        if !previously_connected {
+            state.history.push(HistoryEvent {
+                connection_name: client_name.clone(),
+                event_type: EventType::ConnectionAdded,
+                connection_id: connection.id.clone(),
+                date: connection.last_interacted.clone(),
+                credentials: vec![],
+            });
+        }
         state.history.push(HistoryEvent {
             connection_name: client_name,
-            date: connection_time,
             event_type: EventType::CredentialsShared,
             connection_id: connection.id.clone(),
             date: connection.last_interacted.clone(),
