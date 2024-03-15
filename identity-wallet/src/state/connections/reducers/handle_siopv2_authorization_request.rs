@@ -3,7 +3,6 @@ use crate::{
     persistence::persist_asset,
     state::{
         actions::Action,
-        connections::Connection,
         core_utils::{
             history_event::{EventType, HistoryEvent},
             ConnectionRequest,
@@ -46,8 +45,6 @@ pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: A
     }
     info!("response successfully sent");
 
-    let connection_time = chrono::Utc::now().to_rfc3339();
-
     let (client_name, logo_uri, connection_url) = get_siopv2_client_name_and_logo_uri(&siopv2_authorization_request)
         .map_err(|_| MissingAuthorizationRequestParameterError("connection_url"))?;
 
@@ -55,36 +52,17 @@ pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: A
         warn!("Skipping download of client logo as it should have already been downloaded in `read_authorization_request()` and be present in /assets/tmp folder");
     }
 
-    let mut connections = state.connections.clone();
+    let mut connections = state.connections;
+    let connection = connections.insert_or_update(&connection_url, &client_name);
 
-    let result = connections
-        .iter_mut()
-        .find(|connection| connection.url == connection_url && connection.client_name == client_name)
-        .map(|connection| {
-            connection.last_interacted = connection_time.clone();
-        });
-
-    let connection_id = Connection::create_connection_id(&client_name);
-
-    persist_asset("issuer_0", &connection_id).ok();
-
-    if result.is_none() {
-        connections.push(Connection {
-            id: connection_id.to_string(),
-            client_name: client_name.to_string(),
-            url: connection_url,
-            verified: false,
-            first_interacted: connection_time.clone(),
-            last_interacted: connection_time.clone(),
-        })
-    };
+    persist_asset("issuer_0", &connection.id).ok();
 
     // History
     state.history.push(HistoryEvent {
         connection_name: client_name.clone(),
         event_type: EventType::ConnectionAdded,
-        connection_id,
-        date: connection_time,
+        connection_id: connection.id.clone(),
+        date: connection.last_interacted.clone(),
         credentials: vec![],
     });
 

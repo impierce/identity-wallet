@@ -130,38 +130,20 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
             get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request)
                 .map_err(|_| MissingAuthorizationRequestParameterError("connection_url"))?;
 
-        let mut connections = state.connections.clone();
-        let result = connections
-            .iter_mut()
-            .find(|connection| connection.url == connection_url && connection.client_name == client_name)
-            .map(|connection| {
-                connection.last_interacted = connection_time.clone();
-            });
-
-        let connection_id = Connection::create_connection_id(&client_name);
-
-        if result.is_none() {
-            connections.push(Connection {
-                id: connection_id.to_string(),
-                client_name: client_name.to_string(),
-                url: connection_url,
-                verified: false,
-                first_interacted: connection_time.clone(),
-                last_interacted: connection_time.clone(),
-            })
-        };
-
-        state.connections = connections;
+        let mut connections = state.connections;
+        let connection = connections.insert_or_update(&connection_url, &client_name);
 
         // History
         state.history.push(HistoryEvent {
             connection_name: client_name,
             date: connection_time,
             event_type: EventType::CredentialsShared,
-            connection_id,
+            connection_id: connection.id.clone(),
+            date: connection.last_interacted.clone(),
             credentials: history_credentials,
         });
 
+        state.connections = connections;
         state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
             target: "me".to_string(),
         });
