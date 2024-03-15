@@ -133,6 +133,7 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
 
         // History
         if !previously_connected {
+            // Only add a `ConnectionAdded` event if the connection was not previously connected.
             state.history.push(HistoryEvent {
                 connection_name: client_name.clone(),
                 event_type: EventType::ConnectionAdded,

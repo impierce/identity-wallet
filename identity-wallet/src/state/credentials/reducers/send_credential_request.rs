@@ -206,6 +206,7 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
 
         // History
         if !history_credentials.is_empty() {
+            // Only add a `ConnectionAdded` event if the connection was not previously connected.
             if !previously_connected {
                 state.history.push(HistoryEvent {
                     connection_name: issuer_name.clone(),
