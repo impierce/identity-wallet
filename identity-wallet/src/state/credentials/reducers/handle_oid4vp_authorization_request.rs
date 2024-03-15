@@ -135,7 +135,7 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
         if !previously_connected {
             // Only add a `ConnectionAdded` event if the connection was not previously connected.
             state.history.push(HistoryEvent {
-                connection_name: client_name.clone(),
+                connection_name: connection.name.clone(),
                 event_type: EventType::ConnectionAdded,
                 connection_id: connection.id.clone(),
                 date: connection.last_interacted.clone(),
@@ -143,7 +143,7 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
             });
         }
         state.history.push(HistoryEvent {
-            connection_name: client_name,
+            connection_name: connection.name.clone(),
             event_type: EventType::CredentialsShared,
             connection_id: connection.id.clone(),
             date: connection.last_interacted.clone(),

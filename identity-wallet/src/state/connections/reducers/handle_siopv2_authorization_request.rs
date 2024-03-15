@@ -59,7 +59,7 @@ pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: A
 
     // History
     state.history.push(HistoryEvent {
-        connection_name: client_name.clone(),
+        connection_name: connection.name.clone(),
         event_type: EventType::ConnectionAdded,
         connection_id: connection.id.clone(),
         date: connection.last_interacted.clone(),
