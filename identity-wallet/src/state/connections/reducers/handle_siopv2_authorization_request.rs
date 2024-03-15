@@ -84,8 +84,8 @@ pub fn get_siopv2_client_name_and_logo_uri(
 ) -> anyhow::Result<(String, Option<String>, String)> {
     // Get the connection url from the redirect url host (or use the redirect url if it does not
     // contain a host).
-    let redirect_url = siopv2_authorization_request.body.redirect_uri.clone();
-    let connection_url = redirect_url.host_str().unwrap_or(redirect_url.as_str());
+    let redirect_uri = siopv2_authorization_request.body.redirect_uri.clone();
+    let connection_url = redirect_uri.host_str().unwrap_or(redirect_uri.as_str());
 
     // Get the client_name and logo_uri from the client_metadata if it exists.
     Ok(siopv2_authorization_request
