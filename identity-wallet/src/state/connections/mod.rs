@@ -24,7 +24,7 @@ impl Connections {
     }
 
     /// Inserts a new connection into the list of connections.
-    /// Modeled after the `std::collections::HashMap::insert` method.
+    /// Modelled after the `std::collections::HashMap::insert` method.
     fn insert(&mut self, connection: Connection) -> Option<&Connection> {
         self.contains(&connection.url, &connection.name)
             .not()
@@ -36,7 +36,7 @@ impl Connections {
     }
 
     /// Returns a mutable reference to the connection with the given `url` and `name`.
-    /// Modeled after the `std::collections::HashMap::get_mut` method.
+    /// Modelled after the `std::collections::HashMap::get_mut` method.
     fn get_mut(&mut self, url: &str, name: &str) -> Option<&mut Connection> {
         self.0
             .iter_mut()
