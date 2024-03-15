@@ -2,9 +2,10 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
 
+  import type { Connection } from '@bindings/Connection';
+
   import ConnectionData from '$lib/connections/ConnectionData.svelte';
   import ConnectionSummary from '$lib/connections/ConnectionSummary.svelte';
-  import type { Connection } from '@bindings/Connection';
   import LL from '$src/i18n/i18n-svelte';
   import Tabs from '$src/lib/components/molecules/navigation/Tabs.svelte';
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
