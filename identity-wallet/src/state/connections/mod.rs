@@ -107,3 +107,75 @@ impl PartialEq for Connection {
         self.id == other.id && self.name == other.name && self.url == other.url && self.verified == other.verified
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_insert_or_update() {
+        let mut connections = Connections::new();
+        let url = "https://example.com";
+        let name = "Example";
+        let connection = connections.insert_or_update(url, name);
+        assert_eq!(connection.url, url);
+        assert_eq!(connection.name, name);
+        assert_eq!(connection.first_interacted, connection.last_interacted);
+        assert_eq!(connections.0.len(), 1);
+        assert!(connections.contains(url, name));
+
+        let connection = connections.insert_or_update(url, name);
+        assert_eq!(connection.url, url);
+        assert_eq!(connection.name, name);
+        // The last interaction time should have been updated.
+        assert_ne!(connection.first_interacted, connection.last_interacted);
+        assert_eq!(connections.0.len(), 1);
+    }
+
+    #[test]
+    fn test_insert_or_update_with_duplicate_names() {
+        let mut connections = Connections::new();
+        let url = "https://example.com";
+        let name = "Example";
+        let connection = connections.insert_or_update(url, name);
+        assert_eq!(connection.url, url);
+        assert_eq!(connection.name, name);
+        assert_eq!(connection.first_interacted, connection.last_interacted);
+        assert_eq!(connections.0.len(), 1);
+        assert!(connections.contains(url, name));
+
+        // A different server with the same name is treated as a different connection.
+        let url = "https://example2.com";
+        // The same name is used.
+        let name = name;
+        let connection = connections.insert_or_update(url, name);
+        assert_eq!(connection.url, url);
+        assert_eq!(connection.name, name);
+        assert_eq!(connection.first_interacted, connection.last_interacted);
+        assert_eq!(connections.0.len(), 2);
+        assert!(connections.contains(url, name));
+    }
+
+    #[test]
+    fn test_insert_or_update_with_duplicate_urls() {
+        let mut connections = Connections::new();
+        let url = "https://example.com";
+        let name = "Example";
+        let connection = connections.insert_or_update(url, name);
+        assert_eq!(connection.url, url);
+        assert_eq!(connection.name, name);
+        assert_eq!(connection.first_interacted, connection.last_interacted);
+        assert_eq!(connections.0.len(), 1);
+        assert!(connections.contains(url, name));
+
+        // The same server is used with a different name.
+        let url = url;
+        let name = "Example2";
+        let connection = connections.insert_or_update(url, name);
+        assert_eq!(connection.url, url);
+        assert_eq!(connection.name, name);
+        assert_eq!(connection.first_interacted, connection.last_interacted);
+        assert_eq!(connections.0.len(), 2);
+        assert!(connections.contains(url, name));
+    }
+}
