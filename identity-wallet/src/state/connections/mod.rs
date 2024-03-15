@@ -102,6 +102,7 @@ impl Connection {
 }
 
 /// Implement PartialEq for Connection to allow for comparison of Connection instances for testing purposes.
+/// TODO(test): This implementation should be behind a "test" feature flag.
 impl PartialEq for Connection {
     fn eq(&self, other: &Self) -> bool {
         self.id == other.id && self.name == other.name && self.url == other.url && self.verified == other.verified

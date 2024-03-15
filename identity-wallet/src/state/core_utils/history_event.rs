@@ -43,6 +43,7 @@ impl HistoryCredential {
 }
 
 /// Implement PartialEq for HistoryEvent to allow for comparison of HistoryEvent instances in tests.
+/// TODO(test): This implementation should be behind a "test" feature flag.
 impl PartialEq for HistoryEvent {
     fn eq(&self, other: &Self) -> bool {
         self.connection_id == other.connection_id
