@@ -3,11 +3,7 @@ use crate::{
     persistence::persist_asset,
     state::{
         actions::{listen, Action},
-        connections::Connection,
-        core_utils::{
-            history_event::{EventType, HistoryCredential, HistoryEvent},
-            DateUtils,
-        },
+        core_utils::history_event::{EventType, HistoryCredential, HistoryEvent},
         credentials::{
             actions::credential_offers_selected::CredentialOffersSelected, DisplayCredential,
             VerifiableCredentialRecord,
@@ -204,19 +200,31 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
             .map(|verifiable_credential_record| verifiable_credential_record.display_credential)
             .collect();
 
+        let previously_connected = state.connections.contains(connection_url, &issuer_name);
+        let mut connections = state.connections;
+        let connection = connections.insert_or_update(connection_url, &issuer_name);
+
         // History
         if !history_credentials.is_empty() {
-            let connection_id = Connection::create_connection_id(&issuer_name);
-
+            if !previously_connected {
+                state.history.push(HistoryEvent {
+                    connection_name: issuer_name.clone(),
+                    event_type: EventType::ConnectionAdded,
+                    connection_id: connection.id.clone(),
+                    date: connection.last_interacted.clone(),
+                    credentials: vec![],
+                });
+            }
             state.history.push(HistoryEvent {
                 connection_name: issuer_name,
                 event_type: EventType::CredentialsAdded,
-                date: DateUtils::new_date_string(),
-                connection_id,
+                connection_id: connection.id.clone(),
+                date: connection.last_interacted.clone(),
                 credentials: history_credentials,
             });
         }
 
+        state.connections = connections;
         state.credentials = credentials;
 
         state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
