@@ -31,6 +31,7 @@
     "@iconify-json/flag": "^1.1.32",
     "@iconify-json/heroicons": "^1.1.11",
     "@iconify-json/lucide": "^1.1.112",
+    "@iconify-json/mdi": "^1.1.64",
     "@iconify-json/ph": "^1.1.6",
     "@iconify-json/svg-spinners": "^1.1.1",
     "@melt-ui/pp": "^0.1.2",

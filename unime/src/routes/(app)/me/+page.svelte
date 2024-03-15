@@ -18,8 +18,7 @@
   import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
   import IconMessage from '$src/lib/components/molecules/IconMessage.svelte';
   import Tabs from '$src/lib/components/molecules/navigation/Tabs.svelte';
-  import Sort from '$src/lib/components/molecules/Sort.svelte';
-  import SortModal from '$src/lib/components/molecules/SortModal.svelte';
+  import Sort from '$src/lib/components/molecules/sort/Sort.svelte';
   import CredentialList from '$src/lib/credentials/CredentialList.svelte';
   import Favorites from '$src/lib/credentials/Favorites.svelte';
   import UserJourney from '$src/lib/journeys/UserJourney.svelte';
