@@ -11,9 +11,15 @@
   import Ghost from '~icons/ph/ghost-fill';
   import MagnifyingGlass from '~icons/ph/magnifying-glass-fill';
 
+  import RecentSearches from './RecentSearches.svelte';
+
+  // TODO: read from state
+  let recentSearchesIds: string[] = ['39383134-6538-3766-3963-303366323930', '39313132-3661-6238-3462-393936663735'];
+
   let searchTerm: string | undefined;
   $: indices = $state.user_data_query;
   $: credentials = $state.credentials.filter((cred) => indices.includes(cred.id));
+  $: recentSearches = $state.credentials.filter((cred) => recentSearchesIds.includes(cred.id));
 </script>
 
 <div class="content-height bg-silver dark:bg-navy">
@@ -31,7 +37,9 @@
       }}
     ></Search>
   </div>
+  <!-- User has not entered a search term -->
   {#if !searchTerm}
+    <RecentSearches {recentSearches} />
     <div class="pt-12">
       <IconMessage
         icon={MagnifyingGlass}
@@ -39,7 +47,9 @@
         description={$LL.SEARCH.NO_QUERY.DESCRIPTION()}
       />
     </div>
+    <!-- User has entered something, but there are no results -->
   {:else if credentials.length == 0}
+    <RecentSearches {recentSearches} />
     <div class="pt-12">
       <IconMessage
         icon={Ghost}
@@ -47,6 +57,8 @@
         description={$LL.SEARCH.NO_RESULTS.DESCRIPTION()}
       />
     </div>
+    <!-- User has entered something and there are results.
+      Note: We're doing the if/else checks before to prevent "flashing empty results" before the content has loaded. -->
   {:else}
     <div class="w-full space-y-2 p-5">
       <!-- using "key" to destroy & recreate the complete credentials list to enforce a refresh of logos -->

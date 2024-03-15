@@ -38,7 +38,7 @@
     <!-- TODO: apply "appearance-none" and style everything manually? -->
     <input
       type="text"
-      class="h-11 w-full rounded-full bg-white pl-12 text-sm text-slate-500 placeholder-slate-500 placeholder-opacity-50 dark:bg-dark dark:text-slate-300"
+      class="h-11 w-full rounded-full bg-white pl-12 text-sm font-medium text-slate-500 placeholder-slate-500 placeholder-opacity-50 dark:bg-dark dark:text-slate-300"
       {placeholder}
       id="input"
       bind:value={inputValue}
@@ -46,13 +46,15 @@
     />
     {#if inputValue}
       <button
-        class="absolute right-2 inline-flex h-4 w-4 items-center justify-center rounded-full p-4 active:bg-silver dark:active:bg-navy"
+        class="absolute right-2 inline-flex h-4 w-4 items-center justify-center rounded-full p-4"
         on:click={clear}
       >
-        <Clear class="absolute text-slate-800 dark:text-grey" />
+        <Clear class="absolute h-4 w-4 text-slate-800 dark:text-grey" />
       </button>
     {/if}
   </div>
 
-  <button class="pl-4 text-sm text-slate-500 dark:text-slate-300" on:click={() => goto('/me')}>{$LL.CANCEL()}</button>
+  <button class="pl-4 text-sm font-medium text-slate-500 dark:text-slate-300" on:click={() => goto('/me')}
+    >{$LL.CANCEL()}</button
+  >
 </div>
