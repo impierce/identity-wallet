@@ -82,16 +82,22 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
             .as_ref()
             .and_then(|display| display.first().cloned());
 
+        // Get the connection url from the credential issuer url host (or use the credential issuer url if it does not
+        // contain a host).
+        let connection_url = credential_issuer_url
+            .host_str()
+            .unwrap_or(credential_issuer_url.as_str());
+
         // Get the credential issuer name or use the credential issuer url.
         let issuer_name = display
             .map(|display| {
                 let issuer_name = display["client_name"]
                     .as_str()
                     .map(|s| s.to_string())
-                    .unwrap_or(credential_issuer_url.to_string());
+                    .unwrap_or(connection_url.to_string());
                 issuer_name
             })
-            .unwrap_or(credential_issuer_url.to_string());
+            .unwrap_or(connection_url.to_string());
 
         let credential_offer_formats = offer_indices
             .into_iter()

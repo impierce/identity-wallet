@@ -164,12 +164,10 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
 pub fn get_oid4vp_client_name_and_logo_uri(
     oid4vp_authorization_request: &AuthorizationRequest<Object<OID4VP>>,
 ) -> anyhow::Result<(String, Option<String>, String)> {
-    let connection_url = oid4vp_authorization_request
-        .body
-        .redirect_uri
-        .domain()
-        .ok_or(anyhow::anyhow!("unable to get domain from redirect_uri"))?
-        .to_string();
+    // Get the connection url from the redirect url host (or use the redirect url if it does not
+    // contain a host).
+    let redirect_url = oid4vp_authorization_request.body.redirect_uri.clone();
+    let connection_url = redirect_url.host_str().unwrap_or(redirect_url.as_str());
 
     // Get the client_name and logo_uri from the client_metadata if it exists.
     Ok(oid4vp_authorization_request
@@ -185,8 +183,8 @@ pub fn get_oid4vp_client_name_and_logo_uri(
                 .unwrap_or(connection_url.to_string());
             let logo_uri = client_metadata.logo_uri.as_ref().map(|logo_uri| logo_uri.to_string());
 
-            (client_name, logo_uri, connection_url.clone())
+            (client_name, logo_uri, connection_url.to_string())
         })
         // Otherwise use the connection_url as the client_name.
-        .unwrap_or((connection_url.to_string(), None, connection_url)))
+        .unwrap_or((connection_url.to_string(), None, connection_url.to_string())))
 }
