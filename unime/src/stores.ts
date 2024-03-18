@@ -65,7 +65,5 @@ export const onboarding_state = writable<OnboardingState>({});
 
 interface OnboardingState {
   name?: string;
-  picture?: string;
-  theme?: string;
   password?: string; // TODO: secure enough?
 }

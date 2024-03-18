@@ -139,20 +139,6 @@ type RootTranslation = {
 				 */
 				INPUT_PLACEHOLDER: string
 			}
-			THEME: {
-				/**
-				 * C​h​o​o​s​e​ ​y​o​u​r​ ​a​p​p
-				 */
-				TITLE_1: string
-				/**
-				 * a​p​p​e​a​r​a​n​c​e
-				 */
-				TITLE_2: string
-				/**
-				 * A​r​e​ ​y​o​u​ ​m​o​r​e​ ​o​f​ ​a​ ​n​i​g​h​t​ ​o​w​l​?
-				 */
-				SUBTITLE: string
-			}
 			PICTURE: {
 				/**
 				 * S​e​t​ ​a​ ​d​i​s​p​l​a​y
@@ -166,24 +152,6 @@ type RootTranslation = {
 				 * M​a​k​e​ ​i​t​ ​y​o​u​r​s​.
 				 */
 				SUBTITLE: string
-			}
-			SKIP: {
-				/**
-				 * S​k​i​p​ ​c​u​s​t​o​m​i​z​a​t​i​o​n
-				 */
-				TITLE: string
-				/**
-				 * A​r​e​ ​y​o​u​ ​s​u​r​e​?​ ​Y​o​u​ ​c​a​n​ ​a​d​j​u​s​t​ ​t​h​e​ ​a​p​p​ ​a​p​p​e​a​r​a​n​c​e​ ​l​a​t​e​r​ ​i​n​ ​s​e​t​t​i​n​g​s​.
-				 */
-				TEXT: string
-				/**
-				 * Y​e​s
-				 */
-				CONFIRM: string
-				/**
-				 * N​o​,​ ​l​e​t​'​s​ ​c​o​n​t​i​n​u​e
-				 */
-				ABORT: string
 			}
 		}
 		PASSWORD: {
@@ -291,10 +259,6 @@ type RootTranslation = {
 			}
 			DISPLAY_PICTURE: {
 				/**
-				 * D​i​s​p​l​a​y​ ​p​i​c​t​u​r​e
-				 */
-				TITLE: string
-				/**
 				 * E​d​i​t
 				 */
 				EDIT: string
@@ -302,6 +266,10 @@ type RootTranslation = {
 				 * S​e​l​e​c​t​ ​a​ ​p​r​o​f​i​l​e​ ​p​i​c​t​u​r​e
 				 */
 				CHANGE: string
+				/**
+				 * R​e​m​o​v​e
+				 */
+				REMOVE: string
 			}
 			DELETE_PROFILE: {
 				/**
@@ -337,11 +305,23 @@ type RootTranslation = {
 				/**
 				 * T​h​e​m​e
 				 */
-				TITLE: string
+				LABEL: string
 				/**
 				 * S​e​l​e​c​t​ ​T​h​e​m​e
 				 */
 				NAVBAR_TITLE: string
+				/**
+				 * C​h​o​o​s​e​ ​y​o​u​r​ ​a​p​p
+				 */
+				TITLE_1: string
+				/**
+				 * a​p​p​e​a​r​a​n​c​e
+				 */
+				TITLE_2: string
+				/**
+				 * A​r​e​ ​y​o​u​ ​m​o​r​e​ ​o​f​ ​a​ ​n​i​g​h​t​ ​o​w​l​?
+				 */
+				SUBTITLE: string
 			}
 			PASSWORD: {
 				/**
@@ -914,20 +894,6 @@ export type TranslationFunctions = {
 				 */
 				INPUT_PLACEHOLDER: () => LocalizedString
 			}
-			THEME: {
-				/**
-				 * Choose your app
-				 */
-				TITLE_1: () => LocalizedString
-				/**
-				 * appearance
-				 */
-				TITLE_2: () => LocalizedString
-				/**
-				 * Are you more of a night owl?
-				 */
-				SUBTITLE: () => LocalizedString
-			}
 			PICTURE: {
 				/**
 				 * Set a display
@@ -941,24 +907,6 @@ export type TranslationFunctions = {
 				 * Make it yours.
 				 */
 				SUBTITLE: () => LocalizedString
-			}
-			SKIP: {
-				/**
-				 * Skip customization
-				 */
-				TITLE: () => LocalizedString
-				/**
-				 * Are you sure? You can adjust the app appearance later in settings.
-				 */
-				TEXT: () => LocalizedString
-				/**
-				 * Yes
-				 */
-				CONFIRM: () => LocalizedString
-				/**
-				 * No, let's continue
-				 */
-				ABORT: () => LocalizedString
 			}
 		}
 		PASSWORD: {
@@ -1066,10 +1014,6 @@ export type TranslationFunctions = {
 			}
 			DISPLAY_PICTURE: {
 				/**
-				 * Display picture
-				 */
-				TITLE: () => LocalizedString
-				/**
 				 * Edit
 				 */
 				EDIT: () => LocalizedString
@@ -1077,6 +1021,10 @@ export type TranslationFunctions = {
 				 * Select a profile picture
 				 */
 				CHANGE: () => LocalizedString
+				/**
+				 * Remove
+				 */
+				REMOVE: () => LocalizedString
 			}
 			DELETE_PROFILE: {
 				/**
@@ -1112,11 +1060,23 @@ export type TranslationFunctions = {
 				/**
 				 * Theme
 				 */
-				TITLE: () => LocalizedString
+				LABEL: () => LocalizedString
 				/**
 				 * Select Theme
 				 */
 				NAVBAR_TITLE: () => LocalizedString
+				/**
+				 * Choose your app
+				 */
+				TITLE_1: () => LocalizedString
+				/**
+				 * appearance
+				 */
+				TITLE_2: () => LocalizedString
+				/**
+				 * Are you more of a night owl?
+				 */
+				SUBTITLE: () => LocalizedString
 			}
 			PASSWORD: {
 				/**

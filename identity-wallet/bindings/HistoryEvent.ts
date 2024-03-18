@@ -2,4 +2,4 @@
 import type { EventType } from "./EventType";
 import type { HistoryCredential } from "./HistoryCredential";
 
-export interface HistoryEvent { connection_id: string | null, connection_name: string, event_type: EventType, date: string, credentials: Array<HistoryCredential>, }
+export interface HistoryEvent { connection_id: string, connection_name: string, event_type: EventType, date: string, credentials: Array<HistoryCredential>, }

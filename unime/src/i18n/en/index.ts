@@ -47,21 +47,10 @@ const en = {
         SUBTITLE: 'Your profile information will never leave your device.',
         INPUT_PLACEHOLDER: 'Enter a profile name',
       },
-      THEME: {
-        TITLE_1: 'Choose your app',
-        TITLE_2: 'appearance',
-        SUBTITLE: 'Are you more of a night owl?',
-      },
       PICTURE: {
         TITLE_1: 'Set a display',
         TITLE_2: 'picture',
         SUBTITLE: 'Make it yours.',
-      },
-      SKIP: {
-        TITLE: 'Skip customization',
-        TEXT: 'Are you sure? You can adjust the app appearance later in settings.',
-        CONFIRM: 'Yes',
-        ABORT: "No, let's continue",
       },
     },
     PASSWORD: {
@@ -99,9 +88,9 @@ const en = {
         CONFIRM: 'Update',
       },
       DISPLAY_PICTURE: {
-        TITLE: 'Display picture',
         EDIT: 'Edit',
         CHANGE: 'Select a profile picture',
+        REMOVE: 'Remove',
       },
       DELETE_PROFILE: {
         TITLE: 'Delete profile',
@@ -116,8 +105,11 @@ const en = {
         COMING_SOON: 'Coming soon',
       },
       THEME: {
-        TITLE: 'Theme',
+        LABEL: 'Theme',
         NAVBAR_TITLE: 'Select Theme',
+        TITLE_1: 'Choose your app',
+        TITLE_2: 'appearance',
+        SUBTITLE: 'Are you more of a night owl?',
       },
       PASSWORD: {
         TITLE: 'Password',

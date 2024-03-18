@@ -1,9 +1,8 @@
+use crate::common::extensions::reducers::test_feat_state;
 use identity_wallet::{
     reducer,
-    state::{actions::ActionTrait, reducers::Reducer},
+    state::{actions::ActionTrait, Reducer},
 };
-
-use crate::common::extensions::reducers::test_feat_state;
 
 /// Action to test the extension field.
 #[derive(serde::Serialize, serde::Deserialize, Debug, Clone)]

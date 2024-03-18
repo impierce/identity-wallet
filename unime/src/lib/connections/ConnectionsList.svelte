@@ -1,13 +1,14 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
 
+  import type { Connection } from '@bindings/Connection';
+
   import Image from '$lib/components/atoms/Image.svelte';
   import exampleConnections from '$lib/connections/mock-data.json';
   import LL from '$src/i18n/i18n-svelte';
   import ListItemCard from '$src/lib/components/molecules/ListItemCard.svelte';
   import { state } from '$src/stores';
 
-  import type { Connection } from './types';
   import { groupConnectionsAlphabetically } from './utils';
 
   let connections: Map<string, Connection[]> = groupConnectionsAlphabetically($state.connections);
