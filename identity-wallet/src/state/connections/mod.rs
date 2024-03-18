@@ -45,7 +45,7 @@ impl Connections {
 
     /// Inserts a new connection into the list of connections if it does not already exist. If it does exist, updates
     /// the last interaction time and returns a reference to the connection.
-    pub fn insert_or_update(&mut self, url: &str, name: &str) -> &Connection {
+    pub fn update_or_insert(&mut self, url: &str, name: &str) -> &Connection {
         if self.contains(url, name) {
             info!("Updating existing connection: {} {}", name, url);
             self.get_mut(url, name).map(|connection| {
@@ -114,18 +114,18 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_insert_or_update() {
+    fn test_update_or_insert() {
         let mut connections = Connections::new();
         let url = "https://example.com";
         let name = "Example";
-        let connection = connections.insert_or_update(url, name);
+        let connection = connections.update_or_insert(url, name);
         assert_eq!(connection.url, url);
         assert_eq!(connection.name, name);
         assert_eq!(connection.first_interacted, connection.last_interacted);
         assert_eq!(connections.0.len(), 1);
         assert!(connections.contains(url, name));
 
-        let connection = connections.insert_or_update(url, name);
+        let connection = connections.update_or_insert(url, name);
         assert_eq!(connection.url, url);
         assert_eq!(connection.name, name);
         // The last interaction time should have been updated.
@@ -134,11 +134,11 @@ mod tests {
     }
 
     #[test]
-    fn test_insert_or_update_with_duplicate_names() {
+    fn test_update_or_insert_with_duplicate_names() {
         let mut connections = Connections::new();
         let url = "https://example.com";
         let name = "Example";
-        let connection = connections.insert_or_update(url, name);
+        let connection = connections.update_or_insert(url, name);
         assert_eq!(connection.url, url);
         assert_eq!(connection.name, name);
         assert_eq!(connection.first_interacted, connection.last_interacted);
@@ -149,7 +149,7 @@ mod tests {
         let url = "https://example2.com";
         // The same name is used.
         let name = name;
-        let connection = connections.insert_or_update(url, name);
+        let connection = connections.update_or_insert(url, name);
         assert_eq!(connection.url, url);
         assert_eq!(connection.name, name);
         assert_eq!(connection.first_interacted, connection.last_interacted);
@@ -158,11 +158,11 @@ mod tests {
     }
 
     #[test]
-    fn test_insert_or_update_with_duplicate_urls() {
+    fn test_update_or_insert_with_duplicate_urls() {
         let mut connections = Connections::new();
         let url = "https://example.com";
         let name = "Example";
-        let connection = connections.insert_or_update(url, name);
+        let connection = connections.update_or_insert(url, name);
         assert_eq!(connection.url, url);
         assert_eq!(connection.name, name);
         assert_eq!(connection.first_interacted, connection.last_interacted);
@@ -172,7 +172,7 @@ mod tests {
         // The same server is used with a different name.
         let url = url;
         let name = "Example2";
-        let connection = connections.insert_or_update(url, name);
+        let connection = connections.update_or_insert(url, name);
         assert_eq!(connection.url, url);
         assert_eq!(connection.name, name);
         assert_eq!(connection.first_interacted, connection.last_interacted);

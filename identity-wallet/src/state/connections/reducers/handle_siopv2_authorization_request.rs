@@ -53,7 +53,7 @@ pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: A
     }
 
     let mut connections = state.connections;
-    let connection = connections.insert_or_update(&connection_url, &client_name);
+    let connection = connections.update_or_insert(&connection_url, &client_name);
 
     persist_asset("issuer_0", &connection.id).ok();
 
