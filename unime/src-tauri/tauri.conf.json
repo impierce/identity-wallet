@@ -1,5 +1,8 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/schema.json",
+  "productName": "UniMe Beta",
+  "version": "0.4.9",
+  "identifier": "com.impierce.unime",
   "app": {
     "security": {
       "csp": "default-src 'self' ipc: http://ipc.localhost; style-src 'unsafe-inline' 'self'; img-src 'self' asset: http://asset.localhost",
@@ -32,12 +35,9 @@
     },
     "resources": ["resources/*"]
   },
-  "identifier": "com.impierce.unime",
   "plugins": {
     "fs": {
       "scope": ["$APPDATA/assets/**/*.png", "$APPDATA/assets/**/*.svg"]
     }
-  },
-  "productName": "UniMe Beta",
-  "version": "0.4.9"
+  }
 }
