@@ -31,7 +31,7 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
     info!("send_credential_request");
 
     if let Some(offer_indices) = listen::<CredentialOffersSelected>(action).map(|payload| payload.offer_indices) {
-        let state_guard = state.core_state.managers.lock().await;
+        let state_guard = state.core_utils.managers.lock().await;
         let stronghold_manager = state_guard
             .stronghold_manager
             .as_ref()

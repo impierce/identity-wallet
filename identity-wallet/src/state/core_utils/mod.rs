@@ -21,7 +21,7 @@ use std::sync::Arc;
 
 /// CoreUtils is a struct that contains all the utils that only the rustside needs to perform its tasks.
 #[derive(Default)]
-pub struct CoreState {
+pub struct CoreUtils {
     pub managers: Arc<tauri::async_runtime::Mutex<Managers>>,
     pub active_connection_request: Option<ConnectionRequest>,
 }
