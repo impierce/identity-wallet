@@ -56,7 +56,7 @@ impl Connections {
             info!("Inserting new connection: {} {}", name, url);
             self.insert(Connection::new(name.to_string(), url.to_string()))
         }
-        .expect("Failed to insert or update connection")
+        .expect("Failed to update or insert connection")
     }
 }
 
