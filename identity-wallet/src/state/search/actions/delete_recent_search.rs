@@ -5,10 +5,13 @@ use crate::state::{actions::ActionTrait, Reducer};
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
+use super::search_query::QueryTarget;
+
 /// Action to query user data.
 #[derive(Serialize, Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/UserDataQuery.ts")]
 pub struct DeleteRecentSearch {
+    pub delete_target: QueryTarget,
     pub search_term: String,
 }
 
