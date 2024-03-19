@@ -53,24 +53,30 @@ pub async fn assert_state_update(
             let mut guard = container.0.lock().await;
 
             let AppState {
+                connections,
                 profile_settings,
                 credentials,
                 current_user_prompt,
                 user_data_query,
                 debug_messages,
+                history,
                 extensions,
                 ..
             } = &mut *guard;
 
             let AppState {
+                connections: expected_connections,
                 profile_settings: expected_profile_settings,
                 credentials: expected_credentials,
                 current_user_prompt: expected_current_user_prompt,
                 user_data_query: expected_user_data_query,
                 debug_messages: expected_debug_messages,
+                history: expected_history,
                 extensions: expected_extensions,
                 ..
             } = expected_state;
+
+            assert_eq!(connections, expected_connections);
 
             let active_profile = &profile_settings.profile;
             let expected_active_profile = &expected_profile_settings.profile;
@@ -97,6 +103,7 @@ pub async fn assert_state_update(
             assert_eq!(debug_messages.len(), expected_debug_messages.len());
             assert_eq!(current_user_prompt, expected_current_user_prompt);
             assert_eq!(user_data_query, expected_user_data_query);
+            assert_eq!(history, expected_history);
             if (extensions.len() != 0) || (expected_extensions.len() != 0) {
                 assert_eq!(
                     extensions

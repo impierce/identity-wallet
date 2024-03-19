@@ -2,9 +2,10 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
 
+  import type { Connection } from '@bindings/Connection';
+
   import ConnectionData from '$lib/connections/ConnectionData.svelte';
   import ConnectionSummary from '$lib/connections/ConnectionSummary.svelte';
-  import type { Connection } from '$lib/connections/types';
   import LL from '$src/i18n/i18n-svelte';
   import Tabs from '$src/lib/components/molecules/navigation/Tabs.svelte';
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
@@ -17,7 +18,7 @@
 </script>
 
 <div class="content-height flex flex-col">
-  <TopNavBar on:back={() => goto('/activity')} title={connection.client_name} class="bg-silver dark:bg-navy" />
+  <TopNavBar on:back={() => goto('/activity')} title={connection.name} class="bg-silver dark:bg-navy" />
   <div class="flex grow flex-col overflow-y-auto bg-silver px-4 py-5 dark:bg-navy">
     <Tabs triggers={[$LL.CONNECTION.TABS.SUMMARY(), $LL.CONNECTION.TABS.DATA(), $LL.CONNECTION.TABS.ACTIVITY()]}>
       <div slot="0" class="h-full pt-5">
