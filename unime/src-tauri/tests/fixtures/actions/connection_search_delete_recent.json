@@ -1,0 +1,7 @@
+{
+    "type": "[Search] Delete Recent",
+    "payload": {
+        "delete_target": "Connections",
+        "search_term": "M"
+    }
+}

@@ -33,8 +33,9 @@
          "last_interacted":"2023-11-08T13:52:45.868117252+00:00"
       }
     ],
-    "user_data_query_results": {
-      "results": ["Gym XYZ", "Government"],
-      "recents": ["M"]
+    "search_results": {
+      "current": ["Gym XYZ", "Government"],
+      "recents_connections": ["M"],
+      "recents_credentials": []
     }
 }
