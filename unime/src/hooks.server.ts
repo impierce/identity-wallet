@@ -4,6 +4,8 @@ export const handle = (async ({ event, resolve }) => {
   // info(`hooks.server.ts: event.url: "${event.url}"`);
   console.log(`hooks.server.ts: event.url: "${event.url}"`);
 
+  console.warn(event.locals);
+
   const response = await resolve(event);
 
   // info(`hooks.server.ts: response.url: "${response.url}"`);
