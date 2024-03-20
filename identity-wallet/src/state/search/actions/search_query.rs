@@ -26,15 +26,3 @@ pub enum QueryTarget {
     Credentials,
     Connections,
 }
-
-// Sorting functionality will be moved elsewhere in future PR
-
-// #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq)]
-// #[ts(export)]
-// pub enum SortMethod {
-//     NameAZ,
-//     IssuanceNewOld,
-//     AddedNewOld,
-//     FirstInteractedNewOld,
-//     LastInteractedNewOld,
-// }

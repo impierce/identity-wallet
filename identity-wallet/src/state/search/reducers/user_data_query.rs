@@ -8,17 +8,6 @@ use crate::state::{
 
 use itertools::concat;
 
-// pub async fn search(state: AppState, action: Action) -> Result<AppState, AppError> {
-//     if let Some(query) = listen::<SearchQuery>(action).filter(|query| !query.search_term.is_empty()) {
-//         match query.target {
-//             QueryTarget::Credentials => credential_search(state, query).await?,
-//             QueryTarget::Connections => connection_search(state, action).await?
-//         }
-//     }
-
-//     Ok(state)
-// }
-
 pub async fn credential_search(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(query) = listen::<SearchQuery>(action).filter(|query| !query.search_term.is_empty()) {
         let search_results_current: Vec<String> = {
@@ -45,41 +34,6 @@ pub async fn credential_search(state: AppState, action: Action) -> Result<AppSta
                 .map(|credential| credential.id.clone())
                 .collect()
         };
-
-        // Sorting functionality will be moved elsewhere in future PR
-
-        // let user_data_query = if let Some(sort_method) = &query.sort_method {
-        //     let mut creds: Vec<&DisplayCredential> = state.credentials.iter().collect();
-
-        //     let name_az = |a: &&DisplayCredential, b: &&DisplayCredential| a.display_name.cmp(&b.display_name);
-        //     let issuance_new_old =
-        //         |a: &&DisplayCredential, b: &&DisplayCredential| a.metadata.date_issued.cmp(&b.metadata.date_issued);
-        //     let added_new_old =
-        //         |a: &&DisplayCredential, b: &&DisplayCredential| a.metadata.date_added.cmp(&b.metadata.date_added);
-
-        //     creds.sort_by(match sort_method {
-        //         SortMethod::NameAZ => name_az,
-        //         SortMethod::IssuanceNewOld => issuance_new_old,
-        //         SortMethod::AddedNewOld => added_new_old,
-        //         _ => name_az,
-        //     });
-
-            // let mut sorted_credentials: Vec<String> = creds.iter().map(|s| s.id.clone()).collect();
-
-            // if let Some(sort_reverse) = query.sort_reverse {
-            //     if sort_reverse {
-            //         sorted_credentials.reverse();
-            //     }
-            // }
-
-            // This part should be obsolete when sorting functionality is moved in future PR
-
-            // if user_data_query.is_empty() && query.search_term.is_none() {
-            //     sorted_credentials
-            // } else {
-            //     sorted_credentials.retain(|s| user_data_query.contains(s));
-            //     sorted_credentials
-            // }
 
         let mut search_results = SearchResults {
             current: search_results_current,
@@ -117,39 +71,6 @@ pub async fn connection_search(state: AppState, action: Action) -> Result<AppSta
                 .map(|connection| connection.client_name.clone())
                 .collect()
         };
-
-        // let user_data_query = if let Some(sort_method) = &query.sort_method {
-        //     let mut connections: Vec<&Connection> = state.connections.iter().collect();
-
-        //     let name_az = |a: &&Connection, b: &&Connection| a.client_name.cmp(&b.client_name);
-        //     let first_interacted_new_old =
-        //         |a: &&Connection, b: &&Connection| a.first_interacted.cmp(&b.first_interacted);
-        //     let last_interacted_new_old = |a: &&Connection, b: &&Connection| a.last_interacted.cmp(&b.last_interacted);
-
-        //     connections.sort_by(match sort_method {
-        //         SortMethod::NameAZ => name_az,
-        //         SortMethod::FirstInteractedNewOld => first_interacted_new_old,
-        //         SortMethod::LastInteractedNewOld => last_interacted_new_old,
-        //         _ => name_az,
-        //     });
-
-        //     let mut sorted_connect: Vec<String> = connections.iter().map(|s| s.client_name.clone()).collect();
-
-        //     if let Some(sort_reverse) = query.sort_reverse {
-        //         if sort_reverse {
-        //             sorted_connect.reverse();
-        //         }
-        //     }
-
-        //     if user_data_query.is_empty() && query.search_term.is_none() {
-        //         sorted_connect
-        //     } else {
-        //         sorted_connect.retain(|s| user_data_query.contains(s));
-        //         sorted_connect
-        //     }
-        // } else {
-        //     user_data_query
-        // };
 
         let mut search_results = SearchResults {
             current: search_results_current,
@@ -251,22 +172,6 @@ mod tests {
         .await
         .unwrap();
         assert_eq!(app_state.search_results.current, vec!["1", "3", "2"]);
-
-        // Sorting functionality will be moved elsewhere in future PR
-
-        // // Assert that the `user_data_query` results are sorted by name in ascending order.
-        // app_state = credential_search(
-        //     app_state,
-        //     Arc::new(SearchQuery {
-        //         target: QueryTarget::Credentials,
-        //         search_term: None,
-        //         sort_method: Some(SortMethod::NameAZ),
-        //         sort_reverse: None,
-        //     }),
-        // )
-        // .await
-        // .unwrap();
-        // assert_eq!(app_state.search_results.current, vec!["2", "3", "1"]);
     }
 
     fn app_state() -> AppState {
