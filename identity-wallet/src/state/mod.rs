@@ -178,9 +178,10 @@ mod tests {
             r#"{
                   "connections": [],
                   "credentials": [],
-                  "user_data_query_results": {
-                    "results": [],
-                    "recents": []
+                  "search_results": {
+                    "current": [],
+                    "recents_connections": [],
+                    "recents_credentials": []
                   },
                   "profile_settings": {
                     "locale": "en-US",

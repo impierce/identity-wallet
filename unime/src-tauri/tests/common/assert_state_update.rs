@@ -56,7 +56,7 @@ pub async fn assert_state_update(
                 profile_settings,
                 credentials,
                 current_user_prompt,
-                user_data_query_results,
+                search_results,
                 debug_messages,
                 extensions,
                 ..
@@ -66,7 +66,7 @@ pub async fn assert_state_update(
                 profile_settings: expected_profile_settings,
                 credentials: expected_credentials,
                 current_user_prompt: expected_current_user_prompt,
-                user_data_query_results: expected_user_data_query_results,
+                search_results: expected_search_results,
                 debug_messages: expected_debug_messages,
                 extensions: expected_extensions,
                 ..
@@ -96,7 +96,7 @@ pub async fn assert_state_update(
 
             assert_eq!(debug_messages.len(), expected_debug_messages.len());
             assert_eq!(current_user_prompt, expected_current_user_prompt);
-            assert_eq!(user_data_query_results, expected_user_data_query_results);
+            assert_eq!(search_results, expected_search_results);
             if (extensions.len() != 0) || (expected_extensions.len() != 0) {
                 assert_eq!(
                     extensions

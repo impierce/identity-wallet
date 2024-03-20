@@ -5,7 +5,7 @@ import type { CredentialOffersSelected } from "./CredentialOffersSelected";
 import type { CredentialsSelected } from "./CredentialsSelected";
 import type { DevProfile } from "./DevProfile";
 import type { QrCodeScanned } from "./QrCodeScanned";
-import type { SearchQuery } from "./UserDataQuery";
+import type { SearchQuery } from "./SearchQuery";
 import type { SetLocale } from "./SetLocale";
 import type { UnlockStorage } from "./UnlockStorage";
 import type { UpdateCredentialMetadata } from "./UpdateCredentialMetadata";

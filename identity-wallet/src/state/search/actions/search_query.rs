@@ -1,5 +1,5 @@
 use crate::reducer;
-use crate::state::search::reducers::user_data_query::{connection_query, credential_query};
+use crate::state::search::reducers::user_data_query::{connection_search, credential_search};
 use crate::state::{actions::ActionTrait, Reducer};
 
 use serde::{Deserialize, Serialize};
@@ -7,21 +7,16 @@ use ts_rs::TS;
 
 /// Action to query user data.
 #[derive(Serialize, Deserialize, Debug, TS, Clone)]
-#[ts(export, export_to = "bindings/actions/UserDataQuery.ts")]
+#[ts(export, export_to = "bindings/actions/SearchQuery.ts")]
 pub struct SearchQuery {
     pub target: QueryTarget,
-    #[ts(optional)]
-    pub search_term: Option<String>,
-    #[ts(optional)]
-    pub sort_method: Option<SortMethod>,
-    #[ts(optional)]
-    pub sort_reverse: Option<bool>,
+    pub search_term: String
 }
 
-#[typetag::serde(name = "[User Data] Query")]
+#[typetag::serde(name = "[Search] Query")]
 impl ActionTrait for SearchQuery {
     fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
-        vec![reducer!(credential_query), reducer!(connection_query)]
+        vec![reducer!(credential_search), reducer!(connection_search)]
     }
 }
 
@@ -32,12 +27,14 @@ pub enum QueryTarget {
     Connections,
 }
 
-#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq)]
-#[ts(export)]
-pub enum SortMethod {
-    NameAZ,
-    IssuanceNewOld,
-    AddedNewOld,
-    FirstInteractedNewOld,
-    LastInteractedNewOld,
-}
+// Sorting functionality will be moved elsewhere in future PR
+
+// #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq)]
+// #[ts(export)]
+// pub enum SortMethod {
+//     NameAZ,
+//     IssuanceNewOld,
+//     AddedNewOld,
+//     FirstInteractedNewOld,
+//     LastInteractedNewOld,
+// }
