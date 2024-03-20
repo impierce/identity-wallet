@@ -16,7 +16,7 @@ use self::{
 };
 use crate::state::core_utils::history_event::HistoryEvent;
 use crate::state::credentials::DisplayCredential;
-use crate::{error::AppError, state::connections::Connection};
+use crate::{error::AppError, state::connections::Connections};
 
 use derivative::Derivative;
 use downcast_rs::{impl_downcast, DowncastSync};
@@ -78,7 +78,7 @@ impl AppStateContainer {
 #[serde(default)]
 pub struct AppState {
     /// This field contains the connections.
-    pub connections: Vec<Connection>,
+    pub connections: Connections,
     /// This field contains the display credentials.
     pub credentials: Vec<DisplayCredential>,
     /// This field contains the query result, which is queried from credentials or connections.
@@ -163,7 +163,7 @@ mod tests {
             }),
             debug_messages: Default::default(),
             user_journey: None,
-            connections: vec![],
+            connections: Connections::new(),
             ..Default::default()
         };
 
