@@ -14,7 +14,7 @@
   import RecentSearches from './RecentSearches.svelte';
 
   // TODO: read from state
-  let recentSearchesIds: string[] = ['39383134-6538-3766-3963-303366323930', '39313132-3661-6238-3462-393936663735'];
+  let recentSearchesIds: string[] = ['39383134-6538-3766-3963-303366323930', '39643439-6566-6166-3162-393438616164'];
 
   let searchTerm: string | undefined;
   $: indices = $state.search_results;
@@ -39,17 +39,19 @@
   </div>
   <!-- User has not entered a search term -->
   {#if !searchTerm}
-    <RecentSearches {recentSearches} />
-    <div class="pt-12">
-      <IconMessage
-        icon={MagnifyingGlass}
-        title={$LL.SEARCH.NO_QUERY.TITLE()}
-        description={$LL.SEARCH.NO_QUERY.DESCRIPTION()}
-      />
-    </div>
+    {#if recentSearches.length > 0}
+      <RecentSearches {recentSearches} />
+    {:else}
+      <div class="pt-12">
+        <IconMessage
+          icon={MagnifyingGlass}
+          title={$LL.SEARCH.NO_QUERY.TITLE()}
+          description={$LL.SEARCH.NO_QUERY.DESCRIPTION()}
+        />
+      </div>
+    {/if}
     <!-- User has entered something, but there are no results -->
   {:else if credentials.length == 0}
-    <RecentSearches {recentSearches} />
     <div class="pt-12">
       <IconMessage
         icon={Ghost}
