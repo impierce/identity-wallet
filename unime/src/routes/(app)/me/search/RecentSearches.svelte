@@ -28,7 +28,6 @@
             : goto(`/credentials/${recentSearch.id}`);
         }}
       >
-        <!-- TODO: dispatch action: remove recent search -->
         <button
           slot="right"
           class="hover:bg-silver dark:hover:bg-navy mr-1 rounded-full p-3"
