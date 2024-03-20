@@ -273,6 +273,16 @@ const en = {
       CONTENTS: 'Contents',
     },
   },
+  SORT: {
+    TITLE: 'Sorting',
+    PREFERENCES: {
+      LIST_VIEW: 'List View',
+      GRID_VIEW: 'Grid View',
+      ALPHABETICAL: 'Alphabetical',
+      DATE_ISSUED: 'Date Issued',
+      DATE_ADDED: 'Date Added',
+    },
+  },
   CANCEL: 'Cancel',
   CLOSE: 'Close',
   CONTINUE: 'Continue',

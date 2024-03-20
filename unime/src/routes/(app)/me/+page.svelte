@@ -16,6 +16,7 @@
   import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
   import IconMessage from '$src/lib/components/molecules/IconMessage.svelte';
   import Tabs from '$src/lib/components/molecules/navigation/Tabs.svelte';
+  import Sort from '$src/lib/components/molecules/sort/Sort.svelte';
   import CredentialList from '$src/lib/credentials/CredentialList.svelte';
   import Favorites from '$src/lib/credentials/Favorites.svelte';
   import UserJourney from '$src/lib/journeys/UserJourney.svelte';
@@ -43,12 +44,12 @@
   onboarding_state.set({});
 </script>
 
-<div class="flex min-h-full flex-col bg-white dark:bg-dark">
-  <div class="sticky top-0 z-10 w-full bg-white px-[20px] py-4 dark:bg-dark">
+<div class="dark:bg-dark flex min-h-full flex-col bg-white">
+  <div class="dark:bg-dark sticky top-0 z-10 w-full bg-white px-[20px] py-4">
     <!-- Top Bar -->
     <div class="flex items-center justify-between">
       <button
-        class="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary"
+        class="bg-primary flex h-11 w-11 items-center justify-center rounded-2xl"
         on:click={() => goto('/me/settings')}
       >
         {#if $state.profile_settings.profile?.picture}
@@ -56,7 +57,7 @@
             {@html $state.profile_settings.profile?.picture}
           </span>
         {:else}
-          <span class="text-[20px]/[20px] font-semibold text-white dark:text-dark">
+          <span class="dark:text-dark text-[20px]/[20px] font-semibold text-white">
             {initials}
           </span>
         {/if}
@@ -82,28 +83,38 @@
   <!-- should have min height: full screen - smallest possible welcome header - bottom nav - safe areas (top, bottom) -->
   <div
     in:fly={{ y: 24, duration: 200 }}
-    class="flex grow flex-col items-stretch justify-start rounded-t-[20px] bg-silver p-[18px] dark:bg-navy"
+    class="bg-silver dark:bg-navy flex grow flex-col items-stretch justify-start rounded-t-[20px] p-[18px]"
   >
     {#if $state?.credentials && $state?.credentials.length > 0}
-      <Tabs triggers={[$LL.ME.CREDENTIAL_TABS.ALL(), $LL.ME.CREDENTIAL_TABS.DATA(), $LL.ME.CREDENTIAL_TABS.BADGES()]}>
-        <!-- All -->
-        <div slot="0" class="h-full pt-5">
-          <Favorites />
-          <CredentialList />
+      <div class="relative">
+        <div>
+          <Tabs class="mr-[58px]"
+            triggers={[$LL.ME.CREDENTIAL_TABS.ALL(), $LL.ME.CREDENTIAL_TABS.DATA(), $LL.ME.CREDENTIAL_TABS.BADGES()]}
+          >
+            <!-- All -->
+            <div slot="0" class="h-full pt-5">
+              <Favorites />
+              <CredentialList />
+            </div>
+
+            <!-- Data -->
+            <div slot="1" class="h-full pt-5">
+              <Favorites credentialType="data" />
+              <CredentialList credentialType="data" />
+            </div>
+
+            <!-- Badges -->
+            <div slot="2" class="h-full pt-5">
+              <Favorites credentialType="badges" />
+              <CredentialList credentialType="badges" />
+            </div>
+          </Tabs>
         </div>
 
-        <!-- Data -->
-        <div slot="1" class="h-full pt-5">
-          <Favorites credentialType="data" />
-          <CredentialList credentialType="data" />
+        <div class="absolute right-0 top-0 z-50">
+          <Sort />
         </div>
-
-        <!-- Badges -->
-        <div slot="2" class="h-full pt-5">
-          <Favorites credentialType="badges" />
-          <CredentialList credentialType="badges" />
-        </div>
-      </Tabs>
+      </div>
 
       <!-- container that animates and places the button -->
       <div in:fly={{ y: 12, delay: 0, opacity: 1, duration: 200 }} class="absolute bottom-4 right-4">
@@ -135,7 +146,7 @@
         </div>
 
         <div class="pt-[15px]">
-          <p class="pb-[15px] text-[22px]/[30px] font-semibold tracking-tight text-slate-800 dark:text-grey">
+          <p class="dark:text-grey pb-[15px] text-[22px]/[30px] font-semibold tracking-tight text-slate-800">
             Shall we get started?
           </p>
           <p class="custom w-[240px] text-slate-500 dark:text-slate-300">
@@ -170,7 +181,7 @@
       <div class="flex grow flex-col items-center justify-center">
         <IconMessage icon={Ghost} title={$LL.ME.EMPTY_CREDENTIALS.TITLE()} />
         <p class="w-[280px] pt-[15px] text-center text-[13px]/[24px] font-normal text-slate-500 dark:text-slate-300">
-          {$LL.ME.DEMO.TEXT_1()} <span class="font-semibold text-primary">https://demo.ngdil.com</span>
+          {$LL.ME.DEMO.TEXT_1()} <span class="text-primary font-semibold">https://demo.ngdil.com</span>
           {$LL.ME.DEMO.TEXT_2()}
         </p>
       </div>
@@ -183,7 +194,7 @@
 </div>
 
 <!-- Overwrite colors from layout -->
-<div class="safe-area-top z-10 bg-white dark:bg-dark" />
+<div class="safe-area-top dark:bg-dark z-10 bg-white" />
 
 <style>
   .custom {
