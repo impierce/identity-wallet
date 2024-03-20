@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
+
   import type { DisplayCredential } from '@bindings/display-credential/DisplayCredential';
 
   import LL from '$src/i18n/i18n-svelte';
@@ -16,7 +18,16 @@
   </p>
   <div class="space-y-[10px]">
     {#each recentSearches as recentSearch}
-      <ListItemCard id={recentSearch.id} title={recentSearch.display_name} description={recentSearch.issuer_name}>
+      <ListItemCard
+        id={recentSearch.id}
+        title={recentSearch.display_name}
+        description={recentSearch.issuer_name}
+        on:click={() => {
+          recentSearch.data.type.includes('OpenBadgeCredential')
+            ? goto(`/badges/${recentSearch.id}`)
+            : goto(`/credentials/${recentSearch.id}`);
+        }}
+      >
         <!-- TODO: dispatch action: remove recent search -->
         <button
           slot="right"
