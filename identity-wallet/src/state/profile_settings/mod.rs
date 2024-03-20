@@ -57,30 +57,36 @@ impl FeatTrait for Locale {}
 #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default)]
 #[ts(export)]
 pub struct SortingPreferences {
-    pub credential_sorting: Option<CredentialSorting>,
-    pub connection_sorting: Option<ConnectionSorting>
+    pub credential_sort_method: Option<CredentialSortMethod>,
+    pub credential_reverse: Option<bool>,
+    pub credentials_sorted: Vec<String>,
+    pub connection_sort_method: Option<ConnectionSortMethod>,
+    pub connection_reverse: Option<bool>,
+    pub connections_sorted: Vec<String>
 }
 
-#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, EnumString)]
+#[derive(Clone, Serialize, Debug, Deserialize, TS, Default, PartialEq, EnumString)]
 #[ts(export)]
-pub enum CredentialSorting {
+pub enum CredentialSortMethod {
+    #[default]
     #[serde(rename = "name_az")]
-    NameAZ { reverse: Option<bool> },
+    NameAZ,
     #[serde(rename = "issue_date_new_old")]
-    IssueDateNewOld { reverse: Option<bool> },
+    IssueDateNewOld,
     #[serde(rename = "added_date_new_old")]
-    AddedDateNewOld { reverse: Option<bool> }
+    AddedDateNewOld
 }
 
-#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, EnumString)]
+#[derive(Clone, Serialize, Debug, Deserialize, TS, Default, PartialEq, EnumString)]
 #[ts(export)]
-pub enum ConnectionSorting {
+pub enum ConnectionSortMethod {
+    #[default]
     #[serde(rename = "name_az")]
-    NameAZ { reverse: Option<bool> },
+    NameAZ,
     #[serde(rename = "first_interacted_new_old")]
-    FirstInteractedNewOld { reverse: Option<bool> },
+    FirstInteractedNewOld,
     #[serde(rename = "last_interacted_new_old")]
-    LastInteractedNewOld { reverse: Option<bool> }
+    LastInteractedNewOld
 }
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone, PartialEq, Eq, Default)]
 #[ts(export, export_to = "bindings/theme.ts")]

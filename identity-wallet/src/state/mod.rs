@@ -77,11 +77,8 @@ impl AppStateContainer {
 #[ts(export)]
 #[serde(default)]
 pub struct AppState {
-    /// This field contains the connections.
     pub connections: Vec<Connection>,
-    /// This field contains the display credentials.
     pub credentials: Vec<DisplayCredential>,
-    /// This field contains the query result, which is queried from credentials or connections.
     pub user_data_query: Vec<String>,
     /// This field contains utils needed for the backend to perform its tasks.
     #[serde(skip)]
@@ -94,7 +91,6 @@ pub struct AppState {
     /// Here user_journeys can be loaded from json_files or strings, to give the user a guided experience.
     #[ts(type = "any | null")]
     pub user_journey: Option<serde_json::Value>,
-    /// Handled in command.rs, so no feature folder nor redux pattern needed.
     #[ts(type = "Array<string>")]
     pub debug_messages: VecDeque<String>,
     /// History events
@@ -102,7 +98,6 @@ pub struct AppState {
     /// Extensions will bring along their own redux compliant code, in the unime folder.
     #[ts(skip)]
     pub extensions: std::collections::HashMap<String, Box<dyn FeatTrait>>,
-    /// A simple enum to set dev mode,
     pub dev_mode: DevMode,
 }
 
