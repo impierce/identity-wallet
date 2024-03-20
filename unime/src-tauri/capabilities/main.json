@@ -11,9 +11,7 @@
     "resources:default",
     "menu:default",
     "tray:default",
-    "window:allow-set-title",
-    "fs:allow-exists",
-    "fs:allow-appdata-read-recursive",
-    "log:default"
+    "log:default",
+    "fs:allow-appdata-read-recursive"
   ]
 }
