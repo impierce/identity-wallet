@@ -3,6 +3,8 @@
 
   import { twMerge } from 'tailwind-merge';
 
+  import { debug, warn } from '@tauri-apps/plugin-log';
+
   import { getImageAsset } from '$lib/utils';
   import { icons, type Icon } from '$src/lib/app/icons';
 
@@ -62,9 +64,9 @@ Displays an image (loaded from disk) or a fallback component.
     class={twMerge('max-h-full w-full overflow-hidden bg-white object-contain', $$props.imgClass)}
     on:error={() => {
       id = null;
-      console.warn(`could not load image for id=[${id}]`);
+      warn(`could not load image: ${id}`);
     }}
-    on:load={() => console.log('loading complete')}
+    on:load={() => debug(`image successfully loaded: ${assetUrl}`)}
     data-testid="image"
   />
 {:else}

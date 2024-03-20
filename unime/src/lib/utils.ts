@@ -1,6 +1,7 @@
 import { convertFileSrc } from '@tauri-apps/api/core';
 import { appDataDir, join } from '@tauri-apps/api/path';
 import { BaseDirectory, exists } from '@tauri-apps/plugin-fs';
+import { debug, info, warn } from '@tauri-apps/plugin-log';
 
 /**
  * Get an image asset URL from the UniMe backend.
@@ -19,24 +20,24 @@ export const getImageAsset = async (id: string, tmp: boolean = false): Promise<s
       const tmpFilePath = await join(appDataDirPath, `assets/tmp/${id}.${extension}`);
       if (await exists(tmpFilePath)) {
         const assetUrl = convertFileSrc(tmpFilePath);
-        console.log({ assetUrl });
+        info(`assetUrl: ${assetUrl}`);
         return assetUrl;
       }
     }
-    console.warn(`No tmp file found for id: ${id}`);
+    warn(`No tmp file found for id: ${id}`);
     return null;
   }
 
   for (let extension of extensions) {
     const filePath = await join(appDataDirPath, `assets/${id}.${extension}`);
-    console.log(`filePath: ${filePath}`);
+    debug(`filePath: ${filePath}`);
     if (await exists(filePath)) {
       const assetUrl = convertFileSrc(filePath);
-      console.log(`assetUrl: ${assetUrl}`);
+      debug(`assetUrl: ${assetUrl}`);
       return assetUrl;
     }
   }
 
-  console.warn(`No file found for id: ${id}`);
+  warn(`No file found for id: ${id}`);
   return null;
 };
