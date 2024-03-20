@@ -41,7 +41,7 @@
 
   onDestroy(async () => {
     // TODO: is onDestroy also called when user accepts since the component itself is destroyed?
-    dispatch({ type: '[User Flow] Cancel' });
+    dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });
   });
 </script>
 
