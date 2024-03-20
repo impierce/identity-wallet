@@ -14,12 +14,12 @@
   import RecentSearches from './RecentSearches.svelte';
 
   // TODO: read from state
-  // let recentSearchesIds: string[] = ['39383134-6538-3766-3963-303366323930', '39313132-3661-6238-3462-393936663735'];
+  let recentSearchesIds: string[] = ['39383134-6538-3766-3963-303366323930', '39313132-3661-6238-3462-393936663735'];
 
   let searchTerm: string | undefined;
   $: indices = $state.search_results;
   $: credentials = $state.credentials.filter((cred) => indices?.current.includes(cred.id));
-  $: recentSearches = $state.credentials.filter((cred) => indices?.recents.includes(cred.id));
+  $: recentSearches = $state.credentials.filter((cred) => recentSearchesIds.includes(cred.id));
 </script>
 
 <div class="content-height bg-silver dark:bg-navy">
@@ -28,7 +28,7 @@
       on:value={(e) => {
         searchTerm = e.detail;
         dispatch({
-          type: '[User Data] Query',
+          type: '[Search] Query',
           payload: {
             target: 'Credentials',
             search_term: e.detail,
