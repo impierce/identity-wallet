@@ -75,7 +75,7 @@ mod bindings {
             create_new::CreateNew, set_locale::SetLocale, update_profile_settings::UpdateProfileSettings,
         },
         qr_code::actions::qrcode_scanned::QrCodeScanned,
-        search::actions::search_query::SearchQuery,
+        search::actions::{delete_recent_search::DeleteRecentSearch, search_query::SearchQuery},
     };
 
     #[derive(Serialize, Deserialize, TS)]
@@ -115,7 +115,9 @@ mod bindings {
         UpdateCredentialMetadata { payload: UpdateCredentialMetadata },
         #[serde(rename = "[User Journey] Cancel")]
         CancelUserJourney,
-        #[serde(rename = "[User Data] Query")]
-        UserDataQuery { payload: SearchQuery },
+        #[serde(rename = "[Search] Query")]
+        SearchQuery { payload: SearchQuery },
+        #[serde(rename = "[Search] Delete Recent")]
+        DeleteSearch { payload: DeleteRecentSearch}
     }
 }

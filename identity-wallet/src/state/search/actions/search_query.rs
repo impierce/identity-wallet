@@ -1,5 +1,5 @@
 use crate::reducer;
-use crate::state::search::reducers::user_data_query::{connection_search, credential_search};
+use crate::state::search::reducers::search_query::{connection_search, credential_search};
 use crate::state::{actions::ActionTrait, Reducer};
 
 use serde::{Deserialize, Serialize};
