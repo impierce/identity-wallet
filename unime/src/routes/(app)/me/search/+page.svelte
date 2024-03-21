@@ -17,7 +17,7 @@
 
   $: indices = $state.search_results;
   $: credentials = $state.credentials.filter((cred) => indices?.current.includes(cred.id));
-  $: recentSearches = $state.credentials.filter((cred) => indices?.recents_credentials.includes(cred.id));
+  $: recentSearches = $state.credentials.filter((cred) => indices?.recent_credentials.includes(cred.id));
 </script>
 
 <div class="content-height bg-silver dark:bg-navy">
@@ -25,13 +25,7 @@
     <Search
       on:value={(e) => {
         searchTerm = e.detail;
-        dispatch({
-          type: '[Search] Query',
-          payload: {
-            target: 'Credentials',
-            search_term: e.detail,
-          },
-        });
+        dispatch({ type: '[Search] Query', payload: { search_term: e.detail } });
       }}
     ></Search>
   </div>
@@ -70,7 +64,7 @@
             description={credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
             type={credential.data?.type.includes('OpenBadgeCredential') ? 'badge' : 'data'}
             on:click={() => {
-              dispatch({ type: '[Search] Add Recent', payload: { target: 'Credentials', search_hit: credential.id } });
+              dispatch({ type: '[Search] Add Recent Search', payload: { search_hit: credential.id } });
               credential.data?.type.includes('OpenBadgeCredential')
                 ? goto(`/badges/${credential.id}`)
                 : goto(`/credentials/${credential.id}`);
