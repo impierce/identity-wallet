@@ -14,12 +14,12 @@ pub async fn add_recent_search(state: AppState, action: Action) -> Result<AppSta
         let mut search_results = state.search_results.clone();
 
         search_results
-            .recents_credentials
+            .recent_credentials
             .retain(|recent| recent != &recent_search.search_hit);
-        search_results.recents_credentials.insert(0, recent_search.search_hit);
+        search_results.recent_credentials.insert(0, recent_search.search_hit);
 
-        if search_results.recents_credentials.len() > MAX_RECENT_SEARCHES {
-            search_results.recents_credentials.remove(MAX_RECENT_SEARCHES);
+        if search_results.recent_credentials.len() > MAX_RECENT_SEARCHES {
+            search_results.recent_credentials.remove(MAX_RECENT_SEARCHES);
         }
 
         return Ok(AppState {
