@@ -9,6 +9,7 @@
   import { dispatch } from '$lib/dispatcher';
   import LL from '$src/i18n/i18n-svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
+  import { calculateInitials } from '$src/routes/(app)/me/utils';
   import { onboarding_state } from '$src/stores';
 
   import Shield from '~icons/ph/shield-fill';
@@ -29,8 +30,10 @@
     <div class="relative">
       <div class="relative z-10">
         <div class="text-[100px]/[100px]"><Shield class="text-primary" /></div>
-        <span class="absolute left-[calc(50%_-_22px)] top-[calc(50%_-_22px)] text-[44px]/[44px]">
-          {@html $onboarding_state.picture ?? ''}
+        <span class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[36px]/[36px]">
+          <p class="font-semibold tracking-tight text-white dark:text-dark">
+            {calculateInitials($onboarding_state.name ?? '')}
+          </p>
         </span>
       </div>
       <div class="absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2">
@@ -62,8 +65,8 @@
         type: '[DID] Create new',
         payload: {
           name: $onboarding_state.name ?? '',
-          picture: $onboarding_state.picture ?? '',
-          theme: $onboarding_state.theme ?? '',
+          picture: '',
+          theme: 'system',
           password: $onboarding_state.password ?? '',
         },
       });

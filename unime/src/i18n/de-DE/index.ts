@@ -48,21 +48,10 @@ const de = {
         SUBTITLE: 'Deine Profilinformationen verlassen niemals dein Gerät.',
         INPUT_PLACEHOLDER: 'Gib einen Profilnamen ein',
       },
-      THEME: {
-        TITLE_1: 'Wähle das',
-        TITLE_2: 'Erscheinungsbild',
-        SUBTITLE: 'Bist du eher eine Nachteule?',
-      },
       PICTURE: {
         TITLE_1: 'Wähle ein',
         TITLE_2: 'Profilbild',
         SUBTITLE: 'Mach es zu deinem.',
-      },
-      SKIP: {
-        TITLE: 'Personalisierung überspringen',
-        TEXT: 'Bist du sicher? Du kannst das Erscheinungsbild der App später in den Einstellungen anpassen.',
-        CONFIRM: 'Ja',
-        ABORT: 'Nein, lass uns weitermachen',
       },
     },
     PASSWORD: {
@@ -100,9 +89,9 @@ const de = {
         CONFIRM: 'Aktualisieren',
       },
       DISPLAY_PICTURE: {
-        TITLE: 'Profilbild',
         EDIT: 'Ändern',
         CHANGE: 'Wähle ein Profilbild',
+        REMOVE: 'Entfernen',
       },
       DELETE_PROFILE: {
         TITLE: 'Profil löschen',
@@ -117,8 +106,11 @@ const de = {
         COMING_SOON: 'Bald verfügbar',
       },
       THEME: {
-        TITLE: 'Erscheinungsbild',
+        LABEL: 'Erscheinungsbild',
         NAVBAR_TITLE: 'Erscheinungsbild anpassen',
+        TITLE_1: 'Wähle das',
+        TITLE_2: 'Erscheinungsbild',
+        SUBTITLE: 'Bist du eher eine Nachteule?',
       },
       PASSWORD: {
         TITLE: 'Passwort',
@@ -167,7 +159,7 @@ const de = {
       ABOUT: {
         TITLE: 'Über UniMe',
         NAVBAR_TITLE: 'Über UniMe',
-        BUILT_WITH: 'Gebaut mit',
+        BUILT_WITH: 'Gebaut mit Tauri',
       },
       FEEDBACK: {
         TITLE: 'Feedback senden',
@@ -208,16 +200,16 @@ const de = {
     NAVBAR_TITLE: 'Verbunden',
     TABS: {
       CONNECTIONS: 'Verbindungen',
-      TIMELINE: 'Verlauf',
+      HISTORY: 'Verlauf',
     },
   },
   SCAN: {
     BOTTOM_NAVIGATION_TITLE: 'Scan',
     TITLE_1: 'Scanne einen',
     TITLE_2: 'QR-Code',
-    SUBTITLE: 'Bringe einen QR-Code in den Fokus, um eine Interaktion zu starten.',
-    NO_PERMISSION_1: 'Keine Berechtigung',
-    NO_PERMISSION_2: 'zum Zugriff auf die Kamera',
+    SUBTITLE: 'Bringe einen QR-Code in das Sichtfeld, um eine Interaktion zu starten.',
+    PERMISSION_DENIED: 'Keine Berechtigung zum Zugriff auf die Kamera',
+    OPEN_SETTINGS: 'Einstellungen öffnen',
     CREDENTIAL_OFFER: {
       NAVBAR_TITLE: 'Credential-Angebot',
       DESCRIPTION: 'bietet dir die folgenden Credentials an',
@@ -253,8 +245,11 @@ const de = {
       EMPTY: 'Noch keine Daten.',
     },
   },
-  TIMELINE: {
+  HISTORY: {
     EMPTY: 'Noch keine Aktivitäten.',
+    DATA_RECEIVED: 'Daten empfangen von',
+    DATA_SHARED: 'Daten geteilt mit',
+    CONNECTION_ADDED: 'Verbunden mit',
   },
   SEARCH: {
     INPUT_PLACEHOLDER: 'Gib einen Suchbegriff ein',

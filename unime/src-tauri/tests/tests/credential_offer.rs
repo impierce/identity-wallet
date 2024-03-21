@@ -3,15 +3,18 @@ use identity_wallet::oid4vci::credential_issuer::{
     credential_issuer_metadata::CredentialIssuerMetadata, credentials_supported::CredentialsSupportedObject,
 };
 use identity_wallet::oid4vci::credential_offer::{CredentialOffer, CredentialOfferQuery, CredentialsObject};
-use identity_wallet::state::{reducers::credential_offer::read_credential_offer, AppState};
-use identity_wallet::ASSETS_DIR;
+use identity_wallet::persistence::ASSETS_DIR;
+use identity_wallet::state::core_utils::CoreState;
+use identity_wallet::state::qr_code::reducers::read_credential_offer::read_credential_offer;
+use identity_wallet::state::AppState;
 use identity_wallet::{
     oid4vci::credential_format_profiles::{
         w3c_verifiable_credentials::jwt_vc_json::{self, JwtVcJson},
         CredentialFormats, Parameters, WithParameters,
     },
-    state::actions::QrCodeScanned,
+    state::qr_code::actions::qrcode_scanned::QrCodeScanned,
 };
+
 use serde_json::json;
 use std::sync::Arc;
 use tempfile::TempDir;
@@ -93,7 +96,10 @@ async fn download_credential_logo() {
         .await;
 
     let app_state = AppState {
-        managers: test_managers(vec![]),
+        core_state: CoreState {
+            managers: test_managers(vec![]),
+            ..Default::default()
+        },
         ..AppState::default()
     };
 
@@ -176,7 +182,10 @@ async fn download_issuer_logo() {
         .await;
 
     let app_state = AppState {
-        managers: test_managers(vec![]),
+        core_state: CoreState {
+            managers: test_managers(vec![]),
+            ..Default::default()
+        },
         ..AppState::default()
     };
 
@@ -251,7 +260,10 @@ async fn no_download_when_no_logo_in_metadata() {
     // TODO: assert that function download_asset() is never called (through spy?)
 
     let app_state = AppState {
-        managers: test_managers(vec![]),
+        core_state: CoreState {
+            managers: test_managers(vec![]),
+            ..Default::default()
+        },
         ..AppState::default()
     };
 

@@ -47,21 +47,10 @@ const nl = {
         SUBTITLE: 'Jouw profielinformatie verlaat nooit jouw apparaat',
         INPUT_PLACEHOLDER: 'Profielnaam invoeren',
       },
-      THEME: {
-        TITLE_1: 'Kies het uiterlijk',
-        TITLE_2: 'van je app',
-        SUBTITLE: 'Ben jij meer een nachtuil?',
-      },
       PICTURE: {
         TITLE_1: 'Stel een',
         TITLE_2: 'profielfoto in',
         SUBTITLE: 'Maak het je eigen.',
-      },
-      SKIP: {
-        TITLE: 'Sla personalisatie over',
-        TEXT: 'Weet je het zeker? Je kunt het uiterlijk van de app later aanpassen in de instellingen.',
-        CONFIRM: 'Ja',
-        ABORT: 'Nee, ga door',
       },
     },
     PASSWORD: {
@@ -99,9 +88,9 @@ const nl = {
         CONFIRM: 'Wijzigingen opslaan',
       },
       DISPLAY_PICTURE: {
-        TITLE: 'Profielfoto',
         EDIT: 'Bewerk',
         CHANGE: 'Selecteer een nieuwe afbeelding',
+        REMOVE: 'Verwijder',
       },
       DELETE_PROFILE: {
         TITLE: 'Verwijder profiel',
@@ -116,8 +105,11 @@ const nl = {
         COMING_SOON: 'Binnenkort beschikbaar',
       },
       THEME: {
-        TITLE: 'Thema',
+        LABEL: 'Thema',
         NAVBAR_TITLE: 'Selecteer Thema',
+        TITLE_1: 'Kies het uiterlijk',
+        TITLE_2: 'van je app',
+        SUBTITLE: 'Ben jij meer een nachtuil?',
       },
       PASSWORD: {
         TITLE: 'Wachtwoord',
@@ -207,7 +199,7 @@ const nl = {
     NAVBAR_TITLE: 'Verbonden',
     TABS: {
       CONNECTIONS: 'Connecties',
-      TIMELINE: 'Tijdlijn',
+      HISTORY: 'Tijdlijn',
     },
   },
   SCAN: {
@@ -215,8 +207,8 @@ const nl = {
     TITLE_1: 'Scan een',
     TITLE_2: 'QR Code',
     SUBTITLE: 'Breng een QR-code in beeld op dit scherm om een interactie te starten.',
-    NO_PERMISSION_1: 'Geen recht om toegang',
-    NO_PERMISSION_2: 'te krijgen tot de camera',
+    PERMISSION_DENIED: 'Geen toestemming om toegang te krijgen tot de camera',
+    OPEN_SETTINGS: 'Open instellingen',
     CREDENTIAL_OFFER: {
       NAVBAR_TITLE: 'Credential Aanbod',
       DESCRIPTION: 'biedt u de volgende credentials aan',
@@ -252,8 +244,11 @@ const nl = {
       EMPTY: 'Nog geen data.',
     },
   },
-  TIMELINE: {
+  HISTORY: {
     EMPTY: 'Nog geen activiteit.',
+    DATA_RECEIVED: 'Data gekregen van',
+    DATA_SHARED: 'Data gedeeld met',
+    CONNECTION_ADDED: 'Verbonden met',
   },
   SEARCH: {
     INPUT_PLACEHOLDER: 'Zoeken',

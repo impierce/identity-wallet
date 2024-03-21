@@ -54,13 +54,11 @@
         {#each credentials as credential}
           <ListItemCard
             id={credential.id}
-            title={credential.metadata.display.name ??
-              credential.data.credentialSubject.achievement?.name ??
-              credential.data.type.at(-1)}
+            title={credential.display_name}
             description={credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
-            type={credential.data.type.includes('OpenBadgeCredential') ? 'badge' : 'data'}
+            type={credential.data?.type.includes('OpenBadgeCredential') ? 'badge' : 'data'}
             on:click={() =>
-              credential.data.type.includes('OpenBadgeCredential')
+              credential.data?.type.includes('OpenBadgeCredential')
                 ? goto(`/badges/${credential.id}`)
                 : goto(`/credentials/${credential.id}`)}
           />

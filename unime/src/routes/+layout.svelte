@@ -22,6 +22,8 @@
 
   import type { ProfileSteps } from '@bindings/dev/ProfileSteps';
 
+  import Switch from '$src/lib/components/atoms/Switch.svelte';
+
   import { determineTheme } from './utils';
 
   onMount(async () => {
@@ -33,23 +35,27 @@
   let expandedDevMenu = true;
   let showDebugMessages = false;
   let showDragonProfileSteps = false;
+  let resetDragonProfile = true;
 
   const systemColorScheme = window.matchMedia('(prefers-color-scheme: dark)');
 
-  systemColorScheme.addEventListener(
-    'change',
-    (e) => {
-      determineTheme(e.matches, $state?.active_profile?.theme);
-    },
-    { once: true },
-  );
+  systemColorScheme.addEventListener('change', (e) => {
+    if ($state?.profile_settings.profile?.theme) {
+      determineTheme(e.matches, $state.profile_settings.profile.theme);
+    } else {
+      determineTheme(systemColorScheme.matches, 'system');
+    }
+  });
 
   $: {
     // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
     console.log('+layout.svelte: state', $state);
 
-    // needed again?
-    determineTheme(systemColorScheme.matches, $state?.active_profile?.theme);
+    if ($state?.profile_settings.profile?.theme) {
+      determineTheme(systemColorScheme.matches, $state.profile_settings.profile.theme);
+    } else {
+      determineTheme(systemColorScheme.matches, 'system');
+    }
 
     // User prompt
     let type = $state?.current_user_prompt?.type;
@@ -60,7 +66,7 @@
   }
 
   interface DevModeButton {
-    icon?: typeof SvelteComponent<SvelteHTMLElements['svg']> | string;
+    icon: typeof SvelteComponent<SvelteHTMLElements['svg']> | string;
     onClick: () => void;
   }
 
@@ -98,19 +104,22 @@
   // Order needs to match the rust side: 'ProfileSteps' enum, it needs to be the same order because every step is based upon the previous.
   // 'AddCredentials' is ran after 'CreateProfile' and 'AcceptCredentials' after 'AddCredentials', etc.
   const profileSteps: ProfileSteps[] = [
-    'CreateProfile',
-    'AddCredentials',
-    'AcceptCredentials',
-    'AddConnection',
-    'AcceptConnection',
-    'AddPresentation',
-    'ShareCredentails',
-    'AddFutureEngineer',
-    'CompleteFlow',
+    'Create profile',
+    'Add credentials',
+    'Accept credentials',
+    'Add connection',
+    'Accept connection',
+    'Add presentation',
+    'Share credentials',
+    'Add future engineer',
+    'Complete flow',
   ];
 
   async function loadFerrisProfile() {
-    await dispatch({ type: '[DEV] Load DEV profile', payload: { profile: 'Ferris', execute_step: null } });
+    await dispatch({
+      type: '[DEV] Load DEV profile',
+      payload: { profile: 'Ferris', execute_step: null, reset_profile: false },
+    });
 
     // Reload page, see why not just location.reload()
     // https://stackoverflow.com/questions/75960306/sveltekit-how-to-reload-current-page-via-the-client-side-router-using-goto'
@@ -123,13 +132,14 @@
       type: '[DEV] Load DEV profile',
       payload: {
         profile: 'Dragon',
+        reset_profile: resetDragonProfile,
         execute_step: steps,
       },
     });
 
     showDragonProfileSteps = false;
 
-    if (steps == 'CompleteFlow') {
+    if (steps == 'Complete flow') {
       // Reload page, see why not just location.reload()
       // https://stackoverflow.com/questions/75960306/sveltekit-how-to-reload-current-page-via-the-client-side-router-using-goto'
       await goto('/');
@@ -191,14 +201,21 @@
 
   {#if showDragonProfileSteps}
     <div class="fixed z-10 flex h-screen w-screen justify-center bg-black/50 pt-24">
-      <div class="ml-10 mr-10 mt-10 h-fit w-full rounded bg-white pb-4">
+      <div class="ml-10 mr-10 mt-10 flex h-fit w-full flex-col rounded bg-white pb-4 pl-4 pr-4">
         <p class="pb-2 pt-2 text-center text-orange-800">Profile steps</p>
 
+        <div class="flex items-center justify-end pb-2">
+          <div class="mr-2 text-xs text-orange-800">Reset profile?</div>
+          <Switch
+            active={resetDragonProfile}
+            on:change={() => {
+              resetDragonProfile = !resetDragonProfile;
+            }}
+          />
+        </div>
+
         {#each profileSteps as steps, i}
-          <button
-            class="mx-auto mb-2 block w-11/12 rounded bg-orange-200 p-2"
-            on:click={() => loadDragonProfile(steps)}
-          >
+          <button class="mx-auto mb-2 w-full rounded bg-orange-200 p-2" on:click={() => loadDragonProfile(steps)}>
             <div class="break-all font-mono text-xs text-orange-700">{i + 1}: {steps}</div>
           </button>
         {/each}

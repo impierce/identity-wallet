@@ -1,7 +1,7 @@
 {
   "name": "unime",
   "private": true,
-  "version": "0.4.10",
+  "version": "0.4.12",
   "type": "module",
   "scripts": {
     "dev": "vite dev",
@@ -23,6 +23,7 @@
     "@tauri-apps/plugin-barcode-scanner": "2.0.0-alpha.4",
     "@tauri-apps/plugin-fs": "2.0.0-alpha.5",
     "@tauri-apps/plugin-log": "2.0.0-alpha.5",
+    "date-fns": "^3.3.1",
     "markdown-it": "^14.0.0",
     "qrcode": "^1.5.3",
     "typesafe-i18n": "^5.26.2"

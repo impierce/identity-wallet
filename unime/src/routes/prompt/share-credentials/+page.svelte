@@ -1,10 +1,13 @@
 <script lang="ts">
+  import { onDestroy } from 'svelte';
+
   import { goto } from '$app/navigation';
 
   import { dispatch } from '$lib/dispatcher';
   import LL from '$src/i18n/i18n-svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
   import Checkbox from '$src/lib/components/atoms/Checkbox.svelte';
+  import Image from '$src/lib/components/atoms/Image.svelte';
   import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
   import ListItemCard from '$src/lib/components/molecules/ListItemCard.svelte';
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
@@ -18,6 +21,13 @@
   let selected_credentials = $state.credentials?.filter((c) => $state.current_user_prompt.options.indexOf(c.id) > -1);
 
   let client_name = $state.current_user_prompt.client_name;
+
+  console.log({ '$state.current_user_prompt': $state.current_user_prompt });
+
+  onDestroy(async () => {
+    // TODO: is onDestroy also called when user accepts since the component itself is destroyed?
+    dispatch({ type: '[User Flow] Cancel' });
+  });
 </script>
 
 <div class="content-height flex flex-col items-stretch bg-silver dark:bg-navy">
@@ -27,7 +37,7 @@
     <!-- Header -->
     {#if $state.current_user_prompt.logo_uri}
       <div class="flex h-[75px] w-[75px] overflow-hidden rounded-3xl bg-white p-2 dark:bg-silver">
-        <img src={$state.current_user_prompt.logo_uri} alt="logo" />
+        <Image id={'issuer_0'} isTempAsset={true} />
       </div>
     {:else}
       <PaddedIcon icon={PlugsConnected} />
@@ -60,7 +70,7 @@
       >
         <div class="flex w-full flex-col space-y-2">
           {#each selected_credentials as credential}
-            <ListItemCard id={credential.id} title={credential.metadata.display.name || credential.data.type.at(-1)}>
+            <ListItemCard id={credential.id} title={credential.display_name}>
               <div slot="right" class="mr-2">
                 <Checkbox checked={true} disabled={true} />
               </div>

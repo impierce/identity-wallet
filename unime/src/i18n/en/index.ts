@@ -47,21 +47,10 @@ const en = {
         SUBTITLE: 'Your profile information will never leave your device.',
         INPUT_PLACEHOLDER: 'Enter a profile name',
       },
-      THEME: {
-        TITLE_1: 'Choose your app',
-        TITLE_2: 'appearance',
-        SUBTITLE: 'Are you more of a night owl?',
-      },
       PICTURE: {
         TITLE_1: 'Set a display',
         TITLE_2: 'picture',
         SUBTITLE: 'Make it yours.',
-      },
-      SKIP: {
-        TITLE: 'Skip customization',
-        TEXT: 'Are you sure? You can adjust the app appearance later in settings.',
-        CONFIRM: 'Yes',
-        ABORT: "No, let's continue",
       },
     },
     PASSWORD: {
@@ -99,9 +88,9 @@ const en = {
         CONFIRM: 'Update',
       },
       DISPLAY_PICTURE: {
-        TITLE: 'Display picture',
         EDIT: 'Edit',
         CHANGE: 'Select a profile picture',
+        REMOVE: 'Remove',
       },
       DELETE_PROFILE: {
         TITLE: 'Delete profile',
@@ -116,8 +105,11 @@ const en = {
         COMING_SOON: 'Coming soon',
       },
       THEME: {
-        TITLE: 'Theme',
+        LABEL: 'Theme',
         NAVBAR_TITLE: 'Select Theme',
+        TITLE_1: 'Choose your app',
+        TITLE_2: 'appearance',
+        SUBTITLE: 'Are you more of a night owl?',
       },
       PASSWORD: {
         TITLE: 'Password',
@@ -207,7 +199,7 @@ const en = {
     NAVBAR_TITLE: 'Connected',
     TABS: {
       CONNECTIONS: 'Connections',
-      TIMELINE: 'Timeline',
+      HISTORY: 'History',
     },
   },
   SCAN: {
@@ -215,8 +207,8 @@ const en = {
     TITLE_1: 'Scan a',
     TITLE_2: 'QR Code',
     SUBTITLE: 'Bring a QR Code into view of this screen to start an interaction.',
-    NO_PERMISSION_1: 'No permissions to',
-    NO_PERMISSION_2: 'access the camera',
+    PERMISSION_DENIED: 'No permission to access the camera',
+    OPEN_SETTINGS: 'Open settings',
     CREDENTIAL_OFFER: {
       NAVBAR_TITLE: 'Credential Offer',
       DESCRIPTION: 'is offering you the following credentials',
@@ -252,8 +244,11 @@ const en = {
       EMPTY: 'No data yet.',
     },
   },
-  TIMELINE: {
+  HISTORY: {
     EMPTY: 'No activity yet.',
+    DATA_RECEIVED: 'Received data from',
+    DATA_SHARED: 'Shared data with',
+    CONNECTION_ADDED: 'Connected to',
   },
   SEARCH: {
     INPUT_PLACEHOLDER: 'Look for something',

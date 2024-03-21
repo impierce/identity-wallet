@@ -132,15 +132,16 @@
     > -->
     {/each}
   </div>
-  <!-- <button
-      slot="close"
-      let:close
-      use:melt={close}
-      class="mt-4 w-full rounded-lg bg-red-100 px-4 py-2 text-[13px]/[24px] font-medium text-red-500"
-      >Close</button
-    > -->
   <div class="mt-6 w-full" slot="close" let:close>
-    <Button variant="secondary" label={$LL.CLOSE()} trigger={close} />
+    {#if !!selected}
+      <button
+        use:melt={close}
+        class="h-[48px] w-full rounded-xl border border-slate-200 px-4 py-2 text-[13px]/[24px] font-medium text-red-500 dark:border-slate-600"
+        on:click={() => dispatch('change', '')}>{$LL.SETTINGS.PROFILE.DISPLAY_PICTURE.REMOVE()}</button
+      >
+    {:else}
+      <Button variant="secondary" label={$LL.CLOSE()} trigger={close} />
+    {/if}
   </div>
 </BottomDrawer>
 

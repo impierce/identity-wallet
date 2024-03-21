@@ -30,10 +30,11 @@
       icon={Translate}
       title={$LL.SETTINGS.APP.LANGUAGE.TITLE()}
       hasCaretRight={false}
-      textRight={locales.find((l) => l.locale === $state.locale)?.displayName ?? $state.locale}
+      textRight={locales.find((l) => l.locale === $state.profile_settings.locale)?.displayName ??
+        $state.profile_settings.locale}
       on:click={() => goto('/me/settings/app/language')}
     />
-    <SettingsEntry icon={Sun} title={$LL.SETTINGS.APP.THEME.TITLE()} on:click={() => goto('/me/settings/app/theme')} />
+    <SettingsEntry icon={Sun} title={$LL.SETTINGS.APP.THEME.LABEL()} on:click={() => goto('/me/settings/app/theme')} />
     <SettingsEntry icon={Password} title={$LL.SETTINGS.APP.PASSWORD.TITLE()} todo />
     <SettingsEntry
       icon={Confetti}
