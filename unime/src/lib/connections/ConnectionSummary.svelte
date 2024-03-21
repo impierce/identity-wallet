@@ -42,7 +42,7 @@
     </div>
     <div class="text-center text-2xl font-semibold text-slate-700 dark:text-grey">
       {$LL.CONNECTION.SUMMARY.TITLE()}
-      <p class="text-primary">{connection.client_name}</p>
+      <p class="text-primary">{connection.name}</p>
     </div>
   </div>
   <!-- Details -->

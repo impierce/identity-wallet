@@ -3,7 +3,6 @@ use crate::{
     persistence::persist_asset,
     state::{
         actions::Action,
-        connections::Connection,
         core_utils::{
             history_event::{EventType, HistoryEvent},
             ConnectionRequest,
@@ -46,8 +45,6 @@ pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: A
     }
     info!("response successfully sent");
 
-    let connection_time = chrono::Utc::now().to_rfc3339();
-
     let (client_name, logo_uri, connection_url) = get_siopv2_client_name_and_logo_uri(&siopv2_authorization_request)
         .map_err(|_| MissingAuthorizationRequestParameterError("connection_url"))?;
 
@@ -55,36 +52,17 @@ pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: A
         warn!("Skipping download of client logo as it should have already been downloaded in `read_authorization_request()` and be present in /assets/tmp folder");
     }
 
-    let mut connections = state.connections.clone();
+    let mut connections = state.connections;
+    let connection = connections.update_or_insert(&connection_url, &client_name);
 
-    let result = connections
-        .iter_mut()
-        .find(|connection| connection.url == connection_url && connection.client_name == client_name)
-        .map(|connection| {
-            connection.last_interacted = connection_time.clone();
-        });
-
-    let connection_id = Connection::create_connection_id(&client_name);
-
-    persist_asset("issuer_0", &connection_id).ok();
-
-    if result.is_none() {
-        connections.push(Connection {
-            id: connection_id.to_string(),
-            client_name: client_name.to_string(),
-            url: connection_url,
-            verified: false,
-            first_interacted: connection_time.clone(),
-            last_interacted: connection_time.clone(),
-        })
-    };
+    persist_asset("issuer_0", &connection.id).ok();
 
     // History
     state.history.push(HistoryEvent {
-        connection_name: client_name.clone(),
+        connection_name: connection.name.clone(),
         event_type: EventType::ConnectionAdded,
-        connection_id,
-        date: connection_time,
+        connection_id: connection.id.clone(),
+        date: connection.last_interacted.clone(),
         credentials: vec![],
     });
 
@@ -98,18 +76,16 @@ pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: A
     Ok(state)
 }
 
-// Helpers
+// Helper
 
 // TODO: move this functionality to the oid4vc-manager crate.
 pub fn get_siopv2_client_name_and_logo_uri(
     siopv2_authorization_request: &AuthorizationRequest<Object<SIOPv2>>,
 ) -> anyhow::Result<(String, Option<String>, String)> {
-    let connection_url = siopv2_authorization_request
-        .body
-        .redirect_uri
-        .domain()
-        .ok_or(anyhow::anyhow!("unable to get domain from redirect_uri"))?
-        .to_string();
+    // Get the connection url from the redirect url host (or use the redirect url if it does not
+    // contain a host).
+    let redirect_uri = siopv2_authorization_request.body.redirect_uri.clone();
+    let connection_url = redirect_uri.host_str().unwrap_or(redirect_uri.as_str());
 
     // Get the client_name and logo_uri from the client_metadata if it exists.
     Ok(siopv2_authorization_request
@@ -125,8 +101,8 @@ pub fn get_siopv2_client_name_and_logo_uri(
                 .unwrap_or(connection_url.to_string());
             let logo_uri = client_metadata.logo_uri.as_ref().map(|logo_uri| logo_uri.to_string());
 
-            (client_name, logo_uri, connection_url.clone())
+            (client_name, logo_uri, connection_url.to_string())
         })
         // Otherwise use the connection_url as the client_name.
-        .unwrap_or((connection_url.to_string(), None, connection_url)))
+        .unwrap_or((connection_url.to_string(), None, connection_url.to_string())))
 }

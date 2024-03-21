@@ -9,7 +9,7 @@
     },
     "connections":[
        {
-          "client_name":"Government",
+          "name":"Government",
           "url":"https://goverment.com",
           "logo_uri":null,
           "verified":false,
@@ -17,7 +17,7 @@
           "last_interacted":"2023-11-09T13:52:19.971552835+00:00"
        },
        {
-          "client_name":"Driver License Organization",
+          "name":"Driver License Organization",
           "url":"https://cbr.nl",
           "logo_uri":null,
           "verified":false,
@@ -25,7 +25,7 @@
           "last_interacted":"2023-11-09T13:52:45.868117252+00:00"
        },
        {
-         "client_name":"Gym XYZ",
+         "name":"Gym XYZ",
          "url":"https://thegym_XYZ.nl",
          "logo_uri":null,
          "verified":false,
