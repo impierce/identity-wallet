@@ -8,8 +8,6 @@ use crate::state::{
 
 use itertools::concat;
 
-const MAX_RECENT_SEARCHES: usize = 3;
-
 pub async fn credential_search(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(query) = listen::<SearchQuery>(action).filter(|query| !query.search_term.is_empty()) {
         let search_results_current: Vec<String> = {
@@ -37,14 +35,10 @@ pub async fn credential_search(state: AppState, action: Action) -> Result<AppSta
                 .collect()
         };
 
-        let mut search_results = SearchResults {
+        let search_results = SearchResults {
             current: search_results_current,
             ..state.search_results
         };
-
-        if !search_results.current.is_empty() {
-            add_search_to_recents(&mut search_results, query.clone());
-        }
 
         return Ok(AppState {
             search_results,
@@ -74,14 +68,10 @@ pub async fn connection_search(state: AppState, action: Action) -> Result<AppSta
                 .collect()
         };
 
-        let mut search_results = SearchResults {
+        let search_results = SearchResults {
             current: search_results_current,
             ..state.search_results
         };
-
-        if !search_results.current.is_empty() {
-            add_search_to_recents(&mut search_results, query.clone());
-        }
 
         return Ok(AppState {
             search_results,
@@ -98,30 +88,6 @@ fn contains_search_term(string: Option<&str>, search_term: &str) -> bool {
     string
         .map(|string| string.to_lowercase().contains(&search_term.to_lowercase()))
         .unwrap_or_default()
-}
-
-/// Add the search term to the recents list, with a max of 20.
-fn add_search_to_recents(search_results: &mut SearchResults, search_query: SearchQuery) {
-    let lowercase_search_term = search_query.search_term.to_lowercase();
-
-    match search_query.target {
-        QueryTarget::Credentials => {
-            search_results.recents_credentials.retain(|recent| recent.to_lowercase() != lowercase_search_term);
-            search_results.recents_credentials.insert(0, search_query.search_term);
-
-            if search_results.recents_credentials.len() > MAX_RECENT_SEARCHES{
-                search_results.recents_credentials.remove(MAX_RECENT_SEARCHES);
-            }
-        }
-        QueryTarget::Connections => {
-            search_results.recents_connections.retain(|recent| recent.to_lowercase() != lowercase_search_term);
-            search_results.recents_connections.insert(0, search_query.search_term);
-
-            if search_results.recents_connections.len() > MAX_RECENT_SEARCHES {
-                search_results.recents_connections.remove(MAX_RECENT_SEARCHES);
-            }
-        }
-    }
 }
 
 #[cfg(test)]
