@@ -17,7 +17,7 @@ use self::{
 };
 use crate::state::core_utils::history_event::HistoryEvent;
 use crate::state::credentials::DisplayCredential;
-use crate::{error::AppError, state::connections::Connection};
+use crate::{error::AppError, state::connections::Connections};
 
 use derivative::Derivative;
 use downcast_rs::{impl_downcast, DowncastSync};
@@ -79,7 +79,7 @@ impl AppStateContainer {
 #[serde(default)]
 pub struct AppState {
     /// This field contains the connections.
-    pub connections: Vec<Connection>,
+    pub connections: Connections,
     /// This field contains the display credentials.
     pub credentials: Vec<DisplayCredential>,
     /// This field contains the query result, which is queried from credentials or connections.
@@ -144,6 +144,7 @@ mod tests {
     use crate::state::profile_settings::Locale;
     use crate::state::profile_settings::Profile;
     use indoc::indoc;
+    use tests::profile_settings::AppTheme;
 
     #[test]
     fn test_app_state_serialize() {
@@ -153,7 +154,7 @@ mod tests {
                 profile: Some(Profile {
                     name: "John Doe".to_string(),
                     picture: None,
-                    theme: None,
+                    theme: AppTheme::System,
                     primary_did: "did:example:123".to_string(),
                 }),
             },
@@ -163,7 +164,7 @@ mod tests {
             }),
             debug_messages: Default::default(),
             user_journey: None,
-            connections: vec![],
+            connections: Connections::new(),
             ..Default::default()
         };
 
@@ -186,7 +187,7 @@ mod tests {
                     "profile": {
                       "name": "John Doe",
                       "picture": null,
-                      "theme": null,
+                      "theme": "system",
                       "primary_did": "did:example:123"
                     }
                   },

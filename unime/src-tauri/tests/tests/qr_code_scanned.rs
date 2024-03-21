@@ -28,7 +28,7 @@ async fn test_qr_code_scanned_handle_siopv2_authorization_request() {
     let active_profile = Some(Profile {
         name: "Ferris".to_string(),
         picture: Some("&#129408".to_string()),
-        theme: Some(AppTheme::System),
+        theme: AppTheme::System,
         primary_did: managers
             .lock()
             .await
@@ -86,7 +86,7 @@ async fn test_qr_code_scanned_handle_oid4vp_authorization_request() {
     let active_profile = Some(Profile {
         name: "Ferris".to_string(),
         picture: Some("&#129408".to_string()),
-        theme: Some(AppTheme::System),
+        theme: AppTheme::System,
         primary_did: managers
             .lock()
             .await
@@ -138,7 +138,7 @@ async fn test_qr_code_scanned_invalid_qr_code_error() {
     let active_profile = Some(Profile {
         name: "Ferris".to_string(),
         picture: Some("&#129408".to_string()),
-        theme: Some(AppTheme::System),
+        theme: AppTheme::System,
         primary_did: managers
             .lock()
             .await

@@ -50,11 +50,6 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                 get_siopv2_client_name_and_logo_uri(&siopv2_authorization_request)
                     .map_err(|_| MissingAuthorizationRequestParameterError("client_name"))?;
 
-            let mut connections = state.connections.clone();
-            let previously_connected = connections
-                .iter_mut()
-                .any(|connection| connection.url == connection_url && connection.client_name == client_name);
-
             info!("client_name in credential_offer: {:?}", client_name);
             info!("logo_uri in read_authorization_request: {:?}", logo_uri);
 
@@ -71,13 +66,14 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                 }
             }
 
+            let previously_connected = state.connections.contains(&connection_url, &client_name);
+
             drop(state_guard);
             return Ok(AppState {
                 core_utils: CoreUtils {
                     active_connection_request: Some(ConnectionRequest::SIOPv2(siopv2_authorization_request.into())),
                     ..state.core_utils
                 },
-                connections,
                 current_user_prompt: Some(CurrentUserPrompt::AcceptConnection {
                     client_name,
                     logo_uri,
