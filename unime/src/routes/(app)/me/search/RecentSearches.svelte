@@ -30,15 +30,15 @@
       >
         <button
           slot="right"
-          class="hover:bg-silver dark:hover:bg-navy mr-1 rounded-full p-3"
-          on:click={() => {
+          class="mr-1 rounded-full p-3 hover:bg-silver dark:hover:bg-navy"
+          on:click|preventDefault={() => {
             dispatch({
               type: '[Search] Delete Recent',
               payload: { delete_target: 'Credentials', search_term: recentSearch.id },
             });
           }}
         >
-          <X class="dark:text-grey h-4 w-4 text-slate-800" />
+          <X class="h-4 w-4 text-slate-800 dark:text-grey" />
         </button>
       </ListItemCard>
     {/each}
