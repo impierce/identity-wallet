@@ -119,9 +119,9 @@ mod bindings {
         CancelUserJourney,
         #[serde(rename = "[Search] Query")]
         SearchQuery { payload: SearchQuery },
-        #[serde(rename = "[Search] Add Recent Search")]
+        #[serde(rename = "[Search] Add Recent")]
         AddRecentSearch { payload: AddRecentSearch },
-        #[serde(rename = "[Search] Delete Recent Search")]
-        DeleteSearch { payload: DeleteRecentSearch },
+        #[serde(rename = "[Search] Delete Recent")]
+        DeleteRecentSearch { payload: DeleteRecentSearch },
     }
 }

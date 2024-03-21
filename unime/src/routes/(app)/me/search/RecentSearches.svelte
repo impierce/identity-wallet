@@ -34,7 +34,7 @@
             slot="right"
             class="mr-1 rounded-full p-3 hover:bg-silver dark:hover:bg-navy"
             on:click|stopPropagation={() => {
-              dispatch({ type: '[Search] Delete Recent Search', payload: { search_hit: recentSearch.id } });
+              dispatch({ type: '[Search] Delete Recent', payload: { search_hit: recentSearch.id } });
             }}
           >
             <X class="h-4 w-4 text-slate-800 dark:text-grey" />
