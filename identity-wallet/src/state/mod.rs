@@ -179,8 +179,7 @@ mod tests {
                   "credentials": [],
                   "search_results": {
                     "current": [],
-                    "recents_credentials": [],
-                    "recents_connections": []
+                    "recents_credentials": []
                   },
                   "profile_settings": {
                     "locale": "en-US",

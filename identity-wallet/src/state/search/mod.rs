@@ -13,7 +13,6 @@ use ts_rs::TS;
 pub struct SearchResults {
     pub current: Vec<String>,
     pub recents_credentials: Vec<String>,
-    pub recents_connections: Vec<String>,
 }
 
 #[typetag::serde(name = "SearchResults")]

@@ -1,5 +1,5 @@
 use crate::error::AppError;
-use crate::state::search::actions::search_query::{QueryTarget, SearchQuery};
+use crate::state::search::actions::search_query::SearchQuery;
 use crate::state::search::SearchResults;
 use crate::state::{
     actions::{listen, Action},
@@ -49,40 +49,6 @@ pub async fn credential_search(state: AppState, action: Action) -> Result<AppSta
     Ok(state)
 }
 
-pub async fn connection_search(state: AppState, action: Action) -> Result<AppState, AppError> {
-    if let Some(query) = listen::<SearchQuery>(action).filter(|payload| payload.target == QueryTarget::Connections) {
-        let search_results_current: Vec<String> = {
-            let (filtered_connects_name, connections): (Vec<_>, Vec<_>) = state
-                .connections
-                .iter()
-                .partition(|connection| contains_search_term(Some(&connection.client_name), &query.search_term));
-
-            let filtered_connects_url: Vec<_> = connections
-                .into_iter()
-                .filter(|connection| contains_search_term(Some(&connection.url), &query.search_term))
-                .collect();
-
-            concat(vec![filtered_connects_name, filtered_connects_url])
-                .iter()
-                .map(|connection| connection.client_name.clone())
-                .collect()
-        };
-
-        let search_results = SearchResults {
-            current: search_results_current,
-            ..state.search_results
-        };
-
-        return Ok(AppState {
-            search_results,
-            current_user_prompt: None,
-            ..state
-        });
-    }
-
-    Ok(state)
-}
-
 /// Helper for search_query to check if a string contains a search term.
 fn contains_search_term(string: Option<&str>, search_term: &str) -> bool {
     string
@@ -114,14 +80,13 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn test_user_data_query() {
+    async fn test_search_query() {
         let mut app_state = app_state();
 
-        // Assert that the `user_data_query` is empty when the `search_term` is empty.
+        // Assert that the `search_query` is empty when the `search_term` is empty.
         app_state = credential_search(
             app_state,
             Arc::new(SearchQuery {
-                target: QueryTarget::Credentials,
                 search_term: "".to_string(),
             }),
         )
@@ -129,11 +94,10 @@ mod tests {
         .unwrap();
         assert_eq!(app_state.search_results.current, Vec::<String>::new());
 
-        // Assert that the `user_data_query` results are returned in their order of search relevance.
+        // Assert that the `search_query` results are returned in their order of search relevance.
         app_state = credential_search(
             app_state,
             Arc::new(SearchQuery {
-                target: QueryTarget::Credentials,
                 search_term: "John".to_string(),
             }),
         )
