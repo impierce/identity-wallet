@@ -72,7 +72,7 @@ mod bindings {
         },
         dev_mode::actions::dev_profile::DevProfile,
         profile_settings::actions::{
-            create_new::CreateNew, set_locale::SetLocale, update_profile_settings::UpdateProfileSettings,
+            create_new::CreateNew, set_locale::SetLocale, update_profile_settings::UpdateProfileSettings, update_sorting_preference::UpdateSortingPreference,
         },
         qr_code::actions::qrcode_scanned::QrCodeScanned,
         user_data_query::actions::user_data_query::UserDataQuery,
@@ -117,5 +117,7 @@ mod bindings {
         CancelUserJourney,
         #[serde(rename = "[User Data] Query")]
         UserDataQuery { payload: UserDataQuery },
+        #[serde(rename = "[Settings] Update Sorting Preference")]
+        UpdateSortingPreference { payload: UpdateSortingPreference},
     }
 }
