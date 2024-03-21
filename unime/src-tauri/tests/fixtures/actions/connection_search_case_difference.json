@@ -1,7 +1,0 @@
-{
-    "type": "[Search] Query",
-    "payload": {
-        "target": "Connections",
-        "search_term": "m"
-    }
-}
