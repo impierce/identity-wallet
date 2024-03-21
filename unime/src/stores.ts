@@ -16,22 +16,20 @@ interface StateChangedEvent {
   id: number;
 }
 
-// TODO: even needed? or simply "writable<State>(undefined, (set) => {});"?
-const empty_state: State = {
-  active_profile: {
-    name: '',
-    picture: null,
-    theme: 'system',
-    primary_did: '',
-  },
-  locale: 'en-US',
-  credentials: [],
-  current_user_prompt: null,
-  dev_mode: 'Off',
-  debug_messages: [],
-  user_journey: null,
+// TODO: Are there other solutions to using an "empty state" as a "gap filler" before the actual state is loaded (such as Svelte's app globals)?
+const emptyState: State = {
   connections: [],
+  credentials: [],
   user_data_query: [],
+  profile_settings: {
+    locale: 'en-US',
+    profile: null,
+  },
+  current_user_prompt: null,
+  user_journey: null,
+  debug_messages: [],
+  history: [],
+  dev_mode: 'Off',
 };
 
 /**
@@ -39,7 +37,7 @@ const empty_state: State = {
  * If the frontend intends to change the state, it must dispatch an action to the backend.
  */
 // TODO: make read-only
-export const state = writable<State>(undefined, (set) => {
+export const state = writable<State>(emptyState, (set) => {
   const unlisten = listen('state-changed', (event: StateChangedEvent) => {
     const state = event.payload;
 
