@@ -104,6 +104,7 @@ pub async fn assert_state_update(
             assert_eq!(current_user_prompt, expected_current_user_prompt);
             assert_eq!(search_results, expected_search_results);
             assert_eq!(history, expected_history);
+
             if (extensions.len() != 0) || (expected_extensions.len() != 0) {
                 assert_eq!(
                     extensions

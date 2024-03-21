@@ -180,8 +180,7 @@ mod tests {
                   "credentials": [],
                   "search_results": {
                     "current": [],
-                    "recents_credentials": [],
-                    "recents_connections": []
+                    "recent_credentials": []
                   },
                   "profile_settings": {
                     "locale": "en-US",
