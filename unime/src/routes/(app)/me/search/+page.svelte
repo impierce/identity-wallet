@@ -13,13 +13,11 @@
 
   import RecentSearches from './RecentSearches.svelte';
 
-  // TODO: read from state
-  let recentSearchesIds: string[] = ['39383134-6538-3766-3963-303366323930', '39643439-6566-6166-3162-393438616164'];
-
   let searchTerm: string | undefined;
+
   $: indices = $state.search_results;
   $: credentials = $state.credentials.filter((cred) => indices?.current.includes(cred.id));
-  $: recentSearches = $state.credentials.filter((cred) => recentSearchesIds.includes(cred.id));
+  $: recentSearches = $state.credentials.filter((cred) => indices?.recents_credentials.includes(cred.id));
 </script>
 
 <div class="content-height bg-silver dark:bg-navy">
@@ -72,7 +70,7 @@
             description={credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
             type={credential.data?.type.includes('OpenBadgeCredential') ? 'badge' : 'data'}
             on:click={() => {
-              //  TODO: dispatch action: add recent search
+              dispatch({ type: '[Search] Add Recent', payload: { target: 'Credentials', search_hit: credential.id } });
               credential.data?.type.includes('OpenBadgeCredential')
                 ? goto(`/badges/${credential.id}`)
                 : goto(`/credentials/${credential.id}`);

@@ -17,30 +17,33 @@
     {$LL.SEARCH.RECENT_SEARCHES()}
   </p>
   <div class="space-y-[10px]">
-    {#each recentSearches as recentSearch}
-      <ListItemCard
-        id={recentSearch.id}
-        title={recentSearch.display_name}
-        description={recentSearch.issuer_name}
-        on:click={() => {
-          recentSearch.data.type.includes('OpenBadgeCredential')
-            ? goto(`/badges/${recentSearch.id}`)
-            : goto(`/credentials/${recentSearch.id}`);
-        }}
-      >
-        <button
-          slot="right"
-          class="mr-1 rounded-full p-3 hover:bg-silver dark:hover:bg-navy"
-          on:click|preventDefault={() => {
-            dispatch({
-              type: '[Search] Delete Recent',
-              payload: { delete_target: 'Credentials', search_term: recentSearch.id },
-            });
+    <!-- using "key" to destroy & recreate the complete credentials list to enforce a refresh of logos -->
+    {#key recentSearches}
+      {#each recentSearches as recentSearch}
+        <ListItemCard
+          id={recentSearch.id}
+          title={recentSearch.display_name}
+          description={recentSearch.issuer_name}
+          on:click={() => {
+            recentSearch.data.type.includes('OpenBadgeCredential')
+              ? goto(`/badges/${recentSearch.id}`)
+              : goto(`/credentials/${recentSearch.id}`);
           }}
         >
-          <X class="h-4 w-4 text-slate-800 dark:text-grey" />
-        </button>
-      </ListItemCard>
-    {/each}
+          <button
+            slot="right"
+            class="mr-1 rounded-full p-3 hover:bg-silver dark:hover:bg-navy"
+            on:click|stopPropagation={() => {
+              dispatch({
+                type: '[Search] Delete Recent',
+                payload: { delete_target: 'Credentials', search_term: recentSearch.id },
+              });
+            }}
+          >
+            <X class="h-4 w-4 text-slate-800 dark:text-grey" />
+          </button>
+        </ListItemCard>
+      {/each}
+    {/key}
   </div>
 </div>
