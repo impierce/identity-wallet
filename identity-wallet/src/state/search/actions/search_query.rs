@@ -10,7 +10,7 @@ use ts_rs::TS;
 #[ts(export, export_to = "bindings/actions/SearchQuery.ts")]
 pub struct SearchQuery {
     pub target: QueryTarget,
-    pub search_term: String
+    pub search_term: String,
 }
 
 #[typetag::serde(name = "[Search] Query")]

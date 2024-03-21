@@ -12,9 +12,9 @@ use ts_rs::TS;
 #[serde(default)]
 pub struct SearchResults {
     pub current: Vec<String>,
+    pub recents_credentials: Vec<String>,
     pub recents_connections: Vec<String>,
-    pub recents_credentials: Vec<String>
 }
 
-#[typetag::serde(name = "UserDataQueryResults")]
+#[typetag::serde(name = "SearchResults")]
 impl FeatTrait for SearchResults {}
