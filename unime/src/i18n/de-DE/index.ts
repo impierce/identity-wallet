@@ -274,16 +274,6 @@ const de = {
       CONTENTS: 'Inhalt',
     },
   },
-  SORT: {
-    TITLE: '',
-    PREFERENCES: {
-      LIST_VIEW: '',
-      GRID_VIEW: '',
-      ALPHABETICAL: '',
-      DATE_ISSUED: '',
-      DATE_ADDED: '',
-    }
-  },
   CANCEL: 'Abbrechen',
   CLOSE: 'Schließen',
   CONTINUE: 'Weiter',
