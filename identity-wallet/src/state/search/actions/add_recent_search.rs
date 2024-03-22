@@ -9,10 +9,10 @@ use ts_rs::TS;
 #[derive(Serialize, Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/AddRecentSearch.ts")]
 pub struct AddRecentSearch {
-    pub search_hit: String,
+    pub id: String,
 }
 
-#[typetag::serde(name = "[Search] Add Recent Search")]
+#[typetag::serde(name = "[Search] Add Recent")]
 impl ActionTrait for AddRecentSearch {
     fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
         vec![reducer!(add_recent_search)]

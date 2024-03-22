@@ -15,8 +15,8 @@ pub async fn add_recent_search(state: AppState, action: Action) -> Result<AppSta
 
         search_results
             .recent_credentials
-            .retain(|recent| recent != &recent_search.search_hit);
-        search_results.recent_credentials.insert(0, recent_search.search_hit);
+            .retain(|recent| recent != &recent_search.id);
+        search_results.recent_credentials.insert(0, recent_search.id);
 
         if search_results.recent_credentials.len() > MAX_RECENT_SEARCHES {
             search_results.recent_credentials.remove(MAX_RECENT_SEARCHES);

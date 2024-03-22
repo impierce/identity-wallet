@@ -10,7 +10,7 @@ pub async fn delete_recent_search(state: AppState, action: Action) -> Result<App
     if let Some(deletion) = listen::<DeleteRecentSearch>(action) {
         let search_results: SearchResults = {
             let mut recents_credentials = state.search_results.recent_credentials.clone();
-            recents_credentials.retain(|recent| recent != &deletion.search_hit);
+            recents_credentials.retain(|recent| recent != &deletion.id);
             SearchResults {
                 recent_credentials: recents_credentials,
                 ..state.search_results

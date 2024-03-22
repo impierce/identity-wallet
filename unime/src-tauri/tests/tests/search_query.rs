@@ -41,7 +41,8 @@ async fn test_credential_add_recent_search() {
     // Add recent search with recent search not in the current field
     let state = json_example::<AppState>("tests/fixtures/states/two_credentials_redirect_me_query.json");
     let action = json_example::<Action>("tests/fixtures/actions/credential_add_recent_search.json");
-    let expected_state = json_example::<AppState>("tests/fixtures/states/two_credentials_recent_search_no_current.json");
+    let expected_state =
+        json_example::<AppState>("tests/fixtures/states/two_credentials_recent_search_no_current.json");
     assert_state_update(
         AppStateContainer(Mutex::new(state.clone())),
         vec![action],
@@ -50,10 +51,9 @@ async fn test_credential_add_recent_search() {
     .await;
 }
 
-// To check wether searching the same search_hit isn't registered twice.
 #[tokio::test]
 #[serial_test::serial]
-async fn test_credential_add_recent_search_twice() {
+async fn test_credential_add_existing_recent_search_does_duplicate() {
     setup_state_file();
     setup_stronghold();
 
@@ -76,11 +76,11 @@ async fn test_credential_delete_recent() {
 
     let state = json_example::<AppState>("tests/fixtures/states/two_credentials_search_query.json");
     let action = json_example::<Action>("tests/fixtures/actions/credential_search_delete_recent.json");
-    let expected_state_2 = json_example::<AppState>("tests/fixtures/states/two_credentials_search_delete_recent.json");
+    let expected_state = json_example::<AppState>("tests/fixtures/states/two_credentials_search_delete_recent.json");
     assert_state_update(
         AppStateContainer(Mutex::new(state)),
         vec![action],
-        vec![Some(expected_state_2)],
+        vec![Some(expected_state)],
     )
     .await;
 }
