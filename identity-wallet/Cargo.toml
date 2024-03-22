@@ -10,6 +10,7 @@ oid4vc.workspace = true
 log.workspace = true
 serde_json.workspace = true
 did-key.workspace = true
+did_manager.workspace = true
 
 identity_credential = { git = "https://github.com/iotaledger/identity.rs.git", default-features = false, features = [
     "validator",
