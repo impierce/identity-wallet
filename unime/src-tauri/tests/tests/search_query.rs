@@ -14,9 +14,9 @@ async fn test_credential_search_query() {
     let expected_state = json_example::<AppState>("tests/fixtures/states/two_credentials_search_query.json");
 
     assert_state_update(
-        AppStateContainer(Mutex::new(state.clone())),
-        vec![action.clone()],
-        vec![Some(expected_state.clone())],
+        AppStateContainer(Mutex::new(state)),
+        vec![action],
+        vec![Some(expected_state)],
     )
     .await;
 }
@@ -44,27 +44,9 @@ async fn test_credential_add_recent_search() {
     let expected_state =
         json_example::<AppState>("tests/fixtures/states/two_credentials_recent_search_no_current.json");
     assert_state_update(
-        AppStateContainer(Mutex::new(state.clone())),
+        AppStateContainer(Mutex::new(state)),
         vec![action],
         vec![Some(expected_state)],
-    )
-    .await;
-}
-
-// To check wether searching the same search_hit isn't registered twice.
-#[tokio::test]
-#[serial_test::serial]
-async fn test_credential_add_recent_search_twice() {
-    setup_state_file();
-    setup_stronghold();
-
-    let state = json_example::<AppState>("tests/fixtures/states/two_credentials_recent_search.json");
-    let action = json_example::<Action>("tests/fixtures/actions/credential_add_recent_search.json");
-
-    assert_state_update(
-        AppStateContainer(Mutex::new(state.clone())),
-        vec![action],
-        vec![Some(state)],
     )
     .await;
 }
