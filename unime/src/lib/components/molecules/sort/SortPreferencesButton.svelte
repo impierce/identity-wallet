@@ -2,9 +2,8 @@
   import { createEventDispatcher, SvelteComponent } from 'svelte';
 
   import type { SvelteHTMLElements } from 'svelte/elements';
-
-  import ArrowsDown from '$src/lib/static/svg/ArrowsDown.svelte';
-
+  //import ArrowsDown from '$src/lib/static/svg/ArrowsDown.svelte';
+import ArrowDown from '~icons/ph/arrow-down';
   import ArrowUp from '~icons/ph/arrow-up';
 
   export let icon: typeof SvelteComponent<SvelteHTMLElements['svg']>;
@@ -25,7 +24,7 @@
   {#if active}
     <div class="absolute right-2">
       {#if sortingOrder == 'descending'}
-        <ArrowsDown />
+        <ArrowDown class="text-primary"/>
       {:else if sortingOrder == 'ascending'}
         <ArrowUp class="text-primary" />
       {/if}
