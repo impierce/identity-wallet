@@ -53,7 +53,7 @@ async fn test_credential_add_recent_search() {
 
 #[tokio::test]
 #[serial_test::serial]
-async fn test_credential_add_existing_recent_search_does_duplicate() {
+async fn test_credential_add_existing_recent_search_does_not_create_duplicate() {
     setup_state_file();
     setup_stronghold();
 

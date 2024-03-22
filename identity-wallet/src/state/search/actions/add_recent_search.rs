@@ -5,7 +5,6 @@ use crate::state::{actions::ActionTrait, Reducer};
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
-/// Action to query user data.
 #[derive(Serialize, Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/AddRecentSearch.ts")]
 pub struct AddRecentSearch {
