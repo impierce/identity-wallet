@@ -32,7 +32,7 @@ async fn test_credential_add_recent_search() {
     let action = json_example::<Action>("tests/fixtures/actions/credential_add_recent_search.json");
     let expected_state = json_example::<AppState>("tests/fixtures/states/two_credentials_recent_search.json");
     assert_state_update(
-        AppStateContainer(Mutex::new(state.clone())),
+        AppStateContainer(Mutex::new(state)),
         vec![action],
         vec![Some(expected_state)],
     )
