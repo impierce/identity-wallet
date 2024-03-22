@@ -1,28 +1,34 @@
 <script lang="ts">
-    import { createEventDispatcher, SvelteComponent } from 'svelte';
-    import type { SvelteHTMLElements } from 'svelte/elements';
-    import ArrowsDown from '$src/lib/static/svg/ArrowsDown.svelte';
-    import ArrowUp from '~icons/ph/arrow-up';
-    export let icon: typeof SvelteComponent<SvelteHTMLElements['svg']>;
-    export let label: string;
-    export let active: boolean = false;
-    const dispatch = createEventDispatcher();
-    export let sortingOrder: 'ascending' | 'descending' | undefined = undefined;
-  </script>
-  
-  <button
-    on:click={() => dispatch('click')}
-    class={`my-1 flex w-full gap-2 border p-[10px] text-slate-800 dark:text-grey ${
-      active ? 'rounded-lg border-grey bg-silver dark:border-slate-600 dark:bg-navy' : 'border-transparent'
-    }`}
-  >
-    <svelte:component this={icon} />
-    <p class="text-sm font-medium">{label}</p>
-    {#if active}
+  import { createEventDispatcher, SvelteComponent } from 'svelte';
+
+  import type { SvelteHTMLElements } from 'svelte/elements';
+
+  import ArrowsDown from '$src/lib/static/svg/ArrowsDown.svelte';
+
+  import ArrowUp from '~icons/ph/arrow-up';
+
+  export let icon: typeof SvelteComponent<SvelteHTMLElements['svg']>;
+  export let label: string;
+  export let active: boolean = false;
+  const dispatch = createEventDispatcher();
+  export let sortingOrder: 'ascending' | 'descending' | undefined = undefined;
+</script>
+
+<button
+  on:click={() => dispatch('click')}
+  class={`my-1 flex w-full gap-2 border p-[10px] text-slate-800 dark:text-grey ${
+    active ? 'rounded-lg border-grey bg-silver dark:border-slate-600 dark:bg-navy' : 'border-transparent'
+  }`}
+>
+  <svelte:component this={icon} />
+  <p class="text-sm font-medium">{label}</p>
+  {#if active}
+    <div class="absolute right-2">
       {#if sortingOrder == 'descending'}
         <ArrowsDown />
       {:else if sortingOrder == 'ascending'}
         <ArrowUp class="text-primary" />
       {/if}
-    {/if}
-  </button>
+    </div>
+  {/if}
+</button>

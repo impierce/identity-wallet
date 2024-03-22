@@ -76,7 +76,7 @@
 
 {#if $open}
   <div
-    class="dark:bg-dark z-10 flex max-h-[300px] flex-col items-end rounded-2xl bg-white p-3 shadow-md outline-none"
+    class="z-10 flex max-h-[300px] flex-col items-end rounded-2xl bg-white p-3 shadow-md outline-none dark:bg-dark"
     use:melt={$menu}
     transition:fly={{ duration: 150, y: -10 }}
   >
@@ -154,14 +154,14 @@
     />
     <div
       use:melt={$contentNameDialog}
-      class="dark:bg-dark fixed left-[50%] top-[50%] z-50 flex
-      max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%]
-      flex-col space-y-4 rounded-xl bg-white p-6 shadow-lg"
+      class="fixed left-[50%] top-[50%] z-50 flex max-h-[85vh]
+      w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] flex-col
+      space-y-4 rounded-xl bg-white p-6 shadow-lg dark:bg-dark"
     >
       <!-- Content -->
       <input
         type="text"
-        class="dark:bg-dark h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] text-slate-500 dark:border-slate-600 dark:text-slate-300"
+        class="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300"
         placeholder="Enter a new name"
         bind:value={displayName}
       />
@@ -200,9 +200,9 @@
     />
     <div
       use:melt={$contentAppearanceDialog}
-      class="dark:bg-dark fixed left-[50%] top-[50%] z-50 flex
-      max-h-[85vh] w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%]
-      flex-col space-y-4 rounded-xl bg-white p-6 shadow-lg"
+      class="fixed left-[50%] top-[50%] z-50 flex max-h-[85vh]
+      w-[90vw] max-w-[450px] translate-x-[-50%] translate-y-[-50%] flex-col
+      space-y-4 rounded-xl bg-white p-6 shadow-lg dark:bg-dark"
     >
       <!-- Content -->
       <!-- <input
@@ -235,7 +235,7 @@
               class="h-9 w-9 rounded-md border border-slate-300 p-2 dark:border-slate-600"
               on:click={() => (currentAppearance.icon = icon.at(0))}
             >
-              <svelte:component this={icon.at(1)} class="dark:text-grey h-5 w-5 text-slate-800" />
+              <svelte:component this={icon.at(1)} class="h-5 w-5 text-slate-800 dark:text-grey" />
             </button>
           {/each}
         </div>

@@ -34,7 +34,7 @@ A tab component.
 <div use:melt={$root} class="flex flex-col">
   <div
     use:melt={$list}
-    class={twMerge('dark:bg-dark flex h-[39px] shrink-0 overflow-x-auto rounded-xl bg-white', $$props.class)}
+    class={twMerge('flex h-[39px] shrink-0 overflow-x-auto rounded-xl bg-white dark:bg-dark', $$props.class)}
   >
     {#each triggers as triggerItem}
       <button
@@ -48,7 +48,7 @@ A tab component.
           <div
             in:send={{ key: 'trigger' }}
             out:receive={{ key: 'trigger' }}
-            class="bg-primary absolute left-0 top-0 h-full w-full rounded-lg"
+            class="absolute left-0 top-0 h-full w-full rounded-lg bg-primary"
           />
         {/if}
       </button>

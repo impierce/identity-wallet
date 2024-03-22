@@ -5,16 +5,15 @@
   import Button from '$src/lib/components/atoms/Button.svelte';
   import SortPreferencesButton from '$src/lib/components/molecules/sort/SortPreferencesButton.svelte';
   import { dispatch } from '$src/lib/dispatcher';
-  import ArrowsDown from '$src/lib/static/svg/ArrowsDown.svelte';
 
   import Alphabetical from '~icons/mdi/order-alphabetical-ascending';
   import Issued from '~icons/ph/calendar-check';
   import Added from '~icons/ph/calendar-plus';
-  import Checks from '~icons/ph/checks';
-  import List from '~icons/ph/list-dashes';
+  //import List from '~icons/ph/list-dashes';
   import Slider from '~icons/ph/sliders-horizontal';
-  import Ascending from '~icons/ph/sort-ascending';
-  import Grid from '~icons/ph/squares-four';
+
+  //import Ascending from '~icons/ph/sort-ascending';
+  //import Grid from '~icons/ph/squares-four';
 
   import BottomDrawer from '../dialogs/BottomDrawer.svelte';
 
@@ -30,7 +29,7 @@
       slot="trigger"
       let:trigger
       use:melt={trigger}
-      class="dark:bg-dark dark:text-grey flex h-10 w-10 items-center justify-center rounded-xl bg-white"
+      class="flex h-10 w-10 items-center justify-center rounded-xl bg-white dark:bg-dark dark:text-grey"
       ><Slider /></button
     >
     <!-- bottom drawer and list items with preferred view and sorting preferences-->
