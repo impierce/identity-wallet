@@ -2,7 +2,6 @@ use crate::{
     error::AppError::{self, *},
     state::{
         actions::{listen, Action},
-        connections::Connection,
         core_utils::{
             helpers::get_unverified_jwt_claims,
             history_event::{EventType, HistoryCredential, HistoryEvent},
@@ -124,44 +123,34 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
         }
         info!("response successfully sent");
 
-        let connection_time = chrono::Utc::now().to_rfc3339();
-
         let (client_name, _logo_uri, connection_url) =
             get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request)
                 .map_err(|_| MissingAuthorizationRequestParameterError("connection_url"))?;
 
-        let mut connections = state.connections.clone();
-        let result = connections
-            .iter_mut()
-            .find(|connection| connection.url == connection_url && connection.client_name == client_name)
-            .map(|connection| {
-                connection.last_interacted = connection_time.clone();
-            });
-
-        let connection_id = Connection::create_connection_id(&client_name);
-
-        if result.is_none() {
-            connections.push(Connection {
-                id: connection_id.to_string(),
-                client_name: client_name.to_string(),
-                url: connection_url,
-                verified: false,
-                first_interacted: connection_time.clone(),
-                last_interacted: connection_time.clone(),
-            })
-        };
-
-        state.connections = connections;
+        let previously_connected = state.connections.contains(connection_url.as_str(), &client_name);
+        let mut connections = state.connections;
+        let connection = connections.update_or_insert(&connection_url, &client_name);
 
         // History
+        if !previously_connected {
+            // Only add a `ConnectionAdded` event if the connection was not previously connected.
+            state.history.push(HistoryEvent {
+                connection_name: connection.name.clone(),
+                event_type: EventType::ConnectionAdded,
+                connection_id: connection.id.clone(),
+                date: connection.last_interacted.clone(),
+                credentials: vec![],
+            });
+        }
         state.history.push(HistoryEvent {
-            connection_name: client_name,
-            date: connection_time,
+            connection_name: connection.name.clone(),
             event_type: EventType::CredentialsShared,
-            connection_id,
+            connection_id: connection.id.clone(),
+            date: connection.last_interacted.clone(),
             credentials: history_credentials,
         });
 
+        state.connections = connections;
         state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
             target: "me".to_string(),
         });
@@ -176,12 +165,10 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
 pub fn get_oid4vp_client_name_and_logo_uri(
     oid4vp_authorization_request: &AuthorizationRequest<Object<OID4VP>>,
 ) -> anyhow::Result<(String, Option<String>, String)> {
-    let connection_url = oid4vp_authorization_request
-        .body
-        .redirect_uri
-        .domain()
-        .ok_or(anyhow::anyhow!("unable to get domain from redirect_uri"))?
-        .to_string();
+    // Get the connection url from the redirect url host (or use the redirect url if it does not
+    // contain a host).
+    let redirect_uri = oid4vp_authorization_request.body.redirect_uri.clone();
+    let connection_url = redirect_uri.host_str().unwrap_or(redirect_uri.as_str());
 
     // Get the client_name and logo_uri from the client_metadata if it exists.
     Ok(oid4vp_authorization_request
@@ -197,8 +184,8 @@ pub fn get_oid4vp_client_name_and_logo_uri(
                 .unwrap_or(connection_url.to_string());
             let logo_uri = client_metadata.logo_uri.as_ref().map(|logo_uri| logo_uri.to_string());
 
-            (client_name, logo_uri, connection_url.clone())
+            (client_name, logo_uri, connection_url.to_string())
         })
         // Otherwise use the connection_url as the client_name.
-        .unwrap_or((connection_url.to_string(), None, connection_url)))
+        .unwrap_or((connection_url.to_string(), None, connection_url.to_string())))
 }

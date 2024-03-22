@@ -11,7 +11,7 @@ pub enum EventType {
     CredentialsShared,
 }
 
-#[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq, TS)]
+#[derive(Clone, Serialize, Deserialize, Debug, TS)]
 #[ts(export)]
 pub struct HistoryEvent {
     pub connection_id: String,
@@ -39,5 +39,16 @@ impl HistoryCredential {
             issuer_name: display.issuer_name.to_string(),
             id: display.id.to_string(),
         }
+    }
+}
+
+/// Implement PartialEq for HistoryEvent to allow for comparison of HistoryEvent instances in tests.
+/// TODO(test): This implementation should be behind a "test" feature flag.
+impl PartialEq for HistoryEvent {
+    fn eq(&self, other: &Self) -> bool {
+        self.connection_id == other.connection_id
+            && self.connection_name == other.connection_name
+            && self.event_type == other.event_type
+            && self.credentials == other.credentials
     }
 }
