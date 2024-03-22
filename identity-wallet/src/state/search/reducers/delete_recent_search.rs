@@ -7,12 +7,12 @@ use crate::state::{
 };
 
 pub async fn delete_recent_search(state: AppState, action: Action) -> Result<AppState, AppError> {
-    if let Some(deletion) = listen::<DeleteRecentSearch>(action) {
+    if let Some(recent_search) = listen::<DeleteRecentSearch>(action) {
         let search_results: SearchResults = {
-            let mut recents_credentials = state.search_results.recent_credentials.clone();
-            recents_credentials.retain(|recent| recent != &deletion.search_hit);
+            let mut recent_credentials = state.search_results.recent_credentials.clone();
+            recent_credentials.retain(|recent| recent != &recent_search.id);
             SearchResults {
-                recent_credentials: recents_credentials,
+                recent_credentials,
                 ..state.search_results
             }
         };
