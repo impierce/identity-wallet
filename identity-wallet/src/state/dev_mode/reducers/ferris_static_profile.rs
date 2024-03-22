@@ -99,7 +99,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
     load_predefined_images().await?;
 
     state
-        .core_state
+        .core_utils
         .managers
         .lock()
         .await
