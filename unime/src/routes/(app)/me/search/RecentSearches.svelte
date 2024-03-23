@@ -25,6 +25,7 @@
           title={recentSearch.display_name}
           description={recentSearch.issuer_name}
           on:click={() => {
+            dispatch({ type: '[Search] Add Recent', payload: { id: recentSearch.id } });
             recentSearch.data.type.includes('OpenBadgeCredential')
               ? goto(`/badges/${recentSearch.id}`)
               : goto(`/credentials/${recentSearch.id}`);
