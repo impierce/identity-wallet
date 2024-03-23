@@ -1,5 +1,8 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+
   import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
 
   import IconMessage from '$lib/components/molecules/IconMessage.svelte';
   import Search from '$lib/components/molecules/Search.svelte';
@@ -13,21 +16,29 @@
 
   import RecentSearches from './RecentSearches.svelte';
 
-  let searchTerm: string | undefined;
+  let searchTerm: string | null = $page.url.searchParams.get('query');
 
   $: indices = $state.search_results;
   $: credentials = $state.credentials.filter((cred) => indices?.current.includes(cred.id));
   $: recentSearches = $state.credentials.filter((cred) => indices?.recent_credentials.includes(cred.id));
+
+  // https://stackoverflow.com/questions/57354001/how-to-focus-on-input-field-loaded-from-component-in-svelte
+  let searchInput: HTMLInputElement;
+  onMount(() => {
+    searchInput.focus();
+  });
+
+  function onSearchTermChanged(value: string) {
+    searchTerm = value;
+    $page.url.searchParams.set('query', value);
+    history.replaceState(history.state, '', $page.url);
+    dispatch({ type: '[Search] Query', payload: { search_term: value } });
+  }
 </script>
 
 <div class="content-height bg-silver dark:bg-navy">
   <div class="p-4">
-    <Search
-      on:value={(e) => {
-        searchTerm = e.detail;
-        dispatch({ type: '[Search] Query', payload: { search_term: e.detail } });
-      }}
-    ></Search>
+    <Search bind:ref={searchInput} value={searchTerm ?? ''} on:value={(e) => onSearchTermChanged(e.detail)}></Search>
   </div>
   <!-- User has not entered a search term -->
   {#if !searchTerm}
