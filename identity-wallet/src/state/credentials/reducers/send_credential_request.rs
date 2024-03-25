@@ -204,7 +204,7 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
         let mut connections = state.connections;
         let connection = connections.update_or_insert(connection_url, &issuer_name);
 
-        persist_asset("issuer_0", &connection.id).ok();
+        persist_asset("client_0", &connection.id).ok();
 
         // History
         if !history_credentials.is_empty() {

@@ -103,8 +103,8 @@ pub async fn delete_stronghold() -> anyhow::Result<()> {
 
 #[derive(Display)]
 pub enum LogoType {
-    #[strum(serialize = "issuer")]
-    IssuerLogo,
+    #[strum(serialize = "client")]
+    ClientLogo,
     #[strum(serialize = "credential")]
     CredentialLogo,
 }

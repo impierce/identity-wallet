@@ -132,7 +132,7 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
         let mut connections = state.connections;
         let connection = connections.update_or_insert(&connection_url, &client_name);
 
-        persist_asset("issuer_0", &connection.id).ok();
+        persist_asset("client_0", &connection.id).ok();
 
         // History
         if !previously_connected {
