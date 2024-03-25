@@ -30,12 +30,20 @@ impl StrongholdManager {
             .ok_or(anyhow::anyhow!("failed to get stronghold path"))?
             .to_owned();
 
-        let snapshot_path = SnapshotPath::from_path(format!("{client_path}.snapshot"));
+        let snapshot_path = SnapshotPath::from_path(client_path.clone());
         let key_provider =
             KeyProvider::with_passphrase_hashed_blake2b(password.as_bytes().to_vec()).expect("failed to load key");
 
-        let client: Client = stronghold.create_client(&client_path).expect("cannot create client");
-        let output_location = Location::counter(client_path.clone(), 0u8);
+        let client: Client = stronghold
+            .create_client(b"iota_identity_client")
+            .expect("cannot create client");
+
+        let output_location = Location::generic(
+            "iota_identity_vault".as_bytes().to_vec(),
+            "key-0".to_string().as_bytes().to_vec(),
+        );
+
+        info!("output_location: {:?}", output_location);
 
         client
             .execute_procedure(StrongholdProcedure::GenerateKey(GenerateKey {
@@ -67,13 +75,13 @@ impl StrongholdManager {
             .to_str()
             .ok_or(anyhow::anyhow!("failed to get stronghold path"))?
             .to_owned();
-        let snapshot_path = SnapshotPath::from_path(format!("{client_path}.snapshot"));
+        let snapshot_path = SnapshotPath::from_path(client_path.clone());
         let key_provider =
             KeyProvider::with_passphrase_hashed_blake2b(password.as_bytes().to_vec()).expect("failed to load key");
 
         info!("Loading snapshot");
 
-        let client = stronghold.load_client_from_snapshot(&client_path, &key_provider, &snapshot_path)?;
+        let client = stronghold.load_client_from_snapshot(b"iota_identity_client", &key_provider, &snapshot_path)?;
 
         Ok(Self {
             stronghold,
@@ -89,7 +97,7 @@ impl StrongholdManager {
         engine::snapshot::try_set_encrypt_work_factor(10)?;
 
         self.stronghold
-            .write_client(self.client_path.as_bytes())
+            .write_client(b"iota_identity_client")
             .expect("store client state into snapshot state failed");
 
         self.stronghold
@@ -145,7 +153,10 @@ impl StrongholdManager {
             .client
             .execute_procedure(StrongholdProcedure::PublicKey(PublicKey {
                 ty: KeyType::Ed25519,
-                private_key: Location::counter(self.client_path.as_bytes(), 0u8),
+                private_key: Location::generic(
+                    "iota_identity_vault".as_bytes().to_vec(),
+                    "key-0".to_string().as_bytes().to_vec(),
+                ),
             }))?;
 
         let output: Vec<u8> = procedure_result.into();
@@ -166,7 +177,10 @@ impl ExternalSign for StrongholdManager {
         let procedure_result = self
             .client
             .execute_procedure(StrongholdProcedure::Ed25519Sign(Ed25519Sign {
-                private_key: Location::counter(client_path.clone(), 0u8),
+                private_key: Location::generic(
+                    client_path.as_bytes().to_vec(),
+                    "key-0".to_string().as_bytes().to_vec(),
+                ),
                 msg: message.as_bytes().to_vec(),
             }))?;
 

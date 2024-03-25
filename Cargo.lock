@@ -1177,13 +1177,16 @@ checksum = "f7144d30dcf0fafbce74250a3963025d8d52177934239851c917d29f1df280c2"
 [[package]]
 name = "consumer"
 version = "0.1.0"
-source = "git+https://github.com/impierce/did-manager.git?rev=aff181b#aff181bc80e82f7a47b2315d16210c97d19e68d7"
 dependencies = [
+ "anyhow",
+ "async-trait",
+ "base64-url",
  "did_jwk",
  "did_key",
  "did_web",
  "identity_iota",
  "iota-sdk",
+ "oid4vc-core",
  "signature 2.2.0",
  "tokio",
 ]
@@ -1748,7 +1751,6 @@ dependencies = [
 [[package]]
 name = "did_jwk"
 version = "0.1.0"
-source = "git+https://github.com/impierce/did-manager.git?rev=aff181b#aff181bc80e82f7a47b2315d16210c97d19e68d7"
 dependencies = [
  "did-jwk",
  "identity_iota",
@@ -1765,7 +1767,6 @@ dependencies = [
 [[package]]
 name = "did_key"
 version = "0.1.0"
-source = "git+https://github.com/impierce/did-manager.git?rev=aff181b#aff181bc80e82f7a47b2315d16210c97d19e68d7"
 dependencies = [
  "did-key",
  "did-method-key",
@@ -1784,7 +1785,6 @@ dependencies = [
 [[package]]
 name = "did_manager"
 version = "0.1.0"
-source = "git+https://github.com/impierce/did-manager.git?rev=aff181b#aff181bc80e82f7a47b2315d16210c97d19e68d7"
 dependencies = [
  "consumer",
  "producer",
@@ -1812,7 +1812,6 @@ dependencies = [
 [[package]]
 name = "did_web"
 version = "0.1.0"
-source = "git+https://github.com/impierce/did-manager.git?rev=aff181b#aff181bc80e82f7a47b2315d16210c97d19e68d7"
 dependencies = [
  "did-web",
  "identity_iota",
@@ -5936,11 +5935,11 @@ dependencies = [
 [[package]]
 name = "producer"
 version = "0.1.0"
-source = "git+https://github.com/impierce/did-manager.git?rev=aff181b#aff181bc80e82f7a47b2315d16210c97d19e68d7"
 dependencies = [
  "anyhow",
  "async-trait",
  "base64-url",
+ "consumer",
  "did_jwk",
  "did_key",
  "did_web",
@@ -6948,7 +6947,6 @@ dependencies = [
 [[package]]
 name = "shared"
 version = "0.1.0"
-source = "git+https://github.com/impierce/did-manager.git?rev=aff181b#aff181bc80e82f7a47b2315d16210c97d19e68d7"
 dependencies = [
  "identity_iota",
  "identity_stronghold",
