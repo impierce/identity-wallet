@@ -18,9 +18,10 @@
 
   let searchTerm: string | null = $page.url.searchParams.get('query');
 
-  $: indices = $state.search_results;
-  $: credentials = $state.credentials.filter((cred) => indices?.current.includes(cred.id));
-  $: recentSearches = $state.credentials.filter((cred) => indices?.recent_credentials.includes(cred.id));
+  $: currentSearchResults = $state.credentials.filter((c) => $state.search_results.current.includes(c.id));
+  $: recentSearches = $state.search_results.recent_credentials.map(
+    (id) => $state.credentials.find((c) => c.id === id)!!,
+  );
 
   // https://stackoverflow.com/questions/57354001/how-to-focus-on-input-field-loaded-from-component-in-svelte
   let searchInput: HTMLInputElement;
@@ -54,7 +55,7 @@
       </div>
     {/if}
     <!-- User has entered something, but there are no results -->
-  {:else if credentials.length == 0}
+  {:else if currentSearchResults.length == 0}
     <div class="pt-12">
       <IconMessage
         icon={Ghost}
@@ -62,13 +63,13 @@
         description={$LL.SEARCH.NO_RESULTS.DESCRIPTION()}
       />
     </div>
-    <!-- User has entered something and there are results.
-      Note: We're doing the if/else checks before to prevent "flashing empty results" before the content has loaded. -->
+    <!-- User has entered something and there are results. -->
+    <!-- Note: We're doing the if/else checks before to prevent "flashing empty results" before the content has loaded. -->
   {:else}
     <div class="w-full space-y-2 p-5">
-      <!-- using "key" to destroy & recreate the complete credentials list to enforce a refresh of logos -->
-      {#key indices}
-        {#each credentials as credential}
+      <!-- Using "key" to destroy & recreate the complete credentials list to enforce a refresh of logos -->
+      {#key $state.search_results}
+        {#each currentSearchResults as credential}
           <ListItemCard
             id={credential.id}
             title={credential.display_name}
