@@ -52,7 +52,7 @@ pub async fn credential_search(state: AppState, action: Action) -> Result<AppSta
 /// Helper for search_query to check if a string contains a search term.
 fn contains_search_term(string: Option<&str>, search_term: &str) -> bool {
     string
-        .map(|string| string.to_lowercase().contains(&search_term.to_lowercase()))
+        .map(|string| string.to_lowercase().contains(&search_term.trim().to_lowercase()))
         .unwrap_or_default()
 }
 
