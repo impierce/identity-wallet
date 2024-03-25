@@ -87,7 +87,7 @@
   });
 
   onDestroy(async () => {
-    dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });
+    dispatch({ type: '[User Flow] Cancel' });
   });
 </script>
 
