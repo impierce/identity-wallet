@@ -26,7 +26,7 @@
 </script>
 
 <TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.APP.NAVBAR_TITLE()} />
-<div class="content-height bg-silver dark:bg-navy flex flex-col">
+<div class="content-height flex flex-col bg-silver dark:bg-navy">
   <div class="flex flex-col space-y-[10px] px-4 py-5">
     <SettingsEntry
       icon={Translate}
@@ -55,7 +55,7 @@
     <SettingsEntry icon={Code} title={$LL.SETTINGS.APP.DEVELOPER_MODE.TITLE()} hasCaretRight={false}>
       <Switch active={$state?.dev_mode !== 'Off'} on:change={toggleDevSettings} />
     </SettingsEntry>
-    {#if $state.dev_mode_enabled}
+    {#if $state.dev_mode !== 'Off'}
       <div transition:fade={{ duration: 200 }}>
         <SettingsEntry
           icon={Files}
