@@ -191,6 +191,11 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         },
     ]);
 
+    state.search_results.recent_credentials = vec![
+        DRIVERS_LICENSE_CREDENTIAL.display_credential.id.clone(),
+        OPEN_BADGE.display_credential.id.clone(),
+    ];
+
     state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
         target: "me".to_string(),
     });
