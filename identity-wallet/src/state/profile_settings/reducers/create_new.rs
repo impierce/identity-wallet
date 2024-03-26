@@ -11,6 +11,7 @@ use crate::{
 };
 
 use did_key::{from_existing_key, Ed25519KeyPair};
+use did_manager::SecretManager;
 use log::info;
 use oid4vc::{
     oid4vc_core::Subject,
@@ -35,6 +36,7 @@ pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppS
 
         let keypair = from_existing_key::<Ed25519KeyPair>(public_key.as_slice(), None);
         let subject = Arc::new(KeySubject::from_keypair(keypair, Some(stronghold_manager.clone())));
+        // let subject = Arc::new(SecretManager::load(snapshot_path, password, key_id));
 
         let provider_manager = ProviderManager::new([subject.clone()]).map_err(OID4VCProviderManagerError)?;
         let wallet: Wallet = Wallet::new(subject.clone());

@@ -6,7 +6,8 @@ use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::AppState;
 use crate::stronghold::StrongholdManager;
 
-use did_key::{from_existing_key, Ed25519KeyPair};
+use did_manager::SecretManager;
+// use did_key::{from_existing_key, Ed25519KeyPair};
 use log::info;
 use oid4vc::oid4vc_manager::{methods::key_method::KeySubject, ProviderManager};
 use oid4vc::oid4vci::Wallet;
@@ -18,10 +19,24 @@ pub async fn unlock_storage(state: AppState, action: Action) -> Result<AppState,
 
         let stronghold_manager = Arc::new(StrongholdManager::load(&password).map_err(StrongholdLoadingError)?);
 
-        let public_key = stronghold_manager.get_public_key().map_err(StrongholdPublicKeyError)?;
+        // let public_key = stronghold_manager.get_public_key().map_err(StrongholdPublicKeyError)?;
 
-        let keypair = from_existing_key::<Ed25519KeyPair>(public_key.as_slice(), None);
-        let subject = Arc::new(KeySubject::from_keypair(keypair, Some(stronghold_manager.clone())));
+        // let keypair = from_existing_key::<Ed25519KeyPair>(public_key.as_slice(), None);
+        // let subject = Arc::new(KeySubject::from_keypair(keypair, Some(stronghold_manager.clone())));
+        let client_path = crate::persistence::STRONGHOLD
+            .lock()
+            .unwrap()
+            .to_str()
+            .ok_or(anyhow::anyhow!("failed to get stronghold path"))
+            .unwrap()
+            .to_owned();
+        // let snapshot_path = format!("{client_path}.snapshot");
+        let password = "sup3rSecr3t".to_owned();
+        let subject = Arc::new(
+            SecretManager::load(client_path, password, "key-0".to_owned())
+                .await
+                .unwrap(),
+        );
 
         let provider_manager = ProviderManager::new([subject.clone()]).map_err(OID4VCProviderManagerError)?;
         let wallet: Wallet = Wallet::new(subject.clone());
