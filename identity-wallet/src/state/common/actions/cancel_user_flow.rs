@@ -6,7 +6,7 @@ use crate::{
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
-/// Action to cancel the user flow and redirect to a specific route.
+/// Action to cancel the user flow and (optionally) redirect to a specific route.
 #[derive(Serialize, Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/CancelUserFlow.ts")]
 pub struct CancelUserFlow {

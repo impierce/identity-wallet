@@ -1,5 +1,6 @@
 use crate::{
     error::AppError::{self, *},
+    persistence::persist_asset,
     state::{
         actions::{listen, Action},
         core_utils::{
@@ -130,6 +131,8 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
         let previously_connected = state.connections.contains(connection_url.as_str(), &client_name);
         let mut connections = state.connections;
         let connection = connections.update_or_insert(&connection_url, &client_name);
+
+        persist_asset("client_0", &connection.id).ok();
 
         // History
         if !previously_connected {
