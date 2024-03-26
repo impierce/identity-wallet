@@ -62,7 +62,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                     )
                 );
                 if let Some(logo_uri) = logo_uri.as_ref().and_then(|s| s.parse::<reqwest::Url>().ok()) {
-                    let _ = download_asset(logo_uri, LogoType::IssuerLogo, 0).await;
+                    let _ = download_asset(logo_uri, LogoType::ClientLogo, 0).await;
                 }
             }
 
@@ -123,7 +123,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                     )
                 );
                 if let Some(logo_uri) = logo_uri.as_ref().and_then(|s| s.parse::<reqwest::Url>().ok()) {
-                    let _ = download_asset(logo_uri, LogoType::IssuerLogo, 0).await;
+                    let _ = download_asset(logo_uri, LogoType::ClientLogo, 0).await;
                 }
             }
 
