@@ -4,7 +4,7 @@ use wiremock::matchers::{method, path};
 use wiremock::{Mock, MockServer, ResponseTemplate};
 
 #[tokio::test]
-async fn when_size_is_less_than_2mb_then_download_should_start() {
+async fn when_size_is_less_than_2_mb_then_download_should_start() {
     let mock_server = MockServer::start().await;
 
     // generate 1MB of random bytes
@@ -27,7 +27,7 @@ async fn when_size_is_less_than_2mb_then_download_should_start() {
 }
 
 #[tokio::test]
-async fn when_size_is_bigger_than_2mb_then_download_should_fail() {
+async fn when_size_is_bigger_than_2_mb_then_download_should_fail() {
     let mock_server = MockServer::start().await;
 
     // generate 3MB of random bytes
