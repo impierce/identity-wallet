@@ -7,6 +7,8 @@
   import LL from '$src/i18n/i18n-svelte';
   import Switch from '$src/lib/components/atoms/Switch.svelte';
 
+  import '@lottiefiles/lottie-player';
+
   import Check from '~icons/ph/check-bold';
   import Copy from '~icons/ph/copy-bold';
 
@@ -48,9 +50,19 @@
           <p class="text-base font-semibold text-slate-800 dark:text-grey">{method.name ?? method.method}</p>
           <!-- <Switch active={method.enabled} /> -->
           {#if method.enabled}
-            <Check class="h-5 w-5 text-primary" />
+            <Check class="h-6 w-6 text-primary" />
           {:else if method.did}
-            <p class="text-[13px]/[24px] font-medium text-primary">Reactivate</p>
+            <!-- <p class="text-primary text-[13px]/[24px] font-medium">Reactivate</p> -->
+            <div class="-mr-1 -mt-1">
+              <lottie-player
+                src="/lottiefiles/Animation-1704188137306.json"
+                autoplay
+                loop
+                speed={1.25}
+                mode="normal"
+                style="width: 32px"
+              />
+            </div>
           {:else}
             <p class="text-[13px]/[24px] font-medium text-primary">Set up</p>
           {/if}
