@@ -1,7 +1,7 @@
 use crate::{
     error::AppError,
     state::{
-        actions::{listen, Action}, connections::Connection, credentials::DisplayCredential, profile_settings::{actions::update_sorting_preference::{ConnectionSorting, CredentialSorting, UpdateSortingPreference}, ConnectionSortMethod, CredentialSortMethod, ProfileSettings, SortingPreferences}, AppState
+        actions::{listen, Action}, connections::Connection, credentials::DisplayCredential, profile_settings::{actions::update_sorting_preference::{ConnectionSorting, CredentialSorting, UpdateSortingPreference}, ConnectionSortMethod, CredentialSortMethod, ProfileSettings}, AppState
     },
 };
 
@@ -42,13 +42,13 @@ pub async fn update_sorting_preference(state: AppState, action: Action) -> Resul
 }
 
 pub async fn sort_credentials(state: AppState, sorting: CredentialSorting) -> Result<AppState, AppError> {
-    let mut credentials: Vec<&DisplayCredential> = state.credentials.iter().collect();
+    let mut credentials: Vec<DisplayCredential> = state.credentials.clone();
 
-    let name_az = |a: &&DisplayCredential, b: &&DisplayCredential| a.display_name.cmp(&b.display_name);
+    let name_az = |a: &DisplayCredential, b: &DisplayCredential| a.display_name.cmp(&b.display_name);
     let issuance_new_old =
-        |a: &&DisplayCredential, b: &&DisplayCredential| a.metadata.date_issued.cmp(&b.metadata.date_issued);
+        |a: &DisplayCredential, b: &DisplayCredential| a.metadata.date_issued.cmp(&b.metadata.date_issued);
     let added_new_old =
-        |a: &&DisplayCredential, b: &&DisplayCredential| a.metadata.date_added.cmp(&b.metadata.date_added);
+        |a: &DisplayCredential, b: &DisplayCredential| a.metadata.date_added.cmp(&b.metadata.date_added);
 
     credentials.sort_by(match sorting.method.unwrap_or_default() {
         CredentialSortMethod::NameAZ => name_az,
@@ -56,31 +56,24 @@ pub async fn sort_credentials(state: AppState, sorting: CredentialSorting) -> Re
         CredentialSortMethod::AddedDateNewOld => added_new_old,
     });
 
-    let mut credentials_sorted: Vec<String> = credentials.iter().map(|s| s.id.clone()).collect();
 
     if sorting.reverse.unwrap_or_default() {
-        credentials_sorted.reverse();
+        credentials.reverse();
     }
 
     Ok(AppState {
-        profile_settings: ProfileSettings {
-            sorting_preferences: Some(SortingPreferences {
-                credentials_sorted,
-                ..state.profile_settings.sorting_preferences.unwrap_or_default()
-            }),
-            ..state.profile_settings
-        },
+        credentials,
         ..state
     })
 }
 
 pub async fn sort_connections(state: AppState, sorting: ConnectionSorting) -> Result<AppState, AppError> {
-    let mut connections: Vec<&Connection> = state.connections.iter().collect();
+    let mut connections: Vec<Connection> = state.connections.clone();
 
-    let name_az = |a: &&Connection, b: &&Connection| a.client_name.cmp(&b.client_name);
+    let name_az = |a: &Connection, b: &Connection| a.client_name.cmp(&b.client_name);
     let first_interacted_new_old =
-        |a: &&Connection, b: &&Connection| a.first_interacted.cmp(&b.first_interacted);
-    let last_interacted_new_old = |a: &&Connection, b: &&Connection| a.last_interacted.cmp(&b.last_interacted);
+        |a: &Connection, b: &Connection| a.first_interacted.cmp(&b.first_interacted);
+    let last_interacted_new_old = |a: &Connection, b: &Connection| a.last_interacted.cmp(&b.last_interacted);
 
     connections.sort_by(match sorting.method.unwrap_or_default() {
         ConnectionSortMethod::NameAZ => name_az,
@@ -88,20 +81,12 @@ pub async fn sort_connections(state: AppState, sorting: ConnectionSorting) -> Re
         ConnectionSortMethod::LastInteractedNewOld => last_interacted_new_old,
     });
 
-    let mut connections_sorted: Vec<String> = connections.iter().map(|s| s.client_name.clone()).collect();
-
     if sorting.reverse.unwrap_or_default() {
-        connections_sorted.reverse();
+        connections.reverse();
     }
 
     Ok(AppState {
-        profile_settings: ProfileSettings {
-            sorting_preferences: Some(SortingPreferences {
-                connections_sorted,
-                ..state.profile_settings.sorting_preferences.unwrap_or_default()
-            }),
-            ..state.profile_settings
-        },
+        connections,
         ..state
     })
 }
