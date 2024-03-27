@@ -5,11 +5,10 @@
   import Button from '$src/lib/components/atoms/Button.svelte';
   import SortPreferencesButton from '$src/lib/connections/sorting/SortingSheetButton.svelte';
   import { dispatch } from '$src/lib/dispatcher';
-import AlphabeticalOrder from '$src/lib/static/AlphabeticalOrder.svelte';
-  import Alphabetical from '~icons/mdi/order-alphabetical-ascending';
+  import AlphabeticalOrder from '$src/lib/static/AlphabeticalOrder.svelte';
+
   import Issued from '~icons/ph/calendar-check';
   import Added from '~icons/ph/calendar-plus';
-  //import List from '~icons/ph/list-dashes';
   import Slider from '~icons/ph/sliders-horizontal';
 
   //import Ascending from '~icons/ph/sort-ascending';
