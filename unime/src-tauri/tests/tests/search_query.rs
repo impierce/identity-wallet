@@ -29,7 +29,8 @@ async fn test_credential_search_query_relevance_order() {
 
     let state = json_example::<AppState>("tests/fixtures/states/shenron_six_credentials_two_connections.json");
     let action = json_example::<Action>("tests/fixtures/actions/credential_search_letter.json");
-    let expected_state = json_example::<AppState>("tests/fixtures/states/shenron_six_credentials_two_connections_search.json");
+    let expected_state =
+        json_example::<AppState>("tests/fixtures/states/shenron_six_credentials_two_connections_search.json");
 
     assert_state_update(
         AppStateContainer(Mutex::new(state)),
@@ -94,7 +95,8 @@ async fn test_credential_add_existing_recent_search_back_on_top() {
 
     let state = json_example::<AppState>("tests/fixtures/states/two_credentials_two_recent_searches.json");
     let action = json_example::<Action>("tests/fixtures/actions/credential_add_recent_search.json");
-    let expected_state = json_example::<AppState>("tests/fixtures/states/two_credentials_existing_recent_search_back_on_top.json");
+    let expected_state =
+        json_example::<AppState>("tests/fixtures/states/two_credentials_existing_recent_search_back_on_top.json");
 
     assert_state_update(
         AppStateContainer(Mutex::new(state)),
@@ -119,12 +121,4 @@ async fn test_credential_delete_recent() {
         vec![Some(expected_state)],
     )
     .await;
-}
-
-#[test]
-fn tets() {
-    let v = vec![1, 2, 3];
-    let panics = std::panic::catch_unwind(|| v[99]).is_err();
-    assert!(panics);
-    println!("Hello, World");
 }
