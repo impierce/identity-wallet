@@ -15,7 +15,7 @@ use ts_rs::TS;
 pub struct ProfileSettings {
     pub locale: Locale,
     pub profile: Option<Profile>,
-    pub sorting_preferences: Option<SortingPreferences>
+    pub sorting_preferences: SortingPreferences
 }
 
 #[typetag::serde(name = "profile_settings")]

@@ -75,21 +75,22 @@ pub async fn sort_credentials<T>(state: AppState, sorting: Option<T>) -> Result<
     })
 }
 
-pub async fn sort_connections(state: AppState, sorting: ConnectionSorting) -> Result<AppState, AppError> {
+pub async fn sort_connections(state: AppState, _action: Action) -> Result<AppState, AppError> {
     let mut connections: Vec<Connection> = state.connections.clone();
+    let preferences: Preferences<ConnectionSortMethod> = state.profile_settings.sorting_preferences.connections.clone();
 
     let name_az = |a: &Connection, b: &Connection| a.client_name.cmp(&b.client_name);
     let first_interacted_new_old =
         |a: &Connection, b: &Connection| a.first_interacted.cmp(&b.first_interacted);
     let last_interacted_new_old = |a: &Connection, b: &Connection| a.last_interacted.cmp(&b.last_interacted);
 
-    connections.sort_by(match sorting.method.unwrap_or_default() {
+    connections.sort_by(match preferences.sort_method {
         ConnectionSortMethod::NameAZ => name_az,
         ConnectionSortMethod::FirstInteractedNewOld => first_interacted_new_old,
         ConnectionSortMethod::LastInteractedNewOld => last_interacted_new_old,
     });
 
-    if sorting.reverse.unwrap_or_default() {
+    if preferences.reverse {
         connections.reverse();
     }
 
