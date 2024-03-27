@@ -3,7 +3,7 @@
 
   import LL from '$src/i18n/i18n-svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
-  import SortPreferencesButton from '$src/lib/components/molecules/sort/SortPreferencesButton.svelte';
+  import SortPreferencesButton from '$src/lib/connections/sorting/SortingSheetButton.svelte';
   import { dispatch } from '$src/lib/dispatcher';
 
   import Alphabetical from '~icons/mdi/order-alphabetical-ascending';
@@ -15,7 +15,7 @@
   //import Ascending from '~icons/ph/sort-ascending';
   //import Grid from '~icons/ph/squares-four';
 
-  import BottomDrawer from '../dialogs/BottomDrawer.svelte';
+  import BottomDrawer from '../../components/molecules/dialogs/BottomDrawer.svelte';
 
   let preferredView: 'list' | 'grid' = 'list';
   let preferences: 'alphabetical' | 'issued' | 'added';
