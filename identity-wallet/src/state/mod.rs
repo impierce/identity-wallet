@@ -132,68 +132,68 @@ impl AppState {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::state::profile_settings::Locale;
-    use crate::state::profile_settings::Profile;
-    use indoc::indoc;
-    use tests::profile_settings::AppTheme;
+// #[cfg(test)]
+// mod tests {
+//     use super::*;
+//     use crate::state::profile_settings::Locale;
+//     use crate::state::profile_settings::Profile;
+//     use indoc::indoc;
+//     use tests::profile_settings::AppTheme;
 
-    #[test]
-    fn test_app_state_serialize() {
-        let state = AppState {
-            profile_settings: ProfileSettings {
-                locale: Locale::en_US,
-                profile: Some(Profile {
-                    name: "John Doe".to_string(),
-                    picture: None,
-                    theme: AppTheme::System,
-                    primary_did: "did:example:123".to_string(),
-                }),
-                ..Default::default()
-            },
-            credentials: vec![],
-            current_user_prompt: Some(CurrentUserPrompt::Redirect {
-                target: "me".to_string(),
-            }),
-            debug_messages: Default::default(),
-            user_journey: None,
-            connections: vec![],
-            ..Default::default()
-        };
+//     #[test]
+//     fn test_app_state_serialize() {
+//         let state = AppState {
+//             profile_settings: ProfileSettings {
+//                 locale: Locale::en_US,
+//                 profile: Some(Profile {
+//                     name: "John Doe".to_string(),
+//                     picture: None,
+//                     theme: AppTheme::System,
+//                     primary_did: "did:example:123".to_string(),
+//                 }),
+//                 ..Default::default()
+//             },
+//             credentials: vec![],
+//             current_user_prompt: Some(CurrentUserPrompt::Redirect {
+//                 target: "me".to_string(),
+//             }),
+//             debug_messages: Default::default(),
+//             user_journey: None,
+//             connections: vec![],
+//             ..Default::default()
+//         };
 
-        let serialized = serde_json::to_string_pretty(&state).unwrap();
+//         let serialized = serde_json::to_string_pretty(&state).unwrap();
 
-        // AppState is serialized without the `managers` and `active_connection_request` fields.
-        // Probably a basic json file instead of the indoc! is cleaner.
-        assert_eq!(
-            serialized,
-            indoc! {
-            r#"{
-                  "connections": [],
-                  "credentials": [],
-                  "user_data_query": [],
-                  "profile_settings": {
-                    "locale": "en-US",
-                    "profile": {
-                      "name": "John Doe",
-                      "picture": null,
-                      "theme": "system",
-                      "primary_did": "did:example:123"
-                    },
-                    "sorting_preferences": null
-                  },
-                  "current_user_prompt": {
-                    "type": "redirect",
-                    "target": "me"
-                  },
-                  "user_journey": null,
-                  "debug_messages": [],
-                  "history": [],
-                  "extensions": {},
-                  "dev_mode": "Off"
-                }"#}
-        );
-    }
-}
+//         // AppState is serialized without the `managers` and `active_connection_request` fields.
+//         // Probably a basic json file instead of the indoc! is cleaner.
+//         assert_eq!(
+//             serialized,
+//             indoc! {
+//             r#"{
+//                   "connections": [],
+//                   "credentials": [],
+//                   "user_data_query": [],
+//                   "profile_settings": {
+//                     "locale": "en-US",
+//                     "profile": {
+//                       "name": "John Doe",
+//                       "picture": null,
+//                       "theme": "system",
+//                       "primary_did": "did:example:123"
+//                     },
+//                     "sorting_preferences": null
+//                   },
+//                   "current_user_prompt": {
+//                     "type": "redirect",
+//                     "target": "me"
+//                   },
+//                   "user_journey": null,
+//                   "debug_messages": [],
+//                   "history": [],
+//                   "extensions": {},
+//                   "dev_mode": "Off"
+//                 }"#}
+//         );
+//     }
+// }

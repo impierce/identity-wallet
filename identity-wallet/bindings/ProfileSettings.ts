@@ -3,4 +3,4 @@ import type { Locale } from "./Locale";
 import type { Profile } from "./Profile";
 import type { SortingPreferences } from "./SortingPreferences";
 
-export interface ProfileSettings { locale: Locale, profile: Profile | null, sorting_preferences: SortingPreferences | null, }
+export interface ProfileSettings { locale: Locale, profile: Profile | null, sorting_preferences: SortingPreferences, }

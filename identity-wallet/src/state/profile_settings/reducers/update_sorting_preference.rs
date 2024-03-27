@@ -9,7 +9,7 @@ use log::debug;
 
 pub async fn update_sorting_preference(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(update_sorting) = listen::<UpdateSortingPreference>(action) {
-        let mut sorting_preferences = state.profile_settings.sorting_preferences.clone().unwrap_or_default();
+        let mut sorting_preferences = state.profile_settings.sorting_preferences.clone();
 
         if let Some(credential_sorting) = update_sorting.credential_sorting {
             debug!("Update credential sorting preference set to: `{:?}`", credential_sorting);
@@ -33,7 +33,7 @@ pub async fn update_sorting_preference(state: AppState, action: Action) -> Resul
 
         return Ok( AppState {
             profile_settings: ProfileSettings {
-                sorting_preferences: Some(sorting_preferences),
+                sorting_preferences,
                 ..state.profile_settings
             },
             ..state
@@ -42,8 +42,9 @@ pub async fn update_sorting_preference(state: AppState, action: Action) -> Resul
     Ok(state)
 }
 
-pub async fn sort_credentials<T>(state: AppState, sorting: Option<T>) -> Result<AppState, AppError> {
+pub async fn sort_credentials(state: AppState, _action: Action) -> Result<AppState, AppError> {
     let mut credentials: Vec<DisplayCredential> = state.credentials.clone();
+    let preferences: Preferences<CredentialSortMethod> = state.profile_settings.sorting_preferences.credentials.clone();
 
     let name_az = |a: &DisplayCredential, b: &DisplayCredential| a.display_name.cmp(&b.display_name);
     let issuance_new_old =
@@ -51,21 +52,14 @@ pub async fn sort_credentials<T>(state: AppState, sorting: Option<T>) -> Result<
     let added_new_old =
         |a: &DisplayCredential, b: &DisplayCredential| a.metadata.date_added.cmp(&b.metadata.date_added);
 
-    //if let Some(sorting) = CredentialSortMethod {
-        credentials.sort_by(match sorting {
-            Some(CredentialSortMethod::NameAZ) => name_az,
-            CredentialSortMethod::IssueDateNewOld => issuance_new_old,
-            CredentialSortMethod::AddedDateNewOld => added_new_old,
-        });
-    //}
-    credentials.sort_by(match sorting.method.unwrap_or_default() {
+    credentials.sort_by(match preferences.sort_method {
         CredentialSortMethod::NameAZ => name_az,
         CredentialSortMethod::IssueDateNewOld => issuance_new_old,
         CredentialSortMethod::AddedDateNewOld => added_new_old,
     });
 
 
-    if sorting.reverse.unwrap_or_default() {
+    if preferences.reverse {
         credentials.reverse();
     }
 
