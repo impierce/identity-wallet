@@ -39,25 +39,6 @@ async fn test_credential_search_query_relevance_order() {
     .await;
 }
 
-// Results for search term "b"
-
-// "32353832-3634-6530-3635-663766373865", = Name: "Volunteer Badge", Issuer: "NGDIL"
-// "65343639-6535-6236-3939-313463653461", = Name: "Business Innovation & Interdisciplinair Samenwerken", = Issuer: "Koning Willem I College"
-// "30306664-6633-3766-3063-393735663837", = Name: "Future Engineer Certificate", Issuer: "Koning Willem I College"
-// "37323764-3935-3531-3636-386334326265", = Name: "School Course Certificate", Issuer: "NGDIL"
-// "39313132-3661-6238-3462-393936663735", = Name: "Higher Education Information Literacy Level 1", Issuer: "NGDIL"
-// "65313633-6666-3135-6464-636630373861"  = Name: "National ID", Issuer: "NGDIL"
-
-// Results for search term "d"
-
-// "32353832-3634-6530-3635-663766373865", = Name: Volunteer Badge, issuer: NGDIL
-// "39313132-3661-6238-3462-393936663735", = Name: Higher Education Information Literacy Level 1, issuer: NGDIL
-// "65313633-6666-3135-6464-636630373861", = Name: National ID, issuer: NGDIL
-// "65343639-6535-6236-3939-313463653461", = Name: Business Innovation & Interdisciplinair Samenwerken, issuer: NGDIL
-// "37323764-3935-3531-3636-386334326265", = Name: School Course Certificate, issuer: NGDIL
-// "30306664-6633-3766-3063-393735663837"  = Name: Future Engineer Certificate, issuer: Koning Willem I College
-
-
 #[tokio::test]
 #[serial_test::serial]
 async fn test_credential_add_recent_search() {
