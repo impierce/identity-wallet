@@ -23,6 +23,25 @@ async fn test_credential_search_query() {
 
 #[tokio::test]
 #[serial_test::serial]
+async fn test_credential_search_query_relevance_order() {
+    setup_state_file();
+    setup_stronghold();
+
+    let state = json_example::<AppState>("tests/fixtures/states/shenron_six_credentials_two_connections.json");
+    let action = json_example::<Action>("tests/fixtures/actions/credential_search_letter.json");
+    let expected_state =
+        json_example::<AppState>("tests/fixtures/states/shenron_six_credentials_two_connections_search.json");
+
+    assert_state_update(
+        AppStateContainer(Mutex::new(state)),
+        vec![action],
+        vec![Some(expected_state)],
+    )
+    .await;
+}
+
+#[tokio::test]
+#[serial_test::serial]
 async fn test_credential_add_recent_search() {
     setup_state_file();
     setup_stronghold();
@@ -64,6 +83,25 @@ async fn test_credential_add_existing_recent_search_does_not_create_duplicate() 
         AppStateContainer(Mutex::new(state.clone())),
         vec![action],
         vec![Some(state)],
+    )
+    .await;
+}
+
+#[tokio::test]
+#[serial_test::serial]
+async fn test_credential_add_existing_recent_search_back_on_top() {
+    setup_state_file();
+    setup_stronghold();
+
+    let state = json_example::<AppState>("tests/fixtures/states/two_credentials_two_recent_searches.json");
+    let action = json_example::<Action>("tests/fixtures/actions/credential_add_recent_search.json");
+    let expected_state =
+        json_example::<AppState>("tests/fixtures/states/two_credentials_existing_recent_search_back_on_top.json");
+
+    assert_state_update(
+        AppStateContainer(Mutex::new(state)),
+        vec![action],
+        vec![Some(expected_state)],
     )
     .await;
 }
