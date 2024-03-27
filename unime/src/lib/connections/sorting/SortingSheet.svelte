@@ -5,7 +5,7 @@
   import Button from '$src/lib/components/atoms/Button.svelte';
   import SortPreferencesButton from '$src/lib/connections/sorting/SortingSheetButton.svelte';
   import { dispatch } from '$src/lib/dispatcher';
-
+import AlphabeticalOrder from '$src/lib/static/AlphabeticalOrder.svelte';
   import Alphabetical from '~icons/mdi/order-alphabetical-ascending';
   import Issued from '~icons/ph/calendar-check';
   import Added from '~icons/ph/calendar-plus';
@@ -53,7 +53,7 @@
           -->
 
         <SortPreferencesButton
-          icon={Alphabetical}
+          icon={AlphabeticalOrder}
           label={$LL.SORT.PREFERENCES.ALPHABETICAL()}
           active={preferences == 'alphabetical'}
           {sortingOrder}
