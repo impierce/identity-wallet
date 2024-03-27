@@ -261,6 +261,7 @@ const de = {
       TITLE: 'Keine Ergebnisse',
       DESCRIPTION: 'Versuche es mit einem anderen Suchbegriff.',
     },
+    RECENT_SEARCHES: 'Zuletzt gesucht',
   },
   CREDENTIAL: {
     NAVBAR_TITLE: 'Credential Informationen',
