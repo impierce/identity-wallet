@@ -4,8 +4,8 @@
   import type { SvelteHTMLElements } from 'svelte/elements';
 
   //import ArrowsDown from '$src/lib/static/svg/ArrowsDown.svelte';
-  import ArrowDown from '~icons/ph/arrow-down';
-  import ArrowUp from '~icons/ph/arrow-up';
+  import ArrowDown from '~icons/ph/arrow-down-bold';
+  import ArrowUp from '~icons/ph/arrow-up-bold';
 
   export let icon: typeof SvelteComponent<SvelteHTMLElements['svg']>;
   export let label: string;
