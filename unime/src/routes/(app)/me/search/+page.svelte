@@ -18,7 +18,7 @@
 
   let searchTerm: string | null = $page.url.searchParams.get('query');
 
-  $: currentSearchResults = $state.credentials.filter((c) => $state.search_results.current.includes(c.id));
+  $: currentSearchResults = $state.search_results.current.map((id) => $state.credentials.find((c) => c.id === id)!!);
   $: recentSearches = $state.search_results.recent_credentials.map(
     (id) => $state.credentials.find((c) => c.id === id)!!,
   );
