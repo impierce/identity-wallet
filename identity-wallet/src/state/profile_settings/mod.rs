@@ -57,12 +57,15 @@ impl FeatTrait for Locale {}
 #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default)]
 #[ts(export)]
 pub struct SortingPreferences {
-    pub credential_sort_method: Option<CredentialSortMethod>,
-    pub credential_reverse: Option<bool>,
-    pub credentials_sorted: Vec<String>,
-    pub connection_sort_method: Option<ConnectionSortMethod>,
-    pub connection_reverse: Option<bool>,
-    pub connections_sorted: Vec<String>
+    pub credentials: Preferences<CredentialSortMethod>,
+    pub connections: Preferences<ConnectionSortMethod>,
+}
+
+#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default)]
+#[ts(export)]
+pub struct Preferences<T> {
+    pub sort_method: T,
+    pub reverse: bool,
 }
 
 #[derive(Clone, Serialize, Debug, Deserialize, TS, Default, PartialEq, EnumString)]

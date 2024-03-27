@@ -14,19 +14,19 @@ pub async fn update_sorting_preference(state: AppState, action: Action) -> Resul
         if let Some(credential_sorting) = update_sorting.credential_sorting {
             debug!("Update credential sorting preference set to: `{:?}`", credential_sorting);
             if let Some(method) = credential_sorting.method {
-                sorting_preferences.credential_sort_method = Some(method);
+                sorting_preferences.credentials.sort_method = method;
             }
             if let Some(reverse) = credential_sorting.reverse {
-                sorting_preferences.credential_reverse = Some(reverse);
+                sorting_preferences.credentials.reverse = reverse;
             }
         }
         else if let Some(connection_sorting) = update_sorting.connection_sorting {
             debug!("Update connection sorting preference set to: `{:?}`", connection_sorting);
             if let Some(method) = connection_sorting.method {
-                sorting_preferences.connection_sort_method = Some(method);
+                sorting_preferences.connections.sort_method = method;
             }
             if let Some(reverse) = connection_sorting.reverse {
-                sorting_preferences.connection_reverse = Some(reverse);
+                sorting_preferences.connections.reverse = reverse;
             }
         }
 
