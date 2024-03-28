@@ -3,11 +3,10 @@ pub mod reducers;
 
 use super::FeatTrait;
 
-use derivative::Derivative;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
-#[derive(Default, Serialize, Deserialize, Derivative, TS, Clone, PartialEq, Debug)]
+#[derive(Default, Serialize, Deserialize, TS, Clone, PartialEq, Debug)]
 #[ts(export)]
 #[serde(default)]
 pub struct SearchResults {
@@ -16,5 +15,5 @@ pub struct SearchResults {
     pub recent_credentials: Vec<String>,
 }
 
-#[typetag::serde(name = "SearchResults")]
+#[typetag::serde(name = "search_results")]
 impl FeatTrait for SearchResults {}

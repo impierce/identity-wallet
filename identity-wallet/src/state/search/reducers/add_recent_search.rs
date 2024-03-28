@@ -9,7 +9,7 @@ const MAX_RECENT_SEARCHES: usize = 3;
 
 pub async fn add_recent_search(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(recent_search) = listen::<AddRecentSearch>(action) {
-        let mut search_results = state.search_results.clone();
+        let mut search_results = state.search_results;
 
         search_results
             .recent_credentials
