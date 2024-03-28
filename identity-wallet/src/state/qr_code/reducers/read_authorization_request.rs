@@ -4,7 +4,7 @@ use crate::{
     state::{
         actions::{listen, Action},
         connections::reducers::handle_siopv2_authorization_request::get_siopv2_client_name_and_logo_uri,
-        core_utils::{helpers::get_unverified_jwt_claims, ConnectionRequest, CoreState},
+        core_utils::{helpers::get_unverified_jwt_claims, ConnectionRequest, CoreUtils},
         credentials::reducers::handle_oid4vp_authorization_request::get_oid4vp_client_name_and_logo_uri,
         qr_code::actions::qrcode_scanned::QrCodeScanned,
         user_prompt::CurrentUserPrompt,
@@ -25,7 +25,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
         .map(|payload| payload.form_urlencoded)
         .filter(|s| !s.starts_with("openid-credential-offer"))
     {
-        let state_guard = state.core_state.managers.lock().await;
+        let state_guard = state.core_utils.managers.lock().await;
         let stronghold_manager = state_guard
             .stronghold_manager
             .as_ref()
@@ -70,9 +70,9 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
 
             drop(state_guard);
             return Ok(AppState {
-                core_state: CoreState {
+                core_utils: CoreUtils {
                     active_connection_request: Some(ConnectionRequest::SIOPv2(siopv2_authorization_request.into())),
-                    ..state.core_state
+                    ..state.core_utils
                 },
                 current_user_prompt: Some(CurrentUserPrompt::AcceptConnection {
                     client_name,
@@ -131,9 +131,9 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
             if !uuids.is_empty() {
                 drop(state_guard);
                 return Ok(AppState {
-                    core_state: CoreState {
+                    core_utils: CoreUtils {
                         active_connection_request: Some(ConnectionRequest::OID4VP(oid4vp_authorization_request.into())),
-                        ..state.core_state
+                        ..state.core_utils
                     },
                     current_user_prompt: Some(CurrentUserPrompt::ShareCredentials {
                         client_name,

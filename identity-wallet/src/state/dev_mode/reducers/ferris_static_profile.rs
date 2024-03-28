@@ -99,7 +99,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
     load_predefined_images().await?;
 
     state
-        .core_state
+        .core_utils
         .managers
         .lock()
         .await
@@ -190,6 +190,11 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             last_interacted: "2024-01-09T08:45:44.217Z".to_string(),
         },
     ]);
+
+    state.search_results.recent_credentials = vec![
+        DRIVERS_LICENSE_CREDENTIAL.display_credential.id.clone(),
+        OPEN_BADGE.display_credential.id.clone(),
+    ];
 
     state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
         target: "me".to_string(),
