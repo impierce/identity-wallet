@@ -1,7 +1,14 @@
 use crate::{
     error::AppError,
     state::{
-        actions::{listen, Action}, connections::{Connection, Connections}, credentials::DisplayCredential, profile_settings::{actions::update_sorting_preference::UpdateSortingPreference, ConnectionSortMethod, CredentialSortMethod, Preferences, ProfileSettings}, AppState
+        actions::{listen, Action},
+        connections::{Connection, Connections},
+        credentials::DisplayCredential,
+        profile_settings::{
+            actions::update_sorting_preference::UpdateSortingPreference, ConnectionSortMethod, CredentialSortMethod,
+            Preferences, ProfileSettings,
+        },
+        AppState,
     },
 };
 
@@ -12,7 +19,10 @@ pub async fn update_sorting_preference(state: AppState, action: Action) -> Resul
         let mut sorting_preferences = state.profile_settings.sorting_preferences.clone();
 
         if let Some(credential_sorting) = update_sorting.credential_sorting {
-            debug!("Update credential sorting preference set to: `{:?}`", credential_sorting);
+            debug!(
+                "Update credential sorting preference set to: `{:?}`",
+                credential_sorting
+            );
             sorting_preferences.credentials.sort_method = credential_sorting;
             // With this nested if let statement the user (should) automatically select the sort method when toggling the reverse icon on that sort method.
             // Check the UX designs if the meaning of this comment not clear.
@@ -21,9 +31,11 @@ pub async fn update_sorting_preference(state: AppState, action: Action) -> Resul
                 debug!("Update credential sorting preference set to: `{:?}`", reverse);
                 sorting_preferences.credentials.reverse = reverse;
             }
-        }
-        else if let Some(connection_sorting) = update_sorting.connection_sorting {
-            debug!("Update connection sorting preference set to: `{:?}`", connection_sorting);
+        } else if let Some(connection_sorting) = update_sorting.connection_sorting {
+            debug!(
+                "Update connection sorting preference set to: `{:?}`",
+                connection_sorting
+            );
             sorting_preferences.connections.sort_method = connection_sorting;
             if let Some(reverse) = update_sorting.reverse {
                 debug!("Update connection sorting preference set to: `{:?}`", reverse);
@@ -31,7 +43,7 @@ pub async fn update_sorting_preference(state: AppState, action: Action) -> Resul
             }
         }
 
-        return Ok( AppState {
+        return Ok(AppState {
             profile_settings: ProfileSettings {
                 sorting_preferences,
                 ..state.profile_settings
@@ -58,15 +70,11 @@ pub async fn sort_credentials(state: AppState, _action: Action) -> Result<AppSta
         CredentialSortMethod::AddedDateNewOld => added_new_old,
     });
 
-
     if preferences.reverse {
         credentials.reverse();
     }
 
-    Ok(AppState {
-        credentials,
-        ..state
-    })
+    Ok(AppState { credentials, ..state })
 }
 
 pub async fn sort_connections(state: AppState, _action: Action) -> Result<AppState, AppError> {
@@ -74,8 +82,7 @@ pub async fn sort_connections(state: AppState, _action: Action) -> Result<AppSta
     let preferences: Preferences<ConnectionSortMethod> = state.profile_settings.sorting_preferences.connections.clone();
 
     let name_az = |a: &Connection, b: &Connection| a.name.cmp(&b.name);
-    let first_interacted_new_old =
-        |a: &Connection, b: &Connection| a.first_interacted.cmp(&b.first_interacted);
+    let first_interacted_new_old = |a: &Connection, b: &Connection| a.first_interacted.cmp(&b.first_interacted);
     let last_interacted_new_old = |a: &Connection, b: &Connection| a.last_interacted.cmp(&b.last_interacted);
 
     connections.sort_by(match preferences.sort_method {
@@ -89,9 +96,7 @@ pub async fn sort_connections(state: AppState, _action: Action) -> Result<AppSta
     }
 
     Ok(AppState {
-        connections: Connections {
-            0: connections
-        },
+        connections: Connections { 0: connections },
         ..state
     })
 }

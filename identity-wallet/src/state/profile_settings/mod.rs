@@ -15,7 +15,7 @@ use ts_rs::TS;
 pub struct ProfileSettings {
     pub locale: Locale,
     pub profile: Option<Profile>,
-    pub sorting_preferences: SortingPreferences
+    pub sorting_preferences: SortingPreferences,
 }
 
 #[typetag::serde(name = "profile_settings")]
@@ -77,7 +77,7 @@ pub enum CredentialSortMethod {
     #[serde(rename = "issue_date_new_old")]
     IssueDateNewOld,
     #[serde(rename = "added_date_new_old")]
-    AddedDateNewOld
+    AddedDateNewOld,
 }
 
 #[derive(Clone, Serialize, Debug, Deserialize, TS, Default, PartialEq, EnumString)]
@@ -89,7 +89,7 @@ pub enum ConnectionSortMethod {
     #[serde(rename = "first_interacted_new_old")]
     FirstInteractedNewOld,
     #[serde(rename = "last_interacted_new_old")]
-    LastInteractedNewOld
+    LastInteractedNewOld,
 }
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone, PartialEq, Eq, Default)]
 #[ts(export, export_to = "bindings/theme.ts")]
