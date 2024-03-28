@@ -1,5 +1,8 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+
   import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
 
   import IconMessage from '$lib/components/molecules/IconMessage.svelte';
   import Search from '$lib/components/molecules/Search.svelte';
@@ -11,35 +14,48 @@
   import Ghost from '~icons/ph/ghost-fill';
   import MagnifyingGlass from '~icons/ph/magnifying-glass-fill';
 
-  let searchTerm: string | undefined;
-  $: indices = $state.user_data_query;
-  $: credentials = $state.credentials.filter((cred) => indices.includes(cred.id));
+  import RecentSearches from './RecentSearches.svelte';
+
+  let searchTerm: string | null = $page.url.searchParams.get('query');
+
+  $: currentSearchResults = $state.search_results.current.map((id) => $state.credentials.find((c) => c.id === id)!!);
+  $: recentSearches = $state.search_results.recent_credentials.map(
+    (id) => $state.credentials.find((c) => c.id === id)!!,
+  );
+
+  // https://stackoverflow.com/questions/57354001/how-to-focus-on-input-field-loaded-from-component-in-svelte
+  let searchInput: HTMLInputElement;
+  onMount(() => {
+    searchInput.focus();
+  });
+
+  function onSearchTermChanged(value: string) {
+    searchTerm = value;
+    $page.url.searchParams.set('query', value);
+    history.replaceState(history.state, '', $page.url);
+    dispatch({ type: '[Search] Query', payload: { search_term: value } });
+  }
 </script>
 
 <div class="content-height bg-silver dark:bg-navy">
   <div class="p-4">
-    <Search
-      on:value={(e) => {
-        searchTerm = e.detail;
-        dispatch({
-          type: '[User Data] Query',
-          payload: {
-            target: 'Credentials',
-            search_term: e.detail,
-          },
-        });
-      }}
-    ></Search>
+    <Search bind:ref={searchInput} value={searchTerm ?? ''} on:value={(e) => onSearchTermChanged(e.detail)}></Search>
   </div>
+  <!-- User has not entered a search term -->
   {#if !searchTerm}
-    <div class="pt-12">
-      <IconMessage
-        icon={MagnifyingGlass}
-        title={$LL.SEARCH.NO_QUERY.TITLE()}
-        description={$LL.SEARCH.NO_QUERY.DESCRIPTION()}
-      />
-    </div>
-  {:else if credentials.length == 0}
+    {#if recentSearches.length > 0}
+      <RecentSearches {recentSearches} />
+    {:else}
+      <div class="pt-12">
+        <IconMessage
+          icon={MagnifyingGlass}
+          title={$LL.SEARCH.NO_QUERY.TITLE()}
+          description={$LL.SEARCH.NO_QUERY.DESCRIPTION()}
+        />
+      </div>
+    {/if}
+    <!-- User has entered something, but there are no results -->
+  {:else if currentSearchResults.length == 0}
     <div class="pt-12">
       <IconMessage
         icon={Ghost}
@@ -47,20 +63,24 @@
         description={$LL.SEARCH.NO_RESULTS.DESCRIPTION()}
       />
     </div>
+    <!-- User has entered something and there are results. -->
+    <!-- Note: We're doing the if/else checks before to prevent "flashing empty results" before the content has loaded. -->
   {:else}
     <div class="w-full space-y-2 p-5">
-      <!-- using "key" to destroy & recreate the complete credentials list to enforce a refresh of logos -->
-      {#key indices}
-        {#each credentials as credential}
+      <!-- Using "key" to destroy & recreate the complete credentials list to enforce a refresh of logos -->
+      {#key $state.search_results}
+        {#each currentSearchResults as credential}
           <ListItemCard
             id={credential.id}
             title={credential.display_name}
             description={credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
             type={credential.data?.type.includes('OpenBadgeCredential') ? 'badge' : 'data'}
-            on:click={() =>
+            on:click={() => {
+              dispatch({ type: '[Search] Add recent', payload: { id: credential.id } });
               credential.data?.type.includes('OpenBadgeCredential')
                 ? goto(`/badges/${credential.id}`)
-                : goto(`/credentials/${credential.id}`)}
+                : goto(`/credentials/${credential.id}`);
+            }}
           />
         {/each}
       {/key}

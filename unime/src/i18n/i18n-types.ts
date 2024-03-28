@@ -718,6 +718,10 @@ type RootTranslation = {
 			 */
 			DESCRIPTION: string
 		}
+		/**
+		 * R​e​c​e​n​t​ ​s​e​a​r​c​h​e​s
+		 */
+		RECENT_SEARCHES: string
 	}
 	CREDENTIAL: {
 		/**
@@ -1501,6 +1505,10 @@ export type TranslationFunctions = {
 			 */
 			DESCRIPTION: () => LocalizedString
 		}
+		/**
+		 * Recent searches
+		 */
+		RECENT_SEARCHES: () => LocalizedString
 	}
 	CREDENTIAL: {
 		/**
