@@ -5,5 +5,6 @@ import type { DevMode } from "./DevMode";
 import type { DisplayCredential } from "./display-credential/DisplayCredential";
 import type { HistoryEvent } from "./HistoryEvent";
 import type { ProfileSettings } from "./ProfileSettings";
+import type { SearchResults } from "./SearchResults";
 
-export interface AppState { connections: Connections, credentials: Array<DisplayCredential>, user_data_query: Array<string>, profile_settings: ProfileSettings, current_user_prompt: CurrentUserPrompt | null, user_journey: any | null, debug_messages: Array<string>, history: Array<HistoryEvent>, dev_mode: DevMode, }
+export interface AppState { connections: Connections, credentials: Array<DisplayCredential>, search_results: SearchResults, profile_settings: ProfileSettings, current_user_prompt: CurrentUserPrompt | null, user_journey: any | null, debug_messages: Array<string>, history: Array<HistoryEvent>, dev_mode: DevMode, }
