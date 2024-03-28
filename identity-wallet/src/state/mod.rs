@@ -6,17 +6,18 @@ pub mod credentials;
 pub mod dev_mode;
 pub mod profile_settings;
 pub mod qr_code;
-pub mod user_data_query;
+pub mod search;
 pub mod user_journey;
 pub mod user_prompt;
 
+use self::search::SearchResults;
 use self::{
-    actions::Action, core_utils::CoreState, dev_mode::DevMode, profile_settings::ProfileSettings,
+    actions::Action, core_utils::CoreUtils, dev_mode::DevMode, profile_settings::ProfileSettings,
     user_prompt::CurrentUserPrompt,
 };
 use crate::state::core_utils::history_event::HistoryEvent;
 use crate::state::credentials::DisplayCredential;
-use crate::{error::AppError, state::connections::Connection};
+use crate::{error::AppError, state::connections::Connections};
 
 use derivative::Derivative;
 use downcast_rs::{impl_downcast, DowncastSync};
@@ -77,14 +78,13 @@ impl AppStateContainer {
 #[ts(export)]
 #[serde(default)]
 pub struct AppState {
-    pub connections: Vec<Connection>,
+    pub connections: Connections,
     pub credentials: Vec<DisplayCredential>,
-    pub user_data_query: Vec<String>,
+    pub search_results: SearchResults,
     /// This field contains utils needed for the backend to perform its tasks.
     #[serde(skip)]
     #[derivative(Debug = "ignore")]
-    pub core_state: CoreState,
-    /// This field contains the profile settings, including Locale.
+    pub core_utils: CoreUtils,
     pub profile_settings: ProfileSettings,
     /// User prompts are a way for the backend to communicate a desired/required user interaction to the frontend.
     pub current_user_prompt: Option<CurrentUserPrompt>,
@@ -93,7 +93,6 @@ pub struct AppState {
     pub user_journey: Option<serde_json::Value>,
     #[ts(type = "Array<string>")]
     pub debug_messages: VecDeque<String>,
-    /// History events
     pub history: Vec<HistoryEvent>,
     /// Extensions will bring along their own redux compliant code, in the unime folder.
     #[ts(skip)]
@@ -104,10 +103,10 @@ pub struct AppState {
 impl Clone for AppState {
     fn clone(&self) -> Self {
         Self {
-            core_state: CoreState {
-                managers: self.core_state.managers.clone(),
+            core_utils: CoreUtils {
+                managers: self.core_utils.managers.clone(),
                 active_connection_request: serde_json::from_value(serde_json::json!(
-                    self.core_state.active_connection_request
+                    self.core_utils.active_connection_request
                 ))
                 .unwrap(),
             },
@@ -117,7 +116,7 @@ impl Clone for AppState {
             debug_messages: self.debug_messages.clone(),
             user_journey: self.user_journey.clone(),
             connections: self.connections.clone(),
-            user_data_query: self.user_data_query.clone(),
+            search_results: self.search_results.clone(),
             history: self.history.clone(),
             extensions: self.extensions.clone(),
             dev_mode: self.dev_mode.clone(),
@@ -151,7 +150,6 @@ impl AppState {
 //                     theme: AppTheme::System,
 //                     primary_did: "did:example:123".to_string(),
 //                 }),
-//                 ..Default::default()
 //             },
 //             credentials: vec![],
 //             current_user_prompt: Some(CurrentUserPrompt::Redirect {
@@ -159,11 +157,11 @@ impl AppState {
 //             }),
 //             debug_messages: Default::default(),
 //             user_journey: None,
-//             connections: vec![],
+//             connections: Connections::new(),
 //             ..Default::default()
 //         };
 
-//         let serialized = serde_json::to_string_pretty(&state).unwrap();
+// //         let serialized = serde_json::to_string_pretty(&state).unwrap();
 
 //         // AppState is serialized without the `managers` and `active_connection_request` fields.
 //         // Probably a basic json file instead of the indoc! is cleaner.
@@ -173,7 +171,10 @@ impl AppState {
 //             r#"{
 //                   "connections": [],
 //                   "credentials": [],
-//                   "user_data_query": [],
+//                   "search_results": {
+//                     "current": [],
+//                     "recent_credentials": []
+//                   },
 //                   "profile_settings": {
 //                     "locale": "en-US",
 //                     "profile": {
@@ -181,8 +182,7 @@ impl AppState {
 //                       "picture": null,
 //                       "theme": "system",
 //                       "primary_did": "did:example:123"
-//                     },
-//                     "sorting_preferences": null
+//                     }
 //                   },
 //                   "current_user_prompt": {
 //                     "type": "redirect",

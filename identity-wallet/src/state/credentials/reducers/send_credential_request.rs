@@ -3,11 +3,7 @@ use crate::{
     persistence::persist_asset,
     state::{
         actions::{listen, Action},
-        connections::Connection,
-        core_utils::{
-            history_event::{EventType, HistoryCredential, HistoryEvent},
-            DateUtils,
-        },
+        core_utils::history_event::{EventType, HistoryCredential, HistoryEvent},
         credentials::{
             actions::credential_offers_selected::CredentialOffersSelected, DisplayCredential,
             VerifiableCredentialRecord,
@@ -31,7 +27,7 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
     info!("send_credential_request");
 
     if let Some(offer_indices) = listen::<CredentialOffersSelected>(action).map(|payload| payload.offer_indices) {
-        let state_guard = state.core_state.managers.lock().await;
+        let state_guard = state.core_utils.managers.lock().await;
         let stronghold_manager = state_guard
             .stronghold_manager
             .as_ref()
@@ -82,16 +78,22 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
             .as_ref()
             .and_then(|display| display.first().cloned());
 
+        // Get the connection url from the credential issuer url host (or use the credential issuer url if it does not
+        // contain a host).
+        let connection_url = credential_issuer_url
+            .host_str()
+            .unwrap_or(credential_issuer_url.as_str());
+
         // Get the credential issuer name or use the credential issuer url.
         let issuer_name = display
             .map(|display| {
                 let issuer_name = display["client_name"]
                     .as_str()
                     .map(|s| s.to_string())
-                    .unwrap_or(credential_issuer_url.to_string());
+                    .unwrap_or(connection_url.to_string());
                 issuer_name
             })
-            .unwrap_or(credential_issuer_url.to_string());
+            .unwrap_or(connection_url.to_string());
 
         let credential_offer_formats = offer_indices
             .into_iter()
@@ -198,19 +200,34 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
             .map(|verifiable_credential_record| verifiable_credential_record.display_credential)
             .collect();
 
+        let previously_connected = state.connections.contains(connection_url, &issuer_name);
+        let mut connections = state.connections;
+        let connection = connections.update_or_insert(connection_url, &issuer_name);
+
+        persist_asset("client_0", &connection.id).ok();
+
         // History
         if !history_credentials.is_empty() {
-            let connection_id = Connection::create_connection_id(&issuer_name);
-
+            // Only add a `ConnectionAdded` event if the connection was not previously connected.
+            if !previously_connected {
+                state.history.push(HistoryEvent {
+                    connection_name: connection.name.clone(),
+                    event_type: EventType::ConnectionAdded,
+                    connection_id: connection.id.clone(),
+                    date: connection.last_interacted.clone(),
+                    credentials: vec![],
+                });
+            }
             state.history.push(HistoryEvent {
-                connection_name: issuer_name,
+                connection_name: connection.name.clone(),
                 event_type: EventType::CredentialsAdded,
-                date: DateUtils::new_date_string(),
-                connection_id,
+                connection_id: connection.id.clone(),
+                date: connection.last_interacted.clone(),
                 credentials: history_credentials,
             });
         }
 
+        state.connections = connections;
         state.credentials = credentials;
 
         state.current_user_prompt = Some(CurrentUserPrompt::Redirect {

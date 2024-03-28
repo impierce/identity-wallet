@@ -43,7 +43,7 @@
 
           <div class="flex grow flex-col items-start">
             <div class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
-              {connection.client_name}
+              {connection.name}
             </div>
             <div class="text-[12px]/[20px] font-medium text-slate-400 dark:text-slate-300">
               {connection.url}
@@ -54,7 +54,7 @@
 
       <ListItemCard
         id={connection.id}
-        title={connection.client_name}
+        title={connection.name}
         description={connection.url}
         on:click={() => goto(`/activity/connection/${connection.id}`)}
       >

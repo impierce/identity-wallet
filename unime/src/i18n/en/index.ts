@@ -260,6 +260,7 @@ const en = {
       TITLE: 'No results found',
       DESCRIPTION: 'Try searching for something else.',
     },
+    RECENT_SEARCHES: 'Recent searches',
   },
   CREDENTIAL: {
     NAVBAR_TITLE: 'Credential Information',
@@ -271,6 +272,16 @@ const en = {
       ISSUED_BY: 'Issued by',
       DESCRIPTION: 'Description',
       CONTENTS: 'Contents',
+    },
+  },
+  SORT: {
+    TITLE: 'Sorting',
+    PREFERENCES: {
+      LIST_VIEW: 'List View',
+      GRID_VIEW: 'Grid View',
+      ALPHABETICAL: 'Alphabetical',
+      DATE_ISSUED: 'Date Issued',
+      DATE_ADDED: 'Date Added',
     },
   },
   CANCEL: 'Cancel',

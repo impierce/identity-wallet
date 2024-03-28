@@ -1,7 +1,7 @@
 use crate::{
     error::AppError,
     state::{
-        actions::{listen, Action}, connections::Connection, credentials::DisplayCredential, profile_settings::{actions::update_sorting_preference::UpdateSortingPreference, ConnectionSortMethod, CredentialSortMethod, Preferences, ProfileSettings}, AppState
+        actions::{listen, Action}, connections::{Connection, Connections}, credentials::DisplayCredential, profile_settings::{actions::update_sorting_preference::UpdateSortingPreference, ConnectionSortMethod, CredentialSortMethod, Preferences, ProfileSettings}, AppState
     },
 };
 
@@ -70,10 +70,10 @@ pub async fn sort_credentials(state: AppState, _action: Action) -> Result<AppSta
 }
 
 pub async fn sort_connections(state: AppState, _action: Action) -> Result<AppState, AppError> {
-    let mut connections: Vec<Connection> = state.connections.clone();
+    let mut connections: Vec<Connection> = state.connections.0.clone();
     let preferences: Preferences<ConnectionSortMethod> = state.profile_settings.sorting_preferences.connections.clone();
 
-    let name_az = |a: &Connection, b: &Connection| a.client_name.cmp(&b.client_name);
+    let name_az = |a: &Connection, b: &Connection| a.name.cmp(&b.name);
     let first_interacted_new_old =
         |a: &Connection, b: &Connection| a.first_interacted.cmp(&b.first_interacted);
     let last_interacted_new_old = |a: &Connection, b: &Connection| a.last_interacted.cmp(&b.last_interacted);
@@ -89,7 +89,9 @@ pub async fn sort_connections(state: AppState, _action: Action) -> Result<AppSta
     }
 
     Ok(AppState {
-        connections,
+        connections: Connections {
+            0: connections
+        },
         ..state
     })
 }

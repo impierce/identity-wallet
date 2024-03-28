@@ -260,6 +260,7 @@ const nl = {
       TITLE: 'Geen resultaten gevonden',
       DESCRIPTION: 'Probeer iets anders te zoeken.',
     },
+    RECENT_SEARCHES: 'Recente zoekopdrachten',
   },
   CREDENTIAL: {
     NAVBAR_TITLE: 'Credential Informatie',
@@ -271,6 +272,16 @@ const nl = {
       ISSUED_BY: 'Uitgegeven door',
       DESCRIPTION: 'Beschrijving',
       CONTENTS: 'Inhoud',
+    },
+  },
+  SORT: {
+    TITLE: 'Sorteer',
+    PREFERENCES: {
+      LIST_VIEW: 'Lijstweergave',
+      GRID_VIEW: 'Rasterweergave',
+      ALPHABETICAL: 'Alfabetische Volgorde',
+      DATE_ISSUED: 'Datum Uitgegeven',
+      DATE_ADDED: 'Datum Toegevoegd',
     },
   },
   CANCEL: 'Annuleren',

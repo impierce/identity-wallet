@@ -103,8 +103,8 @@ pub async fn delete_stronghold() -> anyhow::Result<()> {
 
 #[derive(Display)]
 pub enum LogoType {
-    #[strum(serialize = "issuer")]
-    IssuerLogo,
+    #[strum(serialize = "client")]
+    ClientLogo,
     #[strum(serialize = "credential")]
     CredentialLogo,
 }
@@ -140,7 +140,7 @@ pub fn clear_all_assets() -> Result<(), AppError> {
 /// the downloaded file needs to be further treated and moved out of the `/tmp` folder.
 ///
 /// Restrictions:
-/// - max. file size: 2MB
+/// - max. file size: 2 MB
 /// - supported file types: `.png`, `.svg`
 pub async fn download_asset(url: reqwest::Url, logo_type: LogoType, index: usize) -> Result<(), AppError> {
     let assets_dir = ASSETS_DIR.lock().unwrap().as_path().to_owned();
@@ -168,9 +168,9 @@ pub async fn download_asset(url: reqwest::Url, logo_type: LogoType, index: usize
 
     let mut content = Cursor::new(response.bytes().await?);
 
-    // Abort download if file size is bigger than 2MB
+    // Abort download if file size is bigger than 2 MB
     if content.get_ref().len() > 1_024 * 1_024 * 2 {
-        return Err(AppError::DownloadAborted("File size is bigger than 2MB"));
+        return Err(AppError::DownloadAborted("File size is bigger than 2 MB"));
     }
 
     let mut file = std::fs::File::create(tmp_dir.join(format!("{}_{}.{}", logo_type, index, file_extension)))?;

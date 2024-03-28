@@ -26,7 +26,7 @@
 
   onDestroy(async () => {
     // TODO: is onDestroy also called when user accepts since the component itself is destroyed?
-    dispatch({ type: '[User Flow] Cancel' });
+    dispatch({ type: '[User Flow] Cancel', payload: {} });
   });
 </script>
 
@@ -37,7 +37,7 @@
     <!-- Header -->
     {#if $state.current_user_prompt.logo_uri}
       <div class="flex h-[75px] w-[75px] overflow-hidden rounded-3xl bg-white p-2 dark:bg-silver">
-        <Image id={'issuer_0'} isTempAsset={true} />
+        <Image id={'client_0'} isTempAsset={true} />
       </div>
     {:else}
       <PaddedIcon icon={PlugsConnected} />
