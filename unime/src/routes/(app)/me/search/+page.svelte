@@ -76,7 +76,7 @@
             description={credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
             type={credential.data?.type.includes('OpenBadgeCredential') ? 'badge' : 'data'}
             on:click={() => {
-              dispatch({ type: '[Search] Add Recent', payload: { id: credential.id } });
+              dispatch({ type: '[Search] Add recent', payload: { id: credential.id } });
               credential.data?.type.includes('OpenBadgeCredential')
                 ? goto(`/badges/${credential.id}`)
                 : goto(`/credentials/${credential.id}`);

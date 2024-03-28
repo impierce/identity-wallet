@@ -11,7 +11,7 @@ pub struct AddRecentSearch {
     pub id: String,
 }
 
-#[typetag::serde(name = "[Search] Add Recent")]
+#[typetag::serde(name = "[Search] Add recent")]
 impl ActionTrait for AddRecentSearch {
     fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
         vec![reducer!(add_recent_search)]
