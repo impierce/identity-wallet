@@ -16,6 +16,7 @@
   import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
   import IconMessage from '$src/lib/components/molecules/IconMessage.svelte';
   import Tabs from '$src/lib/components/molecules/navigation/Tabs.svelte';
+  import SortingSheet from '$src/lib/connections/sorting/SortingSheet.svelte';
   import CredentialList from '$src/lib/credentials/CredentialList.svelte';
   import Favorites from '$src/lib/credentials/Favorites.svelte';
   import UserJourney from '$src/lib/journeys/UserJourney.svelte';
@@ -85,25 +86,36 @@
     class="flex grow flex-col items-stretch justify-start rounded-t-[20px] bg-silver p-[18px] dark:bg-navy"
   >
     {#if $state?.credentials && $state?.credentials.length > 0}
-      <Tabs triggers={[$LL.ME.CREDENTIAL_TABS.ALL(), $LL.ME.CREDENTIAL_TABS.DATA(), $LL.ME.CREDENTIAL_TABS.BADGES()]}>
-        <!-- All -->
-        <div slot="0" class="h-full pt-5">
-          <Favorites />
-          <CredentialList />
+      <div class="relative">
+        <div>
+          <Tabs
+            class="mr-[58px]"
+            triggers={[$LL.ME.CREDENTIAL_TABS.ALL(), $LL.ME.CREDENTIAL_TABS.DATA(), $LL.ME.CREDENTIAL_TABS.BADGES()]}
+          >
+            <!-- All -->
+            <div slot="0" class="h-full pt-5">
+              <Favorites />
+              <CredentialList />
+            </div>
+
+            <!-- Data -->
+            <div slot="1" class="h-full pt-5">
+              <Favorites credentialType="data" />
+              <CredentialList credentialType="data" />
+            </div>
+
+            <!-- Badges -->
+            <div slot="2" class="h-full pt-5">
+              <Favorites credentialType="badges" />
+              <CredentialList credentialType="badges" />
+            </div>
+          </Tabs>
         </div>
 
-        <!-- Data -->
-        <div slot="1" class="h-full pt-5">
-          <Favorites credentialType="data" />
-          <CredentialList credentialType="data" />
+        <div class="absolute right-0 top-0 z-50">
+          <SortingSheet />
         </div>
-
-        <!-- Badges -->
-        <div slot="2" class="h-full pt-5">
-          <Favorites credentialType="badges" />
-          <CredentialList credentialType="badges" />
-        </div>
-      </Tabs>
+      </div>
 
       <!-- container that animates and places the button -->
       <div in:fly={{ y: 12, delay: 0, opacity: 1, duration: 200 }} class="absolute bottom-4 right-4">

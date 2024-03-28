@@ -1,6 +1,7 @@
 <script lang="ts">
   import { cubicInOut } from 'svelte/easing';
   import { crossfade } from 'svelte/transition';
+  import { twMerge } from 'tailwind-merge';
 
   import { createTabs, melt } from '@melt-ui/svelte';
 
@@ -31,7 +32,10 @@ A tab component.
 ```
 -->
 <div use:melt={$root} class="flex flex-col">
-  <div use:melt={$list} class="flex h-[39px] shrink-0 overflow-x-auto rounded-xl bg-white dark:bg-dark">
+  <div
+    use:melt={$list}
+    class={twMerge('flex h-[39px] shrink-0 overflow-x-auto rounded-xl bg-white dark:bg-dark', $$props.class)}
+  >
     {#each triggers as triggerItem}
       <button
         use:melt={$trigger(triggerItem)}

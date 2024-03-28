@@ -753,6 +753,34 @@ type RootTranslation = {
 			CONTENTS: string
 		}
 	}
+	SORT: {
+		/**
+		 * S​o​r​t​e​e​r
+		 */
+		TITLE: string
+		PREFERENCES: {
+			/**
+			 * L​i​j​s​t​w​e​e​r​g​a​v​e
+			 */
+			LIST_VIEW: string
+			/**
+			 * R​a​s​t​e​r​w​e​e​r​g​a​v​e
+			 */
+			GRID_VIEW: string
+			/**
+			 * A​l​f​a​b​e​t​i​s​c​h​e​ ​V​o​l​g​o​r​d​e
+			 */
+			ALPHABETICAL: string
+			/**
+			 * D​a​t​u​m​ ​U​i​t​g​e​g​e​v​e​n
+			 */
+			DATE_ISSUED: string
+			/**
+			 * D​a​t​u​m​ ​T​o​e​g​e​v​o​e​g​d
+			 */
+			DATE_ADDED: string
+		}
+	}
 	/**
 	 * C​a​n​c​e​l
 	 */
@@ -1510,6 +1538,34 @@ export type TranslationFunctions = {
 			 * Contents
 			 */
 			CONTENTS: () => LocalizedString
+		}
+	}
+	SORT: {
+		/**
+		 * Sorteer
+		 */
+		TITLE: () => LocalizedString
+		PREFERENCES: {
+			/**
+			 * Lijstweergave
+			 */
+			LIST_VIEW: () => LocalizedString
+			/**
+			 * Rasterweergave
+			 */
+			GRID_VIEW: () => LocalizedString
+			/**
+			 * Alfabetische Volgorde
+			 */
+			ALPHABETICAL: () => LocalizedString
+			/**
+			 * Datum Uitgegeven
+			 */
+			DATE_ISSUED: () => LocalizedString
+			/**
+			 * Datum Toegevoegd
+			 */
+			DATE_ADDED: () => LocalizedString
 		}
 	}
 	/**
