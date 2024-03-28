@@ -1,0 +1,6 @@
+{
+  "type": "[Settings] Update Sorting Preference",
+  "payload": {
+    "connection_sorting": "first_interacted_new_old"
+  }
+}

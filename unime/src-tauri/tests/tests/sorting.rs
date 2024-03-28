@@ -5,13 +5,13 @@ use tokio::sync::Mutex;
 
 #[tokio::test]
 #[serial_test::serial]
-async fn test_credentials_sorting() {
+async fn test_credentials_sorting_name_az_reverse() {
     setup_state_file();
     setup_stronghold();
 
-    let state = json_example::<AppState>("tests/fixtures/states/two_credentials_redirect_me_query.json");
-    let action = json_example::<Action>("tests/fixtures/actions/new_credential_sort.json");
-    let expected_state = json_example::<AppState>("tests/fixtures/states/two_credentials_sort.json");
+    let state = json_example::<AppState>("tests/fixtures/states/four_credentials_redirect_me.json");
+    let action = json_example::<Action>("tests/fixtures/actions/credential_sort_name_az_reverse.json");
+    let expected_state = json_example::<AppState>("tests/fixtures/states/four_credentials_sort_name_az_reverse.json");
     assert_state_update(
         AppStateContainer(Mutex::new(state)),
         vec![action],
@@ -22,9 +22,125 @@ async fn test_credentials_sorting() {
 
 #[tokio::test]
 #[serial_test::serial]
-async fn test_connections_sorting() {
-    todo!()
+async fn test_credentials_sorting_added_reverse() {
+    setup_state_file();
+    setup_stronghold();
+
+    let state = json_example::<AppState>("tests/fixtures/states/four_credentials_redirect_me.json");
+    let action = json_example::<Action>("tests/fixtures/actions/credential_sort_added.json");
+    let expected_state = json_example::<AppState>("tests/fixtures/states/four_credentials_sort_added.json");
+    assert_state_update(
+        AppStateContainer(Mutex::new(state)),
+        vec![action],
+        vec![Some(expected_state)],
+    )
+    .await;
 }
 
-//   left: [DisplayCredential { id: "39373933-3863-3339-3864-646234373631", issuer_name: "Government", format: JwtVcJson(Profile { format: JwtVcJson }), data: Object {"@context": Array [String("https://www.w3.org/2018/credentials/v1"), String("https://www.w3.org/2018/credentials/examples/v1")], "type": Array [String("VerifiableCredential"), String("PersonalInformation")], "issuanceDate": String("2022-01-01T00:00:00Z"), "issuer": String("http://192.168.1.127:9090/"), "credentialSubject": Object {"id": String("did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY"), "givenName": String("Ferris"), "familyName": String("Crabman"), "email": String("ferris.crabman@crabmail.com"), "birthdate": String("1985-05-21")}}, metadata: CredentialMetadata { is_favorite: false, date_added: "", date_issued: "" }, display_name: "", display_color: None, display_icon: None }, DisplayCredential { id: "39383134-6538-3766-3963-303366323930", issuer_name: "Driver License Organisation", format: JwtVcJson(Profile { format: JwtVcJson }), data: Object {"@context": Array [String("https://www.w3.org/2018/credentials/v1"), String("https://www.w3.org/2018/credentials/examples/v1")], "type": Array [String("VerifiableCredential"), String("DriverLicenseCredential")], "issuer": String("http://192.168.1.127:9090/"), "issuanceDate": String("2022-08-15T09:30:00Z"), "expirationDate": String("2027-08-15T23:59:59Z"), "credentialSubject": Object {"id": String("did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY"), "licenseClass": String("Class C"), "issuedBy": String("California"), "validity": String("Valid")}}, metadata: CredentialMetadata { is_favorite: false, date_added: "", date_issued: "" }, display_name: "", display_color: None, display_icon: None }]
-//  right: [DisplayCredential { id: "39383134-6538-3766-3963-303366323930", issuer_name: "Driver License Organisation", format: JwtVcJson(Profile { format: JwtVcJson }), data: Object {"@context": Array [String("https://www.w3.org/2018/credentials/v1"), String("https://www.w3.org/2018/credentials/examples/v1")], "type": Array [String("VerifiableCredential"), String("DriverLicenseCredential")], "issuer": String("http://192.168.1.127:9090/"), "issuanceDate": String("2022-08-15T09:30:00Z"), "expirationDate": String("2027-08-15T23:59:59Z"), "credentialSubject": Object {"id": String("did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY"), "licenseClass": String("Class C"), "issuedBy": String("California"), "validity": String("Valid")}}, metadata: CredentialMetadata { is_favorite: false, date_added: "", date_issued: "" }, display_name: "", display_color: None, display_icon: None }, DisplayCredential { id: "39373933-3863-3339-3864-646234373631", issuer_name: "Government", format: JwtVcJson(Profile { format: JwtVcJson }), data: Object {"@context": Array [String("https://www.w3.org/2018/credentials/v1"), String("https://www.w3.org/2018/credentials/examples/v1")], "type": Array [String("VerifiableCredential"), String("PersonalInformation")], "issuanceDate": String("2022-01-01T00:00:00Z"), "issuer": String("http://192.168.1.127:9090/"), "credentialSubject": Object {"id": String("did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY"), "givenName": String("Ferris"), "familyName": String("Crabman"), "email": String("ferris.crabman@crabmail.com"), "birthdate": String("1985-05-21")}}, metadata: CredentialMetadata { is_favorite: false, date_added: "", date_issued: "" }, display_name: "", display_color: None, display_icon: None }]
+#[tokio::test]
+#[serial_test::serial]
+async fn test_credentials_sorting_issue() {
+    setup_state_file();
+    setup_stronghold();
+
+    let state = json_example::<AppState>("tests/fixtures/states/four_credentials_redirect_me.json");
+    let action = json_example::<Action>("tests/fixtures/actions/credential_sort_issue.json");
+    let expected_state = json_example::<AppState>("tests/fixtures/states/four_credentials_sort_issue.json");
+    assert_state_update(
+        AppStateContainer(Mutex::new(state)),
+        vec![action],
+        vec![Some(expected_state)],
+    )
+    .await;
+}
+
+#[tokio::test]
+#[serial_test::serial]
+async fn test_credentials_sorting_issue_reverse() {
+    setup_state_file();
+    setup_stronghold();
+
+    let state = json_example::<AppState>("tests/fixtures/states/four_credentials_redirect_me.json");
+    let action = json_example::<Action>("tests/fixtures/actions/credential_sort_issue_reverse.json");
+    let expected_state = json_example::<AppState>("tests/fixtures/states/four_credentials_sort_issue_reverse.json");
+    assert_state_update(
+        AppStateContainer(Mutex::new(state)),
+        vec![action],
+        vec![Some(expected_state)],
+    )
+    .await;
+}
+
+// problem with default soritng of connections in four credentials: iota before impierce?
+// test overwrite old settings reverse
+// test initiate defaults
+
+#[tokio::test]
+#[serial_test::serial]
+async fn test_connections_sorting_name_az_reverse() {
+    setup_state_file();
+    setup_stronghold();
+
+    let state = json_example::<AppState>("tests/fixtures/states/three_connections.json");
+    let action = json_example::<Action>("tests/fixtures/actions/connection_sort_name_az_reverse.json");
+    let expected_state = json_example::<AppState>("tests/fixtures/states/three_connections_sort_name_az_reverse.json");
+    assert_state_update(
+        AppStateContainer(Mutex::new(state)),
+        vec![action],
+        vec![Some(expected_state)],
+    )
+    .await;
+}
+
+#[tokio::test]
+#[serial_test::serial]
+async fn test_connections_sorting_first_interact() {
+    setup_state_file();
+    setup_stronghold();
+
+    let state = json_example::<AppState>("tests/fixtures/states/three_connections.json");
+    let action = json_example::<Action>("tests/fixtures/actions/connection_sort_first_interact.json");
+    let expected_state = json_example::<AppState>("tests/fixtures/states/three_connections_sort_first_interact.json");
+    assert_state_update(
+        AppStateContainer(Mutex::new(state)),
+        vec![action],
+        vec![Some(expected_state)],
+    )
+    .await;
+}
+
+#[tokio::test]
+#[serial_test::serial]
+async fn test_connections_sorting_first_interact_reverse() {
+    setup_state_file();
+    setup_stronghold();
+
+    let state = json_example::<AppState>("tests/fixtures/states/three_connections.json");
+    let action = json_example::<Action>("tests/fixtures/actions/connection_sort_first_interact_reverse.json");
+    let expected_state = json_example::<AppState>("tests/fixtures/states/three_connections_sort_first_interact_reverse.json");
+    assert_state_update(
+        AppStateContainer(Mutex::new(state)),
+        vec![action],
+        vec![Some(expected_state)],
+    )
+    .await;
+}
+
+#[tokio::test]
+#[serial_test::serial]
+async fn test_connections_sorting_last_interact() {
+    setup_state_file();
+    setup_stronghold();
+
+    // In fact, the {last_interacted, reverse: true} is the same as {first_interacted, reverse:false}.
+    // We'll make a decision based on the UX to choose which one to use (first_interacted and last_interacted, or, first_interacted with reverse button), since having both would be duplicate.
+    let state = json_example::<AppState>("tests/fixtures/states/three_connections.json");
+    let action = json_example::<Action>("tests/fixtures/actions/connection_sort_last_interact.json");
+    let expected_state = json_example::<AppState>("tests/fixtures/states/three_connections_sort_last_interact.json");
+    assert_state_update(
+        AppStateContainer(Mutex::new(state)),
+        vec![action],
+        vec![Some(expected_state)],
+    )
+    .await;
+}

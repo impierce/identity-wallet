@@ -58,6 +58,20 @@ pub async fn sort_credentials(state: AppState, _action: Action) -> Result<AppSta
     let mut credentials: Vec<DisplayCredential> = state.credentials.clone();
     let preferences: Preferences<CredentialSortMethod> = state.profile_settings.sorting_preferences.credentials.clone();
 
+    // testing
+
+    // let credential = credentials.first().unwrap().data.to_string();
+    // fn contains_search_term(string: Option<&str>, search_term: &str) -> bool {
+    //     string
+    //         .map(|string| string.to_lowercase().contains(&search_term.trim().to_lowercase()))
+    //         .unwrap_or_default()
+    // }
+
+    // if contains_search_term(Some(&credential), "issuanceDate") {
+    //     credentials.first().unwrap().metadata.date_issued = issuanceDate;
+    // }
+
+    //
     let name_az = |a: &DisplayCredential, b: &DisplayCredential| a.display_name.cmp(&b.display_name);
     let issuance_new_old =
         |a: &DisplayCredential, b: &DisplayCredential| a.metadata.date_issued.cmp(&b.metadata.date_issued);
@@ -74,7 +88,11 @@ pub async fn sort_credentials(state: AppState, _action: Action) -> Result<AppSta
         credentials.reverse();
     }
 
-    Ok(AppState { credentials, ..state })
+    Ok(AppState {
+        credentials,
+        current_user_prompt: None,
+        ..state
+    })
 }
 
 pub async fn sort_connections(state: AppState, _action: Action) -> Result<AppState, AppError> {
@@ -97,6 +115,7 @@ pub async fn sort_connections(state: AppState, _action: Action) -> Result<AppSta
 
     Ok(AppState {
         connections: Connections { 0: connections },
+        current_user_prompt: None,
         ..state
     })
 }
