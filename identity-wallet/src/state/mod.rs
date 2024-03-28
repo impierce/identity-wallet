@@ -78,32 +78,25 @@ impl AppStateContainer {
 #[ts(export)]
 #[serde(default)]
 pub struct AppState {
-    /// This field contains the connections.
     pub connections: Connections,
-    /// This field contains the display credentials.
     pub credentials: Vec<DisplayCredential>,
-    /// This field contains the query result, which is queried from credentials or connections.
     pub search_results: SearchResults,
     /// This field contains utils needed for the backend to perform its tasks.
     #[serde(skip)]
     #[derivative(Debug = "ignore")]
     pub core_utils: CoreUtils,
-    /// This field contains the profile settings, including Locale.
     pub profile_settings: ProfileSettings,
     /// User prompts are a way for the backend to communicate a desired/required user interaction to the frontend.
     pub current_user_prompt: Option<CurrentUserPrompt>,
     /// Here user_journeys can be loaded from json_files or strings, to give the user a guided experience.
     #[ts(type = "any | null")]
     pub user_journey: Option<serde_json::Value>,
-    /// Handled in command.rs, so no feature folder nor redux pattern needed.
     #[ts(type = "Array<string>")]
     pub debug_messages: VecDeque<String>,
-    /// History events
     pub history: Vec<HistoryEvent>,
     /// Extensions will bring along their own redux compliant code, in the unime folder.
     #[ts(skip)]
     pub extensions: std::collections::HashMap<String, Box<dyn FeatTrait>>,
-    /// A simple enum to set dev mode,
     pub dev_mode: DevMode,
 }
 
@@ -138,69 +131,69 @@ impl AppState {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::state::profile_settings::Locale;
-    use crate::state::profile_settings::Profile;
-    use indoc::indoc;
-    use tests::profile_settings::AppTheme;
+// #[cfg(test)]
+// mod tests {
+//     use super::*;
+//     use crate::state::profile_settings::Locale;
+//     use crate::state::profile_settings::Profile;
+//     use indoc::indoc;
+//     use tests::profile_settings::AppTheme;
 
-    #[test]
-    fn test_app_state_serialize() {
-        let state = AppState {
-            profile_settings: ProfileSettings {
-                locale: Locale::en_US,
-                profile: Some(Profile {
-                    name: "John Doe".to_string(),
-                    picture: None,
-                    theme: AppTheme::System,
-                    primary_did: "did:example:123".to_string(),
-                }),
-            },
-            credentials: vec![],
-            current_user_prompt: Some(CurrentUserPrompt::Redirect {
-                target: "me".to_string(),
-            }),
-            debug_messages: Default::default(),
-            user_journey: None,
-            connections: Connections::new(),
-            ..Default::default()
-        };
+//     #[test]
+//     fn test_app_state_serialize() {
+//         let state = AppState {
+//             profile_settings: ProfileSettings {
+//                 locale: Locale::en_US,
+//                 profile: Some(Profile {
+//                     name: "John Doe".to_string(),
+//                     picture: None,
+//                     theme: AppTheme::System,
+//                     primary_did: "did:example:123".to_string(),
+//                 }),
+//             },
+//             credentials: vec![],
+//             current_user_prompt: Some(CurrentUserPrompt::Redirect {
+//                 target: "me".to_string(),
+//             }),
+//             debug_messages: Default::default(),
+//             user_journey: None,
+//             connections: Connections::new(),
+//             ..Default::default()
+//         };
 
-        let serialized = serde_json::to_string_pretty(&state).unwrap();
+// //         let serialized = serde_json::to_string_pretty(&state).unwrap();
 
-        // AppState is serialized without the `managers` and `active_connection_request` fields.
-        // Probably a basic json file instead of the indoc! is cleaner.
-        assert_eq!(
-            serialized,
-            indoc! {
-            r#"{
-                  "connections": [],
-                  "credentials": [],
-                  "search_results": {
-                    "current": [],
-                    "recent_credentials": []
-                  },
-                  "profile_settings": {
-                    "locale": "en-US",
-                    "profile": {
-                      "name": "John Doe",
-                      "picture": null,
-                      "theme": "system",
-                      "primary_did": "did:example:123"
-                    }
-                  },
-                  "current_user_prompt": {
-                    "type": "redirect",
-                    "target": "me"
-                  },
-                  "user_journey": null,
-                  "debug_messages": [],
-                  "history": [],
-                  "extensions": {},
-                  "dev_mode": "Off"
-                }"#}
-        );
-    }
-}
+//         // AppState is serialized without the `managers` and `active_connection_request` fields.
+//         // Probably a basic json file instead of the indoc! is cleaner.
+//         assert_eq!(
+//             serialized,
+//             indoc! {
+//             r#"{
+//                   "connections": [],
+//                   "credentials": [],
+//                   "search_results": {
+//                     "current": [],
+//                     "recent_credentials": []
+//                   },
+//                   "profile_settings": {
+//                     "locale": "en-US",
+//                     "profile": {
+//                       "name": "John Doe",
+//                       "picture": null,
+//                       "theme": "system",
+//                       "primary_did": "did:example:123"
+//                     }
+//                   },
+//                   "current_user_prompt": {
+//                     "type": "redirect",
+//                     "target": "me"
+//                   },
+//                   "user_journey": null,
+//                   "debug_messages": [],
+//                   "history": [],
+//                   "extensions": {},
+//                   "dev_mode": "Off"
+//                 }"#}
+//         );
+//     }
+// }

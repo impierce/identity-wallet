@@ -72,7 +72,7 @@ mod bindings {
         },
         dev_mode::actions::dev_profile::DevProfile,
         profile_settings::actions::{
-            create_new::CreateNew, set_locale::SetLocale, update_profile_settings::UpdateProfileSettings,
+            create_new::CreateNew, set_locale::SetLocale, update_profile_settings::UpdateProfileSettings, update_sorting_preference::UpdateSortingPreference,
         },
         qr_code::actions::qrcode_scanned::QrCodeScanned,
         search::actions::{
@@ -117,6 +117,8 @@ mod bindings {
         UpdateCredentialMetadata { payload: UpdateCredentialMetadata },
         #[serde(rename = "[User Journey] Cancel")]
         CancelUserJourney,
+        #[serde(rename = "[Settings] Update Sorting Preference")]
+        UpdateSortingPreference { payload: UpdateSortingPreference},
         #[serde(rename = "[Search] Query")]
         SearchQuery { payload: SearchQuery },
         #[serde(rename = "[Search] Add recent")]

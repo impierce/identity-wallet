@@ -15,6 +15,7 @@ use ts_rs::TS;
 pub struct ProfileSettings {
     pub locale: Locale,
     pub profile: Option<Profile>,
+    pub sorting_preferences: SortingPreferences
 }
 
 #[typetag::serde(name = "profile_settings")]
@@ -53,6 +54,43 @@ pub enum Locale {
 #[typetag::serde(name = "locale")]
 impl FeatTrait for Locale {}
 
+#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default)]
+#[ts(export)]
+pub struct SortingPreferences {
+    pub credentials: Preferences<CredentialSortMethod>,
+    pub connections: Preferences<ConnectionSortMethod>,
+}
+
+#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default)]
+#[ts(export)]
+pub struct Preferences<T> {
+    pub sort_method: T,
+    pub reverse: bool,
+}
+
+#[derive(Clone, Serialize, Debug, Deserialize, TS, Default, PartialEq, EnumString)]
+#[ts(export)]
+pub enum CredentialSortMethod {
+    #[default]
+    #[serde(rename = "name_az")]
+    NameAZ,
+    #[serde(rename = "issue_date_new_old")]
+    IssueDateNewOld,
+    #[serde(rename = "added_date_new_old")]
+    AddedDateNewOld
+}
+
+#[derive(Clone, Serialize, Debug, Deserialize, TS, Default, PartialEq, EnumString)]
+#[ts(export)]
+pub enum ConnectionSortMethod {
+    #[default]
+    #[serde(rename = "name_az")]
+    NameAZ,
+    #[serde(rename = "first_interacted_new_old")]
+    FirstInteractedNewOld,
+    #[serde(rename = "last_interacted_new_old")]
+    LastInteractedNewOld
+}
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone, PartialEq, Eq, Default)]
 #[ts(export, export_to = "bindings/theme.ts")]
 pub enum AppTheme {
