@@ -28,7 +28,7 @@ pub async fn assert_state_update(
         .build(tauri::generate_context!())
         .unwrap();
 
-    let window = tauri::WindowBuilder::new(&app, "main", Default::default())
+    let window = tauri::webview::WebviewWindowBuilder::new(&app, "main", Default::default())
         .build()
         .unwrap();
 
@@ -37,7 +37,7 @@ pub async fn assert_state_update(
 
         tauri::test::assert_ipc_response(
             &window,
-            tauri::window::InvokeRequest {
+            tauri::webview::InvokeRequest {
                 cmd: "handle_action".into(),
                 callback: tauri::ipc::CallbackFn(0),
                 error: tauri::ipc::CallbackFn(1),
