@@ -110,7 +110,7 @@ pub async fn assert_state_update(
             assert_eq!(search_results, expected_search_results);
             assert_eq!(history, expected_history);
 
-            if (extensions.len() != 0) || (expected_extensions.len() != 0) {
+            if (!extensions.is_empty()) || (!expected_extensions.is_empty()) {
                 assert_eq!(
                     extensions
                         .get("test")

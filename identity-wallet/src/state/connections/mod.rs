@@ -147,8 +147,6 @@ mod tests {
 
         // A different server with the same name is treated as a different connection.
         let url = "https://example2.com";
-        // The same name is used.
-        let name = name;
         let connection = connections.update_or_insert(url, name);
         assert_eq!(connection.url, url);
         assert_eq!(connection.name, name);
@@ -170,7 +168,6 @@ mod tests {
         assert!(connections.contains(url, name));
 
         // The same server is used with a different name.
-        let url = url;
         let name = "Example2";
         let connection = connections.update_or_insert(url, name);
         assert_eq!(connection.url, url);

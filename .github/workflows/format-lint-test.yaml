@@ -2,30 +2,99 @@ name: Format, Lint, Test
 
 on:
   push:
-    branches: [ "dev" ]
+    branches: ["dev"]
   pull_request:
-    branches: [ "dev" ]
+    branches: ["dev"]
 
 jobs:
-  build:
-
+  unime_frontend:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20.x'
-    - name: Install dependencies
-      working-directory: ./unime
-      run: npm install    
-    - name: Format
-      working-directory: ./unime
-      run: npm run format:check
-    # - name: Lint
-    #   working-directory: ./unime
-    #   run: npm run lint
-    - name: Test (frontend)
-      working-directory: ./unime
-      run: npx vitest run
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+
+      - name: Install dependencies
+        working-directory: ./unime
+        run: npm install
+
+      - name: Format
+        working-directory: ./unime
+        run: npm run format:check
+
+      # TODO: enable liniting for frontend
+      # - name: Lint
+      #   working-directory: ./unime
+      #   run: npm run lint
+
+      - name: Test
+        working-directory: ./unime
+        run: npx vitest run
+
+  unime_core:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install dependencies
+        working-directory: ./unime/src-tauri
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf libsoup-3.0 javascriptcoregtk-4.1 webkit2gtk-4.1
+
+      - name: Format
+        working-directory: ./unime/src-tauri
+        run: cargo fmt -- --check
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+
+      - name: Build frontend
+        # Otherwise linting will fail with error: The `distDir` configuration is set to `"../build"` but this path doesn't exist
+        working-directory: ./unime
+        run: npm install && npm run build
+
+      - name: Lint
+        working-directory: ./unime/src-tauri
+        run: cargo clippy --all-targets --all-features -- -D warnings
+
+      - name: Test
+        working-directory: ./unime/src-tauri
+        run: cargo test
+
+  identity_wallet:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install dependencies
+        working-directory: ./identity-wallet
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf libsoup-3.0 javascriptcoregtk-4.1 webkit2gtk-4.1
+
+      - name: Format
+        working-directory: ./identity-wallet
+        run: cargo fmt -- --check
+
+      - name: Lint
+        working-directory: ./identity-wallet
+        run: cargo clippy --all-targets --all-features -- -D warnings
+
+      - name: Test
+        working-directory: ./identity-wallet
+        run: cargo test
