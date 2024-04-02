@@ -19,7 +19,7 @@ pub async fn update_credential_metadata(state: AppState, action: Action) -> Resu
         is_favorite,
     }) = listen::<UpdateCredentialMetadata>(action)
     {
-        let state_guard = state.core_state.managers.lock().await;
+        let state_guard = state.core_utils.managers.lock().await;
         let stronghold_manager = state_guard
             .stronghold_manager
             .as_ref()

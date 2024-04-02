@@ -28,7 +28,7 @@ pub async fn assert_state_update(
         .build(tauri::generate_context!())
         .unwrap();
 
-    let window = tauri::WindowBuilder::new(&app, "main", Default::default())
+    let window = tauri::webview::WebviewWindowBuilder::new(&app, "main", Default::default())
         .build()
         .unwrap();
 
@@ -37,7 +37,7 @@ pub async fn assert_state_update(
 
         tauri::test::assert_ipc_response(
             &window,
-            tauri::window::InvokeRequest {
+            tauri::webview::InvokeRequest {
                 cmd: "handle_action".into(),
                 callback: tauri::ipc::CallbackFn(0),
                 error: tauri::ipc::CallbackFn(1),
@@ -57,7 +57,7 @@ pub async fn assert_state_update(
                 profile_settings,
                 credentials,
                 current_user_prompt,
-                user_data_query,
+                search_results,
                 debug_messages,
                 history,
                 extensions,
@@ -69,7 +69,7 @@ pub async fn assert_state_update(
                 profile_settings: expected_profile_settings,
                 credentials: expected_credentials,
                 current_user_prompt: expected_current_user_prompt,
-                user_data_query: expected_user_data_query,
+                search_results: expected_search_results,
                 debug_messages: expected_debug_messages,
                 history: expected_history,
                 extensions: expected_extensions,
@@ -102,9 +102,10 @@ pub async fn assert_state_update(
 
             assert_eq!(debug_messages.len(), expected_debug_messages.len());
             assert_eq!(current_user_prompt, expected_current_user_prompt);
-            assert_eq!(user_data_query, expected_user_data_query);
+            assert_eq!(search_results, expected_search_results);
             assert_eq!(history, expected_history);
-            if (extensions.len() != 0) || (expected_extensions.len() != 0) {
+
+            if (!extensions.is_empty()) || (!expected_extensions.is_empty()) {
                 assert_eq!(
                     extensions
                         .get("test")

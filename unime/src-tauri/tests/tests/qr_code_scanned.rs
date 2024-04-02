@@ -3,12 +3,17 @@ use crate::common::{
     assert_state_update::{assert_state_update, setup_state_file, setup_stronghold},
     test_managers,
 };
-use identity_wallet::oid4vci::credential_format_profiles::{Credential, CredentialFormats, WithCredential};
-use identity_wallet::state::core_utils::CoreState;
-use identity_wallet::state::credentials::VerifiableCredentialRecord;
-use identity_wallet::state::profile_settings::{AppTheme, Profile, ProfileSettings};
-use identity_wallet::state::AppStateContainer;
-use identity_wallet::state::{actions::Action, AppState};
+use identity_wallet::oid4vci::credential_format_profiles::{
+    w3c_verifiable_credentials::jwt_vc_json::JwtVcJson, Credential, CredentialFormats, WithCredential,
+};
+use identity_wallet::state::profile_settings::AppTheme;
+use identity_wallet::state::{
+    actions::Action,
+    core_utils::CoreUtils,
+    credentials::VerifiableCredentialRecord,
+    profile_settings::{Profile, ProfileSettings},
+    AppState, AppStateContainer,
+};
 
 use serde_json::json;
 use tokio::sync::Mutex;
@@ -42,7 +47,7 @@ async fn test_qr_code_scanned_handle_siopv2_authorization_request() {
     let action2 = json_example::<Action>("tests/fixtures/actions/authenticate_connect_accept.json");
 
     let container = AppStateContainer(Mutex::new(AppState {
-        core_state: CoreState {
+        core_utils: CoreUtils {
             managers,
             ..Default::default()
         },
@@ -99,7 +104,7 @@ async fn test_qr_code_scanned_handle_oid4vp_authorization_request() {
     let action2 = json_example::<Action>("tests/fixtures/actions/authenticate_cred_selected.json");
 
     let container = AppStateContainer(Mutex::new(AppState {
-        core_state: CoreState {
+        core_utils: CoreUtils {
             managers,
             ..Default::default()
         },
@@ -149,7 +154,7 @@ async fn test_qr_code_scanned_invalid_qr_code_error() {
     let action = json_example::<Action>("tests/fixtures/actions/qr_scanned_invalid_payload.json");
 
     let container = AppStateContainer(Mutex::new(AppState {
-        core_state: CoreState {
+        core_utils: CoreUtils {
             managers,
             ..Default::default()
         },

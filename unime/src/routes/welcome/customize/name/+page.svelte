@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+
   import { goto } from '$app/navigation';
   import { fade } from 'svelte/transition';
 
@@ -8,8 +10,15 @@
   import { onboarding_state } from '$src/stores';
 
   const defaultName = 'Me';
+  let input: HTMLInputElement;
 
   $onboarding_state.name = $onboarding_state.name || defaultName;
+
+  onMount(() => {
+    if ($onboarding_state.name === defaultName) {
+      input.focus();
+    }
+  });
 </script>
 
 <!-- <TopNavBar title="Appearance" on:back={() => history.back()} /> -->
@@ -31,7 +40,7 @@
       class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] font-normal text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300 dark:caret-slate-300"
       placeholder={$LL.ONBOARDING.CUSTOMIZE.NAME.INPUT_PLACEHOLDER()}
       bind:value={$onboarding_state.name}
-      autofocus={$onboarding_state.name === defaultName}
+      bind:this={input}
     />
   </div>
   <div class="rounded-t-3xl bg-white p-6 dark:bg-dark" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>

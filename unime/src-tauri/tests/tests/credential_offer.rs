@@ -4,7 +4,7 @@ use identity_wallet::oid4vci::credential_issuer::{
 };
 use identity_wallet::oid4vci::credential_offer::{CredentialOffer, CredentialOfferQuery, CredentialsObject};
 use identity_wallet::persistence::ASSETS_DIR;
-use identity_wallet::state::core_utils::CoreState;
+use identity_wallet::state::core_utils::CoreUtils;
 use identity_wallet::state::qr_code::reducers::read_credential_offer::read_credential_offer;
 use identity_wallet::state::AppState;
 use identity_wallet::{
@@ -31,7 +31,7 @@ async fn download_credential_logo() {
         .and(path("/offer/1"))
         .respond_with(
             ResponseTemplate::new(200).set_body_json(CredentialOffer::<CredentialFormats> {
-                credential_issuer: format!("{}", &mock_server.uri()).parse().unwrap(),
+                credential_issuer: mock_server.uri().parse().unwrap(),
                 credentials: vec![CredentialsObject::ByReference("UniversityDegreeCredential".to_string())],
                 grants: None,
             }),
@@ -94,7 +94,7 @@ async fn download_credential_logo() {
         .await;
 
     let app_state = AppState {
-        core_state: CoreState {
+        core_utils: CoreUtils {
             managers: test_managers(vec![]),
             ..Default::default()
         },
@@ -124,7 +124,7 @@ async fn download_issuer_logo() {
         .and(path("/offer/1"))
         .respond_with(
             ResponseTemplate::new(200).set_body_json(CredentialOffer::<CredentialFormats> {
-                credential_issuer: format!("{}", &mock_server.uri()).parse().unwrap(),
+                credential_issuer: mock_server.uri().parse().unwrap(),
                 credentials: vec![CredentialsObject::ByReference("UniversityDegreeCredential".to_string())],
                 grants: None,
             }),
@@ -179,7 +179,7 @@ async fn download_issuer_logo() {
         .await;
 
     let app_state = AppState {
-        core_state: CoreState {
+        core_utils: CoreUtils {
             managers: test_managers(vec![]),
             ..Default::default()
         },
@@ -209,7 +209,7 @@ async fn no_download_when_no_logo_in_metadata() {
         .and(path("/offer/1"))
         .respond_with(
             ResponseTemplate::new(200).set_body_json(CredentialOffer::<CredentialFormats> {
-                credential_issuer: format!("{}", &mock_server.uri()).parse().unwrap(),
+                credential_issuer: mock_server.uri().parse().unwrap(),
                 credentials: vec![CredentialsObject::ByReference("UniversityDegreeCredential".to_string())],
                 grants: None,
             }),
@@ -256,7 +256,7 @@ async fn no_download_when_no_logo_in_metadata() {
     // TODO: assert that function download_asset() is never called (through spy?)
 
     let app_state = AppState {
-        core_state: CoreState {
+        core_utils: CoreUtils {
             managers: test_managers(vec![]),
             ..Default::default()
         },

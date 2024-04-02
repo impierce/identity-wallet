@@ -26,7 +26,7 @@ pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppS
         name, picture, theme, ..
     }) = listen::<CreateNew>(action)
     {
-        let mut state_guard = state.core_state.managers.lock().await;
+        let mut state_guard = state.core_utils.managers.lock().await;
         let stronghold_manager = state_guard
             .stronghold_manager
             .as_ref()
@@ -69,7 +69,7 @@ pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppS
 pub async fn initialize_stronghold(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(password) = listen::<CreateNew>(action).map(|payload| payload.password) {
         state
-            .core_state
+            .core_utils
             .managers
             .lock()
             .await

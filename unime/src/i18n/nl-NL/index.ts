@@ -260,6 +260,7 @@ const nl = {
       TITLE: 'Geen resultaten gevonden',
       DESCRIPTION: 'Probeer iets anders te zoeken.',
     },
+    RECENT_SEARCHES: 'Recente zoekopdrachten',
   },
   CREDENTIAL: {
     NAVBAR_TITLE: 'Credential Informatie',
