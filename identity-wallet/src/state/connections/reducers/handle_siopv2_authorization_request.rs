@@ -18,7 +18,7 @@ use oid4vc::siopv2::siopv2::SIOPv2;
 
 // Sends the authorization response.
 pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: Action) -> Result<AppState, AppError> {
-    let state_guard = state.core_state.managers.lock().await;
+    let state_guard = state.core_utils.managers.lock().await;
 
     let provider_manager = &state_guard
         .identity_manager
@@ -27,7 +27,7 @@ pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: A
         .provider_manager;
 
     let siopv2_authorization_request =
-        match serde_json::from_value(serde_json::json!(state.core_state.active_connection_request)).unwrap() {
+        match serde_json::from_value(serde_json::json!(state.core_utils.active_connection_request)).unwrap() {
             Some(ConnectionRequest::SIOPv2(siopv2_authorization_request)) => siopv2_authorization_request,
             _ => unreachable!(),
         };
@@ -55,7 +55,7 @@ pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: A
     let mut connections = state.connections;
     let connection = connections.update_or_insert(&connection_url, &client_name);
 
-    persist_asset("issuer_0", &connection.id).ok();
+    persist_asset("client_0", &connection.id).ok();
 
     // History
     state.history.push(HistoryEvent {
