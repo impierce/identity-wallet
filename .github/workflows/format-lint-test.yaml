@@ -66,8 +66,7 @@ jobs:
 
       - name: Lint
         working-directory: ./unime/src-tauri
-        run: cargo clippy --all-targets --all-features
-        # TODO: add "-- -D warnings" to make clippy fail on warnings
+        run: cargo clippy --all-targets --all-features -- -D warnings
 
       - name: Test
         working-directory: ./unime/src-tauri
