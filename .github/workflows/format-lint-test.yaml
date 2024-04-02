@@ -54,6 +54,11 @@ jobs:
         working-directory: ./unime/src-tauri
         run: cargo fmt -- --check
 
+      - name: Build frontend
+        # Otherwise linting will fail with error: The `distDir` configuration is set to `"../build"` but this path doesn't exist
+        working-directory: ./unime
+        run: npm install && npm run build  
+
       - name: Lint
         working-directory: ./unime/src-tauri
         run: cargo clippy --all-targets --all-features
