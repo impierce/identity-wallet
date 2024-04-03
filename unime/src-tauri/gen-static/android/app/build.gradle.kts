@@ -7,14 +7,6 @@ plugins {
     id("rust")
 }
 
-// val keystoreProperties = Properties()
-// val keystorePropertiesFile = rootProject.file("key.properties").toPath()
-// if (Files.exists(keystorePropertiesFile)) {
-//     Files.newBufferedReader(keystorePropertiesFile).use { reader ->
-//         keystoreProperties.load(reader)
-//     }
-// }
-
 val keyPropertiesFile = rootProject.file("key.properties")
 val keyProperties = Properties()
 keyProperties.load(FileInputStream(keyPropertiesFile))
@@ -27,8 +19,8 @@ android {
         applicationId = "com.impierce.identity_wallet"
         minSdk = 24
         targetSdk = 33
-        versionCode = 37
-        versionName = "0.4.12"
+        versionCode = 39
+        versionName = "0.5.0"
     }
     signingConfigs {
         create("release") {
