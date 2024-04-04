@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation';
   import { fade, fly, slide } from 'svelte/transition';
 
-  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
+  import ActionSheet from '$src/lib/components/molecules/dialogs/ActionSheet.svelte';
 
   import '@lottiefiles/lottie-player';
 
@@ -144,7 +144,7 @@
         </div>
       </div>
 
-      <BottomDrawer
+      <ActionSheet
         titleText="Complete new goals"
         descriptionText="Start your mission here! Goals will lead you through important features and possibilities of UniMe app."
       >
@@ -164,7 +164,7 @@
             on:click={() => goto('/goals')}>{$LL.CONTINUE()}</button
           > -->
         </div>
-      </BottomDrawer>
+      </ActionSheet>
     {:else}
       <!-- Skipped onboarding journey -->
       <div class="flex grow flex-col items-center justify-center">

@@ -3,7 +3,7 @@
 
   import { melt } from '@melt-ui/svelte';
 
-  import BottomDrawer from '$lib/components/molecules/dialogs/BottomDrawer.svelte';
+  import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
   import LL from '$src/i18n/i18n-svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
 
@@ -59,7 +59,7 @@
   ];
 </script>
 
-<BottomDrawer titleText={$LL.SETTINGS.PROFILE.DISPLAY_PICTURE.CHANGE()} descriptionText={''} isOpen={emojiSelectIsOpen}>
+<ActionSheet titleText={$LL.SETTINGS.PROFILE.DISPLAY_PICTURE.CHANGE()} descriptionText={''} isOpen={emojiSelectIsOpen}>
   <!-- <div slot="trigger"> -->
   <button
     slot="trigger"
@@ -143,7 +143,7 @@
       <Button variant="secondary" label={$LL.CLOSE()} trigger={close} />
     {/if}
   </div>
-</BottomDrawer>
+</ActionSheet>
 
 <!-- TODO: needed? -->
 <style>

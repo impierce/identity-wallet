@@ -32,10 +32,10 @@
   
   Usage:
   ```svelte
-  <BottomDrawer let:trigger titleText="My title" descriptionText="My description">
+  <ActionSheet let:trigger titleText="My title" descriptionText="My description">
     ...
     <div use:melt={trigger}></div>
-  </BottomDrawer>
+  </ActionSheet>
   ```  
   -->
 

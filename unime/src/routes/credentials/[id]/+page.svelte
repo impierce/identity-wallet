@@ -14,7 +14,7 @@
   import Button from '$src/lib/components/atoms/Button.svelte';
   import ButtonRounded from '$src/lib/components/atoms/ButtonRounded.svelte';
   import Image from '$src/lib/components/atoms/Image.svelte';
-  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
+  import ActionSheet from '$src/lib/components/molecules/dialogs/ActionSheet.svelte';
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
   import { state } from '$src/stores';
 
@@ -153,7 +153,7 @@
       {/if}
     </div>
   </div>
-  <BottomDrawer>
+  <ActionSheet>
     <!-- TODO: feature disabled: "Share credential" -->
     <!-- <ButtonRounded slot="trigger" let:trigger {trigger} label="Share" icon={QrCode} class="absolute bottom-4 right-4" /> -->
     <span slot="content" class="flex flex-col items-center justify-center">
@@ -186,7 +186,7 @@
       use:melt={close}
       class="mt-2 w-full rounded-lg border bg-white px-4 py-2 text-neutral-700">Close</button
     >
-  </BottomDrawer>
+  </ActionSheet>
 </div>
 
 <div class="safe-area-top {credentialLogoUrl ? 'bg-silver dark:bg-navy' : ''}" />

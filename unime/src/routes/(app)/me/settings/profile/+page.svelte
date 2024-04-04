@@ -7,7 +7,7 @@
   import LL from '$src/i18n/i18n-svelte';
   import SettingsEntry from '$src/lib/app/settings/SettingsEntry.svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
-  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
+  import ActionSheet from '$src/lib/components/molecules/dialogs/ActionSheet.svelte';
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
 
   import Keyboard from '~icons/ph/keyboard-fill';
@@ -25,7 +25,7 @@
     />
 
     <!-- Delete profile -->
-    <BottomDrawer titleText={$LL.SETTINGS.RESET_APP.TITLE()} descriptionText={$LL.SETTINGS.RESET_APP.DESCRIPTION()}>
+    <ActionSheet titleText={$LL.SETTINGS.RESET_APP.TITLE()} descriptionText={$LL.SETTINGS.RESET_APP.DESCRIPTION()}>
       <button
         slot="trigger"
         let:trigger
@@ -46,7 +46,7 @@
         >
       </div>
       <Button variant="secondary" slot="close" let:close trigger={close} label={$LL.SETTINGS.RESET_APP.CANCEL()} />
-    </BottomDrawer>
+    </ActionSheet>
   </div>
 </div>
 
