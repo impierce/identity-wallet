@@ -8,7 +8,7 @@ import { debug, info, warn } from '@tauri-apps/plugin-log';
  *
  * @param id The identifier of the asset (e.g. the credential_id)
  * @param tmp Specify whether to look in the `tmp` folder (e.g. during a offer), default: `false`
- * @returns
+ * @returns A local URL to the asset if present (else `null`)
  */
 export const getImageAsset = async (id: string, tmp: boolean = false): Promise<string | null> => {
   const appDataDirPath = await appDataDir();

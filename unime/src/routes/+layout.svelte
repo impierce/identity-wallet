@@ -49,8 +49,6 @@
 
   $: {
     // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
-    console.log('+layout.svelte: state', $state);
-
     if ($state?.profile_settings.profile?.theme) {
       determineTheme(systemColorScheme.matches, $state.profile_settings.profile.theme);
     } else {

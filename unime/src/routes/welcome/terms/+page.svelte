@@ -10,19 +10,7 @@
   let ownership_isChecked = false;
 </script>
 
-<!-- <div in:fly={{ x: 128, delay: 400 }} out:fly={{ x: -128, opacity: 1 }}>
-  <div class="content-height flex flex-col bg-neutral-100">
-    <TopNavBar title="Terms & Conditions" on:back={() => history.back()} />
-    <div class="grow">terms</div>
-    <div class="space-y-[10px] rounded-t-3xl bg-white p-6">
-      <Button label="Continue" on:click={() => goto('/welcome/terms')} disabled />
-    </div>
-  </div>
-</div> -->
-<!-- <div in:fade={{ delay: 300 }}> -->
 <TopNavBar title={$LL.ONBOARDING.TERMS.NAVBAR_TITLE()} on:back={() => history.back()} />
-<!-- </div> -->
-<!-- <div class="mt-12 grow p-4" in:fly={{ x: 300, delay: 300 }}> -->
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <div class="px-2 pb-8 pt-4">
     <p class="pb-4 text-3xl font-semibold text-slate-700 dark:text-grey">
@@ -81,14 +69,8 @@
     </div>
   </div>
 </div>
+
 <!-- Actions -->
-<!-- <div class="space-y-[10px] rounded-t-3xl bg-white p-6" in:fly={{ y: 154, delay: 300, opacity: 1 }}> -->
 <div class="rounded-t-3xl bg-white p-6 dark:bg-dark" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <Button label={$LL.CONTINUE()} on:click={() => goto('/welcome/customize/name')} disabled={!ownership_isChecked} />
 </div>
-
-<style>
-  .content-height {
-    height: calc(100vh - var(--safe-area-inset-top));
-  }
-</style>

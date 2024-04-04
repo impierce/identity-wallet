@@ -44,9 +44,9 @@
         icon={Vault}
         title={$LL.SETTINGS.BACKUP_RECOVERY.TITLE()}
         on:click={() => goto('/me/settings/backup')}
-        todo
+        disabled
       />
-      <SettingsEntry icon={SignOut} title={$LL.SETTINGS.LOG_OUT.TITLE()} hasCaretRight={false} todo />
+      <SettingsEntry icon={SignOut} title={$LL.SETTINGS.LOG_OUT.TITLE()} hasCaretRight={false} disabled />
     </div>
 
     <!-- Support -->
@@ -57,7 +57,7 @@
         title={$LL.SETTINGS.SUPPORT.ABOUT.TITLE()}
         on:click={() => goto('/me/settings/about')}
       />
-      <SettingsEntry icon={Envelope} title={$LL.SETTINGS.SUPPORT.FEEDBACK.TITLE()} hasCaretRight={false} todo />
+      <SettingsEntry icon={Envelope} title={$LL.SETTINGS.SUPPORT.FEEDBACK.TITLE()} hasCaretRight={false} disabled />
     </div>
   </div>
 </div>

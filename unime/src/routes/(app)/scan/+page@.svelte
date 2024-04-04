@@ -81,10 +81,9 @@
       current_user_prompt: {
         type: 'accept-connection',
         client_name: 'Some other client',
-        logo_uri: 'https://demo.ngdil.com/imgs/ngdil.svg',
+        logo_uri: undefined,
         redirect_uri: 'https://demo.ngdil.com/auth/callback',
         previously_connected: false,
-        // logo_uri: 'https://picsum.photos/200'
       },
     });
   };
@@ -95,8 +94,7 @@
       current_user_prompt: {
         type: 'share-credentials',
         client_name: 'My Client Name',
-        logo_uri: 'https://demo.ngdil.com/imgs/ngdil.svg',
-        // logo_uri: 'https://picsum.photos/200',
+        logo_uri: undefined,
         options: [$state.credentials[0].id],
       },
     });

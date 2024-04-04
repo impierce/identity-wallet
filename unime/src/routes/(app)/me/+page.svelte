@@ -32,7 +32,6 @@
 
   $: {
     // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
-    console.log('routes/(app)/me/+page.svelte: state', $state);
     if ($state?.profile_settings.profile?.name) {
       initials = calculateInitials($state?.profile_settings.profile?.name);
     }

@@ -33,7 +33,6 @@
   //   goto('/scan');
   // }
 
-  console.log($state.current_user_prompt);
   // TODO: type
   let credential_offer: any = $state.current_user_prompt?.credential_offer ?? {};
   console.log({ credential_offer });

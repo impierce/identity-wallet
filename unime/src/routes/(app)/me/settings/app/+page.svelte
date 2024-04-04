@@ -35,20 +35,20 @@
       on:click={() => goto('/me/settings/app/language')}
     />
     <SettingsEntry icon={Sun} title={$LL.SETTINGS.APP.THEME.LABEL()} on:click={() => goto('/me/settings/app/theme')} />
-    <SettingsEntry icon={Password} title={$LL.SETTINGS.APP.PASSWORD.TITLE()} todo />
+    <SettingsEntry icon={Password} title={$LL.SETTINGS.APP.PASSWORD.TITLE()} disabled />
     <SettingsEntry
       icon={Confetti}
       title={$LL.SETTINGS.APP.ONBOARDING_JOURNEY.TITLE()}
       hasCaretRight={false}
       textRight={$LL.SETTINGS.APP.ONBOARDING_JOURNEY.BUTTON_TEXT()}
-      todo
+      disabled
     />
     <SettingsEntry
       icon={ChatCircleText}
       title={$LL.SETTINGS.APP.HINTS_AND_TIPS.TITLE()}
       hasCaretRight={false}
       textRight={$LL.SETTINGS.APP.HINTS_AND_TIPS.BUTTON_TEXT()}
-      todo
+      disabled
     />
     <SettingsEntry icon={Code} title={$LL.SETTINGS.APP.DEVELOPER_MODE.TITLE()} hasCaretRight={false}>
       <Switch active={$state?.dev_mode !== 'Off'} on:change={toggleDevSettings} />

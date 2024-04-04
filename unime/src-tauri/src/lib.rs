@@ -25,7 +25,7 @@ pub fn run() {
         .plugin(
             tauri_plugin_log::Builder::new()
                 .targets([Target::new(TargetKind::Stdout), Target::new(TargetKind::Webview)])
-                .level(LevelFilter::Debug)
+                .level(LevelFilter::Info)
                 .level_for("unime", LevelFilter::Debug)
                 .level_for("identity_wallet", LevelFilter::Debug)
                 .with_colors(

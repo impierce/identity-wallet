@@ -12,8 +12,6 @@
   export let selected: string | undefined;
   export let showEditButton = false;
 
-  //export let defaultValue = '&#x1F642'; // slightly-smiling-face
-
   const dispatch = createEventDispatcher();
 
   let emojiSelectIsOpen = false;
@@ -60,7 +58,6 @@
 </script>
 
 <ActionSheet titleText={$LL.SETTINGS.PROFILE.DISPLAY_PICTURE.CHANGE()} descriptionText={''} isOpen={emojiSelectIsOpen}>
-  <!-- <div slot="trigger"> -->
   <button
     slot="trigger"
     class="relative flex h-24 w-24 items-center justify-center rounded-full
@@ -68,9 +65,7 @@
       {showEditButton ? 'mb-[34px]' : ''}"
     use:melt={trigger}
     let:trigger
-    on:click={() => {
-      emojiSelectIsOpen = true;
-    }}
+    on:click={() => (emojiSelectIsOpen = true)}
   >
     {#if selected}
       <span class="text-[44px]/[44px]">
@@ -85,23 +80,6 @@
       <Plus class="h-6 w-6 text-slate-700 dark:text-grey" />
     {/if}
   </button>
-  <!-- TODO: Popover is never shown, because not in slot -->
-  <!-- {#if $open}
-      <div
-        use:melt={$content}
-        transition:fade={{ duration: 200 }}
-        class="z-10 w-1/2 rounded-2xl bg-dark p-[20px] shadow-md"
-      >
-        <div use:melt={$arrow} />
-        <div>
-          <p class="text-[12px] font-semibold text-white">Add your profile image</p>
-          <p class="pt-2 text-[11px]/[14px] font-normal text-grey">
-            Customize your UniMe with your own picture or emoji.
-          </p>
-        </div>
-      </div>
-    {/if} -->
-  <!-- </div> -->
   <div
     slot="content"
     class="hide-scrollbar flex snap-x snap-mandatory flex-row items-start space-x-4 overflow-x-scroll"

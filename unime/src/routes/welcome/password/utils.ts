@@ -1,7 +1,8 @@
 import { get } from 'svelte/store';
 
-import LL from '$src/i18n/i18n-svelte';
 import { warn } from '@tauri-apps/plugin-log';
+
+import LL from '$src/i18n/i18n-svelte';
 
 export const passwordPolicy = [
   {

@@ -77,22 +77,3 @@ Displays an image (loaded from disk) or a fallback component.
     />
   </slot>
 {/if}
-
-<!-- TODO: make fallback more generic, default is SvelteComponent with icon -->
-<!-- <slot name="fallback" /> -->
-
-<!-- {#if id}
-  {#await assetUrlPromise then assetUrl}
-    <img
-      src={assetUrl}
-      alt="img"
-      on:error={() => {
-        id = null;
-        console.warn(`could not load image for id=[${id}]`);
-      }}
-      on:load={() => console.log('loading complete')}
-    />
-  {/await}
-{:else}
-  <svelte:component this={icons['User']} class="h-6 w-6 text-slate-800 dark:text-grey" />
-{/if} -->

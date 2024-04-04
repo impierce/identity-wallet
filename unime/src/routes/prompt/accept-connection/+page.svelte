@@ -49,6 +49,7 @@
   <TopNavBar title={$LL.SCAN.CONNECTION_REQUEST.NAVBAR_TITLE()} on:back={() => history.back()} />
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
+    <!-- TODO: backend doesn't need to provide a logo_uri, since logo is always downloaded by backend and stored as "/tmp/client_0.png" -->
     {#if $state.current_user_prompt.logo_uri}
       <div class="flex h-[75px] w-[75px] overflow-hidden rounded-3xl bg-white p-2 dark:bg-silver">
         <Image id={'client_0'} isTempAsset={true} />
@@ -121,8 +122,7 @@
             >
               <div use:melt={$arrow} />
               <div class="break-keep text-sm">
-                Your UniMe app automatically tries to verify the identity of <span
-                  class="underline underline-offset-2"
+                Your UniMe app automatically tries to verify the identity of <span class="underline underline-offset-2"
                   >{$state.current_user_prompt.client_name}</span
                 >
                 to provide you with a secure login.
