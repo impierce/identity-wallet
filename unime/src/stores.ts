@@ -48,7 +48,7 @@ export const state = writable<State>(undefined, (set) => {
 
     if (state.current_user_prompt?.type === 'redirect') {
       const redirect_target = state.current_user_prompt.target;
-      info(`redirecting to: "/${redirect_target}"`);
+      info(`Redirecting to: "/${redirect_target}"`);
       goto(`/${redirect_target}`);
     }
   });

@@ -7,6 +7,7 @@
   import { fly } from 'svelte/transition';
 
   import { melt } from '@melt-ui/svelte';
+  import { info } from '@tauri-apps/plugin-log';
 
   import { dispatch } from '$lib/dispatcher';
   import { getImageAsset } from '$lib/utils';
@@ -38,15 +39,14 @@
     title = credential.display_name;
   }
 
-  // create entries to be shown
-  const { id, enrichment, ...entries } = credential.data.credentialSubject;
-  // entries['issuer'] = credential.data.issuer ?? credential.issuer_name;
-  // entries['issuanceDate'] = new Date(credential.data.issuanceDate).toLocaleString('en-US', {
-  //   dateStyle: 'long',
-  //   timeStyle: 'medium'
-  // });
+  const hiddenStandardFields: string[] = ['id'];
+  // TODO: custom metadata field related to NGDIL demo
+  const hiddenCustomFields: string[] = ['enrichment'];
 
-  console.log({ credential });
+  const entries = { ...credential.data.credentialSubject };
+  hiddenStandardFields.concat(hiddenCustomFields).forEach((key) => delete entries[key]);
+
+  info(JSON.stringify(credential));
 
   let credentialLogoUrl: string | null;
 

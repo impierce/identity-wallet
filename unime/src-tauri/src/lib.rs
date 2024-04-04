@@ -24,20 +24,8 @@ pub fn run() {
         .manage(AppStateContainer(Default::default()))
         .plugin(
             tauri_plugin_log::Builder::new()
-                // .clear_targets()
-                .targets([
-                    Target::new(TargetKind::Stdout),
-                    Target::new(TargetKind::Webview),
-                    // Target::new(TargetKind::LogDir {
-                    //     file_name: Some("webview".into()),
-                    // })
-                    // .filter(|metadata| metadata.target() == WEBVIEW_TARGET),
-                    // Target::new(TargetKind::LogDir {
-                    //     file_name: Some("rust".into()),
-                    // })
-                    // .filter(|metadata| metadata.target() != WEBVIEW_TARGET),
-                ])
-                .level(LevelFilter::Info)
+                .targets([Target::new(TargetKind::Stdout), Target::new(TargetKind::Webview)])
+                .level(LevelFilter::Debug)
                 .level_for("unime", LevelFilter::Debug)
                 .level_for("identity_wallet", LevelFilter::Debug)
                 .with_colors(

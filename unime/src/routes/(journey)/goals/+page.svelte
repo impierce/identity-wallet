@@ -30,8 +30,6 @@
   goals.at(2).completed = false;
 
   let completedPercentage = Math.round((goals.filter((goal) => goal.completed).length / goals.length) * 100);
-
-  console.log(completedPercentage);
 </script>
 
 <!-- Navbar -->

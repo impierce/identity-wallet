@@ -59,7 +59,7 @@
       const formats = [Format.QRCode];
       const windowed = true;
 
-      info(`starting scan with parameters: { formats: ${formats}, windowed: ${windowed} }`);
+      info(`Starting scan with parameters: { formats: ${formats}, windowed: ${windowed} }`);
       scanning = true;
       scan({ formats, windowed })
         .then((res) => {
@@ -111,13 +111,13 @@
 
   // lifecycle functions
   onDestroy(async () => {
-    console.log('onDestroy: /scan');
+    debug('/scan: onDestroy() called');
     document.documentElement.querySelector('body')!!.classList.remove('transparent');
     await cancelScan();
   });
 
   onMount(async () => {
-    console.log('onMount: /scan');
+    debug('/scan: onMount() called');
     document.documentElement.querySelector('body')!!.classList.add('transparent');
 
     // TODO find a good way to test if not dev_mode. This will have to be checked after $state is loaded.

@@ -14,7 +14,6 @@
   // Reactive open state passed in from the outside
   export let isOpen = false;
   $: {
-    console.log('isOpen', isOpen);
     open.set(isOpen);
   }
 </script>

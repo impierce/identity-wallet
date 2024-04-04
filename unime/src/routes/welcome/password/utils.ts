@@ -1,6 +1,7 @@
 import { get } from 'svelte/store';
 
 import LL from '$src/i18n/i18n-svelte';
+import { warn } from '@tauri-apps/plugin-log';
 
 export const passwordPolicy = [
   {
@@ -29,9 +30,11 @@ export const checkPasswordPolicy = (password: string) => {
   const violations: string[] = [];
   passwordPolicy.forEach((rule) => {
     if (!password.match(rule.regex)) {
-      console.warn(`Password does not match: ${rule.name}`);
       violations.push(rule.name);
     }
   });
+  if (violations.length !== 0) {
+    warn(`Password policy violations: ${JSON.stringify(violations)}`);
+  }
   return violations;
 };
