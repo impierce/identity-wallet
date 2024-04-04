@@ -6,11 +6,10 @@
   import { debug, warn } from '@tauri-apps/plugin-log';
 
   import { getImageAsset } from '$lib/utils';
-  import { icons, type Icon } from '$src/lib/app/icons';
+
+  import User from '~icons/ph/user-light';
 
   export let id: string | null = null;
-
-  export let iconFallback: Icon = 'User';
 
   export let isTempAsset: boolean = false;
 
@@ -72,7 +71,7 @@ Displays an image (loaded from disk) or a fallback component.
 {:else}
   <slot name="fallback">
     <svelte:component
-      this={icons[iconFallback]}
+      this={User}
       class={twMerge('h-[18px] w-[18px] text-slate-800 dark:text-grey', $$props.iconClass)}
       data-testid="icon"
     />

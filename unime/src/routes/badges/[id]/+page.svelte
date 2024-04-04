@@ -18,10 +18,8 @@
   import Image from '$src/lib/components/atoms/Image.svelte';
   import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
-  import CredentialDetailsDropdownMenu from '$src/lib/credentials/CredentialDetailsDropdownMenu.svelte';
   import { state } from '$src/stores';
 
-  import DotsThreeVertical from '~icons/ph/dots-three-vertical-bold';
   import Heart from '~icons/ph/heart-straight';
   import HeartFill from '~icons/ph/heart-straight-fill';
   import QrCode from '~icons/ph/qr-code';
@@ -29,7 +27,6 @@
 
   let credential = $state.credentials.find((c) => $page.params.id === c.id)!!;
 
-  let icon = credential.display_icon || 'User';
   let title = credential.display_name;
 
   let credentialLogoUrl: string | null;
@@ -44,10 +41,9 @@
 
   $: {
     const credential = $state.credentials.find((c) => $page.params.id === c.id)!!;
-    // TODO: update icon, title, isFavorite when changes in store
+    // TODO: update title, isFavorite when changes in store
     isFavorite = credential.metadata.is_favorite;
     title = credential.display_name;
-    icon = credential.display_icon || 'User';
   }
 
   const hiddenStandardFields: string[] = ['id', 'type', 'name', 'description', 'image'];
@@ -131,7 +127,7 @@
             <Heart class="h-6 w-6 dark:text-white" />
           {/if}
         </button>
-        <div class="mr-2 flex h-[165px] w-[165px] flex-col items-center justify-center rounded-3xl bg-white">
+        <div class="flex h-[165px] w-[165px] flex-col items-center justify-center rounded-3xl bg-white">
           <Image
             id={$page.params.id}
             imgClass="h-[128px] w-[128px] rounded-xl"
@@ -139,11 +135,8 @@
             iconClass="h-10 w-10 dark:text-slate-800"
           />
         </div>
-        <div class="-mr-3 -mt-1">
-          <!-- <CredentialDetailsDropdownMenu {credential} class="dark:text-white" /> -->
-          <!-- Editing the appearance of a badge is not supported, therefore the menu is hidden -->
-          <DotsThreeVertical class="m-1 h-6 w-6 opacity-0 dark:text-white" />
-        </div>
+        <!-- Empty element with the same dimensions and placements as the "Favorite" button -->
+        <div class="-mt-1 mr-1 h-6 w-6"></div>
       </div>
       <!-- Text -->
       <div class="z-10 flex flex-col items-center pt-[15px]">

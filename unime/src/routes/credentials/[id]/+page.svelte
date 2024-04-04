@@ -11,13 +11,11 @@
   import { dispatch } from '$lib/dispatcher';
   import { getImageAsset } from '$lib/utils';
   import LL from '$src/i18n/i18n-svelte';
-  import { colors } from '$src/lib/app/colors';
   import Button from '$src/lib/components/atoms/Button.svelte';
   import ButtonRounded from '$src/lib/components/atoms/ButtonRounded.svelte';
   import Image from '$src/lib/components/atoms/Image.svelte';
   import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
-  import CredentialDetailsDropdownMenu from '$src/lib/credentials/CredentialDetailsDropdownMenu.svelte';
   import { state } from '$src/stores';
 
   import Heart from '~icons/ph/heart-straight';
@@ -27,9 +25,6 @@
 
   let credential = $state.credentials.find((c) => $page.params.id === c.id)!!;
 
-  let color = credential.display_color || colors.at(0);
-
-  let icon: any = credential.display_icon || 'User';
   let title: string = credential.display_name;
 
   let qrcodeText = JSON.stringify(credential, null, 0);
@@ -38,18 +33,9 @@
 
   $: {
     const credential = $state.credentials.find((c) => $page.params.id === c.id)!!;
-    // TODO: update icon, title, isFavorite when changes in store
+    // TODO: update title, isFavorite when changes in store
     isFavorite = credential.metadata.is_favorite;
     title = credential.display_name;
-    icon = credential.display_icon || 'User';
-    color =
-      credential.display_color ||
-      colors.at(
-        credential.id
-          .match(/[0-9]+/)
-          .at(0)
-          .at(0) % 8, // TODO: omits last value (white)
-      );
   }
 
   // create entries to be shown
@@ -73,7 +59,7 @@
   <!-- Background (scaled, blurred, transparent) -->
   <div class="absolute left-0 z-10 {credentialLogoUrl ? 'top-0 h-[270px]' : 'top-[50px] h-[220px]'} w-screen">
     {#if !credentialLogoUrl}
-      <div class="{color} relative h-[220px]"></div>
+      <div class="relative h-[220px]"></div>
     {:else}
       <img
         src={credentialLogoUrl}
@@ -86,12 +72,11 @@
   <TopNavBar
     title={$LL.CREDENTIAL.NAVBAR_TITLE()}
     on:back={() => history.back()}
-    class={credentialLogoUrl ? '' : `${color} dark:${color} text-slate-800 dark:text-slate-800`}
+    class={credentialLogoUrl ? '' : `text-slate-800 dark:text-slate-800`}
   />
   <div class="hide-scrollbar grow overflow-y-scroll bg-silver px-[15px] dark:bg-navy">
     <!-- Header -->
     <!-- Background-->
-    <!-- <div class="absolute left-0 top-[50px] h-[220px] w-screen {color}" /> -->
     <div class="relative z-10">
       <div class="flex flex-col px-2 py-[20px]">
         <!-- Logo -->
@@ -115,13 +100,15 @@
           </button>
           <!-- TODO: remove border entirely? -->
           <div
-            class="{color} mr-2 flex h-[75px] w-[75px] items-center justify-center overflow-hidden rounded-3xl border-[5px] border-white bg-white p-2"
+            class="flex h-[75px] w-[75px] items-center justify-center overflow-hidden rounded-3xl border-[5px] border-white bg-white p-2"
           >
             <Image id={$page.params.id} iconClass={'h-6 w-6 dark:text-slate-800'} />
           </div>
-          <div class="-mr-3 -mt-1">
+          <!-- Empty element with the same dimensions and placements as the "Favorite" button -->
+          <div class="-mt-1 mr-1 h-6 w-6"></div>
+          <!-- <div class="-mr-3 -mt-1">
             <CredentialDetailsDropdownMenu {credential} class={credentialLogoUrl ? 'dark:text-white' : ''} />
-          </div>
+          </div> -->
           <!-- <button class="-mr-1 -mt-1 rounded-full p-1">
           <DotsThreeVertical class="h-6 w-6" />
         </button> -->
@@ -171,9 +158,7 @@
     <!-- <ButtonRounded slot="trigger" let:trigger {trigger} label="Share" icon={QrCode} class="absolute bottom-4 right-4" /> -->
     <span slot="content" class="flex flex-col items-center justify-center">
       <!-- Logo -->
-      <div
-        class="{color} flex h-[75px] w-[75px] flex-col items-center justify-center rounded-[20px] border-[5px] border-white"
-      >
+      <div class="flex h-[75px] w-[75px] flex-col items-center justify-center rounded-[20px] border-[5px] border-white">
         <!-- <svelte:component this={icon} class="h-6 w-6 text-slate-800" /> -->
       </div>
       <!-- Description -->
@@ -204,7 +189,7 @@
   </BottomDrawer>
 </div>
 
-<div class="safe-area-top {credentialLogoUrl ? 'bg-silver dark:bg-navy' : color}" />
+<div class="safe-area-top {credentialLogoUrl ? 'bg-silver dark:bg-navy' : ''}" />
 <div class="safe-area-bottom z-10 bg-silver dark:bg-navy" />
 
 <style>
