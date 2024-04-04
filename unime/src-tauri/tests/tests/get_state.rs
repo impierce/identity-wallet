@@ -3,7 +3,7 @@ use crate::common::{json_example, test_managers};
 use identity_wallet::state::profile_settings::AppTheme;
 use identity_wallet::state::{
     actions::Action,
-    core_utils::CoreState,
+    core_utils::CoreUtils,
     profile_settings::{Profile, ProfileSettings},
     AppState, AppStateContainer,
 };
@@ -52,7 +52,7 @@ async fn test_get_state_unlock_storage() {
     let action2 = json_example::<Action>("tests/fixtures/actions/unlock_storage.json");
 
     let container = AppStateContainer(Mutex::new(AppState {
-        core_state: CoreState {
+        core_utils: CoreUtils {
             managers: test_managers(vec![]),
             ..Default::default()
         },
@@ -99,7 +99,7 @@ async fn test_get_state_unlock_storage_invalid_password() {
     let action2 = json_example::<Action>("tests/fixtures/actions/unlock_storage_incorrect_password.json");
 
     let container = AppStateContainer(Mutex::new(AppState {
-        core_state: CoreState {
+        core_utils: CoreUtils {
             managers: test_managers(vec![]),
             ..Default::default()
         },

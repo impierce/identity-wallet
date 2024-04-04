@@ -260,6 +260,7 @@ const en = {
       TITLE: 'No results found',
       DESCRIPTION: 'Try searching for something else.',
     },
+    RECENT_SEARCHES: 'Recent searches',
   },
   CREDENTIAL: {
     NAVBAR_TITLE: 'Credential Information',

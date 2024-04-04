@@ -29,7 +29,7 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
     info!("handle_presentation_request");
 
     if let Some(credential_uuids) = listen::<CredentialsSelected>(action).map(|payload| payload.credential_uuids) {
-        let state_guard = state.core_state.managers.lock().await;
+        let state_guard = state.core_utils.managers.lock().await;
 
         let stronghold_manager = state_guard
             .stronghold_manager
@@ -42,7 +42,7 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
             .provider_manager;
 
         let oid4vp_authorization_request =
-            match serde_json::from_value(serde_json::json!(state.core_state.active_connection_request)).unwrap() {
+            match serde_json::from_value(serde_json::json!(state.core_utils.active_connection_request)).unwrap() {
                 ConnectionRequest::OID4VP(oid4vp_authorization_request) => oid4vp_authorization_request,
                 ConnectionRequest::SIOPv2(_) => unreachable!(),
             };
@@ -132,7 +132,7 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
         let mut connections = state.connections;
         let connection = connections.update_or_insert(&connection_url, &client_name);
 
-        persist_asset("issuer_0", &connection.id).ok();
+        persist_asset("client_0", &connection.id).ok();
 
         // History
         if !previously_connected {

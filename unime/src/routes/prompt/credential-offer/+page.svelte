@@ -71,7 +71,7 @@
   let credentialLogoUrls = {};
 
   onMount(async () => {
-    issuerLogoUrl = await getImageAsset('issuer_0', true);
+    issuerLogoUrl = await getImageAsset('client_0', true);
     // credentialLogoUrl = await getImageAsset('credential', true);
 
     // $state?.current_user_prompt?.display?.forEach(async (display, i) => {
@@ -87,7 +87,7 @@
   });
 
   onDestroy(async () => {
-    dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });
+    dispatch({ type: '[User Flow] Cancel', payload: {} });
   });
 </script>
 
@@ -100,7 +100,7 @@
       <!-- TODO: should fallback to <PaddedIcon> instead of icon -->
 
       <Image
-        id={'issuer_0'}
+        id={'client_0'}
         isTempAsset={true}
         iconClass="dark:text-slate-800"
         imgClass="flex w-full items-center justify-center overflow-hidden rounded-3xl p-2"

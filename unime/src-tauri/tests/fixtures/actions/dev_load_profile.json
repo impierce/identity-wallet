@@ -1,8 +1,8 @@
 {
-    "type": "[DEV] Load DEV profile",
-    "payload": {
-        "profile": "Ferris",
-        "execute_step": null,
-        "reset_profile": true
-    }
+  "type": "[DEV] Load DEV profile",
+  "payload": {
+    "profile": "Ferris",
+    "execute_step": null,
+    "reset_profile": true
+  }
 }

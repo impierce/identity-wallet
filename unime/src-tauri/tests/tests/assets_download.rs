@@ -1,10 +1,14 @@
 use identity_wallet::error::AppError;
-use identity_wallet::persistence::{download_asset, LogoType};
+use identity_wallet::persistence::{download_asset, LogoType, ASSETS_DIR};
+use tempfile::TempDir;
 use wiremock::matchers::{method, path};
 use wiremock::{Mock, MockServer, ResponseTemplate};
 
 #[tokio::test]
-async fn when_size_is_less_than_2mb_then_download_should_start() {
+#[serial_test::serial]
+async fn when_size_is_less_than_2_mb_then_download_should_start() {
+    setup_empty_assets_dir();
+
     let mock_server = MockServer::start().await;
 
     // generate 1MB of random bytes
@@ -27,7 +31,10 @@ async fn when_size_is_less_than_2mb_then_download_should_start() {
 }
 
 #[tokio::test]
-async fn when_size_is_bigger_than_2mb_then_download_should_fail() {
+#[serial_test::serial]
+async fn when_size_is_bigger_than_2_mb_then_download_should_fail() {
+    setup_empty_assets_dir();
+
     let mock_server = MockServer::start().await;
 
     // generate 3MB of random bytes
@@ -50,7 +57,10 @@ async fn when_size_is_bigger_than_2mb_then_download_should_fail() {
 }
 
 #[tokio::test]
+#[serial_test::serial]
 async fn when_content_type_is_supported_then_download_should_start() {
+    setup_empty_assets_dir();
+
     let mock_server = MockServer::start().await;
 
     Mock::given(method("GET"))
@@ -70,7 +80,10 @@ async fn when_content_type_is_supported_then_download_should_start() {
 }
 
 #[tokio::test]
+#[serial_test::serial]
 async fn when_content_type_is_not_supported_then_download_should_fail() {
+    setup_empty_assets_dir();
+
     let mock_server = MockServer::start().await;
 
     Mock::given(method("GET"))
@@ -89,4 +102,9 @@ async fn when_content_type_is_not_supported_then_download_should_fail() {
         .await,
         Err(AppError::DownloadAborted("content-type is not supported"))
     ));
+}
+
+pub fn setup_empty_assets_dir() {
+    let path = TempDir::new().unwrap().into_path();
+    *ASSETS_DIR.lock().unwrap() = path.as_os_str().into();
 }
