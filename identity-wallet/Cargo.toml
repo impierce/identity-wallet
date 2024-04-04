@@ -9,7 +9,6 @@ tauri.workspace = true
 oid4vc.workspace = true
 log.workspace = true
 serde_json.workspace = true
-did-key.workspace = true
 did_manager.workspace = true
 
 identity_credential = { version = "=0.7.0-alpha.7", default-features = false, features = [

@@ -12,12 +12,10 @@ use crate::{
     stronghold::StrongholdManager,
 };
 
-// use did_key::{generate, Ed25519KeyPair};
 use did_manager::SecretManager;
 use lazy_static::lazy_static;
 use log::info;
 use oid4vc::oid4vc_core::Subject;
-use oid4vc::oid4vc_manager::methods::key_method::KeySubject;
 use oid4vc::oid4vci::credential_format_profiles::{Credential, CredentialFormats, WithCredential};
 use serde_json::json;
 use std::{fs::File, io::Write, sync::Arc};
@@ -57,20 +55,12 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         .ok_or(anyhow::anyhow!("failed to get stronghold path"))
         .unwrap()
         .to_owned();
-    // client_path.push_str(".snapshot");
     info!("Loading secret manager from path: {}", client_path);
     let secret_manager = SecretManager::load(client_path, "sup3rSecr3t".to_owned(), "key-0".to_owned())
         .await
         .unwrap();
 
-    // let _ = secret_manager.produce_document(did_manager::Method::Jwk).await.unwrap();
-
     let subject = Arc::new(secret_manager);
-
-    // let subject = KeySubject::from_keypair(
-    //     generate::<Ed25519KeyPair>(Some("this-is-a-very-UNSAFE-secret-key".as_bytes())),
-    //     None,
-    // );
 
     let profile = Profile {
         name: "Ferris".to_string(),

@@ -32,7 +32,7 @@
     dispatch({ type: '[App] Get state' });
   });
 
-  let expandedDevMenu = true;
+  let expandedDevMenu = false;
   let showDebugMessages = false;
   let showDragonProfileSteps = false;
   let resetDragonProfile = true;

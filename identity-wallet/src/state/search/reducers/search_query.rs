@@ -63,7 +63,7 @@ mod tests {
     use crate::state::credentials::DisplayCredential;
 
     use oid4vc::oid4vci::credential_format_profiles::{
-        w3c_verifiable_credentials::jwt_vc_json::JwtVcJson, CredentialFormats, Profile,
+        w3c_verifiable_credentials::jwt_vc_json::JwtVcJson, CredentialFormats,
     };
     use std::{sync::Arc, vec};
 
@@ -112,7 +112,7 @@ mod tests {
                 DisplayCredential {
                     id: "1".to_string(),
                     issuer_name: "Example Organization".to_string(),
-                    format: CredentialFormats::JwtVcJson(Profile { format: JwtVcJson }),
+                    format: CredentialFormats::JwtVcJson({}),
                     data: serde_json::json!({"last_name": "Ferris"}),
                     metadata: CredentialMetadata {
                         date_issued: "2021-01-01".to_string(),
@@ -126,7 +126,7 @@ mod tests {
                 DisplayCredential {
                     id: "2".to_string(),
                     issuer_name: "Example Organization".to_string(),
-                    format: CredentialFormats::JwtVcJson(Profile { format: JwtVcJson }),
+                    format: CredentialFormats::JwtVcJson({}),
                     data: serde_json::json!({"last_name": "John"}),
                     metadata: CredentialMetadata {
                         date_issued: "2021-01-02".to_string(),
@@ -140,7 +140,7 @@ mod tests {
                 DisplayCredential {
                     id: "3".to_string(),
                     issuer_name: "John Organization".to_string(),
-                    format: CredentialFormats::JwtVcJson(Profile { format: JwtVcJson }),
+                    format: CredentialFormats::JwtVcJson({}),
                     data: serde_json::json!({"last_name": "Ferris"}),
                     metadata: CredentialMetadata {
                         date_issued: "2021-01-03".to_string(),

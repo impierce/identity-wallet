@@ -18,20 +18,26 @@ interface StateChangedEvent {
 
 // TODO: even needed? or simply "writable<State>(undefined, (set) => {});"?
 const empty_state: State = {
-  active_profile: {
-    name: '',
-    picture: null,
-    theme: 'system',
-    primary_did: '',
-  },
-  locale: 'en-US',
   credentials: [],
   current_user_prompt: null,
   dev_mode: 'Off',
   debug_messages: [],
   user_journey: null,
   connections: [],
-  user_data_query: [],
+  search_results: {
+    current: [],
+    recent_credentials: [],
+  },
+  profile_settings: {
+    locale: 'en-US',
+    profile: {
+      name: '',
+      picture: '',
+      theme: 'system',
+      primary_did: '',
+    },
+  },
+  history: [],
 };
 
 /**
@@ -39,7 +45,7 @@ const empty_state: State = {
  * If the frontend intends to change the state, it must dispatch an action to the backend.
  */
 // TODO: make read-only
-export const state = writable<State>(undefined, (set) => {
+export const state = writable<State>(empty_state, (set) => {
   const unlisten = listen('state-changed', (event: StateChangedEvent) => {
     const state = event.payload;
 

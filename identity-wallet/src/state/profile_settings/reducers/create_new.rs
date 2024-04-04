@@ -10,14 +10,11 @@ use crate::{
     stronghold::StrongholdManager,
 };
 
-use did_key::{from_existing_key, Ed25519KeyPair};
 use did_manager::SecretManager;
 use log::info;
-use oid4vc::{
-    oid4vc_core::Subject,
-    oid4vc_manager::{methods::key_method::KeySubject, ProviderManager},
-    oid4vci::Wallet,
-};
+use oid4vc::oid4vc_core::Subject;
+use oid4vc::oid4vc_manager::ProviderManager;
+use oid4vc::oid4vci::Wallet;
 use std::sync::Arc;
 
 /// Creates a new profile with a new DID (using the did:key method) and sets it as the active profile.
@@ -34,9 +31,19 @@ pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppS
 
         let public_key = stronghold_manager.get_public_key().map_err(StrongholdPublicKeyError)?;
 
-        let keypair = from_existing_key::<Ed25519KeyPair>(public_key.as_slice(), None);
-        let subject = Arc::new(KeySubject::from_keypair(keypair, Some(stronghold_manager.clone())));
-        // let subject = Arc::new(SecretManager::load(snapshot_path, password, key_id));
+        let client_path = crate::persistence::STRONGHOLD
+            .lock()
+            .unwrap()
+            .to_str()
+            .ok_or(anyhow::anyhow!("failed to get stronghold path"))
+            .unwrap()
+            .to_owned();
+        let password = "sup3rSecr3t".to_owned();
+        let subject = Arc::new(
+            SecretManager::load(client_path, password, "key-0".to_owned())
+                .await
+                .unwrap(),
+        );
 
         let provider_manager = ProviderManager::new([subject.clone()]).map_err(OID4VCProviderManagerError)?;
         let wallet: Wallet = Wallet::new(subject.clone());
