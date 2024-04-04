@@ -2,9 +2,9 @@
   import { goto } from '$app/navigation';
 
   import type { Connection } from '@bindings/Connection';
+  import { debug } from '@tauri-apps/plugin-log';
 
   import Image from '$lib/components/atoms/Image.svelte';
-  import exampleConnections from '$lib/connections/mock-data.json';
   import LL from '$src/i18n/i18n-svelte';
   import ListItemCard from '$src/lib/components/molecules/ListItemCard.svelte';
   import { state } from '$src/stores';
@@ -12,7 +12,7 @@
   import { groupConnectionsAlphabetically } from './utils';
 
   let connections: Map<string, Connection[]> = groupConnectionsAlphabetically($state.connections);
-  console.log(connections);
+  debug(`${connections}`);
 </script>
 
 <div class="flex h-full flex-col space-y-3">
