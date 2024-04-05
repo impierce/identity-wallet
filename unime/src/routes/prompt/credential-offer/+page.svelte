@@ -14,11 +14,13 @@
   import DownloadSimple from '~icons/ph/download-simple-fill';
 
   // TODO: generate binding in core
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   interface CredentialOffer {
     credential_issuer: string;
     credentials: any[];
     grants: any;
   }
+  /* eslint-enable @typescript-eslint/no-explicit-any */
 
   let credential_offer: CredentialOffer = $state.current_user_prompt?.credential_offer;
 

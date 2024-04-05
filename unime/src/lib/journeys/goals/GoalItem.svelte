@@ -6,7 +6,7 @@
   import CaretRight from '~icons/ph/caret-right-bold';
   import CheckCircle from '~icons/ph/check-circle';
 
-  export let trigger: any;
+  export let trigger;
   export let label: string;
   export let completed: boolean;
   export let icon: string = 'Trophy';

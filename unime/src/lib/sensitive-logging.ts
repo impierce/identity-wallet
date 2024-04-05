@@ -3,6 +3,7 @@
 // Its from a package online, its just the keywords that are often used for sensitive data. Its not a bulletproof solution.
 const defaultBadWords = ['password', 'pass', 'token', 'auth', 'secret', 'passphrase', 'card'];
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const sanitizeStringifyRecursively = function (object: any, replacer: any, space: any): any {
   if (object === null || object === undefined) {
     return object;
@@ -19,6 +20,7 @@ const sanitizeStringifyRecursively = function (object: any, replacer: any, space
   return object;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const sanitizeStringify = function (value: any, replacer?: any, space?: string | number | undefined): string {
   if (typeof value === 'object') {
     const clone = structuredClone(value);
