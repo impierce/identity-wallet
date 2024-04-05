@@ -21,9 +21,9 @@ describe('connections', () => {
     ];
 
     const expected = new Map<string, Connection[]>([
-      ['A', [given.at(2)!!, given.at(0)!!]],
-      ['E', [given.at(3)!!]],
-      ['N', [given.at(1)!!]],
+      ['A', [given.at(2)!, given.at(0)!]],
+      ['E', [given.at(3)!]],
+      ['N', [given.at(1)!]],
     ]);
 
     expect(groupConnectionsAlphabetically(given)).toEqual(expected);

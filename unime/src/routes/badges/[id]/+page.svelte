@@ -20,7 +20,7 @@
   import HeartFill from '~icons/ph/heart-straight-fill';
   import SealCheck from '~icons/ph/seal-check';
 
-  let credential = $state.credentials.find((c) => $page.params.id === c.id)!!;
+  let credential = $state.credentials.find((c) => $page.params.id === c.id)!;
 
   let title = credential.display_name;
 
@@ -33,7 +33,7 @@
   const markdown = new MarkdownIt();
 
   $: {
-    const credential = $state.credentials.find((c) => $page.params.id === c.id)!!;
+    const credential = $state.credentials.find((c) => $page.params.id === c.id)!;
     // TODO: make reactive to store updates?
     isFavorite = credential.metadata.is_favorite;
     title = credential.display_name;
@@ -79,7 +79,7 @@
   const connectionId = determineConnectionId();
 
   onMount(async () => {
-    credentialLogoUrl = await getImageAsset($page.params.id!!);
+    credentialLogoUrl = await getImageAsset($page.params.id!);
   });
 </script>
 

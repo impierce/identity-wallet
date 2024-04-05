@@ -18,7 +18,7 @@
   import Heart from '~icons/ph/heart-straight';
   import HeartFill from '~icons/ph/heart-straight-fill';
 
-  let credential = $state.credentials.find((c) => $page.params.id === c.id)!!;
+  let credential = $state.credentials.find((c) => $page.params.id === c.id)!;
 
   let title: string = credential.display_name;
 
@@ -27,7 +27,7 @@
   let isFavorite: boolean = credential.metadata.is_favorite;
 
   $: {
-    const credential = $state.credentials.find((c) => $page.params.id === c.id)!!;
+    const credential = $state.credentials.find((c) => $page.params.id === c.id)!;
     // TODO: update title, isFavorite when changes in store
     isFavorite = credential.metadata.is_favorite;
     title = credential.display_name;
@@ -45,7 +45,7 @@
   let credentialLogoUrl: string | null;
 
   onMount(async () => {
-    credentialLogoUrl = await getImageAsset($page.params.id!!);
+    credentialLogoUrl = await getImageAsset($page.params.id!);
   });
 </script>
 

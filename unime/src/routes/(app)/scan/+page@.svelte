@@ -110,13 +110,13 @@
   // lifecycle functions
   onDestroy(async () => {
     debug('/scan: onDestroy() called');
-    document.documentElement.querySelector('body')!!.classList.remove('transparent');
+    document.documentElement.querySelector('body')!.classList.remove('transparent');
     await cancelScan();
   });
 
   onMount(async () => {
     debug('/scan: onMount() called');
-    document.documentElement.querySelector('body')!!.classList.add('transparent');
+    document.documentElement.querySelector('body')!.classList.add('transparent');
 
     // TODO find a good way to test if not dev_mode. This will have to be checked after $state is loaded.
     startScan();
