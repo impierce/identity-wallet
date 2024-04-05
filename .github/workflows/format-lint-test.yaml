@@ -26,10 +26,9 @@ jobs:
         working-directory: ./unime
         run: npm run format:check
 
-      # TODO: enable liniting for frontend
-      # - name: Lint
-      #   working-directory: ./unime
-      #   run: npm run lint
+      - name: Lint
+        working-directory: ./unime
+        run: npm run lint
 
       - name: Test
         working-directory: ./unime
