@@ -29,8 +29,7 @@ module.exports = {
   },
   rules: {
     'no-undef': 'off', // only necessary for JS (https://typescript-eslint.io/troubleshooting/#i-get-errors-from-the-no-undef-rule-about-global-variables-not-being-defined-even-though-there-are-no-typescript-errors)
-    'no-console': 'error',
-    '@typescript-eslint/no-inferrable-types': 'warn',
-    'svelte/no-at-html-tags': 'warn', // TODO: security risk applicable for Tauri app?
+    'no-console': 'error', // disallow any logs to console
+    'svelte/no-at-html-tags': 'warn', // TODO: security risk even applicable for context of Tauri app?
   },
 };

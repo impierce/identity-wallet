@@ -9,7 +9,7 @@
   export let trigger;
   export let label: string;
   export let completed: boolean;
-  export let icon: string = 'Trophy';
+  export let icon = 'Trophy';
 </script>
 
 <button

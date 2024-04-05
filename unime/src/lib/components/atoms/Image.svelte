@@ -20,7 +20,7 @@
 
   export let id: string;
   export let iconFallback: Icon = 'User';
-  export let isTempAsset: boolean = false;
+  export let isTempAsset = false;
   let assetUrl: string | null = null;
 
   async function loadImage() {

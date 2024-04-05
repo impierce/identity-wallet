@@ -9,9 +9,9 @@
 
   export let icon: typeof SvelteComponent<SvelteHTMLElements['svg']>;
   export let title: string;
-  export let hasCaretRight: boolean = true;
+  export let hasCaretRight = true;
   export let textRight: string | undefined = undefined;
-  export let disabled: boolean = false;
+  export let disabled = false;
 </script>
 
 <button

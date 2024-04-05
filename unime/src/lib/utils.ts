@@ -10,7 +10,7 @@ import { debug, info, warn } from '@tauri-apps/plugin-log';
  * @param tmp Specify whether to look in the `tmp` folder (e.g. during a offer), default: `false`
  * @returns A local URL to the asset if present (else `null`)
  */
-export const getImageAsset = async (id: string, tmp: boolean = false): Promise<string | null> => {
+export const getImageAsset = async (id: string, tmp = false): Promise<string | null> => {
   const appDataDirPath = await appDataDir();
 
   const extensions = ['svg', 'png'];

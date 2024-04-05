@@ -10,7 +10,7 @@
 
   const dispatch = createEventDispatcher();
 
-  export let value: string = '';
+  export let value = '';
   export let placeholder = $LL.SEARCH.INPUT_PLACEHOLDER();
   export let delay = 500;
   // makes the <input> element available to the parent component (example usage: conditionally put focus it)
