@@ -48,8 +48,8 @@
 
   // TODO: this is a simple way to display any (potentially nested) data, since we don't have a proper UI design for it yet
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const prettyPrint = (object: any): string => {
-    return JSON.stringify(object, null, 2);
+  const prettyPrint = (value: any): string => {
+    return JSON.stringify(value, null, 2);
   };
 
   // TODO: This is a HORRIBLE solution to determine the connection_id by the non-unique "issuer name".
@@ -173,7 +173,12 @@
             </button>
           {:else}
             <div class="flex h-[68px] w-full items-center justify-center rounded-xl bg-silver p-2 dark:bg-white">
-              <Image iconFallback="Bank" imgClass="w-auto rounded-lg m-2" iconClass="h-7 w-7 dark:text-slate-800" />
+              <Image
+                id="_"
+                iconFallback="Bank"
+                imgClass="w-auto rounded-lg m-2"
+                iconClass="h-7 w-7 dark:text-slate-800"
+              />
             </div>
           {/if}
           <p class="text-center text-xs text-black [word-break:break-word] dark:text-white">

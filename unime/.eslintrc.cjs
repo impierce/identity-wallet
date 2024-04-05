@@ -9,7 +9,6 @@ module.exports = {
     'prettier',
   ],
   root: true,
-  // ignorePatterns: ['*.cjs'],
   parserOptions: {
     sourceType: 'module',
     ecmaVersion: 2020,
@@ -29,6 +28,7 @@ module.exports = {
     node: true,
   },
   rules: {
-    'no-console': 'warn',
+    'no-undef': 'off', // only necessary for JS (https://typescript-eslint.io/troubleshooting/#i-get-errors-from-the-no-undef-rule-about-global-variables-not-being-defined-even-though-there-are-no-typescript-errors)
+    'no-console': 'error',
   },
 };

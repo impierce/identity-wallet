@@ -11,28 +11,9 @@ import type { Locales } from '$src/i18n/i18n-types';
 
 interface StateChangedEvent {
   event: string;
-  windowLabel: string;
   payload: State;
   id: number;
 }
-
-// TODO: even needed? or simply "writable<State>(undefined, (set) => {});"?
-const empty_state: State = {
-  active_profile: {
-    name: '',
-    picture: null,
-    theme: 'system',
-    primary_did: '',
-  },
-  locale: 'en-US',
-  credentials: [],
-  current_user_prompt: null,
-  dev_mode: 'Off',
-  debug_messages: [],
-  user_journey: null,
-  connections: [],
-  user_data_query: [],
-};
 
 /**
  * A read-only state that is updated by the Rust backend.
@@ -40,7 +21,7 @@ const empty_state: State = {
  */
 // TODO: make read-only
 export const state = writable<State>(undefined, (set) => {
-  const unlisten = listen('state-changed', (event: StateChangedEvent) => {
+  listen('state-changed', (event: StateChangedEvent) => {
     const state = event.payload;
 
     set(state);

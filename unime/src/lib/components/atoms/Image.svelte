@@ -18,13 +18,13 @@
   };
   type Icon = keyof typeof icons;
 
-  export let id: string | null = null;
+  export let id: string;
   export let iconFallback: Icon = 'User';
   export let isTempAsset: boolean = false;
   let assetUrl: string | null = null;
 
   async function loadImage() {
-    getImageAsset(id!!, isTempAsset).then((url) => {
+    getImageAsset(id, isTempAsset).then((url) => {
       assetUrl = url;
     });
   }
@@ -58,10 +58,7 @@ Displays an image (loaded from disk) or a fallback component.
     src={assetUrl}
     alt="img_{id}"
     class={twMerge('max-h-full w-full overflow-hidden bg-white object-contain', $$props.imgClass)}
-    on:error={() => {
-      id = null;
-      warn(`could not load image: ${id}`);
-    }}
+    on:error={() => warn(`could not load image: ${id}`)}
     on:load={() => debug(`image successfully loaded: ${assetUrl}`)}
     data-testid="image"
   />

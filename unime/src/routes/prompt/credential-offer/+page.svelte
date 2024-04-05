@@ -1,8 +1,7 @@
 <script lang="ts">
-  import { onDestroy, onMount } from 'svelte';
+  import { onDestroy } from 'svelte';
 
   import { dispatch } from '$lib/dispatcher';
-  import { getImageAsset } from '$lib/utils';
   import LL from '$src/i18n/i18n-svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
   import Checkbox from '$src/lib/components/atoms/Checkbox.svelte';
@@ -14,26 +13,18 @@
 
   import DownloadSimple from '~icons/ph/download-simple-fill';
 
-  // TODO: type
-  let credential_offer: any = $state.current_user_prompt?.credential_offer ?? {};
-  console.log({ credential_offer });
+  // TODO: generate binding in core
+  interface CredentialOffer {
+    credential_issuer: string;
+    credentials: any[];
+    grants: any;
+  }
 
-  let issuer_name = $state.current_user_prompt?.issuer_name;
+  let credential_offer: CredentialOffer = $state.current_user_prompt?.credential_offer;
 
-  let all_offer_indices = credential_offer.credentials.map((_, i) => i);
+  let issuer_name: string = $state.current_user_prompt?.issuer_name;
 
-  let issuerLogoUrl: string | null;
-
-  let credentialLogoUrls = {};
-
-  onMount(async () => {
-    issuerLogoUrl = await getImageAsset('client_0', true);
-    $state.current_user_prompt.display.forEach(async (display, i) => {
-      if (display.logo?.url) {
-        credentialLogoUrls[i] = await getImageAsset(`credential_${i}`, true);
-      }
-    });
-  });
+  let all_offer_indices: string[] = credential_offer.credentials.map((_, i: number) => i.toString());
 
   onDestroy(async () => {
     dispatch({ type: '[User Flow] Cancel', payload: {} });
