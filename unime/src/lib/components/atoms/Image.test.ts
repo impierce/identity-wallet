@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { randomFillSync } from 'node:crypto';
 
 import '@testing-library/jest-dom';

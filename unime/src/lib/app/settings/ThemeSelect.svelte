@@ -2,6 +2,7 @@
   import { createEventDispatcher } from 'svelte';
 
   import { createRadioGroup, melt } from '@melt-ui/svelte';
+  import { debug } from '@tauri-apps/plugin-log';
 
   import LL from '$src/i18n/i18n-svelte';
   import Checkbox from '$src/lib/components/atoms/Checkbox.svelte';
@@ -9,7 +10,7 @@
   export let defaultValue = 'system';
 
   const {
-    elements: { root, item },
+    elements: { item },
     helpers: { isChecked },
     states: { value },
   } = createRadioGroup({
@@ -19,23 +20,23 @@
   const dispatch = createEventDispatcher();
 
   $: {
-    console.log('prefers-color-scheme: dark?', window.matchMedia('(prefers-color-scheme: dark)').matches);
+    debug(`prefers-color-scheme: dark? ${window.matchMedia('(prefers-color-scheme: dark)').matches}`);
     if ($value === 'dark') {
       // dark
       document.documentElement.classList.add('dark');
-      console.log('dark mode enabled');
+      debug('dark mode enabled');
     } else if ($value === 'light') {
       // light
       document.documentElement.classList.remove('dark');
-      console.log('light mode enabled');
+      debug('light mode enabled');
     } else {
       // system
       if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
         document.documentElement.classList.add('dark');
-        console.log('dark mode enabled');
+        debug('dark mode enabled');
       } else {
         document.documentElement.classList.remove('dark');
-        console.log('light mode enabled');
+        debug('light mode enabled');
       }
     }
     dispatch('change', { value: $value });

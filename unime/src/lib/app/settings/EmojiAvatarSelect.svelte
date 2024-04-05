@@ -17,7 +17,7 @@
   let emojiSelectIsOpen = false;
 
   // TODO: switch to Unicode?
-  let predefinedEmojis: Array<Array<string>> = [
+  let predefinedEmojis: string[][] = [
     // faces
     [
       '&#x1F642', // slightly-smiling-face
@@ -97,7 +97,8 @@
               dispatch('change', emoji);
               emojiSelectIsOpen = false;
             }}
-            >{@html emoji}
+          >
+            {@html emoji}
           </button>
         {/each}
       </div>

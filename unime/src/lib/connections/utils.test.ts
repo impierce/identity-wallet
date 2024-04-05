@@ -20,7 +20,7 @@ describe('connections', () => {
       { ...connection, id: '3', url: 'https://ecorp.com', name: 'ECorp' },
     ];
 
-    const expected = new Map<string, Array<Connection>>([
+    const expected = new Map<string, Connection[]>([
       ['A', [given.at(2)!!, given.at(0)!!]],
       ['E', [given.at(3)!!]],
       ['N', [given.at(1)!!]],

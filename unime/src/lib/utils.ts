@@ -1,6 +1,6 @@
 import { convertFileSrc } from '@tauri-apps/api/core';
 import { appDataDir, join } from '@tauri-apps/api/path';
-import { BaseDirectory, exists } from '@tauri-apps/plugin-fs';
+import { exists } from '@tauri-apps/plugin-fs';
 import { debug, info, warn } from '@tauri-apps/plugin-log';
 
 /**
@@ -16,7 +16,7 @@ export const getImageAsset = async (id: string, tmp: boolean = false): Promise<s
   const extensions = ['svg', 'png'];
 
   if (tmp) {
-    for (let extension of extensions) {
+    for (const extension of extensions) {
       const tmpFilePath = await join(appDataDirPath, `assets/tmp/${id}.${extension}`);
       if (await exists(tmpFilePath)) {
         const assetUrl = convertFileSrc(tmpFilePath);
@@ -28,7 +28,7 @@ export const getImageAsset = async (id: string, tmp: boolean = false): Promise<s
     return null;
   }
 
-  for (let extension of extensions) {
+  for (const extension of extensions) {
     const filePath = await join(appDataDirPath, `assets/${id}.${extension}`);
     debug(`filePath: ${filePath}`);
     if (await exists(filePath)) {

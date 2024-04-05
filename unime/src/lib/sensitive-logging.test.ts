@@ -1,52 +1,46 @@
 import { sanitizeStringify } from './sensitive-logging';
 
 describe('sensitive-logging', () => {
-  test('Check if sensitive data is not logged', () => {
-    let credentialObj = {
-      name: 'John doe',
-      age: 44,
-      password: 'please_dont_log',
+  test('sensitive data should not be logged', () => {
+    const sensitiveValue = 'should_not_log';
+
+    const testee = {
+      foo: 'bar',
+      password: sensitiveValue,
     };
 
-    let sensitiveStr = sanitizeStringify(credentialObj);
+    const sanitized = sanitizeStringify(testee);
+    const unaltered = JSON.stringify(testee);
 
-    // Sample after because it shouldn't modify the passed object.
-    let sampleStr = JSON.stringify(credentialObj);
-
-    console.log(sensitiveStr);
-
-    expect(sampleStr).toContain('please_dont_log');
-    expect(sensitiveStr).not.toContain('please_dont_log');
+    expect(sanitized).not.toContain(sensitiveValue);
+    expect(unaltered).toContain(sensitiveValue);
   });
 
-  test('Check if sensitive objects recursively is not logged', () => {
-    let pw1 = 'please_dont_log';
-    let pw2 = 'please_dont_log_as_well';
-    let pw3 = 'dont_log';
+  test('sensitive data nested in object should not be logged', () => {
+    const sensitiveValue1 = 'should_not_log_1';
+    const sensitiveValue2 = 'should_not_log_2';
+    const sensitiveValue3 = 'should_not_log_3';
 
-    let credentialObj = {
-      name: 'John doe',
-      age: 44,
-      password: pw1,
+    const testee = {
+      foo: 'bar',
+      password: sensitiveValue1,
       data: {
-        password: pw2,
-        credentials: {
-          password: pw3,
+        secret: sensitiveValue2,
+        foobar: {
+          secret: sensitiveValue3,
         },
       },
     };
 
-    let sensitiveStr = sanitizeStringify(credentialObj);
+    const sanitized = sanitizeStringify(testee);
+    const unaltered = JSON.stringify(testee);
 
-    // Sample after because it shouldn't modify the passed object.
-    let sampleStr = JSON.stringify(credentialObj);
+    expect(sanitized).not.toContain(sensitiveValue1);
+    expect(sanitized).not.toContain(sensitiveValue2);
+    expect(sanitized).not.toContain(sensitiveValue3);
 
-    expect(sensitiveStr).not.toContain(pw1);
-    expect(sensitiveStr).not.toContain(pw2);
-    expect(sensitiveStr).not.toContain(pw3);
-
-    expect(sampleStr).toContain(pw1);
-    expect(sampleStr).toContain(pw2);
-    expect(sampleStr).toContain(pw3);
+    expect(unaltered).toContain(sensitiveValue1);
+    expect(unaltered).toContain(sensitiveValue2);
+    expect(unaltered).toContain(sensitiveValue3);
   });
 });

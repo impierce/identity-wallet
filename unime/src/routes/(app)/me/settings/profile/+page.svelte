@@ -11,7 +11,6 @@
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
 
   import Keyboard from '~icons/ph/keyboard-fill';
-  import SmileyWink from '~icons/ph/smiley-wink-fill';
   import Trash from '~icons/ph/trash-fill';
 </script>
 
@@ -31,7 +30,6 @@
         let:trigger
         class="flex items-center space-x-4 rounded-xl bg-white p-4 dark:bg-dark"
         use:melt={trigger}
-        on:click={() => {}}
       >
         <svelte:component this={Trash} class="h-5 w-5 text-rose-400" />
         <p class="grow text-left text-[13px]/[24px] font-medium text-slate-800 dark:text-white">

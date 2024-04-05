@@ -13,16 +13,12 @@
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
   import { state } from '$src/stores';
 
-  import Check from '~icons/ph/check-bold';
   import PlugsConnected from '~icons/ph/plugs-connected-fill';
-  import RocketLaunch from '~icons/ph/rocket-launch';
   import SealCheck from '~icons/ph/seal-check-fill';
 
   let selected_credentials = $state.credentials?.filter((c) => $state.current_user_prompt.options.indexOf(c.id) > -1);
 
   let client_name = $state.current_user_prompt.client_name;
-
-  console.log({ '$state.current_user_prompt': $state.current_user_prompt });
 
   onDestroy(async () => {
     // TODO: is onDestroy also called when user accepts since the component itself is destroyed?

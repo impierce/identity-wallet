@@ -44,7 +44,7 @@
   </div>
   <!-- Accordion -->
   <div class="mx-auto flex max-w-full flex-col space-y-4" {...$root}>
-    {#each items as { id, title, description }, i}
+    {#each items as { id, title, description }}
       <div
         use:melt={$item(id)}
         class="overflow-hidden rounded-xl border

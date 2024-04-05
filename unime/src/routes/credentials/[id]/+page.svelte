@@ -1,10 +1,8 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import QRCode from 'qrcode';
-  import { fly } from 'svelte/transition';
 
   import { melt } from '@melt-ui/svelte';
   import { info } from '@tauri-apps/plugin-log';
@@ -12,8 +10,6 @@
   import { dispatch } from '$lib/dispatcher';
   import { getImageAsset } from '$lib/utils';
   import LL from '$src/i18n/i18n-svelte';
-  import Button from '$src/lib/components/atoms/Button.svelte';
-  import ButtonRounded from '$src/lib/components/atoms/ButtonRounded.svelte';
   import Image from '$src/lib/components/atoms/Image.svelte';
   import ActionSheet from '$src/lib/components/molecules/dialogs/ActionSheet.svelte';
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
@@ -21,8 +17,6 @@
 
   import Heart from '~icons/ph/heart-straight';
   import HeartFill from '~icons/ph/heart-straight-fill';
-  import QrCode from '~icons/ph/qr-code';
-  import User from '~icons/ph/user-light';
 
   let credential = $state.credentials.find((c) => $page.params.id === c.id)!!;
 
@@ -106,12 +100,6 @@
           </div>
           <!-- Empty element with the same dimensions and placements as the "Favorite" button -->
           <div class="-mt-1 mr-1 h-6 w-6"></div>
-          <!-- <div class="-mr-3 -mt-1">
-            <CredentialDetailsDropdownMenu {credential} class={credentialLogoUrl ? 'dark:text-white' : ''} />
-          </div> -->
-          <!-- <button class="-mr-1 -mt-1 rounded-full p-1">
-          <DotsThreeVertical class="h-6 w-6" />
-        </button> -->
         </div>
         <!-- Text -->
         <div class="flex flex-col items-center pt-[15px]">

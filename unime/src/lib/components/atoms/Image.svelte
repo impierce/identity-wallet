@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, SvelteComponent } from 'svelte';
+  import { onMount } from 'svelte';
 
   import { twMerge } from 'tailwind-merge';
 
@@ -7,33 +7,30 @@
 
   import { getImageAsset } from '$lib/utils';
 
+  import Bank from '~icons/ph/bank-light';
+  import Certificate from '~icons/ph/certificate-light';
   import User from '~icons/ph/user-light';
 
+  const icons = {
+    Bank: Bank,
+    Certificate: Certificate,
+    User: User,
+  };
+  type Icon = keyof typeof icons;
+
   export let id: string | null = null;
-
+  export let iconFallback: Icon = 'User';
   export let isTempAsset: boolean = false;
-
-  let assetUrlPromise: Promise<string | null> = getImageAsset(id!!);
-
   let assetUrl: string | null = null;
 
-  let fallbackComponent: SvelteComponent | null = null;
-
-  // async loading function?: getImageAsset
-
   async function loadImage() {
-    getImageAsset(id!!, isTempAsset).then((a) => {
-      assetUrl = a;
+    getImageAsset(id!!, isTempAsset).then((url) => {
+      assetUrl = url;
     });
   }
 
-  // TODO: needed?
-  let loading = false;
-
   onMount(() => {
-    // getImageAsset
     loadImage();
-    loading = true;
   });
 </script>
 
@@ -71,7 +68,7 @@ Displays an image (loaded from disk) or a fallback component.
 {:else}
   <slot name="fallback">
     <svelte:component
-      this={User}
+      this={icons[iconFallback]}
       class={twMerge('h-[18px] w-[18px] text-slate-800 dark:text-grey', $$props.iconClass)}
       data-testid="icon"
     />

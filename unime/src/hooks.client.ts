@@ -1,17 +1,15 @@
 import type { HandleClientError } from '@sveltejs/kit';
-import { info } from '@tauri-apps/plugin-log';
+import { error, info } from '@tauri-apps/plugin-log';
 
-export const handleError = (async ({ error, event }) => {
+export const handleError = (async ({ error: err, event }) => {
   info(`hooks.client.ts: event.url: "${event.url}"`);
 
   const errorId = crypto.randomUUID();
-  // example integration with https://sentry.io/
-  // Sentry.captureException(error, { extra: { event, errorId } });
 
-  console.error(error);
+  error(`${errorId} - ${err.message}`);
 
   return {
-    message: error.message,
+    message: err.message,
     errorId,
   };
 }) satisfies HandleClientError;

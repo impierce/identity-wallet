@@ -26,7 +26,7 @@
         await dispatch({ type: '[Settings] Update profile', payload: { name } });
         goto('/me/settings');
       }}
-      disabled={!!!name}
+      disabled={!name}
     />
   </div>
 </div>

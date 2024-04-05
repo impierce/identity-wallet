@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
 
   import { melt } from '@melt-ui/svelte';
+  import { warn } from '@tauri-apps/plugin-log';
 
   import { dispatch } from '$lib/dispatcher';
   import LL from '$src/i18n/i18n-svelte';
@@ -24,7 +25,7 @@
   // TODO move to the backend
   onMount(() => {
     if ($state?.dev_mode === 'OnWithAutologin') {
-      console.warn('Developer mode - Injecting password automatically ...');
+      warn('Developer mode - Injecting password automatically ...');
       setTimeout(() => {
         dispatch({ type: '[Storage] Unlock', payload: { password: 'sup3rSecr3t' } });
       }, 500);

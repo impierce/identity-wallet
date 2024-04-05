@@ -41,5 +41,5 @@
 </div>
 
 <div class="rounded-t-3xl bg-white p-6 dark:bg-dark" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
-  <Button label={$LL.CONTINUE()} on:click={() => goto('/welcome/password')} disabled={!!!$onboarding_state.name} />
+  <Button label={$LL.CONTINUE()} on:click={() => goto('/welcome/password')} disabled={!$onboarding_state.name} />
 </div>

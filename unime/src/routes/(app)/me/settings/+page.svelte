@@ -2,8 +2,6 @@
   import { goto } from '$app/navigation';
   import { fly } from 'svelte/transition';
 
-  import { melt } from '@melt-ui/svelte';
-
   import { dispatch } from '$lib/dispatcher';
   import LL from '$src/i18n/i18n-svelte';
   import EmojiAvatarSelect from '$src/lib/app/settings/EmojiAvatarSelect.svelte';
@@ -17,7 +15,6 @@
   import SignOut from '~icons/ph/sign-out-fill';
   import UserCircle from '~icons/ph/user-circle-fill';
   import Vault from '~icons/ph/vault-fill';
-  import WarningCircle from '~icons/ph/warning-circle-fill';
 </script>
 
 <TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.NAVBAR_TITLE()} />

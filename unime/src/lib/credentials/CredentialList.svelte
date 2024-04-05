@@ -14,7 +14,7 @@
 
   export let credentialType: 'all' | 'data' | 'badges' = 'all';
 
-  let credentials: Array<DisplayCredential> = [];
+  let credentials: DisplayCredential[] = [];
 
   onMount(async () => {
     credentials = $state.credentials.filter((c) => !c.metadata.is_favorite);

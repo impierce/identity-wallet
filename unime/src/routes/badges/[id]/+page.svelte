@@ -5,16 +5,12 @@
   import { page } from '$app/stores';
   import MarkdownIt from 'markdown-it';
   import QRCode from 'qrcode';
-  import { fly } from 'svelte/transition';
 
   import { melt } from '@melt-ui/svelte';
-  import { dataDir } from '@tauri-apps/api/path';
 
   import { dispatch } from '$lib/dispatcher';
   import { getImageAsset } from '$lib/utils';
   import LL from '$src/i18n/i18n-svelte';
-  import Button from '$src/lib/components/atoms/Button.svelte';
-  import ButtonRounded from '$src/lib/components/atoms/ButtonRounded.svelte';
   import Image from '$src/lib/components/atoms/Image.svelte';
   import ActionSheet from '$src/lib/components/molecules/dialogs/ActionSheet.svelte';
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
@@ -22,7 +18,6 @@
 
   import Heart from '~icons/ph/heart-straight';
   import HeartFill from '~icons/ph/heart-straight-fill';
-  import QrCode from '~icons/ph/qr-code';
   import SealCheck from '~icons/ph/seal-check';
 
   let credential = $state.credentials.find((c) => $page.params.id === c.id)!!;
@@ -30,8 +25,6 @@
   let title = credential.display_name;
 
   let credentialLogoUrl: string | null;
-
-  let issuerId: string;
 
   let qrcodeText = JSON.stringify(credential, null, 0);
 
@@ -41,7 +34,7 @@
 
   $: {
     const credential = $state.credentials.find((c) => $page.params.id === c.id)!!;
-    // TODO: update title, isFavorite when changes in store
+    // TODO: make reactive to store updates?
     isFavorite = credential.metadata.is_favorite;
     title = credential.display_name;
   }
@@ -53,9 +46,8 @@
   const entries = { ...credential.data.credentialSubject.achievement };
   hiddenStandardFields.concat(hiddenCustomFields).forEach((key) => delete entries[key]);
 
-  console.log({ credential });
-
   // TODO: this is a simple way to display any (potentially nested) data, since we don't have a proper UI design for it yet
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const prettyPrint = (object: any): string => {
     return JSON.stringify(object, null, 2);
   };
@@ -135,7 +127,7 @@
             iconClass="h-10 w-10 dark:text-slate-800"
           />
         </div>
-        <!-- Empty element with the same dimensions and placements as the "Favorite" button -->
+        <!-- Empty element with the same dimensions and placements as the "Favorite" button to enable proper central alignment -->
         <div class="-mt-1 mr-1 h-6 w-6"></div>
       </div>
       <!-- Text -->
@@ -192,7 +184,6 @@
 
       <!-- Description -->
       <div>
-        <!-- <p class="text-lg font-semibold text-black dark:text-white">{$LL.BADGE.DETAILS.DESCRIPTION()}</p> -->
         <p class="text-[13px]/[24px] text-slate-800 dark:text-grey">
           {@html markdown.render(credential.data.credentialSubject.achievement?.description ?? '')}
         </p>
@@ -262,8 +253,6 @@
 </div>
 
 <div class="safe-area-top bg-white dark:bg-dark" />
-
-<!-- <div class="safe-area-bottom z-10 bg-white dark:bg-dark" /> -->
 
 <style>
   .content-height {
