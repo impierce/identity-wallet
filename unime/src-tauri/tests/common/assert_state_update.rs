@@ -50,7 +50,7 @@ pub async fn assert_state_update(
         // Assert that the state is updated as expected.
         if let Some(expected_state) = expected_state {
             let container = app.app_handle().state::<AppStateContainer>().inner();
-            let mut guard = container.0.lock().await;
+            let guard = container.0.lock().await;
 
             let AppState {
                 connections,
@@ -62,7 +62,9 @@ pub async fn assert_state_update(
                 history,
                 extensions,
                 ..
-            } = &mut *guard;
+            } = &mut guard.clone();
+
+            drop(guard);
 
             let AppState {
                 connections: expected_connections,
@@ -75,6 +77,8 @@ pub async fn assert_state_update(
                 extensions: expected_extensions,
                 ..
             } = expected_state;
+
+            println!("Current state:\n{:#?}\n\n-------------------------------------\n\nExpected state:\n{:#?}\n", container.0.lock().await, expected_state);
 
             assert_eq!(connections, expected_connections);
 
