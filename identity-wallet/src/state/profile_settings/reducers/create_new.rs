@@ -47,7 +47,6 @@ pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppS
                 primary_did: subject.identifier().map_err(OID4VCSubjectIdentifierError)?,
             }),
             ..state.profile_settings
-            //..Default::default()
         };
 
         state_guard.identity_manager.replace(IdentityManager {
