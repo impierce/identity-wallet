@@ -57,7 +57,7 @@ async fn test_locale_persistency_during_onboarding() {
         container,
         vec![
             // Get the initial state.
-            action // Create a new profile.
+            action, // Create a new profile.
         ],
         vec![
             // The profile was created, so the user is redirected to the profile page.

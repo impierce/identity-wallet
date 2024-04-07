@@ -78,7 +78,11 @@ pub async fn assert_state_update(
                 ..
             } = expected_state;
 
-            println!("Current state:\n{:#?}\n\n-------------------------------------\n\nExpected state:\n{:#?}\n", container.0.lock().await, expected_state);
+            println!(
+                "Current state:\n{:#?}\n\n-------------------------------------\n\nExpected state:\n{:#?}\n",
+                container.0.lock().await,
+                expected_state
+            );
 
             assert_eq!(connections, expected_connections);
 
