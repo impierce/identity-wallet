@@ -2,6 +2,7 @@
   import { onMount, SvelteComponent } from 'svelte';
 
   import { goto } from '$app/navigation';
+  import { PUBLIC_DEV_MODE_MENU_EXPANDED } from '$env/static/public';
   import { fly } from 'svelte/transition';
 
   import { attachConsole } from '@tauri-apps/plugin-log';
@@ -32,7 +33,7 @@
     dispatch({ type: '[App] Get state' });
   });
 
-  let expandedDevMenu = true;
+  let expandedDevMenu = PUBLIC_DEV_MODE_MENU_EXPANDED === 'true';
   let showDebugMessages = false;
   let showDragonProfileSteps = false;
   let resetDragonProfile = true;
