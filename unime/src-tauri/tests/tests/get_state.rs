@@ -41,7 +41,7 @@ async fn test_get_state_create_new() {
 
 #[tokio::test]
 #[serial_test::serial]
-async fn test_locale_persistency_during_onboarding() {
+async fn test_locale_stays_unchanged_on_profile_creation() {
     setup_state_file();
     setup_stronghold();
 
