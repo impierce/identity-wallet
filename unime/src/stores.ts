@@ -44,7 +44,7 @@ export const state = writable<State>(undefined, (set) => {
     const state = event.payload;
 
     set(state);
-    setLocale(state.locale as Locales);
+    setLocale(state.profile_settings.locale as Locales);
 
     if (state.current_user_prompt?.type === 'redirect') {
       const redirect_target = state.current_user_prompt.target;
@@ -65,7 +65,5 @@ export const onboarding_state = writable<OnboardingState>({});
 
 interface OnboardingState {
   name?: string;
-  picture?: string;
-  theme?: string;
   password?: string; // TODO: secure enough?
 }

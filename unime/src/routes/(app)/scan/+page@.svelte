@@ -10,6 +10,7 @@
     openAppSettings,
     requestPermissions,
     scan,
+    type PermissionState,
     type Scanned,
   } from '@tauri-apps/plugin-barcode-scanner';
   import { debug, info, warn } from '@tauri-apps/plugin-log';
@@ -20,8 +21,11 @@
   import BottomNavBar from '$src/lib/components/molecules/navigation/BottomNavBar.svelte';
   import { state } from '$src/stores';
 
+  import CameraSlash from '~icons/ph/camera-slash';
+
   let scanning = false;
-  let permissions: 'granted' | 'denied' | 'prompt' | undefined = undefined;
+  // We temporarily introduce this type that extends `PermissionState` to handle a possible error when checking for permissions.
+  let permissions_nullable: PermissionState | null;
 
   function onMessage(scanned: Scanned) {
     debug(`scanned: ${scanned.content}`);
@@ -29,63 +33,47 @@
     goto('/me');
   }
 
-  function _startScan() {
-    info(`starting scan with parameters: { cameraDirection: 'back', windowed: false, formats: [Format.QRCode] }`);
-    scanning = true;
-    scan({ windowed: true, formats: [Format.QRCode] })
-      .then((scanned) => {
-        scanning = false;
-        onMessage(scanned);
-      })
-      .catch((error) => {
-        scanning = false;
-        // TODO: display error
-        console.warn(error);
-      });
-  }
-
   // from example in plugin-barcode-scanner repo
   async function startScan() {
-    let permission = await checkPermissions();
-    permissions = permission;
-    console.log({ permission });
+    let permissions = await checkPermissions()
+      .then((permissions) => {
+        info(`Permissions to use the camera: ${permissions}`);
+        return permissions;
+      })
+      .catch((error) => {
+        warn(`Error checking for permissions to use the camera: ${error}`);
+        return null; // possibly return "denied"? or does that imply that the check has been successful, but was actively denied?
+      });
 
-    if (permission === 'prompt') {
-      info('requesting permission');
-      permission = await requestPermissions();
+    // TODO: handle receiving "prompt-with-rationale" (issue: https://github.com/tauri-apps/plugins-workspace/issues/979)
+    if (permissions === 'prompt') {
+      info('Requesting camera permissions');
+      permissions = await requestPermissions(); // handle in more detail?
+      info(`Permissions to use the camera: ${permissions}`);
     }
 
-    if (permission === 'granted') {
-      info(`starting scan with parameters: { cameraDirection: 'back', windowed: false, formats: [Format.QRCode] }`);
+    permissions_nullable = permissions;
+
+    if (permissions === 'granted') {
+      // Scanning parameters
+      const formats = [Format.QRCode];
+      const windowed = true;
+
+      info(`starting scan with parameters: { formats: ${formats}, windowed: ${windowed} }`);
       scanning = true;
-      scan({ windowed: true, formats: [Format.QRCode] })
+      scan({ formats, windowed })
         .then((res) => {
-          scanning = false;
           onMessage(res);
         })
         .catch((error) => {
+          // TODO: display error to user
+          warn(error);
+        })
+        .finally(() => {
           scanning = false;
-          // TODO: display error
-          console.warn(error);
-          // onMessage(error);
         });
-    } else {
-      warn('permission to use the camera denied');
     }
   }
-
-  const mockScanSiopRequest = () => {
-    const TEST_SIOP_REQUEST_URL_BY_REFERENCE =
-      'siopv2://idtoken?client_id=did%3Akey%3Az6MkpuwK1TrrssGe7siCiJU2K5CbSu3mDLU4Y3z45wAepg7J&request_uri=http%3A%2F%2F192.168.1.234%3A4243%2Fsiop%2Frequest-uri';
-    const TEST_SIOP_REQUEST_URL_BY_VALUE =
-      'siopv2://idtoken?response_type=id_token+vp_token&response_mode=post&client_id=did%3Akey%3Az6MkpuwK1TrrssGe7siCiJU2K5CbSu3mDLU4Y3z45wAepg7J&scope=openid&presentation_definition=%7B%22id%22%3A%22Verifiable+Presentation+request+for+sign-on%22%2C%22input_descriptors%22%3A%5B%7B%22id%22%3A%22Request+for+Ferris%27s+Verifiable+Credential%22%2C%22constraints%22%3A%7B%22fields%22%3A%5B%7B%22path%22%3A%5B%22%24.vc.type%22%5D%2C%22filter%22%3A%7B%22type%22%3A%22array%22%2C%22contains%22%3A%7B%22const%22%3A%22PersonalInformation%22%7D%7D%7D%2C%7B%22path%22%3A%5B%22%24.vc.credentialSubject.givenName%22%5D%7D%2C%7B%22path%22%3A%5B%22%24.vc.credentialSubject.familyName%22%5D%7D%2C%7B%22path%22%3A%5B%22%24.vc.credentialSubject.email%22%5D%7D%2C%7B%22path%22%3A%5B%22%24.vc.credentialSubject.birthdate%22%5D%7D%5D%7D%7D%5D%7D&redirect_uri=http%3A%2F%2Ftest%3A4243%2Fsiop%2Fresponse&nonce=n-0S6_WzA2Mj&client_metadata=%7B%22subject_syntax_types_supported%22%3A%5B%22did%3Akey%22%5D%7D&state=50f04e4d-632a-48c8-bfe5-1ffa71fc88e5';
-    dispatch({
-      type: '[QR Code] Scanned',
-      payload: {
-        form_urlencoded: TEST_SIOP_REQUEST_URL_BY_VALUE,
-      },
-    });
-  };
 
   const mockSiopRequest = () => {
     state.set({
@@ -114,64 +102,6 @@
     });
   };
 
-  const mockScanCredentialOffer = (amount: number) => {
-    if (amount == 1) {
-      dispatch({
-        type: '[QR Code] Scanned',
-        payload: {
-          form_urlencoded:
-            'openid-credential-offer://?credential_offer=%7B%22credential_issuer%22%3A%22http%3A%2F%2F192.168.1.127%3A9090%2F%22%2C%22credentials%22%3A%5B%7B%22format%22%3A%22jwt_vc_json%22%2C%22credential_definition%22%3A%7B%22type%22%3A%5B%22VerifiableCredential%22%2C%22PersonalInformation%22%5D%7D%7D%5D%2C%22grants%22%3A%7B%22urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Apre-authorized_code%22%3A%7B%22pre-authorized_code%22%3A%220YI5DXtuCltKyNa5%22%2C%22user_pin_required%22%3Afalse%7D%7D%7D',
-        },
-      });
-    } else if (amount > 1) {
-      // dispatch({
-      //   type: '[QR Code] Scanned',
-      //   payload: {
-      //     'openid-credential-offer://?credential_offer=%7B%22credential_issuer%22%3A%22http%3A%2F%2F10.15.185.12%3A9090%2F%22%2C%22credentials%22%3A%5B%7B%22format%22%3A%22jwt_vc_json%22%2C%22credential_definition%22%3A%7B%22type%22%3A%5B%22VerifiableCredential%22%2C%22PersonalInformation%22%5D%7D%7D%2C%7B%22format%22%3A%22jwt_vc_json%22%2C%22credential_definition%22%3A%7B%22type%22%3A%5B%22VerifiableCredential%22%2C%22DriverLicenseCredential%22%5D%7D%7D%5D%2C%22grants%22%3A%7B%22urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Apre-authorized_code%22%3A%7B%22pre-authorized_code%22%3A%22crzhlepEdqjsXD3I%22%2C%22user_pin_required%22%3Afalse%7D%7D%7D'
-      //   }
-      // });
-      state.set({
-        ...$state,
-        current_user_prompt: {
-          type: 'credential-offer',
-          issuer_name: 'Some issuer',
-          // logo_uri: 'https://picsum.photos/200',
-          logo_uri: 'https://demo.ngdil.com/imgs/ngdil.svg',
-          credential_offer: {
-            credential_issuer: 'http://10.15.185.12:9090/',
-            credentials: [
-              {
-                format: 'jwt_vc_json',
-                credential_definition: { type: ['VerifiableCredential', 'PersonalInformation'] },
-              },
-              {
-                format: 'jwt_vc_json',
-                credential_definition: {
-                  type: ['VerifiableCredential', 'DriverLicenseCredential'],
-                },
-              },
-            ],
-            grants: {
-              'urn:ietf:params:oauth:grant-type:pre-authorized_code': {
-                'pre-authorized_code': 'crzhlepEdqjsXD3I',
-                user_pin_required: false,
-              },
-            },
-          },
-          display: [
-            {
-              name: 'My first Credential',
-              logo: { url: 'https://picsum.photos/200.svg' },
-            },
-            {
-              name: 'My second Credential',
-            },
-          ],
-        },
-      });
-    }
-  };
-
   async function cancelScan() {
     await cancel();
     scanning = false;
@@ -189,110 +119,37 @@
   onMount(async () => {
     console.log('onMount: /scan');
     document.documentElement.querySelector('body')!!.classList.add('transparent');
-    // permissionsGiven = await checkScanPrerequisites();
 
     // TODO find a good way to test if not dev_mode. This will have to be checked after $state is loaded.
     startScan();
   });
 </script>
 
-<!-- <main
-  class="transition-colors-250 grid flex-1 grid-rows-[2fr_auto] bg-orange-300 transition-transform"
-  class:transparent={isMobile}
->
-  <div class="flex flex-col items-center p-6">
-    <h1 class="p-6 text-3xl font-medium">{selected.label}</h1>
-    <div class="overflow-y-auto">
-      <div class="mr-2">
-        <svelte:component this={selected.component} {onMessage} />
-      </div>
-    </div>
-  </div>
-</main> -->
-
-<!-- ############ -->
-<!-- <div class="h-screen">
-  <p class="absolute m-4 w-fit rounded-full bg-slate-600 px-4 py-2 text-slate-200">
-    scanning: {scanning}
-  </p>
-
-  {#if !scanning}
-    <div class="h-screen bg-orange-300" class:invisible={scanning}>
-      <Button variant="secondary" on:click={startScan}>SCAN</Button>
-    </div>
-  {:else}
-
-  <div class="h-screen bg-gradient-to-r from-violet-600 via-green-400 to-violet-500">
-        <div class="">
-            <p>Aim your camera at a QR code</p>
-        </div>
-        <div class="absolute top-1/2 left-1/2">
-            <div class="w-20 h-20 bg-slate-300 rounded overflow-hidden"></div>
-        </div>
-    </div>
-  {/if}
-</div> -->
-
-<!-- {#if scanning}
-    scanning
-    <div class="h-screen bg-gradient-to-br from-violet-600 to-transparent" />
-  {/if} -->
-
-<!-- scanning in progress -->
-<!-- <div
-    class="h-screen bg-gradient-to-br from-violet-600 to-transparent"
-    class:invisible={!scanning}
-  />
-  <div class="h-full w-full">test123</div> -->
-
-<!-- ############ -->
-
 <div class="content-height flex flex-col items-stretch">
-  <!-- <div class="flex h-screen flex-col items-stretch"> -->
   <div class="hide-scrollbar grow overflow-x-hidden overflow-y-scroll">
     <div class="flex h-full w-full flex-col">
       <!-- visible when NOT scanning -->
       <div
         class:invisible={scanning}
-        class="relative flex h-full flex-col items-center justify-center bg-silver p-8 dark:bg-navy"
+        class="relative flex h-full flex-col items-center justify-center space-y-4 bg-silver p-8 dark:bg-navy"
       >
-        {#if permissions === 'denied'}
-          <div class="flex flex-col items-center space-y-4">
-            <div class="rounded-lg bg-rose-100 px-8 py-4 text-rose-500">
-              {$LL.SCAN.NO_PERMISSION_1()}<br />{$LL.SCAN.NO_PERMISSION_2()}
+        {#if permissions_nullable && permissions_nullable !== 'granted'}
+          <div class="flex w-3/4 flex-col space-y-4">
+            <div class="flex flex-col items-center rounded-lg bg-rose-100 px-8 py-4 text-rose-500">
+              <CameraSlash class="m-2 h-8 w-8" />
+              <p class="text-center text-[13px]/[24px] font-semibold">{$LL.SCAN.PERMISSION_DENIED()}</p>
             </div>
-            <Button label="Open settings" on:click={openAppSettings} />
+            <Button label={$LL.SCAN.OPEN_SETTINGS()} on:click={openAppSettings} />
           </div>
-          <!-- {:else}
-      <div class="rounded-lg bg-emerald-100 px-8 py-4 font-medium text-emerald-500">
-        Permissions: {permissions}
-      </div> -->
         {/if}
 
-        <!-- Divider -->
-        <!-- <p class="my-4 h-[1px] w-full bg-slate-200" /> -->
-
         {#if $state?.dev_mode !== 'Off'}
-          <div class="flex flex-col space-y-4">
-            <!-- Mock -->
+          <div class="flex w-3/4 flex-col space-y-4">
+            <!-- Mocks -->
             <div class="flex flex-col space-y-2">
-              <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Mock</p>
+              <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Mock scans</p>
               <Button variant="secondary" on:click={mockSiopRequest} label="New connection" />
               <Button variant="secondary" on:click={mockShareRequest} label="Share credentials" />
-            </div>
-            <!-- UniCore (local) -->
-            <div class="flex flex-col space-y-2">
-              <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">UniCore (local)</p>
-              <Button
-                variant="secondary"
-                on:click={() => mockScanCredentialOffer(1)}
-                label="Credential Offer (single)"
-              />
-              <Button
-                variant="secondary"
-                on:click={() => mockScanCredentialOffer(2)}
-                label="Credential Offer (multi)"
-              />
             </div>
             <!-- Divider -->
             <hr />
@@ -361,22 +218,9 @@
     display: none;
   }
 
-  .full-height {
-    height: 100%;
-    border: 1px solid red;
-  }
-
-  /* p {
-    font-family: sans-serif;
-    text-align: center;
-    font-weight: 600;
-  } */
-
   .my-container {
     width: 100%;
-    /* height: 100%; */
     overflow: hidden;
-    /* border: 1px solid green; */
   }
   .my-container {
     display: flex;
@@ -435,6 +279,5 @@
     background-position: 45% 50%;
     background-size: cover;
     background-repeat: no-repeat;
-    /* border: 1px solid blue; */
   }
 </style>

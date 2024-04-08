@@ -1,0 +1,7 @@
+{
+  "type": "[Test] Test",
+  "payload": {
+    "test_term": "test",
+    "test_bool": true
+  }
+}

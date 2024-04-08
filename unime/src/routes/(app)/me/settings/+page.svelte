@@ -26,7 +26,7 @@
     <!-- Avatar -->
     <div class="flex justify-center">
       <EmojiAvatarSelect
-        selected={$state?.active_profile?.picture ?? undefined}
+        selected={$state?.profile_settings.profile?.picture ?? undefined}
         showEditButton={true}
         on:change={(e) => dispatch({ type: '[Settings] Update profile', payload: { picture: e.detail } })}
       />

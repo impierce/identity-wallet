@@ -139,20 +139,6 @@ type RootTranslation = {
 				 */
 				INPUT_PLACEHOLDER: string
 			}
-			THEME: {
-				/**
-				 * C​h​o​o​s​e​ ​y​o​u​r​ ​a​p​p
-				 */
-				TITLE_1: string
-				/**
-				 * a​p​p​e​a​r​a​n​c​e
-				 */
-				TITLE_2: string
-				/**
-				 * A​r​e​ ​y​o​u​ ​m​o​r​e​ ​o​f​ ​a​ ​n​i​g​h​t​ ​o​w​l​?
-				 */
-				SUBTITLE: string
-			}
 			PICTURE: {
 				/**
 				 * S​e​t​ ​a​ ​d​i​s​p​l​a​y
@@ -166,24 +152,6 @@ type RootTranslation = {
 				 * M​a​k​e​ ​i​t​ ​y​o​u​r​s​.
 				 */
 				SUBTITLE: string
-			}
-			SKIP: {
-				/**
-				 * S​k​i​p​ ​c​u​s​t​o​m​i​z​a​t​i​o​n
-				 */
-				TITLE: string
-				/**
-				 * A​r​e​ ​y​o​u​ ​s​u​r​e​?​ ​Y​o​u​ ​c​a​n​ ​a​d​j​u​s​t​ ​t​h​e​ ​a​p​p​ ​a​p​p​e​a​r​a​n​c​e​ ​l​a​t​e​r​ ​i​n​ ​s​e​t​t​i​n​g​s​.
-				 */
-				TEXT: string
-				/**
-				 * Y​e​s
-				 */
-				CONFIRM: string
-				/**
-				 * N​o​,​ ​l​e​t​'​s​ ​c​o​n​t​i​n​u​e
-				 */
-				ABORT: string
 			}
 		}
 		PASSWORD: {
@@ -291,10 +259,6 @@ type RootTranslation = {
 			}
 			DISPLAY_PICTURE: {
 				/**
-				 * D​i​s​p​l​a​y​ ​p​i​c​t​u​r​e
-				 */
-				TITLE: string
-				/**
 				 * E​d​i​t
 				 */
 				EDIT: string
@@ -302,6 +266,10 @@ type RootTranslation = {
 				 * S​e​l​e​c​t​ ​a​ ​p​r​o​f​i​l​e​ ​p​i​c​t​u​r​e
 				 */
 				CHANGE: string
+				/**
+				 * R​e​m​o​v​e
+				 */
+				REMOVE: string
 			}
 			DELETE_PROFILE: {
 				/**
@@ -337,11 +305,23 @@ type RootTranslation = {
 				/**
 				 * T​h​e​m​e
 				 */
-				TITLE: string
+				LABEL: string
 				/**
 				 * S​e​l​e​c​t​ ​T​h​e​m​e
 				 */
 				NAVBAR_TITLE: string
+				/**
+				 * C​h​o​o​s​e​ ​y​o​u​r​ ​a​p​p
+				 */
+				TITLE_1: string
+				/**
+				 * a​p​p​e​a​r​a​n​c​e
+				 */
+				TITLE_2: string
+				/**
+				 * A​r​e​ ​y​o​u​ ​m​o​r​e​ ​o​f​ ​a​ ​n​i​g​h​t​ ​o​w​l​?
+				 */
+				SUBTITLE: string
 			}
 			PASSWORD: {
 				/**
@@ -570,9 +550,9 @@ type RootTranslation = {
 			 */
 			CONNECTIONS: string
 			/**
-			 * T​i​m​e​l​i​n​e
+			 * H​i​s​t​o​r​y
 			 */
-			TIMELINE: string
+			HISTORY: string
 		}
 	}
 	SCAN: {
@@ -593,13 +573,13 @@ type RootTranslation = {
 		 */
 		SUBTITLE: string
 		/**
-		 * N​o​ ​p​e​r​m​i​s​s​i​o​n​s​ ​t​o
+		 * N​o​ ​p​e​r​m​i​s​s​i​o​n​ ​t​o​ ​a​c​c​e​s​s​ ​t​h​e​ ​c​a​m​e​r​a
 		 */
-		NO_PERMISSION_1: string
+		PERMISSION_DENIED: string
 		/**
-		 * a​c​c​e​s​s​ ​t​h​e​ ​c​a​m​e​r​a
+		 * O​p​e​n​ ​s​e​t​t​i​n​g​s
 		 */
-		NO_PERMISSION_2: string
+		OPEN_SETTINGS: string
 		CREDENTIAL_OFFER: {
 			/**
 			 * C​r​e​d​e​n​t​i​a​l​ ​O​f​f​e​r
@@ -695,11 +675,23 @@ type RootTranslation = {
 			EMPTY: string
 		}
 	}
-	TIMELINE: {
+	HISTORY: {
 		/**
 		 * N​o​ ​a​c​t​i​v​i​t​y​ ​y​e​t​.
 		 */
 		EMPTY: string
+		/**
+		 * R​e​c​e​i​v​e​d​ ​d​a​t​a​ ​f​r​o​m
+		 */
+		DATA_RECEIVED: string
+		/**
+		 * S​h​a​r​e​d​ ​d​a​t​a​ ​w​i​t​h
+		 */
+		DATA_SHARED: string
+		/**
+		 * C​o​n​n​e​c​t​e​d​ ​t​o
+		 */
+		CONNECTION_ADDED: string
 	}
 	SEARCH: {
 		/**
@@ -726,6 +718,10 @@ type RootTranslation = {
 			 */
 			DESCRIPTION: string
 		}
+		/**
+		 * R​e​c​e​n​t​ ​s​e​a​r​c​h​e​s
+		 */
+		RECENT_SEARCHES: string
 	}
 	CREDENTIAL: {
 		/**
@@ -902,20 +898,6 @@ export type TranslationFunctions = {
 				 */
 				INPUT_PLACEHOLDER: () => LocalizedString
 			}
-			THEME: {
-				/**
-				 * Choose your app
-				 */
-				TITLE_1: () => LocalizedString
-				/**
-				 * appearance
-				 */
-				TITLE_2: () => LocalizedString
-				/**
-				 * Are you more of a night owl?
-				 */
-				SUBTITLE: () => LocalizedString
-			}
 			PICTURE: {
 				/**
 				 * Set a display
@@ -929,24 +911,6 @@ export type TranslationFunctions = {
 				 * Make it yours.
 				 */
 				SUBTITLE: () => LocalizedString
-			}
-			SKIP: {
-				/**
-				 * Skip customization
-				 */
-				TITLE: () => LocalizedString
-				/**
-				 * Are you sure? You can adjust the app appearance later in settings.
-				 */
-				TEXT: () => LocalizedString
-				/**
-				 * Yes
-				 */
-				CONFIRM: () => LocalizedString
-				/**
-				 * No, let's continue
-				 */
-				ABORT: () => LocalizedString
 			}
 		}
 		PASSWORD: {
@@ -1054,10 +1018,6 @@ export type TranslationFunctions = {
 			}
 			DISPLAY_PICTURE: {
 				/**
-				 * Display picture
-				 */
-				TITLE: () => LocalizedString
-				/**
 				 * Edit
 				 */
 				EDIT: () => LocalizedString
@@ -1065,6 +1025,10 @@ export type TranslationFunctions = {
 				 * Select a profile picture
 				 */
 				CHANGE: () => LocalizedString
+				/**
+				 * Remove
+				 */
+				REMOVE: () => LocalizedString
 			}
 			DELETE_PROFILE: {
 				/**
@@ -1100,11 +1064,23 @@ export type TranslationFunctions = {
 				/**
 				 * Theme
 				 */
-				TITLE: () => LocalizedString
+				LABEL: () => LocalizedString
 				/**
 				 * Select Theme
 				 */
 				NAVBAR_TITLE: () => LocalizedString
+				/**
+				 * Choose your app
+				 */
+				TITLE_1: () => LocalizedString
+				/**
+				 * appearance
+				 */
+				TITLE_2: () => LocalizedString
+				/**
+				 * Are you more of a night owl?
+				 */
+				SUBTITLE: () => LocalizedString
 			}
 			PASSWORD: {
 				/**
@@ -1333,9 +1309,9 @@ export type TranslationFunctions = {
 			 */
 			CONNECTIONS: () => LocalizedString
 			/**
-			 * Timeline
+			 * History
 			 */
-			TIMELINE: () => LocalizedString
+			HISTORY: () => LocalizedString
 		}
 	}
 	SCAN: {
@@ -1356,13 +1332,13 @@ export type TranslationFunctions = {
 		 */
 		SUBTITLE: () => LocalizedString
 		/**
-		 * No permissions to
+		 * No permission to access the camera
 		 */
-		NO_PERMISSION_1: () => LocalizedString
+		PERMISSION_DENIED: () => LocalizedString
 		/**
-		 * access the camera
+		 * Open settings
 		 */
-		NO_PERMISSION_2: () => LocalizedString
+		OPEN_SETTINGS: () => LocalizedString
 		CREDENTIAL_OFFER: {
 			/**
 			 * Credential Offer
@@ -1458,11 +1434,23 @@ export type TranslationFunctions = {
 			EMPTY: () => LocalizedString
 		}
 	}
-	TIMELINE: {
+	HISTORY: {
 		/**
 		 * No activity yet.
 		 */
 		EMPTY: () => LocalizedString
+		/**
+		 * Received data from
+		 */
+		DATA_RECEIVED: () => LocalizedString
+		/**
+		 * Shared data with
+		 */
+		DATA_SHARED: () => LocalizedString
+		/**
+		 * Connected to
+		 */
+		CONNECTION_ADDED: () => LocalizedString
 	}
 	SEARCH: {
 		/**
@@ -1489,6 +1477,10 @@ export type TranslationFunctions = {
 			 */
 			DESCRIPTION: () => LocalizedString
 		}
+		/**
+		 * Recent searches
+		 */
+		RECENT_SEARCHES: () => LocalizedString
 	}
 	CREDENTIAL: {
 		/**

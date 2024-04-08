@@ -1,7 +1,8 @@
 import type { SvelteComponent } from 'svelte';
 
-import type { Locale } from 'src-tauri/identity_wallet/bindings/Locale';
 import type { SvelteHTMLElements } from 'svelte/elements';
+
+import type { Locale } from '@bindings/Locale';
 
 import DE from '~icons/circle-flags/de';
 import GB from '~icons/circle-flags/gb';
@@ -19,4 +20,7 @@ export const locales: {
   { locale: 'de-DE', flag: DE, displayName: 'Deutsch' },
 ];
 
+// To disable a locale, it can be added to the array
 export const incompleteLocales: Locale[] = ['en-GB'];
+// TODO: extended locales (such as 'en-GB') cannot be enabled until this issue is resolved:
+// https://github.com/ivanhofer/typesafe-i18n/issues/741

@@ -33,8 +33,8 @@
   $: {
     // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
     console.log('routes/(app)/me/+page.svelte: state', $state);
-    if ($state?.active_profile?.name) {
-      initials = calculateInitials($state?.active_profile?.name);
+    if ($state?.profile_settings.profile?.name) {
+      initials = calculateInitials($state?.profile_settings.profile?.name);
     }
   }
 
@@ -51,9 +51,15 @@
         class="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary"
         on:click={() => goto('/me/settings')}
       >
-        <span class="text-[28px]/[28px]">
-          {@html $state?.active_profile?.picture ?? ''}
-        </span>
+        {#if $state.profile_settings.profile?.picture}
+          <span class="text-[28px]/[28px]">
+            {@html $state.profile_settings.profile?.picture}
+          </span>
+        {:else}
+          <span class="text-[20px]/[20px] font-semibold text-white dark:text-dark">
+            {initials}
+          </span>
+        {/if}
       </button>
       <button
         on:click={() => goto('/me/search')}
