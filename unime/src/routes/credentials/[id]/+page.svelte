@@ -5,7 +5,6 @@
   import QRCode from 'qrcode';
 
   import { melt } from '@melt-ui/svelte';
-  import { info } from '@tauri-apps/plugin-log';
 
   import { dispatch } from '$lib/dispatcher';
   import { getImageAsset } from '$lib/utils';
@@ -39,8 +38,6 @@
 
   const entries = { ...credential.data.credentialSubject };
   hiddenStandardFields.concat(hiddenCustomFields).forEach((key) => delete entries[key]);
-
-  info(JSON.stringify(credential));
 
   let credentialLogoUrl: string | null;
 

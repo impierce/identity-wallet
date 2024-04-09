@@ -24,19 +24,19 @@
     if ($value === 'dark') {
       // dark
       document.documentElement.classList.add('dark');
-      debug('dark mode enabled');
+      debug('Dark mode enabled');
     } else if ($value === 'light') {
       // light
       document.documentElement.classList.remove('dark');
-      debug('light mode enabled');
+      debug('Light mode enabled');
     } else {
       // system
       if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
         document.documentElement.classList.add('dark');
-        debug('dark mode enabled');
+        debug('Dark mode enabled');
       } else {
         document.documentElement.classList.remove('dark');
-        debug('light mode enabled');
+        debug('Light mode enabled');
       }
     }
     dispatch('change', { value: $value });

@@ -58,8 +58,8 @@ Displays an image (loaded from disk) or a fallback component.
     src={assetUrl}
     alt="img_{id}"
     class={twMerge('max-h-full w-full overflow-hidden bg-white object-contain', $$props.imgClass)}
-    on:error={() => warn(`could not load image: ${id}`)}
-    on:load={() => debug(`image successfully loaded: ${assetUrl}`)}
+    on:error={() => warn(`Could not load image: ${id}`)}
+    on:load={() => debug(`Image successfully loaded: ${assetUrl}`)}
     data-testid="image"
   />
 {:else}

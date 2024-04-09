@@ -28,7 +28,7 @@
   let permissions_nullable: PermissionState | null;
 
   function onMessage(scanned: Scanned) {
-    debug(`scanned: ${scanned.content}`);
+    debug(`Scanned: ${scanned.content}`);
     dispatch({ type: '[QR Code] Scanned', payload: { form_urlencoded: scanned.content } });
     goto('/me');
   }

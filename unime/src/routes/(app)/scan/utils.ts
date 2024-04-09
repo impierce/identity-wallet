@@ -14,12 +14,12 @@ export const checkScanPrerequisites = async (): Promise<boolean> => {
       if (permission === 'granted') {
         return true;
       } else {
-        warn('app does not have permissions to access the camera');
+        warn('App does not have permissions to access the camera');
         return false;
       }
     })
     .catch((err) => {
-      warn(`error checking permissions: ${err}`);
+      warn(`Error checking permissions: ${err}`);
       return false;
     });
 };
