@@ -1,15 +1,16 @@
 import type { HandleClientError } from '@sveltejs/kit';
-import { error, info } from '@tauri-apps/plugin-log';
+import { info } from '@tauri-apps/plugin-log';
 
-export const handleError = (async ({ error: err, event }) => {
+export const handleError = (async ({ error, event }) => {
   info(`hooks.client.ts: event.url: "${event.url}"`);
 
   const errorId = crypto.randomUUID();
 
-  error(`${errorId} - ${err.message}`);
+  // eslint-disable-next-line no-console
+  console.error(error);
 
   return {
-    message: err.message,
+    message: error.message,
     errorId,
   };
 }) satisfies HandleClientError;
