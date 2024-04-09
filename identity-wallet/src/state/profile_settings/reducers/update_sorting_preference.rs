@@ -25,8 +25,8 @@ pub async fn update_sorting_preference(state: AppState, action: Action) -> Resul
             );
             sorting_preferences.credentials.sort_method = credential_sorting;
             // With this nested if let statement the user (should) automatically select the sort method when toggling the reverse icon on that sort method.
-            // Check the UX designs if the meaning of this comment not clear.
             // If not nested (and therefore not repeated but just checking once in a separate if let statement), the user would be able to toggle the reverse option on a sort method without selecting it.
+            // Check the UX designs if the meaning of this comment not clear.
             if let Some(reverse) = update_sorting.reverse {
                 debug!("Update credential sorting preference set to: `{:?}`", reverse);
                 sorting_preferences.credentials.reverse = reverse;
@@ -58,21 +58,7 @@ pub async fn sort_credentials(state: AppState, _action: Action) -> Result<AppSta
     let mut credentials: Vec<DisplayCredential> = state.credentials.clone();
     let preferences: Preferences<CredentialSortMethod> = state.profile_settings.sorting_preferences.credentials.clone();
 
-    // testing
-
-    // let credential = credentials.first().unwrap().data.to_string();
-    // fn contains_search_term(string: Option<&str>, search_term: &str) -> bool {
-    //     string
-    //         .map(|string| string.to_lowercase().contains(&search_term.trim().to_lowercase()))
-    //         .unwrap_or_default()
-    // }
-
-    // if contains_search_term(Some(&credential), "issuanceDate") {
-    //     credentials.first().unwrap().metadata.date_issued = issuanceDate;
-    // }
-
-    //
-    let name_az = |a: &DisplayCredential, b: &DisplayCredential| a.display_name.cmp(&b.display_name);
+    let name_az = |a: &DisplayCredential, b: &DisplayCredential| a.display_name.to_lowercase().cmp(&b.display_name.to_lowercase());
     let issuance_new_old =
         |a: &DisplayCredential, b: &DisplayCredential| a.metadata.date_issued.cmp(&b.metadata.date_issued);
     let added_new_old =
@@ -99,7 +85,7 @@ pub async fn sort_connections(state: AppState, _action: Action) -> Result<AppSta
     let mut connections: Vec<Connection> = state.connections.0.clone();
     let preferences: Preferences<ConnectionSortMethod> = state.profile_settings.sorting_preferences.connections.clone();
 
-    let name_az = |a: &Connection, b: &Connection| a.name.cmp(&b.name);
+    let name_az = |a: &Connection, b: &Connection| a.name.to_lowercase().cmp(&b.name.to_lowercase());
     let first_interacted_new_old = |a: &Connection, b: &Connection| a.first_interacted.cmp(&b.first_interacted);
     let last_interacted_new_old = |a: &Connection, b: &Connection| a.last_interacted.cmp(&b.last_interacted);
 

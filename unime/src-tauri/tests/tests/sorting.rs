@@ -3,6 +3,9 @@ use crate::common::json_example;
 use identity_wallet::state::{actions::Action, AppState, AppStateContainer};
 use tokio::sync::Mutex;
 
+// Test: Frontend shouldn't persist reverse setting on any of the sorting options which aren't selected.
+//       Because the backend doesn't persist this either.
+
 #[tokio::test]
 #[serial_test::serial]
 async fn test_credentials_sorting_name_az_reverse() {
@@ -25,7 +28,9 @@ async fn test_credentials_sorting_name_az_reverse() {
 async fn test_credentials_sorting_added_settings() {
     // This test only checks if the settings are updated correctly.
     // Currently we #[PartialEq(ignore)] the metadata.date_added field since it will fail many other tests.
-    // The json files are static but some tests create new credentials and the date_added field will added at this time.
+    // The json files are static but some tests create new credentials and the date_added field will be added at this time.
+    // Simultaneously, this and the following tests using "four_credentials_*.json" fixtures will show that sorting for both connections and credentials are checked at every update.
+    
     setup_state_file();
     setup_stronghold();
 
@@ -116,8 +121,6 @@ async fn test_credentials_sorting_identical_issue_dates_reverse() {
     .await;
 }
 
-// problem with default sorting of connections in four credentials: iota before impierce?
-// test overwrite old settings reverse
 // test initiate defaults
 
 #[tokio::test]
@@ -179,7 +182,8 @@ async fn test_connections_sorting_last_interact() {
     setup_stronghold();
 
     // In fact, the {last_interacted, reverse: true} is the same as {first_interacted, reverse:false}.
-    // We'll make a decision based on the UX to choose which one to use (first_interacted and last_interacted, or, first_interacted with reverse button), since having both would be duplicate.
+    // We should make a decision based on the UX to choose which one to use (first_interacted and last_interacted, or, first_interacted with reverse button), since having both would be duplicate.
+
     let state = json_example::<AppState>("tests/fixtures/states/three_connections.json");
     let action = json_example::<Action>("tests/fixtures/actions/connection_sort_last_interact.json");
     let expected_state = json_example::<AppState>("tests/fixtures/states/three_connections_sort_last_interact.json");
