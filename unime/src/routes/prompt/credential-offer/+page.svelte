@@ -26,7 +26,7 @@
 
   let issuer_name: string = $state.current_user_prompt?.issuer_name;
 
-  let all_offer_indices: string[] = credential_offer.credentials.map((_, i: number) => i.toString());
+  let all_offer_indices: number[] = credential_offer.credentials.map((_, i: number) => i);
 
   onDestroy(async () => {
     dispatch({ type: '[User Flow] Cancel', payload: {} });
