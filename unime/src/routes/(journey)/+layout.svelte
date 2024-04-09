@@ -1,9 +1,5 @@
 <script lang="ts">
   import { page } from '$app/stores';
-
-  import { dispatch } from '$lib/dispatcher';
-  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
-  import { state } from '$src/stores';
 </script>
 
 <!-- TODO: refactor routes/(journey) to routes/journey/[id]/goals/[id] as there could be multiple journeys -->

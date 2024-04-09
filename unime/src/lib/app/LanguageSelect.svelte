@@ -3,17 +3,17 @@
 
   import { incompleteLocales, locales } from '$lib/app/locales';
   import Button from '$lib/components/atoms/Button.svelte';
-  import BottomDrawer from '$lib/components/molecules/dialogs/BottomDrawer.svelte';
+  import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
   import { dispatch } from '$lib/dispatcher';
   import LL from '$src/i18n/i18n-svelte';
   import { state } from '$src/stores';
 
-  $: selected = locales.find((l) => l.locale === $state?.profile_settings.locale) ?? locales.at(0)!!;
+  $: selected = locales.find((l) => l.locale === $state?.profile_settings.locale) ?? locales.at(0)!;
 
   let isOpen = false;
 </script>
 
-<BottomDrawer titleText={$LL.ONBOARDING.WELCOME.SELECT_LANGUAGE()} {isOpen}>
+<ActionSheet titleText={$LL.ONBOARDING.WELCOME.SELECT_LANGUAGE()} {isOpen}>
   <button
     slot="trigger"
     use:melt={trigger}
@@ -55,7 +55,7 @@
   <div class="mt-6 w-full" slot="close" let:close>
     <Button label={$LL.CLOSE()} trigger={close} />
   </div>
-</BottomDrawer>
+</ActionSheet>
 
 <!-- TODO: find a better (global) solution -->
 <style>

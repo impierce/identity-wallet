@@ -10,14 +10,14 @@
 
   const dispatch = createEventDispatcher();
 
-  export let value: string = '';
+  export let value = '';
   export let placeholder = $LL.SEARCH.INPUT_PLACEHOLDER();
   export let delay = 500;
   // makes the <input> element available to the parent component (example usage: conditionally put focus it)
   export let ref: HTMLInputElement;
 
   let debouncedValue: string | undefined;
-  let timer: any;
+  let timer: NodeJS.Timeout;
 
   const debounce = (value: string) => {
     clearTimeout(timer);
