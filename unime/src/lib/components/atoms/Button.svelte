@@ -6,8 +6,8 @@
   const dispatch = createEventDispatcher();
 
   export let label: string;
-  export let trigger: any = undefined; // TODO: add type
-  export let disabled: boolean = false;
+  export let trigger = undefined; // TODO: add type
+  export let disabled = false;
   export let variant: 'primary' | 'secondary' = 'primary';
 
   $: variant_classes =

@@ -1,38 +1,36 @@
 <script lang="ts">
-  import { onMount, SvelteComponent } from 'svelte';
+  import { onMount } from 'svelte';
 
   import { twMerge } from 'tailwind-merge';
 
+  import { debug, warn } from '@tauri-apps/plugin-log';
+
   import { getImageAsset } from '$lib/utils';
-  import { icons, type Icon } from '$src/lib/app/icons';
 
-  export let id: string | null = null;
+  import Bank from '~icons/ph/bank-light';
+  import Certificate from '~icons/ph/certificate-light';
+  import User from '~icons/ph/user-light';
 
+  const icons = {
+    Bank: Bank,
+    Certificate: Certificate,
+    User: User,
+  };
+  type Icon = keyof typeof icons;
+
+  export let id: string;
   export let iconFallback: Icon = 'User';
-
-  export let isTempAsset: boolean = false;
-
-  let assetUrlPromise: Promise<string | null> = getImageAsset(id!!);
-
+  export let isTempAsset = false;
   let assetUrl: string | null = null;
 
-  let fallbackComponent: SvelteComponent | null = null;
-
-  // async loading function?: getImageAsset
-
   async function loadImage() {
-    getImageAsset(id!!, isTempAsset).then((a) => {
-      assetUrl = a;
+    getImageAsset(id, isTempAsset).then((url) => {
+      assetUrl = url;
     });
   }
 
-  // TODO: needed?
-  let loading = false;
-
   onMount(() => {
-    // getImageAsset
     loadImage();
-    loading = true;
   });
 </script>
 
@@ -60,11 +58,8 @@ Displays an image (loaded from disk) or a fallback component.
     src={assetUrl}
     alt="img_{id}"
     class={twMerge('max-h-full w-full overflow-hidden bg-white object-contain', $$props.imgClass)}
-    on:error={() => {
-      id = null;
-      console.warn(`could not load image for id=[${id}]`);
-    }}
-    on:load={() => console.log('loading complete')}
+    on:error={() => warn(`Could not load image: ${id}`)}
+    on:load={() => debug(`Image successfully loaded: ${assetUrl}`)}
     data-testid="image"
   />
 {:else}
@@ -76,22 +71,3 @@ Displays an image (loaded from disk) or a fallback component.
     />
   </slot>
 {/if}
-
-<!-- TODO: make fallback more generic, default is SvelteComponent with icon -->
-<!-- <slot name="fallback" /> -->
-
-<!-- {#if id}
-  {#await assetUrlPromise then assetUrl}
-    <img
-      src={assetUrl}
-      alt="img"
-      on:error={() => {
-        id = null;
-        console.warn(`could not load image for id=[${id}]`);
-      }}
-      on:load={() => console.log('loading complete')}
-    />
-  {/await}
-{:else}
-  <svelte:component this={icons['User']} class="h-6 w-6 text-slate-800 dark:text-grey" />
-{/if} -->

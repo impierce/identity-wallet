@@ -13,23 +13,6 @@
 
   export let credentialType: 'all' | 'data' | 'badges' = 'all';
 
-  // let favorite_credentials: any[] = [
-  //   {
-  //     title: 'Avatar: The Way of Water',
-  //     description: 'Downtown Cinema',
-  //     icon: FilmSlate,
-  //     color: 'bg-amber-100'
-  //   },
-  //   {
-  //     title: 'Flight #1337 to Pandora',
-  //     description: 'Pandora Airlines',
-  //     icon: AirplaneTilt,
-  //     color: 'bg-teal-100'
-  //   }
-  // ];
-
-  // favorite_credentials = [];
-
   let favorite_credentials: DisplayCredential[] = $state.credentials.filter((c) => c.metadata.is_favorite);
 
   onMount(async () => {

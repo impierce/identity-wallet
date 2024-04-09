@@ -54,7 +54,7 @@ pub enum Locale {
 impl FeatTrait for Locale {}
 
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone, PartialEq, Eq, Default)]
-#[ts(export, export_to = "bindings/theme.ts")]
+#[ts(export, export_to = "bindings/AppTheme.ts")]
 pub enum AppTheme {
     #[default]
     #[serde(rename = "system")]

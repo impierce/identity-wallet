@@ -3,7 +3,7 @@
 
   import { melt } from '@melt-ui/svelte';
 
-  import BottomDrawer from '$lib/components/molecules/dialogs/BottomDrawer.svelte';
+  import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
   import LL from '$src/i18n/i18n-svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
 
@@ -12,14 +12,12 @@
   export let selected: string | undefined;
   export let showEditButton = false;
 
-  //export let defaultValue = '&#x1F642'; // slightly-smiling-face
-
   const dispatch = createEventDispatcher();
 
   let emojiSelectIsOpen = false;
 
   // TODO: switch to Unicode?
-  let predefinedEmojis: Array<Array<string>> = [
+  let predefinedEmojis: string[][] = [
     // faces
     [
       '&#x1F642', // slightly-smiling-face
@@ -59,8 +57,7 @@
   ];
 </script>
 
-<BottomDrawer titleText={$LL.SETTINGS.PROFILE.DISPLAY_PICTURE.CHANGE()} descriptionText={''} isOpen={emojiSelectIsOpen}>
-  <!-- <div slot="trigger"> -->
+<ActionSheet titleText={$LL.SETTINGS.PROFILE.DISPLAY_PICTURE.CHANGE()} descriptionText={''} isOpen={emojiSelectIsOpen}>
   <button
     slot="trigger"
     class="relative flex h-24 w-24 items-center justify-center rounded-full
@@ -68,9 +65,7 @@
       {showEditButton ? 'mb-[34px]' : ''}"
     use:melt={trigger}
     let:trigger
-    on:click={() => {
-      emojiSelectIsOpen = true;
-    }}
+    on:click={() => (emojiSelectIsOpen = true)}
   >
     {#if selected}
       <span class="text-[44px]/[44px]">
@@ -85,23 +80,6 @@
       <Plus class="h-6 w-6 text-slate-700 dark:text-grey" />
     {/if}
   </button>
-  <!-- TODO: Popover is never shown, because not in slot -->
-  <!-- {#if $open}
-      <div
-        use:melt={$content}
-        transition:fade={{ duration: 200 }}
-        class="z-10 w-1/2 rounded-2xl bg-dark p-[20px] shadow-md"
-      >
-        <div use:melt={$arrow} />
-        <div>
-          <p class="text-[12px] font-semibold text-white">Add your profile image</p>
-          <p class="pt-2 text-[11px]/[14px] font-normal text-grey">
-            Customize your UniMe with your own picture or emoji.
-          </p>
-        </div>
-      </div>
-    {/if} -->
-  <!-- </div> -->
   <div
     slot="content"
     class="hide-scrollbar flex snap-x snap-mandatory flex-row items-start space-x-4 overflow-x-scroll"
@@ -119,7 +97,8 @@
               dispatch('change', emoji);
               emojiSelectIsOpen = false;
             }}
-            >{@html emoji}
+          >
+            {@html emoji}
           </button>
         {/each}
       </div>
@@ -143,7 +122,7 @@
       <Button variant="secondary" label={$LL.CLOSE()} trigger={close} />
     {/if}
   </div>
-</BottomDrawer>
+</ActionSheet>
 
 <!-- TODO: needed? -->
 <style>

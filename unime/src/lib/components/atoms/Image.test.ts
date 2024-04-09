@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { randomFillSync } from 'node:crypto';
 
 import '@testing-library/jest-dom';
@@ -30,8 +31,6 @@ describe('Image', () => {
     // window.__TAURI_INTERNALS__ = window.__TAURI_INTERNALS__ ?? {};
 
     mockConvertFileSrc('linux');
-
-    // console.log({ imageUrl });
 
     const id = '65323136-6535-3737-6463-386531323361';
 
@@ -102,8 +101,6 @@ describe('Image', () => {
     // window.__TAURI_INTERNALS__ = window.__TAURI_INTERNALS__ ?? {};
 
     mockConvertFileSrc('linux');
-
-    // console.log({ imageUrl });
 
     const id = '0';
 

@@ -17,20 +17,24 @@ Identity Wallet for people to manage Decentralized Identities and Verifiable Cre
 cd unime
 ```
 
-### 1. Install dependencies
+### 1. Set environment variables
+
+Copy the file `.env.example` to `.env` and set the values accordingly.
+
+### 2. Install dependencies
 
 ```sh
 npm install
 ```
 
-### 2. Generate icons
+### 3. Generate icons
 
 ```sh
 cd src-tauri
 cargo tauri icon
 ```
 
-### 3. Run the app
+### 4. Run the app
 
 ```sh
 # Desktop

@@ -18,9 +18,9 @@
 
   let searchTerm: string | null = $page.url.searchParams.get('query');
 
-  $: currentSearchResults = $state.search_results.current.map((id) => $state.credentials.find((c) => c.id === id)!!);
+  $: currentSearchResults = $state.search_results.current.map((id) => $state.credentials.find((c) => c.id === id)!);
   $: recentSearches = $state.search_results.recent_credentials.map(
-    (id) => $state.credentials.find((c) => c.id === id)!!,
+    (id) => $state.credentials.find((c) => c.id === id)!,
   );
 
   // https://stackoverflow.com/questions/57354001/how-to-focus-on-input-field-loaded-from-component-in-svelte

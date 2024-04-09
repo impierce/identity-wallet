@@ -9,10 +9,10 @@ module.exports = {
     'prettier',
   ],
   root: true,
-  // ignorePatterns: ['*.cjs'],
   parserOptions: {
     sourceType: 'module',
     ecmaVersion: 2020,
+    extraFileExtensions: ['.svelte'],
   },
   overrides: [
     {
@@ -29,6 +29,8 @@ module.exports = {
     node: true,
   },
   rules: {
-    'no-console': 'warn',
+    'no-undef': 'off', // only necessary for JS (https://typescript-eslint.io/troubleshooting/#i-get-errors-from-the-no-undef-rule-about-global-variables-not-being-defined-even-though-there-are-no-typescript-errors)
+    'no-console': 'error', // disallow any logs to console
+    'svelte/no-at-html-tags': 'warn', // TODO: security risk even applicable for context of Tauri app?
   },
 };

@@ -12,9 +12,7 @@
   import History from '$src/lib/events/History.svelte';
   import { state } from '$src/stores';
 
-  console.log($page.params.id);
-  console.log($state.connections);
-  let connection: Connection = $state.connections.find((c) => c.id === $page.params.id)!!;
+  let connection: Connection = $state.connections.find((c) => c.id === $page.params.id)!;
 </script>
 
 <div class="content-height flex flex-col">
