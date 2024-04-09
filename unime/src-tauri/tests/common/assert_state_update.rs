@@ -78,7 +78,11 @@ pub async fn assert_state_update(
                 ..
             } = expected_state;
 
-            println!("Current state:\n{:#?}\n\n-------------------------------------\n\nExpected state:\n{:#?}\n", container.0.lock().await, expected_state);
+            println!(
+                "Current state:\n{:#?}\n\n-------------------------------------\n\nExpected state:\n{:#?}\n",
+                container.0.lock().await,
+                expected_state
+            );
 
             assert_eq!(connections, expected_connections);
             assert_eq!(credentials, expected_credentials);
@@ -94,7 +98,10 @@ pub async fn assert_state_update(
             }
 
             assert_eq!(profile_settings.locale, expected_profile_settings.locale);
-            assert_eq!(profile_settings.sorting_preferences, expected_profile_settings.sorting_preferences);
+            assert_eq!(
+                profile_settings.sorting_preferences,
+                expected_profile_settings.sorting_preferences
+            );
 
             debug_messages.iter().zip(expected_debug_messages.iter()).for_each(
                 |(debug_message, expected_debug_message)| {
