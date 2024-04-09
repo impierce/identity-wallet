@@ -62,6 +62,8 @@ jobs:
         # Otherwise linting will fail with error: The `distDir` configuration is set to `"../build"` but this path doesn't exist
         working-directory: ./unime
         run: npm install && npm run build
+        env:
+          PUBLIC_DEV_MODE_MENU_EXPANDED: false
 
       - name: Lint
         working-directory: ./unime/src-tauri
