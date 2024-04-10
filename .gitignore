@@ -1,11 +1,12 @@
-# Rust
+# Workspace Rust
 target/
 
-# Node.js
+# Workspace package.json
 node_modules/
 
 # Editor directories and files
 .vscode/**
+!.vscode/extensions.json
 !.vscode/settings.json
 .idea/
 *.suo
@@ -17,3 +18,12 @@ node_modules/
 # OS-generated files
 .DS_Store
 .snapshot
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*

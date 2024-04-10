@@ -1,16 +1,2 @@
-# Rust
+# .gitignore specific to /identity-wallet
 target/
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# OS-generated files
-.DS_Store
-.snapshot
