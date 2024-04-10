@@ -54,7 +54,7 @@ npm run tauri ios dev
 > [!NOTE]
 > Before committing, please make sure the code is formatted correctly, passes all tests and is linted.
 
-### All workspaces
+Run Prettier from the project root:
 
 ```sh
 npm run format
@@ -81,6 +81,18 @@ cargo fmt
 cargo clippy
 cargo test
 ```
+
+### VS Code support
+
+If install the recommende extensions and add
+
+```json
+{
+  "editor.formatOnSave": true
+}
+```
+
+to your user settings, VS Code will automatically format frontend files and JSON file when you hit save.
 
 ### Troubleshooting
 
