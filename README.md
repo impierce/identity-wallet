@@ -84,7 +84,7 @@ cargo test
 
 ### VS Code support
 
-If install the recommende extensions and add
+If you install the recommended extensions and add
 
 ```json
 {
@@ -92,7 +92,7 @@ If install the recommende extensions and add
 }
 ```
 
-to your user settings, VS Code will automatically format frontend files and JSON file when you hit save.
+to your user settings, VS Code will automatically format frontend files and JSON files when you hit save.
 
 ### Troubleshooting
 
