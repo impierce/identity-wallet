@@ -16,7 +16,7 @@
 
   import BottomDrawer from '../../components/molecules/dialogs/BottomDrawer.svelte';
 
-  let preferredView: 'list' | 'grid' = 'list';
+  //let preferredView: 'list' | 'grid' = 'list';
   let preferences: 'alphabetical' | 'issued' | 'added';
   let sortingOrder: 'ascending' | 'descending';
 </script>
@@ -61,17 +61,23 @@
             if (preferences == 'alphabetical') {
               if (sortingOrder == 'descending') {
                 dispatch({
-                  type: '[User Data] Query',
-                  payload: { target: 'Credentials', sort_method: 'NameAZ', sort_reverse: true },
+                  type: '[Settings] Update Sorting Preference',
+                  payload: { credential_sorting: 'name_az', reverse: true },
                 });
                 sortingOrder = 'ascending';
               } else {
-                dispatch({ type: '[User Data] Query', payload: { target: 'Credentials', sort_method: 'NameAZ' } });
+                dispatch({
+                  type: '[Settings] Update Sorting Preference',
+                  payload: { credential_sorting: 'name_az', reverse: false },
+                });
                 sortingOrder = 'descending';
               }
               // Preference not yet selected
             } else {
-              dispatch({ type: '[User Data] Query', payload: { target: 'Credentials', sort_method: 'NameAZ' } });
+              dispatch({
+                type: '[Settings] Update Sorting Preference',
+                payload: { credential_sorting: 'name_az', reverse: false },
+              });
               preferences = 'alphabetical';
               sortingOrder = 'descending';
             }
@@ -87,22 +93,22 @@
             if (preferences == 'issued') {
               if (sortingOrder == 'ascending') {
                 dispatch({
-                  type: '[User Data] Query',
-                  payload: { target: 'Credentials', sort_method: 'IssuanceNewOld', sort_reverse: true },
+                  type: '[Settings] Update Sorting Preference',
+                  payload: { credential_sorting: 'issue_date_new_old', reverse: true },
                 });
                 sortingOrder = 'descending';
               } else {
                 dispatch({
-                  type: '[User Data] Query',
-                  payload: { target: 'Credentials', sort_method: 'IssuanceNewOld' },
+                  type: '[Settings] Update Sorting Preference',
+                  payload: { credential_sorting: 'issue_date_new_old', reverse: false },
                 });
                 sortingOrder = 'ascending';
               }
               // Preference not yet selected
             } else {
               dispatch({
-                type: '[User Data] Query',
-                payload: { target: 'Credentials', sort_method: 'IssuanceNewOld' },
+                type: '[Settings] Update Sorting Preference',
+                payload: { credential_sorting: 'issue_date_new_old', reverse: false },
               });
               preferences = 'issued';
               sortingOrder = 'ascending';
@@ -119,17 +125,23 @@
             if (preferences == 'added') {
               if (sortingOrder == 'ascending') {
                 dispatch({
-                  type: '[User Data] Query',
-                  payload: { target: 'Credentials', sort_method: 'AddedNewOld' },
+                  type: '[Settings] Update Sorting Preference',
+                  payload: { credential_sorting: 'added_date_new_old', reverse: true },
                 });
                 sortingOrder = 'descending';
               } else {
-                dispatch({ type: '[User Data] Query', payload: { target: 'Credentials', sort_method: 'AddedNewOld' } });
+                dispatch({
+                  type: '[Settings] Update Sorting Preference',
+                  payload: { credential_sorting: 'added_date_new_old', reverse: false },
+                });
                 sortingOrder = 'ascending';
               }
               // Preference not yet selected
             } else {
-              dispatch({ type: '[User Data] Query', payload: { target: 'Credentials', sort_method: 'AddedNewOld' } });
+              dispatch({
+                type: '[Settings] Update Sorting Preference',
+                payload: { credential_sorting: 'added_date_new_old', reverse: false },
+              });
               preferences = 'added';
               sortingOrder = 'ascending';
             }
