@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import { fade } from 'svelte/transition';
 
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';

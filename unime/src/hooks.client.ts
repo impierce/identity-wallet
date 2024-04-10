@@ -5,9 +5,8 @@ export const handleError = (async ({ error, event }) => {
   info(`hooks.client.ts: event.url: "${event.url}"`);
 
   const errorId = crypto.randomUUID();
-  // example integration with https://sentry.io/
-  // Sentry.captureException(error, { extra: { event, errorId } });
 
+  // eslint-disable-next-line no-console
   console.error(error);
 
   return {

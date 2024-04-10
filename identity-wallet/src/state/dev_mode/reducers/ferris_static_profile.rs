@@ -1,8 +1,10 @@
 use crate::{
     error::AppError::{self, *},
     persistence::ASSETS_DIR,
+    state::core_utils::history_event::EventType,
     state::{
         connections::{Connection, Connections},
+        core_utils::history_event::{HistoryCredential, HistoryEvent},
         credentials::VerifiableCredentialRecord,
         dev_mode::DevMode,
         profile_settings::{AppTheme, Profile},
@@ -190,6 +192,45 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             last_interacted: "2024-01-09T08:45:44.217Z".to_string(),
         },
     ]);
+
+    state.history = vec![
+        HistoryEvent {
+            connection_id: "impierce".to_string(),
+            connection_name: "Impierce Demo Portal".to_string(),
+            event_type: EventType::ConnectionAdded,
+            date: (chrono::Utc::now() - chrono::Duration::try_days(2).unwrap()).to_rfc3339(),
+            credentials: vec![],
+        },
+        HistoryEvent {
+            connection_id: "impierce".to_string(),
+            connection_name: "Impierce Demo Portal".to_string(),
+            event_type: EventType::CredentialsAdded,
+            date: (chrono::Utc::now() - chrono::Duration::try_hours(3).unwrap()).to_rfc3339(),
+            credentials: vec![
+                HistoryCredential {
+                    title: "PersonalInformation".to_string(),
+                    issuer_name: "Impierce Demo Portal".to_string(),
+                    id: "39373933-3863-3339-3864-646234373631".to_string(),
+                },
+                HistoryCredential {
+                    title: "Teamwork".to_string(),
+                    issuer_name: "Impierce Demo Portal".to_string(),
+                    id: "65323136-6535-3737-6463-386531323361".to_string(),
+                },
+            ],
+        },
+        HistoryEvent {
+            connection_id: "impierce".to_string(),
+            connection_name: "Impierce Demo Portal".to_string(),
+            event_type: EventType::CredentialsShared,
+            date: (chrono::Utc::now() - chrono::Duration::try_minutes(5).unwrap()).to_rfc3339(),
+            credentials: vec![HistoryCredential {
+                title: "Teamwork".to_string(),
+                issuer_name: "Impierce Demo Portal".to_string(),
+                id: "65323136-6535-3737-6463-386531323361".to_string(),
+            }],
+        },
+    ];
 
     state.search_results.recent_credentials = vec![
         DRIVERS_LICENSE_CREDENTIAL.display_credential.id.clone(),

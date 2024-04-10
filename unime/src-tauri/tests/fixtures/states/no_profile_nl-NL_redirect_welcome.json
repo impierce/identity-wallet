@@ -1,0 +1,9 @@
+{
+  "profile_settings": {
+    "locale": "nl-NL"
+  },
+  "current_user_prompt": {
+    "type": "redirect",
+    "target": "welcome"
+  }
+}

@@ -9,5 +9,8 @@ gen/*
 !gen/apple/ExportOptions.plist
 !gen/android/app/build.gradle.kts
 
-# Can be generated through `cargo tauri icon`
+# All icons can be easily generated through `cargo tauri icon`
 icons/
+# Some icons stay checked in to enable a smoother onboarding, because `cargo tauri dev` does not start without them
+!icons/32x32.png
+!icons/icon.icns
