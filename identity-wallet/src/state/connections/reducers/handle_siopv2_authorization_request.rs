@@ -55,7 +55,8 @@ pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: A
     let mut connections = state.connections;
     let connection = connections.update_or_insert(&connection_url, &client_name);
 
-    persist_asset("client_0", &connection.id).ok();
+    let file_name = base64::encode_config(logo_uri.unwrap_or("_".to_string()), base64::URL_SAFE);
+    persist_asset(&file_name, &connection.id).ok();
 
     // History
     state.history.push(HistoryEvent {

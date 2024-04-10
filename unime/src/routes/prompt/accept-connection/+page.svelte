@@ -32,6 +32,8 @@
 
   const hostname = new URL($state.current_user_prompt.redirect_uri).hostname;
 
+  const imageId = btoa($state.current_user_prompt?.logo_uri);
+
   onDestroy(async () => {
     // TODO: is onDestroy also called when user accepts since the component itself is destroyed?
     dispatch({ type: '[User Flow] Cancel', payload: {} });
@@ -42,10 +44,9 @@
   <TopNavBar title={$LL.SCAN.CONNECTION_REQUEST.NAVBAR_TITLE()} on:back={() => history.back()} />
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
-    <!-- TODO: backend doesn't need to provide a logo_uri, since logo is always downloaded by backend and stored as "/tmp/client_0.png" -->
     {#if $state.current_user_prompt.logo_uri}
       <div class="flex h-[75px] w-[75px] overflow-hidden rounded-3xl bg-white p-2 dark:bg-silver">
-        <Image id={'client_0'} isTempAsset={true} />
+        <Image id={imageId} isTempAsset={true} />
       </div>
     {:else}
       <PaddedIcon icon={PlugsConnected} />

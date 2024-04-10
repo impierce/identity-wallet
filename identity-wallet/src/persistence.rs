@@ -4,7 +4,6 @@ use log::info;
 use log::{debug, warn};
 use std::io::{copy, Cursor};
 use std::{fs, sync::Mutex};
-use strum::Display;
 use tauri::Manager;
 use tokio::{
     fs::{read, remove_file, File},
@@ -101,14 +100,6 @@ pub async fn delete_stronghold() -> anyhow::Result<()> {
 
 // Asset persistence functions
 
-#[derive(Display)]
-pub enum LogoType {
-    #[strum(serialize = "client")]
-    ClientLogo,
-    #[strum(serialize = "credential")]
-    CredentialLogo,
-}
-
 /// Clears the `/assets/tmp` folder inside the system-specific data directory.
 /// This prevents downloaded assets that are only needed one single time or that receive no further processing from
 /// cluttering the data directory and filling up space ("dead files").
@@ -136,13 +127,14 @@ pub fn clear_all_assets() -> Result<(), AppError> {
 
 /// Downloads an asset to the system-specific data directory.
 /// The file is saved into the `assets/tmp` folder.
-/// Since the `/tmp` folder is cleared on each app restart,
-/// the downloaded file needs to be further treated and moved out of the `/tmp` folder.
+/// Since the `assets/tmp` folder is cleared on each app restart,
+/// the downloaded file needs to be further treated and moved out of the `/tmp` folder
+/// by running `persist_asset()`.
 ///
 /// Restrictions:
 /// - max. file size: 2 MB
 /// - supported file types: `.png`, `.svg`
-pub async fn download_asset(url: reqwest::Url, logo_type: LogoType, index: usize) -> Result<(), AppError> {
+pub async fn download_asset(url: reqwest::Url, id: &str) -> Result<(), AppError> {
     let assets_dir = ASSETS_DIR.lock().unwrap().as_path().to_owned();
     let tmp_dir = assets_dir.join("tmp");
 
@@ -173,7 +165,7 @@ pub async fn download_asset(url: reqwest::Url, logo_type: LogoType, index: usize
         return Err(AppError::DownloadAborted("File size is bigger than 2 MB"));
     }
 
-    let mut file = std::fs::File::create(tmp_dir.join(format!("{}_{}.{}", logo_type, index, file_extension)))?;
+    let mut file = std::fs::File::create(tmp_dir.join(format!("{}.{}", id, file_extension)))?;
 
     copy(&mut content, &mut file)?;
 
@@ -198,7 +190,7 @@ pub fn persist_asset(file_name: &str, id: &str) -> Result<(), AppError> {
         )?;
         debug!("Successfully persisted asset `{}` --> `{}`.", file_name, new_file_name);
     } else {
-        debug!("No asset found for file_name: `{}`", file_name)
+        warn!("No asset found for file_name: `{}`", file_name)
     };
 
     Ok(())

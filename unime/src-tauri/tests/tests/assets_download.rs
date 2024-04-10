@@ -1,5 +1,5 @@
 use identity_wallet::error::AppError;
-use identity_wallet::persistence::{download_asset, LogoType, ASSETS_DIR};
+use identity_wallet::persistence::{download_asset, ASSETS_DIR};
 use tempfile::TempDir;
 use wiremock::matchers::{method, path};
 use wiremock::{Mock, MockServer, ResponseTemplate};
@@ -21,13 +21,11 @@ async fn when_size_is_less_than_2_mb_then_download_should_start() {
         .mount(&mock_server)
         .await;
 
-    assert!(download_asset(
-        format!("{}/image.png", &mock_server.uri()).parse().unwrap(),
-        LogoType::CredentialLogo,
-        0
-    )
-    .await
-    .is_ok());
+    assert!(
+        download_asset(format!("{}/image.png", &mock_server.uri()).parse().unwrap(), "image")
+            .await
+            .is_ok()
+    );
 }
 
 #[tokio::test]
@@ -47,13 +45,11 @@ async fn when_size_is_bigger_than_2_mb_then_download_should_fail() {
         .mount(&mock_server)
         .await;
 
-    assert!(download_asset(
-        format!("{}/image.png", &mock_server.uri()).parse().unwrap(),
-        LogoType::CredentialLogo,
-        0
-    )
-    .await
-    .is_err());
+    assert!(
+        download_asset(format!("{}/image.png", &mock_server.uri()).parse().unwrap(), "image")
+            .await
+            .is_err()
+    );
 }
 
 #[tokio::test]
@@ -70,13 +66,11 @@ async fn when_content_type_is_supported_then_download_should_start() {
         .mount(&mock_server)
         .await;
 
-    assert!(download_asset(
-        format!("{}/image", &mock_server.uri()).parse().unwrap(),
-        LogoType::CredentialLogo,
-        0
-    )
-    .await
-    .is_ok());
+    assert!(
+        download_asset(format!("{}/image", &mock_server.uri()).parse().unwrap(), "image")
+            .await
+            .is_ok()
+    );
 }
 
 #[tokio::test]
@@ -94,17 +88,12 @@ async fn when_content_type_is_not_supported_then_download_should_fail() {
         .await;
 
     assert!(matches!(
-        download_asset(
-            format!("{}/image.png", &mock_server.uri()).parse().unwrap(),
-            LogoType::CredentialLogo,
-            0
-        )
-        .await,
+        download_asset(format!("{}/image.png", &mock_server.uri()).parse().unwrap(), "image").await,
         Err(AppError::DownloadAborted("content-type is not supported"))
     ));
 }
 
-pub fn setup_empty_assets_dir() {
+fn setup_empty_assets_dir() {
     let path = TempDir::new().unwrap().into_path();
     *ASSETS_DIR.lock().unwrap() = path.as_os_str().into();
 }

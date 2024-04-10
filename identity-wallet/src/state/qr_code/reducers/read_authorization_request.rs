@@ -1,12 +1,12 @@
 use crate::{
     error::AppError::{self, *},
-    persistence::{download_asset, LogoType},
+    persistence::download_asset,
     state::{
         actions::{listen, Action},
         connections::reducers::handle_siopv2_authorization_request::get_siopv2_client_name_and_logo_uri,
         core_utils::{helpers::get_unverified_jwt_claims, ConnectionRequest, CoreUtils},
         credentials::reducers::handle_oid4vp_authorization_request::get_oid4vp_client_name_and_logo_uri,
-        qr_code::actions::qrcode_scanned::QrCodeScanned,
+        qr_code::{actions::qrcode_scanned::QrCodeScanned, reducers::encode},
         user_prompt::CurrentUserPrompt,
         AppState,
     },
@@ -62,7 +62,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                     )
                 );
                 if let Some(logo_uri) = logo_uri.as_ref().and_then(|s| s.parse::<reqwest::Url>().ok()) {
-                    let _ = download_asset(logo_uri, LogoType::ClientLogo, 0).await;
+                    let _ = download_asset(logo_uri.clone(), &encode(logo_uri)).await;
                 }
             }
 
@@ -123,7 +123,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                     )
                 );
                 if let Some(logo_uri) = logo_uri.as_ref().and_then(|s| s.parse::<reqwest::Url>().ok()) {
-                    let _ = download_asset(logo_uri, LogoType::ClientLogo, 0).await;
+                    let _ = download_asset(logo_uri.clone(), &encode(logo_uri)).await;
                 }
             }
 

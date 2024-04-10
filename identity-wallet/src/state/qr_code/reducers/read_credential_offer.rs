@@ -1,9 +1,9 @@
 use crate::{
     error::AppError::{self, *},
-    persistence::{download_asset, LogoType},
+    persistence::download_asset,
     state::{
         actions::{listen, Action},
-        qr_code::actions::qrcode_scanned::QrCodeScanned,
+        qr_code::{actions::qrcode_scanned::QrCodeScanned, reducers::encode},
         user_prompt::CurrentUserPrompt,
         AppState,
     },
@@ -158,7 +158,7 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
                     .as_str()
                     .and_then(|s| s.parse::<reqwest::Url>().ok())
                 {
-                    let _ = download_asset(credential_logo_url, LogoType::CredentialLogo, index).await;
+                    let _ = download_asset(credential_logo_url, format!("credential_{}", index).as_str()).await;
                 }
             }
 
@@ -178,12 +178,12 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
             debug!(
                 "{}",
                 format!(
-                    "Downloading issuer logo from url: {}",
+                    "Downloading client logo from url: {}",
                     logo_uri.as_ref().unwrap().as_str()
                 )
             );
             if let Some(logo_uri) = logo_uri.as_ref().and_then(|s| s.parse::<reqwest::Url>().ok()) {
-                let _ = download_asset(logo_uri, LogoType::ClientLogo, 0).await;
+                let _ = download_asset(logo_uri.clone(), &encode(logo_uri)).await;
             }
         }
 

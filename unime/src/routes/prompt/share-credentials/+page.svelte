@@ -20,6 +20,8 @@
 
   let client_name = $state.current_user_prompt.client_name;
 
+  const imageId = btoa($state.current_user_prompt?.logo_uri);
+
   onDestroy(async () => {
     // TODO: is onDestroy also called when user accepts since the component itself is destroyed?
     dispatch({ type: '[User Flow] Cancel', payload: {} });
@@ -33,7 +35,7 @@
     <!-- Header -->
     {#if $state.current_user_prompt.logo_uri}
       <div class="flex h-[75px] w-[75px] overflow-hidden rounded-3xl bg-white p-2 dark:bg-silver">
-        <Image id={'client_0'} isTempAsset={true} />
+        <Image id={imageId} isTempAsset={true} />
       </div>
     {:else}
       <PaddedIcon icon={PlugsConnected} />

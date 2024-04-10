@@ -124,7 +124,7 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
         }
         info!("response successfully sent");
 
-        let (client_name, _logo_uri, connection_url) =
+        let (client_name, logo_uri, connection_url) =
             get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request)
                 .map_err(|_| MissingAuthorizationRequestParameterError("connection_url"))?;
 
@@ -132,7 +132,8 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
         let mut connections = state.connections;
         let connection = connections.update_or_insert(&connection_url, &client_name);
 
-        persist_asset("client_0", &connection.id).ok();
+        let file_name = base64::encode_config(logo_uri.unwrap_or("_".to_string()), base64::URL_SAFE);
+        persist_asset(&file_name, &connection.id).ok();
 
         // History
         if !previously_connected {
