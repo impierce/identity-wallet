@@ -20,6 +20,9 @@ module.exports = {
     '^[./]',
   ],
   importOrderTypeScriptVersion: '5.0.0',
-  plugins: ['prettier-plugin-svelte', 'prettier-plugin-tailwindcss', '@ianvs/prettier-plugin-sort-imports'],
-  overrides: [{ files: '*.svelte', options: { parser: 'svelte' } }],
+  // prettier-plugin-tailwindcss must be loaded last:
+  // https://github.com/tailwindlabs/prettier-plugin-tailwindcss?tab=readme-ov-file#compatibility-with-other-prettier-plugins
+  plugins: ['prettier-plugin-svelte', '@ianvs/prettier-plugin-sort-imports', 'prettier-plugin-tailwindcss'],
+  // Link to config so Tailwind can sort custom classes like `bg-primary` correctly.
+  tailwindConfig: './unime/tailwind.config.js',
 };
