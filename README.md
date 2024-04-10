@@ -54,11 +54,16 @@ npm run tauri ios dev
 > [!NOTE]
 > Before committing, please make sure the code is formatted correctly, passes all tests and is linted.
 
-#### Frontend
+### All workspaces
+
+```sh
+npm run format
+```
+
+### Frontend
 
 ```sh
 # /unime
-npm run format
 npm run lint
 npm run test
 
@@ -68,7 +73,7 @@ cargo clippy
 cargo test
 ```
 
-#### Core (backend)
+### Core (backend)
 
 ```sh
 # /identity-wallet
