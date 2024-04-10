@@ -1,6 +1,6 @@
 import type { Action } from '@bindings/actions/Action';
 import { invoke } from '@tauri-apps/api/core';
-import { info } from '@tauri-apps/plugin-log';
+import { error, info } from '@tauri-apps/plugin-log';
 
 import { sanitizeStringify } from './sensitive-logging';
 
@@ -12,6 +12,6 @@ import { sanitizeStringify } from './sensitive-logging';
 export const dispatch = async (action: Action) => {
   info(`Dispatching action: ${sanitizeStringify(action)}`);
   await invoke('handle_action', { action }).catch((err) => {
-    console.error(err);
+    error(err);
   });
 };

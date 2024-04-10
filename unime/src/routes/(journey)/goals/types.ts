@@ -16,5 +16,5 @@ interface Faq {
 interface Prerequisite {
   /* type could be: "credential_definiton" (such as dif-presentation-exchange) or "goal" (other goals) or "custom" */
   type: string;
-  data: any;
+  data: string;
 }

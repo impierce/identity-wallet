@@ -4,7 +4,7 @@
   import ListItemCard from '$src/lib/components/molecules/ListItemCard.svelte';
 
   export let id: string;
-  export let data: any = undefined;
+  export let data = undefined;
 </script>
 
 {#if data}

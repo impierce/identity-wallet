@@ -1,18 +1,14 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { fade, fly, slide } from 'svelte/transition';
+  import { fly } from 'svelte/transition';
 
-  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
+  import ActionSheet from '$src/lib/components/molecules/dialogs/ActionSheet.svelte';
 
   import '@lottiefiles/lottie-player';
-
-  import { melt } from '@melt-ui/svelte';
-  import { debug, info } from '@tauri-apps/plugin-log';
 
   import LL from '$src/i18n/i18n-svelte';
   import WelcomeMessage from '$src/lib/app/WelcomeMessage.svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
-  import ButtonRounded from '$src/lib/components/atoms/ButtonRounded.svelte';
   import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
   import IconMessage from '$src/lib/components/molecules/IconMessage.svelte';
   import Tabs from '$src/lib/components/molecules/navigation/Tabs.svelte';
@@ -24,7 +20,6 @@
 
   import Ghost from '~icons/ph/ghost-fill';
   import MagnifyingGlass from '~icons/ph/magnifying-glass';
-  import PlusCircle from '~icons/ph/plus-circle';
   import RocketLaunch from '~icons/ph/rocket-launch-fill';
 
   import { calculateInitials } from './utils';
@@ -33,7 +28,6 @@
 
   $: {
     // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
-    console.log('routes/(app)/me/+page.svelte: state', $state);
     if ($state?.profile_settings.profile?.name) {
       initials = calculateInitials($state?.profile_settings.profile?.name);
     }
@@ -150,33 +144,23 @@
           <p class="pb-[15px] text-[22px]/[30px] font-semibold tracking-tight text-slate-800 dark:text-grey">
             Shall we get started?
           </p>
-          <p class="custom w-[240px] text-slate-500 dark:text-slate-300">
+          <p class="w-[240px] text-[13px]/[24px] font-normal text-slate-500 dark:text-slate-300">
             Start your first steps to add some credentials to your "Me".
           </p>
         </div>
       </div>
 
-      <BottomDrawer
+      <ActionSheet
         titleText="Complete new goals"
         descriptionText="Start your mission here! Goals will lead you through important features and possibilities of UniMe app."
       >
         <!-- TODO: bug: properly $close the drawer with melt-ui (otherwise two clicks necessary) -->
         <Button slot="trigger" let:trigger {trigger} label="Let's go" />
-        <!-- <button
-          slot="trigger"
-          let:trigger
-          class="w-full rounded-lg bg-primary px-4 py-2 text-white"
-          use:melt={trigger}>Start</button
-        > -->
         <div slot="content" class="flex w-full flex-col pt-[20px]">
           <!-- TODO: add multiple steps inline in drawer -->
           <Button label={$LL.CONTINUE()} on:click={() => goto('/goals')} />
-          <!-- <button
-            class="w-full rounded-lg bg-primary px-4 py-2 text-white"
-            on:click={() => goto('/goals')}>{$LL.CONTINUE()}</button
-          > -->
         </div>
-      </BottomDrawer>
+      </ActionSheet>
     {:else}
       <!-- Skipped onboarding journey -->
       <div class="flex grow flex-col items-center justify-center">
@@ -196,12 +180,3 @@
 
 <!-- Overwrite colors from layout -->
 <div class="safe-area-top z-10 bg-white dark:bg-dark" />
-
-<style>
-  .custom {
-    font-size: 13px;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 24px;
-  }
-</style>

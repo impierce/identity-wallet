@@ -12,4 +12,6 @@ export const icons = {
   UserCirclePlus: UserCirclePlus,
   FileArrowDown: FileArrowDown,
   Key: Key,
-};
+} as const;
+
+export type Icon = keyof typeof icons;

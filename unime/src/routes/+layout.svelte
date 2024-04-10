@@ -2,6 +2,7 @@
   import { onMount, SvelteComponent } from 'svelte';
 
   import { goto } from '$app/navigation';
+  import { PUBLIC_DEV_MODE_MENU_EXPANDED } from '$env/static/public';
   import { fly } from 'svelte/transition';
 
   import { attachConsole } from '@tauri-apps/plugin-log';
@@ -27,12 +28,12 @@
   import { determineTheme } from './utils';
 
   onMount(async () => {
-    const detach = await attachConsole();
+    await attachConsole();
     loadAllLocales(); //TODO: performance: only load locale on user request
     dispatch({ type: '[App] Get state' });
   });
 
-  let expandedDevMenu = true;
+  let expandedDevMenu = PUBLIC_DEV_MODE_MENU_EXPANDED === 'true';
   let showDebugMessages = false;
   let showDragonProfileSteps = false;
   let resetDragonProfile = true;
@@ -49,8 +50,6 @@
 
   $: {
     // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
-    console.log('+layout.svelte: state', $state);
-
     if ($state?.profile_settings.profile?.theme) {
       determineTheme(systemColorScheme.matches, $state.profile_settings.profile.theme);
     } else {

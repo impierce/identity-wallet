@@ -32,7 +32,7 @@ async fn download_credential_logo() {
         .and(path("/offer/1"))
         .respond_with(
             ResponseTemplate::new(200).set_body_json(CredentialOffer::<CredentialFormats> {
-                credential_issuer: format!("{}", &mock_server.uri()).parse().unwrap(),
+                credential_issuer: mock_server.uri().parse().unwrap(),
                 credentials: vec![CredentialsObject::ByReference("UniversityDegreeCredential".to_string())],
                 grants: None,
             }),
@@ -126,7 +126,7 @@ async fn download_issuer_logo() {
         .and(path("/offer/1"))
         .respond_with(
             ResponseTemplate::new(200).set_body_json(CredentialOffer::<CredentialFormats> {
-                credential_issuer: format!("{}", &mock_server.uri()).parse().unwrap(),
+                credential_issuer: mock_server.uri().parse().unwrap(),
                 credentials: vec![CredentialsObject::ByReference("UniversityDegreeCredential".to_string())],
                 grants: None,
             }),
@@ -212,7 +212,7 @@ async fn no_download_when_no_logo_in_metadata() {
         .and(path("/offer/1"))
         .respond_with(
             ResponseTemplate::new(200).set_body_json(CredentialOffer::<CredentialFormats> {
-                credential_issuer: format!("{}", &mock_server.uri()).parse().unwrap(),
+                credential_issuer: mock_server.uri().parse().unwrap(),
                 credentials: vec![CredentialsObject::ByReference("UniversityDegreeCredential".to_string())],
                 grants: None,
             }),

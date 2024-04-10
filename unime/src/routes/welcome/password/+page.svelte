@@ -2,9 +2,6 @@
   import { goto } from '$app/navigation';
   import { fade } from 'svelte/transition';
 
-  import { melt } from '@melt-ui/svelte';
-
-  import { dispatch } from '$lib/dispatcher';
   import LL from '$src/i18n/i18n-svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
@@ -32,7 +29,6 @@
     <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">
       {$LL.ONBOARDING.PASSWORD.SUBTITLE()}
     </p>
-    <!-- <div class="mt-[70px] flex w-full items-center justify-center" /> -->
   </div>
   <div class="relative">
     <input
