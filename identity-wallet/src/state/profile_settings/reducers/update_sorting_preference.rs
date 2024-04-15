@@ -49,6 +49,7 @@ pub async fn update_sorting_preference(state: AppState, action: Action) -> Resul
                 sorting_preferences,
                 ..state.profile_settings
             },
+            current_user_prompt: None,
             ..state
         });
     }
@@ -78,9 +79,10 @@ pub async fn sort_credentials(state: AppState, _action: Action) -> Result<AppSta
         credentials.reverse();
     }
 
+    // current_user_prompt is not set to None,
+    // as this reducer is often used in combination with reducers that need to send a user_prompt to the frontend.
     Ok(AppState {
         credentials,
-        current_user_prompt: None,
         ..state
     })
 }
@@ -108,9 +110,10 @@ pub async fn sort_connections(state: AppState, _action: Action) -> Result<AppSta
         connections.reverse();
     }
 
+    // current_user_prompt is not set to None,
+    // as this reducer is often used in combination with reducers that need to send a user_prompt to the frontend.
     Ok(AppState {
         connections: Connections { 0: connections },
-        current_user_prompt: None,
         ..state
     })
 }
