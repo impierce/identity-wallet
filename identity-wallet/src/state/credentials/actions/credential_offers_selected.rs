@@ -1,5 +1,6 @@
 use crate::reducer;
 use crate::state::credentials::reducers::send_credential_request::send_credential_request;
+use crate::state::profile_settings::reducers::update_sorting_preference::{sort_connections, sort_credentials};
 use crate::state::{actions::ActionTrait, Reducer};
 
 use serde::{Deserialize, Serialize};
@@ -16,6 +17,6 @@ pub struct CredentialOffersSelected {
 #[typetag::serde(name = "[Credential Offer] Selected")]
 impl ActionTrait for CredentialOffersSelected {
     fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
-        vec![reducer!(send_credential_request)]
+        vec![reducer!(send_credential_request), reducer!(sort_credentials), reducer!(sort_connections)]
     }
 }

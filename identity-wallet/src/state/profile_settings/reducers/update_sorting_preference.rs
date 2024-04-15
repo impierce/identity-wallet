@@ -74,18 +74,6 @@ pub async fn sort_credentials(state: AppState, _action: Action) -> Result<AppSta
         CredentialSortMethod::AddedDateNewOld => credentials.sort_by(|a: &DisplayCredential, b: &DisplayCredential| a.metadata.date_added.cmp(&b.metadata.date_added)),
     };
 
-    // let name_az = |a: &DisplayCredential, b: &DisplayCredential| a.display_name.to_lowercase().cmp(&b.display_name.to_lowercase());
-    // let issuance_new_old =
-    //     |a: &DisplayCredential, b: &DisplayCredential| a.metadata.date_issued.cmp(&b.metadata.date_issued);
-    // let added_new_old =
-    //     |a: &DisplayCredential, b: &DisplayCredential| a.metadata.date_added.cmp(&b.metadata.date_added);
-
-    // credentials.sort_by(match preferences.sort_method {
-    //     CredentialSortMethod::NameAZ => name_az,
-    //     CredentialSortMethod::IssueDateNewOld => issuance_new_old,
-    //     CredentialSortMethod::AddedDateNewOld => added_new_old,
-    // });
-
     if preferences.reverse {
         credentials.reverse();
     }

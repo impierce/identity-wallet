@@ -1,6 +1,6 @@
 use crate::{
     reducer,
-    state::{actions::ActionTrait, common::reducers::get_state::get_state, Reducer},
+    state::{actions::ActionTrait, common::reducers::get_state::get_state, profile_settings::reducers::update_sorting_preference::{sort_connections, sort_credentials}, Reducer},
 };
 
 use serde::{Deserialize, Serialize};
@@ -12,6 +12,6 @@ pub struct GetState;
 #[typetag::serde(name = "[App] Get state")]
 impl ActionTrait for GetState {
     fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
-        vec![reducer!(get_state)]
+        vec![reducer!(get_state), reducer!(sort_credentials), reducer!(sort_connections)]
     }
 }
