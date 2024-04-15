@@ -16,8 +16,11 @@ use ts_rs::TS;
 #[derive(Serialize, Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/UpdateSortingPreference.ts")]
 pub struct UpdateSortingPreference {
+    #[ts(optional)]
     pub credential_sorting: Option<CredentialSortMethod>,
+    #[ts(optional)]
     pub connection_sorting: Option<ConnectionSortMethod>,
+    #[ts(optional)]
     pub reverse: Option<bool>,
 
 }

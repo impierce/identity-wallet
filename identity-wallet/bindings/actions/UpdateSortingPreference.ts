@@ -2,4 +2,4 @@
 import type { ConnectionSortMethod } from "../ConnectionSortMethod";
 import type { CredentialSortMethod } from "../CredentialSortMethod";
 
-export interface UpdateSortingPreference { credential_sorting: CredentialSortMethod | null, connection_sorting: ConnectionSortMethod | null, reverse: boolean | null, }
+export interface UpdateSortingPreference { credential_sorting?: CredentialSortMethod, connection_sorting?: ConnectionSortMethod, reverse?: boolean, }
