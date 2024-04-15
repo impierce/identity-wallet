@@ -30,7 +30,7 @@ async fn test_credentials_sorting_added_settings() {
     // Currently we #[PartialEq(ignore)] the metadata.date_added field since it will fail many other tests.
     // The json files are static but some tests create new credentials and the date_added field will be added at this time.
     // Simultaneously, this and the following tests using "four_credentials_*.json" fixtures will show that sorting for both connections and credentials are checked at every update.
-    
+
     setup_state_file();
     setup_stronghold();
 
@@ -203,7 +203,8 @@ async fn test_connections_sorting_name_az_random_alphabets() {
 
     let state = json_example::<AppState>("tests/fixtures/states/four_connections_random_alphabets.json");
     let action = json_example::<Action>("tests/fixtures/actions/connection_sort_name_az.json");
-    let expected_state = json_example::<AppState>("tests/fixtures/states/four_connections_random_alphabets_name_az.json");
+    let expected_state =
+        json_example::<AppState>("tests/fixtures/states/four_connections_random_alphabets_name_az.json");
     assert_state_update(
         AppStateContainer(Mutex::new(state)),
         vec![action],

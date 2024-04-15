@@ -22,7 +22,6 @@ pub struct UpdateSortingPreference {
     pub connection_sorting: Option<ConnectionSortMethod>,
     #[ts(optional)]
     pub reverse: Option<bool>,
-
 }
 
 #[typetag::serde(name = "[Settings] Update Sorting Preference")]

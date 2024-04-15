@@ -17,6 +17,10 @@ pub struct CredentialOffersSelected {
 #[typetag::serde(name = "[Credential Offer] Selected")]
 impl ActionTrait for CredentialOffersSelected {
     fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
-        vec![reducer!(send_credential_request), reducer!(sort_credentials), reducer!(sort_connections)]
+        vec![
+            reducer!(send_credential_request),
+            reducer!(sort_credentials),
+            reducer!(sort_connections),
+        ]
     }
 }

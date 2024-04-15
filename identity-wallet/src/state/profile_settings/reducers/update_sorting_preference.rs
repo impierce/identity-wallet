@@ -6,7 +6,7 @@ use crate::{
         credentials::DisplayCredential,
         profile_settings::{
             actions::update_sorting_preference::UpdateSortingPreference, ConnectionSortMethod, CredentialSortMethod,
-            Preferences, ProfileSettings, Locale
+            Locale, Preferences, ProfileSettings,
         },
         AppState,
     },
@@ -64,15 +64,24 @@ pub async fn sort_credentials(state: AppState, _action: Action) -> Result<AppSta
     let sorted_list = sort_carefully(list, state.profile_settings.locale.clone());
 
     let name_az = |a: &DisplayCredential, b: &DisplayCredential| {
-        let pos_a = sorted_list.iter().position(|display_name| display_name == &a.display_name).unwrap();
-        let pos_b = sorted_list.iter().position(|display_name| display_name == &b.display_name).unwrap();
+        let pos_a = sorted_list
+            .iter()
+            .position(|display_name| display_name == &a.display_name)
+            .unwrap();
+        let pos_b = sorted_list
+            .iter()
+            .position(|display_name| display_name == &b.display_name)
+            .unwrap();
         pos_a.cmp(&pos_b)
     };
 
     match preferences.sort_method {
         CredentialSortMethod::NameAZ => credentials.sort_by(name_az),
-        CredentialSortMethod::IssueDateNewOld => credentials.sort_by(|a: &DisplayCredential, b: &DisplayCredential| a.metadata.date_issued.cmp(&b.metadata.date_issued)),
-        CredentialSortMethod::AddedDateNewOld => credentials.sort_by(|a: &DisplayCredential, b: &DisplayCredential| a.metadata.date_added.cmp(&b.metadata.date_added)),
+        CredentialSortMethod::IssueDateNewOld => credentials.sort_by(|a: &DisplayCredential, b: &DisplayCredential| {
+            a.metadata.date_issued.cmp(&b.metadata.date_issued)
+        }),
+        CredentialSortMethod::AddedDateNewOld => credentials
+            .sort_by(|a: &DisplayCredential, b: &DisplayCredential| a.metadata.date_added.cmp(&b.metadata.date_added)),
     };
 
     if preferences.reverse {
@@ -81,10 +90,7 @@ pub async fn sort_credentials(state: AppState, _action: Action) -> Result<AppSta
 
     // current_user_prompt is not set to None,
     // as this reducer is often used in combination with reducers that need to send a user_prompt to the frontend.
-    Ok(AppState {
-        credentials,
-        ..state
-    })
+    Ok(AppState { credentials, ..state })
 }
 
 pub async fn sort_connections(state: AppState, _action: Action) -> Result<AppState, AppError> {
@@ -102,8 +108,12 @@ pub async fn sort_connections(state: AppState, _action: Action) -> Result<AppSta
 
     match preferences.sort_method {
         ConnectionSortMethod::NameAZ => connections.sort_by(name_az),
-        ConnectionSortMethod::FirstInteractedNewOld => connections.sort_by(|a: &Connection, b: &Connection| a.first_interacted.cmp(&b.first_interacted)),
-        ConnectionSortMethod::LastInteractedNewOld => connections.sort_by(|a: &Connection, b: &Connection| a.last_interacted.cmp(&b.last_interacted)),
+        ConnectionSortMethod::FirstInteractedNewOld => {
+            connections.sort_by(|a: &Connection, b: &Connection| a.first_interacted.cmp(&b.first_interacted))
+        }
+        ConnectionSortMethod::LastInteractedNewOld => {
+            connections.sort_by(|a: &Connection, b: &Connection| a.last_interacted.cmp(&b.last_interacted))
+        }
     };
 
     if preferences.reverse {
@@ -138,5 +148,3 @@ pub fn sort_carefully(list: Vec<String>, locale: Locale) -> Vec<String> {
     newly_sorted_list.sort_by(|a, b| collator.compare(a, b));
     newly_sorted_list
 }
-
-
