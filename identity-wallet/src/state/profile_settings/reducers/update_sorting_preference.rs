@@ -61,7 +61,7 @@ pub async fn sort_credentials(state: AppState, _action: Action) -> Result<AppSta
     let preferences: Preferences<CredentialSortMethod> = state.profile_settings.sorting_preferences.credentials.clone();
 
     let list: Vec<String> = credentials.iter().map(|x| x.display_name.clone()).collect();
-    let sorted_list = sort_carefully(list, state.profile_settings.locale.clone());
+    let sorted_list = sort(list, state.profile_settings.locale.clone());
 
     let name_az = |a: &DisplayCredential, b: &DisplayCredential| {
         let pos_a = sorted_list
@@ -98,7 +98,7 @@ pub async fn sort_connections(state: AppState, _action: Action) -> Result<AppSta
     let preferences: Preferences<ConnectionSortMethod> = state.profile_settings.sorting_preferences.connections.clone();
 
     let list: Vec<String> = connections.iter().map(|x| x.name.clone()).collect();
-    let sorted_list = sort_carefully(list, state.profile_settings.locale.clone());
+    let sorted_list = sort(list, state.profile_settings.locale.clone());
 
     let name_az = |a: &Connection, b: &Connection| {
         let pos_a = sorted_list.iter().position(|name| name == &a.name).unwrap();
@@ -131,20 +131,20 @@ pub async fn sort_connections(state: AppState, _action: Action) -> Result<AppSta
 // Helpers //
 
 /// Sort a Vector of words alphabetically, taking into account the locale of the words
-/// `.sorted()` words -> ["Zambia", "enlever", "zoo", "énigme"]
-/// sort_carefully words -> ["énigme", "enlever", "Zambia", "zoo"]
-pub fn sort_carefully(list: Vec<String>, locale: Locale) -> Vec<String> {
+/// standard `.sorted()` -> ["Zambia", "enlever", "zoo", "énigme"]
+/// `sort(list, locale)` -> ["énigme", "enlever", "Zambia", "zoo"]
+pub fn sort(list: Vec<String>, locale: Locale) -> Vec<String> {
     // https://github.com/unicode-org/icu4x/tree/main/components/collator#examples
 
     // Convert locale from AppState to icu_locid::Locale
     let locale: &str = locale.into();
-    let locale: icu::locid::Locale = locale.replace("_", "-").parse().unwrap();
+    let locale: icu::locid::Locale = locale.replace('_', "-").parse().unwrap();
 
     let mut options = CollatorOptions::new();
     options.strength = Some(Strength::Secondary);
     let collator: Collator = Collator::try_new(&locale.into(), options).unwrap();
 
-    let mut newly_sorted_list = list;
-    newly_sorted_list.sort_by(|a, b| collator.compare(a, b));
-    newly_sorted_list
+    let mut sorted_list = list;
+    sorted_list.sort_by(|a, b| collator.compare(a, b));
+    sorted_list
 }
