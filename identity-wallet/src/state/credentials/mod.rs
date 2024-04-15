@@ -35,6 +35,8 @@ pub struct DisplayCredential {
 impl FeatTrait for DisplayCredential {}
 
 /// Contains metadata about a credential.
+/// PartialEq(ignore) used on the date_added field implemented because this would make testing with static json files impossible.
+/// The date_added field is defined the moment the test is run and the json files are predefined.
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, TS, Default, Derivative)]
 #[derivative(PartialEq)]
 #[ts(export, export_to = "bindings/display-credential/CredentialMetadata.ts")]
@@ -42,7 +44,6 @@ pub struct CredentialMetadata {
     pub is_favorite: bool,
     #[derivative(PartialEq = "ignore")]
     pub date_added: String,
-    #[derivative(PartialEq = "ignore")]
     pub date_issued: String,
 }
 

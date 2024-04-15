@@ -19,6 +19,7 @@ pub struct UpdateSortingPreference {
     pub credential_sorting: Option<CredentialSortMethod>,
     pub connection_sorting: Option<ConnectionSortMethod>,
     pub reverse: Option<bool>,
+
 }
 
 #[typetag::serde(name = "[Settings] Update Sorting Preference")]
