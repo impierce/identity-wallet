@@ -1,16 +1,25 @@
+import { dev } from '$app/environment';
+
 import type { HandleClientError } from '@sveltejs/kit';
 import { info } from '@tauri-apps/plugin-log';
 
-export const handleError = (async ({ error, event }) => {
-  info(`hooks.client.ts: event.url: "${event.url}"`);
+// TODO: Refactor after upgrade to SvelteKit v2.
+// `error.message` may contain sensitive information that should not be exposed.
+// In v2 you get a safe `message` prop: https://kit.svelte.dev/docs/hooks#shared-hooks-handleerror.
+
+export const handleError: HandleClientError = async ({ error, event }) => {
+  info(`hooks.client.ts (handleError): event.url: "${event.url}"`);
 
   const errorId = crypto.randomUUID();
 
-  // eslint-disable-next-line no-console
-  console.error(error);
+  if (dev) {
+    // eslint-disable-next-line no-console
+    console.error(error);
+  }
 
   return {
-    message: error.message,
+    // Use type assertion to access `message` property on unknown type.
+    message: (error as Error).message,
     errorId,
   };
-}) satisfies HandleClientError;
+};
