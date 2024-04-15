@@ -1,7 +1,4 @@
 {
-  "name": "identity-wallet-workspace",
-  "license": "Apache-2.0",
-  "private": true,
   "scripts": {
     "format": "prettier . --write",
     "format:check": "prettier . --check"
@@ -11,5 +8,6 @@
     "prettier": "^3.2.5",
     "prettier-plugin-svelte": "^3.0.0",
     "prettier-plugin-tailwindcss": "^0.5.0"
-  }
+  },
+  "type": "module"
 }

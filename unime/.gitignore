@@ -1,4 +1,3 @@
-# .gitignore specific to /unime
 node_modules
 /build
 /.svelte-kit
@@ -12,5 +11,5 @@ vite.config.ts.timestamp-*
 .env.*
 !.env.example
 
-# Remove after debug config in repository root works
+# TODO: Remove after debug config in repository root works
 .vscode/**
