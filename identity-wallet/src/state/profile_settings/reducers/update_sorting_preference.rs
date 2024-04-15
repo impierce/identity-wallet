@@ -6,12 +6,13 @@ use crate::{
         credentials::DisplayCredential,
         profile_settings::{
             actions::update_sorting_preference::UpdateSortingPreference, ConnectionSortMethod, CredentialSortMethod,
-            Preferences, ProfileSettings,
+            Preferences, ProfileSettings, Locale
         },
         AppState,
     },
 };
 
+use icu::collator::*;
 use log::debug;
 
 pub async fn update_sorting_preference(state: AppState, action: Action) -> Result<AppState, AppError> {
@@ -54,42 +55,36 @@ pub async fn update_sorting_preference(state: AppState, action: Action) -> Resul
     Ok(state)
 }
 
-use icu::{collator::*, locid::locale};
-use icu::locid::Locale;
-/// Sort a Vector of words alphabetically, taking into account the locale of the words
-/// `.sorted()` words -> ["Zambia", "abbey", "eager", "enlever", "ezra", "zoo", "énigme"]
-/// sort_carefully words -> ["abbey", "eager", "énigme", "enlever", "ezra", "Zambia", "zoo"]
-pub fn sort_carefully(list: Vec<String>, locale: Locale) -> Vec<String> {
-    // https://github.com/unicode-org/icu4x/tree/main/components/collator#examples
-    let mut options = CollatorOptions::new();
-    options.strength = Some(Strength::Secondary);
-    let collator: Collator = Collator::try_new(&locale.into(), options).unwrap();
-
-    let mut newly_sorted_list = list;
-    newly_sorted_list.sort_by(|a, b| collator.compare(a, b));
-    newly_sorted_list
-}
-
 pub async fn sort_credentials(state: AppState, _action: Action) -> Result<AppState, AppError> {
     let mut credentials: Vec<DisplayCredential> = state.credentials.clone();
     let preferences: Preferences<CredentialSortMethod> = state.profile_settings.sorting_preferences.credentials.clone();
 
     let list: Vec<String> = credentials.iter().map(|x| x.display_name.clone()).collect();
-    //let locale = stringify!(state.profile_settings.locale).to_string();
-    let sorted_list = sort_carefully(list, locale!("en-US"));
-    println!("credentials carefully sorted: \n{:?}\n", sorted_list);
+    let sorted_list = sort_carefully(list, state.profile_settings.locale.clone());
 
-    let name_az = |a: &DisplayCredential, b: &DisplayCredential| a.display_name.to_lowercase().cmp(&b.display_name.to_lowercase());
-    let issuance_new_old =
-        |a: &DisplayCredential, b: &DisplayCredential| a.metadata.date_issued.cmp(&b.metadata.date_issued);
-    let added_new_old =
-        |a: &DisplayCredential, b: &DisplayCredential| a.metadata.date_added.cmp(&b.metadata.date_added);
+    let name_az = |a: &DisplayCredential, b: &DisplayCredential| {
+        let pos_a = sorted_list.iter().position(|display_name| display_name == &a.display_name).unwrap();
+        let pos_b = sorted_list.iter().position(|display_name| display_name == &b.display_name).unwrap();
+        pos_a.cmp(&pos_b)
+    };
 
-    credentials.sort_by(match preferences.sort_method {
-        CredentialSortMethod::NameAZ => name_az,
-        CredentialSortMethod::IssueDateNewOld => issuance_new_old,
-        CredentialSortMethod::AddedDateNewOld => added_new_old,
-    });
+    match preferences.sort_method {
+        CredentialSortMethod::NameAZ => credentials.sort_by(name_az),
+        CredentialSortMethod::IssueDateNewOld => credentials.sort_by(|a: &DisplayCredential, b: &DisplayCredential| a.metadata.date_issued.cmp(&b.metadata.date_issued)),
+        CredentialSortMethod::AddedDateNewOld => credentials.sort_by(|a: &DisplayCredential, b: &DisplayCredential| a.metadata.date_added.cmp(&b.metadata.date_added)),
+    };
+
+    // let name_az = |a: &DisplayCredential, b: &DisplayCredential| a.display_name.to_lowercase().cmp(&b.display_name.to_lowercase());
+    // let issuance_new_old =
+    //     |a: &DisplayCredential, b: &DisplayCredential| a.metadata.date_issued.cmp(&b.metadata.date_issued);
+    // let added_new_old =
+    //     |a: &DisplayCredential, b: &DisplayCredential| a.metadata.date_added.cmp(&b.metadata.date_added);
+
+    // credentials.sort_by(match preferences.sort_method {
+    //     CredentialSortMethod::NameAZ => name_az,
+    //     CredentialSortMethod::IssueDateNewOld => issuance_new_old,
+    //     CredentialSortMethod::AddedDateNewOld => added_new_old,
+    // });
 
     if preferences.reverse {
         credentials.reverse();
@@ -106,25 +101,20 @@ pub async fn sort_connections(state: AppState, _action: Action) -> Result<AppSta
     let mut connections: Vec<Connection> = state.connections.0.clone();
     let preferences: Preferences<ConnectionSortMethod> = state.profile_settings.sorting_preferences.connections.clone();
 
-    // Testing the sort_carefully function
     let list: Vec<String> = connections.iter().map(|x| x.name.clone()).collect();
-    // Get locale from AppState and convert it to a string readable by the icu_locid::Locale parser.
-    let locale: &str = state.profile_settings.locale.clone().into();
-    let locale: Locale = locale.replace("_", "-").parse().unwrap();
-    let sorted_list = sort_carefully(list, locale);
-    println!("connections carefully sorted: \n{:?}\n", sorted_list);
+    let sorted_list = sort_carefully(list, state.profile_settings.locale.clone());
 
-    let name_az = |a: &Connection, b: &Connection| a.name.to_lowercase().cmp(&b.name.to_lowercase());
-    let first_interacted_new_old = |a: &Connection, b: &Connection| a.first_interacted.cmp(&b.first_interacted);
-    let last_interacted_new_old = |a: &Connection, b: &Connection| a.last_interacted.cmp(&b.last_interacted);
+    let name_az = |a: &Connection, b: &Connection| {
+        let pos_a = sorted_list.iter().position(|name| name == &a.name).unwrap();
+        let pos_b = sorted_list.iter().position(|name| name == &b.name).unwrap();
+        pos_a.cmp(&pos_b)
+    };
 
-    connections.sort_by(match preferences.sort_method {
-        ConnectionSortMethod::NameAZ => name_az,
-        ConnectionSortMethod::FirstInteractedNewOld => first_interacted_new_old,
-        ConnectionSortMethod::LastInteractedNewOld => last_interacted_new_old,
-    });
-
-    // connections.sort_by_key(|x| sorted_list.iter().position(|y| y == &x.name).unwrap());
+    match preferences.sort_method {
+        ConnectionSortMethod::NameAZ => connections.sort_by(name_az),
+        ConnectionSortMethod::FirstInteractedNewOld => connections.sort_by(|a: &Connection, b: &Connection| a.first_interacted.cmp(&b.first_interacted)),
+        ConnectionSortMethod::LastInteractedNewOld => connections.sort_by(|a: &Connection, b: &Connection| a.last_interacted.cmp(&b.last_interacted)),
+    };
 
     if preferences.reverse {
         connections.reverse();
@@ -136,3 +126,26 @@ pub async fn sort_connections(state: AppState, _action: Action) -> Result<AppSta
         ..state
     })
 }
+
+// Helpers //
+
+/// Sort a Vector of words alphabetically, taking into account the locale of the words
+/// `.sorted()` words -> ["Zambia", "enlever", "zoo", "énigme"]
+/// sort_carefully words -> ["énigme", "enlever", "Zambia", "zoo"]
+pub fn sort_carefully(list: Vec<String>, locale: Locale) -> Vec<String> {
+    // https://github.com/unicode-org/icu4x/tree/main/components/collator#examples
+
+    // Convert locale from AppState to icu_locid::Locale
+    let locale: &str = locale.into();
+    let locale: icu::locid::Locale = locale.replace("_", "-").parse().unwrap();
+
+    let mut options = CollatorOptions::new();
+    options.strength = Some(Strength::Secondary);
+    let collator: Collator = Collator::try_new(&locale.into(), options).unwrap();
+
+    let mut newly_sorted_list = list;
+    newly_sorted_list.sort_by(|a, b| collator.compare(a, b));
+    newly_sorted_list
+}
+
+

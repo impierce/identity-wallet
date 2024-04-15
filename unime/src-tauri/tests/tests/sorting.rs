@@ -194,3 +194,20 @@ async fn test_connections_sorting_last_interact() {
     )
     .await;
 }
+
+#[tokio::test]
+#[serial_test::serial]
+async fn test_connections_sorting_name_az_random_alphabets() {
+    setup_state_file();
+    setup_stronghold();
+
+    let state = json_example::<AppState>("tests/fixtures/states/four_connections_random_alphabets.json");
+    let action = json_example::<Action>("tests/fixtures/actions/connection_sort_name_az.json");
+    let expected_state = json_example::<AppState>("tests/fixtures/states/four_connections_random_alphabets_name_az.json");
+    assert_state_update(
+        AppStateContainer(Mutex::new(state)),
+        vec![action],
+        vec![Some(expected_state)],
+    )
+    .await;
+}

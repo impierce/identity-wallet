@@ -1,0 +1,45 @@
+{
+  "connections": [
+    {
+      "id": "נgdil",
+      "name": "NGDIL Demo",
+      "url": "api.ngdil-demo.tanglelabs.io",
+      "verified": false,
+      "first_interacted": "2023-09-11T19:53:53.937981+00:00",
+      "last_interacted": "2023-09-11T19:53:53.937981+00:00"
+    },
+    {
+      "id": "ímpierce",
+      "name": "Impierce Demo Portal",
+      "url": "https://demo.impierce.com",
+      "verified": true,
+      "first_interacted": "2024-01-09T07:36:41.382948+00:00",
+      "last_interacted": "2024-01-09T07:36:41.382948+00:00"
+    },
+    {
+      "id": "אebshop",
+      "name": "my-webshop.com",
+      "url": "https://shop.example.com",
+      "verified": false,
+      "first_interacted": "2022-02-03T12:33:54.191824+00:00",
+      "last_interacted": "2023-11-13T19:26:40.049239+00:00"
+    },
+    {
+      "id": "iota",
+      "name": "IOTA",
+      "url": "https://www.iota.org",
+      "verified": true,
+      "first_interacted": "2024-01-09T08:45:44.217Z",
+      "last_interacted": "2024-01-09T08:45:44.217Z"
+    }
+  ],
+  "profile_settings": {
+    "profile": {
+      "name": "Ferris",
+      "picture": "&#129408",
+      "theme": "system",
+      "primary_did": "did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY"
+    },
+    "locale": "en-US"
+  }
+}
