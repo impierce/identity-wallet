@@ -3229,6 +3229,7 @@ dependencies = [
  "tokio",
  "ts-rs",
  "typetag",
+ "unicode-normalization",
  "uuid",
  "wiremock",
 ]

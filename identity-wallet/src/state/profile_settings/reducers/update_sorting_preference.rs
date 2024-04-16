@@ -14,6 +14,7 @@ use crate::{
 
 use icu::collator::*;
 use log::debug;
+use unicode_normalization::UnicodeNormalization;
 
 pub async fn update_sorting_preference(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(update_sorting) = listen::<UpdateSortingPreference>(action) {
@@ -123,16 +124,17 @@ pub async fn sort_connections(state: AppState, _action: Action) -> Result<AppSta
     // current_user_prompt is not set to None,
     // as this reducer is often used in combination with reducers that need to send a user_prompt to the frontend.
     Ok(AppState {
-        connections: Connections { 0: connections },
+        connections: Connections(connections),
         ..state
     })
 }
 
 // Helpers //
 
-/// Sort a Vector of words alphabetically, taking into account the locale of the words
+/// Sort a Vector of words alphabetically, taking into account the locale of the words:
 /// standard `.sorted()` -> ["Zambia", "enlever", "zoo", "énigme"]
 /// `sort(list, locale)` -> ["énigme", "enlever", "Zambia", "zoo"]
+/// Also making it Unicode compatible, using NFC-normalized form.
 pub fn sort(list: Vec<String>, locale: Locale) -> Vec<String> {
     // https://github.com/unicode-org/icu4x/tree/main/components/collator#examples
 
@@ -140,11 +142,14 @@ pub fn sort(list: Vec<String>, locale: Locale) -> Vec<String> {
     let locale: &str = locale.into();
     let locale: icu::locid::Locale = locale.replace('_', "-").parse().unwrap();
 
+    // Normalize all strings to Unicode, using NFC-normalized form.
+    let normalized_list: Vec<String> = list.iter().map(|name| name.nfc().collect::<String>()).collect();
+
     let mut options = CollatorOptions::new();
     options.strength = Some(Strength::Secondary);
     let collator: Collator = Collator::try_new(&locale.into(), options).unwrap();
 
-    let mut sorted_list = list;
+    let mut sorted_list = normalized_list;
     sorted_list.sort_by(|a, b| collator.compare(a, b));
     sorted_list
 }
