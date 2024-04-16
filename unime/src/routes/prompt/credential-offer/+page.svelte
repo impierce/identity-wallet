@@ -9,6 +9,7 @@
   import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
   import ListItemCard from '$src/lib/components/molecules/ListItemCard.svelte';
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
+  import { hash } from '$src/lib/utils';
   import { state } from '$src/stores';
 
   import DownloadSimple from '~icons/ph/download-simple-fill';
@@ -28,7 +29,7 @@
 
   let all_offer_indices: number[] = credential_offer.credentials.map((_, i: number) => i);
 
-  const imageId = btoa($state.current_user_prompt?.logo_uri);
+  const imageId = hash($state.current_user_prompt?.logo_uri);
 
   onDestroy(async () => {
     // TODO: is onDestroy also called when user accepts since the component itself is destroyed?

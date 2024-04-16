@@ -9,6 +9,7 @@ use crate::{
             ConnectionRequest,
         },
         credentials::actions::credentials_selected::CredentialsSelected,
+        hash,
         user_prompt::CurrentUserPrompt,
         AppState,
     },
@@ -132,7 +133,10 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
         let mut connections = state.connections;
         let connection = connections.update_or_insert(&connection_url, &client_name);
 
-        let file_name = base64::encode_config(logo_uri.unwrap_or("_".to_string()), base64::URL_SAFE);
+        let file_name = match logo_uri {
+            Some(logo_uri) => hash(logo_uri.as_str()),
+            None => "_".to_string(),
+        };
         persist_asset(&file_name, &connection.id).ok();
 
         // History

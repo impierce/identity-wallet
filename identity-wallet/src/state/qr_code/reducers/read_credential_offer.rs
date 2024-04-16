@@ -3,7 +3,8 @@ use crate::{
     persistence::download_asset,
     state::{
         actions::{listen, Action},
-        qr_code::{actions::qrcode_scanned::QrCodeScanned, reducers::encode},
+        hash,
+        qr_code::actions::qrcode_scanned::QrCodeScanned,
         user_prompt::CurrentUserPrompt,
         AppState,
     },
@@ -183,7 +184,7 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
                 )
             );
             if let Some(logo_uri) = logo_uri.as_ref().and_then(|s| s.parse::<reqwest::Url>().ok()) {
-                let _ = download_asset(logo_uri.clone(), &encode(logo_uri)).await;
+                let _ = download_asset(logo_uri.clone(), &hash(logo_uri.as_str())).await;
             }
         }
 
