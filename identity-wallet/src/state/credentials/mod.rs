@@ -96,7 +96,7 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
                     metadata: CredentialMetadata {
                         is_favorite: false,
                         date_added: DateUtils::new_date_string(),
-                        date_issued: issuance_date.to_string(),
+                        date_issued: issuance_date.to_string().replace('\"', ""),
                     },
                     display_name,
                 }
