@@ -14,7 +14,6 @@
   // Reactive open state passed in from the outside
   export let isOpen = false;
   $: {
-    console.log('isOpen', isOpen);
     open.set(isOpen);
   }
 </script>
@@ -32,10 +31,10 @@
   
   Usage:
   ```svelte
-  <BottomDrawer let:trigger titleText="My title" descriptionText="My description">
+  <ActionSheet let:trigger titleText="My title" descriptionText="My description">
     ...
     <div use:melt={trigger}></div>
-  </BottomDrawer>
+  </ActionSheet>
   ```  
   -->
 

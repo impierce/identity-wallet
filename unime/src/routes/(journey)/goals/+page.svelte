@@ -9,7 +9,7 @@
   import Button from '$src/lib/components/atoms/Button.svelte';
   import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
   import ProgressBar from '$src/lib/components/atoms/ProgressBar.svelte';
-  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
+  import ActionSheet from '$src/lib/components/molecules/dialogs/ActionSheet.svelte';
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
   import GoalItem from '$src/lib/journeys/goals/GoalItem.svelte';
   import { icons } from '$src/lib/journeys/goals/icons';
@@ -30,14 +30,12 @@
   goals.at(2).completed = false;
 
   let completedPercentage = Math.round((goals.filter((goal) => goal.completed).length / goals.length) * 100);
-
-  console.log(completedPercentage);
 </script>
 
 <!-- Navbar -->
 <TopNavBar on:back={() => history.back()} title={$state?.user_journey?.title}>
-  <!-- TODO: replace BottomDrawer with AlertDialog -->
-  <BottomDrawer titleText={$LL.GETTING_STARTED.SKIP_TITLE()} descriptionText={$LL.GETTING_STARTED.SKIP_TEXT()}>
+  <!-- TODO: replace ActionSheet with AlertDialog -->
+  <ActionSheet titleText={$LL.GETTING_STARTED.SKIP_TITLE()} descriptionText={$LL.GETTING_STARTED.SKIP_TEXT()}>
     <button
       slot="trigger"
       let:trigger
@@ -68,7 +66,7 @@
       <Button label="Yes" on:click={() => dispatch({ type: '[User Journey] Cancel' })} />
     </div>
     <Button variant="secondary" slot="close" let:close trigger={close} label="No, let's continue" />
-  </BottomDrawer>
+  </ActionSheet>
 </TopNavBar>
 
 <!-- Content -->
@@ -99,7 +97,7 @@
       <!-- Goal items -->
       <div class="flex w-full flex-col space-y-4 py-8">
         {#each goals as goal}
-          <BottomDrawer titleText={goal.label} descriptionText={goal.description}>
+          <ActionSheet titleText={goal.label} descriptionText={goal.description}>
             <svelte:fragment slot="trigger" let:trigger>
               <GoalItem {trigger} label={goal.label} completed={goal.completed} icon={goal.icon} />
             </svelte:fragment>
@@ -130,7 +128,7 @@
               class="mt-2 w-full rounded-lg border bg-white px-4 py-2 text-neutral-700"
               >Close</button
             > -->
-          </BottomDrawer>
+          </ActionSheet>
         {/each}
       </div>
     </div>

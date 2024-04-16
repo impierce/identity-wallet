@@ -2,42 +2,35 @@
   import { onDestroy } from 'svelte';
 
   import { goto } from '$app/navigation';
-  import { fade } from 'svelte/transition';
 
-  import { createCheckbox, createPopover, melt } from '@melt-ui/svelte';
+  import { createPopover } from '@melt-ui/svelte';
 
   import Image from '$lib/components/atoms/Image.svelte';
   import { dispatch } from '$lib/dispatcher';
   import LL from '$src/i18n/i18n-svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
   import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
-  import ListItemCard from '$src/lib/components/molecules/ListItemCard.svelte';
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
   import { state } from '$src/stores';
 
   import Check from '~icons/ph/check-bold';
   import PlugsConnected from '~icons/ph/plugs-connected-fill';
-  import Question from '~icons/ph/question';
-  import RocketLaunch from '~icons/ph/rocket-launch';
   import WarningCircle from '~icons/ph/warning-circle-fill';
   import X from '~icons/ph/x-bold';
 
+  // TODO: feature disabled: "Verify .well-known"
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   const {
-    elements: { trigger, content, arrow, close },
+    elements: { trigger, content, arrow },
     states: { open },
   } = createPopover();
-
-  // let selected_credentials = $state.credentials?.filter(
-  //   (c) => $state.current_user_prompt.options.indexOf(c.id) > -1
-  // );
+  /* eslint-enable @typescript-eslint/no-unused-vars */
 
   let client_name = $state.current_user_prompt.client_name;
 
   const previously_connected = $state.current_user_prompt.previously_connected;
 
   const hostname = new URL($state.current_user_prompt.redirect_uri).hostname;
-
-  console.log({ '$state.current_user_prompt': $state.current_user_prompt });
 
   onDestroy(async () => {
     // TODO: is onDestroy also called when user accepts since the component itself is destroyed?
@@ -49,6 +42,7 @@
   <TopNavBar title={$LL.SCAN.CONNECTION_REQUEST.NAVBAR_TITLE()} on:back={() => history.back()} />
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
+    <!-- TODO: backend doesn't need to provide a logo_uri, since logo is always downloaded by backend and stored as "/tmp/client_0.png" -->
     {#if $state.current_user_prompt.logo_uri}
       <div class="flex h-[75px] w-[75px] overflow-hidden rounded-3xl bg-white p-2 dark:bg-silver">
         <Image id={'client_0'} isTempAsset={true} />
@@ -121,8 +115,7 @@
             >
               <div use:melt={$arrow} />
               <div class="break-keep text-sm">
-                Your UniMe app automatically tries to verify the identity of <span
-                  class="underline underline-offset-2"
+                Your UniMe app automatically tries to verify the identity of <span class="underline underline-offset-2"
                   >{$state.current_user_prompt.client_name}</span
                 >
                 to provide you with a secure login.

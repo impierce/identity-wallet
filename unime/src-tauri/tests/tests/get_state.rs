@@ -41,6 +41,34 @@ async fn test_get_state_create_new() {
 
 #[tokio::test]
 #[serial_test::serial]
+async fn test_locale_stays_unchanged_on_profile_creation() {
+    setup_state_file();
+    setup_stronghold();
+
+    // Deserializing the AppStates and Actions from the accompanying json files.
+    let state1 = json_example::<AppState>("tests/fixtures/states/no_profile_nl-NL_redirect_welcome.json");
+    let state2 = json_example::<AppState>("tests/fixtures/states/nl-NL_redirect_me.json");
+    let action = json_example::<Action>("tests/fixtures/actions/create_new.json");
+
+    let container = AppStateContainer(Mutex::new(state1));
+
+    assert_state_update(
+        // Initial state.
+        container,
+        vec![
+            // Get the initial state.
+            action, // Create a new profile.
+        ],
+        vec![
+            // The profile was created, so the user is redirected to the profile page.
+            Some(state2),
+        ],
+    )
+    .await;
+}
+
+#[tokio::test]
+#[serial_test::serial]
 async fn test_get_state_unlock_storage() {
     setup_state_file();
     setup_stronghold();

@@ -10,7 +10,7 @@
 
   export let label: string;
   export let icon: typeof SvelteComponent<SvelteHTMLElements['svg']>;
-  export let trigger: any = undefined; // TODO: add type
+  export let trigger = undefined; // TODO: add type
 </script>
 
 <!-- TODO: does it make sense to pass in the trigger here? -->

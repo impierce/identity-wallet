@@ -1,9 +1,6 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-
-  import { beforeNavigate, goto } from '$app/navigation';
-  import { page } from '$app/stores';
-  import { fade, fly, slide } from 'svelte/transition';
+  import { goto } from '$app/navigation';
+  import { fade, slide } from 'svelte/transition';
 
   import { createAccordion, melt } from '@melt-ui/svelte';
 
@@ -12,14 +9,6 @@
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
 
   import CaretDown from '~icons/ph/caret-down-bold';
-
-  $: {
-    console.log('pledge: $page.data', $page.data);
-  }
-
-  beforeNavigate(({ from, to }) => {
-    console.log('pledge: coming from', from, 'going to', to);
-  });
 
   const {
     elements: { content, item, trigger, root },
@@ -45,20 +34,8 @@
   ];
 </script>
 
-<!-- <div in:fly={{ x: 128, delay: 400 }} out:fly={{ x: -128, opacity: 1 }}>
-  <div class="content-height flex flex-col bg-neutral-100">
-    <TopNavBar title="UniMe pledge" on:back={() => history.back()} />
-    <div class="grow">pledge</div>
-    <div class="space-y-[10px] rounded-t-3xl bg-white p-6">
-      <Button label="Continue" on:click={() => goto('/welcome/terms')} />
-    </div>
-  </div>
-</div> -->
-<!-- <div in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}> -->
 <TopNavBar title={$LL.ONBOARDING.PLEDGE.NAVBAR_TITLE()} on:back={() => history.back()} />
-<!-- </div> -->
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
-  <!-- <div class="mt-12 grow p-4" in:fly={{ x: 300, delay: 300 }} out:fly={{ x: -300, duration: 300 }}> -->
   <div class="px-2 pb-8 pt-4">
     <p class="pb-4 text-3xl font-semibold text-slate-700 dark:text-grey">
       {$LL.ONBOARDING.PLEDGE.TITLE_1()} <span class="text-primary">{$LL.ONBOARDING.PLEDGE.TITLE_2()}</span>
@@ -67,7 +44,7 @@
   </div>
   <!-- Accordion -->
   <div class="mx-auto flex max-w-full flex-col space-y-4" {...$root}>
-    {#each items as { id, title, description }, i}
+    {#each items as { id, title, description }}
       <div
         use:melt={$item(id)}
         class="overflow-hidden rounded-xl border
@@ -102,21 +79,11 @@
     {/each}
   </div>
 </div>
+
 <div
   class="space-y-[10px] rounded-t-3xl bg-white p-6 dark:bg-dark"
   in:fade={{ delay: 200 }}
   out:fade={{ duration: 200 }}
 >
-  <!-- <div
-  class="space-y-[10px] rounded-t-3xl bg-white p-6"
-  in:fly={{ y: 96, delay: 300, opacity: 1 }}
-  out:fly={{ y: 96, duration: 300, opacity: 1 }}
-> -->
   <Button label={$LL.CONTINUE()} on:click={() => goto('/welcome/terms')} />
 </div>
-
-<style>
-  .content-height {
-    height: calc(100vh - var(--safe-area-inset-top));
-  }
-</style>

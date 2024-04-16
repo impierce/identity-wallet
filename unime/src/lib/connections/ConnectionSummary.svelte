@@ -5,14 +5,10 @@
   import Image from '$src/lib/components/atoms/Image.svelte';
   import { state } from '$src/stores';
 
-  import BadgeCheck from '~icons/lucide/badge-check';
-  import Pencil from '~icons/lucide/pencil';
-
   export let connection: Connection;
 
   let summary = {
     URL: connection.url,
-    // Verified: 'no',
     [$LL.CONNECTION.SUMMARY.FIRST_CONNECTED()]: new Date(connection.first_interacted).toLocaleString(
       $state.profile_settings.locale,
       {

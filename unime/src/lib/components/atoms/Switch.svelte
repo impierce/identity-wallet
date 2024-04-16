@@ -3,7 +3,7 @@
 
   import { createSwitch, melt } from '@melt-ui/svelte';
 
-  export let active: boolean = false;
+  export let active = false;
 
   const dispatch = createEventDispatcher();
 

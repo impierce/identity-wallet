@@ -20,7 +20,7 @@
     title: string;
     date: string;
     icon: typeof SvelteComponent<SvelteHTMLElements['svg']>;
-    credentials: Array<HistoryCredential>;
+    credentials: HistoryCredential[];
   }
 
   let filteredEvents: HistoryEvent[];

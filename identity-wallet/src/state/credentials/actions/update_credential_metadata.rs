@@ -15,10 +15,6 @@ pub struct UpdateCredentialMetadata {
     #[ts(optional)]
     pub name: Option<String>,
     #[ts(optional)]
-    pub icon: Option<String>,
-    #[ts(optional)]
-    pub color: Option<String>,
-    #[ts(optional)]
     pub is_favorite: Option<bool>,
 }
 
