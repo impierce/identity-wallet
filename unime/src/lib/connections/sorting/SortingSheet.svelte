@@ -1,6 +1,10 @@
 <script lang="ts">
   import { melt } from '@melt-ui/svelte';
 
+  //import Ascending from '~icons/ph/sort-ascending';
+  //import Grid from '~icons/ph/squares-four';
+
+  import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
   import LL from '$src/i18n/i18n-svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
   import SortPreferencesButton from '$src/lib/connections/sorting/SortingSheetButton.svelte';
@@ -10,11 +14,6 @@
   import Issued from '~icons/ph/calendar-check';
   import Added from '~icons/ph/calendar-plus';
   import Slider from '~icons/ph/sliders-horizontal';
-
-  //import Ascending from '~icons/ph/sort-ascending';
-  //import Grid from '~icons/ph/squares-four';
-
-  import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
 
   let preferredView: 'list' | 'grid' = 'list';
   let preferences: 'alphabetical' | 'issued' | 'added';
@@ -62,7 +61,7 @@
               if (sortingOrder == 'descending') {
                 dispatch({
                   type: '[Settings] Update Sorting Preference',
-                  payload: { credential_sorting: 'name_az', reverse: true }
+                  payload: { credential_sorting: 'name_az', reverse: true },
                   // payload: { target: 'Credentials', sort_method: 'NameAZ', sort_reverse: true },
                 });
                 sortingOrder = 'ascending';
@@ -121,16 +120,22 @@
               if (sortingOrder == 'ascending') {
                 dispatch({
                   type: '[Settings] Update Sorting Preference',
-                  payload: { credential_sorting: 'added_date_new_old', reverse: true }
+                  payload: { credential_sorting: 'added_date_new_old', reverse: true },
                 });
                 sortingOrder = 'descending';
               } else {
-                dispatch({ type: '[Settings] Update Sorting Preference', payload: { credential_sorting: 'added_date_new_old' } });
+                dispatch({
+                  type: '[Settings] Update Sorting Preference',
+                  payload: { credential_sorting: 'added_date_new_old' },
+                });
                 sortingOrder = 'ascending';
               }
               // Preference not yet selected
             } else {
-              dispatch({ type: '[Settings] Update Sorting Preference', payload: { credential_sorting: 'added_date_new_old' } });
+              dispatch({
+                type: '[Settings] Update Sorting Preference',
+                payload: { credential_sorting: 'added_date_new_old' },
+              });
               preferences = 'added';
               sortingOrder = 'ascending';
             }
