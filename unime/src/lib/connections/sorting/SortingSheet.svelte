@@ -11,19 +11,15 @@
   import Added from '~icons/ph/calendar-plus';
   import Slider from '~icons/ph/sliders-horizontal';
 
-  //import Ascending from '~icons/ph/sort-ascending';
-  //import Grid from '~icons/ph/squares-four';
+  import ActionSheet from '../../components/molecules/dialogs/ActionSheet.svelte';
 
-  import BottomDrawer from '../../components/molecules/dialogs/BottomDrawer.svelte';
-
-  //let preferredView: 'list' | 'grid' = 'list';
   let preferences: 'alphabetical' | 'issued' | 'added';
   let sortingOrder: 'ascending' | 'descending';
 </script>
 
 <!-- bottom drawer and sorting button-->
 <div class="sort_wrapper">
-  <BottomDrawer titleText={$LL.SORT.TITLE()}>
+  <ActionSheet titleText={$LL.SORT.TITLE()}>
     <button
       slot="trigger"
       let:trigger
@@ -34,23 +30,6 @@
     <!-- bottom drawer and list items with preferred view and sorting preferences-->
     <div slot="content" class="w-full">
       <div class="relative pb-5">
-        <!--
-  <SortPreferencesButton
-            icon={List}
-            label={$LL.SORT.PREFERENCES.LIST_VIEW()}
-            active={preferredView == 'list'}
-            on:click={() => (preferredView = 'list')}
-          />
-          <SortPreferencesButton
-            icon={Grid}
-            label={$LL.SORT.PREFERENCES.GRID_VIEW()}
-            active={preferredView == 'grid'}
-            on:click={() => (preferredView = 'grid')}
-          />
-  
-          <hr class="full-width fill-[#efefef]" />
-          -->
-
         <SortPreferencesButton
           icon={AlphabeticalOrder}
           label={$LL.SORT.PREFERENCES.ALPHABETICAL()}
@@ -150,5 +129,5 @@
       </div>
     </div>
     <Button variant="primary" slot="close" let:close trigger={close} label={$LL.CLOSE()} />
-  </BottomDrawer>
+  </ActionSheet>
 </div>
