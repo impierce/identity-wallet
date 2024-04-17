@@ -15,7 +15,7 @@
   import Added from '~icons/ph/calendar-plus';
   import Slider from '~icons/ph/sliders-horizontal';
 
-  let preferredView: 'list' | 'grid' = 'list';
+  // let preferredView: 'list' | 'grid' = 'list';
   let preferences: 'alphabetical' | 'issued' | 'added';
   let sortingOrder: 'ascending' | 'descending';
 </script>
@@ -62,16 +62,21 @@
                 dispatch({
                   type: '[Settings] Update Sorting Preference',
                   payload: { credential_sorting: 'name_az', reverse: true },
-                  // payload: { target: 'Credentials', sort_method: 'NameAZ', sort_reverse: true },
                 });
                 sortingOrder = 'ascending';
               } else {
-                dispatch({ type: '[Settings] Update Sorting Preference', payload: { credential_sorting: 'name_az' } });
+                dispatch({ 
+                  type: '[Settings] Update Sorting Preference', 
+                  payload: { credential_sorting: 'name_az' } 
+                });
                 sortingOrder = 'descending';
               }
               // Preference not yet selected
             } else {
-              dispatch({ type: '[Settings] Update Sorting Preference', payload: { credential_sorting: 'name_az' } });
+              dispatch({
+                type: '[Settings] Update Sorting Preference',
+                payload: { credential_sorting: 'name_az'},
+              });
               preferences = 'alphabetical';
               sortingOrder = 'descending';
             }
