@@ -13,6 +13,8 @@ Identity Wallet for people to manage Decentralized Identities and Verifiable Cre
 
 ## Development
 
+Run `npm install` in the project root to install [Prettier](https://prettier.io/). Then
+
 ```sh
 cd unime
 ```
@@ -84,7 +86,9 @@ cargo test
 
 ### VS Code support
 
-If you install the recommended extensions and add
+Recommended extensions are defined in `.vscode/extensions.json`. VS Code normally prompts you and offers you to install any missing recommended extensions. In case VS Code does not prompt you, you can install the recommended extensions manually. Use the extension IDs from `extensions.json` to search for and install extensions.
+
+Remember to run `npm install` in the project root to install Prettier. Otherwise, the Prettier extension will not work. When you add
 
 ```json
 {
@@ -92,7 +96,7 @@ If you install the recommended extensions and add
 }
 ```
 
-to your user settings, VS Code will automatically format frontend files and JSON files when you hit save.
+to your user settings, VS Code will automatically format frontend and JSON files when you hit save.
 
 ### Troubleshooting
 
