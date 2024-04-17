@@ -67,7 +67,7 @@
               } else {
                 dispatch({ 
                   type: '[Settings] Update Sorting Preference', 
-                  payload: { credential_sorting: 'name_az' } 
+                  payload: { credential_sorting: 'name_az', reverse: false } 
                 });
                 sortingOrder = 'descending';
               }
@@ -75,7 +75,7 @@
             } else {
               dispatch({
                 type: '[Settings] Update Sorting Preference',
-                payload: { credential_sorting: 'name_az'},
+                payload: { credential_sorting: 'name_az', reverse: false},
               });
               preferences = 'alphabetical';
               sortingOrder = 'descending';
@@ -99,7 +99,7 @@
               } else {
                 dispatch({
                   type: '[Settings] Update Sorting Preference',
-                  payload: { credential_sorting: 'issue_date_new_old' },
+                  payload: { credential_sorting: 'issue_date_new_old', reverse: false },
                 });
                 sortingOrder = 'ascending';
               }
@@ -107,7 +107,7 @@
             } else {
               dispatch({
                 type: '[Settings] Update Sorting Preference',
-                payload: { credential_sorting: 'issue_date_new_old' },
+                payload: { credential_sorting: 'issue_date_new_old', reverse: false },
               });
               preferences = 'issued';
               sortingOrder = 'ascending';
@@ -131,7 +131,7 @@
               } else {
                 dispatch({
                   type: '[Settings] Update Sorting Preference',
-                  payload: { credential_sorting: 'added_date_new_old' },
+                  payload: { credential_sorting: 'added_date_new_old', reverse: false },
                 });
                 sortingOrder = 'ascending';
               }
@@ -139,7 +139,7 @@
             } else {
               dispatch({
                 type: '[Settings] Update Sorting Preference',
-                payload: { credential_sorting: 'added_date_new_old' },
+                payload: { credential_sorting: 'added_date_new_old', reverse: false },
               });
               preferences = 'added';
               sortingOrder = 'ascending';
