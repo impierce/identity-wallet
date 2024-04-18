@@ -86,9 +86,9 @@ cargo test
 
 ### VS Code support
 
-* Recommended extensions are listed with their extension IDs in `.vscode/extensions.json`.
+- Recommended extensions are listed with their extension IDs in `.vscode/extensions.json`.
 
-* If you want VS Code to format your files when you hit save, add `"editor.formatOnSave": true` to your user settings (use ⌘⇧P and search for _Preferences: Open User Settings (JSON)_).
+- If you want VS Code to format your files when you hit save, add `"editor.formatOnSave": true` to your user settings (use ⌘⇧P and search for _Preferences: Open User Settings (JSON)_).
 
 ### Troubleshooting
 
