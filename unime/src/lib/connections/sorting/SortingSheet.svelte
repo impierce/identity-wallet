@@ -7,6 +7,7 @@
   import SortPreferencesButton from '$src/lib/connections/sorting/SortingSheetButton.svelte';
   import { dispatch } from '$src/lib/dispatcher';
   import AlphabeticalOrder from '$src/lib/static/AlphabeticalOrder.svelte';
+  import { state } from '$src/stores';
 
   import Issued from '~icons/ph/calendar-check';
   import Added from '~icons/ph/calendar-plus';
@@ -14,12 +15,14 @@
 
   import ActionSheet from '../../components/molecules/dialogs/ActionSheet.svelte';
 
-  let method: CredentialSortMethod;
-  let reversed: boolean;
+  let method: CredentialSortMethod = $state.profile_settings.sorting_preferences.credentials.sort_method;
+  let reversed: boolean = $state.profile_settings.sorting_preferences.credentials.reverse;
 
   function updateSortingPreference(credential_sorting: CredentialSortMethod) {
     if (method == credential_sorting) {
       reversed = !reversed;
+    } else {
+      method = credential_sorting;
     }
     dispatch({
       type: '[Settings] Update Sorting Preference',
@@ -46,48 +49,21 @@
           label={$LL.SORT.PREFERENCES.ALPHABETICAL()}
           active={method == 'name_az'}
           {reversed}
-          on:click={() => {
-            // Preference already selected
-            if (method == 'name_az') {
-              updateSortingPreference('name_az');
-              // Preference not yet selected
-            } else {
-              updateSortingPreference('name_az');
-              method = 'name_az';
-            }
-          }}
+          on:click={() => updateSortingPreference('name_az')}
         />
         <SortPreferencesButton
           icon={Issued}
           label={$LL.SORT.PREFERENCES.DATE_ISSUED()}
           active={method == 'issue_date_new_old'}
           {reversed}
-          on:click={() => {
-            // Preference already selected
-            if (method == 'issue_date_new_old') {
-              updateSortingPreference('issue_date_new_old');
-              // Preference not yet selected
-            } else {
-              updateSortingPreference('issue_date_new_old');
-              method = 'issue_date_new_old';
-            }
-          }}
+          on:click={() => updateSortingPreference('issue_date_new_old')}
         />
         <SortPreferencesButton
           icon={Added}
           label={$LL.SORT.PREFERENCES.DATE_ADDED()}
           active={method == 'added_date_new_old'}
           {reversed}
-          on:click={() => {
-            // Preference already selected
-            if (method == 'added_date_new_old') {
-              updateSortingPreference('added_date_new_old');
-              // Preference not yet selected
-            } else {
-              updateSortingPreference('added_date_new_old');
-              method = 'added_date_new_old';
-            }
-          }}
+          on:click={() => updateSortingPreference('added_date_new_old')}
         />
       </div>
     </div>
