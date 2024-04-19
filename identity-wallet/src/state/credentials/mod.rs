@@ -1,13 +1,15 @@
 pub mod actions;
 pub mod reducers;
 
+use std::{fs::File, path::Path};
+
 use crate::state::core_utils::DateUtils;
 
 use super::{core_utils::helpers::get_unverified_jwt_claims, FeatTrait};
 
 use derivative::Derivative;
 use oid4vc::oid4vci::credential_format_profiles::{CredentialFormats, WithCredential};
-use serde::{Deserialize, Serialize};
+use serde::{de::DeserializeOwned, Deserialize, Serialize};
 use serde_json::{json, Value};
 use ts_rs::TS;
 use uuid::Uuid;
@@ -25,12 +27,30 @@ pub struct DisplayCredential {
     pub data: serde_json::Value,
     #[serde(default)]
     pub metadata: CredentialMetadata,
-
     pub display_name: String,
 }
 
 #[typetag::serde(name = "display_credential")]
 impl FeatTrait for DisplayCredential {}
+
+impl Default for DisplayCredential {
+    fn default() -> Self {
+        Self {
+            id: Default::default(),
+            issuer_name: Default::default(),
+            format: serde_json::from_str("\"test\"").unwrap(),
+            data: Default::default(),
+            metadata: CredentialMetadata::default(),
+            display_name: Default::default(),
+        }
+    }
+}
+
+#[test]
+fn test() {
+    let test = DisplayCredential::default();
+    println!("{:?}", test);
+}
 
 /// Contains metadata about a credential.
 /// PartialEq(ignore) used on the date_added field implemented because this would make testing with static json files impossible.
@@ -126,4 +146,15 @@ fn get_type_name_from_data(credential_display: &serde_json::Value) -> Option<Str
         Value::Array(array) => array.last()?.as_str().map(|name| name.to_string()),
         _ => None,
     }
+}
+
+////////////////////////////
+
+pub fn json_example<T>(path: &str) -> T
+where
+    T: DeserializeOwned,
+{
+    let file_path = Path::new(path);
+    let file = File::open(file_path).expect("file does not exist");
+    serde_json::from_reader::<_, T>(file).expect("could not parse json")
 }

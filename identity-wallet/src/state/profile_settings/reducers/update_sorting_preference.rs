@@ -16,6 +16,9 @@ use icu::collator::*;
 use log::debug;
 use unicode_normalization::UnicodeNormalization;
 
+// Frontend shouldn't persist reverse setting on any of the sorting options which aren't selected.
+// Because the backend doesn't persist this either.
+
 pub async fn update_sorting_preference(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(update_sorting) = listen::<UpdateSortingPreference>(action) {
         let mut sorting_preferences = state.profile_settings.sorting_preferences.clone();
@@ -79,10 +82,11 @@ pub async fn sort_credentials(state: AppState, _action: Action) -> Result<AppSta
     match preferences.sort_method {
         CredentialSortMethod::NameAZ => credentials.sort_by(name_az),
         CredentialSortMethod::IssueDateNewOld => credentials.sort_by(|a: &DisplayCredential, b: &DisplayCredential| {
-            a.metadata.date_issued.cmp(&b.metadata.date_issued)
+            a.metadata.date_issued.cmp(&b.metadata.date_issued).reverse()
         }),
-        CredentialSortMethod::AddedDateNewOld => credentials
-            .sort_by(|a: &DisplayCredential, b: &DisplayCredential| a.metadata.date_added.cmp(&b.metadata.date_added)),
+        CredentialSortMethod::AddedDateNewOld => credentials.sort_by(|a: &DisplayCredential, b: &DisplayCredential| {
+            a.metadata.date_added.cmp(&b.metadata.date_added).reverse()
+        }),
     };
 
     if preferences.reverse {
@@ -152,4 +156,299 @@ pub fn sort(list: Vec<String>, locale: Locale) -> Vec<String> {
     let mut sorted_list = normalized_list;
     sorted_list.sort_by(|a, b| collator.compare(a, b));
     sorted_list
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::state::credentials::CredentialMetadata;
+
+    use std::sync::Arc;
+
+    // update_sorting_preference testing //
+
+    // Currently we #[PartialEq(ignore)] the metadata.date_added field since it will fail many other tests.
+    // The json files are static but some tests create new credentials and the date_added field will be added at this time.
+    #[tokio::test]
+    async fn test_credentials_update_sorting_setting_date_added() {
+
+        let state = AppState::default();
+        let action = Arc::new(UpdateSortingPreference {
+            credential_sorting: Some(CredentialSortMethod::AddedDateNewOld),
+            reverse: Some(true),
+            ..Default::default()
+        });
+
+        let result = update_sorting_preference(state, action.clone()).await.unwrap();
+        let result = sort_credentials(result, action).await.unwrap();
+
+        assert_eq!(
+            result.profile_settings.sorting_preferences.credentials,
+            Preferences {
+                sort_method: CredentialSortMethod::AddedDateNewOld,
+                reverse: true,
+            }
+        );
+    }
+
+    // sort_credentials tests //
+
+    #[tokio::test]
+    async fn test_credentials_sorting_name_az() {
+        let state = init_credential_names("C".to_string(), "A".to_string(), "B".to_string());
+        let action = Arc::new(UpdateSortingPreference { ..Default::default() });
+
+        let result = update_sorting_preference(state, action.clone()).await.unwrap();
+        let result = sort_credentials(result, action).await.unwrap();
+
+        assert_eq!(
+            result
+                .credentials
+                .iter()
+                .map(|x| x.display_name.clone())
+                .collect::<Vec<String>>(),
+            vec!["A".to_string(), "B".to_string(), "C".to_string()]
+        );
+    }
+
+    #[tokio::test]
+    async fn test_credentials_sorting_name_az_reverse() {
+        let state = init_credential_names("C".to_string(), "A".to_string(), "B".to_string());
+        let action = Arc::new(UpdateSortingPreference {
+            credential_sorting: Some(CredentialSortMethod::NameAZ),
+            reverse: Some(true),
+            ..Default::default()
+        });
+
+        let result = update_sorting_preference(state, action.clone()).await.unwrap();
+        let result = sort_credentials(result, action).await.unwrap();
+
+        assert_eq!(
+            result
+                .credentials
+                .iter()
+                .map(|x| x.display_name.clone())
+                .collect::<Vec<String>>(),
+            vec!["C".to_string(), "B".to_string(), "A".to_string()]
+        );
+    }
+
+    #[tokio::test]
+    async fn test_credentials_sorting_issue_reverse() {
+        let state = init_credential_issuance_dates(
+            "2022-00-00T00:00:00Z".to_string(),
+            "2019-00-00T00:00:00Z".to_string(),
+            "2020-00-00T00:00:00Z".to_string(),
+        );
+        let action = Arc::new(UpdateSortingPreference {
+            credential_sorting: Some(CredentialSortMethod::IssueDateNewOld),
+            reverse: Some(true),
+            ..Default::default()
+        });
+
+        let result = update_sorting_preference(state, action.clone()).await.unwrap();
+        let result = sort_credentials(result, action).await.unwrap();
+
+        assert_eq!(
+            result
+                .credentials
+                .iter()
+                .map(|x| x.metadata.date_issued.clone())
+                .collect::<Vec<String>>(),
+            vec![
+                "2019-00-00T00:00:00Z".to_string(),
+                "2020-00-00T00:00:00Z".to_string(),
+                "2022-00-00T00:00:00Z".to_string()
+            ]
+        );
+    }
+
+    // sort_connections tests //
+
+    #[tokio::test]
+    async fn test_connections_sorting_name_az_reverse() {
+        let state = init_connection_names(
+            "Gym".to_string(),
+            "Work".to_string(),
+            "School".to_string(),
+        );
+        let action = Arc::new(UpdateSortingPreference {
+            connection_sorting: Some(ConnectionSortMethod::NameAZ),
+            reverse: Some(true),
+            ..Default::default()
+        });
+
+        let result = update_sorting_preference(state, action.clone()).await.unwrap();
+        let result = sort_connections(result, action).await.unwrap();
+
+        assert_eq!(
+            result
+                .connections.0
+                .iter()
+                .map(|x| x.name.clone())
+                .collect::<Vec<String>>(),
+            vec![
+                "Work".to_string(),
+                "School".to_string(),
+                "Gym".to_string(),
+            ]
+        );
+    }
+
+    // In fact, the {last_interacted, reverse: true} is the same as {first_interacted, reverse:false}.
+    // For this reason the reverse button will disabled for these sorting options.
+    #[tokio::test]
+    async fn test_connections_sorting_first_interact() {
+        let state = init_connection_interactions(
+            "2019-00-00T00:00:00Z".to_string(),
+            "2020-00-00T00:00:00Z".to_string(),
+            "2022-00-00T00:00:00Z".to_string(),
+        );
+        let action = Arc::new(UpdateSortingPreference {
+            connection_sorting: Some(ConnectionSortMethod::FirstInteractedNewOld),
+            reverse: Some(false),
+            ..Default::default()
+        });
+
+        let result = update_sorting_preference(state, action.clone()).await.unwrap();
+        let result = sort_connections(result, action).await.unwrap();
+
+        assert_eq!(
+            result
+                .connections.0
+                .iter()
+                .map(|x| x.first_interacted.clone())
+                .collect::<Vec<String>>(),
+            vec![
+                "2019-00-00T00:00:00Z".to_string(),
+                "2020-00-00T00:00:00Z".to_string(),
+                "2022-00-00T00:00:00Z".to_string(),
+            ]
+        );
+    }
+
+    #[tokio::test]
+    async fn test_connections_sorting_last_interact() {
+        let state = init_connection_interactions(
+            "2020-00-00T00:00:00Z".to_string(),
+            "2019-00-00T00:00:00Z".to_string(),
+            "2022-00-00T00:00:00Z".to_string(),
+        );
+        let action = Arc::new(UpdateSortingPreference {
+            connection_sorting: Some(ConnectionSortMethod::LastInteractedNewOld),
+            reverse: Some(false),
+            ..Default::default()
+        });
+
+        let result = update_sorting_preference(state, action.clone()).await.unwrap();
+        let result = sort_connections(result, action).await.unwrap();
+
+        assert_eq!(
+            result
+                .connections.0
+                .iter()
+                .map(|x| x.last_interacted.clone())
+                .collect::<Vec<String>>(),
+            vec![
+                "2019-00-00T00:00:00Z".to_string(),
+                "2020-00-00T00:00:00Z".to_string(),
+                "2022-00-00T00:00:00Z".to_string(),
+            ]
+        );
+    }
+    // Helpers - credentials//
+
+    fn init_credential_names(test_1: String, test_2: String, test_3: String) -> AppState {
+        AppState {
+            credentials: vec![
+                DisplayCredential {
+                    display_name: test_1,
+                    ..Default::default()
+                },
+                DisplayCredential {
+                    display_name: test_2,
+                    ..Default::default()
+                },
+                DisplayCredential {
+                    display_name: test_3,
+                    ..Default::default()
+                },
+            ],
+            ..Default::default()
+        }
+    }
+
+    fn init_credential_issuance_dates(test_1: String, test_2: String, test_3: String) -> AppState {
+        AppState {
+            credentials: vec![
+                DisplayCredential {
+                    metadata: CredentialMetadata {
+                        date_issued: test_1,
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                },
+                DisplayCredential {
+                    metadata: CredentialMetadata {
+                        date_issued: test_2,
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                },
+                DisplayCredential {
+                    metadata: CredentialMetadata {
+                        date_issued: test_3,
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                },
+            ],
+            ..Default::default()
+        }
+    }
+
+    // Helpers - connections //
+
+    fn init_connection_names(test_1: String, test_2: String, test_3: String) -> AppState {
+        AppState {
+            connections: Connections(vec![
+                Connection {
+                    name: test_1,
+                    ..Default::default()
+                },
+                Connection {
+                    name: test_2,
+                    ..Default::default()
+                },
+                Connection {
+                    name: test_3,
+                    ..Default::default()
+                },
+            ]),
+            ..Default::default()
+        }
+    }
+
+    fn init_connection_interactions(test_1: String, test_2: String, test_3: String) -> AppState {
+        AppState {
+            connections: Connections(vec![
+                Connection {
+                    first_interacted: test_1.clone(),
+                    last_interacted: test_1,
+                    ..Default::default()
+                },
+                Connection {
+                    first_interacted: test_2.clone(),
+                    last_interacted: test_2,
+                    ..Default::default()
+                },
+                Connection {
+                    first_interacted: test_3.clone(),
+                    last_interacted: test_3,
+                    ..Default::default()
+                },
+            ]),
+            ..Default::default()
+        }
+    }
 }

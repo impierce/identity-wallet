@@ -13,7 +13,7 @@ use crate::{
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
-#[derive(Serialize, Deserialize, Debug, TS, Clone)]
+#[derive(Serialize, Deserialize, Debug, TS, Clone, Default)]
 #[ts(export, export_to = "bindings/actions/UpdateSortingPreference.ts")]
 pub struct UpdateSortingPreference {
     #[ts(optional)]
