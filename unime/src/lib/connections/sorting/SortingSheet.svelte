@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { CredentialSortMethod } from '@bindings/CredentialSortMethod';
   import { melt } from '@melt-ui/svelte';
 
   import LL from '$src/i18n/i18n-svelte';
@@ -13,8 +14,18 @@
 
   import ActionSheet from '../../components/molecules/dialogs/ActionSheet.svelte';
 
-  let preferences: 'alphabetical' | 'issued' | 'added';
-  let sortingOrder: 'ascending' | 'descending';
+  let method: CredentialSortMethod;
+  let reversed: boolean;
+
+  function updateSortingPreference(credential_sorting: CredentialSortMethod) {
+    if (method == credential_sorting) {
+      reversed = !reversed;
+    }
+    dispatch({
+      type: '[Settings] Update Sorting Preference',
+      payload: { credential_sorting, reverse: reversed },
+    });
+  }
 </script>
 
 <!-- bottom drawer and sorting button-->
@@ -33,96 +44,48 @@
         <SortPreferencesButton
           icon={AlphabeticalOrder}
           label={$LL.SORT.PREFERENCES.ALPHABETICAL()}
-          active={preferences == 'alphabetical'}
-          {sortingOrder}
+          active={method == 'name_az'}
+          {reversed}
           on:click={() => {
             // Preference already selected
-            if (preferences == 'alphabetical') {
-              if (sortingOrder == 'descending') {
-                dispatch({
-                  type: '[Settings] Update Sorting Preference',
-                  payload: { credential_sorting: 'name_az', reverse: true },
-                });
-                sortingOrder = 'ascending';
-              } else {
-                dispatch({
-                  type: '[Settings] Update Sorting Preference',
-                  payload: { credential_sorting: 'name_az', reverse: false },
-                });
-                sortingOrder = 'descending';
-              }
+            if (method == 'name_az') {
+              updateSortingPreference('name_az');
               // Preference not yet selected
             } else {
-              dispatch({
-                type: '[Settings] Update Sorting Preference',
-                payload: { credential_sorting: 'name_az', reverse: false },
-              });
-              preferences = 'alphabetical';
-              sortingOrder = 'descending';
+              updateSortingPreference('name_az');
+              method = 'name_az';
             }
           }}
         />
         <SortPreferencesButton
           icon={Issued}
           label={$LL.SORT.PREFERENCES.DATE_ISSUED()}
-          active={preferences == 'issued'}
-          {sortingOrder}
+          active={method == 'issue_date_new_old'}
+          {reversed}
           on:click={() => {
             // Preference already selected
-            if (preferences == 'issued') {
-              if (sortingOrder == 'ascending') {
-                dispatch({
-                  type: '[Settings] Update Sorting Preference',
-                  payload: { credential_sorting: 'issue_date_new_old', reverse: true },
-                });
-                sortingOrder = 'descending';
-              } else {
-                dispatch({
-                  type: '[Settings] Update Sorting Preference',
-                  payload: { credential_sorting: 'issue_date_new_old', reverse: false },
-                });
-                sortingOrder = 'ascending';
-              }
+            if (method == 'issue_date_new_old') {
+              updateSortingPreference('issue_date_new_old');
               // Preference not yet selected
             } else {
-              dispatch({
-                type: '[Settings] Update Sorting Preference',
-                payload: { credential_sorting: 'issue_date_new_old', reverse: false },
-              });
-              preferences = 'issued';
-              sortingOrder = 'ascending';
+              updateSortingPreference('issue_date_new_old');
+              method = 'issue_date_new_old';
             }
           }}
         />
         <SortPreferencesButton
           icon={Added}
           label={$LL.SORT.PREFERENCES.DATE_ADDED()}
-          active={preferences == 'added'}
-          {sortingOrder}
+          active={method == 'added_date_new_old'}
+          {reversed}
           on:click={() => {
             // Preference already selected
-            if (preferences == 'added') {
-              if (sortingOrder == 'ascending') {
-                dispatch({
-                  type: '[Settings] Update Sorting Preference',
-                  payload: { credential_sorting: 'added_date_new_old', reverse: true },
-                });
-                sortingOrder = 'descending';
-              } else {
-                dispatch({
-                  type: '[Settings] Update Sorting Preference',
-                  payload: { credential_sorting: 'added_date_new_old', reverse: false },
-                });
-                sortingOrder = 'ascending';
-              }
+            if (method == 'added_date_new_old') {
+              updateSortingPreference('added_date_new_old');
               // Preference not yet selected
             } else {
-              dispatch({
-                type: '[Settings] Update Sorting Preference',
-                payload: { credential_sorting: 'added_date_new_old', reverse: false },
-              });
-              preferences = 'added';
-              sortingOrder = 'ascending';
+              updateSortingPreference('added_date_new_old');
+              method = 'added_date_new_old';
             }
           }}
         />
