@@ -62,17 +62,9 @@
     // We prefer the name from the credential, but fallback to the issuer name during oid4vc process
     const issuer_name = name_from_credential ?? name_from_oid4vc;
 
-    console.warn(name_from_credential);
-    console.warn(name_from_oid4vc);
-    console.warn(credential);
-    // console.warn(issuer_name);
-
-    console.warn(name_from_credential ?? name_from_oid4vc);
-
     if (issuer_name) {
       // base64url encode
       const connectionId = btoa(issuer_name).replace('+', '-').replace('/', '_').replace('=', '');
-      console.warn(connectionId);
       // verify that the connection exists
       if ($state.connections.some((c) => c.id === connectionId)) {
         return connectionId;
@@ -85,7 +77,7 @@
   }
 
   function determineIssuerName(): string | null {
-    // The backend fills the `credential.issuer_name` with an empty string when no value is provided.
+    // TODO: Backend should not fill the `credential.issuer_name` with an empty string when no value is provided.
     if (credential.issuer_name.trim().length === 0) {
       return credential.data.issuer?.name ?? credential.data.issuer;
     } else {
@@ -179,20 +171,18 @@
           <!-- If the connection exists, make the logo clickable and redirect to the connection. -->
           {#if connectionId}
             <button
-              class="flex h-[68px] w-full items-center justify-center rounded-xl bg-silver p-2 dark:bg-white"
+              class="flex h-[68px] w-full items-center justify-center overflow-hidden rounded-xl bg-silver p-1 dark:bg-white"
               on:click={() => goto(`/activity/connection/${connectionId}`)}
             >
               <Image
                 id={connectionId}
                 iconFallback="Bank"
-                imgClass="w-16 m-2"
+                imgClass="h-12 w-auto p-1 rounded-lg bg-white"
                 iconClass="h-7 w-7 dark:text-slate-800"
               />
             </button>
           {:else}
-            <div
-              class="mr-4 flex h-12 w-12 min-w-[48px] items-center justify-center overflow-hidden rounded-lg bg-white p-1"
-            >
+            <div class="flex h-[68px] w-full items-center justify-center rounded-xl bg-silver p-2 dark:bg-white">
               <Image
                 id="_"
                 iconFallback="Bank"
@@ -202,7 +192,6 @@
             </div>
           {/if}
           <p class="px-2 text-center text-xs text-black [word-break:break-word] dark:text-white">
-            <!-- TODO: issuer_name is not undefined, but an empty string -->
             {issuerName}
           </p>
         </div>
