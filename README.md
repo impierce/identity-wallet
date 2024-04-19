@@ -88,7 +88,7 @@ cargo test
 
 - Recommended extensions are listed with their extension IDs in `.vscode/extensions.json`.
 
-- If you want VS Code to format your files when you hit save, add `"editor.formatOnSave": true` to your user settings (use ⌘⇧P and search for _Preferences: Open User Settings (JSON)_).
+- It is also recommended to enable `Format On Save` in your VS Code settings.
 
 ### Troubleshooting
 
