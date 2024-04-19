@@ -1,6 +1,6 @@
 <script lang="ts">
-  import SettingsEntry from '$src/lib/app/settings/SettingsEntry.svelte';
-  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
+  import SettingsEntry from '$lib/app/settings/SettingsEntry.svelte';
+  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
 
   import Keyboard from '~icons/ph/keyboard-fill';
 </script>

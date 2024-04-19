@@ -2,12 +2,12 @@
   import { onMount } from 'svelte';
 
   import { goto } from '$app/navigation';
+  import LL from '$i18n/i18n-svelte';
 
   import type { DisplayCredential } from '@bindings/display-credential/DisplayCredential';
 
   import ListItemCard from '$lib/components/molecules/ListItemCard.svelte';
-  import LL from '$src/i18n/i18n-svelte';
-  import { state } from '$src/stores';
+  import { state } from '$lib/stores';
 
   import Heart from '~icons/ph/heart-straight-fill';
 

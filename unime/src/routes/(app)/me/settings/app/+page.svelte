@@ -1,13 +1,13 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import LL from '$i18n/i18n-svelte';
 
   import { locales } from '$lib/app/locales';
+  import SettingsEntry from '$lib/app/settings/SettingsEntry.svelte';
+  import Switch from '$lib/components/atoms/Switch.svelte';
+  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
   import { dispatch } from '$lib/dispatcher';
-  import LL from '$src/i18n/i18n-svelte';
-  import SettingsEntry from '$src/lib/app/settings/SettingsEntry.svelte';
-  import Switch from '$src/lib/components/atoms/Switch.svelte';
-  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
-  import { state } from '$src/stores';
+  import { state } from '$lib/stores';
 
   import ChatCircleText from '~icons/ph/chat-circle-text-fill';
   import Code from '~icons/ph/code-bold';
