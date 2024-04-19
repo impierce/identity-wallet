@@ -43,7 +43,7 @@ lazy_static! {
     pub static ref OPEN_BADGE: VerifiableCredentialRecord = VerifiableCredentialRecord::from(
         CredentialFormats::<WithCredential>::JwtVcJson(Credential {
             format: JwtVcJson,
-            credential: json!("eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDprZXk6ejZNa2toUDQzTENTWGFqM1NRQm92eTF1RTJuWHZTQm5SUFdaMndoUExxblo4UGdEI3o2TWtraFA0M0xDU1hhajNTUUJvdnkxdUUyblh2U0JuUlBXWjJ3aFBMcW5aOFBnRCJ9.eyJpc3MiOiJodHRwOi8vMTkyLjE2OC4xLjEyNzo5MDkwLyIsInN1YiI6ImRpZDprZXk6ejZNa2cxWFhHVXFma2hBS1Uxa1ZkMVBtdzZVRWoxdnhpTGoxeGM5MU1CejVvd05ZIiwiZXhwIjo5OTk5OTk5OTk5LCJpYXQiOjAsInZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIiwiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvZXhhbXBsZXMvdjEiLCJodHRwczovL3B1cmwuaW1zZ2xvYmFsLm9yZy9zcGVjL29iL3YzcDAvY29udGV4dC0zLjAuMi5qc29uIl0sImlkIjoiaHR0cDovL2V4YW1wbGUuZWR1L2NyZWRlbnRpYWxzLzM3MzIiLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIiwiT3BlbkJhZGdlQ3JlZGVudGlhbCJdLCJpc3N1ZXIiOnsiaWQiOiJodHRwczovL2V4YW1wbGUuZWR1L2lzc3VlcnMvNTY1MDQ5IiwidHlwZSI6WyJJc3N1ZXJQcm9maWxlIl0sIm5hbWUiOiJFeGFtcGxlIFVuaXZlcnNpdHkifSwiaXNzdWFuY2VEYXRlIjoiMjAxMC0wMS0wMVQwMDowMDowMFoiLCJuYW1lIjoiVGVhbXdvcmsgQmFkZ2UiLCJjcmVkZW50aWFsU3ViamVjdCI6eyJpZCI6ImRpZDpleGFtcGxlOmViZmViMWY3MTJlYmM2ZjFjMjc2ZTEyZWMyMSIsInR5cGUiOlsiQWNoaWV2ZW1lbnRTdWJqZWN0Il0sImFjaGlldmVtZW50Ijp7ImlkIjoiaHR0cHM6Ly9leGFtcGxlLmNvbS9hY2hpZXZlbWVudHMvMjFzdC1jZW50dXJ5LXNraWxscy90ZWFtd29yayIsInR5cGUiOlsiQWNoaWV2ZW1lbnQiXSwiY3JpdGVyaWEiOnsibmFycmF0aXZlIjoiVGVhbSBtZW1iZXJzIGFyZSBub21pbmF0ZWQgZm9yIHRoaXMgYmFkZ2UgYnkgdGhlaXIgcGVlcnMgYW5kIHJlY29nbml6ZWQgdXBvbiByZXZpZXcgYnkgRXhhbXBsZSBDb3JwIG1hbmFnZW1lbnQuIn0sImRlc2NyaXB0aW9uIjoiVGhpcyBiYWRnZSByZWNvZ25pemVzIHRoZSBkZXZlbG9wbWVudCBvZiB0aGUgY2FwYWNpdHkgdG8gY29sbGFib3JhdGUgd2l0aGluIGEgZ3JvdXAgZW52aXJvbm1lbnQuIiwibmFtZSI6IlRlYW13b3JrIn19fX0.OZCcZt5JTJcBhoLPIyrQuvZuc2dnVN65f8GvKQ3earAzJEgGMA9ZjKRNHEjI73wLwvG5MJBN7Zs_rWiNLEZ5Dg"),
+            credential: json!("eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDprZXk6ejZNa2toUDQzTENTWGFqM1NRQm92eTF1RTJuWHZTQm5SUFdaMndoUExxblo4UGdEI3o2TWtraFA0M0xDU1hhajNTUUJvdnkxdUUyblh2U0JuUlBXWjJ3aFBMcW5aOFBnRCJ9.eyJpc3MiOiJodHRwOi8vMTkyLjE2OC4xLjEyNzo5MDkwLyIsInN1YiI6ImRpZDprZXk6ejZNa2cxWFhHVXFma2hBS1Uxa1ZkMVBtdzZVRWoxdnhpTGoxeGM5MU1CejVvd05ZIiwiZXhwIjo5OTk5OTk5OTk5LCJpYXQiOjAsInZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIiwiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvZXhhbXBsZXMvdjEiLCJodHRwczovL3B1cmwuaW1zZ2xvYmFsLm9yZy9zcGVjL29iL3YzcDAvY29udGV4dC0zLjAuMi5qc29uIl0sImlkIjoiaHR0cDovL2V4YW1wbGUuZWR1L2NyZWRlbnRpYWxzLzM3MzIiLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIiwiT3BlbkJhZGdlQ3JlZGVudGlhbCJdLCJpc3N1ZXIiOnsiaWQiOiJodHRwczovL2V4YW1wbGUuZWR1L2lzc3VlcnMvNTY1MDQ5IiwidHlwZSI6WyJJc3N1ZXJQcm9maWxlIl0sIm5hbWUiOiJJbXBpZXJjZSBEZW1vIFBvcnRhbCJ9LCJpc3N1YW5jZURhdGUiOiIyMDEwLTAxLTAxVDAwOjAwOjAwWiIsIm5hbWUiOiJUZWFtd29yayBCYWRnZSIsImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkIjoiZGlkOmV4YW1wbGU6ZWJmZWIxZjcxMmViYzZmMWMyNzZlMTJlYzIxIiwidHlwZSI6WyJBY2hpZXZlbWVudFN1YmplY3QiXSwiYWNoaWV2ZW1lbnQiOnsiaWQiOiJodHRwczovL2V4YW1wbGUuY29tL2FjaGlldmVtZW50cy8yMXN0LWNlbnR1cnktc2tpbGxzL3RlYW13b3JrIiwidHlwZSI6WyJBY2hpZXZlbWVudCJdLCJjcml0ZXJpYSI6eyJuYXJyYXRpdmUiOiJUZWFtIG1lbWJlcnMgYXJlIG5vbWluYXRlZCBmb3IgdGhpcyBiYWRnZSBieSB0aGVpciBwZWVycyBhbmQgcmVjb2duaXplZCB1cG9uIHJldmlldyBieSBFeGFtcGxlIENvcnAgbWFuYWdlbWVudC4ifSwiZGVzY3JpcHRpb24iOiJUaGlzIGJhZGdlIHJlY29nbml6ZXMgdGhlIGRldmVsb3BtZW50IG9mIHRoZSBjYXBhY2l0eSB0byBjb2xsYWJvcmF0ZSB3aXRoaW4gYSBncm91cCBlbnZpcm9ubWVudC4iLCJuYW1lIjoiVGVhbXdvcmsifX19fQ.OZCcZt5JTJcBhoLPIyrQuvZuc2dnVN65f8GvKQ3earAzJEgGMA9ZjKRNHEjI73wLwvG5MJBN7Zs_rWiNLEZ5Dg"),
         })
     );
     pub static ref EDU_BADGE: VerifiableCredentialRecord = VerifiableCredentialRecord::from(
@@ -160,7 +160,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
 
     state.connections = Connections(vec![
         Connection {
-            id: "ngdil".to_string(),
+            id: "TkdESUwgRGVtbw".to_string(),
             name: "NGDIL Demo".to_string(),
             url: "api.ngdil-demo.tanglelabs.io".to_string(),
             verified: false,
@@ -168,7 +168,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             last_interacted: "2023-09-11T19:53:53.937981+00:00".to_string(),
         },
         Connection {
-            id: "impierce".to_string(),
+            id: "SW1waWVyY2UgRGVtbyBQb3J0YWw".to_string(),
             name: "Impierce Demo Portal".to_string(),
             url: "https://demo.impierce.com".to_string(),
             verified: true,
@@ -176,7 +176,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             last_interacted: "2024-01-09T07:36:41.382948+00:00".to_string(),
         },
         Connection {
-            id: "webshop".to_string(),
+            id: "bXktd2Vic2hvcC5jb20".to_string(),
             name: "my-webshop.com".to_string(),
             url: "https://shop.example.com".to_string(),
             verified: false,
@@ -184,7 +184,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             last_interacted: "2023-11-13T19:26:40.049239+00:00".to_string(),
         },
         Connection {
-            id: "iota".to_string(),
+            id: "SU9UQQ".to_string(),
             name: "IOTA".to_string(),
             url: "https://www.iota.org".to_string(),
             verified: true,
@@ -195,14 +195,14 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
 
     state.history = vec![
         HistoryEvent {
-            connection_id: "impierce".to_string(),
+            connection_id: "SW1waWVyY2UgRGVtbyBQb3J0YWw".to_string(),
             connection_name: "Impierce Demo Portal".to_string(),
             event_type: EventType::ConnectionAdded,
             date: (chrono::Utc::now() - chrono::Duration::try_days(2).unwrap()).to_rfc3339(),
             credentials: vec![],
         },
         HistoryEvent {
-            connection_id: "impierce".to_string(),
+            connection_id: "SW1waWVyY2UgRGVtbyBQb3J0YWw".to_string(),
             connection_name: "Impierce Demo Portal".to_string(),
             event_type: EventType::CredentialsAdded,
             date: (chrono::Utc::now() - chrono::Duration::try_hours(3).unwrap()).to_rfc3339(),
@@ -220,7 +220,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             ],
         },
         HistoryEvent {
-            connection_id: "impierce".to_string(),
+            connection_id: "SW1waWVyY2UgRGVtbyBQb3J0YWw".to_string(),
             connection_name: "Impierce Demo Portal".to_string(),
             event_type: EventType::CredentialsShared,
             date: (chrono::Utc::now() - chrono::Duration::try_minutes(5).unwrap()).to_rfc3339(),
@@ -256,17 +256,20 @@ async fn load_predefined_images() -> Result<(), AppError> {
     // Connections
     write_bytes_to_file(
         include_bytes!("../../../../resources/images/impierce_white.png"),
-        "impierce.png",
+        "SW1waWVyY2UgRGVtbyBQb3J0YWw.png",
     )?;
     write_bytes_to_file(
         include_bytes!("../../../../resources/images/iota-icon-dark.svg"),
-        "iota.svg",
+        "SU9UQQ.svg",
     )?;
     write_bytes_to_file(
         include_bytes!("../../../../resources/images/kw1c-white.png"),
         "kw1c.png",
     )?;
-    write_bytes_to_file(include_bytes!("../../../../resources/images/ngdil.svg"), "ngdil.svg")?;
+    write_bytes_to_file(
+        include_bytes!("../../../../resources/images/ngdil.svg"),
+        "TkdESUwgRGVtbw.svg",
+    )?;
 
     // Credentials
     write_bytes_to_file(

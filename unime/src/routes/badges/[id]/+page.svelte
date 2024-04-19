@@ -62,9 +62,17 @@
     // We prefer the name from the credential, but fallback to the issuer name during oid4vc process
     const issuer_name = name_from_credential ?? name_from_oid4vc;
 
+    console.warn(name_from_credential);
+    console.warn(name_from_oid4vc);
+    console.warn(credential);
+    // console.warn(issuer_name);
+
+    console.warn(name_from_credential ?? name_from_oid4vc);
+
     if (issuer_name) {
       // base64url encode
-      const connectionId = btoa(issuer_name).replace('+', '-').replace('/', '_');
+      const connectionId = btoa(issuer_name).replace('+', '-').replace('/', '_').replace('=', '');
+      console.warn(connectionId);
       // verify that the connection exists
       if ($state.connections.some((c) => c.id === connectionId)) {
         return connectionId;
@@ -76,7 +84,17 @@
     }
   }
 
+  function determineIssuerName(): string | null {
+    // The backend fills the `credential.issuer_name` with an empty string when no value is provided.
+    if (credential.issuer_name.trim().length === 0) {
+      return credential.data.issuer?.name ?? credential.data.issuer;
+    } else {
+      return credential.issuer_name;
+    }
+  }
+
   const connectionId = determineConnectionId();
+  const issuerName = determineIssuerName();
 
   onMount(async () => {
     credentialLogoUrl = await getImageAsset($page.params.id!);
@@ -172,7 +190,9 @@
               />
             </button>
           {:else}
-            <div class="flex h-[68px] w-full items-center justify-center rounded-xl bg-silver p-2 dark:bg-white">
+            <div
+              class="mr-4 flex h-12 w-12 min-w-[48px] items-center justify-center overflow-hidden rounded-lg bg-white p-1"
+            >
               <Image
                 id="_"
                 iconFallback="Bank"
@@ -181,8 +201,9 @@
               />
             </div>
           {/if}
-          <p class="text-center text-xs text-black [word-break:break-word] dark:text-white">
-            {credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
+          <p class="px-2 text-center text-xs text-black [word-break:break-word] dark:text-white">
+            <!-- TODO: issuer_name is not undefined, but an empty string -->
+            {issuerName}
           </p>
         </div>
       </div>

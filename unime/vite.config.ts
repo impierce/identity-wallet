@@ -61,6 +61,8 @@ export default defineConfig(async () => ({
       'typesafe-i18n/utils',
       'typesafe-i18n',
       'typesafe-i18n/detectors',
+      'date-fns',
+      'date-fns/locale',
     ],
   },
 }));
