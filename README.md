@@ -13,6 +13,8 @@ Identity Wallet for people to manage Decentralized Identities and Verifiable Cre
 
 ## Development
 
+Run `npm install` in the project root to install [Prettier](https://prettier.io/). Then
+
 ```sh
 cd unime
 ```
@@ -54,11 +56,16 @@ npm run tauri ios dev
 > [!NOTE]
 > Before committing, please make sure the code is formatted correctly, passes all tests and is linted.
 
-#### Frontend
+Run Prettier from the project root:
+
+```sh
+npm run format
+```
+
+### Frontend
 
 ```sh
 # /unime
-npm run format
 npm run lint
 npm run test
 
@@ -68,7 +75,7 @@ cargo clippy
 cargo test
 ```
 
-#### Core (backend)
+### Core (backend)
 
 ```sh
 # /identity-wallet
@@ -76,6 +83,12 @@ cargo fmt
 cargo clippy
 cargo test
 ```
+
+### VS Code support
+
+- Recommended extensions are listed with their extension IDs in `.vscode/extensions.json`.
+
+- It is also recommended to enable `Format On Save` in your VS Code settings.
 
 ### Troubleshooting
 
