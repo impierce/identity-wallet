@@ -3,7 +3,10 @@ use crate::{
     persistence::persist_asset,
     state::{
         actions::{listen, Action},
-        core_utils::history_event::{EventType, HistoryCredential, HistoryEvent},
+        core_utils::{
+            history_event::{EventType, HistoryCredential, HistoryEvent},
+            CoreUtils,
+        },
         credentials::{
             actions::credential_offers_selected::CredentialOffersSelected, DisplayCredential,
             VerifiableCredentialRecord,
@@ -15,8 +18,8 @@ use crate::{
 
 use log::info;
 use oid4vc::oid4vci::{
-    credential_format_profiles::{CredentialFormats, WithCredential, WithParameters},
-    credential_offer::{CredentialsObject, Grants},
+    credential_format_profiles::{CredentialFormats, WithParameters},
+    credential_offer::Grants,
     credential_response::CredentialResponseType,
     token_request::TokenRequest,
 };
@@ -26,7 +29,9 @@ use uuid::Uuid;
 pub async fn send_credential_request(mut state: AppState, action: Action) -> Result<AppState, AppError> {
     info!("send_credential_request");
 
-    if let Some(offer_indices) = listen::<CredentialOffersSelected>(action).map(|payload| payload.offer_indices) {
+    if let Some(credential_configuration_ids) =
+        listen::<CredentialOffersSelected>(action).map(|payload| payload.credential_configuration_ids)
+    {
         let state_guard = state.core_utils.managers.lock().await;
         let stronghold_manager = state_guard
             .stronghold_manager
@@ -46,12 +51,9 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
 
         info!("current_user_prompt: {:?}", current_user_prompt);
 
-        let (credential_offer, logo_uri) = match current_user_prompt {
-            CurrentUserPrompt::CredentialOffer {
-                credential_offer,
-                logo_uri,
-                ..
-            } => (credential_offer, logo_uri),
+        let credential_offer = state.core_utils.active_credential_offer.take().unwrap();
+        let logo_uri = match current_user_prompt {
+            CurrentUserPrompt::CredentialOffer { logo_uri, .. } => logo_uri,
             _ => unreachable!(),
         };
 
@@ -99,16 +101,24 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
             })
             .unwrap_or(connection_url.to_string());
 
-        let credential_offer_formats = offer_indices
-            .into_iter()
-            .map(|offer_index| match credential_offer.credentials.get(offer_index) {
-                Some(CredentialsObject::ByValue(credential_format)) => credential_format.to_owned(),
-                // Unreachable because we replace all `CredentialsObject::ByReference` with `CredentialsObject::ByValue` in `read_credential_offer`.
-                _ => unreachable!(),
-            })
-            .collect::<Vec<CredentialFormats<WithParameters>>>();
+        let mut credential_configurations_supported = state
+            .core_utils
+            .active_credential_issuer_metadata
+            .take()
+            // TODO: FIX THISS!
+            .unwrap()
+            .credential_configurations_supported;
 
-        info!("credential_offer_formats: {:?}", credential_offer_formats);
+        // let credential_offer_formats = credential_configuration_ids
+        //     .into_iter()
+        //     .filter_map(|credential_configuration_id| {
+        //         credential_configurations_supported
+        //             .remove(&credential_configuration_id)
+        //             .map(|credential_configuration| credential_configuration.credential_format)
+        //     })
+        //     .collect::<Vec<CredentialFormats<WithParameters>>>();
+
+        // info!("credential_offer_formats: {:?}", credential_offer_formats);
 
         // Create a token request with grant_type `pre_authorized_code`.
         let token_request = match credential_offer.grants {
@@ -116,7 +126,7 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
                 pre_authorized_code, ..
             }) => TokenRequest::PreAuthorizedCode {
                 pre_authorized_code: pre_authorized_code.unwrap().pre_authorized_code,
-                user_pin: None,
+                tx_code: None,
             },
             None => unreachable!(),
         };
@@ -130,39 +140,58 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
 
         info!("token_response: {:?}", token_response);
 
-        let credentials: Vec<CredentialFormats<WithCredential>> = match credential_offer_formats.len() {
+        credential_configurations_supported.retain(|credential_configuration_id, _| {
+            credential_configuration_ids.contains(credential_configuration_id)
+        });
+
+        let credentials: Vec<(String, serde_json::Value)> = match credential_configuration_ids.len() {
             0 => vec![],
             1 => {
+                let credential_configuration_id = credential_configuration_ids[0].clone();
+                let credential_format = credential_configurations_supported
+                    .get(&credential_configuration_id)
+                    .expect("FIX THISS")
+                    .credential_format
+                    .to_owned();
+
                 // Get the credential.
                 let credential_response = wallet
-                    .get_credential(
-                        credential_issuer_metadata,
-                        &token_response,
-                        credential_offer_formats[0].to_owned(),
-                    )
+                    .get_credential(credential_issuer_metadata, &token_response, credential_format)
                     .await
                     .map_err(GetCredentialError)?;
 
                 let credential = match credential_response.credential {
-                    CredentialResponseType::Immediate(credential) => credential,
+                    CredentialResponseType::Immediate { credential, .. } => credential,
                     _ => panic!("Credential was not a jwt_vc_json."),
                 };
 
-                vec![credential]
+                vec![(credential_configuration_id, credential)]
             }
             _batch => {
+                let (credential_configuration_ids, credential_formats): (Vec<_>, Vec<_>) =
+                    credential_configurations_supported
+                        .into_iter()
+                        .map(|(credential_configuration_id, credential_configuration)| {
+                            (credential_configuration_id, credential_configuration.credential_format)
+                        })
+                        .unzip();
+
                 let batch_credential_response = wallet
-                    .get_batch_credential(credential_issuer_metadata, &token_response, credential_offer_formats)
+                    .get_batch_credential(credential_issuer_metadata, &token_response, credential_formats)
                     .await
                     .map_err(GetBatchCredentialError)?;
 
-                batch_credential_response
-                    .credential_responses
+                credential_configuration_ids
                     .into_iter()
-                    .map(|credential_response| match credential_response {
-                        CredentialResponseType::Immediate(credential) => credential,
-                        _ => panic!("Credential was not a jwt_vc_json."),
-                    })
+                    .zip(batch_credential_response.credential_responses.into_iter())
+                    .map(
+                        |(credential_configuration_id, credential_response)| match credential_response {
+                            CredentialResponseType::Immediate { credential, .. } => {
+                                (credential_configuration_id, credential)
+                            }
+                            _ => panic!("Credential was not a jwt_vc_json."),
+                        },
+                    )
                     .collect()
             }
         };
@@ -171,7 +200,7 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
 
         let mut history_credentials = vec![];
 
-        for (i, credential) in credentials.into_iter().enumerate() {
+        for (credential_configuration_id, credential) in credentials.into_iter() {
             let mut verifiable_credential_record: VerifiableCredentialRecord = credential.into();
             verifiable_credential_record.display_credential.issuer_name = issuer_name.clone();
 
@@ -183,7 +212,11 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
 
             info!("generated hash-key: {:?}", key);
 
-            persist_asset(format!("credential_{}", i).as_str(), key.to_string().as_str()).ok();
+            persist_asset(
+                format!("credential_{credential_configuration_id}").as_str(),
+                key.to_string().as_str(),
+            )
+            .ok();
 
             // Remove the old credential from the stronghold if it exists.
             stronghold_manager.remove(key).map_err(StrongholdDeletionError)?;
@@ -240,5 +273,11 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
         });
     }
 
-    Ok(state)
+    Ok(AppState {
+        core_utils: CoreUtils {
+            managers: state.core_utils.managers,
+            ..Default::default()
+        },
+        ..state
+    })
 }

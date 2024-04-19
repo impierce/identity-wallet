@@ -36,15 +36,15 @@ pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppS
         let keypair = from_existing_key::<Ed25519KeyPair>(public_key.as_slice(), None);
         let subject = Arc::new(KeySubject::from_keypair(keypair, Some(stronghold_manager.clone())));
 
-        let provider_manager = ProviderManager::new([subject.clone()]).map_err(OID4VCProviderManagerError)?;
-        let wallet: Wallet = Wallet::new(subject.clone());
+        let provider_manager = ProviderManager::new(subject.clone(), "did:key").map_err(OID4VCProviderManagerError)?;
+        let wallet: Wallet = Wallet::new(subject.clone(), "did:key").expect("FIX THISS");
 
         let profile_settings = ProfileSettings {
             profile: Some(Profile {
                 name,
                 picture: Some(picture),
                 theme,
-                primary_did: subject.identifier().map_err(OID4VCSubjectIdentifierError)?,
+                primary_did: subject.identifier("did:key").map_err(OID4VCSubjectIdentifierError)?,
             }),
             ..state.profile_settings
         };

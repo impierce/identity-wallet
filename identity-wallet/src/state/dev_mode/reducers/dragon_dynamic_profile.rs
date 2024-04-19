@@ -132,7 +132,13 @@ async fn add_credential(state: AppState) -> Result<AppState, AppError> {
 
 async fn accept_credential(state: AppState) -> Result<AppState, AppError> {
     let cr_selected = CredentialOffersSelected {
-        offer_indices: vec![0, 1, 2, 3, 4],
+        credential_configuration_ids: vec![
+            "National ID".to_string(),
+            "School Course Certificate".to_string(),
+            "Volunteer Badge".to_string(),
+            "Higher Education Information Literacy Level 1".to_string(),
+            "Business Innovation & Interdisciplinair Samenwerken".to_string(),
+        ],
     };
 
     command::reduce(state, Arc::new(cr_selected)).await
@@ -255,7 +261,9 @@ async fn add_future_engineer(state: AppState) -> Result<AppState, AppError> {
 }
 
 async fn accept_future_engineer(state: AppState) -> Result<AppState, AppError> {
-    let cr_selected = CredentialOffersSelected { offer_indices: vec![0] };
+    let cr_selected = CredentialOffersSelected {
+        credential_configuration_ids: vec!["future_engineer".to_string()],
+    };
 
     command::reduce(state, Arc::new(cr_selected)).await
 }

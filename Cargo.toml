@@ -8,7 +8,7 @@ tauri = { version = "=2.0.0-beta.12", features = [
     "rustls-tls",
 ] }
 
-oid4vc = { git = "https://git@github.com/impierce/openid4vc.git", rev = "af7c5118a45c59f310eb3aab7dac68caafc8fa53" }
+oid4vc = { git = "https://git@github.com/impierce/openid4vc.git", rev = "a932af7" }
 log = "^0.4"
 serde_json = "1.0"
 did-key = "0.2.1"

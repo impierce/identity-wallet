@@ -11,7 +11,10 @@ use oid4vc::{
         Subject,
     },
     oid4vc_manager::ProviderManager,
-    oid4vci::Wallet,
+    oid4vci::{
+        credential_issuer::credential_issuer_metadata::CredentialIssuerMetadata,
+        credential_offer::CredentialOfferParameters, Wallet,
+    },
     oid4vp::oid4vp::OID4VP,
     siopv2::siopv2::SIOPv2,
 };
@@ -20,10 +23,14 @@ use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 
 /// CoreUtils is a struct that contains all the utils that only the rustside needs to perform its tasks.
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct CoreUtils {
     pub managers: Arc<tauri::async_runtime::Mutex<Managers>>,
+
+    // TODO: These 'active_' fields should either be part of `oid4vc-manager`, or the `IdentityManager` struct.
     pub active_connection_request: Option<ConnectionRequest>,
+    pub active_credential_offer: Option<CredentialOfferParameters>,
+    pub active_credential_issuer_metadata: Option<CredentialIssuerMetadata>,
 }
 /// Managers contains both the stronghold manager and the identity manager needed to perform operations on connections & credentials.
 #[derive(Default)]
@@ -39,7 +46,7 @@ pub struct IdentityManager {
     pub wallet: Wallet,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone)]
 pub enum ConnectionRequest {
     SIOPv2(Box<AuthorizationRequest<Object<SIOPv2>>>),
     OID4VP(Box<AuthorizationRequest<Object<OID4VP>>>),

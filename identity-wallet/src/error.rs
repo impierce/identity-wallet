@@ -34,8 +34,6 @@ pub enum AppError {
     OID4VCProviderManagerError(#[source] anyhow::Error),
     #[error("Error while fetching DID identifier from OID4VC subject")]
     OID4VCSubjectIdentifierError(#[source] anyhow::Error),
-    #[error("Missing required parameter `{0}` in authorization request")]
-    MissingAuthorizationRequestParameterError(&'static str),
     #[error("Invalid authorization request: {0}")]
     InvalidAuthorizationRequest(Box<AuthorizationRequest<Object>>),
     #[error("Invalid credential offer")]
