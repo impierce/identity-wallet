@@ -1,13 +1,4 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-/node_modules
+node_modules
 /build
 /.svelte-kit
 /package
@@ -15,21 +6,10 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 /coverage
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# OS-generated files
-.DS_Store
-.snapshot
-
 # Environment variables
 .env
 .env.*
 !.env.example
+
+# TODO: Remove after debug config in repository root works
+.vscode/**
