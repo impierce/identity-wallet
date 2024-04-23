@@ -79,9 +79,9 @@ pub async fn assert_state_update(
             } = expected_state;
 
             println!(
-                "Current state:\n{:#?}\n\n-------------------------------------\n\nExpected state:\n{:#?}\n",
-                container.0.lock().await,
-                expected_state
+                "Current state:\n{}\n\n-------------------------------------\n\nExpected state:\n{}\n",
+                serde_json::to_string_pretty(&container.0.lock().await.clone()).unwrap(),
+                serde_json::to_string_pretty(expected_state).unwrap()
             );
 
             assert_eq!(connections, expected_connections);
