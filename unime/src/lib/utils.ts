@@ -1,3 +1,4 @@
+import { Sha256 } from '@aws-crypto/sha256-js';
 import { convertFileSrc } from '@tauri-apps/api/core';
 import { appDataDir, join } from '@tauri-apps/api/path';
 import { exists } from '@tauri-apps/plugin-fs';
@@ -40,4 +41,13 @@ export const getImageAsset = async (id: string, tmp = false): Promise<string | n
 
   warn(`No file found for id: ${id}`);
   return null;
+};
+
+export const hash = (data: string): string => {
+  const hash = new Sha256();
+  hash.update(data);
+  const result = hash.digestSync();
+  return Array.from(result)
+    .map((i) => i.toString(16).padStart(2, '0'))
+    .join('');
 };

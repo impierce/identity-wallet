@@ -1,6 +1,6 @@
 use crate::{
     error::AppError::{self, *},
-    persistence::persist_asset,
+    persistence::{hash, persist_asset},
     state::{
         actions::Action,
         core_utils::{
@@ -55,7 +55,11 @@ pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: A
     let mut connections = state.connections;
     let connection = connections.update_or_insert(&connection_url, &client_name);
 
-    persist_asset("client_0", &connection.id).ok();
+    let file_name = match logo_uri {
+        Some(logo_uri) => hash(logo_uri.as_str()),
+        None => "_".to_string(),
+    };
+    persist_asset(&file_name, &connection.id).ok();
 
     // History
     state.history.push(HistoryEvent {

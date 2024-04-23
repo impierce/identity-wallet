@@ -1,6 +1,6 @@
 use crate::{
     error::AppError::{self, *},
-    persistence::persist_asset,
+    persistence::{hash, persist_asset},
     state::{
         actions::{listen, Action},
         core_utils::history_event::{EventType, HistoryCredential, HistoryEvent},
@@ -46,8 +46,12 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
 
         info!("current_user_prompt: {:?}", current_user_prompt);
 
-        let credential_offer = match current_user_prompt {
-            CurrentUserPrompt::CredentialOffer { credential_offer, .. } => credential_offer,
+        let (credential_offer, logo_uri) = match current_user_prompt {
+            CurrentUserPrompt::CredentialOffer {
+                credential_offer,
+                logo_uri,
+                ..
+            } => (credential_offer, logo_uri),
             _ => unreachable!(),
         };
 
@@ -204,7 +208,11 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
         let mut connections = state.connections;
         let connection = connections.update_or_insert(connection_url, &issuer_name);
 
-        persist_asset("client_0", &connection.id).ok();
+        let file_name = match logo_uri {
+            Some(logo_uri) => hash(logo_uri.as_str()),
+            None => "_".to_string(),
+        };
+        persist_asset(&file_name, &connection.id).ok();
 
         // History
         if !history_credentials.is_empty() {
