@@ -93,6 +93,15 @@ pub async fn sort_credentials(state: AppState, _action: Action) -> Result<AppSta
         credentials.reverse();
     }
 
+    // In this block we check if there are credentials with an empty issue date.
+    // When the issues date is empty, we sort these credentials alphabetically and add them to the bottom.
+    if preferences.sort_method == CredentialSortMethod:: IssueDateNewOld {
+        let mut credentials_empty_issue_date: Vec<DisplayCredential> = credentials.iter().filter(|x| x.metadata.date_issued == "null").cloned().collect();
+        credentials_empty_issue_date.sort_by(name_az);
+        credentials.retain(|x| x.metadata.date_issued != "null");
+        credentials.append(&mut credentials_empty_issue_date);
+    }
+
     // current_user_prompt is not set to None,
     // as this reducer is often used in combination with reducers that need to send a user_prompt to the frontend.
     Ok(AppState { credentials, ..state })
