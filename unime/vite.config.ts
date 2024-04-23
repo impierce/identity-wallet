@@ -44,5 +44,26 @@ export default defineConfig(async () => ({
   },
   optimizeDeps: {
     exclude: ['~icons/*'],
+    // #188: List of dependecies that Vite frequently optimizes.
+    // Use `include`, not `exclude`: https://github.com/sveltejs/kit/issues/11793#issuecomment-1965850225.
+    // TODO Check if this list can be removed after upgrading to Vite 5.
+    include: [
+      '@lottiefiles/lottie-player',
+      '@tauri-apps/api/path',
+      '@tauri-apps/plugin-fs',
+      'markdown-it',
+      'tailwind-merge',
+      'qrcode',
+      '@melt-ui/svelte',
+      '@tauri-apps/api/event',
+      '@tauri-apps/api/core',
+      'typesafe-i18n/svelte',
+      'typesafe-i18n/utils',
+      'typesafe-i18n',
+      'typesafe-i18n/detectors',
+      'date-fns',
+      'date-fns/locale',
+      '@tauri-apps/plugin-barcode-scanner',
+    ],
   },
 }));
