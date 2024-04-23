@@ -1,6 +1,6 @@
 use crate::{
     error::AppError::{self, *},
-    persistence::persist_asset,
+    persistence::{hash, persist_asset},
     state::{
         actions::{listen, Action},
         core_utils::{
@@ -9,7 +9,6 @@ use crate::{
             ConnectionRequest,
         },
         credentials::actions::credentials_selected::CredentialsSelected,
-        hash,
         user_prompt::CurrentUserPrompt,
         AppState,
     },

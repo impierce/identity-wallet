@@ -1,12 +1,11 @@
 use crate::{
     error::AppError::{self, *},
-    persistence::download_asset,
+    persistence::{download_asset, hash},
     state::{
         actions::{listen, Action},
         connections::reducers::handle_siopv2_authorization_request::get_siopv2_client_name_and_logo_uri,
         core_utils::{helpers::get_unverified_jwt_claims, ConnectionRequest, CoreUtils},
         credentials::reducers::handle_oid4vp_authorization_request::get_oid4vp_client_name_and_logo_uri,
-        hash,
         qr_code::actions::qrcode_scanned::QrCodeScanned,
         user_prompt::CurrentUserPrompt,
         AppState,

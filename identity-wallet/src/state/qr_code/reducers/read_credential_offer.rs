@@ -1,9 +1,8 @@
 use crate::{
     error::AppError::{self, *},
-    persistence::download_asset,
+    persistence::{download_asset, hash},
     state::{
         actions::{listen, Action},
-        hash,
         qr_code::actions::qrcode_scanned::QrCodeScanned,
         user_prompt::CurrentUserPrompt,
         AppState,

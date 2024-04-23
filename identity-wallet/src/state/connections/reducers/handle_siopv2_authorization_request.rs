@@ -1,13 +1,12 @@
 use crate::{
     error::AppError::{self, *},
-    persistence::persist_asset,
+    persistence::{hash, persist_asset},
     state::{
         actions::Action,
         core_utils::{
             history_event::{EventType, HistoryEvent},
             ConnectionRequest,
         },
-        hash,
         user_prompt::CurrentUserPrompt,
         AppState,
     },

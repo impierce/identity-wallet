@@ -138,10 +138,6 @@ impl AppState {
     }
 }
 
-fn hash(url: &str) -> String {
-    sha256::digest(url).to_string()
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;

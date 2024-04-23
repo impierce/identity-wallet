@@ -1,6 +1,6 @@
 use crate::{
     error::AppError::{self, *},
-    persistence::persist_asset,
+    persistence::{hash, persist_asset},
     state::{
         actions::{listen, Action},
         core_utils::history_event::{EventType, HistoryCredential, HistoryEvent},
@@ -8,7 +8,6 @@ use crate::{
             actions::credential_offers_selected::CredentialOffersSelected, DisplayCredential,
             VerifiableCredentialRecord,
         },
-        hash,
         user_prompt::CurrentUserPrompt,
         AppState,
     },
