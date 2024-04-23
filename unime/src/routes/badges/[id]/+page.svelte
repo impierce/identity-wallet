@@ -52,30 +52,6 @@
     return JSON.stringify(value, null, 2);
   };
 
-  // TODO: This is a HORRIBLE solution to determine the connection_id by the non-unique "issuer name".
-  // It is a TEMPORARY solution and should only be used in DEMO environments,
-  // since we currently lack a unique identitfier to distinguish connections.
-  function determineConnectionId(): string | null {
-    // First collect possible sources of the issuer name
-    const name_from_credential: string | undefined = credential.data.issuer?.name;
-    const name_from_oid4vc = credential.issuer_name;
-    // We prefer the name from the credential, but fallback to the issuer name during oid4vc process
-    const issuer_name = name_from_credential ?? name_from_oid4vc;
-
-    if (issuer_name) {
-      // base64url encode
-      const connectionId = btoa(issuer_name).replace('+', '-').replace('/', '_').replace('=', '');
-      // verify that the connection exists
-      if ($state.connections.some((c) => c.id === connectionId)) {
-        return connectionId;
-      } else {
-        return null;
-      }
-    } else {
-      return null;
-    }
-  }
-
   function determineIssuerName(): string | null {
     // TODO: Backend should not fill the `credential.issuer_name` with an empty string when no value is provided.
     if (credential.issuer_name.trim().length === 0) {
@@ -85,7 +61,7 @@
     }
   }
 
-  const connectionId = determineConnectionId();
+  const connectionId = credential.connection_id;
   const issuerName = determineIssuerName();
 
   onMount(async () => {
