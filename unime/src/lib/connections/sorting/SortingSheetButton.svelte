@@ -10,7 +10,7 @@
   export let label: string;
   export let active: boolean = false;
   const dispatch = createEventDispatcher();
-  export let sortingOrder: 'ascending' | 'descending' | undefined = undefined;
+  export let reversed: boolean;
 </script>
 
 <button
@@ -23,10 +23,10 @@
   <p class="text-sm font-medium">{label}</p>
   {#if active}
     <div class="absolute right-2">
-      {#if sortingOrder == 'descending'}
-        <ArrowDown class="text-primary" />
-      {:else if sortingOrder == 'ascending'}
+      {#if reversed}
         <ArrowUp class="text-primary" />
+      {:else}
+        <ArrowDown class="text-primary" />
       {/if}
     </div>
   {/if}
