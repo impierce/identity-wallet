@@ -4,7 +4,7 @@ use crate::{
     state::{
         connections::{Connection, Connections},
         core_utils::history_event::{EventType, HistoryCredential, HistoryEvent},
-        credentials::{CredentialMetadata, VerifiableCredentialRecord},
+        credentials::VerifiableCredentialRecord,
         dev_mode::DevMode,
         profile_settings::{AppTheme, Profile},
         user_prompt::CurrentUserPrompt,
