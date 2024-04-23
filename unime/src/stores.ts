@@ -59,17 +59,6 @@ export const state = writable<AppState>(empty_state, (set) => {
   // TODO: unsubscribe from listener!
 });
 
-// #188: Trigger state update when state is undefined.
-// if (dev) {
-//   state.subscribe((value) => {
-//     if (!value) {
-//       dispatch({ type: '[App] Get state' });
-//       console.log('DISPATCHED!');
-//     }
-//     // console.log(`STORE: ${JSON.stringify(value, null, 2)}`);
-//   });
-// }
-
 /**
  * A state only used by the frontend for storing display logic.
  * Never touches the Rust backend and is therefore not persisted across app restarts.
