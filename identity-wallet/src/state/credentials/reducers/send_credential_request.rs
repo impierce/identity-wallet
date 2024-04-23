@@ -1,6 +1,6 @@
 use crate::{
     error::AppError::{self, *},
-    persistence::persist_asset,
+    persistence::{hash, persist_asset},
     state::{
         actions::{listen, Action},
         core_utils::{
@@ -18,10 +18,7 @@ use crate::{
 
 use log::info;
 use oid4vc::oid4vci::{
-    credential_format_profiles::{CredentialFormats, WithParameters},
-    credential_offer::Grants,
-    credential_response::CredentialResponseType,
-    token_request::TokenRequest,
+    credential_offer::Grants, credential_response::CredentialResponseType, token_request::TokenRequest,
 };
 use serde_json::json;
 use uuid::Uuid;
@@ -108,17 +105,6 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
             // TODO: FIX THISS!
             .unwrap()
             .credential_configurations_supported;
-
-        // let credential_offer_formats = credential_configuration_ids
-        //     .into_iter()
-        //     .filter_map(|credential_configuration_id| {
-        //         credential_configurations_supported
-        //             .remove(&credential_configuration_id)
-        //             .map(|credential_configuration| credential_configuration.credential_format)
-        //     })
-        //     .collect::<Vec<CredentialFormats<WithParameters>>>();
-
-        // info!("credential_offer_formats: {:?}", credential_offer_formats);
 
         // Create a token request with grant_type `pre_authorized_code`.
         let token_request = match credential_offer.grants {
@@ -241,7 +227,10 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
         let mut connections = state.connections;
         let connection = connections.update_or_insert(connection_url, &issuer_name);
 
-        let file_name = base64::encode_config(logo_uri.unwrap_or("_".to_string()), base64::URL_SAFE);
+        let file_name = match logo_uri {
+            Some(logo_uri) => hash(logo_uri.as_str()),
+            None => "_".to_string(),
+        };
         persist_asset(&file_name, &connection.id).ok();
 
         // History

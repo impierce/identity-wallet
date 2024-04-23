@@ -11,6 +11,7 @@
   import Button from '$src/lib/components/atoms/Button.svelte';
   import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
+  import { hash } from '$src/lib/utils';
   import { state } from '$src/stores';
 
   import Check from '~icons/ph/check-bold';
@@ -32,7 +33,7 @@
 
   const hostname = new URL($state.current_user_prompt.redirect_uri).hostname;
 
-  const imageId = btoa($state.current_user_prompt?.logo_uri);
+  const imageId = hash($state.current_user_prompt?.logo_uri);
 
   onDestroy(async () => {
     // TODO: is onDestroy also called when user accepts since the component itself is destroyed?

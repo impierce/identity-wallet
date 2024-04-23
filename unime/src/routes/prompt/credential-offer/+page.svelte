@@ -9,12 +9,11 @@
   import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
   import ListItemCard from '$src/lib/components/molecules/ListItemCard.svelte';
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
+  import { hash } from '$src/lib/utils';
   import { state } from '$src/stores';
   import { error, info } from '@tauri-apps/plugin-log';
 
-
   import DownloadSimple from '~icons/ph/download-simple-fill';
-
 
   // // TODO: generate binding in core
   // /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -32,7 +31,7 @@
 
   let all_credential_configuration_ids: string[] = Object.keys(credential_configurations);
 
-  const imageId = btoa($state.current_user_prompt?.logo_uri);
+  const imageId = hash($state.current_user_prompt?.logo_uri);
 
   onDestroy(async () => {
     // TODO: is onDestroy also called when user accepts since the component itself is destroyed?
@@ -58,7 +57,7 @@
     {/if}
     <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
       <!-- {#if issuer_name} -->
-        {issuer_name}
+      {issuer_name}
       <!-- {:else}
         {new URL(credential_offer.credential_issuer).hostname}
       {/if} -->
@@ -72,11 +71,11 @@
       class="mt-3 w-full rounded-[20px] border border-slate-200 bg-white p-[10px] dark:border-slate-600 dark:bg-dark"
     >
       {#each Object.entries(credential_configurations) as [credential_configuration_id, credential_configuration]}
-        
         <!-- TODO: careful with long list! -->
         <ListItemCard
           id={`credential_${credential_configuration_id}`}
-          title={credential_configuration.display?.at(0).name ?? credential_configuration.credential_definition.type.at(-1)}
+          title={credential_configuration.display?.at(0).name ??
+            credential_configuration.credential_definition.type.at(-1)}
           isTempAsset={true}
         >
           <div slot="right" class="mr-2">

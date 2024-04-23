@@ -18,13 +18,15 @@ jobs:
         with:
           node-version: "20.x"
 
-      - name: Install dependencies
-        working-directory: ./unime
+      - name: Install project root dependencies
         run: npm install
 
       - name: Format
-        working-directory: ./unime
         run: npm run format:check
+
+      - name: Install dependencies
+        working-directory: ./unime
+        run: npm install
 
       - name: Lint
         working-directory: ./unime

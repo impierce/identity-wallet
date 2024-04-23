@@ -1419,7 +1419,7 @@ dependencies = [
 [[package]]
 name = "dif-presentation-exchange"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=a932af7#a932af797117bd8f042335bf29695e00905800e8"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=104e4ba#104e4bac4f02d716e9a36a031ba16214bb3ef7a0"
 dependencies = [
  "getset",
  "jsonpath_lib",
@@ -3890,7 +3890,7 @@ dependencies = [
 [[package]]
 name = "oid4vc"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=a932af7#a932af797117bd8f042335bf29695e00905800e8"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=104e4ba#104e4bac4f02d716e9a36a031ba16214bb3ef7a0"
 dependencies = [
  "dif-presentation-exchange",
  "oid4vc-core",
@@ -3903,7 +3903,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-core"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=a932af7#a932af797117bd8f042335bf29695e00905800e8"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=104e4ba#104e4bac4f02d716e9a36a031ba16214bb3ef7a0"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3927,7 +3927,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-manager"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=a932af7#a932af797117bd8f042335bf29695e00905800e8"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=104e4ba#104e4bac4f02d716e9a36a031ba16214bb3ef7a0"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -3959,7 +3959,7 @@ dependencies = [
 [[package]]
 name = "oid4vci"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=a932af7#a932af797117bd8f042335bf29695e00905800e8"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=104e4ba#104e4bac4f02d716e9a36a031ba16214bb3ef7a0"
 dependencies = [
  "anyhow",
  "derivative",
@@ -3982,7 +3982,7 @@ dependencies = [
 [[package]]
 name = "oid4vp"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=a932af7#a932af797117bd8f042335bf29695e00905800e8"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=104e4ba#104e4bac4f02d716e9a36a031ba16214bb3ef7a0"
 dependencies = [
  "anyhow",
  "chrono",
@@ -5417,7 +5417,7 @@ dependencies = [
 [[package]]
 name = "siopv2"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=a932af7#a932af797117bd8f042335bf29695e00905800e8"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=104e4ba#104e4bac4f02d716e9a36a031ba16214bb3ef7a0"
 dependencies = [
  "anyhow",
  "async-trait",

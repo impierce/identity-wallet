@@ -11,6 +11,7 @@
   import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
   import ListItemCard from '$src/lib/components/molecules/ListItemCard.svelte';
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
+  import { hash } from '$src/lib/utils';
   import { state } from '$src/stores';
 
   import PlugsConnected from '~icons/ph/plugs-connected-fill';
@@ -20,7 +21,7 @@
 
   let client_name = $state.current_user_prompt.client_name;
 
-  const imageId = btoa($state.current_user_prompt?.logo_uri);
+  const imageId = hash($state.current_user_prompt?.logo_uri);
 
   onDestroy(async () => {
     // TODO: is onDestroy also called when user accepts since the component itself is destroyed?

@@ -2,7 +2,11 @@
 // for information about these interfaces
 declare global {
   namespace App {
-    // interface Error {}
+    // Return type of `handleError` hook.
+    interface Error {
+      message: string;
+      errorId: string;
+    }
     // interface Locals {}
     // interface PageData {}
     // interface Platform {}

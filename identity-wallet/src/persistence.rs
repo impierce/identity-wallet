@@ -196,6 +196,12 @@ pub fn persist_asset(file_name: &str, id: &str) -> Result<(), AppError> {
     Ok(())
 }
 
+/// Hashes a given URL string to a unique SHA-256 string.
+/// Used for temporary asset file names in `/assets/tmp` to prevent unintended frontend image caching.
+pub fn hash(url: &str) -> String {
+    sha256::digest(url).to_string()
+}
+
 #[cfg(test)]
 mod tests {
     // use super::*;
