@@ -69,13 +69,13 @@
   }
 </script>
 
-<div class="relative mt-6 flex h-full flex-col">
+<div class="relative flex h-full flex-col">
   {#if $state.history.length === 0}
     <div class="flex h-full flex-col items-center justify-center">
       <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">{$LL.HISTORY.EMPTY()}</p>
     </div>
   {:else}
-    <div class="ml-2 mt-6">
+    <div class="ml-2 pt-10">
       {#each events.reverse() as event, i}
         <div class="flex flex-row">
           <div class="mt-2 flex flex-col items-center">
