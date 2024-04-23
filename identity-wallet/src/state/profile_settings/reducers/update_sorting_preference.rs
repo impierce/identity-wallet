@@ -96,7 +96,11 @@ pub async fn sort_credentials(state: AppState, _action: Action) -> Result<AppSta
     // In this block we check if there are credentials with an empty issue date.
     // When the issues date is empty, we sort these credentials alphabetically and add them to the bottom.
     if preferences.sort_method == CredentialSortMethod::IssueDateNewOld {
-        let mut credentials_empty_issue_date: Vec<DisplayCredential> = credentials.iter().filter(|x| x.metadata.date_issued == "null").cloned().collect();
+        let mut credentials_empty_issue_date: Vec<DisplayCredential> = credentials
+            .iter()
+            .filter(|x| x.metadata.date_issued == "null")
+            .cloned()
+            .collect();
         credentials_empty_issue_date.sort_by(name_az);
         credentials.retain(|x| x.metadata.date_issued != "null");
         credentials.append(&mut credentials_empty_issue_date);
@@ -180,7 +184,6 @@ mod tests {
     // The json files are static but some tests create new credentials and the date_added field will be added at this time.
     #[tokio::test]
     async fn test_credentials_update_sorting_setting_date_added() {
-
         let state = AppState::default();
         let action = Arc::new(UpdateSortingPreference {
             credential_sorting: Some(CredentialSortMethod::AddedDateNewOld),
@@ -276,11 +279,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_connections_sorting_name_az_reverse() {
-        let state = init_connection_names(
-            "Gym".to_string(),
-            "Work".to_string(),
-            "School".to_string(),
-        );
+        let state = init_connection_names("Gym".to_string(), "Work".to_string(), "School".to_string());
         let action = Arc::new(UpdateSortingPreference {
             connection_sorting: Some(ConnectionSortMethod::NameAZ),
             reverse: Some(true),
@@ -292,15 +291,12 @@ mod tests {
 
         assert_eq!(
             result
-                .connections.0
+                .connections
+                .0
                 .iter()
                 .map(|x| x.name.clone())
                 .collect::<Vec<String>>(),
-            vec![
-                "Work".to_string(),
-                "School".to_string(),
-                "Gym".to_string(),
-            ]
+            vec!["Work".to_string(), "School".to_string(), "Gym".to_string(),]
         );
     }
 
@@ -324,7 +320,8 @@ mod tests {
 
         assert_eq!(
             result
-                .connections.0
+                .connections
+                .0
                 .iter()
                 .map(|x| x.first_interacted.clone())
                 .collect::<Vec<String>>(),
@@ -354,7 +351,8 @@ mod tests {
 
         assert_eq!(
             result
-                .connections.0
+                .connections
+                .0
                 .iter()
                 .map(|x| x.last_interacted.clone())
                 .collect::<Vec<String>>(),
