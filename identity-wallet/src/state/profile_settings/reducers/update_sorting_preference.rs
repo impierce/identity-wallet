@@ -93,16 +93,16 @@ pub async fn sort_credentials(state: AppState, _action: Action) -> Result<AppSta
         credentials.reverse();
     }
 
-    // In this block we check if there are credentials with an empty issue date.
-    // When the issues date is empty, we sort these credentials alphabetically and add them to the bottom.
+    // In this block we check if there are credentials without an issue-date.
+    // When the issue-date is empty, we sort these credentials alphabetically and add them to the bottom.
     if preferences.sort_method == CredentialSortMethod::IssueDateNewOld {
         let mut credentials_empty_issue_date: Vec<DisplayCredential> = credentials
             .iter()
-            .filter(|x| x.metadata.date_issued == "null")
+            .filter(|x| x.metadata.date_issued.is_empty())
             .cloned()
             .collect();
         credentials_empty_issue_date.sort_by(name_az);
-        credentials.retain(|x| x.metadata.date_issued != "null");
+        credentials.retain(|x| !x.metadata.date_issued.is_empty());
         credentials.append(&mut credentials_empty_issue_date);
     }
 

@@ -102,7 +102,10 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
                     )
                 };
 
-                let issuance_date = credential_display["issuanceDate"].clone();
+                let mut issuance_date = String::new(); 
+                if !credential_display["issuanceDate"].is_null() {
+                    issuance_date = credential_display["issuanceDate"].clone().to_string().replace('\"', "");
+                }
 
                 let display_name = get_achievement_name_from_data(&credential_display)
                     .or(get_type_name_from_data(&credential_display))
@@ -116,7 +119,7 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
                     metadata: CredentialMetadata {
                         is_favorite: false,
                         date_added: DateUtils::new_date_string(),
-                        date_issued: issuance_date.to_string().replace('\"', ""),
+                        date_issued: issuance_date,
                     },
                     display_name,
                 }
