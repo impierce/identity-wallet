@@ -2,9 +2,6 @@
   import type { CredentialSortMethod } from '@bindings/CredentialSortMethod';
   import { melt } from '@melt-ui/svelte';
 
-  //import Ascending from '~icons/ph/sort-ascending';
-  //import Grid from '~icons/ph/squares-four';
-
   import LL from '$src/i18n/i18n-svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
   import SortPreferencesButton from '$src/lib/connections/sorting/SortingSheetButton.svelte';

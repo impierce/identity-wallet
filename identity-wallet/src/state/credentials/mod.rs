@@ -38,18 +38,13 @@ impl Default for DisplayCredential {
         Self {
             id: Default::default(),
             issuer_name: Default::default(),
+            // Here we use "test" as a placeholder since this fied has no default and it cannot be left empty.
             format: serde_json::from_str("\"test\"").unwrap(),
             data: Default::default(),
             metadata: CredentialMetadata::default(),
             display_name: Default::default(),
         }
     }
-}
-
-#[test]
-fn test() {
-    let test = DisplayCredential::default();
-    println!("{:?}", test);
 }
 
 /// Contains metadata about a credential.
@@ -149,15 +144,4 @@ fn get_type_name_from_data(credential_display: &serde_json::Value) -> Option<Str
         Value::Array(array) => array.last()?.as_str().map(|name| name.to_string()),
         _ => None,
     }
-}
-
-////////////////////////////
-
-pub fn json_example<T>(path: &str) -> T
-where
-    T: DeserializeOwned,
-{
-    let file_path = Path::new(path);
-    let file = File::open(file_path).expect("file does not exist");
-    serde_json::from_reader::<_, T>(file).expect("could not parse json")
 }
