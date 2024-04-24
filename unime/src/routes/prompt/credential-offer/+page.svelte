@@ -17,12 +17,12 @@
   // // TODO: generate binding in core
   // /* eslint-disable @typescript-eslint/no-explicit-any */
   interface CredentialConfiguration {
-    display: any;
-    credential_definition: any;
+    display: object;
+    credential_definition: object;
   }
   // /* eslint-enable @typescript-eslint/no-explicit-any */
 
-  let credential_configurations: { [key: string]: CredentialConfiguration } =
+  let credential_configurations: Record<string, CredentialConfiguration> =
     $state.current_user_prompt?.credential_configurations;
 
   let issuer_name: string = $state.current_user_prompt?.issuer_name;
