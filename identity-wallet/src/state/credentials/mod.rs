@@ -1,15 +1,12 @@
 pub mod actions;
 pub mod reducers;
 
-use std::{fs::File, path::Path};
-
-use crate::state::core_utils::DateUtils;
-
 use super::{core_utils::helpers::get_unverified_jwt_claims, FeatTrait};
+use crate::state::core_utils::DateUtils;
 
 use derivative::Derivative;
 use oid4vc::oid4vci::credential_format_profiles::{CredentialFormats, WithCredential};
-use serde::{de::DeserializeOwned, Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use ts_rs::TS;
 use uuid::Uuid;
@@ -97,7 +94,7 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
                     )
                 };
 
-                let mut issuance_date = String::new(); 
+                let mut issuance_date = String::new();
                 if !credential_display["issuanceDate"].is_null() {
                     issuance_date = credential_display["issuanceDate"].clone().to_string().replace('\"', "");
                 }

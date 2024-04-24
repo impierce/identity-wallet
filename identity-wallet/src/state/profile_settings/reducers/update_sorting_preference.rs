@@ -16,8 +16,7 @@ use icu::collator::*;
 use log::debug;
 use unicode_normalization::UnicodeNormalization;
 
-// Frontend shouldn't persist reverse setting on any of the sorting options which aren't selected.
-// Because the backend doesn't persist this either.
+//Reverse setting of non-selected sorting options are not persisted and use the default (false) when selected.
 
 pub async fn update_sorting_preference(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(update_sorting) = listen::<UpdateSortingPreference>(action) {
@@ -64,19 +63,22 @@ pub async fn sort_credentials(state: AppState, _action: Action) -> Result<AppSta
     let mut credentials: Vec<DisplayCredential> = state.credentials.clone();
     let preferences: Preferences<CredentialSortMethod> = state.profile_settings.sorting_preferences.credentials.clone();
 
-    let list: Vec<String> = credentials.iter().map(|x| x.display_name.clone()).collect();
-    let sorted_list = sort(list, state.profile_settings.locale.clone());
+    let display_names: Vec<String> = credentials
+        .iter()
+        .map(|credential| credential.display_name.clone())
+        .collect();
+    let sorted_display_names = sort(display_names, state.profile_settings.locale.clone());
 
     let name_az = |a: &DisplayCredential, b: &DisplayCredential| {
-        let pos_a = sorted_list
+        let cmp_a = sorted_display_names
             .iter()
             .position(|display_name| display_name == &a.display_name)
             .unwrap();
-        let pos_b = sorted_list
+        let cmp_b = sorted_display_names
             .iter()
             .position(|display_name| display_name == &b.display_name)
             .unwrap();
-        pos_a.cmp(&pos_b)
+        cmp_a.cmp(&cmp_b)
     };
 
     match preferences.sort_method {
@@ -98,11 +100,11 @@ pub async fn sort_credentials(state: AppState, _action: Action) -> Result<AppSta
     if preferences.sort_method == CredentialSortMethod::IssueDateNewOld {
         let mut credentials_empty_issue_date: Vec<DisplayCredential> = credentials
             .iter()
-            .filter(|x| x.metadata.date_issued.is_empty())
+            .filter(|credential| credential.metadata.date_issued.is_empty())
             .cloned()
             .collect();
         credentials_empty_issue_date.sort_by(name_az);
-        credentials.retain(|x| !x.metadata.date_issued.is_empty());
+        credentials.retain(|credential| !credential.metadata.date_issued.is_empty());
         credentials.append(&mut credentials_empty_issue_date);
     }
 
@@ -115,13 +117,13 @@ pub async fn sort_connections(state: AppState, _action: Action) -> Result<AppSta
     let mut connections: Vec<Connection> = state.connections.0.clone();
     let preferences: Preferences<ConnectionSortMethod> = state.profile_settings.sorting_preferences.connections.clone();
 
-    let list: Vec<String> = connections.iter().map(|x| x.name.clone()).collect();
-    let sorted_list = sort(list, state.profile_settings.locale.clone());
+    let names: Vec<String> = connections.iter().map(|connection| connection.name.clone()).collect();
+    let sorted_names = sort(names, state.profile_settings.locale.clone());
 
     let name_az = |a: &Connection, b: &Connection| {
-        let pos_a = sorted_list.iter().position(|name| name == &a.name).unwrap();
-        let pos_b = sorted_list.iter().position(|name| name == &b.name).unwrap();
-        pos_a.cmp(&pos_b)
+        let cmp_a = sorted_names.iter().position(|name| name == &a.name).unwrap();
+        let cmp_b = sorted_names.iter().position(|name| name == &b.name).unwrap();
+        cmp_a.cmp(&cmp_b)
     };
 
     match preferences.sort_method {
