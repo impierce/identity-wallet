@@ -11,21 +11,19 @@
   import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
   import { hash } from '$src/lib/utils';
   import { state } from '$src/stores';
-  import { error, info } from '@tauri-apps/plugin-log';
 
   import DownloadSimple from '~icons/ph/download-simple-fill';
 
   // // TODO: generate binding in core
   // /* eslint-disable @typescript-eslint/no-explicit-any */
-  // interface CredentialOffer {
-  //   credential_issuer: string;
-  //   credentials: any[];
-  //   grants: any;
-  // }
+  interface CredentialConfiguration {
+    display: any;
+    credential_definition: any;
+  }
   // /* eslint-enable @typescript-eslint/no-explicit-any */
 
-  let credential_configurations = $state.current_user_prompt?.credential_configurations;
-  info!(`credential_configurations: ${JSON.stringify(credential_configurations)}`);
+  let credential_configurations: { [key: string]: CredentialConfiguration } =
+    $state.current_user_prompt?.credential_configurations;
 
   let issuer_name: string = $state.current_user_prompt?.issuer_name;
 
@@ -56,11 +54,7 @@
       <PaddedIcon icon={DownloadSimple} />
     {/if}
     <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
-      <!-- {#if issuer_name} -->
       {issuer_name}
-      <!-- {:else}
-        {new URL(credential_offer.credential_issuer).hostname}
-      {/if} -->
     </p>
 
     <p class="w-full text-center text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">
