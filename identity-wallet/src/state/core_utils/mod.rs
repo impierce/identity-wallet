@@ -11,10 +11,7 @@ use oid4vc::{
         Subject,
     },
     oid4vc_manager::ProviderManager,
-    oid4vci::{
-        credential_issuer::credential_issuer_metadata::CredentialIssuerMetadata,
-        credential_offer::CredentialOfferParameters, Wallet,
-    },
+    oid4vci::{credential_offer::CredentialOfferParameters, Wallet},
     oid4vp::oid4vp::OID4VP,
     siopv2::siopv2::SIOPv2,
 };
@@ -30,7 +27,6 @@ pub struct CoreUtils {
     // TODO: These 'active_' fields should either be part of `oid4vc-manager`, or the `IdentityManager` struct.
     pub active_connection_request: Option<ConnectionRequest>,
     pub active_credential_offer: Option<CredentialOfferParameters>,
-    pub active_credential_issuer_metadata: Option<CredentialIssuerMetadata>,
 }
 /// Managers contains both the stronghold manager and the identity manager needed to perform operations on connections & credentials.
 #[derive(Default)]

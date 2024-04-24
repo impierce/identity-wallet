@@ -164,7 +164,6 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
             }),
             core_utils: CoreUtils {
                 active_credential_offer: Some(credential_offer),
-                active_credential_issuer_metadata: credential_issuer_metadata,
                 ..state.core_utils
             },
             ..state
