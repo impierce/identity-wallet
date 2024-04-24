@@ -16,7 +16,7 @@ use icu::collator::*;
 use log::debug;
 use unicode_normalization::UnicodeNormalization;
 
-//Reverse setting of non-selected sorting options are not persisted and use the default (false) when selected.
+// Reverse setting of non-selected sorting options are not persisted and use the default (false) when selected.
 
 pub async fn update_sorting_preference(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(update_sorting) = listen::<UpdateSortingPreference>(action) {
@@ -72,12 +72,10 @@ pub async fn sort_credentials(state: AppState, _action: Action) -> Result<AppSta
     let name_az = |a: &DisplayCredential, b: &DisplayCredential| {
         let cmp_a = sorted_display_names
             .iter()
-            .position(|display_name| display_name == &a.display_name)
-            .unwrap();
+            .position(|display_name| display_name == &a.display_name);
         let cmp_b = sorted_display_names
             .iter()
-            .position(|display_name| display_name == &b.display_name)
-            .unwrap();
+            .position(|display_name| display_name == &b.display_name);
         cmp_a.cmp(&cmp_b)
     };
 
@@ -98,15 +96,16 @@ pub async fn sort_credentials(state: AppState, _action: Action) -> Result<AppSta
     // In this block we check if there are credentials without an issue-date.
     // When the issue-date is empty, we sort these credentials alphabetically and add them to the bottom.
     if preferences.sort_method == CredentialSortMethod::IssueDateNewOld {
-        let mut credentials_empty_issue_date: Vec<DisplayCredential> = credentials
-            .iter()
-            .filter(|credential| credential.metadata.date_issued.is_empty())
-            .cloned()
-            .collect();
-        credentials_empty_issue_date.sort_by(name_az);
-        credentials.retain(|credential| !credential.metadata.date_issued.is_empty());
-        credentials.append(&mut credentials_empty_issue_date);
-    }
+        let (mut credentials_with_date_issued, mut credentials_without_date_issued) = credentials
+            .into_iter()
+            // splits the `credentials` into two vectors.
+            .partition::<Vec<_>, _>(|credential| !credential.metadata.date_issued.is_empty());
+
+        credentials_without_date_issued.sort_by(name_az);
+        credentials_with_date_issued.append(&mut credentials_without_date_issued);
+        // assign the value reconstructed credentials back to `credentials`.
+        credentials = credentials_with_date_issued
+    };
 
     // current_user_prompt is not set to None,
     // as this reducer is often used in combination with reducers that need to send a user_prompt to the frontend.
@@ -121,8 +120,8 @@ pub async fn sort_connections(state: AppState, _action: Action) -> Result<AppSta
     let sorted_names = sort(names, state.profile_settings.locale.clone());
 
     let name_az = |a: &Connection, b: &Connection| {
-        let cmp_a = sorted_names.iter().position(|name| name == &a.name).unwrap();
-        let cmp_b = sorted_names.iter().position(|name| name == &b.name).unwrap();
+        let cmp_a = sorted_names.iter().position(|name| name == &a.name);
+        let cmp_b = sorted_names.iter().position(|name| name == &b.name);
         cmp_a.cmp(&cmp_b)
     };
 

@@ -35,7 +35,7 @@ impl Default for DisplayCredential {
         Self {
             id: Default::default(),
             issuer_name: Default::default(),
-            // Here we use "test" as a placeholder since this fied has no default and it cannot be left empty.
+            // Here we use "test" as a placeholder since this field has no default and it cannot be left empty.
             format: serde_json::from_str("\"test\"").unwrap(),
             data: Default::default(),
             metadata: CredentialMetadata::default(),
@@ -94,10 +94,11 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
                     )
                 };
 
-                let mut issuance_date = String::new();
-                if !credential_display["issuanceDate"].is_null() {
-                    issuance_date = credential_display["issuanceDate"].clone().to_string().replace('\"', "");
-                }
+                let issuance_date = credential_display["issuanceDate"]
+                    .as_str()
+                    .map(ToString::to_string)
+                    .unwrap_or_default()
+                    .replace('\"', "");
 
                 let display_name = get_achievement_name_from_data(&credential_display)
                     .or(get_type_name_from_data(&credential_display))
