@@ -6,11 +6,11 @@
   import '@lottiefiles/lottie-player';
 
   import LL from '$i18n/i18n-svelte';
+  import { calculateInitials } from '$routes/(app)/me/utils';
 
   import Button from '$lib/components/atoms/Button.svelte';
   import { dispatch } from '$lib/dispatcher';
   import { onboarding_state } from '$lib/stores';
-  import { calculateInitials } from '$src/routes/(app)/me/utils';
 
   import Shield from '~icons/ph/shield-fill';
 </script>
