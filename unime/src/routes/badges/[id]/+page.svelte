@@ -147,13 +147,13 @@
           <!-- If the connection exists, make the logo clickable and redirect to the connection. -->
           {#if connectionId}
             <button
-              class="flex h-[68px] w-full items-center justify-center overflow-hidden rounded-xl bg-silver p-1 dark:bg-white"
+              class="flex h-[68px] w-full items-center justify-center overflow-hidden rounded-xl bg-silver p-2 dark:bg-white"
               on:click={() => goto(`/activity/connection/${connectionId}`)}
             >
               <Image
                 id={connectionId}
                 iconFallback="Bank"
-                imgClass="h-12 w-auto p-1 rounded-lg bg-white"
+                imgClass="w-auto max-w-[112px] rounded-lg bg-white p-2"
                 iconClass="h-7 w-7 dark:text-slate-800"
               />
             </button>
