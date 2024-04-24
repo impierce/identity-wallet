@@ -67,8 +67,6 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
             })
             .collect();
 
-        println!("verifiable_credentials: {:?}", verifiable_credentials);
-
         let presentation_submission = create_presentation_submission(
             &oid4vp_authorization_request.body.extension.presentation_definition,
             &verifiable_credentials

@@ -37,7 +37,7 @@ pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppS
         let subject = Arc::new(KeySubject::from_keypair(keypair, Some(stronghold_manager.clone())));
 
         let provider_manager = ProviderManager::new(subject.clone(), "did:key").map_err(OID4VCProviderManagerError)?;
-        let wallet: Wallet = Wallet::new(subject.clone(), "did:key").expect("FIX THISS");
+        let wallet: Wallet = Wallet::new(subject.clone(), "did:key").map_err(OID4VCWalletError)?;
 
         let profile_settings = ProfileSettings {
             profile: Some(Profile {

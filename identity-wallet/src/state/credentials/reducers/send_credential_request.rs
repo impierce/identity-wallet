@@ -98,13 +98,8 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
             })
             .unwrap_or(connection_url.to_string());
 
-        let mut credential_configurations_supported = state
-            .core_utils
-            .active_credential_issuer_metadata
-            .take()
-            // TODO: FIX THISS!
-            .unwrap()
-            .credential_configurations_supported;
+        let mut credential_configurations_supported =
+            credential_issuer_metadata.credential_configurations_supported.clone();
 
         // Create a token request with grant_type `pre_authorized_code`.
         let token_request = match credential_offer.grants {
@@ -136,7 +131,9 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
                 let credential_configuration_id = credential_configuration_ids[0].clone();
                 let credential_format = credential_configurations_supported
                     .get(&credential_configuration_id)
-                    .expect("FIX THISS")
+                    .ok_or(UnknownCredentialConfigurationIdError(
+                        credential_configuration_id.clone(),
+                    ))?
                     .credential_format
                     .to_owned();
 
@@ -170,12 +167,13 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
                 credential_configuration_ids
                     .into_iter()
                     .zip(batch_credential_response.credential_responses.into_iter())
-                    .map(
+                    .filter_map(
                         |(credential_configuration_id, credential_response)| match credential_response {
                             CredentialResponseType::Immediate { credential, .. } => {
-                                (credential_configuration_id, credential)
+                                Some((credential_configuration_id, credential))
                             }
-                            _ => panic!("Credential was not a jwt_vc_json."),
+                            // TODO: add support for deffered credentials.
+                            CredentialResponseType::Deferred { .. } => None,
                         },
                     )
                     .collect()

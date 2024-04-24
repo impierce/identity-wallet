@@ -24,7 +24,7 @@ pub async fn unlock_storage(state: AppState, action: Action) -> Result<AppState,
         let subject = Arc::new(KeySubject::from_keypair(keypair, Some(stronghold_manager.clone())));
 
         let provider_manager = ProviderManager::new(subject.clone(), "did:key").map_err(OID4VCProviderManagerError)?;
-        let wallet: Wallet = Wallet::new(subject.clone(), "did:key").expect("FIX THIS");
+        let wallet: Wallet = Wallet::new(subject.clone(), "did:key").map_err(OID4VCWalletError)?;
 
         info!("loading credentials from stronghold");
         let credentials = stronghold_manager
