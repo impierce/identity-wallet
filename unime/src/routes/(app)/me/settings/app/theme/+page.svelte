@@ -1,9 +1,10 @@
 <script lang="ts">
+  import LL from '$i18n/i18n-svelte';
+
+  import ThemeSelect from '$lib/app/settings/ThemeSelect.svelte';
+  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
   import { dispatch } from '$lib/dispatcher';
-  import LL from '$src/i18n/i18n-svelte';
-  import ThemeSelect from '$src/lib/app/settings/ThemeSelect.svelte';
-  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
-  import { state } from '$src/stores';
+  import { state } from '$lib/stores';
 
   let currentValue = $state.profile_settings.profile?.theme ?? 'system';
 </script>

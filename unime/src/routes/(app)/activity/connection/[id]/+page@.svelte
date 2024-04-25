@@ -1,16 +1,16 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
+  import LL from '$i18n/i18n-svelte';
 
   import type { Connection } from '@bindings/Connection';
 
+  import Tabs from '$lib/components/molecules/navigation/Tabs.svelte';
+  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
   import ConnectionData from '$lib/connections/ConnectionData.svelte';
   import ConnectionSummary from '$lib/connections/ConnectionSummary.svelte';
-  import LL from '$src/i18n/i18n-svelte';
-  import Tabs from '$src/lib/components/molecules/navigation/Tabs.svelte';
-  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
-  import History from '$src/lib/events/History.svelte';
-  import { state } from '$src/stores';
+  import History from '$lib/events/History.svelte';
+  import { state } from '$lib/stores';
 
   let connection: Connection = $state.connections.find((c) => c.id === $page.params.id)!;
 </script>
@@ -37,7 +37,7 @@
 <div class="safe-area-top bg-silver dark:bg-navy" />
 <div class="safe-area-bottom bg-silver dark:bg-navy" />
 
-<!-- 
+<!--
   TODO: remove bottom bar. General rule: only show it in the top level, when navigation one level down, do not show bottom nav anymore
   Exception: in settings, we keep the bottom nav, because we have a lot of levels there
   -->

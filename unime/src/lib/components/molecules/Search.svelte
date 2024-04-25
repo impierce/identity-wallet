@@ -2,8 +2,7 @@
   import { createEventDispatcher } from 'svelte';
 
   import { goto } from '$app/navigation';
-
-  import LL from '$src/i18n/i18n-svelte';
+  import LL from '$i18n/i18n-svelte';
 
   import MagnifyingGlass from '~icons/ph/magnifying-glass-bold';
   import Clear from '~icons/ph/x-bold';

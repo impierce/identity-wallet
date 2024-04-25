@@ -1,11 +1,11 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import LL from '$i18n/i18n-svelte';
 
   import type { DisplayCredential } from '@bindings/display-credential/DisplayCredential';
 
-  import LL from '$src/i18n/i18n-svelte';
-  import ListItemCard from '$src/lib/components/molecules/ListItemCard.svelte';
-  import { dispatch } from '$src/lib/dispatcher';
+  import ListItemCard from '$lib/components/molecules/ListItemCard.svelte';
+  import { dispatch } from '$lib/dispatcher';
 
   import X from '~icons/ph/x-bold';
 
