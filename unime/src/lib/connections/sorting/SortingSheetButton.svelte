@@ -8,7 +8,7 @@
 
   export let icon: typeof SvelteComponent<SvelteHTMLElements['svg']>;
   export let label: string;
-  export let active: boolean = false;
+  export let active = false;
   const dispatch = createEventDispatcher();
   export let reversed: boolean;
 </script>
