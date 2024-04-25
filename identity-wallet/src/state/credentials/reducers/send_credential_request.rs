@@ -99,6 +99,11 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
             })
             .unwrap_or(connection_url.to_string());
 
+        // Create or update the connection.
+        let previously_connected = state.connections.contains(connection_url, &issuer_name);
+        let mut connections = state.connections;
+        let connection = connections.update_or_insert(connection_url, &issuer_name);
+
         let credential_offer_formats = offer_indices
             .into_iter()
             .map(|offer_index| match credential_offer.credentials.get(offer_index) {
@@ -120,6 +125,7 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
             },
             None => unreachable!(),
         };
+
         info!("token_request: {:?}", token_request);
 
         // Get an access token.
@@ -174,6 +180,7 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
         for (i, credential) in credentials.into_iter().enumerate() {
             let mut verifiable_credential_record: VerifiableCredentialRecord = credential.into();
             verifiable_credential_record.display_credential.issuer_name = issuer_name.clone();
+            verifiable_credential_record.display_credential.connection_id = Some(connection.id.clone());
 
             let key: Uuid = verifiable_credential_record
                 .display_credential
@@ -203,10 +210,6 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
             .into_iter()
             .map(|verifiable_credential_record| verifiable_credential_record.display_credential)
             .collect();
-
-        let previously_connected = state.connections.contains(connection_url, &issuer_name);
-        let mut connections = state.connections;
-        let connection = connections.update_or_insert(connection_url, &issuer_name);
 
         let file_name = match logo_uri {
             Some(logo_uri) => hash(logo_uri.as_str()),

@@ -84,7 +84,7 @@ pub struct Connection {
 impl Connection {
     pub fn new(name: String, url: String) -> Self {
         // TODO(ngdil): Temporary solution to support NGDIL demo, replace with different unique identifier to distinguish connection
-        let id = base64::encode_config([name.as_bytes(), url.as_bytes()].concat(), base64::URL_SAFE);
+        let id = sha256::digest([name.as_bytes(), url.as_bytes()].concat()).to_string();
         let current_datetime = DateUtils::new_date_string();
         Self {
             id,

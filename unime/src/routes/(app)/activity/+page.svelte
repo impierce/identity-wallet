@@ -14,7 +14,7 @@
   </div>
   <div class="flex grow flex-col overflow-y-auto px-4 pt-5">
     <Tabs triggers={[$LL.ACTIVITY.TABS.CONNECTIONS(), $LL.ACTIVITY.TABS.HISTORY()]}>
-      <div slot="0" class="h-full pt-5">
+      <div slot="0" class="h-full">
         <ConnectionsList />
       </div>
       <div slot="1" class="h-full">

@@ -119,6 +119,7 @@ mod tests {
                         date_added: "2021-01-01".to_string(),
                         ..Default::default()
                     },
+                    connection_id: None,
                     display_name: "John".to_string(),
                 },
                 DisplayCredential {
@@ -131,6 +132,7 @@ mod tests {
                         date_added: "2021-02-01".to_string(),
                         ..Default::default()
                     },
+                    connection_id: None,
                     display_name: "Jane".to_string(),
                 },
                 DisplayCredential {
@@ -143,6 +145,7 @@ mod tests {
                         date_added: "2021-03-01".to_string(),
                         ..Default::default()
                     },
+                    connection_id: None,
                     display_name: "Jeff".to_string(),
                 },
             ],

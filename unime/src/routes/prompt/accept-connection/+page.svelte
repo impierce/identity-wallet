@@ -33,7 +33,7 @@
 
   const hostname = new URL($state.current_user_prompt.redirect_uri).hostname;
 
-  const imageId = hash($state.current_user_prompt?.logo_uri);
+  const imageId = $state.current_user_prompt?.logo_uri ? hash($state.current_user_prompt?.logo_uri) : '_';
 
   onDestroy(async () => {
     // TODO: is onDestroy also called when user accepts since the component itself is destroyed?
