@@ -2,6 +2,7 @@
   import { onDestroy, onMount } from 'svelte';
 
   import { goto } from '$app/navigation';
+  import LL from '$i18n/i18n-svelte';
 
   import {
     cancel,
@@ -15,11 +16,10 @@
   } from '@tauri-apps/plugin-barcode-scanner';
   import { debug, info, warn } from '@tauri-apps/plugin-log';
 
+  import Button from '$lib/components/atoms/Button.svelte';
+  import BottomNavBar from '$lib/components/molecules/navigation/BottomNavBar.svelte';
   import { dispatch } from '$lib/dispatcher';
-  import LL from '$src/i18n/i18n-svelte';
-  import Button from '$src/lib/components/atoms/Button.svelte';
-  import BottomNavBar from '$src/lib/components/molecules/navigation/BottomNavBar.svelte';
-  import { state } from '$src/stores';
+  import { state } from '$lib/stores';
 
   import CameraSlash from '~icons/ph/camera-slash';
 

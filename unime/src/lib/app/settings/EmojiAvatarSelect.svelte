@@ -1,11 +1,12 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
 
+  import LL from '$i18n/i18n-svelte';
+
   import { melt } from '@melt-ui/svelte';
 
+  import Button from '$lib/components/atoms/Button.svelte';
   import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
-  import LL from '$src/i18n/i18n-svelte';
-  import Button from '$src/lib/components/atoms/Button.svelte';
 
   import Plus from '~icons/ph/plus-bold';
 

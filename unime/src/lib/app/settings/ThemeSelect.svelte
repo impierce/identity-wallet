@@ -1,11 +1,12 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
 
+  import LL from '$i18n/i18n-svelte';
+
   import { createRadioGroup, melt } from '@melt-ui/svelte';
   import { debug } from '@tauri-apps/plugin-log';
 
-  import LL from '$src/i18n/i18n-svelte';
-  import Checkbox from '$src/lib/components/atoms/Checkbox.svelte';
+  import Checkbox from '$lib/components/atoms/Checkbox.svelte';
 
   export let defaultValue = 'system';
 

@@ -1,16 +1,17 @@
 <script lang="ts">
   import { onDestroy } from 'svelte';
 
+  import LL from '$i18n/i18n-svelte';
+
+  import Button from '$lib/components/atoms/Button.svelte';
+  import Checkbox from '$lib/components/atoms/Checkbox.svelte';
+  import Image from '$lib/components/atoms/Image.svelte';
+  import PaddedIcon from '$lib/components/atoms/PaddedIcon.svelte';
+  import ListItemCard from '$lib/components/molecules/ListItemCard.svelte';
+  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
   import { dispatch } from '$lib/dispatcher';
-  import LL from '$src/i18n/i18n-svelte';
-  import Button from '$src/lib/components/atoms/Button.svelte';
-  import Checkbox from '$src/lib/components/atoms/Checkbox.svelte';
-  import Image from '$src/lib/components/atoms/Image.svelte';
-  import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
-  import ListItemCard from '$src/lib/components/molecules/ListItemCard.svelte';
-  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
-  import { hash } from '$src/lib/utils';
-  import { state } from '$src/stores';
+  import { state } from '$lib/stores';
+  import { hash } from '$lib/utils';
 
   import DownloadSimple from '~icons/ph/download-simple-fill';
 
@@ -29,7 +30,7 @@
 
   let all_credential_configuration_ids: string[] = Object.keys(credential_configurations);
 
-  const imageId = hash($state.current_user_prompt?.logo_uri);
+  const imageId = $state.current_user_prompt?.logo_uri ? hash($state.current_user_prompt?.logo_uri) : '_';
 
   onDestroy(async () => {
     // TODO: is onDestroy also called when user accepts since the component itself is destroyed?
