@@ -3,18 +3,18 @@
 
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
+  import LL from '$i18n/i18n-svelte';
   import MarkdownIt from 'markdown-it';
   import QRCode from 'qrcode';
 
   import { melt } from '@melt-ui/svelte';
 
+  import Image from '$lib/components/atoms/Image.svelte';
+  import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
+  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
   import { dispatch } from '$lib/dispatcher';
+  import { state } from '$lib/stores';
   import { getImageAsset } from '$lib/utils';
-  import LL from '$src/i18n/i18n-svelte';
-  import Image from '$src/lib/components/atoms/Image.svelte';
-  import ActionSheet from '$src/lib/components/molecules/dialogs/ActionSheet.svelte';
-  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
-  import { state } from '$src/stores';
 
   import Heart from '~icons/ph/heart-straight';
   import HeartFill from '~icons/ph/heart-straight-fill';

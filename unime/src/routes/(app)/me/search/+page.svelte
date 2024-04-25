@@ -3,13 +3,13 @@
 
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
+  import LL from '$i18n/i18n-svelte';
 
   import IconMessage from '$lib/components/molecules/IconMessage.svelte';
+  import ListItemCard from '$lib/components/molecules/ListItemCard.svelte';
   import Search from '$lib/components/molecules/Search.svelte';
   import { dispatch } from '$lib/dispatcher';
-  import LL from '$src/i18n/i18n-svelte';
-  import ListItemCard from '$src/lib/components/molecules/ListItemCard.svelte';
-  import { state } from '$src/stores';
+  import { state } from '$lib/stores';
 
   import Ghost from '~icons/ph/ghost-fill';
   import MagnifyingGlass from '~icons/ph/magnifying-glass-fill';

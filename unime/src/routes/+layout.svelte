@@ -3,13 +3,13 @@
 
   import { goto } from '$app/navigation';
   import { PUBLIC_DEV_MODE_MENU_EXPANDED } from '$env/static/public';
+  import { loadAllLocales } from '$i18n/i18n-util.sync';
   import { fly } from 'svelte/transition';
 
   import { attachConsole } from '@tauri-apps/plugin-log';
 
   import { dispatch } from '$lib/dispatcher';
-  import { loadAllLocales } from '$src/i18n/i18n-util.sync';
-  import { state } from '$src/stores';
+  import { state } from '$lib/stores';
 
   import ScrollText from '~icons/lucide/scroll-text';
   import ArrowLeft from '~icons/ph/arrow-left';
@@ -23,7 +23,7 @@
 
   import type { ProfileSteps } from '@bindings/dev/ProfileSteps';
 
-  import Switch from '$src/lib/components/atoms/Switch.svelte';
+  import Switch from '$lib/components/atoms/Switch.svelte';
 
   import { determineTheme } from './utils';
 

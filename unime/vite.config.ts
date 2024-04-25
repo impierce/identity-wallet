@@ -1,5 +1,3 @@
-import path from 'path';
-
 import { internalIpV4 } from 'internal-ip';
 import Icons from 'unplugin-icons/vite';
 import { defineConfig } from 'vite';
@@ -7,14 +5,8 @@ import { defineConfig } from 'vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 
 // https://vitejs.dev/config/
-export default defineConfig(async () => ({
+export default defineConfig({
   plugins: [sveltekit(), Icons({ compiler: 'svelte' })],
-  resolve: {
-    alias: {
-      $src: path.resolve('./src'),
-      $lib: path.resolve('./src/lib'),
-    },
-  },
   test: {
     include: ['src/**/*.{test,spec}.{js,ts}'],
     globals: true,
@@ -38,7 +30,6 @@ export default defineConfig(async () => ({
   envPrefix: ['VITE_', 'TAURI_'],
   build: {
     target: process.env.TAURI_PLATFORM == 'windows' ? 'chrome105' : 'safari13',
-    // TODO: "minify" breaks the type? ("No overload matches this call")
     minify: !process.env.TAURI_DEBUG ? 'esbuild' : false,
     sourcemap: !!process.env.TAURI_DEBUG,
   },
@@ -66,4 +57,4 @@ export default defineConfig(async () => ({
       '@tauri-apps/plugin-barcode-scanner',
     ],
   },
-}));
+});

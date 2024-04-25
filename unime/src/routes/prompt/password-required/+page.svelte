@@ -1,16 +1,17 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
+  import LL from '$i18n/i18n-svelte';
+
   import { melt } from '@melt-ui/svelte';
   import { warn } from '@tauri-apps/plugin-log';
 
+  import Button from '$lib/components/atoms/Button.svelte';
+  import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
   import { dispatch } from '$lib/dispatcher';
-  import LL from '$src/i18n/i18n-svelte';
-  import Button from '$src/lib/components/atoms/Button.svelte';
-  import ActionSheet from '$src/lib/components/molecules/dialogs/ActionSheet.svelte';
-  import UniMeLogoDark from '$src/lib/static/svg/logo/UniMeLogoDark.svelte';
-  import UniMeLogoLight from '$src/lib/static/svg/logo/UniMeLogoLight.svelte';
-  import { state } from '$src/stores';
+  import UniMeLogoDark from '$lib/static/svg/logo/UniMeLogoDark.svelte';
+  import UniMeLogoLight from '$lib/static/svg/logo/UniMeLogoLight.svelte';
+  import { state } from '$lib/stores';
 
   import Eye from '~icons/ph/eye';
   import EyeClosed from '~icons/ph/eye-closed';

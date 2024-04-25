@@ -1,12 +1,12 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import LL from '$i18n/i18n-svelte';
   import { fade, slide } from 'svelte/transition';
 
   import { createAccordion, melt } from '@melt-ui/svelte';
 
-  import LL from '$src/i18n/i18n-svelte';
-  import Button from '$src/lib/components/atoms/Button.svelte';
-  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
+  import Button from '$lib/components/atoms/Button.svelte';
+  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
 
   import CaretDown from '~icons/ph/caret-down-bold';
 

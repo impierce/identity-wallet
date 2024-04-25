@@ -1,6 +1,7 @@
 <script lang="ts">
-  import LL from '$src/i18n/i18n-svelte';
-  import { state } from '$src/stores';
+  import LL from '$i18n/i18n-svelte';
+
+  import { state } from '$lib/stores';
 
   const greetings = Array.from([
     $LL.ME.GREETINGS.GREETING_0(),

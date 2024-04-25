@@ -1,13 +1,13 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import LL from '$i18n/i18n-svelte';
 
   import type { Connection } from '@bindings/Connection';
   import { info } from '@tauri-apps/plugin-log';
 
   import Image from '$lib/components/atoms/Image.svelte';
-  import LL from '$src/i18n/i18n-svelte';
-  import ListItemCard from '$src/lib/components/molecules/ListItemCard.svelte';
-  import { state } from '$src/stores';
+  import ListItemCard from '$lib/components/molecules/ListItemCard.svelte';
+  import { state } from '$lib/stores';
 
   import { groupConnectionsAlphabetically } from './utils';
 

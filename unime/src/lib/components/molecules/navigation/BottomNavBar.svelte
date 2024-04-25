@@ -1,11 +1,12 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
 
-  import LL from '$src/i18n/i18n-svelte';
-  import BottomNavItem from '$src/lib/components/molecules/navigation/BottomNavItem.svelte';
-  import Activity from '$src/lib/static/svg/navbar-icons/Activity.svelte';
-  import Me from '$src/lib/static/svg/navbar-icons/Me.svelte';
-  import Scan from '$src/lib/static/svg/navbar-icons/Scan.svelte';
+  import LL from '$i18n/i18n-svelte';
+
+  import BottomNavItem from '$lib/components/molecules/navigation/BottomNavItem.svelte';
+  import Activity from '$lib/static/svg/navbar-icons/Activity.svelte';
+  import Me from '$lib/static/svg/navbar-icons/Me.svelte';
+  import Scan from '$lib/static/svg/navbar-icons/Scan.svelte';
 
   const dispatch = createEventDispatcher();
 

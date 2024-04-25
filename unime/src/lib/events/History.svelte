@@ -1,14 +1,14 @@
 <script lang="ts">
   import type { SvelteComponent } from 'svelte';
 
+  import LL from '$i18n/i18n-svelte';
   import type { SvelteHTMLElements } from 'svelte/elements';
 
   import type { HistoryCredential } from '@bindings/HistoryCredential';
   import type { HistoryEvent } from '@bindings/HistoryEvent';
 
   import HistoryEntry from '$lib/events/HistoryEntry.svelte';
-  import LL from '$src/i18n/i18n-svelte';
-  import { state } from '$src/stores';
+  import { state } from '$lib/stores';
 
   import DownloadSimple from '~icons/ph/download-simple-fill';
   import PlugsConnected from '~icons/ph/plugs-connected-fill';
