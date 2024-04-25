@@ -1,19 +1,19 @@
 <script lang="ts">
+  import LL from '$i18n/i18n-svelte';
+
   import type { CredentialSortMethod } from '@bindings/CredentialSortMethod';
   import { melt } from '@melt-ui/svelte';
 
-  import LL from '$src/i18n/i18n-svelte';
-  import Button from '$src/lib/components/atoms/Button.svelte';
-  import SortPreferencesButton from '$src/lib/connections/sorting/SortingSheetButton.svelte';
-  import { dispatch } from '$src/lib/dispatcher';
-  import AlphabeticalOrder from '$src/lib/static/AlphabeticalOrder.svelte';
-  import { state } from '$src/stores';
+  import Button from '$lib/components/atoms/Button.svelte';
+  import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
+  import SortPreferencesButton from '$lib/connections/sorting/SortingSheetButton.svelte';
+  import { dispatch } from '$lib/dispatcher';
+  import AlphabeticalOrder from '$lib/static/AlphabeticalOrder.svelte';
+  import { state } from '$lib/stores';
 
   import Issued from '~icons/ph/calendar-check';
   import Added from '~icons/ph/calendar-plus';
   import Slider from '~icons/ph/sliders-horizontal';
-
-  import ActionSheet from '../../components/molecules/dialogs/ActionSheet.svelte';
 
   let method: CredentialSortMethod = $state.profile_settings.sorting_preferences.credentials.sort_method;
   let reversed: boolean = $state.profile_settings.sorting_preferences.credentials.reverse;

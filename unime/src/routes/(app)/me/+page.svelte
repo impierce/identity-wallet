@@ -13,6 +13,7 @@
   import PaddedIcon from '$lib/components/atoms/PaddedIcon.svelte';
   import IconMessage from '$lib/components/molecules/IconMessage.svelte';
   import Tabs from '$lib/components/molecules/navigation/Tabs.svelte';
+  import SortingSheet from '$lib/connections/sorting/SortingSheet.svelte';
   import CredentialList from '$lib/credentials/CredentialList.svelte';
   import Favorites from '$lib/credentials/Favorites.svelte';
   import UserJourney from '$lib/journeys/UserJourney.svelte';
