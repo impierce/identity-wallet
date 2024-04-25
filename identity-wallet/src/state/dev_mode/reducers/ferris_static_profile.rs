@@ -51,6 +51,7 @@ lazy_static! {
 
 pub async fn load_ferris_profile() -> Result<AppState, AppError> {
     let mut state = AppState::default();
+    let default_did_method = state.profile_settings.default_did_method.as_str();
 
     let stronghold_manager = StrongholdManager::create("sup3rSecr3t").map_err(StrongholdCreationError)?;
 
@@ -63,7 +64,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         name: "Ferris".to_string(),
         picture: Some("&#129408".to_string()),
         theme: AppTheme::System,
-        primary_did: subject.identifier("did:key").unwrap(),
+        primary_did: subject.identifier(default_did_method).unwrap(),
     };
     state.profile_settings.profile.replace(profile);
 

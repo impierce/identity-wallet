@@ -133,6 +133,7 @@ mod tests {
                     theme: AppTheme::System,
                     primary_did: "did:example:123".to_string(),
                 }),
+                ..Default::default()
             },
             credentials: vec![],
             current_user_prompt: Some(CurrentUserPrompt::Redirect {
@@ -165,7 +166,8 @@ mod tests {
                       "picture": null,
                       "theme": "system",
                       "primary_did": "did:example:123"
-                    }
+                    },
+                    "default_did_method": "did:key"
                   },
                   "current_user_prompt": {
                     "type": "redirect",
