@@ -2,11 +2,13 @@
   import { onMount } from 'svelte';
 
   import { goto } from '$app/navigation';
+  import LL from '$i18n/i18n-svelte';
 
-  import LL from '$src/i18n/i18n-svelte';
-  import IconMessage from '$src/lib/components/molecules/IconMessage.svelte';
-  import ListItemCard from '$src/lib/components/molecules/ListItemCard.svelte';
-  import { state } from '$src/stores';
+  import type { DisplayCredential } from '@bindings/display-credential/DisplayCredential';
+
+  import IconMessage from '$lib/components/molecules/IconMessage.svelte';
+  import ListItemCard from '$lib/components/molecules/ListItemCard.svelte';
+  import { state } from '$lib/stores';
 
   import Ghost from '~icons/ph/ghost-fill';
 

@@ -3,18 +3,18 @@
 
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
+  import LL from '$i18n/i18n-svelte';
   import MarkdownIt from 'markdown-it';
   import QRCode from 'qrcode';
 
   import { melt } from '@melt-ui/svelte';
 
+  import Image from '$lib/components/atoms/Image.svelte';
+  import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
+  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
   import { dispatch } from '$lib/dispatcher';
+  import { state } from '$lib/stores';
   import { getImageAsset } from '$lib/utils';
-  import LL from '$src/i18n/i18n-svelte';
-  import Image from '$src/lib/components/atoms/Image.svelte';
-  import ActionSheet from '$src/lib/components/molecules/dialogs/ActionSheet.svelte';
-  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
-  import { state } from '$src/stores';
 
   import Heart from '~icons/ph/heart-straight';
   import HeartFill from '~icons/ph/heart-straight-fill';
@@ -52,31 +52,17 @@
     return JSON.stringify(value, null, 2);
   };
 
-  // TODO: This is a HORRIBLE solution to determine the connection_id by the non-unique "issuer name".
-  // It is a TEMPORARY solution and should only be used in DEMO environments,
-  // since we currently lack a unique identitfier to distinguish connections.
-  function determineConnectionId(): string | null {
-    // First collect possible sources of the issuer name
-    const name_from_credential: string | undefined = credential.data.issuer?.name;
-    const name_from_oid4vc = credential.issuer_name;
-    // We prefer the name from the credential, but fallback to the issuer name during oid4vc process
-    const issuer_name = name_from_credential ?? name_from_oid4vc;
-
-    if (issuer_name) {
-      // base64url encode
-      const connectionId = btoa(issuer_name).replace('+', '-').replace('/', '_');
-      // verify that the connection exists
-      if ($state.connections.some((c) => c.id === connectionId)) {
-        return connectionId;
-      } else {
-        return null;
-      }
+  function determineIssuerName(): string | null {
+    // TODO: Backend should not fill the `credential.issuer_name` with an empty string when no value is provided.
+    if (credential.issuer_name.trim().length === 0) {
+      return credential.data.issuer?.name ?? credential.data.issuer;
     } else {
-      return null;
+      return credential.issuer_name;
     }
   }
 
-  const connectionId = determineConnectionId();
+  const connectionId = credential.connection_id;
+  const issuerName = determineIssuerName();
 
   onMount(async () => {
     credentialLogoUrl = await getImageAsset($page.params.id!);
@@ -161,13 +147,13 @@
           <!-- If the connection exists, make the logo clickable and redirect to the connection. -->
           {#if connectionId}
             <button
-              class="flex h-[68px] w-full items-center justify-center rounded-xl bg-silver p-2 dark:bg-white"
+              class="flex h-[68px] w-full items-center justify-center overflow-hidden rounded-xl bg-silver p-2 dark:bg-white"
               on:click={() => goto(`/activity/connection/${connectionId}`)}
             >
               <Image
                 id={connectionId}
                 iconFallback="Bank"
-                imgClass="w-16 m-2"
+                imgClass="w-auto max-w-[112px] rounded-lg bg-white p-2"
                 iconClass="h-7 w-7 dark:text-slate-800"
               />
             </button>
@@ -181,8 +167,8 @@
               />
             </div>
           {/if}
-          <p class="text-center text-xs text-black [word-break:break-word] dark:text-white">
-            {credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
+          <p class="px-2 text-center text-xs text-black [word-break:break-word] dark:text-white">
+            {issuerName}
           </p>
         </div>
       </div>

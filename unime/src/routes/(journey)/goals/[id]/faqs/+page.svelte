@@ -2,13 +2,13 @@
   /* TODO: extract to ui-component */
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
+  import LL from '$i18n/i18n-svelte';
   import { slide } from 'svelte/transition';
 
   import { createAccordion, melt } from '@melt-ui/svelte';
 
-  import LL from '$src/i18n/i18n-svelte';
-  import Button from '$src/lib/components/atoms/Button.svelte';
-  import { state } from '$src/stores';
+  import Button from '$lib/components/atoms/Button.svelte';
+  import { state } from '$lib/stores';
 
   import CaretDown from '~icons/ph/caret-down-bold';
 

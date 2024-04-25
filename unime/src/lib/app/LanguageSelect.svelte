@@ -1,12 +1,13 @@
 <script lang="ts">
+  import LL from '$i18n/i18n-svelte';
+
   import { melt } from '@melt-ui/svelte';
 
   import { incompleteLocales, locales } from '$lib/app/locales';
   import Button from '$lib/components/atoms/Button.svelte';
   import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
   import { dispatch } from '$lib/dispatcher';
-  import LL from '$src/i18n/i18n-svelte';
-  import { state } from '$src/stores';
+  import { state } from '$lib/stores';
 
   $: selected = locales.find((l) => l.locale === $state?.profile_settings.locale) ?? locales.at(0)!;
 

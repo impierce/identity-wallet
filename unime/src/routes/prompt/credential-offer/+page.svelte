@@ -1,15 +1,17 @@
 <script lang="ts">
   import { onDestroy } from 'svelte';
 
+  import LL from '$i18n/i18n-svelte';
+
+  import Button from '$lib/components/atoms/Button.svelte';
+  import Checkbox from '$lib/components/atoms/Checkbox.svelte';
+  import Image from '$lib/components/atoms/Image.svelte';
+  import PaddedIcon from '$lib/components/atoms/PaddedIcon.svelte';
+  import ListItemCard from '$lib/components/molecules/ListItemCard.svelte';
+  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
   import { dispatch } from '$lib/dispatcher';
-  import LL from '$src/i18n/i18n-svelte';
-  import Button from '$src/lib/components/atoms/Button.svelte';
-  import Checkbox from '$src/lib/components/atoms/Checkbox.svelte';
-  import Image from '$src/lib/components/atoms/Image.svelte';
-  import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
-  import ListItemCard from '$src/lib/components/molecules/ListItemCard.svelte';
-  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
-  import { state } from '$src/stores';
+  import { state } from '$lib/stores';
+  import { hash } from '$lib/utils';
 
   import DownloadSimple from '~icons/ph/download-simple-fill';
 
@@ -28,7 +30,10 @@
 
   let all_offer_indices: number[] = credential_offer.credentials.map((_, i: number) => i);
 
+  const imageId = $state.current_user_prompt?.logo_uri ? hash($state.current_user_prompt?.logo_uri) : '_';
+
   onDestroy(async () => {
+    // TODO: is onDestroy also called when user accepts since the component itself is destroyed?
     dispatch({ type: '[User Flow] Cancel', payload: {} });
   });
 </script>
@@ -37,19 +42,18 @@
   <TopNavBar title={$LL.SCAN.CREDENTIAL_OFFER.NAVBAR_TITLE()} on:back={() => history.back()} />
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
-    <div class="flex h-[75px] w-[75px] overflow-hidden rounded-3xl">
-      <!-- TODO: should fallback to <PaddedIcon> instead of icon -->
-      <Image
-        id={'client_0'}
-        isTempAsset={true}
-        iconClass="dark:text-slate-800"
-        imgClass="flex w-full items-center justify-center overflow-hidden rounded-3xl p-2"
-      >
-        <div slot="fallback">
-          <PaddedIcon icon={DownloadSimple} />
-        </div>
-      </Image>
-    </div>
+    {#if $state.current_user_prompt.logo_uri}
+      <div class="flex h-[75px] w-[75px] overflow-hidden rounded-3xl">
+        <Image
+          id={imageId}
+          isTempAsset={true}
+          iconClass="dark:text-slate-800"
+          imgClass="flex w-full items-center justify-center overflow-hidden rounded-3xl p-2"
+        />
+      </div>
+    {:else}
+      <PaddedIcon icon={DownloadSimple} />
+    {/if}
     <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
       {#if issuer_name}
         {issuer_name}

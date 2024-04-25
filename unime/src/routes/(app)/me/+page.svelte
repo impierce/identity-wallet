@@ -2,21 +2,21 @@
   import { goto } from '$app/navigation';
   import { fly } from 'svelte/transition';
 
-  import ActionSheet from '$src/lib/components/molecules/dialogs/ActionSheet.svelte';
+  import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
 
   import '@lottiefiles/lottie-player';
 
-  import LL from '$src/i18n/i18n-svelte';
-  import WelcomeMessage from '$src/lib/app/WelcomeMessage.svelte';
-  import Button from '$src/lib/components/atoms/Button.svelte';
-  import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
-  import IconMessage from '$src/lib/components/molecules/IconMessage.svelte';
-  import Tabs from '$src/lib/components/molecules/navigation/Tabs.svelte';
-  import SortingSheet from '$src/lib/connections/sorting/SortingSheet.svelte';
-  import CredentialList from '$src/lib/credentials/CredentialList.svelte';
-  import Favorites from '$src/lib/credentials/Favorites.svelte';
-  import UserJourney from '$src/lib/journeys/UserJourney.svelte';
-  import { onboarding_state, state } from '$src/stores';
+  import LL from '$i18n/i18n-svelte';
+
+  import WelcomeMessage from '$lib/app/WelcomeMessage.svelte';
+  import Button from '$lib/components/atoms/Button.svelte';
+  import PaddedIcon from '$lib/components/atoms/PaddedIcon.svelte';
+  import IconMessage from '$lib/components/molecules/IconMessage.svelte';
+  import Tabs from '$lib/components/molecules/navigation/Tabs.svelte';
+  import CredentialList from '$lib/credentials/CredentialList.svelte';
+  import Favorites from '$lib/credentials/Favorites.svelte';
+  import UserJourney from '$lib/journeys/UserJourney.svelte';
+  import { onboarding_state, state } from '$lib/stores';
 
   import Ghost from '~icons/ph/ghost-fill';
   import MagnifyingGlass from '~icons/ph/magnifying-glass';

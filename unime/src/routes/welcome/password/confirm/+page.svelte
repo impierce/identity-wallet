@@ -1,11 +1,11 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import LL from '$i18n/i18n-svelte';
   import { fade } from 'svelte/transition';
 
-  import LL from '$src/i18n/i18n-svelte';
-  import Button from '$src/lib/components/atoms/Button.svelte';
-  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
-  import { onboarding_state } from '$src/stores';
+  import Button from '$lib/components/atoms/Button.svelte';
+  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
+  import { onboarding_state } from '$lib/stores';
 
   import Eye from '~icons/ph/eye';
   import EyeClosed from '~icons/ph/eye-closed';

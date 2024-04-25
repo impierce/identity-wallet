@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
 
-  import Button from '$src/lib/components/atoms/Button.svelte';
+  import Button from '$lib/components/atoms/Button.svelte';
 </script>
 
 <div class="flex h-screen flex-col items-center justify-center p-4">

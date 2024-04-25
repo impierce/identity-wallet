@@ -1,14 +1,14 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import LL from '$i18n/i18n-svelte';
   import { fade } from 'svelte/transition';
 
-  import LL from '$src/i18n/i18n-svelte';
-  import LanguageSelect from '$src/lib/app/LanguageSelect.svelte';
-  import Button from '$src/lib/components/atoms/Button.svelte';
-  import MeLarge from '$src/lib/static/svg/logo/MeLarge.svelte';
-  import UniMeTextDark from '$src/lib/static/svg/logo/UniMeTextDark.svelte';
-  import UniMeTextLight from '$src/lib/static/svg/logo/UniMeTextLight.svelte';
-  import { onboarding_state } from '$src/stores';
+  import LanguageSelect from '$lib/app/LanguageSelect.svelte';
+  import Button from '$lib/components/atoms/Button.svelte';
+  import MeLarge from '$lib/static/svg/logo/MeLarge.svelte';
+  import UniMeTextDark from '$lib/static/svg/logo/UniMeTextDark.svelte';
+  import UniMeTextLight from '$lib/static/svg/logo/UniMeTextLight.svelte';
+  import { onboarding_state } from '$lib/stores';
 
   // TODO: make reactive
   const isDarkModeEnabled = document.documentElement.classList.contains('dark');

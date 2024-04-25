@@ -1,13 +1,13 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import LL from '$i18n/i18n-svelte';
   import { fly } from 'svelte/transition';
 
+  import EmojiAvatarSelect from '$lib/app/settings/EmojiAvatarSelect.svelte';
+  import SettingsEntry from '$lib/app/settings/SettingsEntry.svelte';
+  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
   import { dispatch } from '$lib/dispatcher';
-  import LL from '$src/i18n/i18n-svelte';
-  import EmojiAvatarSelect from '$src/lib/app/settings/EmojiAvatarSelect.svelte';
-  import SettingsEntry from '$src/lib/app/settings/SettingsEntry.svelte';
-  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
-  import { state } from '$src/stores';
+  import { state } from '$lib/stores';
 
   import Envelope from '~icons/ph/envelope-fill';
   import Gear from '~icons/ph/gear-fill';

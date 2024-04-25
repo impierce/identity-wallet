@@ -1,11 +1,11 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import LL from '$i18n/i18n-svelte';
   import { fade } from 'svelte/transition';
 
-  import LL from '$src/i18n/i18n-svelte';
-  import Button from '$src/lib/components/atoms/Button.svelte';
-  import Checkbox from '$src/lib/components/atoms/Checkbox.svelte';
-  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
+  import Button from '$lib/components/atoms/Button.svelte';
+  import Checkbox from '$lib/components/atoms/Checkbox.svelte';
+  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
 
   let ownership_isChecked = false;
 </script>

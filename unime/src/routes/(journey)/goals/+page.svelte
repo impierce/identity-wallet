@@ -1,19 +1,19 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import LL from '$i18n/i18n-svelte';
   import { fly } from 'svelte/transition';
 
   import { melt } from '@melt-ui/svelte';
 
+  import Button from '$lib/components/atoms/Button.svelte';
+  import PaddedIcon from '$lib/components/atoms/PaddedIcon.svelte';
+  import ProgressBar from '$lib/components/atoms/ProgressBar.svelte';
+  import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
+  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
   import { dispatch } from '$lib/dispatcher';
-  import LL from '$src/i18n/i18n-svelte';
-  import Button from '$src/lib/components/atoms/Button.svelte';
-  import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
-  import ProgressBar from '$src/lib/components/atoms/ProgressBar.svelte';
-  import ActionSheet from '$src/lib/components/molecules/dialogs/ActionSheet.svelte';
-  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
-  import GoalItem from '$src/lib/journeys/goals/GoalItem.svelte';
-  import { icons } from '$src/lib/journeys/goals/icons';
-  import { state } from '$src/stores';
+  import GoalItem from '$lib/journeys/goals/GoalItem.svelte';
+  import { icons } from '$lib/journeys/goals/icons';
+  import { state } from '$lib/stores';
 
   import Trophy from '~icons/ph/trophy-fill';
 

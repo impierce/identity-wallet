@@ -1,15 +1,16 @@
 <script lang="ts">
   import { fade } from 'svelte/transition';
 
-  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
+  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
 
   import '@lottiefiles/lottie-player';
 
+  import LL from '$i18n/i18n-svelte';
+  import { calculateInitials } from '$routes/(app)/me/utils';
+
+  import Button from '$lib/components/atoms/Button.svelte';
   import { dispatch } from '$lib/dispatcher';
-  import LL from '$src/i18n/i18n-svelte';
-  import Button from '$src/lib/components/atoms/Button.svelte';
-  import { calculateInitials } from '$src/routes/(app)/me/utils';
-  import { onboarding_state } from '$src/stores';
+  import { onboarding_state } from '$lib/stores';
 
   import Shield from '~icons/ph/shield-fill';
 </script>
