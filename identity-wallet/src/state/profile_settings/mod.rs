@@ -5,7 +5,7 @@ use super::FeatTrait;
 
 use derivative::Derivative;
 use serde::{Deserialize, Serialize};
-use strum::EnumString;
+use strum::{EnumString, IntoStaticStr};
 use ts_rs::TS;
 
 /// ProfileSettings contains all matters concerning the user profile and its settings.
@@ -39,6 +39,7 @@ impl FeatTrait for Profile {}
 #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default, EnumString)]
 #[ts(export)]
 #[allow(non_camel_case_types)]
+#[derive(IntoStaticStr)]
 pub enum Locale {
     #[default]
     #[serde(rename = "en-US")]

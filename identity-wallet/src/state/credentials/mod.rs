@@ -1,9 +1,8 @@
 pub mod actions;
 pub mod reducers;
 
-use crate::state::core_utils::DateUtils;
-
 use super::{core_utils::helpers::get_unverified_jwt_claims, FeatTrait};
+use crate::state::core_utils::DateUtils;
 
 use derivative::Derivative;
 use oid4vc::oid4vci::credential_format_profiles::{CredentialFormats, WithCredential};
@@ -25,14 +24,29 @@ pub struct DisplayCredential {
     pub data: serde_json::Value,
     #[serde(default)]
     pub metadata: CredentialMetadata,
-
     pub display_name: String,
 }
 
 #[typetag::serde(name = "display_credential")]
 impl FeatTrait for DisplayCredential {}
 
+impl Default for DisplayCredential {
+    fn default() -> Self {
+        Self {
+            id: Default::default(),
+            issuer_name: Default::default(),
+            // Here we use "test" as a placeholder since this field has no default and it cannot be left empty.
+            format: serde_json::from_str("\"test\"").unwrap(),
+            data: Default::default(),
+            metadata: CredentialMetadata::default(),
+            display_name: Default::default(),
+        }
+    }
+}
+
 /// Contains metadata about a credential.
+/// PartialEq(ignore) used on the date_added field implemented because this would make testing with static json files impossible.
+/// The date_added field is defined the moment the test is run and the json files are predefined.
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, TS, Default, Derivative)]
 #[derivative(PartialEq)]
 #[ts(export, export_to = "bindings/display-credential/CredentialMetadata.ts")]
@@ -40,7 +54,6 @@ pub struct CredentialMetadata {
     pub is_favorite: bool,
     #[derivative(PartialEq = "ignore")]
     pub date_added: String,
-    #[derivative(PartialEq = "ignore")]
     pub date_issued: String,
 }
 
@@ -81,7 +94,10 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
                     )
                 };
 
-                let issuance_date = credential_display["issuanceDate"].clone();
+                let issuance_date = credential_display["issuanceDate"]
+                    .as_str()
+                    .map(ToString::to_string)
+                    .unwrap_or_default();
 
                 let display_name = get_achievement_name_from_data(&credential_display)
                     .or(get_type_name_from_data(&credential_display))
@@ -95,7 +111,7 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
                     metadata: CredentialMetadata {
                         is_favorite: false,
                         date_added: DateUtils::new_date_string(),
-                        date_issued: issuance_date.to_string(),
+                        date_issued: issuance_date,
                     },
                     display_name,
                 }

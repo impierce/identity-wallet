@@ -5,13 +5,49 @@ use tokio::sync::Mutex;
 
 #[tokio::test]
 #[serial_test::serial]
-async fn test_credentials_sorting() {
+async fn test_credentials_sorting_identical_issue_dates_reverse() {
+    // This test proves there is no random behavior when sorting credentials with identical issue dates.
+    // The order of the credentials will simply remain the same.
+    // Yet, the order is still reversable when this is clicked by the user.
+
     setup_state_file();
     setup_stronghold();
 
-    let state = json_example::<AppState>("tests/fixtures/states/two_credentials_redirect_me_query.json");
-    let action = json_example::<Action>("tests/fixtures/actions/new_credential_sort.json");
-    let expected_state = json_example::<AppState>("tests/fixtures/states/two_credentials_sort.json");
+    let state = json_example::<AppState>("tests/fixtures/states/four_credentials_sort_identical_issue_dates.json");
+    let action = json_example::<Action>("tests/fixtures/actions/credential_sort_issue.json");
+    let action2 = json_example::<Action>("tests/fixtures/actions/credential_sort_issue_reverse.json");
+    let expected_state =
+        json_example::<AppState>("tests/fixtures/states/four_credentials_sort_identical_issue_dates.json");
+    let expected_state2 =
+        json_example::<AppState>("tests/fixtures/states/four_credentials_sort_identical_issue_dates_reverse.json");
+    assert_state_update(
+        AppStateContainer(Mutex::new(state)),
+        vec![action, action2],
+        vec![Some(expected_state), Some(expected_state2)],
+    )
+    .await;
+}
+
+#[tokio::test]
+#[serial_test::serial]
+async fn test_connections_sorting_unicode_name_az_reverse() {
+    setup_state_file();
+    setup_stronghold();
+
+    // Example of unicode characters, and how they are understood differently by the computer.
+    // This example is also used in the json files
+    // let no_unicode = "sécréter";
+    // let unicode = "sécréter";
+    // assert_ne!(no_unicode, unicode);
+    // assert_ne!(no_unicode.len(), unicode.len());
+    // The above is directly written as unicode characters.
+    // In unicode sequence it is "s\u{00e9}cr\u{00e9}ter"
+
+    let state = json_example::<AppState>("tests/fixtures/states/five_connections_unicode_random_alphabets.json");
+    let action = json_example::<Action>("tests/fixtures/actions/connection_sort_name_az.json");
+    let expected_state =
+        json_example::<AppState>("tests/fixtures/states/five_connections_sort_unicode_random_alphabets_name_az.json");
+
     assert_state_update(
         AppStateContainer(Mutex::new(state)),
         vec![action],
@@ -19,12 +55,3 @@ async fn test_credentials_sorting() {
     )
     .await;
 }
-
-#[tokio::test]
-#[serial_test::serial]
-async fn test_connections_sorting() {
-    todo!()
-}
-
-//   left: [DisplayCredential { id: "39373933-3863-3339-3864-646234373631", issuer_name: "Government", format: JwtVcJson(Profile { format: JwtVcJson }), data: Object {"@context": Array [String("https://www.w3.org/2018/credentials/v1"), String("https://www.w3.org/2018/credentials/examples/v1")], "type": Array [String("VerifiableCredential"), String("PersonalInformation")], "issuanceDate": String("2022-01-01T00:00:00Z"), "issuer": String("http://192.168.1.127:9090/"), "credentialSubject": Object {"id": String("did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY"), "givenName": String("Ferris"), "familyName": String("Crabman"), "email": String("ferris.crabman@crabmail.com"), "birthdate": String("1985-05-21")}}, metadata: CredentialMetadata { is_favorite: false, date_added: "", date_issued: "" }, display_name: "", display_color: None, display_icon: None }, DisplayCredential { id: "39383134-6538-3766-3963-303366323930", issuer_name: "Driver License Organisation", format: JwtVcJson(Profile { format: JwtVcJson }), data: Object {"@context": Array [String("https://www.w3.org/2018/credentials/v1"), String("https://www.w3.org/2018/credentials/examples/v1")], "type": Array [String("VerifiableCredential"), String("DriverLicenseCredential")], "issuer": String("http://192.168.1.127:9090/"), "issuanceDate": String("2022-08-15T09:30:00Z"), "expirationDate": String("2027-08-15T23:59:59Z"), "credentialSubject": Object {"id": String("did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY"), "licenseClass": String("Class C"), "issuedBy": String("California"), "validity": String("Valid")}}, metadata: CredentialMetadata { is_favorite: false, date_added: "", date_issued: "" }, display_name: "", display_color: None, display_icon: None }]
-//  right: [DisplayCredential { id: "39383134-6538-3766-3963-303366323930", issuer_name: "Driver License Organisation", format: JwtVcJson(Profile { format: JwtVcJson }), data: Object {"@context": Array [String("https://www.w3.org/2018/credentials/v1"), String("https://www.w3.org/2018/credentials/examples/v1")], "type": Array [String("VerifiableCredential"), String("DriverLicenseCredential")], "issuer": String("http://192.168.1.127:9090/"), "issuanceDate": String("2022-08-15T09:30:00Z"), "expirationDate": String("2027-08-15T23:59:59Z"), "credentialSubject": Object {"id": String("did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY"), "licenseClass": String("Class C"), "issuedBy": String("California"), "validity": String("Valid")}}, metadata: CredentialMetadata { is_favorite: false, date_added: "", date_issued: "" }, display_name: "", display_color: None, display_icon: None }, DisplayCredential { id: "39373933-3863-3339-3864-646234373631", issuer_name: "Government", format: JwtVcJson(Profile { format: JwtVcJson }), data: Object {"@context": Array [String("https://www.w3.org/2018/credentials/v1"), String("https://www.w3.org/2018/credentials/examples/v1")], "type": Array [String("VerifiableCredential"), String("PersonalInformation")], "issuanceDate": String("2022-01-01T00:00:00Z"), "issuer": String("http://192.168.1.127:9090/"), "credentialSubject": Object {"id": String("did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY"), "givenName": String("Ferris"), "familyName": String("Crabman"), "email": String("ferris.crabman@crabmail.com"), "birthdate": String("1985-05-21")}}, metadata: CredentialMetadata { is_favorite: false, date_added: "", date_issued: "" }, display_name: "", display_color: None, display_icon: None }]
