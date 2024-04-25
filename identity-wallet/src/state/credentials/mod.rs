@@ -97,8 +97,7 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
                 let issuance_date = credential_display["issuanceDate"]
                     .as_str()
                     .map(ToString::to_string)
-                    .unwrap_or_default()
-                    .replace('\"', "");
+                    .unwrap_or_default();
 
                 let display_name = get_achievement_name_from_data(&credential_display)
                     .or(get_type_name_from_data(&credential_display))
