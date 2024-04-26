@@ -83,7 +83,7 @@
       <div class="relative">
         <div>
           <Tabs
-            class="mr-[58px]"
+            class="mr-[50px]"
             triggers={[$LL.ME.CREDENTIAL_TABS.ALL(), $LL.ME.CREDENTIAL_TABS.DATA(), $LL.ME.CREDENTIAL_TABS.BADGES()]}
           >
             <!-- All -->

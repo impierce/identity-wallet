@@ -4,7 +4,7 @@
 
   import LL from '$src/i18n/i18n-svelte';
   import Button from '$src/lib/components/atoms/Button.svelte';
-  import SortPreferencesButton from '$src/lib/connections/sorting/SortingSheetButton.svelte';
+  import SortingSheetButton from '$src/lib/connections/sorting/SortingSheetButton.svelte';
   import { dispatch } from '$src/lib/dispatcher';
   import AlphabeticalOrder from '$src/lib/static/AlphabeticalOrder.svelte';
   import { state } from '$src/stores';
@@ -38,30 +38,33 @@
       slot="trigger"
       let:trigger
       use:melt={trigger}
-      class="flex h-10 w-10 items-center justify-center rounded-xl bg-white dark:bg-dark dark:text-grey"
+      class="dark:bg-dark dark:text-grey flex h-10 w-10 items-center justify-center rounded-xl bg-white"
       ><Slider /></button
     >
     <!-- bottom drawer and list items with preferred view and sorting preferences-->
     <div slot="content" class="w-full">
       <div class="relative pb-5">
-        <SortPreferencesButton
+        <SortingSheetButton
           icon={AlphabeticalOrder}
           label={$LL.SORT.PREFERENCES.ALPHABETICAL()}
-          active={method == 'name_az'}
+          active={method === 'name_az'}
+          {method}
           {reversed}
           on:click={() => updateSortingPreference('name_az')}
         />
-        <SortPreferencesButton
+        <SortingSheetButton
           icon={Issued}
           label={$LL.SORT.PREFERENCES.DATE_ISSUED()}
-          active={method == 'issue_date_new_old'}
+          active={method === 'issue_date_new_old'}
+          {method}
           {reversed}
           on:click={() => updateSortingPreference('issue_date_new_old')}
         />
-        <SortPreferencesButton
+        <SortingSheetButton
           icon={Added}
           label={$LL.SORT.PREFERENCES.DATE_ADDED()}
-          active={method == 'added_date_new_old'}
+          active={method === 'added_date_new_old'}
+          {method}
           {reversed}
           on:click={() => updateSortingPreference('added_date_new_old')}
         />
