@@ -17,7 +17,7 @@ pub struct ProfileSettings {
     pub locale: Locale,
     pub profile: Option<Profile>,
 
-    // Current simplified solution for handling a default DID method. Once we have the did-manager implemented, we
+    // TODO: Current simplified solution for handling a default DID method. Once we have the did-manager implemented, we
     // should probably come up with a different solution.
     #[derivative(Default(value = "String::from(\"did:key\")"))]
     pub default_did_method: String,

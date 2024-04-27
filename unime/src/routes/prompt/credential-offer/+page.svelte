@@ -15,7 +15,7 @@
 
   import DownloadSimple from '~icons/ph/download-simple-fill';
 
-  // // TODO: generate binding in core
+  // TODO: generate binding in core
   // /* eslint-disable @typescript-eslint/no-explicit-any */
   interface CredentialConfiguration {
     display: object;
