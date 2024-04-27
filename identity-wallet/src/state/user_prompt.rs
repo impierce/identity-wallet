@@ -34,7 +34,7 @@ pub enum CurrentUserPrompt {
         issuer_name: String,
         #[ts(optional)]
         logo_uri: Option<String>,
-        #[ts(type = "{ [key: string]: any }")]
+        #[ts(type = "Record<string, any>")]
         credential_configurations: HashMap<String, CredentialConfigurationsSupportedObject>,
     },
     #[serde(rename = "share-credentials")]
