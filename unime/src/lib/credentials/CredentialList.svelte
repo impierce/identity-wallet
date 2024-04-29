@@ -28,20 +28,18 @@
 
 {#if credentials?.length > 0}
   <div class="flex flex-col space-y-2">
-    {#key credentials}
-      {#each credentials as credential}
-        <ListItemCard
-          id={credential.id}
-          title={credential.display_name}
-          description={credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
-          type={credential.data.type.includes('OpenBadgeCredential') ? 'badge' : 'data'}
-          on:click={() =>
-            credential.data.type.includes('OpenBadgeCredential')
-              ? goto(`/badges/${credential.id}`)
-              : goto(`/credentials/${credential.id}`)}
-        ></ListItemCard>
-      {/each}
-    {/key}
+    {#each credentials as credential (credential.id)}
+      <ListItemCard
+        id={credential.id}
+        title={credential.display_name}
+        description={credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
+        type={credential.data.type.includes('OpenBadgeCredential') ? 'badge' : 'data'}
+        on:click={() =>
+          credential.data.type.includes('OpenBadgeCredential')
+            ? goto(`/badges/${credential.id}`)
+            : goto(`/credentials/${credential.id}`)}
+      ></ListItemCard>
+    {/each}
   </div>
 {:else if $state?.credentials?.length === 0}
   <!-- Only show "No credentials" when there's also no favorites -->

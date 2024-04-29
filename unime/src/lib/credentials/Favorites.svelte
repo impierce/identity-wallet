@@ -35,7 +35,7 @@
     <p class="text-[13px]/[24px] font-medium text-slate-500 dark:text-white">{$LL.ME.FAVORITES()}</p>
   </div>
   <div class="flex flex-col space-y-2">
-    {#each favorite_credentials as credential}
+    {#each favorite_credentials as credential (credential.id)}
       <ListItemCard
         id={credential.id}
         title={credential.display_name}
