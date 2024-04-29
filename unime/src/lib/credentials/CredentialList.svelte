@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-
   import { goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
+
+  import type { DisplayCredential } from '@bindings/display-credential/DisplayCredential';
 
   import IconMessage from '$lib/components/molecules/IconMessage.svelte';
   import ListItemCard from '$lib/components/molecules/ListItemCard.svelte';
@@ -12,16 +12,17 @@
 
   export let credentialType: 'all' | 'data' | 'badges' = 'all';
 
-  $: credentials = $state.credentials;
+  let credentials: DisplayCredential[];
 
-  onMount(async () => {
+  $: {
+    // First filter out favorites, then filter by type (if applicable).
     credentials = $state.credentials.filter((c) => !c.metadata.is_favorite);
     if (credentialType === 'badges') {
       credentials = credentials.filter((c) => (c.data.type as string[]).includes('OpenBadgeCredential'));
     } else if (credentialType === 'data') {
       credentials = credentials.filter((c) => !(c.data.type as string[]).includes('OpenBadgeCredential'));
     }
-  });
+  }
 </script>
 
 {#if credentials?.length > 0}
