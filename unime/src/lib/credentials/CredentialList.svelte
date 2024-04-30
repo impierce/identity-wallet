@@ -14,6 +14,7 @@
 
   let credentials: DisplayCredential[];
 
+  // Credentials have to be reactive since state can update while component is mounted.
   $: {
     // First filter out favorites, then filter by type (if applicable).
     credentials = $state.credentials.filter((c) => !c.metadata.is_favorite);
