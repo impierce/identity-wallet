@@ -28,6 +28,7 @@
 
 {#if credentials?.length > 0}
   <div class="flex flex-col space-y-2">
+    <!-- Add credential.id as key to help Svelte update the list correctly. -->
     {#each credentials as credential (credential.id)}
       <ListItemCard
         id={credential.id}
