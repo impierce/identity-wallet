@@ -6,7 +6,7 @@
 
   import Button from '$lib/components/atoms/Button.svelte';
   import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
-  import SortPreferencesButton from '$lib/connections/sorting/SortingSheetButton.svelte';
+  import SortingSheetButton from '$lib/connections/sorting/SortingSheetButton.svelte';
   import { dispatch } from '$lib/dispatcher';
   import AlphabeticalOrder from '$lib/static/AlphabeticalOrder.svelte';
   import { state } from '$lib/stores';
@@ -44,24 +44,27 @@
     <!-- bottom drawer and list items with preferred view and sorting preferences-->
     <div slot="content" class="w-full">
       <div class="relative pb-5">
-        <SortPreferencesButton
+        <SortingSheetButton
           icon={AlphabeticalOrder}
           label={$LL.SORT.PREFERENCES.ALPHABETICAL()}
-          active={method == 'name_az'}
+          active={method === 'name_az'}
+          {method}
           {reversed}
           on:click={() => updateSortingPreference('name_az')}
         />
-        <SortPreferencesButton
+        <SortingSheetButton
           icon={Issued}
           label={$LL.SORT.PREFERENCES.DATE_ISSUED()}
-          active={method == 'issue_date_new_old'}
+          active={method === 'issue_date_new_old'}
+          {method}
           {reversed}
           on:click={() => updateSortingPreference('issue_date_new_old')}
         />
-        <SortPreferencesButton
+        <SortingSheetButton
           icon={Added}
           label={$LL.SORT.PREFERENCES.DATE_ADDED()}
-          active={method == 'added_date_new_old'}
+          active={method === 'added_date_new_old'}
+          {method}
           {reversed}
           on:click={() => updateSortingPreference('added_date_new_old')}
         />

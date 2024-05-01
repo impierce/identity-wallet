@@ -283,6 +283,12 @@ const en = {
       DATE_ISSUED: 'Date Issued',
       DATE_ADDED: 'Date Added',
     },
+    ORDER: {
+      A_Z: 'A to Z',
+      Z_A: 'Z to A',
+      NEWEST: 'Newest',
+      OLDEST: 'Oldest',
+    },
   },
   CANCEL: 'Cancel',
   CLOSE: 'Close',

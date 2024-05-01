@@ -755,30 +755,48 @@ type RootTranslation = {
 	}
 	SORT: {
 		/**
-		 * S​o​r​t​e​e​r
+		 * S​o​r​t​i​n​g
 		 */
 		TITLE: string
 		PREFERENCES: {
 			/**
-			 * L​i​j​s​t​w​e​e​r​g​a​v​e
+			 * L​i​s​t​ ​V​i​e​w
 			 */
 			LIST_VIEW: string
 			/**
-			 * R​a​s​t​e​r​w​e​e​r​g​a​v​e
+			 * G​r​i​d​ ​V​i​e​w
 			 */
 			GRID_VIEW: string
 			/**
-			 * A​l​f​a​b​e​t​i​s​c​h​e​ ​V​o​l​g​o​r​d​e
+			 * A​l​p​h​a​b​e​t​i​c​a​l
 			 */
 			ALPHABETICAL: string
 			/**
-			 * D​a​t​u​m​ ​U​i​t​g​e​g​e​v​e​n
+			 * D​a​t​e​ ​I​s​s​u​e​d
 			 */
 			DATE_ISSUED: string
 			/**
-			 * D​a​t​u​m​ ​T​o​e​g​e​v​o​e​g​d
+			 * D​a​t​e​ ​A​d​d​e​d
 			 */
 			DATE_ADDED: string
+		}
+		ORDER: {
+			/**
+			 * A​ ​t​o​ ​Z
+			 */
+			A_Z: string
+			/**
+			 * Z​ ​t​o​ ​A
+			 */
+			Z_A: string
+			/**
+			 * N​e​w​e​s​t
+			 */
+			NEWEST: string
+			/**
+			 * O​l​d​e​s​t
+			 */
+			OLDEST: string
 		}
 	}
 	/**
@@ -1542,30 +1560,48 @@ export type TranslationFunctions = {
 	}
 	SORT: {
 		/**
-		 * Sorteer
+		 * Sorting
 		 */
 		TITLE: () => LocalizedString
 		PREFERENCES: {
 			/**
-			 * Lijstweergave
+			 * List View
 			 */
 			LIST_VIEW: () => LocalizedString
 			/**
-			 * Rasterweergave
+			 * Grid View
 			 */
 			GRID_VIEW: () => LocalizedString
 			/**
-			 * Alfabetische Volgorde
+			 * Alphabetical
 			 */
 			ALPHABETICAL: () => LocalizedString
 			/**
-			 * Datum Uitgegeven
+			 * Date Issued
 			 */
 			DATE_ISSUED: () => LocalizedString
 			/**
-			 * Datum Toegevoegd
+			 * Date Added
 			 */
 			DATE_ADDED: () => LocalizedString
+		}
+		ORDER: {
+			/**
+			 * A to Z
+			 */
+			A_Z: () => LocalizedString
+			/**
+			 * Z to A
+			 */
+			Z_A: () => LocalizedString
+			/**
+			 * Newest
+			 */
+			NEWEST: () => LocalizedString
+			/**
+			 * Oldest
+			 */
+			OLDEST: () => LocalizedString
 		}
 	}
 	/**

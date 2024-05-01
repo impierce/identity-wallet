@@ -283,6 +283,12 @@ const nl = {
       DATE_ISSUED: 'Datum Uitgegeven',
       DATE_ADDED: 'Datum Toegevoegd',
     },
+    ORDER: {
+      A_Z: 'A tot Z',
+      Z_A: 'Z tot A',
+      NEWEST: 'Nieuwste',
+      OLDEST: 'Oudste',
+    },
   },
   CANCEL: 'Annuleren',
   CLOSE: 'Sluiten',
