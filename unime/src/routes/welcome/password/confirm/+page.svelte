@@ -18,7 +18,7 @@
   let passwords_match: boolean | undefined = undefined;
 
   let showPassword = false;
-  let password: string = '';
+  let password = '';
 
   // Ref to input DOM element.
   let input_element: HTMLInputElement;
