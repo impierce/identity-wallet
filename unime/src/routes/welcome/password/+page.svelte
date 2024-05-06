@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+
   import { goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
   import { fade } from 'svelte/transition';
@@ -16,10 +18,18 @@
 
   let passwordPolicyViolations: string[] = checkPasswordPolicy($onboarding_state.password ?? '');
   let showPassword = false;
+
+  // Ref to input DOM element.
+  let input_element: HTMLInputElement;
+
+  onMount(() => {
+    // Initial focus.
+    input_element.focus();
+  });
 </script>
 
 <TopNavBar on:back={() => history.back()} title={$LL.ONBOARDING.PASSWORD.NAVBAR_TITLE()} />
-<!-- Content -->
+
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <div class="pb-8 pt-4">
     <p class="pb-8 text-3xl font-semibold text-slate-700 dark:text-grey">
@@ -32,19 +42,28 @@
   </div>
   <div class="relative">
     <input
+      bind:this={input_element}
       type={showPassword ? 'text' : 'password'}
       class="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300"
       placeholder={$LL.ONBOARDING.PASSWORD.INPUT_PLACEHOLDER()}
       value={$onboarding_state.password ?? ''}
       on:input={(e) => {
-        passwordPolicyViolations = checkPasswordPolicy(e.target.value);
+        // Here e.currentTarget is the same as e.target and fully typed.
+        passwordPolicyViolations = checkPasswordPolicy(e.currentTarget.value);
         if (passwordPolicyViolations.length === 0) {
-          onboarding_state.set({ ...$onboarding_state, password: e.target.value });
+          onboarding_state.set({ ...$onboarding_state, password: e.currentTarget.value });
         }
       }}
     />
     <div class="absolute right-3 top-0 flex h-full items-center">
-      <button class="rounded-full p-2" on:click={() => (showPassword = !showPassword)}>
+      <button
+        class="rounded-full p-2"
+        on:click={() => {
+          // Focus input element when toggling visbility.
+          input_element.focus();
+          return (showPassword = !showPassword);
+        }}
+      >
         {#if showPassword}
           <Eye class="text-slate-700 dark:text-grey" />
         {:else}

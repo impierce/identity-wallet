@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+
   import { goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
   import { fade } from 'svelte/transition';
@@ -12,12 +14,23 @@
   import Smiley from '~icons/ph/smiley';
   import SmileySad from '~icons/ph/smiley-sad';
 
-  let passwordsEqual: boolean | undefined;
+  // 3 states: true (match), false (mismatch), undefined (I don't know).
+  let passwords_match: boolean | undefined = undefined;
+
   let showPassword = false;
+  let password: string = '';
+
+  // Ref to input DOM element.
+  let input_element: HTMLInputElement;
+
+  onMount(() => {
+    // Initial focus.
+    input_element.focus();
+  });
 </script>
 
 <TopNavBar on:back={() => history.back()} title={$LL.ONBOARDING.PASSWORD.CONFIRM.NAVBAR_TITLE()} />
-<!-- Content -->
+
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <div class="pb-8 pt-4">
     <p class="pb-8 text-3xl font-semibold text-slate-700 dark:text-grey">
@@ -29,14 +42,39 @@
     </p>
   </div>
   <div class="relative">
+    <!-- Dynamic type attribute requires one-way binding instead of two-way bind:value. -->
     <input
+      value={password}
+      bind:this={input_element}
       type={showPassword ? 'text' : 'password'}
-      class="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300"
       placeholder={$LL.ONBOARDING.PASSWORD.CONFIRM.INPUT_PLACEHOLDER()}
-      on:input={(e) => (passwordsEqual = e.target.value === $onboarding_state.password)}
+      on:blur={() => {
+        if (password === $onboarding_state.password) {
+          passwords_match = true;
+        } else {
+          passwords_match = false;
+        }
+      }}
+      on:input={(e) => {
+        password = e.currentTarget.value;
+        if (password === $onboarding_state.password) {
+          passwords_match = true;
+        } else {
+          // Suppress validation message.
+          passwords_match = undefined;
+        }
+      }}
+      class="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300"
     />
     <div class="absolute right-3 top-0 flex h-full items-center">
-      <button class="rounded-full p-2" on:click={() => (showPassword = !showPassword)}>
+      <button
+        class="rounded-full p-2"
+        on:click={() => {
+          // Focus input element when toggling visbility.
+          input_element.focus();
+          return (showPassword = !showPassword);
+        }}
+      >
         {#if showPassword}
           <Eye class="text-slate-700 dark:text-grey" />
         {:else}
@@ -45,9 +83,9 @@
       </button>
     </div>
   </div>
-  {#if passwordsEqual !== undefined}
+  {#if passwords_match !== undefined}
     <div class="mt-8 flex items-center justify-center">
-      {#if passwordsEqual}
+      {#if passwords_match}
         <Smiley class="mr-[10px] h-5 w-5 text-primary" />
         <p class="text-[13px]/[24px] font-medium text-primary">{$LL.ONBOARDING.PASSWORD.CONFIRM.MATCH()}</p>
       {:else}
@@ -59,5 +97,5 @@
 </div>
 
 <div class="rounded-t-3xl bg-white p-6 dark:bg-dark" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
-  <Button label={$LL.CONTINUE()} on:click={() => goto('/welcome/password/completed')} disabled={!passwordsEqual} />
+  <Button label={$LL.CONTINUE()} on:click={() => goto('/welcome/password/completed')} disabled={!passwords_match} />
 </div>
