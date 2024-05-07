@@ -42,7 +42,7 @@ pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppS
             .to_owned();
         let password = "sup3rSecr3t".to_owned();
         let subject = Arc::new(
-            SecretManager::load(client_path, password, "key-0".to_owned())
+            SecretManager::load(client_path, password, "key-0".to_owned(), None, None)
                 .await
                 .unwrap(),
         );

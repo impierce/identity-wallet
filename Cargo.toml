@@ -8,11 +8,10 @@ tauri = { version = "=2.0.0-beta.12", features = [
     "rustls-tls",
 ] }
 
-oid4vc = { git = "https://git@github.com/impierce/openid4vc.git", rev = "104e4ba" }
+oid4vc = { git = "https://git@github.com/impierce/openid4vc.git", rev = "e9c91e1" }
 log = "^0.4"
 serde_json = "1.0"
-did_manager = { git = "https://github.com/impierce/did-manager.git" }
-# did_manager = { path = "../did-manager" }
+did_manager = { git = "https://github.com/impierce/did-manager.git", branch = "feat/remove-oid4vc" }
 indoc = "2.0"
 rand = "0.8"
 wiremock = "0.5"

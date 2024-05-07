@@ -28,7 +28,7 @@ pub async fn unlock_storage(state: AppState, action: Action) -> Result<AppState,
             .to_owned();
         let password = "sup3rSecr3t".to_owned();
         let subject = Arc::new(
-            SecretManager::load(client_path, password, "key-0".to_owned())
+            SecretManager::load(client_path, password, "key-0".to_owned(), None, None)
                 .await
                 .unwrap(),
         );

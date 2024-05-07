@@ -63,7 +63,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         .unwrap()
         .to_owned();
     info!("Loading secret manager from path: {}", client_path);
-    let secret_manager = SecretManager::load(client_path, "sup3rSecr3t".to_owned(), "key-0".to_owned())
+    let secret_manager = SecretManager::load(client_path, "sup3rSecr3t".to_owned(), "key-0".to_owned(), None, None)
         .await
         .unwrap();
 
