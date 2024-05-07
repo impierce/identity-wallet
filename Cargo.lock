@@ -8653,7 +8653,6 @@ checksum = "d4c87d22b6e3f4a18d4d40ef354e97c90fcb14dd91d7dc0aa9d8a1172ebf7202"
 name = "unime"
 version = "0.5.1"
 dependencies = [
- "did-key",
  "did_manager",
  "dotenvy",
  "fern",

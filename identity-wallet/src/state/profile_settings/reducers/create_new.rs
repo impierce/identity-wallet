@@ -32,8 +32,6 @@ pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppS
 
         let default_did_method = state.profile_settings.default_did_method.as_str();
 
-        let public_key = stronghold_manager.get_public_key().map_err(StrongholdPublicKeyError)?;
-
         let client_path = crate::persistence::STRONGHOLD
             .lock()
             .unwrap()

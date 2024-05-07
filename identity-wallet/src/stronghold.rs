@@ -1,5 +1,6 @@
 use crate::{persistence::STRONGHOLD, state::credentials::VerifiableCredentialRecord};
 
+use base64::{engine::general_purpose::STANDARD, Engine as _};
 use iota_stronghold::{
     procedures::{Ed25519Sign, GenerateKey, KeyType, PublicKey, StrongholdProcedure},
     Client, KeyProvider, Location, SnapshotPath, Stronghold,
@@ -61,7 +62,7 @@ impl StrongholdManager {
         };
 
         let public_key = stronghold_manager.get_public_key()?;
-        debug!("public_key (base64): {:?}", base64::encode(public_key));
+        debug!("public_key (base64): {:?}", STANDARD.encode(public_key));
 
         stronghold_manager.commit()?;
         Ok(stronghold_manager)

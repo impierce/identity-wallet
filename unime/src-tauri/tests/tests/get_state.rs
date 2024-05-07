@@ -81,7 +81,7 @@ async fn test_get_state_unlock_storage() {
 
     let container = AppStateContainer(Mutex::new(AppState {
         core_utils: CoreUtils {
-            managers: test_managers(vec![]),
+            managers: test_managers(vec![]).await,
             ..Default::default()
         },
         profile_settings: ProfileSettings {
@@ -128,7 +128,7 @@ async fn test_get_state_unlock_storage_invalid_password() {
 
     let container = AppStateContainer(Mutex::new(AppState {
         core_utils: CoreUtils {
-            managers: test_managers(vec![]),
+            managers: test_managers(vec![]).await,
             ..Default::default()
         },
         profile_settings: ProfileSettings {

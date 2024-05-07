@@ -33,7 +33,6 @@ dotenvy = { version = "0.15" }
 fern = "0.6.0"
 
 [dev-dependencies]
-did-key = "0.2.1"
 did_manager.workspace = true
 indoc.workspace = true
 rand.workspace = true

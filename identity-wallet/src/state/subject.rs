@@ -17,7 +17,7 @@ impl Sign for UnimeSubject {
     async fn key_id(&self, subject_syntax_type: &str) -> Option<String> {
         let method: DidMethod = serde_json::from_str(&format!("{subject_syntax_type:?}")).ok()?;
 
-        self.secret_manager // <-- here
+        self.secret_manager
             .produce_document(method)
             .await
             .ok()
@@ -25,7 +25,7 @@ impl Sign for UnimeSubject {
             .map(|first| first.id().to_string())
     }
     async fn sign(&self, message: &str, _subject_syntax_type: &str) -> anyhow::Result<Vec<u8>> {
-        Ok(self.secret_manager.sign(message.as_bytes()).await?) // <-- here
+        Ok(self.secret_manager.sign(message.as_bytes()).await?)
     }
     fn external_signer(&self) -> Option<Arc<dyn ExternalSign>> {
         None
