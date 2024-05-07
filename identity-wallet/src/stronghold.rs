@@ -1,6 +1,6 @@
 use crate::{persistence::STRONGHOLD, state::credentials::VerifiableCredentialRecord};
 
-use base64::{engine::general_purpose::STANDARD, Engine as _};
+use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use iota_stronghold::{
     procedures::{Ed25519Sign, GenerateKey, KeyType, PublicKey, StrongholdProcedure},
     Client, KeyProvider, Location, SnapshotPath, Stronghold,
@@ -62,7 +62,7 @@ impl StrongholdManager {
         };
 
         let public_key = stronghold_manager.get_public_key()?;
-        debug!("public_key (base64): {:?}", STANDARD.encode(public_key));
+        debug!("public_key (base64): {:?}", URL_SAFE_NO_PAD.encode(public_key));
 
         stronghold_manager.commit()?;
         Ok(stronghold_manager)
@@ -161,7 +161,7 @@ impl StrongholdManager {
             }))?;
 
         let output: Vec<u8> = procedure_result.into();
-        info!(r#"Public key is "{}" (base64)"#, base64::encode(&output));
+        info!(r#"Public key is "{}" (base64)"#, URL_SAFE_NO_PAD.encode(&output));
 
         Ok(output)
     }
@@ -186,7 +186,7 @@ impl ExternalSign for StrongholdManager {
             }))?;
 
         let output: Vec<u8> = procedure_result.into();
-        info!(r#"Signature is "{}" (base64)"#, base64::encode(&output));
+        info!(r#"Signature is "{}" (base64)"#, URL_SAFE_NO_PAD.encode(&output));
 
         Ok(output)
     }

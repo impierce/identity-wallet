@@ -4,16 +4,16 @@ use async_trait::async_trait;
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use did_manager::{DidMethod, Resolver, SecretManager};
 use identity_iota::{did::DID, document::DIDUrlQuery, verification::jwk::JwkParams};
-use oid4vc::oid4vc_core::{authentication::sign::ExternalSign, Sign, Subject, Verify};
+use oid4vc::oid4vc_core::{authentication::sign::ExternalSign, Sign, Subject as SubjectTrait, Verify};
 use std::sync::Arc;
 
-pub struct UnimeSubject {
+pub struct Subject {
     pub stronghold_manager: Arc<StrongholdManager>,
     pub secret_manager: SecretManager,
 }
 
 #[async_trait]
-impl Sign for UnimeSubject {
+impl Sign for Subject {
     async fn key_id(&self, subject_syntax_type: &str) -> Option<String> {
         let method: DidMethod = serde_json::from_str(&format!("{subject_syntax_type:?}")).ok()?;
 
@@ -33,7 +33,7 @@ impl Sign for UnimeSubject {
 }
 
 #[async_trait]
-impl Subject for UnimeSubject {
+impl SubjectTrait for Subject {
     /// Returns the id of the DID document corresponding to the `subject_syntax_type`.
     /// TODO: `subject_syntax_type` or simply `method`?
     async fn identifier(&self, subject_syntax_type: &str) -> anyhow::Result<String> {
@@ -48,7 +48,7 @@ impl Subject for UnimeSubject {
 }
 
 #[async_trait]
-impl Verify for UnimeSubject {
+impl Verify for Subject {
     async fn public_key(&self, did_url: &str) -> anyhow::Result<Vec<u8>> {
         let did_url = identity_iota::did::DIDUrl::parse(did_url).unwrap();
 

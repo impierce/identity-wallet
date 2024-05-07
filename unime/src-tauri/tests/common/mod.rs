@@ -5,7 +5,7 @@ use did_manager::SecretManager;
 use identity_wallet::oid4vc_manager::ProviderManager;
 use identity_wallet::oid4vci::Wallet;
 use identity_wallet::state::credentials::VerifiableCredentialRecord;
-use identity_wallet::state::subject::UnimeSubject;
+use identity_wallet::state::subject::Subject;
 use identity_wallet::{
     state::core_utils::{IdentityManager, Managers},
     stronghold::StrongholdManager,
@@ -47,7 +47,7 @@ pub async fn test_managers(
                 .unwrap();
         });
 
-    let subject: Arc<UnimeSubject> = Arc::new(UnimeSubject {
+    let subject: Arc<Subject> = Arc::new(Subject {
         stronghold_manager: stronghold_manager.clone(),
         secret_manager: SecretManager::load(
             SNAPSHOT_PATH.to_string(),

@@ -7,7 +7,7 @@ use crate::{
         credentials::VerifiableCredentialRecord,
         dev_mode::DevMode,
         profile_settings::{AppTheme, Profile},
-        subject::UnimeSubject,
+        subject::Subject,
         user_prompt::CurrentUserPrompt,
         AppState,
     },
@@ -17,7 +17,7 @@ use crate::{
 use did_manager::SecretManager;
 use lazy_static::lazy_static;
 use log::info;
-use oid4vc::oid4vc_core::Subject;
+use oid4vc::oid4vc_core::Subject as _;
 use serde_json::json;
 use std::{fs::File, io::Write, sync::Arc};
 
@@ -67,7 +67,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         .await
         .unwrap();
 
-    let subject = Arc::new(UnimeSubject {
+    let subject = Arc::new(Subject {
         stronghold_manager: stronghold_manager.clone(),
         secret_manager,
     });

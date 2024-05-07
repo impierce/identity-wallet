@@ -4,7 +4,7 @@ use crate::{
         actions::{listen, Action},
         core_utils::IdentityManager,
         profile_settings::{actions::create_new::CreateNew, Profile, ProfileSettings},
-        subject::UnimeSubject,
+        subject::Subject,
         user_prompt::CurrentUserPrompt,
         AppState,
     },
@@ -13,7 +13,7 @@ use crate::{
 
 use did_manager::SecretManager;
 use log::info;
-use oid4vc::oid4vc_core::Subject;
+use oid4vc::oid4vc_core::Subject as _;
 use oid4vc::oid4vc_manager::ProviderManager;
 use oid4vc::oid4vci::Wallet;
 use std::sync::Arc;
@@ -41,7 +41,7 @@ pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppS
             .to_owned();
         let password = "sup3rSecr3t".to_owned();
 
-        let subject = Arc::new(UnimeSubject {
+        let subject = Arc::new(Subject {
             stronghold_manager: stronghold_manager.clone(),
             secret_manager: SecretManager::load(client_path, password, "key-0".to_owned(), None, None)
                 .await
