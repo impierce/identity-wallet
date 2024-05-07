@@ -1,11 +1,12 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import LL from '$i18n/i18n-svelte';
 
   import SettingsEntry from '$lib/app/settings/SettingsEntry.svelte';
   import Button from '$lib/components/atoms/Button.svelte';
+  import Switch from '$lib/components/atoms/Switch.svelte';
   import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
-  import LL from '$src/i18n/i18n-svelte';
-  import Switch from '$src/lib/components/atoms/Switch.svelte';
+  import { state } from '$lib/stores';
 
   import '@lottiefiles/lottie-player';
 
@@ -21,11 +22,16 @@
 
   const methods: Method[] = [
     {
-      method: 'did:jwk',
-      did: 'did:jwk:eyJjcnYiOiJQLTI1NiIsImt0eSI6IkVDIiwieCI6ImFjYklRaXVNczNpOF91c3pFakoydHBUdFJNNEVVM3l6OTFQSDZDZEgyVjAiLCJ5IjoiX0tjeUxqOXZXTXB0bm1LdG00NkdxRHo4d2Y3NEk1TEtncmwyR3pIM25TRSJ9',
+      method: `${$state.profile_settings.default_did_method}`,
+      did: `${$state.profile_settings.profile?.primary_did}`,
       enabled: true,
     },
-    { method: 'did:key', did: 'did:key:z6Mkk7yqnGF3YwTrLpqrW6PGsKci7dNqh1CjnvMbzrMerSeL', enabled: true },
+    // { method: 'did:key', did: 'did:key:z6Mkk7yqnGF3YwTrLpqrW6PGsKci7dNqh1CjnvMbzrMerSeL', enabled: true },
+    // {
+    //   method: 'did:jwk',
+    //   did: 'did:jwk:eyJjcnYiOiJQLTI1NiIsImt0eSI6IkVDIiwieCI6ImFjYklRaXVNczNpOF91c3pFakoydHBUdFJNNEVVM3l6OTFQSDZDZEgyVjAiLCJ5IjoiX0tjeUxqOXZXTXB0bm1LdG00NkdxRHo4d2Y3NEk1TEtncmwyR3pIM25TRSJ9',
+    //   enabled: true,
+    // },
     // {
     //   name: 'Shimmer Testnet',
     //   did: 'did:iota:rms:0xcc26398894d5edb12e7c54ded26b86f3627a11c86bc06a7abe08597905109de1',
