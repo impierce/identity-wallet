@@ -111,6 +111,7 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
                     presentation_submission,
                 },
             )
+            .await
             .map_err(GenerateAuthorizationResponseError)?;
         info!("response generated: {:?}", response);
 

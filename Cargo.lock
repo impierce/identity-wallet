@@ -3378,7 +3378,8 @@ name = "identity-wallet"
 version = "0.5.1"
 dependencies = [
  "anyhow",
- "base64 0.13.1",
+ "async-trait",
+ "base64 0.22.1",
  "chrono",
  "derivative",
  "did_manager",
@@ -3386,6 +3387,7 @@ dependencies = [
  "dyn-clone",
  "futures",
  "identity_credential",
+ "identity_iota",
  "indoc",
  "iota_stronghold",
  "itertools 0.10.5",

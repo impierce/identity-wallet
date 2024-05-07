@@ -39,6 +39,7 @@ pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: A
 
     let response = provider_manager
         .generate_response(&*siopv2_authorization_request, Default::default())
+        .await
         .map_err(GenerateAuthorizationResponseError)?;
     info!("response generated: {:?}", response);
 

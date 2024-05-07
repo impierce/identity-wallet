@@ -4,6 +4,7 @@ use crate::{
         actions::{listen, Action},
         core_utils::IdentityManager,
         profile_settings::{actions::create_new::CreateNew, Profile, ProfileSettings},
+        subject::UnimeSubject,
         user_prompt::CurrentUserPrompt,
         AppState,
     },
@@ -41,11 +42,13 @@ pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppS
             .unwrap()
             .to_owned();
         let password = "sup3rSecr3t".to_owned();
-        let subject = Arc::new(
-            SecretManager::load(client_path, password, "key-0".to_owned(), None, None)
+
+        let subject = Arc::new(UnimeSubject {
+            stronghold_manager: stronghold_manager.clone(),
+            secret_manager: SecretManager::load(client_path, password, "key-0".to_owned(), None, None)
                 .await
                 .unwrap(),
-        );
+        });
 
         let provider_manager =
             ProviderManager::new(subject.clone(), default_did_method).map_err(OID4VCProviderManagerError)?;
@@ -58,6 +61,7 @@ pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppS
                 theme,
                 primary_did: subject
                     .identifier(default_did_method)
+                    .await
                     .map_err(OID4VCSubjectIdentifierError)?,
             }),
             ..state.profile_settings

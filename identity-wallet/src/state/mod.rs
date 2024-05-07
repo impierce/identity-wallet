@@ -7,6 +7,7 @@ pub mod dev_mode;
 pub mod profile_settings;
 pub mod qr_code;
 pub mod search;
+pub mod subject;
 pub mod user_journey;
 pub mod user_prompt;
 

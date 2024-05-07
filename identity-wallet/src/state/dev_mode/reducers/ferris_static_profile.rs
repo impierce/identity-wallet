@@ -7,6 +7,7 @@ use crate::{
         credentials::VerifiableCredentialRecord,
         dev_mode::DevMode,
         profile_settings::{AppTheme, Profile},
+        subject::UnimeSubject,
         user_prompt::CurrentUserPrompt,
         AppState,
     },
@@ -17,7 +18,6 @@ use did_manager::SecretManager;
 use lazy_static::lazy_static;
 use log::info;
 use oid4vc::oid4vc_core::Subject;
-use oid4vc::oid4vc_manager::methods::key_method::KeySubject;
 use serde_json::json;
 use std::{fs::File, io::Write, sync::Arc};
 
@@ -53,7 +53,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
     let mut state = AppState::default();
     let default_did_method = state.profile_settings.default_did_method.as_str();
 
-    let stronghold_manager = StrongholdManager::create("sup3rSecr3t").map_err(StrongholdCreationError)?;
+    let stronghold_manager = Arc::new(StrongholdManager::create("sup3rSecr3t").map_err(StrongholdCreationError)?);
 
     let client_path = crate::persistence::STRONGHOLD
         .lock()
@@ -67,13 +67,16 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         .await
         .unwrap();
 
-    let subject = Arc::new(secret_manager);
+    let subject = Arc::new(UnimeSubject {
+        stronghold_manager: stronghold_manager.clone(),
+        secret_manager,
+    });
 
     let profile = Profile {
         name: "Ferris".to_string(),
         picture: Some("&#129408".to_string()),
         theme: AppTheme::System,
-        primary_did: subject.identifier(default_did_method).unwrap(),
+        primary_did: subject.identifier(default_did_method).await.unwrap(),
     };
     state.profile_settings.profile.replace(profile);
 
@@ -111,7 +114,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         .lock()
         .await
         .stronghold_manager
-        .replace(Arc::new(stronghold_manager));
+        .replace(stronghold_manager);
 
     info!("loading journey from string");
     let journey_definition = r#"
