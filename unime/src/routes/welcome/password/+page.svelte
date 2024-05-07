@@ -23,7 +23,6 @@
   let input_element: HTMLInputElement;
 
   onMount(() => {
-    // Initial focus.
     input_element.focus();
   });
 </script>

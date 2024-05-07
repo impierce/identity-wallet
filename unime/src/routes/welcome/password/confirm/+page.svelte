@@ -14,8 +14,8 @@
   import Smiley from '~icons/ph/smiley';
   import SmileySad from '~icons/ph/smiley-sad';
 
-  // 3 states: true (match), false (mismatch), undefined (I don't know).
-  let passwords_match: boolean | undefined = undefined;
+  // 3 states: true (match), false (mismatch), undefined (not checked yet).
+  let passwordsMatch: boolean | undefined = undefined;
 
   let showPassword = false;
   let password = '';
@@ -24,7 +24,6 @@
   let input_element: HTMLInputElement;
 
   onMount(() => {
-    // Initial focus.
     input_element.focus();
   });
 </script>
@@ -50,18 +49,18 @@
       placeholder={$LL.ONBOARDING.PASSWORD.CONFIRM.INPUT_PLACEHOLDER()}
       on:blur={() => {
         if (password === $onboarding_state.password) {
-          passwords_match = true;
+          passwordsMatch = true;
         } else {
-          passwords_match = false;
+          passwordsMatch = false;
         }
       }}
       on:input={(e) => {
         password = e.currentTarget.value;
         if (password === $onboarding_state.password) {
-          passwords_match = true;
+          passwordsMatch = true;
         } else {
           // Suppress validation message.
-          passwords_match = undefined;
+          passwordsMatch = undefined;
         }
       }}
       class="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300"
@@ -70,7 +69,7 @@
       <button
         class="rounded-full p-2"
         on:click={() => {
-          // Focus input element when toggling visbility.
+          // Focus input element when toggling visibility.
           input_element.focus();
           return (showPassword = !showPassword);
         }}
@@ -83,9 +82,9 @@
       </button>
     </div>
   </div>
-  {#if passwords_match !== undefined}
+  {#if passwordsMatch !== undefined}
     <div class="mt-8 flex items-center justify-center">
-      {#if passwords_match}
+      {#if passwordsMatch}
         <Smiley class="mr-[10px] h-5 w-5 text-primary" />
         <p class="text-[13px]/[24px] font-medium text-primary">{$LL.ONBOARDING.PASSWORD.CONFIRM.MATCH()}</p>
       {:else}
@@ -97,5 +96,5 @@
 </div>
 
 <div class="rounded-t-3xl bg-white p-6 dark:bg-dark" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
-  <Button label={$LL.CONTINUE()} on:click={() => goto('/welcome/password/completed')} disabled={!passwords_match} />
+  <Button label={$LL.CONTINUE()} on:click={() => goto('/welcome/password/completed')} disabled={!passwordsMatch} />
 </div>
