@@ -1,6 +1,6 @@
 <script lang="ts">
-  import SettingsEntry from '$src/lib/app/settings/SettingsEntry.svelte';
-  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
+  import SettingsEntry from '$lib/app/settings/SettingsEntry.svelte';
+  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
 
   import Keyboard from '~icons/ph/keyboard-fill';
 </script>
@@ -8,7 +8,7 @@
 <TopNavBar on:back={() => history.back()} title="Backup and recovery" />
 <div class="content-height flex flex-col bg-silver dark:bg-navy">
   <div class="flex flex-col space-y-[10px] px-4 py-5">
-    <SettingsEntry icon={Keyboard} title="Your DID" todo />
+    <SettingsEntry icon={Keyboard} title="Your DID" disabled />
   </div>
 </div>
 

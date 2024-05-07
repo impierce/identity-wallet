@@ -2,13 +2,14 @@
   import { onMount, SvelteComponent } from 'svelte';
 
   import { goto } from '$app/navigation';
+  import { PUBLIC_DEV_MODE_MENU_EXPANDED } from '$env/static/public';
+  import { loadAllLocales } from '$i18n/i18n-util.sync';
   import { fly } from 'svelte/transition';
 
   import { attachConsole } from '@tauri-apps/plugin-log';
 
   import { dispatch } from '$lib/dispatcher';
-  import { loadAllLocales } from '$src/i18n/i18n-util.sync';
-  import { state } from '$src/stores';
+  import { state } from '$lib/stores';
 
   import ScrollText from '~icons/lucide/scroll-text';
   import ArrowLeft from '~icons/ph/arrow-left';
@@ -22,17 +23,17 @@
 
   import type { ProfileSteps } from '@bindings/dev/ProfileSteps';
 
-  import Switch from '$src/lib/components/atoms/Switch.svelte';
+  import Switch from '$lib/components/atoms/Switch.svelte';
 
   import { determineTheme } from './utils';
 
   onMount(async () => {
-    const detach = await attachConsole();
+    await attachConsole();
     loadAllLocales(); //TODO: performance: only load locale on user request
     dispatch({ type: '[App] Get state' });
   });
 
-  let expandedDevMenu = false;
+  let expandedDevMenu = PUBLIC_DEV_MODE_MENU_EXPANDED === 'true';
   let showDebugMessages = false;
   let showDragonProfileSteps = false;
   let resetDragonProfile = true;
@@ -49,8 +50,6 @@
 
   $: {
     // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
-    console.log('+layout.svelte: state', $state);
-
     if ($state?.profile_settings.profile?.theme) {
       determineTheme(systemColorScheme.matches, $state.profile_settings.profile.theme);
     } else {

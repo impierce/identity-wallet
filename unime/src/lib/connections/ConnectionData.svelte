@@ -1,10 +1,11 @@
 <script lang="ts">
-  import LL from '$src/i18n/i18n-svelte';
-  import Image from '$src/lib/components/atoms/Image.svelte';
-  import ListItemCard from '$src/lib/components/molecules/ListItemCard.svelte';
+  import LL from '$i18n/i18n-svelte';
+
+  import Image from '$lib/components/atoms/Image.svelte';
+  import ListItemCard from '$lib/components/molecules/ListItemCard.svelte';
 
   export let id: string;
-  export let data: any = undefined;
+  export let data = undefined;
 </script>
 
 {#if data}

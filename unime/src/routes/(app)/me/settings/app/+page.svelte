@@ -1,14 +1,14 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import LL from '$i18n/i18n-svelte';
   import { fade } from 'svelte/transition';
 
   import { locales } from '$lib/app/locales';
+  import SettingsEntry from '$lib/app/settings/SettingsEntry.svelte';
+  import Switch from '$lib/components/atoms/Switch.svelte';
+  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
   import { dispatch } from '$lib/dispatcher';
-  import LL from '$src/i18n/i18n-svelte';
-  import SettingsEntry from '$src/lib/app/settings/SettingsEntry.svelte';
-  import Switch from '$src/lib/components/atoms/Switch.svelte';
-  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
-  import { state } from '$src/stores';
+  import { state } from '$lib/stores';
 
   import ChatCircleText from '~icons/ph/chat-circle-text-fill';
   import Code from '~icons/ph/code-bold';
@@ -37,20 +37,20 @@
       on:click={() => goto('/me/settings/app/language')}
     />
     <SettingsEntry icon={Sun} title={$LL.SETTINGS.APP.THEME.LABEL()} on:click={() => goto('/me/settings/app/theme')} />
-    <SettingsEntry icon={Password} title={$LL.SETTINGS.APP.PASSWORD.TITLE()} todo />
+    <SettingsEntry icon={Password} title={$LL.SETTINGS.APP.PASSWORD.TITLE()} disabled />
     <SettingsEntry
       icon={Confetti}
       title={$LL.SETTINGS.APP.ONBOARDING_JOURNEY.TITLE()}
       hasCaretRight={false}
       textRight={$LL.SETTINGS.APP.ONBOARDING_JOURNEY.BUTTON_TEXT()}
-      todo
+      disabled
     />
     <SettingsEntry
       icon={ChatCircleText}
       title={$LL.SETTINGS.APP.HINTS_AND_TIPS.TITLE()}
       hasCaretRight={false}
       textRight={$LL.SETTINGS.APP.HINTS_AND_TIPS.BUTTON_TEXT()}
-      todo
+      disabled
     />
     <SettingsEntry icon={Code} title={$LL.SETTINGS.APP.DEVELOPER_MODE.TITLE()} hasCaretRight={false}>
       <Switch active={$state?.dev_mode !== 'Off'} on:change={toggleDevSettings} />

@@ -1,6 +1,6 @@
 use crate::{
     error::AppError::{self, *},
-    persistence::persist_asset,
+    persistence::{hash, persist_asset},
     state::{
         actions::{listen, Action},
         core_utils::history_event::{EventType, HistoryCredential, HistoryEvent},
@@ -46,8 +46,12 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
 
         info!("current_user_prompt: {:?}", current_user_prompt);
 
-        let credential_offer = match current_user_prompt {
-            CurrentUserPrompt::CredentialOffer { credential_offer, .. } => credential_offer,
+        let (credential_offer, logo_uri) = match current_user_prompt {
+            CurrentUserPrompt::CredentialOffer {
+                credential_offer,
+                logo_uri,
+                ..
+            } => (credential_offer, logo_uri),
             _ => unreachable!(),
         };
 
@@ -95,6 +99,11 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
             })
             .unwrap_or(connection_url.to_string());
 
+        // Create or update the connection.
+        let previously_connected = state.connections.contains(connection_url, &issuer_name);
+        let mut connections = state.connections;
+        let connection = connections.update_or_insert(connection_url, &issuer_name);
+
         let credential_offer_formats = offer_indices
             .into_iter()
             .map(|offer_index| match credential_offer.credentials.get(offer_index) {
@@ -116,6 +125,7 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
             },
             None => unreachable!(),
         };
+
         info!("token_request: {:?}", token_request);
 
         // Get an access token.
@@ -170,6 +180,7 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
         for (i, credential) in credentials.into_iter().enumerate() {
             let mut verifiable_credential_record: VerifiableCredentialRecord = credential.into();
             verifiable_credential_record.display_credential.issuer_name = issuer_name.clone();
+            verifiable_credential_record.display_credential.connection_id = Some(connection.id.clone());
 
             let key: Uuid = verifiable_credential_record
                 .display_credential
@@ -200,11 +211,11 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
             .map(|verifiable_credential_record| verifiable_credential_record.display_credential)
             .collect();
 
-        let previously_connected = state.connections.contains(connection_url, &issuer_name);
-        let mut connections = state.connections;
-        let connection = connections.update_or_insert(connection_url, &issuer_name);
-
-        persist_asset("client_0", &connection.id).ok();
+        let file_name = match logo_uri {
+            Some(logo_uri) => hash(logo_uri.as_str()),
+            None => "_".to_string(),
+        };
+        persist_asset(&file_name, &connection.id).ok();
 
         // History
         if !history_credentials.is_empty() {

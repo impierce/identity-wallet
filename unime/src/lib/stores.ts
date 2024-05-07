@@ -1,43 +1,40 @@
 import { goto } from '$app/navigation';
+import { setLocale } from '$i18n/i18n-svelte';
+import type { Locales } from '$i18n/i18n-types';
 import { writable } from 'svelte/store';
 
 // TODO: run some copy task instead of importing across root to make the frontend independent
-import type { AppState as State } from '@bindings/AppState';
+import type { AppState } from '@bindings/AppState';
 import { listen } from '@tauri-apps/api/event';
 import { info } from '@tauri-apps/plugin-log';
 
-import { setLocale } from '$src/i18n/i18n-svelte';
-import type { Locales } from '$src/i18n/i18n-types';
-
 interface StateChangedEvent {
   event: string;
-  windowLabel: string;
-  payload: State;
+  payload: AppState;
   id: number;
 }
 
-// TODO: even needed? or simply "writable<State>(undefined, (set) => {});"?
-const empty_state: State = {
-  credentials: [],
-  current_user_prompt: null,
-  dev_mode: 'Off',
-  debug_messages: [],
-  user_journey: null,
+interface OnboardingState {
+  name?: string;
+  password?: string; // TODO: secure enough?
+}
+
+const empty_state: AppState = {
   connections: [],
+  credentials: [],
   search_results: {
     current: [],
     recent_credentials: [],
   },
   profile_settings: {
     locale: 'en-US',
-    profile: {
-      name: '',
-      picture: '',
-      theme: 'system',
-      primary_did: '',
-    },
+    profile: null,
   },
+  current_user_prompt: null,
+  user_journey: null,
+  debug_messages: [],
   history: [],
+  dev_mode: 'Off',
 };
 
 /**
@@ -45,8 +42,8 @@ const empty_state: State = {
  * If the frontend intends to change the state, it must dispatch an action to the backend.
  */
 // TODO: make read-only
-export const state = writable<State>(empty_state, (set) => {
-  const unlisten = listen('state-changed', (event: StateChangedEvent) => {
+export const state = writable<AppState>(empty_state, (set) => {
+  listen('state-changed', (event: StateChangedEvent) => {
     const state = event.payload;
 
     set(state);
@@ -54,7 +51,7 @@ export const state = writable<State>(empty_state, (set) => {
 
     if (state.current_user_prompt?.type === 'redirect') {
       const redirect_target = state.current_user_prompt.target;
-      info(`redirecting to: "/${redirect_target}"`);
+      info(`Redirecting to: "/${redirect_target}"`);
       goto(`/${redirect_target}`);
     }
   });
@@ -68,8 +65,3 @@ export const state = writable<State>(empty_state, (set) => {
  * where the user sets their preferences and only in the last step they are pushed to the backend.
  */
 export const onboarding_state = writable<OnboardingState>({});
-
-interface OnboardingState {
-  name?: string;
-  password?: string; // TODO: secure enough?
-}

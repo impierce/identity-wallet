@@ -9,7 +9,7 @@ use ts_rs::TS;
 #[derive(Serialize, Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/CredentialOffersSelected.ts")]
 pub struct CredentialOffersSelected {
-    #[ts(type = "Array<string>")]
+    #[ts(type = "Array<number>")]
     pub offer_indices: Vec<usize>,
 }
 

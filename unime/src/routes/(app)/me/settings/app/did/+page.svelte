@@ -41,15 +41,15 @@
 </script>
 
 <TopNavBar on:back={() => history.back()} title={'Manage identities'} />
-<div class="content-height bg-silver dark:bg-navy flex flex-col">
+<div class="content-height flex flex-col bg-silver dark:bg-navy">
   <!-- Style 1: Cards -->
   <div class="space-y-8 p-4">
     {#each methods as method}
-      <div class="dark:bg-dark rounded-xl bg-white p-4">
+      <div class="rounded-xl bg-white p-4 dark:bg-dark">
         <div class="flex items-center justify-between">
-          <p class="dark:text-grey text-base font-semibold text-slate-800">{method.name ?? method.method}</p>
+          <p class="text-base font-semibold text-slate-800 dark:text-grey">{method.name ?? method.method}</p>
           {#if method.enabled}
-            <Check class="text-primary h-5 w-5" />
+            <Check class="h-5 w-5 text-primary" />
           {:else if method.did}
             <div class="-mr-1 -mt-1">
               <lottie-player
@@ -62,7 +62,7 @@
               />
             </div>
           {:else}
-            <p class="text-primary text-[13px]/[24px] font-medium">Set up</p>
+            <p class="text-[13px]/[24px] font-medium text-primary">Set up</p>
           {/if}
         </div>
         {#if method.did}

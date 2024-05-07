@@ -1,15 +1,17 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  import { melt } from '@melt-ui/svelte';
+  import LL from '$i18n/i18n-svelte';
 
+  import { melt } from '@melt-ui/svelte';
+  import { warn } from '@tauri-apps/plugin-log';
+
+  import Button from '$lib/components/atoms/Button.svelte';
+  import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
   import { dispatch } from '$lib/dispatcher';
-  import LL from '$src/i18n/i18n-svelte';
-  import Button from '$src/lib/components/atoms/Button.svelte';
-  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
-  import UniMeLogoDark from '$src/lib/static/svg/logo/UniMeLogoDark.svelte';
-  import UniMeLogoLight from '$src/lib/static/svg/logo/UniMeLogoLight.svelte';
-  import { state } from '$src/stores';
+  import UniMeLogoDark from '$lib/static/svg/logo/UniMeLogoDark.svelte';
+  import UniMeLogoLight from '$lib/static/svg/logo/UniMeLogoLight.svelte';
+  import { state } from '$lib/stores';
 
   import Eye from '~icons/ph/eye';
   import EyeClosed from '~icons/ph/eye-closed';
@@ -24,7 +26,7 @@
   // TODO move to the backend
   onMount(() => {
     if ($state?.dev_mode === 'OnWithAutologin') {
-      console.log('Developer mode - Injecting password automatically ...');
+      warn('Developer mode - Injecting password automatically ...');
       setTimeout(() => {
         dispatch({ type: '[Storage] Unlock', payload: { password: 'sup3rSecr3t' } });
       }, 500);
@@ -66,7 +68,7 @@
     />
     <!-- Forgot password? Reset app -->
     <div class="mt-8">
-      <BottomDrawer titleText={$LL.SETTINGS.RESET_APP.TITLE()} descriptionText={$LL.SETTINGS.RESET_APP.DESCRIPTION()}>
+      <ActionSheet titleText={$LL.SETTINGS.RESET_APP.TITLE()} descriptionText={$LL.SETTINGS.RESET_APP.DESCRIPTION()}>
         <button
           slot="trigger"
           let:trigger
@@ -84,7 +86,7 @@
         </div>
 
         <Button variant="secondary" slot="close" let:close trigger={close} label={$LL.SETTINGS.RESET_APP.CANCEL()} />
-      </BottomDrawer>
+      </ActionSheet>
     </div>
   </div>
 </div>

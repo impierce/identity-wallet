@@ -1,17 +1,16 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import LL from '$i18n/i18n-svelte';
 
   import { melt } from '@melt-ui/svelte';
 
+  import SettingsEntry from '$lib/app/settings/SettingsEntry.svelte';
+  import Button from '$lib/components/atoms/Button.svelte';
+  import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
+  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
   import { dispatch } from '$lib/dispatcher';
-  import LL from '$src/i18n/i18n-svelte';
-  import SettingsEntry from '$src/lib/app/settings/SettingsEntry.svelte';
-  import Button from '$src/lib/components/atoms/Button.svelte';
-  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
-  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
 
   import Keyboard from '~icons/ph/keyboard-fill';
-  import SmileyWink from '~icons/ph/smiley-wink-fill';
   import Trash from '~icons/ph/trash-fill';
 </script>
 
@@ -25,13 +24,12 @@
     />
 
     <!-- Delete profile -->
-    <BottomDrawer titleText={$LL.SETTINGS.RESET_APP.TITLE()} descriptionText={$LL.SETTINGS.RESET_APP.DESCRIPTION()}>
+    <ActionSheet titleText={$LL.SETTINGS.RESET_APP.TITLE()} descriptionText={$LL.SETTINGS.RESET_APP.DESCRIPTION()}>
       <button
         slot="trigger"
         let:trigger
         class="flex items-center space-x-4 rounded-xl bg-white p-4 dark:bg-dark"
         use:melt={trigger}
-        on:click={() => {}}
       >
         <svelte:component this={Trash} class="h-5 w-5 text-rose-400" />
         <p class="grow text-left text-[13px]/[24px] font-medium text-slate-800 dark:text-white">
@@ -46,7 +44,7 @@
         >
       </div>
       <Button variant="secondary" slot="close" let:close trigger={close} label={$LL.SETTINGS.RESET_APP.CANCEL()} />
-    </BottomDrawer>
+    </ActionSheet>
   </div>
 </div>
 

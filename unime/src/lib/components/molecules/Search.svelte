@@ -2,22 +2,21 @@
   import { createEventDispatcher } from 'svelte';
 
   import { goto } from '$app/navigation';
-
-  import LL from '$src/i18n/i18n-svelte';
+  import LL from '$i18n/i18n-svelte';
 
   import MagnifyingGlass from '~icons/ph/magnifying-glass-bold';
   import Clear from '~icons/ph/x-bold';
 
   const dispatch = createEventDispatcher();
 
-  export let value: string = '';
+  export let value = '';
   export let placeholder = $LL.SEARCH.INPUT_PLACEHOLDER();
   export let delay = 500;
   // makes the <input> element available to the parent component (example usage: conditionally put focus it)
   export let ref: HTMLInputElement;
 
   let debouncedValue: string | undefined;
-  let timer: any;
+  let timer: NodeJS.Timeout;
 
   const debounce = (value: string) => {
     clearTimeout(timer);

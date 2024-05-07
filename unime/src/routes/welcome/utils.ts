@@ -1,4 +1,4 @@
-export let routeOrder = [
+export const routeOrder = [
   '/welcome',
   '/welcome/pledge',
   '/welcome/terms',

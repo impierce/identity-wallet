@@ -2,33 +2,16 @@
   import { onMount } from 'svelte';
 
   import { goto } from '$app/navigation';
+  import LL from '$i18n/i18n-svelte';
 
   import type { DisplayCredential } from '@bindings/display-credential/DisplayCredential';
 
   import ListItemCard from '$lib/components/molecules/ListItemCard.svelte';
-  import LL from '$src/i18n/i18n-svelte';
-  import { state } from '$src/stores';
+  import { state } from '$lib/stores';
 
   import Heart from '~icons/ph/heart-straight-fill';
 
   export let credentialType: 'all' | 'data' | 'badges' = 'all';
-
-  // let favorite_credentials: any[] = [
-  //   {
-  //     title: 'Avatar: The Way of Water',
-  //     description: 'Downtown Cinema',
-  //     icon: FilmSlate,
-  //     color: 'bg-amber-100'
-  //   },
-  //   {
-  //     title: 'Flight #1337 to Pandora',
-  //     description: 'Pandora Airlines',
-  //     icon: AirplaneTilt,
-  //     color: 'bg-teal-100'
-  //   }
-  // ];
-
-  // favorite_credentials = [];
 
   let favorite_credentials: DisplayCredential[] = $state.credentials.filter((c) => c.metadata.is_favorite);
 

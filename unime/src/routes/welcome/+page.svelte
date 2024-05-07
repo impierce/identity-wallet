@@ -1,15 +1,14 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { fade, fly } from 'svelte/transition';
+  import LL from '$i18n/i18n-svelte';
+  import { fade } from 'svelte/transition';
 
-  import { dispatch } from '$lib/dispatcher';
-  import LL from '$src/i18n/i18n-svelte';
-  import LanguageSelect from '$src/lib/app/LanguageSelect.svelte';
-  import Button from '$src/lib/components/atoms/Button.svelte';
-  import MeLarge from '$src/lib/static/svg/logo/MeLarge.svelte';
-  import UniMeTextDark from '$src/lib/static/svg/logo/UniMeTextDark.svelte';
-  import UniMeTextLight from '$src/lib/static/svg/logo/UniMeTextLight.svelte';
-  import { onboarding_state, state } from '$src/stores';
+  import LanguageSelect from '$lib/app/LanguageSelect.svelte';
+  import Button from '$lib/components/atoms/Button.svelte';
+  import MeLarge from '$lib/static/svg/logo/MeLarge.svelte';
+  import UniMeTextDark from '$lib/static/svg/logo/UniMeTextDark.svelte';
+  import UniMeTextLight from '$lib/static/svg/logo/UniMeTextLight.svelte';
+  import { onboarding_state } from '$lib/stores';
 
   // TODO: make reactive
   const isDarkModeEnabled = document.documentElement.classList.contains('dark');
@@ -20,30 +19,7 @@
   in:fade={{ delay: 200 }}
   out:fade={{ duration: 200 }}
 >
-  <div class="absolute top-12 w-full">
-    <!-- <LanguageSelect
-      selected={$state?.locale}
-      on:value={(e) => dispatch({ type: '[Settings] Set locale', payload: { locale: e.detail } })}
-    /> -->
-
-    <!-- <div class="grid grid-flow-col space-x-4">
-      <button
-        class={active_language === 'en' ? active_language_class : ''}
-        on:click={() => setLanguage('en')}><GB class="h-[27px] w-[36px] rounded-lg" /></button
-      >
-      <button
-        class={active_language === 'nl' ? active_language_class : ''}
-        on:click={() => setLanguage('nl')}><NL class="h-[27px] w-[36px] rounded-lg" /></button
-      >
-      <button
-        class={active_language === 'de' ? active_language_class : ''}
-        on:click={() => setLanguage('de')}><DE class="h-[27px] w-[36px] rounded-lg" /></button
-      >
-    </div> -->
-  </div>
-
   <div class="grow">
-    <!-- <div class="flex grow flex-col justify-center" in:fade out:fly={{ x: -300, duration: 300 }}> -->
     <div class="mt-[calc(100vh/8)] px-4 py-6">
       <div class="pb-9">
         <p class=" pb-[10px] text-[36px]/[44px] font-bold text-blue dark:text-silver">
@@ -74,11 +50,6 @@
 
   <!-- Actions -->
   <div class="z-10 space-y-[10px] rounded-t-3xl bg-white p-6 dark:bg-dark">
-    <!-- <div
-    class="space-y-[10px] rounded-t-3xl bg-white p-6"
-    in:fly={{ y: 154 }}
-    out:fly={{ y: 154, duration: 300, opacity: 1 }}
-  > -->
     <Button
       label={$LL.ONBOARDING.WELCOME.CREATE_NEW_PROFILE()}
       on:click={() => {

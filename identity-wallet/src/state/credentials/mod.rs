@@ -25,10 +25,9 @@ pub struct DisplayCredential {
     pub data: serde_json::Value,
     #[serde(default)]
     pub metadata: CredentialMetadata,
-
+    #[ts(optional)]
+    pub connection_id: Option<String>,
     pub display_name: String,
-    pub display_color: Option<String>,
-    pub display_icon: Option<String>,
 }
 
 #[typetag::serde(name = "display_credential")]
@@ -99,9 +98,8 @@ impl From<CredentialFormats<WithCredential>> for VerifiableCredentialRecord {
                         date_added: DateUtils::new_date_string(),
                         date_issued: issuance_date.to_string(),
                     },
+                    connection_id: None,
                     display_name,
-                    display_color: None,
-                    display_icon: None,
                 }
             }
             _ => unimplemented!(),

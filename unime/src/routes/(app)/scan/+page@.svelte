@@ -2,6 +2,7 @@
   import { onDestroy, onMount } from 'svelte';
 
   import { goto } from '$app/navigation';
+  import LL from '$i18n/i18n-svelte';
 
   import {
     cancel,
@@ -15,11 +16,10 @@
   } from '@tauri-apps/plugin-barcode-scanner';
   import { debug, info, warn } from '@tauri-apps/plugin-log';
 
+  import Button from '$lib/components/atoms/Button.svelte';
+  import BottomNavBar from '$lib/components/molecules/navigation/BottomNavBar.svelte';
   import { dispatch } from '$lib/dispatcher';
-  import LL from '$src/i18n/i18n-svelte';
-  import Button from '$src/lib/components/atoms/Button.svelte';
-  import BottomNavBar from '$src/lib/components/molecules/navigation/BottomNavBar.svelte';
-  import { state } from '$src/stores';
+  import { state } from '$lib/stores';
 
   import CameraSlash from '~icons/ph/camera-slash';
 
@@ -28,7 +28,7 @@
   let permissions_nullable: PermissionState | null;
 
   function onMessage(scanned: Scanned) {
-    debug(`scanned: ${scanned.content}`);
+    debug(`Scanned: ${scanned.content}`);
     dispatch({ type: '[QR Code] Scanned', payload: { form_urlencoded: scanned.content } });
     goto('/me');
   }
@@ -59,7 +59,7 @@
       const formats = [Format.QRCode];
       const windowed = true;
 
-      info(`starting scan with parameters: { formats: ${formats}, windowed: ${windowed} }`);
+      info(`Starting scan with parameters: { formats: ${formats}, windowed: ${windowed} }`);
       scanning = true;
       scan({ formats, windowed })
         .then((res) => {
@@ -81,10 +81,9 @@
       current_user_prompt: {
         type: 'accept-connection',
         client_name: 'Some other client',
-        logo_uri: 'https://demo.ngdil.com/imgs/ngdil.svg',
+        logo_uri: undefined,
         redirect_uri: 'https://demo.ngdil.com/auth/callback',
         previously_connected: false,
-        // logo_uri: 'https://picsum.photos/200'
       },
     });
   };
@@ -95,8 +94,7 @@
       current_user_prompt: {
         type: 'share-credentials',
         client_name: 'My Client Name',
-        logo_uri: 'https://demo.ngdil.com/imgs/ngdil.svg',
-        // logo_uri: 'https://picsum.photos/200',
+        logo_uri: undefined,
         options: [$state.credentials[0].id],
       },
     });
@@ -111,14 +109,14 @@
 
   // lifecycle functions
   onDestroy(async () => {
-    console.log('onDestroy: /scan');
-    document.documentElement.querySelector('body')!!.classList.remove('transparent');
+    debug('/scan: onDestroy() called');
+    document.documentElement.querySelector('body')!.classList.remove('transparent');
     await cancelScan();
   });
 
   onMount(async () => {
-    console.log('onMount: /scan');
-    document.documentElement.querySelector('body')!!.classList.add('transparent');
+    debug('/scan: onMount() called');
+    document.documentElement.querySelector('body')!.classList.add('transparent');
 
     // TODO find a good way to test if not dev_mode. This will have to be checked after $state is loaded.
     startScan();

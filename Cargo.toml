@@ -21,7 +21,7 @@ tempfile = "3.5.0"
 
 [workspace.package]
 name = "unime"
-version = "0.4.12"
+version = "0.5.1"
 description = "Identity Wallet for people to manage Decentralized Identities and Verifiable Credentials"
 homepage = "https://www.impierce.com/"
 authors = ["Impierce Technologies"]

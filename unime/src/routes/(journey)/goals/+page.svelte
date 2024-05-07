@@ -1,19 +1,19 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import LL from '$i18n/i18n-svelte';
   import { fly } from 'svelte/transition';
 
   import { melt } from '@melt-ui/svelte';
 
+  import Button from '$lib/components/atoms/Button.svelte';
+  import PaddedIcon from '$lib/components/atoms/PaddedIcon.svelte';
+  import ProgressBar from '$lib/components/atoms/ProgressBar.svelte';
+  import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
+  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
   import { dispatch } from '$lib/dispatcher';
-  import LL from '$src/i18n/i18n-svelte';
-  import Button from '$src/lib/components/atoms/Button.svelte';
-  import PaddedIcon from '$src/lib/components/atoms/PaddedIcon.svelte';
-  import ProgressBar from '$src/lib/components/atoms/ProgressBar.svelte';
-  import BottomDrawer from '$src/lib/components/molecules/dialogs/BottomDrawer.svelte';
-  import TopNavBar from '$src/lib/components/molecules/navigation/TopNavBar.svelte';
-  import GoalItem from '$src/lib/journeys/goals/GoalItem.svelte';
-  import { icons } from '$src/lib/journeys/goals/icons';
-  import { state } from '$src/stores';
+  import GoalItem from '$lib/journeys/goals/GoalItem.svelte';
+  import { icons } from '$lib/journeys/goals/icons';
+  import { state } from '$lib/stores';
 
   import Trophy from '~icons/ph/trophy-fill';
 
@@ -30,14 +30,12 @@
   goals.at(2).completed = false;
 
   let completedPercentage = Math.round((goals.filter((goal) => goal.completed).length / goals.length) * 100);
-
-  console.log(completedPercentage);
 </script>
 
 <!-- Navbar -->
 <TopNavBar on:back={() => history.back()} title={$state?.user_journey?.title}>
-  <!-- TODO: replace BottomDrawer with AlertDialog -->
-  <BottomDrawer titleText={$LL.GETTING_STARTED.SKIP_TITLE()} descriptionText={$LL.GETTING_STARTED.SKIP_TEXT()}>
+  <!-- TODO: replace ActionSheet with AlertDialog -->
+  <ActionSheet titleText={$LL.GETTING_STARTED.SKIP_TITLE()} descriptionText={$LL.GETTING_STARTED.SKIP_TEXT()}>
     <button
       slot="trigger"
       let:trigger
@@ -68,7 +66,7 @@
       <Button label="Yes" on:click={() => dispatch({ type: '[User Journey] Cancel' })} />
     </div>
     <Button variant="secondary" slot="close" let:close trigger={close} label="No, let's continue" />
-  </BottomDrawer>
+  </ActionSheet>
 </TopNavBar>
 
 <!-- Content -->
@@ -99,7 +97,7 @@
       <!-- Goal items -->
       <div class="flex w-full flex-col space-y-4 py-8">
         {#each goals as goal}
-          <BottomDrawer titleText={goal.label} descriptionText={goal.description}>
+          <ActionSheet titleText={goal.label} descriptionText={goal.description}>
             <svelte:fragment slot="trigger" let:trigger>
               <GoalItem {trigger} label={goal.label} completed={goal.completed} icon={goal.icon} />
             </svelte:fragment>
@@ -130,7 +128,7 @@
               class="mt-2 w-full rounded-lg border bg-white px-4 py-2 text-neutral-700"
               >Close</button
             > -->
-          </BottomDrawer>
+          </ActionSheet>
         {/each}
       </div>
     </div>
