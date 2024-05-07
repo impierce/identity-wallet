@@ -4,11 +4,11 @@ use crate::{
         actions::{listen, Action},
         core_utils::IdentityManager,
         profile_settings::{actions::create_new::CreateNew, Profile, ProfileSettings},
-        subject::Subject,
         user_prompt::CurrentUserPrompt,
         AppState,
     },
     stronghold::StrongholdManager,
+    subject::Subject,
 };
 
 use did_manager::SecretManager;

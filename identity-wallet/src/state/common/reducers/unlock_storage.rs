@@ -2,10 +2,10 @@ use crate::error::AppError::{self, *};
 use crate::state::actions::{listen, Action};
 use crate::state::common::actions::unlock_storage::UnlockStorage;
 use crate::state::core_utils::IdentityManager;
-use crate::state::subject::Subject;
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::AppState;
 use crate::stronghold::StrongholdManager;
+use crate::subject::Subject;
 
 use did_manager::SecretManager;
 use log::info;

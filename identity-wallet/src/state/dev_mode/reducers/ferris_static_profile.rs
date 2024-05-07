@@ -7,11 +7,11 @@ use crate::{
         credentials::VerifiableCredentialRecord,
         dev_mode::DevMode,
         profile_settings::{AppTheme, Profile},
-        subject::Subject,
         user_prompt::CurrentUserPrompt,
         AppState,
     },
     stronghold::StrongholdManager,
+    subject::Subject,
 };
 
 use did_manager::SecretManager;

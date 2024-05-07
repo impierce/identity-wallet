@@ -5,7 +5,7 @@ use did_manager::SecretManager;
 use identity_wallet::oid4vc_manager::ProviderManager;
 use identity_wallet::oid4vci::Wallet;
 use identity_wallet::state::credentials::VerifiableCredentialRecord;
-use identity_wallet::state::subject::Subject;
+use identity_wallet::subject::Subject;
 use identity_wallet::{
     state::core_utils::{IdentityManager, Managers},
     stronghold::StrongholdManager,
