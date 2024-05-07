@@ -29,6 +29,8 @@ pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppS
             .as_ref()
             .ok_or(MissingManagerError("stronghold"))?;
 
+        let default_did_method = state.profile_settings.default_did_method.as_str();
+
         let public_key = stronghold_manager.get_public_key().map_err(StrongholdPublicKeyError)?;
 
         let client_path = crate::persistence::STRONGHOLD
@@ -45,15 +47,18 @@ pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppS
                 .unwrap(),
         );
 
-        let provider_manager = ProviderManager::new([subject.clone()]).map_err(OID4VCProviderManagerError)?;
-        let wallet: Wallet = Wallet::new(subject.clone());
+        let provider_manager =
+            ProviderManager::new(subject.clone(), default_did_method).map_err(OID4VCProviderManagerError)?;
+        let wallet: Wallet = Wallet::new(subject.clone(), default_did_method).map_err(OID4VCWalletError)?;
 
         let profile_settings = ProfileSettings {
             profile: Some(Profile {
                 name,
                 picture: Some(picture),
                 theme,
-                primary_did: subject.identifier().map_err(OID4VCSubjectIdentifierError)?,
+                primary_did: subject
+                    .identifier(default_did_method)
+                    .map_err(OID4VCSubjectIdentifierError)?,
             }),
             ..state.profile_settings
         };

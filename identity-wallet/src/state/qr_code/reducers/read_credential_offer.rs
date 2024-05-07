@@ -1,8 +1,11 @@
+use std::collections::HashMap;
+
 use crate::{
     error::AppError::{self, *},
     persistence::{download_asset, hash},
     state::{
         actions::{listen, Action},
+        core_utils::CoreUtils,
         qr_code::actions::qrcode_scanned::QrCodeScanned,
         user_prompt::CurrentUserPrompt,
         AppState,
@@ -11,8 +14,8 @@ use crate::{
 
 use log::{debug, info};
 use oid4vc::oid4vci::{
-    credential_issuer::credentials_supported::CredentialsSupportedObject,
-    credential_offer::{CredentialOffer, CredentialOfferQuery, CredentialsObject},
+    credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject,
+    credential_offer::{CredentialOffer, CredentialOfferParameters},
 };
 
 pub async fn read_credential_offer(state: AppState, action: Action) -> Result<AppState, AppError> {
@@ -22,7 +25,7 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
     // Therefore its also checked if it can parse to credential offer query
     // TODO find a better way to connect to the right reducer
     if let Some(credential_offer_uri) =
-        listen::<QrCodeScanned>(action).and_then(|payload| payload.form_urlencoded.parse::<CredentialOfferQuery>().ok())
+        listen::<QrCodeScanned>(action).and_then(|payload| payload.form_urlencoded.parse::<CredentialOffer>().ok())
     {
         let state_guard = state.core_utils.managers.lock().await;
         let wallet = &state_guard
@@ -31,9 +34,9 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
             .ok_or(MissingManagerError("identity"))?
             .wallet;
 
-        let mut credential_offer: CredentialOffer = match credential_offer_uri {
-            CredentialOfferQuery::CredentialOffer(credential_offer) => credential_offer,
-            CredentialOfferQuery::CredentialOfferUri(credential_offer_uri) => wallet
+        let credential_offer: CredentialOfferParameters = match credential_offer_uri {
+            CredentialOffer::CredentialOffer(credential_offer) => *credential_offer,
+            CredentialOffer::CredentialOfferUri(credential_offer_uri) => wallet
                 .get_credential_offer(credential_offer_uri)
                 .await
                 .map_err(GetCredentialOfferError)?,
@@ -53,60 +56,30 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
 
         info!("credential issuer metadata: {:?}", credential_issuer_metadata);
 
-        let credentials_supported_objects: Vec<CredentialsSupportedObject> = credential_offer
-            .credentials
+        let credential_configurations: HashMap<String, CredentialConfigurationsSupportedObject> = credential_offer
+            .credential_configuration_ids
             .iter()
-            .map(|credential| {
-                match credential {
-                    CredentialsObject::ByReference(by_reference) => credential_issuer_metadata
-                        .as_ref()
-                        .and_then(|credential_issuer_metadata| {
-                            credential_issuer_metadata
-                                .credentials_supported
-                                .iter()
-                                .find(|credential_supported| {
-                                    credential_supported.scope == Some(by_reference.to_owned())
-                                })
-                        })
-                        .ok_or(MissingCredentialOfferError(by_reference.clone())),
-                    _by_value => credential_issuer_metadata
-                        .as_ref()
-                        .and_then(|credential_issuer_metadata| credential_issuer_metadata.credentials_supported.first())
-                        .ok_or(MissingCredentialOfferError("nothing found".to_string())),
-                }
-                .expect("TODO: handle missing")
-                .to_owned()
+            .filter_map(|credential_configuration_id| {
+                credential_issuer_metadata
+                    .as_ref()
+                    .and_then(|credential_issuer_metadata| {
+                        credential_issuer_metadata
+                            .credential_configurations_supported
+                            .get(credential_configuration_id)
+                            .map(|credential_configuration| {
+                                (credential_configuration_id.clone(), credential_configuration.clone())
+                            })
+                    })
             })
             .collect();
 
-        // For all credentials by reference, replace them with credentials by value using the CredentialIssuerMetadata.
-        for credential in credential_offer.credentials.iter_mut() {
-            match credential {
-                CredentialsObject::ByReference(by_reference) => {
-                    *credential = CredentialsObject::ByValue(
-                        credential_issuer_metadata
-                            .as_ref()
-                            .and_then(|credential_issuer_metadata| {
-                                credential_issuer_metadata
-                                    .credentials_supported
-                                    .iter()
-                                    .find(|credential_supported| {
-                                        credential_supported.scope == Some(by_reference.to_owned())
-                                    })
-                                    .map(|credential_supported| credential_supported.credential_format.clone())
-                            })
-                            .ok_or(MissingCredentialOfferError(by_reference.clone()))?,
-                    );
-                }
-                _by_value => (),
-            }
-        }
-
         // Get the credential issuer display if present.
         let display = credential_issuer_metadata
+            .as_ref()
             .and_then(|credential_issuer_metadata| {
                 credential_issuer_metadata
                     .display
+                    .as_ref()
                     .map(|display| display.first().cloned())
             })
             .flatten();
@@ -139,13 +112,11 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
         info!("issuer_name in credential_offer: {:?}", issuer_name);
         info!("logo_uri in credential_offer: {:?}", logo_uri);
 
-        let mut display = vec![];
-        for (index, credential_supported_object) in credentials_supported_objects.iter().enumerate() {
-            let credential_logo_url = credential_supported_object.display.as_ref().and_then(|display| {
-                display
-                    .first()
-                    .and_then(|value| value.get("logo").and_then(|value| value.get("url")))
-            });
+        for (credential_configuration_id, credential_configuration) in credential_configurations.iter() {
+            let credential_logo_url = credential_configuration
+                .display
+                .first()
+                .and_then(|value| value.get("logo").and_then(|value| value.get("url")));
 
             info!("credential_logo_url: {:?}", credential_logo_url);
 
@@ -158,20 +129,17 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
                     .as_str()
                     .and_then(|s| s.parse::<reqwest::Url>().ok())
                 {
-                    let _ = download_asset(credential_logo_url, format!("credential_{}", index).as_str()).await;
+                    let _ = download_asset(
+                        credential_logo_url,
+                        format!("credential_{}", credential_configuration_id).as_str(),
+                    )
+                    .await;
                 }
             }
 
             if credential_logo_url.is_none() && logo_uri.is_none() {
                 debug!("No logo found in metadata.");
             }
-
-            display.push(
-                credential_supported_object
-                    .display
-                    .as_ref()
-                    .and_then(|display| display.first().cloned()),
-            );
         }
 
         if logo_uri.is_some() {
@@ -192,9 +160,12 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
             current_user_prompt: Some(CurrentUserPrompt::CredentialOffer {
                 issuer_name,
                 logo_uri,
-                credential_offer,
-                display,
+                credential_configurations,
             }),
+            core_utils: CoreUtils {
+                active_credential_offer: Some(credential_offer),
+                ..state.core_utils
+            },
             ..state
         });
     }
