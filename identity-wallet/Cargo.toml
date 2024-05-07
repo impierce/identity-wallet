@@ -47,4 +47,4 @@ rand.workspace = true
 wiremock.workspace = true
 serial_test.workspace = true
 tempfile.workspace = true
-tauri = { version = "=2.0.0-beta.12", features = ["rustls-tls", "test"] }
+tauri = { version = "=2.0.0-beta.18", features = ["rustls-tls", "test"] }
