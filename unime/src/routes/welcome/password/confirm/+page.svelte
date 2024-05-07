@@ -18,13 +18,16 @@
   let passwordsMatch: boolean | undefined = undefined;
 
   let showPassword = false;
-  let password = '';
+  let value = '';
 
   // Ref to input DOM element.
-  let input_element: HTMLInputElement;
+  let inputElement: HTMLInputElement;
+
+  // Tracks whether the user has interacted with the input element. This allows to suppress the validation message only on first try.
+  let touched = false;
 
   onMount(() => {
-    input_element.focus();
+    inputElement.focus();
   });
 </script>
 
@@ -43,24 +46,32 @@
   <div class="relative">
     <!-- Dynamic type attribute requires one-way binding instead of two-way bind:value. -->
     <input
-      value={password}
-      bind:this={input_element}
+      {value}
+      bind:this={inputElement}
       type={showPassword ? 'text' : 'password'}
       placeholder={$LL.ONBOARDING.PASSWORD.CONFIRM.INPUT_PLACEHOLDER()}
       on:blur={() => {
-        if (password === $onboarding_state.password) {
-          passwordsMatch = true;
-        } else {
-          passwordsMatch = false;
+        if (value.length > 0) {
+          if (value === $onboarding_state.password) {
+            passwordsMatch = true;
+          } else {
+            passwordsMatch = false;
+          }
+          // Mark the input element as "touched" after losing focus for the first time.
+          touched = true;
         }
       }}
       on:input={(e) => {
-        password = e.currentTarget.value;
-        if (password === $onboarding_state.password) {
+        value = e.currentTarget.value;
+        if (value === $onboarding_state.password) {
           passwordsMatch = true;
         } else {
-          // Suppress validation message.
-          passwordsMatch = undefined;
+          // Suppress validation message (only on first try).
+          if (touched) {
+            passwordsMatch = false;
+          } else {
+            passwordsMatch = undefined;
+          }
         }
       }}
       class="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300"
@@ -70,7 +81,7 @@
         class="rounded-full p-2"
         on:click={() => {
           // Focus input element when toggling visibility.
-          input_element.focus();
+          inputElement.focus();
           return (showPassword = !showPassword);
         }}
       >

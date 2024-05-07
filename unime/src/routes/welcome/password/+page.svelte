@@ -20,10 +20,10 @@
   let showPassword = false;
 
   // Ref to input DOM element.
-  let input_element: HTMLInputElement;
+  let inputElement: HTMLInputElement;
 
   onMount(() => {
-    input_element.focus();
+    inputElement.focus();
   });
 </script>
 
@@ -41,7 +41,7 @@
   </div>
   <div class="relative">
     <input
-      bind:this={input_element}
+      bind:this={inputElement}
       type={showPassword ? 'text' : 'password'}
       class="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300"
       placeholder={$LL.ONBOARDING.PASSWORD.INPUT_PLACEHOLDER()}
@@ -59,7 +59,7 @@
         class="rounded-full p-2"
         on:click={() => {
           // Focus input element when toggling visbility.
-          input_element.focus();
+          inputElement.focus();
           return (showPassword = !showPassword);
         }}
       >
