@@ -10,11 +10,11 @@
 <div class="flex flex-col items-center">
   <!-- Indicator -->
   {#if active}
-    <div class="h-[4px] w-full rounded-full bg-primary" />
+    <div class="h-[2px] w-full rounded-full bg-primary" />
   {/if}
 
-  <!-- Active button gets 4px less padding to accommodate indicator. -->
-  <button class={`rounded-full px-6 ${active ? 'pt-2' : 'pt-3'}`} on:click={() => dispatch('click')}>
+  <!-- Active button gets 2px less padding to accommodate indicator. -->
+  <button class={`rounded-full px-6 ${active ? 'pt-2.5' : 'pt-3'}`} on:click={() => dispatch('click')}>
     <div
       class={`flex h-12 w-10 flex-col items-center justify-center ${
         active ? 'text-primary' : 'text-slate-800 dark:text-grey'
