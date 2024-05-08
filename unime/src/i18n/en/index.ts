@@ -286,8 +286,8 @@ const en = {
     ORDER: {
       A_Z: 'A to Z',
       Z_A: 'Z to A',
-      NEWEST: 'Newest',
-      OLDEST: 'Oldest',
+      NEWEST: 'Newest first',
+      OLDEST: 'Oldest first',
     },
   },
   CANCEL: 'Cancel',

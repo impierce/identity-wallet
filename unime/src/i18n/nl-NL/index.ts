@@ -286,8 +286,8 @@ const nl = {
     ORDER: {
       A_Z: 'A tot Z',
       Z_A: 'Z tot A',
-      NEWEST: 'Nieuwste',
-      OLDEST: 'Oudste',
+      NEWEST: 'Nieuwste eerst',
+      OLDEST: 'Oudste eerst',
     },
   },
   CANCEL: 'Annuleren',
