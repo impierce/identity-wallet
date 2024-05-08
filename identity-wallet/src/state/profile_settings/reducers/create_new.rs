@@ -8,10 +8,9 @@ use crate::{
         AppState,
     },
     stronghold::StrongholdManager,
-    subject::Subject,
+    subject::subject,
 };
 
-use did_manager::SecretManager;
 use log::info;
 use oid4vc::oid4vc_core::Subject as _;
 use oid4vc::oid4vc_manager::ProviderManager;
@@ -32,21 +31,10 @@ pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppS
 
         let default_did_method = state.profile_settings.default_did_method.as_str();
 
-        let client_path = crate::persistence::STRONGHOLD
-            .lock()
-            .unwrap()
-            .to_str()
-            .ok_or(anyhow::anyhow!("failed to get stronghold path"))
-            .unwrap()
-            .to_owned();
-        let password = "sup3rSecr3t".to_owned();
+        // TODO: shouldn't this be passed in?
+        let password = "f00b4r".to_string();
 
-        let subject = Arc::new(Subject {
-            stronghold_manager: stronghold_manager.clone(),
-            secret_manager: SecretManager::load(client_path, password, "key-0".to_owned(), None, None)
-                .await
-                .unwrap(),
-        });
+        let subject = subject(stronghold_manager.clone(), password).await;
 
         let provider_manager =
             ProviderManager::new(subject.clone(), default_did_method).map_err(OID4VCProviderManagerError)?;

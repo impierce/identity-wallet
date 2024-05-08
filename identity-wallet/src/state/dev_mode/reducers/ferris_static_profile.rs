@@ -11,10 +11,9 @@ use crate::{
         AppState,
     },
     stronghold::StrongholdManager,
-    subject::Subject,
+    subject::subject,
 };
 
-use did_manager::SecretManager;
 use lazy_static::lazy_static;
 use log::info;
 use oid4vc::oid4vc_core::Subject as _;
@@ -53,24 +52,11 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
     let mut state = AppState::default();
     let default_did_method = state.profile_settings.default_did_method.as_str();
 
-    let stronghold_manager = Arc::new(StrongholdManager::create("sup3rSecr3t").map_err(StrongholdCreationError)?);
+    let password = "sup3rSecr3t".to_string();
 
-    let client_path = crate::persistence::STRONGHOLD
-        .lock()
-        .unwrap()
-        .to_str()
-        .ok_or(anyhow::anyhow!("failed to get stronghold path"))
-        .unwrap()
-        .to_owned();
-    info!("Loading secret manager from path: {}", client_path);
-    let secret_manager = SecretManager::load(client_path, "sup3rSecr3t".to_owned(), "key-0".to_owned(), None, None)
-        .await
-        .unwrap();
+    let stronghold_manager = Arc::new(StrongholdManager::create(&password).map_err(StrongholdCreationError)?);
 
-    let subject = Arc::new(Subject {
-        stronghold_manager: stronghold_manager.clone(),
-        secret_manager,
-    });
+    let subject = subject(stronghold_manager.clone(), password).await;
 
     let profile = Profile {
         name: "Ferris".to_string(),

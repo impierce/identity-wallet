@@ -10,6 +10,9 @@ use oid4vc::oid4vc_core::authentication::sign::ExternalSign;
 use uuid::Uuid;
 
 // This file is where we implement the stronghold library for our app, which is used to store sensitive data.
+// We have to follow the hard-coded values used in `identity.rs` to make our Stronghold compatible.
+static STRONGHOLD_VAULT_PATH: &str = "iota_identity_vault";
+static STRONGHOLD_CLIENT_PATH: &[u8] = b"iota_identity_client";
 
 /// This struct is the main point of communication between our appstate and the stronghold library.
 #[derive(Debug)]
@@ -36,11 +39,11 @@ impl StrongholdManager {
             KeyProvider::with_passphrase_hashed_blake2b(password.as_bytes().to_vec()).expect("failed to load key");
 
         let client: Client = stronghold
-            .create_client(b"iota_identity_client")
+            .create_client(STRONGHOLD_CLIENT_PATH)
             .expect("cannot create client");
 
         let output_location = Location::generic(
-            "iota_identity_vault".as_bytes().to_vec(),
+            STRONGHOLD_VAULT_PATH.as_bytes().to_vec(),
             "key-0".to_string().as_bytes().to_vec(),
         );
 
@@ -82,7 +85,7 @@ impl StrongholdManager {
 
         info!("Loading snapshot");
 
-        let client = stronghold.load_client_from_snapshot(b"iota_identity_client", &key_provider, &snapshot_path)?;
+        let client = stronghold.load_client_from_snapshot(STRONGHOLD_CLIENT_PATH, &key_provider, &snapshot_path)?;
 
         Ok(Self {
             stronghold,
@@ -98,7 +101,7 @@ impl StrongholdManager {
         engine::snapshot::try_set_encrypt_work_factor(10)?;
 
         self.stronghold
-            .write_client(b"iota_identity_client")
+            .write_client(STRONGHOLD_CLIENT_PATH)
             .expect("store client state into snapshot state failed");
 
         self.stronghold
@@ -155,7 +158,7 @@ impl StrongholdManager {
             .execute_procedure(StrongholdProcedure::PublicKey(PublicKey {
                 ty: KeyType::Ed25519,
                 private_key: Location::generic(
-                    "iota_identity_vault".as_bytes().to_vec(),
+                    STRONGHOLD_VAULT_PATH.as_bytes().to_vec(),
                     "key-0".to_string().as_bytes().to_vec(),
                 ),
             }))?;

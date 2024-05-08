@@ -86,6 +86,24 @@ impl Verify for Subject {
     }
 }
 
+// Helper function: load a `Subject`
+pub async fn subject(stronghold_manager: Arc<StrongholdManager>, password: String) -> Arc<Subject> {
+    let client_path = crate::persistence::STRONGHOLD
+        .lock()
+        .unwrap()
+        .to_str()
+        .ok_or(anyhow::anyhow!("failed to get stronghold path"))
+        .unwrap()
+        .to_owned();
+
+    Arc::new(Subject {
+        stronghold_manager: stronghold_manager.clone(),
+        secret_manager: SecretManager::load(client_path, password, "key-0".to_owned(), None, None)
+            .await
+            .unwrap(),
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

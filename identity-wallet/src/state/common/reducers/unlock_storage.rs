@@ -5,9 +5,8 @@ use crate::state::core_utils::IdentityManager;
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::AppState;
 use crate::stronghold::StrongholdManager;
-use crate::subject::Subject;
+use crate::subject::subject;
 
-use did_manager::SecretManager;
 use log::info;
 use oid4vc::oid4vc_manager::ProviderManager;
 use oid4vc::oid4vci::Wallet;
@@ -20,20 +19,7 @@ pub async fn unlock_storage(state: AppState, action: Action) -> Result<AppState,
 
         let stronghold_manager = Arc::new(StrongholdManager::load(&password).map_err(StrongholdLoadingError)?);
 
-        let client_path = crate::persistence::STRONGHOLD
-            .lock()
-            .unwrap()
-            .to_str()
-            .ok_or(anyhow::anyhow!("failed to get stronghold path"))
-            .unwrap()
-            .to_owned();
-        let password = "sup3rSecr3t".to_owned();
-        let subject = Arc::new(Subject {
-            stronghold_manager: stronghold_manager.clone(),
-            secret_manager: SecretManager::load(client_path, password, "key-0".to_owned(), None, None)
-                .await
-                .unwrap(),
-        });
+        let subject = subject(stronghold_manager.clone(), password).await;
 
         let provider_manager =
             ProviderManager::new(subject.clone(), default_did_method).map_err(OID4VCProviderManagerError)?;
