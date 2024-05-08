@@ -3,6 +3,7 @@ pub mod reducers;
 
 use super::{core_utils::DateUtils, FeatTrait};
 
+use identity_iota::did::CoreDID;
 use log::info;
 use serde::{Deserialize, Serialize};
 use std::ops::Not;
@@ -45,7 +46,7 @@ impl Connections {
 
     /// Inserts a new connection into the list of connections if it does not already exist. If it does exist, updates
     /// the last interaction time and returns a reference to the connection.
-    pub fn update_or_insert(&mut self, url: &str, name: &str) -> &Connection {
+    pub fn update_or_insert(&mut self, url: &str, name: &str, did: Option<CoreDID>) -> &Connection {
         if self.contains(url, name) {
             info!("Updating existing connection: {} {}", name, url);
             self.get_mut(url, name).map(|connection| {
@@ -54,7 +55,11 @@ impl Connections {
             })
         } else {
             info!("Inserting new connection: {} {}", name, url);
-            self.insert(Connection::new(name.to_string(), url.to_string()))
+            self.insert(Connection::new(
+                name.to_string(),
+                url.to_string(),
+                did.map(|d| d.to_string()),
+            ))
         }
         .expect("Failed to update or insert connection")
     }
@@ -76,13 +81,15 @@ pub struct Connection {
     pub id: String,
     pub name: String,
     pub url: String,
+    #[ts(optional)]
+    pub did: Option<String>,
     pub verified: bool,
     pub first_interacted: String,
     pub last_interacted: String,
 }
 
 impl Connection {
-    pub fn new(name: String, url: String) -> Self {
+    pub fn new(name: String, url: String, did: Option<String>) -> Self {
         // TODO(ngdil): Temporary solution to support NGDIL demo, replace with different unique identifier to distinguish connection
         let id = sha256::digest([name.as_bytes(), url.as_bytes()].concat()).to_string();
         let current_datetime = DateUtils::new_date_string();
@@ -90,6 +97,7 @@ impl Connection {
             id,
             name,
             url,
+            did,
             verified: false,
             first_interacted: current_datetime.clone(),
             last_interacted: current_datetime,
@@ -118,14 +126,14 @@ mod tests {
         let mut connections = Connections::new();
         let url = "https://example.com";
         let name = "Example";
-        let connection = connections.update_or_insert(url, name);
+        let connection = connections.update_or_insert(url, name, None);
         assert_eq!(connection.url, url);
         assert_eq!(connection.name, name);
         assert_eq!(connection.first_interacted, connection.last_interacted);
         assert_eq!(connections.0.len(), 1);
         assert!(connections.contains(url, name));
 
-        let connection = connections.update_or_insert(url, name);
+        let connection = connections.update_or_insert(url, name, None);
         assert_eq!(connection.url, url);
         assert_eq!(connection.name, name);
         // The last interaction time should have been updated.
@@ -138,7 +146,7 @@ mod tests {
         let mut connections = Connections::new();
         let url = "https://example.com";
         let name = "Example";
-        let connection = connections.update_or_insert(url, name);
+        let connection = connections.update_or_insert(url, name, None);
         assert_eq!(connection.url, url);
         assert_eq!(connection.name, name);
         assert_eq!(connection.first_interacted, connection.last_interacted);
@@ -147,7 +155,7 @@ mod tests {
 
         // A different server with the same name is treated as a different connection.
         let url = "https://example2.com";
-        let connection = connections.update_or_insert(url, name);
+        let connection = connections.update_or_insert(url, name, None);
         assert_eq!(connection.url, url);
         assert_eq!(connection.name, name);
         assert_eq!(connection.first_interacted, connection.last_interacted);
@@ -160,7 +168,7 @@ mod tests {
         let mut connections = Connections::new();
         let url = "https://example.com";
         let name = "Example";
-        let connection = connections.update_or_insert(url, name);
+        let connection = connections.update_or_insert(url, name, None);
         assert_eq!(connection.url, url);
         assert_eq!(connection.name, name);
         assert_eq!(connection.first_interacted, connection.last_interacted);
@@ -169,7 +177,7 @@ mod tests {
 
         // The same server is used with a different name.
         let name = "Example2";
-        let connection = connections.update_or_insert(url, name);
+        let connection = connections.update_or_insert(url, name, None);
         assert_eq!(connection.url, url);
         assert_eq!(connection.name, name);
         assert_eq!(connection.first_interacted, connection.last_interacted);

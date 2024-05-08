@@ -56,7 +56,7 @@ pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: A
     }
 
     let mut connections = state.connections;
-    let connection = connections.update_or_insert(&connection_url, &client_name);
+    let connection = connections.update_or_insert(&connection_url, &client_name, None);
 
     let file_name = match logo_uri {
         Some(logo_uri) => hash(logo_uri.as_str()),

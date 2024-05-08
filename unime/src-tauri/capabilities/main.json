@@ -11,6 +11,7 @@
     "menu:default",
     "tray:default",
     "log:default",
-    "fs:allow-appdata-read-recursive"
+    "fs:allow-appdata-read-recursive",
+    "shell:allow-open"
   ]
 }

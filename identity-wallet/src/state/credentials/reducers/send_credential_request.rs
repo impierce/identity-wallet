@@ -104,7 +104,7 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
         // Create or update the connection.
         let previously_connected = state.connections.contains(connection_url, &issuer_name);
         let mut connections = state.connections;
-        let connection = connections.update_or_insert(connection_url, &issuer_name);
+        let connection = connections.update_or_insert(connection_url, &issuer_name, None);
 
         // Create a token request with grant_type `pre_authorized_code`.
         let token_request = match credential_offer.grants {
