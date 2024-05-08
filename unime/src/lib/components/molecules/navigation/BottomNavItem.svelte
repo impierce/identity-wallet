@@ -15,7 +15,11 @@
 
   <!-- Active button gets 4px less padding to accommodate indicator. -->
   <button class={`rounded-full px-6 ${active ? 'pt-2' : 'pt-3'}`} on:click={() => dispatch('click')}>
-    <div class="flex h-12 w-10 flex-col items-center justify-center text-slate-800 dark:text-grey">
+    <div
+      class={`flex h-12 w-10 flex-col items-center justify-center ${
+        active ? 'text-primary' : 'text-slate-800 dark:text-grey'
+      }`}
+    >
       <!-- Slot accepts SVG icons, which bring their own dimensions. -->
       <slot name="icon" />
       <div class="pt-[6px] text-[12px]/[20px] font-medium">
