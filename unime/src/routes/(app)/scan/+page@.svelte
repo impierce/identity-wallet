@@ -22,6 +22,8 @@
   import { state } from '$lib/stores';
 
   import CameraSlash from '~icons/ph/camera-slash';
+  import Code from '~icons/ph/code-bold';
+  import WarningCircle from '~icons/ph/warning-circle-fill';
 
   let scanning = false;
   // We temporarily introduce this type that extends `PermissionState` to handle a possible error when checking for permissions.
@@ -80,10 +82,39 @@
       ...$state,
       current_user_prompt: {
         type: 'accept-connection',
-        client_name: 'Some other client',
+        client_name: 'Impierce Demo Portal',
         logo_uri: undefined,
-        redirect_uri: 'https://demo.ngdil.com/auth/callback',
+        redirect_uri: 'https://demo.impierce.com/auth/callback',
         previously_connected: false,
+      },
+    });
+  };
+
+  const mockOfferRequest = () => {
+    state.set({
+      ...$state,
+      current_user_prompt: {
+        type: 'credential-offer',
+        issuer_name: 'State University',
+        logo_uri: undefined,
+        credential_configurations: {
+          0: {
+            display: [
+              {
+                name: 'Graduation Diploma',
+                locale: 'en-US',
+              },
+            ],
+            credential_definition: {
+              type: ['VerifiableCredential', 'University Degree'],
+            },
+          },
+          1: {
+            credential_definition: {
+              type: ['VerifiableCredential', 'Cafeteria Voucher'],
+            },
+          },
+        },
       },
     });
   };
@@ -93,7 +124,7 @@
       ...$state,
       current_user_prompt: {
         type: 'share-credentials',
-        client_name: 'My Client Name',
+        client_name: 'Impierce Demo Portal',
         logo_uri: undefined,
         options: [$state.credentials[0].id],
       },
@@ -142,16 +173,44 @@
         {/if}
 
         {#if $state?.dev_mode !== 'Off'}
+          <!-- Description -->
+          <div class="flex w-full items-center rounded-lg bg-white px-4 py-4 dark:bg-dark">
+            <span class="mr-4 h-6 w-6">
+              <Code class="h-6 w-6 text-primary" />
+            </span>
+            <div class="flex flex-col">
+              <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">Developer mode active</p>
+              <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
+                Click one of the following buttons to simulate a successful QR scan.
+              </p>
+            </div>
+          </div>
+
+          <!-- Warning -->
+          <div class="flex w-full items-center rounded-lg bg-white px-4 py-4 dark:bg-dark">
+            <span class="mr-4 h-6 w-6">
+              <WarningCircle class="h-6 w-6 text-amber-500" />
+            </span>
+            <div class="flex flex-col">
+              <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">Warning</p>
+              <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
+                Accepting one of the mock requests can lead to unexpected behavior.
+              </p>
+            </div>
+          </div>
+
+          <!-- Buttons -->
           <div class="flex w-3/4 flex-col space-y-4">
-            <!-- Mocks -->
             <div class="flex flex-col space-y-2">
-              <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Mock scans</p>
+              <!-- SIOPv2 -->
               <Button variant="secondary" on:click={mockSiopRequest} label="New connection" />
+              <!-- OpenID4VCI (Verifiable Credential Issuance) -->
+              <Button variant="secondary" on:click={mockOfferRequest} label="Receive credential offer" />
+              <!-- OpenID4VP (Verifiable Presentations) -->
               <Button variant="secondary" on:click={mockShareRequest} label="Share credentials" />
             </div>
-            <!-- Divider -->
             <hr />
-            <Button variant="primary" on:click={startScan} label="Start new scan" />
+            <Button variant="primary" on:click={startScan} label="Start camera" />
           </div>
         {/if}
       </div>
