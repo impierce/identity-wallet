@@ -16,12 +16,10 @@
   import DownloadSimple from '~icons/ph/download-simple-fill';
 
   // TODO: generate binding in core
-  // /* eslint-disable @typescript-eslint/no-explicit-any */
   interface CredentialConfiguration {
-    display: object;
+    display: object[];
     credential_definition: object;
   }
-  // /* eslint-enable @typescript-eslint/no-explicit-any */
 
   let credential_configurations: Record<string, CredentialConfiguration> =
     $state.current_user_prompt?.credential_configurations;
@@ -69,7 +67,7 @@
         <!-- TODO: careful with long list! -->
         <ListItemCard
           id={`credential_${credential_configuration_id}`}
-          title={credential_configuration.display?.at(0).name ??
+          title={credential_configuration.display?.at(0)?.name ??
             credential_configuration.credential_definition.type.at(-1)}
           isTempAsset={true}
         >
