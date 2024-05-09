@@ -58,7 +58,7 @@
       <button
         class="rounded-full p-2"
         on:click={() => {
-          // Focus input element when toggling visbility.
+          // Focus input element when toggling visibility.
           inputElement.focus();
           return (showPassword = !showPassword);
         }}
