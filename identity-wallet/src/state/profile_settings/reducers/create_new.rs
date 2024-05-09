@@ -20,7 +20,10 @@ use std::sync::Arc;
 /// Creates a new profile with a new DID (using the did:key method) and sets it as the active profile.
 pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(CreateNew {
-        name, picture, theme, ..
+        name,
+        picture,
+        theme,
+        password,
     }) = listen::<CreateNew>(action)
     {
         let mut state_guard = state.core_utils.managers.lock().await;
@@ -30,9 +33,6 @@ pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppS
             .ok_or(MissingManagerError("stronghold"))?;
 
         let default_did_method = state.profile_settings.default_did_method.as_str();
-
-        // TODO: shouldn't this be passed in?
-        let password = "f00b4r".to_string();
 
         let subject = subject(stronghold_manager.clone(), password).await;
 
