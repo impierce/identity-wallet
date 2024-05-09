@@ -50,6 +50,9 @@ impl Connections {
         if self.contains(url, name) {
             info!("Updating existing connection: {} {}", name, url);
             self.get_mut(url, name).map(|connection| {
+                if let Some(core_did) = did {
+                    connection.did = Some(core_did.to_string());
+                }
                 connection.update_last_interaction_time();
                 &*connection
             })
