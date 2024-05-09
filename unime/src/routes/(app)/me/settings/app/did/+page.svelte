@@ -44,41 +44,64 @@
     //   enabled: false,
     // },
   ];
+
+  // Capabilities of `did-manager` (alphabetical order)
+  const verifiableMethods: string[] = ['did:iota', 'did:iota:rms', 'did:iota:smr', 'did:jwk', 'did:key', 'did:web'];
 </script>
 
 <TopNavBar on:back={() => history.back()} title={'Manage identities'} />
 <div class="content-height flex flex-col bg-silver dark:bg-navy">
-  <!-- Style 1: Cards -->
-  <div class="space-y-8 p-4">
-    {#each methods as method}
-      <div class="rounded-xl bg-white p-4 dark:bg-dark">
-        <div class="flex items-center justify-between">
-          <p class="text-base font-semibold text-slate-800 dark:text-grey">{method.name ?? method.method}</p>
-          {#if method.enabled}
-            <Check class="h-5 w-5 text-primary" />
-          {:else if method.did}
-            <div class="-mr-1 -mt-1">
-              <lottie-player
-                src="/lottiefiles/Animation-1704188137306.json"
-                autoplay
-                loop
-                speed={1.25}
-                mode="normal"
-                style="width: 32px"
-              />
+  <div class="space-y-[15px] px-4 py-5">
+    <div class="flex flex-col space-y-[10px]">
+      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Produce</p>
+
+      <!-- Style 1: Cards -->
+      <div class="space-y-8">
+        {#each methods as method}
+          <div class="rounded-xl bg-white p-4 dark:bg-dark">
+            <div class="flex items-center justify-between">
+              <p class="text-base font-semibold text-slate-800 dark:text-grey">{method.name ?? method.method}</p>
+              {#if method.enabled}
+                <Check class="h-5 w-5 text-primary" />
+              {:else if method.did}
+                <div class="-mr-1 -mt-1">
+                  <lottie-player
+                    src="/lottiefiles/Animation-1704188137306.json"
+                    autoplay
+                    loop
+                    speed={1.25}
+                    mode="normal"
+                    style="width: 32px"
+                  />
+                </div>
+              {:else}
+                <p class="text-[13px]/[24px] font-medium text-primary">Set up</p>
+              {/if}
             </div>
-          {:else}
-            <p class="text-[13px]/[24px] font-medium text-primary">Set up</p>
-          {/if}
-        </div>
-        {#if method.did}
-          <div class="flex items-center justify-between space-x-4 pt-4">
-            <p class="break-all text-[11px]/[14px] font-medium text-slate-500 dark:text-slate-300">{method.did}</p>
+            {#if method.did}
+              <div class="flex items-center justify-between space-x-4 pt-4">
+                <p class="break-all text-[11px]/[14px] font-medium text-slate-500 dark:text-slate-300">{method.did}</p>
+              </div>
+            {/if}
           </div>
-        {/if}
+        {/each}
       </div>
-    {/each}
+    </div>
+
+    <div class="flex flex-col space-y-[10px]">
+      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Verify</p>
+      <div class="flex flex-wrap gap-2">
+        {#each verifiableMethods as method}
+          <div
+            class="w-fit rounded-lg bg-white px-4 py-2 text-[13px]/[24px] font-medium text-slate-800 dark:bg-dark dark:text-grey"
+          >
+            {method}
+          </div>
+        {/each}
+      </div>
+    </div>
   </div>
+
   <!-- Style 2: Settings entries -->
   <!-- <hr /> -->
   <!-- <div class="flex flex-col space-y-[10px] px-4 py-5">
