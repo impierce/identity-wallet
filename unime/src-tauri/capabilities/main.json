@@ -11,6 +11,8 @@
     "menu:default",
     "tray:default",
     "log:default",
-    "fs:allow-appdata-read-recursive"
+    "fs:allow-appdata-read-recursive",
+    "barcode-scanner:allow-check-permissions",
+    "barcode-scanner:allow-cancel"
   ]
 }
