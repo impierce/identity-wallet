@@ -8,7 +8,7 @@
   import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
   import SortingSheetButton from '$lib/connections/sorting/SortingSheetButton.svelte';
   import { dispatch } from '$lib/dispatcher';
-  import AlphabeticalOrder from '$lib/static/AlphabeticalOrder.svelte';
+  import AlphabeticalOrder from '$lib/static/svg/AlphabeticalOrder.svelte';
   import { state } from '$lib/stores';
 
   import Issued from '~icons/ph/calendar-check';
@@ -19,7 +19,7 @@
   let reversed: boolean = $state.profile_settings.sorting_preferences.credentials.reverse;
 
   function updateSortingPreference(credential_sorting: CredentialSortMethod) {
-    if (method == credential_sorting) {
+    if (method === credential_sorting) {
       reversed = !reversed;
     } else {
       method = credential_sorting;
@@ -32,7 +32,7 @@
 </script>
 
 <!-- bottom drawer and sorting button-->
-<div class="sort_wrapper">
+<div>
   <ActionSheet titleText={$LL.SORT.TITLE()}>
     <button
       slot="trigger"

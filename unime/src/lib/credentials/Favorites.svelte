@@ -11,7 +11,7 @@
 
   export let credentialType: 'all' | 'data' | 'badges' = 'all';
 
-  // Make favorite_credentials reactive in case we sort favorites in the future, too.
+  // after filtering, favorite_credentials becomes reactive and gets sorted as well
   let favorite_credentials: DisplayCredential[];
 
   $: {

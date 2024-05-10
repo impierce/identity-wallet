@@ -21,12 +21,10 @@
       sortOrder = reversed ? $LL.SORT.ORDER.NEWEST() : $LL.SORT.ORDER.OLDEST();
     } else if (method === 'added_date_new_old') {
       sortOrder = reversed ? $LL.SORT.ORDER.NEWEST() : $LL.SORT.ORDER.OLDEST();
-    } else {
-      sortOrder = ''; // Default to empty string if label doesn't match
     }
   }
 
-  // Dispatch click event
+  // Dispatch component event based on DOM event.
   const dispatch = createEventDispatcher();
   const handleClick = () => {
     dispatch('click');
@@ -41,11 +39,9 @@
 >
   <svelte:component this={icon} />
   <p class="text-sm font-medium">{label}</p>
-  <!-- Render label -->
   {#if active}
     <div class="absolute right-2">
       {#if sortOrder !== ''}
-        <!-- Render sort order -->
         <p class="text-sm font-medium text-primary">{sortOrder}</p>
       {/if}
     </div>
