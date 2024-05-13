@@ -1,8 +1,10 @@
 use crate::{
+    command,
     error::AppError::{self, *},
     state::{
         actions::{listen, Action},
         core_utils::IdentityManager,
+        did::actions::produce::ProduceDid,
         profile_settings::{actions::create_new::CreateNew, Profile, ProfileSettings},
         user_prompt::CurrentUserPrompt,
         AppState,
@@ -39,6 +41,22 @@ pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppS
         let provider_manager =
             ProviderManager::new(subject.clone(), default_did_method).map_err(OID4VCProviderManagerError)?;
         let wallet: Wallet = Wallet::new(subject.clone(), default_did_method).map_err(OID4VCWalletError)?;
+
+        command::reduce(
+            state.clone(),
+            Arc::new(ProduceDid {
+                method: did_manager::DidMethod::Jwk,
+            }),
+        )
+        .await?;
+
+        command::reduce(
+            state.clone(),
+            Arc::new(ProduceDid {
+                method: did_manager::DidMethod::Key,
+            }),
+        )
+        .await?;
 
         let profile_settings = ProfileSettings {
             profile: Some(Profile {

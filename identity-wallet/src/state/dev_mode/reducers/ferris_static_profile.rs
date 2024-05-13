@@ -1,11 +1,16 @@
 use crate::{
+    command,
     error::AppError::{self, *},
     persistence::ASSETS_DIR,
     state::{
         connections::{Connection, Connections},
-        core_utils::history_event::{EventType, HistoryCredential, HistoryEvent},
+        core_utils::{
+            history_event::{EventType, HistoryCredential, HistoryEvent},
+            IdentityManager,
+        },
         credentials::VerifiableCredentialRecord,
         dev_mode::DevMode,
+        did::actions::produce::ProduceDid,
         profile_settings::{AppTheme, Profile},
         user_prompt::CurrentUserPrompt,
         AppState,
@@ -16,7 +21,7 @@ use crate::{
 
 use lazy_static::lazy_static;
 use log::info;
-use oid4vc::oid4vc_core::Subject as _;
+use oid4vc::{oid4vc_core::Subject as _, oid4vc_manager::ProviderManager, oid4vci::Wallet};
 use serde_json::json;
 use std::{fs::File, io::Write, sync::Arc};
 
@@ -50,7 +55,7 @@ lazy_static! {
 
 pub async fn load_ferris_profile() -> Result<AppState, AppError> {
     let mut state = AppState::default();
-    let default_did_method = state.profile_settings.default_did_method.as_str();
+    let default_did_method = "did:jwk";
 
     let password = "sup3rSecr3t".to_string();
 
@@ -65,6 +70,40 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         primary_did: subject.identifier(default_did_method).await.unwrap(),
     };
     state.profile_settings.profile.replace(profile);
+
+    let provider_manager =
+        ProviderManager::new(subject.clone(), default_did_method).map_err(OID4VCProviderManagerError)?;
+    let wallet: Wallet = Wallet::new(subject.clone(), default_did_method).map_err(OID4VCWalletError)?;
+    let identity_manager = IdentityManager {
+        subject,
+        provider_manager,
+        wallet,
+    };
+
+    state
+        .core_utils
+        .managers
+        .lock()
+        .await
+        .identity_manager
+        .replace(identity_manager);
+
+    // Producing DIDs (`did:jwk`, `did:key`)
+    state = command::reduce(
+        state.clone(),
+        Arc::new(ProduceDid {
+            method: did_manager::DidMethod::Jwk,
+        }),
+    )
+    .await?;
+
+    state = command::reduce(
+        state.clone(),
+        Arc::new(ProduceDid {
+            method: did_manager::DidMethod::Key,
+        }),
+    )
+    .await?;
 
     vec![
         PERSONAL_INFORMATION.clone(),

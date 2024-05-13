@@ -71,6 +71,7 @@ mod bindings {
             update_credential_metadata::UpdateCredentialMetadata,
         },
         dev_mode::actions::dev_profile::DevProfile,
+        did::actions::{produce::ProduceDid, set_default_method::SetDefaultDidMethod},
         profile_settings::actions::{
             create_new::CreateNew, set_locale::SetLocale, update_profile_settings::UpdateProfileSettings,
         },
@@ -123,5 +124,9 @@ mod bindings {
         AddRecentSearch { payload: AddRecentSearch },
         #[serde(rename = "[Search] Delete recent")]
         DeleteRecentSearch { payload: DeleteRecentSearch },
+        #[serde(rename = "[DID] Produce")]
+        ProduceDid { payload: ProduceDid },
+        #[serde(rename = "[DID] Set default method")]
+        SetDefaultDidMethod { payload: SetDefaultDidMethod },
     }
 }

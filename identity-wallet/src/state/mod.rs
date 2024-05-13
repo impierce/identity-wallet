@@ -4,6 +4,7 @@ pub mod connections;
 pub mod core_utils;
 pub mod credentials;
 pub mod dev_mode;
+pub mod did;
 pub mod profile_settings;
 pub mod qr_code;
 pub mod search;
@@ -24,6 +25,7 @@ use downcast_rs::{impl_downcast, DowncastSync};
 use dyn_clone::DynClone;
 use futures::Future;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::{collections::VecDeque, pin::Pin};
 use ts_rs::TS;
 
@@ -78,6 +80,7 @@ impl AppStateContainer {
 #[ts(export)]
 #[serde(default)]
 pub struct AppState {
+    pub dids: HashMap<String, String>,
     /// This field contains the connections.
     pub connections: Connections,
     /// This field contains the display credentials.

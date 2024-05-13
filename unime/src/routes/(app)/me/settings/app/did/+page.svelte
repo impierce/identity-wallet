@@ -1,143 +1,139 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
-  import LL from '$i18n/i18n-svelte';
+  import type { SvelteComponent } from 'svelte';
 
-  import SettingsEntry from '$lib/app/settings/SettingsEntry.svelte';
-  import Button from '$lib/components/atoms/Button.svelte';
-  import Switch from '$lib/components/atoms/Switch.svelte';
+  import type { SvelteHTMLElements } from 'svelte/elements';
+
   import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
+  import { dispatch } from '$lib/dispatcher';
+  import IotaLogo from '$lib/static/svg/Iota.svelte';
+  import ShimmerLogo from '$lib/static/svg/Shimmer.svelte';
   import { state } from '$lib/stores';
 
-  import '@lottiefiles/lottie-player';
+  import CheckCircle from '~icons/ph/check-circle-fill';
+  import Code from '~icons/ph/code';
 
-  import Check from '~icons/ph/check-bold';
-  import Copy from '~icons/ph/copy-bold';
+  $: preferred_method = $state.profile_settings.default_did_method;
 
   interface Method {
-    name?: string;
+    alias?: string;
     method: string;
     did?: string;
     enabled: boolean;
+    logo?: typeof SvelteComponent<SvelteHTMLElements['svg']>;
   }
 
   const methods: Method[] = [
     {
-      method: `${$state.profile_settings.default_did_method}`,
-      did: `${$state.profile_settings.profile?.primary_did}`,
+      method: 'did:jwk',
+      did: $state.dids['did:jwk'],
       enabled: true,
     },
-    // { method: 'did:key', did: 'did:key:z6Mkk7yqnGF3YwTrLpqrW6PGsKci7dNqh1CjnvMbzrMerSeL', enabled: true },
-    // {
-    //   method: 'did:jwk',
-    //   did: 'did:jwk:eyJjcnYiOiJQLTI1NiIsImt0eSI6IkVDIiwieCI6ImFjYklRaXVNczNpOF91c3pFakoydHBUdFJNNEVVM3l6OTFQSDZDZEgyVjAiLCJ5IjoiX0tjeUxqOXZXTXB0bm1LdG00NkdxRHo4d2Y3NEk1TEtncmwyR3pIM25TRSJ9',
-    //   enabled: true,
-    // },
-    // {
-    //   name: 'Shimmer Testnet',
-    //   did: 'did:iota:rms:0xcc26398894d5edb12e7c54ded26b86f3627a11c86bc06a7abe08597905109de1',
-    //   method: 'did:iota:rms',
-    //   enabled: false,
-    // },
-    // {
-    //   name: 'IOTA Mainnet',
-    //   method: 'did:iota',
-    //   enabled: false,
-    // },
+    {
+      method: `did:key`,
+      did: $state.dids['did:key'],
+      enabled: true,
+    },
+    {
+      alias: 'Shimmer Testnet',
+      method: 'did:iota:rms',
+      did: $state.dids['did:iota:rms'],
+      enabled: false,
+      logo: ShimmerLogo,
+    },
+    {
+      alias: 'Shimmer',
+      method: 'did:iota:smr',
+      did: $state.dids['did:iota:smr'],
+      enabled: false,
+      logo: ShimmerLogo,
+    },
+    {
+      alias: 'IOTA',
+      method: 'did:iota',
+      did: $state.dids['did:iota'],
+      enabled: false,
+      logo: IotaLogo,
+    },
+    {
+      alias: 'Custom',
+      method: '',
+      enabled: false,
+      logo: Code,
+    },
   ];
 
-  // Capabilities of `did-manager` (alphabetical order)
-  const verifiableMethods: string[] = ['did:iota', 'did:iota:rms', 'did:iota:smr', 'did:jwk', 'did:key', 'did:web'];
+  // Capabilities of `did-manager`
+  const verifiableMethods: string[] = ['did:jwk', 'did:key', 'did:web', 'did:iota', 'did:iota:rms', 'did:iota:smr'];
+
+  const handleClick = (method: Method) => {
+    if (method.did) {
+      dispatch({ type: '[DID] Set default method', payload: { method: method.method } });
+    } else {
+      // TODO: start the setup process for the method
+    }
+  };
 </script>
 
 <TopNavBar on:back={() => history.back()} title={'Manage identities'} />
 <div class="content-height flex flex-col bg-silver dark:bg-navy">
   <div class="space-y-[15px] px-4 py-5">
+    <!-- Produce -->
     <div class="flex flex-col space-y-[10px]">
       <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Produce</p>
-
-      <!-- Style 1: Cards -->
-      <div class="space-y-8">
-        {#each methods as method}
-          <div class="rounded-xl bg-white p-4 dark:bg-dark">
-            <div class="flex items-center justify-between">
-              <p class="text-base font-semibold text-slate-800 dark:text-grey">{method.name ?? method.method}</p>
-              {#if method.enabled}
-                <Check class="h-5 w-5 text-primary" />
-              {:else if method.did}
-                <div class="-mr-1 -mt-1">
-                  <lottie-player
-                    src="/lottiefiles/Animation-1704188137306.json"
-                    autoplay
-                    loop
-                    speed={1.25}
-                    mode="normal"
-                    style="width: 32px"
-                  />
+      <div class="flex flex-col space-y-4">
+        {#each methods as method (method.method)}
+          <button
+            class={`rounded-xl border bg-white p-4 disabled:opacity-30 dark:bg-dark ${$state.profile_settings.default_did_method === method.method ? 'border-primary ring-1 ring-primary' : 'border-slate-200 dark:border-slate-600'}`}
+            on:click={() => handleClick(method)}
+            disabled={!method.enabled}
+          >
+            <div class="flex h-7 items-center justify-between">
+              <div class="flex items-center">
+                {#if method.logo}
+                  <svelte:component this={method.logo} class="mr-3 h-6 w-6" />
+                {/if}
+                <p class="text-base font-semibold text-slate-800 dark:text-grey">{method.alias ?? method.method}</p>
+              </div>
+              {#if method.method === preferred_method}
+                <div class="flex items-center space-x-1 rounded-full bg-ex-blue-2 px-2 py-1 dark:bg-primary">
+                  <p class="text-[12px]/[20px] font-medium text-teal dark:text-dark">preferred</p>
                 </div>
-              {:else}
-                <p class="text-[13px]/[24px] font-medium text-primary">Set up</p>
+              {/if}
+              {#if !method.did}
+                <button class="-mr-4 px-4 py-2 text-[13px]/[24px] font-medium text-primary disabled:text-slate-300">
+                  <span class="flex items-center">Set up</span>
+                </button>
               {/if}
             </div>
             {#if method.did}
               <div class="flex items-center justify-between space-x-4 pt-4">
-                <p class="break-all text-[11px]/[14px] font-medium text-slate-500 dark:text-slate-300">{method.did}</p>
+                <p
+                  class="break-all text-left font-mono text-[11px]/[14px] font-medium text-slate-500 dark:text-slate-300"
+                >
+                  {method.did}
+                </p>
               </div>
             {/if}
-          </div>
+          </button>
         {/each}
       </div>
     </div>
 
+    <!-- Verify -->
     <div class="flex flex-col space-y-[10px]">
       <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Verify</p>
       <div class="flex flex-wrap gap-2">
         {#each verifiableMethods as method}
-          <div
-            class="w-fit rounded-lg bg-white px-4 py-2 text-[13px]/[24px] font-medium text-slate-800 dark:bg-dark dark:text-grey"
-          >
-            {method}
+          <div class="flex items-center space-x-1 rounded-full bg-ex-blue-2 px-2 py-1 dark:bg-primary">
+            <CheckCircle class="h-4 w-4 text-primary dark:text-navy" />
+            <p class="text-[12px]/[20px] font-medium text-teal dark:text-dark">
+              {method}
+            </p>
           </div>
         {/each}
       </div>
     </div>
   </div>
-
-  <!-- Style 2: Settings entries -->
-  <!-- <hr /> -->
-  <!-- <div class="flex flex-col space-y-[10px] px-4 py-5">
-    {#each methods as method}
-      <SettingsEntry
-        icon={undefined}
-        title={method.name ?? method.method}
-        textRight={'test'}
-        hasCaretRight={true}
-        on:click={() => goto('/me/settings/app/did')}
-        todo={!method.enabled}
-      >
-      </SettingsEntry>
-    {/each}
-  </div> -->
-  <!-- Style 3: Copy-able raw strings -->
-  <!-- <hr />
-  <div class="flex flex-col space-y-12 break-all px-8 py-8 text-[13px]/[18px] font-medium dark:text-slate-300">
-    <div class="flex items-center justify-between space-x-2">
-      <div>did:key:z6Mkk7yqnGF3YwTrLpqrW6PGsKci7dNqh1CjnvMbzrMerSeL</div>
-      <button class="bg-primary text-primary rounded-full bg-opacity-10 p-3"><Copy class="h-5 w-5" /></button>
-    </div>
-    <div class="flex items-center justify-between space-x-2">
-      <div>did:web:localhost%3A52132</div>
-      <button class="bg-primary text-primary rounded-full bg-opacity-10 p-3"><Copy class="h-5 w-5" /></button>
-    </div> -->
-  <!-- <div>
-      did:jwk:eyJjcnYiOiJQLTI1NiIsImt0eSI6IkVDIiwieCI6ImFjYklRaXVNczNpOF91c3pFakoydHBUdFJNNEVVM3l6OTFQSDZDZEgyVjAiLCJ5IjoiX0tjeUxqOXZXTXB0bm1LdG00NkdxRHo4d2Y3NEk1TEtncmwyR3pIM25TRSJ9
-    </div>
-    <div>did:iota:0xe4edef97da1257e83cbeb49159cfdd2da6ac971ac447f233f8439cf29376ebfe</div>
-    <div>did:smr:0xcd606a482e58b783ba7d14a1c139028f0a249f1a338028e4b3c844f944e6493e</div> -->
-  <!-- <button class="dark:bg-dark flex w-fit items-center rounded-lg p-4"><Copy class="mr-2" />Copy</button> -->
-  <!-- </div> -->
-  <!-- <div class="absolute bottom-8 w-full px-8">
-    <Button label="Copy info"></Button>
-  </div> -->
 </div>
 
 <style>
