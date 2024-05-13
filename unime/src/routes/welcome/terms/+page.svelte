@@ -7,10 +7,11 @@
   import Checkbox from '$lib/components/atoms/Checkbox.svelte';
   import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
 
-  let ownership_isChecked = false;
+  let checked = false;
 </script>
 
 <TopNavBar title={$LL.ONBOARDING.TERMS.NAVBAR_TITLE()} on:back={() => history.back()} />
+
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <div class="px-2 pb-8 pt-4">
     <p class="pb-4 text-3xl font-semibold text-slate-700 dark:text-grey">
@@ -46,31 +47,30 @@
         </button>
       </div>
     </div> -->
-    <div
+
+    <!-- Use button, not div, to enable focus. -->
+    <button
+      on:click={() => {
+        checked = !checked;
+      }}
       class="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-600 dark:bg-dark"
     >
-      <div class="grow">
+      <div class="grow text-left">
         <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
           {$LL.ONBOARDING.TERMS.OWNERSHIP.TITLE()}
         </p>
         <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
-          <!-- I understand that I am solely responsible for <span class="text-primary">my backups</span> -->
           {$LL.ONBOARDING.TERMS.OWNERSHIP.DESCRIPTION()}
         </p>
       </div>
       <div class="pl-4">
-        <Checkbox
-          checked={ownership_isChecked}
-          on:change={(e) => {
-            ownership_isChecked = e.detail;
-          }}
-        />
+        <!-- When toggling checkbox, click event bubbles up and is handled by button. -->
+        <Checkbox {checked} />
       </div>
-    </div>
+    </button>
   </div>
 </div>
 
-<!-- Actions -->
 <div class="rounded-t-3xl bg-white p-6 dark:bg-dark" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
-  <Button label={$LL.CONTINUE()} on:click={() => goto('/welcome/customize/name')} disabled={!ownership_isChecked} />
+  <Button label={$LL.CONTINUE()} on:click={() => goto('/welcome/customize/name')} disabled={!checked} />
 </div>
