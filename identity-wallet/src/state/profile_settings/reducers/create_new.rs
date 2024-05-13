@@ -28,6 +28,7 @@ pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppS
         password,
     }) = listen::<CreateNew>(action)
     {
+        info!("Creating new identity ...");
         let mut state_guard = state.core_utils.managers.lock().await;
         let stronghold_manager = state_guard
             .stronghold_manager
@@ -42,21 +43,20 @@ pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppS
             ProviderManager::new(subject.clone(), default_did_method).map_err(OID4VCProviderManagerError)?;
         let wallet: Wallet = Wallet::new(subject.clone(), default_did_method).map_err(OID4VCWalletError)?;
 
-        command::reduce(
-            state.clone(),
-            Arc::new(ProduceDid {
-                method: did_manager::DidMethod::Jwk,
-            }),
-        )
-        .await?;
+        let did_jwk = subject.identifier("did:jwk").await.map_err(|e| Error(e.to_string()))?;
+        state.dids.insert("did:jwk".to_string(), did_jwk);
 
-        command::reduce(
-            state.clone(),
-            Arc::new(ProduceDid {
-                method: did_manager::DidMethod::Key,
-            }),
-        )
-        .await?;
+        let did_key = subject.identifier("did:key").await.map_err(|e| Error(e.to_string()))?;
+        state.dids.insert("did:key".to_string(), did_key);
+
+        // TODO: running inline reducer doesn't work (locked managers?)
+        // command::reduce(
+        //     state,
+        //     Arc::new(ProduceDid {
+        //         method: did_manager::DidMethod::Key,
+        //     }),
+        // )
+        // .await?;
 
         let profile_settings = ProfileSettings {
             profile: Some(Profile {
