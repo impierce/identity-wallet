@@ -3,10 +3,7 @@ use crate::{
     persistence::{hash, persist_asset},
     state::{
         actions::{listen, Action},
-        core_utils::{
-            history_event::{EventType, HistoryCredential, HistoryEvent},
-            CoreUtils,
-        },
+        core_utils::history_event::{EventType, HistoryCredential, HistoryEvent},
         credentials::{
             actions::credential_offers_selected::CredentialOffersSelected, DisplayCredential,
             VerifiableCredentialRecord,
@@ -263,11 +260,5 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
         });
     }
 
-    Ok(AppState {
-        core_utils: CoreUtils {
-            managers: state.core_utils.managers,
-            ..Default::default()
-        },
-        ..state
-    })
+    Ok(state)
 }
