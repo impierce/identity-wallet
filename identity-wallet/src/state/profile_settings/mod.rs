@@ -16,10 +16,9 @@ use ts_rs::TS;
 pub struct ProfileSettings {
     pub locale: Locale,
     pub profile: Option<Profile>,
-
     // TODO: Current simplified solution for handling a default DID method. Once we have the did-manager implemented, we
     // should probably come up with a different solution.
-    #[derivative(Default(value = "String::from(\"did:key\")"))]
+    #[derivative(Default(value = r#"String::from("did:jwk")"#))]
     pub preferred_did_method: String,
 }
 

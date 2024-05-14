@@ -155,6 +155,7 @@ mod tests {
             serialized,
             indoc! {
             r#"{
+                  "dids": {},
                   "connections": [],
                   "credentials": [],
                   "search_results": {
@@ -168,7 +169,7 @@ mod tests {
                       "picture": null,
                       "theme": "system"
                     },
-                    "preferred_did_method": "did:key"
+                    "preferred_did_method": "did:jwk"
                   },
                   "current_user_prompt": {
                     "type": "redirect",
