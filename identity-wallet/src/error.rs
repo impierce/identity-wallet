@@ -32,10 +32,10 @@ pub enum AppError {
     WriteFailed(#[from] std::io::Error),
     #[error("Error while initializing OID4VC provider manager")]
     OID4VCProviderManagerError(#[source] anyhow::Error),
+    #[error("Error while initializing OID4VC wallet")]
+    OID4VCWalletError(#[source] anyhow::Error),
     #[error("Error while fetching DID identifier from OID4VC subject")]
     OID4VCSubjectIdentifierError(#[source] anyhow::Error),
-    #[error("Missing required parameter `{0}` in authorization request")]
-    MissingAuthorizationRequestParameterError(&'static str),
     #[error("Invalid authorization request: {0}")]
     InvalidAuthorizationRequest(Box<AuthorizationRequest<Object>>),
     #[error("Invalid credential offer")]
@@ -70,6 +70,8 @@ pub enum AppError {
     GetBatchCredentialError(#[source] anyhow::Error),
     #[error("Failed to find credential offer `{0}` in the credential issuer's metadata")]
     MissingCredentialOfferError(String),
+    #[error("No credential configuration available with ID {0}` in the credential issuer's metadata")]
+    UnknownCredentialConfigurationIdError(String),
     #[error("Invalid offer indices")]
     InvalidOfferIndicesError(#[source] serde_json::Error),
     #[error("No `{0}` found in the state")]

@@ -16,19 +16,17 @@
   import DownloadSimple from '~icons/ph/download-simple-fill';
 
   // TODO: generate binding in core
-  /* eslint-disable @typescript-eslint/no-explicit-any */
-  interface CredentialOffer {
-    credential_issuer: string;
-    credentials: any[];
-    grants: any;
+  interface CredentialConfiguration {
+    display: object[];
+    credential_definition: object;
   }
-  /* eslint-enable @typescript-eslint/no-explicit-any */
 
-  let credential_offer: CredentialOffer = $state.current_user_prompt?.credential_offer;
+  let credential_configurations: Record<string, CredentialConfiguration> =
+    $state.current_user_prompt?.credential_configurations;
 
   let issuer_name: string = $state.current_user_prompt?.issuer_name;
 
-  let all_offer_indices: number[] = credential_offer.credentials.map((_, i: number) => i);
+  let all_credential_configuration_ids: string[] = Object.keys(credential_configurations);
 
   const imageId = $state.current_user_prompt?.logo_uri ? hash($state.current_user_prompt?.logo_uri) : '_';
 
@@ -55,11 +53,7 @@
       <PaddedIcon icon={DownloadSimple} />
     {/if}
     <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
-      {#if issuer_name}
-        {issuer_name}
-      {:else}
-        {new URL(credential_offer.credential_issuer).hostname}
-      {/if}
+      {issuer_name}
     </p>
 
     <p class="w-full text-center text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">
@@ -69,11 +63,12 @@
     <div
       class="mt-3 w-full rounded-[20px] border border-slate-200 bg-white p-[10px] dark:border-slate-600 dark:bg-dark"
     >
-      {#each credential_offer.credentials as credential, index}
+      {#each Object.entries(credential_configurations) as [credential_configuration_id, credential_configuration]}
         <!-- TODO: careful with long list! -->
         <ListItemCard
-          id={`credential_${index}`}
-          title={$state?.current_user_prompt?.display?.at(index)?.name ?? credential.credential_definition.type.at(-1)}
+          id={`credential_${credential_configuration_id}`}
+          title={credential_configuration.display?.at(0)?.name ??
+            credential_configuration.credential_definition.type.at(-1)}
           isTempAsset={true}
         >
           <div slot="right" class="mr-2">
@@ -92,7 +87,7 @@
         dispatch({
           type: '[Credential Offer] Selected',
           payload: {
-            offer_indices: all_offer_indices,
+            credential_configuration_ids: all_credential_configuration_ids,
           },
         });
       }}

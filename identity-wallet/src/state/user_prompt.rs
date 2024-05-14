@@ -1,6 +1,7 @@
-use oid4vc::oid4vci::credential_offer::CredentialOffer;
+use std::collections::HashMap;
+
+use oid4vc::oid4vci::credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject;
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
 use ts_rs::TS;
 
 /// "User prompts" are a way for the backend to communicate a desired/required user interaction to the frontend.
@@ -33,10 +34,8 @@ pub enum CurrentUserPrompt {
         issuer_name: String,
         #[ts(optional)]
         logo_uri: Option<String>,
-        #[ts(type = "any")]
-        credential_offer: CredentialOffer,
-        #[ts(type = "Array<any>")]
-        display: Vec<Option<Value>>,
+        #[ts(type = "Record<string, any>")]
+        credential_configurations: HashMap<String, CredentialConfigurationsSupportedObject>,
     },
     #[serde(rename = "share-credentials")]
     ShareCredentials {

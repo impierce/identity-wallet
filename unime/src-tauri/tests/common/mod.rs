@@ -48,8 +48,8 @@ pub fn test_managers(
     let keypair = from_existing_key::<Ed25519KeyPair>(public_key.as_slice(), None);
     let subject = Arc::new(KeySubject::from_keypair(keypair, Some(stronghold_manager.clone())));
 
-    let provider_manager = ProviderManager::new([subject.clone()]).unwrap();
-    let wallet: Wallet = Wallet::new(subject.clone());
+    let provider_manager = ProviderManager::new(subject.clone(), "did:key").unwrap();
+    let wallet: Wallet = Wallet::new(subject.clone(), "did:key").unwrap();
 
     Arc::new(tauri::async_runtime::Mutex::new(Managers {
         stronghold_manager: Some(stronghold_manager),

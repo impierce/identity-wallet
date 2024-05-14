@@ -73,7 +73,7 @@ impl AppStateContainer {
 
 /// The inner state of the application managed by Tauri. When the state is serialized in order to be sent to the
 /// frontend, the `managers` and `active_connection_request` fields are skipped.
-#[derive(Default, Serialize, Deserialize, Derivative, TS)]
+#[derive(Default, Serialize, Deserialize, Derivative, TS, Clone)]
 #[derivative(Debug)]
 #[ts(export)]
 #[serde(default)]
@@ -107,30 +107,6 @@ pub struct AppState {
     pub dev_mode: DevMode,
 }
 
-impl Clone for AppState {
-    fn clone(&self) -> Self {
-        Self {
-            core_utils: CoreUtils {
-                managers: self.core_utils.managers.clone(),
-                active_connection_request: serde_json::from_value(serde_json::json!(
-                    self.core_utils.active_connection_request
-                ))
-                .unwrap(),
-            },
-            profile_settings: self.profile_settings.clone(),
-            credentials: self.credentials.clone(),
-            current_user_prompt: self.current_user_prompt.clone(),
-            debug_messages: self.debug_messages.clone(),
-            user_journey: self.user_journey.clone(),
-            connections: self.connections.clone(),
-            search_results: self.search_results.clone(),
-            history: self.history.clone(),
-            extensions: self.extensions.clone(),
-            dev_mode: self.dev_mode.clone(),
-        }
-    }
-}
-
 impl AppState {
     pub fn insert_extension(mut self, key: &str, extension: Box<dyn FeatTrait>) -> Self {
         self.extensions.insert(key.to_string(), extension);
@@ -157,6 +133,7 @@ mod tests {
                     theme: AppTheme::System,
                     primary_did: "did:example:123".to_string(),
                 }),
+                ..Default::default()
             },
             credentials: vec![],
             current_user_prompt: Some(CurrentUserPrompt::Redirect {
@@ -189,7 +166,8 @@ mod tests {
                       "picture": null,
                       "theme": "system",
                       "primary_did": "did:example:123"
-                    }
+                    },
+                    "default_did_method": "did:key"
                   },
                   "current_user_prompt": {
                     "type": "redirect",

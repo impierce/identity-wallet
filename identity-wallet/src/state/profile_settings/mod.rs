@@ -9,12 +9,18 @@ use strum::EnumString;
 use ts_rs::TS;
 
 /// ProfileSettings contains all matters concerning the user profile and its settings.
-#[derive(Default, Serialize, Deserialize, Derivative, TS, Clone, PartialEq, Debug)]
+#[derive(Serialize, Deserialize, Derivative, TS, Clone, PartialEq, Debug)]
+#[derivative(Default)]
 #[ts(export)]
 #[serde(default)]
 pub struct ProfileSettings {
     pub locale: Locale,
     pub profile: Option<Profile>,
+
+    // TODO: Current simplified solution for handling a default DID method. Once we have the did-manager implemented, we
+    // should probably come up with a different solution.
+    #[derivative(Default(value = r#"String::from("did:key")"#))]
+    pub default_did_method: String,
 }
 
 #[typetag::serde(name = "profile_settings")]

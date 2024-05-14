@@ -101,7 +101,7 @@ struct CredentialResponse {
 
 async fn add_credential(state: AppState) -> Result<AppState, AppError> {
     // URL from NGDIL demo
-    let url = "https://api.demo.ngdil.com/api/starting-offer";
+    let url = "https://staging.api.ngdil.com/api/starting-offer";
 
     let payload = serde_json::json!({
         "credentials": [
@@ -132,7 +132,13 @@ async fn add_credential(state: AppState) -> Result<AppState, AppError> {
 
 async fn accept_credential(state: AppState) -> Result<AppState, AppError> {
     let cr_selected = CredentialOffersSelected {
-        offer_indices: vec![0, 1, 2, 3, 4],
+        credential_configuration_ids: vec![
+            "National ID".to_string(),
+            "School Course Certificate".to_string(),
+            "Volunteer Badge".to_string(),
+            "Higher Education Information Literacy Level 1".to_string(),
+            "Business Innovation & Interdisciplinair Samenwerken".to_string(),
+        ],
     };
 
     command::reduce(state, Arc::new(cr_selected)).await
@@ -148,11 +154,11 @@ struct ConnectionResponse {
 
 async fn add_connection(state: AppState) -> Result<AppState, AppError> {
     // URL from NGDIL demo
-    let url = "https://api.demo.ngdil.com/siop";
+    let url = "https://staging.api.ngdil.com/siop";
 
     let payload = serde_json::json!({
         "clientMetadata": {
-            "logoUri": "https://demo.ngdil.com/imgs/kw1c-white.png",
+            "logoUri": "https://staging.client.ngdil.com/imgs/kw1c-white.png",
             "clientName": "Koning Willem I College"
         }
     });
@@ -188,11 +194,11 @@ struct PresentationResponse {
 
 async fn add_presentation_request(state: AppState) -> Result<AppState, AppError> {
     // URL from NGDIL demo
-    let url = "https://api.demo.ngdil.com/api/oid4vp";
+    let url = "https://staging.api.ngdil.com/api/oid4vp";
 
     let payload = serde_json::json!({
         "presentationStage":"dominiqueEnrolCourse",
-        "clientMetadata":{"logoUri":"https://demo.ngdil.com/imgs/kw1c-white.png","clientName":"Koning Willem I College"}
+        "clientMetadata":{"logoUri":"https://staging.client.ngdil.com/imgs/kw1c-white.png","clientName":"Koning Willem I College"}
     });
 
     let response: PresentationResponse = reqwest::Client::new()
@@ -233,7 +239,7 @@ async fn share_credentials(state: AppState) -> Result<AppState, AppError> {
 }
 
 async fn add_future_engineer(state: AppState) -> Result<AppState, AppError> {
-    let url = "https://api.demo.ngdil.com/api/credential-offer";
+    let url = "https://staging.api.ngdil.com/api/credential-offer";
 
     let payload = json!({"credential":"Future Engineer","issuer":"kw1c"});
 
@@ -255,7 +261,9 @@ async fn add_future_engineer(state: AppState) -> Result<AppState, AppError> {
 }
 
 async fn accept_future_engineer(state: AppState) -> Result<AppState, AppError> {
-    let cr_selected = CredentialOffersSelected { offer_indices: vec![0] };
+    let cr_selected = CredentialOffersSelected {
+        credential_configuration_ids: vec!["Future Engineer Certificate".to_string()],
+    };
 
     command::reduce(state, Arc::new(cr_selected)).await
 }

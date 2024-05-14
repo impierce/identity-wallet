@@ -15,6 +15,7 @@ use std::sync::Arc;
 pub async fn unlock_storage(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(password) = listen::<UnlockStorage>(action).map(|payload| payload.password) {
         let mut state_guard = state.core_utils.managers.lock().await;
+        let default_did_method = state.profile_settings.default_did_method.as_str();
 
         let stronghold_manager = Arc::new(StrongholdManager::load(&password).map_err(StrongholdLoadingError)?);
 
@@ -23,8 +24,9 @@ pub async fn unlock_storage(state: AppState, action: Action) -> Result<AppState,
         let keypair = from_existing_key::<Ed25519KeyPair>(public_key.as_slice(), None);
         let subject = Arc::new(KeySubject::from_keypair(keypair, Some(stronghold_manager.clone())));
 
-        let provider_manager = ProviderManager::new([subject.clone()]).map_err(OID4VCProviderManagerError)?;
-        let wallet: Wallet = Wallet::new(subject.clone());
+        let provider_manager =
+            ProviderManager::new(subject.clone(), default_did_method).map_err(OID4VCProviderManagerError)?;
+        let wallet: Wallet = Wallet::new(subject.clone(), default_did_method).map_err(OID4VCWalletError)?;
 
         info!("loading credentials from stronghold");
         let credentials = stronghold_manager
