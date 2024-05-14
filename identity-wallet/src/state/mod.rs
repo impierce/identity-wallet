@@ -168,7 +168,7 @@ mod tests {
                       "picture": null,
                       "theme": "system"
                     },
-                    "default_did_method": "did:key"
+                    "preferred_did_method": "did:key"
                   },
                   "current_user_prompt": {
                     "type": "redirect",

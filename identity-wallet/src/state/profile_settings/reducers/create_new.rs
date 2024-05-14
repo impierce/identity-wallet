@@ -35,13 +35,13 @@ pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppS
             .as_ref()
             .ok_or(MissingManagerError("stronghold"))?;
 
-        let default_did_method = state.profile_settings.default_did_method.as_str();
+        let preferred_did_method = state.profile_settings.preferred_did_method.as_str();
 
         let subject = subject(stronghold_manager.clone(), password).await;
 
         let provider_manager =
-            ProviderManager::new(subject.clone(), default_did_method).map_err(OID4VCProviderManagerError)?;
-        let wallet: Wallet = Wallet::new(subject.clone(), default_did_method).map_err(OID4VCWalletError)?;
+            ProviderManager::new(subject.clone(), preferred_did_method).map_err(OID4VCProviderManagerError)?;
+        let wallet: Wallet = Wallet::new(subject.clone(), preferred_did_method).map_err(OID4VCWalletError)?;
 
         let did_jwk = subject.identifier("did:jwk").await.map_err(|e| Error(e.to_string()))?;
         state.dids.insert("did:jwk".to_string(), did_jwk);

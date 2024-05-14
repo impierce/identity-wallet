@@ -55,7 +55,7 @@ lazy_static! {
 
 pub async fn load_ferris_profile() -> Result<AppState, AppError> {
     let mut state = AppState::default();
-    let default_did_method = "did:jwk";
+    let preferred_did_method = "did:jwk";
 
     let password = "sup3rSecr3t".to_string();
 
@@ -71,8 +71,8 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
     state.profile_settings.profile.replace(profile);
 
     let provider_manager =
-        ProviderManager::new(subject.clone(), default_did_method).map_err(OID4VCProviderManagerError)?;
-    let wallet: Wallet = Wallet::new(subject.clone(), default_did_method).map_err(OID4VCWalletError)?;
+        ProviderManager::new(subject.clone(), preferred_did_method).map_err(OID4VCProviderManagerError)?;
+    let wallet: Wallet = Wallet::new(subject.clone(), preferred_did_method).map_err(OID4VCWalletError)?;
     let identity_manager = IdentityManager {
         subject,
         provider_manager,

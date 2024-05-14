@@ -1,2 +1,2 @@
-pub mod default_method;
+pub mod preferred_method;
 pub mod produce;

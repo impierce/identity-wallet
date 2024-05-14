@@ -12,7 +12,7 @@
   import CheckCircle from '~icons/ph/check-circle-fill';
   import Code from '~icons/ph/code';
 
-  $: preferred_method = $state.profile_settings.default_did_method;
+  $: preferred_did_method = $state.profile_settings.preferred_did_method;
 
   interface Method {
     alias?: string;
@@ -67,7 +67,7 @@
 
   const handleClick = (method: Method) => {
     if (method.did) {
-      dispatch({ type: '[DID] Set default method', payload: { method: method.method } });
+      dispatch({ type: '[DID] Set preferred method', payload: { method: method.method } });
     } else {
       // TODO: start the setup process for the method
     }
@@ -83,7 +83,7 @@
       <div class="flex flex-col space-y-4">
         {#each methods as method (method.method)}
           <button
-            class={`rounded-xl border bg-white p-4 disabled:opacity-30 dark:bg-dark ${$state.profile_settings.default_did_method === method.method ? 'border-primary ring-1 ring-primary' : 'border-slate-200 dark:border-slate-600'}`}
+            class={`rounded-xl border bg-white p-4 disabled:opacity-30 dark:bg-dark ${method.method === preferred_did_method ? 'border-primary ring-1 ring-primary' : 'border-slate-200 dark:border-slate-600'}`}
             on:click={() => handleClick(method)}
             disabled={!method.enabled}
           >
@@ -94,7 +94,7 @@
                 {/if}
                 <p class="text-base font-semibold text-slate-800 dark:text-grey">{method.alias ?? method.method}</p>
               </div>
-              {#if method.method === preferred_method}
+              {#if method.method === preferred_did_method}
                 <div class="flex items-center space-x-1 rounded-full bg-ex-blue-2 px-2 py-1 dark:bg-primary">
                   <p class="text-[12px]/[20px] font-medium text-teal dark:text-dark">preferred</p>
                 </div>

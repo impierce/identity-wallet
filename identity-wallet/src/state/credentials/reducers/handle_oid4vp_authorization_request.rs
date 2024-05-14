@@ -86,7 +86,7 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
 
         let subject_did = identity_manager
             .subject
-            .identifier(&state.profile_settings.default_did_method)
+            .identifier(&state.profile_settings.preferred_did_method)
             .await
             .expect("No default DID method");
 
