@@ -26,16 +26,6 @@ async fn test_qr_code_scanned_handle_siopv2_authorization_request() {
         name: "Ferris".to_string(),
         picture: Some("&#129408".to_string()),
         theme: AppTheme::System,
-        primary_did: managers
-            .lock()
-            .await
-            .identity_manager
-            .as_ref()
-            .unwrap()
-            .subject
-            .identifier("did:key")
-            .await
-            .unwrap(),
     });
 
     // Deserializing the Appstates and Actions from the accompanying json files.
@@ -84,16 +74,6 @@ async fn test_qr_code_scanned_handle_oid4vp_authorization_request() {
         name: "Ferris".to_string(),
         picture: Some("&#129408".to_string()),
         theme: AppTheme::System,
-        primary_did: managers
-            .lock()
-            .await
-            .identity_manager
-            .as_ref()
-            .unwrap()
-            .subject
-            .identifier("did:key")
-            .await
-            .unwrap(),
     });
 
     // Deserializing the Appstates and Actions from the accompanying json files.
@@ -137,16 +117,6 @@ async fn test_qr_code_scanned_invalid_qr_code_error() {
         name: "Ferris".to_string(),
         picture: Some("&#129408".to_string()),
         theme: AppTheme::System,
-        primary_did: managers
-            .lock()
-            .await
-            .identity_manager
-            .as_ref()
-            .unwrap()
-            .subject
-            .identifier("did:key")
-            .await
-            .unwrap(),
     });
 
     // Deserializing the Appstates and Actions from the accompanying json files.

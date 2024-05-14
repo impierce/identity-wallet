@@ -67,7 +67,6 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         name: "Ferris".to_string(),
         picture: Some("&#129408".to_string()),
         theme: AppTheme::System,
-        primary_did: subject.identifier(default_did_method).await.unwrap(),
     };
     state.profile_settings.profile.replace(profile);
 

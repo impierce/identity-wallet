@@ -89,7 +89,6 @@ async fn test_get_state_unlock_storage() {
                 name: "Ferris Crabman".to_string(),
                 picture: Some("&#129408".to_string()),
                 theme: AppTheme::System,
-                primary_did: "did:example:placeholder".to_string(),
             }),
             ..Default::default()
         },
@@ -136,7 +135,6 @@ async fn test_get_state_unlock_storage_invalid_password() {
                 name: "Ferris Crabman".to_string(),
                 picture: Some("&#129408".to_string()),
                 theme: AppTheme::System,
-                primary_did: "did:example:placeholder".to_string(),
             }),
             ..Default::default()
         },

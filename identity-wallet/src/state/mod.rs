@@ -134,7 +134,6 @@ mod tests {
                     name: "John Doe".to_string(),
                     picture: None,
                     theme: AppTheme::System,
-                    primary_did: "did:example:123".to_string(),
                 }),
                 ..Default::default()
             },
@@ -167,8 +166,7 @@ mod tests {
                     "profile": {
                       "name": "John Doe",
                       "picture": null,
-                      "theme": "system",
-                      "primary_did": "did:example:123"
+                      "theme": "system"
                     },
                     "default_did_method": "did:key"
                   },

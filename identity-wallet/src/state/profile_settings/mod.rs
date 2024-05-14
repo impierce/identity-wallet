@@ -34,7 +34,6 @@ pub struct Profile {
     pub name: String,
     pub picture: Option<String>,
     pub theme: AppTheme,
-    pub primary_did: String,
 }
 
 #[typetag::serde(name = "profile")]
@@ -100,7 +99,6 @@ mod tests {
             name: "Ferris".to_string(),
             picture: Some("&#129408".to_string()),
             theme: AppTheme::System,
-            primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
         };
 
         let mut app_state = AppState {

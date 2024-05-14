@@ -79,13 +79,16 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
 
         info!("get the subject did");
 
-        let subject_did = state
-            .profile_settings
-            .profile
+        let identity_manager = state_guard
+            .identity_manager
             .as_ref()
-            .ok_or(MissingStateParameterError("active profile"))?
-            .primary_did
-            .clone();
+            .ok_or(MissingManagerError("identity"))?;
+
+        let subject_did = identity_manager
+            .subject
+            .identifier(&state.profile_settings.default_did_method)
+            .await
+            .expect("No default DID method");
 
         let mut presentation_builder =
             Presentation::builder(subject_did.parse().map_err(|_| DidParseError)?, Default::default());
