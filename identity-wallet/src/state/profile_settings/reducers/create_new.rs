@@ -1,10 +1,8 @@
 use crate::{
-    command,
     error::AppError::{self, *},
     state::{
         actions::{listen, Action},
         core_utils::IdentityManager,
-        did::actions::produce::ProduceDid,
         profile_settings::{actions::create_new::CreateNew, Profile, ProfileSettings},
         user_prompt::CurrentUserPrompt,
         AppState,
@@ -19,7 +17,7 @@ use oid4vc::oid4vc_manager::ProviderManager;
 use oid4vc::oid4vci::Wallet;
 use std::sync::Arc;
 
-/// Creates a new profile with a new DID (using the did:key method) and sets it as the active profile.
+/// Creates a new profile, produces (deterministic) DIDs and redirects to the main page.
 pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(CreateNew {
         name,

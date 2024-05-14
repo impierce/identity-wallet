@@ -33,33 +33,34 @@
       did: $state.dids['did:key'],
       enabled: true,
     },
-    {
-      alias: 'Shimmer Testnet',
-      method: 'did:iota:rms',
-      did: $state.dids['did:iota:rms'],
-      enabled: false,
-      logo: ShimmerLogo,
-    },
-    {
-      alias: 'Shimmer',
-      method: 'did:iota:smr',
-      did: $state.dids['did:iota:smr'],
-      enabled: false,
-      logo: ShimmerLogo,
-    },
-    {
-      alias: 'IOTA',
-      method: 'did:iota',
-      did: $state.dids['did:iota'],
-      enabled: false,
-      logo: IotaLogo,
-    },
-    {
-      alias: 'Custom',
-      method: '',
-      enabled: false,
-      logo: Code,
-    },
+    // TODO: enable IOTA-based methods once this is implemented: https://github.com/impierce/did-manager/issues/7
+    // {
+    //   alias: 'Shimmer Testnet',
+    //   method: 'did:iota:rms',
+    //   did: $state.dids['did:iota:rms'],
+    //   enabled: false,
+    //   logo: ShimmerLogo,
+    // },
+    // {
+    //   alias: 'Shimmer',
+    //   method: 'did:iota:smr',
+    //   did: $state.dids['did:iota:smr'],
+    //   enabled: false,
+    //   logo: ShimmerLogo,
+    // },
+    // {
+    //   alias: 'IOTA',
+    //   method: 'did:iota',
+    //   did: $state.dids['did:iota'],
+    //   enabled: false,
+    //   logo: IotaLogo,
+    // },
+    // {
+    //   alias: 'Custom',
+    //   method: '',
+    //   enabled: false,
+    //   logo: Code,
+    // },
   ];
 
   // Capabilities of `did-manager`
