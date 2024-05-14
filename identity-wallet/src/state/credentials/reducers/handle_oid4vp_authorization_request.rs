@@ -128,7 +128,7 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
         let (client_name, logo_uri, connection_url, client_id) =
             get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request);
 
-        let did = CoreDID::parse(&client_id).ok();
+        let did = CoreDID::parse(client_id).ok();
 
         let previously_connected = state.connections.contains(connection_url.as_str(), &client_name);
         let mut connections = state.connections;

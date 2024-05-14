@@ -19,7 +19,6 @@ static STRONGHOLD_CLIENT_PATH: &[u8] = b"iota_identity_client";
 pub struct StrongholdManager {
     stronghold: Stronghold,
     client: Client,
-    client_path: String,
     key_provider: KeyProvider,
     snapshot_path: SnapshotPath,
 }
@@ -59,7 +58,6 @@ impl StrongholdManager {
         let stronghold_manager = Self {
             stronghold,
             client,
-            client_path,
             key_provider,
             snapshot_path: snapshot_path.clone(),
         };
@@ -90,7 +88,6 @@ impl StrongholdManager {
         Ok(Self {
             stronghold,
             client,
-            client_path,
             key_provider,
             snapshot_path,
         })

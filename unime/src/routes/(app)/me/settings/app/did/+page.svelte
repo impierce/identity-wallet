@@ -5,12 +5,13 @@
 
   import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
   import { dispatch } from '$lib/dispatcher';
-  import IotaLogo from '$lib/static/svg/Iota.svelte';
-  import ShimmerLogo from '$lib/static/svg/Shimmer.svelte';
+  // TODO: enable IOTA-based methods once this is implemented: https://github.com/impierce/did-manager/issues/7
+  // import IotaLogo from '$lib/static/svg/Iota.svelte';
+  // import ShimmerLogo from '$lib/static/svg/Shimmer.svelte';
+  // import Code from '~icons/ph/code';
   import { state } from '$lib/stores';
 
   import CheckCircle from '~icons/ph/check-circle-fill';
-  import Code from '~icons/ph/code';
 
   $: preferred_did_method = $state.profile_settings.preferred_did_method;
 
