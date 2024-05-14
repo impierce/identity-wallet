@@ -21,7 +21,7 @@ use crate::{
 
 use lazy_static::lazy_static;
 use log::info;
-use oid4vc::{oid4vc_core::Subject as _, oid4vc_manager::ProviderManager, oid4vci::Wallet};
+use oid4vc::{oid4vc_manager::ProviderManager, oid4vci::Wallet};
 use serde_json::json;
 use std::{fs::File, io::Write, sync::Arc};
 
