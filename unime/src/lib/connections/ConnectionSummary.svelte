@@ -7,6 +7,8 @@
   import Image from '$lib/components/atoms/Image.svelte';
   import { state } from '$lib/stores';
 
+  // TODO: reenable once Tauri supports "shell:allow-open" on Mobile
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   import ArrowSquareOut from '~icons/ph/arrow-square-out-bold';
 
   import { buildIotaExplorerSearchLink } from './utils';
@@ -39,6 +41,8 @@
     explorerLink = buildIotaExplorerSearchLink(connection.did);
   }
 
+  // TODO: reenable once Tauri supports "shell:allow-open" on Mobile
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async function openExplorerLink() {
     if (!explorerLink) return;
     await open(explorerLink);
@@ -79,7 +83,8 @@
         <p class="select-text break-all font-mono text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
           {connection.did ?? '-'}
         </p>
-        {#if explorerLink}
+        <!-- TODO: reenable once Tauri supports "shell:allow-open" on Mobile -->
+        <!-- {#if explorerLink}
           <div class="flex w-full justify-center pt-2">
             <button
               type="button"
@@ -92,7 +97,7 @@
               </div>
             </button>
           </div>
-        {/if}
+        {/if} -->
       </div>
     {/if}
   </div>
