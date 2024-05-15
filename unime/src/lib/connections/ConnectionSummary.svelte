@@ -7,7 +7,7 @@
   import Image from '$lib/components/atoms/Image.svelte';
   import { state } from '$lib/stores';
 
-  // TODO: reenable once Tauri supports "shell:allow-open" on Mobile
+  // TODO: reenable once Tauri supports "shell:allow-open" on Mobile: https://github.com/tauri-apps/plugins-workspace/pull/1319
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   import ArrowSquareOut from '~icons/ph/arrow-square-out-bold';
 
@@ -41,7 +41,7 @@
     explorerLink = buildIotaExplorerSearchLink(connection.did);
   }
 
-  // TODO: reenable once Tauri supports "shell:allow-open" on Mobile
+  // TODO: reenable once Tauri supports "shell:allow-open" on Mobile: https://github.com/tauri-apps/plugins-workspace/pull/1319
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async function openExplorerLink() {
     if (!explorerLink) return;
@@ -83,7 +83,7 @@
         <p class="select-text break-all font-mono text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
           {connection.did ?? '-'}
         </p>
-        <!-- TODO: reenable once Tauri supports "shell:allow-open" on Mobile -->
+        <!-- TODO: reenable once Tauri supports "shell:allow-open" on Mobile: https://github.com/tauri-apps/plugins-workspace/pull/1319-->
         <!-- {#if explorerLink}
           <div class="flex w-full justify-center pt-2">
             <button

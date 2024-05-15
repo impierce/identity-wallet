@@ -11,7 +11,7 @@ tauri = { version = "=2.0.0-beta.19", features = [
 oid4vc = { git = "https://git@github.com/impierce/openid4vc.git", rev = "7c6a6eb" }
 log = "^0.4"
 serde_json = "1.0"
-did_manager = { git = "https://github.com/impierce/did-manager.git", rev = "64189b4" }
+did_manager = { git = "https://github.com/impierce/did-manager.git", rev = "3203936" }
 indoc = "2.0"
 rand = "0.8"
 wiremock = "0.5"

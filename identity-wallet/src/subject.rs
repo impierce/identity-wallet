@@ -4,7 +4,7 @@ use async_trait::async_trait;
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use did_manager::{DidMethod, Resolver, SecretManager};
 use identity_iota::{did::DID, document::DIDUrlQuery, verification::jwk::JwkParams};
-use oid4vc::oid4vc_core::{authentication::sign::ExternalSign, Sign, Subject as SubjectTrait, Verify};
+use oid4vc::oid4vc_core::{authentication::sign::ExternalSign, Sign, Verify};
 use std::sync::Arc;
 
 pub struct Subject {
@@ -33,7 +33,7 @@ impl Sign for Subject {
 }
 
 #[async_trait]
-impl SubjectTrait for Subject {
+impl oid4vc::oid4vc_core::Subject for Subject {
     /// Returns the id of the DID document corresponding to the `subject_syntax_type`.
     /// TODO: `subject_syntax_type` or simply `method`?
     async fn identifier(&self, subject_syntax_type: &str) -> anyhow::Result<String> {
