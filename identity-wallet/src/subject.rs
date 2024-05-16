@@ -24,9 +24,11 @@ impl Sign for Subject {
             .and_then(|document| document.verification_method().first().cloned())
             .map(|first| first.id().to_string())
     }
+
     async fn sign(&self, message: &str, _subject_syntax_type: &str) -> anyhow::Result<Vec<u8>> {
         Ok(self.secret_manager.sign(message.as_bytes()).await?)
     }
+
     fn external_signer(&self) -> Option<Arc<dyn ExternalSign>> {
         None
     }
@@ -34,8 +36,6 @@ impl Sign for Subject {
 
 #[async_trait]
 impl oid4vc::oid4vc_core::Subject for Subject {
-    /// Returns the id of the DID document corresponding to the `subject_syntax_type`.
-    /// TODO: `subject_syntax_type` or simply `method`?
     async fn identifier(&self, subject_syntax_type: &str) -> anyhow::Result<String> {
         let method: DidMethod = serde_json::from_str(&format!("{subject_syntax_type:?}"))?;
 
@@ -62,10 +62,6 @@ impl Verify for Subject {
                 Some(identity_iota::verification::MethodScope::VerificationMethod),
             )
             .unwrap();
-        // .ok_or(ProducerError::Generic(format!(
-        //     "No verification method found for fragment=[{}]",
-        //     did_url.fragment().unwrap()
-        // )))?;
 
         // Try decode from `MethodData` directly, else use public JWK params.
         verification_method
