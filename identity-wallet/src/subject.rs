@@ -88,8 +88,7 @@ pub async fn subject(stronghold_manager: Arc<StrongholdManager>, password: Strin
         .lock()
         .unwrap()
         .to_str()
-        .ok_or(anyhow::anyhow!("failed to get stronghold path"))
-        .unwrap()
+        .expect("failed to get stronghold path")
         .to_owned();
 
     Arc::new(Subject {
