@@ -11,15 +11,14 @@ use identity_wallet::{
     stronghold::StrongholdManager,
 };
 
+use log::debug;
+use rand::distributions::DistString;
 use serde::de::DeserializeOwned;
 use serde_json::json;
 use std::fs::File;
 use std::path::Path;
 use std::sync::Arc;
 
-const SNAPSHOT_PATH: &str = "tests/res/test.stronghold";
-const PASSWORD: &str = "secure_password";
-const KEY_ID: &str = "9O66nzWqYYy1LmmiOudOlh2SMIaUWoTS";
 pub const TEST_PASSWORD: &str = "sup3rSecr3t";
 
 pub fn json_example<T>(path: &str) -> T
@@ -49,12 +48,9 @@ pub async fn test_managers(
 
     let subject: Arc<Subject> = Arc::new(Subject {
         stronghold_manager: stronghold_manager.clone(),
-        secret_manager: SecretManager::load(
-            SNAPSHOT_PATH.to_string(),
-            PASSWORD.to_string(),
-            KEY_ID.to_string(),
-            None,
-            None,
+        secret_manager: SecretManager::generate(
+            random_stronghold_path().to_string_lossy().into_owned(),
+            TEST_PASSWORD.to_string(),
         )
         .await
         .unwrap(),
@@ -71,4 +67,13 @@ pub async fn test_managers(
             wallet,
         }),
     }))
+}
+
+pub fn random_stronghold_path() -> std::path::PathBuf {
+    let mut file = std::env::temp_dir();
+    file.push("test_strongholds");
+    file.push(rand::distributions::Alphanumeric.sample_string(&mut rand::thread_rng(), 32));
+    file.set_extension("stronghold");
+    debug!("Stronghold path: {:?}", file);
+    file.to_owned()
 }
