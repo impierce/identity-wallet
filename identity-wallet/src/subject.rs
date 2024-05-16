@@ -109,7 +109,6 @@ mod tests {
     use super::*;
 
     use identity_iota::did::{CoreDID, DIDUrl, RelativeDIDUrl};
-    // use test_log::test;
 
     const SNAPSHOT_PATH: &str = "tests/res/test.stronghold";
     const PASSWORD: &str = "secure_password";
@@ -117,7 +116,7 @@ mod tests {
 
     #[tokio::test]
     async fn successfully_finds_an_existing_public_key_in_did_key_by_fragment() {
-        let res = SecretManager::load(
+        let secret_manager = SecretManager::load(
             SNAPSHOT_PATH.to_owned(),
             PASSWORD.to_owned(),
             KEY_ID.to_owned(),
@@ -126,20 +125,27 @@ mod tests {
         )
         .await
         .unwrap();
+
+        let subject = Subject {
+            stronghold_manager: Arc::new(StrongholdManager::load(PASSWORD).unwrap()),
+            secret_manager,
+        };
+
         let core_did = CoreDID::parse("did:key:z6MkiieyoLMSVsJAZv7Jje5wWSkDEymUgkyF8kbcrjZpX3qd").unwrap();
         let mut url = RelativeDIDUrl::new();
         url.set_fragment(Some(core_did.method_id())).unwrap();
         let did_url = DIDUrl::new(CoreDID::parse(core_did).unwrap(), Some(url));
-        // let pub_key = res.public_key(&did_url.to_string()).await.unwrap();
-        // assert_eq!(
-        //     URL_SAFE_NO_PAD.encode(&pub_key),
-        //     "P2BkYS6z4UHmsxn6FX1oHsyx7eiUSFEMJ1D_RC8M0-w"
-        // );
+        let pub_key = subject.public_key(&did_url.to_string()).await.unwrap();
+
+        assert_eq!(
+            URL_SAFE_NO_PAD.encode(&pub_key),
+            "P2BkYS6z4UHmsxn6FX1oHsyx7eiUSFEMJ1D_RC8M0-w"
+        );
     }
 
     #[tokio::test]
     async fn successfully_finds_an_existing_public_key_in_did_jwk_by_fragment() {
-        let res = SecretManager::load(
+        let secret_manager = SecretManager::load(
             SNAPSHOT_PATH.to_owned(),
             PASSWORD.to_owned(),
             KEY_ID.to_owned(),
@@ -148,20 +154,27 @@ mod tests {
         )
         .await
         .unwrap();
+
+        let subject = Subject {
+            stronghold_manager: Arc::new(StrongholdManager::load(PASSWORD).unwrap()),
+            secret_manager,
+        };
+
         let core_did = CoreDID::parse("did:jwk:eyJjcnYiOiJQLTI1NiIsImt0eSI6IkVDIiwieCI6ImFjYklRaXVNczNpOF91c3pFakoydHBUdFJNNEVVM3l6OTFQSDZDZEgyVjAiLCJ5IjoiX0tjeUxqOXZXTXB0bm1LdG00NkdxRHo4d2Y3NEk1TEtncmwyR3pIM25TRSJ9").unwrap();
         let mut url = RelativeDIDUrl::new();
         url.set_fragment(Some("#0")).unwrap();
         let did_url = DIDUrl::new(CoreDID::parse(core_did).unwrap(), Some(url));
-        // let pub_key = res.public_key(&did_url.to_string()).await.unwrap();
-        // assert_eq!(
-        //     URL_SAFE_NO_PAD.encode(&pub_key),
-        //     "acbIQiuMs3i8_uszEjJ2tpTtRM4EU3yz91PH6CdH2V0"
-        // );
+        let pub_key = subject.public_key(&did_url.to_string()).await.unwrap();
+
+        assert_eq!(
+            URL_SAFE_NO_PAD.encode(&pub_key),
+            "acbIQiuMs3i8_uszEjJ2tpTtRM4EU3yz91PH6CdH2V0"
+        );
     }
 
     #[tokio::test]
     async fn throws_error_when_no_public_key_found_in_document_for_fragment() {
-        let res = SecretManager::load(
+        let secret_manager = SecretManager::load(
             SNAPSHOT_PATH.to_owned(),
             PASSWORD.to_owned(),
             KEY_ID.to_owned(),
@@ -170,10 +183,17 @@ mod tests {
         )
         .await
         .unwrap();
+
+        let subject = Subject {
+            stronghold_manager: Arc::new(StrongholdManager::load(PASSWORD).unwrap()),
+            secret_manager,
+        };
+
         let core_did = CoreDID::parse("did:jwk:eyJjcnYiOiJQLTI1NiIsImt0eSI6IkVDIiwieCI6ImFjYklRaXVNczNpOF91c3pFakoydHBUdFJNNEVVM3l6OTFQSDZDZEgyVjAiLCJ5IjoiX0tjeUxqOXZXTXB0bm1LdG00NkdxRHo4d2Y3NEk1TEtncmwyR3pIM25TRSJ9").unwrap();
         let mut url = RelativeDIDUrl::new();
         url.set_fragment(Some("#foobar")).unwrap();
         let did_url = DIDUrl::new(CoreDID::parse(core_did).unwrap(), Some(url));
-        // assert!(res.public_key(&did_url.to_string()).await.is_err());
+
+        assert!(subject.public_key(&did_url.to_string()).await.is_err());
     }
 }
