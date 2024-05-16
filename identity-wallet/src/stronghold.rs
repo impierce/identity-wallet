@@ -1,5 +1,6 @@
 use crate::{persistence::STRONGHOLD, state::credentials::VerifiableCredentialRecord};
 
+use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use iota_stronghold::{
     procedures::{Ed25519Sign, GenerateKey, KeyType, PublicKey, StrongholdProcedure},
     Client, KeyProvider, Location, SnapshotPath, Stronghold,
@@ -9,13 +10,15 @@ use oid4vc::oid4vc_core::authentication::sign::ExternalSign;
 use uuid::Uuid;
 
 // This file is where we implement the stronghold library for our app, which is used to store sensitive data.
+// We have to follow the hard-coded values used in `identity.rs` to make our Stronghold compatible.
+static STRONGHOLD_VAULT_PATH: &str = "iota_identity_vault";
+static STRONGHOLD_CLIENT_PATH: &[u8] = b"iota_identity_client";
 
 /// This struct is the main point of communication between our appstate and the stronghold library.
 #[derive(Debug)]
 pub struct StrongholdManager {
     stronghold: Stronghold,
     client: Client,
-    client_path: String,
     key_provider: KeyProvider,
     snapshot_path: SnapshotPath,
 }
@@ -30,12 +33,20 @@ impl StrongholdManager {
             .ok_or(anyhow::anyhow!("failed to get stronghold path"))?
             .to_owned();
 
-        let snapshot_path = SnapshotPath::from_path(format!("{client_path}.snapshot"));
+        let snapshot_path = SnapshotPath::from_path(client_path.clone());
         let key_provider =
             KeyProvider::with_passphrase_hashed_blake2b(password.as_bytes().to_vec()).expect("failed to load key");
 
-        let client: Client = stronghold.create_client(&client_path).expect("cannot create client");
-        let output_location = Location::counter(client_path.clone(), 0u8);
+        let client: Client = stronghold
+            .create_client(STRONGHOLD_CLIENT_PATH)
+            .expect("cannot create client");
+
+        let output_location = Location::generic(
+            STRONGHOLD_VAULT_PATH.as_bytes().to_vec(),
+            "key-0".to_string().as_bytes().to_vec(),
+        );
+
+        info!("output_location: {:?}", output_location);
 
         client
             .execute_procedure(StrongholdProcedure::GenerateKey(GenerateKey {
@@ -47,13 +58,12 @@ impl StrongholdManager {
         let stronghold_manager = Self {
             stronghold,
             client,
-            client_path,
             key_provider,
             snapshot_path: snapshot_path.clone(),
         };
 
         let public_key = stronghold_manager.get_public_key()?;
-        debug!("public_key (base64): {:?}", base64::encode(public_key));
+        debug!("public_key (base64): {:?}", URL_SAFE_NO_PAD.encode(public_key));
 
         stronghold_manager.commit()?;
         Ok(stronghold_manager)
@@ -67,18 +77,17 @@ impl StrongholdManager {
             .to_str()
             .ok_or(anyhow::anyhow!("failed to get stronghold path"))?
             .to_owned();
-        let snapshot_path = SnapshotPath::from_path(format!("{client_path}.snapshot"));
+        let snapshot_path = SnapshotPath::from_path(client_path.clone());
         let key_provider =
             KeyProvider::with_passphrase_hashed_blake2b(password.as_bytes().to_vec()).expect("failed to load key");
 
         info!("Loading snapshot");
 
-        let client = stronghold.load_client_from_snapshot(&client_path, &key_provider, &snapshot_path)?;
+        let client = stronghold.load_client_from_snapshot(STRONGHOLD_CLIENT_PATH, &key_provider, &snapshot_path)?;
 
         Ok(Self {
             stronghold,
             client,
-            client_path,
             key_provider,
             snapshot_path,
         })
@@ -89,7 +98,7 @@ impl StrongholdManager {
         engine::snapshot::try_set_encrypt_work_factor(10)?;
 
         self.stronghold
-            .write_client(self.client_path.as_bytes())
+            .write_client(STRONGHOLD_CLIENT_PATH)
             .expect("store client state into snapshot state failed");
 
         self.stronghold
@@ -145,11 +154,14 @@ impl StrongholdManager {
             .client
             .execute_procedure(StrongholdProcedure::PublicKey(PublicKey {
                 ty: KeyType::Ed25519,
-                private_key: Location::counter(self.client_path.as_bytes(), 0u8),
+                private_key: Location::generic(
+                    STRONGHOLD_VAULT_PATH.as_bytes().to_vec(),
+                    "key-0".to_string().as_bytes().to_vec(),
+                ),
             }))?;
 
         let output: Vec<u8> = procedure_result.into();
-        info!(r#"Public key is "{}" (base64)"#, base64::encode(&output));
+        info!(r#"Public key is "{}" (base64)"#, URL_SAFE_NO_PAD.encode(&output));
 
         Ok(output)
     }
@@ -166,12 +178,15 @@ impl ExternalSign for StrongholdManager {
         let procedure_result = self
             .client
             .execute_procedure(StrongholdProcedure::Ed25519Sign(Ed25519Sign {
-                private_key: Location::counter(client_path.clone(), 0u8),
+                private_key: Location::generic(
+                    client_path.as_bytes().to_vec(),
+                    "key-0".to_string().as_bytes().to_vec(),
+                ),
                 msg: message.as_bytes().to_vec(),
             }))?;
 
         let output: Vec<u8> = procedure_result.into();
-        info!(r#"Signature is "{}" (base64)"#, base64::encode(&output));
+        info!(r#"Signature is "{}" (base64)"#, URL_SAFE_NO_PAD.encode(&output));
 
         Ok(output)
     }

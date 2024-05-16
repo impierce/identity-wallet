@@ -2,4 +2,4 @@
 import type { Locale } from "./Locale";
 import type { Profile } from "./Profile";
 
-export interface ProfileSettings { locale: Locale, profile: Profile | null, default_did_method: string, }
+export interface ProfileSettings { locale: Locale, profile: Profile | null, preferred_did_method: string, }

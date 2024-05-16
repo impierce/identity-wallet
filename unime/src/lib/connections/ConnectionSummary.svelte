@@ -2,9 +2,14 @@
   import LL from '$i18n/i18n-svelte';
 
   import type { Connection } from '@bindings/Connection';
+  import { open } from '@tauri-apps/plugin-shell';
 
   import Image from '$lib/components/atoms/Image.svelte';
   import { state } from '$lib/stores';
+
+  import ArrowSquareOut from '~icons/ph/arrow-square-out-bold';
+
+  import { buildIotaExplorerSearchLink } from './utils';
 
   export let connection: Connection;
 
@@ -25,6 +30,19 @@
       },
     ),
   };
+
+  // Holds the link to an external explorer (distributed ledger)
+  let explorerLink: string | undefined = undefined;
+
+  // Currently only IOTA DIDs are supported
+  if (connection.did?.startsWith('did:iota')) {
+    explorerLink = buildIotaExplorerSearchLink(connection.did);
+  }
+
+  async function openExplorerLink() {
+    if (!explorerLink) return;
+    await open(explorerLink);
+  }
 </script>
 
 <div class="flex flex-col items-center justify-center space-y-4">
@@ -54,5 +72,28 @@
         </p>
       </div>
     {/each}
+    <!-- Dev Mode: show DID (and explorer link, if available ) -->
+    {#if $state.dev_mode !== 'Off'}
+      <div class="flex flex-col items-start px-4 py-[10px]">
+        <p class="text-[13px]/[24px] font-medium text-slate-400">DID</p>
+        <p class="select-text break-all font-mono text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
+          {connection.did ?? '-'}
+        </p>
+        {#if explorerLink}
+          <div class="flex w-full justify-center pt-2">
+            <button
+              type="button"
+              class="h-10 rounded-lg px-4 text-[13px]/[24px] font-medium text-primary"
+              on:click={openExplorerLink}
+            >
+              <div class="flex items-center">
+                <p>View on explorer</p>
+                <ArrowSquareOut class="ml-2" />
+              </div>
+            </button>
+          </div>
+        {/if}
+      </div>
+    {/if}
   </div>
 </div>

@@ -81,7 +81,7 @@ async fn test_get_state_unlock_storage() {
 
     let container = AppStateContainer(Mutex::new(AppState {
         core_utils: CoreUtils {
-            managers: test_managers(vec![]),
+            managers: test_managers(vec![]).await,
             ..Default::default()
         },
         profile_settings: ProfileSettings {
@@ -89,7 +89,6 @@ async fn test_get_state_unlock_storage() {
                 name: "Ferris Crabman".to_string(),
                 picture: Some("&#129408".to_string()),
                 theme: AppTheme::System,
-                primary_did: "did:example:placeholder".to_string(),
             }),
             ..Default::default()
         },
@@ -128,7 +127,7 @@ async fn test_get_state_unlock_storage_invalid_password() {
 
     let container = AppStateContainer(Mutex::new(AppState {
         core_utils: CoreUtils {
-            managers: test_managers(vec![]),
+            managers: test_managers(vec![]).await,
             ..Default::default()
         },
         profile_settings: ProfileSettings {
@@ -136,7 +135,6 @@ async fn test_get_state_unlock_storage_invalid_password() {
                 name: "Ferris Crabman".to_string(),
                 picture: Some("&#129408".to_string()),
                 theme: AppTheme::System,
-                primary_did: "did:example:placeholder".to_string(),
             }),
             ..Default::default()
         },

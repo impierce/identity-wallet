@@ -1,15 +1,18 @@
 pub mod assert_state_update;
 pub mod extensions;
 
-use identity_wallet::oid4vc_manager::{methods::key_method::KeySubject, ProviderManager};
+use did_manager::SecretManager;
+use identity_wallet::oid4vc_manager::ProviderManager;
 use identity_wallet::oid4vci::Wallet;
 use identity_wallet::state::credentials::VerifiableCredentialRecord;
+use identity_wallet::subject::Subject;
 use identity_wallet::{
     state::core_utils::{IdentityManager, Managers},
     stronghold::StrongholdManager,
 };
 
-use did_key::{from_existing_key, Ed25519KeyPair};
+use log::debug;
+use rand::distributions::DistString;
 use serde::de::DeserializeOwned;
 use serde_json::json;
 use std::fs::File;
@@ -27,7 +30,7 @@ where
     serde_json::from_reader::<_, T>(file).expect("could not parse json")
 }
 
-pub fn test_managers(
+pub async fn test_managers(
     verifiable_credential_records: Vec<VerifiableCredentialRecord>,
 ) -> Arc<tauri::async_runtime::Mutex<Managers>> {
     let stronghold_manager = Arc::new(StrongholdManager::create(TEST_PASSWORD).unwrap());
@@ -43,10 +46,15 @@ pub fn test_managers(
                 .unwrap();
         });
 
-    let public_key = stronghold_manager.get_public_key().unwrap();
-
-    let keypair = from_existing_key::<Ed25519KeyPair>(public_key.as_slice(), None);
-    let subject = Arc::new(KeySubject::from_keypair(keypair, Some(stronghold_manager.clone())));
+    let subject: Arc<Subject> = Arc::new(Subject {
+        stronghold_manager: stronghold_manager.clone(),
+        secret_manager: SecretManager::generate(
+            random_stronghold_path().to_string_lossy().into_owned(),
+            TEST_PASSWORD.to_string(),
+        )
+        .await
+        .unwrap(),
+    });
 
     let provider_manager = ProviderManager::new(subject.clone(), "did:key").unwrap();
     let wallet: Wallet = Wallet::new(subject.clone(), "did:key").unwrap();
@@ -59,4 +67,13 @@ pub fn test_managers(
             wallet,
         }),
     }))
+}
+
+pub fn random_stronghold_path() -> std::path::PathBuf {
+    let mut file = std::env::temp_dir();
+    file.push("test_strongholds");
+    file.push(rand::distributions::Alphanumeric.sample_string(&mut rand::thread_rng(), 32));
+    file.set_extension("stronghold");
+    debug!("Stronghold path: {:?}", file);
+    file.to_owned()
 }

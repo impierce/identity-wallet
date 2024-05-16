@@ -21,20 +21,11 @@ async fn test_qr_code_scanned_handle_siopv2_authorization_request() {
     setup_state_file();
     setup_stronghold();
 
-    let managers = test_managers(vec![]);
+    let managers = test_managers(vec![]).await;
     let active_profile = Some(Profile {
         name: "Ferris".to_string(),
         picture: Some("&#129408".to_string()),
         theme: AppTheme::System,
-        primary_did: managers
-            .lock()
-            .await
-            .identity_manager
-            .as_ref()
-            .unwrap()
-            .subject
-            .identifier("did:key")
-            .unwrap(),
     });
 
     // Deserializing the Appstates and Actions from the accompanying json files.
@@ -78,20 +69,11 @@ async fn test_qr_code_scanned_handle_oid4vp_authorization_request() {
 
     let credentials = vec![verifiable_credential_record.display_credential.clone()];
 
-    let managers = test_managers(vec![verifiable_credential_record]);
+    let managers = test_managers(vec![verifiable_credential_record]).await;
     let active_profile = Some(Profile {
         name: "Ferris".to_string(),
         picture: Some("&#129408".to_string()),
         theme: AppTheme::System,
-        primary_did: managers
-            .lock()
-            .await
-            .identity_manager
-            .as_ref()
-            .unwrap()
-            .subject
-            .identifier("did:key")
-            .unwrap(),
     });
 
     // Deserializing the Appstates and Actions from the accompanying json files.
@@ -130,20 +112,11 @@ async fn test_qr_code_scanned_invalid_qr_code_error() {
     setup_state_file();
     setup_stronghold();
 
-    let managers = test_managers(vec![]);
+    let managers = test_managers(vec![]).await;
     let active_profile = Some(Profile {
         name: "Ferris".to_string(),
         picture: Some("&#129408".to_string()),
         theme: AppTheme::System,
-        primary_did: managers
-            .lock()
-            .await
-            .identity_manager
-            .as_ref()
-            .unwrap()
-            .subject
-            .identifier("did:key")
-            .unwrap(),
     });
 
     // Deserializing the Appstates and Actions from the accompanying json files.

@@ -3,8 +3,7 @@
     "profile": {
       "name": "Ferris Crabman",
       "picture": "&#129408",
-      "theme": "system",
-      "primary_did": "did:example:placeholder"
+      "theme": "system"
     },
     "locale": "nl-NL"
   },
