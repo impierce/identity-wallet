@@ -4,6 +4,7 @@ pub mod extensions;
 use did_manager::SecretManager;
 use identity_wallet::oid4vc_manager::ProviderManager;
 use identity_wallet::oid4vci::Wallet;
+use identity_wallet::persistence::STRONGHOLD;
 use identity_wallet::state::credentials::VerifiableCredentialRecord;
 use identity_wallet::subject::Subject;
 use identity_wallet::{
@@ -11,14 +12,14 @@ use identity_wallet::{
     stronghold::StrongholdManager,
 };
 
-use log::debug;
-use rand::distributions::DistString;
+use self::assert_state_update::setup_stronghold;
 use serde::de::DeserializeOwned;
 use serde_json::json;
 use std::fs::File;
 use std::path::Path;
 use std::sync::Arc;
 
+const KEY_ID: &str = "key-0";
 pub const TEST_PASSWORD: &str = "sup3rSecr3t";
 
 pub fn json_example<T>(path: &str) -> T
@@ -33,6 +34,8 @@ where
 pub async fn test_managers(
     verifiable_credential_records: Vec<VerifiableCredentialRecord>,
 ) -> Arc<tauri::async_runtime::Mutex<Managers>> {
+    setup_stronghold();
+
     let stronghold_manager = Arc::new(StrongholdManager::create(TEST_PASSWORD).unwrap());
 
     verifiable_credential_records
@@ -48,9 +51,12 @@ pub async fn test_managers(
 
     let subject: Arc<Subject> = Arc::new(Subject {
         stronghold_manager: stronghold_manager.clone(),
-        secret_manager: SecretManager::generate(
-            random_stronghold_path().to_string_lossy().into_owned(),
+        secret_manager: SecretManager::load(
+            STRONGHOLD.lock().unwrap().to_string_lossy().to_string(),
             TEST_PASSWORD.to_string(),
+            KEY_ID.to_string(),
+            None,
+            None,
         )
         .await
         .unwrap(),
@@ -67,13 +73,4 @@ pub async fn test_managers(
             wallet,
         }),
     }))
-}
-
-pub fn random_stronghold_path() -> std::path::PathBuf {
-    let mut file = std::env::temp_dir();
-    file.push("test_strongholds");
-    file.push(rand::distributions::Alphanumeric.sample_string(&mut rand::thread_rng(), 32));
-    file.set_extension("stronghold");
-    debug!("Stronghold path: {:?}", file);
-    file.to_owned()
 }
