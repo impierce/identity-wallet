@@ -7,6 +7,8 @@ use identity_iota::{did::DID, document::DIDUrlQuery, verification::jwk::JwkParam
 use oid4vc::oid4vc_core::{authentication::sign::ExternalSign, Sign, Verify};
 use std::sync::Arc;
 
+/// A `Subject` implements functions required for signatures and verification.
+/// In UniMe, it serves as the "binding link" between the protocol libraries (OID4VC) and the secret management (DID Manager).
 pub struct Subject {
     pub stronghold_manager: Arc<StrongholdManager>,
     pub secret_manager: SecretManager,
@@ -88,8 +90,7 @@ pub async fn subject(stronghold_manager: Arc<StrongholdManager>, password: Strin
         .lock()
         .unwrap()
         .to_str()
-        .ok_or(anyhow::anyhow!("failed to get stronghold path"))
-        .unwrap()
+        .expect("failed to get stronghold path")
         .to_owned();
 
     Arc::new(Subject {

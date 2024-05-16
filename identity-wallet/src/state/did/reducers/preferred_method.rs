@@ -3,13 +3,14 @@ use crate::{
     state::{
         actions::{listen, Action},
         did::actions::set_preferred_method::SetPreferredDidMethod,
+        profile_settings::ProfileSettings,
         AppState,
     },
 };
 use oid4vc::oid4vc_core::SubjectSyntaxType;
 use std::str::FromStr;
 
-pub async fn set_preferred_did_method(mut state: AppState, action: Action) -> Result<AppState, AppError> {
+pub async fn set_preferred_did_method(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(method) = listen::<SetPreferredDidMethod>(action).map(|payload| payload.method) {
         let mut managers = state.core_utils.managers.lock().await;
 
@@ -24,8 +25,16 @@ pub async fn set_preferred_did_method(mut state: AppState, action: Action) -> Re
         identity_manager.provider_manager.provider.default_subject_syntax_type = subject_syntax_type.clone();
         identity_manager.wallet.default_subject_syntax_type = subject_syntax_type;
 
-        state.profile_settings.preferred_did_method = method.to_string();
-        state.current_user_prompt = None;
+        drop(managers);
+
+        return Ok(AppState {
+            profile_settings: ProfileSettings {
+                preferred_did_method: method.to_string(),
+                ..state.profile_settings
+            },
+            current_user_prompt: None,
+            ..state
+        });
     }
     Ok(state)
 }

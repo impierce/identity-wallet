@@ -95,6 +95,7 @@ impl StrongholdManager {
 
     pub fn commit(&self) -> anyhow::Result<()> {
         // Set the work factor to 10 to speed up the commit.
+        // TODO: security: weaker encryption?
         engine::snapshot::try_set_encrypt_work_factor(10)?;
 
         self.stronghold

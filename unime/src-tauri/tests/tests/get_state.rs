@@ -1,4 +1,4 @@
-use crate::common::assert_state_update::{assert_state_update, setup_state_file, setup_stronghold};
+use crate::common::assert_state_update::{assert_state_update, setup_state_file};
 use crate::common::{json_example, test_managers};
 use identity_wallet::state::profile_settings::AppTheme;
 use identity_wallet::state::{
@@ -13,7 +13,6 @@ use tokio::sync::Mutex;
 #[serial_test::serial]
 async fn test_get_state_create_new() {
     setup_state_file();
-    setup_stronghold();
 
     // Deserializing the AppStates and Actions from the accompanying json files.
     let state1 = json_example::<AppState>("tests/fixtures/states/no_profile_redirect_welcome.json");
@@ -43,7 +42,6 @@ async fn test_get_state_create_new() {
 #[serial_test::serial]
 async fn test_locale_stays_unchanged_on_profile_creation() {
     setup_state_file();
-    setup_stronghold();
 
     // Deserializing the AppStates and Actions from the accompanying json files.
     let state1 = json_example::<AppState>("tests/fixtures/states/no_profile_nl-NL_redirect_welcome.json");
@@ -71,7 +69,6 @@ async fn test_locale_stays_unchanged_on_profile_creation() {
 #[serial_test::serial]
 async fn test_get_state_unlock_storage() {
     setup_state_file();
-    setup_stronghold();
 
     // Deserializing the Appstates and Actions from the accompanying json files.
     let state1 = json_example::<AppState>("tests/fixtures/states/password_required.json");
@@ -117,7 +114,6 @@ async fn test_get_state_unlock_storage() {
 #[serial_test::serial]
 async fn test_get_state_unlock_storage_invalid_password() {
     setup_state_file();
-    setup_stronghold();
 
     // Deserializing the Appstates and Actions from the accompanying json files.
     let state1 = json_example::<AppState>("tests/fixtures/states/password_required.json");
