@@ -21,16 +21,11 @@
   export let id: string;
   export let iconFallback: Icon = 'User';
   export let isTempAsset = false;
-  let assetUrl: string | null = null;
 
-  async function loadImage() {
-    getImageAsset(id, isTempAsset).then((url) => {
-      assetUrl = url;
-    });
-  }
+  let assetUrl: Promise<string | null>;
 
   onMount(() => {
-    loadImage();
+    assetUrl = getImageAsset(id, isTempAsset);
   });
 </script>
 
@@ -53,21 +48,24 @@ Displays an image (loaded from disk) or a fallback component.
 <Image id={'3cf73ecb'} iconFallback={'Bank'} imgClass="h-[64px] w-[64px]" />
 ```
 -->
-{#if assetUrl}
-  <img
-    src={assetUrl}
-    alt="img_{id}"
-    class={twMerge('max-h-full w-full overflow-hidden bg-white object-contain', $$props.imgClass)}
-    on:error={() => warn(`Could not load image: ${id}`)}
-    on:load={() => debug(`Image successfully loaded: ${assetUrl}`)}
-    data-testid="image"
-  />
-{:else}
-  <slot name="fallback">
-    <svelte:component
-      this={icons[iconFallback]}
-      class={twMerge('h-[18px] w-[18px] text-slate-800 dark:text-grey', $$props.iconClass)}
-      data-testid="icon"
+
+{#await assetUrl then src}
+  {#if src}
+    <img
+      {src}
+      alt="img_{id}"
+      class={twMerge('max-h-full w-full overflow-hidden bg-white object-contain', $$props.imgClass)}
+      on:error={() => warn(`Could not load image: ${id}`)}
+      on:load={() => debug(`Image successfully loaded: ${assetUrl}`)}
+      data-testid="image"
     />
-  </slot>
-{/if}
+  {:else}
+    <slot name="fallback">
+      <svelte:component
+        this={icons[iconFallback]}
+        class={twMerge('h-[18px] w-[18px] text-slate-800 dark:text-grey', $$props.iconClass)}
+        data-testid="icon"
+      />
+    </slot>
+  {/if}
+{/await}
