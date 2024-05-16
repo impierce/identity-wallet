@@ -49,10 +49,12 @@ pub async fn test_managers(
                 .unwrap();
         });
 
+    let stronghold_snapshot_path = STRONGHOLD.lock().unwrap().to_string_lossy().to_string();
+
     let subject: Arc<Subject> = Arc::new(Subject {
         stronghold_manager: stronghold_manager.clone(),
         secret_manager: SecretManager::load(
-            STRONGHOLD.lock().unwrap().to_string_lossy().to_string(),
+            stronghold_snapshot_path,
             TEST_PASSWORD.to_string(),
             KEY_ID.to_string(),
             None,
