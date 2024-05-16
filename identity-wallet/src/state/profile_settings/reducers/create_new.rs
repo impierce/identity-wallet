@@ -47,15 +47,6 @@ pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppS
         let did_key = subject.identifier("did:key").await.map_err(|e| Error(e.to_string()))?;
         state.dids.insert("did:key".to_string(), did_key);
 
-        // TODO: running inline reducer doesn't work (locked managers?)
-        // command::reduce(
-        //     state,
-        //     Arc::new(ProduceDid {
-        //         method: did_manager::DidMethod::Key,
-        //     }),
-        // )
-        // .await?;
-
         let profile_settings = ProfileSettings {
             profile: Some(Profile {
                 name,
