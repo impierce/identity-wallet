@@ -4,6 +4,7 @@ pub mod connections;
 pub mod core_utils;
 pub mod credentials;
 pub mod dev_mode;
+pub mod did;
 pub mod profile_settings;
 pub mod qr_code;
 pub mod search;
@@ -24,6 +25,7 @@ use downcast_rs::{impl_downcast, DowncastSync};
 use dyn_clone::DynClone;
 use futures::Future;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::{collections::VecDeque, pin::Pin};
 use ts_rs::TS;
 
@@ -78,6 +80,7 @@ impl AppStateContainer {
 #[ts(export)]
 #[serde(default)]
 pub struct AppState {
+    pub dids: HashMap<String, String>,
     /// This field contains the connections.
     pub connections: Connections,
     /// This field contains the display credentials.
@@ -131,7 +134,6 @@ mod tests {
                     name: "John Doe".to_string(),
                     picture: None,
                     theme: AppTheme::System,
-                    primary_did: "did:example:123".to_string(),
                 }),
                 ..Default::default()
             },
@@ -153,6 +155,7 @@ mod tests {
             serialized,
             indoc! {
             r#"{
+                  "dids": {},
                   "connections": [],
                   "credentials": [],
                   "search_results": {
@@ -164,10 +167,9 @@ mod tests {
                     "profile": {
                       "name": "John Doe",
                       "picture": null,
-                      "theme": "system",
-                      "primary_did": "did:example:123"
+                      "theme": "system"
                     },
-                    "default_did_method": "did:key"
+                    "preferred_did_method": "did:jwk"
                   },
                   "current_user_prompt": {
                     "type": "redirect",

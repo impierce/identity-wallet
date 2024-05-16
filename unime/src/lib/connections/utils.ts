@@ -20,3 +20,19 @@ export const groupConnectionsAlphabetically = (connections: Connection[]): Map<s
   const sorted = connections.sort((a, b) => a.name.localeCompare(b.name));
   return groupBy(sorted, (connection: Connection) => connection.name[0].toUpperCase());
 };
+
+// Creates a link to the respective IOTA Explorer that searches for the given DID
+export const buildIotaExplorerSearchLink = (did: string): string => {
+  const explorerMapping: Record<string, string> = {
+    'did:iota': 'mainnet',
+    'did:iota:smr': 'shimmer',
+    'did:iota:rms': 'testnet',
+  };
+
+  // Determine network (by removing the "IOTA-Tag")
+  const parts = did.split(':');
+  parts.pop();
+  const network = parts.join(':');
+
+  return `https://explorer.iota.org/${explorerMapping[network]}/search/${did}`;
+};

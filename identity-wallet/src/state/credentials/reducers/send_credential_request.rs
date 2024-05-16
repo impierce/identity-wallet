@@ -3,7 +3,10 @@ use crate::{
     persistence::{hash, persist_asset},
     state::{
         actions::{listen, Action},
-        core_utils::history_event::{EventType, HistoryCredential, HistoryEvent},
+        core_utils::{
+            history_event::{EventType, HistoryCredential, HistoryEvent},
+            CoreUtils,
+        },
         credentials::{
             actions::credential_offers_selected::CredentialOffersSelected, DisplayCredential,
             VerifiableCredentialRecord,
@@ -101,7 +104,7 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
         // Create or update the connection.
         let previously_connected = state.connections.contains(connection_url, &issuer_name);
         let mut connections = state.connections;
-        let connection = connections.update_or_insert(connection_url, &issuer_name);
+        let connection = connections.update_or_insert(connection_url, &issuer_name, None);
 
         // Create a token request with grant_type `pre_authorized_code`.
         let token_request = match credential_offer.grants {
@@ -189,7 +192,10 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
 
         for (credential_configuration_id, credential) in credentials.into_iter() {
             let mut verifiable_credential_record: VerifiableCredentialRecord = credential.into();
-            verifiable_credential_record.display_credential.issuer_name = issuer_name.clone();
+            verifiable_credential_record
+                .display_credential
+                .issuer_name
+                .clone_from(&issuer_name);
             verifiable_credential_record.display_credential.connection_id = Some(connection.id.clone());
 
             let key: Uuid = verifiable_credential_record
@@ -260,5 +266,11 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
         });
     }
 
-    Ok(state)
+    Ok(AppState {
+        core_utils: CoreUtils {
+            managers: state.core_utils.managers,
+            ..Default::default()
+        },
+        ..state
+    })
 }

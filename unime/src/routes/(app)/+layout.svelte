@@ -16,7 +16,7 @@
 -->
 <div class="content-height flex flex-col items-stretch">
   <!-- <div class="flex h-screen flex-col items-stretch"> -->
-  <div class="hide-scrollbar grow overflow-x-hidden overflow-y-scroll">
+  <div class="hide-scrollbar grow overflow-x-hidden overflow-y-scroll bg-silver dark:bg-navy">
     <slot />
   </div>
   <div class="shrink-0">

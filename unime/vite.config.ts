@@ -55,6 +55,9 @@ export default defineConfig({
       'date-fns',
       'date-fns/locale',
       '@tauri-apps/plugin-barcode-scanner',
+      '@tauri-apps/plugin-shell',
+      '@tauri-apps/plugin-log',
+      '@aws-crypto/sha256-js',
     ],
   },
 });

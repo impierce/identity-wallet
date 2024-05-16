@@ -16,11 +16,10 @@ use ts_rs::TS;
 pub struct ProfileSettings {
     pub locale: Locale,
     pub profile: Option<Profile>,
-
     // TODO: Current simplified solution for handling a default DID method. Once we have the did-manager implemented, we
     // should probably come up with a different solution.
-    #[derivative(Default(value = r#"String::from("did:key")"#))]
-    pub default_did_method: String,
+    #[derivative(Default(value = r#"String::from("did:jwk")"#))]
+    pub preferred_did_method: String,
 }
 
 #[typetag::serde(name = "profile_settings")]
@@ -34,7 +33,6 @@ pub struct Profile {
     pub name: String,
     pub picture: Option<String>,
     pub theme: AppTheme,
-    pub primary_did: String,
 }
 
 #[typetag::serde(name = "profile")]
@@ -100,7 +98,6 @@ mod tests {
             name: "Ferris".to_string(),
             picture: Some("&#129408".to_string()),
             theme: AppTheme::System,
-            primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
         };
 
         let mut app_state = AppState {
