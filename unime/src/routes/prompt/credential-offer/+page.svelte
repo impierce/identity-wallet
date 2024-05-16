@@ -28,6 +28,8 @@
 
   let all_credential_configuration_ids: string[] = Object.keys(credential_configurations);
 
+  let loading = false;
+
   const imageId = $state.current_user_prompt?.logo_uri ? hash($state.current_user_prompt?.logo_uri) : '_';
 
   onDestroy(async () => {
@@ -37,7 +39,7 @@
 </script>
 
 <div class="content-height flex flex-col items-stretch bg-silver dark:bg-navy">
-  <TopNavBar title={$LL.SCAN.CREDENTIAL_OFFER.NAVBAR_TITLE()} on:back={() => history.back()} />
+  <TopNavBar title={$LL.SCAN.CREDENTIAL_OFFER.NAVBAR_TITLE()} on:back={() => history.back()} disabled={loading} />
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
     {#if $state.current_user_prompt.logo_uri}
@@ -84,6 +86,7 @@
     <Button
       label={$LL.SCAN.CREDENTIAL_OFFER.ACCEPT()}
       on:click={() => {
+        loading = true;
         dispatch({
           type: '[Credential Offer] Selected',
           payload: {
@@ -91,6 +94,7 @@
           },
         });
       }}
+      {loading}
     />
     <Button
       label={$LL.REJECT()}
@@ -98,6 +102,7 @@
       on:click={() => {
         dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });
       }}
+      disabled={loading}
     />
   </div>
 </div>

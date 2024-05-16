@@ -27,6 +27,8 @@
   } = createPopover();
   /* eslint-enable @typescript-eslint/no-unused-vars */
 
+  let loading = false;
+
   let client_name = $state.current_user_prompt.client_name;
 
   const previously_connected = $state.current_user_prompt.previously_connected;
@@ -42,7 +44,7 @@
 </script>
 
 <div class="content-height flex flex-col items-stretch bg-silver dark:bg-navy">
-  <TopNavBar title={$LL.SCAN.CONNECTION_REQUEST.NAVBAR_TITLE()} on:back={() => history.back()} />
+  <TopNavBar title={$LL.SCAN.CONNECTION_REQUEST.NAVBAR_TITLE()} on:back={() => history.back()} disabled={loading} />
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
     {#if $state.current_user_prompt.logo_uri}
@@ -135,10 +137,13 @@
   <div class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 dark:bg-dark">
     <Button
       label={$LL.SCAN.CONNECTION_REQUEST.ACCEPT()}
-      on:click={() =>
+      on:click={() => {
+        loading = true;
         dispatch({
           type: '[Authenticate] Connection accepted',
-        })}
+        });
+      }}
+      {loading}
     />
     <Button
       label={$LL.REJECT()}
@@ -147,6 +152,7 @@
         dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });
         goto('/me');
       }}
+      disabled={loading}
     />
   </div>
 </div>
