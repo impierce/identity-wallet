@@ -1,5 +1,4 @@
 use crate::{
-    command,
     error::AppError::{self, *},
     persistence::ASSETS_DIR,
     state::{
@@ -10,7 +9,6 @@ use crate::{
         },
         credentials::VerifiableCredentialRecord,
         dev_mode::DevMode,
-        did::actions::produce::ProduceDid,
         profile_settings::{AppTheme, Profile},
         user_prompt::CurrentUserPrompt,
         AppState,
@@ -21,7 +19,7 @@ use crate::{
 
 use lazy_static::lazy_static;
 use log::info;
-use oid4vc::{oid4vc_manager::ProviderManager, oid4vci::Wallet};
+use oid4vc::{oid4vc_core::Subject, oid4vc_manager::ProviderManager, oid4vci::Wallet};
 use serde_json::json;
 use std::{fs::File, io::Write, sync::Arc};
 
@@ -74,7 +72,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         ProviderManager::new(subject.clone(), preferred_did_method).map_err(OID4VCProviderManagerError)?;
     let wallet: Wallet = Wallet::new(subject.clone(), preferred_did_method).map_err(OID4VCWalletError)?;
     let identity_manager = IdentityManager {
-        subject,
+        subject: subject.clone(),
         provider_manager,
         wallet,
     };
@@ -88,21 +86,11 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         .replace(identity_manager);
 
     // Producing DIDs (`did:jwk`, `did:key`)
-    state = command::reduce(
-        state.clone(),
-        Arc::new(ProduceDid {
-            method: did_manager::DidMethod::Jwk,
-        }),
-    )
-    .await?;
+    let did_jwk = subject.identifier("did:jwk").await.map_err(|e| Error(e.to_string()))?;
+    state.dids.insert("did:jwk".to_string(), did_jwk);
 
-    state = command::reduce(
-        state.clone(),
-        Arc::new(ProduceDid {
-            method: did_manager::DidMethod::Key,
-        }),
-    )
-    .await?;
+    let did_key = subject.identifier("did:key").await.map_err(|e| Error(e.to_string()))?;
+    state.dids.insert("did:key".to_string(), did_key);
 
     vec![
         PERSONAL_INFORMATION.clone(),
