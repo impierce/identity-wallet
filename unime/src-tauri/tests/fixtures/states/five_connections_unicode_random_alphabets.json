@@ -3,8 +3,7 @@
     "profile": {
       "name": "Ferris",
       "picture": "&#129408",
-      "theme": "system",
-      "primary_did": "did:key:z6MknmKLNs3Ps5MFhB4Fp9HqZT4kanNhyxn5xq211xYFHUPJ"
+      "theme": "system"
     }
   },
   "connections": [

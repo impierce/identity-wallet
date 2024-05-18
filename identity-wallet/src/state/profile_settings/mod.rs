@@ -9,12 +9,17 @@ use strum::{EnumString, IntoStaticStr};
 use ts_rs::TS;
 
 /// ProfileSettings contains all matters concerning the user profile and its settings.
-#[derive(Default, Serialize, Deserialize, Derivative, TS, Clone, PartialEq, Debug)]
+#[derive(Serialize, Deserialize, Derivative, TS, Clone, PartialEq, Debug)]
+#[derivative(Default)]
 #[ts(export)]
 #[serde(default)]
 pub struct ProfileSettings {
     pub locale: Locale,
     pub profile: Option<Profile>,
+    // TODO: Current simplified solution for handling a default DID method. Once we have the did-manager implemented, we
+    // should probably come up with a different solution.
+    #[derivative(Default(value = r#"String::from("did:jwk")"#))]
+    pub preferred_did_method: String,
     pub sorting_preferences: SortingPreferences,
 }
 
@@ -29,7 +34,6 @@ pub struct Profile {
     pub name: String,
     pub picture: Option<String>,
     pub theme: AppTheme,
-    pub primary_did: String,
 }
 
 #[typetag::serde(name = "profile")]
@@ -133,7 +137,6 @@ mod tests {
             name: "Ferris".to_string(),
             picture: Some("&#129408".to_string()),
             theme: AppTheme::System,
-            primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
         };
 
         let mut app_state = AppState {

@@ -3,15 +3,15 @@ resolver = "2"
 members = ["identity-wallet", "unime/src-tauri"]
 
 [workspace.dependencies]
-tauri = { version = "=2.0.0-beta.12", features = [
+tauri = { version = "=2.0.0-beta.19", features = [
     "protocol-asset",
     "rustls-tls",
 ] }
 
-oid4vc = { git = "https://git@github.com/impierce/openid4vc.git", rev = "af7c5118a45c59f310eb3aab7dac68caafc8fa53" }
+oid4vc = { git = "https://git@github.com/impierce/openid4vc.git", rev = "7c6a6eb" }
 log = "^0.4"
 serde_json = "1.0"
-did-key = "0.2.1"
+did_manager = { git = "https://github.com/impierce/did-manager.git", rev = "aacecc1" }
 indoc = "2.0"
 rand = "0.8"
 wiremock = "0.5"

@@ -8,43 +8,50 @@ use crate::{
         AppState,
     },
     stronghold::StrongholdManager,
+    subject::subject,
 };
 
-use did_key::{from_existing_key, Ed25519KeyPair};
 use log::info;
-use oid4vc::{
-    oid4vc_core::Subject,
-    oid4vc_manager::{methods::key_method::KeySubject, ProviderManager},
-    oid4vci::Wallet,
-};
+use oid4vc::oid4vc_core::Subject as _;
+use oid4vc::oid4vc_manager::ProviderManager;
+use oid4vc::oid4vci::Wallet;
 use std::sync::Arc;
 
-/// Creates a new profile with a new DID (using the did:key method) and sets it as the active profile.
+/// Creates a new profile, produces (deterministic) DIDs and redirects to the main page.
 pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(CreateNew {
-        name, picture, theme, ..
+        name,
+        picture,
+        theme,
+        password,
     }) = listen::<CreateNew>(action)
     {
+        info!("Creating new identity ...");
         let mut state_guard = state.core_utils.managers.lock().await;
         let stronghold_manager = state_guard
             .stronghold_manager
             .as_ref()
             .ok_or(MissingManagerError("stronghold"))?;
 
-        let public_key = stronghold_manager.get_public_key().map_err(StrongholdPublicKeyError)?;
+        let preferred_did_method = state.profile_settings.preferred_did_method.as_str();
 
-        let keypair = from_existing_key::<Ed25519KeyPair>(public_key.as_slice(), None);
-        let subject = Arc::new(KeySubject::from_keypair(keypair, Some(stronghold_manager.clone())));
+        let subject = subject(stronghold_manager.clone(), password).await;
 
-        let provider_manager = ProviderManager::new([subject.clone()]).map_err(OID4VCProviderManagerError)?;
-        let wallet: Wallet = Wallet::new(subject.clone());
+        let provider_manager =
+            ProviderManager::new(subject.clone(), preferred_did_method).map_err(OID4VCProviderManagerError)?;
+        let wallet: Wallet = Wallet::new(subject.clone(), preferred_did_method).map_err(OID4VCWalletError)?;
+
+        let did_jwk = subject.identifier("did:jwk").await.map_err(|e| Error(e.to_string()))?;
+        state.dids.insert("did:jwk".to_string(), did_jwk);
+
+        let did_key = subject.identifier("did:key").await.map_err(|e| Error(e.to_string()))?;
+        state.dids.insert("did:key".to_string(), did_key);
 
         let profile_settings = ProfileSettings {
             profile: Some(Profile {
                 name,
                 picture: Some(picture),
                 theme,
-                primary_did: subject.identifier().map_err(OID4VCSubjectIdentifierError)?,
             }),
             ..state.profile_settings
         };

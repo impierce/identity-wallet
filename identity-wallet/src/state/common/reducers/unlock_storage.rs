@@ -5,26 +5,25 @@ use crate::state::core_utils::IdentityManager;
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::AppState;
 use crate::stronghold::StrongholdManager;
+use crate::subject::subject;
 
-use did_key::{from_existing_key, Ed25519KeyPair};
 use log::info;
-use oid4vc::oid4vc_manager::{methods::key_method::KeySubject, ProviderManager};
+use oid4vc::oid4vc_manager::ProviderManager;
 use oid4vc::oid4vci::Wallet;
 use std::sync::Arc;
 
 pub async fn unlock_storage(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(password) = listen::<UnlockStorage>(action).map(|payload| payload.password) {
         let mut state_guard = state.core_utils.managers.lock().await;
+        let preferred_did_method = state.profile_settings.preferred_did_method.as_str();
 
         let stronghold_manager = Arc::new(StrongholdManager::load(&password).map_err(StrongholdLoadingError)?);
 
-        let public_key = stronghold_manager.get_public_key().map_err(StrongholdPublicKeyError)?;
+        let subject = subject(stronghold_manager.clone(), password).await;
 
-        let keypair = from_existing_key::<Ed25519KeyPair>(public_key.as_slice(), None);
-        let subject = Arc::new(KeySubject::from_keypair(keypair, Some(stronghold_manager.clone())));
-
-        let provider_manager = ProviderManager::new([subject.clone()]).map_err(OID4VCProviderManagerError)?;
-        let wallet: Wallet = Wallet::new(subject.clone());
+        let provider_manager =
+            ProviderManager::new(subject.clone(), preferred_did_method).map_err(OID4VCProviderManagerError)?;
+        let wallet: Wallet = Wallet::new(subject.clone(), preferred_did_method).map_err(OID4VCWalletError)?;
 
         info!("loading credentials from stronghold");
         let credentials = stronghold_manager

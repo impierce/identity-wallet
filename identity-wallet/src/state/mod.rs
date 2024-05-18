@@ -4,6 +4,7 @@ pub mod connections;
 pub mod core_utils;
 pub mod credentials;
 pub mod dev_mode;
+pub mod did;
 pub mod profile_settings;
 pub mod qr_code;
 pub mod search;
@@ -24,6 +25,7 @@ use downcast_rs::{impl_downcast, DowncastSync};
 use dyn_clone::DynClone;
 use futures::Future;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::{collections::VecDeque, pin::Pin};
 use ts_rs::TS;
 
@@ -73,11 +75,12 @@ impl AppStateContainer {
 
 /// The inner state of the application managed by Tauri. When the state is serialized in order to be sent to the
 /// frontend, the `managers` and `active_connection_request` fields are skipped.
-#[derive(Default, Serialize, Deserialize, Derivative, TS)]
+#[derive(Default, Serialize, Deserialize, Derivative, TS, Clone)]
 #[derivative(Debug)]
 #[ts(export)]
 #[serde(default)]
 pub struct AppState {
+    pub dids: HashMap<String, String>,
     pub connections: Connections,
     pub credentials: Vec<DisplayCredential>,
     pub search_results: SearchResults,
@@ -98,30 +101,6 @@ pub struct AppState {
     #[ts(skip)]
     pub extensions: std::collections::HashMap<String, Box<dyn FeatTrait>>,
     pub dev_mode: DevMode,
-}
-
-impl Clone for AppState {
-    fn clone(&self) -> Self {
-        Self {
-            core_utils: CoreUtils {
-                managers: self.core_utils.managers.clone(),
-                active_connection_request: serde_json::from_value(serde_json::json!(
-                    self.core_utils.active_connection_request
-                ))
-                .unwrap(),
-            },
-            profile_settings: self.profile_settings.clone(),
-            credentials: self.credentials.clone(),
-            current_user_prompt: self.current_user_prompt.clone(),
-            debug_messages: self.debug_messages.clone(),
-            user_journey: self.user_journey.clone(),
-            connections: self.connections.clone(),
-            search_results: self.search_results.clone(),
-            history: self.history.clone(),
-            extensions: self.extensions.clone(),
-            dev_mode: self.dev_mode.clone(),
-        }
-    }
 }
 
 impl AppState {
