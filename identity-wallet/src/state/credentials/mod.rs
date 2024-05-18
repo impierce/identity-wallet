@@ -11,7 +11,7 @@ use ts_rs::TS;
 use uuid::Uuid;
 
 /// A credential displayable by the frontend.
-#[derive(Debug, Serialize, Deserialize, Clone, Eq, Derivative, TS)]
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, Derivative, TS, Default)]
 #[derivative(PartialEq)]
 #[ts(export, export_to = "bindings/display-credential/DisplayCredential.ts")]
 pub struct DisplayCredential {
@@ -28,19 +28,6 @@ pub struct DisplayCredential {
 
 #[typetag::serde(name = "display_credential")]
 impl FeatTrait for DisplayCredential {}
-
-impl Default for DisplayCredential {
-    fn default() -> Self {
-        Self {
-            id: Default::default(),
-            issuer_name: Default::default(),
-            data: Default::default(),
-            metadata: CredentialMetadata::default(),
-            connection_id: Default::default(),
-            display_name: Default::default(),
-        }
-    }
-}
 
 /// Contains metadata about a credential.
 /// PartialEq(ignore) used on the date_added field implemented because this would make testing with static json files impossible.
