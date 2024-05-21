@@ -68,6 +68,7 @@ pub async fn main_exec<R: tauri::Runtime>(
                     chrono::Utc::now().format("[%Y-%m-%d][%H:%M:%S]"),
                     error
                 ));
+                let _ = emit_error(&window, error.to_string());
             }
             error!("state update failed: {}", error);
         }
@@ -106,8 +107,17 @@ pub fn emit_event<R: tauri::Runtime>(window: &tauri::Window<R>, app_state: &AppS
     let app_state_json_str = serde_json::to_string(app_state).unwrap();
 
     debug!(
-        "emitted event `{}` with payload:\n {}",
+        "emitted event `{}` with payload:\n{}",
         STATE_CHANGED_EVENT, app_state_json_str
     );
+    Ok(())
+}
+
+/// This function emits an error to the frontend.
+pub fn emit_error<R: tauri::Runtime>(window: &tauri::Window<R>, error: String) -> anyhow::Result<()> {
+    const ERROR_EVENT: &str = "error";
+    window.emit(ERROR_EVENT, &error)?;
+
+    debug!("emitted event `{}` with payload:\n{}", ERROR_EVENT, error);
     Ok(())
 }

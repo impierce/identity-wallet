@@ -79,6 +79,14 @@
     }
   }
 
+  const mockScanError = () => {
+    loading = true;
+    setTimeout(() => {
+      loading = false;
+      dispatch({ type: '[QR Code] Scanned', payload: { form_urlencoded: 'foobar' } });
+    }, 500);
+  };
+
   const mockSiopRequest = () => {
     state.set({
       ...$state,
@@ -159,6 +167,7 @@
               <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Mock scans</p>
               <Button variant="secondary" on:click={mockSiopRequest} label="New connection" />
               <Button variant="secondary" on:click={mockShareRequest} label="Share credentials" />
+              <Button variant="secondary" on:click={mockScanError} label="Scan error" />
             </div>
             <!-- Divider -->
             <hr />

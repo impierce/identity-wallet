@@ -1,16 +1,22 @@
 import { goto } from '$app/navigation';
 import { setLocale } from '$i18n/i18n-svelte';
 import type { Locales } from '$i18n/i18n-types';
-import { writable } from 'svelte/store';
+import { readable, writable } from 'svelte/store';
 
 // TODO: run some copy task instead of importing across root to make the frontend independent
 import type { AppState } from '@bindings/AppState';
 import { listen } from '@tauri-apps/api/event';
-import { info } from '@tauri-apps/plugin-log';
+import { error as err, info } from '@tauri-apps/plugin-log';
 
 interface StateChangedEvent {
   event: string;
   payload: AppState;
+  id: number;
+}
+
+interface ErrorEvent {
+  event: string;
+  payload: string;
   id: number;
 }
 
@@ -20,6 +26,7 @@ interface OnboardingState {
 }
 
 const empty_state: AppState = {
+  dids: {},
   connections: [],
   credentials: [],
   search_results: {
@@ -29,6 +36,7 @@ const empty_state: AppState = {
   profile_settings: {
     locale: 'en-US',
     profile: null,
+    preferred_did_method: 'did:jwk',
   },
   current_user_prompt: null,
   user_journey: null,
@@ -54,6 +62,17 @@ export const state = writable<AppState>(empty_state, (set) => {
       info(`Redirecting to: "/${redirect_target}"`);
       goto(`/${redirect_target}`);
     }
+  });
+  // TODO: unsubscribe from listener!
+});
+
+/**
+ * A read-only state that listens for errors emitted by the Rust core.
+ */
+export const error = writable<string | undefined>(undefined, (set) => {
+  listen('error', (event: ErrorEvent) => {
+    err(`Error: ${event.payload}`);
+    set(event.payload);
   });
   // TODO: unsubscribe from listener!
 });

@@ -9,7 +9,7 @@
   import { attachConsole } from '@tauri-apps/plugin-log';
 
   import { dispatch } from '$lib/dispatcher';
-  import { state } from '$lib/stores';
+  import { error, state } from '$lib/stores';
 
   import ScrollText from '~icons/lucide/scroll-text';
   import ArrowLeft from '~icons/ph/arrow-left';
@@ -24,6 +24,7 @@
   import type { ProfileSteps } from '@bindings/dev/ProfileSteps';
 
   import Switch from '$lib/components/atoms/Switch.svelte';
+  import Toast from '$lib/components/molecules/toast/Toast.svelte';
 
   import { determineTheme } from './utils';
 
@@ -63,6 +64,9 @@
       goto(`/prompt/${type}`);
     }
   }
+
+  $error = 'This is a quite long test error message. We should handle it accordingly.';
+  $: err = $error;
 
   interface DevModeButton {
     icon: typeof SvelteComponent<SvelteHTMLElements['svg']> | string;
@@ -225,5 +229,15 @@
   <!-- Content -->
   <div class="fixed top-[var(--safe-area-inset-top)] h-auto w-full">
     <slot />
+    {#if err}
+      <div class="absolute bottom-4 right-4 w-[75%]">
+        <Toast
+          title={'Whoops! That was unintentional.'}
+          detail={err}
+          on:dismissed={() => ($error = undefined)}
+          duration={0}
+        />
+      </div>
+    {/if}
   </div>
 </main>
