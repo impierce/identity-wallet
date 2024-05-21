@@ -86,8 +86,8 @@ impl Verify for Subject {
                         let y_bytes = URL_SAFE_NO_PAD.decode(&ec_params.y).ok()?;
 
                         let encoded_point = p256::EncodedPoint::from_affine_coordinates(
-                            &p256::FieldBytes::from_slice(&x_bytes),
-                            &p256::FieldBytes::from_slice(&y_bytes),
+                            p256::FieldBytes::from_slice(&x_bytes),
+                            p256::FieldBytes::from_slice(&y_bytes),
                             false, // false for uncompressed point
                         );
 
