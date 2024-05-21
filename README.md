@@ -103,3 +103,16 @@ rd /s /q "%USERPROFILE%\.cargo\git\checkouts"
 ```
 
 _This project was initialized using `create-tauri-app v3.1.1`._
+
+## Dependabot
+
+Dependabot monitors the following dependencies and creates pull requests with dependecy updates:
+
+| Directory | Updates                                                               |
+| :-------- | :-------------------------------------------------------------------- |
+| `/`       | NPM (project root `package.json`) and dependencies of GitHub Actions. |
+| `/unime`  | NPM.                                                                  |
+
+- Update frequency is once per month.
+- Automatic rebasing is disabled to avoid excessive use of GitHub Action minutes.
+- To trigger a rebase, follow the instructions in the pull request.
