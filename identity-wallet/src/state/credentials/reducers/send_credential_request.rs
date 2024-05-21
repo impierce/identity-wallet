@@ -135,17 +135,16 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
             0 => vec![],
             1 => {
                 let credential_configuration_id = credential_configuration_ids[0].clone();
-                let credential_format = credential_configurations_supported
+
+                let credential_configuration = credential_configurations_supported
                     .get(&credential_configuration_id)
                     .ok_or(UnknownCredentialConfigurationIdError(
                         credential_configuration_id.clone(),
-                    ))?
-                    .credential_format
-                    .to_owned();
+                    ))?;
 
                 // Get the credential.
                 let credential_response = wallet
-                    .get_credential(credential_issuer_metadata, &token_response, credential_format)
+                    .get_credential(credential_issuer_metadata, &token_response, credential_configuration)
                     .await
                     .map_err(GetCredentialError)?;
 
@@ -157,16 +156,16 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
                 vec![(credential_configuration_id, credential)]
             }
             _batch => {
-                let (credential_configuration_ids, credential_formats): (Vec<_>, Vec<_>) =
+                let (credential_configuration_ids, credential_configurations): (Vec<_>, Vec<_>) =
                     credential_configurations_supported
                         .into_iter()
                         .map(|(credential_configuration_id, credential_configuration)| {
-                            (credential_configuration_id, credential_configuration.credential_format)
+                            (credential_configuration_id, credential_configuration)
                         })
                         .unzip();
 
                 let batch_credential_response = wallet
-                    .get_batch_credential(credential_issuer_metadata, &token_response, credential_formats)
+                    .get_batch_credential(credential_issuer_metadata, &token_response, &credential_configurations)
                     .await
                     .map_err(GetBatchCredentialError)?;
 

@@ -7,6 +7,7 @@ use crate::state::AppState;
 use crate::stronghold::StrongholdManager;
 use crate::subject::subject;
 
+use jsonwebtoken::Algorithm;
 use log::info;
 use oid4vc::oid4vc_manager::ProviderManager;
 use oid4vc::oid4vci::Wallet;
@@ -21,9 +22,18 @@ pub async fn unlock_storage(state: AppState, action: Action) -> Result<AppState,
 
         let subject = subject(stronghold_manager.clone(), password).await;
 
-        let provider_manager =
-            ProviderManager::new(subject.clone(), preferred_did_method).map_err(OID4VCProviderManagerError)?;
-        let wallet: Wallet = Wallet::new(subject.clone(), preferred_did_method).map_err(OID4VCWalletError)?;
+        let provider_manager = ProviderManager::new(
+            subject.clone(),
+            preferred_did_method,
+            vec![Algorithm::EdDSA, Algorithm::ES256],
+        )
+        .map_err(OID4VCProviderManagerError)?;
+        let wallet: Wallet = Wallet::new(
+            subject.clone(),
+            preferred_did_method,
+            vec![Algorithm::EdDSA, Algorithm::ES256],
+        )
+        .map_err(OID4VCWalletError)?;
 
         info!("loading credentials from stronghold");
         let credentials = stronghold_manager

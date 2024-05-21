@@ -17,6 +17,7 @@ use crate::{
     subject::subject,
 };
 
+use jsonwebtoken::Algorithm;
 use lazy_static::lazy_static;
 use log::info;
 use oid4vc::{oid4vc_core::Subject, oid4vc_manager::ProviderManager, oid4vci::Wallet};
@@ -68,9 +69,18 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
     };
     state.profile_settings.profile.replace(profile);
 
-    let provider_manager =
-        ProviderManager::new(subject.clone(), preferred_did_method).map_err(OID4VCProviderManagerError)?;
-    let wallet: Wallet = Wallet::new(subject.clone(), preferred_did_method).map_err(OID4VCWalletError)?;
+    let provider_manager = ProviderManager::new(
+        subject.clone(),
+        preferred_did_method,
+        vec![Algorithm::EdDSA, Algorithm::ES256],
+    )
+    .map_err(OID4VCProviderManagerError)?;
+    let wallet: Wallet = Wallet::new(
+        subject.clone(),
+        preferred_did_method,
+        vec![Algorithm::EdDSA, Algorithm::ES256],
+    )
+    .map_err(OID4VCWalletError)?;
     let identity_manager = IdentityManager {
         subject: subject.clone(),
         provider_manager,
@@ -86,10 +96,16 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         .replace(identity_manager);
 
     // Producing DIDs (`did:jwk`, `did:key`)
-    let did_jwk = subject.identifier("did:jwk").await.map_err(|e| Error(e.to_string()))?;
+    let did_jwk = subject
+        .identifier("did:jwk", Algorithm::EdDSA)
+        .await
+        .map_err(|e| Error(e.to_string()))?;
     state.dids.insert("did:jwk".to_string(), did_jwk);
 
-    let did_key = subject.identifier("did:key").await.map_err(|e| Error(e.to_string()))?;
+    let did_key = subject
+        .identifier("did:key", Algorithm::EdDSA)
+        .await
+        .map_err(|e| Error(e.to_string()))?;
     state.dids.insert("did:key".to_string(), did_key);
 
     vec![

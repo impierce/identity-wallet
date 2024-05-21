@@ -11,6 +11,7 @@ use identity_wallet::{
     state::core_utils::{IdentityManager, Managers},
     stronghold::StrongholdManager,
 };
+use jsonwebtoken::Algorithm;
 
 use self::assert_state_update::setup_stronghold;
 use serde::de::DeserializeOwned;
@@ -56,7 +57,8 @@ pub async fn test_managers(
         secret_manager: SecretManager::load(
             stronghold_snapshot_path,
             TEST_PASSWORD.to_string(),
-            KEY_ID.to_string(),
+            Some(KEY_ID.to_string()),
+            None,
             None,
             None,
         )
@@ -64,8 +66,9 @@ pub async fn test_managers(
         .unwrap(),
     });
 
-    let provider_manager = ProviderManager::new(subject.clone(), "did:key").unwrap();
-    let wallet: Wallet = Wallet::new(subject.clone(), "did:key").unwrap();
+    let provider_manager =
+        ProviderManager::new(subject.clone(), "did:key", vec![Algorithm::EdDSA, Algorithm::ES256]).unwrap();
+    let wallet: Wallet = Wallet::new(subject.clone(), "did:key", vec![Algorithm::EdDSA, Algorithm::ES256]).unwrap();
 
     Arc::new(tauri::async_runtime::Mutex::new(Managers {
         stronghold_manager: Some(stronghold_manager),

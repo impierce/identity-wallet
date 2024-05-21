@@ -16,6 +16,7 @@ use crate::{
 
 use identity_credential::{credential::Jwt, presentation::Presentation};
 use identity_iota::did::CoreDID;
+use jsonwebtoken::Algorithm;
 use log::info;
 use oid4vc::oid4vc_core::{
     authorization_request::{AuthorizationRequest, Object},
@@ -86,7 +87,7 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
 
         let subject_did = identity_manager
             .subject
-            .identifier(&state.profile_settings.preferred_did_method)
+            .identifier(&state.profile_settings.preferred_did_method, Algorithm::EdDSA)
             .await
             .expect("No default DID method");
 
