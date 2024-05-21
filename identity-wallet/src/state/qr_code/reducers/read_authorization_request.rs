@@ -107,7 +107,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
 
             info!("uuids of VCs that can fulfill the request: {:?}", uuids);
 
-            let (client_name, logo_uri, _, _) = get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request);
+            let (client_name, logo_uri, _, _, _) = get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request);
 
             info!("client_name in credential_offer: {:?}", client_name);
             info!("logo_uri in read_authorization_request: {:?}", logo_uri);
