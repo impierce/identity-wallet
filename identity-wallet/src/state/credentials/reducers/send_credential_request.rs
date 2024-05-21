@@ -157,12 +157,7 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
             }
             _batch => {
                 let (credential_configuration_ids, credential_configurations): (Vec<_>, Vec<_>) =
-                    credential_configurations_supported
-                        .into_iter()
-                        .map(|(credential_configuration_id, credential_configuration)| {
-                            (credential_configuration_id, credential_configuration)
-                        })
-                        .unzip();
+                    credential_configurations_supported.into_iter().unzip();
 
                 let batch_credential_response = wallet
                     .get_batch_credential(credential_issuer_metadata, &token_response, &credential_configurations)
