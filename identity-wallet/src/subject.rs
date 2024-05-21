@@ -3,9 +3,12 @@ use crate::stronghold::StrongholdManager;
 use async_trait::async_trait;
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use did_manager::{DidMethod, Resolver, SecretManager};
-use identity_iota::{core::ToJson, did::DID, document::DIDUrlQuery, verification::jwk::JwkParams};
+use identity_iota::{
+    did::DID,
+    document::DIDUrlQuery,
+    verification::{jwk::JwkParams, jws::JwsAlgorithm},
+};
 use jsonwebtoken::Algorithm;
-use log::info;
 use oid4vc::oid4vc_core::{authentication::sign::ExternalSign, Sign, Verify};
 use std::sync::Arc;
 
@@ -23,7 +26,7 @@ impl Sign for Subject {
         let method: DidMethod = serde_json::from_str(&format!("{subject_syntax_type:?}")).ok()?;
 
         self.secret_manager
-            .produce_document(method, serde_json::from_str(&algorithm.to_json().unwrap()).unwrap())
+            .produce_document(method, algorithm.into_jws_algorithm())
             .await
             .ok()
             .and_then(|document| document.verification_method().first().cloned())
@@ -33,10 +36,7 @@ impl Sign for Subject {
     async fn sign(&self, message: &str, _subject_syntax_type: &str, algorithm: Algorithm) -> anyhow::Result<Vec<u8>> {
         Ok(self
             .secret_manager
-            .sign(
-                message.as_bytes(),
-                serde_json::from_str(&algorithm.to_json().unwrap()).unwrap(),
-            )
+            .sign(message.as_bytes(), algorithm.into_jws_algorithm())
             .await?)
     }
 
@@ -52,7 +52,7 @@ impl oid4vc::oid4vc_core::Subject for Subject {
 
         Ok(self
             .secret_manager
-            .produce_document(method, serde_json::from_str(&algorithm.to_json().unwrap()).unwrap())
+            .produce_document(method, algorithm.into_jws_algorithm())
             .await
             .map(|document| document.id().to_string())?)
     }
@@ -82,9 +82,8 @@ impl Verify for Subject {
                 .and_then(|public_key_jwk| match public_key_jwk.params() {
                     JwkParams::Okp(okp_params) => URL_SAFE_NO_PAD.decode(&okp_params.x).ok(),
                     JwkParams::Ec(ec_params) => {
-                        // FIX THIS: Error handling
-                        let x_bytes = URL_SAFE_NO_PAD.decode(&ec_params.x).unwrap();
-                        let y_bytes = URL_SAFE_NO_PAD.decode(&ec_params.y).unwrap();
+                        let x_bytes = URL_SAFE_NO_PAD.decode(&ec_params.x).ok()?;
+                        let y_bytes = URL_SAFE_NO_PAD.decode(&ec_params.y).ok()?;
 
                         let encoded_point = p256::EncodedPoint::from_affine_coordinates(
                             &p256::FieldBytes::from_slice(&x_bytes),
@@ -101,7 +100,6 @@ impl Verify for Subject {
                 })
                 .ok_or(anyhow::anyhow!("Failed to decode public key for DID URL: {}", did_url))
         })
-        // .and_then(|encoded_public_key| URL_SAFE_NO_PAD.decode(encoded_public_key).map_err(Into::into))
     }
 }
 
@@ -119,12 +117,35 @@ pub async fn subject(stronghold_manager: Arc<StrongholdManager>, password: Strin
         secret_manager: SecretManager::load(
             client_path,
             password,
-            Some("key-0".to_owned()),
-            Some("key-1".to_owned()),
+            Some("ed25519-0".to_owned()),
+            Some("es256-0".to_owned()),
             None,
             None,
         )
         .await
         .unwrap(),
     })
+}
+
+trait IntoJwsAlgorithm {
+    fn into_jws_algorithm(self) -> JwsAlgorithm;
+}
+
+impl IntoJwsAlgorithm for Algorithm {
+    fn into_jws_algorithm(self) -> JwsAlgorithm {
+        match self {
+            Algorithm::HS256 => JwsAlgorithm::HS256,
+            Algorithm::HS384 => JwsAlgorithm::HS384,
+            Algorithm::HS512 => JwsAlgorithm::HS512,
+            Algorithm::RS256 => JwsAlgorithm::RS256,
+            Algorithm::RS384 => JwsAlgorithm::RS384,
+            Algorithm::RS512 => JwsAlgorithm::RS512,
+            Algorithm::ES256 => JwsAlgorithm::ES256,
+            Algorithm::ES384 => JwsAlgorithm::ES384,
+            Algorithm::PS256 => JwsAlgorithm::PS256,
+            Algorithm::PS384 => JwsAlgorithm::PS384,
+            Algorithm::PS512 => JwsAlgorithm::PS512,
+            Algorithm::EdDSA => JwsAlgorithm::EdDSA,
+        }
+    }
 }
