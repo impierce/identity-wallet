@@ -8,10 +8,7 @@ tauri = { version = "=2.0.0-beta.19", features = [
     "rustls-tls",
 ] }
 
-# oid4vc = { git = "https://git@github.com/impierce/openid4vc.git", rev = "7c6a6eb" }
-oid4vc = { path = "../openid4vc" }
-# did_manager = { git = "https://github.com/impierce/did-manager.git", rev = "aacecc1" }
-did_manager = { path = "../did-manager" }
+did_manager = { git = "https://github.com/impierce/did-manager.git", rev = "584c16b" }
 indoc = "2.0"
 jsonwebtoken = "9.3"
 log = "^0.4"
@@ -19,6 +16,7 @@ rand = "0.8"
 serde_json = "1.0"
 serial_test = "2.0"
 tempfile = "3.5.0"
+oid4vc = { git = "https://git@github.com/impierce/openid4vc.git", rev = "274a3e9" }
 wiremock = "0.5"
 
 [workspace.package]

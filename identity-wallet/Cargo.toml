@@ -6,11 +6,15 @@ rust-version = "1.75.0"
 
 [dependencies]
 tauri.workspace = true
-oid4vc.workspace = true
-log.workspace = true
-serde_json.workspace = true
-did_manager.workspace = true
 
+anyhow = "1.0"
+async-trait = "0.1"
+base64 = "0.22"
+chrono = "0.4"
+derivative = "2.2"
+did_manager.workspace = true
+downcast-rs = "1.2"
+futures = "0.3"
 identity_credential = { version = "1.2.0", default-features = false, features = [
     "validator",
     "credential",
@@ -18,27 +22,21 @@ identity_credential = { version = "1.2.0", default-features = false, features = 
 ] }
 identity_iota = { version = "1.2" }
 iota_stronghold = { git = "https://github.com/iotaledger/stronghold.rs", branch = "2.0" }
-# stronghold-utils = { git = "https://github.com/iotaledger/stronghold.rs", branch = "2.0", optional = true }
-stronghold_engine = { git = "https://github.com/iotaledger/stronghold.rs", branch = "2.0" }
-stronghold_ext = { path = "../../stronghold_ext", features = ["crypto"] }
-# stronghold_ext = { git = "https://github.com/tensor-programming/stronghold_ext", features = ["crypto"] }
-anyhow = "1.0"
-async-trait = "0.1"
-base64 = "0.22"
-chrono = "0.4"
-derivative = "2.2"
-downcast-rs = "1.2"
-futures = "0.3"
 itertools = "0.10.5"
 jsonwebtoken.workspace = true
 lazy_static = "1.4.0"
+log.workspace = true
+oid4vc.workspace = true
 p256 = { version = "0.13", features = ["jwk"] }
 reqwest = { version = "0.11", default-features = false, features = [
     "json",
     "rustls-tls",
 ] }
 serde = { version = "1.0", features = ["derive"] }
+serde_json.workspace = true
 sha256 = "1.4"
+stronghold_engine = { git = "https://github.com/iotaledger/stronghold.rs", branch = "2.0" }
+stronghold_ext = { git = "https://github.com/tensor-programming/stronghold_ext", features = ["crypto"] }
 strum = { version = "0.25", features = ["derive"] }
 thiserror = "1.0"
 tokio = { version = "1.26.0", features = ["macros"] }
