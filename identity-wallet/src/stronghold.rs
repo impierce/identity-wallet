@@ -1,12 +1,10 @@
 use crate::{persistence::STRONGHOLD, state::credentials::VerifiableCredentialRecord};
 
-use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use iota_stronghold::{
-    procedures::{Ed25519Sign, GenerateKey, KeyType, PublicKey, StrongholdProcedure},
+    procedures::{GenerateKey, KeyType, StrongholdProcedure},
     Client, KeyProvider, Location, SnapshotPath, Stronghold,
 };
-use log::{debug, info};
-use oid4vc::oid4vc_core::authentication::sign::ExternalSign;
+use log::info;
 use stronghold_ext::{
     execute_procedure_ext,
     procs::{self, es256::Es256Procs},
@@ -45,11 +43,11 @@ impl StrongholdManager {
             .create_client(STRONGHOLD_CLIENT_PATH)
             .expect("cannot create client");
 
-        // EdDSA
+        // Generate ed25519 key
         {
             let ed25519_output_location = Location::generic(
                 STRONGHOLD_VAULT_PATH.as_bytes().to_vec(),
-                "key-0".to_string().as_bytes().to_vec(),
+                "ed25519-0".to_string().as_bytes().to_vec(),
             );
 
             info!("ed25519_output_location: {:?}", ed25519_output_location);
@@ -60,13 +58,15 @@ impl StrongholdManager {
                     output: ed25519_output_location,
                 }))
                 .expect("failed to generate new private key");
+
+            info!("Successfully generated new private key with type Ed25519");
         }
 
-        // ES256
+        // Generate ES256 Key
         {
             let es256_output_location = Location::generic(
                 STRONGHOLD_VAULT_PATH.as_bytes().to_vec(),
-                "key-1".to_string().as_bytes().to_vec(),
+                "es256-0".to_string().as_bytes().to_vec(),
             );
 
             info!("es256_output_location: {:?}", es256_output_location);
@@ -78,6 +78,8 @@ impl StrongholdManager {
                 }),
             )
             .expect("failed to generate new private key");
+
+            info!("Successfully generated new private key with type Es256");
         }
 
         let stronghold_manager = Self {
@@ -86,9 +88,6 @@ impl StrongholdManager {
             key_provider,
             snapshot_path: snapshot_path.clone(),
         };
-
-        // let public_key = stronghold_manager.get_public_key()?;
-        // debug!("public_key (base64): {:?}", URL_SAFE_NO_PAD.encode(public_key));
 
         stronghold_manager.commit()?;
         Ok(stronghold_manager)
@@ -173,46 +172,7 @@ impl StrongholdManager {
 
         Ok(value)
     }
-
-    // pub fn get_public_key(&self) -> anyhow::Result<Vec<u8>> {
-    //     debug!("Creating public key");
-    //     let procedure_result = execute_procedure_ext(
-    //         &self.client,
-    //         Es256Procs::PublicKey(procs::es256::PublicKey {
-    //             private_key: Location::counter(self.client_path.as_bytes(), 0u8),
-    //         }),
-    //     )?;
-
-    //     let output: Vec<u8> = procedure_result.into();
-
-    //     println!(r#"Public key is "{}" (base64)"#, base64::encode(&output[1..]));
-
-    //     Ok(output[1..].to_vec())
-    // }
 }
-
-// impl ExternalSign for StrongholdManager {
-//     fn sign(&self, message: &str) -> anyhow::Result<Vec<u8>> {
-//         let client_path = STRONGHOLD
-//             .lock()
-//             .unwrap()
-//             .to_str()
-//             .ok_or(anyhow::anyhow!("failed to get stronghold path"))?
-//             .to_owned();
-//         let procedure_result = execute_procedure_ext(
-//             &self.client,
-//             Es256Procs::Sign(procs::es256::Sign {
-//                 private_key: Location::counter(client_path.clone(), 0u8),
-//                 msg: message.as_bytes().to_vec(),
-//             }),
-//         )?;
-
-//         let output: Vec<u8> = procedure_result.into();
-//         info!(r#"Signature is "{}" (base64)"#, URL_SAFE_NO_PAD.encode(&output));
-
-//         Ok(output)
-//     }
-// }
 
 #[cfg(test)]
 mod tests {
