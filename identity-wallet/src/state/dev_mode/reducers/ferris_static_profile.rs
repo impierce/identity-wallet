@@ -11,7 +11,7 @@ use crate::{
         dev_mode::DevMode,
         profile_settings::{AppTheme, Profile},
         user_prompt::CurrentUserPrompt,
-        AppState,
+        AppState, SUPPORTED_SIGNING_ALGORITHMS,
     },
     stronghold::StrongholdManager,
     subject::subject,
@@ -72,13 +72,13 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
     let provider_manager = ProviderManager::new(
         subject.clone(),
         preferred_did_method,
-        vec![Algorithm::EdDSA, Algorithm::ES256],
+        Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
     )
     .map_err(OID4VCProviderManagerError)?;
     let wallet: Wallet = Wallet::new(
         subject.clone(),
         preferred_did_method,
-        vec![Algorithm::EdDSA, Algorithm::ES256],
+        Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
     )
     .map_err(OID4VCWalletError)?;
     let identity_manager = IdentityManager {
@@ -97,12 +97,14 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
 
     // Producing DIDs (`did:jwk`, `did:key`)
     let did_jwk = subject
+        // TODO: make distinction between keys using the same DID Method but different algorithms.
         .identifier("did:jwk", Algorithm::EdDSA)
         .await
         .map_err(|e| Error(e.to_string()))?;
     state.dids.insert("did:jwk".to_string(), did_jwk);
 
     let did_key = subject
+        // TODO: make distinction between keys using the same DID Method but different algorithms.
         .identifier("did:key", Algorithm::EdDSA)
         .await
         .map_err(|e| Error(e.to_string()))?;

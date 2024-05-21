@@ -5,7 +5,7 @@ use crate::{
         core_utils::IdentityManager,
         profile_settings::{actions::create_new::CreateNew, Profile, ProfileSettings},
         user_prompt::CurrentUserPrompt,
-        AppState,
+        AppState, SUPPORTED_SIGNING_ALGORITHMS,
     },
     stronghold::StrongholdManager,
     subject::subject,
@@ -41,23 +41,25 @@ pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppS
         let provider_manager = ProviderManager::new(
             subject.clone(),
             preferred_did_method,
-            vec![Algorithm::EdDSA, Algorithm::ES256],
+            Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
         )
         .map_err(OID4VCProviderManagerError)?;
         let wallet: Wallet = Wallet::new(
             subject.clone(),
             preferred_did_method,
-            vec![Algorithm::EdDSA, Algorithm::ES256],
+            Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
         )
         .map_err(OID4VCWalletError)?;
 
         let did_jwk = subject
+            // TODO: make distinction between keys using the same DID Method but different algorithms.
             .identifier("did:jwk", Algorithm::EdDSA)
             .await
             .map_err(|e| Error(e.to_string()))?;
         state.dids.insert("did:jwk".to_string(), did_jwk);
 
         let did_key = subject
+            // TODO: make distinction between keys using the same DID Method but different algorithms.
             .identifier("did:key", Algorithm::EdDSA)
             .await
             .map_err(|e| Error(e.to_string()))?;
