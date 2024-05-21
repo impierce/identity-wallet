@@ -3,7 +3,10 @@ use crate::{
     persistence::ASSETS_DIR,
     state::{
         connections::{Connection, Connections},
-        core_utils::history_event::{EventType, HistoryCredential, HistoryEvent},
+        core_utils::{
+            history_event::{EventType, HistoryCredential, HistoryEvent},
+            IdentityManager,
+        },
         credentials::VerifiableCredentialRecord,
         dev_mode::DevMode,
         profile_settings::{AppTheme, Profile},
@@ -11,13 +14,12 @@ use crate::{
         AppState,
     },
     stronghold::StrongholdManager,
+    subject::subject,
 };
 
-use did_key::{generate, Ed25519KeyPair};
 use lazy_static::lazy_static;
 use log::info;
-use oid4vc::oid4vc_core::Subject;
-use oid4vc::oid4vc_manager::methods::key_method::KeySubject;
+use oid4vc::{oid4vc_core::Subject, oid4vc_manager::ProviderManager, oid4vci::Wallet};
 use serde_json::json;
 use std::{fs::File, io::Write, sync::Arc};
 
@@ -51,22 +53,44 @@ lazy_static! {
 
 pub async fn load_ferris_profile() -> Result<AppState, AppError> {
     let mut state = AppState::default();
-    let default_did_method = state.profile_settings.default_did_method.as_str();
+    let preferred_did_method = "did:jwk";
 
-    let stronghold_manager = StrongholdManager::create("sup3rSecr3t").map_err(StrongholdCreationError)?;
+    let password = "sup3rSecr3t".to_string();
 
-    let subject = KeySubject::from_keypair(
-        generate::<Ed25519KeyPair>(Some("this-is-a-very-UNSAFE-secret-key".as_bytes())),
-        None,
-    );
+    let stronghold_manager = Arc::new(StrongholdManager::create(&password).map_err(StrongholdCreationError)?);
+
+    let subject = subject(stronghold_manager.clone(), password).await;
 
     let profile = Profile {
         name: "Ferris".to_string(),
         picture: Some("&#129408".to_string()),
         theme: AppTheme::System,
-        primary_did: subject.identifier(default_did_method).unwrap(),
     };
     state.profile_settings.profile.replace(profile);
+
+    let provider_manager =
+        ProviderManager::new(subject.clone(), preferred_did_method).map_err(OID4VCProviderManagerError)?;
+    let wallet: Wallet = Wallet::new(subject.clone(), preferred_did_method).map_err(OID4VCWalletError)?;
+    let identity_manager = IdentityManager {
+        subject: subject.clone(),
+        provider_manager,
+        wallet,
+    };
+
+    state
+        .core_utils
+        .managers
+        .lock()
+        .await
+        .identity_manager
+        .replace(identity_manager);
+
+    // Producing DIDs (`did:jwk`, `did:key`)
+    let did_jwk = subject.identifier("did:jwk").await.map_err(|e| Error(e.to_string()))?;
+    state.dids.insert("did:jwk".to_string(), did_jwk);
+
+    let did_key = subject.identifier("did:key").await.map_err(|e| Error(e.to_string()))?;
+    state.dids.insert("did:key".to_string(), did_key);
 
     vec![
         PERSONAL_INFORMATION.clone(),
@@ -102,7 +126,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         .lock()
         .await
         .stronghold_manager
-        .replace(Arc::new(stronghold_manager));
+        .replace(stronghold_manager);
 
     info!("loading journey from string");
     let journey_definition = r#"
@@ -159,6 +183,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             id: "352eaaf022a32cc315b4ac46bfa14bcad91e901bdf3aff3925d3a5a4c13bd611".to_string(),
             name: "NGDIL Demo".to_string(),
             url: "api.ngdil-demo.tanglelabs.io".to_string(),
+            did: None,
             verified: false,
             first_interacted: "2023-09-11T19:53:53.937981+00:00".to_string(),
             last_interacted: "2023-09-11T19:53:53.937981+00:00".to_string(),
@@ -167,6 +192,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             id: "424313e61e35ca4eeca44aac85dc4764c32d7cf9def83ba15f428c308bf1d181".to_string(),
             name: "Impierce Demo Portal".to_string(),
             url: "https://demo.impierce.com".to_string(),
+            did: Some("did:iota:rms:0x42ad588322e58b3c07aa39e4948d021ee17ecb5747915e9e1f35f028d7ecaf90".to_string()),
             verified: true,
             first_interacted: "2024-01-09T07:36:41.382948+00:00".to_string(),
             last_interacted: "2024-01-09T07:36:41.382948+00:00".to_string(),
@@ -175,6 +201,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             id: "e36236d8d7117ed6c6a5d4e99167a2ee1ccb455e75d5b71cee50b08adcf11ba1".to_string(),
             name: "my-webshop.com".to_string(),
             url: "https://shop.example.com".to_string(),
+            did: Some("did:key:z6Mkk7yqnGF3YwTrLpqrW6PGsKci7dNqh1CjnvMbzrMerSeL".to_string()),
             verified: false,
             first_interacted: "2022-02-03T12:33:54.191824+00:00".to_string(),
             last_interacted: "2023-11-13T19:26:40.049239+00:00".to_string(),
@@ -183,6 +210,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             id: "a81a51b8ad26bdd333abd791a112bf0e0823d559cadc580218a240238a86c292".to_string(),
             name: "IOTA".to_string(),
             url: "https://www.iota.org".to_string(),
+            did: Some("did:iota:0xe4edef97da1257e83cbeb49159cfdd2da6ac971ac447f233f8439cf29376ebfe".to_string()),
             verified: true,
             first_interacted: "2024-01-09T08:45:44.217Z".to_string(),
             last_interacted: "2024-01-09T08:45:44.217Z".to_string(),

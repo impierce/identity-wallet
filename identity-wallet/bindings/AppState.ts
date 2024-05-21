@@ -7,4 +7,4 @@ import type { HistoryEvent } from "./HistoryEvent";
 import type { ProfileSettings } from "./ProfileSettings";
 import type { SearchResults } from "./SearchResults";
 
-export interface AppState { connections: Connections, credentials: Array<DisplayCredential>, search_results: SearchResults, profile_settings: ProfileSettings, current_user_prompt: CurrentUserPrompt | null, user_journey: any | null, debug_messages: Array<string>, history: Array<HistoryEvent>, dev_mode: DevMode, }
+export interface AppState { dids: Record<string, string>, connections: Connections, credentials: Array<DisplayCredential>, search_results: SearchResults, profile_settings: ProfileSettings, current_user_prompt: CurrentUserPrompt | null, user_journey: any | null, debug_messages: Array<string>, history: Array<HistoryEvent>, dev_mode: DevMode, }

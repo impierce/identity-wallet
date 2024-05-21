@@ -65,7 +65,6 @@ mod tests {
                     name: "Ferris".to_string(),
                     picture: Some("&#129408".to_string()),
                     theme: AppTheme::System,
-                    primary_did: "did:mock:z6MkhaXgBZDvotDkL5257faiztiGiC2QtKLGpbnnEGta2doK".to_string(),
                 }),
                 ..Default::default()
             },

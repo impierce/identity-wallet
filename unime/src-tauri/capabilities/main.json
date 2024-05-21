@@ -3,14 +3,15 @@
   "identifier": "main-capability",
   "windows": ["main"],
   "permissions": [
-    "path:default",
-    "event:default",
-    "window:default",
     "app:default",
-    "resources:default",
-    "menu:default",
-    "tray:default",
+    "event:default",
+    "fs:allow-appdata-read-recursive",
     "log:default",
-    "fs:allow-appdata-read-recursive"
+    "menu:default",
+    "path:default",
+    "resources:default",
+    "shell:allow-open",
+    "tray:default",
+    "window:default"
   ]
 }

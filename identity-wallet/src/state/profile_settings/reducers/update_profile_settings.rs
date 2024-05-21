@@ -16,7 +16,6 @@ pub async fn update_profile_settings(state: AppState, action: Action) -> Result<
                         name: name.unwrap_or(profile.name),
                         picture: picture.or(profile.picture),
                         theme: theme.unwrap_or(profile.theme),
-                        ..profile
                     }),
                     ..state.profile_settings
                 },

@@ -33,7 +33,7 @@ pub(crate) async fn reduce(state: AppState, action: Action) -> Result<AppState, 
 }
 
 // This value is based on an estimated guess. Can be adjusted in case lower/higher timeouts are desired.
-const TIMEOUT_SECS: u64 = 6;
+const TIMEOUT_SECS: u64 = 10;
 
 /// This function is used to prevent deadlocks in the backend. It will sleep for a certain amount of time and then return.
 async fn deadlock_safety() {

@@ -3,8 +3,7 @@
     "profile": {
       "name": "Ferris",
       "picture": "&#129408",
-      "theme": "system",
-      "primary_did": "did:key:z6Mkr8yRGc8hG7t26CtjSaEfWZZsEDZZ3HECsUdwVyR4NThQ"
+      "theme": "system"
     }
   },
   "debug_messages": ["[2023-11-14][22:03:55] Unable to parse QR code with content: `invalid payload`\n"]
