@@ -24,7 +24,7 @@
   import type { ProfileSteps } from '@bindings/dev/ProfileSteps';
 
   import Switch from '$lib/components/atoms/Switch.svelte';
-  import Toast from '$lib/components/molecules/toast/Toast.svelte';
+  import ErrorToast from '$lib/components/molecules/toast/ErrorToast.svelte';
 
   import { determineTheme } from './utils';
 
@@ -230,12 +230,12 @@
   <div class="fixed top-[var(--safe-area-inset-top)] h-auto w-full">
     <slot />
     {#if err}
-      <div class="absolute bottom-4 right-4 w-[75%]">
-        <Toast
-          title={'Whoops! That was unintentional.'}
+      <div class="absolute bottom-4 right-4 w-[calc(100%_-_32px)]">
+        <ErrorToast
+          title={'Whoops!'}
           detail={err}
           on:dismissed={() => ($error = undefined)}
-          duration={0}
+          autoDismissAfterMs={5000}
         />
       </div>
     {/if}
