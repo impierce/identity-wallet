@@ -753,6 +753,16 @@ type RootTranslation = {
 			CONTENTS: string
 		}
 	}
+	ERROR: {
+		/**
+		 * O​o​p​s​!
+		 */
+		TITLE: string
+		/**
+		 * S​o​m​e​t​h​i​n​g​ ​w​e​n​t​ ​w​r​o​n​g​.​ ​P​l​e​a​s​e​ ​t​r​y​ ​a​g​a​i​n​ ​l​a​t​e​r​.
+		 */
+		DEFAULT_MESSAGE: string
+	}
 	/**
 	 * C​a​n​c​e​l
 	 */
@@ -1511,6 +1521,16 @@ export type TranslationFunctions = {
 			 */
 			CONTENTS: () => LocalizedString
 		}
+	}
+	ERROR: {
+		/**
+		 * Oops!
+		 */
+		TITLE: () => LocalizedString
+		/**
+		 * Something went wrong. Please try again later.
+		 */
+		DEFAULT_MESSAGE: () => LocalizedString
 	}
 	/**
 	 * Cancel

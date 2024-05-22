@@ -3,6 +3,7 @@
 
   import { goto } from '$app/navigation';
   import { PUBLIC_DEV_MODE_MENU_EXPANDED } from '$env/static/public';
+  import LL from '$i18n/i18n-svelte';
   import { loadAllLocales } from '$i18n/i18n-util.sync';
   import { fly } from 'svelte/transition';
 
@@ -230,8 +231,8 @@
     {#if $error}
       <div class="absolute bottom-4 right-4 w-[calc(100%_-_32px)]">
         <ErrorToast
-          title={'Whoops!'}
-          detail={$error}
+          title={$state?.dev_mode !== 'Off' ? 'Error' : $LL.ERROR.TITLE()}
+          detail={$state?.dev_mode !== 'Off' ? $error : $LL.ERROR.DEFAULT_MESSAGE()}
           on:dismissed={() => {
             // After the toast fires the "dismissed" event, we clear the current $error store.
             $error = undefined;

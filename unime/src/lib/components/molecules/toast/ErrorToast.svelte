@@ -27,7 +27,7 @@
   out:fade={{ duration: 200 }}
 >
   <Warning class="h-6 w-6 min-w-6 text-rose-400" />
-  <div class="ml-4 flex flex-col pr-12">
+  <div class="ml-4 mr-2 flex w-full flex-col overflow-hidden text-ellipsis break-words">
     <p class="truncate text-[12px]/[20px] font-bold text-slate-800">
       {title}
     </p>
@@ -35,7 +35,7 @@
       <p class="line-clamp-2 text-[12px]/[16px] text-slate-800">{detail}</p>
     {/if}
   </div>
-  <button class="absolute right-0 top-0 rounded-full p-3" on:click={() => dispatch('dismissed')}>
+  <button class="-mr-2 rounded-full p-3" on:click={() => dispatch('dismissed')}>
     <X class="h-4 w-4 text-slate-800" />
   </button>
 </div>
