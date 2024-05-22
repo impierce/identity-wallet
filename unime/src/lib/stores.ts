@@ -1,7 +1,7 @@
 import { goto } from '$app/navigation';
 import { setLocale } from '$i18n/i18n-svelte';
 import type { Locales } from '$i18n/i18n-types';
-import { readable, writable } from 'svelte/store';
+import { writable } from 'svelte/store';
 
 // TODO: run some copy task instead of importing across root to make the frontend independent
 import type { AppState } from '@bindings/AppState';
@@ -22,7 +22,7 @@ interface ErrorEvent {
 
 interface OnboardingState {
   name?: string;
-  password?: string; // TODO: secure enough?
+  password?: string; // TODO: security: is it okay to keep the password temporarily in the object?
 }
 
 const empty_state: AppState = {
@@ -46,7 +46,7 @@ const empty_state: AppState = {
 };
 
 /**
- * A read-only state that is updated by the Rust backend.
+ * A store that listens for updates to the application state emitted by the Rust backend.
  * If the frontend intends to change the state, it must dispatch an action to the backend.
  */
 // TODO: make read-only
@@ -67,7 +67,7 @@ export const state = writable<AppState>(empty_state, (set) => {
 });
 
 /**
- * A read-only state that listens for errors emitted by the Rust core.
+ * A store that listens for errors emitted by the Rust backend.
  */
 export const error = writable<string | undefined>(undefined, (set) => {
   listen('error', (event: ErrorEvent) => {
@@ -78,9 +78,8 @@ export const error = writable<string | undefined>(undefined, (set) => {
 });
 
 /**
- * A state only used by the frontend for storing display logic.
- * Never touches the Rust backend and is therefore not persisted across app restarts.
- * This is useful during the onboarding process,
- * where the user sets their preferences and only in the last step they are pushed to the backend.
+ * This store is only used by the frontend for storing state during onboarding.
+ * The data never touches the Rust backend and is therefore not persisted across app restarts.
+ * The state of the onboarding is pushed to the backend only on the last of the onboarding process.
  */
 export const onboarding_state = writable<OnboardingState>({});
