@@ -3,6 +3,7 @@
 
   import { goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
+  import { fade } from 'svelte/transition';
 
   import {
     cancel,
@@ -17,6 +18,7 @@
   import { debug, info, warn } from '@tauri-apps/plugin-log';
 
   import Button from '$lib/components/atoms/Button.svelte';
+  import LoadingSpinner from '$lib/components/atoms/LoadingSpinner.svelte';
   import BottomNavBar from '$lib/components/molecules/navigation/BottomNavBar.svelte';
   import { dispatch } from '$lib/dispatcher';
   import { state } from '$lib/stores';
@@ -24,6 +26,7 @@
   import CameraSlash from '~icons/ph/camera-slash';
 
   let scanning = false;
+  let loading = false;
 
   // We temporarily introduce this type that extends `PermissionState` to handle a possible error when checking for permissions.
   let permissions_nullable: PermissionState | null;
@@ -31,6 +34,7 @@
   function onMessage(scanned: Scanned) {
     debug(`Scanned: ${scanned.content}`);
     dispatch({ type: '[QR Code] Scanned', payload: { form_urlencoded: scanned.content } });
+    loading = true;
   }
 
   // from example in plugin-barcode-scanner repo
@@ -141,7 +145,15 @@
           </div>
         {/if}
 
-        {#if $state?.dev_mode !== 'Off'}
+        {#if loading}
+          <!-- Wait for 300ms before showing the loading spinner -->
+          <div class="flex flex-col items-center justify-center" in:fade={{ delay: 300, duration: 500 }}>
+            <p class="pb-4 text-[13px]/[24px] font-semibold text-slate-800 dark:text-grey">Please wait ...</p>
+            <LoadingSpinner class="h-12 w-12" />
+          </div>
+        {/if}
+
+        {#if $state?.dev_mode !== 'Off' && !loading}
           <div class="flex w-3/4 flex-col space-y-4">
             <!-- Mocks -->
             <div class="flex flex-col space-y-2">
@@ -192,6 +204,10 @@
     </div>
   </div>
   <div class="shrink-0">
+    {#if loading}
+      <!-- Overlay to disable interaction with the nav bar -->
+      <div class="absolute z-10 h-full w-full bg-white opacity-50 dark:bg-dark" />
+    {/if}
     <div class="fixed bottom-[var(--safe-area-inset-bottom)] w-full shadow-[0_-4px_20px_0px_rgba(0,0,0,0.03)]">
       <BottomNavBar
         active={'scan'}
