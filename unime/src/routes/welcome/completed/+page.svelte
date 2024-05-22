@@ -16,7 +16,7 @@
 </script>
 
 <!-- TODO: should we show this screen AFTER a successful creation of a stronghold? -->
-<TopNavBar on:back={() => history.back()} title={$LL.ONBOARDING.PASSWORD.COMPLETED.NAVBAR_TITLE()} />
+<TopNavBar on:back={() => history.back()} title={$LL.ONBOARDING.PASSWORD.COMPLETED.NAVBAR_TITLE()} disabled />
 <!-- Content -->
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }}>
   <div class="pb-8 pt-4">
