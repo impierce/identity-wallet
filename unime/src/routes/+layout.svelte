@@ -65,9 +65,6 @@
     }
   }
 
-  $error = 'This is a quite long test error message. We should handle it accordingly.';
-  $: err = $error;
-
   interface DevModeButton {
     icon: typeof SvelteComponent<SvelteHTMLElements['svg']> | string;
     onClick: () => void;
@@ -229,12 +226,16 @@
   <!-- Content -->
   <div class="fixed top-[var(--safe-area-inset-top)] h-auto w-full">
     <slot />
-    {#if err}
+    <!-- Show error if exists -->
+    {#if $error}
       <div class="absolute bottom-4 right-4 w-[calc(100%_-_32px)]">
         <ErrorToast
           title={'Whoops!'}
-          detail={err}
-          on:dismissed={() => ($error = undefined)}
+          detail={$error}
+          on:dismissed={() => {
+            // After the toast fires the "dismissed" event, we clear the current $error store.
+            $error = undefined;
+          }}
           autoDismissAfterMs={5000}
         />
       </div>

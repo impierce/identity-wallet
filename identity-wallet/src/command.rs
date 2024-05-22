@@ -88,13 +88,14 @@ pub async fn handle_action<R: tauri::Runtime>(
     window: tauri::Window<R>,
 ) -> Result<(), String> {
     tokio::select! {
-        res = main_exec(action, app_handle, container, window) => {
+        res = main_exec(action, app_handle, container, window.clone()) => {
             debug!("Finish invoke");
             res
         }
         _ = await_timeout() => {
             error!("Operation timed out");
-            Err("timed out".to_string())
+            emit_error(&window, "Operation timed out".to_string()).ok();
+            Err("Operation timed out".to_string())
         }
     }
 }
@@ -118,6 +119,6 @@ pub fn emit_error<R: tauri::Runtime>(window: &tauri::Window<R>, error: String) -
     const ERROR_EVENT: &str = "error";
     window.emit(ERROR_EVENT, &error)?;
 
-    debug!("emitted event `{}` with payload:\n{}", ERROR_EVENT, error);
+    debug!("emitted error event `{}` with payload:\n{}", ERROR_EVENT, error);
     Ok(())
 }
