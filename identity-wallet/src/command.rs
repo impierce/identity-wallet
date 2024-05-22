@@ -36,7 +36,7 @@ pub(crate) async fn reduce(state: AppState, action: Action) -> Result<AppState, 
 const TIMEOUT_SECS: u64 = 10;
 
 /// This function is used to prevent deadlocks in the backend. It will sleep for a certain amount of time and then return.
-async fn deadlock_safety() {
+async fn await_timeout() {
     tokio::time::sleep(Duration::from_secs(TIMEOUT_SECS)).await;
 }
 
@@ -92,7 +92,7 @@ pub async fn handle_action<R: tauri::Runtime>(
             debug!("Finish invoke");
             res
         }
-        _ = deadlock_safety() => {
+        _ = await_timeout() => {
             error!("Operation timed out");
             Err("timed out".to_string())
         }
