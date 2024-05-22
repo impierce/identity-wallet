@@ -146,9 +146,8 @@
         {/if}
 
         {#if loading}
-          <!-- Wait for 300ms before showing the loading spinner -->
-          <div class="flex flex-col items-center justify-center" in:fade={{ delay: 300, duration: 500 }}>
-            <p class="pb-4 text-[13px]/[24px] font-semibold text-slate-800 dark:text-grey">Please wait ...</p>
+          <!-- Wait for 500ms before showing the loading spinner -->
+          <div in:fade={{ delay: 500, duration: 500 }}>
             <LoadingSpinner class="h-12 w-12" />
           </div>
         {/if}
