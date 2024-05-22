@@ -227,7 +227,7 @@
               <Button variant="secondary" on:click={mockOfferRequest} label="Receive credential offer" />
               <!-- OpenID4VP (Verifiable Presentations) -->
               <Button variant="secondary" on:click={mockShareRequest} label="Share credentials" />
-              <Button variant="secondary" on:click={mockScanError} label="Scan error" />
+              <Button variant="secondary" on:click={mockScanError} label="Invalid QR code" />
             </div>
             <hr />
             <Button variant="primary" on:click={startScan} label="Start camera" />

@@ -41,6 +41,7 @@ Can be used for credentials, connections, etc.
   <!-- min-h-[64px] needed? -->
   <!-- Image or icon -->
   <slot name="image">
+    <!-- TODO: fix: should be `bg-white` only when Image is present, else `bg-silver dark:bg-navy` -->
     <div class="mr-4 flex h-12 w-12 min-w-[48px] items-center justify-center overflow-hidden rounded-lg bg-white p-1">
       <Image
         {id}
