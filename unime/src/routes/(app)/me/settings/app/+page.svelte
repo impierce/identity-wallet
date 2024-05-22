@@ -1,6 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
+  import { fade } from 'svelte/transition';
 
   import { locales } from '$lib/app/locales';
   import SettingsEntry from '$lib/app/settings/SettingsEntry.svelte';
@@ -12,6 +13,7 @@
   import ChatCircleText from '~icons/ph/chat-circle-text-fill';
   import Code from '~icons/ph/code-bold';
   import Confetti from '~icons/ph/confetti-fill';
+  import Files from '~icons/ph/files-fill';
   import Password from '~icons/ph/password-fill';
   import Sun from '~icons/ph/sun-fill';
   import Translate from '~icons/ph/translate-fill';
@@ -53,6 +55,16 @@
     <SettingsEntry icon={Code} title={$LL.SETTINGS.APP.DEVELOPER_MODE.TITLE()} hasCaretRight={false}>
       <Switch active={$state?.dev_mode !== 'Off'} on:change={toggleDevSettings} />
     </SettingsEntry>
+    {#if $state.dev_mode !== 'Off'}
+      <div transition:fade={{ duration: 200 }}>
+        <SettingsEntry
+          icon={Files}
+          title={'DID management'}
+          hasCaretRight={true}
+          on:click={() => goto('/me/settings/app/did')}
+        />
+      </div>
+    {/if}
   </div>
 </div>
 

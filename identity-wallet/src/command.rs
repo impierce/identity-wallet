@@ -33,10 +33,10 @@ pub(crate) async fn reduce(state: AppState, action: Action) -> Result<AppState, 
 }
 
 // This value is based on an estimated guess. Can be adjusted in case lower/higher timeouts are desired.
-const TIMEOUT_SECS: u64 = 6;
+const TIMEOUT_SECS: u64 = 10;
 
 /// This function is used to prevent deadlocks in the backend. It will sleep for a certain amount of time and then return.
-async fn deadlock_safety() {
+async fn await_timeout() {
     tokio::time::sleep(Duration::from_secs(TIMEOUT_SECS)).await;
 }
 
@@ -68,6 +68,7 @@ pub async fn main_exec<R: tauri::Runtime>(
                     chrono::Utc::now().format("[%Y-%m-%d][%H:%M:%S]"),
                     error
                 ));
+                let _ = emit_error(&window, error.to_string());
             }
             error!("state update failed: {}", error);
         }
@@ -87,13 +88,14 @@ pub async fn handle_action<R: tauri::Runtime>(
     window: tauri::Window<R>,
 ) -> Result<(), String> {
     tokio::select! {
-        res = main_exec(action, app_handle, container, window) => {
+        res = main_exec(action, app_handle, container, window.clone()) => {
             debug!("Finish invoke");
             res
         }
-        _ = deadlock_safety() => {
+        _ = await_timeout() => {
             error!("Operation timed out");
-            Err("timed out".to_string())
+            emit_error(&window, "Operation timed out".to_string()).ok();
+            Err("Operation timed out".to_string())
         }
     }
 }
@@ -106,8 +108,17 @@ pub fn emit_event<R: tauri::Runtime>(window: &tauri::Window<R>, app_state: &AppS
     let app_state_json_str = serde_json::to_string(app_state).unwrap();
 
     debug!(
-        "emitted event `{}` with payload:\n {}",
+        "emitted event `{}` with payload:\n{}",
         STATE_CHANGED_EVENT, app_state_json_str
     );
+    Ok(())
+}
+
+/// This function emits an error to the frontend.
+pub fn emit_error<R: tauri::Runtime>(window: &tauri::Window<R>, error: String) -> anyhow::Result<()> {
+    const ERROR_EVENT: &str = "error";
+    window.emit(ERROR_EVENT, &error)?;
+
+    debug!("emitted error event `{}` with payload:\n{}", ERROR_EVENT, error);
     Ok(())
 }

@@ -15,6 +15,7 @@ use crate::{
 };
 
 use identity_credential::{credential::Jwt, presentation::Presentation};
+use identity_iota::did::CoreDID;
 use log::info;
 use oid4vc::oid4vc_core::{
     authorization_request::{AuthorizationRequest, Object},
@@ -78,13 +79,16 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
 
         info!("get the subject did");
 
-        let subject_did = state
-            .profile_settings
-            .profile
+        let identity_manager = state_guard
+            .identity_manager
             .as_ref()
-            .ok_or(MissingStateParameterError("active profile"))?
-            .primary_did
-            .clone();
+            .ok_or(MissingManagerError("identity"))?;
+
+        let subject_did = identity_manager
+            .subject
+            .identifier(&state.profile_settings.preferred_did_method)
+            .await
+            .expect("No default DID method");
 
         let mut presentation_builder =
             Presentation::builder(subject_did.parse().map_err(|_| DidParseError)?, Default::default());
@@ -111,6 +115,7 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
                     presentation_submission,
                 },
             )
+            .await
             .map_err(GenerateAuthorizationResponseError)?;
         info!("response generated: {:?}", response);
 
@@ -120,12 +125,14 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
         }
         info!("response successfully sent");
 
-        let (client_name, logo_uri, connection_url) =
+        let (client_name, logo_uri, connection_url, client_id) =
             get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request);
+
+        let did = CoreDID::parse(client_id).ok();
 
         let previously_connected = state.connections.contains(connection_url.as_str(), &client_name);
         let mut connections = state.connections;
-        let connection = connections.update_or_insert(&connection_url, &client_name);
+        let connection = connections.update_or_insert(&connection_url, &client_name, did);
 
         let file_name = match logo_uri {
             Some(logo_uri) => hash(logo_uri.as_str()),
@@ -164,13 +171,16 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
 // Helper
 
 // TODO: move this functionality to the oid4vc-manager crate.
+/// Returns (client_name, logo_uri, connection_url, client_id)
 pub fn get_oid4vp_client_name_and_logo_uri(
     oid4vp_authorization_request: &AuthorizationRequest<Object<OID4VP>>,
-) -> (String, Option<String>, String) {
+) -> (String, Option<String>, String, String) {
     // Get the connection url from the redirect url host (or use the redirect url if it does not
     // contain a host).
     let redirect_uri = oid4vp_authorization_request.body.redirect_uri.clone();
     let connection_url = redirect_uri.host_str().unwrap_or(redirect_uri.as_str());
+
+    let client_id = oid4vp_authorization_request.body.client_id.clone();
 
     // Get the client_name and logo_uri from the client_metadata if it exists.
     oid4vp_authorization_request
@@ -184,10 +194,10 @@ pub fn get_oid4vp_client_name_and_logo_uri(
             } => {
                 let client_name = client_name.as_ref().cloned().unwrap_or(connection_url.to_string());
                 let logo_uri = logo_uri.as_ref().map(|logo_uri| logo_uri.to_string());
-                Some((client_name, logo_uri, connection_url.to_string()))
+                Some((client_name, logo_uri, connection_url.to_string(), client_id.clone()))
             }
             _ => None,
         })
         // Otherwise use the connection_url as the client_name.
-        .unwrap_or((connection_url.to_string(), None, connection_url.to_string()))
+        .unwrap_or((connection_url.to_string(), None, connection_url.to_string(), client_id))
 }

@@ -1,4 +1,4 @@
-use crate::common::assert_state_update::{assert_state_update, setup_state_file, setup_stronghold};
+use crate::common::assert_state_update::{assert_state_update, setup_state_file};
 use crate::common::extensions::CustomExtension;
 use crate::common::json_example;
 use identity_wallet::state::AppStateContainer;
@@ -8,7 +8,6 @@ use identity_wallet::state::{actions::Action, AppState};
 #[serial_test::serial]
 async fn test_extension() {
     setup_state_file();
-    setup_stronghold();
 
     // Deserializing the AppStates and Actions from the accompanying json files.
     let state = AppStateContainer::default()

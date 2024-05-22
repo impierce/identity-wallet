@@ -274,6 +274,10 @@ const en = {
       CONTENTS: 'Contents',
     },
   },
+  ERROR: {
+    TITLE: 'Oops!',
+    DEFAULT_MESSAGE: 'Something went wrong. Please try again.',
+  },
   CANCEL: 'Cancel',
   CLOSE: 'Close',
   CONTINUE: 'Continue',

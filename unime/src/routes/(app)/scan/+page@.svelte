@@ -3,6 +3,7 @@
 
   import { goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
+  import { fade } from 'svelte/transition';
 
   import {
     cancel,
@@ -17,6 +18,7 @@
   import { debug, info, warn } from '@tauri-apps/plugin-log';
 
   import Button from '$lib/components/atoms/Button.svelte';
+  import LoadingSpinner from '$lib/components/atoms/LoadingSpinner.svelte';
   import BottomNavBar from '$lib/components/molecules/navigation/BottomNavBar.svelte';
   import { dispatch } from '$lib/dispatcher';
   import { state } from '$lib/stores';
@@ -26,13 +28,15 @@
   import WarningCircle from '~icons/ph/warning-circle-fill';
 
   let scanning = false;
+  let loading = false;
+
   // We temporarily introduce this type that extends `PermissionState` to handle a possible error when checking for permissions.
   let permissions_nullable: PermissionState | null;
 
   function onMessage(scanned: Scanned) {
     debug(`Scanned: ${scanned.content}`);
     dispatch({ type: '[QR Code] Scanned', payload: { form_urlencoded: scanned.content } });
-    goto('/me');
+    loading = true;
   }
 
   // from example in plugin-barcode-scanner repo
@@ -76,6 +80,14 @@
         });
     }
   }
+
+  const mockScanError = () => {
+    loading = true;
+    setTimeout(() => {
+      loading = false;
+      dispatch({ type: '[QR Code] Scanned', payload: { form_urlencoded: 'foobar' } });
+    }, 500);
+  };
 
   const mockSiopRequest = () => {
     state.set({
@@ -172,7 +184,14 @@
           </div>
         {/if}
 
-        {#if $state?.dev_mode !== 'Off'}
+        {#if loading}
+          <!-- Wait for 500ms before showing the loading spinner -->
+          <div in:fade={{ delay: 500, duration: 500 }}>
+            <LoadingSpinner class="h-12 w-12" />
+          </div>
+        {/if}
+
+        {#if $state?.dev_mode !== 'Off' && !loading}
           <!-- Description -->
           <div class="flex w-full items-center rounded-lg bg-white px-4 py-4 dark:bg-dark">
             <span class="mr-4 h-6 w-6">
@@ -208,6 +227,7 @@
               <Button variant="secondary" on:click={mockOfferRequest} label="Receive credential offer" />
               <!-- OpenID4VP (Verifiable Presentations) -->
               <Button variant="secondary" on:click={mockShareRequest} label="Share credentials" />
+              <Button variant="secondary" on:click={mockScanError} label="Scan error" />
             </div>
             <hr />
             <Button variant="primary" on:click={startScan} label="Start camera" />
@@ -251,6 +271,10 @@
     </div>
   </div>
   <div class="shrink-0">
+    {#if loading}
+      <!-- Overlay to disable interaction with the nav bar -->
+      <div class="absolute z-10 h-full w-full bg-white opacity-50 dark:bg-dark" />
+    {/if}
     <div class="fixed bottom-[var(--safe-area-inset-bottom)] w-full shadow-[0_-4px_20px_0px_rgba(0,0,0,0.03)]">
       <BottomNavBar
         active={'scan'}

@@ -11,7 +11,7 @@
   import PaddedIcon from '$lib/components/atoms/PaddedIcon.svelte';
   import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
   import { dispatch } from '$lib/dispatcher';
-  import { state } from '$lib/stores';
+  import { error, state } from '$lib/stores';
   import { hash } from '$lib/utils';
 
   import Check from '~icons/ph/check-bold';
@@ -27,6 +27,8 @@
   } = createPopover();
   /* eslint-enable @typescript-eslint/no-unused-vars */
 
+  let loading = false;
+
   let client_name = $state.current_user_prompt.client_name;
 
   const previously_connected = $state.current_user_prompt.previously_connected;
@@ -35,6 +37,14 @@
 
   const imageId = $state.current_user_prompt?.logo_uri ? hash($state.current_user_prompt?.logo_uri) : '_';
 
+  // When an error is received, cancel the flow and redirect to the "me" page
+  error.subscribe((err) => {
+    if (err) {
+      loading = false;
+      dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });
+    }
+  });
+
   onDestroy(async () => {
     // TODO: is onDestroy also called when user accepts since the component itself is destroyed?
     dispatch({ type: '[User Flow] Cancel', payload: {} });
@@ -42,7 +52,7 @@
 </script>
 
 <div class="content-height flex flex-col items-stretch bg-silver dark:bg-navy">
-  <TopNavBar title={$LL.SCAN.CONNECTION_REQUEST.NAVBAR_TITLE()} on:back={() => history.back()} />
+  <TopNavBar title={$LL.SCAN.CONNECTION_REQUEST.NAVBAR_TITLE()} on:back={() => history.back()} disabled={loading} />
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
     {#if $state.current_user_prompt.logo_uri}
@@ -135,10 +145,13 @@
   <div class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 dark:bg-dark">
     <Button
       label={$LL.SCAN.CONNECTION_REQUEST.ACCEPT()}
-      on:click={() =>
+      on:click={() => {
+        loading = true;
         dispatch({
           type: '[Authenticate] Connection accepted',
-        })}
+        });
+      }}
+      {loading}
     />
     <Button
       label={$LL.REJECT()}
@@ -147,6 +160,7 @@
         dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });
         goto('/me');
       }}
+      disabled={loading}
     />
   </div>
 </div>

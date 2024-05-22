@@ -96,7 +96,7 @@ async fn download_credential_logo() {
 
     let app_state = AppState {
         core_utils: CoreUtils {
-            managers: test_managers(vec![]),
+            managers: test_managers(vec![]).await,
             ..Default::default()
         },
         ..AppState::default()
@@ -182,7 +182,7 @@ async fn download_issuer_logo() {
 
     let app_state = AppState {
         core_utils: CoreUtils {
-            managers: test_managers(vec![]),
+            managers: test_managers(vec![]).await,
             ..Default::default()
         },
         ..AppState::default()
@@ -259,7 +259,7 @@ async fn no_download_when_no_logo_in_metadata() {
 
     let app_state = AppState {
         core_utils: CoreUtils {
-            managers: test_managers(vec![]),
+            managers: test_managers(vec![]).await,
             ..Default::default()
         },
         ..AppState::default()
