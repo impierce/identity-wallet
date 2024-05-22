@@ -11,7 +11,7 @@
   import PaddedIcon from '$lib/components/atoms/PaddedIcon.svelte';
   import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
   import { dispatch } from '$lib/dispatcher';
-  import { state } from '$lib/stores';
+  import { error, state } from '$lib/stores';
   import { hash } from '$lib/utils';
 
   import Check from '~icons/ph/check-bold';
@@ -36,6 +36,14 @@
   const hostname = new URL($state.current_user_prompt.redirect_uri).hostname;
 
   const imageId = $state.current_user_prompt?.logo_uri ? hash($state.current_user_prompt?.logo_uri) : '_';
+
+  // When an error is received, cancel the flow and redirect to the "me" page
+  error.subscribe((err) => {
+    if (err) {
+      loading = false;
+      dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });
+    }
+  });
 
   onDestroy(async () => {
     // TODO: is onDestroy also called when user accepts since the component itself is destroyed?
