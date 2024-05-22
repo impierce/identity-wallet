@@ -12,8 +12,8 @@
   import { dispatch } from '$lib/dispatcher';
   import { error, state } from '$lib/stores';
 
-  import ScrollText from '~icons/lucide/scroll-text';
   import ArrowLeft from '~icons/ph/arrow-left';
+  import Bug from '~icons/ph/bug';
   import CaretDown from '~icons/ph/caret-down-bold';
   import CaretUp from '~icons/ph/caret-up-bold';
   import Trash from '~icons/ph/trash';
@@ -93,7 +93,7 @@
     };
 
     const debugButton: DevModeButton = {
-      icon: ScrollText,
+      icon: Bug,
       onClick: () => (showDebugMessages = !showDebugMessages),
     };
 
