@@ -17,7 +17,6 @@
   import { debug, info, warn } from '@tauri-apps/plugin-log';
 
   import Button from '$lib/components/atoms/Button.svelte';
-  import LoadingSpinner from '$lib/components/atoms/LoadingSpinner.svelte';
   import BottomNavBar from '$lib/components/molecules/navigation/BottomNavBar.svelte';
   import { dispatch } from '$lib/dispatcher';
   import { state } from '$lib/stores';
@@ -25,15 +24,13 @@
   import CameraSlash from '~icons/ph/camera-slash';
 
   let scanning = false;
-  let loading = false;
+
   // We temporarily introduce this type that extends `PermissionState` to handle a possible error when checking for permissions.
   let permissions_nullable: PermissionState | null;
 
   function onMessage(scanned: Scanned) {
     debug(`Scanned: ${scanned.content}`);
     dispatch({ type: '[QR Code] Scanned', payload: { form_urlencoded: scanned.content } });
-    loading = true;
-    // goto('/me');
   }
 
   // from example in plugin-barcode-scanner repo
@@ -173,27 +170,18 @@
           <!-- this background simulates the camera view -->
         </div>
         <div class="my-container grow">
-          {#if loading}
-            <div class="absolute z-10 flex h-full w-full bg-dark opacity-80" />
-          {/if}
           <div class="barcode-scanner--area--container">
             <div class="relative">
               <!-- <p>Aim your camera at a QR code</p> -->
             </div>
             <div class="square surround-cover">
               <div class="barcode-scanner--area--outer surround-cover">
-                <div class="barcode-scanner--area--inner">
-                  {#if loading}
-                    <div class="absolute z-20 -m-[18px] flex h-full w-full items-center justify-center">
-                      <LoadingSpinner class="h-12 w-12" />
-                    </div>
-                  {/if}
-                </div>
+                <div class="barcode-scanner--area--inner" />
               </div>
             </div>
           </div>
           {#if $state?.dev_mode !== 'Off'}
-            <div class="fixed bottom-[128px] left-[calc(50%_-_42px)] z-30">
+            <div class="fixed bottom-[128px] left-[calc(50%_-_42px)]">
               <button class="rounded-lg bg-rose-100 px-4 py-3 font-medium text-rose-500" on:click={cancelScan}
                 >{$LL.CANCEL()}</button
               >
