@@ -13,6 +13,8 @@
   import { onboarding_state } from '$lib/stores';
 
   import Shield from '~icons/ph/shield-fill';
+
+  let loading = false;
 </script>
 
 <!-- TODO: should we show this screen AFTER a successful creation of a stronghold? -->
@@ -60,8 +62,8 @@
 <div class="rounded-t-3xl bg-white p-6 dark:bg-dark" in:fade={{ delay: 200 }}>
   <Button
     label={$LL.CONTINUE()}
-    on:click={async () => {
-      await dispatch({
+    on:click={() => {
+      dispatch({
         type: '[DID] Create new',
         payload: {
           name: $onboarding_state.name ?? '',
@@ -70,6 +72,8 @@
           password: $onboarding_state.password ?? '',
         },
       });
+      loading = true;
     }}
+    {loading}
   />
 </div>
