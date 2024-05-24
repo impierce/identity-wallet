@@ -12,6 +12,8 @@
   export let active = false;
   export let reversed: boolean;
 
+  const dispatch = createEventDispatcher();
+
   // Compute sort order based on label and reversal
   let sortOrder: string;
   $: {
@@ -23,16 +25,10 @@
       sortOrder = reversed ? $LL.SORT.ORDER.NEWEST() : $LL.SORT.ORDER.OLDEST();
     }
   }
-
-  // Dispatch component event based on DOM event.
-  const dispatch = createEventDispatcher();
-  const handleClick = () => {
-    dispatch('click');
-  };
 </script>
 
 <button
-  on:click={handleClick}
+  on:click={() => dispatch('click')}
   class={`my-1 flex w-full gap-2 border p-[10px] text-slate-800 dark:text-grey ${
     active ? 'rounded-lg border-grey bg-silver dark:border-slate-600 dark:bg-navy' : 'border-transparent'
   }`}
