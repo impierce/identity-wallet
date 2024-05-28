@@ -119,7 +119,7 @@ mod bindings {
         UpdateCredentialMetadata { payload: UpdateCredentialMetadata },
         #[serde(rename = "[User Journey] Cancel")]
         CancelUserJourney,
-        #[serde(rename = "[Settings] Update Sorting Preference")]
+        #[serde(rename = "[Settings] Update sorting preference")]
         UpdateSortingPreference { payload: UpdateSortingPreference },
         #[serde(rename = "[Search] Query")]
         SearchQuery { payload: SearchQuery },
