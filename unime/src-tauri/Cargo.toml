@@ -29,7 +29,7 @@ tauri-plugin-barcode-scanner = { version = "=2.0.0-beta.5" }
 tauri-plugin-log = { version = "=2.0.0-beta.4", features = ["colored"] }
 tauri-plugin-fs = { version = "=2.0.0-beta.7" }
 # TODO: waiting for release (possibly `v2.0.0-beta.6`) that includes issue: https://github.com/tauri-apps/plugins-workspace/pull/1319
-tauri-plugin-shell = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v2" }
+tauri-plugin-shell = { git = "https://github.com/tauri-apps/plugins-workspace", rev = "f0fb25a" }
 
 dotenvy = { version = "0.15" }
 fern = "0.6.0"
