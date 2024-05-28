@@ -14,6 +14,8 @@
   import Code from '~icons/ph/code-bold';
   import Confetti from '~icons/ph/confetti-fill';
   import Files from '~icons/ph/files-fill';
+  import IdentificationBadge from '~icons/ph/identification-badge-fill';
+  import Key from '~icons/ph/key-fill';
   import Password from '~icons/ph/password-fill';
   import Sun from '~icons/ph/sun-fill';
   import Translate from '~icons/ph/translate-fill';
@@ -56,12 +58,20 @@
       <Switch active={$state?.dev_mode !== 'Off'} on:change={toggleDevSettings} />
     </SettingsEntry>
     {#if $state.dev_mode !== 'Off'}
-      <div transition:fade={{ duration: 200 }}>
+      <div in:fade={{ duration: 200 }} out:fade={{ duration: 200 }}>
         <SettingsEntry
-          icon={Files}
+          icon={IdentificationBadge}
           title={'DID management'}
           hasCaretRight={true}
           on:click={() => goto('/me/settings/app/did')}
+        />
+      </div>
+      <div in:fade={{ duration: 200 }} out:fade={{ duration: 200 }}>
+        <SettingsEntry
+          icon={Key}
+          title={'Key management'}
+          hasCaretRight={true}
+          on:click={() => goto('/me/settings/app/keys')}
         />
       </div>
     {/if}

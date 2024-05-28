@@ -20,6 +20,8 @@ pub struct ProfileSettings {
     // should probably come up with a different solution.
     #[derivative(Default(value = r#"String::from("did:jwk")"#))]
     pub preferred_did_method: String,
+    #[derivative(Default(value = r#"String::from("Ed25519")"#))]
+    pub preferred_key_type: String,
 }
 
 #[typetag::serde(name = "profile_settings")]

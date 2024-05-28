@@ -119,6 +119,7 @@ pub async fn subject(stronghold_manager: Arc<StrongholdManager>, password: Strin
             password,
             Some("ed25519-0".to_owned()),
             Some("es256-0".to_owned()),
+            Some("es256k-0".to_owned()),
             None,
             None,
         )
