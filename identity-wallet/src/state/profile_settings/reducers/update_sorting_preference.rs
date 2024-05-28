@@ -158,7 +158,7 @@ pub fn sort(list: Vec<String>, locale: Locale) -> Vec<String> {
 
     // Convert locale from AppState to icu_locid::Locale
     let locale: &str = locale.into();
-    let locale: icu::locid::Locale = locale.replace('_', "-").parse().unwrap();
+    let locale: icu::locid::Locale = locale.parse().unwrap();
 
     // Normalize all strings to Unicode, using NFC-normalized form.
     let normalized_list: Vec<String> = list.iter().map(|name| name.nfc().collect::<String>()).collect();
