@@ -10,7 +10,7 @@ use std::ops::Not;
 use ts_rs::TS;
 
 #[derive(Default, Serialize, Deserialize, Clone, Debug, TS, PartialEq)]
-#[ts(export)]
+#[ts(export, export_to = "bindings/connections/Connections.ts")]
 pub struct Connections(pub Vec<Connection>);
 
 impl Connections {
@@ -78,7 +78,7 @@ impl FeatTrait for Connections {}
 /// - [Relying Party](https://github.com/impierce/openid4vc/tree/dev/siopv2)
 /// - [Credential Issuer](https://github.com/impierce/openid4vc/tree/dev/oid4vci)
 #[derive(Clone, Serialize, Debug, Deserialize, TS, Default)]
-#[ts(export)]
+#[ts(export, export_to = "bindings/connections/Connection.ts")]
 #[serde(default)]
 pub struct Connection {
     pub id: String,

@@ -13,7 +13,7 @@ use uuid::Uuid;
 /// A credential displayable by the frontend.
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, Derivative, TS, Default)]
 #[derivative(PartialEq)]
-#[ts(export, export_to = "bindings/display-credential/DisplayCredential.ts")]
+#[ts(export, export_to = "bindings/credentials/DisplayCredential.ts")]
 pub struct DisplayCredential {
     pub id: String,
     pub issuer_name: String,
@@ -34,7 +34,7 @@ impl FeatTrait for DisplayCredential {}
 /// The date_added field is defined the moment the test is run and the json files are predefined.
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, TS, Default, Derivative)]
 #[derivative(PartialEq)]
-#[ts(export, export_to = "bindings/display-credential/CredentialMetadata.ts")]
+#[ts(export, export_to = "bindings/credentials/CredentialMetadata.ts")]
 pub struct CredentialMetadata {
     pub is_favorite: bool,
     #[derivative(PartialEq = "ignore")]
