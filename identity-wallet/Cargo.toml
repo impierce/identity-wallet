@@ -46,7 +46,6 @@ unicode-normalization = "0.1.23"
 uuid = { version = "1.4", features = ["v4", "fast-rng", "serde"] }
 
 [dev-dependencies]
-indoc.workspace = true
 rand.workspace = true
 wiremock.workspace = true
 serial_test.workspace = true
