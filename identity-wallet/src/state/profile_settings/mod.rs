@@ -75,36 +75,32 @@ pub struct Preferences<T> {
 
 #[derive(Clone, Serialize, Debug, Deserialize, TS, Default, PartialEq, EnumString)]
 #[ts(export, export_to = "bindings/profile_settings/CredentialSortMethod.ts")]
+#[serde(rename_all = "snake_case")]
 pub enum CredentialSortMethod {
     #[default]
     #[serde(rename = "name_az")]
     NameAZ,
-    #[serde(rename = "issue_date_new_old")]
     IssueDateNewOld,
-    #[serde(rename = "added_date_new_old")]
     AddedDateNewOld,
 }
 
 #[derive(Clone, Serialize, Debug, Deserialize, TS, Default, PartialEq, EnumString)]
 #[ts(export, export_to = "bindings/profile_settings/ConnectionSortMethod.ts")]
+#[serde(rename_all = "snake_case")]
 pub enum ConnectionSortMethod {
     #[default]
     #[serde(rename = "name_az")]
     NameAZ,
-    #[serde(rename = "first_interacted_new_old")]
     FirstInteractedNewOld,
-    #[serde(rename = "last_interacted_new_old")]
     LastInteractedNewOld,
 }
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone, PartialEq, Eq, Default)]
 #[ts(export, export_to = "bindings/profile_settings/AppTheme.ts")]
+#[serde(rename_all = "snake_case")]
 pub enum AppTheme {
     #[default]
-    #[serde(rename = "system")]
     System,
-    #[serde(rename = "dark")]
     Dark,
-    #[serde(rename = "light")]
     Light,
 }
 
