@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-
   import { goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
 
@@ -14,21 +12,24 @@
 
   export let credentialType: 'all' | 'data' | 'badges' = 'all';
 
-  let credentials: DisplayCredential[] = [];
+  let credentials: DisplayCredential[];
 
-  onMount(async () => {
+  // Credentials have to be reactive since state can update while component is mounted.
+  $: {
+    // First filter out favorites, then filter by type (if applicable).
     credentials = $state.credentials.filter((c) => !c.metadata.is_favorite);
     if (credentialType === 'badges') {
       credentials = credentials.filter((c) => (c.data.type as string[]).includes('OpenBadgeCredential'));
     } else if (credentialType === 'data') {
       credentials = credentials.filter((c) => !(c.data.type as string[]).includes('OpenBadgeCredential'));
     }
-  });
+  }
 </script>
 
 {#if credentials?.length > 0}
   <div class="flex flex-col space-y-2">
-    {#each credentials as credential}
+    <!-- Add credential.id as key to help Svelte update the list correctly. -->
+    {#each credentials as credential (credential.id)}
       <ListItemCard
         id={credential.id}
         title={credential.display_name}

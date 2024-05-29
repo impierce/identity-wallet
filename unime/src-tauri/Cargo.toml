@@ -36,7 +36,6 @@ fern = "0.6.0"
 
 [dev-dependencies]
 did_manager.workspace = true
-indoc.workspace = true
 jsonwebtoken.workspace = true
 rand.workspace = true
 wiremock.workspace = true

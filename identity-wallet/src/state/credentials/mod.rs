@@ -1,9 +1,8 @@
 pub mod actions;
 pub mod reducers;
 
-use crate::state::core_utils::DateUtils;
-
 use super::{core_utils::helpers::get_unverified_jwt_claims, FeatTrait};
+use crate::state::core_utils::DateUtils;
 
 use derivative::Derivative;
 use serde::{Deserialize, Serialize};
@@ -12,9 +11,9 @@ use ts_rs::TS;
 use uuid::Uuid;
 
 /// A credential displayable by the frontend.
-#[derive(Debug, Serialize, Deserialize, Clone, Eq, Derivative, TS)]
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, Derivative, TS, Default)]
 #[derivative(PartialEq)]
-#[ts(export, export_to = "bindings/display-credential/DisplayCredential.ts")]
+#[ts(export, export_to = "bindings/credentials/DisplayCredential.ts")]
 pub struct DisplayCredential {
     pub id: String,
     pub issuer_name: String,
@@ -31,14 +30,15 @@ pub struct DisplayCredential {
 impl FeatTrait for DisplayCredential {}
 
 /// Contains metadata about a credential.
+/// PartialEq(ignore) used on the date_added field implemented because this would make testing with static json files impossible.
+/// The date_added field is defined the moment the test is run and the json files are predefined.
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, TS, Default, Derivative)]
 #[derivative(PartialEq)]
-#[ts(export, export_to = "bindings/display-credential/CredentialMetadata.ts")]
+#[ts(export, export_to = "bindings/credentials/CredentialMetadata.ts")]
 pub struct CredentialMetadata {
     pub is_favorite: bool,
     #[derivative(PartialEq = "ignore")]
     pub date_added: String,
-    #[derivative(PartialEq = "ignore")]
     pub date_issued: String,
 }
 
@@ -78,7 +78,10 @@ impl From<serde_json::Value> for VerifiableCredentialRecord {
                 )
             };
 
-            let issuance_date = credential_display["issuanceDate"].clone();
+            let issuance_date = credential_display["issuanceDate"]
+                .as_str()
+                .map(ToString::to_string)
+                .unwrap_or_default();
 
             let display_name = get_achievement_name_from_data(&credential_display)
                 .or(get_type_name_from_data(&credential_display))

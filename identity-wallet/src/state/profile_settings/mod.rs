@@ -5,13 +5,13 @@ use super::FeatTrait;
 
 use derivative::Derivative;
 use serde::{Deserialize, Serialize};
-use strum::EnumString;
+use strum::{EnumString, IntoStaticStr};
 use ts_rs::TS;
 
 /// ProfileSettings contains all matters concerning the user profile and its settings.
 #[derive(Serialize, Deserialize, Derivative, TS, Clone, PartialEq, Debug)]
 #[derivative(Default)]
-#[ts(export)]
+#[ts(export, export_to = "bindings/profile_settings/ProfileSettings.ts")]
 #[serde(default)]
 pub struct ProfileSettings {
     pub locale: Locale,
@@ -22,6 +22,7 @@ pub struct ProfileSettings {
     pub preferred_did_method: String,
     #[derivative(Default(value = r#"String::from("Ed25519")"#))]
     pub preferred_key_type: String,
+    pub sorting_preferences: SortingPreferences,
 }
 
 #[typetag::serde(name = "profile_settings")]
@@ -29,7 +30,7 @@ impl FeatTrait for ProfileSettings {}
 
 /// A profile of the current user.
 #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default)]
-#[ts(export)]
+#[ts(export, export_to = "bindings/profile_settings/Profile.ts")]
 #[serde(default)]
 pub struct Profile {
     pub name: String,
@@ -42,8 +43,9 @@ impl FeatTrait for Profile {}
 
 /// Format of a locale string: `ll_CC` - where ll is the language code (ISO 639) and CC is the country code (ISO 3166).
 #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default, EnumString)]
-#[ts(export)]
+#[ts(export, export_to = "bindings/profile_settings/Locale.ts")]
 #[allow(non_camel_case_types)]
+#[derive(IntoStaticStr)]
 pub enum Locale {
     #[default]
     #[serde(rename = "en-US")]
@@ -59,15 +61,48 @@ pub enum Locale {
 #[typetag::serde(name = "locale")]
 impl FeatTrait for Locale {}
 
+#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default)]
+#[ts(export, export_to = "bindings/profile_settings/SortingPreferences.ts")]
+pub struct SortingPreferences {
+    pub credentials: Preferences<CredentialSortMethod>,
+    pub connections: Preferences<ConnectionSortMethod>,
+}
+
+#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default)]
+#[ts(export, export_to = "bindings/profile_settings/Preferences.ts")]
+pub struct Preferences<T> {
+    pub sort_method: T,
+    pub reverse: bool,
+}
+
+#[derive(Clone, Serialize, Debug, Deserialize, TS, Default, PartialEq, EnumString)]
+#[ts(export, export_to = "bindings/profile_settings/CredentialSortMethod.ts")]
+#[serde(rename_all = "snake_case")]
+pub enum CredentialSortMethod {
+    #[default]
+    #[serde(rename = "name_az")]
+    NameAZ,
+    IssueDateNewOld,
+    AddedDateNewOld,
+}
+
+#[derive(Clone, Serialize, Debug, Deserialize, TS, Default, PartialEq, EnumString)]
+#[ts(export, export_to = "bindings/profile_settings/ConnectionSortMethod.ts")]
+#[serde(rename_all = "snake_case")]
+pub enum ConnectionSortMethod {
+    #[default]
+    #[serde(rename = "name_az")]
+    NameAZ,
+    FirstInteractedNewOld,
+    LastInteractedNewOld,
+}
 #[derive(serde::Serialize, serde::Deserialize, Debug, TS, Clone, PartialEq, Eq, Default)]
-#[ts(export, export_to = "bindings/AppTheme.ts")]
+#[ts(export, export_to = "bindings/profile_settings/AppTheme.ts")]
+#[serde(rename_all = "snake_case")]
 pub enum AppTheme {
     #[default]
-    #[serde(rename = "system")]
     System,
-    #[serde(rename = "dark")]
     Dark,
-    #[serde(rename = "light")]
     Light,
 }
 

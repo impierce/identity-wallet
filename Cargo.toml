@@ -9,14 +9,13 @@ tauri = { version = "=2.0.0-beta.19", features = [
 ] }
 
 did_manager = { git = "https://github.com/impierce/did-manager.git", rev = "a365fa5" }
-indoc = "2.0"
 jsonwebtoken = "9.3"
 log = "^0.4"
+oid4vc = { git = "https://git@github.com/impierce/openid4vc.git", rev = "274a3e9" }
 rand = "0.8"
 serde_json = "1.0"
 serial_test = "2.0"
 tempfile = "3.5.0"
-oid4vc = { git = "https://git@github.com/impierce/openid4vc.git", rev = "274a3e9" }
 wiremock = "0.5"
 
 [workspace.package]
