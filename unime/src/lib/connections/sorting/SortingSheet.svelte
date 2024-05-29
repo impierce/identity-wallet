@@ -31,7 +31,6 @@
   }
 </script>
 
-<!-- bottom drawer and sorting button-->
 <ActionSheet titleText={$LL.SORT.TITLE()}>
   <button
     slot="trigger"
