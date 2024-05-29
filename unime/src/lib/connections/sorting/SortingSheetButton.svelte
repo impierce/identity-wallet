@@ -4,7 +4,7 @@
   import LL from '$i18n/i18n-svelte';
   import type { SvelteHTMLElements } from 'svelte/elements';
 
-  import type { CredentialSortMethod } from '@bindings/CredentialSortMethod';
+  import type { CredentialSortMethod } from '@bindings/profile_settings/CredentialSortMethod';
 
   export let method: CredentialSortMethod;
   export let icon: typeof SvelteComponent<SvelteHTMLElements['svg']>;

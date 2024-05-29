@@ -1,7 +1,7 @@
 <script lang="ts">
   import LL from '$i18n/i18n-svelte';
 
-  import type { CredentialSortMethod } from '@bindings/CredentialSortMethod';
+  import type { CredentialSortMethod } from '@bindings/profile_settings/CredentialSortMethod';
   import { melt } from '@melt-ui/svelte';
 
   import Button from '$lib/components/atoms/Button.svelte';
@@ -32,44 +32,42 @@
 </script>
 
 <!-- bottom drawer and sorting button-->
-<div>
-  <ActionSheet titleText={$LL.SORT.TITLE()}>
-    <button
-      slot="trigger"
-      let:trigger
-      use:melt={trigger}
-      class="flex h-10 w-10 items-center justify-center rounded-xl bg-white dark:bg-dark dark:text-grey"
-      ><Slider /></button
-    >
-    <!-- bottom drawer and list items with preferred view and sorting preferences-->
-    <div slot="content" class="w-full">
-      <div class="relative pb-5">
-        <SortingSheetButton
-          icon={AlphabeticalOrder}
-          label={$LL.SORT.PREFERENCES.ALPHABETICAL()}
-          active={method === 'name_az'}
-          {method}
-          {reversed}
-          on:click={() => updateSortingPreference('name_az')}
-        />
-        <SortingSheetButton
-          icon={Issued}
-          label={$LL.SORT.PREFERENCES.DATE_ISSUED()}
-          active={method === 'issue_date_new_old'}
-          {method}
-          {reversed}
-          on:click={() => updateSortingPreference('issue_date_new_old')}
-        />
-        <SortingSheetButton
-          icon={Added}
-          label={$LL.SORT.PREFERENCES.DATE_ADDED()}
-          active={method === 'added_date_new_old'}
-          {method}
-          {reversed}
-          on:click={() => updateSortingPreference('added_date_new_old')}
-        />
-      </div>
+<ActionSheet titleText={$LL.SORT.TITLE()}>
+  <button
+    slot="trigger"
+    let:trigger
+    use:melt={trigger}
+    class="flex h-10 w-10 items-center justify-center rounded-xl bg-white dark:bg-dark dark:text-grey"
+    ><Slider /></button
+  >
+  <!-- bottom drawer and list items with preferred view and sorting preferences-->
+  <div slot="content" class="w-full">
+    <div class="relative pb-5">
+      <SortingSheetButton
+        icon={AlphabeticalOrder}
+        label={$LL.SORT.PREFERENCES.ALPHABETICAL()}
+        active={method === 'name_az'}
+        {method}
+        {reversed}
+        on:click={() => updateSortingPreference('name_az')}
+      />
+      <SortingSheetButton
+        icon={Issued}
+        label={$LL.SORT.PREFERENCES.DATE_ISSUED()}
+        active={method === 'issue_date_new_old'}
+        {method}
+        {reversed}
+        on:click={() => updateSortingPreference('issue_date_new_old')}
+      />
+      <SortingSheetButton
+        icon={Added}
+        label={$LL.SORT.PREFERENCES.DATE_ADDED()}
+        active={method === 'added_date_new_old'}
+        {method}
+        {reversed}
+        on:click={() => updateSortingPreference('added_date_new_old')}
+      />
     </div>
-    <Button variant="primary" slot="close" let:close trigger={close} label={$LL.CLOSE()} />
-  </ActionSheet>
-</div>
+  </div>
+  <Button variant="primary" slot="close" let:close trigger={close} label={$LL.CLOSE()} />
+</ActionSheet>
