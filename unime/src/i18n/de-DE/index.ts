@@ -275,6 +275,22 @@ const de = {
       CONTENTS: 'Inhalt',
     },
   },
+  SORT: {
+    TITLE: 'Sortieren',
+    PREFERENCES: {
+      LIST_VIEW: 'Listenansicht',
+      GRID_VIEW: 'Rasteransicht',
+      ALPHABETICAL: 'Alphabetisch',
+      DATE_ISSUED: 'Ausgabedatum',
+      DATE_ADDED: 'Datum hinzugefügt',
+    },
+    ORDER: {
+      A_Z: 'A bis Z',
+      Z_A: 'Z bis A',
+      NEWEST: 'Neueste zuerst',
+      OLDEST: 'Älteste zuerst',
+    },
+  },
   CANCEL: 'Abbrechen',
   CLOSE: 'Schließen',
   CONTINUE: 'Weiter',

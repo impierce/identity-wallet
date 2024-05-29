@@ -8,7 +8,7 @@ use ts_rs::TS;
 
 /// DevMode is a simple enum to enable dev mode for developers to test the app.
 #[derive(Serialize, Deserialize, Debug, TS, Clone, PartialEq, Eq, Default)]
-#[ts(export, export_to = "bindings/DevMode.ts")]
+#[ts(export, export_to = "bindings/dev_mode/DevMode.ts")]
 pub enum DevMode {
     On,
     #[default]
