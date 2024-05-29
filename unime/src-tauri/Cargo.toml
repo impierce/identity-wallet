@@ -15,7 +15,7 @@ name = "unime"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
-tauri-build = { version = "=2.0.0-beta.15", features = [] }
+tauri-build = { version = "=2.0.0-beta.17", features = [] }
 
 [dependencies]
 tauri.workspace = true
@@ -29,7 +29,7 @@ tauri-plugin-barcode-scanner = { version = "=2.0.0-beta.5" }
 tauri-plugin-log = { version = "=2.0.0-beta.4", features = ["colored"] }
 tauri-plugin-fs = { version = "=2.0.0-beta.7" }
 # TODO: waiting for release (possibly `v2.0.0-beta.6`) that includes issue: https://github.com/tauri-apps/plugins-workspace/pull/1319
-tauri-plugin-shell = { git = "https://github.com/tauri-apps/plugins-workspace", rev = "f0fb25a" }
+tauri-plugin-shell = { git = "https://github.com/tauri-apps/plugins-workspace.git", rev = "f0fb25a" }
 
 dotenvy = { version = "0.15" }
 fern = "0.6.0"
@@ -42,7 +42,7 @@ wiremock.workspace = true
 serial_test.workspace = true
 tempfile.workspace = true
 
-tauri = { version = "=2.0.0-beta.19", features = ["rustls-tls", "test"] }
+tauri = { version = "=2.0.0-beta.21", features = ["rustls-tls", "test"] }
 serde = { version = "1.0", features = ["derive"] }
 tokio = { version = "1.26.0", features = ["macros"] }
 url = "2.4"

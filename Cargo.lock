@@ -8865,9 +8865,9 @@ dependencies = [
 
 [[package]]
 name = "tauri"
-version = "2.0.0-beta.19"
+version = "2.0.0-beta.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6f8e5bc2e4f5eb7496d1a3e5f4d272f69f1333db5f8efed28d79d7f93334fe95"
+checksum = "3bec12778ed0623725a0cca67b5b97ad9331e4fdfbcf3d47c665215b9a3223fb"
 dependencies = [
  "anyhow",
  "bytes",
@@ -8915,9 +8915,9 @@ dependencies = [
 
 [[package]]
 name = "tauri-build"
-version = "2.0.0-beta.15"
+version = "2.0.0-beta.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8aa28eebafcda490fa7097a6e3a4d07f65967614d35dd88b2aaa19dbb49241cd"
+checksum = "82b964bb6d03d97e24e12f896aab463b02a3c2ff76a60f728cc37b5548eb470e"
 dependencies = [
  "anyhow",
  "cargo_toml",
@@ -9050,7 +9050,7 @@ dependencies = [
 [[package]]
 name = "tauri-plugin-shell"
 version = "2.0.0-beta.5"
-source = "git+https://github.com/tauri-apps/plugins-workspace?rev=f0fb25a#f0fb25a9b75f93351fb3b4d5931f33570acbec44"
+source = "git+https://github.com/tauri-apps/plugins-workspace.git?rev=f0fb25a#f0fb25a9b75f93351fb3b4d5931f33570acbec44"
 dependencies = [
  "encoding_rs",
  "log",
@@ -9547,9 +9547,9 @@ dependencies = [
 
 [[package]]
 name = "tray-icon"
-version = "0.13.5"
+version = "0.14.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "39240037d755a1832e752d64f99078c3b0b21c09a71c12405070c75ef4e7cd3c"
+checksum = "c53e41ee5fa70d22d0c11ab780beef179944e7d3199b948f5f6fbe7f7debe3b5"
 dependencies = [
  "cocoa",
  "core-graphics",
