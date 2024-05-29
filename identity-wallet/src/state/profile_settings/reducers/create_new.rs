@@ -5,7 +5,7 @@ use crate::{
         core_utils::IdentityManager,
         profile_settings::{actions::create_new::CreateNew, Profile, ProfileSettings},
         user_prompt::CurrentUserPrompt,
-        AppState, SUPPORTED_SIGNING_ALGORITHMS,
+        AppState, SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS,
     },
     stronghold::StrongholdManager,
     subject::subject,
@@ -40,13 +40,13 @@ pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppS
 
         let provider_manager = ProviderManager::new(
             subject.clone(),
-            preferred_did_method,
+            Vec::from(SUPPORTED_DID_METHODS),
             Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
         )
         .map_err(OID4VCProviderManagerError)?;
         let wallet: Wallet = Wallet::new(
             subject.clone(),
-            preferred_did_method,
+            Vec::from(SUPPORTED_DID_METHODS),
             Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
         )
         .map_err(OID4VCWalletError)?;

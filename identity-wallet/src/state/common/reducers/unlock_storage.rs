@@ -3,7 +3,7 @@ use crate::state::actions::{listen, Action};
 use crate::state::common::actions::unlock_storage::UnlockStorage;
 use crate::state::core_utils::IdentityManager;
 use crate::state::user_prompt::CurrentUserPrompt;
-use crate::state::{AppState, SUPPORTED_SIGNING_ALGORITHMS};
+use crate::state::{AppState, SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS};
 use crate::stronghold::StrongholdManager;
 use crate::subject::subject;
 
@@ -23,13 +23,13 @@ pub async fn unlock_storage(state: AppState, action: Action) -> Result<AppState,
 
         let provider_manager = ProviderManager::new(
             subject.clone(),
-            preferred_did_method,
+            Vec::from(SUPPORTED_DID_METHODS),
             Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
         )
         .map_err(OID4VCProviderManagerError)?;
         let wallet: Wallet = Wallet::new(
             subject.clone(),
-            preferred_did_method,
+            Vec::from(SUPPORTED_DID_METHODS),
             Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
         )
         .map_err(OID4VCWalletError)?;

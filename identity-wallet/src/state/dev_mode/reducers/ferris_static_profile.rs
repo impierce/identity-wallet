@@ -11,7 +11,7 @@ use crate::{
         dev_mode::DevMode,
         profile_settings::{AppTheme, Profile},
         user_prompt::CurrentUserPrompt,
-        AppState, SUPPORTED_SIGNING_ALGORITHMS,
+        AppState, SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS,
     },
     stronghold::StrongholdManager,
     subject::subject,
@@ -71,13 +71,13 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
 
     let provider_manager = ProviderManager::new(
         subject.clone(),
-        preferred_did_method,
+        Vec::from(SUPPORTED_DID_METHODS),
         Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
     )
     .map_err(OID4VCProviderManagerError)?;
     let wallet: Wallet = Wallet::new(
         subject.clone(),
-        preferred_did_method,
+        Vec::from(SUPPORTED_DID_METHODS),
         Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
     )
     .map_err(OID4VCWalletError)?;

@@ -192,6 +192,7 @@ pub fn get_oid4vp_client_name_and_logo_uri(
             client_name,
             logo_uri,
             extension: oid4vc::oid4vp::authorization_request::ClientMetadataParameters { vp_formats },
+            other: _,
         } => {
             let client_name = client_name.as_ref().cloned().unwrap_or(connection_url.to_string());
             let logo_uri = logo_uri.as_ref().map(|logo_uri| logo_uri.to_string());

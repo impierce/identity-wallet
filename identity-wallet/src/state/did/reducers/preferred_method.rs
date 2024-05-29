@@ -22,8 +22,8 @@ pub async fn set_preferred_did_method(state: AppState, action: Action) -> Result
         // TODO: add error handling here
         let subject_syntax_type = SubjectSyntaxType::from_str(&method.to_string()).unwrap();
 
-        identity_manager.provider_manager.provider.default_subject_syntax_type = subject_syntax_type.clone();
-        identity_manager.wallet.default_subject_syntax_type = subject_syntax_type;
+        // identity_manager.provider_manager.provider.default_subject_syntax_type = subject_syntax_type.clone();
+        // identity_manager.wallet.default_subject_syntax_type = subject_syntax_type;
 
         drop(managers);
 

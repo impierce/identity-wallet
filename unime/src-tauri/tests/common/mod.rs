@@ -6,7 +6,7 @@ use identity_wallet::oid4vc_manager::ProviderManager;
 use identity_wallet::oid4vci::Wallet;
 use identity_wallet::persistence::STRONGHOLD;
 use identity_wallet::state::credentials::VerifiableCredentialRecord;
-use identity_wallet::state::SUPPORTED_SIGNING_ALGORITHMS;
+use identity_wallet::state::{SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS};
 use identity_wallet::subject::Subject;
 use identity_wallet::{
     state::core_utils::{IdentityManager, Managers},
@@ -61,14 +61,24 @@ pub async fn test_managers(
             None,
             None,
             None,
+            None,
         )
         .await
         .unwrap(),
     });
 
-    let provider_manager =
-        ProviderManager::new(subject.clone(), "did:key", Vec::from(SUPPORTED_SIGNING_ALGORITHMS)).unwrap();
-    let wallet: Wallet = Wallet::new(subject.clone(), "did:key", Vec::from(SUPPORTED_SIGNING_ALGORITHMS)).unwrap();
+    let provider_manager = ProviderManager::new(
+        subject.clone(),
+        Vec::from(SUPPORTED_DID_METHODS),
+        Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
+    )
+    .unwrap();
+    let wallet: Wallet = Wallet::new(
+        subject.clone(),
+        Vec::from(SUPPORTED_DID_METHODS),
+        Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
+    )
+    .unwrap();
 
     Arc::new(tauri::async_runtime::Mutex::new(Managers {
         stronghold_manager: Some(stronghold_manager),
