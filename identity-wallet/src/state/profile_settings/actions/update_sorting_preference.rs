@@ -24,7 +24,7 @@ pub struct UpdateSortingPreference {
     pub reverse: Option<bool>,
 }
 
-#[typetag::serde(name = "[Settings] Update Sorting Preference")]
+#[typetag::serde(name = "[Settings] Update sorting preference")]
 impl ActionTrait for UpdateSortingPreference {
     fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
         vec![

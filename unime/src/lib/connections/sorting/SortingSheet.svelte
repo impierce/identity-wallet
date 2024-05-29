@@ -25,7 +25,7 @@
       method = credential_sorting;
     }
     dispatch({
-      type: '[Settings] Update Sorting Preference',
+      type: '[Settings] Update sorting preference',
       payload: { credential_sorting, reverse: reversed },
     });
   }

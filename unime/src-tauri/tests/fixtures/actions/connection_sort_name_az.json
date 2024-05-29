@@ -1,5 +1,5 @@
 {
-  "type": "[Settings] Update Sorting Preference",
+  "type": "[Settings] Update sorting preference",
   "payload": {
     "connection_sorting": "name_az",
     "reverse": false
