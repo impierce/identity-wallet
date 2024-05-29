@@ -3,7 +3,6 @@ use crate::{
     state::{actions::ActionTrait, did::reducers::preferred_keytype::set_preferred_key_type, Reducer},
 };
 
-use did_manager::DidMethod;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 

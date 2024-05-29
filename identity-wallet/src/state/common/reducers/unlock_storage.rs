@@ -15,7 +15,6 @@ use std::sync::Arc;
 pub async fn unlock_storage(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(password) = listen::<UnlockStorage>(action).map(|payload| payload.password) {
         let mut state_guard = state.core_utils.managers.lock().await;
-        let preferred_did_method = state.profile_settings.preferred_did_method.as_str();
 
         let stronghold_manager = Arc::new(StrongholdManager::load(&password).map_err(StrongholdLoadingError)?);
 

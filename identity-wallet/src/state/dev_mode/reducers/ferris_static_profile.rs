@@ -54,7 +54,6 @@ lazy_static! {
 
 pub async fn load_ferris_profile() -> Result<AppState, AppError> {
     let mut state = AppState::default();
-    let preferred_did_method = "did:jwk";
 
     let password = "sup3rSecr3t".to_string();
 

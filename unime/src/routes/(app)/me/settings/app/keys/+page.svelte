@@ -5,9 +5,9 @@
 
   import Info from '~icons/ph/info';
 
-  $: preferred_key_type = $state.profile_settings.preferred_key_type;
+  $: preferred_key_type = $state.profile_settings.preferred_key_types.at(0);
 
-  type KeyType = 'Ed25519' | 'ES256' | 'ES256K';
+  type KeyType = 'EdDSA' | 'ES256' | 'ES256K';
 
   interface Key {
     type: KeyType;
@@ -18,7 +18,7 @@
 
   const keys: Key[] = [
     {
-      type: 'Ed25519',
+      type: 'EdDSA',
       key_id: 'ed25519-0',
       enabled: true,
     },
@@ -77,13 +77,13 @@
         <Info class="h-6 w-6 text-primary" />
       </span>
       <div class="flex flex-col">
-        <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">Info</p>
+        <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">Developer info</p>
         <ul class="ml-3 list-disc text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
           <li>All keys are generated once on profile creation.</li>
           <li>Only one key per type is currently supported.</li>
           <li>
             UniMe will automatically select the key type based on the server capabilities, but respect your preference
-            if there's multiple options.
+            if there's multiple matches.
           </li>
         </ul>
       </div>

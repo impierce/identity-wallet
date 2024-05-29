@@ -34,8 +34,6 @@ pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppS
             .as_ref()
             .ok_or(MissingManagerError("stronghold"))?;
 
-        let preferred_did_method = state.profile_settings.preferred_did_method.as_str();
-
         let subject = subject(stronghold_manager.clone(), password).await;
 
         let provider_manager = ProviderManager::new(

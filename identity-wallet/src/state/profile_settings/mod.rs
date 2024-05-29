@@ -3,30 +3,50 @@ pub mod reducers;
 
 use super::FeatTrait;
 
-use derivative::Derivative;
+use crate::state::{SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS};
+
 use serde::{Deserialize, Serialize};
 use strum::{EnumString, IntoStaticStr};
 use ts_rs::TS;
 
 /// ProfileSettings contains all matters concerning the user profile and its settings.
-#[derive(Serialize, Deserialize, Derivative, TS, Clone, PartialEq, Debug)]
-#[derivative(Default)]
+#[derive(Serialize, Deserialize, TS, Clone, PartialEq, Debug)]
 #[ts(export, export_to = "bindings/profile_settings/ProfileSettings.ts")]
 #[serde(default)]
 pub struct ProfileSettings {
     pub locale: Locale,
     pub profile: Option<Profile>,
-    // TODO: Current simplified solution for handling a default DID method. Once we have the did-manager implemented, we
-    // should probably come up with a different solution.
-    #[derivative(Default(value = r#"String::from("did:jwk")"#))]
-    pub preferred_did_method: String,
-    #[derivative(Default(value = r#"String::from("Ed25519")"#))]
-    pub preferred_key_type: String,
+    pub preferred_did_methods: Vec<String>,
+    pub preferred_key_types: Vec<String>,
     pub sorting_preferences: SortingPreferences,
 }
 
 #[typetag::serde(name = "profile_settings")]
 impl FeatTrait for ProfileSettings {}
+
+impl Default for ProfileSettings {
+    fn default() -> Self {
+        ProfileSettings {
+            locale: Locale::en_US,
+            profile: None,
+            preferred_did_methods: SUPPORTED_DID_METHODS.iter().map(|&method| method.to_string()).collect(),
+            preferred_key_types: SUPPORTED_SIGNING_ALGORITHMS
+                .iter()
+                .map(|algorithm| serde_json::to_string(algorithm).unwrap().replace('"', ""))
+                .collect(),
+            sorting_preferences: SortingPreferences {
+                credentials: Preferences {
+                    sort_method: CredentialSortMethod::NameAZ,
+                    reverse: false,
+                },
+                connections: Preferences {
+                    sort_method: ConnectionSortMethod::NameAZ,
+                    reverse: false,
+                },
+            },
+        }
+    }
+}
 
 /// A profile of the current user.
 #[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default)]

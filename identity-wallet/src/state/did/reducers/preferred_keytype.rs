@@ -1,3 +1,5 @@
+use log::debug;
+
 use crate::{
     error::AppError,
     state::{
@@ -7,14 +9,25 @@ use crate::{
         AppState,
     },
 };
-use log::info;
-use oid4vc::oid4vc_core::SubjectSyntaxType;
-use std::str::FromStr;
 
 pub async fn set_preferred_key_type(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(key_type) = listen::<SetPreferredKeyType>(action).map(|payload| payload.key_type) {
-        // TODO: re-generate and update the "dids" field
         let mut managers = state.core_utils.managers.lock().await;
+
+        let mut preferred_key_types = state.profile_settings.preferred_key_types;
+
+        debug!("Order of preferred key types (current): {:?}", preferred_key_types);
+
+        let current_position = preferred_key_types
+            .iter()
+            .position(|k| k == &key_type.to_string())
+            .unwrap();
+
+        let element = preferred_key_types.remove(current_position);
+
+        preferred_key_types.insert(0, element);
+
+        debug!("Order of preferred key types (updated): {:?}", preferred_key_types);
 
         let identity_manager = managers
             .identity_manager
@@ -22,12 +35,12 @@ pub async fn set_preferred_key_type(state: AppState, action: Action) -> Result<A
             .ok_or(AppError::MissingManagerError("identity"))?;
 
         let algorithm = match key_type.as_str() {
-            "Ed25519" => jsonwebtoken::Algorithm::EdDSA,
+            "EdDSA" => jsonwebtoken::Algorithm::EdDSA,
             "ES256" => jsonwebtoken::Algorithm::ES256,
             _ => return Err(AppError::Error("Unsupported key type".to_string())),
         };
 
-        // Update the deterministic DIDs
+        // Update the (deterministic) DIDs
         let did_jwk = identity_manager.subject.identifier("did:jwk", algorithm).await.unwrap();
         let did_key = identity_manager.subject.identifier("did:key", algorithm).await.unwrap();
 
@@ -40,7 +53,7 @@ pub async fn set_preferred_key_type(state: AppState, action: Action) -> Result<A
         return Ok(AppState {
             dids,
             profile_settings: ProfileSettings {
-                preferred_key_type: key_type,
+                preferred_key_types,
                 ..state.profile_settings
             },
             current_user_prompt: None,
