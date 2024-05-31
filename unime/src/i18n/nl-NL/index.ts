@@ -274,6 +274,22 @@ const nl = {
       CONTENTS: 'Inhoud',
     },
   },
+  SORT: {
+    TITLE: 'Sorteer',
+    PREFERENCES: {
+      LIST_VIEW: 'Lijstweergave',
+      GRID_VIEW: 'Rasterweergave',
+      ALPHABETICAL: 'Alfabetische Volgorde',
+      DATE_ISSUED: 'Datum Uitgegeven',
+      DATE_ADDED: 'Datum Toegevoegd',
+    },
+    ORDER: {
+      A_Z: 'A tot Z',
+      Z_A: 'Z tot A',
+      NEWEST: 'Nieuwste eerst',
+      OLDEST: 'Oudste eerst',
+    },
+  },
   CANCEL: 'Annuleren',
   CLOSE: 'Sluiten',
   CONTINUE: 'Doorgaan',
