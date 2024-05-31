@@ -3,8 +3,9 @@
 
   import { goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
+  import { fade } from 'svelte/transition';
 
-  import { createPopover } from '@melt-ui/svelte';
+  import { createPopover, melt } from '@melt-ui/svelte';
 
   import Button from '$lib/components/atoms/Button.svelte';
   import Image from '$lib/components/atoms/Image.svelte';
@@ -16,6 +17,7 @@
 
   import Check from '~icons/ph/check-bold';
   import PlugsConnected from '~icons/ph/plugs-connected-fill';
+  import Question from '~icons/ph/question';
   import WarningCircle from '~icons/ph/warning-circle-fill';
   import X from '~icons/ph/x-bold';
 
@@ -30,6 +32,8 @@
   let client_name = $state.current_user_prompt.client_name;
 
   const previously_connected = $state.current_user_prompt.previously_connected;
+
+  const domain_verified: boolean = $state.current_user_prompt.domain_verified;
 
   const hostname = new URL($state.current_user_prompt.redirect_uri).hostname;
 
@@ -79,7 +83,7 @@
           </div>
         </div>
       {/if}
-
+      <!-- URL -->
       <div
         class="flex justify-between rounded-xl border border-slate-200 bg-white px-4 py-4 dark:border-slate-600 dark:bg-dark"
       >
@@ -88,6 +92,7 @@
           {$state.current_user_prompt.redirect_uri}
         </p>
       </div>
+      <!-- Connected previously -->
       <div
         class="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-4 dark:border-slate-600 dark:bg-dark"
       >
@@ -100,9 +105,9 @@
           <X class="text-rose-500" />
         {/if}
       </div>
-      <!-- TODO: feature disabled: "Verify .well-known" -->
-      <!-- <div
-        class="flex justify-between rounded-xl border border-slate-200 bg-white px-4 py-4 dark:border-slate-600 dark:bg-dark"
+      <!-- Domain verification -->
+      <div
+        class="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-4 dark:border-slate-600 dark:bg-dark"
       >
         <div class="flex items-center">
           <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">Verified</p>
@@ -116,8 +121,8 @@
               class="z-10 w-1/2 rounded-2xl bg-dark p-[20px] text-white shadow-md"
             >
               <div use:melt={$arrow} />
-              <div class="break-keep text-sm">
-                Your UniMe app automatically tries to verify the identity of <span class="underline underline-offset-2"
+              <div class="break-keep text-[12px]/[20px]">
+                UniMe automatically tries to verify the identity of <span class="font-medium text-primary"
                   >{$state.current_user_prompt.client_name}</span
                 >
                 to provide you with a secure login.
@@ -125,8 +130,12 @@
             </div>
           {/if}
         </div>
-        <Check class="text-emerald-500" />
-      </div> -->
+        {#if domain_verified}
+          <Check class="text-emerald-500" />
+        {:else}
+          <X class="text-rose-500" />
+        {/if}
+      </div>
     </div>
   </div>
 
