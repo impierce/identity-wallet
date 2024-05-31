@@ -1,0 +1,51 @@
+{
+  "profile_settings": {
+    "profile": {
+      "name": "Ferris",
+      "picture": "&#129408",
+      "theme": "system"
+    }
+  },
+  "connections": [
+    {
+      "id": "נ",
+      "name": "נ",
+      "url": "api.ngdil-demo.tanglelabs.io",
+      "verified": false,
+      "first_interacted": "2023-09-11T19:53:53.937981+00:00",
+      "last_interacted": "2023-09-11T19:53:53.937981+00:00"
+    },
+    {
+      "name": "sécréter",
+      "url": "https://thegym_XYZ.nl",
+      "logo_uri": null,
+      "verified": false,
+      "first_interacted": "2023-11-08T13:52:37.991493008+00:00",
+      "last_interacted": "2023-11-08T13:52:45.868117252+00:00"
+    },
+    {
+      "id": "א",
+      "name": "א",
+      "url": "https://shop.example.com",
+      "verified": false,
+      "first_interacted": "2022-02-03T12:33:54.191824+00:00",
+      "last_interacted": "2023-11-13T19:26:40.049239+00:00"
+    },
+    {
+      "name": "secreter",
+      "url": "https://cbr.nl",
+      "logo_uri": null,
+      "verified": false,
+      "first_interacted": "2023-11-09T13:52:37.991493008+00:00",
+      "last_interacted": "2023-11-09T13:52:45.868117252+00:00"
+    },
+    {
+      "name": "s\u00e9cr\u00e9ter",
+      "url": "https://goverment.com",
+      "logo_uri": null,
+      "verified": false,
+      "first_interacted": "2023-11-09T13:52:11.986023042+00:00",
+      "last_interacted": "2023-11-09T13:52:19.971552835+00:00"
+    }
+  ]
+}

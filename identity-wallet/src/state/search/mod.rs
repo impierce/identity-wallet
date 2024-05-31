@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
 #[derive(Default, Serialize, Deserialize, TS, Clone, PartialEq, Debug)]
-#[ts(export)]
+#[ts(export, export_to = "bindings/search/SearchResults.ts")]
 #[serde(default)]
 pub struct SearchResults {
     pub current: Vec<String>,

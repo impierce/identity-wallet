@@ -274,6 +274,22 @@ const en = {
       CONTENTS: 'Contents',
     },
   },
+  SORT: {
+    TITLE: 'Sorting',
+    PREFERENCES: {
+      LIST_VIEW: 'List View',
+      GRID_VIEW: 'Grid View',
+      ALPHABETICAL: 'Alphabetical',
+      DATE_ISSUED: 'Date Issued',
+      DATE_ADDED: 'Date Added',
+    },
+    ORDER: {
+      A_Z: 'A to Z',
+      Z_A: 'Z to A',
+      NEWEST: 'Newest first',
+      OLDEST: 'Oldest first',
+    },
+  },
   CANCEL: 'Cancel',
   CLOSE: 'Close',
   CONTINUE: 'Continue',

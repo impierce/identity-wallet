@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq, TS)]
-#[ts(export)]
+#[ts(export, export_to = "bindings/history/EventType.ts")]
 pub enum EventType {
     ConnectionAdded,
     CredentialsAdded,
@@ -12,7 +12,7 @@ pub enum EventType {
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, TS)]
-#[ts(export)]
+#[ts(export, export_to = "bindings/history/HistoryEvent.ts")]
 pub struct HistoryEvent {
     pub connection_id: String,
     pub connection_name: String,
@@ -22,7 +22,7 @@ pub struct HistoryEvent {
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq, TS)]
-#[ts(export)]
+#[ts(export, export_to = "bindings/history/HistoryCredential.ts")]
 pub struct HistoryCredential {
     pub title: String,
     pub issuer_name: String,
