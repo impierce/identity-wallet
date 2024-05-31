@@ -1,7 +1,7 @@
 <script lang="ts">
   import LL from '$i18n/i18n-svelte';
 
-  import type { Connection } from '@bindings/Connection';
+  import type { Connection } from '@bindings/connections/Connection';
   import { open } from '@tauri-apps/plugin-shell';
 
   import Image from '$lib/components/atoms/Image.svelte';

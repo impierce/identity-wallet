@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
 
-  import type { DisplayCredential } from '@bindings/display-credential/DisplayCredential';
+  import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 
   import IconMessage from '$lib/components/molecules/IconMessage.svelte';
   import ListItemCard from '$lib/components/molecules/ListItemCard.svelte';
