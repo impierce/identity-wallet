@@ -237,7 +237,7 @@
             // After the toast fires the "dismissed" event, we clear the current $error store.
             $error = undefined;
           }}
-          autoDismissAfterMs={5000}
+          autoDismissAfterMs={$state?.dev_mode !== 'Off' ? 0 : 5_000}
         />
       </div>
     {/if}
