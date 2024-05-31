@@ -3,7 +3,6 @@
 
   import { goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
-  import { fade } from 'svelte/transition';
 
   import {
     cancel,
@@ -34,9 +33,7 @@
   function onMessage(scanned: Scanned) {
     debug(`Scanned: ${scanned.content}`);
     loading = true;
-    setTimeout(() => {
-      dispatch({ type: '[QR Code] Scanned', payload: { form_urlencoded: scanned.content } });
-    }, 2000);
+    dispatch({ type: '[QR Code] Scanned', payload: { form_urlencoded: scanned.content } });
   }
 
   // from example in plugin-barcode-scanner repo
@@ -132,7 +129,8 @@
   <div class="hide-scrollbar grow overflow-x-hidden overflow-y-scroll">
     <div class="flex h-full w-full flex-col">
       {#if !scanning && !loading}
-        <!-- visible when NOT scanning -->
+        <!-- This part is only visible when no scanning or loading is happening.
+          Only visible when user has not granted permissions to the camera. -->
         <div class="relative flex h-full flex-col items-center justify-center space-y-4 bg-silver p-8 dark:bg-navy">
           <!-- Ask for permissions (only if not given) -->
           {#if permissions_nullable && permissions_nullable !== 'granted'}
@@ -154,14 +152,13 @@
                 <Button variant="secondary" on:click={mockSiopRequest} label="New connection" />
                 <Button variant="secondary" on:click={mockShareRequest} label="Share credentials" />
               </div>
-              <!-- Divider -->
               <hr />
               <Button variant="primary" on:click={startScan} label="Start new scan" />
             </div>
           {/if}
         </div>
       {:else}
-        <!-- visible during scanning -->
+        <!-- Scanning or loading/processing -->
         <div class="flex grow flex-col">
           <div class="bg-white p-5 dark:bg-dark">
             <p class="text-3xl font-semibold text-slate-700 dark:text-grey">
@@ -171,27 +168,18 @@
               {$LL.SCAN.SUBTITLE()}
             </p>
           </div>
-          <div class="scanner-background">
-            <!-- this background simulates the camera view -->
-          </div>
           <div class="my-container relative grow">
             {#if loading}
-              <div class="absolute z-10 h-full w-full bg-white opacity-80 dark:bg-dark" />
+              <div class="absolute z-10 h-full w-full bg-silver dark:bg-navy" />
             {/if}
             <div class="barcode-scanner--area--container">
-              <div class="relative">
-                <!-- <p>Aim your camera at a QR code</p> -->
-              </div>
               <div class="square surround-cover">
                 <div class="barcode-scanner--area--outer surround-cover">
-                  <div class="barcode-scanner--area--inner flex items-center justify-center">
+                  <div
+                    class="barcode-scanner--area--inner surround-cover flex items-center justify-center border-2 border-white"
+                  >
                     {#if loading}
-                      <div class="z-20">
-                        <!-- Wait for 500ms before showing the loading spinner -->
-                        <!-- <div in:fade={{ delay: 500, duration: 500 }}> -->
-                        <LoadingSpinner class="h-12 w-12" />
-                        <!-- </div> -->
-                      </div>
+                      <LoadingSpinner class="z-20 h-12 w-12" />
                     {/if}
                   </div>
                 </div>
@@ -211,7 +199,7 @@
   </div>
   <div class="z-10 shrink-0">
     {#if loading}
-      <!-- Overlay to disable interaction with the nav bar -->
+      <!-- Disable the BottomNavBar by overlaying a transparent element -->
       <div class="absolute z-10 h-full w-full bg-white opacity-60 dark:bg-dark" />
     {/if}
     <div class="fixed bottom-[var(--safe-area-inset-bottom)] w-full shadow-[0_-4px_20px_0px_rgba(0,0,0,0.03)]">
@@ -234,21 +222,12 @@
     height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom) - 64px);
   }
 
-  .invisible {
-    display: none;
-  }
-
   .my-container {
     width: 100%;
     overflow: hidden;
   }
   .my-container {
     display: flex;
-  }
-
-  .relative {
-    position: relative;
-    z-index: 1;
   }
 
   .square {
@@ -276,28 +255,15 @@
   }
 
   .barcode-scanner--area--container {
-    width: 80%;
+    width: 75%;
     max-width: min(500px, 80vh);
     margin: auto;
   }
   .barcode-scanner--area--outer {
     display: flex;
-    border-radius: 1em;
   }
   .barcode-scanner--area--inner {
     width: 100%;
-    margin: 1rem;
-    border: 2px solid #fff;
-    box-shadow:
-      0px 0px 2px 1px rgb(0 0 0 / 0.5),
-      inset 0px 0px 2px 1px rgb(0 0 0 / 0.5);
-    border-radius: 1rem;
-  }
-
-  .scanner-background {
-    background: linear-gradient(45deg, #673ab7, transparent);
-    background-position: 45% 50%;
-    background-size: cover;
-    background-repeat: no-repeat;
+    border-radius: 20px;
   }
 </style>
