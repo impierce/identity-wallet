@@ -33,8 +33,10 @@
 
   function onMessage(scanned: Scanned) {
     debug(`Scanned: ${scanned.content}`);
-    dispatch({ type: '[QR Code] Scanned', payload: { form_urlencoded: scanned.content } });
     loading = true;
+    setTimeout(() => {
+      dispatch({ type: '[QR Code] Scanned', payload: { form_urlencoded: scanned.content } });
+    }, 2000);
   }
 
   // from example in plugin-barcode-scanner repo
@@ -111,7 +113,6 @@
     // goto('/me');
   }
 
-  // lifecycle functions
   onDestroy(async () => {
     debug('/scan: onDestroy() called');
     document.documentElement.querySelector('body')!.classList.remove('transparent');
@@ -130,82 +131,88 @@
 <div class="content-height flex flex-col items-stretch">
   <div class="hide-scrollbar grow overflow-x-hidden overflow-y-scroll">
     <div class="flex h-full w-full flex-col">
-      <!-- visible when NOT scanning -->
-      <div
-        class:invisible={scanning}
-        class="relative flex h-full flex-col items-center justify-center space-y-4 bg-silver p-8 dark:bg-navy"
-      >
-        {#if permissions_nullable && permissions_nullable !== 'granted'}
-          <div class="flex w-3/4 flex-col space-y-4">
-            <div class="flex flex-col items-center rounded-lg bg-rose-100 px-8 py-4 text-rose-500">
-              <CameraSlash class="m-2 h-8 w-8" />
-              <p class="text-center text-[13px]/[24px] font-semibold">{$LL.SCAN.PERMISSION_DENIED()}</p>
-            </div>
-            <Button label={$LL.SCAN.OPEN_SETTINGS()} on:click={openAppSettings} />
-          </div>
-        {/if}
-
-        {#if loading}
-          <!-- Wait for 500ms before showing the loading spinner -->
-          <div in:fade={{ delay: 500, duration: 500 }}>
-            <LoadingSpinner class="h-12 w-12" />
-          </div>
-        {/if}
-
-        {#if $state?.dev_mode !== 'Off' && !loading}
-          <div class="flex w-3/4 flex-col space-y-4">
-            <!-- Mocks -->
-            <div class="flex flex-col space-y-2">
-              <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Mock scans</p>
-              <Button variant="secondary" on:click={mockSiopRequest} label="New connection" />
-              <Button variant="secondary" on:click={mockShareRequest} label="Share credentials" />
-            </div>
-            <!-- Divider -->
-            <hr />
-            <Button variant="primary" on:click={startScan} label="Start new scan" />
-          </div>
-        {/if}
-      </div>
-
-      <!-- visible during scanning -->
-      <div class="flex grow flex-col" class:invisible={!scanning}>
-        <div class="bg-white p-5 dark:bg-dark">
-          <p class="text-3xl font-semibold text-slate-700 dark:text-grey">
-            {$LL.SCAN.TITLE_1()} <span class="text-primary">{$LL.SCAN.TITLE_2()}</span>
-          </p>
-          <p class="mt-4 text-sm font-medium text-slate-500 dark:text-slate-300">
-            {$LL.SCAN.SUBTITLE()}
-          </p>
-        </div>
-        <div class="scanner-background">
-          <!-- this background simulates the camera view -->
-        </div>
-        <div class="my-container grow">
-          <div class="barcode-scanner--area--container">
-            <div class="relative">
-              <!-- <p>Aim your camera at a QR code</p> -->
-            </div>
-            <div class="square surround-cover">
-              <div class="barcode-scanner--area--outer surround-cover">
-                <div class="barcode-scanner--area--inner" />
+      {#if !scanning && !loading}
+        <!-- visible when NOT scanning -->
+        <div class="relative flex h-full flex-col items-center justify-center space-y-4 bg-silver p-8 dark:bg-navy">
+          <!-- Ask for permissions (only if not given) -->
+          {#if permissions_nullable && permissions_nullable !== 'granted'}
+            <div class="flex w-3/4 flex-col space-y-4">
+              <div class="flex flex-col items-center rounded-lg bg-rose-100 px-8 py-4 text-rose-500">
+                <CameraSlash class="m-2 h-8 w-8" />
+                <p class="text-center text-[13px]/[24px] font-semibold">{$LL.SCAN.PERMISSION_DENIED()}</p>
               </div>
+              <Button label={$LL.SCAN.OPEN_SETTINGS()} on:click={openAppSettings} />
             </div>
-          </div>
+          {/if}
+
+          <!-- Dev mode -->
           {#if $state?.dev_mode !== 'Off'}
-            <div class="fixed bottom-[128px] left-[calc(50%_-_42px)]">
-              <button class="rounded-lg bg-rose-100 px-4 py-3 font-medium text-rose-500" on:click={cancelScan}
-                >{$LL.CANCEL()}</button
-              >
+            <div class="flex w-3/4 flex-col space-y-4">
+              <!-- Mocks -->
+              <div class="flex flex-col space-y-2">
+                <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Mock scans</p>
+                <Button variant="secondary" on:click={mockSiopRequest} label="New connection" />
+                <Button variant="secondary" on:click={mockShareRequest} label="Share credentials" />
+              </div>
+              <!-- Divider -->
+              <hr />
+              <Button variant="primary" on:click={startScan} label="Start new scan" />
             </div>
           {/if}
         </div>
-      </div>
+      {:else}
+        <!-- visible during scanning -->
+        <div class="flex grow flex-col">
+          <div class="bg-white p-5 dark:bg-dark">
+            <p class="text-3xl font-semibold text-slate-700 dark:text-grey">
+              {$LL.SCAN.TITLE_1()} <span class="text-primary">{$LL.SCAN.TITLE_2()}</span>
+            </p>
+            <p class="mt-4 text-sm font-medium text-slate-500 dark:text-slate-300">
+              {$LL.SCAN.SUBTITLE()}
+            </p>
+          </div>
+          <div class="scanner-background">
+            <!-- this background simulates the camera view -->
+          </div>
+          <div class="my-container relative grow">
+            {#if loading}
+              <div class="absolute z-10 h-full w-full bg-white opacity-80 dark:bg-dark" />
+            {/if}
+            <div class="barcode-scanner--area--container">
+              <div class="relative">
+                <!-- <p>Aim your camera at a QR code</p> -->
+              </div>
+              <div class="square surround-cover">
+                <div class="barcode-scanner--area--outer surround-cover">
+                  <div class="barcode-scanner--area--inner flex items-center justify-center">
+                    {#if loading}
+                      <div class="z-20">
+                        <!-- Wait for 500ms before showing the loading spinner -->
+                        <!-- <div in:fade={{ delay: 500, duration: 500 }}> -->
+                        <LoadingSpinner class="h-12 w-12" />
+                        <!-- </div> -->
+                      </div>
+                    {/if}
+                  </div>
+                </div>
+              </div>
+            </div>
+            {#if $state?.dev_mode !== 'Off'}
+              <div class="fixed bottom-[128px] left-[calc(50%_-_42px)] z-10">
+                <button class="rounded-lg bg-rose-100 px-4 py-3 font-medium text-rose-500" on:click={cancelScan}
+                  >{$LL.CANCEL()}</button
+                >
+              </div>
+            {/if}
+          </div>
+        </div>
+      {/if}
     </div>
   </div>
-  <div class="shrink-0">
+  <div class="z-10 shrink-0">
     {#if loading}
       <!-- Overlay to disable interaction with the nav bar -->
-      <div class="absolute z-10 h-full w-full bg-white opacity-50 dark:bg-dark" />
+      <div class="absolute z-10 h-full w-full bg-white opacity-60 dark:bg-dark" />
     {/if}
     <div class="fixed bottom-[var(--safe-area-inset-bottom)] w-full shadow-[0_-4px_20px_0px_rgba(0,0,0,0.03)]">
       <BottomNavBar
@@ -218,7 +225,7 @@
   </div>
 </div>
 
-<div class="safe-area-top {scanning ? 'bg-white dark:bg-dark' : 'bg-silver dark:bg-navy'}" />
+<div class="safe-area-top {scanning || loading ? 'bg-white dark:bg-dark' : 'bg-silver dark:bg-navy'}" />
 <div class="safe-area-bottom bg-white dark:bg-dark" />
 
 <style>
