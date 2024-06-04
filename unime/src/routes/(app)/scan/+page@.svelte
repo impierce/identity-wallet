@@ -27,6 +27,8 @@
   // We temporarily introduce this type that extends `PermissionState` to handle a possible error when checking for permissions.
   let permissions_nullable: PermissionState | null;
 
+  let mockQrCodeValue = '';
+
   function onMessage(scanned: Scanned) {
     debug(`Scanned: ${scanned.content}`);
     dispatch({ type: '[QR Code] Scanned', payload: { form_urlencoded: scanned.content } });
@@ -148,6 +150,19 @@
               <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Mock scans</p>
               <Button variant="secondary" on:click={mockSiopRequest} label="New connection" />
               <Button variant="secondary" on:click={mockShareRequest} label="Share credentials" />
+              <div class="flex flex-col space-y-2 rounded-2xl border p-2">
+                <input
+                  bind:value={mockQrCodeValue}
+                  class="h-12 w-full rounded-xl border px-3 text-[13px]/[24px] text-primary"
+                  placeholder="Enter QR code value"
+                />
+                <Button
+                  variant="secondary"
+                  on:click={() =>
+                    dispatch({ type: '[QR Code] Scanned', payload: { form_urlencoded: mockQrCodeValue } })}
+                  label="Process QR code"
+                />
+              </div>
             </div>
             <!-- Divider -->
             <hr />

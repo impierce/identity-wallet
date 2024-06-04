@@ -6,6 +6,7 @@ use crate::{
         connections::reducers::handle_siopv2_authorization_request::get_siopv2_client_name_and_logo_uri,
         core_utils::{helpers::get_unverified_jwt_claims, ConnectionRequest, CoreUtils},
         credentials::reducers::handle_oid4vp_authorization_request::get_oid4vp_client_name_and_logo_uri,
+        did::validate_domain_linkage::validate_domain_linkage,
         qr_code::actions::qrcode_scanned::QrCodeScanned,
         user_prompt::CurrentUserPrompt,
         AppState,
@@ -20,6 +21,11 @@ use oid4vc::siopv2::siopv2::SIOPv2;
 // Reads the request url from the payload and validates it.
 pub async fn read_authorization_request(state: AppState, action: Action) -> Result<AppState, AppError> {
     info!("read_authorization_request");
+
+    // let url = url::Url::parse("https://selv.iota.org").unwrap();
+    // let did = "did:iota:rms:0x4868d61773a9f8e54741261a0e82fc883e299c2614c94b2400e2423d4c5bbe6a"; // successful linkage
+    // let did = "did:iota:rms:0x42ad588322e58b3c07aa39e4948d021ee17ecb5747915e9e1f35f028d7ecaf90"; // no linkage
+    // let domain_verified = validate_domain_linkage(url, did).await;
 
     if let Some(qr_code_scanned) = listen::<QrCodeScanned>(action)
         .map(|payload| payload.form_urlencoded)
@@ -67,7 +73,25 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
 
             let previously_connected = state.connections.contains(&connection_url, &client_name);
 
+            info!("{:?}", siopv2_authorization_request);
+
+            let url = url::Url::parse(&redirect_uri).map_err(|_| {
+                Error(format!(
+                    "`redirect_uri` could not be parsed to url::Url: `{:?}`",
+                    redirect_uri.clone()
+                ))
+            })?;
+
+            let did = siopv2_authorization_request.body.client_id.as_str();
+
+            // TODO: temp overrides for testing
+            // let url = url::Url::parse("https://identity.foundation/").unwrap();
+            // let did = "did:key:z6MkoTHsgNNrby8JzCNQ1iRLyW5QQ6R8Xuu6AA8igGrMVPUM";
+
+            let domain_verified = validate_domain_linkage(url, did).await;
+
             drop(state_guard);
+
             return Ok(AppState {
                 core_utils: CoreUtils {
                     active_connection_request: Some(ConnectionRequest::SIOPv2(siopv2_authorization_request.into())),
@@ -78,6 +102,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                     logo_uri,
                     redirect_uri,
                     previously_connected,
+                    domain_verified,
                 }),
                 ..state
             });

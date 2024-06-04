@@ -12,10 +12,12 @@ serde_json.workspace = true
 did_manager.workspace = true
 
 identity_credential = { version = "1.2.0", default-features = false, features = [
-    "validator",
     "credential",
+    "domain-linkage-fetch",
     "presentation",
+    "validator",
 ] }
+identity_eddsa_verifier = { version = "1.2.0" }
 identity_iota = { version = "1.2.0" }
 iota_stronghold = { version = "=2.0.0" }
 stronghold_engine = "=2.0.0"
@@ -43,6 +45,7 @@ typetag = "0.2"
 dyn-clone = "1.0"
 icu = "1.4.0"
 unicode-normalization = "0.1.23"
+url = "2.5"
 uuid = { version = "1.4", features = ["v4", "fast-rng", "serde"] }
 
 [dev-dependencies]

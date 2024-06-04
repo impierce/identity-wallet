@@ -28,6 +28,7 @@ pub enum CurrentUserPrompt {
         logo_uri: Option<String>,
         redirect_uri: String,
         previously_connected: bool,
+        domain_verified: bool,
     },
     #[serde(rename = "credential-offer")]
     CredentialOffer {
@@ -78,6 +79,7 @@ mod tests {
             logo_uri: None,
             redirect_uri: "https://example.com".to_string(),
             previously_connected: false,
+            domain_verified: false,
         };
         assert_eq!(
             serde_json::to_string(&prompt).unwrap(),
