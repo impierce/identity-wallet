@@ -50,8 +50,10 @@
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
     {#if $state.current_user_prompt.logo_uri}
-      <div class="flex h-[75px] w-[75px] overflow-hidden rounded-3xl bg-white p-2 dark:bg-silver">
-        <Image id={imageId} isTempAsset={true} />
+      <div
+        class="flex h-[75px] w-[75px] items-center justify-center overflow-hidden rounded-3xl bg-white p-2 dark:bg-silver"
+      >
+        <Image id={imageId} iconFallback="Bank" isTempAsset={true} />
       </div>
     {:else}
       <PaddedIcon icon={PlugsConnected} />
