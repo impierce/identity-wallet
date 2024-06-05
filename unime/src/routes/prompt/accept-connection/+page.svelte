@@ -18,7 +18,7 @@
 
   import Check from '~icons/ph/check-bold';
   import PlugsConnected from '~icons/ph/plugs-connected-fill';
-  import Question from '~icons/ph/question';
+  import QuestionMark from '~icons/ph/question-mark-bold';
   import WarningCircle from '~icons/ph/warning-circle-fill';
   import X from '~icons/ph/x-bold';
 
@@ -96,15 +96,13 @@
           <X class="text-rose-500" />
         {/if}
       </div>
-      <!-- Domain verification -->
+      <!-- Domain validation -->
       <div
+        use:melt={$trigger}
         class="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-4 dark:border-slate-600 dark:bg-dark"
       >
         <div class="flex items-center">
           <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">Verified</p>
-          <button class="-m-2 ml-1 rounded-full p-1" use:melt={$trigger}>
-            <Question class="h-6 w-6 text-primary" />
-          </button>
           {#if $open}
             <div
               use:melt={$content}
@@ -113,18 +111,32 @@
             >
               <div use:melt={$arrow} />
               <div class="break-keep text-[12px]/[20px]">
-                UniMe automatically tries to verify the identity of <span class="font-medium text-primary"
-                  >{$state.current_user_prompt.client_name}</span
-                >
-                to provide you with a secure login.
+                {#if domain_validation.status === 'Success'}
+                  UniMe successfully verified the identity of
+                  <span class="font-medium text-primary">{$state.current_user_prompt.client_name}</span>
+                  to provide you with a secure login.
+                {:else if domain_validation.status === 'Failure'}
+                  UniMe could not verify the identity of
+                  <span class="font-medium text-primary">{$state.current_user_prompt.client_name}</span>. Proceed with
+                  caution!
+                {:else}
+                  <span class="font-medium text-primary">{$state.current_user_prompt.client_name}</span>
+                  did not provide a proof of ownership of the domain which UniMe could verify. Proceed with caution!
+                {/if}
+                <!-- Dev Mode: Show additional message -->
+                {#if $state.dev_mode !== 'Off' && domain_validation.message}
+                  <p class="font-medium text-rose-500">{domain_validation.message}</p>
+                {/if}
               </div>
             </div>
           {/if}
         </div>
-        {#if domain_verified}
+        {#if domain_validation.status === 'Success'}
           <Check class="text-emerald-500" />
-        {:else}
+        {:else if domain_validation.status === 'Failure'}
           <X class="text-rose-500" />
+        {:else}
+          <QuestionMark class="text-slate-400 dark:text-slate-300" />
         {/if}
       </div>
     </div>
