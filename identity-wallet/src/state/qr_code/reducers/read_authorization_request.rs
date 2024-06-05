@@ -22,11 +22,6 @@ use oid4vc::siopv2::siopv2::SIOPv2;
 pub async fn read_authorization_request(state: AppState, action: Action) -> Result<AppState, AppError> {
     info!("read_authorization_request");
 
-    // let url = url::Url::parse("https://selv.iota.org").unwrap();
-    // let did = "did:iota:rms:0x4868d61773a9f8e54741261a0e82fc883e299c2614c94b2400e2423d4c5bbe6a"; // successful linkage
-    // let did = "did:iota:rms:0x42ad588322e58b3c07aa39e4948d021ee17ecb5747915e9e1f35f028d7ecaf90"; // no linkage
-    // let domain_verified = validate_domain_linkage(url, did).await;
-
     if let Some(qr_code_scanned) = listen::<QrCodeScanned>(action)
         .map(|payload| payload.form_urlencoded)
         .filter(|s| !s.starts_with("openid-credential-offer"))
@@ -88,7 +83,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
             // let url = url::Url::parse("https://identity.foundation/").unwrap();
             // let did = "did:key:z6MkoTHsgNNrby8JzCNQ1iRLyW5QQ6R8Xuu6AA8igGrMVPUM";
 
-            let domain_verified = validate_domain_linkage(url, did).await;
+            let domain_validation = validate_domain_linkage(url, did).await;
 
             drop(state_guard);
 
@@ -102,7 +97,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                     logo_uri,
                     redirect_uri,
                     previously_connected,
-                    domain_verified,
+                    domain_validation,
                 }),
                 ..state
             });

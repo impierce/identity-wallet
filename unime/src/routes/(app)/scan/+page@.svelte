@@ -86,7 +86,7 @@
         logo_uri: undefined,
         redirect_uri: 'https://demo.ngdil.com/auth/callback',
         previously_connected: false,
-        domain_verified: {
+        domain_validation: {
           status: 'Unknown',
           message: 'DomainLinkageConfiguration could not be fetched',
         },
