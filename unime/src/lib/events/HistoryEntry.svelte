@@ -3,7 +3,7 @@
   import { formatRelative, type Locale } from 'date-fns';
   import { de, enGB, enUS, nl } from 'date-fns/locale';
 
-  import type { HistoryCredential } from '@bindings/HistoryCredential';
+  import type { HistoryCredential } from '@bindings/history/HistoryCredential';
 
   import ListItemCard from '$lib/components/molecules/ListItemCard.svelte';
   import { state } from '$lib/stores';

@@ -1,6 +1,11 @@
 use crate::{
     reducer,
-    state::{actions::ActionTrait, dev_mode::reducers::load_dev_profile::load_dev_profile, Reducer},
+    state::{
+        actions::ActionTrait,
+        dev_mode::reducers::load_dev_profile::load_dev_profile,
+        profile_settings::reducers::update_sorting_preference::{sort_connections, sort_credentials},
+        Reducer,
+    },
 };
 
 use ts_rs::TS;
@@ -17,7 +22,11 @@ pub struct DevProfile {
 #[typetag::serde(name = "[DEV] Load DEV profile")]
 impl ActionTrait for DevProfile {
     fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
-        vec![reducer!(load_dev_profile)]
+        vec![
+            reducer!(load_dev_profile),
+            reducer!(sort_credentials),
+            reducer!(sort_connections),
+        ]
     }
 }
 
