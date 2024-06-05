@@ -53,8 +53,6 @@ pub enum CurrentUserPrompt {
 mod tests {
     use super::*;
 
-    use crate::state::did::validate_domain_linkage::ValidationStatus;
-
     #[test]
     fn test_serialize_current_user_prompt() {
         let prompt = CurrentUserPrompt::Redirect {
@@ -83,14 +81,11 @@ mod tests {
             logo_uri: None,
             redirect_uri: "https://example.com".to_string(),
             previously_connected: false,
-            domain_validation: ValidationResult {
-                status: ValidationStatus::Unknown,
-                message: None,
-            },
+            domain_validation: Default::default(),
         };
         assert_eq!(
             serde_json::to_string(&prompt).unwrap(),
-            r#"{"type":"accept-connection","client_name":"Test Client","logo_uri":null,"redirect_uri":"https://example.com","previously_connected":false}"#
+            r#"{"type":"accept-connection","client_name":"Test Client","logo_uri":null,"redirect_uri":"https://example.com","previously_connected":false,"domain_validation":{"status":"Unknown","message":null}}"#
         );
     }
 }
