@@ -87,24 +87,20 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
         // Get the credential issuer name and logo uri or use the credential issuer url.
         let (issuer_name, logo_uri) = display
             .map(|display| {
-                let issuer_name = display["client_name"]
+                let issuer_name = display["name"]
                     .as_str()
+                    // TODO(NGDIL): remove thsi NGDIL specific logic once: https://staging.api.ngdil.com/.well-known/openid-credential-issuer is fixed.
+                    .or_else(|| display["client_name"].as_str())
                     .map(|s| s.to_string())
                     .unwrap_or(credential_issuer_url.to_string());
 
-                let logo_uri = display["logo_uri"].as_str().map(|s| s.to_string());
-                // ===== OpenID for Verifiable Credential Issuance - draft 12 (26 November 2023) =====
-                // let issuer_name = display["name"]
-                //     .as_str()
-                //     .map(|s| s.to_string())
-                //     .unwrap_or(credential_issuer_url.to_string());
-                // let logo_uri = display["logo"]
-                //     .as_object()
-                //     .unwrap()
-                //     .get("url")
-                //     .unwrap()
-                //     .as_str()
-                //     .map(|s| s.to_string());
+                let logo_uri = display["logo"]
+                    .as_object()
+                    .and_then(|logo| logo["url"].as_str())
+                    // TODO(NGDIL): remove thsi NGDIL specific logic once: https://staging.api.ngdil.com/.well-known/openid-credential-issuer is fixed.
+                    .or_else(|| display["logo_uri"].as_str())
+                    .map(ToString::to_string);
+
                 (issuer_name, logo_uri)
             })
             .unwrap_or((credential_issuer_url.to_string(), None));
