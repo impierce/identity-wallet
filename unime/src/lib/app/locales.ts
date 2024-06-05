@@ -2,7 +2,7 @@ import type { SvelteComponent } from 'svelte';
 
 import type { SvelteHTMLElements } from 'svelte/elements';
 
-import type { Locale } from '@bindings/Locale';
+import type { Locale } from '@bindings/profile_settings/Locale';
 
 import DE from '~icons/circle-flags/de';
 import GB from '~icons/circle-flags/gb';
