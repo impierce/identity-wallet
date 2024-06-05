@@ -13,7 +13,7 @@ did_manager.workspace = true
 
 identity_credential = { version = "1.2.0", default-features = false, features = [
     "credential",
-    "domain-linkage-fetch",
+    "domain-linkage",
     "presentation",
     "validator",
 ] }

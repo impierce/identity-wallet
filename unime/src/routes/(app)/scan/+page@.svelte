@@ -86,6 +86,10 @@
         logo_uri: undefined,
         redirect_uri: 'https://demo.ngdil.com/auth/callback',
         previously_connected: false,
+        domain_verified: {
+          status: 'Unknown',
+          message: 'DomainLinkageConfiguration could not be fetched',
+        },
       },
     });
   };
@@ -150,11 +154,11 @@
               <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Mock scans</p>
               <Button variant="secondary" on:click={mockSiopRequest} label="New connection" />
               <Button variant="secondary" on:click={mockShareRequest} label="Share credentials" />
-              <div class="flex flex-col space-y-2 rounded-2xl border p-2">
+              <div class="flex flex-col space-y-2 rounded-[20px] border border-slate-200 p-2 dark:border-slate-600">
                 <input
                   bind:value={mockQrCodeValue}
-                  class="h-12 w-full rounded-xl border px-3 text-[13px]/[24px] text-primary"
-                  placeholder="Enter QR code value"
+                  class="h-12 w-full rounded-xl border border-slate-200 px-3 text-[13px]/[24px] text-teal dark:border-slate-600 dark:bg-dark"
+                  placeholder="Paste QR code value"
                 />
                 <Button
                   variant="secondary"
@@ -165,7 +169,7 @@
               </div>
             </div>
             <!-- Divider -->
-            <hr />
+            <hr class="border-slate-300 dark:border-slate-500" />
             <Button variant="primary" on:click={startScan} label="Start new scan" />
           </div>
         {/if}
