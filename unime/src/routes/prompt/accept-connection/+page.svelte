@@ -5,6 +5,7 @@
   import LL from '$i18n/i18n-svelte';
   import { fade } from 'svelte/transition';
 
+  import type { ValidationResult } from '@bindings/user_prompt/ValidationResult';
   import { createPopover, melt } from '@melt-ui/svelte';
 
   import Button from '$lib/components/atoms/Button.svelte';
@@ -21,19 +22,16 @@
   import WarningCircle from '~icons/ph/warning-circle-fill';
   import X from '~icons/ph/x-bold';
 
-  // TODO: feature disabled: "Verify .well-known"
-  /* eslint-disable @typescript-eslint/no-unused-vars */
   const {
     elements: { trigger, content, arrow },
     states: { open },
   } = createPopover();
-  /* eslint-enable @typescript-eslint/no-unused-vars */
 
   let client_name = $state.current_user_prompt.client_name;
 
   const previously_connected = $state.current_user_prompt.previously_connected;
 
-  const domain_verified: boolean = $state.current_user_prompt.domain_verified;
+  const domain_validation: ValidationResult = $state.current_user_prompt.domain_validation;
 
   const hostname = new URL($state.current_user_prompt.redirect_uri).hostname;
 
