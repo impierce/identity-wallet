@@ -2,7 +2,7 @@
   import { page } from '$app/stores';
   import LL from '$i18n/i18n-svelte';
 
-  import type { Connection } from '@bindings/Connection';
+  import type { Connection } from '@bindings/connections/Connection';
 
   import Tabs from '$lib/components/molecules/navigation/Tabs.svelte';
   import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
