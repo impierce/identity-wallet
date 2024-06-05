@@ -68,8 +68,6 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
 
             let previously_connected = state.connections.contains(&connection_url, &client_name);
 
-            info!("{:?}", siopv2_authorization_request);
-
             let url = url::Url::parse(&redirect_uri).map_err(|_| {
                 Error(format!(
                     "`redirect_uri` could not be parsed to url::Url: `{:?}`",
@@ -78,10 +76,6 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
             })?;
 
             let did = siopv2_authorization_request.body.client_id.as_str();
-
-            // TODO: temp overrides for testing
-            // let url = url::Url::parse("https://identity.foundation/").unwrap();
-            // let did = "did:key:z6MkoTHsgNNrby8JzCNQ1iRLyW5QQ6R8Xuu6AA8igGrMVPUM";
 
             let domain_validation = validate_domain_linkage(url, did).await;
 
