@@ -21,6 +21,8 @@
 
   let client_name = $state.current_user_prompt.client_name;
 
+  let loading = false;
+
   const imageId = $state.current_user_prompt?.logo_uri ? hash($state.current_user_prompt?.logo_uri) : '_';
 
   onDestroy(async () => {
@@ -30,7 +32,7 @@
 </script>
 
 <div class="content-height flex flex-col items-stretch bg-silver dark:bg-navy">
-  <TopNavBar title={$LL.SCAN.SHARE_CREDENTIALS.NAVBAR_TITLE()} on:back={() => history.back()} />
+  <TopNavBar title={$LL.SCAN.SHARE_CREDENTIALS.NAVBAR_TITLE()} on:back={() => history.back()} disabled={loading} />
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
     <!-- Header -->
@@ -84,13 +86,16 @@
   <div class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 dark:bg-dark">
     <Button
       label={$LL.SCAN.SHARE_CREDENTIALS.APPROVE()}
-      on:click={() =>
+      on:click={() => {
+        loading = true;
         dispatch({
           type: '[Authenticate] Credentials selected',
           payload: {
             credential_uuids: selected_credentials.map((c) => c.id),
           },
-        })}
+        });
+      }}
+      {loading}
     />
     <Button
       label={$LL.CANCEL()}
@@ -99,6 +104,7 @@
         dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });
         goto('/me');
       }}
+      disabled={loading}
     />
   </div>
 </div>
