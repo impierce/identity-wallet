@@ -17,8 +17,6 @@ use ts_rs::TS;
 pub enum CurrentUserPrompt {
     #[serde(rename = "redirect")]
     Redirect { target: String },
-    #[serde(rename = "warning")]
-    Warning { message: String },
     #[serde(rename = "password-required")]
     PasswordRequired,
     #[serde(rename = "accept-connection")]
@@ -58,14 +56,6 @@ mod tests {
 
         let serialized = serde_json::to_string(&prompt).unwrap();
         assert_eq!(serialized, r#"{"type":"redirect","target":"welcome"}"#);
-
-        let prompt = CurrentUserPrompt::Warning {
-            message: "This is a warning!".to_string(),
-        };
-        assert_eq!(
-            serde_json::to_string(&prompt).unwrap(),
-            r#"{"type":"warning","message":"This is a warning!"}"#
-        );
 
         let prompt = CurrentUserPrompt::PasswordRequired;
         assert_eq!(

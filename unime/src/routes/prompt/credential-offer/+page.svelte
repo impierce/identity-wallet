@@ -10,7 +10,7 @@
   import ListItemCard from '$lib/components/molecules/ListItemCard.svelte';
   import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
   import { dispatch } from '$lib/dispatcher';
-  import { state } from '$lib/stores';
+  import { error, state } from '$lib/stores';
   import { hash } from '$lib/utils';
 
   import DownloadSimple from '~icons/ph/download-simple-fill';
@@ -31,6 +31,14 @@
   let loading = false;
 
   const imageId = $state.current_user_prompt?.logo_uri ? hash($state.current_user_prompt?.logo_uri) : '_';
+
+  // When an error is received, cancel the flow and redirect to the "me" page
+  error.subscribe((err) => {
+    if (err) {
+      loading = false;
+      dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });
+    }
+  });
 
   onDestroy(async () => {
     // TODO: is onDestroy also called when user accepts since the component itself is destroyed?

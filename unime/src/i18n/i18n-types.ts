@@ -790,14 +790,24 @@ type RootTranslation = {
 			 */
 			Z_A: string
 			/**
-			 * N​e​w​e​s​t
+			 * N​e​w​e​s​t​ ​f​i​r​s​t
 			 */
 			NEWEST: string
 			/**
-			 * O​l​d​e​s​t
+			 * O​l​d​e​s​t​ ​f​i​r​s​t
 			 */
 			OLDEST: string
 		}
+	}
+	ERROR: {
+		/**
+		 * O​o​p​s​!
+		 */
+		TITLE: string
+		/**
+		 * S​o​m​e​t​h​i​n​g​ ​w​e​n​t​ ​w​r​o​n​g​.​ ​P​l​e​a​s​e​ ​t​r​y​ ​a​g​a​i​n​.
+		 */
+		DEFAULT_MESSAGE: string
 	}
 	/**
 	 * C​a​n​c​e​l
@@ -1595,14 +1605,24 @@ export type TranslationFunctions = {
 			 */
 			Z_A: () => LocalizedString
 			/**
-			 * Newest
+			 * Newest first
 			 */
 			NEWEST: () => LocalizedString
 			/**
-			 * Oldest
+			 * Oldest first
 			 */
 			OLDEST: () => LocalizedString
 		}
+	}
+	ERROR: {
+		/**
+		 * Oops!
+		 */
+		TITLE: () => LocalizedString
+		/**
+		 * Something went wrong. Please try again.
+		 */
+		DEFAULT_MESSAGE: () => LocalizedString
 	}
 	/**
 	 * Cancel

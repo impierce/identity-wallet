@@ -78,6 +78,14 @@
     }
   }
 
+  const mockScanError = () => {
+    loading = true;
+    setTimeout(() => {
+      loading = false;
+      dispatch({ type: '[QR Code] Scanned', payload: { form_urlencoded: 'foobar' } });
+    }, 2_000);
+  };
+
   const mockSiopRequest = () => {
     state.set({
       ...$state,
@@ -151,6 +159,7 @@
                 <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Mock scans</p>
                 <Button variant="secondary" on:click={mockSiopRequest} label="New connection" />
                 <Button variant="secondary" on:click={mockShareRequest} label="Share credentials" />
+                <Button variant="secondary" on:click={mockScanError} label="Scan error" />
               </div>
               <hr />
               <Button variant="primary" on:click={startScan} label="Start new scan" />
@@ -186,7 +195,7 @@
               </div>
             </div>
             {#if $state?.dev_mode !== 'Off'}
-              <div class="fixed bottom-[128px] left-[calc(50%_-_42px)] z-10">
+              <div class="fixed bottom-[128px] z-10 flex w-full justify-center">
                 <button class="rounded-lg bg-rose-100 px-4 py-3 font-medium text-rose-500" on:click={cancelScan}
                   >{$LL.CANCEL()}</button
                 >
