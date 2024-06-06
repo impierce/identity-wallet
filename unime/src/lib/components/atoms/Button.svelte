@@ -3,11 +3,14 @@
 
   import { melt } from '@melt-ui/svelte';
 
+  import LoadingSpinner from './LoadingSpinner.svelte';
+
   const dispatch = createEventDispatcher();
 
   export let label: string;
   export let trigger = undefined; // TODO: add type
   export let disabled = false;
+  export let loading = false;
   export let variant: 'primary' | 'secondary' = 'primary';
 
   $: variant_classes =
@@ -17,17 +20,33 @@
 </script>
 
 <!-- TODO: does it make sense to pass in the trigger here? -->
-{#if trigger}
-  <button
-    use:melt={trigger}
-    class="h-[48px] w-full rounded-xl px-4 py-2 text-[13px]/[24px] font-medium disabled:opacity-50 {variant_classes}"
-    {disabled}
-    on:click={() => dispatch('click')}>{label}</button
-  >
+{#if !loading}
+  {#if trigger}
+    <button
+      use:melt={trigger}
+      class="h-[48px] w-full rounded-xl px-4 py-2 text-[13px]/[24px] font-medium disabled:opacity-50 {variant_classes}"
+      {disabled}
+      on:click={() => dispatch('click')}>{label}</button
+    >
+  {:else}
+    <button
+      class="h-[48px] w-full rounded-xl px-4 py-2 text-[13px]/[24px] font-medium disabled:opacity-50 {variant_classes}"
+      {disabled}
+      on:click={() => dispatch('click')}>{label}</button
+    >
+  {/if}
 {:else}
-  <button
-    class="h-[48px] w-full rounded-xl px-4 py-2 text-[13px]/[24px] font-medium disabled:opacity-50 {variant_classes}"
-    {disabled}
-    on:click={() => dispatch('click')}>{label}</button
-  >
+  <!-- Loading -->
+  <div class="relative">
+    <div class="absolute z-10 flex h-full w-full items-center justify-center">
+      <LoadingSpinner />
+    </div>
+    <button
+      class="h-[48px] w-full rounded-xl px-4 py-2 text-[13px]/[24px] font-medium opacity-25 {variant_classes}"
+      disabled={true}
+      on:click={() => dispatch('click')}
+    >
+      <!-- No label -->
+    </button>
+  </div>
 {/if}

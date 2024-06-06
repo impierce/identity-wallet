@@ -8,6 +8,7 @@
   const dispatch = createEventDispatcher();
 
   export let title: string;
+  export let disabled = false;
 </script>
 
 <div
@@ -16,7 +17,7 @@
     $$props.class,
   )}
 >
-  <button class="z-30 -ml-2 rounded-full p-2" on:click={() => dispatch('back')}>
+  <button class="z-30 -ml-2 rounded-full p-2 disabled:opacity-25" on:click={() => dispatch('back')} {disabled}>
     <ChevronLeft class="h-6 w-6" />
   </button>
   {#if title}
