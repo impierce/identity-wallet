@@ -7,6 +7,7 @@
   import '@lottiefiles/lottie-player';
 
   import LL from '$i18n/i18n-svelte';
+  import { determineTheme } from '$routes/utils';
 
   import WelcomeMessage from '$lib/app/WelcomeMessage.svelte';
   import Button from '$lib/components/atoms/Button.svelte';
@@ -17,6 +18,10 @@
   import CredentialList from '$lib/credentials/CredentialList.svelte';
   import Favorites from '$lib/credentials/Favorites.svelte';
   import UserJourney from '$lib/journeys/UserJourney.svelte';
+  import NgdilDark from '$lib/static/svg/logo/demos/NgdilDark.svelte';
+  import NgdilLight from '$lib/static/svg/logo/demos/NgdilLight.svelte';
+  import SelvDark from '$lib/static/svg/logo/demos/SelvDark.svelte';
+  import SelvLight from '$lib/static/svg/logo/demos/SelvLight.svelte';
   import { onboarding_state, state } from '$lib/stores';
 
   import Ghost from '~icons/ph/ghost-fill';
@@ -33,6 +38,12 @@
       initials = calculateInitials($state?.profile_settings.profile?.name);
     }
   }
+
+  // Explicitly listen for dark mode changes, so that icons can react to it
+  let isDarkModeEnabled = document.documentElement.classList.contains('dark');
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+    isDarkModeEnabled = determineTheme(e.matches, $state.profile_settings.profile.theme) === 'dark';
+  });
 
   // security: clear onboarding state after successful creation
   // TODO: move somewhere else
@@ -166,10 +177,29 @@
       <!-- Skipped onboarding journey -->
       <div class="flex grow flex-col items-center justify-center">
         <IconMessage icon={Ghost} title={$LL.ME.EMPTY_CREDENTIALS.TITLE()} />
-        <p class="w-[280px] pt-[15px] text-center text-[13px]/[24px] font-normal text-slate-500 dark:text-slate-300">
-          {$LL.ME.DEMO.TEXT_1()} <span class="font-semibold text-primary">https://demo.ngdil.com</span>
-          {$LL.ME.DEMO.TEXT_2()}
-        </p>
+        <div class="w-[280px] pt-[15px] text-center text-[13px]/[24px] font-normal text-slate-500 dark:text-slate-300">
+          {$LL.ME.DEMO()}
+          <div class="flex flex-col gap-3 pt-[15px]">
+            <!-- Selv -->
+            <div class="flex h-14 items-center justify-between rounded-xl bg-white p-4 dark:bg-dark">
+              {#if isDarkModeEnabled}
+                <SelvDark class="h-6 w-14 opacity-80" />
+              {:else}
+                <SelvLight class="h-6 w-14 opacity-80" />
+              {/if}
+              <span class="text-[13px]/[24px] font-semibold text-primary">https://selv.iota.org</span>
+            </div>
+            <!-- NGDIL -->
+            <div class="flex h-14 items-center justify-between rounded-xl bg-white p-4 dark:bg-dark">
+              {#if isDarkModeEnabled}
+                <NgdilDark class="h-6 w-14 opacity-80" />
+              {:else}
+                <NgdilLight class="h-6 w-14 opacity-80" />
+              {/if}
+              <span class="text-[13px]/[24px] font-semibold text-primary">https://demo.ngdil.com</span>
+            </div>
+          </div>
+        </div>
       </div>
       <!-- TODO: feature disabled: "Add self-signed credential" -->
       <div in:fly={{ y: 12, delay: 400, opacity: 0 }} class="absolute bottom-4 right-4">

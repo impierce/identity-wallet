@@ -179,10 +179,7 @@ const nl = {
       GREETING_3: 'Hoi',
       GREETING_4: 'Dag',
     },
-    DEMO: {
-      TEXT_1: 'Bezoek',
-      TEXT_2: 'op een desktopcomputer om te beginnen.',
-    },
+    DEMO: 'Bezoek een van de volgende websites op een desktopcomputer om te beginnen.',
     CREDENTIAL_TABS: {
       ALL: 'Alle',
       DATA: 'Data',
