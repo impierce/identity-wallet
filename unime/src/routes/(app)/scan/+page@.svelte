@@ -83,7 +83,7 @@
     setTimeout(() => {
       loading = false;
       dispatch({ type: '[QR Code] Scanned', payload: { form_urlencoded: 'foobar' } });
-    }, 500);
+    }, 2_000);
   };
 
   const mockSiopRequest = () => {
@@ -195,7 +195,7 @@
               </div>
             </div>
             {#if $state?.dev_mode !== 'Off'}
-              <div class="fixed bottom-[128px] left-[calc(50%_-_42px)] z-10">
+              <div class="fixed bottom-[128px] z-10 flex w-full justify-center">
                 <button class="rounded-lg bg-rose-100 px-4 py-3 font-medium text-rose-500" on:click={cancelScan}
                   >{$LL.CANCEL()}</button
                 >
