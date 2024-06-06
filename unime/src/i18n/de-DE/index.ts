@@ -291,6 +291,10 @@ const de = {
       OLDEST: 'Älteste zuerst',
     },
   },
+  ERROR: {
+    TITLE: 'Hoppla!',
+    DEFAULT_MESSAGE: 'Es ist ein Fehler aufgetreten. Bitte versuche es noch einmal.',
+  },
   CANCEL: 'Abbrechen',
   CLOSE: 'Schließen',
   CONTINUE: 'Weiter',

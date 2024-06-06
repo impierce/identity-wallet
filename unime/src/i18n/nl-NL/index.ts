@@ -290,6 +290,10 @@ const nl = {
       OLDEST: 'Oudste eerst',
     },
   },
+  ERROR: {
+    TITLE: 'Oeps!',
+    DEFAULT_MESSAGE: 'Er is iets misgegaan. Probeer het later opnieuw.',
+  },
   CANCEL: 'Annuleren',
   CLOSE: 'Sluiten',
   CONTINUE: 'Doorgaan',
