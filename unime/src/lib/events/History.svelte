@@ -4,8 +4,8 @@
   import LL from '$i18n/i18n-svelte';
   import type { SvelteHTMLElements } from 'svelte/elements';
 
-  import type { HistoryCredential } from '@bindings/HistoryCredential';
-  import type { HistoryEvent } from '@bindings/HistoryEvent';
+  import type { HistoryCredential } from '@bindings/history/HistoryCredential';
+  import type { HistoryEvent } from '@bindings/history/HistoryEvent';
 
   import HistoryEntry from '$lib/events/HistoryEntry.svelte';
   import { state } from '$lib/stores';
