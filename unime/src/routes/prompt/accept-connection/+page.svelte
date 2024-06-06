@@ -112,7 +112,7 @@
         class="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-4 dark:border-slate-600 dark:bg-dark"
       >
         <div class="flex items-center">
-          <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">Verified</p>
+          <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">{$LL.DOMAIN_LINKAGE.TITLE()}</p>
           {#if $open}
             <div
               use:melt={$content}
@@ -122,20 +122,17 @@
               <div use:melt={$arrow} class="dark:border-l dark:border-t dark:border-slate-500" />
               <div class="break-words text-[12px]/[20px]">
                 {#if domain_validation.status === 'Success'}
-                  UniMe successfully verified the identity of
-                  <span class="font-medium text-primary">{$state.current_user_prompt.client_name}</span>
-                  to provide you with a secure login.
+                  <p>{$LL.DOMAIN_LINKAGE.SUCCESS()}</p>
                 {:else if domain_validation.status === 'Failure'}
-                  UniMe could not verify the identity of
-                  <span class="font-medium text-primary">{$state.current_user_prompt.client_name}</span>. Proceed with
-                  caution!
+                  <p>{$LL.DOMAIN_LINKAGE.FAILURE()}</p>
+                  <p class="font-semibold text-rose-500">{$LL.DOMAIN_LINKAGE.CAUTION()}</p>
                 {:else}
-                  <span class="font-medium text-primary">{$state.current_user_prompt.client_name}</span>
-                  did not provide a proof of ownership of the domain which UniMe could verify. Proceed with caution!
+                  <p>{$LL.DOMAIN_LINKAGE.UNKNOWN()}</p>
+                  <p class="font-semibold text-rose-500">{$LL.DOMAIN_LINKAGE.CAUTION()}</p>
                 {/if}
                 <!-- Dev Mode: Show additional message -->
                 {#if $state.dev_mode !== 'Off' && domain_validation.message}
-                  <p class="font-medium text-rose-500">{domain_validation.message}</p>
+                  <p class="text-rose-500">{domain_validation.message}</p>
                 {/if}
               </div>
             </div>
