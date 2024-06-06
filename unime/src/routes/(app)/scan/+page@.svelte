@@ -85,7 +85,7 @@
     setTimeout(() => {
       loading = false;
       dispatch({ type: '[QR Code] Scanned', payload: { form_urlencoded: 'foobar' } });
-    }, 2_000);
+    }, 1_000);
   };
 
   const mockSiopRequest = () => {

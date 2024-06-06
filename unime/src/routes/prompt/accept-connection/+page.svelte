@@ -76,10 +76,10 @@
     </div>
 
     <!-- Details -->
-    <div class="w-full space-y-2 rounded-2xl bg-white p-3 dark:bg-dark">
+    <div class="w-full space-y-3 rounded-3xl bg-white p-3 dark:bg-dark">
       <!-- Warning -->
       {#if !previously_connected}
-        <div class="flex w-full items-center rounded-lg bg-silver px-4 py-4 dark:bg-navy">
+        <div class="flex w-full items-center rounded-xl bg-silver p-4 dark:bg-navy">
           <span class="mr-4 h-6 w-6">
             <WarningCircle class="h-6 w-6 text-amber-500" />
           </span>
