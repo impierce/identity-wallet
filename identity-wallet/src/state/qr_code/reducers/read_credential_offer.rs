@@ -89,7 +89,7 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
             .map(|display| {
                 let issuer_name = display["name"]
                     .as_str()
-                    // TODO(NGDIL): remove thsi NGDIL specific logic once: https://staging.api.ngdil.com/.well-known/openid-credential-issuer is fixed.
+                    // TODO(NGDIL): remove this NGDIL specific logic once: https://staging.api.ngdil.com/.well-known/openid-credential-issuer is fixed.
                     .or_else(|| display["client_name"].as_str())
                     .map(|s| s.to_string())
                     .unwrap_or(credential_issuer_url.to_string());
@@ -97,7 +97,7 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
                 let logo_uri = display["logo"]
                     .as_object()
                     .and_then(|logo| logo["url"].as_str())
-                    // TODO(NGDIL): remove thsi NGDIL specific logic once: https://staging.api.ngdil.com/.well-known/openid-credential-issuer is fixed.
+                    // TODO(NGDIL): remove this NGDIL specific logic once: https://staging.api.ngdil.com/.well-known/openid-credential-issuer is fixed.
                     .or_else(|| display["logo_uri"].as_str())
                     .map(ToString::to_string);
 
