@@ -117,10 +117,10 @@
             <div
               use:melt={$content}
               transition:fade={{ duration: 200 }}
-              class="z-10 w-1/2 rounded-2xl bg-dark p-[20px] text-white shadow-md"
+              class="z-10 w-1/2 rounded-2xl bg-blue p-[20px] text-white shadow-md dark:border dark:border-slate-500"
             >
-              <div use:melt={$arrow} />
-              <div class="break-keep text-[12px]/[20px]">
+              <div use:melt={$arrow} class="dark:border-l dark:border-t dark:border-slate-500" />
+              <div class="break-words text-[12px]/[20px]">
                 {#if domain_validation.status === 'Success'}
                   UniMe successfully verified the identity of
                   <span class="font-medium text-primary">{$state.current_user_prompt.client_name}</span>
