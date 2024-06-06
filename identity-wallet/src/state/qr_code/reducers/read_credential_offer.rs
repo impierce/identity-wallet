@@ -91,7 +91,7 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
                     .as_str()
                     // TODO(NGDIL): remove this NGDIL specific logic once: https://staging.api.ngdil.com/.well-known/openid-credential-issuer is fixed.
                     .or_else(|| display["client_name"].as_str())
-                    .map(|s| s.to_string())
+                    .map(ToString::to_string)
                     .unwrap_or(credential_issuer_url.to_string());
 
                 let logo_uri = display["logo"]
