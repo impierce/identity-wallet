@@ -1,22 +1,21 @@
 name: 'Feature Request'
 description: "Request a feature or provide a suggestion"
-title: "[Request] "
 labels: ["Request"]
 body:
   - type: markdown
-    attributes: 
+    attributes:
       value: |
         You are requesting a feature or suggesting something to the maintainers.
   - type: textarea
     id: description
-    attributes: 
+    attributes:
       label: Description
       description: Briefly describe the feature that you are requesting.
     validations:
       required: true
   - type: textarea
     id: motivation
-    attributes: 
+    attributes:
       label: Motivation
       description: Explain why this feature is needed.
     validations:
@@ -25,7 +24,7 @@ body:
     id: requirements
     attributes:
       label: Requirements
-      description: Write a list of what you want this feature to do. 
+      description: Write a list of what you want this feature to do.
       value: |
         1.
         2.
@@ -34,14 +33,14 @@ body:
       required: true
   - type: textarea
     id: openqs
-    attributes: 
+    attributes:
       label: Open Questions
       description: Use this section to ask any questions that are related to the feature.
     validations:
       required: false
   - type: dropdown
     id: doit
-    attributes: 
+    attributes:
       label: Are you planning to contribute this in a PR?
       options:
         - "Yes"
