@@ -290,6 +290,13 @@ const nl = {
       OLDEST: 'Oudste eerst',
     },
   },
+  DOMAIN_LINKAGE: {
+    TITLE: 'Geverifieerd',
+    SUCCESS: 'UniMe heeft de identiteit met succes geverifieerd om u een veilige login te geven.',
+    FAILURE: 'UniMe kon de koppeling van de identiteit aan het domein niet verifiëren.',
+    UNKNOWN: 'UniMe kon geen bewijs vinden van de bijbehorende identiteit van het domein.',
+    CAUTION: 'Ga voorzichtig te werk!',
+  },
   ERROR: {
     TITLE: 'Oeps!',
     DEFAULT_MESSAGE: 'Er is iets misgegaan. Probeer het later opnieuw.',
