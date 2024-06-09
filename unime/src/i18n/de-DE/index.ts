@@ -296,7 +296,7 @@ const de = {
     SUCCESS: 'UniMe konnte die Identität erfolgreich verifizieren, um dir einen sicheren Login zu ermöglichen.',
     FAILURE: 'UniMe konnte die Verknüpfung der Identität mit der Domain nicht überprüfen.',
     UNKNOWN: 'UniMe konnte keinen Nachweis über die verbundene Identität der Domain finden.',
-    CAUTION: 'Fahre mit Vorsicht fort!',
+    CAUTION: 'Mit Vorsicht fortfahren!',
   },
   ERROR: {
     TITLE: 'Hoppla!',
