@@ -1,15 +1,14 @@
 name: Bug report
 description: Create a report to help us fix issues
-title: "[Bug] "
 labels: ["Bug"]
 body:
   - type: markdown
-    attributes: 
+    attributes:
       value: |
         Thanks for taking the time to fill out this bug report!
   - type: textarea
     id: description
-    attributes: 
+    attributes:
       label: Description
       description: Briefly describe the bug.
     validations:
@@ -21,16 +20,16 @@ body:
       description: What hardware are you using? Please provide what is relevant.
       value: |
         Operating system:
-        RAM: 
+        RAM:
         Cores:
-        Device: 
+        Device:
     validations:
       required: false
   - type: textarea
     id: reproduce
     attributes:
       label: Steps to Reproduce the Bug
-      description: Explain how the maintainer can reproduce the bug. 
+      description: Explain how the maintainer can reproduce the bug.
       value: |
         1.
         2.
@@ -38,17 +37,17 @@ body:
     validations:
       required: true
   - type: textarea
-    id: expected
-    attributes:
-      label: Expected Behaviour
-      description: Describe what you expect to happen.
-    validations:
-      required: true
-  - type: textarea
     id: actual
     attributes:
       label: Actual Behaviour
       description: Describe what actually happens.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behaviour
+      description: Describe what you expect to happen.
     validations:
       required: true
   - type: textarea
