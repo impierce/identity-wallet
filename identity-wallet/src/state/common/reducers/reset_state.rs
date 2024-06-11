@@ -14,7 +14,7 @@ pub async fn reset_state(state: AppState, _action: Action) -> Result<AppState, A
         current_user_prompt: Some(CurrentUserPrompt::Redirect {
             target: "welcome".to_string(),
         }),
-        // Keep maintaing dev_mode state
+        // Preserve dev_mode state
         dev_mode: state.dev_mode,
         ..Default::default()
     })

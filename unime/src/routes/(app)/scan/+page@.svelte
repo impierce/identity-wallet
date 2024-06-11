@@ -30,6 +30,8 @@
   // We temporarily introduce this type that extends `PermissionState` to handle a possible error when checking for permissions.
   let permissions_nullable: PermissionState | null;
 
+  let mockQrCodeValue = '';
+
   function onMessage(scanned: Scanned) {
     debug(`Scanned: ${scanned.content}`);
     loading = true;
@@ -83,7 +85,7 @@
     setTimeout(() => {
       loading = false;
       dispatch({ type: '[QR Code] Scanned', payload: { form_urlencoded: 'foobar' } });
-    }, 2_000);
+    }, 1_000);
   };
 
   const mockSiopRequest = () => {
@@ -95,6 +97,10 @@
         logo_uri: undefined,
         redirect_uri: 'https://demo.ngdil.com/auth/callback',
         previously_connected: false,
+        domain_validation: {
+          status: 'Unknown',
+          message: 'DomainLinkageConfiguration could not be fetched',
+        },
       },
     });
   };
@@ -160,8 +166,22 @@
                 <Button variant="secondary" on:click={mockSiopRequest} label="New connection" />
                 <Button variant="secondary" on:click={mockShareRequest} label="Share credentials" />
                 <Button variant="secondary" on:click={mockScanError} label="Scan error" />
+                <div class="flex flex-col space-y-2 rounded-[20px] border border-slate-200 p-2 dark:border-slate-600">
+                  <input
+                    bind:value={mockQrCodeValue}
+                    class="h-12 w-full rounded-xl border border-slate-200 px-3 text-[13px]/[24px] text-teal dark:border-slate-600 dark:bg-dark"
+                    placeholder="Paste QR code value"
+                  />
+                  <Button
+                    variant="secondary"
+                    on:click={() =>
+                      dispatch({ type: '[QR Code] Scanned', payload: { form_urlencoded: mockQrCodeValue } })}
+                    label="Process QR code"
+                  />
+                </div>
               </div>
-              <hr />
+              <!-- Divider -->
+              <hr class="border-slate-300 dark:border-slate-500" />
               <Button variant="primary" on:click={startScan} label="Start new scan" />
             </div>
           {/if}

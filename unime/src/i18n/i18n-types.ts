@@ -799,6 +799,28 @@ type RootTranslation = {
 			OLDEST: string
 		}
 	}
+	DOMAIN_LINKAGE: {
+		/**
+		 * V​e​r​i​f​i​e​d
+		 */
+		TITLE: string
+		/**
+		 * U​n​i​M​e​ ​s​u​c​c​e​s​s​f​u​l​l​y​ ​v​e​r​i​f​i​e​d​ ​t​h​e​ ​i​d​e​n​t​i​t​y​ ​t​o​ ​p​r​o​v​i​d​e​ ​y​o​u​ ​w​i​t​h​ ​a​ ​s​e​c​u​r​e​ ​l​o​g​i​n​.
+		 */
+		SUCCESS: string
+		/**
+		 * U​n​i​M​e​ ​c​o​u​l​d​ ​n​o​t​ ​v​e​r​i​f​y​ ​t​h​e​ ​l​i​n​k​a​g​e​ ​o​f​ ​t​h​e​ ​i​d​e​n​t​i​t​y​ ​t​o​ ​t​h​e​ ​d​o​m​a​i​n​.
+		 */
+		FAILURE: string
+		/**
+		 * N​o​ ​p​r​o​o​f​ ​o​f​ ​o​w​n​e​r​s​h​i​p​ ​o​f​ ​t​h​e​ ​d​o​m​a​i​n​ ​w​a​s​ ​p​r​o​v​i​d​e​d​ ​w​h​i​c​h​ ​U​n​i​M​e​ ​c​o​u​l​d​ ​v​e​r​i​f​y​.
+		 */
+		UNKNOWN: string
+		/**
+		 * P​r​o​c​e​e​d​ ​w​i​t​h​ ​c​a​u​t​i​o​n​!
+		 */
+		CAUTION: string
+	}
 	ERROR: {
 		/**
 		 * O​o​p​s​!
@@ -1613,6 +1635,28 @@ export type TranslationFunctions = {
 			 */
 			OLDEST: () => LocalizedString
 		}
+	}
+	DOMAIN_LINKAGE: {
+		/**
+		 * Verified
+		 */
+		TITLE: () => LocalizedString
+		/**
+		 * UniMe successfully verified the identity to provide you with a secure login.
+		 */
+		SUCCESS: () => LocalizedString
+		/**
+		 * UniMe could not verify the linkage of the identity to the domain.
+		 */
+		FAILURE: () => LocalizedString
+		/**
+		 * No proof of ownership of the domain was provided which UniMe could verify.
+		 */
+		UNKNOWN: () => LocalizedString
+		/**
+		 * Proceed with caution!
+		 */
+		CAUTION: () => LocalizedString
 	}
 	ERROR: {
 		/**
