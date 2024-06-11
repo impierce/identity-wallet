@@ -18,10 +18,8 @@
   import CredentialList from '$lib/credentials/CredentialList.svelte';
   import Favorites from '$lib/credentials/Favorites.svelte';
   import UserJourney from '$lib/journeys/UserJourney.svelte';
-  import NgdilDark from '$lib/static/svg/logo/demos/NgdilDark.svelte';
-  import NgdilLight from '$lib/static/svg/logo/demos/NgdilLight.svelte';
-  import SelvDark from '$lib/static/svg/logo/demos/SelvDark.svelte';
-  import SelvLight from '$lib/static/svg/logo/demos/SelvLight.svelte';
+  import Ngdil from '$lib/static/svg/logo/demos/Ngdil.svelte';
+  import Selv from '$lib/static/svg/logo/demos/Selv.svelte';
   import { onboarding_state, state } from '$lib/stores';
 
   import Ghost from '~icons/ph/ghost-fill';
@@ -38,12 +36,6 @@
       initials = calculateInitials($state?.profile_settings.profile?.name);
     }
   }
-
-  // Explicitly listen for dark mode changes, so that icons can react to it
-  let isDarkModeEnabled = document.documentElement.classList.contains('dark');
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-    isDarkModeEnabled = determineTheme(e.matches, $state.profile_settings.profile.theme) === 'dark';
-  });
 
   // security: clear onboarding state after successful creation
   // TODO: move somewhere else
@@ -182,20 +174,12 @@
           <div class="flex flex-col gap-3 pt-[15px]">
             <!-- Selv -->
             <div class="flex h-14 items-center justify-between rounded-xl bg-white p-4 dark:bg-dark">
-              {#if isDarkModeEnabled}
-                <SelvDark class="h-6 w-14 opacity-80" />
-              {:else}
-                <SelvLight class="h-6 w-14 opacity-80" />
-              {/if}
+              <Selv class="h-6 w-14 text-slate-500 dark:text-slate-300" />
               <span class="text-[13px]/[24px] font-semibold text-primary">https://selv.iota.org</span>
             </div>
             <!-- NGDIL -->
             <div class="flex h-14 items-center justify-between rounded-xl bg-white p-4 dark:bg-dark">
-              {#if isDarkModeEnabled}
-                <NgdilDark class="h-6 w-14 opacity-80" />
-              {:else}
-                <NgdilLight class="h-6 w-14 opacity-80" />
-              {/if}
+              <Ngdil class="h-6 w-14 text-slate-500 dark:text-slate-300" />
               <span class="text-[13px]/[24px] font-semibold text-primary">https://demo.ngdil.com</span>
             </div>
           </div>
