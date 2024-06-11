@@ -1309,7 +1309,7 @@ checksum = "f7144d30dcf0fafbce74250a3963025d8d52177934239851c917d29f1df280c2"
 [[package]]
 name = "consumer"
 version = "0.1.0"
-source = "git+https://github.com/impierce/did-manager.git?rev=f1d3099#f1d3099ec5adc28d837171d0a75f414f774ab60f"
+source = "git+https://github.com/impierce/did-manager.git?rev=b38a9c4#b38a9c44ba1cb9af9a447ab4e6d6850f02b82d8d"
 dependencies = [
  "did_iota",
  "did_jwk",
@@ -1911,7 +1911,7 @@ dependencies = [
 [[package]]
 name = "did-web"
 version = "0.2.2"
-source = "git+https://github.com/impierce/spruceid-ssi.git#192a1fab2eb8e8113fd9aea42ac0fcbb72044d5f"
+source = "git+https://github.com/impierce/spruceid-ssi.git#ff91409b2a38188cf71268d1bfaaba7ede006d08"
 dependencies = [
  "async-trait",
  "http 0.2.12",
@@ -1923,7 +1923,7 @@ dependencies = [
 [[package]]
 name = "did_iota"
 version = "0.1.0"
-source = "git+https://github.com/impierce/did-manager.git?rev=f1d3099#f1d3099ec5adc28d837171d0a75f414f774ab60f"
+source = "git+https://github.com/impierce/did-manager.git?rev=b38a9c4#b38a9c44ba1cb9af9a447ab4e6d6850f02b82d8d"
 dependencies = [
  "identity_iota",
  "identity_stronghold",
@@ -1936,7 +1936,7 @@ dependencies = [
 [[package]]
 name = "did_jwk"
 version = "0.1.0"
-source = "git+https://github.com/impierce/did-manager.git?rev=f1d3099#f1d3099ec5adc28d837171d0a75f414f774ab60f"
+source = "git+https://github.com/impierce/did-manager.git?rev=b38a9c4#b38a9c44ba1cb9af9a447ab4e6d6850f02b82d8d"
 dependencies = [
  "did-jwk",
  "identity_iota",
@@ -1953,7 +1953,7 @@ dependencies = [
 [[package]]
 name = "did_key"
 version = "0.1.0"
-source = "git+https://github.com/impierce/did-manager.git?rev=f1d3099#f1d3099ec5adc28d837171d0a75f414f774ab60f"
+source = "git+https://github.com/impierce/did-manager.git?rev=b38a9c4#b38a9c44ba1cb9af9a447ab4e6d6850f02b82d8d"
 dependencies = [
  "did-key",
  "did-method-key",
@@ -1972,7 +1972,7 @@ dependencies = [
 [[package]]
 name = "did_manager"
 version = "0.1.0"
-source = "git+https://github.com/impierce/did-manager.git?rev=f1d3099#f1d3099ec5adc28d837171d0a75f414f774ab60f"
+source = "git+https://github.com/impierce/did-manager.git?rev=b38a9c4#b38a9c44ba1cb9af9a447ab4e6d6850f02b82d8d"
 dependencies = [
  "consumer",
  "producer",
@@ -2000,7 +2000,7 @@ dependencies = [
 [[package]]
 name = "did_web"
 version = "0.1.0"
-source = "git+https://github.com/impierce/did-manager.git?rev=f1d3099#f1d3099ec5adc28d837171d0a75f414f774ab60f"
+source = "git+https://github.com/impierce/did-manager.git?rev=b38a9c4#b38a9c44ba1cb9af9a447ab4e6d6850f02b82d8d"
 dependencies = [
  "did-web",
  "identity_iota",
@@ -6690,7 +6690,7 @@ dependencies = [
 [[package]]
 name = "producer"
 version = "0.1.0"
-source = "git+https://github.com/impierce/did-manager.git?rev=f1d3099#f1d3099ec5adc28d837171d0a75f414f774ab60f"
+source = "git+https://github.com/impierce/did-manager.git?rev=b38a9c4#b38a9c44ba1cb9af9a447ab4e6d6850f02b82d8d"
 dependencies = [
  "did_iota",
  "did_jwk",
@@ -7935,7 +7935,7 @@ dependencies = [
 [[package]]
 name = "shared"
 version = "0.1.0"
-source = "git+https://github.com/impierce/did-manager.git?rev=f1d3099#f1d3099ec5adc28d837171d0a75f414f774ab60f"
+source = "git+https://github.com/impierce/did-manager.git?rev=b38a9c4#b38a9c44ba1cb9af9a447ab4e6d6850f02b82d8d"
 dependencies = [
  "identity_iota",
  "identity_stronghold",
@@ -8206,7 +8206,7 @@ dependencies = [
 [[package]]
 name = "ssi-caips"
 version = "0.1.0"
-source = "git+https://github.com/impierce/spruceid-ssi.git#192a1fab2eb8e8113fd9aea42ac0fcbb72044d5f"
+source = "git+https://github.com/impierce/spruceid-ssi.git#ff91409b2a38188cf71268d1bfaaba7ede006d08"
 dependencies = [
  "bs58",
  "ssi-jwk 0.1.2 (git+https://github.com/impierce/spruceid-ssi.git)",
@@ -8222,7 +8222,7 @@ checksum = "f3009b82cbae3d88a76f15460fb5fb3f30a1673eb0359ac6917ffaa3c57f7164"
 [[package]]
 name = "ssi-contexts"
 version = "0.1.5"
-source = "git+https://github.com/impierce/spruceid-ssi.git#192a1fab2eb8e8113fd9aea42ac0fcbb72044d5f"
+source = "git+https://github.com/impierce/spruceid-ssi.git#ff91409b2a38188cf71268d1bfaaba7ede006d08"
 
 [[package]]
 name = "ssi-core"
@@ -8238,7 +8238,7 @@ dependencies = [
 [[package]]
 name = "ssi-core"
 version = "0.1.0"
-source = "git+https://github.com/impierce/spruceid-ssi.git#192a1fab2eb8e8113fd9aea42ac0fcbb72044d5f"
+source = "git+https://github.com/impierce/spruceid-ssi.git#ff91409b2a38188cf71268d1bfaaba7ede006d08"
 dependencies = [
  "async-trait",
  "serde",
@@ -8264,7 +8264,7 @@ dependencies = [
 [[package]]
 name = "ssi-crypto"
 version = "0.1.1"
-source = "git+https://github.com/impierce/spruceid-ssi.git#192a1fab2eb8e8113fd9aea42ac0fcbb72044d5f"
+source = "git+https://github.com/impierce/spruceid-ssi.git#ff91409b2a38188cf71268d1bfaaba7ede006d08"
 dependencies = [
  "bs58",
  "digest 0.9.0",
@@ -8304,7 +8304,7 @@ dependencies = [
 [[package]]
 name = "ssi-dids"
 version = "0.1.1"
-source = "git+https://github.com/impierce/spruceid-ssi.git#192a1fab2eb8e8113fd9aea42ac0fcbb72044d5f"
+source = "git+https://github.com/impierce/spruceid-ssi.git#ff91409b2a38188cf71268d1bfaaba7ede006d08"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -8350,7 +8350,7 @@ dependencies = [
 [[package]]
 name = "ssi-json-ld"
 version = "0.2.2"
-source = "git+https://github.com/impierce/spruceid-ssi.git#192a1fab2eb8e8113fd9aea42ac0fcbb72044d5f"
+source = "git+https://github.com/impierce/spruceid-ssi.git#ff91409b2a38188cf71268d1bfaaba7ede006d08"
 dependencies = [
  "async-std",
  "combination",
@@ -8397,7 +8397,7 @@ dependencies = [
 [[package]]
 name = "ssi-jwk"
 version = "0.1.2"
-source = "git+https://github.com/impierce/spruceid-ssi.git#192a1fab2eb8e8113fd9aea42ac0fcbb72044d5f"
+source = "git+https://github.com/impierce/spruceid-ssi.git#ff91409b2a38188cf71268d1bfaaba7ede006d08"
 dependencies = [
  "base64 0.12.3",
  "lazy_static",
