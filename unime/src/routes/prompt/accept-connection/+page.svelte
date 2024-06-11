@@ -122,16 +122,20 @@
               <div use:melt={$arrow} class="dark:border-l dark:border-t dark:border-slate-500" />
               <div class="break-words text-[12px]/[20px]">
                 {#if domain_validation.status === 'Success'}
+                  <!-- TODO: add a better description of _what_ was validated -->
                   <p>{$LL.DOMAIN_LINKAGE.SUCCESS()}</p>
                 {:else if domain_validation.status === 'Failure'}
                   <p>{$LL.DOMAIN_LINKAGE.FAILURE()}</p>
+                  <!-- TODO: pick a different color (bad contrast) -->
                   <p class="font-semibold text-rose-500">{$LL.DOMAIN_LINKAGE.CAUTION()}</p>
                 {:else}
                   <p>{$LL.DOMAIN_LINKAGE.UNKNOWN()}</p>
+                  <!-- TODO: pick a different color (bad contrast) -->
                   <p class="font-semibold text-rose-500">{$LL.DOMAIN_LINKAGE.CAUTION()}</p>
                 {/if}
                 <!-- Dev Mode: Show additional message -->
                 {#if $state.dev_mode !== 'Off' && domain_validation.message}
+                  <!-- TODO: dev_mode only: pick a different color (bad contrast) -->
                   <p class="text-rose-500">{domain_validation.message}</p>
                 {/if}
               </div>
