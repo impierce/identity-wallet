@@ -11,6 +11,10 @@
     "client_name": "example.com",
     "logo_uri": null,
     "redirect_uri": "https://example.com/",
-    "previously_connected": false
+    "previously_connected": false,
+    "domain_validation": {
+      "status": "Unknown",
+      "message": "error decoding response body: expected value at line 1 column 1"
+    }
   }
 }

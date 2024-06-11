@@ -6,6 +6,7 @@ use crate::{
         connections::reducers::handle_siopv2_authorization_request::get_siopv2_client_name_and_logo_uri,
         core_utils::{helpers::get_unverified_jwt_claims, ConnectionRequest, CoreUtils},
         credentials::reducers::handle_oid4vp_authorization_request::get_oid4vp_client_name_and_logo_uri,
+        did::validate_domain_linkage::validate_domain_linkage,
         qr_code::actions::qrcode_scanned::QrCodeScanned,
         user_prompt::CurrentUserPrompt,
         AppState,
@@ -67,7 +68,19 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
 
             let previously_connected = state.connections.contains(&connection_url, &client_name);
 
+            let url = url::Url::parse(&redirect_uri).map_err(|_| {
+                Error(format!(
+                    "`redirect_uri` could not be parsed to url::Url: `{:?}`",
+                    redirect_uri.clone()
+                ))
+            })?;
+
+            let did = siopv2_authorization_request.body.client_id.as_str();
+
+            let domain_validation = validate_domain_linkage(url, did).await;
+
             drop(state_guard);
+
             return Ok(AppState {
                 core_utils: CoreUtils {
                     active_connection_request: Some(ConnectionRequest::SIOPv2(siopv2_authorization_request.into())),
@@ -78,6 +91,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                     logo_uri,
                     redirect_uri,
                     previously_connected,
+                    domain_validation,
                 }),
                 ..state
             });

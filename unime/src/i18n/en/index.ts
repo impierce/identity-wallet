@@ -287,6 +287,13 @@ const en = {
       OLDEST: 'Oldest first',
     },
   },
+  DOMAIN_LINKAGE: {
+    TITLE: 'Verified',
+    SUCCESS: 'UniMe successfully verified the identity to provide you with a secure login.',
+    FAILURE: 'UniMe could not verify the linkage of the identity to the domain.',
+    UNKNOWN: "UniMe could not find any proof of the domain's associated identity.",
+    CAUTION: 'Proceed with caution!',
+  },
   ERROR: {
     TITLE: 'Oops!',
     DEFAULT_MESSAGE: 'Something went wrong. Please try again.',
