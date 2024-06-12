@@ -179,10 +179,7 @@ const en = {
       GREETING_3: 'Welcome back',
       GREETING_4: 'Hello',
     },
-    DEMO: {
-      TEXT_1: 'Visit',
-      TEXT_2: 'on a desktop computer to get started.',
-    },
+    DEMO: 'Visit one of the following websites on a desktop computer to get started.',
     CREDENTIAL_TABS: {
       ALL: 'All',
       DATA: 'Data',

@@ -180,10 +180,7 @@ const de = {
       GREETING_3: 'Hallo',
       GREETING_4: 'Hi',
     },
-    DEMO: {
-      TEXT_1: 'Besuche',
-      TEXT_2: 'auf einem Desktop-Computer um loszulegen.',
-    },
+    DEMO: 'Besuche eine der folgenden Webseiten auf einem Desktop-Computer, um loszulegen.',
     CREDENTIAL_TABS: {
       ALL: 'Alle',
       DATA: 'Daten',

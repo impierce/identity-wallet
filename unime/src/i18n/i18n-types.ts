@@ -496,16 +496,10 @@ type RootTranslation = {
 			 */
 			GREETING_4: string
 		}
-		DEMO: {
-			/**
-			 * V​i​s​i​t
-			 */
-			TEXT_1: string
-			/**
-			 * o​n​ ​a​ ​d​e​s​k​t​o​p​ ​c​o​m​p​u​t​e​r​ ​t​o​ ​g​e​t​ ​s​t​a​r​t​e​d​.
-			 */
-			TEXT_2: string
-		}
+		/**
+		 * V​i​s​i​t​ ​o​n​e​ ​o​f​ ​t​h​e​ ​f​o​l​l​o​w​i​n​g​ ​w​e​b​s​i​t​e​s​ ​o​n​ ​a​ ​d​e​s​k​t​o​p​ ​c​o​m​p​u​t​e​r​ ​t​o​ ​g​e​t​ ​s​t​a​r​t​e​d​.
+		 */
+		DEMO: string
 		CREDENTIAL_TABS: {
 			/**
 			 * A​l​l
@@ -1333,16 +1327,10 @@ export type TranslationFunctions = {
 			 */
 			GREETING_4: () => LocalizedString
 		}
-		DEMO: {
-			/**
-			 * Visit
-			 */
-			TEXT_1: () => LocalizedString
-			/**
-			 * on a desktop computer to get started.
-			 */
-			TEXT_2: () => LocalizedString
-		}
+		/**
+		 * Visit one of the following websites on a desktop computer to get started.
+		 */
+		DEMO: () => LocalizedString
 		CREDENTIAL_TABS: {
 			/**
 			 * All

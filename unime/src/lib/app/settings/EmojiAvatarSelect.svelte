@@ -70,6 +70,7 @@
   >
     {#if selected}
       <span class="text-[44px]/[44px]">
+        <!-- eslint-disable-next-line svelte/no-at-html-tags -->
         {@html selected}
       </span>
       {#if showEditButton}
@@ -99,6 +100,7 @@
               emojiSelectIsOpen = false;
             }}
           >
+            <!-- eslint-disable-next-line svelte/no-at-html-tags -->
             {@html emoji}
           </button>
         {/each}

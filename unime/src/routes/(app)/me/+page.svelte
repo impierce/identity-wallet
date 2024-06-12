@@ -17,6 +17,8 @@
   import CredentialList from '$lib/credentials/CredentialList.svelte';
   import Favorites from '$lib/credentials/Favorites.svelte';
   import UserJourney from '$lib/journeys/UserJourney.svelte';
+  import Ngdil from '$lib/static/svg/logo/demos/Ngdil.svelte';
+  import Selv from '$lib/static/svg/logo/demos/Selv.svelte';
   import { onboarding_state, state } from '$lib/stores';
 
   import Ghost from '~icons/ph/ghost-fill';
@@ -166,10 +168,21 @@
       <!-- Skipped onboarding journey -->
       <div class="flex grow flex-col items-center justify-center">
         <IconMessage icon={Ghost} title={$LL.ME.EMPTY_CREDENTIALS.TITLE()} />
-        <p class="w-[280px] pt-[15px] text-center text-[13px]/[24px] font-normal text-slate-500 dark:text-slate-300">
-          {$LL.ME.DEMO.TEXT_1()} <span class="font-semibold text-primary">https://demo.ngdil.com</span>
-          {$LL.ME.DEMO.TEXT_2()}
-        </p>
+        <div class="w-[280px] pt-[15px] text-center text-[13px]/[24px] font-normal text-slate-500 dark:text-slate-300">
+          {$LL.ME.DEMO()}
+          <div class="flex flex-col gap-3 pt-[15px]">
+            <!-- Selv -->
+            <div class="flex h-14 items-center justify-between rounded-xl bg-white p-4 dark:bg-dark">
+              <Selv class="h-6 w-14 text-slate-500 dark:text-slate-300" />
+              <span class="text-[13px]/[24px] font-semibold text-primary">https://selv.iota.org</span>
+            </div>
+            <!-- NGDIL -->
+            <div class="flex h-14 items-center justify-between rounded-xl bg-white p-4 dark:bg-dark">
+              <Ngdil class="h-6 w-14 text-slate-500 dark:text-slate-300" />
+              <span class="text-[13px]/[24px] font-semibold text-primary">https://demo.ngdil.com</span>
+            </div>
+          </div>
+        </div>
       </div>
       <!-- TODO: feature disabled: "Add self-signed credential" -->
       <div in:fly={{ y: 12, delay: 400, opacity: 0 }} class="absolute bottom-4 right-4">
