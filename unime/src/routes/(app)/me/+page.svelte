@@ -7,7 +7,6 @@
   import '@lottiefiles/lottie-player';
 
   import LL from '$i18n/i18n-svelte';
-  import { determineTheme } from '$routes/utils';
 
   import WelcomeMessage from '$lib/app/WelcomeMessage.svelte';
   import Button from '$lib/components/atoms/Button.svelte';
