@@ -4,12 +4,17 @@ use identity_eddsa_verifier::EdDSAJwsVerifier;
 use identity_iota::{core::FromJson, credential::JwtCredentialValidationOptions};
 use log::info;
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
 use ts_rs::TS;
 
+#[skip_serializing_none]
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, TS, Default)]
 #[ts(export, export_to = "bindings/user_prompt/ValidationResult.ts")]
 pub struct ValidationResult {
     pub(crate) status: ValidationStatus,
+    pub(crate) name: Option<String>,
+    #[ts(type = "String", optional)]
+    pub(crate) logo_uri: Option<url::Url>,
     pub(crate) message: Option<String>,
 }
 
@@ -32,6 +37,7 @@ pub async fn validate_domain_linkage(url: url::Url, did: &str) -> ValidationResu
             return ValidationResult {
                 status: ValidationStatus::Unknown,
                 message: Some(e.to_string()),
+                ..Default::default()
             };
         }
     };
@@ -47,6 +53,7 @@ pub async fn validate_domain_linkage(url: url::Url, did: &str) -> ValidationResu
             return ValidationResult {
                 status: ValidationStatus::Unknown,
                 message: Some(e.to_string()),
+                ..Default::default()
             };
         }
     };
@@ -63,12 +70,13 @@ pub async fn validate_domain_linkage(url: url::Url, did: &str) -> ValidationResu
     if res.is_ok() {
         ValidationResult {
             status: ValidationStatus::Success,
-            message: None,
+            ..Default::default()
         }
     } else {
         ValidationResult {
             status: ValidationStatus::Failure,
             message: res.err().map(|e| e.to_string()),
+            ..Default::default()
         }
     }
 }
@@ -175,6 +183,7 @@ mod tests {
             ValidationResult {
                 status: ValidationStatus::Unknown,
                 message: Some("failed to decode JSON".to_string()),
+                ..Default::default()
             }
         );
     }
@@ -234,7 +243,8 @@ mod tests {
             result,
             ValidationResult {
                 status: ValidationStatus::Failure,
-                message: Some("invalid issuer DID".to_string())
+                message: Some("invalid issuer DID".to_string()),
+                ..Default::default()
             }
         );
     }
@@ -267,7 +277,8 @@ mod tests {
             result,
             ValidationResult {
                 status: ValidationStatus::Failure,
-                message: Some("invalid issuer DID".to_string())
+                message: Some("invalid issuer DID".to_string()),
+                ..Default::default()
             }
         );
     }
