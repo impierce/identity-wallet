@@ -3,41 +3,37 @@
 
   import { goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
-  import { fade } from 'svelte/transition';
 
-  import type { ValidationResult } from '@bindings/user_prompt/ValidationResult';
-  import { createPopover, melt } from '@melt-ui/svelte';
+  import type { CurrentUserPrompt } from '@bindings/user_prompt/CurrentUserPrompt';
 
-  import Button from '$lib/components/atoms/Button.svelte';
-  import Image from '$lib/components/atoms/Image.svelte';
-  import PaddedIcon from '$lib/components/atoms/PaddedIcon.svelte';
-  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
+  import { Button, Image, PaddedIcon, StatusIndicator, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { error, state } from '$lib/stores';
   import { hash } from '$lib/utils';
 
-  import Check from '~icons/ph/check-bold';
   import PlugsConnected from '~icons/ph/plugs-connected-fill';
-  import QuestionMark from '~icons/ph/question-mark-bold';
   import WarningCircle from '~icons/ph/warning-circle-fill';
-  import X from '~icons/ph/x-bold';
-
-  const {
-    elements: { trigger, content, arrow },
-    states: { open },
-  } = createPopover();
 
   let loading = false;
 
-  let client_name = $state.current_user_prompt.client_name;
+  // TypeScript does not know that the `current_user_prompt` is of type `accept-connection`.
+  // Extract the type rather than repeating the type definition.
+  type IsAcceptConnectionPrompt<T> = T extends { type: 'accept-connection' } ? T : never;
+  type AcceptConnectionPrompt = IsAcceptConnectionPrompt<CurrentUserPrompt>;
 
-  const previously_connected = $state.current_user_prompt.previously_connected;
+  // Use reactive statement to coerce the type only once.
+  const {
+    client_name,
+    domain_validation,
+    logo_uri,
+    previously_connected,
+    redirect_uri,
+    thuiswinkel_waarborg_validation,
+  } = $state.current_user_prompt as AcceptConnectionPrompt;
 
-  const domain_validation: ValidationResult = $state.current_user_prompt.domain_validation;
+  $: ({ hostname } = new URL(redirect_uri));
 
-  const hostname = new URL($state.current_user_prompt.redirect_uri).hostname;
-
-  const imageId = $state.current_user_prompt?.logo_uri ? hash($state.current_user_prompt?.logo_uri) : '_';
+  const imageId = logo_uri ? hash(logo_uri) : '_';
 
   // When an error is received, cancel the flow and redirect to the "me" page
   error.subscribe((err) => {
@@ -57,7 +53,7 @@
   <TopNavBar title={$LL.SCAN.CONNECTION_REQUEST.NAVBAR_TITLE()} on:back={() => history.back()} disabled={loading} />
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
-    {#if $state.current_user_prompt.logo_uri}
+    {#if logo_uri}
       <div
         class="flex h-[75px] w-[75px] items-center justify-center overflow-hidden rounded-3xl bg-white p-2 dark:bg-silver"
       >
@@ -93,63 +89,44 @@
           </div>
         </div>
       {/if}
+
       <!-- Connected previously -->
-      <div
-        class="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-4 dark:border-slate-600 dark:bg-dark"
-      >
-        <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
-          {$LL.SCAN.CONNECTION_REQUEST.CONNECTED_PREVIOUSLY()}
-        </p>
-        {#if previously_connected}
-          <Check class="text-emerald-500" />
-        {:else}
-          <X class="text-rose-500" />
-        {/if}
-      </div>
+      <StatusIndicator
+        status={previously_connected ? 'Success' : 'Failure'}
+        title={$LL.SCAN.CONNECTION_REQUEST.CONNECTED_PREVIOUSLY()}
+      />
+
       <!-- Domain validation -->
-      <div
-        use:melt={$trigger}
-        class="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-4 dark:border-slate-600 dark:bg-dark"
-      >
-        <div class="flex items-center">
-          <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">{$LL.DOMAIN_LINKAGE.TITLE()}</p>
-          {#if $open}
-            <div
-              use:melt={$content}
-              transition:fade={{ duration: 200 }}
-              class="z-10 w-1/2 rounded-2xl bg-blue p-[20px] text-white shadow-md dark:border dark:border-slate-500"
-            >
-              <div use:melt={$arrow} class="dark:border-l dark:border-t dark:border-slate-500" />
-              <div class="break-words text-[12px]/[20px]">
-                {#if domain_validation.status === 'Success'}
-                  <!-- TODO: add a better description of _what_ was validated -->
-                  <p>{$LL.DOMAIN_LINKAGE.SUCCESS()}</p>
-                {:else if domain_validation.status === 'Failure'}
-                  <p>{$LL.DOMAIN_LINKAGE.FAILURE()}</p>
-                  <!-- TODO: pick a different color (bad contrast) -->
-                  <p class="font-semibold text-rose-500">{$LL.DOMAIN_LINKAGE.CAUTION()}</p>
-                {:else}
-                  <p>{$LL.DOMAIN_LINKAGE.UNKNOWN()}</p>
-                  <!-- TODO: pick a different color (bad contrast) -->
-                  <p class="font-semibold text-rose-500">{$LL.DOMAIN_LINKAGE.CAUTION()}</p>
-                {/if}
-                <!-- Dev Mode: Show additional message -->
-                {#if $state.dev_mode !== 'Off' && domain_validation.message}
-                  <!-- TODO: dev_mode only: pick a different color (bad contrast) -->
-                  <p class="text-rose-500">{domain_validation.message}</p>
-                {/if}
-              </div>
-            </div>
+      <StatusIndicator status={domain_validation.status} title={$LL.DOMAIN_LINKAGE.TITLE()}>
+        <div class="break-words text-[12px]/[20px]" slot="popover">
+          {#if domain_validation.status === 'Success'}
+            <!-- TODO: add a better description of _what_ was validated -->
+            <p>{$LL.DOMAIN_LINKAGE.SUCCESS()}</p>
+          {:else if domain_validation.status === 'Failure'}
+            <p>{$LL.DOMAIN_LINKAGE.FAILURE()}</p>
+            <!-- TODO: pick a different color (bad contrast) -->
+            <p class="font-semibold text-rose-500">{$LL.DOMAIN_LINKAGE.CAUTION()}</p>
+          {:else}
+            <p>{$LL.DOMAIN_LINKAGE.UNKNOWN()}</p>
+            <!-- TODO: pick a different color (bad contrast) -->
+            <p class="font-semibold text-rose-500">{$LL.DOMAIN_LINKAGE.CAUTION()}</p>
+          {/if}
+          <!-- Dev Mode: Show additional message -->
+          {#if $state.dev_mode !== 'Off' && domain_validation.message}
+            <!-- TODO: dev_mode only: pick a different color (bad contrast) -->
+            <p class="text-rose-500">{domain_validation.message}</p>
           {/if}
         </div>
-        {#if domain_validation.status === 'Success'}
-          <Check class="text-emerald-500" />
-        {:else if domain_validation.status === 'Failure'}
-          <X class="text-rose-500" />
-        {:else}
-          <QuestionMark class="text-slate-400 dark:text-slate-300" />
-        {/if}
-      </div>
+      </StatusIndicator>
+
+      <!-- Thuiswinkel validaton -->
+      {#if thuiswinkel_waarborg_validation.status === 'Success' && thuiswinkel_waarborg_validation.name}
+        <StatusIndicator
+          status="Success"
+          title={thuiswinkel_waarborg_validation.name}
+          logoUrl={thuiswinkel_waarborg_validation.logo_uri}
+        />
+      {/if}
     </div>
   </div>
 

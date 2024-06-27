@@ -27,7 +27,7 @@
   "build": {
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build",
-    "devUrl": "http://localhost:5173",
+    "devUrl": "http://localhost:4173",
     "frontendDist": "../build"
   },
   "bundle": {
