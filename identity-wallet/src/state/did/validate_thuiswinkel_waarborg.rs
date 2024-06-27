@@ -9,9 +9,13 @@ use crate::{
 };
 use did_manager::Resolver;
 use identity_iota::core::ToJson;
+use log::info;
 
 pub async fn validate_thuiswinkel_waarborg(did: &str) -> ValidationResult {
     let resolver = Resolver::new().await;
+
+    info!("Validating Thuiswinkel Waarborg");
+    info!("DID: {}", did);
 
     // Resolve the Document from the DID.
     let document = match resolver.resolve(did).await {
@@ -24,6 +28,8 @@ pub async fn validate_thuiswinkel_waarborg(did: &str) -> ValidationResult {
             };
         }
     };
+
+    info!("Document: {:?}", document);
 
     // Extract the URL of the Linked Verifiable Presentation from the Docoment.
     let linked_verifiable_presentation_url = match document
@@ -53,6 +59,11 @@ pub async fn validate_thuiswinkel_waarborg(did: &str) -> ValidationResult {
         }
     };
 
+    info!(
+        "Linked Verifiable Presentation URL: {}",
+        linked_verifiable_presentation_url
+    );
+
     // Fetch the actual Linked Verifiable Presentation from the service endpoint.
     let linked_verifiable_presentation_result =
         fetch_linked_verifiable_presentation(linked_verifiable_presentation_url).await;
@@ -67,6 +78,8 @@ pub async fn validate_thuiswinkel_waarborg(did: &str) -> ValidationResult {
             }
         }
     };
+
+    info!("Linked Verifiable Presentation: {}", linked_verifiable_presentation);
 
     // Extract the `name` and `thuiswinkel_waarborg_image` from the Linked Verifiable Presentation to be displayed in
     // the frontend.
@@ -117,6 +130,9 @@ pub async fn validate_thuiswinkel_waarborg(did: &str) -> ValidationResult {
                 }
             }
         };
+
+    info!("Thuiswinkel Waarborg Name: {:?}", name);
+    info!("Thuiswinkel Waarborg Image: {:?}", thuiswinkel_waarborg_image);
 
     ValidationResult {
         status: ValidationStatus::Success,

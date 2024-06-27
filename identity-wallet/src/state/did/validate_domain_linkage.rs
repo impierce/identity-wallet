@@ -13,7 +13,7 @@ use ts_rs::TS;
 pub struct ValidationResult {
     pub(crate) status: ValidationStatus,
     pub(crate) name: Option<String>,
-    #[ts(type = "String", optional)]
+    #[ts(type = "string", optional)]
     pub(crate) logo_uri: Option<url::Url>,
     pub(crate) message: Option<String>,
 }

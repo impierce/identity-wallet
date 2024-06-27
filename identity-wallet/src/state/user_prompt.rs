@@ -29,7 +29,7 @@ pub enum CurrentUserPrompt {
         redirect_uri: String,
         previously_connected: bool,
         domain_validation: ValidationResult,
-        thuiswinkel_waarborg_validation: ValidationResult,
+        thuiswinkel_validation: ValidationResult,
     },
     #[serde(rename = "credential-offer")]
     CredentialOffer {
@@ -73,7 +73,7 @@ mod tests {
             redirect_uri: "https://example.com".to_string(),
             previously_connected: false,
             domain_validation: Default::default(),
-            thuiswinkel_waarborg_validation: Default::default(),
+            thuiswinkel_validation: Default::default(),
         };
         assert_eq!(
             serde_json::to_string(&prompt).unwrap(),

@@ -83,7 +83,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
             let domain_validation = validate_domain_linkage(url, did).await;
             // TODO(proj-e-commerce): This needs to be properly implemented. For now it just demonstrates how the Thuiswinkel
             // Waarborg would work in UniMe.
-            let thuiswinkel_waarborg_validation = validate_thuiswinkel_waarborg(did).await;
+            let thuiswinkel_validation = validate_thuiswinkel_waarborg(did).await;
 
             drop(state_guard);
 
@@ -98,7 +98,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                     redirect_uri,
                     previously_connected,
                     domain_validation,
-                    thuiswinkel_waarborg_validation,
+                    thuiswinkel_validation,
                 }),
                 ..state
             });
