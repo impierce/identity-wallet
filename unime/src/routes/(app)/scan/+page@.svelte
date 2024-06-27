@@ -104,12 +104,12 @@
           status: 'Failure',
           message: 'DomainLinkageConfiguration could not be fetched',
         },
-        thuiswinkel_waarborg_validation: {
+        thuiswinkel_validation: {
           status: 'Success',
           name: 'Thuiswinkel Waarborg',
           logo_uri: 'https://www.thuiswinkel.org/Images/logo-thuiswinkel_waarborg.svg',
         },
-        // thuiswinkel_waarborg_validation: {
+        // thuiswinkel_validation: {
         //   status: 'Failure',
         // },
       },

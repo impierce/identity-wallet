@@ -22,14 +22,8 @@
   type AcceptConnectionPrompt = IsAcceptConnectionPrompt<CurrentUserPrompt>;
 
   // Use reactive statement to coerce the type only once.
-  const {
-    client_name,
-    domain_validation,
-    logo_uri,
-    previously_connected,
-    redirect_uri,
-    thuiswinkel_waarborg_validation,
-  } = $state.current_user_prompt as AcceptConnectionPrompt;
+  const { client_name, domain_validation, logo_uri, previously_connected, redirect_uri, thuiswinkel_validation } =
+    $state.current_user_prompt as AcceptConnectionPrompt;
 
   $: ({ hostname } = new URL(redirect_uri));
 
@@ -120,11 +114,11 @@
       </StatusIndicator>
 
       <!-- Thuiswinkel validaton -->
-      {#if thuiswinkel_waarborg_validation.status === 'Success' && thuiswinkel_waarborg_validation.name}
+      {#if thuiswinkel_validation.status === 'Success' && thuiswinkel_validation.name}
         <StatusIndicator
           status="Success"
-          title={thuiswinkel_waarborg_validation.name}
-          logoUrl={thuiswinkel_waarborg_validation.logo_uri}
+          title={thuiswinkel_validation.name}
+          logoUrl={thuiswinkel_validation.logo_uri}
         />
       {/if}
     </div>
