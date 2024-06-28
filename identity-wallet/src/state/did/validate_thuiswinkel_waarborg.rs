@@ -10,6 +10,7 @@ use crate::{
 use did_manager::Resolver;
 use identity_iota::core::ToJson;
 use log::info;
+use serde_json::Value;
 
 pub async fn validate_thuiswinkel_waarborg(did: &str) -> ValidationResult {
     let resolver = Resolver::new().await;
@@ -83,7 +84,7 @@ pub async fn validate_thuiswinkel_waarborg(did: &str) -> ValidationResult {
 
     // Extract the `name` and `thuiswinkel_waarborg_image` from the Linked Verifiable Presentation to be displayed in
     // the frontend.
-    let (name, thuiswinkel_waarborg_image) =
+    let (name, thuiswinkel_waarborg_image, issuance_date) =
         match get_unverified_jwt_claims(&serde_json::json!(linked_verifiable_presentation))
             .get("vp")
             .and_then(|vp| {
@@ -94,20 +95,21 @@ pub async fn validate_thuiswinkel_waarborg(did: &str) -> ValidationResult {
             .map(|verifiable_credential| get_unverified_jwt_claims(&verifiable_credential))
             .and_then(|verifiable_credential| {
                 verifiable_credential.get("vc").and_then(|vc| {
-                    vc.get("credentialSubject").and_then(|credential_subject| {
-                        credential_subject
-                            .get("name")
-                            .and_then(serde_json::Value::as_str)
-                            .map(ToString::to_string)
-                            .and_then(|name| {
-                                Some((
-                                    Some(name),
-                                    credential_subject
-                                        .get("thuiswinkel_waarborg_image")
-                                        .and_then(serde_json::Value::as_str)
-                                        .map(url::Url::from_str),
-                                ))
-                            })
+                    vc.get("credentialSubject").map(|credential_subject| {
+                        (
+                            credential_subject
+                                .get("name")
+                                .and_then(Value::as_str)
+                                .map(ToString::to_string),
+                            credential_subject
+                                .get("thuiswinkel_waarborg_image")
+                                .and_then(Value::as_str)
+                                .map(url::Url::parse),
+                            credential_subject
+                                .get("issuanceDate")
+                                .and_then(Value::as_str)
+                                .map(ToString::to_string),
+                        )
                     })
                 })
             }) {
@@ -118,9 +120,13 @@ pub async fn validate_thuiswinkel_waarborg(did: &str) -> ValidationResult {
                         &hash(thuiswinkel_waarborg_image.as_str()),
                     )
                     .await;
-                    (display_properties.0, Some(thuiswinkel_waarborg_image))
+                    (
+                        display_properties.0,
+                        Some(thuiswinkel_waarborg_image),
+                        display_properties.2,
+                    )
                 } else {
-                    (display_properties.0, None)
+                    (display_properties.0, None, display_properties.2)
                 }
             }
             None => {
@@ -133,11 +139,13 @@ pub async fn validate_thuiswinkel_waarborg(did: &str) -> ValidationResult {
 
     info!("Thuiswinkel Waarborg Name: {:?}", name);
     info!("Thuiswinkel Waarborg Image: {:?}", thuiswinkel_waarborg_image);
+    info!("Thuiswinkel Waarborg Issuance Date: {:?}", issuance_date);
 
     ValidationResult {
         status: ValidationStatus::Success,
         name,
         logo_uri: thuiswinkel_waarborg_image,
+        issuance_date,
         ..Default::default()
     }
 }

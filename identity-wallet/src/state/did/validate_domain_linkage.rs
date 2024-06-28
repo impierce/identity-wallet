@@ -15,6 +15,7 @@ pub struct ValidationResult {
     pub(crate) name: Option<String>,
     #[ts(type = "string", optional)]
     pub(crate) logo_uri: Option<url::Url>,
+    pub(crate) issuance_date: Option<String>,
     pub(crate) message: Option<String>,
 }
 
