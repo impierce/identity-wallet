@@ -105,10 +105,7 @@ pub async fn validate_thuiswinkel_waarborg(did: &str) -> ValidationResult {
                                 .get("thuiswinkel_waarborg_image")
                                 .and_then(Value::as_str)
                                 .map(url::Url::parse),
-                            credential_subject
-                                .get("issuanceDate")
-                                .and_then(Value::as_str)
-                                .map(ToString::to_string),
+                            vc.get("issuanceDate").and_then(Value::as_str).map(ToString::to_string),
                         )
                     })
                 })
