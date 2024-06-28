@@ -13,6 +13,7 @@
 
   export let status: ValidationStatus;
   export let title: string;
+  export let description: string | undefined = undefined;
   export let logoUrl: string | undefined = undefined;
 
   const {
@@ -25,16 +26,21 @@
 <!-- This would require an #if statement in combination with duplicating the outer `div` (without use:melt). -->
 <div
   use:melt={$trigger}
-  class="relative flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-4 dark:border-slate-600 dark:bg-dark"
+  class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-4 dark:border-slate-600 dark:bg-dark"
 >
+  <div class="flex grow flex-col">
+    <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
+      {title}
+    </p>
+    {#if description}
+      <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">{description}</p>
+    {/if}
+  </div>
+
   {#if logoUrl}
-    <div class="absolute bottom-0 left-4 top-0 my-auto grid h-10 w-10 items-center justify-start">
-      <Image id={hash(logoUrl)} iconFallback="Certificate" isTempAsset={true} />
-    </div>
+    <Image id={hash(logoUrl)} iconFallback="Certificate" isTempAsset={true} imgClass="h-10 w-10" />
   {/if}
-  <p class="grow text-[13px]/[24px] font-medium text-slate-800 dark:text-grey" class:pl-12={logoUrl}>
-    {title}
-  </p>
+
   {#if status === 'Success'}
     <Check class="text-emerald-500" />
   {:else if status === 'Failure'}

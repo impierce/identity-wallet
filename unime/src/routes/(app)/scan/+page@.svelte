@@ -107,6 +107,7 @@
         thuiswinkel_validation: {
           status: 'Success',
           name: 'Thuiswinkel Waarborg',
+          issuance_date: '2024-06-26T08:03:53Z',
           logo_uri: 'https://www.thuiswinkel.org/Images/logo-thuiswinkel_waarborg.svg',
         },
         // thuiswinkel_validation: {

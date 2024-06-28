@@ -9,7 +9,7 @@
   import { Button, Image, PaddedIcon, StatusIndicator, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { error, state } from '$lib/stores';
-  import { hash } from '$lib/utils';
+  import { formatDate, hash } from '$lib/utils';
 
   import PlugsConnected from '~icons/ph/plugs-connected-fill';
   import WarningCircle from '~icons/ph/warning-circle-fill';
@@ -24,6 +24,8 @@
   // Use reactive statement to coerce the type only once.
   const { client_name, domain_validation, logo_uri, previously_connected, redirect_uri, thuiswinkel_validation } =
     $state.current_user_prompt as AcceptConnectionPrompt;
+
+  const profile_settings = $state.profile_settings;
 
   $: ({ hostname } = new URL(redirect_uri));
 
@@ -115,9 +117,14 @@
 
       <!-- Thuiswinkel validaton -->
       {#if thuiswinkel_validation.status === 'Success' && thuiswinkel_validation.name}
+        {@const issuanceDate =
+          thuiswinkel_validation.issuance_date && profile_settings.locale
+            ? formatDate(thuiswinkel_validation.issuance_date, profile_settings.locale)
+            : undefined}
         <StatusIndicator
           status="Success"
           title={thuiswinkel_validation.name}
+          description={`${$LL.SORT.PREFERENCES.DATE_ISSUED()}: ${issuanceDate}`}
           logoUrl={thuiswinkel_validation.logo_uri}
         />
       {/if}
