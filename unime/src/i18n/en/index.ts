@@ -288,7 +288,7 @@ const en = {
     },
   },
   DOMAIN_LINKAGE: {
-    TITLE: 'Verified',
+    TITLE: 'Verified website',
     SUCCESS: 'UniMe successfully verified the identity to provide you with a secure login.',
     FAILURE: 'UniMe could not verify the linkage of the identity to the domain.',
     UNKNOWN: "UniMe could not find any proof of the domain's associated identity.",
