@@ -17,19 +17,17 @@
   let loading = false;
 
   // TypeScript does not know that the `current_user_prompt` is of type `accept-connection`.
-  // Extract the type rather than repeating the type definition.
+  // Extract the type from `CurrentUserPrompt`.
   type IsAcceptConnectionPrompt<T> = T extends { type: 'accept-connection' } ? T : never;
   type AcceptConnectionPrompt = IsAcceptConnectionPrompt<CurrentUserPrompt>;
 
-  // Use reactive statement to coerce the type only once.
   const { client_name, domain_validation, logo_uri, previously_connected, redirect_uri, thuiswinkel_validation } =
     $state.current_user_prompt as AcceptConnectionPrompt;
 
   const profile_settings = $state.profile_settings;
 
   $: ({ hostname } = new URL(redirect_uri));
-
-  const imageId = logo_uri ? hash(logo_uri) : '_';
+  $: imageId = logo_uri ? hash(logo_uri) : '_';
 
   // When an error is received, cancel the flow and redirect to the "me" page
   error.subscribe((err) => {
