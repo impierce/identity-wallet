@@ -4,6 +4,8 @@
   import { goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
 
+  import type { CurrentUserPrompt } from '@bindings/user_prompt/CurrentUserPrompt';
+
   import Button from '$lib/components/atoms/Button.svelte';
   import Checkbox from '$lib/components/atoms/Checkbox.svelte';
   import Image from '$lib/components/atoms/Image.svelte';
@@ -17,13 +19,18 @@
   import PlugsConnected from '~icons/ph/plugs-connected-fill';
   import SealCheck from '~icons/ph/seal-check-fill';
 
-  let selected_credentials = $state.credentials?.filter((c) => $state.current_user_prompt.options.indexOf(c.id) > -1);
+  // TypeScript does not know that the `current_user_prompt` is of type `share-credentials`.
+  // Extract the type from `CurrentUserPrompt`.
+  type IsShareCredentialsPrompt<T> = T extends { type: 'share-credentials' } ? T : never;
+  type ShareCredentialsPrompt = IsShareCredentialsPrompt<CurrentUserPrompt>;
 
-  let client_name = $state.current_user_prompt.client_name;
+  const { client_name, logo_uri, options } = $state.current_user_prompt as ShareCredentialsPrompt;
+
+  let selected_credentials = $state.credentials?.filter((c) => options.indexOf(c.id) > -1);
 
   let loading = false;
 
-  const imageId = $state.current_user_prompt?.logo_uri ? hash($state.current_user_prompt?.logo_uri) : '_';
+  $: imageId = logo_uri ? hash(logo_uri) : '_';
 
   // When an error is received, cancel the flow and redirect to the "me" page
   error.subscribe((err) => {
@@ -44,7 +51,7 @@
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
     <!-- Header -->
-    {#if $state.current_user_prompt.logo_uri}
+    {#if logo_uri}
       <div class="flex h-[75px] w-[75px] overflow-hidden rounded-3xl bg-white p-2 dark:bg-silver">
         <Image id={imageId} isTempAsset={true} />
       </div>
