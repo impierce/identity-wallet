@@ -443,6 +443,18 @@ type RootTranslation = {
 				 */
 				NAVBAR_TITLE: string
 				/**
+				 * S​p​e​c​i​f​i​c​a​t​i​o​n​s
+				 */
+				SPECIFICATIONS: string
+				/**
+				 * V​e​r​s​i​o​n
+				 */
+				VERSION: string
+				/**
+				 * L​i​c​e​n​s​e
+				 */
+				LICENSE: string
+				/**
 				 * B​u​i​l​t​ ​w​i​t​h​ ​T​a​u​r​i
 				 */
 				BUILT_WITH: string
@@ -807,7 +819,7 @@ type RootTranslation = {
 		 */
 		FAILURE: string
 		/**
-		 * N​o​ ​p​r​o​o​f​ ​o​f​ ​o​w​n​e​r​s​h​i​p​ ​o​f​ ​t​h​e​ ​d​o​m​a​i​n​ ​w​a​s​ ​p​r​o​v​i​d​e​d​ ​w​h​i​c​h​ ​U​n​i​M​e​ ​c​o​u​l​d​ ​v​e​r​i​f​y​.
+		 * U​n​i​M​e​ ​c​o​u​l​d​ ​n​o​t​ ​f​i​n​d​ ​a​n​y​ ​p​r​o​o​f​ ​o​f​ ​t​h​e​ ​d​o​m​a​i​n​'​s​ ​a​s​s​o​c​i​a​t​e​d​ ​i​d​e​n​t​i​t​y​.
 		 */
 		UNKNOWN: string
 		/**
@@ -1274,6 +1286,18 @@ export type TranslationFunctions = {
 				 */
 				NAVBAR_TITLE: () => LocalizedString
 				/**
+				 * Specifications
+				 */
+				SPECIFICATIONS: () => LocalizedString
+				/**
+				 * Version
+				 */
+				VERSION: () => LocalizedString
+				/**
+				 * License
+				 */
+				LICENSE: () => LocalizedString
+				/**
 				 * Built with Tauri
 				 */
 				BUILT_WITH: () => LocalizedString
@@ -1638,7 +1662,7 @@ export type TranslationFunctions = {
 		 */
 		FAILURE: () => LocalizedString
 		/**
-		 * No proof of ownership of the domain was provided which UniMe could verify.
+		 * UniMe could not find any proof of the domain's associated identity.
 		 */
 		UNKNOWN: () => LocalizedString
 		/**
