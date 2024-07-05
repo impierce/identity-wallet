@@ -4,20 +4,24 @@
 
 # UniMe - Identity Wallet
 
-Identity Wallet for people to manage Decentralized Identities and Verifiable Credentials
+Identity Wallet for people to manage Decentralized Identities and Verifiable Credentials.
 
-### Tech stack
+## Tech stack
 
-- [Tauri 2.0](https://beta.tauri.app/)
-- [SvelteKit](https://kit.svelte.dev/), [Tailwind CSS](https://tailwindcss.com/), [Melt UI](https://melt-ui.com/)
+This app is built with [Tauri 2.0](https://v2.tauri.app/). It uses [Rust](https://www.rust-lang.org/) in the back-end and [SvelteKit](https://kit.svelte.dev/), [Tailwind CSS](https://tailwindcss.com/), and [Melt UI](https://melt-ui.com/) in the front-end.
 
-## Development
+## Develop
 
-Run `npm install` in the project root to install [Prettier](https://prettier.io/). Then
+This repository uses [NPM workspaces](https://docs.npmjs.com/cli/v10/using-npm/workspaces):
 
-```sh
-cd unime
-```
+| Path                | Description                                              |
+| :------------------ | :------------------------------------------------------- |
+| `./`                | Project root with Prettier configuration.                |
+| `./unime`           | NPM workspace UniMe front-end.                           |
+| `./unime/src-tauri` | Tauri Rust app (not an NPM workspace).                   |
+| `./identity-wallet` | Rust package with UniMe back-end (not an NPM workspace). |
+
+Get up and running with these steps:
 
 ### 1. Set environment variables
 
@@ -32,11 +36,13 @@ npm install
 ### 3. Generate icons
 
 ```sh
-cd src-tauri
+cd unime/src-tauri
 cargo tauri icon
 ```
 
 ### 4. Run the app
+
+You can run the following commands from the project root:
 
 ```sh
 # Desktop
@@ -54,31 +60,31 @@ npm run tauri ios dev
 ## Contributing
 
 > [!NOTE]
-> Before committing, please make sure the code is formatted correctly, passes all tests and is linted.
+> Before committing, please make sure the code is formatted, linted, and passes all tests.
 
-Run Prettier from the project root:
+### UniMe frontend
+
+Run the following commands from the project root:
 
 ```sh
 npm run format
-```
-
-### Frontend
-
-```sh
-# /unime
 npm run lint
 npm run test
+```
 
-# /unime/src-tauri
+Run these commands from `./unime/src-tauri`:
+
+```sh
 cargo fmt
 cargo clippy
 cargo test
 ```
 
-### Core (backend)
+### UniMe back-end package
+
+Run these commands from `./identity-wallet`:
 
 ```sh
-# /identity-wallet
 cargo fmt
 cargo clippy
 cargo test
@@ -86,9 +92,7 @@ cargo test
 
 ### VS Code support
 
-- Recommended extensions are listed with their extension IDs in `.vscode/extensions.json`.
-
-- It is also recommended to enable `Format On Save` in your VS Code settings.
+Recommended extensions are listed in `.vscode/extensions.json`.
 
 ### Troubleshooting
 
@@ -101,18 +105,3 @@ rm -rf ~/.cargo/git/checkouts/*
 # Windows
 rd /s /q "%USERPROFILE%\.cargo\git\checkouts"
 ```
-
-_This project was initialized using `create-tauri-app v3.1.1`._
-
-## Dependabot
-
-Dependabot monitors the following dependencies and creates pull requests with dependecy updates:
-
-| Directory | Updates                                                               |
-| :-------- | :-------------------------------------------------------------------- |
-| `/`       | NPM (project root `package.json`) and dependencies of GitHub Actions. |
-| `/unime`  | NPM.                                                                  |
-
-- Update frequency is once per month.
-- Automatic rebasing is disabled to avoid excessive use of GitHub Action minutes.
-- To trigger a rebase, follow the instructions in the pull request.
