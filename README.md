@@ -8,18 +8,18 @@ Identity Wallet for people to manage Decentralized Identities and Verifiable Cre
 
 ## Tech stack
 
-This app is built with [Tauri 2.0](https://v2.tauri.app/). It uses [Rust](https://www.rust-lang.org/) in the back-end and [SvelteKit](https://kit.svelte.dev/), [Tailwind CSS](https://tailwindcss.com/), and [Melt UI](https://melt-ui.com/) in the front-end.
+This app is built with [Tauri 2.0](https://v2.tauri.app/). It uses [Rust](https://www.rust-lang.org/) in the backend and [SvelteKit](https://kit.svelte.dev/), [Tailwind CSS](https://tailwindcss.com/), and [Melt UI](https://melt-ui.com/) in the frontend.
 
 ## Develop
 
-This repository uses [NPM workspaces](https://docs.npmjs.com/cli/v10/using-npm/workspaces):
+This repository uses [npm workspaces](https://docs.npmjs.com/cli/v10/using-npm/workspaces):
 
-| Path                | Description                                              |
-| :------------------ | :------------------------------------------------------- |
-| `./`                | Project root with Prettier configuration.                |
-| `./unime`           | NPM workspace UniMe front-end.                           |
-| `./unime/src-tauri` | Tauri Rust app (not an NPM workspace).                   |
-| `./identity-wallet` | Rust package with UniMe back-end (not an NPM workspace). |
+| Path                | Description                                             |
+| :------------------ | :------------------------------------------------------ |
+| `./`                | Project root with Prettier configuration.               |
+| `./unime`           | NPM workspace UniMe frontend.                           |
+| `./unime/src-tauri` | Tauri Rust app (not an NPM workspace).                  |
+| `./identity-wallet` | Rust package with UniMe backend (not an NPM workspace). |
 
 Get up and running with these steps:
 
@@ -80,7 +80,7 @@ cargo clippy
 cargo test
 ```
 
-### UniMe back-end package
+### UniMe backend package
 
 Run these commands from `./identity-wallet`:
 
