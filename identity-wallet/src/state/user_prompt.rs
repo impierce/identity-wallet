@@ -28,8 +28,8 @@ pub enum CurrentUserPrompt {
         logo_uri: Option<String>,
         redirect_uri: String,
         previously_connected: bool,
-        domain_validation: ValidationResult,
-        thuiswinkel_validation: ValidationResult,
+        domain_validation: Box<ValidationResult>,
+        thuiswinkel_validation: Box<ValidationResult>,
     },
     #[serde(rename = "credential-offer")]
     CredentialOffer {
@@ -77,7 +77,7 @@ mod tests {
         };
         assert_eq!(
             serde_json::to_string(&prompt).unwrap(),
-            r#"{"type":"accept-connection","client_name":"Test Client","logo_uri":null,"redirect_uri":"https://example.com","previously_connected":false,"domain_validation":{"status":"Unknown","message":null}}"#
+            r#"{"type":"accept-connection","client_name":"Test Client","logo_uri":null,"redirect_uri":"https://example.com","previously_connected":false,"domain_validation":{"status":"Unknown"},"thuiswinkel_validation":{"status":"Unknown"}}"#
         );
     }
 }

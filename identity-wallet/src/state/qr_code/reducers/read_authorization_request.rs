@@ -80,10 +80,10 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
 
             let did = siopv2_authorization_request.body.client_id.as_str();
 
-            let domain_validation = validate_domain_linkage(url, did).await;
+            let domain_validation = Box::new(validate_domain_linkage(url, did).await);
             // TODO(proj-e-commerce): This needs to be properly implemented. For now it just demonstrates how the Thuiswinkel
             // Waarborg would work in UniMe.
-            let thuiswinkel_validation = validate_thuiswinkel_waarborg(did).await;
+            let thuiswinkel_validation = Box::new(validate_thuiswinkel_waarborg(did).await);
 
             drop(state_guard);
 
