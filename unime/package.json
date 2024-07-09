@@ -50,7 +50,7 @@
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
     "@vitest/coverage-v8": "^1.1.1",
-    "@vitest/ui": "^1.1.1",
+    "@vitest/ui": "^2.0.1",
     "autoprefixer": "^10.4.14",
     "eslint": "^8.35.0",
     "eslint-config-prettier": "^9.0.0",
