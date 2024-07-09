@@ -8,11 +8,11 @@
   import Button from '$lib/components/atoms/Button.svelte';
   import PaddedIcon from '$lib/components/atoms/PaddedIcon.svelte';
   import ProgressBar from '$lib/components/atoms/ProgressBar.svelte';
+  import GoalItem from '$lib/components/journeys/goals/GoalItem.svelte';
+  import { icons } from '$lib/components/journeys/goals/icons';
   import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
   import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
   import { dispatch } from '$lib/dispatcher';
-  import GoalItem from '$lib/journeys/goals/GoalItem.svelte';
-  import { icons } from '$lib/journeys/goals/icons';
   import { state } from '$lib/stores';
 
   import Trophy from '~icons/ph/trophy-fill';

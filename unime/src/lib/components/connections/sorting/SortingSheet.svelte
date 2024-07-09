@@ -5,8 +5,8 @@
   import { melt } from '@melt-ui/svelte';
 
   import Button from '$lib/components/atoms/Button.svelte';
+  import SortingSheetButton from '$lib/components/connections/sorting/SortingSheetButton.svelte';
   import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
-  import SortingSheetButton from '$lib/connections/sorting/SortingSheetButton.svelte';
   import { dispatch } from '$lib/dispatcher';
   import AlphabeticalOrder from '$lib/static/svg/AlphabeticalOrder.svelte';
   import { state } from '$lib/stores';

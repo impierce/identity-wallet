@@ -4,10 +4,10 @@
 
   import type { Connection } from '@bindings/connections/Connection';
 
+  import ConnectionData from '$lib/components/connections/ConnectionData.svelte';
+  import ConnectionSummary from '$lib/components/connections/ConnectionSummary.svelte';
   import Tabs from '$lib/components/molecules/navigation/Tabs.svelte';
   import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
-  import ConnectionData from '$lib/connections/ConnectionData.svelte';
-  import ConnectionSummary from '$lib/connections/ConnectionSummary.svelte';
   import History from '$lib/events/History.svelte';
   import { state } from '$lib/stores';
 

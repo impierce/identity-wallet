@@ -1,8 +1,8 @@
 <script lang="ts">
   import LL from '$i18n/i18n-svelte';
 
+  import ConnectionsList from '$lib/components/connections/ConnectionsList.svelte';
   import Tabs from '$lib/components/molecules/navigation/Tabs.svelte';
-  import ConnectionsList from '$lib/connections/ConnectionsList.svelte';
   import History from '$lib/events/History.svelte';
 </script>
 
