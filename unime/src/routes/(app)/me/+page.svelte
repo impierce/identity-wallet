@@ -1,8 +1,7 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
+  import { beforeNavigate, goto, replaceState } from '$app/navigation';
+  import { page } from '$app/stores';
   import { fly } from 'svelte/transition';
-
-  import type { Snapshot } from './$types';
 
   import '@lottiefiles/lottie-player';
 
@@ -23,7 +22,11 @@
   let initials: string | undefined;
 
   let triggers = [$LL.ME.CREDENTIAL_TABS.ALL(), $LL.ME.CREDENTIAL_TABS.DATA(), $LL.ME.CREDENTIAL_TABS.BADGES()];
-  let activeTab: Writable<string> = writable();
+  let activeTab: Writable<string> = writable($page.state.tab || triggers[0]);
+
+  beforeNavigate(async () => {
+    replaceState('', { tab: $activeTab });
+  });
 
   $: {
     // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
@@ -31,13 +34,6 @@
       initials = calculateInitials($state?.profile_settings.profile?.name);
     }
   }
-
-  export const snapshot: Snapshot<string> = {
-    capture: () => $activeTab,
-    restore: (tab) => {
-      activeTab.set(tab);
-    },
-  };
 
   // security: clear onboarding state after successful creation
   // TODO: move somewhere else

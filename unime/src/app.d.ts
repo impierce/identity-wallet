@@ -11,6 +11,9 @@ declare global {
     }
     // interface Locals {}
     // interface PageData {}
+    interface PageState {
+      tab?: string;
+    }
     // interface Platform {}
   }
 }
