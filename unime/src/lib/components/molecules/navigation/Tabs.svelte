@@ -1,16 +1,18 @@
 <script lang="ts">
   import { cubicInOut } from 'svelte/easing';
+  import type { Writable } from 'svelte/store';
   import { crossfade } from 'svelte/transition';
   import { twMerge } from 'tailwind-merge';
 
   import { createTabs, melt } from '@melt-ui/svelte';
 
+  // Bring your own store to make active tab availalbe outside.
+  export let value: Writable<string>;
   export let triggers: string[];
 
   const {
     elements: { root, list, content, trigger },
-    states: { value },
-  } = createTabs({ defaultValue: triggers[0] });
+  } = createTabs({ value });
 
   const [send, receive] = crossfade({
     duration: 250,
@@ -18,19 +20,6 @@
   });
 </script>
 
-<!--
-@component
-A tab component.
-
-### Props
-
-- triggers
-
-### Usage
-```tsx
-<Tabs triggers={['First', 'Second', 'Third']} />
-```
--->
 <div use:melt={$root} class="flex flex-col">
   <div
     use:melt={$list}
@@ -46,8 +35,8 @@ A tab component.
         </p>
         {#if $value === triggerItem}
           <div
-            in:send={{ key: 'trigger' }}
-            out:receive={{ key: 'trigger' }}
+            in:receive={{ key: 'trigger' }}
+            out:send={{ key: 'trigger' }}
             class="absolute left-0 top-0 h-full w-full rounded-lg bg-primary"
           />
         {/if}

@@ -2,33 +2,28 @@
   import { goto } from '$app/navigation';
   import { fly } from 'svelte/transition';
 
+  import type { Snapshot } from './$types';
+
   import '@lottiefiles/lottie-player';
 
   import LL from '$i18n/i18n-svelte';
+  import { writable, type Writable } from 'svelte/store';
 
   import WelcomeMessage from '$lib/app/WelcomeMessage.svelte';
-  import {
-    ActionSheet,
-    Button,
-    CredentialList,
-    Favorites,
-    IconMessage,
-    PaddedIcon,
-    SortingSheet,
-    Tabs,
-    UserJourney,
-  } from '$lib/components';
+  import { CredentialList, Favorites, IconMessage, SortingSheet, Tabs, UserJourney } from '$lib/components';
   import Ngdil from '$lib/static/svg/logo/demos/Ngdil.svelte';
   import Selv from '$lib/static/svg/logo/demos/Selv.svelte';
   import { onboarding_state, state } from '$lib/stores';
 
   import Ghost from '~icons/ph/ghost-fill';
   import MagnifyingGlass from '~icons/ph/magnifying-glass';
-  import RocketLaunch from '~icons/ph/rocket-launch-fill';
 
   import { calculateInitials } from './utils';
 
   let initials: string | undefined;
+
+  let triggers = [$LL.ME.CREDENTIAL_TABS.ALL(), $LL.ME.CREDENTIAL_TABS.DATA(), $LL.ME.CREDENTIAL_TABS.BADGES()];
+  let activeTab: Writable<string> = writable();
 
   $: {
     // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
@@ -36,6 +31,13 @@
       initials = calculateInitials($state?.profile_settings.profile?.name);
     }
   }
+
+  export const snapshot: Snapshot<string> = {
+    capture: () => $activeTab,
+    restore: (tab) => {
+      activeTab.set(tab);
+    },
+  };
 
   // security: clear onboarding state after successful creation
   // TODO: move somewhere else
@@ -86,10 +88,7 @@
     {#if $state?.credentials && $state?.credentials.length > 0}
       <div class="relative">
         <div>
-          <Tabs
-            class="mr-[50px]"
-            triggers={[$LL.ME.CREDENTIAL_TABS.ALL(), $LL.ME.CREDENTIAL_TABS.DATA(), $LL.ME.CREDENTIAL_TABS.BADGES()]}
-          >
+          <Tabs class="mr-[50px]" value={activeTab} {triggers}>
             <!-- All -->
             <div slot="0" class="h-full pt-5">
               <Favorites />
@@ -121,18 +120,18 @@
         <!-- TODO: feature disabled: "Add self-signed credential" -->
         <!-- <ButtonRounded label="Add" icon={PlusCircle} /> -->
       </div>
-    {:else if $state?.user_journey}
+      <!-- {:else if $state?.user_journey} -->
       <!-- With active onboarding journey -->
-      <div class="flex h-max grow flex-col items-center justify-center text-center">
-        <div class="relative">
-          <!-- TODO: extract icon component? -->
-          <div class="relative z-10">
-            <!-- z-index only applies to elements with explicit position, therefore also "relative" -->
-            <PaddedIcon icon={RocketLaunch} />
-          </div>
+      <!-- <div class="flex h-max grow flex-col items-center justify-center text-center">
+        <div class="relative"> -->
+      <!-- TODO: extract icon component? -->
+      <!-- <div class="relative z-10"> -->
+      <!-- z-index only applies to elements with explicit position, therefore also "relative" -->
+      <!-- <PaddedIcon icon={RocketLaunch} />
+          </div> -->
 
-          <!-- Confetti -->
-          <div class="absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2">
+      <!-- Confetti -->
+      <!-- <div class="absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2">
             <lottie-player
               src="/lottiefiles/bubble-burst-confetti-ajgRKUnNJ7.json"
               autoplay
@@ -142,9 +141,9 @@
               style="width: 320px"
             />
           </div>
-        </div>
+        </div> -->
 
-        <div class="pt-[15px]">
+      <!-- <div class="pt-[15px]">
           <p class="pb-[15px] text-[22px]/[30px] font-semibold tracking-tight text-slate-800 dark:text-grey">
             Shall we get started?
           </p>
@@ -152,19 +151,19 @@
             Start your first steps to add some credentials to your "Me".
           </p>
         </div>
-      </div>
+      </div> -->
 
-      <ActionSheet
+      <!-- <ActionSheet
         titleText="Complete new goals"
         descriptionText="Start your mission here! Goals will lead you through important features and possibilities of UniMe app."
-      >
-        <!-- TODO: bug: properly $close the drawer with melt-ui (otherwise two clicks necessary) -->
-        <Button slot="trigger" let:trigger {trigger} label="Let's go" />
-        <div slot="content" class="flex w-full flex-col pt-[20px]">
-          <!-- TODO: add multiple steps inline in drawer -->
-          <Button label={$LL.CONTINUE()} on:click={() => goto('/goals')} />
+      > -->
+      <!-- TODO: bug: properly $close the drawer with melt-ui (otherwise two clicks necessary) -->
+      <!-- <Button slot="trigger" let:trigger {trigger} label="Let's go" /> -->
+      <!-- <div slot="content" class="flex w-full flex-col pt-[20px]"> -->
+      <!-- TODO: add multiple steps inline in drawer -->
+      <!-- <Button label={$LL.CONTINUE()} on:click={() => goto('/goals')} />
         </div>
-      </ActionSheet>
+      </ActionSheet> -->
     {:else}
       <!-- Skipped onboarding journey -->
       <div class="flex grow flex-col items-center justify-center">
