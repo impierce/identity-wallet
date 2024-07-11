@@ -77,9 +77,11 @@
             type={credential.data?.type.includes('OpenBadgeCredential') ? 'badge' : 'data'}
             on:click={() => {
               dispatch({ type: '[Search] Add recent', payload: { id: credential.id } });
-              credential.data?.type.includes('OpenBadgeCredential')
-                ? goto(`/badges/${credential.id}`)
-                : goto(`/credentials/${credential.id}`);
+              if (credential.data?.type.includes('OpenBadgeCredential')) {
+                goto(`/badges/${credential.id}`);
+              } else {
+                goto(`/credentials/${credential.id}`);
+              }
             }}
           />
         {/each}

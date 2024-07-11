@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher, SvelteComponent } from 'svelte';
+  import { createEventDispatcher, type SvelteComponent } from 'svelte';
 
   import LL from '$i18n/i18n-svelte';
   import type { SvelteHTMLElements } from 'svelte/elements';
