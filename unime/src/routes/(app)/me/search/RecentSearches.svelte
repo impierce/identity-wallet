@@ -26,16 +26,18 @@
           description={recentSearch.issuer_name}
           on:click={() => {
             dispatch({ type: '[Search] Add recent', payload: { id: recentSearch.id } });
-            recentSearch.data.type.includes('OpenBadgeCredential')
-              ? goto(`/badges/${recentSearch.id}`)
-              : goto(`/credentials/${recentSearch.id}`);
+            if (recentSearch.data.type.includes('OpenBadgeCredential')) {
+              goto(`/badges/${recentSearch.id}`);
+            } else {
+              goto(`/credentials/${recentSearch.id}`);
+            }
           }}
         >
           <button
             slot="right"
             class="mr-1 rounded-full p-3 hover:bg-silver dark:hover:bg-navy"
             on:click|stopPropagation={() => {
-              dispatch({ type: '[Search] Delete Recent', payload: { id: recentSearch.id } });
+              dispatch({ type: '[Search] Delete recent', payload: { id: recentSearch.id } });
             }}
           >
             <X class="h-4 w-4 text-slate-800 dark:text-grey" />
