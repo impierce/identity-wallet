@@ -6,7 +6,7 @@
 
   import { createTabs, melt } from '@melt-ui/svelte';
 
-  // Bring your own store to make active tab availalble outside.
+  // Bring your own store to make active tab available outside.
   export let value: Writable<string>;
   export let triggers: string[];
 
