@@ -16,7 +16,7 @@
   export let ref: HTMLInputElement;
 
   let debouncedValue: string | undefined;
-  let timer: NodeJS.Timeout;
+  let timer: ReturnType<typeof setTimeout>;
 
   const debounce = (value: string) => {
     clearTimeout(timer);

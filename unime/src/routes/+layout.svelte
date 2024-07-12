@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, SvelteComponent } from 'svelte';
+  import { onMount, type SvelteComponent } from 'svelte';
 
   import { goto } from '$app/navigation';
   import { PUBLIC_DEV_MODE_MENU_EXPANDED } from '$env/static/public';
