@@ -20,6 +20,20 @@
   });
 </script>
 
+<!--
+@component
+A tab component.
+
+### Props
+
+- value - Active tab.
+- triggers - Array of tab names.
+
+### Usage
+```tsx
+<Tabs value={storeProvidedByParent} triggers={['First', 'Second', 'Third']} />
+```
+-->
 <div use:melt={$root} class="flex flex-col">
   <div
     use:melt={$list}
