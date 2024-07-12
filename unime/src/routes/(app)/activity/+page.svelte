@@ -1,9 +1,19 @@
 <script lang="ts">
+  import { beforeNavigate, replaceState } from '$app/navigation';
+  import { page } from '$app/stores';
   import LL from '$i18n/i18n-svelte';
+  import { writable, type Writable } from 'svelte/store';
 
+  import { Tabs } from '$lib/components';
   import ConnectionsList from '$lib/components/connections/ConnectionsList.svelte';
-  import Tabs from '$lib/components/molecules/navigation/Tabs.svelte';
   import History from '$lib/events/History.svelte';
+
+  let triggers = [$LL.ACTIVITY.TABS.CONNECTIONS(), $LL.ACTIVITY.TABS.HISTORY()];
+  let activeTab: Writable<string> = writable($page.state.tab || triggers[0]);
+
+  beforeNavigate(async () => {
+    replaceState('', { tab: $activeTab });
+  });
 </script>
 
 <div class="content-height flex flex-col bg-silver dark:bg-navy">
@@ -13,7 +23,7 @@
     <p>{$LL.ACTIVITY.NAVBAR_TITLE()}</p>
   </div>
   <div class="flex grow flex-col overflow-y-auto px-4 pt-5">
-    <Tabs triggers={[$LL.ACTIVITY.TABS.CONNECTIONS(), $LL.ACTIVITY.TABS.HISTORY()]}>
+    <Tabs value={activeTab} {triggers}>
       <div slot="0" class="h-full">
         <ConnectionsList />
       </div>
