@@ -1,23 +1,29 @@
 <script lang="ts">
+  import { beforeNavigate, replaceState } from '$app/navigation';
   import { page } from '$app/stores';
   import LL from '$i18n/i18n-svelte';
+  import { writable, type Writable } from 'svelte/store';
 
   import type { Connection } from '@bindings/connections/Connection';
 
-  import Tabs from '$lib/components/molecules/navigation/Tabs.svelte';
-  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
-  import ConnectionData from '$lib/connections/ConnectionData.svelte';
-  import ConnectionSummary from '$lib/connections/ConnectionSummary.svelte';
+  import { ConnectionData, ConnectionSummary, Tabs, TopNavBar } from '$lib/components';
   import History from '$lib/events/History.svelte';
   import { state } from '$lib/stores';
 
   let connection: Connection = $state.connections.find((c) => c.id === $page.params.id)!;
+
+  let triggers = [$LL.CONNECTION.TABS.SUMMARY(), $LL.CONNECTION.TABS.DATA(), $LL.CONNECTION.TABS.ACTIVITY()];
+  let activeTab: Writable<string> = writable($page.state.tab || triggers[0]);
+
+  beforeNavigate(async () => {
+    replaceState('', { tab: $activeTab });
+  });
 </script>
 
 <div class="content-height flex flex-col">
   <TopNavBar on:back={() => history.back()} title={connection.name} class="bg-silver dark:bg-navy" />
   <div class="flex grow flex-col overflow-y-auto bg-silver px-4 py-5 dark:bg-navy">
-    <Tabs triggers={[$LL.CONNECTION.TABS.SUMMARY(), $LL.CONNECTION.TABS.DATA(), $LL.CONNECTION.TABS.ACTIVITY()]}>
+    <Tabs value={activeTab} {triggers}>
       <div slot="0" class="h-full pt-5">
         <ConnectionSummary {connection} />
       </div>

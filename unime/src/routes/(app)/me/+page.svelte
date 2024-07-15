@@ -1,22 +1,26 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
+  import { beforeNavigate, goto, replaceState } from '$app/navigation';
+  import { page } from '$app/stores';
   import { fly } from 'svelte/transition';
 
-  import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
+  import { ActionSheet } from '$lib/components';
 
   import '@lottiefiles/lottie-player';
 
   import LL from '$i18n/i18n-svelte';
+  import { writable, type Writable } from 'svelte/store';
 
   import WelcomeMessage from '$lib/app/WelcomeMessage.svelte';
-  import Button from '$lib/components/atoms/Button.svelte';
-  import PaddedIcon from '$lib/components/atoms/PaddedIcon.svelte';
-  import IconMessage from '$lib/components/molecules/IconMessage.svelte';
-  import Tabs from '$lib/components/molecules/navigation/Tabs.svelte';
-  import SortingSheet from '$lib/connections/sorting/SortingSheet.svelte';
-  import CredentialList from '$lib/credentials/CredentialList.svelte';
-  import Favorites from '$lib/credentials/Favorites.svelte';
-  import UserJourney from '$lib/journeys/UserJourney.svelte';
+  import {
+    Button,
+    CredentialList,
+    Favorites,
+    IconMessage,
+    PaddedIcon,
+    SortingSheet,
+    Tabs,
+    UserJourney,
+  } from '$lib/components';
   import Ngdil from '$lib/static/svg/logo/demos/Ngdil.svelte';
   import Selv from '$lib/static/svg/logo/demos/Selv.svelte';
   import { onboarding_state, state } from '$lib/stores';
@@ -28,6 +32,13 @@
   import { calculateInitials } from './utils';
 
   let initials: string | undefined;
+
+  let triggers = [$LL.ME.CREDENTIAL_TABS.ALL(), $LL.ME.CREDENTIAL_TABS.DATA(), $LL.ME.CREDENTIAL_TABS.BADGES()];
+  let activeTab: Writable<string> = writable($page.state.tab || triggers[0]);
+
+  beforeNavigate(async () => {
+    replaceState('', { tab: $activeTab });
+  });
 
   $: {
     // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
@@ -85,10 +96,7 @@
     {#if $state?.credentials && $state?.credentials.length > 0}
       <div class="relative">
         <div>
-          <Tabs
-            class="mr-[50px]"
-            triggers={[$LL.ME.CREDENTIAL_TABS.ALL(), $LL.ME.CREDENTIAL_TABS.DATA(), $LL.ME.CREDENTIAL_TABS.BADGES()]}
-          >
+          <Tabs class="mr-[50px]" value={activeTab} {triggers}>
             <!-- All -->
             <div slot="0" class="h-full pt-5">
               <Favorites />
