@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher, SvelteComponent } from 'svelte';
+  import { createEventDispatcher, type SvelteComponent } from 'svelte';
 
   import LL from '$i18n/i18n-svelte';
   import type { SvelteHTMLElements } from 'svelte/elements';
@@ -20,9 +20,9 @@
     if (method === 'name_az') {
       sortOrder = reversed ? $LL.SORT.ORDER.Z_A() : $LL.SORT.ORDER.A_Z();
     } else if (method === 'issue_date_new_old') {
-      sortOrder = reversed ? $LL.SORT.ORDER.NEWEST() : $LL.SORT.ORDER.OLDEST();
+      sortOrder = reversed ? $LL.SORT.ORDER.OLDEST() : $LL.SORT.ORDER.NEWEST();
     } else if (method === 'added_date_new_old') {
-      sortOrder = reversed ? $LL.SORT.ORDER.NEWEST() : $LL.SORT.ORDER.OLDEST();
+      sortOrder = reversed ? $LL.SORT.ORDER.OLDEST() : $LL.SORT.ORDER.NEWEST();
     }
   }
 </script>

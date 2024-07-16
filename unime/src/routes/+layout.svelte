@@ -1,15 +1,16 @@
 <script lang="ts">
-  import { onMount, SvelteComponent } from 'svelte';
+  import { onMount, type SvelteComponent } from 'svelte';
 
   import { goto } from '$app/navigation';
   import { PUBLIC_DEV_MODE_MENU_EXPANDED } from '$env/static/public';
+  import LL from '$i18n/i18n-svelte';
   import { loadAllLocales } from '$i18n/i18n-util.sync';
   import { fly } from 'svelte/transition';
 
   import { attachConsole } from '@tauri-apps/plugin-log';
 
   import { dispatch } from '$lib/dispatcher';
-  import { state } from '$lib/stores';
+  import { error, state } from '$lib/stores';
 
   import ScrollText from '~icons/lucide/scroll-text';
   import ArrowLeft from '~icons/ph/arrow-left';
@@ -24,6 +25,7 @@
   import type { ProfileSteps } from '@bindings/dev/ProfileSteps';
 
   import Switch from '$lib/components/atoms/Switch.svelte';
+  import ErrorToast from '$lib/components/molecules/toast/ErrorToast.svelte';
 
   import { determineTheme } from './utils';
 
@@ -225,5 +227,19 @@
   <!-- Content -->
   <div class="fixed top-[var(--safe-area-inset-top)] h-auto w-full">
     <slot />
+    <!-- Show error if exists -->
+    {#if $error}
+      <div class="absolute bottom-4 right-4 w-[calc(100%_-_32px)]">
+        <ErrorToast
+          title={$state?.dev_mode !== 'Off' ? 'Error' : $LL.ERROR.TITLE()}
+          detail={$state?.dev_mode !== 'Off' ? $error : $LL.ERROR.DEFAULT_MESSAGE()}
+          on:dismissed={() => {
+            // After the toast fires the "dismissed" event, we clear the current $error store.
+            $error = undefined;
+          }}
+          autoDismissAfterMs={$state?.dev_mode !== 'Off' ? 0 : 5_000}
+        />
+      </div>
+    {/if}
   </div>
 </main>

@@ -16,25 +16,19 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20.x"
+          node-version: 'lts/*'
 
-      - name: Install project root dependencies
-        run: npm install
+      - name: Install NPM dependencies in project root and workspaces
+        run: npm ci
 
       - name: Format
         run: npm run format:check
 
-      - name: Install dependencies
-        working-directory: ./unime
-        run: npm install
-
       - name: Lint
-        working-directory: ./unime
         run: npm run lint
 
       - name: Test
-        working-directory: ./unime
-        run: npx vitest run
+        run: npm run test
 
   unime_core:
     runs-on: ubuntu-latest
@@ -63,12 +57,11 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20.x"
+          node-version: 'lts/*'
 
       - name: Build frontend
-        # Otherwise linting will fail with error: The `distDir` configuration is set to `"../build"` but this path doesn't exist
-        working-directory: ./unime
-        run: npm install && npm run build
+        # Otherwise linting will fail with error: The `distDir` configuration is set to `"../build"` but this path doesn't exist.
+        run: npm ci && npm run build
         env:
           PUBLIC_DEV_MODE_MENU_EXPANDED: false
 

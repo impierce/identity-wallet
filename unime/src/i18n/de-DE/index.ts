@@ -180,10 +180,7 @@ const de = {
       GREETING_3: 'Hallo',
       GREETING_4: 'Hi',
     },
-    DEMO: {
-      TEXT_1: 'Besuche',
-      TEXT_2: 'auf einem Desktop-Computer um loszulegen.',
-    },
+    DEMO: 'Besuche eine der folgenden Webseiten auf einem Desktop-Computer, um loszulegen.',
     CREDENTIAL_TABS: {
       ALL: 'Alle',
       DATA: 'Daten',
@@ -290,6 +287,17 @@ const de = {
       NEWEST: 'Neueste zuerst',
       OLDEST: 'Älteste zuerst',
     },
+  },
+  DOMAIN_LINKAGE: {
+    TITLE: 'Verifiziert',
+    SUCCESS: 'UniMe konnte die Identität erfolgreich verifizieren, um dir einen sicheren Login zu ermöglichen.',
+    FAILURE: 'UniMe konnte die Verknüpfung der Identität mit der Domain nicht überprüfen.',
+    UNKNOWN: 'UniMe konnte keinen Nachweis über die verbundene Identität der Domain finden.',
+    CAUTION: 'Mit Vorsicht fortfahren!',
+  },
+  ERROR: {
+    TITLE: 'Hoppla!',
+    DEFAULT_MESSAGE: 'Es ist ein Fehler aufgetreten. Bitte versuche es noch einmal.',
   },
   CANCEL: 'Abbrechen',
   CLOSE: 'Schließen',

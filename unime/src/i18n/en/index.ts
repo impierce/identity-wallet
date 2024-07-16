@@ -179,10 +179,7 @@ const en = {
       GREETING_3: 'Welcome back',
       GREETING_4: 'Hello',
     },
-    DEMO: {
-      TEXT_1: 'Visit',
-      TEXT_2: 'on a desktop computer to get started.',
-    },
+    DEMO: 'Visit one of the following websites on a desktop computer to get started.',
     CREDENTIAL_TABS: {
       ALL: 'All',
       DATA: 'Data',
@@ -289,6 +286,17 @@ const en = {
       NEWEST: 'Newest first',
       OLDEST: 'Oldest first',
     },
+  },
+  DOMAIN_LINKAGE: {
+    TITLE: 'Verified',
+    SUCCESS: 'UniMe successfully verified the identity to provide you with a secure login.',
+    FAILURE: 'UniMe could not verify the linkage of the identity to the domain.',
+    UNKNOWN: "UniMe could not find any proof of the domain's associated identity.",
+    CAUTION: 'Proceed with caution!',
+  },
+  ERROR: {
+    TITLE: 'Oops!',
+    DEFAULT_MESSAGE: 'Something went wrong. Please try again.',
   },
   CANCEL: 'Cancel',
   CLOSE: 'Close',

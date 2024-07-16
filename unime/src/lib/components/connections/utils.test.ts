@@ -1,4 +1,4 @@
-import type { Connection } from '@bindings/Connection';
+import type { Connection } from '@bindings/connections/Connection';
 
 import { groupConnectionsAlphabetically } from './utils';
 

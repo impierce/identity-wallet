@@ -179,10 +179,7 @@ const nl = {
       GREETING_3: 'Hoi',
       GREETING_4: 'Dag',
     },
-    DEMO: {
-      TEXT_1: 'Bezoek',
-      TEXT_2: 'op een desktopcomputer om te beginnen.',
-    },
+    DEMO: 'Bezoek een van de volgende websites op een desktopcomputer om te beginnen.',
     CREDENTIAL_TABS: {
       ALL: 'Alle',
       DATA: 'Data',
@@ -289,6 +286,17 @@ const nl = {
       NEWEST: 'Nieuwste eerst',
       OLDEST: 'Oudste eerst',
     },
+  },
+  DOMAIN_LINKAGE: {
+    TITLE: 'Geverifieerd',
+    SUCCESS: 'UniMe heeft de identiteit met succes geverifieerd om u een veilige login te geven.',
+    FAILURE: 'UniMe kon de koppeling van de identiteit aan het domein niet verifiëren.',
+    UNKNOWN: 'UniMe kon geen bewijs vinden van de bijbehorende identiteit van het domein.',
+    CAUTION: 'Ga voorzichtig te werk!',
+  },
+  ERROR: {
+    TITLE: 'Oeps!',
+    DEFAULT_MESSAGE: 'Er is iets misgegaan. Probeer het later opnieuw.',
   },
   CANCEL: 'Annuleren',
   CLOSE: 'Sluiten',

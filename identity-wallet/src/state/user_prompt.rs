@@ -4,6 +4,8 @@ use oid4vc::oid4vci::credential_issuer::credential_configurations_supported::Cre
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
+use crate::state::did::validate_domain_linkage::ValidationResult;
+
 /// "User prompts" are a way for the backend to communicate a desired/required user interaction to the frontend.
 /// This application design leaves it up to the frontend how it wants to handle such "user prompts".
 /// Having too much frontend logic in the backend would pollute the loose coupling and make it a lot harder to maintain.
@@ -13,12 +15,10 @@ use ts_rs::TS;
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, TS)]
 #[serde(tag = "type")]
 #[serde(deny_unknown_fields)]
-#[ts(export)]
+#[ts(export, export_to = "bindings/user_prompt/CurrentUserPrompt.ts")]
 pub enum CurrentUserPrompt {
     #[serde(rename = "redirect")]
     Redirect { target: String },
-    #[serde(rename = "warning")]
-    Warning { message: String },
     #[serde(rename = "password-required")]
     PasswordRequired,
     #[serde(rename = "accept-connection")]
@@ -28,6 +28,7 @@ pub enum CurrentUserPrompt {
         logo_uri: Option<String>,
         redirect_uri: String,
         previously_connected: bool,
+        domain_validation: ValidationResult,
     },
     #[serde(rename = "credential-offer")]
     CredentialOffer {
@@ -59,14 +60,6 @@ mod tests {
         let serialized = serde_json::to_string(&prompt).unwrap();
         assert_eq!(serialized, r#"{"type":"redirect","target":"welcome"}"#);
 
-        let prompt = CurrentUserPrompt::Warning {
-            message: "This is a warning!".to_string(),
-        };
-        assert_eq!(
-            serde_json::to_string(&prompt).unwrap(),
-            r#"{"type":"warning","message":"This is a warning!"}"#
-        );
-
         let prompt = CurrentUserPrompt::PasswordRequired;
         assert_eq!(
             serde_json::to_string(&prompt).unwrap(),
@@ -78,10 +71,11 @@ mod tests {
             logo_uri: None,
             redirect_uri: "https://example.com".to_string(),
             previously_connected: false,
+            domain_validation: Default::default(),
         };
         assert_eq!(
             serde_json::to_string(&prompt).unwrap(),
-            r#"{"type":"accept-connection","client_name":"Test Client","logo_uri":null,"redirect_uri":"https://example.com","previously_connected":false}"#
+            r#"{"type":"accept-connection","client_name":"Test Client","logo_uri":null,"redirect_uri":"https://example.com","previously_connected":false,"domain_validation":{"status":"Unknown","message":null}}"#
         );
     }
 }

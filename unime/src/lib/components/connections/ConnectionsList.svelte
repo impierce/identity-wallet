@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
 
-  import type { Connection } from '@bindings/Connection';
+  import type { Connection } from '@bindings/connections/Connection';
   import { info } from '@tauri-apps/plugin-log';
 
   import Image from '$lib/components/atoms/Image.svelte';
@@ -21,7 +21,7 @@
       <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">{$LL.CONNECTION.SUMMARY.EMPTY()}</p>
     </div>
   {:else}
-    <div class="space-y-3 pt-6">
+    <div class="space-y-3 py-5">
       {#each Object.entries(Object.fromEntries(connections)) as entry}
         <p class="w-full px-4 text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">
           {entry[0]}
