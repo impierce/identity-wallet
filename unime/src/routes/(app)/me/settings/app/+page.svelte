@@ -13,7 +13,6 @@
   import ChatCircleText from '~icons/ph/chat-circle-text-fill';
   import Code from '~icons/ph/code-bold';
   import Confetti from '~icons/ph/confetti-fill';
-  import Files from '~icons/ph/files-fill';
   import IdentificationBadge from '~icons/ph/identification-badge-fill';
   import Key from '~icons/ph/key-fill';
   import Password from '~icons/ph/password-fill';
