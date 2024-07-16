@@ -29,12 +29,12 @@ export default [
     },
   },
   {
-    ignores: ['build/', '.svelte-kit/', 'dist/', 'src/i18n/*.ts'],
+    ignores: ['.svelte-kit/', 'build/', 'coverage/', 'dist/', 'src/i18n/*.ts', 'vite.config.ts.timestamp-*'],
   },
   {
     rules: {
-      'svelte/no-at-html-tags': 'warn', // TODO: security risk even applicable for context of Tauri app?
       'no-console': 'error',
+      'svelte/no-at-html-tags': 'warn', // TODO: security risk even applicable for context of Tauri app?
     },
   },
 ];
