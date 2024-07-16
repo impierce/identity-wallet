@@ -19,6 +19,7 @@ use identity_iota::did::CoreDID;
 use jsonwebtoken::Algorithm;
 use log::info;
 use oid4vc::oid4vc_manager::managers::presentation::create_presentation_submission;
+use oid4vc::oid4vp::authorization_request::ClientMetadataParameters;
 use oid4vc::oid4vp::oid4vp;
 use oid4vc::oid4vp::oid4vp::OID4VP;
 use oid4vc::{
@@ -88,8 +89,13 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
             .as_ref()
             .ok_or(MissingManagerError("identity"))?;
 
-        let (client_name, logo_uri, connection_url, client_id, algorithm) =
-            get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request);
+        let OID4VPClientMetadata {
+            client_name,
+            logo_uri,
+            connection_url,
+            client_id,
+            algorithm,
+        } = get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request);
 
         let subject_did = identity_manager
             .subject
@@ -174,11 +180,19 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
 
 // Helper
 
+pub struct OID4VPClientMetadata {
+    pub client_name: String,
+    pub logo_uri: Option<String>,
+    pub connection_url: String,
+    pub client_id: String,
+    pub algorithm: Algorithm,
+}
+
 // TODO: move this functionality to the oid4vc-manager crate.
-/// Returns (client_name, logo_uri, connection_url, client_id)
+/// Returns (client_name, logo_uri, connection_url, client_id, algorithm)
 pub fn get_oid4vp_client_name_and_logo_uri(
     oid4vp_authorization_request: &AuthorizationRequest<Object<OID4VP>>,
-) -> (String, Option<String>, String, String, Algorithm) {
+) -> OID4VPClientMetadata {
     // Get the connection url from the redirect url host (or use the redirect url if it does not
     // contain a host).
     let redirect_uri = oid4vp_authorization_request.body.redirect_uri.clone();
@@ -191,7 +205,7 @@ pub fn get_oid4vp_client_name_and_logo_uri(
         ClientMetadataResource::ClientMetadata {
             client_name,
             logo_uri,
-            extension: oid4vc::oid4vp::authorization_request::ClientMetadataParameters { vp_formats },
+            extension: ClientMetadataParameters { vp_formats },
             other: _,
         } => {
             let client_name = client_name.as_ref().cloned().unwrap_or(connection_url.to_string());
@@ -209,23 +223,23 @@ pub fn get_oid4vp_client_name_and_logo_uri(
                 })
                 .unwrap_or(Algorithm::EdDSA);
 
-            Some((
+            Some(OID4VPClientMetadata {
                 client_name,
                 logo_uri,
-                connection_url.to_string(),
-                client_id.clone(),
+                connection_url: connection_url.to_string(),
+                client_id: client_id.clone(),
                 algorithm,
-            ))
+            })
         }
         // TODO: support `client_metadata_uri`
         ClientMetadataResource::ClientMetadataUri(_) => None,
     }
     // Otherwise use the connection_url as the client_name.
-    .unwrap_or((
-        connection_url.to_string(),
-        None,
-        connection_url.to_string(),
+    .unwrap_or(OID4VPClientMetadata {
+        client_name: connection_url.to_string(),
+        logo_uri: None,
+        connection_url: connection_url.to_string(),
         client_id,
-        Algorithm::EdDSA,
-    ))
+        algorithm: Algorithm::EdDSA,
+    })
 }
