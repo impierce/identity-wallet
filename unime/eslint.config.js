@@ -29,7 +29,7 @@ export default [
     },
   },
   {
-    ignores: ['build/', '/coverage', '.svelte-kit/', 'dist/', 'src/i18n/*.ts'],
+    ignores: ['.svelte-kit/', 'build/', 'coverage/', 'dist/', 'src/i18n/*.ts', 'vite.config.ts.timestamp-*'],
   },
   {
     rules: {
