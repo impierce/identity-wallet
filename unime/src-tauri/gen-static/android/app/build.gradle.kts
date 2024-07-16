@@ -19,8 +19,8 @@ android {
         applicationId = "com.impierce.identity_wallet"
         minSdk = 28
         targetSdk = 34
-        versionCode = 43
-        versionName = "0.6.2"
+        versionCode = 44
+        versionName = "0.6.3"
     }
     signingConfigs {
         create("release") {
