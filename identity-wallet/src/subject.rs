@@ -26,7 +26,7 @@ impl Sign for Subject {
         let method: DidMethod = serde_json::from_str(&format!("{subject_syntax_type:?}")).ok()?;
 
         self.secret_manager
-            .produce_document(method, algorithm.into_jws_algorithm())
+            .produce_document(method, None, algorithm.into_jws_algorithm())
             .await
             .ok()
             .and_then(|document| document.verification_method().first().cloned())
@@ -52,7 +52,7 @@ impl oid4vc::oid4vc_core::Subject for Subject {
 
         Ok(self
             .secret_manager
-            .produce_document(method, algorithm.into_jws_algorithm())
+            .produce_document(method, None, algorithm.into_jws_algorithm())
             .await
             .map(|document| document.id().to_string())?)
     }

@@ -8,7 +8,7 @@ tauri = { version = "=2.0.0-beta.21", features = [
     "rustls-tls",
 ] }
 
-did_manager = { git = "https://github.com/impierce/did-manager.git", rev = "a365fa5" }
+did_manager = { git = "https://github.com/impierce/did-manager.git", rev = "fa48f4c" }
 jsonwebtoken = "9.3"
 log = "^0.4"
 oid4vc = { git = "https://git@github.com/impierce/openid4vc.git", rev = "d095db0" }
