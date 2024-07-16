@@ -17,7 +17,7 @@ android {
     defaultConfig {
         manifestPlaceholders["usesCleartextTraffic"] = "false"
         applicationId = "com.impierce.identity_wallet"
-        minSdk = 24
+        minSdk = 28
         targetSdk = 34
         versionCode = 43
         versionName = "0.6.2"
