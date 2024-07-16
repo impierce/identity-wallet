@@ -6,7 +6,7 @@ use futures::StreamExt;
 use itertools::Itertools;
 use log::{debug, error, info};
 use std::time::Duration;
-use tauri::Manager;
+use tauri::Emitter;
 
 // The command.rs holds the functions through which the front and backend communicate using actions and reducers.
 
