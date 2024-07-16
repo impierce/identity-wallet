@@ -13,9 +13,8 @@
   import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
   import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
   import { dispatch } from '$lib/dispatcher';
+  import { TrophyFillIcon } from '$lib/icons';
   import { state } from '$lib/stores';
-
-  import Trophy from '~icons/ph/trophy-fill';
 
   import type { Goal } from './types';
 
@@ -86,7 +85,7 @@
   >
     <div class="flex flex-col items-center">
       <!-- Header -->
-      <PaddedIcon icon={Trophy} />
+      <PaddedIcon icon={TrophyFillIcon} />
       <p class="pt-8 text-[22px]/[30px] font-semibold text-slate-800 dark:text-white">
         {journeyDefinition?.title}
       </p>

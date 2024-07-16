@@ -9,16 +9,14 @@
   import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
   import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
   import { dispatch } from '$lib/dispatcher';
-
-  import Keyboard from '~icons/ph/keyboard-fill';
-  import Trash from '~icons/ph/trash-fill';
+  import { KeyboardFillIcon, TrashFillIcon } from '$lib/icons';
 </script>
 
 <TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.PROFILE.TITLE()} />
 <div class="content-height flex flex-col bg-silver dark:bg-navy">
   <div class="flex flex-col space-y-[10px] px-4 py-5">
     <SettingsEntry
-      icon={Keyboard}
+      icon={KeyboardFillIcon}
       title={$LL.SETTINGS.PROFILE.PROFILE_NAME.TITLE()}
       on:click={() => goto('/me/settings/profile/name')}
     />
@@ -31,7 +29,7 @@
         class="flex items-center space-x-4 rounded-xl bg-white p-4 dark:bg-dark"
         use:melt={trigger}
       >
-        <svelte:component this={Trash} class="h-5 w-5 text-rose-400" />
+        <svelte:component this={TrashFillIcon} class="h-5 w-5 text-rose-400" />
         <p class="grow text-left text-[13px]/[24px] font-medium text-slate-800 dark:text-white">
           {$LL.SETTINGS.PROFILE.DELETE_PROFILE.TITLE()}
         </p>

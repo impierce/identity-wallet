@@ -2,8 +2,7 @@
   import LL from '$i18n/i18n-svelte';
 
   import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
-
-  import Heart from '~icons/ph/heart-fill';
+  import { HeartFillIcon } from '$lib/icons';
 </script>
 
 <TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.SUPPORT.ABOUT.NAVBAR_TITLE()} />
@@ -17,7 +16,7 @@
       <div>0.6.2</div>
       <div class="flex items-center pb-4">
         <p>{$LL.SETTINGS.SUPPORT.ABOUT.BUILT_WITH()}</p>
-        <Heart class="pl-1" />
+        <HeartFillIcon class="pl-1" />
       </div>
       <div>Apache License 2.0</div>
       <div>2024 Impierce Technologies</div>

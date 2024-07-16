@@ -4,8 +4,7 @@
   import { goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
 
-  import MagnifyingGlass from '~icons/ph/magnifying-glass-bold';
-  import Clear from '~icons/ph/x-bold';
+  import { MagnifyingGlassBoldIcon, XBoldIcon } from '$lib/icons';
 
   const dispatch = createEventDispatcher();
 
@@ -34,7 +33,7 @@
 
 <div class="flex">
   <div class="group relative flex grow items-center">
-    <MagnifyingGlass class="absolute left-4 h-4 w-4 text-slate-800 dark:text-grey"></MagnifyingGlass>
+    <MagnifyingGlassBoldIcon class="absolute left-4 h-4 w-4 text-slate-800 dark:text-grey" />
 
     <!-- TODO: apply "appearance-none" and style everything manually? -->
     <input
@@ -51,7 +50,7 @@
         class="absolute right-2 inline-flex h-4 w-4 items-center justify-center rounded-full p-4"
         on:click={clear}
       >
-        <Clear class="absolute h-4 w-4 text-slate-800 dark:text-grey" />
+        <XBoldIcon class="absolute h-4 w-4 text-slate-800 dark:text-grey" />
       </button>
     {/if}
   </div>

@@ -10,10 +10,9 @@
   import ListItemCard from '$lib/components/molecules/ListItemCard.svelte';
   import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
   import { dispatch } from '$lib/dispatcher';
+  import { DownloadSimpleFillIcon } from '$lib/icons';
   import { error, state } from '$lib/stores';
   import { hash } from '$lib/utils';
-
-  import DownloadSimple from '~icons/ph/download-simple-fill';
 
   // TODO: generate binding in core
   interface CredentialConfiguration {
@@ -60,7 +59,7 @@
         />
       </div>
     {:else}
-      <PaddedIcon icon={DownloadSimple} />
+      <PaddedIcon icon={DownloadSimpleFillIcon} />
     {/if}
     <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
       {issuer_name}

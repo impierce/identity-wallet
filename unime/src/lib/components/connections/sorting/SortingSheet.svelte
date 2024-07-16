@@ -8,12 +8,9 @@
   import SortingSheetButton from '$lib/components/connections/sorting/SortingSheetButton.svelte';
   import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
   import { dispatch } from '$lib/dispatcher';
+  import { CalendarCheckIcon, CalendarPlusIcon, SliderHorizontalIcon } from '$lib/icons';
   import AlphabeticalOrder from '$lib/static/svg/AlphabeticalOrder.svelte';
   import { state } from '$lib/stores';
-
-  import Issued from '~icons/ph/calendar-check';
-  import Added from '~icons/ph/calendar-plus';
-  import Slider from '~icons/ph/sliders-horizontal';
 
   let method: CredentialSortMethod = $state.profile_settings.sorting_preferences.credentials.sort_method;
   let reversed: boolean = $state.profile_settings.sorting_preferences.credentials.reverse;
@@ -37,7 +34,7 @@
     let:trigger
     use:melt={trigger}
     class="flex h-10 w-10 items-center justify-center rounded-xl bg-white dark:bg-dark dark:text-grey"
-    ><Slider /></button
+    ><SliderHorizontalIcon /></button
   >
   <!-- bottom drawer and list items with preferred view and sorting preferences-->
   <div slot="content" class="w-full">
@@ -51,7 +48,7 @@
         on:click={() => updateSortingPreference('name_az')}
       />
       <SortingSheetButton
-        icon={Issued}
+        icon={CalendarCheckIcon}
         label={$LL.SORT.PREFERENCES.DATE_ISSUED()}
         active={method === 'issue_date_new_old'}
         {method}
@@ -59,7 +56,7 @@
         on:click={() => updateSortingPreference('issue_date_new_old')}
       />
       <SortingSheetButton
-        icon={Added}
+        icon={CalendarPlusIcon}
         label={$LL.SORT.PREFERENCES.DATE_ADDED()}
         active={method === 'added_date_new_old'}
         {method}

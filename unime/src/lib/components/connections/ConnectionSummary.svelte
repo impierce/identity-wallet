@@ -5,9 +5,8 @@
   import { open } from '@tauri-apps/plugin-shell';
 
   import Image from '$lib/components/atoms/Image.svelte';
+  import { ArrowSquareOutBoldIcon } from '$lib/icons';
   import { state } from '$lib/stores';
-
-  import ArrowSquareOut from '~icons/ph/arrow-square-out-bold';
 
   import { buildIotaExplorerSearchLink } from './utils';
 
@@ -88,7 +87,7 @@
             >
               <div class="flex items-center">
                 <p>View on explorer</p>
-                <ArrowSquareOut class="ml-2" />
+                <ArrowSquareOutBoldIcon class="ml-2" />
               </div>
             </button>
           </div>

@@ -1,10 +1,9 @@
 <script lang="ts">
   import { melt } from '@melt-ui/svelte';
 
-  import { icons } from '$lib/components/journeys/goals/icons';
+  import { CaretRightBoldIcon, CheckCircleIcon } from '$lib/icons';
 
-  import CaretRight from '~icons/ph/caret-right-bold';
-  import CheckCircle from '~icons/ph/check-circle';
+  import { icons } from './icons';
 
   export let trigger;
   export let label: string;
@@ -28,8 +27,8 @@
     </p>
   </div>
   {#if completed}
-    <CheckCircle class="h-6 w-6 text-primary" />
+    <CheckCircleIcon class="h-6 w-6 text-primary" />
   {:else}
-    <CaretRight class="h-5 w-5 text-neutral-400" />
+    <CaretRightBoldIcon class="h-5 w-5 text-neutral-400" />
   {/if}
 </button>

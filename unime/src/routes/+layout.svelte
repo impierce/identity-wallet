@@ -10,13 +10,8 @@
   import { attachConsole } from '@tauri-apps/plugin-log';
 
   import { dispatch } from '$lib/dispatcher';
+  import { ArrowLeftIcon, CaretDownBoldIcon, CaretUpBoldIcon, ScrollTextIcon, TrashIcon } from '$lib/icons';
   import { error, state } from '$lib/stores';
-
-  import ScrollText from '~icons/lucide/scroll-text';
-  import ArrowLeft from '~icons/ph/arrow-left';
-  import CaretDown from '~icons/ph/caret-down-bold';
-  import CaretUp from '~icons/ph/caret-up-bold';
-  import Trash from '~icons/ph/trash';
 
   import '../app.css';
 
@@ -73,12 +68,12 @@
 
   function createDevButtons(): DevModeButton[] {
     const backButton: DevModeButton = {
-      icon: ArrowLeft,
+      icon: ArrowLeftIcon,
       onClick: () => history.back(),
     };
 
     const resetButton: DevModeButton = {
-      icon: Trash,
+      icon: TrashIcon,
       onClick: () => dispatch({ type: '[App] Reset' }),
     };
 
@@ -93,7 +88,7 @@
     };
 
     const debugButton: DevModeButton = {
-      icon: ScrollText,
+      icon: ScrollTextIcon,
       onClick: () => (showDebugMessages = !showDebugMessages),
     };
 
@@ -178,9 +173,9 @@
       on:click={() => (expandedDevMenu = !expandedDevMenu)}
     >
       {#if expandedDevMenu}
-        <CaretUp class="text-red-700" />
+        <CaretUpBoldIcon class="text-red-700" />
       {:else}
-        <CaretDown class="text-red-700" />
+        <CaretDownBoldIcon class="text-red-700" />
       {/if}
     </button>
   {/if}

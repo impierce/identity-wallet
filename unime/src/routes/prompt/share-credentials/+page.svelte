@@ -13,11 +13,9 @@
   import ListItemCard from '$lib/components/molecules/ListItemCard.svelte';
   import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
   import { dispatch } from '$lib/dispatcher';
+  import { PlugsConnectedFillIcon, SealCheckFillIcon } from '$lib/icons';
   import { error, state } from '$lib/stores';
   import { hash } from '$lib/utils';
-
-  import PlugsConnected from '~icons/ph/plugs-connected-fill';
-  import SealCheck from '~icons/ph/seal-check-fill';
 
   // TypeScript does not know that the `current_user_prompt` is of type `share-credentials`.
   // Extract the type from `CurrentUserPrompt`.
@@ -56,7 +54,7 @@
         <Image id={imageId} isTempAsset={true} />
       </div>
     {:else}
-      <PaddedIcon icon={PlugsConnected} />
+      <PaddedIcon icon={PlugsConnectedFillIcon} />
     {/if}
     <div class="text-center">
       <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
@@ -73,7 +71,7 @@
 
     <div class="w-full">
       <div class="flex items-center">
-        <SealCheck class="mr-2 text-primary" />
+        <SealCheckFillIcon class="mr-2 text-primary" />
         <p class="text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">
           {$LL.SCAN.SHARE_CREDENTIALS.REQUESTED()}
         </p>

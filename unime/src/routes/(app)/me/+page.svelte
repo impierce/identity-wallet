@@ -21,13 +21,10 @@
     Tabs,
     UserJourney,
   } from '$lib/components';
+  import { GhostFillIcon, MagnifyingGlassIcon, RocketLaunchFillIcon } from '$lib/icons';
   import Ngdil from '$lib/static/svg/logo/demos/Ngdil.svelte';
   import Selv from '$lib/static/svg/logo/demos/Selv.svelte';
   import { onboarding_state, state } from '$lib/stores';
-
-  import Ghost from '~icons/ph/ghost-fill';
-  import MagnifyingGlass from '~icons/ph/magnifying-glass';
-  import RocketLaunch from '~icons/ph/rocket-launch-fill';
 
   import { calculateInitials } from './utils';
 
@@ -74,7 +71,7 @@
         on:click={() => goto('/me/search')}
         class="-mr-3 flex h-11 w-11 items-center justify-center rounded-2xl text-black dark:text-white"
       >
-        <MagnifyingGlass class="h-6 w-6" />
+        <MagnifyingGlassIcon class="h-6 w-6" />
       </button>
     </div>
   </div>
@@ -135,7 +132,7 @@
           <!-- TODO: extract icon component? -->
           <div class="relative z-10">
             <!-- z-index only applies to elements with explicit position, therefore also "relative" -->
-            <PaddedIcon icon={RocketLaunch} />
+            <PaddedIcon icon={RocketLaunchFillIcon} />
           </div>
 
           <!-- Confetti -->
@@ -175,7 +172,7 @@
     {:else}
       <!-- Skipped onboarding journey -->
       <div class="flex grow flex-col items-center justify-center">
-        <IconMessage icon={Ghost} title={$LL.ME.EMPTY_CREDENTIALS.TITLE()} />
+        <IconMessage icon={GhostFillIcon} title={$LL.ME.EMPTY_CREDENTIALS.TITLE()} />
         <div class="w-[280px] pt-[15px] text-center text-[13px]/[24px] font-normal text-slate-500 dark:text-slate-300">
           {$LL.ME.DEMO()}
           <div class="flex flex-col gap-3 pt-[15px]">
