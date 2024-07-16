@@ -12,13 +12,13 @@ val keyProperties = Properties()
 keyProperties.load(FileInputStream(keyPropertiesFile))
 
 android {
-    compileSdk = 33
+    compileSdk = 34
     namespace = "com.impierce.unime"
     defaultConfig {
         manifestPlaceholders["usesCleartextTraffic"] = "false"
         applicationId = "com.impierce.identity_wallet"
         minSdk = 24
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 43
         versionName = "0.6.2"
     }
