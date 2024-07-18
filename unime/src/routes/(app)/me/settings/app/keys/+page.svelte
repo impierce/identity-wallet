@@ -27,11 +27,13 @@
       key_id: 'es256-0',
       enabled: true,
     },
-    {
-      type: 'ES256K',
-      key_id: 'es256k-0',
-      enabled: false, // TODO: enable once `identity_manager.subject.identifier` accepts `ES256K`
-    },
+    // NOTE: Although Stronghold contains a key for ES256K, we're not giving the user that option yet since
+    // the Rust library `jsonwebtoken` does not support it (yet) to sign tokens.
+    // {
+    //   type: 'ES256K',
+    //   key_id: 'es256k-0',
+    //   enabled: false,
+    // },
   ];
 </script>
 
@@ -66,9 +68,6 @@
             </div>
           {/if}
         </button>
-        <!-- <button class="rounded-xl border bg-white p-4 disabled:opacity-30 dark:bg-dark border-slate-200 dark:border-slate-600">
-            <div class="flex h-7 items-center justify-between">
-                <p class="text-[14px -->
       {/each}
     </div>
 
