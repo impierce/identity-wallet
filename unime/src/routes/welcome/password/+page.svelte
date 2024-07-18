@@ -7,7 +7,7 @@
 
   import Button from '$lib/components/atoms/Button.svelte';
   import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
-  import { CheckCircleFillIcon, CircleIcon, EyeClosedIcon, EyeIcon } from '$lib/icons';
+  import { CheckCircleFillIcon, CircleRegularIcon, EyeClosedRegularIcon, EyeRegularIcon } from '$lib/icons';
   import { onboarding_state } from '$lib/stores';
 
   import { checkPasswordPolicy, passwordPolicy } from './utils';
@@ -60,9 +60,9 @@
         }}
       >
         {#if showPassword}
-          <EyeIcon class="text-slate-700 dark:text-grey" />
+          <EyeRegularIcon class="text-slate-700 dark:text-grey" />
         {:else}
-          <EyeClosedIcon class="text-slate-700 dark:text-grey" />
+          <EyeClosedRegularIcon class="text-slate-700 dark:text-grey" />
         {/if}
       </button>
     </div>
@@ -77,7 +77,7 @@
           {#if passwordPolicyViolations.indexOf(rule.name) > -1}
             <!-- not fulfilled -->
             <div class="mb-2 mr-2 flex items-center space-x-1 rounded-full bg-gray-100 px-2 py-1 dark:bg-navy">
-              <CircleIcon class="h-4 w-4 text-primary" />
+              <CircleRegularIcon class="h-4 w-4 text-primary" />
               <p class="text-[12px]/[20px] font-medium text-teal">
                 {rule.count}
                 {rule.name}

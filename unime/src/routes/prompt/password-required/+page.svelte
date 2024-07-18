@@ -9,7 +9,7 @@
   import Button from '$lib/components/atoms/Button.svelte';
   import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
   import { dispatch } from '$lib/dispatcher';
-  import { EyeClosedIcon, EyeIcon } from '$lib/icons';
+  import { EyeClosedRegularIcon, EyeRegularIcon } from '$lib/icons';
   import UniMeLogoDark from '$lib/static/svg/logo/UniMeLogoDark.svelte';
   import UniMeLogoLight from '$lib/static/svg/logo/UniMeLogoLight.svelte';
   import { state } from '$lib/stores';
@@ -52,9 +52,9 @@
       <div class="absolute right-3 top-0 flex h-full items-center">
         <button class="rounded-full p-2" on:click={() => (showPassword = !showPassword)}>
           {#if showPassword}
-            <EyeIcon class="text-slate-700 dark:text-grey" />
+            <EyeRegularIcon class="text-slate-700 dark:text-grey" />
           {:else}
-            <EyeClosedIcon class="text-slate-700 dark:text-grey" />
+            <EyeClosedRegularIcon class="text-slate-700 dark:text-grey" />
           {/if}
         </button>
       </div>

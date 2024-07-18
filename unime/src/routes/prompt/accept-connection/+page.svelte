@@ -18,7 +18,7 @@
     PlugsConnectedFillIcon,
     QuestionMarkBoldIcon,
     WarningCircleFillIcon,
-    XIcon,
+    XRegularIcon,
   } from '$lib/icons';
   import { error, state } from '$lib/stores';
   import { hash } from '$lib/utils';
@@ -104,7 +104,7 @@
         {#if previously_connected}
           <CheckBoldIcon class="text-emerald-500" />
         {:else}
-          <XIcon class="text-rose-500" />
+          <XRegularIcon class="text-rose-500" />
         {/if}
       </div>
       <!-- Domain validation -->
@@ -146,7 +146,7 @@
         {#if domain_validation.status === 'Success'}
           <CheckBoldIcon class="text-emerald-500" />
         {:else if domain_validation.status === 'Failure'}
-          <XIcon class="text-rose-500" />
+          <XRegularIcon class="text-rose-500" />
         {:else}
           <QuestionMarkBoldIcon class="text-slate-400 dark:text-slate-300" />
         {/if}

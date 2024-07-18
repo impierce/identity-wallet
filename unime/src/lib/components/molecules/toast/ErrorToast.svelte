@@ -3,7 +3,7 @@
 
   import { fade, fly } from 'svelte/transition';
 
-  import { WarningIcon, XIcon } from '$lib/icons';
+  import { WarningRegularIcon, XRegularIcon } from '$lib/icons';
 
   const dispatch = createEventDispatcher();
 
@@ -25,7 +25,7 @@
   in:fly={{ x: 200 }}
   out:fade={{ duration: 200 }}
 >
-  <WarningIcon class="h-6 w-6 min-w-6 text-rose-400" />
+  <WarningRegularIcon class="h-6 w-6 min-w-6 text-rose-400" />
   <div class="ml-4 mr-2 flex w-full flex-col overflow-hidden text-ellipsis break-words">
     <p class="truncate text-[12px]/[20px] font-bold text-slate-800">
       {title}
@@ -35,6 +35,6 @@
     {/if}
   </div>
   <button class="-mr-2 rounded-full p-3" on:click={() => dispatch('dismissed')}>
-    <XIcon class="h-4 w-4 text-slate-800" />
+    <XRegularIcon class="h-4 w-4 text-slate-800" />
   </button>
 </div>

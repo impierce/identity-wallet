@@ -10,7 +10,13 @@
   import { attachConsole } from '@tauri-apps/plugin-log';
 
   import { dispatch } from '$lib/dispatcher';
-  import { ArrowLeftIcon, CaretDownBoldIcon, CaretUpBoldIcon, ScrollTextIcon, TrashIcon } from '$lib/icons';
+  import {
+    ArrowLeftRegularIcon,
+    CaretDownBoldIcon,
+    CaretUpBoldIcon,
+    ScrollTextIcon,
+    TrashRegularIcon,
+  } from '$lib/icons';
   import { error, state } from '$lib/stores';
 
   import '../app.css';
@@ -68,12 +74,12 @@
 
   function createDevButtons(): DevModeButton[] {
     const backButton: DevModeButton = {
-      icon: ArrowLeftIcon,
+      icon: ArrowLeftRegularIcon,
       onClick: () => history.back(),
     };
 
     const resetButton: DevModeButton = {
-      icon: TrashIcon,
+      icon: TrashRegularIcon,
       onClick: () => dispatch({ type: '[App] Reset' }),
     };
 
