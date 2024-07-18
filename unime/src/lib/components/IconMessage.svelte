@@ -3,7 +3,7 @@
 
   import type { SvelteHTMLElements } from 'svelte/elements';
 
-  import PaddedIcon from '$lib/components/PaddedIcon.svelte';
+  import { PaddedIcon } from '$lib/components';
 
   export let icon: typeof SvelteComponent<SvelteHTMLElements['svg']>;
   export let title: string;
