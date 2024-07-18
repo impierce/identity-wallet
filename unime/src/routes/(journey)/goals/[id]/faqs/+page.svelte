@@ -7,7 +7,7 @@
 
   import { createAccordion, melt } from '@melt-ui/svelte';
 
-  import Button from '$lib/components/atoms/Button.svelte';
+  import { Button } from '$lib/components';
   import { state } from '$lib/stores';
 
   import CaretDown from '~icons/ph/caret-down-bold';

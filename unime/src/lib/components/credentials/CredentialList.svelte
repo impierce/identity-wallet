@@ -4,8 +4,7 @@
 
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 
-  import IconMessage from '$lib/components/molecules/IconMessage.svelte';
-  import ListItemCard from '$lib/components/molecules/ListItemCard.svelte';
+  import { IconMessage, ListItemCard } from '$lib/components';
   import { state } from '$lib/stores';
 
   import Ghost from '~icons/ph/ghost-fill';

@@ -6,12 +6,7 @@
 
   import type { CurrentUserPrompt } from '@bindings/user_prompt/CurrentUserPrompt';
 
-  import Button from '$lib/components/atoms/Button.svelte';
-  import Checkbox from '$lib/components/atoms/Checkbox.svelte';
-  import Image from '$lib/components/atoms/Image.svelte';
-  import PaddedIcon from '$lib/components/atoms/PaddedIcon.svelte';
-  import ListItemCard from '$lib/components/molecules/ListItemCard.svelte';
-  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
+  import { Button, Checkbox, Image, ListItemCard, PaddedIcon, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { error, state } from '$lib/stores';
   import { hash } from '$lib/utils';

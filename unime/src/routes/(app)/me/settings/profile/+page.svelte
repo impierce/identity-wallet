@@ -4,10 +4,7 @@
 
   import { melt } from '@melt-ui/svelte';
 
-  import SettingsEntry from '$lib/app/settings/SettingsEntry.svelte';
-  import Button from '$lib/components/atoms/Button.svelte';
-  import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
-  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
+  import { ActionSheet, Button, SettingsEntry, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
 
   import Keyboard from '~icons/ph/keyboard-fill';

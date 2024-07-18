@@ -1,7 +1,7 @@
 <script lang="ts">
   import LL from '$i18n/i18n-svelte';
 
-  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
+  import { TopNavBar } from '$lib/components';
 
   import Heart from '~icons/ph/heart-fill';
 </script>

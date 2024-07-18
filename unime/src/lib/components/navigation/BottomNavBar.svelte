@@ -3,10 +3,11 @@
 
   import LL from '$i18n/i18n-svelte';
 
-  import BottomNavItem from '$lib/components/molecules/navigation/BottomNavItem.svelte';
   import Activity from '$lib/static/svg/navbar-icons/Activity.svelte';
   import Me from '$lib/static/svg/navbar-icons/Me.svelte';
   import Scan from '$lib/static/svg/navbar-icons/Scan.svelte';
+
+  import BottomNavItem from './BottomNavItem.svelte';
 
   const dispatch = createEventDispatcher();
 

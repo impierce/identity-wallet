@@ -6,8 +6,7 @@
   import { melt } from '@melt-ui/svelte';
   import { warn } from '@tauri-apps/plugin-log';
 
-  import Button from '$lib/components/atoms/Button.svelte';
-  import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
+  import { ActionSheet, Button } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import UniMeLogoDark from '$lib/static/svg/logo/UniMeLogoDark.svelte';
   import UniMeLogoLight from '$lib/static/svg/logo/UniMeLogoLight.svelte';

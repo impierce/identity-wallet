@@ -3,7 +3,7 @@
 
   import type { SvelteHTMLElements } from 'svelte/elements';
 
-  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
+  import { TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { state } from '$lib/stores';
 

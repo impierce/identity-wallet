@@ -1,9 +1,9 @@
 <script lang="ts">
   import LL from '$i18n/i18n-svelte';
 
-  import { incompleteLocales, locales } from '$lib/app/locales';
-  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
+  import { TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
+  import { incompleteLocales, locales } from '$lib/locales';
   import { state } from '$lib/stores';
 
   import Check from '~icons/ph/check-bold';

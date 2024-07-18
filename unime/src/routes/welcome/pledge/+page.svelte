@@ -5,8 +5,7 @@
 
   import { createAccordion, melt } from '@melt-ui/svelte';
 
-  import Button from '$lib/components/atoms/Button.svelte';
-  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
+  import { Button, TopNavBar } from '$lib/components';
 
   import CaretDown from '~icons/ph/caret-down-bold';
 

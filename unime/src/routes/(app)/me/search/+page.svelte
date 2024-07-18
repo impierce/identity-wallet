@@ -5,9 +5,7 @@
   import { page } from '$app/stores';
   import LL from '$i18n/i18n-svelte';
 
-  import IconMessage from '$lib/components/molecules/IconMessage.svelte';
-  import ListItemCard from '$lib/components/molecules/ListItemCard.svelte';
-  import Search from '$lib/components/molecules/Search.svelte';
+  import { IconMessage, ListItemCard } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { state } from '$lib/stores';
 
@@ -15,6 +13,7 @@
   import MagnifyingGlass from '~icons/ph/magnifying-glass-fill';
 
   import RecentSearches from './RecentSearches.svelte';
+  import Search from './Search.svelte';
 
   let searchTerm: string | null = $page.url.searchParams.get('query');
 

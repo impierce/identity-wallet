@@ -5,7 +5,7 @@
 
   import type { HistoryCredential } from '@bindings/history/HistoryCredential';
 
-  import ListItemCard from '$lib/components/molecules/ListItemCard.svelte';
+  import { ListItemCard } from '$lib/components';
   import { state } from '$lib/stores';
 
   export let title: string;

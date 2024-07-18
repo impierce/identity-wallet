@@ -7,12 +7,13 @@
   import type { HistoryCredential } from '@bindings/history/HistoryCredential';
   import type { HistoryEvent } from '@bindings/history/HistoryEvent';
 
-  import HistoryEntry from '$lib/events/HistoryEntry.svelte';
   import { state } from '$lib/stores';
 
   import DownloadSimple from '~icons/ph/download-simple-fill';
   import PlugsConnected from '~icons/ph/plugs-connected-fill';
   import ShareFat from '~icons/ph/share-fat-fill';
+
+  import HistoryEntry from './HistoryEntry.svelte';
 
   export let connectionId: string | undefined = undefined;
 
