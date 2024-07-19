@@ -37,6 +37,16 @@ const empty_state: AppState = {
     locale: 'en-US',
     profile: null,
     preferred_did_method: 'did:jwk',
+    sorting_preferences: {
+      connections: {
+        sort_method: 'name_az',
+        reverse: false,
+      },
+      credentials: {
+        sort_method: 'name_az',
+        reverse: false,
+      },
+    },
   },
   current_user_prompt: null,
   user_journey: null,
