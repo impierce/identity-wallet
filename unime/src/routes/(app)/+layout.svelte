@@ -4,7 +4,7 @@
 
   import BottomNavBar from '$lib/components/molecules/navigation/BottomNavBar.svelte';
 
-  $: active = $page.route.id?.split('/').at(2) ?? 'me';
+  $: active = ($page.route.id?.split('/').at(2) ?? 'me') as 'me' | 'scan' | 'activity';
 </script>
 
 <!--
