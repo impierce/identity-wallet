@@ -6,9 +6,8 @@
 
   import IconMessage from '$lib/components/molecules/IconMessage.svelte';
   import ListItemCard from '$lib/components/molecules/ListItemCard.svelte';
+  import { GhostFillIcon } from '$lib/icons';
   import { state } from '$lib/stores';
-
-  import Ghost from '~icons/ph/ghost-fill';
 
   export let credentialType: 'all' | 'data' | 'badges' = 'all';
 
@@ -45,7 +44,7 @@
 {:else if $state?.credentials?.length === 0}
   <!-- Only show "No credentials" when there's also no favorites -->
   <div class="flex grow flex-col items-center justify-center">
-    <IconMessage icon={Ghost} title={$LL.ME.EMPTY_CREDENTIALS.TITLE()} />
+    <IconMessage icon={GhostFillIcon} title={$LL.ME.EMPTY_CREDENTIALS.TITLE()} />
     <div class="w-[280px] pt-[15px] text-center text-[13px]/[24px] font-normal text-slate-500 dark:text-slate-300">
       {$LL.ME.DEMO()}
       <div class="flex flex-col">

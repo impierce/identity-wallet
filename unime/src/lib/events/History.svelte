@@ -8,11 +8,8 @@
   import type { HistoryEvent } from '@bindings/history/HistoryEvent';
 
   import HistoryEntry from '$lib/events/HistoryEntry.svelte';
+  import { DownloadSimpleFillIcon, PlugsConnectedFillIcon, ShareFatFillIcon } from '$lib/icons';
   import { state } from '$lib/stores';
-
-  import DownloadSimple from '~icons/ph/download-simple-fill';
-  import PlugsConnected from '~icons/ph/plugs-connected-fill';
-  import ShareFat from '~icons/ph/share-fat-fill';
 
   export let connectionId: string | undefined = undefined;
 
@@ -41,17 +38,17 @@
     switch (history.event_type) {
       case 'CredentialsAdded': {
         title = $LL.HISTORY.DATA_RECEIVED() + ' ' + history.connection_name;
-        icon = DownloadSimple;
+        icon = DownloadSimpleFillIcon;
         break;
       }
       case 'CredentialsShared': {
         title = $LL.HISTORY.DATA_SHARED() + ' ' + history.connection_name;
-        icon = ShareFat;
+        icon = ShareFatFillIcon;
         break;
       }
       case 'ConnectionAdded': {
         title = $LL.HISTORY.CONNECTION_ADDED() + ' ' + history.connection_name;
-        icon = PlugsConnected;
+        icon = PlugsConnectedFillIcon;
         break;
       }
     }

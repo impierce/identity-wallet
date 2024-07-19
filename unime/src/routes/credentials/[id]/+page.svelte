@@ -11,11 +11,9 @@
   import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
   import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
   import { dispatch } from '$lib/dispatcher';
+  import { HeartStraightFillIcon, HeartStraightRegularIcon } from '$lib/icons';
   import { state } from '$lib/stores';
   import { getImageAsset } from '$lib/utils';
-
-  import Heart from '~icons/ph/heart-straight';
-  import HeartFill from '~icons/ph/heart-straight-fill';
 
   let credential = $state.credentials.find((c) => $page.params.id === c.id)!;
 
@@ -84,9 +82,9 @@
               })}
           >
             {#if isFavorite}
-              <HeartFill class="h-6 w-6 {credentialLogoUrl ? 'dark:text-white' : ''}" />
+              <HeartStraightFillIcon class="h-6 w-6 {credentialLogoUrl ? 'dark:text-white' : ''}" />
             {:else}
-              <Heart class="h-6 w-6 {credentialLogoUrl ? 'dark:text-white' : ''}" />
+              <HeartStraightRegularIcon class="h-6 w-6 {credentialLogoUrl ? 'dark:text-white' : ''}" />
             {/if}
           </button>
           <!-- TODO: remove border entirely? -->

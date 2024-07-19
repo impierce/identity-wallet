@@ -6,8 +6,7 @@
 
   import ListItemCard from '$lib/components/molecules/ListItemCard.svelte';
   import { dispatch } from '$lib/dispatcher';
-
-  import X from '~icons/ph/x-bold';
+  import { XBoldIcon } from '$lib/icons';
 
   export let recentSearches: DisplayCredential[] = [];
 </script>
@@ -40,7 +39,7 @@
               dispatch({ type: '[Search] Delete recent', payload: { id: recentSearch.id } });
             }}
           >
-            <X class="h-4 w-4 text-slate-800 dark:text-grey" />
+            <XBoldIcon class="h-4 w-4 text-slate-800 dark:text-grey" />
           </button>
         </ListItemCard>
       {/each}

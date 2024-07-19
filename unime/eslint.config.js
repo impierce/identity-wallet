@@ -29,7 +29,7 @@ export default [
     },
   },
   {
-    ignores: ['build/', '.svelte-kit/', 'dist/', 'src/i18n/*.ts'],
+    ignores: ['build/', '/coverage', '.svelte-kit/', 'dist/', 'src/i18n/*.ts'],
   },
   {
     rules: {

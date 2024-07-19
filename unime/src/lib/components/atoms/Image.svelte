@@ -5,16 +5,13 @@
 
   import { debug, warn } from '@tauri-apps/plugin-log';
 
+  import { BankLightIcon, CertificateLightIcon, UserLightIcon } from '$lib/icons';
   import { getImageAsset } from '$lib/utils';
 
-  import Bank from '~icons/ph/bank-light';
-  import Certificate from '~icons/ph/certificate-light';
-  import User from '~icons/ph/user-light';
-
   const icons = {
-    Bank: Bank,
-    Certificate: Certificate,
-    User: User,
+    Bank: BankLightIcon,
+    Certificate: CertificateLightIcon,
+    User: UserLightIcon,
   };
   type Icon = keyof typeof icons;
 

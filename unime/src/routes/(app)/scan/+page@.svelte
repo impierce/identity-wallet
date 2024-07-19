@@ -20,9 +20,8 @@
   import LoadingSpinner from '$lib/components/atoms/LoadingSpinner.svelte';
   import BottomNavBar from '$lib/components/molecules/navigation/BottomNavBar.svelte';
   import { dispatch } from '$lib/dispatcher';
+  import { CameraSlashRegularIcon } from '$lib/icons';
   import { state } from '$lib/stores';
-
-  import CameraSlash from '~icons/ph/camera-slash';
 
   let scanning = false;
   let loading = false;
@@ -150,7 +149,7 @@
           {#if permissions_nullable && permissions_nullable !== 'granted'}
             <div class="flex w-3/4 flex-col space-y-4">
               <div class="flex flex-col items-center rounded-lg bg-rose-100 px-8 py-4 text-rose-500">
-                <CameraSlash class="m-2 h-8 w-8" />
+                <CameraSlashRegularIcon class="m-2 h-8 w-8" />
                 <p class="text-center text-[13px]/[24px] font-semibold">{$LL.SCAN.PERMISSION_DENIED()}</p>
               </div>
               <Button label={$LL.SCAN.OPEN_SETTINGS()} on:click={openAppSettings} />

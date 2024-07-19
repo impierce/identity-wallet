@@ -4,9 +4,8 @@
   import { incompleteLocales, locales } from '$lib/app/locales';
   import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
   import { dispatch } from '$lib/dispatcher';
+  import { CheckBoldIcon } from '$lib/icons';
   import { state } from '$lib/stores';
-
-  import Check from '~icons/ph/check-bold';
 
   $: selected = locales.find((l) => l.locale === $state?.profile_settings.locale);
 </script>
@@ -31,7 +30,7 @@
           </div>
         {/if}
         {#if selected && l.locale === selected.locale}
-          <Check class="h-5 w-5 text-primary" />
+          <CheckBoldIcon class="h-5 w-5 text-primary" />
         {/if}
       </button>
     {/each}

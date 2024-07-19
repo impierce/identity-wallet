@@ -7,12 +7,8 @@
 
   import Button from '$lib/components/atoms/Button.svelte';
   import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
+  import { EyeClosedRegularIcon, EyeRegularIcon, SmileyRegularIcon, SmileySadRegularIcon } from '$lib/icons';
   import { onboarding_state } from '$lib/stores';
-
-  import Eye from '~icons/ph/eye';
-  import EyeClosed from '~icons/ph/eye-closed';
-  import Smiley from '~icons/ph/smiley';
-  import SmileySad from '~icons/ph/smiley-sad';
 
   // 3 states: true (match), false (mismatch), undefined (not checked yet).
   let passwordsMatch: boolean | undefined = undefined;
@@ -86,9 +82,9 @@
         }}
       >
         {#if showPassword}
-          <Eye class="text-slate-700 dark:text-grey" />
+          <EyeRegularIcon class="text-slate-700 dark:text-grey" />
         {:else}
-          <EyeClosed class="text-slate-700 dark:text-grey" />
+          <EyeClosedRegularIcon class="text-slate-700 dark:text-grey" />
         {/if}
       </button>
     </div>
@@ -96,10 +92,10 @@
   {#if passwordsMatch !== undefined}
     <div class="mt-8 flex items-center justify-center">
       {#if passwordsMatch}
-        <Smiley class="mr-[10px] h-5 w-5 text-primary" />
+        <SmileyRegularIcon class="mr-[10px] h-5 w-5 text-primary" />
         <p class="text-[13px]/[24px] font-medium text-primary">{$LL.ONBOARDING.PASSWORD.CONFIRM.MATCH()}</p>
       {:else}
-        <SmileySad class="mr-[10px] h-5 w-5 text-rose-500" />
+        <SmileySadRegularIcon class="mr-[10px] h-5 w-5 text-rose-500" />
         <p class="text-[13px]/[24px] font-medium text-rose-500">{$LL.ONBOARDING.PASSWORD.CONFIRM.NO_MATCH()}</p>
       {/if}
     </div>
