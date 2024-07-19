@@ -8,9 +8,8 @@
   import { createAccordion, melt } from '@melt-ui/svelte';
 
   import { Button } from '$lib/components';
+  import { CaretDownBoldIcon } from '$lib/icons';
   import { state } from '$lib/stores';
-
-  import CaretDown from '~icons/ph/caret-down-bold';
 
   import type { Goal } from '../../types';
 
@@ -43,7 +42,7 @@
           >
             <div class="flex w-full items-center justify-between">
               <p class="text-[13px]/[24px] font-medium">{faq.title}</p>
-              <CaretDown />
+              <CaretDownBoldIcon />
             </div>
           </button>
         </h2>

@@ -10,14 +10,15 @@
 
   import { Button, Image, PaddedIcon, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
+  import {
+    CheckBoldIcon,
+    PlugsConnectedFillIcon,
+    QuestionMarkBoldIcon,
+    WarningCircleFillIcon,
+    XRegularIcon,
+  } from '$lib/icons';
   import { error, state } from '$lib/stores';
   import { hash } from '$lib/utils';
-
-  import Check from '~icons/ph/check-bold';
-  import PlugsConnected from '~icons/ph/plugs-connected-fill';
-  import QuestionMark from '~icons/ph/question-mark-bold';
-  import WarningCircle from '~icons/ph/warning-circle-fill';
-  import X from '~icons/ph/x-bold';
 
   const {
     elements: { trigger, content, arrow },
@@ -61,7 +62,7 @@
         <Image id={imageId} iconFallback="Bank" isTempAsset={true} />
       </div>
     {:else}
-      <PaddedIcon icon={PlugsConnected} />
+      <PaddedIcon icon={PlugsConnectedFillIcon} />
     {/if}
     <div class="text-center">
       <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
@@ -78,7 +79,7 @@
       {#if !previously_connected}
         <div class="flex w-full items-center rounded-xl bg-silver p-4 dark:bg-navy">
           <span class="mr-4 h-6 w-6">
-            <WarningCircle class="h-6 w-6 text-amber-500" />
+            <WarningCircleFillIcon class="h-6 w-6 text-amber-500" />
           </span>
           <div class="flex flex-col">
             <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
@@ -98,9 +99,9 @@
           {$LL.SCAN.CONNECTION_REQUEST.CONNECTED_PREVIOUSLY()}
         </p>
         {#if previously_connected}
-          <Check class="text-emerald-500" />
+          <CheckBoldIcon class="text-emerald-500" />
         {:else}
-          <X class="text-rose-500" />
+          <XRegularIcon class="text-rose-500" />
         {/if}
       </div>
       <!-- Domain validation -->
@@ -140,11 +141,11 @@
           {/if}
         </div>
         {#if domain_validation.status === 'Success'}
-          <Check class="text-emerald-500" />
+          <CheckBoldIcon class="text-emerald-500" />
         {:else if domain_validation.status === 'Failure'}
-          <X class="text-rose-500" />
+          <XRegularIcon class="text-rose-500" />
         {:else}
-          <QuestionMark class="text-slate-400 dark:text-slate-300" />
+          <QuestionMarkBoldIcon class="text-slate-400 dark:text-slate-300" />
         {/if}
       </div>
     </div>

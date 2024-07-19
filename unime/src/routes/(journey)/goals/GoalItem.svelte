@@ -1,8 +1,7 @@
 <script lang="ts">
   import { melt } from '@melt-ui/svelte';
 
-  import CaretRight from '~icons/ph/caret-right-bold';
-  import CheckCircle from '~icons/ph/check-circle';
+  import { CaretRightBoldIcon, CheckCircleRegularIcon } from '$lib/icons';
 
   import { icons } from './icons';
 
@@ -28,8 +27,8 @@
     </p>
   </div>
   {#if completed}
-    <CheckCircle class="h-6 w-6 text-primary" />
+    <CheckCircleRegularIcon class="h-6 w-6 text-primary" />
   {:else}
-    <CaretRight class="h-5 w-5 text-neutral-400" />
+    <CaretRightBoldIcon class="h-5 w-5 text-neutral-400" />
   {/if}
 </button>

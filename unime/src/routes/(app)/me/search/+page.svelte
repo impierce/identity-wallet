@@ -7,10 +7,8 @@
 
   import { IconMessage, ListItemCard } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
+  import { GhostFillIcon, MagnifyingGlassFillIcon } from '$lib/icons';
   import { state } from '$lib/stores';
-
-  import Ghost from '~icons/ph/ghost-fill';
-  import MagnifyingGlass from '~icons/ph/magnifying-glass-fill';
 
   import RecentSearches from './RecentSearches.svelte';
   import Search from './Search.svelte';
@@ -47,7 +45,7 @@
     {:else}
       <div class="pt-12">
         <IconMessage
-          icon={MagnifyingGlass}
+          icon={MagnifyingGlassFillIcon}
           title={$LL.SEARCH.NO_QUERY.TITLE()}
           description={$LL.SEARCH.NO_QUERY.DESCRIPTION()}
         />
@@ -57,7 +55,7 @@
   {:else if currentSearchResults.length == 0}
     <div class="pt-12">
       <IconMessage
-        icon={Ghost}
+        icon={GhostFillIcon}
         title={$LL.SEARCH.NO_RESULTS.TITLE()}
         description={$LL.SEARCH.NO_RESULTS.DESCRIPTION()}
       />

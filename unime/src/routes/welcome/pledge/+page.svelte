@@ -6,8 +6,7 @@
   import { createAccordion, melt } from '@melt-ui/svelte';
 
   import { Button, TopNavBar } from '$lib/components';
-
-  import CaretDown from '~icons/ph/caret-down-bold';
+  import { CaretDownBoldIcon } from '$lib/icons';
 
   const {
     elements: { content, item, trigger, root },
@@ -59,7 +58,7 @@
           >
             <div class="flex w-full items-center justify-between">
               <p class="text-[13px]/[24px] font-medium">{title}</p>
-              <CaretDown />
+              <CaretDownBoldIcon />
             </div>
           </button>
         </h2>

@@ -6,12 +6,8 @@
   import { fade } from 'svelte/transition';
 
   import { Button, TopNavBar } from '$lib/components';
+  import { CheckCircleFillIcon, CircleRegularIcon, EyeClosedRegularIcon, EyeRegularIcon } from '$lib/icons';
   import { onboarding_state } from '$lib/stores';
-
-  import CheckCircle from '~icons/ph/check-circle-fill';
-  import Circle from '~icons/ph/circle';
-  import Eye from '~icons/ph/eye';
-  import EyeClosed from '~icons/ph/eye-closed';
 
   import { checkPasswordPolicy, passwordPolicy } from './utils';
 
@@ -63,9 +59,9 @@
         }}
       >
         {#if showPassword}
-          <Eye class="text-slate-700 dark:text-grey" />
+          <EyeRegularIcon class="text-slate-700 dark:text-grey" />
         {:else}
-          <EyeClosed class="text-slate-700 dark:text-grey" />
+          <EyeClosedRegularIcon class="text-slate-700 dark:text-grey" />
         {/if}
       </button>
     </div>
@@ -80,7 +76,7 @@
           {#if passwordPolicyViolations.indexOf(rule.name) > -1}
             <!-- not fulfilled -->
             <div class="mb-2 mr-2 flex items-center space-x-1 rounded-full bg-gray-100 px-2 py-1 dark:bg-navy">
-              <Circle class="h-4 w-4 text-primary" />
+              <CircleRegularIcon class="h-4 w-4 text-primary" />
               <p class="text-[12px]/[20px] font-medium text-teal">
                 {rule.count}
                 {rule.name}
@@ -89,7 +85,7 @@
           {:else}
             <!-- fulfilled -->
             <div class="mb-2 mr-2 flex items-center space-x-1 rounded-full bg-ex-blue-2 px-2 py-1 dark:bg-primary">
-              <CheckCircle class="h-4 w-4 text-primary dark:text-navy" />
+              <CheckCircleFillIcon class="h-4 w-4 text-primary dark:text-navy" />
               <p class="text-[12px]/[20px] font-medium text-teal dark:text-dark">
                 {rule.count}
                 {rule.name}

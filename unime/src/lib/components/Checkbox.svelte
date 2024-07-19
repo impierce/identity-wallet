@@ -3,7 +3,7 @@
 
   import { createCheckbox, melt } from '@melt-ui/svelte';
 
-  import Check from '~icons/ph/check-bold';
+  import { CheckBoldIcon } from '$lib/icons';
 
   export let checked = false;
   export let disabled = false;
@@ -38,7 +38,7 @@
   id="checkbox"
 >
   {#if $isChecked}
-    <Check class="h-3 w-3" />
+    <CheckBoldIcon class="h-3 w-3" />
   {/if}
   <input use:melt={$input} />
 </button>

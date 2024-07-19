@@ -2,9 +2,8 @@
   import { goto } from '$app/navigation';
 
   import { ProgressBar } from '$lib/components';
+  import { CaretRightBoldIcon } from '$lib/icons';
   import { state } from '$lib/stores';
-
-  import CaretRight from '~icons/ph/caret-right-bold';
 
   // TODO: if user_journey.goals, then calculate completed percentage
 </script>
@@ -22,7 +21,7 @@
           <ProgressBar value={(2 / 3) * 100} />
         </div>
         <button class="ml-[15px]" on:click={() => goto('/goals')}>
-          <CaretRight class="h-6 w-6 text-primary" />
+          <CaretRightBoldIcon class="h-6 w-6 text-primary" />
         </button>
       </div>
       <!-- <ProgressBar value={40} /> -->

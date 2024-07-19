@@ -8,12 +8,10 @@
 
   import { ActionSheet, Button } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
+  import { EyeClosedRegularIcon, EyeRegularIcon } from '$lib/icons';
   import UniMeLogoDark from '$lib/static/svg/logo/UniMeLogoDark.svelte';
   import UniMeLogoLight from '$lib/static/svg/logo/UniMeLogoLight.svelte';
   import { state } from '$lib/stores';
-
-  import Eye from '~icons/ph/eye';
-  import EyeClosed from '~icons/ph/eye-closed';
 
   let showPassword = false;
 
@@ -53,9 +51,9 @@
       <div class="absolute right-3 top-0 flex h-full items-center">
         <button class="rounded-full p-2" on:click={() => (showPassword = !showPassword)}>
           {#if showPassword}
-            <Eye class="text-slate-700 dark:text-grey" />
+            <EyeRegularIcon class="text-slate-700 dark:text-grey" />
           {:else}
-            <EyeClosed class="text-slate-700 dark:text-grey" />
+            <EyeClosedRegularIcon class="text-slate-700 dark:text-grey" />
           {/if}
         </button>
       </div>

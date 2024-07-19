@@ -1,13 +1,12 @@
 <script lang="ts">
   import { SettingsEntry, TopNavBar } from '$lib/components';
-
-  import Keyboard from '~icons/ph/keyboard-fill';
+  import { KeyboardFillIcon } from '$lib/icons';
 </script>
 
 <TopNavBar on:back={() => history.back()} title="Backup and recovery" />
 <div class="content-height flex flex-col bg-silver dark:bg-navy">
   <div class="flex flex-col space-y-[10px] px-4 py-5">
-    <SettingsEntry icon={Keyboard} title="Your DID" disabled />
+    <SettingsEntry icon={KeyboardFillIcon} title="Your DID" disabled />
   </div>
 </div>
 

@@ -7,9 +7,8 @@
 
   import { ActionSheet, Button, PaddedIcon, ProgressBar, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
+  import { TrophyFillIcon } from '$lib/icons';
   import { state } from '$lib/stores';
-
-  import Trophy from '~icons/ph/trophy-fill';
 
   import GoalItem from './GoalItem.svelte';
   import { icons } from './icons';
@@ -82,7 +81,7 @@
   >
     <div class="flex flex-col items-center">
       <!-- Header -->
-      <PaddedIcon icon={Trophy} />
+      <PaddedIcon icon={TrophyFillIcon} />
       <p class="pt-8 text-[22px]/[30px] font-semibold text-slate-800 dark:text-white">
         {journeyDefinition?.title}
       </p>
