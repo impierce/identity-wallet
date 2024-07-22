@@ -1,4 +1,5 @@
 import { Sha256 } from '@aws-crypto/sha256-js';
+import type { Locale } from '@bindings/profile_settings/Locale';
 import { convertFileSrc } from '@tauri-apps/api/core';
 import { appDataDir, join } from '@tauri-apps/api/path';
 import { exists } from '@tauri-apps/plugin-fs';
@@ -63,3 +64,9 @@ export const calculateInitials = (name: string): string => {
     return `${first}${last}`.toUpperCase();
   }
 };
+
+export function formatDate(isoDate: string, locale: Locale) {
+  return new Intl.DateTimeFormat(locale, {
+    dateStyle: 'medium',
+  }).format(new Date(isoDate));
+}
