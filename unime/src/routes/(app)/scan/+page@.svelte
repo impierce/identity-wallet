@@ -16,9 +16,7 @@
   } from '@tauri-apps/plugin-barcode-scanner';
   import { debug, info, warn } from '@tauri-apps/plugin-log';
 
-  import Button from '$lib/components/atoms/Button.svelte';
-  import LoadingSpinner from '$lib/components/atoms/LoadingSpinner.svelte';
-  import BottomNavBar from '$lib/components/molecules/navigation/BottomNavBar.svelte';
+  import { BottomNavBar, Button, LoadingSpinner } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { CameraSlashRegularIcon } from '$lib/icons';
   import { state } from '$lib/stores';

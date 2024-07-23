@@ -4,7 +4,7 @@
 
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 
-  import ListItemCard from '$lib/components/molecules/ListItemCard.svelte';
+  import { ListItemCard } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { XBoldIcon } from '$lib/icons';
 

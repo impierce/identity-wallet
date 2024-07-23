@@ -8,10 +8,7 @@
   import type { ValidationResult } from '@bindings/user_prompt/ValidationResult';
   import { createPopover, melt } from '@melt-ui/svelte';
 
-  import Button from '$lib/components/atoms/Button.svelte';
-  import Image from '$lib/components/atoms/Image.svelte';
-  import PaddedIcon from '$lib/components/atoms/PaddedIcon.svelte';
-  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
+  import { Button, Image, PaddedIcon, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import {
     CheckBoldIcon,

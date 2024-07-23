@@ -1,17 +1,15 @@
 <script lang="ts">
   import { fade } from 'svelte/transition';
 
-  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
-
   import '@lottiefiles/lottie-player';
 
   import LL from '$i18n/i18n-svelte';
-  import { calculateInitials } from '$routes/(app)/me/utils';
 
-  import Button from '$lib/components/atoms/Button.svelte';
+  import { Button, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { ShieldFillIcon } from '$lib/icons';
   import { onboarding_state } from '$lib/stores';
+  import { calculateInitials } from '$lib/utils';
 </script>
 
 <!-- TODO: should we show this screen AFTER a successful creation of a stronghold? -->

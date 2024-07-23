@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
 
-  import Image from '$lib/components/atoms/Image.svelte';
+  import { Image } from '$lib/components';
 
   const dispatch = createEventDispatcher();
 

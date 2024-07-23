@@ -5,8 +5,7 @@
   import type { Connection } from '@bindings/connections/Connection';
   import { info } from '@tauri-apps/plugin-log';
 
-  import Image from '$lib/components/atoms/Image.svelte';
-  import ListItemCard from '$lib/components/molecules/ListItemCard.svelte';
+  import { Image, ListItemCard } from '$lib/components';
   import { state } from '$lib/stores';
 
   import { groupConnectionsAlphabetically } from './utils';

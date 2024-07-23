@@ -4,13 +4,13 @@
   import type { CredentialSortMethod } from '@bindings/profile_settings/CredentialSortMethod';
   import { melt } from '@melt-ui/svelte';
 
-  import Button from '$lib/components/atoms/Button.svelte';
-  import SortingSheetButton from '$lib/components/connections/sorting/SortingSheetButton.svelte';
-  import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
+  import { ActionSheet, Button } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { CalendarCheckRegularIcon, CalendarPlusRegularIcon, SlidersHorizontalRegularIcon } from '$lib/icons';
   import AlphabeticalOrder from '$lib/static/svg/AlphabeticalOrder.svelte';
   import { state } from '$lib/stores';
+
+  import SortingSheetButton from './SortingSheetButton.svelte';
 
   let method: CredentialSortMethod = $state.profile_settings.sorting_preferences.credentials.sort_method;
   let reversed: boolean = $state.profile_settings.sorting_preferences.credentials.reverse;

@@ -5,17 +5,13 @@
 
   import { melt } from '@melt-ui/svelte';
 
-  import Button from '$lib/components/atoms/Button.svelte';
-  import PaddedIcon from '$lib/components/atoms/PaddedIcon.svelte';
-  import ProgressBar from '$lib/components/atoms/ProgressBar.svelte';
-  import GoalItem from '$lib/components/journeys/goals/GoalItem.svelte';
-  import { icons } from '$lib/components/journeys/goals/icons';
-  import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
-  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
+  import { ActionSheet, Button, PaddedIcon, ProgressBar, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { TrophyFillIcon } from '$lib/icons';
   import { state } from '$lib/stores';
 
+  import GoalItem from './GoalItem.svelte';
+  import { icons } from './icons';
   import type { Goal } from './types';
 
   let journeyDefinition = $state?.user_journey;

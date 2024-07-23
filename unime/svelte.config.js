@@ -15,7 +15,6 @@ const config = {
     alias: {
       '@bindings/*': '../identity-wallet/bindings/*',
       $i18n: 'src/i18n',
-      $routes: 'src/routes',
     },
     prerender: {
       entries: [

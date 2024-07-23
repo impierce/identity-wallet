@@ -25,9 +25,9 @@
 
   import type { ProfileSteps } from '@bindings/dev/ProfileSteps';
 
-  import Switch from '$lib/components/atoms/Switch.svelte';
-  import ErrorToast from '$lib/components/molecules/toast/ErrorToast.svelte';
+  import { Switch } from '$lib/components';
 
+  import ErrorToast from './ErrorToast.svelte';
   import { determineTheme } from './utils';
 
   onMount(async () => {

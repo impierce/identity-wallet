@@ -5,8 +5,7 @@
   import LL from '$i18n/i18n-svelte';
   import { fade } from 'svelte/transition';
 
-  import Button from '$lib/components/atoms/Button.svelte';
-  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
+  import { Button, TopNavBar } from '$lib/components';
   import { CheckCircleFillIcon, CircleRegularIcon, EyeClosedRegularIcon, EyeRegularIcon } from '$lib/icons';
   import { onboarding_state } from '$lib/stores';
 

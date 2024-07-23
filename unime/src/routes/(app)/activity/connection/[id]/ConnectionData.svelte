@@ -1,8 +1,7 @@
 <script lang="ts">
   import LL from '$i18n/i18n-svelte';
 
-  import Image from '$lib/components/atoms/Image.svelte';
-  import ListItemCard from '$lib/components/molecules/ListItemCard.svelte';
+  import { Image, ListItemCard } from '$lib/components';
 
   export let id: string;
   export let data = undefined;

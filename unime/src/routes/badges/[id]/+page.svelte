@@ -9,9 +9,7 @@
 
   import { melt } from '@melt-ui/svelte';
 
-  import Image from '$lib/components/atoms/Image.svelte';
-  import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
-  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
+  import { ActionSheet, Image, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { HeartStraightFillIcon, HeartStraightRegularIcon, SealCheckRegularIcon } from '$lib/icons';
   import { state } from '$lib/stores';

@@ -3,10 +3,7 @@
   import LL from '$i18n/i18n-svelte';
   import { fade } from 'svelte/transition';
 
-  import { locales } from '$lib/app/locales';
-  import SettingsEntry from '$lib/app/settings/SettingsEntry.svelte';
-  import Switch from '$lib/components/atoms/Switch.svelte';
-  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
+  import { SettingsEntry, Switch, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import {
     ChatCircleTextFillIcon,
@@ -17,6 +14,7 @@
     SunFillIcon,
     TranslateFillIcon,
   } from '$lib/icons';
+  import { locales } from '$lib/locales';
   import { state } from '$lib/stores';
 
   async function toggleDevSettings() {

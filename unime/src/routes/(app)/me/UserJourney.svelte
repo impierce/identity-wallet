@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
 
-  import ProgressBar from '$lib/components/atoms/ProgressBar.svelte';
+  import { ProgressBar } from '$lib/components';
   import { CaretRightBoldIcon } from '$lib/icons';
   import { state } from '$lib/stores';
 

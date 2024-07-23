@@ -5,8 +5,7 @@
 
   import { melt } from '@melt-ui/svelte';
 
-  import Button from '$lib/components/atoms/Button.svelte';
-  import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
+  import { ActionSheet, Button } from '$lib/components';
   import { PlusBoldIcon } from '$lib/icons';
 
   export let selected: string | undefined;

@@ -4,11 +4,11 @@
   import type { Connection } from '@bindings/connections/Connection';
   import { open } from '@tauri-apps/plugin-shell';
 
-  import Image from '$lib/components/atoms/Image.svelte';
+  import { Image } from '$lib/components';
   import { ArrowSquareOutBoldIcon } from '$lib/icons';
   import { state } from '$lib/stores';
 
-  import { buildIotaExplorerSearchLink } from './utils';
+  import { buildIotaExplorerSearchLink } from '../../utils';
 
   export let connection: Connection;
 

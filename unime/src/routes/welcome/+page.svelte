@@ -3,12 +3,13 @@
   import LL from '$i18n/i18n-svelte';
   import { fade } from 'svelte/transition';
 
-  import LanguageSelect from '$lib/app/LanguageSelect.svelte';
-  import Button from '$lib/components/atoms/Button.svelte';
+  import { Button } from '$lib/components';
   import MeLarge from '$lib/static/svg/logo/MeLarge.svelte';
   import UniMeTextDark from '$lib/static/svg/logo/UniMeTextDark.svelte';
   import UniMeTextLight from '$lib/static/svg/logo/UniMeTextLight.svelte';
   import { onboarding_state } from '$lib/stores';
+
+  import LanguageSelect from './LanguageSelect.svelte';
 
   // TODO: make reactive
   const isDarkModeEnabled = document.documentElement.classList.contains('dark');

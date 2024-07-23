@@ -7,9 +7,10 @@
   import type { HistoryCredential } from '@bindings/history/HistoryCredential';
   import type { HistoryEvent } from '@bindings/history/HistoryEvent';
 
-  import HistoryEntry from '$lib/events/HistoryEntry.svelte';
   import { DownloadSimpleFillIcon, PlugsConnectedFillIcon, ShareFatFillIcon } from '$lib/icons';
   import { state } from '$lib/stores';
+
+  import HistoryEntry from './HistoryEntry.svelte';
 
   export let connectionId: string | undefined = undefined;
 

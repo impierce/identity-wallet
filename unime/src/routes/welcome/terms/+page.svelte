@@ -3,9 +3,7 @@
   import LL from '$i18n/i18n-svelte';
   import { fade } from 'svelte/transition';
 
-  import Button from '$lib/components/atoms/Button.svelte';
-  import Checkbox from '$lib/components/atoms/Checkbox.svelte';
-  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
+  import { Button, Checkbox, TopNavBar } from '$lib/components';
 
   let checked = false;
 </script>

@@ -3,9 +3,8 @@
   import LL from '$i18n/i18n-svelte';
   import { fly } from 'svelte/transition';
 
-  import EmojiAvatarSelect from '$lib/app/settings/EmojiAvatarSelect.svelte';
-  import SettingsEntry from '$lib/app/settings/SettingsEntry.svelte';
-  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
+  import { TopNavBar } from '$lib/components';
+  import SettingsEntry from '$lib/components/SettingsEntry.svelte';
   import { dispatch } from '$lib/dispatcher';
   import {
     EnvelopeFillIcon,
@@ -16,6 +15,8 @@
     VaultFillIcon,
   } from '$lib/icons';
   import { state } from '$lib/stores';
+
+  import EmojiAvatarSelect from './EmojiAvatarSelect.svelte';
 </script>
 
 <TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.NAVBAR_TITLE()} />

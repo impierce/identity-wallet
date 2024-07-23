@@ -10,23 +10,16 @@
   import LL from '$i18n/i18n-svelte';
   import { writable, type Writable } from 'svelte/store';
 
-  import WelcomeMessage from '$lib/app/WelcomeMessage.svelte';
-  import {
-    Button,
-    CredentialList,
-    Favorites,
-    IconMessage,
-    PaddedIcon,
-    SortingSheet,
-    Tabs,
-    UserJourney,
-  } from '$lib/components';
+  import { Button, CredentialList, Favorites, IconMessage, PaddedIcon, Tabs } from '$lib/components';
   import { GhostFillIcon, MagnifyingGlassIcon, RocketLaunchFillIcon } from '$lib/icons';
   import Ngdil from '$lib/static/svg/logo/demos/Ngdil.svelte';
   import Selv from '$lib/static/svg/logo/demos/Selv.svelte';
   import { onboarding_state, state } from '$lib/stores';
+  import { calculateInitials } from '$lib/utils';
 
-  import { calculateInitials } from './utils';
+  import SortingSheet from './SortingSheet.svelte';
+  import UserJourney from './UserJourney.svelte';
+  import WelcomeMessage from './WelcomeMessage.svelte';
 
   let initials: string | undefined;
 
