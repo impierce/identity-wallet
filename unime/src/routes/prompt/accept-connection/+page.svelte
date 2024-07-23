@@ -5,7 +5,7 @@
   import LL from '$i18n/i18n-svelte';
   import { fade } from 'svelte/transition';
 
-  import type { ValidationResult } from '@bindings/user_prompt/ValidationResult';
+  import type { CurrentUserPrompt } from '@bindings/user_prompt/CurrentUserPrompt';
   import { createPopover, melt } from '@melt-ui/svelte';
 
   import { Button, Image, PaddedIcon, TopNavBar } from '$lib/components';
@@ -27,15 +27,16 @@
 
   let loading = false;
 
-  let client_name = $state.current_user_prompt.client_name;
+  // TypeScript does not know that the `current_user_prompt` is of type `accept-connection`.
+  // Extract the type from `CurrentUserPrompt`.
+  type IsAcceptConnectionPrompt<T> = T extends { type: 'accept-connection' } ? T : never;
+  type AcceptConnectionPrompt = IsAcceptConnectionPrompt<CurrentUserPrompt>;
 
-  const previously_connected = $state.current_user_prompt.previously_connected;
+  const { client_name, domain_validation, logo_uri, previously_connected, redirect_uri } =
+    $state.current_user_prompt as AcceptConnectionPrompt;
 
-  const domain_validation: ValidationResult = $state.current_user_prompt.domain_validation;
-
-  const hostname = new URL($state.current_user_prompt.redirect_uri).hostname;
-
-  const imageId = $state.current_user_prompt?.logo_uri ? hash($state.current_user_prompt?.logo_uri) : '_';
+  $: ({ hostname } = new URL(redirect_uri));
+  $: imageId = logo_uri ? hash(logo_uri) : '_';
 
   // When an error is received, cancel the flow and redirect to the "me" page
   error.subscribe((err) => {
@@ -55,7 +56,7 @@
   <TopNavBar title={$LL.SCAN.CONNECTION_REQUEST.NAVBAR_TITLE()} on:back={() => history.back()} disabled={loading} />
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
-    {#if $state.current_user_prompt.logo_uri}
+    {#if logo_uri}
       <div
         class="flex h-[75px] w-[75px] items-center justify-center overflow-hidden rounded-3xl bg-white p-2 dark:bg-silver"
       >
