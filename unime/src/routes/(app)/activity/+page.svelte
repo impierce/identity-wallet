@@ -4,9 +4,9 @@
   import LL from '$i18n/i18n-svelte';
   import { writable, type Writable } from 'svelte/store';
 
-  import { Tabs } from '$lib/components';
-  import ConnectionsList from '$lib/components/connections/ConnectionsList.svelte';
-  import History from '$lib/events/History.svelte';
+  import { History, Tabs } from '$lib/components';
+
+  import ConnectionsList from './ConnectionsList.svelte';
 
   let triggers = [$LL.ACTIVITY.TABS.CONNECTIONS(), $LL.ACTIVITY.TABS.HISTORY()];
   let activeTab: Writable<string> = writable($page.state.tab || triggers[0]);

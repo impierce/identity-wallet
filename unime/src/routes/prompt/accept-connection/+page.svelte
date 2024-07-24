@@ -5,22 +5,20 @@
   import LL from '$i18n/i18n-svelte';
   import { fade } from 'svelte/transition';
 
-  import type { ValidationResult } from '@bindings/user_prompt/ValidationResult';
+  import type { CurrentUserPrompt } from '@bindings/user_prompt/CurrentUserPrompt';
   import { createPopover, melt } from '@melt-ui/svelte';
 
-  import Button from '$lib/components/atoms/Button.svelte';
-  import Image from '$lib/components/atoms/Image.svelte';
-  import PaddedIcon from '$lib/components/atoms/PaddedIcon.svelte';
-  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
+  import { Button, Image, PaddedIcon, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
+  import {
+    CheckBoldIcon,
+    PlugsConnectedFillIcon,
+    QuestionMarkBoldIcon,
+    WarningCircleFillIcon,
+    XRegularIcon,
+  } from '$lib/icons';
   import { error, state } from '$lib/stores';
   import { hash } from '$lib/utils';
-
-  import Check from '~icons/ph/check-bold';
-  import PlugsConnected from '~icons/ph/plugs-connected-fill';
-  import QuestionMark from '~icons/ph/question-mark-bold';
-  import WarningCircle from '~icons/ph/warning-circle-fill';
-  import X from '~icons/ph/x-bold';
 
   const {
     elements: { trigger, content, arrow },
@@ -29,15 +27,16 @@
 
   let loading = false;
 
-  let client_name = $state.current_user_prompt.client_name;
+  // TypeScript does not know that the `current_user_prompt` is of type `accept-connection`.
+  // Extract the type from `CurrentUserPrompt`.
+  type IsAcceptConnectionPrompt<T> = T extends { type: 'accept-connection' } ? T : never;
+  type AcceptConnectionPrompt = IsAcceptConnectionPrompt<CurrentUserPrompt>;
 
-  const previously_connected = $state.current_user_prompt.previously_connected;
+  const { client_name, domain_validation, logo_uri, previously_connected, redirect_uri } =
+    $state.current_user_prompt as AcceptConnectionPrompt;
 
-  const domain_validation: ValidationResult = $state.current_user_prompt.domain_validation;
-
-  const hostname = new URL($state.current_user_prompt.redirect_uri).hostname;
-
-  const imageId = $state.current_user_prompt?.logo_uri ? hash($state.current_user_prompt?.logo_uri) : '_';
+  $: ({ hostname } = new URL(redirect_uri));
+  $: imageId = logo_uri ? hash(logo_uri) : '_';
 
   // When an error is received, cancel the flow and redirect to the "me" page
   error.subscribe((err) => {
@@ -57,14 +56,14 @@
   <TopNavBar title={$LL.SCAN.CONNECTION_REQUEST.NAVBAR_TITLE()} on:back={() => history.back()} disabled={loading} />
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
-    {#if $state.current_user_prompt.logo_uri}
+    {#if logo_uri}
       <div
         class="flex h-[75px] w-[75px] items-center justify-center overflow-hidden rounded-3xl bg-white p-2 dark:bg-silver"
       >
         <Image id={imageId} iconFallback="Bank" isTempAsset={true} />
       </div>
     {:else}
-      <PaddedIcon icon={PlugsConnected} />
+      <PaddedIcon icon={PlugsConnectedFillIcon} />
     {/if}
     <div class="text-center">
       <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
@@ -81,7 +80,7 @@
       {#if !previously_connected}
         <div class="flex w-full items-center rounded-xl bg-silver p-4 dark:bg-navy">
           <span class="mr-4 h-6 w-6">
-            <WarningCircle class="h-6 w-6 text-amber-500" />
+            <WarningCircleFillIcon class="h-6 w-6 text-amber-500" />
           </span>
           <div class="flex flex-col">
             <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
@@ -101,9 +100,9 @@
           {$LL.SCAN.CONNECTION_REQUEST.CONNECTED_PREVIOUSLY()}
         </p>
         {#if previously_connected}
-          <Check class="text-emerald-500" />
+          <CheckBoldIcon class="text-emerald-500" />
         {:else}
-          <X class="text-rose-500" />
+          <XRegularIcon class="text-rose-500" />
         {/if}
       </div>
       <!-- Domain validation -->
@@ -143,11 +142,11 @@
           {/if}
         </div>
         {#if domain_validation.status === 'Success'}
-          <Check class="text-emerald-500" />
+          <CheckBoldIcon class="text-emerald-500" />
         {:else if domain_validation.status === 'Failure'}
-          <X class="text-rose-500" />
+          <XRegularIcon class="text-rose-500" />
         {:else}
-          <QuestionMark class="text-slate-400 dark:text-slate-300" />
+          <QuestionMarkBoldIcon class="text-slate-400 dark:text-slate-300" />
         {/if}
       </div>
     </div>

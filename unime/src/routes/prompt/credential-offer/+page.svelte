@@ -3,17 +3,11 @@
 
   import LL from '$i18n/i18n-svelte';
 
-  import Button from '$lib/components/atoms/Button.svelte';
-  import Checkbox from '$lib/components/atoms/Checkbox.svelte';
-  import Image from '$lib/components/atoms/Image.svelte';
-  import PaddedIcon from '$lib/components/atoms/PaddedIcon.svelte';
-  import ListItemCard from '$lib/components/molecules/ListItemCard.svelte';
-  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
+  import { Button, Checkbox, Image, ListItemCard, PaddedIcon, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
+  import { DownloadSimpleFillIcon } from '$lib/icons';
   import { error, state } from '$lib/stores';
   import { hash } from '$lib/utils';
-
-  import DownloadSimple from '~icons/ph/download-simple-fill';
 
   // TODO: generate binding in core
   interface CredentialConfiguration {
@@ -60,7 +54,7 @@
         />
       </div>
     {:else}
-      <PaddedIcon icon={DownloadSimple} />
+      <PaddedIcon icon={DownloadSimpleFillIcon} />
     {/if}
     <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
       {issuer_name}

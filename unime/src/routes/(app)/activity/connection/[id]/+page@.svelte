@@ -6,9 +6,11 @@
 
   import type { Connection } from '@bindings/connections/Connection';
 
-  import { ConnectionData, ConnectionSummary, Tabs, TopNavBar } from '$lib/components';
-  import History from '$lib/events/History.svelte';
+  import { History, Tabs, TopNavBar } from '$lib/components';
   import { state } from '$lib/stores';
+
+  import ConnectionData from './ConnectionData.svelte';
+  import ConnectionSummary from './ConnectionSummary.svelte';
 
   let connection: Connection = $state.connections.find((c) => c.id === $page.params.id)!;
 

@@ -4,12 +4,11 @@
   import type { Connection } from '@bindings/connections/Connection';
   import { open } from '@tauri-apps/plugin-shell';
 
-  import Image from '$lib/components/atoms/Image.svelte';
+  import { Image } from '$lib/components';
+  import { ArrowSquareOutBoldIcon } from '$lib/icons';
   import { state } from '$lib/stores';
 
-  import ArrowSquareOut from '~icons/ph/arrow-square-out-bold';
-
-  import { buildIotaExplorerSearchLink } from './utils';
+  import { buildIotaExplorerSearchLink } from '../../utils';
 
   export let connection: Connection;
 
@@ -88,7 +87,7 @@
             >
               <div class="flex items-center">
                 <p>View on explorer</p>
-                <ArrowSquareOut class="ml-2" />
+                <ArrowSquareOutBoldIcon class="ml-2" />
               </div>
             </button>
           </div>

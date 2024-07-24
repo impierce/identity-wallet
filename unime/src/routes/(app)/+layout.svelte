@@ -2,9 +2,9 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
 
-  import BottomNavBar from '$lib/components/molecules/navigation/BottomNavBar.svelte';
+  import { BottomNavBar } from '$lib/components';
 
-  $: active = $page.route.id?.split('/').at(2) ?? 'me';
+  $: active = ($page.route.id?.split('/').at(2) ?? 'me') as 'me' | 'scan' | 'activity';
 </script>
 
 <!--

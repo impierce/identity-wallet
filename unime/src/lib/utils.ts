@@ -51,3 +51,15 @@ export const hash = (data: string): string => {
     .map((i) => i.toString(16).padStart(2, '0'))
     .join('');
 };
+
+export const calculateInitials = (name: string): string => {
+  const parts = name.split(' ').filter((n) => n.length > 0);
+  if (parts.length === 1) {
+    // Take first two letters, if only one name
+    return parts.at(0)!.slice(0, 2).toUpperCase();
+  } else {
+    const first = parts?.at(0)?.charAt(0) ?? '?';
+    const last = parts?.at(1)?.charAt(0) ?? '?';
+    return `${first}${last}`.toUpperCase();
+  }
+};

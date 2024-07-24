@@ -5,10 +5,8 @@
 
   import { melt } from '@melt-ui/svelte';
 
-  import Button from '$lib/components/atoms/Button.svelte';
-  import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
-
-  import Plus from '~icons/ph/plus-bold';
+  import { ActionSheet, Button } from '$lib/components';
+  import { PlusBoldIcon } from '$lib/icons';
 
   export let selected: string | undefined;
   export let showEditButton = false;
@@ -79,7 +77,7 @@
         </div>
       {/if}
     {:else}
-      <Plus class="h-6 w-6 text-slate-700 dark:text-grey" />
+      <PlusBoldIcon class="h-6 w-6 text-slate-700 dark:text-grey" />
     {/if}
   </button>
   <div

@@ -10,13 +10,14 @@
   import { attachConsole } from '@tauri-apps/plugin-log';
 
   import { dispatch } from '$lib/dispatcher';
+  import {
+    ArrowLeftRegularIcon,
+    CaretDownBoldIcon,
+    CaretUpBoldIcon,
+    ScrollTextIcon,
+    TrashRegularIcon,
+  } from '$lib/icons';
   import { error, state } from '$lib/stores';
-
-  import ScrollText from '~icons/lucide/scroll-text';
-  import ArrowLeft from '~icons/ph/arrow-left';
-  import CaretDown from '~icons/ph/caret-down-bold';
-  import CaretUp from '~icons/ph/caret-up-bold';
-  import Trash from '~icons/ph/trash';
 
   import '../app.css';
 
@@ -24,9 +25,9 @@
 
   import type { ProfileSteps } from '@bindings/dev/ProfileSteps';
 
-  import Switch from '$lib/components/atoms/Switch.svelte';
-  import ErrorToast from '$lib/components/molecules/toast/ErrorToast.svelte';
+  import { Switch } from '$lib/components';
 
+  import ErrorToast from './ErrorToast.svelte';
   import { determineTheme } from './utils';
 
   onMount(async () => {
@@ -73,12 +74,12 @@
 
   function createDevButtons(): DevModeButton[] {
     const backButton: DevModeButton = {
-      icon: ArrowLeft,
+      icon: ArrowLeftRegularIcon,
       onClick: () => history.back(),
     };
 
     const resetButton: DevModeButton = {
-      icon: Trash,
+      icon: TrashRegularIcon,
       onClick: () => dispatch({ type: '[App] Reset' }),
     };
 
@@ -93,7 +94,7 @@
     };
 
     const debugButton: DevModeButton = {
-      icon: ScrollText,
+      icon: ScrollTextIcon,
       onClick: () => (showDebugMessages = !showDebugMessages),
     };
 
@@ -178,9 +179,9 @@
       on:click={() => (expandedDevMenu = !expandedDevMenu)}
     >
       {#if expandedDevMenu}
-        <CaretUp class="text-red-700" />
+        <CaretUpBoldIcon class="text-red-700" />
       {:else}
-        <CaretDown class="text-red-700" />
+        <CaretDownBoldIcon class="text-red-700" />
       {/if}
     </button>
   {/if}

@@ -3,10 +3,9 @@
 
   import { melt } from '@melt-ui/svelte';
 
-  import { incompleteLocales, locales } from '$lib/app/locales';
-  import Button from '$lib/components/atoms/Button.svelte';
-  import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
+  import { ActionSheet, Button } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
+  import { incompleteLocales, locales } from '$lib/locales';
   import { state } from '$lib/stores';
 
   $: selected = locales.find((l) => l.locale === $state?.profile_settings.locale) ?? locales.at(0)!;

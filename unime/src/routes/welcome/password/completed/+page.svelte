@@ -1,18 +1,15 @@
 <script lang="ts">
   import { fade } from 'svelte/transition';
 
-  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
-
   import '@lottiefiles/lottie-player';
 
   import LL from '$i18n/i18n-svelte';
-  import { calculateInitials } from '$routes/(app)/me/utils';
 
-  import Button from '$lib/components/atoms/Button.svelte';
+  import { Button, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
+  import { ShieldFillIcon } from '$lib/icons';
   import { onboarding_state } from '$lib/stores';
-
-  import Shield from '~icons/ph/shield-fill';
+  import { calculateInitials } from '$lib/utils';
 </script>
 
 <!-- TODO: should we show this screen AFTER a successful creation of a stronghold? -->
@@ -29,7 +26,7 @@
     <p class="text-[22px]/[30px] font-semibold text-primary">{$LL.ONBOARDING.PASSWORD.COMPLETED.MESSAGE_1()}</p>
     <div class="relative">
       <div class="relative z-10">
-        <div class="text-[100px]/[100px]"><Shield class="text-primary" /></div>
+        <div class="text-[100px]/[100px]"><ShieldFillIcon class="text-primary" /></div>
         <span class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[36px]/[36px]">
           <p class="font-semibold tracking-tight text-white dark:text-dark">
             {calculateInitials($onboarding_state.name ?? '')}

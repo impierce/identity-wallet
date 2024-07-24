@@ -9,16 +9,11 @@
 
   import { melt } from '@melt-ui/svelte';
 
-  import Image from '$lib/components/atoms/Image.svelte';
-  import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
-  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
+  import { ActionSheet, Image, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
+  import { HeartStraightFillIcon, HeartStraightRegularIcon, SealCheckRegularIcon } from '$lib/icons';
   import { state } from '$lib/stores';
   import { getImageAsset } from '$lib/utils';
-
-  import Heart from '~icons/ph/heart-straight';
-  import HeartFill from '~icons/ph/heart-straight-fill';
-  import SealCheck from '~icons/ph/seal-check';
 
   let credential = $state.credentials.find((c) => $page.params.id === c.id)!;
 
@@ -99,10 +94,9 @@
               },
             })}
         >
-          {#if isFavorite}
-            <HeartFill class="h-6 w-6 dark:text-white" />
+          {#if isFavorite}<HeartStraightFillIcon class="h-6 w-6 dark:text-white" />
           {:else}
-            <Heart class="h-6 w-6 dark:text-white" />
+            <HeartStraightRegularIcon class="h-6 w-6 dark:text-white" />
           {/if}
         </button>
         <div class="flex h-[165px] w-[165px] flex-col items-center justify-center rounded-3xl bg-white">
@@ -118,7 +112,9 @@
       </div>
       <!-- Text -->
       <div class="z-10 flex flex-col items-center pt-[15px]">
-        <p class="line-clamp-2 text-center text-[22px]/[30px] font-semibold tracking-tight text-black dark:text-white">
+        <p
+          class="texSealCheckRegularIconx] line-clamp-2 text-center font-semibold tracking-tight text-black dark:text-white"
+        >
           {credential.data.credentialSubject.achievement?.name ?? title}
         </p>
       </div>
@@ -130,7 +126,7 @@
         <div class="flex w-full flex-col items-center space-y-1">
           <p class="text-xs text-black dark:text-white">{$LL.BADGE.DETAILS.VALID()}</p>
           <div class="flex w-full justify-center rounded-xl bg-silver py-5 dark:bg-white">
-            <SealCheck class="h-7 w-7 text-slate-800" />
+            <SealCheckRegularIcon class="h-7 w-7 text-slate-800" />
           </div>
           <p class="text-xs text-black dark:text-white">
             {#if credential.data.issuanceDate}

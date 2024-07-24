@@ -3,7 +3,7 @@
 
   import type { SvelteHTMLElements } from 'svelte/elements';
 
-  import CaretRight from '~icons/ph/caret-right-bold';
+  import { CaretRightBoldIcon } from '$lib/icons';
 
   const dispatch = createEventDispatcher();
 
@@ -23,7 +23,7 @@
     {title}
   </p>
   {#if hasCaretRight}
-    <svelte:component this={CaretRight} class="h-4 w-4 text-slate-500" />
+    <svelte:component this={CaretRightBoldIcon} class="h-4 w-4 text-slate-500" />
   {:else if textRight}
     <p class="text-[13px]/[24px] font-medium text-primary">{textRight}</p>
   {/if}

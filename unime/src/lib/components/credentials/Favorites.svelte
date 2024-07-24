@@ -4,10 +4,9 @@
 
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 
-  import ListItemCard from '$lib/components/molecules/ListItemCard.svelte';
+  import { ListItemCard } from '$lib/components';
+  import { HeartStraightFillIcon } from '$lib/icons';
   import { state } from '$lib/stores';
-
-  import Heart from '~icons/ph/heart-straight-fill';
 
   export let credentialType: 'all' | 'data' | 'badges' = 'all';
 
@@ -31,7 +30,7 @@
 
 {#if favorite_credentials.length > 0}
   <div class="flex items-center pb-2">
-    <Heart class="mr-2 text-primary" />
+    <HeartStraightFillIcon class="mr-2 text-primary" />
     <p class="text-[13px]/[24px] font-medium text-slate-500 dark:text-white">{$LL.ME.FAVORITES()}</p>
   </div>
   <div class="flex flex-col space-y-2">
