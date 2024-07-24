@@ -94,7 +94,7 @@
               },
             })}
         >
-          {#if isFavorite}HeartStraightRegularIcon <HeartStraightFillIcon class="h-6 w-6 dark:text-white" />
+          {#if isFavorite}<HeartStraightFillIcon class="h-6 w-6 dark:text-white" />
           {:else}
             <HeartStraightRegularIcon class="h-6 w-6 dark:text-white" />
           {/if}
