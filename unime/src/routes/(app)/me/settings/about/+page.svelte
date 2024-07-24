@@ -3,6 +3,7 @@
 
   import { TopNavBar } from '$lib/components';
   import { HeartFillIcon } from '$lib/icons';
+  import { state } from '$lib/stores';
 
   import type { PageData } from './$types';
 
@@ -16,17 +17,19 @@
   <div
     class="flex flex-col items-center gap-6 pt-4 text-[13px]/[24px] font-normal text-slate-500 opacity-50 dark:text-slate-300"
   >
-    <section class="flex flex-col items-center">
-      <h2 class="mb-3 font-bold">{$LL.SETTINGS.SUPPORT.ABOUT.SPECIFICATIONS()}</h2>
-      <dl class="flex flex-col items-center gap-3">
-        {#each data.specifications as spec (spec.id)}
-          <div class="flex flex-col items-center">
-            <dt class="font-semibold">{`${spec.description} (${spec.id}):`}</dt>
-            <dd><a href={spec.url} class="underline">{spec.version}</a></dd>
-          </div>
-        {/each}
-      </dl>
-    </section>
+    {#if $state.dev_mode !== 'Off'}
+      <section class="flex flex-col items-center">
+        <h2 class="mb-3 font-bold">{$LL.SETTINGS.SUPPORT.ABOUT.SPECIFICATIONS()}</h2>
+        <dl class="flex flex-col items-center gap-3">
+          {#each data.specifications as spec (spec.id)}
+            <div class="flex flex-col items-center">
+              <dt class="font-semibold">{`${spec.description} (${spec.id}):`}</dt>
+              <dd><a href={spec.url} class="underline">{spec.version}</a></dd>
+            </div>
+          {/each}
+        </dl>
+      </section>
+    {/if}
     <section class="flex flex-col items-center">
       <h2 class="mb-3 font-bold">{$LL.SETTINGS.SUPPORT.ABOUT.VERSION()}</h2>
       <div>0.6.2</div>
