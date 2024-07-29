@@ -13,7 +13,7 @@
 <TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.SUPPORT.ABOUT.NAVBAR_TITLE()} />
 
 <div class="content-height flex flex-col bg-silver dark:bg-navy">
-  <h1 class="hidden">{$LL.SETTINGS.SUPPORT.ABOUT.TITLE}</h1>
+  <h1 class="sr-only">{$LL.SETTINGS.SUPPORT.ABOUT.TITLE()}</h1>
   <div
     class="flex flex-col items-center gap-6 pt-4 text-[13px]/[24px] font-normal text-slate-500 opacity-50 dark:text-slate-300"
   >
