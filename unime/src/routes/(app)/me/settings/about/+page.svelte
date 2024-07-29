@@ -24,6 +24,7 @@
           {#each data.specifications as spec (spec.id)}
             <div class="flex flex-col items-center">
               <dt class="font-semibold">{`${spec.description} (${spec.id}):`}</dt>
+              <!-- `target="_blank"` opens the spec link in the default browser. -->
               <dd><a href={spec.url} target="_blank" class="underline">{spec.version}</a></dd>
             </div>
           {/each}
