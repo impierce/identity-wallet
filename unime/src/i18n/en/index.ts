@@ -158,6 +158,9 @@ const en = {
       ABOUT: {
         TITLE: 'About UniMe',
         NAVBAR_TITLE: 'About UniMe',
+        SPECIFICATIONS: 'Specifications',
+        VERSION: 'Version',
+        LICENSE: 'License',
         BUILT_WITH: 'Built with Tauri',
       },
       FEEDBACK: {
