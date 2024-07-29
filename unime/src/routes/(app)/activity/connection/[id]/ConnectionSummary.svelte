@@ -7,6 +7,7 @@
   import { Image } from '$lib/components';
   import { ArrowSquareOutBoldIcon } from '$lib/icons';
   import { state } from '$lib/stores';
+  import { formatDateTime } from '$lib/utils';
 
   import { buildIotaExplorerSearchLink } from '../../utils';
 
@@ -14,19 +15,13 @@
 
   let summary = {
     URL: connection.url,
-    [$LL.CONNECTION.SUMMARY.FIRST_CONNECTED()]: new Date(connection.first_interacted).toLocaleString(
+    [$LL.CONNECTION.SUMMARY.FIRST_CONNECTED()]: formatDateTime(
+      connection.first_interacted,
       $state.profile_settings.locale,
-      {
-        dateStyle: 'medium',
-        timeStyle: 'medium',
-      },
     ),
-    [$LL.CONNECTION.SUMMARY.LAST_CONNECTED()]: new Date(connection.last_interacted).toLocaleString(
+    [$LL.CONNECTION.SUMMARY.LAST_CONNECTED()]: formatDateTime(
+      connection.last_interacted,
       $state.profile_settings.locale,
-      {
-        dateStyle: 'medium',
-        timeStyle: 'medium',
-      },
     ),
   };
 

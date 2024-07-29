@@ -13,7 +13,7 @@
   import { dispatch } from '$lib/dispatcher';
   import { HeartStraightFillIcon, HeartStraightRegularIcon, SealCheckRegularIcon } from '$lib/icons';
   import { state } from '$lib/stores';
-  import { getImageAsset } from '$lib/utils';
+  import { formatDate, getImageAsset } from '$lib/utils';
 
   let credential = $state.credentials.find((c) => $page.params.id === c.id)!;
 
@@ -130,9 +130,7 @@
           </div>
           <p class="text-xs text-black dark:text-white">
             {#if credential.data.issuanceDate}
-              {new Date(credential.data.issuanceDate).toLocaleString($state.profile_settings.locale, {
-                dateStyle: 'long',
-              })}
+              {formatDate(credential.data.issuanceDate, $state.profile_settings.locale)}
             {/if}
           </p>
         </div>
