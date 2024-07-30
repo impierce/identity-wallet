@@ -1,3 +1,6 @@
+use std::str::FromStr;
+
+use jsonwebtoken::Algorithm;
 use log::debug;
 
 use crate::{
@@ -48,8 +51,24 @@ pub async fn set_preferred_key_type(state: AppState, action: Action) -> Result<A
         dids.insert("did:jwk".to_string(), did_jwk);
         dids.insert("did:key".to_string(), did_key);
 
-        drop(managers);
+        // Update the Identity Manager
+        let supported_subject_syntax_types = preferred_key_types
+            .iter()
+            .map(String::as_str)
+            .map(Algorithm::from_str)
+            .collect::<Result<Vec<_>, _>>()
+            .map_err(|e| AppError::Error(e.to_string()))?;
+        identity_manager
+            .provider_manager
+            .provider
+            .supported_signing_algorithms
+            .clone_from(&supported_subject_syntax_types);
+        identity_manager
+            .wallet
+            .proof_signing_alg_values_supported
+            .clone_from(&supported_subject_syntax_types);
 
+        drop(managers);
         return Ok(AppState {
             dids,
             profile_settings: ProfileSettings {
