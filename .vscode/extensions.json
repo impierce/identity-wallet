@@ -4,6 +4,7 @@
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
     "rust-lang.rust-analyzer",
-    "svelte.svelte-vscode"
+    "svelte.svelte-vscode",
+    "vitest.explorer"
   ]
 }
