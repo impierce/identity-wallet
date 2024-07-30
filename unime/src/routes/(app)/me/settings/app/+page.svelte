@@ -10,6 +10,7 @@
     CodeBoldIcon,
     ConfettiFillIcon,
     FilesFillIcon,
+    KeyFillIcon,
     PasswordFillIcon,
     SunFillIcon,
     TranslateFillIcon,
@@ -69,7 +70,7 @@
       </div>
       <div in:fade={{ duration: 200 }} out:fade={{ duration: 200 }}>
         <SettingsEntry
-          icon={Key}
+          icon={KeyFillIcon}
           title={'Key management'}
           hasCaretRight={true}
           on:click={() => goto('/me/settings/app/keys')}
