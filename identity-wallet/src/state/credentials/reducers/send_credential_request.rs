@@ -23,7 +23,7 @@ use oid4vc::oid4vci::{
 use serde_json::json;
 use uuid::Uuid;
 
-pub async fn send_credential_request(mut state: AppState, action: Action) -> Result<AppState, AppError> {
+pub async fn send_credential_request(state: AppState, action: Action) -> Result<AppState, AppError> {
     info!("send_credential_request");
 
     if let Some(credential_configuration_ids) =
@@ -48,14 +48,14 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
 
         info!("current_user_prompt: {:?}", current_user_prompt);
 
-        let credential_offer = state.core_utils.active_credential_offer.take().unwrap();
+        let credential_offer = state.core_utils.active_credential_offer.unwrap();
         let logo_uri = match current_user_prompt {
             CurrentUserPrompt::CredentialOffer { logo_uri, .. } => logo_uri,
             _ => unreachable!(),
         };
 
         // The credential offer contains a credential issuer url.
-        let credential_issuer_url = credential_offer.credential_issuer;
+        let credential_issuer_url = credential_offer.credential_issuer.clone();
 
         info!("credential issuer url: {:?}", credential_issuer_url);
 
@@ -107,7 +107,7 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
         let connection = connections.update_or_insert(connection_url, &issuer_name, None);
 
         // Create a token request with grant_type `pre_authorized_code`.
-        let token_request = match credential_offer.grants {
+        let token_request = match credential_offer.grants.clone() {
             Some(Grants {
                 pre_authorized_code, ..
             }) => TokenRequest::PreAuthorizedCode {
@@ -238,10 +238,11 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
         persist_asset(&file_name, &connection.id).ok();
 
         // History
+        let mut history = state.history;
         if !history_credentials.is_empty() {
             // Only add a `ConnectionAdded` event if the connection was not previously connected.
             if !previously_connected {
-                state.history.push(HistoryEvent {
+                history.push(HistoryEvent {
                     connection_name: connection.name.clone(),
                     event_type: EventType::ConnectionAdded,
                     connection_id: connection.id.clone(),
@@ -249,7 +250,7 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
                     credentials: vec![],
                 });
             }
-            state.history.push(HistoryEvent {
+            history.push(HistoryEvent {
                 connection_name: connection.name.clone(),
                 event_type: EventType::CredentialsAdded,
                 connection_id: connection.id.clone(),
@@ -258,19 +259,21 @@ pub async fn send_credential_request(mut state: AppState, action: Action) -> Res
             });
         }
 
-        state.connections = connections;
-        state.credentials = credentials;
-
-        state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
-            target: "me".to_string(),
+        drop(state_guard);
+        return Ok(AppState {
+            connections,
+            credentials,
+            current_user_prompt: Some(CurrentUserPrompt::Redirect {
+                target: "me".to_string(),
+            }),
+            history,
+            core_utils: CoreUtils {
+                active_credential_offer: None,
+                ..state.core_utils
+            },
+            ..state
         });
     }
 
-    Ok(AppState {
-        core_utils: CoreUtils {
-            managers: state.core_utils.managers,
-            ..Default::default()
-        },
-        ..state
-    })
+    Ok(state)
 }
