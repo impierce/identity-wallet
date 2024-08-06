@@ -78,7 +78,7 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
             &verifiable_credentials
                 .iter()
                 .map(get_unverified_jwt_claims)
-                .collect::<Vec<_>>(),
+                .collect::<Result<Vec<_>, _>>()?,
         )
         .map_err(PresentationSubmissionError)?;
 
