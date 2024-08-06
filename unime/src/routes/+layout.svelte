@@ -30,12 +30,18 @@
   import '../app.css';
 
   let detachConsole: UnlistenFn;
+  let unlistenError: UnlistenFn;
   let unlistenStateChanged: UnlistenFn;
 
   onMount(async () => {
     detachConsole = await attachConsole();
 
     loadAllLocales(); //TODO: performance: only load locale on user request
+
+    unlistenError = await listen('error', (event) => {
+      error(`Error: ${event.payload}`);
+      errorState.set(event.payload as string);
+    });
 
     unlistenStateChanged = await listen('state-changed', (event) => {
       // Set frontend state to state received from backend.
@@ -73,6 +79,7 @@
   onDestroy(() => {
     // Destroy in reverse order.
     unlistenStateChanged();
+    unlistenError();
     detachConsole();
   });
 
