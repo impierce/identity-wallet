@@ -11,12 +11,13 @@ use crate::{
         dev_mode::DevMode,
         profile_settings::{AppTheme, Profile},
         user_prompt::CurrentUserPrompt,
-        AppState,
+        AppState, SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS,
     },
     stronghold::StrongholdManager,
     subject::subject,
 };
 
+use jsonwebtoken::Algorithm;
 use lazy_static::lazy_static;
 use log::info;
 use oid4vc::{oid4vc_core::Subject, oid4vc_manager::ProviderManager, oid4vci::Wallet};
@@ -53,7 +54,6 @@ lazy_static! {
 
 pub async fn load_ferris_profile() -> Result<AppState, AppError> {
     let mut state = AppState::default();
-    let preferred_did_method = "did:jwk";
 
     let password = "sup3rSecr3t".to_string();
 
@@ -68,9 +68,18 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
     };
     state.profile_settings.profile.replace(profile);
 
-    let provider_manager =
-        ProviderManager::new(subject.clone(), preferred_did_method).map_err(OID4VCProviderManagerError)?;
-    let wallet: Wallet = Wallet::new(subject.clone(), preferred_did_method).map_err(OID4VCWalletError)?;
+    let provider_manager = ProviderManager::new(
+        subject.clone(),
+        Vec::from(SUPPORTED_DID_METHODS),
+        Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
+    )
+    .map_err(OID4VCProviderManagerError)?;
+    let wallet: Wallet = Wallet::new(
+        subject.clone(),
+        Vec::from(SUPPORTED_DID_METHODS),
+        Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
+    )
+    .map_err(OID4VCWalletError)?;
     let identity_manager = IdentityManager {
         subject: subject.clone(),
         provider_manager,
@@ -86,10 +95,18 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         .replace(identity_manager);
 
     // Producing DIDs (`did:jwk`, `did:key`)
-    let did_jwk = subject.identifier("did:jwk").await.map_err(|e| Error(e.to_string()))?;
+    let did_jwk = subject
+        // TODO: make distinction between keys using the same DID Method but different algorithms.
+        .identifier("did:jwk", Algorithm::EdDSA)
+        .await
+        .map_err(|e| Error(e.to_string()))?;
     state.dids.insert("did:jwk".to_string(), did_jwk);
 
-    let did_key = subject.identifier("did:key").await.map_err(|e| Error(e.to_string()))?;
+    let did_key = subject
+        // TODO: make distinction between keys using the same DID Method but different algorithms.
+        .identifier("did:key", Algorithm::EdDSA)
+        .await
+        .map_err(|e| Error(e.to_string()))?;
     state.dids.insert("did:key".to_string(), did_key);
 
     vec![

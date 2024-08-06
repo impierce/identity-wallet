@@ -44,6 +44,7 @@ pub async fn assert_state_update(
                 url: url::Url::parse("http://localhost").unwrap(),
                 body: json!({ "action": action }).into(),
                 headers: Default::default(),
+                invoke_key: tauri::test::INVOKE_KEY.to_string(),
             },
             Ok(()),
         );
