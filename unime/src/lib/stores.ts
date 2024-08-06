@@ -1,18 +1,9 @@
-import { goto } from '$app/navigation';
-import { setLocale } from '$i18n/i18n-svelte';
-import type { Locales } from '$i18n/i18n-types';
 import { writable } from 'svelte/store';
 
 // TODO: run some copy task instead of importing across root to make the frontend independent
 import type { AppState } from '@bindings/AppState';
 import { listen } from '@tauri-apps/api/event';
-import { error as err, info } from '@tauri-apps/plugin-log';
-
-interface StateChangedEvent {
-  event: string;
-  payload: AppState;
-  id: number;
-}
+import { error as err } from '@tauri-apps/plugin-log';
 
 interface ErrorEvent {
   event: string;
@@ -61,21 +52,7 @@ const empty_state: AppState = {
  * If the frontend intends to change the state, it must dispatch an action to the backend.
  */
 // TODO: make read-only
-export const state = writable<AppState>(empty_state, (set) => {
-  listen('state-changed', (event: StateChangedEvent) => {
-    const state = event.payload;
-
-    set(state);
-    setLocale(state.profile_settings.locale as Locales);
-
-    if (state.current_user_prompt?.type === 'redirect') {
-      const redirect_target = state.current_user_prompt.target;
-      info(`Redirecting to: "/${redirect_target}"`);
-      goto(`/${redirect_target}`);
-    }
-  });
-  // TODO: unsubscribe from listener!
-});
+export const state = writable<AppState>(empty_state);
 
 /**
  * A store that listens for errors emitted by the Rust backend.

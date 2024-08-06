@@ -1,14 +1,19 @@
 <script lang="ts">
-  import { onMount, type SvelteComponent } from 'svelte';
+  import { onDestroy, onMount, type SvelteComponent } from 'svelte';
 
   import { goto } from '$app/navigation';
   import { PUBLIC_DEV_MODE_MENU_EXPANDED } from '$env/static/public';
-  import LL from '$i18n/i18n-svelte';
+  import LL, { setLocale } from '$i18n/i18n-svelte';
   import { loadAllLocales } from '$i18n/i18n-util.sync';
+  import type { SvelteHTMLElements } from 'svelte/elements';
   import { fly } from 'svelte/transition';
 
-  import { attachConsole } from '@tauri-apps/plugin-log';
+  import type { AppState } from '@bindings/AppState';
+  import type { ProfileSteps } from '@bindings/dev/ProfileSteps';
+  import { listen, type UnlistenFn } from '@tauri-apps/api/event';
+  import { attachConsole, error, info } from '@tauri-apps/plugin-log';
 
+  import { Switch } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import {
     ArrowLeftRegularIcon,
@@ -17,23 +22,58 @@
     CaretUpBoldIcon,
     TrashRegularIcon,
   } from '$lib/icons';
-  import { error, state } from '$lib/stores';
-
-  import '../app.css';
-
-  import type { SvelteHTMLElements } from 'svelte/elements';
-
-  import type { ProfileSteps } from '@bindings/dev/ProfileSteps';
-
-  import { Switch } from '$lib/components';
+  import { state as appState, error as errorState } from '$lib/stores';
 
   import ErrorToast from './ErrorToast.svelte';
   import { determineTheme } from './utils';
 
+  import '../app.css';
+
+  let detachConsole: UnlistenFn;
+  let unlistenStateChanged: UnlistenFn;
+
   onMount(async () => {
-    await attachConsole();
+    detachConsole = await attachConsole();
+
     loadAllLocales(); //TODO: performance: only load locale on user request
+
+    unlistenStateChanged = await listen('state-changed', (event) => {
+      // Set frontend state to state received from backend.
+      appState.set(event.payload as AppState);
+
+      // Update locale based on the frontend state.
+      setLocale($appState.profile_settings.locale);
+
+      let redirectPath: string | undefined;
+
+      if ($appState.current_user_prompt) {
+        // Generic redirect.
+        if ($appState.current_user_prompt.type === 'redirect') {
+          redirectPath = `/${$appState.current_user_prompt.target}`;
+        }
+        // Prompt redirect.
+        else {
+          redirectPath = `/prompt/${$appState.current_user_prompt.type}`;
+        }
+      }
+
+      if (redirectPath) {
+        info(`Redirecting to: ${redirectPath}.`);
+        try {
+          goto(redirectPath);
+        } catch (e) {
+          error(`Failed to redirect to ${redirectPath}: ${e}`);
+        }
+      }
+    });
+
     dispatch({ type: '[App] Get state' });
+  });
+
+  onDestroy(() => {
+    // Destroy in reverse order.
+    unlistenStateChanged();
+    detachConsole();
   });
 
   let expandedDevMenu = PUBLIC_DEV_MODE_MENU_EXPANDED === 'true';
@@ -44,8 +84,8 @@
   const systemColorScheme = window.matchMedia('(prefers-color-scheme: dark)');
 
   systemColorScheme.addEventListener('change', (e) => {
-    if ($state?.profile_settings.profile?.theme) {
-      determineTheme(e.matches, $state.profile_settings.profile.theme);
+    if ($appState?.profile_settings.profile?.theme) {
+      determineTheme(e.matches, $appState.profile_settings.profile.theme);
     } else {
       determineTheme(systemColorScheme.matches, 'system');
     }
@@ -53,17 +93,10 @@
 
   $: {
     // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
-    if ($state?.profile_settings.profile?.theme) {
-      determineTheme(systemColorScheme.matches, $state.profile_settings.profile.theme);
+    if ($appState?.profile_settings.profile?.theme) {
+      determineTheme(systemColorScheme.matches, $appState.profile_settings.profile.theme);
     } else {
       determineTheme(systemColorScheme.matches, 'system');
-    }
-
-    // User prompt
-    let type = $state?.current_user_prompt?.type;
-
-    if (type && type !== 'redirect') {
-      goto(`/prompt/${type}`);
     }
   }
 
@@ -152,7 +185,7 @@
 
 <main class="absolute h-screen">
   <!-- Dev Mode: Navbar -->
-  {#if $state?.dev_mode !== 'Off'}
+  {#if $appState?.dev_mode !== 'Off'}
     {#if expandedDevMenu}
       <div
         class="hide-scrollbar fixed z-20 flex w-full space-x-4 overflow-x-auto bg-gradient-to-r from-red-200 to-red-300 p-4 shadow-md"
@@ -193,7 +226,7 @@
 
       <hr class="mx-8 h-1 bg-orange-800" />
 
-      {#each $state.debug_messages as message}
+      {#each $appState.debug_messages as message}
         <div class="mx-2 mb-2 rounded bg-orange-200 p-2">
           <div class="break-all font-mono text-xs text-orange-700">{message}</div>
         </div>
@@ -229,16 +262,16 @@
   <div class="fixed top-[var(--safe-area-inset-top)] h-auto w-full">
     <slot />
     <!-- Show error if exists -->
-    {#if $error}
+    {#if $errorState}
       <div class="absolute bottom-4 right-4 w-[calc(100%_-_32px)]">
         <ErrorToast
-          title={$state?.dev_mode !== 'Off' ? 'Error' : $LL.ERROR.TITLE()}
-          detail={$state?.dev_mode !== 'Off' ? $error : $LL.ERROR.DEFAULT_MESSAGE()}
+          title={$appState?.dev_mode !== 'Off' ? 'Error' : $LL.ERROR.TITLE()}
+          detail={$appState?.dev_mode !== 'Off' ? $errorState : $LL.ERROR.DEFAULT_MESSAGE()}
           on:dismissed={() => {
-            // After the toast fires the "dismissed" event, we clear the current $error store.
-            $error = undefined;
+            // After the toast fires the "dismissed" event, we reset $errorStore.
+            errorState.set(undefined);
           }}
-          autoDismissAfterMs={$state?.dev_mode !== 'Off' ? 0 : 5_000}
+          autoDismissAfterMs={$appState?.dev_mode !== 'Off' ? 0 : 5_000}
         />
       </div>
     {/if}
