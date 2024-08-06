@@ -71,7 +71,7 @@ mod bindings {
             update_credential_metadata::UpdateCredentialMetadata,
         },
         dev_mode::actions::dev_profile::DevProfile,
-        did::actions::set_preferred_method::SetPreferredDidMethod,
+        did::actions::{set_preferred_keytype::SetPreferredKeyType, set_preferred_method::SetPreferredDidMethod},
         profile_settings::actions::{
             create_new::CreateNew, set_locale::SetLocale, update_profile_settings::UpdateProfileSettings,
             update_sorting_preference::UpdateSortingPreference,
@@ -129,5 +129,7 @@ mod bindings {
         DeleteRecentSearch { payload: DeleteRecentSearch },
         #[serde(rename = "[DID] Set preferred method")]
         SetPreferredDidMethod { payload: SetPreferredDidMethod },
+        #[serde(rename = "[Keys] Set preferred key type")]
+        SetPreferredKeyType { payload: SetPreferredKeyType },
     }
 }

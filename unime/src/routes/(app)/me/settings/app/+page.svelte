@@ -10,6 +10,7 @@
     CodeBoldIcon,
     ConfettiFillIcon,
     FilesFillIcon,
+    KeyFillIcon,
     PasswordFillIcon,
     SunFillIcon,
     TranslateFillIcon,
@@ -59,12 +60,20 @@
       <Switch active={$state?.dev_mode !== 'Off'} on:change={toggleDevSettings} />
     </SettingsEntry>
     {#if $state.dev_mode !== 'Off'}
-      <div transition:fade={{ duration: 200 }}>
+      <div in:fade={{ duration: 200 }} out:fade={{ duration: 200 }}>
         <SettingsEntry
           icon={FilesFillIcon}
           title={'DID management'}
           hasCaretRight={true}
           on:click={() => goto('/me/settings/app/did')}
+        />
+      </div>
+      <div in:fade={{ duration: 200 }} out:fade={{ duration: 200 }}>
+        <SettingsEntry
+          icon={KeyFillIcon}
+          title={'Key management'}
+          hasCaretRight={true}
+          on:click={() => goto('/me/settings/app/keys')}
         />
       </div>
     {/if}

@@ -1,6 +1,6 @@
 {
   "type": "[QR Code] Scanned",
   "payload": {
-    "form_urlencoded": "siopv2://idtoken?response_type=id_token&client_id=did%3Akey%3Az6Mkm9yeuZK7inXBNjnNH3vAs9uUjqfy3mfNoKBKsKBrv8Tb&scope=openid&redirect_uri=https%3A%2F%2Fexample.com&nonce=nonce"
+    "form_urlencoded": "openid://?client_id=did%3Akey%3Az6Mkm9yeuZK7inXBNjnNH3vAs9uUjqfy3mfNoKBKsKBrv8Tb&client_metadata=%7B%22id_token_signed_response_alg%22%3A%22EdDSA%22%2C%22subject_syntax_types_supported%22%3A%5B%22did%3Akey%22%5D%7D&nonce=nonce&redirect_uri=https%3A%2F%2Fexample.com%2F&response_type=id_token&scope=openid"
   }
 }

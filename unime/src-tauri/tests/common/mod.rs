@@ -6,6 +6,7 @@ use identity_wallet::oid4vc_manager::ProviderManager;
 use identity_wallet::oid4vci::Wallet;
 use identity_wallet::persistence::STRONGHOLD;
 use identity_wallet::state::credentials::VerifiableCredentialRecord;
+use identity_wallet::state::{SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS};
 use identity_wallet::subject::Subject;
 use identity_wallet::{
     state::core_utils::{IdentityManager, Managers},
@@ -19,7 +20,7 @@ use std::fs::File;
 use std::path::Path;
 use std::sync::Arc;
 
-const KEY_ID: &str = "key-0";
+const KEY_ID: &str = "ed25519-0";
 pub const TEST_PASSWORD: &str = "sup3rSecr3t";
 
 pub fn json_example<T>(path: &str) -> T
@@ -56,7 +57,9 @@ pub async fn test_managers(
         secret_manager: SecretManager::load(
             stronghold_snapshot_path,
             TEST_PASSWORD.to_string(),
-            KEY_ID.to_string(),
+            Some(KEY_ID.to_string()),
+            None,
+            None,
             None,
             None,
         )
@@ -64,8 +67,18 @@ pub async fn test_managers(
         .unwrap(),
     });
 
-    let provider_manager = ProviderManager::new(subject.clone(), "did:key").unwrap();
-    let wallet: Wallet = Wallet::new(subject.clone(), "did:key").unwrap();
+    let provider_manager = ProviderManager::new(
+        subject.clone(),
+        Vec::from(SUPPORTED_DID_METHODS),
+        Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
+    )
+    .unwrap();
+    let wallet: Wallet = Wallet::new(
+        subject.clone(),
+        Vec::from(SUPPORTED_DID_METHODS),
+        Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
+    )
+    .unwrap();
 
     Arc::new(tauri::async_runtime::Mutex::new(Managers {
         stronghold_manager: Some(stronghold_manager),

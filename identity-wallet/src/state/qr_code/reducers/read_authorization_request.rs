@@ -5,7 +5,9 @@ use crate::{
         actions::{listen, Action},
         connections::reducers::handle_siopv2_authorization_request::get_siopv2_client_name_and_logo_uri,
         core_utils::{helpers::get_unverified_jwt_claims, ConnectionRequest, CoreUtils},
-        credentials::reducers::handle_oid4vp_authorization_request::get_oid4vp_client_name_and_logo_uri,
+        credentials::reducers::handle_oid4vp_authorization_request::{
+            get_oid4vp_client_name_and_logo_uri, OID4VPClientMetadata,
+        },
         did::validate_domain_linkage::validate_domain_linkage,
         qr_code::actions::qrcode_scanned::QrCodeScanned,
         user_prompt::CurrentUserPrompt,
@@ -121,7 +123,13 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
 
             info!("uuids of VCs that can fulfill the request: {:?}", uuids);
 
-            let (client_name, logo_uri, _, _) = get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request);
+            let OID4VPClientMetadata {
+                client_name,
+                logo_uri,
+                connection_url: _,
+                client_id: _,
+                algorithm: _,
+            } = get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request);
 
             info!("client_name in credential_offer: {:?}", client_name);
             info!("logo_uri in read_authorization_request: {:?}", logo_uri);

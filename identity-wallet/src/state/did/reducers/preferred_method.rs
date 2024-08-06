@@ -1,3 +1,8 @@
+use std::str::FromStr;
+
+use log::debug;
+use oid4vc::oid4vc_core::SubjectSyntaxType;
+
 use crate::{
     error::AppError,
     state::{
@@ -7,29 +12,45 @@ use crate::{
         AppState,
     },
 };
-use oid4vc::oid4vc_core::SubjectSyntaxType;
-use std::str::FromStr;
 
 pub async fn set_preferred_did_method(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(method) = listen::<SetPreferredDidMethod>(action).map(|payload| payload.method) {
-        let mut managers = state.core_utils.managers.lock().await;
+        let mut preferred_did_methods = state.profile_settings.preferred_did_methods;
 
-        let identity_manager = managers
-            .identity_manager
-            .as_mut()
-            .ok_or(AppError::MissingManagerError("identity"))?;
+        debug!("Order of preferred DID methods (current): {:?}", preferred_did_methods);
 
-        // TODO: add error handling here
-        let subject_syntax_type = SubjectSyntaxType::from_str(&method.to_string()).unwrap();
+        let current_position = preferred_did_methods
+            .iter()
+            .position(|m| m == &method.to_string())
+            .unwrap();
 
-        identity_manager.provider_manager.provider.default_subject_syntax_type = subject_syntax_type.clone();
-        identity_manager.wallet.default_subject_syntax_type = subject_syntax_type;
+        let element = preferred_did_methods.remove(current_position);
 
-        drop(managers);
+        preferred_did_methods.insert(0, element);
 
+        debug!("Order of preferred DID methods (updated): {:?}", preferred_did_methods);
+
+        let mut state_guard = state.core_utils.managers.lock().await;
+
+        let identity_manager = state_guard.identity_manager.as_mut().unwrap();
+
+        identity_manager
+            .provider_manager
+            .provider
+            .supported_subject_syntax_types = preferred_did_methods
+            .iter()
+            .map(|m| SubjectSyntaxType::from_str(m).unwrap())
+            .collect();
+
+        identity_manager.wallet.supported_subject_syntax_types = preferred_did_methods
+            .iter()
+            .map(|m| SubjectSyntaxType::from_str(m).unwrap())
+            .collect();
+
+        drop(state_guard);
         return Ok(AppState {
             profile_settings: ProfileSettings {
-                preferred_did_method: method.to_string(),
+                preferred_did_methods,
                 ..state.profile_settings
             },
             current_user_prompt: None,
