@@ -3,7 +3,6 @@
 
   import { goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
-  import { fade } from 'svelte/transition';
 
   import {
     cancel,
@@ -173,12 +172,6 @@
         <!-- This part is only visible when no scanning or loading is happening.
           Only visible when user has not granted permissions to the camera. -->
         <div class="relative flex h-full flex-col items-center justify-center space-y-4 bg-silver p-8 dark:bg-navy">
-          {#if loading}
-            <!-- Wait for 500ms before showing the loading spinner -->
-            <div in:fade={{ delay: 500, duration: 500 }}>
-              <LoadingSpinner class="h-12 w-12" />
-            </div>
-          {/if}
           <!-- Ask for permissions (only if not given) -->
           {#if permissions_nullable && permissions_nullable !== 'granted'}
             <div class="flex w-3/4 flex-col space-y-4">
