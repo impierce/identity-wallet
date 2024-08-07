@@ -90,9 +90,11 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
         // Get the credential issuer name or use the credential issuer url.
         let issuer_name = display
             .map(|display| {
-                let issuer_name = display["client_name"]
+                let issuer_name = display["name"]
                     .as_str()
-                    .map(|s| s.to_string())
+                    .map(ToString::to_string)
+                    // TODO(ngdil): Remove this fallback.
+                    .or_else(|| display["client_name"].as_str().map(ToString::to_string))
                     .unwrap_or(connection_url.to_string());
                 issuer_name
             })
