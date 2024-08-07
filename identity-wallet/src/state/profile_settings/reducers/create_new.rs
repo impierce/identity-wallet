@@ -19,7 +19,7 @@ use oid4vc::oid4vci::Wallet;
 use std::sync::Arc;
 
 /// Creates a new profile, produces (deterministic) DIDs and redirects to the main page.
-pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppState, AppError> {
+pub async fn create_identity(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(CreateNew {
         name,
         picture,
@@ -49,19 +49,21 @@ pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppS
         )
         .map_err(OID4VCWalletError)?;
 
+        let mut dids = state.dids;
+
         let did_jwk = subject
             // TODO: make distinction between keys using the same DID Method but different algorithms.
             .identifier("did:jwk", Algorithm::EdDSA)
             .await
             .map_err(|e| Error(e.to_string()))?;
-        state.dids.insert("did:jwk".to_string(), did_jwk);
+        dids.insert("did:jwk".to_string(), did_jwk);
 
         let did_key = subject
             // TODO: make distinction between keys using the same DID Method but different algorithms.
             .identifier("did:key", Algorithm::EdDSA)
             .await
             .map_err(|e| Error(e.to_string()))?;
-        state.dids.insert("did:key".to_string(), did_key);
+        dids.insert("did:key".to_string(), did_key);
 
         let profile_settings = ProfileSettings {
             profile: Some(Profile {
@@ -78,9 +80,14 @@ pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppS
             wallet,
         });
 
-        state.profile_settings = profile_settings;
-        state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
-            target: "me".to_string(),
+        drop(state_guard);
+        return Ok(AppState {
+            dids,
+            profile_settings,
+            current_user_prompt: Some(CurrentUserPrompt::Redirect {
+                target: "me".to_string(),
+            }),
+            ..state
         });
     }
 

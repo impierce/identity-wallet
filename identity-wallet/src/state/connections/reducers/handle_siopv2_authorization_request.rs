@@ -21,7 +21,7 @@ use oid4vc::oid4vc_core::{
 use oid4vc::siopv2::siopv2::SIOPv2;
 
 // Sends the authorization response.
-pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: Action) -> Result<AppState, AppError> {
+pub async fn handle_siopv2_authorization_request(state: AppState, _action: Action) -> Result<AppState, AppError> {
     let state_guard = state.core_utils.managers.lock().await;
 
     let provider_manager = &state_guard
@@ -69,7 +69,8 @@ pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: A
     persist_asset(&file_name, &connection.id).ok();
 
     // History
-    state.history.push(HistoryEvent {
+    let mut history = state.history;
+    history.push(HistoryEvent {
         connection_name: connection.name.clone(),
         event_type: EventType::ConnectionAdded,
         connection_id: connection.id.clone(),
@@ -77,14 +78,15 @@ pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: A
         credentials: vec![],
     });
 
-    state.connections = connections;
-    state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
-        target: "me".to_string(),
-    });
-
     drop(state_guard);
-
-    Ok(state)
+    Ok(AppState {
+        connections,
+        current_user_prompt: Some(CurrentUserPrompt::Redirect {
+            target: "me".to_string(),
+        }),
+        history,
+        ..state
+    })
 }
 
 // Helper

@@ -31,7 +31,7 @@ use oid4vc::{
 };
 
 // Sends the authorization response including the verifiable credentials.
-pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Action) -> Result<AppState, AppError> {
+pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action) -> Result<AppState, AppError> {
     info!("handle_presentation_request");
 
     if let Some(credential_uuids) = listen::<CredentialsSelected>(action).map(|payload| payload.credential_uuids) {
@@ -151,9 +151,10 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
         persist_asset(&file_name, &connection.id).ok();
 
         // History
+        let mut history = state.history;
         if !previously_connected {
             // Only add a `ConnectionAdded` event if the connection was not previously connected.
-            state.history.push(HistoryEvent {
+            history.push(HistoryEvent {
                 connection_name: connection.name.clone(),
                 event_type: EventType::ConnectionAdded,
                 connection_id: connection.id.clone(),
@@ -161,7 +162,7 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
                 credentials: vec![],
             });
         }
-        state.history.push(HistoryEvent {
+        history.push(HistoryEvent {
             connection_name: connection.name.clone(),
             event_type: EventType::CredentialsShared,
             connection_id: connection.id.clone(),
@@ -169,9 +170,14 @@ pub async fn handle_oid4vp_authorization_request(mut state: AppState, action: Ac
             credentials: history_credentials,
         });
 
-        state.connections = connections;
-        state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
-            target: "me".to_string(),
+        drop(state_guard);
+        return Ok(AppState {
+            connections,
+            current_user_prompt: Some(CurrentUserPrompt::Redirect {
+                target: "me".to_string(),
+            }),
+            history,
+            ..state
         });
     }
 
