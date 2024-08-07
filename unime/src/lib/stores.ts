@@ -36,7 +36,8 @@ const empty_state: AppState = {
   profile_settings: {
     locale: 'en-US',
     profile: null,
-    preferred_did_method: 'did:jwk',
+    preferred_did_methods: ['did:jwk'],
+    preferred_key_types: ['Ed25519'],
     sorting_preferences: {
       connections: {
         sort_method: 'name_az',
