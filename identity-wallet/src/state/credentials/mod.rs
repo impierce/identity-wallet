@@ -2,7 +2,7 @@ pub mod actions;
 pub mod reducers;
 
 use super::{core_utils::helpers::get_unverified_jwt_claims, FeatTrait};
-use crate::state::core_utils::DateUtils;
+use crate::{error::AppError, state::core_utils::DateUtils};
 
 use derivative::Derivative;
 use serde::{Deserialize, Serialize};
@@ -48,10 +48,12 @@ pub struct VerifiableCredentialRecord {
     pub display_credential: DisplayCredential,
 }
 
-impl From<serde_json::Value> for VerifiableCredentialRecord {
-    fn from(verifiable_credential: serde_json::Value) -> Self {
+impl TryFrom<serde_json::Value> for VerifiableCredentialRecord {
+    type Error = AppError;
+
+    fn try_from(verifiable_credential: serde_json::Value) -> Result<Self, AppError> {
         let display_credential = {
-            let credential_display = get_unverified_jwt_claims(&verifiable_credential)["vc"].clone();
+            let credential_display = get_unverified_jwt_claims(&verifiable_credential)?["vc"].clone();
 
             // Derive the hash from the credential display.
             let hash = {
@@ -101,10 +103,10 @@ impl From<serde_json::Value> for VerifiableCredentialRecord {
             }
         };
 
-        Self {
+        Ok(Self {
             verifiable_credential,
             display_credential,
-        }
+        })
     }
 }
 

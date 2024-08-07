@@ -33,8 +33,8 @@ export default [
   },
   {
     rules: {
-      'svelte/no-at-html-tags': 'warn', // TODO: security risk even applicable for context of Tauri app?
       'no-console': 'error',
+      'svelte/no-at-html-tags': 'warn', // TODO: security risk even applicable for context of Tauri app?
     },
   },
 ];

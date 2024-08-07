@@ -16,14 +16,19 @@ use crate::{
 
 use identity_credential::{credential::Jwt, presentation::Presentation};
 use identity_iota::did::CoreDID;
+use jsonwebtoken::Algorithm;
 use log::info;
-use oid4vc::oid4vc_core::{
-    authorization_request::{AuthorizationRequest, Object},
-    client_metadata::ClientMetadataResource,
-};
 use oid4vc::oid4vc_manager::managers::presentation::create_presentation_submission;
+use oid4vc::oid4vp::authorization_request::ClientMetadataParameters;
 use oid4vc::oid4vp::oid4vp;
 use oid4vc::oid4vp::oid4vp::OID4VP;
+use oid4vc::{
+    oid4vc_core::{
+        authorization_request::{AuthorizationRequest, Object},
+        client_metadata::ClientMetadataResource,
+    },
+    oid4vp::{ClaimFormatDesignation, ClaimFormatProperty},
+};
 
 // Sends the authorization response including the verifiable credentials.
 pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action) -> Result<AppState, AppError> {
@@ -73,7 +78,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             &verifiable_credentials
                 .iter()
                 .map(get_unverified_jwt_claims)
-                .collect::<Vec<_>>(),
+                .collect::<Result<Vec<_>, _>>()?,
         )
         .map_err(PresentationSubmissionError)?;
 
@@ -84,9 +89,17 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             .as_ref()
             .ok_or(MissingManagerError("identity"))?;
 
+        let OID4VPClientMetadata {
+            client_name,
+            logo_uri,
+            connection_url,
+            client_id,
+            algorithm,
+        } = get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request);
+
         let subject_did = identity_manager
             .subject
-            .identifier(&state.profile_settings.preferred_did_method)
+            .identifier(state.profile_settings.preferred_did_methods.first().unwrap(), algorithm)
             .await
             .expect("No default DID method");
 
@@ -124,9 +137,6 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             return Err(SendAuthorizationResponseError);
         }
         info!("response successfully sent");
-
-        let (client_name, logo_uri, connection_url, client_id) =
-            get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request);
 
         let did = CoreDID::parse(client_id).ok();
 
@@ -176,11 +186,19 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
 
 // Helper
 
+pub struct OID4VPClientMetadata {
+    pub client_name: String,
+    pub logo_uri: Option<String>,
+    pub connection_url: String,
+    pub client_id: String,
+    pub algorithm: Algorithm,
+}
+
 // TODO: move this functionality to the oid4vc-manager crate.
-/// Returns (client_name, logo_uri, connection_url, client_id)
+/// Returns (client_name, logo_uri, connection_url, client_id, algorithm)
 pub fn get_oid4vp_client_name_and_logo_uri(
     oid4vp_authorization_request: &AuthorizationRequest<Object<OID4VP>>,
-) -> (String, Option<String>, String, String) {
+) -> OID4VPClientMetadata {
     // Get the connection url from the redirect url host (or use the redirect url if it does not
     // contain a host).
     let redirect_uri = oid4vp_authorization_request.body.redirect_uri.clone();
@@ -189,21 +207,45 @@ pub fn get_oid4vp_client_name_and_logo_uri(
     let client_id = oid4vp_authorization_request.body.client_id.clone();
 
     // Get the client_name and logo_uri from the client_metadata if it exists.
-    oid4vp_authorization_request
-        .body
-        .extension
-        .client_metadata
-        .as_ref()
-        .and_then(|client_metadata| match client_metadata {
-            ClientMetadataResource::ClientMetadata {
-                client_name, logo_uri, ..
-            } => {
-                let client_name = client_name.as_ref().cloned().unwrap_or(connection_url.to_string());
-                let logo_uri = logo_uri.as_ref().map(|logo_uri| logo_uri.to_string());
-                Some((client_name, logo_uri, connection_url.to_string(), client_id.clone()))
-            }
-            _ => None,
-        })
-        // Otherwise use the connection_url as the client_name.
-        .unwrap_or((connection_url.to_string(), None, connection_url.to_string(), client_id))
+    match &oid4vp_authorization_request.body.extension.client_metadata {
+        ClientMetadataResource::ClientMetadata {
+            client_name,
+            logo_uri,
+            extension: ClientMetadataParameters { vp_formats },
+            other: _,
+        } => {
+            let client_name = client_name.as_ref().cloned().unwrap_or(connection_url.to_string());
+            let logo_uri = logo_uri.as_ref().map(|logo_uri| logo_uri.to_string());
+
+            // TODO: These helper functions become more and more complicated. This functionality needs to be implemented
+            // in oid4vc-manager soon.
+            // Get the algorithm from the client_metadata if it exists or default to EdDSA.
+            let algorithm = vp_formats
+                .get(&ClaimFormatDesignation::JwtVcJson)
+                .and_then(|claim_format_property| match claim_format_property {
+                    ClaimFormatProperty::Alg(alg) => alg.first().cloned(),
+                    // TODO: implement `ProofType`.
+                    ClaimFormatProperty::ProofType(_) => None,
+                })
+                .unwrap_or(Algorithm::EdDSA);
+
+            Some(OID4VPClientMetadata {
+                client_name,
+                logo_uri,
+                connection_url: connection_url.to_string(),
+                client_id: client_id.clone(),
+                algorithm,
+            })
+        }
+        // TODO: support `client_metadata_uri`
+        ClientMetadataResource::ClientMetadataUri(_) => None,
+    }
+    // Otherwise use the connection_url as the client_name.
+    .unwrap_or(OID4VPClientMetadata {
+        client_name: connection_url.to_string(),
+        logo_uri: None,
+        connection_url: connection_url.to_string(),
+        client_id,
+        algorithm: Algorithm::EdDSA,
+    })
 }
