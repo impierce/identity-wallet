@@ -10,10 +10,12 @@
   import { ShieldFillIcon } from '$lib/icons';
   import { onboarding_state } from '$lib/stores';
   import { calculateInitials } from '$lib/utils';
+
+  let loading = false;
 </script>
 
 <!-- TODO: should we show this screen AFTER a successful creation of a stronghold? -->
-<TopNavBar on:back={() => history.back()} title={$LL.ONBOARDING.PASSWORD.COMPLETED.NAVBAR_TITLE()} />
+<TopNavBar on:back={() => history.back()} title={$LL.ONBOARDING.PASSWORD.COMPLETED.NAVBAR_TITLE()} disabled />
 <!-- Content -->
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }}>
   <div class="pb-8 pt-4">
@@ -57,8 +59,8 @@
 <div class="rounded-t-3xl bg-white p-6 dark:bg-dark" in:fade={{ delay: 200 }}>
   <Button
     label={$LL.CONTINUE()}
-    on:click={async () => {
-      await dispatch({
+    on:click={() => {
+      dispatch({
         type: '[DID] Create new',
         payload: {
           name: $onboarding_state.name ?? '',
@@ -67,6 +69,8 @@
           password: $onboarding_state.password ?? '',
         },
       });
+      loading = true;
     }}
+    {loading}
   />
 </div>
