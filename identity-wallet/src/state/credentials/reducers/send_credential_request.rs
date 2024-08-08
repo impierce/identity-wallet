@@ -307,9 +307,8 @@ fn get_credential_display_name(
                 )
         })
         .map(ToString::to_string)
-        // An empty string is used as a fallback. This can only happen if the credential is not a valid W3C
-        // Verifiable Credential.
-        .unwrap_or_default()
+        // Fallback to `Credential` if the credential is not a valid W3C Verifiable Credential.
+        .unwrap_or("Credential".to_string())
 }
 
 #[cfg(test)]
