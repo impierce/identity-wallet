@@ -18,7 +18,7 @@
 
   import { BottomNavBar, Button, LoadingSpinner } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
-  import { CameraSlashRegularIcon, CodeRegularIcon, WarningCircleRegularIcon } from '$lib/icons';
+  import { CameraSlashRegularIcon } from '$lib/icons';
   import { state } from '$lib/stores';
 
   let scanning = false;
@@ -77,72 +77,6 @@
     }
   }
 
-  const mockScanError = () => {
-    loading = true;
-    setTimeout(() => {
-      loading = false;
-      dispatch({ type: '[QR Code] Scanned', payload: { form_urlencoded: 'foobar' } });
-    }, 1_000);
-  };
-
-  const mockSiopRequest = () => {
-    state.set({
-      ...$state,
-      current_user_prompt: {
-        type: 'accept-connection',
-        client_name: 'Impierce Demo Portal',
-        logo_uri: undefined,
-        redirect_uri: 'https://demo.impierce.com/auth/callback',
-        previously_connected: false,
-        domain_validation: {
-          status: 'Unknown',
-          message: 'DomainLinkageConfiguration could not be fetched',
-        },
-      },
-    });
-  };
-
-  const mockOfferRequest = () => {
-    state.set({
-      ...$state,
-      current_user_prompt: {
-        type: 'credential-offer',
-        issuer_name: 'State University',
-        logo_uri: undefined,
-        credential_configurations: {
-          0: {
-            display: [
-              {
-                name: 'Graduation Diploma',
-                locale: 'en-US',
-              },
-            ],
-            credential_definition: {
-              type: ['VerifiableCredential', 'University Degree'],
-            },
-          },
-          1: {
-            credential_definition: {
-              type: ['VerifiableCredential', 'Cafeteria Voucher'],
-            },
-          },
-        },
-      },
-    });
-  };
-
-  const mockShareRequest = () => {
-    state.set({
-      ...$state,
-      current_user_prompt: {
-        type: 'share-credentials',
-        client_name: 'Impierce Demo Portal',
-        logo_uri: undefined,
-        options: [$state.credentials[0].id],
-      },
-    });
-  };
-
   async function cancelScan() {
     await cancel();
     scanning = false;
@@ -185,58 +119,20 @@
 
           <!-- Dev mode -->
           {#if $state?.dev_mode !== 'Off' && !loading}
-            <!-- Description -->
-            <div class="flex w-full items-center rounded-lg bg-white px-4 py-4 dark:bg-dark">
-              <span class="mr-4 h-6 w-6">
-                <CodeRegularIcon class="h-6 w-6 text-primary" />
-              </span>
-              <div class="flex flex-col">
-                <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">Developer mode active</p>
-                <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
-                  Click one of the following buttons to simulate a successful QR scan.
-                </p>
-              </div>
-            </div>
-
-            <!-- Warning -->
-            <div class="flex w-full items-center rounded-lg bg-white px-4 py-4 dark:bg-dark">
-              <span class="mr-4 h-6 w-6">
-                <WarningCircleRegularIcon class="h-6 w-6 text-amber-500" />
-              </span>
-              <div class="flex flex-col">
-                <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">Warning</p>
-                <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
-                  Accepting one of the mock requests can lead to unexpected behavior.
-                </p>
-              </div>
-            </div>
-
-            <!-- Buttons -->
             <div class="flex w-3/4 flex-col space-y-4">
-              <!-- Mocks -->
-              <div class="flex flex-col space-y-2">
-                <Button variant="secondary" on:click={mockSiopRequest} label="New connection" />
-                <!-- OpenID4VCI (Verifiable Credential Issuance) -->
-                <Button variant="secondary" on:click={mockOfferRequest} label="Receive credential offer" />
-                <!-- OpenID4VP (Verifiable Presentations) -->
-                <Button variant="secondary" on:click={mockShareRequest} label="Share credentials" />
-                <Button variant="secondary" on:click={mockScanError} label="Invalid QR code" />
-                <div class="flex flex-col space-y-2 rounded-[20px] border border-slate-200 p-2 dark:border-slate-600">
-                  <input
-                    bind:value={mockQrCodeValue}
-                    class="h-12 w-full rounded-xl border border-slate-200 px-3 text-[13px]/[24px] text-teal dark:border-slate-600 dark:bg-dark"
-                    placeholder="Paste QR code value"
-                  />
-                  <Button
-                    variant="secondary"
-                    on:click={() =>
-                      dispatch({ type: '[QR Code] Scanned', payload: { form_urlencoded: mockQrCodeValue } })}
-                    label="Process QR code"
-                  />
-                </div>
+              <div class="flex flex-col space-y-2 rounded-[20px] border border-slate-200 p-2 dark:border-slate-600">
+                <input
+                  bind:value={mockQrCodeValue}
+                  class="h-12 w-full rounded-xl border border-slate-200 px-3 text-[13px]/[24px] text-teal dark:border-slate-600 dark:bg-dark"
+                  placeholder="Paste QR code value"
+                />
+                <Button
+                  variant="secondary"
+                  on:click={() =>
+                    dispatch({ type: '[QR Code] Scanned', payload: { form_urlencoded: mockQrCodeValue } })}
+                  label="Process QR code"
+                />
               </div>
-              <!-- Divider -->
-              <hr class="border-slate-300 dark:border-slate-500" />
               <Button variant="primary" on:click={startScan} label="Start new scan" />
             </div>
           {/if}
