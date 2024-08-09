@@ -2,14 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <!-- Use "development" for local testing, use "ad-hoc" for TestFlight releases -->
+    <!-- Use "development" for local testing, use "release-testing" for TestFlight releases -->
 
-    <!-- <key>method</key>
+	<!-- <key>method</key>
     <string>development</string>
     <key>provisioningProfiles</key>
 	<dict>
 		<key>com.impierce.identity-wallet</key>
-		<string>UniMe (alpha) - Internal Test (Development)</string>
+		<string>UniMe Beta - Daniel's Development Profile</string>
 	</dict> -->
 
     <key>method</key>
@@ -17,7 +17,7 @@
 	<key>provisioningProfiles</key>
 	<dict>
 		<key>com.impierce.identity-wallet</key>
-		<string>UniMe (alpha) - Internal Test (Distribution)</string>
+		<string>UniMe Beta - Distribution Profile</string>
 	</dict>
 </dict>
 </plist>
