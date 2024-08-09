@@ -77,43 +77,6 @@
     }
   }
 
-  const mockScanError = () => {
-    loading = true;
-    setTimeout(() => {
-      loading = false;
-      dispatch({ type: '[QR Code] Scanned', payload: { form_urlencoded: 'foobar' } });
-    }, 1_000);
-  };
-
-  const mockSiopRequest = () => {
-    state.set({
-      ...$state,
-      current_user_prompt: {
-        type: 'accept-connection',
-        client_name: 'Some other client',
-        logo_uri: undefined,
-        redirect_uri: 'https://demo.ngdil.com/auth/callback',
-        previously_connected: false,
-        domain_validation: {
-          status: 'Unknown',
-          message: 'DomainLinkageConfiguration could not be fetched',
-        },
-      },
-    });
-  };
-
-  const mockShareRequest = () => {
-    state.set({
-      ...$state,
-      current_user_prompt: {
-        type: 'share-credentials',
-        client_name: 'My Client Name',
-        logo_uri: undefined,
-        options: [$state.credentials[0].id],
-      },
-    });
-  };
-
   async function cancelScan() {
     await cancel();
     scanning = false;
@@ -155,30 +118,21 @@
           {/if}
 
           <!-- Dev mode -->
-          {#if $state?.dev_mode !== 'Off'}
+          {#if $state?.dev_mode !== 'Off' && !loading}
             <div class="flex w-3/4 flex-col space-y-4">
-              <!-- Mocks -->
-              <div class="flex flex-col space-y-2">
-                <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Mock scans</p>
-                <Button variant="secondary" on:click={mockSiopRequest} label="New connection" />
-                <Button variant="secondary" on:click={mockShareRequest} label="Share credentials" />
-                <Button variant="secondary" on:click={mockScanError} label="Scan error" />
-                <div class="flex flex-col space-y-2 rounded-[20px] border border-slate-200 p-2 dark:border-slate-600">
-                  <input
-                    bind:value={mockQrCodeValue}
-                    class="h-12 w-full rounded-xl border border-slate-200 px-3 text-[13px]/[24px] text-teal dark:border-slate-600 dark:bg-dark"
-                    placeholder="Paste QR code value"
-                  />
-                  <Button
-                    variant="secondary"
-                    on:click={() =>
-                      dispatch({ type: '[QR Code] Scanned', payload: { form_urlencoded: mockQrCodeValue } })}
-                    label="Process QR code"
-                  />
-                </div>
+              <div class="flex flex-col space-y-2 rounded-[20px] border border-slate-200 p-2 dark:border-slate-600">
+                <input
+                  bind:value={mockQrCodeValue}
+                  class="h-12 w-full rounded-xl border border-slate-200 px-3 text-[13px]/[24px] text-teal dark:border-slate-600 dark:bg-dark"
+                  placeholder="Paste QR code value"
+                />
+                <Button
+                  variant="secondary"
+                  on:click={() =>
+                    dispatch({ type: '[QR Code] Scanned', payload: { form_urlencoded: mockQrCodeValue } })}
+                  label="Process QR code"
+                />
               </div>
-              <!-- Divider -->
-              <hr class="border-slate-300 dark:border-slate-500" />
               <Button variant="primary" on:click={startScan} label="Start new scan" />
             </div>
           {/if}

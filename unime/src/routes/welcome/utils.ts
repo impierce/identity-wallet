@@ -5,5 +5,5 @@ export const routeOrder = [
   '/welcome/customize/name',
   '/welcome/password',
   '/welcome/password/confirm',
-  '/welcome/password/completed',
+  '/welcome/completed',
 ];

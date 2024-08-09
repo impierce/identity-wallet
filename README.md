@@ -105,3 +105,11 @@ rm -rf ~/.cargo/git/checkouts/*
 # Windows
 rd /s /q "%USERPROFILE%\.cargo\git\checkouts"
 ```
+
+## Release a new version
+
+1. Search the entire project for the current version string (such as `0.6.2`) and replace them with the new version string.
+   Be **cautious** not to replace versions of any other dependencies (in `Cargo.toml`, `Cargo.lock`, `package.json`, `package-lock.json`).
+2. Run the script in `unime/src-tauri/gen-static/apply.sh` which copies over the changed files into the (untracked) generated folders for Android and iOS.
+3. Inside `unime/src-tauri` run `cargo tauri icon`.
+4. Run `npm run tauri ios build` and `npm run tauri android build` to build the apps. The iOS build (`.ipa`) will be in `unime/src-tauri/gen/apple/build/arm64` and the Android builds (`.apk` and `.aab`) will be in `unime/src-tauri/gen/android/app/build/outputs/`.

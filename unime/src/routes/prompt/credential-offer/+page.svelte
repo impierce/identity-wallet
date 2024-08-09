@@ -68,7 +68,7 @@
       class="mt-3 w-full rounded-[20px] border border-slate-200 bg-white p-[10px] dark:border-slate-600 dark:bg-dark"
     >
       {#each Object.entries(credential_configurations) as [credential_configuration_id, credential_configuration]}
-        <!-- TODO: careful with long list! -->
+        <!-- TODO: bug: long list is not correctly displayed -->
         <ListItemCard
           id={`credential_${credential_configuration_id}`}
           title={credential_configuration.display?.at(0)?.name ??

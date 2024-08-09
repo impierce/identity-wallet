@@ -102,5 +102,5 @@
 </div>
 
 <div class="rounded-t-3xl bg-white p-6 dark:bg-dark" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
-  <Button label={$LL.CONTINUE()} on:click={() => goto('/welcome/password/completed')} disabled={!passwordsMatch} />
+  <Button label={$LL.CONTINUE()} on:click={() => goto('/welcome/completed')} disabled={!passwordsMatch} />
 </div>

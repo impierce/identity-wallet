@@ -4,18 +4,16 @@ export { default as GBFlagIcon } from '~icons/circle-flags/gb';
 export { default as NLFlagIcon } from '~icons/circle-flags/nl';
 export { default as USFlagIcon } from '~icons/circle-flags/us';
 
-// Lucide icons: https://icon-sets.iconify.design/lucide/
-export { default as ChevronLeftIcon } from '~icons/lucide/chevron-left';
-export { default as ScrollTextIcon } from '~icons/lucide/scroll-text';
-
 // Phosphor icons: https://icon-sets.iconify.design/ph/
 export { default as ArrowLeftRegularIcon } from '~icons/ph/arrow-left';
 export { default as ArrowSquareOutBoldIcon } from '~icons/ph/arrow-square-out-bold';
 export { default as BankLightIcon } from '~icons/ph/bank-light';
+export { default as BugRegularIcon } from '~icons/ph/bug';
 export { default as CalendarCheckRegularIcon } from '~icons/ph/calendar-check';
 export { default as CalendarPlusRegularIcon } from '~icons/ph/calendar-plus';
 export { default as CameraSlashRegularIcon } from '~icons/ph/camera-slash';
 export { default as CaretDownBoldIcon } from '~icons/ph/caret-down-bold';
+export { default as CaretLeftBoldIcon } from '~icons/ph/caret-left-bold';
 export { default as CaretRightBoldIcon } from '~icons/ph/caret-right-bold';
 export { default as CaretUpBoldIcon } from '~icons/ph/caret-up-bold';
 export { default as CertificateLightIcon } from '~icons/ph/certificate-light';
@@ -25,6 +23,7 @@ export { default as CheckCircleRegularIcon } from '~icons/ph/check-circle';
 export { default as CheckCircleFillIcon } from '~icons/ph/check-circle-fill';
 export { default as CircleRegularIcon } from '~icons/ph/circle';
 export { default as CodeBoldIcon } from '~icons/ph/code-bold';
+export { default as CodeRegularIcon } from '~icons/ph/code';
 export { default as ConfettiFillIcon } from '~icons/ph/confetti-fill';
 export { default as DownloadSimpleFillIcon } from '~icons/ph/download-simple-fill';
 export { default as EnvelopeFillIcon } from '~icons/ph/envelope-fill';
@@ -68,5 +67,6 @@ export { default as UserLightIcon } from '~icons/ph/user-light';
 export { default as VaultFillIcon } from '~icons/ph/vault-fill';
 export { default as WarningRegularIcon } from '~icons/ph/warning';
 export { default as WarningCircleFillIcon } from '~icons/ph/warning-circle-fill';
+export { default as WarningCircleRegularIcon } from '~icons/ph/warning-circle';
 export { default as XRegularIcon } from '~icons/ph/x';
 export { default as XBoldIcon } from '~icons/ph/x-bold';
