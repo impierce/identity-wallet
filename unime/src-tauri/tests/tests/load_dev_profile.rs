@@ -1,4 +1,4 @@
-use crate::common::assert_state_update::{assert_state_update, setup_state_file};
+use crate::common::assert_state_update::{assert_state_update, setup_state_file, setup_stronghold};
 use crate::common::json_example;
 use identity_wallet::state::AppStateContainer;
 use identity_wallet::state::{actions::Action, AppState};
@@ -7,6 +7,7 @@ use identity_wallet::state::{actions::Action, AppState};
 #[serial_test::serial]
 async fn test_load_dev_profile() {
     setup_state_file();
+    setup_stronghold();
 
     // Deserializing the Appstates and Actions from the accompanying json files.
     let state = json_example::<AppState>("tests/fixtures/states/four_credentials_redirect_me.json");
@@ -19,6 +20,7 @@ async fn test_load_dev_profile() {
 #[serial_test::serial]
 async fn test_load_dev_profile_twice() {
     setup_state_file();
+    setup_stronghold();
 
     // Deserializing the Appstates and Actions from the accompanying json files.
     let state1 = json_example::<AppState>("tests/fixtures/states/four_credentials_redirect_me.json");
