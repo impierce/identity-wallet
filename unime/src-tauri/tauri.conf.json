@@ -27,7 +27,7 @@
   "build": {
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build",
-    "devUrl": "http://localhost:5173",
+    "devUrl": "http://localhost:1420",
     "frontendDist": "../build"
   },
   "bundle": {
@@ -45,13 +45,5 @@
     "resources": [
       "resources/*"
     ]
-  },
-  "plugins": {
-    "fs": {
-      "scope": [
-        "$APPDATA/assets/**/*.png",
-        "$APPDATA/assets/**/*.svg"
-      ]
-    }
   }
 }

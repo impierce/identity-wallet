@@ -3,14 +3,11 @@
   "identifier": "main-capability",
   "windows": ["main"],
   "permissions": [
-    "core:app:default",
-    "core:event:default",
-    "core:menu:default",
-    "core:path:default",
-    "core:resources:default",
-    "core:tray:default",
-    "core:window:default",
-    "fs:allow-appdata-read-recursive",
+    "core:default",
+    {
+      "identifier": "fs:allow-appdata-read-recursive",
+      "allow": [{ "path": "$APPDATA/assets/**/*.png" }, { "path": "$APPDATA/assets/**/*.svg" }]
+    },
     "log:default",
     "shell:allow-open"
   ]
