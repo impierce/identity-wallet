@@ -25,7 +25,7 @@ android {
     namespace = "com.impierce.unime"
     defaultConfig {
         manifestPlaceholders["usesCleartextTraffic"] = "false"
-        applicationId = "com.impierce.unime"
+        applicationId = "com.impierce.identity_wallet"
         minSdk = 24
         targetSdk = 34
         versionCode = tauriProperties.getProperty("tauri.android.versionCode", "1").toInt()
