@@ -6,6 +6,13 @@ plugins {
     id("rust")
 }
 
+val keystoreProperties = Properties().apply {
+    val propFile = rootProject.file("keystore.properties")
+    if (propFile.exists()) {
+        propFile.inputStream().use { load(it) }
+    }
+}
+
 val tauriProperties = Properties().apply {
     val propFile = file("tauri.properties")
     if (propFile.exists()) {
@@ -26,16 +33,10 @@ android {
     }
     signingConfigs {
         create("release") {
-            val keystorePropertiesFile = rootProject.file("keystore.properties")
-            val keystoreProperties = Properties()
-            if (keystorePropertiesFile.exists()) {
-                keystoreProperties.load(FileInputStream(keystorePropertiesFile))
-            }
-
-            keyAlias = keystoreProperties["keyAlias"] as String
-            keyPassword = keystoreProperties["keyPassword"] as String
-            storeFile = file(keystoreProperties["storeFile"] as String)
-            storePassword = keystoreProperties["storePassword"] as String
+            keyAlias = keystoreProperties.getProperty("keyAlias")
+            keyPassword = keystoreProperties.getProperty("keyPassword")
+            storeFile = file(keystoreProperties.getProperty("storeFile"))
+            storePassword = keystoreProperties.getProperty("storePassword")
         }
     }
     buildTypes {
