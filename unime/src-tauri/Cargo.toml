@@ -1,6 +1,6 @@
 [package]
 name = "unime"
-version = "0.6.6"
+version = "0.6.7"
 description = "Identity Wallet for people to manage Decentralized Identities and Verifiable Credentials"
 homepage = "https://www.impierce.com/"
 authors = ["Impierce Technologies"]
