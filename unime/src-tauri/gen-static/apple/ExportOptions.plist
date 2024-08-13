@@ -9,7 +9,7 @@
     <key>provisioningProfiles</key>
 	<dict>
 		<key>com.impierce.identity-wallet</key>
-		<string>UniMe Beta - Daniel's Development Profile</string>
+		<string>UniMe Beta - Development Profile</string>
 	</dict> -->
 
     <key>method</key>
