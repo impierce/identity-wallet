@@ -3,7 +3,7 @@ import { defineConfig } from 'vite';
 
 import { sveltekit } from '@sveltejs/kit/vite';
 
-const host = process.env.TAURI_DEV_HOST;
+const host = '0.0.0.0';
 
 // https://vitejs.dev/config/
 export default defineConfig({
