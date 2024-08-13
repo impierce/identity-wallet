@@ -1,9 +1,8 @@
+import { internalIpV4 } from 'internal-ip';
 import Icons from 'unplugin-icons/vite';
 import { defineConfig } from 'vite';
 
 import { sveltekit } from '@sveltejs/kit/vite';
-
-const host = '0.0.0.0';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -19,16 +18,14 @@ export default defineConfig({
   },
   clearScreen: false,
   server: {
-    host: host || false,
-    port: 1420,
+    host: '0.0.0.0',
+    port: 5173,
     strictPort: true,
-    hmr: host
-      ? {
-          protocol: 'ws',
-          host: host,
-          port: 1430,
-        }
-      : undefined,
+    hmr: {
+      protocol: 'ws',
+      host: await internalIpV4(),
+      port: 5183,
+    },
   },
   envPrefix: ['VITE_', 'TAURI_'],
   build: {
