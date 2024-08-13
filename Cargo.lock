@@ -9142,9 +9142,9 @@ dependencies = [
 
 [[package]]
 name = "tauri-runtime"
-version = "2.0.0-beta.21"
+version = "2.0.0-beta.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "189510033be50f6fde35cfa50b50c7ab4e0ced0c867ae0f643b4907b8385bbe5"
+checksum = "fe978df03966febbebc608931dc2cf26ef94df70855a18b05f07134cf474de09"
 dependencies = [
  "dpi",
  "gtk",
@@ -9161,9 +9161,9 @@ dependencies = [
 
 [[package]]
 name = "tauri-runtime-wry"
-version = "2.0.0-beta.21"
+version = "2.0.0-beta.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6938bd63b6658e7b08f0fe2151390148ee5a8ccdba100d4dff961d2c8734d9a9"
+checksum = "11e4d568f61095f507b3fc4254dfbfff3b20de2a1d66167ffca3f6d90b14db8f"
 dependencies = [
  "cocoa",
  "gtk",
@@ -9839,6 +9839,7 @@ dependencies = [
  "tauri-plugin-fs",
  "tauri-plugin-log",
  "tauri-plugin-shell",
+ "tauri-runtime",
  "tauri-utils",
  "tempfile",
  "tokio",
