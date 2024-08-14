@@ -15,39 +15,43 @@ name = "unime"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
-tauri-build = { version = "=2.0.0-beta.19", features = [] }
-tauri-runtime = { version = "=2.0.0-beta.20" }
-tauri-utils = { version = "=2.0.0-beta.19", features = [ "build" ] }
+tauri-codegen = { workspace = true, optional = true }
+tauri-build.workspace = true
+tauri-utils = { workspace = true, features = ["build" ] }
+tauri-winres.workspace = true
 
 [dependencies]
 tauri.workspace = true
-oid4vc.workspace = true
+tauri-macros.workspace = true
+tauri-runtime.workspace = true
+tauri-runtime-wry = { workspace = true, optional = true }
+tauri-utils.workspace = true
+
+dotenvy = { version = "0.15" }
+fern = "0.6.0"
+identity-wallet = { path = "../../identity-wallet" }
 log.workspace = true
 serde_json.workspace = true
-
-identity-wallet = { path = "../../identity-wallet" }
-
 tauri-plugin-barcode-scanner = { version = "=2.0.0-beta.9" }
 tauri-plugin-log = { version = "=2.0.0-beta.8", features = ["colored"] }
 tauri-plugin-fs = { version = "=2.0.0-beta.11" }
 tauri-plugin-shell = { version = "=2.0.0-beta.9" }
 
-dotenvy = { version = "0.15" }
-fern = "0.6.0"
-
 [dev-dependencies]
+tauri = { workspace = true, features = ["test"] }
+
 did_manager.workspace = true
 jsonwebtoken.workspace = true
+oid4vc.workspace = true
 rand.workspace = true
-wiremock.workspace = true
+serde = { version = "1.0", features = ["derive"] }
 serial_test.workspace = true
 tempfile.workspace = true
-
-tauri = { version = "=2.0.0-beta.24", features = ["rustls-tls", "test"] }
-serde = { version = "1.0", features = ["derive"] }
 tokio = { version = "1.26.0", features = ["macros"] }
-url = "2.4"
 typetag = "0.2"
+url = "2.4"
+wiremock.workspace = true
+
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem
