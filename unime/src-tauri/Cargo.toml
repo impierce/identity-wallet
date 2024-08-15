@@ -1,6 +1,6 @@
 [package]
 name = "unime"
-version = "0.6.2"
+version = "0.6.7"
 description = "Identity Wallet for people to manage Decentralized Identities and Verifiable Credentials"
 homepage = "https://www.impierce.com/"
 authors = ["Impierce Technologies"]
@@ -16,6 +16,7 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
 tauri-build = { version = "=2.0.0-beta.19", features = [] }
+tauri-runtime = { version = "=2.0.0-beta.20" }
 tauri-utils = { version = "=2.0.0-beta.19", features = [ "build" ] }
 
 [dependencies]

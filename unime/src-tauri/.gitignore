@@ -4,10 +4,7 @@
 !Cargo.lock
 .snapshot
 
-gen/*
-!gen/apple/unime_iOS/Info.plist
-!gen/apple/ExportOptions.plist
-!gen/android/app/build.gradle.kts
+gen/
 
 # All icons can be easily generated through `cargo tauri icon`
 icons/
