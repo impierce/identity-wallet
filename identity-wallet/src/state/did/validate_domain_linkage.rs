@@ -1,7 +1,20 @@
+use std::str::FromStr;
+
+use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use did_manager::Resolver;
 use identity_credential::domain_linkage::{DomainLinkageConfiguration, JwtDomainLinkageValidator};
 use identity_eddsa_verifier::EdDSAJwsVerifier;
-use identity_iota::{core::FromJson, credential::JwtCredentialValidationOptions};
+use identity_iota::{
+    core::FromJson,
+    credential::JwtCredentialValidationOptions,
+    verification::{
+        jwk::{Jwk, JwkParams},
+        jws::{
+            JwsAlgorithm, JwsVerifier, SignatureVerificationError, SignatureVerificationErrorKind, VerificationInput,
+        },
+    },
+};
+use jsonwebtoken::{DecodingKey, Validation};
 use log::info;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
@@ -22,6 +35,58 @@ pub enum ValidationStatus {
     Unknown,
 }
 
+struct Verifier;
+
+impl JwsVerifier for Verifier {
+    fn verify(&self, input: VerificationInput, public_key: &Jwk) -> Result<(), SignatureVerificationError> {
+        use JwsAlgorithm::*;
+
+        let decoding_key = match (input.alg, public_key.params()) {
+            (EdDSA, JwkParams::Okp(okp_params)) => {
+                DecodingKey::from_ed_der(&URL_SAFE_NO_PAD.decode(&okp_params.x).unwrap())
+            }
+            (ES256, JwkParams::Ec(ec_params)) => {
+                let x_bytes = URL_SAFE_NO_PAD.decode(&ec_params.x).unwrap();
+                let y_bytes = URL_SAFE_NO_PAD.decode(&ec_params.y).unwrap();
+
+                let encoded_point = p256::EncodedPoint::from_affine_coordinates(
+                    p256::FieldBytes::from_slice(&x_bytes),
+                    p256::FieldBytes::from_slice(&y_bytes),
+                    false, // false for uncompressed point
+                );
+
+                let verifying_key = p256::ecdsa::VerifyingKey::from_encoded_point(&encoded_point)
+                    .expect("Failed to create verifying key from encoded point");
+
+                DecodingKey::from_ec_der(&verifying_key.to_encoded_point(false).as_bytes().to_vec())
+            }
+            _ => {
+                return Err(SignatureVerificationError::new(
+                    SignatureVerificationErrorKind::UnsupportedAlg,
+                ))
+            }
+        };
+
+        let mut validation = Validation::new(jsonwebtoken::Algorithm::from_str(&input.alg.to_string()).unwrap());
+        validation.validate_exp = false;
+        validation.validate_aud = false;
+        validation.required_spec_claims.clear();
+
+        let jwt = format!(
+            "{}.{}",
+            std::str::from_utf8(&input.signing_input).unwrap(),
+            URL_SAFE_NO_PAD.encode(input.decoded_signature.clone())
+        );
+
+        match jsonwebtoken::decode::<serde_json::Value>(&jwt, &decoding_key, &validation) {
+            Ok(_) => Ok(()),
+            Err(e) => Err(SignatureVerificationError::new(
+                SignatureVerificationErrorKind::InvalidSignature,
+            )),
+        }
+    }
+}
+
 /// https://wiki.iota.org/identity.rs/how-tos/domain-linkage/create-and-verify/#verifying-a-did-and-domain-linkage
 pub async fn validate_domain_linkage(url: url::Url, did: &str) -> ValidationResult {
     let did_configuration_result = fetch_configuration(url.clone()).await;
@@ -37,7 +102,7 @@ pub async fn validate_domain_linkage(url: url::Url, did: &str) -> ValidationResu
     };
 
     // TODO: Only EdDSA is supported for now
-    let validator = JwtDomainLinkageValidator::with_signature_verifier(EdDSAJwsVerifier::default());
+    let validator = JwtDomainLinkageValidator::with_signature_verifier(Verifier);
 
     let resolver = Resolver::new().await;
 
