@@ -153,6 +153,12 @@ async fn fetch_configuration(mut url: url::Url) -> Result<DomainLinkageConfigura
 mod tests {
     use super::*;
 
+    use identity_iota::verification::jws::JwsAlgorithm;
+    use jsonwebtoken::{encode, EncodingKey, Header};
+    use ring::{
+        rand::SystemRandom,
+        signature::{EcdsaKeyPair, Ed25519KeyPair, KeyPair, ECDSA_P256_SHA256_ASN1_SIGNING},
+    };
     use serde_json::json;
     use wiremock::{
         matchers::{method, path},
@@ -317,5 +323,84 @@ mod tests {
                 message: Some("invalid issuer DID".to_string())
             }
         );
+    }
+
+    #[test]
+    fn verifier_successfully_verifies_es256_signed_data() {
+        let rng = SystemRandom::new();
+
+        // Generate a new ECDSA key pair (P-256 curve with SHA-256)
+        let pkcs8_bytes = EcdsaKeyPair::generate_pkcs8(&ECDSA_P256_SHA256_ASN1_SIGNING, &rng).unwrap();
+
+        // The private key in DER format
+        let private_key_der = pkcs8_bytes.as_ref();
+
+        let key_pair =
+            EcdsaKeyPair::from_pkcs8(&ring::signature::ECDSA_P256_SHA256_ASN1_SIGNING, private_key_der, &rng).unwrap();
+        let public_key = key_pair.public_key().as_ref();
+
+        // x and y are each 32 bytes, they represent the public key
+        let x = URL_SAFE_NO_PAD.encode(&public_key[1..33]);
+        let y = URL_SAFE_NO_PAD.encode(&public_key[33..65]);
+
+        let jwk = IotaIdentityJwk::from_json_value(serde_json::json!({
+            "kty": "EC",
+            "crv": "P-256",
+            "x": x,
+            "y": y,
+        }))
+        .unwrap();
+
+        let encoding_key = EncodingKey::from_ec_der(private_key_der);
+
+        let message = "foobar";
+
+        let token = encode(&Header::new(Algorithm::ES256), &message, &encoding_key).unwrap();
+
+        let input = VerificationInput {
+            signing_input: message.as_bytes().into(),
+            decoded_signature: URL_SAFE_NO_PAD.decode(token.split('.').nth(2).unwrap()).unwrap().into(),
+            alg: JwsAlgorithm::ES256,
+        };
+
+        assert!(Verifier.verify(input, &jwk).is_ok());
+    }
+
+    #[test]
+    fn verifier_successfully_verifies_eddsa_signed_data() {
+        let rng = SystemRandom::new();
+
+        // Generate a new Ed25519 key pair
+        let pkcs8_bytes = Ed25519KeyPair::generate_pkcs8(&rng).unwrap();
+
+        // The private key in DER format
+        let private_key_der = pkcs8_bytes.as_ref();
+
+        let key_pair = Ed25519KeyPair::from_pkcs8(private_key_der).unwrap();
+        let public_key = key_pair.public_key().as_ref();
+
+        // x represents the public key
+        let x = URL_SAFE_NO_PAD.encode(public_key);
+
+        let jwk = IotaIdentityJwk::from_json_value(serde_json::json!({
+            "kty": "OKP",
+            "crv": "Ed25519",
+            "x": x,
+        }))
+        .unwrap();
+
+        let encoding_key = EncodingKey::from_ed_der(private_key_der);
+
+        let message = "foobar";
+
+        let token = encode(&Header::new(Algorithm::EdDSA), &message, &encoding_key).unwrap();
+
+        let input = VerificationInput {
+            signing_input: message.as_bytes().into(),
+            decoded_signature: URL_SAFE_NO_PAD.decode(token.split('.').nth(2).unwrap()).unwrap().into(),
+            alg: JwsAlgorithm::EdDSA,
+        };
+
+        assert!(Verifier.verify(input, &jwk).is_ok());
     }
 }
