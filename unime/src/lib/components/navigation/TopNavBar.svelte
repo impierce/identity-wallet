@@ -3,7 +3,7 @@
 
   import { twMerge } from 'tailwind-merge';
 
-  import { ChevronLeftIcon } from '$lib/icons';
+  import { CaretLeftBoldIcon } from '$lib/icons';
 
   const dispatch = createEventDispatcher();
 
@@ -18,7 +18,7 @@
   )}
 >
   <button class="z-30 -ml-2 rounded-full p-2 disabled:opacity-25" on:click={() => dispatch('back')} {disabled}>
-    <ChevronLeftIcon class="h-6 w-6" />
+    <CaretLeftBoldIcon class="h-5 w-5" />
   </button>
   {#if title}
     <p class="custom absolute left-0 top-0 z-10 flex h-[50px] w-full items-center justify-center font-medium">

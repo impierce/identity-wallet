@@ -18,9 +18,11 @@ use crate::{
 
 use log::info;
 use oid4vc::oid4vci::{
+    credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject,
     credential_offer::Grants, credential_response::CredentialResponseType, token_request::TokenRequest,
 };
 use serde_json::json;
+use std::collections::HashMap;
 use uuid::Uuid;
 
 pub async fn send_credential_request(state: AppState, action: Action) -> Result<AppState, AppError> {
@@ -90,9 +92,11 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
         // Get the credential issuer name or use the credential issuer url.
         let issuer_name = display
             .map(|display| {
-                let issuer_name = display["client_name"]
+                let issuer_name = display["name"]
                     .as_str()
-                    .map(|s| s.to_string())
+                    .map(ToString::to_string)
+                    // TODO(ngdil): Remove this fallback.
+                    .or_else(|| display["client_name"].as_str().map(ToString::to_string))
                     .unwrap_or(connection_url.to_string());
                 issuer_name
             })
@@ -157,7 +161,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
             }
             _batch => {
                 let (credential_configuration_ids, credential_configurations): (Vec<_>, Vec<_>) =
-                    credential_configurations_supported.into_iter().unzip();
+                    credential_configurations_supported.clone().into_iter().unzip();
 
                 let batch_credential_response = wallet
                     .get_batch_credential(credential_issuer_metadata, &token_response, &credential_configurations)
@@ -191,6 +195,13 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                 .issuer_name
                 .clone_from(&issuer_name);
             verifiable_credential_record.display_credential.connection_id = Some(connection.id.clone());
+
+            // Set the display name of the credential.
+            verifiable_credential_record.display_credential.display_name = get_credential_display_name(
+                &credential_configurations_supported,
+                &credential_configuration_id,
+                &verifiable_credential_record,
+            );
 
             let key: Uuid = verifiable_credential_record
                 .display_credential
@@ -270,4 +281,144 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
     }
 
     Ok(state)
+}
+
+/// Helper function to get the display name of a credential.
+fn get_credential_display_name(
+    credential_configurations_supported: &HashMap<String, CredentialConfigurationsSupportedObject>,
+    credential_configuration_id: &str,
+    verifiable_credential_record: &VerifiableCredentialRecord,
+) -> String {
+    credential_configurations_supported
+        .get(credential_configuration_id)
+        .and_then(|credential_configuration| credential_configuration.display.first())
+        // Get the name of the credential from the display property if it exists.
+        .and_then(|display| display["name"].as_str())
+        .or_else(|| {
+            // Else, if the `type` property is a string, use it as the name of the credential.
+            verifiable_credential_record.display_credential.data["type"]
+                .as_str()
+                .or(
+                    // Or, if the `type` property is an array, use the last element as the name of the credential.
+                    verifiable_credential_record.display_credential.data["type"]
+                        .as_array()
+                        .and_then(|types| types.last())
+                        .and_then(|last_type| last_type.as_str()),
+                )
+        })
+        .map(ToString::to_string)
+        // Fallback to `Credential` if the credential is not a valid W3C Verifiable Credential.
+        .unwrap_or("Credential".to_string())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn display_name_is_successfully_read_from_credential_configuration() {
+        let credential_configuration_id = "credential_configuration_id";
+
+        // Credential configuration with a display name.
+        let credential_configurations_supported = HashMap::from_iter(vec![(
+            credential_configuration_id.to_string(),
+            CredentialConfigurationsSupportedObject {
+                display: vec![json!({"name": "Credential Name"})],
+                ..Default::default()
+            },
+        )]);
+
+        // Credential with a `type` property. The `type` property is a string and it should be ignored in favor of the
+        // display name from the credential configuration.
+        let verifiable_credential_record = VerifiableCredentialRecord {
+            verifiable_credential: Default::default(),
+            display_credential: DisplayCredential {
+                data: json!({
+                    "type": "Credential Type"
+                }),
+                ..Default::default()
+            },
+        };
+
+        // Get the display name of the credential.
+        let display_name = get_credential_display_name(
+            &credential_configurations_supported,
+            credential_configuration_id,
+            &verifiable_credential_record,
+        );
+
+        // Assert that the display name is equal to the display name from the credential configuration.
+        assert_eq!(display_name, "Credential Name");
+    }
+
+    #[test]
+    fn display_name_is_successfully_read_from_credential_type() {
+        let credential_configuration_id = "credential_configuration_id";
+
+        // Credential configuration without a display name. The `type` property should be used to get the display name.
+        let credential_configurations_supported = HashMap::from_iter(vec![(
+            credential_configuration_id.to_string(),
+            CredentialConfigurationsSupportedObject {
+                display: vec![],
+                ..Default::default()
+            },
+        )]);
+
+        // Credential with a `type` property. The `type` property is a string and it should be used as the display name.
+        let verifiable_credential_record = VerifiableCredentialRecord {
+            verifiable_credential: Default::default(),
+            display_credential: DisplayCredential {
+                data: json!({
+                    "type": "Credential Type"
+                }),
+                ..Default::default()
+            },
+        };
+
+        // Get the display name of the credential.
+        let display_name = get_credential_display_name(
+            &credential_configurations_supported,
+            credential_configuration_id,
+            &verifiable_credential_record,
+        );
+
+        // Assert that the display name is equal to the `type` property of the credential.
+        assert_eq!(display_name, "Credential Type");
+    }
+
+    #[test]
+    fn display_name_is_successfully_read_from_credential_type_array() {
+        let credential_configuration_id = "credential_configuration_id";
+
+        // Credential configuration without a display name. The `type` property should be used to get the display name.
+        let credential_configurations_supported = HashMap::from_iter(vec![(
+            credential_configuration_id.to_string(),
+            CredentialConfigurationsSupportedObject {
+                display: vec![],
+                ..Default::default()
+            },
+        )]);
+
+        // Credential with a `type` property. The `type` property is an array and the last element should be used as the
+        // display name.
+        let verifiable_credential_record = VerifiableCredentialRecord {
+            verifiable_credential: Default::default(),
+            display_credential: DisplayCredential {
+                data: json!({
+                    "type": ["Credential Type 1", "Credential Type 2"]
+                }),
+                ..Default::default()
+            },
+        };
+
+        // Get the display name of the credential.
+        let display_name = get_credential_display_name(
+            &credential_configurations_supported,
+            credential_configuration_id,
+            &verifiable_credential_record,
+        );
+
+        // Assert that the display name is equal to the last element of the `type` property of the credential.
+        assert_eq!(display_name, "Credential Type 2");
+    }
 }

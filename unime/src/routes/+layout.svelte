@@ -12,9 +12,9 @@
   import { dispatch } from '$lib/dispatcher';
   import {
     ArrowLeftRegularIcon,
+    BugRegularIcon,
     CaretDownBoldIcon,
     CaretUpBoldIcon,
-    ScrollTextIcon,
     TrashRegularIcon,
   } from '$lib/icons';
   import { error, state } from '$lib/stores';
@@ -94,7 +94,7 @@
     };
 
     const debugButton: DevModeButton = {
-      icon: ScrollTextIcon,
+      icon: BugRegularIcon,
       onClick: () => (showDebugMessages = !showDebugMessages),
     };
 

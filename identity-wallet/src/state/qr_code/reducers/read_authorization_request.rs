@@ -52,8 +52,11 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
             let (client_name, logo_uri, connection_url, _) =
                 get_siopv2_client_name_and_logo_uri(&siopv2_authorization_request);
 
-            info!("client_name in credential_offer: {:?}", client_name);
-            info!("logo_uri in read_authorization_request: {:?}", logo_uri);
+            info!(
+                "client_name in Authorization Request Display parameter: {:?}",
+                client_name
+            );
+            info!("logo_uri in Authorization Request Display parameter: {:?}", logo_uri);
 
             if logo_uri.is_some() {
                 debug!(
