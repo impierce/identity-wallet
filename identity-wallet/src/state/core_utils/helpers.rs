@@ -22,34 +22,6 @@ impl DateUtils {
     }
 }
 
-/// Helper trait for converting between different JWK types.
-pub trait JwkConversion {
-    fn try_into_identity_iota_jwk(&self) -> Result<identity_iota::verification::jwk::Jwk, AppError>;
-    fn try_into_jsonwebtoken_jwk(&self) -> Result<jsonwebtoken::jwk::Jwk, AppError>;
-}
-
-impl JwkConversion for identity_iota::verification::jwk::Jwk {
-    fn try_into_identity_iota_jwk(&self) -> Result<identity_iota::verification::jwk::Jwk, AppError> {
-        Ok(self.clone())
-    }
-
-    fn try_into_jsonwebtoken_jwk(&self) -> Result<jsonwebtoken::jwk::Jwk, AppError> {
-        serde_json::from_value(serde_json::json!(self))
-            .map_err(|_| AppError::Error("Failed to convert JWK".to_string()))
-    }
-}
-
-impl JwkConversion for jsonwebtoken::jwk::Jwk {
-    fn try_into_identity_iota_jwk(&self) -> Result<identity_iota::verification::jwk::Jwk, AppError> {
-        serde_json::from_value(serde_json::json!(self))
-            .map_err(|_| AppError::Error("Failed to convert JWK".to_string()))
-    }
-
-    fn try_into_jsonwebtoken_jwk(&self) -> Result<jsonwebtoken::jwk::Jwk, AppError> {
-        Ok(self.clone())
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;

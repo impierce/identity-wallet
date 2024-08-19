@@ -1,18 +1,17 @@
-use crate::state::core_utils::helpers::JwkConversion;
+use std::str::FromStr;
+
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use did_manager::Resolver;
 use identity_credential::domain_linkage::{DomainLinkageConfiguration, JwtDomainLinkageValidator};
 use identity_iota::{
-    core::FromJson,
+    core::{FromJson, ToJson},
     credential::JwtCredentialValidationOptions,
     verification::{
-        jwk::Jwk,
-        jws::{
-            JwsAlgorithm, JwsVerifier, SignatureVerificationError, SignatureVerificationErrorKind, VerificationInput,
-        },
+        jwk::Jwk as IotaIdentityJwk,
+        jws::{JwsVerifier, SignatureVerificationError, SignatureVerificationErrorKind, VerificationInput},
     },
 };
-use jsonwebtoken::{crypto::verify, Algorithm, DecodingKey, Validation};
+use jsonwebtoken::{crypto::verify, jwk::Jwk as JsonWebTokenJwk, Algorithm, DecodingKey, Validation};
 use log::info;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
@@ -33,24 +32,21 @@ pub enum ValidationStatus {
     Unknown,
 }
 
+/// This `Verifier` uses `jsonwebtoken` under the hood to verify verification input.
 struct Verifier;
-
 impl JwsVerifier for Verifier {
-    fn verify(&self, input: VerificationInput, public_key: &Jwk) -> Result<(), SignatureVerificationError> {
-        use JwsAlgorithm::*;
+    fn verify(&self, input: VerificationInput, public_key: &IotaIdentityJwk) -> Result<(), SignatureVerificationError> {
         use SignatureVerificationErrorKind::*;
 
-        let algorithm = match input.alg {
-            EdDSA => Algorithm::EdDSA,
-            ES256 => Algorithm::ES256,
-            _ => return Err(SignatureVerificationError::new(UnsupportedAlg)),
-        };
+        let algorithm =
+            Algorithm::from_str(&input.alg.to_string()).map_err(|_| SignatureVerificationError::new(UnsupportedAlg))?;
 
+        // Convert the `IotaIdentityJwk` first into a `JsonWebTokenJwk` and then into a `DecodingKey`.
         let decoding_key = public_key
-            .try_into_jsonwebtoken_jwk()
+            .to_json()
             .ok()
-            .as_ref()
-            .and_then(|jwk| DecodingKey::from_jwk(jwk).ok())
+            .and_then(|public_key| JsonWebTokenJwk::from_json(&public_key).ok())
+            .and_then(|jwk| DecodingKey::from_jwk(&jwk).ok())
             .ok_or(SignatureVerificationError::new(KeyDecodingFailure))?;
 
         let mut validation = Validation::new(algorithm);
