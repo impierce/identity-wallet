@@ -39,7 +39,7 @@ A tab component.
     use:melt={$list}
     class={twMerge('flex h-[39px] shrink-0 overflow-x-auto rounded-xl bg-white dark:bg-dark', $$props.class)}
   >
-    {#each triggers as triggerItem}
+    {#each triggers as triggerItem, i}
       <button
         use:melt={$trigger(triggerItem)}
         class="trigger relative m-1 px-3 py-2 text-xs font-semibold text-slate-500 data-[state=active]:text-white dark:text-slate-400 dark:data-[state=active]:text-slate-800"
@@ -53,6 +53,13 @@ A tab component.
             out:send={{ key: 'trigger' }}
             class="absolute left-0 top-0 h-full w-full rounded-lg bg-primary"
           />
+        {/if}
+
+        <!-- Separator between inactive tabs -->
+        {#if $value !== triggerItem && $value !== triggers[i + 1]}
+          <div class="separator absolute -right-1 top-0 flex h-full items-center">
+            <div class="h-4 w-px rounded-full bg-slate-300 dark:bg-slate-500"></div>
+          </div>
         {/if}
       </button>
     {/each}
@@ -94,6 +101,10 @@ A tab component.
 
     &[data-state='active'] {
       @apply focus:relative;
+    }
+
+    &:last-child .separator {
+      display: none;
     }
   }
 </style>
