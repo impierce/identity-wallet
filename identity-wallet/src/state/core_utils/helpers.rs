@@ -1,5 +1,9 @@
 use crate::error::AppError;
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
+use identity_iota::verification::{
+    jwk::{Jwk, JwkParams},
+    jws::SignatureVerificationErrorKind,
+};
 
 /// Get the claims from a JWT without performing validation.
 pub fn get_unverified_jwt_claims(jwt: &serde_json::Value) -> Result<serde_json::Value, AppError> {
@@ -22,8 +26,37 @@ impl DateUtils {
     }
 }
 
+pub trait EcodedPublicKey {
+    fn encoded_public_key(&self) -> Result<Vec<u8>, SignatureVerificationErrorKind>;
+}
+
+impl EcodedPublicKey for Jwk {
+    fn encoded_public_key(&self) -> Result<Vec<u8>, SignatureVerificationErrorKind> {
+        use SignatureVerificationErrorKind::*;
+
+        match self.params() {
+            JwkParams::Okp(okp_params) => Ok(URL_SAFE_NO_PAD.decode(&okp_params.x).map_err(|_| KeyDecodingFailure)?),
+            JwkParams::Ec(ec_params) => {
+                let x_bytes = URL_SAFE_NO_PAD.decode(&ec_params.x).map_err(|_| KeyDecodingFailure)?;
+                let y_bytes = URL_SAFE_NO_PAD.decode(&ec_params.y).map_err(|_| KeyDecodingFailure)?;
+
+                Ok(p256::EncodedPoint::from_affine_coordinates(
+                    p256::FieldBytes::from_slice(&x_bytes),
+                    p256::FieldBytes::from_slice(&y_bytes),
+                    false, // false for uncompressed point
+                )
+                .as_bytes()
+                .to_vec())
+            }
+            _ => Err(UnsupportedKeyType),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
+    use identity_iota::core::FromJson;
+
     use super::*;
 
     #[test]
@@ -58,5 +91,30 @@ mod tests {
               }
             })
         );
+    }
+
+    #[test]
+    fn test() {
+        let test = Jwk::from_json_value(serde_json::json!(
+          {
+            "kty": "EC",
+            "use": "sig",
+            "crv": "P-256",
+            "kid": "XdiSWfx3jDhDu1JO83HsyFgXQm7rcjRIZ_PYu52SV8I",
+            "x": "6RgW5PD1UL_2ZziyHmLw-m4RCEnVNj6_d0W37Q3ici8",
+            "y": "337C0Eh1wIVX4U-J7BGANTThJRDBEZGCUankUuudkKk",
+            "alg": "ES256"
+        }
+        ))
+        .unwrap();
+
+        println!("{:?}", URL_SAFE_NO_PAD.encode(test.encoded_public_key().unwrap()));
+
+        assert_eq!(
+            test.encoded_public_key().unwrap(),
+            URL_SAFE_NO_PAD
+                .decode("6RgW5PD1UL_2ZziyHmLw-m4RCEnVNj6_d0W37Q3ici8337C0Eh1wIVX4U-J7BGANTThJRDBEZGCUankUuudkKk")
+                .unwrap()
+        )
     }
 }

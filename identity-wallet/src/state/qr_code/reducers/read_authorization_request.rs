@@ -42,7 +42,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
         let generic_authorization_request = provider_manager
             .validate_request(qr_code_scanned.clone())
             .await
-            .unwrap();
+            .map_err(|_| InvalidQRCodeError(qr_code_scanned))?;
 
         if let Result::Ok(siopv2_authorization_request) =
             AuthorizationRequest::<Object<SIOPv2>>::from_generic(&generic_authorization_request)

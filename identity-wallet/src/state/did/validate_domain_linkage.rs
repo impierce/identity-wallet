@@ -1,20 +1,18 @@
-use std::str::FromStr;
-
+use crate::state::core_utils::helpers::EcodedPublicKey;
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use did_manager::Resolver;
 use identity_credential::domain_linkage::{DomainLinkageConfiguration, JwtDomainLinkageValidator};
-use identity_eddsa_verifier::EdDSAJwsVerifier;
 use identity_iota::{
     core::FromJson,
     credential::JwtCredentialValidationOptions,
     verification::{
-        jwk::{Jwk, JwkParams},
+        jwk::Jwk,
         jws::{
             JwsAlgorithm, JwsVerifier, SignatureVerificationError, SignatureVerificationErrorKind, VerificationInput,
         },
     },
 };
-use jsonwebtoken::{DecodingKey, Validation};
+use jsonwebtoken::{crypto::verify, Algorithm, DecodingKey, Validation};
 use log::info;
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
@@ -40,47 +38,37 @@ struct Verifier;
 impl JwsVerifier for Verifier {
     fn verify(&self, input: VerificationInput, public_key: &Jwk) -> Result<(), SignatureVerificationError> {
         use JwsAlgorithm::*;
+        use SignatureVerificationErrorKind::*;
 
-        let decoding_key = match (input.alg, public_key.params()) {
-            (EdDSA, JwkParams::Okp(okp_params)) => {
-                DecodingKey::from_ed_der(&URL_SAFE_NO_PAD.decode(&okp_params.x).unwrap())
-            }
-            (ES256, JwkParams::Ec(ec_params)) => {
-                let x_bytes = URL_SAFE_NO_PAD.decode(&ec_params.x).unwrap();
-                let y_bytes = URL_SAFE_NO_PAD.decode(&ec_params.y).unwrap();
-
-                let encoded_point = p256::EncodedPoint::from_affine_coordinates(
-                    p256::FieldBytes::from_slice(&x_bytes),
-                    p256::FieldBytes::from_slice(&y_bytes),
-                    false, // false for uncompressed point
-                );
-
-                let verifying_key = p256::ecdsa::VerifyingKey::from_encoded_point(&encoded_point)
-                    .expect("Failed to create verifying key from encoded point");
-
-                DecodingKey::from_ec_der(&verifying_key.to_encoded_point(false).as_bytes().to_vec())
-            }
-            _ => {
-                return Err(SignatureVerificationError::new(
-                    SignatureVerificationErrorKind::UnsupportedAlg,
-                ))
-            }
+        let (algorithm, decoding_key) = match input.alg {
+            EdDSA => (
+                Algorithm::EdDSA,
+                DecodingKey::from_ed_der(&public_key.encoded_public_key().unwrap()),
+            ),
+            ES256 => (
+                Algorithm::ES256,
+                DecodingKey::from_ec_der(&public_key.encoded_public_key().unwrap()),
+            ),
+            _ => return Err(SignatureVerificationError::new(UnsupportedAlg)),
         };
 
-        let mut validation = Validation::new(jsonwebtoken::Algorithm::from_str(&input.alg.to_string()).unwrap());
-        validation.validate_exp = false;
+        let decoding_key =
+            DecodingKey::from_jwk(&jsonwebtoken::jwk::Jwk::from_json_value(serde_json::json!(public_key)).unwrap())
+                .map_err(|_| KeyDecodingFailure)?;
+
+        let mut validation = Validation::new(algorithm);
         validation.validate_aud = false;
         validation.required_spec_claims.clear();
 
-        let jwt = format!(
-            "{}.{}",
-            std::str::from_utf8(&input.signing_input).unwrap(),
-            URL_SAFE_NO_PAD.encode(input.decoded_signature.clone())
-        );
-
-        match jsonwebtoken::decode::<serde_json::Value>(&jwt, &decoding_key, &validation) {
+        match verify(
+            &URL_SAFE_NO_PAD.encode(input.decoded_signature),
+            &input.signing_input,
+            &decoding_key,
+            algorithm,
+        ) {
             Ok(_) => Ok(()),
-            Err(e) => Err(SignatureVerificationError::new(
+            Err(_) => Err(SignatureVerificationError::new(
+                // TODO: more fine-grained error handling?
                 SignatureVerificationErrorKind::InvalidSignature,
             )),
         }
@@ -101,7 +89,6 @@ pub async fn validate_domain_linkage(url: url::Url, did: &str) -> ValidationResu
         }
     };
 
-    // TODO: Only EdDSA is supported for now
     let validator = JwtDomainLinkageValidator::with_signature_verifier(Verifier);
 
     let resolver = Resolver::new().await;
@@ -147,6 +134,8 @@ async fn fetch_configuration(mut url: url::Url) -> Result<DomainLinkageConfigura
     url.set_fragment(None);
     url.set_query(None);
     url.set_path(".well-known/did-configuration.json");
+
+    info!("Fetching DID configuration from: {}", url);
 
     // 2. Fetch the resource
     let response = reqwest::get(url).await.map_err(|e| e.to_string())?;
