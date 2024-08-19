@@ -1,4 +1,4 @@
-use crate::state::core_utils::helpers::EcodedPublicKey;
+use crate::state::core_utils::helpers::JwkConversion;
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use did_manager::Resolver;
 use identity_credential::domain_linkage::{DomainLinkageConfiguration, JwtDomainLinkageValidator};
@@ -40,21 +40,18 @@ impl JwsVerifier for Verifier {
         use JwsAlgorithm::*;
         use SignatureVerificationErrorKind::*;
 
-        let (algorithm, decoding_key) = match input.alg {
-            EdDSA => (
-                Algorithm::EdDSA,
-                DecodingKey::from_ed_der(&public_key.encoded_public_key().unwrap()),
-            ),
-            ES256 => (
-                Algorithm::ES256,
-                DecodingKey::from_ec_der(&public_key.encoded_public_key().unwrap()),
-            ),
+        let algorithm = match input.alg {
+            EdDSA => Algorithm::EdDSA,
+            ES256 => Algorithm::ES256,
             _ => return Err(SignatureVerificationError::new(UnsupportedAlg)),
         };
 
-        let decoding_key =
-            DecodingKey::from_jwk(&jsonwebtoken::jwk::Jwk::from_json_value(serde_json::json!(public_key)).unwrap())
-                .map_err(|_| KeyDecodingFailure)?;
+        let decoding_key = public_key
+            .try_into_jsonwebtoken_jwk()
+            .ok()
+            .as_ref()
+            .and_then(|jwk| DecodingKey::from_jwk(jwk).ok())
+            .ok_or(SignatureVerificationError::new(KeyDecodingFailure))?;
 
         let mut validation = Validation::new(algorithm);
         validation.validate_aud = false;
@@ -69,7 +66,7 @@ impl JwsVerifier for Verifier {
             Ok(_) => Ok(()),
             Err(_) => Err(SignatureVerificationError::new(
                 // TODO: more fine-grained error handling?
-                SignatureVerificationErrorKind::InvalidSignature,
+                InvalidSignature,
             )),
         }
     }

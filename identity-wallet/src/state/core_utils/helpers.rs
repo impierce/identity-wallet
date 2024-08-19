@@ -26,11 +26,11 @@ impl DateUtils {
     }
 }
 
-pub trait EcodedPublicKey {
+pub trait EncodedPublicKey {
     fn encoded_public_key(&self) -> Result<Vec<u8>, SignatureVerificationErrorKind>;
 }
 
-impl EcodedPublicKey for Jwk {
+impl EncodedPublicKey for Jwk {
     fn encoded_public_key(&self) -> Result<Vec<u8>, SignatureVerificationErrorKind> {
         use SignatureVerificationErrorKind::*;
 
@@ -53,10 +53,36 @@ impl EcodedPublicKey for Jwk {
     }
 }
 
+/// Helper trait for converting between different JWK types.
+pub trait JwkConversion {
+    fn try_into_identity_iota_jwk(&self) -> Result<identity_iota::verification::jwk::Jwk, AppError>;
+    fn try_into_jsonwebtoken_jwk(&self) -> Result<jsonwebtoken::jwk::Jwk, AppError>;
+}
+
+impl JwkConversion for identity_iota::verification::jwk::Jwk {
+    fn try_into_identity_iota_jwk(&self) -> Result<identity_iota::verification::jwk::Jwk, AppError> {
+        Ok(self.clone())
+    }
+
+    fn try_into_jsonwebtoken_jwk(&self) -> Result<jsonwebtoken::jwk::Jwk, AppError> {
+        serde_json::from_value(serde_json::json!(self))
+            .map_err(|_| AppError::Error("Failed to convert JWK".to_string()))
+    }
+}
+
+impl JwkConversion for jsonwebtoken::jwk::Jwk {
+    fn try_into_identity_iota_jwk(&self) -> Result<identity_iota::verification::jwk::Jwk, AppError> {
+        serde_json::from_value(serde_json::json!(self))
+            .map_err(|_| AppError::Error("Failed to convert JWK".to_string()))
+    }
+
+    fn try_into_jsonwebtoken_jwk(&self) -> Result<jsonwebtoken::jwk::Jwk, AppError> {
+        Ok(self.clone())
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use identity_iota::core::FromJson;
-
     use super::*;
 
     #[test]
@@ -91,30 +117,5 @@ mod tests {
               }
             })
         );
-    }
-
-    #[test]
-    fn test() {
-        let test = Jwk::from_json_value(serde_json::json!(
-          {
-            "kty": "EC",
-            "use": "sig",
-            "crv": "P-256",
-            "kid": "XdiSWfx3jDhDu1JO83HsyFgXQm7rcjRIZ_PYu52SV8I",
-            "x": "6RgW5PD1UL_2ZziyHmLw-m4RCEnVNj6_d0W37Q3ici8",
-            "y": "337C0Eh1wIVX4U-J7BGANTThJRDBEZGCUankUuudkKk",
-            "alg": "ES256"
-        }
-        ))
-        .unwrap();
-
-        println!("{:?}", URL_SAFE_NO_PAD.encode(test.encoded_public_key().unwrap()));
-
-        assert_eq!(
-            test.encoded_public_key().unwrap(),
-            URL_SAFE_NO_PAD
-                .decode("6RgW5PD1UL_2ZziyHmLw-m4RCEnVNj6_d0W37Q3ici8337C0Eh1wIVX4U-J7BGANTThJRDBEZGCUankUuudkKk")
-                .unwrap()
-        )
     }
 }

@@ -1,4 +1,4 @@
-use crate::{state::core_utils::helpers::EcodedPublicKey, stronghold::StrongholdManager};
+use crate::{state::core_utils::helpers::EncodedPublicKey, stronghold::StrongholdManager};
 
 use async_trait::async_trait;
 use did_manager::{DidMethod, Resolver, SecretManager};
