@@ -1,8 +1,13 @@
-use crate::{state::core_utils::helpers::EncodedPublicKey, stronghold::StrongholdManager};
+use crate::stronghold::StrongholdManager;
 
 use async_trait::async_trait;
+use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use did_manager::{DidMethod, Resolver, SecretManager};
-use identity_iota::{did::DID, document::DIDUrlQuery, verification::jws::JwsAlgorithm};
+use identity_iota::{
+    did::DID,
+    document::DIDUrlQuery,
+    verification::{jwk::JwkParams, jws::JwsAlgorithm},
+};
 use jsonwebtoken::Algorithm;
 use oid4vc::oid4vc_core::{authentication::sign::ExternalSign, Sign, Verify};
 use std::sync::Arc;
@@ -74,8 +79,26 @@ impl Verify for Subject {
             verification_method
                 .data()
                 .public_key_jwk()
-                .and_then(|public_key_jwk| public_key_jwk.encoded_public_key().ok())
-                .ok_or(anyhow::anyhow!("Invalid public key"))
+                .and_then(|public_key_jwk| match public_key_jwk.params() {
+                    JwkParams::Okp(okp_params) => URL_SAFE_NO_PAD.decode(&okp_params.x).ok(),
+                    JwkParams::Ec(ec_params) => {
+                        let x_bytes = URL_SAFE_NO_PAD.decode(&ec_params.x).ok()?;
+                        let y_bytes = URL_SAFE_NO_PAD.decode(&ec_params.y).ok()?;
+
+                        let encoded_point = p256::EncodedPoint::from_affine_coordinates(
+                            p256::FieldBytes::from_slice(&x_bytes),
+                            p256::FieldBytes::from_slice(&y_bytes),
+                            false, // false for uncompressed point
+                        );
+
+                        let verifying_key = p256::ecdsa::VerifyingKey::from_encoded_point(&encoded_point)
+                            .expect("Failed to create verifying key from encoded point");
+
+                        Some(verifying_key.to_encoded_point(false).as_bytes().to_vec())
+                    }
+                    _ => None,
+                })
+                .ok_or(anyhow::anyhow!("Failed to decode public key for DID URL: {}", did_url))
         })
     }
 }

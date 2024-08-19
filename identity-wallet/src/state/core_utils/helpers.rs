@@ -1,9 +1,5 @@
 use crate::error::AppError;
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
-use identity_iota::verification::{
-    jwk::{Jwk, JwkParams},
-    jws::SignatureVerificationErrorKind,
-};
 
 /// Get the claims from a JWT without performing validation.
 pub fn get_unverified_jwt_claims(jwt: &serde_json::Value) -> Result<serde_json::Value, AppError> {
@@ -23,33 +19,6 @@ pub struct DateUtils;
 impl DateUtils {
     pub fn new_date_string() -> String {
         chrono::Utc::now().to_rfc3339()
-    }
-}
-
-pub trait EncodedPublicKey {
-    fn encoded_public_key(&self) -> Result<Vec<u8>, SignatureVerificationErrorKind>;
-}
-
-impl EncodedPublicKey for Jwk {
-    fn encoded_public_key(&self) -> Result<Vec<u8>, SignatureVerificationErrorKind> {
-        use SignatureVerificationErrorKind::*;
-
-        match self.params() {
-            JwkParams::Okp(okp_params) => Ok(URL_SAFE_NO_PAD.decode(&okp_params.x).map_err(|_| KeyDecodingFailure)?),
-            JwkParams::Ec(ec_params) => {
-                let x_bytes = URL_SAFE_NO_PAD.decode(&ec_params.x).map_err(|_| KeyDecodingFailure)?;
-                let y_bytes = URL_SAFE_NO_PAD.decode(&ec_params.y).map_err(|_| KeyDecodingFailure)?;
-
-                Ok(p256::EncodedPoint::from_affine_coordinates(
-                    p256::FieldBytes::from_slice(&x_bytes),
-                    p256::FieldBytes::from_slice(&y_bytes),
-                    false, // false for uncompressed point
-                )
-                .as_bytes()
-                .to_vec())
-            }
-            _ => Err(UnsupportedKeyType),
-        }
     }
 }
 
