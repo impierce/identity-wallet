@@ -1,7 +1,7 @@
 <script lang="ts">
   import { cubicInOut } from 'svelte/easing';
   import type { Writable } from 'svelte/store';
-  import { crossfade } from 'svelte/transition';
+  import { crossfade, fade } from 'svelte/transition';
   import { twMerge } from 'tailwind-merge';
 
   import { createTabs, melt } from '@melt-ui/svelte';
@@ -57,9 +57,10 @@ A tab component.
 
         <!-- Separator between inactive tabs -->
         {#if $value !== triggerItem && $value !== triggers[i + 1]}
-          <div class="separator absolute -right-1 top-0 flex h-full items-center">
-            <div class="h-4 w-px rounded-full bg-slate-300 dark:bg-slate-500"></div>
-          </div>
+          <div
+            class="separator absolute -right-1 top-1/2 h-3 w-px -translate-y-1/2 transform bg-slate-300 dark:bg-slate-500"
+            out:fade={{ duration: 100 }}
+          />
         {/if}
       </button>
     {/each}
