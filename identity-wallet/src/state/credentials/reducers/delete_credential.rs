@@ -9,10 +9,9 @@ use crate::{
 
 pub async fn delete_credential(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(delete_credential) = listen::<DeleteCredential>(action) {
-
         let mut credentials = state.credentials.clone();
         credentials.retain(|credential| credential.id != delete_credential.id.to_string());
-        
+
         return Ok(AppState {
             credentials,
             current_user_prompt: None,
@@ -45,7 +44,7 @@ mod tests {
         };
 
         let action = Arc::new(DeleteCredential {
-            id: uuid::Uuid::parse_str(&state.credentials[0].id).unwrap(),
+            id: state.credentials[0].id.clone(),
         });
 
         let result = delete_credential(state, action).await.unwrap();

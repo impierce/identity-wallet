@@ -9,7 +9,7 @@ use ts_rs::TS;
 #[ts(export, export_to = "bindings/actions/DeleteCredential.ts")]
 pub struct DeleteCredential {
     #[ts(type = "string")]
-    pub id: uuid::Uuid,
+    pub id: String,
 }
 
 #[typetag::serde(name = "[Credential Metadata] Update")]
