@@ -18,3 +18,21 @@ pub async fn trust_list_add(state: AppState, action: Action) -> Result<AppState,
     }
     Ok(state)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::{collections::HashMap, sync::Arc};
+
+    #[tokio::test]
+    async fn test_trust_list_add() {
+        let state = AppState::default();
+        let action = Arc::new(TrustListAdd {
+            domain: "test".to_string(),
+        });
+
+        let result = trust_list_add(state, action).await.unwrap();
+
+        assert_eq!(result.trust_list, HashMap::from_iter(vec![("test".to_string(), true)]));
+    }
+}

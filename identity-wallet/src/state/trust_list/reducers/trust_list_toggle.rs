@@ -21,3 +21,25 @@ pub async fn trust_list_toggle(state: AppState, action: Action) -> Result<AppSta
     }
     Ok(state)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::{collections::HashMap, sync::Arc};
+
+    #[tokio::test]
+    async fn test_trust_list_toggle() {
+        let state = AppState {
+            trust_list: HashMap::from_iter(vec![("test".to_string(), true)]),
+            ..Default::default()
+        };
+
+        let action = Arc::new(TrustListToggle {
+            domain: "test".to_string(),
+        });
+
+        let result = trust_list_toggle(state, action).await.unwrap();
+
+        assert_eq!(result.trust_list, HashMap::from_iter(vec![("test".to_string(), false)]));
+    }
+}

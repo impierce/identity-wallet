@@ -9,7 +9,6 @@ use ts_rs::TS;
 #[ts(export, export_to = "bindings/actions/TrustListToggle.ts")]
 pub struct TrustListToggle {
     pub domain: String,
-    pub on_off: bool,
 }
 
 #[typetag::serde(name = "[Trust List] Toggle")]
