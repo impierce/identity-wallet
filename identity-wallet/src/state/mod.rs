@@ -1,6 +1,7 @@
 pub mod actions;
 pub mod common;
 pub mod connections;
+pub mod trust_list;
 pub mod core_utils;
 pub mod credentials;
 pub mod dev_mode;
@@ -87,6 +88,7 @@ pub struct AppState {
     pub dids: HashMap<String, String>,
     pub connections: Connections,
     pub credentials: Vec<DisplayCredential>,
+    pub trust_list: HashMap<String, bool>,
     pub search_results: SearchResults,
     /// This field contains utils needed for the backend to perform its tasks.
     #[serde(skip)]
