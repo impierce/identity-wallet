@@ -10,7 +10,13 @@ pub async fn trust_list_edit(state: AppState, action: Action) -> Result<AppState
         let mut trust_list = state.trust_list.clone();
 
         trust_list.remove(&action.old_domain);
-        trust_list.insert(action.new_domain, trust_list.get(&action.old_domain).expect("error: invalid domain value send by frontend.").clone());
+        trust_list.insert(
+            action.new_domain,
+            trust_list
+                .get(&action.old_domain)
+                .expect("error: invalid domain value send by frontend.")
+                .clone(),
+        );
 
         return Ok(AppState {
             trust_list,

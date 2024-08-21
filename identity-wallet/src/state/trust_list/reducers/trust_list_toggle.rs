@@ -12,7 +12,7 @@ pub async fn trust_list_toggle(state: AppState, action: Action) -> Result<AppSta
         if let Some(value) = trust_list.get_mut(&action.domain) {
             *value = !*value;
         }
-        
+
         return Ok(AppState {
             trust_list,
             current_user_prompt: None,

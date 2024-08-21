@@ -1,7 +1,6 @@
 pub mod actions;
 pub mod common;
 pub mod connections;
-pub mod trust_list;
 pub mod core_utils;
 pub mod credentials;
 pub mod dev_mode;
@@ -9,6 +8,7 @@ pub mod did;
 pub mod profile_settings;
 pub mod qr_code;
 pub mod search;
+pub mod trust_list;
 pub mod user_journey;
 pub mod user_prompt;
 
