@@ -1,7 +1,7 @@
 <script lang="ts">
   import { cubicInOut } from 'svelte/easing';
   import type { Writable } from 'svelte/store';
-  import { crossfade } from 'svelte/transition';
+  import { crossfade, fade } from 'svelte/transition';
   import { twMerge } from 'tailwind-merge';
 
   import { createTabs, melt } from '@melt-ui/svelte';
@@ -39,7 +39,7 @@ A tab component.
     use:melt={$list}
     class={twMerge('flex h-[39px] shrink-0 overflow-x-auto rounded-xl bg-white dark:bg-dark', $$props.class)}
   >
-    {#each triggers as triggerItem}
+    {#each triggers as triggerItem, i}
       <button
         use:melt={$trigger(triggerItem)}
         class="trigger relative m-1 px-3 py-2 text-xs font-semibold text-slate-500 data-[state=active]:text-white dark:text-slate-400 dark:data-[state=active]:text-slate-800"
@@ -52,6 +52,14 @@ A tab component.
             in:receive={{ key: 'trigger' }}
             out:send={{ key: 'trigger' }}
             class="absolute left-0 top-0 h-full w-full rounded-lg bg-primary"
+          />
+        {/if}
+
+        <!-- Separator between inactive tabs -->
+        {#if $value !== triggerItem && $value !== triggers[i + 1]}
+          <div
+            class="separator absolute -right-1 top-1/2 h-3 w-px -translate-y-1/2 transform bg-slate-300 dark:bg-slate-500"
+            out:fade={{ duration: 100 }}
           />
         {/if}
       </button>
@@ -94,6 +102,10 @@ A tab component.
 
     &[data-state='active'] {
       @apply focus:relative;
+    }
+
+    &:last-child .separator {
+      display: none;
     }
   }
 </style>
