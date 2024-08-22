@@ -79,7 +79,7 @@ mod bindings {
         qr_code::actions::qrcode_scanned::QrCodeScanned,
         search::actions::{
             add_recent_search::AddRecentSearch, delete_recent_search::DeleteRecentSearch, search_query::SearchQuery,
-        },
+        }, trust_list::actions::{trust_list_add::TrustListAdd, trust_list_delete::TrustListDelete, trust_list_edit::TrustListEdit, trust_list_toggle::TrustListToggle},
     };
 
     #[derive(Serialize, Deserialize, TS)]
@@ -131,5 +131,10 @@ mod bindings {
         SetPreferredDidMethod { payload: SetPreferredDidMethod },
         #[serde(rename = "[Keys] Set preferred key type")]
         SetPreferredKeyType { payload: SetPreferredKeyType },
+        TrustListAdd { payload: TrustListAdd },
+        TrustListEdit { payload: TrustListEdit },
+        TrustListDelete { payload: TrustListDelete },
+        TrustListToggle { payload: TrustListToggle },
+        TrustListReset,
     }
 }
