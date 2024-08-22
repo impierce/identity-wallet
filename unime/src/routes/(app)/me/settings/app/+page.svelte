@@ -11,6 +11,7 @@
     ConfettiFillIcon,
     FilesFillIcon,
     KeyFillIcon,
+    ListStarFillIcon,
     PasswordFillIcon,
     SunFillIcon,
     TranslateFillIcon,
@@ -74,6 +75,14 @@
           title={'Key management'}
           hasCaretRight={true}
           on:click={() => goto('/me/settings/app/keys')}
+        />
+      </div>
+      <div in:fade={{ duration: 200 }} out:fade={{ duration: 200 }}>
+        <SettingsEntry
+          icon={ListStarFillIcon}
+          title={'Trust lists'}
+          hasCaretRight={true}
+          on:click={() => goto('/me/settings/app/trust-list')}
         />
       </div>
     {/if}
