@@ -75,6 +75,12 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
     };
     state.profile_settings.profile.replace(profile);
 
+    let default_trust_list_file = std::fs::File::open(ASSETS_DIR.lock().unwrap().join("default_trust_list.json"))
+        .expect("error: default_trust_list.json not found");
+    let default_trust_list =
+        serde_json::from_reader(default_trust_list_file).expect("error: failed to deserialize default_trust_list.json");
+    state.trust_list = default_trust_list;
+
     let provider_manager = ProviderManager::new(
         subject.clone(),
         Vec::from(SUPPORTED_DID_METHODS),

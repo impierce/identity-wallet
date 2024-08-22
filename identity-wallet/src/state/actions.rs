@@ -79,7 +79,11 @@ mod bindings {
         qr_code::actions::qrcode_scanned::QrCodeScanned,
         search::actions::{
             add_recent_search::AddRecentSearch, delete_recent_search::DeleteRecentSearch, search_query::SearchQuery,
-        }, trust_list::actions::{trust_list_add::TrustListAdd, trust_list_delete::TrustListDelete, trust_list_edit::TrustListEdit, trust_list_toggle::TrustListToggle},
+        },
+        trust_list::actions::{
+            trust_list_add::TrustListAdd, trust_list_delete::TrustListDelete, trust_list_edit::TrustListEdit,
+            trust_list_toggle::TrustListToggle,
+        },
     };
 
     #[derive(Serialize, Deserialize, TS)]
@@ -89,17 +93,27 @@ mod bindings {
         #[serde(rename = "[App] Get state")]
         GetState,
         #[serde(rename = "[Storage] Unlock")]
-        UnlockStorage { payload: UnlockStorage },
+        UnlockStorage {
+            payload: UnlockStorage,
+        },
         #[serde(rename = "[App] Reset")]
         Reset,
         #[serde(rename = "[DID] Create new")]
-        CreateNew { payload: CreateNew },
+        CreateNew {
+            payload: CreateNew,
+        },
         #[serde(rename = "[Settings] Set locale")]
-        SetLocale { payload: SetLocale },
+        SetLocale {
+            payload: SetLocale,
+        },
         #[serde(rename = "[Settings] Update profile")]
-        UpdateProfileSettings { payload: UpdateProfileSettings },
+        UpdateProfileSettings {
+            payload: UpdateProfileSettings,
+        },
         #[serde(rename = "[QR Code] Scanned")]
-        QrCodeScanned { payload: QrCodeScanned },
+        QrCodeScanned {
+            payload: QrCodeScanned,
+        },
         #[serde(rename = "[Authenticate] Connection accepted")]
         ConnectionAccepted,
         #[serde(rename = "[User Flow] Cancel")]
@@ -108,33 +122,66 @@ mod bindings {
             payload: Option<CancelUserFlow>,
         },
         #[serde(rename = "[DEV] Load DEV profile")]
-        LoadDevProfile { payload: DevProfile },
+        LoadDevProfile {
+            payload: DevProfile,
+        },
         #[serde(rename = "[DEV] Toggle DEV mode")]
         ToggleDevMode,
         #[serde(rename = "[Authenticate] Credentials selected")]
-        CredentialsSelected { payload: CredentialsSelected },
+        CredentialsSelected {
+            payload: CredentialsSelected,
+        },
         #[serde(rename = "[Credential Offer] Selected")]
-        CredentialOffersSelected { payload: CredentialOffersSelected },
+        CredentialOffersSelected {
+            payload: CredentialOffersSelected,
+        },
         #[serde(rename = "[Credential Metadata] Update")]
-        UpdateCredentialMetadata { payload: UpdateCredentialMetadata },
+        UpdateCredentialMetadata {
+            payload: UpdateCredentialMetadata,
+        },
         #[serde(rename = "[User Journey] Cancel")]
         CancelUserJourney,
         #[serde(rename = "[Settings] Update sorting preference")]
-        UpdateSortingPreference { payload: UpdateSortingPreference },
+        UpdateSortingPreference {
+            payload: UpdateSortingPreference,
+        },
         #[serde(rename = "[Search] Query")]
-        SearchQuery { payload: SearchQuery },
+        SearchQuery {
+            payload: SearchQuery,
+        },
         #[serde(rename = "[Search] Add recent")]
-        AddRecentSearch { payload: AddRecentSearch },
+        AddRecentSearch {
+            payload: AddRecentSearch,
+        },
         #[serde(rename = "[Search] Delete recent")]
-        DeleteRecentSearch { payload: DeleteRecentSearch },
+        DeleteRecentSearch {
+            payload: DeleteRecentSearch,
+        },
         #[serde(rename = "[DID] Set preferred method")]
-        SetPreferredDidMethod { payload: SetPreferredDidMethod },
+        SetPreferredDidMethod {
+            payload: SetPreferredDidMethod,
+        },
         #[serde(rename = "[Keys] Set preferred key type")]
-        SetPreferredKeyType { payload: SetPreferredKeyType },
-        TrustListAdd { payload: TrustListAdd },
-        TrustListEdit { payload: TrustListEdit },
-        TrustListDelete { payload: TrustListDelete },
-        TrustListToggle { payload: TrustListToggle },
+        SetPreferredKeyType {
+            payload: SetPreferredKeyType,
+        },
+        #[serde(rename = "[Trust List] Add")]
+        TrustListAdd {
+            payload: TrustListAdd,
+        },
+        #[serde(rename = "[Trust List] Edit")]
+        TrustListEdit {
+            payload: TrustListEdit,
+        },
+        #[serde(rename = "[Trust List] Delete")]
+        TrustListDelete {
+            payload: TrustListDelete,
+        },
+        #[serde(rename = "[Trust List] Toggle")]
+        TrustListToggle {
+            payload: TrustListToggle,
+        },
+        #[serde(rename = "[Trust List] Reset")]
         TrustListReset,
     }
 }
