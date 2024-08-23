@@ -13,22 +13,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
+          cache: 'pnpm'
 
       - name: Install NPM dependencies in project root and workspaces
-        run: npm ci
+        run: pnpm i --frozen-lockfile
 
       - name: Format
-        run: npm run format:check
+        run: pnpm format:check
 
       - name: Lint
-        run: npm run lint
+        run: pnpm lint
 
       - name: Test
-        run: npm run test
+        run: pnpm test
 
   unime_core:
     runs-on: ubuntu-latest
@@ -54,14 +59,19 @@ jobs:
         working-directory: ./unime/src-tauri
         run: cargo fmt -- --check
 
+      - uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
+          cache: 'pnpm'
 
       - name: Build frontend
         # Otherwise linting will fail with error: The `distDir` configuration is set to `"../build"` but this path doesn't exist.
-        run: npm ci && npm run build
+        run: pnpm i --frozen-lockfile && pnpm build
         env:
           PUBLIC_DEV_MODE_MENU_EXPANDED: false
 

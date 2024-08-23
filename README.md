@@ -4,7 +4,7 @@
 
 # UniMe - Identity Wallet
 
-Identity Wallet for people to manage Decentralized Identities and Verifiable Credentials.
+Identity Wallet for people to manage decentralized identities and verifiable credentials.
 
 ## Tech stack
 
@@ -12,14 +12,14 @@ This app is built with [Tauri 2.0](https://v2.tauri.app/). It uses [Rust](https:
 
 ## Develop
 
-This repository uses [npm workspaces](https://docs.npmjs.com/cli/v10/using-npm/workspaces):
+This repository uses [pnpm workspaces](https://pnpm.io/workspaces):
 
 | Path                | Description                                             |
 | :------------------ | :------------------------------------------------------ |
 | `./`                | Project root with Prettier configuration.               |
-| `./unime`           | NPM workspace UniMe frontend.                           |
-| `./unime/src-tauri` | Tauri Rust app (not an NPM workspace).                  |
-| `./identity-wallet` | Rust package with UniMe backend (not an NPM workspace). |
+| `./unime`           | pnpm workspace with UniMe frontend.                     |
+| `./unime/src-tauri` | Tauri Rust app (not a pnpm workspace).                  |
+| `./identity-wallet` | Rust package with UniMe backend (not a pnpm workspace). |
 
 Get up and running with these steps:
 
@@ -30,7 +30,7 @@ Copy the file `.env.example` to `.env` and set the values accordingly.
 ### 2. Install dependencies
 
 ```sh
-npm install
+pnpm i
 ```
 
 ### 3. Generate icons
@@ -46,15 +46,15 @@ You can run the following commands from the project root:
 
 ```sh
 # Desktop
-npm run tauri dev
+pnpm tauri dev
 
 # Android
-npm run tauri android init
-npm run tauri android dev
+pnpm tauri android init
+pnpm tauri android dev
 
 # iOS
-npm run tauri ios init
-npm run tauri ios dev
+pnpm tauri ios init
+pnpm tauri ios dev
 ```
 
 ## Contributing
@@ -67,9 +67,9 @@ npm run tauri ios dev
 Run the following commands from the project root:
 
 ```sh
-npm run format
-npm run lint
-npm run test
+pnpm format
+pnpm lint
+pnpm test
 ```
 
 Run these commands from `./unime/src-tauri`:
