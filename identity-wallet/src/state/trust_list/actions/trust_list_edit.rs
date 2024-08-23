@@ -8,6 +8,7 @@ use ts_rs::TS;
 #[derive(Serialize, Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/TrustListEdit.ts")]
 pub struct TrustListEdit {
+    pub trust_list_name: String,
     pub old_domain: String,
     pub new_domain: String,
 }

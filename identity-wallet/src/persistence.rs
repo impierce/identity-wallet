@@ -48,19 +48,6 @@ pub fn initialize_storage(app_handle: &tauri::AppHandle) -> anyhow::Result<()> {
         Err(e) => info!("ASSETS_DIR: {}", e),
     };
 
-    // Create default_trust_list.json file
-    let path = ASSETS_DIR.lock().unwrap().join("default_trust_list.json");
-    if !path.is_file() {
-        // let trust_list = json!({
-        //     "https://www.impierce.com": true
-        // });
-
-        let rdr = std::fs::File::open("../../../../resources/default_trust_list.json")
-            .expect("error: could not default_trust_list.json file");
-        let trust_list_str: String = serde_json::from_reader(rdr).expect("Failed to serialize trust list to JSON");
-        fs::write(&path, trust_list_str).expect("Failed to write default trust list to file");
-    }
-
     Ok(())
 }
 

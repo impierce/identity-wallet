@@ -27,6 +27,7 @@ use dyn_clone::DynClone;
 use futures::Future;
 use jsonwebtoken::Algorithm;
 use serde::{Deserialize, Serialize};
+use trust_list::TrustLists;
 use std::collections::HashMap;
 use std::{collections::VecDeque, pin::Pin};
 use ts_rs::TS;
@@ -88,7 +89,7 @@ pub struct AppState {
     pub dids: HashMap<String, String>,
     pub connections: Connections,
     pub credentials: Vec<DisplayCredential>,
-    pub trust_list: HashMap<String, bool>,
+    pub trust_lists: TrustLists,
     pub search_results: SearchResults,
     /// This field contains utils needed for the backend to perform its tasks.
     #[serde(skip)]

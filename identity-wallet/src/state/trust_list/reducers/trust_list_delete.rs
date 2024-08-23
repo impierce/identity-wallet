@@ -7,11 +7,14 @@ use crate::state::{
 
 pub async fn trust_list_delete(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(action) = listen::<TrustListDelete>(action) {
-        let mut trust_list = state.trust_list.clone();
-        trust_list.remove(&action.domain);
+        let mut trust_lists = state.trust_lists.clone();
+        trust_lists
+            .get_mut(&action.trust_list_name)
+            .expect("error: incorrect trust_list_name dispatched by frontend")
+            .remove(&action.domain);
 
         return Ok(AppState {
-            trust_list,
+            trust_lists,
             current_user_prompt: None,
             ..state
         });
@@ -21,22 +24,31 @@ pub async fn trust_list_delete(state: AppState, action: Action) -> Result<AppSta
 
 #[cfg(test)]
 mod tests {
+    use crate::state::trust_list::{TrustList, TrustLists};
+
     use super::*;
     use std::{collections::HashMap, sync::Arc};
 
     #[tokio::test]
     async fn test_trust_list_delete() {
         let state = AppState {
-            trust_list: HashMap::from_iter(vec![("test".to_string(), true)]),
+            trust_lists: TrustLists::default(),
             ..Default::default()
         };
 
         let action = Arc::new(TrustListDelete {
-            domain: "test".to_string(),
+            trust_list_name: "impierce".to_string(),
+            domain: "https://www.impierce.com".to_string(),
         });
 
         let result = trust_list_delete(state, action).await.unwrap();
 
-        assert_eq!(result.trust_list, HashMap::from_iter(vec![]));
+        let mut test = TrustLists::new();
+        test.insert( TrustList {
+            name: "impierce".to_string(),
+            trust_list: HashMap::new()
+        });
+
+        assert_eq!(result.trust_lists, test);
     }
 }
