@@ -9,7 +9,7 @@ use ts_rs::TS;
 
 #[derive(Default, Serialize, Deserialize, Clone, Debug, TS, PartialEq)]
 #[ts(export, export_to = "bindings/trust_list/TrustLists.ts")]
-pub struct TrustLists(pub Vec<TrustList>); // Vec allows for persistent sorting, but how to handle duplicates?
+pub struct TrustLists(pub Vec<TrustList>);
 
 #[typetag::serde(name = "trust_lists")]
 impl FeatTrait for TrustLists {}
