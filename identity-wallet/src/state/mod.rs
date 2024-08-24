@@ -27,9 +27,9 @@ use dyn_clone::DynClone;
 use futures::Future;
 use jsonwebtoken::Algorithm;
 use serde::{Deserialize, Serialize};
-use trust_list::TrustLists;
 use std::collections::HashMap;
 use std::{collections::VecDeque, pin::Pin};
+use trust_list::TrustLists;
 use ts_rs::TS;
 
 /// The AppState is the main state of the application shared between the backend and the frontend.

@@ -79,7 +79,12 @@ mod bindings {
         qr_code::actions::qrcode_scanned::QrCodeScanned,
         search::actions::{
             add_recent_search::AddRecentSearch, delete_recent_search::DeleteRecentSearch, search_query::SearchQuery,
-        }, trust_list::actions::{add_trust_list_entry::AddTrustListEntry, delete_trust_list_entry::DeleteTrustListEntry, edit_trust_list_entry::EditTrustListEntry, toggle_trust_list_entry::ToggleTrustListEntry},
+        },
+        trust_list::actions::{
+            add_trust_list_entry::AddTrustListEntry, delete_trust_list_entry::DeleteTrustListEntry,
+            edit_trust_list_entry::EditTrustListEntry, toggle_trust_list_entry::ToggleTrustListEntry,
+            trust_list_add::TrustListAdd, trust_list_delete::TrustListDelete, trust_list_edit::TrustListEdit,
+        },
     };
 
     #[derive(Serialize, Deserialize, TS)]
@@ -139,6 +144,12 @@ mod bindings {
         DeleteTrustListEntry { payload: DeleteTrustListEntry },
         #[serde(rename = "[Trust List] Toggle Entry")]
         ToggleTrustListEntry { payload: ToggleTrustListEntry },
+        #[serde(rename = "[Trust List] Add")]
+        TrustListAdd { payload: TrustListAdd },
+        #[serde(rename = "[Trust List] Edit")]
+        TrustListEdit { payload: TrustListEdit },
+        #[serde(rename = "[Trust List] Delete")]
+        TrustListDelete { payload: TrustListDelete },
         #[serde(rename = "[Trust Lists] Reset")]
         TrustListsReset,
     }

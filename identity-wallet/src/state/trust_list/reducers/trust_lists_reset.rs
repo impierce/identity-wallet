@@ -1,13 +1,13 @@
 use crate::error::AppError;
-use crate::state::trust_list::actions::reset_trust_lists::ResetTrustLists;
+use crate::state::trust_list::actions::trust_lists_reset::TrustListsReset;
 use crate::state::trust_list::TrustLists;
 use crate::state::{
     actions::{listen, Action},
     AppState,
 };
 
-pub async fn reset_trust_lists(state: AppState, action: Action) -> Result<AppState, AppError> {
-    if let Some(_action) = listen::<ResetTrustLists>(action) {
+pub async fn trust_lists_reset(state: AppState, action: Action) -> Result<AppState, AppError> {
+    if let Some(_action) = listen::<TrustListsReset>(action) {
         return Ok(AppState {
             trust_lists: TrustLists::default(),
             current_user_prompt: None,
@@ -21,7 +21,7 @@ pub async fn reset_trust_lists(state: AppState, action: Action) -> Result<AppSta
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::state::trust_list::actions::reset_trust_lists::ResetTrustLists;
+    use crate::state::trust_list::actions::trust_lists_reset::TrustListsReset;
     use std::sync::Arc;
 
     #[tokio::test]
@@ -33,9 +33,9 @@ mod tests {
             .unwrap()
             .insert("test".to_string(), false);
 
-        let action = Arc::new(ResetTrustLists {});
+        let action = Arc::new(TrustListsReset {});
 
-        let result = reset_trust_lists(state, action).await.unwrap();
+        let result = trust_lists_reset(state, action).await.unwrap();
 
         assert_eq!(result.trust_lists, TrustLists::default());
     }

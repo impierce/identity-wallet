@@ -49,6 +49,11 @@ impl TrustLists {
     fn get_mut(&mut self, name: &str) -> Option<&mut TrustList> {
         self.0.iter_mut().find(|trust_list| trust_list.name == name)
     }
+
+    fn remove(&mut self, name: &str) -> Option<TrustList> {
+        let index = self.0.iter().position(|trust_list| trust_list.name == name)?;
+        Some(self.0.remove(index))
+    }
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, TS, PartialEq, Default)]
