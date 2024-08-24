@@ -1,12 +1,12 @@
 use crate::error::AppError;
-use crate::state::trust_list::actions::trust_list_delete::TrustListDelete;
+use crate::state::trust_list::actions::delete_trust_list_entry::DeleteTrustListEntry;
 use crate::state::{
     actions::{listen, Action},
     AppState,
 };
 
-pub async fn trust_list_delete(state: AppState, action: Action) -> Result<AppState, AppError> {
-    if let Some(action) = listen::<TrustListDelete>(action) {
+pub async fn delete_trust_list_entry(state: AppState, action: Action) -> Result<AppState, AppError> {
+    if let Some(action) = listen::<DeleteTrustListEntry>(action) {
         let mut trust_lists = state.trust_lists.clone();
         trust_lists
             .get_mut(&action.trust_list_name)
@@ -30,23 +30,20 @@ mod tests {
     use std::{collections::HashMap, sync::Arc};
 
     #[tokio::test]
-    async fn test_trust_list_delete() {
-        let state = AppState {
-            trust_lists: TrustLists::default(),
-            ..Default::default()
-        };
+    async fn test_delete_trust_list_entry() {
+        let state = AppState::default();
 
-        let action = Arc::new(TrustListDelete {
+        let action = Arc::new(DeleteTrustListEntry {
             trust_list_name: "impierce".to_string(),
             domain: "https://www.impierce.com".to_string(),
         });
 
-        let result = trust_list_delete(state, action).await.unwrap();
+        let result = delete_trust_list_entry(state, action).await.unwrap();
 
         let mut test = TrustLists::new();
-        test.insert( TrustList {
+        test.insert(TrustList {
             name: "impierce".to_string(),
-            trust_list: HashMap::new()
+            trust_list: HashMap::new(),
         });
 
         assert_eq!(result.trust_lists, test);

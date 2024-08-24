@@ -7,25 +7,27 @@ use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, ops::Not};
 use ts_rs::TS;
 
-#[derive(Default, Serialize, Deserialize, Clone, Debug, TS, PartialEq)]
+#[derive(Serialize, Deserialize, Clone, Debug, TS, PartialEq)]
 #[ts(export, export_to = "bindings/trust_list/TrustLists.ts")]
 pub struct TrustLists(pub Vec<TrustList>);
 
 #[typetag::serde(name = "trust_lists")]
 impl FeatTrait for TrustLists {}
 
-impl TrustLists {
-    pub fn new() -> Self {
-        Self(Vec::new())
-    }
-
-    pub fn default() -> Self {
+impl Default for TrustLists {
+    fn default() -> Self {
         let mut default = Self::new();
         default.insert(TrustList {
             name: "impierce".to_string(),
             trust_list: HashMap::from([("https://www.impierce.com".to_string(), true)]),
         });
         default
+    }
+}
+
+impl TrustLists {
+    pub fn new() -> Self {
+        Self(Vec::new())
     }
 
     pub fn contains(&self, name: &str) -> bool {
@@ -49,7 +51,7 @@ impl TrustLists {
     }
 }
 
-#[derive(Default, Serialize, Deserialize, Clone, Debug, TS, PartialEq)]
+#[derive(Serialize, Deserialize, Clone, Debug, TS, PartialEq, Default)]
 #[ts(export, export_to = "bindings/trust_list/TrustList.ts")]
 #[serde(default)]
 pub struct TrustList {
