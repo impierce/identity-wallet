@@ -41,7 +41,7 @@ const empty_state: AppState = {
 
 /**
  * This store contains the frontend state.
- * It may be altered only by the `state-changed` Tauri listener.
+ * It may be altered only by the `state-changed` Tauri event listener.
  * The frontend must dispatch an action to the backend to change state.
  */
 // TODO: make read-only
@@ -49,7 +49,7 @@ export const state = writable<AppState>(empty_state);
 
 /**
  * This store contains errors to be displayed by an error toast.
- * It may be altered only by the `error` Tauri listener.
+ * It may be altered only by the `error` Tauri event listener.
  */
 export const error = writable<string | undefined>(undefined);
 
