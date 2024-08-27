@@ -33,7 +33,7 @@
     {/if}
     <section class="flex flex-col items-center">
       <h2 class="mb-3 font-bold">{$LL.SETTINGS.SUPPORT.ABOUT.VERSION()}</h2>
-      <div>0.6.7</div>
+      <div>0.6.8</div>
       <div class="flex items-center pb-4">
         <p>{$LL.SETTINGS.SUPPORT.ABOUT.BUILT_WITH()}</p>
         <HeartFillIcon class="pl-1" />
