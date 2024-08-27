@@ -9,7 +9,7 @@ pub async fn toggle_trust_list_entry(state: AppState, action: Action) -> Result<
     if let Some(action) = listen::<ToggleTrustListEntry>(action) {
         let mut trust_lists = state.trust_lists.clone();
 
-        if let Some(trust_list) = trust_lists.get_mut(&action.trust_list_name) {
+        if let Some(trust_list) = trust_lists.get_mut(&action.trust_list_id) {
             if let Some(value) = trust_list.get_mut(&action.domain) {
                 *value = !*value;
             }
@@ -33,10 +33,11 @@ mod tests {
 
     #[tokio::test]
     async fn test_toggletrust_list_entry() {
-        let state = AppState::default();
+        let mut state = AppState::default();
+        state.trust_lists.insert(TrustList::default());
 
         let action = Arc::new(ToggleTrustListEntry {
-            trust_list_name: "impierce".to_string(),
+            trust_list_id: "impierce".to_string(),
             domain: "https://www.impierce.com".to_string(),
         });
 
@@ -45,6 +46,7 @@ mod tests {
         let mut test = TrustLists::new();
         test.insert(TrustList {
             name: "impierce".to_string(),
+            owned: true,
             trust_list: HashMap::from([("https://www.impierce.com".to_string(), false)]),
         });
 

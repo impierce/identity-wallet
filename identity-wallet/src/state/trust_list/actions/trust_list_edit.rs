@@ -8,8 +8,8 @@ use ts_rs::TS;
 #[derive(Serialize, Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/TrustListEdit.ts")]
 pub struct TrustListEdit {
-    pub trust_list_name: String,
-    pub new_trust_list_name: String,
+    pub trust_list_id: String,
+    pub new_trust_list_id: String,
 }
 
 #[typetag::serde(name = "[Trust List] Edit")]

@@ -7,23 +7,12 @@ use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, ops::Not};
 use ts_rs::TS;
 
-#[derive(Serialize, Deserialize, Clone, Debug, TS, PartialEq)]
+#[derive(Serialize, Deserialize, Clone, Debug, TS, PartialEq, Default)]
 #[ts(export, export_to = "bindings/trust_list/TrustLists.ts")]
 pub struct TrustLists(pub Vec<TrustList>);
 
 #[typetag::serde(name = "trust_lists")]
 impl FeatTrait for TrustLists {}
-
-impl Default for TrustLists {
-    fn default() -> Self {
-        let mut default = Self::new();
-        default.insert(TrustList {
-            name: "impierce".to_string(),
-            trust_list: HashMap::from([("https://www.impierce.com".to_string(), true)]),
-        });
-        default
-    }
-}
 
 impl TrustLists {
     pub fn new() -> Self {
@@ -56,18 +45,30 @@ impl TrustLists {
     }
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug, TS, PartialEq, Default)]
+#[derive(Serialize, Deserialize, Clone, Debug, TS, PartialEq)]
 #[ts(export, export_to = "bindings/trust_list/TrustList.ts")]
 #[serde(default)]
 pub struct TrustList {
     name: String,
+    owned: bool,
     trust_list: HashMap<String, bool>,
+}
+
+impl Default for TrustList {
+    fn default() -> Self {
+        TrustList {
+            name: "impierce".to_string(),
+            owned: true,
+            trust_list: HashMap::from([("https://www.impierce.com".to_string(), true)]),
+        }
+    }
 }
 
 impl TrustList {
     pub fn new() -> Self {
         Self {
             name: String::new(),
+            owned: true,
             trust_list: std::collections::HashMap::new(),
         }
     }
@@ -94,5 +95,33 @@ impl TrustList {
 
     pub fn iter(&self) -> std::collections::hash_map::Iter<String, bool> {
         self.trust_list.iter()
+    }
+
+    pub fn unowned_example () -> Self {
+        TrustList {
+            name: "unowned_example".to_string(),
+            owned: false,
+            trust_list: HashMap::from([("https://www.unowned.com".to_string(), true)]),
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn test_trust_list_unowned_example() {
+        let mut trust_lists = TrustLists::new();
+        trust_lists.insert(TrustList::unowned_example());
+
+        let mut test = TrustLists::new();
+        test.insert(TrustList {
+            name: "unowned_example".to_string(),
+            owned: false,
+            trust_list: HashMap::from([("https://www.unowned.com".to_string(), true)]),
+        });
+
+        assert_eq!(trust_lists, test);
     }
 }

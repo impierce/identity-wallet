@@ -8,7 +8,7 @@ use ts_rs::TS;
 #[derive(Serialize, Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/DeleteTrustListEntry.ts")]
 pub struct DeleteTrustListEntry {
-    pub trust_list_name: String,
+    pub trust_list_id: String,
     pub domain: String,
 }
 

@@ -9,8 +9,8 @@ pub async fn delete_trust_list_entry(state: AppState, action: Action) -> Result<
     if let Some(action) = listen::<DeleteTrustListEntry>(action) {
         let mut trust_lists = state.trust_lists.clone();
         trust_lists
-            .get_mut(&action.trust_list_name)
-            .expect("error: incorrect trust_list_name dispatched by frontend")
+            .get_mut(&action.trust_list_id)
+            .expect("error: incorrect trust_list_id dispatched by frontend")
             .remove(&action.domain);
 
         return Ok(AppState {
@@ -31,10 +31,11 @@ mod tests {
 
     #[tokio::test]
     async fn test_delete_trust_list_entry() {
-        let state = AppState::default();
+        let mut state = AppState::default();
+        state.trust_lists.insert(TrustList::default());
 
         let action = Arc::new(DeleteTrustListEntry {
-            trust_list_name: "impierce".to_string(),
+            trust_list_id: "impierce".to_string(),
             domain: "https://www.impierce.com".to_string(),
         });
 
@@ -43,6 +44,7 @@ mod tests {
         let mut test = TrustLists::new();
         test.insert(TrustList {
             name: "impierce".to_string(),
+            owned: true,
             trust_list: HashMap::new(),
         });
 

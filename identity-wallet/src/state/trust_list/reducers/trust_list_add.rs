@@ -10,7 +10,8 @@ pub async fn trust_list_add(state: AppState, action: Action) -> Result<AppState,
     if let Some(action) = listen::<TrustListAdd>(action) {
         let mut trust_lists = state.trust_lists.clone();
         trust_lists.insert(TrustList {
-            name: action.trust_list_name,
+            name: action.trust_list_id,
+            owned: true,
             trust_list: Default::default(),
         });
 
@@ -32,16 +33,20 @@ mod tests {
 
     #[tokio::test]
     async fn test_trust_list_add() {
-        let state = AppState::default();
+        let mut state = AppState::default();
+        state.trust_lists.insert(TrustList::default());
+
         let action = Arc::new(TrustListAdd {
-            trust_list_name: "example".to_string(),
+            trust_list_id: "example".to_string(),
         });
 
         let result = trust_list_add(state, action).await.unwrap();
 
         let mut test = TrustLists::default();
+        test.insert(TrustList::default());
         test.insert(TrustList {
             name: "example".to_string(),
+            owned: true,
             trust_list: Default::default(),
         });
 

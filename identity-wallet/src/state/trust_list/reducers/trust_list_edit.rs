@@ -10,17 +10,23 @@ pub async fn trust_list_edit(state: AppState, action: Action) -> Result<AppState
     if let Some(action) = listen::<TrustListEdit>(action) {
         let mut trust_lists = state.trust_lists.clone();
         let trust_list = trust_lists
-            .get_mut(&action.trust_list_name)
-            .expect("error: incorrect trust_list_name dispatched by frontend")
+            .get_mut(&action.trust_list_id)
+            .expect("error: incorrect trust_list_id dispatched by frontend")
             .trust_list
             .clone();
 
+        let owned = trust_lists
+            .get_mut(&action.trust_list_id)
+            .expect("error: incorrect trust_list_id dispatched by frontend")
+            .owned;
+
         trust_lists.insert(TrustList {
-            name: action.new_trust_list_name,
+            name: action.new_trust_list_id,
+            owned,
             trust_list,
         });
 
-        trust_lists.remove(&action.trust_list_name);
+        trust_lists.remove(&action.trust_list_id);
 
         return Ok(AppState {
             trust_lists,
@@ -40,10 +46,12 @@ mod tests {
 
     #[tokio::test]
     async fn test_trust_list_edit() {
-        let state = AppState::default();
+        let mut state = AppState::default();
+        state.trust_lists.insert(TrustList::default());
+
         let action = Arc::new(TrustListEdit {
-            trust_list_name: "impierce".to_string(),
-            new_trust_list_name: "example".to_string(),
+            trust_list_id: "impierce".to_string(),
+            new_trust_list_id: "example".to_string(),
         });
 
         let result = trust_list_edit(state, action).await.unwrap();
@@ -51,6 +59,7 @@ mod tests {
         let mut test = TrustLists::new();
         test.insert(TrustList {
             name: "example".to_string(),
+            owned: true,
             trust_list: HashMap::from([("https://www.impierce.com".to_string(), true)]),
         });
 

@@ -8,7 +8,7 @@ use crate::state::{
 pub async fn trust_list_delete(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(action) = listen::<TrustListDelete>(action) {
         let mut trust_lists = state.trust_lists.clone();
-        trust_lists.remove(&action.trust_list_name);
+        trust_lists.remove(&action.trust_list_id);
 
         return Ok(AppState {
             trust_lists,
@@ -30,7 +30,7 @@ mod tests {
     async fn test_trust_list_delete() {
         let state = AppState::default();
         let action = Arc::new(TrustListDelete {
-            trust_list_name: "impierce".to_string(),
+            trust_list_id: "impierce".to_string(),
         });
 
         let result = trust_list_delete(state, action).await.unwrap();
