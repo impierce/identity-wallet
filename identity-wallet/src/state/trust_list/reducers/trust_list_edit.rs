@@ -60,7 +60,7 @@ mod tests {
         test.insert(TrustList {
             name: "example".to_string(),
             owned: true,
-            trust_list: HashMap::from([("https://www.impierce.com".to_string(), true)]),
+            trust_list: HashMap::from([("impierce.com".to_string(), true)]),
         });
 
         assert_eq!(result.trust_lists, test);

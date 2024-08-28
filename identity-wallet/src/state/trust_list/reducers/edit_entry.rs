@@ -49,7 +49,7 @@ mod tests {
 
         let action = Arc::new(EditTrustListEntry {
             trust_list_id: "impierce".to_string(),
-            old_domain: "https://www.impierce.com".to_string(),
+            old_domain: "impierce.com".to_string(),
             new_domain: "new".to_string(),
         });
 

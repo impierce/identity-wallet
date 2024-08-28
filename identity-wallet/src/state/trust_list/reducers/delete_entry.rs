@@ -36,7 +36,7 @@ mod tests {
 
         let action = Arc::new(DeleteTrustListEntry {
             trust_list_id: "impierce".to_string(),
-            domain: "https://www.impierce.com".to_string(),
+            domain: "impierce.com".to_string(),
         });
 
         let result = delete_trust_list_entry(state, action).await.unwrap();

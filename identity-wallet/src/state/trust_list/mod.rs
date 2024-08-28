@@ -24,7 +24,7 @@ impl TrustLists {
     }
 
     /// Modelled after the `std::collections::HashMap::insert` method.
-    fn insert(&mut self, trust_list: TrustList) -> Option<&TrustList> {
+    pub fn insert(&mut self, trust_list: TrustList) -> Option<&TrustList> {
         self.contains(&trust_list.name)
             .not()
             .then(|| {
@@ -59,7 +59,7 @@ impl Default for TrustList {
         TrustList {
             name: "impierce".to_string(),
             owned: true,
-            trust_list: HashMap::from([("https://www.impierce.com".to_string(), true)]),
+            trust_list: HashMap::from([("impierce.com".to_string(), true)]),
         }
     }
 }

@@ -38,7 +38,7 @@ mod tests {
 
         let action = Arc::new(ToggleTrustListEntry {
             trust_list_id: "impierce".to_string(),
-            domain: "https://www.impierce.com".to_string(),
+            domain: "impierce.com".to_string(),
         });
 
         let result = toggle_trust_list_entry(state, action).await.unwrap();
@@ -47,7 +47,7 @@ mod tests {
         test.insert(TrustList {
             name: "impierce".to_string(),
             owned: true,
-            trust_list: HashMap::from([("https://www.impierce.com".to_string(), false)]),
+            trust_list: HashMap::from([("impierce.com".to_string(), false)]),
         });
 
         assert_eq!(result.trust_lists, test);
