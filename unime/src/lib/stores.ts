@@ -53,6 +53,7 @@ const empty_state: AppState = {
   user_journey: null,
   debug_messages: [],
   history: [],
+  trust_lists: [],
   dev_mode: 'Off',
 };
 

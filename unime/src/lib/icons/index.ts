@@ -59,6 +59,7 @@ export { default as SignOutFillIcon } from '~icons/ph/sign-out-fill';
 export { default as SlidersHorizontalRegularIcon } from '~icons/ph/sliders-horizontal';
 export { default as SmileyRegularIcon } from '~icons/ph/smiley';
 export { default as SmileySadRegularIcon } from '~icons/ph/smiley-sad';
+export { default as StarFillIcon } from '~icons/ph/star-fill';
 export { default as SunFillIcon } from '~icons/ph/sun-fill';
 export { default as TranslateFillIcon } from '~icons/ph/translate-fill';
 export { default as TrashRegularIcon } from '~icons/ph/trash';

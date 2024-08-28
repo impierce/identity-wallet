@@ -2,10 +2,17 @@ use crate::{
     error::AppError::{self, *},
     persistence::ASSETS_DIR,
     state::{
-        connections::{Connection, Connections}, core_utils::{
+        connections::{Connection, Connections},
+        core_utils::{
             history_event::{EventType, HistoryCredential, HistoryEvent},
             IdentityManager,
-        }, credentials::VerifiableCredentialRecord, dev_mode::DevMode, profile_settings::{AppTheme, Profile}, trust_list::TrustList, user_prompt::CurrentUserPrompt, AppState, SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS
+        },
+        credentials::VerifiableCredentialRecord,
+        dev_mode::DevMode,
+        profile_settings::{AppTheme, Profile},
+        trust_list::{TrustList, TrustLists},
+        user_prompt::CurrentUserPrompt,
+        AppState, SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS,
     },
     stronghold::StrongholdManager,
     subject::subject,
@@ -16,7 +23,7 @@ use lazy_static::lazy_static;
 use log::info;
 use oid4vc::{oid4vc_core::Subject, oid4vc_manager::ProviderManager, oid4vci::Wallet};
 use serde_json::json;
-use std::{fs::File, io::Write, sync::Arc};
+use std::{collections::HashMap, fs::File, io::Write, sync::Arc};
 
 lazy_static! {
     pub static ref PERSONAL_INFORMATION: VerifiableCredentialRecord = {
@@ -280,6 +287,18 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
     ];
 
     state.trust_lists.insert(TrustList::default());
+
+    // let trust_list: HashMap<String, bool> = serde_json::from_slice::<HashMap<String, bool>>(include_bytes!(
+    //     "../../../../resources/default_trust_list.json"
+    // ))
+    // .unwrap();
+
+    // state.trust_lists = TrustLists {
+    //     0: vec![TrustList {
+    //         name: "Default".to_string(),
+    //         trust_list,
+    //     }],
+    // };
 
     state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
         target: "me".to_string(),
