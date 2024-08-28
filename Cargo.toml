@@ -13,17 +13,17 @@ members = ["identity-wallet", "unime/src-tauri"]
 # - https://github.com/tauri-apps/tauri/blob/6d965e9fbf57323b1ba25faa68b4d0b7df4f07db/core/tauri-build/Cargo.toml#L3
 # - https://github.com/tauri-apps/tauri/blob/6d965e9fbf57323b1ba25faa68b4d0b7df4f07db/core/tauri-build/Cargo.toml#L31-L32
 # - https://github.com/tauri-apps/tauri/blob/6d965e9fbf57323b1ba25faa68b4d0b7df4f07db/core/tauri-build/Cargo.toml#L39
-tauri = { version = "=2.0.0-beta.24", features = [
+tauri = { version = "2.0.0-rc.0", features = [
     "protocol-asset",
     "rustls-tls",
 ] }
-tauri-codegen = { version = "=2.0.0-beta.19" }
-tauri-build = { version = "=2.0.0-beta.19", default-features = false}
-tauri-macros = { version = "=2.0.0-beta.19" }
-tauri-runtime = { version = "=2.0.0-beta.20" }
-tauri-runtime-wry = { version = "=2.0.0-beta.20" }
-tauri-utils = { version = "=2.0.0-beta.19", features = [ "resources" ] }
-tauri-winres = "=0.1"
+# tauri-codegen = { version = "2.0.0-rc.0" }
+tauri-build = { version = "2.0.0-rc.0", default-features = false}
+# tauri-macros = { version = "2.0.0-rc.0" }
+# tauri-runtime = { version = "2.0.0-rc.0" }
+# tauri-runtime-wry = { version = "2.0.0-rc.0" }
+# tauri-utils = { version = "2.0.0-rc.0", features = [ "resources" ] }
+# tauri-winres = "=0.1"
 
 did_manager = { git = "https://github.com/impierce/did-manager.git", rev = "2b88f55" }
 jsonwebtoken = "9.3"
