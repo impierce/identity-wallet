@@ -1,10 +1,10 @@
 use identity_wallet::{
-    persistence::{save_state, STATE_FILE, STRONGHOLD},
+    persistence::{save_state, ASSETS_DIR, STATE_FILE, STRONGHOLD},
     state::{actions::Action, AppState, AppStateContainer},
 };
 use serde_json::json;
 use tauri::Manager;
-use tempfile::NamedTempFile;
+use tempfile::{NamedTempFile, TempDir};
 
 use crate::common::extensions::CustomExtension;
 
@@ -147,4 +147,9 @@ pub fn setup_state_file() {
 pub fn setup_stronghold() {
     let path = NamedTempFile::new().unwrap().into_temp_path();
     *STRONGHOLD.lock().unwrap() = path.as_os_str().into();
+}
+
+pub fn setup_assets_dir() {
+    let path = TempDir::new().unwrap().into_path();
+    *ASSETS_DIR.lock().unwrap() = path.as_os_str().into();
 }

@@ -12,7 +12,7 @@ pub struct DeleteCredential {
     pub id: String,
 }
 
-#[typetag::serde(name = "[Credential Metadata] Update")]
+#[typetag::serde(name = "[Credential] Delete")]
 impl ActionTrait for DeleteCredential {
     fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
         vec![reducer!(delete_credential)]
