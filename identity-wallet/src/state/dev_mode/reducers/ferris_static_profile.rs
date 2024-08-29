@@ -10,7 +10,7 @@ use crate::{
         credentials::VerifiableCredentialRecord,
         dev_mode::DevMode,
         profile_settings::{AppTheme, Profile},
-        trust_list::{TrustList, TrustLists},
+        trust_list::TrustList,
         user_prompt::CurrentUserPrompt,
         AppState, SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS,
     },
