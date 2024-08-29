@@ -97,7 +97,7 @@ impl TrustList {
         self.trust_list.iter()
     }
 
-    pub fn unowned_example () -> Self {
+    pub fn unowned_example() -> Self {
         TrustList {
             name: "unowned_example".to_string(),
             owned: false,

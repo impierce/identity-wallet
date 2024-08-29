@@ -2,10 +2,17 @@ use crate::{
     error::AppError::{self, *},
     persistence::ASSETS_DIR,
     state::{
-        connections::{Connection, Connections}, core_utils::{
+        connections::{Connection, Connections},
+        core_utils::{
             history_event::{EventType, HistoryCredential, HistoryEvent},
             IdentityManager,
-        }, credentials::VerifiableCredentialRecord, dev_mode::DevMode, profile_settings::{AppTheme, Profile}, trust_list::TrustList, user_prompt::CurrentUserPrompt, AppState, SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS
+        },
+        credentials::VerifiableCredentialRecord,
+        dev_mode::DevMode,
+        profile_settings::{AppTheme, Profile},
+        trust_list::TrustList,
+        user_prompt::CurrentUserPrompt,
+        AppState, SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS,
     },
     stronghold::StrongholdManager,
     subject::subject,
