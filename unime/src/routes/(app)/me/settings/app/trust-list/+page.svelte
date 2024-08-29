@@ -30,7 +30,7 @@
   };
 </script>
 
-<TopNavBar on:back={() => history.back()} title={'Trust lists'} />
+<TopNavBar on:back={() => history.back()} title={'Trusted domains'} />
 <div class="content-height flex flex-col bg-silver dark:bg-navy">
   <div class="space-y-[15px] px-4 py-5">
     <!-- Developer info -->
@@ -51,6 +51,11 @@
 
     <div class="flex flex-col space-y-[10px]">
       <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Trust lists</p>
+      {#if trustLists.length === 0}
+        <div class="flex h-14 items-center justify-center">
+          <p class="text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">No trust lists yet.</p>
+        </div>
+      {/if}
       {#each trustLists as trustList}
         <button
           class="flex h-14 w-full items-center space-x-4 rounded-xl bg-white p-4 dark:bg-dark"
