@@ -1,4 +1,7 @@
 {
-  "https://www.impierce.com": true,
-  "https://example.com": true
+  "agent-dev.impierce.com": true,
+  "impierce.com": true,
+  "example.org": true,
+  "portal.impierce.com": true,
+  "foobar.example.com": true
 }

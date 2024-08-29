@@ -49,9 +49,9 @@ impl TrustLists {
 #[ts(export, export_to = "bindings/trust_list/TrustList.ts")]
 #[serde(default)]
 pub struct TrustList {
-    name: String,
-    owned: bool,
-    trust_list: HashMap<String, bool>,
+    pub name: String,
+    pub owned: bool,
+    pub trust_list: HashMap<String, bool>,
 }
 
 impl Default for TrustList {

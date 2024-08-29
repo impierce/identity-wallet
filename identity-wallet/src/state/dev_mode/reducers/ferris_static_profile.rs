@@ -288,17 +288,15 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
 
     state.trust_lists.insert(TrustList::default());
 
-    // let trust_list: HashMap<String, bool> = serde_json::from_slice::<HashMap<String, bool>>(include_bytes!(
-    //     "../../../../resources/default_trust_list.json"
-    // ))
-    // .unwrap();
-
-    // state.trust_lists = TrustLists {
-    //     0: vec![TrustList {
-    //         name: "Default".to_string(),
-    //         trust_list,
-    //     }],
-    // };
+    let mut imported_list = TrustList::new();
+    imported_list.name = "My imported list".to_string();
+    let trust_list_entries: HashMap<String, bool> = serde_json::from_slice::<HashMap<String, bool>>(include_bytes!(
+        "../../../../resources/default_trust_list.json"
+    ))
+    .unwrap();
+    imported_list.trust_list = trust_list_entries;
+    imported_list.owned = false;
+    state.trust_lists.insert(imported_list);
 
     state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
         target: "me".to_string(),

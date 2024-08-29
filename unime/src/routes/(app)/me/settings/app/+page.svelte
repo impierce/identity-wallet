@@ -69,7 +69,7 @@
           on:click={() => goto('/me/settings/app/did')}
         />
       </div>
-      <div in:fade={{ duration: 200 }} out:fade={{ duration: 200 }}>
+      <div in:fade={{ duration: 200, delay: 50 }} out:fade={{ duration: 200 }}>
         <SettingsEntry
           icon={KeyFillIcon}
           title={'Key management'}
@@ -77,10 +77,10 @@
           on:click={() => goto('/me/settings/app/keys')}
         />
       </div>
-      <div in:fade={{ duration: 200 }} out:fade={{ duration: 200 }}>
+      <div in:fade={{ duration: 200, delay: 100 }} out:fade={{ duration: 200 }}>
         <SettingsEntry
           icon={ListStarFillIcon}
-          title={'Trust lists'}
+          title={'Trusted domains'}
           hasCaretRight={true}
           on:click={() => goto('/me/settings/app/trust-list')}
         />
