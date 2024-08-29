@@ -18,48 +18,27 @@
 </script>
 
 <TopNavBar on:back={() => history.back()} title={$page.params.id}>
-  {#if trustList?.owned}
-    <ActionSheet
-      titleText={'Delete trust list'}
-      descriptionText={'Are you sure you want to delete your custom list of trusted domains?'}
+  <ActionSheet
+    titleText={'Delete trust list'}
+    descriptionText={'Are you sure you want to delete this list of trusted domains?'}
+  >
+    <button
+      slot="trigger"
+      let:trigger
+      use:melt={trigger}
+      class="-mr-2 p-2 text-left text-[13px]/[24px] font-medium text-primary">Delete</button
     >
-      <button
-        slot="trigger"
-        let:trigger
-        use:melt={trigger}
-        class="-mr-2 p-2 text-left text-[13px]/[24px] font-medium text-primary">Delete</button
-      >
-      <div slot="content" class="w-full pb-[10px] pt-[20px]">
-        <Button
-          label="Yes, delete it."
-          on:click={() => {
-            dispatch({ type: '[Trust List] Delete', payload: { trust_list_id: $page.params.id } });
-            history.back();
-          }}
-        />
-      </div>
-      <Button variant="secondary" slot="close" let:close trigger={close} label="No, keep the list." />
-    </ActionSheet>
-  {:else}
-    <ActionSheet
-      titleText={'Reset to defaults'}
-      descriptionText={'Are you sure you want to reset the trusted domains to the default list?'}
-    >
-      <button
-        slot="trigger"
-        let:trigger
-        use:melt={trigger}
-        class="-mr-2 p-2 text-left text-[13px]/[24px] font-medium text-primary">Reset</button
-      >
-      <div slot="content" class="w-full pb-[10px] pt-[20px]">
-        <Button
-          label="Yes, reset to defaults."
-          on:click={() => dispatch({ type: '[Trust Lists] Default', payload: { trust_list_id: $page.params.id } })}
-        />
-      </div>
-      <Button variant="secondary" slot="close" let:close trigger={close} label="No, keep my edits." />
-    </ActionSheet>
-  {/if}
+    <div slot="content" class="w-full pb-[10px] pt-[20px]">
+      <Button
+        label="Yes, delete it."
+        on:click={() => {
+          dispatch({ type: '[Trust List] Delete', payload: { trust_list_id: $page.params.id } });
+          history.back();
+        }}
+      />
+    </div>
+    <Button variant="secondary" slot="close" let:close trigger={close} label="No, keep the list." />
+  </ActionSheet>
 </TopNavBar>
 <div class="content-height flex flex-col bg-silver dark:bg-navy">
   <div class="space-y-[15px] px-4 py-5">
