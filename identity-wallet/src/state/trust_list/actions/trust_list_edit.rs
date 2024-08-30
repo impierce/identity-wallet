@@ -7,13 +7,13 @@ use ts_rs::TS;
 
 #[derive(Serialize, Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/TrustListEdit.ts")]
-pub struct TrustListEdit {
+pub struct TrustListsEdit {
     pub trust_list_id: String,
-    pub new_trust_list_id: String,
+    pub new_display_name: String,
 }
 
 #[typetag::serde(name = "[Trust List] Edit")]
-impl ActionTrait for TrustListEdit {
+impl ActionTrait for TrustListsEdit {
     fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
         vec![reducer!(trust_list_edit)]
     }

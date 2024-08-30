@@ -24,27 +24,27 @@ pub async fn add_trust_list_entry(state: AppState, action: Action) -> Result<App
 
 #[cfg(test)]
 mod tests {
-    use crate::state::trust_list::{TrustList, TrustLists};
-
     use super::*;
+    use crate::state::trust_list::TrustList;
+
     use std::sync::Arc;
 
     #[tokio::test]
     async fn test_add_trust_list_entry() {
         let mut state = AppState::default();
-        state.trust_lists.insert(TrustList::default());
+        let default_trust_list = TrustList::default();
+        state.trust_lists.insert(default_trust_list.clone());
 
         let action = Arc::new(AddTrustListEntry {
-            trust_list_id: "impierce".to_string(),
-            domain: "test".to_string(),
+            trust_list_id: default_trust_list.id.clone(),
+            domain: "example.com".to_string(),
         });
 
         let result = add_trust_list_entry(state, action).await.unwrap();
 
-        let mut test = TrustLists::default();
-        test.insert(TrustList::default());
-        test.get_mut("impierce").unwrap().insert("test".to_string(), true);
+        let mut expected = default_trust_list.clone();
+        expected.insert("example.com".to_string(), true);
 
-        assert_eq!(result.trust_lists, test);
+        assert_eq!(result.trust_lists.0.first().unwrap().clone(), expected);
     }
 }

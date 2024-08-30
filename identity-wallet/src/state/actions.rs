@@ -83,8 +83,7 @@ mod bindings {
         trust_list::actions::{
             add_trust_list_entry::AddTrustListEntry, delete_trust_list_entry::DeleteTrustListEntry,
             edit_trust_list_entry::EditTrustListEntry, toggle_trust_list_entry::ToggleTrustListEntry,
-            trust_list_add::TrustListAdd, trust_list_default::TrustListDefault, trust_list_delete::TrustListDelete,
-            trust_list_edit::TrustListEdit,
+            trust_list_add::TrustListsAdd, trust_list_delete::TrustListsDelete, trust_list_edit::TrustListsEdit,
         },
     };
 
@@ -145,13 +144,11 @@ mod bindings {
         DeleteTrustListEntry { payload: DeleteTrustListEntry },
         #[serde(rename = "[Trust List] Toggle Entry")]
         ToggleTrustListEntry { payload: ToggleTrustListEntry },
-        #[serde(rename = "[Trust List] Add")]
-        TrustListAdd { payload: TrustListAdd },
-        #[serde(rename = "[Trust List] Edit")]
-        TrustListEdit { payload: TrustListEdit },
-        #[serde(rename = "[Trust List] Delete")]
-        TrustListDelete { payload: TrustListDelete },
-        #[serde(rename = "[Trust List] Default")]
-        TrustListDefault { payload: TrustListDefault },
+        #[serde(rename = "[Trust Lists] Add")]
+        TrustListAdd { payload: TrustListsAdd },
+        #[serde(rename = "[Trust Lists] Edit")]
+        TrustListEdit { payload: TrustListsEdit },
+        #[serde(rename = "[Trust Lists] Delete")]
+        TrustListDelete { payload: TrustListsDelete },
     }
 }

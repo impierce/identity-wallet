@@ -34,22 +34,24 @@ mod tests {
     #[tokio::test]
     async fn test_toggletrust_list_entry() {
         let mut state = AppState::default();
-        state.trust_lists.insert(TrustList::default());
+        let default_trust_list = TrustList::default();
+        state.trust_lists.insert(default_trust_list.clone());
 
         let action = Arc::new(ToggleTrustListEntry {
-            trust_list_id: "impierce".to_string(),
+            trust_list_id: default_trust_list.id.clone(),
             domain: "impierce.com".to_string(),
         });
 
         let result = toggle_trust_list_entry(state, action).await.unwrap();
 
-        let mut test = TrustLists::new();
-        test.insert(TrustList {
-            name: "impierce".to_string(),
+        let mut expected = TrustLists::new();
+        expected.insert(TrustList {
+            id: default_trust_list.id.clone(),
+            display_name: default_trust_list.display_name.clone(),
             owned: true,
-            trust_list: HashMap::from([("impierce.com".to_string(), false)]),
+            entries: HashMap::from([("impierce.com".to_string(), false)]),
         });
 
-        assert_eq!(result.trust_lists, test);
+        assert_eq!(result.trust_lists, expected);
     }
 }
