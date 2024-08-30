@@ -46,9 +46,8 @@ impl TrustLists {
     }
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug, TS, PartialEq, Default)]
+#[derive(Serialize, Deserialize, Clone, Debug, TS, PartialEq)]
 #[ts(export, export_to = "bindings/trust_list/TrustList.ts")]
-#[serde(default)]
 pub struct TrustList {
     pub id: String,
     pub display_name: String,
