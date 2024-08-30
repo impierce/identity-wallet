@@ -17,7 +17,7 @@
   let newEntryValue = '';
 </script>
 
-<TopNavBar on:back={() => history.back()} title={$page.params.id}>
+<TopNavBar on:back={() => history.back()} title={trustList?.display_name ?? ''}>
   <ActionSheet
     titleText={'Delete trust list'}
     descriptionText={'Are you sure you want to delete this list of trusted domains?'}
