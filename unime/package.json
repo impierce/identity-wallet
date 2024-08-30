@@ -1,7 +1,7 @@
 {
   "name": "unime",
   "private": true,
-  "version": "0.6.7",
+  "version": "0.6.8",
   "type": "module",
   "scripts": {
     "dev": "vite dev",
@@ -15,31 +15,25 @@
     "tauri": "tauri",
     "typesafe-i18n": "typesafe-i18n --no-watch"
   },
-  "dependencies": {
-    "@aws-crypto/sha256-js": "^5.2.0",
-    "@lottiefiles/lottie-player": "^2.0.2",
-    "@tauri-apps/api": "2.0.0-beta.15",
-    "@tauri-apps/plugin-barcode-scanner": "2.0.0-beta.7",
-    "@tauri-apps/plugin-fs": "2.0.0-beta.7",
-    "@tauri-apps/plugin-log": "2.0.0-beta.8",
-    "@tauri-apps/plugin-shell": "2.0.0-beta.8",
-    "date-fns": "^3.3.1",
-    "markdown-it": "^14.0.0",
-    "qrcode": "^1.5.3",
-    "typesafe-i18n": "^5.26.2"
-  },
   "devDependencies": {
+    "@aws-crypto/sha256-js": "^5.2.0",
     "@iconify-json/circle-flags": "^1.1.46",
     "@iconify-json/ph": "^1.1.13",
+    "@lottiefiles/lottie-player": "^2.0.2",
     "@melt-ui/pp": "^0.3.0",
     "@melt-ui/svelte": "^0.83.0",
     "@sveltejs/adapter-static": "^3.0.0",
     "@sveltejs/kit": "^2.5.19",
     "@sveltejs/vite-plugin-svelte": "^3.0.0",
+    "@tauri-apps/api": "2.0.0-beta.15",
     "@tauri-apps/cli": "2.0.0-beta.22",
+    "@tauri-apps/plugin-barcode-scanner": "2.0.0-beta.7",
+    "@tauri-apps/plugin-fs": "2.0.0-beta.7",
+    "@tauri-apps/plugin-log": "2.0.0-beta.8",
+    "@tauri-apps/plugin-shell": "2.0.0-beta.8",
     "@testing-library/jest-dom": "^6.1.0",
     "@testing-library/svelte": "^4.0.0",
-    "@types/eslint": "^8.56.0",
+    "@types/eslint": "^9.6.0",
     "@types/markdown-it": "^14.1.2",
     "@types/qrcode": "^1.5.1",
     "@vitest/coverage-v8": "^2.0.3",
@@ -50,13 +44,16 @@
     "globals": "^15.7.0",
     "internal-ip": "^7.0.0",
     "jsdom": "^22.1.0",
+    "markdown-it": "^14.0.0",
     "postcss": "^8.4.21",
+    "qrcode": "^1.5.3",
     "svelte": "^4.2.18",
     "svelte-check": "^3.8.5",
     "svelte-sequential-preprocessor": "^2.0.1",
     "tailwind-merge": "^2.4.0",
     "tailwindcss": "^3.3.1",
     "tslib": "^2.4.1",
+    "typesafe-i18n": "^5.26.2",
     "typescript": "^5.2.0",
     "typescript-eslint": "^8.0.1",
     "unplugin-icons": "^0.19.1",
@@ -64,7 +61,7 @@
     "vitest": "^2.0.3"
   },
   "engines": {
-    "node": ">=20.0.0",
-    "npm": ">=10.0.0"
+    "node": ">=20",
+    "pnpm": ">=9"
   }
 }
