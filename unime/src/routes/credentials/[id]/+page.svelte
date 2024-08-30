@@ -123,8 +123,8 @@
         {#each Object.entries(entries) as entry}
           <div class="flex flex-col items-start px-4 py-[10px]">
             <p class="dark:text-300 text-[13px]/[24px] font-medium text-slate-500">{entry[0]}</p>
-            <!-- Render "image" instead of displaying it as text -->
-            {#if entry[0] === 'image'}
+            <!-- Render "portrait" instead of displaying it as text -->
+            {#if entry[0] === 'portrait'}
               <div class="flex w-full justify-center">
                 <img src={entry[1]} alt="embedded" class="h-auto w-32 rounded-lg" />
               </div>
