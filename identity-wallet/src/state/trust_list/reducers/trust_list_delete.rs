@@ -21,22 +21,32 @@ pub async fn trust_list_delete(state: AppState, action: Action) -> Result<AppSta
 
 #[cfg(test)]
 mod tests {
-    use crate::state::trust_list::TrustLists;
+    use uuid::Uuid;
+
+    use crate::state::trust_list::{TrustList, TrustLists};
 
     use super::*;
-    use std::sync::Arc;
+    use std::{collections::HashMap, sync::Arc};
 
     #[tokio::test]
     async fn test_trust_list_delete() {
-        let state = AppState::default();
+        let mut state = AppState::default();
+        let default_trust_list = TrustList {
+            id: Uuid::new_v4().to_string(),
+            display_name: "impierce".to_string(),
+            custom: true,
+            entries: HashMap::from([("impierce.com".to_string(), true)]),
+        };
+        state.trust_lists.insert(default_trust_list.clone());
+
         let action = Arc::new(TrustListsDelete {
-            trust_list_id: "impierce".to_string(),
+            trust_list_id: default_trust_list.id,
         });
 
         let result = trust_list_delete(state, action).await.unwrap();
 
-        let test = TrustLists::new();
+        let expected = TrustLists::new();
 
-        assert_eq!(result.trust_lists, test);
+        assert_eq!(result.trust_lists, expected);
     }
 }

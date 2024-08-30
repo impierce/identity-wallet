@@ -1,7 +1,4 @@
 {
-  "agent-dev.impierce.com": true,
-  "impierce.com": true,
-  "example.org": true,
-  "portal.impierce.com": true,
-  "foobar.example.com": true
+  "display_name": "foobar",
+  "domains": ["agent-dev.impierce.com", "impierce.com", "example.org", "portal.impierce.com", "foobar.example.com"]
 }

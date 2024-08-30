@@ -22,8 +22,8 @@ use jsonwebtoken::Algorithm;
 use lazy_static::lazy_static;
 use log::info;
 use oid4vc::{oid4vc_core::Subject, oid4vc_manager::ProviderManager, oid4vci::Wallet};
-use serde_json::json;
-use std::{collections::HashMap, fs::File, io::Write, sync::Arc};
+use serde_json::{json, Value};
+use std::{fs::File, io::Write, sync::Arc};
 
 lazy_static! {
     pub static ref PERSONAL_INFORMATION: VerifiableCredentialRecord = {
@@ -289,13 +289,24 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
     state.trust_lists.insert(TrustList::default());
 
     let mut imported_list = TrustList::new();
-    imported_list.display_name = "My imported list".to_string();
-    let trust_list_entries: HashMap<String, bool> = serde_json::from_slice::<HashMap<String, bool>>(include_bytes!(
-        "../../../../resources/default_trust_list.json"
-    ))
-    .unwrap();
-    imported_list.entries = trust_list_entries;
-    imported_list.owned = false;
+    let imported_trust_list: Value =
+        serde_json::from_slice::<Value>(include_bytes!("../../../../resources/default_trust_list.json")).unwrap();
+
+    imported_list.entries = imported_trust_list
+        .get("domains")
+        .unwrap()
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|domain| (domain.as_str().unwrap().to_string(), true))
+        .collect();
+    imported_list.display_name = imported_trust_list
+        .get("display_name")
+        .unwrap()
+        .as_str()
+        .unwrap()
+        .to_string();
+    imported_list.custom = false;
     state.trust_lists.insert(imported_list);
 
     state.current_user_prompt = Some(CurrentUserPrompt::Redirect {

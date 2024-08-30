@@ -12,7 +12,7 @@ pub async fn trust_list_add(state: AppState, action: Action) -> Result<AppState,
         trust_lists.insert(TrustList {
             id: uuid::Uuid::new_v4().to_string(),
             display_name: action.display_name,
-            owned: true,
+            custom: true,
             entries: Default::default(),
         });
 
@@ -34,9 +34,7 @@ mod tests {
 
     #[tokio::test]
     async fn test_trust_list_add() {
-        let mut state = AppState::default();
-        let default_trust_list = TrustList::default();
-        state.trust_lists.insert(default_trust_list.clone());
+        let state = AppState::default();
 
         let action = Arc::new(TrustListsAdd {
             display_name: "example".to_string(),
@@ -45,11 +43,10 @@ mod tests {
         let result = trust_list_add(state, action).await.unwrap();
 
         let mut expected = TrustLists::default();
-        expected.insert(TrustList::default());
         expected.insert(TrustList {
             id: "_".to_string(),
             display_name: "example".to_string(),
-            owned: true,
+            custom: true,
             entries: Default::default(),
         });
 
@@ -58,7 +55,7 @@ mod tests {
 
         // ID is not asserted as it is randomly generated upon creation.
         assert_eq!(actual.display_name, expected.display_name);
-        assert_eq!(actual.owned, expected.owned);
+        assert_eq!(actual.custom, expected.custom);
         assert_eq!(actual.entries, expected.entries);
     }
 }

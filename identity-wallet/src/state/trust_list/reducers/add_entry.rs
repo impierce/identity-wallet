@@ -24,15 +24,22 @@ pub async fn add_trust_list_entry(state: AppState, action: Action) -> Result<App
 
 #[cfg(test)]
 mod tests {
+    use uuid::Uuid;
+
     use super::*;
     use crate::state::trust_list::TrustList;
 
-    use std::sync::Arc;
+    use std::{collections::HashMap, sync::Arc};
 
     #[tokio::test]
     async fn test_add_trust_list_entry() {
         let mut state = AppState::default();
-        let default_trust_list = TrustList::default();
+        let default_trust_list = TrustList {
+            id: Uuid::new_v4().to_string(),
+            display_name: "impierce".to_string(),
+            custom: true,
+            entries: HashMap::from([("impierce.com".to_string(), true)]),
+        };
         state.trust_lists.insert(default_trust_list.clone());
 
         let action = Arc::new(AddTrustListEntry {

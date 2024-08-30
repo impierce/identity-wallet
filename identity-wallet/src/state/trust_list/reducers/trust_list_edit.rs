@@ -20,7 +20,7 @@ pub async fn trust_list_edit(state: AppState, action: Action) -> Result<AppState
         trust_lists.insert(TrustList {
             id: trust_list.id,
             display_name: action.new_display_name,
-            owned: trust_list.owned,
+            custom: trust_list.custom,
             entries: trust_list.entries,
         });
 
@@ -35,6 +35,8 @@ pub async fn trust_list_edit(state: AppState, action: Action) -> Result<AppState
 
 #[cfg(test)]
 mod tests {
+    use uuid::Uuid;
+
     use super::*;
     use crate::state::trust_list::TrustLists;
 
@@ -43,7 +45,12 @@ mod tests {
     #[tokio::test]
     async fn test_trust_list_edit() {
         let mut state = AppState::default();
-        let default_trust_list = TrustList::default();
+        let default_trust_list = TrustList {
+            id: Uuid::new_v4().to_string(),
+            display_name: "impierce".to_string(),
+            custom: true,
+            entries: HashMap::from([("impierce.com".to_string(), true)]),
+        };
         state.trust_lists.insert(default_trust_list.clone());
 
         let action = Arc::new(TrustListsEdit {
@@ -57,7 +64,7 @@ mod tests {
         expected.insert(TrustList {
             id: default_trust_list.id.clone(),
             display_name: "example".to_string(),
-            owned: true,
+            custom: true,
             entries: HashMap::from([("impierce.com".to_string(), true)]),
         });
 

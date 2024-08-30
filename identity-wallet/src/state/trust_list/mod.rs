@@ -46,25 +46,14 @@ impl TrustLists {
     }
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug, TS, PartialEq)]
+#[derive(Serialize, Deserialize, Clone, Debug, TS, PartialEq, Default)]
 #[ts(export, export_to = "bindings/trust_list/TrustList.ts")]
 #[serde(default)]
 pub struct TrustList {
     pub id: String,
     pub display_name: String,
-    pub owned: bool,
+    pub custom: bool,
     pub entries: HashMap<String, bool>,
-}
-
-impl Default for TrustList {
-    fn default() -> Self {
-        TrustList {
-            id: Uuid::new_v4().to_string(),
-            display_name: "impierce".to_string(),
-            owned: true,
-            entries: HashMap::from([("impierce.com".to_string(), true)]),
-        }
-    }
 }
 
 impl TrustList {
@@ -72,7 +61,7 @@ impl TrustList {
         Self {
             id: Uuid::new_v4().to_string(),
             display_name: String::new(),
-            owned: true,
+            custom: true,
             entries: std::collections::HashMap::new(),
         }
     }
