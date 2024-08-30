@@ -1,4 +1,4 @@
 {
-  "display_name": "foobar",
-  "domains": ["agent-dev.impierce.com", "impierce.com", "example.org", "portal.impierce.com", "foobar.example.com"]
+  "display_name": "Impierce (Development)",
+  "domains": ["agent-dev.impierce.com", "ngdil.com", "selv.iota.org"]
 }
