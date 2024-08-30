@@ -34,10 +34,10 @@ lazy_static! {
         record.display_credential.display_name = "PersonalInformation".to_string();
         record
     };
-    pub static ref DRIVERS_LICENSE_CREDENTIAL_SUBJECT: String = URL_SAFE_NO_PAD.encode(include_bytes!("../../../../resources/drivers-license-credential-subject.json"));
+    pub static ref DRIVERS_LICENSE_CREDENTIAL_PAYLOAD: String = URL_SAFE_NO_PAD.encode(include_bytes!("../../../../resources/ferris-drivers-license-payload.json"));
     pub static ref DRIVERS_LICENSE_CREDENTIAL: VerifiableCredentialRecord = {
         let mut record = VerifiableCredentialRecord::try_from(
-            json!(format!("eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDprZXk6ejZNa2toUDQzTENTWGFqM1NRQm92eTF1RTJuWHZTQm5SUFdaMndoUExxblo4UGdEI3o2TWtraFA0M0xDU1hhajNTUUJvdnkxdUUyblh2U0JuUlBXWjJ3aFBMcW5aOFBnRCJ9.{}.OZCcZt5JTJcBhoLPIyrQuvZuc2dnVN65f8GvKQ3earAzJEgGMA9ZjKRNHEjI73wLwvG5MJBN7Zs_rWiNLEZ5Dg", DRIVERS_LICENSE_CREDENTIAL_SUBJECT.to_string())),
+            json!(format!("eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDprZXk6ejZNa2toUDQzTENTWGFqM1NRQm92eTF1RTJuWHZTQm5SUFdaMndoUExxblo4UGdEI3o2TWtraFA0M0xDU1hhajNTUUJvdnkxdUUyblh2U0JuUlBXWjJ3aFBMcW5aOFBnRCJ9.{}.OZCcZt5JTJcBhoLPIyrQuvZuc2dnVN65f8GvKQ3earAzJEgGMA9ZjKRNHEjI73wLwvG5MJBN7Zs_rWiNLEZ5Dg", DRIVERS_LICENSE_CREDENTIAL_PAYLOAD.clone())),
         ).unwrap();
         record.display_credential.display_name = "DriverLicenseCredential".to_string();
         record
