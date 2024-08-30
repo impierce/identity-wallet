@@ -8,8 +8,8 @@
   import { ArrowCounterClockwiseBoldIcon, CheckBoldIcon, PlusBoldIcon, TrashRegularIcon } from '$lib/icons';
   import { state } from '$lib/stores';
 
-  $: trustList = $state.trust_lists.find((tl) => tl.name === $page.params.id);
-  $: entries = trustList?.trust_list || {};
+  $: trustList = $state.trust_lists.find((tl) => tl.id === $page.params.id);
+  $: entries = trustList?.entries || {};
   $: domains = Object.keys(entries);
 
   let newEntryInputElement: HTMLInputElement;
@@ -32,7 +32,7 @@
       <Button
         label="Yes, delete it."
         on:click={() => {
-          dispatch({ type: '[Trust List] Delete', payload: { trust_list_id: $page.params.id } });
+          dispatch({ type: '[Trust Lists] Delete', payload: { trust_list_id: $page.params.id } });
           history.back();
         }}
       />
@@ -58,7 +58,7 @@
       {/each} -->
     </div>
 
-    {#if trustList?.owned}
+    {#if trustList?.custom}
       <!-- Custom list -->
       {#each Object.entries(entries) as [domain, active], i (domain)}
         <div class="flex flex-row items-center space-x-2">

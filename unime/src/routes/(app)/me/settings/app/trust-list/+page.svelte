@@ -11,9 +11,9 @@
   $: trustLists = $state.trust_lists || {};
 
   const activeDomainsString = (trustList: TrustList): string => {
-    const totalEntries = Object.keys(trustList.trust_list).length;
-    const enabledEntries = Object.values(trustList.trust_list).filter((active) => active === true).length;
-    const disabledEntries = Object.values(trustList.trust_list).filter((active) => active === false).length;
+    const totalEntries = Object.keys(trustList.entries).length;
+    const enabledEntries = Object.values(trustList.entries).filter((active) => active === true).length;
+    const disabledEntries = Object.values(trustList.entries).filter((active) => active === false).length;
     if (totalEntries === 0) {
       return 'Empty list';
     } else if (enabledEntries === totalEntries) {
@@ -59,13 +59,13 @@
       {#each trustLists as trustList}
         <button
           class="flex h-14 w-full items-center space-x-4 rounded-xl bg-white p-4 dark:bg-dark"
-          on:click={() => goto(`/me/settings/app/trust-list/${trustList.name}`)}
+          on:click={() => goto(`/me/settings/app/trust-list/${trustList.id}`)}
         >
           <div class="flex grow flex-row items-center space-x-2">
             <p class="text-left text-[13px]/[24px] font-medium text-slate-800 dark:text-white">
-              {trustList.name}
+              {trustList.display_name}
             </p>
-            {#if trustList.owned}
+            {#if trustList.custom}
               <svelte:component this={StarFillIcon} class="h-5 w-5 text-primary" />
             {/if}
           </div>
@@ -80,8 +80,8 @@
       label="Add new custom trust list"
       on:click={() => {
         dispatch({
-          type: '[Trust List] Add',
-          payload: { trust_list_id: `custom_list_${Math.floor(Math.random() * 100_000)}` },
+          type: '[Trust Lists] Add',
+          payload: { display_name: `Custom List ${Math.floor(Math.random() * 100_000)}` },
         });
       }}
     />
