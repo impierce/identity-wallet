@@ -145,10 +145,10 @@ mod bindings {
         #[serde(rename = "[Trust List] Toggle Entry")]
         ToggleTrustListEntry { payload: ToggleTrustListEntry },
         #[serde(rename = "[Trust Lists] Add")]
-        TrustListAdd { payload: TrustListsAdd },
+        TrustListsAdd { payload: TrustListsAdd },
         #[serde(rename = "[Trust Lists] Edit")]
-        TrustListEdit { payload: TrustListsEdit },
+        TrustListsEdit { payload: TrustListsEdit },
         #[serde(rename = "[Trust Lists] Delete")]
-        TrustListDelete { payload: TrustListsDelete },
+        TrustListsDelete { payload: TrustListsDelete },
     }
 }
