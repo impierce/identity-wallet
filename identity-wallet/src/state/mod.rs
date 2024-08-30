@@ -29,6 +29,7 @@ use jsonwebtoken::Algorithm;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::{collections::VecDeque, pin::Pin};
+use trust_list::TrustLists;
 use ts_rs::TS;
 
 /// The AppState is the main state of the application shared between the backend and the frontend.
@@ -88,7 +89,7 @@ pub struct AppState {
     pub dids: HashMap<String, String>,
     pub connections: Connections,
     pub credentials: Vec<DisplayCredential>,
-    pub trust_list: HashMap<String, bool>,
+    pub trust_lists: TrustLists,
     pub search_results: SearchResults,
     /// This field contains utils needed for the backend to perform its tasks.
     #[serde(skip)]

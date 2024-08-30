@@ -1,17 +1,23 @@
 use crate::error::AppError;
-use crate::state::trust_list::actions::trust_list_add::TrustListAdd;
+use crate::state::trust_list::actions::trust_list_add::TrustListsAdd;
+use crate::state::trust_list::TrustList;
 use crate::state::{
     actions::{listen, Action},
     AppState,
 };
 
 pub async fn trust_list_add(state: AppState, action: Action) -> Result<AppState, AppError> {
-    if let Some(action) = listen::<TrustListAdd>(action) {
-        let mut trust_list = state.trust_list.clone();
-        trust_list.insert(action.domain, true);
+    if let Some(action) = listen::<TrustListsAdd>(action) {
+        let mut trust_lists = state.trust_lists.clone();
+        trust_lists.insert(TrustList {
+            id: uuid::Uuid::new_v4().to_string(),
+            display_name: action.display_name,
+            custom: true,
+            entries: Default::default(),
+        });
 
         return Ok(AppState {
-            trust_list,
+            trust_lists,
             current_user_prompt: None,
             ..state
         });
@@ -22,17 +28,34 @@ pub async fn trust_list_add(state: AppState, action: Action) -> Result<AppState,
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::{collections::HashMap, sync::Arc};
+    use crate::state::trust_list::TrustLists;
+
+    use std::sync::Arc;
 
     #[tokio::test]
     async fn test_trust_list_add() {
         let state = AppState::default();
-        let action = Arc::new(TrustListAdd {
-            domain: "test".to_string(),
+
+        let action = Arc::new(TrustListsAdd {
+            display_name: "example".to_string(),
         });
 
         let result = trust_list_add(state, action).await.unwrap();
 
-        assert_eq!(result.trust_list, HashMap::from_iter(vec![("test".to_string(), true)]));
+        let mut expected = TrustLists::default();
+        expected.insert(TrustList {
+            id: "_".to_string(),
+            display_name: "example".to_string(),
+            custom: true,
+            entries: Default::default(),
+        });
+
+        let actual = result.trust_lists.0.first().unwrap();
+        let expected = expected.0.first().unwrap();
+
+        // ID is not asserted as it is randomly generated upon creation.
+        assert_eq!(actual.display_name, expected.display_name);
+        assert_eq!(actual.custom, expected.custom);
+        assert_eq!(actual.entries, expected.entries);
     }
 }

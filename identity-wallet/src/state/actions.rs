@@ -80,6 +80,11 @@ mod bindings {
         search::actions::{
             add_recent_search::AddRecentSearch, delete_recent_search::DeleteRecentSearch, search_query::SearchQuery,
         },
+        trust_list::actions::{
+            add_trust_list_entry::AddTrustListEntry, delete_trust_list_entry::DeleteTrustListEntry,
+            edit_trust_list_entry::EditTrustListEntry, toggle_trust_list_entry::ToggleTrustListEntry,
+            trust_list_add::TrustListsAdd, trust_list_delete::TrustListsDelete, trust_list_edit::TrustListsEdit,
+        },
     };
 
     #[derive(Serialize, Deserialize, TS)]
@@ -131,5 +136,19 @@ mod bindings {
         SetPreferredDidMethod { payload: SetPreferredDidMethod },
         #[serde(rename = "[Keys] Set preferred key type")]
         SetPreferredKeyType { payload: SetPreferredKeyType },
+        #[serde(rename = "[Trust List] Add Entry")]
+        AddTrustListEntry { payload: AddTrustListEntry },
+        #[serde(rename = "[Trust List] Edit Entry")]
+        EditTrustListEntry { payload: EditTrustListEntry },
+        #[serde(rename = "[Trust List] Delete Entry")]
+        DeleteTrustListEntry { payload: DeleteTrustListEntry },
+        #[serde(rename = "[Trust List] Toggle Entry")]
+        ToggleTrustListEntry { payload: ToggleTrustListEntry },
+        #[serde(rename = "[Trust Lists] Add")]
+        TrustListsAdd { payload: TrustListsAdd },
+        #[serde(rename = "[Trust Lists] Edit")]
+        TrustListsEdit { payload: TrustListsEdit },
+        #[serde(rename = "[Trust Lists] Delete")]
+        TrustListsDelete { payload: TrustListsDelete },
     }
 }

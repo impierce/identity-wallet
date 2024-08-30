@@ -5,6 +5,7 @@ export { default as NLFlagIcon } from '~icons/circle-flags/nl';
 export { default as USFlagIcon } from '~icons/circle-flags/us';
 
 // Phosphor icons: https://icon-sets.iconify.design/ph/
+export { default as ArrowCounterClockwiseBoldIcon } from '~icons/ph/arrow-counter-clockwise-bold';
 export { default as ArrowLeftRegularIcon } from '~icons/ph/arrow-left';
 export { default as ArrowSquareOutBoldIcon } from '~icons/ph/arrow-square-out-bold';
 export { default as BankLightIcon } from '~icons/ph/bank-light';
@@ -36,9 +37,11 @@ export { default as GhostFillIcon } from '~icons/ph/ghost-fill';
 export { default as HeartFillIcon } from '~icons/ph/heart-fill';
 export { default as HeartStraightRegularIcon } from '~icons/ph/heart-straight';
 export { default as HeartStraightFillIcon } from '~icons/ph/heart-straight-fill';
+export { default as InfoRegularIcon } from '~icons/ph/info';
 export { default as InfoFillIcon } from '~icons/ph/info-fill';
 export { default as KeyFillIcon } from '~icons/ph/key-fill';
 export { default as KeyboardFillIcon } from '~icons/ph/keyboard-fill';
+export { default as ListStarFillIcon } from '~icons/ph/list-star-fill';
 export { default as LockSimpleOpenFillIcon } from '~icons/ph/lock-simple-open-fill';
 export { default as MagnifyingGlassIcon } from '~icons/ph/magnifying-glass';
 export { default as MagnifyingGlassBoldIcon } from '~icons/ph/magnifying-glass-bold';
@@ -56,6 +59,7 @@ export { default as SignOutFillIcon } from '~icons/ph/sign-out-fill';
 export { default as SlidersHorizontalRegularIcon } from '~icons/ph/sliders-horizontal';
 export { default as SmileyRegularIcon } from '~icons/ph/smiley';
 export { default as SmileySadRegularIcon } from '~icons/ph/smiley-sad';
+export { default as StarFillIcon } from '~icons/ph/star-fill';
 export { default as SunFillIcon } from '~icons/ph/sun-fill';
 export { default as TranslateFillIcon } from '~icons/ph/translate-fill';
 export { default as TrashRegularIcon } from '~icons/ph/trash';

@@ -1,24 +1,7 @@
-import { goto } from '$app/navigation';
-import { setLocale } from '$i18n/i18n-svelte';
-import type { Locales } from '$i18n/i18n-types';
 import { writable } from 'svelte/store';
 
 // TODO: run some copy task instead of importing across root to make the frontend independent
 import type { AppState } from '@bindings/AppState';
-import { listen } from '@tauri-apps/api/event';
-import { error as err, info } from '@tauri-apps/plugin-log';
-
-interface StateChangedEvent {
-  event: string;
-  payload: AppState;
-  id: number;
-}
-
-interface ErrorEvent {
-  event: string;
-  payload: string;
-  id: number;
-}
 
 interface OnboardingState {
   name?: string;
@@ -53,40 +36,23 @@ const empty_state: AppState = {
   user_journey: null,
   debug_messages: [],
   history: [],
+  trust_lists: [],
   dev_mode: 'Off',
 };
 
 /**
- * A store that listens for updates to the application state emitted by the Rust backend.
- * If the frontend intends to change the state, it must dispatch an action to the backend.
+ * This store contains the frontend state.
+ * It may be altered only by the `state-changed` Tauri event listener.
+ * The frontend must dispatch an action to the backend to change state.
  */
 // TODO: make read-only
-export const state = writable<AppState>(empty_state, (set) => {
-  listen('state-changed', (event: StateChangedEvent) => {
-    const state = event.payload;
-
-    set(state);
-    setLocale(state.profile_settings.locale as Locales);
-
-    if (state.current_user_prompt?.type === 'redirect') {
-      const redirect_target = state.current_user_prompt.target;
-      info(`Redirecting to: "/${redirect_target}"`);
-      goto(`/${redirect_target}`);
-    }
-  });
-  // TODO: unsubscribe from listener!
-});
+export const state = writable<AppState>(empty_state);
 
 /**
- * A store that listens for errors emitted by the Rust backend.
+ * This store contains errors to be displayed by an error toast.
+ * It may be altered only by the `error` Tauri event listener.
  */
-export const error = writable<string | undefined>(undefined, (set) => {
-  listen('error', (event: ErrorEvent) => {
-    err(`Error: ${event.payload}`);
-    set(event.payload);
-  });
-  // TODO: unsubscribe from listener!
-});
+export const error = writable<string | undefined>(undefined);
 
 /**
  * This store is only used by the frontend for storing state during onboarding.
