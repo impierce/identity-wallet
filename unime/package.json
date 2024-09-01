@@ -27,7 +27,7 @@
     "@sveltejs/vite-plugin-svelte": "^3.0.0",
     "@tauri-apps/api": "2.0.0-beta.15",
     "@tauri-apps/cli": "2.0.0-beta.22",
-    "@tauri-apps/plugin-barcode-scanner": "2.0.0-beta.7",
+    "@tauri-apps/plugin-barcode-scanner": "2.0.0-rc.1",
     "@tauri-apps/plugin-fs": "2.0.0-beta.7",
     "@tauri-apps/plugin-log": "2.0.0-beta.8",
     "@tauri-apps/plugin-shell": "2.0.0-beta.8",
