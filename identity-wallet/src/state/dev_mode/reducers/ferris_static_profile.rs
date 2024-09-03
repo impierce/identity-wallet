@@ -59,14 +59,14 @@ lazy_static! {
     };
 }
 
+pub(super) const PASSWORD: &str = "sup3rSecr3t";
+
 pub async fn load_ferris_profile() -> Result<AppState, AppError> {
     let mut state = AppState::default();
 
-    let password = "sup3rSecr3t".to_string();
+    let stronghold_manager = Arc::new(StrongholdManager::create(PASSWORD).map_err(StrongholdCreationError)?);
 
-    let stronghold_manager = Arc::new(StrongholdManager::create(&password).map_err(StrongholdCreationError)?);
-
-    let subject = subject(stronghold_manager.clone(), password).await;
+    let subject = subject(stronghold_manager.clone(), PASSWORD.to_string()).await;
 
     let profile = Profile {
         name: "Ferris".to_string(),
@@ -81,12 +81,14 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
     )
     .map_err(OID4VCProviderManagerError)?;
+
     let wallet: Wallet = Wallet::new(
         subject.clone(),
         Vec::from(SUPPORTED_DID_METHODS),
         Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
     )
     .map_err(OID4VCWalletError)?;
+
     let identity_manager = IdentityManager {
         subject: subject.clone(),
         provider_manager,

@@ -2,94 +2,63 @@ use crate::{
     command,
     error::AppError,
     state::{
-        common::actions::reset::Reset,
         connections::actions::connection_accepted::ConnectionAccepted,
         credentials::actions::{
             credential_offers_selected::CredentialOffersSelected, credentials_selected::CredentialsSelected,
         },
-        dev_mode::{
-            actions::dev_profile::{DevProfile, ProfileSteps},
-            DevMode,
-        },
-        profile_settings::{actions::create_new::CreateNew, AppTheme},
         qr_code::actions::qrcode_scanned::QrCodeScanned,
         user_prompt::CurrentUserPrompt,
-        AppState,
     },
+    state::{dev_mode::actions::dev_profile::OID4VCSteps, AppState},
 };
 
-use log::{debug, info};
 use serde_json::json;
 use std::sync::Arc;
 use uuid::Uuid;
 
-pub(super) const PASSWORD: &str = "sup3rSecr3t";
+pub async fn ngdil_flow(state: AppState, ngdil_step: OID4VCSteps, auto_confirm: bool) -> Result<AppState, AppError> {
+    match ngdil_step {
+        OID4VCSteps::Connect => {
+            let mut state = add_connection(state).await?;
 
-pub async fn load_dragon_profile(mut state: AppState, dev_profile: DevProfile) -> Result<AppState, AppError> {
-    let steps = dev_profile.execute_step.expect("For dragon profile steps are expected");
+            if auto_confirm {
+                state = accept_connection(state).await?;
+            }
 
-    info!("Profile steps executed: {:?}", steps);
+            return Ok(state);
+        }
+        OID4VCSteps::Share => {
+            let mut state = add_presentation_request(state).await?;
 
-    if dev_profile.reset_profile {
-        state = reset_settings(state).await?;
+            if auto_confirm {
+                state = share_credentials(state).await?;
+            }
+
+            return Ok(state);
+        }
+        OID4VCSteps::Receive => {
+            let mut state = add_credential(state).await?;
+
+            if auto_confirm {
+                state = accept_credential(state).await?;
+            }
+
+            return Ok(state);
+        }
+        OID4VCSteps::All => {
+            // For all, auto_confirm is always true
+            let mut state = add_connection(state).await?;
+            state = accept_connection(state).await?;
+            state = add_presentation_request(state).await?;
+            state = share_credentials(state).await?;
+            state = add_credential(state).await?;
+            state = accept_credential(state).await?;
+            state = add_future_engineer(state).await?;
+            state = accept_future_engineer(state).await?;
+
+            return Ok(state);
+        }
     }
-
-    state = create_new_profile(state).await?;
-
-    if ProfileSteps::AddCredentials <= steps {
-        debug!("Add credentials step executed");
-        state = add_credential(state).await?;
-    }
-
-    if ProfileSteps::AcceptCredentials <= steps {
-        debug!("Accept credentials step executed");
-        state = accept_credential(state).await?;
-    }
-
-    if ProfileSteps::AddConnection <= steps {
-        debug!("Add connection step executed");
-        state = add_connection(state).await?;
-    }
-
-    if ProfileSteps::AcceptConnection <= steps {
-        debug!("Accept connection step executed");
-        state = accept_connection(state).await?;
-    }
-
-    if ProfileSteps::AddPresentation <= steps {
-        debug!("Add presentation step executed");
-        state = add_presentation_request(state).await?;
-    }
-
-    if ProfileSteps::ShareCredentails <= steps {
-        debug!("Share credentials step executed");
-        state = share_credentials(state).await?;
-    }
-
-    if ProfileSteps::AddFutureEngineer <= steps {
-        debug!("Add future engineer step executed");
-        state = add_future_engineer(state).await?;
-    }
-
-    if ProfileSteps::CompleteFlow <= steps {
-        debug!("Accept future engineer step executed");
-        state = accept_future_engineer(state).await?;
-    }
-
-    state.dev_mode = DevMode::OnWithAutologin;
-
-    Ok(state)
-}
-
-async fn create_new_profile(state: AppState) -> Result<AppState, AppError> {
-    let create_new = CreateNew {
-        name: "Shenron".to_string(),
-        picture: "&#x1F432".to_string(),
-        theme: AppTheme::Dark,
-        password: PASSWORD.to_string(),
-    };
-
-    command::reduce(state, Arc::new(create_new)).await
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
@@ -266,8 +235,4 @@ async fn accept_future_engineer(state: AppState) -> Result<AppState, AppError> {
     };
 
     command::reduce(state, Arc::new(cr_selected)).await
-}
-
-async fn reset_settings(state: AppState) -> Result<AppState, AppError> {
-    command::reduce(state, Arc::new(Reset)).await
 }

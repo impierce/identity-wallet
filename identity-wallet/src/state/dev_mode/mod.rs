@@ -13,7 +13,7 @@ pub enum DevMode {
     On,
     #[default]
     Off,
-    OnWithAutologin,
+    OnWithAutologin, // shenron: Used whenever a Dev profile is initiated, since these are initiated without having to onboard and set a password. I'll have to keep this for the Ferris profile.
 }
 
 #[typetag::serde(name = "dev_mode")]
