@@ -1,7 +1,17 @@
+use std::str::FromStr;
+
+use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use did_manager::Resolver;
 use identity_credential::domain_linkage::{DomainLinkageConfiguration, JwtDomainLinkageValidator};
-use identity_eddsa_verifier::EdDSAJwsVerifier;
-use identity_iota::{core::FromJson, credential::JwtCredentialValidationOptions};
+use identity_iota::{
+    core::{FromJson, ToJson},
+    credential::JwtCredentialValidationOptions,
+    verification::{
+        jwk::Jwk as IotaIdentityJwk,
+        jws::{JwsVerifier, SignatureVerificationError, SignatureVerificationErrorKind, VerificationInput},
+    },
+};
+use jsonwebtoken::{crypto::verify, jwk::Jwk as JsonWebTokenJwk, Algorithm, DecodingKey, Validation};
 use log::info;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
@@ -28,6 +38,42 @@ pub enum ValidationStatus {
     Unknown,
 }
 
+/// This `Verifier` uses `jsonwebtoken` under the hood to verify verification input.
+struct Verifier;
+impl JwsVerifier for Verifier {
+    fn verify(&self, input: VerificationInput, public_key: &IotaIdentityJwk) -> Result<(), SignatureVerificationError> {
+        use SignatureVerificationErrorKind::*;
+
+        let algorithm =
+            Algorithm::from_str(&input.alg.to_string()).map_err(|_| SignatureVerificationError::new(UnsupportedAlg))?;
+
+        // Convert the `IotaIdentityJwk` first into a `JsonWebTokenJwk` and then into a `DecodingKey`.
+        let decoding_key = public_key
+            .to_json()
+            .ok()
+            .and_then(|public_key| JsonWebTokenJwk::from_json(&public_key).ok())
+            .and_then(|jwk| DecodingKey::from_jwk(&jwk).ok())
+            .ok_or(SignatureVerificationError::new(KeyDecodingFailure))?;
+
+        let mut validation = Validation::new(algorithm);
+        validation.validate_aud = false;
+        validation.required_spec_claims.clear();
+
+        match verify(
+            &URL_SAFE_NO_PAD.encode(input.decoded_signature),
+            &input.signing_input,
+            &decoding_key,
+            algorithm,
+        ) {
+            Ok(_) => Ok(()),
+            Err(_) => Err(SignatureVerificationError::new(
+                // TODO: more fine-grained error handling?
+                InvalidSignature,
+            )),
+        }
+    }
+}
+
 /// https://wiki.iota.org/identity.rs/how-tos/domain-linkage/create-and-verify/#verifying-a-did-and-domain-linkage
 pub async fn validate_domain_linkage(url: url::Url, did: &str) -> ValidationResult {
     let did_configuration_result = fetch_configuration(url.clone()).await;
@@ -43,8 +89,7 @@ pub async fn validate_domain_linkage(url: url::Url, did: &str) -> ValidationResu
         }
     };
 
-    // TODO: Only EdDSA is supported for now
-    let validator = JwtDomainLinkageValidator::with_signature_verifier(EdDSAJwsVerifier::default());
+    let validator = JwtDomainLinkageValidator::with_signature_verifier(Verifier);
 
     let resolver = Resolver::new().await;
 
@@ -92,6 +137,8 @@ async fn fetch_configuration(mut url: url::Url) -> Result<DomainLinkageConfigura
     url.set_query(None);
     url.set_path(".well-known/did-configuration.json");
 
+    info!("Fetching DID configuration from: {}", url);
+
     // 2. Fetch the resource
     let response = reqwest::get(url).await.map_err(|e| e.to_string())?;
 
@@ -115,6 +162,12 @@ async fn fetch_configuration(mut url: url::Url) -> Result<DomainLinkageConfigura
 mod tests {
     use super::*;
 
+    use identity_iota::verification::jws::JwsAlgorithm;
+    use jsonwebtoken::{encode, EncodingKey, Header};
+    use ring::{
+        rand::SystemRandom,
+        signature::{EcdsaKeyPair, Ed25519KeyPair, KeyPair, ECDSA_P256_SHA256_ASN1_SIGNING},
+    };
     use serde_json::json;
     use wiremock::{
         matchers::{method, path},
@@ -282,5 +335,84 @@ mod tests {
                 ..Default::default()
             }
         );
+    }
+
+    #[test]
+    fn verifier_successfully_verifies_es256_signed_data() {
+        let rng = SystemRandom::new();
+
+        // Generate a new ECDSA key pair (P-256 curve with SHA-256)
+        let pkcs8_bytes = EcdsaKeyPair::generate_pkcs8(&ECDSA_P256_SHA256_ASN1_SIGNING, &rng).unwrap();
+
+        // The private key in DER format
+        let private_key_der = pkcs8_bytes.as_ref();
+
+        let key_pair =
+            EcdsaKeyPair::from_pkcs8(&ring::signature::ECDSA_P256_SHA256_ASN1_SIGNING, private_key_der, &rng).unwrap();
+        let public_key = key_pair.public_key().as_ref();
+
+        // x and y are each 32 bytes, they represent the public key
+        let x = URL_SAFE_NO_PAD.encode(&public_key[1..33]);
+        let y = URL_SAFE_NO_PAD.encode(&public_key[33..65]);
+
+        let jwk = IotaIdentityJwk::from_json_value(serde_json::json!({
+            "kty": "EC",
+            "crv": "P-256",
+            "x": x,
+            "y": y,
+        }))
+        .unwrap();
+
+        let encoding_key = EncodingKey::from_ec_der(private_key_der);
+
+        let message = "foobar";
+
+        let token = encode(&Header::new(Algorithm::ES256), &message, &encoding_key).unwrap();
+
+        let input = VerificationInput {
+            signing_input: message.as_bytes().into(),
+            decoded_signature: URL_SAFE_NO_PAD.decode(token.split('.').nth(2).unwrap()).unwrap().into(),
+            alg: JwsAlgorithm::ES256,
+        };
+
+        assert!(Verifier.verify(input, &jwk).is_ok());
+    }
+
+    #[test]
+    fn verifier_successfully_verifies_eddsa_signed_data() {
+        let rng = SystemRandom::new();
+
+        // Generate a new Ed25519 key pair
+        let pkcs8_bytes = Ed25519KeyPair::generate_pkcs8(&rng).unwrap();
+
+        // The private key in DER format
+        let private_key_der = pkcs8_bytes.as_ref();
+
+        let key_pair = Ed25519KeyPair::from_pkcs8(private_key_der).unwrap();
+        let public_key = key_pair.public_key().as_ref();
+
+        // x represents the public key
+        let x = URL_SAFE_NO_PAD.encode(public_key);
+
+        let jwk = IotaIdentityJwk::from_json_value(serde_json::json!({
+            "kty": "OKP",
+            "crv": "Ed25519",
+            "x": x,
+        }))
+        .unwrap();
+
+        let encoding_key = EncodingKey::from_ed_der(private_key_der);
+
+        let message = "foobar";
+
+        let token = encode(&Header::new(Algorithm::EdDSA), &message, &encoding_key).unwrap();
+
+        let input = VerificationInput {
+            signing_input: message.as_bytes().into(),
+            decoded_signature: URL_SAFE_NO_PAD.decode(token.split('.').nth(2).unwrap()).unwrap().into(),
+            alg: JwsAlgorithm::EdDSA,
+        };
+
+        assert!(Verifier.verify(input, &jwk).is_ok());
     }
 }

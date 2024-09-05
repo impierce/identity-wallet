@@ -86,6 +86,7 @@ pub async fn validate_thuiswinkel_waarborg(did: &str) -> ValidationResult {
     // the frontend.
     let (name, thuiswinkel_waarborg_image, issuance_date) =
         match get_unverified_jwt_claims(&serde_json::json!(linked_verifiable_presentation))
+            .unwrap()
             .get("vp")
             .and_then(|vp| {
                 vp.get("verifiableCredential")
@@ -94,7 +95,7 @@ pub async fn validate_thuiswinkel_waarborg(did: &str) -> ValidationResult {
             .and_then(|verifiable_credential| verifiable_credential.first().cloned())
             .map(|verifiable_credential| get_unverified_jwt_claims(&verifiable_credential))
             .and_then(|verifiable_credential| {
-                verifiable_credential.get("vc").and_then(|vc| {
+                verifiable_credential.unwrap().get("vc").and_then(|vc| {
                     vc.get("credentialSubject").map(|credential_subject| {
                         (
                             credential_subject

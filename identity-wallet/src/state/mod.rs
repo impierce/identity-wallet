@@ -24,6 +24,7 @@ use derivative::Derivative;
 use downcast_rs::{impl_downcast, DowncastSync};
 use dyn_clone::DynClone;
 use futures::Future;
+use jsonwebtoken::Algorithm;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::{collections::VecDeque, pin::Pin};
@@ -72,6 +73,9 @@ impl AppStateContainer {
         self
     }
 }
+
+pub const SUPPORTED_SIGNING_ALGORITHMS: &[Algorithm] = &[Algorithm::EdDSA, Algorithm::ES256];
+pub const SUPPORTED_DID_METHODS: &[&str] = &["did:jwk", "did:key"];
 
 /// The inner state of the application managed by Tauri. When the state is serialized in order to be sent to the
 /// frontend, the `managers` and `active_connection_request` fields are skipped.

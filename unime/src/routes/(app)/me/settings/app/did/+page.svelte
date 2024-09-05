@@ -3,13 +3,12 @@
 
   import type { SvelteHTMLElements } from 'svelte/elements';
 
-  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
+  import { TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
+  import { CheckCircleFillIcon } from '$lib/icons';
   import { state } from '$lib/stores';
 
-  import CheckCircle from '~icons/ph/check-circle-fill';
-
-  $: preferred_did_method = $state.profile_settings.preferred_did_method;
+  $: preferred_did_method = $state.profile_settings.preferred_did_methods.at(0);
 
   interface Method {
     alias?: string;
@@ -63,6 +62,11 @@
                   <svelte:component this={method.logo} class="mr-3 h-6 w-6" />
                 {/if}
                 <p class="text-base font-semibold text-slate-800 dark:text-grey">{method.alias ?? method.method}</p>
+                <div class="ml-2 flex items-center space-x-1 rounded-full bg-slate-200 px-2 py-1 dark:bg-slate-600">
+                  <p class="text-[12px]/[20px] font-medium text-slate-400 dark:text-slate-300">
+                    {$state.profile_settings.preferred_key_types.at(0)}
+                  </p>
+                </div>
               </div>
               {#if method.method === preferred_did_method}
                 <div class="flex items-center space-x-1 rounded-full bg-ex-blue-2 px-2 py-1 dark:bg-primary">
@@ -95,7 +99,7 @@
       <div class="flex flex-wrap gap-2">
         {#each verifiableMethods as method}
           <div class="flex items-center space-x-1 rounded-full bg-ex-blue-2 px-2 py-1 dark:bg-primary">
-            <CheckCircle class="h-4 w-4 text-primary dark:text-navy" />
+            <CheckCircleFillIcon class="h-4 w-4 text-primary dark:text-navy" />
             <p class="text-[12px]/[20px] font-medium text-teal dark:text-dark">
               {method}
             </p>

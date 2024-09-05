@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/stores';
 
-  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
+  import { TopNavBar } from '$lib/components';
   import { state } from '$lib/stores';
 
   import type { Goal } from '../types';

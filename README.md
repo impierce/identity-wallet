@@ -12,14 +12,14 @@ This app is built with [Tauri 2.0](https://v2.tauri.app/). It uses [Rust](https:
 
 ## Develop
 
-This repository uses [npm workspaces](https://docs.npmjs.com/cli/v10/using-npm/workspaces):
+This repository uses [pnpm workspaces](https://pnpm.io/workspaces):
 
 | Path                | Description                                             |
 | :------------------ | :------------------------------------------------------ |
 | `./`                | Project root with Prettier configuration.               |
-| `./unime`           | NPM workspace UniMe frontend.                           |
-| `./unime/src-tauri` | Tauri Rust app (not an NPM workspace).                  |
-| `./identity-wallet` | Rust package with UniMe backend (not an NPM workspace). |
+| `./unime`           | pnpm workspace with UniMe frontend.                     |
+| `./unime/src-tauri` | Tauri Rust app (not a pnpm workspace).                  |
+| `./identity-wallet` | Rust package with UniMe backend (not a pnpm workspace). |
 
 Get up and running with these steps:
 
@@ -30,7 +30,7 @@ Copy the file `.env.example` to `.env` and set the values accordingly.
 ### 2. Install dependencies
 
 ```sh
-npm install
+pnpm i
 ```
 
 ### 3. Generate icons
@@ -46,15 +46,15 @@ You can run the following commands from the project root:
 
 ```sh
 # Desktop
-npm run tauri dev
+pnpm tauri dev
 
 # Android
-npm run tauri android init
-npm run tauri android dev
+pnpm tauri android init
+pnpm tauri android dev
 
 # iOS
-npm run tauri ios init
-npm run tauri ios dev
+pnpm tauri ios init
+pnpm tauri ios dev
 ```
 
 ## Contributing
@@ -67,9 +67,9 @@ npm run tauri ios dev
 Run the following commands from the project root:
 
 ```sh
-npm run format
-npm run lint
-npm run test
+pnpm format
+pnpm lint
+pnpm test
 ```
 
 Run these commands from `./unime/src-tauri`:
@@ -105,3 +105,11 @@ rm -rf ~/.cargo/git/checkouts/*
 # Windows
 rd /s /q "%USERPROFILE%\.cargo\git\checkouts"
 ```
+
+## Release a new version
+
+1. Search the entire project for the current version string (such as `0.6.2`) and replace them with the new version string.
+   Be **cautious** not to replace versions of any other dependencies (in `Cargo.toml`, `Cargo.lock`, `package.json`, `package-lock.json`).
+2. Run the script in `unime/src-tauri/gen-static/apply.sh` which copies over the changed files into the (untracked) generated folders for Android and iOS.
+3. Inside `unime/src-tauri` run `cargo tauri icon`.
+4. Run `npm run tauri ios build` and `npm run tauri android build` to build the apps. The iOS build (`.ipa`) will be in `unime/src-tauri/gen/apple/build/arm64` and the Android builds (`.apk` and `.aab`) will be in `unime/src-tauri/gen/android/app/build/outputs/`.

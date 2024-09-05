@@ -53,8 +53,50 @@ export const hash = (data: string): string => {
     .join('');
 };
 
-export function formatDate(isoDate: string, locale: Locale) {
+export const calculateInitials = (name: string): string => {
+  const parts = name.split(' ').filter((n) => n.length > 0);
+  if (parts.length === 1) {
+    // Take first two letters, if only one name
+    return parts.at(0)!.slice(0, 2).toUpperCase();
+  } else {
+    const first = parts?.at(0)?.charAt(0) ?? '?';
+    const last = parts?.at(1)?.charAt(0) ?? '?';
+    return `${first}${last}`.toUpperCase();
+  }
+};
+
+export function formatDate(isoDate: string, locale: Locale, test = false) {
   return new Intl.DateTimeFormat(locale, {
     dateStyle: 'medium',
+    // Timezone in CI is UTC, which would fail tests.
+    timeZone: test ? 'Europe/Amsterdam' : undefined,
   }).format(new Date(isoDate));
+}
+
+export function formatDateTime(isoDate: string, locale: Locale, test = false) {
+  return new Intl.DateTimeFormat(locale, {
+    dateStyle: 'medium',
+    timeStyle: 'medium',
+    // Timezone in CI is UTC, which would fail tests.
+    timeZone: test ? 'Europe/Amsterdam' : undefined,
+  }).format(new Date(isoDate));
+}
+
+export function formatRelativeDateTime(isoDate: string, locale: Locale) {
+  // 1 min, 1 hour, 1 day, 1 week, 1 month, 1 year.today
+  const thresholds = [60, 3600, 86400, 86400 * 7, 86400 * 30, 86400 * 365, Infinity];
+  const units: Intl.RelativeTimeFormatUnit[] = ['second', 'minute', 'hour', 'day', 'week', 'month', 'year'];
+
+  const diffInSeconds = (Date.now() - new Date(isoDate).getTime()) / 1000;
+
+  // Determine the threshold to use.
+  const index = thresholds.findIndex((threshold) => threshold > diffInSeconds);
+  const divisor = index ? thresholds[index - 1] : 1;
+
+  const relativeDateTime = new Intl.RelativeTimeFormat(locale, {
+    numeric: 'auto',
+  }).format(-1 * Math.floor(diffInSeconds / divisor), units[index]);
+
+  // Capitalize the first character.
+  return relativeDateTime.charAt(0).toUpperCase() + relativeDateTime.slice(1);
 }

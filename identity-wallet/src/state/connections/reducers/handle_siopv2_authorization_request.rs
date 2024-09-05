@@ -21,7 +21,7 @@ use oid4vc::oid4vc_core::{
 use oid4vc::siopv2::siopv2::SIOPv2;
 
 // Sends the authorization response.
-pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: Action) -> Result<AppState, AppError> {
+pub async fn handle_siopv2_authorization_request(state: AppState, _action: Action) -> Result<AppState, AppError> {
     let state_guard = state.core_utils.managers.lock().await;
 
     let provider_manager = &state_guard
@@ -69,7 +69,8 @@ pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: A
     persist_asset(&file_name, &connection.id).ok();
 
     // History
-    state.history.push(HistoryEvent {
+    let mut history = state.history;
+    history.push(HistoryEvent {
         connection_name: connection.name.clone(),
         event_type: EventType::ConnectionAdded,
         connection_id: connection.id.clone(),
@@ -77,14 +78,15 @@ pub async fn handle_siopv2_authorization_request(mut state: AppState, _action: A
         credentials: vec![],
     });
 
-    state.connections = connections;
-    state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
-        target: "me".to_string(),
-    });
-
     drop(state_guard);
-
-    Ok(state)
+    Ok(AppState {
+        connections,
+        current_user_prompt: Some(CurrentUserPrompt::Redirect {
+            target: "me".to_string(),
+        }),
+        history,
+        ..state
+    })
 }
 
 // Helper
@@ -102,21 +104,17 @@ pub fn get_siopv2_client_name_and_logo_uri(
     let client_id = siopv2_authorization_request.body.client_id.clone();
 
     // Get the client_name and logo_uri from the client_metadata if it exists.
-    siopv2_authorization_request
-        .body
-        .extension
-        .client_metadata
-        .as_ref()
-        .and_then(|client_metadata| match client_metadata {
-            ClientMetadataResource::ClientMetadata {
-                client_name, logo_uri, ..
-            } => {
-                let client_name = client_name.as_ref().cloned().unwrap_or(connection_url.to_string());
-                let logo_uri = logo_uri.as_ref().map(|logo_uri| logo_uri.to_string());
-                Some((client_name, logo_uri, connection_url.to_string(), client_id.clone()))
-            }
-            _ => None,
-        })
-        // Otherwise use the connection_url as the client_name.
-        .unwrap_or((connection_url.to_string(), None, connection_url.to_string(), client_id))
+    match &siopv2_authorization_request.body.extension.client_metadata {
+        ClientMetadataResource::ClientMetadata {
+            client_name, logo_uri, ..
+        } => {
+            let client_name = client_name.as_ref().cloned().unwrap_or(connection_url.to_string());
+            let logo_uri = logo_uri.as_ref().map(|logo_uri| logo_uri.to_string());
+            Some((client_name, logo_uri, connection_url.to_string(), client_id.clone()))
+        }
+        // TODO: support `client_metadata_uri`
+        ClientMetadataResource::ClientMetadataUri(_) => None,
+    }
+    // Otherwise use the connection_url as the client_name.
+    .unwrap_or((connection_url.to_string(), None, connection_url.to_string(), client_id))
 }

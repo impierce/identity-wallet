@@ -2,8 +2,7 @@
   import { goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
 
-  import Button from '$lib/components/atoms/Button.svelte';
-  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
+  import { Button, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { state } from '$lib/stores';
 

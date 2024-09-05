@@ -52,8 +52,6 @@ export default defineConfig({
       'typesafe-i18n/utils',
       'typesafe-i18n',
       'typesafe-i18n/detectors',
-      'date-fns',
-      'date-fns/locale',
       '@tauri-apps/plugin-barcode-scanner',
       '@tauri-apps/plugin-shell',
       '@tauri-apps/plugin-log',

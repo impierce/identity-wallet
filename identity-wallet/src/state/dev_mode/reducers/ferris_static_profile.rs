@@ -11,12 +11,13 @@ use crate::{
         dev_mode::DevMode,
         profile_settings::{AppTheme, Profile},
         user_prompt::CurrentUserPrompt,
-        AppState,
+        AppState, SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS,
     },
     stronghold::StrongholdManager,
     subject::subject,
 };
 
+use jsonwebtoken::Algorithm;
 use lazy_static::lazy_static;
 use log::info;
 use oid4vc::{oid4vc_core::Subject, oid4vc_manager::ProviderManager, oid4vci::Wallet};
@@ -25,35 +26,41 @@ use std::{fs::File, io::Write, sync::Arc};
 
 lazy_static! {
     pub static ref PERSONAL_INFORMATION: VerifiableCredentialRecord = {
-        let mut record = VerifiableCredentialRecord::from(
+        let mut record = VerifiableCredentialRecord::try_from(
             json!("eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDprZXk6ejZNa2toUDQzTENTWGFqM1NRQm92eTF1RTJuWHZTQm5SUFdaMndoUExxblo4UGdEI3o2TWtraFA0M0xDU1hhajNTUUJvdnkxdUUyblh2U0JuUlBXWjJ3aFBMcW5aOFBnRCJ9.eyJpc3MiOiJodHRwOi8vMTkyLjE2OC4xLjEyNzo5MDkwLyIsInN1YiI6ImRpZDprZXk6ejZNa2cxWFhHVXFma2hBS1Uxa1ZkMVBtdzZVRWoxdnhpTGoxeGM5MU1CejVvd05ZIiwiZXhwIjo5OTk5OTk5OTk5LCJpYXQiOjAsInZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIiwiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvZXhhbXBsZXMvdjEiXSwidHlwZSI6WyJWZXJpZmlhYmxlQ3JlZGVudGlhbCIsIlBlcnNvbmFsSW5mb3JtYXRpb24iXSwiaXNzdWFuY2VEYXRlIjoiMjAyMi0wMS0wMVQwMDowMDowMFoiLCJpc3N1ZXIiOiJodHRwOi8vMTkyLjE2OC4xLjEyNzo5MDkwLyIsImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkIjoiZGlkOmtleTp6Nk1rZzFYWEdVcWZraEFLVTFrVmQxUG13NlVFajF2eGlMajF4YzkxTUJ6NW93TlkiLCJnaXZlbk5hbWUiOiJGZXJyaXMiLCJmYW1pbHlOYW1lIjoiQ3JhYm1hbiIsImVtYWlsIjoiZmVycmlzLmNyYWJtYW5AY3JhYm1haWwuY29tIiwiYmlydGhkYXRlIjoiMTk4NS0wNS0yMSJ9fX0.Yl841U5BwWgctX5vF5Zi8SYCEQpxFqEs8_J8KrX9D_mOwL-IRmP64BeQZvnKeAdcOoYGn6CyciV51_amdPNQBw"),
-        );
+        ).unwrap();
         record.display_credential.metadata.is_favorite = true;
+        record.display_credential.display_name = "PersonalInformation".to_string();
         record
     };
-    pub static ref DRIVERS_LICENSE_CREDENTIAL: VerifiableCredentialRecord = VerifiableCredentialRecord::from(
-        json!("eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDprZXk6ejZNa2toUDQzTENTWGFqM1NRQm92eTF1RTJuWHZTQm5SUFdaMndoUExxblo4UGdEI3o2TWtraFA0M0xDU1hhajNTUUJvdnkxdUUyblh2U0JuUlBXWjJ3aFBMcW5aOFBnRCJ9.eyJpc3MiOiJodHRwOi8vMTkyLjE2OC4xLjEyNzo5MDkwLyIsInN1YiI6ImRpZDprZXk6ejZNa2cxWFhHVXFma2hBS1Uxa1ZkMVBtdzZVRWoxdnhpTGoxeGM5MU1CejVvd05ZIiwiZXhwIjo5OTk5OTk5OTk5LCJpYXQiOjAsInZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIiwiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvZXhhbXBsZXMvdjEiXSwidHlwZSI6WyJWZXJpZmlhYmxlQ3JlZGVudGlhbCIsIkRyaXZlckxpY2Vuc2VDcmVkZW50aWFsIl0sImlzc3VlciI6Imh0dHA6Ly8xOTIuMTY4LjEuMTI3OjkwOTAvIiwiaXNzdWFuY2VEYXRlIjoiMjAyMi0wOC0xNVQwOTozMDowMFoiLCJleHBpcmF0aW9uRGF0ZSI6IjIwMjctMDgtMTVUMjM6NTk6NTlaIiwiY3JlZGVudGlhbFN1YmplY3QiOnsiaWQiOiJkaWQ6a2V5Ono2TWtnMVhYR1VxZmtoQUtVMWtWZDFQbXc2VUVqMXZ4aUxqMXhjOTFNQno1b3dOWSIsImxpY2Vuc2VDbGFzcyI6IkNsYXNzIEMiLCJpc3N1ZWRCeSI6IkNhbGlmb3JuaWEiLCJ2YWxpZGl0eSI6IlZhbGlkIn19fQ.OZCcZt5JTJcBhoLPIyrQuvZuc2dnVN65f8GvKQ3earAzJEgGMA9ZjKRNHEjI73wLwvG5MJBN7Zs_rWiNLEZ5Dg"),
-    );
+    pub static ref DRIVERS_LICENSE_CREDENTIAL: VerifiableCredentialRecord = {
+        let mut record = VerifiableCredentialRecord::try_from(
+            json!("eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDprZXk6ejZNa2toUDQzTENTWGFqM1NRQm92eTF1RTJuWHZTQm5SUFdaMndoUExxblo4UGdEI3o2TWtraFA0M0xDU1hhajNTUUJvdnkxdUUyblh2U0JuUlBXWjJ3aFBMcW5aOFBnRCJ9.eyJpc3MiOiJodHRwOi8vMTkyLjE2OC4xLjEyNzo5MDkwLyIsInN1YiI6ImRpZDprZXk6ejZNa2cxWFhHVXFma2hBS1Uxa1ZkMVBtdzZVRWoxdnhpTGoxeGM5MU1CejVvd05ZIiwiZXhwIjo5OTk5OTk5OTk5LCJpYXQiOjAsInZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIiwiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvZXhhbXBsZXMvdjEiXSwidHlwZSI6WyJWZXJpZmlhYmxlQ3JlZGVudGlhbCIsIkRyaXZlckxpY2Vuc2VDcmVkZW50aWFsIl0sImlzc3VlciI6Imh0dHA6Ly8xOTIuMTY4LjEuMTI3OjkwOTAvIiwiaXNzdWFuY2VEYXRlIjoiMjAwNC0wMi0wOFQwODoxNDowOFoiLCJleHBpcmF0aW9uRGF0ZSI6IjIwMjctMDgtMTVUMjM6NTk6NTlaIiwiY3JlZGVudGlhbFN1YmplY3QiOnsiaWQiOiJkaWQ6a2V5Ono2TWtnMVhYR1VxZmtoQUtVMWtWZDFQbXc2VUVqMXZ4aUxqMXhjOTFNQno1b3dOWSIsImxpY2Vuc2VDbGFzcyI6IkNsYXNzIEMiLCJpc3N1ZWRCeSI6IkNhbGlmb3JuaWEiLCJ2YWxpZGl0eSI6IlZhbGlkIn19fQ.OZCcZt5JTJcBhoLPIyrQuvZuc2dnVN65f8GvKQ3earAzJEgGMA9ZjKRNHEjI73wLwvG5MJBN7Zs_rWiNLEZ5Dg"),
+        ).unwrap();
+        record.display_credential.display_name = "DriverLicenseCredential".to_string();
+        record
+    };
     pub static ref OPEN_BADGE: VerifiableCredentialRecord = {
-        let mut record = VerifiableCredentialRecord::from(
+        let mut record = VerifiableCredentialRecord::try_from(
             json!("eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDprZXk6ejZNa2toUDQzTENTWGFqM1NRQm92eTF1RTJuWHZTQm5SUFdaMndoUExxblo4UGdEI3o2TWtraFA0M0xDU1hhajNTUUJvdnkxdUUyblh2U0JuUlBXWjJ3aFBMcW5aOFBnRCJ9.eyJpc3MiOiJodHRwOi8vMTkyLjE2OC4xLjEyNzo5MDkwLyIsInN1YiI6ImRpZDprZXk6ejZNa2cxWFhHVXFma2hBS1Uxa1ZkMVBtdzZVRWoxdnhpTGoxeGM5MU1CejVvd05ZIiwiZXhwIjo5OTk5OTk5OTk5LCJpYXQiOjAsInZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIiwiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvZXhhbXBsZXMvdjEiLCJodHRwczovL3B1cmwuaW1zZ2xvYmFsLm9yZy9zcGVjL29iL3YzcDAvY29udGV4dC0zLjAuMi5qc29uIl0sImlkIjoiaHR0cDovL2V4YW1wbGUuZWR1L2NyZWRlbnRpYWxzLzM3MzIiLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIiwiT3BlbkJhZGdlQ3JlZGVudGlhbCJdLCJpc3N1ZXIiOnsiaWQiOiJodHRwczovL2V4YW1wbGUuZWR1L2lzc3VlcnMvNTY1MDQ5IiwidHlwZSI6WyJJc3N1ZXJQcm9maWxlIl0sIm5hbWUiOiJJbXBpZXJjZSBEZW1vIFBvcnRhbCJ9LCJpc3N1YW5jZURhdGUiOiIyMDEwLTAxLTAxVDAwOjAwOjAwWiIsIm5hbWUiOiJUZWFtd29yayBCYWRnZSIsImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkIjoiZGlkOmV4YW1wbGU6ZWJmZWIxZjcxMmViYzZmMWMyNzZlMTJlYzIxIiwidHlwZSI6WyJBY2hpZXZlbWVudFN1YmplY3QiXSwiYWNoaWV2ZW1lbnQiOnsiaWQiOiJodHRwczovL2V4YW1wbGUuY29tL2FjaGlldmVtZW50cy8yMXN0LWNlbnR1cnktc2tpbGxzL3RlYW13b3JrIiwidHlwZSI6WyJBY2hpZXZlbWVudCJdLCJjcml0ZXJpYSI6eyJuYXJyYXRpdmUiOiJUZWFtIG1lbWJlcnMgYXJlIG5vbWluYXRlZCBmb3IgdGhpcyBiYWRnZSBieSB0aGVpciBwZWVycyBhbmQgcmVjb2duaXplZCB1cG9uIHJldmlldyBieSBFeGFtcGxlIENvcnAgbWFuYWdlbWVudC4ifSwiZGVzY3JpcHRpb24iOiJUaGlzIGJhZGdlIHJlY29nbml6ZXMgdGhlIGRldmVsb3BtZW50IG9mIHRoZSBjYXBhY2l0eSB0byBjb2xsYWJvcmF0ZSB3aXRoaW4gYSBncm91cCBlbnZpcm9ubWVudC4iLCJuYW1lIjoiVGVhbXdvcmsifX19fQ.OZCcZt5JTJcBhoLPIyrQuvZuc2dnVN65f8GvKQ3earAzJEgGMA9ZjKRNHEjI73wLwvG5MJBN7Zs_rWiNLEZ5Dg"),
-        );
+        ).unwrap();
         record.display_credential.connection_id = Some("424313e61e35ca4eeca44aac85dc4764c32d7cf9def83ba15f428c308bf1d181".to_string());
+        record.display_credential.display_name = "Teamwork".to_string();
         record
     };
     pub static ref EDU_BADGE: VerifiableCredentialRecord = {
-        let mut record = VerifiableCredentialRecord::from(
+        let mut record = VerifiableCredentialRecord::try_from(
             json!("eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDprZXk6ejZNa3F5WmpEZmhzeVo1YzZOdUpoYm9zV2tTajg2Mmp5V2lDQ0tIRHpOTkttOGtoI3o2TWtxeVpqRGZoc3laNWM2TnVKaGJvc1drU2o4NjJqeVdpQ0NLSER6Tk5LbThraCJ9.eyJpc3MiOiJkaWQ6a2V5Ono2TWtxeVpqRGZoc3laNWM2TnVKaGJvc1drU2o4NjJqeVdpQ0NLSER6Tk5LbThraCIsInN1YiI6ImRpZDprZXk6ejZNa3VpUktxMWZLcnpBWGVTTmlHd3JwSlBQdWdZOEF4SllBNWNwQ3ZaQ1lCRDdCIiwiZXhwIjo5OTk5OTk5OTk5LCJpYXQiOjAsInZjIjp7ImlkIjoiaHR0cDovL2V4YW1wbGUuY29tL2NyZWRlbnRpYWxzLzM1MjciLCJuYW1lIjoiVGVhbXdvcmsgQmFkZ2UiLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIiwiT3BlbkJhZGdlQ3JlZGVudGlhbCJdLCJpc3N1ZXIiOiJkaWQ6a2V5Ono2TWtxeVpqRGZoc3laNWM2TnVKaGJvc1drU2o4NjJqeVdpQ0NLSER6Tk5LbThraCIsIkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIiwiaHR0cHM6Ly9wdXJsLmltc2dsb2JhbC5vcmcvc3BlYy9vYi92M3AwL2NvbnRleHQtMy4wLjIuanNvbiJdLCJpc3N1YW5jZURhdGUiOiIyMDEwLTAxLTAxVDAwOjAwOjAwWiIsImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkIjoiZGlkOmtleTp6Nk1rdWlSS3ExZktyekFYZVNOaUd3cnBKUFB1Z1k4QXhKWUE1Y3BDdlpDWUJEN0IiLCJ0eXBlIjpbIkFjaGlldmVtZW50U3ViamVjdCJdLCJhY2hpZXZlbWVudCI6eyJpZCI6Imh0dHBzOi8vZGVtby5lZHViYWRnZXMubmwvcHVibGljL2Fzc2VydGlvbnMvNnBFQi0tbi1Td2laUHRXWE1DQjJqUSIsIm5hbWUiOiJFZHViYWRnZSBhY2NvdW50IGNvbXBsZXRlIiwidHlwZSI6WyJBY2hpZXZlbWVudCJdLCJpbWFnZSI6eyJpZCI6Imh0dHBzOi8vYXBpLWRlbW8uZWR1YmFkZ2VzLm5sL21lZGlhL3VwbG9hZHMvYmFkZ2VzL2lzc3Vlcl9iYWRnZWNsYXNzXzU0ODUxN2FhLWNiYWItNGE3Yi1hOTcxLTU1Y2RjY2UwZTJhNS5wbmcifSwiY3JpdGVyaWEiOnsibmFycmF0aXZlIjoiVG8gcXVhbGlmeSBmb3IgdGhpcyBlZHViYWRnZTpcclxuXHJcbiogIHlvdSBzdWNjZXNzZnVsbHkgY3JlYXRlZCBhbiBlZHVJRCxcclxuKiB5b3Ugc3VjY2Vzc2Z1bGx5IGxpbmtlZCB5b3VyIGluc3RpdHV0aW9uIHRvIHlvdXIgZWR1SUQsXHJcbiogIHlvdSBjYW4gc3RvcmUgYW5kIG1hbmFnZSB0aGVtIHNhZmVseSBpbiB5b3VyIGJhY2twYWNrLiJ9LCJkZXNjcmlwdGlvbiI6IiMjIyBXZWxjb21lIHRvIGVkdWJhZGdlcy4gTGV0IHlvdXIgbGlmZSBsb25nIGxlYXJuaW5nIGJlZ2luISAjIyNcclxuXHJcbllvdSBhcmUgbm93IHJlYWR5IHRvIGNvbGxlY3QgYWxsIHlvdXIgZWR1YmFkZ2VzIGluIHlvdXIgYmFja3BhY2suIEluIHlvdXIgYmFja3BhY2sgeW91IGNhbiBzdG9yZSBhbmQgbWFuYWdlIHRoZW0gc2FmZWx5LlxyXG5cclxuU2hhcmUgdGhlbSBhbnl0aW1lIHlvdSBsaWtlIGFuZCB3aXRoIHdob20geW91IGxpa2UuXHJcblxyXG5FZHViYWRnZXMgYXJlIHZpc3VhbCByZXByZXNlbnRhdGlvbnMgb2YgeW91ciBrbm93bGVkZ2UsIHNraWxscyBhbmQgY29tcGV0ZW5jZXMuIn19fX0.z2rEuafNmbmY9sf5t4alnkZJeuNrNZrXXGovCc0J8NWdLyFU48mZfBffy6qltvtUOODOHSJnow1lAAFQ16W9Bw"),
-        );
+        ).unwrap();
         // Connection does not exist (simulate deletion)
         record.display_credential.connection_id = Some("c5be6c4b46535a28cfc7edcccc79f9b041d0fedbbee4c1c3aeb234af750c7980".to_string());
+        record.display_credential.display_name = "Edubadge account complete".to_string();
         record
     };
 }
 
 pub async fn load_ferris_profile() -> Result<AppState, AppError> {
     let mut state = AppState::default();
-    let preferred_did_method = "did:jwk";
 
     let password = "sup3rSecr3t".to_string();
 
@@ -68,9 +75,18 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
     };
     state.profile_settings.profile.replace(profile);
 
-    let provider_manager =
-        ProviderManager::new(subject.clone(), preferred_did_method).map_err(OID4VCProviderManagerError)?;
-    let wallet: Wallet = Wallet::new(subject.clone(), preferred_did_method).map_err(OID4VCWalletError)?;
+    let provider_manager = ProviderManager::new(
+        subject.clone(),
+        Vec::from(SUPPORTED_DID_METHODS),
+        Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
+    )
+    .map_err(OID4VCProviderManagerError)?;
+    let wallet: Wallet = Wallet::new(
+        subject.clone(),
+        Vec::from(SUPPORTED_DID_METHODS),
+        Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
+    )
+    .map_err(OID4VCWalletError)?;
     let identity_manager = IdentityManager {
         subject: subject.clone(),
         provider_manager,
@@ -86,10 +102,18 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         .replace(identity_manager);
 
     // Producing DIDs (`did:jwk`, `did:key`)
-    let did_jwk = subject.identifier("did:jwk").await.map_err(|e| Error(e.to_string()))?;
+    let did_jwk = subject
+        // TODO: make distinction between keys using the same DID Method but different algorithms.
+        .identifier("did:jwk", Algorithm::EdDSA)
+        .await
+        .map_err(|e| Error(e.to_string()))?;
     state.dids.insert("did:jwk".to_string(), did_jwk);
 
-    let did_key = subject.identifier("did:key").await.map_err(|e| Error(e.to_string()))?;
+    let did_key = subject
+        // TODO: make distinction between keys using the same DID Method but different algorithms.
+        .identifier("did:key", Algorithm::EdDSA)
+        .await
+        .map_err(|e| Error(e.to_string()))?;
     state.dids.insert("did:key".to_string(), did_key);
 
     vec![

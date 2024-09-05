@@ -158,6 +158,9 @@ const nl = {
       ABOUT: {
         TITLE: 'Over UniMe',
         NAVBAR_TITLE: 'Over UniMe',
+        SPECIFICATIONS: 'Specificaties',
+        VERSION: 'Versie',
+        LICENSE: 'Licentie',
         BUILT_WITH: 'Ontwikkeld met Tauri',
       },
       FEEDBACK: {

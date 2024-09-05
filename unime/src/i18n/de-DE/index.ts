@@ -159,6 +159,9 @@ const de = {
       ABOUT: {
         TITLE: 'Über UniMe',
         NAVBAR_TITLE: 'Über UniMe',
+        SPECIFICATIONS: 'Spezifikationen',
+        VERSION: 'Version',
+        LICENSE: 'Lizenz',
         BUILT_WITH: 'Gebaut mit Tauri',
       },
       FEEDBACK: {

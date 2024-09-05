@@ -2,11 +2,11 @@ pub mod actions;
 pub mod reducers;
 
 use super::{core_utils::helpers::get_unverified_jwt_claims, FeatTrait};
-use crate::state::core_utils::DateUtils;
+use crate::{error::AppError, state::core_utils::DateUtils};
 
 use derivative::Derivative;
 use serde::{Deserialize, Serialize};
-use serde_json::{json, Value};
+use serde_json::json;
 use ts_rs::TS;
 use uuid::Uuid;
 
@@ -48,10 +48,13 @@ pub struct VerifiableCredentialRecord {
     pub display_credential: DisplayCredential,
 }
 
-impl From<serde_json::Value> for VerifiableCredentialRecord {
-    fn from(verifiable_credential: serde_json::Value) -> Self {
+// TODO: remove this function and find a cleaner implementation for this functionality.
+impl TryFrom<serde_json::Value> for VerifiableCredentialRecord {
+    type Error = AppError;
+
+    fn try_from(verifiable_credential: serde_json::Value) -> Result<Self, AppError> {
         let display_credential = {
-            let credential_display = get_unverified_jwt_claims(&verifiable_credential)["vc"].clone();
+            let credential_display = get_unverified_jwt_claims(&verifiable_credential)?["vc"].clone();
 
             // Derive the hash from the credential display.
             let hash = {
@@ -61,7 +64,7 @@ impl From<serde_json::Value> for VerifiableCredentialRecord {
                 let credential_subject_key = "credentialSubject";
                 let mut credential_subject_value = credential_display[credential_subject_key].clone();
 
-                // TODO: Remove this hard-coded logic.
+                // TODO(ngdil): Remove this hard-coded logic.
                 // Remove the `Passport Number` and `Staff Number` from the credential subject if they exists.
                 credential_subject_value["Passport Number"].take();
                 credential_subject_value["Staff Number"].take();
@@ -83,44 +86,22 @@ impl From<serde_json::Value> for VerifiableCredentialRecord {
                 .map(ToString::to_string)
                 .unwrap_or_default();
 
-            let display_name = get_achievement_name_from_data(&credential_display)
-                .or(get_type_name_from_data(&credential_display))
-                .unwrap_or("".to_string());
-
             DisplayCredential {
                 id: Uuid::from_slice(&hash.as_bytes()[..16]).unwrap().to_string(),
-                issuer_name: "".to_string(),
                 data: credential_display,
                 metadata: CredentialMetadata {
                     is_favorite: false,
                     date_added: DateUtils::new_date_string(),
                     date_issued: issuance_date.to_string(),
                 },
-                connection_id: None,
-                display_name,
+                // The other fields will be filled in at a later stage.
+                ..Default::default()
             }
         };
 
-        Self {
+        Ok(Self {
             verifiable_credential,
             display_credential,
-        }
-    }
-}
-
-fn get_achievement_name_from_data(credential_display: &serde_json::Value) -> Option<String> {
-    let cred_subject = credential_display.get("credentialSubject")?;
-    let achievement = cred_subject.get("achievement")?;
-    let name = achievement.get("name")?;
-
-    // Don't use the to_string for the name variable as it add's "" around the string
-    name.as_str().map(|name| name.to_string())
-}
-
-fn get_type_name_from_data(credential_display: &serde_json::Value) -> Option<String> {
-    match credential_display.get("type")? {
-        // Don't use the to_string for the name variable as it add's "" around the string
-        Value::Array(array) => array.last()?.as_str().map(|name| name.to_string()),
-        _ => None,
+        })
     }
 }

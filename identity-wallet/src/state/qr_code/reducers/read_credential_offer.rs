@@ -94,9 +94,8 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
                     .map(ToString::to_string)
                     .unwrap_or(credential_issuer_url.to_string());
 
-                let logo_uri = display["logo"]
-                    .as_object()
-                    .and_then(|logo| logo["url"].as_str())
+                let logo_uri = display["logo"]["uri"]
+                    .as_str()
                     // TODO(NGDIL): remove this NGDIL specific logic once: https://staging.api.ngdil.com/.well-known/openid-credential-issuer is fixed.
                     .or_else(|| display["logo_uri"].as_str())
                     .map(ToString::to_string);
@@ -108,35 +107,7 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
         info!("issuer_name in credential_offer: {:?}", issuer_name);
         info!("logo_uri in credential_offer: {:?}", logo_uri);
 
-        for (credential_configuration_id, credential_configuration) in credential_configurations.iter() {
-            let credential_logo_url = credential_configuration
-                .display
-                .first()
-                .and_then(|value| value.get("logo").and_then(|value| value.get("url")));
-
-            info!("credential_logo_url: {:?}", credential_logo_url);
-
-            if let Some(credential_logo_url) = credential_logo_url {
-                debug!(
-                    "{}",
-                    format!("Downloading credential logo from url: {}", credential_logo_url)
-                );
-                if let Some(credential_logo_url) = credential_logo_url
-                    .as_str()
-                    .and_then(|s| s.parse::<reqwest::Url>().ok())
-                {
-                    let _ = download_asset(
-                        credential_logo_url,
-                        format!("credential_{}", credential_configuration_id).as_str(),
-                    )
-                    .await;
-                }
-            }
-
-            if credential_logo_url.is_none() && logo_uri.is_none() {
-                debug!("No logo found in metadata.");
-            }
-        }
+        download_credential_logos(&credential_configurations).await;
 
         if logo_uri.is_some() {
             debug!(
@@ -167,4 +138,34 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
     }
 
     Ok(state)
+}
+
+/// Downloads all the Credential logos.
+async fn download_credential_logos(
+    credential_configurations: &HashMap<String, CredentialConfigurationsSupportedObject>,
+) {
+    for (credential_configuration_id, credential_configuration) in credential_configurations.iter() {
+        let credential_logo_uri = credential_configuration
+            .display
+            .first()
+            .and_then(|value| value["logo"]["uri"].as_str());
+
+        info!("credential_logo_uri: {:?}", credential_logo_uri);
+
+        if let Some(credential_logo_uri) = credential_logo_uri {
+            debug!(
+                "{}",
+                format!("Downloading credential logo from URI: {}", credential_logo_uri)
+            );
+            if let Ok(credential_logo_uri) = credential_logo_uri.parse::<reqwest::Url>() {
+                let _ = download_asset(
+                    credential_logo_uri,
+                    format!("credential_{}", credential_configuration_id).as_str(),
+                )
+                .await;
+            } else {
+                debug!("Failed to parse credential logo URI: {}", credential_logo_uri);
+            }
+        }
+    }
 }

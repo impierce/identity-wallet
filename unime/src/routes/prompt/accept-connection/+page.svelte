@@ -5,14 +5,20 @@
   import LL from '$i18n/i18n-svelte';
 
   import type { CurrentUserPrompt } from '@bindings/user_prompt/CurrentUserPrompt';
+  import { createPopover } from '@melt-ui/svelte';
 
   import { Button, Image, PaddedIcon, StatusIndicator, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
+  import { PlugsConnectedFillIcon, WarningCircleFillIcon } from '$lib/icons';
   import { error, state } from '$lib/stores';
   import { formatDate, hash } from '$lib/utils';
 
-  import PlugsConnected from '~icons/ph/plugs-connected-fill';
-  import WarningCircle from '~icons/ph/warning-circle-fill';
+  const {
+    elements: { trigger, content, arrow },
+    states: { open },
+  } = createPopover();
+
+  const profile_settings = $state.profile_settings;
 
   let loading = false;
 
@@ -23,8 +29,6 @@
 
   const { client_name, domain_validation, logo_uri, previously_connected, redirect_uri, thuiswinkel_validation } =
     $state.current_user_prompt as AcceptConnectionPrompt;
-
-  const profile_settings = $state.profile_settings;
 
   $: ({ hostname } = new URL(redirect_uri));
   $: imageId = logo_uri ? hash(logo_uri) : '_';
@@ -54,7 +58,7 @@
         <Image id={imageId} iconFallback="Bank" isTempAsset={true} />
       </div>
     {:else}
-      <PaddedIcon icon={PlugsConnected} />
+      <PaddedIcon icon={PlugsConnectedFillIcon} />
     {/if}
     <div class="text-center">
       <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
@@ -71,7 +75,7 @@
       {#if !previously_connected}
         <div class="flex w-full items-center rounded-xl bg-silver p-4 dark:bg-navy">
           <span class="mr-4 h-6 w-6">
-            <WarningCircle class="h-6 w-6 text-amber-500" />
+            <WarningCircleFillIcon class="h-6 w-6 text-amber-500" />
           </span>
           <div class="flex flex-col">
             <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">

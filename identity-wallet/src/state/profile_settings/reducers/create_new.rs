@@ -5,12 +5,13 @@ use crate::{
         core_utils::IdentityManager,
         profile_settings::{actions::create_new::CreateNew, Profile, ProfileSettings},
         user_prompt::CurrentUserPrompt,
-        AppState,
+        AppState, SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS,
     },
     stronghold::StrongholdManager,
     subject::subject,
 };
 
+use jsonwebtoken::Algorithm;
 use log::info;
 use oid4vc::oid4vc_core::Subject as _;
 use oid4vc::oid4vc_manager::ProviderManager;
@@ -18,7 +19,7 @@ use oid4vc::oid4vci::Wallet;
 use std::sync::Arc;
 
 /// Creates a new profile, produces (deterministic) DIDs and redirects to the main page.
-pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppState, AppError> {
+pub async fn create_identity(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(CreateNew {
         name,
         picture,
@@ -33,19 +34,36 @@ pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppS
             .as_ref()
             .ok_or(MissingManagerError("stronghold"))?;
 
-        let preferred_did_method = state.profile_settings.preferred_did_method.as_str();
-
         let subject = subject(stronghold_manager.clone(), password).await;
 
-        let provider_manager =
-            ProviderManager::new(subject.clone(), preferred_did_method).map_err(OID4VCProviderManagerError)?;
-        let wallet: Wallet = Wallet::new(subject.clone(), preferred_did_method).map_err(OID4VCWalletError)?;
+        let provider_manager = ProviderManager::new(
+            subject.clone(),
+            Vec::from(SUPPORTED_DID_METHODS),
+            Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
+        )
+        .map_err(OID4VCProviderManagerError)?;
+        let wallet: Wallet = Wallet::new(
+            subject.clone(),
+            Vec::from(SUPPORTED_DID_METHODS),
+            Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
+        )
+        .map_err(OID4VCWalletError)?;
 
-        let did_jwk = subject.identifier("did:jwk").await.map_err(|e| Error(e.to_string()))?;
-        state.dids.insert("did:jwk".to_string(), did_jwk);
+        let mut dids = state.dids;
 
-        let did_key = subject.identifier("did:key").await.map_err(|e| Error(e.to_string()))?;
-        state.dids.insert("did:key".to_string(), did_key);
+        let did_jwk = subject
+            // TODO: make distinction between keys using the same DID Method but different algorithms.
+            .identifier("did:jwk", Algorithm::EdDSA)
+            .await
+            .map_err(|e| Error(e.to_string()))?;
+        dids.insert("did:jwk".to_string(), did_jwk);
+
+        let did_key = subject
+            // TODO: make distinction between keys using the same DID Method but different algorithms.
+            .identifier("did:key", Algorithm::EdDSA)
+            .await
+            .map_err(|e| Error(e.to_string()))?;
+        dids.insert("did:key".to_string(), did_key);
 
         let profile_settings = ProfileSettings {
             profile: Some(Profile {
@@ -62,9 +80,14 @@ pub async fn create_identity(mut state: AppState, action: Action) -> Result<AppS
             wallet,
         });
 
-        state.profile_settings = profile_settings;
-        state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
-            target: "me".to_string(),
+        drop(state_guard);
+        return Ok(AppState {
+            dids,
+            profile_settings,
+            current_user_prompt: Some(CurrentUserPrompt::Redirect {
+                target: "me".to_string(),
+            }),
+            ..state
         });
     }
 

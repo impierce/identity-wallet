@@ -68,7 +68,7 @@ async fn download_credential_logo() {
                             "name": "University Credential",
                             "locale": "en-US",
                             "logo": {
-                                "url": format!("{}/logo/credential.svg", &mock_server.uri()),
+                                "uri": format!("{}/logo/credential.svg", &mock_server.uri()),
                                 "alternative_text": "a square logo of a university"
                             },
                             "background_color": "#12107c",

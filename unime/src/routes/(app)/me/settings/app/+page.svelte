@@ -3,20 +3,20 @@
   import LL from '$i18n/i18n-svelte';
   import { fade } from 'svelte/transition';
 
-  import { locales } from '$lib/app/locales';
-  import SettingsEntry from '$lib/app/settings/SettingsEntry.svelte';
-  import Switch from '$lib/components/atoms/Switch.svelte';
-  import TopNavBar from '$lib/components/molecules/navigation/TopNavBar.svelte';
+  import { SettingsEntry, Switch, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
+  import {
+    ChatCircleTextFillIcon,
+    CodeBoldIcon,
+    ConfettiFillIcon,
+    FilesFillIcon,
+    KeyFillIcon,
+    PasswordFillIcon,
+    SunFillIcon,
+    TranslateFillIcon,
+  } from '$lib/icons';
+  import { locales } from '$lib/locales';
   import { state } from '$lib/stores';
-
-  import ChatCircleText from '~icons/ph/chat-circle-text-fill';
-  import Code from '~icons/ph/code-bold';
-  import Confetti from '~icons/ph/confetti-fill';
-  import Files from '~icons/ph/files-fill';
-  import Password from '~icons/ph/password-fill';
-  import Sun from '~icons/ph/sun-fill';
-  import Translate from '~icons/ph/translate-fill';
 
   async function toggleDevSettings() {
     await dispatch({
@@ -29,39 +29,51 @@
 <div class="content-height flex flex-col bg-silver dark:bg-navy">
   <div class="flex flex-col space-y-[10px] px-4 py-5">
     <SettingsEntry
-      icon={Translate}
+      icon={TranslateFillIcon}
       title={$LL.SETTINGS.APP.LANGUAGE.TITLE()}
       hasCaretRight={false}
       textRight={locales.find((l) => l.locale === $state.profile_settings.locale)?.displayName ??
         $state.profile_settings.locale}
       on:click={() => goto('/me/settings/app/language')}
     />
-    <SettingsEntry icon={Sun} title={$LL.SETTINGS.APP.THEME.LABEL()} on:click={() => goto('/me/settings/app/theme')} />
-    <SettingsEntry icon={Password} title={$LL.SETTINGS.APP.PASSWORD.TITLE()} disabled />
     <SettingsEntry
-      icon={Confetti}
+      icon={SunFillIcon}
+      title={$LL.SETTINGS.APP.THEME.LABEL()}
+      on:click={() => goto('/me/settings/app/theme')}
+    />
+    <SettingsEntry icon={PasswordFillIcon} title={$LL.SETTINGS.APP.PASSWORD.TITLE()} disabled />
+    <SettingsEntry
+      icon={ConfettiFillIcon}
       title={$LL.SETTINGS.APP.ONBOARDING_JOURNEY.TITLE()}
       hasCaretRight={false}
       textRight={$LL.SETTINGS.APP.ONBOARDING_JOURNEY.BUTTON_TEXT()}
       disabled
     />
     <SettingsEntry
-      icon={ChatCircleText}
+      icon={ChatCircleTextFillIcon}
       title={$LL.SETTINGS.APP.HINTS_AND_TIPS.TITLE()}
       hasCaretRight={false}
       textRight={$LL.SETTINGS.APP.HINTS_AND_TIPS.BUTTON_TEXT()}
       disabled
     />
-    <SettingsEntry icon={Code} title={$LL.SETTINGS.APP.DEVELOPER_MODE.TITLE()} hasCaretRight={false}>
+    <SettingsEntry icon={CodeBoldIcon} title={$LL.SETTINGS.APP.DEVELOPER_MODE.TITLE()} hasCaretRight={false}>
       <Switch active={$state?.dev_mode !== 'Off'} on:change={toggleDevSettings} />
     </SettingsEntry>
     {#if $state.dev_mode !== 'Off'}
-      <div transition:fade={{ duration: 200 }}>
+      <div in:fade={{ duration: 200 }} out:fade={{ duration: 200 }}>
         <SettingsEntry
-          icon={Files}
+          icon={FilesFillIcon}
           title={'DID management'}
           hasCaretRight={true}
           on:click={() => goto('/me/settings/app/did')}
+        />
+      </div>
+      <div in:fade={{ duration: 200 }} out:fade={{ duration: 200 }}>
+        <SettingsEntry
+          icon={KeyFillIcon}
+          title={'Key management'}
+          hasCaretRight={true}
+          on:click={() => goto('/me/settings/app/keys')}
         />
       </div>
     {/if}

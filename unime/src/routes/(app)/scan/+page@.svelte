@@ -16,13 +16,10 @@
   } from '@tauri-apps/plugin-barcode-scanner';
   import { debug, info, warn } from '@tauri-apps/plugin-log';
 
-  import Button from '$lib/components/atoms/Button.svelte';
-  import LoadingSpinner from '$lib/components/atoms/LoadingSpinner.svelte';
-  import BottomNavBar from '$lib/components/molecules/navigation/BottomNavBar.svelte';
+  import { BottomNavBar, Button, LoadingSpinner } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
+  import { CameraSlashRegularIcon } from '$lib/icons';
   import { state } from '$lib/stores';
-
-  import CameraSlash from '~icons/ph/camera-slash';
 
   let scanning = false;
   let loading = false;
@@ -80,55 +77,6 @@
     }
   }
 
-  const mockScanError = () => {
-    loading = true;
-    setTimeout(() => {
-      loading = false;
-      dispatch({ type: '[QR Code] Scanned', payload: { form_urlencoded: 'foobar' } });
-    }, 1_000);
-  };
-
-  const mockSiopRequest = () => {
-    state.set({
-      ...$state,
-      current_user_prompt: {
-        type: 'accept-connection',
-        client_name: 'Some other client',
-        logo_uri: undefined,
-        redirect_uri: 'https://demo.ngdil.com/auth/callback',
-        previously_connected: false,
-        // domain_validation: {
-        //   status: 'Success',
-        // },
-        domain_validation: {
-          status: 'Failure',
-          message: 'DomainLinkageConfiguration could not be fetched',
-        },
-        thuiswinkel_validation: {
-          status: 'Success',
-          name: 'Thuiswinkel Waarborg',
-          issuance_date: '2024-06-26T08:03:53Z',
-          logo_uri: 'https://www.thuiswinkel.org/Images/logo-thuiswinkel_waarborg.svg',
-        },
-        // thuiswinkel_validation: {
-        //   status: 'Failure',
-        // },
-      },
-    });
-  };
-
-  const mockShareRequest = () => {
-    state.set({
-      ...$state,
-      current_user_prompt: {
-        type: 'share-credentials',
-        client_name: 'My Client Name',
-        logo_uri: undefined,
-        options: [$state.credentials[0].id],
-      },
-    });
-  };
-
   async function cancelScan() {
     await cancel();
     scanning = false;
@@ -162,7 +110,7 @@
           {#if permissions_nullable && permissions_nullable !== 'granted'}
             <div class="flex w-3/4 flex-col space-y-4">
               <div class="flex flex-col items-center rounded-lg bg-rose-100 px-8 py-4 text-rose-500">
-                <CameraSlash class="m-2 h-8 w-8" />
+                <CameraSlashRegularIcon class="m-2 h-8 w-8" />
                 <p class="text-center text-[13px]/[24px] font-semibold">{$LL.SCAN.PERMISSION_DENIED()}</p>
               </div>
               <Button label={$LL.SCAN.OPEN_SETTINGS()} on:click={openAppSettings} />
@@ -170,30 +118,21 @@
           {/if}
 
           <!-- Dev mode -->
-          {#if $state?.dev_mode !== 'Off'}
+          {#if $state?.dev_mode !== 'Off' && !loading}
             <div class="flex w-3/4 flex-col space-y-4">
-              <!-- Mocks -->
-              <div class="flex flex-col space-y-2">
-                <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Mock scans</p>
-                <Button variant="secondary" on:click={mockSiopRequest} label="New connection" />
-                <Button variant="secondary" on:click={mockShareRequest} label="Share credentials" />
-                <Button variant="secondary" on:click={mockScanError} label="Scan error" />
-                <div class="flex flex-col space-y-2 rounded-[20px] border border-slate-200 p-2 dark:border-slate-600">
-                  <input
-                    bind:value={mockQrCodeValue}
-                    class="h-12 w-full rounded-xl border border-slate-200 px-3 text-[13px]/[24px] text-teal dark:border-slate-600 dark:bg-dark"
-                    placeholder="Paste QR code value"
-                  />
-                  <Button
-                    variant="secondary"
-                    on:click={() =>
-                      dispatch({ type: '[QR Code] Scanned', payload: { form_urlencoded: mockQrCodeValue } })}
-                    label="Process QR code"
-                  />
-                </div>
+              <div class="flex flex-col space-y-2 rounded-[20px] border border-slate-200 p-2 dark:border-slate-600">
+                <input
+                  bind:value={mockQrCodeValue}
+                  class="h-12 w-full rounded-xl border border-slate-200 px-3 text-[13px]/[24px] text-teal dark:border-slate-600 dark:bg-dark"
+                  placeholder="Paste QR code value"
+                />
+                <Button
+                  variant="secondary"
+                  on:click={() =>
+                    dispatch({ type: '[QR Code] Scanned', payload: { form_urlencoded: mockQrCodeValue } })}
+                  label="Process QR code"
+                />
               </div>
-              <!-- Divider -->
-              <hr class="border-slate-300 dark:border-slate-500" />
               <Button variant="primary" on:click={startScan} label="Start new scan" />
             </div>
           {/if}

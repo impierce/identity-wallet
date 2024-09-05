@@ -1,33 +1,34 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
+  import { beforeNavigate, goto, replaceState } from '$app/navigation';
+  import { page } from '$app/stores';
   import { fly } from 'svelte/transition';
 
-  import ActionSheet from '$lib/components/molecules/dialogs/ActionSheet.svelte';
+  import { ActionSheet } from '$lib/components';
 
   import '@lottiefiles/lottie-player';
 
   import LL from '$i18n/i18n-svelte';
+  import { writable, type Writable } from 'svelte/store';
 
-  import WelcomeMessage from '$lib/app/WelcomeMessage.svelte';
-  import Button from '$lib/components/atoms/Button.svelte';
-  import PaddedIcon from '$lib/components/atoms/PaddedIcon.svelte';
-  import IconMessage from '$lib/components/molecules/IconMessage.svelte';
-  import Tabs from '$lib/components/molecules/navigation/Tabs.svelte';
-  import SortingSheet from '$lib/connections/sorting/SortingSheet.svelte';
-  import CredentialList from '$lib/credentials/CredentialList.svelte';
-  import Favorites from '$lib/credentials/Favorites.svelte';
-  import UserJourney from '$lib/journeys/UserJourney.svelte';
+  import { Button, CredentialList, Favorites, IconMessage, PaddedIcon, Tabs } from '$lib/components';
+  import { GhostFillIcon, MagnifyingGlassIcon, RocketLaunchFillIcon } from '$lib/icons';
   import Ngdil from '$lib/static/svg/logo/demos/Ngdil.svelte';
-  import Selv from '$lib/static/svg/logo/demos/Selv.svelte';
+  // import Selv from '$lib/static/svg/logo/demos/Selv.svelte';
   import { onboarding_state, state } from '$lib/stores';
+  import { calculateInitials } from '$lib/utils';
 
-  import Ghost from '~icons/ph/ghost-fill';
-  import MagnifyingGlass from '~icons/ph/magnifying-glass';
-  import RocketLaunch from '~icons/ph/rocket-launch-fill';
-
-  import { calculateInitials } from './utils';
+  import SortingSheet from './SortingSheet.svelte';
+  import UserJourney from './UserJourney.svelte';
+  import WelcomeMessage from './WelcomeMessage.svelte';
 
   let initials: string | undefined;
+
+  let triggers = [$LL.ME.CREDENTIAL_TABS.ALL(), $LL.ME.CREDENTIAL_TABS.DATA(), $LL.ME.CREDENTIAL_TABS.BADGES()];
+  let activeTab: Writable<string> = writable($page.state.tab || triggers[0]);
+
+  beforeNavigate(async () => {
+    replaceState('', { tab: $activeTab });
+  });
 
   $: {
     // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
@@ -63,7 +64,7 @@
         on:click={() => goto('/me/search')}
         class="-mr-3 flex h-11 w-11 items-center justify-center rounded-2xl text-black dark:text-white"
       >
-        <MagnifyingGlass class="h-6 w-6" />
+        <MagnifyingGlassIcon class="h-6 w-6" />
       </button>
     </div>
   </div>
@@ -85,10 +86,7 @@
     {#if $state?.credentials && $state?.credentials.length > 0}
       <div class="relative">
         <div>
-          <Tabs
-            class="mr-[50px]"
-            triggers={[$LL.ME.CREDENTIAL_TABS.ALL(), $LL.ME.CREDENTIAL_TABS.DATA(), $LL.ME.CREDENTIAL_TABS.BADGES()]}
-          >
+          <Tabs class="mr-[50px]" value={activeTab} {triggers}>
             <!-- All -->
             <div slot="0" class="h-full pt-5">
               <Favorites />
@@ -127,7 +125,7 @@
           <!-- TODO: extract icon component? -->
           <div class="relative z-10">
             <!-- z-index only applies to elements with explicit position, therefore also "relative" -->
-            <PaddedIcon icon={RocketLaunch} />
+            <PaddedIcon icon={RocketLaunchFillIcon} />
           </div>
 
           <!-- Confetti -->
@@ -167,15 +165,15 @@
     {:else}
       <!-- Skipped onboarding journey -->
       <div class="flex grow flex-col items-center justify-center">
-        <IconMessage icon={Ghost} title={$LL.ME.EMPTY_CREDENTIALS.TITLE()} />
+        <IconMessage icon={GhostFillIcon} title={$LL.ME.EMPTY_CREDENTIALS.TITLE()} />
         <div class="w-[280px] pt-[15px] text-center text-[13px]/[24px] font-normal text-slate-500 dark:text-slate-300">
           {$LL.ME.DEMO()}
           <div class="flex flex-col gap-3 pt-[15px]">
             <!-- Selv -->
-            <div class="flex h-14 items-center justify-between rounded-xl bg-white p-4 dark:bg-dark">
+            <!-- <div class="flex h-14 items-center justify-between rounded-xl bg-white p-4 dark:bg-dark">
               <Selv class="h-6 w-14 text-slate-500 dark:text-slate-300" />
               <span class="text-[13px]/[24px] font-semibold text-primary">https://selv.iota.org</span>
-            </div>
+            </div> -->
             <!-- NGDIL -->
             <div class="flex h-14 items-center justify-between rounded-xl bg-white p-4 dark:bg-dark">
               <Ngdil class="h-6 w-14 text-slate-500 dark:text-slate-300" />
