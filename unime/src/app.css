@@ -188,8 +188,4 @@
   .hide-scrollbar::-webkit-scrollbar {
     display: none;
   }
-
-  .transparent {
-    background-color: transparent;
-  }
 }

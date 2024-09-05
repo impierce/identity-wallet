@@ -2,6 +2,7 @@
   import { onDestroy, onMount, type SvelteComponent } from 'svelte';
 
   import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
   import { PUBLIC_DEV_MODE_MENU_EXPANDED } from '$env/static/public';
   import LL, { setLocale } from '$i18n/i18n-svelte';
   import { loadAllLocales } from '$i18n/i18n-util.sync';
@@ -232,8 +233,9 @@ Stacking context: We have to deviate from the DOM-sequence.
 - ActionSheet (z-40): between safe-area-inset-top and safe-area-inset-bottom.
 -->
 
-<!-- Set default background and text colors. -->
-<div class="overflow-hidden bg-background text-text" class:dark>
+<!-- Set default background and text color. -->
+<!-- A page can request a transparent background by setting `$page.data.transparent` (required by scan route). -->
+<div class="overflow-hidden text-text {$page.data.transparent ? 'bg-transparent' : 'bg-background'}" class:dark>
   <!-- safe-area-inset-top: highlight area when in dev mode. -->
   <div class="safe-area-inset-top fixed top-0 z-30 w-full bg-background">
     {#if $appState.dev_mode !== 'Off'}

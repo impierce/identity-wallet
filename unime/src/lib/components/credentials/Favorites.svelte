@@ -40,10 +40,7 @@
         title={credential.display_name}
         description={credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
         type={credential.data.type.includes('OpenBadgeCredential') ? 'badge' : 'data'}
-        on:click={() =>
-          credential.data.type.includes('OpenBadgeCredential')
-            ? goto(`/badges/${credential.id}`)
-            : goto(`/credentials/${credential.id}`)}
+        on:click={() => goto(`/credential/${credential.id}`)}
       />
     {/each}
   </div>

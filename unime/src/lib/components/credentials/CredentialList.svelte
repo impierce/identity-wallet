@@ -25,12 +25,11 @@
 
   function createClickHandler(credential: DisplayCredential) {
     if (credential.data.type.includes('OpenBadgeCredential')) {
-      // return () => goto(`/badges/${credential.id}`);
-      return () => goto(`/credentials-new/${credential.id}`);
+      return () => goto(`/badges/${credential.id}`);
+      // return () => goto(`/credentials-new/${credential.id}`);
     }
     return () => {
       goto(`/credentials-new/${credential.id}`);
-      // goto(`/credentials/${credential.id}`);
     };
   }
 </script>
