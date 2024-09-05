@@ -170,9 +170,6 @@
   </ActionSheet>
 </div>
 
-<div class="safe-area-top {credentialLogoUrl ? 'bg-silver dark:bg-navy' : ''}" />
-<div class="safe-area-bottom z-10 bg-silver dark:bg-navy" />
-
 <style>
   .content-height {
     /* bottom-navigation: 64px + 2 * 8px (y-padding) + 1px (border top) = 81px */

@@ -237,8 +237,6 @@
   </ActionSheet>
 </div>
 
-<div class="safe-area-top bg-white dark:bg-dark" />
-
 <style>
   .content-height {
     /* bottom-navigation: 64px + 2 * 8px (y-padding) + 1px (border top) = 81px */

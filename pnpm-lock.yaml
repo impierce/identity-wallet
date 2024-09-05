@@ -42,10 +42,10 @@ importers:
         specifier: ^0.83.0
         version: 0.83.0(svelte@4.2.18)
       '@sveltejs/adapter-static':
-        specifier: ^3.0.0
+        specifier: ^3.0.4
         version: 3.0.4(@sveltejs/kit@2.5.24(@sveltejs/vite-plugin-svelte@3.1.2(svelte@4.2.18)(vite@5.4.2(@types/node@22.5.0)))(svelte@4.2.18)(vite@5.4.2(@types/node@22.5.0)))
       '@sveltejs/kit':
-        specifier: ^2.5.19
+        specifier: ^2.5.24
         version: 2.5.24(@sveltejs/vite-plugin-svelte@3.1.2(svelte@4.2.18)(vite@5.4.2(@types/node@22.5.0)))(svelte@4.2.18)(vite@5.4.2(@types/node@22.5.0))
       '@sveltejs/vite-plugin-svelte':
         specifier: ^3.0.0

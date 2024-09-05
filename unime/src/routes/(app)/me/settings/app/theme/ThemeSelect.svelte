@@ -18,28 +18,9 @@
 
   const dispatch = createEventDispatcher();
 
-  $: {
-    debug(`prefers-color-scheme: dark? ${window.matchMedia('(prefers-color-scheme: dark)').matches}`);
-    if ($value === 'dark') {
-      // dark
-      document.documentElement.classList.add('dark');
-      debug('Dark mode enabled');
-    } else if ($value === 'light') {
-      // light
-      document.documentElement.classList.remove('dark');
-      debug('Light mode enabled');
-    } else {
-      // system
-      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.documentElement.classList.add('dark');
-        debug('Dark mode enabled');
-      } else {
-        document.documentElement.classList.remove('dark');
-        debug('Light mode enabled');
-      }
-    }
-    dispatch('change', { value: $value });
-  }
+  // `$value` contains the value of the selected radio button.
+  // Dispatch custom event whenever that value changes.
+  $: $value, dispatch('change', { value: $value });
 </script>
 
 <div use:melt={$root} class="flex flex-col gap-4">

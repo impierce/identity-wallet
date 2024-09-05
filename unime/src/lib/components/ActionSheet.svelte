@@ -6,7 +6,7 @@
   const {
     elements: { trigger, overlay, content, title, description, close, portalled },
     states: { open },
-  } = createDialog();
+  } = createDialog({ portal: '#portal' });
 
   export let titleText = '';
   export let descriptionText = '';
@@ -20,22 +20,22 @@
 
 <!--
   @component
-  
+
   @prop titleText - The title of the dialog.
   @prop descriptionText - The description of the dialog.
-  
+
   @slot trigger - The trigger element that opens the dialog.
   @slot content - The content of the dialog.
   @slot icon - An icon.
   @slot close - The close button.
-  
+
   Usage:
   ```svelte
   <ActionSheet let:trigger titleText="My title" descriptionText="My description">
     ...
     <div use:melt={trigger}></div>
   </ActionSheet>
-  ```  
+  ```
   -->
 
 <!-- <slot trigger={$trigger} /> -->
@@ -46,15 +46,14 @@
     <!-- Overlay -->
     <div
       use:melt={$overlay}
-      class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
+      class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
       transition:fade={{ duration: 150 }}
     />
 
     <!-- TODO: should we respect the bottom safe area as well? -> pb-[calc(25px_+_var(--safe-area-inset-bottom))] -->
     <div
       use:melt={$content}
-      class="fixed bottom-0 left-0 z-50 flex w-screen flex-col
-                items-center rounded-t-[20px] bg-white p-6 focus:outline-none dark:bg-dark"
+      class="fixed bottom-0 left-0 z-40 flex w-screen flex-col items-center rounded-t-[20px] bg-white p-6 pb-[calc(25px_+_var(--safe-area-inset-bottom))] focus:outline-none dark:bg-dark"
       transition:fly={{
         y: 350,
         duration: 300,

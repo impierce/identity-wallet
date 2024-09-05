@@ -6,6 +6,7 @@
   import LL, { setLocale } from '$i18n/i18n-svelte';
   import { loadAllLocales } from '$i18n/i18n-util.sync';
   import type { SvelteHTMLElements } from 'svelte/elements';
+  import { writable } from 'svelte/store';
   import { fly } from 'svelte/transition';
 
   import type { AppState } from '@bindings/AppState';
@@ -25,7 +26,6 @@
   import { state as appState, error as errorState } from '$lib/stores';
 
   import ErrorToast from './ErrorToast.svelte';
-  import { determineTheme } from './utils';
 
   import '../app.css';
 
@@ -88,22 +88,39 @@
   let showDragonProfileSteps = false;
   let resetDragonProfile = true;
 
-  const systemColorScheme = window.matchMedia('(prefers-color-scheme: dark)');
+  // Tailwind considers app to be in dark theme if the class `dark` is present.
+  // A user can chooser between 3 themes: `light`, `dark`, and `system`.
 
-  systemColorScheme.addEventListener('change', (e) => {
-    if ($appState?.profile_settings.profile?.theme) {
-      determineTheme(e.matches, $appState.profile_settings.profile.theme);
-    } else {
-      determineTheme(systemColorScheme.matches, 'system');
-    }
+  // For `system` we need to check `prefers-color-scheme: dark` media query.
+  // `prefersColorSchemeDarkStore` monitors wheter this media query is applied.
+  const prefersColorSchemeDarkQuery = window.matchMedia('(prefers-color-scheme: dark)');
+  const prefersColorSchemeDarkStore = writable(prefersColorSchemeDarkQuery.matches);
+
+  prefersColorSchemeDarkQuery.addEventListener('change', () => {
+    prefersColorSchemeDarkStore.set(prefersColorSchemeDarkQuery.matches);
   });
 
+  // Function that determines if the `dark` class should be added.
+  function addDarkClass() {
+    if ($appState.profile_settings.profile?.theme === 'dark') {
+      return true;
+    }
+    if ($appState.profile_settings.profile?.theme === 'light') {
+      return false;
+    }
+    return $prefersColorSchemeDarkStore;
+  }
+
+  // `dark` is reactive and depends on the two stores.
+  let dark: boolean;
+  $: $appState, $prefersColorSchemeDarkStore, (dark = addDarkClass());
+
   $: {
-    // TODO: needs to be called at least once to trigger subscribers --> better way to do this?
-    if ($appState?.profile_settings.profile?.theme) {
-      determineTheme(systemColorScheme.matches, $appState.profile_settings.profile.theme);
-    } else {
-      determineTheme(systemColorScheme.matches, 'system');
+    // User prompt
+    let type = $appState?.current_user_prompt?.type;
+
+    if (type && type !== 'redirect') {
+      goto(`/prompt/${type}`);
     }
   }
 
@@ -188,86 +205,137 @@
       await goto('/me');
     }
   }
+
+  // Hack to get rid of the border that marks the top safe area inset when the top inset is 0.
+  let safeAreaInsetTopHeight = 0;
+  let safeAreaInsetBottomHeight = 0;
+
+  onMount(() => {
+    const topElement = document.querySelector('.safe-area-inset-top');
+    if (topElement) {
+      safeAreaInsetTopHeight = topElement.clientHeight;
+    }
+
+    const bottomElement = document.querySelector('.safe-area-inset-bottom');
+    if (bottomElement) {
+      safeAreaInsetBottomHeight = bottomElement.clientHeight;
+    }
+  });
 </script>
 
-<main class="absolute h-screen">
-  <!-- Dev Mode: Navbar -->
-  {#if $appState?.dev_mode !== 'Off'}
-    {#if expandedDevMenu}
+<!--
+Stacking context: We have to deviate from the DOM-sequence.
+- safe-area-inset-top (z-30): Always on top, but under ActionSheet blurr-out.
+- safe-area-inset-bottom (z-50): Always on top.
+- Expanded menu (z-10): flies in from under safe-area-inset-top.
+- Dev menu expansion button (z-20): sits on top of the expanded menu.
+- ActionSheet (z-40): between safe-area-inset-top and safe-area-inset-bottom.
+-->
+
+<!-- Set default background and text colors. -->
+<div class="overflow-hidden bg-background text-text" class:dark>
+  <!-- safe-area-inset-top: highlight area when in dev mode. -->
+  <div class="safe-area-inset-top fixed top-0 z-30 w-full bg-background">
+    {#if $appState.dev_mode !== 'Off'}
+      <!-- Apply border conditionally when the top inset is not 0. -->
       <div
-        class="hide-scrollbar fixed z-20 flex w-full space-x-4 overflow-x-auto bg-gradient-to-r from-red-200 to-red-300 p-4 shadow-md"
-        in:fly={{ y: -64, opacity: 1 }}
-        out:fly={{ y: -64, opacity: 1 }}
+        class="grid h-full place-items-center"
+        style:border-bottom={safeAreaInsetTopHeight > 0 ? '2px dashed rgb(var(--color-text)' : 'none'}
+      ></div>
+    {/if}
+  </div>
+
+  <!-- safe-area-inset-bottom: highlight area when in dev mode. -->
+  <div class="safe-area-inset-bottom fixed bottom-0 z-50 w-full bg-background">
+    {#if $appState.dev_mode !== 'Off'}
+      <div
+        class="grid h-full place-items-center"
+        style:border-top={safeAreaInsetBottomHeight > 0 ? '2px dashed rgb(var(--color-text)' : 'none'}
+      ></div>
+    {/if}
+  </div>
+
+  <!--
+  Add paddings to honor safe-area-insets.
+  This is also the portal for the ActionSheet instead of default `body` to ensure it works with dark mode.
+  -->
+  <div class="safe-area-insets h-screen" id="portal">
+    <!-- Dev Mode: Navbar -->
+    {#if $appState?.dev_mode !== 'Off'}
+      {#if expandedDevMenu}
+        <div
+          class="hide-scrollbar fixed z-10 flex w-full space-x-4 overflow-x-auto bg-gradient-to-r from-red-200 to-red-300 p-4 shadow-md"
+          in:fly={{ y: -64, opacity: 1 }}
+          out:fly={{ y: -64, opacity: 1 }}
+        >
+          {#each devButtons as button}
+            <button
+              class="rounded-full bg-red-300 px-4 py-1 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
+              on:click={button.onClick}
+            >
+              {#if typeof button.icon === 'string'}
+                <span class="m-auto block text-xl">{button.icon}</span>
+              {:else}
+                <svelte:component this={button.icon} class="m-auto block text-xl" />
+              {/if}
+            </button>
+          {/each}
+        </div>
+      {/if}
+
+      <button
+        class="fixed left-[calc(50%_-_12px)] top-[var(--safe-area-inset-top)] z-20 h-6 w-6 rounded-b-md bg-red-200 p-[2px]"
+        on:click={() => (expandedDevMenu = !expandedDevMenu)}
       >
-        {#each devButtons as button}
-          <button
-            class="rounded-full bg-red-300 px-4 py-1 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
-            on:click={button.onClick}
-          >
-            {#if typeof button.icon === 'string'}
-              <span class="m-auto block text-xl">{button.icon}</span>
-            {:else}
-              <svelte:component this={button.icon} class="m-auto block text-xl" />
-            {/if}
-          </button>
+        {#if expandedDevMenu}
+          <CaretUpBoldIcon class="text-red-700" />
+        {:else}
+          <CaretDownBoldIcon class="text-red-700" />
+        {/if}
+      </button>
+    {/if}
+
+    <!-- TODO: Debug messages is broken. -->
+    {#if showDebugMessages}
+      <div class="relative z-10 min-h-full w-screen bg-orange-100 pt-24">
+        <p class="pb-2 pt-2 text-center text-xs font-semibold uppercase text-orange-800">debug messages</p>
+
+        <hr class="mx-8 h-1 bg-orange-800" />
+
+        {#each $appState.debug_messages as message}
+          <div class="mx-2 mb-2 rounded bg-orange-200 p-2">
+            <div class="break-all font-mono text-xs text-orange-700">{message}</div>
+          </div>
         {/each}
       </div>
     {/if}
 
-    <button
-      class="fixed left-[calc(50%_-_12px)] top-[var(--safe-area-inset-top)] z-30 h-6 w-6 rounded-b-md bg-red-200 p-[2px]"
-      on:click={() => (expandedDevMenu = !expandedDevMenu)}
-    >
-      {#if expandedDevMenu}
-        <CaretUpBoldIcon class="text-red-700" />
-      {:else}
-        <CaretDownBoldIcon class="text-red-700" />
-      {/if}
-    </button>
-  {/if}
+    {#if showDragonProfileSteps}
+      <div class="fixed z-10 flex h-screen w-screen justify-center bg-black/50 pt-24">
+        <div class="ml-10 mr-10 mt-10 flex h-fit w-full flex-col rounded bg-white pb-4 pl-4 pr-4">
+          <p class="pb-2 pt-2 text-center text-orange-800">Profile steps</p>
 
-  <!-- Dev Mode: Debug messages -->
-  {#if showDebugMessages}
-    <div class="relative z-10 min-h-full w-screen bg-orange-100 pt-24">
-      <p class="pb-2 pt-2 text-center text-xs font-semibold uppercase text-orange-800">debug messages</p>
+          <div class="flex items-center justify-end pb-2">
+            <div class="mr-2 text-xs text-orange-800">Reset profile?</div>
+            <Switch
+              active={resetDragonProfile}
+              on:change={() => {
+                resetDragonProfile = !resetDragonProfile;
+              }}
+            />
+          </div>
 
-      <hr class="mx-8 h-1 bg-orange-800" />
-
-      {#each $appState.debug_messages as message}
-        <div class="mx-2 mb-2 rounded bg-orange-200 p-2">
-          <div class="break-all font-mono text-xs text-orange-700">{message}</div>
+          {#each profileSteps as steps, i}
+            <button class="mx-auto mb-2 w-full rounded bg-orange-200 p-2" on:click={() => loadDragonProfile(steps)}>
+              <div class="break-all font-mono text-xs text-orange-700">{i + 1}: {steps}</div>
+            </button>
+          {/each}
         </div>
-      {/each}
-    </div>
-  {/if}
-
-  {#if showDragonProfileSteps}
-    <div class="fixed z-10 flex h-screen w-screen justify-center bg-black/50 pt-24">
-      <div class="ml-10 mr-10 mt-10 flex h-fit w-full flex-col rounded bg-white pb-4 pl-4 pr-4">
-        <p class="pb-2 pt-2 text-center text-orange-800">Profile steps</p>
-
-        <div class="flex items-center justify-end pb-2">
-          <div class="mr-2 text-xs text-orange-800">Reset profile?</div>
-          <Switch
-            active={resetDragonProfile}
-            on:change={() => {
-              resetDragonProfile = !resetDragonProfile;
-            }}
-          />
-        </div>
-
-        {#each profileSteps as steps, i}
-          <button class="mx-auto mb-2 w-full rounded bg-orange-200 p-2" on:click={() => loadDragonProfile(steps)}>
-            <div class="break-all font-mono text-xs text-orange-700">{i + 1}: {steps}</div>
-          </button>
-        {/each}
       </div>
-    </div>
-  {/if}
+    {/if}
 
-  <!-- Content -->
-  <div class="fixed top-[var(--safe-area-inset-top)] h-auto w-full">
     <slot />
+
     <!-- Show error if exists -->
     {#if $errorState}
       <div class="absolute bottom-4 right-4 w-[calc(100%_-_32px)]">
@@ -283,4 +351,20 @@
       </div>
     {/if}
   </div>
-</main>
+</div>
+
+<style>
+  /* Use CSS variables instead of `env(safe-area-inset-*)` to allow adding safe areas for desktop dev. */
+  .safe-area-insets {
+    padding-top: var(--safe-area-inset-top);
+    padding-bottom: var(--safe-area-inset-bottom);
+  }
+
+  .safe-area-inset-top {
+    height: var(--safe-area-inset-top);
+  }
+
+  .safe-area-inset-bottom {
+    height: var(--safe-area-inset-bottom);
+  }
+</style>

@@ -42,7 +42,8 @@
   onboarding_state.set({});
 </script>
 
-<div class="flex min-h-full flex-col bg-white dark:bg-dark">
+<!-- Isolate stacking context to avoid z-index conflicts. -->
+<div class="isolate flex min-h-full flex-col bg-white dark:bg-dark">
   <div class="sticky top-0 z-10 w-full bg-white px-[20px] py-4 dark:bg-dark">
     <!-- Top Bar -->
     <div class="flex items-center justify-between">
@@ -107,7 +108,7 @@
           </Tabs>
         </div>
 
-        <div class="absolute right-0 top-0 z-50">
+        <div class="absolute right-0 top-0">
           <SortingSheet />
         </div>
       </div>
@@ -189,6 +190,3 @@
     {/if}
   </div>
 </div>
-
-<!-- Overwrite colors from layout -->
-<div class="safe-area-top z-10 bg-white dark:bg-dark" />

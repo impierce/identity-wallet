@@ -10,10 +10,8 @@
   </div>
 {/key}
 
-<div class="safe-area-top bg-silver dark:bg-navy" />
-
 <style>
   .content-height {
-    height: calc(100vh - var(--safe-area-inset-top));
+    height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom));
   }
 </style>

@@ -22,6 +22,17 @@
       credentials = credentials.filter((c) => !(c.data.type as string[]).includes('OpenBadgeCredential'));
     }
   }
+
+  function createClickHandler(credential: DisplayCredential) {
+    if (credential.data.type.includes('OpenBadgeCredential')) {
+      // return () => goto(`/badges/${credential.id}`);
+      return () => goto(`/credentials-new/${credential.id}`);
+    }
+    return () => {
+      goto(`/credentials-new/${credential.id}`);
+      // goto(`/credentials/${credential.id}`);
+    };
+  }
 </script>
 
 {#if credentials?.length > 0}
@@ -33,10 +44,7 @@
         title={credential.display_name}
         description={credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
         type={credential.data.type.includes('OpenBadgeCredential') ? 'badge' : 'data'}
-        on:click={() =>
-          credential.data.type.includes('OpenBadgeCredential')
-            ? goto(`/badges/${credential.id}`)
-            : goto(`/credentials/${credential.id}`)}
+        on:click={createClickHandler(credential)}
       ></ListItemCard>
     {/each}
   </div>
