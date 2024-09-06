@@ -114,6 +114,9 @@
 
   // `dark` is reactive and depends on the two stores.
   let dark: boolean;
+
+  // ESLint does not understand the reactive statement.
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   $: $appState, $prefersColorSchemeDarkStore, (dark = addDarkClass());
 
   $: {

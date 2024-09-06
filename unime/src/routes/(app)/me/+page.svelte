@@ -53,6 +53,8 @@
       >
         {#if $state.profile_settings.profile?.picture}
           <span class="text-[28px]/[28px]">
+            <!-- The profile picture is an emoticon selected from a list of emoticons we provide. -->
+            <!-- eslint-disable-next-line svelte/no-at-html-tags -->
             {@html $state.profile_settings.profile?.picture}
           </span>
         {:else}

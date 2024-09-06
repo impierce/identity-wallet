@@ -20,6 +20,8 @@
   let credential: DisplayCredential | undefined = loadCredential();
 
   // The credential's metadata, e.g., the favorite status, may change.
+  // ESLint does not understand the reactive statement.
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   $: $state, (credential = loadCredential());
 
   $: {

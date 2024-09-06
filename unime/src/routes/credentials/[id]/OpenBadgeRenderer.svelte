@@ -12,15 +12,19 @@
 <!-- Render `credentialSubject.achievement`. -->
 <div class="flex flex-col gap-4">
   {#if credential.data.credentialSubject?.achievement?.description}
-    <div class="prose prose-sm dark:prose-invert rounded-xl bg-background-alt p-4">
+    <div class="prose prose-sm rounded-xl bg-background-alt p-4 dark:prose-invert">
       <h2>{$LL.CREDENTIAL.DETAILS.DESCRIPTION()}</h2>
+      <!-- TODO Review marked vs. markdown-it and security risks. -->
+      <!-- eslint-disable-next-line svelte/no-at-html-tags -->
       {@html md.render(credential.data.credentialSubject.achievement.description)}
     </div>
   {/if}
 
   {#if credential.data.credentialSubject?.achievement?.criteria?.narrative}
-    <div class="prose prose-sm dark:prose-invert rounded-xl bg-background-alt p-4">
+    <div class="prose prose-sm rounded-xl bg-background-alt p-4 dark:prose-invert">
       <h2>{$LL.CREDENTIAL.DETAILS.CONTENTS()}</h2>
+      <!-- TODO Review marked vs. markdown-it and security risks. -->
+      <!-- eslint-disable-next-line svelte/no-at-html-tags -->
       {@html md.render(credential.data.credentialSubject.achievement.criteria.narrative)}
     </div>
   {/if}

@@ -4,7 +4,6 @@
   import LL from '$i18n/i18n-svelte';
 
   import { createRadioGroup, melt } from '@melt-ui/svelte';
-  import { debug } from '@tauri-apps/plugin-log';
 
   export let defaultValue = 'system';
 
@@ -20,6 +19,8 @@
 
   // `$value` contains the value of the selected radio button.
   // Dispatch custom event whenever that value changes.
+  // ESLint does not understand the reactive statement.
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
   $: $value, dispatch('change', { value: $value });
 </script>
 
