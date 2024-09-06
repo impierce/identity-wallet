@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
+  import { goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
 
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
@@ -26,13 +27,11 @@
       issuerLogoUrl = await getImageAsset(credential.connection_id);
     }
   });
-
-  $: console.dir(credential);
 </script>
 
 <div class="grid grid-cols-2 gap-4 text-xs">
   <div class="flex flex-col items-center gap-1">
-    <div>{$LL.BADGE.DETAILS.VALID()}</div>
+    <div>{$LL.CREDENTIAL.DETAILS.VALID()}</div>
     <div class="grid h-20 place-items-center self-stretch rounded-xl bg-background-alt py-5 text-text-alt">
       <SealCheckRegularIcon class="h-7 w-7" />
     </div>
@@ -43,14 +42,19 @@
     {/if}
   </div>
   <div class="flex flex-col items-center gap-1">
-    <div>{$LL.BADGE.DETAILS.ISSUED_BY()}</div>
-    <div class="grid h-20 place-items-center self-stretch rounded-xl bg-background-alt py-5 text-text-alt">
+    <div>{$LL.CREDENTIAL.DETAILS.ISSUED_BY()}</div>
+    <svelte:element
+      this={credential.connection_id ? 'button' : 'div'}
+      on:click={credential.connection_id ? () => goto(`/activity/connection/${credential.connection_id}`) : undefined}
+      role={credential.connection_id ? 'button' : undefined}
+      class="grid h-20 place-items-center self-stretch rounded-xl bg-background-alt py-5 text-text-alt"
+    >
       {#if issuerLogoUrl}
         <img src={issuerLogoUrl} alt="Issuer logo" class="h-10 w-10 object-contain" />
       {:else}
         <BankLightIcon class="h-7 w-7" />
       {/if}
-    </div>
+    </svelte:element>
     <div class="break-all">{determineIssuerName()}</div>
   </div>
 </div>

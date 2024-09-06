@@ -3,9 +3,12 @@
 
   export let credential: DisplayCredential;
 
-  const hiddenFields: string[] = ['type'];
+  // If you add a field, add a comment why that field should be hidden.
+  //
+  // `enrichment`: custom metadata field related for NGDIL demo.
+  const hideFields: string[] = ['enrichment', 'id', 'type'];
 
-  $: fields = Object.keys(credential.data.credentialSubject).filter((field) => !hiddenFields.includes(field));
+  $: fields = Object.keys(credential.data.credentialSubject).filter((field) => !hideFields.includes(field));
 </script>
 
 {#if fields}
