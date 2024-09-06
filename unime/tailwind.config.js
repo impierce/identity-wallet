@@ -9,7 +9,7 @@ export default {
         sans: ['Inter', 'sans-serif'],
       },
       colors: {
-        // New color defintions.
+        // Semantic color defintions.
         brand: 'rgb(var(--color-brand))',
         text: 'rgb(var(--color-text))',
         'text-alt': 'rgb(var(--color-text-alt))',

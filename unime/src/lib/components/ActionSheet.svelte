@@ -3,6 +3,8 @@
 
   import { createDialog, melt } from '@melt-ui/svelte';
 
+  // Instead of default portal in `<body>`, we create the portal at ID `#portal` in root layout.
+  // This way the ActionSheet opens within the safe area.
   const {
     elements: { trigger, overlay, content, title, description, close, portalled },
     states: { open },

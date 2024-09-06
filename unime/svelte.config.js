@@ -19,8 +19,6 @@ const config = {
       '@bindings/*': '../identity-wallet/bindings/*',
       $i18n: 'src/i18n',
     },
-    // SvelteKit prerenders all non-dynamic routes by default.
-    // Dynamic routes cannot be prerendered because they depend on state that is unknown at build time.
   },
 };
 
