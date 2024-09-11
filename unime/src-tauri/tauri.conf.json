@@ -1,5 +1,5 @@
 {
-  "$schema": "../../node_modules/@tauri-apps/cli/schema.json",
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "UniMe Beta",
   "version": "0.6.8",
   "identifier": "com.impierce.unime",
@@ -45,13 +45,5 @@
     "resources": [
       "resources/*"
     ]
-  },
-  "plugins": {
-    "fs": {
-      "scope": [
-        "$APPDATA/assets/**/*.png",
-        "$APPDATA/assets/**/*.svg"
-      ]
-    }
   }
 }
