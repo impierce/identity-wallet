@@ -124,7 +124,7 @@ async fn get_validated_linked_presentation_data(
     linked_verifiable_presentation_url: Url,
 ) -> Option<Vec<LinkedVerifiableCredentialData>> {
     OptionFuture::from(
-        validate_linked_verifiable_presentation(&holder_document, linked_verifiable_presentation_url)
+        validate_linked_verifiable_presentation(holder_document, linked_verifiable_presentation_url)
             .await
             .map(|linked_verifiable_presentation| {
                 get_validated_linked_credential_data(resolver, linked_verifiable_presentation)
@@ -205,7 +205,7 @@ async fn get_validated_linked_credential_data(
                     let credential_subject = match &linked_verifiable_credential.credential.credential_subject {
                         OneOrMany::One(subject) => Some(subject),
                         // TODO: how to handle multiple credential subjects?
-                        OneOrMany::Many(subjects) => subjects.get(0),
+                        OneOrMany::Many(subjects) => subjects.first(),
                     };
 
                     OptionFuture::from(credential_subject.map(|credential_subject| async {
@@ -296,7 +296,7 @@ async fn get_issuer_linked_domains(issuer_document: &CoreDocument) -> Vec<Url> {
                     linked_domain.get("origins").and_then(|origins| {
                         origins.as_array().and_then(|origins| {
                             origins
-                                .into_iter()
+                                .iter()
                                 .map(|origin| {
                                     origin.as_str().and_then(|origin| {
                                         origin
@@ -643,7 +643,7 @@ mod tests {
         holder.add_well_known_did_json().await;
 
         assert_eq!(
-            validate_linked_verifiable_presentations(&holder.did_document.id().to_string()).await,
+            validate_linked_verifiable_presentations(holder.did_document.id().to_string().as_ref()).await,
             vec![
                 vec![LinkedVerifiableCredentialData {
                     name: Some("Webshop".to_string()),
@@ -701,7 +701,7 @@ mod tests {
         holder.add_well_known_did_json().await;
 
         assert_eq!(
-            validate_linked_verifiable_presentations(&holder.did_document.id().to_string()).await,
+            validate_linked_verifiable_presentations(holder.did_document.id().to_string().as_ref()).await,
             // The domain linkage validation of the issuer failed, so the linked verifiable credential is not considered.
             vec![vec![]]
         );
@@ -736,7 +736,7 @@ mod tests {
             get_linked_verifiable_presentation_urls(&holder.did_document.service()[0])
                 .unwrap()
                 .iter()
-                .all(|item| vec![
+                .all(|item| [
                     format!("{}{}", holder.domain, linked_verifiable_presentation_endpoint)
                         .parse()
                         .unwrap(),
@@ -814,7 +814,11 @@ mod tests {
 
         // Succesfully validate the linked domain.
         assert_eq!(
-            get_validated_linked_domains(&[issuer1.domain.clone()], &issuer1.did_document.id().to_string()).await,
+            get_validated_linked_domains(
+                &[issuer1.domain.clone()],
+                issuer1.did_document.id().to_string().as_ref()
+            )
+            .await,
             vec![issuer1.domain.clone()]
         );
 
@@ -822,7 +826,7 @@ mod tests {
         assert_eq!(
             get_validated_linked_domains(
                 &[issuer1.domain.clone(), "http://invalid-domain.org".parse().unwrap()],
-                &issuer1.did_document.id().to_string()
+                issuer1.did_document.id().to_string().as_ref()
             )
             .await,
             vec![issuer1.domain.clone()]
@@ -840,7 +844,7 @@ mod tests {
         assert_eq!(
             get_validated_linked_domains(
                 &[issuer1.domain.clone(), issuer2.domain.clone()],
-                &issuer1.did_document.id().to_string()
+                issuer1.did_document.id().to_string().as_ref()
             )
             .await,
             vec![issuer1.domain.clone()]
@@ -861,10 +865,10 @@ mod tests {
         // Assert that both domains were validated (regardless of the order).
         assert!(get_validated_linked_domains(
             &[issuer1.domain.clone(), issuer2.domain.clone()],
-            &issuer1.did_document.id().to_string()
+            issuer1.did_document.id().to_string().as_ref()
         )
         .await
         .iter()
-        .all(|item| vec![issuer1.domain.clone(), issuer2.domain.clone()].contains(item)));
+        .all(|item| [issuer1.domain.clone(), issuer2.domain.clone()].contains(item)));
     }
 }

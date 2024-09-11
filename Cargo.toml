@@ -46,4 +46,4 @@ keywords = ["identity", "did", "ssi", "wallet", "siopv2"]
 license = "Apache-2.0"
 repository = "https://github.com/impierce/identity-wallet"
 edition = "2021"
-rust-version = "1.75.0"
+rust-version = "1.76.0"
