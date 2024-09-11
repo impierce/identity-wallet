@@ -16,8 +16,6 @@
       "status": "Unknown",
       "message": "error decoding response body: expected value at line 1 column 1"
     },
-    "thuiswinkel_validation": {
-      "status": "Unknown"
-    }
+    "linked_verifiable_presentations": []
   }
 }

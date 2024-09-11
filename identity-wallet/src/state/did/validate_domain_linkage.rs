@@ -39,7 +39,7 @@ pub enum ValidationStatus {
 }
 
 /// This `Verifier` uses `jsonwebtoken` under the hood to verify verification input.
-struct Verifier;
+pub struct Verifier;
 impl JwsVerifier for Verifier {
     fn verify(&self, input: VerificationInput, public_key: &IotaIdentityJwk) -> Result<(), SignatureVerificationError> {
         use SignatureVerificationErrorKind::*;
@@ -103,6 +103,8 @@ pub async fn validate_domain_linkage(url: url::Url, did: &str) -> ValidationResu
             };
         }
     };
+
+    info!("Resolved document: {:?}", document);
 
     let url = identity_iota::core::Url::from(url);
 

@@ -4,13 +4,13 @@ use crate::{
     state::{
         actions::{listen, Action},
         connections::reducers::handle_siopv2_authorization_request::get_siopv2_client_name_and_logo_uri,
-        core_utils::{helpers::get_unverified_jwt_claims, ConnectionRequest, CoreUtils},
+        core_utils::{ConnectionRequest, CoreUtils},
         credentials::reducers::handle_oid4vp_authorization_request::{
             get_oid4vp_client_name_and_logo_uri, OID4VPClientMetadata,
         },
         did::{
             validate_domain_linkage::validate_domain_linkage,
-            validate_thuiswinkel_waarborg::validate_thuiswinkel_waarborg,
+            validate_linked_verifiable_presentations::validate_linked_verifiable_presentations,
         },
         qr_code::actions::qrcode_scanned::QrCodeScanned,
         user_prompt::CurrentUserPrompt,
@@ -86,9 +86,12 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
             let did = siopv2_authorization_request.body.client_id.as_str();
 
             let domain_validation = Box::new(validate_domain_linkage(url, did).await);
-            // TODO(proj-e-commerce): This needs to be properly implemented. For now it just demonstrates how the Thuiswinkel
-            // Waarborg would work in UniMe.
-            let thuiswinkel_validation = Box::new(validate_thuiswinkel_waarborg(did).await);
+
+            let linked_verifiable_presentations = validate_linked_verifiable_presentations(did)
+                .await
+                .into_iter()
+                .flatten()
+                .collect();
 
             drop(state_guard);
 
@@ -103,7 +106,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                     redirect_uri,
                     previously_connected,
                     domain_validation,
-                    thuiswinkel_validation,
+                    linked_verifiable_presentations,
                 }),
                 ..state
             });

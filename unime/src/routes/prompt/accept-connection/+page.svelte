@@ -27,8 +27,14 @@
   type IsAcceptConnectionPrompt<T> = T extends { type: 'accept-connection' } ? T : never;
   type AcceptConnectionPrompt = IsAcceptConnectionPrompt<CurrentUserPrompt>;
 
-  const { client_name, domain_validation, logo_uri, previously_connected, redirect_uri, thuiswinkel_validation } =
-    $state.current_user_prompt as AcceptConnectionPrompt;
+  const {
+    client_name,
+    domain_validation,
+    logo_uri,
+    previously_connected,
+    redirect_uri,
+    linked_verifiable_presentations,
+  } = $state.current_user_prompt as AcceptConnectionPrompt;
 
   $: ({ hostname } = new URL(redirect_uri));
   $: imageId = logo_uri ? hash(logo_uri) : '_';
@@ -117,19 +123,21 @@
         </div>
       </StatusIndicator>
 
-      <!-- Thuiswinkel validaton -->
-      {#if thuiswinkel_validation.status === 'Success' && thuiswinkel_validation.name}
-        {@const issuanceDate =
-          thuiswinkel_validation.issuance_date && profile_settings.locale
-            ? formatDate(thuiswinkel_validation.issuance_date, profile_settings.locale)
-            : undefined}
-        <StatusIndicator
-          status="Success"
-          title={thuiswinkel_validation.name}
-          description={`${$LL.SORT.PREFERENCES.DATE_ISSUED()}: ${issuanceDate}`}
-          logoUrl={thuiswinkel_validation.logo_uri}
-        />
-      {/if}
+      <!-- Linked Verifiable Presentations -->
+      {#each linked_verifiable_presentations as presentation}
+        {#if presentation.name}
+          {@const issuanceDate =
+            presentation.issuance_date && profile_settings.locale
+              ? formatDate(presentation.issuance_date, profile_settings.locale)
+              : undefined}
+          <StatusIndicator
+            status="Success"
+            title={presentation.name}
+            description={`${$LL.SORT.PREFERENCES.DATE_ISSUED()}: ${issuanceDate}`}
+            logoUrl={presentation.logo_uri}
+          />
+        {/if}
+      {/each}
     </div>
   </div>
 
