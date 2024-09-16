@@ -27,8 +27,8 @@ importers:
         specifier: ^5.2.0
         version: 5.2.0
       '@iconify-json/circle-flags':
-        specifier: ^1.1.46
-        version: 1.1.49
+        specifier: ^1.2.0
+        version: 1.2.0
       '@iconify-json/ph':
         specifier: ^1.1.13
         version: 1.1.14
@@ -454,8 +454,8 @@ packages:
       '@vue/compiler-sfc':
         optional: true
 
-  '@iconify-json/circle-flags@1.1.49':
-    resolution: {integrity: sha512-wzctBnYIbwAeao+M+aer9dOzxLtcJioFYVjlLY91Dq6oamy+cP0rnNeVhch7fXE7G71YzHNi7vwoxlRXgeDhfw==}
+  '@iconify-json/circle-flags@1.2.0':
+    resolution: {integrity: sha512-IiHBArcOAePzikToo52mUmVHh5ysekcuK5xOzZkFk9mokIp+rwYlSP0qgfB0POmD9Y22bCVNHYukyg5a5qDCNw==}
 
   '@iconify-json/ph@1.1.14':
     resolution: {integrity: sha512-s1hZVaxIpl40qLEhjqPRMcZl4A3M4fZ+77Fi+VuOb/eKkIHIMutAoBHIR+0a3l7psUweZQGj9hSyL2P5CIj6qA==}
@@ -3148,7 +3148,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@iconify-json/circle-flags@1.1.49':
+  '@iconify-json/circle-flags@1.2.0':
     dependencies:
       '@iconify/types': 2.0.0
 
