@@ -1730,6 +1730,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "data-url"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5c297a1c74b71ae29df00c3e22dd9534821d60eb9af5a0192823fa2acea70c2a"
+
+[[package]]
 name = "deadpool"
 version = "0.9.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -8944,6 +8950,7 @@ dependencies = [
  "anyhow",
  "bytes",
  "cocoa",
+ "data-url",
  "dirs 5.0.1",
  "dunce",
  "embed_plist",
