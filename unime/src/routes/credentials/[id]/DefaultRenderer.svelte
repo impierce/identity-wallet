@@ -14,8 +14,8 @@
 {#if fields}
   <div class="flex flex-col gap-4">
     {#each fields as field}
-      <div class="rounded-xl bg-background-alt px-4 py-2">
-        <h2 class="font-semibold">{field}</h2>
+      <div class="rounded-xl bg-background-alt px-4 py-3 text-[13px]/[24px]">
+        <h2 class="font-medium text-text-alt">{field}</h2>
         <p class="overflow-x-auto">{credential.data.credentialSubject[field]}</p>
       </div>
     {/each}

@@ -15,7 +15,7 @@
   const isDarkModeEnabled = document.documentElement.classList.contains('dark');
 </script>
 
-<div class="relative flex h-full flex-col bg-silver dark:bg-navy" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
+<div class="relative flex h-full flex-col" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <div class="grow">
     <div class="mt-[calc(100vh/8)] px-4 py-6">
       <div class="pb-9">

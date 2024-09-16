@@ -29,7 +29,7 @@
   });
 </script>
 
-<div class="grid grid-cols-2 gap-4 text-xs">
+<div class="grid grid-cols-2 gap-4 text-xs font-medium">
   <div class="flex flex-col items-center gap-1">
     <div>{$LL.CREDENTIAL.DETAILS.VALID()}</div>
     <div class="grid h-20 place-items-center self-stretch rounded-xl bg-background-alt py-5 text-text-alt">
