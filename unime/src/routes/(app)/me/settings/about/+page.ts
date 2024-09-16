@@ -1,4 +1,4 @@
-import type { PageServerLoad } from './$types';
+import type { PageLoad } from './$types';
 
 interface Specification {
   id: string;
@@ -34,4 +34,4 @@ export const load = (async () => {
   return {
     specifications,
   };
-}) satisfies PageServerLoad;
+}) satisfies PageLoad;

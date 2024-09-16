@@ -10,7 +10,9 @@ declare global {
       errorId: string;
     }
     // interface Locals {}
-    // interface PageData {}
+    interface PageData {
+      transparent?: boolean;
+    }
     interface PageState {
       tab?: string;
     }

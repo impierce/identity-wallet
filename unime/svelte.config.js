@@ -11,22 +11,13 @@ const config = {
   preprocess: sequence([vitePreprocess(), preprocessMeltUI()]),
 
   kit: {
-    adapter: adapter(),
+    // For dynamic routes we set `prerender = false`.
+    // But adapter-static wants all routes to be prerendered by default.
+    // `strict: false` makes adapter-static ignore pages that are not prerendered.
+    adapter: adapter({ strict: false }),
     alias: {
       '@bindings/*': '../identity-wallet/bindings/*',
       $i18n: 'src/i18n',
-    },
-    prerender: {
-      entries: [
-        '*',
-        '/activity/connection/0',
-        '/activity/connection/1',
-        '/activity/connection/2',
-        '/goals/2/faqs',
-        '/goals/2/step/0',
-        '/credentials/*',
-        '/badges/*',
-      ],
     },
   },
 };

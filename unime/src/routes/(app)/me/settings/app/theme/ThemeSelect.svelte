@@ -4,7 +4,6 @@
   import LL from '$i18n/i18n-svelte';
 
   import { createRadioGroup, melt } from '@melt-ui/svelte';
-  import { debug } from '@tauri-apps/plugin-log';
 
   export let defaultValue = 'system';
 
@@ -18,28 +17,11 @@
 
   const dispatch = createEventDispatcher();
 
-  $: {
-    debug(`prefers-color-scheme: dark? ${window.matchMedia('(prefers-color-scheme: dark)').matches}`);
-    if ($value === 'dark') {
-      // dark
-      document.documentElement.classList.add('dark');
-      debug('Dark mode enabled');
-    } else if ($value === 'light') {
-      // light
-      document.documentElement.classList.remove('dark');
-      debug('Light mode enabled');
-    } else {
-      // system
-      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-        document.documentElement.classList.add('dark');
-        debug('Dark mode enabled');
-      } else {
-        document.documentElement.classList.remove('dark');
-        debug('Light mode enabled');
-      }
-    }
-    dispatch('change', { value: $value });
-  }
+  // `$value` contains the value of the selected radio button.
+  // Dispatch custom event whenever that value changes.
+  // ESLint does not understand the reactive statement.
+  // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+  $: $value, dispatch('change', { value: $value });
 </script>
 
 <div use:melt={$root} class="flex flex-col gap-4">

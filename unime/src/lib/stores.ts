@@ -59,3 +59,11 @@ export const error = writable<string | undefined>(undefined);
  * The state of the onboarding is pushed to the backend only on the last of the onboarding process.
  */
 export const onboarding_state = writable<OnboardingState>({});
+
+/**
+ * Since the backend can push the application state to the frontend at any time,
+ * we cannot use SvelteKit's load functions to load data. We always have to rely on stores.
+ * Therefore, a page can only supply data to a layout via a store.
+ * This store is used to get the page title into a layout.
+ */
+export const pageTitleStore = writable<string>();
