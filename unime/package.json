@@ -43,7 +43,7 @@
     "eslint-plugin-svelte": "^2.33.0",
     "globals": "^15.7.0",
     "internal-ip": "^7.0.0",
-    "jsdom": "^22.1.0",
+    "jsdom": "^25.0.0",
     "markdown-it": "^14.0.0",
     "postcss": "^8.4.45",
     "qrcode": "^1.5.3",
