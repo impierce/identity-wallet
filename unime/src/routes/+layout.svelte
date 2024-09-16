@@ -93,7 +93,7 @@
   // A user can chooser between 3 themes: `light`, `dark`, and `system`.
 
   // For `system` we need to check `prefers-color-scheme: dark` media query.
-  // `prefersColorSchemeDarkStore` monitors wheter this media query is applied.
+  // `prefersColorSchemeDarkStore` monitors whether this media query is applied.
   const prefersColorSchemeDarkQuery = window.matchMedia('(prefers-color-scheme: dark)');
   const prefersColorSchemeDarkStore = writable(prefersColorSchemeDarkQuery.matches);
 

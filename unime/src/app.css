@@ -154,8 +154,8 @@
     --safe-area-inset-bottom: env(safe-area-inset-bottom);
 
     /* Uncomment to simulate safe area insets for iPhone 13 Pro. */
-    /* --safe-area-inset-top: 47px;
-    --safe-area-inset-bottom: 34px; */
+    --safe-area-inset-top: 47px;
+    --safe-area-inset-bottom: 34px;
 
     /* Colors for light theme (will be fed into `rgb` function). */
     --color-brand: 92 199 199; /* #5cc7c7 */
