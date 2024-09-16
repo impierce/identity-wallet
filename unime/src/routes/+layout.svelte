@@ -210,19 +210,61 @@
     }
   }
 
-  // Hack to get rid of the border that marks the top safe area inset when the top inset is 0.
-  let safeAreaInsetTopHeight = 0;
-  let safeAreaInsetBottomHeight = 0;
+  // Bind the div elements of th insets against these variables.
+  let safeAreaInsetTop: HTMLDivElement;
+  let safeAreaInsetBottom: HTMLDivElement;
+
+  // The resize observers will update these heights.
+  // Styling will be applied to the insets if the height is greater than 0.
+  let safeAreaInsetTopHeight: number;
+  let safeAreaInsetBottomHeight: number;
+
+  // Resize observers.
+  let resizeObserverInsetTop: ResizeObserver;
+  let resizeObserverInsetBottom: ResizeObserver;
 
   onMount(() => {
-    const topElement = document.querySelector('.safe-area-inset-top');
-    if (topElement) {
-      safeAreaInsetTopHeight = topElement.clientHeight;
+    // ResizeObserver for safe area top inset.
+    resizeObserverInsetTop = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        safeAreaInsetTopHeight = entry.contentRect.height;
+      }
+    });
+
+    if (safeAreaInsetTop) {
+      resizeObserverInsetTop.observe(safeAreaInsetTop);
     }
 
-    const bottomElement = document.querySelector('.safe-area-inset-bottom');
-    if (bottomElement) {
-      safeAreaInsetBottomHeight = bottomElement.clientHeight;
+    // ResizeObserver for safe area bottom inset.
+    resizeObserverInsetBottom = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        safeAreaInsetBottomHeight = entry.contentRect.height;
+      }
+    });
+
+    resizeObserverInsetBottom.observe(safeAreaInsetBottom);
+
+    // const resizeObserver = new ResizeObserver((entries) => {
+    //   for (let entry of entries) {
+    //   })
+    // });
+    // const topElement = document.querySelector('.safe-area-inset-top');
+    // if (topElement) {
+    //   safeAreaInsetTopHeight = topElement.clientHeight;
+    // }
+    // const bottomElement = document.querySelector('.safe-area-inset-bottom');
+    // if (bottomElement) {
+    //   safeAreaInsetBottomHeight = bottomElement.clientHeight;
+    // }
+  });
+
+  onDestroy(() => {
+    if (resizeObserverInsetTop) {
+      resizeObserverInsetTop.disconnect();
+    }
+
+    if (resizeObserverInsetBottom) {
+      resizeObserverInsetBottom.disconnect();
     }
   });
 </script>
@@ -240,7 +282,7 @@ Stacking context: We have to deviate from the DOM-sequence.
 <!-- A page can request a transparent background by setting `$page.data.transparent` (required by scan route). -->
 <div class="overflow-hidden text-text {$page.data.transparent ? 'bg-transparent' : 'bg-background'}" class:dark>
   <!-- safe-area-inset-top: highlight area when in dev mode. -->
-  <div class="safe-area-inset-top fixed top-0 z-30 w-full bg-background">
+  <div bind:this={safeAreaInsetTop} class="safe-area-inset-top fixed top-0 z-30 w-full bg-background">
     {#if $appState.dev_mode !== 'Off'}
       <!-- Apply border conditionally when the top inset is not 0. -->
       <div
@@ -251,7 +293,7 @@ Stacking context: We have to deviate from the DOM-sequence.
   </div>
 
   <!-- safe-area-inset-bottom: highlight area when in dev mode. -->
-  <div class="safe-area-inset-bottom fixed bottom-0 z-50 w-full bg-background">
+  <div bind:this={safeAreaInsetBottom} class="safe-area-inset-bottom fixed bottom-0 z-50 w-full bg-background">
     {#if $appState.dev_mode !== 'Off'}
       <div
         class="grid h-full place-items-center"
