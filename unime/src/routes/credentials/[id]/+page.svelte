@@ -28,17 +28,19 @@
     // Use `pageTitleStore` to get page title into layout.
     pageTitleStore.set($LL.CREDENTIAL.NAVBAR_TITLE());
   }
+
+  const credentialTypes = credential?.data?.type as string[] | undefined;
 </script>
 
 {#if credential}
   <div class="flex flex-col gap-7 px-4 pb-7">
     <CredentialHeader {credential}>
       <h1 class="text-center font-semibold">
-        {credential.data?.credentialSubject?.achievement?.name ?? credential.display_name}
+        {credential.data?.name ?? credential.display_name}
       </h1>
     </CredentialHeader>
     <CredentialOverview {credential} />
-    {#if credential.data?.credentialSubject?.achievement}
+    {#if credentialTypes?.includes('OpenBadgeCredential') || credentialTypes?.includes('AchievementCredential')}
       <OpenBadgeRenderer {credential} />
     {:else}
       <DefaultRenderer {credential} />
