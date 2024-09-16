@@ -382,7 +382,7 @@ Stacking context: We have to deviate from the DOM-sequence.
 
     <!-- Show error if exists -->
     {#if $errorState}
-      <div class="absolute bottom-4 right-4 w-[calc(100%_-_32px)]">
+      <div class="absolute bottom-[calc(16px_+_var(--safe-area-inset-bottom))] right-4 w-[calc(100%_-_32px)]">
         <ErrorToast
           title={$appState?.dev_mode !== 'Off' ? 'Error' : $LL.ERROR.TITLE()}
           detail={$appState?.dev_mode !== 'Off' ? $errorState : $LL.ERROR.DEFAULT_MESSAGE()}
