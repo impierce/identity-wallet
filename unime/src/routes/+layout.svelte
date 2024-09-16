@@ -3,7 +3,7 @@
 
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import { PUBLIC_DEV_MODE_MENU_EXPANDED } from '$env/static/public';
+  import { PUBLIC_DEV_MODE_MENU_EXPANDED, PUBLIC_STYLE_SAFE_AREA_INSETS } from '$env/static/public';
   import LL, { setLocale } from '$i18n/i18n-svelte';
   import { loadAllLocales } from '$i18n/i18n-util.sync';
   import type { SvelteHTMLElements } from 'svelte/elements';
@@ -85,6 +85,7 @@
   });
 
   let expandedDevMenu = PUBLIC_DEV_MODE_MENU_EXPANDED === 'true';
+  let styleSafeAreaInsets = PUBLIC_STYLE_SAFE_AREA_INSETS === 'true';
   let showDebugMessages = false;
   let showDragonProfileSteps = false;
   let resetDragonProfile = true;
@@ -287,7 +288,9 @@ Stacking context: We have to deviate from the DOM-sequence.
       <!-- Apply border conditionally when the top inset is not 0. -->
       <div
         class="grid h-full place-items-center"
-        style:border-bottom={safeAreaInsetTopHeight > 0 ? '2px dashed rgb(var(--color-text)' : 'none'}
+        style:border-bottom={safeAreaInsetTopHeight > 0 && styleSafeAreaInsets
+          ? '2px dashed rgb(var(--color-text)'
+          : 'none'}
       ></div>
     {/if}
   </div>
@@ -297,7 +300,9 @@ Stacking context: We have to deviate from the DOM-sequence.
     {#if $appState.dev_mode !== 'Off'}
       <div
         class="grid h-full place-items-center"
-        style:border-top={safeAreaInsetBottomHeight > 0 ? '2px dashed rgb(var(--color-text)' : 'none'}
+        style:border-top={safeAreaInsetBottomHeight > 0 && styleSafeAreaInsets
+          ? '2px dashed rgb(var(--color-text)'
+          : 'none'}
       ></div>
     {/if}
   </div>
