@@ -243,20 +243,9 @@
       }
     });
 
-    resizeObserverInsetBottom.observe(safeAreaInsetBottom);
-
-    // const resizeObserver = new ResizeObserver((entries) => {
-    //   for (let entry of entries) {
-    //   })
-    // });
-    // const topElement = document.querySelector('.safe-area-inset-top');
-    // if (topElement) {
-    //   safeAreaInsetTopHeight = topElement.clientHeight;
-    // }
-    // const bottomElement = document.querySelector('.safe-area-inset-bottom');
-    // if (bottomElement) {
-    //   safeAreaInsetBottomHeight = bottomElement.clientHeight;
-    // }
+    if (safeAreaInsetBottom) {
+      resizeObserverInsetBottom.observe(safeAreaInsetBottom);
+    }
   });
 
   onDestroy(() => {
@@ -282,8 +271,11 @@ Stacking context: We have to deviate from the DOM-sequence.
 <!-- Set default background and text color. -->
 <!-- A page can request a transparent background by setting `$page.data.transparent` (required by scan route). -->
 <div class="overflow-hidden text-text {$page.data.transparent ? 'bg-transparent' : 'bg-background'}" class:dark>
-  <!-- safe-area-inset-top: highlight area when in dev mode. -->
-  <div bind:this={safeAreaInsetTop} class="safe-area-inset-top fixed top-0 z-30 w-full bg-background">
+  <!-- Default background for `safe-area-inset-top` is `bg-background`. Make it `bg-background-alt` when flag is set.  -->
+  <div
+    bind:this={safeAreaInsetTop}
+    class="safe-area-inset-top fixed top-0 z-30 w-full {$page.data.bgAlt ? 'bg-background-alt' : 'bg-background'}"
+  >
     {#if $appState.dev_mode !== 'Off'}
       <!-- Apply border conditionally when the top inset is not 0. -->
       <div
