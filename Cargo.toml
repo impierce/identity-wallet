@@ -16,7 +16,6 @@ members = ["identity-wallet", "unime/src-tauri"]
 tauri = { version = "=2.0.0-beta.24", features = [
     "protocol-asset",
     "rustls-tls",
-    "webview-data-url"
 ] }
 tauri-codegen = { version = "=2.0.0-beta.19" }
 tauri-build = { version = "=2.0.0-beta.19", default-features = false}

@@ -5,7 +5,7 @@
   "identifier": "com.impierce.unime",
   "app": {
     "security": {
-      "csp": "default-src 'self' ipc: http://ipc.localhost; style-src 'unsafe-inline' 'self'; img-src 'self' asset: http://asset.localhost",
+      "csp": "default-src 'self' ipc: http://ipc.localhost; style-src 'unsafe-inline' 'self'; img-src 'self' asset: http://asset.localhost data:",
       "assetProtocol": {
         "enable": true,
         "scope": [
