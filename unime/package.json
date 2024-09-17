@@ -18,7 +18,7 @@
   "devDependencies": {
     "@aws-crypto/sha256-js": "^5.2.0",
     "@iconify-json/circle-flags": "^1.2.0",
-    "@iconify-json/ph": "^1.1.13",
+    "@iconify-json/ph": "^1.2.0",
     "@lottiefiles/lottie-player": "^2.0.2",
     "@melt-ui/pp": "^0.3.0",
     "@melt-ui/svelte": "^0.83.0",
