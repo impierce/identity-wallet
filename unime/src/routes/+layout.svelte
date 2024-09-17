@@ -90,7 +90,7 @@
   let resetDragonProfile = true;
 
   // Tailwind considers app to be in dark theme if the class `dark` is present.
-  // A user can chooser between 3 themes: `light`, `dark`, and `system`.
+  // A user can choose between 3 themes: `light`, `dark`, and `system`.
 
   // For `system` we need to check `prefers-color-scheme: dark` media query.
   // `prefersColorSchemeDarkStore` monitors wheter this media query is applied.
