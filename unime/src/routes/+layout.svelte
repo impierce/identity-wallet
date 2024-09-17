@@ -3,7 +3,7 @@
 
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
-  import { PUBLIC_DEV_MODE_MENU_EXPANDED } from '$env/static/public';
+  import { PUBLIC_DEV_MODE_MENU_EXPANDED, PUBLIC_STYLE_SAFE_AREA_INSETS } from '$env/static/public';
   import LL, { setLocale } from '$i18n/i18n-svelte';
   import { loadAllLocales } from '$i18n/i18n-util.sync';
   import type { SvelteHTMLElements } from 'svelte/elements';
@@ -85,6 +85,7 @@
   });
 
   let expandedDevMenu = PUBLIC_DEV_MODE_MENU_EXPANDED === 'true';
+  let styleSafeAreaInsets = PUBLIC_STYLE_SAFE_AREA_INSETS === 'true';
   let showDebugMessages = false;
   let showDragonProfileSteps = false;
   let resetDragonProfile = true;
@@ -93,7 +94,7 @@
   // A user can choose between 3 themes: `light`, `dark`, and `system`.
 
   // For `system` we need to check `prefers-color-scheme: dark` media query.
-  // `prefersColorSchemeDarkStore` monitors wheter this media query is applied.
+  // `prefersColorSchemeDarkStore` monitors whether this media query is applied.
   const prefersColorSchemeDarkQuery = window.matchMedia('(prefers-color-scheme: dark)');
   const prefersColorSchemeDarkStore = writable(prefersColorSchemeDarkQuery.matches);
 
@@ -210,19 +211,50 @@
     }
   }
 
-  // Hack to get rid of the border that marks the top safe area inset when the top inset is 0.
-  let safeAreaInsetTopHeight = 0;
-  let safeAreaInsetBottomHeight = 0;
+  // Bind the div elements of th insets against these variables.
+  let safeAreaInsetTop: HTMLDivElement;
+  let safeAreaInsetBottom: HTMLDivElement;
+
+  // The resize observers will update these heights.
+  // Styling will be applied to the insets if the height is greater than 0.
+  let safeAreaInsetTopHeight: number;
+  let safeAreaInsetBottomHeight: number;
+
+  // Resize observers.
+  let resizeObserverInsetTop: ResizeObserver;
+  let resizeObserverInsetBottom: ResizeObserver;
 
   onMount(() => {
-    const topElement = document.querySelector('.safe-area-inset-top');
-    if (topElement) {
-      safeAreaInsetTopHeight = topElement.clientHeight;
+    // ResizeObserver for safe area top inset.
+    resizeObserverInsetTop = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        safeAreaInsetTopHeight = entry.contentRect.height;
+      }
+    });
+
+    if (safeAreaInsetTop) {
+      resizeObserverInsetTop.observe(safeAreaInsetTop);
     }
 
-    const bottomElement = document.querySelector('.safe-area-inset-bottom');
-    if (bottomElement) {
-      safeAreaInsetBottomHeight = bottomElement.clientHeight;
+    // ResizeObserver for safe area bottom inset.
+    resizeObserverInsetBottom = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        safeAreaInsetBottomHeight = entry.contentRect.height;
+      }
+    });
+
+    if (safeAreaInsetBottom) {
+      resizeObserverInsetBottom.observe(safeAreaInsetBottom);
+    }
+  });
+
+  onDestroy(() => {
+    if (resizeObserverInsetTop) {
+      resizeObserverInsetTop.disconnect();
+    }
+
+    if (resizeObserverInsetBottom) {
+      resizeObserverInsetBottom.disconnect();
     }
   });
 </script>
@@ -239,23 +271,35 @@ Stacking context: We have to deviate from the DOM-sequence.
 <!-- Set default background and text color. -->
 <!-- A page can request a transparent background by setting `$page.data.transparent` (required by scan route). -->
 <div class="overflow-hidden text-text {$page.data.transparent ? 'bg-transparent' : 'bg-background'}" class:dark>
-  <!-- safe-area-inset-top: highlight area when in dev mode. -->
-  <div class="safe-area-inset-top fixed top-0 z-30 w-full bg-background">
+  <!-- Default background for `safe-area-inset-top` is `bg-background`. Make it `bg-background-alt` when flag is set.  -->
+  <div
+    bind:this={safeAreaInsetTop}
+    class="safe-area-inset-top fixed top-0 z-30 w-full {$page.data.bgAltTop ? 'bg-background-alt' : 'bg-background'}"
+  >
     {#if $appState.dev_mode !== 'Off'}
       <!-- Apply border conditionally when the top inset is not 0. -->
       <div
         class="grid h-full place-items-center"
-        style:border-bottom={safeAreaInsetTopHeight > 0 ? '2px dashed rgb(var(--color-text)' : 'none'}
+        style:border-bottom={safeAreaInsetTopHeight > 0 && styleSafeAreaInsets
+          ? '2px dashed rgb(var(--color-text)'
+          : 'none'}
       ></div>
     {/if}
   </div>
 
   <!-- safe-area-inset-bottom: highlight area when in dev mode. -->
-  <div class="safe-area-inset-bottom fixed bottom-0 z-50 w-full bg-background">
+  <div
+    bind:this={safeAreaInsetBottom}
+    class="safe-area-inset-bottom fixed bottom-0 z-50 w-full {$page.data.bgAltBottom
+      ? 'bg-background-alt'
+      : 'bg-background'}"
+  >
     {#if $appState.dev_mode !== 'Off'}
       <div
         class="grid h-full place-items-center"
-        style:border-top={safeAreaInsetBottomHeight > 0 ? '2px dashed rgb(var(--color-text)' : 'none'}
+        style:border-top={safeAreaInsetBottomHeight > 0 && styleSafeAreaInsets
+          ? '2px dashed rgb(var(--color-text)'
+          : 'none'}
       ></div>
     {/if}
   </div>
@@ -343,7 +387,7 @@ Stacking context: We have to deviate from the DOM-sequence.
 
     <!-- Show error if exists -->
     {#if $errorState}
-      <div class="absolute bottom-4 right-4 w-[calc(100%_-_32px)]">
+      <div class="absolute bottom-[calc(16px_+_var(--safe-area-inset-bottom))] right-4 w-[calc(100%_-_32px)]">
         <ErrorToast
           title={$appState?.dev_mode !== 'Off' ? 'Error' : $LL.ERROR.TITLE()}
           detail={$appState?.dev_mode !== 'Off' ? $errorState : $LL.ERROR.DEFAULT_MESSAGE()}
