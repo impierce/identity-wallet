@@ -274,7 +274,7 @@ Stacking context: We have to deviate from the DOM-sequence.
   <!-- Default background for `safe-area-inset-top` is `bg-background`. Make it `bg-background-alt` when flag is set.  -->
   <div
     bind:this={safeAreaInsetTop}
-    class="safe-area-inset-top fixed top-0 z-30 w-full {$page.data.bgAlt ? 'bg-background-alt' : 'bg-background'}"
+    class="safe-area-inset-top fixed top-0 z-30 w-full {$page.data.bgAltTop ? 'bg-background-alt' : 'bg-background'}"
   >
     {#if $appState.dev_mode !== 'Off'}
       <!-- Apply border conditionally when the top inset is not 0. -->
@@ -288,7 +288,12 @@ Stacking context: We have to deviate from the DOM-sequence.
   </div>
 
   <!-- safe-area-inset-bottom: highlight area when in dev mode. -->
-  <div bind:this={safeAreaInsetBottom} class="safe-area-inset-bottom fixed bottom-0 z-50 w-full bg-background">
+  <div
+    bind:this={safeAreaInsetBottom}
+    class="safe-area-inset-bottom fixed bottom-0 z-50 w-full {$page.data.bgAltBottom
+      ? 'bg-background-alt'
+      : 'bg-background'}"
+  >
     {#if $appState.dev_mode !== 'Off'}
       <div
         class="grid h-full place-items-center"

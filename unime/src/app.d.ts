@@ -12,7 +12,8 @@ declare global {
     // interface Locals {}
     interface PageData {
       transparent?: boolean;
-      bgAlt?: boolean;
+      bgAltTop?: boolean;
+      bgAltBottom?: boolean;
     }
     interface PageState {
       tab?: string;
