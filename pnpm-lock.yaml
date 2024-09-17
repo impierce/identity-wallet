@@ -30,8 +30,8 @@ importers:
         specifier: ^1.2.0
         version: 1.2.0
       '@iconify-json/ph':
-        specifier: ^1.1.13
-        version: 1.1.14
+        specifier: ^1.2.0
+        version: 1.2.0
       '@lottiefiles/lottie-player':
         specifier: ^2.0.2
         version: 2.0.4
@@ -460,8 +460,8 @@ packages:
   '@iconify-json/circle-flags@1.2.0':
     resolution: {integrity: sha512-IiHBArcOAePzikToo52mUmVHh5ysekcuK5xOzZkFk9mokIp+rwYlSP0qgfB0POmD9Y22bCVNHYukyg5a5qDCNw==}
 
-  '@iconify-json/ph@1.1.14':
-    resolution: {integrity: sha512-s1hZVaxIpl40qLEhjqPRMcZl4A3M4fZ+77Fi+VuOb/eKkIHIMutAoBHIR+0a3l7psUweZQGj9hSyL2P5CIj6qA==}
+  '@iconify-json/ph@1.2.0':
+    resolution: {integrity: sha512-013eLpgTmX1lACOuDnkuhC7gRHyYj9w/j8SyDmlyUYvsKQrwdRsv1otcXtwH3DevuDAzSkreeeRsCeez+gTyVA==}
 
   '@iconify/types@2.0.0':
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
@@ -3173,7 +3173,7 @@ snapshots:
     dependencies:
       '@iconify/types': 2.0.0
 
-  '@iconify-json/ph@1.1.14':
+  '@iconify-json/ph@1.2.0':
     dependencies:
       '@iconify/types': 2.0.0
 
