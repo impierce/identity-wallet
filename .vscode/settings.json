@@ -7,6 +7,10 @@
     "editor.defaultFormatter": "rust-lang.rust-analyzer"
   },
 
+  "files.associations": {
+    "*.css": "tailwindcss"
+  },
+
   "search.exclude": {
     "pnpm-lock.yaml": true
   }

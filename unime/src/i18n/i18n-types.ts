@@ -734,12 +734,6 @@ type RootTranslation = {
 		 * C​r​e​d​e​n​t​i​a​l​ ​I​n​f​o​r​m​a​t​i​o​n
 		 */
 		NAVBAR_TITLE: string
-	}
-	BADGE: {
-		/**
-		 * B​a​d​g​e​ ​I​n​f​o​r​m​a​t​i​o​n
-		 */
-		NAVBAR_TITLE: string
 		DETAILS: {
 			/**
 			 * V​a​l​i​d
@@ -1575,12 +1569,6 @@ export type TranslationFunctions = {
 	CREDENTIAL: {
 		/**
 		 * Credential Information
-		 */
-		NAVBAR_TITLE: () => LocalizedString
-	}
-	BADGE: {
-		/**
-		 * Badge Information
 		 */
 		NAVBAR_TITLE: () => LocalizedString
 		DETAILS: {
