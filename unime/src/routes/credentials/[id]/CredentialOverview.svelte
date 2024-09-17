@@ -35,7 +35,7 @@
     <div class="grid h-20 place-items-center self-stretch rounded-xl bg-background-alt py-5 text-text-alt">
       <SealCheckRegularIcon class="h-7 w-7" />
     </div>
-    {#if credential.data}
+    {#if credential.data.issuanceDate}
       <div>
         {formatDate(credential.data.issuanceDate, $appState.profile_settings.locale)}
       </div>
