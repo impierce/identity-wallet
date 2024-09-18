@@ -47,10 +47,11 @@
       this={credential.connection_id ? 'button' : 'div'}
       on:click={credential.connection_id ? () => goto(`/activity/connection/${credential.connection_id}`) : undefined}
       role={credential.connection_id ? 'button' : undefined}
-      class="grid h-20 place-items-center self-stretch rounded-xl bg-background-alt py-5 text-text-alt"
+      class="grid h-20 place-items-center self-stretch rounded-xl bg-background text-text-alt"
     >
       {#if issuerLogoUrl}
-        <img src={issuerLogoUrl} alt="Issuer logo" class="h-10 w-10 object-contain" />
+        <!-- Background is always white since most logos are designed for light backgrounds -->
+        <img src={issuerLogoUrl} alt="Issuer logo" class="h-12 w-12 rounded-xl bg-white object-contain p-1.5" />
       {:else}
         <BankLightIcon class="h-7 w-7" />
       {/if}
