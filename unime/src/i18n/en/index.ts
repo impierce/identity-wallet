@@ -264,9 +264,6 @@ const en = {
   },
   CREDENTIAL: {
     NAVBAR_TITLE: 'Credential Information',
-  },
-  BADGE: {
-    NAVBAR_TITLE: 'Badge Information',
     DETAILS: {
       VALID: 'Valid',
       ISSUED_BY: 'Issued by',

@@ -15,11 +15,7 @@
   const isDarkModeEnabled = document.documentElement.classList.contains('dark');
 </script>
 
-<div
-  class="content-height relative flex flex-col bg-silver dark:bg-navy"
-  in:fade={{ delay: 200 }}
-  out:fade={{ duration: 200 }}
->
+<div class="relative flex h-full flex-col" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <div class="grow">
     <div class="mt-[calc(100vh/8)] px-4 py-6">
       <div class="pb-9">
@@ -50,7 +46,7 @@
   </div>
 
   <!-- Actions -->
-  <div class="z-10 space-y-[10px] rounded-t-3xl bg-white p-6 dark:bg-dark">
+  <div class="z-10 rounded-t-3xl bg-white p-6 dark:bg-dark">
     <Button
       label={$LL.ONBOARDING.WELCOME.CREATE_NEW_PROFILE()}
       on:click={() => {
@@ -62,9 +58,3 @@
     <!-- <Button label="Recover existing profile" variant="secondary" /> -->
   </div>
 </div>
-
-<style>
-  .content-height {
-    height: calc(100vh - var(--safe-area-inset-top));
-  }
-</style>
