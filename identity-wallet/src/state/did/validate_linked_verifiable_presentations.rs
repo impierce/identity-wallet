@@ -352,7 +352,7 @@ mod tests {
     use did_manager::SecretManager;
     use identity_credential::domain_linkage::{DomainLinkageConfiguration, DomainLinkageCredentialBuilder};
     use identity_iota::{
-        core::{Duration, FromJson as _, Object, Timestamp, Url},
+        core::{Duration, FromJson as _, Object, OrderedSet, Timestamp, Url},
         credential::{Credential, CredentialBuilder, Presentation},
         document::{CoreDocument, Service, ServiceEndpoint},
         verification::jws::JwsAlgorithm,
@@ -507,11 +507,10 @@ mod tests {
 
             let service_endpoint = match urls.len() {
                 // Value::String
-                1 => serde_json::from_value::<ServiceEndpoint>(serde_json::json!(urls[0])),
+                1 => ServiceEndpoint::from(urls[0].clone()),
                 // Value::Array
-                _ => serde_json::from_value::<ServiceEndpoint>(serde_json::json!(urls)),
-            }
-            .unwrap();
+                _ => ServiceEndpoint::from(OrderedSet::from_iter(urls)),
+            };
             let service = Service::builder(Default::default())
                 .id(format!("{}#{service_id}", self.did_document.id()).parse().unwrap())
                 .type_("LinkedVerifiablePresentation")
