@@ -18,7 +18,7 @@
     $$props.class,
   )}
 >
-  <button class="z-30 -ml-2 rounded-full p-2 disabled:opacity-25" on:click={() => dispatch('back')} {disabled}>
+  <button class="z-30 -ml-4 rounded-full p-2 disabled:opacity-25" on:click={() => dispatch('back')} {disabled}>
     <CaretLeftBoldIcon class="h-5 w-5" />
   </button>
   {#if title}
