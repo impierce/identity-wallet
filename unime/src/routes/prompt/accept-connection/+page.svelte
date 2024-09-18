@@ -5,18 +5,12 @@
   import LL from '$i18n/i18n-svelte';
 
   import type { CurrentUserPrompt } from '@bindings/user_prompt/CurrentUserPrompt';
-  import { createPopover } from '@melt-ui/svelte';
 
   import { Button, Image, PaddedIcon, StatusIndicator, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { PlugsConnectedFillIcon, WarningCircleFillIcon } from '$lib/icons';
   import { error, state } from '$lib/stores';
   import { formatDate, hash } from '$lib/utils';
-
-  const {
-    elements: { trigger, content, arrow },
-    states: { open },
-  } = createPopover();
 
   const profile_settings = $state.profile_settings;
 
