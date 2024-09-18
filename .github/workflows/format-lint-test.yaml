@@ -74,6 +74,7 @@ jobs:
         run: pnpm i --frozen-lockfile && pnpm build
         env:
           PUBLIC_DEV_MODE_MENU_EXPANDED: false
+          PUBLIC_STYLE_SAFE_AREA_INSETS: false
 
       - name: Lint
         working-directory: ./unime/src-tauri
