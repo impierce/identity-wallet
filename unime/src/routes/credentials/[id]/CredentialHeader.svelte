@@ -18,7 +18,7 @@
 </script>
 
 <!-- Stretch over parent horizontal padding with negative margins. -->
-<div class="relative -mx-4 flex flex-col items-center gap-4 bg-background-alt py-5">
+<div class="relative -mx-4 flex flex-col items-center gap-4 bg-background py-5">
   <div class="grid h-40 w-40 place-items-center rounded-xl bg-white">
     {#if credentialLogoUrl}
       <!-- Fit image of unknown dimensions into availalbe space with `contain` (not `cover`). -->

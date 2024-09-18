@@ -19,7 +19,7 @@
       {#if credential.data.credentialSubject[field].startsWith('data:image/')}
         <DataUrlImageRenderer key={field} dataUrl={credential.data.credentialSubject[field]} />
       {:else}
-        <div class="rounded-xl bg-background-alt px-4 py-3 text-[13px]/[24px]">
+        <div class="rounded-xl bg-background px-4 py-3 text-[13px]/[24px]">
           <h2 class="font-medium text-text-alt">{field}</h2>
           <p class="overflow-x-auto">{credential.data.credentialSubject[field]}</p>
         </div>
