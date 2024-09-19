@@ -76,7 +76,7 @@ mod tests {
     use crate::stronghold::StrongholdManager;
 
     #[tokio::test]
-    async fn test_credential_is_removed_from_appstate_and_from_stronghold_and_images_deleted() {
+    async fn test_credential_is_removed_from_appstate_and_from_stronghold_and_images_are_deleted() {
         let uuid = Uuid::new_v4();
 
         let credential = DisplayCredential {

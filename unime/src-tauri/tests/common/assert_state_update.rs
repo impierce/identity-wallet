@@ -148,8 +148,3 @@ pub fn setup_stronghold() {
     let path = NamedTempFile::new().unwrap().into_temp_path();
     *STRONGHOLD.lock().unwrap() = path.as_os_str().into();
 }
-
-pub fn setup_assets_dir() {
-    let path = TempDir::new().unwrap().into_path();
-    *ASSETS_DIR.lock().unwrap() = path.as_os_str().into();
-}

@@ -1,6 +1,5 @@
 mod assets_download;
 mod credential_offer;
-mod delete_credential;
 mod extensions;
 mod get_state;
 mod load_dev_profile;
