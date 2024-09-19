@@ -20,17 +20,13 @@ pub async fn delete_credential(state: AppState, action: Action) -> Result<AppSta
 
         // Delete image file in assets folder
         for extension in SUPPORTED_IMAGE_ASSET_EXTENSIONS {
-            let asset_path = ASSETS_DIR
-                .lock()
-                .unwrap()
-                .as_path()
-                .to_owned()
-                .join(&delete_credential.id);
+            let assets_path = ASSETS_DIR.lock().unwrap().as_path().to_owned();
+            let file_path = assets_path.join(format!("{}.{}", delete_credential.id, extension));
 
-            if asset_path.join(extension).exists() {
-                match fs::remove_file(&asset_path) {
-                    Ok(_) => info!("Successfully removed logo file: `{:?}`", asset_path),
-                    Err(e) => warn!("Failed to remove logo file: `{:?}`, reason: `{:?}`", asset_path, e),
+            if file_path.exists() {
+                match fs::remove_file(&file_path) {
+                    Ok(_) => info!("Successfully deleted image file: `{:?}`", file_path),
+                    Err(e) => warn!("Failed to delete image file: `{:?}`, reason: `{:?}`", file_path, e),
                 }
             }
         }
@@ -67,16 +63,24 @@ pub async fn delete_credential(state: AppState, action: Action) -> Result<AppSta
 
 #[cfg(test)]
 mod tests {
+    use std::fs::File;
+    use std::io::Write;
     use std::sync::Arc;
 
+    use tempfile::{NamedTempFile, TempDir};
+
     use super::*;
+    use crate::persistence::STRONGHOLD;
     use crate::state::credentials::DisplayCredential;
     use crate::state::AppState;
+    use crate::stronghold::StrongholdManager;
 
     #[tokio::test]
-    async fn test_credential_is_removed_from_appstate() {
+    async fn test_credential_is_removed_from_appstate_and_from_stronghold_and_images_deleted() {
+        let uuid = Uuid::new_v4();
+
         let credential = DisplayCredential {
-            id: "00000000-0000-0000-0000-000000000000".to_string(),
+            id: uuid.to_string(),
             ..Default::default()
         };
 
@@ -86,12 +90,40 @@ mod tests {
             ..Default::default()
         };
 
+        // Set up Stronghold
+        let path = NamedTempFile::new().unwrap().into_temp_path();
+        *STRONGHOLD.lock().unwrap() = path.as_os_str().into();
+        let stronghold_manager = StrongholdManager::create("sup3rSecr3t").unwrap();
+
+        // Set up image asset
+        let tmp_dir = TempDir::new().unwrap().into_path();
+        *ASSETS_DIR.lock().unwrap() = tmp_dir.clone();
+        let file_path = tmp_dir.join(format!("{}.{}", uuid, SUPPORTED_IMAGE_ASSET_EXTENSIONS[0]));
+        let mut file = File::create(file_path.clone()).unwrap();
+        file.write_all(b"some-bytes").unwrap();
+        assert!(file_path.exists());
+
         let action = Arc::new(DeleteCredential {
             id: state.credentials[0].id.clone(),
         });
 
-        let result = delete_credential(state, action).await.unwrap();
+        let result = delete_credential(state.clone(), action).await.unwrap();
 
+        // Assert AppState
         assert_eq!(result.credentials, vec![]);
+
+        // Assert Stronghold
+        assert_eq!(stronghold_manager.get(uuid).unwrap(), None);
+
+        // Assert image asset
+        assert_eq!(file_path.exists(), false);
+
+        // Assert redirect
+        assert_eq!(
+            result.current_user_prompt,
+            Some(CurrentUserPrompt::Redirect {
+                target: "me".to_string()
+            })
+        );
     }
 }
