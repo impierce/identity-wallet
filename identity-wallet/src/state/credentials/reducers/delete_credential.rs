@@ -9,6 +9,7 @@ use crate::{
     state::{
         actions::{listen, Action},
         credentials::actions::delete_credential::DeleteCredential,
+        user_prompt::CurrentUserPrompt,
         AppError::StrongholdDeletionError,
         AppState,
     },
@@ -29,7 +30,7 @@ pub async fn delete_credential(state: AppState, action: Action) -> Result<AppSta
 
             if asset_pathbuf.join(e).exists() {
                 match fs::remove_file(&asset_pathbuf) {
-                    Ok(_) => info!("Succesfully removed logo asset in path: {:?}", asset_pathbuf),
+                    Ok(_) => info!("Successfully removed logo asset in path: {:?}", asset_pathbuf),
                     Err(_) => debug!("Unable to remove logo asset in path: {:?}", asset_pathbuf),
                 }
             }
@@ -51,11 +52,15 @@ pub async fn delete_credential(state: AppState, action: Action) -> Result<AppSta
         // Delete DisplayCredential from AppState
         credentials.retain(|credential| credential.id != delete_credential.id.to_string());
 
-        info!("Succesfully deleted file from the Appstate and Stronghold and its assets from the ASSETS_DIR");
+        info!("Successfully deleted file from the Appstate and Stronghold and its assets from the ASSETS_DIR");
+
+        let redirect_prompt = Some(CurrentUserPrompt::Redirect {
+            target: "me".to_string(),
+        });
 
         return Ok(AppState {
             credentials,
-            current_user_prompt: None,
+            current_user_prompt: redirect_prompt,
             ..state
         });
     }

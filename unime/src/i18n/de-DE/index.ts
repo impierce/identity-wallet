@@ -271,6 +271,15 @@ const de = {
       DESCRIPTION: 'Beschreibung',
       CONTENTS: 'Inhalt',
     },
+    ACTIONS: {
+      DELETE: {
+        BUTTON_LABEL: 'Credential entfernen',
+        TITLE: 'Credential entfernen',
+        DESCRIPTION:
+          'Bist du sicher, dass du dieses Credential aus deiner Wallet entfernen willst? Diese Aktion kann nicht rückgängig gemacht werden.',
+        CONFIRM_BUTTON: 'Entfernen',
+      },
+    },
   },
   SORT: {
     TITLE: 'Sortieren',
