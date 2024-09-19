@@ -33,7 +33,7 @@
 </script>
 
 {#if credential}
-  <div class="flex flex-col gap-7 px-4 pb-7">
+  <div class="flex flex-col gap-7 bg-background-alt px-4 pb-7">
     <CredentialHeader {credential}>
       <h1 class="text-center font-semibold">
         {credential.data?.name ?? credential.display_name}
