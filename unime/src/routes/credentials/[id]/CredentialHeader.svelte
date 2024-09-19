@@ -7,6 +7,8 @@
   import { CertificateLightIcon, HeartStraightFillIcon, HeartStraightRegularIcon } from '$lib/icons';
   import { getImageAsset } from '$lib/utils';
 
+  import CredentialHeaderMenu from './CredentialHeaderMenu.svelte';
+
   export let credential: DisplayCredential;
 
   // Url to cached credential logo (if available).
@@ -32,7 +34,7 @@
   <slot />
 
   <button
-    class="absolute left-0 top-0 ml-4 mt-4"
+    class="absolute left-0 top-0 ml-4 mt-4 bg-fuchsia-500"
     on:click={() =>
       dispatch({
         type: '[Credential Metadata] Update',
@@ -48,4 +50,8 @@
       <HeartStraightRegularIcon class="h-6 w-6 dark:text-white" />
     {/if}
   </button>
+
+  <div class="absolute right-0 top-0 mr-4 mt-4">
+    <CredentialHeaderMenu />
+  </div>
 </div>
