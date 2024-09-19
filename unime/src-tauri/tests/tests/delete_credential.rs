@@ -14,13 +14,13 @@ async fn test_delete_credential() {
     setup_assets_dir();
 
     // Deserializing the Appstates and Actions from the accompanying json files.
-    let state = json_example::<AppState>("tests/fixtures/states/four_credentials_redirect_me.json");
+    let state = AppState::default();
     let action = json_example::<Action>("tests/fixtures/actions/dev_load_profile.json");
 
     let state = load_dev_profile(state, action).await.unwrap();
 
-    let expected_state = json_example::<AppState>("tests/fixtures/states/delete_credential_four_credentials.json");
-    let action = json_example::<Action>("tests/fixtures/actions/delete_credential_personal_information.json");
+    let expected_state = json_example::<AppState>("tests/fixtures/states/delete_credential_three_credentials.json");
+    let action = json_example::<Action>("tests/fixtures/actions/delete_credential_driver_license.json");
 
     assert_state_update(
         AppStateContainer(Mutex::new(state)),
