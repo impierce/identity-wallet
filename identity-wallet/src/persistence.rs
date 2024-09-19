@@ -20,7 +20,7 @@ lazy_static! {
     pub static ref ASSETS_DIR: Mutex<std::path::PathBuf> = Mutex::new(std::path::PathBuf::new());
 }
 
-pub const SUPPORTED_LOGO_EXTENSIONS: [&str; 2] = ["svg", "png"];
+pub const SUPPORTED_IMAGE_ASSET_EXTENSIONS: [&str; 2] = ["svg", "png"];
 
 /// Initialize the storage file paths.
 pub fn initialize_storage(app_handle: &tauri::AppHandle) -> anyhow::Result<()> {
@@ -177,7 +177,7 @@ pub fn persist_asset(file_name: &str, id: &str) -> Result<(), AppError> {
     let assets_dir = ASSETS_DIR.lock().unwrap().as_path().to_owned();
     let tmp_dir = assets_dir.join("tmp");
 
-    if let Some(extension) = SUPPORTED_LOGO_EXTENSIONS
+    if let Some(extension) = SUPPORTED_IMAGE_ASSET_EXTENSIONS
         .iter()
         .find(|&e| tmp_dir.join(format!("{}.{}", file_name, e)).exists())
     {

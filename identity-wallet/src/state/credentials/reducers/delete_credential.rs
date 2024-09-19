@@ -1,11 +1,10 @@
+use log::{info, warn};
 use std::fs;
-
-use log::{debug, info};
 use uuid::Uuid;
 
 use crate::{
     error::AppError,
-    persistence::{ASSETS_DIR, SUPPORTED_LOGO_EXTENSIONS},
+    persistence::{ASSETS_DIR, SUPPORTED_IMAGE_ASSET_EXTENSIONS},
     state::{
         actions::{listen, Action},
         credentials::actions::delete_credential::DeleteCredential,
@@ -19,40 +18,38 @@ pub async fn delete_credential(state: AppState, action: Action) -> Result<AppSta
     if let Some(delete_credential) = listen::<DeleteCredential>(action) {
         let mut credentials = state.credentials.clone();
 
-        // Delete credential image in ASSETS folder
-        for e in SUPPORTED_LOGO_EXTENSIONS {
-            let asset_pathbuf = ASSETS_DIR
+        // Delete image file in assets folder
+        for extension in SUPPORTED_IMAGE_ASSET_EXTENSIONS {
+            let asset_path = ASSETS_DIR
                 .lock()
                 .unwrap()
                 .as_path()
                 .to_owned()
                 .join(&delete_credential.id);
 
-            if asset_pathbuf.join(e).exists() {
-                match fs::remove_file(&asset_pathbuf) {
-                    Ok(_) => info!("Successfully removed logo asset in path: {:?}", asset_pathbuf),
-                    Err(_) => debug!("Unable to remove logo asset in path: {:?}", asset_pathbuf),
+            if asset_path.join(extension).exists() {
+                match fs::remove_file(&asset_path) {
+                    Ok(_) => info!("Successfully removed logo file: `{:?}`", asset_path),
+                    Err(e) => warn!("Failed to remove logo file: `{:?}`, reason: `{:?}`", asset_path, e),
                 }
             }
         }
 
         {
-            // Delete verifiable credential from stronghold
+            // Remove credential from Stronghold
             let managers = &state.core_utils.managers.lock().await;
 
             if let Some(stronghold) = &managers.stronghold_manager {
                 stronghold
-                    .remove(
-                        Uuid::parse_str(&delete_credential.id).expect("error: could not parse credential.id to uuid"),
-                    )
-                    .map_err(StrongholdDeletionError)?; //);
+                    .remove(Uuid::parse_str(&delete_credential.id).map_err(|e| AppError::Error(e.to_string()))?)
+                    .map_err(StrongholdDeletionError)?;
             }
         }
 
-        // Delete DisplayCredential from AppState
+        // Remove DisplayCredential from AppState
         credentials.retain(|credential| credential.id != delete_credential.id.to_string());
 
-        info!("Successfully deleted file from the Appstate and Stronghold and its assets from the ASSETS_DIR");
+        info!("Successfully deleted credential with id: `{}`", delete_credential.id);
 
         let redirect_prompt = Some(CurrentUserPrompt::Redirect {
             target: "me".to_string(),
@@ -77,7 +74,7 @@ mod tests {
     use crate::state::AppState;
 
     #[tokio::test]
-    async fn test_delete_credential() {
+    async fn test_credential_is_removed_from_appstate() {
         let credential = DisplayCredential {
             id: "00000000-0000-0000-0000-000000000000".to_string(),
             ..Default::default()

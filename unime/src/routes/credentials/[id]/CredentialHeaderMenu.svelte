@@ -12,6 +12,7 @@
 
   const {
     elements: { trigger, menu, item, arrow },
+    // TODO: see comment below (Ln 28)
     // states: { open },
   } = createDropdownMenu({
     portal: '#portal',
