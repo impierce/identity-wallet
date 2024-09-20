@@ -5,11 +5,8 @@
   import { createPopover, melt } from '@melt-ui/svelte';
 
   import { Image } from '$lib/components';
+  import { CheckBoldIcon, QuestionMarkBoldIcon, XBoldIcon } from '$lib/icons';
   import { hash } from '$lib/utils';
-
-  import Check from '~icons/ph/check-bold';
-  import QuestionMark from '~icons/ph/question-mark-bold';
-  import X from '~icons/ph/x-bold';
 
   export let status: ValidationStatus;
   export let title: string;
@@ -42,11 +39,11 @@
   {/if}
 
   {#if status === 'Success'}
-    <Check class="text-emerald-500" />
+    <CheckBoldIcon class="text-emerald-500" />
   {:else if status === 'Failure'}
-    <X class="text-rose-500" />
+    <XBoldIcon class="text-rose-500" />
   {:else}
-    <QuestionMark class="text-slate-400 dark:text-slate-300" />
+    <QuestionMarkBoldIcon class="text-slate-400 dark:text-slate-300" />
   {/if}
 </div>
 
