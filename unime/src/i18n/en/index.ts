@@ -274,7 +274,7 @@ const en = {
       DELETE: {
         BUTTON_LABEL: 'Delete credential',
         TITLE: 'Delete credential',
-        DESCRIPTION: 'Are you sure you want to remove this credential from your wallet? This action cannot be undone.',
+        DESCRIPTION: 'Are you sure you want to delete this credential from your wallet? This action cannot be undone.',
         CONFIRM_BUTTON: 'Delete',
       },
     },
