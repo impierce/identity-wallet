@@ -1,10 +1,10 @@
 use identity_wallet::{
-    persistence::{save_state, ASSETS_DIR, STATE_FILE, STRONGHOLD},
+    persistence::{save_state, STATE_FILE, STRONGHOLD},
     state::{actions::Action, AppState, AppStateContainer},
 };
 use serde_json::json;
 use tauri::Manager;
-use tempfile::{NamedTempFile, TempDir};
+use tempfile::NamedTempFile;
 
 use crate::common::extensions::CustomExtension;
 

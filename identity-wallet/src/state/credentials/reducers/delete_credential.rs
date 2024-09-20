@@ -43,7 +43,7 @@ pub async fn delete_credential(state: AppState, action: Action) -> Result<AppSta
         }
 
         // Remove DisplayCredential from AppState
-        credentials.retain(|credential| credential.id != delete_credential.id.to_string());
+        credentials.retain(|credential| credential.id != delete_credential.id);
 
         info!("Successfully deleted credential with id: `{}`", delete_credential.id);
 

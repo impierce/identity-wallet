@@ -275,7 +275,7 @@ const nl = {
         BUTTON_LABEL: 'Credential verwijderen',
         TITLE: 'Credential verwijderen',
         DESCRIPTION:
-          'Weet je zeker dat je deze credential uit je wallet wilt verwijderern? Deze aktie kan niet meer worden teruggedraaid.',
+          'Weet je zeker dat je deze credential uit je wallet wilt verwijderen? Deze aktie kan niet meer worden teruggedraaid.',
         CONFIRM_BUTTON: 'Verwijderen',
       },
     },
