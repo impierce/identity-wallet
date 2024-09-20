@@ -71,12 +71,13 @@ mod tests {
 
     use super::*;
     use crate::persistence::STRONGHOLD;
+    use crate::state::core_utils::Managers;
     use crate::state::credentials::DisplayCredential;
     use crate::state::AppState;
     use crate::stronghold::StrongholdManager;
 
     #[tokio::test]
-    async fn test_credential_is_removed_from_appstate_and_from_stronghold_and_images_are_deleted() {
+    async fn test_credential_is_removed_from_appstate_and_from_stronghold_and_image_is_deleted() {
         let uuid = Uuid::new_v4();
 
         let credential = DisplayCredential {
@@ -84,8 +85,8 @@ mod tests {
             ..Default::default()
         };
 
-        let state = AppState {
-            credentials: vec![credential],
+        let mut state = AppState {
+            credentials: vec![credential.clone()],
             current_user_prompt: None,
             ..Default::default()
         };
@@ -94,6 +95,22 @@ mod tests {
         let path = NamedTempFile::new().unwrap().into_temp_path();
         *STRONGHOLD.lock().unwrap() = path.as_os_str().into();
         let stronghold_manager = StrongholdManager::create("sup3rSecr3t").unwrap();
+
+        state.core_utils.managers = Arc::new(tauri::async_runtime::Mutex::new(Managers {
+            stronghold_manager: Some(Arc::new(stronghold_manager)),
+            identity_manager: None,
+        }));
+
+        let managers = state.core_utils.managers.lock().await;
+
+        let stronghold_manager = managers.stronghold_manager.as_ref().unwrap();
+
+        stronghold_manager
+            .insert(uuid, serde_json::to_vec(&credential).unwrap())
+            .unwrap();
+
+        assert!(stronghold_manager.get(uuid).unwrap().is_some());
+        drop(managers);
 
         // Set up image asset
         let tmp_dir = TempDir::new().unwrap().into_path();
@@ -107,13 +124,15 @@ mod tests {
             id: state.credentials[0].id.clone(),
         });
 
-        let result = delete_credential(state.clone(), action).await.unwrap();
+        let result = delete_credential(state, action).await.unwrap();
 
         // Assert AppState
-        assert_eq!(result.credentials, vec![]);
+        assert!(result.credentials.is_empty());
 
         // Assert Stronghold
-        assert_eq!(stronghold_manager.get(uuid).unwrap(), None);
+        let managers = result.core_utils.managers.lock().await;
+        let stronghold_manager = managers.stronghold_manager.as_ref().unwrap();
+        assert!(stronghold_manager.get(uuid).unwrap().is_none());
 
         // Assert image asset
         assert_eq!(file_path.exists(), false);
