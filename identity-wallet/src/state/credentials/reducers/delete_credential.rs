@@ -124,6 +124,7 @@ mod tests {
             id: state.credentials[0].id.clone(),
         });
 
+        // Reduce action
         let result = delete_credential(state, action).await.unwrap();
 
         // Assert AppState
