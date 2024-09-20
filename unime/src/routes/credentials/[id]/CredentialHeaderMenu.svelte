@@ -39,7 +39,7 @@
     <button
       slot="trigger"
       let:trigger
-      class="flex items-center space-x-4 rounded-lg bg-background-alt px-3 py-3"
+      class="flex items-center space-x-2 rounded-lg bg-background-alt py-2 pl-1 pr-2"
       use:melt={$item}
       use:melt={trigger}
     >
