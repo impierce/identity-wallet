@@ -135,7 +135,7 @@ mod tests {
         assert!(stronghold_manager.get(uuid).unwrap().is_none());
 
         // Assert image asset
-        assert_eq!(file_path.exists(), false);
+        assert!(!file_path.exists());
 
         // Assert redirect
         assert_eq!(
