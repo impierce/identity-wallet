@@ -25,6 +25,7 @@ export { default as CircleRegularIcon } from '~icons/ph/circle';
 export { default as CodeBoldIcon } from '~icons/ph/code-bold';
 export { default as CodeRegularIcon } from '~icons/ph/code';
 export { default as ConfettiFillIcon } from '~icons/ph/confetti-fill';
+export { default as DotsThreeVerticalBoldIcon } from '~icons/ph/dots-three-vertical-bold';
 export { default as DownloadSimpleFillIcon } from '~icons/ph/download-simple-fill';
 export { default as EnvelopeFillIcon } from '~icons/ph/envelope-fill';
 export { default as EyeRegularIcon } from '~icons/ph/eye';
