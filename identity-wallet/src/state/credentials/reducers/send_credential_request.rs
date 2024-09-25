@@ -160,13 +160,41 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                 vec![(credential_configuration_id, credential)]
             }
             _batch => {
+                let desired_order = [
+                    "National ID",
+                    "School Course Certificate",
+                    "Volunteer Badge",
+                    "Higher Education Information Literacy Level 1",
+                    "Business Innovation & Interdisciplinair Samenwerken",
+                ];
+
+                let order_map: HashMap<&str, usize> = desired_order
+                    .iter()
+                    .enumerate()
+                    .map(|(index, &item)| (item, index))
+                    .collect();
+
+                let mut credential_configurations_supported: Vec<(String, _)> =
+                    credential_configurations_supported.clone().into_iter().collect();
+
+                credential_configurations_supported
+                    .sort_by_key(|(s, _)| order_map.get(s.as_str()).cloned().unwrap_or(usize::MAX));
+
                 let (credential_configuration_ids, credential_configurations): (Vec<_>, Vec<_>) =
                     credential_configurations_supported.clone().into_iter().unzip();
+
+                info!("credential_configuration_ids: {:?}", credential_configuration_ids);
+                info!("credential_configurations: {:?}", credential_configurations);
 
                 let batch_credential_response = wallet
                     .get_batch_credential(credential_issuer_metadata, &token_response, &credential_configurations)
                     .await
                     .map_err(GetBatchCredentialError)?;
+
+                info!(
+                    "batch_credential_response: {:?}",
+                    batch_credential_response.credential_responses
+                );
 
                 credential_configuration_ids
                     .into_iter()
