@@ -59,7 +59,7 @@
     "typescript-eslint": "^8.0.1",
     "unplugin-icons": "^0.19.1",
     "vite": "^5.0.0",
-    "vitest": "^2.0.3"
+    "vitest": "^2.1.1"
   },
   "engines": {
     "node": ">=20",
