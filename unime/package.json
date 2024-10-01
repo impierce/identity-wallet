@@ -26,7 +26,7 @@
     "@sveltejs/kit": "^2.5.26",
     "@sveltejs/vite-plugin-svelte": "^3.0.0",
     "@tailwindcss/typography": "^0.5.15",
-    "@tauri-apps/api": "2.0.0-beta.15",
+    "@tauri-apps/api": "2.0.0-rc.6",
     "@tauri-apps/cli": "2.0.0-beta.22",
     "@tauri-apps/plugin-barcode-scanner": "2.0.0-beta.7",
     "@tauri-apps/plugin-fs": "2.0.0-beta.7",
