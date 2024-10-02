@@ -25,7 +25,8 @@ tauri-runtime-wry = { version = "=2.0.0-beta.20" }
 tauri-utils = { version = "=2.0.0-beta.19", features = [ "resources" ] }
 tauri-winres = "=0.1"
 
-did_manager = { git = "https://github.com/impierce/did-manager.git", rev = "2b88f55" }
+agent_shared = { git = "https://git@github.com/impierce/ssi-agent.git", rev = "1823810" }
+did_manager = { git = "https://git@github.com/impierce/did-manager.git", tag = "v1.0.0-beta.3" }
 jsonwebtoken = "9.3"
 log = "^0.4"
 oid4vc = { git = "https://git@github.com/impierce/openid4vc.git", rev = "d095db0" }
@@ -45,4 +46,4 @@ keywords = ["identity", "did", "ssi", "wallet", "siopv2"]
 license = "Apache-2.0"
 repository = "https://github.com/impierce/identity-wallet"
 edition = "2021"
-rust-version = "1.75.0"
+rust-version = "1.76.0"

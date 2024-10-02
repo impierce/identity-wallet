@@ -12,6 +12,7 @@ use identity_wallet::{
     state::core_utils::{IdentityManager, Managers},
     stronghold::StrongholdManager,
 };
+use tokio::sync::Mutex;
 
 use self::assert_state_update::setup_stronghold;
 use serde::de::DeserializeOwned;
@@ -54,17 +55,15 @@ pub async fn test_managers(
 
     let subject: Arc<Subject> = Arc::new(Subject {
         stronghold_manager: stronghold_manager.clone(),
-        secret_manager: SecretManager::load(
-            stronghold_snapshot_path,
-            TEST_PASSWORD.to_string(),
-            Some(KEY_ID.to_string()),
-            None,
-            None,
-            None,
-            None,
-        )
-        .await
-        .unwrap(),
+        secret_manager: Arc::new(Mutex::new(
+            SecretManager::builder()
+                .snapshot_path(&stronghold_snapshot_path)
+                .with_ed25519_key(KEY_ID)
+                .password(TEST_PASSWORD)
+                .build()
+                .await
+                .unwrap(),
+        )),
     });
 
     let provider_manager = ProviderManager::new(
