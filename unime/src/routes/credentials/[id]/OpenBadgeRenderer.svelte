@@ -25,14 +25,14 @@
   {#if credential.data.credentialSubject?.achievement?.criteria?.narrative}
     <div class="prose prose-sm rounded-xl bg-background p-4 dark:prose-invert">
       <h2>{$LL.CREDENTIAL.DETAILS.CRITERIA()}</h2>
-        <!-- TODO Review marked vs. markdown-it and security risks. -->
-        <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+      <!-- TODO Review marked vs. markdown-it and security risks. -->
+      <!-- eslint-disable-next-line svelte/no-at-html-tags -->
       {@html md.render(credential.data.credentialSubject.achievement.criteria.narrative)}
     </div>
   {/if}
 
   {#if credential.data.credentialSubject?.achievement?.alignment?.length > 0}
-  <!-- Loop over the alignment array and render each item with a subtle dividing line -->
+    <!-- Loop over the alignment array and render each item with a subtle dividing line -->
     {#each credential.data.credentialSubject.achievement.alignment as alignItem, i}
       <div class="prose prose-sm rounded-xl bg-background p-4 dark:prose-invert">
         <!-- Render targetName in bold -->
@@ -41,7 +41,6 @@
       </div>
     {/each}
   {/if}
-
 
   <!-- <TextFieldRenderer key={'Achievement name'} value={credential.data.credentialSubject?.achievement?.name} /> -->
 
