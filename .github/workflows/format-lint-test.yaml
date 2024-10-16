@@ -1,5 +1,7 @@
 name: Format, Lint, Test
 
+# Ubuntu version has been pinned to 22.04 to avoid build errors.
+
 on:
   push:
     branches: ["dev"]
