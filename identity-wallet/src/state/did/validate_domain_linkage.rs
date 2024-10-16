@@ -77,7 +77,7 @@ pub async fn validate_domain_linkage(url: url::Url, did: &str) -> ValidationResu
         Err(e) => {
             return ValidationResult {
                 status: ValidationStatus::Unknown,
-                message: Some(format!("Error while fetching configuration: {}", e.to_string())),
+                message: Some(format!("Error while fetching configuration: {}", e)),
             };
         }
     };
