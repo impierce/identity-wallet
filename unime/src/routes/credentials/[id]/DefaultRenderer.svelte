@@ -10,13 +10,17 @@
   // `enrichment`: custom metadata field related for NGDIL demo.
   const hideFields: string[] = ['enrichment', 'id', 'type'];
 
-  $: fields = Object.keys(credential.data.credentialSubject).filter((field) => !hideFields.includes(field));
+  function isDataUrl(value: unknown): boolean {
+    return typeof value === 'string' && value.startsWith('data:image/');
+  }
+  // `fields` does not have to be reactive because `credential` never changes while component is mounted.
+  let fields = Object.keys(credential.data.credentialSubject).filter((field) => !hideFields.includes(field));
 </script>
 
 {#if fields}
   <div class="flex flex-col gap-4">
     {#each fields as field}
-      {#if credential.data.credentialSubject[field].startsWith('data:image/')}
+      {#if isDataUrl(credential.data.credentialSubject[field])}
         <DataUrlImageRenderer key={field} dataUrl={credential.data.credentialSubject[field]} />
       {:else}
         <div class="rounded-xl bg-background px-4 py-3 text-[13px]/[24px]">
