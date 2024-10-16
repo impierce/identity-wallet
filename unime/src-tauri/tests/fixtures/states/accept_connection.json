@@ -14,7 +14,7 @@
     "previously_connected": false,
     "domain_validation": {
       "status": "Unknown",
-      "message": "Failed to fetch configuration"
+      "message": "Error while fetching configuration: failed to parse response into JSON value"
     }
   }
 }
