@@ -80,7 +80,7 @@
       <div in:fade={{ duration: 200, delay: 100 }} out:fade={{ duration: 200 }}>
         <SettingsEntry
           icon={ListStarFillIcon}
-          title={'Trusted domains'}
+          title={'Trusted issuers'}
           hasCaretRight={true}
           on:click={() => goto('/me/settings/app/trust-list')}
         />

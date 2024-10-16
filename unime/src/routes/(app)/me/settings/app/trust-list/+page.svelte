@@ -30,7 +30,7 @@
   };
 </script>
 
-<TopNavBar on:back={() => history.back()} title={'Trusted domains'} />
+<TopNavBar on:back={() => history.back()} title={'Trusted issuers'} />
 <div class="content-height flex flex-col bg-silver dark:bg-navy">
   <div class="space-y-[15px] px-4 py-5">
     <!-- Developer info -->

@@ -20,7 +20,7 @@
 <TopNavBar on:back={() => history.back()} title={trustList?.display_name ?? ''}>
   <ActionSheet
     titleText={'Delete trust list'}
-    descriptionText={'Are you sure you want to delete this list of trusted domains?'}
+    descriptionText={'Are you sure you want to delete this list of trusted issuers?'}
   >
     <button
       slot="trigger"
@@ -43,7 +43,7 @@
 <div class="content-height flex flex-col bg-silver dark:bg-navy">
   <div class="space-y-[15px] px-4 py-5">
     <div class="flex flex-col space-y-[10px]">
-      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Trusted domains</p>
+      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Trusted issuers</p>
       <!-- {#each Object.entries(entries) as [domain, active], i (domain)}
         <div class="flex flex-row items-center space-x-2">
           <div class="flex h-14 w-full items-center justify-between space-x-4 rounded-xl bg-white p-4 dark:bg-dark">
