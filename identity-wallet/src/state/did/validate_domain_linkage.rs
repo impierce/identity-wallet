@@ -233,7 +233,10 @@ mod tests {
             result,
             ValidationResult {
                 status: ValidationStatus::Unknown,
-                message: Some("Error while fetching configuration: failed to deserialize DomainLinkageConfiguration from JSON".to_string()),
+                message: Some(
+                    "Error while fetching configuration: failed to deserialize DomainLinkageConfiguration from JSON"
+                        .to_string()
+                ),
             }
         );
     }
