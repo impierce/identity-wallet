@@ -42,7 +42,7 @@
     {/each}
   {/if}
 
-  <!-- <TextFieldRenderer key={'Achievement name'} value={credential.data.credentialSubject?.achievement?.name} /> -->
+  <TextFieldRenderer key={'Achievement type'} value={credential.data.credentialSubject?.achievement?.achievementType} />
 
   <!-- "validFrom" is defined as REQUIRED in JSON Schema: https://purl.imsglobal.org/spec/ob/v3p0/schema/json/ob_v3p0_achievementcredential_schema.json -->
   {#if credential.data.validFrom}
