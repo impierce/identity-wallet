@@ -1,6 +1,6 @@
 [package]
 name = "identity-wallet"
-version = "0.6.8"
+version = "0.6.13"
 edition = "2021"
 rust-version.workspace = true
 
