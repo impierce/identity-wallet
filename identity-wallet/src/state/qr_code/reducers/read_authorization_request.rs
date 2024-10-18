@@ -8,7 +8,10 @@ use crate::{
         credentials::reducers::handle_oid4vp_authorization_request::{
             get_oid4vp_client_name_and_logo_uri, OID4VPClientMetadata,
         },
-        did::validate_domain_linkage::validate_domain_linkage,
+        did::{
+            validate_domain_linkage::validate_domain_linkage,
+            validate_linked_verifiable_presentations::validate_linked_verifiable_presentations,
+        },
         qr_code::actions::qrcode_scanned::QrCodeScanned,
         user_prompt::CurrentUserPrompt,
         AppState,
@@ -82,7 +85,37 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
 
             let did = siopv2_authorization_request.body.client_id.as_str();
 
-            let domain_validation = validate_domain_linkage(url, did).await;
+            let domain_validation = Box::new(validate_domain_linkage(url, did).await);
+
+            let temp: Vec<String> = state
+                .trust_lists
+                .0
+                .iter()
+                .map(|trust_list| {
+                    trust_list
+                        .entries
+                        .iter()
+                        .filter_map(|(domain, trusted)| trusted.then_some(domain.clone()))
+                        .collect::<String>()
+                })
+                .collect();
+
+            info!("temp: {:?}", temp);
+
+            let linked_verifiable_presentations = validate_linked_verifiable_presentations(did)
+                .await
+                .into_iter()
+                .flatten()
+                .filter(|linked_verifiable_credential| {
+                    linked_verifiable_credential.issuer_linked_domains.iter().any(|domain| {
+                        info!("domain: {:?}", domain.to_string());
+
+                        temp.contains(&domain.to_string())
+                    })
+                })
+                .collect();
+
+            info!("linked_verifiable_presentations: {:?}", linked_verifiable_presentations);
 
             drop(state_guard);
 
@@ -97,6 +130,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                     redirect_uri,
                     previously_connected,
                     domain_validation,
+                    linked_verifiable_presentations,
                 }),
                 ..state
             });

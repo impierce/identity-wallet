@@ -297,7 +297,7 @@ const nl = {
     },
   },
   DOMAIN_LINKAGE: {
-    TITLE: 'Geverifieerd',
+    TITLE: 'Geverifieerde website',
     SUCCESS: 'UniMe heeft de identiteit met succes geverifieerd om u een veilige login te geven.',
     FAILURE: 'UniMe kon de koppeling van de identiteit aan het domein niet verifiëren.',
     UNKNOWN: 'UniMe kon geen bewijs vinden van de bijbehorende identiteit van het domein.',
