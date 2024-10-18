@@ -268,7 +268,7 @@ const nl = {
       VALID: 'Geldig',
       ISSUED_BY: 'Uitgegeven door',
       DESCRIPTION: 'Beschrijving',
-      CONTENTS: 'Inhoud',
+      CRITERIA: 'Criteria',
     },
     ACTIONS: {
       DELETE: {

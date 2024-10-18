@@ -269,7 +269,7 @@ const de = {
       VALID: 'Gültig',
       ISSUED_BY: 'Ausgestellt von',
       DESCRIPTION: 'Beschreibung',
-      CONTENTS: 'Inhalt',
+      CRITERIA: 'Criteria',
     },
     ACTIONS: {
       DELETE: {

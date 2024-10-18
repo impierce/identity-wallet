@@ -83,7 +83,7 @@ pub async fn validate_domain_linkage(url: url::Url, did: &str) -> ValidationResu
         Err(e) => {
             return ValidationResult {
                 status: ValidationStatus::Unknown,
-                message: Some(e.to_string()),
+                message: Some(format!("Error while fetching configuration: {}", e)),
                 ..Default::default()
             };
         }
@@ -142,10 +142,15 @@ async fn fetch_configuration(mut url: url::Url) -> Result<DomainLinkageConfigura
     info!("Fetching DID configuration from: {}", url);
 
     // 2. Fetch the resource
-    let response = reqwest::get(url).await.map_err(|e| e.to_string())?;
+    let response = reqwest::get(url)
+        .await
+        .map_err(|_| "failed to get response from resource url".to_string())?;
 
     // 3. Parse to JSON value (mutable)
-    let mut json = response.json::<serde_json::Value>().await.map_err(|e| e.to_string())?;
+    let mut json = response
+        .json::<serde_json::Value>()
+        .await
+        .map_err(|_| "failed to parse response into JSON value".to_string())?;
 
     // 4. Remove all non-string values from `linked_dids` (JSON-LD)
     if let serde_json::Value::Object(ref mut root) = json {
@@ -156,7 +161,8 @@ async fn fetch_configuration(mut url: url::Url) -> Result<DomainLinkageConfigura
     }
 
     // 5. Deserialize to `DomainLinkageConfiguration`
-    let config = DomainLinkageConfiguration::from_json_value(json).map_err(|e| e.to_string())?;
+    let config = DomainLinkageConfiguration::from_json_value(json)
+        .map_err(|_| "failed to deserialize DomainLinkageConfiguration from JSON".to_string())?;
     Ok(config)
 }
 
@@ -238,7 +244,10 @@ mod tests {
             result,
             ValidationResult {
                 status: ValidationStatus::Unknown,
-                message: Some("failed to decode JSON".to_string()),
+                message: Some(
+                    "Error while fetching configuration: failed to deserialize DomainLinkageConfiguration from JSON"
+                        .to_string()
+                ),
                 ..Default::default()
             }
         );
