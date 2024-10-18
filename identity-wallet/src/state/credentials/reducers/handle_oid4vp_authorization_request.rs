@@ -12,16 +12,19 @@ use crate::{
         user_prompt::CurrentUserPrompt,
         AppState,
     },
+    subject::SubjectWrapper,
 };
 
-use identity_credential::{credential::Jwt, presentation::Presentation};
-use identity_iota::did::CoreDID;
+use identity_credential::{
+    credential::Jwt,
+    presentation::Presentation,
+    sd_jwt_v2::{KeyBindingJwt, Sha256Hasher},
+    sd_jwt_vc::{SdJwtVc, SdJwtVcPresentationBuilder},
+};
+use identity_iota::{core::Timestamp, did::CoreDID};
 use jsonwebtoken::Algorithm;
 use log::info;
-use oid4vc::oid4vc_manager::managers::presentation::create_presentation_submission;
-use oid4vc::oid4vp::authorization_request::ClientMetadataParameters;
-use oid4vc::oid4vp::oid4vp;
-use oid4vc::oid4vp::oid4vp::OID4VP;
+use oid4vc::oid4vp::{authorization_request::ClientMetadataParameters, oid4vp::PresentationInputType};
 use oid4vc::{
     oid4vc_core::{
         authorization_request::{AuthorizationRequest, Object},
@@ -29,6 +32,12 @@ use oid4vc::{
     },
     oid4vp::{ClaimFormatDesignation, ClaimFormatProperty},
 };
+use oid4vc::{
+    oid4vc_manager::managers::presentation::create_presentation_submission,
+    oid4vci::credential_format_profiles::CredentialFormats,
+};
+use oid4vc::{oid4vc_manager::managers::presentation::create_sd_jwt_presentation_submission, oid4vp::oid4vp};
+use oid4vc::{oid4vc_manager::managers::presentation::merge_submissions, oid4vp::oid4vp::OID4VP};
 
 // Sends the authorization response including the verifiable credentials.
 pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action) -> Result<AppState, AppError> {
@@ -46,6 +55,12 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             .as_ref()
             .ok_or(MissingManagerError("identity"))?
             .provider_manager;
+        let subject = state_guard
+            .identity_manager
+            .as_ref()
+            .ok_or(MissingManagerError("identity"))?
+            .subject
+            .clone();
 
         let oid4vp_authorization_request =
             match serde_json::from_value(serde_json::json!(state.core_utils.active_connection_request)).unwrap() {
@@ -55,12 +70,14 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
 
         let mut history_credentials = Vec::new();
 
-        let verifiable_credentials: Vec<serde_json::Value> = stronghold_manager
+        let verifiable_credentials: Vec<(CredentialFormats, serde_json::Value)> = stronghold_manager
             .values()
             .map_err(StrongholdValuesError)?
             .unwrap()
             .iter()
             .filter_map(|verifiable_credential_record| {
+                info!("verifiable_credential_record: {:#?}", verifiable_credential_record);
+
                 let share_credential = credential_uuids
                     .contains(&verifiable_credential_record.display_credential.id.parse().unwrap())
                     .then_some(verifiable_credential_record.verifiable_credential.clone());
@@ -69,53 +86,169 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
                     history_credentials.push(HistoryCredential::from_credential(verifiable_credential_record));
                 }
 
-                share_credential
+                share_credential.map(|share_credential| {
+                    (
+                        verifiable_credential_record.display_credential.format.clone(),
+                        share_credential,
+                    )
+                })
             })
             .collect();
 
-        let presentation_submission = create_presentation_submission(
-            &oid4vp_authorization_request.body.extension.presentation_definition,
-            &verifiable_credentials
-                .iter()
-                .map(get_unverified_jwt_claims)
-                .collect::<Result<Vec<_>, _>>()?,
-        )
-        .map_err(PresentationSubmissionError)?;
+        let subject_syntax_type = state
+            .profile_settings
+            .preferred_did_methods
+            .first()
+            .unwrap()
+            .to_string();
 
-        info!("get the subject did");
+        let subject_wrapper = SubjectWrapper {
+            subject,
+            subject_syntax_type,
+        };
 
-        let identity_manager = state_guard
-            .identity_manager
-            .as_ref()
-            .ok_or(MissingManagerError("identity"))?;
+        let sd_jwt_vcs: Vec<serde_json::Value> = verifiable_credentials
+            .iter()
+            .filter_map(|(format, vc)| {
+                if format == &CredentialFormats::VcSdJwt(()) {
+                    Some(vc.clone())
+                } else {
+                    None
+                }
+            })
+            .collect();
 
-        let OID4VPClientMetadata {
-            client_name,
-            logo_uri,
-            connection_url,
-            client_id,
-            algorithm,
-        } = get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request);
+        let now = Timestamp::now_utc();
 
-        let subject_did = identity_manager
-            .subject
-            .identifier(state.profile_settings.preferred_did_methods.first().unwrap(), algorithm)
-            .await
-            .expect("No default DID method");
+        let mut verifiable_presentation_input = vec![];
+        let mut presentation_submissions = vec![];
 
-        let mut presentation_builder =
-            Presentation::builder(subject_did.parse().map_err(|_| DidParseError)?, Default::default());
-        for verifiable_credential in verifiable_credentials {
-            presentation_builder = presentation_builder.credential(Jwt::from(
-                verifiable_credential
-                    .as_str()
-                    .ok_or(InvalidCredentialFormatError)?
-                    .to_string(),
+        info!(
+            "Authorization Request: {}",
+            serde_json::to_string_pretty(&oid4vp_authorization_request).unwrap()
+        );
+
+        let nonce = oid4vp_authorization_request.body.extension.nonce.clone();
+        let aud = oid4vp_authorization_request.body.client_id.clone();
+
+        let OID4VPClientMetadata { algorithm, .. } = get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request);
+
+        for sd_jwt_vc in sd_jwt_vcs {
+            let sd_jwt_vc = sd_jwt_vc
+                .as_str()
+                .and_then(|sd_jwt_vc| SdJwtVc::parse(sd_jwt_vc).ok())
+                .ok_or(AppError::Error("Failed to parse SD-JWT VC".to_string()))?;
+
+            let alg = sd_jwt_vc
+                .header()
+                .get("alg")
+                .and_then(|alg| alg.as_str())
+                .map(ToString::to_string)
+                .unwrap_or(serde_json::json!(algorithm).as_str().unwrap().to_string());
+            let kb_jwt = KeyBindingJwt::builder()
+                .iat(now.to_unix())
+                .aud(aud.clone())
+                .nonce(nonce.clone())
+                .finish(&sd_jwt_vc, &Sha256Hasher::new(), &alg, &subject_wrapper)
+                .await
+                .map_err(|e| AppError::Error(format!("Failed to create KeyBindingJwt for SD-JWT VC: {:?}", e)))?;
+
+            let (sd_jwt_vc, _) = SdJwtVcPresentationBuilder::new(sd_jwt_vc, &Sha256Hasher::new())
+                .map_err(|e| {
+                    AppError::Error(format!(
+                        "Failed to create SD-JWT VC Presentation Builder for SD-JWT VC: {:?}",
+                        e
+                    ))
+                })?
+                .attach_key_binding_jwt(kb_jwt)
+                .finish()
+                .map_err(|e| AppError::Error(format!("Failed to attach KeyBindingJwt to SD-JWT VC: {:?}", e)))?;
+
+            let presentation_submission = create_sd_jwt_presentation_submission(
+                &oid4vp_authorization_request.body.extension.presentation_definition,
+                &[serde_json::json!(sd_jwt_vc
+                    .clone()
+                    .into_disclosed_object(&Sha256Hasher::new())
+                    // FIX THIS
+                    .unwrap())],
+            )
+            .map_err(|e| {
+                AppError::Error(format!(
+                    "Failed to create Presentation Submission for SD-JWT VC: {:?}",
+                    e
+                ))
+            })?;
+
+            verifiable_presentation_input.push(PresentationInputType::Signed(sd_jwt_vc.to_string()));
+            presentation_submissions.push(presentation_submission);
+        }
+
+        let verifiable_credentials: Vec<serde_json::Value> = verifiable_credentials
+            .iter()
+            .filter_map(|(format, vc)| {
+                if format == &CredentialFormats::JwtVcJson(()) {
+                    Some(vc.clone())
+                } else {
+                    None
+                }
+            })
+            .collect();
+
+        info!("verifiable_credentials: {:#?}", verifiable_credentials);
+
+        if !verifiable_credentials.is_empty() {
+            let presentation_submission = create_presentation_submission(
+                &oid4vp_authorization_request.body.extension.presentation_definition,
+                &verifiable_credentials
+                    .iter()
+                    .map(get_unverified_jwt_claims)
+                    .collect::<Result<Vec<_>, _>>()?,
+            )
+            .map_err(PresentationSubmissionError)?;
+
+            presentation_submissions.push(presentation_submission);
+
+            info!("get the subject did");
+
+            let identity_manager = state_guard
+                .identity_manager
+                .as_ref()
+                .ok_or(MissingManagerError("identity"))?;
+
+            let OID4VPClientMetadata { algorithm, .. } =
+                get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request);
+
+            let subject_did = identity_manager
+                .subject
+                .identifier(state.profile_settings.preferred_did_methods.first().unwrap(), algorithm)
+                .await
+                .expect("No default DID method");
+
+            let mut presentation_builder =
+                Presentation::builder(subject_did.parse().map_err(|_| DidParseError)?, Default::default());
+            for verifiable_credential in verifiable_credentials {
+                presentation_builder = presentation_builder.credential(Jwt::from(
+                    verifiable_credential
+                        .as_str()
+                        .ok_or(InvalidCredentialFormatError)?
+                        .to_string(),
+                ));
+            }
+
+            verifiable_presentation_input.push(PresentationInputType::Unsigned(
+                presentation_builder.build().map_err(PresentationBuilderError)?,
             ));
         }
 
-        let verifiable_presentation: Presentation<Jwt, _> =
-            presentation_builder.build().map_err(PresentationBuilderError)?;
+        let presentation_submission = if presentation_submissions.len() > 1 {
+            merge_submissions(presentation_submissions)
+        } else {
+            presentation_submissions.pop().ok_or(AppError::Error(
+                "Failed to create a Presentation Submission".to_string(),
+            ))?
+        };
+
+        info!("Verifiable Presentation Input: {:#?}", verifiable_presentation_input);
 
         info!("get the provider_manager");
 
@@ -124,7 +257,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             .generate_response(
                 &oid4vp_authorization_request,
                 oid4vp::AuthorizationResponseInput {
-                    verifiable_presentation,
+                    verifiable_presentation_input,
                     presentation_submission,
                 },
             )
@@ -138,10 +271,18 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
         }
         info!("response successfully sent");
 
+        let OID4VPClientMetadata {
+            client_name,
+            logo_uri,
+            connection_url,
+            client_id,
+            algorithm: _algorithm,
+        } = get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request);
+
         let did = CoreDID::parse(client_id).ok();
 
-        let previously_connected = state.connections.contains(connection_url.as_str(), &client_name);
         let mut connections = state.connections;
+        let previously_connected = connections.contains(connection_url.as_str(), &client_name);
         let connection = connections.update_or_insert(&connection_url, &client_name, did);
 
         let file_name = match logo_uri {
@@ -225,7 +366,7 @@ pub fn get_oid4vp_client_name_and_logo_uri(
                 .and_then(|claim_format_property| match claim_format_property {
                     ClaimFormatProperty::Alg(alg) => alg.first().cloned(),
                     // TODO: implement `ProofType`.
-                    ClaimFormatProperty::ProofType(_) => None,
+                    ClaimFormatProperty::ProofType(_) | _ => None,
                 })
                 .unwrap_or(Algorithm::EdDSA);
 
