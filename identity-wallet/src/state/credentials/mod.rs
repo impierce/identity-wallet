@@ -1,10 +1,15 @@
 pub mod actions;
 pub mod reducers;
 
+use std::str::FromStr;
+
 use super::{core_utils::helpers::get_unverified_jwt_claims, FeatTrait};
 use crate::{error::AppError, state::core_utils::DateUtils};
 
 use derivative::Derivative;
+use identity_credential::{sd_jwt_v2::Sha256Hasher, sd_jwt_vc::SdJwtVc};
+use log::info;
+use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use ts_rs::TS;
@@ -16,6 +21,8 @@ use uuid::Uuid;
 #[ts(export, export_to = "bindings/credentials/DisplayCredential.ts")]
 pub struct DisplayCredential {
     pub id: String,
+    #[ts(type = "string")]
+    pub format: CredentialFormats,
     pub issuer_name: String,
     #[ts(type = "any")]
     pub data: serde_json::Value,
@@ -54,48 +61,89 @@ impl TryFrom<serde_json::Value> for VerifiableCredentialRecord {
 
     fn try_from(verifiable_credential: serde_json::Value) -> Result<Self, AppError> {
         let display_credential = {
-            let credential_display = get_unverified_jwt_claims(&verifiable_credential)?["vc"].clone();
+            // FIX THIS
+            if let Ok(sd_jwt_vc) = SdJwtVc::from_str(verifiable_credential.as_str().unwrap()) {
+                info!("sd_jwt_vc: {:#?}", sd_jwt_vc);
 
-            // Derive the hash from the credential display.
-            let hash = {
-                let type_key = "type";
-                let type_value = credential_display[type_key].clone();
+                let issuance_date = sd_jwt_vc.claims().iat.map(|iat| iat.to_rfc3339()).unwrap_or_default();
+                let credential_subject = sd_jwt_vc.clone().into_disclosed_object(&Sha256Hasher::new()).unwrap();
 
-                let credential_subject_key = "credentialSubject";
-                let mut credential_subject_value = credential_display[credential_subject_key].clone();
-
-                // TODO(ngdil): Remove this hard-coded logic.
-                // Remove the `Passport Number` and `Staff Number` from the credential subject if they exists.
-                credential_subject_value["Passport Number"].take();
-                credential_subject_value["Staff Number"].take();
-                credential_subject_value["achievement"]["id"].take();
-
-                sha256::digest(
+                let hash = sha256::digest(
                     json!(
                         {
-                            "type": type_value,
-                            "credentialSubject": credential_subject_value,
+                            "type": ["VerifiableCredential"],
+                            "credentialSubject": credential_subject
                         }
                     )
                     .to_string(),
-                )
-            };
+                );
 
-            let issuance_date = credential_display["issuanceDate"]
-                .as_str()
-                .map(ToString::to_string)
-                .unwrap_or_default();
+                DisplayCredential {
+                    id: Uuid::from_slice(&hash.as_bytes()[..16]).unwrap().to_string(),
+                    format: CredentialFormats::VcSdJwt(()),
+                    data: json!({
+                        "type": ["VerifiableCredential"],
+                        "issuer": sd_jwt_vc.claims().iss,
+                        "credentialSubject": credential_subject
 
-            DisplayCredential {
-                id: Uuid::from_slice(&hash.as_bytes()[..16]).unwrap().to_string(),
-                data: credential_display,
-                metadata: CredentialMetadata {
-                    is_favorite: false,
-                    date_added: DateUtils::new_date_string(),
-                    date_issued: issuance_date.to_string(),
-                },
-                // The other fields will be filled in at a later stage.
-                ..Default::default()
+                    }),
+                    metadata: CredentialMetadata {
+                        is_favorite: false,
+                        date_added: DateUtils::new_date_string(),
+                        date_issued: issuance_date.to_string(),
+                    },
+                    // The other fields will be filled in at a later stage.
+                    ..Default::default()
+                }
+            } else {
+                let credential_display = get_unverified_jwt_claims(&verifiable_credential)?["vc"].clone();
+
+                info!(
+                    "Credential Display: {:#?}",
+                    serde_json::to_string_pretty(&credential_display).unwrap()
+                );
+
+                // Derive the hash from the credential display.
+                let hash = {
+                    let type_value = credential_display["type"].clone();
+
+                    let credential_subject_key = "credentialSubject";
+                    let mut credential_subject_value = credential_display[credential_subject_key].clone();
+
+                    // TODO(ngdil): Remove this hard-coded logic.
+                    // Remove the `Passport Number` and `Staff Number` from the credential subject if they exists.
+                    credential_subject_value["Passport Number"].take();
+                    credential_subject_value["Staff Number"].take();
+                    credential_subject_value["achievement"]["id"].take();
+
+                    sha256::digest(
+                        json!(
+                            {
+                                "type": type_value,
+                                "credentialSubject": credential_subject_value,
+                            }
+                        )
+                        .to_string(),
+                    )
+                };
+
+                let issuance_date = credential_display["issuanceDate"]
+                    .as_str()
+                    .map(ToString::to_string)
+                    .unwrap_or_default();
+
+                DisplayCredential {
+                    id: Uuid::from_slice(&hash.as_bytes()[..16]).unwrap().to_string(),
+                    format: CredentialFormats::JwtVcJson(()),
+                    data: credential_display,
+                    metadata: CredentialMetadata {
+                        is_favorite: false,
+                        date_added: DateUtils::new_date_string(),
+                        date_issued: issuance_date.to_string(),
+                    },
+                    // The other fields will be filled in at a later stage.
+                    ..Default::default()
+                }
             }
         };
 
