@@ -17,17 +17,17 @@ downcast-rs = "1.2"
 dyn-clone = "1.0"
 futures = "0.3"
 icu = "1.4.0"
-identity_credential = { git = "https://github.com/impierce/identity.rs", branch = "fix/compile-fixes", default-features = false, features = [
+identity_credential = { git = "https://github.com/impierce/identity.rs", rev = "309c399", default-features = false, features = [
     "credential",
     "domain-linkage",
     "presentation",
     "validator",
     "sd-jwt-vc"
 ] }
-identity_core = { git = "https://github.com/impierce/identity.rs", branch = "fix/compile-fixes" }
-identity_eddsa_verifier = { git = "https://github.com/impierce/identity.rs", branch = "fix/compile-fixes" }
-identity_iota = { git = "https://github.com/impierce/identity.rs", branch = "fix/compile-fixes" }
-identity_jose = { git = "https://github.com/impierce/identity.rs", branch = "fix/compile-fixes" }
+identity_core = { git = "https://github.com/impierce/identity.rs", rev = "309c399" }
+identity_eddsa_verifier = { git = "https://github.com/impierce/identity.rs", rev = "309c399" }
+identity_iota = { git = "https://github.com/impierce/identity.rs", rev = "309c399" }
+identity_jose = { git = "https://github.com/impierce/identity.rs", rev = "309c399" }
 iota_stronghold = { version = "2.1" }
 itertools = "0.10.5"
 jsonwebtoken.workspace = true

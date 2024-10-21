@@ -62,47 +62,42 @@ impl TryFrom<serde_json::Value> for VerifiableCredentialRecord {
     fn try_from(verifiable_credential: serde_json::Value) -> Result<Self, AppError> {
         let display_credential = {
             // FIX THIS
-            if let Ok(sd_jwt_vc) = SdJwtVc::from_str(verifiable_credential.as_str().unwrap()) {
+            let (id, format, data, issuance_date) = if let Ok(sd_jwt_vc) = SdJwtVc::from_str(
+                verifiable_credential
+                    .as_str()
+                    .ok_or(AppError::Error("Credential is not a valid JWT".to_string()))?,
+            ) {
                 info!("sd_jwt_vc: {:#?}", sd_jwt_vc);
 
                 let issuance_date = sd_jwt_vc.claims().iat.map(|iat| iat.to_rfc3339()).unwrap_or_default();
-                let credential_subject = sd_jwt_vc.clone().into_disclosed_object(&Sha256Hasher::new()).unwrap();
+                let credential_subject = sd_jwt_vc
+                    .clone()
+                    .into_disclosed_object(&Sha256Hasher::new())
+                    .map_err(|_| AppError::Error("Failed to convert SD JWT VC to Disclosed Object".to_string()))?;
 
-                let hash = sha256::digest(
-                    json!(
-                        {
-                            "type": ["VerifiableCredential"],
-                            "credentialSubject": credential_subject
-                        }
-                    )
-                    .to_string(),
-                );
+                // TODO: We are using this hash as Credential ID so that we can prevent credential duplication in
+                // demo situations. Now we can actually delete Credentials in UniMe we don't need to use the hash of the
+                // credential as the ID anymore. We should simply generate a random UUID.
+                let hash = sha256::digest(json!(credential_subject).to_string());
 
-                DisplayCredential {
-                    id: Uuid::from_slice(&hash.as_bytes()[..16]).unwrap().to_string(),
-                    format: CredentialFormats::VcSdJwt(()),
-                    data: json!({
-                        "type": ["VerifiableCredential"],
-                        "issuer": sd_jwt_vc.claims().iss,
-                        "credentialSubject": credential_subject
+                let id = Uuid::from_slice(&hash.as_bytes()[..16]).unwrap().to_string();
+                let format = CredentialFormats::VcSdJwt(());
+                // TODO: Remove this workaround that is basically a way of disguising the SD JWT VC as a VC so that
+                // it can be displayed in the Frontend.
+                let data = json!({
+                    "type": ["VerifiableCredential"],
+                    "issuer": sd_jwt_vc.claims().iss,
+                    "credentialSubject": credential_subject
 
-                    }),
-                    metadata: CredentialMetadata {
-                        is_favorite: false,
-                        date_added: DateUtils::new_date_string(),
-                        date_issued: issuance_date.to_string(),
-                    },
-                    // The other fields will be filled in at a later stage.
-                    ..Default::default()
-                }
+                });
+
+                (id, format, data, issuance_date)
             } else {
                 let credential_display = get_unverified_jwt_claims(&verifiable_credential)?["vc"].clone();
 
-                info!(
-                    "Credential Display: {:#?}",
-                    serde_json::to_string_pretty(&credential_display).unwrap()
-                );
-
+                // TODO: We are using this hash as Credential ID so that we can prevent credential duplication in
+                // demo situations. Now we can actually delete Credentials in UniMe we don't need to use the hash of the
+                // credential as the ID anymore. We should simply generate a random UUID.
                 // Derive the hash from the credential display.
                 let hash = {
                     let type_value = credential_display["type"].clone();
@@ -131,19 +126,29 @@ impl TryFrom<serde_json::Value> for VerifiableCredentialRecord {
                     .as_str()
                     .map(ToString::to_string)
                     .unwrap_or_default();
+                let id = Uuid::from_slice(&hash.as_bytes()[..16]).unwrap().to_string();
+                let format = CredentialFormats::JwtVcJson(());
+                let data = credential_display;
 
-                DisplayCredential {
-                    id: Uuid::from_slice(&hash.as_bytes()[..16]).unwrap().to_string(),
-                    format: CredentialFormats::JwtVcJson(()),
-                    data: credential_display,
-                    metadata: CredentialMetadata {
-                        is_favorite: false,
-                        date_added: DateUtils::new_date_string(),
-                        date_issued: issuance_date.to_string(),
-                    },
-                    // The other fields will be filled in at a later stage.
-                    ..Default::default()
-                }
+                (id, format, data, issuance_date)
+            };
+
+            info!(
+                "Credential Display: {:#?}",
+                serde_json::to_string_pretty(&data).unwrap()
+            );
+
+            DisplayCredential {
+                id,
+                format,
+                data,
+                metadata: CredentialMetadata {
+                    is_favorite: false,
+                    date_added: DateUtils::new_date_string(),
+                    date_issued: issuance_date,
+                },
+                // The other fields will be filled in at a later stage.
+                ..Default::default()
             }
         };
 

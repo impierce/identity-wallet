@@ -155,30 +155,22 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                     verifiable_credentials
                         .iter()
                         .find_map(|verifiable_credential_record| {
-                            if verifiable_credential_record.display_credential.format == CredentialFormats::VcSdJwt(())
+                            let credential = if verifiable_credential_record.display_credential.format
+                                == CredentialFormats::VcSdJwt(())
                             {
-                                let unconceiled_credential = serde_json::json!(verifiable_credential_record
+                                serde_json::json!(verifiable_credential_record
                                     .verifiable_credential
-                                    .as_str()
-                                    // FIX THIS
-                                    .unwrap()
+                                    .as_str()?
                                     .parse::<SdJwtVc>()
-                                    // FIX THIS
-                                    .unwrap()
+                                    .ok()?
                                     .into_disclosed_object(&Sha256Hasher::new())
-                                    // FIX THIS
-                                    .unwrap());
-
-                                evaluate_input(input_descriptor, &unconceiled_credential)
-                                    .then_some(verifiable_credential_record.display_credential.id.clone())
+                                    .ok()?)
                             } else {
-                                evaluate_input(
-                                    input_descriptor,
-                                    &get_unverified_jwt_claims(&verifiable_credential_record.verifiable_credential)
-                                        .unwrap(),
-                                )
+                                get_unverified_jwt_claims(&verifiable_credential_record.verifiable_credential).unwrap()
+                            };
+
+                            evaluate_input(input_descriptor, &credential)
                                 .then_some(verifiable_credential_record.display_credential.id.clone())
-                            }
                         })
                         .ok_or(NoMatchingCredentialError)
                 })
