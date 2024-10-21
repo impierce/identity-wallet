@@ -134,7 +134,7 @@
         </div>
       {:else}
         <Button
-          label="Add trusted domain"
+          label="Add trusted issuer"
           on:click={() => {
             showNewEntry = true;
             newEntryInputElement.focus();

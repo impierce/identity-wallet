@@ -23,7 +23,7 @@
     'sub',
     '_sd_alg',
     'cnf',
-    // 'vct',
+    'vct',
   ];
 
   function isDataUrl(value: unknown): boolean {

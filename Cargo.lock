@@ -1228,7 +1228,7 @@ dependencies = [
  "cocoa-foundation",
  "core-foundation",
  "core-graphics",
- "foreign-types 0.5.0",
+ "foreign-types",
  "libc",
  "objc",
 ]
@@ -1316,7 +1316,7 @@ checksum = "f7144d30dcf0fafbce74250a3963025d8d52177934239851c917d29f1df280c2"
 [[package]]
 name = "consumer"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=c1cfda0#c1cfda09ae1e5797ba013ead8aa6ace616b75a6d"
+source = "git+https://git@github.com/impierce/did-manager.git?rev=c8a141d#c8a141df13cfb910203a3e43d2088c0c3376b6bd"
 dependencies = [
  "did_iota",
  "did_jwk",
@@ -1365,7 +1365,7 @@ dependencies = [
  "bitflags 1.3.2",
  "core-foundation",
  "core-graphics-types",
- "foreign-types 0.5.0",
+ "foreign-types",
  "libc",
 ]
 
@@ -1929,7 +1929,7 @@ dependencies = [
 [[package]]
 name = "did_iota"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=c1cfda0#c1cfda09ae1e5797ba013ead8aa6ace616b75a6d"
+source = "git+https://git@github.com/impierce/did-manager.git?rev=c8a141d#c8a141df13cfb910203a3e43d2088c0c3376b6bd"
 dependencies = [
  "bls12_381_plus 0.8.17",
  "identity_iota",
@@ -1943,7 +1943,7 @@ dependencies = [
 [[package]]
 name = "did_jwk"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=c1cfda0#c1cfda09ae1e5797ba013ead8aa6ace616b75a6d"
+source = "git+https://git@github.com/impierce/did-manager.git?rev=c8a141d#c8a141df13cfb910203a3e43d2088c0c3376b6bd"
 dependencies = [
  "did-jwk",
  "identity_iota",
@@ -1960,7 +1960,7 @@ dependencies = [
 [[package]]
 name = "did_key"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=c1cfda0#c1cfda09ae1e5797ba013ead8aa6ace616b75a6d"
+source = "git+https://git@github.com/impierce/did-manager.git?rev=c8a141d#c8a141df13cfb910203a3e43d2088c0c3376b6bd"
 dependencies = [
  "did-method-key",
  "identity_iota",
@@ -1978,7 +1978,7 @@ dependencies = [
 [[package]]
 name = "did_manager"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=c1cfda0#c1cfda09ae1e5797ba013ead8aa6ace616b75a6d"
+source = "git+https://git@github.com/impierce/did-manager.git?rev=c8a141d#c8a141df13cfb910203a3e43d2088c0c3376b6bd"
 dependencies = [
  "consumer",
  "producer",
@@ -2006,7 +2006,7 @@ dependencies = [
 [[package]]
 name = "did_web"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=c1cfda0#c1cfda09ae1e5797ba013ead8aa6ace616b75a6d"
+source = "git+https://git@github.com/impierce/did-manager.git?rev=c8a141d#c8a141df13cfb910203a3e43d2088c0c3376b6bd"
 dependencies = [
  "did-web",
  "identity_iota",
@@ -2025,7 +2025,7 @@ dependencies = [
 [[package]]
 name = "dif-presentation-exchange"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=bc4d6d2#bc4d6d2f9ea8cae7ab61da2099af3b95e9616585"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=5933fd6#5933fd60811923a50aba98fcea2fe1cd76270bc6"
 dependencies = [
  "getset",
  "jsonpath_lib",
@@ -2638,21 +2638,12 @@ checksum = "3f9eec918d3f24069decb9af1554cad7c880e2da24a9afd88aca000531ab82c1"
 
 [[package]]
 name = "foreign-types"
-version = "0.3.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f6f339eb8adc052cd2ca78910fda869aefa38d22d5cb648e6485e4d3fc06f3b1"
-dependencies = [
- "foreign-types-shared 0.1.1",
-]
-
-[[package]]
-name = "foreign-types"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d737d9aa519fb7b749cbc3b962edcf310a8dd1f4b67c91c4f83975dbdd17d965"
 dependencies = [
  "foreign-types-macros",
- "foreign-types-shared 0.3.1",
+ "foreign-types-shared",
 ]
 
 [[package]]
@@ -2665,12 +2656,6 @@ dependencies = [
  "quote",
  "syn 2.0.71",
 ]
-
-[[package]]
-name = "foreign-types-shared"
-version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "00b0228411908ca8685dba7fc2cdd70ec9990a6e753e89b6ac91a84c40fbaf4b"
 
 [[package]]
 name = "foreign-types-shared"
@@ -4131,7 +4116,7 @@ dependencies = [
 [[package]]
 name = "identity_core"
 version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?branch=fix/compile-fixes#d36175ce30d3be6c40da0c39f7d6c95ae424894e"
+source = "git+https://github.com/impierce/identity.rs?rev=309c399#309c3998437de1fd07bdbc443fd029ee5f4c732c"
 dependencies = [
  "js-sys",
  "multibase 0.9.1",
@@ -4147,7 +4132,7 @@ dependencies = [
 [[package]]
 name = "identity_credential"
 version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?branch=fix/compile-fixes#d36175ce30d3be6c40da0c39f7d6c95ae424894e"
+source = "git+https://github.com/impierce/identity.rs?rev=309c399#309c3998437de1fd07bdbc443fd029ee5f4c732c"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -4176,7 +4161,7 @@ dependencies = [
 [[package]]
 name = "identity_did"
 version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?branch=fix/compile-fixes#d36175ce30d3be6c40da0c39f7d6c95ae424894e"
+source = "git+https://github.com/impierce/identity.rs?rev=309c399#309c3998437de1fd07bdbc443fd029ee5f4c732c"
 dependencies = [
  "did_url_parser",
  "form_urlencoded",
@@ -4190,7 +4175,7 @@ dependencies = [
 [[package]]
 name = "identity_document"
 version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?branch=fix/compile-fixes#d36175ce30d3be6c40da0c39f7d6c95ae424894e"
+source = "git+https://github.com/impierce/identity.rs?rev=309c399#309c3998437de1fd07bdbc443fd029ee5f4c732c"
 dependencies = [
  "did_url_parser",
  "identity_core",
@@ -4205,7 +4190,7 @@ dependencies = [
 [[package]]
 name = "identity_eddsa_verifier"
 version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?branch=fix/compile-fixes#d36175ce30d3be6c40da0c39f7d6c95ae424894e"
+source = "git+https://github.com/impierce/identity.rs?rev=309c399#309c3998437de1fd07bdbc443fd029ee5f4c732c"
 dependencies = [
  "identity_jose",
  "iota-crypto",
@@ -4214,7 +4199,7 @@ dependencies = [
 [[package]]
 name = "identity_iota"
 version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?branch=fix/compile-fixes#d36175ce30d3be6c40da0c39f7d6c95ae424894e"
+source = "git+https://github.com/impierce/identity.rs?rev=309c399#309c3998437de1fd07bdbc443fd029ee5f4c732c"
 dependencies = [
  "identity_core",
  "identity_credential",
@@ -4229,7 +4214,7 @@ dependencies = [
 [[package]]
 name = "identity_iota_core"
 version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?branch=fix/compile-fixes#d36175ce30d3be6c40da0c39f7d6c95ae424894e"
+source = "git+https://github.com/impierce/identity.rs?rev=309c399#309c3998437de1fd07bdbc443fd029ee5f4c732c"
 dependencies = [
  "async-trait",
  "futures",
@@ -4252,7 +4237,7 @@ dependencies = [
 [[package]]
 name = "identity_jose"
 version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?branch=fix/compile-fixes#d36175ce30d3be6c40da0c39f7d6c95ae424894e"
+source = "git+https://github.com/impierce/identity.rs?rev=309c399#309c3998437de1fd07bdbc443fd029ee5f4c732c"
 dependencies = [
  "bls12_381_plus 0.8.17",
  "identity_core",
@@ -4268,7 +4253,7 @@ dependencies = [
 [[package]]
 name = "identity_resolver"
 version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?branch=fix/compile-fixes#d36175ce30d3be6c40da0c39f7d6c95ae424894e"
+source = "git+https://github.com/impierce/identity.rs?rev=309c399#309c3998437de1fd07bdbc443fd029ee5f4c732c"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -4286,7 +4271,7 @@ dependencies = [
 [[package]]
 name = "identity_storage"
 version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?branch=fix/compile-fixes#d36175ce30d3be6c40da0c39f7d6c95ae424894e"
+source = "git+https://github.com/impierce/identity.rs?rev=309c399#309c3998437de1fd07bdbc443fd029ee5f4c732c"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -4306,7 +4291,7 @@ dependencies = [
 [[package]]
 name = "identity_stronghold"
 version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?branch=fix/compile-fixes#d36175ce30d3be6c40da0c39f7d6c95ae424894e"
+source = "git+https://github.com/impierce/identity.rs?rev=309c399#309c3998437de1fd07bdbc443fd029ee5f4c732c"
 dependencies = [
  "async-trait",
  "identity_storage",
@@ -4322,7 +4307,7 @@ dependencies = [
 [[package]]
 name = "identity_stronghold_ext"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=c1cfda0#c1cfda09ae1e5797ba013ead8aa6ace616b75a6d"
+source = "git+https://git@github.com/impierce/did-manager.git?rev=c8a141d#c8a141df13cfb910203a3e43d2088c0c3376b6bd"
 dependencies = [
  "async-trait",
  "elliptic-curve 0.13.8",
@@ -4341,7 +4326,7 @@ dependencies = [
 [[package]]
 name = "identity_verification"
 version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?branch=fix/compile-fixes#d36175ce30d3be6c40da0c39f7d6c95ae424894e"
+source = "git+https://github.com/impierce/identity.rs?rev=309c399#309c3998437de1fd07bdbc443fd029ee5f4c732c"
 dependencies = [
  "identity_core",
  "identity_did",
@@ -4741,24 +4726,6 @@ name = "jni-sys"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8eaf4bc02d17cbdd7ff4c7438cafcdf7fb9a4613313ad11b4f8fefe7d3fa0130"
-
-[[package]]
-name = "josekit"
-version = "0.8.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "54b85e2125819afc4fd2ae57416207e792c7e12797858e5db2a6c6f24a166829"
-dependencies = [
- "anyhow",
- "base64 0.22.1",
- "flate2",
- "once_cell",
- "openssl",
- "regex",
- "serde",
- "serde_json",
- "thiserror",
- "time",
-]
 
 [[package]]
 name = "js-sys"
@@ -6034,7 +6001,7 @@ dependencies = [
 [[package]]
 name = "oid4vc"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=bc4d6d2#bc4d6d2f9ea8cae7ab61da2099af3b95e9616585"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=5933fd6#5933fd60811923a50aba98fcea2fe1cd76270bc6"
 dependencies = [
  "dif-presentation-exchange",
  "oid4vc-core",
@@ -6047,7 +6014,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-core"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=bc4d6d2#bc4d6d2f9ea8cae7ab61da2099af3b95e9616585"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=5933fd6#5933fd60811923a50aba98fcea2fe1cd76270bc6"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -6071,7 +6038,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-manager"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=bc4d6d2#bc4d6d2f9ea8cae7ab61da2099af3b95e9616585"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=5933fd6#5933fd60811923a50aba98fcea2fe1cd76270bc6"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -6103,7 +6070,7 @@ dependencies = [
 [[package]]
 name = "oid4vci"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=bc4d6d2#bc4d6d2f9ea8cae7ab61da2099af3b95e9616585"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=5933fd6#5933fd60811923a50aba98fcea2fe1cd76270bc6"
 dependencies = [
  "anyhow",
  "derivative",
@@ -6127,7 +6094,7 @@ dependencies = [
 [[package]]
 name = "oid4vp"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=bc4d6d2#bc4d6d2f9ea8cae7ab61da2099af3b95e9616585"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=5933fd6#5933fd60811923a50aba98fcea2fe1cd76270bc6"
 dependencies = [
  "anyhow",
  "chrono",
@@ -6175,48 +6142,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "openssl"
-version = "0.10.66"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9529f4786b70a3e8c61e11179af17ab6188ad8d0ded78c5529441ed39d4bd9c1"
-dependencies = [
- "bitflags 2.6.0",
- "cfg-if",
- "foreign-types 0.3.2",
- "libc",
- "once_cell",
- "openssl-macros",
- "openssl-sys",
-]
-
-[[package]]
-name = "openssl-macros"
-version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a948666b637a0f465e8564c73e89d4dde00d72d4d473cc972f390fc3dcee7d9c"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.71",
-]
-
-[[package]]
 name = "openssl-probe"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ff011a302c396a5197692431fc1948019154afc178baf7d8e37367442a4601cf"
-
-[[package]]
-name = "openssl-sys"
-version = "0.9.103"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7f9e8deee91df40a943c71b917e5874b951d32a802526c85721ce3b776c929d6"
-dependencies = [
- "cc",
- "libc",
- "pkg-config",
- "vcpkg",
-]
 
 [[package]]
 name = "option-ext"
@@ -6940,7 +6869,7 @@ dependencies = [
 [[package]]
 name = "producer"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=c1cfda0#c1cfda09ae1e5797ba013ead8aa6ace616b75a6d"
+source = "git+https://git@github.com/impierce/did-manager.git?rev=c8a141d#c8a141df13cfb910203a3e43d2088c0c3376b6bd"
 dependencies = [
  "did_iota",
  "did_jwk",
@@ -7848,14 +7777,13 @@ dependencies = [
 [[package]]
 name = "sd-jwt-payload"
 version = "0.3.0"
-source = "git+https://github.com/iotaledger/sd-jwt-payload.git?rev=0300fc5#0300fc5bb2bd6c595127f58a023e0cbb33a7d423"
+source = "git+https://github.com/impierce/sd-jwt-payload.git?rev=318dad9#318dad904f1a1c3d7e510b0446fc75c6c71a49b5"
 dependencies = [
  "anyhow",
  "async-trait",
  "indexmap 2.6.0",
  "iota-crypto",
  "itertools 0.12.1",
- "josekit",
  "json-pointer",
  "multibase 0.9.1",
  "rand 0.8.5",
@@ -8276,7 +8204,7 @@ dependencies = [
 [[package]]
 name = "shared"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=c1cfda0#c1cfda09ae1e5797ba013ead8aa6ace616b75a6d"
+source = "git+https://git@github.com/impierce/did-manager.git?rev=c8a141d#c8a141df13cfb910203a3e43d2088c0c3376b6bd"
 dependencies = [
  "identity_iota",
  "identity_storage",
@@ -8368,7 +8296,7 @@ dependencies = [
 [[package]]
 name = "siopv2"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=bc4d6d2#bc4d6d2f9ea8cae7ab61da2099af3b95e9616585"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=5933fd6#5933fd60811923a50aba98fcea2fe1cd76270bc6"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -8452,7 +8380,7 @@ dependencies = [
  "bytemuck",
  "cfg_aliases 0.2.1",
  "core-graphics",
- "foreign-types 0.5.0",
+ "foreign-types",
  "js-sys",
  "log",
  "objc2",
