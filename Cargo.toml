@@ -39,7 +39,7 @@ wiremock = "0.5"
 
 [workspace.package]
 name = "unime"
-version = "0.6.13"
+version = "0.6.14"
 description = "Identity Wallet for people to manage Decentralized Identities and Verifiable Credentials"
 homepage = "https://www.impierce.com/"
 authors = ["Impierce Technologies"]
