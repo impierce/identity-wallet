@@ -8,7 +8,23 @@
   // If you add a field, add a comment why that field should be hidden.
   //
   // `enrichment`: custom metadata field related for NGDIL demo.
-  const hideFields: string[] = ['enrichment', 'id', 'type'];
+  const hideFields: string[] = [
+    'enrichment',
+    'id',
+    'type',
+
+    // TODO: to be removed once the backend properly propagates the to be displayed fields.
+    // SD-JWT claims
+    'iss',
+    'nbf',
+    'exp',
+    'status',
+    'iat',
+    'sub',
+    '_sd_alg',
+    'cnf',
+    'vct',
+  ];
 
   function isDataUrl(value: unknown): boolean {
     return typeof value === 'string' && value.startsWith('data:image/');

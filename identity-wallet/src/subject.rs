@@ -1,15 +1,17 @@
-use crate::stronghold::StrongholdManager;
+use crate::{error::AppError, stronghold::StrongholdManager};
 
 use async_trait::async_trait;
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use did_manager::{DidMethod, Resolver, SecretManager};
+use identity_credential::sd_jwt_v2::JwsSigner;
 use identity_iota::{
     did::DID,
     document::DIDUrlQuery,
     verification::{jwk::JwkParams, jws::JwsAlgorithm},
 };
 use jsonwebtoken::Algorithm;
-use oid4vc::oid4vc_core::{authentication::sign::ExternalSign, Sign, Verify};
+use log::info;
+use oid4vc::oid4vc_core::{self, authentication::sign::ExternalSign, JsonObject, Sign, Verify};
 use std::sync::Arc;
 use tokio::sync::Mutex;
 
@@ -129,6 +131,47 @@ pub async fn subject(stronghold_manager: Arc<StrongholdManager>, password: Strin
                 .unwrap(),
         )),
     })
+}
+
+pub struct SubjectWrapper {
+    pub subject: Arc<dyn oid4vc_core::Subject>,
+    pub subject_syntax_type: String,
+}
+
+#[async_trait]
+impl JwsSigner for SubjectWrapper {
+    // FIX THIS
+    type Error = AppError;
+
+    async fn sign(&self, header: &JsonObject, payload: &JsonObject) -> Result<Vec<u8>, Self::Error> {
+        let encoded_header = URL_SAFE_NO_PAD
+            .encode(serde_json::to_vec(header).map_err(|_| AppError::Error("Failed to encode header".to_string()))?);
+        let encoded_payload = URL_SAFE_NO_PAD
+            .encode(serde_json::to_vec(payload).map_err(|_| AppError::Error("Failed to encode payload".to_string()))?);
+
+        info!("header {}", serde_json::to_string_pretty(&header).unwrap());
+        info!("payload {}", serde_json::to_string_pretty(&payload).unwrap());
+
+        let message = format!("{}.{}", encoded_header, encoded_payload);
+
+        let algorithm = header["alg"]
+            .as_str()
+            .and_then(|s| s.parse().ok())
+            .ok_or(AppError::Error("Unsupported algorithm".to_string()))?;
+
+        let proof_value = Sign::sign(&*self.subject, &message, &self.subject_syntax_type, algorithm)
+            .await
+            .map_err(|e| {
+                AppError::Error(format!(
+                    "Failed to sign message with algorithm {:?}: {:?}",
+                    algorithm, e
+                ))
+            })?;
+
+        let signature = URL_SAFE_NO_PAD.encode(proof_value.as_slice());
+        let message = [message, signature].join(".");
+        Ok(message.as_bytes().to_vec())
+    }
 }
 
 trait IntoJwsAlgorithm {

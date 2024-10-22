@@ -26,10 +26,11 @@ tauri-utils = { version = "=2.0.0-beta.19", features = [ "resources" ] }
 tauri-winres = "=0.1"
 
 agent_shared = { git = "https://git@github.com/impierce/ssi-agent.git", rev = "1823810" }
-did_manager = { git = "https://git@github.com/impierce/did-manager.git", tag = "v1.0.0-beta.3" }
+# did_manager = { git = "https://git@github.com/impierce/did-manager.git", tag = "v1.0.0-beta.3" }
+did_manager = { git = "https://git@github.com/impierce/did-manager.git", rev = "c8a141d" }
 jsonwebtoken = "9.3"
 log = "^0.4"
-oid4vc = { git = "https://git@github.com/impierce/openid4vc.git", rev = "d095db0" }
+oid4vc = { git = "https://git@github.com/impierce/openid4vc.git", rev = "5933fd6" }
 rand = "0.8"
 serde_json = "1.0"
 serial_test = "2.0"
