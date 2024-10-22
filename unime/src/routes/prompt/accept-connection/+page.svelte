@@ -3,27 +3,16 @@
 
   import { goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
-  import { fade } from 'svelte/transition';
 
   import type { CurrentUserPrompt } from '@bindings/user_prompt/CurrentUserPrompt';
-  import { createPopover, melt } from '@melt-ui/svelte';
 
-  import { Button, Image, PaddedIcon, TopNavBar } from '$lib/components';
+  import { Button, Image, PaddedIcon, StatusIndicator, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
-  import {
-    CheckBoldIcon,
-    PlugsConnectedFillIcon,
-    QuestionMarkBoldIcon,
-    WarningCircleFillIcon,
-    XRegularIcon,
-  } from '$lib/icons';
+  import { PlugsConnectedFillIcon, WarningCircleFillIcon } from '$lib/icons';
   import { error, state } from '$lib/stores';
-  import { hash } from '$lib/utils';
+  import { formatDate, hash } from '$lib/utils';
 
-  const {
-    elements: { trigger, content, arrow },
-    states: { open },
-  } = createPopover();
+  const profile_settings = $state.profile_settings;
 
   let loading = false;
 
@@ -32,8 +21,14 @@
   type IsAcceptConnectionPrompt<T> = T extends { type: 'accept-connection' } ? T : never;
   type AcceptConnectionPrompt = IsAcceptConnectionPrompt<CurrentUserPrompt>;
 
-  const { client_name, domain_validation, logo_uri, previously_connected, redirect_uri } =
-    $state.current_user_prompt as AcceptConnectionPrompt;
+  const {
+    client_name,
+    domain_validation,
+    logo_uri,
+    previously_connected,
+    redirect_uri,
+    linked_verifiable_presentations,
+  } = $state.current_user_prompt as AcceptConnectionPrompt;
 
   $: ({ hostname } = new URL(redirect_uri));
   $: imageId = logo_uri ? hash(logo_uri) : '_';
@@ -92,63 +87,51 @@
           </div>
         </div>
       {/if}
+
       <!-- Connected previously -->
-      <div
-        class="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-4 dark:border-slate-600 dark:bg-dark"
-      >
-        <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
-          {$LL.SCAN.CONNECTION_REQUEST.CONNECTED_PREVIOUSLY()}
-        </p>
-        {#if previously_connected}
-          <CheckBoldIcon class="text-emerald-500" />
-        {:else}
-          <XRegularIcon class="text-rose-500" />
-        {/if}
-      </div>
+      <StatusIndicator
+        status={previously_connected ? 'Success' : 'Failure'}
+        title={$LL.SCAN.CONNECTION_REQUEST.CONNECTED_PREVIOUSLY()}
+      />
+
       <!-- Domain validation -->
-      <div
-        use:melt={$trigger}
-        class="flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-4 dark:border-slate-600 dark:bg-dark"
-      >
-        <div class="flex items-center">
-          <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">{$LL.DOMAIN_LINKAGE.TITLE()}</p>
-          {#if $open}
-            <div
-              use:melt={$content}
-              transition:fade={{ duration: 200 }}
-              class="z-10 w-1/2 rounded-2xl bg-blue p-[20px] text-white shadow-md dark:border dark:border-slate-500"
-            >
-              <div use:melt={$arrow} class="dark:border-l dark:border-t dark:border-slate-500" />
-              <div class="break-words text-[12px]/[20px]">
-                {#if domain_validation.status === 'Success'}
-                  <!-- TODO: add a better description of _what_ was validated -->
-                  <p>{$LL.DOMAIN_LINKAGE.SUCCESS()}</p>
-                {:else if domain_validation.status === 'Failure'}
-                  <p>{$LL.DOMAIN_LINKAGE.FAILURE()}</p>
-                  <!-- TODO: pick a different color (bad contrast) -->
-                  <p class="font-semibold text-rose-500">{$LL.DOMAIN_LINKAGE.CAUTION()}</p>
-                {:else}
-                  <p>{$LL.DOMAIN_LINKAGE.UNKNOWN()}</p>
-                  <!-- TODO: pick a different color (bad contrast) -->
-                  <p class="font-semibold text-rose-500">{$LL.DOMAIN_LINKAGE.CAUTION()}</p>
-                {/if}
-                <!-- Dev Mode: Show additional message -->
-                {#if $state.dev_mode !== 'Off' && domain_validation.message}
-                  <!-- TODO: dev_mode only: pick a different color (bad contrast) -->
-                  <p class="text-rose-500">{domain_validation.message}</p>
-                {/if}
-              </div>
-            </div>
+      <StatusIndicator status={domain_validation.status} title={$LL.DOMAIN_LINKAGE.TITLE()}>
+        <div class="break-words text-[12px]/[20px]" slot="popover">
+          {#if domain_validation.status === 'Success'}
+            <!-- TODO: add a better description of _what_ was validated -->
+            <p>{$LL.DOMAIN_LINKAGE.SUCCESS()}</p>
+          {:else if domain_validation.status === 'Failure'}
+            <p>{$LL.DOMAIN_LINKAGE.FAILURE()}</p>
+            <!-- TODO: pick a different color (bad contrast) -->
+            <p class="font-semibold text-rose-500">{$LL.DOMAIN_LINKAGE.CAUTION()}</p>
+          {:else}
+            <p>{$LL.DOMAIN_LINKAGE.UNKNOWN()}</p>
+            <!-- TODO: pick a different color (bad contrast) -->
+            <p class="font-semibold text-rose-500">{$LL.DOMAIN_LINKAGE.CAUTION()}</p>
+          {/if}
+          <!-- Dev Mode: Show additional message -->
+          {#if $state.dev_mode !== 'Off' && domain_validation.message}
+            <!-- TODO: dev_mode only: pick a different color (bad contrast) -->
+            <p class="text-rose-500">{domain_validation.message}</p>
           {/if}
         </div>
-        {#if domain_validation.status === 'Success'}
-          <CheckBoldIcon class="text-emerald-500" />
-        {:else if domain_validation.status === 'Failure'}
-          <XRegularIcon class="text-rose-500" />
-        {:else}
-          <QuestionMarkBoldIcon class="text-slate-400 dark:text-slate-300" />
+      </StatusIndicator>
+
+      <!-- Linked Verifiable Presentations -->
+      {#each linked_verifiable_presentations as presentation}
+        {#if presentation.name}
+          {@const issuanceDate =
+            presentation.issuance_date && profile_settings.locale
+              ? formatDate(presentation.issuance_date, profile_settings.locale)
+              : undefined}
+          <StatusIndicator
+            status="Success"
+            title={presentation.name}
+            description={`${$LL.SORT.PREFERENCES.DATE_ISSUED()}: ${issuanceDate}`}
+            logoUrl={presentation.logo_uri}
+          />
         {/if}
-      </div>
+      {/each}
     </div>
   </div>
 
