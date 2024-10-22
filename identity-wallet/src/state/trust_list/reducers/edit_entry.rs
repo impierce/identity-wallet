@@ -9,12 +9,11 @@ pub async fn edit_trust_list_entry(state: AppState, action: Action) -> Result<Ap
     if let Some(action) = listen::<EditTrustListEntry>(action) {
         let mut trust_lists = state.trust_lists.clone();
 
-        let new_bool = trust_lists
+        let new_bool = *trust_lists
             .get_mut(&action.trust_list_id)
             .expect("error: invalid trust list name sent by frontend.")
             .get(&action.old_domain)
-            .expect("error: invalid domain value sent by frontend.")
-            .clone();
+            .expect("error: invalid domain value sent by frontend.");
 
         // Unwraps no problem here as the first check already has the expect() implemented.
         trust_lists
