@@ -199,17 +199,17 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             ));
         }
 
-        let presentation_submission = if presentation_submissions.len() > 1 {
-            merge_submissions(presentation_submissions)
-        } else {
-            presentation_submissions.pop().ok_or(AppError::Error(
-                "Failed to create a Presentation Submission".to_string(),
-            ))?
-        };
-
         info!("Verifiable Presentation Input: {:#?}", verifiable_presentation_input);
 
-        if verifiable_presentation_input.len() > 1 {
+        if verifiable_presentation_input.len() != 1 {
+            let presentation_submission = if presentation_submissions.len() > 1 {
+                merge_submissions(presentation_submissions.clone())
+            } else {
+                presentation_submissions.pop().ok_or(AppError::Error(
+                    "Failed to create a Presentation Submission".to_string(),
+                ))?
+            };
+
             // If multiple presentations are provided, this means that the `vp_token` in the Authorization
             // Response will be a sequence which cannot be serialized into a x-www-form-urlencoded string by `reqwest`.
             // See: https://github.com/nox/serde_urlencoded/issues/75#issuecomment-648257888
@@ -226,7 +226,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
                 &oid4vp_authorization_request,
                 oid4vp::AuthorizationResponseInput {
                     verifiable_presentation_input,
-                    presentation_submission,
+                    presentation_submission: presentation_submissions.first().clone().unwrap().clone(),
                 },
             )
             .await
