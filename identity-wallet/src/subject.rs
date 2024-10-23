@@ -11,13 +11,14 @@ use identity_iota::{
 use jsonwebtoken::Algorithm;
 use oid4vc::oid4vc_core::{authentication::sign::ExternalSign, Sign, Verify};
 use std::sync::Arc;
+use tokio::sync::Mutex;
 
 /// A `Subject` implements functions required for signatures and verification.
 /// In UniMe, it serves as the "binding link" between the protocol libraries (OID4VC) and the secret management (DID Manager).
 #[derive(Debug)]
 pub struct Subject {
     pub stronghold_manager: Arc<StrongholdManager>,
-    pub secret_manager: SecretManager,
+    pub secret_manager: Arc<Mutex<SecretManager>>,
 }
 
 #[async_trait]
@@ -25,7 +26,9 @@ impl Sign for Subject {
     async fn key_id(&self, subject_syntax_type: &str, algorithm: Algorithm) -> Option<String> {
         let method: DidMethod = serde_json::from_str(&format!("{subject_syntax_type:?}")).ok()?;
 
-        self.secret_manager
+        let mut secret_manager = self.secret_manager.lock().await;
+
+        secret_manager
             .produce_document(method, None, algorithm.into_jws_algorithm())
             .await
             .ok()
@@ -34,8 +37,9 @@ impl Sign for Subject {
     }
 
     async fn sign(&self, message: &str, _subject_syntax_type: &str, algorithm: Algorithm) -> anyhow::Result<Vec<u8>> {
-        Ok(self
-            .secret_manager
+        let secret_manager = self.secret_manager.lock().await;
+
+        Ok(secret_manager
             .sign(message.as_bytes(), algorithm.into_jws_algorithm())
             .await?)
     }
@@ -49,9 +53,9 @@ impl Sign for Subject {
 impl oid4vc::oid4vc_core::Subject for Subject {
     async fn identifier(&self, subject_syntax_type: &str, algorithm: Algorithm) -> anyhow::Result<String> {
         let method: DidMethod = serde_json::from_str(&format!("{subject_syntax_type:?}"))?;
+        let mut secret_manager = self.secret_manager.lock().await;
 
-        Ok(self
-            .secret_manager
+        Ok(secret_manager
             .produce_document(method, None, algorithm.into_jws_algorithm())
             .await
             .map(|document| document.id().to_string())?)
@@ -114,17 +118,16 @@ pub async fn subject(stronghold_manager: Arc<StrongholdManager>, password: Strin
 
     Arc::new(Subject {
         stronghold_manager: stronghold_manager.clone(),
-        secret_manager: SecretManager::load(
-            client_path,
-            password,
-            Some("ed25519-0".to_owned()),
-            Some("es256-0".to_owned()),
-            Some("es256k-0".to_owned()),
-            None,
-            None,
-        )
-        .await
-        .unwrap(),
+        secret_manager: Arc::new(Mutex::new(
+            SecretManager::builder()
+                .snapshot_path(&client_path)
+                .with_ed25519_key("ed25519-0")
+                .with_es256_key("es256-0")
+                .password(&password)
+                .build()
+                .await
+                .unwrap(),
+        )),
     })
 }
 
