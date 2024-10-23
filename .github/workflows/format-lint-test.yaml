@@ -1,5 +1,7 @@
 name: Format, Lint, Test
 
+# Ubuntu version has been pinned to 22.04 to avoid build errors.
+
 on:
   push:
     branches: ["dev"]
@@ -8,7 +10,7 @@ on:
 
 jobs:
   unime_frontend:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v4
@@ -36,7 +38,7 @@ jobs:
         run: pnpm test
 
   unime_core:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v4
@@ -85,7 +87,7 @@ jobs:
         run: cargo test
 
   identity_wallet:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v4

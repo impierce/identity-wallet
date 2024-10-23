@@ -268,7 +268,7 @@ const en = {
       VALID: 'Valid',
       ISSUED_BY: 'Issued by',
       DESCRIPTION: 'Description',
-      CONTENTS: 'Contents',
+      CRITERIA: 'Criteria',
     },
     ACTIONS: {
       DELETE: {
