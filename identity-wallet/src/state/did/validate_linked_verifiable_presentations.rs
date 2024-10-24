@@ -1,12 +1,8 @@
 use crate::{
     persistence::{download_asset, hash},
-    state::{
-        core_utils::helpers::get_unverified_jwt_claims,
-        did::validate_domain_linkage::{validate_domain_linkage, ValidationStatus, Verifier},
-    },
+    state::did::validate_domain_linkage::{validate_domain_linkage, ValidationStatus, Verifier},
 };
 
-use chrono::DateTime;
 use did_manager::Resolver;
 use futures::{
     future::OptionFuture,
@@ -231,87 +227,10 @@ async fn get_validated_linked_credential_data(
                         }
                     }))
                     .await
-                }
-                else {
+                } else {
                     // TODO: Should we add more fine-grained error handling? `None` here means that the linked verifiable credential is invalid.
                     warn!("Failed to validate linked verifiable credential: {linked_verifiable_credential:#?}");
-
-                    info!("Retrieving unverified linked verifiable credential: {linked_verifiable_credential:#?}");
-
-                    if let Ok(linked_verifiable_credential_value) = linked_verifiable_credential.to_json_value() {
-                        if let Ok(unverified_jwt_claims) = get_unverified_jwt_claims(&linked_verifiable_credential_value) {
-
-                            info!("Unverified jwt claims: {unverified_jwt_claims:#?}");
-
-                            if let Some(unverified_jwt_claims) = unverified_jwt_claims.get("vc") {
-
-                                // Without the DecodedJwtCredential<Value> we can't get the credential subject as required for the functions get_name and get_logo_uri.
-                                // Therefore this code is somewhat repetitive.
-                                // Since nowhere in the VC 2.0 does it specify anything about the name, we have to try and catch it in all possible forms.
-                                let name = unverified_jwt_claims.get("name")
-                                    .or_else(|| unverified_jwt_claims.get("naam"))
-                                    .or_else(|| unverified_jwt_claims.get("credentialSubject")
-                                        .and_then(|cred_subject| cred_subject.get("name")))
-                                    .or_else(|| unverified_jwt_claims.get("credentialSubject")
-                                        .and_then(|cred_subject| cred_subject.get("naam")))
-                                    .or_else(|| unverified_jwt_claims.get("credentialSubject")
-                                        .and_then(|cred_subject| cred_subject.get("legal_person_name")))
-                                    .and_then(Value::as_str)
-                                    .map(ToString::to_string);
-
-                                let mut logo_uri = OptionFuture::from(
-                                    unverified_jwt_claims.get("credentialSubject").and_then(|cred_subject| cred_subject.get("image")
-                                        .and_then(Value::as_str)
-                                        .map(|image| async {
-                                            let url = image.parse().inspect_err(|err| warn!("Failed to parse logo URI: {:#?}", err)).ok()?;
-                                            let _ = download_asset(url, &hash(image)).await;
-
-                                            Some(image.to_string())
-                                        })))
-                                    .await
-                                    .flatten();
-
-                                // todo: this actually needs to be straightened out in the frontend.
-                                // Currently the frontend only defaults to the fallback icon if the logo_uri is Some but it can't fetch it, if it's None it displays nothing.
-                                if logo_uri.is_none() {
-                                    warn!("Failed to get logo URI from unverified jwt claims: {unverified_jwt_claims:#?}");
-                                    logo_uri = Some("Fallback icon".to_string());
-                                }
-
-                                let issuance_date = unverified_jwt_claims["issuanceDate"].as_str().and_then(|date_str| {
-                                        DateTime::parse_from_rfc3339(date_str)
-                                            .ok()
-                                            .map(|dt| dt.to_rfc3339())
-                                }).unwrap_or({
-                                    warn!("Failed to get rfc3999 compliant issuance date from unverified jwt claims: {unverified_jwt_claims:#?}");
-                                    // todo: VC spec doesn't require issuance date, furthermore, it specifies that if none is present, validity is indefinite. 
-                                    // issuanceDate doesn't equal validity (that's validFrom and validUntil), 
-                                    // but it can easily be mistaken for implying validity, therefore I chose the "indefinite" timestamp.
-                                    "0000-00-00T00:00:00Z".to_string()
-                                });
-
-                                Some(
-                                    LinkedVerifiableCredentialData {
-                                    name,
-                                    logo_uri,
-                                    issuance_date,
-                                    issuer_linked_domains: validated_linked_domains,
-                                })
-                            }
-                            else {
-                                warn!("Failed to get verifiable credential from unverified jwt claims: {linked_verifiable_credential:#?}");
-                                None
-                            }
-                        }
-                        else {
-                            warn!("Failed to get unverified jwt claims from linked verifiable credential: {linked_verifiable_credential:#?}");
-                            None
-                        }
-                    }
-                    else {
-                        warn!("Failed to convert linked verifiable credential to Json Value: {linked_verifiable_credential:#?}");
-                        None
-                    }
+                    None
                 }
             } else {
                 warn!("No validated linked domains for issuer DID: {issuer_did}");
