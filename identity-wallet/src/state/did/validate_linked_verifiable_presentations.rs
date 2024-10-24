@@ -285,8 +285,8 @@ async fn get_validated_linked_credential_data(
                                 }).unwrap_or({
                                     warn!("Failed to get rfc3999 compliant issuance date from unverified jwt claims: {unverified_jwt_claims:#?}");
                                     // todo: VC spec doesn't require issuance date, furthermore, it specifies that if none is present, validity is indefinite. 
-                                    // issuanceDate doesn't equal validity (thats validFrom and validUntil), 
-                                    // but it can easily be mistaken for implying validity there I chose the "indefinite" timestamp.
+                                    // issuanceDate doesn't equal validity (that's validFrom and validUntil), 
+                                    // but it can easily be mistaken for implying validity, therefore I chose the "indefinite" timestamp.
                                     "0000-00-00T00:00:00Z".to_string()
                                 });
 
