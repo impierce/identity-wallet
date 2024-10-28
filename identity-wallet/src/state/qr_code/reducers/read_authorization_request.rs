@@ -105,7 +105,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                 })
                 .collect();
 
-            info!("temp: {:?}", trusted_domains);
+            info!("Trusted domains: {:?}", trusted_domains);
 
             let linked_verifiable_presentations = validate_linked_verifiable_presentations(did)
                 .await
