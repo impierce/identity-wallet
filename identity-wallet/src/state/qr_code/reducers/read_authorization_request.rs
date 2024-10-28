@@ -96,12 +96,11 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                 .trust_lists
                 .0
                 .iter()
-                .map(|trust_list| {
+                .flat_map(|trust_list| {
                     trust_list
                         .entries
                         .iter()
                         .filter_map(|(domain, trusted)| trusted.then_some(domain.clone()))
-                        .collect::<String>()
                 })
                 .collect();
 
