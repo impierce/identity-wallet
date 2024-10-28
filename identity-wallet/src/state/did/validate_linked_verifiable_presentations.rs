@@ -189,7 +189,15 @@ async fn get_validated_linked_credential_data(
             info!("Issuer linked domains: {issuer_linked_domains:#?}");
 
             // Only linked verifiable credentials with at least one successful domain linkage validation are considered
-            let validated_linked_domains = get_validated_linked_domains(&issuer_linked_domains, &issuer_did).await;
+            let mut validated_linked_domains = get_validated_linked_domains(&issuer_linked_domains, &issuer_did).await;
+
+            // This is a fallback to get the url from a did:web to validate domain linkage. This is useful for companies who haven't implemented domain linkage yet.
+            if validated_linked_domains.is_empty() {
+                if let Some(did_web_url) = extract_url_from_did_web(&issuer_did) {
+                    validated_linked_domains.insert(0, did_web_url);
+                }
+            }
+
             if !validated_linked_domains.is_empty() {
                 let validator = JwtCredentialValidator::with_signature_verifier(Verifier);
 
@@ -318,6 +326,8 @@ fn get_name(credential_subject: &Subject) -> Option<String> {
     credential_subject
         .properties
         .get("name")
+        .or_else(|| credential_subject.properties.get("naam"))
+        .or_else(|| credential_subject.properties.get("legal_person_name"))
         .and_then(Value::as_str)
         .map(ToString::to_string)
 }
@@ -342,6 +352,21 @@ async fn get_logo_uri(credential_subject: &Subject) -> Option<String> {
     )
     .await
     .flatten()
+}
+
+fn extract_url_from_did_web(did_web: &str) -> Option<Url> {
+    if let Some(did) = did_web.strip_prefix("did:web:") {
+        let url_str = if let Some(index_colon) = did.find(':') {
+            &did[..index_colon]
+        } else {
+            did
+        };
+
+        if let Ok(url) = Url::parse(&format!("https://{}", url_str)) {
+            return Some(url);
+        }
+    }
+    None
 }
 
 #[cfg(test)]

@@ -1,7 +1,12 @@
 use crate::{
     error::AppError::{self, *},
     state::{
-        actions::{listen, Action}, core_utils::IdentityManager, profile_settings::{actions::create_new::CreateNew, Profile, ProfileSettings}, trust_list::{TrustList, TrustLists}, user_prompt::CurrentUserPrompt, AppState, SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS
+        actions::{listen, Action},
+        core_utils::IdentityManager,
+        profile_settings::{actions::create_new::CreateNew, Profile, ProfileSettings},
+        trust_list::{TrustList, TrustLists},
+        user_prompt::CurrentUserPrompt,
+        AppState, SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS,
     },
     stronghold::StrongholdManager,
     subject::subject,
