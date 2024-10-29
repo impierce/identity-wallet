@@ -2,6 +2,7 @@ use crate::{
     persistence::{download_asset, hash},
     state::did::validate_domain_linkage::{validate_domain_linkage, ValidationStatus, Verifier},
 };
+use chrono::DateTime;
 use did_manager::Resolver;
 use futures::{
     future::OptionFuture,
@@ -178,8 +179,10 @@ async fn get_validated_linked_credential_data(
 ) -> Vec<LinkedVerifiableCredentialData> {
     iter(linked_verifiable_presentation.presentation.verifiable_credential)
         .filter_map(|linked_verifiable_credential| async move {
+
+
             // Resolve the issuer document and issuer DID
-            let issuer_document = get_issuer_document(resolver, &linked_verifiable_credential).await?;
+            let (issuer_document, mut issuance_date_opt) = parse_jwt_claims(resolver, &linked_verifiable_credential).await?;
             let issuer_did = issuer_document.id().to_string();
 
             info!("Issuer document: {issuer_document:#?}");
@@ -267,12 +270,24 @@ async fn get_validated_linked_credential_data(
                             warn!("Failed to fetch logo URI from /.well-known/openid-credential-issuer endpoint");
                         }
 
-                        let issuance_date = linked_verifiable_credential.credential.issuance_date.to_rfc3339();
+                        if issuance_date_opt.is_none() {
+                            issuance_date_opt = Some(linked_verifiable_credential.credential.issuance_date.to_rfc3339());
+                        }
+
+                        let mut issuance_date = String::new();
+
+                        if let Some(issuance_date_unwrapped) = issuance_date_opt {
+                            info!("Issuance date: {issuance_date_unwrapped}");
+                            issuance_date = issuance_date_unwrapped;
+                        } else {
+                            warn!("No issuance date available, invalid");
+                            // TODO: should the whole flow stop here?
+                        }
 
                         Some(LinkedVerifiableCredentialData {
                             name,
                             logo_uri,
-                            issuance_date,
+                            issuance_date: issuance_date,
                             issuer_linked_domains: validated_linked_domains,
                         })
                     }
@@ -316,8 +331,11 @@ async fn get_validated_linked_domains(issuer_linked_domains: &[Url], issuer_did:
     .await
 }
 
-/// This function uses the linked verifiable credential to resolve the issuer document.
-async fn get_issuer_document(resolver: &Resolver, linked_verifiable_credential: &Jwt) -> Option<CoreDocument> {
+/// This function uses the linked verifiable credential to resolve the issuer document and optionally get the issuance_date from the nbf field.
+async fn parse_jwt_claims(
+    resolver: &Resolver,
+    linked_verifiable_credential: &Jwt,
+) -> Option<(CoreDocument, Option<String>)> {
     let decoder = Decoder::new();
 
     // Decode the linked verifiable credential.
@@ -333,11 +351,23 @@ async fn get_issuer_document(resolver: &Resolver, linked_verifiable_credential: 
     info!("Linked verifiable credential claims: {:#?}", claims);
 
     // Resolve the DID
-    resolver
+    let issuer_document = resolver
         .resolve(claims.iss()?)
         .await
         .inspect_err(|err| warn!("Failed to resolve issuer DID.: {:#?}", err))
-        .ok()
+        .ok()?;
+
+    // Get issuance_date from nbf if present
+    let issuance_date = claims
+        .nbf()
+        .and_then(|nbf_timestamp| DateTime::from_timestamp(nbf_timestamp, 0))
+        .map(|datetime| datetime.to_rfc3339())
+        .or_else(|| {
+            warn!("No issuance date available in nbf");
+            None
+        });
+
+    Some((issuer_document, issuance_date))
 }
 
 /// Get the linked domains from the issuer document. It returns a list of URLs if the service type is `LinkedDomains`.
