@@ -98,14 +98,16 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
 
         let sd_jwt_vcs: Vec<serde_json::Value> = verifiable_credentials
             .iter()
-            .filter(|&(format, _vc)| (format == &CredentialFormats::JwtVcJson(()))).map(|(_format, vc)| vc.clone())
+            .filter(|&(format, _vc)| (format == &CredentialFormats::JwtVcJson(())))
+            .map(|(_format, vc)| vc.clone())
             .collect();
 
         info!("sd_jwt_vcs: {:#?}", sd_jwt_vcs);
 
         let verifiable_credentials: Vec<serde_json::Value> = verifiable_credentials
             .iter()
-            .filter(|&(format, _vc)| (format == &CredentialFormats::JwtVcJson(()))).map(|(_format, vc)| vc.clone())
+            .filter(|&(format, _vc)| (format == &CredentialFormats::JwtVcJson(())))
+            .map(|(_format, vc)| vc.clone())
             .collect();
 
         info!("verifiable_credentials: {:#?}", verifiable_credentials);
