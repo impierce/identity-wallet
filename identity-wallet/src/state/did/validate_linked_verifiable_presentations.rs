@@ -217,19 +217,6 @@ async fn get_validated_linked_credential_data(
                         OneOrMany::Many(subjects) => subjects.first(),
                     };
 
-                    // OptionFuture::from(credential_subject.map(|credential_subject| async {
-                    //     let name = get_name(credential_subject);
-                    //     let logo_uri = get_logo_uri(credential_subject).await;
-                    //     let issuance_date = linked_verifiable_credential.credential.issuance_date.to_rfc3339();
-
-                    //     LinkedVerifiableCredentialData {
-                    //         name,
-                    //         logo_uri,
-                    //         issuance_date,
-                    //         issuer_linked_domains: validated_linked_domains,
-                    //     }
-                    // }))
-                    // .await
                     if let Some(credential_subject) = credential_subject {
                         let name = get_name(credential_subject);
                         let mut logo_uri = get_logo_uri(credential_subject).await;
@@ -274,7 +261,7 @@ async fn get_validated_linked_credential_data(
                         }
                         else {
                             // Logo URI needs to be Some, even if it's value is not working, for the frontend to display the fallback icon.
-                            // Otherwise, it doesn't display the linked vp at all.
+                            // Otherwise, it doesn't display any icon.
                             // TODO: this needs to be fixed in the frontend.
                             logo_uri = Some("Fallback icon".to_string());
                             warn!("Failed to fetch logo URI from /.well-known/openid-credential-issuer endpoint");
