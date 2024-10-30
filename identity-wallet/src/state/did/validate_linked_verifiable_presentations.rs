@@ -16,6 +16,7 @@ use identity_iota::{
 };
 use identity_jose::jwt::JwtClaims;
 use log::{info, warn};
+use oid4vc::oid4vci::credential_issuer::credential_issuer_metadata::CredentialIssuerMetadata;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use ts_rs::TS;
@@ -189,7 +190,15 @@ async fn get_validated_linked_credential_data(
             info!("Issuer linked domains: {issuer_linked_domains:#?}");
 
             // Only linked verifiable credentials with at least one successful domain linkage validation are considered
-            let validated_linked_domains = get_validated_linked_domains(&issuer_linked_domains, &issuer_did).await;
+            let mut validated_linked_domains = get_validated_linked_domains(&issuer_linked_domains, &issuer_did).await;
+
+            // This is a fallback to get the url from a did:web to validate domain linkage. This is useful for companies who haven't implemented domain linkage yet.
+            if validated_linked_domains.is_empty() {
+                if let Some(did_web_url) = extract_url_from_did_web(&issuer_did) {
+                    validated_linked_domains.insert(0, did_web_url);
+                }
+            }
+
             if !validated_linked_domains.is_empty() {
                 let validator = JwtCredentialValidator::with_signature_verifier(Verifier);
 
@@ -208,19 +217,69 @@ async fn get_validated_linked_credential_data(
                         OneOrMany::Many(subjects) => subjects.first(),
                     };
 
-                    OptionFuture::from(credential_subject.map(|credential_subject| async {
+                    if let Some(credential_subject) = credential_subject {
                         let name = get_name(credential_subject);
-                        let logo_uri = get_logo_uri(credential_subject).await;
+                        let mut logo_uri = get_logo_uri(credential_subject).await;
+
+                        // Check if logo URI was retrieved, else attempt to retrieve from well-known endpoint
+                        if logo_uri.is_none() {
+                            warn!("Failed to download logo URI from linked verifiable credential: {linked_verifiable_credential:#?}");
+                            info!("Fetching image from /.well-known/openid-credential-issuer endpoint");
+                            for domain in validated_linked_domains.iter() {
+                                let well_known_endpoint = format!("{}/.well-known/openid-credential-issuer", domain);
+                                if let Ok(response) = reqwest::Client::new().get(&well_known_endpoint).send().await {
+                                    if let Ok(metadata) = response.json::<CredentialIssuerMetadata>().await {
+                                        if let Some(display) = metadata.display {
+                                            if let Some(image) = display[0].get("logo") {
+                                                if let Some(image_url) = image.get("url") {
+                                                    logo_uri = image_url.as_str().map(ToString::to_string);
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        if let Some(ref logo_uri_str) = logo_uri {
+                            info!("Logo URI: {}", logo_uri_str);
+
+                            // Parse the logo URI
+                            match logo_uri_str.parse() {
+                                Ok(parsed_url) => {
+                                    // Download the asset if parsing succeeded
+                                    if let Err(err) = download_asset(parsed_url, &hash(logo_uri_str)).await {
+                                        warn!("Failed to download logo URI: {:#?}", err);
+                                    }
+                                },
+                                Err(parse_err) => {
+                                    // Log parse error if the URI is invalid
+                                    warn!("Failed to parse logo URI: {:#?}, {:#?}", logo_uri_str, parse_err);
+                                }
+                            }
+                        }
+                        else {
+                            // Logo URI needs to be Some, even if it's value is not working, for the frontend to display the fallback icon.
+                            // Otherwise, it doesn't display any icon.
+                            // TODO: this needs to be fixed in the frontend.
+                            logo_uri = Some("Fallback icon".to_string());
+                            warn!("Failed to fetch logo URI from /.well-known/openid-credential-issuer endpoint");
+                        }
+
                         let issuance_date = linked_verifiable_credential.credential.issuance_date.to_rfc3339();
 
-                        LinkedVerifiableCredentialData {
+                        Some(LinkedVerifiableCredentialData {
                             name,
                             logo_uri,
                             issuance_date,
                             issuer_linked_domains: validated_linked_domains,
-                        }
-                    }))
-                    .await
+                        })
+                    }
+                    else {
+                        warn!("Failed to get credential_subject: {linked_verifiable_credential:#?}");
+                        None
+                    }
                 } else {
                     warn!("Failed to validate linked verifiable credential: {linked_verifiable_credential:#?}");
                     // TODO: Should we add more fine-grained error handling? `None` here means that the linked verifiable credential is invalid.
@@ -318,6 +377,8 @@ fn get_name(credential_subject: &Subject) -> Option<String> {
     credential_subject
         .properties
         .get("name")
+        .or_else(|| credential_subject.properties.get("naam"))
+        .or_else(|| credential_subject.properties.get("legal_person_name"))
         .and_then(Value::as_str)
         .map(ToString::to_string)
 }
@@ -342,6 +403,21 @@ async fn get_logo_uri(credential_subject: &Subject) -> Option<String> {
     )
     .await
     .flatten()
+}
+
+fn extract_url_from_did_web(did_web: &str) -> Option<Url> {
+    if let Some(did) = did_web.strip_prefix("did:web:") {
+        let url_str = if let Some(index_colon) = did.find(':') {
+            &did[..index_colon]
+        } else {
+            did
+        };
+
+        if let Ok(url) = Url::parse(&format!("https://{}", url_str)) {
+            return Some(url);
+        }
+    }
+    None
 }
 
 #[cfg(test)]

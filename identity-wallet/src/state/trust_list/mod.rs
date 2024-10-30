@@ -55,6 +55,12 @@ pub struct TrustList {
     pub entries: HashMap<String, bool>,
 }
 
+impl Default for TrustList {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl TrustList {
     pub fn new() -> Self {
         Self {

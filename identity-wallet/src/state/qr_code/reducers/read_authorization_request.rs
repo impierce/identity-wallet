@@ -92,20 +92,19 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
             let domain_validation: Box<crate::state::did::validate_domain_linkage::ValidationResult> =
                 Box::new(validate_domain_linkage(url, did).await);
 
-            let temp: Vec<String> = state
+            let trusted_domains: Vec<String> = state
                 .trust_lists
                 .0
                 .iter()
-                .map(|trust_list| {
+                .flat_map(|trust_list| {
                     trust_list
                         .entries
                         .iter()
                         .filter_map(|(domain, trusted)| trusted.then_some(domain.clone()))
-                        .collect::<String>()
                 })
                 .collect();
 
-            info!("temp: {:?}", temp);
+            info!("Trusted domains: {:?}", trusted_domains);
 
             let linked_verifiable_presentations = validate_linked_verifiable_presentations(did)
                 .await
@@ -115,7 +114,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                     linked_verifiable_credential.issuer_linked_domains.iter().any(|domain| {
                         info!("domain: {:?}", domain.to_string());
 
-                        temp.contains(&domain.to_string())
+                        trusted_domains.contains(&domain.to_string())
                     })
                 })
                 .collect();
