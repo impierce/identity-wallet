@@ -182,7 +182,7 @@ async fn get_validated_linked_credential_data(
 
 
             // Resolve the issuer document and issuer DID
-            let (issuer_document, jwt_claims) = parse_jwt_claims(resolver, &linked_verifiable_credential).await?;
+            let (issuer_document, issuance_date_opt) = get_issuer_did_issuance_date(resolver, &linked_verifiable_credential).await?;
             let issuer_did = issuer_document.id().to_string();
 
             info!("Issuer document: {issuer_document:#?}");
@@ -272,8 +272,8 @@ async fn get_validated_linked_credential_data(
 
                         let issuance_date: String;
 
-                        if jwt_claims.nbf.is_some() {
-                            issuance_date = jwt_claims.nbf.unwrap();
+                        if issuance_date_opt.is_some() {
+                            issuance_date = issuance_date_opt.unwrap();
                         }
                         else {
                             issuance_date = linked_verifiable_credential.credential.issuance_date.to_rfc3339();
@@ -331,10 +331,10 @@ async fn get_validated_linked_domains(issuer_linked_domains: &[Url], issuer_did:
 }
 
 /// This function uses the linked verifiable credential to resolve the issuer document and optionally get the issuance_date from the nbf field.
-async fn parse_jwt_claims(
+async fn get_issuer_did_issuance_date(
     resolver: &Resolver,
     linked_verifiable_credential: &Jwt,
-) -> Option<(CoreDocument, JWTClaims)> {
+) -> Option<(CoreDocument, Option<String>)> {
     let decoder = Decoder::new();
 
     // Decode the linked verifiable credential.
@@ -356,44 +356,17 @@ async fn parse_jwt_claims(
         .inspect_err(|err| warn!("Failed to resolve issuer DID.: {:#?}", err))
         .ok()?;
 
-    // Get the Jwt claims which can represent values in the VC
-    let jwt_claims = JWTClaims {
-        // Get issuer from iss if present, this represents the issuer property of a verifiable credential or the holder property of a verifiable presentation.
-        iss: claims.iss().map(ToString::to_string),
-        // Get issuanceDate from nbf if present
-        nbf: claims
-            .nbf()
-            .and_then(|nbf_timestamp| DateTime::from_timestamp(nbf_timestamp, 0))
-            .map(|datetime| datetime.to_rfc3339())
-            .or_else(|| {
-                warn!("No issuance date available in Jwt claims nbf");
-                None
-            }),
-        // Get expirationDate from exp if present
-        exp: claims
-            .exp()
-            .and_then(|nbf_timestamp| DateTime::from_timestamp(nbf_timestamp, 0))
-            .map(|datetime| datetime.to_rfc3339())
-            .or_else(|| {
-                warn!("No issuance date available in Jwt claims nbf");
-                None
-            }),
-        // Get id from jti if present.
-        jti: claims.jti().map(ToString::to_string),
-        // Get credentialSubject.id from sub if present.
-        sub: claims.sub().map(ToString::to_string)
-    };
+    // Get issuanceDate from nbf if present
+    let issuance_date = claims
+        .nbf()
+        .and_then(|nbf_timestamp| DateTime::from_timestamp(nbf_timestamp, 0))
+        .map(|datetime| datetime.to_rfc3339())
+        .or_else(|| {
+            warn!("No issuance date available in Jwt claims nbf");
+            None
+        });
 
-    Some((issuer_document, jwt_claims))
-}
-
-#[derive(Default)]
-struct JWTClaims {
-    iss: Option<String>,
-    nbf: Option<String>,
-    exp: Option<String>,
-    jti: Option<String>,
-    sub: Option<String>,
+    Some((issuer_document, issuance_date))
 }
 
 /// Get the linked domains from the issuer document. It returns a list of URLs if the service type is `LinkedDomains`.
