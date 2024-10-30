@@ -65,8 +65,8 @@ impl JwsVerifier for Verifier {
             &decoding_key,
             algorithm,
         ) {
-            Ok(_) => Ok(()),
-            Err(_) => Err(SignatureVerificationError::new(
+            Ok(true) => Ok(()),
+            Err(_) | Ok(false) => Err(SignatureVerificationError::new(
                 // TODO: more fine-grained error handling?
                 InvalidSignature,
             )),
