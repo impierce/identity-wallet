@@ -277,6 +277,7 @@ async fn get_validated_linked_credential_data(
                         }
                         else {
                             issuance_date = linked_verifiable_credential.credential.issuance_date.to_rfc3339();
+                            info!("Retrieved issuanceDate from VC: {issuance_date}");
                             if issuance_date.is_empty() {
                                 warn!("No issuance date available, invalid");
                                 // TODO: should the whole flow stop here?

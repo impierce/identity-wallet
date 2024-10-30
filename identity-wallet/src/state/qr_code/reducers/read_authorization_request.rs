@@ -26,6 +26,7 @@ use oid4vc::{
     oid4vc_core::authorization_request::{AuthorizationRequest, Object},
     oid4vci::credential_format_profiles::CredentialFormats,
 };
+use url::Url;
 
 // Reads the request url from the payload and validates it.
 pub async fn read_authorization_request(state: AppState, action: Action) -> Result<AppState, AppError> {
@@ -92,15 +93,25 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
             let domain_validation: Box<crate::state::did::validate_domain_linkage::ValidationResult> =
                 Box::new(validate_domain_linkage(url, did).await);
 
+            // This collects the Trusted Issuer domains and checks wether they are valid Url's.
+            // For UX it's not mandatory to add the domain including the http(s):// prefix and the trailing /,
+            // therefore we double check the domain after adding the suffix and prefix.
             let trusted_domains: Vec<String> = state
                 .trust_lists
                 .0
                 .iter()
                 .flat_map(|trust_list| {
-                    trust_list
-                        .entries
-                        .iter()
-                        .filter_map(|(domain, trusted)| trusted.then_some(domain.clone()))
+                    trust_list.entries.iter().filter_map(|(domain, trusted)| {
+                        if *trusted {
+                            let url = Url::parse(domain).unwrap_or_else(|_| {
+                                let formatted_domain = format!("https://{}/", domain.trim_end_matches('/'));
+                                Url::parse(&formatted_domain).expect("Failed to format Trusted Issuer domain as URL")
+                            });
+                            Some(url.to_string())
+                        } else {
+                            None
+                        }
+                    })
                 })
                 .collect();
 
@@ -112,7 +123,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                 .flatten()
                 .filter(|linked_verifiable_credential| {
                     linked_verifiable_credential.issuer_linked_domains.iter().any(|domain| {
-                        info!("domain: {:?}", domain.to_string());
+                        info!("Issuer linked-vp domain: {:?}", domain.to_string());
 
                         trusted_domains.contains(&domain.to_string())
                     })
