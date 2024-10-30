@@ -10,6 +10,8 @@
   export let description: string | undefined = undefined;
   export let type: 'data' | 'badge' = 'data';
   export let isTempAsset = false;
+
+  let useFallback = false;
 </script>
 
 <!--
@@ -42,13 +44,10 @@ Can be used for credentials, connections, etc.
   <!-- Image or icon -->
   <slot name="image">
     <!-- TODO: fix: should be `bg-white` only when Image is present, else `bg-silver dark:bg-navy` -->
-    <div class="mr-4 flex h-12 w-12 min-w-[48px] items-center justify-center overflow-hidden rounded-lg bg-white p-1">
-      <Image
-        {id}
-        iconFallback={type === 'data' ? 'User' : 'Certificate'}
-        {isTempAsset}
-        iconClass="dark:text-slate-800"
-      />
+    <div
+      class={`mr-4 flex h-12 w-12 min-w-[48px] items-center justify-center overflow-hidden rounded-lg p-1 ${useFallback ? 'bg-silver dark:bg-navy' : 'bg-white'}`}
+    >
+      <Image {id} iconFallback={type === 'data' ? 'User' : 'Certificate'} {isTempAsset} bind:useFallback />
     </div>
   </slot>
   <!-- Text -->
