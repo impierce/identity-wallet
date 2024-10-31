@@ -268,7 +268,9 @@ const en = {
       VALID: 'Valid',
       ISSUED_BY: 'Issued by',
       DESCRIPTION: 'Description',
-      CRITERIA: 'Criteria',
+      OPEN_BADGES: {
+        CRITERIA: 'Criteria',
+      },
     },
     ACTIONS: {
       DELETE: {

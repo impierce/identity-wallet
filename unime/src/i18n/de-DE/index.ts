@@ -269,7 +269,9 @@ const de = {
       VALID: 'Gültig',
       ISSUED_BY: 'Ausgestellt von',
       DESCRIPTION: 'Beschreibung',
-      CRITERIA: 'Criteria',
+      OPEN_BADGES: {
+        CRITERIA: 'Kriterien',
+      },
     },
     ACTIONS: {
       DELETE: {

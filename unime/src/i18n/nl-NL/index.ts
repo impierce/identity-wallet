@@ -268,7 +268,9 @@ const nl = {
       VALID: 'Geldig',
       ISSUED_BY: 'Uitgegeven door',
       DESCRIPTION: 'Beschrijving',
-      CRITERIA: 'Criteria',
+      OPEN_BADGES: {
+        CRITERIA: 'Criteria',
+      },
     },
     ACTIONS: {
       DELETE: {
