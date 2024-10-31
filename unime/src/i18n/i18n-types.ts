@@ -748,9 +748,9 @@ type RootTranslation = {
 			 */
 			DESCRIPTION: string
 			/**
-			 * C​o​n​t​e​n​t​s
+			 * C​r​i​t​e​r​i​a
 			 */
-			CONTENTS: string
+			CRITERIA: string
 		}
 		ACTIONS: {
 			DELETE: {
@@ -763,7 +763,7 @@ type RootTranslation = {
 				 */
 				TITLE: string
 				/**
-				 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​r​e​m​o​v​e​ ​t​h​i​s​ ​c​r​e​d​e​n​t​i​a​l​ ​f​r​o​m​ ​y​o​u​r​ ​w​a​l​l​e​t​?​ ​T​h​i​s​ ​a​c​t​i​o​n​ ​c​a​n​n​o​t​ ​b​e​ ​u​n​d​o​n​e​.
+				 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​d​e​l​e​t​e​ ​t​h​i​s​ ​c​r​e​d​e​n​t​i​a​l​ ​f​r​o​m​ ​y​o​u​r​ ​w​a​l​l​e​t​?​ ​T​h​i​s​ ​a​c​t​i​o​n​ ​c​a​n​n​o​t​ ​b​e​ ​u​n​d​o​n​e​.
 				 */
 				DESCRIPTION: string
 				/**
@@ -1605,9 +1605,9 @@ export type TranslationFunctions = {
 			 */
 			DESCRIPTION: () => LocalizedString
 			/**
-			 * Contents
+			 * Criteria
 			 */
-			CONTENTS: () => LocalizedString
+			CRITERIA: () => LocalizedString
 		}
 		ACTIONS: {
 			DELETE: {
@@ -1620,7 +1620,7 @@ export type TranslationFunctions = {
 				 */
 				TITLE: () => LocalizedString
 				/**
-				 * Are you sure you want to remove this credential from your wallet? This action cannot be undone.
+				 * Are you sure you want to delete this credential from your wallet? This action cannot be undone.
 				 */
 				DESCRIPTION: () => LocalizedString
 				/**
