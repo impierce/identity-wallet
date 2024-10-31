@@ -144,7 +144,7 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
 async fn download_credential_logos(
     credential_configurations: &HashMap<String, CredentialConfigurationsSupportedObject>,
 ) {
-    for (credential_configuration_id, credential_configuration) in credential_configurations.iter() {
+    for (_, credential_configuration) in credential_configurations.iter() {
         let credential_logo_uri = credential_configuration
             .display
             .first()
@@ -158,11 +158,7 @@ async fn download_credential_logos(
                 format!("Downloading credential logo from URI: {}", credential_logo_uri)
             );
             if let Ok(credential_logo_uri) = credential_logo_uri.parse::<reqwest::Url>() {
-                let _ = download_asset(
-                    credential_logo_uri,
-                    format!("credential_{}", credential_configuration_id).as_str(),
-                )
-                .await;
+                let _ = download_asset(credential_logo_uri.clone(), &hash(credential_logo_uri.as_str())).await;
             } else {
                 debug!("Failed to parse credential logo URI: {}", credential_logo_uri);
             }
