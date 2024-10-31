@@ -4,21 +4,28 @@ use crate::{
     state::{
         actions::{listen, Action},
         connections::reducers::handle_siopv2_authorization_request::get_siopv2_client_name_and_logo_uri,
-        core_utils::{ConnectionRequest, CoreUtils},
+        core_utils::{helpers::get_unverified_jwt_claims, ConnectionRequest, CoreUtils},
         credentials::reducers::handle_oid4vp_authorization_request::{
             get_oid4vp_client_name_and_logo_uri, OID4VPClientMetadata,
         },
-        did::validate_domain_linkage::validate_domain_linkage,
+        did::{
+            validate_domain_linkage::validate_domain_linkage,
+            validate_linked_verifiable_presentations::validate_linked_verifiable_presentations,
+        },
         qr_code::actions::qrcode_scanned::QrCodeScanned,
         user_prompt::CurrentUserPrompt,
         AppState,
     },
 };
 
+use identity_credential::{sd_jwt_v2::Sha256Hasher, sd_jwt_vc::SdJwtVc};
 use log::{debug, info};
-use oid4vc::oid4vc_core::authorization_request::{AuthorizationRequest, Object};
 use oid4vc::oid4vp::{evaluate_input, oid4vp::OID4VP};
 use oid4vc::siopv2::siopv2::SIOPv2;
+use oid4vc::{
+    oid4vc_core::authorization_request::{AuthorizationRequest, Object},
+    oid4vci::credential_format_profiles::CredentialFormats,
+};
 
 // Reads the request url from the payload and validates it.
 pub async fn read_authorization_request(state: AppState, action: Action) -> Result<AppState, AppError> {
@@ -82,7 +89,37 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
 
             let did = siopv2_authorization_request.body.client_id.as_str();
 
-            let domain_validation = validate_domain_linkage(url, did).await;
+            let domain_validation: Box<crate::state::did::validate_domain_linkage::ValidationResult> =
+                Box::new(validate_domain_linkage(url, did).await);
+
+            let trusted_domains: Vec<String> = state
+                .trust_lists
+                .0
+                .iter()
+                .flat_map(|trust_list| {
+                    trust_list
+                        .entries
+                        .iter()
+                        .filter_map(|(domain, trusted)| trusted.then_some(domain.clone()))
+                })
+                .collect();
+
+            info!("Trusted domains: {:?}", trusted_domains);
+
+            let linked_verifiable_presentations = validate_linked_verifiable_presentations(did)
+                .await
+                .into_iter()
+                .flatten()
+                .filter(|linked_verifiable_credential| {
+                    linked_verifiable_credential.issuer_linked_domains.iter().any(|domain| {
+                        info!("domain: {:?}", domain.to_string());
+
+                        trusted_domains.contains(&domain.to_string())
+                    })
+                })
+                .collect();
+
+            info!("linked_verifiable_presentations: {:?}", linked_verifiable_presentations);
 
             drop(state_guard);
 
@@ -97,6 +134,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                     redirect_uri,
                     previously_connected,
                     domain_validation,
+                    linked_verifiable_presentations,
                 }),
                 ..state
             });
@@ -116,13 +154,22 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                     verifiable_credentials
                         .iter()
                         .find_map(|verifiable_credential_record| {
-                            evaluate_input(
-                                input_descriptor,
-                                &serde_json::json!({
-                                    "vc": verifiable_credential_record.display_credential.data
-                                }),
-                            )
-                            .then_some(verifiable_credential_record.display_credential.id.clone())
+                            let credential = if verifiable_credential_record.display_credential.format
+                                == CredentialFormats::VcSdJwt(())
+                            {
+                                serde_json::json!(verifiable_credential_record
+                                    .verifiable_credential
+                                    .as_str()?
+                                    .parse::<SdJwtVc>()
+                                    .ok()?
+                                    .into_disclosed_object(&Sha256Hasher::new())
+                                    .ok()?)
+                            } else {
+                                get_unverified_jwt_claims(&verifiable_credential_record.verifiable_credential).unwrap()
+                            };
+
+                            evaluate_input(input_descriptor, &credential)
+                                .then_some(verifiable_credential_record.display_credential.id.clone())
                         })
                         .ok_or(NoMatchingCredentialError)
                 })

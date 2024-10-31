@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/schema.json",
   "productName": "UniMe Beta",
-  "version": "0.6.12",
+  "version": "0.6.15",
   "identifier": "com.impierce.unime",
   "app": {
     "security": {
@@ -27,7 +27,7 @@
   "build": {
     "beforeDevCommand": "pnpm dev",
     "beforeBuildCommand": "pnpm build",
-    "devUrl": "http://localhost:5173",
+    "devUrl": "http://localhost:4173",
     "frontendDist": "../build"
   },
   "bundle": {

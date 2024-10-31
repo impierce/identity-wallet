@@ -15,6 +15,7 @@
     "domain_validation": {
       "status": "Unknown",
       "message": "Error while fetching configuration: failed to parse response into JSON value"
-    }
+    },
+    "linked_verifiable_presentations": []
   }
 }
