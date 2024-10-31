@@ -747,10 +747,12 @@ type RootTranslation = {
 			 * D​e​s​c​r​i​p​t​i​o​n
 			 */
 			DESCRIPTION: string
-			/**
-			 * C​r​i​t​e​r​i​a
-			 */
-			CRITERIA: string
+			OPEN_BADGES: {
+				/**
+				 * C​r​i​t​e​r​i​a
+				 */
+				CRITERIA: string
+			}
 		}
 		ACTIONS: {
 			DELETE: {
@@ -1604,10 +1606,12 @@ export type TranslationFunctions = {
 			 * Description
 			 */
 			DESCRIPTION: () => LocalizedString
-			/**
-			 * Criteria
-			 */
-			CRITERIA: () => LocalizedString
+			OPEN_BADGES: {
+				/**
+				 * Criteria
+				 */
+				CRITERIA: () => LocalizedString
+			}
 		}
 		ACTIONS: {
 			DELETE: {
