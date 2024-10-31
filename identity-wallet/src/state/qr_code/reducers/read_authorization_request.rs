@@ -103,11 +103,13 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                 .flat_map(|trust_list| {
                     trust_list.entries.iter().filter_map(|(domain, trusted)| {
                         if *trusted {
-                            let url = Url::parse(domain).unwrap_or_else(|_| {
-                                let formatted_domain = format!("https://{}/", domain.trim_end_matches('/'));
-                                Url::parse(&formatted_domain).expect("Failed to format Trusted Issuer domain as URL")
-                            });
-                            Some(url.to_string())
+                            Url::parse(domain)
+                                .or_else(|_| {
+                                    let formatted_domain = format!("https://{}/", domain.trim_end_matches('/'));
+                                    Url::parse(&formatted_domain)
+                                })
+                                .map(|url| url.to_string())
+                                .ok()
                         } else {
                             None
                         }
