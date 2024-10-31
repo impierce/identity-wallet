@@ -24,7 +24,7 @@
 
   {#if credential.data.credentialSubject?.achievement?.criteria?.narrative}
     <div class="prose prose-sm rounded-xl bg-background p-4 dark:prose-invert">
-      <h2>{$LL.CREDENTIAL.DETAILS.CRITERIA()}</h2>
+      <h2>{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.CRITERIA()}</h2>
       <!-- TODO Review marked vs. markdown-it and security risks. -->
       <!-- eslint-disable-next-line svelte/no-at-html-tags -->
       {@html md.render(credential.data.credentialSubject.achievement.criteria.narrative)}
@@ -33,16 +33,21 @@
 
   {#if credential.data.credentialSubject?.achievement?.alignment?.length > 0}
     <!-- Loop over the alignment array and render each item with a subtle dividing line -->
-    {#each credential.data.credentialSubject.achievement.alignment as alignItem}
+    {#each credential.data.credentialSubject.achievement.alignment as alignmentItem}
       <div class="prose prose-sm rounded-xl bg-background p-4 dark:prose-invert">
         <!-- Render targetName in bold -->
-        <strong>{@html md.render(alignItem.targetName)}</strong>
-        {@html md.render(alignItem.targetDescription)}
+        <strong>{@html md.render(alignmentItem.targetName)}</strong>
+        {@html md.render(alignmentItem.targetDescription)}
       </div>
     {/each}
   {/if}
 
-  <TextFieldRenderer key={'Achievement type'} value={credential.data.credentialSubject?.achievement?.achievementType} />
+  {#if credential.data.credentialSubject?.achievement?.achievementType}
+    <TextFieldRenderer
+      key={'Achievement type'}
+      value={credential.data.credentialSubject?.achievement?.achievementType}
+    />
+  {/if}
 
   <!-- "validFrom" is defined as REQUIRED in JSON Schema: https://purl.imsglobal.org/spec/ob/v3p0/schema/json/ob_v3p0_achievementcredential_schema.json -->
   {#if credential.data.validFrom}

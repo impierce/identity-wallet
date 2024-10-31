@@ -98,7 +98,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
 
         let sd_jwt_vcs: Vec<serde_json::Value> = verifiable_credentials
             .iter()
-            .filter(|&(format, _vc)| (format == &CredentialFormats::JwtVcJson(())))
+            .filter(|&(format, _vc)| (format == &CredentialFormats::VcSdJwt(())))
             .map(|(_format, vc)| vc.clone())
             .collect();
 
