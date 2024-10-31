@@ -31,6 +31,7 @@ pub struct LinkedVerifiableCredentialData {
     pub issuance_date: String,
     #[ts(skip)]
     pub issuer_linked_domains: Vec<Url>,
+    pub validation_status: ValidationStatus,
 }
 
 // Skip the partial equality check for `issuance_date` during testing.
@@ -210,6 +211,7 @@ async fn get_validated_linked_credential_data(
                     FailFast::FirstError,
                 ) {
                     info!("Validated linked verifiable credential: {linked_verifiable_credential:#?}");
+                    let validation_status = ValidationStatus::Success;
 
                     let credential_subject = match &linked_verifiable_credential.credential.credential_subject {
                         OneOrMany::One(subject) => Some(subject),
@@ -274,6 +276,7 @@ async fn get_validated_linked_credential_data(
                             logo_uri,
                             issuance_date,
                             issuer_linked_domains: validated_linked_domains,
+                            validation_status,
                         })
                     }
                     else {
