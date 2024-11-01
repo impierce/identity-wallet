@@ -19,7 +19,7 @@
     "@aws-crypto/sha256-js": "^5.2.0",
     "@iconify-json/circle-flags": "^1.2.0",
     "@iconify-json/ph": "^1.2.0",
-    "@lottiefiles/lottie-player": "^2.0.2",
+    "@lottiefiles/lottie-player": "^2.0.11",
     "@melt-ui/pp": "^0.3.0",
     "@melt-ui/svelte": "^0.83.0",
     "@sveltejs/adapter-static": "^3.0.4",
