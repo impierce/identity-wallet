@@ -214,54 +214,7 @@ async fn get_validated_linked_credential_data(
 
                     if let Some(credential_subject) = credential_subject {
                         let name = get_name(credential_subject);
-                        let mut logo_uri = get_logo_uri(credential_subject).await;
-
-                        // Check if logo URI was retrieved, else attempt to retrieve from well-known endpoint
-                        if logo_uri.is_none() {
-                            warn!("Failed to download logo URI from linked verifiable credential: {linked_verifiable_credential:#?}");
-                            info!("Fetching image from /.well-known/openid-credential-issuer endpoint");
-                            for domain in validated_linked_domains.iter() {
-                                let well_known_endpoint = format!("{}/.well-known/openid-credential-issuer", domain);
-                                if let Ok(response) = reqwest::Client::new().get(&well_known_endpoint).send().await {
-                                    if let Ok(metadata) = response.json::<CredentialIssuerMetadata>().await {
-                                        if let Some(display) = metadata.display {
-                                            if let Some(image) = display[0].get("logo") {
-                                                if let Some(image_url) = image.get("url") {
-                                                    logo_uri = image_url.as_str().map(ToString::to_string);
-                                                    break;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        if let Some(ref logo_uri_str) = logo_uri {
-                            info!("Logo URI: {}", logo_uri_str);
-
-                            // Parse the logo URI
-                            match logo_uri_str.parse() {
-                                Ok(parsed_url) => {
-                                    // Download the asset if parsing succeeded
-                                    if let Err(err) = download_asset(parsed_url, &hash(logo_uri_str)).await {
-                                        warn!("Failed to download logo URI: {:#?}", err);
-                                    }
-                                },
-                                Err(parse_err) => {
-                                    // Log parse error if the URI is invalid
-                                    warn!("Failed to parse logo URI: {:#?}, {:#?}", logo_uri_str, parse_err);
-                                }
-                            }
-                        }
-                        else {
-                            // Logo URI needs to be Some, even if it's value is not working, for the frontend to display the fallback icon.
-                            // Otherwise, it doesn't display any icon.
-                            // TODO: this needs to be fixed in the frontend.
-                            logo_uri = Some("Fallback icon".to_string());
-                            warn!("Failed to fetch logo URI from /.well-known/openid-credential-issuer endpoint");
-                        }
-
+                        let logo_uri = get_logo_uri(credential_subject, &validated_linked_domains).await;
                         let issuance_date = linked_verifiable_credential.credential.issuance_date.to_rfc3339();
 
                         Some(LinkedVerifiableCredentialData {
@@ -271,8 +224,7 @@ async fn get_validated_linked_credential_data(
                             issuer_linked_domains: validated_linked_domains,
                             validation_status,
                         })
-                    }
-                    else {
+                    } else {
                         warn!("Failed to get credential_subject: {linked_verifiable_credential:#?}");
                         None
                     }
@@ -389,26 +341,57 @@ fn get_name(credential_subject: &Subject) -> Option<String> {
         .map(ToString::to_string)
 }
 
-async fn get_logo_uri(credential_subject: &Subject) -> Option<String> {
-    OptionFuture::from(
-        credential_subject
-            .properties
-            .get("image")
-            .and_then(Value::as_str)
-            .map(|image| async {
-                let _ = download_asset(
-                    image
-                        .parse()
-                        .inspect_err(|err| warn!("Failed to parse logo URI: {:#?}", err))
-                        .ok()?,
-                    &hash(image),
-                )
-                .await;
-                Some(image.to_string())
-            }),
-    )
-    .await
-    .flatten()
+async fn get_logo_uri(credential_subject: &Subject, validated_linked_domains: &Vec<Url>) -> Option<String> {
+    let mut logo_uri = credential_subject
+        .properties
+        .get("image")
+        .and_then(Value::as_str)
+        .map(|image| image.to_string());
+
+    // Check if logo URI was retrieved from the credential_subject, if not then attempt to retrieve it from well-known endpoint.
+    if logo_uri.is_none() {
+        warn!("Failed to download logo URI from linked verifiable credential subject: {credential_subject:#?}");
+        info!("Fetching image from /.well-known/openid-credential-issuer endpoint");
+        for domain in validated_linked_domains.iter() {
+            let well_known_endpoint = format!("{}/.well-known/openid-credential-issuer", domain);
+            if let Ok(response) = reqwest::Client::new().get(&well_known_endpoint).send().await {
+                if let Ok(metadata) = response.json::<CredentialIssuerMetadata>().await {
+                    if let Some(display) = metadata.display {
+                        if let Some(image) = display[0].get("logo") {
+                            if let Some(image_url) = image.get("url") {
+                                logo_uri = image_url.as_str().map(ToString::to_string);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Parse Url to check if it is valid, then download the image asset.
+    if let Some(ref logo_uri_str) = logo_uri {
+        info!("Logo URI: {}", logo_uri_str);
+
+        match logo_uri_str.parse() {
+            Ok(parsed_url) => {
+                if let Err(err) = download_asset(parsed_url, &hash(logo_uri_str)).await {
+                    warn!("Failed to download logo URI: {:#?}", err);
+                }
+            }
+            Err(parse_err) => {
+                warn!("Failed to parse logo URI: {:#?}, {:#?}", logo_uri_str, parse_err);
+            }
+        }
+    } else {
+        // Logo URI needs to be Some, even if it's value is not working, for the frontend to display the fallback icon.
+        // Otherwise, it doesn't display any icon.
+        // TODO: this needs to be fixed in the frontend.
+        logo_uri = Some("Fallback icon".to_string());
+        warn!("Failed to fetch logo URI from /.well-known/openid-credential-issuer endpoint");
+    };
+
+    logo_uri
 }
 
 fn extract_url_from_did_web(did_web: &str) -> Option<Url> {
