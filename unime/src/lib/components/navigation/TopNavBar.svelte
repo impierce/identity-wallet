@@ -9,13 +9,16 @@
 
   export let title: string;
   export let disabled = false;
+
+  let className: string = '';
+  export { className as class };
 </script>
 
 <!-- Create a new stacking context with `isolate` to prevent z-index leakage. -->
 <div
   class={twMerge(
     'relative isolate flex h-[50px] items-center justify-between self-stretch bg-silver px-6 py-[13px] text-slate-800 dark:bg-navy dark:text-grey',
-    $$props.class,
+    className,
   )}
 >
   <button class="z-30 -ml-4 rounded-full p-2 disabled:opacity-25" on:click={() => dispatch('back')} {disabled}>
