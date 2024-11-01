@@ -26,8 +26,8 @@
   }
 </script>
 
-<TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.APP.NAVBAR_TITLE()} />
-<div class="content-height flex flex-col bg-silver dark:bg-navy">
+<TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.APP.NAVBAR_TITLE()} class="sticky top-0 z-10 " />
+<div class="flex flex-col bg-silver dark:bg-navy">
   <div class="flex flex-col space-y-[10px] px-4 py-5">
     <SettingsEntry
       icon={TranslateFillIcon}
@@ -88,10 +88,3 @@
     {/if}
   </div>
 </div>
-
-<style>
-  .content-height {
-    /* bottom-navigation: 64px, top-navigation: 50px */
-    height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom) - 64px - 50px);
-  }
-</style>
