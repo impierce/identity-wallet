@@ -20,6 +20,7 @@
 </script>
 
 <TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.NAVBAR_TITLE()} class="sticky top-0 z-10" />
+
 <div class="flex flex-col space-y-[15px] bg-silver px-4 py-5 dark:bg-navy" in:fly={{ x: 32, opacity: 1 }}>
   <!-- Avatar -->
   <div class="flex justify-center">

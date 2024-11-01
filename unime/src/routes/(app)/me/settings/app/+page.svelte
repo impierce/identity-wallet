@@ -26,7 +26,8 @@
   }
 </script>
 
-<TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.APP.NAVBAR_TITLE()} class="sticky top-0 z-10 " />
+<TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.APP.NAVBAR_TITLE()} class="sticky top-0 z-10" />
+
 <div class="flex flex-col bg-silver dark:bg-navy">
   <div class="flex flex-col space-y-[10px] px-4 py-5">
     <SettingsEntry
