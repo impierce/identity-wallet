@@ -7,9 +7,10 @@
   $: active = ($page.route.id?.split('/').at(2) ?? 'me') as 'me' | 'scan' | 'activity';
 </script>
 
-<div class="safe-area-height">
+<!-- Create new stacking context to avoid interference with dev menu. -->
+<div class="safe-area-height isolate">
   <!-- Fixed height is required to trigger scrolling.
-       `pb-[64px]` refelcts the height of the sticky`BottomNavBar`.
+       `pb-[64px]` reflects the height of the sticky`BottomNavBar`.
        `h-full` ensures that sticky `BottomNavBar` does not cover any content when scrolling is active. -->
   <div class="hide-scrollbar h-full overflow-y-auto pb-[64px]">
     <slot />
