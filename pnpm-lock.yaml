@@ -126,8 +126,8 @@ importers:
         specifier: ^3.8.5
         version: 3.8.6(@babel/core@7.25.2)(postcss-load-config@4.0.2(postcss@8.4.47))(postcss@8.4.47)(svelte@4.2.19)
       svelte-sequential-preprocessor:
-        specifier: ^2.0.1
-        version: 2.0.1
+        specifier: ^2.0.2
+        version: 2.0.2
       tailwind-merge:
         specifier: ^2.4.0
         version: 2.5.2
@@ -2513,8 +2513,8 @@ packages:
       typescript:
         optional: true
 
-  svelte-sequential-preprocessor@2.0.1:
-    resolution: {integrity: sha512-N5JqlBni6BzElxmuFrOPxOJnjsxh1cFDACLEVKs8OHBcx8ZNRO1p5SxuQex1m3qbLzAC8G99EHeWcxGkjyKjLQ==}
+  svelte-sequential-preprocessor@2.0.2:
+    resolution: {integrity: sha512-DIFm0kSNscVxtBmKkBiygAHB5otoqN1aVmJ3t57jZhJfCB7Np/lUSoTtSrvPFjmlBbMeOsb1VQ06cut1+rBYOg==}
     engines: {node: '>=16'}
 
   svelte@4.2.19:
@@ -2598,9 +2598,6 @@ packages:
 
   ts-interface-checker@0.1.13:
     resolution: {integrity: sha512-Y/arvbn+rrz3JCKl9C4kVNfTfSm2/mEp5FSz5EsZSANGPSlQrpRI5M4PKF+mJnE52jOO90PnPSc3Ur3bTQw0gA==}
-
-  tslib@2.6.3:
-    resolution: {integrity: sha512-xNvxJEOUiWPGhUuUdQgAJPKOOJfGnIyKySOc09XkKsgdUV/3E2zvwZYdejjmRgPCgcym1juLH3226yA7sEFJKQ==}
 
   tslib@2.7.0:
     resolution: {integrity: sha512-gLXCKdN1/j47AiHiOkJN69hJmcbGTHI0ImLmbYLHykhgeN0jVGola9yVjFgzCUklsZQMW55o+dW7IXv3RCXDzA==}
@@ -5206,10 +5203,10 @@ snapshots:
       postcss-load-config: 4.0.2(postcss@8.4.47)
       typescript: 5.5.4
 
-  svelte-sequential-preprocessor@2.0.1:
+  svelte-sequential-preprocessor@2.0.2:
     dependencies:
       svelte: 4.2.19
-      tslib: 2.6.3
+      tslib: 2.7.0
 
   svelte@4.2.19:
     dependencies:
@@ -5316,8 +5313,6 @@ snapshots:
       typescript: 5.5.4
 
   ts-interface-checker@0.1.13: {}
-
-  tslib@2.6.3: {}
 
   tslib@2.7.0: {}
 
