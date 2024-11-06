@@ -239,13 +239,15 @@ async fn get_validated_linked_credential_data(
                                         }
                                     }
                                 }
-                                else if let Ok(response) = reqwest::Client::new().get(format!("{}/oid4vci/.well-known/openid-credential-issuer", domain)).send().await {
-                                    if let Ok(metadata) = response.json::<CredentialIssuerMetadata>().await {
-                                        if let Some(conf) = metadata.credential_configurations_supported.get("Omzetbelasting") {
-                                            if let Some(image) = conf.display[0].get("logo") {
-                                                if let Some(image_url) = image.get("url") {
-                                                    logo_uri = image_url.as_str().map(ToString::to_string);
-                                                    break;
+                                if logo_uri.is_none() {
+                                    if let Ok(response) = reqwest::Client::new().get(format!("{}oid4vci/.well-known/openid-credential-issuer", domain)).send().await {
+                                        if let Ok(metadata) = response.json::<CredentialIssuerMetadata>().await {
+                                            if let Some(conf) = metadata.credential_configurations_supported.get("Omzetbelasting") {
+                                                if let Some(image) = conf.display[0].get("logo") {
+                                                    if let Some(image_url) = image.get("url") {
+                                                        logo_uri = image_url.as_str().map(ToString::to_string);
+                                                        break;
+                                                    }
                                                 }
                                             }
                                         }
