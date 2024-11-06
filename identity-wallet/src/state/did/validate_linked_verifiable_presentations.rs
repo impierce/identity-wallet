@@ -204,7 +204,7 @@ async fn get_validated_linked_credential_data(
                         .unwrap_or_else(|| {
                             warn!("No issuance date available in the vc either, invalid jwt/vc");
                             // TODO: should the whole flow stop here?
-                            return String::new();
+                            String::new()
                         })
                 });
 
@@ -256,6 +256,8 @@ async fn get_validated_linked_credential_data(
                     validation_status = ValidationStatus::Failure;
                 }
 
+                info!("Linked verifiable credential data: {name:#?}, {logo_uri:#?}, {issuance_date:#?}, {issuer_linked_domains:#?}, {validation_status:#?}");
+                
                 Some(LinkedVerifiableCredentialData {
                     name,
                     logo_uri,
@@ -297,7 +299,7 @@ async fn get_validated_linked_domains(issuer_linked_domains: &[Url], issuer_did:
     if validated_linked_domains.is_empty() {
         // TODO: find a way to differentiate between failure and unknown
         validation_status = ValidationStatus::Unknown;
-        if let Some(did_web_url) = extract_url_from_did_web(&issuer_did) {
+        if let Some(did_web_url) = extract_url_from_did_web(issuer_did) {
             validated_linked_domains.insert(0, did_web_url);
         }
     }
@@ -371,7 +373,7 @@ fn get_name(credential_subject: &Value) -> Option<String> {
         .map(ToString::to_string)
 }
 
-async fn get_logo_uri(credential_subject: &Value, validated_linked_domains: &Vec<Url>) -> Option<String> {
+async fn get_logo_uri(credential_subject: &Value, validated_linked_domains: &[Url]) -> Option<String> {
     let mut logo_uri = credential_subject
         .get("image")
         .and_then(Value::as_str)
