@@ -3555,7 +3555,7 @@ dependencies = [
  "httpdate",
  "itoa 1.0.11",
  "pin-project-lite",
- "socket2 0.4.10",
+ "socket2 0.5.7",
  "tokio",
  "tower-service",
  "tracing",
@@ -4087,6 +4087,7 @@ dependencies = [
  "iota_stronghold",
  "itertools 0.10.5",
  "jsonwebtoken",
+ "jwt",
  "lazy_static",
  "log",
  "oid4vc",
@@ -5050,6 +5051,21 @@ dependencies = [
  "serde",
  "serde_json",
  "simple_asn1 0.6.2",
+]
+
+[[package]]
+name = "jwt"
+version = "0.16.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6204285f77fe7d9784db3fdc449ecce1a0114927a51d5a41c4c7a292011c015f"
+dependencies = [
+ "base64 0.13.1",
+ "crypto-common",
+ "digest 0.10.7",
+ "hmac 0.12.1",
+ "serde",
+ "serde_json",
+ "sha2 0.10.8",
 ]
 
 [[package]]

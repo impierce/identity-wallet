@@ -2,6 +2,7 @@ use crate::{
     persistence::{download_asset, hash},
     state::did::validate_domain_linkage::{validate_domain_linkage, ValidationStatus, Verifier},
 };
+use chrono::DateTime;
 use did_manager::Resolver;
 use futures::{
     future::OptionFuture,
@@ -9,12 +10,13 @@ use futures::{
     StreamExt,
 };
 use identity_iota::{
-    core::{OneOrMany, ToJson},
-    credential::{DecodedJwtPresentation, FailFast, Jwt, JwtCredentialValidator, JwtPresentationValidator, Subject},
+    core::ToJson,
+    credential::{DecodedJwtPresentation, FailFast, Jwt, JwtCredentialValidator, JwtPresentationValidator},
     document::{CoreDocument, Service},
     verification::jws::Decoder,
 };
 use identity_jose::jwt::JwtClaims;
+use jwt::{Claims, Header, Token};
 use log::{info, warn};
 use oid4vc::oid4vci::credential_issuer::credential_issuer_metadata::CredentialIssuerMetadata;
 use serde::{Deserialize, Serialize};
@@ -179,24 +181,58 @@ async fn get_validated_linked_credential_data(
 ) -> Vec<LinkedVerifiableCredentialData> {
     iter(linked_verifiable_presentation.presentation.verifiable_credential)
         .filter_map(|linked_verifiable_credential| async move {
-            // Resolve the issuer document and issuer DID
-            let issuer_document = get_issuer_document(resolver, &linked_verifiable_credential).await?;
-            let issuer_did = issuer_document.id().to_string();
+            // Only decode the linked verifiable credential, don't validate it yet
+            let unverified_jwt: Token<Header, Claims, _> =
+                Token::parse_unverified(linked_verifiable_credential.as_str()).unwrap();
 
-            info!("Issuer document: {issuer_document:#?}");
+            info!("\n\n\n\n\n\n\n\n\n{:#?}\n\n\n", unverified_jwt.claims());
+            let validation_status: ValidationStatus;
+            let issuance_date = unverified_jwt
+                .claims()
+                .registered
+                .not_before
+                .and_then(|nbf_timestamp| DateTime::from_timestamp(nbf_timestamp as i64, 0))
+                .map(|datetime| datetime.to_rfc3339())
+                .unwrap_or_else(|| {
+                    warn!("No issuance date available in Jwt claims nbf");
+                    unverified_jwt
+                        .claims()
+                        .private
+                        .get("vc")
+                        .and_then(|vc| vc.get("issuance_date").and_then(Value::as_str).map(ToString::to_string))
+                        .unwrap_or_else(|| {
+                            warn!("No issuance date available in the vc either, invalid jwt/vc");
+                            // TODO: should the whole flow stop here?
+                            return String::new();
+                        })
+                });
 
-            // Resolve the issuer linked domains from the issuer document
-            let issuer_linked_domains = get_issuer_linked_domains(&issuer_document).await;
+            if let Some(credential_subject) = unverified_jwt
+                .claims()
+                .private
+                .get("vc")
+                .and_then(|vc| vc.get("credentialSubject"))
+            {
+                // Resolve the issuer document and issuer DID
+                let issuer_document = get_issuer_document(resolver, &linked_verifiable_credential).await?;
+                let issuer_did = issuer_document.id().to_string();
 
-            info!("Issuer linked domains: {issuer_linked_domains:#?}");
+                info!("Issuer document: {issuer_document:#?}");
 
-            // Only linked verifiable credentials with at least one successful domain linkage validation are considered
-            let validated_linked_domains = get_validated_linked_domains(&issuer_linked_domains, &issuer_did).await;
+                // Resolve the issuer linked domains from the issuer document
+                let issuer_linked_domains = get_issuer_linked_domains(&issuer_document).await;
 
-            if !validated_linked_domains.is_empty() {
+                info!("Issuer linked domains: {issuer_linked_domains:#?}");
+
+                // Only linked verifiable credentials with at least one successful domain linkage validation are considered
+                let validated_linked_domains = get_validated_linked_domains(&issuer_linked_domains, &issuer_did).await;
+
+                let name = get_name(credential_subject);
+                let logo_uri = get_logo_uri(credential_subject, &validated_linked_domains).await;
+
+                // Validate the linked verifiable credential
                 let validator = JwtCredentialValidator::with_signature_verifier(Verifier);
 
-                // Decode the linked verifiable credential and validate it
                 if let Ok(linked_verifiable_credential) = validator.validate::<_, Value>(
                     &linked_verifiable_credential,
                     &issuer_document,
@@ -204,39 +240,28 @@ async fn get_validated_linked_credential_data(
                     FailFast::FirstError,
                 ) {
                     info!("Validated linked verifiable credential: {linked_verifiable_credential:#?}");
-                    let validation_status = ValidationStatus::Success;
-
-                    let credential_subject = match &linked_verifiable_credential.credential.credential_subject {
-                        OneOrMany::One(subject) => Some(subject),
-                        // TODO: how to handle multiple credential subjects?
-                        OneOrMany::Many(subjects) => subjects.first(),
-                    };
-
-                    if let Some(credential_subject) = credential_subject {
-                        let name = get_name(credential_subject);
-                        let logo_uri = get_logo_uri(credential_subject, &validated_linked_domains).await;
-                        let issuance_date = linked_verifiable_credential.credential.issuance_date.to_rfc3339();
-
-                        Some(LinkedVerifiableCredentialData {
-                            name,
-                            logo_uri,
-                            issuance_date,
-                            issuer_linked_domains: validated_linked_domains,
-                            validation_status,
-                        })
-                    } else {
-                        warn!("Failed to get credential_subject: {linked_verifiable_credential:#?}");
-                        None
-                    }
+                    validation_status = ValidationStatus::Success;
                 } else {
                     warn!("Failed to validate linked verifiable credential: {linked_verifiable_credential:#?}");
                     // TODO: Should we add more fine-grained error handling? `None` here means that the linked verifiable credential is invalid.
-                    None
+                    validation_status = ValidationStatus::Failure;
                 }
+                if !validated_linked_domains.is_empty() {
+                } else {
+                    warn!("No validated linked domains for issuer DID: {issuer_did}");
+                    // TODO: Should we add more fine-grained error handling? `None` here means that the domain linkage
+                    // validation failed or is unknown.
+                }
+
+                Some(LinkedVerifiableCredentialData {
+                    name,
+                    logo_uri,
+                    issuance_date,
+                    issuer_linked_domains: validated_linked_domains,
+                    validation_status,
+                })
             } else {
-                warn!("No validated linked domains for issuer DID: {issuer_did}");
-                // TODO: Should we add more fine-grained error handling? `None` here means that the domain linkage
-                // validation failed or is unknown.
+                warn!("Failed to get credential_subject: {linked_verifiable_credential:#?}");
                 None
             }
         })
@@ -331,19 +356,17 @@ async fn get_issuer_linked_domains(issuer_document: &CoreDocument) -> Vec<Url> {
         .collect()
 }
 
-fn get_name(credential_subject: &Subject) -> Option<String> {
+fn get_name(credential_subject: &Value) -> Option<String> {
     credential_subject
-        .properties
         .get("name")
-        .or_else(|| credential_subject.properties.get("naam"))
-        .or_else(|| credential_subject.properties.get("legal_person_name"))
+        .or_else(|| credential_subject.get("naam"))
+        .or_else(|| credential_subject.get("legal_person_name"))
         .and_then(Value::as_str)
         .map(ToString::to_string)
 }
 
-async fn get_logo_uri(credential_subject: &Subject, validated_linked_domains: &Vec<Url>) -> Option<String> {
+async fn get_logo_uri(credential_subject: &Value, validated_linked_domains: &Vec<Url>) -> Option<String> {
     let mut logo_uri = credential_subject
-        .properties
         .get("image")
         .and_then(Value::as_str)
         .map(|image| image.to_string());
