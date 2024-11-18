@@ -265,14 +265,20 @@ const de = {
   },
   CREDENTIAL: {
     NAVBAR_TITLE: 'Credential Informationen',
-  },
-  BADGE: {
-    NAVBAR_TITLE: 'Badge Informationen',
     DETAILS: {
       VALID: 'Gültig',
       ISSUED_BY: 'Ausgestellt von',
       DESCRIPTION: 'Beschreibung',
       CONTENTS: 'Inhalt',
+    },
+    ACTIONS: {
+      DELETE: {
+        BUTTON_LABEL: 'Credential löschen',
+        TITLE: 'Credential löschen',
+        DESCRIPTION:
+          'Bist du sicher, dass du dieses Credential aus deiner Wallet löschen willst? Diese Aktion kann nicht rückgängig gemacht werden.',
+        CONFIRM_BUTTON: 'Löschen',
+      },
     },
   },
   SORT: {

@@ -264,14 +264,20 @@ const nl = {
   },
   CREDENTIAL: {
     NAVBAR_TITLE: 'Credential Informatie',
-  },
-  BADGE: {
-    NAVBAR_TITLE: 'Badge Informatie',
     DETAILS: {
       VALID: 'Geldig',
       ISSUED_BY: 'Uitgegeven door',
       DESCRIPTION: 'Beschrijving',
       CONTENTS: 'Inhoud',
+    },
+    ACTIONS: {
+      DELETE: {
+        BUTTON_LABEL: 'Credential verwijderen',
+        TITLE: 'Credential verwijderen',
+        DESCRIPTION:
+          'Weet je zeker dat je deze credential uit je wallet wilt verwijderen? Deze aktie kan niet meer worden teruggedraaid.',
+        CONFIRM_BUTTON: 'Verwijderen',
+      },
     },
   },
   SORT: {

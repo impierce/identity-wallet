@@ -10,9 +10,6 @@
   <div class="absolute bottom-2 left-2 rounded bg-orange-100 p-1 font-mono text-xs text-orange-600">
     {$page.url.pathname}
   </div>
-
-  <div class="safe-area-top bg-silver dark:bg-navy" />
-  <div class="safe-area-bottom" />
 </div>
 
 <style>

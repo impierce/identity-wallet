@@ -3,68 +3,174 @@
 @tailwind utilities;
 
 @layer base {
-  /* @font-face { */
-  /* font-family: 'Satoshi-Variable';
-    src: url('/fonts/Satoshi-Variable.woff2') format('woff2'); */
-  /* font-family: 'Inter-Variable';
-    src: url('/fonts/Inter-Variable.ttf') format('truetype'); */
-  /* font-family: 'Inter'; */
-  /* src: url('/fonts/Inter-VariableFont_slnt,wght.ttf') format('truetype'); */
-  /* src: url('/fonts/Inter.var.woff2') format('woff2'); */
-  /* } */
-
+  /* Font: Inter. */
   @font-face {
     font-family: 'Inter';
-    src: url('/fonts/Inter/static/Inter-Thin.ttf') format('truetype');
+    font-display: swap;
+    font-style: normal;
     font-weight: 100;
+    src: url('./fonts/inter/inter-v18-latin-100.woff2') format('woff2');
   }
+
+  /* @font-face {
+    font-family: 'Inter';
+    font-display: swap;
+    font-style: italic;
+    font-weight: 100;
+    src: url('/fonts/inter-v18-latin-100italic.woff2') format('woff2');
+  } */
 
   @font-face {
     font-family: 'Inter';
-    src: url('/fonts/Inter/static/Inter-ExtraLight.ttf') format('truetype');
+    font-display: swap;
+    font-style: normal;
     font-weight: 200;
+    src: url('./fonts/inter/inter-v18-latin-200.woff2') format('woff2');
   }
+
+  /* @font-face {
+    font-family: 'Inter';
+    font-display: swap;
+    font-style: italic;
+    font-weight: 200;
+    src: url('./fonts/inter/inter-v18-latin-200italic.woff2') format('woff2');
+  } */
 
   @font-face {
     font-family: 'Inter';
-    src: url('/fonts/Inter/static/Inter-Light.ttf') format('truetype');
+    font-display: swap;
+    font-style: normal;
     font-weight: 300;
+    src: url('./fonts/inter/inter-v18-latin-300.woff2') format('woff2');
   }
+
+  /* @font-face {
+    font-family: 'Inter';
+    font-display: swap;
+    font-style: italic;
+    font-weight: 300;
+    src: url('./fonts/inter/inter-v18-latin-300italic.woff2') format('woff2');
+  } */
 
   @font-face {
     font-family: 'Inter';
-    src: url('/fonts/Inter/static/Inter-Regular.ttf') format('truetype');
+    font-display: swap;
+    font-style: normal;
     font-weight: 400;
+    src: url('./fonts/inter/inter-v18-latin-regular.woff2') format('woff2');
   }
+
+  /* @font-face {
+    font-family: 'Inter';
+    font-display: swap;
+    font-style: italic;
+    font-weight: 400;
+    src: url('./fonts/inter/inter-v18-latin-italic.woff2') format('woff2');
+  } */
 
   @font-face {
     font-family: 'Inter';
-    src: url('/fonts/Inter/static/Inter-Medium.ttf') format('truetype');
+    font-display: swap;
+    font-style: normal;
     font-weight: 500;
+    src: url('./fonts/inter/inter-v18-latin-500.woff2') format('woff2');
   }
+
+  /* @font-face {
+    font-family: 'Inter';
+    font-display: swap;
+    font-style: italic;
+    font-weight: 500;
+    src: url('./fonts/inter/inter-v18-latin-500italic.woff2') format('woff2');
+  } */
 
   @font-face {
     font-family: 'Inter';
-    src: url('/fonts/Inter/static/Inter-SemiBold.ttf') format('truetype');
+    font-display: swap;
+    font-style: normal;
     font-weight: 600;
+    src: url('./fonts/inter/inter-v18-latin-600.woff2') format('woff2');
   }
+
+  /* @font-face {
+    font-family: 'Inter';
+    font-display: swap;
+    font-style: italic;
+    font-weight: 600;
+    src: url('./fonts/inter/inter-v18-latin-600italic.woff2') format('woff2');
+  } */
 
   @font-face {
     font-family: 'Inter';
-    src: url('/fonts/Inter/static/Inter-Bold.ttf') format('truetype');
+    font-display: swap;
+    font-style: normal;
     font-weight: 700;
+    src: url('./fonts/inter/inter-v18-latin-700.woff2') format('woff2');
   }
+
+  /* @font-face {
+    font-family: 'Inter';
+    font-display: swap;
+    font-style: italic;
+    font-weight: 700;
+    src: url('./fonts/inter/inter-v18-latin-700italic.woff2') format('woff2');
+  } */
 
   @font-face {
     font-family: 'Inter';
-    src: url('/fonts/Inter/static/Inter-ExtraBold.ttf') format('truetype');
+    font-display: swap;
+    font-style: normal;
     font-weight: 800;
+    src: url('./fonts/inter/inter-v18-latin-800.woff2') format('woff2');
   }
+
+  /* @font-face {
+    font-family: 'Inter';
+    font-display: swap;
+    font-style: italic;
+    font-weight: 800;
+    src: url('./fonts/inter/inter-v18-latin-800italic.woff2') format('woff2');
+  } */
 
   @font-face {
     font-family: 'Inter';
-    src: url('/fonts/Inter/static/Inter-Black.ttf') format('truetype');
+    font-display: swap;
+    font-style: normal;
     font-weight: 900;
+    src: url('./fonts/inter/inter-v18-latin-900.woff2') format('woff2');
+  }
+
+  /* @font-face {
+    font-family: 'Inter';
+    font-display: swap;
+    font-style: italic;
+    font-weight: 900;
+    src: url('./fonts/inter/inter-v18-latin-900italic.woff2') format('woff2');
+  } */
+
+  :root {
+    /* Define safe area inset variables to allow overriding in dev. */
+    --safe-area-inset-top: env(safe-area-inset-top);
+    --safe-area-inset-bottom: env(safe-area-inset-bottom);
+
+    /* Uncomment to simulate safe area insets for iPhone 13 Pro. */
+    /* --safe-area-inset-top: 47px;
+    --safe-area-inset-bottom: 34px; */
+
+    /* Colors for light theme (will be fed into `rgb` function). */
+    --color-brand: 92 199 199; /* "Primary" (#5cc7c7) */
+    --color-text: 30 41 59; /* Tailwind Slate 800 (#1e293b) */
+    --color-text-alt: 100 116 139; /* Tailwind Slate 500 (#64748b) */
+    --color-background: 249 249 249; /* "Silver" (#f9f9f9) */
+    --color-background-alt: 255 255 255; /* white (#ffffff) */
+  }
+
+  .dark {
+    /* Colors for dark theme. */
+    --color-text: 239 239 239; /* "Grey" (#efefef) */
+    --color-text-alt: 148 163 184; /* Tailwind Slate 400 (#94a3b8) */
+    --color-background: 30 57 89; /* "Navy" (#1e3959) */
+    --color-background-alt: 19 36 61; /* "Dark" (#13243d) */
   }
 
   html {
@@ -72,79 +178,14 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* h1 {
-    @apply text-2xl font-bold;
-  }
-
-  h2 {
-    @apply text-xl font-semibold;
-  } */
-
-  h3 {
-    @apply text-lg font-semibold;
+  body {
+    /* Globally disables any text to be selectable by the user */
+    user-select: none;
   }
 }
-
-/* h3 {
-  @apply text-lg font-semibold;
-} */
 
 @layer utilities {
   .hide-scrollbar::-webkit-scrollbar {
     display: none;
   }
 }
-
-/* iOS specific styling, https://github.com/tauri-apps/tauri/issues/6961 */
-body {
-  /* padding-top: env(safe-area-inset-top); */
-  /* padding-bottom: env(safe-area-inset-bottom); */
-  padding: var(--safe-area-inset-top) env(safe-area-inset-right) var(--safe-area-inset-bottom) env(safe-area-inset-left);
-  /* padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
-    env(safe-area-inset-left); */
-  height: 100vh;
-  width: 100vw;
-  /* Blue 700 */
-  /* background-color: #1d4ed8; */
-  /* overflow: hidden; */
-  /* Cuts off all overflowing content on the x-axis */
-  overflow-x: hidden;
-  /* overflow-y: hidden; */
-  /* max-width: 100%; */
-  /* Globally disables any text to be selectable by the user */
-  user-select: none;
-}
-
-.transparent {
-  background-color: transparent;
-}
-
-:root {
-  /* TODO: development: using variables for easier testing, production: replace var() --> env()? */
-  --safe-area-inset-top: env(safe-area-inset-top);
-  --safe-area-inset-bottom: env(safe-area-inset-bottom);
-
-  /* TODO: testing: uncomment to simulate safe areas on iOS */
-  /* iPhone 13 Pro */
-  /* --safe-area-inset-top: 47px;
-  --safe-area-inset-bottom: 34px; */
-}
-
-.safe-area-top {
-  position: fixed;
-  top: 0px;
-  height: var(--safe-area-inset-top);
-  width: 100%;
-}
-
-.safe-area-bottom {
-  position: fixed;
-  bottom: 0px;
-  height: var(--safe-area-inset-bottom);
-  width: 100%;
-}
-
-/**
- * TODO (when supporting landscape orientation):
- * https://kulturbanause.de/blog/websites-fuer-das-iphone-x-optimieren-weisse-balken-entfernen-viewport-anpassen-safe-area-festlegen/
-*/

@@ -264,14 +264,19 @@ const en = {
   },
   CREDENTIAL: {
     NAVBAR_TITLE: 'Credential Information',
-  },
-  BADGE: {
-    NAVBAR_TITLE: 'Badge Information',
     DETAILS: {
       VALID: 'Valid',
       ISSUED_BY: 'Issued by',
       DESCRIPTION: 'Description',
       CONTENTS: 'Contents',
+    },
+    ACTIONS: {
+      DELETE: {
+        BUTTON_LABEL: 'Delete credential',
+        TITLE: 'Delete credential',
+        DESCRIPTION: 'Are you sure you want to delete this credential from your wallet? This action cannot be undone.',
+        CONFIRM_BUTTON: 'Delete',
+      },
     },
   },
   SORT: {

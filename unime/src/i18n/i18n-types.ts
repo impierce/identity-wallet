@@ -734,12 +734,6 @@ type RootTranslation = {
 		 * C​r​e​d​e​n​t​i​a​l​ ​I​n​f​o​r​m​a​t​i​o​n
 		 */
 		NAVBAR_TITLE: string
-	}
-	BADGE: {
-		/**
-		 * B​a​d​g​e​ ​I​n​f​o​r​m​a​t​i​o​n
-		 */
-		NAVBAR_TITLE: string
 		DETAILS: {
 			/**
 			 * V​a​l​i​d
@@ -757,6 +751,26 @@ type RootTranslation = {
 			 * C​o​n​t​e​n​t​s
 			 */
 			CONTENTS: string
+		}
+		ACTIONS: {
+			DELETE: {
+				/**
+				 * D​e​l​e​t​e​ ​c​r​e​d​e​n​t​i​a​l
+				 */
+				BUTTON_LABEL: string
+				/**
+				 * D​e​l​e​t​e​ ​c​r​e​d​e​n​t​i​a​l
+				 */
+				TITLE: string
+				/**
+				 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​r​e​m​o​v​e​ ​t​h​i​s​ ​c​r​e​d​e​n​t​i​a​l​ ​f​r​o​m​ ​y​o​u​r​ ​w​a​l​l​e​t​?​ ​T​h​i​s​ ​a​c​t​i​o​n​ ​c​a​n​n​o​t​ ​b​e​ ​u​n​d​o​n​e​.
+				 */
+				DESCRIPTION: string
+				/**
+				 * D​e​l​e​t​e
+				 */
+				CONFIRM_BUTTON: string
+			}
 		}
 	}
 	SORT: {
@@ -1577,12 +1591,6 @@ export type TranslationFunctions = {
 		 * Credential Information
 		 */
 		NAVBAR_TITLE: () => LocalizedString
-	}
-	BADGE: {
-		/**
-		 * Badge Information
-		 */
-		NAVBAR_TITLE: () => LocalizedString
 		DETAILS: {
 			/**
 			 * Valid
@@ -1600,6 +1608,26 @@ export type TranslationFunctions = {
 			 * Contents
 			 */
 			CONTENTS: () => LocalizedString
+		}
+		ACTIONS: {
+			DELETE: {
+				/**
+				 * Delete credential
+				 */
+				BUTTON_LABEL: () => LocalizedString
+				/**
+				 * Delete credential
+				 */
+				TITLE: () => LocalizedString
+				/**
+				 * Are you sure you want to remove this credential from your wallet? This action cannot be undone.
+				 */
+				DESCRIPTION: () => LocalizedString
+				/**
+				 * Delete
+				 */
+				CONFIRM_BUTTON: () => LocalizedString
+			}
 		}
 	}
 	SORT: {

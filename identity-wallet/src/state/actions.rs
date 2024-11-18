@@ -68,7 +68,7 @@ mod bindings {
         common::actions::{cancel_user_flow::CancelUserFlow, unlock_storage::UnlockStorage},
         credentials::actions::{
             credential_offers_selected::CredentialOffersSelected, credentials_selected::CredentialsSelected,
-            update_credential_metadata::UpdateCredentialMetadata,
+            delete_credential::DeleteCredential, update_credential_metadata::UpdateCredentialMetadata,
         },
         dev_mode::actions::dev_profile::DevProfile,
         did::actions::{set_preferred_keytype::SetPreferredKeyType, set_preferred_method::SetPreferredDidMethod},
@@ -117,6 +117,8 @@ mod bindings {
         CredentialOffersSelected { payload: CredentialOffersSelected },
         #[serde(rename = "[Credential Metadata] Update")]
         UpdateCredentialMetadata { payload: UpdateCredentialMetadata },
+        #[serde(rename = "[Credential] Delete")]
+        DeleteCredential { payload: DeleteCredential },
         #[serde(rename = "[User Journey] Cancel")]
         CancelUserJourney,
         #[serde(rename = "[Settings] Update sorting preference")]
