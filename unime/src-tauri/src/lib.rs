@@ -1,4 +1,4 @@
-use fern::colors::Color;
+use colored::Color;
 use identity_wallet::{
     persistence::{clear_assets_tmp_folder, initialize_storage},
     state::AppStateContainer,

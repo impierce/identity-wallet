@@ -13,12 +13,13 @@ members = ["identity-wallet", "unime/src-tauri"]
 # - https://github.com/tauri-apps/tauri/blob/6d965e9fbf57323b1ba25faa68b4d0b7df4f07db/core/tauri-build/Cargo.toml#L3
 # - https://github.com/tauri-apps/tauri/blob/6d965e9fbf57323b1ba25faa68b4d0b7df4f07db/core/tauri-build/Cargo.toml#L31-L32
 # - https://github.com/tauri-apps/tauri/blob/6d965e9fbf57323b1ba25faa68b4d0b7df4f07db/core/tauri-build/Cargo.toml#L39
-tauri = { version = "2.0.0-rc.0", features = [
+tauri = { version = "2.1.1", features = [
     "protocol-asset",
     "rustls-tls",
 ] }
 # tauri-codegen = { version = "2.0.0-rc.0" }
-tauri-build = { version = "2.0.0-rc.0", default-features = false}
+tauri-build = "2.0.3"
+# tauri-build = { version = "2.0.0-rc.0", default-features = false}
 # tauri-macros = { version = "2.0.0-rc.0" }
 # tauri-runtime = { version = "2.0.0-rc.0" }
 # tauri-runtime-wry = { version = "2.0.0-rc.0" }

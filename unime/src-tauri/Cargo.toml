@@ -28,14 +28,14 @@ tauri.workspace = true
 # tauri-utils.workspace = true
 
 dotenvy = { version = "0.15" }
-fern = "0.6.0"
+colored = { version = "2" }
 identity-wallet = { path = "../../identity-wallet" }
 log.workspace = true
 serde_json.workspace = true
-tauri-plugin-barcode-scanner = { version = "2.0.0-rc.0" }
-tauri-plugin-log = { version = "2.0.0-rc.0", features = ["colored"] }
-tauri-plugin-fs = { version = "2.0.0-rc.0" }
-tauri-plugin-shell = { version = "2.0.0-rc.0" }
+tauri-plugin-barcode-scanner = { version = "2" }
+tauri-plugin-log = { version = "2", features = ["colored"] }
+tauri-plugin-fs = { version = "2" }
+tauri-plugin-shell = { version = "2" }
 
 [dev-dependencies]
 tauri = { workspace = true, features = ["test"] }
