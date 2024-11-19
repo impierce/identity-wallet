@@ -333,7 +333,7 @@ Stacking context: We have to deviate from the DOM-sequence.
       {/if}
 
       <button
-        class="fixed left-[calc(50%_-_12px)] top-[var(--safe-area-inset-top)] z-20 h-6 w-6 rounded-b-md bg-red-200 p-[2px]"
+        class="fixed left-[calc(50%_-_12px)] top-[var(--safe-area-inset-top)] z-20 h-6 w-6 rounded-b-md bg-red-200 p-[2px] [view-transition-name:dev-menu]"
         on:click={() => (expandedDevMenu = !expandedDevMenu)}
       >
         {#if expandedDevMenu}

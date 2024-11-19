@@ -21,7 +21,7 @@
 
 <TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.NAVBAR_TITLE()} />
 <div class="content-height flex flex-col bg-silver dark:bg-navy">
-  <div class="hide-scrollbar flex flex-col space-y-[15px] overflow-y-scroll px-4 py-5" in:fly={{ x: 32, opacity: 1 }}>
+  <div class="hide-scrollbar flex flex-col space-y-[15px] overflow-y-scroll px-4 py-5">
     <!-- Avatar -->
     <div class="flex justify-center">
       <EmojiAvatarSelect
