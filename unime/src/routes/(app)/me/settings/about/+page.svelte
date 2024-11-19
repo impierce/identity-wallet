@@ -42,7 +42,7 @@
     <section class="flex flex-col items-center">
       <h2 class="mb-3 font-bold">{$LL.SETTINGS.SUPPORT.ABOUT.LICENSE()}</h2>
       <div>Apache License 2.0</div>
-      <div>{`${new Date().getFullYear()} Impierce Technologies`}</div>
+      <div>{`${new Date().getFullYear()} Impierce Technologies B.V.`}</div>
     </section>
   </div>
 </div>
