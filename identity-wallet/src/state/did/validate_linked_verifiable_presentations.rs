@@ -10,7 +10,10 @@ use futures::{
 };
 use identity_iota::{
     core::{OneOrMany, ToJson},
-    credential::{DecodedJwtPresentation, FailFast, Jwt, JwtCredentialValidationOptions, JwtCredentialValidator, JwtPresentationValidator, StatusCheck, Subject},
+    credential::{
+        DecodedJwtCredential, DecodedJwtPresentation, FailFast, Jwt, JwtCredentialValidationOptions,
+        JwtCredentialValidator, JwtPresentationValidator, StatusCheck, Subject,
+    },
     document::{CoreDocument, Service},
     verification::jws::Decoder,
 };
@@ -221,89 +224,7 @@ async fn get_validated_linked_credential_data(
 
                     if let Some(credential_subject) = credential_subject {
                         let name = get_name(credential_subject);
-                        let mut logo_uri = get_logo_uri(credential_subject).await;
-
-                        // Check if logo URI was retrieved, else attempt to retrieve from well-known endpoint
-                        if logo_uri.is_none() {
-                            warn!("Failed to download logo URI from linked verifiable credential: {linked_verifiable_credential:#?}");
-                            for domain in validated_linked_domains.iter() {
-                                let mut well_known_endpoint = format!("{}.well-known/openid-credential-issuer", domain);
-                                info!("Trying to fetch image from {well_known_endpoint} endpoint");
-                                if let Ok(response) = reqwest::Client::new().get(&well_known_endpoint).send().await {
-                                    if let Ok(metadata) = response.json::<CredentialIssuerMetadata>().await {
-                                        if let Some(display) = metadata.display {
-                                            if let Some(image) = display[0].get("logo") {
-                                                if let Some(image_url) = image.get("url") {
-                                                    logo_uri = image_url.as_str().map(ToString::to_string);
-                                                    break;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                well_known_endpoint = format!("{}oid4vci/.well-known/openid-credential-issuer", domain);
-                                info!("Trying to fetch image from {well_known_endpoint} endpoint");
-                                if let Ok(response) = reqwest::Client::new().get(&well_known_endpoint).send().await {
-                                    if let Ok(metadata) = response.json::<CredentialIssuerMetadata>().await {
-                                        let credential_confs_supported = metadata.credential_configurations_supported;
-                                        match &linked_verifiable_credential.credential.types {
-                                            OneOrMany::One(type_) => {
-                                                info!("Trying to fetch from Credential Configuration Supported: {}", type_);
-                                                if let Some(credential_conf) = credential_confs_supported.get(type_) {
-                                                    let display = &credential_conf.display;
-                                                    if let Some(image) = display[0].get("logo") {
-                                                        if let Some(image_url) = image.get("url") {
-                                                            logo_uri = image_url.as_str().map(ToString::to_string);
-                                                            break;
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            OneOrMany::Many(types) => {
-                                                for type_ in types {
-                                                    info!("Trying to fetch from Credential Configuration Supported: {}", type_);
-                                                    if let Some(credential_conf) = credential_confs_supported.get(type_) {
-                                                        let display = &credential_conf.display;
-                                                        if let Some(image) = display[0].get("logo") {
-                                                            if let Some(image_url) = image.get("url") {
-                                                                logo_uri = image_url.as_str().map(ToString::to_string);
-                                                                break;
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        if let Some(ref logo_uri_str) = logo_uri {
-                            info!("Logo URI: {}", logo_uri_str);
-
-                            // Parse the logo URI
-                            match logo_uri_str.parse() {
-                                Ok(parsed_url) => {
-                                    // Download the asset if parsing succeeded
-                                    if let Err(err) = download_asset(parsed_url, &hash(logo_uri_str)).await {
-                                        warn!("Failed to download logo URI: {:#?}", err);
-                                    }
-                                },
-                                Err(parse_err) => {
-                                    // Log parse error if the URI is invalid
-                                    warn!("Failed to parse logo URI: {:#?}, {:#?}", logo_uri_str, parse_err);
-                                }
-                            }
-                        }
-                        else {
-                            // Logo URI needs to be Some, even if it's value is not working, for the frontend to display the fallback icon.
-                            // Otherwise, it doesn't display any icon.
-                            // TODO: this needs to be fixed in the frontend.
-                            logo_uri = Some("Fallback icon".to_string());
-                            warn!("Failed to fetch logo URI from /.well-known/openid-credential-issuer endpoint");
-                        }
-
+                        let logo_uri = get_logo_uri(credential_subject, &linked_verifiable_credential, &validated_linked_domains).await;
                         let issuance_date = linked_verifiable_credential.credential.issuance_date.to_rfc3339();
 
                         info!("Linkedverifiablecredential: name: {name:?}, logo_uri: {logo_uri:?}, issuance_date: {issuance_date}");
@@ -421,26 +342,114 @@ fn get_name(credential_subject: &Subject) -> Option<String> {
         .map(ToString::to_string)
 }
 
-async fn get_logo_uri(credential_subject: &Subject) -> Option<String> {
-    OptionFuture::from(
-        credential_subject
-            .properties
-            .get("image")
-            .and_then(Value::as_str)
-            .map(|image| async {
-                let _ = download_asset(
-                    image
-                        .parse()
-                        .inspect_err(|err| warn!("Failed to parse logo URI: {:#?}", err))
-                        .ok()?,
-                    &hash(image),
-                )
-                .await;
-                Some(image.to_string())
-            }),
-    )
+/// First try to get the logo URI from the credential subject.
+/// Then, if no success, iterate through the validated linked domains and try to fetch it from the well-known/openid-credential-issuer endpoint.
+/// In this endpoint, first we look inside the Display field, at the root.
+/// Then, if no success, we look inside the Credential Configuration Supported and try the match keys in there with the strings in the type array of the credential, in reverse order.
+/// At first success the loop breaks and we download the image.
+/// Otherwise, we use a fallback icon.
+async fn get_logo_uri(
+    credential_subject: &Subject,
+    linked_verifiable_credential: &DecodedJwtCredential<Value>,
+    validated_linked_domains: &Vec<Url>,
+) -> Option<String> {
+    let mut logo_uri = OptionFuture::from(credential_subject.properties.get("image").and_then(Value::as_str).map(
+        |image| async {
+            let _ = download_asset(
+                image
+                    .parse()
+                    .inspect_err(|err| warn!("Failed to parse logo URI: {:#?}", err))
+                    .ok()?,
+                &hash(image),
+            )
+            .await;
+            Some(image.to_string())
+        },
+    ))
     .await
-    .flatten()
+    .flatten();
+
+    // Check if logo URI was retrieved, else attempt to retrieve from well-known endpoint
+    if logo_uri.is_none() {
+        warn!("Failed to download logo URI from linked verifiable credential: {linked_verifiable_credential:#?}");
+        for domain in validated_linked_domains.iter() {
+            let mut well_known_endpoint = format!("{}.well-known/openid-credential-issuer", domain);
+            info!("Trying to fetch image from {well_known_endpoint} endpoint");
+            if let Ok(response) = reqwest::Client::new().get(&well_known_endpoint).send().await {
+                if let Ok(metadata) = response.json::<CredentialIssuerMetadata>().await {
+                    if let Some(display) = metadata.display {
+                        if let Some(image) = display[0].get("logo") {
+                            if let Some(image_url) = image.get("url") {
+                                logo_uri = image_url.as_str().map(ToString::to_string);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            well_known_endpoint = format!("{}oid4vci/.well-known/openid-credential-issuer", domain);
+            info!("Trying to fetch image from {well_known_endpoint} endpoint");
+            if let Ok(response) = reqwest::Client::new().get(&well_known_endpoint).send().await {
+                if let Ok(metadata) = response.json::<CredentialIssuerMetadata>().await {
+                    let credential_confs_supported = metadata.credential_configurations_supported;
+                    match &linked_verifiable_credential.credential.types {
+                        OneOrMany::One(type_) => {
+                            info!("Trying to fetch from Credential Configuration Supported: {}", type_);
+                            if let Some(credential_conf) = credential_confs_supported.get(type_) {
+                                let display = &credential_conf.display;
+                                if let Some(image) = display[0].get("logo") {
+                                    if let Some(image_url) = image.get("url") {
+                                        logo_uri = image_url.as_str().map(ToString::to_string);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        OneOrMany::Many(types) => {
+                            for type_ in types {
+                                info!("Trying to fetch from Credential Configuration Supported: {}", type_);
+                                if let Some(credential_conf) = credential_confs_supported.get(type_) {
+                                    let display = &credential_conf.display;
+                                    if let Some(image) = display[0].get("logo") {
+                                        if let Some(image_url) = image.get("url") {
+                                            logo_uri = image_url.as_str().map(ToString::to_string);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if let Some(ref logo_uri_str) = logo_uri {
+        info!("Logo URI: {}", logo_uri_str);
+
+        // Parse the logo URI
+        match logo_uri_str.parse() {
+            Ok(parsed_url) => {
+                // Download the asset if parsing succeeded
+                if let Err(err) = download_asset(parsed_url, &hash(logo_uri_str)).await {
+                    warn!("Failed to download logo URI: {:#?}", err);
+                }
+            }
+            Err(parse_err) => {
+                // Log parse error if the URI is invalid
+                warn!("Failed to parse logo URI: {:#?}, {:#?}", logo_uri_str, parse_err);
+            }
+        }
+    } else {
+        // Logo URI needs to be Some, even if it's value is not working, for the frontend to display the fallback icon.
+        // Otherwise, it doesn't display any icon.
+        // TODO: this needs to be fixed in the frontend.
+        logo_uri = Some("Fallback icon".to_string());
+        warn!("Failed to fetch logo URI from /.well-known/openid-credential-issuer endpoint");
+    }
+
+    logo_uri
 }
 
 fn extract_url_from_did_web(did_web: &str) -> Option<Url> {
