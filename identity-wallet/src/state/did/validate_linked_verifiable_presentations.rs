@@ -10,7 +10,7 @@ use futures::{
 };
 use identity_iota::{
     core::{OneOrMany, ToJson},
-    credential::{DecodedJwtPresentation, FailFast, Jwt, JwtCredentialValidator, JwtPresentationValidator, Subject},
+    credential::{DecodedJwtPresentation, FailFast, Jwt, JwtCredentialValidationOptions, JwtCredentialValidator, JwtPresentationValidator, StatusCheck, Subject},
     document::{CoreDocument, Service},
     verification::jws::Decoder,
 };
@@ -202,11 +202,13 @@ async fn get_validated_linked_credential_data(
             if !validated_linked_domains.is_empty() {
                 let validator = JwtCredentialValidator::with_signature_verifier(Verifier);
 
+                let options = JwtCredentialValidationOptions::new().status_check(StatusCheck::SkipUnsupported);
+
                 // Decode the linked verifiable credential and validate it
                 if let Ok(linked_verifiable_credential) = validator.validate::<_, Value>(
                     &linked_verifiable_credential,
                     &issuer_document,
-                    &Default::default(),
+                    &options,
                     FailFast::FirstError,
                 ) {
                     info!("Validated linked verifiable credential: {linked_verifiable_credential:#?}");
@@ -224,9 +226,9 @@ async fn get_validated_linked_credential_data(
                         // Check if logo URI was retrieved, else attempt to retrieve from well-known endpoint
                         if logo_uri.is_none() {
                             warn!("Failed to download logo URI from linked verifiable credential: {linked_verifiable_credential:#?}");
-                            info!("Fetching image from /.well-known/openid-credential-issuer endpoint");
                             for domain in validated_linked_domains.iter() {
-                                let well_known_endpoint = format!("{}/.well-known/openid-credential-issuer", domain);
+                                let mut well_known_endpoint = format!("{}.well-known/openid-credential-issuer", domain);
+                                info!("Trying to fetch image from {well_known_endpoint} endpoint");
                                 if let Ok(response) = reqwest::Client::new().get(&well_known_endpoint).send().await {
                                     if let Ok(metadata) = response.json::<CredentialIssuerMetadata>().await {
                                         if let Some(display) = metadata.display {
@@ -234,6 +236,41 @@ async fn get_validated_linked_credential_data(
                                                 if let Some(image_url) = image.get("url") {
                                                     logo_uri = image_url.as_str().map(ToString::to_string);
                                                     break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                well_known_endpoint = format!("{}oid4vci/.well-known/openid-credential-issuer", domain);
+                                info!("Trying to fetch image from {well_known_endpoint} endpoint");
+                                if let Ok(response) = reqwest::Client::new().get(&well_known_endpoint).send().await {
+                                    if let Ok(metadata) = response.json::<CredentialIssuerMetadata>().await {
+                                        let credential_confs_supported = metadata.credential_configurations_supported;
+                                        match &linked_verifiable_credential.credential.types {
+                                            OneOrMany::One(type_) => {
+                                                info!("Trying to fetch from Credential Configuration Supported: {}", type_);
+                                                if let Some(credential_conf) = credential_confs_supported.get(type_) {
+                                                    let display = &credential_conf.display;
+                                                    if let Some(image) = display[0].get("logo") {
+                                                        if let Some(image_url) = image.get("url") {
+                                                            logo_uri = image_url.as_str().map(ToString::to_string);
+                                                            break;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            OneOrMany::Many(types) => {
+                                                for type_ in types {
+                                                    info!("Trying to fetch from Credential Configuration Supported: {}", type_);
+                                                    if let Some(credential_conf) = credential_confs_supported.get(type_) {
+                                                        let display = &credential_conf.display;
+                                                        if let Some(image) = display[0].get("logo") {
+                                                            if let Some(image_url) = image.get("url") {
+                                                                logo_uri = image_url.as_str().map(ToString::to_string);
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }
@@ -269,6 +306,7 @@ async fn get_validated_linked_credential_data(
 
                         let issuance_date = linked_verifiable_credential.credential.issuance_date.to_rfc3339();
 
+                        info!("Linkedverifiablecredential: name: {name:?}, logo_uri: {logo_uri:?}, issuance_date: {issuance_date}");
                         Some(LinkedVerifiableCredentialData {
                             name,
                             logo_uri,
