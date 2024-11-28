@@ -8,7 +8,10 @@ use crate::{
         credentials::reducers::handle_oid4vp_authorization_request::{
             get_oid4vp_client_name_and_logo_uri, OID4VPClientMetadata,
         },
-        did::validate_domain_linkage::validate_domain_linkage,
+        did::{
+            validate_domain_linkage::validate_domain_linkage,
+            validate_linked_verifiable_presentations::validate_linked_verifiable_presentations,
+        },
         qr_code::actions::qrcode_scanned::QrCodeScanned,
         user_prompt::CurrentUserPrompt,
         AppState,
@@ -82,7 +85,13 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
 
             let did = siopv2_authorization_request.body.client_id.as_str();
 
-            let domain_validation = validate_domain_linkage(url, did).await;
+            let domain_validation = Box::new(validate_domain_linkage(url, did).await);
+
+            let linked_verifiable_presentations = validate_linked_verifiable_presentations(did)
+                .await
+                .into_iter()
+                .flatten()
+                .collect();
 
             drop(state_guard);
 
@@ -97,6 +106,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                     redirect_uri,
                     previously_connected,
                     domain_validation,
+                    linked_verifiable_presentations,
                 }),
                 ..state
             });
