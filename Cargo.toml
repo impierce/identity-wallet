@@ -25,7 +25,6 @@ tauri-runtime-wry = { version = "=2.0.0-beta.20" }
 tauri-utils = { version = "=2.0.0-beta.19", features = [ "resources" ] }
 tauri-winres = "=0.1"
 
-agent_shared = { git = "https://git@github.com/impierce/ssi-agent.git", rev = "1823810" }
 did_manager = { git = "https://git@github.com/impierce/did-manager.git", tag = "v1.0.0-beta.3" }
 jsonwebtoken = "9.3"
 log = "^0.4"
