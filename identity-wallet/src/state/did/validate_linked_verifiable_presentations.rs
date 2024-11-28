@@ -187,7 +187,6 @@ async fn get_validated_linked_credential_data(
 
             info!("Unverified jwt claims: {:#?}", unverified_jwt.claims());
 
-            let mut validation_status: ValidationStatus;
             let issuance_date = unverified_jwt
                 .claims()
                 .registered
@@ -214,6 +213,9 @@ async fn get_validated_linked_credential_data(
                 .get("vc")
                 .and_then(|vc| vc.get("credentialSubject"))
             {
+                let validation_status: ValidationStatus;
+                let name = get_name(credential_subject);
+
                 // Resolve the issuer document and issuer DID
                 let issuer_document = get_issuer_document(resolver, &linked_verifiable_credential).await?;
                 let issuer_did = issuer_document.id().to_string();
@@ -226,10 +228,8 @@ async fn get_validated_linked_credential_data(
                 info!("Issuer linked domains: {issuer_linked_domains:#?}");
 
                 // Only linked verifiable credentials with at least one successful domain linkage validation are considered
-                let (validated_linked_domains, domain_validation_status) =
-                    get_validated_linked_domains(&issuer_linked_domains, &issuer_did).await;
+                let validated_linked_domains = get_validated_linked_domains(&issuer_linked_domains, &issuer_did).await;
 
-                let name = get_name(credential_subject);
                 let logo_uri = get_logo_uri(credential_subject, &validated_linked_domains).await;
 
                 // Validate the linked verifiable credential
@@ -241,23 +241,17 @@ async fn get_validated_linked_credential_data(
                     &Default::default(),
                     FailFast::FirstError,
                 ) {
-                    info!("Validated linked verifiable credential: {linked_verifiable_credential:#?}");
                     validation_status = ValidationStatus::Success;
+                    info!("Validated linked verifiable credential: {linked_verifiable_credential:#?}");
 
-                    if domain_validation_status != ValidationStatus::Success {
-                        warn!("No validated linked domains for issuer DID: {issuer_did}");
-                        // TODO: Should we add more fine-grained error handling? `None` here means that the domain linkage
-                        // validation failed or is unknown.
-                        validation_status = ValidationStatus::Unknown;
-                    }
                 } else {
+                    validation_status = ValidationStatus::Failure;
                     warn!("Failed to validate linked verifiable credential: {linked_verifiable_credential:#?}");
                     // TODO: Should we add more fine-grained error handling? `None` here means that the linked verifiable credential is invalid.
-                    validation_status = ValidationStatus::Failure;
                 }
 
                 info!("Linked verifiable credential data: {name:#?}, {logo_uri:#?}, {issuance_date:#?}, {issuer_linked_domains:#?}, {validation_status:#?}");
-                
+
                 Some(LinkedVerifiableCredentialData {
                     name,
                     logo_uri,
@@ -275,7 +269,7 @@ async fn get_validated_linked_credential_data(
 }
 
 /// Returns a Vec of successfully validated issuer linked domains.
-async fn get_validated_linked_domains(issuer_linked_domains: &[Url], issuer_did: &str) -> (Vec<Url>, ValidationStatus) {
+async fn get_validated_linked_domains(issuer_linked_domains: &[Url], issuer_did: &str) -> Vec<Url> {
     let mut validated_linked_domains: Vec<Url> =
         FuturesUnordered::from_iter(issuer_linked_domains.iter().map(|issuer_linked_domain| async move {
             let validation_status = validate_domain_linkage(issuer_linked_domain.clone(), issuer_did)
@@ -294,17 +288,15 @@ async fn get_validated_linked_domains(issuer_linked_domains: &[Url], issuer_did:
         .collect()
         .await;
 
-    let mut validation_status = ValidationStatus::Success;
     // This is a fallback to get the url from a did:web to validate domain linkage. This is useful for companies who haven't implemented domain linkage yet.
     if validated_linked_domains.is_empty() {
         // TODO: find a way to differentiate between failure and unknown
-        validation_status = ValidationStatus::Unknown;
         if let Some(did_web_url) = extract_url_from_did_web(issuer_did) {
             validated_linked_domains.insert(0, did_web_url);
         }
     }
 
-    (validated_linked_domains, validation_status)
+    validated_linked_domains
 }
 
 /// This function uses the linked verifiable credential to resolve the issuer document.
@@ -914,7 +906,7 @@ mod tests {
                 issuer1.did_document.id().to_string().as_ref()
             )
             .await,
-            (vec![issuer1.domain.clone()], ValidationStatus::Success)
+            (vec![issuer1.domain.clone()])
         );
 
         // Assert that only one domain was validated.
@@ -924,7 +916,7 @@ mod tests {
                 issuer1.did_document.id().to_string().as_ref()
             )
             .await,
-            (vec![issuer1.domain.clone()], ValidationStatus::Success)
+            (vec![issuer1.domain.clone()])
         );
 
         let mut issuer2 = TestEntity::new().await;
@@ -942,7 +934,7 @@ mod tests {
                 issuer1.did_document.id().to_string().as_ref()
             )
             .await,
-            (vec![issuer1.domain.clone()], ValidationStatus::Success)
+            (vec![issuer1.domain.clone()])
         );
 
         // Add the `/did_configuration.json` and `/did.json` endpoints to the issuer mock server. Use the same issuer DID as
@@ -963,7 +955,6 @@ mod tests {
             issuer1.did_document.id().to_string().as_ref()
         )
         .await
-        .0
         .iter()
         .all(|item| [issuer1.domain.clone(), issuer2.domain.clone()].contains(item)));
     }
