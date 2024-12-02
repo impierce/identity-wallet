@@ -4,14 +4,12 @@ use crate::state::{actions::ActionTrait, Reducer};
 
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
-use url::Url;
 
 #[derive(Serialize, Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/AddTrustListEntry.ts")]
 pub struct AddTrustListEntry {
     pub trust_list_id: String,
-    #[ts(type = "string")]
-    pub domain: Url,
+    pub domain: String,
 }
 
 #[typetag::serde(name = "[Trust List] Add entry")]

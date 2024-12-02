@@ -1,4 +1,5 @@
 use log::info;
+use url::Url;
 
 use crate::error::AppError;
 use crate::state::trust_list::actions::add_trust_list_entry::AddTrustListEntry;
@@ -10,10 +11,22 @@ use crate::state::{
 pub async fn add_trust_list_entry(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(action) = listen::<AddTrustListEntry>(action) {
         let mut trust_lists = state.trust_lists;
-        trust_lists
-            .get_mut(&action.trust_list_id)
-            .ok_or_else(|| AppError::TrustListNotFoundError(action.trust_list_id.clone()))?
-            .insert(action.domain.clone(), true);
+        if let Ok(domain) = Url::parse(&action.domain) {
+            trust_lists
+                .get_mut(&action.trust_list_id)
+                .ok_or_else(|| AppError::TrustListNotFoundError(action.trust_list_id.clone()))?
+                .insert(domain, true);
+        } else if let Ok(domain) = Url::parse(&format!("https://{}", action.domain)) {
+            trust_lists
+                .get_mut(&action.trust_list_id)
+                .ok_or_else(|| AppError::TrustListNotFoundError(action.trust_list_id.clone()))?
+                .insert(domain, true);
+        } else {
+            return Err(AppError::Error(format!(
+                "Failed to add entry, invalid domain value: {}",
+                action.domain.clone()
+            )));
+        }
 
         info!(
             "Added domain {} to trust list: {:#?}",
@@ -53,7 +66,7 @@ mod tests {
 
         let action = Arc::new(AddTrustListEntry {
             trust_list_id: default_trust_list.id.clone(),
-            domain: Url::parse("https://example.com").unwrap(),
+            domain: "example.com".to_string(),
         });
 
         let result = add_trust_list_entry(state, action).await.unwrap();

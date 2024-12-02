@@ -9,12 +9,8 @@ use ts_rs::TS;
 use url::Url;
 use uuid::Uuid;
 
-/// TrustLists is a Vec capable of holding TrustList's of 2 types, external and custom.
-/// External currently would mean injected at profile creation just like our default trust list.
-/// Custom TrustList's can be created in dev mode at any time.
-/// A TrustList will contain trusted domains and/or URL's.
-/// These will determine whether a Linked VP is to be trusted and therefore displayed to the user or not.
-/// A default trust list has been added as well, containing domains we use in our demos.
+/// TrustLists is a Vec capable of holding TrustList's of 2 types, external and custom, differentiated by a bool.
+/// insert, get_mut and remove methods are modelled after the std::collections::HashMap methods.
 #[derive(Serialize, Deserialize, Clone, Debug, TS, PartialEq, Default)]
 #[ts(export, export_to = "bindings/trust_list/TrustLists.ts")]
 pub struct TrustLists(pub Vec<TrustList>);
@@ -54,12 +50,18 @@ impl TrustLists {
     }
 }
 
+/// A TrustList will contain trusted URL's.
+/// Domains with the https:// scheme don't need to be added with the scheme, nor will they be displayed by it.
+/// These URL's will determine whether a Linked VP is to be trusted and therefore displayed to the user or not.
+/// A default trust list has been added as well, containing domains we use in our demos.
 #[derive(Serialize, Deserialize, Clone, Debug, TS, PartialEq)]
 #[ts(export, export_to = "bindings/trust_list/TrustList.ts")]
 pub struct TrustList {
     #[serde(default)]
     pub id: String,
     pub display_name: String,
+    /// Custom false: this currently would mean injected at profile creation similar to our default trust list.
+    /// Custom true: TrustList's can be created in dev mode at any time.
     #[serde(default)]
     pub custom: bool,
     #[serde(alias = "domains", deserialize_with = "deserialize_domains")]
