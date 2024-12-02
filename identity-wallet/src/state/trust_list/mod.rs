@@ -97,8 +97,8 @@ impl TrustList {
         self.entries.insert(domain, trusted);
     }
 
-    pub fn remove(&mut self, domain: &Url) {
-        self.entries.remove(domain);
+    pub fn remove(&mut self, domain: &Url) -> Option<bool> {
+        self.entries.remove(domain)
     }
 
     pub fn contains(&self, domain: &Url) -> bool {

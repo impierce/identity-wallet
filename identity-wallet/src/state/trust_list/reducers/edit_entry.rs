@@ -11,25 +11,19 @@ pub async fn edit_trust_list_entry(state: AppState, action: Action) -> Result<Ap
     if let Some(action) = listen::<EditTrustListEntry>(action) {
         let mut trust_lists = state.trust_lists;
 
-        let new_bool = *trust_lists
+        let trust_list = trust_lists
             .get_mut(&action.trust_list_id)
-            .ok_or_else(|| AppError::TrustListNotFoundError(action.trust_list_id.clone()))?
-            .get(&action.old_domain)
-            .ok_or_else(|| {
-                AppError::Error(format!(
-                    "invalid domain value sent by frontend: {}",
-                    action.old_domain.clone()
-                ))
-            })?;
+            .ok_or_else(|| AppError::TrustListNotFoundError(action.trust_list_id.clone()))?;
 
-        trust_lists
-            .get_mut(&action.trust_list_id)
-            .ok_or_else(|| AppError::TrustListNotFoundError(action.trust_list_id.clone()))?
-            .remove(&action.old_domain);
-        trust_lists
-            .get_mut(&action.trust_list_id)
-            .ok_or_else(|| AppError::TrustListNotFoundError(action.trust_list_id.clone()))?
-            .insert(action.new_domain.clone(), new_bool);
+        let new_bool = *trust_list.get(&action.old_domain).ok_or_else(|| {
+            AppError::Error(format!(
+                "invalid domain value sent by frontend: {}",
+                action.old_domain.clone()
+            ))
+        })?;
+
+        trust_list.remove(&action.old_domain);
+        trust_list.insert(action.new_domain.clone(), new_bool);
 
         info!(
             "edited old domain {} to new domain {} in trust list: {:#?}",
