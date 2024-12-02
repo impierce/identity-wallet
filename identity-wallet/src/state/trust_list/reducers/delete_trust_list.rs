@@ -43,7 +43,7 @@ mod tests {
             id: Uuid::new_v4().to_string(),
             display_name: "impierce".to_string(),
             custom: true,
-            entries: HashMap::from([(Url::parse("example.com").unwrap(), true)]),
+            entries: HashMap::from([(Url::parse("https://example.com").unwrap(), true)]),
         };
         state.trust_lists.insert(default_trust_list.clone());
 

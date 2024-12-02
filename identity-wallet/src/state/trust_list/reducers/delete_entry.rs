@@ -47,13 +47,13 @@ mod tests {
             id: Uuid::new_v4().to_string(),
             display_name: "impierce".to_string(),
             custom: true,
-            entries: HashMap::from([(Url::parse("example.com").unwrap(), true)]),
+            entries: HashMap::from([(Url::parse("https://example.com").unwrap(), true)]),
         };
         state.trust_lists.insert(default_trust_list.clone());
 
         let action = Arc::new(DeleteTrustListEntry {
             trust_list_id: default_trust_list.id.clone(),
-            domain: Url::parse("example.com").unwrap(),
+            domain: Url::parse("https://example.com").unwrap(),
         });
 
         let result = delete_trust_list_entry(state, action).await.unwrap();

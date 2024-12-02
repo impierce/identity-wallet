@@ -64,14 +64,14 @@ mod tests {
             id: Uuid::new_v4().to_string(),
             display_name: "impierce".to_string(),
             custom: true,
-            entries: HashMap::from([(Url::parse("example.com").unwrap(), true)]),
+            entries: HashMap::from([(Url::parse("https://example.com").unwrap(), true)]),
         };
         state.trust_lists.insert(default_trust_list.clone());
 
         let action = Arc::new(EditTrustListEntry {
             trust_list_id: default_trust_list.id.clone(),
-            old_domain: Url::parse("example.com").unwrap(),
-            new_domain: Url::parse("new.com").unwrap(),
+            old_domain: Url::parse("https://example.com").unwrap(),
+            new_domain: Url::parse("https://new.com").unwrap(),
         });
 
         let result = edit_trust_list_entry(state, action).await.unwrap();
@@ -81,7 +81,7 @@ mod tests {
             id: default_trust_list.id.clone(),
             display_name: default_trust_list.display_name.clone(),
             custom: true,
-            entries: HashMap::from([(Url::parse("new.com").unwrap(), true)]),
+            entries: HashMap::from([(Url::parse("https://new.com").unwrap(), true)]),
         });
 
         assert_eq!(result.trust_lists, expected);

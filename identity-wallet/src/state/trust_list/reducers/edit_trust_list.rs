@@ -56,7 +56,7 @@ mod tests {
             id: Uuid::new_v4().to_string(),
             display_name: "impierce".to_string(),
             custom: true,
-            entries: HashMap::from([(Url::parse("example.com").unwrap(), true)]),
+            entries: HashMap::from([(Url::parse("https://example.com").unwrap(), true)]),
         };
         state.trust_lists.insert(default_trust_list.clone());
 
@@ -72,7 +72,7 @@ mod tests {
             id: default_trust_list.id.clone(),
             display_name: "example".to_string(),
             custom: true,
-            entries: HashMap::from([(Url::parse("example.com").unwrap(), true)]),
+            entries: HashMap::from([(Url::parse("https://example.com").unwrap(), true)]),
         });
 
         assert_eq!(result.trust_lists, expected);
