@@ -1,4 +1,9 @@
 {
   "display_name": "Impierce (Development)",
-  "domains": ["https://agent-dev.impierce.com", "https://ngdil.com", "https://selv.iota.org", "https://thuiswinkel-agent.dev.impierce.com"]
+  "domains": [
+    "https://agent-dev.impierce.com",
+    "https://ngdil.com",
+    "https://selv.iota.org",
+    "https://thuiswinkel-agent.dev.impierce.com"
+  ]
 }
