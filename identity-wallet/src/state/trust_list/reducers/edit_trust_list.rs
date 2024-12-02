@@ -2,7 +2,6 @@ use log::info;
 
 use crate::error::AppError;
 use crate::state::trust_list::actions::edit_trust_list::EditTrustList;
-use crate::state::trust_list::TrustList;
 use crate::state::{
     actions::{listen, Action},
     AppState,
@@ -13,17 +12,9 @@ pub async fn trust_list_edit(state: AppState, action: Action) -> Result<AppState
         let mut trust_lists = state.trust_lists;
         let trust_list = trust_lists
             .get_mut(&action.trust_list_id)
-            .ok_or_else(|| AppError::TrustListNotFoundError(action.trust_list_id.clone()))?
-            .clone();
+            .ok_or_else(|| AppError::TrustListNotFoundError(action.trust_list_id.clone()))?;
 
-        trust_lists.remove(&action.trust_list_id);
-
-        trust_lists.insert(TrustList {
-            id: trust_list.id,
-            display_name: action.new_display_name.clone(),
-            custom: trust_list.custom,
-            entries: trust_list.entries,
-        });
+        trust_list.display_name = action.new_display_name.clone();
 
         info!(
             "Edited trust list {} in trust lists: {:#?}",
@@ -45,7 +36,7 @@ mod tests {
     use uuid::Uuid;
 
     use super::*;
-    use crate::state::trust_list::TrustLists;
+    use crate::state::trust_list::{TrustList, TrustLists};
 
     use std::{collections::HashMap, sync::Arc};
 
