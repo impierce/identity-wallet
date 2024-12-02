@@ -4,15 +4,17 @@ use crate::state::{actions::ActionTrait, Reducer};
 
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
+use url::Url;
 
 #[derive(Serialize, Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/AddTrustListEntry.ts")]
 pub struct AddTrustListEntry {
     pub trust_list_id: String,
-    pub domain: String,
+    #[ts(type = "string")]
+    pub domain: Url,
 }
 
-#[typetag::serde(name = "[Trust List] Add Entry")]
+#[typetag::serde(name = "[Trust List] Add entry")]
 impl ActionTrait for AddTrustListEntry {
     fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
         vec![reducer!(add_trust_list_entry)]

@@ -9,7 +9,7 @@ use crate::state::{
 
 pub async fn trust_list_delete(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(action) = listen::<DeleteTrustList>(action) {
-        let mut trust_lists = state.trust_lists.clone();
+        let mut trust_lists = state.trust_lists;
         trust_lists.remove(&action.trust_list_id);
 
         info!(
@@ -28,6 +28,7 @@ pub async fn trust_list_delete(state: AppState, action: Action) -> Result<AppSta
 
 #[cfg(test)]
 mod tests {
+    use url::Url;
     use uuid::Uuid;
 
     use crate::state::trust_list::{TrustList, TrustLists};
@@ -42,7 +43,7 @@ mod tests {
             id: Uuid::new_v4().to_string(),
             display_name: "impierce".to_string(),
             custom: true,
-            entries: HashMap::from([("impierce.com".to_string(), true)]),
+            entries: HashMap::from([(Url::parse("example.com").unwrap(), true)]),
         };
         state.trust_lists.insert(default_trust_list.clone());
 

@@ -95,7 +95,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                     trust_list
                         .entries
                         .iter()
-                        .filter_map(|(domain, trusted)| trusted.then_some(domain.clone()))
+                        .filter_map(|(domain, trusted)| trusted.then_some(domain.clone().to_string()))
                         .collect::<String>()
                 })
                 .collect();

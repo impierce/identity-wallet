@@ -10,7 +10,7 @@ use crate::state::{
 
 pub async fn trust_list_add(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(action) = listen::<AddTrustList>(action) {
-        let mut trust_lists = state.trust_lists.clone();
+        let mut trust_lists = state.trust_lists;
         trust_lists.insert(TrustList {
             id: uuid::Uuid::new_v4().to_string(),
             display_name: action.display_name.clone(),

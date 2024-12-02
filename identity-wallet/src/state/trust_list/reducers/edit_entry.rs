@@ -9,22 +9,26 @@ use crate::state::{
 
 pub async fn edit_trust_list_entry(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(action) = listen::<EditTrustListEntry>(action) {
-        let mut trust_lists = state.trust_lists.clone();
+        let mut trust_lists = state.trust_lists;
 
         let new_bool = *trust_lists
             .get_mut(&action.trust_list_id)
-            .expect(&format!("error: unknown trust_list_id {}", action.trust_list_id))
+            .ok_or_else(|| AppError::TrustListNotFoundError(action.trust_list_id.clone()))?
             .get(&action.old_domain)
-            .expect(&format!("error: unknown domain value {}", action.old_domain));
+            .ok_or_else(|| {
+                AppError::Error(format!(
+                    "invalid domain value sent by frontend: {}",
+                    action.old_domain.clone()
+                ))
+            })?;
 
-        // Unwraps no problem here as the first check already has the expect() implemented.
         trust_lists
             .get_mut(&action.trust_list_id)
-            .unwrap()
+            .ok_or_else(|| AppError::TrustListNotFoundError(action.trust_list_id.clone()))?
             .remove(&action.old_domain);
         trust_lists
             .get_mut(&action.trust_list_id)
-            .unwrap()
+            .ok_or_else(|| AppError::TrustListNotFoundError(action.trust_list_id.clone()))?
             .insert(action.new_domain.clone(), new_bool);
 
         info!(
@@ -45,6 +49,7 @@ pub async fn edit_trust_list_entry(state: AppState, action: Action) -> Result<Ap
 
 #[cfg(test)]
 mod tests {
+    use url::Url;
     use uuid::Uuid;
 
     use crate::state::trust_list::{TrustList, TrustLists};
@@ -59,14 +64,14 @@ mod tests {
             id: Uuid::new_v4().to_string(),
             display_name: "impierce".to_string(),
             custom: true,
-            entries: HashMap::from([("impierce.com".to_string(), true)]),
+            entries: HashMap::from([(Url::parse("example.com").unwrap(), true)]),
         };
         state.trust_lists.insert(default_trust_list.clone());
 
         let action = Arc::new(EditTrustListEntry {
             trust_list_id: default_trust_list.id.clone(),
-            old_domain: "impierce.com".to_string(),
-            new_domain: "new.com".to_string(),
+            old_domain: Url::parse("example.com").unwrap(),
+            new_domain: Url::parse("new.com").unwrap(),
         });
 
         let result = edit_trust_list_entry(state, action).await.unwrap();
@@ -76,7 +81,7 @@ mod tests {
             id: default_trust_list.id.clone(),
             display_name: default_trust_list.display_name.clone(),
             custom: true,
-            entries: HashMap::from([("new.com".to_string(), true)]),
+            entries: HashMap::from([(Url::parse("new.com").unwrap(), true)]),
         });
 
         assert_eq!(result.trust_lists, expected);

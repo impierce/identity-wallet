@@ -9,10 +9,10 @@ use crate::state::{
 
 pub async fn delete_trust_list_entry(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(action) = listen::<DeleteTrustListEntry>(action) {
-        let mut trust_lists = state.trust_lists.clone();
+        let mut trust_lists = state.trust_lists;
         trust_lists
             .get_mut(&action.trust_list_id)
-            .expect(&format!("error: unknown trust_list_id {}", action.trust_list_id))
+            .ok_or_else(|| AppError::TrustListNotFoundError(action.trust_list_id.clone()))?
             .remove(&action.domain);
 
         info!(
@@ -32,6 +32,7 @@ pub async fn delete_trust_list_entry(state: AppState, action: Action) -> Result<
 
 #[cfg(test)]
 mod tests {
+    use url::Url;
     use uuid::Uuid;
 
     use super::*;
@@ -46,13 +47,13 @@ mod tests {
             id: Uuid::new_v4().to_string(),
             display_name: "impierce".to_string(),
             custom: true,
-            entries: HashMap::from([("impierce.com".to_string(), true)]),
+            entries: HashMap::from([(Url::parse("example.com").unwrap(), true)]),
         };
         state.trust_lists.insert(default_trust_list.clone());
 
         let action = Arc::new(DeleteTrustListEntry {
             trust_list_id: default_trust_list.id.clone(),
-            domain: "impierce.com".to_string(),
+            domain: Url::parse("example.com").unwrap(),
         });
 
         let result = delete_trust_list_entry(state, action).await.unwrap();

@@ -8,13 +8,12 @@ use crate::state::{
     AppState,
 };
 
-// todo: remove expect
 pub async fn trust_list_edit(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(action) = listen::<EditTrustList>(action) {
-        let mut trust_lists = state.trust_lists.clone();
+        let mut trust_lists = state.trust_lists;
         let trust_list = trust_lists
             .get_mut(&action.trust_list_id)
-            .expect("error: unknown trust_list_id")
+            .ok_or_else(|| AppError::TrustListNotFoundError(action.trust_list_id.clone()))?
             .clone();
 
         trust_lists.remove(&action.trust_list_id);
@@ -42,6 +41,7 @@ pub async fn trust_list_edit(state: AppState, action: Action) -> Result<AppState
 
 #[cfg(test)]
 mod tests {
+    use url::Url;
     use uuid::Uuid;
 
     use super::*;
@@ -56,7 +56,7 @@ mod tests {
             id: Uuid::new_v4().to_string(),
             display_name: "impierce".to_string(),
             custom: true,
-            entries: HashMap::from([("impierce.com".to_string(), true)]),
+            entries: HashMap::from([(Url::parse("example.com").unwrap(), true)]),
         };
         state.trust_lists.insert(default_trust_list.clone());
 
@@ -72,7 +72,7 @@ mod tests {
             id: default_trust_list.id.clone(),
             display_name: "example".to_string(),
             custom: true,
-            entries: HashMap::from([("impierce.com".to_string(), true)]),
+            entries: HashMap::from([(Url::parse("example.com").unwrap(), true)]),
         });
 
         assert_eq!(result.trust_lists, expected);

@@ -6,6 +6,7 @@ use super::FeatTrait;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, ops::Not};
 use ts_rs::TS;
+use url::Url;
 use uuid::Uuid;
 
 /// TrustLists is a Vec capable of holding TrustList's of 2 types, external and custom.
@@ -56,10 +57,22 @@ impl TrustLists {
 #[derive(Serialize, Deserialize, Clone, Debug, TS, PartialEq)]
 #[ts(export, export_to = "bindings/trust_list/TrustList.ts")]
 pub struct TrustList {
+    #[serde(default)]
     pub id: String,
     pub display_name: String,
+    #[serde(default)]
     pub custom: bool,
-    pub entries: HashMap<String, bool>,
+    #[serde(alias = "domains", deserialize_with = "deserialize_domains")]
+    #[ts(type = "Record<string, boolean>")]
+    pub entries: HashMap<url::Url, bool>,
+}
+
+fn deserialize_domains<'de, D>(deserializer: D) -> Result<HashMap<Url, bool>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let domains: Vec<Url> = Vec::deserialize(deserializer)?;
+    Ok(domains.into_iter().map(|domain| (domain, true)).collect())
 }
 
 impl Default for TrustList {
@@ -78,27 +91,27 @@ impl TrustList {
         }
     }
 
-    pub fn insert(&mut self, domain: String, trusted: bool) {
+    pub fn insert(&mut self, domain: Url, trusted: bool) {
         self.entries.insert(domain, trusted);
     }
 
-    pub fn remove(&mut self, domain: &str) {
+    pub fn remove(&mut self, domain: &Url) {
         self.entries.remove(domain);
     }
 
-    pub fn contains(&self, domain: &str) -> bool {
+    pub fn contains(&self, domain: &Url) -> bool {
         self.entries.contains_key(domain)
     }
 
-    pub fn get(&self, domain: &str) -> Option<&bool> {
+    pub fn get(&self, domain: &Url) -> Option<&bool> {
         self.entries.get(domain)
     }
 
-    pub fn get_mut(&mut self, domain: &str) -> Option<&mut bool> {
+    pub fn get_mut(&mut self, domain: &Url) -> Option<&mut bool> {
         self.entries.get_mut(domain)
     }
 
-    pub fn iter(&self) -> std::collections::hash_map::Iter<String, bool> {
+    pub fn iter(&self) -> std::collections::hash_map::Iter<Url, bool> {
         self.entries.iter()
     }
 }
