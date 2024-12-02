@@ -81,9 +81,9 @@ mod bindings {
             add_recent_search::AddRecentSearch, delete_recent_search::DeleteRecentSearch, search_query::SearchQuery,
         },
         trust_list::actions::{
-            add_trust_list_entry::AddTrustListEntry, delete_trust_list_entry::DeleteTrustListEntry,
+            add_trust_list::AddTrustList, add_trust_list_entry::AddTrustListEntry, delete_trust_list::DeleteTrustList,
+            delete_trust_list_entry::DeleteTrustListEntry, edit_trust_list::EditTrustList,
             edit_trust_list_entry::EditTrustListEntry, toggle_trust_list_entry::ToggleTrustListEntry,
-            trust_list_add::TrustListsAdd, trust_list_delete::TrustListsDelete, trust_list_edit::TrustListsEdit,
         },
     };
 
@@ -147,10 +147,10 @@ mod bindings {
         #[serde(rename = "[Trust List] Toggle Entry")]
         ToggleTrustListEntry { payload: ToggleTrustListEntry },
         #[serde(rename = "[Trust Lists] Add")]
-        TrustListsAdd { payload: TrustListsAdd },
+        TrustListsAdd { payload: AddTrustList },
         #[serde(rename = "[Trust Lists] Edit")]
-        TrustListsEdit { payload: TrustListsEdit },
+        TrustListsEdit { payload: EditTrustList },
         #[serde(rename = "[Trust Lists] Delete")]
-        TrustListsDelete { payload: TrustListsDelete },
+        TrustListsDelete { payload: DeleteTrustList },
     }
 }

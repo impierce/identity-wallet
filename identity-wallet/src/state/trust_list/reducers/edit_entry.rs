@@ -1,3 +1,5 @@
+use log::info;
+
 use crate::error::AppError;
 use crate::state::trust_list::actions::edit_trust_list_entry::EditTrustListEntry;
 use crate::state::{
@@ -11,9 +13,9 @@ pub async fn edit_trust_list_entry(state: AppState, action: Action) -> Result<Ap
 
         let new_bool = *trust_lists
             .get_mut(&action.trust_list_id)
-            .expect("error: invalid trust list name sent by frontend.")
+            .expect(&format!("error: unknown trust_list_id {}", action.trust_list_id))
             .get(&action.old_domain)
-            .expect("error: invalid domain value sent by frontend.");
+            .expect(&format!("error: unknown domain value {}", action.old_domain));
 
         // Unwraps no problem here as the first check already has the expect() implemented.
         trust_lists
@@ -23,7 +25,14 @@ pub async fn edit_trust_list_entry(state: AppState, action: Action) -> Result<Ap
         trust_lists
             .get_mut(&action.trust_list_id)
             .unwrap()
-            .insert(action.new_domain, new_bool);
+            .insert(action.new_domain.clone(), new_bool);
+
+        info!(
+            "edited old domain {} to new domain {} in trust list: {:#?}",
+            action.old_domain,
+            action.new_domain,
+            trust_lists.get_mut(&action.trust_list_id)
+        );
 
         return Ok(AppState {
             trust_lists,

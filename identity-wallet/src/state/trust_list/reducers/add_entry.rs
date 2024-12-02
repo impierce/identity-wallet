@@ -1,3 +1,5 @@
+use log::info;
+
 use crate::error::AppError;
 use crate::state::trust_list::actions::add_trust_list_entry::AddTrustListEntry;
 use crate::state::{
@@ -10,8 +12,14 @@ pub async fn add_trust_list_entry(state: AppState, action: Action) -> Result<App
         let mut trust_lists = state.trust_lists.clone();
         trust_lists
             .get_mut(&action.trust_list_id)
-            .expect("error: incorrect trust_list_id dispatched by frontend")
-            .insert(action.domain, true);
+            .expect(&format!("error: unknown trust_list_id {}", action.trust_list_id))
+            .insert(action.domain.clone(), true);
+
+        info!(
+            "Added domain {} to trust list: {:#?}",
+            action.domain,
+            trust_lists.get_mut(&action.trust_list_id)
+        );
 
         return Ok(AppState {
             trust_lists,

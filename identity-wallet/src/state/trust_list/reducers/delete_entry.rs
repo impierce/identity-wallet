@@ -1,3 +1,5 @@
+use log::info;
+
 use crate::error::AppError;
 use crate::state::trust_list::actions::delete_trust_list_entry::DeleteTrustListEntry;
 use crate::state::{
@@ -10,8 +12,14 @@ pub async fn delete_trust_list_entry(state: AppState, action: Action) -> Result<
         let mut trust_lists = state.trust_lists.clone();
         trust_lists
             .get_mut(&action.trust_list_id)
-            .expect("error: incorrect trust_list_id dispatched by frontend")
+            .expect(&format!("error: unknown trust_list_id {}", action.trust_list_id))
             .remove(&action.domain);
+
+        info!(
+            "Deleted domain {} from trust list: {:#?}",
+            action.domain,
+            trust_lists.get_mut(&action.trust_list_id)
+        );
 
         return Ok(AppState {
             trust_lists,

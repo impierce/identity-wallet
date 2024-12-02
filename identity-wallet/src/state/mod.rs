@@ -89,12 +89,6 @@ pub struct AppState {
     pub dids: HashMap<String, String>,
     pub connections: Connections,
     pub credentials: Vec<DisplayCredential>,
-    /// Currently the TrustLists can hold multiple TrustList's of 2 types, external and custom.
-    /// External currently would mean injected at profile creation just like our default trust list.
-    /// Custom TrustList's can be created in dev mode at any time.
-    /// A TrustList will contain trusted domains and/or URL's.
-    /// These will determine whether a Linked VP is to be trusted and therefore displayed to the user or not.
-    /// A default trust list has been added as well, containing domains we use in our demos.
     pub trust_lists: TrustLists,
     pub search_results: SearchResults,
     /// This field contains utils needed for the backend to perform its tasks.

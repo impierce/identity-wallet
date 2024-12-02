@@ -1,14 +1,21 @@
+use log::info;
+
 use crate::error::AppError;
-use crate::state::trust_list::actions::trust_list_delete::TrustListsDelete;
+use crate::state::trust_list::actions::delete_trust_list::DeleteTrustList;
 use crate::state::{
     actions::{listen, Action},
     AppState,
 };
 
 pub async fn trust_list_delete(state: AppState, action: Action) -> Result<AppState, AppError> {
-    if let Some(action) = listen::<TrustListsDelete>(action) {
+    if let Some(action) = listen::<DeleteTrustList>(action) {
         let mut trust_lists = state.trust_lists.clone();
         trust_lists.remove(&action.trust_list_id);
+
+        info!(
+            "Deleted trust list {} from trust lists: {:#?}",
+            action.trust_list_id, trust_lists
+        );
 
         return Ok(AppState {
             trust_lists,
@@ -39,7 +46,7 @@ mod tests {
         };
         state.trust_lists.insert(default_trust_list.clone());
 
-        let action = Arc::new(TrustListsDelete {
+        let action = Arc::new(DeleteTrustList {
             trust_list_id: default_trust_list.id,
         });
 

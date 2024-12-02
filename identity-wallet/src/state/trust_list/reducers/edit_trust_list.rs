@@ -1,5 +1,7 @@
+use log::info;
+
 use crate::error::AppError;
-use crate::state::trust_list::actions::trust_list_edit::TrustListsEdit;
+use crate::state::trust_list::actions::edit_trust_list::EditTrustList;
 use crate::state::trust_list::TrustList;
 use crate::state::{
     actions::{listen, Action},
@@ -8,21 +10,26 @@ use crate::state::{
 
 // todo: remove expect
 pub async fn trust_list_edit(state: AppState, action: Action) -> Result<AppState, AppError> {
-    if let Some(action) = listen::<TrustListsEdit>(action) {
+    if let Some(action) = listen::<EditTrustList>(action) {
         let mut trust_lists = state.trust_lists.clone();
         let trust_list = trust_lists
             .get_mut(&action.trust_list_id)
-            .expect("error: incorrect trust_list_id dispatched by frontend")
+            .expect("error: unknown trust_list_id")
             .clone();
 
         trust_lists.remove(&action.trust_list_id);
 
         trust_lists.insert(TrustList {
             id: trust_list.id,
-            display_name: action.new_display_name,
+            display_name: action.new_display_name.clone(),
             custom: trust_list.custom,
             entries: trust_list.entries,
         });
+
+        info!(
+            "Edited trust list {} in trust lists: {:#?}",
+            action.new_display_name, trust_lists
+        );
 
         return Ok(AppState {
             trust_lists,
@@ -53,7 +60,7 @@ mod tests {
         };
         state.trust_lists.insert(default_trust_list.clone());
 
-        let action = Arc::new(TrustListsEdit {
+        let action = Arc::new(EditTrustList {
             trust_list_id: default_trust_list.id.clone(),
             new_display_name: "example".to_string(),
         });

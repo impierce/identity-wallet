@@ -8,6 +8,12 @@ use std::{collections::HashMap, ops::Not};
 use ts_rs::TS;
 use uuid::Uuid;
 
+/// TrustLists is a Vec capable of holding TrustList's of 2 types, external and custom.
+/// External currently would mean injected at profile creation just like our default trust list.
+/// Custom TrustList's can be created in dev mode at any time.
+/// A TrustList will contain trusted domains and/or URL's.
+/// These will determine whether a Linked VP is to be trusted and therefore displayed to the user or not.
+/// A default trust list has been added as well, containing domains we use in our demos.
 #[derive(Serialize, Deserialize, Clone, Debug, TS, PartialEq, Default)]
 #[ts(export, export_to = "bindings/trust_list/TrustLists.ts")]
 pub struct TrustLists(pub Vec<TrustList>);
@@ -40,6 +46,7 @@ impl TrustLists {
         self.0.iter_mut().find(|trust_list| trust_list.id == id)
     }
 
+    /// Modelled after the `std::collections::HashMap::remove` method.
     fn remove(&mut self, id: &str) -> Option<TrustList> {
         let index = self.0.iter().position(|trust_list| trust_list.id == id)?;
         Some(self.0.remove(index))

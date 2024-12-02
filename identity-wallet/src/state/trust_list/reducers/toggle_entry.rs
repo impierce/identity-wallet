@@ -1,3 +1,5 @@
+use log::info;
+
 use crate::error::AppError;
 use crate::state::trust_list::actions::toggle_trust_list_entry::ToggleTrustListEntry;
 use crate::state::{
@@ -12,6 +14,13 @@ pub async fn toggle_trust_list_entry(state: AppState, action: Action) -> Result<
         if let Some(trust_list) = trust_lists.get_mut(&action.trust_list_id) {
             if let Some(value) = trust_list.get_mut(&action.domain) {
                 *value = !*value;
+
+                info!(
+                    "Toggled domain {} to {} in trust list: {:#?}",
+                    action.domain,
+                    value.clone(),
+                    trust_lists.get_mut(&action.trust_list_id)
+                );
             }
         }
 
