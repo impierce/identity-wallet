@@ -23,13 +23,13 @@ pub async fn add_trust_list_entry(state: AppState, action: Action) -> Result<App
                 .insert(domain, true);
         } else {
             return Err(AppError::Error(format!(
-                "Failed to add entry, invalid domain value: {}",
+                "Invalid domain value: `{}`",
                 action.domain.clone()
             )));
         }
 
         info!(
-            "Added domain {} to trust list: {:#?}",
+            "Added trusted domain `{}` to list `{:#?}`",
             action.domain,
             trust_lists.get_mut(&action.trust_list_id)
         );

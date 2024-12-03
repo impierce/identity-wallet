@@ -16,7 +16,7 @@ pub async fn delete_trust_list_entry(state: AppState, action: Action) -> Result<
             .remove(&action.domain);
 
         info!(
-            "Deleted domain {} from trust list: {:#?}",
+            "Deleted trusted domain `{}` from list `{:#?}`",
             action.domain,
             trust_lists.get_mut(&action.trust_list_id)
         );

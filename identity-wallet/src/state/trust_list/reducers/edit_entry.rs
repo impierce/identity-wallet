@@ -15,18 +15,15 @@ pub async fn edit_trust_list_entry(state: AppState, action: Action) -> Result<Ap
             .get_mut(&action.trust_list_id)
             .ok_or_else(|| AppError::TrustListNotFoundError(action.trust_list_id.clone()))?;
 
-        let new_bool = *trust_list.get(&action.old_domain).ok_or_else(|| {
-            AppError::Error(format!(
-                "invalid domain value sent by frontend: {}",
-                action.old_domain.clone()
-            ))
-        })?;
+        let new_bool = *trust_list
+            .get(&action.old_domain)
+            .ok_or_else(|| AppError::Error(format!("Value does not exist: {}", action.old_domain.clone())))?;
 
         trust_list.remove(&action.old_domain);
         trust_list.insert(action.new_domain.clone(), new_bool);
 
         info!(
-            "edited old domain {} to new domain {} in trust list: {:#?}",
+            "Updated trusted domain: `{}` --> `{}` on list `{:#?}`",
             action.old_domain,
             action.new_domain,
             trust_lists.get_mut(&action.trust_list_id)
