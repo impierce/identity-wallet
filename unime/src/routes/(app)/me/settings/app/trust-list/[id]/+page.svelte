@@ -75,7 +75,7 @@
                 class="rounded-full p-2"
                 on:click={() =>
                   dispatch({
-                    type: '[Trust List] Edit Entry',
+                    type: '[Trust List] Edit entry',
                     payload: { trust_list_id: $page.params.id, old_domain: domain, new_domain: domains[i] },
                   })}
               >
@@ -89,7 +89,7 @@
             <button
               class="rounded-full p-2"
               on:click={() =>
-                dispatch({ type: '[Trust List] Delete Entry', payload: { trust_list_id: $page.params.id, domain } })}
+                dispatch({ type: '[Trust List] Delete entry', payload: { trust_list_id: $page.params.id, domain } })}
             >
               <TrashRegularIcon class="h-5 w-5 text-rose-500 dark:text-rose-400" />
             </button>
@@ -100,7 +100,7 @@
               <Switch
                 {active}
                 on:change={() =>
-                  dispatch({ type: '[Trust List] Toggle Entry', payload: { trust_list_id: $page.params.id, domain } })}
+                  dispatch({ type: '[Trust List] Toggle entry', payload: { trust_list_id: $page.params.id, domain } })}
               />
             {/key}
           </div>
@@ -155,7 +155,7 @@
             <Switch
               {active}
               on:change={() =>
-                dispatch({ type: '[Trust List] Toggle Entry', payload: { trust_list_id: $page.params.id, domain } })}
+                dispatch({ type: '[Trust List] Toggle entry', payload: { trust_list_id: $page.params.id, domain } })}
             />
           {/key}
         </div>
