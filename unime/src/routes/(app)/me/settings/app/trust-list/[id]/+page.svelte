@@ -119,7 +119,7 @@
             class="rounded-full p-2 disabled:opacity-50 disabled:grayscale"
             on:click={() => {
               dispatch({
-                type: '[Trust List] Add Entry',
+                type: '[Trust List] Add entry',
                 payload: { trust_list_id: $page.params.id, domain: newEntryValue },
               });
               newEntryValue = '';
