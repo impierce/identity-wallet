@@ -138,13 +138,13 @@ mod bindings {
         SetPreferredDidMethod { payload: SetPreferredDidMethod },
         #[serde(rename = "[Keys] Set preferred key type")]
         SetPreferredKeyType { payload: SetPreferredKeyType },
-        #[serde(rename = "[Trust List] Add Entry")]
+        #[serde(rename = "[Trust List] Add entry")]
         AddTrustListEntry { payload: AddTrustListEntry },
-        #[serde(rename = "[Trust List] Edit Entry")]
+        #[serde(rename = "[Trust List] Edit entry")]
         EditTrustListEntry { payload: EditTrustListEntry },
-        #[serde(rename = "[Trust List] Delete Entry")]
+        #[serde(rename = "[Trust List] Delete entry")]
         DeleteTrustListEntry { payload: DeleteTrustListEntry },
-        #[serde(rename = "[Trust List] Toggle Entry")]
+        #[serde(rename = "[Trust List] Toggle entry")]
         ToggleTrustListEntry { payload: ToggleTrustListEntry },
         #[serde(rename = "[Trust Lists] Add")]
         TrustListsAdd { payload: AddTrustList },
