@@ -23,10 +23,8 @@ pub async fn edit_trust_list_entry(state: AppState, action: Action) -> Result<Ap
         trust_list.insert(action.new_domain.clone(), new_bool);
 
         info!(
-            "Updated trusted domain: `{}` --> `{}` on list `{:#?}`",
-            action.old_domain,
-            action.new_domain,
-            trust_lists.get_mut(&action.trust_list_id)
+            "Updated trusted domain: `{}` --> `{}` on list `{}`",
+            action.old_domain, action.new_domain, trust_list.display_name
         );
 
         return Ok(AppState {

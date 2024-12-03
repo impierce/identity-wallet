@@ -12,14 +12,13 @@ pub async fn toggle_trust_list_entry(state: AppState, action: Action) -> Result<
         let mut trust_lists = state.trust_lists;
 
         if let Some(trust_list) = trust_lists.get_mut(&action.trust_list_id) {
+            let display_name = trust_list.display_name.clone();
             if let Some(value) = trust_list.get_mut(&action.domain) {
                 *value = !*value;
 
                 info!(
-                    "Toggled domain {} to {} in trust list: {:#?}",
-                    action.domain,
-                    value.clone(),
-                    trust_lists.get_mut(&action.trust_list_id)
+                    "Toggled domain `{}` to `{}` in trust list: `{}`",
+                    action.domain, value, display_name
                 );
             }
         }

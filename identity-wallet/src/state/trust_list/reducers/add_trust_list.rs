@@ -18,10 +18,7 @@ pub async fn trust_list_add(state: AppState, action: Action) -> Result<AppState,
             entries: Default::default(),
         });
 
-        info!(
-            "Added trust list {} to trust lists: {:#?}",
-            action.display_name, trust_lists
-        );
+        info!("Added trust list `{}`", action.display_name);
 
         return Ok(AppState {
             trust_lists,

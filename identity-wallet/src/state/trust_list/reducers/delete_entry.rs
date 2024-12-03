@@ -10,15 +10,16 @@ use crate::state::{
 pub async fn delete_trust_list_entry(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(action) = listen::<DeleteTrustListEntry>(action) {
         let mut trust_lists = state.trust_lists;
-        trust_lists
+
+        let trust_list = trust_lists
             .get_mut(&action.trust_list_id)
-            .ok_or_else(|| AppError::TrustListNotFoundError(action.trust_list_id.clone()))?
-            .remove(&action.domain);
+            .ok_or_else(|| AppError::TrustListNotFoundError(action.trust_list_id.clone()))?;
+
+        trust_list.remove(&action.domain);
 
         info!(
-            "Deleted trusted domain `{}` from list `{:#?}`",
-            action.domain,
-            trust_lists.get_mut(&action.trust_list_id)
+            "Deleted trusted domain `{}` from list `{}`",
+            action.domain, trust_list.display_name
         );
 
         return Ok(AppState {

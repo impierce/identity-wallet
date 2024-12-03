@@ -1,4 +1,4 @@
-use log::info;
+use log::{info, warn};
 
 use crate::error::AppError;
 use crate::state::trust_list::actions::delete_trust_list::DeleteTrustList;
@@ -10,12 +10,11 @@ use crate::state::{
 pub async fn trust_list_delete(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(action) = listen::<DeleteTrustList>(action) {
         let mut trust_lists = state.trust_lists;
-        trust_lists.remove(&action.trust_list_id);
-
-        info!(
-            "Deleted trust list {} from trust lists: {:#?}",
-            action.trust_list_id, trust_lists
-        );
+        if let Some(trust_list) = trust_lists.remove(&action.trust_list_id) {
+            info!("Deleted trust list `{}`", trust_list.display_name);
+        } else {
+            warn!("Attempted to delete non-existent trust list `{}`", action.trust_list_id);
+        }
 
         return Ok(AppState {
             trust_lists,

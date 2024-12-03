@@ -16,10 +16,7 @@ pub async fn trust_list_edit(state: AppState, action: Action) -> Result<AppState
 
         trust_list.display_name = action.new_display_name.clone();
 
-        info!(
-            "Edited trust list {} in trust lists: {:#?}",
-            action.new_display_name, trust_lists
-        );
+        info!("Edited trust list {}", action.new_display_name);
 
         return Ok(AppState {
             trust_lists,

@@ -11,27 +11,22 @@ use crate::state::{
 pub async fn add_trust_list_entry(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(action) = listen::<AddTrustListEntry>(action) {
         let mut trust_lists = state.trust_lists;
-        if let Ok(domain) = Url::parse(&action.domain) {
-            trust_lists
-                .get_mut(&action.trust_list_id)
-                .ok_or_else(|| AppError::TrustListNotFoundError(action.trust_list_id.clone()))?
-                .insert(domain, true);
-        } else if let Ok(domain) = Url::parse(&format!("https://{}", action.domain)) {
-            trust_lists
-                .get_mut(&action.trust_list_id)
-                .ok_or_else(|| AppError::TrustListNotFoundError(action.trust_list_id.clone()))?
-                .insert(domain, true);
-        } else {
-            return Err(AppError::Error(format!(
-                "Invalid domain value: `{}`",
-                action.domain.clone()
-            )));
-        }
+
+        // Parse the domain value into a Url
+        let domain = Url::parse(&action.domain)
+            // If the domain value does not contain a scheme, then apply the `https` scheme as the default scheme.
+            .or_else(|_| Url::parse(&format!("https://{}", action.domain)))
+            .map_err(|_| AppError::Error(format!("Invalid domain value: `{}`", action.domain)))?;
+
+        let trust_list = trust_lists
+            .get_mut(&action.trust_list_id)
+            .ok_or_else(|| AppError::TrustListNotFoundError(action.trust_list_id.clone()))?;
+
+        trust_list.insert(domain, true);
 
         info!(
-            "Added trusted domain `{}` to list `{:#?}`",
-            action.domain,
-            trust_lists.get_mut(&action.trust_list_id)
+            "Added trusted domain `{}` to list `{}`",
+            action.domain, trust_list.display_name
         );
 
         return Ok(AppState {
