@@ -1,4 +1,5 @@
 {
+  "id": "default_impierce_dev_trust_list",
   "display_name": "Impierce (Development)",
   "domains": [
     "https://agent-dev.impierce.com",
