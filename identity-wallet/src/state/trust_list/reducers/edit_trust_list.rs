@@ -14,9 +14,14 @@ pub async fn trust_list_edit(state: AppState, action: Action) -> Result<AppState
             .get_mut(&action.trust_list_id)
             .ok_or_else(|| AppError::TrustListNotFoundError(action.trust_list_id.clone()))?;
 
+        let display_name_before = trust_list.display_name.clone();
+
         trust_list.display_name = action.new_display_name.clone();
 
-        info!("Edited trust list {}", action.new_display_name);
+        info!(
+            "Updated trust list name: `{}` --> `{}`",
+            display_name_before, action.new_display_name
+        );
 
         return Ok(AppState {
             trust_lists,

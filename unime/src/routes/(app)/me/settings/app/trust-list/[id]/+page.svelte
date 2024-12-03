@@ -15,6 +15,7 @@
   let newEntryInputElement: HTMLInputElement;
   let showNewEntry = false;
   let newEntryValue = '';
+  $: updatedListName = trustList?.display_name;
 </script>
 
 <TopNavBar on:back={() => history.back()} title={trustList?.display_name ?? ''}>
@@ -43,6 +44,30 @@
 <div class="content-height flex flex-col bg-silver dark:bg-navy">
   <div class="space-y-[15px] px-4 py-5">
     <div class="flex flex-col space-y-[10px]">
+      {#if trustList?.custom}
+        <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Update list name</p>
+        <div class="flex space-x-[10px]">
+          <input
+            type="text"
+            class="h-12 grow rounded-xl border border-slate-200 px-3 text-[13px]/[24px] text-teal disabled:text-slate-400 disabled:opacity-60 dark:border-slate-600 dark:bg-dark"
+            value={trustList?.display_name}
+            on:input={(e) => (updatedListName = e.target.value)}
+          />
+          <div class="ml-2 w-[88px]">
+            <Button
+              label="Save"
+              on:click={() => {
+                dispatch({
+                  type: '[Trust Lists] Edit',
+                  payload: { trust_list_id: $page.params.id, new_display_name: updatedListName },
+                });
+              }}
+              disabled={updatedListName === trustList?.display_name}
+            />
+          </div>
+        </div>
+      {/if}
+      <!-- <div class="h-12 border bg-background-alt"></div> -->
       <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Trusted issuers</p>
       <!-- {#each Object.entries(entries) as [domain, active], i (domain)}
         <div class="flex flex-row items-center space-x-2">
@@ -115,7 +140,7 @@
             bind:this={newEntryInputElement}
             bind:value={newEntryValue}
           />
-          <button
+          <!-- <button
             class="rounded-full p-2 disabled:opacity-50 disabled:grayscale"
             on:click={() => {
               dispatch({
@@ -128,10 +153,22 @@
             disabled={!newEntryValue}
           >
             <PlusBoldIcon class="h-5 w-5 text-primary" />
-          </button>
+          </button> -->
           <!-- Placeholder with the same dimensions of a Switch for better visual alignment -->
-          <div class="w-11"></div>
+          <!-- <div class="w-11"></div> -->
         </div>
+        <Button
+          label="Save"
+          on:click={() => {
+            dispatch({
+              type: '[Trust List] Add entry',
+              payload: { trust_list_id: $page.params.id, domain: newEntryValue },
+            });
+            newEntryValue = '';
+            showNewEntry = false;
+          }}
+          disabled={!newEntryValue}
+        />
       {:else}
         <Button
           label="Add trusted domain"
@@ -149,7 +186,7 @@
           <p
             class={`grow text-left text-[13px]/[24px] font-medium text-slate-800 dark:text-white ${active ? '' : 'opacity-50'}`}
           >
-            {domain}
+            {URL.parse(domain)?.hostname}
           </p>
           {#key active}
             <Switch

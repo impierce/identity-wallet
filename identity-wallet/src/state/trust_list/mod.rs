@@ -64,7 +64,7 @@ pub struct TrustList {
     /// Custom true: TrustList's can be created in dev mode at any time.
     #[serde(default)]
     pub custom: bool,
-    #[serde(alias = "domains", deserialize_with = "deserialize_domains")]
+    #[serde(deserialize_with = "deserialize_domains")]
     #[ts(type = "Record<string, boolean>")]
     pub entries: HashMap<url::Url, bool>,
 }
