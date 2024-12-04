@@ -1,9 +1,5 @@
 {
   "id": "b01f4a74-3005-4749-a030-c5444bc4dab5",
   "display_name": "Impierce Demos",
-  "entries": [
-    "https://ngdil.com",
-    "https://selv.iota.org",
-    "https://thuiswinkel-agent.dev.impierce.com"
-  ]
+  "entries": ["https://ngdil.com", "https://selv.iota.org", "https://thuiswinkel-agent.dev.impierce.com"]
 }
