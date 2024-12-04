@@ -5,17 +5,20 @@
 
   import { ActionSheet, Button, Switch, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
-  import { ArrowCounterClockwiseBoldIcon, CheckBoldIcon, PlusBoldIcon, TrashRegularIcon } from '$lib/icons';
+  import { ArrowCounterClockwiseBoldIcon, CheckBoldIcon, TrashRegularIcon } from '$lib/icons';
   import { state } from '$lib/stores';
 
   $: trustList = $state.trust_lists.find((tl) => tl.id === $page.params.id);
   $: entries = trustList?.entries || {};
   $: domains = Object.keys(entries);
 
-  let newEntryInputElement: HTMLInputElement;
   let showNewEntry = false;
   let newEntryValue = '';
   $: updatedListName = trustList?.display_name;
+
+  function init(el: HTMLInputElement) {
+    el.focus();
+  }
 </script>
 
 <TopNavBar on:back={() => history.back()} title={trustList?.display_name ?? ''}>
@@ -67,20 +70,7 @@
           </div>
         </div>
       {/if}
-      <!-- <div class="h-12 border bg-background-alt"></div> -->
       <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Trusted issuers</p>
-      <!-- {#each Object.entries(entries) as [domain, active], i (domain)}
-        <div class="flex flex-row items-center space-x-2">
-          <div class="flex h-14 w-full items-center justify-between space-x-4 rounded-xl bg-white p-4 dark:bg-dark">
-            <p class={`text-sm font-medium text-slate-500 ${active ? '' : 'opacity-30'}`}>{domain}</p>
-            <Switch
-              {active}
-              on:change={() =>
-                dispatch({ type: '[Trust List] Toggle Entry', payload: { trust_list_id: $page.params.id, domain } })}
-            />
-          </div>
-        </div>
-      {/each} -->
     </div>
 
     {#if trustList?.custom}
@@ -137,25 +127,9 @@
             type="text"
             class="h-12 grow rounded-xl border border-slate-200 px-3 text-[13px]/[24px] text-teal dark:border-slate-600 dark:bg-dark"
             placeholder="example.org"
-            bind:this={newEntryInputElement}
             bind:value={newEntryValue}
+            use:init
           />
-          <!-- <button
-            class="rounded-full p-2 disabled:opacity-50 disabled:grayscale"
-            on:click={() => {
-              dispatch({
-                type: '[Trust List] Add entry',
-                payload: { trust_list_id: $page.params.id, domain: newEntryValue },
-              });
-              newEntryValue = '';
-              showNewEntry = false;
-            }}
-            disabled={!newEntryValue}
-          >
-            <PlusBoldIcon class="h-5 w-5 text-primary" />
-          </button> -->
-          <!-- Placeholder with the same dimensions of a Switch for better visual alignment -->
-          <!-- <div class="w-11"></div> -->
         </div>
         <Button
           label="Save"
@@ -170,14 +144,7 @@
           disabled={!newEntryValue}
         />
       {:else}
-        <Button
-          label="Add trusted domain"
-          on:click={() => {
-            showNewEntry = true;
-            newEntryInputElement.focus();
-          }}
-          disabled={showNewEntry}
-        />
+        <Button label="Add trusted domain" on:click={() => (showNewEntry = true)} disabled={showNewEntry} />
       {/if}
     {:else}
       <!-- Imported list -->
