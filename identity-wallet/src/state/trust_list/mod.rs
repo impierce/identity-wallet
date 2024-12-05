@@ -127,3 +127,55 @@ impl TrustList {
         self.entries.iter()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use identity_iota::core::FromJson;
+
+    #[test]
+    fn trust_list_successfully_deserializes_from_entries_map() {
+        assert_eq!(
+            TrustList {
+                id: "b01f4a74-3005-4749-a030-c5444bc4dab5".to_string(),
+                display_name: "Test List".to_string(),
+                custom: false,
+                entries: HashMap::from_json_value(serde_json::json!({
+                    "https://example.org": true,
+                }))
+                .unwrap()
+            },
+            serde_json::from_value(serde_json::json!({
+                "id": "b01f4a74-3005-4749-a030-c5444bc4dab5",
+                "display_name": "Test List",
+                "entries": {
+                    "https://example.org": true,
+                },
+            }))
+            .unwrap()
+        );
+    }
+
+    #[test]
+    fn trust_list_successfully_deserializes_from_entries_array() {
+        assert_eq!(
+            TrustList {
+                id: "b01f4a74-3005-4749-a030-c5444bc4dab5".to_string(),
+                display_name: "Test List".to_string(),
+                custom: false,
+                entries: HashMap::from_json_value(serde_json::json!({
+                    "https://example.org": true,
+                }))
+                .unwrap()
+            },
+            serde_json::from_value(serde_json::json!({
+                "id": "b01f4a74-3005-4749-a030-c5444bc4dab5",
+                "display_name": "Test List",
+                "entries": [
+                    "https://example.org",
+                ],
+            }))
+            .unwrap()
+        );
+    }
+}
