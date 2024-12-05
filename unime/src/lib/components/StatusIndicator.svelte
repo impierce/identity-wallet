@@ -11,7 +11,7 @@
   export let status: ValidationStatus;
   export let title: string;
   export let description: string | undefined = undefined;
-  export let logoUrl: string | null = null;
+  export let logoUrl: string | undefined = undefined;
 
   const {
     elements: { trigger, content, arrow },

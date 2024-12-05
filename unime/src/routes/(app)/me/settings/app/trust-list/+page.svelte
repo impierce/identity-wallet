@@ -30,59 +30,60 @@
   };
 </script>
 
-<TopNavBar on:back={() => history.back()} title={'Trusted issuers'} class="sticky top-0 z-10" />
-
-<div class="flex flex-col space-y-[15px] bg-silver px-4 py-5 dark:bg-navy">
-  <!-- Developer info -->
-  <div class="flex w-full items-center rounded-lg bg-white px-4 py-4 dark:bg-dark">
-    <span class="mr-4 h-6 w-6">
-      <InfoRegularIcon class="h-6 w-6 text-primary" />
-    </span>
-    <div class="flex flex-col">
-      <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">Developer info</p>
-      <ul class="ml-3 list-disc text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
-        <li>Verifiable Presentations are trusted based on domains found in trust lists.</li>
-        <li>You can add, remove and update custom entries.</li>
-        <li>All entries can be manually disabled.</li>
-        <!-- <li>All edits can be reset to the default trust list.</li> -->
-      </ul>
-    </div>
-  </div>
-
-  <div class="flex flex-col space-y-[10px]">
-    <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Trust lists</p>
-    {#if trustLists.length === 0}
-      <div class="flex h-14 items-center justify-center">
-        <p class="text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">No trust lists yet.</p>
+<TopNavBar on:back={() => history.back()} title={'Trusted issuers'} />
+<div class="content-height flex flex-col bg-silver dark:bg-navy">
+  <div class="space-y-[15px] px-4 py-5">
+    <!-- Developer info -->
+    <div class="flex w-full items-center rounded-lg bg-white px-4 py-4 dark:bg-dark">
+      <span class="mr-4 h-6 w-6">
+        <InfoRegularIcon class="h-6 w-6 text-primary" />
+      </span>
+      <div class="flex flex-col">
+        <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">Developer info</p>
+        <ul class="ml-3 list-disc text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
+          <li>Verifiable Presentations are trusted based on domains found in trust lists.</li>
+          <li>You can add, remove and update custom entries.</li>
+          <li>All entries can be manually disabled.</li>
+          <!-- <li>All edits can be reset to the default trust list.</li> -->
+        </ul>
       </div>
-    {/if}
-    {#each trustLists as trustList}
-      <button
-        class="flex h-14 w-full items-center space-x-4 rounded-xl bg-white p-4 dark:bg-dark"
-        on:click={() => goto(`/me/settings/app/trust-list/${trustList.id}`)}
-      >
-        <div class="flex grow flex-row items-center space-x-2">
-          <p class="text-left text-[13px]/[24px] font-medium text-slate-800 dark:text-white">
-            {trustList.display_name}
-          </p>
-          {#if trustList.custom}
-            <svelte:component this={StarFillIcon} class="h-5 w-5 text-primary" />
-          {/if}
+    </div>
+
+    <div class="flex flex-col space-y-[10px]">
+      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Trust lists</p>
+      {#if trustLists.length === 0}
+        <div class="flex h-14 items-center justify-center">
+          <p class="text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">No trust lists yet.</p>
         </div>
-        <p class="text-[13px]/[24px] font-medium text-slate-400 dark:text-slate-300">
-          {activeDomainsString(trustList)}
-        </p>
-        <svelte:component this={CaretRightBoldIcon} class="h-4 w-4 text-slate-500" />
-      </button>
-    {/each}
+      {/if}
+      {#each trustLists as trustList}
+        <button
+          class="flex h-14 w-full items-center space-x-4 rounded-xl bg-white p-4 dark:bg-dark"
+          on:click={() => goto(`/me/settings/app/trust-list/${trustList.id}`)}
+        >
+          <div class="flex grow flex-row items-center space-x-2">
+            <p class="text-left text-[13px]/[24px] font-medium text-slate-800 dark:text-white">
+              {trustList.display_name}
+            </p>
+            {#if trustList.custom}
+              <svelte:component this={StarFillIcon} class="h-5 w-5 text-primary" />
+            {/if}
+          </div>
+          <p class="text-[13px]/[24px] font-medium text-slate-400 dark:text-slate-300">
+            {activeDomainsString(trustList)}
+          </p>
+          <svelte:component this={CaretRightBoldIcon} class="h-4 w-4 text-slate-500" />
+        </button>
+      {/each}
+    </div>
+    <Button
+      label="Add new custom trust list"
+      on:click={() => {
+        dispatch({
+          type: '[Trust Lists] Add',
+          payload: { display_name: `Custom List ${crypto.randomUUID().slice(0, 8)}` },
+        });
+      }}
+    />
   </div>
-  <Button
-    label="Add new custom trust list"
-    on:click={() => {
-      dispatch({
-        type: '[Trust Lists] Add',
-        payload: { display_name: `Custom List ${Math.floor(Math.random() * 100_000)}` },
-      });
-    }}
-  />
 </div>

@@ -10,9 +10,8 @@
   let currentValue = $state.profile_settings.profile?.theme ?? 'system';
 </script>
 
-<TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.APP.THEME.NAVBAR_TITLE()} class="sticky top-0 z-10" />
-
-<div class="bg-silver p-4 dark:bg-navy">
+<TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.APP.THEME.NAVBAR_TITLE()} />
+<div class="h-full bg-silver p-4 dark:bg-navy">
   <div class="px-2 pb-8 pt-4">
     <p class="pb-4 text-3xl font-semibold text-slate-700 dark:text-grey">
       {$LL.SETTINGS.APP.THEME.TITLE_1()}

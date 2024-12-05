@@ -20,9 +20,6 @@
   export let isTempAsset = false;
   let assetUrl: string | null = null;
 
-  export let useFallback: boolean = false;
-  $: useFallback = assetUrl === null;
-
   async function loadImage() {
     getImageAsset(id, isTempAsset).then((url) => {
       assetUrl = url;

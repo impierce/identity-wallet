@@ -5,10 +5,14 @@
 
   import { Button } from '$lib/components';
   import MeLarge from '$lib/static/svg/logo/MeLarge.svelte';
-  import UniMeText from '$lib/static/svg/logo/UniMeText.svelte';
+  import UniMeTextDark from '$lib/static/svg/logo/UniMeTextDark.svelte';
+  import UniMeTextLight from '$lib/static/svg/logo/UniMeTextLight.svelte';
   import { onboarding_state } from '$lib/stores';
 
   import LanguageSelect from './LanguageSelect.svelte';
+
+  // TODO: make reactive
+  const isDarkModeEnabled = document.documentElement.classList.contains('dark');
 </script>
 
 <div class="relative flex h-full flex-col" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
@@ -18,7 +22,11 @@
         <p class=" pb-[10px] text-[36px]/[44px] font-bold text-blue dark:text-silver">
           {$LL.ONBOARDING.WELCOME.GREETING()}
         </p>
-        <UniMeText class="text-blue dark:text-silver" />
+        {#if isDarkModeEnabled}
+          <UniMeTextDark />
+        {:else}
+          <UniMeTextLight />
+        {/if}
       </div>
 
       <p class="text-[14px]/[22px] font-medium text-ex-grey-2 dark:text-grey">

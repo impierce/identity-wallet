@@ -308,7 +308,7 @@ Stacking context: We have to deviate from the DOM-sequence.
   Add paddings to honor safe-area-insets.
   This is also the portal for the ActionSheet instead of default `body` to ensure it works with dark mode.
   -->
-  <div id="portal" class="safe-area-insets h-screen">
+  <div class="safe-area-insets h-screen" id="portal">
     <!-- Dev Mode: Navbar -->
     {#if $appState?.dev_mode !== 'Off'}
       {#if expandedDevMenu}

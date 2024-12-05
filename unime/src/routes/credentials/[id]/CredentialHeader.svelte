@@ -4,7 +4,7 @@
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 
   import { dispatch } from '$lib/dispatcher';
-  import { CertificateLightIcon, HeartStraightFillIcon, HeartStraightRegularIcon, UserLightIcon } from '$lib/icons';
+  import { CertificateLightIcon, HeartStraightFillIcon, HeartStraightRegularIcon } from '$lib/icons';
   import { getImageAsset } from '$lib/utils';
 
   import CredentialHeaderMenu from './CredentialHeaderMenu.svelte';
@@ -26,10 +26,8 @@
     {#if credentialLogoUrl}
       <!-- Fit image of unknown dimensions into available space with `contain` (not `cover`). -->
       <img src={credentialLogoUrl} alt="Credential logo" class="h-32 w-32 object-contain" />
-    {:else if credential.data.type.includes('OpenBadgeCredential')}
-      <CertificateLightIcon class="h-10 w-10 text-text-alt" />
     {:else}
-      <UserLightIcon class="h-10 w-10 text-text-alt" />
+      <CertificateLightIcon class="h-10 w-10 text-text-alt" />
     {/if}
   </div>
 

@@ -10,9 +10,9 @@
   export let data: PageData;
 </script>
 
-<TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.SUPPORT.ABOUT.NAVBAR_TITLE()} class="sticky top-0 z-10" />
+<TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.SUPPORT.ABOUT.NAVBAR_TITLE()} />
 
-<div class="flex flex-col bg-silver dark:bg-navy">
+<div class="content-height flex flex-col bg-silver dark:bg-navy">
   <h1 class="sr-only">{$LL.SETTINGS.SUPPORT.ABOUT.TITLE()}</h1>
   <div
     class="flex flex-col items-center gap-6 pt-4 text-[13px]/[24px] font-normal text-slate-500 opacity-50 dark:text-slate-300"
@@ -33,16 +33,23 @@
     {/if}
     <section class="flex flex-col items-center">
       <h2 class="mb-3 font-bold">{$LL.SETTINGS.SUPPORT.ABOUT.VERSION()}</h2>
-      <div>0.7.3</div>
+      <div>0.6.12</div>
       <div class="flex items-center pb-4">
         <p>{$LL.SETTINGS.SUPPORT.ABOUT.BUILT_WITH()}</p>
         <HeartFillIcon class="pl-1" />
       </div>
     </section>
-    <section class="mb-4 flex flex-col items-center">
+    <section class="flex flex-col items-center">
       <h2 class="mb-3 font-bold">{$LL.SETTINGS.SUPPORT.ABOUT.LICENSE()}</h2>
       <div>Apache License 2.0</div>
       <div>{`${new Date().getFullYear()} Impierce Technologies`}</div>
     </section>
   </div>
 </div>
+
+<style>
+  .content-height {
+    /* bottom-navigation: 64px, top-navigation: 50px */
+    height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom) - 64px - 50px);
+  }
+</style>

@@ -47,13 +47,8 @@
   });
 </script>
 
-<div class="safe-area-height hide-scrollbar flex flex-col items-stretch overflow-y-auto bg-silver dark:bg-navy">
-  <TopNavBar
-    title={$LL.SCAN.CONNECTION_REQUEST.NAVBAR_TITLE()}
-    on:back={() => history.back()}
-    disabled={loading}
-    class="sticky top-0 z-10"
-  />
+<div class="content-height flex flex-col items-stretch bg-silver dark:bg-navy">
+  <TopNavBar title={$LL.SCAN.CONNECTION_REQUEST.NAVBAR_TITLE()} on:back={() => history.back()} disabled={loading} />
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
     {#if logo_uri}
@@ -140,8 +135,9 @@
     </div>
   </div>
 
-  <!-- `sticky` is relative to the nearest scrolling ancestor, which is the enclosing `div` above and not the viewport. -->
-  <div class="sticky bottom-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 dark:bg-dark">
+  <!-- Controls -->
+  <!-- TODO: on iOS subtract the --safe-area-inset-bottom from the bottom-padding -->
+  <div class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 dark:bg-dark">
     <Button
       label={$LL.SCAN.CONNECTION_REQUEST.ACCEPT()}
       on:click={() => {
@@ -165,7 +161,8 @@
 </div>
 
 <style>
-  .safe-area-height {
+  .content-height {
+    /* bottom-navigation: 64px + 2 * 8px (y-padding) + 1px (border top) = 81px */
     height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom));
   }
 </style>
