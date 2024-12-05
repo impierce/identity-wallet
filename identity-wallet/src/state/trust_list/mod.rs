@@ -64,17 +64,27 @@ pub struct TrustList {
     /// Custom true: TrustList's can be created in dev mode at any time.
     #[serde(default)]
     pub custom: bool,
-    #[serde(deserialize_with = "deserialize_domains")]
+    #[serde(deserialize_with = "deserialize_entries")]
     #[ts(type = "Record<string, boolean>")]
     pub entries: HashMap<url::Url, bool>,
 }
 
-fn deserialize_domains<'de, D>(deserializer: D) -> Result<HashMap<Url, bool>, D::Error>
+fn deserialize_entries<'de, D>(deserializer: D) -> Result<HashMap<Url, bool>, D::Error>
 where
     D: serde::Deserializer<'de>,
 {
-    let domains: Vec<Url> = Vec::deserialize(deserializer)?;
-    Ok(domains.into_iter().map(|domain| (domain, true)).collect())
+    #[derive(Deserialize)]
+    #[serde(untagged)]
+    enum Entries {
+        Array(Vec<Url>),
+        Map(HashMap<Url, bool>),
+    }
+
+    let entries = Entries::deserialize(deserializer)?;
+    match entries {
+        Entries::Array(array) => Ok(array.into_iter().map(|url| (url, true)).collect()),
+        Entries::Map(map) => Ok(map),
+    }
 }
 
 impl Default for TrustList {
