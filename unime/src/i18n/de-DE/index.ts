@@ -267,9 +267,12 @@ const de = {
     NAVBAR_TITLE: 'Credential Informationen',
     DETAILS: {
       VALID: 'Gültig',
-      ISSUED_BY: 'Ausgestellt von',
+      ISSUED_BY: 'Ausgestellt durch',
       DESCRIPTION: 'Beschreibung',
-      CONTENTS: 'Inhalt',
+      OPEN_BADGES: {
+        ALIGNMENT: 'Ausrichtung',
+        CRITERIA: 'Kriterien',
+      },
     },
     ACTIONS: {
       DELETE: {

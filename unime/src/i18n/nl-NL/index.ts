@@ -268,7 +268,10 @@ const nl = {
       VALID: 'Geldig',
       ISSUED_BY: 'Uitgegeven door',
       DESCRIPTION: 'Beschrijving',
-      CONTENTS: 'Inhoud',
+      OPEN_BADGES: {
+        ALIGNMENT: 'Afstemming',
+        CRITERIA: 'Criteria',
+      },
     },
     ACTIONS: {
       DELETE: {

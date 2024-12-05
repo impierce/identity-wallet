@@ -268,7 +268,10 @@ const en = {
       VALID: 'Valid',
       ISSUED_BY: 'Issued by',
       DESCRIPTION: 'Description',
-      CONTENTS: 'Contents',
+      OPEN_BADGES: {
+        ALIGNMENT: 'Alignment',
+        CRITERIA: 'Criteria',
+      },
     },
     ACTIONS: {
       DELETE: {
