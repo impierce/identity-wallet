@@ -199,7 +199,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
         let mut history_credentials = vec![];
 
         for (credential_configuration_id, credential, display) in credentials.into_iter() {
-            let mut verifiable_credential_record: VerifiableCredentialRecord = credential.clone().try_into()?;
+            let mut verifiable_credential_record: VerifiableCredentialRecord = credential.try_into()?;
             verifiable_credential_record
                 .display_credential
                 .issuer_name

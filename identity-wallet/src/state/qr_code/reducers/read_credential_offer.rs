@@ -144,7 +144,7 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
 async fn download_credential_logos(
     credential_configurations: &HashMap<String, CredentialConfigurationsSupportedObject>,
 ) {
-    for (_, credential_configuration) in credential_configurations.iter() {
+    for credential_configuration in credential_configurations.values() {
         let credential_logo_uri = credential_configuration
             .display
             .first()
