@@ -747,10 +747,16 @@ type RootTranslation = {
 			 * D​e​s​c​r​i​p​t​i​o​n
 			 */
 			DESCRIPTION: string
-			/**
-			 * C​o​n​t​e​n​t​s
-			 */
-			CONTENTS: string
+			OPEN_BADGES: {
+				/**
+				 * A​l​i​g​n​m​e​n​t
+				 */
+				ALIGNMENT: string
+				/**
+				 * C​r​i​t​e​r​i​a
+				 */
+				CRITERIA: string
+			}
 		}
 		ACTIONS: {
 			DELETE: {
@@ -763,7 +769,7 @@ type RootTranslation = {
 				 */
 				TITLE: string
 				/**
-				 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​r​e​m​o​v​e​ ​t​h​i​s​ ​c​r​e​d​e​n​t​i​a​l​ ​f​r​o​m​ ​y​o​u​r​ ​w​a​l​l​e​t​?​ ​T​h​i​s​ ​a​c​t​i​o​n​ ​c​a​n​n​o​t​ ​b​e​ ​u​n​d​o​n​e​.
+				 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​d​e​l​e​t​e​ ​t​h​i​s​ ​c​r​e​d​e​n​t​i​a​l​ ​f​r​o​m​ ​y​o​u​r​ ​w​a​l​l​e​t​?​ ​T​h​i​s​ ​a​c​t​i​o​n​ ​c​a​n​n​o​t​ ​b​e​ ​u​n​d​o​n​e​.
 				 */
 				DESCRIPTION: string
 				/**
@@ -821,7 +827,7 @@ type RootTranslation = {
 	}
 	DOMAIN_LINKAGE: {
 		/**
-		 * V​e​r​i​f​i​e​d
+		 * V​e​r​i​f​i​e​d​ ​w​e​b​s​i​t​e
 		 */
 		TITLE: string
 		/**
@@ -1604,10 +1610,16 @@ export type TranslationFunctions = {
 			 * Description
 			 */
 			DESCRIPTION: () => LocalizedString
-			/**
-			 * Contents
-			 */
-			CONTENTS: () => LocalizedString
+			OPEN_BADGES: {
+				/**
+				 * Alignment
+				 */
+				ALIGNMENT: () => LocalizedString
+				/**
+				 * Criteria
+				 */
+				CRITERIA: () => LocalizedString
+			}
 		}
 		ACTIONS: {
 			DELETE: {
@@ -1620,7 +1632,7 @@ export type TranslationFunctions = {
 				 */
 				TITLE: () => LocalizedString
 				/**
-				 * Are you sure you want to remove this credential from your wallet? This action cannot be undone.
+				 * Are you sure you want to delete this credential from your wallet? This action cannot be undone.
 				 */
 				DESCRIPTION: () => LocalizedString
 				/**
@@ -1678,7 +1690,7 @@ export type TranslationFunctions = {
 	}
 	DOMAIN_LINKAGE: {
 		/**
-		 * Verified
+		 * Verified website
 		 */
 		TITLE: () => LocalizedString
 		/**
