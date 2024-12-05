@@ -9,7 +9,7 @@
   import { XBoldIcon } from '$lib/icons';
 
   const {
-    elements: { trigger, overlay, content, title, description, close, portalled },
+    elements: { trigger, overlay, content, title, description, close },
     states: { open },
   } = createDialog();
 
@@ -90,14 +90,7 @@
               label={$LL.REJECT()}
             />
 
-            <Button
-              on:click={() => {
-                checked_terms = true;
-                console.log('checked_terms:', checked_terms);
-              }}
-              trigger={$close}
-              label={$LL.ACCEPT()}
-            />
+            <Button on:click={() => (checked_terms = true)} trigger={$close} label={$LL.ACCEPT()} />
             <!-- <button
               use:melt={$close}
               class="bg-magnum-100 text-magnum-900 inline-flex h-8 items-center
