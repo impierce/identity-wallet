@@ -20,6 +20,7 @@
   export let isTempAsset = false;
   let assetUrl: string | null = null;
 
+  // useFallback is reactive since the assetUrl is updated onMount when the image is loaded from the backend
   export let useFallback: boolean = false;
   $: useFallback = assetUrl === null;
 
