@@ -12,7 +12,7 @@ pub struct AddTrustListEntry {
     pub domain: String,
 }
 
-#[typetag::serde(name = "[Trust List] Add Entry")]
+#[typetag::serde(name = "[Trust List] Add entry")]
 impl ActionTrait for AddTrustListEntry {
     fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
         vec![reducer!(add_trust_list_entry)]

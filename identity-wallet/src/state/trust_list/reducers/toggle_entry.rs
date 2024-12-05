@@ -1,3 +1,5 @@
+use log::info;
+
 use crate::error::AppError;
 use crate::state::trust_list::actions::toggle_trust_list_entry::ToggleTrustListEntry;
 use crate::state::{
@@ -7,11 +9,17 @@ use crate::state::{
 
 pub async fn toggle_trust_list_entry(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(action) = listen::<ToggleTrustListEntry>(action) {
-        let mut trust_lists = state.trust_lists.clone();
+        let mut trust_lists = state.trust_lists;
 
         if let Some(trust_list) = trust_lists.get_mut(&action.trust_list_id) {
+            let display_name = trust_list.display_name.clone();
             if let Some(value) = trust_list.get_mut(&action.domain) {
                 *value = !*value;
+
+                info!(
+                    "Toggled domain `{}` to `{}` in trust list: `{}`",
+                    action.domain, value, display_name
+                );
             }
         }
 
@@ -26,6 +34,7 @@ pub async fn toggle_trust_list_entry(state: AppState, action: Action) -> Result<
 
 #[cfg(test)]
 mod tests {
+    use url::Url;
     use uuid::Uuid;
 
     use crate::state::trust_list::{TrustList, TrustLists};
@@ -40,13 +49,13 @@ mod tests {
             id: Uuid::new_v4().to_string(),
             display_name: "impierce".to_string(),
             custom: true,
-            entries: HashMap::from([("impierce.com".to_string(), true)]),
+            entries: HashMap::from([(Url::parse("https://example.com").unwrap(), true)]),
         };
         state.trust_lists.insert(default_trust_list.clone());
 
         let action = Arc::new(ToggleTrustListEntry {
             trust_list_id: default_trust_list.id.clone(),
-            domain: "impierce.com".to_string(),
+            domain: Url::parse("https://example.com").unwrap(),
         });
 
         let result = toggle_trust_list_entry(state, action).await.unwrap();
@@ -56,7 +65,7 @@ mod tests {
             id: default_trust_list.id.clone(),
             display_name: default_trust_list.display_name.clone(),
             custom: true,
-            entries: HashMap::from([("impierce.com".to_string(), false)]),
+            entries: HashMap::from([(Url::parse("https://example.com").unwrap(), false)]),
         });
 
         assert_eq!(result.trust_lists, expected);
