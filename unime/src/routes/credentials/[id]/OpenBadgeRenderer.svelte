@@ -32,10 +32,8 @@
   {/if}
 
   {#if credential.data.credentialSubject?.achievement?.alignment?.length > 0}
-    <!-- Loop over the alignment array and render each item with a subtle dividing line -->
     {#each credential.data.credentialSubject.achievement.alignment as alignmentItem}
       <div class="prose prose-sm rounded-xl bg-background p-4 dark:prose-invert">
-        <!-- Render targetName in bold -->
         <strong>{@html md.render(alignmentItem.targetName)}</strong>
         {@html md.render(alignmentItem.targetDescription)}
       </div>
