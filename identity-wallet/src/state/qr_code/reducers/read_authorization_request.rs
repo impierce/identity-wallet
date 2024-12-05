@@ -89,22 +89,22 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
 
             let did = siopv2_authorization_request.body.client_id.as_str();
 
-            let domain_validation: Box<crate::state::did::validate_domain_linkage::ValidationResult> =
-                Box::new(validate_domain_linkage(url, did).await);
+            let domain_validation = Box::new(validate_domain_linkage(url, did).await);
 
             let trusted_domains: Vec<String> = state
                 .trust_lists
                 .0
                 .iter()
-                .flat_map(|trust_list| {
+                .map(|trust_list| {
                     trust_list
                         .entries
                         .iter()
-                        .filter_map(|(domain, trusted)| trusted.then_some(domain.clone()))
+                        .filter_map(|(domain, trusted)| trusted.then_some(domain.clone().to_string()))
+                        .collect::<String>()
                 })
                 .collect();
 
-            info!("Trusted domains: {:?}", trusted_domains);
+            info!("Trusted Domains: {:?}", trusted_domains);
 
             let linked_verifiable_presentations = validate_linked_verifiable_presentations(did)
                 .await

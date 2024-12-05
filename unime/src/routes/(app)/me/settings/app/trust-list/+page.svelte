@@ -81,7 +81,7 @@
       on:click={() => {
         dispatch({
           type: '[Trust Lists] Add',
-          payload: { display_name: `Custom List ${Math.floor(Math.random() * 100_000)}` },
+          payload: { display_name: `Custom List ${crypto.randomUUID().slice(0, 8)}` },
         });
       }}
     />

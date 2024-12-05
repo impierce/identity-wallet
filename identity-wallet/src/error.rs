@@ -30,6 +30,8 @@ pub enum AppError {
     DownloadAborted(&'static str),
     #[error("Failed to write to the file: {0}")]
     WriteFailed(#[from] std::io::Error),
+    #[error("Failed to deserialize: {0}")]
+    DeserializeFailed(#[from] serde_json::Error),
     #[error("Error while initializing OID4VC provider manager")]
     OID4VCProviderManagerError(#[source] anyhow::Error),
     #[error("Error while initializing OID4VC wallet")]
@@ -92,6 +94,8 @@ pub enum AppError {
     StrongholdPublicKeyError(#[source] anyhow::Error),
     #[error("Failed to delete state file")]
     StateFileDeletionError(#[source] anyhow::Error),
+    #[error("Failed to find TrustList with ID `{0}`")]
+    TrustListNotFoundError(String),
 }
 
 impl std::fmt::Debug for AppError {

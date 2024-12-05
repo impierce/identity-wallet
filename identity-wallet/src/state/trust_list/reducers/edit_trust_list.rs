@@ -1,25 +1,26 @@
 use log::info;
 
 use crate::error::AppError;
-use crate::state::trust_list::actions::delete_trust_list_entry::DeleteTrustListEntry;
+use crate::state::trust_list::actions::edit_trust_list::EditTrustList;
 use crate::state::{
     actions::{listen, Action},
     AppState,
 };
 
-pub async fn delete_trust_list_entry(state: AppState, action: Action) -> Result<AppState, AppError> {
-    if let Some(action) = listen::<DeleteTrustListEntry>(action) {
+pub async fn trust_list_edit(state: AppState, action: Action) -> Result<AppState, AppError> {
+    if let Some(action) = listen::<EditTrustList>(action) {
         let mut trust_lists = state.trust_lists;
-
         let trust_list = trust_lists
             .get_mut(&action.trust_list_id)
             .ok_or_else(|| AppError::TrustListNotFoundError(action.trust_list_id.clone()))?;
 
-        trust_list.remove(&action.domain);
+        let display_name_before = trust_list.display_name.clone();
+
+        trust_list.display_name = action.new_display_name.clone();
 
         info!(
-            "Deleted trusted domain `{}` from list `{}`",
-            action.domain, trust_list.display_name
+            "Updated trust list name: `{}` --> `{}`",
+            display_name_before, action.new_display_name
         );
 
         return Ok(AppState {
@@ -42,7 +43,7 @@ mod tests {
     use std::{collections::HashMap, sync::Arc};
 
     #[tokio::test]
-    async fn test_delete_trust_list_entry() {
+    async fn test_trust_list_edit() {
         let mut state = AppState::default();
         let default_trust_list = TrustList {
             id: Uuid::new_v4().to_string(),
@@ -52,19 +53,19 @@ mod tests {
         };
         state.trust_lists.insert(default_trust_list.clone());
 
-        let action = Arc::new(DeleteTrustListEntry {
+        let action = Arc::new(EditTrustList {
             trust_list_id: default_trust_list.id.clone(),
-            domain: Url::parse("https://example.com").unwrap(),
+            new_display_name: "example".to_string(),
         });
 
-        let result = delete_trust_list_entry(state, action).await.unwrap();
+        let result = trust_list_edit(state, action).await.unwrap();
 
         let mut expected = TrustLists::new();
         expected.insert(TrustList {
             id: default_trust_list.id.clone(),
-            display_name: default_trust_list.display_name.clone(),
+            display_name: "example".to_string(),
             custom: true,
-            entries: HashMap::new(),
+            entries: HashMap::from([(Url::parse("https://example.com").unwrap(), true)]),
         });
 
         assert_eq!(result.trust_lists, expected);
