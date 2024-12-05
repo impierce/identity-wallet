@@ -749,6 +749,10 @@ type RootTranslation = {
 			DESCRIPTION: string
 			OPEN_BADGES: {
 				/**
+				 * A​l​i​g​n​m​e​n​t
+				 */
+				ALIGNMENT: string
+				/**
 				 * C​r​i​t​e​r​i​a
 				 */
 				CRITERIA: string
@@ -823,7 +827,7 @@ type RootTranslation = {
 	}
 	DOMAIN_LINKAGE: {
 		/**
-		 * V​e​r​i​f​i​e​d
+		 * V​e​r​i​f​i​e​d​ ​w​e​b​s​i​t​e
 		 */
 		TITLE: string
 		/**
@@ -1608,6 +1612,10 @@ export type TranslationFunctions = {
 			DESCRIPTION: () => LocalizedString
 			OPEN_BADGES: {
 				/**
+				 * Alignment
+				 */
+				ALIGNMENT: () => LocalizedString
+				/**
 				 * Criteria
 				 */
 				CRITERIA: () => LocalizedString
@@ -1682,7 +1690,7 @@ export type TranslationFunctions = {
 	}
 	DOMAIN_LINKAGE: {
 		/**
-		 * Verified
+		 * Verified website
 		 */
 		TITLE: () => LocalizedString
 		/**

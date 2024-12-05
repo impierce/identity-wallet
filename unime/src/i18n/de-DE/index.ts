@@ -270,6 +270,7 @@ const de = {
       ISSUED_BY: 'Ausgestellt durch',
       DESCRIPTION: 'Beschreibung',
       OPEN_BADGES: {
+        ALIGNMENT: 'Ausrichtung',
         CRITERIA: 'Kriterien',
       },
     },

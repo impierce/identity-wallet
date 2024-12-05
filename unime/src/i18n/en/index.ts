@@ -269,6 +269,7 @@ const en = {
       ISSUED_BY: 'Issued by',
       DESCRIPTION: 'Description',
       OPEN_BADGES: {
+        ALIGNMENT: 'Alignment',
         CRITERIA: 'Criteria',
       },
     },

@@ -269,6 +269,7 @@ const nl = {
       ISSUED_BY: 'Uitgegeven door',
       DESCRIPTION: 'Beschrijving',
       OPEN_BADGES: {
+        ALIGNMENT: 'Afstemming',
         CRITERIA: 'Criteria',
       },
     },
