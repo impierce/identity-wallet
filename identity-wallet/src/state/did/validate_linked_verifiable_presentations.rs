@@ -351,7 +351,7 @@ fn get_name(credential_subject: &Subject) -> Option<String> {
 async fn get_logo_uri(
     credential_subject: &Subject,
     linked_verifiable_credential: &DecodedJwtCredential<Value>,
-    validated_linked_domains: &Vec<Url>,
+    validated_linked_domains: &[Url],
 ) -> Option<String> {
     let mut logo_uri = OptionFuture::from(credential_subject.properties.get("image").and_then(Value::as_str).map(
         |image| async {
