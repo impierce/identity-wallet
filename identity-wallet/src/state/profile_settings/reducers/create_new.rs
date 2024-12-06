@@ -17,7 +17,6 @@ use log::info;
 use oid4vc::oid4vc_core::Subject as _;
 use oid4vc::oid4vc_manager::ProviderManager;
 use oid4vc::oid4vci::Wallet;
-use serde_json::Value;
 use std::sync::Arc;
 
 /// Creates a new profile, produces (deterministic) DIDs and redirects to the main page.
@@ -83,27 +82,8 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
         });
 
         // Import default trust list
-        let mut default_trust_list = TrustList::new();
-        let default_trust_list_json: Value =
-            serde_json::from_slice::<Value>(include_bytes!("../../../../resources/default_trust_list.json")).unwrap();
-
-        default_trust_list.display_name = default_trust_list_json
-            .get("display_name")
-            .unwrap()
-            .as_str()
-            .unwrap()
-            .to_string();
-
-        default_trust_list.entries = default_trust_list_json
-            .get("domains")
-            .unwrap()
-            .as_array()
-            .unwrap()
-            .iter()
-            .map(|domain| (domain.as_str().unwrap().to_string(), true))
-            .collect();
-
-        default_trust_list.custom = false;
+        let default_trust_list: TrustList =
+            serde_json::from_str(include_str!("../../../../resources/default_trust_list.json"))?;
 
         let trust_lists = TrustLists(vec![default_trust_list]);
 
