@@ -336,7 +336,7 @@ fn get_name(credential_subject: &Subject) -> Option<String> {
     credential_subject
         .properties
         .get("name")
-        .or_else(|| credential_subject.properties.get("naam"))
+        .or_else(|| credential_subject.properties.get("naam")) // TODO: "naam" is expected to be used in Dutch credentials
         .or_else(|| credential_subject.properties.get("legal_person_name"))
         .and_then(Value::as_str)
         .map(ToString::to_string)

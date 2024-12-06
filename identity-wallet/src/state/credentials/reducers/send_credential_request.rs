@@ -135,71 +135,61 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
             credential_configuration_ids.contains(credential_configuration_id)
         });
 
-        let credentials: Vec<(String, serde_json::Value, Vec<serde_json::Value>)> =
-            match credential_configuration_ids.len() {
-                0 => vec![],
-                1 => {
-                    let credential_configuration_id = credential_configuration_ids[0].clone();
+        let credentials: Vec<(String, serde_json::Value)> = match credential_configuration_ids.len() {
+            0 => vec![],
+            1 => {
+                let credential_configuration_id = credential_configuration_ids[0].clone();
 
-                    let credential_configuration = credential_configurations_supported
-                        .get(&credential_configuration_id)
-                        .ok_or(UnknownCredentialConfigurationIdError(
-                            credential_configuration_id.clone(),
-                        ))?;
+                let credential_configuration = credential_configurations_supported
+                    .get(&credential_configuration_id)
+                    .ok_or(UnknownCredentialConfigurationIdError(
+                        credential_configuration_id.clone(),
+                    ))?;
 
-                    // Get the credential.
-                    let credential_response = wallet
-                        .get_credential(credential_issuer_metadata, &token_response, credential_configuration)
-                        .await
-                        .map_err(GetCredentialError)?;
+                // Get the credential.
+                let credential_response = wallet
+                    .get_credential(credential_issuer_metadata, &token_response, credential_configuration)
+                    .await
+                    .map_err(GetCredentialError)?;
 
-                    let credential = match credential_response.credential {
-                        CredentialResponseType::Immediate { credential, .. } => credential,
-                        _ => panic!("Credential was not a jwt_vc_json."),
-                    };
+                let credential = match credential_response.credential {
+                    CredentialResponseType::Immediate { credential, .. } => credential,
+                    _ => panic!("Credential was not a jwt_vc_json."),
+                };
 
-                    vec![(
-                        credential_configuration_id,
-                        credential,
-                        credential_configuration.display.clone(),
-                    )]
-                }
-                _batch => {
-                    let (credential_configuration_ids, credential_configurations): (Vec<_>, Vec<_>) =
-                        credential_configurations_supported.clone().into_iter().unzip();
+                vec![(credential_configuration_id, credential)]
+            }
+            _batch => {
+                let (credential_configuration_ids, credential_configurations): (Vec<_>, Vec<_>) =
+                    credential_configurations_supported.clone().into_iter().unzip();
 
-                    let batch_credential_response = wallet
-                        .get_batch_credential(credential_issuer_metadata, &token_response, &credential_configurations)
-                        .await
-                        .map_err(GetBatchCredentialError)?;
+                let batch_credential_response = wallet
+                    .get_batch_credential(credential_issuer_metadata, &token_response, &credential_configurations)
+                    .await
+                    .map_err(GetBatchCredentialError)?;
 
-                    credential_configuration_ids
-                        .into_iter()
-                        .zip(batch_credential_response.credential_responses.into_iter())
-                        .zip(credential_configurations.into_iter())
-                        .filter_map(
-                            |((credential_configuration_id, credential_response), credential_configuration)| {
-                                match credential_response {
-                                    CredentialResponseType::Immediate { credential, .. } => Some((
-                                        credential_configuration_id,
-                                        credential,
-                                        credential_configuration.display,
-                                    )),
-                                    // TODO: add support for deferred credentials.
-                                    CredentialResponseType::Deferred { .. } => None,
-                                }
-                            },
-                        )
-                        .collect()
-                }
-            };
+                credential_configuration_ids
+                    .into_iter()
+                    .zip(batch_credential_response.credential_responses.into_iter())
+                    .filter_map(
+                        |(credential_configuration_id, credential_response)| match credential_response {
+                            CredentialResponseType::Immediate { credential, .. } => {
+                                Some((credential_configuration_id, credential))
+                            }
+                            // TODO: add support for deffered credentials.
+                            CredentialResponseType::Deferred { .. } => None,
+                        },
+                    )
+                    .collect()
+            }
+        };
 
         info!("credentials: {:?}", credentials);
 
         let mut history_credentials = vec![];
 
-        for (credential_configuration_id, credential, display) in credentials.into_iter() {
-            let mut verifiable_credential_record: VerifiableCredentialRecord = credential.clone().try_into()?;
+        for (credential_configuration_id, credential) in credentials.into_iter() {
+            let mut verifiable_credential_record: VerifiableCredentialRecord = credential.try_into()?;
             verifiable_credential_record
                 .display_credential
                 .issuer_name
@@ -221,12 +211,11 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
 
             info!("generated hash-key: {:?}", key);
 
-            display
-                .first()
-                .and_then(|display| display.get("logo"))
-                .and_then(|logo| logo.get("uri").or_else(|| logo.get("url")))
-                .and_then(|uri| uri.as_str())
-                .and_then(|uri| persist_asset(&hash(uri), key.to_string().as_str()).ok());
+            persist_asset(
+                format!("credential_{credential_configuration_id}").as_str(),
+                key.to_string().as_str(),
+            )
+            .ok();
 
             // Remove the old credential from the stronghold if it exists.
             stronghold_manager.remove(key).map_err(StrongholdDeletionError)?;

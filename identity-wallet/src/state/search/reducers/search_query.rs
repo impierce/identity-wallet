@@ -58,8 +58,6 @@ fn contains_search_term(string: Option<&str>, search_term: &str) -> bool {
 
 #[cfg(test)]
 mod tests {
-    use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
-
     use super::*;
     use crate::state::credentials::CredentialMetadata;
     use crate::state::credentials::DisplayCredential;
@@ -110,7 +108,6 @@ mod tests {
             credentials: vec![
                 DisplayCredential {
                     id: "1".to_string(),
-                    format: CredentialFormats::JwtVcJson(()),
                     issuer_name: "Example Organization".to_string(),
                     data: serde_json::json!({"last_name": "Ferris"}),
                     metadata: CredentialMetadata {
@@ -123,7 +120,6 @@ mod tests {
                 },
                 DisplayCredential {
                     id: "2".to_string(),
-                    format: CredentialFormats::JwtVcJson(()),
                     issuer_name: "Example Organization".to_string(),
                     data: serde_json::json!({"last_name": "John"}),
                     metadata: CredentialMetadata {
@@ -136,7 +132,6 @@ mod tests {
                 },
                 DisplayCredential {
                     id: "3".to_string(),
-                    format: CredentialFormats::JwtVcJson(()),
                     issuer_name: "John Organization".to_string(),
                     data: serde_json::json!({"last_name": "Ferris"}),
                     metadata: CredentialMetadata {

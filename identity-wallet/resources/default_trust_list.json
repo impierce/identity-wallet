@@ -1,6 +1,7 @@
 {
-  "display_name": "Impierce (Development)",
-  "domains": [
+  "id": "b01f4a74-3005-4749-a030-c5444bc4dab5",
+  "display_name": "Impierce Demos",
+  "entries": [
     "agent-dev.impierce.com",
     "ngdil.com",
     "selv.iota.org",
