@@ -344,10 +344,11 @@ fn get_name(credential_subject: &Subject) -> Option<String> {
         .map(ToString::to_string)
 }
 
-/// First try to get the logo URI from the credential subject.
-/// Then, if no success, iterate through the validated linked domains and try to fetch it from the well-known/openid-credential-issuer endpoint.
+/// First, try to get the logo URI from the credential subject.
+/// If this doesn't succeed, iterate through the validated linked domains and try to fetch it from the well-known/openid-credential-issuer endpoint.
 /// In this endpoint, first we look inside the Display field, at the root.
-/// Then, if no success, we look inside the Credential Configuration Supported and try the match keys in there with the strings in the type array of the credential, in reverse order.
+/// If we can't find a logo there, we look inside the Credential Configurations Supported field at the root.
+/// We try the match fields/keys inside the Credential Configurations Supported object against the credential `type` array of the linked verifiable credential, in reverse order.
 /// At first success the loop breaks and we download the image.
 /// Otherwise, we use a fallback icon.
 async fn get_logo_uri(
@@ -389,6 +390,10 @@ async fn get_logo_uri(
                     }
                 }
             }
+            // TODO: Due to mixing 2 specs here, the oid4vci and linked verifiable presentation spec, we lose the Credential Issuer Identifier (CII) during the linked vp flow.
+            // The CII tells us where exactly we can add "/.well-known/openid-credential-issuer" to fetch the Credential Issuer Metadata, in which we might find the logo.
+            // For now we assume it's the same domain as the linked domain.
+            // But this is no guarantee and the code below is one such workaround.
             well_known_endpoint = format!("{}oid4vci/.well-known/openid-credential-issuer", domain);
             info!("Trying to fetch image from {well_known_endpoint} endpoint");
             if let Ok(response) = reqwest::Client::new().get(&well_known_endpoint).send().await {
@@ -443,12 +448,6 @@ async fn get_logo_uri(
                 warn!("Failed to parse logo URI: {:#?}, {:#?}", logo_uri_str, parse_err);
             }
         }
-    } else {
-        // Logo URI needs to be Some, even if it's value is not working, for the frontend to display the fallback icon.
-        // Otherwise, it doesn't display any icon.
-        // TODO: this needs to be fixed in the frontend.
-        logo_uri = Some("Fallback icon".to_string());
-        warn!("Failed to fetch logo URI from /.well-known/openid-credential-issuer endpoint");
     }
 
     logo_uri
