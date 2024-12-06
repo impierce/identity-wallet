@@ -337,7 +337,9 @@ fn get_name(credential_subject: &Subject) -> Option<String> {
         .properties
         .get("name")
         .or_else(|| credential_subject.properties.get("naam")) // TODO: "naam" is expected to be used in Dutch credentials
-        .or_else(|| credential_subject.properties.get("legal_person_name"))
+        .or_else(|| credential_subject.properties.get("legal_person_name")) // This is another valid property name according to the following spec:
+        // EWC RFC005: Issue Legal Person Identification Data (LPID) - v1.0
+        // https://github.com/EWC-consortium/eudi-wallet-rfcs/blob/49faa8b0ba5e5e79836e247fd07cc0447c1ae98b/ewc-rfc005-issue-legal-person-identification-data.md#51031-lpid-attributes-specification
         .and_then(Value::as_str)
         .map(ToString::to_string)
 }
