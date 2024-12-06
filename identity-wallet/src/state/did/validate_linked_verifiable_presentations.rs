@@ -195,7 +195,7 @@ async fn get_validated_linked_credential_data(
             // Only linked verifiable credentials with at least one successful domain linkage validation are considered
             let mut validated_linked_domains = get_validated_linked_domains(&issuer_linked_domains, &issuer_did).await;
 
-            // This is a fallback to get the url from a did:web to validate domain linkage. This is useful for companies who haven't implemented domain linkage yet.
+            // TODO: This is a fallback to get the url from a did:web to validate domain linkage. This is useful for companies who haven't implemented domain linkage yet.
             if validated_linked_domains.is_empty() {
                 if let Some(did_web_url) = extract_url_from_did_web(&issuer_did) {
                     validated_linked_domains.insert(0, did_web_url);
