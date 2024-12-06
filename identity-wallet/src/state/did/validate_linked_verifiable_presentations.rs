@@ -348,7 +348,7 @@ fn get_name(credential_subject: &Subject) -> Option<String> {
 /// If this doesn't succeed, iterate through the validated linked domains and try to fetch it from the well-known/openid-credential-issuer endpoint.
 /// In this endpoint, first we look inside the Display field, at the root.
 /// If we can't find a logo there, we look inside the Credential Configurations Supported field at the root.
-/// We try the match fields/keys inside the Credential Configurations Supported object against the credential `type` array of the linked verifiable credential, in reverse order.
+/// We try to match keys inside the Credential Configurations Supported object against the credential `type` array of the linked verifiable credential, in reverse order.
 /// At first success the loop breaks and we download the image.
 /// Otherwise, we use a fallback icon.
 async fn get_logo_uri(
