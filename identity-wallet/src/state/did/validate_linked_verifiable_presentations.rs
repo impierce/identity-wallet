@@ -236,7 +236,7 @@ async fn get_validated_linked_credential_data(
                         })
                     }
                     else {
-                        warn!("Failed to get credential_subject: {linked_verifiable_credential:#?}");
+                        warn!("Failed to get credential_subject from linked_verifiable_credential: {linked_verifiable_credential:#?}");
                         None
                     }
                 } else {
