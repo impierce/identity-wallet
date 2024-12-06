@@ -227,7 +227,7 @@ async fn get_validated_linked_credential_data(
                         let logo_uri = get_logo_uri(credential_subject, &linked_verifiable_credential, &validated_linked_domains).await;
                         let issuance_date = linked_verifiable_credential.credential.issuance_date.to_rfc3339();
 
-                        info!("Linkedverifiablecredential: name: {name:?}, logo_uri: {logo_uri:?}, issuance_date: {issuance_date}");
+                        info!("LinkedVerifiableCredentialData: name: {name:?}, logo_uri: {logo_uri:?}, issuance_date: {issuance_date}");
                         Some(LinkedVerifiableCredentialData {
                             name,
                             logo_uri,
