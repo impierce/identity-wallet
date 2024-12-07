@@ -205,6 +205,7 @@ async fn get_validated_linked_credential_data(
             if !validated_linked_domains.is_empty() {
                 let validator = JwtCredentialValidator::with_signature_verifier(Verifier);
 
+                // `SkipUnsupported` allows for custom credential types, such as the StatusList2021Entry (https://www.w3.org/TR/2023/WD-vc-status-list-20230427/#statuslist2021entry)
                 let options = JwtCredentialValidationOptions::new().status_check(StatusCheck::SkipUnsupported);
 
                 // Decode the linked verifiable credential and validate it
@@ -356,37 +357,23 @@ async fn get_logo_uri(
     linked_verifiable_credential: &DecodedJwtCredential<Value>,
     validated_linked_domains: &[Url],
 ) -> Option<String> {
-    let mut logo_uri = OptionFuture::from(credential_subject.properties.get("image").and_then(Value::as_str).map(
-        |image| async {
-            let _ = download_asset(
-                image
-                    .parse()
-                    .inspect_err(|err| warn!("Failed to parse logo URI: {:#?}", err))
-                    .ok()?,
-                &hash(image),
-            )
-            .await;
-            Some(image.to_string())
-        },
-    ))
-    .await
-    .flatten();
+    let mut logo_uri = credential_subject
+        .properties
+        .get("image")
+        .and_then(Value::as_str)
+        .map(ToString::to_string);
 
-    // Check if logo URI was retrieved, else attempt to retrieve from well-known endpoint
+    // Check if logo URI was retrieved, if not then attempt to retrieve from a well-known endpoint
     if logo_uri.is_none() {
-        warn!("Failed to download logo URI from linked verifiable credential: {linked_verifiable_credential:#?}");
         for domain in validated_linked_domains.iter() {
-            let mut well_known_endpoint = format!("{}.well-known/openid-credential-issuer", domain);
+            let well_known_endpoint = format!("{}.well-known/openid-credential-issuer", domain);
             info!("Trying to fetch image from {well_known_endpoint} endpoint");
             if let Ok(response) = reqwest::Client::new().get(&well_known_endpoint).send().await {
                 if let Ok(metadata) = response.json::<CredentialIssuerMetadata>().await {
-                    if let Some(display) = metadata.display {
-                        if let Some(image) = display[0].get("logo") {
-                            if let Some(image_url) = image.get("url") {
-                                logo_uri = image_url.as_str().map(ToString::to_string);
-                                break;
-                            }
-                        }
+                    logo_uri = metadata.display.as_deref().and_then(extract_logo_uri_from_display);
+
+                    if logo_uri.is_some() {
+                        break;
                     }
                 }
             }
@@ -394,38 +381,21 @@ async fn get_logo_uri(
             // The CII tells us where exactly we can add "/.well-known/openid-credential-issuer" to fetch the Credential Issuer Metadata, in which we might find the logo.
             // For now we assume it's the same domain as the linked domain.
             // But this is no guarantee and the code below is one such workaround.
-            well_known_endpoint = format!("{}oid4vci/.well-known/openid-credential-issuer", domain);
+            let well_known_endpoint = format!("{}oid4vci/.well-known/openid-credential-issuer", domain);
             info!("Trying to fetch image from {well_known_endpoint} endpoint");
             if let Ok(response) = reqwest::Client::new().get(&well_known_endpoint).send().await {
                 if let Ok(metadata) = response.json::<CredentialIssuerMetadata>().await {
-                    let credential_confs_supported = metadata.credential_configurations_supported;
-                    match &linked_verifiable_credential.credential.types {
-                        OneOrMany::One(type_) => {
-                            info!("Trying to fetch from Credential Configuration Supported: {}", type_);
-                            if let Some(credential_conf) = credential_confs_supported.get(type_) {
-                                let display = &credential_conf.display;
-                                if let Some(image) = display[0].get("logo") {
-                                    if let Some(image_url) = image.get("url") {
-                                        logo_uri = image_url.as_str().map(ToString::to_string);
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                        OneOrMany::Many(types) => {
-                            for type_ in types {
-                                info!("Trying to fetch from Credential Configuration Supported: {}", type_);
-                                if let Some(credential_conf) = credential_confs_supported.get(type_) {
-                                    let display = &credential_conf.display;
-                                    if let Some(image) = display[0].get("logo") {
-                                        if let Some(image_url) = image.get("url") {
-                                            logo_uri = image_url.as_str().map(ToString::to_string);
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                    logo_uri = linked_verifiable_credential.credential.types.iter().find_map(|type_| {
+                        info!("Trying to fetch from Credential Configuration Supported: {}", type_);
+                        metadata
+                            .credential_configurations_supported
+                            .get(type_)
+                            .map(|credential_configuration| credential_configuration.display.as_ref())
+                            .and_then(extract_logo_uri_from_display)
+                    });
+
+                    if logo_uri.is_some() {
+                        break;
                     }
                 }
             }
@@ -441,16 +411,29 @@ async fn get_logo_uri(
                 // Download the asset if parsing succeeded
                 if let Err(err) = download_asset(parsed_url, &hash(logo_uri_str)).await {
                     warn!("Failed to download logo URI: {:#?}", err);
+                    return None;
                 }
+                logo_uri
             }
             Err(parse_err) => {
                 // Log parse error if the URI is invalid
                 warn!("Failed to parse logo URI: {:#?}, {:#?}", logo_uri_str, parse_err);
+                None
             }
         }
+    } else {
+        warn!("Failed to extract logo URI from well-known endpoints nor credential subject");
+        None
     }
+}
 
-    logo_uri
+fn extract_logo_uri_from_display(display: &[Value]) -> Option<String> {
+    display
+        .first()
+        .and_then(|display| display.get("logo"))
+        .and_then(|logo| logo.get("uri").or(logo.get("url")))
+        .and_then(|url| url.as_str())
+        .map(ToString::to_string)
 }
 
 fn extract_url_from_did_web(did_web: &str) -> Option<Url> {
@@ -770,13 +753,15 @@ mod tests {
             vec![
                 vec![LinkedVerifiableCredentialData {
                     name: Some("Webshop".to_string()),
-                    logo_uri: Some("https://webshop.com/logo.jpg".to_string()),
+                    // logo_uri needs to be None instead of Some("https://webshop.com/logo.jpg".to_string(), since no actual image is succesfully downloaded from this fake example url.
+                    logo_uri: None,
                     issuer_linked_domains: vec![issuer_a.domain.clone()],
                     ..Default::default()
                 }],
                 vec![LinkedVerifiableCredentialData {
                     name: Some("Webshop".to_string()),
-                    logo_uri: Some("https://webshop.com/logo.jpg".to_string()),
+                    // logo_uri needs to be None instead of Some("https://webshop.com/logo.jpg".to_string(), since no actual image is succesfully downloaded from this fake example url.
+                    logo_uri: None,
                     issuer_linked_domains: vec![issuer_b.domain.clone()],
                     ..Default::default()
                 }]
@@ -918,7 +903,8 @@ mod tests {
             validated_linked_presentation_data,
             Some(vec![LinkedVerifiableCredentialData {
                 name: Some("Webshop".to_string()),
-                logo_uri: Some("https://webshop.com/logo.jpg".to_string()),
+                // logo_uri needs to be None instead of Some("https://webshop.com/logo.jpg".to_string(), since no actual image is succesfully downloaded from this fake example url.
+                logo_uri: None,
                 issuer_linked_domains: vec![issuer.domain.clone()],
                 ..Default::default()
             }])
