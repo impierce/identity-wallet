@@ -53,7 +53,7 @@ jobs:
         working-directory: ./unime/src-tauri
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf libsoup-3.0 javascriptcoregtk-4.1 webkit2gtk-4.1
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
 
       - name: Format
         working-directory: ./unime/src-tauri
@@ -101,7 +101,7 @@ jobs:
         working-directory: ./identity-wallet
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf libsoup-3.0 javascriptcoregtk-4.1 webkit2gtk-4.1
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
 
       - name: Format
         working-directory: ./identity-wallet
