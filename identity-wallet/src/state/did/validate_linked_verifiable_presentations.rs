@@ -680,6 +680,17 @@ mod tests {
 
             Jwt::from(message)
         }
+
+        async fn add_logo_endpoint(&self) {
+            Mock::given(method("GET"))
+                .and(path("logo.png"))
+                .respond_with(ResponseTemplate::new(200).set_body_raw(
+                    include_bytes!("../../../resources/images/impierce_white.png"),
+                    "image/png",
+                ))
+                .mount(&self.mock_server)
+                .await;
+        }
     }
 
     #[tokio::test]
@@ -687,6 +698,7 @@ mod tests {
         let mut holder = TestEntity::new().await;
 
         let mut issuer_a = TestEntity::new().await;
+        issuer_a.add_logo_endpoint().await;
 
         // Add the `/did_configuration.json` and `/did.json` endpoints to the issuer A mock server.
         issuer_a
@@ -695,6 +707,7 @@ mod tests {
         issuer_a.add_well_known_did_json().await;
 
         let mut issuer_b = TestEntity::new().await;
+        issuer_b.add_logo_endpoint().await;
 
         // Add the `/did_configuration.json` and `/did.json` endpoints to the issuer B mock server.
         issuer_b
@@ -702,11 +715,13 @@ mod tests {
             .await;
         issuer_b.add_well_known_did_json().await;
 
+        let logo_uri_a: String = format!("{}logo.png", issuer_a.domain.clone());
+
         let verifiable_credential_jwt = issuer_a
             .issue_credential(
                 holder.did_document.id().to_string().as_str(),
                 "Webshop",
-                "https://webshop.com/logo.jpg".parse().unwrap(),
+                logo_uri_a.parse().unwrap(),
             )
             .await;
 
@@ -724,11 +739,13 @@ mod tests {
             )
             .await;
 
+        let logo_uri_b: String = format!("{}logo.png", issuer_b.domain.clone());
+
         let verifiable_credential_jwt_2 = issuer_b
             .issue_credential(
                 holder.did_document.id().to_string().as_str(),
                 "Webshop",
-                "https://webshop.com/logo.jpg".parse().unwrap(),
+                logo_uri_b.parse().unwrap(),
             )
             .await;
 
@@ -753,15 +770,13 @@ mod tests {
             vec![
                 vec![LinkedVerifiableCredentialData {
                     name: Some("Webshop".to_string()),
-                    // logo_uri needs to be None instead of Some("https://webshop.com/logo.jpg".to_string(), since no actual image is succesfully downloaded from this fake example url.
-                    logo_uri: None,
+                    logo_uri: Some(logo_uri_a),
                     issuer_linked_domains: vec![issuer_a.domain.clone()],
                     ..Default::default()
                 }],
                 vec![LinkedVerifiableCredentialData {
                     name: Some("Webshop".to_string()),
-                    // logo_uri needs to be None instead of Some("https://webshop.com/logo.jpg".to_string(), since no actual image is succesfully downloaded from this fake example url.
-                    logo_uri: None,
+                    logo_uri: Some(logo_uri_b),
                     issuer_linked_domains: vec![issuer_b.domain.clone()],
                     ..Default::default()
                 }]
@@ -865,14 +880,17 @@ mod tests {
             .add_well_known_did_configuration_json("linked-domain", &[issuer.domain.clone().into()])
             .await;
         issuer.add_well_known_did_json().await;
+        issuer.add_logo_endpoint().await;
 
         let mut holder = TestEntity::new().await;
+
+        let issuer_logo = format!("{}logo.png", issuer.domain.clone());
 
         let verifiable_credential_jwt = issuer
             .issue_credential(
                 holder.did_document.id().to_string().as_str(),
                 "Webshop",
-                "https://webshop.com/logo.jpg".parse().unwrap(),
+                issuer_logo.parse().unwrap(),
             )
             .await;
 
@@ -903,8 +921,7 @@ mod tests {
             validated_linked_presentation_data,
             Some(vec![LinkedVerifiableCredentialData {
                 name: Some("Webshop".to_string()),
-                // logo_uri needs to be None instead of Some("https://webshop.com/logo.jpg".to_string(), since no actual image is succesfully downloaded from this fake example url.
-                logo_uri: None,
+                logo_uri: Some(issuer_logo),
                 issuer_linked_domains: vec![issuer.domain.clone()],
                 ..Default::default()
             }])
