@@ -403,21 +403,21 @@ async fn get_logo_uri(
     }
 
     if let Some(ref logo_uri_str) = logo_uri {
-        info!("Logo URI: {}", logo_uri_str);
+        info!("Logo URI: {:?}", logo_uri_str);
 
         // Parse the logo URI
         match logo_uri_str.parse() {
             Ok(parsed_url) => {
                 // Download the asset if parsing succeeded
-                if let Err(err) = download_asset(parsed_url, &hash(logo_uri_str)).await {
-                    warn!("Failed to download logo URI: {:#?}", err);
+                if download_asset(parsed_url, &hash(logo_uri_str)).await.is_err() {
+                    warn!("Failed to download logo URI");
                     return None;
                 }
                 logo_uri
             }
             Err(parse_err) => {
                 // Log parse error if the URI is invalid
-                warn!("Failed to parse logo URI: {:#?}, {:#?}", logo_uri_str, parse_err);
+                warn!("Failed to parse logo URI: {:#?}, {}", logo_uri_str, parse_err);
                 None
             }
         }
