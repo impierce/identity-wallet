@@ -87,16 +87,16 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
 
             let domain_validation = Box::new(validate_domain_linkage(url, did).await);
 
-            let trusted_domains: Vec<String> = state
+            let trusted_domains: Vec<url::Url> = state
                 .trust_lists
                 .0
                 .iter()
-                .map(|trust_list| {
+                .flat_map(|trust_list| {
                     trust_list
                         .entries
                         .iter()
-                        .filter_map(|(domain, trusted)| trusted.then_some(domain.clone().to_string()))
-                        .collect::<String>()
+                        .filter_map(|(domain, trusted)| trusted.then_some(domain.clone()))
+                        .collect::<Vec<url::Url>>()
                 })
                 .collect();
 
@@ -108,9 +108,9 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                 .flatten()
                 .filter(|linked_verifiable_credential| {
                     linked_verifiable_credential.issuer_linked_domains.iter().any(|domain| {
-                        info!("domain: {:?}", domain.to_string());
+                        info!("domain: `{}`", domain);
 
-                        trusted_domains.contains(&domain.to_string())
+                        trusted_domains.contains(domain)
                     })
                 })
                 .collect();
