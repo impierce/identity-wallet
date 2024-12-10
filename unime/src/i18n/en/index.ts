@@ -373,7 +373,10 @@ By using our Service, you acknowledge that you have read, understood, and agree 
       VALID: 'Valid',
       ISSUED_BY: 'Issued by',
       DESCRIPTION: 'Description',
-      CONTENTS: 'Contents',
+      OPEN_BADGES: {
+        ALIGNMENT: 'Alignment',
+        CRITERIA: 'Criteria',
+      },
     },
     ACTIONS: {
       DELETE: {

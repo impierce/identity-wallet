@@ -64,17 +64,27 @@ pub struct TrustList {
     /// Custom true: TrustList's can be created in dev mode at any time.
     #[serde(default)]
     pub custom: bool,
-    #[serde(deserialize_with = "deserialize_domains")]
+    #[serde(deserialize_with = "deserialize_entries")]
     #[ts(type = "Record<string, boolean>")]
     pub entries: HashMap<url::Url, bool>,
 }
 
-fn deserialize_domains<'de, D>(deserializer: D) -> Result<HashMap<Url, bool>, D::Error>
+fn deserialize_entries<'de, D>(deserializer: D) -> Result<HashMap<Url, bool>, D::Error>
 where
     D: serde::Deserializer<'de>,
 {
-    let domains: Vec<Url> = Vec::deserialize(deserializer)?;
-    Ok(domains.into_iter().map(|domain| (domain, true)).collect())
+    #[derive(Deserialize)]
+    #[serde(untagged)]
+    enum Entries {
+        Array(Vec<Url>),
+        Map(HashMap<Url, bool>),
+    }
+
+    let entries = Entries::deserialize(deserializer)?;
+    match entries {
+        Entries::Array(array) => Ok(array.into_iter().map(|url| (url, true)).collect()),
+        Entries::Map(map) => Ok(map),
+    }
 }
 
 impl Default for TrustList {
@@ -115,5 +125,57 @@ impl TrustList {
 
     pub fn iter(&self) -> std::collections::hash_map::Iter<Url, bool> {
         self.entries.iter()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use identity_iota::core::FromJson;
+
+    #[test]
+    fn trust_list_successfully_deserializes_from_entries_map() {
+        assert_eq!(
+            TrustList {
+                id: "b01f4a74-3005-4749-a030-c5444bc4dab5".to_string(),
+                display_name: "Test List".to_string(),
+                custom: false,
+                entries: HashMap::from_json_value(serde_json::json!({
+                    "https://example.org": true,
+                }))
+                .unwrap()
+            },
+            serde_json::from_value(serde_json::json!({
+                "id": "b01f4a74-3005-4749-a030-c5444bc4dab5",
+                "display_name": "Test List",
+                "entries": {
+                    "https://example.org": true,
+                },
+            }))
+            .unwrap()
+        );
+    }
+
+    #[test]
+    fn trust_list_successfully_deserializes_from_entries_array() {
+        assert_eq!(
+            TrustList {
+                id: "b01f4a74-3005-4749-a030-c5444bc4dab5".to_string(),
+                display_name: "Test List".to_string(),
+                custom: false,
+                entries: HashMap::from_json_value(serde_json::json!({
+                    "https://example.org": true,
+                }))
+                .unwrap()
+            },
+            serde_json::from_value(serde_json::json!({
+                "id": "b01f4a74-3005-4749-a030-c5444bc4dab5",
+                "display_name": "Test List",
+                "entries": [
+                    "https://example.org",
+                ],
+            }))
+            .unwrap()
+        );
     }
 }
