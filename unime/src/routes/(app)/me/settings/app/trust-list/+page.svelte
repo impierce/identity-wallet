@@ -49,41 +49,40 @@
     </div>
   </div>
 
-    <div class="flex flex-col space-y-[10px]">
-      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Trust lists</p>
-      {#if trustLists.length === 0}
-        <div class="flex h-14 items-center justify-center">
-          <p class="text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">No trust lists yet.</p>
-        </div>
-      {/if}
-      {#each trustLists as trustList}
-        <button
-          class="flex h-14 w-full items-center space-x-4 rounded-xl bg-white p-4 dark:bg-dark"
-          on:click={() => goto(`/me/settings/app/trust-list/${trustList.id}`)}
-        >
-          <div class="flex grow flex-row items-center space-x-2">
-            <p class="text-left text-[13px]/[24px] font-medium text-slate-800 dark:text-white">
-              {trustList.display_name}
-            </p>
-            {#if trustList.custom}
-              <svelte:component this={StarFillIcon} class="h-5 w-5 text-primary" />
-            {/if}
-          </div>
-          <p class="text-[13px]/[24px] font-medium text-slate-400 dark:text-slate-300">
-            {activeDomainsString(trustList)}
+  <div class="flex flex-col space-y-[10px]">
+    <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Trust lists</p>
+    {#if trustLists.length === 0}
+      <div class="flex h-14 items-center justify-center">
+        <p class="text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">No trust lists yet.</p>
+      </div>
+    {/if}
+    {#each trustLists as trustList}
+      <button
+        class="flex h-14 w-full items-center space-x-4 rounded-xl bg-white p-4 dark:bg-dark"
+        on:click={() => goto(`/me/settings/app/trust-list/${trustList.id}`)}
+      >
+        <div class="flex grow flex-row items-center space-x-2">
+          <p class="text-left text-[13px]/[24px] font-medium text-slate-800 dark:text-white">
+            {trustList.display_name}
           </p>
-          <svelte:component this={CaretRightBoldIcon} class="h-4 w-4 text-slate-500" />
-        </button>
-      {/each}
-    </div>
-    <Button
-      label="Add new custom trust list"
-      on:click={() => {
-        dispatch({
-          type: '[Trust Lists] Add',
-          payload: { display_name: `Custom List ${crypto.randomUUID().slice(0, 8)}` },
-        });
-      }}
-    />
+          {#if trustList.custom}
+            <svelte:component this={StarFillIcon} class="h-5 w-5 text-primary" />
+          {/if}
+        </div>
+        <p class="text-[13px]/[24px] font-medium text-slate-400 dark:text-slate-300">
+          {activeDomainsString(trustList)}
+        </p>
+        <svelte:component this={CaretRightBoldIcon} class="h-4 w-4 text-slate-500" />
+      </button>
+    {/each}
   </div>
+  <Button
+    label="Add new custom trust list"
+    on:click={() => {
+      dispatch({
+        type: '[Trust Lists] Add',
+        payload: { display_name: `Custom List ${crypto.randomUUID().slice(0, 8)}` },
+      });
+    }}
+  />
 </div>
