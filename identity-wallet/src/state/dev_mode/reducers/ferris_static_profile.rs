@@ -10,6 +10,7 @@ use crate::{
         credentials::VerifiableCredentialRecord,
         dev_mode::DevMode,
         profile_settings::{AppTheme, Profile},
+        trust_list::TrustList,
         user_prompt::CurrentUserPrompt,
         AppState, SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS,
     },
@@ -17,11 +18,12 @@ use crate::{
     subject::subject,
 };
 
+use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use jsonwebtoken::Algorithm;
 use lazy_static::lazy_static;
 use log::info;
 use oid4vc::{oid4vc_core::Subject, oid4vc_manager::ProviderManager, oid4vci::Wallet};
-use serde_json::json;
+use serde_json::{json, Value};
 use std::{fs::File, io::Write, sync::Arc};
 
 lazy_static! {
@@ -33,9 +35,10 @@ lazy_static! {
         record.display_credential.display_name = "PersonalInformation".to_string();
         record
     };
+    pub static ref DRIVERS_LICENSE_CREDENTIAL_PAYLOAD: String = URL_SAFE_NO_PAD.encode(include_bytes!("../../../../resources/ferris-drivers-license-payload.json"));
     pub static ref DRIVERS_LICENSE_CREDENTIAL: VerifiableCredentialRecord = {
         let mut record = VerifiableCredentialRecord::try_from(
-            json!("eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDprZXk6ejZNa2toUDQzTENTWGFqM1NRQm92eTF1RTJuWHZTQm5SUFdaMndoUExxblo4UGdEI3o2TWtraFA0M0xDU1hhajNTUUJvdnkxdUUyblh2U0JuUlBXWjJ3aFBMcW5aOFBnRCJ9.eyJpc3MiOiJodHRwOi8vMTkyLjE2OC4xLjEyNzo5MDkwLyIsInN1YiI6ImRpZDprZXk6ejZNa2cxWFhHVXFma2hBS1Uxa1ZkMVBtdzZVRWoxdnhpTGoxeGM5MU1CejVvd05ZIiwiZXhwIjo5OTk5OTk5OTk5LCJpYXQiOjAsInZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIiwiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvZXhhbXBsZXMvdjEiXSwidHlwZSI6WyJWZXJpZmlhYmxlQ3JlZGVudGlhbCIsIkRyaXZlckxpY2Vuc2VDcmVkZW50aWFsIl0sImlzc3VlciI6Imh0dHA6Ly8xOTIuMTY4LjEuMTI3OjkwOTAvIiwiaXNzdWFuY2VEYXRlIjoiMjAwNC0wMi0wOFQwODoxNDowOFoiLCJleHBpcmF0aW9uRGF0ZSI6IjIwMjctMDgtMTVUMjM6NTk6NTlaIiwiY3JlZGVudGlhbFN1YmplY3QiOnsiaWQiOiJkaWQ6a2V5Ono2TWtnMVhYR1VxZmtoQUtVMWtWZDFQbXc2VUVqMXZ4aUxqMXhjOTFNQno1b3dOWSIsImxpY2Vuc2VDbGFzcyI6IkNsYXNzIEMiLCJpc3N1ZWRCeSI6IkNhbGlmb3JuaWEiLCJ2YWxpZGl0eSI6IlZhbGlkIn19fQ.OZCcZt5JTJcBhoLPIyrQuvZuc2dnVN65f8GvKQ3earAzJEgGMA9ZjKRNHEjI73wLwvG5MJBN7Zs_rWiNLEZ5Dg"),
+            json!(format!("eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDprZXk6ejZNa2toUDQzTENTWGFqM1NRQm92eTF1RTJuWHZTQm5SUFdaMndoUExxblo4UGdEI3o2TWtraFA0M0xDU1hhajNTUUJvdnkxdUUyblh2U0JuUlBXWjJ3aFBMcW5aOFBnRCJ9.{}.OZCcZt5JTJcBhoLPIyrQuvZuc2dnVN65f8GvKQ3earAzJEgGMA9ZjKRNHEjI73wLwvG5MJBN7Zs_rWiNLEZ5Dg", DRIVERS_LICENSE_CREDENTIAL_PAYLOAD.clone())),
         ).unwrap();
         record.display_credential.display_name = "DriverLicenseCredential".to_string();
         record
@@ -284,6 +287,31 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         DRIVERS_LICENSE_CREDENTIAL.display_credential.id.clone(),
         OPEN_BADGE.display_credential.id.clone(),
     ];
+
+    // Import trusted domains
+    let mut default_trust_list = TrustList::new();
+    let default_trust_list_json: Value =
+        serde_json::from_slice::<Value>(include_bytes!("../../../../resources/default_trust_list.json")).unwrap();
+
+    default_trust_list.display_name = default_trust_list_json
+        .get("display_name")
+        .unwrap()
+        .as_str()
+        .unwrap()
+        .to_string();
+
+    default_trust_list.entries = default_trust_list_json
+        .get("domains")
+        .unwrap()
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|domain| (domain.as_str().unwrap().to_string(), true))
+        .collect();
+
+    default_trust_list.custom = false;
+
+    state.trust_lists.insert(default_trust_list);
 
     state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
         target: "me".to_string(),

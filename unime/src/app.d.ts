@@ -10,7 +10,11 @@ declare global {
       errorId: string;
     }
     // interface Locals {}
-    // interface PageData {}
+    interface PageData {
+      transparent?: boolean;
+      bgAltTop?: boolean;
+      bgAltBottom?: boolean;
+    }
     interface PageState {
       tab?: string;
     }

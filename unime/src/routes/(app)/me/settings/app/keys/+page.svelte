@@ -1,9 +1,8 @@
 <script lang="ts">
   import { TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
+  import { InfoRegularIcon } from '$lib/icons';
   import { state } from '$lib/stores';
-
-  import Info from '~icons/ph/info';
 
   $: preferred_key_type = $state.profile_settings.preferred_key_types.at(0);
 
@@ -73,7 +72,7 @@
 
     <div class="flex w-full items-center rounded-lg bg-white px-4 py-4 dark:bg-dark">
       <span class="mr-4 h-6 w-6">
-        <Info class="h-6 w-6 text-primary" />
+        <InfoRegularIcon class="h-6 w-6 text-primary" />
       </span>
       <div class="flex flex-col">
         <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">Developer info</p>

@@ -20,6 +20,8 @@ lazy_static! {
     pub static ref ASSETS_DIR: Mutex<std::path::PathBuf> = Mutex::new(std::path::PathBuf::new());
 }
 
+pub const SUPPORTED_IMAGE_ASSET_EXTENSIONS: [&str; 2] = ["svg", "png"];
+
 /// Initialize the storage file paths.
 pub fn initialize_storage(app_handle: &tauri::AppHandle) -> anyhow::Result<()> {
     // TODO: create folder if not exists (not automatically created on macOS)
@@ -175,9 +177,7 @@ pub fn persist_asset(file_name: &str, id: &str) -> Result<(), AppError> {
     let assets_dir = ASSETS_DIR.lock().unwrap().as_path().to_owned();
     let tmp_dir = assets_dir.join("tmp");
 
-    let extensions = ["svg", "png"];
-
-    if let Some(extension) = extensions
+    if let Some(extension) = SUPPORTED_IMAGE_ASSET_EXTENSIONS
         .iter()
         .find(|&e| tmp_dir.join(format!("{}.{}", file_name, e)).exists())
     {
@@ -198,14 +198,4 @@ pub fn persist_asset(file_name: &str, id: &str) -> Result<(), AppError> {
 /// Used for temporary asset file names in `/assets/tmp` to prevent unintended frontend image caching.
 pub fn hash(url: &str) -> String {
     sha256::digest(url).to_string()
-}
-
-#[cfg(test)]
-mod tests {
-    // use super::*;
-
-    #[test]
-    fn test_load_state() {
-        // TODO: how to mock the app_handle?
-    }
 }

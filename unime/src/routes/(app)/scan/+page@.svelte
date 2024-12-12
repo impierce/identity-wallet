@@ -85,21 +85,16 @@
   }
 
   onDestroy(async () => {
-    debug('/scan: onDestroy() called');
-    document.documentElement.querySelector('body')!.classList.remove('transparent');
     await cancelScan();
   });
 
   onMount(async () => {
-    debug('/scan: onMount() called');
-    document.documentElement.querySelector('body')!.classList.add('transparent');
-
     // TODO find a good way to test if not dev_mode. This will have to be checked after $state is loaded.
     startScan();
   });
 </script>
 
-<div class="content-height flex flex-col items-stretch">
+<div class="content-height isolate flex flex-col items-stretch">
   <div class="hide-scrollbar grow overflow-x-hidden overflow-y-scroll">
     <div class="flex h-full w-full flex-col">
       {#if !scanning && !loading}
@@ -192,9 +187,6 @@
     </div>
   </div>
 </div>
-
-<div class="safe-area-top {scanning || loading ? 'bg-white dark:bg-dark' : 'bg-silver dark:bg-navy'}" />
-<div class="safe-area-bottom bg-white dark:bg-dark" />
 
 <style>
   .content-height {

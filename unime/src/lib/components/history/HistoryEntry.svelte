@@ -15,11 +15,7 @@
     const credential = $state.credentials.find((cred) => cred.id === credentialId);
 
     if (credential) {
-      if (credential.data.type.includes('OpenBadgeCredential')) {
-        goto(`/badges/${credential.id}`);
-      } else {
-        goto(`/credentials/${credential.id}`);
-      }
+      goto(`/credentials/${credential.id}`);
     }
   }
 </script>

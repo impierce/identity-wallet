@@ -14,4 +14,5 @@ export { default as TopNavBar } from './navigation/TopNavBar.svelte';
 export { default as PaddedIcon } from './PaddedIcon.svelte';
 export { default as ProgressBar } from './ProgressBar.svelte';
 export { default as SettingsEntry } from './SettingsEntry.svelte';
+export { default as StatusIndicator } from './StatusIndicator.svelte';
 export { default as Switch } from './Switch.svelte';

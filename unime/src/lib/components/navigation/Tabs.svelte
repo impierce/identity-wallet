@@ -34,7 +34,8 @@ A tab component.
 <Tabs value={storeProvidedByParent} triggers={['First', 'Second', 'Third']} />
 ```
 -->
-<div use:melt={$root} class="flex flex-col">
+<!-- Create new stacking context to prevent z-index leakage. -->
+<div use:melt={$root} class="isolate flex flex-col">
   <div
     use:melt={$list}
     class={twMerge('flex h-[39px] shrink-0 overflow-x-auto rounded-xl bg-white dark:bg-dark', $$props.class)}
