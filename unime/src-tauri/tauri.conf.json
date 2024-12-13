@@ -1,6 +1,6 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/schema.json",
-  "productName": "UniMe Beta",
+  "productName": "UniMe",
   "version": "0.6.12",
   "identifier": "com.impierce.unime",
   "app": {
