@@ -39,8 +39,13 @@
   });
 </script>
 
-<div class="content-height flex flex-col items-stretch bg-silver dark:bg-navy">
-  <TopNavBar title={$LL.SCAN.SHARE_CREDENTIALS.NAVBAR_TITLE()} on:back={() => history.back()} disabled={loading} />
+<div class="safe-area-height flex flex-col items-stretch overflow-y-auto bg-silver dark:bg-navy">
+  <TopNavBar
+    title={$LL.SCAN.SHARE_CREDENTIALS.NAVBAR_TITLE()}
+    on:back={() => history.back()}
+    disabled={loading}
+    class="sticky top-0 z-10"
+  />
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
     <!-- Header -->
@@ -118,8 +123,7 @@
 </div>
 
 <style>
-  .content-height {
-    /* bottom-navigation: 64px + 2 * 8px (y-padding) + 1px (border top) = 81px */
+  .safe-area-height {
     height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom));
   }
 </style>
