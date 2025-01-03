@@ -10,6 +10,7 @@ use crate::{
         credentials::VerifiableCredentialRecord,
         dev_mode::DevMode,
         profile_settings::{AppTheme, Profile},
+        trust_list::TrustList,
         user_prompt::CurrentUserPrompt,
         AppState, SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS,
     },
@@ -286,6 +287,12 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         DRIVERS_LICENSE_CREDENTIAL.display_credential.id.clone(),
         OPEN_BADGE.display_credential.id.clone(),
     ];
+
+    // Import trusted domains
+    let default_trust_list: TrustList =
+        serde_json::from_str(include_str!("../../../../resources/default_trust_list.json")).unwrap();
+
+    state.trust_lists.insert(default_trust_list);
 
     state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
         target: "me".to_string(),

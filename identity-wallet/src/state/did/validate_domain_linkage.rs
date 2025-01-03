@@ -14,12 +14,18 @@ use identity_iota::{
 use jsonwebtoken::{crypto::verify, jwk::Jwk as JsonWebTokenJwk, Algorithm, DecodingKey, Validation};
 use log::info;
 use serde::{Deserialize, Serialize};
+use serde_with::skip_serializing_none;
 use ts_rs::TS;
 
+#[skip_serializing_none]
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, TS, Default)]
 #[ts(export, export_to = "bindings/user_prompt/ValidationResult.ts")]
 pub struct ValidationResult {
     pub(crate) status: ValidationStatus,
+    pub(crate) name: Option<String>,
+    #[ts(type = "string", optional)]
+    pub(crate) logo_uri: Option<url::Url>,
+    pub(crate) issuance_date: Option<String>,
     pub(crate) message: Option<String>,
 }
 
@@ -33,10 +39,12 @@ pub enum ValidationStatus {
 }
 
 /// This `Verifier` uses `jsonwebtoken` under the hood to verify verification input.
-struct Verifier;
+pub struct Verifier;
 impl JwsVerifier for Verifier {
     fn verify(&self, input: VerificationInput, public_key: &IotaIdentityJwk) -> Result<(), SignatureVerificationError> {
         use SignatureVerificationErrorKind::*;
+
+        info!("Verifying input");
 
         let algorithm =
             Algorithm::from_str(&input.alg.to_string()).map_err(|_| SignatureVerificationError::new(UnsupportedAlg))?;
@@ -59,8 +67,8 @@ impl JwsVerifier for Verifier {
             &decoding_key,
             algorithm,
         ) {
-            Ok(_) => Ok(()),
-            Err(_) => Err(SignatureVerificationError::new(
+            Ok(true) => Ok(()),
+            Err(_) | Ok(false) => Err(SignatureVerificationError::new(
                 // TODO: more fine-grained error handling?
                 InvalidSignature,
             )),
@@ -77,7 +85,8 @@ pub async fn validate_domain_linkage(url: url::Url, did: &str) -> ValidationResu
         Err(e) => {
             return ValidationResult {
                 status: ValidationStatus::Unknown,
-                message: Some(e.to_string()),
+                message: Some(format!("Error while fetching configuration: {}", e)),
+                ..Default::default()
             };
         }
     };
@@ -92,9 +101,12 @@ pub async fn validate_domain_linkage(url: url::Url, did: &str) -> ValidationResu
             return ValidationResult {
                 status: ValidationStatus::Unknown,
                 message: Some(e.to_string()),
+                ..Default::default()
             };
         }
     };
+
+    info!("Resolved document: {:?}", document);
 
     let url = identity_iota::core::Url::from(url);
 
@@ -108,12 +120,13 @@ pub async fn validate_domain_linkage(url: url::Url, did: &str) -> ValidationResu
     if res.is_ok() {
         ValidationResult {
             status: ValidationStatus::Success,
-            message: None,
+            ..Default::default()
         }
     } else {
         ValidationResult {
             status: ValidationStatus::Failure,
             message: res.err().map(|e| e.to_string()),
+            ..Default::default()
         }
     }
 }
@@ -131,10 +144,15 @@ async fn fetch_configuration(mut url: url::Url) -> Result<DomainLinkageConfigura
     info!("Fetching DID configuration from: {}", url);
 
     // 2. Fetch the resource
-    let response = reqwest::get(url).await.map_err(|e| e.to_string())?;
+    let response = reqwest::get(url.clone())
+        .await
+        .map_err(|_| format!("failed to get response from resource url: {}", url))?;
 
     // 3. Parse to JSON value (mutable)
-    let mut json = response.json::<serde_json::Value>().await.map_err(|e| e.to_string())?;
+    let mut json = response
+        .json::<serde_json::Value>()
+        .await
+        .map_err(|_| "failed to parse response into JSON value".to_string())?;
 
     // 4. Remove all non-string values from `linked_dids` (JSON-LD)
     if let serde_json::Value::Object(ref mut root) = json {
@@ -145,21 +163,24 @@ async fn fetch_configuration(mut url: url::Url) -> Result<DomainLinkageConfigura
     }
 
     // 5. Deserialize to `DomainLinkageConfiguration`
-    let config = DomainLinkageConfiguration::from_json_value(json).map_err(|e| e.to_string())?;
+    let config = DomainLinkageConfiguration::from_json_value(json)
+        .map_err(|_| "failed to deserialize DomainLinkageConfiguration from JSON".to_string())?;
     Ok(config)
 }
 
 #[cfg(test)]
 mod tests {
+    use std::sync::Arc;
+
+    use crate::{persistence::STRONGHOLD, stronghold::StrongholdManager, subject::subject};
+
     use super::*;
 
     use identity_iota::verification::jws::JwsAlgorithm;
-    use jsonwebtoken::{encode, EncodingKey, Header};
-    use ring::{
-        rand::SystemRandom,
-        signature::{EcdsaKeyPair, Ed25519KeyPair, KeyPair, ECDSA_P256_SHA256_ASN1_SIGNING},
-    };
+    use oid4vc::oid4vc_core::{Sign, Subject, Verify};
+
     use serde_json::json;
+    use tempfile::NamedTempFile;
     use wiremock::{
         matchers::{method, path},
         Mock, MockServer, ResponseTemplate,
@@ -227,7 +248,11 @@ mod tests {
             result,
             ValidationResult {
                 status: ValidationStatus::Unknown,
-                message: Some("failed to decode JSON".to_string()),
+                message: Some(
+                    "Error while fetching configuration: failed to deserialize DomainLinkageConfiguration from JSON"
+                        .to_string()
+                ),
+                ..Default::default()
             }
         );
     }
@@ -287,7 +312,8 @@ mod tests {
             result,
             ValidationResult {
                 status: ValidationStatus::Failure,
-                message: Some("invalid issuer DID".to_string())
+                message: Some("invalid issuer DID".to_string()),
+                ..Default::default()
             }
         );
     }
@@ -320,24 +346,27 @@ mod tests {
             result,
             ValidationResult {
                 status: ValidationStatus::Failure,
-                message: Some("invalid issuer DID".to_string())
+                message: Some("invalid issuer DID".to_string()),
+                ..Default::default()
             }
         );
     }
 
-    #[test]
-    fn verifier_successfully_verifies_es256_signed_data() {
-        let rng = SystemRandom::new();
+    #[tokio::test]
+    #[serial_test::serial]
+    async fn verifier_successfully_verifies_es256_signed_data() {
+        let path = NamedTempFile::new().unwrap().into_temp_path();
+        *STRONGHOLD.lock().unwrap() = path.as_os_str().into();
 
-        // Generate a new ECDSA key pair (P-256 curve with SHA-256)
-        let pkcs8_bytes = EcdsaKeyPair::generate_pkcs8(&ECDSA_P256_SHA256_ASN1_SIGNING, &rng).unwrap();
+        let password = "sup3rSecr3t".to_string();
 
-        // The private key in DER format
-        let private_key_der = pkcs8_bytes.as_ref();
+        let stronghold_manager = Arc::new(StrongholdManager::create(&password).unwrap());
 
-        let key_pair =
-            EcdsaKeyPair::from_pkcs8(&ring::signature::ECDSA_P256_SHA256_ASN1_SIGNING, private_key_der, &rng).unwrap();
-        let public_key = key_pair.public_key().as_ref();
+        let subject = subject(stronghold_manager.clone(), password).await;
+
+        let identifier = subject.identifier("did:key", Algorithm::ES256).await.unwrap();
+        let fragment = identifier.split(':').last().unwrap();
+        let public_key = subject.public_key(&format!("{identifier}#{fragment}")).await.unwrap();
 
         // x and y are each 32 bytes, they represent the public key
         let x = URL_SAFE_NO_PAD.encode(&public_key[1..33]);
@@ -351,33 +380,34 @@ mod tests {
         }))
         .unwrap();
 
-        let encoding_key = EncodingKey::from_ec_der(private_key_der);
+        let message = URL_SAFE_NO_PAD.encode("foobar");
 
-        let message = "foobar";
-
-        let token = encode(&Header::new(Algorithm::ES256), &message, &encoding_key).unwrap();
+        let signature = subject.sign(&message, "did:key", Algorithm::ES256).await.unwrap();
 
         let input = VerificationInput {
-            signing_input: message.as_bytes().into(),
-            decoded_signature: URL_SAFE_NO_PAD.decode(token.split('.').nth(2).unwrap()).unwrap().into(),
+            signing_input: message.to_string().as_bytes().into(),
+            decoded_signature: signature.into(),
             alg: JwsAlgorithm::ES256,
         };
 
         assert!(Verifier.verify(input, &jwk).is_ok());
     }
 
-    #[test]
-    fn verifier_successfully_verifies_eddsa_signed_data() {
-        let rng = SystemRandom::new();
+    #[tokio::test]
+    #[serial_test::serial]
+    async fn verifier_successfully_verifies_eddsa_signed_data() {
+        let path = NamedTempFile::new().unwrap().into_temp_path();
+        *STRONGHOLD.lock().unwrap() = path.as_os_str().into();
 
-        // Generate a new Ed25519 key pair
-        let pkcs8_bytes = Ed25519KeyPair::generate_pkcs8(&rng).unwrap();
+        let password = "sup3rSecr3t".to_string();
 
-        // The private key in DER format
-        let private_key_der = pkcs8_bytes.as_ref();
+        let stronghold_manager = Arc::new(StrongholdManager::create(&password).unwrap());
 
-        let key_pair = Ed25519KeyPair::from_pkcs8(private_key_der).unwrap();
-        let public_key = key_pair.public_key().as_ref();
+        let subject = subject(stronghold_manager.clone(), password).await;
+
+        let identifier = subject.identifier("did:key", Algorithm::EdDSA).await.unwrap();
+        let fragment = identifier.split(':').last().unwrap();
+        let public_key = subject.public_key(&format!("{identifier}#{fragment}")).await.unwrap();
 
         // x represents the public key
         let x = URL_SAFE_NO_PAD.encode(public_key);
@@ -389,15 +419,13 @@ mod tests {
         }))
         .unwrap();
 
-        let encoding_key = EncodingKey::from_ed_der(private_key_der);
+        let message = URL_SAFE_NO_PAD.encode("foobar");
 
-        let message = "foobar";
-
-        let token = encode(&Header::new(Algorithm::EdDSA), &message, &encoding_key).unwrap();
+        let signature = subject.sign(&message, "did:key", Algorithm::EdDSA).await.unwrap();
 
         let input = VerificationInput {
-            signing_input: message.as_bytes().into(),
-            decoded_signature: URL_SAFE_NO_PAD.decode(token.split('.').nth(2).unwrap()).unwrap().into(),
+            signing_input: message.to_string().as_bytes().into(),
+            decoded_signature: signature.into(),
             alg: JwsAlgorithm::EdDSA,
         };
 

@@ -40,8 +40,13 @@
   });
 </script>
 
-<div class="content-height flex flex-col items-stretch bg-silver dark:bg-navy">
-  <TopNavBar title={$LL.SCAN.CREDENTIAL_OFFER.NAVBAR_TITLE()} on:back={() => history.back()} disabled={loading} />
+<div class="safe-area-height flex flex-col items-stretch overflow-y-auto bg-silver dark:bg-navy">
+  <TopNavBar
+    title={$LL.SCAN.CREDENTIAL_OFFER.NAVBAR_TITLE()}
+    on:back={() => history.back()}
+    disabled={loading}
+    class="sticky top-0 z-10"
+  />
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
     {#if $state.current_user_prompt.logo_uri}
@@ -67,10 +72,10 @@
     <div
       class="mt-3 w-full rounded-[20px] border border-slate-200 bg-white p-[10px] dark:border-slate-600 dark:bg-dark"
     >
-      {#each Object.entries(credential_configurations) as [credential_configuration_id, credential_configuration]}
+      {#each Object.values(credential_configurations) as credential_configuration}
         <!-- TODO: bug: long list is not correctly displayed -->
         <ListItemCard
-          id={`credential_${credential_configuration_id}`}
+          id={hash(credential_configuration.display?.at(0)?.logo?.uri ?? '')}
           title={credential_configuration.display?.at(0)?.name ??
             credential_configuration.credential_definition.type.at(-1)}
           isTempAsset={true}
@@ -83,7 +88,7 @@
     </div>
   </div>
 
-  <!-- Controls -->
+  <!-- `sticky` is relative to the nearest scrolling ancestor, which is the enclosing `div` above and not the viewport. -->
   <div class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 dark:bg-dark">
     <Button
       label={$LL.SCAN.CREDENTIAL_OFFER.ACCEPT()}
@@ -110,8 +115,7 @@
 </div>
 
 <style>
-  .content-height {
-    /* bottom-navigation: 64px + 2 * 8px (y-padding) + 1px (border top) = 81px */
+  .safe-area-height {
     height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom));
   }
 </style>

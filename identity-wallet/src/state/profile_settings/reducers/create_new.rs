@@ -4,6 +4,7 @@ use crate::{
         actions::{listen, Action},
         core_utils::IdentityManager,
         profile_settings::{actions::create_new::CreateNew, Profile, ProfileSettings},
+        trust_list::{TrustList, TrustLists},
         user_prompt::CurrentUserPrompt,
         AppState, SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS,
     },
@@ -80,6 +81,12 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
             wallet,
         });
 
+        // Import default trust list
+        let default_trust_list: TrustList =
+            serde_json::from_str(include_str!("../../../../resources/default_trust_list.json"))?;
+
+        let trust_lists = TrustLists(vec![default_trust_list]);
+
         drop(state_guard);
         return Ok(AppState {
             dids,
@@ -87,6 +94,7 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
             current_user_prompt: Some(CurrentUserPrompt::Redirect {
                 target: "me".to_string(),
             }),
+            trust_lists,
             ..state
         });
     }
