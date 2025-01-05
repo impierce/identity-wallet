@@ -43,7 +43,6 @@
       icon={VaultFillIcon}
       title={$LL.SETTINGS.BACKUP_RECOVERY.TITLE()}
       on:click={() => goto('/me/settings/backup')}
-      disabled
     />
     <SettingsEntry icon={SignOutFillIcon} title={$LL.SETTINGS.LOG_OUT.TITLE()} hasCaretRight={false} disabled />
   </div>

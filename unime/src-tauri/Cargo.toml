@@ -26,6 +26,7 @@ identity-wallet = { path = "../../identity-wallet" }
 log.workspace = true
 serde_json.workspace = true
 tauri-plugin-barcode-scanner = { version = "2" }
+tauri-plugin-cloud-storage = { path = "../../../../daniel-mader/plugins-workspace/plugins/tauri-plugin-cloud-storage" }
 tauri-plugin-log = { version = "2", features = ["colored"] }
 tauri-plugin-fs = { version = "2" }
 tauri-plugin-shell = { version = "2" }

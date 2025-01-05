@@ -32,6 +32,7 @@
     "@tauri-apps/plugin-fs": "^2.2.0",
     "@tauri-apps/plugin-log": "^2.2.0",
     "@tauri-apps/plugin-shell": "^2.2.0",
+    "@impierce/tauri-plugin-cloud-storage": "file:../../../daniel-mader/plugins-workspace/plugins/tauri-plugin-cloud-storage",
     "@testing-library/jest-dom": "^6.1.0",
     "@testing-library/svelte": "^4.0.0",
     "@types/eslint": "^9.6.0",

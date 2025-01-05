@@ -6,6 +6,7 @@ rust-version.workspace = true
 
 [dependencies]
 tauri.workspace = true
+tauri-plugin-cloud-storage = { path = "../../../daniel-mader/plugins-workspace/plugins/tauri-plugin-cloud-storage" }
 
 anyhow = "1.0"
 async-trait = "0.1"

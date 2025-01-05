@@ -10,6 +10,7 @@
     "core:resources:default",
     "core:tray:default",
     "core:window:default",
+    "cloud-storage:default",
     "fs:allow-appdata-read-recursive",
     "log:default",
     "shell:allow-open",
