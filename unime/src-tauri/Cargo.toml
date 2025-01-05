@@ -15,17 +15,10 @@ name = "unime"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
-# tauri-codegen = { workspace = true, optional = true }
 tauri-build.workspace = true
-# tauri-utils = { workspace = true, features = ["build" ] }
-# tauri-winres.workspace = true
 
 [dependencies]
 tauri.workspace = true
-# tauri-macros.workspace = true
-# tauri-runtime.workspace = true
-# tauri-runtime-wry = { workspace = true, optional = true }
-# tauri-utils.workspace = true
 
 dotenvy = { version = "0.15" }
 colored = { version = "2" }
