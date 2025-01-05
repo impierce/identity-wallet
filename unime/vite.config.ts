@@ -20,13 +20,13 @@ export default defineConfig({
   clearScreen: false,
   server: {
     host: host || false,
-    port: 1420,
+    port: 4173,
     strictPort: true,
     hmr: host
       ? {
           protocol: 'ws',
           host: host,
-          port: 1430,
+          port: 5183,
         }
       : undefined,
   },
