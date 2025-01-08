@@ -11,6 +11,8 @@
     "core:tray:default",
     "core:window:default",
     "cloud-storage:default",
+    "cloud-storage:allow-check-permissions",
+    "cloud-storage:allow-write",
     "fs:allow-appdata-read-recursive",
     "log:default",
     "shell:allow-open",

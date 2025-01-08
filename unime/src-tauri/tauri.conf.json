@@ -2,7 +2,7 @@
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "UniMe",
   "version": "0.6.12",
-  "identifier": "com.impierce.unime",
+  "identifier": "com.impierce.identity-wallet",
   "app": {
     "security": {
       "csp": "default-src 'self' ipc: http://ipc.localhost; style-src 'unsafe-inline' 'self'; img-src 'self' asset: http://asset.localhost data:",
@@ -40,7 +40,7 @@
       "icons/icon.ico"
     ],
     "iOS": {
-      "developmentTeam": "Impierce Technologies B.V."
+      "developmentTeam": "\"Impierce Technologies B.V.\""
     },
     "resources": [
       "resources/*"

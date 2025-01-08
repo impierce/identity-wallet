@@ -4,7 +4,15 @@
   import LL from '$i18n/i18n-svelte';
 
   // import { checkPermissions, ping } from '@impierce/tauri-plugin-cloud-storage';
-  import { checkPermissions } from '@impierce/tauri-plugin-cloud-storage';
+  import {
+    checkPermissions,
+    exists,
+    ping,
+    status,
+    writeBytes,
+    type FileAttributes,
+    type Status,
+  } from '@impierce/tauri-plugin-cloud-storage';
   import { info, warn } from '@tauri-apps/plugin-log';
 
   // import { ping } from '@impierce/tauri-plugin-cloud-storage';
@@ -16,8 +24,33 @@
 
   let enabled = true;
 
+  let permissions: string | null = null;
+  let cloud_status: FileAttributes | undefined = undefined;
+  let message: string | null = null;
+
+  async function writeToStorage(value: string) {
+    info(`${value}`);
+    message = await ping(new Date().toISOString())
+      .then((res) => {
+        info(`successful ping: ${res}`);
+        return res;
+      })
+      .catch((error) => {
+        warn(`Error pinging cloud storage: ${error}`);
+        return null;
+      });
+
+    await writeBytes(value)
+      .then((res) => {
+        info(`Successfully wrote value to cloud storage: ${value}, response: ${res}`);
+      })
+      .catch((error) => {
+        warn(`Error writing value to cloud storage: ${error}`);
+      });
+  }
+
   onMount(async () => {
-    let permissions = await checkPermissions()
+    permissions = await checkPermissions()
       .then((permissions) => {
         info(`Permissions to use cloud storage: ${permissions}`);
         return permissions;
@@ -27,6 +60,12 @@
         return null; // possibly return "denied"? or does that imply that the check has been successful, but was actively denied?
       });
     console.log(permissions);
+    cloud_status = await exists().catch((error) => {
+      warn(`Error checking cloud backup exists: ${error}`);
+      warn(`${JSON.stringify(error)}`);
+      return null;
+    });
+    console.log(cloud_status);
   });
 </script>
 
@@ -70,8 +109,11 @@
         <div class="mb-2 text-sm font-semibold text-slate-500">iCloud</div>
         <div class="text-xs font-medium text-slate-400">Latest backup on {new Date().toISOString()}</div>
       </div>
-      <Button label="Back up now" />
+      <Button label="Back up now" on:click={async () => await writeToStorage('foobar')} />
     {/if}
+    <pre class="text-slate-400">permissions: {permissions}</pre>
+    <pre class="text-slate-400">backup exists: {cloud_status?.modificationDate} (size: {cloud_status?.size})</pre>
+    <pre class="text-slate-400">ping: {message}</pre>
     <div></div>
   </div>
 </div>
