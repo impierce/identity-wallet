@@ -3,30 +3,33 @@
 
   import LL from '$i18n/i18n-svelte';
 
-  // import { checkPermissions, ping } from '@impierce/tauri-plugin-cloud-storage';
   import {
     checkPermissions,
+    deleteBackup,
     exists,
     ping,
-    status,
     writeBytes,
     type FileAttributes,
-    type Status,
   } from '@impierce/tauri-plugin-cloud-storage';
   import { info, warn } from '@tauri-apps/plugin-log';
 
-  // import { ping } from '@impierce/tauri-plugin-cloud-storage';
-
   import { Button, SettingsEntry, Switch, TopNavBar } from '$lib/components';
-  import { dispatch } from '$lib/dispatcher';
   import { CloudFillIcon, InfoRegularIcon } from '$lib/icons';
   import { state } from '$lib/stores';
+  import { formatDateTime } from '$lib/utils';
 
   let enabled = true;
 
   let permissions: string | null = null;
   let cloud_status: FileAttributes | undefined = undefined;
   let message: string | null = null;
+
+  async function refresh() {
+    cloud_status = await exists().catch((error) => {
+      warn(`Error checking cloud backup exists: ${error}`);
+      return undefined;
+    });
+  }
 
   async function writeToStorage(value: string) {
     info(`${value}`);
@@ -47,6 +50,8 @@
       .catch((error) => {
         warn(`Error writing value to cloud storage: ${error}`);
       });
+
+    await refresh();
   }
 
   onMount(async () => {
@@ -63,7 +68,7 @@
     cloud_status = await exists().catch((error) => {
       warn(`Error checking cloud backup exists: ${error}`);
       warn(`${JSON.stringify(error)}`);
-      return null;
+      return undefined;
     });
     console.log(cloud_status);
   });
@@ -95,26 +100,42 @@
       <Switch
         active={enabled}
         on:change={async () => {
-          // console.log(await ping('foobar'));
-          // console.log(await checkPermissions());
-          enabled = !enabled;
-          // dispatch({
-          //   type: '[Backup] Toggle',
-          // });
+          if (enabled) {
+            await deleteBackup()
+              .then((res) => {
+                info(`Successfully deleted backup: ${res}`);
+                enabled = false;
+              })
+              .catch((error) => {
+                warn(`Error deleting backup: ${error}`);
+              });
+          } else {
+            await writeToStorage('some_awesome_32_character_string')
+              .then(() => {
+                info('Successfully wrote to storage');
+                enabled = true;
+              })
+              .catch((error) => {
+                warn(`Error writing to storage: ${error}`);
+              });
+          }
         }}
       />
     </SettingsEntry>
     {#if enabled}
       <div class="rounded-xl bg-background-alt p-4">
-        <div class="mb-2 text-sm font-semibold text-slate-500">iCloud</div>
-        <div class="text-xs font-medium text-slate-400">Latest backup on {new Date().toISOString()}</div>
+        <div class="mb-2 text-sm font-semibold text-slate-500">{cloud_status?.provider}</div>
+        {#if cloud_status?.modificationDate}
+          <div class="text-xs font-medium text-slate-400">
+            Latest backup on {formatDateTime(cloud_status.modificationDate, $state.profile_settings.locale)}
+          </div>
+        {/if}
+        <div class="text-xs font-medium text-slate-400">{cloud_status?.size} bytes</div>
       </div>
       <Button label="Back up now" on:click={async () => await writeToStorage('foobar')} />
     {/if}
-    <pre class="text-slate-400">permissions: {permissions}</pre>
-    <pre class="text-slate-400">backup exists: {cloud_status?.modificationDate} (size: {cloud_status?.size})</pre>
-    <pre class="text-slate-400">ping: {message}</pre>
-    <div></div>
+    <pre class="text-xs text-slate-400">permissions: {permissions}</pre>
+    <pre class="text-xs text-slate-400">ping response: {message}</pre>
   </div>
 </div>
 

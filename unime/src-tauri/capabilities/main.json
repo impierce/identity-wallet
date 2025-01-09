@@ -13,6 +13,7 @@
     "cloud-storage:default",
     "cloud-storage:allow-check-permissions",
     "cloud-storage:allow-write",
+    "cloud-storage:allow-delete",
     "fs:allow-appdata-read-recursive",
     "log:default",
     "shell:allow-open",
