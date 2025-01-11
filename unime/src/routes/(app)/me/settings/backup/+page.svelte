@@ -24,8 +24,12 @@
   let cloud_status: FileAttributes | undefined = undefined;
   let message: string | null = null;
 
+  const args = {
+    fileUri: '/Users/daniel/Library/Application Support/com.impierce.unime/backup.txt', // TODO: move to backend
+  };
+
   async function refresh() {
-    cloud_status = await exists().catch((error) => {
+    cloud_status = await exists(args).catch((error) => {
       warn(`Error checking cloud backup exists: ${error}`);
       return undefined;
     });
@@ -43,9 +47,9 @@
         return null;
       });
 
-    await writeBytes(value)
+    await writeBytes({ fileUri: args.fileUri, value })
       .then((res) => {
-        info(`Successfully wrote value to cloud storage: ${value}, response: ${res}`);
+        info(`Successfully wrote value to cloud storage: ${value}, response: ${res.value}`);
       })
       .catch((error) => {
         warn(`Error writing value to cloud storage: ${error}`);
@@ -65,7 +69,7 @@
         return null; // possibly return "denied"? or does that imply that the check has been successful, but was actively denied?
       });
     console.log(permissions);
-    cloud_status = await exists().catch((error) => {
+    cloud_status = await exists(args).catch((error) => {
       warn(`Error checking cloud backup exists: ${error}`);
       warn(`${JSON.stringify(error)}`);
       return undefined;
@@ -101,7 +105,7 @@
         active={enabled}
         on:change={async () => {
           if (enabled) {
-            await deleteBackup()
+            await deleteBackup(args)
               .then((res) => {
                 info(`Successfully deleted backup: ${res}`);
                 enabled = false;
@@ -130,7 +134,12 @@
             Latest backup on {formatDateTime(cloud_status.modificationDate, $state.profile_settings.locale)}
           </div>
         {/if}
-        <div class="text-xs font-medium text-slate-400">{cloud_status?.size} bytes</div>
+        {#if $state.dev_mode !== 'Off'}
+          <div class="mt-2 space-y-2">
+            <div class="text-xs font-medium text-slate-400">Location: {args.fileUri}</div>
+            <div class="text-xs font-medium text-slate-400">{cloud_status?.size} bytes</div>
+          </div>
+        {/if}
       </div>
       <Button label="Back up now" on:click={async () => await writeToStorage('foobar')} />
     {/if}
