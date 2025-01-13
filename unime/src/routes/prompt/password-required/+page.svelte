@@ -10,15 +10,11 @@
   import { dispatch } from '$lib/dispatcher';
   import { EyeClosedRegularIcon, EyeRegularIcon } from '$lib/icons';
   import UniMeLogoDark from '$lib/static/svg/logo/UniMeLogoDark.svelte';
-  import UniMeLogoLight from '$lib/static/svg/logo/UniMeLogoLight.svelte';
   import { state } from '$lib/stores';
 
   let showPassword = false;
 
   let password: string;
-
-  // TODO: make reactive
-  const isDarkModeEnabled = document.documentElement.classList.contains('dark');
 
   // TODO move to the backend
   onMount(() => {
@@ -35,11 +31,7 @@
   <!-- Placeholder -->
   <!-- <div class="aspect-square w-1/4 rounded-3xl border border-slate-200 bg-slate-100" /> -->
   <div class="flex flex-col items-center justify-center">
-    {#if isDarkModeEnabled}
-      <UniMeLogoDark />
-    {:else}
-      <UniMeLogoLight />
-    {/if}
+    <UniMeLogoDark class="text-blue dark:text-silver" />
 
     <div class="relative mb-4 mt-8 w-[240px]">
       <input
