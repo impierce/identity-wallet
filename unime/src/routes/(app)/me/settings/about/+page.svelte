@@ -3,6 +3,7 @@
 
   import { TopNavBar } from '$lib/components';
   import { HeartFillIcon } from '$lib/icons';
+  import UniMeLogo from '$lib/static/svg/logo/UniMeLogo.svelte';
   import { state } from '$lib/stores';
 
   import type { PageData } from './$types';
@@ -14,6 +15,9 @@
 
 <div class="flex flex-col bg-silver dark:bg-navy">
   <h1 class="sr-only">{$LL.SETTINGS.SUPPORT.ABOUT.TITLE()}</h1>
+  <div class="flex w-full scale-75 justify-center">
+    <UniMeLogo class="text-blue dark:text-silver" />
+  </div>
   <div
     class="flex flex-col items-center gap-6 pt-4 text-[13px]/[24px] font-normal text-slate-500 opacity-50 dark:text-slate-300"
   >
@@ -31,17 +35,17 @@
         </dl>
       </section>
     {/if}
-    <section class="flex flex-col items-center">
-      <h2 class="mb-3 font-bold">{$LL.SETTINGS.SUPPORT.ABOUT.VERSION()}</h2>
-      <div>0.6.12</div>
-      <div class="flex items-center pb-4">
+    <section class="mb-4 flex flex-col items-center">
+      <h2 class="font-bold">{$LL.SETTINGS.SUPPORT.ABOUT.VERSION()}</h2>
+      <div class="mb-3">0.6.12</div>
+      <div class="flex items-center">
         <p>{$LL.SETTINGS.SUPPORT.ABOUT.BUILT_WITH()}</p>
         <HeartFillIcon class="pl-1" />
       </div>
     </section>
     <section class="mb-4 flex flex-col items-center">
-      <h2 class="mb-3 font-bold">{$LL.SETTINGS.SUPPORT.ABOUT.LICENSE()}</h2>
-      <div>Apache License 2.0</div>
+      <h2 class="font-bold">{$LL.SETTINGS.SUPPORT.ABOUT.LICENSE()}</h2>
+      <div class="mb-3">Apache License 2.0</div>
       <div>{`${new Date().getFullYear()} Impierce Technologies`}</div>
     </section>
   </div>
