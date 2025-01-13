@@ -9,7 +9,7 @@
   import { ActionSheet, Button } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { EyeClosedRegularIcon, EyeRegularIcon } from '$lib/icons';
-  import UniMeLogoDark from '$lib/static/svg/logo/UniMeLogoDark.svelte';
+  import UniMeLogo from '$lib/static/svg/logo/UniMeLogo.svelte';
   import { state } from '$lib/stores';
 
   let showPassword = false;
@@ -31,7 +31,7 @@
   <!-- Placeholder -->
   <!-- <div class="aspect-square w-1/4 rounded-3xl border border-slate-200 bg-slate-100" /> -->
   <div class="flex flex-col items-center justify-center">
-    <UniMeLogoDark class="text-blue dark:text-silver" />
+    <UniMeLogo class="text-blue dark:text-silver" />
 
     <div class="relative mb-4 mt-8 w-[240px]">
       <input

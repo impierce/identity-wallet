@@ -1,9 +1,9 @@
 <script lang="ts">
-  import UniMeLogoDark from '$lib/static/svg/logo/UniMeLogoDark.svelte';
+  import UniMeLogo from '$lib/static/svg/logo/UniMeLogo.svelte';
 </script>
 
 <div class="content-height flex items-center justify-center bg-silver dark:bg-navy">
-  <UniMeLogoDark class="text-blue dark:text-silver" />
+  <UniMeLogo class="text-blue dark:text-silver" />
 </div>
 
 <style>
