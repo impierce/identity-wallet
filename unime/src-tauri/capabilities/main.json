@@ -12,9 +12,12 @@
     "core:window:default",
     "cloud-storage:default",
     "cloud-storage:allow-check-permissions",
-    "cloud-storage:allow-write",
+    "cloud-storage:allow-write-data",
     "cloud-storage:allow-delete",
     "fs:allow-appdata-read-recursive",
+    "fs:allow-remove",
+    "fs:allow-write-file",
+    "barcode-scanner:default",
     "log:default",
     "shell:allow-open",
     {

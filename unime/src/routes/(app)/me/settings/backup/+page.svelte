@@ -3,62 +3,157 @@
 
   import LL from '$i18n/i18n-svelte';
 
-  import {
-    checkPermissions,
-    deleteBackup,
-    exists,
-    ping,
-    writeBytes,
-    type FileAttributes,
-  } from '@impierce/tauri-plugin-cloud-storage';
+  import { checkPermissions, getDir, type PermissionState } from '@impierce/tauri-plugin-cloud-storage';
+  import * as path from '@tauri-apps/api/path';
+  import { BaseDirectory, exists, readDir, remove, stat, writeFile, type FileInfo } from '@tauri-apps/plugin-fs';
   import { info, warn } from '@tauri-apps/plugin-log';
 
   import { Button, SettingsEntry, Switch, TopNavBar } from '$lib/components';
+  import { dispatch } from '$lib/dispatcher';
   import { CloudFillIcon, InfoRegularIcon } from '$lib/icons';
   import { state } from '$lib/stores';
   import { formatDateTime } from '$lib/utils';
 
   let enabled = true;
 
-  let permissions: string | null = null;
-  let cloud_status: FileAttributes | undefined = undefined;
-  let message: string | null = null;
+  let permissions: PermissionState | null; // TODO: handle "denied" and "prompt" states accordingly
+  let fileInfo: FileInfo | undefined = undefined;
 
-  const args = {
-    fileUri: '/Users/daniel/Library/Application Support/com.impierce.unime/backup.txt', // TODO: move to backend
-  };
+  let dirPath: string | null;
+  let fileName: string = 'backup.txt';
 
-  async function refresh() {
-    cloud_status = await exists(args).catch((error) => {
-      warn(`Error checking cloud backup exists: ${error}`);
-      return undefined;
-    });
-  }
-
-  async function writeToStorage(value: string) {
-    info(`${value}`);
-    message = await ping(new Date().toISOString())
-      .then((res) => {
-        info(`successful ping: ${res}`);
-        return res;
+  async function getFileInfo() {
+    if (!dirPath) {
+      return;
+    }
+    let filePath = await path.join(dirPath, fileName);
+    fileInfo = await stat(filePath)
+      .then((fileInfo) => {
+        info(`location: "backup.txt", attributes: ${JSON.stringify(fileInfo)}`);
+        return fileInfo;
+        // return {
+        //   provider: 'Local filesystem',
+        //   size: fileInfo.size,
+        //   modificationDate: fileInfo.mtime?.toISOString() ?? '',
+        // };
       })
       .catch((error) => {
-        warn(`Error pinging cloud storage: ${error}`);
-        return null;
+        warn(`Error checking cloud backup exists: ${error}`);
+        warn(`${JSON.stringify(error)}`);
+        return undefined;
       });
+  }
 
-    await writeBytes({ fileUri: args.fileUri, value })
-      .then((res) => {
-        info(`Successfully wrote value to cloud storage: ${value}, response: ${res.value}`);
+  async function createBackup() {
+    if (!dirPath) {
+      Promise.reject('No directory path');
+    }
+    await dispatch({ type: '[Backup] Create', payload: { path: `${dirPath}/${fileName}`, password: 'sup3rSecr3t' } });
+  }
+
+  async function writeToStorage(data: Uint8Array | ReadableStream<Uint8Array>) {
+    info(`${data.toString()}`);
+
+    if (!dirPath) {
+      return;
+    }
+
+    let filePath = await path.join(dirPath, fileName);
+
+    await writeFile(filePath, data)
+      .then(() => {
+        info(`Successfully wrote value to cloud storage: ${data.toString()}`);
       })
       .catch((error) => {
         warn(`Error writing value to cloud storage: ${error}`);
       });
 
-    await refresh();
+    // await writeData({ ...args, data: new TextEncoder().encode(value) })
+    //   .then(() => {
+    //     info(`Successfully wrote value to cloud storage: ${value}`);
+    //   })
+    //   .catch((error) => {
+    //     warn(`Error writing value to cloud storage: ${error}`);
+    //   });
+
+    await getFileInfo();
+  }
+
+  async function deleteTheBackup() {
+    if (!dirPath) {
+      return;
+    }
+
+    let filePath = await path.join(dirPath, fileName);
+
+    await remove(filePath)
+      .then(() => {
+        info(`Successfully deleted backup: ${fileName}`);
+        enabled = false;
+      })
+      .catch((error) => {
+        warn(`Error deleting backup: ${error}`);
+      });
+
+    // await deleteBackup({ fileUri: `${args.pathUri}/${args.fileName}` })
+    //   .then((res) => {
+    //     info(`Successfully deleted backup: ${res}`);
+    //     enabled = false;
+    //   })
+    //   .catch((error) => {
+    //     warn(`Error deleting backup: ${error}`);
+    //   });
+  }
+
+  async function enable() {
+    // await dispatch({ type: '[Backup] Enable' });
+    await writeToStorage(new TextEncoder().encode('some_awesome_32_character_string'))
+      .then(() => {
+        info('Successfully wrote to storage');
+        enabled = true;
+      })
+      .catch((error) => {
+        warn(`Error writing to storage: ${error}`);
+      });
   }
 
   onMount(async () => {
+    dirPath = await getDir()
+      .then((dir) => {
+        info(`Cloud storage directory: ${dir}`);
+        return dir;
+      })
+      .catch(async (error) => {
+        warn(`Error getting cloud storage directory: ${error}`);
+        // TODO: is a fallback to dir AppLocalData a good idea?
+        return path
+          .appLocalDataDir()
+          .then((dir) => {
+            info(`Fallback to local app data directory: ${dir}`);
+            return dir;
+          })
+          .catch((error) => {
+            warn(`Error getting local app data directory: ${error}`);
+            return null;
+          });
+        // return BaseDirectory.AppLocalData;
+      });
+
+    if (!dirPath) {
+      return;
+    }
+
+    const files = await readDir(dirPath);
+
+    files.map((file) => {
+      info(`${file.name}`);
+    });
+
+    // info(`Files in app data directory: ${JSON.stringify(files)}`);
+
+    const folderExists = await exists('backup.txt', { baseDir: BaseDirectory.AppLocalData });
+    info(`Backup file exists: ${folderExists}`);
+
     permissions = await checkPermissions()
       .then((permissions) => {
         info(`Permissions to use cloud storage: ${permissions}`);
@@ -66,15 +161,23 @@
       })
       .catch((error) => {
         warn(`Error checking for permissions to use cloud storage: ${error}`);
-        return null; // possibly return "denied"? or does that imply that the check has been successful, but was actively denied?
+        return null;
       });
-    console.log(permissions);
-    cloud_status = await exists(args).catch((error) => {
-      warn(`Error checking cloud backup exists: ${error}`);
-      warn(`${JSON.stringify(error)}`);
-      return undefined;
+
+    await exists('backup.txt', { baseDir: BaseDirectory.AppLocalData }).then(async (res) => {
+      if (res) {
+        getFileInfo();
+      }
     });
-    console.log(cloud_status);
+    // .then((fileAttributes) => {
+    //   info(`location: "${args.pathUri}/${args.fileName}", attributes: ${JSON.stringify(fileAttributes)}`);
+    //   return fileAttributes;
+    // })
+    // .catch((error) => {
+    //   warn(`Error checking cloud backup exists: ${error}`);
+    //   warn(`${JSON.stringify(error)}`);
+    //   return undefined;
+    // });
   });
 </script>
 
@@ -105,46 +208,31 @@
         active={enabled}
         on:change={async () => {
           if (enabled) {
-            await deleteBackup(args)
-              .then((res) => {
-                info(`Successfully deleted backup: ${res}`);
-                enabled = false;
-              })
-              .catch((error) => {
-                warn(`Error deleting backup: ${error}`);
-              });
+            await deleteTheBackup();
           } else {
-            await writeToStorage('some_awesome_32_character_string')
-              .then(() => {
-                info('Successfully wrote to storage');
-                enabled = true;
-              })
-              .catch((error) => {
-                warn(`Error writing to storage: ${error}`);
-              });
+            await enable();
           }
         }}
       />
     </SettingsEntry>
     {#if enabled}
       <div class="rounded-xl bg-background-alt p-4">
-        <div class="mb-2 text-sm font-semibold text-slate-500">{cloud_status?.provider}</div>
-        {#if cloud_status?.modificationDate}
+        <div class="mb-2 text-sm font-semibold text-slate-500">{'n/a'}</div>
+        {#if fileInfo?.mtime}
           <div class="text-xs font-medium text-slate-400">
-            Latest backup on {formatDateTime(cloud_status.modificationDate, $state.profile_settings.locale)}
+            Latest backup on {formatDateTime(fileInfo?.mtime.toISOString(), $state.profile_settings.locale)}
           </div>
         {/if}
         {#if $state.dev_mode !== 'Off'}
           <div class="mt-2 space-y-2">
-            <div class="text-xs font-medium text-slate-400">Location: {args.fileUri}</div>
-            <div class="text-xs font-medium text-slate-400">{cloud_status?.size} bytes</div>
+            <div class="text-xs font-medium text-slate-400">Location: {dirPath}/{fileName}</div>
+            <div class="text-xs font-medium text-slate-400">{fileInfo?.size} bytes</div>
           </div>
         {/if}
       </div>
-      <Button label="Back up now" on:click={async () => await writeToStorage('foobar')} />
+      <Button label="Back up now" on:click={async () => await createBackup()} />
     {/if}
     <pre class="text-xs text-slate-400">permissions: {permissions}</pre>
-    <pre class="text-xs text-slate-400">ping response: {message}</pre>
   </div>
 </div>
 
