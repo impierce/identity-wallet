@@ -234,6 +234,14 @@ By using our Service, you acknowledge that you have read, understood, and agree 
     },
     BACKUP_RECOVERY: {
       TITLE: 'Backup and recovery',
+      SETTINGS_ENTRY: 'Automatic cloud backups',
+      BACKUP_NOW: 'Back up now',
+      CONFIRM_DISABLE: {
+        TITLE: 'Disable automatic backups',
+        DESCRIPTION: 'Are you sure you want to disable automatic backups to the cloud?',
+        CONFIRM: 'Yes, remove all backups',
+        CANCEL: 'No, keep my backups',
+      },
     },
     LOG_OUT: {
       TITLE: 'Log out',

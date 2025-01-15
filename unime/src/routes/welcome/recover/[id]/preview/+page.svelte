@@ -36,7 +36,7 @@
           slot="image"
           class="mr-4 flex h-12 w-12 min-w-[48px] items-center justify-center overflow-hidden rounded-lg bg-silver p-1 dark:bg-navy"
         >
-          <Image id={'connection.id'} iconFallback={CubeLightIcon} imgClass="p-1" />
+          <Image id={'CubeLightIcon'} iconFallback={CubeLightIcon} imgClass="p-1" />
         </div>
       </ListItemCard>
       <ListItemCard id={''} title={'Badges'} description={'5 items'}>
@@ -44,7 +44,7 @@
           slot="image"
           class="mr-4 flex h-12 w-12 min-w-[48px] items-center justify-center overflow-hidden rounded-lg bg-silver p-1 dark:bg-navy"
         >
-          <Image id={'connection.id'} iconFallback={CertificateLightIcon} imgClass="p-1" />
+          <Image id={'CertificateLightIcon'} iconFallback={CertificateLightIcon} imgClass="p-1" />
         </div>
       </ListItemCard>
       <ListItemCard id={''} title={'Connections'} description={'7 items'}>
@@ -52,7 +52,7 @@
           slot="image"
           class="mr-4 flex h-12 w-12 min-w-[48px] items-center justify-center overflow-hidden rounded-lg bg-silver p-1 dark:bg-navy"
         >
-          <Image id={'connection.id'} iconFallback={LinkLightIcon} imgClass="p-1" />
+          <Image id={'LinkLightIcon'} iconFallback={LinkLightIcon} imgClass="p-1" />
         </div>
       </ListItemCard>
     </div>
