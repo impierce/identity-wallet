@@ -20,7 +20,7 @@ use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 
 /// CoreUtils is a struct that contains all the utils that only the rustside needs to perform its tasks.
-#[derive(Default, Clone)]
+#[derive(Default, Clone, Debug)]
 pub struct CoreUtils {
     pub managers: Arc<tauri::async_runtime::Mutex<Managers>>,
 
@@ -28,21 +28,24 @@ pub struct CoreUtils {
     pub active_connection_request: Option<ConnectionRequest>,
     pub active_credential_offer: Option<CredentialOfferParameters>,
 }
+
 /// Managers contains both the stronghold manager and the identity manager needed to perform operations on connections & credentials.
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct Managers {
     pub stronghold_manager: Option<Arc<StrongholdManager>>,
     pub identity_manager: Option<IdentityManager>,
 }
 
 /// IdentityManager contains the subject, provider_manager and wallet needed to perform operations within the oid4vc library.
+
+#[derive(Debug)]
 pub struct IdentityManager {
     pub subject: Arc<dyn Subject>,
     pub provider_manager: ProviderManager,
     pub wallet: Wallet,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub enum ConnectionRequest {
     SIOPv2(Box<AuthorizationRequest<Object<SIOPv2>>>),
     OID4VP(Box<AuthorizationRequest<Object<OID4VP>>>),

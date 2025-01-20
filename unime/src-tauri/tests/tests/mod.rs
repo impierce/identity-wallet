@@ -6,3 +6,4 @@ mod load_dev_profile;
 mod qr_code_scanned;
 mod search_query;
 mod sorting;
+mod self_issue_credential;

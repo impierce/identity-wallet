@@ -1316,7 +1316,7 @@ checksum = "f7144d30dcf0fafbce74250a3963025d8d52177934239851c917d29f1df280c2"
 [[package]]
 name = "consumer"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=c8a141d#c8a141df13cfb910203a3e43d2088c0c3376b6bd"
+source = "git+https://git@github.com/impierce/did-manager.git?branch=build/sd-jwt#c478327c1929a60e7d7701142ae072b81ede2a97"
 dependencies = [
  "did_iota",
  "did_jwk",
@@ -1929,7 +1929,7 @@ dependencies = [
 [[package]]
 name = "did_iota"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=c8a141d#c8a141df13cfb910203a3e43d2088c0c3376b6bd"
+source = "git+https://git@github.com/impierce/did-manager.git?branch=build/sd-jwt#c478327c1929a60e7d7701142ae072b81ede2a97"
 dependencies = [
  "bls12_381_plus 0.8.17",
  "identity_iota",
@@ -1943,7 +1943,7 @@ dependencies = [
 [[package]]
 name = "did_jwk"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=c8a141d#c8a141df13cfb910203a3e43d2088c0c3376b6bd"
+source = "git+https://git@github.com/impierce/did-manager.git?branch=build/sd-jwt#c478327c1929a60e7d7701142ae072b81ede2a97"
 dependencies = [
  "did-jwk",
  "identity_iota",
@@ -1960,7 +1960,7 @@ dependencies = [
 [[package]]
 name = "did_key"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=c8a141d#c8a141df13cfb910203a3e43d2088c0c3376b6bd"
+source = "git+https://git@github.com/impierce/did-manager.git?branch=build/sd-jwt#c478327c1929a60e7d7701142ae072b81ede2a97"
 dependencies = [
  "did-method-key",
  "identity_iota",
@@ -1978,7 +1978,7 @@ dependencies = [
 [[package]]
 name = "did_manager"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=c8a141d#c8a141df13cfb910203a3e43d2088c0c3376b6bd"
+source = "git+https://git@github.com/impierce/did-manager.git?branch=build/sd-jwt#c478327c1929a60e7d7701142ae072b81ede2a97"
 dependencies = [
  "consumer",
  "producer",
@@ -2006,7 +2006,7 @@ dependencies = [
 [[package]]
 name = "did_web"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=c8a141d#c8a141df13cfb910203a3e43d2088c0c3376b6bd"
+source = "git+https://git@github.com/impierce/did-manager.git?branch=build/sd-jwt#c478327c1929a60e7d7701142ae072b81ede2a97"
 dependencies = [
  "did-web",
  "identity_iota",
@@ -2025,7 +2025,7 @@ dependencies = [
 [[package]]
 name = "dif-presentation-exchange"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=0f77733#0f777334977118af4ca7d6b650c6a9d84c9ec3a6"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/impl_debug#c2f317513372415550207c94ff6306f8a4ec176a"
 dependencies = [
  "getset",
  "jsonpath_lib",
@@ -4091,6 +4091,7 @@ dependencies = [
  "oid4vc",
  "p256 0.13.2",
  "reqwest 0.11.27",
+ "sd-jwt-payload 0.3.0",
  "serde",
  "serde_json",
  "serde_with 3.9.0",
@@ -4113,8 +4114,8 @@ dependencies = [
 
 [[package]]
 name = "identity_core"
-version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?rev=309c399#309c3998437de1fd07bdbc443fd029ee5f4c732c"
+version = "1.4.0"
+source = "git+https://github.com/iotaledger/identity.rs?branch=feat/sd-jwt-vc#0a3131f025c91669027385f617cf435d85fade27"
 dependencies = [
  "js-sys",
  "multibase 0.9.1",
@@ -4129,8 +4130,8 @@ dependencies = [
 
 [[package]]
 name = "identity_credential"
-version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?rev=309c399#309c3998437de1fd07bdbc443fd029ee5f4c732c"
+version = "1.4.0"
+source = "git+https://github.com/iotaledger/identity.rs?branch=feat/sd-jwt-vc#0a3131f025c91669027385f617cf435d85fade27"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -4158,8 +4159,8 @@ dependencies = [
 
 [[package]]
 name = "identity_did"
-version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?rev=309c399#309c3998437de1fd07bdbc443fd029ee5f4c732c"
+version = "1.4.0"
+source = "git+https://github.com/iotaledger/identity.rs?branch=feat/sd-jwt-vc#0a3131f025c91669027385f617cf435d85fade27"
 dependencies = [
  "did_url_parser",
  "form_urlencoded",
@@ -4172,8 +4173,8 @@ dependencies = [
 
 [[package]]
 name = "identity_document"
-version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?rev=309c399#309c3998437de1fd07bdbc443fd029ee5f4c732c"
+version = "1.4.0"
+source = "git+https://github.com/iotaledger/identity.rs?branch=feat/sd-jwt-vc#0a3131f025c91669027385f617cf435d85fade27"
 dependencies = [
  "did_url_parser",
  "identity_core",
@@ -4187,8 +4188,8 @@ dependencies = [
 
 [[package]]
 name = "identity_eddsa_verifier"
-version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?rev=309c399#309c3998437de1fd07bdbc443fd029ee5f4c732c"
+version = "1.4.0"
+source = "git+https://github.com/iotaledger/identity.rs?branch=feat/sd-jwt-vc#0a3131f025c91669027385f617cf435d85fade27"
 dependencies = [
  "identity_jose",
  "iota-crypto",
@@ -4196,8 +4197,8 @@ dependencies = [
 
 [[package]]
 name = "identity_iota"
-version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?rev=309c399#309c3998437de1fd07bdbc443fd029ee5f4c732c"
+version = "1.4.0"
+source = "git+https://github.com/iotaledger/identity.rs?branch=feat/sd-jwt-vc#0a3131f025c91669027385f617cf435d85fade27"
 dependencies = [
  "identity_core",
  "identity_credential",
@@ -4211,8 +4212,8 @@ dependencies = [
 
 [[package]]
 name = "identity_iota_core"
-version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?rev=309c399#309c3998437de1fd07bdbc443fd029ee5f4c732c"
+version = "1.4.0"
+source = "git+https://github.com/iotaledger/identity.rs?branch=feat/sd-jwt-vc#0a3131f025c91669027385f617cf435d85fade27"
 dependencies = [
  "async-trait",
  "futures",
@@ -4234,8 +4235,8 @@ dependencies = [
 
 [[package]]
 name = "identity_jose"
-version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?rev=309c399#309c3998437de1fd07bdbc443fd029ee5f4c732c"
+version = "1.4.0"
+source = "git+https://github.com/iotaledger/identity.rs?branch=feat/sd-jwt-vc#0a3131f025c91669027385f617cf435d85fade27"
 dependencies = [
  "bls12_381_plus 0.8.17",
  "identity_core",
@@ -4250,17 +4251,16 @@ dependencies = [
 
 [[package]]
 name = "identity_resolver"
-version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?rev=309c399#309c3998437de1fd07bdbc443fd029ee5f4c732c"
+version = "1.4.0"
+source = "git+https://github.com/iotaledger/identity.rs?branch=feat/sd-jwt-vc#0a3131f025c91669027385f617cf435d85fade27"
 dependencies = [
- "anyhow",
  "async-trait",
  "futures",
  "identity_core",
+ "identity_credential",
  "identity_did",
  "identity_document",
  "identity_iota_core",
- "iota-sdk",
  "serde",
  "strum 0.25.0",
  "thiserror",
@@ -4268,8 +4268,8 @@ dependencies = [
 
 [[package]]
 name = "identity_storage"
-version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?rev=309c399#309c3998437de1fd07bdbc443fd029ee5f4c732c"
+version = "1.4.0"
+source = "git+https://github.com/iotaledger/identity.rs?branch=feat/sd-jwt-vc#0a3131f025c91669027385f617cf435d85fade27"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -4288,8 +4288,8 @@ dependencies = [
 
 [[package]]
 name = "identity_stronghold"
-version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?rev=309c399#309c3998437de1fd07bdbc443fd029ee5f4c732c"
+version = "1.4.0"
+source = "git+https://github.com/iotaledger/identity.rs?branch=feat/sd-jwt-vc#0a3131f025c91669027385f617cf435d85fade27"
 dependencies = [
  "async-trait",
  "identity_storage",
@@ -4305,7 +4305,7 @@ dependencies = [
 [[package]]
 name = "identity_stronghold_ext"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=c8a141d#c8a141df13cfb910203a3e43d2088c0c3376b6bd"
+source = "git+https://git@github.com/impierce/did-manager.git?branch=build/sd-jwt#c478327c1929a60e7d7701142ae072b81ede2a97"
 dependencies = [
  "async-trait",
  "elliptic-curve 0.13.8",
@@ -4323,8 +4323,8 @@ dependencies = [
 
 [[package]]
 name = "identity_verification"
-version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?rev=309c399#309c3998437de1fd07bdbc443fd029ee5f4c732c"
+version = "1.4.0"
+source = "git+https://github.com/iotaledger/identity.rs?branch=feat/sd-jwt-vc#0a3131f025c91669027385f617cf435d85fade27"
 dependencies = [
  "identity_core",
  "identity_did",
@@ -5999,7 +5999,7 @@ dependencies = [
 [[package]]
 name = "oid4vc"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=0f77733#0f777334977118af4ca7d6b650c6a9d84c9ec3a6"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/impl_debug#c2f317513372415550207c94ff6306f8a4ec176a"
 dependencies = [
  "dif-presentation-exchange",
  "oid4vc-core",
@@ -6012,7 +6012,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-core"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=0f77733#0f777334977118af4ca7d6b650c6a9d84c9ec3a6"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/impl_debug#c2f317513372415550207c94ff6306f8a4ec176a"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -6036,13 +6036,14 @@ dependencies = [
 [[package]]
 name = "oid4vc-manager"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=0f77733#0f777334977118af4ca7d6b650c6a9d84c9ec3a6"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/impl_debug#c2f317513372415550207c94ff6306f8a4ec176a"
 dependencies = [
  "anyhow",
  "async-trait",
  "axum",
  "axum-auth",
  "chrono",
+ "derivative",
  "did-key",
  "did_url",
  "futures",
@@ -6068,7 +6069,7 @@ dependencies = [
 [[package]]
 name = "oid4vci"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=0f77733#0f777334977118af4ca7d6b650c6a9d84c9ec3a6"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/impl_debug#c2f317513372415550207c94ff6306f8a4ec176a"
 dependencies = [
  "anyhow",
  "derivative",
@@ -6091,7 +6092,7 @@ dependencies = [
 [[package]]
 name = "oid4vp"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=0f77733#0f777334977118af4ca7d6b650c6a9d84c9ec3a6"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/impl_debug#c2f317513372415550207c94ff6306f8a4ec176a"
 dependencies = [
  "anyhow",
  "chrono",
@@ -6866,7 +6867,7 @@ dependencies = [
 [[package]]
 name = "producer"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=c8a141d#c8a141df13cfb910203a3e43d2088c0c3376b6bd"
+source = "git+https://git@github.com/impierce/did-manager.git?branch=build/sd-jwt#c478327c1929a60e7d7701142ae072b81ede2a97"
 dependencies = [
  "did_iota",
  "did_jwk",
@@ -7774,7 +7775,7 @@ dependencies = [
 [[package]]
 name = "sd-jwt-payload"
 version = "0.3.0"
-source = "git+https://github.com/impierce/sd-jwt-payload.git?rev=318dad9#318dad904f1a1c3d7e510b0446fc75c6c71a49b5"
+source = "git+https://github.com/iotaledger/sd-jwt-payload.git?branch=feat/sd-jwt-v11#a5b299159092b792bec8514fa1dd654817791fb2"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -8201,7 +8202,7 @@ dependencies = [
 [[package]]
 name = "shared"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=c8a141d#c8a141df13cfb910203a3e43d2088c0c3376b6bd"
+source = "git+https://git@github.com/impierce/did-manager.git?branch=build/sd-jwt#c478327c1929a60e7d7701142ae072b81ede2a97"
 dependencies = [
  "identity_iota",
  "identity_storage",
@@ -8293,7 +8294,7 @@ dependencies = [
 [[package]]
 name = "siopv2"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=0f77733#0f777334977118af4ca7d6b650c6a9d84c9ec3a6"
+source = "git+https://git@github.com/impierce/openid4vc.git?branch=feat/impl_debug#c2f317513372415550207c94ff6306f8a4ec176a"
 dependencies = [
  "anyhow",
  "async-trait",

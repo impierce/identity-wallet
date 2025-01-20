@@ -93,7 +93,6 @@ pub struct AppState {
     pub search_results: SearchResults,
     /// This field contains utils needed for the backend to perform its tasks.
     #[serde(skip)]
-    #[derivative(Debug = "ignore")]
     pub core_utils: CoreUtils,
     pub profile_settings: ProfileSettings,
     /// User prompts are a way for the backend to communicate a desired/required user interaction to the frontend.
