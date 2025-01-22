@@ -14,12 +14,14 @@ use crate::{
     error::AppError,
     state::{
         actions::{listen, Action},
-        credentials::{actions::self_issue_credential::{SelfIssueCredential, SelfIssuedCredentialType}, VerifiableCredentialRecord},
+        credentials::{
+            actions::self_issue_credential::{SelfIssueCredential, SelfIssuedCredentialType},
+            VerifiableCredentialRecord,
+        },
         user_prompt::CurrentUserPrompt,
         AppState,
     },
 };
-
 
 pub struct SubjectWrapper(pub Arc<dyn oid4vc::oid4vc_core::Subject>);
 
@@ -51,6 +53,7 @@ impl JwsSigner for SubjectWrapper {
 
 pub async fn self_issue_credential(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(self_issue_credential) = listen::<SelfIssueCredential>(action) {
+        // Validate to be self-issued credential data from the action payload against the JsonSchema belonging to the credential type
         match self_issue_credential._type {
             SelfIssuedCredentialType::Profile => {
                 info!("Successfully self-issued profile credential with id: XX");
@@ -61,23 +64,30 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
         }
 
         let now = Timestamp::from_unix(0).unwrap();
-        
+
         let managers = state.core_utils.managers.lock().await;
-        let subject = &managers.identity_manager.as_ref().and_then(|f| Some(f.subject.clone())).unwrap();
-        
-        let kid = "example".to_string(); // TODO:
-        // subject
-        //     .key_id(
-        //         "Jwk", // TODO: hardcode
-        //         jsonwebtoken::Algorithm::ES256, // TODO: hardcode
-        //     )
-        //     .await
-        //     .unwrap();
-            
+        let subject = &managers
+            .identity_manager
+            .as_ref()
+            .and_then(|f| Some(f.subject.clone()))
+            .unwrap();
+
+        // Get and convert the preferred key type to jsonwebtoken::Algorithm
+        let algorithm = match state.profile_settings.preferred_key_types.first().unwrap().as_str() {
+            "EdDSA" => jsonwebtoken::Algorithm::EdDSA,
+            "ES256" => jsonwebtoken::Algorithm::ES256,
+            _ => return Err(AppError::Error("Unsupported key type".to_string())),
+        };
+
+        let kid = subject
+            .key_id(state.profile_settings.preferred_did_methods.first().unwrap(), algorithm)
+            .await
+            .unwrap();
+
         let subjectwrapper = SubjectWrapper(subject.clone());
-        
+
         let issuer_did = state.dids.get("did:jwk").unwrap(); // TODO: hardcode
-        
+
         let sd_jwt_credential = SdJwtVcBuilder::new(self_issue_credential.data.clone().as_object().unwrap())
             .unwrap()
             .header(std::iter::once(("kid".to_string(), serde_json::Value::String(kid.clone()))).collect())
@@ -97,7 +107,7 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
             .unwrap();
 
         drop(managers);
-        
+
         let signed_credential = json!(sd_jwt_credential.to_string());
 
         let vcr = VerifiableCredentialRecord::try_from(signed_credential).unwrap();
@@ -120,4 +130,3 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
 
     Ok(state)
 }
-
