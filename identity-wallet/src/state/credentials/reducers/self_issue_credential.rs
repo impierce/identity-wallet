@@ -11,7 +11,7 @@ use sd_jwt_payload_rework::{JsonObject, JwsSigner};
 use serde_json::json;
 
 use crate::{
-    error::AppError,
+    error::AppError::{self, *},
     state::{
         actions::{listen, Action},
         credentials::{
@@ -63,54 +63,81 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
             }
         }
 
-        let now = Timestamp::from_unix(0).unwrap();
-
-        let managers = state.core_utils.managers.lock().await;
-        let subject = &managers
-            .identity_manager
-            .as_ref()
-            .and_then(|f| Some(f.subject.clone()))
-            .unwrap();
-
-        // Get and convert the preferred key type to jsonwebtoken::Algorithm
-        let algorithm = match state.profile_settings.preferred_key_types.first().unwrap().as_str() {
+        // Get preferred key type and convert it to jsonwebtoken::Algorithm
+        let key_type = state
+            .profile_settings
+            .preferred_key_types
+            .first()
+            .ok_or(AppError::Error("Failed to get a preferred key type".to_string()))?
+            .as_str();
+        let algorithm = match key_type {
             "EdDSA" => jsonwebtoken::Algorithm::EdDSA,
             "ES256" => jsonwebtoken::Algorithm::ES256,
             _ => return Err(AppError::Error("Unsupported key type".to_string())),
         };
 
-        let kid = subject
-            .key_id(state.profile_settings.preferred_did_methods.first().unwrap(), algorithm)
-            .await
-            .unwrap();
+        // Get issuer DID
+        let did_method = state
+            .profile_settings
+            .preferred_did_methods
+            .first()
+            .ok_or(AppError::Error("Failed to get a preferred did method".to_string()))?;
+        let issuer_did = state
+            .dids
+            .get(did_method)
+            .ok_or(AppError::Error(
+                "Failed to get the did for the preferred did method".to_string(),
+            ))?
+            .parse()
+            .map_err(|_| AppError::Error("Failed to parse the did into a <Url>".to_string()))?;
 
+        // Get kid
+        let managers = state.core_utils.managers.lock().await;
+        let subject = managers
+            .identity_manager
+            .as_ref()
+            .ok_or(MissingManagerError("identity"))?
+            .subject
+            .clone();
+
+        let kid = subject.key_id(did_method, algorithm).await.ok_or(AppError::Error(
+            "Failed to create a key id necessary to self-issue the credential".to_string(),
+        ))?;
+
+        // Wrap subject with the SubjectWrapper to get the JwsSigner implementation
         let subjectwrapper = SubjectWrapper(subject.clone());
 
-        let issuer_did = state.dids.get("did:jwk").unwrap(); // TODO: hardcode
+        let now = Timestamp::from_unix(0).map_err(|_| AppError::Error("Failed to create a timestamp".to_string()))?;
 
-        let sd_jwt_credential = SdJwtVcBuilder::new(self_issue_credential.data.clone().as_object().unwrap())
-            .unwrap()
+        let credential_data = self_issue_credential.data.as_object().ok_or(AppError::Error(
+            "Invalid action payload for the self_issue_credential.data field".to_string(),
+        ))?;
+
+        let sd_jwt_credential = SdJwtVcBuilder::new(credential_data)
+            .map_err(|_| AppError::Error("Failed to create a SdJwtVcBuilder".to_string()))?
             .header(std::iter::once(("kid".to_string(), serde_json::Value::String(kid.clone()))).collect())
-            // FIX THIS
-            .vct("https://example.com/education_credential".parse::<Url>().unwrap())
+            .vct(
+                "https://www.ietf.org/archive/id/draft-terbu-oauth-sd-jwt-vc-00.html"
+                    .parse::<Url>()
+                    .map_err(|_| AppError::Error("Failed to parse the vct into a <Url>".to_string()))?,
+            ) // TODO: make this specific to the credential type chosen and coherent with the JsonSchema used.
             .iat(now)
-            .iss(issuer_did.parse().unwrap())
-            .require_key_binding(identity_credential::sd_jwt_v2::RequiredKeyBinding::Kid(
-                // FIX THIS!: how to get the holder's kid or Jwk?
-                kid,
-            ))
+            .iss(issuer_did)
+            .require_key_binding(identity_credential::sd_jwt_v2::RequiredKeyBinding::Kid(kid))
             // .make_concealable("/address/street_address")
             // .unwrap()
             // FIX THIS!
-            .finish::<SubjectWrapper>(&subjectwrapper, "ES256")
+            .finish::<SubjectWrapper>(&subjectwrapper, key_type)
             .await
-            .unwrap();
+            .map_err(|_| AppError::Error("Failed to create the self-issued sd_jwt_credential".to_string()))?;
 
         drop(managers);
 
         let signed_credential = json!(sd_jwt_credential.to_string());
 
-        let vcr = VerifiableCredentialRecord::try_from(signed_credential).unwrap();
+        let vcr = VerifiableCredentialRecord::try_from(signed_credential).map_err(|_| {
+            AppError::Error("Failed to create a VerifiableCredentialRecord from self_issue_credential".to_string())
+        })?;
 
         let mut credentials = state.credentials.clone();
         println!("before: {:?}", credentials);
