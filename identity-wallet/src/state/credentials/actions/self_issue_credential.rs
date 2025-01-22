@@ -3,7 +3,7 @@ use crate::state::credentials::reducers::self_issue_credential::self_issue_crede
 use crate::state::{actions::ActionTrait, Reducer};
 
 use serde::{Deserialize, Serialize};
-use strum::EnumString;
+use strum::{Display, EnumString};
 use ts_rs::TS;
 
 #[derive(Serialize, Deserialize, Debug, TS, Clone)]
@@ -22,7 +22,7 @@ impl ActionTrait for SelfIssueCredential {
     }
 }
 
-#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, EnumString)]
+#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, EnumString, Display)]
 #[ts(export, export_to = "bindings/credentials/SelfIssuedCredentialType.ts")]
 #[serde(rename_all = "snake_case")]
 pub enum SelfIssuedCredentialType {

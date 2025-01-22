@@ -54,6 +54,7 @@ unicode-normalization = "0.1.23"
 url = "2.5"
 uuid = { version = "1.4", features = ["v4", "fast-rng", "serde"] }
 sd-jwt-payload-rework = { package = "sd-jwt-payload", git = "https://github.com/iotaledger/sd-jwt-payload.git", branch = "feat/sd-jwt-v11", default-features = false, features = ["sha"]}
+jsonschema = "0.18"
 
 [dev-dependencies]
 serial_test.workspace = true

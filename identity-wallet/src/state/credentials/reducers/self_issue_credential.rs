@@ -4,6 +4,7 @@ use async_trait::async_trait;
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
 use identity_credential::sd_jwt_vc::SdJwtVcBuilder;
 use identity_iota::core::{Timestamp, Url};
+use jsonschema::{JSONSchema, ValidationError};
 use jsonwebtoken::Algorithm;
 use log::info;
 use oid4vc::oid4vc_core::Sign;
@@ -56,10 +57,26 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
         // Validate to be self-issued credential data from the action payload against the JsonSchema belonging to the credential type
         match self_issue_credential._type {
             SelfIssuedCredentialType::Profile => {
-                info!("Successfully self-issued profile credential with id: XX");
+                let json_schema_path =
+                    // format! {"../../../../resources/{}_json_schema.json", self_issue_credential._type.to_string().to_lowercase()};
+                    format! {"../../identity-wallet/resources/{}_json_schema.json", self_issue_credential._type.to_string().to_lowercase()};
+
+                info!(
+                    "Validating payload credential against JsonSchema from path: {}",
+                    json_schema_path
+                );
+                json_schema_validation(json_schema_path, self_issue_credential.data.clone())?;
             }
             SelfIssuedCredentialType::Address => {
-                info!("Successfully self-issued address credential with id: XX");
+                let json_schema_path =
+                // format! {"../../../../resources/{}_json_schema.json", self_issue_credential._type.to_string().to_lowercase()};
+                format! {"../../identity-wallet/resources/{}_json_schema.json", self_issue_credential._type.to_string().to_lowercase()};
+
+                info!(
+                    "Validating payload credential against JsonSchema from path: {}",
+                    json_schema_path
+                );
+                json_schema_validation(json_schema_path, self_issue_credential.data.clone())?;
             }
         }
 
@@ -126,7 +143,7 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
             .require_key_binding(identity_credential::sd_jwt_v2::RequiredKeyBinding::Kid(kid))
             // .make_concealable("/address/street_address")
             // .unwrap()
-            // FIX THIS!
+            // TODO: how to implement the fn make_concealable() when fields should only be known from the JsonSchema?
             .finish::<SubjectWrapper>(&subjectwrapper, key_type)
             .await
             .map_err(|_| AppError::Error("Failed to create the self-issued sd_jwt_credential".to_string()))?;
@@ -156,4 +173,32 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
     }
 
     Ok(state)
+}
+
+fn json_schema_validation(json_schema_path: String, data: serde_json::Value) -> Result<(), AppError> {
+    println!("Current dir: {:?}", std::env::current_dir().unwrap());
+    println!("Fetching JsonSchema from path: {}", json_schema_path);
+
+    let json_schema_file = std::fs::File::open(json_schema_path.clone())
+        .map_err(|_| AppError::Error("Failed to find or read from JsonSchema file".to_string()))?;
+    let reader = std::io::BufReader::new(json_schema_file);
+    let json_schema: serde_json::Value = serde_json::from_reader(reader)
+        .map_err(|_| AppError::Error("Failed to convert JsonSchema &str to serde_json::Value".to_string()))?;
+
+    // Draft is detected automatically with fallback to Draft7
+    let schema = JSONSchema::compile(&json_schema)
+        .map_err(|_| AppError::Error("Failed to compile JsonSchema from serde_json::Value".to_string()))?;
+
+    let result = schema.validate(&data);
+
+    if result.is_err() {
+        let errors: Vec<ValidationError> = result.unwrap_err().collect();
+        Err(AppError::Error(format!(
+            "The data is invalid according to the given JsonSchema: {:?}",
+            errors
+        )))
+    }
+    else {
+        Ok(())
+    }
 }
