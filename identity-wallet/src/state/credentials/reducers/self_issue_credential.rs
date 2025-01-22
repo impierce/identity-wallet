@@ -14,7 +14,7 @@ use crate::{
     error::AppError,
     state::{
         actions::{listen, Action},
-        credentials::actions::self_issue_credential::{SelfIssueCredential, SelfIssuedCredentialType},
+        credentials::{actions::self_issue_credential::{SelfIssueCredential, SelfIssuedCredentialType}, VerifiableCredentialRecord},
         user_prompt::CurrentUserPrompt,
         AppState,
     },
@@ -38,7 +38,7 @@ impl JwsSigner for SubjectWrapper {
 
         let message = format!("{}.{}", encoded_header, encoded_payload);
 
-        let proof_value = Sign::sign(&*self.0, &message, "FIX THIS", Algorithm::default())
+        let proof_value = Sign::sign(&*self.0, &message, "FIX THIS", Algorithm::EdDSA)
             .await
             // FIX THIS
             .unwrap();
@@ -60,43 +60,52 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
             }
         }
 
-        {
-            let now = Timestamp::from_unix(0).unwrap();
+        let now = Timestamp::from_unix(0).unwrap();
+        
+        let managers = state.core_utils.managers.lock().await;
+        let subject = &managers.identity_manager.as_ref().and_then(|f| Some(f.subject.clone())).unwrap();
+        
+        let kid = "example".to_string(); // TODO:
+        // subject
+        //     .key_id(
+        //         "Jwk", // TODO: hardcode
+        //         jsonwebtoken::Algorithm::ES256, // TODO: hardcode
+        //     )
+        //     .await
+        //     .unwrap();
+            
+        let subjectwrapper = SubjectWrapper(subject.clone());
+        
+        let issuer_did = state.dids.get("did:jwk").unwrap(); // TODO: hardcode
+        
+        let sd_jwt_credential = SdJwtVcBuilder::new(self_issue_credential.data.clone().as_object().unwrap())
+            .unwrap()
+            .header(std::iter::once(("kid".to_string(), serde_json::Value::String(kid.clone()))).collect())
+            // FIX THIS
+            .vct("https://example.com/education_credential".parse::<Url>().unwrap())
+            .iat(now)
+            .iss(issuer_did.parse().unwrap())
+            .require_key_binding(identity_credential::sd_jwt_v2::RequiredKeyBinding::Kid(
+                // FIX THIS!: how to get the holder's kid or Jwk?
+                kid,
+            ))
+            // .make_concealable("/address/street_address")
+            // .unwrap()
+            // FIX THIS!
+            .finish::<SubjectWrapper>(&subjectwrapper, "ES256")
+            .await
+            .unwrap();
 
-            let managers = state.core_utils.managers.lock().await;
-            let subject = &managers.identity_manager.as_ref().and_then(|f| Some(f.subject.clone())).unwrap();
-            let kid = subject
-                .key_id(
-                    "Jwk", // TODO: hardcode
-                    jsonwebtoken::Algorithm::ES256, // TODO: hardcode
-                )
-                .await
-                .unwrap();
+        drop(managers);
+        
+        let signed_credential = json!(sd_jwt_credential.to_string());
 
-            let subjectwrapper = SubjectWrapper(subject.clone());
+        let vcr = VerifiableCredentialRecord::try_from(signed_credential).unwrap();
 
-            let issuer_did = "0"; //managers.identity_manager.as_ref().unwrap().subject.did.clone(); // TODO: hardcode
-
-            let sd_jwt_credential = SdJwtVcBuilder::new(self_issue_credential.data.clone())
-                .unwrap()
-                .header(std::iter::once(("kid".to_string(), serde_json::Value::String(kid.clone()))).collect())
-                // FIX THIS
-                .vct("https://example.com/education_credential".parse::<Url>().unwrap())
-                .iat(now)
-                .iss(issuer_did.parse().unwrap())
-                .require_key_binding(identity_credential::sd_jwt_v2::RequiredKeyBinding::Kid(
-                    // FIX THIS!: how to get the holder's kid or Jwk?
-                    kid,
-                ))
-                // .make_concealable("/address/street_address")
-                // .unwrap()
-                // FIX THIS!
-                .finish::<SubjectWrapper>(&subjectwrapper, "ES256")
-                .await
-                .unwrap();
-
-            json!(sd_jwt_credential.to_string());
-        }
+        let mut credentials = state.credentials.clone();
+        println!("before: {:?}", credentials);
+        credentials.push(vcr.display_credential); // TODO: this is unsorted
+        println!("\nafter: {:?}", credentials);
 
         let redirect_prompt = Some(CurrentUserPrompt::Redirect {
             target: "me".to_string(),
@@ -104,6 +113,7 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
 
         return Ok(AppState {
             current_user_prompt: redirect_prompt,
+            credentials,
             ..state
         });
     }
