@@ -58,8 +58,9 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
         match self_issue_credential._type {
             SelfIssuedCredentialType::Profile => {
                 let json_schema_path =
-                    // format! {"../../../../resources/{}_json_schema.json", self_issue_credential._type.to_string().to_lowercase()};
+                    // This path works for the test in unime/src-tauri/tests/tests/self_issue_credential.rs
                     format! {"../../identity-wallet/resources/{}_json_schema.json", self_issue_credential._type.to_string().to_lowercase()};
+                // format! {"../../../../resources/{}_json_schema.json", self_issue_credential._type.to_string().to_lowercase()};
 
                 info!(
                     "Validating payload credential against JsonSchema from path: {}",
@@ -69,8 +70,9 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
             }
             SelfIssuedCredentialType::Address => {
                 let json_schema_path =
+                    // This path works for the test in unime/src-tauri/tests/tests/self_issue_credential.rs
+                    format! {"../../identity-wallet/resources/{}_json_schema.json", self_issue_credential._type.to_string().to_lowercase()};
                 // format! {"../../../../resources/{}_json_schema.json", self_issue_credential._type.to_string().to_lowercase()};
-                format! {"../../identity-wallet/resources/{}_json_schema.json", self_issue_credential._type.to_string().to_lowercase()};
 
                 info!(
                     "Validating payload credential against JsonSchema from path: {}",
@@ -124,7 +126,7 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
         // Wrap subject with the SubjectWrapper to get the JwsSigner implementation
         let subjectwrapper = SubjectWrapper(subject.clone());
 
-        let now = Timestamp::from_unix(0).map_err(|_| AppError::Error("Failed to create a timestamp".to_string()))?;
+        let now = Timestamp::now_utc(); // TODO?: is this the right time notation?
 
         let credential_data = self_issue_credential.data.as_object().ok_or(AppError::Error(
             "Invalid action payload for the self_issue_credential.data field".to_string(),
@@ -152,14 +154,26 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
 
         let signed_credential = json!(sd_jwt_credential.to_string());
 
-        let vcr = VerifiableCredentialRecord::try_from(signed_credential).map_err(|_| {
+        // Create and populate the VerifiableCredentialRecord
+        let mut vcr = VerifiableCredentialRecord::try_from(signed_credential).map_err(|_| {
             AppError::Error("Failed to create a VerifiableCredentialRecord from self_issue_credential".to_string())
         })?;
 
+        vcr.display_credential.data = self_issue_credential.data;
+        vcr.display_credential.display_name = self_issue_credential._type.to_string();
+        vcr.display_credential.issuer_name = state
+            .profile_settings
+            .profile
+            .clone()
+            .ok_or(AppError::Error(
+                "No profile found to set the self-issued credential issuer name".to_string(),
+            ))?
+            .name;
+        vcr.display_credential.metadata.date_issued = now.to_string();
+
+        // TODO: add to stronghold
         let mut credentials = state.credentials.clone();
-        println!("before: {:?}", credentials);
         credentials.push(vcr.display_credential); // TODO: this is unsorted
-        println!("\nafter: {:?}", credentials);
 
         let redirect_prompt = Some(CurrentUserPrompt::Redirect {
             target: "me".to_string(),
@@ -176,9 +190,6 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
 }
 
 fn json_schema_validation(json_schema_path: String, data: serde_json::Value) -> Result<(), AppError> {
-    println!("Current dir: {:?}", std::env::current_dir().unwrap());
-    println!("Fetching JsonSchema from path: {}", json_schema_path);
-
     let json_schema_file = std::fs::File::open(json_schema_path.clone())
         .map_err(|_| AppError::Error("Failed to find or read from JsonSchema file".to_string()))?;
     let reader = std::io::BufReader::new(json_schema_file);
@@ -197,8 +208,7 @@ fn json_schema_validation(json_schema_path: String, data: serde_json::Value) -> 
             "The data is invalid according to the given JsonSchema: {:?}",
             errors
         )))
-    }
-    else {
+    } else {
         Ok(())
     }
 }

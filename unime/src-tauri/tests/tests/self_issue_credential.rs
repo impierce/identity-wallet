@@ -6,6 +6,7 @@ use identity_wallet::state::{
         actions::self_issue_credential::{SelfIssueCredential, SelfIssuedCredentialType},
         reducers::self_issue_credential::self_issue_credential,
     },
+    profile_settings::{Profile, ProfileSettings},
     AppState,
 };
 use jsonwebtoken::Algorithm;
@@ -20,6 +21,14 @@ async fn test() {
     let mut app_state = AppState {
         core_utils: CoreUtils {
             managers: test_managers(vec![]).await,
+            ..Default::default()
+        },
+        profile_settings: ProfileSettings {
+            profile: Some(Profile {
+                name: "John Doe".to_string(),
+                picture: Some("&#129408".to_string()),
+                ..Default::default()
+            }),
             ..Default::default()
         },
         ..AppState::default()
