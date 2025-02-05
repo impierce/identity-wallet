@@ -21,6 +21,8 @@ pub fn listen<T: ActionTrait + Clone>(action: Action) -> Option<T> {
     action.downcast_arc::<T>().ok().map(|action| (*action).clone())
 }
 
+// TODO: remove this once we have a better way to export the TS types.
+
 /// Below is an example of how to add an action to the app
 ///
 /// Example:
@@ -57,10 +59,7 @@ pub fn listen<T: ActionTrait + Clone>(action: Action) -> Option<T> {
 ///     Ok(state)
 /// }
 /// ```
-
-// TODO: remove this once we have a better way to export the TS types.
 mod bindings {
-
     use serde::{Deserialize, Serialize};
     use ts_rs::TS;
 
