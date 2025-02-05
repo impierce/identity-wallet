@@ -60,6 +60,7 @@ pub fn listen<T: ActionTrait + Clone>(action: Action) -> Option<T> {
 /// }
 /// ```
 mod bindings {
+
     use serde::{Deserialize, Serialize};
     use ts_rs::TS;
 
