@@ -56,7 +56,7 @@
             {$LL.ONBOARDING.TERMS.T_AND_C.TL_DR()}
           </p>
           <!-- acts as <hr> -->
-          <div class="my-2 h-px w-full bg-brand" />
+          <div class="my-2 h-px w-full bg-brand"></div>
           <p class="text-xs font-light">{$LL.ONBOARDING.TERMS.T_AND_C.FULL()}</p>
 
           <!-- First focusable element gets the focus (close button). This forces user to scroll through terms. -->

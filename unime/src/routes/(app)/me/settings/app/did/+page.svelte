@@ -74,9 +74,10 @@
               </div>
             {/if}
             {#if !method.did}
-              <button class="-mr-4 px-4 py-2 text-[13px]/[24px] font-medium text-primary disabled:text-slate-300">
+              <!-- TODO: Clean up. Button inside button not permitted. Changed to `div`. -->
+              <div class="-mr-4 px-4 py-2 text-[13px]/[24px] font-medium text-primary disabled:text-slate-300">
                 <span class="flex items-center">Set up</span>
-              </button>
+              </div>
             {/if}
           </div>
           {#if method.did}
