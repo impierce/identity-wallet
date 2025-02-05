@@ -1,17 +1,9 @@
 <script lang="ts">
-  import UniMeLogoDark from '$lib/static/svg/logo/UniMeLogoDark.svelte';
-  import UniMeLogoLight from '$lib/static/svg/logo/UniMeLogoLight.svelte';
-
-  // TODO: make reactive? necessary even on initial page load? (splashscreen is static)
-  const isDarkModeEnabled = document.documentElement.classList.contains('dark');
+  import UniMeLogo from '$lib/static/svg/logo/UniMeLogo.svelte';
 </script>
 
 <div class="content-height flex items-center justify-center bg-silver dark:bg-navy">
-  {#if isDarkModeEnabled}
-    <UniMeLogoDark />
-  {:else}
-    <UniMeLogoLight />
-  {/if}
+  <UniMeLogo class="text-blue dark:text-silver" />
 </div>
 
 <style>
