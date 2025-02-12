@@ -79,12 +79,21 @@
   </div>
   <!-- <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}> -->
   <div class="px-2 pb-8 pt-4">
-    <p class="pb-4 text-3xl font-semibold text-slate-700 dark:text-grey">
-      {"We've found your"} <span class="text-primary">{'recovery backups'}</span>
-    </p>
-    <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">
-      {'Choose a backup from below'}
-    </p>
+    {#if backups.length === 0}
+      <p class="pb-4 text-3xl font-semibold text-slate-700 dark:text-grey">
+        <span class="text-primary">{'Nothing '}</span>{'to see here'}
+      </p>
+      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">
+        {'UniMe was not able to find any existing backups'}
+      </p>
+    {:else}
+      <p class="pb-4 text-3xl font-semibold text-slate-700 dark:text-grey">
+        {"We've found your"} <span class="text-primary">{'recovery backups'}</span>
+      </p>
+      <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">
+        {'Choose a backup from below'}
+      </p>
+    {/if}
   </div>
   <!-- List -->
   <div class="space-y-3">

@@ -23,6 +23,7 @@ export { default as CheckBoldIcon } from '~icons/ph/check-bold';
 export { default as CheckCircleRegularIcon } from '~icons/ph/check-circle';
 export { default as CheckCircleFillIcon } from '~icons/ph/check-circle-fill';
 export { default as CircleRegularIcon } from '~icons/ph/circle';
+export { default as CloudArrowUpFillIcon } from '~icons/ph/cloud-arrow-up-fill';
 export { default as CloudFillIcon } from '~icons/ph/cloud-fill';
 export { default as CodeBoldIcon } from '~icons/ph/code-bold';
 export { default as CodeRegularIcon } from '~icons/ph/code';

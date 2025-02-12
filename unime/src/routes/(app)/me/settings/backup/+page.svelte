@@ -11,7 +11,7 @@
 
   import { ActionSheet, Button, SettingsEntry, Switch, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
-  import { CloudFillIcon, InfoRegularIcon } from '$lib/icons';
+  import { CloudArrowUpFillIcon, CloudFillIcon, InfoRegularIcon } from '$lib/icons';
   import { state } from '$lib/stores';
   import { formatDateTime } from '$lib/utils';
 
@@ -157,7 +157,7 @@
       to your backups.
     </div> -->
 
-    <SettingsEntry icon={CloudFillIcon} title={'Automatic cloud backups'} hasCaretRight={false}>
+    <SettingsEntry icon={CloudArrowUpFillIcon} title={'Automatic cloud backups'} hasCaretRight={false}>
       <!-- TODO: bug in <Switch />: does not rerender when `enabled` changes, now triggering manual rerender through {#key} -->
       {#key enabled}
         <Switch
