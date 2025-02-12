@@ -8,7 +8,12 @@
   const dispatch = createEventDispatcher();
 
   export let label: string;
-  export let trigger = undefined; // TODO: add type
+  // TODO: typing fixed by Claude. Melt UI triggers should not be passed as props but applied to HTML elements.
+  export let trigger:
+    | ({ readonly type: 'button' } & { [x: `data-melt-${string}`]: '' } & {
+        action: (node: HTMLElement) => { destroy?: (() => void) | undefined };
+      })
+    | undefined = undefined;
   export let disabled = false;
   export let loading = false;
   export let variant: 'primary' | 'secondary' = 'primary';

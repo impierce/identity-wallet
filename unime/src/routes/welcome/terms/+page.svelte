@@ -9,9 +9,12 @@
   import { XBoldIcon } from '$lib/icons';
 
   const {
-    elements: { trigger, overlay, content, title, description, close },
+    elements: { trigger, overlay, content, title, description, close, portalled },
     states: { open },
-  } = createDialog();
+  } = createDialog({
+    // Portal to root layout below `div` that sets class `dark` to ensure that dark mode works.
+    portal: '#portal',
+  });
 
   let checked_terms = false;
   let checked_ownership = false;
@@ -29,38 +32,12 @@
     </p>
   </div>
   <div class="mt-4 flex flex-col space-y-4">
-    <!-- TODO: feature disabled: "terms and conditions" -->
-    <!-- <div
-      class="flex items-center justify-between space-x-4 rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-600 dark:bg-dark"
-    >
-      <div class="grow">
-        <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">Data</p>
-        <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
-          I have read and accept the <span class="text-primary">terms and conditions</span>
-        </p>
-      </div>
-      <div>
-        <button
-          use:melt={$root}
-          class="flex h-6 w-6 appearance-none items-center justify-center
-            rounded-md border-[1.5px] border-slate-300 p-[6px] text-white dark:border-slate-600 dark:text-dark
-            {$isChecked ? 'border-none bg-primary' : 'bg-white dark:bg-dark'}"
-          id="checkbox"
-        >
-          {#if $isChecked}
-            <Check class="h-3 w-3" />
-          {/if}
-          <input use:melt={$input} />
-        </button>
-      </div>
-    </div> -->
-
     {#if $open}
-      <!-- TODO: when using "portalled", dark mode is not applied correctly -->
-      <!-- <div use:melt={$portalled}> -->
-      <div>
+      <div use:melt={$portalled}>
         <div use:melt={$overlay} class="fixed inset-0 z-50 bg-black/50" transition:fade={{ duration: 150 }} />
         <div
+          data-component="Modal"
+          use:melt={$content}
           class="fixed left-1/2 top-1/2 z-50 max-h-[85vh] w-[90vw]
             -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-xl
             bg-background p-6 shadow-lg"
@@ -68,9 +45,10 @@
             duration: 150,
             start: 0.96,
           }}
-          use:melt={$content}
         >
-          <h2 use:melt={$title} class="mb-4 text-lg font-bold">{$LL.ONBOARDING.TERMS.T_AND_C.DIALOG_TITLE()}</h2>
+          <h2 use:melt={$title} class="mb-4 text-lg font-bold">
+            {$LL.ONBOARDING.TERMS.T_AND_C.DIALOG_TITLE()}
+          </h2>
           <p class="mb-2 text-xs font-medium text-slate-500 dark:text-slate-300">
             {$LL.ONBOARDING.TERMS.T_AND_C.LAST_UPDATED()}
           </p>
@@ -80,6 +58,17 @@
           <!-- acts as <hr> -->
           <div class="my-2 h-px w-full bg-brand" />
           <p class="text-xs font-light">{$LL.ONBOARDING.TERMS.T_AND_C.FULL()}</p>
+
+          <!-- First focusable element gets the focus (close button). This forces user to scroll through terms. -->
+          <button
+            use:melt={$close}
+            aria-label="close"
+            class="text-magnum-800 hover:bg-magnum-100 focus:shadow-magnum-400 absolute right-4 top-4 inline-flex
+              h-6 w-6 appearance-none items-center justify-center
+              rounded-full p-1"
+          >
+            <XBoldIcon class="size-4" />
+          </button>
           <div class="mt-6 flex justify-end gap-4">
             <Button
               on:click={() => {
@@ -89,35 +78,15 @@
               trigger={$close}
               label={$LL.REJECT()}
             />
-
             <Button on:click={() => (checked_terms = true)} trigger={$close} label={$LL.ACCEPT()} />
-            <!-- <button
-              use:melt={$close}
-              class="bg-magnum-100 text-magnum-900 inline-flex h-8 items-center
-                    justify-center rounded-sm px-4 font-medium leading-none"
-            >
-              Save changes
-            </button> -->
           </div>
-          <button
-            use:melt={$close}
-            aria-label="close"
-            class="text-magnum-800 hover:bg-magnum-100 focus:shadow-magnum-400 absolute right-4 top-4 inline-flex
-                h-6 w-6 appearance-none items-center justify-center
-                rounded-full p-1"
-          >
-            <XBoldIcon class="size-4" />
-          </button>
         </div>
       </div>
     {/if}
 
-    <!-- Use button, not div, to enable focus. -->
     <button
+      data-component="Terms & Conditions"
       use:melt={$trigger}
-      on:click={() => {
-        // checked_terms = !checked_terms;
-      }}
       class="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-600 dark:bg-dark"
     >
       <div class="grow text-left">
@@ -129,13 +98,14 @@
         </p>
       </div>
       <div class="pl-4">
-        <!-- When toggling checkbox, click event bubbles up and is handled by button. -->
-        <Checkbox checked={checked_terms} />
+        <!-- The state of the checkbox is altered by the modal's buttons. -->
+        <Checkbox checked={checked_terms} readonly={true} />
       </div>
     </button>
 
     <!-- Use button, not div, to enable focus. -->
     <button
+      data-component="Data Ownership"
       on:click={() => {
         checked_ownership = !checked_ownership;
       }}
