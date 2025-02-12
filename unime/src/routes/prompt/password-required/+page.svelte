@@ -3,6 +3,7 @@
 
   import LL from '$i18n/i18n-svelte';
 
+  import { retrieve } from '@impierce/tauri-plugin-keystore';
   import { melt } from '@melt-ui/svelte';
   import { warn } from '@tauri-apps/plugin-log';
 
@@ -17,11 +18,12 @@
   let password: string;
 
   // TODO move to the backend
-  onMount(() => {
+  onMount(async () => {
     if ($state?.dev_mode === 'OnWithAutologin') {
+      password = (await retrieve('unime-dev', 'tester')) ?? '';
       warn('Developer mode - Injecting password automatically ...');
       setTimeout(() => {
-        dispatch({ type: '[Storage] Unlock', payload: { password: 'sup3rSecr3t' } });
+        dispatch({ type: '[Storage] Unlock', payload: { password } });
       }, 500);
     }
   });

@@ -8,6 +8,7 @@
     "barcode-scanner:allow-check-permissions",
     "barcode-scanner:allow-open-app-settings",
     "barcode-scanner:allow-request-permissions",
-    "barcode-scanner:allow-scan"
+    "barcode-scanner:allow-scan",
+    "biometric:default"
   ]
 }

@@ -41,6 +41,9 @@ importers:
       '@impierce/tauri-plugin-cloud-storage':
         specifier: file:../../../daniel-mader/plugins-workspace/plugins/tauri-plugin-cloud-storage
         version: tauri-plugin-cloud-storage-api@file:../../daniel-mader/plugins-workspace/plugins/tauri-plugin-cloud-storage
+      '@impierce/tauri-plugin-keystore':
+        specifier: file:../../tauri-plugin-keystore
+        version: tauri-plugin-keystore-api@file:../tauri-plugin-keystore
       '@lottiefiles/lottie-player':
         specifier: ^2.0.12
         version: 2.0.12
@@ -71,10 +74,16 @@ importers:
       '@tauri-apps/plugin-barcode-scanner':
         specifier: ^2.2.0
         version: 2.2.0
+      '@tauri-apps/plugin-biometric':
+        specifier: ^2.2.0
+        version: 2.2.0
       '@tauri-apps/plugin-fs':
         specifier: ^2.2.0
         version: 2.2.0
       '@tauri-apps/plugin-log':
+        specifier: ^2.2.0
+        version: 2.2.0
+      '@tauri-apps/plugin-os':
         specifier: ^2.2.0
         version: 2.2.0
       '@tauri-apps/plugin-shell':
@@ -770,11 +779,17 @@ packages:
   '@tauri-apps/plugin-barcode-scanner@2.2.0':
     resolution: {integrity: sha512-16AgAjNZGS790KXTW2oq7K0YKUCxLmlDlizN7+pBvIcZzdR3kYzHSST/CYSXkAkYRParyHmE2nMsMvqJFAHKbA==}
 
+  '@tauri-apps/plugin-biometric@2.2.0':
+    resolution: {integrity: sha512-bxetRUGNGIuH/zMMlZ1VuYG7B0pWA/GkNDyMKmajCC3T3AIgL+siyeorDw+lAcp9KDNnTZ8vSOlxiAcwdbWN4Q==}
+
   '@tauri-apps/plugin-fs@2.2.0':
     resolution: {integrity: sha512-+08mApuONKI8/sCNEZ6AR8vf5vI9DXD4YfrQ9NQmhRxYKMLVhRW164vdW5BSLmMpuevftpQ2FVoL9EFkfG9Z+g==}
 
   '@tauri-apps/plugin-log@2.2.0':
     resolution: {integrity: sha512-g6CsQAR1lsm5ABSZZxpM/iCn86GrMDTTlhj7GPkZkYBRSm3+WczfOAl7SV7HDn77tOKCzhZffwI5uHfRoHutrw==}
+
+  '@tauri-apps/plugin-os@2.2.0':
+    resolution: {integrity: sha512-HszbCdbisMlu5QhCNAN8YIWyz2v33abAWha6+uvV2CKX8P5VSct/y+kEe22JeyqrxCnWlQ3DRx7s49Byg7/0EA==}
 
   '@tauri-apps/plugin-shell@2.2.0':
     resolution: {integrity: sha512-iC3Ic1hLmasoboG7BO+7p+AriSoqAwKrIk+Hpk+S/bjTQdXqbl2GbdclghI4gM32X0bls7xHzIFqhRdrlvJeaA==}
@@ -2416,6 +2431,9 @@ packages:
   tauri-plugin-cloud-storage-api@file:../../daniel-mader/plugins-workspace/plugins/tauri-plugin-cloud-storage:
     resolution: {directory: ../../daniel-mader/plugins-workspace/plugins/tauri-plugin-cloud-storage, type: directory}
 
+  tauri-plugin-keystore-api@file:../tauri-plugin-keystore:
+    resolution: {directory: ../tauri-plugin-keystore, type: directory}
+
   test-exclude@7.0.1:
     resolution: {integrity: sha512-pFYqmTw68LXVjeWJMST4+borgQP2AyMNbg1BpZh9LbyhUeNkeaPF9gzfPGUAnSMV3qPYdWUwDIjjCLiSDOl7vg==}
     engines: {node: '>=18'}
@@ -3280,11 +3298,19 @@ snapshots:
     dependencies:
       '@tauri-apps/api': 2.2.0
 
+  '@tauri-apps/plugin-biometric@2.2.0':
+    dependencies:
+      '@tauri-apps/api': 2.2.0
+
   '@tauri-apps/plugin-fs@2.2.0':
     dependencies:
       '@tauri-apps/api': 2.2.0
 
   '@tauri-apps/plugin-log@2.2.0':
+    dependencies:
+      '@tauri-apps/api': 2.2.0
+
+  '@tauri-apps/plugin-os@2.2.0':
     dependencies:
       '@tauri-apps/api': 2.2.0
 
@@ -4971,6 +4997,10 @@ snapshots:
       - ts-node
 
   tauri-plugin-cloud-storage-api@file:../../daniel-mader/plugins-workspace/plugins/tauri-plugin-cloud-storage:
+    dependencies:
+      '@tauri-apps/api': 2.2.0
+
+  tauri-plugin-keystore-api@file:../tauri-plugin-keystore:
     dependencies:
       '@tauri-apps/api': 2.2.0
 

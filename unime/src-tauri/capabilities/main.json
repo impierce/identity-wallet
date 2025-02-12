@@ -17,6 +17,7 @@
     "fs:allow-appdata-read-recursive",
     "fs:allow-remove",
     "fs:allow-write-file",
+    "keystore:default",
     "barcode-scanner:default",
     "log:default",
     "shell:allow-open",
