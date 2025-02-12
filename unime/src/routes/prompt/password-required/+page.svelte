@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
+  import { PUBLIC_KEYSTORE_DISABLED } from '$env/static/public';
   import LL from '$i18n/i18n-svelte';
 
   import { retrieve } from '@impierce/tauri-plugin-keystore';
@@ -17,11 +18,18 @@
 
   let password: string;
 
+  const SERVICE = 'com.impierce.identity-wallet';
+  const USER = 'tester'; // TODO: rename to "ACCOUNT" to reflect Keychain Access item?
+
   // TODO move to the backend
   onMount(async () => {
     if ($state?.dev_mode === 'OnWithAutologin') {
-      password = (await retrieve('unime-dev', 'tester')) ?? '';
-      warn('Developer mode - Injecting password automatically ...');
+      if (PUBLIC_KEYSTORE_DISABLED === 'true') {
+        password = 'sup3rSecr3t';
+        warn('Developer mode - Injecting password automatically ...');
+      } else {
+        password = (await retrieve(SERVICE, USER)) ?? '';
+      }
       setTimeout(() => {
         dispatch({ type: '[Storage] Unlock', payload: { password } });
       }, 500);

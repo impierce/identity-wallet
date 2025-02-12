@@ -3,19 +3,23 @@
 
   import LL from '$i18n/i18n-svelte';
 
-  import { retrieve, store } from '@impierce/tauri-plugin-keystore';
+  import { remove, retrieve, store } from '@impierce/tauri-plugin-keystore';
   import { BiometryType, checkStatus, type Status } from '@tauri-apps/plugin-biometric';
   import { platform } from '@tauri-apps/plugin-os';
 
-  import { SettingsEntry, Switch, TopNavBar } from '$lib/components';
+  import { LoadingSpinner, SettingsEntry, Switch, TopNavBar } from '$lib/components';
   import { FingerprintFillIcon, PasswordFillIcon, ScanSmileyFillIcon } from '$lib/icons';
   import { state } from '$lib/stores';
+
+  const SERVICE = 'com.impierce.identity-wallet';
+  const USER = 'tester';
 
   let biometricsStatus: Status;
   let biometryTypeString: string;
   let enabled: boolean = false;
 
   let retrieved: string | null;
+  let loading: boolean = false;
 
   const checkBiometrics = async (): Promise<Status> => {
     return await checkStatus().catch((error) => {
@@ -30,12 +34,29 @@
 
   const enableBiometrics = async () => {
     // TODO: ask for the password first
-    console.log('response', await store('sup3rSecr3t'));
+    loading = true;
+    const password = 'sup3rSecr3t';
+    await store(password).then(() => {
+      // retrieved = password;
+    });
+    loading = false;
   };
 
   const _retrieve = async () => {
-    retrieved = await retrieve('unime-dev', 'tester');
+    loading = true;
+    retrieved = await retrieve(SERVICE, USER).catch((error) => {
+      return 'error';
+    });
     console.log('retrieved', retrieved);
+    loading = false;
+  };
+
+  const _remove = async () => {
+    loading = true;
+    await remove(SERVICE, USER).then(() => {
+      retrieved = null;
+    });
+    loading = false;
   };
 
   onMount(async () => {
@@ -92,6 +113,15 @@
       class="rounded-lg border border-amber-300 bg-amber-100 py-4 text-xs font-medium text-amber-600 shadow"
       on:click={_retrieve}>Retrieve from secure storage</button
     >
+  </div>
+  <button
+    class="mx-4 rounded-lg border border-sky-300 bg-sky-100 py-4 text-xs font-medium text-sky-600 shadow"
+    on:click={_remove}>Clear secure storage</button
+  >
+  <div class="m-4">
     <pre>retrieved: {retrieved}</pre>
+    {#if loading}
+      <LoadingSpinner />
+    {/if}
   </div>
 </div>
