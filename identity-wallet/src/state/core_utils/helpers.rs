@@ -1,5 +1,8 @@
 use crate::error::AppError;
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
+use jsonschema::ValidationError;
+use serde_json::Value;
+use std::fs::File;
 
 /// Get the claims from a JWT without performing validation.
 pub fn get_unverified_jwt_claims(jwt: &serde_json::Value) -> Result<serde_json::Value, AppError> {
@@ -12,6 +15,30 @@ pub fn get_unverified_jwt_claims(jwt: &serde_json::Value) -> Result<serde_json::
                 .and_then(|payload_bytes| serde_json::from_slice::<serde_json::Value>(&payload_bytes).ok())
         })
         .ok_or(AppError::Error("Failed to decode JWT claims".to_string()))
+}
+
+pub fn json_schema_validation(json_schema_path: String, data: serde_json::Value) -> Result<(), AppError> {
+    let json_schema_file = File::open(json_schema_path.clone())
+        .map_err(|_| AppError::Error("Failed to find or read from JsonSchema file".to_string()))?;
+    let reader = std::io::BufReader::new(json_schema_file);
+    let json_schema: Value = serde_json::from_reader(reader)
+        .map_err(|_| AppError::Error("Failed to convert JsonSchema &str to serde_json::Value".to_string()))?;
+
+    // Draft is detected automatically with fallback to Draft7
+    let schema = jsonschema::draft201909::new(&json_schema)
+        .map_err(|_| AppError::Error("Failed to compile JsonSchema from serde_json::Value".to_string()))?;
+
+    let result = schema.iter_errors(&data);
+
+    let errors: Vec<ValidationError> = result.collect();
+    if !errors.is_empty() {
+        Err(AppError::Error(format!(
+            "The data is invalid according to the given JsonSchema: {:?}",
+            errors
+        )))
+    } else {
+        Ok(())
+    }
 }
 
 pub struct DateUtils;
@@ -58,5 +85,19 @@ mod tests {
               }
             })
         );
+    }
+
+    #[test]
+    fn json_schema_validator_test() {
+      println!("Current directory: {:?}", std::env::current_dir());
+
+      let json_schema_path = "resources/obv3_jsonschema.json".to_string();
+
+      let file = File::open("resources/example_basic_obv3.json").unwrap();
+      let rdr = std::io::BufReader::new(file);
+      let data = serde_json::from_reader(rdr).unwrap();
+
+      let result = json_schema_validation(json_schema_path, data);
+      println!("{:?}", result);
     }
 }
