@@ -7,7 +7,7 @@
 
   export let checked = false;
   export let disabled = false;
-  /** With `readonly=true`, the checkbox state can only be changed from outside the component. */
+  // With `readonly=true`, the checkbox state can only be changed from outside the component.
   export let readonly = false;
 
   const dispatch = createEventDispatcher();

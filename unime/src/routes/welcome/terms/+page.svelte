@@ -12,7 +12,7 @@
     elements: { trigger, overlay, content, title, description, close, portalled },
     states: { open },
   } = createDialog({
-    // Portal to root layout below `div` that sets class `dark` to ensure that dark mode works.
+    // Portal to root layout inside the `div` that sets the `dark` class. This ensures that dark mode works.
     portal: '#portal',
   });
 
@@ -63,11 +63,9 @@
           <button
             use:melt={$close}
             aria-label="close"
-            class="text-magnum-800 hover:bg-magnum-100 focus:shadow-magnum-400 absolute right-4 top-4 inline-flex
-              h-6 w-6 appearance-none items-center justify-center
-              rounded-full p-1"
+            class="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full border border-slate-200 bg-white p-1"
           >
-            <XBoldIcon class="size-4" />
+            <XBoldIcon class="size-5" />
           </button>
           <div class="mt-6 flex justify-end gap-4">
             <Button
