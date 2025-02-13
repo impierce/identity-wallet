@@ -63,7 +63,7 @@
           <button
             use:melt={$close}
             aria-label="close"
-            class="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full border border-slate-200 bg-white p-1"
+            class="absolute right-2 top-2 flex size-7 items-center justify-center rounded-full border border-slate-200 bg-white p-1 dark:border-slate-600 dark:bg-dark"
           >
             <XBoldIcon class="size-5" />
           </button>
