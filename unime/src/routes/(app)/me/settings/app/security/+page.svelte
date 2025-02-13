@@ -10,6 +10,7 @@
   import { LoadingSpinner, SettingsEntry, Switch, TopNavBar } from '$lib/components';
   import { FingerprintFillIcon, PasswordFillIcon, ScanSmileyFillIcon } from '$lib/icons';
   import { state } from '$lib/stores';
+  import { biometricsTypeString } from '$lib/utils';
 
   const SERVICE = 'com.impierce.identity-wallet';
   const USER = 'tester';
@@ -62,31 +63,7 @@
   onMount(async () => {
     biometricsStatus = await checkBiometrics();
     biometryTypeString = 'Biometrics';
-    // On iOS, we distinguish between Face ID and Touch ID.
-    if (platform() === 'ios') {
-      switch (biometricsStatus.biometryType) {
-        case BiometryType.TouchID:
-          biometryTypeString = 'Touch ID';
-          break;
-        case BiometryType.FaceID:
-          biometryTypeString = 'Face ID';
-          break;
-        default:
-          biometryTypeString = 'Biometrics';
-      }
-      // On Android, we distinguish between fingerprint and face unlock.
-    } else if (platform() === 'android') {
-      switch (biometricsStatus.biometryType) {
-        case BiometryType.TouchID:
-          biometryTypeString = 'Fingerprint';
-          break;
-        case BiometryType.FaceID:
-          biometryTypeString = 'Face Unlock';
-          break;
-        default:
-          biometryTypeString = 'Biometrics';
-      }
-    }
+    biometryTypeString = biometricsTypeString(biometricsStatus.biometryType);
   });
 </script>
 

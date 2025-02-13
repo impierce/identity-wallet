@@ -5,9 +5,20 @@
   import LL from '$i18n/i18n-svelte';
   import { fade } from 'svelte/transition';
 
-  import { Button, TopNavBar } from '$lib/components';
-  import { EyeClosedRegularIcon, EyeRegularIcon, SmileyRegularIcon, SmileySadRegularIcon } from '$lib/icons';
+  import { store } from '@impierce/tauri-plugin-keystore';
+  import { BiometryType, checkStatus, type Status } from '@tauri-apps/plugin-biometric';
+
+  import { ActionSheet, Button, TopNavBar } from '$lib/components';
+  import {
+    EyeClosedRegularIcon,
+    EyeRegularIcon,
+    FingerprintLightIcon,
+    ScanSmileyLightIcon,
+    SmileyRegularIcon,
+    SmileySadRegularIcon,
+  } from '$lib/icons';
   import { onboarding_state } from '$lib/stores';
+  import { biometricsTypeString } from '$lib/utils';
 
   // 3 states: true (match), false (mismatch), undefined (not checked yet).
   let passwordsMatch: boolean | undefined = undefined;
@@ -21,8 +32,19 @@
   // Tracks whether the user has interacted with the input element. This allows to suppress the validation message only on first try.
   let touched = false;
 
-  onMount(() => {
+  let biometricsStatus: Status;
+  let biometricsName: string;
+
+  const enableBiometrics = async () => {
+    await store($onboarding_state.password!!).then(() => {
+      goto('/welcome/completed');
+    });
+  };
+
+  onMount(async () => {
     inputElement.focus();
+    biometricsStatus = await checkStatus().catch(() => ({ isAvailable: false, biometryType: BiometryType.None }));
+    biometricsName = biometricsTypeString(biometricsStatus.biometryType);
   });
 </script>
 
@@ -102,5 +124,25 @@
 </div>
 
 <div class="rounded-t-3xl bg-white p-6 dark:bg-dark" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
-  <Button label={$LL.CONTINUE()} on:click={() => goto('/welcome/completed')} disabled={!passwordsMatch} />
+  {#if biometricsStatus?.isAvailable}
+    <ActionSheet
+      titleText={`Enable ${biometricsName}`}
+      descriptionText={`Do you want to set up ${biometricsName} to unlock the app?`}
+    >
+      <Button slot="trigger" let:trigger {trigger} label={$LL.CONTINUE()} disabled={!passwordsMatch} />
+      <div slot="icon" class="mb-2">
+        {#if biometricsStatus.biometryType === BiometryType.FaceID || biometricsStatus.biometryType === BiometryType.Iris}
+          <ScanSmileyLightIcon class="size-14 text-primary" />
+        {:else}
+          <FingerprintLightIcon class="size-12 text-primary" />
+        {/if}
+      </div>
+      <div slot="content" class="flex w-full flex-col space-y-[10px] pt-[20px]">
+        <Button label={`Yes, use ${biometricsName}`} on:click={enableBiometrics} />
+        <Button variant="secondary" label={'Decide later'} on:click={() => goto('/welcome/completed')} />
+      </div>
+    </ActionSheet>
+  {:else}
+    <Button label={$LL.CONTINUE()} on:click={() => goto('/welcome/completed')} disabled={!passwordsMatch} />
+  {/if}
 </div>
