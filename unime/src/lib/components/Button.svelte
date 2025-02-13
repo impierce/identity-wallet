@@ -9,7 +9,7 @@
 
   export let label: string;
   // Typing is a workaround to make svelte-check errors go away.
-  // TODO:Melt UI triggers should not be passed as props but applied to HTML elements.
+  // TODO: Melt UI triggers should not be passed as props but applied to HTML elements.
   export let trigger:
     | ({ readonly type: 'button' } & { [x: `data-melt-${string}`]: '' } & {
         action: (node: HTMLElement) => { destroy?: (() => void) | undefined };
