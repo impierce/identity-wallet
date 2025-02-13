@@ -54,7 +54,7 @@
             type="text"
             class="h-12 grow rounded-xl border border-slate-200 px-3 text-[13px]/[24px] text-teal disabled:text-slate-400 disabled:opacity-60 dark:border-slate-600 dark:bg-dark"
             value={trustList?.display_name}
-            on:input={(e) => (updatedListName = e.target.value)}
+            on:input={(e: Event) => (updatedListName = (e.target as HTMLInputElement).value)}
           />
           <div class="ml-2 w-[88px]">
             <Button
@@ -81,7 +81,7 @@
             type="text"
             class="h-12 grow rounded-xl border border-slate-200 px-3 text-[13px]/[24px] text-teal disabled:text-slate-400 disabled:opacity-60 dark:border-slate-600 dark:bg-dark"
             value={domains[i]}
-            on:input={(e) => (domains[i] = e.target.value)}
+            on:input={(e: Event) => (domains[i] = (e.target as HTMLInputElement).value)}
             disabled={!active}
           />
           {#if domains[i] !== domain}

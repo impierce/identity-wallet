@@ -17,7 +17,7 @@
   let journeyDefinition = $state?.user_journey;
 
   let goals: Goal[] =
-    journeyDefinition?.goals.map((goal) => ({
+    journeyDefinition?.goals.map((goal: Goal) => ({
       ...goal,
       completed: true, // TODO: should be determined by the backend
     })) ?? [];

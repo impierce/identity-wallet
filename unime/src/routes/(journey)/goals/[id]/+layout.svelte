@@ -6,7 +6,7 @@
 
   import type { Goal } from '../types';
 
-  let goal: Goal = $state?.user_journey?.goals.find((g) => g.id === parseInt($page.params.id));
+  let goal: Goal = $state?.user_journey?.goals.find((g: Goal) => g.id === parseInt($page.params.id));
 </script>
 
 <TopNavBar on:back={() => history.back()} title={goal.label}>
