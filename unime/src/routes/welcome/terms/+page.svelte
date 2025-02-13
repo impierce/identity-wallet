@@ -34,7 +34,7 @@
   <div class="mt-4 flex flex-col space-y-4">
     {#if $open}
       <div use:melt={$portalled}>
-        <div use:melt={$overlay} class="fixed inset-0 z-50 bg-black/50" transition:fade={{ duration: 150 }} />
+        <div use:melt={$overlay} class="fixed inset-0 z-50 bg-black/50" transition:fade={{ duration: 150 }}></div>
         <div
           data-component="Modal"
           use:melt={$content}
