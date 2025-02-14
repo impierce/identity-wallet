@@ -74,8 +74,8 @@ mod bindings {
         dev_mode::actions::dev_profile::DevProfile,
         did::actions::{set_preferred_keytype::SetPreferredKeyType, set_preferred_method::SetPreferredDidMethod},
         profile_settings::actions::{
-            create_new::CreateNew, set_locale::SetLocale, update_profile_settings::UpdateProfileSettings,
-            update_sorting_preference::UpdateSortingPreference,
+            create_new::CreateNew, enable_biometrics::EnableBiometrics, set_locale::SetLocale,
+            update_profile_settings::UpdateProfileSettings, update_sorting_preference::UpdateSortingPreference,
         },
         qr_code::actions::qrcode_scanned::QrCodeScanned,
         search::actions::{
@@ -155,5 +155,7 @@ mod bindings {
         TrustListsDelete { payload: DeleteTrustList },
         #[serde(rename = "[Backup] Create")]
         CreateBackup { payload: CreateBackup },
+        #[serde(rename = "[Biometrics] Enable")]
+        EnableBiometrics { payload: EnableBiometrics },
     }
 }

@@ -90,6 +90,10 @@ cargo clippy
 cargo test
 ```
 
+### Generate TypeScript bindings
+
+In order to regenerate the TypeScript bindings in `identity-wallet/bindings` after making changes to actions or reducers, you can simply execute all Rust tests by running `cargo test` from within the `/identity-wallet` folder.
+
 ### VS Code support
 
 Recommended extensions are listed in `.vscode/extensions.json`.

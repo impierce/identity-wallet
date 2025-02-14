@@ -5,25 +5,61 @@
 
   import { remove, retrieve, store } from '@impierce/tauri-plugin-keystore';
   import { BiometryType, checkStatus, type Status } from '@tauri-apps/plugin-biometric';
-  import { platform } from '@tauri-apps/plugin-os';
 
-  import { LoadingSpinner, SettingsEntry, Switch, TopNavBar } from '$lib/components';
+  import { SettingsEntry, Switch, TopNavBar } from '$lib/components';
+  import { dispatch } from '$lib/dispatcher';
   import { FingerprintFillIcon, PasswordFillIcon, ScanSmileyFillIcon } from '$lib/icons';
-  import { state } from '$lib/stores';
+  import { error as errorState, state } from '$lib/stores';
   import { biometricsTypeString } from '$lib/utils';
 
   const SERVICE = 'com.impierce.identity-wallet';
-  const USER = 'tester';
+  const USER = 'tester'; // TODO: rename to "ACCOUNT" to reflect Keychain Access item?
 
   let biometricsStatus: Status;
-  let biometryTypeString: string;
-  let enabled: boolean = false;
+  let biometryTypeString: string = 'biometrics';
+  let enabled: boolean = $state.profile_settings.biometrics_enabled;
 
+  // TODO: remove (during development only)
   let retrieved: string | null;
-  let loading: boolean = false;
 
-  const checkBiometrics = async (): Promise<Status> => {
-    return await checkStatus().catch((error) => {
+  const toggleBiometrics = async () => {
+    console.log('toggleBiometrics, current: ', enabled);
+    if (enabled) {
+      await _remove();
+    } else {
+      // TODO: ask for the password first
+      const password = 'sup3rSecr3t';
+      await store(password)
+        .then(async () => {
+          await dispatch({ type: '[Biometrics] Enable', payload: { enable: true } });
+        })
+        .catch((error) => {
+          console.warn(error);
+          errorState.set(error);
+        });
+    }
+  };
+
+  const _retrieve = async () => {
+    retrieved = await retrieve(SERVICE, USER).catch((error) => {
+      return 'retrieve: error';
+    });
+    console.log('retrieved', retrieved);
+  };
+
+  const _remove = async () => {
+    await remove(SERVICE, USER)
+      .then(async () => {
+        retrieved = null;
+        await dispatch({ type: '[Biometrics] Enable', payload: { enable: false } });
+      })
+      .catch(async (error) => {
+        retrieved = 'remove: error';
+      });
+  };
+
+  onMount(async () => {
+    biometricsStatus = await checkStatus().catch((error) => {
       console.warn(error);
       return {
         isAvailable: false,
@@ -31,38 +67,7 @@
         error: error,
       };
     });
-  };
-
-  const enableBiometrics = async () => {
-    // TODO: ask for the password first
-    loading = true;
-    const password = 'sup3rSecr3t';
-    await store(password).then(() => {
-      // retrieved = password;
-    });
-    loading = false;
-  };
-
-  const _retrieve = async () => {
-    loading = true;
-    retrieved = await retrieve(SERVICE, USER).catch((error) => {
-      return 'error';
-    });
-    console.log('retrieved', retrieved);
-    loading = false;
-  };
-
-  const _remove = async () => {
-    loading = true;
-    await remove(SERVICE, USER).then(() => {
-      retrieved = null;
-    });
-    loading = false;
-  };
-
-  onMount(async () => {
-    biometricsStatus = await checkBiometrics();
-    biometryTypeString = 'Biometrics';
+    // Determine human-readable name for biometrics type (with respect to the device platform)
     biometryTypeString = biometricsTypeString(biometricsStatus.biometryType);
   });
 </script>
@@ -77,28 +82,26 @@
         title={`Unlock with ${biometryTypeString}`}
         hasCaretRight={false}
       >
-        <Switch active={enabled} on:change={enableBiometrics} />
+        <Switch active={enabled} on:change={toggleBiometrics} />
       </SettingsEntry>
-      {#if biometricsStatus.error && $state.dev_mode !== 'Off'}
+      <!-- {#if biometricsStatus.error && $state.dev_mode !== 'Off'}
         <div class="h-12 rounded-lg bg-rose-50 py-4 text-center text-xs font-medium text-rose-500">
           Biometrics are not available.
         </div>
-      {/if}
+      {/if} -->
     {/if}
     <SettingsEntry icon={PasswordFillIcon} title={'Change password'} disabled />
+  </div>
+  <!-- TODO: dev -->
+  <div class="m-8 flex flex-col space-y-4">
     <button
       class="rounded-lg border border-amber-300 bg-amber-100 py-4 text-xs font-medium text-amber-600 shadow"
       on:click={_retrieve}>Retrieve from secure storage</button
     >
-  </div>
-  <button
-    class="mx-4 rounded-lg border border-sky-300 bg-sky-100 py-4 text-xs font-medium text-sky-600 shadow"
-    on:click={_remove}>Clear secure storage</button
-  >
-  <div class="m-4">
-    <pre>retrieved: {retrieved}</pre>
-    {#if loading}
-      <LoadingSpinner />
-    {/if}
+    <button
+      class="rounded-lg border border-sky-300 bg-sky-100 py-4 text-xs font-medium text-sky-600 shadow"
+      on:click={_remove}>Clear secure storage</button
+    >
+    <pre class="text-sm">value: {retrieved}</pre>
   </div>
 </div>

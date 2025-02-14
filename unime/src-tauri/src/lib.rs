@@ -19,6 +19,7 @@ pub fn run() {
             {
                 app.handle().plugin(tauri_plugin_barcode_scanner::init())?;
                 app.handle().plugin(tauri_plugin_biometric::init())?;
+                app.handle().plugin(tauri_plugin_keystore::init())?;
             }
             Ok(())
         })
@@ -43,7 +44,6 @@ pub fn run() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_cloud_storage::init())
-        .plugin(tauri_plugin_keystore::init())
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
