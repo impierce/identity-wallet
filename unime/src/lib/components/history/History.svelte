@@ -2,7 +2,7 @@
   import type { Component } from 'svelte';
 
   import LL from '$i18n/i18n-svelte';
-  import type { SvelteHTMLElements, SVGAttributes } from 'svelte/elements';
+  import type { SVGAttributes } from 'svelte/elements';
 
   import type { HistoryCredential } from '@bindings/history/HistoryCredential';
   import type { HistoryEvent } from '@bindings/history/HistoryEvent';

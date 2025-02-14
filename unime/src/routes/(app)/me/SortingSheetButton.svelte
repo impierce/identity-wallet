@@ -6,7 +6,7 @@
   import type { CredentialSortMethod } from '@bindings/profile_settings/CredentialSortMethod';
 
   export let method: CredentialSortMethod;
-  export let icon: Component<any>;
+  export let icon: Component;
   export let label: string;
   export let active = false;
   export let reversed: boolean;

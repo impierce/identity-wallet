@@ -11,14 +11,6 @@
   import { error, state } from '$lib/stores';
   import { hash } from '$lib/utils';
 
-  import CredentialHeader from '../../credentials/[id]/CredentialHeader.svelte';
-
-  // TODO: generate binding in core
-  interface CredentialConfiguration {
-    display: object[];
-    credential_definition: object;
-  }
-
   // TypeScript does not know that the `current_user_prompt` is of type `credential-offer`.
   // Extract the type from `CurrentUserPrompt`.
   type IsCredentialOfferPrompt<T> = T extends { type: 'credential-offer' } ? T : never;
