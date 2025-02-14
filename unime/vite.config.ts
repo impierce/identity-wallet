@@ -52,6 +52,7 @@ const viteConfig = defineConfig({
   },
 });
 
+// TODO: Refactored by AI to fix TS errors (Claude 3.5 Sonnet).
 const vitestConfig = defineVitestConfig({
   test: {
     include: ['src/**/*.{test,spec}.{js,ts}'],

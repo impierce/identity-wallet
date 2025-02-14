@@ -22,6 +22,7 @@
       completed: true, // TODO: should be determined by the backend
     })) ?? [];
 
+  // `goals.at(2)` might be undefined.
   const thirdGoal = goals.at(2);
   if (thirdGoal) {
     thirdGoal.completed = false;
