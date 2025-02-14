@@ -1,21 +1,13 @@
 import { internalIpV4 } from 'internal-ip';
 import Icons from 'unplugin-icons/vite';
-import { defineConfig } from 'vite';
+import { defineConfig, mergeConfig } from 'vite';
+import { defineConfig as defineVitestConfig } from 'vitest/config';
 
 import { sveltekit } from '@sveltejs/kit/vite';
 
 // https://vitejs.dev/config/
-export default defineConfig({
+const viteConfig = defineConfig({
   plugins: [sveltekit(), Icons({ compiler: 'svelte' })],
-  test: {
-    include: ['src/**/*.{test,spec}.{js,ts}'],
-    globals: true,
-    environment: 'jsdom',
-    coverage: {
-      include: ['src/**'],
-      exclude: ['src/i18n/**'],
-    },
-  },
   clearScreen: false,
   server: {
     host: '0.0.0.0',
@@ -59,3 +51,17 @@ export default defineConfig({
     ],
   },
 });
+
+const vitestConfig = defineVitestConfig({
+  test: {
+    include: ['src/**/*.{test,spec}.{js,ts}'],
+    globals: true,
+    environment: 'jsdom',
+    coverage: {
+      include: ['src/**'],
+      exclude: ['src/i18n/**'],
+    },
+  },
+});
+
+export default mergeConfig(viteConfig, vitestConfig);
