@@ -37,6 +37,7 @@ mod tests {
     use std::sync::Arc;
 
     #[tokio::test]
+    #[serial_test::serial]
     async fn test_trust_list_add() {
         let state = AppState::default();
 

@@ -77,6 +77,7 @@ mod tests {
     }
 
     #[tokio::test]
+    #[serial_test::serial]
     async fn test_search_query() {
         let mut app_state = app_state();
 

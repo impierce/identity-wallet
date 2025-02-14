@@ -694,6 +694,7 @@ mod tests {
     }
 
     #[tokio::test]
+    #[serial_test::serial]
     async fn validate_linked_verifiable_presentations_successfully_validates_multiple_presentations() {
         let mut holder = TestEntity::new().await;
 
@@ -785,6 +786,7 @@ mod tests {
     }
 
     #[tokio::test]
+    #[serial_test::serial]
     async fn validate_linked_verifiable_presentations_successfully_considers_missing_issuer_domain_linkage() {
         let mut holder = TestEntity::new().await;
 
@@ -831,6 +833,7 @@ mod tests {
     }
 
     #[tokio::test]
+    #[serial_test::serial]
     async fn get_linked_verifiable_presentation_urls_successfully_retrieves_urls() {
         let mut holder = TestEntity::new().await;
 
@@ -872,6 +875,7 @@ mod tests {
     }
 
     #[tokio::test]
+    #[serial_test::serial]
     async fn get_validated_linked_credential_data_succesfully_returns_linked_verifiable_credential_data() {
         let mut issuer = TestEntity::new().await;
 
@@ -929,6 +933,7 @@ mod tests {
     }
 
     #[tokio::test]
+    #[serial_test::serial]
     async fn get_validated_linked_domains_returns_only_succesfully_validated_linked_domains() {
         let mut issuer1 = TestEntity::new().await;
 

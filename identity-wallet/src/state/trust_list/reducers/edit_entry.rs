@@ -47,6 +47,7 @@ mod tests {
     use std::{collections::HashMap, sync::Arc};
 
     #[tokio::test]
+    #[serial_test::serial]
     async fn test_edit_trust_list_entry() {
         let mut state = AppState::default();
         let default_trust_list = TrustList {

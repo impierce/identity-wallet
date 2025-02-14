@@ -215,6 +215,7 @@ mod tests {
     const LINKED_DID_JWT: &str = "eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDprZXk6ejZNa29USHNnTk5yYnk4SnpDTlExaVJMeVc1UVE2UjhYdXU2QUE4aWdHck1WUFVNI3o2TWtvVEhzZ05OcmJ5OEp6Q05RMWlSTHlXNVFRNlI4WHV1NkFBOGlnR3JNVlBVTSJ9.eyJleHAiOjE3NjQ4NzkxMzksImlzcyI6ImRpZDprZXk6ejZNa29USHNnTk5yYnk4SnpDTlExaVJMeVc1UVE2UjhYdXU2QUE4aWdHck1WUFVNIiwibmJmIjoxNjA3MTEyNzM5LCJzdWIiOiJkaWQ6a2V5Ono2TWtvVEhzZ05OcmJ5OEp6Q05RMWlSTHlXNVFRNlI4WHV1NkFBOGlnR3JNVlBVTSIsInZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIiwiaHR0cHM6Ly9pZGVudGl0eS5mb3VuZGF0aW9uLy53ZWxsLWtub3duL2RpZC1jb25maWd1cmF0aW9uL3YxIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkIjoiZGlkOmtleTp6Nk1rb1RIc2dOTnJieThKekNOUTFpUkx5VzVRUTZSOFh1dTZBQThpZ0dyTVZQVU0iLCJvcmlnaW4iOiJpZGVudGl0eS5mb3VuZGF0aW9uIn0sImV4cGlyYXRpb25EYXRlIjoiMjAyNS0xMi0wNFQxNDoxMjoxOS0wNjowMCIsImlzc3VhbmNlRGF0ZSI6IjIwMjAtMTItMDRUMTQ6MTI6MTktMDY6MDAiLCJpc3N1ZXIiOiJkaWQ6a2V5Ono2TWtvVEhzZ05OcmJ5OEp6Q05RMWlSTHlXNVFRNlI4WHV1NkFBOGlnR3JNVlBVTSIsInR5cGUiOlsiVmVyaWZpYWJsZUNyZWRlbnRpYWwiLCJEb21haW5MaW5rYWdlQ3JlZGVudGlhbCJdfX0.aUFNReA4R5rcX_oYm3sPXqWtso_gjPHnWZsB6pWcGv6m3K8-4JIAvFov3ZTM8HxPOrOL17Qf4vBFdY9oK0HeCQ";
 
     #[tokio::test]
+    #[serial_test::serial]
     async fn when_no_well_known_then_return_validation_status_unknown() {
         let mock_server = MockServer::start().await;
 
@@ -225,6 +226,7 @@ mod tests {
     }
 
     #[tokio::test]
+    #[serial_test::serial]
     async fn when_well_known_only_contains_json_ld_credential_then_return_unknown() {
         let mock_server = MockServer::start().await;
 
@@ -258,6 +260,7 @@ mod tests {
     }
 
     #[tokio::test]
+    #[serial_test::serial]
     async fn when_well_known_contains_json_ld_and_jwt_then_remove_json_ld_during_fetch() {
         // Mocking a `DomainLinkageCredential` in a local test is difficult since the `mock_server` does not have an actual domain.
         // We thereby only test if `fetch_configuration()` builds a `DomainLinkageConfiguration` that could be verified.
@@ -285,6 +288,7 @@ mod tests {
     }
 
     #[tokio::test]
+    #[serial_test::serial]
     async fn when_well_known_contains_unexpected_did_then_return_failure() {
         let mock_server = MockServer::start().await;
 
@@ -319,6 +323,7 @@ mod tests {
     }
 
     #[tokio::test]
+    #[serial_test::serial]
     async fn successfully_ignores_url_parts_other_than_origin() {
         let mock_server = MockServer::start().await;
 
