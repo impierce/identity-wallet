@@ -420,6 +420,10 @@ By using our Service, you acknowledge that you have read, understood, and agree 
   SKIP: 'Skip',
   ACCEPT: 'Accept',
   REJECT: 'Reject',
+  GETTING_STARTED: {
+    SKIP_TITLE: 'Skip Getting Started',
+    SKIP_TEXT: 'Are you sure you want to skip the getting started guide?',
+  },
 } satisfies BaseTranslation;
 
 export default en;

@@ -404,6 +404,10 @@ Door onze Service te gebruiken, erken je dat je deze Voorwaarden heeft gelezen, 
   SKIP: 'Overslaan',
   ACCEPT: 'Accepteren',
   REJECT: 'Weigeren',
+  GETTING_STARTED: {
+    SKIP_TITLE: 'Introductie overslaan',
+    SKIP_TEXT: 'Weet je zeker dat je de introductie wilt overslaan?',
+  },
 } satisfies Translation;
 
 export default nl;

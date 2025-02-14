@@ -60,10 +60,12 @@
             <Button
               label="Save"
               on:click={() => {
-                dispatch({
-                  type: '[Trust Lists] Edit',
-                  payload: { trust_list_id: $page.params.id, new_display_name: updatedListName },
-                });
+                if (updatedListName) {
+                  dispatch({
+                    type: '[Trust Lists] Edit',
+                    payload: { trust_list_id: $page.params.id, new_display_name: updatedListName },
+                  });
+                }
               }}
               disabled={updatedListName === trustList?.display_name}
             />

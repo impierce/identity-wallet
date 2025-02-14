@@ -3,12 +3,12 @@
 
   import { CaretRightBoldIcon, CheckCircleRegularIcon } from '$lib/icons';
 
-  import { icons } from './icons';
+  import { icons, type Icon } from './icons';
 
   export let trigger;
   export let label: string;
   export let completed: boolean;
-  export let icon = 'Trophy';
+  export let icon: Icon = 'Trophy';
 </script>
 
 <button

@@ -49,7 +49,7 @@ describe('Image', () => {
           return Promise.resolve(true);
         default:
           console.warn(`No mock provided for: ${cmd}`);
-          break;
+          return Promise.resolve(undefined as any);
       }
     });
 
@@ -117,6 +117,7 @@ describe('Image', () => {
       if (cmd === 'plugin:fs|exists') {
         return Promise.resolve(false);
       }
+      return Promise.resolve(undefined as any);
     });
 
     const { container } = render(Image, { id });

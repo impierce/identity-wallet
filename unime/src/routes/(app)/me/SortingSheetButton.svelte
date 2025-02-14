@@ -2,12 +2,11 @@
   import { createEventDispatcher, type Component } from 'svelte';
 
   import LL from '$i18n/i18n-svelte';
-  import type { SVGAttributes } from 'svelte/elements';
 
   import type { CredentialSortMethod } from '@bindings/profile_settings/CredentialSortMethod';
 
   export let method: CredentialSortMethod;
-  export let icon: Component<SVGAttributes<SVGSVGElement>>;
+  export let icon: Component<any>;
   export let label: string;
   export let active = false;
   export let reversed: boolean;
