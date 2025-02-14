@@ -37,6 +37,7 @@
 
   const enableBiometrics = async () => {
     await store($onboarding_state.password!!).then(() => {
+      $onboarding_state.biometrics_enabled = true;
       goto('/welcome/completed');
     });
   };
