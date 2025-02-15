@@ -146,7 +146,7 @@ async fn fetch_configuration(mut url: url::Url) -> Result<DomainLinkageConfigura
     // 2. Fetch the resource
     let response = reqwest::get(url.clone())
         .await
-        .map_err(|_| format!("failed to get response from resource url: {}", url))?;
+        .map_err(|err| format!("failed to get response from resource url: {}, err: {err}", url))?;
 
     // 3. Parse to JSON value (mutable)
     let mut json = response
