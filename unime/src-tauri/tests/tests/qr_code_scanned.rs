@@ -1,9 +1,13 @@
+use std::sync::Arc;
+
 use crate::common::json_example;
 use crate::common::{
     assert_state_update::{assert_state_update, setup_state_file},
     test_managers,
 };
+use identity_wallet::state::actions::ActionTrait;
 use identity_wallet::state::profile_settings::AppTheme;
+use identity_wallet::state::user_prompt::CurrentUserPrompt;
 use identity_wallet::state::{
     actions::Action,
     core_utils::CoreUtils,
@@ -14,6 +18,8 @@ use identity_wallet::state::{
 
 use serde_json::json;
 use tokio::sync::Mutex;
+use wiremock::matchers::{method, path};
+use wiremock::{Mock, MockServer, ResponseTemplate};
 
 #[tokio::test]
 #[serial_test::serial]
@@ -27,10 +33,38 @@ async fn test_qr_code_scanned_handle_siopv2_authorization_request() {
         theme: AppTheme::System,
     });
 
+    // Start a mock server to respond to the domain linkage request.
+    let mock_server = MockServer::start().await;
+    Mock::given(method("GET"))
+        .and(path("/.well-known/foobar"))
+        .respond_with(ResponseTemplate::new(200).set_body_json(json!({ "foo": "bar" })))
+        .mount(&mock_server)
+        .await;
+
     // Deserializing the Appstates and Actions from the accompanying json files.
-    let state1 = json_example::<AppState>("tests/fixtures/states/accept_connection.json");
+    let mut state1 = json_example::<AppState>("tests/fixtures/states/accept_connection.json");
+    let validation_result = serde_json::from_str(&format!(
+        "{{\"status\":\"Unknown\",\"name\":null,\"logo_uri\":null,\"issuance_date\":null,\"message\":\"Error while fetching configuration: failed to get response from resource url: https://{}/.well-known/did-configuration.json\"}}",
+        mock_server.address()
+    ))
+    .unwrap();
+    let current_user_prompt = CurrentUserPrompt::AcceptConnection {
+        client_name: "127.0.0.1".to_string(),
+        logo_uri: None,
+        // TODO: scheme is a problem in local environment: we have to use http (where https is inferred)
+        redirect_uri: format!("http://{}/", mock_server.address()),
+        previously_connected: false,
+        domain_validation: Box::new(validation_result),
+        linked_verifiable_presentations: vec![],
+    };
+    state1.current_user_prompt = Some(current_user_prompt);
+
     let state2 = json_example::<AppState>("tests/fixtures/states/did_redirect_me.json");
-    let action1 = json_example::<Action>("tests/fixtures/actions/qr_scanned_id_token.json");
+
+    let action1: Arc<dyn ActionTrait> = Arc::new(identity_wallet::state::qr_code::actions::qrcode_scanned::QrCodeScanned {
+        form_urlencoded: format!("openid://?client_id=did%3Akey%3Az6Mkm9yeuZK7inXBNjnNH3vAs9uUjqfy3mfNoKBKsKBrv8Tb&client_metadata=%7B%22id_token_signed_response_alg%22%3A%22EdDSA%22%2C%22subject_syntax_types_supported%22%3A%5B%22did%3Akey%22%5D%7D&nonce=nonce&redirect_uri=https%3A%2F%2F{}%2F&response_type=id_token&scope=openid", mock_server.address())
+    });
+
     let action2 = json_example::<Action>("tests/fixtures/actions/authenticate_connect_accept.json");
 
     let container = AppStateContainer(Mutex::new(AppState {
