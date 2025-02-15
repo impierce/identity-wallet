@@ -8,13 +8,13 @@
   },
   "current_user_prompt": {
     "type": "accept-connection",
-    "client_name": "example.com",
+    "client_name": "example.test",
     "logo_uri": null,
-    "redirect_uri": "https://example.com/",
+    "redirect_uri": "https://example.test/",
     "previously_connected": false,
     "domain_validation": {
       "status": "Unknown",
-      "message": "Error while fetching configuration: failed to parse response into JSON value"
+      "message": "Error while fetching configuration: failed to get response from resource url: https://example.test/.well-known/did-configuration.json"
     },
     "linked_verifiable_presentations": []
   }
