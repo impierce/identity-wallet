@@ -43,10 +43,10 @@ importers:
         version: 2.0.12
       '@melt-ui/pp':
         specifier: ^0.3.0
-        version: 0.3.2(@melt-ui/svelte@0.83.0(svelte@5.20.0))(svelte@5.20.0)
+        version: 0.3.2(@melt-ui/svelte@0.86.2(svelte@5.20.0))(svelte@5.20.0)
       '@melt-ui/svelte':
-        specifier: ^0.83.0
-        version: 0.83.0(svelte@5.20.0)
+        specifier: ^0.86.2
+        version: 0.86.2(svelte@5.20.0)
       '@sveltejs/adapter-static':
         specifier: ^3.0.8
         version: 3.0.8(@sveltejs/kit@2.17.1(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.20.0)(vite@6.1.0(@types/node@22.5.0)(jiti@1.21.6)(yaml@2.5.0)))(svelte@5.20.0)(vite@6.1.0(@types/node@22.5.0)(jiti@1.21.6)(yaml@2.5.0)))
@@ -539,8 +539,8 @@ packages:
       '@melt-ui/svelte': '>= 0.29.0'
       svelte: ^3.55.0 || ^4.0.0 || ^5.0.0-next.1
 
-  '@melt-ui/svelte@0.83.0':
-    resolution: {integrity: sha512-E7QT+8YSftz+Hdk1W0hNR3f+cnaF2COMWkStn+2u4vk0RO1I9mXRJl+bJD6uhYaH146oxEB+5elu/ABbv6rpsA==}
+  '@melt-ui/svelte@0.86.2':
+    resolution: {integrity: sha512-wRVN603oIt1aXvx2QRmKqVDJgTScSvr/WJLLokkD8c4QzHgn6pfpPtUKmhV6Dvkk+OY89OG/1Irkd6ouA50Ztw==}
     peerDependencies:
       svelte: ^3.0.0 || ^4.0.0 || ^5.0.0-next.118
 
@@ -3128,14 +3128,14 @@ snapshots:
       pako: 2.1.0
       resize-observer-polyfill: 1.5.1
 
-  '@melt-ui/pp@0.3.2(@melt-ui/svelte@0.83.0(svelte@5.20.0))(svelte@5.20.0)':
+  '@melt-ui/pp@0.3.2(@melt-ui/svelte@0.86.2(svelte@5.20.0))(svelte@5.20.0)':
     dependencies:
-      '@melt-ui/svelte': 0.83.0(svelte@5.20.0)
+      '@melt-ui/svelte': 0.86.2(svelte@5.20.0)
       estree-walker: 3.0.3
       magic-string: 0.30.11
       svelte: 5.20.0
 
-  '@melt-ui/svelte@0.83.0(svelte@5.20.0)':
+  '@melt-ui/svelte@0.86.2(svelte@5.20.0)':
     dependencies:
       '@floating-ui/core': 1.6.7
       '@floating-ui/dom': 1.6.10
