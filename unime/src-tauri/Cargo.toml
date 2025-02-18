@@ -41,6 +41,7 @@ tauri-plugin-shell = { version = "=2.0.0-beta.9" }
 tauri = { workspace = true, features = ["test"] }
 
 did_manager.workspace = true
+identity-wallet = { path = "../../identity-wallet", features = ["test_utils"] }
 jsonwebtoken.workspace = true
 oid4vc.workspace = true
 rand.workspace = true
