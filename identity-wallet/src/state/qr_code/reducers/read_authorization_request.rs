@@ -91,9 +91,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                 }
                 #[cfg(feature = "test_utils")]
                 {
-                    // Since Domain Linkage validation is already covered by separate tests,
-                    // we provide a default `ValidationResult` here to avoid redundant validation
-                    // during integration testing.
+                    // Skip validation during tests
                     Default::default()
                 }
             };
