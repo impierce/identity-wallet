@@ -21,7 +21,6 @@ tauri-build.workspace = true
 tauri.workspace = true
 
 dotenvy = { version = "0.15" }
-colored = { version = "2" }
 identity-wallet = { path = "../../identity-wallet" }
 log.workspace = true
 serde_json.workspace = true

@@ -1,10 +1,9 @@
-use colored::Color;
 use identity_wallet::{
     persistence::{clear_assets_tmp_folder, initialize_storage},
     state::AppStateContainer,
 };
 use log::{info, LevelFilter};
-use tauri_plugin_log::{fern::colors::ColoredLevelConfig, Target, TargetKind};
+use tauri_plugin_log::{fern::colors::Color, fern::colors::ColoredLevelConfig, Target, TargetKind};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
