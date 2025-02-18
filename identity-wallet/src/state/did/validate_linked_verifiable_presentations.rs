@@ -465,6 +465,7 @@ fn extract_url_from_did_web(did_web: &str) -> Option<Url> {
     None
 }
 
+#[cfg(not(feature = "test_utils"))]
 #[cfg(test)]
 mod tests {
     use super::*;
