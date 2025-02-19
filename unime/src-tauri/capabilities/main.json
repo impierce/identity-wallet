@@ -4,9 +4,9 @@
   "windows": ["main"],
   "permissions": [
     "core:default",
+    "fs:default",
     "log:default",
     "shell:allow-open",
-    "fs:default",
     {
       "identifier": "fs:allow-exists",
       "allow": [{ "path": "$APPDATA/assets/**/*.png" }, { "path": "$APPDATA/assets/**/*.svg" }]
