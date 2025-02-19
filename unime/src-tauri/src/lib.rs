@@ -42,7 +42,7 @@ pub fn run() {
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_os::init())
-        .plugin(tauri_plugin_cloud_storage::init())
+        // .plugin(tauri_plugin_cloud_storage::init())
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

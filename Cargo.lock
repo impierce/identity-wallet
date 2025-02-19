@@ -4119,7 +4119,6 @@ dependencies = [
  "stronghold_ext 0.1.0 (git+https://github.com/tensor-programming/stronghold_ext)",
  "strum",
  "tauri",
- "tauri-plugin-cloud-storage",
  "tauri-plugin-fs",
  "tempfile",
  "thiserror 1.0.69",
@@ -9296,17 +9295,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "tauri-plugin-cloud-storage"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "serde",
- "tauri",
- "tauri-plugin",
- "thiserror 2.0.11",
-]
-
-[[package]]
 name = "tauri-plugin-fs"
 version = "2.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -10105,7 +10093,6 @@ dependencies = [
  "tauri-build",
  "tauri-plugin-barcode-scanner",
  "tauri-plugin-biometric",
- "tauri-plugin-cloud-storage",
  "tauri-plugin-fs",
  "tauri-plugin-keystore",
  "tauri-plugin-log",
