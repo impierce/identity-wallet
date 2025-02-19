@@ -4,11 +4,11 @@
   "windows": ["main"],
   "permissions": [
     "core:default",
-    "fs:allow-appdata-read-recursive",
     "log:default",
     "shell:allow-open",
+    "fs:default",
     {
-      "identifier": "fs:scope",
+      "identifier": "fs:allow-exists",
       "allow": [{ "path": "$APPDATA/assets/**/*.png" }, { "path": "$APPDATA/assets/**/*.svg" }]
     }
   ]
