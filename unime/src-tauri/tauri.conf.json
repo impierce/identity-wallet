@@ -2,7 +2,7 @@
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "UniMe",
   "version": "0.6.12",
-  "identifier": "com.impierce.unime",
+  "identifier": "com.impierce.identity-wallet",
   "app": {
     "security": {
       "csp": {
