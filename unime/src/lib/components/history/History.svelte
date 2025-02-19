@@ -1,8 +1,8 @@
 <script lang="ts">
-  import type { SvelteComponent } from 'svelte';
+  import type { Component } from 'svelte';
 
   import LL from '$i18n/i18n-svelte';
-  import type { SvelteHTMLElements } from 'svelte/elements';
+  import type { SVGAttributes } from 'svelte/elements';
 
   import type { HistoryCredential } from '@bindings/history/HistoryCredential';
   import type { HistoryEvent } from '@bindings/history/HistoryEvent';
@@ -17,7 +17,7 @@
   interface DisplayEvent {
     title: string;
     date: string;
-    icon: typeof SvelteComponent<SvelteHTMLElements['svg']>;
+    icon: Component<SVGAttributes<SVGSVGElement>>;
     credentials: HistoryCredential[];
   }
 
@@ -31,7 +31,7 @@
 
   const events: DisplayEvent[] = filteredEvents.map((history) => {
     let title: string;
-    let icon: typeof SvelteComponent<SvelteHTMLElements['svg']>;
+    let icon: Component<SVGAttributes<SVGSVGElement>>;
 
     let date = history.date;
     let credentials = history.credentials;

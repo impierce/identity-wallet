@@ -1,6 +1,6 @@
-import type { SvelteComponent } from 'svelte';
+import type { Component } from 'svelte';
 
-import type { SvelteHTMLElements } from 'svelte/elements';
+import type { SVGAttributes } from 'svelte/elements';
 
 import type { Locale } from '@bindings/profile_settings/Locale';
 
@@ -8,7 +8,7 @@ import { DEFlagIcon, GBFlagIcon, NLFlagIcon, USFlagIcon } from '$lib/icons';
 
 export const locales: {
   locale: Locale;
-  flag: typeof SvelteComponent<SvelteHTMLElements['svg']>;
+  flag: Component<SVGAttributes<SVGSVGElement>>;
   displayName: string;
 }[] = [
   { locale: 'en-US', flag: USFlagIcon, displayName: 'English (US)' },
