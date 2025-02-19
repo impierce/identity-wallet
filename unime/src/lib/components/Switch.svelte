@@ -1,21 +1,19 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
-
   import { createSwitch, melt } from '@melt-ui/svelte';
 
-  export let active = false;
+  let { active = false, onchange } = $props();
 
-  const dispatch = createEventDispatcher();
+  const handleOnCheckedChange = ({ curr, next }: { curr: boolean; next: boolean }) => {
+    onchange(next);
+    return next;
+  };
 
   const {
     elements: { root, input },
     states: { checked },
   } = createSwitch({
     defaultChecked: active,
-  });
-
-  checked.subscribe((c) => {
-    dispatch('change', c);
+    onCheckedChange: handleOnCheckedChange,
   });
 </script>
 

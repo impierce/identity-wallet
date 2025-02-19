@@ -82,7 +82,7 @@
         title={`Unlock with ${biometryTypeString}`}
         hasCaretRight={false}
       >
-        <Switch active={enabled} on:change={toggleBiometrics} />
+        <Switch active={enabled} onchange={toggleBiometrics} />
       </SettingsEntry>
       <!-- {#if biometricsStatus.error && $state.dev_mode !== 'Off'}
         <div class="h-12 rounded-lg bg-rose-50 py-4 text-center text-xs font-medium text-rose-500">

@@ -162,7 +162,7 @@
       {#key enabled}
         <Switch
           active={enabled}
-          on:change={async () => {
+          onchange={async () => {
             if (enabled) {
               openConfirmAction = true;
             } else {

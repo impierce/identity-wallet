@@ -116,7 +116,7 @@
             {#key active}
               <Switch
                 {active}
-                on:change={() =>
+                onchange={() =>
                   dispatch({ type: '[Trust List] Toggle entry', payload: { trust_list_id: $page.params.id, domain } })}
               />
             {/key}
@@ -160,7 +160,7 @@
           {#key active}
             <Switch
               {active}
-              on:change={() =>
+              onchange={() =>
                 dispatch({ type: '[Trust List] Toggle entry', payload: { trust_list_id: $page.params.id, domain } })}
             />
           {/key}

@@ -368,7 +368,7 @@ Stacking context: We have to deviate from the DOM-sequence.
             <div class="mr-2 text-xs text-orange-800">Reset profile?</div>
             <Switch
               active={resetDragonProfile}
-              on:change={() => {
+              onchange={() => {
                 resetDragonProfile = !resetDragonProfile;
               }}
             />
