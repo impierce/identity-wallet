@@ -44,7 +44,7 @@
       "icons/icon.ico"
     ],
     "iOS": {
-      "developmentTeam": "\"Impierce Technologies B.V.\""
+      "developmentTeam": "Impierce Technologies B.V."
     },
     "resources": [
       "resources/*"
