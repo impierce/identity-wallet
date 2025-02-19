@@ -12,8 +12,6 @@
     FilesFillIcon,
     KeyFillIcon,
     ListStarFillIcon,
-    LockSimpleFillIcon,
-    PasswordFillIcon,
     ShieldCheckFillIcon,
     SunFillIcon,
     TranslateFillIcon,

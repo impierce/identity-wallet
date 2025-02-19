@@ -39,11 +39,7 @@
       on:click={() => goto('/me/settings/profile')}
     />
     <SettingsEntry icon={GearFillIcon} title={$LL.SETTINGS.APP.TITLE()} on:click={() => goto('/me/settings/app')} />
-    <SettingsEntry
-      icon={VaultFillIcon}
-      title={$LL.SETTINGS.BACKUP_RECOVERY.TITLE()}
-      on:click={() => goto('/me/settings/backup')}
-    />
+    <SettingsEntry icon={VaultFillIcon} title={$LL.SETTINGS.BACKUP_RECOVERY.TITLE()} hasCaretRight={true} disabled />
     <SettingsEntry icon={SignOutFillIcon} title={$LL.SETTINGS.LOG_OUT.TITLE()} hasCaretRight={false} disabled />
   </div>
 
