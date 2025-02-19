@@ -6,6 +6,7 @@ import type { AppState } from '@bindings/AppState';
 interface OnboardingState {
   name?: string;
   password?: string; // TODO: security: is it okay to keep the password temporarily in the object?
+  biometrics_enabled?: boolean;
 }
 
 const empty_state: AppState = {
@@ -31,6 +32,7 @@ const empty_state: AppState = {
         reverse: false,
       },
     },
+    biometrics_enabled: false
   },
   current_user_prompt: null,
   user_journey: null,

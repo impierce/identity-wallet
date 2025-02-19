@@ -6,3 +6,4 @@ cp -v ./android/app/tauri.properties ../gen/android/app/tauri.properties
 cp -v ./android/app/src/main/AndroidManifest.xml ../gen/android/app/src/main/AndroidManifest.xml
 cp -v ./apple/ExportOptions.plist ../gen/apple/ExportOptions.plist
 cp -v ./apple/unime_iOS/Info.plist ../gen/apple/unime_iOS/Info.plist
+cp -v ./apple/unime_iOS/unime_iOS.entitlements ../gen/apple/unime_iOS/unime_iOS.entitlements

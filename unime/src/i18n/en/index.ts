@@ -5,8 +5,9 @@ const en = {
     WELCOME: {
       GREETING: 'Welcome to',
       WHAT_IS_UNIME_1: 'UniMe connects your digital world, safely and securely.',
-      WHAT_IS_UNIME_2: 'Create a brand new identity profile to get started.',
+      WHAT_IS_UNIME_2: 'Create a brand new identity profile or recover an existing one to get started.',
       CREATE_NEW_PROFILE: 'Create new profile',
+      RECOVER_PROFILE: 'Recover existing profile',
       SELECT_LANGUAGE: 'Select language',
     },
     PLEDGE: {
@@ -233,6 +234,14 @@ By using our Service, you acknowledge that you have read, understood, and agree 
     },
     BACKUP_RECOVERY: {
       TITLE: 'Backup and recovery',
+      SETTINGS_ENTRY: 'Automatic cloud backups',
+      BACKUP_NOW: 'Back up now',
+      CONFIRM_DISABLE: {
+        TITLE: 'Disable automatic backups',
+        DESCRIPTION: 'Are you sure you want to disable automatic backups to the cloud?',
+        CONFIRM: 'Yes, remove all backups',
+        CANCEL: 'No, keep my backups',
+      },
     },
     LOG_OUT: {
       TITLE: 'Log out',

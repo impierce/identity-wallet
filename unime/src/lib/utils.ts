@@ -2,6 +2,8 @@ import { Sha256 } from '@aws-crypto/sha256-js';
 import type { Locale } from '@bindings/profile_settings/Locale';
 import { convertFileSrc } from '@tauri-apps/api/core';
 import { appDataDir, join } from '@tauri-apps/api/path';
+import { BiometryType } from '@tauri-apps/plugin-biometric';
+import { platform } from '@tauri-apps/plugin-os';
 import { exists } from '@tauri-apps/plugin-fs';
 import { debug, info, warn } from '@tauri-apps/plugin-log';
 
@@ -99,4 +101,37 @@ export function formatRelativeDateTime(isoDate: string, locale: Locale) {
 
   // Capitalize the first character.
   return relativeDateTime.charAt(0).toUpperCase() + relativeDateTime.slice(1);
+}
+
+/**
+ * Determines the name of the biometrics type based on the platform.
+ */
+export function biometricsTypeString(type: BiometryType): string {
+  let biometryTypeString = 'biometrics'; // default
+  // On iOS, we distinguish between Face ID and Touch ID.
+  if (platform() === 'ios') {
+    switch (type) {
+      case BiometryType.TouchID:
+        biometryTypeString = 'Touch ID';
+        break;
+      case BiometryType.FaceID:
+        biometryTypeString = 'Face ID';
+        break;
+      default:
+        biometryTypeString = 'biometrics';
+    }
+    // On Android, we distinguish between fingerprint and face unlock.
+  } else if (platform() === 'android') {
+    switch (type) {
+      case BiometryType.TouchID:
+        biometryTypeString = 'Fingerprint';
+        break;
+      case BiometryType.FaceID:
+        biometryTypeString = 'Face Unlock';
+        break;
+      default:
+        biometryTypeString = 'biometrics';
+    }
+  }
+  return biometryTypeString;
 }

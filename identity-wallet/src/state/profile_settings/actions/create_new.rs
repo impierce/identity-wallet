@@ -22,6 +22,7 @@ pub struct CreateNew {
     pub picture: String,
     pub theme: AppTheme,
     pub password: String,
+    pub biometrics_enabled: bool,
 }
 
 impl std::fmt::Debug for CreateNew {
@@ -31,6 +32,7 @@ impl std::fmt::Debug for CreateNew {
             .field("picture", &self.picture)
             .field("theme", &self.theme)
             .field("password", &"*****")
+            .field("biometrics_enabled", &self.biometrics_enabled)
             .finish()
     }
 }

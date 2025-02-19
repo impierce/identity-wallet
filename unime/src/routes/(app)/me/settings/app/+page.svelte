@@ -12,7 +12,9 @@
     FilesFillIcon,
     KeyFillIcon,
     ListStarFillIcon,
+    LockSimpleFillIcon,
     PasswordFillIcon,
+    ShieldCheckFillIcon,
     SunFillIcon,
     TranslateFillIcon,
   } from '$lib/icons';
@@ -43,7 +45,7 @@
       title={$LL.SETTINGS.APP.THEME.LABEL()}
       on:click={() => goto('/me/settings/app/theme')}
     />
-    <SettingsEntry icon={PasswordFillIcon} title={$LL.SETTINGS.APP.PASSWORD.TITLE()} disabled />
+    <SettingsEntry icon={ShieldCheckFillIcon} title={'Security'} on:click={() => goto('/me/settings/app/security')} />
     <SettingsEntry
       icon={ConfettiFillIcon}
       title={$LL.SETTINGS.APP.ONBOARDING_JOURNEY.TITLE()}

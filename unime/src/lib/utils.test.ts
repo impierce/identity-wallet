@@ -1,4 +1,5 @@
-import { calculateInitials, formatDate, formatDateTime, formatRelativeDateTime, hash } from './utils';
+import { BiometryType } from '@tauri-apps/plugin-biometric';
+import { biometricsTypeString, calculateInitials, formatDate, formatDateTime, formatRelativeDateTime, hash } from './utils';
 
 describe('hash function', () => {
   test('should return the expected hash digest', () => {
@@ -124,3 +125,43 @@ describe('formatRelativeDateTime function', () => {
     expect(formatRelativeDateTime(twoYearsAgo.toISOString(), 'en-US')).toEqual('2 years ago');
   });
 });
+
+vi.mock('@tauri-apps/plugin-os', () => ({
+  platform: vi.fn()
+}))
+
+// import { platform as _platform } from '@tauri-apps/plugin-os';
+import { platform } from '@tauri-apps/plugin-os';
+
+// const platform = _platform as unknown as vi.MockedFunction<typeof _platform>;
+
+describe('biometricsTypeString function', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  test('should return Face ID on iOS', () => {
+    platform.mockReturnValue('ios');
+    expect(biometricsTypeString(BiometryType.FaceID)).toEqual('Face ID');
+  })
+
+  test('should return Touch ID on iOS', () => {
+    platform.mockReturnValue('ios');
+    expect(biometricsTypeString(BiometryType.TouchID)).toEqual('Touch ID');
+  })
+
+  test('should return biometrics on iOS', () => {
+    platform.mockReturnValue('ios');
+    expect(biometricsTypeString(BiometryType.None)).toEqual('biometrics');
+  })
+
+  test('should return Face Unlock on Android', () => {
+    platform.mockReturnValue('android');
+    expect(biometricsTypeString(BiometryType.FaceID)).toEqual('Face Unlock');
+  })
+
+  test('should return biometrics on Android', () => {
+    platform.mockReturnValue('android');
+    expect(biometricsTypeString(BiometryType.None)).toEqual('biometrics');
+  })
+})

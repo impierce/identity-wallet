@@ -67,6 +67,7 @@
           picture: '',
           theme: 'system',
           password: $onboarding_state.password ?? '',
+          biometrics_enabled: $onboarding_state.biometrics_enabled ?? false,
         },
       });
       loading = true;
