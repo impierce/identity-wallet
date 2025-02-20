@@ -42,8 +42,8 @@ importers:
         specifier: file:../../../daniel-mader/plugins-workspace/plugins/tauri-plugin-cloud-storage
         version: tauri-plugin-cloud-storage-api@file:../../daniel-mader/plugins-workspace/plugins/tauri-plugin-cloud-storage
       '@impierce/tauri-plugin-keystore':
-        specifier: file:../../tauri-plugin-keystore
-        version: tauri-plugin-keystore-api@file:../tauri-plugin-keystore
+        specifier: 2.1.0-alpha.1
+        version: 2.1.0-alpha.1
       '@lottiefiles/lottie-player':
         specifier: ^2.0.12
         version: 2.0.12
@@ -502,6 +502,9 @@ packages:
 
   '@iconify/utils@2.3.0':
     resolution: {integrity: sha512-GmQ78prtwYW6EtzXRU1rY+KwOKfz32PD7iJh6Iyqw68GiKuoZ2A6pRtzWONz5VQJbp50mEjXh/7NkumtrAgRKA==}
+
+  '@impierce/tauri-plugin-keystore@2.1.0-alpha.1':
+    resolution: {integrity: sha512-oIfGz3XcghyX9sTanF+R8fGqSUp15S7jhTOf62OiWidX3F2yZa2byq6X64GjAnz/wLD8mPVhRTjnjIk4zEmZ/g==}
 
   '@internationalized/date@3.5.5':
     resolution: {integrity: sha512-H+CfYvOZ0LTJeeLOqm19E3uj/4YjrmOFtBufDHPfvtI80hFAMqtrp7oCACpe4Cil5l8S0Qu/9dYfZc/5lY8WQQ==}
@@ -2431,9 +2434,6 @@ packages:
   tauri-plugin-cloud-storage-api@file:../../daniel-mader/plugins-workspace/plugins/tauri-plugin-cloud-storage:
     resolution: {directory: ../../daniel-mader/plugins-workspace/plugins/tauri-plugin-cloud-storage, type: directory}
 
-  tauri-plugin-keystore-api@file:../tauri-plugin-keystore:
-    resolution: {directory: ../tauri-plugin-keystore, type: directory}
-
   test-exclude@7.0.1:
     resolution: {integrity: sha512-pFYqmTw68LXVjeWJMST4+borgQP2AyMNbg1BpZh9LbyhUeNkeaPF9gzfPGUAnSMV3qPYdWUwDIjjCLiSDOl7vg==}
     engines: {node: '>=18'}
@@ -3039,6 +3039,10 @@ snapshots:
       mlly: 1.7.4
     transitivePeerDependencies:
       - supports-color
+
+  '@impierce/tauri-plugin-keystore@2.1.0-alpha.1':
+    dependencies:
+      '@tauri-apps/api': 2.2.0
 
   '@internationalized/date@3.5.5':
     dependencies:
@@ -4997,10 +5001,6 @@ snapshots:
       - ts-node
 
   tauri-plugin-cloud-storage-api@file:../../daniel-mader/plugins-workspace/plugins/tauri-plugin-cloud-storage:
-    dependencies:
-      '@tauri-apps/api': 2.2.0
-
-  tauri-plugin-keystore-api@file:../tauri-plugin-keystore:
     dependencies:
       '@tauri-apps/api': 2.2.0
 

@@ -27,7 +27,7 @@ log.workspace = true
 serde_json.workspace = true
 tauri-plugin-barcode-scanner = { version = "2" }
 tauri-plugin-cloud-storage = { path = "../../../../daniel-mader/plugins-workspace/plugins/tauri-plugin-cloud-storage" }
-tauri-plugin-keystore = { path = "../../../tauri-plugin-keystore" }
+tauri-plugin-keystore = { version = "2.1.0-alpha.1" }
 tauri-plugin-log = { version = "2", features = ["colored"] }
 tauri-plugin-fs = { version = "2" }
 tauri-plugin-shell = { version = "2" }

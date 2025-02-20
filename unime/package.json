@@ -22,7 +22,7 @@
     "@iconify-json/circle-flags": "^1.2.0",
     "@iconify-json/ph": "^1.2.0",
     "@impierce/tauri-plugin-cloud-storage": "file:../../../daniel-mader/plugins-workspace/plugins/tauri-plugin-cloud-storage",
-    "@impierce/tauri-plugin-keystore": "file:../../tauri-plugin-keystore",
+    "@impierce/tauri-plugin-keystore": "2.1.0-alpha.1",
     "@lottiefiles/lottie-player": "^2.0.12",
     "@melt-ui/pp": "^0.3.0",
     "@melt-ui/svelte": "^0.83.0",
