@@ -1,3 +1,4 @@
+use crate::state::APPSTATE_VERSION;
 use crate::{error::AppError, state::AppState};
 use lazy_static::lazy_static;
 use log::info;
@@ -61,9 +62,30 @@ pub async fn load_state() -> anyhow::Result<AppState> {
     let state_file = STATE_FILE.lock().unwrap().clone();
     let bytes = read(state_file).await?;
     let content = String::from_utf8(bytes)?;
-    let app_state: AppState = serde_json::from_str(&content)?;
-    debug!("state loaded from disk");
+    // Load state to json Value instead of direct deserialization to avoid different versions breaking.
+    let app_state_value: serde_json::Value = serde_json::from_str(&content)?;
+    let version = app_state_value.get("version").unwrap().to_string(); // TODO: remove unwrap
+    let app_state: AppState = match version.as_str() {
+        APPSTATE_VERSION => {
+            let app_state = serde_json::from_str(&content)?;
+            debug!("state loaded from disk");
+            app_state
+        }
+        _ => {
+            debug!("state version mismatch, performing data migration and appstate update from {} to {}", version, APPSTATE_VERSION);
+            let app_state = appstate_version_update(app_state_value, version)?;
+            debug!("state successfully loaded from disk and updated");
+            app_state
+        }
+    };
     Ok(app_state)
+}
+
+pub fn appstate_version_update(app_state_value: serde_json::Value, version: String) -> anyhow::Result<AppState> {
+    // how to update step by step through all versions?
+    // It would be a fixed list of updates and then drop in in the right place? 
+    // Incremental loop is messy since the end of a loop of the latter fragments is unclear when former fragments differ.
+    Ok(AppState::default()) // TODO: remove default
 }
 
 /// Persists a [AppState] to the app's data directory.
