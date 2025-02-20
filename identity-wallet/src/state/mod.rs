@@ -86,6 +86,8 @@ pub const SUPPORTED_DID_METHODS: &[&str] = &["did:jwk", "did:key"];
 #[ts(export)]
 #[serde(default)]
 pub struct AppState {
+    /// The version field must follow a three part versioning system: "1.2.3", dynamic tags (e.g. @latest) are not allowed. This field will be used for Data Migration between version updates.
+    pub version: String,
     pub dids: HashMap<String, String>,
     pub connections: Connections,
     pub credentials: Vec<DisplayCredential>,
