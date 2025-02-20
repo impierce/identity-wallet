@@ -140,7 +140,7 @@
               speed={0.25}
               mode="normal"
               style="width: 320px"
-            />
+            ></lottie-player>
           </div>
         </div>
 

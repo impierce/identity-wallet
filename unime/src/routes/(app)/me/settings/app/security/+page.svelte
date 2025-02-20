@@ -82,7 +82,7 @@
         title={`Unlock with ${biometryTypeString}`}
         hasCaretRight={false}
       >
-        <Switch active={enabled} on:change={toggleBiometrics} />
+        <Switch active={enabled} onchange={toggleBiometrics} />
       </SettingsEntry>
       <!-- {#if biometricsStatus.error && $state.dev_mode !== 'Off'}
         <div class="h-12 rounded-lg bg-rose-50 py-4 text-center text-xs font-medium text-rose-500">
@@ -93,15 +93,17 @@
     <SettingsEntry icon={PasswordFillIcon} title={'Change password'} disabled />
   </div>
   <!-- TODO: dev -->
-  <div class="m-8 flex flex-col space-y-4">
-    <button
-      class="rounded-lg border border-amber-300 bg-amber-100 py-4 text-xs font-medium text-amber-600 shadow"
-      on:click={_retrieve}>Retrieve from secure storage</button
-    >
-    <button
-      class="rounded-lg border border-sky-300 bg-sky-100 py-4 text-xs font-medium text-sky-600 shadow"
-      on:click={_remove}>Clear secure storage</button
-    >
-    <pre class="text-sm">value: {retrieved}</pre>
-  </div>
+  {#if $state.dev_mode !== 'Off'}
+    <div class="m-8 flex flex-col space-y-4">
+      <button
+        class="rounded-lg border border-amber-300 bg-amber-100 py-4 text-xs font-medium text-amber-600 shadow"
+        on:click={_retrieve}>Retrieve from secure storage</button
+      >
+      <button
+        class="rounded-lg border border-sky-300 bg-sky-100 py-4 text-xs font-medium text-sky-600 shadow"
+        on:click={_remove}>Clear secure storage</button
+      >
+      <pre class="text-sm">value: {retrieved}</pre>
+    </div>
+  {/if}
 </div>

@@ -54,16 +54,18 @@
             type="text"
             class="h-12 grow rounded-xl border border-slate-200 px-3 text-[13px]/[24px] text-teal disabled:text-slate-400 disabled:opacity-60 dark:border-slate-600 dark:bg-dark"
             value={trustList?.display_name}
-            on:input={(e) => (updatedListName = e.target.value)}
+            on:input={(e: Event) => (updatedListName = (e.target as HTMLInputElement).value)}
           />
           <div class="ml-2 w-[88px]">
             <Button
               label="Save"
               on:click={() => {
-                dispatch({
-                  type: '[Trust Lists] Edit',
-                  payload: { trust_list_id: $page.params.id, new_display_name: updatedListName },
-                });
+                if (updatedListName) {
+                  dispatch({
+                    type: '[Trust Lists] Edit',
+                    payload: { trust_list_id: $page.params.id, new_display_name: updatedListName },
+                  });
+                }
               }}
               disabled={updatedListName === trustList?.display_name}
             />
@@ -81,7 +83,7 @@
             type="text"
             class="h-12 grow rounded-xl border border-slate-200 px-3 text-[13px]/[24px] text-teal disabled:text-slate-400 disabled:opacity-60 dark:border-slate-600 dark:bg-dark"
             value={domains[i]}
-            on:input={(e) => (domains[i] = e.target.value)}
+            on:input={(e: Event) => (domains[i] = (e.target as HTMLInputElement).value)}
             disabled={!active}
           />
           {#if domains[i] !== domain}
@@ -114,7 +116,7 @@
             {#key active}
               <Switch
                 {active}
-                on:change={() =>
+                onchange={() =>
                   dispatch({ type: '[Trust List] Toggle entry', payload: { trust_list_id: $page.params.id, domain } })}
               />
             {/key}
@@ -158,7 +160,7 @@
           {#key active}
             <Switch
               {active}
-              on:change={() =>
+              onchange={() =>
                 dispatch({ type: '[Trust List] Toggle entry', payload: { trust_list_id: $page.params.id, domain } })}
             />
           {/key}

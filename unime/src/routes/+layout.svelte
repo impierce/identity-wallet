@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { onDestroy, onMount, type SvelteComponent } from 'svelte';
+  import { onDestroy, onMount, type Component } from 'svelte';
 
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { PUBLIC_DEV_MODE_MENU_EXPANDED, PUBLIC_STYLE_SAFE_AREA_INSETS } from '$env/static/public';
   import LL, { setLocale } from '$i18n/i18n-svelte';
   import { loadAllLocales } from '$i18n/i18n-util.sync';
-  import type { SvelteHTMLElements } from 'svelte/elements';
+  import type { SVGAttributes } from 'svelte/elements';
   import { writable } from 'svelte/store';
   import { fly } from 'svelte/transition';
 
@@ -130,7 +130,7 @@
   }
 
   interface DevModeButton {
-    icon: typeof SvelteComponent<SvelteHTMLElements['svg']> | string;
+    icon: Component<SVGAttributes<SVGSVGElement>> | string;
     onClick: () => void;
   }
 
@@ -368,7 +368,7 @@ Stacking context: We have to deviate from the DOM-sequence.
             <div class="mr-2 text-xs text-orange-800">Reset profile?</div>
             <Switch
               active={resetDragonProfile}
-              on:change={() => {
+              onchange={() => {
                 resetDragonProfile = !resetDragonProfile;
               }}
             />

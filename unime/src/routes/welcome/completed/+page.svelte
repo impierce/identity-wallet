@@ -43,7 +43,7 @@
           speed={0.25}
           mode="normal"
           style="width: 320px"
-        />
+        ></lottie-player>
       </div>
     </div>
     <p class="text-[22px]/[30px] font-semibold text-primary">

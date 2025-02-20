@@ -12,8 +12,6 @@
     FilesFillIcon,
     KeyFillIcon,
     ListStarFillIcon,
-    LockSimpleFillIcon,
-    PasswordFillIcon,
     ShieldCheckFillIcon,
     SunFillIcon,
     TranslateFillIcon,
@@ -61,7 +59,7 @@
       disabled
     />
     <SettingsEntry icon={CodeBoldIcon} title={$LL.SETTINGS.APP.DEVELOPER_MODE.TITLE()} hasCaretRight={false}>
-      <Switch active={$state?.dev_mode !== 'Off'} on:change={toggleDevSettings} />
+      <Switch active={$state?.dev_mode !== 'Off'} onchange={toggleDevSettings} />
     </SettingsEntry>
     {#if $state.dev_mode !== 'Off'}
       <div in:fade={{ duration: 200 }} out:fade={{ duration: 200 }}>

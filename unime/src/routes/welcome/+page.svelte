@@ -46,12 +46,12 @@
         goto('/welcome/pledge');
       }}
     />
-    <Button
+    <!-- <Button
       label={$LL.ONBOARDING.WELCOME.RECOVER_PROFILE()}
       variant="secondary"
       on:click={() => {
         goto('/welcome/recover');
       }}
-    />
+    /> -->
   </div>
 </div>

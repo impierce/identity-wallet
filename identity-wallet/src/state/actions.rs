@@ -21,6 +21,7 @@ pub fn listen<T: ActionTrait + Clone>(action: Action) -> Option<T> {
     action.downcast_arc::<T>().ok().map(|action| (*action).clone())
 }
 
+#[allow(clippy::empty_line_after_doc_comments)]
 /// Below is an example of how to add an action to the app
 ///
 /// Example:

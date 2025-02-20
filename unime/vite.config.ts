@@ -1,22 +1,14 @@
 import Icons from 'unplugin-icons/vite';
-import { defineConfig } from 'vite';
+import { defineConfig, mergeConfig } from 'vite';
+import { defineConfig as defineVitestConfig } from 'vitest/config';
 
 import { sveltekit } from '@sveltejs/kit/vite';
 
 const host = process.env.TAURI_DEV_HOST;
 
 // https://vitejs.dev/config/
-export default defineConfig({
+const viteConfig = defineConfig({
   plugins: [sveltekit(), Icons({ compiler: 'svelte' })],
-  test: {
-    include: ['src/**/*.{test,spec}.{js,ts}'],
-    globals: true,
-    environment: 'jsdom',
-    coverage: {
-      include: ['src/**'],
-      exclude: ['src/i18n/**'],
-    },
-  },
   clearScreen: false,
   server: {
     host: host || false,
@@ -62,3 +54,18 @@ export default defineConfig({
     ],
   },
 });
+
+// TODO: Refactored by AI to fix TS errors (Claude 3.5 Sonnet).
+const vitestConfig = defineVitestConfig({
+  test: {
+    include: ['src/**/*.{test,spec}.{js,ts}'],
+    globals: true,
+    environment: 'jsdom',
+    coverage: {
+      include: ['src/**'],
+      exclude: ['src/i18n/**'],
+    },
+  },
+});
+
+export default mergeConfig(viteConfig, vitestConfig);
