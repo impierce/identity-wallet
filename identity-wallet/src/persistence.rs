@@ -3,6 +3,7 @@ use crate::{error::AppError, state::AppState};
 use lazy_static::lazy_static;
 use log::info;
 use log::{debug, warn};
+use serde_json::Value;
 use std::io::{copy, Cursor};
 use std::{fs, sync::Mutex};
 use tauri::Manager;
@@ -62,6 +63,7 @@ pub async fn load_state() -> anyhow::Result<AppState> {
     let state_file = STATE_FILE.lock().unwrap().clone();
     let bytes = read(state_file).await?;
     let content = String::from_utf8(bytes)?;
+
     // Load state to json Value instead of direct deserialization to avoid different versions breaking.
     let app_state_value: serde_json::Value = serde_json::from_str(&content)?;
     let version = app_state_value.get("version").unwrap().to_string(); // TODO: remove unwrap
@@ -78,14 +80,32 @@ pub async fn load_state() -> anyhow::Result<AppState> {
             app_state
         }
     };
+    
     Ok(app_state)
 }
 
-pub fn appstate_version_update(app_state_value: serde_json::Value, version: String) -> anyhow::Result<AppState> {
-    // how to update step by step through all versions?
-    // It would be a fixed list of updates and then drop in in the right place? 
-    // Incremental loop is messy since the end of a loop of the latter fragments is unclear when former fragments differ.
-    Ok(AppState::default()) // TODO: remove default
+pub async fn appstate_version_update(app_state_value: serde_json::Value, version: String) -> anyhow::Result<AppState> {
+    // todo: convert version to index in migrations vec
+    // let version_index = todo;
+    
+    let migrations: Vec<fn(&mut Value)> = vec![
+        migrate_v1_to_v2,
+        migrate_v2_to_v3,
+        migrate_v3_to_v4,
+    ];
+
+    for (index, migration) in migrations.iter().enumerate() {
+        if (index + 1) >  version {
+            migration(&mut app_state_value);
+        }
+    }
+
+    let app_state: AppState = serde_json::from_value(app_state_value)?;
+
+    // save the updated state
+    save_state(&app_state).await?;
+
+    Ok(app_state)
 }
 
 /// Persists a [AppState] to the app's data directory.
