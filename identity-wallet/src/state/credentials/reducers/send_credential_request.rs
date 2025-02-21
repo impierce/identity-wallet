@@ -4,6 +4,7 @@ use crate::{
     state::{
         actions::{listen, Action},
         core_utils::{
+            helpers::credential_schema_validation,
             history_event::{EventType, HistoryCredential, HistoryEvent},
             CoreUtils,
         },
@@ -21,7 +22,7 @@ use oid4vc::oid4vci::{
     credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject,
     credential_offer::Grants, credential_response::CredentialResponseType, token_request::TokenRequest,
 };
-use serde_json::{json, Value};
+use serde_json::json;
 use std::collections::HashMap;
 use uuid::Uuid;
 
@@ -202,7 +203,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
             let mut verifiable_credential_record: VerifiableCredentialRecord = credential.try_into()?;
 
             // Validate the credential against its corresponding credential Json schema.
-            jsonschema_validator(&verifiable_credential_record.verifiable_credential)?;
+            credential_schema_validation(&verifiable_credential_record.verifiable_credential)?;
 
             // Set the issuer name of the credential.
             verifiable_credential_record
@@ -299,12 +300,6 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
     }
 
     Ok(state)
-}
-
-fn jsonschema_validator(credential: Value) -> Result<_, AppError> {
-    
-
-    Ok()
 }
 
 /// Helper function to get the display name of a credential.

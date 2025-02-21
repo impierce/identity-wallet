@@ -1,6 +1,7 @@
-use crate::error::AppError;
+use crate::{error::AppError, state::SUPPORTED_CRED_TYPE_SCHEMAS};
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use jsonschema::ValidationError;
+use log::warn;
 use serde_json::Value;
 use std::fs::File;
 
@@ -17,7 +18,42 @@ pub fn get_unverified_jwt_claims(jwt: &serde_json::Value) -> Result<serde_json::
         .ok_or(AppError::Error("Failed to decode JWT claims".to_string()))
 }
 
-pub fn json_schema_validation(json_schema_path: String, data: serde_json::Value) -> Result<(), AppError> {
+pub fn credential_schema_validation(data: &Value) -> Result<(), AppError> {
+    let credential_type_array: Vec<String> = data
+        .get("type")
+        .unwrap()
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|f| f.to_string())
+        .collect(); // TODO: remove unwrap. This doesn't work for mDoc, only VC's.
+
+    if !SUPPORTED_CRED_TYPE_SCHEMAS.iter().any(|x| credential_type_array.contains(&x.to_string())) {
+        // No schema found for Credential type
+        warn!(
+            "No supported schema found for Credential type: {:?}",
+            credential_type_array
+        );
+        return Ok(());
+    }
+
+    for mut supported_cred_type in SUPPORTED_CRED_TYPE_SCHEMAS {
+        if credential_type_array.contains(&supported_cred_type.to_string()) {
+            // OpenBadgeCredentials can be typed as "OpenBadgeCredential" or "AchievementCredential"
+            if *supported_cred_type == "AchievementCredential" {
+                supported_cred_type = &"OpenBadgeCredential";
+            }
+            
+            let json_schema_path = format!("resources/jsonschemas/{}.json", supported_cred_type);
+            json_schema_validation(json_schema_path, data.clone())?;
+            return Ok(());
+        }
+    }
+
+    Ok(())
+}
+
+pub fn json_schema_validation(json_schema_path: String, data: Value) -> Result<(), AppError> {
     let json_schema_file = File::open(json_schema_path.clone())
         .map_err(|_| AppError::Error("Failed to find or read from JsonSchema file".to_string()))?;
     let reader = std::io::BufReader::new(json_schema_file);
@@ -89,15 +125,11 @@ mod tests {
 
     #[test]
     fn json_schema_validator_test() {
-      println!("Current directory: {:?}", std::env::current_dir());
+        let file = File::open("resources/example_basic_obv3.json").unwrap();
+        let rdr = std::io::BufReader::new(file);
+        let data = serde_json::from_reader(rdr).unwrap();
 
-      let json_schema_path = "resources/obv3_jsonschema.json".to_string();
-
-      let file = File::open("resources/example_basic_obv3.json").unwrap();
-      let rdr = std::io::BufReader::new(file);
-      let data = serde_json::from_reader(rdr).unwrap();
-
-      let result = json_schema_validation(json_schema_path, data);
-      println!("{:?}", result);
+        let result = credential_schema_validation(&data);
+        println!("{:?}", result);
     }
 }
