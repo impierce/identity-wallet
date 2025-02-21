@@ -21,7 +21,7 @@ use oid4vc::oid4vci::{
     credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject,
     credential_offer::Grants, credential_response::CredentialResponseType, token_request::TokenRequest,
 };
-use serde_json::json;
+use serde_json::{json, Value};
 use std::collections::HashMap;
 use uuid::Uuid;
 
@@ -200,10 +200,17 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
 
         for (credential_configuration_id, credential, display) in credentials.into_iter() {
             let mut verifiable_credential_record: VerifiableCredentialRecord = credential.try_into()?;
+
+            // Validate the credential against its corresponding credential Json schema.
+            jsonschema_validator(&verifiable_credential_record.verifiable_credential)?;
+
+            // Set the issuer name of the credential.
             verifiable_credential_record
                 .display_credential
                 .issuer_name
                 .clone_from(&issuer_name);
+
+            // Set the connection id of the credential.
             verifiable_credential_record.display_credential.connection_id = Some(connection.id.clone());
 
             // Set the display name of the credential.
@@ -292,6 +299,12 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
     }
 
     Ok(state)
+}
+
+fn jsonschema_validator(credential: Value) -> Result<_, AppError> {
+    
+
+    Ok()
 }
 
 /// Helper function to get the display name of a credential.
