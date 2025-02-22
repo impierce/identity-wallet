@@ -91,14 +91,16 @@ impl DateUtils {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use lazy_static::lazy_static;
+    use serde_json::json;
 
     #[test]
     fn get_unverified_jwt_claims_successfully_gets_claims() {
-        let jwt = serde_json::json!("eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDprZXk6ejZNa2toUDQzTENTWGFqM1NRQm92eTF1RTJuWHZTQm5SUFdaMndoUExxblo4UGdEI3o2TWtraFA0M0xDU1hhajNTUUJvdnkxdUUyblh2U0JuUlBXWjJ3aFBMcW5aOFBnRCJ9.eyJpc3MiOiJodHRwOi8vMTkyLjE2OC4xLjEyNzo5MDkwLyIsInN1YiI6ImRpZDprZXk6ejZNa2cxWFhHVXFma2hBS1Uxa1ZkMVBtdzZVRWoxdnhpTGoxeGM5MU1CejVvd05ZIiwiZXhwIjo5OTk5OTk5OTk5LCJpYXQiOjAsInZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIiwiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvZXhhbXBsZXMvdjEiXSwidHlwZSI6WyJWZXJpZmlhYmxlQ3JlZGVudGlhbCIsIlBlcnNvbmFsSW5mb3JtYXRpb24iXSwiaXNzdWFuY2VEYXRlIjoiMjAyMi0wMS0wMVQwMDowMDowMFoiLCJpc3N1ZXIiOiJodHRwOi8vMTkyLjE2OC4xLjEyNzo5MDkwLyIsImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkIjoiZGlkOmtleTp6Nk1rZzFYWEdVcWZraEFLVTFrVmQxUG13NlVFajF2eGlMajF4YzkxTUJ6NW93TlkiLCJnaXZlbk5hbWUiOiJGZXJyaXMiLCJmYW1pbHlOYW1lIjoiQ3JhYm1hbiIsImVtYWlsIjoiZmVycmlzLmNyYWJtYW5AY3JhYm1haWwuY29tIiwiYmlydGhkYXRlIjoiMTk4NS0wNS0yMSJ9fX0.Yl841U5BwWgctX5vF5Zi8SYCEQpxFqEs8_J8KrX9D_mOwL-IRmP64BeQZvnKeAdcOoYGn6CyciV51_amdPNQBw");
+        let jwt = json!("eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDprZXk6ejZNa2toUDQzTENTWGFqM1NRQm92eTF1RTJuWHZTQm5SUFdaMndoUExxblo4UGdEI3o2TWtraFA0M0xDU1hhajNTUUJvdnkxdUUyblh2U0JuUlBXWjJ3aFBMcW5aOFBnRCJ9.eyJpc3MiOiJodHRwOi8vMTkyLjE2OC4xLjEyNzo5MDkwLyIsInN1YiI6ImRpZDprZXk6ejZNa2cxWFhHVXFma2hBS1Uxa1ZkMVBtdzZVRWoxdnhpTGoxeGM5MU1CejVvd05ZIiwiZXhwIjo5OTk5OTk5OTk5LCJpYXQiOjAsInZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIiwiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvZXhhbXBsZXMvdjEiXSwidHlwZSI6WyJWZXJpZmlhYmxlQ3JlZGVudGlhbCIsIlBlcnNvbmFsSW5mb3JtYXRpb24iXSwiaXNzdWFuY2VEYXRlIjoiMjAyMi0wMS0wMVQwMDowMDowMFoiLCJpc3N1ZXIiOiJodHRwOi8vMTkyLjE2OC4xLjEyNzo5MDkwLyIsImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkIjoiZGlkOmtleTp6Nk1rZzFYWEdVcWZraEFLVTFrVmQxUG13NlVFajF2eGlMajF4YzkxTUJ6NW93TlkiLCJnaXZlbk5hbWUiOiJGZXJyaXMiLCJmYW1pbHlOYW1lIjoiQ3JhYm1hbiIsImVtYWlsIjoiZmVycmlzLmNyYWJtYW5AY3JhYm1haWwuY29tIiwiYmlydGhkYXRlIjoiMTk4NS0wNS0yMSJ9fX0.Yl841U5BwWgctX5vF5Zi8SYCEQpxFqEs8_J8KrX9D_mOwL-IRmP64BeQZvnKeAdcOoYGn6CyciV51_amdPNQBw");
 
         assert_eq!(
             get_unverified_jwt_claims(&jwt).unwrap(),
-            serde_json::json!({
+            json!({
               "iss": "http://192.168.1.127:9090/",
               "sub": "did:key:z6Mkg1XXGUqfkhAKU1kVd1Pmw6UEj1vxiLj1xc91MBz5owNY",
               "exp": 9999999999i64,
@@ -126,25 +128,50 @@ mod tests {
         );
     }
 
+    lazy_static! {
+        static ref EXAMPLE_BASIC_OB3: Value = json!({
+            "@context": [
+              "https://www.w3.org/ns/credentials/v2",
+              "https://purl.imsglobal.org/spec/ob/v3p0/context-3.0.3.json"
+            ],
+            "id": "http://example.com/credentials/3527",
+            "type": ["VerifiableCredential", "OpenBadgeCredential"],
+            "issuer": {
+              "id": "https://example.com/issuers/876543",
+              "type": ["Profile"],
+              "name": "Example Corp"
+            },
+            "validFrom": "2010-01-01T00:00:00Z",
+            "name": "Teamwork Badge",
+            "credentialSubject": {
+              "id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
+              "type": ["AchievementSubject"],
+              "achievement": {
+                        "id": "https://example.com/achievements/21st-century-skills/teamwork",
+                        "type": ["Achievement"],
+                        "criteria": {
+                            "narrative": "Team members are nominated for this badge by their peers and recognized upon review by Example Corp management."
+                        },
+                        "description": "This badge recognizes the development of the capacity to collaborate within a group environment.",
+                        "name": "Teamwork"
+                    }
+            }
+        });
+    }
+
     #[test]
     fn credential_schema_validation_ok() {
-        let file = File::open("resources/example_basic_obv3.json").unwrap();
-        let rdr = std::io::BufReader::new(file);
-        let data = serde_json::from_reader(rdr).unwrap();
-
-        let result = credential_schema_validation(&data);
+        let result = credential_schema_validation(&EXAMPLE_BASIC_OB3);
         assert!(result.is_ok());
     }
 
     #[test]
     fn credential_schema_validation_err() {
-        let file = File::open("resources/example_basic_obv3.json").unwrap();
-        let rdr = std::io::BufReader::new(file);
-        let mut data: Value = serde_json::from_reader(rdr).unwrap();
+        let mut invalid_ob3 = EXAMPLE_BASIC_OB3.clone();
 
-        *data.get_mut("id").unwrap() = serde_json::json!(["InvalidType"]);
+        *invalid_ob3.get_mut("id").unwrap() = json!(["InvalidType"]);
 
-        let result = credential_schema_validation(&data);
+        let result = credential_schema_validation(&invalid_ob3);
         assert!(result.is_err());
     }
 }
