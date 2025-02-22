@@ -1,7 +1,7 @@
 use crate::{error::AppError, state::SUPPORTED_CRED_TYPE_SCHEMAS};
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use jsonschema::ValidationError;
-use log::warn;
+use log::{debug, warn};
 use serde_json::Value;
 use std::fs::File;
 
@@ -29,25 +29,28 @@ pub fn credential_schema_validation(data: &Value) -> Result<(), AppError> {
         .map(|f| f.as_str().map(String::from).unwrap())
         .collect(); // TODO: remove unwrap. This doesn't work for mDoc, only VC's.
 
-    if SUPPORTED_CRED_TYPE_SCHEMAS.iter().any(|x| credential_type_array.contains(&x.to_string())) {
+    if SUPPORTED_CRED_TYPE_SCHEMAS
+        .iter()
+        .any(|x| credential_type_array.contains(&x.to_string()))
+    {
         for mut supported_cred_type in SUPPORTED_CRED_TYPE_SCHEMAS {
             if credential_type_array.contains(&supported_cred_type.to_string()) {
-                println!("Supported schema found for Credential type: {:?}", supported_cred_type);
-
                 // OpenBadgeCredentials can be typed as "OpenBadgeCredential" or "AchievementCredential"
                 if *supported_cred_type == "AchievementCredential" {
                     supported_cred_type = &"OpenBadgeCredential";
                 }
-    
+
                 let json_schema_path = format!("resources/jsonschemas/{}.json", supported_cred_type);
-                json_schema_validation(json_schema_path, data)?;                
+                json_schema_validation(json_schema_path, data)?;
+                debug!(
+                    "Credential type: {:?} succesfully validated against corresponding Json schema",
+                    supported_cred_type
+                );
             }
         }
-    }
-    else {
-        println!("No supported schema found for Credential type");
+    } else {
         warn!(
-            "No supported schema found for Credential type: {:?}",
+            "No supported schema found for Credential types: {:?}",
             credential_type_array
         );
     }
@@ -66,11 +69,10 @@ pub fn json_schema_validation(json_schema_path: String, data: &Value) -> Result<
     let schema = jsonschema::draft201909::new(&json_schema)
         .map_err(|_| AppError::Error("Failed to compile JsonSchema from serde_json::Value".to_string()))?;
 
-    let result = schema.iter_errors(&data);
+    let result = schema.iter_errors(data);
 
     let errors: Vec<ValidationError> = result.collect();
     if !errors.is_empty() {
-        println!("The data is invalid according to the given JsonSchema: {:?}", errors);
         Err(AppError::Error(format!(
             "The data is invalid according to the given JsonSchema: {:?}",
             errors
@@ -135,7 +137,7 @@ mod tests {
               "https://purl.imsglobal.org/spec/ob/v3p0/context-3.0.3.json"
             ],
             "id": "http://example.com/credentials/3527",
-            "type": ["VerifiableCredential", "OpenBadgeCredential"],
+            "type": ["VerifiableCredential", "AchievementCredential"],
             "issuer": {
               "id": "https://example.com/issuers/876543",
               "type": ["Profile"],
