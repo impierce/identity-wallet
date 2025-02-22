@@ -20,14 +20,19 @@ pub fn get_unverified_jwt_claims(jwt: &serde_json::Value) -> Result<serde_json::
 
 /// Validate supported credential types against their corresponding Json schema.
 pub fn credential_schema_validation(data: &Value) -> Result<(), AppError> {
+    // All VC's must have a type field, which is an array of strings.
+    // This part is not compatible with mDoc's or other types of credentials.
     let credential_type_array: Vec<String> = data
         .get("type")
-        .unwrap()
-        .as_array()
-        .unwrap()
+        .and_then(|f| f.as_array())
+        .ok_or_else(|| AppError::InvalidCredentialFormatError)?
         .iter()
-        .map(|f| f.as_str().map(String::from).unwrap())
-        .collect(); // TODO: remove unwrap. This doesn't work for mDoc, only VC's.
+        .map(|f| {
+            f.as_str()
+                .map(String::from)
+                .ok_or(AppError::InvalidCredentialFormatError)
+        })
+        .collect::<Result<Vec<String>, AppError>>()?;
 
     if SUPPORTED_CRED_TYPE_SCHEMAS
         .iter()
