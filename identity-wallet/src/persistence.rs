@@ -65,9 +65,9 @@ pub async fn load_state() -> anyhow::Result<AppState> {
     let content = String::from_utf8(bytes)?;
 
     // Load state to json Value instead of direct deserialization to avoid different versions breaking.
-    let app_state_value: serde_json::Value = serde_json::from_str(&content)?;
-    let version = app_state_value.get("version").unwrap().to_string(); // TODO: remove unwrap
-    let app_state: AppState = match version.as_str() {
+    let app_state_value: Value = serde_json::from_str(&content)?;
+    let version = app_state_value.get("version").unwrap().as_u64().unwrap(); // TODO: remove unwrap
+    let app_state: AppState = match version {
         APPSTATE_VERSION => {
             let app_state = serde_json::from_str(&content)?;
             debug!("state loaded from disk");
@@ -75,7 +75,7 @@ pub async fn load_state() -> anyhow::Result<AppState> {
         }
         _ => {
             debug!("state version mismatch, performing data migration and appstate update from {} to {}", version, APPSTATE_VERSION);
-            let app_state = appstate_version_update(app_state_value, version)?;
+            let app_state = appstate_version_update(app_state_value, version).await?;
             debug!("state successfully loaded from disk and updated");
             app_state
         }
@@ -84,9 +84,8 @@ pub async fn load_state() -> anyhow::Result<AppState> {
     Ok(app_state)
 }
 
-pub async fn appstate_version_update(app_state_value: serde_json::Value, version: String) -> anyhow::Result<AppState> {
-    // todo: convert version to index in migrations vec
-    // let version_index = todo;
+/// This function is used to migrate the app state from one version to another.
+pub async fn appstate_version_update(app_state_value: Value, version: u64) -> anyhow::Result<AppState> {
     
     let migrations: Vec<fn(&mut Value)> = vec![
         migrate_v1_to_v2,
@@ -95,7 +94,7 @@ pub async fn appstate_version_update(app_state_value: serde_json::Value, version
     ];
 
     for (index, migration) in migrations.iter().enumerate() {
-        if (index + 1) >  version {
+        if (index + 1) >=  version as usize {
             migration(&mut app_state_value);
         }
     }
@@ -116,7 +115,7 @@ pub async fn save_state(app_state: &AppState) -> anyhow::Result<()> {
     // Here we take out the credentials field before saving the state,
     // being sensitive data they should only be stored in the stronghold, nowhere else.
     let mut json_app_state = serde_json::to_value(app_state)?;
-    json_app_state["credentials"] = serde_json::Value::Array(Vec::new());
+    json_app_state["credentials"] = Value::Array(Vec::new());
 
     file.write_all(serde_json::to_string(app_state)?.as_bytes()).await?;
     debug!("state saved to disk");
