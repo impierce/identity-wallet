@@ -209,7 +209,7 @@ async fn get_validated_linked_credential_data(
                 // `SkipUnsupported` allows for custom credential types, such as the StatusList2021Entry (https://www.w3.org/TR/2023/WD-vc-status-list-20230427/#statuslist2021entry)
                 let options = JwtCredentialValidationOptions::new().status_check(StatusCheck::SkipUnsupported);
 
-                // Decode the linked verifiable credential and validate it 
+                // Decode the linked verifiable credential and validate it
                 if let Ok(linked_verifiable_credential) = validator.validate::<_, Value>(
                     &linked_verifiable_credential,
                     &issuer_document,
