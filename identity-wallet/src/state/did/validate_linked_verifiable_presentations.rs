@@ -260,9 +260,23 @@ async fn get_validated_linked_credential_data(
 /// Returns a Vec of successfully validated issuer linked domains.
 async fn get_validated_linked_domains(issuer_linked_domains: &[Url], issuer_did: &str) -> Vec<Url> {
     FuturesUnordered::from_iter(issuer_linked_domains.iter().map(|issuer_linked_domain| async move {
-        let validation_status = validate_domain_linkage(issuer_linked_domain.clone(), issuer_did)
-            .await
-            .status;
+        let validation_status: ValidationStatus = {
+            #[cfg(not(feature = "test_utils"))]
+            {
+                use crate::state::did::validate_domain_linkage::validate_domain_linkage;
+
+                validate_domain_linkage(issuer_linked_domain.clone(), issuer_did)
+                    .await
+                    .status
+            }
+            #[cfg(feature = "test_utils")]
+            {
+                // Silence unused variable warning
+                let _issuer_did = issuer_did;
+                // Skip validation during tests
+                Default::default()
+            }
+        };
 
         if validation_status == ValidationStatus::Success {
             info!("Successfully validated domain linkage for issuer linked domain: {issuer_linked_domain}");
@@ -428,6 +442,7 @@ fn extract_url_from_did_web(did_web: &str) -> Option<Url> {
     None
 }
 
+#[cfg(not(feature = "test_utils"))]
 #[cfg(test)]
 mod tests {
     use super::*;

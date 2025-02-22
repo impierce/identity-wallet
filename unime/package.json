@@ -23,7 +23,7 @@
     "@iconify-json/ph": "^1.2.0",
     "@lottiefiles/lottie-player": "^2.0.12",
     "@melt-ui/pp": "^0.3.0",
-    "@melt-ui/svelte": "^0.83.0",
+    "@melt-ui/svelte": "^0.86.2",
     "@sveltejs/adapter-static": "^3.0.8",
     "@sveltejs/kit": "^2.5.26",
     "@sveltejs/vite-plugin-svelte": "^3.0.0",
