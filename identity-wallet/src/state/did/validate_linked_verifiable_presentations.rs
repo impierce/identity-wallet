@@ -2,7 +2,7 @@ use crate::{
     persistence::{download_asset, hash},
     state::{
         core_utils::helpers::get_issuer_document,
-        did::validate_domain_linkage::{validate_domain_linkage, ValidationStatus, Verifier},
+        did::validate_domain_linkage::{ValidationStatus, Verifier},
     },
 };
 use did_manager::Resolver;
