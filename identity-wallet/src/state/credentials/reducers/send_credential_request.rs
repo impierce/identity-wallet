@@ -12,17 +12,20 @@ use crate::{
             actions::credential_offers_selected::CredentialOffersSelected, DisplayCredential,
             VerifiableCredentialRecord,
         },
+        did::{validate_domain_linkage::Verifier, validate_linked_verifiable_presentations::get_issuer_document},
         user_prompt::CurrentUserPrompt,
         AppState,
     },
 };
 
+use did_manager::Resolver;
+use identity_iota::credential::{FailFast, Jwt, JwtCredentialValidationOptions, JwtCredentialValidator, StatusCheck};
 use log::info;
 use oid4vc::oid4vci::{
     credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject,
     credential_offer::Grants, credential_response::CredentialResponseType, token_request::TokenRequest,
 };
-use serde_json::json;
+use serde_json::{json, Value};
 use std::collections::HashMap;
 use uuid::Uuid;
 
@@ -158,6 +161,25 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                         CredentialResponseType::Immediate { credential, .. } => credential,
                         _ => panic!("Credential was not a jwt_vc_json."),
                     };
+
+                    {
+                        // Validate the received jwt_vc_json.
+                        // `SkipUnsupported` allows for custom credential types, such as the StatusList2021Entry (https://www.w3.org/TR/2023/WD-vc-status-list-20230427/#statuslist2021entry)
+                        let validator = JwtCredentialValidator::with_signature_verifier(Verifier);
+                        let options = JwtCredentialValidationOptions::new().status_check(StatusCheck::SkipUnsupported);
+
+                        // Type received credential to Jwt
+                        let credential_jwt = Jwt::new(credential.as_str().unwrap().to_string()); // TODO: remove unwrap
+
+                        let resolver = Resolver::new().await;
+                        let issuer_document = get_issuer_document(&resolver, &credential_jwt)
+                            .await
+                            .ok_or(AppError::Error("Failed to resolve issuer DID".to_string()))?;
+
+                        validator
+                            .validate::<_, Value>(&credential_jwt, &issuer_document, &options, FailFast::FirstError)
+                            .map_err(|_| AppError::Error("Received nvalid jwt_vc_json".to_string()))?;
+                    }
 
                     vec![(
                         credential_configuration_id,

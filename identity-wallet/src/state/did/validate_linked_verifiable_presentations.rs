@@ -276,21 +276,21 @@ async fn get_validated_linked_domains(issuer_linked_domains: &[Url], issuer_did:
     .await
 }
 
-/// This function uses the linked verifiable credential to resolve the issuer document.
-async fn get_issuer_document(resolver: &Resolver, linked_verifiable_credential: &Jwt) -> Option<CoreDocument> {
+/// This function uses the credential in jwt format from the jwt_vc_json to resolve the issuer document.
+pub async fn get_issuer_document(resolver: &Resolver, credential_jwt: &Jwt) -> Option<CoreDocument> {
     let decoder = Decoder::new();
 
     // Decode the linked verifiable credential.
-    let decoded_linked_verifiable_credential = decoder
-        .decode_compact_serialization(linked_verifiable_credential.as_str().as_bytes(), None)
-        .inspect_err(|err| warn!("Failed to decode linked verifiable credential: {:#?}", err))
+    let decoded_credential_jwt = decoder
+        .decode_compact_serialization(credential_jwt.as_str().as_bytes(), None)
+        .inspect_err(|err| warn!("Failed to decode credential jwt: {:#?}", err))
         .ok()?;
 
-    let claims: JwtClaims<Value> = serde_json::from_slice(decoded_linked_verifiable_credential.claims())
-        .inspect_err(|err| warn!("Failed to parse linked verifiable credential claims: {:#?}", err))
+    let claims: JwtClaims<Value> = serde_json::from_slice(decoded_credential_jwt.claims())
+        .inspect_err(|err| warn!("Failed to parse credential claims: {:#?}", err))
         .ok()?;
 
-    info!("Linked verifiable credential claims: {:#?}", claims);
+    info!("jwt_vc_json Credential claims: {:#?}", claims);
 
     // Resolve the DID
     resolver
