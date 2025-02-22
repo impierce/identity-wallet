@@ -1,6 +1,9 @@
 use crate::{
     persistence::{download_asset, hash},
-    state::did::validate_domain_linkage::{validate_domain_linkage, ValidationStatus, Verifier},
+    state::{
+        core_utils::helpers::get_issuer_document,
+        did::validate_domain_linkage::{validate_domain_linkage, ValidationStatus, Verifier},
+    },
 };
 use did_manager::Resolver;
 use futures::{
@@ -15,9 +18,7 @@ use identity_iota::{
         JwtCredentialValidator, JwtPresentationValidator, StatusCheck, Subject,
     },
     document::{CoreDocument, Service},
-    verification::jws::Decoder,
 };
-use identity_jose::jwt::JwtClaims;
 use log::{info, warn};
 use oid4vc::oid4vci::credential_issuer::credential_issuer_metadata::CredentialIssuerMetadata;
 use serde::{Deserialize, Serialize};
@@ -208,7 +209,7 @@ async fn get_validated_linked_credential_data(
                 // `SkipUnsupported` allows for custom credential types, such as the StatusList2021Entry (https://www.w3.org/TR/2023/WD-vc-status-list-20230427/#statuslist2021entry)
                 let options = JwtCredentialValidationOptions::new().status_check(StatusCheck::SkipUnsupported);
 
-                // Decode the linked verifiable credential and validate it
+                // Decode the linked verifiable credential and validate it 
                 if let Ok(linked_verifiable_credential) = validator.validate::<_, Value>(
                     &linked_verifiable_credential,
                     &issuer_document,
@@ -274,30 +275,6 @@ async fn get_validated_linked_domains(issuer_linked_domains: &[Url], issuer_did:
     .filter_map(|result| async move { result })
     .collect()
     .await
-}
-
-/// This function uses the credential in jwt format from the jwt_vc_json to resolve the issuer document.
-pub async fn get_issuer_document(resolver: &Resolver, credential_jwt: &Jwt) -> Option<CoreDocument> {
-    let decoder = Decoder::new();
-
-    // Decode the linked verifiable credential.
-    let decoded_credential_jwt = decoder
-        .decode_compact_serialization(credential_jwt.as_str().as_bytes(), None)
-        .inspect_err(|err| warn!("Failed to decode credential jwt: {:#?}", err))
-        .ok()?;
-
-    let claims: JwtClaims<Value> = serde_json::from_slice(decoded_credential_jwt.claims())
-        .inspect_err(|err| warn!("Failed to parse credential claims: {:#?}", err))
-        .ok()?;
-
-    info!("jwt_vc_json Credential claims: {:#?}", claims);
-
-    // Resolve the DID
-    resolver
-        .resolve(claims.iss()?)
-        .await
-        .inspect_err(|err| warn!("Failed to resolve issuer DID.: {:#?}", err))
-        .ok()
 }
 
 /// Get the linked domains from the issuer document. It returns a list of URLs if the service type is `LinkedDomains`.

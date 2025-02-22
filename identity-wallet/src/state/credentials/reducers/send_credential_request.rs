@@ -4,7 +4,7 @@ use crate::{
     state::{
         actions::{listen, Action},
         core_utils::{
-            helpers::credential_schema_validation,
+            helpers::{credential_schema_validation, jwt_vc_json_validator},
             history_event::{EventType, HistoryCredential, HistoryEvent},
             CoreUtils,
         },
@@ -12,20 +12,18 @@ use crate::{
             actions::credential_offers_selected::CredentialOffersSelected, DisplayCredential,
             VerifiableCredentialRecord,
         },
-        did::{validate_domain_linkage::Verifier, validate_linked_verifiable_presentations::get_issuer_document},
         user_prompt::CurrentUserPrompt,
         AppState,
     },
 };
 
-use did_manager::Resolver;
-use identity_iota::credential::{FailFast, Jwt, JwtCredentialValidationOptions, JwtCredentialValidator, StatusCheck};
+use identity_iota::credential::Jwt;
 use log::info;
 use oid4vc::oid4vci::{
     credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject,
     credential_offer::Grants, credential_response::CredentialResponseType, token_request::TokenRequest,
 };
-use serde_json::{json, Value};
+use serde_json::json;
 use std::collections::HashMap;
 use uuid::Uuid;
 
@@ -162,24 +160,14 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                         _ => panic!("Credential was not a jwt_vc_json."),
                     };
 
-                    {
-                        // Validate the received jwt_vc_json.
-                        // `SkipUnsupported` allows for custom credential types, such as the StatusList2021Entry (https://www.w3.org/TR/2023/WD-vc-status-list-20230427/#statuslist2021entry)
-                        let validator = JwtCredentialValidator::with_signature_verifier(Verifier);
-                        let options = JwtCredentialValidationOptions::new().status_check(StatusCheck::SkipUnsupported);
-
-                        // Type received credential to Jwt
-                        let credential_jwt = Jwt::new(credential.as_str().unwrap().to_string()); // TODO: remove unwrap
-
-                        let resolver = Resolver::new().await;
-                        let issuer_document = get_issuer_document(&resolver, &credential_jwt)
-                            .await
-                            .ok_or(AppError::Error("Failed to resolve issuer DID".to_string()))?;
-
-                        validator
-                            .validate::<_, Value>(&credential_jwt, &issuer_document, &options, FailFast::FirstError)
-                            .map_err(|_| AppError::Error("Received nvalid jwt_vc_json".to_string()))?;
-                    }
+                    // Type received credential to Jwt for jwt_vc_json validation
+                    let credential_jwt = Jwt::new(
+                        credential
+                            .as_str()
+                            .ok_or(AppError::Error("Invalid JWT string.".to_string()))?
+                            .to_string(),
+                    ); // TODO: remove unwrap
+                    jwt_vc_json_validator(credential_jwt).await?;
 
                     vec![(
                         credential_configuration_id,
@@ -196,24 +184,32 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                         .await
                         .map_err(GetBatchCredentialError)?;
 
-                    credential_configuration_ids
-                        .into_iter()
-                        .zip(batch_credential_response.credential_responses.into_iter())
-                        .zip(credential_configurations.into_iter())
-                        .filter_map(
-                            |((credential_configuration_id, credential_response), credential_configuration)| {
-                                match credential_response {
-                                    CredentialResponseType::Immediate { credential, .. } => Some((
-                                        credential_configuration_id,
-                                        credential,
-                                        credential_configuration.display,
-                                    )),
-                                    // TODO: add support for deferred credentials.
-                                    CredentialResponseType::Deferred { .. } => None,
-                                }
-                            },
-                        )
-                        .collect()
+                    let mut result = Vec::new();
+                    for ((credential_configuration_id, credential_response), credential_configuration) in
+                        credential_configuration_ids
+                            .into_iter()
+                            .zip(batch_credential_response.credential_responses.into_iter())
+                            .zip(credential_configurations.into_iter())
+                    {
+                        if let CredentialResponseType::Immediate { credential, .. } = credential_response {
+                            // Type received credential to Jwt for jwt_vc_json validation
+                            let credential_jwt = Jwt::new(
+                                credential
+                                    .as_str()
+                                    .ok_or(AppError::Error("Invalid JWT string.".to_string()))?
+                                    .to_string(),
+                            );
+                            jwt_vc_json_validator(credential_jwt).await?;
+
+                            result.push((
+                                credential_configuration_id,
+                                credential,
+                                credential_configuration.display,
+                            ));
+                        }
+                        // TODO: add support for deferred credentials.
+                    }
+                    result
                 }
             };
 
