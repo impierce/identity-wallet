@@ -88,7 +88,7 @@ pub const APPSTATE_VERSION: u64 = 1;
 #[serde(default)]
 pub struct AppState {
     /// This field will be used for Data Migration between version updates.
-    pub version: usize,
+    pub version: u64,
     pub dids: HashMap<String, String>,
     pub connections: Connections,
     pub credentials: Vec<DisplayCredential>,
