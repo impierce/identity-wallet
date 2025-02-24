@@ -166,7 +166,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                             .as_str()
                             .ok_or(AppError::Error("Invalid JWT string.".to_string()))?
                             .to_string(),
-                    ); // TODO: remove unwrap
+                    );
                     jwt_vc_json_validator(credential_jwt).await?;
 
                     vec![(

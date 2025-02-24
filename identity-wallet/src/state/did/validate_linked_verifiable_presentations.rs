@@ -1,7 +1,7 @@
 use crate::{
     persistence::{download_asset, hash},
     state::{
-        core_utils::helpers::get_issuer_document,
+        core_utils::helpers::{credential_schema_validation, get_issuer_document},
         did::validate_domain_linkage::{ValidationStatus, Verifier},
     },
 };
@@ -216,7 +216,10 @@ async fn get_validated_linked_credential_data(
                     &options,
                     FailFast::FirstError,
                 ) {
-                    info!("Validated linked verifiable credential: {linked_verifiable_credential:#?}");
+                    info!("Validated linked verifiable credential JWT: {linked_verifiable_credential:#?}");
+
+                    // Validate the linked verifiable credential against its corresponding Json schema
+                    credential_schema_validation(&linked_verifiable_credential.credential.to_json_value().ok()?).ok()?;
 
                     let credential_subject = match &linked_verifiable_credential.credential.credential_subject {
                         OneOrMany::One(subject) => Some(subject),
