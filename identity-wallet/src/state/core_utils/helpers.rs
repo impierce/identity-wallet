@@ -112,7 +112,7 @@ pub fn credential_schema_validation(data: &Value) -> Result<(), AppError> {
 
                     let json_schema_path = format!("resources/jsonschemas/{}.json", supported_cred_type);
                     json_schema_validation(json_schema_path, data)?;
-                    
+
                     debug!(
                         "Credential type: {:?} succesfully validated against corresponding Json schema",
                         supported_cred_type
