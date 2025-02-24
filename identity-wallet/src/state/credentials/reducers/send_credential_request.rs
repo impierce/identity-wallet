@@ -158,6 +158,8 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                         _ => panic!("Credential was not a jwt_vc_json."),
                     };
 
+                    // TODO: Validate credential against its corresponding credential configuration.
+
                     vec![(
                         credential_configuration_id,
                         credential,
