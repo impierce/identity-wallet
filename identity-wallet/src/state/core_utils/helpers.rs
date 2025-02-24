@@ -72,44 +72,59 @@ pub async fn jwt_vc_json_validator(credential_jwt: Jwt) -> Result<DecodedJwtCred
 
 /// Validate supported credential types against their corresponding Json schema.
 pub fn credential_schema_validation(data: &Value) -> Result<(), AppError> {
-    // All VC's must have a type field, which is an array of strings.
-    // This part is not compatible with mDoc's or other types of credentials.
-    let credential_type_array: Vec<String> = data
-        .get("type")
-        .and_then(|f| f.as_array())
-        .ok_or_else(|| AppError::InvalidCredentialFormatError)?
-        .iter()
-        .map(|f| {
-            f.as_str()
-                .map(String::from)
-                .ok_or(AppError::InvalidCredentialFormatError)
-        })
-        .collect::<Result<Vec<String>, AppError>>()?;
+    // This function is only capable of validating VC's and subsequent Credential Formats/Types.
+    // All VC's must have a `type` field, which is either a string or an array of strings.
+    if let Some(credential_type) = data.get("type").and_then(|f| f.as_str()) {
+        if SUPPORTED_CRED_TYPE_SCHEMAS.contains(&credential_type) {
+            let json_schema_path = format!("resources/jsonschemas/{}.json", credential_type);
 
-    if SUPPORTED_CRED_TYPE_SCHEMAS
-        .iter()
-        .any(|x| credential_type_array.contains(&x.to_string()))
-    {
-        for mut supported_cred_type in SUPPORTED_CRED_TYPE_SCHEMAS {
-            if credential_type_array.contains(&supported_cred_type.to_string()) {
-                // OpenBadgeCredentials can be typed as "OpenBadgeCredential" or "AchievementCredential"
-                if *supported_cred_type == "AchievementCredential" {
-                    supported_cred_type = &"OpenBadgeCredential";
-                }
-
-                let json_schema_path = format!("resources/jsonschemas/{}.json", supported_cred_type);
-                json_schema_validation(json_schema_path, data)?;
-                debug!(
-                    "Credential type: {:?} succesfully validated against corresponding Json schema",
-                    supported_cred_type
-                );
-            }
+            json_schema_validation(json_schema_path, data)?;
+            debug!(
+                "Credential type: {:?} succesfully validated against corresponding Json schema",
+                credential_type
+            );
+        } else {
+            warn!("No supported schema found for Credential type: {:?}", credential_type);
         }
     } else {
-        warn!(
-            "No supported schema found for Credential types: {:?}",
-            credential_type_array
-        );
+        let credential_type_array: Vec<String> = data
+            .get("type")
+            .and_then(|f| f.as_array())
+            .ok_or_else(|| AppError::InvalidCredentialFormatError)?
+            .iter()
+            .map(|f| {
+                f.as_str()
+                    .map(String::from)
+                    .ok_or(AppError::InvalidCredentialFormatError)
+            })
+            .collect::<Result<Vec<String>, AppError>>()?;
+
+        if SUPPORTED_CRED_TYPE_SCHEMAS
+            .iter()
+            .any(|x| credential_type_array.contains(&x.to_string()))
+        {
+            for mut supported_cred_type in SUPPORTED_CRED_TYPE_SCHEMAS {
+                if credential_type_array.contains(&supported_cred_type.to_string()) {
+                    // OpenBadgeCredentials can be typed as "OpenBadgeCredential" or "AchievementCredential"
+                    if *supported_cred_type == "AchievementCredential" {
+                        supported_cred_type = &"OpenBadgeCredential";
+                    }
+
+                    let json_schema_path = format!("resources/jsonschemas/{}.json", supported_cred_type);
+                    json_schema_validation(json_schema_path, data)?;
+                    
+                    debug!(
+                        "Credential type: {:?} succesfully validated against corresponding Json schema",
+                        supported_cred_type
+                    );
+                }
+            }
+        } else {
+            warn!(
+                "No supported schema found for Credential types: {:?}",
+                credential_type_array
+            );
+        }
     }
 
     Ok(())
