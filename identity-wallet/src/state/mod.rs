@@ -78,7 +78,7 @@ impl AppStateContainer {
 
 pub const SUPPORTED_SIGNING_ALGORITHMS: &[Algorithm] = &[Algorithm::EdDSA, Algorithm::ES256];
 pub const SUPPORTED_DID_METHODS: &[&str] = &["did:jwk", "did:key"];
-pub const APPSTATE_VERSION: u64 = 1;
+pub const APPSTATE_VERSION: u32 = 1;
 
 /// The inner state of the application managed by Tauri. When the state is serialized in order to be sent to the
 /// frontend, the `managers` and `active_connection_request` fields are skipped.
@@ -87,8 +87,7 @@ pub const APPSTATE_VERSION: u64 = 1;
 #[ts(export)]
 #[serde(default)]
 pub struct AppState {
-    /// This field will be used for Data Migration between version updates.
-    pub version: u64,
+    pub version: u32,
     pub dids: HashMap<String, String>,
     pub connections: Connections,
     pub credentials: Vec<DisplayCredential>,
