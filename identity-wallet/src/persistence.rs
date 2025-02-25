@@ -88,7 +88,7 @@ pub async fn load_state() -> anyhow::Result<AppState> {
             app_state
         }
         _ => {
-            let app_state = apply_state_migrations(app_state_object, version).await?;
+            let app_state = apply_state_migrations(app_state_object, version)?;
             debug!("successful migration");
 
             save_state(&app_state)
@@ -239,7 +239,7 @@ pub fn hash(url: &str) -> String {
 // Data migration functions
 
 /// This function is used to migrate the app state from one version to the next.
-pub async fn apply_state_migrations(
+pub fn apply_state_migrations(
     app_state_object: serde_json::Map<String, serde_json::Value>,
     mut current_version: u32,
 ) -> anyhow::Result<AppState, AppError> {
