@@ -65,27 +65,31 @@ pub async fn load_state() -> anyhow::Result<AppState> {
 
     // Load state into a `serde_json::Object` first to run data model migrations before deserialization into `AppState`.
     let app_state_object: serde_json::Map<String, serde_json::Value> = serde_json::from_str(&content)?;
+    debug!("state loaded from disk");
+
     // Get the version from the state file, if no version field is found, default to 1.
     let version = app_state_object
         .get("version")
         .unwrap_or(&serde_json::Value::from(1))
         .as_u64()
         .map(|v| v as u32)
-        .ok_or_else(|| AppError::Error("Failed to get valid version while loading AppState".to_string()))?;
+        .ok_or_else(|| {
+            AppError::AppStateMigrationError(
+                0,
+                APP_STATE_VERSION,
+                "Failed to get valid current version from AppState loaded from disk".to_string(),
+            )
+        })?;
 
     let app_state: AppState = match version {
         APP_STATE_VERSION => {
             let app_state = serde_json::from_str(&content)?;
-            debug!("state loaded from disk");
+            debug!("no migrations needed");
             app_state
         }
         _ => {
-            debug!(
-                "state version mismatch, performing data migration and appstate update from {} to {}",
-                version, APP_STATE_VERSION
-            );
             let app_state = apply_state_migrations(app_state_object, version).await?;
-            debug!("state successfully loaded from disk and migrated");
+            debug!("successful migration");
             app_state
         }
     };
@@ -234,24 +238,27 @@ pub async fn apply_state_migrations(
     app_state_object: serde_json::Map<String, serde_json::Value>,
     mut current_version: u32,
 ) -> anyhow::Result<AppState, AppError> {
-    println!("outdated_version: {}\n\n", current_version);
     while current_version < APP_STATE_VERSION {
         // this code is commented out because we don't have any migrations yet.
-        // match outdated_version {
-        //     1 => migrate_v1_to_v2(&mut app_state_object),
-        //     _ => return Err(AppError::Error(format!("Unsupported AppState version: {}", outdated_version))),
+        // match current_version {
+        //     1 => migrate_v1_to_v2(&mut app_state_object)?,
+        //     _ => return Err(AppError::AppStateMigrationError(current_version, APP_STATE_VERSION, "Unsupported AppState version")),
         // }
 
-        // outdated_version = app_state_object
+        let previous_version = current_version;
+        // This is a temporary solution to avoid infinite loops.
+        current_version += 1;
+
+        // current_version = app_state_object
         //     .get("version")
         //     .and_then(|v| v.as_u64())
         //     .map(|v| v as u32)
         //     .ok_or_else(|| AppError::Error("Failed to get version while migrating AppState".to_string()))?;
 
-        // This is a temporary solution to avoid infinite loops.
-        current_version += 1;
-
-        info!("state successfully migrated to AppState version {}.", current_version);
+        info!(
+            "state successfully migrated AppState version from {} to {}.",
+            previous_version, current_version
+        );
     }
 
     let app_state_value = serde_json::Value::Object(app_state_object);
@@ -260,8 +267,6 @@ pub async fn apply_state_migrations(
     save_state(&app_state)
         .await
         .map_err(|_| AppError::Error("Failed to save state after applying migrations".to_string()))?;
-
-    info!("state successfully migrated, AppState: {:?}.", app_state);
 
     Ok(app_state)
 }
