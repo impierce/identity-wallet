@@ -13,8 +13,6 @@
   import UniMeLogo from '$lib/static/svg/logo/UniMeLogo.svelte';
   import { state } from '$lib/stores';
 
-  let maxTriesBiometrics = 2;
-  let biometricAuthenticationInProgress = false;
   let showPassword = false;
 
   let password: string;
@@ -23,7 +21,6 @@
   const USER = 'tester'; // TODO: rename to "ACCOUNT" to reflect Keychain Access item?
 
   const unlockWithBiometrics = async () => {
-    biometricAuthenticationInProgress = true;
     await retrieve(SERVICE, USER)
       .then((password) => {
         // TODO: do we need this check or can we change the return type to "Promise<string>"?
@@ -35,7 +32,6 @@
       })
       .catch((error) => {
         warn(error);
-        maxTriesBiometrics--;
       });
   };
 
@@ -61,37 +57,29 @@
   <div class="flex flex-col items-center justify-center">
     <UniMeLogo class="text-blue dark:text-silver" />
 
-    {#if biometricAuthenticationInProgress && maxTriesBiometrics > 0}
-      <div class="w-[240px]">
-        <div class="h-24">
-          <!-- Placeholder instead of the password input -->
-        </div>
-        <Button label={$LL.LOCK_SCREEN.BUTTON_TEXT()} on:click={unlockWithBiometrics} />
-      </div>
-    {:else}
-      <div class="relative mb-4 mt-8 w-[240px]">
-        <input
-          type={showPassword ? 'text' : 'password'}
-          class="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300"
-          placeholder={$LL.LOCK_SCREEN.PASSWORD_INPUT_PLACEHOLDER()}
-          on:input={(e: Event) => (password = (e.target as HTMLInputElement).value)}
-        />
-        <div class="absolute right-3 top-0 flex h-full items-center">
-          <button class="rounded-full p-2" on:click={() => (showPassword = !showPassword)}>
-            {#if showPassword}
-              <EyeRegularIcon class="text-slate-700 dark:text-grey" />
-            {:else}
-              <EyeClosedRegularIcon class="text-slate-700 dark:text-grey" />
-            {/if}
-          </button>
-        </div>
-      </div>
-      <Button
-        label={$LL.LOCK_SCREEN.BUTTON_TEXT()}
-        on:click={() => dispatch({ type: '[Storage] Unlock', payload: { password } })}
-        disabled={!password}
+    <!-- Manual password entry -->
+    <div class="relative mb-4 mt-8 w-[240px]">
+      <input
+        type={showPassword ? 'text' : 'password'}
+        class="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300"
+        placeholder={$LL.LOCK_SCREEN.PASSWORD_INPUT_PLACEHOLDER()}
+        on:input={(e: Event) => (password = (e.target as HTMLInputElement).value)}
       />
-    {/if}
+      <div class="absolute right-3 top-0 flex h-full items-center">
+        <button class="rounded-full p-2" on:click={() => (showPassword = !showPassword)}>
+          {#if showPassword}
+            <EyeRegularIcon class="text-slate-700 dark:text-grey" />
+          {:else}
+            <EyeClosedRegularIcon class="text-slate-700 dark:text-grey" />
+          {/if}
+        </button>
+      </div>
+    </div>
+    <Button
+      label={$LL.LOCK_SCREEN.BUTTON_TEXT()}
+      on:click={() => dispatch({ type: '[Storage] Unlock', payload: { password } })}
+      disabled={!password}
+    />
 
     <!-- Forgot password? Reset app -->
     <div class="mt-8">
