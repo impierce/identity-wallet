@@ -139,6 +139,7 @@ mod tests {
     use std::sync::Arc;
 
     #[tokio::test]
+    #[serial_test::serial]
     async fn test_set_locale() {
         let mut app_state = AppState::default();
 
@@ -150,6 +151,7 @@ mod tests {
     }
 
     #[tokio::test]
+    #[serial_test::serial]
     async fn test_update_profile_settings() {
         let active_profile = Profile {
             name: "Ferris".to_string(),

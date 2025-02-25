@@ -184,6 +184,7 @@ mod tests {
     // Currently we #[PartialEq(ignore)] the metadata.date_added field since it will fail many other tests.
     // The json files are static but some tests create new credentials and the date_added field will be added at this time.
     #[tokio::test]
+    #[serial_test::serial]
     async fn test_credentials_update_sorting_setting_date_added() {
         let state = AppState::default();
         let action = Arc::new(UpdateSortingPreference {
@@ -207,6 +208,7 @@ mod tests {
     // sort_credentials tests //
 
     #[tokio::test]
+    #[serial_test::serial]
     async fn test_credentials_sorting_name_az() {
         let state = init_credential_names("C".to_string(), "A".to_string(), "B".to_string());
         let action = Arc::new(UpdateSortingPreference { ..Default::default() });
@@ -225,6 +227,7 @@ mod tests {
     }
 
     #[tokio::test]
+    #[serial_test::serial]
     async fn test_credentials_sorting_name_az_reverse() {
         let state = init_credential_names("C".to_string(), "A".to_string(), "B".to_string());
         let action = Arc::new(UpdateSortingPreference {
@@ -247,6 +250,7 @@ mod tests {
     }
 
     #[tokio::test]
+    #[serial_test::serial]
     async fn test_credentials_sorting_issue_reverse() {
         let state = init_credential_issuance_dates(
             "2022-00-00T00:00:00Z".to_string(),
@@ -279,6 +283,7 @@ mod tests {
     // sort_connections tests //
 
     #[tokio::test]
+    #[serial_test::serial]
     async fn test_connections_sorting_name_az_reverse() {
         let state = init_connection_names("Gym".to_string(), "Work".to_string(), "School".to_string());
         let action = Arc::new(UpdateSortingPreference {
@@ -304,6 +309,7 @@ mod tests {
     // In fact, the {last_interacted, reverse: true} is the same as {first_interacted, reverse:false}.
     // For this reason the reverse button will disabled for these sorting options.
     #[tokio::test]
+    #[serial_test::serial]
     async fn test_connections_sorting_first_interact() {
         let state = init_connection_interactions(
             "2019-00-00T00:00:00Z".to_string(),
@@ -335,6 +341,7 @@ mod tests {
     }
 
     #[tokio::test]
+    #[serial_test::serial]
     async fn test_connections_sorting_last_interact() {
         let state = init_connection_interactions(
             "2020-00-00T00:00:00Z".to_string(),

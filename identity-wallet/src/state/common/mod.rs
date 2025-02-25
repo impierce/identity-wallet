@@ -17,6 +17,7 @@ mod tests {
     use std::sync::Arc;
 
     #[tokio::test]
+    #[serial_test::serial]
     async fn test_cancel_user_flow() {
         let current_user_prompt = Some(CurrentUserPrompt::ShareCredentials {
             client_name: "Impierce Technologies".to_string(),
@@ -58,6 +59,7 @@ mod tests {
     }
 
     #[tokio::test]
+    #[serial_test::serial]
     async fn test_reset_state() {
         let mut app_state = AppState {
             profile_settings: ProfileSettings {

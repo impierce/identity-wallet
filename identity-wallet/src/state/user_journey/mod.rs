@@ -15,6 +15,7 @@ mod tests {
     use std::sync::Arc;
 
     #[tokio::test]
+    #[serial_test::serial]
     async fn test_cancel_user_journey() {
         let mut app_state = AppState {
             user_journey: Some(json!("Some Journey")),
