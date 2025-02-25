@@ -90,6 +90,11 @@ pub async fn load_state() -> anyhow::Result<AppState> {
         _ => {
             let app_state = apply_state_migrations(app_state_object, version).await?;
             debug!("successful migration");
+
+            save_state(&app_state)
+                .await
+                .map_err(|_| AppError::Error("Failed to save state after applying migrations".to_string()))?;
+
             app_state
         }
     };
@@ -255,7 +260,7 @@ pub async fn apply_state_migrations(
         //     .map(|v| v as u32)
         //     .ok_or_else(|| AppError::Error("Failed to get version while migrating AppState".to_string()))?;
 
-        info!(
+        debug!(
             "state successfully migrated AppState version from {} to {}.",
             previous_version, current_version
         );
@@ -263,10 +268,6 @@ pub async fn apply_state_migrations(
 
     let app_state_value = serde_json::Value::Object(app_state_object);
     let app_state: AppState = serde_json::from_value(app_state_value)?;
-
-    save_state(&app_state)
-        .await
-        .map_err(|_| AppError::Error("Failed to save state after applying migrations".to_string()))?;
 
     Ok(app_state)
 }
@@ -322,7 +323,7 @@ mod tests {
 
         let app_state_object: Map<String, Value> = serde_json::from_reader(&rdr).unwrap();
         let test_app_state = dummy_appstate_version_update(app_state_object, 0).await.unwrap();
-        let test_app_state_str = serde_json::to_string(&test_app_state).unwrap();
+        let test_app_state_str = serde_json::to_value(&test_app_state).unwrap();
 
         let const_app_state: AppState = serde_json::from_str(
             r#"
@@ -336,7 +337,7 @@ mod tests {
         "#,
         )
         .unwrap();
-        let const_app_state_str = serde_json::to_string(&const_app_state).unwrap();
+        let const_app_state_str = serde_json::to_value(&const_app_state).unwrap();
 
         assert_eq!(test_app_state_str, const_app_state_str);
     }

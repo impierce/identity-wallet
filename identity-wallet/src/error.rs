@@ -96,7 +96,7 @@ pub enum AppError {
     StateFileDeletionError(#[source] anyhow::Error),
     #[error("Failed to find TrustList with ID `{0}`")]
     TrustListNotFoundError(String),
-    #[error("Failed to migrate AppState version `{0}` to latest version `{1}`: {2}")]
+    #[error("Failed to migrate AppState version `{0}` to version `{1}`: {2}")]
     AppStateMigrationError(u32, u32, String),
 }
 
