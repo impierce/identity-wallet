@@ -234,6 +234,7 @@ pub async fn apply_state_migrations(
     app_state_object: serde_json::Map<String, serde_json::Value>,
     mut outdated_version: u32,
 ) -> anyhow::Result<AppState, AppError> {
+    println!("outdated_version: {}\n\n", outdated_version);
     while outdated_version < APPSTATE_VERSION {
         // this code is commented out because we don't have any migrations yet.
         // match outdated_version {
@@ -241,11 +242,14 @@ pub async fn apply_state_migrations(
         //     _ => return Err(AppError::Error(format!("Unsupported AppState version: {}", outdated_version))),
         // }
 
-        outdated_version = app_state_object
-            .get("version")
-            .and_then(|v| v.as_u64())
-            .map(|v| v as u32)
-            .ok_or_else(|| AppError::Error("Failed to get version while migrating AppState".to_string()))?;
+        // outdated_version = app_state_object
+        //     .get("version")
+        //     .and_then(|v| v.as_u64())
+        //     .map(|v| v as u32)
+        //     .ok_or_else(|| AppError::Error("Failed to get version while migrating AppState".to_string()))?;
+
+        // This is a temporary solution to avoid infinite loops.
+        outdated_version += 1;
 
         info!("state successfully migrated to AppState version {}.", outdated_version);
     }
@@ -264,7 +268,10 @@ pub async fn apply_state_migrations(
 
 #[cfg(test)]
 mod tests {
-    use crate::state::AppState;
+    use crate::{
+        error::AppError,
+        state::{AppState, APPSTATE_VERSION},
+    };
     use serde_json::{Map, Value};
 
     // To unit test the appstate_version_update function, we need to create an adapted function.
@@ -273,14 +280,24 @@ mod tests {
 
     pub async fn dummy_appstate_version_update(
         mut app_state_object: Map<String, Value>,
-        version: u64,
-    ) -> anyhow::Result<AppState> {
-        let migrations: Vec<fn(&mut Map<String, Value>)> = vec![dummy_migrate_v0_to_v1];
-
-        for (index, migration) in migrations.iter().enumerate() {
-            if (index + 1) >= version as usize {
-                migration(&mut app_state_object);
+        mut outdated_version: u32,
+    ) -> anyhow::Result<AppState, AppError> {
+        while outdated_version < APPSTATE_VERSION {
+            match outdated_version {
+                0 => dummy_migrate_v0_to_v1(&mut app_state_object),
+                _ => {
+                    return Err(AppError::Error(format!(
+                        "Unsupported AppState version: {}",
+                        outdated_version
+                    )))
+                }
             }
+
+            outdated_version = app_state_object
+                .get("version")
+                .and_then(|v| v.as_u64())
+                .map(|v| v as u32)
+                .ok_or_else(|| AppError::Error("Failed to get version while migrating AppState".to_string()))?;
         }
 
         let app_state_value = Value::Object(app_state_object);
@@ -299,7 +316,7 @@ mod tests {
             std::fs::File::open("../unime/src-tauri/tests/fixtures/states/no_profile_redirect_welcome.json").unwrap();
 
         let app_state_object: Map<String, Value> = serde_json::from_reader(&rdr).unwrap();
-        let test_app_state = dummy_appstate_version_update(app_state_object, 1).await.unwrap();
+        let test_app_state = dummy_appstate_version_update(app_state_object, 0).await.unwrap();
         let test_app_state_str = serde_json::to_string(&test_app_state).unwrap();
 
         let const_app_state: AppState = serde_json::from_str(
