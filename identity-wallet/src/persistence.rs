@@ -1,4 +1,4 @@
-use crate::state::APPSTATE_VERSION;
+use crate::state::APP_STATE_VERSION;
 use crate::{error::AppError, state::AppState};
 use lazy_static::lazy_static;
 use log::info;
@@ -74,7 +74,7 @@ pub async fn load_state() -> anyhow::Result<AppState> {
         .ok_or_else(|| AppError::Error("Failed to get valid version while loading AppState".to_string()))?;
 
     let app_state: AppState = match version {
-        APPSTATE_VERSION => {
+        APP_STATE_VERSION => {
             let app_state = serde_json::from_str(&content)?;
             debug!("state loaded from disk");
             app_state
@@ -82,7 +82,7 @@ pub async fn load_state() -> anyhow::Result<AppState> {
         _ => {
             debug!(
                 "state version mismatch, performing data migration and appstate update from {} to {}",
-                version, APPSTATE_VERSION
+                version, APP_STATE_VERSION
             );
             let app_state = apply_state_migrations(app_state_object, version).await?;
             debug!("state successfully loaded from disk and migrated");
@@ -232,10 +232,10 @@ pub fn hash(url: &str) -> String {
 /// This function is used to migrate the app state from one version to the next.
 pub async fn apply_state_migrations(
     app_state_object: serde_json::Map<String, serde_json::Value>,
-    mut outdated_version: u32,
+    mut current_version: u32,
 ) -> anyhow::Result<AppState, AppError> {
-    println!("outdated_version: {}\n\n", outdated_version);
-    while outdated_version < APPSTATE_VERSION {
+    println!("outdated_version: {}\n\n", current_version);
+    while current_version < APP_STATE_VERSION {
         // this code is commented out because we don't have any migrations yet.
         // match outdated_version {
         //     1 => migrate_v1_to_v2(&mut app_state_object),
@@ -249,9 +249,9 @@ pub async fn apply_state_migrations(
         //     .ok_or_else(|| AppError::Error("Failed to get version while migrating AppState".to_string()))?;
 
         // This is a temporary solution to avoid infinite loops.
-        outdated_version += 1;
+        current_version += 1;
 
-        info!("state successfully migrated to AppState version {}.", outdated_version);
+        info!("state successfully migrated to AppState version {}.", current_version);
     }
 
     let app_state_value = serde_json::Value::Object(app_state_object);
@@ -270,7 +270,7 @@ pub async fn apply_state_migrations(
 mod tests {
     use crate::{
         error::AppError,
-        state::{AppState, APPSTATE_VERSION},
+        state::{AppState, APP_STATE_VERSION},
     };
     use serde_json::{Map, Value};
 
@@ -282,7 +282,7 @@ mod tests {
         mut app_state_object: Map<String, Value>,
         mut outdated_version: u32,
     ) -> anyhow::Result<AppState, AppError> {
-        while outdated_version < APPSTATE_VERSION {
+        while outdated_version < APP_STATE_VERSION {
             match outdated_version {
                 0 => dummy_migrate_v0_to_v1(&mut app_state_object),
                 _ => {
