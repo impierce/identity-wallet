@@ -42,12 +42,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Use Rust stable
-        # TODO Set back to @stable (workaround for #224).
-        # uses: dtolnay/rust-toolchain@1.77.2 fails because it does not include rustfmt.
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: 1.77.2
-          components: clippy, rustfmt
+        uses: dtolnay/rust-toolchain@stable
 
       - name: Install dependencies
         working-directory: ./unime/src-tauri
@@ -91,11 +86,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Use Rust stable
-        # TODO See comment above.
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: 1.77.2
-          components: clippy, rustfmt
+        uses: dtolnay/rust-toolchain@stable
 
       - name: Install dependencies
         working-directory: ./identity-wallet

@@ -22,7 +22,7 @@ val tauriProperties = Properties().apply {
 
 android {
     compileSdk = 34
-    namespace = "com.impierce.unime"
+    namespace = "com.impierce.identity_wallet"
     defaultConfig {
         manifestPlaceholders["usesCleartextTraffic"] = "false"
         applicationId = "com.impierce.identity_wallet"

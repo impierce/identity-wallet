@@ -1,23 +1,26 @@
-import { internalIpV4 } from 'internal-ip';
 import Icons from 'unplugin-icons/vite';
 import { defineConfig, mergeConfig } from 'vite';
 import { defineConfig as defineVitestConfig } from 'vitest/config';
 
 import { sveltekit } from '@sveltejs/kit/vite';
 
+const host = process.env.TAURI_DEV_HOST;
+
 // https://vitejs.dev/config/
 const viteConfig = defineConfig({
   plugins: [sveltekit(), Icons({ compiler: 'svelte' })],
   clearScreen: false,
   server: {
-    host: '0.0.0.0',
+    host: host || false,
     port: 4173,
     strictPort: true,
-    hmr: {
-      protocol: 'ws',
-      host: await internalIpV4(),
-      port: 5183,
-    },
+    hmr: host
+      ? {
+          protocol: 'ws',
+          host: host,
+          port: 5183,
+        }
+      : undefined,
   },
   envPrefix: ['VITE_', 'TAURI_'],
   build: {
