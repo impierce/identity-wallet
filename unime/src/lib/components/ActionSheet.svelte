@@ -50,7 +50,7 @@
       use:melt={$overlay}
       class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
       transition:fade={{ duration: 150 }}
-    />
+    ></div>
 
     <!-- TODO: should we respect the bottom safe area as well? -> pb-[calc(25px_+_var(--safe-area-inset-bottom))] -->
     <div

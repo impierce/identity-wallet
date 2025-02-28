@@ -53,7 +53,7 @@ A tab component.
             in:receive={{ key: 'trigger' }}
             out:send={{ key: 'trigger' }}
             class="absolute left-0 top-0 h-full w-full rounded-lg bg-primary"
-          />
+          ></div>
         {/if}
 
         <!-- Separator between inactive tabs -->
@@ -61,7 +61,7 @@ A tab component.
           <div
             class="separator absolute -right-1 top-1/2 h-3 w-px -translate-y-1/2 transform bg-slate-300 dark:bg-slate-500"
             out:fade={{ duration: 100 }}
-          />
+          ></div>
         {/if}
       </button>
     {/each}

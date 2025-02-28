@@ -1,13 +1,13 @@
 <script lang="ts">
-  import { createEventDispatcher, type SvelteComponent } from 'svelte';
+  import { createEventDispatcher, type Component } from 'svelte';
 
-  import type { SvelteHTMLElements } from 'svelte/elements';
+  import type { SVGAttributes } from 'svelte/elements';
 
   import { CaretRightBoldIcon } from '$lib/icons';
 
   const dispatch = createEventDispatcher();
 
-  export let icon: typeof SvelteComponent<SvelteHTMLElements['svg']>;
+  export let icon: Component<SVGAttributes<SVGSVGElement>>;
   export let title: string;
   export let hasCaretRight = true;
   export let textRight: string | undefined = undefined;

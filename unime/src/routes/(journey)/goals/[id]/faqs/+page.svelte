@@ -18,7 +18,7 @@
     helpers: { isSelected },
   } = createAccordion({});
 
-  let goal: Goal = $state?.user_journey?.goals.find((g) => g.id === parseInt($page.params.id));
+  let goal: Goal = $state?.user_journey?.goals.find((g: Goal) => g.id === parseInt($page.params.id));
 </script>
 
 <div class="flex h-full flex-col items-center justify-evenly space-y-8 bg-silver p-6 dark:bg-navy">

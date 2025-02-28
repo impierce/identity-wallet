@@ -34,7 +34,7 @@
   <div class="mt-4 flex flex-col space-y-4">
     {#if $open}
       <div use:melt={$portalled}>
-        <div use:melt={$overlay} class="fixed inset-0 z-50 bg-black/50" transition:fade={{ duration: 150 }} />
+        <div use:melt={$overlay} class="fixed inset-0 z-50 bg-black/50" transition:fade={{ duration: 150 }}></div>
         <div
           data-component="Modal"
           use:melt={$content}
@@ -56,7 +56,7 @@
             {$LL.ONBOARDING.TERMS.T_AND_C.TL_DR()}
           </p>
           <!-- acts as <hr> -->
-          <div class="my-2 h-px w-full bg-brand" />
+          <div class="my-2 h-px w-full bg-brand"></div>
           <p class="text-xs font-light">{$LL.ONBOARDING.TERMS.T_AND_C.FULL()}</p>
 
           <!-- First focusable element gets the focus (close button). This forces user to scroll through terms. -->
