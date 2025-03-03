@@ -163,6 +163,8 @@
     --color-text-alt: 100 116 139; /* Tailwind Slate 500 (#64748b) */
     --color-background: 249 249 249; /* "Silver" (#f9f9f9) */
     --color-background-alt: 255 255 255; /* white (#ffffff) */
+    --color-grey: 203 213 225; /* Slate 300 (#cdd5e1) */
+    --color-grey-alt: 229 231 235; /* Slate 200 (#e5e7eb) */
   }
 
   .dark {
@@ -171,6 +173,8 @@
     --color-text-alt: 148 163 184; /* Tailwind Slate 400 (#94a3b8) */
     --color-background: 30 57 89; /* "Navy" (#1e3959) */
     --color-background-alt: 19 36 61; /* "Dark" (#13243d) */
+    --color-grey: 39 45 55; /* Slate 500 */
+    --color-grey-alt: 28 33 41; /* Slate 600 */
   }
 
   html {

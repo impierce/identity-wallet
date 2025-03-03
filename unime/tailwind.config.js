@@ -15,6 +15,9 @@ export default {
         'text-alt': 'rgb(var(--color-text-alt))',
         background: 'rgb(var(--color-background))',
         'background-alt': 'rgb(var(--color-background-alt))',
+        // `gray` instead of `grey` to avoid conflict with old color definition `grey`.
+        gray: 'rgb(var(--color-grey))',
+        'gray-alt': 'rgb(var(--color-grey-alt))',
 
         // Old color definitions.
 
