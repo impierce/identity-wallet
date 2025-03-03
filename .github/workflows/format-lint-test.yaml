@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: ["dev"]
 
+env:
+  PUBLIC_DEV_MODE_MENU_EXPANDED: false
+  PUBLIC_STYLE_SAFE_AREA_INSETS: false
+
 jobs:
   unime_frontend:
     runs-on: ubuntu-latest
@@ -70,9 +74,6 @@ jobs:
       - name: Build frontend
         # Otherwise linting will fail with error: The `distDir` configuration is set to `"../build"` but this path doesn't exist.
         run: pnpm i --frozen-lockfile && pnpm build
-        env:
-          PUBLIC_DEV_MODE_MENU_EXPANDED: false
-          PUBLIC_STYLE_SAFE_AREA_INSETS: false
 
       - name: Lint
         working-directory: ./unime/src-tauri
