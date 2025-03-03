@@ -49,7 +49,7 @@
     <div class="flex items-center justify-between">
       <button
         class="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary"
-        on:click={() => goto('/me/settings')}
+        onclick={() => goto('/me/settings')}
       >
         {#if $state.profile_settings.profile?.picture}
           <span class="text-[28px]/[28px]">
@@ -64,7 +64,7 @@
         {/if}
       </button>
       <button
-        on:click={() => goto('/me/search')}
+        onclick={() => goto('/me/search')}
         class="-mr-3 flex h-11 w-11 items-center justify-center rounded-2xl text-black dark:text-white"
       >
         <MagnifyingGlassIcon class="h-6 w-6" />
@@ -195,7 +195,10 @@
 
 <!-- "Add" button -->
 <div class="absolute bottom-[calc(64px+18px+var(--safe-area-inset-bottom))] right-4">
-  <button class="flex w-fit justify-center rounded-full bg-primary px-4 py-3 text-white dark:text-dark">
+  <button
+    class="flex w-fit justify-center rounded-full bg-primary px-4 py-3 text-white dark:text-dark"
+    onclick={() => goto('/me/add')}
+  >
     <PlusCircleIcon class="mr-2 size-6" />
     <div class="text-[13px]/[24px] font-medium">Add</div>
   </button>
