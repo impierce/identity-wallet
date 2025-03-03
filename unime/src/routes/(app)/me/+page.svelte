@@ -11,7 +11,7 @@
   import { writable, type Writable } from 'svelte/store';
 
   import { Button, CredentialList, Favorites, IconMessage, PaddedIcon, Tabs } from '$lib/components';
-  import { GhostFillIcon, MagnifyingGlassIcon, RocketLaunchFillIcon } from '$lib/icons';
+  import { GhostFillIcon, MagnifyingGlassIcon, PlusCircleIcon, RocketLaunchFillIcon } from '$lib/icons';
   import Ngdil from '$lib/static/svg/logo/demos/Ngdil.svelte';
   // import Selv from '$lib/static/svg/logo/demos/Selv.svelte';
   import { onboarding_state, state } from '$lib/stores';
@@ -191,4 +191,12 @@
       </div>
     {/if}
   </div>
+</div>
+
+<!-- "Add" button -->
+<div class="absolute bottom-[calc(64px+18px+var(--safe-area-inset-bottom))] right-4">
+  <button class="flex w-fit justify-center rounded-full bg-primary px-4 py-3 text-white dark:text-dark">
+    <PlusCircleIcon class="mr-2 size-6" />
+    <div class="text-[13px]/[24px] font-medium">Add</div>
+  </button>
 </div>

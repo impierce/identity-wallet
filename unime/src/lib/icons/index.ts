@@ -50,6 +50,7 @@ export { default as MagnifyingGlassFillIcon } from '~icons/ph/magnifying-glass-f
 export { default as PasswordFillIcon } from '~icons/ph/password-fill';
 export { default as PlugsConnectedFillIcon } from '~icons/ph/plugs-connected-fill';
 export { default as PlusBoldIcon } from '~icons/ph/plus-bold';
+export { default as PlusCircleIcon } from '~icons/ph/plus-circle';
 export { default as QuestionMarkBoldIcon } from '~icons/ph/question-mark-bold';
 export { default as RocketLaunchFillIcon } from '~icons/ph/rocket-launch-fill';
 export { default as SealCheckRegularIcon } from '~icons/ph/seal-check';
