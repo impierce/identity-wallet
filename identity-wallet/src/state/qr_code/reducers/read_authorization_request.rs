@@ -163,7 +163,8 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                     verifiable_credentials
                         .iter()
                         .find_map(|verifiable_credential_record| {
-                            let credential = if verifiable_credential_record.display_credential.format
+                            // Decode the Verifiable Credential into a JSON object.
+                            let credential_data = if verifiable_credential_record.display_credential.format
                                 == CredentialFormats::VcSdJwt(())
                             {
                                 serde_json::json!(verifiable_credential_record
@@ -178,7 +179,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                                     .unwrap_or_default()
                             };
 
-                            evaluate_input(input_descriptor, &credential)
+                            evaluate_input(input_descriptor, &credential_data)
                                 .then_some(verifiable_credential_record.display_credential.id.clone())
                         })
                         .ok_or(NoMatchingCredentialError)

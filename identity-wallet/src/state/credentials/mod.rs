@@ -1,8 +1,6 @@
 pub mod actions;
 pub mod reducers;
 
-use std::str::FromStr;
-
 use super::{core_utils::helpers::get_unverified_jwt_claims, FeatTrait};
 use crate::{error::AppError, state::core_utils::DateUtils};
 
@@ -61,13 +59,12 @@ impl TryFrom<serde_json::Value> for VerifiableCredentialRecord {
 
     fn try_from(verifiable_credential: serde_json::Value) -> Result<Self, AppError> {
         let display_credential = {
-            // FIX THIS
-            let (id, format, data, issuance_date) = if let Ok(sd_jwt_vc) = SdJwtVc::from_str(
-                verifiable_credential
-                    .as_str()
-                    .ok_or(AppError::Error("Credential is not a valid JWT".to_string()))?,
-            ) {
-                info!("sd_jwt_vc: {:#?}", sd_jwt_vc);
+            // Try to parse the Verifiable Credential as an SD-JWT credential.
+            let (id, format, data, issuance_date) = if let Some(sd_jwt_vc) = verifiable_credential
+                .as_str()
+                .and_then(|verifiable_credential| verifiable_credential.parse::<SdJwtVc>().ok())
+            {
+                info!("Verifiable Credential parsed as a SD-JWT VC");
 
                 let issuance_date = sd_jwt_vc.claims().iat.map(|iat| iat.to_rfc3339()).unwrap_or_default();
                 let credential_subject = sd_jwt_vc
@@ -132,11 +129,6 @@ impl TryFrom<serde_json::Value> for VerifiableCredentialRecord {
 
                 (id, format, data, issuance_date)
             };
-
-            info!(
-                "Credential Display: {:#?}",
-                serde_json::to_string_pretty(&data).unwrap()
-            );
 
             DisplayCredential {
                 id,
