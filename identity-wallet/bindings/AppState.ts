@@ -7,5 +7,6 @@ import type { HistoryEvent } from "./history/HistoryEvent";
 import type { ProfileSettings } from "./profile_settings/ProfileSettings";
 import type { SearchResults } from "./search/SearchResults";
 import type { TrustLists } from "./trust_list/TrustLists";
+import type { VerifiedData } from "./verified_data/VerifiedData";
 
-export interface AppState { dids: Record<string, string>, connections: Connections, credentials: Array<DisplayCredential>, trust_lists: TrustLists, search_results: SearchResults, profile_settings: ProfileSettings, current_user_prompt: CurrentUserPrompt | null, user_journey: any | null, debug_messages: Array<string>, history: Array<HistoryEvent>, dev_mode: DevMode, }
+export interface AppState { dids: Record<string, string>, connections: Connections, credentials: Array<DisplayCredential>, trust_lists: TrustLists, search_results: SearchResults, profile_settings: ProfileSettings, current_user_prompt: CurrentUserPrompt | null, user_journey: any | null, debug_messages: Array<string>, history: Array<HistoryEvent>, verified_data: VerifiedData, dev_mode: DevMode, }
