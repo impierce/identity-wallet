@@ -9,16 +9,12 @@
   import { ActionSheet, Button } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { EyeClosedRegularIcon, EyeRegularIcon } from '$lib/icons';
-  import UniMeLogoDark from '$lib/static/svg/logo/UniMeLogoDark.svelte';
-  import UniMeLogoLight from '$lib/static/svg/logo/UniMeLogoLight.svelte';
+  import UniMeLogo from '$lib/static/svg/logo/UniMeLogo.svelte';
   import { state } from '$lib/stores';
 
   let showPassword = false;
 
   let password: string;
-
-  // TODO: make reactive
-  const isDarkModeEnabled = document.documentElement.classList.contains('dark');
 
   // TODO move to the backend
   onMount(() => {
@@ -35,18 +31,14 @@
   <!-- Placeholder -->
   <!-- <div class="aspect-square w-1/4 rounded-3xl border border-slate-200 bg-slate-100" /> -->
   <div class="flex flex-col items-center justify-center">
-    {#if isDarkModeEnabled}
-      <UniMeLogoDark />
-    {:else}
-      <UniMeLogoLight />
-    {/if}
+    <UniMeLogo class="text-blue dark:text-silver" />
 
     <div class="relative mb-4 mt-8 w-[240px]">
       <input
         type={showPassword ? 'text' : 'password'}
         class="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300"
         placeholder={$LL.LOCK_SCREEN.PASSWORD_INPUT_PLACEHOLDER()}
-        on:input={(e) => (password = e.target.value)}
+        on:input={(e: Event) => (password = (e.target as HTMLInputElement).value)}
       />
       <div class="absolute right-3 top-0 flex h-full items-center">
         <button class="rounded-full p-2" on:click={() => (showPassword = !showPassword)}>
@@ -89,7 +81,7 @@
 </div>
 
 <!-- Overwrite colors from template -->
-<div class="safe-area-bottom z-10 bg-silver dark:bg-navy" />
+<div class="safe-area-bottom z-10 bg-silver dark:bg-navy"></div>
 
 <style>
   .content-height {

@@ -49,7 +49,8 @@ describe('Image', () => {
           return Promise.resolve(true);
         default:
           console.warn(`No mock provided for: ${cmd}`);
-          break;
+          // TODO: AI generated code to make TS error go away (Claude 3.5 Sonnet).
+          return Promise.resolve(undefined as any);
       }
     });
 
@@ -117,6 +118,8 @@ describe('Image', () => {
       if (cmd === 'plugin:fs|exists') {
         return Promise.resolve(false);
       }
+      // TODO: AI generated code to make TS error go away (Claude 3.5 Sonnet).
+      return Promise.resolve(undefined as any);
     });
 
     const { container } = render(Image, { id });

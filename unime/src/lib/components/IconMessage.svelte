@@ -1,11 +1,11 @@
 <script lang="ts">
-  import type { SvelteComponent } from 'svelte';
+  import type { Component } from 'svelte';
 
-  import type { SvelteHTMLElements } from 'svelte/elements';
+  import type { SVGAttributes } from 'svelte/elements';
 
   import { PaddedIcon } from '$lib/components';
 
-  export let icon: typeof SvelteComponent<SvelteHTMLElements['svg']>;
+  export let icon: Component<SVGAttributes<SVGSVGElement>>;
   export let title: string;
   export let description: string | undefined = undefined;
 </script>
