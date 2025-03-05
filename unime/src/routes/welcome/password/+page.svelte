@@ -75,7 +75,7 @@
         {#each passwordPolicy as rule}
           {#if passwordPolicyViolations.indexOf(rule.name) > -1}
             <!-- not fulfilled -->
-            <div class="bg-gray-100 mb-2 mr-2 flex items-center space-x-1 rounded-full px-2 py-1 dark:bg-navy">
+            <div class="mb-2 mr-2 flex items-center space-x-1 rounded-full bg-gray-100 px-2 py-1 dark:bg-navy">
               <CircleRegularIcon class="h-4 w-4 text-primary" />
               <p class="text-[12px]/[20px] font-medium text-teal">
                 {rule.count}
