@@ -37,6 +37,7 @@ use oid4vc::{
     oid4vci::credential_format_profiles::CredentialFormats,
 };
 use oid4vc::{oid4vc_manager::managers::presentation::create_sd_jwt_presentation_submission, oid4vp::oid4vp};
+use uuid::Uuid;
 
 // Sends the authorization response including the verifiable credentials.
 pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action) -> Result<AppState, AppError> {
@@ -147,6 +148,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
                     .map_err(|e| AppError::Error(format!("Failed to attach KeyBindingJwt to SD-JWT VC: {e}")))?;
 
                 let presentation_submission = create_sd_jwt_presentation_submission(
+                    Uuid::new_v4().to_string(),
                     &oid4vp_authorization_request.body.extension.presentation_definition,
                     &[serde_json::json!(sd_jwt_vc
                         .clone()
@@ -160,12 +162,13 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
                 })?;
 
                 oid4vp::AuthorizationResponseInput {
-                    verifiable_presentation_input: PresentationInputType::Signed(sd_jwt_vc.to_string()),
+                    verifiable_presentation_input: PresentationInputType::SdJwtVc(sd_jwt_vc.to_string()),
                     presentation_submission,
                 }
             }
             (0, jwt_vc_json_count) if jwt_vc_json_count > 0 => {
                 let presentation_submission = create_presentation_submission(
+                    Uuid::new_v4().to_string(),
                     &oid4vp_authorization_request.body.extension.presentation_definition,
                     &jwt_vc_json_credentials
                         .iter()
@@ -203,7 +206,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
                 }
 
                 oid4vp::AuthorizationResponseInput {
-                    verifiable_presentation_input: PresentationInputType::Unsigned(
+                    verifiable_presentation_input: PresentationInputType::Presentation(
                         presentation_builder.build().map_err(PresentationBuilderError)?,
                     ),
                     presentation_submission,
