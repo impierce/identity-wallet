@@ -15,9 +15,11 @@ export default {
         'text-alt': 'rgb(var(--color-text-alt))',
         background: 'rgb(var(--color-background))',
         'background-alt': 'rgb(var(--color-background-alt))',
-        // `gray` instead of `grey` to avoid conflict with old color definition `grey`.
-        gray: 'rgb(var(--color-grey))',
-        'gray-alt': 'rgb(var(--color-grey-alt))',
+        // TODO rename `semgray` (semantic gray) to `gray` or `grey`.
+        // We can't use `grey` because its already defined further down.
+        // We can't use `gray` because it would nuke Tailwind's `gray`.
+        semgray: 'rgb(var(--color-grey))',
+        'semgray-alt': 'rgb(var(--color-grey-alt))',
 
         // Old color definitions.
 

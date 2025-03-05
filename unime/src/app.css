@@ -163,6 +163,8 @@
     --color-text-alt: 100 116 139; /* Tailwind Slate 500 (#64748b) */
     --color-background: 249 249 249; /* "Silver" (#f9f9f9) */
     --color-background-alt: 255 255 255; /* white (#ffffff) */
+    /* Use `grey` to steer clear of Tailwind's `gray`. */
+    /* TODO once we use semantic colors only, this can be renamed to `gray`. */
     --color-grey: 203 213 225; /* Slate 300 (#cdd5e1) */
     --color-grey-alt: 229 231 235; /* Slate 200 (#e5e7eb) */
   }
