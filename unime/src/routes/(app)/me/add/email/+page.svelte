@@ -2,6 +2,7 @@
   import { onDestroy, onMount } from 'svelte';
 
   import { dev } from '$app/environment';
+  import { goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
   import { PinInput } from 'melt/builders';
   import { cubicOut } from 'svelte/easing';
@@ -143,12 +144,12 @@
   });
 </script>
 
-<TopNavBar on:back={() => history.back()} title={'Verified email'} class="sticky top-0 z-10" />
+<TopNavBar on:back={() => goto('/me/add')} title={'Verified email'} class="sticky top-0 z-10" />
 
 <div class="flex h-[calc(100vh-48px-64px)] flex-col">
   <div class="flex grow flex-col items-center p-4">
     <div class="mb-8 mt-4 flex w-3/4 flex-col gap-1">
-      <label for="email" class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300"> Your email </label>
+      <label for="email" class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Your email</label>
       <input
         name="email"
         type="email"
