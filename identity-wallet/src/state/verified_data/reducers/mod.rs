@@ -5,11 +5,14 @@ use crate::{
     error::AppError,
     state::{
         actions::{listen, Action},
+        qr_code::{actions::qrcode_scanned::QrCodeScanned, reducers::read_credential_offer::read_credential_offer},
+        verified_data::{
+            actions::{RedeemCode, SendVerificationEmail},
+            EmailVerification,
+        },
         AppState, VerifiedData,
     },
 };
-
-use super::{actions::SendVerificationEmail, EmailVerification};
 
 pub async fn send_verification_email(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(action) = listen::<SendVerificationEmail>(action) {
@@ -46,6 +49,42 @@ pub async fn send_verification_email(state: AppState, action: Action) -> Result<
             current_user_prompt: None,
             ..state
         });
+    }
+    Ok(state)
+}
+
+pub async fn redeem_code(state: AppState, action: Action) -> Result<AppState, AppError> {
+    if let Some(action) = listen::<RedeemCode>(action) {
+        let session_id = state
+            .verified_data
+            .email_verification
+            .as_ref()
+            .unwrap()
+            .verification_id
+            .as_ref()
+            .unwrap();
+        let url = format!("http://localhost:5177/api/verify/{}", session_id);
+        let body = json!({ "code": action.code });
+        info!("[>>>] {}", body);
+        let response = reqwest::Client::new()
+            .post(url)
+            .json(&body)
+            .send()
+            .await
+            .inspect_err(|err| {
+                warn!("Failed to send verification: {}", err);
+            })
+            .ok();
+        let credential_offer_value: String = response.unwrap().text().await.unwrap();
+        info!("[<<<] {}", credential_offer_value);
+
+        let action = QrCodeScanned {
+            form_urlencoded: credential_offer_value,
+        };
+
+        let state = read_credential_offer(state, std::sync::Arc::new(action)).await.unwrap();
+
+        return Ok(state);
     }
     Ok(state)
 }

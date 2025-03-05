@@ -93,6 +93,7 @@
 
   async function redeemCode(code: string) {
     console.log(`TODO: trying to redeem code: ${code}`);
+    dispatch({ type: '[Verified Data] Redeem code', payload: { code } });
   }
 
   const reset = () => {
