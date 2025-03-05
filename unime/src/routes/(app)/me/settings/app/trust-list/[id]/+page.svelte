@@ -3,7 +3,7 @@
 
   import { melt } from '@melt-ui/svelte';
 
-  import { ActionSheet, Button, DoNotUseThisSwitch, TopNavBar } from '$lib/components';
+  import { ActionSheet, Button, DeprecatedSwitch, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { ArrowCounterClockwiseBoldIcon, CheckBoldIcon, TrashRegularIcon } from '$lib/icons';
   import { state } from '$lib/stores';
@@ -114,7 +114,7 @@
           <div class="flex items-center">
             <!-- `active` prop in Switch is not reactive, so triggering a rerender manually using `#key` -->
             {#key active}
-              <DoNotUseThisSwitch
+              <DeprecatedSwitch
                 {active}
                 on:change={() =>
                   dispatch({ type: '[Trust List] Toggle entry', payload: { trust_list_id: $page.params.id, domain } })}
@@ -158,7 +158,7 @@
             {URL.parse(domain)?.hostname}
           </p>
           {#key active}
-            <DoNotUseThisSwitch
+            <DeprecatedSwitch
               {active}
               on:change={() =>
                 dispatch({ type: '[Trust List] Toggle entry', payload: { trust_list_id: $page.params.id, domain } })}
