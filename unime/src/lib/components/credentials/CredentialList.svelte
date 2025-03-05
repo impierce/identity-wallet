@@ -42,11 +42,8 @@
   <div class="flex grow flex-col items-center justify-center">
     <IconMessage icon={GhostFillIcon} title={$LL.ME.EMPTY_CREDENTIALS.TITLE()} />
     <div class="w-[280px] pt-[15px] text-center text-[13px]/[24px] font-normal text-slate-500 dark:text-slate-300">
-      {$LL.ME.DEMO()}
-      <div class="flex flex-col">
-        <!-- <p class="font-semibold text-primary">https://selv.iota.org</p> -->
-        <p class="font-semibold text-primary">https://demo.ngdil.com</p>
-      </div>
+      <!-- {$LL.ME.DEMO()} -->
+      Why not get some of your data verified to start your journey?
     </div>
   </div>
 {/if}
