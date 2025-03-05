@@ -14,7 +14,16 @@
   import { dispatch } from '$lib/dispatcher';
   import { state as appState } from '$lib/stores';
 
-  const pinInput = new PinInput({ type: 'numeric', maxLength: 4 });
+  const pinInput = new PinInput({
+    type: 'numeric',
+    maxLength: 4,
+    onValueChange(value) {
+      // onComplete(value) does not seem to trigger on "melt 0.17.0", that's why we use onValueChange and count the length
+      if (value.length === 4) {
+        redeemCode(value);
+      }
+    },
+  });
 
   let email: string = $state(dev ? 'ferris.rustacean@impierce.com' : '');
 
@@ -22,15 +31,7 @@
 
   let awaitingConfirmation = $state(false);
 
-  let emailSentTimestamp: Date | undefined = undefined;
-
   let expired = $state(false);
-
-  // static value
-  //   let progress = 100;
-
-  // TODO: should be removed since the backend service determines the expiration time
-  //   const MAX_SECONDS = dev ? 5 : 60;
 
   let progressValue = new Tween(0, {
     duration: 400,
@@ -42,11 +43,11 @@
 
   let secsRemaining = 0;
 
-  let interval;
+  let interval: ReturnType<typeof setInterval>;
 
   const startTimer = (seconds: number) => {
     interval = setInterval(() => {
-      info(`seconds: ${seconds}`);
+      // debug(`seconds: ${seconds}`);
       if (seconds < 1) {
         clearInterval(interval);
         expired = true;
@@ -66,7 +67,7 @@
     }, 1000);
   };
 
-  const send = async () => {
+  const startVerificationSession = async () => {
     loading = true;
     console.log(`sending request to email-verification-service for email: ${email}`);
 
@@ -79,12 +80,25 @@
 
     console.log(`expires_in_seconds: ${expires_in_seconds}`);
 
+    // Reset PIN input
+    pinInput.value = '';
+
     loading = false;
     progressValue.set(expires_in_seconds);
     awaitingConfirmation = true;
     expired = false;
     // emailSentTimestamp = new Date();
     startTimer(expires_in_seconds);
+  };
+
+  async function redeemCode(code: string) {
+    console.log(`TODO: trying to redeem code: ${code}`);
+  }
+
+  const reset = () => {
+    // TODO: send action to backend to clear state
+    expired = false;
+    awaitingConfirmation = false;
   };
 
   onMount(() => {
@@ -122,20 +136,30 @@
   });
 
   onDestroy(() => {
-    clearInterval(interval);
+    // Clearing the interval to avoid duplicate counters when the page is loaded next time
     info('clearingInterval');
+    clearInterval(interval);
   });
 </script>
 
 <TopNavBar on:back={() => history.back()} title={'Verified email'} class="sticky top-0 z-10" />
 
 <div class="flex h-[calc(100vh-48px-64px)] flex-col">
-  <div class="flex grow flex-col items-center space-y-8 p-4">
-    <div class="max-w-1/2 my-4">
+  <div class="flex grow flex-col items-center p-4">
+    <div class="mb-8 mt-4 flex w-3/4 flex-col gap-1">
+      <label for="email" class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300"> Your email </label>
       <input
+        name="email"
+        type="email"
         class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] font-normal text-slate-500 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-dark dark:text-slate-300 dark:caret-slate-300"
         placeholder={'Your email address'}
         bind:value={email}
+        oninput={() => {
+          // When the email is changed after a verification session has expired, reset everything.
+          if (expired) {
+            reset();
+          }
+        }}
         disabled={awaitingConfirmation}
       />
     </div>
@@ -160,7 +184,7 @@
         />
       {/key}
 
-      <div {...pinInput.root} class="flex items-center justify-center gap-4 font-mono">
+      <div {...pinInput.root} class="mt-8 flex items-center justify-center gap-4 font-mono">
         {#each pinInput.inputs as input}
           <input
             {...input}
@@ -180,22 +204,27 @@
         </div> -->
       <!-- {:else} -->
       {#if expired}
-        <div class="rounded-lg px-4 py-3 text-sm font-semibold text-rose-500">
-          <span>Verification code expired</span>
+        <div class="mt-4 flex flex-col items-center">
+          <div class="rounded-lg px-4 py-3 text-sm font-semibold text-rose-500">
+            <span>Verification code expired</span>
+          </div>
         </div>
       {/if}
     {/if}
 
-    <div class="bottom-4 py-8 text-sm text-slate-400 dark:text-slate-500">
+    <!-- <div class="pt-4 text-sm text-slate-400 dark:text-slate-500">
       <span>Verified by</span> <span class="font-semibold">Impierce Technologies B.V.</span>
-    </div>
+    </div> -->
   </div>
 
   <!-- TODO: REFACTOR! -->
-  <div class="absolute bottom-[64px] left-0 z-10 w-full rounded-t-3xl bg-white p-6 dark:bg-dark">
+  <div class="absolute bottom-[64px] left-0 z-10 flex w-full flex-col gap-3 rounded-t-3xl bg-white p-6 dark:bg-dark">
+    {#if expired}
+      <Button label="Dismiss" variant="secondary" on:click={reset} />
+    {/if}
     <Button
       label={expired ? 'Resend verification email' : 'Send verification email'}
-      on:click={() => send()}
+      on:click={() => startVerificationSession()}
       {loading}
       disabled={awaitingConfirmation}
     />
