@@ -39,7 +39,7 @@ jobs:
       - name: Test
         run: pnpm test
 
-      - name: svelte-check
+      - name: Check
         run: pnpm check
 
   unime_core:
