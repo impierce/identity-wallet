@@ -77,7 +77,8 @@ impl TryFrom<serde_json::Value> for VerifiableCredentialRecord {
                 // credential as the ID anymore. We should simply generate a random UUID.
                 let hash = sha256::digest(json!(credential_subject).to_string());
 
-                let id = Uuid::from_slice(&hash.as_bytes()[..16]).unwrap().to_string();
+                let id = Uuid::from_slice(&hash.as_bytes()[..16])?.to_string();
+
                 let format = CredentialFormats::VcSdJwt(());
                 // TODO: Remove this workaround that is basically a way of disguising the SD JWT VC as a VC so that
                 // it can be displayed in the Frontend.
@@ -123,7 +124,7 @@ impl TryFrom<serde_json::Value> for VerifiableCredentialRecord {
                     .as_str()
                     .map(ToString::to_string)
                     .unwrap_or_default();
-                let id = Uuid::from_slice(&hash.as_bytes()[..16]).unwrap().to_string();
+                let id = Uuid::from_slice(&hash.as_bytes()[..16])?.to_string();
                 let format = CredentialFormats::JwtVcJson(());
                 let data = credential_display;
 
