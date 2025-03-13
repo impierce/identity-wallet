@@ -27,7 +27,7 @@
       use:melt={trigger}
     >
       <svelte:component this={TrashFillIcon} class="h-5 w-5 text-rose-400" />
-      <p class="grow text-left text-[13px]/[24px] font-medium text-slate-800 dark:text-white">
+      <p class="grow text-left text-sm font-medium text-slate-800 dark:text-white">
         {$LL.SETTINGS.PROFILE.DELETE_PROFILE.TITLE()}
       </p>
     </button>
