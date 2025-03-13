@@ -91,7 +91,7 @@
           {/if}
           <!-- <CodeBoldIcon class="h-5 w-5 text-primary"></CodeBoldIcon> -->
         {/snippet}
-        {$LL.SETTINGS.APP.DEVELOPER_MODE.TITLE()}
+        {`Unlock with ${biometryTypeString}`}
       </SettingsSwitch>
 
       <!-- <SettingsEntry
