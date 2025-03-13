@@ -4,12 +4,11 @@
   import LL from '$i18n/i18n-svelte';
 
   import { checkPermissions, getDir, type PermissionState } from '@impierce/tauri-plugin-cloud-storage';
-  import { melt } from '@melt-ui/svelte';
   import * as path from '@tauri-apps/api/path';
   import { BaseDirectory, exists, readDir, remove, stat, type FileInfo } from '@tauri-apps/plugin-fs';
   import { info, warn } from '@tauri-apps/plugin-log';
 
-  import { ActionSheet, Button, SettingsEntry, Switch, TopNavBar } from '$lib/components';
+  import { ActionSheet, Button, SettingsSwitch, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { CloudFillIcon, InfoRegularIcon } from '$lib/icons';
   import { state } from '$lib/stores';
@@ -135,6 +134,7 @@
 </script>
 
 <TopNavBar on:back={() => history.back()} title="Backup and recovery" />
+
 <div class="content-height flex flex-col bg-silver dark:bg-navy">
   <div class="flex flex-col space-y-[10px] px-4 py-5">
     <div class="flex w-full items-center rounded-lg bg-white px-4 py-4 dark:bg-dark">
@@ -157,21 +157,22 @@
       to your backups.
     </div> -->
 
-    <SettingsEntry icon={CloudFillIcon} title={'Automatic cloud backups'} hasCaretRight={false}>
-      <!-- TODO: bug in <Switch />: does not rerender when `enabled` changes, now triggering manual rerender through {#key} -->
-      {#key enabled}
-        <Switch
-          active={enabled}
-          onchange={async () => {
-            if (enabled) {
-              openConfirmAction = true;
-            } else {
-              await enable();
-            }
-          }}
-        />
-      {/key}
-    </SettingsEntry>
+    <SettingsSwitch
+      initialChecked={enabled}
+      onchange={async () => {
+        if (enabled) {
+          openConfirmAction = true;
+        } else {
+          await enable();
+        }
+      }}
+    >
+      {#snippet icon()}
+        <CloudFillIcon class="size-5 text-primary"></CloudFillIcon>
+      {/snippet}
+      {'Automatic cloud backups'}
+    </SettingsSwitch>
+
     {#if enabled}
       <div class="rounded-xl bg-background-alt p-4">
         <div class="mb-2 text-sm font-semibold text-slate-500">{'n/a'}</div>
@@ -228,6 +229,8 @@
         label={$LL.SETTINGS.BACKUP_RECOVERY.CONFIRM_DISABLE.CANCEL()}
       />
     </ActionSheet>
+
+    <!-- TODO Button with `KeyboardFillIcon` and `Your DID`. -->
   </div>
 </div>
 

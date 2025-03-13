@@ -85,19 +85,26 @@ export function formatDateTime(isoDate: string, locale: Locale, test = false) {
 }
 
 export function formatRelativeDateTime(isoDate: string, locale: Locale) {
-  // 1 min, 1 hour, 1 day, 1 week, 1 month, 1 year.today
+  const date = new Date(isoDate);
+  const now = new Date();
+
+  const diffInSeconds = (date.getTime() - now.getTime()) / 1000;
+
+  // Thresholds in seconds: 1 min, 1 hour, 1 day, 1 week, 1 month, 1 year.
   const thresholds = [60, 3600, 86400, 86400 * 7, 86400 * 30, 86400 * 365, Infinity];
+
   const units: Intl.RelativeTimeFormatUnit[] = ['second', 'minute', 'hour', 'day', 'week', 'month', 'year'];
 
-  const diffInSeconds = (Date.now() - new Date(isoDate).getTime()) / 1000;
-
   // Determine the threshold to use.
-  const index = thresholds.findIndex((threshold) => threshold > diffInSeconds);
+  const index = thresholds.findIndex((threshold) => Math.abs(diffInSeconds) < threshold);
   const divisor = index ? thresholds[index - 1] : 1;
 
-  const relativeDateTime = new Intl.RelativeTimeFormat(locale, {
+  const relativeFormatter = new Intl.RelativeTimeFormat(locale, {
     numeric: 'auto',
-  }).format(-1 * Math.floor(diffInSeconds / divisor), units[index]);
+  });
+
+  // Use Math.round for more accurate relative time.
+  const relativeDateTime = relativeFormatter.format(Math.round(diffInSeconds / divisor), units[index]);
 
   // Capitalize the first character.
   return relativeDateTime.charAt(0).toUpperCase() + relativeDateTime.slice(1);
