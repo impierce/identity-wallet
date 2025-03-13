@@ -24,7 +24,8 @@
 <button
   use:melt={$root}
   aria-label="Toggle switch"
-  class="group relative h-7 w-11 rounded-full bg-primary/25 transition-colors data-[state=checked]:bg-primary"
+  class="group relative h-7 w-11 rounded-full bg-primary/25 transition-colors disabled:opacity-50 data-[state=checked]:bg-primary"
+  disabled
 >
   <span
     class="m-0.5 block h-5 w-5 translate-x-0.5 rounded-full bg-white transition group-data-[state=checked]:translate-x-[18px] dark:bg-dark"

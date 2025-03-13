@@ -113,13 +113,12 @@
           {/if}
           <div class="flex items-center">
             <!-- `active` prop in Switch is not reactive, so triggering a rerender manually using `#key` -->
-            {#key active}
-              <DeprecatedSwitch
-                {active}
-                on:change={() =>
-                  dispatch({ type: '[Trust List] Toggle entry', payload: { trust_list_id: $page.params.id, domain } })}
-              />
-            {/key}
+            <DeprecatedSwitch
+              {active}
+              on:change={() => {
+                // dispatch({ type: '[Trust List] Toggle entry', payload: { trust_list_id: $page.params.id, domain } });
+              }}
+            />
           </div>
         </div>
       {/each}
@@ -157,13 +156,12 @@
           >
             {URL.parse(domain)?.hostname}
           </p>
-          {#key active}
-            <DeprecatedSwitch
-              {active}
-              on:change={() =>
-                dispatch({ type: '[Trust List] Toggle entry', payload: { trust_list_id: $page.params.id, domain } })}
-            />
-          {/key}
+          <DeprecatedSwitch
+            {active}
+            on:change={() => {
+              // dispatch({ type: '[Trust List] Toggle entry', payload: { trust_list_id: $page.params.id, domain } });
+            }}
+          />
         </div>
       {/each}
     {/if}
