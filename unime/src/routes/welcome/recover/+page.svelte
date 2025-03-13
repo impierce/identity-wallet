@@ -11,7 +11,6 @@
 
   import { ListItemCard, TopNavBar } from '$lib/components';
   import PaddedIcon from '$lib/components/PaddedIcon.svelte';
-  import SettingsEntry from '$lib/components/SettingsEntry.svelte';
   import {
     CaretRightBoldIcon,
     CloudFillIcon,

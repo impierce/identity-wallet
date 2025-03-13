@@ -6,7 +6,7 @@
   import { remove, retrieve, store } from '@impierce/tauri-plugin-keystore';
   import { BiometryType, checkStatus, type Status } from '@tauri-apps/plugin-biometric';
 
-  import { SettingsEntry, Switch, TopNavBar } from '$lib/components';
+  import { SettingsSwitch, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { FingerprintFillIcon, PasswordFillIcon, ScanSmileyFillIcon } from '$lib/icons';
   import { error as errorState, state } from '$lib/stores';
@@ -77,20 +77,38 @@
 <div class="flex flex-col bg-silver dark:bg-navy">
   <div class="flex flex-col space-y-[10px] px-4 py-5">
     {#if biometricsStatus}
-      <SettingsEntry
+      <SettingsSwitch
+        initialChecked={enabled}
+        onchange={(checked) => {
+          toggleBiometrics();
+        }}
+      >
+        {#snippet icon()}
+          {#if biometricsStatus.biometryType === BiometryType.FaceID}
+            <ScanSmileyFillIcon class="size-5 text-primary"></ScanSmileyFillIcon>
+          {:else}
+            <FingerprintFillIcon class="size-5 text-primary"></FingerprintFillIcon>
+          {/if}
+          <!-- <CodeBoldIcon class="h-5 w-5 text-primary"></CodeBoldIcon> -->
+        {/snippet}
+        {$LL.SETTINGS.APP.DEVELOPER_MODE.TITLE()}
+      </SettingsSwitch>
+
+      <!-- <SettingsEntry
         icon={biometricsStatus.biometryType === BiometryType.FaceID ? ScanSmileyFillIcon : FingerprintFillIcon}
         title={`Unlock with ${biometryTypeString}`}
         hasCaretRight={false}
       >
         <Switch active={enabled} onchange={toggleBiometrics} />
       </SettingsEntry>
-      <!-- {#if biometricsStatus.error && $state.dev_mode !== 'Off'}
+      {#if biometricsStatus.error && $state.dev_mode !== 'Off'}
         <div class="h-12 rounded-lg bg-rose-50 py-4 text-center text-xs font-medium text-rose-500">
           Biometrics are not available.
         </div>
-      {/if} -->
+      {/if}
     {/if}
-    <SettingsEntry icon={PasswordFillIcon} title={'Change password'} disabled />
+    <SettingsEntry icon={PasswordFillIcon} title={'Change password'} disabled /> -->
+    {/if}
   </div>
   <!-- TODO: dev -->
   {#if $state.dev_mode !== 'Off'}
