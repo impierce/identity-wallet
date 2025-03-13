@@ -1,35 +1,43 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
+  import type { Snippet } from 'svelte';
 
   import { createSwitch, melt } from '@melt-ui/svelte';
 
-  export let active = false;
+  interface Props {
+    children: Snippet;
+    initialChecked?: boolean;
+    onchange: (checked: boolean) => void;
+  }
 
-  const dispatch = createEventDispatcher();
+  let { initialChecked = false, onchange, children }: Props = $props();
 
   const {
-    elements: { root, input },
-    states: { checked },
+    elements: { root },
   } = createSwitch({
-    defaultChecked: active,
+    defaultChecked: initialChecked,
+    onCheckedChange: ({ next }) => {
+      onchange(next);
+      return next;
+    },
   });
 
-  checked.subscribe((c) => {
-    dispatch('change', c);
-  });
+  const id = crypto.randomUUID();
+
+  // If we made `initialChecked` reactive with `$effect`, we might get an endless loop.
+  // This happens when `onchange` triggers a backend state update that is fed into `checked.`
 </script>
 
-<!-- TODO: This button has no text and should have a label instead to comply with accessibility standards.
-     This component requires a `aria-labelledby` to reference the label element. But this would require a bigger refactor.
-     Adding a hard-wired `aria-label` silences the error. It's a hack and requires a proper refactor.
--->
-<button
-  use:melt={$root}
-  aria-label="Toggle switch"
-  class="group relative h-7 w-11 rounded-full bg-primary/25 transition-colors data-[state=checked]:bg-primary"
->
-  <span
-    class="m-0.5 block h-5 w-5 translate-x-0.5 rounded-full bg-white transition group-data-[state=checked]:translate-x-[18px] dark:bg-dark"
-  ></span>
-</button>
-<input use:melt={$input} />
+<div class="flex items-center justify-between gap-2">
+  <label {id} class="grow">
+    {@render children()}
+  </label>
+  <button
+    use:melt={$root}
+    aria-labelledby={id}
+    class="group relative h-7 w-11 rounded-full bg-text transition-colors data-[state=checked]:bg-primary"
+  >
+    <span
+      class="m-0.5 block h-5 w-5 translate-x-0.5 rounded-full bg-background transition group-data-[state=checked]:translate-x-[18px]"
+    ></span>
+  </button>
+</div>
