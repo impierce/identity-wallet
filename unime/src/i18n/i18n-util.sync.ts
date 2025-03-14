@@ -9,6 +9,7 @@ import de_DE from './de-DE'
 import en from './en'
 import en_GB from './en-GB'
 import en_US from './en-US'
+import es_ES from './es-ES'
 import nl_NL from './nl-NL'
 
 const localeTranslations = {
@@ -16,6 +17,7 @@ const localeTranslations = {
 	en,
 	'en-GB': en_GB,
 	'en-US': en_US,
+	'es-ES': es_ES,
 	'nl-NL': nl_NL,
 }
 
