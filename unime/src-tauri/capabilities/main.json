@@ -7,6 +7,10 @@
     "fs:default",
     "log:default",
     "shell:allow-open",
+    "cloud-storage:default",
+    "cloud-storage:allow-check-permissions",
+    "cloud-storage:allow-write-data",
+    "cloud-storage:allow-delete",
     {
       "identifier": "fs:allow-exists",
       "allow": [{ "path": "$APPDATA/assets/**/*.png" }, { "path": "$APPDATA/assets/**/*.svg" }]

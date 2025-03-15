@@ -66,6 +66,7 @@ mod bindings {
     use ts_rs::TS;
 
     use crate::state::{
+        backup::actions::create::CreateBackup,
         common::actions::{cancel_user_flow::CancelUserFlow, unlock_storage::UnlockStorage},
         credentials::actions::{
             credential_offers_selected::CredentialOffersSelected, credentials_selected::CredentialsSelected,
@@ -153,5 +154,7 @@ mod bindings {
         TrustListsEdit { payload: EditTrustList },
         #[serde(rename = "[Trust Lists] Delete")]
         TrustListsDelete { payload: DeleteTrustList },
+        #[serde(rename = "[Backup] Create")]
+        CreateBackup { payload: CreateBackup },
     }
 }

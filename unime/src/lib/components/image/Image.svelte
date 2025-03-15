@@ -66,7 +66,7 @@ Displays an image (loaded from disk) or a fallback component.
 {:else}
   <slot name="fallback">
     <svelte:component
-      this={icons[iconFallback]}
+      this={icons[iconFallback] ?? iconFallback}
       class={twMerge('h-[18px] w-[18px] text-slate-800 dark:text-grey', $$props.iconClass)}
       data-testid="icon"
     />
