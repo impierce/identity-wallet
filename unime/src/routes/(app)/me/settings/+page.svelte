@@ -1,19 +1,10 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
   import { fly } from 'svelte/transition';
 
-  import { TopNavBar } from '$lib/components';
-  import SettingsEntry from '$lib/components/SettingsEntry.svelte';
+  import { SettingsCaretLink, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
-  import {
-    EnvelopeFillIcon,
-    GearFillIcon,
-    InfoFillIcon,
-    SignOutFillIcon,
-    UserCircleFillIcon,
-    VaultFillIcon,
-  } from '$lib/icons';
+  import { GearFillIcon, InfoFillIcon, UserCircleFillIcon } from '$lib/icons';
   import { state } from '$lib/stores';
 
   import EmojiAvatarSelect from './EmojiAvatarSelect.svelte';
@@ -21,7 +12,7 @@
 
 <TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.NAVBAR_TITLE()} class="sticky top-0 z-10" />
 
-<div class="flex flex-col space-y-[15px] bg-silver px-4 py-5 dark:bg-navy" in:fly={{ x: 32, opacity: 1 }}>
+<div class="flex flex-col space-y-[15px] bg-background px-4 py-5" in:fly={{ x: 32, opacity: 1 }}>
   <!-- Avatar -->
   <div class="flex justify-center">
     <EmojiAvatarSelect
@@ -31,35 +22,44 @@
     />
   </div>
   <!-- Account -->
-  <div class="flex flex-col space-y-[10px]">
+  <div class="flex flex-col gap-3">
     <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">{$LL.SETTINGS.ACCOUNT()}</p>
-    <SettingsEntry
-      icon={UserCircleFillIcon}
-      title={$LL.SETTINGS.PROFILE.TITLE()}
-      on:click={() => goto('/me/settings/profile')}
-    />
-    <SettingsEntry icon={GearFillIcon} title={$LL.SETTINGS.APP.TITLE()} on:click={() => goto('/me/settings/app')} />
-    <SettingsEntry
-      icon={VaultFillIcon}
-      title={$LL.SETTINGS.BACKUP_RECOVERY.TITLE()}
-      on:click={() => goto('/me/settings/backup')}
-    />
-    <SettingsEntry icon={SignOutFillIcon} title={$LL.SETTINGS.LOG_OUT.TITLE()} hasCaretRight={false} disabled />
+
+    <SettingsCaretLink href="/me/settings/profile">
+      {#snippet icon()}
+        <UserCircleFillIcon class="h-5 w-5 text-primary"></UserCircleFillIcon>
+      {/snippet}
+      {$LL.SETTINGS.PROFILE.TITLE()}
+    </SettingsCaretLink>
+
+    <SettingsCaretLink href="/me/settings/app">
+      {#snippet icon()}
+        <GearFillIcon class="h-5 w-5 text-primary"></GearFillIcon>
+      {/snippet}
+      {$LL.SETTINGS.APP.TITLE()}
+    </SettingsCaretLink>
+
+    <SettingsCaretLink href="/me/settings/backup">
+      {#snippet icon()}
+        <VaultFillIcon class="h-5 w-5 text-primary"></VaultFillIcon>
+      {/snippet}
+      {$LL.SETTINGS.BACKUP_RECOVERY.TITLE()}
+    </SettingsCaretLink>
+
+    <!-- TODO Logout button with `SignOutFillIcon` and `LL.SETTINGS.LOG_OUT.TITLE()`.  -->
   </div>
 
   <!-- Support -->
   <div class="flex flex-col space-y-[10px]">
     <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">{$LL.SETTINGS.SUPPORT.TITLE()}</p>
-    <SettingsEntry
-      icon={InfoFillIcon}
-      title={$LL.SETTINGS.SUPPORT.ABOUT.TITLE()}
-      on:click={() => goto('/me/settings/about')}
-    />
-    <SettingsEntry
-      icon={EnvelopeFillIcon}
-      title={$LL.SETTINGS.SUPPORT.FEEDBACK.TITLE()}
-      hasCaretRight={false}
-      disabled
-    />
+
+    <SettingsCaretLink href="/me/settings/about">
+      {#snippet icon()}
+        <InfoFillIcon class="h-5 w-5 text-primary"></InfoFillIcon>
+      {/snippet}
+      {$LL.SETTINGS.SUPPORT.ABOUT.TITLE()}
+    </SettingsCaretLink>
+
+    <!-- TODO Feedback button with `EnvelopeFillIcon` and `$LL.SETTINGS.SUPPORT.FEEDBACK.TITLE()`. -->
   </div>
 </div>

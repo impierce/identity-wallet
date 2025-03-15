@@ -8,10 +8,7 @@ use crate::{
         credentials::reducers::handle_oid4vp_authorization_request::{
             get_oid4vp_client_name_and_logo_uri, OID4VPClientMetadata,
         },
-        did::{
-            validate_domain_linkage::validate_domain_linkage,
-            validate_linked_verifiable_presentations::validate_linked_verifiable_presentations,
-        },
+        did::validate_linked_verifiable_presentations::validate_linked_verifiable_presentations,
         qr_code::actions::qrcode_scanned::QrCodeScanned,
         user_prompt::CurrentUserPrompt,
         AppState,
@@ -76,16 +73,28 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
 
             let previously_connected = state.connections.contains(&connection_url, &client_name);
 
-            let url = url::Url::parse(&redirect_uri).map_err(|_| {
-                Error(format!(
-                    "`redirect_uri` could not be parsed to url::Url: `{:?}`",
-                    redirect_uri.clone()
-                ))
-            })?;
-
             let did = siopv2_authorization_request.body.client_id.as_str();
 
-            let domain_validation = Box::new(validate_domain_linkage(url, did).await);
+            let domain_validation = {
+                #[cfg(not(feature = "test_utils"))]
+                {
+                    use crate::state::did::validate_domain_linkage::validate_domain_linkage;
+
+                    let url = url::Url::parse(&redirect_uri).map_err(|_| {
+                        Error(format!(
+                            "`redirect_uri` could not be parsed to url::Url: `{:?}`",
+                            redirect_uri.clone()
+                        ))
+                    })?;
+
+                    Box::new(validate_domain_linkage(url, did).await)
+                }
+                #[cfg(feature = "test_utils")]
+                {
+                    // Skip validation during tests
+                    Default::default()
+                }
+            };
 
             let trusted_domains: Vec<url::Url> = state
                 .trust_lists

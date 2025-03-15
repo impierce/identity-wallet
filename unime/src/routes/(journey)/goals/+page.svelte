@@ -17,12 +17,16 @@
   let journeyDefinition = $state?.user_journey;
 
   let goals: Goal[] =
-    journeyDefinition?.goals.map((goal) => ({
+    journeyDefinition?.goals.map((goal: Goal) => ({
       ...goal,
       completed: true, // TODO: should be determined by the backend
     })) ?? [];
 
-  goals.at(2).completed = false;
+  // `goals.at(2)` might be undefined.
+  const thirdGoal = goals.at(2);
+  if (thirdGoal) {
+    thirdGoal.completed = false;
+  }
 
   let completedPercentage = Math.round((goals.filter((goal) => goal.completed).length / goals.length) * 100);
 </script>
@@ -99,7 +103,7 @@
 
             <svelte:fragment slot="icon">
               <div class="mb-[15px] flex h-[75px] w-[75px] items-center justify-center rounded-3xl bg-slate-100">
-                <svelte:component this={icons[goal.icon] || icons['Trophy']} class="h-7 w-7 text-primary" />
+                <svelte:component this={icons[goal.icon ?? 'Trophy']} class="h-7 w-7 text-primary" />
               </div>
             </svelte:fragment>
 
