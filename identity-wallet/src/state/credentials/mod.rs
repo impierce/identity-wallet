@@ -100,8 +100,7 @@ impl TryFrom<serde_json::Value> for VerifiableCredentialRecord {
                 let hash = {
                     let type_value = credential_display["type"].clone();
 
-                    let credential_subject_key = "credentialSubject";
-                    let mut credential_subject_value = credential_display[credential_subject_key].clone();
+                    let mut credential_subject_value = credential_display["credentialSubject"].clone();
 
                     // TODO(ngdil): Remove this hard-coded logic.
                     // Remove the `Passport Number` and `Staff Number` from the credential subject if they exists.
