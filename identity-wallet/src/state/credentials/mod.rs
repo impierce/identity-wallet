@@ -67,10 +67,15 @@ impl TryFrom<serde_json::Value> for VerifiableCredentialRecord {
                 info!("Verifiable Credential parsed as a SD-JWT VC");
 
                 let issuance_date = sd_jwt_vc.claims().iat.map(|iat| iat.to_rfc3339()).unwrap_or_default();
-                let credential_subject = sd_jwt_vc
+                let mut credential_subject = sd_jwt_vc
                     .clone()
                     .into_disclosed_object(&Sha256Hasher::new())
                     .map_err(|_| AppError::Error("Failed to convert SD JWT VC to Disclosed Object".to_string()))?;
+
+                // Remove the SD-JWT specific fields that should not be displayed in the frontend.
+                for key in ["iss", "nbf", "exp", "status", "iat", "sub", "_sd_alg", "cnf", "vct"] {
+                    credential_subject.remove(key);
+                }
 
                 // TODO: We are using this hash as Credential ID so that we can prevent credential duplication in
                 // demo situations. Now we can actually delete Credentials in UniMe we don't need to use the hash of the
@@ -213,13 +218,7 @@ mod tests {
               ],
               "issuer": "did:web:demopidprovider.acc.credenco.com:did:b49bc37c-6e24-442a-9597-069cdbc946bd",
               "credentialSubject": {
-                "sub": "did:jwk:eyJhbGciOiJFZERTQSIsImNydiI6IkVkMjU1MTkiLCJraWQiOiJTSm9vQnQ4ZUtXUjhYejdxNEQyV0VkMmVTZ05xaTh0TTFnNGk4NGJQUVNjIiwia3R5IjoiT0tQIiwieCI6ImN0TTFkOThXTlRlZnN3LVBqbXpDWWFPZkFsWllULUlKZVFWY2JEaWtjWjAifQ",
                 "id": "urn:uuid:d0696c60-34bd-42ec-b1db-86f1a68e9487",
-                "iss": "did:web:demopidprovider.acc.credenco.com:did:b49bc37c-6e24-442a-9597-069cdbc946bd",
-                "nbf": 1741117731,
-                "exp": 1772653731,
-                "vct": "pid_vc+sd-jwt",
-                "iat": 1741117731,
                 "family_name": "Visser",
                 "given_name": "Charlotte",
                 "birth_date": "1990-07-22",
