@@ -134,7 +134,6 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
                     "Sending multiple presentations is not supported".to_string(),
                 ))
             }
-
             (1, 0) => {
                 let sd_jwt_vc = sd_jwt_vc_credentials
                     .first()
@@ -218,7 +217,9 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
                 }
             }
             _ => {
-                unreachable!("Invalid combination of SD-JWT VC and JWT VC JSONs");
+                return Err(AppError::Error(
+                    "Invalid combination of SD-JWT VC and JWT VC JSONs".to_string(),
+                ));
             }
         };
 
