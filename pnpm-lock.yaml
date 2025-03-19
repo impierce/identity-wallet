@@ -35,9 +35,6 @@ importers:
       '@iconify-json/ph':
         specifier: ^1.2.0
         version: 1.2.0
-      '@impierce/tauri-plugin-cloud-storage':
-        specifier: file:../../../daniel-mader/plugins-workspace/plugins/tauri-plugin-cloud-storage
-        version: tauri-plugin-cloud-storage-api@file:../../daniel-mader/plugins-workspace/plugins/tauri-plugin-cloud-storage
       '@impierce/tauri-plugin-keystore':
         specifier: 2.1.0-alpha.1
         version: 2.1.0-alpha.1
@@ -2414,9 +2411,6 @@ packages:
     resolution: {integrity: sha512-IcSvOcTRcUtQQ7ILQL5quRDg7Xs93PdJEk1ZLbhhvJc7uj/OAhYOnruEiwnGgBvUtaUAJ8/mhSw1o8L2jCiENA==}
     engines: {node: '>=14.0.0'}
     hasBin: true
-
-  tauri-plugin-cloud-storage-api@file:../../daniel-mader/plugins-workspace/plugins/tauri-plugin-cloud-storage:
-    resolution: {directory: ../../daniel-mader/plugins-workspace/plugins/tauri-plugin-cloud-storage, type: directory}
 
   test-exclude@7.0.1:
     resolution: {integrity: sha512-pFYqmTw68LXVjeWJMST4+borgQP2AyMNbg1BpZh9LbyhUeNkeaPF9gzfPGUAnSMV3qPYdWUwDIjjCLiSDOl7vg==}
@@ -4992,10 +4986,6 @@ snapshots:
       sucrase: 3.35.0
     transitivePeerDependencies:
       - ts-node
-
-  tauri-plugin-cloud-storage-api@file:../../daniel-mader/plugins-workspace/plugins/tauri-plugin-cloud-storage:
-    dependencies:
-      '@tauri-apps/api': 2.3.0
 
   test-exclude@7.0.1:
     dependencies:
