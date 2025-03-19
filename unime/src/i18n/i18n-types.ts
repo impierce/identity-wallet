@@ -10,6 +10,7 @@ export type Locales =
 	| 'en'
 	| 'en-GB'
 	| 'en-US'
+	| 'es-ES'
 	| 'nl-NL'
 
 export type Translation = RootTranslation
@@ -223,7 +224,7 @@ type RootTranslation = {
 			​T​h​e​s​e​ ​T​e​r​m​s​ ​m​a​y​ ​h​a​v​e​ ​b​e​e​n​ ​t​r​a​n​s​l​a​t​e​d​ ​i​n​t​o​ ​o​t​h​e​r​ ​l​a​n​g​u​a​g​e​s​ ​f​o​r​ ​y​o​u​r​ ​c​o​n​v​e​n​i​e​n​c​e​.​ ​I​n​ ​t​h​e​ ​e​v​e​n​t​ ​o​f​ ​a​ ​c​o​n​f​l​i​c​t​ ​b​e​t​w​e​e​n​ ​t​h​e​ ​E​n​g​l​i​s​h​ ​v​e​r​s​i​o​n​ ​a​n​d​ ​a​ ​t​r​a​n​s​l​a​t​e​d​ ​v​e​r​s​i​o​n​,​ ​t​h​e​ ​E​n​g​l​i​s​h​ ​v​e​r​s​i​o​n​ ​s​h​a​l​l​ ​p​r​e​v​a​i​l​.​
 			​
 			​B​y​ ​u​s​i​n​g​ ​o​u​r​ ​S​e​r​v​i​c​e​,​ ​y​o​u​ ​a​c​k​n​o​w​l​e​d​g​e​ ​t​h​a​t​ ​y​o​u​ ​h​a​v​e​ ​r​e​a​d​,​ ​u​n​d​e​r​s​t​o​o​d​,​ ​a​n​d​ ​a​g​r​e​e​ ​t​o​ ​b​e​ ​b​o​u​n​d​ ​b​y​ ​t​h​e​s​e​ ​T​e​r​m​s​ ​&​ ​C​o​n​d​i​t​i​o​n​s​.​ ​I​m​p​i​e​r​c​e​ ​T​e​c​h​n​o​l​o​g​i​e​s​ ​B​.​V​.​ ​r​e​m​a​i​n​s​ ​c​o​m​m​i​t​t​e​d​ ​t​o​ ​p​r​o​v​i​d​i​n​g​ ​y​o​u​ ​w​i​t​h​ ​s​e​c​u​r​e​,​ ​p​r​i​v​a​c​y​-​c​e​n​t​r​i​c​ ​s​o​l​u​t​i​o​n​s​ ​w​h​i​l​e​ ​u​p​h​o​l​d​i​n​g​ ​y​o​u​r​ ​r​i​g​h​t​s​ ​a​n​d​ ​f​r​e​e​d​o​m​s​.​
-
+		
 				 */
 				FULL: string
 			}
@@ -1127,102 +1128,102 @@ export type TranslationFunctions = {
 				TL_DR: () => LocalizedString
 				/**
 				 * Welcome to Impierce Technologies B.V. (“we,” “us,” or “our”). These Terms & Conditions (“Terms”) govern your access to the UniMe - Identity Wallet application (“Service”). By accessing or using our Service, you agree to be bound by these Terms. If you do not agree with any part of these Terms, please do not use our Service.
-
+		
 			Acceptance of Terms
 			By downloading, accessing, or using our Service, you confirm that you have read, understood, and agree to these Terms and our Privacy Policy. If you are using the Service on behalf of an organization, you represent that you have the authority to bind that organization to these Terms.
-
-
+		
+		
 			User Responsibilities
 			Data Security: You are responsible for maintaining the confidentiality and security of your devices and any credentials used to access our Service. Impierce Technologies B.V. is not liable for any loss or compromise of your data due to your failure to secure your device.
 			Compliance with Laws: You agree to use our Service in compliance with all applicable laws and regulations.
 			Accurate Information: You are responsible for ensuring that any information you store or share using our Service is accurate and up-to-date.
-
-
-
+		
+		
+		
 			Data Ownership and Privacy
 			No Data Collection: We do not collect, store, or process any personal information through the UniMe application. All identity data remains solely on your device or within the storage option you choose.
 			User-Controlled Sharing: Any data sharing is initiated and managed solely by you and occurs directly between you and the designated party. We do not access, track, or have insight into your identity or activity.
 			Third-Party Data Collection: Be aware that third-party platforms like Apple App Store or Google Play Store may collect data related to app performance, usage, and device information independently of Impierce Technologies B.V.
-
-
-
+		
+		
+		
 			Intellectual Property Rights
 			Ownership and Licensing: All intellectual property rights in UniMe and related materials are owned by Impierce Technologies B.V. or its licensors. However, UniMe is provided as an open-source product under the Apache 2.0 license, allowing users to use, modify, and distribute the software in compliance with the terms of that license.
 			License Grant: By downloading or using UniMe, you agree to abide by the terms of the Apache 2.0 license, which grants a worldwide, royalty-free license to use, reproduce, and distribute the software with proper attribution.
-
+		
 			For more details, please refer to the full text of the Apache 2.0 License.
-
-
-
-
+		
+		
+		
+		
 			Prohibited Activities
 			You agree not to engage in any of the following activities:
 			Unauthorized Access: Attempting to gain unauthorized access to our Service or systems.
 			Interference: Disrupting or interfering with the security or performance of the Service.
 			Misuse: Using the Service for any unlawful, harmful, fraudulent, infringing, or other malicious purposes.
-
-
-
+		
+		
+		
 			Third-Party Service
 			Our Service may include links or integrations with third-party Services. We do not control these third-party Service and are not responsible for their content or policies. Your use of third-party Service is at your own risk and subject to their terms and conditions.
-
-
-
+		
+		
+		
 			Disclaimers
 			“As Is” Basis: Our Service are provided on an “as is” and “as available” basis without warranties of any kind, either express or implied.
 			No Warranty: We do not warrant that the Service will be uninterrupted, error-free, secure, or free from viruses or other harmful components.
-
-
-
+		
+		
+		
 			Limitation of Liability
 			To the fullest extent permitted by law, Impierce Technologies B.V. shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to loss of profits, data, use, goodwill, or other intangible losses resulting from:
 			Your access to or use of or inability to access or use the Service;
 			Any conduct or content of any third party on the Service;
 			Any content obtained from the Service.
-
-
-
+		
+		
+		
 			Indemnification
 			You agree to indemnify, defend, and hold harmless Impierce Technologies B.V., its affiliates, and their respective directors, officers, employees, and agents from and against any claims, liabilities, damages, losses, and expenses arising out of or in any way connected with:
 			Your access to or use of the Service;
 			Your violation of these Terms;
 			Your violation of any rights of another.
-
-
-
+		
+		
+		
 			Modifications to the Terms
 			We may update or modify these Terms from time to time. The “Last Updated” date at the top indicates when the latest changes were made. We will notify you of significant changes by posting the new Terms on our website or through the Service. Your continued use of the Service after any changes constitute your acceptance of the new Terms.
-
-
-
+		
+		
+		
 			Governing Law and Jurisdiction
 			These Terms are governed by and construed in accordance with the laws of the Netherlands. Any disputes arising under or in connection with these Terms shall be subject to the exclusive jurisdiction of the courts located in the Netherlands.
-
-
-
+		
+		
+		
 			Severability
 			If any provision of these Terms is held to be invalid or unenforceable, the remaining provisions will remain in full force and effect.
-
-
-
+		
+		
+		
 			Entire Agreement
 			These Terms, along with our Privacy Policy, constitute the entire agreement between you and Impierce Technologies B.V. regarding your use of the Service.
-
-
-
+		
+		
+		
 			Contact Information
 			For any questions, concerns, or comments about these Terms, please contact us at:
 			Impierce Technologies B.V.
 			Karekietweide 6, 3993 CD, Houten, the Netherlands
 			Email: contact@impierce.com
-
-
-
+		
+		
+		
 			Language
 			These Terms may have been translated into other languages for your convenience. In the event of a conflict between the English version and a translated version, the English version shall prevail.
-
+		
 			By using our Service, you acknowledge that you have read, understood, and agree to be bound by these Terms & Conditions. Impierce Technologies B.V. remains committed to providing you with secure, privacy-centric solutions while upholding your rights and freedoms.
-
+		
 				 */
 				FULL: () => LocalizedString
 			}
