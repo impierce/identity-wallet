@@ -33,12 +33,12 @@
     </div>
   </div>
 
-  <div class="absolute bottom-32 left-0">
+  <div class="absolute bottom-16 left-0">
     <MeLarge class="h-auto w-screen" />
   </div>
 
   <!-- Actions -->
-  <div class="z-10 space-y-3 rounded-t-3xl bg-white p-6 dark:bg-dark">
+  <div class="z-10 rounded-t-3xl bg-white p-6 dark:bg-dark">
     <Button
       label={$LL.ONBOARDING.WELCOME.CREATE_NEW_PROFILE()}
       on:click={() => {
@@ -46,12 +46,7 @@
         goto('/welcome/pledge');
       }}
     />
-    <!-- <Button
-      label={$LL.ONBOARDING.WELCOME.RECOVER_PROFILE()}
-      variant="secondary"
-      on:click={() => {
-        goto('/welcome/recover');
-      }}
-    /> -->
+    <!-- TODO: feature disabled: "recover existing profile" -->
+    <!-- <Button label="Recover existing profile" variant="secondary" /> -->
   </div>
 </div>
