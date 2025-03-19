@@ -10,7 +10,7 @@
 <div class="flex flex-col items-center">
   <!-- Indicator -->
   {#if active}
-    <div class="h-[2px] w-full rounded-full bg-primary" />
+    <div class="h-[2px] w-full rounded-full bg-primary"></div>
   {/if}
 
   <!-- Active button gets 2px less padding to accommodate indicator. -->

@@ -395,6 +395,11 @@ Durch die Nutzung unseres Dienstes bestätigen Sie, dass Sie diese Allgemeinen G
   SKIP: 'Überspringen',
   ACCEPT: 'Akzeptieren',
   REJECT: 'Ablehnen',
+  // TODO: AI generated translations to fix TS errors in journeys.
+  GETTING_STARTED: {
+    SKIP_TITLE: 'Einführung überspringen',
+    SKIP_TEXT: 'Möchtest du die Einführung wirklich überspringen?',
+  },
 } satisfies Translation;
 
 export default de;

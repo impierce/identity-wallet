@@ -64,6 +64,6 @@
   </ActionSheet>
 
   <!-- Little arrow that visually links the menu box to the trigger button -->
-  <div use:melt={$arrow} />
+  <div use:melt={$arrow}></div>
 </div>
 <!-- {/if} -->
