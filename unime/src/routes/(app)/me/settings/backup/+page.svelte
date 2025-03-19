@@ -9,3 +9,10 @@
     <!-- TODO Button with `KeyboardFillIcon` and `Your DID`. -->
   </div>
 </div>
+
+<style>
+  .content-height {
+    /* bottom-navigation: 64px, top-navigation: 50px */
+    height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom) - 64px - 50px);
+  }
+</style>
