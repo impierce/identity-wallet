@@ -11,5 +11,5 @@ export const locales: {
   { locale: 'es-ES', displayName: 'Español (España)' },
 ];
 
-// Incomplete locales can be disabled
+// Incomplete locales can be disabled here
 export const disabledLocales: Locale[] = ['en-GB'];

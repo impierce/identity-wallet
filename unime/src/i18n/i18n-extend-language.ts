@@ -2,8 +2,7 @@ import extend from 'just-extend';
 
 import type { BaseTranslation } from './i18n-types';
 
-// Issue: "Using `extendDictionary` does not work well with nested namespaces"
-// https://github.com/ivanhofer/typesafe-i18n/issues/741
+// Applies fix to `extendDictionary` as proposed in issue: https://github.com/ivanhofer/typesafe-i18n/issues/741
 
 type DeepPartial<T> = T extends BaseTranslation
   ? {

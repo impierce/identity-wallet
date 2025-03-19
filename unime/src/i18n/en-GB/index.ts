@@ -1,4 +1,4 @@
-import { extendLanguage } from '$i18n/i18n-util-custom';
+import { extendLanguage } from '$i18n/i18n-extend-language';
 
 import en from '../en';
 import type { Translation } from '../i18n-types';
