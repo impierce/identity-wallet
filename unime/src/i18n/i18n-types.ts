@@ -484,32 +484,6 @@ type RootTranslation = {
 			 * B​a​c​k​u​p​ ​a​n​d​ ​r​e​c​o​v​e​r​y
 			 */
 			TITLE: string
-			/**
-			 * A​u​t​o​m​a​t​i​c​ ​c​l​o​u​d​ ​b​a​c​k​u​p​s
-			 */
-			SETTINGS_ENTRY: string
-			/**
-			 * B​a​c​k​ ​u​p​ ​n​o​w
-			 */
-			BACKUP_NOW: string
-			CONFIRM_DISABLE: {
-				/**
-				 * D​i​s​a​b​l​e​ ​a​u​t​o​m​a​t​i​c​ ​b​a​c​k​u​p​s
-				 */
-				TITLE: string
-				/**
-				 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​d​i​s​a​b​l​e​ ​a​u​t​o​m​a​t​i​c​ ​b​a​c​k​u​p​s​ ​t​o​ ​t​h​e​ ​c​l​o​u​d​?
-				 */
-				DESCRIPTION: string
-				/**
-				 * Y​e​s​,​ ​r​e​m​o​v​e​ ​a​l​l​ ​b​a​c​k​u​p​s
-				 */
-				CONFIRM: string
-				/**
-				 * N​o​,​ ​k​e​e​p​ ​m​y​ ​b​a​c​k​u​p​s
-				 */
-				CANCEL: string
-			}
 		}
 		LOG_OUT: {
 			/**
@@ -1509,32 +1483,6 @@ export type TranslationFunctions = {
 			 * Backup and recovery
 			 */
 			TITLE: () => LocalizedString
-			/**
-			 * Automatic cloud backups
-			 */
-			SETTINGS_ENTRY: () => LocalizedString
-			/**
-			 * Back up now
-			 */
-			BACKUP_NOW: () => LocalizedString
-			CONFIRM_DISABLE: {
-				/**
-				 * Disable automatic backups
-				 */
-				TITLE: () => LocalizedString
-				/**
-				 * Are you sure you want to disable automatic backups to the cloud?
-				 */
-				DESCRIPTION: () => LocalizedString
-				/**
-				 * Yes, remove all backups
-				 */
-				CONFIRM: () => LocalizedString
-				/**
-				 * No, keep my backups
-				 */
-				CANCEL: () => LocalizedString
-			}
 		}
 		LOG_OUT: {
 			/**
