@@ -19,7 +19,6 @@
     "@aws-crypto/sha256-js": "^5.2.0",
     "@eslint/compat": "^1.2.7",
     "@eslint/js": "^9.21.0",
-    "@iconify-json/circle-flags": "^1.2.0",
     "@iconify-json/ph": "^1.2.0",
     "@impierce/tauri-plugin-cloud-storage": "file:../../../daniel-mader/plugins-workspace/plugins/tauri-plugin-cloud-storage",
     "@impierce/tauri-plugin-keystore": "2.1.0-alpha.1",

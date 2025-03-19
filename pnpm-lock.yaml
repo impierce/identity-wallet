@@ -32,9 +32,6 @@ importers:
       '@eslint/js':
         specifier: ^9.21.0
         version: 9.21.0
-      '@iconify-json/circle-flags':
-        specifier: ^1.2.0
-        version: 1.2.0
       '@iconify-json/ph':
         specifier: ^1.2.0
         version: 1.2.0
@@ -487,9 +484,6 @@ packages:
     peerDependenciesMeta:
       '@vue/compiler-sfc':
         optional: true
-
-  '@iconify-json/circle-flags@1.2.0':
-    resolution: {integrity: sha512-IiHBArcOAePzikToo52mUmVHh5ysekcuK5xOzZkFk9mokIp+rwYlSP0qgfB0POmD9Y22bCVNHYukyg5a5qDCNw==}
 
   '@iconify-json/ph@1.2.0':
     resolution: {integrity: sha512-013eLpgTmX1lACOuDnkuhC7gRHyYj9w/j8SyDmlyUYvsKQrwdRsv1otcXtwH3DevuDAzSkreeeRsCeez+gTyVA==}
@@ -3008,10 +3002,6 @@ snapshots:
       semver: 7.7.1
     transitivePeerDependencies:
       - supports-color
-
-  '@iconify-json/circle-flags@1.2.0':
-    dependencies:
-      '@iconify/types': 2.0.0
 
   '@iconify-json/ph@1.2.0':
     dependencies:
