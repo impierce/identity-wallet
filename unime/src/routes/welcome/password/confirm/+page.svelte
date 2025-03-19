@@ -6,7 +6,7 @@
   import { fade } from 'svelte/transition';
 
   import { store } from '@impierce/tauri-plugin-keystore';
-  import { BiometryType, checkStatus, type Status } from '@tauri-apps/plugin-biometric';
+  import { authenticate, BiometryType, checkStatus, type Status } from '@tauri-apps/plugin-biometric';
 
   import { ActionSheet, Button, TopNavBar } from '$lib/components';
   import {
@@ -36,9 +36,12 @@
   let biometricsName: string;
 
   const enableBiometrics = async () => {
-    await store($onboarding_state.password!!).then(() => {
-      $onboarding_state.biometrics_enabled = true;
-      goto('/welcome/completed');
+    // TODO: authenticate first, before storing the password => duplicate check?
+    await authenticate('Enable biometrics').then(async () => {
+      await store($onboarding_state.password!!).then(() => {
+        $onboarding_state.biometrics_enabled = true;
+        goto('/welcome/completed');
+      });
     });
   };
 
