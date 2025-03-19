@@ -72,7 +72,7 @@
   });
 </script>
 
-<TopNavBar on:back={() => history.back()} title={'Security'} class="sticky top-0 z-10" />
+<TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.APP.SECURITY.NAVBAR_TITLE()} class="sticky top-0 z-10" />
 
 <div class="flex flex-col bg-silver dark:bg-navy">
   <div class="flex flex-col space-y-[10px] px-4 py-5">
@@ -91,7 +91,7 @@
           {/if}
           <!-- <CodeBoldIcon class="h-5 w-5 text-primary"></CodeBoldIcon> -->
         {/snippet}
-        {`Unlock with ${biometryTypeString}`}
+        {$LL.SETTINGS.APP.SECURITY.SWITCH_LABEL({ type: biometryTypeString })}
       </SettingsSwitch>
 
       <!-- <SettingsEntry

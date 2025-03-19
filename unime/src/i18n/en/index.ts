@@ -216,6 +216,11 @@ By using our Service, you acknowledge that you have read, understood, and agree 
         TITLE_2: 'appearance',
         SUBTITLE: 'Are you more of a night owl?',
       },
+      SECURITY: {
+        LABEL: 'Security',
+        NAVBAR_TITLE: 'Security',
+        SWITCH_LABEL: 'Unlock with {type:string}'
+      },
       PASSWORD: {
         TITLE: 'Password',
       },

@@ -189,6 +189,11 @@ Durch die Nutzung unseres Dienstes bestätigen Sie, dass Sie diese Allgemeinen G
         TITLE_2: 'Erscheinungsbild',
         SUBTITLE: 'Bist du eher eine Nachteule?',
       },
+      SECURITY: {
+        LABEL: 'Sicherheit',
+        NAVBAR_TITLE: 'Sicherheit',
+        SWITCH_LABEL: 'Mit {type} entsperren'
+      },
       PASSWORD: {
         TITLE: 'Passwort',
       },
