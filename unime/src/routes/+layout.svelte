@@ -368,7 +368,7 @@ Stacking context: We have to deviate from the DOM-sequence.
             <div class="mr-2 text-xs text-orange-800">Reset profile?</div>
             <DeprecatedSwitch
               active={resetDragonProfile}
-              onchange={() => {
+              on:change={() => {
                 resetDragonProfile = !resetDragonProfile;
               }}
             />

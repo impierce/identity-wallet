@@ -29,17 +29,13 @@ type RootTranslation = {
 			 */
 			WHAT_IS_UNIME_1: string
 			/**
-			 * C​r​e​a​t​e​ ​a​ ​b​r​a​n​d​ ​n​e​w​ ​i​d​e​n​t​i​t​y​ ​p​r​o​f​i​l​e​ ​o​r​ ​r​e​c​o​v​e​r​ ​a​n​ ​e​x​i​s​t​i​n​g​ ​o​n​e​ ​t​o​ ​g​e​t​ ​s​t​a​r​t​e​d​.
+			 * C​r​e​a​t​e​ ​a​ ​b​r​a​n​d​ ​n​e​w​ ​i​d​e​n​t​i​t​y​ ​p​r​o​f​i​l​e​ ​t​o​ ​g​e​t​ ​s​t​a​r​t​e​d​.
 			 */
 			WHAT_IS_UNIME_2: string
 			/**
 			 * C​r​e​a​t​e​ ​n​e​w​ ​p​r​o​f​i​l​e
 			 */
 			CREATE_NEW_PROFILE: string
-			/**
-			 * R​e​c​o​v​e​r​ ​e​x​i​s​t​i​n​g​ ​p​r​o​f​i​l​e
-			 */
-			RECOVER_PROFILE: string
 			/**
 			 * S​e​l​e​c​t​ ​l​a​n​g​u​a​g​e
 			 */
@@ -1058,17 +1054,13 @@ export type TranslationFunctions = {
 			 */
 			WHAT_IS_UNIME_1: () => LocalizedString
 			/**
-			 * Create a brand new identity profile or recover an existing one to get started.
+			 * Create a brand new identity profile to get started.
 			 */
 			WHAT_IS_UNIME_2: () => LocalizedString
 			/**
 			 * Create new profile
 			 */
 			CREATE_NEW_PROFILE: () => LocalizedString
-			/**
-			 * Recover existing profile
-			 */
-			RECOVER_PROFILE: () => LocalizedString
 			/**
 			 * Select language
 			 */

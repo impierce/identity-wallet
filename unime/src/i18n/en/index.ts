@@ -5,9 +5,8 @@ const en = {
     WELCOME: {
       GREETING: 'Welcome to',
       WHAT_IS_UNIME_1: 'UniMe connects your digital world, safely and securely.',
-      WHAT_IS_UNIME_2: 'Create a brand new identity profile or recover an existing one to get started.',
+      WHAT_IS_UNIME_2: 'Create a brand new identity profile to get started.',
       CREATE_NEW_PROFILE: 'Create new profile',
-      RECOVER_PROFILE: 'Recover existing profile',
       SELECT_LANGUAGE: 'Select language',
     },
     PLEDGE: {
