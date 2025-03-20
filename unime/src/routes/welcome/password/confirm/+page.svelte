@@ -17,7 +17,7 @@
     SmileyRegularIcon,
     SmileySadRegularIcon,
   } from '$lib/icons';
-  import { onboarding_state } from '$lib/stores';
+  import { onboarding_state, state } from '$lib/stores';
   import { localizedBiometricsTypeString } from '$lib/utils';
 
   // 3 states: true (match), false (mismatch), undefined (not checked yet).
@@ -43,6 +43,15 @@
         goto('/welcome/completed');
       });
     });
+  };
+
+  // TODO: This workaround capitalizes the first letter for a specific language, since typesafe-i18n formatters do not seem to support this.
+  const capitalize = (value: string) => {
+    if ($state.profile_settings.locale === 'nl-NL') {
+      return value.charAt(0).toUpperCase() + value.slice(1);
+    } else {
+      return value;
+    }
   };
 
   onMount(async () => {
@@ -130,7 +139,7 @@
 <div class="rounded-t-3xl bg-white p-6 dark:bg-dark" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   {#if biometricsStatus?.isAvailable}
     <ActionSheet
-      titleText={$LL.ONBOARDING.PASSWORD.BIOMETRICS.TITLE({ type: biometricsName })}
+      titleText={capitalize($LL.ONBOARDING.PASSWORD.BIOMETRICS.TITLE({ type: biometricsName }))}
       descriptionText={$LL.ONBOARDING.PASSWORD.BIOMETRICS.DESCRIPTION({ type: biometricsName })}
     >
       <Button slot="trigger" let:trigger {trigger} label={$LL.CONTINUE()} disabled={!passwordsMatch} />
