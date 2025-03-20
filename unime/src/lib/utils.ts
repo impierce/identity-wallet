@@ -6,6 +6,8 @@ import { BiometryType } from '@tauri-apps/plugin-biometric';
 import { platform } from '@tauri-apps/plugin-os';
 import { exists } from '@tauri-apps/plugin-fs';
 import { debug, info, warn } from '@tauri-apps/plugin-log';
+import LL from '$i18n/i18n-svelte';
+import { get } from 'svelte/store';
 
 /**
  * Get an image asset URL from the UniMe backend.
@@ -113,32 +115,59 @@ export function formatRelativeDateTime(isoDate: string, locale: Locale) {
 /**
  * Determines the name of the biometrics type based on the platform.
  */
-export function biometricsTypeString(type: BiometryType): string {
-  let biometryTypeString = 'biometrics'; // default
+export function localizedBiometricsTypeString(type: BiometryType): string {
+  let biometryTypeString = get(LL).SETTINGS.APP.SECURITY.BIOMETRIC_TYPE.GENERIC(); // default
   // On iOS, we distinguish between Face ID and Touch ID.
   if (platform() === 'ios') {
-    switch (type) {
-      case BiometryType.TouchID:
-        biometryTypeString = 'Touch ID';
-        break;
-      case BiometryType.FaceID:
-        biometryTypeString = 'Face ID';
-        break;
-      default:
-        biometryTypeString = 'biometrics';
-    }
+    const localizedType = (() => {
+      switch (type) {
+        case BiometryType.TouchID:
+          return get(LL).SETTINGS.APP.SECURITY.BIOMETRIC_TYPE.IOS.TOUCH_ID();
+        case BiometryType.FaceID:
+          return get(LL).SETTINGS.APP.SECURITY.BIOMETRIC_TYPE.IOS.FACE_ID();
+        default:
+          return get(LL).SETTINGS.APP.SECURITY.BIOMETRIC_TYPE.GENERIC();
+      }
+    })();
+    biometryTypeString = localizedType;
     // On Android, we distinguish between fingerprint and face unlock.
   } else if (platform() === 'android') {
-    switch (type) {
-      case BiometryType.TouchID:
-        biometryTypeString = 'Fingerprint';
-        break;
-      case BiometryType.FaceID:
-        biometryTypeString = 'Face Unlock';
-        break;
-      default:
-        biometryTypeString = 'biometrics';
-    }
+    const localizedType = (() => {
+      switch (type) {
+        case BiometryType.TouchID:
+          return get(LL).SETTINGS.APP.SECURITY.BIOMETRIC_TYPE.ANDROID.TOUCH_ID();
+        case BiometryType.FaceID:
+          return get(LL).SETTINGS.APP.SECURITY.BIOMETRIC_TYPE.ANDROID.FACE_ID();
+        default:
+          return get(LL).SETTINGS.APP.SECURITY.BIOMETRIC_TYPE.GENERIC();
+      }
+    })();
+    biometryTypeString = localizedType;
   }
   return biometryTypeString;
+
+  // {#if biometricsStatus.biometryType === BiometryType.FaceID}
+  //         {#if platform() === 'ios'}
+  //           {$LL.SETTINGS.APP.SECURITY.SWITCH_LABEL({ type: $LL.SETTINGS.APP.SECURITY.BIOMETRIC_TYPE.IOS.FACE_ID() })}
+  //         {:else if platform() === 'android'}
+  //           {$LL.SETTINGS.APP.SECURITY.SWITCH_LABEL({
+  //             type: $LL.SETTINGS.APP.SECURITY.BIOMETRIC_TYPE.ANDROID.FACE_ID(),
+  //           })}
+  //         {:else}
+  //           <!-- TODO: handle unsupported platform? -->
+  //         {/if}
+  //       {:else if biometricsStatus.biometryType === BiometryType.TouchID}
+  //         {#if platform() === 'ios'}
+  //           {$LL.SETTINGS.APP.SECURITY.SWITCH_LABEL({ type: $LL.SETTINGS.APP.SECURITY.BIOMETRIC_TYPE.IOS.TOUCH_ID() })}
+  //         {:else if platform() === 'android'}
+  //           {$LL.SETTINGS.APP.SECURITY.SWITCH_LABEL({
+  //             type: $LL.SETTINGS.APP.SECURITY.BIOMETRIC_TYPE.ANDROID.TOUCH_ID(),
+  //           })}
+  //         {:else}
+  //           <!-- TODO: handle unsupported platform? -->
+  //         {/if}
+  //       {:else}
+  //         <!-- TODO: handle unsupported platform -->
+  //         {$LL.SETTINGS.APP.SECURITY.SWITCH_LABEL({ type: $LL.SETTINGS.APP.SECURITY.BIOMETRIC_TYPE.GENERIC() })}
+  //       {/if}
 }

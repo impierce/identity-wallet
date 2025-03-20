@@ -1,6 +1,6 @@
 import type { Translation } from '../i18n-types';
 
-const nl = {
+const nl_NL = {
   ONBOARDING: {
     WELCOME: {
       GREETING: 'Welkom bij',
@@ -156,6 +156,12 @@ Door onze Service te gebruiken, erken je dat je deze Voorwaarden heeft gelezen, 
         MATCH: 'Wachtwoorden komen overeen',
         NO_MATCH: 'Wachtwoorden komen niet overeen',
       },
+      BIOMETRICS: {
+        TITLE: '{type} inschakelen',
+        DESCRIPTION: 'Wil je {type} instellen om de app te ontgrendelen?',
+        CONFIRM: 'Ja, gebruik {type}',
+        DECIDE_LATER: 'Beslis later',
+      },
       COMPLETED: {
         NAVBAR_TITLE: 'Wachtwoord Instellen',
         TITLE_1: 'Je UniMe profiel is nu',
@@ -198,6 +204,22 @@ Door onze Service te gebruiken, erken je dat je deze Voorwaarden heeft gelezen, 
         TITLE_1: 'Kies het uiterlijk',
         TITLE_2: 'van je app',
         SUBTITLE: 'Ben jij meer een nachtuil?',
+      },
+      SECURITY: {
+        LABEL: 'Beveiliging',
+        NAVBAR_TITLE: 'Beveiliging',
+        SWITCH_LABEL: 'Ontgrendelen met {type}',
+        BIOMETRIC_TYPE: {
+          ANDROID: {
+            FACE_ID: 'gezichtsherkenning',
+            TOUCH_ID: 'vingerafdruk',
+          },
+          IOS: {
+            FACE_ID: 'Face ID',
+            TOUCH_ID: 'Touch ID',
+          },
+          GENERIC: 'biometrie'
+        },
       },
       PASSWORD: {
         TITLE: 'Wachtwoord',
@@ -411,4 +433,4 @@ Door onze Service te gebruiken, erken je dat je deze Voorwaarden heeft gelezen, 
   },
 } satisfies Translation;
 
-export default nl;
+export default nl_NL;

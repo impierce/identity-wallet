@@ -10,13 +10,13 @@
   import { dispatch } from '$lib/dispatcher';
   import { EyeClosedRegularIcon, EyeRegularIcon, FingerprintFillIcon, ScanSmileyFillIcon } from '$lib/icons';
   import { error as errorState, state } from '$lib/stores';
-  import { biometricsTypeString } from '$lib/utils';
+  import { localizedBiometricsTypeString } from '$lib/utils';
 
   const SERVICE = 'com.impierce.identity-wallet';
   const USER = 'tester'; // TODO: rename to "ACCOUNT" to reflect Keychain Access item?
 
   let biometricsStatus: Status;
-  let biometryTypeString: string = 'biometrics';
+  let biometryTypeString: string;
   let enabled: boolean = $state.profile_settings.biometrics_enabled;
 
   let enterPassword: boolean = false;
@@ -79,7 +79,7 @@
       };
     });
     // Determine human-readable name for biometrics type (with respect to the device platform)
-    biometryTypeString = biometricsTypeString(biometricsStatus.biometryType);
+    biometryTypeString = localizedBiometricsTypeString(biometricsStatus.biometryType);
   });
 </script>
 
@@ -102,7 +102,7 @@
           {/if}
           <!-- <CodeBoldIcon class="h-5 w-5 text-primary"></CodeBoldIcon> -->
         {/snippet}
-        {$LL.SETTINGS.APP.SECURITY.SWITCH_LABEL({ type: biometryTypeString })}
+        {$LL.SETTINGS.APP.SECURITY.SWITCH_LABEL({ type: localizedBiometricsTypeString(biometricsStatus.biometryType) })}
       </SettingsSwitch>
 
       <!-- <SettingsEntry

@@ -1,5 +1,5 @@
 import { BiometryType } from '@tauri-apps/plugin-biometric';
-import { biometricsTypeString, calculateInitials, formatDate, formatDateTime, formatRelativeDateTime, hash } from './utils';
+import { localizedBiometricsTypeString, calculateInitials, formatDate, formatDateTime, formatRelativeDateTime, hash } from './utils';
 
 describe('hash function', () => {
   test('should return the expected hash digest', () => {
@@ -36,6 +36,10 @@ describe('formatDate function', () => {
   test('format with nl-NL locale', () => {
     expect(formatDate(isoDate, 'nl-NL', true)).toEqual('22 jul 2024');
   });
+
+  test('format with es-ES locale', () => {
+    expect(formatDate(isoDate, 'es-ES', true)).toEqual('22 jul 2024');
+  })
 });
 
 describe('formatDateTime function', () => {
@@ -55,6 +59,10 @@ describe('formatDateTime function', () => {
 
   test('format with nl-NL locale', () => {
     expect(formatDateTime(isoDate, 'nl-NL', true)).toEqual('22 jul 2024, 11:31:45');
+  });
+
+  test('format with es-ES locale', () => {
+    expect(formatDateTime(isoDate, 'es-ES', true)).toEqual('22 jul 2024, 11:31:45');
   });
 });
 
@@ -128,44 +136,60 @@ describe('formatRelativeDateTime function', () => {
     const twoYearsAgo = new Date(now.setFullYear(now.getFullYear() - 2));
     expect(formatRelativeDateTime(twoYearsAgo.toISOString(), 'en-US')).toEqual('2 years ago');
   });
+
+  test('3 months ago es-ES', () => {
+    const now = new Date();
+    const twoMonthsAgo = new Date(now.setMonth(now.getMonth() - 3));
+    expect(formatRelativeDateTime(twoMonthsAgo.toISOString(), 'es-ES')).toEqual('Hace 3 meses');
+  });
 });
 
 vi.mock('@tauri-apps/plugin-os', () => ({
   platform: vi.fn()
 }))
 
-// import { platform as _platform } from '@tauri-apps/plugin-os';
 import { platform } from '@tauri-apps/plugin-os';
-
-// const platform = _platform as unknown as vi.MockedFunction<typeof _platform>;
+import { setLocale } from '$i18n/i18n-svelte';
+import { loadAllLocales } from '$i18n/i18n-util.sync';
 
 describe('biometricsTypeString function', () => {
+  beforeAll(() => {
+    loadAllLocales();
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  test('should return Face ID on iOS', () => {
+  test('Face ID on iOS in en-US', () => {
     platform.mockReturnValue('ios');
-    expect(biometricsTypeString(BiometryType.FaceID)).toEqual('Face ID');
+    setLocale('en-US');
+    expect(localizedBiometricsTypeString(BiometryType.FaceID)).toEqual('Face ID');
   })
 
-  test('should return Touch ID on iOS', () => {
+  test('Touch ID on iOS in de-DE', () => {
     platform.mockReturnValue('ios');
-    expect(biometricsTypeString(BiometryType.TouchID)).toEqual('Touch ID');
+    setLocale('de-DE');
+    expect(localizedBiometricsTypeString(BiometryType.TouchID)).toEqual('Touch ID');
   })
 
-  test('should return biometrics on iOS', () => {
-    platform.mockReturnValue('ios');
-    expect(biometricsTypeString(BiometryType.None)).toEqual('biometrics');
-  })
-
-  test('should return Face Unlock on Android', () => {
+  test('Face ID on Android in nl-NL', () => {
     platform.mockReturnValue('android');
-    expect(biometricsTypeString(BiometryType.FaceID)).toEqual('Face Unlock');
+    setLocale('nl-NL');
+    expect(localizedBiometricsTypeString(BiometryType.FaceID)).toEqual('gezichtsherkenning');
   })
 
-  test('should return biometrics on Android', () => {
+  test('Touch ID on Android in es-ES', () => {
     platform.mockReturnValue('android');
-    expect(biometricsTypeString(BiometryType.None)).toEqual('biometrics');
+    setLocale('es-ES');
+    expect(localizedBiometricsTypeString(BiometryType.TouchID)).toEqual('huella dactilar');
+  })
+
+  test('generic in en-US', () => {
+    setLocale('en-US');
+    platform.mockReturnValue('ios');
+    expect(localizedBiometricsTypeString(BiometryType.None)).toEqual('biometrics');
+    platform.mockReturnValue('android');
+    expect(localizedBiometricsTypeString(BiometryType.None)).toEqual('biometrics');
   })
 })

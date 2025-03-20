@@ -18,7 +18,7 @@
     SmileySadRegularIcon,
   } from '$lib/icons';
   import { onboarding_state } from '$lib/stores';
-  import { biometricsTypeString } from '$lib/utils';
+  import { localizedBiometricsTypeString } from '$lib/utils';
 
   // 3 states: true (match), false (mismatch), undefined (not checked yet).
   let passwordsMatch: boolean | undefined = undefined;
@@ -48,7 +48,7 @@
   onMount(async () => {
     inputElement.focus();
     biometricsStatus = await checkStatus().catch(() => ({ isAvailable: false, biometryType: BiometryType.None }));
-    biometricsName = biometricsTypeString(biometricsStatus.biometryType);
+    biometricsName = localizedBiometricsTypeString(biometricsStatus.biometryType);
   });
 </script>
 
@@ -130,8 +130,8 @@
 <div class="rounded-t-3xl bg-white p-6 dark:bg-dark" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   {#if biometricsStatus?.isAvailable}
     <ActionSheet
-      titleText={`Enable ${biometricsName}`}
-      descriptionText={`Do you want to set up ${biometricsName} to unlock the app?`}
+      titleText={$LL.ONBOARDING.PASSWORD.BIOMETRICS.TITLE({ type: biometricsName })}
+      descriptionText={$LL.ONBOARDING.PASSWORD.BIOMETRICS.DESCRIPTION({ type: biometricsName })}
     >
       <Button slot="trigger" let:trigger {trigger} label={$LL.CONTINUE()} disabled={!passwordsMatch} />
       <div slot="icon" class="mb-2">
@@ -142,8 +142,15 @@
         {/if}
       </div>
       <div slot="content" class="flex w-full flex-col space-y-[10px] pt-[20px]">
-        <Button label={`Yes, use ${biometricsName}`} on:click={enableBiometrics} />
-        <Button variant="secondary" label={'Decide later'} on:click={() => goto('/welcome/completed')} />
+        <Button
+          label={$LL.ONBOARDING.PASSWORD.BIOMETRICS.CONFIRM({ type: biometricsName })}
+          on:click={enableBiometrics}
+        />
+        <Button
+          variant="secondary"
+          label={$LL.ONBOARDING.PASSWORD.BIOMETRICS.DECIDE_LATER()}
+          on:click={() => goto('/welcome/completed')}
+        />
       </div>
     </ActionSheet>
   {:else}

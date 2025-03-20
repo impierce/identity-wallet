@@ -328,6 +328,27 @@ type RootTranslation = {
 				 */
 				NO_MATCH: string
 			}
+			BIOMETRICS: {
+				/**
+				 * E​n​a​b​l​e​ ​{​t​y​p​e​}
+				 * @param {string} type
+				 */
+				TITLE: RequiredParams<'type'>
+				/**
+				 * D​o​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​s​e​t​ ​u​p​ ​{​t​y​p​e​}​ ​t​o​ ​u​n​l​o​c​k​ ​t​h​e​ ​a​p​p​?
+				 * @param {string} type
+				 */
+				DESCRIPTION: RequiredParams<'type'>
+				/**
+				 * Y​e​s​,​ ​u​s​e​ ​{​t​y​p​e​}
+				 * @param {string} type
+				 */
+				CONFIRM: RequiredParams<'type'>
+				/**
+				 * D​e​c​i​d​e​ ​l​a​t​e​r
+				 */
+				DECIDE_LATER: string
+			}
 			COMPLETED: {
 				/**
 				 * P​a​s​s​w​o​r​d​ ​S​e​t
@@ -460,6 +481,32 @@ type RootTranslation = {
 				 * @param {string} type
 				 */
 				SWITCH_LABEL: RequiredParams<'type'>
+				BIOMETRIC_TYPE: {
+					ANDROID: {
+						/**
+						 * f​a​c​i​a​l​ ​r​e​c​o​g​n​i​t​i​o​n
+						 */
+						FACE_ID: string
+						/**
+						 * f​i​n​g​e​r​p​r​i​n​t
+						 */
+						TOUCH_ID: string
+					}
+					IOS: {
+						/**
+						 * F​a​c​e​ ​I​D
+						 */
+						FACE_ID: string
+						/**
+						 * T​o​u​c​h​ ​I​D
+						 */
+						TOUCH_ID: string
+					}
+					/**
+					 * b​i​o​m​e​t​r​i​c​s
+					 */
+					GENERIC: string
+				}
 			}
 			PASSWORD: {
 				/**
@@ -1342,6 +1389,24 @@ export type TranslationFunctions = {
 				 */
 				NO_MATCH: () => LocalizedString
 			}
+			BIOMETRICS: {
+				/**
+				 * Enable {type}
+				 */
+				TITLE: (arg: { type: string }) => LocalizedString
+				/**
+				 * Do you want to set up {type} to unlock the app?
+				 */
+				DESCRIPTION: (arg: { type: string }) => LocalizedString
+				/**
+				 * Yes, use {type}
+				 */
+				CONFIRM: (arg: { type: string }) => LocalizedString
+				/**
+				 * Decide later
+				 */
+				DECIDE_LATER: () => LocalizedString
+			}
 			COMPLETED: {
 				/**
 				 * Password Set
@@ -1473,6 +1538,32 @@ export type TranslationFunctions = {
 				 * Unlock with {type}
 				 */
 				SWITCH_LABEL: (arg: { type: string }) => LocalizedString
+				BIOMETRIC_TYPE: {
+					ANDROID: {
+						/**
+						 * facial recognition
+						 */
+						FACE_ID: () => LocalizedString
+						/**
+						 * fingerprint
+						 */
+						TOUCH_ID: () => LocalizedString
+					}
+					IOS: {
+						/**
+						 * Face ID
+						 */
+						FACE_ID: () => LocalizedString
+						/**
+						 * Touch ID
+						 */
+						TOUCH_ID: () => LocalizedString
+					}
+					/**
+					 * biometrics
+					 */
+					GENERIC: () => LocalizedString
+				}
 			}
 			PASSWORD: {
 				/**
