@@ -3,13 +3,13 @@
 
   import LL from '$i18n/i18n-svelte';
 
-  import { remove, retrieve, store } from '@impierce/tauri-plugin-keystore';
+  import { remove, retrieve, store, type StoreRequest } from '@impierce/tauri-plugin-keystore';
   import { authenticate, BiometryType, checkStatus, type Status } from '@tauri-apps/plugin-biometric';
 
   import { ActionSheet, Button, SettingsSwitch, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { EyeClosedRegularIcon, EyeRegularIcon, FingerprintFillIcon, ScanSmileyFillIcon } from '$lib/icons';
-  import { error as errorState, state } from '$lib/stores';
+  import { state as appState, error as errorState } from '$lib/stores';
   import { localizedBiometricsTypeString } from '$lib/utils';
 
   const SERVICE = 'com.impierce.identity-wallet';
@@ -17,11 +17,11 @@
 
   let biometricsStatus: Status;
   let biometryTypeString: string;
-  let enabled: boolean = $state.profile_settings.biometrics_enabled;
+  let enabled: boolean = $appState.profile_settings.biometrics_enabled;
 
   let enterPassword: boolean = false;
   let showPassword = false;
-  let passwordValue: string;
+  let passwordValue: string = '';
 
   // Ref to input DOM element.
   let inputElement: HTMLInputElement;
@@ -38,16 +38,27 @@
       // TODO: ask for the password first
       const password = 'sup3rSecr3t';
       // Check biometrics first, before storing the password => duplicate check on Android?
-      authenticate('Enable biometrics').then(async () => {
-        await store(password)
-          .then(async () => {
-            await dispatch({ type: '[Biometrics] Enable', payload: { enable: true } });
-          })
-          .catch((error) => {
-            console.warn(error);
-            errorState.set(error);
-          });
-      });
+      authenticate('Enable biometrics')
+        .then(async () => {
+          const args: StoreRequest = {
+            keyAlias: 'unime_dev',
+            value: password,
+            promptTitle: 'Store UniMe password',
+            promptSubtitle: 'Please authenticate to store your password on the device.',
+            promptNegativeButtonText: 'Cancel',
+          };
+          await store(args)
+            .then(async () => {
+              await dispatch({ type: '[Biometrics] Enable', payload: { enable: true } });
+            })
+            .catch((error) => {
+              console.warn(error);
+              errorState.set(error);
+            });
+        })
+        .catch((error) => {
+          enabled = false;
+        });
     }
   };
 
@@ -89,7 +100,7 @@
   <div class="flex flex-col space-y-[10px] px-4 py-5">
     {#if biometricsStatus}
       <SettingsSwitch
-        initialChecked={enabled}
+        checked={enabled}
         onchange={(checked) => {
           toggleBiometrics();
         }}
@@ -122,7 +133,7 @@
     {/if}
   </div>
   <!-- TODO: dev -->
-  {#if $state.dev_mode !== 'Off'}
+  {#if $appState.dev_mode !== 'Off'}
     <div class="m-8 flex flex-col space-y-4">
       <button
         class="rounded-lg border border-amber-300 bg-amber-100 py-4 text-xs font-medium text-amber-600 shadow"
@@ -136,7 +147,11 @@
     </div>
   {/if}
 
-  <ActionSheet titleText={'titleText'} descriptionText={'descriptionText'} isOpen={enterPassword}>
+  <ActionSheet
+    titleText={$LL.SETTINGS.APP.SECURITY.DIALOG_TITLE({ type: biometryTypeString })}
+    descriptionText={$LL.SETTINGS.APP.SECURITY.DIALOG_CONTENT({ type: biometryTypeString })}
+    isOpen={enterPassword}
+  >
     <div slot="content" class="flex w-full flex-col gap-3 pt-[20px]">
       <!-- Password input -->
       <div class="relative">

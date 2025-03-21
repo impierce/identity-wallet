@@ -507,6 +507,16 @@ type RootTranslation = {
 					 */
 					GENERIC: string
 				}
+				/**
+				 * E​n​a​b​l​e​ ​{​t​y​p​e​}
+				 * @param {string} type
+				 */
+				DIALOG_TITLE: RequiredParams<'type'>
+				/**
+				 * P​l​e​a​s​e​ ​e​n​t​e​r​ ​y​o​u​r​ ​p​a​s​s​w​o​r​d​ ​t​o​ ​e​n​a​b​l​e​ ​{​t​y​p​e​}​.
+				 * @param {string} type
+				 */
+				DIALOG_CONTENT: RequiredParams<'type'>
 			}
 			PASSWORD: {
 				/**
@@ -1564,6 +1574,14 @@ export type TranslationFunctions = {
 					 */
 					GENERIC: () => LocalizedString
 				}
+				/**
+				 * Enable {type}
+				 */
+				DIALOG_TITLE: (arg: { type: string }) => LocalizedString
+				/**
+				 * Please enter your password to enable {type}.
+				 */
+				DIALOG_CONTENT: (arg: { type: string }) => LocalizedString
 			}
 			PASSWORD: {
 				/**

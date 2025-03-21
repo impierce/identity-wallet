@@ -237,6 +237,8 @@ By using our Service, you acknowledge that you have read, understood, and agree 
           },
           GENERIC: 'biometrics'
         },
+        DIALOG_TITLE: 'Enable {type:string}',
+        DIALOG_CONTENT: 'Please enter your password to enable {type:string}.'
       },
       PASSWORD: {
         TITLE: 'Password',
