@@ -12,6 +12,7 @@ use oid4vc::oid4vc_manager::ProviderManager;
 use oid4vc::oid4vci::Wallet;
 use std::sync::Arc;
 
+// TODO: implement Data Migration regarding the credentials here
 pub async fn unlock_storage(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(password) = listen::<UnlockStorage>(action).map(|payload| payload.password) {
         let mut state_guard = state.core_utils.managers.lock().await;

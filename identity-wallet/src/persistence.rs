@@ -251,7 +251,7 @@ pub fn apply_state_migrations(
         // }
 
         let previous_version = current_version;
-        // This is a temporary solution to avoid infinite loops.
+        // TODO: This is a temporary solution to avoid infinite loops.
         current_version += 1;
 
         // current_version = app_state_object
@@ -323,7 +323,7 @@ mod tests {
 
         let app_state_object: Map<String, Value> = serde_json::from_reader(&rdr).unwrap();
         let test_app_state = dummy_appstate_version_update(app_state_object, 0).await.unwrap();
-        let test_app_state_str = serde_json::to_value(&test_app_state).unwrap();
+        let test_app_state_value = serde_json::to_value(&test_app_state).unwrap();
 
         let const_app_state: AppState = serde_json::from_str(
             r#"
@@ -337,8 +337,8 @@ mod tests {
         "#,
         )
         .unwrap();
-        let const_app_state_str = serde_json::to_value(&const_app_state).unwrap();
+        let const_app_state_value = serde_json::to_value(&const_app_state).unwrap();
 
-        assert_eq!(test_app_state_str, const_app_state_str);
+        assert_eq!(test_app_state_value, const_app_state_value);
     }
 }
