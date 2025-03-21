@@ -1,3 +1,5 @@
+import type { Icon } from './icons';
+
 export interface Goal {
   id: number;
   label: string;
@@ -5,6 +7,7 @@ export interface Goal {
   completed: boolean;
   faqs: Faq[];
   prerequisites: Prerequisite[];
+  icon?: Icon;
 }
 
 interface Faq {

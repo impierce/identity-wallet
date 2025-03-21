@@ -20,7 +20,6 @@
       on:click={() => dispatch({ type: '[Settings] Set locale', payload: { locale: l.locale } })}
       disabled={incompleteLocales.includes(l.locale)}
     >
-      <svelte:component this={l.flag} class="h-5 w-5 rounded-full" />
       <p class="grow text-left text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
         {l.displayName}
       </p>
