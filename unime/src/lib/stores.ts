@@ -3,12 +3,15 @@ import { writable } from 'svelte/store';
 // TODO: run some copy task instead of importing across root to make the frontend independent
 import type { AppState } from '@bindings/AppState';
 
+const APP_STATE_VERSION = 1;
+
 interface OnboardingState {
   name?: string;
   password?: string; // TODO: security: is it okay to keep the password temporarily in the object?
 }
 
 const empty_state: AppState = {
+  version: APP_STATE_VERSION,
   dids: {},
   connections: [],
   credentials: [],
