@@ -21,17 +21,13 @@ use identity_credential::{
     sd_jwt_vc::{SdJwtVc, SdJwtVcPresentationBuilder},
 };
 use identity_iota::did::CoreDID;
-use jsonwebtoken::Algorithm;
 use log::info;
-use oid4vc::oid4vp::oid4vp::OID4VP;
-use oid4vc::oid4vp::{authorization_request::ClientMetadataParameters, oid4vp::PresentationInputType};
-use oid4vc::{
-    oid4vc_core::{
-        authorization_request::{AuthorizationRequest, Object},
-        client_metadata::ClientMetadataResource,
-    },
-    oid4vp::{ClaimFormatDesignation, ClaimFormatProperty},
+use oid4vc::oid4vc_core::{
+    authorization_request::{AuthorizationRequest, Object},
+    client_metadata::ClientMetadataResource,
 };
+use oid4vc::oid4vp::oid4vp::PresentationInputType;
+use oid4vc::oid4vp::oid4vp::OID4VP;
 use oid4vc::{
     oid4vc_manager::managers::presentation::create_presentation_submission,
     oid4vci::credential_format_profiles::CredentialFormats,
@@ -110,7 +106,6 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             logo_uri,
             connection_url,
             client_id,
-            algorithm,
         } = get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request);
 
         // Create the Authorization Response Input.
@@ -194,6 +189,25 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
                     .preferred_did_methods
                     .first()
                     .ok_or(AppError::Error("Default DID method is missing".to_string()))?;
+
+                // Get the algorithm from the client_metadata if it exists
+                let algorithm = identity_manager
+                    .provider_manager
+                    .get_matching_signing_algorithm(&oid4vp_authorization_request)
+                    .await
+                    // If there is no matching algorithm, use the Provider's first supported algorithm.
+                    .unwrap_or(
+                        *identity_manager
+                            .provider_manager
+                            .provider
+                            .supported_signing_algorithms
+                            .first()
+                            .ok_or_else(|| {
+                                AppError::Error(
+                                    "Provider manager does not contain any supported signing algorithms".to_string(),
+                                )
+                            })?,
+                    );
 
                 let subject_did = identity_manager
                     .subject
@@ -291,7 +305,6 @@ pub struct OID4VPClientMetadata {
     pub logo_uri: Option<String>,
     pub connection_url: String,
     pub client_id: String,
-    pub algorithm: Algorithm,
 }
 
 // TODO: move this functionality to the oid4vc-manager crate.
@@ -311,31 +324,17 @@ pub fn get_oid4vp_client_name_and_logo_uri(
         ClientMetadataResource::ClientMetadata {
             client_name,
             logo_uri,
-            extension: ClientMetadataParameters { vp_formats },
+            extension: _,
             other: _,
         } => {
             let client_name = client_name.as_ref().cloned().unwrap_or(connection_url.to_string());
             let logo_uri = logo_uri.as_ref().map(|logo_uri| logo_uri.to_string());
-
-            // TODO: These helper functions become more and more complicated. This functionality needs to be implemented
-            // in oid4vc-manager soon.
-            // Get the algorithm from the client_metadata if it exists or default to EdDSA.
-            let algorithm = vp_formats
-                .get(&ClaimFormatDesignation::JwtVcJson)
-                .and_then(|claim_format_property| match claim_format_property {
-                    ClaimFormatProperty::Alg(alg) => alg.first().cloned(),
-                    ClaimFormatProperty::SdJwt { sd_jwt_alg_values, .. } => sd_jwt_alg_values.first().cloned(),
-                    // TODO: implement `ProofType`.
-                    ClaimFormatProperty::ProofType(_) => None,
-                })
-                .unwrap_or(Algorithm::EdDSA);
 
             Some(OID4VPClientMetadata {
                 client_name,
                 logo_uri,
                 connection_url: connection_url.to_string(),
                 client_id: client_id.clone(),
-                algorithm,
             })
         }
         // TODO: support `client_metadata_uri`
@@ -347,6 +346,5 @@ pub fn get_oid4vp_client_name_and_logo_uri(
         logo_uri: None,
         connection_url: connection_url.to_string(),
         client_id,
-        algorithm: Algorithm::EdDSA,
     })
 }

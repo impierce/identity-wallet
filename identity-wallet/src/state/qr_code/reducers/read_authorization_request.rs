@@ -193,7 +193,6 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                 logo_uri,
                 connection_url: _,
                 client_id: _,
-                algorithm: _,
             } = get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request);
 
             info!("client_name in credential_offer: {:?}", client_name);
