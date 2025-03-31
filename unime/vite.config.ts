@@ -1,31 +1,26 @@
-import { internalIpV4 } from 'internal-ip';
 import Icons from 'unplugin-icons/vite';
-import { defineConfig } from 'vite';
+import { defineConfig, mergeConfig } from 'vite';
+import { defineConfig as defineVitestConfig } from 'vitest/config';
 
 import { sveltekit } from '@sveltejs/kit/vite';
 
+const host = process.env.TAURI_DEV_HOST;
+
 // https://vitejs.dev/config/
-export default defineConfig({
+const viteConfig = defineConfig({
   plugins: [sveltekit(), Icons({ compiler: 'svelte' })],
-  test: {
-    include: ['src/**/*.{test,spec}.{js,ts}'],
-    globals: true,
-    environment: 'jsdom',
-    coverage: {
-      include: ['src/**'],
-      exclude: ['src/i18n/**'],
-    },
-  },
   clearScreen: false,
   server: {
-    host: '0.0.0.0',
+    host: host || false,
     port: 4173,
     strictPort: true,
-    hmr: {
-      protocol: 'ws',
-      host: await internalIpV4(),
-      port: 5183,
-    },
+    hmr: host
+      ? {
+          protocol: 'ws',
+          host: host,
+          port: 5183,
+        }
+      : undefined,
   },
   envPrefix: ['VITE_', 'TAURI_'],
   build: {
@@ -59,3 +54,18 @@ export default defineConfig({
     ],
   },
 });
+
+// TODO: Refactored by AI to fix TS errors (Claude 3.5 Sonnet).
+const vitestConfig = defineVitestConfig({
+  test: {
+    include: ['src/**/*.{test,spec}.{js,ts}'],
+    globals: true,
+    environment: 'jsdom',
+    coverage: {
+      include: ['src/**'],
+      exclude: ['src/i18n/**'],
+    },
+  },
+});
+
+export default mergeConfig(viteConfig, vitestConfig);

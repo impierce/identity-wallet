@@ -58,6 +58,8 @@ describe('formatDateTime function', () => {
 });
 
 describe('formatRelativeDateTime function', () => {
+  // Test a random sample of different relative times with different locales.
+
   test('1 min ago en-US', () => {
     const now = new Date();
     const oneMinuteAgo = new Date(now.setMinutes(now.getMinutes() - 1));
@@ -103,7 +105,9 @@ describe('formatRelativeDateTime function', () => {
   test('1 month ago nl-NL', () => {
     const now = new Date();
     const oneMonthAgo = new Date(now.setMonth(now.getMonth() - 1));
-    expect(formatRelativeDateTime(oneMonthAgo.toISOString(), 'nl-NL')).toEqual('Vorige maand');
+    const result = formatRelativeDateTime(oneMonthAgo.toISOString(), 'nl-NL');
+    // `result` can differ depending on which month the test runs (February is a short month).
+    expect(['Vorige maand', '4 weken geleden']).toContain(result);
   });
 
   test('2 months ago nl-NL', () => {

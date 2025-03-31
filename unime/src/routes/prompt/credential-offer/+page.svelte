@@ -3,28 +3,29 @@
 
   import LL from '$i18n/i18n-svelte';
 
+  import type { CurrentUserPrompt } from '@bindings/user_prompt/CurrentUserPrompt';
+
   import { Button, Checkbox, Image, ListItemCard, PaddedIcon, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { DownloadSimpleFillIcon } from '$lib/icons';
   import { error, state } from '$lib/stores';
   import { hash } from '$lib/utils';
 
-  // TODO: generate binding in core
-  interface CredentialConfiguration {
-    display: object[];
-    credential_definition: object;
-  }
+  // TypeScript does not know that the `current_user_prompt` is of type `credential-offer`.
+  // Extract the type from `CurrentUserPrompt`.
+  type IsCredentialOfferPrompt<T> = T extends { type: 'credential-offer' } ? T : never;
+  type CredentialOfferPrompt = IsCredentialOfferPrompt<CurrentUserPrompt>;
 
-  let credential_configurations: Record<string, CredentialConfiguration> =
-    $state.current_user_prompt?.credential_configurations;
+  const { credential_configurations, issuer_name, logo_uri } = $state.current_user_prompt as CredentialOfferPrompt;
 
-  let issuer_name: string = $state.current_user_prompt?.issuer_name;
+  // let credential_configurations: Record<string, CredentialConfiguration> =
+  //   $state.current_user_prompt?.credential_configurations;
 
   let all_credential_configuration_ids: string[] = Object.keys(credential_configurations);
 
   let loading = false;
 
-  const imageId = $state.current_user_prompt?.logo_uri ? hash($state.current_user_prompt?.logo_uri) : '_';
+  const imageId = logo_uri ? hash(logo_uri) : '_';
 
   // When an error is received, cancel the flow and redirect to the "me" page
   error.subscribe((err) => {
@@ -49,7 +50,7 @@
   />
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
-    {#if $state.current_user_prompt.logo_uri}
+    {#if logo_uri}
       <div class="flex h-[75px] w-[75px] overflow-hidden rounded-3xl">
         <Image
           id={imageId}

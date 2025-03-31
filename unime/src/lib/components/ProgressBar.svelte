@@ -8,5 +8,5 @@
   <div
     style="width:{value}%"
     class="flex flex-col justify-center whitespace-nowrap rounded-lg bg-primary text-center text-white shadow-none"
-  />
+  ></div>
 </div>

@@ -10,6 +10,7 @@ export type Locales =
 	| 'en'
 	| 'en-GB'
 	| 'en-US'
+	| 'es-ES'
 	| 'nl-NL'
 
 export type Translation = RootTranslation
@@ -1003,6 +1004,16 @@ type RootTranslation = {
 	 * R​e​j​e​c​t
 	 */
 	REJECT: string
+	GETTING_STARTED: {
+		/**
+		 * S​k​i​p​ ​G​e​t​t​i​n​g​ ​S​t​a​r​t​e​d
+		 */
+		SKIP_TITLE: string
+		/**
+		 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​s​k​i​p​ ​t​h​e​ ​g​e​t​t​i​n​g​ ​s​t​a​r​t​e​d​ ​g​u​i​d​e​?
+		 */
+		SKIP_TEXT: string
+	}
 }
 
 export type TranslationFunctions = {
@@ -1992,6 +2003,16 @@ export type TranslationFunctions = {
 	 * Reject
 	 */
 	REJECT: () => LocalizedString
+	GETTING_STARTED: {
+		/**
+		 * Skip Getting Started
+		 */
+		SKIP_TITLE: () => LocalizedString
+		/**
+		 * Are you sure you want to skip the getting started guide?
+		 */
+		SKIP_TEXT: () => LocalizedString
+	}
 }
 
 export type Formatters = {}

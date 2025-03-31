@@ -1,11 +1,15 @@
 {
-  "$schema": "../node_modules/@tauri-apps/cli/schema.json",
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "UniMe",
   "version": "0.6.12",
-  "identifier": "com.impierce.unime",
+  "identifier": "com.impierce.identity-wallet",
   "app": {
     "security": {
-      "csp": "default-src 'self' ipc: http://ipc.localhost; style-src 'unsafe-inline' 'self'; img-src 'self' asset: http://asset.localhost data:",
+      "csp": {
+        "default-src": "'self' ipc: http://ipc.localhost",
+        "style-src": "'unsafe-inline' 'self'",
+        "img-src": "'self' asset: http://asset.localhost data:"
+      },
       "assetProtocol": {
         "enable": true,
         "scope": [
@@ -45,13 +49,5 @@
     "resources": [
       "resources/*"
     ]
-  },
-  "plugins": {
-    "fs": {
-      "scope": [
-        "$APPDATA/assets/**/*.png",
-        "$APPDATA/assets/**/*.svg"
-      ]
-    }
   }
 }

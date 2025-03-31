@@ -1,22 +1,22 @@
 <script lang="ts">
-  import { goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
 
   import { melt } from '@melt-ui/svelte';
 
-  import { ActionSheet, Button, SettingsEntry, TopNavBar } from '$lib/components';
+  import { ActionSheet, Button, SettingsCaretLink, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { KeyboardFillIcon, TrashFillIcon } from '$lib/icons';
 </script>
 
 <TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.PROFILE.TITLE()} class="sticky top-0 z-10" />
 
-<div class="flex flex-col space-y-[10px] bg-silver px-4 py-5 dark:bg-navy">
-  <SettingsEntry
-    icon={KeyboardFillIcon}
-    title={$LL.SETTINGS.PROFILE.PROFILE_NAME.TITLE()}
-    on:click={() => goto('/me/settings/profile/name')}
-  />
+<div class="flex flex-col gap-3 bg-background px-4 py-5">
+  <SettingsCaretLink href="/me/settings/profile/name">
+    {#snippet icon()}
+      <KeyboardFillIcon class="h-5 w-5 text-primary"></KeyboardFillIcon>
+    {/snippet}
+    {$LL.SETTINGS.PROFILE.PROFILE_NAME.TITLE()}
+  </SettingsCaretLink>
 
   <!-- Delete profile -->
   <ActionSheet titleText={$LL.SETTINGS.RESET_APP.TITLE()} descriptionText={$LL.SETTINGS.RESET_APP.DESCRIPTION()}>
@@ -27,7 +27,7 @@
       use:melt={trigger}
     >
       <svelte:component this={TrashFillIcon} class="h-5 w-5 text-rose-400" />
-      <p class="grow text-left text-[13px]/[24px] font-medium text-slate-800 dark:text-white">
+      <p class="grow text-left text-sm font-medium text-slate-800 dark:text-white">
         {$LL.SETTINGS.PROFILE.DELETE_PROFILE.TITLE()}
       </p>
     </button>

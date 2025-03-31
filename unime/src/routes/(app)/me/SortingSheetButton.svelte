@@ -1,13 +1,13 @@
 <script lang="ts">
-  import { createEventDispatcher, type SvelteComponent } from 'svelte';
+  import { createEventDispatcher, type Component } from 'svelte';
 
   import LL from '$i18n/i18n-svelte';
-  import type { SvelteHTMLElements } from 'svelte/elements';
 
   import type { CredentialSortMethod } from '@bindings/profile_settings/CredentialSortMethod';
 
   export let method: CredentialSortMethod;
-  export let icon: typeof SvelteComponent<SvelteHTMLElements['svg']>;
+  // Cannot be typed as Component<SVGAttributes<SVGSVGElement>> because icon `AlphabeticalOrder` has a different type.
+  export let icon: Component;
   export let label: string;
   export let active = false;
   export let reversed: boolean;

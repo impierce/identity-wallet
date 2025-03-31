@@ -32,17 +32,17 @@ use std::{collections::VecDeque, pin::Pin};
 use trust_list::TrustLists;
 use ts_rs::TS;
 
-/// The AppState is the main state of the application shared between the backend and the frontend.
-/// We have structured the state and its operations following the redux pattern.
-/// To safeguard this pattern we have introduced the FeatTrait, ActionTrait and a macro_rule for the Reducers.
-/// All fields in the AppState have to implement the FeatTrait.
-/// This is to ensure that the state is serializable/deserializable and cloneable among other things.
-/// All actions have to implement the ActionTrait.
-/// This ensures that all actions have at least one reducer, implement a debug method,
-///  and are downcastable (necessary when receiving the action from the frontend)
-/// The reducers are paired with the actions using our macro_rule.
-/// This ensures that all reducers have the same signature and therefore follow the redux pattern and our error handling.
-/// All the above goes for extensions (values) which are added to the extensions field.
+// The AppState is the main state of the application shared between the backend and the frontend.
+// We have structured the state and its operations following the redux pattern.
+// To safeguard this pattern we have introduced the FeatTrait, ActionTrait and a macro_rule for the Reducers.
+// All fields in the AppState have to implement the FeatTrait.
+// This is to ensure that the state is serializable/deserializable and cloneable among other things.
+// All actions have to implement the ActionTrait.
+// This ensures that all actions have at least one reducer, implement a debug method,
+//  and are downcastable (necessary when receiving the action from the frontend)
+// The reducers are paired with the actions using our macro_rule.
+// This ensures that all reducers have the same signature and therefore follow the redux pattern and our error handling.
+// All the above goes for extensions (values) which are added to the extensions field.
 
 /// A macro to wrap a reducer function in a Box and a Pin.
 /// It checks the reducers for its signature,
