@@ -76,6 +76,8 @@ pub enum Locale {
     de_DE,
     #[serde(rename = "nl-NL")]
     nl_NL,
+    #[serde(rename = "es-ES")]
+    es_ES,
 }
 
 #[typetag::serde(name = "locale")]

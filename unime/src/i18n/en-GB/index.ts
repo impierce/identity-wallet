@@ -1,10 +1,9 @@
-import { extendDictionary } from 'typesafe-i18n/utils';
+import { extendLanguage } from '$i18n/i18n-extend-language';
 
 import en from '../en';
 import type { Translation } from '../i18n-types';
 
-// TODO: issue when using `extendDictionary()`: https://github.com/ivanhofer/typesafe-i18n/issues/741
-const en_GB = extendDictionary(en, {
+const en_GB = extendLanguage(en, {
   ONBOARDING: {
     CUSTOMIZE: {
       NAVBAR_TITLE: 'Customisation',
