@@ -121,12 +121,12 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             // See: https://github.com/nox/serde_urlencoded/issues/75#issuecomment-648257888
             (sd_jwt_vc_count, 0) if sd_jwt_vc_count > 1 => {
                 return Err(AppError::Error(
-                    "Sending multiple presentations is not supported".to_string(),
+                    "Sending multiple SD-JWT VCs is not supported".to_string(),
                 ))
             }
             (sd_jwt_vc_count, jwt_vc_json_count) if (sd_jwt_vc_count > 0 && jwt_vc_json_count > 0) => {
                 return Err(AppError::Error(
-                    "Sending multiple presentations is not supported".to_string(),
+                    "Sending multiple W3C Verifiable Presentations and SD-JWT VCs is not supported".to_string(),
                 ))
             }
             (1, 0) => {
