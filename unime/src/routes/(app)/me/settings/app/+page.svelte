@@ -15,7 +15,7 @@
   import { locales } from '$lib/locales';
   import { state } from '$lib/stores';
 
-  async function toggleDevSettings() {
+  async function handleDevModeSwitch() {
     await dispatch({
       type: '[DEV] Toggle DEV mode',
     });
@@ -65,7 +65,7 @@
       {$LL.SETTINGS.APP.HINTS_AND_TIPS.TITLE()}
     </SettingsValueLink> -->
 
-    <SettingsSwitch initialChecked={$state?.dev_mode !== 'Off'} onchange={toggleDevSettings}>
+    <SettingsSwitch checked={$state?.dev_mode !== 'Off'} onchange={handleDevModeSwitch}>
       {#snippet icon()}
         <CodeBoldIcon class="h-5 w-5 text-primary"></CodeBoldIcon>
       {/snippet}
