@@ -308,7 +308,7 @@ pub struct OID4VPClientMetadata {
 }
 
 // TODO: move this functionality to the oid4vc-manager crate.
-/// Returns (client_name, logo_uri, connection_url, client_id, algorithm)
+/// Returns (client_name, logo_uri, connection_url, client_id)
 pub fn get_oid4vp_client_name_and_logo_uri(
     oid4vp_authorization_request: &AuthorizationRequest<Object<OID4VP>>,
 ) -> OID4VPClientMetadata {
