@@ -218,9 +218,12 @@ async fn get_validated_linked_credential_data(
                 ) {
                     info!("Validated linked verifiable credential JWT: {linked_verifiable_credential:#?}");
 
+                    println!("\n\nStart\n\n");
                     // Validate the linked verifiable credential against its corresponding Json schema
                     credential_schema_validation(&linked_verifiable_credential.credential.to_json_value().ok()?).ok()?;
 
+                    println!("\n\nEnd\n\n");
+                    
                     let credential_subject = match &linked_verifiable_credential.credential.credential_subject {
                         OneOrMany::One(subject) => Some(subject),
                         // TODO: how to handle multiple credential subjects?
@@ -445,7 +448,7 @@ fn extract_url_from_did_web(did_web: &str) -> Option<Url> {
     None
 }
 
-#[cfg(not(feature = "test_utils"))]
+// #[cfg(not(feature = "test_utils"))]
 #[cfg(test)]
 mod tests {
     use super::*;

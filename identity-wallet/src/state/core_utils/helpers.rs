@@ -75,6 +75,7 @@ pub fn credential_schema_validation(data: &Value) -> Result<(), AppError> {
     // This function is only capable of validating VC's and subsequent Credential Formats/Types.
     // All VC's must have a `type` field, which is either a string or an array of strings.
     if let Some(credential_type) = data.get("type").and_then(|f| f.as_str()) {
+
         if SUPPORTED_CRED_TYPE_SCHEMAS.contains(&credential_type) {
             let json_schema_path = format!("resources/jsonschemas/{}.json", credential_type);
 
@@ -145,11 +146,13 @@ pub fn json_schema_validation(json_schema_path: String, data: &Value) -> Result<
 
     let errors: Vec<ValidationError> = result.collect();
     if !errors.is_empty() {
+        println!("\n\nerrors: {:?}\n\n", errors);
         Err(AppError::Error(format!(
             "The data is invalid according to the given JsonSchema: {:?}",
             errors
         )))
     } else {
+        println!("no errors");
         Ok(())
     }
 }
