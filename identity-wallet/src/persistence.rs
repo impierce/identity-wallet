@@ -73,7 +73,7 @@ pub async fn load_state() -> Result<AppState, AppError> {
     let app_state_object: serde_json::Map<String, serde_json::Value> = serde_json::from_str(&content)?;
     debug!("state loaded from disk");
 
-    // Get the version from the state file, if no version field is found, default to 1.
+    // Get the version from the state file, if no version field is found, default to 0.
     let version = app_state_object
         .get("version")
         .unwrap_or(&serde_json::Value::from(0))
