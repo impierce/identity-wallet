@@ -29,24 +29,21 @@ pub fn apply_state_migrations(
             .ok_or_else(|| AppError::Error("Failed to get version while migrating AppState".to_string()))?;
 
         debug!(
-            "updated AppState version from {} to {}.",
+            "Successfully migrated AppState version from {} to {}",
             previous_version, current_version
         );
     }
 
     let app_state_value = serde_json::Value::Object(app_state_object);
-    // If somehow the AppState updates weren't succesful after all, the function will throw an error trying to deserialize here
+    // If somehow the AppState updates weren't successful after all, the function will throw an error trying to deserialize here
     let app_state: AppState = serde_json::from_value(app_state_value)?;
 
     Ok(app_state)
 }
 
-/////     Data migration functions
-
+/// A new field `version` is added which marks the beginning of versioning the AppState.
 fn migrate_v0_to_v1(app_state_object: &mut Map<String, Value>) -> anyhow::Result<(), AppError> {
     app_state_object.insert("version".to_string(), Value::from(1));
-
-    debug!("Succesfully migrated AppState from version 0 to 1");
     Ok(())
 }
 
@@ -56,7 +53,7 @@ mod tests {
     use serde_json::{Map, Value};
 
     #[tokio::test]
-    async fn test_appstate_version_update() {
+    async fn test_migrate_v0_to_v1() {
         let rdr =
             std::fs::File::open("../unime/src-tauri/tests/fixtures/states/no_profile_redirect_welcome.json").unwrap();
 
