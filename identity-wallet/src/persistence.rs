@@ -1,3 +1,4 @@
+use crate::data_migration::apply_state_migrations;
 use crate::state::APP_STATE_VERSION;
 use crate::{error::AppError, state::AppState};
 use lazy_static::lazy_static;
@@ -24,7 +25,7 @@ lazy_static! {
 pub const SUPPORTED_IMAGE_ASSET_EXTENSIONS: [&str; 2] = ["svg", "png"];
 
 /// Initialize the storage file paths.
-pub fn initialize_storage(app_handle: &tauri::AppHandle) -> anyhow::Result<()> {
+pub fn initialize_storage(app_handle: &tauri::AppHandle) -> Result<(), AppError> {
     // TODO: create folder if not exists (not automatically created on macOS)
     if cfg!(target_os = "android") {
         *STATE_FILE.lock().unwrap() = app_handle.path().data_dir()?.join("state.json");
@@ -62,10 +63,11 @@ pub fn initialize_storage(app_handle: &tauri::AppHandle) -> anyhow::Result<()> {
 
 /// Loads an [AppState] from the app's data directory.
 /// If it does not exist or it cannot be parsed, it will fallback to default values.
-pub async fn load_state() -> anyhow::Result<AppState> {
+pub async fn load_state() -> Result<AppState, AppError> {
     let state_file = STATE_FILE.lock().unwrap().clone();
     let bytes = read(state_file).await?;
-    let content = String::from_utf8(bytes)?;
+    let content = String::from_utf8(bytes.clone())
+        .map_err(|e| AppError::Error(format!("Failed to convert utf8, {:?}, to String: {}", bytes, e)))?;
 
     // Load state into a `serde_json::Object` first to run data model migrations before deserialization into `AppState`.
     let app_state_object: serde_json::Map<String, serde_json::Value> = serde_json::from_str(&content)?;
@@ -74,7 +76,7 @@ pub async fn load_state() -> anyhow::Result<AppState> {
     // Get the version from the state file, if no version field is found, default to 1.
     let version = app_state_object
         .get("version")
-        .unwrap_or(&serde_json::Value::from(1))
+        .unwrap_or(&serde_json::Value::from(0))
         .as_u64()
         .map(|v| v as u32)
         .ok_or_else(|| {
@@ -107,7 +109,7 @@ pub async fn load_state() -> anyhow::Result<AppState> {
 }
 
 /// Persists a [AppState] to the app's data directory.
-pub async fn save_state(app_state: &AppState) -> anyhow::Result<()> {
+pub async fn save_state(app_state: &AppState) -> Result<(), AppError> {
     let state_file = STATE_FILE.lock().unwrap().clone();
     let mut file = File::create(state_file).await?;
 
@@ -122,7 +124,7 @@ pub async fn save_state(app_state: &AppState) -> anyhow::Result<()> {
 }
 
 /// Removes the state file from the app's data directory.
-pub async fn delete_state_file() -> anyhow::Result<()> {
+pub async fn delete_state_file() -> Result<(), AppError> {
     let state_file = STATE_FILE.lock().unwrap().clone();
     remove_file(state_file).await?;
     debug!("state deleted from disk");
@@ -130,7 +132,7 @@ pub async fn delete_state_file() -> anyhow::Result<()> {
 }
 
 /// Removes the stronghold file from the app's data directory.
-pub async fn delete_stronghold() -> anyhow::Result<()> {
+pub async fn delete_stronghold() -> Result<(), AppError> {
     let stronghold_file = STRONGHOLD.lock().unwrap().clone();
     remove_file(&stronghold_file).await?;
     remove_file(stronghold_file.join(".snapshot")).await?;
@@ -238,111 +240,4 @@ pub fn persist_asset(file_name: &str, id: &str) -> Result<(), AppError> {
 /// Used for temporary asset file names in `/assets/tmp` to prevent unintended frontend image caching.
 pub fn hash(url: &str) -> String {
     sha256::digest(url).to_string()
-}
-
-// Data migration functions
-
-/// This function is used to migrate the app state from one version to the next.
-pub fn apply_state_migrations(
-    app_state_object: serde_json::Map<String, serde_json::Value>,
-    mut current_version: u32,
-) -> anyhow::Result<AppState, AppError> {
-    while current_version < APP_STATE_VERSION {
-        // this code is commented out because we don't have any migrations yet.
-        // match current_version {
-        //     1 => migrate_v1_to_v2(&mut app_state_object)?,
-        //     _ => return Err(AppError::AppStateMigrationError(current_version, APP_STATE_VERSION, "Unsupported AppState version")),
-        // }
-
-        let previous_version = current_version;
-        // TODO: This is a temporary solution to avoid infinite loops.
-        current_version += 1;
-
-        // current_version = app_state_object
-        //     .get("version")
-        //     .and_then(|v| v.as_u64())
-        //     .map(|v| v as u32)
-        //     .ok_or_else(|| AppError::Error("Failed to get version while migrating AppState".to_string()))?;
-
-        debug!(
-            "state successfully migrated AppState version from {} to {}.",
-            previous_version, current_version
-        );
-    }
-
-    let app_state_value = serde_json::Value::Object(app_state_object);
-    let app_state: AppState = serde_json::from_value(app_state_value)?;
-
-    Ok(app_state)
-}
-
-#[cfg(test)]
-mod tests {
-    use crate::{
-        error::AppError,
-        state::{AppState, APP_STATE_VERSION},
-    };
-    use serde_json::{Map, Value};
-
-    // To unit test the appstate_version_update function, we need to create an adapted function.
-    // This is to bypass the need for a true STATE_FILE due to the fn `save_state`.
-    // Also to bypass migration functions, since we don't have multiple AppState versions yet.
-
-    pub async fn dummy_appstate_version_update(
-        mut app_state_object: Map<String, Value>,
-        mut outdated_version: u32,
-    ) -> anyhow::Result<AppState, AppError> {
-        while outdated_version < APP_STATE_VERSION {
-            match outdated_version {
-                0 => dummy_migrate_v0_to_v1(&mut app_state_object),
-                _ => {
-                    return Err(AppError::Error(format!(
-                        "Unsupported AppState version: {}",
-                        outdated_version
-                    )))
-                }
-            }
-
-            outdated_version = app_state_object
-                .get("version")
-                .and_then(|v| v.as_u64())
-                .map(|v| v as u32)
-                .ok_or_else(|| AppError::Error("Failed to get version while migrating AppState".to_string()))?;
-        }
-
-        let app_state_value = Value::Object(app_state_object);
-        let app_state: AppState = serde_json::from_value(app_state_value)?;
-
-        Ok(app_state)
-    }
-
-    fn dummy_migrate_v0_to_v1(app_state_object: &mut Map<String, Value>) {
-        app_state_object.insert("version".to_string(), Value::from(1));
-    }
-
-    #[tokio::test]
-    async fn appstate_version_update_test() {
-        let rdr =
-            std::fs::File::open("../unime/src-tauri/tests/fixtures/states/no_profile_redirect_welcome.json").unwrap();
-
-        let app_state_object: Map<String, Value> = serde_json::from_reader(&rdr).unwrap();
-        let test_app_state = dummy_appstate_version_update(app_state_object, 0).await.unwrap();
-        let test_app_state_value = serde_json::to_value(&test_app_state).unwrap();
-
-        let const_app_state: AppState = serde_json::from_str(
-            r#"
-        {
-            "version": 1,
-            "current_user_prompt": {
-                "type": "redirect",
-                "target": "welcome"
-            }
-        }
-        "#,
-        )
-        .unwrap();
-        let const_app_state_value = serde_json::to_value(&const_app_state).unwrap();
-
-        assert_eq!(test_app_state_value, const_app_state_value);
-    }
 }

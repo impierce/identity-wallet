@@ -24,6 +24,8 @@ pub enum AppError {
         extension: &'static str,
         source: serde_json::Error,
     },
+    #[error("Failed to create a data directory via Tauri handle")]
+    DataDirCreationError(#[from] tauri::Error),
     #[error("Failed to download the file: {0}")]
     DownloadFailed(#[from] reqwest::Error),
     #[error("Failed to download the file: {0}")]

@@ -1,4 +1,5 @@
 pub mod command;
+pub mod data_migration;
 pub mod error;
 pub mod persistence;
 pub mod state;
