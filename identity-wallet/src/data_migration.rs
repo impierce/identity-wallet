@@ -41,7 +41,7 @@ pub fn apply_state_migrations(
     Ok(app_state)
 }
 
-/////     Data migration functions     /////
+/////     Data migration functions
 
 fn migrate_v0_to_v1(app_state_object: &mut Map<String, Value>) -> anyhow::Result<(), AppError> {
     app_state_object.insert("version".to_string(), Value::from(1));
