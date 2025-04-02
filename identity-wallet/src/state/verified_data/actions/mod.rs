@@ -1,8 +1,25 @@
 use crate::reducer;
-use crate::state::verified_data::reducers::{redeem_code, reset_email_verification, send_verification_email};
+use crate::state::verified_data::reducers::{
+    check_service_health, redeem_code, reset_email_verification, send_verification_email,
+};
 use crate::state::{actions::ActionTrait, Reducer};
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
+
+// Service health check
+
+#[derive(Serialize, Deserialize, Debug, Clone, TS)]
+#[ts(export, export_to = "bindings/actions/ServiceHealthCheck.ts")]
+pub struct ServiceHealthCheck {
+    pub service: String,
+}
+
+#[typetag::serde(name = "[Verified Data] Check service health")]
+impl ActionTrait for ServiceHealthCheck {
+    fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
+        vec![reducer!(check_service_health)]
+    }
+}
 
 // Initialize verification session
 

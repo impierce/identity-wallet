@@ -7,28 +7,49 @@ use crate::{
         actions::{listen, Action},
         qr_code::{actions::qrcode_scanned::QrCodeScanned, reducers::read_credential_offer::read_credential_offer},
         verified_data::{
-            actions::{RedeemCode, ResetEmailVerification, SendVerificationEmail},
+            actions::{RedeemCode, ResetEmailVerification, SendVerificationEmail, ServiceHealthCheck},
             EmailVerification,
         },
         AppState, VerifiedData,
     },
 };
 
+const EMAIL_VERIFICATION_SERVICE_HOST: &str = "http://localhost:5177";
+
+pub async fn check_service_health(state: AppState, action: Action) -> Result<AppState, AppError> {
+    if let Some(action) = listen::<ServiceHealthCheck>(action) {
+        // let body = json!({ "service": action.service });
+        info!("[>>>] {}", action.service);
+        let response = reqwest::Client::new()
+            .get(format!("{}/healthz", EMAIL_VERIFICATION_SERVICE_HOST))
+            // .json(&body)
+            .send()
+            .await
+            .inspect_err(|err| {
+                warn!("Failed to check service health: {}", err);
+            })
+            .map_err(|err| AppError::Error(err.to_string()))?;
+        // .ok();
+        info!("[<<<] {}", response.status());
+        return Ok(state);
+    }
+    Ok(state)
+}
+
 pub async fn send_verification_email(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(action) = listen::<SendVerificationEmail>(action) {
-        let url = "http://localhost:5177/api/verify";
         let body = json!({ "email": action.email });
         info!("[>>>] {}", body);
         let response = reqwest::Client::new()
-            .post(url)
+            .post(format!("{}/api/verify", EMAIL_VERIFICATION_SERVICE_HOST))
             .json(&body)
             .send()
             .await
             .inspect_err(|err| {
                 warn!("Failed to send verification: {}", err);
             })
-            .ok();
-        let json_response: serde_json::Value = response.unwrap().json().await.unwrap();
+            .map_err(|err| AppError::Error(err.to_string()))?;
+        let json_response: serde_json::Value = response.json().await.unwrap();
         info!("[<<<] {}", json_response);
         let id = json_response.get("id").unwrap().as_str().unwrap();
         let expires_at = json_response.get("expires_at").unwrap().as_str().unwrap();

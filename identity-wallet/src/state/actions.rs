@@ -86,7 +86,7 @@ mod bindings {
             delete_trust_list_entry::DeleteTrustListEntry, edit_trust_list::EditTrustList,
             edit_trust_list_entry::EditTrustListEntry, toggle_trust_list_entry::ToggleTrustListEntry,
         },
-        verified_data::actions::{RedeemCode, SendVerificationEmail},
+        verified_data::actions::{RedeemCode, SendVerificationEmail, ServiceHealthCheck},
     };
 
     #[derive(Serialize, Deserialize, TS)]
@@ -154,6 +154,8 @@ mod bindings {
         TrustListsEdit { payload: EditTrustList },
         #[serde(rename = "[Trust Lists] Delete")]
         TrustListsDelete { payload: DeleteTrustList },
+        #[serde(rename = "[Verified Data] Check service health")]
+        ServiceHealthCheck { payload: ServiceHealthCheck },
         #[serde(rename = "[Verified Data] Send verification email")]
         SendVerificationEmail { payload: SendVerificationEmail },
         #[serde(rename = "[Verified Data] Redeem code")]

@@ -19,7 +19,7 @@
       id: '1',
       title: 'How is it verified?',
       description:
-        'UniMe sends a message containing your email to one of our verification systems. That system then creates a one-time code and sends an email to your inbox containing that code. When you enter that code in UniMe, you prove you have access to that email inbox. UniMe now sends another message to our verification system, redeeming the code for a verifiable credential.',
+        'UniMe sends a message containing your email to a verification system run by us. That system then sends an email containing a one-time code to your inbox. By entering that code in UniMe, you prove you have access to that email inbox. UniMe then sends another message to our verification system, redeeming that code for a verifiable credential.',
     },
     {
       id: '2',

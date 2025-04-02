@@ -107,6 +107,11 @@
   };
 
   onMount(async () => {
+    await dispatch({
+      type: '[Verified Data] Check service health',
+      payload: { service: 'email-verification-service' },
+    });
+
     // Resume verification timer across app restarts by reading from app state
     if ($appState.verified_data.email_verification?.expires_at) {
       // await goto('/me/add/email/confirm');
