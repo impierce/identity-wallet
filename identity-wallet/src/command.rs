@@ -105,12 +105,14 @@ pub fn emit_event<R: tauri::Runtime>(window: &tauri::Window<R>, app_state: &AppS
     const STATE_CHANGED_EVENT: &str = "state-changed";
     window.emit(STATE_CHANGED_EVENT, app_state)?;
 
-    let app_state_json_str = serde_json::to_string(app_state).unwrap();
+    let app_state_json_str = serde_json::to_string_pretty(app_state).unwrap();
 
-    debug!(
-        "emitted event `{}` with payload:\n{}",
-        STATE_CHANGED_EVENT, app_state_json_str
-    );
+    if cfg!(debug_assertions) {
+        std::fs::create_dir_all("../../debug").unwrap();
+        std::fs::write("../../debug/state.json", app_state_json_str).unwrap();
+    }
+
+    debug!("emitted event `{}`", STATE_CHANGED_EVENT);
     Ok(())
 }
 
