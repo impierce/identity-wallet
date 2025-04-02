@@ -7,7 +7,7 @@ use crate::{
         actions::{listen, Action},
         qr_code::{actions::qrcode_scanned::QrCodeScanned, reducers::read_credential_offer::read_credential_offer},
         verified_data::{
-            actions::{RedeemCode, SendVerificationEmail},
+            actions::{RedeemCode, ResetEmailVerification, SendVerificationEmail},
             EmailVerification,
         },
         AppState, VerifiedData,
@@ -85,6 +85,18 @@ pub async fn redeem_code(state: AppState, action: Action) -> Result<AppState, Ap
         let state = read_credential_offer(state, std::sync::Arc::new(action)).await.unwrap();
 
         return Ok(state);
+    }
+    Ok(state)
+}
+
+pub async fn reset_email_verification(state: AppState, action: Action) -> Result<AppState, AppError> {
+    if let Some(_action) = listen::<ResetEmailVerification>(action) {
+        return Ok(AppState {
+            verified_data: VerifiedData {
+                email_verification: None,
+            },
+            ..state
+        });
     }
     Ok(state)
 }

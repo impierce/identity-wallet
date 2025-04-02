@@ -18,7 +18,7 @@
   const data: Data[] = [
     {
       title: 'Email',
-      description: 'Get your email address verified',
+      description: 'Get your personal or work email verified',
       icon: EnvelopeOpenFillIcon,
       link: '/me/add/email/info',
     },

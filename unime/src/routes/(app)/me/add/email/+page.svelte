@@ -18,6 +18,7 @@
   const pinInput = new PinInput({
     type: 'numeric',
     maxLength: 4,
+    placeholder: '', // '•',
     onValueChange(value) {
       // onComplete(value) does not seem to trigger on "melt 0.17.0", that's why we use onValueChange and count the length
       if (value.length === 4) {
@@ -26,6 +27,7 @@
     },
   });
 
+  let label: string = $state(dev ? 'My Email 1' : '');
   let email: string = $state(dev ? 'ferris.rustacean@impierce.com' : '');
 
   let loading = $state(false);
@@ -101,11 +103,14 @@
     // TODO: send action to backend to clear state
     expired = false;
     awaitingConfirmation = false;
+    dispatch({ type: '[Verified Data] Reset email verification' });
   };
 
-  onMount(() => {
+  onMount(async () => {
     // Resume verification timer across app restarts by reading from app state
     if ($appState.verified_data.email_verification?.expires_at) {
+      // await goto('/me/add/email/confirm');
+
       info('Resuming email verification timer');
       //   emailSentTimestamp = new Date($appState.verified_data.email_verification.expires_at);
       const expires_at = $appState.verified_data.email_verification?.expires_at!!;
@@ -148,8 +153,30 @@
 
 <div class="flex h-[calc(100vh-48px-64px)] flex-col">
   <div class="flex grow flex-col items-center p-4">
-    <div class="mb-8 mt-4 flex w-3/4 flex-col gap-1">
-      <label for="email" class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Your email</label>
+    <div class="mb-8 mt-4 flex w-full flex-col gap-1">
+      <div class="flex items-center justify-between">
+        <label for="label" class="text-[14px]/[22px] font-medium text-slate-800 dark:text-grey">Your UniMe label</label>
+        <div class="text-[12px]/[14px] font-medium text-primary">Only seen by you</div>
+      </div>
+      <input
+        name="label"
+        type="label"
+        class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] font-normal text-slate-500 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-dark dark:text-slate-300 dark:caret-slate-300"
+        placeholder={'My email'}
+        bind:value={label}
+        oninput={() => {
+          // When the email is changed after a verification session has expired, reset everything.
+          // if (expired) {
+          //   reset();
+          // }
+        }}
+        disabled={awaitingConfirmation}
+      />
+
+      <!-- Divider -->
+      <div class="my-4 h-px bg-slate-300"></div>
+
+      <label for="email" class="text-[14px]/[22px] font-medium text-slate-800 dark:text-grey">Email</label>
       <input
         name="email"
         type="email"
@@ -186,11 +213,11 @@
         />
       {/key}
 
-      <div {...pinInput.root} class="mt-8 flex items-center justify-center gap-4 font-mono">
+      <div {...pinInput.root} class="mt-8 flex items-center justify-center gap-2 font-mono">
         {#each pinInput.inputs as input}
           <input
             {...input}
-            class="size-14 rounded-xl border-2 border-slate-300 bg-background-alt text-center text-2xl font-semibold text-text-alt outline-none focus:border-primary disabled:cursor-not-allowed dark:border-slate-500"
+            class="size-12 rounded-xl border border-slate-300 bg-background-alt text-center text-2xl font-semibold text-text-alt outline-none focus:border-primary disabled:cursor-not-allowed dark:border-slate-500"
             disabled={!awaitingConfirmation}
           />
         {/each}

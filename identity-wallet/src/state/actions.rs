@@ -158,5 +158,7 @@ mod bindings {
         SendVerificationEmail { payload: SendVerificationEmail },
         #[serde(rename = "[Verified Data] Redeem code")]
         RedeemCode { payload: RedeemCode },
+        #[serde(rename = "[Verified Data] Reset email verification")]
+        ResetEmailVerification,
     }
 }
