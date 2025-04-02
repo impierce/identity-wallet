@@ -56,7 +56,7 @@ mod tests {
     use serde_json::{Map, Value};
 
     #[tokio::test]
-    async fn appstate_version_update_test() {
+    async fn test_appstate_version_update() {
         let rdr =
             std::fs::File::open("../unime/src-tauri/tests/fixtures/states/no_profile_redirect_welcome.json").unwrap();
 
