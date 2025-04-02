@@ -90,12 +90,18 @@ pub async fn load_state() -> Result<AppState, AppError> {
     let app_state: AppState = match version {
         APP_STATE_VERSION => {
             let app_state = serde_json::from_str(&content)?;
-            debug!("no migrations needed");
+            debug!(
+                "App state is at current version {}, no migrations needed",
+                APP_STATE_VERSION
+            );
             app_state
         }
         _ => {
             let app_state = apply_state_migrations(app_state_object, version)?;
-            debug!("successful migration");
+            debug!(
+                "App state successfully migrated to version {} (latest)",
+                APP_STATE_VERSION
+            );
 
             save_state(&app_state)
                 .await
