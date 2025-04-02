@@ -15,7 +15,7 @@
   import { listen, type UnlistenFn } from '@tauri-apps/api/event';
   import { attachConsole, error, info } from '@tauri-apps/plugin-log';
 
-  import { Switch } from '$lib/components';
+  import { DeprecatedSwitch } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import {
     ArrowLeftRegularIcon,
@@ -366,7 +366,7 @@ Stacking context: We have to deviate from the DOM-sequence.
 
           <div class="flex items-center justify-end pb-2">
             <div class="mr-2 text-xs text-orange-800">Reset profile?</div>
-            <Switch
+            <DeprecatedSwitch
               active={resetDragonProfile}
               on:change={() => {
                 resetDragonProfile = !resetDragonProfile;
