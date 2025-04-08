@@ -116,15 +116,13 @@ pub fn emit_event<R: tauri::Runtime>(window: &tauri::Window<R>, app_state: &AppS
             STATE_CHANGED_EVENT,
             serde_json::to_string(app_state).unwrap()
         );
-    } else {
-        if cfg!(debug_assertions) {
-            std::fs::create_dir_all("../../debug").unwrap();
-            std::fs::write(
-                "../../debug/state.json",
-                serde_json::to_string_pretty(app_state).unwrap(),
-            )
-            .unwrap();
-        }
+    } else if cfg!(debug_assertions) {
+        std::fs::create_dir_all("../../debug").unwrap();
+        std::fs::write(
+            "../../debug/state.json",
+            serde_json::to_string_pretty(app_state).unwrap(),
+        )
+        .unwrap();
     };
 
     debug!("emitted event `{}`", STATE_CHANGED_EVENT);
