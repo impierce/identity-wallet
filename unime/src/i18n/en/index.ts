@@ -33,7 +33,7 @@ const en = {
       NAVBAR_TITLE: 'Terms & Conditions',
       TITLE_1: "Here's the less interesting",
       TITLE_2: 'stuff',
-      SUBTITLE: 'Yeah, we know. We still recommend you read this information carefully.',
+      SUBTITLE: 'Yes, we know. We still recommend you read this information carefully.',
       T_AND_C: {
         TITLE: 'Terms & Conditions',
         DESCRIPTION: 'I have read and agree to the Terms & Conditions.',
@@ -44,7 +44,7 @@ const en = {
         FULL: `Welcome to Impierce Technologies B.V. (“we,” “us,” or “our”). These Terms & Conditions (“Terms”) govern your access to the UniMe - Identity Wallet application (“Service”). By accessing or using our Service, you agree to be bound by these Terms. If you do not agree with any part of these Terms, please do not use our Service.
 
 Acceptance of Terms
-By downloading, accessing, or using our Service, you confirm that you have read, understood, and agree to these Terms and our Privacy Policy. If you are using the Service on behalf of an organization, you represent that you have the authority to bind that organization to these Terms.
+By downloading, accessing, or using our Service, you confirm that you have read, understood, and agree to these Terms and our Privacy Policy. If you are using the Service on behalf of an organization, you represent that you have the authbeority to bind that organization to these Terms.
 
 
 User Responsibilities
@@ -318,7 +318,7 @@ By using our Service, you acknowledge that you have read, understood, and agree 
       NAVBAR_TITLE: 'Credential Offer',
       DESCRIPTION: 'is offering you the following credentials',
       ACCEPT: 'Accept credentials',
-    },
+    },C
     CONNECTION_REQUEST: {
       NAVBAR_TITLE: 'Connection Request',
       TITLE: 'New connection',
@@ -356,7 +356,7 @@ By using our Service, you acknowledge that you have read, understood, and agree 
     CONNECTION_ADDED: 'Connected to',
   },
   SEARCH: {
-    INPUT_PLACEHOLDER: 'Look for something',
+    INPUT_PLACEHOLDER: 'Search for something',
     NO_QUERY: {
       TITLE: 'What shall we search for?',
       DESCRIPTION: 'Search for any of your credentials and badges here.',
