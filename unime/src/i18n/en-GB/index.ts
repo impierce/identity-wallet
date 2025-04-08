@@ -4,7 +4,7 @@ import en from '../en';
 import type { Translation } from '../i18n-types';
 
 const en_GB = extendLanguage(en, {
-ONBOARDING: {
+  ONBOARDING: {
     CUSTOMIZE: {
       NAVBAR_TITLE: 'Customisation',
     },
@@ -19,19 +19,19 @@ ONBOARDING: {
         DESCRIPTION:
           "We do not track your actions behind the scenes. Full stop. Not for testing or any other reasons. That's our pledge. We also do not collect any anonymous device information or usage statistics. That decision makes developing the app a bit harder for us, but we believe it is the right decision.",
       },
-    }, 
+    },
   },
-  SCAN:{
-    CONNECTION_REQUEST:{
-      DESCRIPTION: 'Only accept new connections that you recognise and trust'
-    }
+  SCAN: {
+    CONNECTION_REQUEST: {
+      DESCRIPTION: 'Only accept new connections that you recognise and trust',
+    },
   },
   ME: {
     FAVORITES: 'My favourites',
   },
-ERROR: {
-  TITLE: 'Oh dear!',
-}
+  ERROR: {
+    TITLE: 'Oh dear!',
+  },
 }) satisfies Translation;
 
 export default en_GB;
