@@ -19,7 +19,7 @@
   let biometryTypeString: string;
   let enabled: boolean = $appState.profile_settings.biometrics_enabled;
 
-  let enterPassword: boolean = false;
+  let openPasswordPrompt: boolean = false;
   let showPassword = false;
   let passwordValue: string = '';
 
@@ -33,8 +33,9 @@
     console.log('toggleBiometrics, current: ', enabled);
     if (enabled) {
       await _remove();
+      openPasswordPrompt = false;
     } else {
-      enterPassword = true;
+      openPasswordPrompt = true;
       // TODO: ask for the password first
       const password = 'sup3rSecr3t';
       // Check biometrics first, before storing the password => duplicate check on Android?
@@ -102,6 +103,7 @@
       <SettingsSwitch
         checked={enabled}
         onchange={(checked) => {
+          enabled = checked;
           toggleBiometrics();
         }}
       >
@@ -144,13 +146,19 @@
         on:click={_remove}>Clear secure storage</button
       >
       <pre class="text-sm">value: {retrieved}</pre>
+      <pre class="text-sm">enabled: {enabled}</pre>
+      <pre class="text-sm">openPasswordPrompt: {openPasswordPrompt}</pre>
     </div>
   {/if}
+
+  <button on:click={() => (openPasswordPrompt = !openPasswordPrompt)} class="w-fit rounded-lg border p-2">
+    Click to flip
+  </button>
 
   <ActionSheet
     titleText={$LL.SETTINGS.APP.SECURITY.DIALOG_TITLE({ type: biometryTypeString })}
     descriptionText={$LL.SETTINGS.APP.SECURITY.DIALOG_CONTENT({ type: biometryTypeString })}
-    isOpen={enterPassword}
+    isOpen={openPasswordPrompt}
   >
     <div slot="content" class="flex w-full flex-col gap-3 pt-[20px]">
       <!-- Password input -->

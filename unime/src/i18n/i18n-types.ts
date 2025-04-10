@@ -508,12 +508,12 @@ type RootTranslation = {
 					GENERIC: string
 				}
 				/**
-				 * E​n​a​b​l​e​ ​{​t​y​p​e​}
+				 * D​i​s​a​b​l​e​ ​{​t​y​p​e​}
 				 * @param {string} type
 				 */
 				DIALOG_TITLE: RequiredParams<'type'>
 				/**
-				 * P​l​e​a​s​e​ ​e​n​t​e​r​ ​y​o​u​r​ ​p​a​s​s​w​o​r​d​ ​t​o​ ​e​n​a​b​l​e​ ​{​t​y​p​e​}​.
+				 * P​l​e​a​s​e​ ​e​n​t​e​r​ ​y​o​u​r​ ​p​a​s​s​w​o​r​d​ ​t​o​ ​d​i​s​a​b​l​e​ ​{​t​y​p​e​}​.
 				 * @param {string} type
 				 */
 				DIALOG_CONTENT: RequiredParams<'type'>
@@ -1575,11 +1575,11 @@ export type TranslationFunctions = {
 					GENERIC: () => LocalizedString
 				}
 				/**
-				 * Enable {type}
+				 * Disable {type}
 				 */
 				DIALOG_TITLE: (arg: { type: string }) => LocalizedString
 				/**
-				 * Please enter your password to enable {type}.
+				 * Please enter your password to disable {type}.
 				 */
 				DIALOG_CONTENT: (arg: { type: string }) => LocalizedString
 			}

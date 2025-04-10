@@ -218,8 +218,10 @@ Door onze Service te gebruiken, erken je dat je deze Voorwaarden heeft gelezen, 
             FACE_ID: 'Face ID',
             TOUCH_ID: 'Touch ID',
           },
-          GENERIC: 'biometrie'
+          GENERIC: 'biometrie',
         },
+        DIALOG_TITLE: '{type} uitschakelen',
+        DIALOG_CONTENT: 'Voer je wachtwoord in om {type} uit te schakelen',
       },
       PASSWORD: {
         TITLE: 'Wachtwoord',

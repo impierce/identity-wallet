@@ -235,10 +235,10 @@ By using our Service, you acknowledge that you have read, understood, and agree 
             FACE_ID: 'Face ID',
             TOUCH_ID: 'Touch ID',
           },
-          GENERIC: 'biometrics'
+          GENERIC: 'biometrics',
         },
-        DIALOG_TITLE: 'Enable {type:string}',
-        DIALOG_CONTENT: 'Please enter your password to enable {type:string}.'
+        DIALOG_TITLE: 'Disable {type:string}',
+        DIALOG_CONTENT: 'Please enter your password to disable {type:string}.',
       },
       PASSWORD: {
         TITLE: 'Password',

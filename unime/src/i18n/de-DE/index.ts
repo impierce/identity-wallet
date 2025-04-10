@@ -210,8 +210,8 @@ Durch die Nutzung unseres Dienstes bestätigen Sie, dass Sie diese Allgemeinen G
           },
           GENERIC: 'Biometrie',
         },
-        DIALOG_TITLE: '{type} aktivieren',
-        DIALOG_CONTENT: 'Gib dein Passwort ein, um {type} zu aktivieren.'
+        DIALOG_TITLE: '{type} deaktivieren',
+        DIALOG_CONTENT: 'Gib dein Passwort ein, um {type} zu deaktivieren.',
       },
       PASSWORD: {
         TITLE: 'Passwort',
