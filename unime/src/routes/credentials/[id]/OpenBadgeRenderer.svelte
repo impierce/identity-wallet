@@ -36,9 +36,11 @@
       <h2>{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.ALIGNMENT()}</h2>
       {#each credential.data.credentialSubject.achievement.alignment as alignmentItem}
         <h4>{alignmentItem.targetName}</h4>
-        <!-- TODO Review marked vs. markdown-it and security risks. -->
-        <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-        {@html md.render(alignmentItem.targetDescription)}
+        {#if alignmentItem.targetDescription}
+          <!-- TODO Review marked vs. markdown-it and security risks. -->
+          <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+          {@html md.render(alignmentItem.targetDescription)}
+        {/if}
       {/each}
     </div>
   {/if}

@@ -33,7 +33,7 @@ const en = {
       NAVBAR_TITLE: 'Terms & Conditions',
       TITLE_1: "Here's the less interesting",
       TITLE_2: 'stuff',
-      SUBTITLE: 'Yeah, we know. We still recommend you read this information carefully.',
+      SUBTITLE: 'Yes, we know. We still recommend you read this information carefully.',
       T_AND_C: {
         TITLE: 'Terms & Conditions',
         DESCRIPTION: 'I have read and agree to the Terms & Conditions.',
@@ -380,7 +380,7 @@ By using our Service, you acknowledge that you have read, understood, and agree 
     CONNECTION_ADDED: 'Connected to',
   },
   SEARCH: {
-    INPUT_PLACEHOLDER: 'Look for something',
+    INPUT_PLACEHOLDER: 'Search for something',
     NO_QUERY: {
       TITLE: 'What shall we search for?',
       DESCRIPTION: 'Search for any of your credentials and badges here.',

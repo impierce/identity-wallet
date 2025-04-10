@@ -1,15 +1,16 @@
-import { extendDictionary } from 'typesafe-i18n/utils';
+import { extendLanguage } from '$i18n/i18n-extend-language';
 
 import en from '../en';
 import type { Translation } from '../i18n-types';
 
-// TODO: issue when using `extendDictionary()`: https://github.com/ivanhofer/typesafe-i18n/issues/741
-const en_GB = extendDictionary(en, {
+const en_GB = extendLanguage(en, {
   ONBOARDING: {
     CUSTOMIZE: {
       NAVBAR_TITLE: 'Customisation',
     },
     PLEDGE: {
+      TITLE_1: 'No dodgy',
+      TITLE_2: 'dealings',
       ITEM_1: {
         DESCRIPTION:
           'Your data belongs to you and only you decide who you share it with. Full stop. In fact, your data never even touches any of our systems - unless you opt-in to one of the cloud storage options.',
@@ -20,8 +21,16 @@ const en_GB = extendDictionary(en, {
       },
     },
   },
+  SCAN: {
+    CONNECTION_REQUEST: {
+      DESCRIPTION: 'Only accept new connections that you recognise and trust',
+    },
+  },
   ME: {
     FAVORITES: 'My favourites',
+  },
+  ERROR: {
+    TITLE: 'Oh dear!',
   },
 }) satisfies Translation;
 
