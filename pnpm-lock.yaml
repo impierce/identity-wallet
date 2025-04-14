@@ -36,8 +36,8 @@ importers:
         specifier: ^1.2.0
         version: 1.2.0
       '@impierce/tauri-plugin-keystore':
-        specifier: file:../../tauri-plugin-keystore
-        version: file:../tauri-plugin-keystore
+        specifier: 2.1.0-alpha.1
+        version: 2.1.0-alpha.1
       '@lottiefiles/lottie-player':
         specifier: ^2.0.12
         version: 2.0.12
@@ -498,8 +498,8 @@ packages:
   '@iconify/utils@2.2.1':
     resolution: {integrity: sha512-0/7J7hk4PqXmxo5PDBDxmnecw5PxklZJfNjIVG9FM0mEfVrvfudS22rYWsqVk6gR3UJ/mSYS90X4R3znXnqfNA==}
 
-  '@impierce/tauri-plugin-keystore@file:../tauri-plugin-keystore':
-    resolution: {directory: ../tauri-plugin-keystore, type: directory}
+  '@impierce/tauri-plugin-keystore@2.1.0-alpha.1':
+    resolution: {integrity: sha512-oIfGz3XcghyX9sTanF+R8fGqSUp15S7jhTOf62OiWidX3F2yZa2byq6X64GjAnz/wLD8mPVhRTjnjIk4zEmZ/g==}
 
   '@internationalized/date@3.5.5':
     resolution: {integrity: sha512-H+CfYvOZ0LTJeeLOqm19E3uj/4YjrmOFtBufDHPfvtI80hFAMqtrp7oCACpe4Cil5l8S0Qu/9dYfZc/5lY8WQQ==}
@@ -3022,7 +3022,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@impierce/tauri-plugin-keystore@file:../tauri-plugin-keystore':
+  '@impierce/tauri-plugin-keystore@2.1.0-alpha.1':
     dependencies:
       '@tauri-apps/api': 2.3.0
 

@@ -8,9 +8,7 @@ rust-version.workspace = true
 tauri.workspace = true
 tauri-plugin-fs = { version = "2" }
 
-aes-gcm = "0.10.3"
 anyhow = "1.0"
-argon2 = "0.5.3"
 async-trait = "0.1"
 base64 = "0.22"
 chrono = "0.4"

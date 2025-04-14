@@ -13,8 +13,35 @@ use oid4vc::oid4vci::Wallet;
 use std::sync::Arc;
 
 pub async fn unlock_storage(state: AppState, action: Action) -> Result<AppState, AppError> {
-    if let Some(password) = listen::<UnlockStorage>(action).map(|payload| payload.password) {
+    if let Some((password, check_password_only)) =
+        listen::<UnlockStorage>(action).map(|payload| (payload.password, payload.check_password_only))
+    {
         let mut state_guard = state.core_utils.managers.lock().await;
+
+        if check_password_only.unwrap_or_default() {
+            drop(state_guard);
+            if StrongholdManager::load(&password).is_ok() {
+                return Ok(AppState {
+                    debug_messages: {
+                        let mut debug_messages = state.debug_messages.clone();
+                        debug_messages.push_back("Stronghold password OK".to_string());
+                        debug_messages
+                    },
+                    current_user_prompt: None,
+                    ..state
+                });
+            } else {
+                return Ok(AppState {
+                    debug_messages: {
+                        let mut debug_messages = state.debug_messages.clone();
+                        debug_messages.push_back("Wrong Stronghold password".to_string());
+                        debug_messages
+                    },
+                    current_user_prompt: None,
+                    ..state
+                });
+            }
+        }
 
         let stronghold_manager = Arc::new(StrongholdManager::load(&password).map_err(StrongholdLoadingError)?);
 

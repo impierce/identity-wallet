@@ -3,25 +3,37 @@
 
   import LL from '$i18n/i18n-svelte';
 
-  import { remove, retrieve, store, type StoreRequest } from '@impierce/tauri-plugin-keystore';
+  import { remove, retrieve, store } from '@impierce/tauri-plugin-keystore';
   import { authenticate, BiometryType, checkStatus, type Status } from '@tauri-apps/plugin-biometric';
 
-  import { ActionSheet, Button, SettingsSwitch, TopNavBar } from '$lib/components';
+  import { Button, SettingsSwitch, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { EyeClosedRegularIcon, EyeRegularIcon, FingerprintFillIcon, ScanSmileyFillIcon } from '$lib/icons';
   import { state as appState, error as errorState } from '$lib/stores';
   import { localizedBiometricsTypeString } from '$lib/utils';
 
   const SERVICE = 'com.impierce.identity-wallet';
-  const USER = 'tester'; // TODO: rename to "ACCOUNT" to reflect Keychain Access item?
+  const USER = 'unime'; // TODO: rename to "ACCOUNT" to reflect Keychain Access item?
 
-  let biometricsStatus: Status;
-  let biometryTypeString: string;
-  let enabled: boolean = $appState.profile_settings.biometrics_enabled;
+  let biometricsStatus: Status | undefined = $state();
+  let biometryTypeString: string = $state('');
 
-  let openPasswordPrompt: boolean = false;
-  let showPassword = false;
-  let passwordValue: string = '';
+  let enabled = $state($appState.profile_settings.biometrics_enabled);
+  // let debug_messages = $state($appState.debug_messages);
+
+  let openPasswordPrompt = $state(false);
+  let showPassword = $state(false);
+  let passwordValue: string = $state($appState.dev_mode !== 'Off' ? 'sup3rSecr3t' : '');
+
+  let error: string | null = $state(null);
+  let showError = $state(false);
+
+  // $effect(() => {
+  //   if (debug_messages.at(-1) === 'Wrong Stronghold password') {
+  //     error = 'Wrong Stronghold password';
+  //   }
+  //   // debug_messages = $appState.debug_messages;
+  // });
 
   // Ref to input DOM element.
   let inputElement: HTMLInputElement;
@@ -30,25 +42,21 @@
   let retrieved: string | null;
 
   const toggleBiometrics = async () => {
-    console.log('toggleBiometrics, current: ', enabled);
     if (enabled) {
       await _remove();
       openPasswordPrompt = false;
+      enabled = false;
     } else {
+      // enabled = true;
       openPasswordPrompt = true;
+      // enabled = false;
+      console.log(enabled);
       // TODO: ask for the password first
       const password = 'sup3rSecr3t';
       // Check biometrics first, before storing the password => duplicate check on Android?
       authenticate('Enable biometrics')
         .then(async () => {
-          const args: StoreRequest = {
-            keyAlias: 'unime_dev',
-            value: password,
-            promptTitle: 'Store UniMe password',
-            promptSubtitle: 'Please authenticate to store your password on the device.',
-            promptNegativeButtonText: 'Cancel',
-          };
-          await store(args)
+          await store(password)
             .then(async () => {
               await dispatch({ type: '[Biometrics] Enable', payload: { enable: true } });
             })
@@ -58,9 +66,24 @@
             });
         })
         .catch((error) => {
-          enabled = false;
+          // enabled = false;
         });
     }
+  };
+
+  const checkPassword = async () => {
+    await dispatch({ type: '[Storage] Unlock', payload: { password: passwordValue, check_password_only: true } });
+    const lastDebugMessage = $appState.debug_messages.at(-1);
+    if (lastDebugMessage === 'Wrong Stronghold password') {
+      error = 'Incorrect password';
+    } else if (lastDebugMessage === 'Stronghold password OK') {
+      await dispatch({ type: '[Biometrics] Enable', payload: { enable: true } });
+      openPasswordPrompt = false;
+      enabled = true;
+    } else {
+      error = null;
+    }
+    showError = true;
   };
 
   const _retrieve = async () => {
@@ -71,6 +94,9 @@
   };
 
   const _remove = async () => {
+    if ($appState.dev_mode !== 'Off') {
+      await dispatch({ type: '[Biometrics] Enable', payload: { enable: false } });
+    }
     await remove(SERVICE, USER)
       .then(async () => {
         retrieved = null;
@@ -100,15 +126,9 @@
 <div class="flex flex-col bg-silver dark:bg-navy">
   <div class="flex flex-col space-y-[10px] px-4 py-5">
     {#if biometricsStatus}
-      <SettingsSwitch
-        checked={enabled}
-        onchange={(checked) => {
-          enabled = checked;
-          toggleBiometrics();
-        }}
-      >
+      <SettingsSwitch checked={enabled} onchange={() => toggleBiometrics()}>
         {#snippet icon()}
-          {#if biometricsStatus.biometryType === BiometryType.FaceID}
+          {#if biometricsStatus?.biometryType === BiometryType.FaceID}
             <ScanSmileyFillIcon class="size-5 text-primary"></ScanSmileyFillIcon>
           {:else}
             <FingerprintFillIcon class="size-5 text-primary"></FingerprintFillIcon>
@@ -117,6 +137,63 @@
         {/snippet}
         {$LL.SETTINGS.APP.SECURITY.SWITCH_LABEL({ type: localizedBiometricsTypeString(biometricsStatus.biometryType) })}
       </SettingsSwitch>
+
+      {#if openPasswordPrompt}
+        <!-- <input
+          type="text"
+          class="h-12 grow rounded-xl border border-slate-200 px-3 text-[13px]/[24px] text-teal disabled:text-slate-400 disabled:opacity-60 dark:border-slate-600 dark:bg-dark"
+          bind:value={passwordValue}
+        />
+
+        <input
+          class="w-[280px] rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] font-normal text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300"
+          placeholder={$LL.LOCK_SCREEN.PASSWORD_INPUT_PLACEHOLDER()}
+          bind:value={passwordValue}
+        /> -->
+
+        <div class="relative">
+          <input
+            type={showPassword ? 'text' : 'password'}
+            class="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300"
+            placeholder={$LL.LOCK_SCREEN.PASSWORD_INPUT_PLACEHOLDER()}
+            oninput={() => (showError = false)}
+            bind:value={passwordValue}
+          />
+          <div class="absolute right-3 top-0 flex h-full items-center">
+            <button class="rounded-full p-2" onclick={() => (showPassword = !showPassword)}>
+              {#if showPassword}
+                <EyeRegularIcon class="text-slate-700 dark:text-grey" />
+              {:else}
+                <EyeClosedRegularIcon class="text-slate-700 dark:text-grey" />
+              {/if}
+            </button>
+          </div>
+        </div>
+
+        <Button
+          label={$LL.ONBOARDING.PASSWORD.BIOMETRICS.TITLE({ type: biometryTypeString })}
+          on:click={() => checkPassword()}
+        />
+
+        {#if showError}
+          {#if $appState.debug_messages.at(-1) === 'Wrong Stronghold password'}
+            <div class="text-center text-xs font-medium text-rose-500">{error}</div>
+          {/if}
+        {/if}
+
+        <!-- {#if $appState.dev_mode !== 'Off' && debug_messages.length > 0}
+          <div
+            class="mt-4 rounded-lg border border-amber-300 bg-amber-100 p-3 dark:border-amber-700 dark:bg-amber-900/30"
+          >
+            <h4 class="mb-2 text-xs font-semibold text-amber-700 dark:text-amber-500">Debug Messages:</h4>
+            <ul class="space-y-1 text-xs text-amber-600 dark:text-amber-400">
+              {#each debug_messages as message}
+                <li>{message}</li>
+              {/each}
+            </ul>
+          </div>
+        {/if} -->
+      {/if}
 
       <!-- <SettingsEntry
         icon={biometricsStatus.biometryType === BiometryType.FaceID ? ScanSmileyFillIcon : FingerprintFillIcon}
@@ -139,93 +216,13 @@
     <div class="m-8 flex flex-col space-y-4">
       <button
         class="rounded-lg border border-amber-300 bg-amber-100 py-4 text-xs font-medium text-amber-600 shadow"
-        on:click={_retrieve}>Retrieve from secure storage</button
+        onclick={_retrieve}>Retrieve from secure storage</button
       >
       <button
         class="rounded-lg border border-sky-300 bg-sky-100 py-4 text-xs font-medium text-sky-600 shadow"
-        on:click={_remove}>Clear secure storage</button
+        onclick={_remove}>Clear secure storage</button
       >
       <pre class="text-sm">value: {retrieved}</pre>
-      <pre class="text-sm">enabled: {enabled}</pre>
-      <pre class="text-sm">openPasswordPrompt: {openPasswordPrompt}</pre>
     </div>
   {/if}
-
-  <button on:click={() => (openPasswordPrompt = !openPasswordPrompt)} class="w-fit rounded-lg border p-2">
-    Click to flip
-  </button>
-
-  <ActionSheet
-    titleText={$LL.SETTINGS.APP.SECURITY.DIALOG_TITLE({ type: biometryTypeString })}
-    descriptionText={$LL.SETTINGS.APP.SECURITY.DIALOG_CONTENT({ type: biometryTypeString })}
-    isOpen={openPasswordPrompt}
-  >
-    <div slot="content" class="flex w-full flex-col gap-3 pt-[20px]">
-      <!-- Password input -->
-      <div class="relative">
-        <!-- Dynamic type attribute requires one-way binding instead of two-way bind:value. -->
-        <input
-          value={passwordValue}
-          bind:this={inputElement}
-          type={showPassword ? 'text' : 'password'}
-          placeholder={$LL.LOCK_SCREEN.PASSWORD_INPUT_PLACEHOLDER()}
-          on:blur={() => {
-            if (passwordValue.length > 0) {
-              // if (value === $onboarding_state.password) {
-              //   passwordsMatch = true;
-              // } else {
-              //   passwordsMatch = false;
-              // }
-              // Mark the input element as "touched" after losing focus for the first time.
-              // touched = true;
-            }
-          }}
-          on:input={(e) => {
-            // value = e.currentTarget.value;
-            // if (value === $onboarding_state.password) {
-            //   passwordsMatch = true;
-            // } else {
-            //   // Suppress validation message (only on first try).
-            //   if (touched) {
-            //     passwordsMatch = false;
-            //   } else {
-            //     passwordsMatch = undefined;
-            //   }
-            // }
-          }}
-          class="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300"
-        />
-        <div class="absolute right-3 top-0 flex h-full items-center">
-          <button
-            class="rounded-full p-2"
-            on:click={() => {
-              // Focus input element when toggling visibility.
-              inputElement.focus();
-              return (showPassword = !showPassword);
-            }}
-          >
-            {#if showPassword}
-              <EyeRegularIcon class="text-slate-700 dark:text-grey" />
-            {:else}
-              <EyeClosedRegularIcon class="text-slate-700 dark:text-grey" />
-            {/if}
-          </button>
-        </div>
-      </div>
-
-      <!-- <div slot="content" class="w-full pb-[10px] pt-[20px]">
-        <Button label="Yes" on:click={() => dispatch({ type: '[User Journey] Cancel' })} />
-      </div>
-      <Button variant="secondary" slot="close" let:close trigger={close} label="No, let's continue" /> -->
-
-      <!-- Confirm -->
-      <Button label={$LL.CONTINUE()} />
-      <!-- <button
-      class="h-[48px] w-full rounded-xl bg-rose-100 px-4 py-2 text-[14px]/[24px] font-medium text-rose-500"
-      on:click={() => dispatch({ type: '[App] Reset' })}>{$LL.CONTINUE()}</button
-    > -->
-    </div>
-
-    <!-- <Button variant="secondary" slot="close" let:close trigger={close} label={$LL.SETTINGS.RESET_APP.CANCEL()} /> -->
-  </ActionSheet>
 </div>
