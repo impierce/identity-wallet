@@ -18,45 +18,62 @@
   let biometricsStatus: Status | undefined = $state();
   let biometryTypeString: string = $state('');
 
-  let enabled = $state($appState.profile_settings.biometrics_enabled);
-  // let debug_messages = $state($appState.debug_messages);
-
-  let openPasswordPrompt = $state(false);
-  let showPassword = $state(false);
+  let showPasswordInput = $state(false);
+  let showPassword = $state(false); // The user can show or hide what they are typing
   let passwordValue: string = $state($appState.dev_mode !== 'Off' ? 'sup3rSecr3t' : '');
 
   let error: string | null = $state(null);
   let showError = $state(false);
 
-  // $effect(() => {
-  //   if (debug_messages.at(-1) === 'Wrong Stronghold password') {
-  //     error = 'Wrong Stronghold password';
-  //   }
-  //   // debug_messages = $appState.debug_messages;
-  // });
-
-  // Ref to input DOM element.
-  let inputElement: HTMLInputElement;
-
   // TODO: remove (during development only)
-  let retrieved: string | null;
+  let retrieved: string | null = $state(null);
 
-  const toggleBiometrics = async () => {
-    if (enabled) {
-      await _remove();
-      openPasswordPrompt = false;
-      enabled = false;
+  const toggleBiometrics = async (curr: boolean) => {
+    if (curr) {
+      // Local development (Desktop)
+      if ($appState.dev_mode !== 'Off') {
+        await _remove();
+      }
+      authenticate('Disable biometrics').then(async () => {
+        await _remove();
+      });
     } else {
-      // enabled = true;
-      openPasswordPrompt = true;
-      // enabled = false;
-      console.log(enabled);
+      showPasswordInput = true;
       // TODO: ask for the password first
-      const password = 'sup3rSecr3t';
+      // const password = 'sup3rSecr3t';
       // Check biometrics first, before storing the password => duplicate check on Android?
+      // authenticate('Enable biometrics')
+      //   .then(async () => {
+      //     await store(password)
+      //       .then(async () => {
+      //         await dispatch({ type: '[Biometrics] Enable', payload: { enable: true } });
+      //       })
+      //       .catch((error) => {
+      //         console.warn(error);
+      //         errorState.set(error);
+      //       });
+      //   })
+      //   .catch((error) => {
+      //     // enabled = false;
+      //   });
+    }
+  };
+
+  const checkPassword = async () => {
+    await dispatch({ type: '[Storage] Unlock', payload: { password: passwordValue, check_password_only: true } });
+    const lastDebugMessage = $appState.debug_messages.at(-1);
+    if (lastDebugMessage === 'Wrong Stronghold password') {
+      error = 'Incorrect password';
+    } else if (lastDebugMessage === 'Stronghold password OK') {
+      // Local development (Desktop)
+      if ($appState.dev_mode !== 'Off') {
+        await dispatch({ type: '[Biometrics] Enable', payload: { enable: true } });
+        showPasswordInput = false;
+      }
+
       authenticate('Enable biometrics')
         .then(async () => {
-          await store(password)
+          await store(passwordValue)
             .then(async () => {
               await dispatch({ type: '[Biometrics] Enable', payload: { enable: true } });
             })
@@ -68,18 +85,8 @@
         .catch((error) => {
           // enabled = false;
         });
-    }
-  };
-
-  const checkPassword = async () => {
-    await dispatch({ type: '[Storage] Unlock', payload: { password: passwordValue, check_password_only: true } });
-    const lastDebugMessage = $appState.debug_messages.at(-1);
-    if (lastDebugMessage === 'Wrong Stronghold password') {
-      error = 'Incorrect password';
-    } else if (lastDebugMessage === 'Stronghold password OK') {
-      await dispatch({ type: '[Biometrics] Enable', payload: { enable: true } });
-      openPasswordPrompt = false;
-      enabled = true;
+      // await dispatch({ type: '[Biometrics] Enable', payload: { enable: true } });
+      // showPasswordInput = false;
     } else {
       error = null;
     }
@@ -126,7 +133,13 @@
 <div class="flex flex-col bg-silver dark:bg-navy">
   <div class="flex flex-col space-y-[10px] px-4 py-5">
     {#if biometricsStatus}
-      <SettingsSwitch checked={enabled} onchange={() => toggleBiometrics()}>
+      <SettingsSwitch
+        checked={$appState.profile_settings.biometrics_enabled}
+        onCheckedChange={({ curr }) => {
+          toggleBiometrics(curr);
+          return curr;
+        }}
+      >
         {#snippet icon()}
           {#if biometricsStatus?.biometryType === BiometryType.FaceID}
             <ScanSmileyFillIcon class="size-5 text-primary"></ScanSmileyFillIcon>
@@ -138,7 +151,7 @@
         {$LL.SETTINGS.APP.SECURITY.SWITCH_LABEL({ type: localizedBiometricsTypeString(biometricsStatus.biometryType) })}
       </SettingsSwitch>
 
-      {#if openPasswordPrompt}
+      {#if showPasswordInput}
         <!-- <input
           type="text"
           class="h-12 grow rounded-xl border border-slate-200 px-3 text-[13px]/[24px] text-teal disabled:text-slate-400 disabled:opacity-60 dark:border-slate-600 dark:bg-dark"

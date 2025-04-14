@@ -5,7 +5,7 @@
   import LL from '$i18n/i18n-svelte';
   import { fade } from 'svelte/transition';
 
-  import { store, type StoreRequest } from '@impierce/tauri-plugin-keystore';
+  import { store } from '@impierce/tauri-plugin-keystore';
   import { authenticate, BiometryType, checkStatus, type Status } from '@tauri-apps/plugin-biometric';
 
   import { ActionSheet, Button, TopNavBar } from '$lib/components';
@@ -36,16 +36,21 @@
   let biometricsName: string;
 
   const enableBiometrics = async () => {
+    if ($state.dev_mode !== 'Off') {
+      $onboarding_state.biometrics_enabled = true;
+      goto('/welcome/completed');
+    }
+
     // TODO: authenticate first, before storing the password => duplicate check?
     await authenticate('Enable biometrics').then(async () => {
-      const args: StoreRequest = {
-        keyAlias: 'unime_dev',
-        value: $onboarding_state.password!!,
-        promptTitle: 'Store UniMe password',
-        promptSubtitle: 'Please authenticate to store your password on the device.',
-        promptNegativeButtonText: 'Cancel',
-      };
-      await store(args).then(() => {
+      // const args: StoreRequest = {
+      //   keyAlias: 'unime_dev',
+      //   value: $onboarding_state.password!!,
+      //   promptTitle: 'Store UniMe password',
+      //   promptSubtitle: 'Please authenticate to store your password on the device.',
+      //   promptNegativeButtonText: 'Cancel',
+      // };
+      await store($onboarding_state.password).then(() => {
         $onboarding_state.biometrics_enabled = true;
         goto('/welcome/completed');
       });
