@@ -48,8 +48,8 @@ pub enum AppError {
     GenerateAuthorizationResponseError(#[source] anyhow::Error),
     #[error("Failed to send authorization response")]
     SendAuthorizationResponseError,
-    #[error("Failed to parse json")]
-    InvalidUuidError(#[source] uuid::Error),
+    #[error("Failed to generate UUID: {0}")]
+    InvalidUuidError(#[from] uuid::Error),
     #[error("Failed to create presentation submission")]
     PresentationSubmissionError(#[source] anyhow::Error),
     #[error("Failed to parse DID")]
