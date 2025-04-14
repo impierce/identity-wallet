@@ -44,7 +44,7 @@
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-svelte": "^2.46.1",
     "globals": "^15.11.0",
-    "jsdom": "^22.1.0",
+    "jsdom": "^26.1.0",
     "just-extend": "^6.2.0",
     "markdown-it": "^14.0.0",
     "postcss": "^8.5.3",
