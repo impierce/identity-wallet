@@ -7,11 +7,11 @@
 
   interface Props {
     children: Snippet;
-    checked?: boolean;
-    onchange: (checked: boolean) => void;
+    checked?: boolean; // Control the switch from outside.
+    onCheckedChange?: ({ curr, next }: { curr: boolean; next: boolean }) => boolean; // Control whether or not the switch should toggle.
   }
 
-  let { checked = false, onchange, children }: Props = $props();
+  let { checked = false, onCheckedChange, children }: Props = $props();
 
   // Provide own store to `createSwitch` and set initial value.
   const checkedStore = writable(checked);
@@ -21,8 +21,10 @@
   } = createSwitch({
     // Make switch controlled.
     checked: checkedStore,
-    onCheckedChange: ({ next }) => {
-      onchange(next);
+    onCheckedChange: ({ curr, next }) => {
+      if (onCheckedChange) {
+        return onCheckedChange({ curr, next });
+      }
       return next;
     },
   });
