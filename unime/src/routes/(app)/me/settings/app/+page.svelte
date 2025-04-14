@@ -69,7 +69,6 @@
           return next;
         } catch (e) {
           if (e instanceof Error) {
-            console.error(e);
             $error = e.message;
           }
           return curr;
