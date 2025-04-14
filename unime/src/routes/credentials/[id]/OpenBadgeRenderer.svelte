@@ -31,6 +31,13 @@
     </div>
   {/if}
 
+  {#if credential.data.credentialSubject?.achievement?.achievementType}
+    <TextFieldRenderer
+      key={'Achievement type'}
+      value={credential.data.credentialSubject?.achievement?.achievementType}
+    />
+  {/if}
+
   {#if credential.data.credentialSubject?.achievement?.alignment?.length > 0}
     <div class="prose prose-sm rounded-xl bg-background p-4 dark:prose-invert">
       <h2>{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.ALIGNMENT()}</h2>
@@ -43,13 +50,6 @@
         {/if}
       {/each}
     </div>
-  {/if}
-
-  {#if credential.data.credentialSubject?.achievement?.achievementType}
-    <TextFieldRenderer
-      key={'Achievement type'}
-      value={credential.data.credentialSubject?.achievement?.achievementType}
-    />
   {/if}
 
   <!-- "validFrom" is defined as REQUIRED in JSON Schema: https://purl.imsglobal.org/spec/ob/v3p0/schema/json/ob_v3p0_achievementcredential_schema.json -->
