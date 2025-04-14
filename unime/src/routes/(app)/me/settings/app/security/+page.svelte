@@ -3,7 +3,7 @@
 
   import LL from '$i18n/i18n-svelte';
 
-  import { remove, retrieve, store } from '@impierce/tauri-plugin-keystore';
+  import { remove as remove_inner, retrieve as retrieve_inner, store } from '@impierce/tauri-plugin-keystore';
   import { authenticate, BiometryType, checkStatus, type Status } from '@tauri-apps/plugin-biometric';
 
   import { Button, SettingsSwitch, TopNavBar } from '$lib/components';
@@ -30,32 +30,15 @@
 
   const toggleBiometrics = async (curr: boolean) => {
     if (curr) {
-      // Local development (Desktop)
+      // This is only useful for local development (Desktop)
       if ($appState.dev_mode !== 'Off') {
-        await _remove();
+        await remove();
       }
       authenticate('Disable biometrics').then(async () => {
-        await _remove();
+        await remove();
       });
     } else {
       showPasswordInput = true;
-      // TODO: ask for the password first
-      // const password = 'sup3rSecr3t';
-      // Check biometrics first, before storing the password => duplicate check on Android?
-      // authenticate('Enable biometrics')
-      //   .then(async () => {
-      //     await store(password)
-      //       .then(async () => {
-      //         await dispatch({ type: '[Biometrics] Enable', payload: { enable: true } });
-      //       })
-      //       .catch((error) => {
-      //         console.warn(error);
-      //         errorState.set(error);
-      //       });
-      //   })
-      //   .catch((error) => {
-      //     // enabled = false;
-      //   });
     }
   };
 
@@ -76,6 +59,7 @@
           await store(passwordValue)
             .then(async () => {
               await dispatch({ type: '[Biometrics] Enable', payload: { enable: true } });
+              showPasswordInput = false;
             })
             .catch((error) => {
               console.warn(error);
@@ -83,28 +67,27 @@
             });
         })
         .catch((error) => {
-          // enabled = false;
+          console.warn(error);
+          errorState.set(error);
         });
-      // await dispatch({ type: '[Biometrics] Enable', payload: { enable: true } });
-      // showPasswordInput = false;
     } else {
       error = null;
     }
     showError = true;
   };
 
-  const _retrieve = async () => {
-    retrieved = await retrieve(SERVICE, USER).catch((error) => {
+  const retrieve = async () => {
+    retrieved = await retrieve_inner(SERVICE, USER).catch((error) => {
       return 'retrieve: error';
     });
     console.log('retrieved', retrieved);
   };
 
-  const _remove = async () => {
+  const remove = async () => {
     if ($appState.dev_mode !== 'Off') {
       await dispatch({ type: '[Biometrics] Enable', payload: { enable: false } });
     }
-    await remove(SERVICE, USER)
+    await remove_inner(SERVICE, USER)
       .then(async () => {
         retrieved = null;
         await dispatch({ type: '[Biometrics] Enable', payload: { enable: false } });
@@ -146,24 +129,11 @@
           {:else}
             <FingerprintFillIcon class="size-5 text-primary"></FingerprintFillIcon>
           {/if}
-          <!-- <CodeBoldIcon class="h-5 w-5 text-primary"></CodeBoldIcon> -->
         {/snippet}
         {$LL.SETTINGS.APP.SECURITY.SWITCH_LABEL({ type: localizedBiometricsTypeString(biometricsStatus.biometryType) })}
       </SettingsSwitch>
 
       {#if showPasswordInput}
-        <!-- <input
-          type="text"
-          class="h-12 grow rounded-xl border border-slate-200 px-3 text-[13px]/[24px] text-teal disabled:text-slate-400 disabled:opacity-60 dark:border-slate-600 dark:bg-dark"
-          bind:value={passwordValue}
-        />
-
-        <input
-          class="w-[280px] rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] font-normal text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300"
-          placeholder={$LL.LOCK_SCREEN.PASSWORD_INPUT_PLACEHOLDER()}
-          bind:value={passwordValue}
-        /> -->
-
         <div class="relative">
           <input
             type={showPassword ? 'text' : 'password'}
@@ -193,47 +163,20 @@
             <div class="text-center text-xs font-medium text-rose-500">{error}</div>
           {/if}
         {/if}
-
-        <!-- {#if $appState.dev_mode !== 'Off' && debug_messages.length > 0}
-          <div
-            class="mt-4 rounded-lg border border-amber-300 bg-amber-100 p-3 dark:border-amber-700 dark:bg-amber-900/30"
-          >
-            <h4 class="mb-2 text-xs font-semibold text-amber-700 dark:text-amber-500">Debug Messages:</h4>
-            <ul class="space-y-1 text-xs text-amber-600 dark:text-amber-400">
-              {#each debug_messages as message}
-                <li>{message}</li>
-              {/each}
-            </ul>
-          </div>
-        {/if} -->
       {/if}
-
-      <!-- <SettingsEntry
-        icon={biometricsStatus.biometryType === BiometryType.FaceID ? ScanSmileyFillIcon : FingerprintFillIcon}
-        title={`Unlock with ${biometryTypeString}`}
-        hasCaretRight={false}
-      >
-        <Switch active={enabled} onchange={toggleBiometrics} />
-      </SettingsEntry>
-      {#if biometricsStatus.error && $state.dev_mode !== 'Off'}
-        <div class="h-12 rounded-lg bg-rose-50 py-4 text-center text-xs font-medium text-rose-500">
-          Biometrics are not available.
-        </div>
-      {/if}
-    {/if}
-    <SettingsEntry icon={PasswordFillIcon} title={'Change password'} disabled /> -->
     {/if}
   </div>
+
   <!-- TODO: dev -->
   {#if $appState.dev_mode !== 'Off'}
     <div class="m-8 flex flex-col space-y-4">
       <button
         class="rounded-lg border border-amber-300 bg-amber-100 py-4 text-xs font-medium text-amber-600 shadow"
-        onclick={_retrieve}>Retrieve from secure storage</button
+        onclick={retrieve}>Retrieve from secure storage</button
       >
       <button
         class="rounded-lg border border-sky-300 bg-sky-100 py-4 text-xs font-medium text-sky-600 shadow"
-        onclick={_remove}>Clear secure storage</button
+        onclick={remove}>Clear secure storage</button
       >
       <pre class="text-sm">value: {retrieved}</pre>
     </div>

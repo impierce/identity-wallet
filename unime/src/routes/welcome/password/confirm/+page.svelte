@@ -43,13 +43,6 @@
 
     // TODO: authenticate first, before storing the password => duplicate check?
     await authenticate('Enable biometrics').then(async () => {
-      // const args: StoreRequest = {
-      //   keyAlias: 'unime_dev',
-      //   value: $onboarding_state.password!!,
-      //   promptTitle: 'Store UniMe password',
-      //   promptSubtitle: 'Please authenticate to store your password on the device.',
-      //   promptNegativeButtonText: 'Cancel',
-      // };
       await store($onboarding_state.password).then(() => {
         $onboarding_state.biometrics_enabled = true;
         goto('/welcome/completed');
@@ -149,7 +142,7 @@
 </div>
 
 <div class="rounded-t-3xl bg-white p-6 dark:bg-dark" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
-  {#if !biometricsStatus?.isAvailable}
+  {#if biometricsStatus?.isAvailable}
     <ActionSheet
       titleText={capitalize($LL.ONBOARDING.PASSWORD.BIOMETRICS.TITLE({ type: biometricsName }))}
       descriptionText={$LL.ONBOARDING.PASSWORD.BIOMETRICS.DESCRIPTION({ type: biometricsName })}

@@ -18,6 +18,11 @@ pub async fn unlock_storage(state: AppState, action: Action) -> Result<AppState,
     {
         let mut state_guard = state.core_utils.managers.lock().await;
 
+        // When this flag is set, no full "unlock" is performed which would create managers and load all data.
+        // Only the password is checked, which is useful for smaller features such as prompting the user during login.
+        // TODO(refactor): In the current design of UniMe, there is no way to tell the frontend that the password is correct, except through a state update.
+        //   We therefore push a debug message and return the state as is.
+        //   TODO: introduce unique "action id" to identify which command triggered with action?
         if check_password_only.unwrap_or_default() {
             drop(state_guard);
             if StrongholdManager::load(&password).is_ok() {

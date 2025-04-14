@@ -117,12 +117,15 @@ pub fn emit_event<R: tauri::Runtime>(window: &tauri::Window<R>, app_state: &AppS
             serde_json::to_string(app_state).unwrap()
         );
     } else if cfg!(debug_assertions) {
-        std::fs::create_dir_all("../../debug").unwrap();
-        std::fs::write(
-            "../../debug/state.json",
-            serde_json::to_string_pretty(app_state).unwrap(),
-        )
-        .unwrap();
+        if let Err(e) = std::fs::create_dir_all("../../debug") {
+            debug!("Failed to create debug directory: {}", e);
+        } else {
+            std::fs::write(
+                "../../debug/state.json",
+                serde_json::to_string_pretty(app_state).unwrap(),
+            )
+            .unwrap_or_else(|e| debug!("Failed to write debug state file: {}", e));
+        }
     };
 
     debug!("emitted event `{}`", STATE_CHANGED_EVENT);
