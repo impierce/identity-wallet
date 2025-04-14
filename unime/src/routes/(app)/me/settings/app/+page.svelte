@@ -13,13 +13,7 @@
     TranslateFillIcon,
   } from '$lib/icons';
   import { locales } from '$lib/locales';
-  import { state } from '$lib/stores';
-
-  async function handleDevModeSwitch() {
-    await dispatch({
-      type: '[DEV] Toggle DEV mode',
-    });
-  }
+  import { error, state } from '$lib/stores';
 </script>
 
 <TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.APP.NAVBAR_TITLE()} class="sticky top-0 z-10" />
@@ -65,7 +59,23 @@
       {$LL.SETTINGS.APP.HINTS_AND_TIPS.TITLE()}
     </SettingsValueLink> -->
 
-    <SettingsSwitch checked={$state?.dev_mode !== 'Off'} onchange={handleDevModeSwitch}>
+    <SettingsSwitch
+      checked={$state?.dev_mode !== 'Off'}
+      onCheckedChange={({ curr, next }) => {
+        try {
+          dispatch({
+            type: '[DEV] Toggle DEV mode',
+          });
+          return next;
+        } catch (e) {
+          if (e instanceof Error) {
+            console.error(e);
+            $error = e.message;
+          }
+          return curr;
+        }
+      }}
+    >
       {#snippet icon()}
         <CodeBoldIcon class="h-5 w-5 text-primary"></CodeBoldIcon>
       {/snippet}
