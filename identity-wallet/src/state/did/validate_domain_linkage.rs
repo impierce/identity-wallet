@@ -365,7 +365,7 @@ mod tests {
         let subject = subject(stronghold_manager.clone(), password).await;
 
         let identifier = subject.identifier("did:key", Algorithm::ES256).await.unwrap();
-        let fragment = identifier.split(':').last().unwrap();
+        let fragment = identifier.split(':').next_back().unwrap();
         let public_key = subject.public_key(&format!("{identifier}#{fragment}")).await.unwrap();
 
         // x and y are each 32 bytes, they represent the public key
@@ -406,7 +406,7 @@ mod tests {
         let subject = subject(stronghold_manager.clone(), password).await;
 
         let identifier = subject.identifier("did:key", Algorithm::EdDSA).await.unwrap();
-        let fragment = identifier.split(':').last().unwrap();
+        let fragment = identifier.split(':').next_back().unwrap();
         let public_key = subject.public_key(&format!("{identifier}#{fragment}")).await.unwrap();
 
         // x represents the public key

@@ -6,12 +6,12 @@
   interface Props {
     checked?: boolean;
     disabled?: boolean;
-    onchange: (checked: boolean) => void;
+    onCheckedChange?: ({ curr, next }: { curr: boolean; next: boolean }) => boolean;
     icon?: Snippet;
     children: Snippet;
   }
 
-  let { icon, checked = false, disabled = false, onchange, children }: Props = $props();
+  let { icon, checked = false, disabled = false, onCheckedChange, children }: Props = $props();
 </script>
 
 <div
@@ -26,7 +26,7 @@
     </div>
   {/if}
   <div class="grow">
-    <Switch {checked} {onchange}>
+    <Switch {checked} {onCheckedChange}>
       <span class="text-sm font-medium text-text">
         {@render children()}
       </span>

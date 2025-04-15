@@ -12,4 +12,4 @@ export const locales: {
 ];
 
 // Incomplete locales can be disabled here
-export const disabledLocales: Locale[] = ['en-GB'];
+export const disabledLocales: Locale[] = [];
