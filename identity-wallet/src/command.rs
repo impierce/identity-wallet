@@ -117,7 +117,7 @@ pub fn emit_event<R: tauri::Runtime>(window: &tauri::Window<R>, app_state: &AppS
             serde_json::to_string(app_state).unwrap()
         );
     } else if cfg!(debug_assertions) {
-        if let Err(_) = std::fs::create_dir_all("../../debug") {
+        if std::fs::create_dir_all("../../debug").is_err() {
             debug!("Failed to create debug directory");
         } else {
             std::fs::write(
