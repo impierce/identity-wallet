@@ -220,8 +220,14 @@ Door onze Service te gebruiken, erken je dat je deze Voorwaarden heeft gelezen, 
           },
           GENERIC: 'biometrie',
         },
-        DIALOG_TITLE: '{type} uitschakelen',
-        DIALOG_CONTENT: 'Voer je wachtwoord in om {type} uit te schakelen',
+        ENABLE: {
+          DIALOG_TITLE: '{type} inschakelen',
+          DIALOG_CONTENT: 'Voer je wachtwoord in om {type} in te schakelen',
+        },
+        DISABLE: {
+          DIALOG_TITLE: '{type} uitschakelen',
+          DIALOG_CONTENT: 'Voer je wachtwoord in om {type} uit te schakelen',
+        },
       },
       PASSWORD: {
         TITLE: 'Wachtwoord',

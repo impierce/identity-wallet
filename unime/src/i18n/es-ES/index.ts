@@ -237,8 +237,14 @@ Al utilizar nuestro Servicio, usted reconoce que ha leído, entendido y aceptado
           },
           GENERIC: 'biometría',
         },
-        DIALOG_TITLE: 'Desactivar {type}',
-        DIALOG_CONTENT: 'Introduce tu contraseña para desactivar {type}',
+        ENABLE: {
+          DIALOG_TITLE: 'Activar {type}',
+          DIALOG_CONTENT: 'Introduce tu contraseña para activar {type}',
+        },
+        DISABLE: {
+          DIALOG_TITLE: 'Desactivar {type}',
+          DIALOG_CONTENT: 'Introduce tu contraseña para desactivar {type}',
+        },
       },
       PASSWORD: {
         TITLE: 'Contraseña',

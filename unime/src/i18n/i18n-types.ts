@@ -103,7 +103,7 @@ type RootTranslation = {
 			 */
 			TITLE_2: string
 			/**
-			 * Y​e​a​h​,​ ​w​e​ ​k​n​o​w​.​ ​W​e​ ​s​t​i​l​l​ ​r​e​c​o​m​m​e​n​d​ ​y​o​u​ ​r​e​a​d​ ​t​h​i​s​ ​i​n​f​o​r​m​a​t​i​o​n​ ​c​a​r​e​f​u​l​l​y​.
+			 * Y​e​s​,​ ​w​e​ ​k​n​o​w​.​ ​W​e​ ​s​t​i​l​l​ ​r​e​c​o​m​m​e​n​d​ ​y​o​u​ ​r​e​a​d​ ​t​h​i​s​ ​i​n​f​o​r​m​a​t​i​o​n​ ​c​a​r​e​f​u​l​l​y​.
 			 */
 			SUBTITLE: string
 			T_AND_C: {
@@ -507,16 +507,30 @@ type RootTranslation = {
 					 */
 					GENERIC: string
 				}
-				/**
-				 * D​i​s​a​b​l​e​ ​{​t​y​p​e​}
-				 * @param {string} type
-				 */
-				DIALOG_TITLE: RequiredParams<'type'>
-				/**
-				 * P​l​e​a​s​e​ ​e​n​t​e​r​ ​y​o​u​r​ ​p​a​s​s​w​o​r​d​ ​t​o​ ​d​i​s​a​b​l​e​ ​{​t​y​p​e​}​.
-				 * @param {string} type
-				 */
-				DIALOG_CONTENT: RequiredParams<'type'>
+				ENABLE: {
+					/**
+					 * E​n​a​b​l​e​ ​{​t​y​p​e​}
+					 * @param {string} type
+					 */
+					DIALOG_TITLE: RequiredParams<'type'>
+					/**
+					 * P​l​e​a​s​e​ ​e​n​t​e​r​ ​y​o​u​r​ ​p​a​s​s​w​o​r​d​ ​t​o​ ​e​n​a​b​l​e​ ​{​t​y​p​e​}​.
+					 * @param {string} type
+					 */
+					DIALOG_CONTENT: RequiredParams<'type'>
+				}
+				DISABLE: {
+					/**
+					 * D​i​s​a​b​l​e​ ​{​t​y​p​e​}
+					 * @param {string} type
+					 */
+					DIALOG_TITLE: RequiredParams<'type'>
+					/**
+					 * P​l​e​a​s​e​ ​e​n​t​e​r​ ​y​o​u​r​ ​p​a​s​s​w​o​r​d​ ​t​o​ ​d​i​s​a​b​l​e​ ​{​t​y​p​e​}​.
+					 * @param {string} type
+					 */
+					DIALOG_CONTENT: RequiredParams<'type'>
+				}
 			}
 			PASSWORD: {
 				/**
@@ -896,7 +910,7 @@ type RootTranslation = {
 	}
 	SEARCH: {
 		/**
-		 * L​o​o​k​ ​f​o​r​ ​s​o​m​e​t​h​i​n​g
+		 * S​e​a​r​c​h​ ​f​o​r​ ​s​o​m​e​t​h​i​n​g
 		 */
 		INPUT_PLACEHOLDER: string
 		NO_QUERY: {
@@ -1174,7 +1188,7 @@ export type TranslationFunctions = {
 			 */
 			TITLE_2: () => LocalizedString
 			/**
-			 * Yeah, we know. We still recommend you read this information carefully.
+			 * Yes, we know. We still recommend you read this information carefully.
 			 */
 			SUBTITLE: () => LocalizedString
 			T_AND_C: {
@@ -1574,14 +1588,26 @@ export type TranslationFunctions = {
 					 */
 					GENERIC: () => LocalizedString
 				}
-				/**
-				 * Disable {type}
-				 */
-				DIALOG_TITLE: (arg: { type: string }) => LocalizedString
-				/**
-				 * Please enter your password to disable {type}.
-				 */
-				DIALOG_CONTENT: (arg: { type: string }) => LocalizedString
+				ENABLE: {
+					/**
+					 * Enable {type}
+					 */
+					DIALOG_TITLE: (arg: { type: string }) => LocalizedString
+					/**
+					 * Please enter your password to enable {type}.
+					 */
+					DIALOG_CONTENT: (arg: { type: string }) => LocalizedString
+				}
+				DISABLE: {
+					/**
+					 * Disable {type}
+					 */
+					DIALOG_TITLE: (arg: { type: string }) => LocalizedString
+					/**
+					 * Please enter your password to disable {type}.
+					 */
+					DIALOG_CONTENT: (arg: { type: string }) => LocalizedString
+				}
 			}
 			PASSWORD: {
 				/**
@@ -1961,7 +1987,7 @@ export type TranslationFunctions = {
 	}
 	SEARCH: {
 		/**
-		 * Look for something
+		 * Search for something
 		 */
 		INPUT_PLACEHOLDER: () => LocalizedString
 		NO_QUERY: {
