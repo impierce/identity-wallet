@@ -24,6 +24,8 @@ pub enum AppError {
         extension: &'static str,
         source: serde_json::Error,
     },
+    #[error("Failed to create a data directory via Tauri handle")]
+    DataDirCreationError(#[from] tauri::Error),
     #[error("Failed to download the file: {0}")]
     DownloadFailed(#[from] reqwest::Error),
     #[error("Failed to download the file: {0}")]
@@ -96,6 +98,8 @@ pub enum AppError {
     StateFileDeletionError(#[source] anyhow::Error),
     #[error("Failed to find TrustList with ID `{0}`")]
     TrustListNotFoundError(String),
+    #[error("Failed to migrate AppState version `{0}` to version `{1}`: {2}")]
+    AppStateMigrationError(u32, u32, String),
 }
 
 impl std::fmt::Debug for AppError {
