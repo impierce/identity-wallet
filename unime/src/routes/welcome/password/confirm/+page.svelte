@@ -17,7 +17,7 @@
     SmileyRegularIcon,
     SmileySadRegularIcon,
   } from '$lib/icons';
-  import { onboarding_state, state } from '$lib/stores';
+  import { error, onboarding_state, state } from '$lib/stores';
   import { localizedBiometricsTypeString } from '$lib/utils';
 
   // 3 states: true (match), false (mismatch), undefined (not checked yet).
@@ -36,18 +36,24 @@
   let biometricsName: string;
 
   const enableBiometrics = async () => {
+    $onboarding_state.biometrics_enabled = true;
+
     if ($state.dev_mode !== 'Off') {
-      $onboarding_state.biometrics_enabled = true;
       goto('/welcome/completed');
     }
 
-    // TODO: authenticate first, before storing the password => duplicate check?
-    await authenticate('Enable biometrics').then(async () => {
-      await store($onboarding_state.password).then(() => {
-        $onboarding_state.biometrics_enabled = true;
-        goto('/welcome/completed');
+    const password = $onboarding_state.password;
+
+    if (password) {
+      // TODO: authenticate first, before storing the password => duplicate check?
+      await authenticate('Enable biometrics').then(async () => {
+        await store(password).then(() => {
+          goto('/welcome/completed');
+        });
       });
-    });
+    } else {
+      error.set('Biometrics enabled, but no password value provided');
+    }
   };
 
   // TODO: This workaround capitalizes the first letter for a specific language, since typesafe-i18n formatters do not seem to support this.

@@ -1,5 +1,17 @@
+import { setLocale } from '$i18n/i18n-svelte';
+import { loadAllLocales } from '$i18n/i18n-util.sync';
+
 import { BiometryType } from '@tauri-apps/plugin-biometric';
-import { localizedBiometricsTypeString, calculateInitials, formatDate, formatDateTime, formatRelativeDateTime, hash } from './utils';
+import { platform } from '@tauri-apps/plugin-os';
+
+import {
+  calculateInitials,
+  formatDate,
+  formatDateTime,
+  formatRelativeDateTime,
+  hash,
+  localizedBiometricsTypeString,
+} from './utils';
 
 describe('hash function', () => {
   test('should return the expected hash digest', () => {
@@ -39,7 +51,7 @@ describe('formatDate function', () => {
 
   test('format with es-ES locale', () => {
     expect(formatDate(isoDate, 'es-ES', true)).toEqual('22 jul 2024');
-  })
+  });
 });
 
 describe('formatDateTime function', () => {
@@ -145,12 +157,8 @@ describe('formatRelativeDateTime function', () => {
 });
 
 vi.mock('@tauri-apps/plugin-os', () => ({
-  platform: vi.fn()
-}))
-
-import { platform } from '@tauri-apps/plugin-os';
-import { setLocale } from '$i18n/i18n-svelte';
-import { loadAllLocales } from '$i18n/i18n-util.sync';
+  platform: vi.fn(),
+}));
 
 describe('biometricsTypeString function', () => {
   beforeAll(() => {
@@ -162,34 +170,40 @@ describe('biometricsTypeString function', () => {
   });
 
   test('Face ID on iOS in en-US', () => {
+    // @ts-expect-error Property 'mockReturnValue' does not exist on type, but still works in tests
     platform.mockReturnValue('ios');
     setLocale('en-US');
     expect(localizedBiometricsTypeString(BiometryType.FaceID)).toEqual('Face ID');
-  })
+  });
 
   test('Touch ID on iOS in de-DE', () => {
+    // @ts-expect-error Property 'mockReturnValue' does not exist on type, but still works in tests
     platform.mockReturnValue('ios');
     setLocale('de-DE');
     expect(localizedBiometricsTypeString(BiometryType.TouchID)).toEqual('Touch ID');
-  })
+  });
 
   test('Face ID on Android in nl-NL', () => {
+    // @ts-expect-error Property 'mockReturnValue' does not exist on type, but still works in tests
     platform.mockReturnValue('android');
     setLocale('nl-NL');
     expect(localizedBiometricsTypeString(BiometryType.FaceID)).toEqual('gezichtsherkenning');
-  })
+  });
 
   test('Touch ID on Android in es-ES', () => {
+    // @ts-expect-error Property 'mockReturnValue' does not exist on type, but still works in tests
     platform.mockReturnValue('android');
     setLocale('es-ES');
     expect(localizedBiometricsTypeString(BiometryType.TouchID)).toEqual('huella dactilar');
-  })
+  });
 
   test('generic in en-US', () => {
     setLocale('en-US');
+    // @ts-expect-error Property 'mockReturnValue' does not exist on type, but still works in tests
     platform.mockReturnValue('ios');
     expect(localizedBiometricsTypeString(BiometryType.None)).toEqual('biometrics');
+    // @ts-expect-error Property 'mockReturnValue' does not exist on type, but still works in tests
     platform.mockReturnValue('android');
     expect(localizedBiometricsTypeString(BiometryType.None)).toEqual('biometrics');
-  })
-})
+  });
+});

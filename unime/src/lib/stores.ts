@@ -32,7 +32,7 @@ const empty_state: AppState = {
         reverse: false,
       },
     },
-    biometrics_enabled: false
+    biometrics_enabled: false,
   },
   current_user_prompt: null,
   user_journey: null,
