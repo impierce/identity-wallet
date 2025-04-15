@@ -9,6 +9,7 @@ interface OnboardingState {
 }
 
 const empty_state: AppState = {
+  version: 0,
   dids: {},
   connections: [],
   credentials: [],
