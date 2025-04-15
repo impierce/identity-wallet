@@ -32,6 +32,8 @@ const en_GB = extendLanguage(en, {
   ERROR: {
     TITLE: 'Oh dear!',
   },
-}) satisfies Translation;
+}) as Translation;
+// TODO: this should be `satisfies Translation` (which currently produces a type error)
+// We should consider using just one "base english" (without extensions) or use a different i18n library altogether.
 
 export default en_GB;
