@@ -1,4 +1,4 @@
-use crate::data_migration::apply_state_migrations;
+use crate::migrations::apply_state_migrations;
 use crate::state::APP_STATE_VERSION;
 use crate::{error::AppError, state::AppState};
 use lazy_static::lazy_static;

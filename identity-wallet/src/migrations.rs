@@ -49,7 +49,7 @@ fn migrate_v0_to_v1(app_state_object: &mut Map<String, Value>) -> anyhow::Result
 
 #[cfg(test)]
 mod tests {
-    use crate::{data_migration::apply_state_migrations, state::AppState};
+    use crate::{migrations::apply_state_migrations, state::AppState};
     use serde_json::{Map, Value};
 
     #[tokio::test]
