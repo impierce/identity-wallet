@@ -60,10 +60,12 @@
       if (enable) {
         authenticate('Enable biometrics').then(async () => {
           await store(passwordValue);
+          $openPasswordPrompt = false;
         });
       } else {
         authenticate('Disable biometrics').then(async () => {
           await remove();
+          $openPasswordPrompt = false;
         });
       }
     }
