@@ -1,12 +1,7 @@
-use std::sync::Arc;
-
 use identity_wallet::state::{
     actions::Action,
     core_utils::CoreUtils,
-    credentials::{
-        actions::self_issue_credential::{SelfIssueCredential, SelfIssuedCredentialType},
-        reducers::self_issue_credential::self_issue_credential,
-    },
+    credentials::reducers::self_issue_credential::self_issue_credential,
     profile_settings::{Profile, ProfileSettings},
     AppState,
 };
@@ -42,13 +37,9 @@ async fn test() {
 
     drop(managers);
 
-    // let action = json_example::<Action>("tests/fixtures/actions/self_issue_profile.json");
-    let action2 = Arc::new(SelfIssueCredential {
-        _type: SelfIssuedCredentialType::Profile,
-        data: "{ \"first name\": \"John\", \"last name\": \"Doe\" }".to_string(),
-    });
+    let action = json_example::<Action>("tests/fixtures/actions/self_issue_profile.json");
 
-    let result = self_issue_credential(app_state, action2).await.unwrap();
+    let result = self_issue_credential(app_state, action).await.unwrap();
 
     // Assert AppState
     assert!(!result.credentials.is_empty());
