@@ -2,10 +2,6 @@
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
     "properties": {
-      "Unime label": {
-        "type": "string",
-        "description": "A unique label for the entity"
-      },
       "title": {
         "type": "string",
         "description": "Title of the person (e.g., Mr., Ms., Dr.)",

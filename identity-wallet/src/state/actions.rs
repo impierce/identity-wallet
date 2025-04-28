@@ -68,7 +68,8 @@ mod bindings {
         common::actions::{cancel_user_flow::CancelUserFlow, unlock_storage::UnlockStorage},
         credentials::actions::{
             credential_offers_selected::CredentialOffersSelected, credentials_selected::CredentialsSelected,
-            delete_credential::DeleteCredential, update_credential_metadata::UpdateCredentialMetadata,
+            delete_credential::DeleteCredential, self_issue_credential::SelfIssueCredential,
+            update_credential_metadata::UpdateCredentialMetadata,
         },
         dev_mode::actions::dev_profile::DevProfile,
         did::actions::{set_preferred_keytype::SetPreferredKeyType, set_preferred_method::SetPreferredDidMethod},
@@ -152,5 +153,7 @@ mod bindings {
         TrustListsEdit { payload: EditTrustList },
         #[serde(rename = "[Trust Lists] Delete")]
         TrustListsDelete { payload: DeleteTrustList },
+        #[serde(rename = "[Credential] Self Issue")]
+        SelfIssueCredential { payload: SelfIssueCredential },
     }
 }

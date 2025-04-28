@@ -10,12 +10,13 @@ use ts_rs::TS;
 #[ts(export, export_to = "bindings/actions/SelfIssueCredential.ts")]
 pub struct SelfIssueCredential {
     #[ts(type = "string")]
+    #[serde(rename = "type")]
     pub _type: SelfIssuedCredentialType,
-    #[ts(type = "any")]
-    pub data: serde_json::Value,
+    #[ts(type = "string")]
+    pub data: String,
 }
 
-#[typetag::serde(name = "[Credential] Delete")]
+#[typetag::serde(name = "[Credential] Self Issue")]
 impl ActionTrait for SelfIssueCredential {
     fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
         vec![reducer!(self_issue_credential)]

@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use identity_wallet::state::{
+    actions::Action,
     core_utils::CoreUtils,
     credentials::{
         actions::self_issue_credential::{SelfIssueCredential, SelfIssuedCredentialType},
@@ -10,9 +11,8 @@ use identity_wallet::state::{
     AppState,
 };
 use jsonwebtoken::Algorithm;
-use serde_json::json;
 
-use crate::common::test_managers;
+use crate::common::{json_example, test_managers};
 
 #[tokio::test]
 #[serial_test::serial]
@@ -26,7 +26,6 @@ async fn test() {
         profile_settings: ProfileSettings {
             profile: Some(Profile {
                 name: "John Doe".to_string(),
-                picture: Some("&#129408".to_string()),
                 ..Default::default()
             }),
             ..Default::default()
@@ -43,16 +42,13 @@ async fn test() {
 
     drop(managers);
 
-    let action = Arc::new(SelfIssueCredential {
+    // let action = json_example::<Action>("tests/fixtures/actions/self_issue_profile.json");
+    let action2 = Arc::new(SelfIssueCredential {
         _type: SelfIssuedCredentialType::Profile,
-        data: json!({
-            "test": 123,
-            "tester": 456
-        }),
+        data: "{ \"first name\": \"John\", \"last name\": \"Doe\" }".to_string(),
     });
 
-    let result = self_issue_credential(app_state, action).await.unwrap();
-    println!("\n\nResult:\n{:?}\n", result);
+    let result = self_issue_credential(app_state, action2).await.unwrap();
 
     // Assert AppState
     assert!(!result.credentials.is_empty());
