@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "@aws-crypto/sha256-js": "^5.2.0",
-    "@eslint/compat": "^1.2.8",
+    "@eslint/compat": "^1.2.9",
     "@eslint/js": "^9.24.0",
     "@iconify-json/ph": "^1.2.0",
     "@lottiefiles/lottie-player": "^2.0.12",
