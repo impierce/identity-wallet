@@ -1,19 +1,11 @@
 use crate::error::AppError::{self, *};
 use crate::state::actions::{listen, Action};
 use crate::state::common::actions::check_password::CheckPassword;
-use crate::state::core_utils::IdentityManager;
-use crate::state::user_prompt::CurrentUserPrompt;
-use crate::state::{AppState, SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS};
+use crate::state::AppState;
 use crate::stronghold::StrongholdManager;
-use crate::subject::subject;
-
-use log::info;
-use oid4vc::oid4vc_manager::ProviderManager;
-use oid4vc::oid4vci::Wallet;
-use std::sync::Arc;
 
 pub async fn check_password(state: AppState, action: Action) -> Result<AppState, AppError> {
-    if let Some(password) = listen::<CheckPassword>(action).map(|payload| (payload.password)) {
+    if let Some(password) = listen::<CheckPassword>(action).map(|payload| payload.password) {
         // TODO(refactor): In the current design of UniMe, there is no way to tell the frontend that the password is correct, except through a state update.
         //   We therefore push a debug message and return the state as is.
         //   TODO: possible solution: introduce unique "action id" to identify which command triggered with action (similar to tracing id)

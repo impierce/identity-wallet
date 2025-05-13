@@ -1,9 +1,6 @@
 use crate::{
     reducer,
-    state::{
-        actions::ActionTrait, common::reducers::check_password::check_password,
-        profile_settings::reducers::update_sorting_preference::sort_credentials, Reducer,
-    },
+    state::{actions::ActionTrait, common::reducers::check_password::check_password, Reducer},
 };
 
 use serde::{Deserialize, Serialize};
