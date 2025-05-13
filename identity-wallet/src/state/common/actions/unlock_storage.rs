@@ -11,12 +11,10 @@ use std::fmt::Formatter;
 use ts_rs::TS;
 
 /// Action to unlock the storage.
-#[derive(Serialize, Deserialize, TS, Clone, Default)]
+#[derive(Serialize, Deserialize, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/UnlockStorage.ts")]
 pub struct UnlockStorage {
     pub password: String,
-    #[ts(optional)]
-    pub check_password_only: Option<bool>,
 }
 
 impl std::fmt::Debug for UnlockStorage {

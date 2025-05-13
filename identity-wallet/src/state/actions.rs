@@ -66,7 +66,9 @@ mod bindings {
     use ts_rs::TS;
 
     use crate::state::{
-        common::actions::{cancel_user_flow::CancelUserFlow, unlock_storage::UnlockStorage},
+        common::actions::{
+            cancel_user_flow::CancelUserFlow, check_password::CheckPassword, unlock_storage::UnlockStorage,
+        },
         credentials::actions::{
             credential_offers_selected::CredentialOffersSelected, credentials_selected::CredentialsSelected,
             delete_credential::DeleteCredential, update_credential_metadata::UpdateCredentialMetadata,
@@ -155,5 +157,7 @@ mod bindings {
         TrustListsDelete { payload: DeleteTrustList },
         #[serde(rename = "[Biometrics] Enable")]
         EnableBiometrics { payload: EnableBiometrics },
+        #[serde(rename = "[Storage] Check password")]
+        CheckPassword { payload: CheckPassword },
     }
 }

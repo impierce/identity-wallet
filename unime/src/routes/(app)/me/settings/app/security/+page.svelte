@@ -44,7 +44,7 @@
   const checkPassword = async () => {
     let enable = action === 'enable';
     // Check if the password is correct
-    await dispatch({ type: '[Storage] Unlock', payload: { password: passwordValue, check_password_only: true } });
+    await dispatch({ type: '[Storage] Check password', payload: { password: passwordValue } });
     const lastDebugMessage = $appState.debug_messages.at(-1);
     if (lastDebugMessage === 'Wrong Stronghold password') {
       error = 'Incorrect password';
