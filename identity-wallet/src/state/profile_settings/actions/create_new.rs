@@ -22,6 +22,7 @@ pub struct CreateNew {
     pub picture: String,
     pub theme: AppTheme,
     pub password: String,
+    #[serde(default)]
     pub biometrics_enabled: bool,
 }
 
