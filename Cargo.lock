@@ -171,26 +171,26 @@ dependencies = [
 [[package]]
 name = "anemo"
 version = "0.0.0"
-source = "git+https://github.com/mystenlabs/anemo.git?rev=e609f7697ed6169bf0760882a0b6c032a57e4f3b#e609f7697ed6169bf0760882a0b6c032a57e4f3b"
+source = "git+https://github.com/mystenlabs/anemo.git?rev=c4e7e4cb4b624d7738c2016d7b7885c6774ff9c2#c4e7e4cb4b624d7738c2016d7b7885c6774ff9c2"
 dependencies = [
  "anyhow",
  "async-trait",
  "bincode",
  "bytes",
- "ed25519 1.5.3",
+ "ed25519 2.2.3",
  "futures",
  "hex",
  "http 1.2.0",
  "matchit 0.5.0",
  "pin-project-lite",
- "pkcs8 0.9.0",
+ "pkcs8 0.10.2",
  "quinn",
  "quinn-proto",
  "rand 0.8.5",
  "rcgen",
  "ring",
  "rustls 0.23.23",
- "rustls-webpki 0.102.8",
+ "rustls-webpki 0.103.3",
  "serde",
  "serde_json",
  "socket2",
@@ -206,7 +206,7 @@ dependencies = [
 [[package]]
 name = "anemo-tower"
 version = "0.0.0"
-source = "git+https://github.com/mystenlabs/anemo.git?rev=e609f7697ed6169bf0760882a0b6c032a57e4f3b#e609f7697ed6169bf0760882a0b6c032a57e4f3b"
+source = "git+https://github.com/mystenlabs/anemo.git?rev=c4e7e4cb4b624d7738c2016d7b7885c6774ff9c2#c4e7e4cb4b624d7738c2016d7b7885c6774ff9c2"
 dependencies = [
  "anemo",
  "bytes",
@@ -302,18 +302,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dde20b3d026af13f561bdd0f15edf01fc734f0dafcedbaf42bba506a9517f223"
 dependencies = [
  "derive_arbitrary",
-]
-
-[[package]]
-name = "ark-bls12-381"
-version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c775f0d12169cba7aae4caeb547bb6a50781c7449a8aa53793827c9ec4abf488"
-dependencies = [
- "ark-ec",
- "ark-ff",
- "ark-serialize",
- "ark-std",
 ]
 
 [[package]]
@@ -514,9 +502,9 @@ checksum = "7c02d123df017efcdfbd739ef81735b36c5ba83ec3c59c80a9d7ecc718f92e50"
 
 [[package]]
 name = "asn1-rs"
-version = "0.5.2"
+version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7f6fd5ddaf0351dff5b8da21b2fb4ff8e08ddd02857f0bf69c47639106c0fff0"
+checksum = "56624a96882bb8c26d61312ae18cb45868e5a9992ea73c58e45c3101e56a1e60"
 dependencies = [
  "asn1-rs-derive",
  "asn1-rs-impl",
@@ -524,31 +512,31 @@ dependencies = [
  "nom 7.1.3",
  "num-traits",
  "rusticata-macros",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "time",
 ]
 
 [[package]]
 name = "asn1-rs-derive"
-version = "0.4.0"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "726535892e8eae7e70657b4c8ea93d26b8553afb1ce617caee529ef96d7dee6c"
+checksum = "3109e49b1e4909e9db6515a30c633684d68cdeaa252f215214cb4fa1a5bfee2c"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 1.0.109",
- "synstructure 0.12.6",
+ "syn 2.0.98",
+ "synstructure 0.13.1",
 ]
 
 [[package]]
 name = "asn1-rs-impl"
-version = "0.1.0"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2777730b2039ac0f95f093556e61b6d26cebed5393ca6f152717777cec3a42ed"
+checksum = "7b18050c2cd6fe86c3a76584ef5e0baf286d038cda203eb6223df2cc413565f7"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 1.0.109",
+ "syn 2.0.98",
 ]
 
 [[package]]
@@ -1919,7 +1907,7 @@ dependencies = [
 [[package]]
 name = "consensus-config"
 version = "0.1.0"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "fastcrypto",
  "iota-network-stack",
@@ -1985,13 +1973,13 @@ checksum = "7c74b8349d32d297c9134b8c88677813a227df8f779daa29bfc29c183fe3dca6"
 [[package]]
 name = "consumer"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=1d988dc#1d988dc7aad0b2da992ebc7d2ba89d599c1bbf66"
+source = "git+https://git@github.com/impierce/did-manager.git?rev=049a1e9#049a1e93a7a4241ba20e00b1b125f9120137e34f"
 dependencies = [
  "did_iota",
  "did_jwk",
  "did_key",
  "did_web",
- "identity_iota 1.3.1",
+ "identity_iota 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
  "shared",
  "signature 2.2.0",
  "tokio",
@@ -2126,6 +2114,25 @@ name = "crossbeam-channel"
 version = "0.5.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "06ba6d68e24814cb8de6bb986db8222d3a027d15872cabc0d18817bc3c0e4471"
+dependencies = [
+ "crossbeam-utils",
+]
+
+[[package]]
+name = "crossbeam-deque"
+version = "0.8.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9dd111b7b7f7d55b72c0a6ae361660ee5853c9af73f70c3c2ef6858b950e2e51"
+dependencies = [
+ "crossbeam-epoch",
+ "crossbeam-utils",
+]
+
+[[package]]
+name = "crossbeam-epoch"
+version = "0.9.18"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5b82ac4a3c2ca9c3460964f020e1402edd5753411d7737aa39c3714ad1b5420e"
 dependencies = [
  "crossbeam-utils",
 ]
@@ -2537,9 +2544,9 @@ dependencies = [
 
 [[package]]
 name = "der-parser"
-version = "8.2.0"
+version = "10.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dbd676fbbab537128ef0278adb5576cf363cff6aa22a7b24effe97347cfab61e"
+checksum = "07da5016415d5a3c4dd39b11ed26f915f52fc4e0dc197d87908bc916e51bc1a6"
 dependencies = [
  "asn1-rs",
  "displaydoc",
@@ -2558,6 +2565,12 @@ dependencies = [
  "powerfmt",
  "serde",
 ]
+
+[[package]]
+name = "deranged"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9c9e6a11ca8224451684bc0d7d5a7adbf8f2fd6887261a1cfc3c0432f9d4068e"
 
 [[package]]
 name = "derivative"
@@ -2724,10 +2737,10 @@ dependencies = [
 [[package]]
 name = "did_iota"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=1d988dc#1d988dc7aad0b2da992ebc7d2ba89d599c1bbf66"
+source = "git+https://git@github.com/impierce/did-manager.git?rev=049a1e9#049a1e93a7a4241ba20e00b1b125f9120137e34f"
 dependencies = [
  "bls12_381_plus 0.8.17",
- "identity_iota 1.3.1",
+ "identity_iota 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
  "identity_stronghold",
  "iota-sdk 1.1.5",
  "log",
@@ -2738,10 +2751,10 @@ dependencies = [
 [[package]]
 name = "did_jwk"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=1d988dc#1d988dc7aad0b2da992ebc7d2ba89d599c1bbf66"
+source = "git+https://git@github.com/impierce/did-manager.git?rev=049a1e9#049a1e93a7a4241ba20e00b1b125f9120137e34f"
 dependencies = [
  "did-jwk",
- "identity_iota 1.3.1",
+ "identity_iota 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
  "identity_stronghold",
  "iota-sdk 1.1.5",
  "log",
@@ -2755,10 +2768,10 @@ dependencies = [
 [[package]]
 name = "did_key"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=1d988dc#1d988dc7aad0b2da992ebc7d2ba89d599c1bbf66"
+source = "git+https://git@github.com/impierce/did-manager.git?rev=049a1e9#049a1e93a7a4241ba20e00b1b125f9120137e34f"
 dependencies = [
  "did-method-key",
- "identity_iota 1.3.1",
+ "identity_iota 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
  "identity_stronghold",
  "iota-sdk 1.1.5",
  "jsonwebkey",
@@ -2773,7 +2786,7 @@ dependencies = [
 [[package]]
 name = "did_manager"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=1d988dc#1d988dc7aad0b2da992ebc7d2ba89d599c1bbf66"
+source = "git+https://git@github.com/impierce/did-manager.git?rev=049a1e9#049a1e93a7a4241ba20e00b1b125f9120137e34f"
 dependencies = [
  "consumer",
  "producer",
@@ -2811,10 +2824,10 @@ dependencies = [
 [[package]]
 name = "did_web"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=1d988dc#1d988dc7aad0b2da992ebc7d2ba89d599c1bbf66"
+source = "git+https://git@github.com/impierce/did-manager.git?rev=049a1e9#049a1e93a7a4241ba20e00b1b125f9120137e34f"
 dependencies = [
  "did-web",
- "identity_iota 1.3.1",
+ "identity_iota 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
  "identity_stronghold",
  "iota-sdk 1.1.5",
  "log",
@@ -2830,7 +2843,7 @@ dependencies = [
 [[package]]
 name = "dif-presentation-exchange"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=fa4aa19#fa4aa1914ac7a432d37321d5b0bf536352303448"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=742af62#742af62d849c76e75a50f050d5c2dd0123f2dec6"
 dependencies = [
  "getset",
  "jsonpath_lib",
@@ -2841,12 +2854,6 @@ dependencies = [
  "serde_with 3.12.0",
  "url",
 ]
-
-[[package]]
-name = "difference"
-version = "2.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "524cbf6897b527295dff137cec09ecf3a05f4fddffd7dfcd1585403449e74198"
 
 [[package]]
 name = "digest"
@@ -3085,9 +3092,7 @@ version = "1.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "91cff35c70bba8a626e3185d8cd48cc11b5437e1a5bcd15b9b5fa3c64b6dfee7"
 dependencies = [
- "pkcs8 0.9.0",
  "signature 1.6.4",
- "zeroize",
 ]
 
 [[package]]
@@ -3099,6 +3104,7 @@ dependencies = [
  "pkcs8 0.10.2",
  "serde",
  "signature 2.2.0",
+ "zeroize",
 ]
 
 [[package]]
@@ -3252,7 +3258,7 @@ dependencies = [
 [[package]]
 name = "enum-compat-util"
 version = "0.1.0"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "serde_yaml",
 ]
@@ -3407,7 +3413,7 @@ dependencies = [
 [[package]]
 name = "fastcrypto"
 version = "0.1.8"
-source = "git+https://github.com/MystenLabs/fastcrypto?rev=5f2c63266a065996d53f98156f0412782b468597#5f2c63266a065996d53f98156f0412782b468597"
+source = "git+https://github.com/MystenLabs/fastcrypto?rev=2f502fd8570fe4e9cff36eea5bbd6fef22002898#2f502fd8570fe4e9cff36eea5bbd6fef22002898"
 dependencies = [
  "aes",
  "aes-gcm",
@@ -3461,7 +3467,7 @@ dependencies = [
 [[package]]
 name = "fastcrypto-derive"
 version = "0.1.3"
-source = "git+https://github.com/MystenLabs/fastcrypto?rev=5f2c63266a065996d53f98156f0412782b468597#5f2c63266a065996d53f98156f0412782b468597"
+source = "git+https://github.com/MystenLabs/fastcrypto?rev=2f502fd8570fe4e9cff36eea5bbd6fef22002898#2f502fd8570fe4e9cff36eea5bbd6fef22002898"
 dependencies = [
  "quote",
  "syn 1.0.109",
@@ -3470,7 +3476,7 @@ dependencies = [
 [[package]]
 name = "fastcrypto-tbls"
 version = "0.1.0"
-source = "git+https://github.com/MystenLabs/fastcrypto?rev=5f2c63266a065996d53f98156f0412782b468597#5f2c63266a065996d53f98156f0412782b468597"
+source = "git+https://github.com/MystenLabs/fastcrypto?rev=2f502fd8570fe4e9cff36eea5bbd6fef22002898#2f502fd8570fe4e9cff36eea5bbd6fef22002898"
 dependencies = [
  "bcs",
  "digest 0.10.7",
@@ -3489,7 +3495,7 @@ dependencies = [
 [[package]]
 name = "fastcrypto-vdf"
 version = "0.1.0"
-source = "git+https://github.com/MystenLabs/fastcrypto?rev=5f2c63266a065996d53f98156f0412782b468597#5f2c63266a065996d53f98156f0412782b468597"
+source = "git+https://github.com/MystenLabs/fastcrypto?rev=2f502fd8570fe4e9cff36eea5bbd6fef22002898#2f502fd8570fe4e9cff36eea5bbd6fef22002898"
 dependencies = [
  "bcs",
  "fastcrypto",
@@ -3506,9 +3512,8 @@ dependencies = [
 [[package]]
 name = "fastcrypto-zkp"
 version = "0.1.3"
-source = "git+https://github.com/MystenLabs/fastcrypto?rev=5f2c63266a065996d53f98156f0412782b468597#5f2c63266a065996d53f98156f0412782b468597"
+source = "git+https://github.com/MystenLabs/fastcrypto?rev=2f502fd8570fe4e9cff36eea5bbd6fef22002898#2f502fd8570fe4e9cff36eea5bbd6fef22002898"
 dependencies = [
- "ark-bls12-381",
  "ark-bn254",
  "ark-ec",
  "ark-ff",
@@ -3516,7 +3521,7 @@ dependencies = [
  "ark-relations",
  "ark-serialize",
  "ark-snark",
- "blst",
+ "bcs",
  "byte-slice-cast",
  "derive_more 0.99.19",
  "fastcrypto",
@@ -5334,11 +5339,11 @@ dependencies = [
  "dyn-clone",
  "futures",
  "icu",
- "identity_core 1.5.0",
- "identity_credential 1.5.0",
- "identity_eddsa_verifier",
- "identity_iota 1.5.0",
- "identity_jose 1.5.0",
+ "identity_core 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_credential 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_eddsa_verifier 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_iota 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_jose 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
  "iota_stronghold",
  "itertools 0.10.5",
  "jsonschema 0.29.0",
@@ -5370,9 +5375,10 @@ dependencies = [
 
 [[package]]
 name = "identity_core"
-version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?rev=f11c7e9#f11c7e9acaef25ffd261bd471788b5df8c3849b5"
+version = "1.6.0-alpha"
+source = "git+https://github.com/impierce/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
 dependencies = [
+ "deranged 0.4.0",
  "js-sys",
  "multibase 0.9.1",
  "serde",
@@ -5381,14 +5387,14 @@ dependencies = [
  "thiserror 1.0.69",
  "time",
  "url",
- "zeroize",
 ]
 
 [[package]]
 name = "identity_core"
-version = "1.5.0"
-source = "git+https://github.com/iotaledger/identity.rs?rev=bd06427#bd06427c52ac72ec5f78b8bf98a8417c2ab593ff"
+version = "1.6.0-alpha"
+source = "git+https://github.com/iotaledger/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
 dependencies = [
+ "deranged 0.4.0",
  "js-sys",
  "multibase 0.9.1",
  "serde",
@@ -5401,16 +5407,16 @@ dependencies = [
 
 [[package]]
 name = "identity_credential"
-version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?rev=f11c7e9#f11c7e9acaef25ffd261bd471788b5df8c3849b5"
+version = "1.6.0-alpha"
+source = "git+https://github.com/impierce/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
 dependencies = [
  "anyhow",
  "async-trait",
  "flate2",
- "identity_core 1.3.1",
- "identity_did 1.3.1",
- "identity_document 1.3.1",
- "identity_verification 1.3.1",
+ "identity_core 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_did 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_document 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_verification 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
  "indexmap 2.7.1",
  "itertools 0.11.0",
  "once_cell",
@@ -5426,17 +5432,17 @@ dependencies = [
 
 [[package]]
 name = "identity_credential"
-version = "1.5.0"
-source = "git+https://github.com/iotaledger/identity.rs?rev=bd06427#bd06427c52ac72ec5f78b8bf98a8417c2ab593ff"
+version = "1.6.0-alpha"
+source = "git+https://github.com/iotaledger/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
 dependencies = [
  "anyhow",
  "async-trait",
  "flate2",
  "futures",
- "identity_core 1.5.0",
- "identity_did 1.5.0",
- "identity_document 1.5.0",
- "identity_verification 1.5.0",
+ "identity_core 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_did 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_document 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_verification 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
  "indexmap 2.7.1",
  "itertools 0.11.0",
  "jsonschema 0.19.1",
@@ -5455,13 +5461,13 @@ dependencies = [
 
 [[package]]
 name = "identity_did"
-version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?rev=f11c7e9#f11c7e9acaef25ffd261bd471788b5df8c3849b5"
+version = "1.6.0-alpha"
+source = "git+https://github.com/impierce/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
 dependencies = [
- "did_url_parser 0.2.0",
+ "did_url_parser 0.3.0",
  "form_urlencoded",
- "identity_core 1.3.1",
- "identity_jose 1.3.1",
+ "identity_core 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_jose 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
  "serde",
  "strum 0.25.0",
  "thiserror 1.0.69",
@@ -5469,13 +5475,13 @@ dependencies = [
 
 [[package]]
 name = "identity_did"
-version = "1.5.0"
-source = "git+https://github.com/iotaledger/identity.rs?rev=bd06427#bd06427c52ac72ec5f78b8bf98a8417c2ab593ff"
+version = "1.6.0-alpha"
+source = "git+https://github.com/iotaledger/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
 dependencies = [
  "did_url_parser 0.3.0",
  "form_urlencoded",
- "identity_core 1.5.0",
- "identity_jose 1.5.0",
+ "identity_core 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_jose 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
  "serde",
  "strum 0.25.0",
  "thiserror 1.0.69",
@@ -5483,13 +5489,13 @@ dependencies = [
 
 [[package]]
 name = "identity_document"
-version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?rev=f11c7e9#f11c7e9acaef25ffd261bd471788b5df8c3849b5"
+version = "1.6.0-alpha"
+source = "git+https://github.com/impierce/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
 dependencies = [
  "did_url_parser 0.2.0",
- "identity_core 1.3.1",
- "identity_did 1.3.1",
- "identity_verification 1.3.1",
+ "identity_core 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_did 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_verification 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
  "indexmap 2.7.1",
  "serde",
  "strum 0.25.0",
@@ -5498,13 +5504,13 @@ dependencies = [
 
 [[package]]
 name = "identity_document"
-version = "1.5.0"
-source = "git+https://github.com/iotaledger/identity.rs?rev=bd06427#bd06427c52ac72ec5f78b8bf98a8417c2ab593ff"
+version = "1.6.0-alpha"
+source = "git+https://github.com/iotaledger/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
 dependencies = [
  "did_url_parser 0.2.0",
- "identity_core 1.5.0",
- "identity_did 1.5.0",
- "identity_verification 1.5.0",
+ "identity_core 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_did 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_verification 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
  "indexmap 2.7.1",
  "serde",
  "strum 0.25.0",
@@ -5513,71 +5519,58 @@ dependencies = [
 
 [[package]]
 name = "identity_eddsa_verifier"
-version = "1.5.0"
-source = "git+https://github.com/iotaledger/identity.rs?rev=bd06427#bd06427c52ac72ec5f78b8bf98a8417c2ab593ff"
+version = "1.6.0-alpha"
+source = "git+https://github.com/impierce/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
 dependencies = [
- "identity_jose 1.5.0",
+ "identity_jose 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "iota-crypto",
+]
+
+[[package]]
+name = "identity_eddsa_verifier"
+version = "1.6.0-alpha"
+source = "git+https://github.com/iotaledger/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
+dependencies = [
+ "identity_jose 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
  "iota-crypto",
 ]
 
 [[package]]
 name = "identity_iota"
-version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?rev=f11c7e9#f11c7e9acaef25ffd261bd471788b5df8c3849b5"
+version = "1.6.0-alpha"
+source = "git+https://github.com/impierce/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
 dependencies = [
- "identity_core 1.3.1",
- "identity_credential 1.3.1",
- "identity_did 1.3.1",
- "identity_document 1.3.1",
- "identity_iota_core 1.3.1",
- "identity_resolver 1.3.1",
- "identity_storage 1.3.1",
- "identity_verification 1.3.1",
+ "identity_core 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_credential 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_did 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_document 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_iota_core 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_iota_interaction 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_resolver 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_storage 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_verification 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
 ]
 
 [[package]]
 name = "identity_iota"
-version = "1.5.0"
-source = "git+https://github.com/iotaledger/identity.rs?rev=bd06427#bd06427c52ac72ec5f78b8bf98a8417c2ab593ff"
+version = "1.6.0-alpha"
+source = "git+https://github.com/iotaledger/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
 dependencies = [
- "identity_core 1.5.0",
- "identity_credential 1.5.0",
- "identity_did 1.5.0",
- "identity_document 1.5.0",
- "identity_iota_core 1.5.0",
- "identity_iota_interaction",
- "identity_resolver 1.5.0",
- "identity_storage 1.5.0",
- "identity_verification 1.5.0",
+ "identity_core 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_credential 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_did 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_document 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_iota_core 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_iota_interaction 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_resolver 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_storage 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_verification 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
 ]
 
 [[package]]
 name = "identity_iota_core"
-version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?rev=f11c7e9#f11c7e9acaef25ffd261bd471788b5df8c3849b5"
-dependencies = [
- "async-trait",
- "futures",
- "identity_core 1.3.1",
- "identity_credential 1.3.1",
- "identity_did 1.3.1",
- "identity_document 1.3.1",
- "identity_verification 1.3.1",
- "iota-sdk 1.1.5",
- "num-derive 0.4.2",
- "num-traits",
- "once_cell",
- "prefix-hex",
- "ref-cast",
- "serde",
- "strum 0.25.0",
- "thiserror 1.0.69",
-]
-
-[[package]]
-name = "identity_iota_core"
-version = "1.5.0"
-source = "git+https://github.com/iotaledger/identity.rs?rev=bd06427#bd06427c52ac72ec5f78b8bf98a8417c2ab593ff"
+version = "1.6.0-alpha"
+source = "git+https://github.com/impierce/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -5585,18 +5578,18 @@ dependencies = [
  "cfg-if",
  "fastcrypto",
  "futures",
- "identity_core 1.5.0",
- "identity_credential 1.5.0",
- "identity_did 1.5.0",
- "identity_document 1.5.0",
- "identity_eddsa_verifier",
- "identity_iota_interaction",
- "identity_jose 1.5.0",
- "identity_verification 1.5.0",
+ "identity_core 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_credential 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_did 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_document 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_eddsa_verifier 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_iota_interaction 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_jose 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_verification 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
  "iota-config",
  "iota-crypto",
- "iota-sdk 0.9.2-rc",
- "iota_interaction_ts",
+ "iota-sdk 0.12.0-rc",
+ "iota_interaction_ts 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
  "itertools 0.13.0",
  "move-core-types",
  "num-derive 0.4.2",
@@ -5610,7 +5603,47 @@ dependencies = [
  "serde",
  "serde-aux",
  "serde_json",
- "shared-crypto",
+ "strum 0.25.0",
+ "thiserror 1.0.69",
+ "tokio",
+]
+
+[[package]]
+name = "identity_iota_core"
+version = "1.6.0-alpha"
+source = "git+https://github.com/iotaledger/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "bcs",
+ "cfg-if",
+ "fastcrypto",
+ "futures",
+ "identity_core 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_credential 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_did 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_document 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_eddsa_verifier 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_iota_interaction 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_jose 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_verification 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "iota-config",
+ "iota-crypto",
+ "iota-sdk 0.12.0-rc",
+ "iota_interaction_ts 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "itertools 0.13.0",
+ "move-core-types",
+ "num-derive 0.4.2",
+ "num-traits",
+ "once_cell",
+ "phf 0.11.3",
+ "prefix-hex",
+ "rand 0.8.5",
+ "ref-cast",
+ "secret-storage",
+ "serde",
+ "serde-aux",
+ "serde_json",
  "strum 0.25.0",
  "thiserror 1.0.69",
  "tokio",
@@ -5618,8 +5651,8 @@ dependencies = [
 
 [[package]]
 name = "identity_iota_interaction"
-version = "1.5.0"
-source = "git+https://github.com/iotaledger/identity.rs?rev=bd06427#bd06427c52ac72ec5f78b8bf98a8417c2ab593ff"
+version = "1.6.0-alpha"
+source = "git+https://github.com/impierce/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -5632,11 +5665,12 @@ dependencies = [
  "fastcrypto-zkp",
  "getrandom 0.2.15",
  "hex",
- "iota-sdk 0.9.2-rc",
+ "iota-sdk 0.12.0-rc",
  "itertools 0.13.0",
  "jsonrpsee",
  "leb128",
  "move-core-types",
+ "nonempty 0.11.0",
  "num-bigint 0.4.6",
  "primitive-types 0.12.2",
  "rand 0.8.5",
@@ -5649,6 +5683,47 @@ dependencies = [
  "serde_with 3.12.0",
  "shared-crypto",
  "strum 0.25.0",
+ "tap",
+ "thiserror 1.0.69",
+ "tracing",
+ "uint",
+]
+
+[[package]]
+name = "identity_iota_interaction"
+version = "1.6.0-alpha"
+source = "git+https://github.com/iotaledger/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "bcs",
+ "cfg-if",
+ "derive_more 0.99.19",
+ "enum_dispatch",
+ "eyre",
+ "fastcrypto",
+ "fastcrypto-zkp",
+ "getrandom 0.2.15",
+ "hex",
+ "iota-sdk 0.12.0-rc",
+ "itertools 0.13.0",
+ "jsonrpsee",
+ "leb128",
+ "move-core-types",
+ "nonempty 0.11.0",
+ "num-bigint 0.4.6",
+ "primitive-types 0.12.2",
+ "rand 0.8.5",
+ "ref-cast",
+ "schemars",
+ "secret-storage",
+ "serde",
+ "serde_json",
+ "serde_repr",
+ "serde_with 3.12.0",
+ "shared-crypto",
+ "strum 0.25.0",
+ "tap",
  "thiserror 1.0.69",
  "tracing",
  "uint",
@@ -5656,27 +5731,26 @@ dependencies = [
 
 [[package]]
 name = "identity_jose"
-version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?rev=f11c7e9#f11c7e9acaef25ffd261bd471788b5df8c3849b5"
+version = "1.6.0-alpha"
+source = "git+https://github.com/impierce/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
 dependencies = [
  "bls12_381_plus 0.8.17",
- "identity_core 1.3.1",
+ "identity_core 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
  "iota-crypto",
  "json-proof-token",
  "serde",
  "serde_json",
- "subtle",
  "thiserror 1.0.69",
  "zeroize",
 ]
 
 [[package]]
 name = "identity_jose"
-version = "1.5.0"
-source = "git+https://github.com/iotaledger/identity.rs?rev=bd06427#bd06427c52ac72ec5f78b8bf98a8417c2ab593ff"
+version = "1.6.0-alpha"
+source = "git+https://github.com/iotaledger/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
 dependencies = [
  "bls12_381_plus 0.8.17",
- "identity_core 1.5.0",
+ "identity_core 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
  "iota-crypto",
  "json-proof-token",
  "serde",
@@ -5687,17 +5761,16 @@ dependencies = [
 
 [[package]]
 name = "identity_resolver"
-version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?rev=f11c7e9#f11c7e9acaef25ffd261bd471788b5df8c3849b5"
+version = "1.6.0-alpha"
+source = "git+https://github.com/impierce/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
 dependencies = [
- "anyhow",
  "async-trait",
  "futures",
- "identity_core 1.3.1",
- "identity_did 1.3.1",
- "identity_document 1.3.1",
- "identity_iota_core 1.3.1",
- "iota-sdk 1.1.5",
+ "identity_core 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_credential 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_did 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_document 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_iota_core 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
  "serde",
  "strum 0.25.0",
  "thiserror 1.0.69",
@@ -5705,16 +5778,16 @@ dependencies = [
 
 [[package]]
 name = "identity_resolver"
-version = "1.5.0"
-source = "git+https://github.com/iotaledger/identity.rs?rev=bd06427#bd06427c52ac72ec5f78b8bf98a8417c2ab593ff"
+version = "1.6.0-alpha"
+source = "git+https://github.com/iotaledger/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
 dependencies = [
  "async-trait",
  "futures",
- "identity_core 1.5.0",
- "identity_credential 1.5.0",
- "identity_did 1.5.0",
- "identity_document 1.5.0",
- "identity_iota_core 1.5.0",
+ "identity_core 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_credential 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_did 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_document 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_iota_core 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
  "serde",
  "strum 0.25.0",
  "thiserror 1.0.69",
@@ -5722,19 +5795,23 @@ dependencies = [
 
 [[package]]
 name = "identity_storage"
-version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?rev=f11c7e9#f11c7e9acaef25ffd261bd471788b5df8c3849b5"
+version = "1.6.0-alpha"
+source = "git+https://github.com/impierce/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
 dependencies = [
  "anyhow",
  "async-trait",
+ "bcs",
+ "fastcrypto",
  "futures",
- "identity_core 1.3.1",
- "identity_credential 1.3.1",
- "identity_did 1.3.1",
- "identity_document 1.3.1",
- "identity_iota_core 1.3.1",
- "identity_verification 1.3.1",
+ "identity_core 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_credential 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_did 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_document 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_iota_core 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_iota_interaction 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_verification 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
  "seahash",
+ "secret-storage",
  "serde",
  "serde_json",
  "thiserror 1.0.69",
@@ -5742,21 +5819,21 @@ dependencies = [
 
 [[package]]
 name = "identity_storage"
-version = "1.5.0"
-source = "git+https://github.com/iotaledger/identity.rs?rev=bd06427#bd06427c52ac72ec5f78b8bf98a8417c2ab593ff"
+version = "1.6.0-alpha"
+source = "git+https://github.com/iotaledger/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
 dependencies = [
  "anyhow",
  "async-trait",
  "bcs",
  "fastcrypto",
  "futures",
- "identity_core 1.5.0",
- "identity_credential 1.5.0",
- "identity_did 1.5.0",
- "identity_document 1.5.0",
- "identity_iota_core 1.5.0",
- "identity_iota_interaction",
- "identity_verification 1.5.0",
+ "identity_core 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_credential 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_did 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_document 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_iota_core 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_iota_interaction 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_verification 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
  "seahash",
  "secret-storage",
  "serde",
@@ -5766,12 +5843,12 @@ dependencies = [
 
 [[package]]
 name = "identity_stronghold"
-version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?rev=f11c7e9#f11c7e9acaef25ffd261bd471788b5df8c3849b5"
+version = "1.6.0-alpha"
+source = "git+https://github.com/impierce/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
 dependencies = [
  "async-trait",
- "identity_storage 1.3.1",
- "identity_verification 1.3.1",
+ "identity_storage 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_verification 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
  "iota-crypto",
  "iota-sdk 1.1.5",
  "iota_stronghold",
@@ -5783,12 +5860,12 @@ dependencies = [
 [[package]]
 name = "identity_stronghold_ext"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=1d988dc#1d988dc7aad0b2da992ebc7d2ba89d599c1bbf66"
+source = "git+https://git@github.com/impierce/did-manager.git?rev=049a1e9#049a1e93a7a4241ba20e00b1b125f9120137e34f"
 dependencies = [
  "async-trait",
  "elliptic-curve 0.13.8",
- "identity_storage 1.3.1",
- "identity_verification 1.3.1",
+ "identity_storage 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_verification 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
  "iota-sdk 1.1.5",
  "iota_stronghold",
  "k256",
@@ -5801,12 +5878,12 @@ dependencies = [
 
 [[package]]
 name = "identity_verification"
-version = "1.3.1"
-source = "git+https://github.com/impierce/identity.rs?rev=f11c7e9#f11c7e9acaef25ffd261bd471788b5df8c3849b5"
+version = "1.6.0-alpha"
+source = "git+https://github.com/impierce/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
 dependencies = [
- "identity_core 1.3.1",
- "identity_did 1.3.1",
- "identity_jose 1.3.1",
+ "identity_core 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_did 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_jose 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
  "serde",
  "serde_json",
  "strum 0.25.0",
@@ -5815,12 +5892,12 @@ dependencies = [
 
 [[package]]
 name = "identity_verification"
-version = "1.5.0"
-source = "git+https://github.com/iotaledger/identity.rs?rev=bd06427#bd06427c52ac72ec5f78b8bf98a8417c2ab593ff"
+version = "1.6.0-alpha"
+source = "git+https://github.com/iotaledger/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
 dependencies = [
- "identity_core 1.5.0",
- "identity_did 1.5.0",
- "identity_jose 1.5.0",
+ "identity_core 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_did 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_jose 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
  "serde",
  "serde_json",
  "strum 0.25.0",
@@ -5953,6 +6030,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "inline_colorization"
+version = "0.1.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dc1804bdb6a9784758b200007273a8b84e2b0b0b97a8f1e18e763eceb3e9f98a"
+
+[[package]]
 name = "inout"
 version = "0.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5986,7 +6069,7 @@ dependencies = [
 [[package]]
 name = "iota-adapter-latest"
 version = "0.1.0"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "anyhow",
  "bcs",
@@ -6013,8 +6096,8 @@ dependencies = [
 
 [[package]]
 name = "iota-config"
-version = "0.9.2-rc"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+version = "0.12.0-rc"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "anemo",
  "anyhow",
@@ -6028,13 +6111,13 @@ dependencies = [
  "iota-keys",
  "iota-protocol-config",
  "iota-types",
+ "move-vm-config",
  "object_store",
  "once_cell",
  "prometheus",
  "rand 0.8.5",
  "reqwest 0.12.12",
  "serde",
- "serde_with 3.12.0",
  "serde_yaml",
  "tracing",
 ]
@@ -6076,8 +6159,8 @@ dependencies = [
 
 [[package]]
 name = "iota-enum-compat-util"
-version = "0.9.2-rc"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+version = "0.12.0-rc"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "serde_yaml",
 ]
@@ -6085,7 +6168,7 @@ dependencies = [
 [[package]]
 name = "iota-execution"
 version = "0.1.0"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "iota-adapter-latest",
  "iota-move-natives-latest",
@@ -6101,8 +6184,8 @@ dependencies = [
 
 [[package]]
 name = "iota-genesis-common"
-version = "0.9.2-rc"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+version = "0.12.0-rc"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "iota-execution",
  "iota-protocol-config",
@@ -6112,8 +6195,8 @@ dependencies = [
 
 [[package]]
 name = "iota-json"
-version = "0.9.2-rc"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+version = "0.12.0-rc"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "anyhow",
  "bcs",
@@ -6129,8 +6212,8 @@ dependencies = [
 
 [[package]]
 name = "iota-json-rpc-api"
-version = "0.9.2-rc"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+version = "0.12.0-rc"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "anyhow",
  "fastcrypto",
@@ -6149,11 +6232,12 @@ dependencies = [
 
 [[package]]
 name = "iota-json-rpc-types"
-version = "0.9.2-rc"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+version = "0.12.0-rc"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "anyhow",
  "bcs",
+ "chrono",
  "colored",
  "enum_dispatch",
  "fastcrypto",
@@ -6173,14 +6257,15 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_with 3.12.0",
+ "strum 0.26.3",
  "tabled",
  "tracing",
 ]
 
 [[package]]
 name = "iota-keys"
-version = "0.9.2-rc"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+version = "0.12.0-rc"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "anyhow",
  "bip32",
@@ -6198,8 +6283,8 @@ dependencies = [
 
 [[package]]
 name = "iota-macros"
-version = "0.9.2-rc"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+version = "0.12.0-rc"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "futures",
  "iota-proc-macros",
@@ -6209,8 +6294,8 @@ dependencies = [
 
 [[package]]
 name = "iota-metrics"
-version = "0.9.2-rc"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+version = "0.12.0-rc"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "anemo",
  "anemo-tower",
@@ -6225,7 +6310,9 @@ dependencies = [
  "prometheus-closure-metric",
  "scopeguard",
  "simple-server-timing-header",
+ "sysinfo",
  "tap",
+ "thiserror 1.0.69",
  "tokio",
  "tracing",
  "uuid",
@@ -6234,7 +6321,7 @@ dependencies = [
 [[package]]
 name = "iota-move-natives-latest"
 version = "0.1.0"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "bcs",
  "better_any",
@@ -6256,8 +6343,8 @@ dependencies = [
 
 [[package]]
 name = "iota-network-stack"
-version = "0.9.2-rc"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+version = "0.12.0-rc"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "anemo",
  "bcs",
@@ -6265,6 +6352,7 @@ dependencies = [
  "eyre",
  "futures",
  "http 1.2.0",
+ "http-body 1.0.1",
  "multiaddr",
  "pin-project-lite",
  "serde",
@@ -6280,8 +6368,8 @@ dependencies = [
 
 [[package]]
 name = "iota-open-rpc"
-version = "0.9.2-rc"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+version = "0.12.0-rc"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "schemars",
  "serde",
@@ -6291,8 +6379,8 @@ dependencies = [
 
 [[package]]
 name = "iota-open-rpc-macros"
-version = "0.9.2-rc"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+version = "0.12.0-rc"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "derive-syn-parse",
  "itertools 0.13.0",
@@ -6304,8 +6392,8 @@ dependencies = [
 
 [[package]]
 name = "iota-package-resolver"
-version = "0.9.2-rc"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+version = "0.12.0-rc"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "async-trait",
  "bcs",
@@ -6322,8 +6410,8 @@ dependencies = [
 
 [[package]]
 name = "iota-proc-macros"
-version = "0.9.2-rc"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+version = "0.12.0-rc"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "msim-macros",
  "proc-macro2",
@@ -6333,8 +6421,8 @@ dependencies = [
 
 [[package]]
 name = "iota-protocol-config"
-version = "0.9.2-rc"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+version = "0.12.0-rc"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "clap 4.5.29",
  "iota-protocol-config-macros",
@@ -6347,8 +6435,8 @@ dependencies = [
 
 [[package]]
 name = "iota-protocol-config-macros"
-version = "0.9.2-rc"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+version = "0.12.0-rc"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -6358,7 +6446,7 @@ dependencies = [
 [[package]]
 name = "iota-rust-sdk"
 version = "0.0.0"
-source = "git+https://github.com/iotaledger/iota-rust-sdk.git?rev=2ba6b293bdede769a1d9b4d1aecaede2ff7682dd#2ba6b293bdede769a1d9b4d1aecaede2ff7682dd"
+source = "git+https://github.com/iotaledger/iota-rust-sdk.git?rev=3e4a47351cdd774dd2895a2552a038fe2f4b6da5#3e4a47351cdd774dd2895a2552a038fe2f4b6da5"
 dependencies = [
  "base64ct",
  "bcs",
@@ -6377,8 +6465,8 @@ dependencies = [
 
 [[package]]
 name = "iota-sdk"
-version = "0.9.2-rc"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+version = "0.12.0-rc"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -6456,8 +6544,8 @@ dependencies = [
 
 [[package]]
 name = "iota-transaction-builder"
-version = "0.9.2-rc"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+version = "0.12.0-rc"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -6473,8 +6561,8 @@ dependencies = [
 
 [[package]]
 name = "iota-types"
-version = "0.9.2-rc"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+version = "0.12.0-rc"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "anemo",
  "anyhow",
@@ -6486,6 +6574,7 @@ dependencies = [
  "chrono",
  "consensus-config",
  "derive_more 1.0.0",
+ "either",
  "enum_dispatch",
  "eyre",
  "fastcrypto",
@@ -6512,7 +6601,7 @@ dependencies = [
  "move-vm-profiler",
  "move-vm-test-utils",
  "move-vm-types",
- "nonempty",
+ "nonempty 0.9.0",
  "num-bigint 0.4.6",
  "num-rational",
  "num-traits",
@@ -6544,7 +6633,7 @@ dependencies = [
 [[package]]
 name = "iota-verifier-latest"
 version = "0.1.0"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "iota-protocol-config",
  "iota-types",
@@ -6559,8 +6648,8 @@ dependencies = [
 
 [[package]]
 name = "iota_interaction_ts"
-version = "1.5.0"
-source = "git+https://github.com/iotaledger/identity.rs?rev=bd06427#bd06427c52ac72ec5f78b8bf98a8417c2ab593ff"
+version = "1.6.0-alpha"
+source = "git+https://github.com/impierce/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -6572,8 +6661,40 @@ dependencies = [
  "fastcrypto",
  "futures",
  "getrandom 0.2.15",
- "identity_core 1.5.0",
- "identity_iota_interaction",
+ "identity_core 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_iota_interaction 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "instant",
+ "js-sys",
+ "secret-storage",
+ "serde",
+ "serde-wasm-bindgen",
+ "serde_json",
+ "serde_repr",
+ "thiserror 1.0.69",
+ "tokio",
+ "tsify",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "zkryptium",
+]
+
+[[package]]
+name = "iota_interaction_ts"
+version = "1.6.0-alpha"
+source = "git+https://github.com/iotaledger/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "bcs",
+ "bls12_381_plus 0.8.17",
+ "cfg-if",
+ "console_error_panic_hook",
+ "eyre",
+ "fastcrypto",
+ "futures",
+ "getrandom 0.2.15",
+ "identity_core 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_iota_interaction 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
  "instant",
  "js-sys",
  "secret-storage",
@@ -7924,7 +8045,7 @@ dependencies = [
 [[package]]
 name = "move-abstract-interpreter"
 version = "0.1.0"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "move-binary-format",
  "move-bytecode-verifier-meter",
@@ -7933,12 +8054,12 @@ dependencies = [
 [[package]]
 name = "move-abstract-stack"
 version = "0.0.1"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 
 [[package]]
 name = "move-binary-format"
 version = "0.0.3"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "anyhow",
  "enum-compat-util",
@@ -7952,12 +8073,12 @@ dependencies = [
 [[package]]
 name = "move-borrow-graph"
 version = "0.0.1"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 
 [[package]]
 name = "move-bytecode-source-map"
 version = "0.1.0"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "anyhow",
  "bcs",
@@ -7967,14 +8088,16 @@ dependencies = [
  "move-ir-types",
  "move-symbol-pool",
  "serde",
+ "serde_json",
 ]
 
 [[package]]
 name = "move-bytecode-utils"
 version = "0.1.0"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "anyhow",
+ "indexmap 2.7.1",
  "move-binary-format",
  "move-core-types",
  "petgraph",
@@ -7985,7 +8108,7 @@ dependencies = [
 [[package]]
 name = "move-bytecode-verifier"
 version = "0.1.0"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "move-abstract-interpreter",
  "move-abstract-stack",
@@ -8000,7 +8123,7 @@ dependencies = [
 [[package]]
 name = "move-bytecode-verifier-meter"
 version = "0.1.0"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "move-binary-format",
  "move-core-types",
@@ -8010,11 +8133,11 @@ dependencies = [
 [[package]]
 name = "move-command-line-common"
 version = "0.1.0"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "anyhow",
  "bcs",
- "difference",
+ "colored",
  "dirs-next",
  "hex",
  "move-binary-format",
@@ -8023,6 +8146,7 @@ dependencies = [
  "once_cell",
  "serde",
  "sha2 0.9.9",
+ "similar",
  "vfs",
  "walkdir",
 ]
@@ -8030,7 +8154,7 @@ dependencies = [
 [[package]]
 name = "move-compiler"
 version = "0.0.1"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "anyhow",
  "bcs",
@@ -8051,18 +8175,20 @@ dependencies = [
  "move-symbol-pool",
  "once_cell",
  "petgraph",
+ "rayon",
  "regex",
  "serde",
  "serde_json",
  "similar",
  "stacker",
+ "tempfile",
  "vfs",
 ]
 
 [[package]]
 name = "move-core-types"
 version = "0.0.4"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "anyhow",
  "bcs",
@@ -8085,13 +8211,14 @@ dependencies = [
 [[package]]
 name = "move-coverage"
 version = "0.1.0"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "anyhow",
  "bcs",
  "clap 4.5.29",
  "codespan",
  "colored",
+ "indexmap 2.7.1",
  "move-abstract-interpreter",
  "move-binary-format",
  "move-bytecode-source-map",
@@ -8105,13 +8232,13 @@ dependencies = [
 [[package]]
 name = "move-disassembler"
 version = "0.1.0"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "anyhow",
  "bcs",
  "clap 4.5.29",
- "colored",
  "hex",
+ "inline_colorization",
  "move-abstract-interpreter",
  "move-binary-format",
  "move-bytecode-source-map",
@@ -8125,7 +8252,7 @@ dependencies = [
 [[package]]
 name = "move-ir-to-bytecode"
 version = "0.1.0"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "anyhow",
  "codespan-reporting",
@@ -8143,7 +8270,7 @@ dependencies = [
 [[package]]
 name = "move-ir-to-bytecode-syntax"
 version = "0.1.0"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "anyhow",
  "hex",
@@ -8156,7 +8283,7 @@ dependencies = [
 [[package]]
 name = "move-ir-types"
 version = "0.1.0"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "hex",
  "move-command-line-common",
@@ -8169,7 +8296,7 @@ dependencies = [
 [[package]]
 name = "move-proc-macros"
 version = "0.1.0"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "quote",
  "syn 2.0.98",
@@ -8178,7 +8305,7 @@ dependencies = [
 [[package]]
 name = "move-stdlib-natives"
 version = "0.1.1"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "hex",
  "move-binary-format",
@@ -8193,7 +8320,7 @@ dependencies = [
 [[package]]
 name = "move-symbol-pool"
 version = "0.1.0"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "once_cell",
  "phf 0.11.3",
@@ -8201,9 +8328,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "move-trace-format"
+version = "0.0.1"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
+dependencies = [
+ "anyhow",
+ "move-binary-format",
+ "move-core-types",
+ "move-proc-macros",
+ "ref-cast",
+ "serde",
+ "serde_json",
+ "variant_count",
+]
+
+[[package]]
 name = "move-vm-config"
 version = "0.1.0"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "move-binary-format",
  "once_cell",
@@ -8212,7 +8354,7 @@ dependencies = [
 [[package]]
 name = "move-vm-profiler"
 version = "0.1.0"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "move-vm-config",
  "once_cell",
@@ -8222,13 +8364,14 @@ dependencies = [
 [[package]]
 name = "move-vm-runtime"
 version = "0.1.0"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "better_any",
  "fail",
  "move-binary-format",
  "move-bytecode-verifier",
  "move-core-types",
+ "move-trace-format",
  "move-vm-config",
  "move-vm-profiler",
  "move-vm-types",
@@ -8241,7 +8384,7 @@ dependencies = [
 [[package]]
 name = "move-vm-test-utils"
 version = "0.1.0"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "anyhow",
  "move-binary-format",
@@ -8255,7 +8398,7 @@ dependencies = [
 [[package]]
 name = "move-vm-types"
 version = "0.1.0"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "bcs",
  "move-binary-format",
@@ -8274,7 +8417,7 @@ checksum = "e7627d8bbeb17edbf1c3f74b21488e4af680040da89713b4217d0010e9cbd97e"
 [[package]]
 name = "msim-macros"
 version = "0.1.0"
-source = "git+https://github.com/iotaledger/iota-sim.git?rev=f16ef50ba7d874fe1f0960f248f6c651a634d6a5#f16ef50ba7d874fe1f0960f248f6c651a634d6a5"
+source = "git+https://github.com/iotaledger/iota-sim.git?branch=tokio-1.43#d3ae9de63b7ebfbeea8fa5f9d111b9570be703f2"
 dependencies = [
  "darling 0.14.4",
  "proc-macro2",
@@ -8473,10 +8616,25 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "995defdca0a589acfdd1bd2e8e3b896b4d4f7675a31fd14c32611440c7f608e6"
 
 [[package]]
+name = "nonempty"
+version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "549e471b99ccaf2f89101bec68f4d244457d5a95a9c3d0672e9564124397741d"
+
+[[package]]
 name = "nonzero_ext"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "38bf9645c8b145698bb0b18a4637dcacbc421ea49bef2317e4fd8065a387cf21"
+
+[[package]]
+name = "ntapi"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e8a3895c6391c39d7fe7ebc444a87eb2991b2a0bc718fdabd071eec617fc68e4"
+dependencies = [
+ "winapi",
+]
 
 [[package]]
 name = "num"
@@ -8512,6 +8670,7 @@ dependencies = [
  "num-integer",
  "num-traits",
  "rand 0.8.5",
+ "serde",
 ]
 
 [[package]]
@@ -8951,9 +9110,9 @@ dependencies = [
 
 [[package]]
 name = "oid-registry"
-version = "0.6.1"
+version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9bedf36ffb6ba96c2eb7144ef6270557b52e54b20c0a8e1eb2ff99a6c6959bff"
+checksum = "12f40cff3dde1b6087cc5d5f5d4d65712f34016a03ed60e9c08dcc392736b5b7"
 dependencies = [
  "asn1-rs",
 ]
@@ -8961,7 +9120,7 @@ dependencies = [
 [[package]]
 name = "oid4vc"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=fa4aa19#fa4aa1914ac7a432d37321d5b0bf536352303448"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=742af62#742af62d849c76e75a50f050d5c2dd0123f2dec6"
 dependencies = [
  "dif-presentation-exchange",
  "oid4vc-core",
@@ -8974,7 +9133,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-core"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=fa4aa19#fa4aa1914ac7a432d37321d5b0bf536352303448"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=742af62#742af62d849c76e75a50f050d5c2dd0123f2dec6"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -8998,7 +9157,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-manager"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=fa4aa19#fa4aa1914ac7a432d37321d5b0bf536352303448"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=742af62#742af62d849c76e75a50f050d5c2dd0123f2dec6"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -9009,8 +9168,8 @@ dependencies = [
  "did_url",
  "futures",
  "getset",
- "identity_core 1.5.0",
- "identity_credential 1.5.0",
+ "identity_core 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_credential 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
  "jsonwebtoken",
  "oid4vc-core",
  "oid4vci",
@@ -9030,7 +9189,7 @@ dependencies = [
 [[package]]
 name = "oid4vci"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=fa4aa19#fa4aa1914ac7a432d37321d5b0bf536352303448"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=742af62#742af62d849c76e75a50f050d5c2dd0123f2dec6"
 dependencies = [
  "anyhow",
  "derivative",
@@ -9053,15 +9212,15 @@ dependencies = [
 [[package]]
 name = "oid4vp"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=fa4aa19#fa4aa1914ac7a432d37321d5b0bf536352303448"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=742af62#742af62d849c76e75a50f050d5c2dd0123f2dec6"
 dependencies = [
  "anyhow",
  "chrono",
  "dif-presentation-exchange",
  "futures",
  "getset",
- "identity_core 1.5.0",
- "identity_credential 1.5.0",
+ "identity_core 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_credential 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
  "is_empty",
  "jsonwebtoken",
  "monostate",
@@ -10009,14 +10168,14 @@ dependencies = [
 [[package]]
 name = "producer"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=1d988dc#1d988dc7aad0b2da992ebc7d2ba89d599c1bbf66"
+source = "git+https://git@github.com/impierce/did-manager.git?rev=049a1e9#049a1e93a7a4241ba20e00b1b125f9120137e34f"
 dependencies = [
  "did_iota",
  "did_jwk",
  "did_key",
  "did_web",
- "identity_iota 1.3.1",
- "identity_storage 1.3.1",
+ "identity_iota 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_storage 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
  "identity_stronghold",
  "identity_stronghold_ext",
  "iota-sdk 1.1.5",
@@ -10045,8 +10204,8 @@ dependencies = [
 
 [[package]]
 name = "prometheus-closure-metric"
-version = "0.9.2-rc"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+version = "0.12.0-rc"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "anyhow",
  "prometheus",
@@ -10070,7 +10229,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8a56d757972c98b346a9b766e3f02746cde6dd1cd1d1d563472929fdd74bec4d"
 dependencies = [
  "anyhow",
- "itertools 0.12.1",
+ "itertools 0.13.0",
  "proc-macro2",
  "quote",
  "syn 2.0.98",
@@ -10366,6 +10525,26 @@ name = "raw-window-handle"
 version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "20675572f6f24e9e76ef639bc5552774ed45f1c30e2951e1e99c59888861c539"
+
+[[package]]
+name = "rayon"
+version = "1.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b418a60154510ca1a002a752ca9714984e21e4241e804d32555251faf8b78ffa"
+dependencies = [
+ "either",
+ "rayon-core",
+]
+
+[[package]]
+name = "rayon-core"
+version = "1.12.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1465873a3dfdaa8ae7cb14b4383657caab0b3e8a0aa9ae8e04b044854c8dfce2"
+dependencies = [
+ "crossbeam-deque",
+ "crossbeam-utils",
+]
 
 [[package]]
 name = "rcgen"
@@ -11075,6 +11254,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "rustls-webpki"
+version = "0.103.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e4a72fe2bcf7a6ac6fd7d0b9e5cb68aeb7d4c0a0271730218b3e92d43b4eb435"
+dependencies = [
+ "ring",
+ "rustls-pki-types",
+ "untrusted",
+]
+
+[[package]]
 name = "rustversion"
 version = "1.0.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -11276,8 +11466,8 @@ dependencies = [
 
 [[package]]
 name = "secret-storage"
-version = "0.2.0"
-source = "git+https://github.com/iotaledger/secret-storage.git?tag=v0.2.0#cb4709ff999c8838a741b569985e0e064f57aec1"
+version = "0.3.0"
+source = "git+https://github.com/iotaledger/secret-storage.git?tag=v0.3.0#7dc13ddae8a7f2c8a931d3155f3cb9e9a27902fb"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -11759,10 +11949,10 @@ dependencies = [
 [[package]]
 name = "shared"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=1d988dc#1d988dc7aad0b2da992ebc7d2ba89d599c1bbf66"
+source = "git+https://git@github.com/impierce/did-manager.git?rev=049a1e9#049a1e93a7a4241ba20e00b1b125f9120137e34f"
 dependencies = [
- "identity_iota 1.3.1",
- "identity_storage 1.3.1",
+ "identity_iota 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_storage 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
  "identity_stronghold",
  "identity_stronghold_ext",
  "iota-sdk 1.1.5",
@@ -11775,8 +11965,8 @@ dependencies = [
 
 [[package]]
 name = "shared-crypto"
-version = "0.9.2-rc"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+version = "0.12.0-rc"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "bcs",
  "eyre",
@@ -11881,7 +12071,7 @@ dependencies = [
 [[package]]
 name = "siopv2"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=fa4aa19#fa4aa1914ac7a432d37321d5b0bf536352303448"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=742af62#742af62d849c76e75a50f050d5c2dd0123f2dec6"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -12631,6 +12821,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "sysinfo"
+version = "0.33.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4fc858248ea01b66f19d8e8a6d55f41deaf91e9d495246fd01368d99935c6c01"
+dependencies = [
+ "core-foundation-sys",
+ "libc",
+ "memchr",
+ "ntapi",
+ "rayon",
+ "windows 0.57.0",
+]
+
+[[package]]
 name = "system-configuration"
 version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -13183,7 +13387,7 @@ version = "0.3.37"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "35e7868883861bd0e56d9ac6efcaaca0d6d5d82a2a7ec8209ff492c07cf37b21"
 dependencies = [
- "deranged",
+ "deranged 0.3.11",
  "itoa 1.0.14",
  "libc",
  "num-conv",
@@ -13265,9 +13469,9 @@ checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
 
 [[package]]
 name = "tokio"
-version = "1.39.2"
+version = "1.43.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "daa4fb1bc778bd6f04cbfc4bb2d06a7396a8f299dc33ea1900cedaa316f467b1"
+checksum = "3d61fa4ffa3de412bfea335c6ecff681de2b609ba3c77ef3e00e521813a9ed9e"
 dependencies = [
  "backtrace",
  "bytes",
@@ -13283,9 +13487,9 @@ dependencies = [
 
 [[package]]
 name = "tokio-macros"
-version = "2.4.0"
+version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "693d596312e88961bc67d7f1f97af8a70227d9f90c31bba5806eec004978d752"
+checksum = "6e06d43f1345a3bcd39f6a56dbb7dcab2ba47e68e8ac134855e7e2bdbaf8cab8"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -13736,8 +13940,8 @@ dependencies = [
 
 [[package]]
 name = "typed-store-error"
-version = "0.9.2-rc"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.9.2-rc#45df8ac5533251237ce34f7c6e5cbc099805895e"
+version = "0.12.0-rc"
+source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "serde",
  "thiserror 1.0.69",
@@ -14360,8 +14564,8 @@ dependencies = [
  "webview2-com-sys",
  "windows 0.58.0",
  "windows-core 0.58.0",
- "windows-implement",
- "windows-interface",
+ "windows-implement 0.58.0",
+ "windows-interface 0.58.0",
 ]
 
 [[package]]
@@ -14446,6 +14650,16 @@ dependencies = [
 
 [[package]]
 name = "windows"
+version = "0.57.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "12342cb4d8e3b046f3d80effd474a7a02447231330ef77d71daa6fbc40681143"
+dependencies = [
+ "windows-core 0.57.0",
+ "windows-targets 0.52.6",
+]
+
+[[package]]
+name = "windows"
 version = "0.58.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dd04d41d93c4992d421894c18c8b43496aa748dd4c081bac0dc93eb0489272b6"
@@ -14465,15 +14679,38 @@ dependencies = [
 
 [[package]]
 name = "windows-core"
+version = "0.57.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d2ed2439a290666cd67ecce2b0ffaad89c2a56b976b736e6ece670297897832d"
+dependencies = [
+ "windows-implement 0.57.0",
+ "windows-interface 0.57.0",
+ "windows-result 0.1.2",
+ "windows-targets 0.52.6",
+]
+
+[[package]]
+name = "windows-core"
 version = "0.58.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6ba6d44ec8c2591c134257ce647b7ea6b20335bf6379a27dac5f1641fcf59f99"
 dependencies = [
- "windows-implement",
- "windows-interface",
- "windows-result",
+ "windows-implement 0.58.0",
+ "windows-interface 0.58.0",
+ "windows-result 0.2.0",
  "windows-strings",
  "windows-targets 0.52.6",
+]
+
+[[package]]
+name = "windows-implement"
+version = "0.57.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9107ddc059d5b6fbfbffdfa7a7fe3e22a226def0b2608f72e9d552763d3e1ad7"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.98",
 ]
 
 [[package]]
@@ -14481,6 +14718,17 @@ name = "windows-implement"
 version = "0.58.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2bbd5b46c938e506ecbce286b6628a02171d56153ba733b6c741fc627ec9579b"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.98",
+]
+
+[[package]]
+name = "windows-interface"
+version = "0.57.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "29bee4b38ea3cde66011baa44dba677c432a78593e202392d1e9070cf2a7fca7"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -14504,8 +14752,17 @@ version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e400001bb720a623c1c69032f8e3e4cf09984deec740f007dd2b03ec864804b0"
 dependencies = [
- "windows-result",
+ "windows-result 0.2.0",
  "windows-strings",
+ "windows-targets 0.52.6",
+]
+
+[[package]]
+name = "windows-result"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5e383302e8ec8515204254685643de10811af0ed97ea37210dc26fb0032647f8"
+dependencies = [
  "windows-targets 0.52.6",
 ]
 
@@ -14524,7 +14781,7 @@ version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4cd9b125c486025df0eabcb585e62173c6c9eddcec5d117d3b6e8c30e2ee4d10"
 dependencies = [
- "windows-result",
+ "windows-result 0.2.0",
  "windows-targets 0.52.6",
 ]
 
@@ -15061,19 +15318,18 @@ dependencies = [
 
 [[package]]
 name = "x509-parser"
-version = "0.14.0"
+version = "0.17.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e0ecbeb7b67ce215e40e3cc7f2ff902f94a223acf44995934763467e7b1febc8"
+checksum = "4569f339c0c402346d4a75a9e39cf8dad310e287eef1ff56d4c68e5067f53460"
 dependencies = [
  "asn1-rs",
- "base64 0.13.1",
  "data-encoding",
  "der-parser",
  "lazy_static",
  "nom 7.1.3",
  "oid-registry",
  "rusticata-macros",
- "thiserror 1.0.69",
+ "thiserror 2.0.11",
  "time",
 ]
 

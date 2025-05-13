@@ -9,15 +9,19 @@ tauri = { version = "2.2.5", features = [
 ] }
 tauri-build = "2.0.5"
 
-did_manager = { git = "https://git@github.com/impierce/did-manager.git", rev = "1d988dc" }
+did_manager = { git = "https://git@github.com/impierce/did-manager.git", rev = "049a1e9" }
 jsonwebtoken = "9.3"
 log = "^0.4"
-oid4vc = { git = "https://git@github.com/impierce/openid4vc.git", rev = "fa4aa19" }
+oid4vc = { git = "https://git@github.com/impierce/openid4vc.git", rev = "742af62" }
 rand = "0.8"
 serde_json = "1.0"
 serial_test = "2.0"
 tempfile = "3.5.0"
 wiremock = "0.5"
+# pin dependency of `time` and limit range, as `0.4.1` has impl for `usize: PartialOrd<_>`
+# that conflicts with `iota-sdk`s `core` impl, leading to errors in `iota-sdk` crate
+deranged = { version = ">=0.4.0, <0.4.1", default-features = false }
+tokio = { version = "1.43.0", features = ["macros"] }
 
 [workspace.package]
 name = "unime"

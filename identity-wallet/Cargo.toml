@@ -17,16 +17,16 @@ downcast-rs = "1.2"
 dyn-clone = "1.0"
 futures = "0.3"
 icu = "1.4.0"
-identity_credential = { git = "https://github.com/iotaledger/identity.rs", rev = "bd06427", default-features = false, features = [
+identity_credential = { git = "https://github.com/iotaledger/identity.rs", rev = "8b650d4", default-features = false, features = [
     "credential",
     "domain-linkage",
     "presentation",
     "validator",
 ] }
-identity_core = { git = "https://github.com/iotaledger/identity.rs", rev = "bd06427" }
-identity_eddsa_verifier = { git = "https://github.com/iotaledger/identity.rs", rev = "bd06427" }
-identity_iota = { git = "https://github.com/iotaledger/identity.rs", rev = "bd06427" }
-identity_jose = { git = "https://github.com/iotaledger/identity.rs", rev = "bd06427" }
+identity_core = { git = "https://github.com/iotaledger/identity.rs", rev = "8b650d4" }
+identity_eddsa_verifier = { git = "https://github.com/iotaledger/identity.rs", rev = "8b650d4" }
+identity_iota = { git = "https://github.com/iotaledger/identity.rs", rev = "8b650d4" }
+identity_jose = { git = "https://github.com/iotaledger/identity.rs", rev = "8b650d4" }
 iota_stronghold = { version = "2.1" }
 itertools = "0.10.5"
 jsonwebtoken.workspace = true
@@ -46,7 +46,7 @@ stronghold_engine = { version = "2.0.1" }
 stronghold_ext = { git = "https://github.com/tensor-programming/stronghold_ext", features = ["crypto"] }
 strum = { version = "0.25", features = ["derive"] }
 thiserror = "1.0"
-tokio = { version = "=1.39.2", features = ["macros"] }
+tokio.workspace = true
 ts-rs = "7.0"
 typetag = "0.2"
 unicode-normalization = "0.1.23"

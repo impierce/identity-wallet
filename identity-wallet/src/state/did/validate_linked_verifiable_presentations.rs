@@ -223,7 +223,7 @@ async fn get_validated_linked_credential_data(
                     credential_schema_validation(&linked_verifiable_credential.credential.to_json_value().ok()?).ok()?;
 
                     println!("\n\nEnd\n\n");
-                    
+
                     let credential_subject = match &linked_verifiable_credential.credential.credential_subject {
                         OneOrMany::One(subject) => Some(subject),
                         // TODO: how to handle multiple credential subjects?
