@@ -66,7 +66,9 @@ mod bindings {
     use ts_rs::TS;
 
     use crate::state::{
-        common::actions::{cancel_user_flow::CancelUserFlow, unlock_storage::UnlockStorage},
+        common::actions::{
+            cancel_user_flow::CancelUserFlow, check_password::CheckPassword, unlock_storage::UnlockStorage,
+        },
         credentials::actions::{
             credential_offers_selected::CredentialOffersSelected, credentials_selected::CredentialsSelected,
             delete_credential::DeleteCredential, update_credential_metadata::UpdateCredentialMetadata,
@@ -74,8 +76,8 @@ mod bindings {
         dev_mode::actions::dev_profile::DevProfile,
         did::actions::{set_preferred_keytype::SetPreferredKeyType, set_preferred_method::SetPreferredDidMethod},
         profile_settings::actions::{
-            create_new::CreateNew, set_locale::SetLocale, update_profile_settings::UpdateProfileSettings,
-            update_sorting_preference::UpdateSortingPreference,
+            create_new::CreateNew, enable_biometrics::EnableBiometrics, set_locale::SetLocale,
+            update_profile_settings::UpdateProfileSettings, update_sorting_preference::UpdateSortingPreference,
         },
         qr_code::actions::qrcode_scanned::QrCodeScanned,
         search::actions::{
@@ -154,6 +156,10 @@ mod bindings {
         TrustListsEdit { payload: EditTrustList },
         #[serde(rename = "[Trust Lists] Delete")]
         TrustListsDelete { payload: DeleteTrustList },
+        #[serde(rename = "[Biometrics] Enable")]
+        EnableBiometrics { payload: EnableBiometrics },
+        #[serde(rename = "[Storage] Check password")]
+        CheckPassword { payload: CheckPassword },
         #[serde(rename = "[Verified Data] Check service health")]
         ServiceHealthCheck { payload: ServiceHealthCheck },
         #[serde(rename = "[Verified Data] Send verification email")]

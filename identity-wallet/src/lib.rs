@@ -1,6 +1,6 @@
 pub mod command;
-pub mod data_migration;
 pub mod error;
+pub mod migrations;
 pub mod persistence;
 pub mod state;
 pub mod stronghold;

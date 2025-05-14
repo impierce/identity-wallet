@@ -1,4 +1,4 @@
-use crate::data_migration::apply_state_migrations;
+use crate::migrations::apply_state_migrations;
 use crate::state::APP_STATE_VERSION;
 use crate::{error::AppError, state::AppState};
 use lazy_static::lazy_static;
@@ -66,8 +66,7 @@ pub fn initialize_storage(app_handle: &tauri::AppHandle) -> Result<(), AppError>
 pub async fn load_state() -> Result<AppState, AppError> {
     let state_file = STATE_FILE.lock().unwrap().clone();
     let bytes = read(state_file).await?;
-    let content = String::from_utf8(bytes.clone())
-        .map_err(|e| AppError::Error(format!("Failed to convert utf8, {:?}, to String: {}", bytes, e)))?;
+    let content = String::from_utf8(bytes.clone()).map_err(|e| AppError::Error(e.utf8_error().to_string()))?;
 
     // Load state into a `serde_json::Object` first to run data model migrations before deserialization into `AppState`.
     let app_state_object: serde_json::Map<String, serde_json::Value> = serde_json::from_str(&content)?;
@@ -90,18 +89,12 @@ pub async fn load_state() -> Result<AppState, AppError> {
     let app_state: AppState = match version {
         APP_STATE_VERSION => {
             let app_state = serde_json::from_str(&content)?;
-            debug!(
-                "App state is at current version {}, no migrations needed",
-                APP_STATE_VERSION
-            );
+            debug!("App state is already at version {} (latest)", APP_STATE_VERSION);
             app_state
         }
         _ => {
             let app_state = apply_state_migrations(app_state_object, version)?;
-            debug!(
-                "App state successfully migrated to version {} (latest)",
-                APP_STATE_VERSION
-            );
+            debug!("App state is now at version {} (latest)", APP_STATE_VERSION);
 
             save_state(&app_state)
                 .await

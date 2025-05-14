@@ -1,9 +1,14 @@
+import LL from '$i18n/i18n-svelte';
+import { get } from 'svelte/store';
+
 import { Sha256 } from '@aws-crypto/sha256-js';
 import type { Locale } from '@bindings/profile_settings/Locale';
 import { convertFileSrc } from '@tauri-apps/api/core';
 import { appDataDir, join } from '@tauri-apps/api/path';
+import { BiometryType } from '@tauri-apps/plugin-biometric';
 import { exists } from '@tauri-apps/plugin-fs';
 import { debug, info, warn } from '@tauri-apps/plugin-log';
+import { platform } from '@tauri-apps/plugin-os';
 
 /**
  * Get an image asset URL from the UniMe backend.
@@ -106,4 +111,39 @@ export function formatRelativeDateTime(isoDate: string, locale: Locale) {
 
   // Capitalize the first character.
   return relativeDateTime.charAt(0).toUpperCase() + relativeDateTime.slice(1);
+}
+
+/**
+ * Determines the name of the biometrics type based on the platform.
+ */
+export function localizedBiometricsTypeString(type: BiometryType): string {
+  let biometryTypeString = get(LL).SETTINGS.APP.SECURITY.BIOMETRIC_TYPE.GENERIC(); // default
+  // On iOS, we distinguish between Face ID and Touch ID.
+  if (platform() === 'ios') {
+    const localizedType = (() => {
+      switch (type) {
+        case BiometryType.TouchID:
+          return get(LL).SETTINGS.APP.SECURITY.BIOMETRIC_TYPE.IOS.TOUCH_ID();
+        case BiometryType.FaceID:
+          return get(LL).SETTINGS.APP.SECURITY.BIOMETRIC_TYPE.IOS.FACE_ID();
+        default:
+          return get(LL).SETTINGS.APP.SECURITY.BIOMETRIC_TYPE.GENERIC();
+      }
+    })();
+    biometryTypeString = localizedType;
+    // On Android, we distinguish between fingerprint and face unlock.
+  } else if (platform() === 'android') {
+    const localizedType = (() => {
+      switch (type) {
+        case BiometryType.TouchID:
+          return get(LL).SETTINGS.APP.SECURITY.BIOMETRIC_TYPE.ANDROID.TOUCH_ID();
+        case BiometryType.FaceID:
+          return get(LL).SETTINGS.APP.SECURITY.BIOMETRIC_TYPE.ANDROID.FACE_ID();
+        default:
+          return get(LL).SETTINGS.APP.SECURITY.BIOMETRIC_TYPE.GENERIC();
+      }
+    })();
+    biometryTypeString = localizedType;
+  }
+  return biometryTypeString;
 }

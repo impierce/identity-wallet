@@ -173,6 +173,12 @@ By using our Service, you acknowledge that you have read, understood, and agree 
         MATCH: 'Passwords match',
         NO_MATCH: 'Passwords do not match',
       },
+      BIOMETRICS: {
+        TITLE: 'Enable {type:string}',
+        DESCRIPTION: 'Do you want to set up {type:string} to unlock the app?',
+        CONFIRM: 'Yes, use {type:string}',
+        DECIDE_LATER: 'Decide later',
+      },
       COMPLETED: {
         NAVBAR_TITLE: 'Password Set',
         TITLE_1: 'Your UniMe profile is now',
@@ -215,6 +221,30 @@ By using our Service, you acknowledge that you have read, understood, and agree 
         TITLE_1: 'Choose your app',
         TITLE_2: 'appearance',
         SUBTITLE: 'Are you more of a night owl?',
+      },
+      SECURITY: {
+        LABEL: 'Security',
+        NAVBAR_TITLE: 'Security',
+        SWITCH_LABEL: 'Unlock with {type:string}',
+        BIOMETRIC_TYPE: {
+          ANDROID: {
+            FACE_ID: 'facial recognition',
+            TOUCH_ID: 'fingerprint',
+          },
+          IOS: {
+            FACE_ID: 'Face ID',
+            TOUCH_ID: 'Touch ID',
+          },
+          GENERIC: 'biometrics',
+        },
+        ENABLE: {
+          DIALOG_TITLE: 'Enable {type:string}',
+          DIALOG_CONTENT: 'Please enter your password to enable {type:string}.',
+        },
+        DISABLE: {
+          DIALOG_TITLE: 'Disable {type:string}',
+          DIALOG_CONTENT: 'Please enter your password to disable {type:string}.',
+        },
       },
       PASSWORD: {
         TITLE: 'Password',
