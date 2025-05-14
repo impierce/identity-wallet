@@ -27,6 +27,7 @@ impl ActionTrait for ServiceHealthCheck {
 #[ts(export, export_to = "bindings/actions/SendVerificationEmail.ts")]
 pub struct SendVerificationEmail {
     pub email: String,
+    pub label: String,
 }
 
 #[typetag::serde(name = "[Verified Data] Send verification email")]

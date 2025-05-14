@@ -19,39 +19,38 @@ const EMAIL_VERIFICATION_SERVICE_API_KEY: &str = env!("EMAIL_VERIFICATION_SERVIC
 
 pub async fn check_service_health(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(action) = listen::<ServiceHealthCheck>(action) {
-        // let body = json!({ "service": action.service });
         info!("[>>>] {}", action.service);
         let response = reqwest::Client::new()
             .get(format!("{}/healthz", EMAIL_VERIFICATION_SERVICE_HOST))
             .header("X-API-KEY", EMAIL_VERIFICATION_SERVICE_API_KEY)
-            // .json(&body)
             .send()
-            .await
-            .inspect_err(|err| {
-                warn!("Failed to check service health: {}", err);
-            })
-            .map_err(|err| AppError::Error(err.to_string()))?;
-        // .ok();
-        info!("[<<<] {}", response.status());
-        match response.status().as_u16() {
-            200 => {
-                info!("Service is healthy");
-                return Ok(AppState {
-                    current_user_prompt: None,
-                    ..state
-                });
+            .await;
+
+        match response {
+            Ok(resp) => {
+                if resp.status() == reqwest::StatusCode::OK {
+                    info!("[<<<] Service is healthy: {}", resp.status());
+                } else {
+                    warn!("[<<<] Service returned non-OK status: {}", resp.status());
+                    return Err(AppError::Error(format!(
+                        "email-verification-service responded with {}",
+                        resp.status()
+                    )));
+                }
             }
-            _ => {
-                error!("Service not available");
-                // return Err(AppError::Error("Service not available".to_string()));
-                return Ok(AppState {
-                    current_user_prompt: None,
-                    ..state
-                });
+            Err(err) => {
+                warn!("Failed to check service health: {}", err);
+                return Err(AppError::Error(format!(
+                    "email-verification-service health could not be checked: {}",
+                    err
+                )));
             }
         }
     }
-    Ok(state)
+    Ok(AppState {
+        current_user_prompt: None,
+        ..state
+    })
 }
 
 pub async fn send_verification_email(state: AppState, action: Action) -> Result<AppState, AppError> {
@@ -83,6 +82,7 @@ pub async fn send_verification_email(state: AppState, action: Action) -> Result<
             verified_data: VerifiedData {
                 email_verification: Some(EmailVerification {
                     email: action.email,
+                    label: action.label,
                     verification_id: Some(id.to_string()),
                     expires_at: Some(chrono::DateTime::parse_from_rfc3339(expires_at).unwrap().to_utc()),
                     validation_expiration_in_secs: Some(validation_expiration_in_secs),

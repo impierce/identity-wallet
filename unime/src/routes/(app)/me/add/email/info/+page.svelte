@@ -5,6 +5,7 @@
   import LL from '$i18n/i18n-svelte';
 
   import { Accordion, Button, IconMessage, TopNavBar } from '$lib/components';
+  import { dispatch } from '$lib/dispatcher';
   import { EnvelopeOpenFillIcon } from '$lib/icons';
   import { state } from '$lib/stores';
 
@@ -29,7 +30,11 @@
     },
   ];
 
-  onMount(() => {
+  onMount(async () => {
+    await dispatch({
+      type: '[Verified Data] Check service health',
+      payload: { service: 'email-verification-service' },
+    });
     // If there is already an active verification session ongoing, skip this info page.
     if ($state.verified_data.email_verification) {
       goto('/me/add/email');

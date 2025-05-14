@@ -78,7 +78,7 @@
     loading = true;
     console.log(`sending request to email-verification-service for email: ${email}`);
 
-    await dispatch({ type: '[Verified Data] Send verification email', payload: { email } });
+    await dispatch({ type: '[Verified Data] Send verification email', payload: { email, label } });
 
     console.log(`$appState expiry: ${$appState.verified_data.email_verification?.expires_at}`);
 
@@ -172,7 +172,7 @@
       <input
         name="label"
         type="label"
-        class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] font-normal text-slate-500 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-dark dark:text-slate-300 dark:caret-slate-300"
+        class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] font-normal text-slate-800 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-dark dark:text-slate-300 dark:caret-slate-300"
         placeholder={'My email'}
         bind:value={label}
         oninput={() => {
@@ -191,7 +191,7 @@
       <input
         name="email"
         type="email"
-        class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] font-normal text-slate-500 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-dark dark:text-slate-300 dark:caret-slate-300"
+        class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] font-normal text-slate-800 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-dark dark:text-slate-300 dark:caret-slate-300"
         placeholder={'Your email address'}
         bind:value={email}
         oninput={() => {

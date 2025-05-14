@@ -16,6 +16,7 @@ pub struct VerifiedData {
 #[ts(export, export_to = "bindings/verified_data/EmailVerification.ts")]
 pub struct EmailVerification {
     pub email: String,
+    pub label: String,
     pub verification_id: Option<String>,
     pub expires_at: Option<DateTime<Utc>>,
     pub validation_expiration_in_secs: Option<i32>,
