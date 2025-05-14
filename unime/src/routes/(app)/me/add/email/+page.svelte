@@ -23,12 +23,16 @@
       // onComplete(value) does not seem to trigger on "melt 0.17.0", that's why we use onValueChange and count the length
       if (value.length === 4) {
         redeemCode(value);
+      } else {
+        showError = false;
       }
     },
   });
 
   let label: string = $state(dev ? 'My Email 1' : '');
-  let email: string = $state(dev ? 'ferris.rustacean@impierce.com' : '');
+  let email: string = $state(dev ? 'ferris.rustacean@example.test' : '');
+
+  let showError: boolean = $state(false);
 
   let loading = $state(false);
 
@@ -97,6 +101,7 @@
   async function redeemCode(code: string) {
     console.log(`TODO: trying to redeem code: ${code}`);
     dispatch({ type: '[Verified Data] Redeem code', payload: { code } });
+    showError = true;
   }
 
   const reset = () => {
@@ -156,8 +161,9 @@
 
 <TopNavBar on:back={() => goto('/me/add')} title={'Verified email'} class="sticky top-0 z-10" />
 
-<div class="flex h-[calc(100vh-48px-64px)] flex-col">
-  <div class="flex grow flex-col items-center p-4">
+<div class="flex h-auto flex-col">
+  <!-- Extra margin is added at the bottom to account for the absolute buttons -->
+  <div class="mb-[156px] flex grow flex-col items-center p-4">
     <div class="mb-8 mt-4 flex w-full flex-col gap-1">
       <div class="flex items-center justify-between">
         <label for="label" class="text-[14px]/[22px] font-medium text-slate-800 dark:text-grey">Your UniMe label</label>
@@ -237,6 +243,14 @@
           {/each}
         </div> -->
       <!-- {:else} -->
+      {#if showError}
+        <div class="mt-4 flex flex-col items-center">
+          <div class="rounded-lg px-4 py-3 text-sm font-semibold text-rose-500">
+            <span>{$appState.verified_data.email_verification?.error}</span>
+          </div>
+        </div>
+      {/if}
+
       {#if expired}
         <div class="mt-4 flex flex-col items-center">
           <div class="rounded-lg px-4 py-3 text-sm font-semibold text-rose-500">

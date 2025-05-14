@@ -4107,6 +4107,7 @@ dependencies = [
  "chrono",
  "derivative",
  "did_manager",
+ "dotenvy",
  "downcast-rs",
  "dyn-clone",
  "futures",

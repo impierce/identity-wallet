@@ -19,4 +19,5 @@ pub struct EmailVerification {
     pub verification_id: Option<String>,
     pub expires_at: Option<DateTime<Utc>>,
     pub validation_expiration_in_secs: Option<i32>,
+    pub error: Option<String>,
 }
