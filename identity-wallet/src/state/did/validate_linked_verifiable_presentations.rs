@@ -760,8 +760,6 @@ mod tests {
 
         holder.add_well_known_did_json().await;
 
-        // println!("\n\n\n1\n");
-
         assert_eq!(
             validate_linked_verifiable_presentations(holder.did_document.id().to_string().as_ref()).await,
             vec![
