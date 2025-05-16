@@ -312,7 +312,7 @@ mod tests {
             result,
             ValidationResult {
                 status: ValidationStatus::Failure,
-                message: Some("invalid issuer DID".to_string()),
+                message: Some("invalid semantic structure of the domain linkage configuration".to_string()),
                 ..Default::default()
             }
         );
