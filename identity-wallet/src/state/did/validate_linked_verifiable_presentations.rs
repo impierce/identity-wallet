@@ -218,11 +218,8 @@ async fn get_validated_linked_credential_data(
                 ) {
                     info!("Validated linked verifiable credential JWT: {linked_verifiable_credential:#?}");
 
-                    println!("\n\nStart\n\n");
                     // Validate the linked verifiable credential against its corresponding Json schema
                     credential_schema_validation(&linked_verifiable_credential.credential.to_json_value().ok()?).ok()?;
-
-                    println!("\n\nEnd\n\n");
 
                     let credential_subject = match &linked_verifiable_credential.credential.credential_subject {
                         OneOrMany::One(subject) => Some(subject),
@@ -762,6 +759,8 @@ mod tests {
             .await;
 
         holder.add_well_known_did_json().await;
+
+        // println!("\n\n\n1\n");
 
         assert_eq!(
             validate_linked_verifiable_presentations(holder.did_document.id().to_string().as_ref()).await,
