@@ -1,23 +1,18 @@
 <script lang="ts">
+  import { writable, type Writable } from 'svelte/store';
   import { fade, fly } from 'svelte/transition';
 
   import { createDialog, melt } from '@melt-ui/svelte';
+
+  export let titleText = '';
+  export let descriptionText = '';
+  export let open: Writable<boolean> = writable(false);
 
   // Instead of default portal in `<body>`, we create the portal at ID `#portal` in root layout.
   // This way the ActionSheet opens within the safe area.
   const {
     elements: { trigger, overlay, content, title, description, close, portalled },
-    states: { open },
-  } = createDialog({ portal: '#portal' });
-
-  export let titleText = '';
-  export let descriptionText = '';
-
-  // Reactive open state passed in from the outside
-  export let isOpen = false;
-  $: {
-    open.set(isOpen);
-  }
+  } = createDialog({ open, portal: '#portal' });
 </script>
 
 <!--
@@ -25,6 +20,7 @@
 
   @prop titleText - The title of the dialog.
   @prop descriptionText - The description of the dialog.
+  @prop open - An optional writable store to control the component from outside.
 
   @slot trigger - The trigger element that opens the dialog.
   @slot content - The content of the dialog.

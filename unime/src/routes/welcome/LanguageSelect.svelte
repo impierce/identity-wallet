@@ -1,5 +1,6 @@
 <script lang="ts">
   import LL from '$i18n/i18n-svelte';
+  import { writable } from 'svelte/store';
 
   import { melt } from '@melt-ui/svelte';
 
@@ -11,15 +12,15 @@
 
   $: selected = locales.find((l) => l.locale === $state?.profile_settings.locale) ?? locales.at(0)!;
 
-  let isOpen = false;
+  const open = writable(false);
 </script>
 
-<ActionSheet titleText={$LL.ONBOARDING.WELCOME.SELECT_LANGUAGE()} {isOpen}>
+<ActionSheet titleText={$LL.ONBOARDING.WELCOME.SELECT_LANGUAGE()} {open}>
   <button
     slot="trigger"
     use:melt={trigger}
     let:trigger
-    on:click={() => (isOpen = true)}
+    on:click={() => ($open = true)}
     class="flex w-fit items-center justify-center rounded-lg border border-grey bg-silver px-[15px] py-3 dark:border-blue dark:bg-navy"
   >
     <TranslateRegularIcon class="mr-3 size-6 text-primary" />
@@ -31,7 +32,7 @@
       <button
         on:click={() => {
           dispatch({ type: '[Settings] Set locale', payload: { locale: l.locale } });
-          isOpen = false;
+          $open = false;
         }}
         class="flex items-center rounded-lg border p-[10px]
           {l.locale === selected.locale ? 'border-grey bg-silver dark:border-blue dark:bg-navy' : 'border-transparent'}

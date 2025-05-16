@@ -2,6 +2,7 @@
   import { createEventDispatcher } from 'svelte';
 
   import LL from '$i18n/i18n-svelte';
+  import { writable } from 'svelte/store';
 
   import { melt } from '@melt-ui/svelte';
 
@@ -13,7 +14,7 @@
 
   const dispatch = createEventDispatcher();
 
-  let emojiSelectIsOpen = false;
+  const open = writable(false);
 
   // TODO: switch to Unicode?
   let predefinedEmojis: string[][] = [
@@ -56,7 +57,7 @@
   ];
 </script>
 
-<ActionSheet titleText={$LL.SETTINGS.PROFILE.DISPLAY_PICTURE.CHANGE()} descriptionText={''} isOpen={emojiSelectIsOpen}>
+<ActionSheet titleText={$LL.SETTINGS.PROFILE.DISPLAY_PICTURE.CHANGE()} descriptionText={''} {open}>
   <button
     slot="trigger"
     class="relative flex h-24 w-24 items-center justify-center rounded-full
@@ -64,7 +65,7 @@
       {showEditButton ? 'mb-[34px]' : ''}"
     use:melt={trigger}
     let:trigger
-    on:click={() => (emojiSelectIsOpen = true)}
+    on:click={() => ($open = true)}
   >
     {#if selected}
       <span class="text-[44px]/[44px]">
@@ -95,7 +96,7 @@
               : 'border-grey dark:border-blue'}"
             on:click={() => {
               dispatch('change', emoji);
-              emojiSelectIsOpen = false;
+              $open = false;
             }}
           >
             <!-- eslint-disable-next-line svelte/no-at-html-tags -->

@@ -81,6 +81,7 @@ pub const SUPPORTED_DID_METHODS: &[&str] = &["did:jwk", "did:key"];
 // Array elements must have the same name as the corresponding json schema file in `resources/jsonschemas` folder
 pub const SUPPORTED_CRED_TYPE_SCHEMAS: &[&str] =
     &["VerifiableCredential", "OpenBadgeCredential", "AchievementCredential"];
+pub const APP_STATE_VERSION: u32 = 1;
 
 /// The inner state of the application managed by Tauri. When the state is serialized in order to be sent to the
 /// frontend, the `managers` and `active_connection_request` fields are skipped.
@@ -89,6 +90,7 @@ pub const SUPPORTED_CRED_TYPE_SCHEMAS: &[&str] =
 #[ts(export)]
 #[serde(default)]
 pub struct AppState {
+    pub version: u32,
     pub dids: HashMap<String, String>,
     pub connections: Connections,
     pub credentials: Vec<DisplayCredential>,

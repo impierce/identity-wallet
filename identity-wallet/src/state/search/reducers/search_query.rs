@@ -61,6 +61,7 @@ mod tests {
     use super::*;
     use crate::state::credentials::CredentialMetadata;
     use crate::state::credentials::DisplayCredential;
+    use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
 
     use std::{sync::Arc, vec};
 
@@ -108,6 +109,7 @@ mod tests {
             credentials: vec![
                 DisplayCredential {
                     id: "1".to_string(),
+                    format: CredentialFormats::default(),
                     issuer_name: "Example Organization".to_string(),
                     data: serde_json::json!({"last_name": "Ferris"}),
                     metadata: CredentialMetadata {
@@ -120,6 +122,7 @@ mod tests {
                 },
                 DisplayCredential {
                     id: "2".to_string(),
+                    format: CredentialFormats::default(),
                     issuer_name: "Example Organization".to_string(),
                     data: serde_json::json!({"last_name": "John"}),
                     metadata: CredentialMetadata {
@@ -132,6 +135,7 @@ mod tests {
                 },
                 DisplayCredential {
                     id: "3".to_string(),
+                    format: CredentialFormats::default(),
                     issuer_name: "John Organization".to_string(),
                     data: serde_json::json!({"last_name": "Ferris"}),
                     metadata: CredentialMetadata {

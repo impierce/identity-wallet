@@ -385,7 +385,7 @@ Stacking context: We have to deviate from the DOM-sequence.
 
     <slot />
 
-    <!-- Show error if exists -->
+    <!-- Show actual (non-localized) error message in dev mode, default (localized) message otherwise.  -->
     {#if $errorState}
       <div class="absolute bottom-[calc(16px_+_var(--safe-area-inset-bottom))] right-4 w-[calc(100%_-_32px)]">
         <ErrorToast

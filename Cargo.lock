@@ -1293,9 +1293,9 @@ dependencies = [
 
 [[package]]
 name = "bls12_381_plus"
-version = "0.8.17"
+version = "0.8.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "68ed5f583bb45888c562e1f117f7f20ce86a640f1163c38fe665ac7a71190861"
+checksum = "1fa37cf2a8c96054d2dc3d708efe35cc0347014af0d30b86c736b4388ff8491c"
 dependencies = [
  "arrayref",
  "elliptic-curve 0.13.8",
@@ -1973,7 +1973,7 @@ checksum = "7c74b8349d32d297c9134b8c88677813a227df8f779daa29bfc29c183fe3dca6"
 [[package]]
 name = "consumer"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=049a1e9#049a1e93a7a4241ba20e00b1b125f9120137e34f"
+source = "git+https://git@github.com/impierce/did-manager.git?tag=v1.0.0-beta.4#627985fc556fc5867054662137aa2dc6107b4968"
 dependencies = [
  "did_iota",
  "did_jwk",
@@ -2737,10 +2737,9 @@ dependencies = [
 [[package]]
 name = "did_iota"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=049a1e9#049a1e93a7a4241ba20e00b1b125f9120137e34f"
+source = "git+https://git@github.com/impierce/did-manager.git?tag=v1.0.0-beta.4#627985fc556fc5867054662137aa2dc6107b4968"
 dependencies = [
- "bls12_381_plus 0.8.17",
- "identity_iota 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "identity_iota",
  "identity_stronghold",
  "iota-sdk 1.1.5",
  "log",
@@ -2751,7 +2750,7 @@ dependencies = [
 [[package]]
 name = "did_jwk"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=049a1e9#049a1e93a7a4241ba20e00b1b125f9120137e34f"
+source = "git+https://git@github.com/impierce/did-manager.git?tag=v1.0.0-beta.4#627985fc556fc5867054662137aa2dc6107b4968"
 dependencies = [
  "did-jwk",
  "identity_iota 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
@@ -2768,7 +2767,7 @@ dependencies = [
 [[package]]
 name = "did_key"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=049a1e9#049a1e93a7a4241ba20e00b1b125f9120137e34f"
+source = "git+https://git@github.com/impierce/did-manager.git?tag=v1.0.0-beta.4#627985fc556fc5867054662137aa2dc6107b4968"
 dependencies = [
  "did-method-key",
  "identity_iota 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
@@ -2786,7 +2785,7 @@ dependencies = [
 [[package]]
 name = "did_manager"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=049a1e9#049a1e93a7a4241ba20e00b1b125f9120137e34f"
+source = "git+https://git@github.com/impierce/did-manager.git?tag=v1.0.0-beta.4#627985fc556fc5867054662137aa2dc6107b4968"
 dependencies = [
  "consumer",
  "producer",
@@ -2824,7 +2823,7 @@ dependencies = [
 [[package]]
 name = "did_web"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=049a1e9#049a1e93a7a4241ba20e00b1b125f9120137e34f"
+source = "git+https://git@github.com/impierce/did-manager.git?tag=v1.0.0-beta.4#627985fc556fc5867054662137aa2dc6107b4968"
 dependencies = [
  "did-web",
  "identity_iota 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
@@ -2843,7 +2842,7 @@ dependencies = [
 [[package]]
 name = "dif-presentation-exchange"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=742af62#742af62d849c76e75a50f050d5c2dd0123f2dec6"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=29ff245#29ff245dcd06bfb28b0a4e1defb514fd5d360cdc"
 dependencies = [
  "getset",
  "jsonpath_lib",
@@ -3394,150 +3393,9 @@ version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "531e46835a22af56d1e3b66f04844bed63158bc094a628bec1d321d9b4c44bf2"
 dependencies = [
- "bit-set 0.5.3",
+ "bit-set",
  "regex-automata 0.4.9",
  "regex-syntax",
-]
-
-[[package]]
-name = "fancy-regex"
-version = "0.14.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6e24cb5a94bcae1e5408b0effca5cd7172ea3c5755049c5f3af4cd283a165298"
-dependencies = [
- "bit-set 0.8.0",
- "regex-automata 0.4.9",
- "regex-syntax",
-]
-
-[[package]]
-name = "fastcrypto"
-version = "0.1.8"
-source = "git+https://github.com/MystenLabs/fastcrypto?rev=2f502fd8570fe4e9cff36eea5bbd6fef22002898#2f502fd8570fe4e9cff36eea5bbd6fef22002898"
-dependencies = [
- "aes",
- "aes-gcm",
- "ark-ec",
- "ark-ff",
- "ark-secp256r1",
- "ark-serialize",
- "auto_ops",
- "base64ct",
- "bech32",
- "bincode",
- "blake2",
- "blst",
- "bs58 0.4.0",
- "cbc",
- "ctr",
- "curve25519-dalek-ng",
- "derive_more 0.99.19",
- "digest 0.10.7",
- "ecdsa 0.16.9",
- "ed25519-consensus",
- "elliptic-curve 0.13.8",
- "fastcrypto-derive",
- "generic-array",
- "hex",
- "hex-literal",
- "hkdf 0.12.4",
- "lazy_static",
- "num-bigint 0.4.6",
- "once_cell",
- "p256 0.13.2",
- "rand 0.8.5",
- "readonly",
- "rfc6979 0.4.0",
- "rsa 0.8.2",
- "schemars",
- "secp256k1",
- "serde",
- "serde_json",
- "serde_with 3.12.0",
- "sha2 0.10.8",
- "sha3 0.10.8",
- "signature 2.2.0",
- "static_assertions",
- "thiserror 1.0.69",
- "tokio",
- "typenum",
- "zeroize",
-]
-
-[[package]]
-name = "fastcrypto-derive"
-version = "0.1.3"
-source = "git+https://github.com/MystenLabs/fastcrypto?rev=2f502fd8570fe4e9cff36eea5bbd6fef22002898#2f502fd8570fe4e9cff36eea5bbd6fef22002898"
-dependencies = [
- "quote",
- "syn 1.0.109",
-]
-
-[[package]]
-name = "fastcrypto-tbls"
-version = "0.1.0"
-source = "git+https://github.com/MystenLabs/fastcrypto?rev=2f502fd8570fe4e9cff36eea5bbd6fef22002898#2f502fd8570fe4e9cff36eea5bbd6fef22002898"
-dependencies = [
- "bcs",
- "digest 0.10.7",
- "fastcrypto",
- "hex",
- "itertools 0.10.5",
- "rand 0.8.5",
- "serde",
- "sha3 0.10.8",
- "tap",
- "tracing",
- "typenum",
- "zeroize",
-]
-
-[[package]]
-name = "fastcrypto-vdf"
-version = "0.1.0"
-source = "git+https://github.com/MystenLabs/fastcrypto?rev=2f502fd8570fe4e9cff36eea5bbd6fef22002898#2f502fd8570fe4e9cff36eea5bbd6fef22002898"
-dependencies = [
- "bcs",
- "fastcrypto",
- "lazy_static",
- "num-bigint 0.4.6",
- "num-integer",
- "num-prime",
- "num-traits",
- "rand 0.8.5",
- "rand_chacha 0.3.1",
- "serde",
-]
-
-[[package]]
-name = "fastcrypto-zkp"
-version = "0.1.3"
-source = "git+https://github.com/MystenLabs/fastcrypto?rev=2f502fd8570fe4e9cff36eea5bbd6fef22002898#2f502fd8570fe4e9cff36eea5bbd6fef22002898"
-dependencies = [
- "ark-bn254",
- "ark-ec",
- "ark-ff",
- "ark-groth16",
- "ark-relations",
- "ark-serialize",
- "ark-snark",
- "bcs",
- "byte-slice-cast",
- "derive_more 0.99.19",
- "fastcrypto",
- "ff 0.13.0",
- "im",
- "itertools 0.12.1",
- "lazy_static",
- "neptune",
- "num-bigint 0.4.6",
- "once_cell",
- "regex",
- "reqwest 0.12.12",
- "schemars",
- "serde",
- "serde_json",
- "typenum",
 ]
 
 [[package]]
@@ -3791,12 +3649,6 @@ dependencies = [
  "lazy_static",
  "num",
 ]
-
-[[package]]
-name = "funty"
-version = "1.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fed34cd105917e91daa4da6b3728c47b068749d6a62c59811f06ed2ac71d9da7"
 
 [[package]]
 name = "funty"
@@ -5375,10 +5227,10 @@ dependencies = [
 
 [[package]]
 name = "identity_core"
-version = "1.6.0-alpha"
-source = "git+https://github.com/impierce/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
+version = "1.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7064800b974717ee628a9c4469881255e1720ec3e73942ccd75b64129c6d9325"
 dependencies = [
- "deranged 0.4.0",
  "js-sys",
  "multibase 0.9.1",
  "serde",
@@ -5407,42 +5259,18 @@ dependencies = [
 
 [[package]]
 name = "identity_credential"
-version = "1.6.0-alpha"
-source = "git+https://github.com/impierce/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
-dependencies = [
- "anyhow",
- "async-trait",
- "flate2",
- "identity_core 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
- "identity_did 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
- "identity_document 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
- "identity_verification 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
- "indexmap 2.7.1",
- "itertools 0.11.0",
- "once_cell",
- "roaring",
- "serde",
- "serde-aux",
- "serde_json",
- "serde_repr",
- "strum 0.25.0",
- "thiserror 1.0.69",
- "url",
-]
-
-[[package]]
-name = "identity_credential"
-version = "1.6.0-alpha"
-source = "git+https://github.com/iotaledger/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
+version = "1.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1f8f319eeaa1825db8b2dc7a4367ea506c26c9219ac8470e59f2e5fc9432b0d7"
 dependencies = [
  "anyhow",
  "async-trait",
  "flate2",
  "futures",
- "identity_core 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
- "identity_did 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
- "identity_document 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
- "identity_verification 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_core",
+ "identity_did",
+ "identity_document",
+ "identity_verification",
  "indexmap 2.7.1",
  "itertools 0.11.0",
  "jsonschema 0.19.1",
@@ -5461,27 +5289,14 @@ dependencies = [
 
 [[package]]
 name = "identity_did"
-version = "1.6.0-alpha"
-source = "git+https://github.com/impierce/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
+version = "1.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b5e1ee3a38c9f9bb55f943576872747b09c3e227360d0ad674620f1a9e382786"
 dependencies = [
  "did_url_parser 0.3.0",
  "form_urlencoded",
- "identity_core 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
- "identity_jose 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
- "serde",
- "strum 0.25.0",
- "thiserror 1.0.69",
-]
-
-[[package]]
-name = "identity_did"
-version = "1.6.0-alpha"
-source = "git+https://github.com/iotaledger/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
-dependencies = [
- "did_url_parser 0.3.0",
- "form_urlencoded",
- "identity_core 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
- "identity_jose 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_core",
+ "identity_jose",
  "serde",
  "strum 0.25.0",
  "thiserror 1.0.69",
@@ -5489,28 +5304,14 @@ dependencies = [
 
 [[package]]
 name = "identity_document"
-version = "1.6.0-alpha"
-source = "git+https://github.com/impierce/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
+version = "1.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5e40a92bd8ee2880437cc3ce6853ec3bb9ec57c29583d0f8ca90c1736fa7b66b"
 dependencies = [
  "did_url_parser 0.2.0",
- "identity_core 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
- "identity_did 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
- "identity_verification 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
- "indexmap 2.7.1",
- "serde",
- "strum 0.25.0",
- "thiserror 1.0.69",
-]
-
-[[package]]
-name = "identity_document"
-version = "1.6.0-alpha"
-source = "git+https://github.com/iotaledger/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
-dependencies = [
- "did_url_parser 0.2.0",
- "identity_core 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
- "identity_did 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
- "identity_verification 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
+ "identity_core",
+ "identity_did",
+ "identity_verification",
  "indexmap 2.7.1",
  "serde",
  "strum 0.25.0",
@@ -5519,8 +5320,9 @@ dependencies = [
 
 [[package]]
 name = "identity_eddsa_verifier"
-version = "1.6.0-alpha"
-source = "git+https://github.com/impierce/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
+version = "1.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5b6416979b47adc9079451ea4ed00c43ff68163182d3405676691bf148ee51b4"
 dependencies = [
  "identity_jose 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
  "iota-crypto",
@@ -5537,8 +5339,9 @@ dependencies = [
 
 [[package]]
 name = "identity_iota"
-version = "1.6.0-alpha"
-source = "git+https://github.com/impierce/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
+version = "1.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1757a5a3f72a8eaa8c581caac72e6a3c362ecb7e28a2d28f459d9dbffd8feed0"
 dependencies = [
  "identity_core 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
  "identity_credential 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
@@ -5569,8 +5372,9 @@ dependencies = [
 
 [[package]]
 name = "identity_iota_core"
-version = "1.6.0-alpha"
-source = "git+https://github.com/impierce/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
+version = "1.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "eef0c1892c59cc44ad2145396e5e9ed5c9dc40640168222a4ba7aa9d82948ee1"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -5601,8 +5405,6 @@ dependencies = [
  "ref-cast",
  "secret-storage",
  "serde",
- "serde-aux",
- "serde_json",
  "strum 0.25.0",
  "thiserror 1.0.69",
  "tokio",
@@ -5731,11 +5533,12 @@ dependencies = [
 
 [[package]]
 name = "identity_jose"
-version = "1.6.0-alpha"
-source = "git+https://github.com/impierce/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
+version = "1.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "aab986d1ed98f01a73cadf76922d7375a59abfe657d8912412ea0ccc69715d6e"
 dependencies = [
- "bls12_381_plus 0.8.17",
- "identity_core 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
+ "bls12_381_plus 0.8.18",
+ "identity_core",
  "iota-crypto",
  "json-proof-token",
  "serde",
@@ -5761,8 +5564,9 @@ dependencies = [
 
 [[package]]
 name = "identity_resolver"
-version = "1.6.0-alpha"
-source = "git+https://github.com/impierce/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
+version = "1.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7506310391381683102cb232928baff7956e5b53b118825e578808e2ad647c31"
 dependencies = [
  "async-trait",
  "futures",
@@ -5777,26 +5581,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "identity_resolver"
-version = "1.6.0-alpha"
-source = "git+https://github.com/iotaledger/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
-dependencies = [
- "async-trait",
- "futures",
- "identity_core 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
- "identity_credential 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
- "identity_did 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
- "identity_document 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
- "identity_iota_core 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
- "serde",
- "strum 0.25.0",
- "thiserror 1.0.69",
-]
-
-[[package]]
 name = "identity_storage"
-version = "1.6.0-alpha"
-source = "git+https://github.com/impierce/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
+version = "1.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5056f32d605f803067f38e87da01ca06f605f112ae9d8be7cc7e6590fe91c063"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -5843,8 +5631,9 @@ dependencies = [
 
 [[package]]
 name = "identity_stronghold"
-version = "1.6.0-alpha"
-source = "git+https://github.com/impierce/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
+version = "1.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "95ff20458f3939df912af176da0409131146b0214066dc82ad028430fcda44d2"
 dependencies = [
  "async-trait",
  "identity_storage 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
@@ -5860,7 +5649,7 @@ dependencies = [
 [[package]]
 name = "identity_stronghold_ext"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=049a1e9#049a1e93a7a4241ba20e00b1b125f9120137e34f"
+source = "git+https://git@github.com/impierce/did-manager.git?tag=v1.0.0-beta.4#627985fc556fc5867054662137aa2dc6107b4968"
 dependencies = [
  "async-trait",
  "elliptic-curve 0.13.8",
@@ -5878,26 +5667,13 @@ dependencies = [
 
 [[package]]
 name = "identity_verification"
-version = "1.6.0-alpha"
-source = "git+https://github.com/impierce/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
+version = "1.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6a651188b8864fd5f69b4fe9e24d0b457ccd387504851d8e1df830df89f7e2f2"
 dependencies = [
  "identity_core 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
  "identity_did 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
  "identity_jose 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
- "serde",
- "serde_json",
- "strum 0.25.0",
- "thiserror 1.0.69",
-]
-
-[[package]]
-name = "identity_verification"
-version = "1.6.0-alpha"
-source = "git+https://github.com/iotaledger/identity.rs?rev=8b650d4#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
-dependencies = [
- "identity_core 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
- "identity_did 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
- "identity_jose 1.6.0-alpha (git+https://github.com/iotaledger/identity.rs?rev=8b650d4)",
  "serde",
  "serde_json",
  "strum 0.25.0",
@@ -7432,31 +7208,6 @@ dependencies = [
  "serde_json",
  "time",
  "url",
- "uuid-simd",
-]
-
-[[package]]
-name = "jsonschema"
-version = "0.29.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3c59cb1733c34377b6067a0419befd7f25073c5249ec3b0614a482bf499e1df5"
-dependencies = [
- "ahash 0.8.11",
- "base64 0.22.1",
- "bytecount",
- "email_address",
- "fancy-regex 0.14.0",
- "fraction 0.15.3",
- "idna",
- "itoa 1.0.14",
- "num-cmp",
- "once_cell",
- "percent-encoding",
- "referencing",
- "regex-syntax",
- "reqwest 0.12.12",
- "serde",
- "serde_json",
  "uuid-simd",
 ]
 
@@ -9120,7 +8871,7 @@ dependencies = [
 [[package]]
 name = "oid4vc"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=742af62#742af62d849c76e75a50f050d5c2dd0123f2dec6"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=29ff245#29ff245dcd06bfb28b0a4e1defb514fd5d360cdc"
 dependencies = [
  "dif-presentation-exchange",
  "oid4vc-core",
@@ -9133,7 +8884,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-core"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=742af62#742af62d849c76e75a50f050d5c2dd0123f2dec6"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=29ff245#29ff245dcd06bfb28b0a4e1defb514fd5d360cdc"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -9157,7 +8908,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-manager"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=742af62#742af62d849c76e75a50f050d5c2dd0123f2dec6"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=29ff245#29ff245dcd06bfb28b0a4e1defb514fd5d360cdc"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -9189,7 +8940,7 @@ dependencies = [
 [[package]]
 name = "oid4vci"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=742af62#742af62d849c76e75a50f050d5c2dd0123f2dec6"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=29ff245#29ff245dcd06bfb28b0a4e1defb514fd5d360cdc"
 dependencies = [
  "anyhow",
  "derivative",
@@ -9212,7 +8963,7 @@ dependencies = [
 [[package]]
 name = "oid4vp"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=742af62#742af62d849c76e75a50f050d5c2dd0123f2dec6"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=29ff245#29ff245dcd06bfb28b0a4e1defb514fd5d360cdc"
 dependencies = [
  "anyhow",
  "chrono",
@@ -9296,30 +9047,6 @@ name = "os_str_bytes"
 version = "6.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e2355d85b9a3786f481747ced0e0ff2ba35213a1f9bd406ed906554d7af805a1"
-
-[[package]]
-name = "ouroboros"
-version = "0.17.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e2ba07320d39dfea882faa70554b4bd342a5f273ed59ba7c1c6b4c840492c954"
-dependencies = [
- "aliasable",
- "ouroboros_macro",
- "static_assertions",
-]
-
-[[package]]
-name = "ouroboros_macro"
-version = "0.17.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ec4c6225c69b4ca778c0aea097321a64c421cf4577b331c61b229267edabb6f8"
-dependencies = [
- "heck 0.4.1",
- "proc-macro-error",
- "proc-macro2",
- "quote",
- "syn 2.0.98",
-]
 
 [[package]]
 name = "outref"
@@ -10168,7 +9895,7 @@ dependencies = [
 [[package]]
 name = "producer"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=049a1e9#049a1e93a7a4241ba20e00b1b125f9120137e34f"
+source = "git+https://git@github.com/impierce/did-manager.git?tag=v1.0.0-beta.4#627985fc556fc5867054662137aa2dc6107b4968"
 dependencies = [
  "did_iota",
  "did_jwk",
@@ -11949,7 +11676,7 @@ dependencies = [
 [[package]]
 name = "shared"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=049a1e9#049a1e93a7a4241ba20e00b1b125f9120137e34f"
+source = "git+https://git@github.com/impierce/did-manager.git?tag=v1.0.0-beta.4#627985fc556fc5867054662137aa2dc6107b4968"
 dependencies = [
  "identity_iota 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
  "identity_storage 1.6.0-alpha (git+https://github.com/impierce/identity.rs?rev=8b650d4)",
@@ -12071,7 +11798,7 @@ dependencies = [
 [[package]]
 name = "siopv2"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=742af62#742af62d849c76e75a50f050d5c2dd0123f2dec6"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=29ff245#29ff245dcd06bfb28b0a4e1defb514fd5d360cdc"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -14287,22 +14014,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
 
 [[package]]
-name = "versions"
-version = "4.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ee97e1d97bd593fb513912a07691b742361b3dd64ad56f2c694ea2dbfe0665d3"
-dependencies = [
- "itertools 0.10.5",
- "nom 7.1.3",
-]
-
-[[package]]
-name = "vfs"
-version = "0.10.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2e4fe92cfc1bad19c19925d5eee4b30584dbbdee4ff10183b261acccbef74e2d"
-
-[[package]]
 name = "vsimd"
 version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -15525,7 +15236,7 @@ version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c734c171ed591a19dc1127351eb1b4d91864d3e53b2b6e9992bffcb7febf364a"
 dependencies = [
- "bls12_381_plus 0.8.17",
+ "bls12_381_plus 0.8.18",
  "cargo-license",
  "digest 0.10.7",
  "dotenv",
