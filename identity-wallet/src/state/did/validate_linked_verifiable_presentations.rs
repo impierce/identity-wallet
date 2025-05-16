@@ -485,7 +485,7 @@ mod tests {
             let mock_server = MockServer::start().await;
 
             let uri = mock_server.uri();
-            let port = uri.split(':').last().unwrap();
+            let port = uri.split(':').next_back().unwrap();
             let domain: url::Url = format!("http://localhost:{port}").parse().unwrap();
 
             let temp_dir = TempDir::new().unwrap();
