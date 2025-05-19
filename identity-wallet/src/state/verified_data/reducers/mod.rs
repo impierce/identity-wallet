@@ -129,7 +129,17 @@ pub async fn redeem_code(state: AppState, action: Action) -> Result<AppState, Ap
                 let action = QrCodeScanned {
                     form_urlencoded: credential_offer_value,
                 };
-                return Ok(read_credential_offer(state, std::sync::Arc::new(action)).await.unwrap());
+                return Ok(read_credential_offer(
+                    AppState {
+                        verified_data: VerifiedData {
+                            email_verification: None,
+                        },
+                        ..state
+                    },
+                    std::sync::Arc::new(action),
+                )
+                .await
+                .unwrap());
             }
             _ => {
                 let error: serde_json::Value = response.json().await?;
