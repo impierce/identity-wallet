@@ -16,13 +16,17 @@
 
   // Credential cannot be loaded via load function since it's stored in the application state.
   // TODO Credential should be loaded from backend via load function to handle invalid IDs properly.
-  function loadCredential() {
-    return $appState.credentials.find((c) => $page.params.id === c.id);
+  function loadCredential(): DisplayCredential {
+    const credential = $appState.credentials.find((c) => $page.params.id === c.id);
+    if (!credential) {
+      throw new Error('No credential not found for id: ' + $page.params.id);
+    }
+    return credential;
   }
 
-  let credential: DisplayCredential | undefined = loadCredential();
+  let credential: DisplayCredential = loadCredential();
 
-  let displayName: string = credential?.display_name ?? credential?.data.name;
+  let displayName: string = credential.display_name ?? credential.data.name;
   let displayNameUpdated = displayName;
 
   let openEditMode = false;
@@ -37,7 +41,7 @@
     pageTitleStore.set($LL.CREDENTIAL.NAVBAR_TITLE());
   }
 
-  const credentialTypes = credential?.data?.type as string[] | undefined;
+  const credentialTypes = credential.data?.type as string[] | undefined;
 
   function discard() {
     displayNameUpdated = displayName;
@@ -45,7 +49,7 @@
   }
 
   async function update() {
-    await dispatch({ type: '[Credential Metadata] Update', payload: { id: credential?.id, name: displayNameUpdated } });
+    await dispatch({ type: '[Credential Metadata] Update', payload: { id: credential.id, name: displayNameUpdated } });
     openEditMode = false;
   }
 </script>

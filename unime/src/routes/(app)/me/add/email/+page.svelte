@@ -176,7 +176,7 @@
       hideForm = false;
       labelInput.focus();
       if ($appState.dev_mode !== 'Off') {
-        label = "Ferris' Personal Email";
+        label = 'Personal Email';
         email = 'ferris.rustacean@example.test';
       }
     }
