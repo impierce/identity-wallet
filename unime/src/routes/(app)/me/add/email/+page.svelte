@@ -19,18 +19,18 @@
     type: 'numeric',
     maxLength: 4,
     placeholder: '', // '•',
-    onValueChange(value) {
-      // onComplete(value) does not seem to trigger on "melt 0.17.0", that's why we use onValueChange and count the length
-      if (value.length === 4) {
-        redeemCode(value);
-      } else {
-        showError = false;
-      }
+    onValueChange() {
+      showError = false;
+    },
+    onComplete(value) {
+      redeemCode(value);
     },
   });
 
   let label: string = $state('');
   let email: string = $state('');
+
+  let labelInput: HTMLInputElement;
 
   let showError: boolean = $state(false);
 
@@ -112,6 +112,7 @@
   async function redeemCode(code: string) {
     console.log(`TODO: trying to redeem code: ${code}`);
     dispatch({ type: '[Verified Data] Redeem code', payload: { code } });
+    pinInput.value = '';
     showError = true;
   }
 
@@ -136,9 +137,7 @@
 
       // Resume verification timer across app restarts by reading from app state
       if (current.expires_at) {
-        // await goto('/me/add/email/confirm');
-
-        info('Resuming email verification timer');
+        info('Resuming existing email verification timer');
         //   emailSentTimestamp = new Date($appState.verified_data.email_verification.expires_at);
         const expires_in_ms = new Date(current.expires_at).getTime() - Date.now();
         //   info(`emailSentTimestamp: ${emailSentTimestamp}`);
@@ -167,7 +166,8 @@
         debug('No email verification timer found in app state');
       }
     } else {
-      if (dev) {
+      labelInput.focus();
+      if (dev && $appState.dev_mode !== 'Off') {
         label = "Ferris' Personal Email";
         email = 'ferris.rustacean@example.test';
       }
@@ -200,10 +200,11 @@
       </div>
       <input
         name="label"
-        type="label"
+        type="text"
         class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] font-normal text-slate-800 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-dark dark:text-slate-300 dark:caret-slate-300"
         placeholder={$LL.ADD_CREDENTIALS.EMAIL.ADD.LABEL_PLACEHOLDER()}
         bind:value={label}
+        bind:this={labelInput}
         oninput={() => {
           // When the email is changed after a verification session has expired, reset everything.
           // if (expired) {
@@ -216,9 +217,9 @@
       <!-- Divider -->
       <div class="my-4 h-px bg-slate-300"></div>
 
-      <label for="email" class="text-[14px]/[22px] font-medium text-slate-800 dark:text-grey"
-        >{$LL.ADD_CREDENTIALS.EMAIL.ADD.VALUE_LABEL()}</label
-      >
+      <label for="email" class="text-[14px]/[22px] font-medium text-slate-800 dark:text-grey">
+        {$LL.ADD_CREDENTIALS.EMAIL.ADD.VALUE_LABEL()}
+      </label>
       <input
         name="email"
         type="email"
@@ -306,7 +307,7 @@
       label={expired ? $LL.ADD_CREDENTIALS.EMAIL.ADD.BUTTON_SEND_AGAIN() : $LL.ADD_CREDENTIALS.EMAIL.ADD.BUTTON_SEND()}
       on:click={() => startVerificationSession()}
       {loading}
-      disabled={awaitingConfirmation}
+      disabled={awaitingConfirmation || label.length === 0 || email.length === 0}
     />
   </div>
 </div>
