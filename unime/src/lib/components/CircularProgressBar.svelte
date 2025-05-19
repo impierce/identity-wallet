@@ -8,9 +8,10 @@
 
   export let max: number = 100;
   export let value: number = 0;
+  export let displayValue: string = '';
   export let min: number = 0;
   export let gaugePrimaryColor: string = '#f00';
-  export let gaugeSecondaryColor: string = '#ddd';
+  // gaugeSecondaryColor is set through Tailwind class: "stroke-*"
 
   let className: string = '';
   export { className as class };
@@ -49,7 +50,6 @@
         stroke-linejoin="round"
         class="opacity-100"
         style="
-        stroke:{gaugeSecondaryColor};
         stroke-dasharray: calc(var(--stroke-percent) * var(--percent-to-px)) var(--circumference);
         transform: rotate(calc(1turn - 90deg - (var(--gap-percent) * var(--percent-to-deg) * var(--offset-factor-secondary)))) scaleY(-1);
         transition: all var(--transition-length) ease var(--delay);
@@ -85,8 +85,8 @@
   >
     <!-- {currentPercent.toFixed(0)} -->
     <div class="text-center">
-      {Math.floor(value)}
-      <p class="text-xs font-medium text-slate-500">seconds left</p>
+      {displayValue}
+      <!-- <p class="text-xs font-medium text-slate-500">seconds left</p> -->
     </div>
   </span>
 </div>

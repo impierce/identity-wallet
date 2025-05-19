@@ -290,7 +290,6 @@ Durch die Nutzung unseres Dienstes bestätigen Sie, dass Sie diese Allgemeinen G
       GREETING_3: 'Hallo',
       GREETING_4: 'Hi',
     },
-    DEMO: 'Besuche eine der folgenden Webseiten auf einem Desktop-Computer, um loszulegen.',
     CREDENTIAL_TABS: {
       ALL: 'Alle',
       DATA: 'Daten',
@@ -391,6 +390,44 @@ Durch die Nutzung unseres Dienstes bestätigen Sie, dass Sie diese Allgemeinen G
       },
     },
   },
+  ADD_CREDENTIALS: {
+    BUTTON: 'Hinzufügen',
+    NAVBAR_TITLE: 'Daten hinzufügen',
+    EMAIL: {
+      TITLE: 'E-Mail',
+      DESCRIPTION: 'Erhalte eine verifizierte E-Mail-Adresse',
+      INFO: {
+        NAVBAR_TITLE: 'Verifizierte E-Mail',
+        TITLE: 'Verifizierte E-Mail',
+        DESCRIPTION: 'Bevor du beginnst',
+        ITEM_0: {
+          TITLE: 'Was kann ich damit machen?',
+          DESCRIPTION:
+            'Du kannst einfach nachweisen, dass dir diese E-Mail-Adresse gehört. So kannst du dich bei Webseiten und Shops einloggen, ohne dass du dir ein Passwort merken musst oder dir einen Passkey einrichten musst.',
+        },
+        ITEM_1: {
+          TITLE: 'Wie funktioniert die Verifizierung?',
+          DESCRIPTION:
+            'UniMe sendet einmalig eine Nachricht an eines unserer Verifizierungssysteme. Du erhältst dann eine E-Mail mit einem Code, den du in UniMe eingeben musst, um zu beweisen, dass du Zugriff auf das angegebene E-Mail-Postfach hast. Dann erhältst du ein Credential, das du künftig überall verwenden kannst.',
+        },
+        ITEM_2: {
+          TITLE: 'Sind meine persönlichen Daten sicher?',
+          DESCRIPTION:
+            'Alle Daten, die du in UniMe eingibst werden mit dem größtmöglichen Respekt behandelt. Alle Nachrichten von UniMe zu unseren Systemen wandern nur vollständig verschlüsselt durch das Internet. Um überhaupt eine E-Mail an dein Postfach senden zu können, benötigen wir deine E-Mail-Adresse im Klartext. Diese wird aber selbstverständlich nicht zu Marketingzwecken verwendet.',
+        },
+      },
+      ADD: {
+        NAVBAR_TITLE: 'E-Mail hinzufügen',
+        LABEL: 'Dein UniMe Label',
+        LABEL_DISCLAIMER: 'Nur für dich sichtbar',
+        LABEL_PLACEHOLDER: 'Persönliche E-Mail',
+        VALUE_LABEL: 'E-Mail',
+        VALUE_PLACEHOLDER: 'vorname.nachname@example.com',
+        BUTTON_SEND: 'E-Mail senden',
+        BUTTON_SEND_AGAIN: 'E-Mail erneut senden',
+      },
+    },
+  },
   SORT: {
     TITLE: 'Sortieren',
     PREFERENCES: {
@@ -420,6 +457,7 @@ Durch die Nutzung unseres Dienstes bestätigen Sie, dass Sie diese Allgemeinen G
   },
   CANCEL: 'Abbrechen',
   CLOSE: 'Schließen',
+  DISCARD: 'Verwerfen',
   CONTINUE: 'Weiter',
   SKIP: 'Überspringen',
   ACCEPT: 'Akzeptieren',

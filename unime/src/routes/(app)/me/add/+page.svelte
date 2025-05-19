@@ -2,10 +2,11 @@
   import type { Component } from 'svelte';
 
   import { goto } from '$app/navigation';
+  import LL from '$i18n/i18n-svelte';
   import type { SVGAttributes } from 'svelte/elements';
 
   import { TopNavBar } from '$lib/components';
-  import { CaretRightBoldIcon, EnvelopeOpenFillIcon, PhoneFillIcon } from '$lib/icons';
+  import { CaretRightBoldIcon, EnvelopeOpenFillIcon } from '$lib/icons';
 
   type Data = {
     title: string;
@@ -17,22 +18,15 @@
 
   const data: Data[] = [
     {
-      title: 'Email',
-      description: 'Get your personal or work email verified',
+      title: $LL.ADD_CREDENTIALS.EMAIL.TITLE(),
+      description: $LL.ADD_CREDENTIALS.EMAIL.DESCRIPTION(),
       icon: EnvelopeOpenFillIcon,
       link: '/me/add/email/info',
-    },
-    {
-      title: 'Phone number',
-      description: 'Get your phone number verified',
-      icon: PhoneFillIcon,
-      link: '/me/add',
-      disabled: true,
     },
   ];
 </script>
 
-<TopNavBar on:back={() => history.back()} title={'Add data'} class="sticky top-0 z-10" />
+<TopNavBar on:back={() => history.back()} title={$LL.ADD_CREDENTIALS.NAVBAR_TITLE()} class="sticky top-0 z-10" />
 
 <div class="flex flex-col space-y-4 px-4 py-8">
   {#each data as { title, description, icon, link, disabled } (title)}

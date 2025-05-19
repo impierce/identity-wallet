@@ -300,7 +300,6 @@ Door onze Service te gebruiken, erken je dat je deze Voorwaarden heeft gelezen, 
       GREETING_3: 'Hoi',
       GREETING_4: 'Dag',
     },
-    DEMO: 'Bezoek een van de volgende websites op een desktopcomputer om te beginnen.',
     CREDENTIAL_TABS: {
       ALL: 'Alle',
       DATA: 'Data',

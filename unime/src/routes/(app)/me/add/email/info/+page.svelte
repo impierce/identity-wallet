@@ -12,21 +12,18 @@
   const items = [
     {
       id: '0',
-      title: 'What can I do with my verified email?',
-      description:
-        'You can prove ownership of that email address to websites, shops and other people. It also allows you to log in to websites that support it without needing to remember a password or setting up a passkey.',
+      title: $LL.ADD_CREDENTIALS.EMAIL.INFO.ITEM_0.TITLE(),
+      description: $LL.ADD_CREDENTIALS.EMAIL.INFO.ITEM_0.DESCRIPTION(),
     },
     {
       id: '1',
-      title: 'How is it verified?',
-      description:
-        'UniMe sends a message containing your email to a verification system run by us. That system then sends an email containing a one-time code to your inbox. By entering that code in UniMe, you prove you have access to that email inbox. UniMe then sends another message to our verification system, redeeming that code for a verifiable credential.',
+      title: $LL.ADD_CREDENTIALS.EMAIL.INFO.ITEM_1.TITLE(),
+      description: $LL.ADD_CREDENTIALS.EMAIL.INFO.ITEM_1.DESCRIPTION(),
     },
     {
       id: '2',
-      title: 'Is my personal information safe?',
-      description:
-        'We treat any data you enter in UniMe with the greatest respect. All messages from UniMe to our servers are fully encrypted when they travel through the internet. They are also encrypted on our servers using the latest security standards. In order to successfully deliver an email to your inbox, we initially have to receive it in plain text, so a full "zero-access encryption" is unfortunately not applicable to this use case.',
+      title: $LL.ADD_CREDENTIALS.EMAIL.INFO.ITEM_2.TITLE(),
+      description: $LL.ADD_CREDENTIALS.EMAIL.INFO.ITEM_2.DESCRIPTION(),
     },
   ];
 
@@ -42,14 +39,20 @@
   });
 </script>
 
-<TopNavBar on:back={() => history.back()} title={'Verified email'} class="sticky top-0 z-10" />
+<TopNavBar
+  on:back={() => history.back()}
+  title={$LL.ADD_CREDENTIALS.EMAIL.INFO.NAVBAR_TITLE()}
+  class="sticky top-0 z-10"
+/>
 <div class="flex h-[calc(100vh-48px-64px)] flex-col">
   <div class="grow space-y-4 p-4">
     <div class="pt-8">
-      <IconMessage icon={EnvelopeOpenFillIcon} title="Verified email" />
+      <IconMessage icon={EnvelopeOpenFillIcon} title={$LL.ADD_CREDENTIALS.EMAIL.INFO.TITLE()} />
     </div>
 
-    <p class="pb-4 text-center text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">Before you start</p>
+    <p class="pb-4 text-center text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">
+      {$LL.ADD_CREDENTIALS.EMAIL.INFO.DESCRIPTION()}
+    </p>
 
     <Accordion {items} />
   </div>

@@ -317,7 +317,6 @@ Al utilizar nuestro Servicio, usted reconoce que ha leído, entendido y aceptado
       GREETING_3: 'Bienvenido de nuevo',
       GREETING_4: 'Hola',
     },
-    DEMO: 'Visita una de las siguientes páginas web en un ordenador de sobremesa para comenzar.',
     CREDENTIAL_TABS: {
       ALL: 'Todo',
       DATA: 'Datos',

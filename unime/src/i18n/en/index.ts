@@ -317,7 +317,6 @@ By using our Service, you acknowledge that you have read, understood, and agree 
       GREETING_3: 'Welcome back',
       GREETING_4: 'Hello',
     },
-    DEMO: 'Visit one of the following websites on a desktop computer to get started.',
     CREDENTIAL_TABS: {
       ALL: 'All',
       DATA: 'Data',
@@ -325,7 +324,7 @@ By using our Service, you acknowledge that you have read, understood, and agree 
     },
     EMPTY_CREDENTIALS: {
       TITLE: "It's a bit quiet in here",
-      SUBTITLE: 'Why not add some credentials to start your new digital me?',
+      SUBTITLE: 'Why not get some of your data verified to start your journey?',
     },
     FAVORITES: 'My favorites',
   },
@@ -417,6 +416,44 @@ By using our Service, you acknowledge that you have read, understood, and agree 
       },
     },
   },
+  ADD_CREDENTIALS: {
+    BUTTON: 'Add',
+    NAVBAR_TITLE: 'Add data',
+    EMAIL: {
+      TITLE: 'Email',
+      DESCRIPTION: 'Get your personal or work email verified',
+      INFO: {
+        NAVBAR_TITLE: 'Verified email',
+        TITLE: 'Verified email',
+        DESCRIPTION: 'Before you start',
+        ITEM_0: {
+          TITLE: 'What can I do with my verified email?',
+          DESCRIPTION:
+            'You can prove ownership of that email address to websites, shops and other people. It also allows you to log in to websites that support it without needing to remember a password or setting up a passkey.',
+        },
+        ITEM_1: {
+          TITLE: 'How is it verified?',
+          DESCRIPTION:
+            'UniMe sends a message containing your email to a verification system run by us. That system then sends an email containing a one-time code to your inbox. By entering that code in UniMe, you prove you have access to that email inbox. UniMe then sends another message to our verification system, redeeming that code for a verifiable credential.',
+        },
+        ITEM_2: {
+          TITLE: 'Is my personal information safe?',
+          DESCRIPTION:
+            'We treat any data you enter in UniMe with the greatest respect. All messages from UniMe to our servers are fully encrypted when they travel through the internet. They are also encrypted on our servers using the latest security standards. In order to successfully deliver an email to your inbox, we initially have to receive it in plain text, so a full "zero-access encryption" is unfortunately not applicable to this use case.',
+        },
+      },
+      ADD: {
+        NAVBAR_TITLE: 'Get verified email',
+        LABEL: 'Your UniMe label',
+        LABEL_DISCLAIMER: 'Only seen by you',
+        LABEL_PLACEHOLDER: 'Personal email',
+        VALUE_LABEL: 'Email',
+        VALUE_PLACEHOLDER: 'firstname.lastname@example.com',
+        BUTTON_SEND: 'Send verification email',
+        BUTTON_SEND_AGAIN: 'Resend verification email',
+      },
+    },
+  },
   SORT: {
     TITLE: 'Sorting',
     PREFERENCES: {
@@ -446,6 +483,7 @@ By using our Service, you acknowledge that you have read, understood, and agree 
   },
   CANCEL: 'Cancel',
   CLOSE: 'Close',
+  DISCARD: 'Discard',
   CONTINUE: 'Continue',
   SKIP: 'Skip',
   ACCEPT: 'Accept',

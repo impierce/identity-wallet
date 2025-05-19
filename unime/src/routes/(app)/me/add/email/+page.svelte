@@ -29,8 +29,8 @@
     },
   });
 
-  let label: string = $state(dev ? 'My Email 1' : '');
-  let email: string = $state(dev ? 'ferris.rustacean@example.test' : '');
+  let label: string = $state('');
+  let email: string = $state('');
 
   let showError: boolean = $state(false);
 
@@ -45,8 +45,19 @@
     easing: cubicOut,
   });
 
+  function formatTime(totalSeconds: number): string {
+    const positiveSeconds = Math.max(0, Math.floor(totalSeconds)); // Ensure integer and non-negative
+    const minutes = Math.floor(positiveSeconds / 60);
+    const seconds = positiveSeconds % 60;
+    const paddedMinutes = String(minutes).padStart(2, '0');
+    const paddedSeconds = String(seconds).padStart(2, '0');
+    return `${paddedMinutes}:${paddedSeconds}`;
+  }
+
+  let displayTime = $derived(formatTime(progressValue.current));
+
   // Gauge
-  let max = $state(60);
+  // let max = $state(60);
 
   let secsRemaining = 0;
 
@@ -117,38 +128,49 @@
       payload: { service: 'email-verification-service' },
     });
 
-    // Resume verification timer across app restarts by reading from app state
-    if ($appState.verified_data.email_verification?.expires_at) {
-      // await goto('/me/add/email/confirm');
+    const current = $appState.verified_data.email_verification;
 
-      info('Resuming email verification timer');
-      //   emailSentTimestamp = new Date($appState.verified_data.email_verification.expires_at);
-      const expires_at = $appState.verified_data.email_verification?.expires_at!!;
-      const expires_in_ms = new Date(expires_at).getTime() - Date.now();
-      //   info(`emailSentTimestamp: ${emailSentTimestamp}`);
-      //   const diff = emailSentTimestamp.getTime() - Date.now();
-      const diff = expires_in_ms / 1_000;
-      info(`diff: ${diff}`);
-      max = diff;
-      if (diff <= 0) {
-        progressValue.set(0);
-        awaitingConfirmation = false;
-        expired = true;
+    if (current) {
+      email = current.email;
+      label = current.label;
+
+      // Resume verification timer across app restarts by reading from app state
+      if (current.expires_at) {
+        // await goto('/me/add/email/confirm');
+
+        info('Resuming email verification timer');
+        //   emailSentTimestamp = new Date($appState.verified_data.email_verification.expires_at);
+        const expires_in_ms = new Date(current.expires_at).getTime() - Date.now();
+        //   info(`emailSentTimestamp: ${emailSentTimestamp}`);
+        //   const diff = emailSentTimestamp.getTime() - Date.now();
+        const diff = expires_in_ms / 1_000;
+        info(`diff: ${diff}`);
+        // max = diff;
+        if (diff <= 0) {
+          progressValue.set(0);
+          awaitingConfirmation = false;
+          expired = true;
+        } else {
+          // if (diff > MAX_SECONDS * 1_000) {
+          //   progressValue.set(0);
+          //   awaitingConfirmation = false;
+          //   expired = true;
+          // } else {
+          // progressValue.set(MAX_SECONDS - diff / 1_000);
+          // startTimer(MAX_SECONDS - diff / 1_000);
+          progressValue.set(diff);
+          startTimer(diff);
+          awaitingConfirmation = true;
+          // }
+        }
       } else {
-        // if (diff > MAX_SECONDS * 1_000) {
-        //   progressValue.set(0);
-        //   awaitingConfirmation = false;
-        //   expired = true;
-        // } else {
-        // progressValue.set(MAX_SECONDS - diff / 1_000);
-        // startTimer(MAX_SECONDS - diff / 1_000);
-        progressValue.set(diff);
-        startTimer(diff);
-        awaitingConfirmation = true;
-        // }
+        debug('No email verification timer found in app state');
       }
     } else {
-      debug('No email verification timer found in app state');
+      if (dev) {
+        label = "Ferris' Personal Email";
+        email = 'ferris.rustacean@example.test';
+      }
     }
   });
 
@@ -159,21 +181,28 @@
   });
 </script>
 
-<TopNavBar on:back={() => goto('/me/add')} title={'Verified email'} class="sticky top-0 z-10" />
+<TopNavBar
+  on:back={() => goto('/me/add')}
+  title={$LL.ADD_CREDENTIALS.EMAIL.ADD.NAVBAR_TITLE()}
+  class="sticky top-0 z-10"
+/>
 
-<div class="flex h-auto flex-col">
-  <!-- Extra margin is added at the bottom to account for the absolute buttons -->
-  <div class="mb-[156px] flex grow flex-col items-center p-4">
+<div class="flex h-[calc(100vh-48px-64px)] flex-col">
+  <div class="flex grow flex-col items-center p-4">
     <div class="mb-8 mt-4 flex w-full flex-col gap-1">
       <div class="flex items-center justify-between">
-        <label for="label" class="text-[14px]/[22px] font-medium text-slate-800 dark:text-grey">Your UniMe label</label>
-        <div class="text-[12px]/[14px] font-medium text-primary">Only seen by you</div>
+        <label for="label" class="text-[14px]/[22px] font-medium text-slate-800 dark:text-grey">
+          {$LL.ADD_CREDENTIALS.EMAIL.ADD.LABEL()}
+        </label>
+        <div class="text-[12px]/[14px] font-medium text-primary">
+          {$LL.ADD_CREDENTIALS.EMAIL.ADD.LABEL_DISCLAIMER()}
+        </div>
       </div>
       <input
         name="label"
         type="label"
         class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] font-normal text-slate-800 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-dark dark:text-slate-300 dark:caret-slate-300"
-        placeholder={'My email'}
+        placeholder={$LL.ADD_CREDENTIALS.EMAIL.ADD.LABEL_PLACEHOLDER()}
         bind:value={label}
         oninput={() => {
           // When the email is changed after a verification session has expired, reset everything.
@@ -187,12 +216,14 @@
       <!-- Divider -->
       <div class="my-4 h-px bg-slate-300"></div>
 
-      <label for="email" class="text-[14px]/[22px] font-medium text-slate-800 dark:text-grey">Email</label>
+      <label for="email" class="text-[14px]/[22px] font-medium text-slate-800 dark:text-grey"
+        >{$LL.ADD_CREDENTIALS.EMAIL.ADD.VALUE_LABEL()}</label
+      >
       <input
         name="email"
         type="email"
         class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] font-normal text-slate-800 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-dark dark:text-slate-300 dark:caret-slate-300"
-        placeholder={'Your email address'}
+        placeholder={$LL.ADD_CREDENTIALS.EMAIL.ADD.VALUE_PLACEHOLDER()}
         bind:value={email}
         oninput={() => {
           // When the email is changed after a verification session has expired, reset everything.
@@ -216,11 +247,12 @@
 
       {#key progressValue.current}
         <CircularProgressBar
+          class="stroke-slate-200 dark:stroke-background-alt"
           max={$appState.verified_data.email_verification?.validation_expiration_in_secs ?? 0}
           min={0}
           value={progressValue.current}
+          displayValue={displayTime}
           gaugePrimaryColor={`${progressValue.target > 0 ? 'rgb(var(--color-brand))' : 'oklch(0.586 0.253 17.585)'} `}
-          gaugeSecondaryColor="rgba(0, 50, 100, 0.1)"
         />
       {/key}
 
@@ -245,7 +277,7 @@
       <!-- {:else} -->
       {#if showError}
         <div class="mt-4 flex flex-col items-center">
-          <div class="rounded-lg px-4 py-3 text-sm font-semibold text-rose-500">
+          <div class="rounded-full bg-rose-100 px-4 py-3 text-sm font-semibold text-rose-500">
             <span>{$appState.verified_data.email_verification?.error}</span>
           </div>
         </div>
@@ -253,7 +285,7 @@
 
       {#if expired}
         <div class="mt-4 flex flex-col items-center">
-          <div class="rounded-lg px-4 py-3 text-sm font-semibold text-rose-500">
+          <div class="rounded-full bg-rose-100 px-4 py-3 text-sm font-semibold text-rose-500">
             <span>Verification code expired</span>
           </div>
         </div>
@@ -268,10 +300,10 @@
   <!-- TODO: REFACTOR! -->
   <div class="absolute bottom-[64px] left-0 z-10 flex w-full flex-col gap-3 rounded-t-3xl bg-white p-6 dark:bg-dark">
     {#if expired}
-      <Button label="Dismiss" variant="secondary" on:click={reset} />
+      <Button label={$LL.DISCARD()} variant="secondary" on:click={reset} />
     {/if}
     <Button
-      label={expired ? 'Resend verification email' : 'Send verification email'}
+      label={expired ? $LL.ADD_CREDENTIALS.EMAIL.ADD.BUTTON_SEND_AGAIN() : $LL.ADD_CREDENTIALS.EMAIL.ADD.BUTTON_SEND()}
       on:click={() => startVerificationSession()}
       {loading}
       disabled={awaitingConfirmation}
