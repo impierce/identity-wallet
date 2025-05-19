@@ -3,6 +3,7 @@
 
   import LL from '$i18n/i18n-svelte';
 
+  import { retrieve } from '@impierce/tauri-plugin-keystore';
   import { melt } from '@melt-ui/svelte';
   import { warn } from '@tauri-apps/plugin-log';
 
@@ -16,13 +17,36 @@
 
   let password: string;
 
+  const SERVICE = 'com.impierce.identity-wallet';
+  const USER = 'unime'; // TODO: rename to "ACCOUNT" to reflect Keychain Access item?
+
+  const unlockWithBiometrics = async () => {
+    await retrieve(SERVICE, USER)
+      .then((password) => {
+        // TODO: do we need this check or can we change the return type to "Promise<string>"?
+        if (password) {
+          setTimeout(() => {
+            dispatch({ type: '[Storage] Unlock', payload: { password } });
+          }, 500);
+        }
+      })
+      .catch((error) => {
+        warn(error);
+      });
+  };
+
   // TODO move to the backend
-  onMount(() => {
+  onMount(async () => {
+    // When developer mode is enabled, a static password is injected automatically.
     if ($state?.dev_mode === 'OnWithAutologin') {
       warn('Developer mode - Injecting password automatically ...');
       setTimeout(() => {
         dispatch({ type: '[Storage] Unlock', payload: { password: 'sup3rSecr3t' } });
       }, 500);
+    }
+    // When biometrics are enabled, try to retrieve the password and inject it.
+    if ($state?.profile_settings.biometrics_enabled) {
+      await unlockWithBiometrics();
     }
   });
 </script>
@@ -33,6 +57,7 @@
   <div class="flex flex-col items-center justify-center">
     <UniMeLogo class="text-blue dark:text-silver" />
 
+    <!-- Manual password entry -->
     <div class="relative mb-4 mt-8 w-[240px]">
       <input
         type={showPassword ? 'text' : 'password'}
@@ -55,6 +80,7 @@
       on:click={() => dispatch({ type: '[Storage] Unlock', payload: { password } })}
       disabled={!password}
     />
+
     <!-- Forgot password? Reset app -->
     <div class="mt-8">
       <ActionSheet titleText={$LL.SETTINGS.RESET_APP.TITLE()} descriptionText={$LL.SETTINGS.RESET_APP.DESCRIPTION()}>

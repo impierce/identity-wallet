@@ -6,6 +6,7 @@ rust-version.workspace = true
 
 [dependencies]
 tauri.workspace = true
+tauri-plugin-fs = { version = "2" }
 
 anyhow = "1.0"
 async-trait = "0.1"
