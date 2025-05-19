@@ -425,6 +425,7 @@ Durch die Nutzung unseres Dienstes bestätigen Sie, dass Sie diese Allgemeinen G
         VALUE_PLACEHOLDER: 'vorname.nachname@example.com',
         BUTTON_SEND: 'E-Mail senden',
         BUTTON_SEND_AGAIN: 'E-Mail erneut senden',
+        CHECK_EMAIL: 'Bitte schaue in dein E-Mail-Postfach und gib den Code unten ein.',
       },
     },
   },

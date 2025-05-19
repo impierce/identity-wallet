@@ -1079,6 +1079,10 @@ type RootTranslation = {
 				 * R​e​s​e​n​d​ ​v​e​r​i​f​i​c​a​t​i​o​n​ ​e​m​a​i​l
 				 */
 				BUTTON_SEND_AGAIN: string
+				/**
+				 * P​l​e​a​s​e​ ​c​h​e​c​k​ ​y​o​u​r​ ​e​m​a​i​l​ ​i​n​b​o​x​ ​a​n​d​ ​e​n​t​e​r​ ​t​h​e​ ​c​o​d​e​ ​b​e​l​o​w​.
+				 */
+				CHECK_EMAIL: string
 			}
 		}
 	}
@@ -2254,6 +2258,10 @@ export type TranslationFunctions = {
 				 * Resend verification email
 				 */
 				BUTTON_SEND_AGAIN: () => LocalizedString
+				/**
+				 * Please check your email inbox and enter the code below.
+				 */
+				CHECK_EMAIL: () => LocalizedString
 			}
 		}
 	}

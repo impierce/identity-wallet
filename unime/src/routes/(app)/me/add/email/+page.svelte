@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte';
 
-  import { dev } from '$app/environment';
   import { goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
   import { PinInput } from 'melt/builders';
@@ -33,6 +32,9 @@
   let labelInput: HTMLInputElement;
 
   let showError: boolean = $state(false);
+
+  // We need to hide some elements, so the Android keyboard doesn't cover the input.
+  let hideForm = $state(false);
 
   let loading = $state(false);
 
@@ -102,6 +104,9 @@
     pinInput.value = '';
 
     loading = false;
+
+    hideForm = true;
+
     progressValue.set(expires_in_seconds);
     awaitingConfirmation = true;
     expired = false;
@@ -117,9 +122,10 @@
   }
 
   const reset = () => {
-    // TODO: send action to backend to clear state
     expired = false;
     awaitingConfirmation = false;
+    hideForm = false;
+    labelInput.focus();
     dispatch({ type: '[Verified Data] Reset email verification' });
   };
 
@@ -132,6 +138,7 @@
     const current = $appState.verified_data.email_verification;
 
     if (current) {
+      hideForm = true;
       email = current.email;
       label = current.label;
 
@@ -166,8 +173,9 @@
         debug('No email verification timer found in app state');
       }
     } else {
+      hideForm = false;
       labelInput.focus();
-      if (dev && $appState.dev_mode !== 'Off') {
+      if ($appState.dev_mode !== 'Off') {
         label = "Ferris' Personal Email";
         email = 'ferris.rustacean@example.test';
       }
@@ -189,52 +197,58 @@
 
 <div class="flex h-[calc(100vh-48px-64px)] flex-col">
   <div class="flex grow flex-col items-center p-4">
-    <div class="mb-8 mt-4 flex w-full flex-col gap-1">
-      <div class="flex items-center justify-between">
-        <label for="label" class="text-[14px]/[22px] font-medium text-slate-800 dark:text-grey">
-          {$LL.ADD_CREDENTIALS.EMAIL.ADD.LABEL()}
-        </label>
-        <div class="text-[12px]/[14px] font-medium text-primary">
-          {$LL.ADD_CREDENTIALS.EMAIL.ADD.LABEL_DISCLAIMER()}
+    {#if !hideForm}
+      <div class="mb-8 mt-4 flex w-full flex-col gap-1">
+        <div class="flex items-center justify-between">
+          <label for="label" class="text-[14px]/[22px] font-medium text-slate-800 dark:text-grey">
+            {$LL.ADD_CREDENTIALS.EMAIL.ADD.LABEL()}
+          </label>
+          <div class="text-[12px]/[14px] font-medium text-primary">
+            {$LL.ADD_CREDENTIALS.EMAIL.ADD.LABEL_DISCLAIMER()}
+          </div>
         </div>
+        <input
+          name="label"
+          type="text"
+          class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] font-normal text-slate-800 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-dark dark:text-slate-300 dark:caret-slate-300"
+          placeholder={$LL.ADD_CREDENTIALS.EMAIL.ADD.LABEL_PLACEHOLDER()}
+          bind:value={label}
+          bind:this={labelInput}
+          oninput={() => {
+            // When the label is changed after a verification session has expired, reset everything.
+            if (expired) {
+              reset();
+            }
+          }}
+          disabled={awaitingConfirmation}
+        />
+
+        <!-- Divider -->
+        <div class="my-4 h-px bg-slate-300"></div>
+
+        <label for="email" class="text-[14px]/[22px] font-medium text-slate-800 dark:text-grey">
+          {$LL.ADD_CREDENTIALS.EMAIL.ADD.VALUE_LABEL()}
+        </label>
+        <input
+          name="email"
+          type="email"
+          class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] font-normal text-slate-800 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-dark dark:text-slate-300 dark:caret-slate-300"
+          placeholder={$LL.ADD_CREDENTIALS.EMAIL.ADD.VALUE_PLACEHOLDER()}
+          bind:value={email}
+          oninput={() => {
+            // When the email is changed after a verification session has expired, reset everything.
+            if (expired) {
+              reset();
+            }
+          }}
+          disabled={awaitingConfirmation}
+        />
       </div>
-      <input
-        name="label"
-        type="text"
-        class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] font-normal text-slate-800 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-dark dark:text-slate-300 dark:caret-slate-300"
-        placeholder={$LL.ADD_CREDENTIALS.EMAIL.ADD.LABEL_PLACEHOLDER()}
-        bind:value={label}
-        bind:this={labelInput}
-        oninput={() => {
-          // When the email is changed after a verification session has expired, reset everything.
-          // if (expired) {
-          //   reset();
-          // }
-        }}
-        disabled={awaitingConfirmation}
-      />
-
-      <!-- Divider -->
-      <div class="my-4 h-px bg-slate-300"></div>
-
-      <label for="email" class="text-[14px]/[22px] font-medium text-slate-800 dark:text-grey">
-        {$LL.ADD_CREDENTIALS.EMAIL.ADD.VALUE_LABEL()}
-      </label>
-      <input
-        name="email"
-        type="email"
-        class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] font-normal text-slate-800 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-dark dark:text-slate-300 dark:caret-slate-300"
-        placeholder={$LL.ADD_CREDENTIALS.EMAIL.ADD.VALUE_PLACEHOLDER()}
-        bind:value={email}
-        oninput={() => {
-          // When the email is changed after a verification session has expired, reset everything.
-          if (expired) {
-            reset();
-          }
-        }}
-        disabled={awaitingConfirmation}
-      />
-    </div>
+    {:else}
+      <div class="p-8 pt-0 text-[14px]/[22px] font-medium text-slate-500 dark:text-grey">
+        {$LL.ADD_CREDENTIALS.EMAIL.ADD.CHECK_EMAIL()}
+      </div>
+    {/if}
 
     {#if awaitingConfirmation || expired}
       <!-- {emailSentTimestamp?.toISOString()} -->

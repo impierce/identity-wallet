@@ -451,6 +451,7 @@ By using our Service, you acknowledge that you have read, understood, and agree 
         VALUE_PLACEHOLDER: 'firstname.lastname@example.com',
         BUTTON_SEND: 'Send verification email',
         BUTTON_SEND_AGAIN: 'Resend verification email',
+        CHECK_EMAIL: 'Please check your email inbox and enter the code below.',
       },
     },
   },
