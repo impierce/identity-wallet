@@ -408,6 +408,9 @@ By using our Service, you acknowledge that you have read, understood, and agree 
       },
     },
     ACTIONS: {
+      EDIT: {
+        CONFIRM_BUTTON: 'Update display name',
+      },
       DELETE: {
         BUTTON_LABEL: 'Delete credential',
         TITLE: 'Delete credential',

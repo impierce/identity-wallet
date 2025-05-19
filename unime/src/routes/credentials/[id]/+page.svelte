@@ -54,19 +54,22 @@
   <div class="flex min-h-full flex-col gap-7 bg-background-alt px-4 pb-7">
     <CredentialHeader {credential}>
       <!-- Editable title -->
-      <input
-        type="text"
-        bind:value={displayNameUpdated}
-        class="-my-2 h-10 w-fit bg-background text-center font-semibold focus:outline-none"
-        placeholder="Some title"
-        onfocus={() => (openEditMode = true)}
-        onblur={() => {
-          // If no change was made, automatically close edit mode when input loses focus.
-          if (displayName === displayNameUpdated) {
-            openEditMode = false;
-          }
-        }}
-      />
+      <div class="w-full px-4">
+        <input
+          type="text"
+          maxlength="32"
+          bind:value={displayNameUpdated}
+          class="-my-2 h-10 w-full truncate bg-background text-center font-semibold focus:outline-none"
+          placeholder="Some title"
+          onfocus={() => (openEditMode = true)}
+          onblur={() => {
+            // If no change was made, automatically close edit mode when input loses focus.
+            if (displayName === displayNameUpdated) {
+              openEditMode = false;
+            }
+          }}
+        />
+      </div>
     </CredentialHeader>
     {#if openEditMode}
       <!-- Similar to ActionSheet, but without backdrop -->
@@ -78,9 +81,9 @@
           opacity: 1,
         }}
       >
-        <Button label="Discard changes" variant="secondary" on:click={discard} />
+        <Button label={$LL.DISCARD()} variant="secondary" on:click={discard} />
         <Button
-          label="Update display name"
+          label={$LL.CREDENTIAL.ACTIONS.EDIT.CONFIRM_BUTTON()}
           disabled={displayNameUpdated.length === 0 || displayNameUpdated === displayName}
           on:click={update}
         />

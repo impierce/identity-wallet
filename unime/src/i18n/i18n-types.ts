@@ -964,6 +964,12 @@ type RootTranslation = {
 			}
 		}
 		ACTIONS: {
+			EDIT: {
+				/**
+				 * U​p​d​a​t​e​ ​d​i​s​p​l​a​y​ ​n​a​m​e
+				 */
+				CONFIRM_BUTTON: string
+			}
 			DELETE: {
 				/**
 				 * D​e​l​e​t​e​ ​c​r​e​d​e​n​t​i​a​l
@@ -2143,6 +2149,12 @@ export type TranslationFunctions = {
 			}
 		}
 		ACTIONS: {
+			EDIT: {
+				/**
+				 * Update display name
+				 */
+				CONFIRM_BUTTON: () => LocalizedString
+			}
 			DELETE: {
 				/**
 				 * Delete credential

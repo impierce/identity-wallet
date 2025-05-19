@@ -381,6 +381,9 @@ Durch die Nutzung unseres Dienstes bestätigen Sie, dass Sie diese Allgemeinen G
       },
     },
     ACTIONS: {
+      EDIT: {
+        CONFIRM_BUTTON: 'Anzeigename ändern',
+      },
       DELETE: {
         BUTTON_LABEL: 'Credential löschen',
         TITLE: 'Credential löschen',
