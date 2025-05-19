@@ -129,8 +129,8 @@ importers:
         specifier: ^14.0.0
         version: 14.1.0
       melt:
-        specifier: ^0.17.0
-        version: 0.17.0(@floating-ui/dom@1.6.10)(svelte@5.26.3)
+        specifier: ^0.33.0
+        version: 0.33.0(@floating-ui/dom@1.6.10)(svelte@5.26.3)
       postcss:
         specifier: ^8.5.3
         version: 8.5.3
@@ -1880,8 +1880,8 @@ packages:
   mdurl@2.0.0:
     resolution: {integrity: sha512-Lf+9+2r+Tdp5wXDXC4PcIBjTDtq4UKjCPMQhKIuzpJNW0b96kVqSwW0bT7FhRSfmAiFYgP+SCRvdrDozfh0U5w==}
 
-  melt@0.17.0:
-    resolution: {integrity: sha512-efVL7+sOab3+lx965q1CZVdJzVDeRWiq+/PKa0B/PN8xbdWTBVE0Y7FkuhbEkxCmpJq5J3bdr1NJLZovzI1vrw==}
+  melt@0.33.0:
+    resolution: {integrity: sha512-QzUWOkwgfPOJ3LoONESDM/hIqbEcCPkfDrxhqsvWkvs8UeZQHGXq6bC/hrSV+bS+HVe+zmTuy3wFxApEU7JFEw==}
     peerDependencies:
       '@floating-ui/dom': ^1.6.0
       svelte: ^5.0.0
@@ -1944,8 +1944,8 @@ packages:
     engines: {node: ^18 || >=20}
     hasBin: true
 
-  nanoid@5.1.2:
-    resolution: {integrity: sha512-b+CiXQCNMUGe0Ri64S9SXFcP9hogjAJ2Rd6GdVxhPLRm7mhGaM7VgOvCAJ1ZshfHbqVDI3uqTI5C8/GaKuLI7g==}
+  nanoid@5.1.5:
+    resolution: {integrity: sha512-Ir/+ZpE9fDsNH0hQ3C68uyThDXzYcim2EqcZ8zn8Chtt1iylPT9xXJB0kPCnqzgcEGikO9RxSrh63MsmVCU7Fw==}
     engines: {node: ^18 || >=20}
     hasBin: true
 
@@ -4546,11 +4546,12 @@ snapshots:
 
   mdurl@2.0.0: {}
 
-  melt@0.17.0(@floating-ui/dom@1.6.10)(svelte@5.26.3):
+  melt@0.33.0(@floating-ui/dom@1.6.10)(svelte@5.26.3):
     dependencies:
       '@floating-ui/dom': 1.6.10
+      dequal: 2.0.3
       jest-axe: 9.0.0
-      nanoid: 5.1.2
+      nanoid: 5.1.5
       runed: 0.23.4(svelte@5.26.3)
       svelte: 5.26.3
 
@@ -4602,7 +4603,7 @@ snapshots:
 
   nanoid@5.0.7: {}
 
-  nanoid@5.1.2: {}
+  nanoid@5.1.5: {}
 
   natural-compare@1.4.0: {}
 
