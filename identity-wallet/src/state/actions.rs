@@ -73,7 +73,7 @@ mod bindings {
             credential_offers_selected::CredentialOffersSelected, credentials_selected::CredentialsSelected,
             delete_credential::DeleteCredential, update_credential_metadata::UpdateCredentialMetadata,
         },
-        dev_mode::actions::dev_profile::DevProfile,
+        dev_mode::actions::{dev_profile::DevProfile, show_setting::ShowDevModeSetting},
         did::actions::{set_preferred_keytype::SetPreferredKeyType, set_preferred_method::SetPreferredDidMethod},
         profile_settings::actions::{
             create_new::CreateNew, enable_biometrics::EnableBiometrics, set_locale::SetLocale,
@@ -116,6 +116,8 @@ mod bindings {
             #[ts(optional)]
             payload: Option<CancelUserFlow>,
         },
+        #[serde(rename = "[DEV] Show DEV mode setting")]
+        ShowDevModeSetting { payload: ShowDevModeSetting },
         #[serde(rename = "[DEV] Load DEV profile")]
         LoadDevProfile { payload: DevProfile },
         #[serde(rename = "[DEV] Toggle DEV mode")]
