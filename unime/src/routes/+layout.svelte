@@ -15,7 +15,7 @@
   import { listen, type UnlistenFn } from '@tauri-apps/api/event';
   import { attachConsole, error, info } from '@tauri-apps/plugin-log';
 
-  import { DeprecatedSwitch } from '$lib/components';
+  import { DeprecatedSwitch, ErrorToast } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import {
     ArrowLeftRegularIcon,
@@ -25,8 +25,6 @@
     TrashRegularIcon,
   } from '$lib/icons';
   import { state as appState, error as errorState } from '$lib/stores';
-
-  import ErrorToast from './ErrorToast.svelte';
 
   import '../app.css';
 
