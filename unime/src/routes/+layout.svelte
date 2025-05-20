@@ -389,7 +389,7 @@ Stacking context: We have to deviate from the DOM-sequence.
         <ErrorToast
           title={$appState?.dev_mode !== 'Off' ? 'Error' : $LL.ERROR.TITLE()}
           detail={$appState?.dev_mode !== 'Off' ? $errorState : $LL.ERROR.DEFAULT_MESSAGE()}
-          on:dismissed={() => {
+          ondismissed={() => {
             // After the toast fires the "dismissed" event, we reset $errorStore.
             errorState.set(undefined);
           }}

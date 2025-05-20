@@ -1,20 +1,23 @@
 <script lang="ts">
-  import { createEventDispatcher, onMount } from 'svelte';
+  import { onMount } from 'svelte';
 
   import { fade, fly } from 'svelte/transition';
 
   import { WarningRegularIcon, XRegularIcon } from '$lib/icons';
 
-  const dispatch = createEventDispatcher();
+  interface Props {
+    autoDismissAfterMs?: number; // A value of 0 means the toast will never auto-dismiss
+    title: string;
+    detail?: string;
+    ondismissed?: () => void;
+  }
 
-  export let autoDismissAfterMs = 0; // A value of 0 means the toast will never auto-dismiss
-  export let title;
-  export let detail: string | undefined = undefined;
+  let { autoDismissAfterMs = 0, title, detail, ondismissed }: Props = $props();
 
   onMount(() => {
     if (autoDismissAfterMs > 0) {
       setTimeout(() => {
-        dispatch('dismissed');
+        ondismissed?.();
       }, autoDismissAfterMs);
     }
   });
@@ -34,7 +37,7 @@
       <p class="line-clamp-2 text-[12px]/[16px] text-slate-800">{detail}</p>
     {/if}
   </div>
-  <button class="-mr-2 rounded-full p-3" on:click={() => dispatch('dismissed')}>
+  <button class="-mr-2 rounded-full p-3" onclick={() => ondismissed?.()}>
     <XRegularIcon class="h-4 w-4 text-slate-800" />
   </button>
 </div>
