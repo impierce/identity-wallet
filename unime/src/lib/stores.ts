@@ -43,6 +43,7 @@ const empty_state: AppState = {
   verified_data: {
     email_verification: null,
   },
+  show_dev_mode_setting: false,
   dev_mode: 'Off',
 };
 
