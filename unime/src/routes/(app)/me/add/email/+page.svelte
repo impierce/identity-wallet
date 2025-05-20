@@ -197,7 +197,7 @@
 />
 
 <!-- The 50px height of the TopNavBar are manually subtracted -->
-<div class="flex h-[calc(100%_-_50px)] flex-col">
+<div class="relative flex h-[calc(100%_-_50px)] flex-col">
   <div class="flex grow flex-col items-center p-4">
     {#if !hideForm}
       <div class="mb-8 mt-4 flex w-full flex-col gap-1">
@@ -299,7 +299,7 @@
 
   <!-- TODO: REFACTOR! -->
   <div class="absolute bottom-0 left-0 z-10 flex w-full flex-col gap-3 rounded-t-3xl bg-background-alt p-6">
-    {#if expired}
+    {#if expired || $appState.dev_mode !== 'Off'}
       <Button label={$LL.DISCARD()} variant="secondary" on:click={reset} />
     {/if}
     <Button
