@@ -29,7 +29,9 @@
   let label: string = $state('');
   let email: string = $state('');
 
-  let labelInput: HTMLInputElement;
+  // Svelte 5's `bind:this` with `let` is idiomatic
+  // svelte-ignore non_reactive_update
+  let labelInput: HTMLInputElement | null = null;
 
   let showError: boolean = $state(false);
 
@@ -38,7 +40,7 @@
 
   let loading = $state(false);
 
-  let awaitingConfirmation = $state(false);
+  let pending = $state(false);
 
   let expired = $state(false);
 
@@ -71,7 +73,7 @@
       if (seconds < 1) {
         clearInterval(interval);
         expired = true;
-        awaitingConfirmation = false;
+        pending = false;
         progressValue.set(0);
       }
       //   if (seconds === 1) {
@@ -89,18 +91,18 @@
 
   const startVerificationSession = async () => {
     loading = true;
-    console.log(`sending request to email-verification-service for email: ${email}`);
 
     await dispatch({ type: '[Verified Data] Send verification email', payload: { email, label } });
 
-    console.log(`$appState expiry: ${$appState.verified_data.email_verification?.expires_at}`);
+    const expires_at = $appState.verified_data.email_verification?.expires_at;
+    if (!expires_at) {
+      debug('No `expires_at` found in app state');
+      loading = false;
+      return;
+    }
 
-    const expires_at = $appState.verified_data.email_verification?.expires_at!!;
-    const expires_in_seconds = Math.round((new Date(expires_at).getTime() - Date.now()) / 1_000);
+    const expires_in_seconds = Math.floor((new Date(expires_at).getTime() - Date.now()) / 1_000);
 
-    console.log(`expires_in_seconds: ${expires_in_seconds}`);
-
-    // Reset PIN input
     pinInput.value = '';
 
     loading = false;
@@ -108,14 +110,13 @@
     hideForm = true;
 
     progressValue.set(expires_in_seconds);
-    awaitingConfirmation = true;
+    pending = true;
     expired = false;
     // emailSentTimestamp = new Date();
     startTimer(expires_in_seconds);
   };
 
   async function redeemCode(code: string) {
-    console.log(`TODO: trying to redeem code: ${code}`);
     dispatch({ type: '[Verified Data] Redeem code', payload: { code } });
     pinInput.value = '';
     showError = true;
@@ -123,9 +124,9 @@
 
   const reset = () => {
     expired = false;
-    awaitingConfirmation = false;
+    pending = false;
     hideForm = false;
-    labelInput.focus();
+    labelInput?.focus();
     dispatch({ type: '[Verified Data] Reset email verification' });
   };
 
@@ -146,15 +147,15 @@
       if (current.expires_at) {
         info('Resuming existing email verification timer');
         //   emailSentTimestamp = new Date($appState.verified_data.email_verification.expires_at);
-        const expires_in_ms = new Date(current.expires_at).getTime() - Date.now();
+        const expires_in_secs = Math.floor((new Date(current.expires_at).getTime() - Date.now()) / 1_000);
         //   info(`emailSentTimestamp: ${emailSentTimestamp}`);
         //   const diff = emailSentTimestamp.getTime() - Date.now();
-        const diff = expires_in_ms / 1_000;
-        info(`diff: ${diff}`);
+        // const diff = expires_in_secs / 1_000;
+        // info(`diff: ${diff}`);
         // max = diff;
-        if (diff <= 0) {
+        if (expires_in_secs <= 0) {
           progressValue.set(0);
-          awaitingConfirmation = false;
+          pending = false;
           expired = true;
         } else {
           // if (diff > MAX_SECONDS * 1_000) {
@@ -164,17 +165,17 @@
           // } else {
           // progressValue.set(MAX_SECONDS - diff / 1_000);
           // startTimer(MAX_SECONDS - diff / 1_000);
-          progressValue.set(diff);
-          startTimer(diff);
-          awaitingConfirmation = true;
+          progressValue.set(expires_in_secs);
+          startTimer(expires_in_secs);
+          pending = true;
           // }
         }
       } else {
-        debug('No email verification timer found in app state');
+        debug('No current email verification timer found in app state');
       }
     } else {
       hideForm = false;
-      labelInput.focus();
+      labelInput?.focus();
       if ($appState.dev_mode !== 'Off') {
         label = 'Personal Email';
         email = 'ferris.rustacean@example.test';
@@ -195,7 +196,8 @@
   class="sticky top-0 z-10"
 />
 
-<div class="flex h-[calc(100vh-48px-64px)] flex-col">
+<!-- The 50px height of the TopNavBar are manually subtracted -->
+<div class="flex h-[calc(100%_-_50px)] flex-col">
   <div class="flex grow flex-col items-center p-4">
     {#if !hideForm}
       <div class="mb-8 mt-4 flex w-full flex-col gap-1">
@@ -203,9 +205,6 @@
           <label for="label" class="text-[14px]/[22px] font-medium text-slate-800 dark:text-grey">
             {$LL.ADD_CREDENTIALS.EMAIL.ADD.LABEL()}
           </label>
-          <div class="text-[12px]/[14px] font-medium text-primary">
-            {$LL.ADD_CREDENTIALS.EMAIL.ADD.LABEL_DISCLAIMER()}
-          </div>
         </div>
         <input
           name="label"
@@ -220,8 +219,11 @@
               reset();
             }
           }}
-          disabled={awaitingConfirmation}
+          disabled={pending}
         />
+        <div class="pt-1 text-[12px]/[14px] font-medium text-primary">
+          {$LL.ADD_CREDENTIALS.EMAIL.ADD.LABEL_DISCLAIMER()}
+        </div>
 
         <!-- Divider -->
         <div class="my-4 h-px bg-slate-300"></div>
@@ -241,7 +243,7 @@
               reset();
             }
           }}
-          disabled={awaitingConfirmation}
+          disabled={pending}
         />
       </div>
     {:else}
@@ -250,16 +252,7 @@
       </div>
     {/if}
 
-    {#if awaitingConfirmation || expired}
-      <!-- {emailSentTimestamp?.toISOString()} -->
-
-      <!-- 
-        color-brand: "primary": #5cc7c7, rgb(92, 199, 199)
-        rose-600: oklch(0.586 0.253 17.585)
-
-        gaugeSecondaryColor="rgba(0, 50, 100, 0.1)"
-      -->
-
+    {#if pending || expired}
       {#key progressValue.current}
         <CircularProgressBar
           class="stroke-slate-200 dark:stroke-background-alt"
@@ -276,21 +269,13 @@
           <input
             {...input}
             class="size-12 rounded-xl border border-slate-300 bg-background-alt text-center text-2xl font-semibold text-text-alt outline-none focus:border-primary disabled:cursor-not-allowed dark:border-slate-500"
-            disabled={!awaitingConfirmation}
+            disabled={!pending}
           />
         {/each}
       </div>
 
-      <!-- <div use:melt={$root} class="flex items-center gap-2">
-          {#each Array.from({ length: 4 }) as _}
-            <input
-              class="size-12 rounded-md border-2 border-slate-500 bg-background-alt text-center text-lg font-semibold text-slate-500"
-              use:melt={$input()}
-            />
-          {/each}
-        </div> -->
-      <!-- {:else} -->
-      {#if showError}
+      <!-- Errors -->
+      {#if showError && $appState.verified_data.email_verification?.error}
         <div class="mt-4 flex flex-col items-center">
           <div class="rounded-full bg-rose-100 px-4 py-3 text-sm font-semibold text-rose-500">
             <span>{$appState.verified_data.email_verification?.error}</span>
@@ -313,15 +298,17 @@
   </div>
 
   <!-- TODO: REFACTOR! -->
-  <div class="absolute bottom-[64px] left-0 z-10 flex w-full flex-col gap-3 rounded-t-3xl bg-white p-6 dark:bg-dark">
+  <div class="absolute bottom-0 left-0 z-10 flex w-full flex-col gap-3 rounded-t-3xl bg-background-alt p-6">
     {#if expired}
       <Button label={$LL.DISCARD()} variant="secondary" on:click={reset} />
     {/if}
     <Button
-      label={expired ? $LL.ADD_CREDENTIALS.EMAIL.ADD.BUTTON_SEND_AGAIN() : $LL.ADD_CREDENTIALS.EMAIL.ADD.BUTTON_SEND()}
+      label={expired || pending
+        ? $LL.ADD_CREDENTIALS.EMAIL.ADD.BUTTON_SEND_AGAIN()
+        : $LL.ADD_CREDENTIALS.EMAIL.ADD.BUTTON_SEND()}
       on:click={() => startVerificationSession()}
       {loading}
-      disabled={awaitingConfirmation || label.length === 0 || email.length === 0}
+      disabled={pending || label.length === 0 || email.length === 0}
     />
   </div>
 </div>

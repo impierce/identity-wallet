@@ -41,7 +41,7 @@
 </script>
 
 <!-- Isolate stacking context to avoid z-index conflicts. -->
-<div class="relative isolate flex h-full flex-col bg-white dark:bg-dark">
+<div class="relative isolate flex flex-col bg-white dark:bg-dark">
   <div class="sticky top-0 z-10 w-full bg-white px-[20px] py-4 dark:bg-dark">
     <!-- Top Bar -->
     <div class="flex items-center justify-between">
@@ -166,16 +166,19 @@
       </div>
     {/if}
   </div>
+</div>
 
-  <!-- "Add" button -->
-  <!-- <div in:fly={{ y: 12, delay: 0, opacity: 1, duration: 200 }} class="absolute bottom-5 right-4"> -->
-  <div in:fly={{ y: 12, opacity: 1, duration: 200 }} class="absolute bottom-5 right-4">
-    <button
-      class="flex w-fit justify-center rounded-full bg-primary px-4 py-3 text-white dark:text-dark"
-      onclick={() => goto('/me/add')}
-    >
-      <PlusCircleIcon class="mr-2 size-6" />
-      <div class="text-[13px]/[24px] font-medium">{$LL.ADD_CREDENTIALS.BUTTON()}</div>
-    </button>
-  </div>
+<!-- "Add" button -->
+<!-- <div in:fly={{ y: 12, delay: 0, opacity: 1, duration: 200 }} class="absolute bottom-5 right-4"> -->
+<div
+  in:fly={{ y: 12, opacity: 1, duration: 200 }}
+  class="absolute bottom-[calc(64px_+_16px_+_var(--safe-area-inset-bottom))] right-4"
+>
+  <button
+    class="flex w-fit justify-center rounded-full bg-primary px-4 py-3 text-white dark:text-dark"
+    onclick={() => goto('/me/add')}
+  >
+    <PlusCircleIcon class="mr-2 size-6" />
+    <div class="text-[13px]/[24px] font-medium">{$LL.ADD_CREDENTIALS.BUTTON()}</div>
+  </button>
 </div>

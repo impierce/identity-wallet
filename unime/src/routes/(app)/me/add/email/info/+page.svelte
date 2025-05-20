@@ -44,7 +44,8 @@
   title={$LL.ADD_CREDENTIALS.EMAIL.INFO.NAVBAR_TITLE()}
   class="sticky top-0 z-10"
 />
-<div class="flex h-[calc(100vh-48px-64px)] flex-col">
+
+<div class="relative flex h-[calc(100%_-_50px)] flex-col">
   <div class="grow space-y-4 p-4">
     <div class="pt-8">
       <IconMessage icon={EnvelopeOpenFillIcon} title={$LL.ADD_CREDENTIALS.EMAIL.INFO.TITLE()} />
@@ -58,7 +59,7 @@
   </div>
 
   <!-- TODO: REFACTOR! -->
-  <div class="absolute bottom-[64px] left-0 z-10 w-full rounded-t-3xl bg-white p-6 dark:bg-dark">
+  <div class="absolute bottom-0 left-0 z-10 w-full rounded-t-3xl bg-background-alt p-6">
     <Button label={$LL.CONTINUE()} on:click={() => goto('/me/add/email')} />
   </div>
 </div>

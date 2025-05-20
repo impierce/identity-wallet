@@ -430,24 +430,24 @@ By using our Service, you acknowledge that you have read, understood, and agree 
         TITLE: 'Verified email',
         DESCRIPTION: 'Before you start',
         ITEM_0: {
-          TITLE: 'What can I do with my verified email?',
+          TITLE: 'Why verify your email in UniMe?',
           DESCRIPTION:
-            'You can prove ownership of that email address to websites, shops and other people. It also allows you to log in to websites that support it without needing to remember a password or setting up a passkey.',
+            'Verifying your email shows it really belongs to you. This lets you safely use it to access services without needing a password. It also helps you prove who you are to shops, websites, services and even other people.',
         },
         ITEM_1: {
-          TITLE: 'How is it verified?',
+          TITLE: 'How does it work?',
           DESCRIPTION:
-            'UniMe sends a message containing your email to a verification system run by us. That system then sends an email containing a one-time code to your inbox. By entering that code in UniMe, you prove you have access to that email inbox. UniMe then sends another message to our verification system, redeeming that code for a verifiable credential.',
+            "When you start, UniMe sends your email address to our secure system. You'll then get a one-time code in your inbox. Enter that code in UniMe to show you can access the email. Once that's done, UniMe confirms your email is verified and you can now use it wherever it's accepted.",
         },
         ITEM_2: {
-          TITLE: 'Is my personal information safe?',
+          TITLE: 'Is my information safe?',
           DESCRIPTION:
-            'We treat any data you enter in UniMe with the greatest respect. All messages from UniMe to our servers are fully encrypted when they travel through the internet. They are also encrypted on our servers using the latest security standards. In order to successfully deliver an email to your inbox, we initially have to receive it in plain text, so a full "zero-access encryption" is unfortunately not applicable to this use case.',
+            "Yes. We take your privacy very seriously. All messages between UniMe and our verification servers are protected with strong encryption and your information is stored securely. We only use your email address to send you the verification code, nothing else. Once verified, it's never shared.",
         },
       },
       ADD: {
         NAVBAR_TITLE: 'Get verified email',
-        LABEL: 'Your UniMe label',
+        LABEL: 'How do you want to call this email address?',
         LABEL_DISCLAIMER: 'Only seen by you',
         LABEL_PLACEHOLDER: 'Personal email',
         VALUE_LABEL: 'Email',

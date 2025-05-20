@@ -404,24 +404,24 @@ Durch die Nutzung unseres Dienstes bestätigen Sie, dass Sie diese Allgemeinen G
         TITLE: 'Verifizierte E-Mail',
         DESCRIPTION: 'Bevor du beginnst',
         ITEM_0: {
-          TITLE: 'Was kann ich damit machen?',
+          TITLE: 'Warum sollte ich meine E-Mail in UniMe verifizieren?',
           DESCRIPTION:
-            'Du kannst einfach nachweisen, dass dir diese E-Mail-Adresse gehört. So kannst du dich bei Webseiten und Shops einloggen, ohne dass du dir ein Passwort merken musst oder dir einen Passkey einrichten musst.',
+            'Mit einer verifizierten E-Mail zeigst du, dass sie wirklich dir gehört. So kannst du sicher und ohne Passwort verschiedene Dienste nutzen. Außerdem hilft sie dir, deine Identität gegenüber Shops, Websites und sogar anderen Personen nachzuweisen.',
         },
         ITEM_1: {
-          TITLE: 'Wie funktioniert die Verifizierung?',
+          TITLE: 'Wie funktioniert das?',
           DESCRIPTION:
-            'UniMe sendet einmalig eine Nachricht an eines unserer Verifizierungssysteme. Du erhältst dann eine E-Mail mit einem Code, den du in UniMe eingeben musst, um zu beweisen, dass du Zugriff auf das angegebene E-Mail-Postfach hast. Dann erhältst du ein Credential, das du künftig überall verwenden kannst.',
+            'UniMe sendet deine angegebene E-Mail-Adresse an eines unserer Verifizierungssysteme. Du erhälst dann einen Einmalcode in deinen Posteingang. Gib diesen Code in UniMe ein, um zu bestätigen, dass du auf die E-Mail zugreifen konntest. Dann bestätigt UniMe die Verifizierung deiner E-Mail-Adresse und du kannst sie nun überall dort verwenden, wo sie akzeptiert wird.',
         },
         ITEM_2: {
-          TITLE: 'Sind meine persönlichen Daten sicher?',
+          TITLE: 'Sind meine Daten sicher?',
           DESCRIPTION:
-            'Alle Daten, die du in UniMe eingibst werden mit dem größtmöglichen Respekt behandelt. Alle Nachrichten von UniMe zu unseren Systemen wandern nur vollständig verschlüsselt durch das Internet. Um überhaupt eine E-Mail an dein Postfach senden zu können, benötigen wir deine E-Mail-Adresse im Klartext. Diese wird aber selbstverständlich nicht zu Marketingzwecken verwendet.',
+            'Ja. Wir nehmen deine Privatsphäre sehr ernst. Alle Nachrichten zwischen UniMe und unseren Verifizierungsservern sind durch starke Verschlüsselung geschützt und deine Daten werden sicher gespeichert. Wir verwenden deine E-Mail-Adresse nur, um den Verifizierungscode zu senden - sie wird niemals weitergegeben oder für andere Zwecke verwendet.',
         },
       },
       ADD: {
         NAVBAR_TITLE: 'E-Mail hinzufügen',
-        LABEL: 'Dein UniMe Label',
+        LABEL: 'Wie möchtest du diese E-Mail-Adresse nennen?',
         LABEL_DISCLAIMER: 'Nur für dich sichtbar',
         LABEL_PLACEHOLDER: 'Persönliche E-Mail',
         VALUE_LABEL: 'E-Mail',
