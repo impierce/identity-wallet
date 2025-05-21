@@ -62,6 +62,9 @@
         }
       }
 
+      // DEV: uncommenting this helps local development by always redirecting to the page you're working on
+      // redirectPath = '/me/settings/about';
+
       if (redirectPath) {
         info(`Redirecting to: ${redirectPath}.`);
         try {
@@ -387,6 +390,7 @@ Stacking context: We have to deviate from the DOM-sequence.
     {#if $errorState}
       <div class="absolute bottom-[calc(16px_+_var(--safe-area-inset-bottom))] right-4 w-[calc(100%_-_32px)]">
         <ErrorToast
+          variant="error"
           title={$appState?.dev_mode !== 'Off' ? 'Error' : $LL.ERROR.TITLE()}
           detail={$appState?.dev_mode !== 'Off' ? $errorState : $LL.ERROR.DEFAULT_MESSAGE()}
           ondismissed={() => {

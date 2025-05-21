@@ -1,7 +1,7 @@
 <script lang="ts">
   import LL from '$i18n/i18n-svelte';
 
-  import { TopNavBar } from '$lib/components';
+  import { ErrorToast, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { HeartFillIcon } from '$lib/icons';
   import UniMeLogo from '$lib/static/svg/logo/UniMeLogo.svelte';
@@ -20,10 +20,15 @@
   function handleClick() {
     counter++;
     if (counter === REQUIRED_CLICKS) {
-      dispatch({ type: '[DEV] Show DEV mode setting', payload: { show: true } });
+      dispatch({ type: '[DEV] Show DEV mode setting', payload: { show: !$appState.show_dev_mode_setting } });
       counter = 0;
     }
   }
+
+  let title = $appState.show_dev_mode_setting ? 'Hide Developer Mode' : 'Unlock Developer Mode';
+  let detail = $derived(
+    `Tap the logo ${REQUIRED_CLICKS - counter} more time${REQUIRED_CLICKS - counter > 1 ? 's' : ''} to ${$appState.show_dev_mode_setting ? 'hide' : 'unlock'}.`,
+  );
 
   let showMessage = $derived(() => {
     if (counter >= 5 && counter < REQUIRED_CLICKS) {
@@ -77,7 +82,7 @@
 </div>
 
 {#if showMessage()}
-  <div class="bottom-0 left-0 w-full">
-    Tap {REQUIRED_CLICKS - counter} more time{REQUIRED_CLICKS - counter > 1 ? 's' : ''} to unlock developer mode.
+  <div class="absolute bottom-[calc(64px_+_16px_+_var(--safe-area-inset-bottom))] left-4 w-[calc(100%_-_32px)]">
+    <ErrorToast variant="info" {title} {detail} dismissible={false} />
   </div>
 {/if}
