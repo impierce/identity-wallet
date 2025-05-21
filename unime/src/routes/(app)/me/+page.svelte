@@ -170,10 +170,7 @@
 
 <!-- "Add" button -->
 <!-- <div in:fly={{ y: 12, delay: 0, opacity: 1, duration: 200 }} class="absolute bottom-5 right-4"> -->
-<div
-  in:fly={{ y: 12, opacity: 1, duration: 200 }}
-  class="absolute bottom-[calc(64px_+_16px_+_var(--safe-area-inset-bottom))] right-4"
->
+<div in:fly={{ y: 12, opacity: 1, duration: 200 }} class="absolute bottom-[calc(64px_+_16px)] right-4">
   <button
     class="flex w-fit justify-center rounded-full bg-primary px-4 py-3 text-white dark:text-dark"
     onclick={() => goto('/me/add')}

@@ -82,7 +82,7 @@
 </div>
 
 {#if showMessage()}
-  <div class="absolute bottom-[calc(64px_+_16px_+_var(--safe-area-inset-bottom))] left-4 w-[calc(100%_-_32px)]">
+  <div class="absolute bottom-[calc(64px_+_16px)] left-4 w-[calc(100%_-_32px)]">
     <ErrorToast variant="info" {title} {detail} dismissible={false} />
   </div>
 {/if}

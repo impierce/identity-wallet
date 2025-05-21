@@ -80,12 +80,12 @@
 />
 
 <!-- The 50px height of the TopNavBar are manually subtracted -->
-<div class="relative flex h-[calc(100%_-_50px)] flex-col">
+<div class="relative flex flex-col">
   <div class="flex grow flex-col items-center p-4 pt-0">
     <div class="my-5 flex h-[120px] flex-col items-center space-y-4">
       <!-- PaddedIcon -->
       <div class="flex h-[75px] w-[75px] items-center justify-center rounded-3xl bg-background-alt">
-        <IdentificationBadgeRegularIcon class="dark:text-gray size-7 text-slate-800" />
+        <IdentificationBadgeRegularIcon class="size-7 text-slate-800 dark:text-grey" />
       </div>
       <input
         type="text"
