@@ -24,8 +24,8 @@ export { default as DotsThreeVerticalBoldIcon } from '~icons/ph/dots-three-verti
 export { default as DownloadSimpleFillIcon } from '~icons/ph/download-simple-fill';
 export { default as EnvelopeFillIcon } from '~icons/ph/envelope-fill';
 export { default as EnvelopeOpenFillIcon } from '~icons/ph/envelope-open-fill';
-export { default as EyeRegularIcon } from '~icons/ph/eye';
 export { default as EyeClosedRegularIcon } from '~icons/ph/eye-closed';
+export { default as EyeRegularIcon } from '~icons/ph/eye';
 export { default as FileArrowDownFillIcon } from '~icons/ph/file-arrow-down-fill';
 export { default as FilesFillIcon } from '~icons/ph/files-fill';
 export { default as FingerprintLightIcon } from '~icons/ph/fingerprint-light';
@@ -35,6 +35,8 @@ export { default as GhostFillIcon } from '~icons/ph/ghost-fill';
 export { default as HeartFillIcon } from '~icons/ph/heart-fill';
 export { default as HeartStraightRegularIcon } from '~icons/ph/heart-straight';
 export { default as HeartStraightFillIcon } from '~icons/ph/heart-straight-fill';
+export { default as IdentificationBadgeFillIcon } from '~icons/ph/identification-badge-fill';
+export { default as IdentificationBadgeRegularIcon } from '~icons/ph/identification-badge';
 export { default as InfoRegularIcon } from '~icons/ph/info';
 export { default as InfoFillIcon } from '~icons/ph/info-fill';
 export { default as KeyFillIcon } from '~icons/ph/key-fill';

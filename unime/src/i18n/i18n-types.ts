@@ -1023,31 +1023,31 @@ type RootTranslation = {
 				DESCRIPTION: string
 				ITEM_0: {
 					/**
-					 * W​h​a​t​ ​c​a​n​ ​I​ ​d​o​ ​w​i​t​h​ ​m​y​ ​v​e​r​i​f​i​e​d​ ​e​m​a​i​l​?
+					 * W​h​y​ ​v​e​r​i​f​y​ ​y​o​u​r​ ​e​m​a​i​l​ ​i​n​ ​U​n​i​M​e​?
 					 */
 					TITLE: string
 					/**
-					 * Y​o​u​ ​c​a​n​ ​p​r​o​v​e​ ​o​w​n​e​r​s​h​i​p​ ​o​f​ ​t​h​a​t​ ​e​m​a​i​l​ ​a​d​d​r​e​s​s​ ​t​o​ ​w​e​b​s​i​t​e​s​,​ ​s​h​o​p​s​ ​a​n​d​ ​o​t​h​e​r​ ​p​e​o​p​l​e​.​ ​I​t​ ​a​l​s​o​ ​a​l​l​o​w​s​ ​y​o​u​ ​t​o​ ​l​o​g​ ​i​n​ ​t​o​ ​w​e​b​s​i​t​e​s​ ​t​h​a​t​ ​s​u​p​p​o​r​t​ ​i​t​ ​w​i​t​h​o​u​t​ ​n​e​e​d​i​n​g​ ​t​o​ ​r​e​m​e​m​b​e​r​ ​a​ ​p​a​s​s​w​o​r​d​ ​o​r​ ​s​e​t​t​i​n​g​ ​u​p​ ​a​ ​p​a​s​s​k​e​y​.
+					 * V​e​r​i​f​y​i​n​g​ ​y​o​u​r​ ​e​m​a​i​l​ ​s​h​o​w​s​ ​i​t​ ​r​e​a​l​l​y​ ​b​e​l​o​n​g​s​ ​t​o​ ​y​o​u​.​ ​T​h​i​s​ ​l​e​t​s​ ​y​o​u​ ​s​a​f​e​l​y​ ​u​s​e​ ​i​t​ ​t​o​ ​a​c​c​e​s​s​ ​s​e​r​v​i​c​e​s​ ​w​i​t​h​o​u​t​ ​n​e​e​d​i​n​g​ ​a​ ​p​a​s​s​w​o​r​d​.​ ​I​t​ ​a​l​s​o​ ​h​e​l​p​s​ ​y​o​u​ ​p​r​o​v​e​ ​w​h​o​ ​y​o​u​ ​a​r​e​ ​t​o​ ​s​h​o​p​s​,​ ​w​e​b​s​i​t​e​s​,​ ​s​e​r​v​i​c​e​s​ ​a​n​d​ ​e​v​e​n​ ​o​t​h​e​r​ ​p​e​o​p​l​e​.
 					 */
 					DESCRIPTION: string
 				}
 				ITEM_1: {
 					/**
-					 * H​o​w​ ​i​s​ ​i​t​ ​v​e​r​i​f​i​e​d​?
+					 * H​o​w​ ​d​o​e​s​ ​i​t​ ​w​o​r​k​?
 					 */
 					TITLE: string
 					/**
-					 * U​n​i​M​e​ ​s​e​n​d​s​ ​a​ ​m​e​s​s​a​g​e​ ​c​o​n​t​a​i​n​i​n​g​ ​y​o​u​r​ ​e​m​a​i​l​ ​t​o​ ​a​ ​v​e​r​i​f​i​c​a​t​i​o​n​ ​s​y​s​t​e​m​ ​r​u​n​ ​b​y​ ​u​s​.​ ​T​h​a​t​ ​s​y​s​t​e​m​ ​t​h​e​n​ ​s​e​n​d​s​ ​a​n​ ​e​m​a​i​l​ ​c​o​n​t​a​i​n​i​n​g​ ​a​ ​o​n​e​-​t​i​m​e​ ​c​o​d​e​ ​t​o​ ​y​o​u​r​ ​i​n​b​o​x​.​ ​B​y​ ​e​n​t​e​r​i​n​g​ ​t​h​a​t​ ​c​o​d​e​ ​i​n​ ​U​n​i​M​e​,​ ​y​o​u​ ​p​r​o​v​e​ ​y​o​u​ ​h​a​v​e​ ​a​c​c​e​s​s​ ​t​o​ ​t​h​a​t​ ​e​m​a​i​l​ ​i​n​b​o​x​.​ ​U​n​i​M​e​ ​t​h​e​n​ ​s​e​n​d​s​ ​a​n​o​t​h​e​r​ ​m​e​s​s​a​g​e​ ​t​o​ ​o​u​r​ ​v​e​r​i​f​i​c​a​t​i​o​n​ ​s​y​s​t​e​m​,​ ​r​e​d​e​e​m​i​n​g​ ​t​h​a​t​ ​c​o​d​e​ ​f​o​r​ ​a​ ​v​e​r​i​f​i​a​b​l​e​ ​c​r​e​d​e​n​t​i​a​l​.
+					 * W​h​e​n​ ​y​o​u​ ​s​t​a​r​t​,​ ​U​n​i​M​e​ ​s​e​n​d​s​ ​y​o​u​r​ ​e​m​a​i​l​ ​a​d​d​r​e​s​s​ ​t​o​ ​o​u​r​ ​s​e​c​u​r​e​ ​s​y​s​t​e​m​.​ ​Y​o​u​'​l​l​ ​t​h​e​n​ ​g​e​t​ ​a​ ​o​n​e​-​t​i​m​e​ ​c​o​d​e​ ​i​n​ ​y​o​u​r​ ​i​n​b​o​x​.​ ​E​n​t​e​r​ ​t​h​a​t​ ​c​o​d​e​ ​i​n​ ​U​n​i​M​e​ ​t​o​ ​s​h​o​w​ ​y​o​u​ ​c​a​n​ ​a​c​c​e​s​s​ ​t​h​e​ ​e​m​a​i​l​.​ ​O​n​c​e​ ​t​h​a​t​'​s​ ​d​o​n​e​,​ ​U​n​i​M​e​ ​c​o​n​f​i​r​m​s​ ​y​o​u​r​ ​e​m​a​i​l​ ​i​s​ ​v​e​r​i​f​i​e​d​ ​a​n​d​ ​y​o​u​ ​c​a​n​ ​n​o​w​ ​u​s​e​ ​i​t​ ​w​h​e​r​e​v​e​r​ ​i​t​'​s​ ​a​c​c​e​p​t​e​d​.
 					 */
 					DESCRIPTION: string
 				}
 				ITEM_2: {
 					/**
-					 * I​s​ ​m​y​ ​p​e​r​s​o​n​a​l​ ​i​n​f​o​r​m​a​t​i​o​n​ ​s​a​f​e​?
+					 * I​s​ ​m​y​ ​i​n​f​o​r​m​a​t​i​o​n​ ​s​a​f​e​?
 					 */
 					TITLE: string
 					/**
-					 * W​e​ ​t​r​e​a​t​ ​a​n​y​ ​d​a​t​a​ ​y​o​u​ ​e​n​t​e​r​ ​i​n​ ​U​n​i​M​e​ ​w​i​t​h​ ​t​h​e​ ​g​r​e​a​t​e​s​t​ ​r​e​s​p​e​c​t​.​ ​A​l​l​ ​m​e​s​s​a​g​e​s​ ​f​r​o​m​ ​U​n​i​M​e​ ​t​o​ ​o​u​r​ ​s​e​r​v​e​r​s​ ​a​r​e​ ​f​u​l​l​y​ ​e​n​c​r​y​p​t​e​d​ ​w​h​e​n​ ​t​h​e​y​ ​t​r​a​v​e​l​ ​t​h​r​o​u​g​h​ ​t​h​e​ ​i​n​t​e​r​n​e​t​.​ ​T​h​e​y​ ​a​r​e​ ​a​l​s​o​ ​e​n​c​r​y​p​t​e​d​ ​o​n​ ​o​u​r​ ​s​e​r​v​e​r​s​ ​u​s​i​n​g​ ​t​h​e​ ​l​a​t​e​s​t​ ​s​e​c​u​r​i​t​y​ ​s​t​a​n​d​a​r​d​s​.​ ​I​n​ ​o​r​d​e​r​ ​t​o​ ​s​u​c​c​e​s​s​f​u​l​l​y​ ​d​e​l​i​v​e​r​ ​a​n​ ​e​m​a​i​l​ ​t​o​ ​y​o​u​r​ ​i​n​b​o​x​,​ ​w​e​ ​i​n​i​t​i​a​l​l​y​ ​h​a​v​e​ ​t​o​ ​r​e​c​e​i​v​e​ ​i​t​ ​i​n​ ​p​l​a​i​n​ ​t​e​x​t​,​ ​s​o​ ​a​ ​f​u​l​l​ ​"​z​e​r​o​-​a​c​c​e​s​s​ ​e​n​c​r​y​p​t​i​o​n​"​ ​i​s​ ​u​n​f​o​r​t​u​n​a​t​e​l​y​ ​n​o​t​ ​a​p​p​l​i​c​a​b​l​e​ ​t​o​ ​t​h​i​s​ ​u​s​e​ ​c​a​s​e​.
+					 * Y​e​s​.​ ​W​e​ ​t​a​k​e​ ​y​o​u​r​ ​p​r​i​v​a​c​y​ ​v​e​r​y​ ​s​e​r​i​o​u​s​l​y​.​ ​A​l​l​ ​m​e​s​s​a​g​e​s​ ​b​e​t​w​e​e​n​ ​U​n​i​M​e​ ​a​n​d​ ​o​u​r​ ​v​e​r​i​f​i​c​a​t​i​o​n​ ​s​e​r​v​e​r​s​ ​a​r​e​ ​p​r​o​t​e​c​t​e​d​ ​w​i​t​h​ ​s​t​r​o​n​g​ ​e​n​c​r​y​p​t​i​o​n​ ​a​n​d​ ​y​o​u​r​ ​i​n​f​o​r​m​a​t​i​o​n​ ​i​s​ ​s​t​o​r​e​d​ ​s​e​c​u​r​e​l​y​.​ ​W​e​ ​o​n​l​y​ ​u​s​e​ ​y​o​u​r​ ​e​m​a​i​l​ ​a​d​d​r​e​s​s​ ​t​o​ ​s​e​n​d​ ​y​o​u​ ​t​h​e​ ​v​e​r​i​f​i​c​a​t​i​o​n​ ​c​o​d​e​,​ ​n​o​t​h​i​n​g​ ​e​l​s​e​.​ ​O​n​c​e​ ​v​e​r​i​f​i​e​d​,​ ​i​t​'​s​ ​n​e​v​e​r​ ​s​h​a​r​e​d​.
 					 */
 					DESCRIPTION: string
 				}
@@ -1058,7 +1058,7 @@ type RootTranslation = {
 				 */
 				NAVBAR_TITLE: string
 				/**
-				 * Y​o​u​r​ ​U​n​i​M​e​ ​l​a​b​e​l
+				 * H​o​w​ ​d​o​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​c​a​l​l​ ​t​h​i​s​ ​e​m​a​i​l​ ​a​d​d​r​e​s​s​?
 				 */
 				LABEL: string
 				/**
@@ -1089,6 +1089,106 @@ type RootTranslation = {
 				 * P​l​e​a​s​e​ ​c​h​e​c​k​ ​y​o​u​r​ ​e​m​a​i​l​ ​i​n​b​o​x​ ​a​n​d​ ​e​n​t​e​r​ ​t​h​e​ ​c​o​d​e​ ​b​e​l​o​w​.
 				 */
 				CHECK_EMAIL: string
+			}
+		}
+		PROFILE: {
+			/**
+			 * P​r​o​f​i​l​e
+			 */
+			TITLE: string
+			/**
+			 * A​d​d​ ​i​n​f​o​r​m​a​t​i​o​n​ ​a​b​o​u​t​ ​y​o​u​r​s​e​l​f
+			 */
+			DESCRIPTION: string
+			INFO: {
+				/**
+				 * Y​o​u​r​ ​p​r​o​f​i​l​e
+				 */
+				NAVBAR_TITLE: string
+				/**
+				 * U​n​i​M​e​ ​P​r​o​f​i​l​e
+				 */
+				TITLE: string
+				/**
+				 * B​e​f​o​r​e​ ​y​o​u​ ​s​t​a​r​t
+				 */
+				DESCRIPTION: string
+				ITEM_0: {
+					/**
+					 * W​h​y​ ​a​d​d​ ​m​y​ ​i​n​f​o​r​m​a​t​i​o​n​ ​i​n​ ​U​n​i​M​e​?
+					 */
+					TITLE: string
+					/**
+					 * n​/​a
+					 */
+					DESCRIPTION: string
+				}
+				ITEM_1: {
+					/**
+					 * H​o​w​ ​d​o​e​s​ ​i​t​ ​w​o​r​k​?
+					 */
+					TITLE: string
+					/**
+					 * n​/​a
+					 */
+					DESCRIPTION: string
+				}
+				ITEM_2: {
+					/**
+					 * I​s​ ​m​y​ ​i​n​f​o​r​m​a​t​i​o​n​ ​s​a​f​e​?
+					 */
+					TITLE: string
+					/**
+					 * n​/​a
+					 */
+					DESCRIPTION: string
+				}
+			}
+			ADD: {
+				/**
+				 * Y​o​u​r​ ​p​r​o​f​i​l​e
+				 */
+				NAVBAR_TITLE: string
+				/**
+				 * P​e​r​s​o​n​a​l​ ​P​r​o​f​i​l​e
+				 */
+				LABEL_PLACEHOLDER: string
+				/**
+				 * R​e​q​u​i​r​e​d
+				 */
+				REQUIRED: string
+				/**
+				 * F​i​r​s​t​ ​n​a​m​e
+				 */
+				FIRST_NAME_LABEL: string
+				/**
+				 * Y​o​u​r​ ​f​i​r​s​t​ ​n​a​m​e
+				 */
+				FIRST_NAME_PLACEHOLDER: string
+				/**
+				 * M​i​d​d​l​e​ ​n​a​m​e​(​s​)
+				 */
+				MIDDLE_NAME_LABEL: string
+				/**
+				 * Y​o​u​r​ ​m​i​d​d​l​e​ ​n​a​m​e​(​s​)
+				 */
+				MIDDLE_NAME_PLACEHOLDER: string
+				/**
+				 * L​a​s​t​ ​n​a​m​e
+				 */
+				LAST_NAME_LABEL: string
+				/**
+				 * Y​o​u​r​ ​l​a​s​t​ ​n​a​m​e
+				 */
+				LAST_NAME_PLACEHOLDER: string
+				/**
+				 * A​d​d​ ​t​o​ ​f​a​v​o​r​i​t​e​s
+				 */
+				FAVORITES_TOGGLE_LABEL: string
+				/**
+				 * C​r​e​a​t​e​ ​p​r​o​f​i​l​e
+				 */
+				CREATE_PROFILE_BUTTON: string
 			}
 		}
 	}
@@ -2208,31 +2308,31 @@ export type TranslationFunctions = {
 				DESCRIPTION: () => LocalizedString
 				ITEM_0: {
 					/**
-					 * What can I do with my verified email?
+					 * Why verify your email in UniMe?
 					 */
 					TITLE: () => LocalizedString
 					/**
-					 * You can prove ownership of that email address to websites, shops and other people. It also allows you to log in to websites that support it without needing to remember a password or setting up a passkey.
+					 * Verifying your email shows it really belongs to you. This lets you safely use it to access services without needing a password. It also helps you prove who you are to shops, websites, services and even other people.
 					 */
 					DESCRIPTION: () => LocalizedString
 				}
 				ITEM_1: {
 					/**
-					 * How is it verified?
+					 * How does it work?
 					 */
 					TITLE: () => LocalizedString
 					/**
-					 * UniMe sends a message containing your email to a verification system run by us. That system then sends an email containing a one-time code to your inbox. By entering that code in UniMe, you prove you have access to that email inbox. UniMe then sends another message to our verification system, redeeming that code for a verifiable credential.
+					 * When you start, UniMe sends your email address to our secure system. You'll then get a one-time code in your inbox. Enter that code in UniMe to show you can access the email. Once that's done, UniMe confirms your email is verified and you can now use it wherever it's accepted.
 					 */
 					DESCRIPTION: () => LocalizedString
 				}
 				ITEM_2: {
 					/**
-					 * Is my personal information safe?
+					 * Is my information safe?
 					 */
 					TITLE: () => LocalizedString
 					/**
-					 * We treat any data you enter in UniMe with the greatest respect. All messages from UniMe to our servers are fully encrypted when they travel through the internet. They are also encrypted on our servers using the latest security standards. In order to successfully deliver an email to your inbox, we initially have to receive it in plain text, so a full "zero-access encryption" is unfortunately not applicable to this use case.
+					 * Yes. We take your privacy very seriously. All messages between UniMe and our verification servers are protected with strong encryption and your information is stored securely. We only use your email address to send you the verification code, nothing else. Once verified, it's never shared.
 					 */
 					DESCRIPTION: () => LocalizedString
 				}
@@ -2243,7 +2343,7 @@ export type TranslationFunctions = {
 				 */
 				NAVBAR_TITLE: () => LocalizedString
 				/**
-				 * Your UniMe label
+				 * How do you want to call this email address?
 				 */
 				LABEL: () => LocalizedString
 				/**
@@ -2274,6 +2374,106 @@ export type TranslationFunctions = {
 				 * Please check your email inbox and enter the code below.
 				 */
 				CHECK_EMAIL: () => LocalizedString
+			}
+		}
+		PROFILE: {
+			/**
+			 * Profile
+			 */
+			TITLE: () => LocalizedString
+			/**
+			 * Add information about yourself
+			 */
+			DESCRIPTION: () => LocalizedString
+			INFO: {
+				/**
+				 * Your profile
+				 */
+				NAVBAR_TITLE: () => LocalizedString
+				/**
+				 * UniMe Profile
+				 */
+				TITLE: () => LocalizedString
+				/**
+				 * Before you start
+				 */
+				DESCRIPTION: () => LocalizedString
+				ITEM_0: {
+					/**
+					 * Why add my information in UniMe?
+					 */
+					TITLE: () => LocalizedString
+					/**
+					 * n/a
+					 */
+					DESCRIPTION: () => LocalizedString
+				}
+				ITEM_1: {
+					/**
+					 * How does it work?
+					 */
+					TITLE: () => LocalizedString
+					/**
+					 * n/a
+					 */
+					DESCRIPTION: () => LocalizedString
+				}
+				ITEM_2: {
+					/**
+					 * Is my information safe?
+					 */
+					TITLE: () => LocalizedString
+					/**
+					 * n/a
+					 */
+					DESCRIPTION: () => LocalizedString
+				}
+			}
+			ADD: {
+				/**
+				 * Your profile
+				 */
+				NAVBAR_TITLE: () => LocalizedString
+				/**
+				 * Personal Profile
+				 */
+				LABEL_PLACEHOLDER: () => LocalizedString
+				/**
+				 * Required
+				 */
+				REQUIRED: () => LocalizedString
+				/**
+				 * First name
+				 */
+				FIRST_NAME_LABEL: () => LocalizedString
+				/**
+				 * Your first name
+				 */
+				FIRST_NAME_PLACEHOLDER: () => LocalizedString
+				/**
+				 * Middle name(s)
+				 */
+				MIDDLE_NAME_LABEL: () => LocalizedString
+				/**
+				 * Your middle name(s)
+				 */
+				MIDDLE_NAME_PLACEHOLDER: () => LocalizedString
+				/**
+				 * Last name
+				 */
+				LAST_NAME_LABEL: () => LocalizedString
+				/**
+				 * Your last name
+				 */
+				LAST_NAME_PLACEHOLDER: () => LocalizedString
+				/**
+				 * Add to favorites
+				 */
+				FAVORITES_TOGGLE_LABEL: () => LocalizedString
+				/**
+				 * Create profile
+				 */
+				CREATE_PROFILE_BUTTON: () => LocalizedString
 			}
 		}
 	}

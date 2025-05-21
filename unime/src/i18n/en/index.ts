@@ -457,6 +457,40 @@ By using our Service, you acknowledge that you have read, understood, and agree 
         CHECK_EMAIL: 'Please check your email inbox and enter the code below.',
       },
     },
+    PROFILE: {
+      TITLE: 'Profile',
+      DESCRIPTION: 'Add information about yourself',
+      INFO: {
+        NAVBAR_TITLE: 'Your profile',
+        TITLE: 'UniMe Profile',
+        DESCRIPTION: 'Before you start',
+        ITEM_0: {
+          TITLE: 'Why add my information in UniMe?',
+          DESCRIPTION: 'n/a',
+        },
+        ITEM_1: {
+          TITLE: 'How does it work?',
+          DESCRIPTION: 'n/a',
+        },
+        ITEM_2: {
+          TITLE: 'Is my information safe?',
+          DESCRIPTION: 'n/a',
+        },
+      },
+      ADD: {
+        NAVBAR_TITLE: 'Your profile',
+        LABEL_PLACEHOLDER: 'Personal Profile',
+        REQUIRED: 'Required',
+        FIRST_NAME_LABEL: 'First name',
+        FIRST_NAME_PLACEHOLDER: 'Your first name',
+        MIDDLE_NAME_LABEL: 'Middle name(s)',
+        MIDDLE_NAME_PLACEHOLDER: 'Your middle name(s)',
+        LAST_NAME_LABEL: 'Last name',
+        LAST_NAME_PLACEHOLDER: 'Your last name',
+        FAVORITES_TOGGLE_LABEL: 'Add to favorites',
+        CREATE_PROFILE_BUTTON: 'Create profile',
+      },
+    },
   },
   SORT: {
     TITLE: 'Sorting',

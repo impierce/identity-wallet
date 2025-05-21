@@ -431,6 +431,40 @@ Durch die Nutzung unseres Dienstes bestätigen Sie, dass Sie diese Allgemeinen G
         CHECK_EMAIL: 'Bitte schaue in dein E-Mail-Postfach und gib den Code unten ein.',
       },
     },
+    PROFILE: {
+      TITLE: 'Profil',
+      DESCRIPTION: 'Füge Informationen über dich hinzu',
+      INFO: {
+        NAVBAR_TITLE: 'Dein Profil',
+        TITLE: 'UniMe Profil',
+        DESCRIPTION: 'Bevor du beginnst',
+        ITEM_0: {
+          TITLE: 'Warum sollte ich ein Profil erstellen?',
+          DESCRIPTION: 'n/a',
+        },
+        ITEM_1: {
+          TITLE: 'Wie funktioniert das?',
+          DESCRIPTION: 'n/a',
+        },
+        ITEM_2: {
+          TITLE: 'Sind meine Daten sicher?',
+          DESCRIPTION: 'n/a',
+        },
+      },
+      ADD: {
+        NAVBAR_TITLE: 'Dein Profil',
+        LABEL_PLACEHOLDER: 'Persönliches Profil',
+        REQUIRED: 'Erforderlich',
+        FIRST_NAME_LABEL: 'Vorname',
+        FIRST_NAME_PLACEHOLDER: 'Dein Vorname',
+        MIDDLE_NAME_LABEL: 'Zweitname(n)',
+        MIDDLE_NAME_PLACEHOLDER: 'Weitere Vornamen',
+        LAST_NAME_LABEL: 'Nachname',
+        LAST_NAME_PLACEHOLDER: 'Dein Nachname',
+        FAVORITES_TOGGLE_LABEL: 'Zu Favoriten hinzufügen',
+        CREATE_PROFILE_BUTTON: 'Profil erstellen',
+      },
+    },
   },
   SORT: {
     TITLE: 'Sortieren',
