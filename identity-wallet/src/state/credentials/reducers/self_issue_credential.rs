@@ -132,8 +132,13 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
             AppError::Error("Failed to create a VerifiableCredentialRecord from self_issue_credential".to_string())
         })?;
 
-        vcr.display_credential.data = data;
-        vcr.display_credential.display_name = self_issue_credential._type.to_string();
+        vcr.display_credential.data = data.clone();
+        vcr.display_credential.display_name = data
+            .get("name")
+            .unwrap_or(&json!(self_issue_credential._type))
+            .as_str()
+            .unwrap()
+            .to_owned();
         vcr.display_credential.issuer_name = state
             .profile_settings
             .profile
@@ -142,8 +147,11 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
                 "No profile found to set the self-issued credential issuer name".to_string(),
             ))?
             .name;
-        vcr.display_credential.metadata.date_issued = now.to_string();
         vcr.display_credential.connection_id = Some("Self-Issued".to_string());
+
+        // Metadata
+        vcr.display_credential.metadata.date_issued = now.to_string();
+        vcr.display_credential.metadata.is_favorite = self_issue_credential.is_favorite;
 
         let state_guard = state.core_utils.managers.lock().await;
         let stronghold_manager = state_guard

@@ -5,7 +5,9 @@
   import LL from '$i18n/i18n-svelte';
 
   import { Button, Switch, TopNavBar } from '$lib/components';
+  import { dispatch } from '$lib/dispatcher';
   import { HeartFillIcon, IdentificationBadgeRegularIcon } from '$lib/icons';
+  import { state as appState } from '$lib/stores';
 
   // Bottom action: Add to favourites, Create profile
   let checked = $state(true);
@@ -50,6 +52,35 @@
   // TODO: do we even need this?
   function createProfile() {
     loading = true;
+
+    const credentialSubject = fields.reduce(
+      (acc, field) => {
+        if (field.value && field.value.trim().length > 0) {
+          acc[field.label] = field.value;
+        }
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+
+    let name = labelInput.value;
+    if (name.trim().length === 0) {
+      name = $LL.ADD_CREDENTIALS.PROFILE.ADD.LABEL_PLACEHOLDER();
+    }
+
+    dispatch({
+      type: '[Credential] Self Issue',
+      payload: {
+        type: 'profile',
+        data: JSON.stringify({
+          type: ['VerifiableCredential'],
+          issuanceDate: new Date().toISOString(), // TODO: this shouldn't be necessary anymore, use `metadata` instead
+          name,
+          credentialSubject,
+        }),
+        is_favorite: checked,
+      },
+    });
     // TODO: dispatch action
     setTimeout(() => {
       loading = false;
@@ -69,6 +100,11 @@
   onMount(() => {
     if (!profileName) {
       labelInput.focus();
+    }
+    if ($appState.dev_mode !== 'Off') {
+      labelInput.value = 'My Profile';
+      fields[0].value = 'Ferris';
+      fields[2].value = 'Rustacean';
     }
   });
 </script>

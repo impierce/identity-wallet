@@ -9,11 +9,10 @@ use ts_rs::TS;
 #[derive(Serialize, Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/SelfIssueCredential.ts")]
 pub struct SelfIssueCredential {
-    #[ts(type = "string")]
     #[serde(rename = "type")]
     pub _type: SelfIssuedCredentialType,
-    #[ts(type = "string")]
     pub data: String,
+    pub is_favorite: bool,
 }
 
 #[typetag::serde(name = "[Credential] Self Issue")]
