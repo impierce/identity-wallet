@@ -5406,7 +5406,6 @@ dependencies = [
  "oid4vc",
  "p256 0.13.2",
  "reqwest 0.11.27",
- "sd-jwt-payload 0.3.0 (git+https://github.com/iotaledger/sd-jwt-payload.git?rev=ddbf033)",
  "serde",
  "serde_json",
  "serde_with 3.12.0",
@@ -5479,7 +5478,7 @@ dependencies = [
  "once_cell",
  "roaring",
  "sd-jwt-payload 0.2.1",
- "sd-jwt-payload 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sd-jwt-payload 0.3.0",
  "serde",
  "serde-aux",
  "serde_json",
@@ -11438,26 +11437,6 @@ name = "sd-jwt-payload"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c080b34b6f70cd590f5611cc7e37024eaaa52391d93a9cc85960f2f1d8c69927"
-dependencies = [
- "anyhow",
- "async-trait",
- "indexmap 2.9.0",
- "iota-crypto",
- "itertools 0.12.1",
- "json-pointer",
- "multibase 0.9.1",
- "rand 0.8.5",
- "serde",
- "serde_json",
- "serde_with 3.12.0",
- "strum 0.26.3",
- "thiserror 1.0.69",
-]
-
-[[package]]
-name = "sd-jwt-payload"
-version = "0.3.0"
-source = "git+https://github.com/iotaledger/sd-jwt-payload.git?rev=ddbf033#ddbf033149200da502130f7cf48df8ae09056cab"
 dependencies = [
  "anyhow",
  "async-trait",

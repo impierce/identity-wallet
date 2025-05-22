@@ -2,12 +2,14 @@ use std::{str::FromStr, sync::Arc};
 
 use async_trait::async_trait;
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
-use identity_credential::sd_jwt_vc::SdJwtVcBuilder;
+use identity_credential::{
+    sd_jwt_v2::{JsonObject, JwsSigner},
+    sd_jwt_vc::SdJwtVcBuilder,
+};
 use identity_iota::core::{Timestamp, Url};
 use itertools::Itertools;
 use jsonwebtoken::Algorithm;
 use oid4vc::oid4vc_core::Sign;
-use sd_jwt_payload_rework::{JsonObject, JwsSigner};
 use serde_json::json;
 use uuid::Uuid;
 
