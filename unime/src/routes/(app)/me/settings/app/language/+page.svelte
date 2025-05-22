@@ -4,7 +4,7 @@
   import { TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { CheckBoldIcon } from '$lib/icons';
-  import { incompleteLocales, locales } from '$lib/locales';
+  import { disabledLocales, locales } from '$lib/locales';
   import { state } from '$lib/stores';
 
   $: selected = locales.find((l) => l.locale === $state?.profile_settings.locale);
@@ -16,15 +16,14 @@
   {#each locales as l}
     <button
       class="flex h-14 items-center space-x-4 rounded-xl bg-white p-4 dark:bg-dark
-          {incompleteLocales.includes(l.locale) ? 'opacity-30 grayscale' : ''}"
+          {disabledLocales.includes(l.locale) ? 'opacity-30 grayscale' : ''}"
       on:click={() => dispatch({ type: '[Settings] Set locale', payload: { locale: l.locale } })}
-      disabled={incompleteLocales.includes(l.locale)}
+      disabled={disabledLocales.includes(l.locale)}
     >
-      <svelte:component this={l.flag} class="h-5 w-5 rounded-full" />
       <p class="grow text-left text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
         {l.displayName}
       </p>
-      {#if incompleteLocales.includes(l.locale)}
+      {#if disabledLocales.includes(l.locale)}
         <div class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
           {$LL.SETTINGS.APP.LANGUAGE.COMING_SOON()}
         </div>

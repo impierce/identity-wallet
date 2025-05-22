@@ -90,6 +90,10 @@ cargo clippy
 cargo test
 ```
 
+### Generate TypeScript bindings
+
+In order to regenerate the TypeScript bindings in `identity-wallet/bindings` after making changes to actions or reducers, you can simply execute all Rust tests by running `cargo test` from within the `/identity-wallet` folder.
+
 ### VS Code support
 
 Recommended extensions are listed in `.vscode/extensions.json`.
@@ -116,4 +120,7 @@ You can simulate safe area insets during development by overriding CSS variables
    Be **cautious** not to replace versions of any other dependencies (in `Cargo.toml`, `Cargo.lock`, `package.json`, `package-lock.json`).
 2. Run the script in `unime/src-tauri/gen-static/apply.sh` which copies over the changed files into the (untracked) generated folders for Android and iOS.
 3. Inside `unime/src-tauri` run `cargo tauri icon`.
-4. Run `npm run tauri ios build` and `npm run tauri android build` to build the apps. The iOS build (`.ipa`) will be in `unime/src-tauri/gen/apple/build/arm64` and the Android builds (`.apk` and `.aab`) will be in `unime/src-tauri/gen/android/app/build/outputs/`.
+4. To create a release build, there is a special tweak for the respective platform:
+   - For **iOS**, open Xcode and open the root file `unime.xcodeproj`. Go to `Signing & Capabilities`, disable `Automatically manage signing` and select the `Provisioning Profile` manually.
+   - For **Android**, create a `keystore.properties` file in `unime/src-tauri/gen/android` which contains the secrets required in `build.gradle.kts` (such as `keyAlias`, etc.).
+5. Run `pnpm tauri ios build` and `pnpm tauri android build` to build the apps. The iOS build (`.ipa`) will be in `unime/src-tauri/gen/apple/build/arm64` and the Android builds (`.apk` and `.aab`) will be in `unime/src-tauri/gen/android/app/build/outputs/`.

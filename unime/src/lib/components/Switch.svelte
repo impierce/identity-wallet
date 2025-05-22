@@ -1,30 +1,54 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
+  import type { Snippet } from 'svelte';
+
+  import { writable } from 'svelte/store';
 
   import { createSwitch, melt } from '@melt-ui/svelte';
 
-  export let active = false;
+  interface Props {
+    children: Snippet;
+    checked?: boolean; // Control the switch from outside.
+    onCheckedChange?: ({ curr, next }: { curr: boolean; next: boolean }) => boolean; // Control whether or not the switch should toggle.
+  }
 
-  const dispatch = createEventDispatcher();
+  let { checked = false, onCheckedChange, children }: Props = $props();
+
+  // Provide own store to `createSwitch` and set initial value.
+  const checkedStore = writable(checked);
 
   const {
-    elements: { root, input },
-    states: { checked },
+    elements: { root },
   } = createSwitch({
-    defaultChecked: active,
+    // Make switch controlled.
+    checked: checkedStore,
+    onCheckedChange: ({ curr, next }) => {
+      if (onCheckedChange) {
+        return onCheckedChange({ curr, next });
+      }
+      return next;
+    },
   });
 
-  checked.subscribe((c) => {
-    dispatch('change', c);
+  $effect(() => {
+    // Update the switch store when `checked` changes.
+    $checkedStore = checked;
   });
+
+  // ID to link `label` and `button`.
+  const id = crypto.randomUUID();
 </script>
 
-<button
-  use:melt={$root}
-  class="group relative h-7 w-11 rounded-full bg-primary/25 transition-colors data-[state=checked]:bg-primary"
->
-  <span
-    class="m-0.5 block h-5 w-5 translate-x-0.5 rounded-full bg-white transition group-data-[state=checked]:translate-x-[18px] dark:bg-dark"
-  ></span>
-</button>
-<input use:melt={$input} />
+<div data-component="Switch" class="flex items-center justify-between gap-2">
+  <label {id} class="grow">
+    {@render children()}
+  </label>
+  <button
+    use:melt={$root}
+    aria-labelledby={id}
+    class="group relative h-7 w-11 rounded-full bg-text/25 transition-colors data-[state=checked]:bg-primary"
+  >
+    <span
+      class="m-0.5 block h-5 w-5 translate-x-0.5 rounded-full bg-background-alt transition group-data-[state=checked]:translate-x-[18px]"
+    ></span>
+  </button>
+</div>

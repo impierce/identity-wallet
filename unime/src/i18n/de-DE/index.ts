@@ -1,6 +1,6 @@
 import type { Translation } from '../i18n-types';
 
-const de = {
+const de_DE = {
   ONBOARDING: {
     WELCOME: {
       GREETING: 'Willkommen bei',
@@ -146,6 +146,12 @@ Durch die Nutzung unseres Dienstes bestätigen Sie, dass Sie diese Allgemeinen G
         MATCH: 'Passwörter stimmen überein',
         NO_MATCH: 'Passwörter stimmen nicht überein',
       },
+      BIOMETRICS: {
+        TITLE: '{type} aktivieren',
+        DESCRIPTION: 'Möchtest du {type} nutzen, um die App zu entsperren?',
+        CONFIRM: 'Ja, {type} nutzen',
+        DECIDE_LATER: 'Später entscheiden',
+      },
       COMPLETED: {
         NAVBAR_TITLE: 'Passwort gesetzt',
         TITLE_1: 'Dein UniMe Profil ist jetzt',
@@ -188,6 +194,30 @@ Durch die Nutzung unseres Dienstes bestätigen Sie, dass Sie diese Allgemeinen G
         TITLE_1: 'Wähle das',
         TITLE_2: 'Erscheinungsbild',
         SUBTITLE: 'Bist du eher eine Nachteule?',
+      },
+      SECURITY: {
+        LABEL: 'Sicherheit',
+        NAVBAR_TITLE: 'Sicherheit',
+        SWITCH_LABEL: 'Mit {type} entsperren',
+        BIOMETRIC_TYPE: {
+          ANDROID: {
+            FACE_ID: 'Gesichtserkennung',
+            TOUCH_ID: 'Fingerabdruck',
+          },
+          IOS: {
+            FACE_ID: 'Face ID',
+            TOUCH_ID: 'Touch ID',
+          },
+          GENERIC: 'Biometrie',
+        },
+        ENABLE: {
+          DIALOG_TITLE: '{type} aktivieren',
+          DIALOG_CONTENT: 'Gib dein Passwort ein, um {type} zu aktivieren.',
+        },
+        DISABLE: {
+          DIALOG_TITLE: '{type} deaktivieren',
+          DIALOG_CONTENT: 'Gib dein Passwort ein, um {type} zu deaktivieren.',
+        },
       },
       PASSWORD: {
         TITLE: 'Passwort',
@@ -394,6 +424,11 @@ Durch die Nutzung unseres Dienstes bestätigen Sie, dass Sie diese Allgemeinen G
   SKIP: 'Überspringen',
   ACCEPT: 'Akzeptieren',
   REJECT: 'Ablehnen',
+  // TODO: AI generated translations to fix TS errors in journeys.
+  GETTING_STARTED: {
+    SKIP_TITLE: 'Einführung überspringen',
+    SKIP_TEXT: 'Möchtest du die Einführung wirklich überspringen?',
+  },
 } satisfies Translation;
 
-export default de;
+export default de_DE;

@@ -3,30 +3,50 @@
 
   import LL from '$i18n/i18n-svelte';
 
+  import { retrieve } from '@impierce/tauri-plugin-keystore';
   import { melt } from '@melt-ui/svelte';
   import { warn } from '@tauri-apps/plugin-log';
 
   import { ActionSheet, Button } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { EyeClosedRegularIcon, EyeRegularIcon } from '$lib/icons';
-  import UniMeLogoDark from '$lib/static/svg/logo/UniMeLogoDark.svelte';
-  import UniMeLogoLight from '$lib/static/svg/logo/UniMeLogoLight.svelte';
+  import UniMeLogo from '$lib/static/svg/logo/UniMeLogo.svelte';
   import { state } from '$lib/stores';
 
   let showPassword = false;
 
   let password: string;
 
-  // TODO: make reactive
-  const isDarkModeEnabled = document.documentElement.classList.contains('dark');
+  const SERVICE = 'com.impierce.identity-wallet';
+  const USER = 'unime'; // TODO: rename to "ACCOUNT" to reflect Keychain Access item?
+
+  const unlockWithBiometrics = async () => {
+    await retrieve(SERVICE, USER)
+      .then((password) => {
+        // TODO: do we need this check or can we change the return type to "Promise<string>"?
+        if (password) {
+          setTimeout(() => {
+            dispatch({ type: '[Storage] Unlock', payload: { password } });
+          }, 500);
+        }
+      })
+      .catch((error) => {
+        warn(error);
+      });
+  };
 
   // TODO move to the backend
-  onMount(() => {
+  onMount(async () => {
+    // When developer mode is enabled, a static password is injected automatically.
     if ($state?.dev_mode === 'OnWithAutologin') {
       warn('Developer mode - Injecting password automatically ...');
       setTimeout(() => {
         dispatch({ type: '[Storage] Unlock', payload: { password: 'sup3rSecr3t' } });
       }, 500);
+    }
+    // When biometrics are enabled, try to retrieve the password and inject it.
+    if ($state?.profile_settings.biometrics_enabled) {
+      await unlockWithBiometrics();
     }
   });
 </script>
@@ -35,18 +55,15 @@
   <!-- Placeholder -->
   <!-- <div class="aspect-square w-1/4 rounded-3xl border border-slate-200 bg-slate-100" /> -->
   <div class="flex flex-col items-center justify-center">
-    {#if isDarkModeEnabled}
-      <UniMeLogoDark />
-    {:else}
-      <UniMeLogoLight />
-    {/if}
+    <UniMeLogo class="text-blue dark:text-silver" />
 
+    <!-- Manual password entry -->
     <div class="relative mb-4 mt-8 w-[240px]">
       <input
         type={showPassword ? 'text' : 'password'}
         class="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300"
         placeholder={$LL.LOCK_SCREEN.PASSWORD_INPUT_PLACEHOLDER()}
-        on:input={(e) => (password = e.target.value)}
+        on:input={(e: Event) => (password = (e.target as HTMLInputElement).value)}
       />
       <div class="absolute right-3 top-0 flex h-full items-center">
         <button class="rounded-full p-2" on:click={() => (showPassword = !showPassword)}>
@@ -63,6 +80,7 @@
       on:click={() => dispatch({ type: '[Storage] Unlock', payload: { password } })}
       disabled={!password}
     />
+
     <!-- Forgot password? Reset app -->
     <div class="mt-8">
       <ActionSheet titleText={$LL.SETTINGS.RESET_APP.TITLE()} descriptionText={$LL.SETTINGS.RESET_APP.DESCRIPTION()}>
@@ -89,7 +107,7 @@
 </div>
 
 <!-- Overwrite colors from template -->
-<div class="safe-area-bottom z-10 bg-silver dark:bg-navy" />
+<div class="safe-area-bottom z-10 bg-silver dark:bg-navy"></div>
 
 <style>
   .content-height {

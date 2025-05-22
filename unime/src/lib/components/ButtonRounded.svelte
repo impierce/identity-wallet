@@ -10,7 +10,13 @@
 
   export let label: string;
   export let icon: typeof SvelteComponent<SvelteHTMLElements['svg']>;
-  export let trigger = undefined; // TODO: add type
+  // AI generated type (Claude 3.5 Sonnet).
+  // TODO: Melt UI triggers should not be passed in from the outside.
+  export let trigger:
+    | ({ readonly type: 'button' } & { [x: `data-melt-${string}`]: '' } & {
+        action: (node: HTMLElement) => { destroy?: (() => void) | undefined };
+      })
+    | undefined = undefined;
 </script>
 
 <!-- TODO: does it make sense to pass in the trigger here? -->

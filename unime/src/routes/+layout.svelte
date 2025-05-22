@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { onDestroy, onMount, type SvelteComponent } from 'svelte';
+  import { onDestroy, onMount, type Component } from 'svelte';
 
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import { PUBLIC_DEV_MODE_MENU_EXPANDED, PUBLIC_STYLE_SAFE_AREA_INSETS } from '$env/static/public';
   import LL, { setLocale } from '$i18n/i18n-svelte';
   import { loadAllLocales } from '$i18n/i18n-util.sync';
-  import type { SvelteHTMLElements } from 'svelte/elements';
+  import type { SVGAttributes } from 'svelte/elements';
   import { writable } from 'svelte/store';
   import { fly } from 'svelte/transition';
 
@@ -15,7 +15,7 @@
   import { listen, type UnlistenFn } from '@tauri-apps/api/event';
   import { attachConsole, error, info } from '@tauri-apps/plugin-log';
 
-  import { Switch } from '$lib/components';
+  import { DeprecatedSwitch } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import {
     ArrowLeftRegularIcon,
@@ -130,7 +130,7 @@
   }
 
   interface DevModeButton {
-    icon: typeof SvelteComponent<SvelteHTMLElements['svg']> | string;
+    icon: Component<SVGAttributes<SVGSVGElement>> | string;
     onClick: () => void;
   }
 
@@ -366,7 +366,7 @@ Stacking context: We have to deviate from the DOM-sequence.
 
           <div class="flex items-center justify-end pb-2">
             <div class="mr-2 text-xs text-orange-800">Reset profile?</div>
-            <Switch
+            <DeprecatedSwitch
               active={resetDragonProfile}
               on:change={() => {
                 resetDragonProfile = !resetDragonProfile;
@@ -385,7 +385,7 @@ Stacking context: We have to deviate from the DOM-sequence.
 
     <slot />
 
-    <!-- Show error if exists -->
+    <!-- Show actual (non-localized) error message in dev mode, default (localized) message otherwise.  -->
     {#if $errorState}
       <div class="absolute bottom-[calc(16px_+_var(--safe-area-inset-bottom))] right-4 w-[calc(100%_-_32px)]">
         <ErrorToast

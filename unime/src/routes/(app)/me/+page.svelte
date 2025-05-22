@@ -43,7 +43,7 @@
 </script>
 
 <!-- Isolate stacking context to avoid z-index conflicts. -->
-<div class="isolate flex flex-col bg-white dark:bg-dark">
+<div class="isolate flex h-full flex-col bg-white dark:bg-dark">
   <div class="sticky top-0 z-10 w-full bg-white px-[20px] py-4 dark:bg-dark">
     <!-- Top Bar -->
     <div class="flex items-center justify-between">
@@ -140,7 +140,7 @@
               speed={0.25}
               mode="normal"
               style="width: 320px"
-            />
+            ></lottie-player>
           </div>
         </div>
 

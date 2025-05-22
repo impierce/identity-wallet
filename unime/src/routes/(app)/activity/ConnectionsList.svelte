@@ -41,7 +41,7 @@
                 <div
                   slot="fallback"
                   class="h-full w-full rounded-full ring-1 ring-inset ring-slate-200 dark:bg-dark dark:ring-slate-600"
-                />
+                ></div>
               </Image>
             </div>
             <div slot="right" class="h-full pr-2 pt-1 text-[12px]/[20px] font-medium text-slate-400">

@@ -19,6 +19,7 @@ pub struct ProfileSettings {
     pub preferred_did_methods: Vec<String>,
     pub preferred_key_types: Vec<String>,
     pub sorting_preferences: SortingPreferences,
+    pub biometrics_enabled: bool,
 }
 
 #[typetag::serde(name = "profile_settings")]
@@ -44,6 +45,7 @@ impl Default for ProfileSettings {
                     reverse: false,
                 },
             },
+            biometrics_enabled: false,
         }
     }
 }
@@ -76,6 +78,8 @@ pub enum Locale {
     de_DE,
     #[serde(rename = "nl-NL")]
     nl_NL,
+    #[serde(rename = "es-ES")]
+    es_ES,
 }
 
 #[typetag::serde(name = "locale")]

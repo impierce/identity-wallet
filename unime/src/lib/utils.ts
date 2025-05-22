@@ -1,9 +1,14 @@
+import LL from '$i18n/i18n-svelte';
+import { get } from 'svelte/store';
+
 import { Sha256 } from '@aws-crypto/sha256-js';
 import type { Locale } from '@bindings/profile_settings/Locale';
 import { convertFileSrc } from '@tauri-apps/api/core';
 import { appDataDir, join } from '@tauri-apps/api/path';
+import { BiometryType } from '@tauri-apps/plugin-biometric';
 import { exists } from '@tauri-apps/plugin-fs';
 import { debug, info, warn } from '@tauri-apps/plugin-log';
+import { platform } from '@tauri-apps/plugin-os';
 
 /**
  * Get an image asset URL from the UniMe backend.
@@ -83,20 +88,62 @@ export function formatDateTime(isoDate: string, locale: Locale, test = false) {
 }
 
 export function formatRelativeDateTime(isoDate: string, locale: Locale) {
-  // 1 min, 1 hour, 1 day, 1 week, 1 month, 1 year.today
+  const date = new Date(isoDate);
+  const now = new Date();
+
+  const diffInSeconds = (date.getTime() - now.getTime()) / 1000;
+
+  // Thresholds in seconds: 1 min, 1 hour, 1 day, 1 week, 1 month, 1 year.
   const thresholds = [60, 3600, 86400, 86400 * 7, 86400 * 30, 86400 * 365, Infinity];
+
   const units: Intl.RelativeTimeFormatUnit[] = ['second', 'minute', 'hour', 'day', 'week', 'month', 'year'];
 
-  const diffInSeconds = (Date.now() - new Date(isoDate).getTime()) / 1000;
-
   // Determine the threshold to use.
-  const index = thresholds.findIndex((threshold) => threshold > diffInSeconds);
+  const index = thresholds.findIndex((threshold) => Math.abs(diffInSeconds) < threshold);
   const divisor = index ? thresholds[index - 1] : 1;
 
-  const relativeDateTime = new Intl.RelativeTimeFormat(locale, {
+  const relativeFormatter = new Intl.RelativeTimeFormat(locale, {
     numeric: 'auto',
-  }).format(-1 * Math.floor(diffInSeconds / divisor), units[index]);
+  });
+
+  // Use Math.round for more accurate relative time.
+  const relativeDateTime = relativeFormatter.format(Math.round(diffInSeconds / divisor), units[index]);
 
   // Capitalize the first character.
   return relativeDateTime.charAt(0).toUpperCase() + relativeDateTime.slice(1);
+}
+
+/**
+ * Determines the name of the biometrics type based on the platform.
+ */
+export function localizedBiometricsTypeString(type: BiometryType): string {
+  let biometryTypeString = get(LL).SETTINGS.APP.SECURITY.BIOMETRIC_TYPE.GENERIC(); // default
+  // On iOS, we distinguish between Face ID and Touch ID.
+  if (platform() === 'ios') {
+    const localizedType = (() => {
+      switch (type) {
+        case BiometryType.TouchID:
+          return get(LL).SETTINGS.APP.SECURITY.BIOMETRIC_TYPE.IOS.TOUCH_ID();
+        case BiometryType.FaceID:
+          return get(LL).SETTINGS.APP.SECURITY.BIOMETRIC_TYPE.IOS.FACE_ID();
+        default:
+          return get(LL).SETTINGS.APP.SECURITY.BIOMETRIC_TYPE.GENERIC();
+      }
+    })();
+    biometryTypeString = localizedType;
+    // On Android, we distinguish between fingerprint and face unlock.
+  } else if (platform() === 'android') {
+    const localizedType = (() => {
+      switch (type) {
+        case BiometryType.TouchID:
+          return get(LL).SETTINGS.APP.SECURITY.BIOMETRIC_TYPE.ANDROID.TOUCH_ID();
+        case BiometryType.FaceID:
+          return get(LL).SETTINGS.APP.SECURITY.BIOMETRIC_TYPE.ANDROID.FACE_ID();
+        default:
+          return get(LL).SETTINGS.APP.SECURITY.BIOMETRIC_TYPE.GENERIC();
+      }
+    })();
+    biometryTypeString = localizedType;
+  }
+  return biometryTypeString;
 }

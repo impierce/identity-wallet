@@ -1,9 +1,3 @@
-// Circle Flag icons: https://icon-sets.iconify.design/circle-flags/
-export { default as DEFlagIcon } from '~icons/circle-flags/de';
-export { default as GBFlagIcon } from '~icons/circle-flags/gb';
-export { default as NLFlagIcon } from '~icons/circle-flags/nl';
-export { default as USFlagIcon } from '~icons/circle-flags/us';
-
 // Phosphor icons: https://icon-sets.iconify.design/ph/
 export { default as ArrowCounterClockwiseBoldIcon } from '~icons/ph/arrow-counter-clockwise-bold';
 export { default as ArrowLeftRegularIcon } from '~icons/ph/arrow-left';
@@ -33,6 +27,8 @@ export { default as EyeRegularIcon } from '~icons/ph/eye';
 export { default as EyeClosedRegularIcon } from '~icons/ph/eye-closed';
 export { default as FileArrowDownFillIcon } from '~icons/ph/file-arrow-down-fill';
 export { default as FilesFillIcon } from '~icons/ph/files-fill';
+export { default as FingerprintLightIcon } from '~icons/ph/fingerprint-light';
+export { default as FingerprintFillIcon } from '~icons/ph/fingerprint-fill';
 export { default as GearFillIcon } from '~icons/ph/gear-fill';
 export { default as GhostFillIcon } from '~icons/ph/ghost-fill';
 export { default as HeartFillIcon } from '~icons/ph/heart-fill';
@@ -52,9 +48,12 @@ export { default as PlugsConnectedFillIcon } from '~icons/ph/plugs-connected-fil
 export { default as PlusBoldIcon } from '~icons/ph/plus-bold';
 export { default as QuestionMarkBoldIcon } from '~icons/ph/question-mark-bold';
 export { default as RocketLaunchFillIcon } from '~icons/ph/rocket-launch-fill';
+export { default as ScanSmileyLightIcon } from '~icons/ph/scan-smiley-light';
+export { default as ScanSmileyFillIcon } from '~icons/ph/scan-smiley-fill';
 export { default as SealCheckRegularIcon } from '~icons/ph/seal-check';
 export { default as SealCheckFillIcon } from '~icons/ph/seal-check-fill';
 export { default as ShareFatFillIcon } from '~icons/ph/share-fat-fill';
+export { default as ShieldCheckFillIcon } from '~icons/ph/shield-check-fill';
 export { default as ShieldFillIcon } from '~icons/ph/shield-fill';
 export { default as SignOutFillIcon } from '~icons/ph/sign-out-fill';
 export { default as SlidersHorizontalRegularIcon } from '~icons/ph/sliders-horizontal';
@@ -63,6 +62,7 @@ export { default as SmileySadRegularIcon } from '~icons/ph/smiley-sad';
 export { default as StarFillIcon } from '~icons/ph/star-fill';
 export { default as SunFillIcon } from '~icons/ph/sun-fill';
 export { default as TranslateFillIcon } from '~icons/ph/translate-fill';
+export { default as TranslateRegularIcon } from '~icons/ph/translate';
 export { default as TrashRegularIcon } from '~icons/ph/trash';
 export { default as TrashFillIcon } from '~icons/ph/trash-fill';
 export { default as TrophyFillIcon } from '~icons/ph/trophy-fill';
