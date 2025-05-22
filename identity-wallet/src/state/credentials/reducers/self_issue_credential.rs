@@ -147,7 +147,6 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
                 "No profile found to set the self-issued credential issuer name".to_string(),
             ))?
             .name;
-        vcr.display_credential.connection_id = Some("Self-Issued".to_string());
 
         // Metadata
         vcr.display_credential.metadata.date_issued = now.to_string();
