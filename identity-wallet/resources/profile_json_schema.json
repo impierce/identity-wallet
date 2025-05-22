@@ -1,0 +1,43 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+      "title": {
+        "type": "string",
+        "description": "Title of the person (e.g., Mr., Ms., Dr.)",
+        "enum": ["Mr.", "Ms.", "Mrs.", "Dr.", "Prof.", "Mx."]
+      },
+      "first name": {
+        "type": "string",
+        "description": "First name of the person",
+        "minLength": 1
+      },
+      "middle name": {
+        "type": "string",
+        "description": "Middle name of the person",
+        "minLength": 1,
+        "nullable": true
+      },
+      "last name": {
+        "type": "string",
+        "description": "Last name of the person",
+        "minLength": 1
+      },
+      "date of birth": {
+        "type": "string",
+        "format": "date",
+        "description": "Date of birth in ISO 8601 format (YYYY-MM-DD)"
+      },
+      "gender": {
+        "type": "string",
+        "description": "Gender of the person",
+        "enum": ["Male", "Female", "Non-Binary", "Other", "Prefer not to say"]
+      },
+      "pronoun": {
+        "type": "string",
+        "description": "Preferred pronoun of the person",
+        "enum": ["He/Him", "She/Her", "They/Them", "Other", "Prefer not to say"]
+      }
+    },
+    "additionalProperties": true
+  }
