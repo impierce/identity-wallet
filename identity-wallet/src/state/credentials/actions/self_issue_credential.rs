@@ -11,7 +11,8 @@ use ts_rs::TS;
 pub struct SelfIssueCredential {
     #[serde(rename = "type")]
     pub _type: SelfIssuedCredentialType,
-    pub data: String,
+    #[ts(type = "object")]
+    pub data: serde_json::Value,
     pub is_favorite: bool,
 }
 

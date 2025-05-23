@@ -1,4 +1,4 @@
-use std::{str::FromStr, sync::Arc};
+use std::sync::Arc;
 
 use async_trait::async_trait;
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
@@ -55,7 +55,7 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
     if let Some(self_issue_credential) = listen::<SelfIssueCredential>(action) {
         // TODO: autofill credentialSubject and a few other fields.
 
-        let data = serde_json::Value::from_str(&self_issue_credential.data).unwrap();
+        let data = &mut self_issue_credential.data.clone();
 
         // Get preferred key type and convert it to jsonwebtoken::Algorithm
         let key_type = state
@@ -76,7 +76,7 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
             .preferred_did_methods
             .first()
             .ok_or(AppError::Error("Failed to get a preferred did method".to_string()))?;
-        let issuer_did = state
+        let issuer_did: Url = state
             .dids
             .get(did_method)
             .ok_or(AppError::Error(
@@ -103,9 +103,13 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
 
         let now = Timestamp::now_utc(); // TODO?: is this the right time notation?
 
-        let credential_data = data.as_object().ok_or(AppError::Error(
+        let credential_data = data.as_object_mut().ok_or(AppError::Error(
             "Invalid action payload for the self_issue_credential.data field".to_string(),
         ))?;
+
+        credential_data.insert("@context".to_string(), json!("https://www.w3.org/2018/credentials/v1"));
+        credential_data.insert("issuer".to_string(), json!(issuer_did.to_string()));
+        // TODO: should we also set the (optional) "credentialSubject.id = issuer_did"?
 
         let sd_jwt_credential = SdJwtVcBuilder::new(credential_data)
             .map_err(|_| AppError::Error("Failed to create a SdJwtVcBuilder".to_string()))?
@@ -139,14 +143,6 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
             .as_str()
             .unwrap()
             .to_owned();
-        vcr.display_credential.issuer_name = state
-            .profile_settings
-            .profile
-            .clone()
-            .ok_or(AppError::Error(
-                "No profile found to set the self-issued credential issuer name".to_string(),
-            ))?
-            .name;
 
         // Metadata
         vcr.display_credential.metadata.date_issued = now.to_string();

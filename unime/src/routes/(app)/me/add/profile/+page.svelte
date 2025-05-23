@@ -3,10 +3,12 @@
 
   import { goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
+  import { z } from 'zod/v4';
 
   import { Button, Switch, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { HeartFillIcon, IdentificationBadgeRegularIcon } from '$lib/icons';
+  import { naturalPerson } from '$lib/schemas/pid';
   import { state as appState } from '$lib/stores';
 
   // Bottom action: Add to favourites, Create profile
@@ -49,7 +51,6 @@
     },
   ]);
 
-  // TODO: do we even need this?
   function createProfile() {
     loading = true;
 
@@ -72,19 +73,15 @@
       type: '[Credential] Self Issue',
       payload: {
         type: 'profile',
-        data: JSON.stringify({
+        data: {
           type: ['VerifiableCredential'],
-          issuanceDate: new Date().toISOString(), // TODO: this shouldn't be necessary anymore, use `metadata` instead
+          issuanceDate: new Date().toISOString(), // TODO: the backend should use `metadata` instead
           name,
           credentialSubject,
-        }),
+        },
         is_favorite: checked,
       },
     });
-    // TODO: dispatch action
-    setTimeout(() => {
-      loading = false;
-    }, 2000);
   }
 
   let valid = $derived(() => {
@@ -98,6 +95,8 @@
   });
 
   onMount(() => {
+    console.log(JSON.stringify(z.toJSONSchema(naturalPerson)));
+
     if (!profileName) {
       labelInput.focus();
     }
@@ -138,9 +137,9 @@
               {field.label}
             </label>
             {#if field.required}
-              <span class="text-[12px]/[14px] font-medium text-primary"
-                >{$LL.ADD_CREDENTIALS.PROFILE.ADD.REQUIRED()}</span
-              >
+              <span class="text-[12px]/[14px] font-medium text-primary">
+                {$LL.ADD_CREDENTIALS.VALUE_REQUIRED()}
+              </span>
             {/if}
           </div>
           <input
@@ -160,17 +159,15 @@
   <Switch {checked} onCheckedChange={({ next }) => (checked = next)}>
     <div class="flex items-center gap-4 px-4">
       <HeartFillIcon class="size-5 text-primary" />
-      <span class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey"
-        >{$LL.ADD_CREDENTIALS.PROFILE.ADD.FAVORITES_TOGGLE_LABEL()}</span
-      >
+      <span class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
+        {$LL.ADD_CREDENTIALS.FAVORITES_TOGGLE_LABEL()}
+      </span>
     </div>
   </Switch>
   <Button
-    label={$LL.ADD_CREDENTIALS.PROFILE.ADD.CREATE_PROFILE_BUTTON()}
+    label={$LL.ADD_CREDENTIALS.PROFILE.ADD.CREATE_BUTTON()}
     disabled={!valid()}
     {loading}
-    on:click={() => {
-      createProfile();
-    }}
+    on:click={() => createProfile()}
   />
 </div>

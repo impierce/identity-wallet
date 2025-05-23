@@ -173,6 +173,9 @@ importers:
       vitest:
         specifier: ^3.1.1
         version: 3.1.1(@types/node@22.5.0)(jiti@1.21.6)(jsdom@22.1.0)(yaml@2.5.0)
+      zod:
+        specifier: ^3.25.23
+        version: 3.25.23
 
 packages:
 
@@ -2800,6 +2803,9 @@ packages:
   zimmerframe@1.1.2:
     resolution: {integrity: sha512-rAbqEGa8ovJy4pyBxZM70hg4pE6gDgaQ0Sl9M3enG3I0d6H4XSAM3GeNGLKnsBpuijUow064sf7ww1nutC5/3w==}
 
+  zod@3.25.23:
+    resolution: {integrity: sha512-Od2bdMosahjSrSgJtakrwjMDb1zM1A3VIHCPGveZt/3/wlrTWBya2lmEh2OYe4OIu8mPTmmr0gnLHIWQXdtWBg==}
+
 snapshots:
 
   '@adobe/css-tools@4.4.0': {}
@@ -5402,3 +5408,5 @@ snapshots:
   yocto-queue@0.1.0: {}
 
   zimmerframe@1.1.2: {}
+
+  zod@3.25.23: {}

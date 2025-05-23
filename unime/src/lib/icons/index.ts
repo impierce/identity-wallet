@@ -57,6 +57,7 @@ export { default as ScanSmileyLightIcon } from '~icons/ph/scan-smiley-light';
 export { default as ScanSmileyFillIcon } from '~icons/ph/scan-smiley-fill';
 export { default as SealCheckRegularIcon } from '~icons/ph/seal-check';
 export { default as SealCheckFillIcon } from '~icons/ph/seal-check-fill';
+export { default as SealQuestionRegularIcon } from '~icons/ph/seal-question';
 export { default as ShareFatFillIcon } from '~icons/ph/share-fat-fill';
 export { default as ShieldCheckFillIcon } from '~icons/ph/shield-check-fill';
 export { default as ShieldFillIcon } from '~icons/ph/shield-fill';

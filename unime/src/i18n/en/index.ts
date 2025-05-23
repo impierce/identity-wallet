@@ -400,7 +400,9 @@ By using our Service, you acknowledge that you have read, understood, and agree 
     NAVBAR_TITLE: 'Credential Information',
     DETAILS: {
       VALID: 'Valid',
+      UNVERIFIED: 'Unverified',
       ISSUED_BY: 'Issued by',
+      SELF_SIGNED: 'yourself',
       DESCRIPTION: 'Description',
       OPEN_BADGES: {
         ALIGNMENT: 'Alignment',
@@ -422,6 +424,8 @@ By using our Service, you acknowledge that you have read, understood, and agree 
   ADD_CREDENTIALS: {
     BUTTON: 'Add',
     NAVBAR_TITLE: 'Add data',
+    VALUE_REQUIRED: 'Required',
+    FAVORITES_TOGGLE_LABEL: 'Add to favorites',
     EMAIL: {
       TITLE: 'Email',
       DESCRIPTION: 'Get your personal or work email verified',
@@ -480,15 +484,13 @@ By using our Service, you acknowledge that you have read, understood, and agree 
       ADD: {
         NAVBAR_TITLE: 'Your profile',
         LABEL_PLACEHOLDER: 'Personal Profile',
-        REQUIRED: 'Required',
         FIRST_NAME_LABEL: 'First name',
         FIRST_NAME_PLACEHOLDER: 'Your first name',
         MIDDLE_NAME_LABEL: 'Middle name(s)',
         MIDDLE_NAME_PLACEHOLDER: 'Your middle name(s)',
         LAST_NAME_LABEL: 'Last name',
         LAST_NAME_PLACEHOLDER: 'Your last name',
-        FAVORITES_TOGGLE_LABEL: 'Add to favorites',
-        CREATE_PROFILE_BUTTON: 'Create profile',
+        CREATE_BUTTON: 'Create profile',
       },
     },
   },

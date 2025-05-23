@@ -5413,7 +5413,7 @@ dependencies = [
  "serial_test",
  "sha256",
  "stronghold_engine",
- "stronghold_ext 0.1.0 (git+https://github.com/tensor-programming/stronghold_ext)",
+ "stronghold_ext",
  "strum 0.25.0",
  "tauri",
  "tauri-plugin-fs",
@@ -5695,7 +5695,7 @@ dependencies = [
  "log",
  "p256 0.13.2",
  "serde_json",
- "stronghold_ext 0.1.0 (git+https://github.com/impierce/stronghold_ext.git)",
+ "stronghold_ext",
  "tokio",
 ]
 
@@ -12408,25 +12408,7 @@ dependencies = [
 [[package]]
 name = "stronghold_ext"
 version = "0.1.0"
-source = "git+https://github.com/impierce/stronghold_ext.git#c3fa9c1cff0eaa8cd518b9a758cb8df76b899bf8"
-dependencies = [
- "ecdsa 0.16.9",
- "iota_stronghold",
- "k256",
- "p256 0.13.2",
- "rand 0.8.5",
- "serde",
- "sha2 0.10.9",
- "stronghold-utils",
- "stronghold_engine",
- "thiserror 1.0.69",
- "zeroize",
-]
-
-[[package]]
-name = "stronghold_ext"
-version = "0.1.0"
-source = "git+https://github.com/tensor-programming/stronghold_ext#c3fa9c1cff0eaa8cd518b9a758cb8df76b899bf8"
+source = "git+https://github.com/impierce/stronghold_ext#c3fa9c1cff0eaa8cd518b9a758cb8df76b899bf8"
 dependencies = [
  "ecdsa 0.16.9",
  "iota_stronghold",

@@ -945,9 +945,17 @@ type RootTranslation = {
 			 */
 			VALID: string
 			/**
+			 * U​n​v​e​r​i​f​i​e​d
+			 */
+			UNVERIFIED: string
+			/**
 			 * I​s​s​u​e​d​ ​b​y
 			 */
 			ISSUED_BY: string
+			/**
+			 * y​o​u​r​s​e​l​f
+			 */
+			SELF_SIGNED: string
 			/**
 			 * D​e​s​c​r​i​p​t​i​o​n
 			 */
@@ -999,6 +1007,14 @@ type RootTranslation = {
 		 * A​d​d​ ​d​a​t​a
 		 */
 		NAVBAR_TITLE: string
+		/**
+		 * R​e​q​u​i​r​e​d
+		 */
+		VALUE_REQUIRED: string
+		/**
+		 * A​d​d​ ​t​o​ ​f​a​v​o​r​i​t​e​s
+		 */
+		FAVORITES_TOGGLE_LABEL: string
 		EMAIL: {
 			/**
 			 * E​m​a​i​l
@@ -1154,10 +1170,6 @@ type RootTranslation = {
 				 */
 				LABEL_PLACEHOLDER: string
 				/**
-				 * R​e​q​u​i​r​e​d
-				 */
-				REQUIRED: string
-				/**
 				 * F​i​r​s​t​ ​n​a​m​e
 				 */
 				FIRST_NAME_LABEL: string
@@ -1182,13 +1194,9 @@ type RootTranslation = {
 				 */
 				LAST_NAME_PLACEHOLDER: string
 				/**
-				 * A​d​d​ ​t​o​ ​f​a​v​o​r​i​t​e​s
-				 */
-				FAVORITES_TOGGLE_LABEL: string
-				/**
 				 * C​r​e​a​t​e​ ​p​r​o​f​i​l​e
 				 */
-				CREATE_PROFILE_BUTTON: string
+				CREATE_BUTTON: string
 			}
 		}
 	}
@@ -2230,9 +2238,17 @@ export type TranslationFunctions = {
 			 */
 			VALID: () => LocalizedString
 			/**
+			 * Unverified
+			 */
+			UNVERIFIED: () => LocalizedString
+			/**
 			 * Issued by
 			 */
 			ISSUED_BY: () => LocalizedString
+			/**
+			 * yourself
+			 */
+			SELF_SIGNED: () => LocalizedString
 			/**
 			 * Description
 			 */
@@ -2284,6 +2300,14 @@ export type TranslationFunctions = {
 		 * Add data
 		 */
 		NAVBAR_TITLE: () => LocalizedString
+		/**
+		 * Required
+		 */
+		VALUE_REQUIRED: () => LocalizedString
+		/**
+		 * Add to favorites
+		 */
+		FAVORITES_TOGGLE_LABEL: () => LocalizedString
 		EMAIL: {
 			/**
 			 * Email
@@ -2439,10 +2463,6 @@ export type TranslationFunctions = {
 				 */
 				LABEL_PLACEHOLDER: () => LocalizedString
 				/**
-				 * Required
-				 */
-				REQUIRED: () => LocalizedString
-				/**
 				 * First name
 				 */
 				FIRST_NAME_LABEL: () => LocalizedString
@@ -2467,13 +2487,9 @@ export type TranslationFunctions = {
 				 */
 				LAST_NAME_PLACEHOLDER: () => LocalizedString
 				/**
-				 * Add to favorites
-				 */
-				FAVORITES_TOGGLE_LABEL: () => LocalizedString
-				/**
 				 * Create profile
 				 */
-				CREATE_PROFILE_BUTTON: () => LocalizedString
+				CREATE_BUTTON: () => LocalizedString
 			}
 		}
 	}
