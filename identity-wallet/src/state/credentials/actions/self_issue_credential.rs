@@ -14,6 +14,8 @@ pub struct SelfIssueCredential {
     #[ts(type = "object")]
     pub data: serde_json::Value,
     pub is_favorite: bool,
+    #[ts(optional)]
+    pub icon: Option<String>,
 }
 
 #[typetag::serde(name = "[Credential] Self Issue")]

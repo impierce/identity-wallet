@@ -80,6 +80,7 @@
           credentialSubject,
         },
         is_favorite: checked,
+        icon: 'IdentificationBadge',
       },
     });
   }

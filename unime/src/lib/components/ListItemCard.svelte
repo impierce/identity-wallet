@@ -10,6 +10,7 @@
   export let description: string | undefined = undefined;
   export let type: 'data' | 'badge' = 'data';
   export let isTempAsset = false;
+  export let icon: string | undefined = undefined;
 
   let useFallback = false;
 </script>
@@ -47,7 +48,12 @@ Can be used for credentials, connections, etc.
       class={`mr-4 flex h-12 w-12 min-w-[48px] items-center justify-center overflow-hidden rounded-lg p-1 ${useFallback ? 'bg-silver dark:bg-navy' : 'bg-white'}`}
     >
       <!-- useFallback from <Image> (child) is bound to a local variable in <ListItemCard> (parent) with the same name to determine which background color to display -->
-      <Image {id} iconFallback={type === 'data' ? 'User' : 'Certificate'} {isTempAsset} bind:useFallback />
+      <Image
+        {id}
+        iconFallback={icon ?? (type === 'data' ? 'UserLight' : 'CertificateLight')}
+        {isTempAsset}
+        bind:useFallback
+      />
     </div>
   </slot>
   <!-- Text -->

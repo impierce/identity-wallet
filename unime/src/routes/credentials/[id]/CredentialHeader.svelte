@@ -3,6 +3,7 @@
 
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 
+  import { Image } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { CertificateLightIcon, HeartStraightFillIcon, HeartStraightRegularIcon, UserLightIcon } from '$lib/icons';
   import { getImageAsset } from '$lib/utils';
@@ -22,16 +23,27 @@
 <!-- Stretch over parent horizontal padding with negative margins. -->
 <div class="relative -mx-4 flex flex-col items-center gap-4 bg-background py-5">
   <!-- Background is always white since most logos are designed for light backgrounds -->
-  <div class="grid h-40 w-40 place-items-center rounded-xl bg-white">
-    {#if credentialLogoUrl}
+  {#if credentialLogoUrl}
+    <div class="grid size-40 place-items-center rounded-xl bg-white">
       <!-- Fit image of unknown dimensions into available space with `contain` (not `cover`). -->
-      <img src={credentialLogoUrl} alt="Credential logo" class="h-32 w-32 object-contain" />
-    {:else if credential.data.type.includes('OpenBadgeCredential')}
-      <CertificateLightIcon class="h-10 w-10 text-text-alt" />
-    {:else}
-      <UserLightIcon class="h-10 w-10 text-text-alt" />
-    {/if}
-  </div>
+      <img src={credentialLogoUrl} alt="Credential logo" class="size-32 object-contain" />
+    </div>
+  {:else}
+    <!-- When there's no logo, we adjust the background to the theme -->
+    <div class="grid size-40 place-items-center rounded-xl bg-background-alt">
+      {#if credential.metadata.icon}
+        <Image
+          id={`${credential.metadata.icon}Light`}
+          iconFallback={`${credential.metadata.icon}Light`}
+          iconClass="size-10 dark:text-text-alt"
+        />
+      {:else if credential.data.type.includes('OpenBadgeCredential')}
+        <CertificateLightIcon class="size-10 text-text-alt" />
+      {:else}
+        <UserLightIcon class="size-10 text-text-alt" />
+      {/if}
+    </div>
+  {/if}
 
   <slot />
 

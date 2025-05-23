@@ -147,6 +147,7 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
         // Metadata
         vcr.display_credential.metadata.date_issued = now.to_string();
         vcr.display_credential.metadata.is_favorite = self_issue_credential.is_favorite;
+        vcr.display_credential.metadata.icon = self_issue_credential.icon;
 
         let state_guard = state.core_utils.managers.lock().await;
         let stronghold_manager = state_guard
