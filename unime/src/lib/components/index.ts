@@ -1,5 +1,6 @@
 export { default as Accordion } from './Accordion.svelte';
 export { default as ActionSheet } from './ActionSheet.svelte';
+export { default as Avatar } from './Avatar.svelte';
 export { default as BottomNavBar } from './navigation/BottomNavBar.svelte';
 export { default as Button } from './Button.svelte';
 export { default as Checkbox } from './Checkbox.svelte';
