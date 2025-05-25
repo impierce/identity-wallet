@@ -33,6 +33,7 @@ export { default as FingerprintLightIcon } from '~icons/ph/fingerprint-light';
 export { default as FingerprintFillIcon } from '~icons/ph/fingerprint-fill';
 export { default as GearFillIcon } from '~icons/ph/gear-fill';
 export { default as GhostFillIcon } from '~icons/ph/ghost-fill';
+export { default as GlobeRegularIcon } from '~icons/ph/globe';
 export { default as HeartFillIcon } from '~icons/ph/heart-fill';
 export { default as HeartStraightRegularIcon } from '~icons/ph/heart-straight';
 export { default as HeartStraightFillIcon } from '~icons/ph/heart-straight-fill';
