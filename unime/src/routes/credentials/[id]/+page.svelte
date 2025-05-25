@@ -9,6 +9,7 @@
   import { dispatch } from '$lib/dispatcher';
   import { state as appState, pageTitleStore } from '$lib/stores';
 
+  import AddressRenderer from './AddressRenderer.svelte';
   import CredentialHeader from './CredentialHeader.svelte';
   import CredentialOverview from './CredentialOverview.svelte';
   import DefaultRenderer from './DefaultRenderer.svelte';
@@ -96,6 +97,8 @@
     <CredentialOverview {credential} />
     {#if credentialTypes?.includes('OpenBadgeCredential') || credentialTypes?.includes('AchievementCredential')}
       <OpenBadgeRenderer {credential} />
+    {:else if credentialTypes?.includes('ResidenceCredential')}
+      <AddressRenderer {credential} />
     {:else}
       <DefaultRenderer {credential} />
     {/if}
