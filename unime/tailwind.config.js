@@ -20,7 +20,7 @@ export default {
 
         // accent
         primary: '#5cc7c7',
-        teal: '#50b5b2',
+        secondary: '#50b5b2', // designed as "teal", but should not be conflicting with Tailwind default
         // light
         silver: '#f9f9f9',
         grey: '#efefef',
