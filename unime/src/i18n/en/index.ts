@@ -426,6 +426,23 @@ By using our Service, you acknowledge that you have read, understood, and agree 
     NAVBAR_TITLE: 'Add data',
     VALUE_REQUIRED: 'Required',
     FAVORITES_TOGGLE_LABEL: 'Add to favorites',
+    ADDRESS: {
+      TITLE: 'Address',
+      DESCRIPTION: 'Add your home or work address',
+      ADD: {
+        NAVBAR_TITLE: 'Add address',
+        LABEL_PLACEHOLDER: 'Home address',
+        RESIDENT_ADDRESS_LABEL: 'Address',
+        RESIDENT_COUNTRY_LABEL: 'Country',
+        RESIDENT_COUNTRY_PLACEHOLDER: 'Choose a country',
+        RESIDENT_STATE_LABEL: 'State',
+        RESIDENT_STREET_LABEL: 'Street',
+        RESIDENT_HOUSE_NUMBER_LABEL: 'House number',
+        RESIDENT_POSTAL_CODE_LABEL: 'Postal code',
+        RESIDENT_CITY_LABEL: 'City',
+        CREATE_BUTTON: 'Add address',
+      },
+    },
     EMAIL: {
       TITLE: 'Email',
       DESCRIPTION: 'Get your personal or work email verified',

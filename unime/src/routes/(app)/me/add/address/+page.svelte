@@ -1,0 +1,175 @@
+<script lang="ts">
+  import { onMount } from 'svelte';
+
+  import { goto } from '$app/navigation';
+  import LL from '$i18n/i18n-svelte';
+  import { get } from 'svelte/store';
+  import { superForm } from 'sveltekit-superforms';
+  import { zod } from 'sveltekit-superforms/adapters';
+  import { z } from 'zod';
+
+  import { Button, Switch, TextInput, TopNavBar } from '$lib/components';
+  import SelectCountry from '$lib/components/forms/SelectCountry.svelte';
+  import { dispatch } from '$lib/dispatcher';
+  import { HeartFillIcon, HouseRegularIcon } from '$lib/icons';
+  import { residence as schema } from '$lib/schemas/pid';
+  import { state as appState } from '$lib/stores';
+
+  // Create a zod schema with i18n error messages
+  const residence = schema(get(LL));
+
+  // Initialize the form
+  const init: z.infer<typeof residence> = {};
+
+  const { form, constraints, errors, enhance, allErrors, tainted } = superForm(init, { validators: zod(residence) });
+
+  // Bottom action: Add to favourites, Add address
+  let checked = $state(true);
+  let labelInput: HTMLInputElement;
+
+  // Loading state while the credential is created
+  let loading = $state(false);
+
+  let addressName = $state('');
+
+  function createAddress() {
+    loading = true;
+
+    const credentialSubject = {
+      ...$form,
+    };
+
+    const validationResult = residence.safeParse(credentialSubject);
+    console.log('Validation result:', validationResult);
+
+    let name = labelInput.value;
+    if (name.trim().length === 0) {
+      name = $LL.ADD_CREDENTIALS.ADDRESS.ADD.LABEL_PLACEHOLDER();
+    }
+
+    dispatch({
+      type: '[Credential] Self Issue',
+      payload: {
+        type: 'address',
+        data: {
+          type: ['VerifiableCredential', 'ResidenceCredential'],
+          issuanceDate: new Date().toISOString(), // TODO: this shouldn't be necessary anymore, use `metadata` instead
+          name,
+          credentialSubject,
+        },
+        is_favorite: checked,
+        icon: 'House',
+      },
+    });
+  }
+
+  onMount(() => {
+    if (!addressName) {
+      labelInput.focus();
+    }
+    if ($appState.dev_mode !== 'Off') {
+      labelInput.value = 'Home address';
+      $form = {
+        resident_country: 'NL',
+        resident_state: 'Noord-Holland',
+        resident_city: 'Amsterdam',
+        resident_postal_code: '1071 XX',
+        resident_street: 'Molenstraat',
+        resident_house_number: '1A',
+      };
+    }
+  });
+</script>
+
+<TopNavBar
+  on:back={() => goto('/me/add')}
+  title={$LL.ADD_CREDENTIALS.ADDRESS.ADD.NAVBAR_TITLE()}
+  class="sticky top-0 z-10"
+/>
+
+<!-- The 50px height of the TopNavBar are manually subtracted -->
+<div class="relative flex flex-col">
+  <div class="flex grow flex-col items-center p-4 pt-0">
+    <div class="my-5 flex h-[120px] flex-col items-center space-y-4">
+      <!-- PaddedIcon -->
+      <div class="flex h-[75px] w-[75px] items-center justify-center rounded-3xl bg-background-alt">
+        <HouseRegularIcon class="size-7 text-slate-800 dark:text-grey" />
+      </div>
+      <input
+        type="text"
+        class="w-full bg-background text-center text-[22px]/[30px] font-semibold tracking-tight text-slate-700 outline-none dark:text-grey"
+        placeholder={$LL.ADD_CREDENTIALS.ADDRESS.ADD.LABEL_PLACEHOLDER()}
+        bind:this={labelInput}
+      />
+    </div>
+    <div class="w-full space-y-4">
+      <!-- This form is actually never submitted, it is only used for validation -->
+      <form method="POST" use:enhance>
+        <div class="space-y-4">
+          <SelectCountry bind:value={$form.resident_country} />
+          <TextInput
+            id="resident_state"
+            label={$LL.ADD_CREDENTIALS.ADDRESS.ADD.RESIDENT_STATE_LABEL()}
+            bind:value={$form.resident_state}
+          />
+          <!-- Street, House number -->
+          <div class="flex gap-4">
+            <div class="grow">
+              <TextInput
+                id="resident_street"
+                label={$LL.ADD_CREDENTIALS.ADDRESS.ADD.RESIDENT_STREET_LABEL()}
+                bind:value={$form.resident_street}
+              />
+            </div>
+            <div class="w-1/3">
+              <TextInput
+                id="resident_house_number"
+                label={$LL.ADD_CREDENTIALS.ADDRESS.ADD.RESIDENT_HOUSE_NUMBER_LABEL()}
+                bind:value={$form.resident_house_number}
+              />
+            </div>
+          </div>
+          <!-- Postal code, City -->
+          <div class="flex gap-4">
+            <div class="w-1/3">
+              <TextInput
+                id="resident_postal_code"
+                label={$LL.ADD_CREDENTIALS.ADDRESS.ADD.RESIDENT_POSTAL_CODE_LABEL()}
+                bind:value={$form.resident_postal_code}
+              />
+            </div>
+            <div class="grow">
+              <TextInput
+                id="resident_city"
+                label={$LL.ADD_CREDENTIALS.ADDRESS.ADD.RESIDENT_CITY_LABEL()}
+                bind:value={$form.resident_city}
+              />
+            </div>
+          </div>
+        </div>
+      </form>
+      <!-- DEBUG -->
+      <!-- <pre class="text-xs">{JSON.stringify($form, null, 2)}</pre> -->
+      <!-- <div class="break-all text-xs text-rose-700">errors: {JSON.stringify($errors, null, 2)}</div> -->
+      <!-- <div class="break-all text-xs">constraints: {JSON.stringify($constraints)}</div> -->
+      <!-- <div class="text-xs">tainted: {JSON.stringify($tainted, null, 2)}</div> -->
+    </div>
+  </div>
+</div>
+
+<div class="fixed bottom-0 left-0 z-10 flex w-full flex-col gap-5 rounded-t-3xl bg-background-alt p-6 shadow">
+  <Switch {checked} onCheckedChange={({ next }) => (checked = next)}>
+    <div class="flex items-center gap-4 px-4">
+      <HeartFillIcon class="size-5 text-primary" />
+      <span class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey"
+        >{$LL.ADD_CREDENTIALS.FAVORITES_TOGGLE_LABEL()}</span
+      >
+    </div>
+  </Switch>
+  <Button
+    label={$LL.ADD_CREDENTIALS.ADDRESS.ADD.CREATE_BUTTON()}
+    disabled={$allErrors.length > 0}
+    {loading}
+    on:click={() => createAddress()}
+  />
+</div>

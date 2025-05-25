@@ -373,7 +373,9 @@ Durch die Nutzung unseres Dienstes bestätigen Sie, dass Sie diese Allgemeinen G
     NAVBAR_TITLE: 'Credential Informationen',
     DETAILS: {
       VALID: 'Gültig',
+      UNVERIFIED: 'Unbestätigt',
       ISSUED_BY: 'Ausgestellt durch',
+      SELF_SIGNED: 'dich selbst',
       DESCRIPTION: 'Beschreibung',
       OPEN_BADGES: {
         ALIGNMENT: 'Ausrichtung',
@@ -396,6 +398,25 @@ Durch die Nutzung unseres Dienstes bestätigen Sie, dass Sie diese Allgemeinen G
   ADD_CREDENTIALS: {
     BUTTON: 'Hinzufügen',
     NAVBAR_TITLE: 'Daten hinzufügen',
+    VALUE_REQUIRED: 'Erforderlich',
+    FAVORITES_TOGGLE_LABEL: 'Zu Favoriten hinzufügen',
+    ADDRESS: {
+      TITLE: 'Adresse',
+      DESCRIPTION: 'Füge eine Arbeits- oder Privatadresse hinzu',
+      ADD: {
+        NAVBAR_TITLE: 'Addresse hinzufügen',
+        LABEL_PLACEHOLDER: 'Privatadresse',
+        RESIDENT_ADDRESS_LABEL: 'Adresse',
+        RESIDENT_COUNTRY_LABEL: 'Land',
+        RESIDENT_COUNTRY_PLACEHOLDER: 'Wähle ein Land aus',
+        RESIDENT_STATE_LABEL: 'Bundesland',
+        RESIDENT_STREET_LABEL: 'Straße',
+        RESIDENT_HOUSE_NUMBER_LABEL: 'Hausnummer',
+        RESIDENT_POSTAL_CODE_LABEL: 'Postleitzahl',
+        RESIDENT_CITY_LABEL: 'Stadt',
+        CREATE_BUTTON: 'Adresse hinzufügen',
+      },
+    },
     EMAIL: {
       TITLE: 'E-Mail',
       DESCRIPTION: 'Erhalte eine verifizierte E-Mail-Adresse',
@@ -454,15 +475,13 @@ Durch die Nutzung unseres Dienstes bestätigen Sie, dass Sie diese Allgemeinen G
       ADD: {
         NAVBAR_TITLE: 'Dein Profil',
         LABEL_PLACEHOLDER: 'Persönliches Profil',
-        REQUIRED: 'Erforderlich',
         FIRST_NAME_LABEL: 'Vorname',
         FIRST_NAME_PLACEHOLDER: 'Dein Vorname',
         MIDDLE_NAME_LABEL: 'Zweitname(n)',
         MIDDLE_NAME_PLACEHOLDER: 'Weitere Vornamen',
         LAST_NAME_LABEL: 'Nachname',
         LAST_NAME_PLACEHOLDER: 'Dein Nachname',
-        FAVORITES_TOGGLE_LABEL: 'Zu Favoriten hinzufügen',
-        CREATE_PROFILE_BUTTON: 'Profil erstellen',
+        CREATE_BUTTON: 'Profil erstellen',
       },
     },
   },

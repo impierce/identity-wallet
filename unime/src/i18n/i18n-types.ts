@@ -1015,6 +1015,62 @@ type RootTranslation = {
 		 * A​d​d​ ​t​o​ ​f​a​v​o​r​i​t​e​s
 		 */
 		FAVORITES_TOGGLE_LABEL: string
+		ADDRESS: {
+			/**
+			 * A​d​d​r​e​s​s
+			 */
+			TITLE: string
+			/**
+			 * A​d​d​ ​y​o​u​r​ ​h​o​m​e​ ​o​r​ ​w​o​r​k​ ​a​d​d​r​e​s​s
+			 */
+			DESCRIPTION: string
+			ADD: {
+				/**
+				 * A​d​d​ ​a​d​d​r​e​s​s
+				 */
+				NAVBAR_TITLE: string
+				/**
+				 * H​o​m​e​ ​a​d​d​r​e​s​s
+				 */
+				LABEL_PLACEHOLDER: string
+				/**
+				 * A​d​d​r​e​s​s
+				 */
+				RESIDENT_ADDRESS_LABEL: string
+				/**
+				 * C​o​u​n​t​r​y
+				 */
+				RESIDENT_COUNTRY_LABEL: string
+				/**
+				 * C​h​o​o​s​e​ ​a​ ​c​o​u​n​t​r​y
+				 */
+				RESIDENT_COUNTRY_PLACEHOLDER: string
+				/**
+				 * S​t​a​t​e
+				 */
+				RESIDENT_STATE_LABEL: string
+				/**
+				 * S​t​r​e​e​t
+				 */
+				RESIDENT_STREET_LABEL: string
+				/**
+				 * H​o​u​s​e​ ​n​u​m​b​e​r
+				 */
+				RESIDENT_HOUSE_NUMBER_LABEL: string
+				/**
+				 * P​o​s​t​a​l​ ​c​o​d​e
+				 */
+				RESIDENT_POSTAL_CODE_LABEL: string
+				/**
+				 * C​i​t​y
+				 */
+				RESIDENT_CITY_LABEL: string
+				/**
+				 * A​d​d​ ​a​d​d​r​e​s​s
+				 */
+				CREATE_BUTTON: string
+			}
+		}
 		EMAIL: {
 			/**
 			 * E​m​a​i​l
@@ -2308,6 +2364,62 @@ export type TranslationFunctions = {
 		 * Add to favorites
 		 */
 		FAVORITES_TOGGLE_LABEL: () => LocalizedString
+		ADDRESS: {
+			/**
+			 * Address
+			 */
+			TITLE: () => LocalizedString
+			/**
+			 * Add your home or work address
+			 */
+			DESCRIPTION: () => LocalizedString
+			ADD: {
+				/**
+				 * Add address
+				 */
+				NAVBAR_TITLE: () => LocalizedString
+				/**
+				 * Home address
+				 */
+				LABEL_PLACEHOLDER: () => LocalizedString
+				/**
+				 * Address
+				 */
+				RESIDENT_ADDRESS_LABEL: () => LocalizedString
+				/**
+				 * Country
+				 */
+				RESIDENT_COUNTRY_LABEL: () => LocalizedString
+				/**
+				 * Choose a country
+				 */
+				RESIDENT_COUNTRY_PLACEHOLDER: () => LocalizedString
+				/**
+				 * State
+				 */
+				RESIDENT_STATE_LABEL: () => LocalizedString
+				/**
+				 * Street
+				 */
+				RESIDENT_STREET_LABEL: () => LocalizedString
+				/**
+				 * House number
+				 */
+				RESIDENT_HOUSE_NUMBER_LABEL: () => LocalizedString
+				/**
+				 * Postal code
+				 */
+				RESIDENT_POSTAL_CODE_LABEL: () => LocalizedString
+				/**
+				 * City
+				 */
+				RESIDENT_CITY_LABEL: () => LocalizedString
+				/**
+				 * Add address
+				 */
+				CREATE_BUTTON: () => LocalizedString
+			}
+		}
 		EMAIL: {
 			/**
 			 * Email

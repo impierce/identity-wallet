@@ -6,7 +6,7 @@
   import type { SVGAttributes } from 'svelte/elements';
 
   import { TopNavBar } from '$lib/components';
-  import { CaretRightBoldIcon, EnvelopeOpenFillIcon, IdentificationBadgeFillIcon } from '$lib/icons';
+  import { CaretRightBoldIcon, EnvelopeOpenFillIcon, HouseFillIcon, IdentificationBadgeFillIcon } from '$lib/icons';
 
   type Data = {
     title: string;
@@ -28,6 +28,12 @@
       description: $LL.ADD_CREDENTIALS.EMAIL.DESCRIPTION(),
       icon: EnvelopeOpenFillIcon,
       link: '/me/add/email/info',
+    },
+    {
+      title: $LL.ADD_CREDENTIALS.ADDRESS.TITLE(),
+      description: $LL.ADD_CREDENTIALS.ADDRESS.DESCRIPTION(),
+      icon: HouseFillIcon,
+      link: '/me/add/address',
     },
   ];
 </script>
