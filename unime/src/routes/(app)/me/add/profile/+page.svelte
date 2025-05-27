@@ -3,13 +3,33 @@
 
   import { goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
-  import { z } from 'zod/v4';
+  import { get } from 'svelte/store';
+  import { superForm } from 'sveltekit-superforms';
+  import { zod } from 'sveltekit-superforms/adapters';
+  import { z } from 'zod';
 
-  import { Button, Switch, TopNavBar } from '$lib/components';
+  import { Button, DateField, Switch, TextInput, TopNavBar } from '$lib/components';
+  import SelectCountry from '$lib/components/forms/SelectCountry.svelte';
   import { dispatch } from '$lib/dispatcher';
   import { HeartFillIcon, IdentificationBadgeRegularIcon } from '$lib/icons';
-  import { naturalPerson } from '$lib/schemas/pid';
+  import { naturalPerson as schema } from '$lib/schemas/pid';
   import { state as appState } from '$lib/stores';
+
+  // Create a zod schema with i18n error messages
+  const naturalPerson = schema(get(LL));
+
+  // Initialize the form
+  const init: z.infer<typeof naturalPerson> = {
+    family_name: '',
+    given_name: '',
+    birth_date: new Date(),
+    birth_place: '',
+    nationality: [],
+  };
+
+  const { form, constraints, errors, enhance, allErrors, tainted } = superForm(init, {
+    validators: zod(naturalPerson),
+  });
 
   // Bottom action: Add to favourites, Create profile
   let checked = $state(true);
@@ -20,52 +40,36 @@
 
   let profileName = $state('');
 
-  interface Field {
-    id: string;
-    label: string;
-    placeholder: string;
-    value: string;
-    required?: boolean;
-  }
+  let primary_nationality: string | undefined = $state();
+  let secondary_nationality: string | undefined = $state();
 
-  const fields: Field[] = $state([
-    {
-      id: 'first-name',
-      label: $LL.ADD_CREDENTIALS.PROFILE.ADD.FIRST_NAME_LABEL(),
-      placeholder: $LL.ADD_CREDENTIALS.PROFILE.ADD.FIRST_NAME_PLACEHOLDER(),
-      value: '',
-      required: true,
-    },
-    {
-      id: 'middle-name',
-      label: $LL.ADD_CREDENTIALS.PROFILE.ADD.MIDDLE_NAME_LABEL(),
-      placeholder: $LL.ADD_CREDENTIALS.PROFILE.ADD.MIDDLE_NAME_PLACEHOLDER(),
-      value: '',
-    },
-    {
-      id: 'last-name',
-      label: $LL.ADD_CREDENTIALS.PROFILE.ADD.LAST_NAME_LABEL(),
-      placeholder: $LL.ADD_CREDENTIALS.PROFILE.ADD.LAST_NAME_PLACEHOLDER(),
-      value: '',
-      required: true,
-    },
-  ]);
+  let show_secondary_nationality = $state(false);
+
+  $effect(() => {
+    let nationalities: string[] = [];
+    if (primary_nationality) {
+      nationalities.push(primary_nationality);
+    } else {
+      nationalities = [];
+    }
+    if (secondary_nationality) {
+      nationalities.push(secondary_nationality);
+    }
+    $form.nationality = nationalities;
+  });
 
   function createProfile() {
     loading = true;
 
-    const credentialSubject = fields.reduce(
-      (acc, field) => {
-        if (field.value && field.value.trim().length > 0) {
-          acc[field.label] = field.value;
-        }
-        return acc;
-      },
-      {} as Record<string, string>,
-    );
+    const credentialSubject = {
+      ...$form,
+    };
 
-    let name = labelInput.value;
-    if (name.trim().length === 0) {
+    const validationResult = naturalPerson.safeParse(credentialSubject);
+    console.log('Validation result:', validationResult);
+
+    let name = profileName;
+    if (profileName.trim().length === 0) {
       name = $LL.ADD_CREDENTIALS.PROFILE.ADD.LABEL_PLACEHOLDER();
     }
 
@@ -74,7 +78,7 @@
       payload: {
         type: 'profile',
         data: {
-          type: ['VerifiableCredential'],
+          type: ['VerifiableCredential', 'NaturalPersonCredential'],
           issuanceDate: new Date().toISOString(), // TODO: the backend should use `metadata` instead
           name,
           credentialSubject,
@@ -85,26 +89,21 @@
     });
   }
 
-  let valid = $derived(() => {
-    return fields.every((field) => {
-      if (field.required) {
-        return field.value.length > 0;
-      } else {
-        return true;
-      }
-    });
-  });
-
   onMount(() => {
-    console.log(JSON.stringify(z.toJSONSchema(naturalPerson)));
-
     if (!profileName) {
       labelInput.focus();
     }
     if ($appState.dev_mode !== 'Off') {
-      labelInput.value = 'My Profile';
-      fields[0].value = 'Ferris';
-      fields[2].value = 'Rustacean';
+      profileName = 'My Profile';
+      $form = {
+        given_name: 'Ferris',
+        family_name: 'Rustacean',
+        birth_date: new Date('2023-04-01'),
+        birth_place: 'Atlantic Ocean',
+        nationality: ['NL', 'BQ-BO'],
+      };
+      primary_nationality = $form.nationality.at(0);
+      secondary_nationality = $form.nationality.at(1);
     }
   });
 </script>
@@ -118,20 +117,84 @@
 <!-- The 50px height of the TopNavBar are manually subtracted -->
 <div class="relative flex flex-col">
   <div class="flex grow flex-col items-center p-4 pt-0">
-    <div class="my-5 flex h-[120px] flex-col items-center space-y-4">
+    <div class="my-5 flex h-[121px] flex-col items-center space-y-4">
       <!-- PaddedIcon -->
       <div class="flex h-[75px] w-[75px] items-center justify-center rounded-3xl bg-background-alt">
         <IdentificationBadgeRegularIcon class="size-7 text-slate-800 dark:text-grey" />
       </div>
-      <input
+      <!-- <input
         type="text"
         class="w-full bg-background text-center text-[22px]/[30px] font-semibold tracking-tight text-slate-700 outline-none dark:text-grey"
         placeholder={$LL.ADD_CREDENTIALS.PROFILE.ADD.LABEL_PLACEHOLDER()}
         bind:this={labelInput}
-      />
+      /> -->
+      <div
+        class="w-full text-center text-[22px]/[30px] font-semibold tracking-tight text-slate-700 outline-none dark:text-grey"
+      >
+        {profileName}
+      </div>
     </div>
     <div class="w-full space-y-4">
-      {#each fields as field}
+      <div>
+        <TextInput
+          id="label"
+          label={$LL.ADD_CREDENTIALS.PROFILE.ADD.LABEL()}
+          placeholder={$LL.ADD_CREDENTIALS.PROFILE.ADD.LABEL_PLACEHOLDER()}
+          bind:value={profileName}
+          bind:ref={labelInput}
+        />
+        <div class="pt-1 text-[12px]/[14px] font-medium text-primary">
+          {$LL.ADD_CREDENTIALS.LABEL_DISCLAIMER()}
+        </div>
+        <!-- Divider -->
+        <div class="my-4 h-px bg-slate-300"></div>
+      </div>
+
+      <TextInput
+        id="given_name"
+        label={$LL.ADD_CREDENTIALS.PROFILE.ADD.FIRST_NAME_LABEL()}
+        placeholder={$LL.ADD_CREDENTIALS.PROFILE.ADD.FIRST_NAME_PLACEHOLDER()}
+        bind:value={$form.given_name}
+      />
+
+      <TextInput
+        id="family_name"
+        label={$LL.ADD_CREDENTIALS.PROFILE.ADD.LAST_NAME_LABEL()}
+        placeholder={$LL.ADD_CREDENTIALS.PROFILE.ADD.LAST_NAME_PLACEHOLDER()}
+        bind:value={$form.family_name}
+      />
+
+      <!-- birth_date -->
+      <!-- TODO: use proper date picker -->
+      <!-- <DateField label={$LL.ADD_CREDENTIALS.PROFILE.ADD.BIRTH_DATE_LABEL()} /> -->
+
+      <TextInput
+        id="birth_place"
+        label={$LL.ADD_CREDENTIALS.PROFILE.ADD.BIRTH_PLACE_LABEL()}
+        placeholder={$LL.ADD_CREDENTIALS.PROFILE.ADD.BIRTH_PLACE_PLACEHOLDER()}
+        bind:value={$form.birth_place}
+      />
+
+      <div class="flex w-full flex-col items-center gap-4">
+        <SelectCountry label={$LL.ADD_CREDENTIALS.PROFILE.ADD.NATIONALITY_LABEL()} bind:value={primary_nationality} />
+
+        {#if show_secondary_nationality}
+          <SelectCountry
+            label={$LL.ADD_CREDENTIALS.PROFILE.ADD.NATIONALITY_LABEL()}
+            bind:value={secondary_nationality}
+          />
+        {:else}
+          <!-- TODO: allow multiple nationalities -->
+          <!-- <button
+            onclick={() => (show_secondary_nationality = true)}
+            class="w-fit rounded px-3 py-2 text-sm font-medium text-primary hover:bg-slate-100"
+          >
+            Add another nationality
+          </button> -->
+        {/if}
+      </div>
+
+      <!-- {#each fields as field}
         <div class="flex flex-col gap-1">
           <div class="flex items-center justify-between">
             <label for={field.id} class="text-[14px]/[22px] font-medium text-slate-800 dark:text-grey">
@@ -151,12 +214,13 @@
             bind:value={field.value}
           />
         </div>
-      {/each}
+      {/each} -->
     </div>
   </div>
+  <div class="break-all px-4 text-xs">{JSON.stringify($form)}</div>
 </div>
 
-<div class="absolute bottom-0 left-0 z-10 flex w-full flex-col gap-5 rounded-t-3xl bg-background-alt p-6 shadow">
+<div class="fixed bottom-0 left-0 z-10 flex w-full flex-col gap-5 rounded-t-3xl bg-background-alt p-6 shadow">
   <Switch {checked} onCheckedChange={({ next }) => (checked = next)}>
     <div class="flex items-center gap-4 px-4">
       <HeartFillIcon class="size-5 text-primary" />
@@ -167,7 +231,7 @@
   </Switch>
   <Button
     label={$LL.ADD_CREDENTIALS.PROFILE.ADD.CREATE_BUTTON()}
-    disabled={!valid()}
+    disabled={$allErrors.length > 0}
     {loading}
     on:click={() => createProfile()}
   />

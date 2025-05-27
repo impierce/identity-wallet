@@ -7,7 +7,13 @@
 
   import { CaretDownBoldIcon, CheckBoldIcon, GlobeRegularIcon } from '$lib/icons';
 
-  let { value = $bindable() }: { value?: string } = $props();
+  interface Props {
+    label?: string;
+    placeholder?: string;
+    value?: string;
+  }
+
+  let { label, placeholder, value = $bindable() }: Props = $props();
 
   const options = [
     // { code: 'AT', name: 'Österreich' },
@@ -44,10 +50,10 @@
   });
 </script>
 
-<div>
+<div class="w-full">
   <div class="relative text-left transition">
     <label for={combobox.ids.input} class="text-[14px]/[22px] font-medium text-slate-800 dark:text-grey">
-      {$LL.ADD_CREDENTIALS.ADDRESS.ADD.RESIDENT_COUNTRY_LABEL()}
+      {label || $LL.ADD_CREDENTIALS.ADDRESS.ADD.RESIDENT_COUNTRY_LABEL()}
     </label>
     <div class="relative">
       <div class="absolute left-3 top-1/2 -translate-y-1/2">
@@ -64,7 +70,7 @@
       <input
         {...combobox.input}
         class="w-full rounded-xl border border-slate-300 bg-background-alt px-10 py-3 text-[14px]/[22px] font-medium text-slate-800 dark:border-slate-600 dark:text-grey"
-        placeholder={$LL.ADD_CREDENTIALS.ADDRESS.ADD.RESIDENT_COUNTRY_PLACEHOLDER()}
+        placeholder={placeholder || $LL.ADD_CREDENTIALS.ADDRESS.ADD.RESIDENT_COUNTRY_PLACEHOLDER()}
       />
       <button
         {...combobox.trigger}

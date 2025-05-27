@@ -13,6 +13,16 @@
   export let icon: string | undefined = undefined;
 
   let useFallback = false;
+
+  // Converts the passed icon to the light version, if applicable.
+  const ensureLightIcon = (icon: string | undefined): string | undefined => {
+    if (!icon) return undefined;
+    if (icon.endsWith('Light')) {
+      return icon; // Already a light icon
+    } else {
+      return `${icon}Light`; // Convert to light icon
+    }
+  };
 </script>
 
 <!--
@@ -50,7 +60,7 @@ Can be used for credentials, connections, etc.
       <!-- useFallback from <Image> (child) is bound to a local variable in <ListItemCard> (parent) with the same name to determine which background color to display -->
       <Image
         {id}
-        iconFallback={icon ?? (type === 'data' ? 'UserLight' : 'CertificateLight')}
+        iconFallback={ensureLightIcon(icon) ?? (type === 'data' ? 'UserLight' : 'CertificateLight')}
         {isTempAsset}
         bind:useFallback
       />
