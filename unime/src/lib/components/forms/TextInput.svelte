@@ -7,9 +7,10 @@
     placeholder?: string;
     value?: string;
     required?: boolean;
+    ref?: HTMLInputElement;
   }
 
-  let { id, label, placeholder, value = $bindable(), required = false }: Props = $props();
+  let { id, label, placeholder, value = $bindable(), required = false, ref = $bindable() }: Props = $props();
 </script>
 
 <div class="flex flex-col gap-1">
@@ -27,5 +28,6 @@
     class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] font-normal text-slate-800 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-dark dark:text-slate-300 dark:caret-slate-300"
     {placeholder}
     bind:value
+    bind:this={ref}
   />
 </div>

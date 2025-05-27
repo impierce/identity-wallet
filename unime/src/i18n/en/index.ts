@@ -409,6 +409,14 @@ By using our Service, you acknowledge that you have read, understood, and agree 
         CRITERIA: 'Criteria',
       },
     },
+    RENDERER: {
+      PID: {
+        NAME: 'Name',
+        NATIONALITY: 'Nationality',
+        BIRTH_DATE: 'Date of birth',
+        BIRTH_PLACE: 'Place of birth',
+      },
+    },
     ACTIONS: {
       EDIT: {
         CONFIRM_BUTTON: 'Update display name',
@@ -425,12 +433,14 @@ By using our Service, you acknowledge that you have read, understood, and agree 
     BUTTON: 'Add',
     NAVBAR_TITLE: 'Add data',
     VALUE_REQUIRED: 'Required',
+    LABEL_DISCLAIMER: 'Only seen by you',
     FAVORITES_TOGGLE_LABEL: 'Add to favorites',
     ADDRESS: {
       TITLE: 'Address',
       DESCRIPTION: 'Add your home or work address',
       ADD: {
         NAVBAR_TITLE: 'Add address',
+        LABEL: 'How do you want to call this address?',
         LABEL_PLACEHOLDER: 'Home address',
         RESIDENT_ADDRESS_LABEL: 'Address',
         RESIDENT_COUNTRY_LABEL: 'Country',
@@ -469,7 +479,6 @@ By using our Service, you acknowledge that you have read, understood, and agree 
       ADD: {
         NAVBAR_TITLE: 'Get verified email',
         LABEL: 'How do you want to call this email address?',
-        LABEL_DISCLAIMER: 'Only seen by you',
         LABEL_PLACEHOLDER: 'Personal email',
         VALUE_LABEL: 'Email',
         VALUE_PLACEHOLDER: 'firstname.lastname@example.com',
@@ -500,6 +509,7 @@ By using our Service, you acknowledge that you have read, understood, and agree 
       },
       ADD: {
         NAVBAR_TITLE: 'Your profile',
+        LABEL: 'How do you want to call this profile?',
         LABEL_PLACEHOLDER: 'Personal Profile',
         FIRST_NAME_LABEL: 'First name',
         FIRST_NAME_PLACEHOLDER: 'Your first name',
@@ -507,6 +517,11 @@ By using our Service, you acknowledge that you have read, understood, and agree 
         MIDDLE_NAME_PLACEHOLDER: 'Your middle name(s)',
         LAST_NAME_LABEL: 'Last name',
         LAST_NAME_PLACEHOLDER: 'Your last name',
+        BIRTH_DATE_LABEL: 'Date of birth',
+        BIRTH_DATE_PLACEHOLDER: 'Select your date of birth',
+        BIRTH_PLACE_LABEL: 'Place of birth',
+        BIRTH_PLACE_PLACEHOLDER: 'Your place of birth',
+        NATIONALITY_LABEL: 'Nationality',
         CREATE_BUTTON: 'Create profile',
       },
     },

@@ -971,6 +971,26 @@ type RootTranslation = {
 				CRITERIA: string
 			}
 		}
+		RENDERER: {
+			PID: {
+				/**
+				 * N​a​m​e
+				 */
+				NAME: string
+				/**
+				 * N​a​t​i​o​n​a​l​i​t​y
+				 */
+				NATIONALITY: string
+				/**
+				 * D​a​t​e​ ​o​f​ ​b​i​r​t​h
+				 */
+				BIRTH_DATE: string
+				/**
+				 * P​l​a​c​e​ ​o​f​ ​b​i​r​t​h
+				 */
+				BIRTH_PLACE: string
+			}
+		}
 		ACTIONS: {
 			EDIT: {
 				/**
@@ -1012,6 +1032,10 @@ type RootTranslation = {
 		 */
 		VALUE_REQUIRED: string
 		/**
+		 * O​n​l​y​ ​s​e​e​n​ ​b​y​ ​y​o​u
+		 */
+		LABEL_DISCLAIMER: string
+		/**
 		 * A​d​d​ ​t​o​ ​f​a​v​o​r​i​t​e​s
 		 */
 		FAVORITES_TOGGLE_LABEL: string
@@ -1029,6 +1053,10 @@ type RootTranslation = {
 				 * A​d​d​ ​a​d​d​r​e​s​s
 				 */
 				NAVBAR_TITLE: string
+				/**
+				 * H​o​w​ ​d​o​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​c​a​l​l​ ​t​h​i​s​ ​a​d​d​r​e​s​s​?
+				 */
+				LABEL: string
 				/**
 				 * H​o​m​e​ ​a​d​d​r​e​s​s
 				 */
@@ -1134,10 +1162,6 @@ type RootTranslation = {
 				 */
 				LABEL: string
 				/**
-				 * O​n​l​y​ ​s​e​e​n​ ​b​y​ ​y​o​u
-				 */
-				LABEL_DISCLAIMER: string
-				/**
 				 * P​e​r​s​o​n​a​l​ ​e​m​a​i​l
 				 */
 				LABEL_PLACEHOLDER: string
@@ -1222,6 +1246,10 @@ type RootTranslation = {
 				 */
 				NAVBAR_TITLE: string
 				/**
+				 * H​o​w​ ​d​o​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​c​a​l​l​ ​t​h​i​s​ ​p​r​o​f​i​l​e​?
+				 */
+				LABEL: string
+				/**
 				 * P​e​r​s​o​n​a​l​ ​P​r​o​f​i​l​e
 				 */
 				LABEL_PLACEHOLDER: string
@@ -1249,6 +1277,26 @@ type RootTranslation = {
 				 * Y​o​u​r​ ​l​a​s​t​ ​n​a​m​e
 				 */
 				LAST_NAME_PLACEHOLDER: string
+				/**
+				 * D​a​t​e​ ​o​f​ ​b​i​r​t​h
+				 */
+				BIRTH_DATE_LABEL: string
+				/**
+				 * S​e​l​e​c​t​ ​y​o​u​r​ ​d​a​t​e​ ​o​f​ ​b​i​r​t​h
+				 */
+				BIRTH_DATE_PLACEHOLDER: string
+				/**
+				 * P​l​a​c​e​ ​o​f​ ​b​i​r​t​h
+				 */
+				BIRTH_PLACE_LABEL: string
+				/**
+				 * Y​o​u​r​ ​p​l​a​c​e​ ​o​f​ ​b​i​r​t​h
+				 */
+				BIRTH_PLACE_PLACEHOLDER: string
+				/**
+				 * N​a​t​i​o​n​a​l​i​t​y
+				 */
+				NATIONALITY_LABEL: string
 				/**
 				 * C​r​e​a​t​e​ ​p​r​o​f​i​l​e
 				 */
@@ -2320,6 +2368,26 @@ export type TranslationFunctions = {
 				CRITERIA: () => LocalizedString
 			}
 		}
+		RENDERER: {
+			PID: {
+				/**
+				 * Name
+				 */
+				NAME: () => LocalizedString
+				/**
+				 * Nationality
+				 */
+				NATIONALITY: () => LocalizedString
+				/**
+				 * Date of birth
+				 */
+				BIRTH_DATE: () => LocalizedString
+				/**
+				 * Place of birth
+				 */
+				BIRTH_PLACE: () => LocalizedString
+			}
+		}
 		ACTIONS: {
 			EDIT: {
 				/**
@@ -2361,6 +2429,10 @@ export type TranslationFunctions = {
 		 */
 		VALUE_REQUIRED: () => LocalizedString
 		/**
+		 * Only seen by you
+		 */
+		LABEL_DISCLAIMER: () => LocalizedString
+		/**
 		 * Add to favorites
 		 */
 		FAVORITES_TOGGLE_LABEL: () => LocalizedString
@@ -2378,6 +2450,10 @@ export type TranslationFunctions = {
 				 * Add address
 				 */
 				NAVBAR_TITLE: () => LocalizedString
+				/**
+				 * How do you want to call this address?
+				 */
+				LABEL: () => LocalizedString
 				/**
 				 * Home address
 				 */
@@ -2483,10 +2559,6 @@ export type TranslationFunctions = {
 				 */
 				LABEL: () => LocalizedString
 				/**
-				 * Only seen by you
-				 */
-				LABEL_DISCLAIMER: () => LocalizedString
-				/**
 				 * Personal email
 				 */
 				LABEL_PLACEHOLDER: () => LocalizedString
@@ -2571,6 +2643,10 @@ export type TranslationFunctions = {
 				 */
 				NAVBAR_TITLE: () => LocalizedString
 				/**
+				 * How do you want to call this profile?
+				 */
+				LABEL: () => LocalizedString
+				/**
 				 * Personal Profile
 				 */
 				LABEL_PLACEHOLDER: () => LocalizedString
@@ -2598,6 +2674,26 @@ export type TranslationFunctions = {
 				 * Your last name
 				 */
 				LAST_NAME_PLACEHOLDER: () => LocalizedString
+				/**
+				 * Date of birth
+				 */
+				BIRTH_DATE_LABEL: () => LocalizedString
+				/**
+				 * Select your date of birth
+				 */
+				BIRTH_DATE_PLACEHOLDER: () => LocalizedString
+				/**
+				 * Place of birth
+				 */
+				BIRTH_PLACE_LABEL: () => LocalizedString
+				/**
+				 * Your place of birth
+				 */
+				BIRTH_PLACE_PLACEHOLDER: () => LocalizedString
+				/**
+				 * Nationality
+				 */
+				NATIONALITY_LABEL: () => LocalizedString
 				/**
 				 * Create profile
 				 */

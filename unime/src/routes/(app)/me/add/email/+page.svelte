@@ -14,6 +14,10 @@
   import { dispatch } from '$lib/dispatcher';
   import { state as appState } from '$lib/stores';
 
+  // When the current verification case has expired, the user should be informed about it.
+  // However, we do not want to leave the expired case open forever, but reset the forms after a given period.
+  const AUTO_DISCARD_AFTER_MINUTES = 5;
+
   const pinInput = new PinInput({
     type: 'numeric',
     maxLength: 4,
@@ -130,8 +134,18 @@
     dispatch({ type: '[Verified Data] Reset email verification' });
   };
 
+  const checkAutoDiscard = (expires_at: Date) => {
+    const expired_mins_ago = Math.floor((new Date().getTime() - expires_at.getTime()) / 1_000 / 60);
+    console.log('expired_mins_ago', expired_mins_ago);
+    if (expired_mins_ago >= AUTO_DISCARD_AFTER_MINUTES) {
+      debug(`Auto-discarding expired verification case (${expired_mins_ago} minutes ago) ...`);
+      reset();
+      // TODO: issue: still shows the expired timer
+    }
+  };
+
   onMount(async () => {
-    await dispatch({
+    dispatch({
       type: '[Verified Data] Check service health',
       payload: { service: 'email-verification-service' },
     });
@@ -145,6 +159,8 @@
 
       // Resume verification timer across app restarts by reading from app state
       if (current.expires_at) {
+        checkAutoDiscard(new Date(current.expires_at));
+
         info('Resuming existing email verification timer');
         //   emailSentTimestamp = new Date($appState.verified_data.email_verification.expires_at);
         const expires_in_secs = Math.floor((new Date(current.expires_at).getTime() - Date.now()) / 1_000);
@@ -215,14 +231,14 @@
           bind:this={labelInput}
           oninput={() => {
             // When the label is changed after a verification session has expired, reset everything.
-            if (expired) {
-              reset();
-            }
+            // if (expired) {
+            //   reset();
+            // }
           }}
           disabled={pending}
         />
         <div class="pt-1 text-[12px]/[14px] font-medium text-primary">
-          {$LL.ADD_CREDENTIALS.EMAIL.ADD.LABEL_DISCLAIMER()}
+          {$LL.ADD_CREDENTIALS.LABEL_DISCLAIMER()}
         </div>
 
         <!-- Divider -->

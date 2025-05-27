@@ -53,7 +53,7 @@
     "jsdom": "^22.1.0",
     "just-extend": "^6.2.0",
     "markdown-it": "^14.0.0",
-    "melt": "^0.33.0",
+    "melt": "^0.34.0",
     "postcss": "^8.5.3",
     "qrcode": "^1.5.3",
     "svelte": "^5.26.3",

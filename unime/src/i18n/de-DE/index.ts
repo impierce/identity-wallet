@@ -382,6 +382,14 @@ Durch die Nutzung unseres Dienstes bestätigen Sie, dass Sie diese Allgemeinen G
         CRITERIA: 'Kriterien',
       },
     },
+    RENDERER: {
+      PID: {
+        NAME: 'Name',
+        NATIONALITY: 'Staatsangehörigkeit',
+        BIRTH_DATE: 'Geburtsdatum',
+        BIRTH_PLACE: 'Geburtsort',
+      },
+    },
     ACTIONS: {
       EDIT: {
         CONFIRM_BUTTON: 'Anzeigename ändern',
@@ -399,12 +407,14 @@ Durch die Nutzung unseres Dienstes bestätigen Sie, dass Sie diese Allgemeinen G
     BUTTON: 'Hinzufügen',
     NAVBAR_TITLE: 'Daten hinzufügen',
     VALUE_REQUIRED: 'Erforderlich',
+    LABEL_DISCLAIMER: 'Nur für dich sichtbar',
     FAVORITES_TOGGLE_LABEL: 'Zu Favoriten hinzufügen',
     ADDRESS: {
       TITLE: 'Adresse',
       DESCRIPTION: 'Füge eine Arbeits- oder Privatadresse hinzu',
       ADD: {
         NAVBAR_TITLE: 'Addresse hinzufügen',
+        LABEL: 'Wie möchtest du diese Adresse nennen?',
         LABEL_PLACEHOLDER: 'Privatadresse',
         RESIDENT_ADDRESS_LABEL: 'Adresse',
         RESIDENT_COUNTRY_LABEL: 'Land',
@@ -443,7 +453,6 @@ Durch die Nutzung unseres Dienstes bestätigen Sie, dass Sie diese Allgemeinen G
       ADD: {
         NAVBAR_TITLE: 'E-Mail hinzufügen',
         LABEL: 'Wie möchtest du diese E-Mail-Adresse nennen?',
-        LABEL_DISCLAIMER: 'Nur für dich sichtbar',
         LABEL_PLACEHOLDER: 'Persönliche E-Mail',
         VALUE_LABEL: 'E-Mail',
         VALUE_PLACEHOLDER: 'vorname.nachname@example.com',
@@ -474,6 +483,7 @@ Durch die Nutzung unseres Dienstes bestätigen Sie, dass Sie diese Allgemeinen G
       },
       ADD: {
         NAVBAR_TITLE: 'Dein Profil',
+        LABEL: 'Wie möchtest du dieses Profil nennen?',
         LABEL_PLACEHOLDER: 'Persönliches Profil',
         FIRST_NAME_LABEL: 'Vorname',
         FIRST_NAME_PLACEHOLDER: 'Dein Vorname',
@@ -481,6 +491,11 @@ Durch die Nutzung unseres Dienstes bestätigen Sie, dass Sie diese Allgemeinen G
         MIDDLE_NAME_PLACEHOLDER: 'Weitere Vornamen',
         LAST_NAME_LABEL: 'Nachname',
         LAST_NAME_PLACEHOLDER: 'Dein Nachname',
+        BIRTH_DATE_LABEL: 'Geburtsdatum',
+        BIRTH_DATE_PLACEHOLDER: 'Dein Geburtsdatum',
+        BIRTH_PLACE_LABEL: 'Geburtsort',
+        BIRTH_PLACE_PLACEHOLDER: 'Dein Geburtsort',
+        NATIONALITY_LABEL: 'Staatsangehörigkeit',
         CREATE_BUTTON: 'Profil erstellen',
       },
     },
