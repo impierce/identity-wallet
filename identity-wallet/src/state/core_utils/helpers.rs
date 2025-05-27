@@ -132,18 +132,15 @@ pub fn credential_schema_validation(data: &Value) -> Result<(), AppError> {
 
 /// Validate any given data in serde_json::Value format against any given JsonSchema by path.
 pub fn json_schema_validation(json_schema_path: String, data: &Value) -> Result<(), AppError> {
-    let json_schema_file = File::open(json_schema_path.clone())
+    let json_schema_file = File::open(&json_schema_path)
         .map_err(|_| AppError::Error("Failed to find or read from JsonSchema file".to_string()))?;
-    let reader = std::io::BufReader::new(json_schema_file);
-    let json_schema: Value = serde_json::from_reader(reader)
+    let json_schema: Value = serde_json::from_reader(json_schema_file)
         .map_err(|_| AppError::Error("Failed to convert JsonSchema &str to serde_json::Value".to_string()))?;
 
     let schema = jsonschema::draft201909::new(&json_schema)
         .map_err(|_| AppError::Error("Failed to compile JsonSchema from serde_json::Value".to_string()))?;
 
-    let result = schema.iter_errors(data);
-
-    let errors: Vec<ValidationError> = result.collect();
+    let errors: Vec<ValidationError> = schema.iter_errors(data).collect();
     if !errors.is_empty() {
         Err(AppError::Error(format!(
             "The data is invalid according to the given JsonSchema: {:?}",

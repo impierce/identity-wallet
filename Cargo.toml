@@ -17,8 +17,8 @@ rand = "0.8"
 serde_json = "1.0"
 serial_test = "2.0"
 tempfile = "3.5.0"
-wiremock = "0.5"
 tokio = { version = "1.43.0", features = ["macros"] }
+wiremock = "0.5"
 
 [workspace.package]
 name = "unime"

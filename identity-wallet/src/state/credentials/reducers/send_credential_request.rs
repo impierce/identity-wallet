@@ -160,7 +160,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                         _ => panic!("Credential was not a jwt_vc_json."),
                     };
 
-                    // Type received credential to Jwt for jwt_vc_json validation
+                    // Convert the received credential (as a string) into a Jwt instance for validation.
                     let credential_jwt = Jwt::new(
                         credential
                             .as_str()
