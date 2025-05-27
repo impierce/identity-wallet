@@ -392,10 +392,11 @@ Durch die Nutzung unseres Dienstes bestätigen Sie, dass Sie diese Allgemeinen G
     },
     ACTIONS: {
       EDIT: {
+        MENU_BUTTON: 'Anzeigename ändern',
         CONFIRM_BUTTON: 'Anzeigename ändern',
       },
       DELETE: {
-        BUTTON_LABEL: 'Credential löschen',
+        MENU_BUTTON: 'Credential löschen',
         TITLE: 'Credential löschen',
         DESCRIPTION:
           'Bist du sicher, dass du dieses Credential aus deiner Wallet löschen willst? Diese Aktion kann nicht rückgängig gemacht werden.',

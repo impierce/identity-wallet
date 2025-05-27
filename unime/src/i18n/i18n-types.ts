@@ -994,6 +994,10 @@ type RootTranslation = {
 		ACTIONS: {
 			EDIT: {
 				/**
+				 * E​d​i​t​ ​d​i​s​p​l​a​y​ ​n​a​m​e
+				 */
+				MENU_BUTTON: string
+				/**
 				 * U​p​d​a​t​e​ ​d​i​s​p​l​a​y​ ​n​a​m​e
 				 */
 				CONFIRM_BUTTON: string
@@ -1002,7 +1006,7 @@ type RootTranslation = {
 				/**
 				 * D​e​l​e​t​e​ ​c​r​e​d​e​n​t​i​a​l
 				 */
-				BUTTON_LABEL: string
+				MENU_BUTTON: string
 				/**
 				 * D​e​l​e​t​e​ ​c​r​e​d​e​n​t​i​a​l
 				 */
@@ -2391,6 +2395,10 @@ export type TranslationFunctions = {
 		ACTIONS: {
 			EDIT: {
 				/**
+				 * Edit display name
+				 */
+				MENU_BUTTON: () => LocalizedString
+				/**
 				 * Update display name
 				 */
 				CONFIRM_BUTTON: () => LocalizedString
@@ -2399,7 +2407,7 @@ export type TranslationFunctions = {
 				/**
 				 * Delete credential
 				 */
-				BUTTON_LABEL: () => LocalizedString
+				MENU_BUTTON: () => LocalizedString
 				/**
 				 * Delete credential
 				 */

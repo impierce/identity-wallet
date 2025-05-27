@@ -419,10 +419,11 @@ By using our Service, you acknowledge that you have read, understood, and agree 
     },
     ACTIONS: {
       EDIT: {
+        MENU_BUTTON: 'Edit display name',
         CONFIRM_BUTTON: 'Update display name',
       },
       DELETE: {
-        BUTTON_LABEL: 'Delete credential',
+        MENU_BUTTON: 'Delete credential',
         TITLE: 'Delete credential',
         DESCRIPTION: 'Are you sure you want to delete this credential from your wallet? This action cannot be undone.',
         CONFIRM_BUTTON: 'Delete',
