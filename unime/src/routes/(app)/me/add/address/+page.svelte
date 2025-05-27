@@ -42,8 +42,8 @@
     const validationResult = residence.safeParse(credentialSubject);
     console.log('Validation result:', validationResult);
 
-    let name = labelInput.value;
-    if (name.trim().length === 0) {
+    let name = addressName;
+    if (addressName.trim().length === 0) {
       name = $LL.ADD_CREDENTIALS.ADDRESS.ADD.LABEL_PLACEHOLDER();
     }
 
@@ -68,7 +68,7 @@
       labelInput.focus();
     }
     if ($appState.dev_mode !== 'Off') {
-      labelInput.value = 'Home address';
+      addressName = 'Home address';
       $form = {
         resident_country: 'NL',
         resident_state: 'Noord-Holland',
@@ -87,31 +87,38 @@
   class="sticky top-0 z-10"
 />
 
-<!-- The 50px height of the TopNavBar are manually subtracted -->
 <div class="relative flex flex-col">
   <div class="flex grow flex-col items-center p-4 pt-0">
-    <div class="my-5 flex h-[120px] flex-col items-center space-y-4">
+    <div class="my-5 flex h-[121px] flex-col items-center space-y-4">
       <!-- PaddedIcon -->
       <div class="flex h-[75px] w-[75px] items-center justify-center rounded-3xl bg-background-alt">
         <HouseRegularIcon class="size-7 text-slate-800 dark:text-grey" />
       </div>
-      <input
-        type="text"
-        class="w-full bg-background text-center text-[22px]/[30px] font-semibold tracking-tight text-slate-700 outline-none dark:text-grey"
-        placeholder={$LL.ADD_CREDENTIALS.ADDRESS.ADD.LABEL_PLACEHOLDER()}
-        bind:this={labelInput}
-      />
+      <div
+        class="w-full text-center text-[22px]/[30px] font-semibold tracking-tight text-slate-700 outline-none dark:text-grey"
+      >
+        {addressName}
+      </div>
     </div>
     <div class="w-full space-y-4">
+      <div>
+        <TextInput
+          id="label"
+          label={$LL.ADD_CREDENTIALS.ADDRESS.ADD.LABEL()}
+          placeholder={$LL.ADD_CREDENTIALS.ADDRESS.ADD.LABEL_PLACEHOLDER()}
+          bind:value={addressName}
+          bind:ref={labelInput}
+        />
+        <div class="pt-1 text-[12px]/[14px] font-medium text-primary">
+          {$LL.ADD_CREDENTIALS.LABEL_DISCLAIMER()}
+        </div>
+        <!-- Divider -->
+        <div class="my-4 h-px bg-slate-300"></div>
+      </div>
       <!-- This form is actually never submitted, it is only used for validation -->
       <form method="POST" use:enhance>
         <div class="space-y-4">
           <SelectCountry bind:value={$form.resident_country} />
-          <TextInput
-            id="resident_state"
-            label={$LL.ADD_CREDENTIALS.ADDRESS.ADD.RESIDENT_STATE_LABEL()}
-            bind:value={$form.resident_state}
-          />
           <!-- Street, House number -->
           <div class="flex gap-4">
             <div class="grow">
@@ -146,6 +153,11 @@
               />
             </div>
           </div>
+          <TextInput
+            id="resident_state"
+            label={$LL.ADD_CREDENTIALS.ADDRESS.ADD.RESIDENT_STATE_LABEL()}
+            bind:value={$form.resident_state}
+          />
         </div>
       </form>
       <!-- DEBUG -->

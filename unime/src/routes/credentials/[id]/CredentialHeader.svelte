@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { createEventDispatcher, onMount } from 'svelte';
 
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 
@@ -9,6 +9,8 @@
   import { getImageAsset } from '$lib/utils';
 
   import CredentialHeaderMenu from './CredentialHeaderMenu.svelte';
+
+  const dispatchEvent = createEventDispatcher();
 
   export let credential: DisplayCredential;
 
@@ -66,6 +68,6 @@
   </button>
 
   <div class="absolute right-0 top-0 mr-2 mt-4">
-    <CredentialHeaderMenu id={credential.id} />
+    <CredentialHeaderMenu id={credential.id} on:edit={() => dispatchEvent('edit')} />
   </div>
 </div>

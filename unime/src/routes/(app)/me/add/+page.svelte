@@ -7,6 +7,7 @@
 
   import { TopNavBar } from '$lib/components';
   import { CaretRightBoldIcon, EnvelopeOpenFillIcon, HouseFillIcon, IdentificationBadgeFillIcon } from '$lib/icons';
+  import { state as appState } from '$lib/stores';
 
   type Data = {
     title: string;
@@ -27,7 +28,8 @@
       title: $LL.ADD_CREDENTIALS.EMAIL.TITLE(),
       description: $LL.ADD_CREDENTIALS.EMAIL.DESCRIPTION(),
       icon: EnvelopeOpenFillIcon,
-      link: '/me/add/email/info',
+      // If there is an active verification case, skip the /info page to avoid "flickering".
+      link: $appState.verified_data.email_verification ? '/me/add/email' : '/me/add/email/info',
     },
     {
       title: $LL.ADD_CREDENTIALS.ADDRESS.TITLE(),
