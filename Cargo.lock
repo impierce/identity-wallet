@@ -1947,7 +1947,7 @@ checksum = "7c74b8349d32d297c9134b8c88677813a227df8f779daa29bfc29c183fe3dca6"
 [[package]]
 name = "consumer"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=91c26b7#91c26b7a590c0bef7541f9a8615d48f14b32b6cf"
+source = "git+https://git@github.com/impierce/did-manager.git?rev=c30936b#c30936b3e66dbf224a4971b48dbb3511d7c37888"
 dependencies = [
  "did_iota",
  "did_jwk",
@@ -1957,6 +1957,7 @@ dependencies = [
  "shared",
  "signature 2.2.0",
  "tokio",
+ "tracing",
 ]
 
 [[package]]
@@ -2705,7 +2706,7 @@ dependencies = [
 [[package]]
 name = "did_iota"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=91c26b7#91c26b7a590c0bef7541f9a8615d48f14b32b6cf"
+source = "git+https://git@github.com/impierce/did-manager.git?rev=c30936b#c30936b3e66dbf224a4971b48dbb3511d7c37888"
 dependencies = [
  "anyhow",
  "identity_iota",
@@ -2719,7 +2720,7 @@ dependencies = [
 [[package]]
 name = "did_jwk"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=91c26b7#91c26b7a590c0bef7541f9a8615d48f14b32b6cf"
+source = "git+https://git@github.com/impierce/did-manager.git?rev=c30936b#c30936b3e66dbf224a4971b48dbb3511d7c37888"
 dependencies = [
  "did-jwk",
  "identity_iota",
@@ -2736,7 +2737,7 @@ dependencies = [
 [[package]]
 name = "did_key"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=91c26b7#91c26b7a590c0bef7541f9a8615d48f14b32b6cf"
+source = "git+https://git@github.com/impierce/did-manager.git?rev=c30936b#c30936b3e66dbf224a4971b48dbb3511d7c37888"
 dependencies = [
  "did-method-key",
  "identity_iota",
@@ -2754,7 +2755,7 @@ dependencies = [
 [[package]]
 name = "did_manager"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=91c26b7#91c26b7a590c0bef7541f9a8615d48f14b32b6cf"
+source = "git+https://git@github.com/impierce/did-manager.git?rev=c30936b#c30936b3e66dbf224a4971b48dbb3511d7c37888"
 dependencies = [
  "consumer",
  "producer",
@@ -2792,7 +2793,7 @@ dependencies = [
 [[package]]
 name = "did_web"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=91c26b7#91c26b7a590c0bef7541f9a8615d48f14b32b6cf"
+source = "git+https://git@github.com/impierce/did-manager.git?rev=c30936b#c30936b3e66dbf224a4971b48dbb3511d7c37888"
 dependencies = [
  "did-web",
  "identity_iota",
@@ -2811,7 +2812,7 @@ dependencies = [
 [[package]]
 name = "dif-presentation-exchange"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=5aede59#5aede592acf061820c5fa5f9b807f140c8c299f4"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=e4a6d11#e4a6d1182ce7fb12a1d99112bf1c222c2ba15c0e"
 dependencies = [
  "getset",
  "jsonpath_lib",
@@ -5430,12 +5431,13 @@ dependencies = [
 
 [[package]]
 name = "identity_core"
-version = "1.6.0-alpha"
-source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-alpha.5#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
+version = "1.6.0-beta"
+source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-beta.1#0e6db9826fab69345fc21e220300e9530573039c"
 dependencies = [
  "deranged",
  "js-sys",
  "multibase 0.9.1",
+ "product_common",
  "serde",
  "serde_json",
  "strum 0.25.0",
@@ -5446,8 +5448,8 @@ dependencies = [
 
 [[package]]
 name = "identity_credential"
-version = "1.6.0-alpha"
-source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-alpha.5#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
+version = "1.6.0-beta"
+source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-beta.1#0e6db9826fab69345fc21e220300e9530573039c"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -5475,8 +5477,8 @@ dependencies = [
 
 [[package]]
 name = "identity_did"
-version = "1.6.0-alpha"
-source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-alpha.5#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
+version = "1.6.0-beta"
+source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-beta.1#0e6db9826fab69345fc21e220300e9530573039c"
 dependencies = [
  "did_url_parser 0.3.0",
  "form_urlencoded",
@@ -5489,8 +5491,8 @@ dependencies = [
 
 [[package]]
 name = "identity_document"
-version = "1.6.0-alpha"
-source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-alpha.5#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
+version = "1.6.0-beta"
+source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-beta.1#0e6db9826fab69345fc21e220300e9530573039c"
 dependencies = [
  "did_url_parser 0.2.0",
  "identity_core",
@@ -5504,8 +5506,8 @@ dependencies = [
 
 [[package]]
 name = "identity_eddsa_verifier"
-version = "1.6.0-alpha"
-source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-alpha.5#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
+version = "1.6.0-beta"
+source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-beta.1#0e6db9826fab69345fc21e220300e9530573039c"
 dependencies = [
  "identity_jose",
  "iota-crypto",
@@ -5513,24 +5515,24 @@ dependencies = [
 
 [[package]]
 name = "identity_iota"
-version = "1.6.0-alpha"
-source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-alpha.5#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
+version = "1.6.0-beta"
+source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-beta.1#0e6db9826fab69345fc21e220300e9530573039c"
 dependencies = [
  "identity_core",
  "identity_credential",
  "identity_did",
  "identity_document",
  "identity_iota_core",
- "identity_iota_interaction",
  "identity_resolver",
  "identity_storage",
  "identity_verification",
+ "iota_interaction",
 ]
 
 [[package]]
 name = "identity_iota_core"
-version = "1.6.0-alpha"
-source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-alpha.5#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
+version = "1.6.0-beta"
+source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-beta.1#0e6db9826fab69345fc21e220300e9530573039c"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -5543,12 +5545,13 @@ dependencies = [
  "identity_did",
  "identity_document",
  "identity_eddsa_verifier",
- "identity_iota_interaction",
  "identity_jose",
  "identity_verification",
  "iota-config",
  "iota-crypto",
  "iota-sdk 0.12.0-rc",
+ "iota_interaction",
+ "iota_interaction_rust",
  "iota_interaction_ts",
  "itertools 0.13.0",
  "move-core-types",
@@ -5557,6 +5560,7 @@ dependencies = [
  "once_cell",
  "phf 0.11.3",
  "prefix-hex",
+ "product_common",
  "rand 0.8.5",
  "ref-cast",
  "secret-storage",
@@ -5566,57 +5570,23 @@ dependencies = [
  "strum 0.25.0",
  "thiserror 1.0.69",
  "tokio",
-]
-
-[[package]]
-name = "identity_iota_interaction"
-version = "1.6.0-alpha"
-source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-alpha.5#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
-dependencies = [
- "anyhow",
- "async-trait",
- "bcs",
- "cfg-if",
- "derive_more 0.99.20",
- "enum_dispatch",
- "eyre",
- "fastcrypto",
- "fastcrypto-zkp",
- "getrandom 0.2.16",
- "hex",
- "iota-sdk 0.12.0-rc",
- "itertools 0.13.0",
- "jsonrpsee",
- "leb128",
- "move-core-types",
- "nonempty 0.11.0",
- "num-bigint 0.4.6",
- "primitive-types 0.12.2",
- "rand 0.8.5",
- "ref-cast",
- "schemars",
- "secret-storage",
- "serde",
- "serde_json",
- "serde_repr",
- "serde_with 3.12.0",
- "shared-crypto",
- "strum 0.25.0",
- "tap",
- "thiserror 1.0.69",
- "tracing",
- "uint",
+ "toml 0.8.22",
 ]
 
 [[package]]
 name = "identity_jose"
-version = "1.6.0-alpha"
-source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-alpha.5#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
+version = "1.6.0-beta"
+source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-beta.1#0e6db9826fab69345fc21e220300e9530573039c"
 dependencies = [
+ "anyhow",
  "bls12_381_plus 0.8.18",
+ "fastcrypto",
  "identity_core",
  "iota-crypto",
+ "iota_interaction",
  "json-proof-token",
+ "k256",
+ "p256 0.13.2",
  "serde",
  "serde_json",
  "thiserror 1.0.69",
@@ -5625,8 +5595,8 @@ dependencies = [
 
 [[package]]
 name = "identity_resolver"
-version = "1.6.0-alpha"
-source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-alpha.5#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
+version = "1.6.0-beta"
+source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-beta.1#0e6db9826fab69345fc21e220300e9530573039c"
 dependencies = [
  "async-trait",
  "futures",
@@ -5642,8 +5612,8 @@ dependencies = [
 
 [[package]]
 name = "identity_storage"
-version = "1.6.0-alpha"
-source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-alpha.5#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
+version = "1.6.0-beta"
+source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-beta.1#0e6db9826fab69345fc21e220300e9530573039c"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -5655,8 +5625,8 @@ dependencies = [
  "identity_did",
  "identity_document",
  "identity_iota_core",
- "identity_iota_interaction",
  "identity_verification",
+ "iota_interaction",
  "seahash",
  "secret-storage",
  "serde",
@@ -5666,8 +5636,8 @@ dependencies = [
 
 [[package]]
 name = "identity_stronghold"
-version = "1.6.0-alpha"
-source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-alpha.5#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
+version = "1.6.0-beta"
+source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-beta.1#0e6db9826fab69345fc21e220300e9530573039c"
 dependencies = [
  "async-trait",
  "identity_storage",
@@ -5683,7 +5653,7 @@ dependencies = [
 [[package]]
 name = "identity_stronghold_ext"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=91c26b7#91c26b7a590c0bef7541f9a8615d48f14b32b6cf"
+source = "git+https://git@github.com/impierce/did-manager.git?rev=c30936b#c30936b3e66dbf224a4971b48dbb3511d7c37888"
 dependencies = [
  "async-trait",
  "elliptic-curve 0.13.8",
@@ -5701,8 +5671,8 @@ dependencies = [
 
 [[package]]
 name = "identity_verification"
-version = "1.6.0-alpha"
-source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-alpha.5#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
+version = "1.6.0-beta"
+source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-beta.1#0e6db9826fab69345fc21e220300e9530573039c"
 dependencies = [
  "identity_core",
  "identity_did",
@@ -6456,9 +6426,72 @@ dependencies = [
 ]
 
 [[package]]
+name = "iota_interaction"
+version = "1.6.0-alpha"
+source = "git+https://github.com/iotaledger/product-core.git?tag=v0.1.0-alpha#a0ffdd7a89561b22b4153d8f98aa8c9de9ae76f4"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "bcs",
+ "cfg-if",
+ "derive_more 0.99.20",
+ "enum_dispatch",
+ "eyre",
+ "fastcrypto",
+ "fastcrypto-zkp",
+ "getrandom 0.2.16",
+ "getrandom 0.3.3",
+ "hex",
+ "indexmap 2.9.0",
+ "iota-sdk 0.12.0-rc",
+ "itertools 0.13.0",
+ "jsonpath-rust",
+ "jsonrpsee",
+ "leb128",
+ "move-core-types",
+ "nonempty 0.11.0",
+ "num-bigint 0.4.6",
+ "primitive-types 0.12.2",
+ "rand 0.8.5",
+ "ref-cast",
+ "schemars",
+ "secret-storage",
+ "serde",
+ "serde_json",
+ "serde_repr",
+ "serde_with 3.12.0",
+ "shared-crypto",
+ "strum 0.25.0",
+ "tap",
+ "thiserror 1.0.69",
+ "tokio",
+ "tracing",
+ "uint",
+]
+
+[[package]]
+name = "iota_interaction_rust"
+version = "1.6.0-alpha"
+source = "git+https://github.com/iotaledger/product-core.git?tag=v0.1.0-alpha#a0ffdd7a89561b22b4153d8f98aa8c9de9ae76f4"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "bcs",
+ "cfg-if",
+ "fastcrypto",
+ "iota-sdk 0.12.0-rc",
+ "iota_interaction",
+ "secret-storage",
+ "serde",
+ "serde_json",
+ "strum 0.25.0",
+ "thiserror 1.0.69",
+]
+
+[[package]]
 name = "iota_interaction_ts"
 version = "1.6.0-alpha"
-source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-alpha.5#8b650d45167bbe0c8f9aead36981bcdeb3ae35e8"
+source = "git+https://github.com/iotaledger/product-core.git?tag=v0.1.0-alpha#a0ffdd7a89561b22b4153d8f98aa8c9de9ae76f4"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -6470,9 +6503,9 @@ dependencies = [
  "fastcrypto",
  "futures",
  "getrandom 0.2.16",
- "identity_core",
- "identity_iota_interaction",
+ "getrandom 0.3.3",
  "instant",
+ "iota_interaction",
  "js-sys",
  "secret-storage",
  "serde",
@@ -6956,6 +6989,21 @@ source = "git+https://github.com/zhiburt/tabled/?rev=e449317a1c02eb6b29e409ad661
 dependencies = [
  "serde_json",
  "tabled",
+]
+
+[[package]]
+name = "jsonpath-rust"
+version = "0.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "19d8fe85bd70ff715f31ce8c739194b423d79811a19602115d611a3ec85d6200"
+dependencies = [
+ "lazy_static",
+ "once_cell",
+ "pest",
+ "pest_derive",
+ "regex",
+ "serde_json",
+ "thiserror 1.0.69",
 ]
 
 [[package]]
@@ -8894,7 +8942,7 @@ dependencies = [
 [[package]]
 name = "oid4vc"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=5aede59#5aede592acf061820c5fa5f9b807f140c8c299f4"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=e4a6d11#e4a6d1182ce7fb12a1d99112bf1c222c2ba15c0e"
 dependencies = [
  "dif-presentation-exchange",
  "oid4vc-core",
@@ -8907,7 +8955,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-core"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=5aede59#5aede592acf061820c5fa5f9b807f140c8c299f4"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=e4a6d11#e4a6d1182ce7fb12a1d99112bf1c222c2ba15c0e"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -8925,13 +8973,14 @@ dependencies = [
  "serde_json",
  "serde_urlencoded",
  "serde_with 2.3.3",
+ "tracing",
  "url",
 ]
 
 [[package]]
 name = "oid4vc-manager"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=5aede59#5aede592acf061820c5fa5f9b807f140c8c299f4"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=e4a6d11#e4a6d1182ce7fb12a1d99112bf1c222c2ba15c0e"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -8964,7 +9013,7 @@ dependencies = [
 [[package]]
 name = "oid4vci"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=5aede59#5aede592acf061820c5fa5f9b807f140c8c299f4"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=e4a6d11#e4a6d1182ce7fb12a1d99112bf1c222c2ba15c0e"
 dependencies = [
  "anyhow",
  "derivative",
@@ -8989,7 +9038,7 @@ dependencies = [
 [[package]]
 name = "oid4vp"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=5aede59#5aede592acf061820c5fa5f9b807f140c8c299f4"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=e4a6d11#e4a6d1182ce7fb12a1d99112bf1c222c2ba15c0e"
 dependencies = [
  "anyhow",
  "chrono",
@@ -9452,6 +9501,51 @@ name = "permutohedron"
 version = "0.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b687ff7b5da449d39e418ad391e5e08da53ec334903ddbb921db208908fc372c"
+
+[[package]]
+name = "pest"
+version = "2.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "198db74531d58c70a361c42201efde7e2591e976d518caf7662a47dc5720e7b6"
+dependencies = [
+ "memchr",
+ "thiserror 2.0.12",
+ "ucd-trie",
+]
+
+[[package]]
+name = "pest_derive"
+version = "2.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d725d9cfd79e87dccc9341a2ef39d1b6f6353d68c4b33c177febbe1a402c97c5"
+dependencies = [
+ "pest",
+ "pest_generator",
+]
+
+[[package]]
+name = "pest_generator"
+version = "2.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "db7d01726be8ab66ab32f9df467ae8b1148906685bbe75c82d1e65d7f5b3f841"
+dependencies = [
+ "pest",
+ "pest_meta",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.101",
+]
+
+[[package]]
+name = "pest_meta"
+version = "2.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7f9f832470494906d1fca5329f8ab5791cc60beb230c74815dff541cbd2b5ca0"
+dependencies = [
+ "once_cell",
+ "pest",
+ "sha2 0.10.9",
+]
 
 [[package]]
 name = "petgraph"
@@ -9965,7 +10059,7 @@ dependencies = [
 [[package]]
 name = "producer"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=91c26b7#91c26b7a590c0bef7541f9a8615d48f14b32b6cf"
+source = "git+https://git@github.com/impierce/did-manager.git?rev=c30936b#c30936b3e66dbf224a4971b48dbb3511d7c37888"
 dependencies = [
  "did_iota",
  "did_jwk",
@@ -9982,6 +10076,28 @@ dependencies = [
  "serde_json",
  "shared",
  "url",
+]
+
+[[package]]
+name = "product_common"
+version = "1.6.0-alpha"
+source = "git+https://github.com/iotaledger/product-core.git?tag=v0.1.0-alpha#a0ffdd7a89561b22b4153d8f98aa8c9de9ae76f4"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "cfg-if",
+ "iota-sdk 0.12.0-rc",
+ "iota_interaction",
+ "iota_interaction_rust",
+ "iota_interaction_ts",
+ "itertools 0.13.0",
+ "phf 0.11.3",
+ "secret-storage",
+ "serde",
+ "serde_json",
+ "strum 0.25.0",
+ "thiserror 1.0.69",
+ "tokio",
 ]
 
 [[package]]
@@ -11715,7 +11831,7 @@ dependencies = [
 [[package]]
 name = "shared"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=91c26b7#91c26b7a590c0bef7541f9a8615d48f14b32b6cf"
+source = "git+https://git@github.com/impierce/did-manager.git?rev=c30936b#c30936b3e66dbf224a4971b48dbb3511d7c37888"
 dependencies = [
  "identity_iota",
  "identity_storage",
@@ -11837,7 +11953,7 @@ dependencies = [
 [[package]]
 name = "siopv2"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=5aede59#5aede592acf061820c5fa5f9b807f140c8c299f4"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=e4a6d11#e4a6d1182ce7fb12a1d99112bf1c222c2ba15c0e"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -11859,6 +11975,7 @@ dependencies = [
  "serde_urlencoded",
  "serde_with 3.12.0",
  "tokio",
+ "tracing",
  "url",
 ]
 
@@ -13818,6 +13935,12 @@ dependencies = [
  "quote",
  "syn 2.0.101",
 ]
+
+[[package]]
+name = "ucd-trie"
+version = "0.1.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2896d95c02a80c6d6a5d6e953d479f5ddf2dfdb6a244441010e373ac0fb88971"
 
 [[package]]
 name = "uint"
