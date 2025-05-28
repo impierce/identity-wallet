@@ -54,6 +54,7 @@ export { default as MagnifyingGlassBoldIcon } from '~icons/ph/magnifying-glass-b
 export { default as MagnifyingGlassFillIcon } from '~icons/ph/magnifying-glass-fill';
 export { default as PasswordFillIcon } from '~icons/ph/password-fill';
 export { default as PhoneFillIcon } from '~icons/ph/phone-fill';
+export { default as PencilFillIcon } from '~icons/ph/pencil-fill';
 export { default as PlugsConnectedFillIcon } from '~icons/ph/plugs-connected-fill';
 export { default as PlusBoldIcon } from '~icons/ph/plus-bold';
 export { default as PlusCircleIcon } from '~icons/ph/plus-circle';

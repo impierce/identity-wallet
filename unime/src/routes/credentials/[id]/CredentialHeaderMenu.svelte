@@ -4,12 +4,11 @@
   import LL from '$i18n/i18n-svelte';
   import { fly } from 'svelte/transition';
 
-  import Icon from '@iconify/svelte';
   import { createDropdownMenu, melt } from '@melt-ui/svelte';
 
   import { ActionSheet, Button } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
-  import { DotsThreeVerticalBoldIcon, TrashFillIcon } from '$lib/icons';
+  import { DotsThreeVerticalBoldIcon, PencilFillIcon, TrashFillIcon } from '$lib/icons';
 
   const dispatchEvent = createEventDispatcher();
 
@@ -45,7 +44,7 @@
     }}
     class="flex items-center space-x-2 rounded-lg py-2 pl-3 pr-4 hover:bg-background dark:text-grey"
   >
-    <Icon class="size-5" icon="ph:pencil-fill" />
+    <PencilFillIcon class="size-5" />
     <p class="grow text-left text-[13px]/[24px] font-medium">
       {$LL.CREDENTIAL.ACTIONS.EDIT.MENU_BUTTON()}
     </p>

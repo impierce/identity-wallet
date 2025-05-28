@@ -4,10 +4,10 @@
   import { fly } from 'svelte/transition';
 
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
-  import Icon from '@iconify/svelte';
 
   import { Button } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
+  import { PencilFillIcon } from '$lib/icons';
   import { state as appState, pageTitleStore } from '$lib/stores';
 
   import AddressRenderer from './AddressRenderer.svelte';
@@ -84,13 +84,13 @@
         {#if openEditMode}
           <!-- Character count -->
           <div
-            class="absolute -top-6 right-5 font-mono text-xs font-medium tracking-tight text-slate-500 dark:text-slate-300"
+            class="absolute -top-7 right-5 font-mono text-xs font-medium tracking-tight text-slate-500 dark:text-slate-300"
           >
             {displayNameUpdated.length}/{maxLength}
           </div>
           <!-- Inline pencil icon -->
           <div class="absolute right-6 top-1/2 -translate-y-1/2">
-            <Icon class="size-5 text-slate-500 dark:text-slate-300" icon="ph:pencil-fill" />
+            <PencilFillIcon class="size-5 text-slate-500 dark:text-slate-300" />
           </div>
         {/if}
       </div>
