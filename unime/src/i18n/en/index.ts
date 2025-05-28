@@ -446,6 +446,7 @@ By using our Service, you acknowledge that you have read, understood, and agree 
         RESIDENT_ADDRESS_LABEL: 'Address',
         RESIDENT_COUNTRY_LABEL: 'Country',
         RESIDENT_COUNTRY_PLACEHOLDER: 'Choose a country',
+        RESIDENT_COUNTRY_NO_MATCH: 'No countries found',
         RESIDENT_STATE_LABEL: 'State',
         RESIDENT_STREET_LABEL: 'Street',
         RESIDENT_HOUSE_NUMBER_LABEL: 'House number',

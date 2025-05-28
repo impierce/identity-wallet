@@ -420,6 +420,7 @@ Durch die Nutzung unseres Dienstes bestätigen Sie, dass Sie diese Allgemeinen G
         RESIDENT_ADDRESS_LABEL: 'Adresse',
         RESIDENT_COUNTRY_LABEL: 'Land',
         RESIDENT_COUNTRY_PLACEHOLDER: 'Wähle ein Land aus',
+        RESIDENT_COUNTRY_NO_MATCH: 'Keine Länder gefunden',
         RESIDENT_STATE_LABEL: 'Bundesland',
         RESIDENT_STREET_LABEL: 'Straße',
         RESIDENT_HOUSE_NUMBER_LABEL: 'Hausnummer',

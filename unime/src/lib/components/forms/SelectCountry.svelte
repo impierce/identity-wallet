@@ -95,7 +95,9 @@
         {/if}
       </div>
     {:else}
-      <span class="text-[13px]/[24px] font-medium text-slate-500 p-2">No results found</span>
+      <span class="text-[13px]/[24px] font-medium text-slate-500 p-2">
+        {$LL.ADD_CREDENTIALS.ADDRESS.ADD.RESIDENT_COUNTRY_NO_MATCH()}
+      </span>
     {/each}
   </div>
 </div>

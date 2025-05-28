@@ -1078,6 +1078,10 @@ type RootTranslation = {
 				 */
 				RESIDENT_COUNTRY_PLACEHOLDER: string
 				/**
+				 * N​o​ ​c​o​u​n​t​r​i​e​s​ ​f​o​u​n​d
+				 */
+				RESIDENT_COUNTRY_NO_MATCH: string
+				/**
 				 * S​t​a​t​e
 				 */
 				RESIDENT_STATE_LABEL: string
@@ -2486,6 +2490,10 @@ export type TranslationFunctions = {
 				 * Choose a country
 				 */
 				RESIDENT_COUNTRY_PLACEHOLDER: () => LocalizedString
+				/**
+				 * No countries found
+				 */
+				RESIDENT_COUNTRY_NO_MATCH: () => LocalizedString
 				/**
 				 * State
 				 */
