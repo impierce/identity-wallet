@@ -1178,6 +1178,10 @@ type RootTranslation = {
 				 */
 				VALUE_PLACEHOLDER: string
 				/**
+				 * P​l​e​a​s​e​ ​p​r​o​v​i​d​e​ ​a​ ​v​a​l​i​d​ ​e​m​a​i​l​ ​a​d​d​r​e​s​s
+				 */
+				VALUE_PATTERN_ERROR: string
+				/**
 				 * S​e​n​d​ ​v​e​r​i​f​i​c​a​t​i​o​n​ ​e​m​a​i​l
 				 */
 				BUTTON_SEND: string
@@ -1189,6 +1193,10 @@ type RootTranslation = {
 				 * P​l​e​a​s​e​ ​c​h​e​c​k​ ​y​o​u​r​ ​e​m​a​i​l​ ​i​n​b​o​x​ ​a​n​d​ ​e​n​t​e​r​ ​t​h​e​ ​c​o​d​e​ ​b​e​l​o​w​.
 				 */
 				CHECK_EMAIL: string
+				/**
+				 * V​e​r​i​f​i​c​a​t​i​o​n​ ​c​o​d​e​ ​e​x​p​i​r​e​d
+				 */
+				EXPIRED_ERROR: string
 			}
 		}
 		PROFILE: {
@@ -2579,6 +2587,10 @@ export type TranslationFunctions = {
 				 */
 				VALUE_PLACEHOLDER: () => LocalizedString
 				/**
+				 * Please provide a valid email address
+				 */
+				VALUE_PATTERN_ERROR: () => LocalizedString
+				/**
 				 * Send verification email
 				 */
 				BUTTON_SEND: () => LocalizedString
@@ -2590,6 +2602,10 @@ export type TranslationFunctions = {
 				 * Please check your email inbox and enter the code below.
 				 */
 				CHECK_EMAIL: () => LocalizedString
+				/**
+				 * Verification code expired
+				 */
+				EXPIRED_ERROR: () => LocalizedString
 			}
 		}
 		PROFILE: {

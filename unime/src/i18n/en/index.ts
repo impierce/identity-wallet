@@ -483,9 +483,11 @@ By using our Service, you acknowledge that you have read, understood, and agree 
         LABEL_PLACEHOLDER: 'Personal email',
         VALUE_LABEL: 'Email',
         VALUE_PLACEHOLDER: 'firstname.lastname@example.com',
+        VALUE_PATTERN_ERROR: 'Please provide a valid email address',
         BUTTON_SEND: 'Send verification email',
         BUTTON_SEND_AGAIN: 'Resend verification email',
         CHECK_EMAIL: 'Please check your email inbox and enter the code below.',
+        EXPIRED_ERROR: 'Verification code expired',
       },
     },
     PROFILE: {

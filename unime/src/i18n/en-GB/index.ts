@@ -30,11 +30,7 @@ const en_GB = extendLanguage(en, {
     FAVORITES: 'My favourites',
   },
   ADD_CREDENTIALS: {
-    PROFILE: {
-      ADD: {
-        FAVORITES_TOGGLE_LABEL: 'Add to favourites',
-      },
-    },
+    FAVORITES_TOGGLE_LABEL: 'Add to favourites',
   },
   ERROR: {
     TITLE: 'Oh dear!',
