@@ -5381,7 +5381,7 @@ checksum = "b9e0384b61958566e926dc50660321d12159025e767c18e043daf26b70104c39"
 
 [[package]]
 name = "identity-wallet"
-version = "0.6.12"
+version = "0.9.5"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -14042,7 +14042,7 @@ checksum = "ebc1c04c71510c7f702b52b7c350734c9ff1295c464a03335b00bb84fc54f853"
 
 [[package]]
 name = "unime"
-version = "0.6.12"
+version = "0.9.5"
 dependencies = [
  "did_manager",
  "dotenvy",
