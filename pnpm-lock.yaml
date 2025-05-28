@@ -35,6 +35,9 @@ importers:
       '@iconify-json/circle-flags':
         specifier: ^1.2.6
         version: 1.2.6
+      '@iconify-json/flagpack':
+        specifier: ^1.2.2
+        version: 1.2.2
       '@iconify-json/ph':
         specifier: ^1.2.0
         version: 1.2.0
@@ -543,6 +546,9 @@ packages:
 
   '@iconify-json/circle-flags@1.2.6':
     resolution: {integrity: sha512-UR7hL1nxOFWDVlSTuAmssyAzm3U1PuE5CMVLlahuVsnm1l7Q2b29+jUaSLTDCFqrpvdeWifCmj4C6Ojkj+4uww==}
+
+  '@iconify-json/flagpack@1.2.2':
+    resolution: {integrity: sha512-L9C906tqC0yxLTNE5Jez54hiMQhlfRR9lr8YZJJcIrJayBm5LxUZvfHbyFrH5AggLutVomXze4tIZk7hh9+kCg==}
 
   '@iconify-json/ph@1.2.0':
     resolution: {integrity: sha512-013eLpgTmX1lACOuDnkuhC7gRHyYj9w/j8SyDmlyUYvsKQrwdRsv1otcXtwH3DevuDAzSkreeeRsCeez+gTyVA==}
@@ -3342,6 +3348,10 @@ snapshots:
       - supports-color
 
   '@iconify-json/circle-flags@1.2.6':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/flagpack@1.2.2':
     dependencies:
       '@iconify/types': 2.0.0
 
