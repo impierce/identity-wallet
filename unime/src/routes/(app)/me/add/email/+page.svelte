@@ -35,7 +35,7 @@
 
   // Svelte 5's `bind:this` with `let` is idiomatic
   // svelte-ignore non_reactive_update
-  let labelInput: HTMLInputElement | null = null;
+  let labelInput: HTMLInputElement | undefined = undefined;
 
   let showError: boolean = $state(false);
 

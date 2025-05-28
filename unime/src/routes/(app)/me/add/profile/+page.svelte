@@ -33,7 +33,8 @@
 
   // Bottom action: Add to favourites, Create profile
   let checked = $state(true);
-  let labelInput: HTMLInputElement;
+  // svelte-ignore non_reactive_update
+  let labelInput: HTMLInputElement | undefined = undefined;
 
   // Loading state while the credential is created
   let loading = $state(false);
@@ -91,7 +92,7 @@
 
   onMount(() => {
     if (!profileName) {
-      labelInput.focus();
+      labelInput?.focus();
     }
     if ($appState.dev_mode !== 'Off') {
       profileName = 'My Profile';

@@ -25,7 +25,8 @@
 
   // Bottom action: Add to favourites, Add address
   let checked = $state(true);
-  let labelInput: HTMLInputElement;
+  // svelte-ignore non_reactive_update
+  let labelInput: HTMLInputElement | undefined = undefined;
 
   // Loading state while the credential is created
   let loading = $state(false);
@@ -65,7 +66,7 @@
 
   onMount(() => {
     if (!addressName) {
-      labelInput.focus();
+      labelInput?.focus();
     }
     if ($appState.dev_mode !== 'Off') {
       addressName = 'Home address';
