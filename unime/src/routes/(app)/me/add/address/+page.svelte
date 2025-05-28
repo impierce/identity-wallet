@@ -87,7 +87,8 @@
   class="sticky top-0 z-10"
 />
 
-<div class="relative flex flex-col">
+<!-- Extra bottom padding is added to make room for the bottom actions -->
+<div class="relative flex flex-col pb-20">
   <div class="flex grow flex-col items-center p-4 pt-0">
     <div class="my-5 flex h-[121px] flex-col items-center space-y-4">
       <!-- PaddedIcon -->
@@ -169,7 +170,9 @@
   </div>
 </div>
 
-<div class="fixed bottom-0 left-0 z-10 flex w-full flex-col gap-5 rounded-t-3xl bg-background-alt p-6 shadow">
+<div
+  class="fixed bottom-[var(--safe-area-inset-bottom)] left-0 z-10 flex h-36 w-full flex-col gap-5 rounded-t-3xl bg-background-alt p-6 shadow"
+>
   <Switch {checked} onCheckedChange={({ next }) => (checked = next)}>
     <div class="flex items-center gap-4 px-4">
       <HeartFillIcon class="size-5 text-primary" />

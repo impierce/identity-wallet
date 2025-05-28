@@ -98,7 +98,7 @@
     {#if openEditMode}
       <!-- Similar to ActionSheet, but without backdrop -->
       <div
-        class="fixed bottom-0 left-0 flex w-screen flex-col space-y-[10px] rounded-t-[20px] bg-background-alt p-6"
+        class="fixed bottom-[var(--safe-area-inset-bottom)] left-0 flex w-screen flex-col space-y-[10px] rounded-t-[20px] bg-background-alt p-6"
         transition:fly={{
           y: 350,
           duration: 300,
