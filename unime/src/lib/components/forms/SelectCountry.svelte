@@ -71,6 +71,7 @@
         {...combobox.input}
         class="w-full rounded-xl border border-slate-300 bg-background-alt px-10 py-3 text-[14px]/[22px] font-medium text-slate-800 dark:border-slate-600 dark:text-grey"
         placeholder={placeholder || $LL.ADD_CREDENTIALS.ADDRESS.ADD.RESIDENT_COUNTRY_PLACEHOLDER()}
+        value={combobox.value}
       />
       <button
         {...combobox.trigger}
