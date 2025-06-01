@@ -50,7 +50,7 @@
     "jsdom": "^22.1.0",
     "just-extend": "^6.2.0",
     "markdown-it": "^14.0.0",
-    "postcss": "^8.5.3",
+    "postcss": "^8.5.4",
     "qrcode": "^1.5.3",
     "svelte": "^5.26.3",
     "svelte-check": "^4.1.6",
