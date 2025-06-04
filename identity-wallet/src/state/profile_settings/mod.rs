@@ -19,6 +19,7 @@ pub struct ProfileSettings {
     pub preferred_did_methods: Vec<String>,
     pub preferred_key_types: Vec<String>,
     pub sorting_preferences: SortingPreferences,
+    pub biometrics_enabled: bool,
 }
 
 #[typetag::serde(name = "profile_settings")]
@@ -44,6 +45,7 @@ impl Default for ProfileSettings {
                     reverse: false,
                 },
             },
+            biometrics_enabled: false,
         }
     }
 }

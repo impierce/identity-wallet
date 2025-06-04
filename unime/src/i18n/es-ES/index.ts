@@ -1,4 +1,4 @@
-import type { BaseTranslation } from '../i18n-types';
+import type { Translation } from '../i18n-types';
 
 const es_ES = {
   ONBOARDING: {
@@ -173,6 +173,12 @@ Al utilizar nuestro Servicio, usted reconoce que ha leído, entendido y aceptado
         MATCH: 'Las contraseñas coinciden',
         NO_MATCH: 'Las contraseñas no coinciden',
       },
+      BIOMETRICS: {
+        TITLE: 'Activar {type}',
+        DESCRIPTION: '¿Quieres configurar {type} para desbloquear la app?',
+        CONFIRM: 'Sí, usar {type}',
+        DECIDE_LATER: 'Decide más tarde',
+      },
       COMPLETED: {
         NAVBAR_TITLE: 'Contraseña establecida',
         TITLE_1: 'Tu perfil UniMe ya está',
@@ -215,6 +221,30 @@ Al utilizar nuestro Servicio, usted reconoce que ha leído, entendido y aceptado
         TITLE_1: 'Escoge el aspecto de tu',
         TITLE_2: 'aplicación',
         SUBTITLE: '¿Te gusta más la noche?',
+      },
+      SECURITY: {
+        LABEL: 'Seguridad',
+        NAVBAR_TITLE: 'Seguridad',
+        SWITCH_LABEL: 'Desbloquear con {type}',
+        BIOMETRIC_TYPE: {
+          ANDROID: {
+            FACE_ID: 'reconocimiento facial',
+            TOUCH_ID: 'huella dactilar',
+          },
+          IOS: {
+            FACE_ID: 'Face ID',
+            TOUCH_ID: 'Touch ID',
+          },
+          GENERIC: 'biometría',
+        },
+        ENABLE: {
+          DIALOG_TITLE: 'Activar {type}',
+          DIALOG_CONTENT: 'Introduce tu contraseña para activar {type}',
+        },
+        DISABLE: {
+          DIALOG_TITLE: 'Desactivar {type}',
+          DIALOG_CONTENT: 'Introduce tu contraseña para desactivar {type}',
+        },
       },
       PASSWORD: {
         TITLE: 'Contraseña',
@@ -425,6 +455,6 @@ Al utilizar nuestro Servicio, usted reconoce que ha leído, entendido y aceptado
     SKIP_TITLE: 'Salta el paso de empezar',
     SKIP_TEXT: '¿Seguro que quieres saltarte la guía de cómo empezar?',
   },
-} satisfies BaseTranslation;
+} satisfies Translation;
 
 export default es_ES;

@@ -25,8 +25,10 @@ identity-wallet = { path = "../../identity-wallet" }
 log.workspace = true
 serde_json.workspace = true
 tauri-plugin-barcode-scanner = { version = "2" }
-tauri-plugin-log = { version = "2", features = ["colored"] }
 tauri-plugin-fs = { version = "2" }
+tauri-plugin-keystore = { version = "2.1.0-alpha.1" }
+tauri-plugin-log = { version = "2", features = ["colored"] }
+tauri-plugin-os = { version = "2" }
 tauri-plugin-shell = { version = "2" }
 
 [dev-dependencies]
@@ -49,3 +51,6 @@ wiremock.workspace = true
 # this feature is used for production builds or when `devPath` points to the filesystem
 # DO NOT REMOVE!!
 custom-protocol = ["tauri/custom-protocol"]
+
+[target.'cfg(any(target_os = "android", target_os = "ios"))'.dependencies]
+tauri-plugin-biometric = "2.2.0"

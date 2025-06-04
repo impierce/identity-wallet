@@ -9,6 +9,7 @@
     FilesFillIcon,
     KeyFillIcon,
     ListStarFillIcon,
+    ShieldCheckFillIcon,
     SunFillIcon,
     TranslateFillIcon,
   } from '$lib/icons';
@@ -36,6 +37,13 @@
         <SunFillIcon class="h-5 w-5 text-primary"></SunFillIcon>
       {/snippet}
       {$LL.SETTINGS.APP.THEME.LABEL()}
+    </SettingsCaretLink>
+
+    <SettingsCaretLink href="/me/settings/app/security">
+      {#snippet icon()}
+        <ShieldCheckFillIcon class="h-5 w-5 text-primary"></ShieldCheckFillIcon>
+      {/snippet}
+      {$LL.SETTINGS.APP.SECURITY.LABEL()}
     </SettingsCaretLink>
 
     <!-- <SettingsCaretLink href="#" disabled>

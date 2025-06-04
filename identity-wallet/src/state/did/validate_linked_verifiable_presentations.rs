@@ -867,7 +867,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn get_validated_linked_credential_data_succesfully_returns_linked_verifiable_credential_data() {
+    async fn get_validated_linked_credential_data_successfully_returns_linked_verifiable_credential_data() {
         let mut issuer = TestEntity::new().await;
 
         // Add the `/did_configuration.json` and `/did.json` endpoints to the issuer mock server.
@@ -924,7 +924,7 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn get_validated_linked_domains_returns_only_succesfully_validated_linked_domains() {
+    async fn get_validated_linked_domains_returns_only_successfully_validated_linked_domains() {
         let mut issuer1 = TestEntity::new().await;
 
         // Add the `/did_configuration.json` and `/did.json` endpoints to the issuer mock server.
@@ -933,7 +933,7 @@ mod tests {
             .await;
         issuer1.add_well_known_did_json().await;
 
-        // Succesfully validate the linked domain.
+        // Successfully validate the linked domain.
         assert_eq!(
             get_validated_linked_domains(
                 &[issuer1.domain.clone()],

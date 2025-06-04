@@ -26,6 +26,7 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
         picture,
         theme,
         password,
+        biometrics_enabled,
     }) = listen::<CreateNew>(action)
     {
         info!("Creating new identity ...");
@@ -72,6 +73,7 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
                 picture: Some(picture),
                 theme,
             }),
+            biometrics_enabled,
             ..state.profile_settings
         };
 
