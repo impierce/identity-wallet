@@ -1,7 +1,4 @@
-use crate::{
-    error::AppError,
-    state::{did::validate_domain_linkage::Verifier, SUPPORTED_CRED_TYPE_SCHEMAS},
-};
+use crate::{error::AppError, state::did::validate_domain_linkage::Verifier};
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use did_manager::Resolver;
 use identity_iota::{
@@ -74,60 +71,23 @@ pub async fn jwt_vc_json_validator(credential_jwt: Jwt) -> Result<DecodedJwtCred
 /// This function is only capable of validating VC's and subsequent Credential Formats/Types.
 /// All VC's must have a `type` field, which is either a string or an array of strings.
 pub fn credential_schema_validation(data: &Value) -> Result<(), AppError> {
-    if let Some(credential_type) = data.get("type").and_then(|f| f.as_str()) {
-        if SUPPORTED_CRED_TYPE_SCHEMAS.contains(&credential_type) {
-            let json_schema_path = format!("resources/jsonschemas/{}.json", credential_type);
-
-            json_schema_validation(json_schema_path, data)?;
-            debug!(
-                "Credential type: {:?} succesfully validated against corresponding Json schema",
-                credential_type
-            );
-        } else {
-            warn!("No supported schema found for Credential type: {:?}", credential_type);
+    match serde_json::from_value::<StringOrArray>(
+        data.get("type")
+            .ok_or(AppError::InvalidCredentialFormatError)
+            .cloned()?,
+    )
+    .map_err(|_| AppError::InvalidCredentialFormatError)?
+    {
+        StringOrArray::String(credential_type) => {
+            println!("Validating credential type STRING: {}", credential_type);
+            Ok(credential_type.validate(data)?)
         }
-    } else {
-        let credential_type_array: Vec<String> = data
-            .get("type")
-            .and_then(|f| f.as_array())
-            .ok_or_else(|| AppError::InvalidCredentialFormatError)?
-            .iter()
-            .map(|f| {
-                f.as_str()
-                    .map(String::from)
-                    .ok_or(AppError::InvalidCredentialFormatError)
-            })
-            .collect::<Result<Vec<String>, AppError>>()?;
+        StringOrArray::Array(credential_type_array) => credential_type_array.iter().try_for_each(|credential_type| {
+            println!("Validating credential type ARRAY: {}", credential_type);
 
-        if SUPPORTED_CRED_TYPE_SCHEMAS
-            .iter()
-            .any(|x| credential_type_array.contains(&x.to_string()))
-        {
-            for mut supported_cred_type in SUPPORTED_CRED_TYPE_SCHEMAS {
-                if credential_type_array.contains(&supported_cred_type.to_string()) {
-                    // OpenBadgeCredentials can be typed as "OpenBadgeCredential" or "AchievementCredential"
-                    if *supported_cred_type == "AchievementCredential" {
-                        supported_cred_type = &"OpenBadgeCredential";
-                    }
-
-                    let json_schema_path = format!("resources/jsonschemas/{}.json", supported_cred_type);
-                    json_schema_validation(json_schema_path, data)?;
-
-                    debug!(
-                        "Credential type: {:?} succesfully validated against corresponding Json schema",
-                        supported_cred_type
-                    );
-                }
-            }
-        } else {
-            warn!(
-                "No supported schema found for Credential types: {:?}",
-                credential_type_array
-            );
-        }
+            credential_type.validate(data)
+        }),
     }
-
-    Ok(())
 }
 
 /// Validate any given data in serde_json::Value format against any given JsonSchema by path.
@@ -140,13 +100,105 @@ pub fn json_schema_validation(json_schema_path: String, data: &Value) -> Result<
     let schema = jsonschema::draft201909::new(&json_schema)
         .map_err(|_| AppError::Error("Failed to compile JsonSchema from serde_json::Value".to_string()))?;
 
+    println!("3");
     let errors: Vec<ValidationError> = schema.iter_errors(data).collect();
     if !errors.is_empty() {
+        println!("Errors: {:?}", errors);
+
         Err(AppError::Error(format!(
             "The data is invalid according to the given JsonSchema: {:?}",
             errors
         )))
     } else {
+        println!("Hereees the");
+
+        Ok(())
+    }
+}
+
+#[derive(serde::Deserialize)]
+#[serde(untagged)]
+enum StringOrArray {
+    String(CredentialType),
+    Array(Vec<CredentialType>),
+}
+
+#[derive(serde::Deserialize, PartialEq, Debug, strum::Display)]
+enum CredentialType {
+    VerifiableCredential,
+    #[serde(alias = "AchievementCredential")]
+    OpenBadgeCredential,
+    #[serde(other)]
+    Other,
+}
+
+#[derive(serde::Deserialize, PartialEq, Debug, strum::Display)]
+enum CredentialTypeVersion {
+    VerifiableCredentialV1_1,
+    VerifiableCredentialV2,
+    OpenBadgeCredentialV3,
+    #[serde(other)]
+    Other,
+}
+
+impl CredentialType {
+    fn get_version(&self, data: &Value) -> Result<CredentialTypeVersion, AppError> {
+        let context_array = serde_json::from_value::<Vec<String>>(
+            data.get("@context")
+                .ok_or(AppError::InvalidCredentialFormatError)
+                .cloned()?,
+        )
+        .map_err(|_| AppError::InvalidCredentialFormatError)
+        .unwrap();
+
+        println!("Context array: {:?}", context_array);
+
+        match self {
+            CredentialType::OpenBadgeCredential => {
+                match context_array
+                    .get(1)
+                    .ok_or(AppError::InvalidCredentialFormatError)?
+                    .as_str()
+                {
+                    context
+                        if context.starts_with("https://purl.imsglobal.org/spec/ob/v3p0/context-")
+                            && context.ends_with(".json") =>
+                    {
+                        Ok(CredentialTypeVersion::OpenBadgeCredentialV3)
+                    }
+                    _ => Err(AppError::InvalidCredentialFormatError),
+                }
+            }
+            CredentialType::VerifiableCredential => {
+                match context_array
+                    .first()
+                    .ok_or(AppError::InvalidCredentialFormatError)
+                    .unwrap()
+                    .as_str()
+                {
+                    "https://www.w3.org/2018/credentials/v1" => Ok(CredentialTypeVersion::VerifiableCredentialV1_1),
+                    "https://www.w3.org/ns/credentials/v2" => Ok(CredentialTypeVersion::VerifiableCredentialV2),
+                    _ => Err(AppError::InvalidCredentialFormatError),
+                }
+            }
+            CredentialType::Other => {
+                warn!("No version found for credential type: {self:?}. Skipping validation.",);
+                Ok(CredentialTypeVersion::Other)
+            }
+        }
+    }
+
+    fn validate(&self, data: &Value) -> Result<(), AppError> {
+        println!("0");
+        let version = self.get_version(data)?;
+        println!("0.5");
+        let json_schema_path = format!("resources/jsonschemas/{}.json", version);
+
+        println!("1");
+        json_schema_validation(json_schema_path, data)?;
+        println!("2");
+        debug!("Credential type: {self:?} succesfully validated against corresponding Json schema",);
+
         Ok(())
     }
 }
