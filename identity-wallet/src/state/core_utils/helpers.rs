@@ -71,12 +71,8 @@ pub async fn jwt_vc_json_validator(credential_jwt: Jwt) -> Result<DecodedJwtCred
 /// This function is only capable of validating VC's and subsequent Credential Formats/Types.
 /// All VC's must have a `type` field, which is either a string or an array of strings.
 pub fn credential_schema_validation(data: &Value) -> Result<(), AppError> {
-    match serde_json::from_value::<StringOrArray>(
-        data.get("type")
-            .ok_or(AppError::InvalidCredentialFormatError)
-            .cloned()?,
-    )
-    .map_err(|_| AppError::InvalidCredentialFormatError)?
+    match serde_json::from_value::<StringOrArray>(data["type"].clone())
+        .map_err(|_| AppError::InvalidCredentialFormatError)?
     {
         StringOrArray::String(credential_type) => Ok(credential_type.validate(data)?),
         StringOrArray::Array(credential_type_array) => credential_type_array
@@ -133,12 +129,8 @@ enum CredentialTypeVersion {
 
 impl CredentialType {
     fn get_version(&self, data: &Value) -> Result<CredentialTypeVersion, AppError> {
-        let context_array = serde_json::from_value::<Vec<String>>(
-            data.get("@context")
-                .ok_or(AppError::InvalidCredentialFormatError)
-                .cloned()?,
-        )
-        .map_err(|_| AppError::InvalidCredentialFormatError)?;
+        let context_array = serde_json::from_value::<Vec<String>>(data["@context"].clone())
+            .map_err(|_| AppError::InvalidCredentialFormatError)?;
 
         match self {
             CredentialType::OpenBadgeCredential => {
