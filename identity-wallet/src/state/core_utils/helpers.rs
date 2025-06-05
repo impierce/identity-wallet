@@ -78,15 +78,10 @@ pub fn credential_schema_validation(data: &Value) -> Result<(), AppError> {
     )
     .map_err(|_| AppError::InvalidCredentialFormatError)?
     {
-        StringOrArray::String(credential_type) => {
-            println!("Validating credential type STRING: {}", credential_type);
-            Ok(credential_type.validate(data)?)
-        }
-        StringOrArray::Array(credential_type_array) => credential_type_array.iter().try_for_each(|credential_type| {
-            println!("Validating credential type ARRAY: {}", credential_type);
-
-            credential_type.validate(data)
-        }),
+        StringOrArray::String(credential_type) => Ok(credential_type.validate(data)?),
+        StringOrArray::Array(credential_type_array) => credential_type_array
+            .iter()
+            .try_for_each(|credential_type| credential_type.validate(data)),
     }
 }
 
@@ -100,18 +95,13 @@ pub fn json_schema_validation(json_schema_path: String, data: &Value) -> Result<
     let schema = jsonschema::draft201909::new(&json_schema)
         .map_err(|_| AppError::Error("Failed to compile JsonSchema from serde_json::Value".to_string()))?;
 
-    println!("3");
     let errors: Vec<ValidationError> = schema.iter_errors(data).collect();
     if !errors.is_empty() {
-        println!("Errors: {:?}", errors);
-
         Err(AppError::Error(format!(
             "The data is invalid according to the given JsonSchema: {:?}",
             errors
         )))
     } else {
-        println!("Hereees the");
-
         Ok(())
     }
 }
@@ -148,10 +138,7 @@ impl CredentialType {
                 .ok_or(AppError::InvalidCredentialFormatError)
                 .cloned()?,
         )
-        .map_err(|_| AppError::InvalidCredentialFormatError)
-        .unwrap();
-
-        println!("Context array: {:?}", context_array);
+        .map_err(|_| AppError::InvalidCredentialFormatError)?;
 
         match self {
             CredentialType::OpenBadgeCredential => {
@@ -172,8 +159,7 @@ impl CredentialType {
             CredentialType::VerifiableCredential => {
                 match context_array
                     .first()
-                    .ok_or(AppError::InvalidCredentialFormatError)
-                    .unwrap()
+                    .ok_or(AppError::InvalidCredentialFormatError)?
                     .as_str()
                 {
                     "https://www.w3.org/2018/credentials/v1" => Ok(CredentialTypeVersion::VerifiableCredentialV1_1),
@@ -189,14 +175,10 @@ impl CredentialType {
     }
 
     fn validate(&self, data: &Value) -> Result<(), AppError> {
-        println!("0");
         let version = self.get_version(data)?;
-        println!("0.5");
         let json_schema_path = format!("resources/jsonschemas/{}.json", version);
 
-        println!("1");
         json_schema_validation(json_schema_path, data)?;
-        println!("2");
         debug!("Credential type: {self:?} succesfully validated against corresponding Json schema",);
 
         Ok(())

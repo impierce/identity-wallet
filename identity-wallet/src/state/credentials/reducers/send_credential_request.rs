@@ -219,7 +219,6 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
 
         for (credential_configuration_id, credential, display) in credentials.into_iter() {
             let mut verifiable_credential_record: VerifiableCredentialRecord = credential.try_into()?;
-
             // Validate the credential against its corresponding credential Json schema.
             credential_schema_validation(&verifiable_credential_record.verifiable_credential)?;
 
