@@ -28,6 +28,8 @@
 
   import '../app.css';
 
+  import { loadIcons } from '$lib/icons/iconify';
+
   let detachConsole: UnlistenFn;
   let unlistenError: UnlistenFn;
   let unlistenStateChanged: UnlistenFn;
@@ -211,6 +213,8 @@
       await goto('/me');
     }
   }
+
+  loadIcons();
 
   // Bind the div elements of th insets against these variables.
   let safeAreaInsetTop: HTMLDivElement;
