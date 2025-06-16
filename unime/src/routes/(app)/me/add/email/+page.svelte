@@ -24,6 +24,7 @@
     type: 'numeric',
     maxLength: 4,
     placeholder: '', // '•',
+    allowPaste: false,
     onValueChange() {
       showError = false;
     },
