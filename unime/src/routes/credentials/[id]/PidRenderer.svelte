@@ -26,7 +26,7 @@
     <div class="flex grow items-center gap-2">
       {#each subject.nationality as nationality}
         <span class="overflow-hidden rounded">
-          <Icon class="-ml-px h-4 w-auto" icon={`flagpack:${nationality.toLowerCase()}`} />
+          <Icon class="h-[18px] w-auto" icon={`flagpack:${nationality.toLowerCase()}`} />
         </span>
       {/each}
     </div>

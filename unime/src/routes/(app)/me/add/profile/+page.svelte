@@ -104,7 +104,7 @@
         nationality: ['NL', 'BQ-BO'],
       };
       primary_nationality = $form.nationality.at(0);
-      secondary_nationality = $form.nationality.at(1);
+      // secondary_nationality = $form.nationality.at(1);
     }
   });
 </script>

@@ -5,7 +5,7 @@
 
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 
-  import * as countriesData from '$lib/components/forms/countries.json';
+  import countries from '$lib/components/forms/countries';
   import { residence as schema } from '$lib/schemas/pid';
 
   let { credential }: { credential: DisplayCredential } = $props();
@@ -13,8 +13,6 @@
   const residence = schema(get(LL));
 
   const subject = credential.data.credentialSubject as z.infer<typeof residence>;
-
-  const countries: { code: string; name: string }[] = (countriesData as any).default;
 </script>
 
 <div class="flex flex-col gap-4">
