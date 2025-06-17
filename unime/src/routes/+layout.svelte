@@ -23,6 +23,7 @@
     CaretDownBoldIcon,
     CaretUpBoldIcon,
     TrashRegularIcon,
+    XRegularIcon,
   } from '$lib/icons';
   import { state as appState, error as errorState } from '$lib/stores';
 
@@ -351,10 +352,16 @@ Stacking context: We have to deviate from the DOM-sequence.
 
     <!-- TODO: Debug messages is broken. -->
     {#if showDebugMessages}
-      <div class="relative z-10 min-h-full w-screen bg-orange-100 pt-24">
+      <div class="relative z-10 min-h-full w-screen bg-orange-100 pt-8">
+        <button
+          class="absolute right-1 top-1 rounded-full p-2 text-orange-800"
+          on:click={() => (showDebugMessages = false)}
+        >
+          <XRegularIcon />
+        </button>
         <p class="pb-2 pt-2 text-center text-xs font-semibold uppercase text-orange-800">debug messages</p>
 
-        <hr class="mx-8 h-1 bg-orange-800" />
+        <hr class="mx-8 mb-2 h-[2px] bg-orange-800" />
 
         {#each $appState.debug_messages as message}
           <div class="mx-2 mb-2 rounded bg-orange-200 p-2">
