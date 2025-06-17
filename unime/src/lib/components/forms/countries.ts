@@ -1,3 +1,5 @@
+import iso3166 from './iso-3166-1_alpha-2.json';
+
 type Country = {
   code: string;
   name: string;
@@ -34,12 +36,19 @@ const memberStates: Country[] = [
   { code: 'SK', name: 'Slovensko' },
 ];
 
-// Additional countries
+// Additional supported countries
 const additional: Country[] = [
   { code: 'CH', name: 'Schweiz / Suisse / Svizzera' },
   { code: 'GB', name: 'United Kingdom' },
 ];
 
-const countries = memberStates.concat(additional).sort((a, b) => a.code.localeCompare(b.code));
+// Merge and sort `memberStates` and `additional`
+// const countries = memberStates.concat(additional).sort((a, b) => a.code.localeCompare(b.code));
+
+// source: https://github.com/lukes/ISO-3166-Countries-with-Regional-Codes/blob/v10.0/slim-2/slim-2.json
+// adjustments:
+// - 'GB': replace 'United Kingdom of Great Britain and Northern Ireland' with 'United Kingdom'
+// - 'NL': replace 'Netherlands, Kingdom of the' with 'Netherlands'
+const countries: Country[] = iso3166.map((i) => ({ code: i['alpha-2'], name: i.name }));
 
 export default countries;
