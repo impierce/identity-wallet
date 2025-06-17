@@ -1231,7 +1231,7 @@ type RootTranslation = {
 					 */
 					TITLE: string
 					/**
-					 * n​/​a
+					 * S​t​o​r​e​ ​y​o​u​r​ ​c​r​e​d​e​n​t​i​a​l​s​ ​o​n​c​e​ ​a​n​d​ ​r​e​u​s​e​ ​t​h​e​m​ ​a​n​y​w​h​e​r​e​.​ ​S​k​i​p​ ​l​o​n​g​ ​f​o​r​m​s​,​ ​s​p​e​e​d​ ​t​h​r​o​u​g​h​ ​s​i​g​n​-​u​p​s​,​ ​a​n​d​ ​p​r​o​v​e​ ​w​h​o​ ​y​o​u​ ​a​r​e​ ​-​ ​o​n​ ​y​o​u​r​ ​t​e​r​m​s​.
 					 */
 					DESCRIPTION: string
 				}
@@ -1241,7 +1241,7 @@ type RootTranslation = {
 					 */
 					TITLE: string
 					/**
-					 * n​/​a
+					 * Y​o​u​r​ ​i​n​f​o​ ​s​t​a​y​s​ ​s​a​f​e​l​y​ ​o​n​ ​y​o​u​r​ ​p​h​o​n​e​ ​i​n​ ​a​ ​p​r​i​v​a​t​e​ ​v​a​u​l​t​ ​o​n​l​y​ ​y​o​u​ ​c​a​n​ ​u​n​l​o​c​k​.​ ​S​c​a​n​ ​a​ ​Q​R​ ​c​o​d​e​ ​t​o​ ​s​e​t​ ​u​p​ ​a​ ​s​e​c​u​r​e​ ​c​o​n​n​e​c​t​i​o​n​.​ ​R​e​v​i​e​w​ ​t​h​e​ ​r​e​q​u​e​s​t​e​d​ ​d​e​t​a​i​l​s​ ​a​n​d​ ​c​h​o​o​s​e​ ​w​h​a​t​ ​t​o​ ​s​h​a​r​e​ ​-​ ​o​n​l​y​ ​w​h​e​n​ ​y​o​u​ ​a​p​p​r​o​v​e​.
 					 */
 					DESCRIPTION: string
 				}
@@ -1251,7 +1251,7 @@ type RootTranslation = {
 					 */
 					TITLE: string
 					/**
-					 * n​/​a
+					 * Y​e​s​.​ ​Y​o​u​r​ ​d​a​t​a​ ​s​t​a​y​s​ ​l​o​c​k​e​d​ ​b​e​h​i​n​d​ ​y​o​u​r​ ​d​e​v​i​c​e​'​s​ ​s​e​c​u​r​i​t​y​,​ ​l​i​k​e​ ​a​ ​p​a​s​s​w​o​r​d​ ​o​r​ ​f​a​c​e​/​f​i​n​g​e​r​p​r​i​n​t​ ​u​n​l​o​c​k​.​ ​W​h​e​n​ ​s​h​a​r​e​d​,​ ​i​t​'​s​ ​e​n​c​r​y​p​t​e​d​ ​a​n​d​ ​o​n​l​y​ ​v​i​s​i​b​l​e​ ​t​o​ ​t​h​e​ ​i​n​t​e​n​d​e​d​ ​r​e​c​i​p​i​e​n​t​.​ ​W​e​ ​d​o​n​'​t​ ​c​o​l​l​e​c​t​ ​y​o​u​r​ ​d​a​t​a​,​ ​a​n​d​ ​o​u​r​ ​o​p​e​n​-​s​o​u​r​c​e​ ​c​o​d​e​ ​e​v​e​n​ ​m​a​k​e​s​ ​t​h​a​t​ ​c​l​a​i​m​ ​v​e​r​i​f​i​a​b​l​e​.
 					 */
 					DESCRIPTION: string
 				}
@@ -2644,7 +2644,7 @@ export type TranslationFunctions = {
 					 */
 					TITLE: () => LocalizedString
 					/**
-					 * n/a
+					 * Store your credentials once and reuse them anywhere. Skip long forms, speed through sign-ups, and prove who you are - on your terms.
 					 */
 					DESCRIPTION: () => LocalizedString
 				}
@@ -2654,7 +2654,7 @@ export type TranslationFunctions = {
 					 */
 					TITLE: () => LocalizedString
 					/**
-					 * n/a
+					 * Your info stays safely on your phone in a private vault only you can unlock. Scan a QR code to set up a secure connection. Review the requested details and choose what to share - only when you approve.
 					 */
 					DESCRIPTION: () => LocalizedString
 				}
@@ -2664,7 +2664,7 @@ export type TranslationFunctions = {
 					 */
 					TITLE: () => LocalizedString
 					/**
-					 * n/a
+					 * Yes. Your data stays locked behind your device's security, like a password or face/fingerprint unlock. When shared, it's encrypted and only visible to the intended recipient. We don't collect your data, and our open-source code even makes that claim verifiable.
 					 */
 					DESCRIPTION: () => LocalizedString
 				}

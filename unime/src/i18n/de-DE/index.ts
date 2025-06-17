@@ -474,15 +474,18 @@ Durch die Nutzung unseres Dienstes bestätigen Sie, dass Sie diese Allgemeinen G
         DESCRIPTION: 'Bevor du beginnst',
         ITEM_0: {
           TITLE: 'Warum sollte ich ein Profil erstellen?',
-          DESCRIPTION: 'n/a',
+          DESCRIPTION:
+            'Speichere deine Daten einmalig und nutze sie überall. Überspringe lange Eingabeformulare, beschleunige Anmeldungen und beweise dass du du bist - alles zu deinen Bedingungen.',
         },
         ITEM_1: {
           TITLE: 'Wie funktioniert das?',
-          DESCRIPTION: 'n/a',
+          DESCRIPTION:
+            'Deine Daten sind auf deinem Gerät in einem sicheren Tresor geschützt, den nur du öffnen kannst. Scanne einen QR-Code, um eine gesicherte Verbindung herzustellen. Überprüfe die Anfrage und wähle aus, was du teilen möchtest.',
         },
         ITEM_2: {
           TITLE: 'Sind meine Daten sicher?',
-          DESCRIPTION: 'n/a',
+          DESCRIPTION:
+            'Ja. Deine Daten werden mit der Sicherheit deines Geräts geschützt, z.B. mit einem Fingerabdruck oder Gesichtserkennung. Wir sammeln deine Daten nicht und haben keinen Zugriff darauf. Der Quellcode ist offen, so kannst du das sogar selbst überprüfen.',
         },
       },
       ADD: {

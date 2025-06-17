@@ -500,15 +500,18 @@ By using our Service, you acknowledge that you have read, understood, and agree 
         DESCRIPTION: 'Before you start',
         ITEM_0: {
           TITLE: 'Why add my information in UniMe?',
-          DESCRIPTION: 'n/a',
+          DESCRIPTION:
+            'Store your credentials once and reuse them anywhere. Skip long forms, speed through sign-ups, and prove who you are - on your terms.',
         },
         ITEM_1: {
           TITLE: 'How does it work?',
-          DESCRIPTION: 'n/a',
+          DESCRIPTION:
+            'Your info stays safely on your phone in a private vault only you can unlock. Scan a QR code to set up a secure connection. Review the requested details and choose what to share - only when you approve.',
         },
         ITEM_2: {
           TITLE: 'Is my information safe?',
-          DESCRIPTION: 'n/a',
+          DESCRIPTION:
+            "Yes. Your data stays locked behind your device's security, like a password or face/fingerprint unlock. When shared, it's encrypted and only visible to the intended recipient. We don't collect your data, and our open-source code even makes that claim verifiable.",
         },
       },
       ADD: {
