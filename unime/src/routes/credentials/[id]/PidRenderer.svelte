@@ -33,10 +33,11 @@
       {/each}
     </div>
   </div>
-  <TextFieldRenderer
+  <!-- TODO: temporarily hide birth_date field while there is no proper input for it (date picker) -->
+  <!-- <TextFieldRenderer
     key={$LL.CREDENTIAL.RENDERER.PID.BIRTH_DATE()}
     value={formatDate(subject.birth_date, $appState.profile_settings.locale)}
-  />
+  /> -->
   <TextFieldRenderer key={$LL.CREDENTIAL.RENDERER.PID.BIRTH_PLACE()} value={subject.birth_place} />
   <!-- <TextFieldRenderer key={'family_name_birth'} value={subject.family_name_birth ?? '-'} />
   <TextFieldRenderer key={'sex'} value={subject.sex?.toString() ?? '-'} /> -->
