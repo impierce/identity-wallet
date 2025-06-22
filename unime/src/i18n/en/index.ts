@@ -465,17 +465,17 @@ By using our Service, you acknowledge that you have read, understood, and agree 
         ITEM_0: {
           TITLE: 'Why verify your email in UniMe?',
           DESCRIPTION:
-            'Verifying your email shows it really belongs to you. This lets you safely use it to access services without needing a password. It also helps you prove who you are to shops, websites, services and even other people.',
+            "It proves the email is yours, so you can log in faster without a username or password. You'll also be able to use it with apps, websites and even other people who want to confirm it's really you.",
         },
         ITEM_1: {
           TITLE: 'How does it work?',
           DESCRIPTION:
-            "When you start, UniMe sends your email address to our secure system. You'll then get a one-time code in your inbox. Enter that code in UniMe to show you can access the email. Once that's done, UniMe confirms your email is verified and you can now use it wherever it's accepted.",
+            "We send a one-time code to your email. Just enter it to confirm it's yours. Once verified, you can use your email with supported services.",
         },
         ITEM_2: {
           TITLE: 'Is my information safe?',
           DESCRIPTION:
-            "Yes. We take your privacy very seriously. All messages between UniMe and our verification servers are protected with strong encryption and your information is stored securely. We only use your email address to send you the verification code, nothing else. Once verified, it's never shared.",
+            'Yes. We only use your email to send the verification code. We never share or use it for anything else.',
         },
       },
       ADD: {
@@ -499,19 +499,19 @@ By using our Service, you acknowledge that you have read, understood, and agree 
         TITLE: 'UniMe Profile',
         DESCRIPTION: 'Before you start',
         ITEM_0: {
-          TITLE: 'Why add my information in UniMe?',
+          TITLE: 'Why add your information in UniMe?',
           DESCRIPTION:
-            'Store your credentials once and reuse them anywhere. Skip long forms, speed through sign-ups, and prove who you are - on your terms.',
+            'Add your personal details once and reuse them anywhere. Skip long forms, speed through sign-ups and choose what you share, on your terms.',
         },
         ITEM_1: {
           TITLE: 'How does it work?',
           DESCRIPTION:
-            'Your info stays safely on your phone in a private vault only you can unlock. Scan a QR code to set up a secure connection. Review the requested details and choose what to share - only when you approve.',
+            "Your info stays safely on your phone in a private, secure vault only you can unlock. When your details are requested, details such as your name or address, simply scan a QR code, check what's being requested and if everything is in order click 'connect'.",
         },
         ITEM_2: {
           TITLE: 'Is my information safe?',
           DESCRIPTION:
-            "Yes. Your data stays locked behind your device's security, like a password or face/fingerprint unlock. When shared, it's encrypted and only visible to the intended recipient. We don't collect your data, and our open-source code even makes that claim verifiable.",
+            "Yes. Your data stays safely on your phone, protected by your password or face/fingerprint unlock. When you choose to share personal details, like your name or address, it's encrypted and only visible to the service you are interacting with. Your data stays yours.",
         },
       },
       ADD: {

@@ -1135,7 +1135,7 @@ type RootTranslation = {
 					 */
 					TITLE: string
 					/**
-					 * V​e​r​i​f​y​i​n​g​ ​y​o​u​r​ ​e​m​a​i​l​ ​s​h​o​w​s​ ​i​t​ ​r​e​a​l​l​y​ ​b​e​l​o​n​g​s​ ​t​o​ ​y​o​u​.​ ​T​h​i​s​ ​l​e​t​s​ ​y​o​u​ ​s​a​f​e​l​y​ ​u​s​e​ ​i​t​ ​t​o​ ​a​c​c​e​s​s​ ​s​e​r​v​i​c​e​s​ ​w​i​t​h​o​u​t​ ​n​e​e​d​i​n​g​ ​a​ ​p​a​s​s​w​o​r​d​.​ ​I​t​ ​a​l​s​o​ ​h​e​l​p​s​ ​y​o​u​ ​p​r​o​v​e​ ​w​h​o​ ​y​o​u​ ​a​r​e​ ​t​o​ ​s​h​o​p​s​,​ ​w​e​b​s​i​t​e​s​,​ ​s​e​r​v​i​c​e​s​ ​a​n​d​ ​e​v​e​n​ ​o​t​h​e​r​ ​p​e​o​p​l​e​.
+					 * I​t​ ​p​r​o​v​e​s​ ​t​h​e​ ​e​m​a​i​l​ ​i​s​ ​y​o​u​r​s​,​ ​s​o​ ​y​o​u​ ​c​a​n​ ​l​o​g​ ​i​n​ ​f​a​s​t​e​r​ ​w​i​t​h​o​u​t​ ​a​ ​u​s​e​r​n​a​m​e​ ​o​r​ ​p​a​s​s​w​o​r​d​.​ ​Y​o​u​'​l​l​ ​a​l​s​o​ ​b​e​ ​a​b​l​e​ ​t​o​ ​u​s​e​ ​i​t​ ​w​i​t​h​ ​a​p​p​s​,​ ​w​e​b​s​i​t​e​s​ ​a​n​d​ ​e​v​e​n​ ​o​t​h​e​r​ ​p​e​o​p​l​e​ ​w​h​o​ ​w​a​n​t​ ​t​o​ ​c​o​n​f​i​r​m​ ​i​t​'​s​ ​r​e​a​l​l​y​ ​y​o​u​.
 					 */
 					DESCRIPTION: string
 				}
@@ -1145,7 +1145,7 @@ type RootTranslation = {
 					 */
 					TITLE: string
 					/**
-					 * W​h​e​n​ ​y​o​u​ ​s​t​a​r​t​,​ ​U​n​i​M​e​ ​s​e​n​d​s​ ​y​o​u​r​ ​e​m​a​i​l​ ​a​d​d​r​e​s​s​ ​t​o​ ​o​u​r​ ​s​e​c​u​r​e​ ​s​y​s​t​e​m​.​ ​Y​o​u​'​l​l​ ​t​h​e​n​ ​g​e​t​ ​a​ ​o​n​e​-​t​i​m​e​ ​c​o​d​e​ ​i​n​ ​y​o​u​r​ ​i​n​b​o​x​.​ ​E​n​t​e​r​ ​t​h​a​t​ ​c​o​d​e​ ​i​n​ ​U​n​i​M​e​ ​t​o​ ​s​h​o​w​ ​y​o​u​ ​c​a​n​ ​a​c​c​e​s​s​ ​t​h​e​ ​e​m​a​i​l​.​ ​O​n​c​e​ ​t​h​a​t​'​s​ ​d​o​n​e​,​ ​U​n​i​M​e​ ​c​o​n​f​i​r​m​s​ ​y​o​u​r​ ​e​m​a​i​l​ ​i​s​ ​v​e​r​i​f​i​e​d​ ​a​n​d​ ​y​o​u​ ​c​a​n​ ​n​o​w​ ​u​s​e​ ​i​t​ ​w​h​e​r​e​v​e​r​ ​i​t​'​s​ ​a​c​c​e​p​t​e​d​.
+					 * W​e​ ​s​e​n​d​ ​a​ ​o​n​e​-​t​i​m​e​ ​c​o​d​e​ ​t​o​ ​y​o​u​r​ ​e​m​a​i​l​.​ ​J​u​s​t​ ​e​n​t​e​r​ ​i​t​ ​t​o​ ​c​o​n​f​i​r​m​ ​i​t​'​s​ ​y​o​u​r​s​.​ ​O​n​c​e​ ​v​e​r​i​f​i​e​d​,​ ​y​o​u​ ​c​a​n​ ​u​s​e​ ​y​o​u​r​ ​e​m​a​i​l​ ​w​i​t​h​ ​s​u​p​p​o​r​t​e​d​ ​s​e​r​v​i​c​e​s​.
 					 */
 					DESCRIPTION: string
 				}
@@ -1155,7 +1155,7 @@ type RootTranslation = {
 					 */
 					TITLE: string
 					/**
-					 * Y​e​s​.​ ​W​e​ ​t​a​k​e​ ​y​o​u​r​ ​p​r​i​v​a​c​y​ ​v​e​r​y​ ​s​e​r​i​o​u​s​l​y​.​ ​A​l​l​ ​m​e​s​s​a​g​e​s​ ​b​e​t​w​e​e​n​ ​U​n​i​M​e​ ​a​n​d​ ​o​u​r​ ​v​e​r​i​f​i​c​a​t​i​o​n​ ​s​e​r​v​e​r​s​ ​a​r​e​ ​p​r​o​t​e​c​t​e​d​ ​w​i​t​h​ ​s​t​r​o​n​g​ ​e​n​c​r​y​p​t​i​o​n​ ​a​n​d​ ​y​o​u​r​ ​i​n​f​o​r​m​a​t​i​o​n​ ​i​s​ ​s​t​o​r​e​d​ ​s​e​c​u​r​e​l​y​.​ ​W​e​ ​o​n​l​y​ ​u​s​e​ ​y​o​u​r​ ​e​m​a​i​l​ ​a​d​d​r​e​s​s​ ​t​o​ ​s​e​n​d​ ​y​o​u​ ​t​h​e​ ​v​e​r​i​f​i​c​a​t​i​o​n​ ​c​o​d​e​,​ ​n​o​t​h​i​n​g​ ​e​l​s​e​.​ ​O​n​c​e​ ​v​e​r​i​f​i​e​d​,​ ​i​t​'​s​ ​n​e​v​e​r​ ​s​h​a​r​e​d​.
+					 * Y​e​s​.​ ​W​e​ ​o​n​l​y​ ​u​s​e​ ​y​o​u​r​ ​e​m​a​i​l​ ​t​o​ ​s​e​n​d​ ​t​h​e​ ​v​e​r​i​f​i​c​a​t​i​o​n​ ​c​o​d​e​.​ ​W​e​ ​n​e​v​e​r​ ​s​h​a​r​e​ ​o​r​ ​u​s​e​ ​i​t​ ​f​o​r​ ​a​n​y​t​h​i​n​g​ ​e​l​s​e​.
 					 */
 					DESCRIPTION: string
 				}
@@ -1227,11 +1227,11 @@ type RootTranslation = {
 				DESCRIPTION: string
 				ITEM_0: {
 					/**
-					 * W​h​y​ ​a​d​d​ ​m​y​ ​i​n​f​o​r​m​a​t​i​o​n​ ​i​n​ ​U​n​i​M​e​?
+					 * W​h​y​ ​a​d​d​ ​y​o​u​r​ ​i​n​f​o​r​m​a​t​i​o​n​ ​i​n​ ​U​n​i​M​e​?
 					 */
 					TITLE: string
 					/**
-					 * S​t​o​r​e​ ​y​o​u​r​ ​c​r​e​d​e​n​t​i​a​l​s​ ​o​n​c​e​ ​a​n​d​ ​r​e​u​s​e​ ​t​h​e​m​ ​a​n​y​w​h​e​r​e​.​ ​S​k​i​p​ ​l​o​n​g​ ​f​o​r​m​s​,​ ​s​p​e​e​d​ ​t​h​r​o​u​g​h​ ​s​i​g​n​-​u​p​s​,​ ​a​n​d​ ​p​r​o​v​e​ ​w​h​o​ ​y​o​u​ ​a​r​e​ ​-​ ​o​n​ ​y​o​u​r​ ​t​e​r​m​s​.
+					 * A​d​d​ ​y​o​u​r​ ​p​e​r​s​o​n​a​l​ ​d​e​t​a​i​l​s​ ​o​n​c​e​ ​a​n​d​ ​r​e​u​s​e​ ​t​h​e​m​ ​a​n​y​w​h​e​r​e​.​ ​S​k​i​p​ ​l​o​n​g​ ​f​o​r​m​s​,​ ​s​p​e​e​d​ ​t​h​r​o​u​g​h​ ​s​i​g​n​-​u​p​s​ ​a​n​d​ ​c​h​o​o​s​e​ ​w​h​a​t​ ​y​o​u​ ​s​h​a​r​e​,​ ​o​n​ ​y​o​u​r​ ​t​e​r​m​s​.
 					 */
 					DESCRIPTION: string
 				}
@@ -1241,7 +1241,7 @@ type RootTranslation = {
 					 */
 					TITLE: string
 					/**
-					 * Y​o​u​r​ ​i​n​f​o​ ​s​t​a​y​s​ ​s​a​f​e​l​y​ ​o​n​ ​y​o​u​r​ ​p​h​o​n​e​ ​i​n​ ​a​ ​p​r​i​v​a​t​e​ ​v​a​u​l​t​ ​o​n​l​y​ ​y​o​u​ ​c​a​n​ ​u​n​l​o​c​k​.​ ​S​c​a​n​ ​a​ ​Q​R​ ​c​o​d​e​ ​t​o​ ​s​e​t​ ​u​p​ ​a​ ​s​e​c​u​r​e​ ​c​o​n​n​e​c​t​i​o​n​.​ ​R​e​v​i​e​w​ ​t​h​e​ ​r​e​q​u​e​s​t​e​d​ ​d​e​t​a​i​l​s​ ​a​n​d​ ​c​h​o​o​s​e​ ​w​h​a​t​ ​t​o​ ​s​h​a​r​e​ ​-​ ​o​n​l​y​ ​w​h​e​n​ ​y​o​u​ ​a​p​p​r​o​v​e​.
+					 * Y​o​u​r​ ​i​n​f​o​ ​s​t​a​y​s​ ​s​a​f​e​l​y​ ​o​n​ ​y​o​u​r​ ​p​h​o​n​e​ ​i​n​ ​a​ ​p​r​i​v​a​t​e​,​ ​s​e​c​u​r​e​ ​v​a​u​l​t​ ​o​n​l​y​ ​y​o​u​ ​c​a​n​ ​u​n​l​o​c​k​.​ ​W​h​e​n​ ​y​o​u​r​ ​d​e​t​a​i​l​s​ ​a​r​e​ ​r​e​q​u​e​s​t​e​d​,​ ​d​e​t​a​i​l​s​ ​s​u​c​h​ ​a​s​ ​y​o​u​r​ ​n​a​m​e​ ​o​r​ ​a​d​d​r​e​s​s​,​ ​s​i​m​p​l​y​ ​s​c​a​n​ ​a​ ​Q​R​ ​c​o​d​e​,​ ​c​h​e​c​k​ ​w​h​a​t​'​s​ ​b​e​i​n​g​ ​r​e​q​u​e​s​t​e​d​ ​a​n​d​ ​i​f​ ​e​v​e​r​y​t​h​i​n​g​ ​i​s​ ​i​n​ ​o​r​d​e​r​ ​c​l​i​c​k​ ​'​c​o​n​n​e​c​t​'​.
 					 */
 					DESCRIPTION: string
 				}
@@ -1251,7 +1251,7 @@ type RootTranslation = {
 					 */
 					TITLE: string
 					/**
-					 * Y​e​s​.​ ​Y​o​u​r​ ​d​a​t​a​ ​s​t​a​y​s​ ​l​o​c​k​e​d​ ​b​e​h​i​n​d​ ​y​o​u​r​ ​d​e​v​i​c​e​'​s​ ​s​e​c​u​r​i​t​y​,​ ​l​i​k​e​ ​a​ ​p​a​s​s​w​o​r​d​ ​o​r​ ​f​a​c​e​/​f​i​n​g​e​r​p​r​i​n​t​ ​u​n​l​o​c​k​.​ ​W​h​e​n​ ​s​h​a​r​e​d​,​ ​i​t​'​s​ ​e​n​c​r​y​p​t​e​d​ ​a​n​d​ ​o​n​l​y​ ​v​i​s​i​b​l​e​ ​t​o​ ​t​h​e​ ​i​n​t​e​n​d​e​d​ ​r​e​c​i​p​i​e​n​t​.​ ​W​e​ ​d​o​n​'​t​ ​c​o​l​l​e​c​t​ ​y​o​u​r​ ​d​a​t​a​,​ ​a​n​d​ ​o​u​r​ ​o​p​e​n​-​s​o​u​r​c​e​ ​c​o​d​e​ ​e​v​e​n​ ​m​a​k​e​s​ ​t​h​a​t​ ​c​l​a​i​m​ ​v​e​r​i​f​i​a​b​l​e​.
+					 * Y​e​s​.​ ​Y​o​u​r​ ​d​a​t​a​ ​s​t​a​y​s​ ​s​a​f​e​l​y​ ​o​n​ ​y​o​u​r​ ​p​h​o​n​e​,​ ​p​r​o​t​e​c​t​e​d​ ​b​y​ ​y​o​u​r​ ​p​a​s​s​w​o​r​d​ ​o​r​ ​f​a​c​e​/​f​i​n​g​e​r​p​r​i​n​t​ ​u​n​l​o​c​k​.​ ​W​h​e​n​ ​y​o​u​ ​c​h​o​o​s​e​ ​t​o​ ​s​h​a​r​e​ ​p​e​r​s​o​n​a​l​ ​d​e​t​a​i​l​s​,​ ​l​i​k​e​ ​y​o​u​r​ ​n​a​m​e​ ​o​r​ ​a​d​d​r​e​s​s​,​ ​i​t​'​s​ ​e​n​c​r​y​p​t​e​d​ ​a​n​d​ ​o​n​l​y​ ​v​i​s​i​b​l​e​ ​t​o​ ​t​h​e​ ​s​e​r​v​i​c​e​ ​y​o​u​ ​a​r​e​ ​i​n​t​e​r​a​c​t​i​n​g​ ​w​i​t​h​.​ ​Y​o​u​r​ ​d​a​t​a​ ​s​t​a​y​s​ ​y​o​u​r​s​.
 					 */
 					DESCRIPTION: string
 				}
@@ -2548,7 +2548,7 @@ export type TranslationFunctions = {
 					 */
 					TITLE: () => LocalizedString
 					/**
-					 * Verifying your email shows it really belongs to you. This lets you safely use it to access services without needing a password. It also helps you prove who you are to shops, websites, services and even other people.
+					 * It proves the email is yours, so you can log in faster without a username or password. You'll also be able to use it with apps, websites and even other people who want to confirm it's really you.
 					 */
 					DESCRIPTION: () => LocalizedString
 				}
@@ -2558,7 +2558,7 @@ export type TranslationFunctions = {
 					 */
 					TITLE: () => LocalizedString
 					/**
-					 * When you start, UniMe sends your email address to our secure system. You'll then get a one-time code in your inbox. Enter that code in UniMe to show you can access the email. Once that's done, UniMe confirms your email is verified and you can now use it wherever it's accepted.
+					 * We send a one-time code to your email. Just enter it to confirm it's yours. Once verified, you can use your email with supported services.
 					 */
 					DESCRIPTION: () => LocalizedString
 				}
@@ -2568,7 +2568,7 @@ export type TranslationFunctions = {
 					 */
 					TITLE: () => LocalizedString
 					/**
-					 * Yes. We take your privacy very seriously. All messages between UniMe and our verification servers are protected with strong encryption and your information is stored securely. We only use your email address to send you the verification code, nothing else. Once verified, it's never shared.
+					 * Yes. We only use your email to send the verification code. We never share or use it for anything else.
 					 */
 					DESCRIPTION: () => LocalizedString
 				}
@@ -2640,11 +2640,11 @@ export type TranslationFunctions = {
 				DESCRIPTION: () => LocalizedString
 				ITEM_0: {
 					/**
-					 * Why add my information in UniMe?
+					 * Why add your information in UniMe?
 					 */
 					TITLE: () => LocalizedString
 					/**
-					 * Store your credentials once and reuse them anywhere. Skip long forms, speed through sign-ups, and prove who you are - on your terms.
+					 * Add your personal details once and reuse them anywhere. Skip long forms, speed through sign-ups and choose what you share, on your terms.
 					 */
 					DESCRIPTION: () => LocalizedString
 				}
@@ -2654,7 +2654,7 @@ export type TranslationFunctions = {
 					 */
 					TITLE: () => LocalizedString
 					/**
-					 * Your info stays safely on your phone in a private vault only you can unlock. Scan a QR code to set up a secure connection. Review the requested details and choose what to share - only when you approve.
+					 * Your info stays safely on your phone in a private, secure vault only you can unlock. When your details are requested, details such as your name or address, simply scan a QR code, check what's being requested and if everything is in order click 'connect'.
 					 */
 					DESCRIPTION: () => LocalizedString
 				}
@@ -2664,7 +2664,7 @@ export type TranslationFunctions = {
 					 */
 					TITLE: () => LocalizedString
 					/**
-					 * Yes. Your data stays locked behind your device's security, like a password or face/fingerprint unlock. When shared, it's encrypted and only visible to the intended recipient. We don't collect your data, and our open-source code even makes that claim verifiable.
+					 * Yes. Your data stays safely on your phone, protected by your password or face/fingerprint unlock. When you choose to share personal details, like your name or address, it's encrypted and only visible to the service you are interacting with. Your data stays yours.
 					 */
 					DESCRIPTION: () => LocalizedString
 				}
