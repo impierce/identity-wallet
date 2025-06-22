@@ -32,7 +32,7 @@
   ];
 
   // Capabilities of `did-manager`
-  const verifiableMethods: string[] = ['did:jwk', 'did:key', 'did:web', 'did:iota', 'did:iota:rms', 'did:iota:smr'];
+  const verifiableMethods: string[] = ['did:jwk', 'did:key', 'did:web'];
 
   const handleClick = (method: Method) => {
     if (method.did) {
