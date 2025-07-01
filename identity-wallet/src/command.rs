@@ -70,7 +70,7 @@ pub async fn main_exec<R: tauri::Runtime>(
                 ));
                 let _ = emit_error(&window, error.to_string());
             }
-            error!("state update failed: {}", error);
+            error!("state update failed: {error}");
         }
     };
 
@@ -128,7 +128,7 @@ pub fn emit_event<R: tauri::Runtime>(window: &tauri::Window<R>, app_state: &AppS
         }
     };
 
-    debug!("emitted event `{}`", STATE_CHANGED_EVENT);
+    debug!("emitted event `{STATE_CHANGED_EVENT}`");
     Ok(())
 }
 
@@ -137,6 +137,6 @@ pub fn emit_error<R: tauri::Runtime>(window: &tauri::Window<R>, error: String) -
     const ERROR_EVENT: &str = "error";
     window.emit(ERROR_EVENT, &error)?;
 
-    debug!("emitted error event `{}` with payload:\n{}", ERROR_EVENT, error);
+    debug!("emitted error event `{ERROR_EVENT}` with payload:\n{error}");
     Ok(())
 }

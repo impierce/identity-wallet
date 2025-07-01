@@ -34,20 +34,20 @@ pub async fn get_issuer_document(resolver: &Resolver, credential_jwt: &Jwt) -> O
     // Decode the linked verifiable credential.
     let decoded_credential_jwt = decoder
         .decode_compact_serialization(credential_jwt.as_str().as_bytes(), None)
-        .inspect_err(|err| warn!("Failed to decode credential jwt: {:#?}", err))
+        .inspect_err(|err| warn!("Failed to decode credential jwt: {err:#?}"))
         .ok()?;
 
     let claims: JwtClaims<Value> = serde_json::from_slice(decoded_credential_jwt.claims())
-        .inspect_err(|err| warn!("Failed to parse credential claims: {:#?}", err))
+        .inspect_err(|err| warn!("Failed to parse credential claims: {err:#?}"))
         .ok()?;
 
-    info!("jwt_vc_json Credential claims: {:#?}", claims);
+    info!("jwt_vc_json Credential claims: {claims:#?}",);
 
     // Resolve the DID
     resolver
         .resolve(claims.iss()?)
         .await
-        .inspect_err(|err| warn!("Failed to resolve issuer DID.: {:#?}", err))
+        .inspect_err(|err| warn!("Failed to resolve issuer DID.: {err:#?}"))
         .ok()
 }
 
@@ -94,8 +94,7 @@ pub fn json_schema_validation(json_schema_path: String, data: &Value) -> Result<
     let errors: Vec<ValidationError> = schema.iter_errors(data).collect();
     if !errors.is_empty() {
         Err(AppError::Error(format!(
-            "The data is invalid according to the given JsonSchema: {:?}",
-            errors
+            "The data is invalid according to the given JsonSchema: {errors:?}"
         )))
     } else {
         Ok(())
@@ -168,10 +167,10 @@ impl CredentialType {
 
     fn validate(&self, data: &Value) -> Result<(), AppError> {
         let version = self.get_version(data)?;
-        let json_schema_path = format!("resources/jsonschemas/{}.json", version);
+        let json_schema_path = format!("resources/jsonschemas/{version}.json");
 
         json_schema_validation(json_schema_path, data)?;
-        debug!("Credential type: {self:?} succesfully validated against corresponding Json schema",);
+        debug!("Credential type: {self:?} succesfully validated against corresponding Json schema");
 
         Ok(())
     }

@@ -50,7 +50,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
             .clone()
             .ok_or(MissingStateParameterError("current user prompt"))?;
 
-        info!("current_user_prompt: {:?}", current_user_prompt);
+        info!("current_user_prompt: {current_user_prompt:?}");
 
         let credential_offer = state.core_utils.active_credential_offer.unwrap();
         let logo_uri = match current_user_prompt {
@@ -61,7 +61,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
         // The credential offer contains a credential issuer url.
         let credential_issuer_url = credential_offer.credential_issuer.clone();
 
-        info!("credential issuer url: {:?}", credential_issuer_url);
+        info!("credential issuer url: {credential_issuer_url:?}");
 
         // Get the authorization server metadata.
         let authorization_server_metadata = wallet
@@ -69,7 +69,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
             .await
             .map_err(GetAuthorizationServerMetadataError)?;
 
-        info!("authorization server metadata: {:?}", authorization_server_metadata);
+        info!("authorization server metadata: {authorization_server_metadata:?}");
 
         // Get the credential issuer metadata.
         let credential_issuer_metadata = wallet
@@ -77,7 +77,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
             .await
             .map_err(GetCredentialIssuerMetadataError)?;
 
-        info!("credential issuer metadata: {:?}", credential_issuer_metadata);
+        info!("credential issuer metadata: {credential_issuer_metadata:?}");
 
         // Get the credential issuer display.
         let display = credential_issuer_metadata
@@ -123,7 +123,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
             None => unreachable!(),
         };
 
-        info!("token_request: {:?}", token_request);
+        info!("token_request: {token_request:?}");
 
         // Get an access token.
         let token_response = wallet
@@ -131,7 +131,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
             .await
             .map_err(GetAccessTokenError)?;
 
-        info!("token_response: {:?}", token_response);
+        info!("token_response: {token_response:?}");
 
         credential_configurations_supported.retain(|credential_configuration_id, _| {
             credential_configuration_ids.contains(credential_configuration_id)
@@ -213,7 +213,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                 }
             };
 
-        info!("credentials: {:?}", credentials);
+        info!("credentials: {credentials:?}");
 
         let mut history_credentials = vec![];
 
@@ -244,7 +244,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                 .parse()
                 .expect("invalid uuid");
 
-            info!("generated hash-key: {:?}", key);
+            info!("generated hash-key: {key:?}");
 
             display
                 .first()

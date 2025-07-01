@@ -99,7 +99,7 @@ fn get_linked_verifiable_presentation_urls(service: &Service) -> Option<Vec<Url>
             |linked_verifiable_presentation_urls| match linked_verifiable_presentation_urls {
                 Value::String(url) => url
                     .parse()
-                    .inspect_err(|err| warn!("Failed to parse linked verifiable presentation URL: {}", err))
+                    .inspect_err(|err| warn!("Failed to parse linked verifiable presentation URL: {err}"))
                     .ok()
                     .map(|url| vec![url]),
                 Value::Array(array) => Some(
@@ -109,7 +109,7 @@ fn get_linked_verifiable_presentation_urls(service: &Service) -> Option<Vec<Url>
                             url.as_str().and_then(|url| {
                                 url.parse()
                                     .inspect_err(|err| {
-                                        warn!("Failed to parse linked verifiable presentation URL: {}", err)
+                                        warn!("Failed to parse linked verifiable presentation URL: {err}")
                                     })
                                     .ok()
                             })
@@ -147,7 +147,7 @@ async fn validate_linked_verifiable_presentation(
     let response = reqwest::get(linked_verifiable_presentation_url)
         .await
         .inspect_err(|err| {
-            warn!("Failed to retrieve linked verifiable presentation: {}", err);
+            warn!("Failed to retrieve linked verifiable presentation: {err}");
         })
         .ok()?;
     let status = response.status();
@@ -156,7 +156,7 @@ async fn validate_linked_verifiable_presentation(
         .text()
         .await
         .inspect_err(|err| {
-            warn!("Failed to read linked verifiable presentation response: {}", err);
+            warn!("Failed to read linked verifiable presentation response: {err}");
         })
         .ok()
         .and_then(|presentation_jwt| {
@@ -165,7 +165,7 @@ async fn validate_linked_verifiable_presentation(
                 validator
                     .validate(&presentation_jwt.into(), &holder_document, &Default::default())
                     .inspect_err(|err| {
-                        warn!("Failed to validate linked verifiable presentation: {:#?}", err);
+                        warn!("Failed to validate linked verifiable presentation: {err:#?}");
                     })
                     .ok()
             })?
@@ -314,7 +314,7 @@ async fn get_issuer_linked_domains(issuer_document: &CoreDocument) -> Vec<Url> {
                                     origin.as_str().and_then(|origin| {
                                         origin
                                             .parse()
-                                            .inspect_err(|err| warn!("Failed to parse linked domain: {:#?}", err))
+                                            .inspect_err(|err| warn!("Failed to parse linked domain: {err:#?}"))
                                             .ok()
                                     })
                                 })
@@ -360,7 +360,7 @@ async fn get_logo_uri(
     // Check if logo URI was retrieved, if not then attempt to retrieve from a well-known endpoint
     if logo_uri.is_none() {
         for domain in validated_linked_domains.iter() {
-            let well_known_endpoint = format!("{}.well-known/openid-credential-issuer", domain);
+            let well_known_endpoint = format!("{domain}.well-known/openid-credential-issuer");
             info!("Trying to fetch image from {well_known_endpoint} endpoint");
             if let Ok(response) = reqwest::Client::new().get(&well_known_endpoint).send().await {
                 if let Ok(metadata) = response.json::<CredentialIssuerMetadata>().await {
@@ -375,12 +375,12 @@ async fn get_logo_uri(
             // The CII tells us where exactly we can add "/.well-known/openid-credential-issuer" to fetch the Credential Issuer Metadata, in which we might find the logo.
             // For now we assume it's the same domain as the linked domain.
             // But this is no guarantee and the code below is one such workaround.
-            let well_known_endpoint = format!("{}oid4vci/.well-known/openid-credential-issuer", domain);
+            let well_known_endpoint = format!("{domain}oid4vci/.well-known/openid-credential-issuer");
             info!("Trying to fetch image from {well_known_endpoint} endpoint");
             if let Ok(response) = reqwest::Client::new().get(&well_known_endpoint).send().await {
                 if let Ok(metadata) = response.json::<CredentialIssuerMetadata>().await {
                     logo_uri = linked_verifiable_credential.credential.types.iter().find_map(|type_| {
-                        info!("Trying to fetch from Credential Configuration Supported: {}", type_);
+                        info!("Trying to fetch from Credential Configuration Supported: {type_}");
                         metadata
                             .credential_configurations_supported
                             .get(type_)
@@ -397,7 +397,7 @@ async fn get_logo_uri(
     }
 
     if let Some(ref logo_uri_str) = logo_uri {
-        info!("Logo URI: {:?}", logo_uri_str);
+        info!("Logo URI: {logo_uri_str:?}");
 
         // Parse the logo URI
         match logo_uri_str.parse() {
@@ -411,7 +411,7 @@ async fn get_logo_uri(
             }
             Err(parse_err) => {
                 // Log parse error if the URI is invalid
-                warn!("Failed to parse logo URI: {:#?}, {}", logo_uri_str, parse_err);
+                warn!("Failed to parse logo URI: {logo_uri_str:#?}, {parse_err}");
                 None
             }
         }
@@ -438,7 +438,7 @@ fn extract_url_from_did_web(did_web: &str) -> Option<Url> {
             did
         };
 
-        if let Ok(url) = Url::parse(&format!("https://{}", url_str)) {
+        if let Ok(url) = Url::parse(&format!("https://{url_str}")) {
             return Some(url);
         }
     }

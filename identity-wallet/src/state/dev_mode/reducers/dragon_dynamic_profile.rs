@@ -28,7 +28,7 @@ pub(super) const PASSWORD: &str = "sup3rSecr3t";
 pub async fn load_dragon_profile(mut state: AppState, dev_profile: DevProfile) -> Result<AppState, AppError> {
     let steps = dev_profile.execute_step.expect("For dragon profile steps are expected");
 
-    info!("Profile steps executed: {:?}", steps);
+    info!("Profile steps executed: {steps:?}");
 
     if dev_profile.reset_profile {
         state = reset_settings(state).await?;

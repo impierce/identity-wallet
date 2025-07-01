@@ -53,7 +53,7 @@ pub fn initialize_storage(app_handle: &tauri::AppHandle) -> Result<(), AppError>
 
     match fs::create_dir_all(ASSETS_DIR.lock().unwrap().as_path()) {
         Ok(_) => info!("ASSETS_DIR: created"),
-        Err(e) => info!("ASSETS_DIR: {}", e),
+        Err(e) => info!("ASSETS_DIR: {e}"),
     };
 
     Ok(())
@@ -89,12 +89,12 @@ pub async fn load_state() -> Result<AppState, AppError> {
     let app_state: AppState = match version {
         APP_STATE_VERSION => {
             let app_state = serde_json::from_str(&content)?;
-            debug!("App state is already at version {} (latest)", APP_STATE_VERSION);
+            debug!("App state is already at version {APP_STATE_VERSION} (latest)");
             app_state
         }
         _ => {
             let app_state = apply_state_migrations(app_state_object, version)?;
-            debug!("App state is now at version {} (latest)", APP_STATE_VERSION);
+            debug!("App state is now at version {APP_STATE_VERSION} (latest)");
 
             save_state(&app_state)
                 .await
@@ -193,7 +193,7 @@ pub async fn download_asset(url: reqwest::Url, id: &str) -> Result<(), AppError>
             "image/png" => Ok("png"),
             "image/svg+xml" => Ok("svg"),
             _ => {
-                warn!("content_type is not supported: {:?}", header_value);
+                warn!("content_type is not supported: {header_value:?}");
                 Err(AppError::DownloadAborted("content-type is not supported"))
             }
         })
@@ -206,7 +206,7 @@ pub async fn download_asset(url: reqwest::Url, id: &str) -> Result<(), AppError>
         return Err(AppError::DownloadAborted("File size is bigger than 2 MB"));
     }
 
-    let mut file = std::fs::File::create(tmp_dir.join(format!("{}.{}", id, file_extension)))?;
+    let mut file = std::fs::File::create(tmp_dir.join(format!("{id}.{file_extension}")))?;
 
     copy(&mut content, &mut file)?;
 
@@ -220,16 +220,16 @@ pub fn persist_asset(file_name: &str, id: &str) -> Result<(), AppError> {
 
     if let Some(extension) = SUPPORTED_IMAGE_ASSET_EXTENSIONS
         .iter()
-        .find(|&e| tmp_dir.join(format!("{}.{}", file_name, e)).exists())
+        .find(|&e| tmp_dir.join(format!("{file_name}.{e}")).exists())
     {
-        let new_file_name = format!("{}.{}", id, extension);
+        let new_file_name = format!("{id}.{extension}");
         std::fs::rename(
-            tmp_dir.join(format!("{}.{}", file_name, extension)),
+            tmp_dir.join(format!("{file_name}.{extension}")),
             assets_dir.join(&new_file_name),
         )?;
-        debug!("Successfully persisted asset `{}` --> `{}`.", file_name, new_file_name);
+        debug!("Successfully persisted asset `{file_name}` --> `{new_file_name}`.");
     } else {
-        warn!("No asset found for file_name: `{}`", file_name)
+        warn!("No asset found for file_name: `{file_name}`")
     };
 
     Ok(())

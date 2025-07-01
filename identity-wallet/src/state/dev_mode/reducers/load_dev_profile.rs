@@ -13,7 +13,7 @@ use crate::{
 use log::info;
 
 pub async fn load_dev_profile(state: AppState, action: Action) -> Result<AppState, AppError> {
-    info!("Load dev profile: {:?}", action);
+    info!("Load dev profile: {action:?}");
 
     if let Some(dev_profile) = listen::<DevProfile>(action) {
         // All dev profiles need to use the const PASSWORD so it can automatically unlock storage.
