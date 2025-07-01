@@ -21,7 +21,7 @@ use oid4vc::oid4vc_core::{
 };
 use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
 use oid4vc::oid4vp::oid4vp::OID4VP;
-// Sends the authorization response including the verifiable credentials.
+
 pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action) -> Result<AppState, AppError> {
     info!("handle_presentation_request");
 
@@ -41,11 +41,13 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
         let provider_manager = &identity_manager.provider_manager;
 
         //deserializes the active_connection_request from application state into an OID4VP authorization request object.
-        let oid4vp_authorization_request =
-            match serde_json::from_value(serde_json::json!(state.core_utils.active_connection_request)).unwrap() {
-                ConnectionRequest::OID4VP(oid4vp_authorization_request) => oid4vp_authorization_request,
-                ConnectionRequest::SIOPv2(_) => unreachable!(),
-            };
+        let oid4vp_authorization_request = if let ConnectionRequest::OID4VP(oid4vp_authorization_request) =
+            serde_json::from_value(serde_json::json!(state.core_utils.active_connection_request)).unwrap()
+        {
+            oid4vp_authorization_request
+        } else {
+            return Err(AppError::Error("Expected OID4VP Authorization Request".to_string()));
+        };
 
         let mut history_credentials = vec![];
 
@@ -326,4 +328,53 @@ pub fn get_oid4vp_client_name_and_logo_uri(
         connection_url: connection_url.to_string(),
         client_id,
     })
+}
+
+#[test]
+fn object_shi() {
+    let test_body: AuthorizationRequest<Object<OID4VP>> = serde_json::from_value(serde_json::json!({
+        "client_id": "did:key:z6Mkm9yeuZK7inXBNjnNH3vAs9uUjqfy3mfNoKBKsKBrv8Tb",
+        "redirect_uri": "https://example.com/",
+        "state": null,
+        "response_type": "vp_token",
+        "dcql_query":
+        {
+      "credentials": [
+        {
+          "id": "CredentialQuery",
+          "format": "jwt_vc_json",
+          "meta": {
+            "type_values": [
+                ["VerifiableCredential"],
+                ["PersonalInformation"],
+            ]
+          },
+          "claims": [
+              {"path": ["credentialSubject", "givenName"]},
+              {"path": ["credentialSubject", "familyName"]},
+              {"path": ["credentialSubject", "email"]},
+              {"path": ["credentialSubject", "birthdate"]}
+          ]
+        }
+      ]
+    },
+        "client_id_scheme": null,
+        "response_mode": null,
+        "scope": null,
+        "nonce": "nonce",
+        "client_metadata": {
+          "vp_formats": {
+            "jwt_vc_json": {
+              "alg": [
+                "EdDSA"
+              ]
+            }
+          },
+          "subject_syntax_types_supported": [
+            "did:key"
+          ]
+        }
+      }))
+    .unwrap();
+    println!("{}", test_body.to_string())
 }

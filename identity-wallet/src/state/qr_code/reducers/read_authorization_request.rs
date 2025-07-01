@@ -22,7 +22,6 @@ use oid4vc::siopv2::siopv2::SIOPv2;
 use oid4vc::{
     oid4vc_core::authorization_request::{AuthorizationRequest, Object},
     oid4vci::credential_format_profiles::CredentialFormats,
-    oid4vp::dcql::dcql_query,
     oid4vp::dcql_evaluation::evaluate_credential_query,
 };
 
@@ -209,7 +208,6 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                     let _ = download_asset(logo_uri.clone(), &hash(logo_uri.as_str())).await;
                 }
             }
-
             // TODO: communicate when no credentials are available.
             if !uuids.is_empty() {
                 drop(state_guard);
