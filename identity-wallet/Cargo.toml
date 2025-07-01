@@ -17,7 +17,7 @@ did_manager.workspace = true
 downcast-rs = "1.2"
 dyn-clone = "1.0"
 futures = "0.3"
-icu = "1.4.0"
+icu = "1.4"
 identity_credential = { version = "1.5", default-features = false, features = [
     "credential",
     "domain-linkage",
@@ -25,15 +25,15 @@ identity_credential = { version = "1.5", default-features = false, features = [
     "validator",
     "sd-jwt-vc"
 ] }
-identity_core = { version = "1.5.1" }
-identity_eddsa_verifier = { version = "1.5.1" }
-identity_iota = { version = "1.5.1" }
-identity_jose = { version = "1.5.1" }
+identity_core = { version = "1.5" }
+identity_eddsa_verifier = { version = "1.5" }
+identity_iota = { version = "1.5" }
+identity_jose = { version = "1.5" }
 iota_stronghold = { version = "2.1" }
-itertools = "0.10.5"
+itertools = "0.10"
 jsonschema = "0.29"
 jsonwebtoken.workspace = true
-lazy_static = "1.4.0"
+lazy_static = "1.4"
 log.workspace = true
 oid4vc.workspace = true
 p256 = { version = "0.13", features = ["jwk"] }
@@ -52,7 +52,7 @@ thiserror = "1.0"
 tokio.workspace = true
 ts-rs = "7.0"
 typetag = "0.2"
-unicode-normalization = "0.1.23"
+unicode-normalization = "0.1"
 url = "2.5"
 uuid = { version = "1.4", features = ["v4", "fast-rng", "serde"] }
 

@@ -111,11 +111,8 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
 
         if logo_uri.is_some() {
             debug!(
-                "{}",
-                format!(
-                    "Downloading client logo from url: {}",
-                    logo_uri.as_ref().unwrap().as_str()
-                )
+                "Downloading client logo from url: {}",
+                logo_uri.as_ref().unwrap().as_str()
             );
             if let Some(logo_uri) = logo_uri.as_ref().and_then(|s| s.parse::<reqwest::Url>().ok()) {
                 let _ = download_asset(logo_uri.clone(), &hash(logo_uri.as_str())).await;
@@ -153,10 +150,7 @@ async fn download_credential_logos(
         info!("credential_logo_uri: {:?}", credential_logo_uri);
 
         if let Some(credential_logo_uri) = credential_logo_uri {
-            debug!(
-                "{}",
-                format!("Downloading credential logo from URI: {}", credential_logo_uri)
-            );
+            debug!("Downloading credential logo from URI: {}", credential_logo_uri);
             if let Ok(credential_logo_uri) = credential_logo_uri.parse::<reqwest::Url>() {
                 let _ = download_asset(credential_logo_uri.clone(), &hash(credential_logo_uri.as_str())).await;
             } else {
