@@ -78,6 +78,7 @@ pub enum AppError {
     UnknownCredentialConfigurationIdError(String),
     #[error("Invalid offer indices")]
     InvalidOfferIndicesError(#[source] serde_json::Error),
+
     #[error("No `{0}` found in the state")]
     MissingStateParameterError(&'static str),
     #[error("Failed to create stronghold")]
