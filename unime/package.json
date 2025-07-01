@@ -25,7 +25,7 @@
     "@melt-ui/pp": "^0.3.0",
     "@melt-ui/svelte": "^0.86.4",
     "@sveltejs/adapter-static": "^3.0.8",
-    "@sveltejs/kit": "^2.20.5",
+    "@sveltejs/kit": "^2.22.2",
     "@sveltejs/vite-plugin-svelte": "^5.0.3",
     "@tailwindcss/typography": "^0.5.16",
     "@tauri-apps/api": "^2.2.0",
