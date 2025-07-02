@@ -14,6 +14,7 @@ use crate::{
         AppState,
     },
 };
+use serde_json::Value;
 
 use identity_credential::{sd_jwt_v2::Sha256Hasher, sd_jwt_vc::SdJwtVc};
 use log::{debug, info};
@@ -155,13 +156,12 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
             info!("verifiable credentials: {:?}", verifiable_credentials);
 
             let dcql_request = &oid4vp_authorization_request.body.extension.dcql_query;
-
             let uuids: Vec<String> = dcql_request
                 .credentials
                 .iter()
                 .filter_map(|credential_query_from_request| {
                     verifiable_credentials.iter().find_map(|verifiable_credential_record| {
-                        let credential_data = if verifiable_credential_record.display_credential.format
+                        let credential_data: Value = if verifiable_credential_record.display_credential.format
                             == CredentialFormats::VcSdJwt(())
                         {
                             serde_json::json!(verifiable_credential_record
@@ -171,12 +171,29 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                                 .ok()?
                                 .into_disclosed_object(&Sha256Hasher::new())
                                 .ok()?)
+                        } else if verifiable_credential_record.display_credential.format
+                            == CredentialFormats::JwtVcJson(())
+                        {
+                            let full_jwt_payload =
+                                get_unverified_jwt_claims(&verifiable_credential_record.verifiable_credential)
+                                    .unwrap_or_default();
+                            // JWT_VC_JSON must be accessed from the vc values.
+                            full_jwt_payload.get("vc").cloned().unwrap_or_else(|| {
+                                debug!(
+                                    "JWT-VC-JSON is missing 'vc' claims or is not a valid JSON value: {:?}",
+                                    full_jwt_payload
+                                );
+                                serde_json::json!({})
+                            })
                         } else {
+                            debug!(
+                                "Unhandled credential format: {:?}",
+                                verifiable_credential_record.display_credential.format
+                            );
                             get_unverified_jwt_claims(&verifiable_credential_record.verifiable_credential)
                                 .unwrap_or_default()
                         };
 
-                        // Check to see if all claimquery objects within this credentialquery are satisfied
                         let credential_query_satisfied =
                             evaluate_credential_query(credential_query_from_request, &credential_data);
                         credential_query_satisfied.then_some(verifiable_credential_record.display_credential.id.clone())
