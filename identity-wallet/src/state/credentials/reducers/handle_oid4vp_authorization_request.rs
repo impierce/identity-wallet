@@ -20,6 +20,7 @@ use oid4vc::oid4vc_core::{
     client_metadata::ClientMetadataResource,
 };
 use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
+use oid4vc::oid4vp::dcql::dcql_query::CredentialQuery;
 use oid4vc::oid4vp::oid4vp::OID4VP;
 
 pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action) -> Result<AppState, AppError> {
@@ -28,8 +29,6 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
     if let Some(credential_uuids) = listen::<CredentialsSelected>(action).map(|payload| payload.credential_uuids) {
         let state_guard = state.core_utils.managers.lock().await;
 
-        // so above we are listening - if the credentialsselected action occurs, this function takes place!
-        // would start by moving identity_manager and provider_manager retrieval to a broader scale despite credential type.
         let stronghold_manager = state_guard
             .stronghold_manager
             .as_ref()
@@ -40,7 +39,6 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             .ok_or(MissingManagerError("identity"))?;
         let provider_manager = &identity_manager.provider_manager;
 
-        //deserializes the active_connection_request from application state into an OID4VP authorization request object.
         let oid4vp_authorization_request = if let ConnectionRequest::OID4VP(oid4vp_authorization_request) =
             serde_json::from_value(serde_json::json!(state.core_utils.active_connection_request)).unwrap()
         {
@@ -50,110 +48,90 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
         };
 
         let mut history_credentials = vec![];
-
-        let selected_verifiable_credentials: Vec<(CredentialFormats, serde_json::Value, String)> = stronghold_manager
+        let dcql_from_request = &oid4vp_authorization_request.body.extension.dcql_query;
+        let available_credentials_map: std::collections::HashMap<String, _> = stronghold_manager
             .values()
             .map_err(StrongholdValuesError)?
             .unwrap()
-            .iter()
-            .filter_map(|verifiable_credential_record| {
-                info!("Verifiable Credential Record: {:#?}", verifiable_credential_record);
-
-                let credential_uuid = verifiable_credential_record.display_credential.id.parse().unwrap();
-                let share_credential = credential_uuids
-                    .contains(&credential_uuid)
-                    .then_some(verifiable_credential_record.verifiable_credential.clone());
-                // If a credential's ID is found in the credential_uuids list, then_some(...) extracts the verifiable_credential data itself.
-
-                if share_credential.is_some() {
-                    history_credentials.push(HistoryCredential::from_credential(verifiable_credential_record));
-                }
-
-                share_credential.map(|vc_value| {
-                    (
-                        verifiable_credential_record.display_credential.format.clone(),
-                        vc_value,
-                        verifiable_credential_record.display_credential.id.clone(),
-                    )
-                })
-            })
+            .into_iter()
+            .map(|record| (record.display_credential.id.clone(), record)) // Map to (internal_uuid_string, full_record)
             .collect();
 
-        if selected_verifiable_credentials.is_empty() {
-            return Err(AppError::Error("No credentials selected".to_string()));
+        let mut selected_verifiable_credentials: Vec<(CredentialQuery, serde_json::Value)> = Vec::new();
+        for requested_credential_query in &dcql_from_request.credentials {
+            //selects from all our credential_uuids, which ones we've said ok to.
+            for user_selected_uuid in &credential_uuids {
+                let user_selected_uuid_str = user_selected_uuid.to_string();
+                if let Some(verifiable_credential_record) = available_credentials_map.get(&user_selected_uuid_str) {
+                    let credential_data = if verifiable_credential_record.display_credential.format
+                        == CredentialFormats::VcSdJwt(())
+                    {
+                        // Handle SD-JWTs to get disclosed claims
+                        let sd_jwt_vc_string = verifiable_credential_record
+                            .verifiable_credential
+                            .as_str()
+                            .ok_or(AppError::InvalidCredentialFormatError)?
+                            .to_string();
+
+                        let sd_jwt_vc = sd_jwt_vc_string
+                            .parse::<identity_credential::sd_jwt_vc::SdJwtVc>()
+                            .map_err(|e| AppError::Error(format!("Failed to parse stored SD-JWT VC: {}", e)))?;
+
+                        let disclosed_object = sd_jwt_vc
+                            .into_disclosed_object(&identity_credential::sd_jwt_v2::Sha256Hasher::new())
+                            .map_err(|e| {
+                                AppError::Error(format!("Failed to get disclosed object from SD-JWT VC: {}", e))
+                            })?;
+                        serde_json::json!(disclosed_object)
+                    } else if verifiable_credential_record.display_credential.format == CredentialFormats::JwtVcJson(())
+                    {
+                        // Handle jwt-vc-json starting from vc.
+                        crate::state::core_utils::helpers::get_unverified_jwt_claims(
+                            &verifiable_credential_record.verifiable_credential,
+                        )
+                        .unwrap_or_default()
+                        .get("vc")
+                        .cloned()
+                        .unwrap_or_else(|| {
+                            log::debug!(
+                                "JWT-VC-JSON missing 'vc' claim or it's not a valid JSON value: {:?}",
+                                verifiable_credential_record.verifiable_credential
+                            );
+                            serde_json::json!({})
+                        })
+                    } else {
+                        log::warn!(
+                            "Unsupported format {:?} for evaluation. Attempting to get unverified JWT claims.",
+                            verifiable_credential_record.display_credential.format
+                        );
+                        crate::state::core_utils::helpers::get_unverified_jwt_claims(
+                            &verifiable_credential_record.verifiable_credential,
+                        )
+                        .unwrap_or_default()
+                    };
+
+                    let credential_query_satisfied = oid4vc::oid4vp::dcql_evaluation::evaluate_credential_query(
+                        requested_credential_query,
+                        &credential_data,
+                    );
+
+                    if credential_query_satisfied {
+                        selected_verifiable_credentials.push((
+                            requested_credential_query.clone(),
+                            verifiable_credential_record.verifiable_credential.clone(),
+                        ));
+                        history_credentials.push(HistoryCredential::from_credential(verifiable_credential_record));
+                        break;
+                    }
+                }
+            }
         }
 
-        // // Divide all Verifiable Credentials into SD-JWT VC and JWT VC JSONs.
-        // let (sd_jwt_vc_credentials, jwt_vc_json_credentials) = verifiable_credentials.into_iter().try_fold(
-        //     (Vec::new(), Vec::new()),
-        //     |(mut sd_jwt_vc_credentials, mut jwt_vc_json_credentials), (format, verifiable_credential)| {
-        //         match format {
-        //             CredentialFormats::VcSdJwt(()) => sd_jwt_vc_credentials.push(verifiable_credential),
-        //             CredentialFormats::JwtVcJson(()) => jwt_vc_json_credentials.push(verifiable_credential),
-        //             _ => return Err(AppError::InvalidCredentialFormatError),
-        //         }
-        //         Ok((sd_jwt_vc_credentials, jwt_vc_json_credentials))
-        //     },
-        // )?;
-
-        // info!("`jwt_vc_json` Credentials: {:#?}", jwt_vc_json_credentials);
-        // info!("`sd_jwt_vc` Credentials: {:#?}", sd_jwt_vc_credentials);
-
-        // let OID4VPClientMetadata {
-        //     client_name,
-        //     logo_uri,
-        //     connection_url,
-        //     client_id,
-        // } = get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request);
-
-        // // Create the Authorization Response Input.
-        // let vector: Vec<_> = match (sd_jwt_vc_credentials.len(), jwt_vc_json_credentials.len()) {
-        //     (0, 0) => {
-        //         return Err(AppError::Error(
-        //             "No credentials available to fulfill the request".to_string(),
-        //         ));
-        //     }
-
-        //     // If multiple presentations are provided, this means that the `vp_token` in the Authorization
-        //     // Response will be a sequence which cannot be serialized into a x-www-form-urlencoded string by `reqwest`.
-        //     // See: https://github.com/nox/serde_urlencoded/issues/75#issuecomment-648257888
-        //     (sd_jwt_vc_count, 0) if sd_jwt_vc_count > 1 => {
-        //         return Err(AppError::Error(
-        //             "Sending multiple SD-JWT VCs is not supported".to_string(),
-        //         ))
-        //     }
-        //     (sd_jwt_vc_count, jwt_vc_json_count) if (sd_jwt_vc_count > 0 && jwt_vc_json_count > 0) => {
-        //         return Err(AppError::Error(
-        //             "Sending multiple W3C Verifiable Presentations and SD-JWT VCs is not supported".to_string(),
-        //         ))
-        //     }
-        //     (1, 0) => {
-        //         let sd_jwt_vc = sd_jwt_vc_credentials
-        //             .first()
-        //             .and_then(serde_json::Value::as_str)
-        //             .and_then(|sd_jwt_vc| SdJwtVc::parse(sd_jwt_vc).ok())
-        //             .ok_or(AppError::Error("Failed to parse SD-JWT VC".to_string()))?;
-
-        //         let (sd_jwt_vc, _) = SdJwtVcPresentationBuilder::new(sd_jwt_vc, &Sha256Hasher::new())
-        //             .map_err(|e| {
-        //                 AppError::Error(format!(
-        //                     "Failed to create SD-JWT VC Presentation Builder for SD-JWT VC: {e}",
-        //                 ))
-        //             })?
-        //             // TODO: Allow concealing claims (selective disclosure)
-        //             // .conceal("address")
-        //             // TODO: Implement Key Binding
-        //             // .attach_key_binding_jwt(kb_jwt)
-        //             .finish()
-        //             .map_err(|e| AppError::Error(format!("Failed to attach KeyBindingJwt to SD-JWT VC: {e}")))?;
-
-        //         vec![sd_jwt_vc]
-        //     }
-        // (0, jwt_vc_json_count) if jwt_vc_json_count > 0 => {
-        //     let identity_manager = state_guard
-        //         .identity_manager
-        //         .as_ref()
-        //         .ok_or(MissingManagerError("identity"))?;
+        if selected_verifiable_credentials.is_empty() {
+            return Err(AppError::Error(
+                "No credentials selected or found to fulfill the request".to_string(),
+            ));
+        }
 
         let did_method = state
             .profile_settings
@@ -161,14 +139,11 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             .first()
             .ok_or(AppError::Error("Default DID method is missing".to_string()))?;
 
-        // Get the algorithm from the client_metadata if it exists
         let algorithm = identity_manager
             .provider_manager
             .get_matching_signing_algorithm(&oid4vp_authorization_request)
             .await
-            // If there is no matching algorithm, use the Provider's first supported algorithm.
             .unwrap_or(
-                //dereferencing to get algo enum value - not a reference? /
                 *identity_manager
                     .provider_manager
                     .provider
@@ -180,36 +155,17 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
                         )
                     })?,
             );
-        //gets subject did string from identity manager
+
         let subject_did_str = identity_manager
             .subject
             .identifier(did_method, algorithm)
             .await
             .map_err(AppError::OID4VCSubjectIdentifierError)?;
 
-        //prepare_vp_token_object expects a did string parsed into coredid object so prepared here:
         let subject_did = CoreDID::parse(subject_did_str).map_err(|_| DidParseError)?;
 
-        // let mut presentation_builder =
-        //     Presentation::builder(subject_did.parse().map_err(|_| DidParseError)?, Default::default());
-        // for jwt_vc_json in jwt_vc_json_credentials {
-        //     presentation_builder = presentation_builder.credential(Jwt::from(
-        //         jwt_vc_json.as_str().ok_or(InvalidCredentialFormatError)?.to_string(),
-        //     ));
-        // }
-        // let verifiable_presentation = presentation_builder.build().map_err(PresentationBuilderError)?;
-        // todo!()
-        // sign and return the presentations - signing (must be added back in was removed from generate_token extension)
-        //     }
-        //     _ => {
-        //         return Err(AppError::Error(
-        //             "Invalid combination of SD-JWT VC and JWT VC JSONs".to_string(),
-        //         ));
-        //     }
-        // };
-
         let vp_token_payload = prepare_vp_token_object(
-            selected_verifiable_credentials,
+            selected_verifiable_credentials, // This is now correctly structured
             &subject_did,
             &identity_manager.subject,
             &oid4vp_authorization_request,
@@ -217,7 +173,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
         .await?;
 
         let response = provider_manager
-            .generate_response(&oid4vp_authorization_request, vp_token_payload) //vptoken instance gettin passed
+            .generate_response(&oid4vp_authorization_request, vp_token_payload)
             .await
             .map_err(GenerateAuthorizationResponseError)?;
         info!("response generated: {:?}", response);
@@ -235,7 +191,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             client_id,
         } = get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request);
 
-        let did = CoreDID::parse(client_id).ok(); //clientiddid not subjectiddid
+        let did = CoreDID::parse(client_id).ok();
 
         let mut connections = state.connections;
         let previously_connected = connections.contains(connection_url.as_str(), &client_name);
@@ -247,10 +203,8 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
         };
         persist_asset(&file_name, &connection.id).ok();
 
-        // History
         let mut history = state.history;
         if !previously_connected {
-            // Only add a `ConnectionAdded` event if the connection was not previously connected.
             history.push(HistoryEvent {
                 connection_name: connection.name.clone(),
                 event_type: EventType::ConnectionAdded,

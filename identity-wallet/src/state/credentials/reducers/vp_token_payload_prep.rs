@@ -8,8 +8,7 @@ use identity_iota::did::{CoreDID, DIDUrl, DID};
 use jsonwebtoken::Header;
 use oid4vc::oid4vc_core::authorization_request::{AuthorizationRequest, Object};
 use oid4vc::oid4vc_core::{jwt, Subject};
-use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
-use oid4vc::oid4vp::dcql::dcql_query::CredentialId;
+use oid4vc::oid4vp::dcql::dcql_query::{CredentialQuery, Format};
 use oid4vc::oid4vp::oid4vp::OID4VP;
 use oid4vc::oid4vp::token::{
     vp_token::{PresentationFormat, VpToken},
@@ -18,7 +17,7 @@ use oid4vc::oid4vp::token::{
 use serde_json::Value;
 use std::sync::Arc;
 pub async fn prepare_vp_token_object(
-    selected_verifiable_credentials: Vec<(CredentialFormats, Value, String)>,
+    selected_verifiable_credentials: Vec<(CredentialQuery, Value)>,
     subject_did: &CoreDID,
     subject_manager: &Arc<dyn Subject>,
     oid4vp_authorization_request: &AuthorizationRequest<Object<OID4VP>>,
@@ -31,12 +30,13 @@ pub async fn prepare_vp_token_object(
     let signing_method_id =
         DIDUrl::parse(format!("{}#{}", subject_did, subject_did.method_id())).map_err(|_| AppError::DidParseError)?;
 
-    for (format, vc_value, credential_id_str) in selected_verifiable_credentials {
-        let credential_id = CredentialId::try_new(credential_id_str)
-            .map_err(|e| AppError::Error(format!("Invalid credential ID: {}", e)))?;
+    for (credential_query_from_dcql, vc_value) in selected_verifiable_credentials {
+        let credential_id = credential_query_from_dcql.id.clone();
+        let format_from_query = credential_query_from_dcql.format;
+        // .map_err(|e| AppError::Error(format!("Invalid credential ID: {}", e)))?;
 
-        let presentation_format_item = match format {
-            CredentialFormats::JwtVcJson(_) => {
+        let presentation_format_item = match format_from_query {
+            Format::JwtVcJson => {
                 let raw_vc_jwt_string = vc_value
                     .as_str()
                     .ok_or(AppError::InvalidCredentialFormatError)?
@@ -81,7 +81,7 @@ pub async fn prepare_vp_token_object(
 
                 PresentationFormat::JwtVcJson(signed_vc_presentation_jwt_string)
             }
-            CredentialFormats::VcSdJwt(_) => {
+            Format::DcSdJwt => {
                 let sd_jwt_vc_string = vc_value
                     .as_str()
                     .ok_or(AppError::InvalidCredentialFormatError)?
