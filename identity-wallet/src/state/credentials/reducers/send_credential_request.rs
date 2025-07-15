@@ -4,7 +4,7 @@ use crate::{
     state::{
         actions::{listen, Action},
         core_utils::{
-            helpers::{credential_schema_validation, jwt_vc_json_validator},
+            helpers::{credential_schema_validation, get_credential_status, jwt_vc_json_validator},
             history_event::{EventType, HistoryCredential, HistoryEvent},
             CoreUtils,
         },
@@ -221,6 +221,12 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
             let mut verifiable_credential_record: VerifiableCredentialRecord = credential.try_into()?;
             // Validate the credential against its corresponding credential Json schema.
             credential_schema_validation(&verifiable_credential_record.verifiable_credential)?;
+            let credential_status = get_credential_status(&verifiable_credential_record.verifiable_credential)
+                .await
+                .ok();
+
+            // Set the credential status of the credential.
+            verifiable_credential_record.display_credential.credential_status = credential_status;
 
             // Set the issuer name of the credential.
             verifiable_credential_record

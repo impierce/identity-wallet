@@ -7,6 +7,7 @@ use crate::{error::AppError, state::core_utils::DateUtils};
 use derivative::Derivative;
 use identity_credential::{sd_jwt_v2::Sha256Hasher, sd_jwt_vc::SdJwtVc};
 use log::info;
+use oauth_tsl::status_list::StatusType;
 use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
@@ -29,6 +30,7 @@ pub struct DisplayCredential {
     #[ts(optional)]
     pub connection_id: Option<String>,
     pub display_name: String,
+    pub credential_status: Option<StatusType>,
 }
 
 #[typetag::serde(name = "display_credential")]

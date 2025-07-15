@@ -11,6 +11,7 @@ use identity_iota::{
 use identity_jose::jwt::JwtClaims;
 use jsonschema::ValidationError;
 use log::{debug, info, warn};
+use oauth_tsl::{managers::relying_party::check_referenced_token_index, status_list::StatusType};
 use serde_json::Value;
 use std::fs::File;
 
@@ -98,6 +99,15 @@ pub fn json_schema_validation(json_schema_path: String, data: &Value) -> Result<
         )))
     } else {
         Ok(())
+    }
+}
+
+pub async fn get_credential_status(credential: &Value) -> Option<StatusType> {
+    if let Some(credential_status) = credential.get("credentialStatus") {
+        let status = check_referenced_token_index(referenced_token, decoding_key).await.ok();
+        status
+    } else {
+        None
     }
 }
 

@@ -35,6 +35,7 @@ jsonschema = "0.29"
 jsonwebtoken.workspace = true
 lazy_static = "1.4"
 log.workspace = true
+oauth_tsl = { git = "https://github.com/impierce/oauth-token-status-list" }
 oid4vc.workspace = true
 p256 = { version = "0.13", features = ["jwk"] }
 reqwest = { version = "0.11", default-features = false, features = [
