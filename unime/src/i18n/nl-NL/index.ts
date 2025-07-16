@@ -518,13 +518,13 @@ Door onze Service te gebruiken, erken je dat je deze Voorwaarden heeft gelezen, 
     },
   },
   SORT: {
-    TITLE: 'Sorteer',
+    TITLE: 'Sorteren',
     PREFERENCES: {
       LIST_VIEW: 'Lijstweergave',
       GRID_VIEW: 'Rasterweergave',
       ALPHABETICAL: 'Alfabetische Volgorde',
-      DATE_ISSUED: 'Datum Uitgegeven',
-      DATE_ADDED: 'Datum Toegevoegd',
+      DATE_ISSUED: 'Datum uitgegeven',
+      DATE_ADDED: 'Datum toegevoegd',
     },
     ORDER: {
       A_Z: 'A tot Z',
