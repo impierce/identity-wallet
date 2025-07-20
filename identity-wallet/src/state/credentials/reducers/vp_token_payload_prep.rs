@@ -44,8 +44,8 @@ pub async fn prepare_vp_token_object(
 
                 let vc_jwt: Jwt = raw_vc_jwt_string.into();
 
-                let holder_url: Url = Url::parse(&subject_did.to_string())
-                    .map_err(|e| AppError::Error(format!("Failed to parse DID as URL: {}", e)))?;
+                let holder_url: Url = Url::parse(subject_did.to_string())
+                    .map_err(|e| AppError::Error(format!("Failed to parse DID as URL: {e}")))?;
 
                 let presentation = Presentation::builder(holder_url, IotaObject::default())
                     .credential(vc_jwt)
@@ -77,7 +77,7 @@ pub async fn prepare_vp_token_object(
                     &format!("did:{}", subject_did.method()),
                 )
                 .await
-                .map_err(|e| AppError::Error(format!("Failed to sign VP JWT: {}", e)))?;
+                .map_err(|e| AppError::Error(format!("Failed to sign VP JWT: {e}")))?;
 
                 PresentationFormat::JwtVcJson(signed_vc_presentation_jwt_string)
             }
@@ -102,5 +102,5 @@ pub async fn prepare_vp_token_object(
     // Build and validate the VP token
     builder
         .build()
-        .map_err(|e| AppError::Error(format!("Failed to build VpToken: {:?}", e)))
+        .map_err(|e| AppError::Error(format!("Failed to build VpToken: {e:?}",)))
 }

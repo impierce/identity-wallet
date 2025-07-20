@@ -75,12 +75,12 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
 
                         let sd_jwt_vc = sd_jwt_vc_string
                             .parse::<identity_credential::sd_jwt_vc::SdJwtVc>()
-                            .map_err(|e| AppError::Error(format!("Failed to parse stored SD-JWT VC: {}", e)))?;
+                            .map_err(|e| AppError::Error(format!("Failed to parse stored SD-JWT VC: {e}")))?;
 
                         let disclosed_object = sd_jwt_vc
                             .into_disclosed_object(&identity_credential::sd_jwt_v2::Sha256Hasher::new())
                             .map_err(|e| {
-                                AppError::Error(format!("Failed to get disclosed object from SD-JWT VC: {}", e))
+                                AppError::Error(format!("Failed to get disclosed object from SD-JWT VC: {e}"))
                             })?;
                         serde_json::json!(disclosed_object)
                     } else if verifiable_credential_record.display_credential.format == CredentialFormats::JwtVcJson(())
@@ -165,7 +165,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
         let subject_did = CoreDID::parse(subject_did_str).map_err(|_| DidParseError)?;
 
         let vp_token_payload = prepare_vp_token_object(
-            selected_verifiable_credentials, // This is now correctly structured
+            selected_verifiable_credentials,
             &subject_did,
             &identity_manager.subject,
             &oid4vp_authorization_request,
@@ -285,7 +285,7 @@ pub fn get_oid4vp_client_name_and_logo_uri(
 }
 
 #[test]
-fn object_shi() {
+fn test_authorization_request_object() {
     let test_body: AuthorizationRequest<Object<OID4VP>> = serde_json::from_value(serde_json::json!({
         "client_id": "did:key:z6Mkm9yeuZK7inXBNjnNH3vAs9uUjqfy3mfNoKBKsKBrv8Tb",
         "redirect_uri": "https://example.com/",

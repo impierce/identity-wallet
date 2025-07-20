@@ -206,7 +206,7 @@ pub async fn download_asset(url: reqwest::Url, id: &str) -> Result<(), AppError>
         return Err(AppError::DownloadAborted("File size is bigger than 2 MB"));
     }
 
-    let mut file = std::fs::File::create(tmp_dir.join(format!("{}.{}", id, file_extension)))?;
+    let mut file = std::fs::File::create(tmp_dir.join(format!("{id}.{file_extension}")))?;
 
     copy(&mut content, &mut file)?;
 
@@ -220,11 +220,11 @@ pub fn persist_asset(file_name: &str, id: &str) -> Result<(), AppError> {
 
     if let Some(extension) = SUPPORTED_IMAGE_ASSET_EXTENSIONS
         .iter()
-        .find(|&e| tmp_dir.join(format!("{}.{}", file_name, e)).exists())
+        .find(|&e| tmp_dir.join(format!("{file_name}.{e}")).exists())
     {
-        let new_file_name = format!("{}.{}", id, extension);
+        let new_file_name = format!("{id}.{extension}");
         std::fs::rename(
-            tmp_dir.join(format!("{}.{}", file_name, extension)),
+            tmp_dir.join(format!("{file_name}.{extension}")),
             assets_dir.join(&new_file_name),
         )?;
         debug!("Successfully persisted asset `{}` --> `{}`.", file_name, new_file_name);

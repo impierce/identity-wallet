@@ -105,9 +105,9 @@ pub enum AppError {
 
 impl std::fmt::Debug for AppError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        writeln!(f, "{}", self)?;
+        writeln!(f, "{self}")?;
         if let Some(source) = self.source() {
-            writeln!(f, "Caused by:\n\t{}", source)?;
+            writeln!(f, "Caused by:\n\t{source}")?;
         }
         Ok(())
     }
