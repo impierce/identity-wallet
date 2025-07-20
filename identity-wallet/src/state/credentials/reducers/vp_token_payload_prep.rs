@@ -44,13 +44,13 @@ pub async fn prepare_vp_token_object(
 
                 let vc_jwt: Jwt = raw_vc_jwt_string.into();
 
-                let holder_url: Url = Url::parse(subject_did.to_string())
-                    .map_err(|e| AppError::Error(format!("Failed to parse DID as URL: {e}")))?;
+                let holder_url: Url =
+                    Url::parse(subject_did).map_err(|e| AppError::Error(format!("Failed to parse DID as URL: {e}")))?;
 
                 let presentation = Presentation::builder(holder_url, IotaObject::default())
                     .credential(vc_jwt)
                     .build()
-                    .map_err(|e| AppError::PresentationBuilderError(e))?;
+                    .map_err(AppError::PresentationBuilderError)?;
 
                 let vp_jwt_claims = serde_json::json!({
                     "vp": presentation,

@@ -330,5 +330,5 @@ fn test_authorization_request_object() {
         }
       }))
     .unwrap();
-    println!("{}", test_body.to_string())
+    println!("{test_body}")
 }
