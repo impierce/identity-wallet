@@ -42,6 +42,8 @@ pub enum AppError {
     OID4VCSubjectIdentifierError(#[source] anyhow::Error),
     #[error("Invalid authorization request: {0}")]
     InvalidAuthorizationRequest(Box<AuthorizationRequest<Object>>),
+    #[error("Credential status is invalid/revoked")]
+    InvalidCredentialStatus,
     #[error("Invalid credential offer")]
     InvalidCredentialOffer(#[source] serde_json::Error),
     #[error("Could not find a matching credential for input descriptor")]
@@ -58,6 +60,8 @@ pub enum AppError {
     DidParseError,
     #[error("Invalid credential format")]
     InvalidCredentialFormatError,
+    #[error("Invalid credential status format")]
+    InvalidCredentialStatusFormatError,
     #[error("Failed to build verifiable presentation")]
     PresentationBuilderError(#[source] identity_credential::error::Error),
     #[error("Failed to retrieve credential offer from the credential issuer")]
@@ -66,6 +70,8 @@ pub enum AppError {
     GetAuthorizationServerMetadataError(#[source] anyhow::Error),
     #[error("Failed to retrieve the credential issuer's metadata")]
     GetCredentialIssuerMetadataError(#[source] anyhow::Error),
+    #[error("Failed to retrieve credential status from the status list provider")]
+    GetCredentialStatusError,
     #[error("Failed to retrieve an access token from the credential issuer")]
     GetAccessTokenError(#[source] anyhow::Error),
     #[error("Failed to retrieve credential from the credential issuer")]

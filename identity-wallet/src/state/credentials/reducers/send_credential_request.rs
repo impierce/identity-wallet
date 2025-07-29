@@ -6,10 +6,10 @@ use crate::{
         core_utils::{
             helpers::{credential_schema_validation, get_credential_status, jwt_vc_json_validator},
             history_event::{EventType, HistoryCredential, HistoryEvent},
-            CoreUtils,
+            CoreUtils, DateUtils,
         },
         credentials::{
-            actions::credential_offers_selected::CredentialOffersSelected, DisplayCredential,
+            actions::credential_offers_selected::CredentialOffersSelected, CredentialStatusData, DisplayCredential,
             VerifiableCredentialRecord,
         },
         user_prompt::CurrentUserPrompt,
@@ -18,7 +18,8 @@ use crate::{
 };
 
 use identity_iota::credential::Jwt;
-use log::info;
+use log::{info, warn};
+use oauth_tsl::status_list::StatusType;
 use oid4vc::oid4vci::{
     credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject,
     credential_offer::Grants, credential_response::CredentialResponseType, token_request::TokenRequest,
@@ -218,15 +219,49 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
         let mut history_credentials = vec![];
 
         for (credential_configuration_id, credential, display) in credentials.into_iter() {
-            let mut verifiable_credential_record: VerifiableCredentialRecord = credential.try_into()?;
+            let mut verifiable_credential_record: VerifiableCredentialRecord = credential.clone().try_into()?;
             // Validate the credential against its corresponding credential Json schema.
             credential_schema_validation(&verifiable_credential_record.verifiable_credential)?;
-            let credential_status = get_credential_status(&verifiable_credential_record.verifiable_credential)
-                .await
-                .ok();
 
-            // Set the credential status of the credential.
-            verifiable_credential_record.display_credential.credential_status = credential_status;
+            // Check the credentialStatus as defined in the VC Data Models and store it in the display credential.
+            if let Some(credential_status) = credential.get("credentialStatus") {
+                let status = get_credential_status(
+                    credential_status,
+                    state
+                        .core_utils
+                        .managers
+                        .lock()
+                        .await
+                        .identity_manager
+                        .as_ref()
+                        .ok_or(AppError::MissingManagerError("identity"))?,
+                )
+                .await?;
+
+                match status {
+                    StatusType::VALID => {
+                        info!("Credential is valid, credential request accepted");
+                    }
+                    StatusType::INVALID => {
+                        warn!("Credential is invalid, credential request declined");
+                        return Err(AppError::InvalidCredentialStatus);
+                    }
+                    StatusType::SUSPENDED => {
+                        info!("Credential is suspended, credential request accepted");
+                    }
+                    StatusType::UNDEFINED => {
+                        info!("Credential status type is unknown, credential request accepted");
+                    }
+                    StatusType::RESERVED => {
+                        info!("Credential status type is reserved, credential request declined");
+                        return Err(AppError::InvalidCredentialStatus);
+                    }
+                }
+                verifiable_credential_record.display_credential.credential_status = Some(CredentialStatusData {
+                    status,
+                    last_checked: DateUtils::new_date_string(),
+                });
+            }
 
             // Set the issuer name of the credential.
             verifiable_credential_record

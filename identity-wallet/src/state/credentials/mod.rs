@@ -30,7 +30,16 @@ pub struct DisplayCredential {
     #[ts(optional)]
     pub connection_id: Option<String>,
     pub display_name: String,
-    pub credential_status: Option<StatusType>,
+    pub credential_status: Option<CredentialStatusData>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, Derivative, TS, Default)]
+#[derivative(PartialEq)]
+#[ts(export, export_to = "bindings/credentials/CredentialStatusData.ts")]
+pub struct CredentialStatusData {
+    #[ts(type = "number")]
+    pub status: StatusType,
+    pub last_checked: String,
 }
 
 #[typetag::serde(name = "display_credential")]
