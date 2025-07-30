@@ -4,12 +4,13 @@ use crate::{
     state::{
         actions::{listen, Action},
         core_utils::{
-            helpers::{credential_schema_validation, get_credential_status, jwt_vc_json_validator},
+            helpers::{credential_schema_validation, jwt_vc_json_validator},
             history_event::{EventType, HistoryCredential, HistoryEvent},
             CoreUtils, DateUtils,
         },
         credentials::{
-            actions::credential_offers_selected::CredentialOffersSelected, CredentialStatusData, DisplayCredential,
+            actions::credential_offers_selected::CredentialOffersSelected,
+            reducers::refresh_credential_status::get_credential_status, CredentialStatusData, DisplayCredential,
             VerifiableCredentialRecord,
         },
         user_prompt::CurrentUserPrompt,
@@ -223,7 +224,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
             // Validate the credential against its corresponding credential Json schema.
             credential_schema_validation(&verifiable_credential_record.verifiable_credential)?;
 
-            // Check the credentialStatus as defined in the VC Data Models and store it in the display credential.
+            // Check the credentialStatus as defined in the VC Data Model and store it in the display credential.
             if let Some(credential_status) = credential.get("credentialStatus") {
                 let status = get_credential_status(
                     credential_status,
@@ -250,7 +251,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                         info!("Credential is suspended, credential request accepted");
                     }
                     StatusType::UNDEFINED => {
-                        info!("Credential status type is unknown, credential request accepted");
+                        info!("Credential status type is undefined, credential request accepted");
                     }
                     StatusType::RESERVED => {
                         info!("Credential status type is reserved, credential request declined");
