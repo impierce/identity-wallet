@@ -71,7 +71,8 @@ mod bindings {
         },
         credentials::actions::{
             credential_offers_selected::CredentialOffersSelected, credentials_selected::CredentialsSelected,
-            delete_credential::DeleteCredential, update_credential_metadata::UpdateCredentialMetadata,
+            delete_credential::DeleteCredential, refresh_credential_status::RefreshCredentialStatus,
+            update_credential_metadata::UpdateCredentialMetadata,
         },
         dev_mode::actions::dev_profile::DevProfile,
         did::actions::{set_preferred_keytype::SetPreferredKeyType, set_preferred_method::SetPreferredDidMethod},
@@ -127,6 +128,8 @@ mod bindings {
         UpdateCredentialMetadata { payload: UpdateCredentialMetadata },
         #[serde(rename = "[Credential] Delete")]
         DeleteCredential { payload: DeleteCredential },
+        #[serde(rename = "[Credential] Refresh Status")]
+        RefreshCredentialStatus { payload: RefreshCredentialStatus },
         #[serde(rename = "[User Journey] Cancel")]
         CancelUserJourney,
         #[serde(rename = "[Settings] Update sorting preference")]
