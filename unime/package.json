@@ -18,7 +18,7 @@
   "devDependencies": {
     "@aws-crypto/sha256-js": "^5.2.0",
     "@eslint/compat": "^1.2.8",
-    "@eslint/js": "^9.24.0",
+    "@eslint/js": "^9.32.0",
     "@iconify-json/ph": "^1.2.0",
     "@impierce/tauri-plugin-keystore": "2.1.0-alpha.1",
     "@lottiefiles/lottie-player": "^2.0.12",
