@@ -1,4 +1,6 @@
+use chrono::{DateTime, Utc};
 use log::{info, warn};
+use serde::Deserialize;
 use serde_json::json;
 
 use crate::{
@@ -52,6 +54,14 @@ pub async fn check_service_health(state: AppState, action: Action) -> Result<App
     })
 }
 
+/// Expected response type from email verification service.
+#[derive(Deserialize, Debug)]
+struct VerificationResponse {
+    id: String,
+    expires_at: DateTime<Utc>,
+    validation_expiration_in_secs: i32,
+}
+
 pub async fn send_verification_email(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(action) = listen::<SendVerificationEmail>(action) {
         let url = format!("{EMAIL_VERIFICATION_SERVICE_HOST}/api/verify");
@@ -67,24 +77,16 @@ pub async fn send_verification_email(state: AppState, action: Action) -> Result<
                 warn!("Failed to send verification request: {}", err);
             })
             .map_err(|err| AppError::Error(err.to_string()))?;
-        // TODO: handle error
-        let json_response: serde_json::Value = response.json().await.unwrap();
-        info!("[<<<] {}", json_response);
-        let id = json_response.get("id").unwrap().as_str().unwrap();
-        let expires_at = json_response.get("expires_at").unwrap().as_str().unwrap();
-        let validation_expiration_in_secs = json_response
-            .get("validation_expiration_in_secs")
-            .unwrap()
-            .as_i64()
-            .unwrap() as i32;
+        let response: VerificationResponse = response.json().await.map_err(|err| AppError::Error(err.to_string()))?;
+        info!("[<<<] {:?}", response);
         return Ok(AppState {
             verified_data: VerifiedData {
                 email_verification: Some(EmailVerification {
                     email: action.email,
                     label: action.label,
-                    verification_id: Some(id.to_string()),
-                    expires_at: Some(chrono::DateTime::parse_from_rfc3339(expires_at).unwrap().to_utc()),
-                    validation_expiration_in_secs: Some(validation_expiration_in_secs),
+                    verification_id: Some(response.id),
+                    expires_at: Some(response.expires_at),
+                    validation_expiration_in_secs: Some(response.validation_expiration_in_secs),
                     error: None,
                 }),
             },
@@ -141,7 +143,10 @@ pub async fn redeem_code(state: AppState, action: Action) -> Result<AppState, Ap
                 return Ok(AppState {
                     verified_data: VerifiedData {
                         email_verification: Some(EmailVerification {
-                            error: Some(error.get("error").unwrap().as_str().unwrap().to_string()),
+                            error: error
+                                .get("error")
+                                .and_then(serde_json::Value::as_str)
+                                .map(ToString::to_string),
                             ..state
                                 .verified_data
                                 .email_verification
