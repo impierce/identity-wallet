@@ -102,10 +102,10 @@ pub async fn redeem_code(state: AppState, action: Action) -> Result<AppState, Ap
             .verified_data
             .email_verification
             .as_ref()
-            .unwrap()
-            .verification_id
-            .as_ref()
-            .unwrap();
+            .and_then(|email_verification| email_verification.verification_id.clone())
+            .ok_or(AppError::Error(
+                "Tried to redeem a code without an active email verification flow".to_string(),
+            ))?;
         let url = format!("{}/api/verify/{}", EMAIL_VERIFICATION_SERVICE_HOST, session_id);
         let body = json!({ "code": action.code });
         info!("[>>>] {} {}", url, body);
@@ -115,17 +115,13 @@ pub async fn redeem_code(state: AppState, action: Action) -> Result<AppState, Ap
             .json(&body)
             .send()
             .await
-            .inspect_err(|err| {
-                warn!("Failed to send verification code: {}", err);
-            })
-            .ok()
-            .unwrap();
+            .map_err(|err| AppError::Error(format!("Failed to send verification code: {err}")))?;
 
         info!("[<<<] {:?}", response);
 
         match response.status().as_u16() {
             200 => {
-                let credential_offer_value: String = response.text().await.unwrap();
+                let credential_offer_value: String = response.text().await?;
                 let action = QrCodeScanned {
                     form_urlencoded: credential_offer_value,
                 };
@@ -138,8 +134,7 @@ pub async fn redeem_code(state: AppState, action: Action) -> Result<AppState, Ap
                     },
                     std::sync::Arc::new(action),
                 )
-                .await
-                .unwrap());
+                .await?);
             }
             _ => {
                 let error: serde_json::Value = response.json().await?;
