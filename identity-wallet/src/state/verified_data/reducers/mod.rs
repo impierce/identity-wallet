@@ -21,7 +21,7 @@ pub async fn check_service_health(state: AppState, action: Action) -> Result<App
     if let Some(action) = listen::<ServiceHealthCheck>(action) {
         info!("[>>>] {}", action.service);
         let response = reqwest::Client::new()
-            .get(format!("{}/healthz", EMAIL_VERIFICATION_SERVICE_HOST))
+            .get(format!("{EMAIL_VERIFICATION_SERVICE_HOST}/healthz"))
             .header("X-API-KEY", EMAIL_VERIFICATION_SERVICE_API_KEY)
             .send()
             .await;
@@ -41,8 +41,7 @@ pub async fn check_service_health(state: AppState, action: Action) -> Result<App
             Err(err) => {
                 warn!("Failed to check service health: {}", err);
                 return Err(AppError::Error(format!(
-                    "email-verification-service health could not be checked: {}",
-                    err
+                    "email-verification-service health could not be checked: {err}"
                 )));
             }
         }
@@ -55,7 +54,7 @@ pub async fn check_service_health(state: AppState, action: Action) -> Result<App
 
 pub async fn send_verification_email(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(action) = listen::<SendVerificationEmail>(action) {
-        let url = format!("{}/api/verify", EMAIL_VERIFICATION_SERVICE_HOST);
+        let url = format!("{EMAIL_VERIFICATION_SERVICE_HOST}/api/verify");
         let body = json!({ "email": action.email });
         info!("[>>>] {} {}", url, body);
         let response = reqwest::Client::new()
@@ -106,7 +105,7 @@ pub async fn redeem_code(state: AppState, action: Action) -> Result<AppState, Ap
             .ok_or(AppError::Error(
                 "Tried to redeem a code without an active email verification flow".to_string(),
             ))?;
-        let url = format!("{}/api/verify/{}", EMAIL_VERIFICATION_SERVICE_HOST, session_id);
+        let url = format!("{EMAIL_VERIFICATION_SERVICE_HOST}/api/verify/{session_id}");
         let body = json!({ "code": action.code });
         info!("[>>>] {} {}", url, body);
         let response = reqwest::Client::new()
@@ -125,7 +124,7 @@ pub async fn redeem_code(state: AppState, action: Action) -> Result<AppState, Ap
                 let action = QrCodeScanned {
                     form_urlencoded: credential_offer_value,
                 };
-                return Ok(read_credential_offer(
+                return read_credential_offer(
                     AppState {
                         verified_data: VerifiedData {
                             email_verification: None,
@@ -134,7 +133,7 @@ pub async fn redeem_code(state: AppState, action: Action) -> Result<AppState, Ap
                     },
                     std::sync::Arc::new(action),
                 )
-                .await?);
+                .await;
             }
             _ => {
                 let error: serde_json::Value = response.json().await?;
@@ -148,7 +147,6 @@ pub async fn redeem_code(state: AppState, action: Action) -> Result<AppState, Ap
                                 .email_verification
                                 .expect("tried to redeem a code without an active email verification flow")
                         }),
-                        ..state.verified_data
                     },
                     ..state
                 });

@@ -82,10 +82,10 @@ pub async fn validate_domain_linkage(url: url::Url, did: &str) -> ValidationResu
 
     let domain_linkage_configuration = match did_configuration_result {
         Ok(did_config) => did_config,
-        Err(e) => {
+        Err(err) => {
             return ValidationResult {
                 status: ValidationStatus::Unknown,
-                message: Some(format!("Error while fetching configuration: {}", e)),
+                message: Some(format!("Error while fetching configuration: {err}")),
                 ..Default::default()
             };
         }
@@ -146,7 +146,7 @@ async fn fetch_configuration(mut url: url::Url) -> Result<DomainLinkageConfigura
     // 2. Fetch the resource
     let response = reqwest::get(url.clone())
         .await
-        .map_err(|_| format!("failed to get response from resource url: {}", url))?;
+        .map_err(|_| format!("failed to get response from resource url: {url}"))?;
 
     // 3. Parse to JSON value (mutable)
     let mut json = response
