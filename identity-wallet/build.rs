@@ -1,3 +1,5 @@
+#![allow(clippy::uninlined_format_args)]
+
 fn main() {
     // Re-run the build script if the .env file changes
     println!("cargo:rerun-if-changed=.env");
