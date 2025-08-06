@@ -70,6 +70,7 @@
         {client_name}
       </p>
       <p class="pt-[10px] text-sm font-medium text-slate-500">
+        <!-- TODO: make the apex domain bold for extra highlight, subdomain(s) slightly greyed out -->
         {hostname}
       </p>
     </div>
