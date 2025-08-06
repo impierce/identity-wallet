@@ -6,8 +6,7 @@ use crate::state::{actions::ActionTrait, Reducer};
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
-// Service health check
-
+/// Action to check the health of an external service.
 #[derive(Serialize, Deserialize, Debug, Clone, TS)]
 #[ts(export, export_to = "bindings/actions/ServiceHealthCheck.ts")]
 pub struct ServiceHealthCheck {
@@ -21,8 +20,7 @@ impl ActionTrait for ServiceHealthCheck {
     }
 }
 
-// Initialize verification session
-
+/// Action to trigger sending a verification email.
 #[derive(Serialize, Deserialize, Debug, Clone, TS)]
 #[ts(export, export_to = "bindings/actions/SendVerificationEmail.ts")]
 pub struct SendVerificationEmail {
@@ -37,8 +35,7 @@ impl ActionTrait for SendVerificationEmail {
     }
 }
 
-// Redeem code
-
+/// Action to redeem a verification code.
 #[derive(Serialize, Deserialize, Debug, Clone, TS)]
 #[ts(export, export_to = "bindings/actions/RedeemCode.ts")]
 pub struct RedeemCode {
@@ -52,10 +49,8 @@ impl ActionTrait for RedeemCode {
     }
 }
 
-// Redeem code
-
+/// Action to reset the current email verification flow.
 #[derive(Serialize, Deserialize, Debug, Clone)]
-// #[ts(export, export_to = "bindings/actions/ResetEmailVerification.ts")]
 pub struct ResetEmailVerification;
 
 #[typetag::serde(name = "[Verified Data] Reset email verification")]
