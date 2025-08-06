@@ -5,7 +5,7 @@ export { default as Button } from './Button.svelte';
 export { default as Checkbox } from './Checkbox.svelte';
 export { default as CredentialList } from './credentials/CredentialList.svelte';
 export { default as DeprecatedSwitch } from './DeprecatedSwitch.svelte';
-export { default as ErrorToast } from './ErrorToast.svelte';
+export { default as Toast } from './Toast.svelte';
 export { default as Favorites } from './credentials/Favorites.svelte';
 export { default as History } from './history/History.svelte';
 export { default as IconMessage } from './IconMessage.svelte';

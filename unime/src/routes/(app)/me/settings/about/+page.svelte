@@ -1,7 +1,7 @@
 <script lang="ts">
   import LL from '$i18n/i18n-svelte';
 
-  import { ErrorToast, TopNavBar } from '$lib/components';
+  import { Toast, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { HeartFillIcon } from '$lib/icons';
   import UniMeLogo from '$lib/static/svg/logo/UniMeLogo.svelte';
@@ -83,6 +83,6 @@
 
 {#if showMessage()}
   <div class="absolute bottom-[calc(64px_+_16px_+_var(--safe-area-inset-bottom))] left-4 w-[calc(100%_-_32px)]">
-    <ErrorToast variant="info" {title} {detail} dismissible={false} />
+    <Toast variant="info" {title} {detail} dismissible={false} />
   </div>
 {/if}
