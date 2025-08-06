@@ -380,7 +380,7 @@ async fn get_logo_uri(
     // Check if logo URI was retrieved, if not then attempt to retrieve from a well-known endpoint
     if logo_uri.is_none() {
         for domain in validated_linked_domains.iter() {
-            let well_known_endpoint = format!("{}.well-known/openid-credential-issuer", domain);
+            let well_known_endpoint = format!("{domain}.well-known/openid-credential-issuer");
             info!("Trying to fetch image from {well_known_endpoint} endpoint");
             if let Ok(response) = reqwest::Client::new().get(&well_known_endpoint).send().await {
                 if let Ok(metadata) = response.json::<CredentialIssuerMetadata>().await {
@@ -395,7 +395,7 @@ async fn get_logo_uri(
             // The CII tells us where exactly we can add "/.well-known/openid-credential-issuer" to fetch the Credential Issuer Metadata, in which we might find the logo.
             // For now we assume it's the same domain as the linked domain.
             // But this is no guarantee and the code below is one such workaround.
-            let well_known_endpoint = format!("{}oid4vci/.well-known/openid-credential-issuer", domain);
+            let well_known_endpoint = format!("{domain}oid4vci/.well-known/openid-credential-issuer");
             info!("Trying to fetch image from {well_known_endpoint} endpoint");
             if let Ok(response) = reqwest::Client::new().get(&well_known_endpoint).send().await {
                 if let Ok(metadata) = response.json::<CredentialIssuerMetadata>().await {
@@ -458,7 +458,7 @@ fn extract_url_from_did_web(did_web: &str) -> Option<Url> {
             did
         };
 
-        if let Ok(url) = Url::parse(&format!("https://{}", url_str)) {
+        if let Ok(url) = Url::parse(&format!("https://{url_str}")) {
             return Some(url);
         }
     }

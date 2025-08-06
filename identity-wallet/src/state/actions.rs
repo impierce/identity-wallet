@@ -88,6 +88,7 @@ mod bindings {
             delete_trust_list_entry::DeleteTrustListEntry, edit_trust_list::EditTrustList,
             edit_trust_list_entry::EditTrustListEntry, toggle_trust_list_entry::ToggleTrustListEntry,
         },
+        verified_data::actions::{RedeemCode, SendVerificationEmail, ServiceHealthCheck},
     };
 
     #[derive(Serialize, Deserialize, TS)]
@@ -159,5 +160,13 @@ mod bindings {
         EnableBiometrics { payload: EnableBiometrics },
         #[serde(rename = "[Storage] Check password")]
         CheckPassword { payload: CheckPassword },
+        #[serde(rename = "[Verified Data] Check service health")]
+        ServiceHealthCheck { payload: ServiceHealthCheck },
+        #[serde(rename = "[Verified Data] Send verification email")]
+        SendVerificationEmail { payload: SendVerificationEmail },
+        #[serde(rename = "[Verified Data] Redeem code")]
+        RedeemCode { payload: RedeemCode },
+        #[serde(rename = "[Verified Data] Reset email verification")]
+        ResetEmailVerification,
     }
 }

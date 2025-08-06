@@ -317,7 +317,6 @@ Al utilizar nuestro Servicio, usted reconoce que ha leído, entendido y aceptado
       GREETING_3: 'Bienvenido de nuevo',
       GREETING_4: 'Hola',
     },
-    DEMO: 'Visita una de las siguientes páginas web en un ordenador de sobremesa para comenzar.',
     CREDENTIAL_TABS: {
       ALL: 'Todo',
       DATA: 'Datos',
@@ -409,11 +408,50 @@ Al utilizar nuestro Servicio, usted reconoce que ha leído, entendido y aceptado
       },
     },
     ACTIONS: {
+      EDIT: {
+        CONFIRM_BUTTON: 'Actualizar nombre para mostrar',
+      },
       DELETE: {
         BUTTON_LABEL: 'Borra las credenciales',
         TITLE: 'Borra las credenciales',
         DESCRIPTION: '¿Seguro que quieres borrar estas credenciales de tu billetera? Esta acción no puede deshacerse.',
         CONFIRM_BUTTON: 'Borra',
+      },
+    },
+  },
+  ADD_CREDENTIALS: {
+    BUTTON: 'Añadir',
+    NAVBAR_TITLE: 'Añadir datos',
+    EMAIL: {
+      TITLE: '',
+      DESCRIPTION: '',
+      INFO: {
+        NAVBAR_TITLE: '',
+        TITLE: '',
+        DESCRIPTION: '',
+        ITEM_0: {
+          TITLE: '',
+          DESCRIPTION: '',
+        },
+        ITEM_1: {
+          TITLE: '',
+          DESCRIPTION: '',
+        },
+        ITEM_2: {
+          TITLE: '',
+          DESCRIPTION: '',
+        },
+      },
+      ADD: {
+        NAVBAR_TITLE: '',
+        LABEL: '',
+        LABEL_DISCLAIMER: '',
+        LABEL_PLACEHOLDER: '',
+        VALUE_LABEL: '',
+        VALUE_PLACEHOLDER: 'nombre.apellido@example.com',
+        BUTTON_SEND: '',
+        BUTTON_SEND_AGAIN: '',
+        CHECK_EMAIL: '',
       },
     },
   },
@@ -446,6 +484,7 @@ Al utilizar nuestro Servicio, usted reconoce que ha leído, entendido y aceptado
   },
   CANCEL: 'Cancela',
   CLOSE: 'Cierra',
+  DISCARD: 'Descarta',
   CONTINUE: 'Continua',
   SKIP: 'Saltar',
   ACCEPT: 'Acepta',

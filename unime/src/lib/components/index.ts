@@ -1,3 +1,4 @@
+export { default as Accordion } from './Accordion.svelte';
 export { default as ActionSheet } from './ActionSheet.svelte';
 export { default as Button } from './Button.svelte';
 export { default as Checkbox } from './Checkbox.svelte';
