@@ -11,6 +11,8 @@ use oid4vc::oid4vc_core::{jwt, Subject};
 use oid4vc::oid4vp::dcql::dcql_query::{CredentialQuery, Format};
 use oid4vc::oid4vp::oid4vp::OID4VP;
 use oid4vc::oid4vp::token::{
+    verifiable_presentation_jwt::VerifiablePresentationJwt,
+    verifiable_presentation_jwt_builder::VerifiablePresentationJwtBuilder,
     vp_token::{PresentationFormat, VpToken},
     vp_token_builder::VpTokenBuilder,
 };
@@ -51,16 +53,17 @@ pub async fn prepare_vp_token_object(
                     .credential(vc_jwt)
                     .build()
                     .map_err(AppError::PresentationBuilderError)?;
-
-                let vp_jwt_claims = serde_json::json!({
-                    "vp": presentation,
-                    "iss": subject_did.to_string(),
-                    "sub": subject_did.to_string(),
-                    "aud": verifier_audience.to_string(),
-                    "nonce": required_nonce.to_string(),
-                    "iat": Utc::now().timestamp(),
-                    "exp": (Utc::now() + Duration::minutes(10)).timestamp()
-                });
+                //j
+                let verifiable_presentation_jwt = VerifiablePresentationJwt::builder()
+                    .iss(subject_did.to_string())
+                    .sub(subject_did.to_string())
+                    .aud(verifier_audience.to_string())
+                    .nonce(required_nonce.to_string())
+                    .iat(Utc::now().timestamp())
+                    .exp((Utc::now() + Duration::minutes(10)).timestamp())
+                    .verifiable_presentation(presentation)
+                    .build()
+                    .map_err(|e| AppError::Error(format!("Failed to build VerifiablePresentationJwt: {e}")))?;
 
                 let jwt_header = Header {
                     alg: jsonwebtoken::Algorithm::ES256, //algorithm - dynamic eddsa
@@ -73,7 +76,7 @@ pub async fn prepare_vp_token_object(
                 let signed_vc_presentation_jwt_string = jwt::encode(
                     subject_manager.clone(),
                     jwt_header,
-                    vp_jwt_claims,
+                    &verifiable_presentation_jwt,
                     &format!("did:{}", subject_did.method()),
                 )
                 .await
