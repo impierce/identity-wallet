@@ -112,6 +112,7 @@ pub struct AppState {
     /// Extensions will bring along their own redux compliant code, in the unime folder.
     #[ts(skip)]
     pub extensions: std::collections::HashMap<String, Box<dyn FeatTrait>>,
+    pub show_dev_mode_setting: bool,
     pub dev_mode: DevMode,
 }
 
