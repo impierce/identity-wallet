@@ -40,6 +40,9 @@ const empty_state: AppState = {
   debug_messages: [],
   history: [],
   trust_lists: [],
+  verified_data: {
+    email_verification: null,
+  },
   dev_mode: 'Off',
 };
 

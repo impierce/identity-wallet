@@ -290,7 +290,6 @@ Durch die Nutzung unseres Dienstes bestätigen Sie, dass Sie diese Allgemeinen G
       GREETING_3: 'Hallo',
       GREETING_4: 'Hi',
     },
-    DEMO: 'Besuche eine der folgenden Webseiten auf einem Desktop-Computer, um loszulegen.',
     CREDENTIAL_TABS: {
       ALL: 'Alle',
       DATA: 'Daten',
@@ -382,12 +381,54 @@ Durch die Nutzung unseres Dienstes bestätigen Sie, dass Sie diese Allgemeinen G
       },
     },
     ACTIONS: {
+      EDIT: {
+        CONFIRM_BUTTON: 'Anzeigename ändern',
+      },
       DELETE: {
         BUTTON_LABEL: 'Credential löschen',
         TITLE: 'Credential löschen',
         DESCRIPTION:
           'Bist du sicher, dass du dieses Credential aus deiner Wallet löschen willst? Diese Aktion kann nicht rückgängig gemacht werden.',
         CONFIRM_BUTTON: 'Löschen',
+      },
+    },
+  },
+  ADD_CREDENTIALS: {
+    BUTTON: 'Hinzufügen',
+    NAVBAR_TITLE: 'Daten hinzufügen',
+    EMAIL: {
+      TITLE: 'E-Mail',
+      DESCRIPTION: 'Erhalte eine verifizierte E-Mail-Adresse',
+      INFO: {
+        NAVBAR_TITLE: 'Verifizierte E-Mail',
+        TITLE: 'Verifizierte E-Mail',
+        DESCRIPTION: 'Bevor du beginnst',
+        ITEM_0: {
+          TITLE: 'Warum sollte ich meine E-Mail in UniMe verifizieren?',
+          DESCRIPTION:
+            'Mit einer verifizierten E-Mail zeigst du, dass sie wirklich dir gehört. So kannst du sicher und ohne Passwort verschiedene Dienste nutzen. Außerdem hilft sie dir, deine Identität gegenüber Shops, Websites und sogar anderen Personen nachzuweisen.',
+        },
+        ITEM_1: {
+          TITLE: 'Wie funktioniert das?',
+          DESCRIPTION:
+            'UniMe sendet deine angegebene E-Mail-Adresse an eines unserer Verifizierungssysteme. Du erhälst dann einen Einmalcode in deinen Posteingang. Gib diesen Code in UniMe ein, um zu bestätigen, dass du auf die E-Mail zugreifen konntest. Dann bestätigt UniMe die Verifizierung deiner E-Mail-Adresse und du kannst sie nun überall dort verwenden, wo sie akzeptiert wird.',
+        },
+        ITEM_2: {
+          TITLE: 'Sind meine Daten sicher?',
+          DESCRIPTION:
+            'Ja. Wir nehmen deine Privatsphäre sehr ernst. Alle Nachrichten zwischen UniMe und unseren Verifizierungsservern sind durch starke Verschlüsselung geschützt und deine Daten werden sicher gespeichert. Wir verwenden deine E-Mail-Adresse nur, um den Verifizierungscode zu senden - sie wird niemals weitergegeben oder für andere Zwecke verwendet.',
+        },
+      },
+      ADD: {
+        NAVBAR_TITLE: 'E-Mail hinzufügen',
+        LABEL: 'Wie möchtest du diese E-Mail-Adresse nennen?',
+        LABEL_DISCLAIMER: 'Nur für dich sichtbar',
+        LABEL_PLACEHOLDER: 'Persönliche E-Mail',
+        VALUE_LABEL: 'E-Mail',
+        VALUE_PLACEHOLDER: 'vorname.nachname@example.com',
+        BUTTON_SEND: 'E-Mail senden',
+        BUTTON_SEND_AGAIN: 'E-Mail erneut senden',
+        CHECK_EMAIL: 'Bitte schaue in dein E-Mail-Postfach und gib den Code unten ein.',
       },
     },
   },
@@ -420,6 +461,7 @@ Durch die Nutzung unseres Dienstes bestätigen Sie, dass Sie diese Allgemeinen G
   },
   CANCEL: 'Abbrechen',
   CLOSE: 'Schließen',
+  DISCARD: 'Verwerfen',
   CONTINUE: 'Weiter',
   SKIP: 'Überspringen',
   ACCEPT: 'Akzeptieren',
