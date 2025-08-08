@@ -52,7 +52,7 @@ pub async fn prepare_vp_token_object(
                     .credential(vc_jwt)
                     .build()
                     .map_err(AppError::PresentationBuilderError)?;
-                //j
+
                 let verifiable_presentation_jwt = VerifiablePresentationJwt::builder()
                     .iss(subject_did.to_string())
                     .sub(subject_did.to_string())

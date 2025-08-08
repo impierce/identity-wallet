@@ -162,7 +162,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                 .filter_map(|credential_query_from_request| {
                     verifiable_credentials.iter().find_map(|verifiable_credential_record| {
                         let credential_data: Value = if verifiable_credential_record.display_credential.format
-                            == CredentialFormats::VcSdJwt(())
+                            == CredentialFormats::DcSdJwt(())
                         {
                             serde_json::json!(verifiable_credential_record
                                 .verifiable_credential
