@@ -12,7 +12,6 @@ use oid4vc::oid4vp::dcql::dcql_query::{CredentialQuery, Format};
 use oid4vc::oid4vp::oid4vp::OID4VP;
 use oid4vc::oid4vp::token::{
     verifiable_presentation_jwt::VerifiablePresentationJwt,
-    verifiable_presentation_jwt_builder::VerifiablePresentationJwtBuilder,
     vp_token::{PresentationFormat, VpToken},
     vp_token_builder::VpTokenBuilder,
 };

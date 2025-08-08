@@ -84,7 +84,7 @@ impl TryFrom<serde_json::Value> for VerifiableCredentialRecord {
 
                 let id = Uuid::from_slice(&hash.as_bytes()[..16])?.to_string();
 
-                let format = CredentialFormats::VcSdJwt(());
+                let format = CredentialFormats::DcSdJwt(());
                 // TODO: Remove this workaround that is basically a way of disguising the SD JWT VC as a VC so that
                 // it can be displayed in the Frontend.
                 let data = json!({
@@ -207,7 +207,7 @@ mod tests {
 
         assert_eq!(
             verifiable_credential_record.display_credential.format,
-            CredentialFormats::VcSdJwt(())
+            CredentialFormats::DcSdJwt(())
         );
 
         assert_eq!(

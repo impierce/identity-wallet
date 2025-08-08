@@ -64,7 +64,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
                 let user_selected_uuid_str = user_selected_uuid.to_string();
                 if let Some(verifiable_credential_record) = available_credentials_map.get(&user_selected_uuid_str) {
                     let credential_data = if verifiable_credential_record.display_credential.format
-                        == CredentialFormats::VcSdJwt(())
+                        == CredentialFormats::DcSdJwt(())
                     {
                         // Handle SD-JWTs to get disclosed claims
                         let sd_jwt_vc_string = verifiable_credential_record
