@@ -717,10 +717,6 @@ type RootTranslation = {
 			 */
 			GREETING_4: string
 		}
-		/**
-		 * V​i​s​i​t​ ​o​n​e​ ​o​f​ ​t​h​e​ ​f​o​l​l​o​w​i​n​g​ ​w​e​b​s​i​t​e​s​ ​o​n​ ​a​ ​d​e​s​k​t​o​p​ ​c​o​m​p​u​t​e​r​ ​t​o​ ​g​e​t​ ​s​t​a​r​t​e​d​.
-		 */
-		DEMO: string
 		CREDENTIAL_TABS: {
 			/**
 			 * A​l​l
@@ -741,7 +737,7 @@ type RootTranslation = {
 			 */
 			TITLE: string
 			/**
-			 * W​h​y​ ​n​o​t​ ​a​d​d​ ​s​o​m​e​ ​c​r​e​d​e​n​t​i​a​l​s​ ​t​o​ ​s​t​a​r​t​ ​y​o​u​r​ ​n​e​w​ ​d​i​g​i​t​a​l​ ​m​e​?
+			 * W​h​y​ ​n​o​t​ ​g​e​t​ ​s​o​m​e​ ​o​f​ ​y​o​u​r​ ​d​a​t​a​ ​v​e​r​i​f​i​e​d​ ​t​o​ ​s​t​a​r​t​ ​y​o​u​r​ ​j​o​u​r​n​e​y​?
 			 */
 			SUBTITLE: string
 		}
@@ -968,6 +964,12 @@ type RootTranslation = {
 			}
 		}
 		ACTIONS: {
+			EDIT: {
+				/**
+				 * U​p​d​a​t​e​ ​d​i​s​p​l​a​y​ ​n​a​m​e
+				 */
+				CONFIRM_BUTTON: string
+			}
 			DELETE: {
 				/**
 				 * D​e​l​e​t​e​ ​c​r​e​d​e​n​t​i​a​l
@@ -985,6 +987,108 @@ type RootTranslation = {
 				 * D​e​l​e​t​e
 				 */
 				CONFIRM_BUTTON: string
+			}
+		}
+	}
+	ADD_CREDENTIALS: {
+		/**
+		 * A​d​d
+		 */
+		BUTTON: string
+		/**
+		 * A​d​d​ ​d​a​t​a
+		 */
+		NAVBAR_TITLE: string
+		EMAIL: {
+			/**
+			 * E​m​a​i​l
+			 */
+			TITLE: string
+			/**
+			 * G​e​t​ ​y​o​u​r​ ​p​e​r​s​o​n​a​l​ ​o​r​ ​w​o​r​k​ ​e​m​a​i​l​ ​v​e​r​i​f​i​e​d
+			 */
+			DESCRIPTION: string
+			INFO: {
+				/**
+				 * V​e​r​i​f​i​e​d​ ​e​m​a​i​l
+				 */
+				NAVBAR_TITLE: string
+				/**
+				 * V​e​r​i​f​i​e​d​ ​e​m​a​i​l
+				 */
+				TITLE: string
+				/**
+				 * B​e​f​o​r​e​ ​y​o​u​ ​s​t​a​r​t
+				 */
+				DESCRIPTION: string
+				ITEM_0: {
+					/**
+					 * W​h​a​t​ ​c​a​n​ ​I​ ​d​o​ ​w​i​t​h​ ​m​y​ ​v​e​r​i​f​i​e​d​ ​e​m​a​i​l​?
+					 */
+					TITLE: string
+					/**
+					 * Y​o​u​ ​c​a​n​ ​p​r​o​v​e​ ​o​w​n​e​r​s​h​i​p​ ​o​f​ ​t​h​a​t​ ​e​m​a​i​l​ ​a​d​d​r​e​s​s​ ​t​o​ ​w​e​b​s​i​t​e​s​,​ ​s​h​o​p​s​ ​a​n​d​ ​o​t​h​e​r​ ​p​e​o​p​l​e​.​ ​I​t​ ​a​l​s​o​ ​a​l​l​o​w​s​ ​y​o​u​ ​t​o​ ​l​o​g​ ​i​n​ ​t​o​ ​w​e​b​s​i​t​e​s​ ​t​h​a​t​ ​s​u​p​p​o​r​t​ ​i​t​ ​w​i​t​h​o​u​t​ ​n​e​e​d​i​n​g​ ​t​o​ ​r​e​m​e​m​b​e​r​ ​a​ ​p​a​s​s​w​o​r​d​ ​o​r​ ​s​e​t​t​i​n​g​ ​u​p​ ​a​ ​p​a​s​s​k​e​y​.
+					 */
+					DESCRIPTION: string
+				}
+				ITEM_1: {
+					/**
+					 * H​o​w​ ​i​s​ ​i​t​ ​v​e​r​i​f​i​e​d​?
+					 */
+					TITLE: string
+					/**
+					 * U​n​i​M​e​ ​s​e​n​d​s​ ​a​ ​m​e​s​s​a​g​e​ ​c​o​n​t​a​i​n​i​n​g​ ​y​o​u​r​ ​e​m​a​i​l​ ​t​o​ ​a​ ​v​e​r​i​f​i​c​a​t​i​o​n​ ​s​y​s​t​e​m​ ​r​u​n​ ​b​y​ ​u​s​.​ ​T​h​a​t​ ​s​y​s​t​e​m​ ​t​h​e​n​ ​s​e​n​d​s​ ​a​n​ ​e​m​a​i​l​ ​c​o​n​t​a​i​n​i​n​g​ ​a​ ​o​n​e​-​t​i​m​e​ ​c​o​d​e​ ​t​o​ ​y​o​u​r​ ​i​n​b​o​x​.​ ​B​y​ ​e​n​t​e​r​i​n​g​ ​t​h​a​t​ ​c​o​d​e​ ​i​n​ ​U​n​i​M​e​,​ ​y​o​u​ ​p​r​o​v​e​ ​y​o​u​ ​h​a​v​e​ ​a​c​c​e​s​s​ ​t​o​ ​t​h​a​t​ ​e​m​a​i​l​ ​i​n​b​o​x​.​ ​U​n​i​M​e​ ​t​h​e​n​ ​s​e​n​d​s​ ​a​n​o​t​h​e​r​ ​m​e​s​s​a​g​e​ ​t​o​ ​o​u​r​ ​v​e​r​i​f​i​c​a​t​i​o​n​ ​s​y​s​t​e​m​,​ ​r​e​d​e​e​m​i​n​g​ ​t​h​a​t​ ​c​o​d​e​ ​f​o​r​ ​a​ ​v​e​r​i​f​i​a​b​l​e​ ​c​r​e​d​e​n​t​i​a​l​.
+					 */
+					DESCRIPTION: string
+				}
+				ITEM_2: {
+					/**
+					 * I​s​ ​m​y​ ​p​e​r​s​o​n​a​l​ ​i​n​f​o​r​m​a​t​i​o​n​ ​s​a​f​e​?
+					 */
+					TITLE: string
+					/**
+					 * W​e​ ​t​r​e​a​t​ ​a​n​y​ ​d​a​t​a​ ​y​o​u​ ​e​n​t​e​r​ ​i​n​ ​U​n​i​M​e​ ​w​i​t​h​ ​t​h​e​ ​g​r​e​a​t​e​s​t​ ​r​e​s​p​e​c​t​.​ ​A​l​l​ ​m​e​s​s​a​g​e​s​ ​f​r​o​m​ ​U​n​i​M​e​ ​t​o​ ​o​u​r​ ​s​e​r​v​e​r​s​ ​a​r​e​ ​f​u​l​l​y​ ​e​n​c​r​y​p​t​e​d​ ​w​h​e​n​ ​t​h​e​y​ ​t​r​a​v​e​l​ ​t​h​r​o​u​g​h​ ​t​h​e​ ​i​n​t​e​r​n​e​t​.​ ​T​h​e​y​ ​a​r​e​ ​a​l​s​o​ ​e​n​c​r​y​p​t​e​d​ ​o​n​ ​o​u​r​ ​s​e​r​v​e​r​s​ ​u​s​i​n​g​ ​t​h​e​ ​l​a​t​e​s​t​ ​s​e​c​u​r​i​t​y​ ​s​t​a​n​d​a​r​d​s​.​ ​I​n​ ​o​r​d​e​r​ ​t​o​ ​s​u​c​c​e​s​s​f​u​l​l​y​ ​d​e​l​i​v​e​r​ ​a​n​ ​e​m​a​i​l​ ​t​o​ ​y​o​u​r​ ​i​n​b​o​x​,​ ​w​e​ ​i​n​i​t​i​a​l​l​y​ ​h​a​v​e​ ​t​o​ ​r​e​c​e​i​v​e​ ​i​t​ ​i​n​ ​p​l​a​i​n​ ​t​e​x​t​,​ ​s​o​ ​a​ ​f​u​l​l​ ​"​z​e​r​o​-​a​c​c​e​s​s​ ​e​n​c​r​y​p​t​i​o​n​"​ ​i​s​ ​u​n​f​o​r​t​u​n​a​t​e​l​y​ ​n​o​t​ ​a​p​p​l​i​c​a​b​l​e​ ​t​o​ ​t​h​i​s​ ​u​s​e​ ​c​a​s​e​.
+					 */
+					DESCRIPTION: string
+				}
+			}
+			ADD: {
+				/**
+				 * G​e​t​ ​v​e​r​i​f​i​e​d​ ​e​m​a​i​l
+				 */
+				NAVBAR_TITLE: string
+				/**
+				 * Y​o​u​r​ ​U​n​i​M​e​ ​l​a​b​e​l
+				 */
+				LABEL: string
+				/**
+				 * O​n​l​y​ ​s​e​e​n​ ​b​y​ ​y​o​u
+				 */
+				LABEL_DISCLAIMER: string
+				/**
+				 * P​e​r​s​o​n​a​l​ ​e​m​a​i​l
+				 */
+				LABEL_PLACEHOLDER: string
+				/**
+				 * E​m​a​i​l
+				 */
+				VALUE_LABEL: string
+				/**
+				 * f​i​r​s​t​n​a​m​e​.​l​a​s​t​n​a​m​e​@​e​x​a​m​p​l​e​.​c​o​m
+				 */
+				VALUE_PLACEHOLDER: string
+				/**
+				 * S​e​n​d​ ​v​e​r​i​f​i​c​a​t​i​o​n​ ​e​m​a​i​l
+				 */
+				BUTTON_SEND: string
+				/**
+				 * R​e​s​e​n​d​ ​v​e​r​i​f​i​c​a​t​i​o​n​ ​e​m​a​i​l
+				 */
+				BUTTON_SEND_AGAIN: string
+				/**
+				 * P​l​e​a​s​e​ ​c​h​e​c​k​ ​y​o​u​r​ ​e​m​a​i​l​ ​i​n​b​o​x​ ​a​n​d​ ​e​n​t​e​r​ ​t​h​e​ ​c​o​d​e​ ​b​e​l​o​w​.
+				 */
+				CHECK_EMAIL: string
 			}
 		}
 	}
@@ -1074,6 +1178,10 @@ type RootTranslation = {
 	 * C​l​o​s​e
 	 */
 	CLOSE: string
+	/**
+	 * D​i​s​c​a​r​d
+	 */
+	DISCARD: string
 	/**
 	 * C​o​n​t​i​n​u​e
 	 */
@@ -1794,10 +1902,6 @@ export type TranslationFunctions = {
 			 */
 			GREETING_4: () => LocalizedString
 		}
-		/**
-		 * Visit one of the following websites on a desktop computer to get started.
-		 */
-		DEMO: () => LocalizedString
 		CREDENTIAL_TABS: {
 			/**
 			 * All
@@ -1818,7 +1922,7 @@ export type TranslationFunctions = {
 			 */
 			TITLE: () => LocalizedString
 			/**
-			 * Why not add some credentials to start your new digital me?
+			 * Why not get some of your data verified to start your journey?
 			 */
 			SUBTITLE: () => LocalizedString
 		}
@@ -2045,6 +2149,12 @@ export type TranslationFunctions = {
 			}
 		}
 		ACTIONS: {
+			EDIT: {
+				/**
+				 * Update display name
+				 */
+				CONFIRM_BUTTON: () => LocalizedString
+			}
 			DELETE: {
 				/**
 				 * Delete credential
@@ -2062,6 +2172,108 @@ export type TranslationFunctions = {
 				 * Delete
 				 */
 				CONFIRM_BUTTON: () => LocalizedString
+			}
+		}
+	}
+	ADD_CREDENTIALS: {
+		/**
+		 * Add
+		 */
+		BUTTON: () => LocalizedString
+		/**
+		 * Add data
+		 */
+		NAVBAR_TITLE: () => LocalizedString
+		EMAIL: {
+			/**
+			 * Email
+			 */
+			TITLE: () => LocalizedString
+			/**
+			 * Get your personal or work email verified
+			 */
+			DESCRIPTION: () => LocalizedString
+			INFO: {
+				/**
+				 * Verified email
+				 */
+				NAVBAR_TITLE: () => LocalizedString
+				/**
+				 * Verified email
+				 */
+				TITLE: () => LocalizedString
+				/**
+				 * Before you start
+				 */
+				DESCRIPTION: () => LocalizedString
+				ITEM_0: {
+					/**
+					 * What can I do with my verified email?
+					 */
+					TITLE: () => LocalizedString
+					/**
+					 * You can prove ownership of that email address to websites, shops and other people. It also allows you to log in to websites that support it without needing to remember a password or setting up a passkey.
+					 */
+					DESCRIPTION: () => LocalizedString
+				}
+				ITEM_1: {
+					/**
+					 * How is it verified?
+					 */
+					TITLE: () => LocalizedString
+					/**
+					 * UniMe sends a message containing your email to a verification system run by us. That system then sends an email containing a one-time code to your inbox. By entering that code in UniMe, you prove you have access to that email inbox. UniMe then sends another message to our verification system, redeeming that code for a verifiable credential.
+					 */
+					DESCRIPTION: () => LocalizedString
+				}
+				ITEM_2: {
+					/**
+					 * Is my personal information safe?
+					 */
+					TITLE: () => LocalizedString
+					/**
+					 * We treat any data you enter in UniMe with the greatest respect. All messages from UniMe to our servers are fully encrypted when they travel through the internet. They are also encrypted on our servers using the latest security standards. In order to successfully deliver an email to your inbox, we initially have to receive it in plain text, so a full "zero-access encryption" is unfortunately not applicable to this use case.
+					 */
+					DESCRIPTION: () => LocalizedString
+				}
+			}
+			ADD: {
+				/**
+				 * Get verified email
+				 */
+				NAVBAR_TITLE: () => LocalizedString
+				/**
+				 * Your UniMe label
+				 */
+				LABEL: () => LocalizedString
+				/**
+				 * Only seen by you
+				 */
+				LABEL_DISCLAIMER: () => LocalizedString
+				/**
+				 * Personal email
+				 */
+				LABEL_PLACEHOLDER: () => LocalizedString
+				/**
+				 * Email
+				 */
+				VALUE_LABEL: () => LocalizedString
+				/**
+				 * firstname.lastname@example.com
+				 */
+				VALUE_PLACEHOLDER: () => LocalizedString
+				/**
+				 * Send verification email
+				 */
+				BUTTON_SEND: () => LocalizedString
+				/**
+				 * Resend verification email
+				 */
+				BUTTON_SEND_AGAIN: () => LocalizedString
+				/**
+				 * Please check your email inbox and enter the code below.
+				 */
+				CHECK_EMAIL: () => LocalizedString
 			}
 		}
 	}
@@ -2151,6 +2363,10 @@ export type TranslationFunctions = {
 	 * Close
 	 */
 	CLOSE: () => LocalizedString
+	/**
+	 * Discard
+	 */
+	DISCARD: () => LocalizedString
 	/**
 	 * Continue
 	 */

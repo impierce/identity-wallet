@@ -317,7 +317,6 @@ By using our Service, you acknowledge that you have read, understood, and agree 
       GREETING_3: 'Welcome back',
       GREETING_4: 'Hello',
     },
-    DEMO: 'Visit one of the following websites on a desktop computer to get started.',
     CREDENTIAL_TABS: {
       ALL: 'All',
       DATA: 'Data',
@@ -325,7 +324,7 @@ By using our Service, you acknowledge that you have read, understood, and agree 
     },
     EMPTY_CREDENTIALS: {
       TITLE: "It's a bit quiet in here",
-      SUBTITLE: 'Why not add some credentials to start your new digital me?',
+      SUBTITLE: 'Why not get some of your data verified to start your journey?',
     },
     FAVORITES: 'My favorites',
   },
@@ -409,11 +408,53 @@ By using our Service, you acknowledge that you have read, understood, and agree 
       },
     },
     ACTIONS: {
+      EDIT: {
+        CONFIRM_BUTTON: 'Update display name',
+      },
       DELETE: {
         BUTTON_LABEL: 'Delete credential',
         TITLE: 'Delete credential',
         DESCRIPTION: 'Are you sure you want to delete this credential from your wallet? This action cannot be undone.',
         CONFIRM_BUTTON: 'Delete',
+      },
+    },
+  },
+  ADD_CREDENTIALS: {
+    BUTTON: 'Add',
+    NAVBAR_TITLE: 'Add data',
+    EMAIL: {
+      TITLE: 'Email',
+      DESCRIPTION: 'Get your personal or work email verified',
+      INFO: {
+        NAVBAR_TITLE: 'Verified email',
+        TITLE: 'Verified email',
+        DESCRIPTION: 'Before you start',
+        ITEM_0: {
+          TITLE: 'Why verify your email in UniMe?',
+          DESCRIPTION:
+            'Verifying your email shows it really belongs to you. This lets you safely use it to access services without needing a password. It also helps you prove who you are to shops, websites, services and even other people.',
+        },
+        ITEM_1: {
+          TITLE: 'How does it work?',
+          DESCRIPTION:
+            "When you start, UniMe sends your email address to our secure system. You'll then get a one-time code in your inbox. Enter that code in UniMe to show you can access the email. Once that's done, UniMe confirms your email is verified and you can now use it wherever it's accepted.",
+        },
+        ITEM_2: {
+          TITLE: 'Is my information safe?',
+          DESCRIPTION:
+            "Yes. We take your privacy very seriously. All messages between UniMe and our verification servers are protected with strong encryption and your information is stored securely. We only use your email address to send you the verification code, nothing else. Once verified, it's never shared.",
+        },
+      },
+      ADD: {
+        NAVBAR_TITLE: 'Get verified email',
+        LABEL: 'How do you want to call this email address?',
+        LABEL_DISCLAIMER: 'Only seen by you',
+        LABEL_PLACEHOLDER: 'Personal email',
+        VALUE_LABEL: 'Email',
+        VALUE_PLACEHOLDER: 'firstname.lastname@example.com',
+        BUTTON_SEND: 'Send verification email',
+        BUTTON_SEND_AGAIN: 'Resend verification email',
+        CHECK_EMAIL: 'Please check your email inbox and enter the code below.',
       },
     },
   },
@@ -446,6 +487,7 @@ By using our Service, you acknowledge that you have read, understood, and agree 
   },
   CANCEL: 'Cancel',
   CLOSE: 'Close',
+  DISCARD: 'Discard',
   CONTINUE: 'Continue',
   SKIP: 'Skip',
   ACCEPT: 'Accept',

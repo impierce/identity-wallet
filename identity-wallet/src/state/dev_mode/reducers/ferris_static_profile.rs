@@ -298,6 +298,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         target: "me".to_string(),
     });
 
+    state.show_dev_mode_setting = true;
     state.dev_mode = DevMode::OnWithAutologin;
 
     Ok(state)
