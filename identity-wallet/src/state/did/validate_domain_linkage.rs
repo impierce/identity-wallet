@@ -312,7 +312,7 @@ mod tests {
             result,
             ValidationResult {
                 status: ValidationStatus::Failure,
-                message: Some("invalid semantic structure of the domain linkage configuration".to_string()),
+                message: Some("invalid issuer DID".to_string()),
                 ..Default::default()
             }
         );
@@ -346,7 +346,7 @@ mod tests {
             result,
             ValidationResult {
                 status: ValidationStatus::Failure,
-                message: Some("invalid semantic structure of the domain linkage configuration".to_string()),
+                message: Some("invalid issuer DID".to_string()),
                 ..Default::default()
             }
         );
