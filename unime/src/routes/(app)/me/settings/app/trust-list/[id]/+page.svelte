@@ -2,11 +2,12 @@
   import { page } from '$app/stores';
 
   import { melt } from '@melt-ui/svelte';
+  import { redirect } from '@sveltejs/kit';
 
   import { ActionSheet, Button, DeprecatedSwitch, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { ArrowCounterClockwiseBoldIcon, CheckBoldIcon, TrashRegularIcon } from '$lib/icons';
-  import { state } from '$lib/stores';
+  import { error, state } from '$lib/stores';
 
   $: trustList = $state.trust_lists.find((tl) => tl.id === $page.params.id);
   $: entries = trustList?.entries || {};
@@ -15,6 +16,13 @@
   let showNewEntry = false;
   let newEntryValue = '';
   $: updatedListName = trustList?.display_name;
+
+  const trust_list_id = $page.params.id;
+
+  if (!trust_list_id) {
+    $error = `No trust list found with id ${trust_list_id}.`;
+    redirect(303, '/me/settings/app/trust-list');
+  }
 
   function init(el: HTMLInputElement) {
     el.focus();
@@ -36,7 +44,7 @@
       <Button
         label="Yes, delete it."
         on:click={() => {
-          dispatch({ type: '[Trust Lists] Delete', payload: { trust_list_id: $page.params.id } });
+          dispatch({ type: '[Trust Lists] Delete', payload: { trust_list_id } });
           history.back();
         }}
       />
@@ -63,7 +71,7 @@
                 if (updatedListName) {
                   dispatch({
                     type: '[Trust Lists] Edit',
-                    payload: { trust_list_id: $page.params.id, new_display_name: updatedListName },
+                    payload: { trust_list_id, new_display_name: updatedListName },
                   });
                 }
               }}
@@ -93,7 +101,7 @@
                 on:click={() =>
                   dispatch({
                     type: '[Trust List] Edit entry',
-                    payload: { trust_list_id: $page.params.id, old_domain: domain, new_domain: domains[i] },
+                    payload: { trust_list_id, old_domain: domain, new_domain: domains[i] },
                   })}
               >
                 <CheckBoldIcon class="h-5 w-5 text-primary" />
@@ -105,8 +113,7 @@
           {:else}
             <button
               class="rounded-full p-2"
-              on:click={() =>
-                dispatch({ type: '[Trust List] Delete entry', payload: { trust_list_id: $page.params.id, domain } })}
+              on:click={() => dispatch({ type: '[Trust List] Delete entry', payload: { trust_list_id, domain } })}
             >
               <TrashRegularIcon class="h-5 w-5 text-rose-500 dark:text-rose-400" />
             </button>
@@ -137,7 +144,7 @@
           on:click={() => {
             dispatch({
               type: '[Trust List] Add entry',
-              payload: { trust_list_id: $page.params.id, domain: newEntryValue },
+              payload: { trust_list_id, domain: newEntryValue },
             });
             newEntryValue = '';
             showNewEntry = false;
