@@ -15,7 +15,7 @@
   import { listen, type UnlistenFn } from '@tauri-apps/api/event';
   import { attachConsole, error, info } from '@tauri-apps/plugin-log';
 
-  import { DeprecatedSwitch, ErrorToast } from '$lib/components';
+  import { DeprecatedSwitch, Toast } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import {
     ArrowLeftRegularIcon,
@@ -400,7 +400,7 @@ Stacking context: We have to deviate from the DOM-sequence.
     <!-- Show actual (non-localized) error message in dev mode, default (localized) message otherwise.  -->
     {#if $errorState}
       <div class="absolute bottom-[calc(16px_+_var(--safe-area-inset-bottom))] right-4 w-[calc(100%_-_32px)]">
-        <ErrorToast
+        <Toast
           variant="error"
           title={$appState?.dev_mode !== 'Off' ? 'Error' : $LL.ERROR.TITLE()}
           detail={$appState?.dev_mode !== 'Off' ? $errorState : $LL.ERROR.DEFAULT_MESSAGE()}

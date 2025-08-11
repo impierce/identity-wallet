@@ -1,4 +1,6 @@
+use chrono::{DateTime, Utc};
 use log::{info, warn};
+use serde::Deserialize;
 use serde_json::json;
 
 use crate::{
@@ -21,7 +23,7 @@ pub async fn check_service_health(state: AppState, action: Action) -> Result<App
     if let Some(action) = listen::<ServiceHealthCheck>(action) {
         info!("[>>>] {}", action.service);
         let response = reqwest::Client::new()
-            .get(format!("{}/healthz", EMAIL_VERIFICATION_SERVICE_HOST))
+            .get(format!("{EMAIL_VERIFICATION_SERVICE_HOST}/healthz"))
             .header("X-API-KEY", EMAIL_VERIFICATION_SERVICE_API_KEY)
             .send()
             .await;
@@ -41,8 +43,7 @@ pub async fn check_service_health(state: AppState, action: Action) -> Result<App
             Err(err) => {
                 warn!("Failed to check service health: {}", err);
                 return Err(AppError::Error(format!(
-                    "email-verification-service health could not be checked: {}",
-                    err
+                    "email-verification-service health could not be checked: {err}"
                 )));
             }
         }
@@ -53,9 +54,17 @@ pub async fn check_service_health(state: AppState, action: Action) -> Result<App
     })
 }
 
+/// Expected response type from email verification service.
+#[derive(Deserialize, Debug)]
+struct VerificationResponse {
+    id: String,
+    expires_at: DateTime<Utc>,
+    validation_expiration_in_secs: i32,
+}
+
 pub async fn send_verification_email(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(action) = listen::<SendVerificationEmail>(action) {
-        let url = format!("{}/api/verify", EMAIL_VERIFICATION_SERVICE_HOST);
+        let url = format!("{EMAIL_VERIFICATION_SERVICE_HOST}/api/verify");
         let body = json!({ "email": action.email });
         info!("[>>>] {} {}", url, body);
         let response = reqwest::Client::new()
@@ -68,24 +77,16 @@ pub async fn send_verification_email(state: AppState, action: Action) -> Result<
                 warn!("Failed to send verification request: {}", err);
             })
             .map_err(|err| AppError::Error(err.to_string()))?;
-        // TODO: handle error
-        let json_response: serde_json::Value = response.json().await.unwrap();
-        info!("[<<<] {}", json_response);
-        let id = json_response.get("id").unwrap().as_str().unwrap();
-        let expires_at = json_response.get("expires_at").unwrap().as_str().unwrap();
-        let validation_expiration_in_secs = json_response
-            .get("validation_expiration_in_secs")
-            .unwrap()
-            .as_i64()
-            .unwrap() as i32;
+        let response: VerificationResponse = response.json().await.map_err(|err| AppError::Error(err.to_string()))?;
+        info!("[<<<] {:?}", response);
         return Ok(AppState {
             verified_data: VerifiedData {
                 email_verification: Some(EmailVerification {
                     email: action.email,
                     label: action.label,
-                    verification_id: Some(id.to_string()),
-                    expires_at: Some(chrono::DateTime::parse_from_rfc3339(expires_at).unwrap().to_utc()),
-                    validation_expiration_in_secs: Some(validation_expiration_in_secs),
+                    verification_id: Some(response.id),
+                    expires_at: Some(response.expires_at),
+                    validation_expiration_in_secs: Some(response.validation_expiration_in_secs),
                     error: None,
                 }),
             },
@@ -102,11 +103,11 @@ pub async fn redeem_code(state: AppState, action: Action) -> Result<AppState, Ap
             .verified_data
             .email_verification
             .as_ref()
-            .unwrap()
-            .verification_id
-            .as_ref()
-            .unwrap();
-        let url = format!("{}/api/verify/{}", EMAIL_VERIFICATION_SERVICE_HOST, session_id);
+            .and_then(|email_verification| email_verification.verification_id.clone())
+            .ok_or(AppError::Error(
+                "Tried to redeem a code without an active email verification flow".to_string(),
+            ))?;
+        let url = format!("{EMAIL_VERIFICATION_SERVICE_HOST}/api/verify/{session_id}");
         let body = json!({ "code": action.code });
         info!("[>>>] {} {}", url, body);
         let response = reqwest::Client::new()
@@ -115,21 +116,17 @@ pub async fn redeem_code(state: AppState, action: Action) -> Result<AppState, Ap
             .json(&body)
             .send()
             .await
-            .inspect_err(|err| {
-                warn!("Failed to send verification code: {}", err);
-            })
-            .ok()
-            .unwrap();
+            .map_err(|err| AppError::Error(format!("Failed to send verification code: {err}")))?;
 
         info!("[<<<] {:?}", response);
 
         match response.status().as_u16() {
             200 => {
-                let credential_offer_value: String = response.text().await.unwrap();
+                let credential_offer_value: String = response.text().await?;
                 let action = QrCodeScanned {
                     form_urlencoded: credential_offer_value,
                 };
-                return Ok(read_credential_offer(
+                return read_credential_offer(
                     AppState {
                         verified_data: VerifiedData {
                             email_verification: None,
@@ -138,8 +135,7 @@ pub async fn redeem_code(state: AppState, action: Action) -> Result<AppState, Ap
                     },
                     std::sync::Arc::new(action),
                 )
-                .await
-                .unwrap());
+                .await;
             }
             _ => {
                 let error: serde_json::Value = response.json().await?;
@@ -147,13 +143,15 @@ pub async fn redeem_code(state: AppState, action: Action) -> Result<AppState, Ap
                 return Ok(AppState {
                     verified_data: VerifiedData {
                         email_verification: Some(EmailVerification {
-                            error: Some(error.get("error").unwrap().as_str().unwrap().to_string()),
+                            error: error
+                                .get("error")
+                                .and_then(serde_json::Value::as_str)
+                                .map(ToString::to_string),
                             ..state
                                 .verified_data
                                 .email_verification
                                 .expect("tried to redeem a code without an active email verification flow")
                         }),
-                        ..state.verified_data
                     },
                     ..state
                 });

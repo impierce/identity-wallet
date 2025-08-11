@@ -25,8 +25,9 @@
   });
 </script>
 
+<!-- teal-50: #f0fdfa -->
 <div
-  class={`relative flex items-center overflow-hidden rounded-xl border  p-4 ${variant === 'error' ? 'border-rose-400 bg-rose-100' : 'border-primary bg-teal-50'}`}
+  class={`relative flex items-center overflow-hidden rounded-xl border  p-4 ${variant === 'error' ? 'border-rose-400 bg-rose-100' : 'border-primary bg-[#f0fdfa]'}`}
   in:fly={{ x: 200 }}
   out:fade={{ duration: 200 }}
 >
