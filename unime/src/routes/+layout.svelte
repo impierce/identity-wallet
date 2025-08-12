@@ -15,7 +15,7 @@
   import { listen, type UnlistenFn } from '@tauri-apps/api/event';
   import { attachConsole, error, info } from '@tauri-apps/plugin-log';
 
-  import { DeprecatedSwitch } from '$lib/components';
+  import { DeprecatedSwitch, Toast } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import {
     ArrowLeftRegularIcon,
@@ -25,8 +25,6 @@
     TrashRegularIcon,
   } from '$lib/icons';
   import { state as appState, error as errorState } from '$lib/stores';
-
-  import ErrorToast from './ErrorToast.svelte';
 
   import '../app.css';
 
@@ -63,6 +61,9 @@
           redirectPath = `/prompt/${$appState.current_user_prompt.type}`;
         }
       }
+
+      // DEV: uncommenting this helps local development by always redirecting to the page you're working on
+      // redirectPath = '/me/settings/about';
 
       if (redirectPath) {
         info(`Redirecting to: ${redirectPath}.`);
@@ -388,10 +389,11 @@ Stacking context: We have to deviate from the DOM-sequence.
     <!-- Show actual (non-localized) error message in dev mode, default (localized) message otherwise.  -->
     {#if $errorState}
       <div class="absolute bottom-[calc(16px_+_var(--safe-area-inset-bottom))] right-4 w-[calc(100%_-_32px)]">
-        <ErrorToast
+        <Toast
+          variant="error"
           title={$appState?.dev_mode !== 'Off' ? 'Error' : $LL.ERROR.TITLE()}
           detail={$appState?.dev_mode !== 'Off' ? $errorState : $LL.ERROR.DEFAULT_MESSAGE()}
-          on:dismissed={() => {
+          ondismissed={() => {
             // After the toast fires the "dismissed" event, we reset $errorStore.
             errorState.set(undefined);
           }}

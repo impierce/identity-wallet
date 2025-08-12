@@ -67,27 +67,29 @@
       {$LL.SETTINGS.APP.HINTS_AND_TIPS.TITLE()}
     </SettingsValueLink> -->
 
-    <SettingsSwitch
-      checked={$state?.dev_mode !== 'Off'}
-      onCheckedChange={({ curr, next }) => {
-        try {
-          dispatch({
-            type: '[DEV] Toggle DEV mode',
-          });
-          return next;
-        } catch (e) {
-          if (e instanceof Error) {
-            $error = e.message;
+    {#if $state.show_dev_mode_setting}
+      <SettingsSwitch
+        checked={$state?.dev_mode !== 'Off'}
+        onCheckedChange={({ curr, next }) => {
+          try {
+            dispatch({
+              type: '[DEV] Toggle DEV mode',
+            });
+            return next;
+          } catch (e) {
+            if (e instanceof Error) {
+              $error = e.message;
+            }
+            return curr;
           }
-          return curr;
-        }
-      }}
-    >
-      {#snippet icon()}
-        <CodeBoldIcon class="h-5 w-5 text-primary"></CodeBoldIcon>
-      {/snippet}
-      {$LL.SETTINGS.APP.DEVELOPER_MODE.TITLE()}
-    </SettingsSwitch>
+        }}
+      >
+        {#snippet icon()}
+          <CodeBoldIcon class="h-5 w-5 text-primary"></CodeBoldIcon>
+        {/snippet}
+        {$LL.SETTINGS.APP.DEVELOPER_MODE.TITLE()}
+      </SettingsSwitch>
+    {/if}
 
     {#if $state.dev_mode !== 'Off'}
       <div in:fade={{ duration: 200 }} out:fade={{ duration: 200 }}>
