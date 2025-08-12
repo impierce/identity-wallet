@@ -13,7 +13,7 @@ tauri-build = "2.0.5"
 did_manager = { git = "https://git@github.com/impierce/did-manager.git", rev = "b762f61" }
 jsonwebtoken = "9.3"
 log = "^0.4"
-oid4vc = { git = "https://git@github.com/impierce/openid4vc.git", rev = "2f8e4f7" }
+oid4vc = { git = "https://git@github.com/impierce/openid4vc.git", rev = "5384fcc" }
 
 rand = "0.8"
 serde_json = "1.0"

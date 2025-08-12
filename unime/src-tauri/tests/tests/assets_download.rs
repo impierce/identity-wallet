@@ -94,6 +94,6 @@ async fn when_content_type_is_not_supported_then_download_should_fail() {
 }
 
 fn setup_empty_assets_dir() {
-    let path = TempDir::new().unwrap().into_path();
+    let path = TempDir::new().unwrap().keep();
     *ASSETS_DIR.lock().unwrap() = path.as_os_str().into();
 }
