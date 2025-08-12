@@ -80,6 +80,10 @@ pub enum Locale {
     nl_NL,
     #[serde(rename = "es-ES")]
     es_ES,
+    #[serde(rename = "fi-FI")]
+    fi_FI,
+    #[serde(rename = "sv-FI")]
+    sv_FI,
 }
 
 #[typetag::serde(name = "locale")]

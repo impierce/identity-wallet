@@ -3,7 +3,7 @@ import type { BaseTranslation } from '../i18n-types';
 const sv_FI = {
   ONBOARDING: {
     WELCOME: {
-      GREETING: 'Välkommen',
+      GREETING: 'Välkommen till',
       WHAT_IS_UNIME_1: 'UniMe kopplar ihop din digitala värld säkert.',
       WHAT_IS_UNIME_2: 'Skapa en helt ny identitetsprofil för att komma igång.',
       CREATE_NEW_PROFILE: 'Skapa ny profil',
@@ -385,8 +385,7 @@ Genom att använda Tjänsten bekräftar du att du har läst, förstått och acce
       DELETE: {
         BUTTON_LABEL: 'Ta bort legitimation',
         TITLE: 'Ta bort legitimation',
-        DESCRIPTION:
-          'Är du säker på att du vill ta bort denna legitimation från din plånbok? Detta kan inte ångras.',
+        DESCRIPTION: 'Är du säker på att du vill ta bort denna legitimation från din plånbok? Detta kan inte ångras.',
         CONFIRM_BUTTON: 'Ta bort',
       },
     },

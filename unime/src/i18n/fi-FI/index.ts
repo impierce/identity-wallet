@@ -385,8 +385,7 @@ Käyttämällä Palvelua vahvistat, että olet lukenut, ymmärtänyt ja hyväksy
       DELETE: {
         BUTTON_LABEL: 'Poista valtuus',
         TITLE: 'Poista valtuus',
-        DESCRIPTION:
-          'Haluatko varmasti poistaa tämän valtuuden lompakostasi? Toimintoa ei voi perua.',
+        DESCRIPTION: 'Haluatko varmasti poistaa tämän valtuuden lompakostasi? Toimintoa ei voi perua.',
         CONFIRM_BUTTON: 'Poista',
       },
     },
@@ -440,8 +439,8 @@ Käyttämällä Palvelua vahvistat, että olet lukenut, ymmärtänyt ja hyväksy
       DATE_ADDED: 'Lisäyspäivä',
     },
     ORDER: {
-      A_Z: 'A–Ö',
-      Z_A: 'Ö–A',
+      A_Z: 'A-Ö',
+      Z_A: 'Ö-A',
       NEWEST: 'Uusimmat ensin',
       OLDEST: 'Vanhimmat ensin',
     },
