@@ -5441,6 +5441,7 @@ dependencies = [
  "chrono",
  "derivative",
  "did_manager",
+ "dotenvy",
  "downcast-rs",
  "dyn-clone",
  "futures",
@@ -14652,6 +14653,7 @@ version = "7.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fc2cae1fc5d05d47aa24b64f9a4f7cba24cdc9187a2084dd97ac57bef5eccae6"
 dependencies = [
+ "chrono",
  "thiserror 1.0.69",
  "ts-rs-macros",
 ]

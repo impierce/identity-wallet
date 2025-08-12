@@ -50,7 +50,7 @@ stronghold_ext = { git = "https://github.com/tensor-programming/stronghold_ext",
 strum = { version = "0.25", features = ["derive"] }
 thiserror = "1.0"
 tokio = { version = "1.26.0", features = ["macros"] }
-ts-rs = "7.0"
+ts-rs = { version = "7.0", features = ["chrono-impl"]}
 typetag = "0.2"
 unicode-normalization = "0.1.23"
 url = "2.5"
@@ -60,6 +60,9 @@ uuid = { version = "1.4", features = ["v4", "fast-rng", "serde"] }
 serial_test.workspace = true
 tempfile.workspace = true
 wiremock.workspace = true
+
+[build-dependencies]
+dotenvy = "0.15"
 
 [features]
 test_utils = []

@@ -82,7 +82,7 @@ pub async fn validate_domain_linkage(url: url::Url, did: &str) -> ValidationResu
 
     let domain_linkage_configuration = match did_configuration_result {
         Ok(did_config) => did_config,
-        Err(e) => {
+        Err(err) => {
             return ValidationResult {
                 status: ValidationStatus::Unknown,
                 message: Some(format!("Error while fetching configuration: {e}")),
