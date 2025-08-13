@@ -18,7 +18,7 @@
   "devDependencies": {
     "@aws-crypto/sha256-js": "^5.2.0",
     "@eslint/compat": "^1.2.8",
-    "@eslint/js": "^9.24.0",
+    "@eslint/js": "^9.32.0",
     "@iconify-json/circle-flags": "^1.2.6",
     "@iconify-json/flagpack": "^1.2.2",
     "@iconify-json/ph": "^1.2.0",
@@ -57,7 +57,7 @@
     "just-extend": "^6.2.0",
     "markdown-it": "^14.0.0",
     "melt": "^0.34.0",
-    "postcss": "^8.5.3",
+    "postcss": "^8.5.6",
     "qrcode": "^1.5.3",
     "svelte": "^5.38.1",
     "svelte-check": "^4.3.1",
