@@ -1994,7 +1994,7 @@ dependencies = [
 [[package]]
 name = "consensus-config"
 version = "0.1.0"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "fastcrypto",
  "iota-network-stack",
@@ -2054,7 +2054,7 @@ checksum = "7c74b8349d32d297c9134b8c88677813a227df8f779daa29bfc29c183fe3dca6"
 [[package]]
 name = "consumer"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
+source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
 dependencies = [
  "did_iota",
  "did_jwk",
@@ -2798,7 +2798,7 @@ dependencies = [
 [[package]]
 name = "did_iota"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
+source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
 dependencies = [
  "anyhow",
  "identity_iota",
@@ -2813,7 +2813,7 @@ dependencies = [
 [[package]]
 name = "did_jwk"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
+source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
 dependencies = [
  "did-jwk",
  "identity_iota",
@@ -2830,7 +2830,7 @@ dependencies = [
 [[package]]
 name = "did_key"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
+source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
 dependencies = [
  "did-method-key",
  "identity_iota",
@@ -2848,7 +2848,7 @@ dependencies = [
 [[package]]
 name = "did_manager"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
+source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
 dependencies = [
  "consumer",
  "producer",
@@ -2886,7 +2886,7 @@ dependencies = [
 [[package]]
 name = "did_web"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
+source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
 dependencies = [
  "did-web",
  "identity_iota",
@@ -2905,7 +2905,7 @@ dependencies = [
 [[package]]
 name = "dif-presentation-exchange"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=cdc02ba#cdc02ba1f37c78994191854641fcf9779e8fcd50"
+source = "git+https://git@github.com/impierce/openid4vc?rev=cdc02ba#cdc02ba1f37c78994191854641fcf9779e8fcd50"
 dependencies = [
  "getset",
  "jsonpath_lib",
@@ -3311,7 +3311,7 @@ dependencies = [
 [[package]]
 name = "enum-compat-util"
 version = "0.1.0"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "serde_yaml",
 ]
@@ -5656,7 +5656,7 @@ dependencies = [
 [[package]]
 name = "identity_stronghold_ext"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
+source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
 dependencies = [
  "async-trait",
  "elliptic-curve 0.13.8",
@@ -5852,7 +5852,7 @@ dependencies = [
 [[package]]
 name = "iota-adapter-latest"
 version = "0.1.0"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "anyhow",
  "bcs",
@@ -5908,18 +5908,18 @@ dependencies = [
 [[package]]
 name = "iota-config"
 version = "0.12.0-rc"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "anemo",
  "anyhow",
  "bcs",
  "clap 4.5.29",
- "consensus-config 0.1.0 (git+https://github.com/impierce/iota.git?branch=temp/fix)",
+ "consensus-config 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
  "csv",
  "dirs 5.0.1",
  "fastcrypto",
- "iota-genesis-common 0.12.0-rc (git+https://github.com/impierce/iota.git?branch=temp/fix)",
- "iota-keys 0.12.0-rc (git+https://github.com/impierce/iota.git?branch=temp/fix)",
+ "iota-genesis-common 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
+ "iota-keys 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
  "iota-protocol-config",
  "iota-types",
  "move-vm-config",
@@ -5971,7 +5971,7 @@ dependencies = [
 [[package]]
 name = "iota-enum-compat-util"
 version = "0.12.0-rc"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "serde_yaml",
 ]
@@ -5979,7 +5979,7 @@ dependencies = [
 [[package]]
 name = "iota-execution"
 version = "0.1.0"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "iota-adapter-latest",
  "iota-move-natives-latest",
@@ -6007,7 +6007,7 @@ dependencies = [
 [[package]]
 name = "iota-genesis-common"
 version = "0.12.0-rc"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "iota-execution",
  "iota-protocol-config",
@@ -6018,7 +6018,7 @@ dependencies = [
 [[package]]
 name = "iota-json"
 version = "0.12.0-rc"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "anyhow",
  "bcs",
@@ -6035,7 +6035,7 @@ dependencies = [
 [[package]]
 name = "iota-json-rpc-api"
 version = "0.12.0-rc"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "anyhow",
  "fastcrypto",
@@ -6055,7 +6055,7 @@ dependencies = [
 [[package]]
 name = "iota-json-rpc-types"
 version = "0.12.0-rc"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "anyhow",
  "bcs",
@@ -6106,7 +6106,7 @@ dependencies = [
 [[package]]
 name = "iota-keys"
 version = "0.12.0-rc"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "anyhow",
  "bip32",
@@ -6125,7 +6125,7 @@ dependencies = [
 [[package]]
 name = "iota-macros"
 version = "0.12.0-rc"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "futures",
  "iota-proc-macros",
@@ -6136,7 +6136,7 @@ dependencies = [
 [[package]]
 name = "iota-metrics"
 version = "0.12.0-rc"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "anemo",
  "anemo-tower",
@@ -6162,7 +6162,7 @@ dependencies = [
 [[package]]
 name = "iota-move-natives-latest"
 version = "0.1.0"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "bcs",
  "better_any",
@@ -6185,7 +6185,7 @@ dependencies = [
 [[package]]
 name = "iota-network-stack"
 version = "0.12.0-rc"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "anemo",
  "bcs",
@@ -6210,7 +6210,7 @@ dependencies = [
 [[package]]
 name = "iota-open-rpc"
 version = "0.12.0-rc"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "schemars",
  "serde",
@@ -6221,7 +6221,7 @@ dependencies = [
 [[package]]
 name = "iota-open-rpc-macros"
 version = "0.12.0-rc"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "derive-syn-parse",
  "itertools 0.13.0",
@@ -6234,7 +6234,7 @@ dependencies = [
 [[package]]
 name = "iota-package-resolver"
 version = "0.12.0-rc"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "async-trait",
  "bcs",
@@ -6252,7 +6252,7 @@ dependencies = [
 [[package]]
 name = "iota-proc-macros"
 version = "0.12.0-rc"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "msim-macros",
  "proc-macro2",
@@ -6263,7 +6263,7 @@ dependencies = [
 [[package]]
 name = "iota-protocol-config"
 version = "0.12.0-rc"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "clap 4.5.29",
  "iota-protocol-config-macros",
@@ -6277,7 +6277,7 @@ dependencies = [
 [[package]]
 name = "iota-protocol-config-macros"
 version = "0.12.0-rc"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -6307,7 +6307,7 @@ dependencies = [
 [[package]]
 name = "iota-sdk"
 version = "0.12.0-rc"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -6319,11 +6319,11 @@ dependencies = [
  "futures",
  "futures-core",
  "getset",
- "iota-config 0.12.0-rc (git+https://github.com/impierce/iota.git?branch=temp/fix)",
+ "iota-config 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
  "iota-json",
  "iota-json-rpc-api",
  "iota-json-rpc-types",
- "iota-keys 0.12.0-rc (git+https://github.com/impierce/iota.git?branch=temp/fix)",
+ "iota-keys 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
  "iota-transaction-builder",
  "iota-types",
  "jsonrpsee",
@@ -6386,7 +6386,7 @@ dependencies = [
 [[package]]
 name = "iota-transaction-builder"
 version = "0.12.0-rc"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -6403,7 +6403,7 @@ dependencies = [
 [[package]]
 name = "iota-types"
 version = "0.12.0-rc"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "anemo",
  "anyhow",
@@ -6413,7 +6413,7 @@ dependencies = [
  "bincode",
  "byteorder",
  "chrono",
- "consensus-config 0.1.0 (git+https://github.com/impierce/iota.git?branch=temp/fix)",
+ "consensus-config 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
  "derive_more 1.0.0",
  "either",
  "enum_dispatch",
@@ -6474,7 +6474,7 @@ dependencies = [
 [[package]]
 name = "iota-verifier-latest"
 version = "0.1.0"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "iota-protocol-config",
  "iota-types",
@@ -7920,7 +7920,7 @@ dependencies = [
 [[package]]
 name = "move-abstract-interpreter"
 version = "0.1.0"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "move-binary-format",
  "move-bytecode-verifier-meter",
@@ -7929,12 +7929,12 @@ dependencies = [
 [[package]]
 name = "move-abstract-stack"
 version = "0.0.1"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 
 [[package]]
 name = "move-binary-format"
 version = "0.0.3"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "anyhow",
  "enum-compat-util",
@@ -7948,12 +7948,12 @@ dependencies = [
 [[package]]
 name = "move-borrow-graph"
 version = "0.0.1"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 
 [[package]]
 name = "move-bytecode-source-map"
 version = "0.1.0"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "anyhow",
  "bcs",
@@ -7969,7 +7969,7 @@ dependencies = [
 [[package]]
 name = "move-bytecode-utils"
 version = "0.1.0"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "anyhow",
  "indexmap 2.10.0",
@@ -7983,7 +7983,7 @@ dependencies = [
 [[package]]
 name = "move-bytecode-verifier"
 version = "0.1.0"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "move-abstract-interpreter",
  "move-abstract-stack",
@@ -7998,7 +7998,7 @@ dependencies = [
 [[package]]
 name = "move-bytecode-verifier-meter"
 version = "0.1.0"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "move-binary-format",
  "move-core-types",
@@ -8008,7 +8008,7 @@ dependencies = [
 [[package]]
 name = "move-command-line-common"
 version = "0.1.0"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "anyhow",
  "bcs",
@@ -8029,7 +8029,7 @@ dependencies = [
 [[package]]
 name = "move-compiler"
 version = "0.0.1"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "anyhow",
  "bcs",
@@ -8063,7 +8063,7 @@ dependencies = [
 [[package]]
 name = "move-core-types"
 version = "0.0.4"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "anyhow",
  "bcs",
@@ -8086,7 +8086,7 @@ dependencies = [
 [[package]]
 name = "move-coverage"
 version = "0.1.0"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "anyhow",
  "bcs",
@@ -8107,7 +8107,7 @@ dependencies = [
 [[package]]
 name = "move-disassembler"
 version = "0.1.0"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "anyhow",
  "bcs",
@@ -8127,7 +8127,7 @@ dependencies = [
 [[package]]
 name = "move-ir-to-bytecode"
 version = "0.1.0"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "anyhow",
  "codespan-reporting",
@@ -8145,7 +8145,7 @@ dependencies = [
 [[package]]
 name = "move-ir-to-bytecode-syntax"
 version = "0.1.0"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "anyhow",
  "hex",
@@ -8158,7 +8158,7 @@ dependencies = [
 [[package]]
 name = "move-ir-types"
 version = "0.1.0"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "hex",
  "move-command-line-common",
@@ -8171,7 +8171,7 @@ dependencies = [
 [[package]]
 name = "move-proc-macros"
 version = "0.1.0"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "quote",
  "syn 2.0.98",
@@ -8180,7 +8180,7 @@ dependencies = [
 [[package]]
 name = "move-stdlib-natives"
 version = "0.1.1"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "hex",
  "move-binary-format",
@@ -8195,7 +8195,7 @@ dependencies = [
 [[package]]
 name = "move-symbol-pool"
 version = "0.1.0"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "once_cell",
  "phf 0.11.3",
@@ -8205,7 +8205,7 @@ dependencies = [
 [[package]]
 name = "move-trace-format"
 version = "0.0.1"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "anyhow",
  "move-binary-format",
@@ -8220,7 +8220,7 @@ dependencies = [
 [[package]]
 name = "move-vm-config"
 version = "0.1.0"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "move-binary-format",
  "once_cell",
@@ -8229,7 +8229,7 @@ dependencies = [
 [[package]]
 name = "move-vm-profiler"
 version = "0.1.0"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "move-vm-config",
  "once_cell",
@@ -8239,7 +8239,7 @@ dependencies = [
 [[package]]
 name = "move-vm-runtime"
 version = "0.1.0"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "better_any",
  "fail",
@@ -8259,7 +8259,7 @@ dependencies = [
 [[package]]
 name = "move-vm-test-utils"
 version = "0.1.0"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "anyhow",
  "move-binary-format",
@@ -8273,7 +8273,7 @@ dependencies = [
 [[package]]
 name = "move-vm-types"
 version = "0.1.0"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "bcs",
  "move-binary-format",
@@ -8995,7 +8995,7 @@ dependencies = [
 [[package]]
 name = "oid4vc"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=cdc02ba#cdc02ba1f37c78994191854641fcf9779e8fcd50"
+source = "git+https://git@github.com/impierce/openid4vc?rev=cdc02ba#cdc02ba1f37c78994191854641fcf9779e8fcd50"
 dependencies = [
  "dif-presentation-exchange",
  "oid4vc-core",
@@ -9008,7 +9008,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-core"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=cdc02ba#cdc02ba1f37c78994191854641fcf9779e8fcd50"
+source = "git+https://git@github.com/impierce/openid4vc?rev=cdc02ba#cdc02ba1f37c78994191854641fcf9779e8fcd50"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -9032,7 +9032,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-manager"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=cdc02ba#cdc02ba1f37c78994191854641fcf9779e8fcd50"
+source = "git+https://git@github.com/impierce/openid4vc?rev=cdc02ba#cdc02ba1f37c78994191854641fcf9779e8fcd50"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -9065,7 +9065,7 @@ dependencies = [
 [[package]]
 name = "oid4vci"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=cdc02ba#cdc02ba1f37c78994191854641fcf9779e8fcd50"
+source = "git+https://git@github.com/impierce/openid4vc?rev=cdc02ba#cdc02ba1f37c78994191854641fcf9779e8fcd50"
 dependencies = [
  "anyhow",
  "derivative",
@@ -9090,7 +9090,7 @@ dependencies = [
 [[package]]
 name = "oid4vp"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=cdc02ba#cdc02ba1f37c78994191854641fcf9779e8fcd50"
+source = "git+https://git@github.com/impierce/openid4vc?rev=cdc02ba#cdc02ba1f37c78994191854641fcf9779e8fcd50"
 dependencies = [
  "anyhow",
  "chrono",
@@ -10080,7 +10080,7 @@ dependencies = [
 [[package]]
 name = "producer"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
+source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
 dependencies = [
  "did_iota",
  "did_jwk",
@@ -10140,7 +10140,7 @@ dependencies = [
 [[package]]
 name = "prometheus-closure-metric"
 version = "0.12.0-rc"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "anyhow",
  "prometheus",
@@ -11828,7 +11828,7 @@ dependencies = [
 [[package]]
 name = "shared"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
+source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
 dependencies = [
  "identity_iota",
  "identity_storage",
@@ -11845,7 +11845,7 @@ dependencies = [
 [[package]]
 name = "shared-crypto"
 version = "0.12.0-rc"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "bcs",
  "eyre",
@@ -11950,7 +11950,7 @@ dependencies = [
 [[package]]
 name = "siopv2"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=cdc02ba#cdc02ba1f37c78994191854641fcf9779e8fcd50"
+source = "git+https://git@github.com/impierce/openid4vc?rev=cdc02ba#cdc02ba1f37c78994191854641fcf9779e8fcd50"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -13872,7 +13872,7 @@ dependencies = [
 [[package]]
 name = "typed-store-error"
 version = "0.12.0-rc"
-source = "git+https://github.com/impierce/iota.git?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "serde",
  "thiserror 1.0.69",
