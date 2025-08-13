@@ -10,6 +10,8 @@ Identity Wallet for people to manage Decentralized Identities and Verifiable Cre
 
 This app is built with [Tauri 2.0](https://v2.tauri.app/). It uses [Rust](https://www.rust-lang.org/) in the backend and [SvelteKit](https://kit.svelte.dev/), [Tailwind CSS](https://tailwindcss.com/), and [Melt UI](https://melt-ui.com/) in the frontend.
 
+Checkout the [Prerequisites](https://v2.tauri.app/start/prerequisites/) for running Tauri apps on your system to get started.
+
 ## Develop
 
 This repository uses [pnpm workspaces](https://pnpm.io/workspaces):
@@ -56,6 +58,18 @@ pnpm tauri android dev
 pnpm tauri ios init
 pnpm tauri ios dev
 ```
+
+<!-- The environment variables below are required by `aws-lc-sys` via `rustls-platform-verifier -->
+
+> [!NOTE]
+> For Android builds, make sure the `ANDROID_NDK_ROOT` and `ANDROID_NDK` environment variables are set to the correct NDK path, e.g.:
+>
+> ```sh
+> export ANDROID_NDK_ROOT=$NDK_HOME
+> export ANDROID_NDK=$NDK_HOME
+> export CC="$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi21-clang"
+> export BINDGEN_EXTRA_CLANG_ARGS="--sysroot=$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
+> ```
 
 ## Contributing
 

@@ -52,6 +52,9 @@ pub async fn main_exec<R: tauri::Runtime>(
 
     let mut guard = container.0.lock().await;
 
+    // Initialize the resolver if it hasn't been initialized yet.
+    guard.core_utils.resolver().await;
+
     // Get a copy of the current state and pass it to the root reducer.
     match reduce(guard.clone(), action).await {
         // If the state update succeeds, we replace the old state with the new one.

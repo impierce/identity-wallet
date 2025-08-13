@@ -11,10 +11,16 @@ jsonwebtoken = "9.3"
 log = "^0.4"
 oid4vc = { git = "https://git@github.com/impierce/openid4vc", rev = "cdc02ba" }
 rand = "0.8"
+rustls = { version = "0.23", features = ["aws-lc-rs"] }
+rustls-platform-verifier = { version = "0.6" }
 serde_json = "1.0"
 serial_test = "2.0"
 tempfile = "3.5.0"
 wiremock = "0.5"
+
+# TODO: Check whether these are really required
+aws-lc-rs = { version = "1.13.3", features = ["fips", "bindgen"] }
+aws-lc-sys = { version = "0.30", features = ["fips", "bindgen"] }
 
 # TODO: Remove these patches once configurable TLS is available in `iota-sdk`.
 [patch.'https://github.com/iotaledger/iota']

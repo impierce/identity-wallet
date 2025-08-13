@@ -5411,6 +5411,8 @@ dependencies = [
  "oid4vc",
  "p256 0.13.2",
  "reqwest 0.11.27",
+ "rustls 0.23.31",
+ "rustls-platform-verifier 0.6.1",
  "serde",
  "serde_json",
  "serde_with 3.12.0",
@@ -7112,7 +7114,7 @@ dependencies = [
  "pin-project",
  "rustls 0.23.31",
  "rustls-pki-types",
- "rustls-platform-verifier",
+ "rustls-platform-verifier 0.5.3",
  "soketto",
  "thiserror 1.0.69",
  "tokio",
@@ -7164,7 +7166,7 @@ dependencies = [
  "jsonrpsee-core",
  "jsonrpsee-types",
  "rustls 0.23.31",
- "rustls-platform-verifier",
+ "rustls-platform-verifier 0.5.3",
  "serde",
  "serde_json",
  "thiserror 1.0.69",
@@ -10164,7 +10166,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8a56d757972c98b346a9b766e3f02746cde6dd1cd1d1d563472929fdd74bec4d"
 dependencies = [
  "anyhow",
- "itertools 0.12.1",
+ "itertools 0.13.0",
  "proc-macro2",
  "quote",
  "syn 2.0.98",
@@ -11113,6 +11115,27 @@ dependencies = [
  "security-framework 3.2.0",
  "security-framework-sys",
  "webpki-root-certs 0.26.11",
+ "windows-sys 0.59.0",
+]
+
+[[package]]
+name = "rustls-platform-verifier"
+version = "0.6.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "be59af91596cac372a6942530653ad0c3a246cdd491aaa9dcaee47f88d67d5a0"
+dependencies = [
+ "core-foundation 0.10.0",
+ "core-foundation-sys",
+ "jni",
+ "log",
+ "once_cell",
+ "rustls 0.23.31",
+ "rustls-native-certs 0.8.1",
+ "rustls-platform-verifier-android",
+ "rustls-webpki 0.103.4",
+ "security-framework 3.2.0",
+ "security-framework-sys",
+ "webpki-root-certs 1.0.2",
  "windows-sys 0.59.0",
 ]
 
@@ -14047,10 +14070,14 @@ dependencies = [
  "did_manager",
  "dotenvy",
  "identity-wallet",
+ "iota-sdk 0.12.0-rc",
+ "jni",
  "jsonwebtoken",
  "log",
  "oid4vc",
  "rand 0.8.5",
+ "rustls 0.23.31",
+ "rustls-platform-verifier 0.6.1",
  "serde",
  "serde_json",
  "serial_test",
