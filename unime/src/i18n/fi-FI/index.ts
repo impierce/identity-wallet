@@ -1,4 +1,4 @@
-import type { BaseTranslation } from '../i18n-types';
+import type { Translation } from '../i18n-types';
 
 const fi_FI = {
   ONBOARDING: {
@@ -467,6 +467,6 @@ Käyttämällä Palvelua vahvistat, että olet lukenut, ymmärtänyt ja hyväksy
     SKIP_TITLE: 'Ohita aloitusopas',
     SKIP_TEXT: 'Haluatko varmasti ohittaa aloitusoppaan?',
   },
-} satisfies BaseTranslation;
+} satisfies Translation;
 
 export default fi_FI;

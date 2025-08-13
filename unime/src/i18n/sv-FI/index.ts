@@ -1,4 +1,4 @@
-import type { BaseTranslation } from '../i18n-types';
+import type { Translation } from '../i18n-types';
 
 const sv_FI = {
   ONBOARDING: {
@@ -467,6 +467,6 @@ Genom att använda Tjänsten bekräftar du att du har läst, förstått och acce
     SKIP_TITLE: 'Hoppa över guiden',
     SKIP_TEXT: 'Är du säker på att du vill hoppa över guiden?',
   },
-} satisfies BaseTranslation;
+} satisfies Translation;
 
 export default sv_FI;
