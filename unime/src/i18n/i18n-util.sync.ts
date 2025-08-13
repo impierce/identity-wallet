@@ -10,7 +10,9 @@ import en from './en'
 import en_GB from './en-GB'
 import en_US from './en-US'
 import es_ES from './es-ES'
+import fi_FI from './fi-FI'
 import nl_NL from './nl-NL'
+import sv_FI from './sv-FI'
 
 const localeTranslations = {
 	'de-DE': de_DE,
@@ -18,7 +20,9 @@ const localeTranslations = {
 	'en-GB': en_GB,
 	'en-US': en_US,
 	'es-ES': es_ES,
+	'fi-FI': fi_FI,
 	'nl-NL': nl_NL,
+	'sv-FI': sv_FI,
 }
 
 export const loadLocale = (locale: Locales): void => {

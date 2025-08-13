@@ -11,7 +11,9 @@ export type Locales =
 	| 'en-GB'
 	| 'en-US'
 	| 'es-ES'
+	| 'fi-FI'
 	| 'nl-NL'
+	| 'sv-FI'
 
 export type Translation = RootTranslation
 

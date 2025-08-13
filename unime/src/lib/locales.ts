@@ -9,6 +9,8 @@ export const locales: {
   { locale: 'nl-NL', displayName: 'Nederlands (Nederland)' },
   { locale: 'de-DE', displayName: 'Deutsch (Deutschland)' },
   { locale: 'es-ES', displayName: 'Español (España)' },
+  { locale: 'fi-FI', displayName: 'Suomi (Suomi)' },
+  { locale: 'sv-FI', displayName: 'Svenska (Finland)' },
 ];
 
 // Incomplete locales can be disabled here
