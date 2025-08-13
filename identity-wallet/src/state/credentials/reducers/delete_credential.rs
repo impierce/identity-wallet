@@ -114,7 +114,7 @@ mod tests {
         drop(managers);
 
         // Set up image asset
-        let tmp_dir = TempDir::new().unwrap().keep();
+        let tmp_dir = TempDir::new().unwrap().into_path();
         *ASSETS_DIR.lock().unwrap() = tmp_dir.clone();
         let file_path = tmp_dir.join(format!("{}.{}", uuid, SUPPORTED_IMAGE_ASSET_EXTENSIONS[0]));
         let mut file = File::create(file_path.clone()).unwrap();
