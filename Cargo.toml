@@ -18,10 +18,6 @@ serial_test = "2.0"
 tempfile = "3.5.0"
 wiremock = "0.5"
 
-# TODO: Check whether these are really required
-aws-lc-rs = { version = "1.13.3", features = ["fips", "bindgen"] }
-aws-lc-sys = { version = "0.30", features = ["fips", "bindgen"] }
-
 # TODO: Remove these patches once configurable TLS is available in `iota-sdk`.
 [patch.'https://github.com/iotaledger/iota']
 iota-sdk = { git = "https://github.com/impierce/iota", package = "iota-sdk", branch = "temp/fix" }
