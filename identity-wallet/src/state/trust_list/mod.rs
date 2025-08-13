@@ -123,7 +123,7 @@ impl TrustList {
         self.entries.get_mut(domain)
     }
 
-    pub fn iter(&self) -> std::collections::hash_map::Iter<Url, bool> {
+    pub fn iter(&self) -> std::collections::hash_map::Iter<'_, Url, bool> {
         self.entries.iter()
     }
 }
