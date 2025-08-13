@@ -32,7 +32,7 @@ use oid4vc::{
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 
-// TODO: Warning! This is very unsafe, this is only used for Android builds to temporary bypass certificate
+// TODO: Warning! This is very unsafe, this is only used for Android builds to temporarily bypass certificate
 // verification! The problem with `rustls_platform_verifier` on Android is that the Android Trust Store seems to
 // require OCSP stapling, which not all servers support. `api.mainnet.iota.cafe` is one of those servers.
 // This should be replaced with a proper certificate verifier that is secure and works on Android.

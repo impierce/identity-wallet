@@ -1,7 +1,6 @@
 package com.impierce.identity_wallet
 
 import android.os.Bundle
-import android.util.Log
 
 class MainActivity : TauriActivity() {
     companion object {
