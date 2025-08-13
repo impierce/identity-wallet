@@ -312,14 +312,14 @@ fn test_authorization_request_object() {
         }
       ]
     },
-        "client_id_scheme": null,
-        "response_mode": null,
+        "client_id_scheme": "None",
+        "response_mode": "None",
         "scope": null,
         "nonce": "nonce",
         "client_metadata": {
-          "vp_formats": {
+          "vp_formats_supported": {
             "jwt_vc_json": {
-              "alg": [
+              "alg_values": [
                 "EdDSA"
               ]
             }
