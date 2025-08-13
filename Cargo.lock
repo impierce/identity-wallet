@@ -193,7 +193,7 @@ dependencies = [
  "rustls-webpki 0.103.4",
  "serde",
  "serde_json",
- "socket2 0.5.10",
+ "socket2",
  "tap",
  "thiserror 1.0.69",
  "tokio",
@@ -284,7 +284,7 @@ dependencies = [
 name = "anyhow"
 version = "1.0.98"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e16d2d3311acee920a9eb8d33b8cbc1787ce4a264e85f964c2404b969bdcd487"
+checksum = "34ac096ce696dc2fcabef30516bb13c0a68a11d30131d3df6f04711467681b04"
 dependencies = [
  "backtrace",
 ]
@@ -330,7 +330,7 @@ dependencies = [
  "blake2",
  "derivative",
  "digest 0.10.7",
- "sha2 0.10.9",
+ "sha2 0.10.8",
 ]
 
 [[package]]
@@ -512,7 +512,7 @@ dependencies = [
  "nom 7.1.3",
  "num-traits",
  "rusticata-macros",
- "thiserror 2.0.12",
+ "thiserror 2.0.11",
  "time",
 ]
 
@@ -524,8 +524,8 @@ checksum = "3109e49b1e4909e9db6515a30c633684d68cdeaa252f215214cb4fa1a5bfee2c"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.104",
- "synstructure 0.13.2",
+ "syn 2.0.98",
+ "synstructure 0.13.1",
 ]
 
 [[package]]
@@ -536,7 +536,7 @@ checksum = "7b18050c2cd6fe86c3a76584ef5e0baf286d038cda203eb6223df2cc413565f7"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.104",
+ "syn 2.0.98",
 ]
 
 [[package]]
@@ -588,7 +588,7 @@ version = "0.4.27"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ddb939d66e4ae03cee6091612804ba446b12878410cfa17f785f4dd67d4014e8"
 dependencies = [
- "brotli",
+ "brotli 8.0.1",
  "flate2",
  "futures-core",
  "memchr",
@@ -640,7 +640,7 @@ dependencies = [
  "futures-lite 2.6.1",
  "parking",
  "polling",
- "rustix 1.0.8",
+ "rustix 0.38.44",
  "slab",
  "windows-sys 0.60.2",
 ]
@@ -671,7 +671,7 @@ dependencies = [
  "futures-channel",
  "futures-core",
  "futures-io",
- "futures-lite 2.6.1",
+ "futures-lite 2.6.0",
  "gloo-timers 0.3.0",
  "kv-log-macro",
  "log",
@@ -702,7 +702,7 @@ checksum = "c7c24de15d275a1ecfd47a380fb4d5ec9bfe0933f309ed5e705b775596a3574d"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.104",
+ "syn 2.0.98",
 ]
 
 [[package]]
@@ -809,7 +809,7 @@ checksum = "7460f7dd8e100147b82a63afca1a20eb6c231ee36b90ba7272e14951cb58af59"
 name = "autocfg"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c08606f8c3cbf4ce6ec8e28fb0014a2c086708fe954eaa885384a6165172e7e8"
+checksum = "ace50bade8e6234aa140d9a2f552bbee1db4d353f69b8217bc503490fc1a9f26"
 
 [[package]]
 name = "aws-lc-rs"
@@ -848,7 +848,7 @@ dependencies = [
  "http 0.2.12",
  "http-body 0.4.6",
  "hyper 0.14.32",
- "itoa",
+ "itoa 1.0.14",
  "matchit 0.7.3",
  "memchr",
  "mime",
@@ -882,7 +882,7 @@ dependencies = [
  "http-body-util",
  "hyper 1.6.0",
  "hyper-util",
- "itoa",
+ "itoa 1.0.14",
  "matchit 0.7.3",
  "memchr",
  "mime",
@@ -1021,7 +1021,7 @@ dependencies = [
 name = "base64ct"
 version = "1.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "55248b47b0caf0546f7988906588779981c43bb1bc9d0c44087278f80cdb44ba"
+checksum = "8c3c1a368f70d6cf7302d78f8f7093da241fb8e8807c05cc9e51a125895a6d5b"
 
 [[package]]
 name = "bcs"
@@ -1047,7 +1047,7 @@ checksum = "9ae286c2cb403324ab644c7cc68dceb25fe52ca9429908a726d7ed272c1edf7b"
 dependencies = [
  "bellpepper-core",
  "byteorder",
- "ff 0.13.1",
+ "ff 0.13.0",
 ]
 
 [[package]]
@@ -1058,7 +1058,7 @@ checksum = "1d8abb418570756396d722841b19edfec21d4e89e1cf8990610663040ecb1aea"
 dependencies = [
  "blake2s_simd",
  "byteorder",
- "ff 0.13.1",
+ "ff 0.13.0",
  "serde",
  "thiserror 1.0.69",
 ]
@@ -1098,10 +1098,10 @@ version = "0.69.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "271383c67ccabffb7381723dea0672a673f292304fcb45c01cc648c7a8d58088"
 dependencies = [
- "bitflags 2.9.1",
+ "bitflags 2.8.0",
  "cexpr",
  "clang-sys",
- "itertools 0.10.5",
+ "itertools 0.12.1",
  "lazy_static",
  "lazycell",
  "log",
@@ -1111,7 +1111,7 @@ dependencies = [
  "regex",
  "rustc-hash 1.1.0",
  "shlex",
- "syn 2.0.104",
+ "syn 2.0.98",
  "which",
 ]
 
@@ -1129,7 +1129,7 @@ dependencies = [
  "rand_core 0.6.4",
  "ripemd",
  "secp256k1",
- "sha2 0.10.9",
+ "sha2 0.10.8",
  "subtle",
  "zeroize",
 ]
@@ -1242,6 +1242,12 @@ dependencies = [
  "arrayvec",
  "constant_time_eq 0.3.1",
 ]
+
+[[package]]
+name = "blake2s_simd"
+version = "1.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0d8c1fef690941d3e7788d328517591fecc684c084084702d6ff1641e993699a"
 
 [[package]]
 name = "block-buffer"
@@ -1364,7 +1370,7 @@ checksum = "7a8a8ed6fefbeef4a8c7b460e4110e12c5e22a5b7cf32621aae6ad650c4dcf29"
 dependencies = [
  "blst",
  "byte-slice-cast",
- "ff 0.13.1",
+ "ff 0.13.0",
  "group 0.13.0",
  "pairing 0.23.0",
  "rand_core 0.6.4",
@@ -1409,7 +1415,28 @@ checksum = "9991eea70ea4f293524138648e41ee89b0b2b12ddef3b255effa43c8056e0e0d"
 dependencies = [
  "alloc-no-stdlib",
  "alloc-stdlib",
- "brotli-decompressor",
+ "brotli-decompressor 4.0.2",
+]
+
+[[package]]
+name = "brotli"
+version = "8.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9991eea70ea4f293524138648e41ee89b0b2b12ddef3b255effa43c8056e0e0d"
+dependencies = [
+ "alloc-no-stdlib",
+ "alloc-stdlib",
+ "brotli-decompressor 5.0.0",
+]
+
+[[package]]
+name = "brotli-decompressor"
+version = "5.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "74fa05ad7d803d413eb8380983b092cbbaf9a85f151b871360e7b00cd7060b37"
+dependencies = [
+ "alloc-no-stdlib",
+ "alloc-stdlib",
 ]
 
 [[package]]
@@ -1437,7 +1464,7 @@ version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bf88ba1141d185c399bee5288d850d63b8369520c1eafc32a0430b5b6c287bf4"
 dependencies = [
- "sha2 0.10.9",
+ "sha2 0.10.8",
  "tinyvec",
 ]
 
@@ -1621,7 +1648,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "374b7c592d9c00c1f4972ea58390ac6b18cbb6ab79011f3bdc90a0b82ca06b77"
 dependencies = [
  "serde",
- "toml 0.9.5",
+ "toml 0.8.23",
 ]
 
 [[package]]
@@ -1858,7 +1885,7 @@ dependencies = [
 name = "clap_lex"
 version = "0.7.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b94f61472cee1439c0b966b47e3aca9ae07e45d070759512cd390ea2bebc6675"
+checksum = "f46ad14479a25103f283c0f10005961cf086d8dc42205bb44c46ac563475dca6"
 
 [[package]]
 name = "cmake"
@@ -1867,6 +1894,29 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e7caa3f9de89ddbe2c607f4101924c5abec803763ae9534e4f4d7d8f84aa81f0"
 dependencies = [
  "cc",
+]
+
+[[package]]
+name = "cmake"
+version = "0.1.54"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e7caa3f9de89ddbe2c607f4101924c5abec803763ae9534e4f4d7d8f84aa81f0"
+dependencies = [
+ "cc",
+]
+
+[[package]]
+name = "codespan"
+version = "0.11.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3362992a0d9f1dd7c3d0e89e0ab2bb540b7a95fea8cd798090e758fda2899b5e"
+dependencies = [
+ "bitflags 2.8.0",
+ "block",
+ "core-foundation 0.10.0",
+ "core-graphics-types",
+ "libc",
+ "objc",
 ]
 
 [[package]]
@@ -1887,7 +1937,7 @@ checksum = "3538270d33cc669650c4b093848450d380def10c331d38c768e34cac80576e6e"
 dependencies = [
  "serde",
  "termcolor",
- "unicode-width 0.1.14",
+ "unicode-width",
 ]
 
 [[package]]
@@ -1937,7 +1987,7 @@ version = "0.1.0"
 source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
  "fastcrypto",
- "iota-network-stack 0.12.0-rc (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
+ "iota-network-stack",
  "rand 0.8.5",
  "serde",
  "shared-crypto",
@@ -1949,7 +1999,7 @@ version = "0.1.0"
 source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "fastcrypto",
- "iota-network-stack 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
+ "iota-network-stack",
  "rand 0.8.5",
  "serde",
  "shared-crypto",
@@ -1964,12 +2014,6 @@ dependencies = [
  "cfg-if",
  "wasm-bindgen",
 ]
-
-[[package]]
-name = "const-oid"
-version = "0.7.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e4c78c047431fee22c1a7bb92e00ad095a02a983affe4d8a72e2a2c62c1b94f3"
 
 [[package]]
 name = "const-oid"
@@ -2012,7 +2056,7 @@ checksum = "7c74b8349d32d297c9134b8c88677813a227df8f779daa29bfc29c183fe3dca6"
 [[package]]
 name = "consumer"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=b762f61#b762f61697af2f455047c0691f3dd0dfe01cd97f"
+source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
 dependencies = [
  "did_iota",
  "did_jwk",
@@ -2162,7 +2206,7 @@ checksum = "790eea4361631c5e7d22598ecd5723ff611904e3344ce8720784c93e3d83d40b"
 name = "crossbeam-channel"
 version = "0.5.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "82b8f8f868b36967f9606790d1903570de9ceaf870a7bf9fbbd3016d636a2cb2"
+checksum = "06ba6d68e24814cb8de6bb986db8222d3a027d15872cabc0d18817bc3c0e4471"
 dependencies = [
  "crossbeam-utils",
 ]
@@ -2196,17 +2240,7 @@ checksum = "d0a5c400df2834b80a4c3327b3aad3a4c4cd4de0629063962b03235697506a28"
 name = "crunchy"
 version = "0.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "460fbee9c2c2f33933d720630a6a0bac33ba7053db5344fac858d4b8952d77d5"
-
-[[package]]
-name = "crypto-bigint"
-version = "0.3.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "03c6a1d5fa1de37e071642dfa44ec552ca5b299adb128fab16138e24b548fd21"
-dependencies = [
- "generic-array",
- "subtle",
-]
+checksum = "43da5946c66ffcc7745f48db692ffbb10a83bfe0afd96235c5c2a4fb23994929"
 
 [[package]]
 name = "crypto-bigint"
@@ -2367,7 +2401,7 @@ checksum = "f46882e17999c6cc590af592290432be3bce0428cb0d5f8b6715e4dc7b383eb3"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.104",
+ "syn 2.0.98",
 ]
 
 [[package]]
@@ -2405,12 +2439,12 @@ dependencies = [
 
 [[package]]
 name = "darling"
-version = "0.20.11"
+version = "0.14.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fc7f46116c46ff9ab3eb1597a45688b6715c6e628b5c133e288e709a29bcb4ee"
+checksum = "7b750cb3417fd1b327431a470f388520309479ab0bf5e323505daf0290cd3850"
 dependencies = [
- "darling_core 0.20.11",
- "darling_macro 0.20.11",
+ "darling_core 0.20.10",
+ "darling_macro 0.20.10",
 ]
 
 [[package]]
@@ -2443,9 +2477,9 @@ dependencies = [
 
 [[package]]
 name = "darling_core"
-version = "0.20.11"
+version = "0.14.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0d00b9596d185e565c2207a0b01f8bd1a135483d02d9b7b0a54b11da8d53412e"
+checksum = "95133861a8032aaea082871032f5815eb9e98cef03fa916ab4500513994df9e5"
 dependencies = [
  "fnv",
  "ident_case",
@@ -2479,13 +2513,13 @@ dependencies = [
 
 [[package]]
 name = "darling_macro"
-version = "0.20.11"
+version = "0.14.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fc34b93ccb385b40dc71c6fceac4b2ad23662c7eeb248cf10d529b7e055b6ead"
+checksum = "a4aab4dbc9f7611d8b55048a3a16d2d010c2c8334e46304b40ac1cc14bf3b48e"
 dependencies = [
- "darling_core 0.20.11",
+ "darling_core 0.14.4",
  "quote",
- "syn 2.0.104",
+ "syn 2.0.98",
 ]
 
 [[package]]
@@ -2560,22 +2594,11 @@ checksum = "5440d1dc8ea7cae44cda3c64568db29bfa2434aba51ae66a50c00488841a65a3"
 
 [[package]]
 name = "der"
-version = "0.5.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6919815d73839e7ad218de758883aae3a257ba6759ce7a9992501efbb53d705c"
-dependencies = [
- "const-oid 0.7.1",
- "crypto-bigint 0.3.2",
- "pem-rfc7468 0.3.1",
-]
-
-[[package]]
-name = "der"
 version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f1a467a65c5e759bce6e65eaf91cc29f466cdc57cb65777bd646872a8a1fd4de"
 dependencies = [
- "const-oid 0.9.6",
+ "const-oid",
  "pem-rfc7468 0.6.0",
  "zeroize",
 ]
@@ -2586,7 +2609,7 @@ version = "0.7.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e7c1832837b905bbfb5101e07cc24c8deddf52f93225eee6ead5f4d63d53ddcb"
 dependencies = [
- "const-oid 0.9.6",
+ "const-oid",
  "pem-rfc7468 0.7.0",
  "zeroize",
 ]
@@ -2614,6 +2637,12 @@ dependencies = [
  "powerfmt",
  "serde",
 ]
+
+[[package]]
+name = "deranged"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9c9e6a11ca8224451684bc0d7d5a7adbf8f2fd6887261a1cfc3c0432f9d4068e"
 
 [[package]]
 name = "derivative"
@@ -2683,7 +2712,7 @@ dependencies = [
  "proc-macro2",
  "quote",
  "rustc_version",
- "syn 2.0.104",
+ "syn 2.0.98",
 ]
 
 [[package]]
@@ -2703,7 +2732,7 @@ checksum = "cb7330aeadfbe296029522e6c40f315320aba36fc43a5b3632f3795348f3bd22"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.104",
+ "syn 2.0.98",
  "unicode-xid",
 ]
 
@@ -2780,7 +2809,7 @@ dependencies = [
 [[package]]
 name = "did_iota"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=b762f61#b762f61697af2f455047c0691f3dd0dfe01cd97f"
+source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
 dependencies = [
  "anyhow",
  "identity_iota",
@@ -2795,7 +2824,7 @@ dependencies = [
 [[package]]
 name = "did_jwk"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=b762f61#b762f61697af2f455047c0691f3dd0dfe01cd97f"
+source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
 dependencies = [
  "did-jwk",
  "identity_iota",
@@ -2812,7 +2841,7 @@ dependencies = [
 [[package]]
 name = "did_key"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=b762f61#b762f61697af2f455047c0691f3dd0dfe01cd97f"
+source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
 dependencies = [
  "did-method-key",
  "identity_iota",
@@ -2830,7 +2859,7 @@ dependencies = [
 [[package]]
 name = "did_manager"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=b762f61#b762f61697af2f455047c0691f3dd0dfe01cd97f"
+source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
 dependencies = [
  "consumer",
  "producer",
@@ -2868,7 +2897,7 @@ dependencies = [
 [[package]]
 name = "did_web"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=b762f61#b762f61697af2f455047c0691f3dd0dfe01cd97f"
+source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
 dependencies = [
  "did-web",
  "identity_iota",
@@ -2882,6 +2911,21 @@ dependencies = [
  "tokio",
  "url",
  "urlencoding",
+]
+
+[[package]]
+name = "dif-presentation-exchange"
+version = "0.1.0"
+source = "git+https://git@github.com/impierce/openid4vc?rev=cdc02ba#cdc02ba1f37c78994191854641fcf9779e8fcd50"
+dependencies = [
+ "getset",
+ "jsonpath_lib",
+ "jsonschema 0.17.1",
+ "jsonwebtoken",
+ "serde",
+ "serde_json",
+ "serde_with 3.12.0",
+ "url",
 ]
 
 [[package]]
@@ -2900,7 +2944,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9ed9a281f7bc9b7576e61468ba615a66a5c8cfdff42420a70aa82701a3b1e292"
 dependencies = [
  "block-buffer 0.10.4",
- "const-oid 0.9.6",
+ "const-oid",
  "crypto-common",
  "subtle",
 ]
@@ -3265,7 +3309,7 @@ dependencies = [
  "cc",
  "memchr",
  "rustc_version",
- "toml 0.9.5",
+ "toml 0.8.23",
  "vswhom",
  "winreg 0.55.0",
 ]
@@ -3288,14 +3332,6 @@ dependencies = [
 [[package]]
 name = "enum-compat-util"
 version = "0.1.0"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
-dependencies = [
- "serde_yaml",
-]
-
-[[package]]
-name = "enum-compat-util"
-version = "0.1.0"
 source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "serde_yaml",
@@ -3310,7 +3346,7 @@ dependencies = [
  "once_cell",
  "proc-macro2",
  "quote",
- "syn 2.0.104",
+ "syn 2.0.98",
 ]
 
 [[package]]
@@ -3417,6 +3453,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "eyre"
+version = "0.6.12"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7cd915d99f24784cdc19fd37ef22b97e3ff0ae756c7e492e9fbfe897d61e2aec"
+dependencies = [
+ "bit-set",
+ "regex",
+]
+
+[[package]]
 name = "fancy-regex"
 version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3448,7 +3494,7 @@ dependencies = [
  "cbc",
  "ctr",
  "curve25519-dalek-ng",
- "derive_more 0.99.20",
+ "derive_more 0.99.19",
  "digest 0.10.7",
  "ecdsa 0.16.9",
  "ed25519-consensus",
@@ -3465,13 +3511,13 @@ dependencies = [
  "rand 0.8.5",
  "readonly",
  "rfc6979 0.4.0",
- "rsa 0.8.2",
- "schemars 0.8.22",
+ "rsa",
+ "schemars",
  "secp256k1",
  "serde",
  "serde_json",
- "serde_with 3.14.0",
- "sha2 0.10.9",
+ "serde_with 3.12.0",
+ "sha2 0.10.8",
  "sha3 0.10.8",
  "signature 2.2.0",
  "static_assertions",
@@ -3540,9 +3586,9 @@ dependencies = [
  "ark-snark",
  "bcs",
  "byte-slice-cast",
- "derive_more 0.99.20",
+ "derive_more 0.99.19",
  "fastcrypto",
- "ff 0.13.1",
+ "ff 0.13.0",
  "im",
  "itertools 0.12.1",
  "lazy_static",
@@ -3550,8 +3596,8 @@ dependencies = [
  "num-bigint 0.4.6",
  "once_cell",
  "regex",
- "reqwest 0.12.22",
- "schemars 0.8.22",
+ "reqwest 0.12.12",
+ "schemars",
  "serde",
  "serde_json",
  "typenum",
@@ -3781,6 +3827,16 @@ dependencies = [
 [[package]]
 name = "fraction"
 version = "0.15.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0f158e3ff0a1b334408dc9fb811cd99b446986f4d8b741bb08f9df1604085ae7"
+dependencies = [
+ "lazy_static",
+ "num",
+]
+
+[[package]]
+name = "fs_extra"
+version = "1.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0f158e3ff0a1b334408dc9fb811cd99b446986f4d8b741bb08f9df1604085ae7"
 dependencies = [
@@ -4070,7 +4126,7 @@ version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fc257fdb4038301ce4b9cd1b3b51704509692bb3ff716a410cbd07925d9dae55"
 dependencies = [
- "rustix 1.0.8",
+ "rustix 0.38.44",
  "windows-targets 0.52.6",
 ]
 
@@ -4116,9 +4172,9 @@ dependencies = [
  "cfg-if",
  "js-sys",
  "libc",
- "r-efi",
- "wasi 0.14.2+wasi-0.2.4",
+ "wasi 0.13.3+wasi-0.2.2",
  "wasm-bindgen",
+ "windows-targets 0.52.6",
 ]
 
 [[package]]
@@ -4328,7 +4384,7 @@ dependencies = [
  "futures-timer",
  "no-std-compat",
  "nonzero_ext",
- "parking_lot 0.12.4",
+ "parking_lot 0.12.3",
  "portable-atomic",
  "quanta",
  "rand 0.8.5",
@@ -4377,7 +4433,7 @@ version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f0f9ef7462f7c099f518d754361858f86d8a07af53ba9af0fe635bbccb151a63"
 dependencies = [
- "ff 0.13.1",
+ "ff 0.13.0",
  "rand 0.8.5",
  "rand_core 0.6.4",
  "rand_xorshift",
@@ -4526,7 +4582,7 @@ dependencies = [
 name = "hashbrown"
 version = "0.15.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5971ac85611da7067dbfcabef3c70ebb5606018acd9e2a3903a0da507521e0d5"
+checksum = "bf151400ff0baff5465007dd2f3e717f3fe502074ca563069ce3a6629d07b289"
 dependencies = [
  "allocator-api2",
  "equivalent",
@@ -4734,7 +4790,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b021d93e26becf5dc7e1b75b1bed1fd93124b374ceb73f43d4d4eafec896a64a"
 dependencies = [
  "bytes",
- "futures-core",
+ "futures-util",
  "http 1.3.1",
  "http-body 1.0.1",
  "pin-project-lite",
@@ -4807,7 +4863,7 @@ dependencies = [
  "futures-channel",
  "futures-core",
  "futures-util",
- "h2 0.3.27",
+ "h2 0.3.26",
  "http 0.2.12",
  "http-body 0.4.6",
  "httparse",
@@ -4835,7 +4891,7 @@ dependencies = [
  "http-body 1.0.1",
  "httparse",
  "httpdate",
- "itoa",
+ "itoa 1.0.14",
  "pin-project-lite",
  "smallvec",
  "tokio",
@@ -4862,6 +4918,7 @@ version = "0.27.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e3c93eb611681b207e1fe55d5a71ecf91572ec8a6705cdb6857f7d8d5242cf58"
 dependencies = [
+ "futures-util",
  "http 1.3.1",
  "hyper 1.6.0",
  "hyper-util",
@@ -4872,7 +4929,7 @@ dependencies = [
  "tokio",
  "tokio-rustls 0.26.2",
  "tower-service",
- "webpki-roots 1.0.2",
+ "webpki-roots 0.26.8",
 ]
 
 [[package]]
@@ -5130,9 +5187,9 @@ dependencies = [
  "icu_normalizer 1.5.0",
  "icu_pattern",
  "icu_plurals",
- "icu_properties 1.5.1",
- "icu_provider 1.5.0",
- "litemap 0.7.5",
+ "icu_properties",
+ "icu_provider",
+ "litemap",
  "num-bigint 0.4.6",
  "num-rational",
  "num-traits",
@@ -5486,7 +5543,7 @@ name = "identity_core"
 version = "1.6.0-beta"
 source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-beta.2#0ecce7b015ca5b7a731a7ff62dad101a1a4a3bfe"
 dependencies = [
- "deranged",
+ "deranged 0.4.0",
  "js-sys",
  "multibase 0.9.1",
  "product_common",
@@ -5705,7 +5762,7 @@ dependencies = [
 [[package]]
 name = "identity_stronghold_ext"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=b762f61#b762f61697af2f455047c0691f3dd0dfe01cd97f"
+source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
 dependencies = [
  "async-trait",
  "elliptic-curve 0.13.8",
@@ -5716,7 +5773,6 @@ dependencies = [
  "k256",
  "log",
  "p256 0.13.2",
- "rand 0.8.5",
  "secret-storage",
  "serde_json",
  "stronghold_ext 0.1.0 (git+https://github.com/impierce/stronghold_ext.git)",
@@ -5754,8 +5810,8 @@ version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3acae9609540aa318d1bc588455225fb2085b9ed0c4f6bd0d9d5bcd86f1a0344"
 dependencies = [
- "icu_normalizer 2.0.0",
- "icu_properties 2.0.1",
+ "icu_normalizer",
+ "icu_properties",
 ]
 
 [[package]]
@@ -5787,7 +5843,7 @@ version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ba6a270039626615617f3f36d15fc827041df3b78c439da2cadfa47455a77f2f"
 dependencies = [
- "parity-scale-codec 3.7.5",
+ "parity-scale-codec 3.7.4",
 ]
 
 [[package]]
@@ -5902,55 +5958,27 @@ dependencies = [
 [[package]]
 name = "iota-adapter-latest"
 version = "0.1.0"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
-dependencies = [
- "anyhow",
- "bcs",
- "iota-macros 0.12.0-rc (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "iota-metrics 0.12.0-rc (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "iota-move-natives-latest 0.1.0 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "iota-protocol-config 0.12.0-rc (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "iota-types 0.12.0-rc (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "iota-verifier-latest 0.1.0 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "leb128",
- "move-binary-format 0.0.3 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "move-bytecode-utils 0.1.0 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "move-bytecode-verifier 0.1.0 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "move-bytecode-verifier-meter 0.1.0 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "move-core-types",
- "move-vm-config 0.1.0 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "move-vm-profiler 0.1.0 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "move-vm-runtime 0.1.0 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "move-vm-types 0.1.0 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "parking_lot 0.12.4",
- "serde",
- "tracing",
-]
-
-[[package]]
-name = "iota-adapter-latest"
-version = "0.1.0"
 source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "anyhow",
  "bcs",
- "iota-macros 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
- "iota-metrics 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
- "iota-move-natives-latest 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
- "iota-protocol-config 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
- "iota-types 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
- "iota-verifier-latest 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
+ "iota-macros",
+ "iota-metrics",
+ "iota-move-natives-latest",
+ "iota-protocol-config",
+ "iota-types",
+ "iota-verifier-latest",
  "leb128",
- "move-binary-format 0.0.3 (git+https://github.com/impierce/iota?branch=temp/fix)",
- "move-bytecode-utils 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
- "move-bytecode-verifier 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
- "move-bytecode-verifier-meter 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
+ "move-binary-format",
+ "move-bytecode-utils",
+ "move-bytecode-verifier",
+ "move-bytecode-verifier-meter",
  "move-core-types",
- "move-vm-config 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
- "move-vm-profiler 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
- "move-vm-runtime 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
- "move-vm-types 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
- "parking_lot 0.12.4",
+ "move-vm-config",
+ "move-vm-profiler",
+ "move-vm-runtime",
+ "move-vm-types",
+ "parking_lot 0.12.3",
  "serde",
  "tracing",
 ]
@@ -5963,21 +5991,21 @@ dependencies = [
  "anemo",
  "anyhow",
  "bcs",
- "clap 4.5.43",
+ "clap 4.5.29",
  "consensus-config 0.1.0 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
  "csv",
  "dirs 5.0.1",
  "fastcrypto",
  "iota-genesis-common 0.12.0-rc (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
  "iota-keys 0.12.0-rc (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "iota-protocol-config 0.12.0-rc (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "iota-types 0.12.0-rc (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "move-vm-config 0.1.0 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
+ "iota-protocol-config",
+ "iota-types",
+ "move-vm-config",
  "object_store",
  "once_cell",
  "prometheus",
  "rand 0.8.5",
- "reqwest 0.12.22",
+ "reqwest 0.12.12",
  "serde",
  "serde_yaml",
  "tracing",
@@ -5991,21 +6019,21 @@ dependencies = [
  "anemo",
  "anyhow",
  "bcs",
- "clap 4.5.43",
+ "clap 4.5.29",
  "consensus-config 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
  "csv",
  "dirs 5.0.1",
  "fastcrypto",
  "iota-genesis-common 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
  "iota-keys 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
- "iota-protocol-config 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
- "iota-types 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
- "move-vm-config 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
+ "iota-protocol-config",
+ "iota-types",
+ "move-vm-config",
  "object_store",
  "once_cell",
  "prometheus",
  "rand 0.8.5",
- "reqwest 0.12.22",
+ "reqwest 0.12.12",
  "serde",
  "serde_yaml",
  "tracing",
@@ -6049,14 +6077,6 @@ dependencies = [
 [[package]]
 name = "iota-enum-compat-util"
 version = "0.12.0-rc"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
-dependencies = [
- "serde_yaml",
-]
-
-[[package]]
-name = "iota-enum-compat-util"
-version = "0.12.0-rc"
 source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "serde_yaml",
@@ -6065,35 +6085,18 @@ dependencies = [
 [[package]]
 name = "iota-execution"
 version = "0.1.0"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
-dependencies = [
- "iota-adapter-latest 0.1.0 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "iota-move-natives-latest 0.1.0 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "iota-protocol-config 0.12.0-rc (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "iota-types 0.12.0-rc (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "iota-verifier-latest 0.1.0 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "move-binary-format 0.0.3 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "move-bytecode-verifier 0.1.0 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "move-bytecode-verifier-meter 0.1.0 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "move-vm-config 0.1.0 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "move-vm-runtime 0.1.0 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
-]
-
-[[package]]
-name = "iota-execution"
-version = "0.1.0"
 source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
- "iota-adapter-latest 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
- "iota-move-natives-latest 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
- "iota-protocol-config 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
- "iota-types 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
- "iota-verifier-latest 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
- "move-binary-format 0.0.3 (git+https://github.com/impierce/iota?branch=temp/fix)",
- "move-bytecode-verifier 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
- "move-bytecode-verifier-meter 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
- "move-vm-config 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
- "move-vm-runtime 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
+ "iota-adapter-latest",
+ "iota-move-natives-latest",
+ "iota-protocol-config",
+ "iota-types",
+ "iota-verifier-latest",
+ "move-binary-format",
+ "move-bytecode-verifier",
+ "move-bytecode-verifier-meter",
+ "move-vm-config",
+ "move-vm-runtime",
 ]
 
 [[package]]
@@ -6101,9 +6104,9 @@ name = "iota-genesis-common"
 version = "0.12.0-rc"
 source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
 dependencies = [
- "iota-execution 0.1.0 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "iota-protocol-config 0.12.0-rc (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "iota-types 0.12.0-rc (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
+ "iota-execution",
+ "iota-protocol-config",
+ "iota-types",
  "prometheus",
 ]
 
@@ -6112,9 +6115,9 @@ name = "iota-genesis-common"
 version = "0.12.0-rc"
 source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
- "iota-execution 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
- "iota-protocol-config 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
- "iota-types 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
+ "iota-execution",
+ "iota-protocol-config",
+ "iota-types",
  "prometheus",
 ]
 
@@ -6126,11 +6129,11 @@ dependencies = [
  "anyhow",
  "bcs",
  "fastcrypto",
- "iota-types 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
- "move-binary-format 0.0.3 (git+https://github.com/impierce/iota?branch=temp/fix)",
- "move-bytecode-utils 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
+ "iota-types",
+ "move-binary-format",
+ "move-bytecode-utils",
  "move-core-types",
- "schemars 0.8.22",
+ "schemars",
  "serde",
  "serde_json",
 ]
@@ -6144,10 +6147,10 @@ dependencies = [
  "fastcrypto",
  "iota-json",
  "iota-json-rpc-types",
- "iota-metrics 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
+ "iota-metrics",
  "iota-open-rpc",
  "iota-open-rpc-macros",
- "iota-types 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
+ "iota-types",
  "jsonrpsee",
  "once_cell",
  "prometheus",
@@ -6166,22 +6169,22 @@ dependencies = [
  "colored",
  "enum_dispatch",
  "fastcrypto",
- "iota-enum-compat-util 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
+ "iota-enum-compat-util",
  "iota-json",
- "iota-macros 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
- "iota-metrics 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
+ "iota-macros",
+ "iota-metrics",
  "iota-package-resolver",
- "iota-protocol-config 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
- "iota-types 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
+ "iota-protocol-config",
+ "iota-types",
  "itertools 0.13.0",
  "json_to_table",
- "move-binary-format 0.0.3 (git+https://github.com/impierce/iota?branch=temp/fix)",
- "move-bytecode-utils 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
+ "move-binary-format",
+ "move-bytecode-utils",
  "move-core-types",
- "schemars 0.8.22",
+ "schemars",
  "serde",
  "serde_json",
- "serde_with 3.14.0",
+ "serde_with 3.12.0",
  "strum 0.26.3",
  "tabled",
  "tracing",
@@ -6195,7 +6198,7 @@ dependencies = [
  "anyhow",
  "bip32",
  "fastcrypto",
- "iota-types 0.12.0-rc (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
+ "iota-types",
  "rand 0.8.5",
  "regex",
  "serde",
@@ -6214,7 +6217,7 @@ dependencies = [
  "anyhow",
  "bip32",
  "fastcrypto",
- "iota-types 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
+ "iota-types",
  "rand 0.8.5",
  "regex",
  "serde",
@@ -6228,49 +6231,12 @@ dependencies = [
 [[package]]
 name = "iota-macros"
 version = "0.12.0-rc"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
-dependencies = [
- "futures",
- "iota-proc-macros 0.12.0-rc (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "once_cell",
- "tracing",
-]
-
-[[package]]
-name = "iota-macros"
-version = "0.12.0-rc"
 source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "futures",
- "iota-proc-macros 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
+ "iota-proc-macros",
  "once_cell",
  "tracing",
-]
-
-[[package]]
-name = "iota-metrics"
-version = "0.12.0-rc"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
-dependencies = [
- "anemo",
- "anemo-tower",
- "async-trait",
- "axum 0.7.9",
- "bytes",
- "dashmap",
- "futures",
- "once_cell",
- "parking_lot 0.12.4",
- "prometheus",
- "prometheus-closure-metric 0.12.0-rc (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "scopeguard",
- "simple-server-timing-header",
- "sysinfo",
- "tap",
- "thiserror 1.0.69",
- "tokio",
- "tracing",
- "uuid",
 ]
 
 [[package]]
@@ -6286,9 +6252,9 @@ dependencies = [
  "dashmap",
  "futures",
  "once_cell",
- "parking_lot 0.12.4",
+ "parking_lot 0.12.3",
  "prometheus",
- "prometheus-closure-metric 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
+ "prometheus-closure-metric",
  "scopeguard",
  "simple-server-timing-header",
  "sysinfo",
@@ -6302,29 +6268,6 @@ dependencies = [
 [[package]]
 name = "iota-move-natives-latest"
 version = "0.1.0"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
-dependencies = [
- "bcs",
- "better_any",
- "fastcrypto",
- "fastcrypto-vdf",
- "fastcrypto-zkp",
- "indexmap 2.10.0",
- "iota-protocol-config 0.12.0-rc (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "iota-types 0.12.0-rc (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "move-binary-format 0.0.3 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "move-core-types",
- "move-stdlib-natives 0.1.1 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "move-vm-runtime 0.1.0 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "move-vm-types 0.1.0 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "rand 0.8.5",
- "smallvec",
- "tracing",
-]
-
-[[package]]
-name = "iota-move-natives-latest"
-version = "0.1.0"
 source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "bcs",
@@ -6333,40 +6276,15 @@ dependencies = [
  "fastcrypto-vdf",
  "fastcrypto-zkp",
  "indexmap 2.10.0",
- "iota-protocol-config 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
- "iota-types 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
- "move-binary-format 0.0.3 (git+https://github.com/impierce/iota?branch=temp/fix)",
+ "iota-protocol-config",
+ "iota-types",
+ "move-binary-format",
  "move-core-types",
- "move-stdlib-natives 0.1.1 (git+https://github.com/impierce/iota?branch=temp/fix)",
- "move-vm-runtime 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
- "move-vm-types 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
+ "move-stdlib-natives",
+ "move-vm-runtime",
+ "move-vm-types",
  "rand 0.8.5",
  "smallvec",
- "tracing",
-]
-
-[[package]]
-name = "iota-network-stack"
-version = "0.12.0-rc"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
-dependencies = [
- "anemo",
- "bcs",
- "bytes",
- "eyre",
- "futures",
- "http 1.3.1",
- "http-body 1.0.1",
- "multiaddr",
- "pin-project-lite",
- "serde",
- "snap",
- "tokio",
- "tokio-stream",
- "tonic",
- "tonic-health",
- "tower 0.4.13",
- "tower-http 0.5.2",
  "tracing",
 ]
 
@@ -6400,7 +6318,7 @@ name = "iota-open-rpc"
 version = "0.12.0-rc"
 source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
- "schemars 0.8.22",
+ "schemars",
  "serde",
  "serde_json",
  "versions",
@@ -6427,10 +6345,10 @@ dependencies = [
  "async-trait",
  "bcs",
  "eyre",
- "iota-types 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
+ "iota-types",
  "lru",
- "move-binary-format 0.0.3 (git+https://github.com/impierce/iota?branch=temp/fix)",
- "move-command-line-common 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
+ "move-binary-format",
+ "move-command-line-common",
  "move-core-types",
  "serde",
  "thiserror 1.0.69",
@@ -6440,37 +6358,12 @@ dependencies = [
 [[package]]
 name = "iota-proc-macros"
 version = "0.12.0-rc"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
-dependencies = [
- "msim-macros",
- "proc-macro2",
- "quote",
- "syn 2.0.104",
-]
-
-[[package]]
-name = "iota-proc-macros"
-version = "0.12.0-rc"
 source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "msim-macros",
  "proc-macro2",
  "quote",
- "syn 2.0.104",
-]
-
-[[package]]
-name = "iota-protocol-config"
-version = "0.12.0-rc"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
-dependencies = [
- "clap 4.5.43",
- "iota-protocol-config-macros 0.12.0-rc (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "move-vm-config 0.1.0 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "schemars 0.8.22",
- "serde",
- "serde_with 3.14.0",
- "tracing",
+ "syn 2.0.98",
 ]
 
 [[package]]
@@ -6478,23 +6371,13 @@ name = "iota-protocol-config"
 version = "0.12.0-rc"
 source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
- "clap 4.5.43",
- "iota-protocol-config-macros 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
- "move-vm-config 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
- "schemars 0.8.22",
+ "clap 4.5.29",
+ "iota-protocol-config-macros",
+ "move-vm-config",
+ "schemars",
  "serde",
- "serde_with 3.14.0",
+ "serde_with 3.12.0",
  "tracing",
-]
-
-[[package]]
-name = "iota-protocol-config-macros"
-version = "0.12.0-rc"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 1.0.109",
 ]
 
 [[package]]
@@ -6519,11 +6402,11 @@ dependencies = [
  "bs58 0.5.1",
  "hex",
  "roaring",
- "schemars 0.8.22",
+ "schemars",
  "serde",
  "serde_derive",
  "serde_json",
- "serde_with 3.14.0",
+ "serde_with 3.12.0",
  "winnow 0.6.26",
 ]
 
@@ -6536,7 +6419,7 @@ dependencies = [
  "async-trait",
  "base64 0.21.7",
  "bcs",
- "clap 4.5.43",
+ "clap 4.5.29",
  "colored",
  "fastcrypto",
  "futures",
@@ -6548,14 +6431,14 @@ dependencies = [
  "iota-json-rpc-types",
  "iota-keys 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
  "iota-transaction-builder",
- "iota-types 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
+ "iota-types",
  "jsonrpsee",
  "move-core-types",
- "reqwest 0.12.22",
+ "reqwest 0.12.12",
  "rustls 0.23.31",
  "serde",
  "serde_json",
- "serde_with 3.14.0",
+ "serde_with 3.12.0",
  "shared-crypto",
  "thiserror 1.0.69",
  "tokio",
@@ -6573,7 +6456,7 @@ dependencies = [
  "bech32",
  "bitflags 2.9.1",
  "bytemuck",
- "derive_more 0.99.20",
+ "derive_more 0.99.19",
  "futures",
  "getset",
  "gloo-timers 0.3.0",
@@ -6617,81 +6500,10 @@ dependencies = [
  "futures",
  "iota-json",
  "iota-json-rpc-types",
- "iota-protocol-config 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
- "iota-types 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
- "move-binary-format 0.0.3 (git+https://github.com/impierce/iota?branch=temp/fix)",
+ "iota-protocol-config",
+ "iota-types",
+ "move-binary-format",
  "move-core-types",
-]
-
-[[package]]
-name = "iota-types"
-version = "0.12.0-rc"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
-dependencies = [
- "anemo",
- "anyhow",
- "async-trait",
- "bcs",
- "better_any",
- "bincode",
- "byteorder",
- "chrono",
- "consensus-config 0.1.0 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "derive_more 1.0.0",
- "either",
- "enum_dispatch",
- "eyre",
- "fastcrypto",
- "fastcrypto-tbls",
- "fastcrypto-zkp",
- "hex",
- "im",
- "indexmap 2.10.0",
- "iota-enum-compat-util 0.12.0-rc (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "iota-macros 0.12.0-rc (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "iota-metrics 0.12.0-rc (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "iota-network-stack 0.12.0-rc (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "iota-protocol-config 0.12.0-rc (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "iota-rust-sdk",
- "iota-sdk 1.1.5",
- "itertools 0.13.0",
- "lru",
- "move-binary-format 0.0.3 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "move-bytecode-utils 0.1.0 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "move-command-line-common 0.1.0 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "move-core-types",
- "move-disassembler 0.1.0 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "move-ir-types 0.1.0 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "move-vm-profiler 0.1.0 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "move-vm-test-utils 0.1.0 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "move-vm-types 0.1.0 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "nonempty 0.9.0",
- "num-bigint 0.4.6",
- "num-rational",
- "num-traits",
- "num_enum",
- "once_cell",
- "packable",
- "parking_lot 0.12.4",
- "passkey-types",
- "prometheus",
- "rand 0.8.5",
- "roaring",
- "schemars 0.8.22",
- "serde",
- "serde-name",
- "serde_json",
- "serde_with 3.14.0",
- "shared-crypto",
- "signature 1.6.4",
- "static_assertions",
- "strum 0.26.3",
- "strum_macros 0.26.4",
- "tap",
- "thiserror 1.0.69",
- "tonic",
- "tracing",
- "typed-store-error 0.12.0-rc (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
 ]
 
 [[package]]
@@ -6718,24 +6530,24 @@ dependencies = [
  "hex",
  "im",
  "indexmap 2.10.0",
- "iota-enum-compat-util 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
- "iota-macros 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
- "iota-metrics 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
- "iota-network-stack 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
- "iota-protocol-config 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
+ "iota-enum-compat-util",
+ "iota-macros",
+ "iota-metrics",
+ "iota-network-stack",
+ "iota-protocol-config",
  "iota-rust-sdk",
  "iota-sdk 1.1.5",
  "itertools 0.13.0",
  "lru",
- "move-binary-format 0.0.3 (git+https://github.com/impierce/iota?branch=temp/fix)",
- "move-bytecode-utils 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
- "move-command-line-common 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
+ "move-binary-format",
+ "move-bytecode-utils",
+ "move-command-line-common",
  "move-core-types",
- "move-disassembler 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
- "move-ir-types 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
- "move-vm-profiler 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
- "move-vm-test-utils 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
- "move-vm-types 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
+ "move-disassembler",
+ "move-ir-types",
+ "move-vm-profiler",
+ "move-vm-test-utils",
+ "move-vm-types",
  "nonempty 0.9.0",
  "num-bigint 0.4.6",
  "num-rational",
@@ -6743,16 +6555,16 @@ dependencies = [
  "num_enum",
  "once_cell",
  "packable",
- "parking_lot 0.12.4",
+ "parking_lot 0.12.3",
  "passkey-types",
  "prometheus",
  "rand 0.8.5",
  "roaring",
- "schemars 0.8.22",
+ "schemars",
  "serde",
  "serde-name",
  "serde_json",
- "serde_with 3.14.0",
+ "serde_with 3.12.0",
  "shared-crypto",
  "signature 1.6.4",
  "static_assertions",
@@ -6762,23 +6574,7 @@ dependencies = [
  "thiserror 1.0.69",
  "tonic",
  "tracing",
- "typed-store-error 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
-]
-
-[[package]]
-name = "iota-verifier-latest"
-version = "0.1.0"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
-dependencies = [
- "iota-protocol-config 0.12.0-rc (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "iota-types 0.12.0-rc (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "move-abstract-interpreter 0.1.0 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "move-abstract-stack 0.0.1 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "move-binary-format 0.0.3 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "move-bytecode-utils 0.1.0 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "move-bytecode-verifier-meter 0.1.0 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
- "move-core-types",
- "move-vm-config 0.1.0 (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
+ "typed-store-error",
 ]
 
 [[package]]
@@ -6786,15 +6582,15 @@ name = "iota-verifier-latest"
 version = "0.1.0"
 source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
- "iota-protocol-config 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
- "iota-types 0.12.0-rc (git+https://github.com/impierce/iota?branch=temp/fix)",
- "move-abstract-interpreter 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
- "move-abstract-stack 0.0.1 (git+https://github.com/impierce/iota?branch=temp/fix)",
- "move-binary-format 0.0.3 (git+https://github.com/impierce/iota?branch=temp/fix)",
- "move-bytecode-utils 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
- "move-bytecode-verifier-meter 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
+ "iota-protocol-config",
+ "iota-types",
+ "move-abstract-interpreter",
+ "move-abstract-stack",
+ "move-binary-format",
+ "move-bytecode-utils",
+ "move-bytecode-verifier-meter",
  "move-core-types",
- "move-vm-config 0.1.0 (git+https://github.com/impierce/iota?branch=temp/fix)",
+ "move-vm-config",
 ]
 
 [[package]]
@@ -6806,13 +6602,13 @@ dependencies = [
  "async-trait",
  "bcs",
  "cfg-if",
- "derive_more 0.99.20",
+ "derive_more 0.99.19",
  "enum_dispatch",
  "eyre",
  "fastcrypto",
  "fastcrypto-zkp",
- "getrandom 0.2.16",
- "getrandom 0.3.3",
+ "getrandom 0.2.15",
+ "getrandom 0.3.1",
  "hex",
  "indexmap 2.10.0",
  "iota-sdk 0.12.0-rc",
@@ -6826,12 +6622,12 @@ dependencies = [
  "primitive-types 0.12.2",
  "rand 0.8.5",
  "ref-cast",
- "schemars 0.8.22",
+ "schemars",
  "secret-storage",
  "serde",
  "serde_json",
  "serde_repr",
- "serde_with 3.14.0",
+ "serde_with 3.12.0",
  "shared-crypto",
  "strum 0.25.0",
  "tap",
@@ -6874,8 +6670,8 @@ dependencies = [
  "eyre",
  "fastcrypto",
  "futures",
- "getrandom 0.2.16",
- "getrandom 0.3.3",
+ "getrandom 0.2.15",
+ "getrandom 0.3.1",
  "instant",
  "iota_interaction",
  "js-sys",
@@ -7052,12 +6848,9 @@ dependencies = [
 
 [[package]]
 name = "itertools"
-version = "0.14.0"
+version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2b192c782037fadd9cfa75548310488aabdbf3d2da73885b31bd0abd03351285"
-dependencies = [
- "either",
-]
+checksum = "b71991ff56294aa922b450139ee08b3bfc70982c6b2c7562771375cf73542dd4"
 
 [[package]]
 name = "itoa"
@@ -7112,11 +6905,10 @@ checksum = "8eaf4bc02d17cbdd7ff4c7438cafcdf7fb9a4613313ad11b4f8fefe7d3fa0130"
 
 [[package]]
 name = "jobserver"
-version = "0.1.33"
+version = "0.1.32"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "38f262f097c174adebe41eb73d66ae9c06b2844fb0da69969647bbddd9b0538a"
+checksum = "48d1dbcbbeb6a7fec7e059840aa538bd62aaccf972c7346c4d9d2059312853d0"
 dependencies = [
- "getrandom 0.3.3",
  "libc",
 ]
 
@@ -7373,6 +7165,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "json_to_table"
+version = "0.6.0"
+source = "git+https://github.com/zhiburt/tabled/?rev=e449317a1c02eb6b29e409ad6617e5d9eb7b3bd4#e449317a1c02eb6b29e409ad6617e5d9eb7b3bd4"
+dependencies = [
+ "serde_json",
+ "tabled",
+]
+
+[[package]]
+name = "jsonpath-rust"
+version = "0.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "19d8fe85bd70ff715f31ce8c739194b423d79811a19602115d611a3ec85d6200"
+dependencies = [
+ "lazy_static",
+ "once_cell",
+ "pest",
+ "pest_derive",
+ "regex",
+ "serde_json",
+]
+
+[[package]]
 name = "jsonptr"
 version = "0.6.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7419,7 +7234,7 @@ dependencies = [
  "soketto",
  "thiserror 1.0.69",
  "tokio",
- "tokio-rustls 0.26.2",
+ "tokio-rustls 0.26.1",
  "tokio-util",
  "tracing",
  "url",
@@ -7439,7 +7254,7 @@ dependencies = [
  "http-body 1.0.1",
  "http-body-util",
  "jsonrpsee-types",
- "parking_lot 0.12.4",
+ "parking_lot 0.12.3",
  "pin-project",
  "rand 0.8.5",
  "rustc-hash 2.1.1",
@@ -7462,7 +7277,7 @@ dependencies = [
  "base64 0.22.1",
  "http-body 1.0.1",
  "hyper 1.6.0",
- "hyper-rustls 0.27.7",
+ "hyper-rustls 0.27.5",
  "hyper-util",
  "jsonrpsee-core",
  "jsonrpsee-types",
@@ -7484,10 +7299,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5e65763c942dfc9358146571911b0cd1c361c2d63e2d2305622d40d36376ca80"
 dependencies = [
  "heck 0.5.0",
- "proc-macro-crate 3.3.0",
+ "proc-macro-crate 3.2.0",
  "proc-macro2",
  "quote",
- "syn 2.0.104",
+ "syn 2.0.98",
 ]
 
 [[package]]
@@ -7551,6 +7366,36 @@ dependencies = [
  "jsonrpsee-core",
  "jsonrpsee-types",
  "url",
+]
+
+[[package]]
+name = "jsonrpsee"
+version = "0.24.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "37b26c20e2178756451cfeb0661fb74c47dd5988cb7e3939de7e9241fd604d42"
+dependencies = [
+ "ahash 0.8.11",
+ "anyhow",
+ "base64 0.21.7",
+ "bytecount",
+ "clap 4.5.29",
+ "fancy-regex 0.11.0",
+ "fraction 0.13.1",
+ "getrandom 0.2.15",
+ "iso8601",
+ "itoa 1.0.14",
+ "memchr",
+ "num-cmp",
+ "once_cell",
+ "parking_lot 0.12.3",
+ "percent-encoding",
+ "regex",
+ "reqwest 0.11.27",
+ "serde",
+ "serde_json",
+ "time",
+ "url",
+ "uuid",
 ]
 
 [[package]]
@@ -7881,7 +7726,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "07033963ba89ebaf1584d767badaa2e8fcec21aedea6b8c0346d487d49c28667"
 dependencies = [
  "cfg-if",
- "windows-targets 0.48.5",
+ "windows-targets 0.53.0",
 ]
 
 [[package]]
@@ -8044,14 +7889,8 @@ version = "0.12.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "234cf4f4a04dc1f57e24b96cc0cd600cf2af460d4161ac5ecdd0af8e1f3b2a38"
 dependencies = [
- "hashbrown 0.15.4",
+ "hashbrown 0.15.2",
 ]
-
-[[package]]
-name = "lru-slab"
-version = "0.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "112b39cec0b298b6c1999fee3e31427f74f676e4cb9879ed1a121b43661a4154"
 
 [[package]]
 name = "lsp-types"
@@ -8067,10 +7906,19 @@ dependencies = [
 ]
 
 [[package]]
-name = "mac"
-version = "0.1.1"
+name = "lru"
+version = "0.12.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c41e0c4fef86961ac6d6f8a82609f55f31b05e4fce149ac5710e439df7619ba4"
+
+[[package]]
+name = "malloc_buf"
+version = "0.0.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "62bb907fe88d54d8d9ce32a3cceab4218ed2f6b7d35617cafe9adf84e43919cb"
+dependencies = [
+ "libc",
+]
 
 [[package]]
 name = "markup5ever"
@@ -8929,6 +8777,632 @@ dependencies = [
 ]
 
 [[package]]
+name = "move-abstract-interpreter"
+version = "0.1.0"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "move-binary-format",
+ "move-bytecode-verifier-meter",
+]
+
+[[package]]
+name = "move-abstract-stack"
+version = "0.0.1"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+
+[[package]]
+name = "move-binary-format"
+version = "0.0.3"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "anyhow",
+ "enum-compat-util",
+ "move-core-types",
+ "move-proc-macros",
+ "ref-cast",
+ "serde",
+ "variant_count",
+]
+
+[[package]]
+name = "move-borrow-graph"
+version = "0.0.1"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+
+[[package]]
+name = "move-bytecode-source-map"
+version = "0.1.0"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "anyhow",
+ "bcs",
+ "move-binary-format",
+ "move-command-line-common",
+ "move-core-types",
+ "move-ir-types",
+ "move-symbol-pool",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "move-bytecode-utils"
+version = "0.1.0"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "anyhow",
+ "indexmap 2.10.0",
+ "move-binary-format",
+ "move-core-types",
+ "petgraph",
+ "serde",
+ "serde-reflection",
+]
+
+[[package]]
+name = "move-bytecode-verifier"
+version = "0.1.0"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "move-abstract-interpreter",
+ "move-abstract-stack",
+ "move-binary-format",
+ "move-borrow-graph",
+ "move-bytecode-verifier-meter",
+ "move-core-types",
+ "move-vm-config",
+ "petgraph",
+]
+
+[[package]]
+name = "move-bytecode-verifier-meter"
+version = "0.1.0"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "move-binary-format",
+ "move-core-types",
+ "move-vm-config",
+]
+
+[[package]]
+name = "move-command-line-common"
+version = "0.1.0"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "anyhow",
+ "bcs",
+ "colored",
+ "dirs-next",
+ "hex",
+ "move-binary-format",
+ "move-core-types",
+ "num-bigint 0.4.6",
+ "once_cell",
+ "serde",
+ "sha2 0.9.9",
+ "similar",
+ "vfs",
+ "walkdir",
+]
+
+[[package]]
+name = "move-compiler"
+version = "0.0.1"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "anyhow",
+ "bcs",
+ "clap 4.5.29",
+ "codespan-reporting",
+ "dunce",
+ "hex",
+ "lsp-types",
+ "move-binary-format",
+ "move-borrow-graph",
+ "move-bytecode-source-map",
+ "move-bytecode-verifier",
+ "move-command-line-common",
+ "move-core-types",
+ "move-ir-to-bytecode",
+ "move-ir-types",
+ "move-proc-macros",
+ "move-symbol-pool",
+ "once_cell",
+ "petgraph",
+ "rayon",
+ "regex",
+ "serde",
+ "serde_json",
+ "similar",
+ "stacker",
+ "tempfile",
+ "vfs",
+]
+
+[[package]]
+name = "move-core-types"
+version = "0.0.4"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "anyhow",
+ "bcs",
+ "enum-compat-util",
+ "ethnum",
+ "hex",
+ "leb128",
+ "move-proc-macros",
+ "num",
+ "once_cell",
+ "primitive-types 0.10.1",
+ "rand 0.8.5",
+ "ref-cast",
+ "serde",
+ "serde_bytes",
+ "thiserror 1.0.69",
+ "uint",
+]
+
+[[package]]
+name = "move-coverage"
+version = "0.1.0"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "anyhow",
+ "bcs",
+ "clap 4.5.29",
+ "codespan",
+ "colored",
+ "indexmap 2.10.0",
+ "move-abstract-interpreter",
+ "move-binary-format",
+ "move-bytecode-source-map",
+ "move-command-line-common",
+ "move-core-types",
+ "move-ir-types",
+ "petgraph",
+ "serde",
+]
+
+[[package]]
+name = "move-disassembler"
+version = "0.1.0"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "anyhow",
+ "bcs",
+ "clap 4.5.29",
+ "hex",
+ "inline_colorization",
+ "move-abstract-interpreter",
+ "move-binary-format",
+ "move-bytecode-source-map",
+ "move-command-line-common",
+ "move-compiler",
+ "move-core-types",
+ "move-coverage",
+ "move-ir-types",
+]
+
+[[package]]
+name = "move-ir-to-bytecode"
+version = "0.1.0"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "anyhow",
+ "codespan-reporting",
+ "log",
+ "move-binary-format",
+ "move-bytecode-source-map",
+ "move-command-line-common",
+ "move-core-types",
+ "move-ir-to-bytecode-syntax",
+ "move-ir-types",
+ "move-symbol-pool",
+ "ouroboros",
+]
+
+[[package]]
+name = "move-ir-to-bytecode-syntax"
+version = "0.1.0"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "anyhow",
+ "hex",
+ "move-command-line-common",
+ "move-core-types",
+ "move-ir-types",
+ "move-symbol-pool",
+]
+
+[[package]]
+name = "move-ir-types"
+version = "0.1.0"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "hex",
+ "move-command-line-common",
+ "move-core-types",
+ "move-symbol-pool",
+ "once_cell",
+ "serde",
+]
+
+[[package]]
+name = "move-proc-macros"
+version = "0.1.0"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "quote",
+ "syn 2.0.98",
+]
+
+[[package]]
+name = "move-abstract-interpreter"
+version = "0.1.0"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "move-binary-format",
+ "move-bytecode-verifier-meter",
+]
+
+[[package]]
+name = "move-abstract-stack"
+version = "0.0.1"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+
+[[package]]
+name = "move-binary-format"
+version = "0.0.3"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "anyhow",
+ "enum-compat-util",
+ "move-core-types",
+ "move-proc-macros",
+ "ref-cast",
+ "serde",
+ "variant_count",
+]
+
+[[package]]
+name = "move-borrow-graph"
+version = "0.0.1"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+
+[[package]]
+name = "move-bytecode-source-map"
+version = "0.1.0"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "anyhow",
+ "bcs",
+ "move-binary-format",
+ "move-command-line-common",
+ "move-core-types",
+ "move-ir-types",
+ "move-symbol-pool",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "move-bytecode-utils"
+version = "0.1.0"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "anyhow",
+ "indexmap 2.10.0",
+ "move-binary-format",
+ "move-core-types",
+ "petgraph",
+ "serde",
+ "serde-reflection",
+]
+
+[[package]]
+name = "move-bytecode-verifier"
+version = "0.1.0"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "move-abstract-interpreter",
+ "move-abstract-stack",
+ "move-binary-format",
+ "move-borrow-graph",
+ "move-bytecode-verifier-meter",
+ "move-core-types",
+ "move-vm-config",
+ "petgraph",
+]
+
+[[package]]
+name = "move-bytecode-verifier-meter"
+version = "0.1.0"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "move-binary-format",
+ "move-core-types",
+ "move-vm-config",
+]
+
+[[package]]
+name = "move-command-line-common"
+version = "0.1.0"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "anyhow",
+ "bcs",
+ "colored",
+ "dirs-next",
+ "hex",
+ "move-binary-format",
+ "move-core-types",
+ "num-bigint 0.4.6",
+ "once_cell",
+ "serde",
+ "sha2 0.9.9",
+ "similar",
+ "vfs",
+ "walkdir",
+]
+
+[[package]]
+name = "move-compiler"
+version = "0.0.1"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "anyhow",
+ "bcs",
+ "clap 4.5.29",
+ "codespan-reporting",
+ "dunce",
+ "hex",
+ "lsp-types",
+ "move-binary-format",
+ "move-borrow-graph",
+ "move-bytecode-source-map",
+ "move-bytecode-verifier",
+ "move-command-line-common",
+ "move-core-types",
+ "move-ir-to-bytecode",
+ "move-ir-types",
+ "move-proc-macros",
+ "move-symbol-pool",
+ "once_cell",
+ "petgraph",
+ "rayon",
+ "regex",
+ "serde",
+ "serde_json",
+ "similar",
+ "stacker",
+ "tempfile",
+ "vfs",
+]
+
+[[package]]
+name = "move-core-types"
+version = "0.0.4"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "anyhow",
+ "bcs",
+ "enum-compat-util",
+ "ethnum",
+ "hex",
+ "leb128",
+ "move-proc-macros",
+ "num",
+ "once_cell",
+ "primitive-types 0.10.1",
+ "rand 0.8.5",
+ "ref-cast",
+ "serde",
+ "serde_bytes",
+ "thiserror 1.0.69",
+ "uint",
+]
+
+[[package]]
+name = "move-coverage"
+version = "0.1.0"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "anyhow",
+ "bcs",
+ "clap 4.5.29",
+ "codespan",
+ "colored",
+ "indexmap 2.10.0",
+ "move-abstract-interpreter",
+ "move-binary-format",
+ "move-bytecode-source-map",
+ "move-command-line-common",
+ "move-core-types",
+ "move-ir-types",
+ "petgraph",
+ "serde",
+]
+
+[[package]]
+name = "move-disassembler"
+version = "0.1.0"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "anyhow",
+ "bcs",
+ "clap 4.5.29",
+ "hex",
+ "inline_colorization",
+ "move-abstract-interpreter",
+ "move-binary-format",
+ "move-bytecode-source-map",
+ "move-command-line-common",
+ "move-compiler",
+ "move-core-types",
+ "move-coverage",
+ "move-ir-types",
+]
+
+[[package]]
+name = "move-ir-to-bytecode"
+version = "0.1.0"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "anyhow",
+ "codespan-reporting",
+ "log",
+ "move-binary-format",
+ "move-bytecode-source-map",
+ "move-command-line-common",
+ "move-core-types",
+ "move-ir-to-bytecode-syntax",
+ "move-ir-types",
+ "move-symbol-pool",
+ "ouroboros",
+]
+
+[[package]]
+name = "move-ir-to-bytecode-syntax"
+version = "0.1.0"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "anyhow",
+ "hex",
+ "move-command-line-common",
+ "move-core-types",
+ "move-ir-types",
+ "move-symbol-pool",
+]
+
+[[package]]
+name = "move-ir-types"
+version = "0.1.0"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "hex",
+ "move-command-line-common",
+ "move-core-types",
+ "move-symbol-pool",
+ "once_cell",
+ "serde",
+]
+
+[[package]]
+name = "move-proc-macros"
+version = "0.1.0"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "quote",
+ "syn 2.0.98",
+]
+
+[[package]]
+name = "move-stdlib-natives"
+version = "0.1.1"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "hex",
+ "move-binary-format",
+ "move-core-types",
+ "move-vm-runtime",
+ "move-vm-types",
+ "sha2 0.9.9",
+ "sha3 0.9.1",
+ "smallvec",
+]
+
+[[package]]
+name = "move-symbol-pool"
+version = "0.1.0"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "once_cell",
+ "phf 0.11.3",
+ "serde",
+]
+
+[[package]]
+name = "move-trace-format"
+version = "0.0.1"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "anyhow",
+ "move-binary-format",
+ "move-core-types",
+ "move-proc-macros",
+ "ref-cast",
+ "serde",
+ "serde_json",
+ "variant_count",
+]
+
+[[package]]
+name = "move-vm-config"
+version = "0.1.0"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "move-binary-format",
+ "once_cell",
+]
+
+[[package]]
+name = "move-vm-profiler"
+version = "0.1.0"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "move-vm-config",
+ "once_cell",
+ "serde",
+]
+
+[[package]]
+name = "move-vm-runtime"
+version = "0.1.0"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "better_any",
+ "fail",
+ "move-binary-format",
+ "move-bytecode-verifier",
+ "move-core-types",
+ "move-trace-format",
+ "move-vm-config",
+ "move-vm-profiler",
+ "move-vm-types",
+ "once_cell",
+ "parking_lot 0.11.2",
+ "smallvec",
+ "tracing",
+]
+
+[[package]]
+name = "move-vm-test-utils"
+version = "0.1.0"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "anyhow",
+ "move-binary-format",
+ "move-core-types",
+ "move-vm-profiler",
+ "move-vm-types",
+ "once_cell",
+ "serde",
+]
+
+[[package]]
+name = "move-vm-types"
+version = "0.1.0"
+source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
+dependencies = [
+ "bcs",
+ "move-binary-format",
+ "move-core-types",
+ "move-vm-profiler",
+ "serde",
+ "smallvec",
+]
+
+[[package]]
 name = "mown"
 version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -8962,8 +9436,8 @@ dependencies = [
  "once_cell",
  "png",
  "serde",
- "thiserror 2.0.12",
- "windows-sys 0.60.2",
+ "thiserror 1.0.69",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -9073,7 +9547,7 @@ dependencies = [
  "blake2s_simd",
  "blstrs",
  "byteorder",
- "ff 0.13.1",
+ "ff 0.13.0",
  "generic-array",
  "log",
  "pasta_curves",
@@ -9647,13 +10121,53 @@ version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "12f40cff3dde1b6087cc5d5f5d4d65712f34016a03ed60e9c08dcc392736b5b7"
 dependencies = [
+ "memchr",
+]
+
+[[package]]
+name = "object_store"
+version = "0.10.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e6da452820c715ce78221e8202ccc599b4a52f3e1eb3eedb487b680c81a8e3f3"
+dependencies = [
+ "async-trait",
+ "base64 0.22.1",
+ "bytes",
+ "chrono",
+ "futures",
+ "humantime",
+ "hyper 1.6.0",
+ "itertools 0.13.0",
+ "md-5",
+ "parking_lot 0.12.3",
+ "percent-encoding",
+ "quick-xml 0.36.2",
+ "rand 0.8.5",
+ "reqwest 0.12.12",
+ "ring",
+ "rustls-pemfile 2.2.0",
+ "serde",
+ "serde_json",
+ "snafu",
+ "tokio",
+ "tracing",
+ "url",
+ "walkdir",
+]
+
+[[package]]
+name = "oid-registry"
+version = "0.8.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "12f40cff3dde1b6087cc5d5f5d4d65712f34016a03ed60e9c08dcc392736b5b7"
+dependencies = [
  "asn1-rs",
 ]
 
 [[package]]
 name = "oid4vc"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=5384fcc#5384fccbefae383fdc7c077cbe2aed09b582969d"
+source = "git+https://git@github.com/impierce/openid4vc?rev=cdc02ba#cdc02ba1f37c78994191854641fcf9779e8fcd50"
 dependencies = [
  "oid4vc-core",
  "oid4vc-manager",
@@ -9665,13 +10179,13 @@ dependencies = [
 [[package]]
 name = "oid4vc-core"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=5384fcc#5384fccbefae383fdc7c077cbe2aed09b582969d"
+source = "git+https://git@github.com/impierce/openid4vc?rev=cdc02ba#cdc02ba1f37c78994191854641fcf9779e8fcd50"
 dependencies = [
  "anyhow",
  "async-trait",
  "base64-url",
  "derivative",
- "derive_more 0.99.20",
+ "derive_more 0.99.19",
  "did_url",
  "ed25519-dalek 2.2.0",
  "getset",
@@ -9690,7 +10204,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-manager"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=5384fcc#5384fccbefae383fdc7c077cbe2aed09b582969d"
+source = "git+https://git@github.com/impierce/openid4vc?rev=cdc02ba#cdc02ba1f37c78994191854641fcf9779e8fcd50"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -9724,7 +10238,7 @@ dependencies = [
 [[package]]
 name = "oid4vci"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=5384fcc#5384fccbefae383fdc7c077cbe2aed09b582969d"
+source = "git+https://git@github.com/impierce/openid4vc?rev=cdc02ba#cdc02ba1f37c78994191854641fcf9779e8fcd50"
 dependencies = [
  "anyhow",
  "derivative",
@@ -9740,7 +10254,7 @@ dependencies = [
  "serde",
  "serde_json",
  "serde_urlencoded",
- "serde_with 3.14.0",
+ "serde_with 3.12.0",
  "thiserror 1.0.69",
  "tokio",
 ]
@@ -9748,7 +10262,7 @@ dependencies = [
 [[package]]
 name = "oid4vp"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=5384fcc#5384fccbefae383fdc7c077cbe2aed09b582969d"
+source = "git+https://git@github.com/impierce/openid4vc?rev=cdc02ba#cdc02ba1f37c78994191854641fcf9779e8fcd50"
 dependencies = [
  "anyhow",
  "chrono",
@@ -9874,7 +10388,7 @@ dependencies = [
  "proc-macro-error",
  "proc-macro2",
  "quote",
- "syn 2.0.104",
+ "syn 2.0.98",
 ]
 
 [[package]]
@@ -9982,7 +10496,7 @@ checksum = "ae7891b22598926e4398790c8fe6447930c72a67d36d983a49d6ce682ce83290"
 dependencies = [
  "bytecount",
  "fnv",
- "unicode-width 0.1.14",
+ "unicode-width",
 ]
 
 [[package]]
@@ -10001,16 +10515,16 @@ dependencies = [
 
 [[package]]
 name = "parity-scale-codec"
-version = "3.7.5"
+version = "2.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "799781ae679d79a948e13d4824a40970bfa500058d245760dd857301059810fa"
+checksum = "373b1a4c1338d9cd3d1fa53b3a11bdab5ab6bd80a20f7f7becd76953ae2be909"
 dependencies = [
  "arrayvec",
  "bitvec 1.0.1",
  "byte-slice-cast",
  "const_format",
  "impl-trait-for-tuples",
- "parity-scale-codec-derive 3.7.5",
+ "parity-scale-codec-derive 3.7.4",
  "rustversion",
  "serde",
 ]
@@ -10029,14 +10543,14 @@ dependencies = [
 
 [[package]]
 name = "parity-scale-codec-derive"
-version = "3.7.5"
+version = "2.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "34b4653168b563151153c9e4c08ebed57fb8262bebfa79711552fa983c623e7a"
+checksum = "1557010476e0595c9b568d16dcfb81b93cdeb157612726f5170d31aa707bed27"
 dependencies = [
- "proc-macro-crate 3.3.0",
+ "proc-macro-crate 1.3.1",
  "proc-macro2",
  "quote",
- "syn 2.0.104",
+ "syn 2.0.98",
 ]
 
 [[package]]
@@ -10099,17 +10613,17 @@ version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "77144664f6aac5f629d7efa815f5098a054beeeca6ccafee5ec453fd2b0c53f9"
 dependencies = [
- "bitflags 2.9.1",
+ "bitflags 2.8.0",
  "ciborium",
  "coset",
  "data-encoding",
- "getrandom 0.2.16",
+ "getrandom 0.2.15",
  "hmac 0.12.1",
  "indexmap 2.10.0",
  "rand 0.8.5",
  "serde",
  "serde_json",
- "sha2 0.10.9",
+ "sha2 0.10.8",
  "strum 0.25.0",
  "typeshare",
  "zeroize",
@@ -10122,7 +10636,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d3e57598f73cc7e1b2ac63c79c517b31a0877cd7c402cdcaa311b5208de7a095"
 dependencies = [
  "blake2b_simd",
- "ff 0.13.1",
+ "ff 0.13.0",
  "group 0.13.0",
  "hex",
  "lazy_static",
@@ -10184,15 +10698,6 @@ dependencies = [
 
 [[package]]
 name = "pem-rfc7468"
-version = "0.3.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "01de5d978f34aa4b2296576379fcc416034702fd94117c56ffd8a1a767cefb30"
-dependencies = [
- "base64ct",
-]
-
-[[package]]
-name = "pem-rfc7468"
 version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "24d159833a9105500e0398934e205e0773f0b27529557134ecfc51c27646adac"
@@ -10228,7 +10733,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1db05f56d34358a8b1066f67cbb203ee3e7ed2ba674a6263a1d5ec6db2204323"
 dependencies = [
  "memchr",
- "thiserror 2.0.12",
+ "thiserror 2.0.11",
  "ucd-trie",
 ]
 
@@ -10252,7 +10757,7 @@ dependencies = [
  "pest_meta",
  "proc-macro2",
  "quote",
- "syn 2.0.104",
+ "syn 2.0.98",
 ]
 
 [[package]]
@@ -10262,7 +10767,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "edd1101f170f5903fde0914f899bb503d9ff5271d7ba76bbb70bea63690cc0d5"
 dependencies = [
  "pest",
- "sha2 0.10.9",
+ "sha2 0.10.8",
 ]
 
 [[package]]
@@ -10464,17 +10969,6 @@ dependencies = [
 
 [[package]]
 name = "pkcs1"
-version = "0.3.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a78f66c04ccc83dd4486fd46c33896f4e17b24a7a3a6400dedc48ed0ddd72320"
-dependencies = [
- "der 0.5.1",
- "pkcs8 0.8.0",
- "zeroize",
-]
-
-[[package]]
-name = "pkcs1"
 version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "eff33bdbdfc54cc98a2eca766ebdec3e1b8fb7387523d5c9c9a2891da856f719"
@@ -10482,17 +10976,6 @@ dependencies = [
  "der 0.6.1",
  "pkcs8 0.9.0",
  "spki 0.6.0",
- "zeroize",
-]
-
-[[package]]
-name = "pkcs8"
-version = "0.8.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7cabda3fb821068a9a4fab19a683eac3af12edf0f34b94a8be53c4972b8149d0"
-dependencies = [
- "der 0.5.1",
- "spki 0.5.4",
  "zeroize",
 ]
 
@@ -10530,7 +11013,7 @@ checksum = "3af6b589e163c5a788fab00ce0c0366f6efbb9959c2f9874b224936af7fce7e1"
 dependencies = [
  "base64 0.22.1",
  "indexmap 2.10.0",
- "quick-xml 0.38.1",
+ "quick-xml 0.32.0",
  "serde",
  "time",
 ]
@@ -10558,8 +11041,9 @@ dependencies = [
  "concurrent-queue",
  "hermit-abi 0.5.2",
  "pin-project-lite",
- "rustix 1.0.8",
- "windows-sys 0.60.2",
+ "rustix 0.38.44",
+ "tracing",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -10590,15 +11074,6 @@ name = "portable-atomic"
 version = "1.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f84267b20a16ea918e43c6a88433c2d54fa145c92a811b5b047ccbe153674483"
-
-[[package]]
-name = "potential_utf"
-version = "0.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e5a7c30837279ca13e7c867e9e40053bc68740f988cb07f7ca6df43cc734b585"
-dependencies = [
- "zerovec 0.11.4",
-]
 
 [[package]]
 name = "powerfmt"
@@ -10643,12 +11118,12 @@ dependencies = [
 
 [[package]]
 name = "prettyplease"
-version = "0.2.36"
+version = "0.2.34"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ff24dfcda44452b9816fff4cd4227e1bb73ff5a2f1bc1105aa92fb8565ce44d2"
+checksum = "6837b9e10d61f45f987d50808f83d1ee3d206c66acf650c3e4ae2e1f6ddedf55"
 dependencies = [
  "proc-macro2",
- "syn 2.0.104",
+ "syn 2.0.98",
 ]
 
 [[package]]
@@ -10786,7 +11261,7 @@ dependencies = [
 [[package]]
 name = "producer"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=b762f61#b762f61697af2f455047c0691f3dd0dfe01cd97f"
+source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
 dependencies = [
  "did_iota",
  "did_jwk",
@@ -10838,19 +11313,9 @@ dependencies = [
  "fnv",
  "lazy_static",
  "memchr",
- "parking_lot 0.12.4",
+ "parking_lot 0.12.3",
  "protobuf",
  "thiserror 1.0.69",
-]
-
-[[package]]
-name = "prometheus-closure-metric"
-version = "0.12.0-rc"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
-dependencies = [
- "anyhow",
- "prometheus",
- "protobuf",
 ]
 
 [[package]]
@@ -10880,10 +11345,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8a56d757972c98b346a9b766e3f02746cde6dd1cd1d1d563472929fdd74bec4d"
 dependencies = [
  "anyhow",
- "itertools 0.14.0",
+ "itertools 0.12.1",
  "proc-macro2",
  "quote",
- "syn 2.0.104",
+ "syn 2.0.98",
 ]
 
 [[package]]
@@ -10934,7 +11399,7 @@ dependencies = [
  "libc",
  "once_cell",
  "raw-cpuid",
- "wasi 0.11.1+wasi-snapshot-preview1",
+ "wasi 0.11.0+wasi-snapshot-preview1",
  "web-sys",
  "winapi",
 ]
@@ -10943,7 +11408,7 @@ dependencies = [
 name = "quick-xml"
 version = "0.36.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f7649a7b4df05aed9ea7ec6f628c67c9953a43869b8bc50929569b2999d443fe"
+checksum = "1d3a6e5838b60e0e8fa7a43f22ade549a37d61f8bdbe636d0d7816191de969c2"
 dependencies = [
  "memchr",
  "serde",
@@ -10959,21 +11424,40 @@ dependencies = [
 ]
 
 [[package]]
+name = "quick-xml"
+version = "0.36.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f7649a7b4df05aed9ea7ec6f628c67c9953a43869b8bc50929569b2999d443fe"
+dependencies = [
+ "memchr",
+ "serde",
+]
+
+[[package]]
+name = "quick-xml"
+version = "0.36.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f7649a7b4df05aed9ea7ec6f628c67c9953a43869b8bc50929569b2999d443fe"
+dependencies = [
+ "memchr",
+ "serde",
+]
+
+[[package]]
 name = "quinn"
 version = "0.11.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "626214629cda6781b6dc1d316ba307189c85ba657213ce642d9c77670f8202c8"
 dependencies = [
  "bytes",
- "cfg_aliases",
  "futures-io",
  "pin-project-lite",
  "quinn-proto",
  "quinn-udp",
  "rustc-hash 2.1.1",
  "rustls 0.23.31",
- "socket2 0.5.10",
- "thiserror 2.0.12",
+ "socket2",
+ "thiserror 2.0.11",
  "tokio",
  "tracing",
  "web-time",
@@ -11022,12 +11506,6 @@ checksum = "1885c039570dc00dcb4ff087a89e185fd56bae234ddc7f056a945bf36467248d"
 dependencies = [
  "proc-macro2",
 ]
-
-[[package]]
-name = "r-efi"
-version = "5.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "69cdb34c158ceb288df11e18b4bd39de994f6657d83847bdffdbd7f346754b0f"
 
 [[package]]
 name = "radium"
@@ -11175,7 +11653,7 @@ version = "11.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c6df7ab838ed27997ba19a4664507e6f82b41fe6e20be42929332156e5e85146"
 dependencies = [
- "bitflags 2.9.1",
+ "bitflags 2.8.0",
 ]
 
 [[package]]
@@ -11238,7 +11716,7 @@ checksum = "f2a62d85ed81ca5305dc544bd42c8804c5060b78ffa5ad3c64b0fb6a8c13d062"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.104",
+ "syn 2.0.98",
 ]
 
 [[package]]
@@ -11359,7 +11837,7 @@ dependencies = [
  "encoding_rs",
  "futures-core",
  "futures-util",
- "h2 0.3.27",
+ "h2 0.3.26",
  "http 0.2.12",
  "http-body 0.4.6",
  "hyper 0.14.32",
@@ -11415,6 +11893,7 @@ dependencies = [
  "quinn",
  "rustls 0.23.31",
  "rustls-native-certs 0.8.1",
+ "rustls-pemfile 2.2.0",
  "rustls-pki-types",
  "serde",
  "serde_json",
@@ -11598,26 +12077,6 @@ checksum = "afab94fb28594581f62d981211a9a4d53cc8130bbcbbb89a0440d9b8e81a7746"
 
 [[package]]
 name = "rsa"
-version = "0.6.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4cf22754c49613d2b3b119f0e5d46e34a2c628a937e3024b8762de4e7d8c710b"
-dependencies = [
- "byteorder",
- "digest 0.10.7",
- "num-bigint-dig",
- "num-integer",
- "num-iter",
- "num-traits",
- "pkcs1 0.3.3",
- "pkcs8 0.8.0",
- "rand_core 0.6.4",
- "smallvec",
- "subtle",
- "zeroize",
-]
-
-[[package]]
-name = "rsa"
 version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "55a77d189da1fee555ad95b7e50e7457d91c0e089ec68ca69ad2989413bbdab4"
@@ -11628,10 +12087,10 @@ dependencies = [
  "num-integer",
  "num-iter",
  "num-traits",
- "pkcs1 0.4.1",
+ "pkcs1",
  "pkcs8 0.9.0",
  "rand_core 0.6.4",
- "sha2 0.10.9",
+ "sha2 0.10.8",
  "signature 2.2.0",
  "subtle",
  "zeroize",
@@ -11690,7 +12149,7 @@ dependencies = [
 name = "rustc-demangle"
 version = "0.1.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "56f7d92ca342cea22a06f2121d944b4fd82af56988c270852495420f961d4ace"
+checksum = "719b953e2095829ee67db738b3bfa9fa368c94900df327b3f07fe6e794d2fe1f"
 
 [[package]]
 name = "rustc-hash"
@@ -11738,7 +12197,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys 0.4.15",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -11747,11 +12206,11 @@ version = "1.0.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "11181fbabf243db407ef8df94a6ce0b2f9a733bd8be4ad02b4eda9602296cac8"
 dependencies = [
- "bitflags 2.9.1",
+ "bitflags 2.8.0",
  "errno",
  "libc",
  "linux-raw-sys 0.9.4",
- "windows-sys 0.60.2",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -11803,7 +12262,7 @@ dependencies = [
  "openssl-probe",
  "rustls-pki-types",
  "schannel",
- "security-framework 3.3.0",
+ "security-framework 3.2.0",
 ]
 
 [[package]]
@@ -11840,7 +12299,7 @@ version = "0.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "19787cda76408ec5404443dc8b31795c87cd8fec49762dc75fa727740d34acc1"
 dependencies = [
- "core-foundation 0.10.1",
+ "core-foundation 0.10.0",
  "core-foundation-sys",
  "jni",
  "log",
@@ -11849,7 +12308,7 @@ dependencies = [
  "rustls-native-certs 0.8.1",
  "rustls-platform-verifier-android",
  "rustls-webpki 0.103.4",
- "security-framework 3.3.0",
+ "security-framework 3.2.0",
  "security-framework-sys",
  "webpki-root-certs 0.26.11",
  "windows-sys 0.59.0",
@@ -11983,7 +12442,7 @@ dependencies = [
  "proc-macro2",
  "quote",
  "serde_derive_internals 0.29.1",
- "syn 2.0.104",
+ "syn 2.0.98",
 ]
 
 [[package]]
@@ -12110,11 +12569,11 @@ dependencies = [
 [[package]]
 name = "secret-storage"
 version = "0.3.0"
-source = "git+https://github.com/iotaledger/secret-storage.git?tag=v0.3.0#7dc13ddae8a7f2c8a931d3155f3cb9e9a27902fb"
+source = "git+https://github.com/iotaledger/secret-storage?tag=v0.3.0#7dc13ddae8a7f2c8a931d3155f3cb9e9a27902fb"
 dependencies = [
  "anyhow",
  "async-trait",
- "thiserror 2.0.12",
+ "thiserror 2.0.11",
 ]
 
 [[package]]
@@ -12161,7 +12620,7 @@ checksum = "0c37578180969d00692904465fb7f6b3d50b9a2b952b87c23d0e2e5cb5013416"
 dependencies = [
  "bitflags 1.3.2",
  "cssparser",
- "derive_more 0.99.20",
+ "derive_more 0.99.19",
  "fxhash",
  "log",
  "phf 0.8.0",
@@ -12273,7 +12732,18 @@ dependencies = [
 name = "serde_derive"
 version = "1.0.219"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5b0276cf7f2c73365f7157c8123c21cd9a50fbbd844757af28ca1f5925fc2a00"
+checksum = "5a9bf7cf98d04a2b28aead066b7496853d4779c9cc183c440dbac457641e19a0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.98",
+]
+
+[[package]]
+name = "serde_derive_internals"
+version = "0.28.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e578a843d40b4189a4d66bba51d7684f57da5bd7c304c64e14bd63efbef49509"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -12320,7 +12790,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "030fedb782600dcbd6f02d479bf0d817ac3bb40d644745b769d6a96bc3afc5a7"
 dependencies = [
  "indexmap 2.10.0",
- "itoa",
+ "itoa 1.0.14",
  "memchr",
  "ryu",
  "serde",
@@ -12368,15 +12838,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "serde_spanned"
-version = "1.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "40734c41988f7306bb04f0ecf60ec0f3f1caa34290e4e8ea471dcd3346483b83"
-dependencies = [
- "serde",
-]
-
-[[package]]
 name = "serde_urlencoded"
 version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -12415,8 +12876,6 @@ dependencies = [
  "hex",
  "indexmap 1.9.3",
  "indexmap 2.10.0",
- "schemars 0.9.0",
- "schemars 1.0.4",
  "serde",
  "serde_derive",
  "serde_json",
@@ -12445,7 +12904,7 @@ dependencies = [
  "darling 0.20.11",
  "proc-macro2",
  "quote",
- "syn 2.0.104",
+ "syn 2.0.98",
 ]
 
 [[package]]
@@ -12600,7 +13059,7 @@ dependencies = [
 [[package]]
 name = "shared"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager.git?rev=b762f61#b762f61697af2f455047c0691f3dd0dfe01cd97f"
+source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
 dependencies = [
  "identity_iota",
  "identity_storage",
@@ -12744,13 +13203,13 @@ dependencies = [
 [[package]]
 name = "siopv2"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?rev=5384fcc#5384fccbefae383fdc7c077cbe2aed09b582969d"
+source = "git+https://git@github.com/impierce/openid4vc?rev=cdc02ba#cdc02ba1f37c78994191854641fcf9779e8fcd50"
 dependencies = [
  "anyhow",
  "async-trait",
  "base64-url",
  "chrono",
- "derive_more 0.99.20",
+ "derive_more 0.99.19",
  "did_url",
  "futures",
  "getset",
@@ -12803,6 +13262,15 @@ version = "0.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4be0ff28bf14f9610a342169084e87a4f435ad798ec528dc7579a3678fa9dc9a"
 dependencies = [
+ "autocfg",
+]
+
+[[package]]
+name = "slip10_ed25519"
+version = "0.1.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4be0ff28bf14f9610a342169084e87a4f435ad798ec528dc7579a3678fa9dc9a"
+dependencies = [
  "hmac-sha512",
 ]
 
@@ -12819,7 +13287,7 @@ dependencies = [
 name = "smallvec"
 version = "1.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "67b1b7a3b5fe4f1376887184045fcf45c69e92af734b7aaddc05fb777b6fbd03"
+checksum = "3c5e1a9a646d36c3599cd173a41282daf47c44583ad367b8e6837255952e5c67"
 
 [[package]]
 name = "snafu"
@@ -12949,16 +13417,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d96d2d1d716fb500937168cc09353ffdc7a012be8475ac7308e1bdf0e3923300"
 dependencies = [
  "lock_api",
-]
-
-[[package]]
-name = "spki"
-version = "0.5.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "44d01ac02a6ccf3e07db148d2be087da624fea0221a16152ed01f0496a6b0a27"
-dependencies = [
- "base64ct",
- "der 0.5.1",
 ]
 
 [[package]]
@@ -13174,7 +13632,6 @@ dependencies = [
  "num-traits",
  "p256 0.13.2",
  "rand 0.8.5",
- "rsa 0.6.1",
  "serde",
  "simple_asn1 0.5.4",
  "ssi-crypto 0.1.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -13491,13 +13948,13 @@ dependencies = [
 
 [[package]]
 name = "synstructure"
-version = "0.13.2"
+version = "0.12.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "728a70f3dbaf5bab7f0c4b1ac8d7ae5ea60a4b5549c8a5914361c99147a709d2"
+checksum = "f36bdaa60a83aca3921b5259d5400cbf5e90fc51931376a9bd4a0eb79aa7210f"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.104",
+ "syn 2.0.98",
 ]
 
 [[package]]
@@ -13565,7 +14022,7 @@ checksum = "0ce69a5028cd9576063ec1f48edb2c75339fd835e6094ef3e05b3a079bf594a6"
 dependencies = [
  "papergrid",
  "tabled_derive",
- "unicode-width 0.1.14",
+ "unicode-width",
 ]
 
 [[package]]
@@ -13743,7 +14200,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b54a99a6cd8e01abcfa61508177e6096a4fe2681efecee9214e962f2f073ae4a"
 dependencies = [
  "base64 0.22.1",
- "brotli",
+ "brotli 7.0.0",
  "ico",
  "json-patch 3.0.1",
  "plist",
@@ -13840,7 +14297,7 @@ dependencies = [
  "tauri",
  "tauri-plugin",
  "tauri-utils",
- "thiserror 2.0.12",
+ "thiserror 2.0.11",
  "toml 0.8.23",
  "url",
 ]
@@ -13974,15 +14431,14 @@ version = "2.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9330c15cabfe1d9f213478c9e8ec2b0c76dab26bb6f314b8ad1c8a568c1d186e"
 dependencies = [
- "anyhow",
- "brotli",
- "cargo_metadata 0.19.2",
+ "brotli 7.0.0",
+ "cargo_metadata 0.19.1",
  "ctor",
  "dunce",
  "glob",
  "html5ever",
  "http 1.3.1",
- "infer 0.19.0",
+ "infer 0.16.0",
  "json-patch 3.0.1",
  "kuchikiki",
  "log",
@@ -13998,7 +14454,7 @@ dependencies = [
  "serde_json",
  "serde_with 3.14.0",
  "swift-rs",
- "thiserror 2.0.12",
+ "thiserror 2.0.11",
  "toml 0.8.23",
  "url",
  "urlpattern",
@@ -14026,7 +14482,7 @@ dependencies = [
  "fastrand 2.3.0",
  "getrandom 0.3.3",
  "once_cell",
- "rustix 1.0.8",
+ "rustix 0.38.44",
  "windows-sys 0.59.0",
 ]
 
@@ -14061,10 +14517,20 @@ dependencies = [
 ]
 
 [[package]]
-name = "textwrap"
-version = "0.16.2"
+name = "terminal_size"
+version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c13547615a44dc9c452a8a534638acdf07120d4b6847c8178705da06306a3057"
+checksum = "45c6481c4829e4cc63825e62c49186a34538b7b2750b73b266581ffb612fb5ed"
+dependencies = [
+ "rustix 1.0.8",
+ "windows-sys 0.59.0",
+]
+
+[[package]]
+name = "thin-slice"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8eaa81235c7058867fa8c0e7314f33dcce9c215f535d1913822a2b3f5e289f3c"
 
 [[package]]
 name = "thiserror"
@@ -14103,7 +14569,7 @@ checksum = "7f7cf42b4507d8ea322120659672cf1b9dbb93f8f2d4ecfd6e51350ff5b17a1d"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.104",
+ "syn 2.0.98",
 ]
 
 [[package]]
@@ -14121,8 +14587,8 @@ version = "0.3.41"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8a7619e19bc266e0f9c5e6686659d394bc57973859340060a69221e57dbc0c40"
 dependencies = [
- "deranged",
- "itoa",
+ "deranged 0.3.11",
+ "itoa 1.0.14",
  "libc",
  "num-conv",
  "num_threads",
@@ -14160,7 +14626,7 @@ dependencies = [
  "pbkdf2 0.11.0",
  "rand 0.8.5",
  "rustc-hash 1.1.0",
- "sha2 0.10.9",
+ "sha2 0.10.8",
  "thiserror 1.0.69",
  "unicode-normalization",
  "wasm-bindgen",
@@ -14321,17 +14787,15 @@ dependencies = [
 
 [[package]]
 name = "toml"
-version = "0.9.5"
+version = "0.8.23"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "75129e1dc5000bfbaa9fee9d1b21f974f9fbad9daec557a521ee6e080825f6e8"
+checksum = "dc1beb996b9d83529a9e75c17a1686767d148d70663143c7854d8b4a09ced362"
 dependencies = [
  "indexmap 2.10.0",
  "serde",
- "serde_spanned 1.0.0",
- "toml_datetime 0.7.0",
- "toml_parser",
- "toml_writer",
- "winnow 0.7.12",
+ "serde_spanned",
+ "toml_datetime",
+ "toml_edit 0.22.27",
 ]
 
 [[package]]
@@ -14344,22 +14808,15 @@ dependencies = [
 ]
 
 [[package]]
-name = "toml_datetime"
-version = "0.7.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bade1c3e902f58d73d3f294cd7f20391c1cb2fbcb643b73566bc773971df91e3"
-dependencies = [
- "serde",
-]
-
-[[package]]
 name = "toml_edit"
 version = "0.19.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1b5bb770da30e5cbfde35a2d7b9b8a2c4b8ef89548a7a6aeab5c9a576e3e7421"
 dependencies = [
  "indexmap 2.10.0",
- "toml_datetime 0.6.11",
+ "serde",
+ "serde_spanned",
+ "toml_datetime",
  "winnow 0.5.40",
 ]
 
@@ -14370,7 +14827,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "70f427fce4d84c72b5b732388bf4a9f4531b53f74e2887e3ecb2481f68f66d81"
 dependencies = [
  "indexmap 2.10.0",
- "toml_datetime 0.6.11",
+ "toml_datetime",
  "winnow 0.5.40",
 ]
 
@@ -14382,18 +14839,9 @@ checksum = "41fe8c660ae4257887cf66394862d21dbca4a6ddd26f04a3560410406a2f819a"
 dependencies = [
  "indexmap 2.10.0",
  "serde",
- "serde_spanned 0.6.9",
- "toml_datetime 0.6.11",
+ "serde_spanned",
+ "toml_datetime",
  "toml_write",
- "winnow 0.7.12",
-]
-
-[[package]]
-name = "toml_parser"
-version = "1.0.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b551886f449aa90d4fe2bdaa9f4a2577ad2dde302c61ecf262d80b116db95c10"
-dependencies = [
  "winnow 0.7.12",
 ]
 
@@ -14402,12 +14850,6 @@ name = "toml_write"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5d99f8c9a7727884afe522e9bd5edbfc91a3312b36a77b5fb8926e4c31a41801"
-
-[[package]]
-name = "toml_writer"
-version = "1.0.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fcc842091f2def52017664b53082ecbbeb5c7731092bad69d2c63050401dfd64"
 
 [[package]]
 name = "tonic"
@@ -14430,7 +14872,7 @@ dependencies = [
  "percent-encoding",
  "pin-project",
  "prost",
- "socket2 0.5.10",
+ "socket2",
  "tokio",
  "tokio-stream",
  "tower 0.4.13",
@@ -14514,7 +14956,7 @@ checksum = "1e9cd434a998747dd2c4276bc96ee2e0c7a2eadf3cae88e52be55a05fa9053f5"
 dependencies = [
  "async-compression",
  "base64 0.21.7",
- "bitflags 2.9.1",
+ "bitflags 2.8.0",
  "bytes",
  "futures-core",
  "futures-util",
@@ -14535,24 +14977,6 @@ dependencies = [
  "tower-service",
  "tracing",
  "uuid",
-]
-
-[[package]]
-name = "tower-http"
-version = "0.6.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "adc82fd73de2a9722ac5da747f12383d2bfdb93591ee6c58486e0097890f05f2"
-dependencies = [
- "bitflags 2.9.1",
- "bytes",
- "futures-util",
- "http 1.3.1",
- "http-body 1.0.1",
- "iri-string",
- "pin-project-lite",
- "tower 0.5.2",
- "tower-layer",
- "tower-service",
 ]
 
 [[package]]
@@ -14693,7 +15117,7 @@ dependencies = [
  "proc-macro2",
  "quote",
  "serde_derive_internals 0.28.0",
- "syn 2.0.104",
+ "syn 2.0.98",
 ]
 
 [[package]]
@@ -14737,15 +15161,6 @@ dependencies = [
 [[package]]
 name = "typed-store-error"
 version = "0.12.0-rc"
-source = "git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc#7e49c58b826b34c8e2b61842ef13c8de35a0aee8"
-dependencies = [
- "serde",
- "thiserror 1.0.69",
-]
-
-[[package]]
-name = "typed-store-error"
-version = "0.12.0-rc"
 source = "git+https://github.com/impierce/iota?branch=temp/fix#90084d420f010226775f389547d03fe3d2df81a9"
 dependencies = [
  "serde",
@@ -14762,7 +15177,7 @@ checksum = "bc7d623258602320d5c55d1bc22793b57daff0ec7efc270ea7d55ce1d5f5471c"
 name = "typenum"
 version = "1.18.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1dccffe3ce07af9386bfd29e80c0ab1a8205a2fc34e4bcd40364df902cfa8f3f"
+checksum = "42ff0bf0c66b8238c6f3b578df37d0b7848e55df8577b3f74f92a69acceeb825"
 
 [[package]]
 name = "typeshare"
@@ -14783,7 +15198,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a615d6c2764852a2e88a4f16e9ce1ea49bb776b5872956309e170d63a042a34f"
 dependencies = [
  "quote",
- "syn 2.0.104",
+ "syn 2.0.98",
 ]
 
 [[package]]
@@ -15108,7 +15523,7 @@ dependencies = [
 name = "value-bag"
 version = "1.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "943ce29a8a743eb10d6082545d861b24f9d1b160b7d741e0f2cdf726bec909c5"
+checksum = "3ef4c4aa54d5d05a279399bfa921ec387b7aba77caf7a682ae8d86785b8fdad2"
 
 [[package]]
 name = "variant_count"
@@ -15118,7 +15533,7 @@ checksum = "a1935e10c6f04d22688d07c0790f2fc0e1b1c5c2c55bc0cc87ed67656e587dd8"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.104",
+ "syn 2.0.98",
 ]
 
 [[package]]
@@ -15433,10 +15848,10 @@ checksum = "d4ba622a989277ef3886dd5afb3e280e3dd6d974b766118950a08f8f678ad6a4"
 dependencies = [
  "webview2-com-macros",
  "webview2-com-sys",
- "windows 0.61.3",
- "windows-core 0.61.2",
- "windows-implement 0.60.0",
- "windows-interface 0.59.1",
+ "windows 0.58.0",
+ "windows-core 0.58.0",
+ "windows-implement 0.58.0",
+ "windows-interface 0.58.0",
 ]
 
 [[package]]
@@ -15456,9 +15871,9 @@ version = "0.38.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "36695906a1b53a3bf5c4289621efedac12b73eeb0b89e7e1a89b517302d5d75c"
 dependencies = [
- "thiserror 2.0.12",
- "windows 0.61.3",
- "windows-core 0.61.2",
+ "thiserror 1.0.69",
+ "windows 0.58.0",
+ "windows-core 0.58.0",
 ]
 
 [[package]]
@@ -15544,24 +15959,12 @@ dependencies = [
 
 [[package]]
 name = "windows"
-version = "0.61.3"
+version = "0.57.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9babd3a767a4c1aef6900409f85f5d53ce2544ccdfaa86dad48c91782c6d6893"
+checksum = "12342cb4d8e3b046f3d80effd474a7a02447231330ef77d71daa6fbc40681143"
 dependencies = [
- "windows-collections",
- "windows-core 0.61.2",
- "windows-future",
- "windows-link",
- "windows-numerics",
-]
-
-[[package]]
-name = "windows-collections"
-version = "0.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3beeceb5e5cfd9eb1d76b381630e82c4241ccd0d27f1a39ed41b2760b255c5e8"
-dependencies = [
- "windows-core 0.61.2",
+ "windows-core 0.57.0",
+ "windows-targets 0.52.6",
 ]
 
 [[package]]
@@ -15578,14 +15981,25 @@ dependencies = [
 
 [[package]]
 name = "windows-core"
-version = "0.61.2"
+version = "0.57.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c0fdd3ddb90610c7638aa2b3a3ab2904fb9e5cdbecc643ddb3647212781c4ae3"
+checksum = "d2ed2439a290666cd67ecce2b0ffaad89c2a56b976b736e6ece670297897832d"
 dependencies = [
- "windows-implement 0.60.0",
- "windows-interface 0.59.1",
- "windows-link",
- "windows-result 0.3.4",
+ "windows-implement 0.57.0",
+ "windows-interface 0.57.0",
+ "windows-result 0.1.2",
+ "windows-targets 0.52.6",
+]
+
+[[package]]
+name = "windows-core"
+version = "0.58.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6ba6d44ec8c2591c134257ce647b7ea6b20335bf6379a27dac5f1641fcf59f99"
+dependencies = [
+ "windows-implement 0.58.0",
+ "windows-interface 0.58.0",
+ "windows-result 0.2.0",
  "windows-strings",
 ]
 
@@ -15605,6 +16019,40 @@ name = "windows-implement"
 version = "0.57.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9107ddc059d5b6fbfbffdfa7a7fe3e22a226def0b2608f72e9d552763d3e1ad7"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.98",
+]
+
+[[package]]
+name = "windows-implement"
+version = "0.57.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9107ddc059d5b6fbfbffdfa7a7fe3e22a226def0b2608f72e9d552763d3e1ad7"
+checksum = "2bbd5b46c938e506ecbce286b6628a02171d56153ba733b6c741fc627ec9579b"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.98",
+]
+
+[[package]]
+name = "windows-interface"
+version = "0.57.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "29bee4b38ea3cde66011baa44dba677c432a78593e202392d1e9070cf2a7fca7"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.98",
+]
+
+[[package]]
+name = "windows-implement"
+version = "0.57.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2bbd5b46c938e506ecbce286b6628a02171d56153ba733b6c741fc627ec9579b"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -15656,8 +16104,9 @@ version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9150af68066c4c5c07ddc0ce30421554771e528bde427614c61038bc2c92c2b1"
 dependencies = [
- "windows-core 0.61.2",
- "windows-link",
+ "windows-result 0.2.0",
+ "windows-strings",
+ "windows-targets 0.52.6",
 ]
 
 [[package]]
@@ -15671,11 +16120,11 @@ dependencies = [
 
 [[package]]
 name = "windows-result"
-version = "0.3.4"
+version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "56f42bd332cc6c8eac5af113fc0c1fd6a8fd2aa08a0119358686e5160d0586c6"
+checksum = "5e383302e8ec8515204254685643de10811af0ed97ea37210dc26fb0032647f8"
 dependencies = [
- "windows-link",
+ "windows-targets 0.52.6",
 ]
 
 [[package]]
@@ -15684,7 +16133,8 @@ version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "56e6c93f3a0c3b36176cb1327a4958a0353d5d166c2a35cb268ace15e91d3b57"
 dependencies = [
- "windows-link",
+ "windows-result 0.2.0",
+ "windows-targets 0.52.6",
 ]
 
 [[package]]
@@ -16257,7 +16707,7 @@ dependencies = [
  "nom 7.1.3",
  "oid-registry",
  "rusticata-macros",
- "thiserror 2.0.12",
+ "thiserror 2.0.11",
  "time",
 ]
 
@@ -16268,7 +16718,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "af3a19837351dc82ba89f8a125e22a3c475f05aba604acc023d62b2739ae2909"
 dependencies = [
  "libc",
- "rustix 1.0.8",
+ "linux-raw-sys 0.4.15",
+ "rustix 0.38.44",
 ]
 
 [[package]]
@@ -16321,8 +16772,8 @@ checksum = "2380878cad4ac9aac1e2435f3eb4020e8374b5f13c296cb75b4620ff8e229154"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.104",
- "synstructure 0.13.2",
+ "syn 2.0.98",
+ "synstructure 0.13.1",
 ]
 
 [[package]]
@@ -16374,8 +16825,8 @@ checksum = "d71e5d6e06ab090c67b5e44993ec16b72dcbaabc526db883a360057678b48502"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.104",
- "synstructure 0.13.2",
+ "syn 2.0.98",
+ "synstructure 0.13.1",
 ]
 
 [[package]]
@@ -16502,7 +16953,7 @@ dependencies = [
  "rand 0.8.5",
  "serde",
  "serde_json",
- "sha2 0.10.9",
+ "sha2 0.10.8",
  "sha3 0.10.8",
  "thiserror 1.0.69",
  "zeroize",

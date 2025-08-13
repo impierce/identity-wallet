@@ -151,8 +151,20 @@ describe('formatRelativeDateTime function', () => {
 
   test('3 months ago es-ES', () => {
     const now = new Date();
-    const twoMonthsAgo = new Date(now.setMonth(now.getMonth() - 3));
-    expect(formatRelativeDateTime(twoMonthsAgo.toISOString(), 'es-ES')).toEqual('Hace 3 meses');
+    const threeMonthsAgo = new Date(now.setMonth(now.getMonth() - 3));
+    expect(formatRelativeDateTime(threeMonthsAgo.toISOString(), 'es-ES')).toEqual('Hace 3 meses');
+  });
+
+  test('2 months ago fi-FI', () => {
+    const now = new Date();
+    const twoMonthsAgo = new Date(now.setMonth(now.getMonth() - 2));
+    expect(formatRelativeDateTime(twoMonthsAgo.toISOString(), 'fi-FI')).toEqual('2 kuukautta sitten');
+  });
+
+  test('3 years ago sv-FI', () => {
+    const now = new Date();
+    const threeYearsAgo = new Date(now.setFullYear(now.getFullYear() - 3));
+    expect(formatRelativeDateTime(threeYearsAgo.toISOString(), 'sv-FI')).toEqual('För 3 år sedan');
   });
 });
 
