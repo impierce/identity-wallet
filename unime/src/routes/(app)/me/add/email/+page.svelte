@@ -152,7 +152,7 @@
 
   const checkAutoDiscard = (expires_at: Date) => {
     const expired_mins_ago = Math.floor((new Date().getTime() - expires_at.getTime()) / 1_000 / 60);
-    console.log('expired_mins_ago', expired_mins_ago);
+    info(`expired_mins_ago: ${expired_mins_ago}`);
     if (expired_mins_ago >= AUTO_DISCARD_AFTER_MINUTES) {
       debug(`Auto-discarding expired verification case (${expired_mins_ago} minutes ago) ...`);
       reset();

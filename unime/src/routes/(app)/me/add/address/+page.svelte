@@ -8,6 +8,8 @@
   import { zod } from 'sveltekit-superforms/adapters';
   import { z } from 'zod';
 
+  import { info } from '@tauri-apps/plugin-log';
+
   import { Button, Switch, TextInput, TopNavBar } from '$lib/components';
   import SelectCountry from '$lib/components/forms/SelectCountry.svelte';
   import { dispatch } from '$lib/dispatcher';
@@ -41,7 +43,7 @@
     };
 
     const validationResult = residence.safeParse(credentialSubject);
-    console.log('Validation result:', validationResult);
+    info(`Validation result: ${JSON.stringify(validationResult)}`);
 
     let name = addressName;
     if (addressName.trim().length === 0) {
