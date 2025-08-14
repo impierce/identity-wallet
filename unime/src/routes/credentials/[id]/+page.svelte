@@ -77,7 +77,7 @@
           maxlength={maxLength}
           bind:value={displayNameUpdated}
           bind:this={labelInput}
-          class="-my-2 h-[40px] w-full truncate rounded-lg border border-slate-300 bg-background-alt text-center font-semibold text-slate-700 focus:outline-none disabled:border-none disabled:bg-background dark:border-slate-600 dark:text-grey"
+          class="-my-2 h-[40px] w-full truncate rounded-lg border border-slate-300 bg-background-alt text-center font-semibold text-slate-700 focus:outline-none disabled:border-none disabled:bg-background disabled:text-slate-700 dark:border-slate-600 dark:text-grey dark:disabled:text-grey"
           placeholder="Some title"
           disabled={!openEditMode}
         />
