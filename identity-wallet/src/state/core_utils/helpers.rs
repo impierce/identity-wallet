@@ -41,7 +41,7 @@ pub async fn get_issuer_document(resolver: &Resolver, credential_jwt: &Jwt) -> O
         .inspect_err(|err| warn!("Failed to parse credential claims: {err:#?}"))
         .ok()?;
 
-    info!("jwt_vc_json Credential claims: {claims:#?}",);
+    info!("jwt_vc_json Credential claims: {claims:#?}");
 
     // Resolve the DID
     resolver
@@ -159,7 +159,7 @@ impl CredentialType {
                 }
             }
             CredentialType::Other => {
-                warn!("No version found for credential type: {self:?}. Skipping validation.",);
+                warn!("No version found for credential type: {self:?}. Skipping validation.");
                 Ok(CredentialTypeVersion::Other)
             }
         }
