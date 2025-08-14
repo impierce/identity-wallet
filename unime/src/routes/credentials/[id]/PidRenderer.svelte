@@ -26,8 +26,6 @@
     <div class="flex grow items-center gap-2">
       {#each subject.nationality as nationality}
         <span class="overflow-hidden rounded">
-          <!-- <Icon class="h-[18px] w-auto" icon={`flagpack:${nationality.toLowerCase()}`} /> -->
-          <!-- We have to use circle-flags for consistency (e.g. 'GB' is rendered as 'GB-ENG' when using flagpack) -->
           <Icon class="size-5" icon={`circle-flags:${nationality.toLowerCase()}`} />
         </span>
       {/each}

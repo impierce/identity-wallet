@@ -20,7 +20,6 @@
     "@eslint/compat": "^1.2.8",
     "@eslint/js": "^9.32.0",
     "@iconify-json/circle-flags": "^1.2.6",
-    "@iconify-json/flagpack": "^1.2.2",
     "@iconify-json/ph": "^1.2.0",
     "@iconify/svelte": "^5.0.0",
     "@impierce/tauri-plugin-keystore": "2.1.0-alpha.1",
