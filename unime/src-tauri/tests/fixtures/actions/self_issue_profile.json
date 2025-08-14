@@ -2,6 +2,11 @@
   "type": "[Credential] Self Issue",
   "payload": {
     "type": "profile",
-    "data": "{\"gender\": \"Male\", \"first name\": \"John\", \"last name\": \"Doe\", \"date of birth\": \"1990-01-01\"}"
+    "data": {
+      "gender": "Male",
+      "first name": "John",
+      "last name": "Doe",
+      "date of birth": "1990-01-01"
+    }
   }
 }

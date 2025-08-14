@@ -23,7 +23,10 @@ use crate::{
     },
 };
 
-pub struct SubjectWrapper(pub Arc<dyn oid4vc::oid4vc_core::Subject>);
+pub struct SubjectWrapper {
+    pub subject: Arc<dyn oid4vc::oid4vc_core::Subject>,
+    pub preferred_did_method: String,
+}
 
 #[async_trait]
 impl JwsSigner for SubjectWrapper {
@@ -36,12 +39,13 @@ impl JwsSigner for SubjectWrapper {
 
         let message = format!("{}.{}", encoded_header, encoded_payload);
 
-        let proof_value = Sign::sign(&*self.0, &message, "TODO: DID:method here", Algorithm::EdDSA)
+        let proof_value = Sign::sign(&*self.subject, &message, &self.preferred_did_method, Algorithm::EdDSA)
             .await
             .map_err(|e| AppError::Error(format!("Failed to sign JWT for self-issued sd-jwt: {}", e)))?;
 
         let signature = URL_SAFE_NO_PAD.encode(proof_value.as_slice());
         let message = [message, signature].join(".");
+
         Ok(message.as_bytes().to_vec())
     }
 }
@@ -94,7 +98,10 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
         ))?;
 
         // Wrap subject with the SubjectWrapper to get the JwsSigner implementation
-        let subjectwrapper = SubjectWrapper(subject.clone());
+        let subject_wrapper = SubjectWrapper {
+            subject: subject.clone(),
+            preferred_did_method: did_method.clone(),
+        };
 
         let now = Timestamp::now_utc(); // TODO?: is this the right time notation?
 
@@ -118,7 +125,7 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
             .iss(issuer_did)
             .require_key_binding(identity_credential::sd_jwt_v2::RequiredKeyBinding::Kid(kid))
             // TODO: how to implement the fn make_concealable(), also when fields should only be known from the JsonSchema?
-            .finish::<SubjectWrapper>(&subjectwrapper, key_type)
+            .finish::<SubjectWrapper>(&subject_wrapper, key_type)
             .await
             .map_err(|_| AppError::Error("Failed to create the self-issued sd_jwt_credential".to_string()))?;
 
