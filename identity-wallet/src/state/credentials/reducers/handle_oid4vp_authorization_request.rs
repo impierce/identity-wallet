@@ -224,9 +224,9 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
                 }
 
                 oid4vp::AuthorizationResponseInput {
-                    verifiable_presentation_input: PresentationInputType::Presentation(
+                    verifiable_presentation_input: PresentationInputType::Presentation(Box::new(
                         presentation_builder.build().map_err(PresentationBuilderError)?,
-                    ),
+                    )),
                     presentation_submission,
                 }
             }
