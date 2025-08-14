@@ -29,7 +29,7 @@
     nationality: [],
   };
 
-  const { form, constraints, errors, enhance, allErrors, tainted } = superForm(init, {
+  const { form, allErrors } = superForm(init, {
     validators: zod(naturalPerson),
   });
 
@@ -125,12 +125,6 @@
       <div class="flex h-[75px] w-[75px] items-center justify-center rounded-3xl bg-background-alt">
         <IdentificationBadgeRegularIcon class="size-7 text-slate-800 dark:text-grey" />
       </div>
-      <!-- <input
-        type="text"
-        class="w-full bg-background text-center text-[22px]/[30px] font-semibold tracking-tight text-slate-700 outline-none dark:text-grey"
-        placeholder={$LL.ADD_CREDENTIALS.PROFILE.ADD.LABEL_PLACEHOLDER()}
-        bind:this={labelInput}
-      /> -->
       <div
         class="w-full text-center text-[22px]/[30px] font-semibold tracking-tight text-slate-700 outline-none dark:text-grey"
       >
@@ -196,30 +190,9 @@
           </button> -->
         {/if}
       </div>
-
-      <!-- {#each fields as field}
-        <div class="flex flex-col gap-1">
-          <div class="flex items-center justify-between">
-            <label for={field.id} class="text-[14px]/[22px] font-medium text-slate-800 dark:text-grey">
-              {field.label}
-            </label>
-            {#if field.required}
-              <span class="text-[12px]/[14px] font-medium text-primary">
-                {$LL.ADD_CREDENTIALS.VALUE_REQUIRED()}
-              </span>
-            {/if}
-          </div>
-          <input
-            name={field.id}
-            type="text"
-            class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] font-normal text-slate-800 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-dark dark:text-slate-300 dark:caret-slate-300"
-            placeholder={field.placeholder}
-            bind:value={field.value}
-          />
-        </div>
-      {/each} -->
     </div>
   </div>
+  <!-- DEBUG -->
   <!-- <div class="break-all px-4 text-xs">{JSON.stringify($form)}</div> -->
 </div>
 

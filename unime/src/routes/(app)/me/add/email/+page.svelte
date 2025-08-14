@@ -23,7 +23,7 @@
   const pinInput = new PinInput({
     type: 'numeric',
     maxLength: 4,
-    placeholder: '', // '•',
+    placeholder: '',
     allowPaste: false,
     onValueChange() {
       showError = false;
@@ -156,7 +156,7 @@
     if (expired_mins_ago >= AUTO_DISCARD_AFTER_MINUTES) {
       debug(`Auto-discarding expired verification case (${expired_mins_ago} minutes ago) ...`);
       reset();
-      // TODO: issue: still shows the expired timer
+      // TODO: bug: still shows the expired timer
     }
   };
 
@@ -246,10 +246,7 @@
           bind:value={label}
           bind:this={labelInput}
           oninput={() => {
-            // When the label is changed after a verification session has expired, reset everything.
-            // if (expired) {
-            //   reset();
-            // }
+            // TODO: when the label is changed after a verification session has expired, reset everything.
           }}
           disabled={pending}
         />

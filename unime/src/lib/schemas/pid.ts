@@ -4,7 +4,6 @@ import { z } from 'zod';
 // reference: https://eur-lex.europa.eu/eli/reg_impl/2024/2977/oj
 
 // TODO: only allow values as defined in ISO 3166-1 alpha-2
-// const countryCode = z.string().length(2).uppercase();
 const countryCode = z.string().length(2);
 
 export const residence = (LL: TranslationFunctions) =>
@@ -18,16 +17,16 @@ export const residence = (LL: TranslationFunctions) =>
     resident_house_number: z.string().optional(),
   });
 
-// const sex = {
-//     0: 'not known',
-//     1: 'male',
-//     2: 'female',
-//     3: 'other',
-//     4: 'inter',
-//     5: 'diverse',
-//     6: 'open',
-//     9: 'not applicable',
-// }
+const sex = {
+  0: 'not known',
+  1: 'male',
+  2: 'female',
+  3: 'other',
+  4: 'inter',
+  5: 'diverse',
+  6: 'open',
+  9: 'not applicable',
+};
 
 export const naturalPerson = (LL: TranslationFunctions) =>
   z.object({
@@ -36,7 +35,7 @@ export const naturalPerson = (LL: TranslationFunctions) =>
     given_name: z.string(),
     // birth_date: z.iso.date(), // TODO: available in zod/v4
     birth_date: z.date(),
-    birth_place: countryCode, // TODO: or arbitrary string?
+    birth_place: countryCode, // TODO: should be arbitrary string?
     nationality: z.array(countryCode).min(1, 'At least one nationality is required'),
 
     // optional

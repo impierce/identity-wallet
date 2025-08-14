@@ -23,7 +23,7 @@
   // Initialize the form
   const init: z.infer<typeof residence> = {};
 
-  const { form, constraints, errors, enhance, allErrors, tainted } = superForm(init, { validators: zod(residence) });
+  const { form, enhance, allErrors } = superForm(init, { validators: zod(residence) });
 
   // Bottom action: Add to favourites, Add address
   let checked = $state(true);
@@ -119,7 +119,7 @@
         <!-- Divider -->
         <div class="my-4 h-px bg-slate-300"></div>
       </div>
-      <!-- This form is actually never submitted, it is only used for validation -->
+      <!-- This form is actually never submitted as a web-based form, it is only used for validation -->
       <form method="POST" use:enhance>
         <div class="space-y-4">
           <SelectCountry bind:value={$form.resident_country} />
