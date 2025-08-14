@@ -145,9 +145,9 @@ Genom att använda Tjänsten bekräftar du att du har läst, förstått och acce
         NO_MATCH: 'Lösenorden stämmer inte',
       },
       BIOMETRICS: {
-        TITLE: 'Aktivera {type:string}',
-        DESCRIPTION: 'Vill du ställa in {type:string} för att låsa upp appen?',
-        CONFIRM: 'Ja, använd {type:string}',
+        TITLE: 'Aktivera {type}',
+        DESCRIPTION: 'Vill du ställa in {type} för att låsa upp appen?',
+        CONFIRM: 'Ja, använd {type}',
         DECIDE_LATER: 'Bestäm senare',
       },
       COMPLETED: {
@@ -196,7 +196,7 @@ Genom att använda Tjänsten bekräftar du att du har läst, förstått och acce
       SECURITY: {
         LABEL: 'Säkerhet',
         NAVBAR_TITLE: 'Säkerhet',
-        SWITCH_LABEL: 'Lås upp med {type:string}',
+        SWITCH_LABEL: 'Lås upp med {type}',
         BIOMETRIC_TYPE: {
           ANDROID: {
             FACE_ID: 'ansiktsigenkänning',
@@ -209,12 +209,12 @@ Genom att använda Tjänsten bekräftar du att du har läst, förstått och acce
           GENERIC: 'biometri',
         },
         ENABLE: {
-          DIALOG_TITLE: 'Aktivera {type:string}',
-          DIALOG_CONTENT: 'Ange ditt lösenord för att aktivera {type:string}.',
+          DIALOG_TITLE: 'Aktivera {type}',
+          DIALOG_CONTENT: 'Ange ditt lösenord för att aktivera {type}.',
         },
         DISABLE: {
-          DIALOG_TITLE: 'Inaktivera {type:string}',
-          DIALOG_CONTENT: 'Ange ditt lösenord för att inaktivera {type:string}.',
+          DIALOG_TITLE: 'Inaktivera {type}',
+          DIALOG_CONTENT: 'Ange ditt lösenord för att inaktivera {type}.',
         },
       },
       PASSWORD: {

@@ -145,9 +145,9 @@ Käyttämällä Palvelua vahvistat, että olet lukenut, ymmärtänyt ja hyväksy
         NO_MATCH: 'Salasanat eivät täsmää',
       },
       BIOMETRICS: {
-        TITLE: 'Ota käyttöön {type:string}',
-        DESCRIPTION: 'Haluatko käyttää {type:string} sovelluksen avaamiseen?',
-        CONFIRM: 'Kyllä, käytä {type:string}',
+        TITLE: 'Ota käyttöön {type}',
+        DESCRIPTION: 'Haluatko käyttää {type} sovelluksen avaamiseen?',
+        CONFIRM: 'Kyllä, käytä {type}',
         DECIDE_LATER: 'Päätä myöhemmin',
       },
       COMPLETED: {
@@ -196,7 +196,7 @@ Käyttämällä Palvelua vahvistat, että olet lukenut, ymmärtänyt ja hyväksy
       SECURITY: {
         LABEL: 'Turvallisuus',
         NAVBAR_TITLE: 'Turvallisuus',
-        SWITCH_LABEL: 'Avaa {type:string}',
+        SWITCH_LABEL: 'Avaa {type}',
         BIOMETRIC_TYPE: {
           ANDROID: {
             FACE_ID: 'kasvontunnistus',
@@ -209,12 +209,12 @@ Käyttämällä Palvelua vahvistat, että olet lukenut, ymmärtänyt ja hyväksy
           GENERIC: 'biometria',
         },
         ENABLE: {
-          DIALOG_TITLE: 'Ota käyttöön {type:string}',
-          DIALOG_CONTENT: 'Anna salasanasi ottaaksesi {type:string} käyttöön.',
+          DIALOG_TITLE: 'Ota käyttöön {type}',
+          DIALOG_CONTENT: 'Anna salasanasi ottaaksesi {type} käyttöön.',
         },
         DISABLE: {
-          DIALOG_TITLE: 'Poista käytöstä {type:string}',
-          DIALOG_CONTENT: 'Anna salasanasi poistaaksesi {type:string} käytöstä.',
+          DIALOG_TITLE: 'Poista käytöstä {type}',
+          DIALOG_CONTENT: 'Anna salasanasi poistaaksesi {type} käytöstä.',
         },
       },
       PASSWORD: {
