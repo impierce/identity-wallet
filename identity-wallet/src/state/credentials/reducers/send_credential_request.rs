@@ -4,7 +4,7 @@ use crate::{
     state::{
         actions::{listen, Action},
         core_utils::{
-            helpers::{credential_schema_validation, jwt_vc_json_validator},
+            helpers::{validate_credential_types, validate_jwt_vc_json},
             history_event::{EventType, HistoryCredential, HistoryEvent},
             CoreUtils,
         },
@@ -167,7 +167,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                             .ok_or(AppError::Error("Invalid JWT string.".to_string()))?
                             .to_string(),
                     );
-                    jwt_vc_json_validator(credential_jwt).await?;
+                    validate_jwt_vc_json(credential_jwt).await?;
 
                     vec![(
                         credential_configuration_id,
@@ -199,7 +199,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                                     .ok_or(AppError::Error("Invalid JWT string.".to_string()))?
                                     .to_string(),
                             );
-                            jwt_vc_json_validator(credential_jwt).await?;
+                            validate_jwt_vc_json(credential_jwt).await?;
 
                             result.push((
                                 credential_configuration_id,
@@ -219,8 +219,8 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
 
         for (credential_configuration_id, credential, display) in credentials.into_iter() {
             let mut verifiable_credential_record: VerifiableCredentialRecord = credential.try_into()?;
-            // Validate the credential against its corresponding credential Json schema.
-            credential_schema_validation(&verifiable_credential_record.verifiable_credential)?;
+            // Validate the credential against its corresponding credential JSON Schema.
+            validate_credential_types(&verifiable_credential_record.verifiable_credential)?;
 
             // Set the issuer name of the credential.
             verifiable_credential_record

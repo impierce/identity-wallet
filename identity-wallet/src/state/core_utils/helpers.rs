@@ -52,7 +52,7 @@ pub async fn get_issuer_document(resolver: &Resolver, credential_jwt: &Jwt) -> O
 }
 
 /// Validate a jwt_vc_json, checks the JWT, the VC against VC Data Model 1.1 and checks the Issuer DID.
-pub async fn jwt_vc_json_validator(credential_jwt: Jwt) -> Result<DecodedJwtCredential<Value>, AppError> {
+pub async fn validate_jwt_vc_json(credential_jwt: Jwt) -> Result<DecodedJwtCredential<Value>, AppError> {
     // `SkipUnsupported` allows for custom credential types, such as the StatusList2021Entry (https://www.w3.org/TR/2023/WD-vc-status-list-20230427/#statuslist2021entry)
     let validator = JwtCredentialValidator::with_signature_verifier(Verifier);
     let options = JwtCredentialValidationOptions::new().status_check(StatusCheck::SkipUnsupported);
@@ -67,10 +67,10 @@ pub async fn jwt_vc_json_validator(credential_jwt: Jwt) -> Result<DecodedJwtCred
         .map_err(|_| AppError::Error("Invalid jwt_vc_json".to_string()))
 }
 
-/// Validate supported credential types against their corresponding Json schema.
+/// Validate supported credential types against their corresponding JSON Schema.
 /// This function is only capable of validating VC's and subsequent Credential Formats/Types.
 /// All VC's must have a `type` field, which is either a string or an array of strings.
-pub fn credential_schema_validation(data: &Value) -> Result<(), AppError> {
+pub fn validate_credential_types(data: &Value) -> Result<(), AppError> {
     match serde_json::from_value::<StringOrArray>(data["type"].clone())
         .map_err(|_| AppError::InvalidCredentialFormatError)?
     {
@@ -82,7 +82,7 @@ pub fn credential_schema_validation(data: &Value) -> Result<(), AppError> {
 }
 
 /// Validate any given data in serde_json::Value format against any given JsonSchema by path.
-pub fn json_schema_validation(json_schema_path: String, data: &Value) -> Result<(), AppError> {
+pub fn validate_credential_against_schema(json_schema_path: String, data: &Value) -> Result<(), AppError> {
     let json_schema_file = File::open(&json_schema_path)
         .map_err(|_| AppError::Error("Failed to find or read from JsonSchema file".to_string()))?;
     let json_schema: Value = serde_json::from_reader(json_schema_file)
@@ -169,8 +169,8 @@ impl CredentialType {
         let version = self.get_version(data)?;
         let json_schema_path = format!("resources/jsonschemas/{version}.json");
 
-        json_schema_validation(json_schema_path, data)?;
-        debug!("Credential type: {self:?} succesfully validated against corresponding Json schema");
+        validate_credential_against_schema(json_schema_path, data)?;
+        debug!("Credential type: {self:?} successfully validated against corresponding JSON Schema");
 
         Ok(())
     }
@@ -257,7 +257,7 @@ mod tests {
 
     #[test]
     fn credential_schema_validation_ok() {
-        let result = credential_schema_validation(&EXAMPLE_BASIC_OB3);
+        let result = validate_credential_types(&EXAMPLE_BASIC_OB3);
         assert!(result.is_ok());
     }
 
@@ -267,7 +267,7 @@ mod tests {
 
         *invalid_ob3.get_mut("id").unwrap() = json!(["InvalidType"]);
 
-        let result = credential_schema_validation(&invalid_ob3);
+        let result = validate_credential_types(&invalid_ob3);
         assert!(result.is_err());
     }
 }
