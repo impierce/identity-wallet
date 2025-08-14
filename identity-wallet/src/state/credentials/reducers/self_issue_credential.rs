@@ -25,13 +25,9 @@ use crate::{
 
 pub struct SubjectWrapper(pub Arc<dyn oid4vc::oid4vc_core::Subject>);
 
-#[derive(thiserror::Error, Debug)]
-pub enum TempError {}
-
 #[async_trait]
 impl JwsSigner for SubjectWrapper {
-    // FIX THIS
-    type Error = TempError;
+    type Error = AppError;
 
     // FIX THIS: jwt::encode?
     async fn sign(&self, header: &JsonObject, payload: &JsonObject) -> Result<Vec<u8>, Self::Error> {
@@ -40,10 +36,9 @@ impl JwsSigner for SubjectWrapper {
 
         let message = format!("{}.{}", encoded_header, encoded_payload);
 
-        let proof_value = Sign::sign(&*self.0, &message, "FIX THIS", Algorithm::EdDSA)
+        let proof_value = Sign::sign(&*self.0, &message, "TODO: DID:method here", Algorithm::EdDSA)
             .await
-            // FIX THIS
-            .unwrap();
+            .map_err(|e| AppError::Error(format!("Failed to sign JWT for self-issued sd-jwt: {}", e)))?;
 
         let signature = URL_SAFE_NO_PAD.encode(proof_value.as_slice());
         let message = [message, signature].join(".");
