@@ -70,6 +70,9 @@ pnpm tauri ios dev
 > export CC="$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi21-clang"
 > export BINDGEN_EXTRA_CLANG_ARGS="--sysroot=$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
 > ```
+>
+> If you're on macOS, you do not need to set `CC` explicitly. Make sure to use `darwin-x86_64` (also for Apple Silicon).
+> Also make sure to have `bindgen` installed (via cargo).
 
 ## Contributing
 
