@@ -18,6 +18,7 @@ use uuid::Uuid;
 #[derivative(PartialEq)]
 #[ts(export, export_to = "bindings/credentials/DisplayCredential.ts")]
 pub struct DisplayCredential {
+    #[derivative(PartialEq = "ignore")]
     pub id: String,
     #[ts(type = "string")]
     pub format: CredentialFormats,
@@ -45,6 +46,7 @@ pub struct CredentialMetadata {
     pub is_favorite: bool,
     #[derivative(PartialEq = "ignore")]
     pub date_added: String,
+    #[derivative(PartialEq = "ignore")]
     pub date_issued: String,
     #[ts(optional)]
     pub icon: Option<String>,

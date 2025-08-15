@@ -103,15 +103,13 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
             preferred_did_method: did_method.clone(),
         };
 
-        let now = Timestamp::now_utc(); // TODO?: is this the right time notation?
+        let now = Timestamp::now_utc();
 
         let credential_data = data.as_object_mut().ok_or(AppError::Error(
             "Invalid action payload for the self_issue_credential.data field".to_string(),
         ))?;
 
-        credential_data.insert("@context".to_string(), json!("https://www.w3.org/2018/credentials/v1"));
         credential_data.insert("issuer".to_string(), json!(issuer_did.to_string()));
-        // TODO: should we also set the (optional) "credentialSubject.id = issuer_did"?
 
         let sd_jwt_credential = SdJwtVcBuilder::new(credential_data)
             .map_err(|_| AppError::Error("Failed to create a SdJwtVcBuilder".to_string()))?
@@ -139,6 +137,13 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
         })?;
 
         vcr.display_credential.data = data.clone();
+        vcr.display_credential.issuer_name = state
+            .profile_settings
+            .profile
+            .as_ref()
+            .ok_or(AppError::Error("No profile found".to_string()))?
+            .name
+            .clone();
         vcr.display_credential.display_name = data
             .get("name")
             .unwrap_or(&json!(self_issue_credential._type))
