@@ -64,11 +64,8 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
 
             if logo_uri.is_some() {
                 debug!(
-                    "{}",
-                    format!(
-                        "Downloading client logo from url: {}",
-                        logo_uri.as_ref().unwrap().as_str()
-                    )
+                    "Downloading client logo from url: {}",
+                    logo_uri.as_ref().unwrap().as_str()
                 );
                 if let Some(logo_uri) = logo_uri.as_ref().and_then(|s| s.parse::<reqwest::Url>().ok()) {
                     let _ = download_asset(logo_uri.clone(), &hash(logo_uri.as_str())).await;
@@ -204,11 +201,8 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
 
             if logo_uri.is_some() {
                 debug!(
-                    "{}",
-                    format!(
-                        "Downloading client logo from url: {}",
-                        logo_uri.as_ref().unwrap().as_str()
-                    )
+                    "Downloading client logo from url: {}",
+                    logo_uri.as_ref().unwrap().as_str()
                 );
                 if let Some(logo_uri) = logo_uri.as_ref().and_then(|s| s.parse::<reqwest::Url>().ok()) {
                     let _ = download_asset(logo_uri.clone(), &hash(logo_uri.as_str())).await;

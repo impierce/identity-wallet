@@ -18,6 +18,7 @@ use uuid::Uuid;
 #[derivative(PartialEq)]
 #[ts(export, export_to = "bindings/credentials/DisplayCredential.ts")]
 pub struct DisplayCredential {
+    #[derivative(PartialEq = "ignore")]
     pub id: String,
     #[ts(type = "string")]
     pub format: CredentialFormats,
@@ -28,6 +29,7 @@ pub struct DisplayCredential {
     pub metadata: CredentialMetadata,
     #[ts(optional)]
     pub connection_id: Option<String>,
+    // TODO: should this be moved to `metadata`?
     pub display_name: String,
 }
 
@@ -44,7 +46,10 @@ pub struct CredentialMetadata {
     pub is_favorite: bool,
     #[derivative(PartialEq = "ignore")]
     pub date_added: String,
+    #[derivative(PartialEq = "ignore")]
     pub date_issued: String,
+    #[ts(optional)]
+    pub icon: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
@@ -143,6 +148,7 @@ impl TryFrom<serde_json::Value> for VerifiableCredentialRecord {
                     is_favorite: false,
                     date_added: DateUtils::new_date_string(),
                     date_issued: issuance_date,
+                    icon: None,
                 },
                 // The other fields will be filled in at a later stage.
                 ..Default::default()

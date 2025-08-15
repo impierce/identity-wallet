@@ -32,7 +32,7 @@
   ];
 
   // Capabilities of `did-manager`
-  const verifiableMethods: string[] = ['did:jwk', 'did:key', 'did:web', 'did:iota', 'did:iota:rms', 'did:iota:smr'];
+  const verifiableMethods: string[] = ['did:jwk', 'did:key', 'did:web'];
 
   const handleClick = (method: Method) => {
     if (method.did) {
@@ -70,7 +70,7 @@
             </div>
             {#if method.method === preferred_did_method}
               <div class="flex items-center space-x-1 rounded-full bg-ex-blue-2 px-2 py-1 dark:bg-primary">
-                <p class="text-[12px]/[20px] font-medium text-teal dark:text-dark">preferred</p>
+                <p class="text-[12px]/[20px] font-medium text-secondary dark:text-dark">preferred</p>
               </div>
             {/if}
             {#if !method.did}
@@ -101,7 +101,7 @@
       {#each verifiableMethods as method}
         <div class="flex items-center space-x-1 rounded-full bg-ex-blue-2 px-2 py-1 dark:bg-primary">
           <CheckCircleFillIcon class="h-4 w-4 text-primary dark:text-navy" />
-          <p class="text-[12px]/[20px] font-medium text-teal dark:text-dark">
+          <p class="text-[12px]/[20px] font-medium text-secondary dark:text-dark">
             {method}
           </p>
         </div>
