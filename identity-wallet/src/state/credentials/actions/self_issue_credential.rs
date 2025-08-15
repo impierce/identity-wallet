@@ -13,6 +13,7 @@ pub struct SelfIssueCredential {
     pub _type: SelfIssuedCredentialType,
     #[ts(type = "object")]
     pub data: serde_json::Value,
+    #[serde(default)] // default to false if not provided
     pub is_favorite: bool,
     #[ts(optional)]
     pub icon: Option<String>,

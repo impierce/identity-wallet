@@ -24,7 +24,7 @@ use wiremock::{Mock, MockServer, ResponseTemplate};
 #[tokio::test]
 #[serial_test::serial]
 async fn download_credential_logo() {
-    *ASSETS_DIR.lock().unwrap() = TempDir::new().unwrap().into_path();
+    *ASSETS_DIR.lock().unwrap() = TempDir::new().unwrap().keep();
 
     let mock_server = MockServer::start().await;
     Mock::given(method("GET"))
@@ -118,7 +118,7 @@ async fn download_credential_logo() {
 #[tokio::test]
 #[serial_test::serial]
 async fn download_issuer_logo() {
-    *ASSETS_DIR.lock().unwrap() = TempDir::new().unwrap().into_path();
+    *ASSETS_DIR.lock().unwrap() = TempDir::new().unwrap().keep();
 
     let mock_server = MockServer::start().await;
     Mock::given(method("GET"))
@@ -204,7 +204,7 @@ async fn download_issuer_logo() {
 #[tokio::test]
 #[serial_test::serial]
 async fn no_download_when_no_logo_in_metadata() {
-    *ASSETS_DIR.lock().unwrap() = TempDir::new().unwrap().into_path();
+    *ASSETS_DIR.lock().unwrap() = TempDir::new().unwrap().keep();
 
     let mock_server = MockServer::start().await;
     Mock::given(method("GET"))

@@ -23,15 +23,14 @@ use crate::{
     },
 };
 
-pub struct SubjectWrapper(pub Arc<dyn oid4vc::oid4vc_core::Subject>);
-
-#[derive(thiserror::Error, Debug)]
-pub enum TempError {}
+pub struct SubjectWrapper {
+    pub subject: Arc<dyn oid4vc::oid4vc_core::Subject>,
+    pub preferred_did_method: String,
+}
 
 #[async_trait]
 impl JwsSigner for SubjectWrapper {
-    // FIX THIS
-    type Error = TempError;
+    type Error = AppError;
 
     // FIX THIS: jwt::encode?
     async fn sign(&self, header: &JsonObject, payload: &JsonObject) -> Result<Vec<u8>, Self::Error> {
@@ -40,13 +39,13 @@ impl JwsSigner for SubjectWrapper {
 
         let message = format!("{}.{}", encoded_header, encoded_payload);
 
-        let proof_value = Sign::sign(&*self.0, &message, "FIX THIS", Algorithm::EdDSA)
+        let proof_value = Sign::sign(&*self.subject, &message, &self.preferred_did_method, Algorithm::EdDSA)
             .await
-            // FIX THIS
-            .unwrap();
+            .map_err(|e| AppError::Error(format!("Failed to sign JWT for self-issued sd-jwt: {}", e)))?;
 
         let signature = URL_SAFE_NO_PAD.encode(proof_value.as_slice());
         let message = [message, signature].join(".");
+
         Ok(message.as_bytes().to_vec())
     }
 }
@@ -99,17 +98,18 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
         ))?;
 
         // Wrap subject with the SubjectWrapper to get the JwsSigner implementation
-        let subjectwrapper = SubjectWrapper(subject.clone());
+        let subject_wrapper = SubjectWrapper {
+            subject: subject.clone(),
+            preferred_did_method: did_method.clone(),
+        };
 
-        let now = Timestamp::now_utc(); // TODO?: is this the right time notation?
+        let now = Timestamp::now_utc();
 
         let credential_data = data.as_object_mut().ok_or(AppError::Error(
             "Invalid action payload for the self_issue_credential.data field".to_string(),
         ))?;
 
-        credential_data.insert("@context".to_string(), json!("https://www.w3.org/2018/credentials/v1"));
         credential_data.insert("issuer".to_string(), json!(issuer_did.to_string()));
-        // TODO: should we also set the (optional) "credentialSubject.id = issuer_did"?
 
         let sd_jwt_credential = SdJwtVcBuilder::new(credential_data)
             .map_err(|_| AppError::Error("Failed to create a SdJwtVcBuilder".to_string()))?
@@ -123,7 +123,7 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
             .iss(issuer_did)
             .require_key_binding(identity_credential::sd_jwt_v2::RequiredKeyBinding::Kid(kid))
             // TODO: how to implement the fn make_concealable(), also when fields should only be known from the JsonSchema?
-            .finish::<SubjectWrapper>(&subjectwrapper, key_type)
+            .finish::<SubjectWrapper>(&subject_wrapper, key_type)
             .await
             .map_err(|_| AppError::Error("Failed to create the self-issued sd_jwt_credential".to_string()))?;
 
@@ -137,6 +137,13 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
         })?;
 
         vcr.display_credential.data = data.clone();
+        vcr.display_credential.issuer_name = state
+            .profile_settings
+            .profile
+            .as_ref()
+            .ok_or(AppError::Error("No profile found".to_string()))?
+            .name
+            .clone();
         vcr.display_credential.display_name = data
             .get("name")
             .unwrap_or(&json!(self_issue_credential._type))
