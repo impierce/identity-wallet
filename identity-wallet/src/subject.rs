@@ -19,6 +19,7 @@ use tokio::sync::Mutex;
 pub struct Subject {
     pub stronghold_manager: Arc<StrongholdManager>,
     pub secret_manager: Arc<Mutex<SecretManager>>,
+    pub resolver: Arc<Resolver>,
 }
 
 #[async_trait]
@@ -67,9 +68,7 @@ impl Verify for Subject {
     async fn public_key(&self, did_url: &str) -> anyhow::Result<Vec<u8>> {
         let did_url = identity_iota::did::DIDUrl::parse(did_url).unwrap();
 
-        let resolver = Resolver::new().await;
-
-        let document = resolver.resolve(did_url.did().as_str()).await.unwrap();
+        let document = self.resolver.resolve(did_url.did().as_str()).await.unwrap();
 
         let verification_method = document
             .resolve_method(
@@ -108,7 +107,11 @@ impl Verify for Subject {
 }
 
 // Helper function: load a `Subject`
-pub async fn subject(stronghold_manager: Arc<StrongholdManager>, password: String) -> Arc<Subject> {
+pub async fn subject(
+    stronghold_manager: Arc<StrongholdManager>,
+    password: String,
+    resolver: Arc<Resolver>,
+) -> Arc<Subject> {
     let client_path = crate::persistence::STRONGHOLD
         .lock()
         .unwrap()
@@ -128,6 +131,7 @@ pub async fn subject(stronghold_manager: Arc<StrongholdManager>, password: Strin
                 .await
                 .unwrap(),
         )),
+        resolver,
     })
 }
 
