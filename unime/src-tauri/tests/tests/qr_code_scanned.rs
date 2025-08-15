@@ -44,7 +44,6 @@ async fn test_qr_code_scanned_handle_siopv2_authorization_request() {
         },
         ..AppState::default()
     }));
-
     assert_state_update(
         // Initial state.
         container,

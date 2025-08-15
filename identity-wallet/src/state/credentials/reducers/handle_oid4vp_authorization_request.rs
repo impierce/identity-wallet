@@ -312,8 +312,8 @@ fn test_authorization_request_object() {
         }
       ]
     },
-        "client_id_scheme": "None",
-        "response_mode": "None",
+        "client_id_scheme": null,
+        "response_mode": "direct_post",
         "scope": null,
         "nonce": "nonce",
         "client_metadata": {
