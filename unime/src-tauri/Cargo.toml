@@ -22,7 +22,11 @@ tauri.workspace = true
 
 dotenvy = { version = "0.15" }
 identity-wallet = { path = "../../identity-wallet" }
+iota-sdk = { git = "https://github.com/impierce/iota", package = "iota-sdk", branch = "temp/fix" }
+jni = "0.21"
 log.workspace = true
+rustls.workspace = true
+rustls-platform-verifier.workspace = true
 serde_json.workspace = true
 tauri-plugin-barcode-scanner = { version = "2" }
 tauri-plugin-fs = { version = "2" }

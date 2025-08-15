@@ -23,3 +23,5 @@
 -keep class com.impierce.identity_wallet.RustWebView {
     void evalScript(int, java.lang.String);
 }
+
+-keep, includedescriptorclasses class org.rustls.platformverifier.** { *; }

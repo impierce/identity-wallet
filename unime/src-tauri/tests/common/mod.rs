@@ -1,7 +1,7 @@
 pub mod assert_state_update;
 pub mod extensions;
 
-use did_manager::SecretManager;
+use did_manager::{Resolver, SecretManager};
 use identity_wallet::oid4vc_manager::ProviderManager;
 use identity_wallet::oid4vci::Wallet;
 use identity_wallet::persistence::STRONGHOLD;
@@ -53,6 +53,8 @@ pub async fn test_managers(
 
     let stronghold_snapshot_path = STRONGHOLD.lock().unwrap().to_string_lossy().to_string();
 
+    let resolver = Resolver::new().await;
+
     let subject: Arc<Subject> = Arc::new(Subject {
         stronghold_manager: stronghold_manager.clone(),
         secret_manager: Arc::new(Mutex::new(
@@ -64,6 +66,7 @@ pub async fn test_managers(
                 .await
                 .unwrap(),
         )),
+        resolver: Arc::new(resolver),
     });
 
     let provider_manager = ProviderManager::new(

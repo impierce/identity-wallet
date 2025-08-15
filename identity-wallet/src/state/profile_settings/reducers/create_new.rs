@@ -36,7 +36,9 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
             .as_ref()
             .ok_or(MissingManagerError("stronghold"))?;
 
-        let subject = subject(stronghold_manager.clone(), password).await;
+        let resolver = state.core_utils.resolver().await;
+
+        let subject = subject(stronghold_manager.clone(), password, resolver).await;
 
         let provider_manager = ProviderManager::new(
             subject.clone(),
