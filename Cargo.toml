@@ -12,6 +12,8 @@ log = "^0.4"
 oid4vc = { git = "https://git@github.com/impierce/openid4vc.git", rev = "5384fcc" }
 
 rand = "0.8"
+rustls = { version = "0.23", features = ["aws-lc-rs"] }
+rustls-platform-verifier = { version = "0.6" }
 serde_json = "1.0"
 serial_test = "2.0"
 tempfile = "3.5.0"
