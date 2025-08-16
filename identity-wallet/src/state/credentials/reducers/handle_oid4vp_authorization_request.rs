@@ -169,6 +169,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             &subject_did,
             &identity_manager.subject,
             &oid4vp_authorization_request,
+            algorithm,
         )
         .await?;
 
@@ -178,6 +179,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             .map_err(GenerateAuthorizationResponseError)?;
         info!("response generated: {:?}", response);
 
+        #[cfg(not(feature = "test_utils"))]
         if provider_manager.send_response(&response).await.is_err() {
             info!("failed to send response");
             return Err(SendAuthorizationResponseError);

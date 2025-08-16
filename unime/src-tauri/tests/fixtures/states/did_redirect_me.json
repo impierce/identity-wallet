@@ -6,8 +6,8 @@
       "url": "example.com",
       "did": "did:key:z6Mkm9yeuZK7inXBNjnNH3vAs9uUjqfy3mfNoKBKsKBrv8Tb",
       "verified": false,
-      "first_interacted": "",
-      "last_interacted": ""
+      "first_interacted": "2024-03-15T01:16:28.712260354+00:00",
+      "last_interacted": "2024-03-15T01:16:28.712260354+00:00"
     }
   ],
   "profile_settings": {
@@ -26,7 +26,7 @@
       "connection_id": "c0f1be09f33c331ee001a09e1515ba70022a102b30ebad7f15f8e6a9017e177c",
       "connection_name": "example.com",
       "event_type": "ConnectionAdded",
-      "date": "",
+      "date": "2024-03-15T01:17:34.692691163+00:00",
       "credentials": []
     }
   ]
