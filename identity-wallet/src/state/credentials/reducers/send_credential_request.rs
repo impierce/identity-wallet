@@ -4,7 +4,7 @@ use crate::{
     state::{
         actions::{listen, Action},
         core_utils::{
-            helpers::{credential_schema_validation, jwt_vc_json_validator},
+            helpers::{validate_credential_types, validate_jwt_vc_json},
             history_event::{EventType, HistoryCredential, HistoryEvent},
             CoreUtils, DateUtils,
         },
@@ -19,8 +19,7 @@ use crate::{
 };
 
 use identity_iota::credential::Jwt;
-use log::{info, warn};
-use oauth_tsl::status_list::StatusType;
+use log::info;
 use oid4vc::oid4vci::{
     credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject,
     credential_offer::Grants, credential_response::CredentialResponseType, token_request::TokenRequest,
@@ -169,7 +168,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                             .ok_or(AppError::Error("Invalid JWT string.".to_string()))?
                             .to_string(),
                     );
-                    jwt_vc_json_validator(credential_jwt).await?;
+                    validate_jwt_vc_json(credential_jwt).await?;
 
                     vec![(
                         credential_configuration_id,
@@ -201,7 +200,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                                     .ok_or(AppError::Error("Invalid JWT string.".to_string()))?
                                     .to_string(),
                             );
-                            jwt_vc_json_validator(credential_jwt).await?;
+                            validate_jwt_vc_json(credential_jwt).await?;
 
                             result.push((
                                 credential_configuration_id,
@@ -220,49 +219,9 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
         let mut history_credentials = vec![];
 
         for (credential_configuration_id, credential, display) in credentials.into_iter() {
-            let mut verifiable_credential_record: VerifiableCredentialRecord = credential.clone().try_into()?;
-            // Validate the credential against its corresponding credential Json schema.
-            credential_schema_validation(&verifiable_credential_record.verifiable_credential)?;
-
-            // Check the credentialStatus as defined in the VC Data Model and store it in the display credential.
-            if let Some(credential_status) = credential.get("credentialStatus") {
-                let status = get_credential_status(
-                    credential_status,
-                    state
-                        .core_utils
-                        .managers
-                        .lock()
-                        .await
-                        .identity_manager
-                        .as_ref()
-                        .ok_or(AppError::MissingManagerError("identity"))?,
-                )
-                .await?;
-
-                match status {
-                    StatusType::VALID => {
-                        info!("Credential is valid, credential request accepted");
-                    }
-                    StatusType::INVALID => {
-                        warn!("Credential is invalid, credential request declined");
-                        return Err(AppError::InvalidCredentialStatus);
-                    }
-                    StatusType::SUSPENDED => {
-                        info!("Credential is suspended, credential request accepted");
-                    }
-                    StatusType::UNDEFINED => {
-                        info!("Credential status type is undefined, credential request accepted");
-                    }
-                    StatusType::RESERVED => {
-                        info!("Credential status type is reserved, credential request declined");
-                        return Err(AppError::InvalidCredentialStatus);
-                    }
-                }
-                verifiable_credential_record.display_credential.credential_status = Some(CredentialStatusData {
-                    status,
-                    last_checked: DateUtils::new_date_string(),
-                });
-            }
+            let mut verifiable_credential_record: VerifiableCredentialRecord = credential.try_into()?;
+            // Validate the credential against its corresponding credential JSON Schema.
+            validate_credential_types(&verifiable_credential_record.verifiable_credential)?;
 
             // Set the issuer name of the credential.
             verifiable_credential_record

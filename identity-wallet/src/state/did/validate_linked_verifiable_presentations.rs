@@ -1,7 +1,7 @@
 use crate::{
     persistence::{download_asset, hash},
     state::{
-        core_utils::helpers::{credential_schema_validation, get_issuer_document},
+        core_utils::helpers::{get_issuer_document, validate_credential_types},
         did::validate_domain_linkage::{ValidationStatus, Verifier},
     },
 };
@@ -211,7 +211,7 @@ async fn get_validated_linked_credential_data(
                 // `SkipUnsupported` allows for custom credential types, such as the StatusList2021Entry (https://www.w3.org/TR/2023/WD-vc-status-list-20230427/#statuslist2021entry)
                 let options = JwtCredentialValidationOptions::new().status_check(StatusCheck::SkipUnsupported);
 
-                // Decode the linked verifiable credential and validate the jwt_vc_json, checks the JWT, the VC against VC Data Model 1.1 and checks the Issuer DID
+                // Decode the linked verifiable credential and validate the jwt_vc_json, checks the JWT and the Issuer DID
                 if let Ok(linked_verifiable_credential) = validator.validate::<_, Value>(
                     &linked_verifiable_credential,
                     &issuer_document,
@@ -220,8 +220,8 @@ async fn get_validated_linked_credential_data(
                 ) {
                     info!("Validated linked verifiable credential JWT: {linked_verifiable_credential:#?}");
 
-                    // Validate the linked verifiable credential against its corresponding Json schema
-                    credential_schema_validation(&linked_verifiable_credential.credential.to_json_value().ok()?).ok()?;
+                    // Validate the linked verifiable credential against its corresponding JSON Schema
+                    validate_credential_types(&linked_verifiable_credential.credential.to_json_value().ok()?).ok()?;
 
                     let credential_subject = match &linked_verifiable_credential.credential.credential_subject {
                         OneOrMany::One(subject) => Some(subject),

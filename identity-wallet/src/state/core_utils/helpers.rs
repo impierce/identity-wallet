@@ -13,7 +13,6 @@ use jsonschema::ValidationError;
 use log::{debug, info, warn};
 use serde_json::Value;
 use std::fs::File;
-use typetag::serde;
 
 /// Get the claims from a JWT without performing validation.
 pub fn get_unverified_jwt_claims(jwt: &serde_json::Value) -> Result<serde_json::Value, AppError> {
@@ -42,7 +41,7 @@ pub async fn get_issuer_document(resolver: &Resolver, credential_jwt: &Jwt) -> O
         .inspect_err(|err| warn!("Failed to parse credential claims: {err:#?}"))
         .ok()?;
 
-    info!("jwt_vc_json Credential claims: {claims:#?}",);
+    info!("jwt_vc_json Credential claims: {claims:#?}");
 
     // Resolve the DID
     resolver
@@ -52,8 +51,8 @@ pub async fn get_issuer_document(resolver: &Resolver, credential_jwt: &Jwt) -> O
         .ok()
 }
 
-/// Validate a jwt_vc_json, checks the JWT, the VC against VC Data Model 1.1 and checks the Issuer DID.
-pub async fn jwt_vc_json_validator(credential_jwt: Jwt) -> Result<DecodedJwtCredential<Value>, AppError> {
+/// Validate a jwt_vc_json, checks the JWT and the Issuer DID.
+pub async fn validate_jwt_vc_json(credential_jwt: Jwt) -> Result<DecodedJwtCredential<Value>, AppError> {
     // `SkipUnsupported` allows for custom credential types, such as the StatusList2021Entry (https://www.w3.org/TR/2023/WD-vc-status-list-20230427/#statuslist2021entry)
     let validator = JwtCredentialValidator::with_signature_verifier(Verifier);
     let options = JwtCredentialValidationOptions::new().status_check(StatusCheck::SkipUnsupported);
@@ -68,34 +67,67 @@ pub async fn jwt_vc_json_validator(credential_jwt: Jwt) -> Result<DecodedJwtCred
         .map_err(|_| AppError::Error("Invalid jwt_vc_json".to_string()))
 }
 
-/// Validate supported credential types against their corresponding Json schema.
+/// Validate supported credential types against their corresponding JSON Schema.
 /// This function is only capable of validating VC's and subsequent Credential Formats/Types.
 /// All VC's must have a `type` field, which is either a string or an array of strings.
-pub fn credential_schema_validation(data: &Value) -> Result<(), AppError> {
-    match serde_json::from_value::<StringOrArray>(data["type"].clone())
-        .map_err(|_| AppError::InvalidCredentialFormatError)?
-    {
-        StringOrArray::String(credential_type) => Ok(credential_type.validate(data)?),
-        StringOrArray::Array(credential_type_array) => credential_type_array
-            .iter()
-            .try_for_each(|credential_type| credential_type.validate(data)),
+pub fn validate_credential_types(data: &Value) -> Result<(), AppError> {
+    let type_field = data.get("type");
+
+    match type_field {
+        Some(_type) if !_type.is_null() => {
+            match serde_json::from_value::<StringOrArray>(_type.clone())
+                .map_err(|_| AppError::InvalidCredentialFormatError)?
+            {
+                StringOrArray::String(credential_type) => Ok(credential_type.validate(data)?),
+                StringOrArray::Array(credential_type_array) => credential_type_array
+                    .iter()
+                    .try_for_each(|credential_type| credential_type.validate(data)),
+            }
+        }
+        _ => {
+            debug!("No credential type found, skipping validation");
+            Ok(())
+        }
     }
 }
 
-/// Validate any given data in serde_json::Value format against any given JsonSchema by path.
-pub fn json_schema_validation(json_schema_path: String, data: &Value) -> Result<(), AppError> {
+/// Validate any given data in serde_json::Value format against any given JSON Schema by path.
+pub fn validate_credential_against_schema(json_schema_path: String, data: &Value) -> Result<(), AppError> {
     let json_schema_file = File::open(&json_schema_path)
-        .map_err(|_| AppError::Error("Failed to find or read from JsonSchema file".to_string()))?;
+        .map_err(|_| AppError::Error("Failed to find or read from JSON Schema file".to_string()))?;
     let json_schema: Value = serde_json::from_reader(json_schema_file)
-        .map_err(|_| AppError::Error("Failed to convert JsonSchema &str to serde_json::Value".to_string()))?;
+        .map_err(|_| AppError::Error("Failed to convert JSON Schema &str to serde_json::Value".to_string()))?;
 
-    let schema = jsonschema::draft201909::new(&json_schema)
-        .map_err(|_| AppError::Error("Failed to compile JsonSchema from serde_json::Value".to_string()))?;
+    // Select correct draft version for JSON Schema Validator
+    let schema = match json_schema
+        .get("$schema")
+        .and_then(|value| value.as_str().map(ToString::to_string))
+        .ok_or(AppError::Error("Invalid or missing \"$schema\" field".to_string()))?
+        .as_str()
+    {
+        "https://json-schema.org/draft/2019-09/schema#" => {
+            jsonschema::draft201909::new(&json_schema).map_err(|_| {
+                AppError::Error(format!(
+                    "Failed to compile JSON Schema from serde_json::Value: {json_schema}"
+                ))
+            })?
+        }
+        "https://json-schema.org/draft/2020-12/schema" => jsonschema::draft202012::new(&json_schema).map_err(|_| {
+            AppError::Error(format!(
+                "Failed to compile JSON Schema from serde_json::Value: {json_schema}"
+            ))
+        })?,
+        _ => jsonschema::draft202012::new(&json_schema).map_err(|_| {
+            AppError::Error(format!(
+                "Failed to compile JSON Schema from serde_json::Value: {json_schema}"
+            ))
+        })?,
+    };
 
     let errors: Vec<ValidationError> = schema.iter_errors(data).collect();
     if !errors.is_empty() {
         Err(AppError::Error(format!(
-            "The data is invalid according to the given JsonSchema: {errors:?}"
+            "The data is invalid according to the given JSON Schema: {errors:?}"
         )))
     } else {
         Ok(())
@@ -115,7 +147,7 @@ enum CredentialType {
     #[serde(alias = "AchievementCredential")]
     OpenBadgeCredential,
     #[serde(other)]
-    Other,
+    Unknown,
 }
 
 #[derive(serde::Deserialize, PartialEq, Debug, strum::Display)]
@@ -124,7 +156,7 @@ enum CredentialTypeVersion {
     VerifiableCredentialV2,
     OpenBadgeCredentialV3,
     #[serde(other)]
-    Other,
+    Unknown,
 }
 
 impl CredentialType {
@@ -159,21 +191,30 @@ impl CredentialType {
                     _ => Err(AppError::InvalidCredentialFormatError),
                 }
             }
-            CredentialType::Other => {
-                warn!("No version found for credential type: {self:?}. Skipping validation.",);
-                Ok(CredentialTypeVersion::Other)
+            CredentialType::Unknown => {
+                warn!("No version found for credential type: {self:?}");
+                Ok(CredentialTypeVersion::Unknown)
             }
         }
     }
 
     fn validate(&self, data: &Value) -> Result<(), AppError> {
         let version = self.get_version(data)?;
-        let json_schema_path = format!("resources/jsonschemas/{version}.json");
 
-        json_schema_validation(json_schema_path, data)?;
-        debug!("Credential type: {self:?} succesfully validated against corresponding Json schema");
+        match version {
+            CredentialTypeVersion::Unknown => {
+                warn!("Credential Type unknown, skipping validation.");
+                Ok(())
+            }
+            _ => {
+                let json_schema_path = format!("resources/jsonschemas/{version}.json");
 
-        Ok(())
+                validate_credential_against_schema(json_schema_path, data)?;
+                debug!("Credential type: {self:?} successfully validated against corresponding JSON Schema");
+
+                Ok(())
+            }
+        }
     }
 }
 
@@ -258,7 +299,7 @@ mod tests {
 
     #[test]
     fn credential_schema_validation_ok() {
-        let result = credential_schema_validation(&EXAMPLE_BASIC_OB3);
+        let result = validate_credential_types(&EXAMPLE_BASIC_OB3);
         assert!(result.is_ok());
     }
 
@@ -266,9 +307,19 @@ mod tests {
     fn credential_schema_validation_err() {
         let mut invalid_ob3 = EXAMPLE_BASIC_OB3.clone();
 
-        *invalid_ob3.get_mut("id").unwrap() = json!(["InvalidType"]);
+        *invalid_ob3.get_mut("id").unwrap() = json!(["InvalidId"]);
 
-        let result = credential_schema_validation(&invalid_ob3);
+        let result = validate_credential_types(&invalid_ob3);
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn credential_schema_validation_unknown_type() {
+        let mut invalid_ob3 = EXAMPLE_BASIC_OB3.clone();
+
+        *invalid_ob3.get_mut("type").unwrap() = json!(["UnknownType"]);
+
+        let result = validate_credential_types(&invalid_ob3);
+        assert!(result.is_ok());
     }
 }
