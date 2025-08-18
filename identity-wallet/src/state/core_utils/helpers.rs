@@ -51,7 +51,7 @@ pub async fn get_issuer_document(resolver: &Resolver, credential_jwt: &Jwt) -> O
         .ok()
 }
 
-/// Validate a jwt_vc_json, checks the JWT, the VC against VC Data Model 1.1 and checks the Issuer DID.
+/// Validate a jwt_vc_json, checks the JWT and the Issuer DID.
 pub async fn validate_jwt_vc_json(credential_jwt: Jwt) -> Result<DecodedJwtCredential<Value>, AppError> {
     // `SkipUnsupported` allows for custom credential types, such as the StatusList2021Entry (https://www.w3.org/TR/2023/WD-vc-status-list-20230427/#statuslist2021entry)
     let validator = JwtCredentialValidator::with_signature_verifier(Verifier);
@@ -91,12 +91,12 @@ pub fn validate_credential_types(data: &Value) -> Result<(), AppError> {
     }
 }
 
-/// Validate any given data in serde_json::Value format against any given JsonSchema by path.
+/// Validate any given data in serde_json::Value format against any given JSON Schema by path.
 pub fn validate_credential_against_schema(json_schema_path: String, data: &Value) -> Result<(), AppError> {
     let json_schema_file = File::open(&json_schema_path)
-        .map_err(|_| AppError::Error("Failed to find or read from JsonSchema file".to_string()))?;
+        .map_err(|_| AppError::Error("Failed to find or read from JSON Schema file".to_string()))?;
     let json_schema: Value = serde_json::from_reader(json_schema_file)
-        .map_err(|_| AppError::Error("Failed to convert JsonSchema &str to serde_json::Value".to_string()))?;
+        .map_err(|_| AppError::Error("Failed to convert JSON Schema &str to serde_json::Value".to_string()))?;
 
     // Select correct draft version for JSON Schema Validator
     let schema = match json_schema
@@ -105,19 +105,21 @@ pub fn validate_credential_against_schema(json_schema_path: String, data: &Value
         .ok_or(AppError::Error("Invalid or missing \"$schema\" field".to_string()))?
         .as_str()
     {
-        "https://json-schema.org/draft/2019-09/schema" => jsonschema::draft201909::new(&json_schema).map_err(|_| {
-            AppError::Error(format!(
-                "Failed to compile JsonSchema from serde_json::Value: {json_schema}"
-            ))
-        })?,
+        "https://json-schema.org/draft/2019-09/schema#" => {
+            jsonschema::draft201909::new(&json_schema).map_err(|_| {
+                AppError::Error(format!(
+                    "Failed to compile JSON Schema from serde_json::Value: {json_schema}"
+                ))
+            })?
+        }
         "https://json-schema.org/draft/2020-12/schema" => jsonschema::draft202012::new(&json_schema).map_err(|_| {
             AppError::Error(format!(
-                "Failed to compile JsonSchema from serde_json::Value: {json_schema}"
+                "Failed to compile JSON Schema from serde_json::Value: {json_schema}"
             ))
         })?,
         _ => jsonschema::draft202012::new(&json_schema).map_err(|_| {
             AppError::Error(format!(
-                "Failed to compile JsonSchema from serde_json::Value: {json_schema}"
+                "Failed to compile JSON Schema from serde_json::Value: {json_schema}"
             ))
         })?,
     };
@@ -125,7 +127,7 @@ pub fn validate_credential_against_schema(json_schema_path: String, data: &Value
     let errors: Vec<ValidationError> = schema.iter_errors(data).collect();
     if !errors.is_empty() {
         Err(AppError::Error(format!(
-            "The data is invalid according to the given JsonSchema: {errors:?}"
+            "The data is invalid according to the given JSON Schema: {errors:?}"
         )))
     } else {
         Ok(())
@@ -305,7 +307,7 @@ mod tests {
     fn credential_schema_validation_err() {
         let mut invalid_ob3 = EXAMPLE_BASIC_OB3.clone();
 
-        *invalid_ob3.get_mut("id").unwrap() = json!(["InvalidType"]);
+        *invalid_ob3.get_mut("id").unwrap() = json!(["InvalidId"]);
 
         let result = validate_credential_types(&invalid_ob3);
         assert!(result.is_err());
