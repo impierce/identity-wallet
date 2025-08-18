@@ -98,9 +98,29 @@ pub fn validate_credential_against_schema(json_schema_path: String, data: &Value
     let json_schema: Value = serde_json::from_reader(json_schema_file)
         .map_err(|_| AppError::Error("Failed to convert JsonSchema &str to serde_json::Value".to_string()))?;
 
-    // todo pick right draft version
-    let schema = jsonschema::draft201909::new(&json_schema)
-        .map_err(|_| AppError::Error("Failed to compile JsonSchema from serde_json::Value".to_string()))?;
+    // Select correct draft version for JSON Schema Validator
+    let schema = match json_schema
+        .get("$schema")
+        .and_then(|value| value.as_str().map(ToString::to_string))
+        .ok_or(AppError::Error("Invalid or missing \"$schema\" field".to_string()))?
+        .as_str()
+    {
+        "https://json-schema.org/draft/2019-09/schema" => jsonschema::draft201909::new(&json_schema).map_err(|_| {
+            AppError::Error(format!(
+                "Failed to compile JsonSchema from serde_json::Value: {json_schema}"
+            ))
+        })?,
+        "https://json-schema.org/draft/2020-12/schema" => jsonschema::draft202012::new(&json_schema).map_err(|_| {
+            AppError::Error(format!(
+                "Failed to compile JsonSchema from serde_json::Value: {json_schema}"
+            ))
+        })?,
+        _ => jsonschema::draft202012::new(&json_schema).map_err(|_| {
+            AppError::Error(format!(
+                "Failed to compile JsonSchema from serde_json::Value: {json_schema}"
+            ))
+        })?,
+    };
 
     let errors: Vec<ValidationError> = schema.iter_errors(data).collect();
     if !errors.is_empty() {
