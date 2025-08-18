@@ -9,8 +9,13 @@
 
 {#if data}
   <div class="flex w-full flex-col items-center justify-center space-y-4 py-6">
-    <div class="h-[75px] w-[75px] rounded-3xl bg-white p-4">
-      <Image {id} imgClass="h-full w-full rounded-2xl" iconFallback="Bank" iconClass="h-6 w-6 dark:text-slate-800" />
+    <div class="size-[75px] rounded-3xl bg-white p-4">
+      <Image
+        {id}
+        imgClass="h-full w-full rounded-2xl"
+        iconFallback="BankLight"
+        iconClass="size-6 dark:text-slate-800"
+      />
     </div>
 
     <div class="text-center text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">Data shared</div>

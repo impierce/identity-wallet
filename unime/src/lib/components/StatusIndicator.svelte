@@ -35,7 +35,7 @@
   </div>
 
   {#if logoUrl}
-    <Image id={hash(logoUrl)} iconFallback="Certificate" isTempAsset={true} imgClass="h-10 w-10" />
+    <Image id={hash(logoUrl)} iconFallback="CertificateLight" isTempAsset={true} imgClass="h-10 w-10" />
   {/if}
 
   {#if status === 'Success'}

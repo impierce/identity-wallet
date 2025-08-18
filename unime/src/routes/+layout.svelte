@@ -15,7 +15,7 @@
   import { listen, type UnlistenFn } from '@tauri-apps/api/event';
   import { attachConsole, error, info } from '@tauri-apps/plugin-log';
 
-  import { DeprecatedSwitch } from '$lib/components';
+  import { DeprecatedSwitch, Toast } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import {
     ArrowLeftRegularIcon,
@@ -23,12 +23,13 @@
     CaretDownBoldIcon,
     CaretUpBoldIcon,
     TrashRegularIcon,
+    XRegularIcon,
   } from '$lib/icons';
   import { state as appState, error as errorState } from '$lib/stores';
 
-  import ErrorToast from './ErrorToast.svelte';
-
   import '../app.css';
+
+  import { loadIcons } from '$lib/icons/iconify';
 
   let detachConsole: UnlistenFn;
   let unlistenError: UnlistenFn;
@@ -63,6 +64,9 @@
           redirectPath = `/prompt/${$appState.current_user_prompt.type}`;
         }
       }
+
+      // DEV: uncommenting this helps local development by always redirecting to the page you're working on
+      // redirectPath = '/me/settings/about';
 
       if (redirectPath) {
         info(`Redirecting to: ${redirectPath}.`);
@@ -211,6 +215,8 @@
     }
   }
 
+  loadIcons();
+
   // Bind the div elements of th insets against these variables.
   let safeAreaInsetTop: HTMLDivElement;
   let safeAreaInsetBottom: HTMLDivElement;
@@ -346,10 +352,16 @@ Stacking context: We have to deviate from the DOM-sequence.
 
     <!-- TODO: Debug messages is broken. -->
     {#if showDebugMessages}
-      <div class="relative z-10 min-h-full w-screen bg-orange-100 pt-24">
+      <div class="relative z-10 min-h-full w-screen bg-orange-100 pt-8">
+        <button
+          class="absolute right-1 top-1 rounded-full p-2 text-orange-800"
+          on:click={() => (showDebugMessages = false)}
+        >
+          <XRegularIcon />
+        </button>
         <p class="pb-2 pt-2 text-center text-xs font-semibold uppercase text-orange-800">debug messages</p>
 
-        <hr class="mx-8 h-1 bg-orange-800" />
+        <hr class="mx-8 mb-2 h-[2px] bg-orange-800" />
 
         {#each $appState.debug_messages as message}
           <div class="mx-2 mb-2 rounded bg-orange-200 p-2">
@@ -388,10 +400,11 @@ Stacking context: We have to deviate from the DOM-sequence.
     <!-- Show actual (non-localized) error message in dev mode, default (localized) message otherwise.  -->
     {#if $errorState}
       <div class="absolute bottom-[calc(16px_+_var(--safe-area-inset-bottom))] right-4 w-[calc(100%_-_32px)]">
-        <ErrorToast
+        <Toast
+          variant="error"
           title={$appState?.dev_mode !== 'Off' ? 'Error' : $LL.ERROR.TITLE()}
           detail={$appState?.dev_mode !== 'Off' ? $errorState : $LL.ERROR.DEFAULT_MESSAGE()}
-          on:dismissed={() => {
+          ondismissed={() => {
             // After the toast fires the "dismissed" event, we reset $errorStore.
             errorState.set(undefined);
           }}

@@ -3,7 +3,7 @@
   import { page } from '$app/stores';
   import { fly } from 'svelte/transition';
 
-  import { ActionSheet } from '$lib/components';
+  import { ActionSheet, Avatar } from '$lib/components';
 
   import '@lottiefiles/lottie-player';
 
@@ -11,9 +11,7 @@
   import { writable, type Writable } from 'svelte/store';
 
   import { Button, CredentialList, Favorites, IconMessage, PaddedIcon, Tabs } from '$lib/components';
-  import { GhostFillIcon, MagnifyingGlassIcon, RocketLaunchFillIcon } from '$lib/icons';
-  import Ngdil from '$lib/static/svg/logo/demos/Ngdil.svelte';
-  // import Selv from '$lib/static/svg/logo/demos/Selv.svelte';
+  import { GhostFillIcon, MagnifyingGlassIcon, PlusCircleIcon, RocketLaunchFillIcon } from '$lib/icons';
   import { onboarding_state, state } from '$lib/stores';
   import { calculateInitials } from '$lib/utils';
 
@@ -43,28 +41,15 @@
 </script>
 
 <!-- Isolate stacking context to avoid z-index conflicts. -->
-<div class="isolate flex h-full flex-col bg-white dark:bg-dark">
+<div class="relative isolate flex flex-col bg-white dark:bg-dark">
   <div class="sticky top-0 z-10 w-full bg-white px-[20px] py-4 dark:bg-dark">
     <!-- Top Bar -->
     <div class="flex items-center justify-between">
-      <button
-        class="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary"
-        on:click={() => goto('/me/settings')}
-      >
-        {#if $state.profile_settings.profile?.picture}
-          <span class="text-[28px]/[28px]">
-            <!-- The profile picture is an emoticon selected from a list of emoticons we provide. -->
-            <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-            {@html $state.profile_settings.profile?.picture}
-          </span>
-        {:else}
-          <span class="text-[20px]/[20px] font-semibold text-white dark:text-dark">
-            {initials}
-          </span>
-        {/if}
+      <button onclick={() => goto('/me/settings')}>
+        <Avatar {initials} picture={$state.profile_settings.profile?.picture} />
       </button>
       <button
-        on:click={() => goto('/me/search')}
+        onclick={() => goto('/me/search')}
         class="-mr-3 flex h-11 w-11 items-center justify-center rounded-2xl text-black dark:text-white"
       >
         <MagnifyingGlassIcon class="h-6 w-6" />
@@ -83,7 +68,7 @@
 
   <!-- should have min height: full screen - smallest possible welcome header - bottom nav - safe areas (top, bottom) -->
   <div
-    in:fly={{ y: 24, duration: 200 }}
+    in:fly={{ y: 24, duration: 200, opacity: 1 }}
     class="flex grow flex-col items-stretch justify-start rounded-t-[20px] bg-silver p-[18px] dark:bg-navy"
   >
     {#if $state?.credentials && $state?.credentials.length > 0}
@@ -113,13 +98,6 @@
         <div class="absolute right-0 top-0">
           <SortingSheet />
         </div>
-      </div>
-
-      <!-- container that animates and places the button -->
-      <div in:fly={{ y: 12, delay: 0, opacity: 1, duration: 200 }} class="absolute bottom-4 right-4">
-        <!-- <div in:fade={{ delay: 200, duration: 200 }} class="absolute bottom-4 right-4"> -->
-        <!-- TODO: feature disabled: "Add self-signed credential" -->
-        <!-- <ButtonRounded label="Add" icon={PlusCircle} /> -->
       </div>
     {:else if $state?.user_journey}
       <!-- With active onboarding journey -->
@@ -170,25 +148,24 @@
       <div class="flex grow flex-col items-center justify-center">
         <IconMessage icon={GhostFillIcon} title={$LL.ME.EMPTY_CREDENTIALS.TITLE()} />
         <div class="w-[280px] pt-[15px] text-center text-[13px]/[24px] font-normal text-slate-500 dark:text-slate-300">
-          {$LL.ME.DEMO()}
-          <div class="flex flex-col gap-3 pt-[15px]">
-            <!-- Selv -->
-            <!-- <div class="flex h-14 items-center justify-between rounded-xl bg-white p-4 dark:bg-dark">
-              <Selv class="h-6 w-14 text-slate-500 dark:text-slate-300" />
-              <span class="text-[13px]/[24px] font-semibold text-primary">https://selv.iota.org</span>
-            </div> -->
-            <!-- NGDIL -->
-            <div class="flex h-14 items-center justify-between rounded-xl bg-white p-4 dark:bg-dark">
-              <Ngdil class="h-6 w-14 text-slate-500 dark:text-slate-300" />
-              <span class="text-[13px]/[24px] font-semibold text-primary">https://demo.ngdil.com</span>
-            </div>
-          </div>
+          {$LL.ME.EMPTY_CREDENTIALS.SUBTITLE()}
         </div>
-      </div>
-      <!-- TODO: feature disabled: "Add self-signed credential" -->
-      <div in:fly={{ y: 12, delay: 400, opacity: 0 }} class="absolute bottom-4 right-4">
-        <!-- <ButtonRounded label="Add" icon={PlusCircle} /> -->
       </div>
     {/if}
   </div>
+</div>
+
+<!-- "Add" button -->
+<!-- <div in:fly={{ y: 12, delay: 0, opacity: 1, duration: 200 }} class="absolute bottom-5 right-4"> -->
+<div
+  in:fly={{ y: 12, opacity: 1, duration: 200 }}
+  class="fixed bottom-[calc(64px_+_16px_+_var(--safe-area-inset-bottom))] right-4"
+>
+  <button
+    class="flex w-fit justify-center rounded-full bg-primary px-4 py-3 text-white dark:text-dark"
+    onclick={() => goto('/me/add')}
+  >
+    <PlusCircleIcon class="mr-2 size-6" />
+    <div class="text-[13px]/[24px] font-medium">{$LL.ADD_CREDENTIALS.BUTTON()}</div>
+  </button>
 </div>

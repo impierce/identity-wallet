@@ -11,6 +11,7 @@ pub mod search;
 pub mod trust_list;
 pub mod user_journey;
 pub mod user_prompt;
+pub mod verified_data;
 
 use self::search::SearchResults;
 use self::{
@@ -31,6 +32,7 @@ use std::collections::HashMap;
 use std::{collections::VecDeque, pin::Pin};
 use trust_list::TrustLists;
 use ts_rs::TS;
+use verified_data::VerifiedData;
 
 // The AppState is the main state of the application shared between the backend and the frontend.
 // We have structured the state and its operations following the redux pattern.
@@ -95,7 +97,6 @@ pub struct AppState {
     pub search_results: SearchResults,
     /// This field contains utils needed for the backend to perform its tasks.
     #[serde(skip)]
-    #[derivative(Debug = "ignore")]
     pub core_utils: CoreUtils,
     pub profile_settings: ProfileSettings,
     /// User prompts are a way for the backend to communicate a desired/required user interaction to the frontend.
@@ -106,9 +107,11 @@ pub struct AppState {
     #[ts(type = "Array<string>")]
     pub debug_messages: VecDeque<String>,
     pub history: Vec<HistoryEvent>,
+    pub verified_data: VerifiedData,
     /// Extensions will bring along their own redux compliant code, in the unime folder.
     #[ts(skip)]
     pub extensions: std::collections::HashMap<String, Box<dyn FeatTrait>>,
+    pub show_dev_mode_setting: bool,
     pub dev_mode: DevMode,
 }
 

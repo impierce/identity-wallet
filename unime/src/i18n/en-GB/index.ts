@@ -29,6 +29,9 @@ const en_GB = extendLanguage(en, {
   ME: {
     FAVORITES: 'My favourites',
   },
+  ADD_CREDENTIALS: {
+    FAVORITES_TOGGLE_LABEL: 'Add to favourites',
+  },
   ERROR: {
     TITLE: 'Oh dear!',
   },

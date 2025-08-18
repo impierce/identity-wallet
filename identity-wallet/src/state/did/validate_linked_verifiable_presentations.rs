@@ -51,10 +51,11 @@ impl PartialEq for LinkedVerifiableCredentialData {
 /// credential data. It starts by resolving the holder DID and then iterates over the linked verifiable presentation
 /// URLs. For each linked verifiable presentation, it validates the presentation and then validates the linked
 /// verifiable credentials. It only considers linked verifiable credentials with successful domain linkage validation.
-pub async fn validate_linked_verifiable_presentations(holder_did: &str) -> Vec<Vec<LinkedVerifiableCredentialData>> {
+pub async fn validate_linked_verifiable_presentations(
+    resolver: &Resolver,
+    holder_did: &str,
+) -> Vec<Vec<LinkedVerifiableCredentialData>> {
     info!("Validating linked verifiable presentations for holder DID: {holder_did}");
-
-    let resolver = Resolver::new().await;
 
     let holder_document = match resolver.resolve(holder_did).await {
         Ok(holder_document) => holder_document,
@@ -76,7 +77,7 @@ pub async fn validate_linked_verifiable_presentations(holder_did: &str) -> Vec<V
     )
     .filter_map(|linked_verifiable_presentation_url| {
         // Validate the linked verifiable presentation and get the linked verifiable credential data
-        get_validated_linked_presentation_data(&resolver, &holder_document, linked_verifiable_presentation_url)
+        get_validated_linked_presentation_data(resolver, &holder_document, linked_verifiable_presentation_url)
     })
     .collect::<Vec<_>>()
     .await
@@ -194,7 +195,8 @@ async fn get_validated_linked_credential_data(
             info!("Issuer linked domains: {issuer_linked_domains:#?}");
 
             // Only linked verifiable credentials with at least one successful domain linkage validation are considered
-            let mut validated_linked_domains = get_validated_linked_domains(&issuer_linked_domains, &issuer_did).await;
+            let mut validated_linked_domains = get_validated_linked_domains(resolver, &issuer_linked_domains, &issuer_did).await;
+
 
             // TODO: This is a fallback to get the url from a did:web to validate domain linkage. This is useful for companies who haven't implemented domain linkage yet.
             if validated_linked_domains.is_empty() {
@@ -261,14 +263,20 @@ async fn get_validated_linked_credential_data(
 }
 
 /// Returns a Vec of successfully validated issuer linked domains.
-async fn get_validated_linked_domains(issuer_linked_domains: &[Url], issuer_did: &str) -> Vec<Url> {
+async fn get_validated_linked_domains(
+    // TODO: make this conditional configuration more 'ergonomic'.
+    #[cfg(not(feature = "test_utils"))] resolver: &Resolver,
+    #[cfg(feature = "test_utils")] _resolver: &Resolver,
+    issuer_linked_domains: &[Url],
+    issuer_did: &str,
+) -> Vec<Url> {
     FuturesUnordered::from_iter(issuer_linked_domains.iter().map(|issuer_linked_domain| async move {
         let validation_status: ValidationStatus = {
             #[cfg(not(feature = "test_utils"))]
             {
                 use crate::state::did::validate_domain_linkage::validate_domain_linkage;
 
-                validate_domain_linkage(issuer_linked_domain.clone(), issuer_did)
+                validate_domain_linkage(resolver, issuer_linked_domain.clone(), issuer_did)
                     .await
                     .status
             }
@@ -760,8 +768,10 @@ mod tests {
 
         holder.add_well_known_did_json().await;
 
+        let resolver = Resolver::new().await;
+
         assert_eq!(
-            validate_linked_verifiable_presentations(holder.did_document.id().to_string().as_ref()).await,
+            validate_linked_verifiable_presentations(&resolver, holder.did_document.id().to_string().as_ref()).await,
             vec![
                 vec![LinkedVerifiableCredentialData {
                     name: Some("Webshop".to_string()),
@@ -818,8 +828,10 @@ mod tests {
 
         holder.add_well_known_did_json().await;
 
+        let resolver = Resolver::new().await;
+
         assert_eq!(
-            validate_linked_verifiable_presentations(holder.did_document.id().to_string().as_ref()).await,
+            validate_linked_verifiable_presentations(&resolver, holder.did_document.id().to_string().as_ref()).await,
             // The domain linkage validation of the issuer failed, so the linked verifiable credential is not considered.
             vec![vec![]]
         );
@@ -933,9 +945,12 @@ mod tests {
             .await;
         issuer1.add_well_known_did_json().await;
 
+        let resolver = Resolver::new().await;
+
         // Successfully validate the linked domain.
         assert_eq!(
             get_validated_linked_domains(
+                &resolver,
                 &[issuer1.domain.clone()],
                 issuer1.did_document.id().to_string().as_ref()
             )
@@ -946,6 +961,7 @@ mod tests {
         // Assert that only one domain was validated.
         assert_eq!(
             get_validated_linked_domains(
+                &resolver,
                 &[issuer1.domain.clone(), "http://invalid-domain.org".parse().unwrap()],
                 issuer1.did_document.id().to_string().as_ref()
             )
@@ -964,6 +980,7 @@ mod tests {
         // Assert that only one domain was validated. The second domain cannot be validated because the issuer DID is different.
         assert_eq!(
             get_validated_linked_domains(
+                &resolver,
                 &[issuer1.domain.clone(), issuer2.domain.clone()],
                 issuer1.did_document.id().to_string().as_ref()
             )
@@ -985,6 +1002,7 @@ mod tests {
 
         // Assert that both domains were validated (regardless of the order).
         assert!(get_validated_linked_domains(
+            &resolver,
             &[issuer1.domain.clone(), issuer2.domain.clone()],
             issuer1.did_document.id().to_string().as_ref()
         )

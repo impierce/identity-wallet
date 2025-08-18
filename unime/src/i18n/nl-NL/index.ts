@@ -300,7 +300,6 @@ Door onze Service te gebruiken, erken je dat je deze Voorwaarden heeft gelezen, 
       GREETING_3: 'Hoi',
       GREETING_4: 'Dag',
     },
-    DEMO: 'Bezoek een van de volgende websites op een desktopcomputer om te beginnen.',
     CREDENTIAL_TABS: {
       ALL: 'Alle',
       DATA: 'Data',
@@ -384,16 +383,30 @@ Door onze Service te gebruiken, erken je dat je deze Voorwaarden heeft gelezen, 
     NAVBAR_TITLE: 'Credential Informatie',
     DETAILS: {
       VALID: 'Geldig',
+      UNVERIFIED: 'Niet geverifieerd',
       ISSUED_BY: 'Uitgegeven door',
+      SELF_SIGNED: 'jezelf',
       DESCRIPTION: 'Beschrijving',
       OPEN_BADGES: {
         ALIGNMENT: 'Afstemming',
         CRITERIA: 'Criteria',
       },
     },
+    RENDERER: {
+      PID: {
+        NAME: 'Naam',
+        NATIONALITY: 'Nationaliteit',
+        BIRTH_DATE: 'Geboortedatum',
+        BIRTH_PLACE: 'Geboorteplaats',
+      },
+    },
     ACTIONS: {
+      EDIT: {
+        MENU_BUTTON: 'Weergavenaam bijwerken',
+        CONFIRM_BUTTON: 'Weergavenaam bijwerken',
+      },
       DELETE: {
-        BUTTON_LABEL: 'Credential verwijderen',
+        MENU_BUTTON: 'Credential verwijderen',
         TITLE: 'Credential verwijderen',
         DESCRIPTION:
           'Weet je zeker dat je deze credential uit je wallet wilt verwijderen? Deze aktie kan niet meer worden teruggedraaid.',
@@ -401,14 +414,117 @@ Door onze Service te gebruiken, erken je dat je deze Voorwaarden heeft gelezen, 
       },
     },
   },
+  ADD_CREDENTIALS: {
+    BUTTON: 'Toevoegen',
+    NAVBAR_TITLE: 'Voeg credentials toe',
+    VALUE_REQUIRED: 'Verplicht',
+    LABEL_DISCLAIMER: 'Alleen zichtbaar voor jou',
+    FAVORITES_TOGGLE_LABEL: 'Aan favorieten toevoegen',
+    ADDRESS: {
+      TITLE: 'Adres',
+      DESCRIPTION: 'Voeg je woon- of werkadres toe',
+      ADD: {
+        NAVBAR_TITLE: 'Adres toevoegen',
+        LABEL: 'Hoe wil je dit adres noemen?',
+        LABEL_PLACEHOLDER: 'Woonadres',
+        RESIDENT_ADDRESS_LABEL: 'Adres',
+        RESIDENT_COUNTRY_LABEL: 'Land',
+        RESIDENT_COUNTRY_PLACEHOLDER: 'Kies een land',
+        RESIDENT_COUNTRY_NO_MATCH: 'Geen landen gevonden',
+        RESIDENT_STATE_LABEL: 'Provincie',
+        RESIDENT_STREET_LABEL: 'Straat',
+        RESIDENT_HOUSE_NUMBER_LABEL: 'Huisnummer',
+        RESIDENT_POSTAL_CODE_LABEL: 'Postcode',
+        RESIDENT_CITY_LABEL: 'Plaats',
+        CREATE_BUTTON: 'Adres toevoegen',
+      },
+    },
+    EMAIL: {
+      TITLE: 'E-mail',
+      DESCRIPTION: 'Verifieer je e-mailadres',
+      INFO: {
+        NAVBAR_TITLE: 'Verifieer e-mailadres',
+        TITLE: 'Verifieer e-mailadres',
+        DESCRIPTION: 'Voordat je begint',
+        ITEM_0: {
+          TITLE: 'Waarom je e-mail verifiëren in UniMe?',
+          DESCRIPTION:
+            'Door je e-mailadres te verifiëren bewijs je dat het echt van jou is. Zo krijg je eenvoudig en vlot toegang tot diensten, zonder gebruikersnaam of wachtwoord. Je kunt het bijvoorbeeld gebruiken om toegang te krijgen tot online diensten en apps, of om het te delen met andere mensen die willen verifiëren dat jij het bent.',
+        },
+        ITEM_1: {
+          TITLE: 'Hoe werkt het?',
+          DESCRIPTION:
+            'We sturen een eenmalige code naar je e-mailadres. Voer de code in om te bevestigen dat het jouw e-mailadres is. Zodra bevestigd, kun je je e-mailadres gebruiken bij ondersteunde diensten.',
+        },
+        ITEM_2: {
+          TITLE: 'Is mijn informatie veilig?',
+          DESCRIPTION:
+            'Ja. We gebruiken je e-mailadres alleen om je de verificatiecode te sturen. Het wordt niet gedeeld en nergens anders voor gebruikt.',
+        },
+      },
+      ADD: {
+        NAVBAR_TITLE: 'E-mail toevoegen',
+        LABEL: 'Hoe wil je dit emailadres noemen?',
+        LABEL_PLACEHOLDER: 'Persoonlijk email',
+        VALUE_LABEL: 'Email',
+        VALUE_PLACEHOLDER: 'voornaam.achternaam@example.com',
+        VALUE_PATTERN_ERROR: 'Voer een geldig emailadres in',
+        BUTTON_SEND: 'Verificatie email versturen',
+        BUTTON_SEND_AGAIN: 'Verificatie-e-mail opnieuw versturen',
+        CHECK_EMAIL: 'Controleer je inbox en vul hieronder de code in.',
+        EXPIRED_ERROR: 'Verificatiecode is verlopen',
+      },
+    },
+    PROFILE: {
+      TITLE: 'Profiel',
+      DESCRIPTION: 'Voeg informatie over jezelf toe',
+      INFO: {
+        NAVBAR_TITLE: 'Your profile',
+        TITLE: 'UniMe Profiel',
+        DESCRIPTION: 'Voordat je begint',
+        ITEM_0: {
+          TITLE: 'Waarom je gegevens toevoegen in UniMe?',
+          DESCRIPTION:
+            'Voeg je persoonlijke gegevens één keer toe en gebruik ze overal opnieuw. Sla lange formulieren over, meld je sneller aan en kies zelf wat je deelt op jouw voorwaarden.',
+        },
+        ITEM_1: {
+          TITLE: 'Hoe werkt het?',
+          DESCRIPTION:
+            'Wanneer een dienst om je gegevens vraagt, zoals je naam of adres om een aanmelding of bezorging af te ronden, scan je eenvoudig een QR-code, controleer je welke informatie wordt gevraagd en kies je welke gegevens je wilt delen om formulieren met één klik in te vullen.',
+        },
+        ITEM_2: {
+          TITLE: 'Zijn mijn gegevens veilig?',
+          DESCRIPTION:
+            'Ja. Je gegevens blijven veilig op je telefoon, beschermd door je wachtwoord, gezichtsherkenning of vingerafdruk. Als je persoonlijke gegevens deelt, zoals je naam of adres,  worden ze versleuteld en zijn ze alleen zichtbaar voor de dienst die om je gegevens vraagt. Jij bepaalt wat je deelt, en met wie.',
+        },
+      },
+      ADD: {
+        NAVBAR_TITLE: 'Jouw profiel',
+        LABEL: 'Hoe wil je dit profiel noemen?',
+        LABEL_PLACEHOLDER: 'Persoonlijk profiel',
+        FIRST_NAME_LABEL: 'Voornaam',
+        FIRST_NAME_PLACEHOLDER: 'Je voornaam',
+        MIDDLE_NAME_LABEL: 'Middennaam',
+        MIDDLE_NAME_PLACEHOLDER: 'Je middennaam',
+        LAST_NAME_LABEL: 'Achternaam',
+        LAST_NAME_PLACEHOLDER: 'Je achternaam',
+        BIRTH_DATE_LABEL: 'Geboortedatum',
+        BIRTH_DATE_PLACEHOLDER: 'Selecteer je geboortedatum',
+        BIRTH_PLACE_LABEL: 'Geboorteplaats',
+        BIRTH_PLACE_PLACEHOLDER: 'Je geboorteplaats',
+        NATIONALITY_LABEL: 'Nationaliteit',
+        CREATE_BUTTON: 'Profiel aanmaken',
+      },
+    },
+  },
   SORT: {
-    TITLE: 'Sorteer',
+    TITLE: 'Sorteren',
     PREFERENCES: {
       LIST_VIEW: 'Lijstweergave',
       GRID_VIEW: 'Rasterweergave',
       ALPHABETICAL: 'Alfabetische Volgorde',
-      DATE_ISSUED: 'Datum Uitgegeven',
-      DATE_ADDED: 'Datum Toegevoegd',
+      DATE_ISSUED: 'Datum uitgegeven',
+      DATE_ADDED: 'Datum toegevoegd',
     },
     ORDER: {
       A_Z: 'A tot Z',
@@ -430,6 +546,7 @@ Door onze Service te gebruiken, erken je dat je deze Voorwaarden heeft gelezen, 
   },
   CANCEL: 'Annuleren',
   CLOSE: 'Sluiten',
+  DISCARD: 'Verwijderen',
   CONTINUE: 'Doorgaan',
   SKIP: 'Overslaan',
   ACCEPT: 'Accepteren',

@@ -1,5 +1,3 @@
-use std::str::FromStr;
-
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use did_manager::Resolver;
 use identity_credential::domain_linkage::{DomainLinkageConfiguration, JwtDomainLinkageValidator};
@@ -15,6 +13,7 @@ use jsonwebtoken::{crypto::verify, jwk::Jwk as JsonWebTokenJwk, Algorithm, Decod
 use log::info;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+use std::str::FromStr;
 use ts_rs::TS;
 
 #[skip_serializing_none]
@@ -77,23 +76,21 @@ impl JwsVerifier for Verifier {
 }
 
 /// https://wiki.iota.org/identity.rs/how-tos/domain-linkage/create-and-verify/#verifying-a-did-and-domain-linkage
-pub async fn validate_domain_linkage(url: url::Url, did: &str) -> ValidationResult {
+pub async fn validate_domain_linkage(resolver: &Resolver, url: url::Url, did: &str) -> ValidationResult {
     let did_configuration_result = fetch_configuration(url.clone()).await;
 
     let domain_linkage_configuration = match did_configuration_result {
         Ok(did_config) => did_config,
-        Err(e) => {
+        Err(err) => {
             return ValidationResult {
                 status: ValidationStatus::Unknown,
-                message: Some(format!("Error while fetching configuration: {e}")),
+                message: Some(format!("Error while fetching configuration: {err}")),
                 ..Default::default()
             };
         }
     };
 
     let validator = JwtDomainLinkageValidator::with_signature_verifier(Verifier);
-
-    let resolver = Resolver::new().await;
 
     let document = match resolver.resolve(did).await {
         Ok(document) => document,
@@ -218,7 +215,10 @@ mod tests {
     async fn when_no_well_known_then_return_validation_status_unknown() {
         let mock_server = MockServer::start().await;
 
-        let result = validate_domain_linkage(url::Url::parse(&mock_server.uri()).unwrap(), "did:foo:bar").await;
+        let resolver = Resolver::new().await;
+
+        let result =
+            validate_domain_linkage(&resolver, url::Url::parse(&mock_server.uri()).unwrap(), "did:foo:bar").await;
 
         assert_eq!(result.status, ValidationStatus::Unknown);
         assert!(result.message.is_some());
@@ -242,7 +242,10 @@ mod tests {
             .mount(&mock_server)
             .await;
 
-        let result = validate_domain_linkage(url::Url::parse(&mock_server.uri()).unwrap(), "did:foo:bar").await;
+        let resolver = Resolver::new().await;
+
+        let result =
+            validate_domain_linkage(&resolver, url::Url::parse(&mock_server.uri()).unwrap(), "did:foo:bar").await;
 
         assert_eq!(
             result,
@@ -302,7 +305,10 @@ mod tests {
             .mount(&mock_server)
             .await;
 
+        let resolver = Resolver::new().await;
+
         let result = validate_domain_linkage(
+            &resolver,
             url::Url::parse(&mock_server.uri()).unwrap(),
             "did:key:z6MkiTBz1ymuepAQ4HEHYSF1H8quG5GLVVQR3djdX3mDooWp",
         )
@@ -340,7 +346,14 @@ mod tests {
         url.set_fragment(Some("foobar"));
         url.set_query(Some("page=1"));
 
-        let result = validate_domain_linkage(url, "did:key:z6MkiTBz1ymuepAQ4HEHYSF1H8quG5GLVVQR3djdX3mDooWp").await;
+        let resolver = Resolver::new().await;
+
+        let result = validate_domain_linkage(
+            &resolver,
+            url,
+            "did:key:z6MkiTBz1ymuepAQ4HEHYSF1H8quG5GLVVQR3djdX3mDooWp",
+        )
+        .await;
 
         assert_eq!(
             result,
@@ -362,7 +375,9 @@ mod tests {
 
         let stronghold_manager = Arc::new(StrongholdManager::create(&password).unwrap());
 
-        let subject = subject(stronghold_manager.clone(), password).await;
+        let resolver = Resolver::new().await;
+
+        let subject = subject(stronghold_manager.clone(), password, Arc::new(resolver)).await;
 
         let identifier = subject.identifier("did:key", Algorithm::ES256).await.unwrap();
         let fragment = identifier.split(':').next_back().unwrap();
@@ -403,7 +418,9 @@ mod tests {
 
         let stronghold_manager = Arc::new(StrongholdManager::create(&password).unwrap());
 
-        let subject = subject(stronghold_manager.clone(), password).await;
+        let resolver = Resolver::new().await;
+
+        let subject = subject(stronghold_manager.clone(), password, Arc::new(resolver)).await;
 
         let identifier = subject.identifier("did:key", Algorithm::EdDSA).await.unwrap();
         let fragment = identifier.split(':').next_back().unwrap();

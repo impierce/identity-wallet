@@ -317,7 +317,6 @@ Al utilizar nuestro Servicio, usted reconoce que ha leído, entendido y aceptado
       GREETING_3: 'Bienvenido de nuevo',
       GREETING_4: 'Hola',
     },
-    DEMO: 'Visita una de las siguientes páginas web en un ordenador de sobremesa para comenzar.',
     CREDENTIAL_TABS: {
       ALL: 'Todo',
       DATA: 'Datos',
@@ -401,19 +400,136 @@ Al utilizar nuestro Servicio, usted reconoce que ha leído, entendido y aceptado
     NAVBAR_TITLE: 'Información de las credenciales',
     DETAILS: {
       VALID: 'Válidas',
+      UNVERIFIED: 'No verificadas',
       ISSUED_BY: 'Emitidas por',
+      SELF_SIGNED: 'Autofirmadas',
       DESCRIPTION: 'Descripción',
       OPEN_BADGES: {
         ALIGNMENT: 'Alineación',
         CRITERIA: 'Criterio',
       },
     },
+    RENDERER: {
+      PID: {
+        NAME: 'Nombre',
+        NATIONALITY: 'Nacionalidad',
+        BIRTH_DATE: 'Fecha de nacimiento',
+        BIRTH_PLACE: 'Lugar de nacimiento',
+      },
+    },
     ACTIONS: {
+      EDIT: {
+        MENU_BUTTON: 'Editar nombre para mostrar',
+        CONFIRM_BUTTON: 'Actualizar nombre para mostrar',
+      },
       DELETE: {
-        BUTTON_LABEL: 'Borra las credenciales',
+        MENU_BUTTON: 'Borra las credenciales',
         TITLE: 'Borra las credenciales',
         DESCRIPTION: '¿Seguro que quieres borrar estas credenciales de tu billetera? Esta acción no puede deshacerse.',
         CONFIRM_BUTTON: 'Borra',
+      },
+    },
+  },
+  ADD_CREDENTIALS: {
+    BUTTON: 'Añadir',
+    NAVBAR_TITLE: 'Añadir datos',
+    VALUE_REQUIRED: 'Obligatorio',
+    LABEL_DISCLAIMER: 'Esto sólo lo ves tú',
+    FAVORITES_TOGGLE_LABEL: 'Añadir a favoritos',
+    ADDRESS: {
+      TITLE: 'Dirección',
+      DESCRIPTION: 'Añade tu dirección de casa o trabajo',
+      ADD: {
+        NAVBAR_TITLE: 'Añadir dirección',
+        LABEL: '¿Cómo quieres llamar a esta dirección?',
+        LABEL_PLACEHOLDER: 'Dirección de casa',
+        RESIDENT_ADDRESS_LABEL: 'Dirección',
+        RESIDENT_COUNTRY_LABEL: 'País',
+        RESIDENT_COUNTRY_PLACEHOLDER: 'Elige un país',
+        RESIDENT_COUNTRY_NO_MATCH: 'No se encontraron países',
+        RESIDENT_STATE_LABEL: 'Estado',
+        RESIDENT_STREET_LABEL: 'Calle',
+        RESIDENT_HOUSE_NUMBER_LABEL: 'Número',
+        RESIDENT_POSTAL_CODE_LABEL: 'Código postal',
+        RESIDENT_CITY_LABEL: 'Ciudad',
+        CREATE_BUTTON: 'Añadir dirección',
+      },
+    },
+    EMAIL: {
+      TITLE: 'Correo electrónico',
+      DESCRIPTION: 'Verifica tu correo personal o de trabajo',
+      INFO: {
+        NAVBAR_TITLE: 'Correo verificado',
+        TITLE: 'Correo verificado',
+        DESCRIPTION: 'Antes de empezar',
+        ITEM_0: {
+          TITLE: '¿Por qué verificar tu correo en UniMe?',
+          DESCRIPTION:
+            'Demuestra que el correo es tuyo, así puedes iniciar sesión más rápido sin usuario ni contraseña. También podrás usarlo con apps, sitios web e incluso otras personas que quieran confirmar que eres tú.',
+        },
+        ITEM_1: {
+          TITLE: '¿Cómo funciona?',
+          DESCRIPTION:
+            'Te enviamos un código de un solo uso a tu correo. Solo tienes que introducirlo para confirmar que es tuyo. Una vez verificado, podrás usar tu correo con servicios compatibles.',
+        },
+        ITEM_2: {
+          TITLE: '¿Está segura mi información?',
+          DESCRIPTION:
+            'Sí. Solo usamos tu correo para enviarte el código de verificación. Nunca lo compartimos ni lo usamos para nada más.',
+        },
+      },
+      ADD: {
+        NAVBAR_TITLE: 'Verifica tu correo',
+        LABEL: '¿Cómo quieres llamar a este correo?',
+        LABEL_PLACEHOLDER: 'Correo personal',
+        VALUE_LABEL: 'Correo electrónico',
+        VALUE_PLACEHOLDER: 'nombre.apellido@example.com',
+        VALUE_PATTERN_ERROR: 'Por favor, introduce un correo válido',
+        BUTTON_SEND: 'Enviar correo de verificación',
+        BUTTON_SEND_AGAIN: 'Reenviar correo de verificación',
+        CHECK_EMAIL: 'Por favor, revisa tu bandeja de entrada e introduce el código abajo.',
+        EXPIRED_ERROR: 'El código de verificación ha expirado',
+      },
+    },
+    PROFILE: {
+      TITLE: 'Perfil',
+      DESCRIPTION: 'Añade información sobre ti',
+      INFO: {
+        NAVBAR_TITLE: 'Tu perfil',
+        TITLE: 'Perfil UniMe',
+        DESCRIPTION: 'Antes de empezar',
+        ITEM_0: {
+          TITLE: '¿Por qué añadir tu información en UniMe?',
+          DESCRIPTION:
+            'Añade tus datos personales una vez y reutilízalos donde quieras. Olvídate de rellenar formularios largos, regístrate más rápido y elige qué compartes, a tu manera.',
+        },
+        ITEM_1: {
+          TITLE: '¿Cómo funciona?',
+          DESCRIPTION:
+            'Tu información se guarda de forma segura en tu teléfono, en una bóveda privada que solo tú puedes desbloquear. Cuando te pidan tus datos, como tu nombre o dirección, simplemente escanea un código QR, revisa lo que se solicita y si todo está bien haz clic en "conectar".',
+        },
+        ITEM_2: {
+          TITLE: '¿Está segura mi información?',
+          DESCRIPTION:
+            'Sí. Tus datos se guardan de forma segura en tu teléfono, protegidos por tu contraseña o desbloqueo facial/huella. Cuando decides compartir datos personales, como tu nombre o dirección, se encriptan y solo los ve el servicio con el que interactúas. Tus datos siguen siendo tuyos.',
+        },
+      },
+      ADD: {
+        NAVBAR_TITLE: 'Tu perfil',
+        LABEL: '¿Cómo quieres llamar a este perfil?',
+        LABEL_PLACEHOLDER: 'Perfil personal',
+        FIRST_NAME_LABEL: 'Nombre',
+        FIRST_NAME_PLACEHOLDER: 'Tu nombre',
+        MIDDLE_NAME_LABEL: 'Segundo nombre(s)',
+        MIDDLE_NAME_PLACEHOLDER: 'Tus segundos nombres',
+        LAST_NAME_LABEL: 'Apellido',
+        LAST_NAME_PLACEHOLDER: 'Tu apellido',
+        BIRTH_DATE_LABEL: 'Fecha de nacimiento',
+        BIRTH_DATE_PLACEHOLDER: 'Selecciona tu fecha de nacimiento',
+        BIRTH_PLACE_LABEL: 'Lugar de nacimiento',
+        BIRTH_PLACE_PLACEHOLDER: 'Tu lugar de nacimiento',
+        NATIONALITY_LABEL: 'Nacionalidad',
+        CREATE_BUTTON: 'Crear perfil',
       },
     },
   },
@@ -446,6 +562,7 @@ Al utilizar nuestro Servicio, usted reconoce que ha leído, entendido y aceptado
   },
   CANCEL: 'Cancela',
   CLOSE: 'Cierra',
+  DISCARD: 'Descarta',
   CONTINUE: 'Continua',
   SKIP: 'Saltar',
   ACCEPT: 'Acepta',

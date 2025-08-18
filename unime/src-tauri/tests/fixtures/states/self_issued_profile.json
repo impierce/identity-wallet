@@ -1,0 +1,31 @@
+{
+  "profile_settings": {
+    "profile": {
+      "name": "Ferris",
+      "picture": "&#129408",
+      "theme": "system"
+    },
+    "locale": "en-US"
+  },
+  "credentials": [
+    {
+      "id": "dummy_value",
+      "issuer_name": "Ferris",
+      "format": {
+        "format": "vc+sd-jwt"
+      },
+      "data": {
+        "gender": "Male",
+        "first name": "Ferris",
+        "last name": "Crabman",
+        "date of birth": "1990-01-01",
+        "issuer": "did:example:ebfeb1f712ebc6f1c276e12ec21"
+      },
+      "display_name": "profile"
+    }
+  ],
+  "current_user_prompt": {
+    "type": "redirect",
+    "target": "me"
+  }
+}

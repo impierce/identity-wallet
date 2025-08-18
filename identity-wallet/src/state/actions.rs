@@ -72,9 +72,10 @@ mod bindings {
         credentials::actions::{
             credential_offers_selected::CredentialOffersSelected, credentials_selected::CredentialsSelected,
             delete_credential::DeleteCredential, refresh_credential_status::RefreshCredentialStatus,
+            delete_credential::DeleteCredential, self_issue_credential::SelfIssueCredential,
             update_credential_metadata::UpdateCredentialMetadata,
         },
-        dev_mode::actions::dev_profile::DevProfile,
+        dev_mode::actions::{dev_profile::DevProfile, show_setting::ShowDevModeSetting},
         did::actions::{set_preferred_keytype::SetPreferredKeyType, set_preferred_method::SetPreferredDidMethod},
         profile_settings::actions::{
             create_new::CreateNew, enable_biometrics::EnableBiometrics, set_locale::SetLocale,
@@ -89,6 +90,7 @@ mod bindings {
             delete_trust_list_entry::DeleteTrustListEntry, edit_trust_list::EditTrustList,
             edit_trust_list_entry::EditTrustListEntry, toggle_trust_list_entry::ToggleTrustListEntry,
         },
+        verified_data::actions::{RedeemCode, SendVerificationEmail, ServiceHealthCheck},
     };
 
     #[derive(Serialize, Deserialize, TS)]
@@ -116,6 +118,8 @@ mod bindings {
             #[ts(optional)]
             payload: Option<CancelUserFlow>,
         },
+        #[serde(rename = "[DEV] Show DEV mode setting")]
+        ShowDevModeSetting { payload: ShowDevModeSetting },
         #[serde(rename = "[DEV] Load DEV profile")]
         LoadDevProfile { payload: DevProfile },
         #[serde(rename = "[DEV] Toggle DEV mode")]
@@ -162,5 +166,15 @@ mod bindings {
         EnableBiometrics { payload: EnableBiometrics },
         #[serde(rename = "[Storage] Check password")]
         CheckPassword { payload: CheckPassword },
+        #[serde(rename = "[Verified Data] Check service health")]
+        ServiceHealthCheck { payload: ServiceHealthCheck },
+        #[serde(rename = "[Verified Data] Send verification email")]
+        SendVerificationEmail { payload: SendVerificationEmail },
+        #[serde(rename = "[Verified Data] Redeem code")]
+        RedeemCode { payload: RedeemCode },
+        #[serde(rename = "[Verified Data] Reset email verification")]
+        ResetEmailVerification,
+        #[serde(rename = "[Credential] Self Issue")]
+        SelfIssueCredential { payload: SelfIssueCredential },
     }
 }

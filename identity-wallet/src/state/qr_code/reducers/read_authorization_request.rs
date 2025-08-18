@@ -85,7 +85,9 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                         ))
                     })?;
 
-                    Box::new(validate_domain_linkage(url, did).await)
+                    let resolver = &state.core_utils.resolver().await;
+
+                    Box::new(validate_domain_linkage(resolver, url, did).await)
                 }
                 #[cfg(feature = "test_utils")]
                 {
@@ -109,7 +111,9 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
 
             info!("Trusted Domains: {trusted_domains:?}");
 
-            let linked_verifiable_presentations = validate_linked_verifiable_presentations(did)
+            let resolver = state.core_utils.resolver().await;
+
+            let linked_verifiable_presentations = validate_linked_verifiable_presentations(&resolver, did)
                 .await
                 .into_iter()
                 .flatten()

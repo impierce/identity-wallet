@@ -18,8 +18,9 @@ pub async fn unlock_storage(state: AppState, action: Action) -> Result<AppState,
         let mut state_guard = state.core_utils.managers.lock().await;
 
         let stronghold_manager = Arc::new(StrongholdManager::load(&password).map_err(StrongholdLoadingError)?);
+        let resolver = state.core_utils.resolver().await;
 
-        let subject = subject(stronghold_manager.clone(), password).await;
+        let subject = subject(stronghold_manager.clone(), password, resolver).await;
 
         let provider_manager = ProviderManager::new(
             subject.clone(),
