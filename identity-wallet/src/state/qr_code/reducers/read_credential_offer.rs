@@ -151,6 +151,7 @@ async fn download_credential_logos(
 
         if let Some(credential_logo_uri) = credential_logo_uri {
             debug!("Downloading credential logo from URI: {credential_logo_uri}");
+
             if let Ok(credential_logo_uri) = credential_logo_uri.parse::<reqwest::Url>() {
                 let _ = download_asset(credential_logo_uri.clone(), &hash(credential_logo_uri.as_str())).await;
             } else {

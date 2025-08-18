@@ -3,7 +3,7 @@
   import { page } from '$app/stores';
   import { fly } from 'svelte/transition';
 
-  import { ActionSheet } from '$lib/components';
+  import { ActionSheet, Avatar } from '$lib/components';
 
   import '@lottiefiles/lottie-player';
 
@@ -45,21 +45,8 @@
   <div class="sticky top-0 z-10 w-full bg-white px-[20px] py-4 dark:bg-dark">
     <!-- Top Bar -->
     <div class="flex items-center justify-between">
-      <button
-        class="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary"
-        onclick={() => goto('/me/settings')}
-      >
-        {#if $state.profile_settings.profile?.picture}
-          <span class="text-[28px]/[28px]">
-            <!-- The profile picture is an emoticon selected from a list of emoticons we provide. -->
-            <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-            {@html $state.profile_settings.profile?.picture}
-          </span>
-        {:else}
-          <span class="text-[20px]/[20px] font-semibold text-white dark:text-dark">
-            {initials}
-          </span>
-        {/if}
+      <button onclick={() => goto('/me/settings')}>
+        <Avatar {initials} picture={$state.profile_settings.profile?.picture} />
       </button>
       <button
         onclick={() => goto('/me/search')}
@@ -172,7 +159,7 @@
 <!-- <div in:fly={{ y: 12, delay: 0, opacity: 1, duration: 200 }} class="absolute bottom-5 right-4"> -->
 <div
   in:fly={{ y: 12, opacity: 1, duration: 200 }}
-  class="absolute bottom-[calc(64px_+_16px_+_var(--safe-area-inset-bottom))] right-4"
+  class="fixed bottom-[calc(64px_+_16px_+_var(--safe-area-inset-bottom))] right-4"
 >
   <button
     class="flex w-fit justify-center rounded-full bg-primary px-4 py-3 text-white dark:text-dark"

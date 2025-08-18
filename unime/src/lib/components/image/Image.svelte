@@ -5,18 +5,32 @@
 
   import { debug, warn } from '@tauri-apps/plugin-log';
 
-  import { BankLightIcon, CertificateLightIcon, UserLightIcon } from '$lib/icons';
+  import {
+    BankLightIcon,
+    BankRegularIcon,
+    CertificateLightIcon,
+    HouseLightIcon,
+    HouseRegularIcon,
+    IdentificationBadgeLightIcon,
+    IdentificationBadgeRegularIcon,
+    UserLightIcon,
+  } from '$lib/icons';
   import { getImageAsset } from '$lib/utils';
 
   const icons = {
-    Bank: BankLightIcon,
-    Certificate: CertificateLightIcon,
-    User: UserLightIcon,
+    Bank: BankRegularIcon,
+    BankLight: BankLightIcon,
+    CertificateLight: CertificateLightIcon,
+    UserLight: UserLightIcon,
+    IdentificationBadge: IdentificationBadgeRegularIcon,
+    IdentificationBadgeLight: IdentificationBadgeLightIcon,
+    House: HouseRegularIcon,
+    HouseLight: HouseLightIcon,
   };
   type Icon = keyof typeof icons;
 
   export let id: string;
-  export let iconFallback: Icon = 'User';
+  export let iconFallback: Icon = 'UserLight';
   export let isTempAsset = false;
   let assetUrl: string | null = null;
 
@@ -41,13 +55,13 @@ Displays an image (loaded from disk) or a fallback component.
 
 ### Props
 - id
-- iconFallback (_default_: `'User'`)
+- iconFallback (_default_: `'UserLight'`)
 - isTempAsset (_default_: `false`)
 - imgClass (_overwrite Tailwind classes, default size_: `100%`)
 - iconClass (_overwrite Tailwind classes, default size_: `18px`)
 
 ### Slots
-- fallback (_default_: `User` icon)
+- fallback (_default_: `UserLight` icon)
 
 ### Usage
 ```tsx
@@ -67,7 +81,7 @@ Displays an image (loaded from disk) or a fallback component.
   <slot name="fallback">
     <svelte:component
       this={icons[iconFallback]}
-      class={twMerge('h-[18px] w-[18px] text-slate-800 dark:text-grey', $$props.iconClass)}
+      class={twMerge('size-[18px] text-slate-800 dark:text-grey', $$props.iconClass)}
       data-testid="icon"
     />
   </slot>

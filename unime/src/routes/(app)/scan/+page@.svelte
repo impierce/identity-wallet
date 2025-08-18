@@ -118,7 +118,7 @@
               <div class="flex flex-col space-y-2 rounded-[20px] border border-slate-200 p-2 dark:border-slate-600">
                 <input
                   bind:value={mockQrCodeValue}
-                  class="h-12 w-full rounded-xl border border-slate-200 px-3 text-[13px]/[24px] text-teal dark:border-slate-600 dark:bg-dark"
+                  class="h-12 w-full rounded-xl border border-slate-200 px-3 text-[13px]/[24px] text-secondary dark:border-slate-600 dark:bg-dark"
                   placeholder="Paste QR code value"
                 />
                 <Button

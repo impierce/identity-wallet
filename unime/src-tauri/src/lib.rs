@@ -5,6 +5,14 @@ use identity_wallet::{
 use log::{info, LevelFilter};
 use tauri_plugin_log::{fern::colors::Color, fern::colors::ColoredLevelConfig, Target, TargetKind};
 
+#[cfg(target_os = "android")]
+use iota_sdk::IotaClientBuilder;
+#[cfg(target_os = "android")]
+use jni::{
+    objects::{JClass, JObject},
+    JNIEnv,
+};
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -58,4 +66,15 @@ pub mod tauri_command {
     ) -> Result<(), String> {
         identity_wallet::command::handle_action(action, _app_handle, container, window).await
     }
+}
+
+#[cfg(target_os = "android")]
+#[no_mangle]
+pub extern "C" fn Java_com_impierce_identity_1wallet_MainActivity_java_1init(
+    mut env: JNIEnv,
+    _class: JClass,
+    context: JObject,
+) {
+    rustls_platform_verifier::android::init_hosted(&mut env, context)
+        .expect("Failed to initialize Android platform verifier");
 }

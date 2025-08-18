@@ -33,6 +33,7 @@
         title={credential.display_name}
         description={credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
         type={credential.data.type.includes('OpenBadgeCredential') ? 'badge' : 'data'}
+        icon={credential.metadata.icon}
         on:click={() => goto(`/credentials/${credential.id}`)}
       ></ListItemCard>
     {/each}

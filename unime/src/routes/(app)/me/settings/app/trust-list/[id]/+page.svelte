@@ -60,7 +60,7 @@
         <div class="flex space-x-[10px]">
           <input
             type="text"
-            class="h-12 grow rounded-xl border border-slate-200 px-3 text-[13px]/[24px] text-teal disabled:text-slate-400 disabled:opacity-60 dark:border-slate-600 dark:bg-dark"
+            class="h-12 grow rounded-xl border border-slate-200 px-3 text-[13px]/[24px] text-secondary disabled:text-slate-400 disabled:opacity-60 dark:border-slate-600 dark:bg-dark"
             value={trustList?.display_name}
             on:input={(e: Event) => (updatedListName = (e.target as HTMLInputElement).value)}
           />
@@ -89,7 +89,7 @@
         <div class="flex flex-row items-center space-x-2">
           <input
             type="text"
-            class="h-12 grow rounded-xl border border-slate-200 px-3 text-[13px]/[24px] text-teal disabled:text-slate-400 disabled:opacity-60 dark:border-slate-600 dark:bg-dark"
+            class="h-12 grow rounded-xl border border-slate-200 px-3 text-[13px]/[24px] text-secondary disabled:text-slate-400 disabled:opacity-60 dark:border-slate-600 dark:bg-dark"
             value={domains[i]}
             on:input={(e: Event) => (domains[i] = (e.target as HTMLInputElement).value)}
             disabled={!active}
@@ -133,7 +133,7 @@
         <div class="flex flex-row items-center space-x-2">
           <input
             type="text"
-            class="h-12 grow rounded-xl border border-slate-200 px-3 text-[13px]/[24px] text-teal dark:border-slate-600 dark:bg-dark"
+            class="h-12 grow rounded-xl border border-slate-200 px-3 text-[13px]/[24px] text-secondary dark:border-slate-600 dark:bg-dark"
             placeholder="example.org"
             bind:value={newEntryValue}
             use:init

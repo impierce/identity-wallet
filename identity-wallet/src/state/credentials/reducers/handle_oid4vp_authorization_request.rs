@@ -101,13 +101,6 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
         info!("`jwt_vc_json` Credentials: {jwt_vc_json_credentials:#?}");
         info!("`sd_jwt_vc` Credentials: {sd_jwt_vc_credentials:#?}");
 
-        let OID4VPClientMetadata {
-            client_name,
-            logo_uri,
-            connection_url,
-            client_id,
-        } = get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request);
-
         // Create the Authorization Response Input.
         let authorization_response_input = match (sd_jwt_vc_credentials.len(), jwt_vc_json_credentials.len()) {
             (0, 0) => {
@@ -251,6 +244,13 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             return Err(SendAuthorizationResponseError);
         }
         info!("response successfully sent");
+
+        let OID4VPClientMetadata {
+            client_name,
+            logo_uri,
+            connection_url,
+            client_id,
+        } = get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request);
 
         let did = CoreDID::parse(client_id).ok();
 

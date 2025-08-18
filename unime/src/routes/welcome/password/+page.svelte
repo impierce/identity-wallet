@@ -77,7 +77,7 @@
             <!-- not fulfilled -->
             <div class="mb-2 mr-2 flex items-center space-x-1 rounded-full bg-gray-100 px-2 py-1 dark:bg-navy">
               <CircleRegularIcon class="h-4 w-4 text-primary" />
-              <p class="text-[12px]/[20px] font-medium text-teal">
+              <p class="text-[12px]/[20px] font-medium text-secondary">
                 {rule.count}
                 {rule.name}
               </p>
@@ -86,7 +86,7 @@
             <!-- fulfilled -->
             <div class="mb-2 mr-2 flex items-center space-x-1 rounded-full bg-ex-blue-2 px-2 py-1 dark:bg-primary">
               <CheckCircleFillIcon class="h-4 w-4 text-primary dark:text-navy" />
-              <p class="text-[12px]/[20px] font-medium text-teal dark:text-dark">
+              <p class="text-[12px]/[20px] font-medium text-secondary dark:text-dark">
                 {rule.count}
                 {rule.name}
               </p>

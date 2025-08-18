@@ -41,14 +41,14 @@ reqwest = { version = "0.11", default-features = false, features = [
     "json",
     "rustls-tls",
 ] }
+rustls.workspace = true
+rustls-platform-verifier.workspace = true
 serde = { version = "1.0", features = ["derive"] }
 serde_with = "3.8"
 serde_json.workspace = true
 sha256 = "1.4"
 stronghold_engine = { version = "2.0.1" }
-stronghold_ext = { git = "https://github.com/tensor-programming/stronghold_ext", features = [
-    "crypto",
-] }
+stronghold_ext = { git = "https://github.com/impierce/stronghold_ext", features = ["crypto"] }
 strum = { version = "0.25", features = ["derive"] }
 thiserror = "1.0"
 tokio = { version = "1.26.0", features = ["macros"] }
@@ -57,6 +57,7 @@ typetag = "0.2"
 unicode-normalization = "0.1"
 url = "2.5"
 uuid = { version = "1.4", features = ["v4", "fast-rng", "serde"] }
+jsonschema = "0.18"
 
 [dev-dependencies]
 serial_test.workspace = true
