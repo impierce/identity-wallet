@@ -66,7 +66,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             .unwrap()
             .iter()
             .filter_map(|verifiable_credential_record| {
-                info!("Verifiable Credential Record: {:#?}", verifiable_credential_record);
+                info!("Verifiable Credential Record: {verifiable_credential_record:#?}");
 
                 let share_credential = credential_uuids
                     .contains(&verifiable_credential_record.display_credential.id.parse().unwrap())
@@ -98,8 +98,8 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             },
         )?;
 
-        info!("`jwt_vc_json` Credentials: {:#?}", jwt_vc_json_credentials);
-        info!("`sd_jwt_vc` Credentials: {:#?}", sd_jwt_vc_credentials);
+        info!("`jwt_vc_json` Credentials: {jwt_vc_json_credentials:#?}");
+        info!("`sd_jwt_vc` Credentials: {sd_jwt_vc_credentials:#?}");
 
         // Create the Authorization Response Input.
         let authorization_response_input = match (sd_jwt_vc_credentials.len(), jwt_vc_json_credentials.len()) {
@@ -237,7 +237,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             .generate_response(&oid4vp_authorization_request, authorization_response_input)
             .await
             .map_err(GenerateAuthorizationResponseError)?;
-        info!("response generated: {:?}", response);
+        info!("response generated: {response:?}");
 
         if provider_manager.send_response(&response).await.is_err() {
             info!("failed to send response");

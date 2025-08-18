@@ -25,8 +25,8 @@ pub async fn delete_credential(state: AppState, action: Action) -> Result<AppSta
 
             if file_path.exists() {
                 match fs::remove_file(&file_path) {
-                    Ok(_) => info!("Successfully deleted image file: `{:?}`", file_path),
-                    Err(e) => warn!("Failed to delete image file: `{:?}`, reason: `{:?}`", file_path, e),
+                    Ok(_) => info!("Successfully deleted image file: `{file_path:?}`"),
+                    Err(e) => warn!("Failed to delete image file: `{file_path:?}`, reason: `{e:?}`"),
                 }
             }
         }

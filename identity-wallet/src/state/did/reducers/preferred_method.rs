@@ -17,7 +17,7 @@ pub async fn set_preferred_did_method(state: AppState, action: Action) -> Result
     if let Some(method) = listen::<SetPreferredDidMethod>(action).map(|payload| payload.method) {
         let mut preferred_did_methods = state.profile_settings.preferred_did_methods;
 
-        debug!("Order of preferred DID methods (current): {:?}", preferred_did_methods);
+        debug!("Order of preferred DID methods (current): {preferred_did_methods:?}");
 
         let current_position = preferred_did_methods
             .iter()
@@ -28,7 +28,7 @@ pub async fn set_preferred_did_method(state: AppState, action: Action) -> Result
 
         preferred_did_methods.insert(0, element);
 
-        debug!("Order of preferred DID methods (updated): {:?}", preferred_did_methods);
+        debug!("Order of preferred DID methods (updated): {preferred_did_methods:?}");
 
         let mut state_guard = state.core_utils.managers.lock().await;
 

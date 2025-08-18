@@ -41,7 +41,7 @@ pub async fn check_service_health(state: AppState, action: Action) -> Result<App
                 }
             }
             Err(err) => {
-                warn!("Failed to check service health: {}", err);
+                warn!("Failed to check service health: {err}");
                 return Err(AppError::Error(format!(
                     "email-verification-service health could not be checked: {err}"
                 )));
@@ -66,7 +66,7 @@ pub async fn send_verification_email(state: AppState, action: Action) -> Result<
     if let Some(action) = listen::<SendVerificationEmail>(action) {
         let url = format!("{EMAIL_VERIFICATION_SERVICE_HOST}/api/verify");
         let body = json!({ "email": action.email });
-        info!("[>>>] {} {}", url, body);
+        info!("[>>>] {url} {body}");
         let response = reqwest::Client::new()
             .post(url)
             .header("X-API-KEY", EMAIL_VERIFICATION_SERVICE_API_KEY)
@@ -74,11 +74,11 @@ pub async fn send_verification_email(state: AppState, action: Action) -> Result<
             .send()
             .await
             .inspect_err(|err| {
-                warn!("Failed to send verification request: {}", err);
+                warn!("Failed to send verification request: {err}");
             })
             .map_err(|err| AppError::Error(err.to_string()))?;
         let response: VerificationResponse = response.json().await.map_err(|err| AppError::Error(err.to_string()))?;
-        info!("[<<<] {:?}", response);
+        info!("[<<<] {response:?}");
         return Ok(AppState {
             verified_data: VerifiedData {
                 email_verification: Some(EmailVerification {
@@ -109,7 +109,7 @@ pub async fn redeem_code(state: AppState, action: Action) -> Result<AppState, Ap
             ))?;
         let url = format!("{EMAIL_VERIFICATION_SERVICE_HOST}/api/verify/{session_id}");
         let body = json!({ "code": action.code });
-        info!("[>>>] {} {}", url, body);
+        info!("[>>>] {url} {body}");
         let response = reqwest::Client::new()
             .post(url)
             .header("X-API-KEY", EMAIL_VERIFICATION_SERVICE_API_KEY)
@@ -118,7 +118,7 @@ pub async fn redeem_code(state: AppState, action: Action) -> Result<AppState, Ap
             .await
             .map_err(|err| AppError::Error(format!("Failed to send verification code: {err}")))?;
 
-        info!("[<<<] {:?}", response);
+        info!("[<<<] {response:?}");
 
         match response.status().as_u16() {
             200 => {
@@ -139,7 +139,7 @@ pub async fn redeem_code(state: AppState, action: Action) -> Result<AppState, Ap
             }
             _ => {
                 let error: serde_json::Value = response.json().await?;
-                warn!("Failed to redeem code: {}", error);
+                warn!("Failed to redeem code: {error}");
                 return Ok(AppState {
                     verified_data: VerifiedData {
                         email_verification: Some(EmailVerification {

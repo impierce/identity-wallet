@@ -50,7 +50,7 @@ impl StrongholdManager {
                 "ed25519-0".to_string().as_bytes().to_vec(),
             );
 
-            info!("ed25519_output_location: {:?}", ed25519_output_location);
+            info!("ed25519_output_location: {ed25519_output_location:?}");
 
             client
                 .execute_procedure(StrongholdProcedure::GenerateKey(GenerateKey {
@@ -69,7 +69,7 @@ impl StrongholdManager {
                 "es256-0".to_string().as_bytes().to_vec(),
             );
 
-            info!("es256_output_location: {:?}", es256_output_location);
+            info!("es256_output_location: {es256_output_location:?}");
 
             execute_procedure_ext(
                 &client,

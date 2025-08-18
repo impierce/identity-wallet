@@ -42,7 +42,7 @@ pub async fn handle_siopv2_authorization_request(state: AppState, _action: Actio
         .generate_response(&*siopv2_authorization_request, Default::default())
         .await
         .map_err(GenerateAuthorizationResponseError)?;
-    info!("response generated: {:?}", response);
+    info!("response generated: {response:?}");
 
     if provider_manager.send_response(&response).await.is_err() {
         info!("failed to send response");

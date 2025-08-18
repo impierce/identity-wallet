@@ -1,6 +1,9 @@
 use crate::{
     persistence::{download_asset, hash},
-    state::did::validate_domain_linkage::{ValidationStatus, Verifier},
+    state::{
+        core_utils::helpers::{get_issuer_document, validate_credential_types},
+        did::validate_domain_linkage::{ValidationStatus, Verifier},
+    },
 };
 use did_manager::Resolver;
 use futures::{
@@ -15,9 +18,7 @@ use identity_iota::{
         JwtCredentialValidator, JwtPresentationValidator, StatusCheck, Subject,
     },
     document::{CoreDocument, Service},
-    verification::jws::Decoder,
 };
-use identity_jose::jwt::JwtClaims;
 use log::{info, warn};
 use oid4vc::oid4vci::credential_issuer::credential_issuer_metadata::CredentialIssuerMetadata;
 use serde::{Deserialize, Serialize};
@@ -99,7 +100,7 @@ fn get_linked_verifiable_presentation_urls(service: &Service) -> Option<Vec<Url>
             |linked_verifiable_presentation_urls| match linked_verifiable_presentation_urls {
                 Value::String(url) => url
                     .parse()
-                    .inspect_err(|err| warn!("Failed to parse linked verifiable presentation URL: {}", err))
+                    .inspect_err(|err| warn!("Failed to parse linked verifiable presentation URL: {err}"))
                     .ok()
                     .map(|url| vec![url]),
                 Value::Array(array) => Some(
@@ -109,7 +110,7 @@ fn get_linked_verifiable_presentation_urls(service: &Service) -> Option<Vec<Url>
                             url.as_str().and_then(|url| {
                                 url.parse()
                                     .inspect_err(|err| {
-                                        warn!("Failed to parse linked verifiable presentation URL: {}", err)
+                                        warn!("Failed to parse linked verifiable presentation URL: {err}")
                                     })
                                     .ok()
                             })
@@ -147,7 +148,7 @@ async fn validate_linked_verifiable_presentation(
     let response = reqwest::get(linked_verifiable_presentation_url)
         .await
         .inspect_err(|err| {
-            warn!("Failed to retrieve linked verifiable presentation: {}", err);
+            warn!("Failed to retrieve linked verifiable presentation: {err}");
         })
         .ok()?;
     let status = response.status();
@@ -156,7 +157,7 @@ async fn validate_linked_verifiable_presentation(
         .text()
         .await
         .inspect_err(|err| {
-            warn!("Failed to read linked verifiable presentation response: {}", err);
+            warn!("Failed to read linked verifiable presentation response: {err}");
         })
         .ok()
         .and_then(|presentation_jwt| {
@@ -165,7 +166,7 @@ async fn validate_linked_verifiable_presentation(
                 validator
                     .validate(&presentation_jwt.into(), &holder_document, &Default::default())
                     .inspect_err(|err| {
-                        warn!("Failed to validate linked verifiable presentation: {:#?}", err);
+                        warn!("Failed to validate linked verifiable presentation: {err:#?}");
                     })
                     .ok()
             })?
@@ -210,14 +211,17 @@ async fn get_validated_linked_credential_data(
                 // `SkipUnsupported` allows for custom credential types, such as the StatusList2021Entry (https://www.w3.org/TR/2023/WD-vc-status-list-20230427/#statuslist2021entry)
                 let options = JwtCredentialValidationOptions::new().status_check(StatusCheck::SkipUnsupported);
 
-                // Decode the linked verifiable credential and validate it
+                // Decode the linked verifiable credential and validate the jwt_vc_json, checks the JWT and the Issuer DID
                 if let Ok(linked_verifiable_credential) = validator.validate::<_, Value>(
                     &linked_verifiable_credential,
                     &issuer_document,
                     &options,
                     FailFast::FirstError,
                 ) {
-                    info!("Validated linked verifiable credential: {linked_verifiable_credential:#?}");
+                    info!("Validated linked verifiable credential JWT: {linked_verifiable_credential:#?}");
+
+                    // Validate the linked verifiable credential against its corresponding JSON Schema
+                    validate_credential_types(&linked_verifiable_credential.credential.to_json_value().ok()?).ok()?;
 
                     let credential_subject = match &linked_verifiable_credential.credential.credential_subject {
                         OneOrMany::One(subject) => Some(subject),
@@ -298,30 +302,6 @@ async fn get_validated_linked_domains(
     .await
 }
 
-/// This function uses the linked verifiable credential to resolve the issuer document.
-async fn get_issuer_document(resolver: &Resolver, linked_verifiable_credential: &Jwt) -> Option<CoreDocument> {
-    let decoder = Decoder::new();
-
-    // Decode the linked verifiable credential.
-    let decoded_linked_verifiable_credential = decoder
-        .decode_compact_serialization(linked_verifiable_credential.as_str().as_bytes(), None)
-        .inspect_err(|err| warn!("Failed to decode linked verifiable credential: {:#?}", err))
-        .ok()?;
-
-    let claims: JwtClaims<Value> = serde_json::from_slice(decoded_linked_verifiable_credential.claims())
-        .inspect_err(|err| warn!("Failed to parse linked verifiable credential claims: {:#?}", err))
-        .ok()?;
-
-    info!("Linked verifiable credential claims: {:#?}", claims);
-
-    // Resolve the DID
-    resolver
-        .resolve(claims.iss()?)
-        .await
-        .inspect_err(|err| warn!("Failed to resolve issuer DID.: {:#?}", err))
-        .ok()
-}
-
 /// Get the linked domains from the issuer document. It returns a list of URLs if the service type is `LinkedDomains`.
 async fn get_issuer_linked_domains(issuer_document: &CoreDocument) -> Vec<Url> {
     issuer_document
@@ -342,7 +322,7 @@ async fn get_issuer_linked_domains(issuer_document: &CoreDocument) -> Vec<Url> {
                                     origin.as_str().and_then(|origin| {
                                         origin
                                             .parse()
-                                            .inspect_err(|err| warn!("Failed to parse linked domain: {:#?}", err))
+                                            .inspect_err(|err| warn!("Failed to parse linked domain: {err:#?}"))
                                             .ok()
                                     })
                                 })
@@ -408,7 +388,7 @@ async fn get_logo_uri(
             if let Ok(response) = reqwest::Client::new().get(&well_known_endpoint).send().await {
                 if let Ok(metadata) = response.json::<CredentialIssuerMetadata>().await {
                     logo_uri = linked_verifiable_credential.credential.types.iter().find_map(|type_| {
-                        info!("Trying to fetch from Credential Configuration Supported: {}", type_);
+                        info!("Trying to fetch from Credential Configuration Supported: {type_}");
                         metadata
                             .credential_configurations_supported
                             .get(type_)
@@ -425,7 +405,7 @@ async fn get_logo_uri(
     }
 
     if let Some(ref logo_uri_str) = logo_uri {
-        info!("Logo URI: {:?}", logo_uri_str);
+        info!("Logo URI: {logo_uri_str:?}");
 
         // Parse the logo URI
         match logo_uri_str.parse() {
@@ -439,7 +419,7 @@ async fn get_logo_uri(
             }
             Err(parse_err) => {
                 // Log parse error if the URI is invalid
-                warn!("Failed to parse logo URI: {:#?}, {}", logo_uri_str, parse_err);
+                warn!("Failed to parse logo URI: {logo_uri_str:#?}, {parse_err}");
                 None
             }
         }
@@ -513,7 +493,7 @@ mod tests {
             let mock_server = MockServer::start().await;
 
             let uri = mock_server.uri();
-            let port = uri.split(':').last().unwrap();
+            let port = uri.split(':').next_back().unwrap();
             let domain: url::Url = format!("http://localhost:{port}").parse().unwrap();
 
             let temp_dir = TempDir::new().unwrap();
