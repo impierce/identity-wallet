@@ -1,4 +1,4 @@
-import type { BaseTranslation } from '../i18n-types';
+import type { Translation } from '../i18n-types';
 
 const sv_FI = {
   ONBOARDING: {
@@ -145,9 +145,9 @@ Genom att använda Tjänsten bekräftar du att du har läst, förstått och acce
         NO_MATCH: 'Lösenorden stämmer inte',
       },
       BIOMETRICS: {
-        TITLE: 'Aktivera {type:string}',
-        DESCRIPTION: 'Vill du ställa in {type:string} för att låsa upp appen?',
-        CONFIRM: 'Ja, använd {type:string}',
+        TITLE: 'Aktivera {type}',
+        DESCRIPTION: 'Vill du ställa in {type} för att låsa upp appen?',
+        CONFIRM: 'Ja, använd {type}',
         DECIDE_LATER: 'Bestäm senare',
       },
       COMPLETED: {
@@ -196,7 +196,7 @@ Genom att använda Tjänsten bekräftar du att du har läst, förstått och acce
       SECURITY: {
         LABEL: 'Säkerhet',
         NAVBAR_TITLE: 'Säkerhet',
-        SWITCH_LABEL: 'Lås upp med {type:string}',
+        SWITCH_LABEL: 'Lås upp med {type}',
         BIOMETRIC_TYPE: {
           ANDROID: {
             FACE_ID: 'ansiktsigenkänning',
@@ -209,12 +209,12 @@ Genom att använda Tjänsten bekräftar du att du har läst, förstått och acce
           GENERIC: 'biometri',
         },
         ENABLE: {
-          DIALOG_TITLE: 'Aktivera {type:string}',
-          DIALOG_CONTENT: 'Ange ditt lösenord för att aktivera {type:string}.',
+          DIALOG_TITLE: 'Aktivera {type}',
+          DIALOG_CONTENT: 'Ange ditt lösenord för att aktivera {type}.',
         },
         DISABLE: {
-          DIALOG_TITLE: 'Inaktivera {type:string}',
-          DIALOG_CONTENT: 'Ange ditt lösenord för att inaktivera {type:string}.',
+          DIALOG_TITLE: 'Inaktivera {type}',
+          DIALOG_CONTENT: 'Ange ditt lösenord för att inaktivera {type}.',
         },
       },
       PASSWORD: {
@@ -371,19 +371,30 @@ Genom att använda Tjänsten bekräftar du att du har läst, förstått och acce
     NAVBAR_TITLE: 'Legitimationsinformation',
     DETAILS: {
       VALID: 'Giltig',
+      UNVERIFIED: 'Overifierad',
       ISSUED_BY: 'Utfärdad av',
+      SELF_SIGNED: 'dig själv',
       DESCRIPTION: 'Beskrivning',
       OPEN_BADGES: {
         ALIGNMENT: 'Justering',
         CRITERIA: 'Kriterier',
       },
     },
+    RENDERER: {
+      PID: {
+        NAME: 'Namn',
+        NATIONALITY: 'Nationalitet',
+        BIRTH_DATE: 'Födelsedatum',
+        BIRTH_PLACE: 'Födelseort',
+      },
+    },
     ACTIONS: {
       EDIT: {
+        MENU_BUTTON: 'Uppdatera visningsnamn',
         CONFIRM_BUTTON: 'Uppdatera visningsnamn',
       },
       DELETE: {
-        BUTTON_LABEL: 'Ta bort legitimation',
+        MENU_BUTTON: 'Ta bort legitimation',
         TITLE: 'Ta bort legitimation',
         DESCRIPTION: 'Är du säker på att du vill ta bort denna legitimation från din plånbok? Detta kan inte ångras.',
         CONFIRM_BUTTON: 'Ta bort',
@@ -393,6 +404,28 @@ Genom att använda Tjänsten bekräftar du att du har läst, förstått och acce
   ADD_CREDENTIALS: {
     BUTTON: 'Lägg till',
     NAVBAR_TITLE: 'Lägg till data',
+    VALUE_REQUIRED: 'Obligatoriskt',
+    LABEL_DISCLAIMER: 'Syns bara för dig',
+    FAVORITES_TOGGLE_LABEL: 'Lägg till i favoriter',
+    ADDRESS: {
+      TITLE: 'Adress',
+      DESCRIPTION: 'Lägg till en arbets- eller privatadress',
+      ADD: {
+        NAVBAR_TITLE: 'Lägg till adress',
+        LABEL: 'Vad vill du kalla den här adressen?',
+        LABEL_PLACEHOLDER: 'Privatadress',
+        RESIDENT_ADDRESS_LABEL: 'Adress',
+        RESIDENT_COUNTRY_LABEL: 'Land',
+        RESIDENT_COUNTRY_PLACEHOLDER: 'Välj ett land',
+        RESIDENT_COUNTRY_NO_MATCH: 'Inga länder hittades',
+        RESIDENT_STATE_LABEL: 'Delstat',
+        RESIDENT_STREET_LABEL: 'Gata',
+        RESIDENT_HOUSE_NUMBER_LABEL: 'Husnummer',
+        RESIDENT_POSTAL_CODE_LABEL: 'Postnummer',
+        RESIDENT_CITY_LABEL: 'Stad',
+        CREATE_BUTTON: 'Lägg till adress',
+      },
+    },
     EMAIL: {
       TITLE: 'E-post',
       DESCRIPTION: 'Verifiera din privata eller arbetsadress',
@@ -419,13 +452,55 @@ Genom att använda Tjänsten bekräftar du att du har läst, förstått och acce
       ADD: {
         NAVBAR_TITLE: 'Skaffa verifierad e-post',
         LABEL: 'Vad vill du kalla denna adress?',
-        LABEL_DISCLAIMER: 'Syns bara för dig',
         LABEL_PLACEHOLDER: 'Privat e-post',
         VALUE_LABEL: 'E-post',
         VALUE_PLACEHOLDER: 'fornamn.efternamn@example.com',
+        VALUE_PATTERN_ERROR: 'Ange en giltig e-postadress',
         BUTTON_SEND: 'Skicka verifieringsmail',
         BUTTON_SEND_AGAIN: 'Skicka igen',
         CHECK_EMAIL: 'Kontrollera din inkorg och ange koden nedan.',
+        EXPIRED_ERROR: 'Verifieringskoden har gått ut',
+      },
+    },
+    PROFILE: {
+      TITLE: 'Profil',
+      DESCRIPTION: 'Lägg till information om dig själv',
+      INFO: {
+        NAVBAR_TITLE: 'Din profil',
+        TITLE: 'UniMe-profil',
+        DESCRIPTION: 'Innan du börjar',
+        ITEM_0: {
+          TITLE: 'Varför ska jag skapa en profil?',
+          DESCRIPTION:
+            'Spara dina uppgifter en gång och använd dem överallt. Slipp långa formulär, snabba på inloggningar och bevisa att du är du - allt på dina villkor.',
+        },
+        ITEM_1: {
+          TITLE: 'Hur fungerar det?',
+          DESCRIPTION:
+            'Dina uppgifter skyddas på din enhet i ett säkert valv som bara du kan öppna. Skanna en QR-kod för att upprätta en säker anslutning. Kontrollera förfrågan och välj vad du vill dela.',
+        },
+        ITEM_2: {
+          TITLE: 'Är mina data säkra?',
+          DESCRIPTION:
+            'Ja. Dina data skyddas med din enhets säkerhetsfunktioner, t.ex. fingeravtryck eller ansiktsigenkänning. Vi samlar inte in dina data och har inte tillgång till dem. Källkoden är öppen, så du kan själv kontrollera detta.',
+        },
+      },
+      ADD: {
+        NAVBAR_TITLE: 'Din profil',
+        LABEL: 'Vad vill du kalla den här profilen?',
+        LABEL_PLACEHOLDER: 'Personlig profil',
+        FIRST_NAME_LABEL: 'Förnamn',
+        FIRST_NAME_PLACEHOLDER: 'Ditt förnamn',
+        MIDDLE_NAME_LABEL: 'Mellannamn',
+        MIDDLE_NAME_PLACEHOLDER: 'Ytterligare förnamn',
+        LAST_NAME_LABEL: 'Efternamn',
+        LAST_NAME_PLACEHOLDER: 'Ditt efternamn',
+        BIRTH_DATE_LABEL: 'Födelsedatum',
+        BIRTH_DATE_PLACEHOLDER: 'Ditt födelsedatum',
+        BIRTH_PLACE_LABEL: 'Födelseort',
+        BIRTH_PLACE_PLACEHOLDER: 'Din födelseort',
+        NATIONALITY_LABEL: 'Medborgarskap',
+        CREATE_BUTTON: 'Skapa profil',
       },
     },
   },
@@ -467,6 +542,6 @@ Genom att använda Tjänsten bekräftar du att du har läst, förstått och acce
     SKIP_TITLE: 'Hoppa över guiden',
     SKIP_TEXT: 'Är du säker på att du vill hoppa över guiden?',
   },
-} satisfies BaseTranslation;
+} satisfies Translation;
 
 export default sv_FI;

@@ -48,7 +48,7 @@ impl Connections {
     /// the last interaction time and returns a reference to the connection.
     pub fn update_or_insert(&mut self, url: &str, name: &str, did: Option<CoreDID>) -> &Connection {
         if self.contains(url, name) {
-            info!("Updating existing connection: {} {}", name, url);
+            info!("Updating existing connection: {name} {url}");
             self.get_mut(url, name).map(|connection| {
                 if let Some(core_did) = did {
                     connection.did = Some(core_did.to_string());
@@ -57,7 +57,7 @@ impl Connections {
                 &*connection
             })
         } else {
-            info!("Inserting new connection: {} {}", name, url);
+            info!("Inserting new connection: {name} {url}");
             self.insert(Connection::new(
                 name.to_string(),
                 url.to_string(),

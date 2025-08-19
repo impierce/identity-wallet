@@ -1,4 +1,4 @@
-import type { BaseTranslation } from '../i18n-types';
+import type { Translation } from '../i18n-types';
 
 const fi_FI = {
   ONBOARDING: {
@@ -145,9 +145,9 @@ Käyttämällä Palvelua vahvistat, että olet lukenut, ymmärtänyt ja hyväksy
         NO_MATCH: 'Salasanat eivät täsmää',
       },
       BIOMETRICS: {
-        TITLE: 'Ota käyttöön {type:string}',
-        DESCRIPTION: 'Haluatko käyttää {type:string} sovelluksen avaamiseen?',
-        CONFIRM: 'Kyllä, käytä {type:string}',
+        TITLE: 'Ota käyttöön {type}',
+        DESCRIPTION: 'Haluatko käyttää {type} sovelluksen avaamiseen?',
+        CONFIRM: 'Kyllä, käytä {type}',
         DECIDE_LATER: 'Päätä myöhemmin',
       },
       COMPLETED: {
@@ -196,7 +196,7 @@ Käyttämällä Palvelua vahvistat, että olet lukenut, ymmärtänyt ja hyväksy
       SECURITY: {
         LABEL: 'Turvallisuus',
         NAVBAR_TITLE: 'Turvallisuus',
-        SWITCH_LABEL: 'Avaa {type:string}',
+        SWITCH_LABEL: 'Avaa {type}',
         BIOMETRIC_TYPE: {
           ANDROID: {
             FACE_ID: 'kasvontunnistus',
@@ -209,12 +209,12 @@ Käyttämällä Palvelua vahvistat, että olet lukenut, ymmärtänyt ja hyväksy
           GENERIC: 'biometria',
         },
         ENABLE: {
-          DIALOG_TITLE: 'Ota käyttöön {type:string}',
-          DIALOG_CONTENT: 'Anna salasanasi ottaaksesi {type:string} käyttöön.',
+          DIALOG_TITLE: 'Ota käyttöön {type}',
+          DIALOG_CONTENT: 'Anna salasanasi ottaaksesi {type} käyttöön.',
         },
         DISABLE: {
-          DIALOG_TITLE: 'Poista käytöstä {type:string}',
-          DIALOG_CONTENT: 'Anna salasanasi poistaaksesi {type:string} käytöstä.',
+          DIALOG_TITLE: 'Poista käytöstä {type}',
+          DIALOG_CONTENT: 'Anna salasanasi poistaaksesi {type} käytöstä.',
         },
       },
       PASSWORD: {
@@ -371,19 +371,30 @@ Käyttämällä Palvelua vahvistat, että olet lukenut, ymmärtänyt ja hyväksy
     NAVBAR_TITLE: 'Valtuuden tiedot',
     DETAILS: {
       VALID: 'Voimassa',
+      UNVERIFIED: 'Vahvistamaton',
       ISSUED_BY: 'Myöntäjä',
+      SELF_SIGNED: 'sinä itse',
       DESCRIPTION: 'Kuvaus',
       OPEN_BADGES: {
         ALIGNMENT: 'Tasaus',
         CRITERIA: 'Kriteerit',
       },
     },
+    RENDERER: {
+      PID: {
+        NAME: 'Nimi',
+        NATIONALITY: 'Kansalaisuus',
+        BIRTH_DATE: 'Syntymäaika',
+        BIRTH_PLACE: 'Syntymäpaikka',
+      },
+    },
     ACTIONS: {
       EDIT: {
+        MENU_BUTTON: 'Päivitä näyttönimi',
         CONFIRM_BUTTON: 'Päivitä näyttönimi',
       },
       DELETE: {
-        BUTTON_LABEL: 'Poista valtuus',
+        MENU_BUTTON: 'Poista valtuus',
         TITLE: 'Poista valtuus',
         DESCRIPTION: 'Haluatko varmasti poistaa tämän valtuuden lompakostasi? Toimintoa ei voi perua.',
         CONFIRM_BUTTON: 'Poista',
@@ -393,6 +404,28 @@ Käyttämällä Palvelua vahvistat, että olet lukenut, ymmärtänyt ja hyväksy
   ADD_CREDENTIALS: {
     BUTTON: 'Lisää',
     NAVBAR_TITLE: 'Lisää dataa',
+    VALUE_REQUIRED: 'Pakollinen',
+    LABEL_DISCLAIMER: 'Näkyy vain sinulle',
+    FAVORITES_TOGGLE_LABEL: 'Lisää suosikkeihin',
+    ADDRESS: {
+      TITLE: 'Osoite',
+      DESCRIPTION: 'Lisää työ- tai kotiosoite',
+      ADD: {
+        NAVBAR_TITLE: 'Lisää osoite',
+        LABEL: 'Miksi haluat nimetä tämän osoitteen?',
+        LABEL_PLACEHOLDER: 'Kotiosoite',
+        RESIDENT_ADDRESS_LABEL: 'Osoite',
+        RESIDENT_COUNTRY_LABEL: 'Maa',
+        RESIDENT_COUNTRY_PLACEHOLDER: 'Valitse maa',
+        RESIDENT_COUNTRY_NO_MATCH: 'Maita ei löytynyt',
+        RESIDENT_STATE_LABEL: 'Osavaltio',
+        RESIDENT_STREET_LABEL: 'Katu',
+        RESIDENT_HOUSE_NUMBER_LABEL: 'Talon numero',
+        RESIDENT_POSTAL_CODE_LABEL: 'Postinumero',
+        RESIDENT_CITY_LABEL: 'Kaupunki',
+        CREATE_BUTTON: 'Lisää osoite',
+      },
+    },
     EMAIL: {
       TITLE: 'Sähköposti',
       DESCRIPTION: 'Varmenna henkilökohtainen tai työsähköpostisi',
@@ -419,13 +452,55 @@ Käyttämällä Palvelua vahvistat, että olet lukenut, ymmärtänyt ja hyväksy
       ADD: {
         NAVBAR_TITLE: 'Hanki varmennettu sähköposti',
         LABEL: 'Millä nimellä haluat kutsua tätä osoitetta?',
-        LABEL_DISCLAIMER: 'Näkyy vain sinulle',
         LABEL_PLACEHOLDER: 'Henkilökohtainen sähköposti',
         VALUE_LABEL: 'Sähköposti',
         VALUE_PLACEHOLDER: 'etunimi.sukunimi@esimerkki.com',
+        VALUE_PATTERN_ERROR: 'Syotä kelvollinen sähköpostiosoite',
         BUTTON_SEND: 'Lähetä varmennussähköposti',
         BUTTON_SEND_AGAIN: 'Lähetä uudelleen',
         CHECK_EMAIL: 'Tarkista postilaatikko ja syötä koodi alle.',
+        EXPIRED_ERROR: 'Vahvistuskoodi vanhentunut',
+      },
+    },
+    PROFILE: {
+      TITLE: 'Profiili',
+      DESCRIPTION: 'Lisää tietoja itsestäsi',
+      INFO: {
+        NAVBAR_TITLE: 'Profiilisi',
+        TITLE: 'UniMe-profiili',
+        DESCRIPTION: 'Ennen kuin aloitat',
+        ITEM_0: {
+          TITLE: 'Miksi minun pitäisi luoda profiili?',
+          DESCRIPTION:
+            'Tallenna tietosi kerran ja käytä niitä kaikkialla. Ohita pitkät lomakkeet, nopeuta kirjautumista ja todista henkilöllisyytesi - kaikki omilla ehdoillasi.',
+        },
+        ITEM_1: {
+          TITLE: 'Miten se toimii?',
+          DESCRIPTION:
+            'Tietosi ovat suojattuina laitteellasi turvallisessa kassakaapissa, jonka vain sinä voit avata. Skannaa QR-koodi luodaksesi suojatun yhteyden. Tarkista pyyntö ja valitse, mitä haluat jakaa.',
+        },
+        ITEM_2: {
+          TITLE: 'Ovatko tietoni turvassa?',
+          DESCRIPTION:
+            'Kyllä. Tietosi suojataan laitteesi turvaominaisuuksilla, kuten sormenjälkitunnistuksella tai kasvojentunnistuksella. Emme kerää tietojasi emmekä pääse niihin käsiksi. Lähdekoodi on avoin, joten voit tarkistaa sen itse.',
+        },
+      },
+      ADD: {
+        NAVBAR_TITLE: 'Profiilisi',
+        LABEL: 'Minkä nimen haluat antaa tälle profiilille?',
+        LABEL_PLACEHOLDER: 'Henkilökohtainen profiili',
+        FIRST_NAME_LABEL: 'Etunimi',
+        FIRST_NAME_PLACEHOLDER: 'Etunimesi',
+        MIDDLE_NAME_LABEL: 'Toinen nimi (nimet)',
+        MIDDLE_NAME_PLACEHOLDER: 'Muut etunimet',
+        LAST_NAME_LABEL: 'Sukunimi',
+        LAST_NAME_PLACEHOLDER: 'Sukunimesi',
+        BIRTH_DATE_LABEL: 'Syntymäaika',
+        BIRTH_DATE_PLACEHOLDER: 'Syntymäpäiväsi',
+        BIRTH_PLACE_LABEL: 'Syntymäpaikka',
+        BIRTH_PLACE_PLACEHOLDER: 'Syntymäpaikkasi',
+        NATIONALITY_LABEL: 'Kansalaisuus',
+        CREATE_BUTTON: 'Luo profiili',
       },
     },
   },
@@ -467,6 +542,6 @@ Käyttämällä Palvelua vahvistat, että olet lukenut, ymmärtänyt ja hyväksy
     SKIP_TITLE: 'Ohita aloitusopas',
     SKIP_TEXT: 'Haluatko varmasti ohittaa aloitusoppaan?',
   },
-} satisfies BaseTranslation;
+} satisfies Translation;
 
 export default fi_FI;

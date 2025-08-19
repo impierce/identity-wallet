@@ -111,10 +111,6 @@ impl TrustList {
         self.entries.remove(domain)
     }
 
-    pub fn contains(&self, domain: &Url) -> bool {
-        self.entries.contains_key(domain)
-    }
-
     pub fn get(&self, domain: &Url) -> Option<&bool> {
         self.entries.get(domain)
     }

@@ -177,7 +177,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             .generate_response(&oid4vp_authorization_request, vp_token_payload)
             .await
             .map_err(GenerateAuthorizationResponseError)?;
-        info!("response generated: {:?}", response);
+        info!("response generated: {response:?}");
 
         #[cfg(not(feature = "test_utils"))]
         if provider_manager.send_response(&response).await.is_err() {

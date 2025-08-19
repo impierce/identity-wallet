@@ -58,19 +58,13 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
             let (client_name, logo_uri, connection_url, _) =
                 get_siopv2_client_name_and_logo_uri(&siopv2_authorization_request);
 
-            info!(
-                "client_name in Authorization Request Display parameter: {:?}",
-                client_name
-            );
-            info!("logo_uri in Authorization Request Display parameter: {:?}", logo_uri);
+            info!("client_name in Authorization Request Display parameter: {client_name:?}");
+            info!("logo_uri in Authorization Request Display parameter: {logo_uri:?}");
 
             if logo_uri.is_some() {
                 debug!(
-                    "{}",
-                    format!(
-                        "Downloading client logo from url: {}",
-                        logo_uri.as_ref().unwrap().as_str()
-                    )
+                    "Downloading client logo from url: {}",
+                    logo_uri.as_ref().unwrap().as_str()
                 );
                 if let Some(logo_uri) = logo_uri.as_ref().and_then(|s| s.parse::<reqwest::Url>().ok()) {
                     let _ = download_asset(logo_uri.clone(), &hash(logo_uri.as_str())).await;
@@ -117,7 +111,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                 })
                 .collect();
 
-            info!("Trusted Domains: {:?}", trusted_domains);
+            info!("Trusted Domains: {trusted_domains:?}");
 
             let resolver = state.core_utils.resolver().await;
 
@@ -127,14 +121,14 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                 .flatten()
                 .filter(|linked_verifiable_credential| {
                     linked_verifiable_credential.issuer_linked_domains.iter().any(|domain| {
-                        info!("domain: `{}`", domain);
+                        info!("domain: `{domain}`");
 
                         trusted_domains.contains(domain)
                     })
                 })
                 .collect();
 
-            info!("linked_verifiable_presentations: {:?}", linked_verifiable_presentations);
+            info!("linked_verifiable_presentations: {linked_verifiable_presentations:?}");
 
             drop(state_guard);
 
@@ -157,7 +151,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
             AuthorizationRequest::<Object<OID4VP>>::from_generic(&generic_authorization_request)
         {
             let verifiable_credentials = stronghold_manager.values().map_err(StrongholdValuesError)?.unwrap();
-            info!("verifiable credentials: {:?}", verifiable_credentials);
+            info!("verifiable credentials: {verifiable_credentials:?}");
 
             let dcql_request = &oid4vp_authorization_request.body.extension.dcql_query;
             let uuids: Vec<String> = dcql_request
@@ -205,7 +199,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                 })
                 .collect();
 
-            info!("uuids of VCs that can fulfill the request: {:?}", uuids);
+            info!("uuids of VCs that can fulfill the request: {uuids:?}");
 
             let OID4VPClientMetadata {
                 client_name,
@@ -214,16 +208,13 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                 client_id: _,
             } = get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request);
 
-            info!("client_name in credential_offer: {:?}", client_name);
-            info!("logo_uri in read_authorization_request: {:?}", logo_uri);
+            info!("client_name in credential_offer: {client_name:?}");
+            info!("logo_uri in read_authorization_request: {logo_uri:?}");
 
             if logo_uri.is_some() {
                 debug!(
-                    "{}",
-                    format!(
-                        "Downloading client logo from url: {}",
-                        logo_uri.as_ref().unwrap().as_str()
-                    )
+                    "Downloading client logo from url: {}",
+                    logo_uri.as_ref().unwrap().as_str()
                 );
                 if let Some(logo_uri) = logo_uri.as_ref().and_then(|s| s.parse::<reqwest::Url>().ok()) {
                     let _ = download_asset(logo_uri.clone(), &hash(logo_uri.as_str())).await;

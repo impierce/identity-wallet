@@ -6,6 +6,8 @@
   import { PinInput } from 'melt/builders';
   import { cubicOut } from 'svelte/easing';
   import { Tween } from 'svelte/motion';
+  import { get } from 'svelte/store';
+  import { z } from 'zod';
 
   import { debug, info } from '@tauri-apps/plugin-log';
 
@@ -14,10 +16,15 @@
   import { dispatch } from '$lib/dispatcher';
   import { state as appState } from '$lib/stores';
 
+  // When the current verification case has expired, the user should be informed about it.
+  // However, we do not want to leave the expired case open forever, but reset the forms after a given period.
+  const AUTO_DISCARD_AFTER_MINUTES = 5;
+
   const pinInput = new PinInput({
     type: 'numeric',
     maxLength: 4,
-    placeholder: '', // '•',
+    placeholder: '',
+    allowPaste: false,
     onValueChange() {
       showError = false;
     },
@@ -29,9 +36,14 @@
   let label: string = $state('');
   let email: string = $state('');
 
+  // Input validation
+  const emailSchema = z.string().email({ message: get(LL).ADD_CREDENTIALS.EMAIL.ADD.VALUE_PATTERN_ERROR() });
+  let emailSchemaError: string | undefined = $state(undefined);
+  let showEmailSchemaError: boolean = $state(false);
+
   // Svelte 5's `bind:this` with `let` is idiomatic
   // svelte-ignore non_reactive_update
-  let labelInput: HTMLInputElement | null = null;
+  let labelInput: HTMLInputElement | undefined = undefined;
 
   let showError: boolean = $state(false);
 
@@ -60,8 +72,14 @@
 
   let displayTime = $derived(formatTime(progressValue.current));
 
-  // Gauge
-  // let max = $state(60);
+  function validateEmailSchema() {
+    const result = emailSchema.safeParse(email);
+    if (result.success) {
+      emailSchemaError = undefined;
+    } else {
+      emailSchemaError = result.error.errors[0].message;
+    }
+  }
 
   let secsRemaining = 0;
 
@@ -117,9 +135,11 @@
   };
 
   async function redeemCode(code: string) {
-    dispatch({ type: '[Verified Data] Redeem code', payload: { code } });
-    pinInput.value = '';
-    showError = true;
+    await dispatch({ type: '[Verified Data] Redeem code', payload: { code } });
+    setTimeout(() => {
+      pinInput.value = '';
+      showError = true;
+    }, 250);
   }
 
   const reset = () => {
@@ -130,8 +150,18 @@
     dispatch({ type: '[Verified Data] Reset email verification' });
   };
 
+  const checkAutoDiscard = (expires_at: Date) => {
+    const expired_mins_ago = Math.floor((new Date().getTime() - expires_at.getTime()) / 1_000 / 60);
+    info(`expired_mins_ago: ${expired_mins_ago}`);
+    if (expired_mins_ago >= AUTO_DISCARD_AFTER_MINUTES) {
+      debug(`Auto-discarding expired verification case (${expired_mins_ago} minutes ago) ...`);
+      reset();
+      // TODO: bug: still shows the expired timer
+    }
+  };
+
   onMount(async () => {
-    await dispatch({
+    dispatch({
       type: '[Verified Data] Check service health',
       payload: { service: 'email-verification-service' },
     });
@@ -145,6 +175,8 @@
 
       // Resume verification timer across app restarts by reading from app state
       if (current.expires_at) {
+        checkAutoDiscard(new Date(current.expires_at));
+
         info('Resuming existing email verification timer');
         //   emailSentTimestamp = new Date($appState.verified_data.email_verification.expires_at);
         const expires_in_secs = Math.floor((new Date(current.expires_at).getTime() - Date.now()) / 1_000);
@@ -214,15 +246,12 @@
           bind:value={label}
           bind:this={labelInput}
           oninput={() => {
-            // When the label is changed after a verification session has expired, reset everything.
-            if (expired) {
-              reset();
-            }
+            // TODO: when the label is changed after a verification session has expired, reset everything.
           }}
           disabled={pending}
         />
         <div class="pt-1 text-[12px]/[14px] font-medium text-primary">
-          {$LL.ADD_CREDENTIALS.EMAIL.ADD.LABEL_DISCLAIMER()}
+          {$LL.ADD_CREDENTIALS.LABEL_DISCLAIMER()}
         </div>
 
         <!-- Divider -->
@@ -234,17 +263,24 @@
         <input
           name="email"
           type="email"
-          class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] font-normal text-slate-800 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-dark dark:text-slate-300 dark:caret-slate-300"
+          class="w-full rounded-xl border border-slate-300 bg-background-alt px-4 py-3 text-[13px]/[24px] font-normal text-slate-800 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:text-slate-300 dark:caret-slate-300"
           placeholder={$LL.ADD_CREDENTIALS.EMAIL.ADD.VALUE_PLACEHOLDER()}
           bind:value={email}
           oninput={() => {
+            validateEmailSchema();
             // When the email is changed after a verification session has expired, reset everything.
             if (expired) {
               reset();
             }
           }}
+          onblur={() => (showEmailSchemaError = true)}
           disabled={pending}
         />
+        {#if showEmailSchemaError && emailSchemaError}
+          <div class="mt-1 text-[12px]/[14px] font-medium text-rose-500">
+            {emailSchemaError}
+          </div>
+        {/if}
       </div>
     {:else}
       <div class="p-8 pt-0 text-[14px]/[22px] font-medium text-slate-500 dark:text-grey">
@@ -286,7 +322,7 @@
       {#if expired}
         <div class="mt-4 flex flex-col items-center">
           <div class="rounded-full bg-rose-100 px-4 py-3 text-sm font-semibold text-rose-500">
-            <span>Verification code expired</span>
+            <span>{$LL.ADD_CREDENTIALS.EMAIL.ADD.EXPIRED_ERROR()}</span>
           </div>
         </div>
       {/if}
@@ -308,7 +344,7 @@
         : $LL.ADD_CREDENTIALS.EMAIL.ADD.BUTTON_SEND()}
       on:click={() => startVerificationSession()}
       {loading}
-      disabled={pending || label.length === 0 || email.length === 0}
+      disabled={pending || !!emailSchemaError || label.length === 0 || email.length === 0}
     />
   </div>
 </div>

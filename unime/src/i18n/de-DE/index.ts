@@ -373,19 +373,30 @@ Durch die Nutzung unseres Dienstes bestätigen Sie, dass Sie diese Allgemeinen G
     NAVBAR_TITLE: 'Credential Informationen',
     DETAILS: {
       VALID: 'Gültig',
+      UNVERIFIED: 'Unbestätigt',
       ISSUED_BY: 'Ausgestellt durch',
+      SELF_SIGNED: 'dich selbst',
       DESCRIPTION: 'Beschreibung',
       OPEN_BADGES: {
         ALIGNMENT: 'Ausrichtung',
         CRITERIA: 'Kriterien',
       },
     },
+    RENDERER: {
+      PID: {
+        NAME: 'Name',
+        NATIONALITY: 'Staatsangehörigkeit',
+        BIRTH_DATE: 'Geburtsdatum',
+        BIRTH_PLACE: 'Geburtsort',
+      },
+    },
     ACTIONS: {
       EDIT: {
+        MENU_BUTTON: 'Anzeigename ändern',
         CONFIRM_BUTTON: 'Anzeigename ändern',
       },
       DELETE: {
-        BUTTON_LABEL: 'Credential löschen',
+        MENU_BUTTON: 'Credential löschen',
         TITLE: 'Credential löschen',
         DESCRIPTION:
           'Bist du sicher, dass du dieses Credential aus deiner Wallet löschen willst? Diese Aktion kann nicht rückgängig gemacht werden.',
@@ -396,6 +407,28 @@ Durch die Nutzung unseres Dienstes bestätigen Sie, dass Sie diese Allgemeinen G
   ADD_CREDENTIALS: {
     BUTTON: 'Hinzufügen',
     NAVBAR_TITLE: 'Daten hinzufügen',
+    VALUE_REQUIRED: 'Erforderlich',
+    LABEL_DISCLAIMER: 'Nur für dich sichtbar',
+    FAVORITES_TOGGLE_LABEL: 'Zu Favoriten hinzufügen',
+    ADDRESS: {
+      TITLE: 'Adresse',
+      DESCRIPTION: 'Füge eine Arbeits- oder Privatadresse hinzu',
+      ADD: {
+        NAVBAR_TITLE: 'Addresse hinzufügen',
+        LABEL: 'Wie möchtest du diese Adresse nennen?',
+        LABEL_PLACEHOLDER: 'Privatadresse',
+        RESIDENT_ADDRESS_LABEL: 'Adresse',
+        RESIDENT_COUNTRY_LABEL: 'Land',
+        RESIDENT_COUNTRY_PLACEHOLDER: 'Wähle ein Land aus',
+        RESIDENT_COUNTRY_NO_MATCH: 'Keine Länder gefunden',
+        RESIDENT_STATE_LABEL: 'Bundesland',
+        RESIDENT_STREET_LABEL: 'Straße',
+        RESIDENT_HOUSE_NUMBER_LABEL: 'Hausnummer',
+        RESIDENT_POSTAL_CODE_LABEL: 'Postleitzahl',
+        RESIDENT_CITY_LABEL: 'Stadt',
+        CREATE_BUTTON: 'Adresse hinzufügen',
+      },
+    },
     EMAIL: {
       TITLE: 'E-Mail',
       DESCRIPTION: 'Erhalte eine verifizierte E-Mail-Adresse',
@@ -422,13 +455,55 @@ Durch die Nutzung unseres Dienstes bestätigen Sie, dass Sie diese Allgemeinen G
       ADD: {
         NAVBAR_TITLE: 'E-Mail hinzufügen',
         LABEL: 'Wie möchtest du diese E-Mail-Adresse nennen?',
-        LABEL_DISCLAIMER: 'Nur für dich sichtbar',
         LABEL_PLACEHOLDER: 'Persönliche E-Mail',
         VALUE_LABEL: 'E-Mail',
         VALUE_PLACEHOLDER: 'vorname.nachname@example.com',
+        VALUE_PATTERN_ERROR: 'Bitte gib eine gültige E-Mail-Adresse ein',
         BUTTON_SEND: 'E-Mail senden',
         BUTTON_SEND_AGAIN: 'E-Mail erneut senden',
         CHECK_EMAIL: 'Bitte schaue in dein E-Mail-Postfach und gib den Code unten ein.',
+        EXPIRED_ERROR: 'Verifizierungscode abgelaufen',
+      },
+    },
+    PROFILE: {
+      TITLE: 'Profil',
+      DESCRIPTION: 'Füge Informationen über dich hinzu',
+      INFO: {
+        NAVBAR_TITLE: 'Dein Profil',
+        TITLE: 'UniMe Profil',
+        DESCRIPTION: 'Bevor du beginnst',
+        ITEM_0: {
+          TITLE: 'Warum sollte ich ein Profil erstellen?',
+          DESCRIPTION:
+            'Speichere deine Daten einmalig und nutze sie überall. Überspringe lange Eingabeformulare, beschleunige Anmeldungen und beweise dass du du bist - alles zu deinen Bedingungen.',
+        },
+        ITEM_1: {
+          TITLE: 'Wie funktioniert das?',
+          DESCRIPTION:
+            'Deine Daten sind auf deinem Gerät in einem sicheren Tresor geschützt, den nur du öffnen kannst. Scanne einen QR-Code, um eine gesicherte Verbindung herzustellen. Überprüfe die Anfrage und wähle aus, was du teilen möchtest.',
+        },
+        ITEM_2: {
+          TITLE: 'Sind meine Daten sicher?',
+          DESCRIPTION:
+            'Ja. Deine Daten werden mit der Sicherheit deines Geräts geschützt, z.B. mit einem Fingerabdruck oder Gesichtserkennung. Wir sammeln deine Daten nicht und haben keinen Zugriff darauf. Der Quellcode ist offen, so kannst du das sogar selbst überprüfen.',
+        },
+      },
+      ADD: {
+        NAVBAR_TITLE: 'Dein Profil',
+        LABEL: 'Wie möchtest du dieses Profil nennen?',
+        LABEL_PLACEHOLDER: 'Persönliches Profil',
+        FIRST_NAME_LABEL: 'Vorname',
+        FIRST_NAME_PLACEHOLDER: 'Dein Vorname',
+        MIDDLE_NAME_LABEL: 'Zweitname(n)',
+        MIDDLE_NAME_PLACEHOLDER: 'Weitere Vornamen',
+        LAST_NAME_LABEL: 'Nachname',
+        LAST_NAME_PLACEHOLDER: 'Dein Nachname',
+        BIRTH_DATE_LABEL: 'Geburtsdatum',
+        BIRTH_DATE_PLACEHOLDER: 'Dein Geburtsdatum',
+        BIRTH_PLACE_LABEL: 'Geburtsort',
+        BIRTH_PLACE_PLACEHOLDER: 'Dein Geburtsort',
+        NATIONALITY_LABEL: 'Staatsangehörigkeit',
+        CREATE_BUTTON: 'Profil erstellen',
       },
     },
   },
