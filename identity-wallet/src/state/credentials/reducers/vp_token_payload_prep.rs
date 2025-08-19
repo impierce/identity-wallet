@@ -67,7 +67,7 @@ pub async fn prepare_vp_token_object(
                     .map_err(|e| AppError::Error(format!("Failed to build VerifiablePresentationJwt: {e}")))?;
 
                 let jwt_header = Header {
-                    alg: signing_algorithm.into(),
+                    alg: signing_algorithm,
                     kid: Some(signing_method_id.to_string()),
                     typ: Some("JWT".to_string()),
                     ..Default::default()
