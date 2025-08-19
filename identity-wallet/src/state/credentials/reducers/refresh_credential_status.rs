@@ -28,6 +28,9 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
             if let Some(credential) = credentials.iter_mut().find(|c| c.id == credential_id) {
                 if let Some(old_status) = credential.credential_status.as_ref().map(|s| s.status) {
                     // We ok_or() with an error here because when the if let Some() statement above is true, we must have a credentialStatus.
+                    println!("credential: {:?}", credential);
+                    println!("old status: {:?}", old_status);
+
                     let credential_status = credential
                         .data
                         .get_mut("credentialStatus")

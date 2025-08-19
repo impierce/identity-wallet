@@ -41,6 +41,7 @@ pub struct DisplayCredential {
 pub struct CredentialStatusData {
     #[ts(type = "number")]
     pub status: StatusType,
+    #[derivative(PartialEq = "ignore")]
     pub last_checked: String,
 }
 
