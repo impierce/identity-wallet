@@ -60,7 +60,7 @@
       <div
         class="flex h-[75px] w-[75px] items-center justify-center overflow-hidden rounded-3xl bg-white p-2 dark:bg-silver"
       >
-        <Image id={imageId} iconFallback="Bank" isTempAsset={true} />
+        <Image id={imageId} iconFallback="BankLight" isTempAsset={true} />
       </div>
     {:else}
       <PaddedIcon icon={PlugsConnectedFillIcon} />
@@ -70,6 +70,7 @@
         {client_name}
       </p>
       <p class="pt-[10px] text-sm font-medium text-slate-500">
+        <!-- TODO: make the apex domain bold for extra highlight, subdomain(s) slightly greyed out -->
         {hostname}
       </p>
     </div>

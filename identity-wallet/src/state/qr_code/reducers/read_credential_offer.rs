@@ -42,19 +42,19 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
                 .map_err(GetCredentialOfferError)?,
         };
 
-        info!("credential offer: {:?}", credential_offer);
+        info!("credential offer: {credential_offer:?}");
 
         // The credential offer contains a credential issuer url.
         let credential_issuer_url = credential_offer.credential_issuer.clone();
 
-        info!("credential issuer url: {:?}", credential_issuer_url);
+        info!("credential issuer url: {credential_issuer_url:?}");
 
         let credential_issuer_metadata = wallet
             .get_credential_issuer_metadata(credential_issuer_url.clone())
             .await
             .ok();
 
-        info!("credential issuer metadata: {:?}", credential_issuer_metadata);
+        info!("credential issuer metadata: {credential_issuer_metadata:?}");
 
         let credential_configurations: HashMap<String, CredentialConfigurationsSupportedObject> = credential_offer
             .credential_configuration_ids
@@ -104,18 +104,15 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
             })
             .unwrap_or((credential_issuer_url.to_string(), None));
 
-        info!("issuer_name in credential_offer: {:?}", issuer_name);
-        info!("logo_uri in credential_offer: {:?}", logo_uri);
+        info!("issuer_name in credential_offer: {issuer_name:?}");
+        info!("logo_uri in credential_offer: {logo_uri:?}");
 
         download_credential_logos(&credential_configurations).await;
 
         if logo_uri.is_some() {
             debug!(
-                "{}",
-                format!(
-                    "Downloading client logo from url: {}",
-                    logo_uri.as_ref().unwrap().as_str()
-                )
+                "Downloading client logo from url: {}",
+                logo_uri.as_ref().unwrap().as_str()
             );
             if let Some(logo_uri) = logo_uri.as_ref().and_then(|s| s.parse::<reqwest::Url>().ok()) {
                 let _ = download_asset(logo_uri.clone(), &hash(logo_uri.as_str())).await;
@@ -150,17 +147,15 @@ async fn download_credential_logos(
             .first()
             .and_then(|value| value["logo"]["uri"].as_str());
 
-        info!("credential_logo_uri: {:?}", credential_logo_uri);
+        info!("credential_logo_uri: {credential_logo_uri:?}");
 
         if let Some(credential_logo_uri) = credential_logo_uri {
-            debug!(
-                "{}",
-                format!("Downloading credential logo from URI: {}", credential_logo_uri)
-            );
+            debug!("Downloading credential logo from URI: {credential_logo_uri}");
+
             if let Ok(credential_logo_uri) = credential_logo_uri.parse::<reqwest::Url>() {
                 let _ = download_asset(credential_logo_uri.clone(), &hash(credential_logo_uri.as_str())).await;
             } else {
-                debug!("Failed to parse credential logo URI: {}", credential_logo_uri);
+                debug!("Failed to parse credential logo URI: {credential_logo_uri}");
             }
         }
     }

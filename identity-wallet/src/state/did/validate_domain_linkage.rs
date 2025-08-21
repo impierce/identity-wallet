@@ -103,7 +103,7 @@ pub async fn validate_domain_linkage(resolver: &Resolver, url: url::Url, did: &s
         }
     };
 
-    info!("Resolved document: {:?}", document);
+    info!("Resolved document: {document:?}");
 
     let url = identity_iota::core::Url::from(url);
 
@@ -138,7 +138,7 @@ async fn fetch_configuration(mut url: url::Url) -> Result<DomainLinkageConfigura
     url.set_query(None);
     url.set_path(".well-known/did-configuration.json");
 
-    info!("Fetching DID configuration from: {}", url);
+    info!("Fetching DID configuration from: {url}");
 
     // 2. Fetch the resource
     let response = reqwest::get(url.clone())

@@ -71,7 +71,8 @@ mod bindings {
         },
         credentials::actions::{
             credential_offers_selected::CredentialOffersSelected, credentials_selected::CredentialsSelected,
-            delete_credential::DeleteCredential, update_credential_metadata::UpdateCredentialMetadata,
+            delete_credential::DeleteCredential, self_issue_credential::SelfIssueCredential,
+            update_credential_metadata::UpdateCredentialMetadata,
         },
         dev_mode::actions::{dev_profile::DevProfile, show_setting::ShowDevModeSetting},
         did::actions::{set_preferred_keytype::SetPreferredKeyType, set_preferred_method::SetPreferredDidMethod},
@@ -170,5 +171,7 @@ mod bindings {
         RedeemCode { payload: RedeemCode },
         #[serde(rename = "[Verified Data] Reset email verification")]
         ResetEmailVerification,
+        #[serde(rename = "[Credential] Self Issue")]
+        SelfIssueCredential { payload: SelfIssueCredential },
     }
 }

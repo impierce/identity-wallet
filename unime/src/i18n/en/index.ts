@@ -400,19 +400,30 @@ By using our Service, you acknowledge that you have read, understood, and agree 
     NAVBAR_TITLE: 'Credential Information',
     DETAILS: {
       VALID: 'Valid',
+      UNVERIFIED: 'Unverified',
       ISSUED_BY: 'Issued by',
+      SELF_SIGNED: 'yourself',
       DESCRIPTION: 'Description',
       OPEN_BADGES: {
         ALIGNMENT: 'Alignment',
         CRITERIA: 'Criteria',
       },
     },
+    RENDERER: {
+      PID: {
+        NAME: 'Name',
+        NATIONALITY: 'Nationality',
+        BIRTH_DATE: 'Date of birth',
+        BIRTH_PLACE: 'Place of birth',
+      },
+    },
     ACTIONS: {
       EDIT: {
+        MENU_BUTTON: 'Edit display name',
         CONFIRM_BUTTON: 'Update display name',
       },
       DELETE: {
-        BUTTON_LABEL: 'Delete credential',
+        MENU_BUTTON: 'Delete credential',
         TITLE: 'Delete credential',
         DESCRIPTION: 'Are you sure you want to delete this credential from your wallet? This action cannot be undone.',
         CONFIRM_BUTTON: 'Delete',
@@ -422,6 +433,28 @@ By using our Service, you acknowledge that you have read, understood, and agree 
   ADD_CREDENTIALS: {
     BUTTON: 'Add',
     NAVBAR_TITLE: 'Add data',
+    VALUE_REQUIRED: 'Required',
+    LABEL_DISCLAIMER: 'Only seen by you',
+    FAVORITES_TOGGLE_LABEL: 'Add to favorites',
+    ADDRESS: {
+      TITLE: 'Address',
+      DESCRIPTION: 'Add your home or work address',
+      ADD: {
+        NAVBAR_TITLE: 'Add address',
+        LABEL: 'How do you want to call this address?',
+        LABEL_PLACEHOLDER: 'Home address',
+        RESIDENT_ADDRESS_LABEL: 'Address',
+        RESIDENT_COUNTRY_LABEL: 'Country',
+        RESIDENT_COUNTRY_PLACEHOLDER: 'Choose a country',
+        RESIDENT_COUNTRY_NO_MATCH: 'No countries found',
+        RESIDENT_STATE_LABEL: 'State',
+        RESIDENT_STREET_LABEL: 'Street',
+        RESIDENT_HOUSE_NUMBER_LABEL: 'House number',
+        RESIDENT_POSTAL_CODE_LABEL: 'Postal code',
+        RESIDENT_CITY_LABEL: 'City',
+        CREATE_BUTTON: 'Add address',
+      },
+    },
     EMAIL: {
       TITLE: 'Email',
       DESCRIPTION: 'Get your personal or work email verified',
@@ -432,29 +465,71 @@ By using our Service, you acknowledge that you have read, understood, and agree 
         ITEM_0: {
           TITLE: 'Why verify your email in UniMe?',
           DESCRIPTION:
-            'Verifying your email shows it really belongs to you. This lets you safely use it to access services without needing a password. It also helps you prove who you are to shops, websites, services and even other people.',
+            "It proves the email is yours, so you can log in faster without a username or password. You'll also be able to use it with apps, websites and even other people who want to confirm it's really you.",
         },
         ITEM_1: {
           TITLE: 'How does it work?',
           DESCRIPTION:
-            "When you start, UniMe sends your email address to our secure system. You'll then get a one-time code in your inbox. Enter that code in UniMe to show you can access the email. Once that's done, UniMe confirms your email is verified and you can now use it wherever it's accepted.",
+            "We send a one-time code to your email. Just enter it to confirm it's yours. Once verified, you can use your email with supported services.",
         },
         ITEM_2: {
           TITLE: 'Is my information safe?',
           DESCRIPTION:
-            "Yes. We take your privacy very seriously. All messages between UniMe and our verification servers are protected with strong encryption and your information is stored securely. We only use your email address to send you the verification code, nothing else. Once verified, it's never shared.",
+            'Yes. We only use your email to send the verification code. We never share or use it for anything else.',
         },
       },
       ADD: {
         NAVBAR_TITLE: 'Get verified email',
         LABEL: 'How do you want to call this email address?',
-        LABEL_DISCLAIMER: 'Only seen by you',
         LABEL_PLACEHOLDER: 'Personal email',
         VALUE_LABEL: 'Email',
         VALUE_PLACEHOLDER: 'firstname.lastname@example.com',
+        VALUE_PATTERN_ERROR: 'Please provide a valid email address',
         BUTTON_SEND: 'Send verification email',
         BUTTON_SEND_AGAIN: 'Resend verification email',
         CHECK_EMAIL: 'Please check your email inbox and enter the code below.',
+        EXPIRED_ERROR: 'Verification code expired',
+      },
+    },
+    PROFILE: {
+      TITLE: 'Profile',
+      DESCRIPTION: 'Add information about yourself',
+      INFO: {
+        NAVBAR_TITLE: 'Your profile',
+        TITLE: 'UniMe Profile',
+        DESCRIPTION: 'Before you start',
+        ITEM_0: {
+          TITLE: 'Why add your information in UniMe?',
+          DESCRIPTION:
+            'Add your personal details once and reuse them anywhere. Skip long forms, speed through sign-ups and choose what you share, on your terms.',
+        },
+        ITEM_1: {
+          TITLE: 'How does it work?',
+          DESCRIPTION:
+            "Your info stays safely on your phone in a private, secure vault only you can unlock. When your details are requested, details such as your name or address, simply scan a QR code, check what's being requested and if everything is in order click 'connect'.",
+        },
+        ITEM_2: {
+          TITLE: 'Is my information safe?',
+          DESCRIPTION:
+            "Yes. Your data stays safely on your phone, protected by your password or face/fingerprint unlock. When you choose to share personal details, like your name or address, it's encrypted and only visible to the service you are interacting with. Your data stays yours.",
+        },
+      },
+      ADD: {
+        NAVBAR_TITLE: 'Your profile',
+        LABEL: 'How do you want to call this profile?',
+        LABEL_PLACEHOLDER: 'Personal Profile',
+        FIRST_NAME_LABEL: 'First name',
+        FIRST_NAME_PLACEHOLDER: 'Your first name',
+        MIDDLE_NAME_LABEL: 'Middle name(s)',
+        MIDDLE_NAME_PLACEHOLDER: 'Your middle name(s)',
+        LAST_NAME_LABEL: 'Last name',
+        LAST_NAME_PLACEHOLDER: 'Your last name',
+        BIRTH_DATE_LABEL: 'Date of birth',
+        BIRTH_DATE_PLACEHOLDER: 'Select your date of birth',
+        BIRTH_PLACE_LABEL: 'Place of birth',
+        BIRTH_PLACE_PLACEHOLDER: 'Your place of birth',
+        NATIONALITY_LABEL: 'Nationality',
+        CREATE_BUTTON: 'Create profile',
       },
     },
   },

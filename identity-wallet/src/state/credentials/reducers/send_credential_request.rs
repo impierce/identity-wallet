@@ -4,6 +4,7 @@ use crate::{
     state::{
         actions::{listen, Action},
         core_utils::{
+            helpers::{validate_credential_types, validate_jwt_vc_json},
             history_event::{EventType, HistoryCredential, HistoryEvent},
             CoreUtils,
         },
@@ -16,6 +17,7 @@ use crate::{
     },
 };
 
+use identity_iota::credential::Jwt;
 use log::info;
 use oid4vc::oid4vci::{
     credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject,
@@ -48,7 +50,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
             .clone()
             .ok_or(MissingStateParameterError("current user prompt"))?;
 
-        info!("current_user_prompt: {:?}", current_user_prompt);
+        info!("current_user_prompt: {current_user_prompt:?}");
 
         let credential_offer = state.core_utils.active_credential_offer.unwrap();
         let logo_uri = match current_user_prompt {
@@ -59,7 +61,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
         // The credential offer contains a credential issuer url.
         let credential_issuer_url = credential_offer.credential_issuer.clone();
 
-        info!("credential issuer url: {:?}", credential_issuer_url);
+        info!("credential issuer url: {credential_issuer_url:?}");
 
         // Get the authorization server metadata.
         let authorization_server_metadata = wallet
@@ -67,7 +69,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
             .await
             .map_err(GetAuthorizationServerMetadataError)?;
 
-        info!("authorization server metadata: {:?}", authorization_server_metadata);
+        info!("authorization server metadata: {authorization_server_metadata:?}");
 
         // Get the credential issuer metadata.
         let credential_issuer_metadata = wallet
@@ -75,7 +77,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
             .await
             .map_err(GetCredentialIssuerMetadataError)?;
 
-        info!("credential issuer metadata: {:?}", credential_issuer_metadata);
+        info!("credential issuer metadata: {credential_issuer_metadata:?}");
 
         // Get the credential issuer display.
         let display = credential_issuer_metadata
@@ -121,7 +123,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
             None => unreachable!(),
         };
 
-        info!("token_request: {:?}", token_request);
+        info!("token_request: {token_request:?}");
 
         // Get an access token.
         let token_response = wallet
@@ -129,7 +131,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
             .await
             .map_err(GetAccessTokenError)?;
 
-        info!("token_response: {:?}", token_response);
+        info!("token_response: {token_response:?}");
 
         credential_configurations_supported.retain(|credential_configuration_id, _| {
             credential_configuration_ids.contains(credential_configuration_id)
@@ -158,6 +160,15 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                         _ => panic!("Credential was not a jwt_vc_json."),
                     };
 
+                    // Convert the received credential (as a string) into a Jwt instance for validation.
+                    let credential_jwt = Jwt::new(
+                        credential
+                            .as_str()
+                            .ok_or(AppError::Error("Invalid JWT string.".to_string()))?
+                            .to_string(),
+                    );
+                    validate_jwt_vc_json(credential_jwt).await?;
+
                     vec![(
                         credential_configuration_id,
                         credential,
@@ -173,37 +184,51 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                         .await
                         .map_err(GetBatchCredentialError)?;
 
-                    credential_configuration_ids
-                        .into_iter()
-                        .zip(batch_credential_response.credential_responses.into_iter())
-                        .zip(credential_configurations.into_iter())
-                        .filter_map(
-                            |((credential_configuration_id, credential_response), credential_configuration)| {
-                                match credential_response {
-                                    CredentialResponseType::Immediate { credential, .. } => Some((
-                                        credential_configuration_id,
-                                        credential,
-                                        credential_configuration.display,
-                                    )),
-                                    // TODO: add support for deferred credentials.
-                                    CredentialResponseType::Deferred { .. } => None,
-                                }
-                            },
-                        )
-                        .collect()
+                    let mut result = Vec::new();
+                    for ((credential_configuration_id, credential_response), credential_configuration) in
+                        credential_configuration_ids
+                            .into_iter()
+                            .zip(batch_credential_response.credential_responses.into_iter())
+                            .zip(credential_configurations.into_iter())
+                    {
+                        if let CredentialResponseType::Immediate { credential, .. } = credential_response {
+                            // Type received credential to Jwt for jwt_vc_json validation
+                            let credential_jwt = Jwt::new(
+                                credential
+                                    .as_str()
+                                    .ok_or(AppError::Error("Invalid JWT string.".to_string()))?
+                                    .to_string(),
+                            );
+                            validate_jwt_vc_json(credential_jwt).await?;
+
+                            result.push((
+                                credential_configuration_id,
+                                credential,
+                                credential_configuration.display,
+                            ));
+                        }
+                        // TODO: add support for deferred credentials.
+                    }
+                    result
                 }
             };
 
-        info!("credentials: {:?}", credentials);
+        info!("credentials: {credentials:?}");
 
         let mut history_credentials = vec![];
 
         for (credential_configuration_id, credential, display) in credentials.into_iter() {
             let mut verifiable_credential_record: VerifiableCredentialRecord = credential.try_into()?;
+            // Validate the credential against its corresponding credential JSON Schema.
+            validate_credential_types(&verifiable_credential_record.verifiable_credential)?;
+
+            // Set the issuer name of the credential.
             verifiable_credential_record
                 .display_credential
                 .issuer_name
                 .clone_from(&issuer_name);
+
+            // Set the connection id of the credential.
             verifiable_credential_record.display_credential.connection_id = Some(connection.id.clone());
 
             // Set the display name of the credential.
@@ -219,7 +244,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                 .parse()
                 .expect("invalid uuid");
 
-            info!("generated hash-key: {:?}", key);
+            info!("generated hash-key: {key:?}");
 
             display
                 .first()

@@ -6,7 +6,8 @@
   import type { SVGAttributes } from 'svelte/elements';
 
   import { TopNavBar } from '$lib/components';
-  import { CaretRightBoldIcon, EnvelopeOpenFillIcon } from '$lib/icons';
+  import { CaretRightBoldIcon, EnvelopeOpenFillIcon, HouseFillIcon, IdentificationBadgeFillIcon } from '$lib/icons';
+  import { state as appState } from '$lib/stores';
 
   type Data = {
     title: string;
@@ -18,10 +19,23 @@
 
   const data: Data[] = [
     {
+      title: $LL.ADD_CREDENTIALS.PROFILE.TITLE(),
+      description: $LL.ADD_CREDENTIALS.PROFILE.DESCRIPTION(),
+      icon: IdentificationBadgeFillIcon,
+      link: '/me/add/profile/info',
+    },
+    {
       title: $LL.ADD_CREDENTIALS.EMAIL.TITLE(),
       description: $LL.ADD_CREDENTIALS.EMAIL.DESCRIPTION(),
       icon: EnvelopeOpenFillIcon,
-      link: '/me/add/email/info',
+      // If there is an active verification case, skip the /info page to avoid "flickering".
+      link: $appState.verified_data.email_verification ? '/me/add/email' : '/me/add/email/info',
+    },
+    {
+      title: $LL.ADD_CREDENTIALS.ADDRESS.TITLE(),
+      description: $LL.ADD_CREDENTIALS.ADDRESS.DESCRIPTION(),
+      icon: HouseFillIcon,
+      link: '/me/add/address',
     },
   ];
 </script>

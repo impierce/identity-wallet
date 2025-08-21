@@ -28,10 +28,7 @@ pub fn apply_state_migrations(
             .map(|v| v as u32)
             .ok_or_else(|| AppError::Error("Failed to get version while migrating AppState".to_string()))?;
 
-        debug!(
-            "Successfully migrated AppState version from {} to {}",
-            previous_version, current_version
-        );
+        debug!("Successfully migrated AppState version from {previous_version} to {current_version}");
     }
 
     let app_state_value = serde_json::Value::Object(app_state_object);

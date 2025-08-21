@@ -947,9 +947,17 @@ type RootTranslation = {
 			 */
 			VALID: string
 			/**
+			 * U​n​v​e​r​i​f​i​e​d
+			 */
+			UNVERIFIED: string
+			/**
 			 * I​s​s​u​e​d​ ​b​y
 			 */
 			ISSUED_BY: string
+			/**
+			 * y​o​u​r​s​e​l​f
+			 */
+			SELF_SIGNED: string
 			/**
 			 * D​e​s​c​r​i​p​t​i​o​n
 			 */
@@ -965,8 +973,32 @@ type RootTranslation = {
 				CRITERIA: string
 			}
 		}
+		RENDERER: {
+			PID: {
+				/**
+				 * N​a​m​e
+				 */
+				NAME: string
+				/**
+				 * N​a​t​i​o​n​a​l​i​t​y
+				 */
+				NATIONALITY: string
+				/**
+				 * D​a​t​e​ ​o​f​ ​b​i​r​t​h
+				 */
+				BIRTH_DATE: string
+				/**
+				 * P​l​a​c​e​ ​o​f​ ​b​i​r​t​h
+				 */
+				BIRTH_PLACE: string
+			}
+		}
 		ACTIONS: {
 			EDIT: {
+				/**
+				 * E​d​i​t​ ​d​i​s​p​l​a​y​ ​n​a​m​e
+				 */
+				MENU_BUTTON: string
 				/**
 				 * U​p​d​a​t​e​ ​d​i​s​p​l​a​y​ ​n​a​m​e
 				 */
@@ -976,7 +1008,7 @@ type RootTranslation = {
 				/**
 				 * D​e​l​e​t​e​ ​c​r​e​d​e​n​t​i​a​l
 				 */
-				BUTTON_LABEL: string
+				MENU_BUTTON: string
 				/**
 				 * D​e​l​e​t​e​ ​c​r​e​d​e​n​t​i​a​l
 				 */
@@ -1001,6 +1033,82 @@ type RootTranslation = {
 		 * A​d​d​ ​d​a​t​a
 		 */
 		NAVBAR_TITLE: string
+		/**
+		 * R​e​q​u​i​r​e​d
+		 */
+		VALUE_REQUIRED: string
+		/**
+		 * O​n​l​y​ ​s​e​e​n​ ​b​y​ ​y​o​u
+		 */
+		LABEL_DISCLAIMER: string
+		/**
+		 * A​d​d​ ​t​o​ ​f​a​v​o​r​i​t​e​s
+		 */
+		FAVORITES_TOGGLE_LABEL: string
+		ADDRESS: {
+			/**
+			 * A​d​d​r​e​s​s
+			 */
+			TITLE: string
+			/**
+			 * A​d​d​ ​y​o​u​r​ ​h​o​m​e​ ​o​r​ ​w​o​r​k​ ​a​d​d​r​e​s​s
+			 */
+			DESCRIPTION: string
+			ADD: {
+				/**
+				 * A​d​d​ ​a​d​d​r​e​s​s
+				 */
+				NAVBAR_TITLE: string
+				/**
+				 * H​o​w​ ​d​o​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​c​a​l​l​ ​t​h​i​s​ ​a​d​d​r​e​s​s​?
+				 */
+				LABEL: string
+				/**
+				 * H​o​m​e​ ​a​d​d​r​e​s​s
+				 */
+				LABEL_PLACEHOLDER: string
+				/**
+				 * A​d​d​r​e​s​s
+				 */
+				RESIDENT_ADDRESS_LABEL: string
+				/**
+				 * C​o​u​n​t​r​y
+				 */
+				RESIDENT_COUNTRY_LABEL: string
+				/**
+				 * C​h​o​o​s​e​ ​a​ ​c​o​u​n​t​r​y
+				 */
+				RESIDENT_COUNTRY_PLACEHOLDER: string
+				/**
+				 * N​o​ ​c​o​u​n​t​r​i​e​s​ ​f​o​u​n​d
+				 */
+				RESIDENT_COUNTRY_NO_MATCH: string
+				/**
+				 * S​t​a​t​e
+				 */
+				RESIDENT_STATE_LABEL: string
+				/**
+				 * S​t​r​e​e​t
+				 */
+				RESIDENT_STREET_LABEL: string
+				/**
+				 * H​o​u​s​e​ ​n​u​m​b​e​r
+				 */
+				RESIDENT_HOUSE_NUMBER_LABEL: string
+				/**
+				 * P​o​s​t​a​l​ ​c​o​d​e
+				 */
+				RESIDENT_POSTAL_CODE_LABEL: string
+				/**
+				 * C​i​t​y
+				 */
+				RESIDENT_CITY_LABEL: string
+				/**
+				 * A​d​d​ ​a​d​d​r​e​s​s
+				 */
+				CREATE_BUTTON: string
+			}
+		}
 		EMAIL: {
 			/**
 			 * E​m​a​i​l
@@ -1029,7 +1137,7 @@ type RootTranslation = {
 					 */
 					TITLE: string
 					/**
-					 * V​e​r​i​f​y​i​n​g​ ​y​o​u​r​ ​e​m​a​i​l​ ​s​h​o​w​s​ ​i​t​ ​r​e​a​l​l​y​ ​b​e​l​o​n​g​s​ ​t​o​ ​y​o​u​.​ ​T​h​i​s​ ​l​e​t​s​ ​y​o​u​ ​s​a​f​e​l​y​ ​u​s​e​ ​i​t​ ​t​o​ ​a​c​c​e​s​s​ ​s​e​r​v​i​c​e​s​ ​w​i​t​h​o​u​t​ ​n​e​e​d​i​n​g​ ​a​ ​p​a​s​s​w​o​r​d​.​ ​I​t​ ​a​l​s​o​ ​h​e​l​p​s​ ​y​o​u​ ​p​r​o​v​e​ ​w​h​o​ ​y​o​u​ ​a​r​e​ ​t​o​ ​s​h​o​p​s​,​ ​w​e​b​s​i​t​e​s​,​ ​s​e​r​v​i​c​e​s​ ​a​n​d​ ​e​v​e​n​ ​o​t​h​e​r​ ​p​e​o​p​l​e​.
+					 * I​t​ ​p​r​o​v​e​s​ ​t​h​e​ ​e​m​a​i​l​ ​i​s​ ​y​o​u​r​s​,​ ​s​o​ ​y​o​u​ ​c​a​n​ ​l​o​g​ ​i​n​ ​f​a​s​t​e​r​ ​w​i​t​h​o​u​t​ ​a​ ​u​s​e​r​n​a​m​e​ ​o​r​ ​p​a​s​s​w​o​r​d​.​ ​Y​o​u​'​l​l​ ​a​l​s​o​ ​b​e​ ​a​b​l​e​ ​t​o​ ​u​s​e​ ​i​t​ ​w​i​t​h​ ​a​p​p​s​,​ ​w​e​b​s​i​t​e​s​ ​a​n​d​ ​e​v​e​n​ ​o​t​h​e​r​ ​p​e​o​p​l​e​ ​w​h​o​ ​w​a​n​t​ ​t​o​ ​c​o​n​f​i​r​m​ ​i​t​'​s​ ​r​e​a​l​l​y​ ​y​o​u​.
 					 */
 					DESCRIPTION: string
 				}
@@ -1039,7 +1147,7 @@ type RootTranslation = {
 					 */
 					TITLE: string
 					/**
-					 * W​h​e​n​ ​y​o​u​ ​s​t​a​r​t​,​ ​U​n​i​M​e​ ​s​e​n​d​s​ ​y​o​u​r​ ​e​m​a​i​l​ ​a​d​d​r​e​s​s​ ​t​o​ ​o​u​r​ ​s​e​c​u​r​e​ ​s​y​s​t​e​m​.​ ​Y​o​u​'​l​l​ ​t​h​e​n​ ​g​e​t​ ​a​ ​o​n​e​-​t​i​m​e​ ​c​o​d​e​ ​i​n​ ​y​o​u​r​ ​i​n​b​o​x​.​ ​E​n​t​e​r​ ​t​h​a​t​ ​c​o​d​e​ ​i​n​ ​U​n​i​M​e​ ​t​o​ ​s​h​o​w​ ​y​o​u​ ​c​a​n​ ​a​c​c​e​s​s​ ​t​h​e​ ​e​m​a​i​l​.​ ​O​n​c​e​ ​t​h​a​t​'​s​ ​d​o​n​e​,​ ​U​n​i​M​e​ ​c​o​n​f​i​r​m​s​ ​y​o​u​r​ ​e​m​a​i​l​ ​i​s​ ​v​e​r​i​f​i​e​d​ ​a​n​d​ ​y​o​u​ ​c​a​n​ ​n​o​w​ ​u​s​e​ ​i​t​ ​w​h​e​r​e​v​e​r​ ​i​t​'​s​ ​a​c​c​e​p​t​e​d​.
+					 * W​e​ ​s​e​n​d​ ​a​ ​o​n​e​-​t​i​m​e​ ​c​o​d​e​ ​t​o​ ​y​o​u​r​ ​e​m​a​i​l​.​ ​J​u​s​t​ ​e​n​t​e​r​ ​i​t​ ​t​o​ ​c​o​n​f​i​r​m​ ​i​t​'​s​ ​y​o​u​r​s​.​ ​O​n​c​e​ ​v​e​r​i​f​i​e​d​,​ ​y​o​u​ ​c​a​n​ ​u​s​e​ ​y​o​u​r​ ​e​m​a​i​l​ ​w​i​t​h​ ​s​u​p​p​o​r​t​e​d​ ​s​e​r​v​i​c​e​s​.
 					 */
 					DESCRIPTION: string
 				}
@@ -1049,7 +1157,7 @@ type RootTranslation = {
 					 */
 					TITLE: string
 					/**
-					 * Y​e​s​.​ ​W​e​ ​t​a​k​e​ ​y​o​u​r​ ​p​r​i​v​a​c​y​ ​v​e​r​y​ ​s​e​r​i​o​u​s​l​y​.​ ​A​l​l​ ​m​e​s​s​a​g​e​s​ ​b​e​t​w​e​e​n​ ​U​n​i​M​e​ ​a​n​d​ ​o​u​r​ ​v​e​r​i​f​i​c​a​t​i​o​n​ ​s​e​r​v​e​r​s​ ​a​r​e​ ​p​r​o​t​e​c​t​e​d​ ​w​i​t​h​ ​s​t​r​o​n​g​ ​e​n​c​r​y​p​t​i​o​n​ ​a​n​d​ ​y​o​u​r​ ​i​n​f​o​r​m​a​t​i​o​n​ ​i​s​ ​s​t​o​r​e​d​ ​s​e​c​u​r​e​l​y​.​ ​W​e​ ​o​n​l​y​ ​u​s​e​ ​y​o​u​r​ ​e​m​a​i​l​ ​a​d​d​r​e​s​s​ ​t​o​ ​s​e​n​d​ ​y​o​u​ ​t​h​e​ ​v​e​r​i​f​i​c​a​t​i​o​n​ ​c​o​d​e​,​ ​n​o​t​h​i​n​g​ ​e​l​s​e​.​ ​O​n​c​e​ ​v​e​r​i​f​i​e​d​,​ ​i​t​'​s​ ​n​e​v​e​r​ ​s​h​a​r​e​d​.
+					 * Y​e​s​.​ ​W​e​ ​o​n​l​y​ ​u​s​e​ ​y​o​u​r​ ​e​m​a​i​l​ ​t​o​ ​s​e​n​d​ ​t​h​e​ ​v​e​r​i​f​i​c​a​t​i​o​n​ ​c​o​d​e​.​ ​W​e​ ​n​e​v​e​r​ ​s​h​a​r​e​ ​o​r​ ​u​s​e​ ​i​t​ ​f​o​r​ ​a​n​y​t​h​i​n​g​ ​e​l​s​e​.
 					 */
 					DESCRIPTION: string
 				}
@@ -1064,10 +1172,6 @@ type RootTranslation = {
 				 */
 				LABEL: string
 				/**
-				 * O​n​l​y​ ​s​e​e​n​ ​b​y​ ​y​o​u
-				 */
-				LABEL_DISCLAIMER: string
-				/**
 				 * P​e​r​s​o​n​a​l​ ​e​m​a​i​l
 				 */
 				LABEL_PLACEHOLDER: string
@@ -1080,6 +1184,10 @@ type RootTranslation = {
 				 */
 				VALUE_PLACEHOLDER: string
 				/**
+				 * P​l​e​a​s​e​ ​p​r​o​v​i​d​e​ ​a​ ​v​a​l​i​d​ ​e​m​a​i​l​ ​a​d​d​r​e​s​s
+				 */
+				VALUE_PATTERN_ERROR: string
+				/**
 				 * S​e​n​d​ ​v​e​r​i​f​i​c​a​t​i​o​n​ ​e​m​a​i​l
 				 */
 				BUTTON_SEND: string
@@ -1091,6 +1199,126 @@ type RootTranslation = {
 				 * P​l​e​a​s​e​ ​c​h​e​c​k​ ​y​o​u​r​ ​e​m​a​i​l​ ​i​n​b​o​x​ ​a​n​d​ ​e​n​t​e​r​ ​t​h​e​ ​c​o​d​e​ ​b​e​l​o​w​.
 				 */
 				CHECK_EMAIL: string
+				/**
+				 * V​e​r​i​f​i​c​a​t​i​o​n​ ​c​o​d​e​ ​e​x​p​i​r​e​d
+				 */
+				EXPIRED_ERROR: string
+			}
+		}
+		PROFILE: {
+			/**
+			 * P​r​o​f​i​l​e
+			 */
+			TITLE: string
+			/**
+			 * A​d​d​ ​i​n​f​o​r​m​a​t​i​o​n​ ​a​b​o​u​t​ ​y​o​u​r​s​e​l​f
+			 */
+			DESCRIPTION: string
+			INFO: {
+				/**
+				 * Y​o​u​r​ ​p​r​o​f​i​l​e
+				 */
+				NAVBAR_TITLE: string
+				/**
+				 * U​n​i​M​e​ ​P​r​o​f​i​l​e
+				 */
+				TITLE: string
+				/**
+				 * B​e​f​o​r​e​ ​y​o​u​ ​s​t​a​r​t
+				 */
+				DESCRIPTION: string
+				ITEM_0: {
+					/**
+					 * W​h​y​ ​a​d​d​ ​y​o​u​r​ ​i​n​f​o​r​m​a​t​i​o​n​ ​i​n​ ​U​n​i​M​e​?
+					 */
+					TITLE: string
+					/**
+					 * A​d​d​ ​y​o​u​r​ ​p​e​r​s​o​n​a​l​ ​d​e​t​a​i​l​s​ ​o​n​c​e​ ​a​n​d​ ​r​e​u​s​e​ ​t​h​e​m​ ​a​n​y​w​h​e​r​e​.​ ​S​k​i​p​ ​l​o​n​g​ ​f​o​r​m​s​,​ ​s​p​e​e​d​ ​t​h​r​o​u​g​h​ ​s​i​g​n​-​u​p​s​ ​a​n​d​ ​c​h​o​o​s​e​ ​w​h​a​t​ ​y​o​u​ ​s​h​a​r​e​,​ ​o​n​ ​y​o​u​r​ ​t​e​r​m​s​.
+					 */
+					DESCRIPTION: string
+				}
+				ITEM_1: {
+					/**
+					 * H​o​w​ ​d​o​e​s​ ​i​t​ ​w​o​r​k​?
+					 */
+					TITLE: string
+					/**
+					 * Y​o​u​r​ ​i​n​f​o​ ​s​t​a​y​s​ ​s​a​f​e​l​y​ ​o​n​ ​y​o​u​r​ ​p​h​o​n​e​ ​i​n​ ​a​ ​p​r​i​v​a​t​e​,​ ​s​e​c​u​r​e​ ​v​a​u​l​t​ ​o​n​l​y​ ​y​o​u​ ​c​a​n​ ​u​n​l​o​c​k​.​ ​W​h​e​n​ ​y​o​u​r​ ​d​e​t​a​i​l​s​ ​a​r​e​ ​r​e​q​u​e​s​t​e​d​,​ ​d​e​t​a​i​l​s​ ​s​u​c​h​ ​a​s​ ​y​o​u​r​ ​n​a​m​e​ ​o​r​ ​a​d​d​r​e​s​s​,​ ​s​i​m​p​l​y​ ​s​c​a​n​ ​a​ ​Q​R​ ​c​o​d​e​,​ ​c​h​e​c​k​ ​w​h​a​t​'​s​ ​b​e​i​n​g​ ​r​e​q​u​e​s​t​e​d​ ​a​n​d​ ​i​f​ ​e​v​e​r​y​t​h​i​n​g​ ​i​s​ ​i​n​ ​o​r​d​e​r​ ​c​l​i​c​k​ ​'​c​o​n​n​e​c​t​'​.
+					 */
+					DESCRIPTION: string
+				}
+				ITEM_2: {
+					/**
+					 * I​s​ ​m​y​ ​i​n​f​o​r​m​a​t​i​o​n​ ​s​a​f​e​?
+					 */
+					TITLE: string
+					/**
+					 * Y​e​s​.​ ​Y​o​u​r​ ​d​a​t​a​ ​s​t​a​y​s​ ​s​a​f​e​l​y​ ​o​n​ ​y​o​u​r​ ​p​h​o​n​e​,​ ​p​r​o​t​e​c​t​e​d​ ​b​y​ ​y​o​u​r​ ​p​a​s​s​w​o​r​d​ ​o​r​ ​f​a​c​e​/​f​i​n​g​e​r​p​r​i​n​t​ ​u​n​l​o​c​k​.​ ​W​h​e​n​ ​y​o​u​ ​c​h​o​o​s​e​ ​t​o​ ​s​h​a​r​e​ ​p​e​r​s​o​n​a​l​ ​d​e​t​a​i​l​s​,​ ​l​i​k​e​ ​y​o​u​r​ ​n​a​m​e​ ​o​r​ ​a​d​d​r​e​s​s​,​ ​i​t​'​s​ ​e​n​c​r​y​p​t​e​d​ ​a​n​d​ ​o​n​l​y​ ​v​i​s​i​b​l​e​ ​t​o​ ​t​h​e​ ​s​e​r​v​i​c​e​ ​y​o​u​ ​a​r​e​ ​i​n​t​e​r​a​c​t​i​n​g​ ​w​i​t​h​.​ ​Y​o​u​r​ ​d​a​t​a​ ​s​t​a​y​s​ ​y​o​u​r​s​.
+					 */
+					DESCRIPTION: string
+				}
+			}
+			ADD: {
+				/**
+				 * Y​o​u​r​ ​p​r​o​f​i​l​e
+				 */
+				NAVBAR_TITLE: string
+				/**
+				 * H​o​w​ ​d​o​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​c​a​l​l​ ​t​h​i​s​ ​p​r​o​f​i​l​e​?
+				 */
+				LABEL: string
+				/**
+				 * P​e​r​s​o​n​a​l​ ​P​r​o​f​i​l​e
+				 */
+				LABEL_PLACEHOLDER: string
+				/**
+				 * F​i​r​s​t​ ​n​a​m​e
+				 */
+				FIRST_NAME_LABEL: string
+				/**
+				 * Y​o​u​r​ ​f​i​r​s​t​ ​n​a​m​e
+				 */
+				FIRST_NAME_PLACEHOLDER: string
+				/**
+				 * M​i​d​d​l​e​ ​n​a​m​e​(​s​)
+				 */
+				MIDDLE_NAME_LABEL: string
+				/**
+				 * Y​o​u​r​ ​m​i​d​d​l​e​ ​n​a​m​e​(​s​)
+				 */
+				MIDDLE_NAME_PLACEHOLDER: string
+				/**
+				 * L​a​s​t​ ​n​a​m​e
+				 */
+				LAST_NAME_LABEL: string
+				/**
+				 * Y​o​u​r​ ​l​a​s​t​ ​n​a​m​e
+				 */
+				LAST_NAME_PLACEHOLDER: string
+				/**
+				 * D​a​t​e​ ​o​f​ ​b​i​r​t​h
+				 */
+				BIRTH_DATE_LABEL: string
+				/**
+				 * S​e​l​e​c​t​ ​y​o​u​r​ ​d​a​t​e​ ​o​f​ ​b​i​r​t​h
+				 */
+				BIRTH_DATE_PLACEHOLDER: string
+				/**
+				 * P​l​a​c​e​ ​o​f​ ​b​i​r​t​h
+				 */
+				BIRTH_PLACE_LABEL: string
+				/**
+				 * Y​o​u​r​ ​p​l​a​c​e​ ​o​f​ ​b​i​r​t​h
+				 */
+				BIRTH_PLACE_PLACEHOLDER: string
+				/**
+				 * N​a​t​i​o​n​a​l​i​t​y
+				 */
+				NATIONALITY_LABEL: string
+				/**
+				 * C​r​e​a​t​e​ ​p​r​o​f​i​l​e
+				 */
+				CREATE_BUTTON: string
 			}
 		}
 	}
@@ -2132,9 +2360,17 @@ export type TranslationFunctions = {
 			 */
 			VALID: () => LocalizedString
 			/**
+			 * Unverified
+			 */
+			UNVERIFIED: () => LocalizedString
+			/**
 			 * Issued by
 			 */
 			ISSUED_BY: () => LocalizedString
+			/**
+			 * yourself
+			 */
+			SELF_SIGNED: () => LocalizedString
 			/**
 			 * Description
 			 */
@@ -2150,8 +2386,32 @@ export type TranslationFunctions = {
 				CRITERIA: () => LocalizedString
 			}
 		}
+		RENDERER: {
+			PID: {
+				/**
+				 * Name
+				 */
+				NAME: () => LocalizedString
+				/**
+				 * Nationality
+				 */
+				NATIONALITY: () => LocalizedString
+				/**
+				 * Date of birth
+				 */
+				BIRTH_DATE: () => LocalizedString
+				/**
+				 * Place of birth
+				 */
+				BIRTH_PLACE: () => LocalizedString
+			}
+		}
 		ACTIONS: {
 			EDIT: {
+				/**
+				 * Edit display name
+				 */
+				MENU_BUTTON: () => LocalizedString
 				/**
 				 * Update display name
 				 */
@@ -2161,7 +2421,7 @@ export type TranslationFunctions = {
 				/**
 				 * Delete credential
 				 */
-				BUTTON_LABEL: () => LocalizedString
+				MENU_BUTTON: () => LocalizedString
 				/**
 				 * Delete credential
 				 */
@@ -2186,6 +2446,82 @@ export type TranslationFunctions = {
 		 * Add data
 		 */
 		NAVBAR_TITLE: () => LocalizedString
+		/**
+		 * Required
+		 */
+		VALUE_REQUIRED: () => LocalizedString
+		/**
+		 * Only seen by you
+		 */
+		LABEL_DISCLAIMER: () => LocalizedString
+		/**
+		 * Add to favorites
+		 */
+		FAVORITES_TOGGLE_LABEL: () => LocalizedString
+		ADDRESS: {
+			/**
+			 * Address
+			 */
+			TITLE: () => LocalizedString
+			/**
+			 * Add your home or work address
+			 */
+			DESCRIPTION: () => LocalizedString
+			ADD: {
+				/**
+				 * Add address
+				 */
+				NAVBAR_TITLE: () => LocalizedString
+				/**
+				 * How do you want to call this address?
+				 */
+				LABEL: () => LocalizedString
+				/**
+				 * Home address
+				 */
+				LABEL_PLACEHOLDER: () => LocalizedString
+				/**
+				 * Address
+				 */
+				RESIDENT_ADDRESS_LABEL: () => LocalizedString
+				/**
+				 * Country
+				 */
+				RESIDENT_COUNTRY_LABEL: () => LocalizedString
+				/**
+				 * Choose a country
+				 */
+				RESIDENT_COUNTRY_PLACEHOLDER: () => LocalizedString
+				/**
+				 * No countries found
+				 */
+				RESIDENT_COUNTRY_NO_MATCH: () => LocalizedString
+				/**
+				 * State
+				 */
+				RESIDENT_STATE_LABEL: () => LocalizedString
+				/**
+				 * Street
+				 */
+				RESIDENT_STREET_LABEL: () => LocalizedString
+				/**
+				 * House number
+				 */
+				RESIDENT_HOUSE_NUMBER_LABEL: () => LocalizedString
+				/**
+				 * Postal code
+				 */
+				RESIDENT_POSTAL_CODE_LABEL: () => LocalizedString
+				/**
+				 * City
+				 */
+				RESIDENT_CITY_LABEL: () => LocalizedString
+				/**
+				 * Add address
+				 */
+				CREATE_BUTTON: () => LocalizedString
+			}
+		}
 		EMAIL: {
 			/**
 			 * Email
@@ -2214,7 +2550,7 @@ export type TranslationFunctions = {
 					 */
 					TITLE: () => LocalizedString
 					/**
-					 * Verifying your email shows it really belongs to you. This lets you safely use it to access services without needing a password. It also helps you prove who you are to shops, websites, services and even other people.
+					 * It proves the email is yours, so you can log in faster without a username or password. You'll also be able to use it with apps, websites and even other people who want to confirm it's really you.
 					 */
 					DESCRIPTION: () => LocalizedString
 				}
@@ -2224,7 +2560,7 @@ export type TranslationFunctions = {
 					 */
 					TITLE: () => LocalizedString
 					/**
-					 * When you start, UniMe sends your email address to our secure system. You'll then get a one-time code in your inbox. Enter that code in UniMe to show you can access the email. Once that's done, UniMe confirms your email is verified and you can now use it wherever it's accepted.
+					 * We send a one-time code to your email. Just enter it to confirm it's yours. Once verified, you can use your email with supported services.
 					 */
 					DESCRIPTION: () => LocalizedString
 				}
@@ -2234,7 +2570,7 @@ export type TranslationFunctions = {
 					 */
 					TITLE: () => LocalizedString
 					/**
-					 * Yes. We take your privacy very seriously. All messages between UniMe and our verification servers are protected with strong encryption and your information is stored securely. We only use your email address to send you the verification code, nothing else. Once verified, it's never shared.
+					 * Yes. We only use your email to send the verification code. We never share or use it for anything else.
 					 */
 					DESCRIPTION: () => LocalizedString
 				}
@@ -2249,10 +2585,6 @@ export type TranslationFunctions = {
 				 */
 				LABEL: () => LocalizedString
 				/**
-				 * Only seen by you
-				 */
-				LABEL_DISCLAIMER: () => LocalizedString
-				/**
 				 * Personal email
 				 */
 				LABEL_PLACEHOLDER: () => LocalizedString
@@ -2265,6 +2597,10 @@ export type TranslationFunctions = {
 				 */
 				VALUE_PLACEHOLDER: () => LocalizedString
 				/**
+				 * Please provide a valid email address
+				 */
+				VALUE_PATTERN_ERROR: () => LocalizedString
+				/**
 				 * Send verification email
 				 */
 				BUTTON_SEND: () => LocalizedString
@@ -2276,6 +2612,126 @@ export type TranslationFunctions = {
 				 * Please check your email inbox and enter the code below.
 				 */
 				CHECK_EMAIL: () => LocalizedString
+				/**
+				 * Verification code expired
+				 */
+				EXPIRED_ERROR: () => LocalizedString
+			}
+		}
+		PROFILE: {
+			/**
+			 * Profile
+			 */
+			TITLE: () => LocalizedString
+			/**
+			 * Add information about yourself
+			 */
+			DESCRIPTION: () => LocalizedString
+			INFO: {
+				/**
+				 * Your profile
+				 */
+				NAVBAR_TITLE: () => LocalizedString
+				/**
+				 * UniMe Profile
+				 */
+				TITLE: () => LocalizedString
+				/**
+				 * Before you start
+				 */
+				DESCRIPTION: () => LocalizedString
+				ITEM_0: {
+					/**
+					 * Why add your information in UniMe?
+					 */
+					TITLE: () => LocalizedString
+					/**
+					 * Add your personal details once and reuse them anywhere. Skip long forms, speed through sign-ups and choose what you share, on your terms.
+					 */
+					DESCRIPTION: () => LocalizedString
+				}
+				ITEM_1: {
+					/**
+					 * How does it work?
+					 */
+					TITLE: () => LocalizedString
+					/**
+					 * Your info stays safely on your phone in a private, secure vault only you can unlock. When your details are requested, details such as your name or address, simply scan a QR code, check what's being requested and if everything is in order click 'connect'.
+					 */
+					DESCRIPTION: () => LocalizedString
+				}
+				ITEM_2: {
+					/**
+					 * Is my information safe?
+					 */
+					TITLE: () => LocalizedString
+					/**
+					 * Yes. Your data stays safely on your phone, protected by your password or face/fingerprint unlock. When you choose to share personal details, like your name or address, it's encrypted and only visible to the service you are interacting with. Your data stays yours.
+					 */
+					DESCRIPTION: () => LocalizedString
+				}
+			}
+			ADD: {
+				/**
+				 * Your profile
+				 */
+				NAVBAR_TITLE: () => LocalizedString
+				/**
+				 * How do you want to call this profile?
+				 */
+				LABEL: () => LocalizedString
+				/**
+				 * Personal Profile
+				 */
+				LABEL_PLACEHOLDER: () => LocalizedString
+				/**
+				 * First name
+				 */
+				FIRST_NAME_LABEL: () => LocalizedString
+				/**
+				 * Your first name
+				 */
+				FIRST_NAME_PLACEHOLDER: () => LocalizedString
+				/**
+				 * Middle name(s)
+				 */
+				MIDDLE_NAME_LABEL: () => LocalizedString
+				/**
+				 * Your middle name(s)
+				 */
+				MIDDLE_NAME_PLACEHOLDER: () => LocalizedString
+				/**
+				 * Last name
+				 */
+				LAST_NAME_LABEL: () => LocalizedString
+				/**
+				 * Your last name
+				 */
+				LAST_NAME_PLACEHOLDER: () => LocalizedString
+				/**
+				 * Date of birth
+				 */
+				BIRTH_DATE_LABEL: () => LocalizedString
+				/**
+				 * Select your date of birth
+				 */
+				BIRTH_DATE_PLACEHOLDER: () => LocalizedString
+				/**
+				 * Place of birth
+				 */
+				BIRTH_PLACE_LABEL: () => LocalizedString
+				/**
+				 * Your place of birth
+				 */
+				BIRTH_PLACE_PLACEHOLDER: () => LocalizedString
+				/**
+				 * Nationality
+				 */
+				NATIONALITY_LABEL: () => LocalizedString
+				/**
+				 * Create profile
+				 */
+				CREATE_BUTTON: () => LocalizedString
 			}
 		}
 	}

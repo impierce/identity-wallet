@@ -10,7 +10,7 @@ use log::debug;
 
 pub async fn enable_biometrics(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(enable) = listen::<EnableBiometrics>(action).map(|payload| payload.enable) {
-        debug!("biometrics enabled: `{:?}`", enable);
+        debug!("biometrics enabled: `{enable:?}`");
         return Ok(AppState {
             profile_settings: ProfileSettings {
                 biometrics_enabled: enable,
