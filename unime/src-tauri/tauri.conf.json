@@ -46,8 +46,24 @@
     "iOS": {
       "developmentTeam": "Impierce Technologies B.V."
     },
+    "linux": {
+      "deb": {
+        "desktopTemplate": "../UniMe.desktop"
+      }
+    },
     "resources": [
       "resources/*"
     ]
+  },
+  "plugins": {
+    "deep-link": {
+      "mobile": [
+        { "scheme": [ "openid" ] },
+        { "scheme": [ "openid-credential-offer" ] }
+      ],
+      "desktop": {
+        "schemes": ["openid", "openid-credential-offer"]
+      }
+    }
   }
 }

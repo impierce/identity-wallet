@@ -15,8 +15,18 @@ use jni::{
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::Builder::default()
+    let mut builder = tauri::Builder::default();
+
+    #[cfg(desktop)]
+    {
+        builder = builder.plugin(tauri_plugin_single_instance::init(|_app, argv, _cwd| {
+            info!("New instance opened via deep link: {argv:?}");
+        }));
+    }
+
+    builder
         .invoke_handler(tauri::generate_handler![tauri_command::handle_action])
+        .plugin(tauri_plugin_deep_link::init())
         .setup(move |app| {
             info!("setting up tauri app");
             initialize_storage(app.handle()).ok();

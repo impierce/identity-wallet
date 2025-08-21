@@ -1,0 +1,9 @@
+[Desktop Entry]
+Categories=
+Comment=Identity Wallet for people to manage Decentralized Identities and Verifiable Credentials
+Exec=gnome-terminal -- /usr/bin/unime %U
+Icon=unime
+Name=UniMe
+Terminal=false
+Type=Application
+MimeType=x-scheme-handler/openid;x-scheme-handler/openid-credential-offer

@@ -112,6 +112,7 @@ pub struct AppState {
     #[ts(skip)]
     pub extensions: std::collections::HashMap<String, Box<dyn FeatTrait>>,
     pub show_dev_mode_setting: bool,
+    pub is_unlocked: bool,
     pub dev_mode: DevMode,
 }
 
