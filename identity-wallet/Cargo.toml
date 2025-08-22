@@ -46,7 +46,6 @@ rustls-platform-verifier.workspace = true
 serde = { version = "1.0", features = ["derive"] }
 serde_with = "3.8"
 serde_json.workspace = true
-serde_urlencoded = "0.7"
 sha256 = "1.4"
 stronghold_engine = { version = "2.0.1" }
 stronghold_ext = { git = "https://github.com/impierce/stronghold_ext", features = ["crypto"] }

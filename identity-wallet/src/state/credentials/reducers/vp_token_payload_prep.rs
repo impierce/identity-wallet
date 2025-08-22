@@ -4,7 +4,6 @@ use identity_core::common::Object as IotaObject;
 
 use identity_credential::{credential::Jwt, presentation::Presentation};
 use identity_iota::core::Url;
-use identity_iota::did::{CoreDID, DIDUrl, DID};
 use jsonwebtoken::Algorithm;
 use jsonwebtoken::Header;
 use oid4vc::oid4vc_core::authorization_request::{AuthorizationRequest, Object};
@@ -21,7 +20,7 @@ use std::sync::Arc;
 
 pub async fn prepare_vp_token_object(
     selected_verifiable_credentials: Vec<(CredentialQuery, Value)>,
-    subject_did: &CoreDID,
+    did_method: &str,
     subject_manager: &Arc<dyn Subject>,
     oid4vp_authorization_request: &AuthorizationRequest<Object<OID4VP>>,
     signing_algorithm: Algorithm,
@@ -31,11 +30,14 @@ pub async fn prepare_vp_token_object(
 
     let dcql_query = &oid4vp_authorization_request.body.extension.dcql_query;
     let mut builder = VpTokenBuilder::builder_dcql_query(dcql_query.clone());
-    let signing_method_id =
-        DIDUrl::parse(format!("{}#{}", subject_did, subject_did.method_id())).map_err(|_| AppError::DidParseError)?;
+
+    let key_id = subject_manager
+        .key_id(did_method, signing_algorithm)
+        .await
+        .ok_or_else(|| AppError::Error(format!("Failed to get signing method ID for DID method {did_method}")))?;
 
     for (credential_query_from_dcql, vc_value) in selected_verifiable_credentials {
-        let credential_id = credential_query_from_dcql.id.clone();
+        let credential_query_id = credential_query_from_dcql.id.clone();
         let format_from_query = credential_query_from_dcql.format;
 
         let presentation_format_item = match format_from_query {
@@ -47,8 +49,15 @@ pub async fn prepare_vp_token_object(
 
                 let vc_jwt: Jwt = raw_vc_jwt_string.into();
 
-                let holder_url: Url =
-                    Url::parse(subject_did).map_err(|e| AppError::Error(format!("Failed to parse DID as URL: {e}")))?;
+                let full_did = subject_manager
+                    .identifier(did_method, signing_algorithm)
+                    .await
+                    .map_err(|e| AppError::Error(format!("Failed to get DID identifier: {e}")))?;
+
+                let full_did_string = full_did.to_string();
+
+                let holder_url: Url = Url::parse(&full_did_string)
+                    .map_err(|e| AppError::Error(format!("Failed to parse DID as URL: {e}")))?;
 
                 let presentation = Presentation::builder(holder_url, IotaObject::default())
                     .credential(vc_jwt)
@@ -56,8 +65,8 @@ pub async fn prepare_vp_token_object(
                     .map_err(AppError::PresentationBuilderError)?;
 
                 let verifiable_presentation_jwt = VerifiablePresentationJwt::builder()
-                    .iss(subject_did.to_string())
-                    .sub(subject_did.to_string())
+                    .iss(full_did_string.clone())
+                    .sub(full_did_string.clone())
                     .aud(verifier_audience.to_string())
                     .nonce(required_nonce.to_string())
                     .iat(Utc::now().timestamp())
@@ -68,7 +77,7 @@ pub async fn prepare_vp_token_object(
 
                 let jwt_header = Header {
                     alg: signing_algorithm,
-                    kid: Some(signing_method_id.to_string()),
+                    kid: Some(key_id.to_string()),
                     typ: Some("JWT".to_string()),
                     ..Default::default()
                 };
@@ -77,7 +86,7 @@ pub async fn prepare_vp_token_object(
                     subject_manager.clone(),
                     jwt_header,
                     &verifiable_presentation_jwt,
-                    &format!("did:{}", subject_did.method()),
+                    did_method,
                 )
                 .await
                 .map_err(|e| AppError::Error(format!("Failed to sign VP JWT: {e}")))?;
@@ -99,7 +108,7 @@ pub async fn prepare_vp_token_object(
             }
         };
 
-        builder = builder.add_presentation(credential_id, presentation_format_item);
+        builder = builder.add_presentation(credential_query_id, presentation_format_item);
     }
 
     // Build and validate the VP token

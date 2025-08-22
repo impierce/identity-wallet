@@ -1,3 +1,4 @@
+use crate::state::core_utils::helpers::get_unverified_jwt_claims;
 use crate::state::credentials::reducers::vp_token_payload_prep::prepare_vp_token_object;
 use crate::{
     error::AppError::{self, *},
@@ -23,6 +24,7 @@ use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
 use oid4vc::oid4vp::dcql::dcql_query::CredentialQuery;
 use oid4vc::oid4vp::oid4vp::OID4VP;
 
+// Sends the authorization response including the verifiable credentials.
 pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action) -> Result<AppState, AppError> {
     info!("handle_presentation_request");
 
@@ -48,7 +50,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
         };
 
         let mut history_credentials = vec![];
-        let dcql_from_request = &oid4vp_authorization_request.body.extension.dcql_query;
+        let dcql_query = &oid4vp_authorization_request.body.extension.dcql_query;
         let available_credentials_map: std::collections::HashMap<String, _> = stronghold_manager
             .values()
             .map_err(StrongholdValuesError)?
@@ -57,9 +59,9 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             .map(|record| (record.display_credential.id.clone(), record)) // Map to (internal_uuid_string, full_record)
             .collect();
 
+        // TODO: Optimize credential selection so that evaluate_credential_query does not need to be called twice.
         let mut selected_verifiable_credentials: Vec<(CredentialQuery, serde_json::Value)> = Vec::new();
-        for requested_credential_query in &dcql_from_request.credentials {
-            //selects from all our credential_uuids, which ones we've said ok to.
+        for requested_credential_query in &dcql_query.credentials {
             for user_selected_uuid in &credential_uuids {
                 let user_selected_uuid_str = user_selected_uuid.to_string();
                 if let Some(verifiable_credential_record) = available_credentials_map.get(&user_selected_uuid_str) {
@@ -85,29 +87,24 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
                         serde_json::json!(disclosed_object)
                     } else if verifiable_credential_record.display_credential.format == CredentialFormats::JwtVcJson(())
                     {
-                        // Handle jwt-vc-json starting from vc.
-                        crate::state::core_utils::helpers::get_unverified_jwt_claims(
-                            &verifiable_credential_record.verifiable_credential,
-                        )
-                        .unwrap_or_default()
-                        .get("vc")
-                        .cloned()
-                        .unwrap_or_else(|| {
-                            log::debug!(
-                                "JWT-VC-JSON missing 'vc' claim or it's not a valid JSON value: {:?}",
-                                verifiable_credential_record.verifiable_credential
-                            );
-                            serde_json::json!({})
-                        })
+                        get_unverified_jwt_claims(&verifiable_credential_record.verifiable_credential)
+                            .unwrap_or_default()
+                            .get("vc")
+                            .cloned()
+                            .unwrap_or_else(|| {
+                                log::debug!(
+                                    "JWT-VC-JSON missing 'vc' claim or it's not a valid JSON value: {:?}",
+                                    verifiable_credential_record.verifiable_credential
+                                );
+                                serde_json::json!({})
+                            })
                     } else {
                         log::warn!(
                             "Unsupported format {:?} for evaluation. Attempting to get unverified JWT claims.",
                             verifiable_credential_record.display_credential.format
                         );
-                        crate::state::core_utils::helpers::get_unverified_jwt_claims(
-                            &verifiable_credential_record.verifiable_credential,
-                        )
-                        .unwrap_or_default()
+                        get_unverified_jwt_claims(&verifiable_credential_record.verifiable_credential)
+                            .unwrap_or_default()
                     };
 
                     let credential_query_satisfied = oid4vc::oid4vp::dcql_evaluation::evaluate_credential_query(
@@ -156,17 +153,9 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
                     })?,
             );
 
-        let subject_did_str = identity_manager
-            .subject
-            .identifier(did_method, algorithm)
-            .await
-            .map_err(AppError::OID4VCSubjectIdentifierError)?;
-
-        let subject_did = CoreDID::parse(subject_did_str).map_err(|_| DidParseError)?;
-
         let vp_token_payload = prepare_vp_token_object(
             selected_verifiable_credentials,
-            &subject_did,
+            did_method,
             &identity_manager.subject,
             &oid4vp_authorization_request,
             algorithm,
@@ -284,53 +273,4 @@ pub fn get_oid4vp_client_name_and_logo_uri(
         connection_url: connection_url.to_string(),
         client_id,
     })
-}
-
-#[test]
-fn test_authorization_request_object() {
-    let test_body: AuthorizationRequest<Object<OID4VP>> = serde_json::from_value(serde_json::json!({
-        "client_id": "did:key:z6Mkm9yeuZK7inXBNjnNH3vAs9uUjqfy3mfNoKBKsKBrv8Tb",
-        "redirect_uri": "https://example.com/",
-        "state": null,
-        "response_type": "vp_token",
-        "dcql_query":
-        {
-      "credentials": [
-        {
-          "id": "CredentialQuery",
-          "format": "jwt_vc_json",
-          "meta": {
-            "type_values": [
-                ["VerifiableCredential"],
-                ["PersonalInformation"],
-            ]
-          },
-          "claims": [
-              {"path": ["credentialSubject", "givenName"]},
-              {"path": ["credentialSubject", "familyName"]},
-              {"path": ["credentialSubject", "email"]},
-              {"path": ["credentialSubject", "birthdate"]}
-          ]
-        }
-      ]
-    },
-        "client_id_scheme": null,
-        "response_mode": "direct_post",
-        "scope": null,
-        "nonce": "nonce",
-        "client_metadata": {
-          "vp_formats_supported": {
-            "jwt_vc_json": {
-              "alg_values": [
-                "EdDSA"
-              ]
-            }
-          },
-          "subject_syntax_types_supported": [
-            "did:key"
-          ]
-        }
-      }))
-    .unwrap();
-    println!("{test_body}")
 }

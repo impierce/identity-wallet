@@ -220,6 +220,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                     let _ = download_asset(logo_uri.clone(), &hash(logo_uri.as_str())).await;
                 }
             }
+
             // TODO: communicate when no credentials are available.
             if !uuids.is_empty() {
                 drop(state_guard);

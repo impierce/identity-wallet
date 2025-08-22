@@ -5482,7 +5482,6 @@ dependencies = [
  "rustls-platform-verifier 0.6.1",
  "serde",
  "serde_json",
- "serde_urlencoded",
  "serde_with 3.14.0",
  "serial_test",
  "sha256",
