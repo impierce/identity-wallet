@@ -44,6 +44,7 @@ const empty_state: AppState = {
     email_verification: null,
   },
   show_dev_mode_setting: false,
+  is_unlocked: false,
   dev_mode: 'Off',
 };
 

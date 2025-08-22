@@ -13,6 +13,7 @@ pub async fn get_state(_state: AppState, _action: Action) -> Result<AppState, Ap
 
     if state.profile_settings.profile.is_some() {
         state.current_user_prompt = Some(CurrentUserPrompt::PasswordRequired);
+        state.is_unlocked = false;
     } else {
         // TODO: bug: if state is present, but empty, user will never be redirected to neither welcome or profile page
         state.current_user_prompt = Some(CurrentUserPrompt::Redirect {
