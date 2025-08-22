@@ -1160,7 +1160,7 @@ dependencies = [
  "bitflags 2.9.1",
  "cexpr",
  "clang-sys",
- "itertools 0.10.5",
+ "itertools 0.12.1",
  "lazy_static",
  "lazycell",
  "log",
@@ -1983,7 +1983,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "117725a109d387c937a1533ce01b450cbde6b88abceea8473c4d7a85853cda3c"
 dependencies = [
  "lazy_static",
- "windows-sys 0.48.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -2951,7 +2951,6 @@ dependencies = [
 [[package]]
 name = "dif-presentation-exchange"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc?rev=cdc02ba#cdc02ba1f37c78994191854641fcf9779e8fcd50"
 dependencies = [
  "getset",
  "jsonpath_lib",
@@ -5082,7 +5081,7 @@ dependencies = [
  "js-sys",
  "log",
  "wasm-bindgen",
- "windows-core 0.57.0",
+ "windows-core 0.61.2",
 ]
 
 [[package]]
@@ -5604,7 +5603,7 @@ dependencies = [
  "dyn-clone",
  "futures",
  "icu",
- "identity_core",
+ "identity_core 1.6.0-beta (git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check)",
  "identity_credential",
  "identity_eddsa_verifier",
  "identity_iota",
@@ -5621,7 +5620,8 @@ dependencies = [
  "rustls 0.23.31",
  "rustls-platform-verifier 0.6.1",
  "serde",
- "serde_json",
+ "serde_json_path_to_error",
+ "serde_urlencoded",
  "serde_with 3.14.0",
  "serial_test",
  "sha256",
@@ -5630,6 +5630,7 @@ dependencies = [
  "strum 0.25.0",
  "tauri",
  "tauri-plugin-fs",
+ "tauri-plugin-opener",
  "tempfile",
  "thiserror 1.0.69",
  "tokio",
@@ -5659,15 +5660,32 @@ dependencies = [
 ]
 
 [[package]]
+name = "identity_core"
+version = "1.6.0-beta"
+source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#9d3bea97c78a200dc73c14ee3a1dc7a61ef2dc9e"
+dependencies = [
+ "deranged",
+ "js-sys",
+ "multibase 0.9.1",
+ "product_common",
+ "serde",
+ "serde_json",
+ "strum 0.25.0",
+ "thiserror 1.0.69",
+ "time",
+ "url",
+]
+
+[[package]]
 name = "identity_credential"
 version = "1.6.0-beta"
-source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-beta.2#0ecce7b015ca5b7a731a7ff62dad101a1a4a3bfe"
+source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#9d3bea97c78a200dc73c14ee3a1dc7a61ef2dc9e"
 dependencies = [
  "anyhow",
  "async-trait",
  "flate2",
  "futures",
- "identity_core",
+ "identity_core 1.6.0-beta (git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check)",
  "identity_did",
  "identity_document",
  "identity_verification",
@@ -5690,11 +5708,11 @@ dependencies = [
 [[package]]
 name = "identity_did"
 version = "1.6.0-beta"
-source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-beta.2#0ecce7b015ca5b7a731a7ff62dad101a1a4a3bfe"
+source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#9d3bea97c78a200dc73c14ee3a1dc7a61ef2dc9e"
 dependencies = [
  "did_url_parser 0.3.0",
  "form_urlencoded",
- "identity_core",
+ "identity_core 1.6.0-beta (git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check)",
  "identity_jose",
  "serde",
  "strum 0.25.0",
@@ -5704,10 +5722,10 @@ dependencies = [
 [[package]]
 name = "identity_document"
 version = "1.6.0-beta"
-source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-beta.2#0ecce7b015ca5b7a731a7ff62dad101a1a4a3bfe"
+source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#9d3bea97c78a200dc73c14ee3a1dc7a61ef2dc9e"
 dependencies = [
  "did_url_parser 0.2.0",
- "identity_core",
+ "identity_core 1.6.0-beta (git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check)",
  "identity_did",
  "identity_verification",
  "indexmap 2.10.0",
@@ -5719,7 +5737,7 @@ dependencies = [
 [[package]]
 name = "identity_eddsa_verifier"
 version = "1.6.0-beta"
-source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-beta.2#0ecce7b015ca5b7a731a7ff62dad101a1a4a3bfe"
+source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#9d3bea97c78a200dc73c14ee3a1dc7a61ef2dc9e"
 dependencies = [
  "identity_jose",
  "iota-crypto",
@@ -5728,9 +5746,9 @@ dependencies = [
 [[package]]
 name = "identity_iota"
 version = "1.6.0-beta"
-source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-beta.2#0ecce7b015ca5b7a731a7ff62dad101a1a4a3bfe"
+source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#9d3bea97c78a200dc73c14ee3a1dc7a61ef2dc9e"
 dependencies = [
- "identity_core",
+ "identity_core 1.6.0-beta (git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check)",
  "identity_credential",
  "identity_did",
  "identity_document",
@@ -5744,7 +5762,7 @@ dependencies = [
 [[package]]
 name = "identity_iota_core"
 version = "1.6.0-beta"
-source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-beta.2#0ecce7b015ca5b7a731a7ff62dad101a1a4a3bfe"
+source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#9d3bea97c78a200dc73c14ee3a1dc7a61ef2dc9e"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -5752,7 +5770,7 @@ dependencies = [
  "cfg-if",
  "fastcrypto",
  "futures",
- "identity_core",
+ "identity_core 1.6.0-beta (git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check)",
  "identity_credential",
  "identity_did",
  "identity_document",
@@ -5788,12 +5806,12 @@ dependencies = [
 [[package]]
 name = "identity_jose"
 version = "1.6.0-beta"
-source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-beta.2#0ecce7b015ca5b7a731a7ff62dad101a1a4a3bfe"
+source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#9d3bea97c78a200dc73c14ee3a1dc7a61ef2dc9e"
 dependencies = [
  "anyhow",
  "bls12_381_plus 0.8.18",
  "fastcrypto",
- "identity_core",
+ "identity_core 1.6.0-beta (git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check)",
  "iota-crypto",
  "iota_interaction",
  "json-proof-token",
@@ -5808,11 +5826,11 @@ dependencies = [
 [[package]]
 name = "identity_resolver"
 version = "1.6.0-beta"
-source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-beta.2#0ecce7b015ca5b7a731a7ff62dad101a1a4a3bfe"
+source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#9d3bea97c78a200dc73c14ee3a1dc7a61ef2dc9e"
 dependencies = [
  "async-trait",
  "futures",
- "identity_core",
+ "identity_core 1.6.0-beta (git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check)",
  "identity_credential",
  "identity_did",
  "identity_document",
@@ -5825,14 +5843,14 @@ dependencies = [
 [[package]]
 name = "identity_storage"
 version = "1.6.0-beta"
-source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-beta.2#0ecce7b015ca5b7a731a7ff62dad101a1a4a3bfe"
+source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#9d3bea97c78a200dc73c14ee3a1dc7a61ef2dc9e"
 dependencies = [
  "anyhow",
  "async-trait",
  "bcs",
  "fastcrypto",
  "futures",
- "identity_core",
+ "identity_core 1.6.0-beta (git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check)",
  "identity_credential",
  "identity_did",
  "identity_document",
@@ -5885,9 +5903,9 @@ dependencies = [
 [[package]]
 name = "identity_verification"
 version = "1.6.0-beta"
-source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-beta.2#0ecce7b015ca5b7a731a7ff62dad101a1a4a3bfe"
+source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#9d3bea97c78a200dc73c14ee3a1dc7a61ef2dc9e"
 dependencies = [
- "identity_core",
+ "identity_core 1.6.0-beta (git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check)",
  "identity_did",
  "identity_jose",
  "serde",
@@ -7816,7 +7834,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "07033963ba89ebaf1584d767badaa2e8fcec21aedea6b8c0346d487d49c28667"
 dependencies = [
  "cfg-if",
- "windows-targets 0.48.5",
+ "windows-targets 0.53.3",
 ]
 
 [[package]]
@@ -8953,7 +8971,7 @@ version = "0.7.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "77e878c846a8abae00dd069496dbe8751b16ac1c3d6bd2a7283a938e8228f90d"
 dependencies = [
- "proc-macro-crate 3.3.0",
+ "proc-macro-crate 2.0.0",
  "proc-macro2",
  "quote",
  "syn 2.0.105",
@@ -9257,7 +9275,6 @@ dependencies = [
 [[package]]
 name = "oid4vc"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc?rev=cdc02ba#cdc02ba1f37c78994191854641fcf9779e8fcd50"
 dependencies = [
  "dif-presentation-exchange",
  "oid4vc-core",
@@ -9270,7 +9287,6 @@ dependencies = [
 [[package]]
 name = "oid4vc-core"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc?rev=cdc02ba#cdc02ba1f37c78994191854641fcf9779e8fcd50"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -9294,7 +9310,6 @@ dependencies = [
 [[package]]
 name = "oid4vc-manager"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc?rev=cdc02ba#cdc02ba1f37c78994191854641fcf9779e8fcd50"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -9306,7 +9321,7 @@ dependencies = [
  "did_url",
  "futures",
  "getset",
- "identity_core",
+ "identity_core 1.6.0-beta (git+https://github.com/iotaledger/identity?tag=v1.6.0-beta.2)",
  "identity_credential",
  "jsonwebtoken",
  "oid4vc-core",
@@ -9327,9 +9342,9 @@ dependencies = [
 [[package]]
 name = "oid4vci"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc?rev=cdc02ba#cdc02ba1f37c78994191854641fcf9779e8fcd50"
 dependencies = [
  "anyhow",
+ "chrono",
  "derivative",
  "dif-presentation-exchange",
  "getset",
@@ -9338,6 +9353,7 @@ dependencies = [
  "lazy_static",
  "oid4vc-core",
  "paste",
+ "pkce",
  "reqwest 0.11.27",
  "reqwest-middleware",
  "reqwest-retry",
@@ -9347,19 +9363,20 @@ dependencies = [
  "serde_with 3.14.0",
  "thiserror 1.0.69",
  "tokio",
+ "url",
+ "uuid",
 ]
 
 [[package]]
 name = "oid4vp"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc?rev=cdc02ba#cdc02ba1f37c78994191854641fcf9779e8fcd50"
 dependencies = [
  "anyhow",
  "chrono",
  "dif-presentation-exchange",
  "futures",
  "getset",
- "identity_core",
+ "identity_core 1.6.0-beta (git+https://github.com/iotaledger/identity?tag=v1.6.0-beta.2)",
  "identity_credential",
  "is_empty",
  "jsonwebtoken",
@@ -10073,6 +10090,17 @@ dependencies = [
  "atomic-waker",
  "fastrand 2.3.0",
  "futures-io",
+]
+
+[[package]]
+name = "pkce"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e228dbe2aebd82de09c914fe28d36d3170ed5192e8d52b9c070ee0794519c2d3"
+dependencies = [
+ "base64 0.21.7",
+ "rand 0.8.5",
+ "sha2 0.10.9",
 ]
 
 [[package]]
@@ -11934,6 +11962,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "serde_json_path_to_error"
+version = "0.1.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "131f9e72e503904612f46028049e1c873b7b4d725baccedf8a00e3e67904cb1a"
+dependencies = [
+ "serde",
+ "serde_json",
+ "serde_path_to_error",
+]
+
+[[package]]
 name = "serde_path_to_error"
 version = "0.1.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -12351,7 +12390,6 @@ dependencies = [
 [[package]]
 name = "siopv2"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc?rev=cdc02ba#cdc02ba1f37c78994191854641fcf9779e8fcd50"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -13482,6 +13520,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "tauri-plugin-opener"
+version = "2.5.0"
+source = "git+https://github.com/tauri-apps/plugins-workspace?branch=v2#9e4e859beac805723b48cc044b336f2c68287142"
+dependencies = [
+ "dunce",
+ "glob",
+ "objc2-app-kit",
+ "objc2-foundation 0.3.1",
+ "open",
+ "schemars 0.8.22",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-plugin",
+ "thiserror 2.0.14",
+ "url",
+ "windows 0.61.3",
+ "zbus",
+]
+
+[[package]]
 name = "tauri-plugin-os"
 version = "2.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -14273,9 +14332,9 @@ checksum = "e421abadd41a4225275504ea4d6566923418b7f05506fbc9c0fe86ba7396114b"
 
 [[package]]
 name = "ts-rs"
-version = "7.1.1"
+version = "7.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fc2cae1fc5d05d47aa24b64f9a4f7cba24cdc9187a2084dd97ac57bef5eccae6"
+checksum = "e1ff1f8c90369bc172200013ac17ae86e7b5def580687df4e6127883454ff2b0"
 dependencies = [
  "chrono",
  "thiserror 1.0.69",
@@ -14562,7 +14621,7 @@ dependencies = [
  "rustls 0.23.31",
  "rustls-platform-verifier 0.6.1",
  "serde",
- "serde_json",
+ "serde_json_path_to_error",
  "serial_test",
  "tauri",
  "tauri-build",
@@ -14572,12 +14631,14 @@ dependencies = [
  "tauri-plugin-fs",
  "tauri-plugin-keystore",
  "tauri-plugin-log",
+ "tauri-plugin-opener",
  "tauri-plugin-os",
  "tauri-plugin-shell",
  "tauri-plugin-single-instance",
  "tempfile",
  "tokio",
  "typetag",
+ "unime",
  "url",
  "wiremock",
 ]
@@ -15097,7 +15158,7 @@ version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cf221c93e13a30d793f7645a0e7762c55d169dbb0a49671918a2319d289b10bb"
 dependencies = [
- "windows-sys 0.48.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]

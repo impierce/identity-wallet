@@ -46,6 +46,15 @@
     pendingDeepLinkUrl.set(undefined);
 
     switch (url.protocol) {
+      case 'unime:': {
+        const code = url.searchParams.get('code') ?? '';
+        const state = url.searchParams.get('state') ?? '';
+        await dispatch({
+          type: '[Credential Offer] Authorization code received',
+          payload: { code, state },
+        });
+        break;
+      }
       case 'openid-credential-offer:':
       case 'openid:': {
         await dispatch({
@@ -127,12 +136,18 @@
     unlistenDeepLink = await onOpenUrl((urls) => {
       info(`Received deep link while running, storing for processing: ${urls[0]}`);
       const invocationUrl = new URL(urls[0]);
+      info(`Storing deep link for later processing: ${invocationUrl}`);
       pendingDeepLinkUrl.set(invocationUrl);
+
+      info(`Successfully stored deep link for later processing: ${invocationUrl}`);
 
       // Also try to process it immediately in case the app is already ready.
       const appIsReady = $appState?.is_unlocked;
 
+      info(`App is ready: ${appIsReady}`);
+
       if (appIsReady) {
+        info(`App is ready, processing deep link immediately: ${invocationUrl}`);
         processDeepLink(invocationUrl);
       }
     });

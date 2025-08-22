@@ -90,7 +90,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             (Vec::new(), Vec::new()),
             |(mut sd_jwt_vc_credentials, mut jwt_vc_json_credentials), (format, verifiable_credential)| {
                 match format {
-                    CredentialFormats::VcSdJwt(()) => sd_jwt_vc_credentials.push(verifiable_credential),
+                    CredentialFormats::DcSdJwt(()) => sd_jwt_vc_credentials.push(verifiable_credential),
                     CredentialFormats::JwtVcJson(()) => jwt_vc_json_credentials.push(verifiable_credential),
                     _ => return Err(AppError::InvalidCredentialFormatError),
                 }

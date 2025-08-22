@@ -58,11 +58,12 @@
   "plugins": {
     "deep-link": {
       "mobile": [
+        { "scheme": [ "unime" ] },
         { "scheme": [ "openid" ] },
         { "scheme": [ "openid-credential-offer" ] }
       ],
       "desktop": {
-        "schemes": ["openid", "openid-credential-offer"]
+        "schemes": ["unime", "openid", "openid-credential-offer"]
       }
     }
   }
