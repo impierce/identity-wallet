@@ -12,6 +12,7 @@ use rustls::{
 #[cfg(target_os = "android")]
 use rustls_platform_verifier::BuilderVerifierExt;
 
+use crate::command::Runtime;
 use crate::stronghold::StrongholdManager;
 use did_manager::Resolver;
 pub use helpers::DateUtils;
@@ -111,12 +112,15 @@ pub async fn tls_config() -> anyhow::Result<rustls::ClientConfig> {
 /// CoreUtils is a struct that contains all the utils that only the rustside needs to perform its tasks.
 #[derive(Clone, Default, Debug)]
 pub struct CoreUtils {
+    pub app_handle: Option<tauri::AppHandle<Runtime>>,
     pub managers: Arc<tauri::async_runtime::Mutex<Managers>>,
     pub resolver: OnceCell<Arc<Resolver>>,
 
     // TODO: These 'active_' fields should either be part of `oid4vc-manager`, or the `IdentityManager` struct.
     pub active_connection_request: Option<ConnectionRequest>,
+    pub active_credential_configuration_ids: Option<Vec<String>>,
     pub active_credential_offer: Option<CredentialOfferParameters>,
+    pub active_code_verifier: Option<Vec<u8>>,
 }
 
 impl CoreUtils {

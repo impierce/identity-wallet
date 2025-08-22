@@ -48,17 +48,14 @@ async fn download_credential_logo() {
                     "UniversityDegreeCredential".to_string(),
                     CredentialConfigurationsSupportedObject {
                         credential_format: CredentialFormats::<WithParameters>::JwtVcJson(Parameters {
-                            parameters: (
-                                jwt_vc_json::CredentialDefinition {
-                                    type_: vec![
-                                        "VerifiableCredential".to_string(),
-                                        "UniversityDegreeCredential".to_string(),
-                                    ],
-                                    credential_subject: Default::default(),
-                                },
-                                None,
-                            )
-                                .into(),
+                            parameters: (jwt_vc_json::CredentialDefinition {
+                                type_: vec![
+                                    "VerifiableCredential".to_string(),
+                                    "UniversityDegreeCredential".to_string(),
+                                ],
+                                credential_subject: Default::default(),
+                            })
+                            .into(),
                         }),
                         scope: Some("UniversityDegreeCredential".to_string()),
                         cryptographic_binding_methods_supported: vec!["did".to_string()],
@@ -74,6 +71,7 @@ async fn download_credential_logo() {
                             "background_color": "#12107c",
                             "text_color": "#FFFFFF"
                         })],
+                        claims: Default::default(),
                     },
                 )]
                 .into_iter()
@@ -142,17 +140,14 @@ async fn download_issuer_logo() {
                     "UniversityDegreeCredential".to_string(),
                     CredentialConfigurationsSupportedObject {
                         credential_format: CredentialFormats::<WithParameters>::JwtVcJson(Parameters {
-                            parameters: (
-                                jwt_vc_json::CredentialDefinition {
-                                    type_: vec![
-                                        "VerifiableCredential".to_string(),
-                                        "UniversityDegreeCredential".to_string(),
-                                    ],
-                                    credential_subject: Default::default(),
-                                },
-                                None,
-                            )
-                                .into(),
+                            parameters: (jwt_vc_json::CredentialDefinition {
+                                type_: vec![
+                                    "VerifiableCredential".to_string(),
+                                    "UniversityDegreeCredential".to_string(),
+                                ],
+                                credential_subject: Default::default(),
+                            })
+                            .into(),
                         }),
                         scope: Some("UniversityDegreeCredential".to_string()),
                         cryptographic_binding_methods_supported: vec!["did".to_string()],
@@ -228,17 +223,14 @@ async fn no_download_when_no_logo_in_metadata() {
                     "UniversityDegreeCredential".to_string(),
                     CredentialConfigurationsSupportedObject {
                         credential_format: CredentialFormats::<WithParameters>::JwtVcJson(Parameters {
-                            parameters: (
-                                jwt_vc_json::CredentialDefinition {
-                                    type_: vec![
-                                        "VerifiableCredential".to_string(),
-                                        "UniversityDegreeCredential".to_string(),
-                                    ],
-                                    credential_subject: Default::default(),
-                                },
-                                None,
-                            )
-                                .into(),
+                            parameters: (jwt_vc_json::CredentialDefinition {
+                                type_: vec![
+                                    "VerifiableCredential".to_string(),
+                                    "UniversityDegreeCredential".to_string(),
+                                ],
+                                credential_subject: Default::default(),
+                            })
+                            .into(),
                         }),
                         scope: Some("UniversityDegreeCredential".to_string()),
                         cryptographic_binding_methods_supported: vec!["did".to_string()],

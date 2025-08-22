@@ -31,9 +31,10 @@ pub fn get_unverified_jwt_claims(jwt: &serde_json::Value) -> Result<serde_json::
 pub async fn get_issuer_document(resolver: &Resolver, credential_jwt: &Jwt) -> Option<CoreDocument> {
     let decoder = Decoder::new();
 
+    let temp = credential_jwt.as_str().split('~').next().unwrap();
     // Decode the linked verifiable credential.
     let decoded_credential_jwt = decoder
-        .decode_compact_serialization(credential_jwt.as_str().as_bytes(), None)
+        .decode_compact_serialization(temp.as_bytes(), None)
         .inspect_err(|err| warn!("Failed to decode credential jwt: {err:#?}"))
         .ok()?;
 
@@ -52,13 +53,15 @@ pub async fn get_issuer_document(resolver: &Resolver, credential_jwt: &Jwt) -> O
 }
 
 /// Validate a jwt_vc_json, checks the JWT and the Issuer DID.
-pub async fn validate_jwt_vc_json(credential_jwt: Jwt) -> Result<DecodedJwtCredential<Value>, AppError> {
+pub async fn validate_jwt_vc_json(
+    resolver: &Resolver,
+    credential_jwt: Jwt,
+) -> Result<DecodedJwtCredential<Value>, AppError> {
     // `SkipUnsupported` allows for custom credential types, such as the StatusList2021Entry (https://www.w3.org/TR/2023/WD-vc-status-list-20230427/#statuslist2021entry)
     let validator = JwtCredentialValidator::with_signature_verifier(Verifier);
     let options = JwtCredentialValidationOptions::new().status_check(StatusCheck::SkipUnsupported);
 
-    let resolver = Resolver::new().await;
-    let issuer_document = get_issuer_document(&resolver, &credential_jwt)
+    let issuer_document = get_issuer_document(resolver, &credential_jwt)
         .await
         .ok_or(AppError::Error("Failed to resolve issuer DID".to_string()))?;
 

@@ -68,6 +68,8 @@ impl Verify for Subject {
     async fn public_key(&self, did_url: &str) -> anyhow::Result<Vec<u8>> {
         let did_url = identity_iota::did::DIDUrl::parse(did_url).unwrap();
 
+        println!("resolving DID: {}", did_url);
+
         let document = self.resolver.resolve(did_url.did().as_str()).await.unwrap();
 
         let verification_method = document
