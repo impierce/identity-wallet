@@ -7,7 +7,10 @@ use crate::{error::AppError, state::core_utils::DateUtils};
 use derivative::Derivative;
 use identity_credential::{sd_jwt_v2::Sha256Hasher, sd_jwt_vc::SdJwtVc};
 use log::info;
-use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
+use oid4vc::oid4vci::{
+    credential_format_profiles::CredentialFormats,
+    credential_issuer::credential_configurations_supported::IssuerMetadataClaim,
+};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use ts_rs::TS;
@@ -60,9 +63,122 @@ pub struct VerifiableCredentialRecord {
 
 #[test]
 fn test() {
+    // "Verifiable ID Card (jwt_vc)"
+    // "Person Identification Data"
     let credential: SdJwtVc = "eyJ0eXAiOiJ2YytzZC1qd3QiLCJraWQiOiJkaWQ6andrOmV5SnJkSGtpT2lKRlF5SXNJbmdpT2lJM2VXMUhhWEJyVEdReGIzaFNSMWxEU1dGME9EUlBjWHAxVUdaTU1GbHZUQzF5V1VGdlMzRlFhbmhySWl3aWVTSTZJa1ZLVEVRNFJHSTRPRXhRTW5Oa01raERiRlpyV25Ka2VHd3dlV2x3YlVkVlprdEdPRFZKWmxWVk5sRWlMQ0pqY25ZaU9pSlFMVEkxTmlKOSMwIiwiYWxnIjoiRVMyNTYiLCJjdHkiOiJ2YyJ9.eyJpc3MiOiJkaWQ6andrOmV5SnJkSGtpT2lKRlF5SXNJbmdpT2lJM2VXMUhhWEJyVEdReGIzaFNSMWxEU1dGME9EUlBjWHAxVUdaTU1GbHZUQzF5V1VGdlMzRlFhbmhySWl3aWVTSTZJa1ZLVEVRNFJHSTRPRXhRTW5Oa01raERiRlpyV25Ka2VHd3dlV2x3YlVkVlprdEdPRFZKWmxWVk5sRWlMQ0pqY25ZaU9pSlFMVEkxTmlKOSIsImlhdCI6MTc1NTg2OTkwMiwibmJmIjoxNzU1ODY5OTAyLCJleHAiOjE3NzE3Njc1MDIsIkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy9ucy9jcmVkZW50aWFscy92MiJdLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIiwiVmVyaWZpYWJsZUlkQ2FyZEp3dFZjIl0sImNyZWRlbnRpYWxTdWJqZWN0Ijp7Il9zZCI6WyJRanBseWtud1RUTG13WXkzTTZwS09wMnF1V3E4VkRDUmI5NDV3RVU3VElFIiwiVVpDUFJMRTZWOWZibEtmSDNkRS1XN1NrQi1MUU1vZ2NFcmd3Uk5RZHJXTSIsIlduOXlLeXNqZWRJd1BESkh4dUZWelNQSGdqOXNLTGIyZGxUSGNlRG1jd1UiLCJYakFwZjQ3WWNjQWltdHVzYmxkMFhzejMtc2hnWC1oZDRiN3NGclFnWHRRIiwibFNzQ2tLU2tHU1pXUjhMd2VFZlNZU1V6QUktczNndFVCdDJydi1kemtsNCIsInFPM2xFelV4eC10SU83ZlhHS05iMi1INEJXcXFUdFJsNHBpeVBmSlpYLUEiLCJxcm1WaDBuVUtaNmlpd2gzYUo3dlc3VmVTaks3SVR6WW1UWjJuclpVQ3ZvIiwieUxfczE4WUVzQ3AxYXFYdGZJdHJHX3I1a1p0MjRLaXRvSE9LRUJQaElGVSJdfSwiaXNzdWVyIjoiZGlkOmp3azpleUpyZEhraU9pSkZReUlzSW5naU9pSTNlVzFIYVhCclRHUXhiM2hTUjFsRFNXRjBPRFJQY1hwMVVHWk1NRmx2VEMxeVdVRnZTM0ZRYW5ocklpd2llU0k2SWtWS1RFUTRSR0k0T0V4UU1uTmtNa2hEYkZaclduSmtlR3d3ZVdsd2JVZFZaa3RHT0RWSlpsVlZObEVpTENKamNuWWlPaUpRTFRJMU5pSjkiLCJ2YWxpZEZyb20iOiIyMDI1LTA4LTIyVDEzOjM4OjIyLjI4OVoiLCJ2YWxpZFVudGlsIjoiMjAyNi0wMi0yMlQxMzozODoyMi4yODlaIiwiY25mIjp7ImtpZCI6ImRpZDpqd2s6ZXlKaGJHY2lPaUpGVXpJMU5pSXNJbU55ZGlJNklsQXRNalUySWl3aWEybGtJam9pWVVwSU4zZEdlalJXVEVkM1FWZERNbkIxTW1KU1FYWkdYMU15TFdOVWRFMDVYMlZSVlZwUmNGZzBRU0lzSW10MGVTSTZJa1ZESWl3aWVDSTZJbFZNUm1WS1RVaDZORTVvT1Y5WVZURktZVXc0UmpSVlkxWldOVzVuWjBadVdXZGZNelowUldSQ1JuTWlMQ0o1SWpvaVEwWnlSMmczVUcweWVrSktXa2RQYkRGRGEyTmpiREJZZFcxdVNWZFRVV05IWkVJdGVVOWhNakE0Y3lKOSMwIn0sInN0YXR1cyI6eyJzdGF0dXNfbGlzdCI6eyJ1cmkiOiJodHRwczovL2l0Yi5pbGFicy5haS9yZmMtaXNzdWVyL3N0YXR1cy1saXN0LzIxMmM3OTRiLWM0NjYtNDk5NS1hODQyLTNlY2MxNjQyMGIwNyIsImlkeCI6MH19LCJfc2RfYWxnIjoic2hhLTI1NiJ9.YlBNjBFuM6-aj0cHKJzzSWjawz8pAcIYFjkhj4Dsp1zMh8n8DvOxeITqFioEungKCcJIxnTceTWs4qJQvFx0tg~WyJmZGVkNmI5MTQ5M2U1NGVmIiwiZ2l2ZW5fbmFtZSIsIkhhbm5hIl0~WyIxMWE3YThjY2YzNGRhYWEzIiwiZmFtaWx5X25hbWUiLCJNYXRrYWxhaW5lbiJd~WyJlYzZiOGI5ZGYwNDRlOGUzIiwiYmlydGhfZGF0ZSIsIjAxLjA3LjIwMDUiXQ~WyJjN2JlN2VmNzAyZGFhZjYwIiwiYWdlX292ZXJfMTgiLHRydWVd~WyIwMTVmNDJiM2FiNzc1NzI3IiwiaXNzdWFuY2VfZGF0ZSIsMTc1NTg2OTkwMjI4OV0~WyJiYmIyNDViNTgwODU2NzRlIiwiZXhwaXJ5X2RhdGUiLDE3ODc0MDU5MDIyODld~WyJiMWMxNWRmZDhjYjU3MmQzIiwiaXNzdWluZ19hdXRob3JpdHkiLCJVQWVnZWFuIFRlc3QgSXNzdWVyIl0~WyJlMjc3ZWMxYzM3NWQ0NGViIiwiaXNzdWluZ19jb3VudHJ5IiwiRmlubGFuZCJd~".parse().unwrap();
 
     println!("Parsed SD-JWT VC: {:#?}", credential);
+}
+
+impl VerifiableCredentialRecord {
+    pub fn new(verifiable_credential: serde_json::Value, claims: Vec<IssuerMetadataClaim>) -> Result<Self, AppError> {
+        let display_credential = {
+            // Try to parse the Verifiable Credential as an SD-JWT credential.
+            let (format, data, issuance_date) = if let Some(sd_jwt_vc) = verifiable_credential
+                .as_str()
+                .and_then(|verifiable_credential| verifiable_credential.parse::<SdJwtVc>().ok())
+            {
+                info!("Verifiable Credential parsed as a SD-JWT VC");
+
+                let typ = sd_jwt_vc.header().get("typ").and_then(|typ| typ.as_str());
+
+                info!("typ: {typ:?}");
+
+                let issuance_date = sd_jwt_vc.claims().iat.map(|iat| iat.to_rfc3339()).unwrap_or_default();
+
+                let mut credential_subject = serde_json::json!(sd_jwt_vc
+                    .clone()
+                    .into_disclosed_object(&Sha256Hasher::new())
+                    .map_err(|_| AppError::Error("Failed to convert SD JWT VC to Disclosed Object".to_string()))?);
+
+                if let Some("vc+sd-jwt") = typ {
+                    credential_subject = serde_json::json!(credential_subject
+                        .get("credentialSubject")
+                        .cloned()
+                        .ok_or_else(|| AppError::Error("Missing credentialSubject in SD JWT VC".to_string()))?
+                        .as_object()
+                        .cloned()
+                        .ok_or_else(|| {
+                            AppError::Error("credentialSubject is not a JSON object in SD JWT VC".to_string())
+                        })?);
+                };
+
+                // Remove the SD-JWT specific fields that should not be displayed in the frontend.
+                for key in ["iss", "nbf", "exp", "status", "iat", "sub", "_sd_alg", "cnf", "vct"] {
+                    credential_subject.as_object_mut().unwrap().remove(key);
+                }
+
+                // TODO: preserve order of the claims (this needs to be fixed in `openid4vc` first).
+
+                // FXIME!!!!
+                // Rename the keys in the Credential according to the display hints provided by the Issuer.
+                for claim in claims {
+                    let _ = claim.path.rename_key_in_json(
+                        &mut credential_subject,
+                        claim.display[0]["name"]
+                            .as_str()
+                            .map(ToString::to_string)
+                            .unwrap_or_default(),
+                    );
+                }
+
+                let format = if let Some("dc+sd-jwt") = typ {
+                    CredentialFormats::DcSdJwt(())
+                } else {
+                    CredentialFormats::VcSdJwt(())
+                };
+
+                // TODO: Remove this workaround that is basically a way of disguising the SD JWT VC as a VC so that
+                // it can be displayed in the Frontend.
+                let data = json!({
+                    "type": ["VerifiableCredential"],
+                    "issuer": sd_jwt_vc.claims().iss,
+                    "credentialSubject": credential_subject
+
+                });
+
+                info!("data: {data:?}");
+
+                (format, data, issuance_date)
+            } else {
+                let credential_display = get_unverified_jwt_claims(&verifiable_credential)?["vc"].clone();
+
+                let issuance_date = credential_display["issuanceDate"]
+                    .as_str()
+                    .map(ToString::to_string)
+                    .unwrap_or_default();
+                let format = CredentialFormats::JwtVcJson(());
+
+                // TODO: Use the claims to rename the keys in the Credential according to the display hints provided by
+                // the Issuer. Before we do this we need to make sure that UniCore supports Claims Description for
+                // Issuer Metadata (see: https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0-15.html#claims-description-issuer-metadata).
+                // For now we just display the raw credential as is.
+
+                let data = credential_display;
+
+                (format, data, issuance_date)
+            };
+
+            DisplayCredential {
+                id: Uuid::new_v4().to_string(),
+                format,
+                data,
+                metadata: CredentialMetadata {
+                    is_favorite: false,
+                    date_added: DateUtils::new_date_string(),
+                    date_issued: issuance_date,
+                    icon: None,
+                },
+                // The other fields will be filled in at a later stage.
+                ..Default::default()
+            }
+        };
+
+        Ok(Self {
+            verifiable_credential,
+            display_credential,
+        })
+    }
 }
 
 // TODO: remove this function and find a cleaner implementation for this functionality.
@@ -78,11 +194,28 @@ impl TryFrom<serde_json::Value> for VerifiableCredentialRecord {
             {
                 info!("Verifiable Credential parsed as a SD-JWT VC");
 
+                let typ = sd_jwt_vc.header().get("typ").and_then(|typ| typ.as_str());
+
+                info!("typ: {typ:?}");
+
                 let issuance_date = sd_jwt_vc.claims().iat.map(|iat| iat.to_rfc3339()).unwrap_or_default();
+
                 let mut credential_subject = sd_jwt_vc
                     .clone()
                     .into_disclosed_object(&Sha256Hasher::new())
                     .map_err(|_| AppError::Error("Failed to convert SD JWT VC to Disclosed Object".to_string()))?;
+
+                if let Some("vc+sd-jwt") = typ {
+                    credential_subject = credential_subject
+                        .get("credentialSubject")
+                        .cloned()
+                        .ok_or_else(|| AppError::Error("Missing credentialSubject in SD JWT VC".to_string()))?
+                        .as_object()
+                        .cloned()
+                        .ok_or_else(|| {
+                            AppError::Error("credentialSubject is not a JSON object in SD JWT VC".to_string())
+                        })?;
+                };
 
                 // Remove the SD-JWT specific fields that should not be displayed in the frontend.
                 for key in ["iss", "nbf", "exp", "status", "iat", "sub", "_sd_alg", "cnf", "vct"] {
@@ -112,37 +245,11 @@ impl TryFrom<serde_json::Value> for VerifiableCredentialRecord {
             } else {
                 let credential_display = get_unverified_jwt_claims(&verifiable_credential)?["vc"].clone();
 
-                // TODO: We are using this hash as Credential ID so that we can prevent credential duplication in
-                // demo situations. Now we can actually delete Credentials in UniMe we don't need to use the hash of the
-                // credential as the ID anymore. We should simply generate a random UUID.
-                // Derive the hash from the credential display.
-                let hash = {
-                    let type_value = credential_display["type"].clone();
-
-                    let mut credential_subject_value = credential_display["credentialSubject"].clone();
-
-                    // TODO(ngdil): Remove this hard-coded logic.
-                    // Remove the `Passport Number` and `Staff Number` from the credential subject if they exists.
-                    credential_subject_value["Passport Number"].take();
-                    credential_subject_value["Staff Number"].take();
-                    credential_subject_value["achievement"]["id"].take();
-
-                    sha256::digest(
-                        json!(
-                            {
-                                "type": type_value,
-                                "credentialSubject": credential_subject_value,
-                            }
-                        )
-                        .to_string(),
-                    )
-                };
-
                 let issuance_date = credential_display["issuanceDate"]
                     .as_str()
                     .map(ToString::to_string)
                     .unwrap_or_default();
-                let id = Uuid::from_slice(&hash.as_bytes()[..16])?.to_string();
+                let id = Uuid::new_v4().to_string();
                 let format = CredentialFormats::JwtVcJson(());
                 let data = credential_display;
 

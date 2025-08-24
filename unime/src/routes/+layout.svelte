@@ -50,8 +50,8 @@
         const code = url.searchParams.get('code') ?? '';
         const state = url.searchParams.get('state') ?? '';
         await dispatch({
-          type: '[Credential Offer] Authorization code received',
-          payload: { code, state },
+          type: '[Credential Offer] Code received',
+          payload: { code, is_pre_authorized: false, state },
         });
         break;
       }

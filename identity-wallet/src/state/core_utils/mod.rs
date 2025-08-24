@@ -121,6 +121,7 @@ pub struct CoreUtils {
     pub active_credential_configuration_ids: Option<Vec<String>>,
     pub active_credential_offer: Option<CredentialOfferParameters>,
     pub active_code_verifier: Option<Vec<u8>>,
+    pub active_wallet_state: Option<String>,
 }
 
 impl CoreUtils {

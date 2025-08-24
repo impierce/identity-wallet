@@ -2106,7 +2106,7 @@ checksum = "7c74b8349d32d297c9134b8c88677813a227df8f779daa29bfc29c183fe3dca6"
 [[package]]
 name = "consumer"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
+source = "git+https://git@github.com/impierce/did-manager?branch=temp/workaround#5a75cc6e0b6443e23a613bf5557ab54a9cc695bd"
 dependencies = [
  "did_iota",
  "did_jwk",
@@ -2853,7 +2853,7 @@ dependencies = [
 [[package]]
 name = "did_iota"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
+source = "git+https://git@github.com/impierce/did-manager?branch=temp/workaround#5a75cc6e0b6443e23a613bf5557ab54a9cc695bd"
 dependencies = [
  "anyhow",
  "identity_iota",
@@ -2868,7 +2868,7 @@ dependencies = [
 [[package]]
 name = "did_jwk"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
+source = "git+https://git@github.com/impierce/did-manager?branch=temp/workaround#5a75cc6e0b6443e23a613bf5557ab54a9cc695bd"
 dependencies = [
  "did-jwk",
  "identity_iota",
@@ -2885,7 +2885,7 @@ dependencies = [
 [[package]]
 name = "did_key"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
+source = "git+https://git@github.com/impierce/did-manager?branch=temp/workaround#5a75cc6e0b6443e23a613bf5557ab54a9cc695bd"
 dependencies = [
  "did-method-key",
  "identity_iota",
@@ -2903,7 +2903,7 @@ dependencies = [
 [[package]]
 name = "did_manager"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
+source = "git+https://git@github.com/impierce/did-manager?branch=temp/workaround#5a75cc6e0b6443e23a613bf5557ab54a9cc695bd"
 dependencies = [
  "consumer",
  "producer",
@@ -2941,7 +2941,7 @@ dependencies = [
 [[package]]
 name = "did_web"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
+source = "git+https://git@github.com/impierce/did-manager?branch=temp/workaround#5a75cc6e0b6443e23a613bf5557ab54a9cc695bd"
 dependencies = [
  "did-web",
  "identity_iota",
@@ -5597,7 +5597,6 @@ dependencies = [
  "rustls-platform-verifier 0.6.1",
  "serde",
  "serde_json_path_to_error",
- "serde_urlencoded",
  "serde_with 3.14.0",
  "serial_test",
  "sha256",
@@ -5638,7 +5637,7 @@ dependencies = [
 [[package]]
 name = "identity_core"
 version = "1.6.0-beta"
-source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#9d3bea97c78a200dc73c14ee3a1dc7a61ef2dc9e"
+source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#251ea38d70654cd235dc5373ae48f6b82def94b8"
 dependencies = [
  "deranged",
  "js-sys",
@@ -5655,7 +5654,7 @@ dependencies = [
 [[package]]
 name = "identity_credential"
 version = "1.6.0-beta"
-source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#9d3bea97c78a200dc73c14ee3a1dc7a61ef2dc9e"
+source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#251ea38d70654cd235dc5373ae48f6b82def94b8"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -5684,7 +5683,7 @@ dependencies = [
 [[package]]
 name = "identity_did"
 version = "1.6.0-beta"
-source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#9d3bea97c78a200dc73c14ee3a1dc7a61ef2dc9e"
+source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#251ea38d70654cd235dc5373ae48f6b82def94b8"
 dependencies = [
  "did_url_parser 0.3.0",
  "form_urlencoded",
@@ -5698,7 +5697,7 @@ dependencies = [
 [[package]]
 name = "identity_document"
 version = "1.6.0-beta"
-source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#9d3bea97c78a200dc73c14ee3a1dc7a61ef2dc9e"
+source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#251ea38d70654cd235dc5373ae48f6b82def94b8"
 dependencies = [
  "did_url_parser 0.2.0",
  "identity_core 1.6.0-beta (git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check)",
@@ -5713,7 +5712,7 @@ dependencies = [
 [[package]]
 name = "identity_eddsa_verifier"
 version = "1.6.0-beta"
-source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#9d3bea97c78a200dc73c14ee3a1dc7a61ef2dc9e"
+source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#251ea38d70654cd235dc5373ae48f6b82def94b8"
 dependencies = [
  "identity_jose",
  "iota-crypto",
@@ -5722,7 +5721,7 @@ dependencies = [
 [[package]]
 name = "identity_iota"
 version = "1.6.0-beta"
-source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#9d3bea97c78a200dc73c14ee3a1dc7a61ef2dc9e"
+source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#251ea38d70654cd235dc5373ae48f6b82def94b8"
 dependencies = [
  "identity_core 1.6.0-beta (git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check)",
  "identity_credential",
@@ -5738,7 +5737,7 @@ dependencies = [
 [[package]]
 name = "identity_iota_core"
 version = "1.6.0-beta"
-source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#9d3bea97c78a200dc73c14ee3a1dc7a61ef2dc9e"
+source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#251ea38d70654cd235dc5373ae48f6b82def94b8"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -5782,7 +5781,7 @@ dependencies = [
 [[package]]
 name = "identity_jose"
 version = "1.6.0-beta"
-source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#9d3bea97c78a200dc73c14ee3a1dc7a61ef2dc9e"
+source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#251ea38d70654cd235dc5373ae48f6b82def94b8"
 dependencies = [
  "anyhow",
  "bls12_381_plus 0.8.18",
@@ -5802,7 +5801,7 @@ dependencies = [
 [[package]]
 name = "identity_resolver"
 version = "1.6.0-beta"
-source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#9d3bea97c78a200dc73c14ee3a1dc7a61ef2dc9e"
+source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#251ea38d70654cd235dc5373ae48f6b82def94b8"
 dependencies = [
  "async-trait",
  "futures",
@@ -5819,7 +5818,7 @@ dependencies = [
 [[package]]
 name = "identity_storage"
 version = "1.6.0-beta"
-source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#9d3bea97c78a200dc73c14ee3a1dc7a61ef2dc9e"
+source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#251ea38d70654cd235dc5373ae48f6b82def94b8"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -5859,7 +5858,7 @@ dependencies = [
 [[package]]
 name = "identity_stronghold_ext"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
+source = "git+https://git@github.com/impierce/did-manager?branch=temp/workaround#5a75cc6e0b6443e23a613bf5557ab54a9cc695bd"
 dependencies = [
  "async-trait",
  "elliptic-curve 0.13.8",
@@ -5879,7 +5878,7 @@ dependencies = [
 [[package]]
 name = "identity_verification"
 version = "1.6.0-beta"
-source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#9d3bea97c78a200dc73c14ee3a1dc7a61ef2dc9e"
+source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#251ea38d70654cd235dc5373ae48f6b82def94b8"
 dependencies = [
  "identity_core 1.6.0-beta (git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check)",
  "identity_did",
@@ -9264,7 +9263,7 @@ dependencies = [
 [[package]]
 name = "oid4vc"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?branch=DIIP-prep#1b9116d6df30992a32b4352e35c0fdd195be7334"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=4807db4#4807db467735c1fe174bb7cd647b08f9e961ed3d"
 dependencies = [
  "oid4vc-core",
  "oid4vc-manager",
@@ -9276,7 +9275,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-core"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?branch=DIIP-prep#1b9116d6df30992a32b4352e35c0fdd195be7334"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=4807db4#4807db467735c1fe174bb7cd647b08f9e961ed3d"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -9301,7 +9300,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-manager"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?branch=DIIP-prep#1b9116d6df30992a32b4352e35c0fdd195be7334"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=4807db4#4807db467735c1fe174bb7cd647b08f9e961ed3d"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -9335,7 +9334,7 @@ dependencies = [
 [[package]]
 name = "oid4vci"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?branch=DIIP-prep#1b9116d6df30992a32b4352e35c0fdd195be7334"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=4807db4#4807db467735c1fe174bb7cd647b08f9e961ed3d"
 dependencies = [
  "anyhow",
  "chrono",
@@ -9363,7 +9362,7 @@ dependencies = [
 [[package]]
 name = "oid4vp"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?branch=DIIP-prep#1b9116d6df30992a32b4352e35c0fdd195be7334"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=4807db4#4807db467735c1fe174bb7cd647b08f9e961ed3d"
 dependencies = [
  "anyhow",
  "chrono",
@@ -10401,7 +10400,7 @@ dependencies = [
 [[package]]
 name = "producer"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
+source = "git+https://git@github.com/impierce/did-manager?branch=temp/workaround#5a75cc6e0b6443e23a613bf5557ab54a9cc695bd"
 dependencies = [
  "did_iota",
  "did_jwk",
@@ -11665,8 +11664,7 @@ dependencies = [
 [[package]]
 name = "sd-jwt-payload"
 version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c080b34b6f70cd590f5611cc7e37024eaaa52391d93a9cc85960f2f1d8c69927"
+source = "git+https://github.com/impierce/sd-jwt-payload?branch=fix/hasher-send-sync#9bccc38ec6119650334a55a06012f97a9fab81cb"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -12242,7 +12240,7 @@ dependencies = [
 [[package]]
 name = "shared"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
+source = "git+https://git@github.com/impierce/did-manager?branch=temp/workaround#5a75cc6e0b6443e23a613bf5557ab54a9cc695bd"
 dependencies = [
  "identity_iota",
  "identity_storage",
@@ -12386,7 +12384,7 @@ dependencies = [
 [[package]]
 name = "siopv2"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc.git?branch=DIIP-prep#1b9116d6df30992a32b4352e35c0fdd195be7334"
+source = "git+https://git@github.com/impierce/openid4vc.git?rev=4807db4#4807db467735c1fe174bb7cd647b08f9e961ed3d"
 dependencies = [
  "anyhow",
  "async-trait",

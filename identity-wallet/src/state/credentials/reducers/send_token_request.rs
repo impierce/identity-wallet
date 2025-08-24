@@ -4,47 +4,49 @@ use crate::{
     state::{
         actions::{listen, Action},
         core_utils::{
+            helpers::{validate_credential_types, validate_jwt_vc_json},
             history_event::{EventType, HistoryCredential, HistoryEvent},
             CoreUtils,
         },
         credentials::{
-            actions::{
-                authorization_code_received::AuthorizationCodeReceived,
-                credential_offers_selected::CredentialOffersSelected,
-            },
-            DisplayCredential, VerifiableCredentialRecord,
+            actions::authorization_code_received::CodeReceived, DisplayCredential, VerifiableCredentialRecord,
         },
         user_prompt::CurrentUserPrompt,
         AppState,
     },
 };
-
+use identity_iota::credential::Jwt;
 use log::info;
 use oid4vc::oid4vci::{
-    authorization_details::AuthorizationDetailsObject, authorization_request::AuthorizationRequest,
     credential_format_profiles::CredentialFormats,
     credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject,
-    credential_offer::Grants, credential_response::CredentialResponseType, token_request::TokenRequest,
-    wallet::PushedAuthorizationResponse,
+    credential_response::CredentialResponseType, token_request::TokenRequest,
 };
-use reqwest::{
-    header::{HeaderValue, CONTENT_TYPE},
-    Body, Client, Request,
-};
-use serde::Serializer;
 use serde_json::json;
-use serde_with::skip_serializing_none;
 use std::collections::HashMap;
-use tauri_plugin_opener::OpenerExt;
 use uuid::Uuid;
 
 pub async fn send_token_request(state: AppState, action: Action) -> Result<AppState, AppError> {
     info!("send_token_request");
 
-    if let Some((code, client_state)) =
-        listen::<AuthorizationCodeReceived>(action).map(|payload| (payload.code, payload.state))
+    if let Some((code, is_pre_authorized, wallet_state)) =
+        listen::<CodeReceived>(action).map(|payload| (payload.code, payload.is_pre_authorized, payload.state))
     {
+        if !is_pre_authorized && wallet_state.is_some() {
+            if wallet_state != state.core_utils.active_wallet_state {
+                return Err(AppError::Error(
+                    "The state parameter in the authorization response does not match the active wallet state."
+                        .to_string(),
+                ));
+            }
+        } else if !is_pre_authorized && wallet_state.is_none() {
+            return Err(AppError::Error(
+                "The state parameter is missing in the authorization response.".to_string(),
+            ));
+        }
+
         let state_guard = state.core_utils.managers.lock().await;
+        let resolver = state.core_utils.resolver().await;
         let stronghold_manager = state_guard
             .stronghold_manager
             .as_ref()
@@ -63,7 +65,10 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
 
         info!("current_user_prompt: {:?}", current_user_prompt);
 
-        let credential_offer = state.core_utils.active_credential_offer.unwrap();
+        let credential_offer = state
+            .core_utils
+            .active_credential_offer
+            .ok_or(AppError::Error("Missing active credential offer".to_string()))?;
         let logo_uri = match current_user_prompt {
             CurrentUserPrompt::CredentialOffer { logo_uri, .. } => logo_uri,
             _ => unreachable!(),
@@ -82,13 +87,51 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
 
         info!("authorization server metadata: {:?}", authorization_server_metadata);
 
+        let token_request = if is_pre_authorized {
+            TokenRequest::PreAuthorizedCode {
+                pre_authorized_code: code,
+                tx_code: None,
+            }
+        } else {
+            let code_verifier = state
+                .core_utils
+                .active_code_verifier
+                .and_then(|code_verifier| String::from_utf8(code_verifier).ok())
+                .ok_or(AppError::Error("Missing code verifier".to_string()))?;
+
+            TokenRequest::AuthorizationCode {
+                client_id: "unime-client-id".to_string(),
+                code,
+                code_verifier: Some(code_verifier),
+                redirect_uri: Some("unime://callback".parse().unwrap()),
+            }
+        };
+
+        info!("token_request: {token_request:?}");
+
+        // Get an access token.
+        let token_response = wallet
+            .get_access_token(
+                authorization_server_metadata
+                    .token_endpoint
+                    .ok_or(AppError::Error(
+                        "The authorization server metadata does not contain a token endpoint.".to_string(),
+                    ))?
+                    .clone(),
+                token_request,
+            )
+            .await
+            .map_err(GetAccessTokenError)?;
+
+        info!("token_response: {token_response:?}");
+
         // Get the credential issuer metadata.
         let credential_issuer_metadata = wallet
             .get_credential_issuer_metadata(credential_issuer_url.clone())
             .await
             .map_err(GetCredentialIssuerMetadataError)?;
 
-        info!("credential issuer metadata: {:?}", credential_issuer_metadata);
+        info!("credential issuer metadata: {credential_issuer_metadata:?}");
 
         // Get the credential issuer display.
         let display = credential_issuer_metadata
@@ -118,121 +161,113 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
         let mut credential_configurations_supported =
             credential_issuer_metadata.credential_configurations_supported.clone();
 
-        // Create or update the connection.
-        let previously_connected = state.connections.contains(connection_url, &issuer_name);
-        let mut connections = state.connections;
-        let connection = connections.update_or_insert(connection_url, &issuer_name, None);
-
-        let code_verifier = String::from_utf8(
-            state
-                .core_utils
-                .active_code_verifier
-                .clone()
-                .expect("FIXME: active_code_verifier should be set"),
-        )
-        .expect("FIXME: code_verifier should be utf8");
-
-        // Create a token request with grant_type `pre_authorized_code`.
-        let token_request = TokenRequest::AuthorizationCode {
-            client_id: "unime-client-id".to_string(),
-            code,
-            code_verifier: Some(code_verifier),
-            redirect_uri: Some(
-                // "https://website-git-feat-assetlinks-app-site-association-impierce.vercel.app/callback"
-                "unime://callback".parse().unwrap(),
-            ),
-        };
-
-        info!("token_request: {:?}", token_request);
-
-        // Get an access token.
-        let token_response = wallet
-            .get_access_token(authorization_server_metadata.token_endpoint.unwrap(), token_request)
-            .await
-            .map_err(GetAccessTokenError)?;
-
-        info!("token_response: {:?}", token_response);
-
         let credential_configuration_ids = state
             .core_utils
             .active_credential_configuration_ids
-            .clone()
-            // FIXME
-            .unwrap_or_default();
+            .ok_or_else(|| AppError::Error("Missing active credential configuration ids".to_string()))?
+            .clone();
 
         credential_configurations_supported.retain(|credential_configuration_id, _| {
             credential_configuration_ids.contains(credential_configuration_id)
         });
 
-        let credentials: Vec<(String, serde_json::Value, Vec<serde_json::Value>)> =
-            match credential_configuration_ids.len() {
-                0 => vec![],
-                1 => {
-                    let credential_configuration_id = credential_configuration_ids[0].clone();
+        let mut credentials = vec![];
+        for credential_configuration_id in credential_configuration_ids {
+            let credential_configuration = credential_configurations_supported
+                .get(&credential_configuration_id)
+                .ok_or(UnknownCredentialConfigurationIdError(
+                    credential_configuration_id.clone(),
+                ))?;
 
-                    let credential_configuration = credential_configurations_supported
-                        .get(&credential_configuration_id)
-                        .ok_or(UnknownCredentialConfigurationIdError(
-                            credential_configuration_id.clone(),
-                        ))?;
+            // Get a nonce if the credential issuer metadata contains a nonce endpoint.
+            let nonce = if let Some(nonce_endpoint) = &credential_issuer_metadata.nonce_endpoint {
+                let nonce = wallet.get_nonce(nonce_endpoint.clone()).await.map_err(|err| {
+                    AppError::Error(format!("Failed to get nonce from endpoint {nonce_endpoint}: {err}"))
+                })?;
 
-                    let nonce = if let Some(ref nonce_endpoint) = credential_issuer_metadata.nonce_endpoint {
-                        let nonce = wallet
-                            .get_nonce(nonce_endpoint.clone())
-                            .await
-                            .expect("FIXME: nonce endpoint");
+                Some(nonce)
+            } else {
+                None
+            };
 
-                        Some(nonce)
-                    } else {
-                        None
-                    };
+            info!("nonce: {nonce:?}");
 
-                    info!("nonce: {nonce:?}");
+            // TODO: all code related to sending the actual credential request(s) should be moved to a separate reducer.
+            // Get the credential.
+            let credential_response = wallet
+                .get_credential(
+                    credential_issuer_metadata.clone(),
+                    &token_response,
+                    nonce,
+                    credential_configuration_id.clone(),
+                    credential_configuration,
+                )
+                .await
+                .map_err(|err| {
+                    AppError::Error(format!(
+                        "Failed to get credential for configuration id {credential_configuration_id}: {err}"
+                    ))
+                })?;
 
-                    // Get the credential.
-                    let credential_response = wallet
-                        .get_credential(
-                            credential_issuer_metadata,
-                            &token_response,
-                            nonce,
-                            credential_configuration_id.clone(),
-                            credential_configuration,
-                        )
-                        .await
-                        .map_err(GetCredentialError)?;
-
-                    let credential = match credential_response.credential {
-                        // FIXME: fix the type of the credential.
-                        CredentialResponseType::Immediate { credentials, .. } => {
-                            serde_json::json!(credentials[0].credential)
-                        }
-                        _ => panic!("Credential was not a jwt_vc_json."),
-                    };
-
-                    vec![(
-                        credential_configuration_id,
-                        credential,
-                        credential_configuration.display.clone(),
-                    )]
+            let credential = match credential_response.credential {
+                CredentialResponseType::Immediate { credentials, .. } => {
+                    serde_json::json!(
+                        credentials
+                            // TODO: handle batch credential issuance. See: https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0-15.html#section-11.2.3-2.8.1
+                            .first()
+                            .ok_or(AppError::Error(
+                                "No credentials found in the credential response.".to_string()
+                            ))?
+                            .credential
+                    )
                 }
-                _batch => {
-                    let (credential_configuration_ids, credential_configurations): (Vec<_>, Vec<_>) =
-                        credential_configurations_supported.clone().into_iter().unzip();
-
-                    todo!("FIXME: batch credential request");
+                CredentialResponseType::Deferred { .. } => {
+                    return Err(AppError::Error(
+                        "Deferred credential response is not supported yet.".to_string(),
+                    ))
                 }
             };
 
-        info!("credentials: {:?}", credentials);
+            if credential_configuration.credential_format.format() == CredentialFormats::JwtVcJson(()) {
+                // Convert the received credential (as a string) into a Jwt instance for validation.
+                let credential_jwt = Jwt::new(
+                    credential
+                        .as_str()
+                        .ok_or(AppError::Error("Invalid JWT string.".to_string()))?
+                        .to_string(),
+                );
+                validate_jwt_vc_json(&resolver, credential_jwt).await?;
+            }
+
+            credentials.push((
+                credential_configuration_id,
+                credential,
+                credential_configuration.display.clone(),
+                credential_configuration.claims.clone(),
+            ));
+        }
+
+        info!("credentials: {credentials:?}");
+
+        // Create or update the connection.
+        let previously_connected = state.connections.contains(connection_url, &issuer_name);
+        let mut connections = state.connections;
+        let connection = connections.update_or_insert(connection_url, &issuer_name, None);
 
         let mut history_credentials = vec![];
 
-        for (credential_configuration_id, credential, display) in credentials.into_iter() {
-            let mut verifiable_credential_record: VerifiableCredentialRecord = credential.try_into()?;
+        for (credential_configuration_id, credential, display, claims) in credentials.into_iter() {
+            let mut verifiable_credential_record = VerifiableCredentialRecord::new(credential, claims)?;
+            // Validate the credential against its corresponding credential JSON Schema.
+            validate_credential_types(&verifiable_credential_record.verifiable_credential)?;
+
+            // Set the issuer name of the credential.
             verifiable_credential_record
                 .display_credential
                 .issuer_name
                 .clone_from(&issuer_name);
+
+            // Set the connection ID of the credential.
             verifiable_credential_record.display_credential.connection_id = Some(connection.id.clone());
 
             // Set the display name of the credential.
@@ -246,14 +281,12 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                 .display_credential
                 .id
                 .parse()
-                .expect("invalid uuid");
-
-            info!("generated hash-key: {:?}", key);
+                .map_err(|err| AppError::Error(format!("Failed to parse credential id as UUID: {err}")))?;
 
             display
                 .first()
                 .and_then(|display| display.get("logo"))
-                .and_then(|logo| logo.get("uri").or_else(|| logo.get("url")))
+                .and_then(|logo| logo.get("uri"))
                 .and_then(|uri| uri.as_str())
                 .and_then(|uri| persist_asset(&hash(uri), key.to_string().as_str()).ok());
 
@@ -351,4 +384,116 @@ fn get_credential_display_name(
         .map(ToString::to_string)
         // Fallback to `Credential` if the credential is not a valid W3C Verifiable Credential.
         .unwrap_or("Credential".to_string())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn display_name_is_successfully_read_from_credential_configuration() {
+        let credential_configuration_id = "credential_configuration_id";
+
+        // Credential configuration with a display name.
+        let credential_configurations_supported = HashMap::from_iter(vec![(
+            credential_configuration_id.to_string(),
+            CredentialConfigurationsSupportedObject {
+                display: vec![json!({"name": "Credential Name"})],
+                ..Default::default()
+            },
+        )]);
+
+        // Credential with a `type` property. The `type` property is a string and it should be ignored in favor of the
+        // display name from the credential configuration.
+        let verifiable_credential_record = VerifiableCredentialRecord {
+            verifiable_credential: Default::default(),
+            display_credential: DisplayCredential {
+                data: json!({
+                    "type": "Credential Type"
+                }),
+                ..Default::default()
+            },
+        };
+
+        // Get the display name of the credential.
+        let display_name = get_credential_display_name(
+            &credential_configurations_supported,
+            credential_configuration_id,
+            &verifiable_credential_record,
+        );
+
+        // Assert that the display name is equal to the display name from the credential configuration.
+        assert_eq!(display_name, "Credential Name");
+    }
+
+    #[test]
+    fn display_name_is_successfully_read_from_credential_type() {
+        let credential_configuration_id = "credential_configuration_id";
+
+        // Credential configuration without a display name. The `type` property should be used to get the display name.
+        let credential_configurations_supported = HashMap::from_iter(vec![(
+            credential_configuration_id.to_string(),
+            CredentialConfigurationsSupportedObject {
+                display: vec![],
+                ..Default::default()
+            },
+        )]);
+
+        // Credential with a `type` property. The `type` property is a string and it should be used as the display name.
+        let verifiable_credential_record = VerifiableCredentialRecord {
+            verifiable_credential: Default::default(),
+            display_credential: DisplayCredential {
+                data: json!({
+                    "type": "Credential Type"
+                }),
+                ..Default::default()
+            },
+        };
+
+        // Get the display name of the credential.
+        let display_name = get_credential_display_name(
+            &credential_configurations_supported,
+            credential_configuration_id,
+            &verifiable_credential_record,
+        );
+
+        // Assert that the display name is equal to the `type` property of the credential.
+        assert_eq!(display_name, "Credential Type");
+    }
+
+    #[test]
+    fn display_name_is_successfully_read_from_credential_type_array() {
+        let credential_configuration_id = "credential_configuration_id";
+
+        // Credential configuration without a display name. The `type` property should be used to get the display name.
+        let credential_configurations_supported = HashMap::from_iter(vec![(
+            credential_configuration_id.to_string(),
+            CredentialConfigurationsSupportedObject {
+                display: vec![],
+                ..Default::default()
+            },
+        )]);
+
+        // Credential with a `type` property. The `type` property is an array and the last element should be used as the
+        // display name.
+        let verifiable_credential_record = VerifiableCredentialRecord {
+            verifiable_credential: Default::default(),
+            display_credential: DisplayCredential {
+                data: json!({
+                    "type": ["Credential Type 1", "Credential Type 2"]
+                }),
+                ..Default::default()
+            },
+        };
+
+        // Get the display name of the credential.
+        let display_name = get_credential_display_name(
+            &credential_configurations_supported,
+            credential_configuration_id,
+            &verifiable_credential_record,
+        );
+
+        // Assert that the display name is equal to the last element of the `type` property of the credential.
+        assert_eq!(display_name, "Credential Type 2");
+    }
 }

@@ -48,12 +48,12 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
         let generic_authorization_request = provider_manager
             .validate_request(qr_code_scanned.clone())
             .await
-            .map_err(|_| InvalidQRCodeError(qr_code_scanned))?;
+            .map_err(|err| InvalidQRCodeError(err.to_string()))?;
 
         if let Result::Ok(siopv2_authorization_request) =
             AuthorizationRequest::<Object<SIOPv2>>::from_generic(&generic_authorization_request)
         {
-            let redirect_uri = siopv2_authorization_request.body.redirect_uri.to_string();
+            let redirect_uri = siopv2_authorization_request.body.uri.uri().to_string();
 
             let (client_name, logo_uri, connection_url, _) =
                 get_siopv2_client_name_and_logo_uri(&siopv2_authorization_request);
