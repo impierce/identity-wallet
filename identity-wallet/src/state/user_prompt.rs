@@ -1,7 +1,7 @@
-use std::collections::HashMap;
-
 use oid4vc::oid4vci::credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject;
+use oid4vc::oid4vci::credential_offer::TxCodeConstraints;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use ts_rs::TS;
 
 use crate::state::did::validate_domain_linkage::ValidationResult;
@@ -40,6 +40,8 @@ pub enum CurrentUserPrompt {
         logo_uri: Option<String>,
         #[ts(type = "Record<string, any>")]
         credential_configurations: HashMap<String, CredentialConfigurationsSupportedObject>,
+        #[ts(optional, type = "any")]
+        tx_code: Option<TxCodeConstraints>,
     },
     #[serde(rename = "share-credentials")]
     ShareCredentials {

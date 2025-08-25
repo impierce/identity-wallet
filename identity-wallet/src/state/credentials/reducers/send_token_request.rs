@@ -29,8 +29,8 @@ use uuid::Uuid;
 pub async fn send_token_request(state: AppState, action: Action) -> Result<AppState, AppError> {
     info!("send_token_request");
 
-    if let Some((code, is_pre_authorized, wallet_state)) =
-        listen::<CodeReceived>(action).map(|payload| (payload.code, payload.is_pre_authorized, payload.state))
+    if let Some((code, is_pre_authorized, wallet_state, tx_code)) = listen::<CodeReceived>(action)
+        .map(|payload| (payload.code, payload.is_pre_authorized, payload.state, payload.tx_code))
     {
         if !is_pre_authorized && wallet_state.is_some() {
             if wallet_state != state.core_utils.active_wallet_state {
@@ -90,7 +90,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
         let token_request = if is_pre_authorized {
             TokenRequest::PreAuthorizedCode {
                 pre_authorized_code: code,
-                tx_code: None,
+                tx_code,
             }
         } else {
             let code_verifier = state

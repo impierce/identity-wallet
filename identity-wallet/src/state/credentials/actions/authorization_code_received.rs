@@ -11,6 +11,7 @@ pub struct CodeReceived {
     pub code: String,
     pub is_pre_authorized: bool,
     pub state: Option<String>,
+    pub tx_code: Option<String>,
 }
 
 #[typetag::serde(name = "[Credential Offer] Code received")]

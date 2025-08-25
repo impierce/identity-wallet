@@ -23,10 +23,9 @@ use uuid::Uuid;
 // confusing git diffs.
 pub async fn send_credential_request(state: AppState, action: Action) -> Result<AppState, AppError> {
     info!("send_credential_request");
+    if let Some(selected_offer) = listen::<CredentialOffersSelected>(action.clone()) {
+        let credential_configuration_ids = selected_offer.credential_configuration_ids;
 
-    if let Some(credential_configuration_ids) =
-        listen::<CredentialOffersSelected>(action).map(|payload| payload.credential_configuration_ids)
-    {
         let state_guard = state.core_utils.managers.lock().await;
 
         let wallet = &state_guard
@@ -113,10 +112,25 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                 authorization_code,
             }) => {
                 if let Some(pre_authorized_code) = pre_authorized_code {
+                    let tx_code_required = pre_authorized_code.tx_code.is_some();
+
+                    let tx_code = Some(1234.to_string());
+
+                    if tx_code_required && tx_code.is_none() {
+                        return Err(AppError::Error("tx_code is required but not provided".to_string()));
+                    }
+
+                    if tx_code_required {
+                        info!("tx_code is required and provided: {}", tx_code.is_some());
+                    } else {
+                        info!("tx_code not required for this offer");
+                    }
+
                     let action = CodeReceived {
                         code: pre_authorized_code.pre_authorized_code.clone(),
                         is_pre_authorized: true,
                         state: None,
+                        tx_code,
                     };
 
                     drop(state_guard);

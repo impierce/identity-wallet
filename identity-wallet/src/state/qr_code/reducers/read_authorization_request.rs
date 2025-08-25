@@ -48,7 +48,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
         let generic_authorization_request = provider_manager
             .validate_request(qr_code_scanned.clone())
             .await
-            .map_err(|err| InvalidQRCodeError(err.to_string()))?;
+            .map_err(|_| InvalidQRCodeError(qr_code_scanned))?;
 
         if let Result::Ok(siopv2_authorization_request) =
             AuthorizationRequest::<Object<SIOPv2>>::from_generic(&generic_authorization_request)
@@ -153,8 +153,8 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
             let verifiable_credentials = stronghold_manager.values().map_err(StrongholdValuesError)?.unwrap();
             info!("verifiable credentials: {verifiable_credentials:?}");
 
-            let dcql_request = &oid4vp_authorization_request.body.extension.dcql_query;
-            let uuids: Vec<String> = dcql_request
+            let dcql_query = &oid4vp_authorization_request.body.extension.dcql_query;
+            let uuids: Vec<String> = dcql_query
                 .credentials
                 .iter()
                 .filter_map(|credential_query_from_request| {
