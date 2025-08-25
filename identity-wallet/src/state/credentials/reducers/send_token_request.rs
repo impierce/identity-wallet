@@ -201,6 +201,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                     nonce,
                     credential_configuration_id.clone(),
                     credential_configuration,
+                    is_pre_authorized,
                 )
                 .await
                 .map_err(|err| {
