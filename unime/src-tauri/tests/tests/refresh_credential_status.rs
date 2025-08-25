@@ -1,7 +1,7 @@
+use crate::common::{assert_state_update::setup_state_file, json_example, test_managers};
 use identity_wallet::state::credentials::reducers::refresh_credential_status::refresh_credential_status;
 use identity_wallet::state::{actions::Action, AppState};
 use serde_json::json;
-use crate::common::{assert_state_update::setup_state_file, json_example, test_managers};
 use wiremock::matchers::{method, path};
 use wiremock::{Mock, MockServer, ResponseTemplate};
 
@@ -22,9 +22,10 @@ async fn test_refresh_credential_status() {
     let managers = test_managers(vec![]).await;
     let mut state = json_example::<AppState>("tests/fixtures/states/credential_with_status.json");
     state.core_utils.managers = managers;
-    
+
     // Update the credential status URI to point to the mock server.
-    state.credentials.get_mut(0).unwrap().data["credentialStatus/uri"] = serde_json::from_value(json!(mock_server.uri().to_string() + "/ietf-oauth-token-status-list/0")).unwrap();
+    state.credentials.get_mut(0).unwrap().data["credentialStatus/uri"] =
+        serde_json::from_value(json!(mock_server.uri().to_string() + "/ietf-oauth-token-status-list/0")).unwrap();
 
     let action = json_example::<Action>("tests/fixtures/actions/refresh_credential_status.json");
 
