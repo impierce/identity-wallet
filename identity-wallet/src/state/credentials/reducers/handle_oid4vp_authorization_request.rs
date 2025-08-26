@@ -308,10 +308,12 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             None => "_".to_string(),
         };
         persist_asset(&file_name, &connection.id).ok();
+
         // History
         let mut history = state.history;
-        // Only add a `ConnectionAdded` event if the connection was not previously connected.
+
         if !previously_connected {
+            // Only add a `ConnectionAdded` event if the connection was not previously connected.
             history.push(HistoryEvent {
                 connection_name: connection.name.clone(),
                 event_type: EventType::ConnectionAdded,
