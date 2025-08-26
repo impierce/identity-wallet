@@ -311,7 +311,6 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
 
         // History
         let mut history = state.history;
-
         if !previously_connected {
             // Only add a `ConnectionAdded` event if the connection was not previously connected.
             history.push(HistoryEvent {
