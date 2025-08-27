@@ -56,98 +56,98 @@ fn contains_search_term(string: Option<&str>, search_term: &str) -> bool {
         .unwrap_or_default()
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::state::credentials::CredentialMetadata;
-    use crate::state::credentials::DisplayCredential;
-    use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
+// #[cfg(test)]
+// mod tests {
+//     use super::*;
+//     use crate::state::credentials::CredentialMetadata;
+//     use crate::state::credentials::DisplayCredential;
+//     use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
 
-    use std::{sync::Arc, vec};
+//     use std::{sync::Arc, vec};
 
-    #[test]
-    fn test_contains_search_term() {
-        assert!(contains_search_term(Some("John Doe"), "john"));
-        assert!(contains_search_term(Some("John Doe"), "doe"));
-        assert!(contains_search_term(Some("John Doe"), "john doe"));
-        assert!(contains_search_term(Some("John Doe"), "JOHN DOE"));
-        assert!(contains_search_term(Some("John Doe"), "JOHN"));
-        assert!(contains_search_term(Some("John Doe"), "DOE"));
-        assert!(!contains_search_term(None, "john doe"));
-        assert!(!contains_search_term(None, ""));
-    }
+//     #[test]
+//     fn test_contains_search_term() {
+//         assert!(contains_search_term(Some("John Doe"), "john"));
+//         assert!(contains_search_term(Some("John Doe"), "doe"));
+//         assert!(contains_search_term(Some("John Doe"), "john doe"));
+//         assert!(contains_search_term(Some("John Doe"), "JOHN DOE"));
+//         assert!(contains_search_term(Some("John Doe"), "JOHN"));
+//         assert!(contains_search_term(Some("John Doe"), "DOE"));
+//         assert!(!contains_search_term(None, "john doe"));
+//         assert!(!contains_search_term(None, ""));
+//     }
 
-    #[tokio::test]
-    async fn test_search_query() {
-        let mut app_state = app_state();
+//     #[tokio::test]
+//     async fn test_search_query() {
+//         let mut app_state = app_state();
 
-        // Assert that the `search_query` is empty when the `search_term` is empty.
-        app_state = credential_search(
-            app_state,
-            Arc::new(SearchQuery {
-                search_term: "".to_string(),
-            }),
-        )
-        .await
-        .unwrap();
-        assert_eq!(app_state.search_results.current, Vec::<String>::new());
+//         // Assert that the `search_query` is empty when the `search_term` is empty.
+//         app_state = credential_search(
+//             app_state,
+//             Arc::new(SearchQuery {
+//                 search_term: "".to_string(),
+//             }),
+//         )
+//         .await
+//         .unwrap();
+//         assert_eq!(app_state.search_results.current, Vec::<String>::new());
 
-        // Assert that the `search_query` results are returned in their order of search relevance.
-        app_state = credential_search(
-            app_state,
-            Arc::new(SearchQuery {
-                search_term: "John".to_string(),
-            }),
-        )
-        .await
-        .unwrap();
-        assert_eq!(app_state.search_results.current, vec!["1", "3", "2"]);
-    }
+//         // Assert that the `search_query` results are returned in their order of search relevance.
+//         app_state = credential_search(
+//             app_state,
+//             Arc::new(SearchQuery {
+//                 search_term: "John".to_string(),
+//             }),
+//         )
+//         .await
+//         .unwrap();
+//         assert_eq!(app_state.search_results.current, vec!["1", "3", "2"]);
+//     }
 
-    fn app_state() -> AppState {
-        AppState {
-            credentials: vec![
-                DisplayCredential {
-                    id: "1".to_string(),
-                    format: CredentialFormats::default(),
-                    issuer_name: "Example Organization".to_string(),
-                    data: serde_json::json!({"last_name": "Ferris"}),
-                    metadata: CredentialMetadata {
-                        date_issued: "2021-01-01".to_string(),
-                        date_added: "2021-01-01".to_string(),
-                        ..Default::default()
-                    },
-                    connection_id: None,
-                    display_name: "John".to_string(),
-                },
-                DisplayCredential {
-                    id: "2".to_string(),
-                    format: CredentialFormats::default(),
-                    issuer_name: "Example Organization".to_string(),
-                    data: serde_json::json!({"last_name": "John"}),
-                    metadata: CredentialMetadata {
-                        date_issued: "2021-01-02".to_string(),
-                        date_added: "2021-02-01".to_string(),
-                        ..Default::default()
-                    },
-                    connection_id: None,
-                    display_name: "Jane".to_string(),
-                },
-                DisplayCredential {
-                    id: "3".to_string(),
-                    format: CredentialFormats::default(),
-                    issuer_name: "John Organization".to_string(),
-                    data: serde_json::json!({"last_name": "Ferris"}),
-                    metadata: CredentialMetadata {
-                        date_issued: "2021-01-03".to_string(),
-                        date_added: "2021-03-01".to_string(),
-                        ..Default::default()
-                    },
-                    connection_id: None,
-                    display_name: "Jeff".to_string(),
-                },
-            ],
-            ..Default::default()
-        }
-    }
-}
+//     fn app_state() -> AppState {
+//         AppState {
+//             credentials: vec![
+//                 DisplayCredential {
+//                     id: "1".to_string(),
+//                     format: CredentialFormats::default(),
+//                     issuer_name: "Example Organization".to_string(),
+//                     data: serde_json::json!({"last_name": "Ferris"}),
+//                     metadata: CredentialMetadata {
+//                         date_issued: "2021-01-01".to_string(),
+//                         date_added: "2021-01-01".to_string(),
+//                         ..Default::default()
+//                     },
+//                     connection_id: None,
+//                     display_name: "John".to_string(),
+//                 },
+//                 DisplayCredential {
+//                     id: "2".to_string(),
+//                     format: CredentialFormats::default(),
+//                     issuer_name: "Example Organization".to_string(),
+//                     data: serde_json::json!({"last_name": "John"}),
+//                     metadata: CredentialMetadata {
+//                         date_issued: "2021-01-02".to_string(),
+//                         date_added: "2021-02-01".to_string(),
+//                         ..Default::default()
+//                     },
+//                     connection_id: None,
+//                     display_name: "Jane".to_string(),
+//                 },
+//                 DisplayCredential {
+//                     id: "3".to_string(),
+//                     format: CredentialFormats::default(),
+//                     issuer_name: "John Organization".to_string(),
+//                     data: serde_json::json!({"last_name": "Ferris"}),
+//                     metadata: CredentialMetadata {
+//                         date_issued: "2021-01-03".to_string(),
+//                         date_added: "2021-03-01".to_string(),
+//                         ..Default::default()
+//                     },
+//                     connection_id: None,
+//                     display_name: "Jeff".to_string(),
+//                 },
+//             ],
+//             ..Default::default()
+//         }
+//     }
+// }

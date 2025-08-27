@@ -5,8 +5,11 @@ use crate::{
         actions::{listen, Action},
         connections::reducers::handle_siopv2_authorization_request::get_siopv2_client_name_and_logo_uri,
         core_utils::{helpers::get_unverified_jwt_claims, ConnectionRequest, CoreUtils},
-        credentials::reducers::handle_oid4vp_authorization_request::{
-            get_oid4vp_client_name_and_logo_uri, OID4VPClientMetadata,
+        credentials::{
+            reducers::handle_oid4vp_authorization_request::{
+                get_oid4vp_client_name_and_logo_uri, OID4VPClientMetadata,
+            },
+            DisplayClaim,
         },
         did::validate_linked_verifiable_presentations::validate_linked_verifiable_presentations,
         qr_code::actions::qrcode_scanned::QrCodeScanned,
@@ -18,12 +21,15 @@ use serde_json::Value;
 
 use identity_credential::{sd_jwt_v2::Sha256Hasher, sd_jwt_vc::SdJwtVc};
 use log::{debug, info};
-use oid4vc::oid4vp::oid4vp::OID4VP;
 use oid4vc::siopv2::siopv2::SIOPv2;
 use oid4vc::{
     oid4vc_core::authorization_request::{AuthorizationRequest, Object},
     oid4vci::credential_format_profiles::CredentialFormats,
     oid4vp::dcql_evaluation::evaluate_credential_query,
+};
+use oid4vc::{
+    oid4vc_core::claim_path_pointer::ClaimPathPointer,
+    oid4vp::{dcql::dcql_query::ClaimQuery, oid4vp::OID4VP},
 };
 
 // Reads the request url from the payload and validates it.
@@ -154,13 +160,23 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
             info!("verifiable credentials: {verifiable_credentials:?}");
 
             let dcql_query = &oid4vp_authorization_request.body.extension.dcql_query;
-            let uuids: Vec<String> = dcql_query
+            let options: Vec<(String, Vec<DisplayClaim>)> = dcql_query
                 .credentials
                 .iter()
-                .filter_map(|credential_query_from_request| {
+                .filter_map(|credential_query| {
                     verifiable_credentials.iter().find_map(|verifiable_credential_record| {
                         let credential_data: Value = if verifiable_credential_record.display_credential.format
                             == CredentialFormats::DcSdJwt(())
+                        {
+                            serde_json::json!(verifiable_credential_record
+                                .verifiable_credential
+                                .as_str()?
+                                .parse::<SdJwtVc>()
+                                .ok()?
+                                .into_disclosed_object(&Sha256Hasher::new())
+                                .ok()?)
+                        } else if verifiable_credential_record.display_credential.format
+                            == CredentialFormats::VcSdJwt(())
                         {
                             serde_json::json!(verifiable_credential_record
                                 .verifiable_credential
@@ -192,14 +208,16 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                                 .unwrap_or_default()
                         };
 
-                        let credential_query_satisfied =
-                            evaluate_credential_query(credential_query_from_request, &credential_data);
-                        credential_query_satisfied.then_some(verifiable_credential_record.display_credential.id.clone())
+                        let credential_query_satisfied = evaluate_credential_query(credential_query, &credential_data);
+                        credential_query_satisfied.then_some((
+                            verifiable_credential_record.display_credential.id.clone(),
+                            verifiable_credential_record.display_credential.display_claims.clone(),
+                        ))
                     })
                 })
                 .collect();
 
-            info!("uuids of VCs that can fulfill the request: {uuids:?}");
+            info!("uuids of VCs that can fulfill the request: {options:?}");
 
             let OID4VPClientMetadata {
                 client_name,
@@ -222,7 +240,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
             }
 
             // TODO: communicate when no credentials are available.
-            if !uuids.is_empty() {
+            if !options.is_empty() {
                 drop(state_guard);
                 return Ok(AppState {
                     core_utils: CoreUtils {
@@ -232,7 +250,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                     current_user_prompt: Some(CurrentUserPrompt::ShareCredentials {
                         client_name,
                         logo_uri,
-                        options: uuids,
+                        options,
                     }),
                     ..state
                 });

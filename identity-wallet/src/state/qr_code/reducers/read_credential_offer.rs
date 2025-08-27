@@ -152,18 +152,15 @@ async fn download_credential_logos(
         let credential_logo_uri = credential_configuration
             .display
             .first()
-            .and_then(|value| value["logo"]["uri"].as_str());
+            .and_then(|display| display.logo.clone())
+            .map(|logo| logo.uri);
 
         info!("credential_logo_uri: {credential_logo_uri:?}");
 
         if let Some(credential_logo_uri) = credential_logo_uri {
             debug!("Downloading credential logo from URI: {credential_logo_uri}");
 
-            if let Ok(credential_logo_uri) = credential_logo_uri.parse::<reqwest::Url>() {
-                let _ = download_asset(credential_logo_uri.clone(), &hash(credential_logo_uri.as_str())).await;
-            } else {
-                debug!("Failed to parse credential logo URI: {credential_logo_uri}");
-            }
+            let _ = download_asset(credential_logo_uri.clone(), &hash(credential_logo_uri.as_str())).await;
         }
     }
 }

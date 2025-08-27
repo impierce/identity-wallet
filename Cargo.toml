@@ -10,7 +10,8 @@ tauri-build = "2.3.1"
 did_manager = { git = "https://git@github.com/impierce/did-manager", branch = "temp/workaround" }
 jsonwebtoken = "9.3"
 log = "^0.4"
-oid4vc = { git = "https://git@github.com/impierce/openid4vc.git", rev = "1038972" }
+# oid4vc = { git = "https://git@github.com/impierce/openid4vc.git", rev = "1038972" }
+oid4vc = { path = "../openid4vc" }
 rand = "0.8"
 rustls = { version = "0.23", features = ["aws-lc-rs"] }
 rustls-platform-verifier = { version = "0.6" }

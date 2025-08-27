@@ -1,5 +1,6 @@
 use crate::state::core_utils::helpers::get_unverified_jwt_claims;
 use crate::state::credentials::reducers::vp_token_payload_prep::prepare_vp_token_object;
+use crate::state::credentials::DisplayClaim;
 use crate::{
     error::AppError::{self, *},
     persistence::{hash, persist_asset},
@@ -14,6 +15,7 @@ use crate::{
         AppState,
     },
 };
+use identity_credential::sd_jwt_v2::Sha256Hasher;
 use identity_iota::did::CoreDID;
 use log::info;
 use oid4vc::oid4vc_core::{
@@ -60,9 +62,10 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             .collect();
 
         // TODO: Optimize credential selection so that evaluate_credential_query does not need to be called twice.
-        let mut selected_verifiable_credentials: Vec<(CredentialQuery, serde_json::Value)> = Vec::new();
+        let mut selected_verifiable_credentials: Vec<(CredentialQuery, serde_json::Value, Vec<DisplayClaim>)> =
+            Vec::new();
         for requested_credential_query in &dcql_query.credentials {
-            for user_selected_uuid in &credential_uuids {
+            for (user_selected_uuid, display_claims) in &credential_uuids {
                 let user_selected_uuid_str = user_selected_uuid.to_string();
                 if let Some(verifiable_credential_record) = available_credentials_map.get(&user_selected_uuid_str) {
                     let credential_data = if verifiable_credential_record.display_credential.format
@@ -79,11 +82,9 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
                             .parse::<identity_credential::sd_jwt_vc::SdJwtVc>()
                             .map_err(|e| AppError::Error(format!("Failed to parse stored SD-JWT VC: {e}")))?;
 
-                        let disclosed_object = sd_jwt_vc
-                            .into_disclosed_object(&identity_credential::sd_jwt_v2::Sha256Hasher::new())
-                            .map_err(|e| {
-                                AppError::Error(format!("Failed to get disclosed object from SD-JWT VC: {e}"))
-                            })?;
+                        let disclosed_object = sd_jwt_vc.into_disclosed_object(&Sha256Hasher::new()).map_err(|e| {
+                            AppError::Error(format!("Failed to get disclosed object from SD-JWT VC: {e}"))
+                        })?;
                         serde_json::json!(disclosed_object)
                     } else if verifiable_credential_record.display_credential.format == CredentialFormats::JwtVcJson(())
                     {
@@ -116,6 +117,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
                         selected_verifiable_credentials.push((
                             requested_credential_query.clone(),
                             verifiable_credential_record.verifiable_credential.clone(),
+                            display_claims.clone(),
                         ));
                         history_credentials.push(HistoryCredential::from_credential(verifiable_credential_record));
                         break;
