@@ -4,7 +4,7 @@
   "windows": ["main"],
   "permissions": [
     "core:default",
-    "deep-link:allow-get-current",
+    "deep-link:default",
     "fs:default",
     "log:default",
     "shell:allow-open",
