@@ -1,6 +1,6 @@
 [Desktop Entry]
 Comment=Identity Wallet for people to manage Decentralized Identities and Verifiable Credentials
-Exec=gnome-terminal -- /usr/bin/unime %U
+Exec=/usr/bin/unime %U
 Icon=unime
 Name=UniMe
 Terminal=false
