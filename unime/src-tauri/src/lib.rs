@@ -20,7 +20,7 @@ pub fn run() {
     #[cfg(desktop)]
     {
         builder = builder.plugin(tauri_plugin_single_instance::init(|_app, argv, _cwd| {
-            info!("New instance opened via deep link: {argv:?}");
+            info!("New app instance opened via deep link: {argv:?}");
         }));
     }
 
