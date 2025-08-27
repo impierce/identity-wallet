@@ -25,6 +25,7 @@ identity-wallet = { path = "../../identity-wallet" }
 iota-sdk = { git = "https://github.com/impierce/iota", package = "iota-sdk", branch = "temp/fix" }
 jni = "0.21"
 log.workspace = true
+oauth_tsl.workspace = true
 rustls.workspace = true
 rustls-platform-verifier.workspace = true
 serde_json.workspace = true
