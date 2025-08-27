@@ -59,6 +59,7 @@ pub async fn unlock_storage(state: AppState, action: Action) -> Result<AppState,
             current_user_prompt: Some(CurrentUserPrompt::Redirect {
                 target: "me".to_string(),
             }),
+            is_unlocked: true,
             ..state
         });
     }
