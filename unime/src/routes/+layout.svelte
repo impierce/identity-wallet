@@ -78,13 +78,10 @@
       // Update locale based on the frontend state.
       setLocale($appState.profile_settings.locale);
 
-      // The app is considered ready when it is unlocked.
-      const appIsReady = $appState?.is_unlocked;
-      const pendingUrl = get(pendingDeepLinkUrl);
-
-      if (appIsReady && pendingUrl) {
-        // If the app is ready and there's a URL, process it now.
-        processDeepLink(pendingUrl);
+      // Process a deep link (only if the app is already unlocked).
+      const url = get(pendingDeepLinkUrl);
+      if ($appState?.is_unlocked && url) {
+        processDeepLink(url);
       }
 
       let redirectPath: string | undefined;
@@ -115,24 +112,20 @@
 
     dispatch({ type: '[App] Get state' });
 
-    // Listen for deep links.
-    // If the app is launched with a deep link, we store it for later processing.
+    // If the app is launched with a deep link, it is stored for later processing via the `state-changed` listener.
     const invocationUrls = await getCurrent();
     if (invocationUrls) {
-      info(`App launched with deep link, storing for later: ${invocationUrls}`);
+      info(`App launched with deep links: ${invocationUrls}`);
       pendingDeepLinkUrl.set(new URL(invocationUrls[0]));
     }
 
-    // For subsequent links, also just store them. The state-changed listener will handle processing.
+    // If a deep link is received with the app already open, try processing it immediately.
     unlistenDeepLink = await onOpenUrl((urls) => {
       info(`Received deep link while running, storing for processing: ${urls[0]}`);
       const invocationUrl = new URL(urls[0]);
       pendingDeepLinkUrl.set(invocationUrl);
 
-      // Also try to process it immediately in case the app is already ready.
-      const appIsReady = $appState?.is_unlocked;
-
-      if (appIsReady) {
+      if ($appState?.is_unlocked) {
         processDeepLink(invocationUrl);
       }
     });
@@ -140,7 +133,7 @@
 
   onDestroy(() => {
     // Destroy in reverse order.
-    if (unlistenDeepLink) unlistenDeepLink();
+    unlistenDeepLink();
     unlistenStateChanged();
     unlistenError();
     detachConsole();
