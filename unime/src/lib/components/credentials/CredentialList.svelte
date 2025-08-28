@@ -5,7 +5,7 @@
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 
   import { IconMessage, ListItemCard } from '$lib/components';
-  import { GhostFillIcon } from '$lib/icons';
+  import { GhostFillIcon, SealWarningRegularIcon } from '$lib/icons';
   import { state } from '$lib/stores';
 
   export let credentialType: 'all' | 'data' | 'badges' = 'all';
@@ -34,8 +34,15 @@
         description={credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
         type={credential.data.type.includes('OpenBadgeCredential') ? 'badge' : 'data'}
         icon={credential.metadata.icon}
+        isInvalid={credential.credential_status?.status === 1}
         on:click={() => goto(`/credentials/${credential.id}`)}
-      ></ListItemCard>
+      >
+        <div slot="right">
+          {#if credential.credential_status?.status === 1}
+            <SealWarningRegularIcon class="mr-3 size-6 text-red-700 dark:text-red-500" />
+          {/if}
+        </div>
+      </ListItemCard>
     {/each}
   </div>
 {:else if $state?.credentials?.length === 0}
