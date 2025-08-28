@@ -1,9 +1,9 @@
-import type { Translation } from '../i18n-types';
+import type { BaseTranslation } from '../i18n-types';
 
 const sv_FI = {
   ONBOARDING: {
     WELCOME: {
-      GREETING: 'Välkommen till',
+      GREETING: 'Välkommen',
       WHAT_IS_UNIME_1: 'UniMe kopplar ihop din digitala värld säkert.',
       WHAT_IS_UNIME_2: 'Skapa en helt ny identitetsprofil för att komma igång.',
       CREATE_NEW_PROFILE: 'Skapa ny profil',
@@ -53,7 +53,7 @@ Efterlevnad av lag: Du åtar dig att använda Tjänsten i enlighet med all till�
 Korrekt information: Du ansvarar för att all information som du lagrar eller delar via Tjänsten är korrekt och uppdaterad.
 
 Dataägande och integritet
-Ingen datainsamling: Vi samlar inte in, lagrar eller behandlar personuppgifter genom UniMe-applikationen. All identitetsdata finns endast på din enhet eller i det lagringsalternativ du väljer.
+Ingen datainsamling: Vi varken samlar in, lagrar eller behandlar personuppgifter genom UniMe-applikationen. All identitetsdata finns endast på din enhet eller i det lagringsalternativ du väljer.
 Användarkontrollerad delning: Delning initieras och styrs endast av dig och sker direkt mellan dig och den utsedda parten. Vi har ingen åtkomst till eller insyn i din identitet eller dina aktiviteter.
 Tredje parts insamling: Observera att tredjepartsplattformar som Apple App Store eller Google Play Store självständigt kan samla in uppgifter om appens prestanda, användning och enhetsinformation.
 
@@ -71,7 +71,7 @@ Missbruk: Använda Tjänsten för olagliga, skadliga, bedrägliga, intrångsgör
 Tredje parts tjänster
 Tjänsten kan innehålla länkar eller integrationer till tredjepartstjänster. Vi kontrollerar inte dessa och ansvarar inte för deras innehåll eller policyer. Användning sker på egen risk och styrs av deras villkor.
 
-Ansvarsfriskrivningar
+Ansvarsfrihetskrivningar
 "I befintligt skick": Tjänsten tillhandahålls i befintligt skick och i mån av tillgänglighet utan några uttryckliga eller underförstådda garantier.
 Ingen garanti: Vi garanterar inte att Tjänsten är oavbruten, felfri, säker eller fri från virus eller andra skadliga komponenter.
 
@@ -131,9 +131,9 @@ Genom att använda Tjänsten bekräftar du att du har läst, förstått och acce
     },
     PASSWORD: {
       NAVBAR_TITLE: 'Lösenord',
-      TITLE_1: 'Ställ in ditt nya',
+      TITLE_1: 'Skapa ditt nya',
       TITLE_2: 'lösenord',
-      SUBTITLE: 'Välj ett starkt lösenord för att kryptera dina data.',
+      SUBTITLE: 'Skapa ett starkt lösenord för att kryptera dina data.',
       INPUT_PLACEHOLDER: 'Ange ett lösenord',
       CONFIRM: {
         NAVBAR_TITLE: 'Bekräfta lösenord',
@@ -141,20 +141,20 @@ Genom att använda Tjänsten bekräftar du att du har läst, förstått och acce
         TITLE_2: 'lösenord',
         SUBTITLE: 'Säkerställ att du skrev rätt.',
         INPUT_PLACEHOLDER: 'Skriv lösenordet igen',
-        MATCH: 'Lösenorden stämmer',
-        NO_MATCH: 'Lösenorden stämmer inte',
+        MATCH: 'Lösenordet stämmer',
+        NO_MATCH: 'Lösenordet stämmer inte',
       },
       BIOMETRICS: {
-        TITLE: 'Aktivera {type}',
-        DESCRIPTION: 'Vill du ställa in {type} för att låsa upp appen?',
-        CONFIRM: 'Ja, använd {type}',
+        TITLE: 'Aktivera {type:string}',
+        DESCRIPTION: 'Vill du ställa in {type:string} för att låsa upp appen?',
+        CONFIRM: 'Ja, använd {type:string}',
         DECIDE_LATER: 'Bestäm senare',
       },
       COMPLETED: {
-        NAVBAR_TITLE: 'Lösenord satt',
+        NAVBAR_TITLE: 'Lösenord skapat',
         TITLE_1: 'Din UniMe-profil är nu',
         TITLE_2: 'skyddad',
-        MESSAGE_1: 'Säker & trygg.',
+        MESSAGE_1: 'säker & trygg.',
         MESSAGE_2: 'Snyggt jobbat',
       },
     },
@@ -196,7 +196,7 @@ Genom att använda Tjänsten bekräftar du att du har läst, förstått och acce
       SECURITY: {
         LABEL: 'Säkerhet',
         NAVBAR_TITLE: 'Säkerhet',
-        SWITCH_LABEL: 'Lås upp med {type}',
+        SWITCH_LABEL: 'Lås upp med {type:string}',
         BIOMETRIC_TYPE: {
           ANDROID: {
             FACE_ID: 'ansiktsigenkänning',
@@ -209,12 +209,12 @@ Genom att använda Tjänsten bekräftar du att du har läst, förstått och acce
           GENERIC: 'biometri',
         },
         ENABLE: {
-          DIALOG_TITLE: 'Aktivera {type}',
-          DIALOG_CONTENT: 'Ange ditt lösenord för att aktivera {type}.',
+          DIALOG_TITLE: 'Aktivera {type:string}',
+          DIALOG_CONTENT: 'Ange ditt lösenord för att aktivera {type:string}.',
         },
         DISABLE: {
-          DIALOG_TITLE: 'Inaktivera {type}',
-          DIALOG_CONTENT: 'Ange ditt lösenord för att inaktivera {type}.',
+          DIALOG_TITLE: 'Inaktivera {type:string}',
+          DIALOG_CONTENT: 'Ange ditt lösenord för att inaktivera {type:string}.',
         },
       },
       PASSWORD: {
@@ -246,8 +246,8 @@ Genom att använda Tjänsten bekräftar du att du har läst, förstått och acce
     PASSWORD: {
       POLICY: {
         TITLE: 'Ditt lösenord måste innehålla',
-        UPPERCASE_LETTER: 'versal',
-        LOWERCASE_LETTER: 'gemen',
+        UPPERCASE_LETTER: 'stor bokstav',
+        LOWERCASE_LETTER: 'liten bokstav',
         NUMBER: 'siffra',
         CHARACTERS: 'tecken',
       },
@@ -291,7 +291,7 @@ Genom att använda Tjänsten bekräftar du att du har läst, förstått och acce
     CREDENTIAL_TABS: {
       ALL: 'Alla',
       DATA: 'Data',
-      BADGES: 'Brickor',
+      BADGES: 'Förtroendemärken',
     },
     EMPTY_CREDENTIALS: {
       TITLE: 'Lite tomt här',
@@ -311,13 +311,13 @@ Genom att använda Tjänsten bekräftar du att du har läst, förstått och acce
     BOTTOM_NAVIGATION_TITLE: 'Skanna',
     TITLE_1: 'Skanna en',
     TITLE_2: 'QR-kod',
-    SUBTITLE: 'För in en QR-kod i bild för att starta en interaktion.',
+    SUBTITLE: 'För in en QR-kod i bilden för att starta en interaktion.',
     PERMISSION_DENIED: 'Ingen behörighet till kameran',
     OPEN_SETTINGS: 'Öppna inställningar',
     CREDENTIAL_OFFER: {
-      NAVBAR_TITLE: 'Legitimationserbjudande',
-      DESCRIPTION: 'erbjuder dig följande legitimationer',
-      ACCEPT: 'Acceptera legitimationer',
+      NAVBAR_TITLE: 'Intygsserbjudande',
+      DESCRIPTION: 'erbjuder dig följande intyg',
+      ACCEPT: 'Acceptera intyg',
     },
     CONNECTION_REQUEST: {
       NAVBAR_TITLE: 'Anslutningsförfrågan',
@@ -328,7 +328,7 @@ Genom att använda Tjänsten bekräftar du att du har läst, förstått och acce
     },
     SHARE_CREDENTIALS: {
       NAVBAR_TITLE: 'Dela data',
-      DESCRIPTION: 'begär följande legitimationer',
+      DESCRIPTION: 'begär följande intyg',
       REQUESTED: 'Begärt',
       APPROVE: 'Godkänn förfrågan',
     },
@@ -359,7 +359,7 @@ Genom att använda Tjänsten bekräftar du att du har läst, förstått och acce
     INPUT_PLACEHOLDER: 'Sök efter något',
     NO_QUERY: {
       TITLE: 'Vad ska vi söka efter?',
-      DESCRIPTION: 'Sök efter alla dina legitimationer och brickor här.',
+      DESCRIPTION: 'Sök efter alla dina intyg och förtroendemärken här.',
     },
     NO_RESULTS: {
       TITLE: 'Inga resultat',
@@ -368,64 +368,32 @@ Genom att använda Tjänsten bekräftar du att du har läst, förstått och acce
     RECENT_SEARCHES: 'Senaste sökningar',
   },
   CREDENTIAL: {
-    NAVBAR_TITLE: 'Legitimationsinformation',
+    NAVBAR_TITLE: 'Intygsinformation',
     DETAILS: {
       VALID: 'Giltig',
-      UNVERIFIED: 'Overifierad',
       ISSUED_BY: 'Utfärdad av',
-      SELF_SIGNED: 'dig själv',
       DESCRIPTION: 'Beskrivning',
       OPEN_BADGES: {
         ALIGNMENT: 'Justering',
         CRITERIA: 'Kriterier',
       },
     },
-    RENDERER: {
-      PID: {
-        NAME: 'Namn',
-        NATIONALITY: 'Nationalitet',
-        BIRTH_DATE: 'Födelsedatum',
-        BIRTH_PLACE: 'Födelseort',
-      },
-    },
     ACTIONS: {
       EDIT: {
-        MENU_BUTTON: 'Uppdatera visningsnamn',
         CONFIRM_BUTTON: 'Uppdatera visningsnamn',
       },
       DELETE: {
-        MENU_BUTTON: 'Ta bort legitimation',
-        TITLE: 'Ta bort legitimation',
-        DESCRIPTION: 'Är du säker på att du vill ta bort denna legitimation från din plånbok? Detta kan inte ångras.',
+        BUTTON_LABEL: 'Ta bort intyg',
+        TITLE: 'Ta bort intyg',
+        DESCRIPTION:
+          'Är du säker på att du vill ta bort detta intyg från din plånbok? Detta kan inte ångras.',
         CONFIRM_BUTTON: 'Ta bort',
       },
     },
   },
   ADD_CREDENTIALS: {
     BUTTON: 'Lägg till',
-    NAVBAR_TITLE: 'Lägg till data',
-    VALUE_REQUIRED: 'Obligatoriskt',
-    LABEL_DISCLAIMER: 'Syns bara för dig',
-    FAVORITES_TOGGLE_LABEL: 'Lägg till i favoriter',
-    ADDRESS: {
-      TITLE: 'Adress',
-      DESCRIPTION: 'Lägg till en arbets- eller privatadress',
-      ADD: {
-        NAVBAR_TITLE: 'Lägg till adress',
-        LABEL: 'Vad vill du kalla den här adressen?',
-        LABEL_PLACEHOLDER: 'Privatadress',
-        RESIDENT_ADDRESS_LABEL: 'Adress',
-        RESIDENT_COUNTRY_LABEL: 'Land',
-        RESIDENT_COUNTRY_PLACEHOLDER: 'Välj ett land',
-        RESIDENT_COUNTRY_NO_MATCH: 'Inga länder hittades',
-        RESIDENT_STATE_LABEL: 'Delstat',
-        RESIDENT_STREET_LABEL: 'Gata',
-        RESIDENT_HOUSE_NUMBER_LABEL: 'Husnummer',
-        RESIDENT_POSTAL_CODE_LABEL: 'Postnummer',
-        RESIDENT_CITY_LABEL: 'Stad',
-        CREATE_BUTTON: 'Lägg till adress',
-      },
-    },
+    NAVBAR_TITLE: 'Lägg till intyg',
     EMAIL: {
       TITLE: 'E-post',
       DESCRIPTION: 'Verifiera din privata eller arbetsadress',
@@ -452,55 +420,13 @@ Genom att använda Tjänsten bekräftar du att du har läst, förstått och acce
       ADD: {
         NAVBAR_TITLE: 'Skaffa verifierad e-post',
         LABEL: 'Vad vill du kalla denna adress?',
+        LABEL_DISCLAIMER: 'Syns bara för dig',
         LABEL_PLACEHOLDER: 'Privat e-post',
         VALUE_LABEL: 'E-post',
         VALUE_PLACEHOLDER: 'fornamn.efternamn@example.com',
-        VALUE_PATTERN_ERROR: 'Ange en giltig e-postadress',
         BUTTON_SEND: 'Skicka verifieringsmail',
         BUTTON_SEND_AGAIN: 'Skicka igen',
         CHECK_EMAIL: 'Kontrollera din inkorg och ange koden nedan.',
-        EXPIRED_ERROR: 'Verifieringskoden har gått ut',
-      },
-    },
-    PROFILE: {
-      TITLE: 'Profil',
-      DESCRIPTION: 'Lägg till information om dig själv',
-      INFO: {
-        NAVBAR_TITLE: 'Din profil',
-        TITLE: 'UniMe-profil',
-        DESCRIPTION: 'Innan du börjar',
-        ITEM_0: {
-          TITLE: 'Varför ska jag skapa en profil?',
-          DESCRIPTION:
-            'Spara dina uppgifter en gång och använd dem överallt. Slipp långa formulär, snabba på inloggningar och bevisa att du är du - allt på dina villkor.',
-        },
-        ITEM_1: {
-          TITLE: 'Hur fungerar det?',
-          DESCRIPTION:
-            'Dina uppgifter skyddas på din enhet i ett säkert valv som bara du kan öppna. Skanna en QR-kod för att upprätta en säker anslutning. Kontrollera förfrågan och välj vad du vill dela.',
-        },
-        ITEM_2: {
-          TITLE: 'Är mina data säkra?',
-          DESCRIPTION:
-            'Ja. Dina data skyddas med din enhets säkerhetsfunktioner, t.ex. fingeravtryck eller ansiktsigenkänning. Vi samlar inte in dina data och har inte tillgång till dem. Källkoden är öppen, så du kan själv kontrollera detta.',
-        },
-      },
-      ADD: {
-        NAVBAR_TITLE: 'Din profil',
-        LABEL: 'Vad vill du kalla den här profilen?',
-        LABEL_PLACEHOLDER: 'Personlig profil',
-        FIRST_NAME_LABEL: 'Förnamn',
-        FIRST_NAME_PLACEHOLDER: 'Ditt förnamn',
-        MIDDLE_NAME_LABEL: 'Mellannamn',
-        MIDDLE_NAME_PLACEHOLDER: 'Ytterligare förnamn',
-        LAST_NAME_LABEL: 'Efternamn',
-        LAST_NAME_PLACEHOLDER: 'Ditt efternamn',
-        BIRTH_DATE_LABEL: 'Födelsedatum',
-        BIRTH_DATE_PLACEHOLDER: 'Ditt födelsedatum',
-        BIRTH_PLACE_LABEL: 'Födelseort',
-        BIRTH_PLACE_PLACEHOLDER: 'Din födelseort',
-        NATIONALITY_LABEL: 'Medborgarskap',
-        CREATE_BUTTON: 'Skapa profil',
       },
     },
   },
@@ -542,6 +468,6 @@ Genom att använda Tjänsten bekräftar du att du har läst, förstått och acce
     SKIP_TITLE: 'Hoppa över guiden',
     SKIP_TEXT: 'Är du säker på att du vill hoppa över guiden?',
   },
-} satisfies Translation;
+} satisfies BaseTranslation;
 
 export default sv_FI;
