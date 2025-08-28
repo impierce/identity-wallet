@@ -34,6 +34,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
         listen::<CredentialOffersSelected>(action).map(|payload| payload.credential_configuration_ids)
     {
         let state_guard = state.core_utils.managers.lock().await;
+        let resolver = state.core_utils.resolver().await;
         let stronghold_manager = state_guard
             .stronghold_manager
             .as_ref()
@@ -167,7 +168,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                             .ok_or(AppError::Error("Invalid JWT string.".to_string()))?
                             .to_string(),
                     );
-                    validate_jwt_vc_json(credential_jwt).await?;
+                    validate_jwt_vc_json(&resolver, credential_jwt).await?;
 
                     vec![(
                         credential_configuration_id,
@@ -199,7 +200,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                                     .ok_or(AppError::Error("Invalid JWT string.".to_string()))?
                                     .to_string(),
                             );
-                            validate_jwt_vc_json(credential_jwt).await?;
+                            validate_jwt_vc_json(&resolver, credential_jwt).await?;
 
                             result.push((
                                 credential_configuration_id,

@@ -52,13 +52,15 @@ pub async fn get_issuer_document(resolver: &Resolver, credential_jwt: &Jwt) -> O
 }
 
 /// Validate a jwt_vc_json, checks the JWT and the Issuer DID.
-pub async fn validate_jwt_vc_json(credential_jwt: Jwt) -> Result<DecodedJwtCredential<Value>, AppError> {
+pub async fn validate_jwt_vc_json(
+    resolver: &Resolver,
+    credential_jwt: Jwt,
+) -> Result<DecodedJwtCredential<Value>, AppError> {
     // `SkipUnsupported` allows for custom credential types, such as the StatusList2021Entry (https://www.w3.org/TR/2023/WD-vc-status-list-20230427/#statuslist2021entry)
     let validator = JwtCredentialValidator::with_signature_verifier(Verifier);
     let options = JwtCredentialValidationOptions::new().status_check(StatusCheck::SkipUnsupported);
 
-    let resolver = Resolver::new().await;
-    let issuer_document = get_issuer_document(&resolver, &credential_jwt)
+    let issuer_document = get_issuer_document(resolver, &credential_jwt)
         .await
         .ok_or(AppError::Error("Failed to resolve issuer DID".to_string()))?;
 
