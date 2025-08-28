@@ -114,8 +114,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                 if let Some(pre_authorized_code) = pre_authorized_code {
                     let tx_code_required = pre_authorized_code.tx_code.is_some();
 
-                    let tx_code = Some(1234.to_string());
-                    // FIXME! Replace with actual tx_code.
+                    let tx_code = selected_offer.tx_code;
 
                     if tx_code_required && tx_code.is_none() {
                         return Err(AppError::Error("tx_code is required but not provided".to_string()));
