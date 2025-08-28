@@ -10,7 +10,7 @@ did_manager = { git = "https://git@github.com/impierce/did-manager", tag = "v1.0
 jsonwebtoken = "9.3"
 log = "^0.4"
 # FIXME: make sure to update this `rev` when https://github.com/impierce/openid4vc/pull/106 is merged.
-oid4vc = { git = "https://git@github.com/impierce/openid4vc", rev = "9d99345" }
+oid4vc = { git = "https://github.com/impierce/openid4vc", rev = "9d99345" }
 rand = "0.8"
 rustls = { version = "0.23", features = ["aws-lc-rs"] }
 rustls-platform-verifier = { version = "0.6" }

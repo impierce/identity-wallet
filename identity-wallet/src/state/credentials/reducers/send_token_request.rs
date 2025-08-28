@@ -192,6 +192,10 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
 
             info!("nonce: {nonce:?}");
 
+            let pre_authorized_grant_anonymous_access_supported = authorization_server_metadata
+                .pre_authorized_grant_anonymous_access_supported
+                .unwrap_or(false);
+
             // TODO: all code related to sending the actual credential request(s) should be moved to a separate reducer.
             // Get the credential.
             let credential_response = wallet
@@ -201,7 +205,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                     nonce,
                     credential_configuration_id.clone(),
                     credential_configuration,
-                    is_pre_authorized,
+                    pre_authorized_grant_anonymous_access_supported,
                 )
                 .await
                 .map_err(|err| {
