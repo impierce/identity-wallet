@@ -8918,7 +8918,7 @@ version = "0.7.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "77e878c846a8abae00dd069496dbe8751b16ac1c3d6bd2a7283a938e8228f90d"
 dependencies = [
- "proc-macro-crate 3.3.0",
+ "proc-macro-crate 2.0.0",
  "proc-macro2",
  "quote",
  "syn 2.0.106",
@@ -9246,7 +9246,7 @@ dependencies = [
 [[package]]
 name = "oid4vc"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc?rev=9d99345#9d993453a7e6e1717dfa094c7f83396d460889f9"
+source = "git+https://github.com/impierce/openid4vc?rev=a6a5de3#a6a5de34cec81b70f4cfd7e4c8775741c91a4cc6"
 dependencies = [
  "oid4vc-core",
  "oid4vc-manager",
@@ -9258,7 +9258,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-core"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc?rev=9d99345#9d993453a7e6e1717dfa094c7f83396d460889f9"
+source = "git+https://github.com/impierce/openid4vc?rev=a6a5de3#a6a5de34cec81b70f4cfd7e4c8775741c91a4cc6"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -9283,7 +9283,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-manager"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc?rev=9d99345#9d993453a7e6e1717dfa094c7f83396d460889f9"
+source = "git+https://github.com/impierce/openid4vc?rev=a6a5de3#a6a5de34cec81b70f4cfd7e4c8775741c91a4cc6"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -9317,7 +9317,7 @@ dependencies = [
 [[package]]
 name = "oid4vci"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc?rev=9d99345#9d993453a7e6e1717dfa094c7f83396d460889f9"
+source = "git+https://github.com/impierce/openid4vc?rev=a6a5de3#a6a5de34cec81b70f4cfd7e4c8775741c91a4cc6"
 dependencies = [
  "anyhow",
  "chrono",
@@ -9345,7 +9345,7 @@ dependencies = [
 [[package]]
 name = "oid4vp"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc?rev=9d99345#9d993453a7e6e1717dfa094c7f83396d460889f9"
+source = "git+https://github.com/impierce/openid4vc?rev=a6a5de3#a6a5de34cec81b70f4cfd7e4c8775741c91a4cc6"
 dependencies = [
  "anyhow",
  "chrono",
@@ -12357,7 +12357,7 @@ dependencies = [
 [[package]]
 name = "siopv2"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc?rev=9d99345#9d993453a7e6e1717dfa094c7f83396d460889f9"
+source = "git+https://github.com/impierce/openid4vc?rev=a6a5de3#a6a5de34cec81b70f4cfd7e4c8775741c91a4cc6"
 dependencies = [
  "anyhow",
  "async-trait",
