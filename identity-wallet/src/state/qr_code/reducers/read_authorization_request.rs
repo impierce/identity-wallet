@@ -178,7 +178,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                             // JWT_VC_JSON must be accessed from the vc values.
                             full_jwt_payload.get("vc").cloned().unwrap_or_else(|| {
                                 debug!(
-                                    "JWT-VC-JSON is missing 'vc' claims or is not a valid JSON value: {:?}",
+                                    "JWT-VC-JSON is missing `vc` claims or is not a valid JSON value: {:?}",
                                     full_jwt_payload
                                 );
                                 serde_json::json!({})

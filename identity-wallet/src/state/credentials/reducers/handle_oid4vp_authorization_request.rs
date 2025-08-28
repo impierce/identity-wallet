@@ -171,7 +171,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             .map_err(StrongholdValuesError)?
             .unwrap()
             .into_iter()
-            .map(|record| (record.display_credential.id.clone(), record)) // Map to (internal_uuid_string, full_record)
+            .map(|record| (record.display_credential.id.clone(), record))
             .collect();
 
         // TODO: Optimize credential selection so that evaluate_credential_query does not need to be called twice.
