@@ -44,6 +44,7 @@ pub async fn handle_siopv2_authorization_request(state: AppState, _action: Actio
         .map_err(GenerateAuthorizationResponseError)?;
     info!("response generated: {response:?}");
 
+    #[cfg(not(feature = "test_utils"))]
     if provider_manager.send_response(&response).await.is_err() {
         info!("failed to send response");
         return Err(SendAuthorizationResponseError);
