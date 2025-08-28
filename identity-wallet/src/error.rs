@@ -78,7 +78,6 @@ pub enum AppError {
     UnknownCredentialConfigurationIdError(String),
     #[error("Invalid offer indices")]
     InvalidOfferIndicesError(#[source] serde_json::Error),
-
     #[error("No `{0}` found in the state")]
     MissingStateParameterError(&'static str),
     #[error("Failed to create stronghold")]
@@ -101,6 +100,8 @@ pub enum AppError {
     TrustListNotFoundError(String),
     #[error("Failed to migrate AppState version `{0}` to version `{1}`: {2}")]
     AppStateMigrationError(u32, u32, String),
+    #[error("Provided code is invalid")]
+    InvalidTransactionCode(#[source] anyhow::Error),
 }
 
 impl std::fmt::Debug for AppError {

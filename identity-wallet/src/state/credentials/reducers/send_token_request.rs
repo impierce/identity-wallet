@@ -121,7 +121,17 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                 token_request,
             )
             .await
-            .map_err(GetAccessTokenError)?;
+            .map_err(|err| {
+                let err_string = err.to_string();
+                if err_string.contains("Invalid transaction code provided.")
+                    || (err_string.contains("invalid_request") && err_string.contains("tx_code"))
+                    || (err_string.contains("400") && err_string.contains("tx_code"))
+                {
+                    AppError::InvalidTransactionCode(err)
+                } else {
+                    GetAccessTokenError(err)
+                }
+            })?;
 
         info!("token_response: {token_response:?}");
 
