@@ -392,8 +392,9 @@ async fn get_logo_uri(
                         metadata
                             .credential_configurations_supported
                             .get(type_)
-                            .map(|credential_configuration| credential_configuration.display.as_ref())
-                            .and_then(extract_logo_uri_from_display)
+                            .and_then(|credential_configuration| credential_configuration.display.first())
+                            .and_then(|display| display.logo.clone())
+                            .map(|logo| logo.uri.to_string())
                     });
 
                     if logo_uri.is_some() {
