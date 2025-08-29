@@ -10,7 +10,9 @@ use ts_rs::TS;
 pub struct CodeReceived {
     pub code: String,
     pub is_pre_authorized: bool,
+    #[ts(optional)]
     pub state: Option<String>,
+    #[ts(optional)]
     pub tx_code: Option<String>,
 }
 
