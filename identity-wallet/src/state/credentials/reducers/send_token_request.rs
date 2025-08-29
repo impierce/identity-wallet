@@ -192,9 +192,12 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
 
             info!("nonce: {nonce:?}");
 
-            let pre_authorized_grant_anonymous_access_supported = authorization_server_metadata
-                .pre_authorized_grant_anonymous_access_supported
-                .unwrap_or(false);
+            // Determine if the token request was pre-authorized and if anonymous access is supported.
+            // See: https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0-15.html#section-8.2.1.1-2.2.2.2
+            let with_anonymous_access = is_pre_authorized
+                && authorization_server_metadata
+                    .pre_authorized_grant_anonymous_access_supported
+                    .unwrap_or(false);
 
             // TODO: all code related to sending the actual credential request(s) should be moved to a separate reducer.
             // Get the credential.
@@ -205,7 +208,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                     nonce,
                     credential_configuration_id.clone(),
                     credential_configuration,
-                    pre_authorized_grant_anonymous_access_supported,
+                    with_anonymous_access,
                 )
                 .await
                 .map_err(|err| {
