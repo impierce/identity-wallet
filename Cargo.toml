@@ -15,7 +15,6 @@ rustls = { version = "0.23", features = ["aws-lc-rs"] }
 rustls-platform-verifier = { version = "0.6" }
 serde_json = "1.0"
 serial_test = "2.0"
-tauri-plugin-opener = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v2" }
 tempfile = "3.5.0"
 tokio = { version = "1.43.0", features = ["macros"] }
 wiremock = "0.5"
