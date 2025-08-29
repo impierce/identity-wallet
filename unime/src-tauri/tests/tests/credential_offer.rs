@@ -12,7 +12,9 @@ use identity_wallet::{
     state::qr_code::actions::qrcode_scanned::QrCodeScanned,
 };
 
-use oid4vc::oid4vci::credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject;
+use oid4vc::oid4vci::credential_issuer::credential_configurations_supported::{
+    CredentialConfigurationsSupportedDisplay, CredentialConfigurationsSupportedObject, Logo,
+};
 use oid4vc::oid4vci::credential_offer::CredentialOfferParameters;
 use serde_json::json;
 use std::sync::Arc;
@@ -61,16 +63,18 @@ async fn download_credential_logo() {
                         cryptographic_binding_methods_supported: vec!["did".to_string()],
                         credential_signing_alg_values_supported: vec!["ES256K".to_string()],
                         proof_types_supported: Default::default(),
-                        display: vec![json!({
-                            "name": "University Credential",
-                            "locale": "en-US",
-                            "logo": {
-                                "uri": format!("{}/logo/credential.svg", &mock_server.uri()),
-                                "alternative_text": "a square logo of a university"
-                            },
-                            "background_color": "#12107c",
-                            "text_color": "#FFFFFF"
-                        })],
+                        display: vec![CredentialConfigurationsSupportedDisplay {
+                            name: "University Credential".to_string(),
+                            locale: Some("en-US".to_string()),
+                            logo: Some(Logo {
+                                uri: format!("{}/logo/credential.svg", &mock_server.uri()).parse().unwrap(),
+                                alt_text: Some("a square logo of a university".to_string()),
+                            }),
+                            description: None,
+                            background_image: None,
+                            background_color: Some("#12107c".to_string()),
+                            text_color: Some("#FFFFFF".to_string()),
+                        }],
                         claims: Default::default(),
                     },
                 )]

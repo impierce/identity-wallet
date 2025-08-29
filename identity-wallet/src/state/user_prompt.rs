@@ -46,7 +46,7 @@ pub enum CurrentUserPrompt {
         client_name: String,
         #[ts(optional)]
         logo_uri: Option<String>,
-        options: Vec<(String, Vec<DisplayClaim>)>,
+        uuids: Vec<String>,
     },
 }
 

@@ -152,8 +152,7 @@ async fn download_credential_logos(
         let credential_logo_uri = credential_configuration
             .display
             .first()
-            .and_then(|display| display.logo.clone())
-            .map(|logo| logo.uri);
+            .and_then(|value| value.logo.as_ref().map(|logo| logo.uri.clone()));
 
         info!("credential_logo_uri: {credential_logo_uri:?}");
 

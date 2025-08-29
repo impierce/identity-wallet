@@ -96,6 +96,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         provider_manager,
         wallet,
     };
+    state.is_unlocked = true;
 
     state
         .core_utils

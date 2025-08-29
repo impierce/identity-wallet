@@ -3,15 +3,15 @@ resolver = "2"
 members = ["identity-wallet", "unime/src-tauri"]
 
 [workspace.dependencies]
-tauri = { version = "2.8.0", features = ["protocol-asset", "rustls-tls"] }
-tauri-build = "2.3.1"
+tauri = { version = "2.8.2", features = ["protocol-asset", "rustls-tls"] }
+tauri-build = "2.4.0"
 
 # did_manager = { git = "https://git@github.com/impierce/did-manager", tag = "v1.0.0-beta.5" }
 did_manager = { git = "https://git@github.com/impierce/did-manager", branch = "temp/workaround" }
 jsonwebtoken = "9.3"
 log = "^0.4"
-# oid4vc = { git = "https://git@github.com/impierce/openid4vc.git", rev = "1038972" }
-oid4vc = { path = "../openid4vc" }
+# FIXME: make sure to update this `rev` when https://github.com/impierce/openid4vc/pull/106 is merged.
+oid4vc = { git = "https://github.com/impierce/openid4vc", rev = "a6a5de3" }
 rand = "0.8"
 rustls = { version = "0.23", features = ["aws-lc-rs"] }
 rustls-platform-verifier = { version = "0.6" }
@@ -49,7 +49,7 @@ identity_iota = { git = "https://github.com/impierce/identity.rs", branch = "tmp
 
 [workspace.package]
 name = "unime"
-version = "0.6.12"
+version = "0.10.0"
 description = "Identity Wallet for people to manage Decentralized Identities and Verifiable Credentials"
 homepage = "https://www.impierce.com/"
 authors = ["Impierce Technologies"]

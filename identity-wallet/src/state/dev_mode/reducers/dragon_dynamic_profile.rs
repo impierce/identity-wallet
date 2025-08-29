@@ -35,6 +35,7 @@ pub async fn load_dragon_profile(mut state: AppState, dev_profile: DevProfile) -
     }
 
     state = create_new_profile(state).await?;
+    state.is_unlocked = true;
 
     if ProfileSteps::AddCredentials <= steps {
         debug!("Add credentials step executed");
@@ -224,12 +225,12 @@ async fn share_credentials(state: AppState) -> Result<AppState, AppError> {
     if let Some(CurrentUserPrompt::ShareCredentials {
         client_name: _,
         logo_uri: _,
-        options,
+        uuids,
     }) = &state.current_user_prompt
     {
-        let credential_uuids: Vec<(Uuid, Vec<_>)> = options
+        let credential_uuids: Vec<Uuid> = uuids
             .iter()
-            .map(|(uuid_str, display_claims)| (Uuid::parse_str(&uuid_str).unwrap(), display_claims.clone()))
+            .map(|uuid_str| Uuid::parse_str(&uuid_str).unwrap())
             .collect();
 
         let cr_selected = CredentialsSelected { credential_uuids };
