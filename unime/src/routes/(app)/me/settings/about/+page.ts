@@ -14,7 +14,7 @@ export const load = (async () => {
     {
       id: 'OID4VCI',
       description: 'OpenID for Verifiable Credential Issuance',
-      version: 'Working Group Draft 13 (published: 8 February 2024)',
+      version: 'Working Group Draft 15 (published: 19 December 2024)',
       url: 'https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0-13.html',
     },
     {
