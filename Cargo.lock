@@ -5596,7 +5596,7 @@ dependencies = [
  "rustls 0.23.31",
  "rustls-platform-verifier 0.6.1",
  "serde",
- "serde_json_path_to_error",
+ "serde_json",
  "serde_with 3.14.0",
  "serial_test",
  "sha256",
@@ -11940,17 +11940,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "serde_json_path_to_error"
-version = "0.1.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "131f9e72e503904612f46028049e1c873b7b4d725baccedf8a00e3e67904cb1a"
-dependencies = [
- "serde",
- "serde_json",
- "serde_path_to_error",
-]
-
-[[package]]
 name = "serde_path_to_error"
 version = "0.1.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -14602,7 +14591,7 @@ dependencies = [
  "rustls 0.23.31",
  "rustls-platform-verifier 0.6.1",
  "serde",
- "serde_json_path_to_error",
+ "serde_json",
  "serial_test",
  "tauri",
  "tauri-build",
