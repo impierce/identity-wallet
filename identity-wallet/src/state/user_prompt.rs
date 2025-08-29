@@ -40,7 +40,7 @@ pub enum CurrentUserPrompt {
         logo_uri: Option<String>,
         #[ts(type = "Record<string, any>")]
         credential_configurations: HashMap<String, CredentialConfigurationsSupportedObject>,
-        #[ts(optional, type = "any")]
+        #[ts(optional, type = "{ input_mode?: 'numeric' | 'text'; length?: number }")]
         tx_code: Option<TxCodeConstraints>,
     },
     #[serde(rename = "share-credentials")]
