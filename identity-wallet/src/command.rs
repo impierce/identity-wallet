@@ -8,6 +8,8 @@ use log::{debug, error, info};
 use std::time::Duration;
 use tauri::Emitter;
 
+// TODO: remove this once we refactor our tests in `/unime/src-tauri/tests`
+/// Define the runtime based on whether we are in test mode or not.
 #[cfg(feature = "test_utils")]
 pub type Runtime = tauri::test::MockRuntime;
 #[cfg(not(feature = "test_utils"))]

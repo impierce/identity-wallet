@@ -12,7 +12,7 @@ use crate::{
             actions::authorization_code_received::CodeReceived, DisplayCredential, VerifiableCredentialRecord,
         },
         user_prompt::CurrentUserPrompt,
-        AppState,
+        AppState, UNIME_CLIENT_ID, UNIME_REDIRECT_URI,
     },
 };
 use identity_iota::credential::Jwt;
@@ -100,10 +100,10 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                 .ok_or(AppError::Error("Missing code verifier".to_string()))?;
 
             TokenRequest::AuthorizationCode {
-                client_id: "unime-client-id".to_string(),
+                client_id: UNIME_CLIENT_ID.to_string(),
                 code,
                 code_verifier: Some(code_verifier),
-                redirect_uri: Some("unime://callback".parse().unwrap()),
+                redirect_uri: Some(UNIME_REDIRECT_URI.parse().unwrap()),
             }
         };
 
@@ -233,6 +233,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                 }
             };
 
+            // TODO: add validation for other credential formats.
             if credential_configuration.credential_format.format() == CredentialFormats::JwtVcJson(()) {
                 // Convert the received credential (as a string) into a Jwt instance for validation.
                 let credential_jwt = Jwt::new(
