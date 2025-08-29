@@ -12,7 +12,7 @@
       "id": "dummy_value",
       "issuer_name": "Ferris",
       "format": {
-        "format": "vc+sd-jwt"
+        "format": "dc+sd-jwt"
       },
       "data": {
         "gender": "Male",
