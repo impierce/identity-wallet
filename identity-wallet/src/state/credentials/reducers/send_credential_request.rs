@@ -1,3 +1,4 @@
+use crate::oid4vci::authorization_request::CodeChallengeMethod;
 use crate::state::credentials::reducers::send_token_request::send_token_request;
 use crate::state::{UNIME_CLIENT_ID, UNIME_REDIRECT_URI};
 use crate::{
@@ -190,7 +191,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                                 ))?
                                 .clone(),
                             Some(code_challenge),
-                            Some("S256".to_string()),
+                            Some(CodeChallengeMethod::S256),
                         )
                         .await
                         .map_err(|err| {
