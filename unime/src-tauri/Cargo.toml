@@ -33,7 +33,7 @@ tauri-plugin-deep-link = { version = "2" }
 tauri-plugin-fs = { version = "2" }
 tauri-plugin-keystore = { version = "2.1.0-alpha.1" }
 tauri-plugin-log = { version = "2", features = ["colored"] }
-tauri-plugin-opener.workspace = true
+tauri-plugin-opener = { version = "2" }
 tauri-plugin-os = { version = "2" }
 tauri-plugin-shell = { version = "2" }
 [target."cfg(any(target_os = \"macos\", windows, target_os = \"linux\"))".dependencies]
