@@ -64,7 +64,7 @@ pub struct Profile {
 impl FeatTrait for Profile {}
 
 /// Format of a locale string: `ll_CC` - where ll is the language code (ISO 639) and CC is the country code (ISO 3166).
-#[derive(Clone, Serialize, Debug, Deserialize, TS, Eq, PartialEq, Default, EnumString, Hash)]
+#[derive(Clone, Serialize, Debug, Deserialize, TS, PartialEq, Default, EnumString)]
 #[ts(export, export_to = "bindings/profile_settings/Locale.ts")]
 #[allow(non_camel_case_types)]
 #[derive(IntoStaticStr)]

@@ -157,7 +157,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
             let uuids: Vec<String> = dcql_query
                 .credentials
                 .iter()
-                .filter_map(|credential_query| {
+                .filter_map(|credential_query_from_request| {
                     verifiable_credentials.iter().find_map(|verifiable_credential_record| {
                         let credential_data: Value = if verifiable_credential_record.display_credential.format
                             == CredentialFormats::DcSdJwt(())
@@ -202,7 +202,8 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                                 .unwrap_or_default()
                         };
 
-                        let credential_query_satisfied = evaluate_credential_query(credential_query, &credential_data);
+                        let credential_query_satisfied =
+                            evaluate_credential_query(credential_query_from_request, &credential_data);
                         credential_query_satisfied.then_some(verifiable_credential_record.display_credential.id.clone())
                     })
                 })
@@ -241,7 +242,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                     current_user_prompt: Some(CurrentUserPrompt::ShareCredentials {
                         client_name,
                         logo_uri,
-                        uuids,
+                        options: uuids,
                     }),
                     ..state
                 });

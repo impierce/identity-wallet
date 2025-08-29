@@ -225,12 +225,12 @@ async fn share_credentials(state: AppState) -> Result<AppState, AppError> {
     if let Some(CurrentUserPrompt::ShareCredentials {
         client_name: _,
         logo_uri: _,
-        uuids,
+        options,
     }) = &state.current_user_prompt
     {
-        let credential_uuids: Vec<Uuid> = uuids
+        let credential_uuids: Vec<Uuid> = options
             .iter()
-            .map(|uuid_str| Uuid::parse_str(&uuid_str).unwrap())
+            .map(|uuid_str| Uuid::parse_str(uuid_str).unwrap())
             .collect();
 
         let cr_selected = CredentialsSelected { credential_uuids };

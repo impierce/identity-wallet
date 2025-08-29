@@ -9,7 +9,6 @@ use jni::{
 #[cfg(not(feature = "test_utils"))]
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    use identity_wallet::state::AppState;
     use identity_wallet::{
         persistence::{clear_assets_tmp_folder, initialize_storage},
         state::AppStateContainer,
@@ -42,7 +41,7 @@ pub fn run() {
             }
             Ok(())
         })
-        .manage(AppStateContainer(AppState::default().into()))
+        .manage(AppStateContainer(Default::default()))
         .plugin(
             tauri_plugin_log::Builder::new()
                 .targets([Target::new(TargetKind::Stdout), Target::new(TargetKind::Webview)])

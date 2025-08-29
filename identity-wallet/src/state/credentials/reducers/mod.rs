@@ -4,4 +4,3 @@ pub mod self_issue_credential;
 pub mod send_credential_request;
 pub mod send_token_request;
 pub mod update_credential_metadata;
-pub mod vp_token_payload_prep;

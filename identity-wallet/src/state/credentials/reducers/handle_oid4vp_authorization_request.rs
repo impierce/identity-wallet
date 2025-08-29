@@ -172,7 +172,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             .map_err(StrongholdValuesError)?
             .unwrap()
             .into_iter()
-            .map(|record| (record.display_credential.id.clone(), record)) // Map to (internal_uuid_string, full_record)
+            .map(|record| (record.display_credential.id.clone(), record))
             .collect();
 
         // TODO: Optimize credential selection so that evaluate_credential_query does not need to be called twice.
@@ -308,8 +308,10 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
         };
         persist_asset(&file_name, &connection.id).ok();
 
+        // History
         let mut history = state.history;
         if !previously_connected {
+            // Only add a `ConnectionAdded` event if the connection was not previously connected.
             history.push(HistoryEvent {
                 connection_name: connection.name.clone(),
                 event_type: EventType::ConnectionAdded,

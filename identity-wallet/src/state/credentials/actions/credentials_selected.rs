@@ -1,6 +1,7 @@
 use crate::reducer;
 use crate::state::credentials::reducers::handle_oid4vp_authorization_request::handle_oid4vp_authorization_request;
 use crate::state::{actions::ActionTrait, Reducer};
+
 use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
