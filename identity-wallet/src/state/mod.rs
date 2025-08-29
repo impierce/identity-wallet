@@ -37,7 +37,7 @@ use verified_data::VerifiedData;
 // TODO: usually in traditional OAuth2/OIDC apps the client_id is provided by the authorization server
 // when registering the app. For now we are hardcoding it here, but in the future we should provide a way to configure it.
 // See: https://github.com/openid/OpenID4VCI/issues/94
-pub const UNIME_CLIENT_ID: &str = "unime-client-id";
+pub const UNIME_CLIENT_ID: &str = "unime";
 
 // This is the custom URI scheme that the app will use to receive the authorization code from the authorization server.
 pub const UNIME_REDIRECT_URI: &str = "unime://callback";
