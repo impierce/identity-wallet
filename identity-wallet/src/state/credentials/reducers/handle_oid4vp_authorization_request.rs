@@ -1,5 +1,4 @@
 use crate::state::core_utils::helpers::get_unverified_jwt_claims;
-use crate::state::credentials::reducers::vp_token_payload_prep::prepare_vp_token_object;
 use crate::{
     error::AppError::{self, *},
     persistence::{hash, persist_asset},
@@ -14,15 +13,131 @@ use crate::{
         AppState,
     },
 };
+use chrono::{Duration, Utc};
+use identity_core::common::Object as IotaObject;
 use identity_iota::did::CoreDID;
 use log::info;
 use oid4vc::oid4vc_core::{
     authorization_request::{AuthorizationRequest, Object},
     client_metadata::ClientMetadataResource,
 };
+use oid4vc::oid4vc_core::{jwt, Subject};
 use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
-use oid4vc::oid4vp::dcql::dcql_query::CredentialQuery;
-use oid4vc::oid4vp::oid4vp::OID4VP;
+use oid4vc::oid4vp::{
+    dcql::dcql_query::{CredentialQuery, Format},
+    oid4vp::OID4VP,
+    token::{
+        verifiable_presentation_jwt::VerifiablePresentationJwt,
+        vp_token::{PresentationFormat, VpToken},
+        vp_token_builder::VpTokenBuilder,
+    },
+};
+
+use identity_credential::{credential::Jwt, presentation::Presentation};
+use identity_iota::core::Url;
+use jsonwebtoken::Algorithm;
+use jsonwebtoken::Header;
+use serde_json::Value;
+use std::sync::Arc;
+
+pub async fn get_vp_token(
+    selected_verifiable_credentials: Vec<(CredentialQuery, Value)>,
+    did_method: &str,
+    subject_manager: &Arc<dyn Subject>,
+    oid4vp_authorization_request: &AuthorizationRequest<Object<OID4VP>>,
+    signing_algorithm: Algorithm,
+) -> Result<VpToken, AppError> {
+    let verifier_audience = oid4vp_authorization_request.body.client_id.to_string();
+    let required_nonce = oid4vp_authorization_request.body.extension.nonce.clone();
+
+    let dcql_query = &oid4vp_authorization_request.body.extension.dcql_query;
+    let mut builder = VpTokenBuilder::builder_dcql_query(dcql_query.clone());
+
+    let key_id = subject_manager
+        .key_id(did_method, signing_algorithm)
+        .await
+        .ok_or_else(|| AppError::Error(format!("Failed to get signing method ID for DID method {did_method}")))?;
+
+    for (credential_query_from_dcql, vc_value) in selected_verifiable_credentials {
+        let credential_query_id = credential_query_from_dcql.id.clone();
+        let format_from_query = credential_query_from_dcql.format;
+
+        let presentation_format_item = match format_from_query {
+            Format::JwtVcJson => {
+                let raw_vc_jwt_string = vc_value
+                    .as_str()
+                    .ok_or(AppError::InvalidCredentialFormatError)?
+                    .to_string();
+
+                let vc_jwt: Jwt = raw_vc_jwt_string.into();
+
+                let full_did = subject_manager
+                    .identifier(did_method, signing_algorithm)
+                    .await
+                    .map_err(|e| AppError::Error(format!("Failed to get DID identifier: {e}")))?;
+
+                let full_did_string = full_did.to_string();
+
+                let holder_url: Url = Url::parse(&full_did_string)
+                    .map_err(|e| AppError::Error(format!("Failed to parse DID as URL: {e}")))?;
+
+                let presentation = Presentation::builder(holder_url, IotaObject::default())
+                    .credential(vc_jwt)
+                    .build()
+                    .map_err(AppError::PresentationBuilderError)?;
+
+                let verifiable_presentation_jwt = VerifiablePresentationJwt::builder()
+                    .iss(full_did_string.clone())
+                    .sub(full_did_string.clone())
+                    .aud(verifier_audience.to_string())
+                    .nonce(required_nonce.to_string())
+                    .iat(Utc::now().timestamp())
+                    .exp((Utc::now() + Duration::minutes(10)).timestamp())
+                    .verifiable_presentation(presentation)
+                    .build()
+                    .map_err(|e| AppError::Error(format!("Failed to build VerifiablePresentationJwt: {e}")))?;
+
+                let jwt_header = Header {
+                    alg: signing_algorithm,
+                    kid: Some(key_id.to_string()),
+                    typ: Some("JWT".to_string()),
+                    ..Default::default()
+                };
+
+                let signed_vc_presentation_jwt_string = jwt::encode(
+                    subject_manager.clone(),
+                    jwt_header,
+                    &verifiable_presentation_jwt,
+                    did_method,
+                )
+                .await
+                .map_err(|e| AppError::Error(format!("Failed to sign VP JWT: {e}")))?;
+
+                PresentationFormat::JwtVcJson(signed_vc_presentation_jwt_string)
+            }
+            Format::DcSdJwt => {
+                let sd_jwt_vc_string = vc_value
+                    .as_str()
+                    .ok_or(AppError::InvalidCredentialFormatError)?
+                    .to_string();
+
+                // TODO: Implement proper SD-JWT presentation logic here
+
+                PresentationFormat::DcSdJwt(sd_jwt_vc_string)
+            }
+            _ => {
+                return Err(AppError::InvalidCredentialFormatError);
+            }
+        };
+
+        builder = builder.add_presentation(credential_query_id, presentation_format_item);
+    }
+
+    // Build and validate the VP token
+    builder
+        .build()
+        .map_err(|e| AppError::Error(format!("Failed to build VpToken: {e:?}",)))
+}
 
 // Sends the authorization response including the verifiable credentials.
 pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action) -> Result<AppState, AppError> {
@@ -56,7 +171,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             .map_err(StrongholdValuesError)?
             .unwrap()
             .into_iter()
-            .map(|record| (record.display_credential.id.clone(), record)) // Map to (internal_uuid_string, full_record)
+            .map(|record| (record.display_credential.id.clone(), record))
             .collect();
 
         // TODO: Optimize credential selection so that evaluate_credential_query does not need to be called twice.
@@ -153,7 +268,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
                     })?,
             );
 
-        let vp_token_payload = prepare_vp_token_object(
+        let vp_token_payload = get_vp_token(
             selected_verifiable_credentials,
             did_method,
             &identity_manager.subject,
@@ -194,8 +309,10 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
         };
         persist_asset(&file_name, &connection.id).ok();
 
+        // History
         let mut history = state.history;
         if !previously_connected {
+            // Only add a `ConnectionAdded` event if the connection was not previously connected.
             history.push(HistoryEvent {
                 connection_name: connection.name.clone(),
                 event_type: EventType::ConnectionAdded,

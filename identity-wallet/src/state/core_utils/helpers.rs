@@ -31,10 +31,9 @@ pub fn get_unverified_jwt_claims(jwt: &serde_json::Value) -> Result<serde_json::
 pub async fn get_issuer_document(resolver: &Resolver, credential_jwt: &Jwt) -> Option<CoreDocument> {
     let decoder = Decoder::new();
 
-    let temp = credential_jwt.as_str().split('~').next().unwrap();
     // Decode the linked verifiable credential.
     let decoded_credential_jwt = decoder
-        .decode_compact_serialization(temp.as_bytes(), None)
+        .decode_compact_serialization(credential_jwt.as_str().as_bytes(), None)
         .inspect_err(|err| warn!("Failed to decode credential jwt: {err:#?}"))
         .ok()?;
 

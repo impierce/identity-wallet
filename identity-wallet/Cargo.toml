@@ -1,6 +1,6 @@
 [package]
 name = "identity-wallet"
-version = "0.6.12"
+version = "0.10.0"
 edition = "2021"
 rust-version.workspace = true
 
@@ -18,17 +18,17 @@ downcast-rs = "1.2"
 dyn-clone = "1.0"
 futures = "0.3"
 icu = "1.4.0"
-identity_credential = { git = "https://github.com/impierce/identity.rs", branch = "tmp/disable-typ-check", default-features = false, features = [
+identity_credential = { git = "https://github.com/iotaledger/identity", tag = "v1.6.0-beta.2", default-features = false, features = [
     "credential",
     "domain-linkage",
     "presentation",
     "validator",
     "sd-jwt-vc",
 ] }
-identity_core = { git = "https://github.com/impierce/identity.rs", branch = "tmp/disable-typ-check" }
-identity_eddsa_verifier = { git = "https://github.com/impierce/identity.rs", branch = "tmp/disable-typ-check" }
-identity_iota = { git = "https://github.com/impierce/identity.rs", branch = "tmp/disable-typ-check" }
-identity_jose = { git = "https://github.com/impierce/identity.rs", branch = "tmp/disable-typ-check" }
+identity_core = { git = "https://github.com/iotaledger/identity", tag = "v1.6.0-beta.2" }
+identity_eddsa_verifier = { git = "https://github.com/iotaledger/identity", tag = "v1.6.0-beta.2" }
+identity_iota = { git = "https://github.com/iotaledger/identity", tag = "v1.6.0-beta.2" }
+identity_jose = { git = "https://github.com/iotaledger/identity", tag = "v1.6.0-beta.2" }
 iota_stronghold = { version = "2.1" }
 itertools = "0.10"
 jsonschema = "0.29"
@@ -63,15 +63,6 @@ uuid = { version = "1.4", features = ["v4", "fast-rng", "serde"] }
 
 [dev-dependencies]
 serial_test.workspace = true
-async-trait = "0.1"
-base64 = "0.22"
-chrono = "0.4"
-derivative = "2.2"
-did_manager.workspace = true
-downcast-rs = "1.2"
-dyn-clone = "1.0"
-futures = "0.3"
-icu = "1.4.0"
 tempfile.workspace = true
 wiremock.workspace = true
 
@@ -79,4 +70,4 @@ wiremock.workspace = true
 dotenvy = "0.15"
 
 [features]
-test_utils = []
+test_utils = ["tauri/test"]
