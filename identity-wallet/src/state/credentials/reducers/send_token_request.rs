@@ -12,7 +12,7 @@ use crate::{
             actions::authorization_code_received::CodeReceived, DisplayCredential, VerifiableCredentialRecord,
         },
         user_prompt::CurrentUserPrompt,
-        AppState,
+        AppState, UNIME_CLIENT_ID, UNIME_REDIRECT_URI,
     },
 };
 use identity_iota::credential::Jwt;
@@ -100,10 +100,10 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                 .ok_or(AppError::Error("Missing code verifier".to_string()))?;
 
             TokenRequest::AuthorizationCode {
-                client_id: "unime-client-id".to_string(),
+                client_id: UNIME_CLIENT_ID.to_string(),
                 code,
                 code_verifier: Some(code_verifier),
-                redirect_uri: Some("unime://callback".parse().unwrap()),
+                redirect_uri: Some(UNIME_REDIRECT_URI.parse().unwrap()),
             }
         };
 
@@ -192,6 +192,10 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
 
             info!("nonce: {nonce:?}");
 
+            let pre_authorized_grant_anonymous_access_supported = authorization_server_metadata
+                .pre_authorized_grant_anonymous_access_supported
+                .unwrap_or(false);
+
             // TODO: all code related to sending the actual credential request(s) should be moved to a separate reducer.
             // Get the credential.
             let credential_response = wallet
@@ -201,7 +205,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                     nonce,
                     credential_configuration_id.clone(),
                     credential_configuration,
-                    is_pre_authorized,
+                    pre_authorized_grant_anonymous_access_supported,
                 )
                 .await
                 .map_err(|err| {
@@ -229,6 +233,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                 }
             };
 
+            // TODO: add validation for other credential formats.
             if credential_configuration.credential_format.format() == CredentialFormats::JwtVcJson(()) {
                 // Convert the received credential (as a string) into a Jwt instance for validation.
                 let credential_jwt = Jwt::new(
@@ -244,7 +249,6 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                 credential_configuration_id,
                 credential,
                 credential_configuration.display.clone(),
-                credential_configuration.claims.clone(),
             ));
         }
 
@@ -257,8 +261,8 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
 
         let mut history_credentials = vec![];
 
-        for (credential_configuration_id, credential, display, claims) in credentials.into_iter() {
-            let mut verifiable_credential_record = VerifiableCredentialRecord::new(credential, claims)?;
+        for (credential_configuration_id, credential, display) in credentials.into_iter() {
+            let mut verifiable_credential_record = VerifiableCredentialRecord::try_from(credential)?;
             // Validate the credential against its corresponding credential JSON Schema.
             validate_credential_types(&verifiable_credential_record.verifiable_credential)?;
 
@@ -286,10 +290,9 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
 
             display
                 .first()
-                .and_then(|display| display.get("logo"))
-                .and_then(|logo| logo.get("uri"))
-                .and_then(|uri| uri.as_str())
-                .and_then(|uri| persist_asset(&hash(uri), key.to_string().as_str()).ok());
+                .and_then(|display| display.logo.clone())
+                .map(|logo| logo.uri.clone())
+                .and_then(|uri| persist_asset(&hash(uri.as_str()), key.to_string().as_str()).ok());
 
             // Remove the old credential from the stronghold if it exists.
             stronghold_manager.remove(key).map_err(StrongholdDeletionError)?;
@@ -369,7 +372,7 @@ fn get_credential_display_name(
         .get(credential_configuration_id)
         .and_then(|credential_configuration| credential_configuration.display.first())
         // Get the name of the credential from the display property if it exists.
-        .and_then(|display| display["name"].as_str())
+        .map(|display| display.name.clone())
         .or_else(|| {
             // Else, if the `type` property is a string, use it as the name of the credential.
             verifiable_credential_record.display_credential.data["type"]
@@ -381,8 +384,8 @@ fn get_credential_display_name(
                         .and_then(|types| types.last())
                         .and_then(|last_type| last_type.as_str()),
                 )
+                .map(ToString::to_string)
         })
-        .map(ToString::to_string)
         // Fallback to `Credential` if the credential is not a valid W3C Verifiable Credential.
         .unwrap_or("Credential".to_string())
 }
@@ -390,6 +393,7 @@ fn get_credential_display_name(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use oid4vc::oid4vci::credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedDisplay;
 
     #[test]
     fn display_name_is_successfully_read_from_credential_configuration() {
@@ -399,7 +403,15 @@ mod tests {
         let credential_configurations_supported = HashMap::from_iter(vec![(
             credential_configuration_id.to_string(),
             CredentialConfigurationsSupportedObject {
-                display: vec![json!({"name": "Credential Name"})],
+                display: vec![CredentialConfigurationsSupportedDisplay {
+                    name: "Credential Name".to_string(),
+                    locale: None,
+                    logo: None,
+                    description: None,
+                    background_image: None,
+                    background_color: None,
+                    text_color: None,
+                }],
                 ..Default::default()
             },
         )]);

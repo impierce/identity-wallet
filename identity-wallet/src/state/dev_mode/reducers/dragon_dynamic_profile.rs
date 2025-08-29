@@ -35,6 +35,7 @@ pub async fn load_dragon_profile(mut state: AppState, dev_profile: DevProfile) -
     }
 
     state = create_new_profile(state).await?;
+    state.is_unlocked = true;
 
     if ProfileSteps::AddCredentials <= steps {
         debug!("Add credentials step executed");
