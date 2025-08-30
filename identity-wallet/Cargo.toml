@@ -7,6 +7,7 @@ rust-version.workspace = true
 [dependencies]
 tauri.workspace = true
 tauri-plugin-fs = { version = "2" }
+tauri-plugin-opener = { version = "2" }
 
 anyhow = "1.0"
 async-trait = "0.1"
@@ -52,7 +53,6 @@ stronghold_ext = { git = "https://github.com/impierce/stronghold_ext", features 
     "crypto",
 ] }
 strum = { version = "0.25", features = ["derive"] }
-tauri-plugin-opener = { version = "2" }
 thiserror = "1.0"
 tokio.workspace = true
 ts-rs = { version = "7.0", features = ["chrono-impl"] }
