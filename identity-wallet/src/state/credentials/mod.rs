@@ -38,7 +38,7 @@ pub struct DisplayCredential {
     #[ts(type = "{ format: string }")]
     pub format: CredentialFormats,
     pub issuer_name: String,
-    // TODO: Remove this field?
+    // TODO: Remove this field once we fully implemented `display_claims` for all credential formats.
     #[ts(type = "any")]
     pub data: serde_json::Value,
     // TODO: change this to `HashMap<Locale, Vec<DisplayClaim>>` to support multiple locales.
@@ -115,15 +115,19 @@ impl VerifiableCredentialRecord {
                 let display_claims: Vec<DisplayClaim> = claim_descriptions
                     .into_iter()
                     .map(|claim_description| {
-                        // FIXME
-                        let key = claim_description.display[0].name.clone();
+                        let key = claim_description
+                            .display
+                            .get(0)
+                            .map(|display| display.name.clone())
+                            // TODO: Come up with a proper fallback strategy here.
+                            .unwrap_or_default();
                         let value = claim_description
                             .path
                             .get_values_from_json(&json!(credential_subject))
                             .first()
-                            .expect("FIXME")
-                            .clone()
-                            .clone();
+                            .cloned()
+                            // TODO: Come up with a proper fallback strategy here.
+                            .unwrap_or_default();
 
                         DisplayClaim {
                             path: claim_description.path,
@@ -189,11 +193,11 @@ impl VerifiableCredentialRecord {
                 // the Issuer. Before we do this we need to make sure that UniCore supports Claims Description for
                 // Issuer Metadata (see: https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0-15.html#claims-description-issuer-metadata).
                 // For now we just display the raw credential as is.
+                let display_claims = vec![];
 
                 let data = credential_display;
 
-                // FIXME!!: empty vec!
-                (id, format, data, issuance_date, vec![])
+                (id, format, data, issuance_date, display_claims)
             };
 
             DisplayCredential {

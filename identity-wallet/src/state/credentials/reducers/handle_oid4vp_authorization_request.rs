@@ -118,13 +118,14 @@ pub async fn get_vp_token(
 
                 PresentationFormat::JwtVcJson(signed_vc_presentation_jwt_string)
             }
+            // TODO: Support `vc+sd-jwt` format
             Format::DcSdJwt => {
                 let sd_jwt_vc = vc_value
                     .as_str()
                     .ok_or(AppError::InvalidCredentialFormatError)?
                     .to_string()
                     .parse::<SdJwtVc>()
-                    .unwrap();
+                    .map_err(|err| AppError::Error(format!("Failed to parse SD-JWT VC: {err}")))?;
 
                 let subject_wrapper = SubjectWrapper {
                     subject: subject_manager.clone(),
@@ -141,13 +142,11 @@ pub async fn get_vp_token(
 
                 let (sd_jwt_vc, _) = sd_jwt_vc
                     .into_presentation(&Sha256Hasher::new())
-                    .unwrap()
+                    .map_err(|err| AppError::Error(format!("Failed to create SD-JWT presentation: {err}")))?
                     // TODO: Conceal claims
                     .attach_key_binding_jwt(key_binding_jwt)
                     .finish()
-                    .unwrap();
-
-                // TODO: Implement proper SD-JWT presentation logic here
+                    .map_err(|err| AppError::Error(format!("Failed to finalize SD-JWT presentation: {err}")))?;
 
                 PresentationFormat::DcSdJwt(sd_jwt_vc.to_string())
             }
