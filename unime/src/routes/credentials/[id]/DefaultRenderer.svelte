@@ -15,20 +15,17 @@
   }
   // `fields` does not have to be reactive because `credential` never changes while component is mounted.
   let fields = Object.keys(credential.data.credentialSubject).filter((field) => !hideFields.includes(field));
-
-  let displayClaims = credential.display_claims;
 </script>
 
-<!-- TODO: fix the `ts_rs` bindings for the `format` field -->
 <!--
   SD-JWT credentials (`dc+sd-jwt` or `vc+sd-jwt`) can include `display` metadata from the issuer.
   If `display_claims` is available, we use it to render the claims with their intended names and order.
   For all other formats, we fall back to iterating over the raw claims in `credentialSubject`.
 -->
 {#if credential.format.format === 'dc+sd-jwt' || credential.format.format === 'vc+sd-jwt'}
-  {#if displayClaims}
+  {#if credential.display_claims}
     <div class="flex flex-col gap-4">
-      {#each displayClaims as displayClaim}
+      {#each credential.display_claims as displayClaim}
         {#if isDataUrl(displayClaim.value)}
           <DataUrlImageRenderer key={displayClaim.key} dataUrl={displayClaim.value} />
         {:else}

@@ -2,4 +2,4 @@
 import type { CredentialMetadata } from "./CredentialMetadata";
 import type { DisplayClaim } from "./DisplayClaim";
 
-export interface DisplayCredential { id: string, format: string, issuer_name: string, data: any, display_claims: Array<DisplayClaim>, metadata: CredentialMetadata, connection_id?: string, display_name: string, }
+export interface DisplayCredential { id: string, format: { format: string }, issuer_name: string, data: any, display_claims: Array<DisplayClaim>, metadata: CredentialMetadata, connection_id?: string, display_name: string, }

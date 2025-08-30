@@ -35,7 +35,7 @@ pub struct DisplayClaim {
 pub struct DisplayCredential {
     #[derivative(PartialEq = "ignore")]
     pub id: String,
-    #[ts(type = "string")]
+    #[ts(type = "{ format: string }")]
     pub format: CredentialFormats,
     pub issuer_name: String,
     // TODO: Remove this field?
