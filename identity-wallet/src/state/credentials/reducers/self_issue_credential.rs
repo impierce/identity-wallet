@@ -115,8 +115,8 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
         let sd_jwt_credential = SdJwtVcBuilder::new(credential_data)
             .map_err(|_| AppError::Error("Failed to create a SdJwtVcBuilder".to_string()))?
             .header(JsonObject::from_iter(vec![
-                ("typ".to_string(), serde_json::Value::String(kid.clone())),
-                ("kid".to_string(), serde_json::Value::String(SD_JWT_DC_TYP.to_string())),
+                ("typ".to_string(), serde_json::Value::String(SD_JWT_DC_TYP.to_string())),
+                ("kid".to_string(), serde_json::Value::String(kid.clone())),
             ]))
             .vct(
                 "https://www.ietf.org/archive/id/draft-terbu-oauth-sd-jwt-vc-00.html"
