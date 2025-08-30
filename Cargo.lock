@@ -5579,9 +5579,9 @@ dependencies = [
  "dyn-clone",
  "futures",
  "icu",
- "identity_core 1.6.0-beta (git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check)",
+ "identity_core 1.6.0-beta (git+https://github.com/iotaledger/identity?tag=v1.6.0-beta.2)",
  "identity_credential",
- "identity_eddsa_verifier",
+ "identity_eddsa_verifier 1.6.0-beta (git+https://github.com/iotaledger/identity?tag=v1.6.0-beta.2)",
  "identity_iota",
  "identity_jose",
  "iota_stronghold",
@@ -5637,7 +5637,7 @@ dependencies = [
 [[package]]
 name = "identity_core"
 version = "1.6.0-beta"
-source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#bd980f174912e5a37c809d3abceb469565eb9df8"
+source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#2ee41ef8e5045e5d4447010b9c7a75c4419d719d"
 dependencies = [
  "deranged",
  "js-sys",
@@ -5654,7 +5654,7 @@ dependencies = [
 [[package]]
 name = "identity_credential"
 version = "1.6.0-beta"
-source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#bd980f174912e5a37c809d3abceb469565eb9df8"
+source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#2ee41ef8e5045e5d4447010b9c7a75c4419d719d"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -5683,7 +5683,7 @@ dependencies = [
 [[package]]
 name = "identity_did"
 version = "1.6.0-beta"
-source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#bd980f174912e5a37c809d3abceb469565eb9df8"
+source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#2ee41ef8e5045e5d4447010b9c7a75c4419d719d"
 dependencies = [
  "did_url_parser 0.3.0",
  "form_urlencoded",
@@ -5697,7 +5697,7 @@ dependencies = [
 [[package]]
 name = "identity_document"
 version = "1.6.0-beta"
-source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#bd980f174912e5a37c809d3abceb469565eb9df8"
+source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#2ee41ef8e5045e5d4447010b9c7a75c4419d719d"
 dependencies = [
  "did_url_parser 0.2.0",
  "identity_core 1.6.0-beta (git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check)",
@@ -5712,7 +5712,16 @@ dependencies = [
 [[package]]
 name = "identity_eddsa_verifier"
 version = "1.6.0-beta"
-source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#bd980f174912e5a37c809d3abceb469565eb9df8"
+source = "git+https://github.com/iotaledger/identity?tag=v1.6.0-beta.2#0ecce7b015ca5b7a731a7ff62dad101a1a4a3bfe"
+dependencies = [
+ "identity_jose",
+ "iota-crypto",
+]
+
+[[package]]
+name = "identity_eddsa_verifier"
+version = "1.6.0-beta"
+source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#2ee41ef8e5045e5d4447010b9c7a75c4419d719d"
 dependencies = [
  "identity_jose",
  "iota-crypto",
@@ -5721,7 +5730,7 @@ dependencies = [
 [[package]]
 name = "identity_iota"
 version = "1.6.0-beta"
-source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#bd980f174912e5a37c809d3abceb469565eb9df8"
+source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#2ee41ef8e5045e5d4447010b9c7a75c4419d719d"
 dependencies = [
  "identity_core 1.6.0-beta (git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check)",
  "identity_credential",
@@ -5737,7 +5746,7 @@ dependencies = [
 [[package]]
 name = "identity_iota_core"
 version = "1.6.0-beta"
-source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#bd980f174912e5a37c809d3abceb469565eb9df8"
+source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#2ee41ef8e5045e5d4447010b9c7a75c4419d719d"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -5749,7 +5758,7 @@ dependencies = [
  "identity_credential",
  "identity_did",
  "identity_document",
- "identity_eddsa_verifier",
+ "identity_eddsa_verifier 1.6.0-beta (git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check)",
  "identity_jose",
  "identity_verification",
  "iota-config 0.12.0-rc (git+https://github.com/iotaledger/iota.git?tag=v0.12.0-rc)",
@@ -5781,7 +5790,7 @@ dependencies = [
 [[package]]
 name = "identity_jose"
 version = "1.6.0-beta"
-source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#bd980f174912e5a37c809d3abceb469565eb9df8"
+source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#2ee41ef8e5045e5d4447010b9c7a75c4419d719d"
 dependencies = [
  "anyhow",
  "bls12_381_plus 0.8.18",
@@ -5801,7 +5810,7 @@ dependencies = [
 [[package]]
 name = "identity_resolver"
 version = "1.6.0-beta"
-source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#bd980f174912e5a37c809d3abceb469565eb9df8"
+source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#2ee41ef8e5045e5d4447010b9c7a75c4419d719d"
 dependencies = [
  "async-trait",
  "futures",
@@ -5818,7 +5827,7 @@ dependencies = [
 [[package]]
 name = "identity_storage"
 version = "1.6.0-beta"
-source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#bd980f174912e5a37c809d3abceb469565eb9df8"
+source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#2ee41ef8e5045e5d4447010b9c7a75c4419d719d"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -5878,7 +5887,7 @@ dependencies = [
 [[package]]
 name = "identity_verification"
 version = "1.6.0-beta"
-source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#bd980f174912e5a37c809d3abceb469565eb9df8"
+source = "git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check#2ee41ef8e5045e5d4447010b9c7a75c4419d719d"
 dependencies = [
  "identity_core 1.6.0-beta (git+https://github.com/impierce/identity.rs?branch=tmp/disable-typ-check)",
  "identity_did",
@@ -8935,7 +8944,7 @@ version = "0.7.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "77e878c846a8abae00dd069496dbe8751b16ac1c3d6bd2a7283a938e8228f90d"
 dependencies = [
- "proc-macro-crate 2.0.0",
+ "proc-macro-crate 3.3.0",
  "proc-macro2",
  "quote",
  "syn 2.0.106",

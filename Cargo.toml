@@ -33,6 +33,9 @@ move-vm-config = { git = "https://github.com/impierce/iota", package = "move-vm-
 iota-adapter-latest = { git = "https://github.com/impierce/iota", package = "iota-adapter-latest", branch = "temp/fix" }
 iota-execution = { git = "https://github.com/impierce/iota", package = "iota-execution", branch = "temp/fix" }
 
+# TODO: **WARNING**: These are temporary patches that allow us to create and validate both `dc+sd-jwt`s and
+# `vc+sd-jwt`s, but this is a very hacky workaround. We need to come up with a better long-term solution.
+# To see the actual changes, see: https://github.com/iotaledger/identity/compare/v1.6.0-beta.2...impierce:identity.rs:tmp/disable-typ-check?expand=1
 [patch.'https://github.com/iotaledger/identity']
 identity_credential = { git = "https://github.com/impierce/identity.rs", branch = "tmp/disable-typ-check" }
 identity_iota_core = { git = "https://github.com/impierce/identity.rs", branch = "tmp/disable-typ-check" }
