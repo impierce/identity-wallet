@@ -46,6 +46,16 @@
     pendingDeepLinkUrl.set(undefined);
 
     switch (url.protocol) {
+      // TODO: support App/Universal Links
+      case 'unime:': {
+        const code = url.searchParams.get('code') ?? '';
+        const state = url.searchParams.get('state') ?? '';
+        await dispatch({
+          type: '[Credential Offer] Code received',
+          payload: { code, is_pre_authorized: false, state },
+        });
+        break;
+      }
       case 'openid-credential-offer:':
       case 'openid:': {
         await dispatch({

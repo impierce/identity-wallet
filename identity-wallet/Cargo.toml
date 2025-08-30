@@ -7,6 +7,7 @@ rust-version.workspace = true
 [dependencies]
 tauri.workspace = true
 tauri-plugin-fs = { version = "2" }
+tauri-plugin-opener = { version = "2" }
 
 anyhow = "1.0"
 async-trait = "0.1"
@@ -44,14 +45,16 @@ reqwest = { version = "0.11", default-features = false, features = [
 rustls.workspace = true
 rustls-platform-verifier.workspace = true
 serde = { version = "1.0", features = ["derive"] }
-serde_with = "3.8"
 serde_json.workspace = true
+serde_with = "3.8"
 sha256 = "1.4"
 stronghold_engine = { version = "2.0.1" }
-stronghold_ext = { git = "https://github.com/impierce/stronghold_ext", features = ["crypto"] }
+stronghold_ext = { git = "https://github.com/impierce/stronghold_ext", features = [
+    "crypto",
+] }
 strum = { version = "0.25", features = ["derive"] }
 thiserror = "1.0"
-tokio = { version = "1.26.0", features = ["macros"] }
+tokio.workspace = true
 ts-rs = { version = "7.0", features = ["chrono-impl"] }
 typetag = "0.2"
 unicode-normalization = "0.1"
@@ -67,4 +70,4 @@ wiremock.workspace = true
 dotenvy = "0.15"
 
 [features]
-test_utils = []
+test_utils = ["tauri/test"]
