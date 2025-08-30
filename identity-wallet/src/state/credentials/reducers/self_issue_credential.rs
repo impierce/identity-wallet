@@ -1,14 +1,5 @@
 use std::sync::Arc;
 
-use crate::{
-    error::AppError::{self, *},
-    state::{
-        actions::{listen, Action},
-        credentials::{actions::self_issue_credential::SelfIssueCredential, VerifiableCredentialRecord},
-        user_prompt::CurrentUserPrompt,
-        AppState,
-    },
-};
 use async_trait::async_trait;
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
 use identity_credential::sd_jwt_vc::SD_JWT_DC_TYP;
@@ -22,6 +13,16 @@ use jsonwebtoken::Algorithm;
 use oid4vc::oid4vc_core::Sign;
 use serde_json::json;
 use uuid::Uuid;
+
+use crate::{
+    error::AppError::{self, *},
+    state::{
+        actions::{listen, Action},
+        credentials::{actions::self_issue_credential::SelfIssueCredential, VerifiableCredentialRecord},
+        user_prompt::CurrentUserPrompt,
+        AppState,
+    },
+};
 
 pub struct SubjectWrapper {
     pub subject: Arc<dyn oid4vc::oid4vc_core::Subject>,

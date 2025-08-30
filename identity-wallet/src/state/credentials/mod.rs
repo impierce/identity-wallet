@@ -92,11 +92,6 @@ impl VerifiableCredentialRecord {
 
                 let typ = sd_jwt_vc.header().get("typ").and_then(|typ| typ.as_str());
 
-                info!("typ: {typ:?}");
-
-                info!("VC: {}", serde_json::to_string_pretty(&verifiable_credential).unwrap());
-                info!("Claims: {}", serde_json::to_string_pretty(&claim_descriptions).unwrap());
-
                 let id = Uuid::new_v4().to_string();
                 let issuance_date = sd_jwt_vc.claims().iat.map(|iat| iat.to_rfc3339()).unwrap_or_default();
 
@@ -138,11 +133,6 @@ impl VerifiableCredentialRecord {
                     })
                     .collect();
 
-                // // Remove the SD-JWT specific fields that should not be displayed in the frontend.
-                // for key in ["iss", "nbf", "exp", "status", "iat", "sub", "_sd_alg", "cnf", "vct"] {
-                //     credential_subject.as_object_mut().unwrap().remove(key);
-                // }
-
                 let format = if let Some("dc+sd-jwt") = typ {
                     CredentialFormats::DcSdJwt(())
                 } else {
@@ -157,8 +147,6 @@ impl VerifiableCredentialRecord {
                     "credentialSubject": credential_subject
 
                 });
-
-                info!("data: {data:?}");
 
                 (id, format, data, issuance_date, display_claims)
             } else {
