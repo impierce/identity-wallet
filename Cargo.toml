@@ -33,6 +33,16 @@ move-vm-config = { git = "https://github.com/impierce/iota", package = "move-vm-
 iota-adapter-latest = { git = "https://github.com/impierce/iota", package = "iota-adapter-latest", branch = "temp/fix" }
 iota-execution = { git = "https://github.com/impierce/iota", package = "iota-execution", branch = "temp/fix" }
 
+[patch.'https://github.com/iotaledger/identity']
+identity_credential = { git = "https://github.com/impierce/identity.rs", branch = "tmp/disable-typ-check" }
+identity_iota_core = { git = "https://github.com/impierce/identity.rs", branch = "tmp/disable-typ-check" }
+identity_storage = { git = "https://github.com/impierce/identity.rs", branch = "tmp/disable-typ-check" }
+identity_resolver = { git = "https://github.com/impierce/identity.rs", branch = "tmp/disable-typ-check" }
+identity_jose = { git = "https://github.com/impierce/identity.rs", branch = "tmp/disable-typ-check" }
+identity_document = { git = "https://github.com/impierce/identity.rs", branch = "tmp/disable-typ-check" }
+identity_verification = { git = "https://github.com/impierce/identity.rs", branch = "tmp/disable-typ-check" }
+identity_iota = { git = "https://github.com/impierce/identity.rs", branch = "tmp/disable-typ-check" }
+
 [workspace.package]
 name = "unime"
 version = "0.10.0"

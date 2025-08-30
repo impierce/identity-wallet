@@ -1,4 +1,5 @@
 use crate::state::core_utils::helpers::get_unverified_jwt_claims;
+use crate::state::credentials::reducers::self_issue_credential::SubjectWrapper;
 use crate::{
     error::AppError::{self, *},
     persistence::{hash, persist_asset},
@@ -15,7 +16,8 @@ use crate::{
 };
 use chrono::{Duration, Utc};
 use identity_core::common::Object as IotaObject;
-use identity_credential::sd_jwt_v2::Sha256Hasher;
+use identity_credential::sd_jwt_v2::{KeyBindingJwtBuilder, Sha256Hasher};
+use identity_credential::sd_jwt_vc::SdJwtVc;
 use identity_iota::did::CoreDID;
 use log::info;
 use oid4vc::oid4vc_core::{
@@ -117,14 +119,37 @@ pub async fn get_vp_token(
                 PresentationFormat::JwtVcJson(signed_vc_presentation_jwt_string)
             }
             Format::DcSdJwt => {
-                let sd_jwt_vc_string = vc_value
+                let sd_jwt_vc = vc_value
                     .as_str()
                     .ok_or(AppError::InvalidCredentialFormatError)?
-                    .to_string();
+                    .to_string()
+                    .parse::<SdJwtVc>()
+                    .unwrap();
+
+                let subject_wrapper = SubjectWrapper {
+                    subject: subject_manager.clone(),
+                    preferred_did_method: did_method.to_string(),
+                };
+
+                let key_binding_jwt = KeyBindingJwtBuilder::new()
+                    .iat(Utc::now().timestamp())
+                    .aud(verifier_audience.to_string())
+                    .nonce(required_nonce.to_string())
+                    .finish(&sd_jwt_vc, &Sha256Hasher::new(), "RS256", &subject_wrapper)
+                    .await
+                    .map_err(|e| AppError::Error(format!("Failed to build KeyBindingJwt: {e}")))?;
+
+                let (sd_jwt_vc, _) = sd_jwt_vc
+                    .into_presentation(&Sha256Hasher::new())
+                    .unwrap()
+                    // TODO: Conceal claims
+                    .attach_key_binding_jwt(key_binding_jwt)
+                    .finish()
+                    .unwrap();
 
                 // TODO: Implement proper SD-JWT presentation logic here
 
-                PresentationFormat::DcSdJwt(sd_jwt_vc_string)
+                PresentationFormat::DcSdJwt(sd_jwt_vc.to_string())
             }
             _ => {
                 return Err(AppError::InvalidCredentialFormatError);
