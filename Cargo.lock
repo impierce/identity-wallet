@@ -9246,7 +9246,7 @@ dependencies = [
 [[package]]
 name = "oid4vc"
 version = "0.1.0"
-source = "git+https://github.com/impierce/openid4vc?rev=348af4c#348af4c89cfe43fb4af2a8f53fc6e3e851de5b9b"
+source = "git+https://github.com/impierce/openid4vc?rev=00f29ac#00f29ac15b921affb6e222cf08b35f5c4984af3f"
 dependencies = [
  "oid4vc-core",
  "oid4vc-manager",
@@ -9258,7 +9258,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-core"
 version = "0.1.0"
-source = "git+https://github.com/impierce/openid4vc?rev=348af4c#348af4c89cfe43fb4af2a8f53fc6e3e851de5b9b"
+source = "git+https://github.com/impierce/openid4vc?rev=00f29ac#00f29ac15b921affb6e222cf08b35f5c4984af3f"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -9283,7 +9283,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-manager"
 version = "0.1.0"
-source = "git+https://github.com/impierce/openid4vc?rev=348af4c#348af4c89cfe43fb4af2a8f53fc6e3e851de5b9b"
+source = "git+https://github.com/impierce/openid4vc?rev=00f29ac#00f29ac15b921affb6e222cf08b35f5c4984af3f"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -9317,7 +9317,7 @@ dependencies = [
 [[package]]
 name = "oid4vci"
 version = "0.1.0"
-source = "git+https://github.com/impierce/openid4vc?rev=348af4c#348af4c89cfe43fb4af2a8f53fc6e3e851de5b9b"
+source = "git+https://github.com/impierce/openid4vc?rev=00f29ac#00f29ac15b921affb6e222cf08b35f5c4984af3f"
 dependencies = [
  "anyhow",
  "chrono",
@@ -9345,7 +9345,7 @@ dependencies = [
 [[package]]
 name = "oid4vp"
 version = "0.1.0"
-source = "git+https://github.com/impierce/openid4vc?rev=348af4c#348af4c89cfe43fb4af2a8f53fc6e3e851de5b9b"
+source = "git+https://github.com/impierce/openid4vc?rev=00f29ac#00f29ac15b921affb6e222cf08b35f5c4984af3f"
 dependencies = [
  "anyhow",
  "chrono",
@@ -12357,7 +12357,7 @@ dependencies = [
 [[package]]
 name = "siopv2"
 version = "0.1.0"
-source = "git+https://github.com/impierce/openid4vc?rev=348af4c#348af4c89cfe43fb4af2a8f53fc6e3e851de5b9b"
+source = "git+https://github.com/impierce/openid4vc?rev=00f29ac#00f29ac15b921affb6e222cf08b35f5c4984af3f"
 dependencies = [
  "anyhow",
  "async-trait",
