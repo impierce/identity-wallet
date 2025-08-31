@@ -246,6 +246,8 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                     }),
                     ..state
                 });
+            } else {
+                return Err(NoMatchingCredentialError);
             }
         } else {
             return Err(InvalidAuthorizationRequest(Box::new(generic_authorization_request)));
