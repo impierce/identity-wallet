@@ -2,6 +2,7 @@
   import { onDestroy } from 'svelte';
 
   import LL from '$i18n/i18n-svelte';
+  import { PinInput } from 'melt/builders';
 
   import type { CurrentUserPrompt } from '@bindings/user_prompt/CurrentUserPrompt';
 
@@ -16,7 +17,8 @@
   type IsCredentialOfferPrompt<T> = T extends { type: 'credential-offer' } ? T : never;
   type CredentialOfferPrompt = IsCredentialOfferPrompt<CurrentUserPrompt>;
 
-  const { credential_configurations, issuer_name, logo_uri } = $state.current_user_prompt as CredentialOfferPrompt;
+  const { credential_configurations, issuer_name, logo_uri, tx_code } =
+    $state.current_user_prompt as CredentialOfferPrompt;
 
   // let credential_configurations: Record<string, CredentialConfiguration> =
   //   $state.current_user_prompt?.credential_configurations;
@@ -25,7 +27,19 @@
 
   let loading = false;
 
+  $: complete = false;
+
   const imageId = logo_uri ? hash(logo_uri) : '_';
+
+  const pinInput = new PinInput({
+    type: tx_code?.input_mode ?? 'numeric',
+    maxLength: tx_code?.length ?? 4,
+    placeholder: '',
+    allowPaste: false,
+    onValueChange() {
+      complete = pinInput.value.length === tx_code?.length;
+    },
+  });
 
   // When an error is received, cancel the flow and redirect to the "me" page
   error.subscribe((err) => {
@@ -87,18 +101,40 @@
         </ListItemCard>
       {/each}
     </div>
+
+    <!-- PIN Code -->
+    {#if tx_code}
+      <!-- <div class="flex grow flex-col items-center justify-center space-x-6 p-4"> -->
+      <div>
+        <p class="w-full text-center text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">
+          A PIN code is required to claim the credentials.
+        </p>
+
+        <!-- PIN input -->
+        <div {...pinInput.root} class="mt-6 flex items-center justify-center gap-2 font-mono">
+          {#each pinInput.inputs as input}
+            <input
+              {...input}
+              class="size-12 rounded-xl border border-slate-300 bg-background-alt text-center text-2xl font-semibold text-text-alt outline-none focus:border-primary disabled:cursor-not-allowed dark:border-slate-500"
+            />
+          {/each}
+        </div>
+      </div>
+    {/if}
   </div>
 
   <!-- `sticky` is relative to the nearest scrolling ancestor, which is the enclosing `div` above and not the viewport. -->
   <div class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 dark:bg-dark">
     <Button
       label={$LL.SCAN.CREDENTIAL_OFFER.ACCEPT()}
+      disabled={tx_code && !complete}
       on:click={() => {
         loading = true;
         dispatch({
           type: '[Credential Offer] Selected',
           payload: {
             credential_configuration_ids: all_credential_configuration_ids,
+            tx_code: tx_code ? pinInput.value : null,
           },
         });
       }}

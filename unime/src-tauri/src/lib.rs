@@ -1,10 +1,3 @@
-use identity_wallet::{
-    persistence::{clear_assets_tmp_folder, initialize_storage},
-    state::AppStateContainer,
-};
-use log::{info, LevelFilter};
-use tauri_plugin_log::{fern::colors::Color, fern::colors::ColoredLevelConfig, Target, TargetKind};
-
 #[cfg(target_os = "android")]
 use iota_sdk::IotaClientBuilder;
 #[cfg(target_os = "android")]
@@ -13,9 +6,26 @@ use jni::{
     JNIEnv,
 };
 
+#[cfg(not(feature = "test_utils"))]
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    tauri::Builder::default()
+    use identity_wallet::{
+        persistence::{clear_assets_tmp_folder, initialize_storage},
+        state::AppStateContainer,
+    };
+    use log::{info, LevelFilter};
+    use tauri_plugin_log::{fern::colors::Color, fern::colors::ColoredLevelConfig, Target, TargetKind};
+
+    let mut builder = tauri::Builder::default();
+
+    #[cfg(desktop)]
+    {
+        builder = builder.plugin(tauri_plugin_single_instance::init(|_app, argv, _cwd| {
+            info!("New app instance opened via deep link: {argv:?}");
+        }));
+    }
+
+    builder
         .invoke_handler(tauri::generate_handler![tauri_command::handle_action])
         .setup(move |app| {
             info!("setting up tauri app");
@@ -47,7 +57,9 @@ pub fn run() {
                 )
                 .build(),
         )
+        .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_shell::init())
         .run(tauri::generate_context!())
@@ -55,16 +67,19 @@ pub fn run() {
 }
 
 pub mod tauri_command {
-    use identity_wallet::state::{actions::Action, AppStateContainer};
+    use identity_wallet::{
+        command::Runtime,
+        state::{actions::Action, AppStateContainer},
+    };
 
     #[tauri::command]
-    pub async fn handle_action<R: tauri::Runtime>(
+    pub async fn handle_action(
         action: Action,
-        _app_handle: tauri::AppHandle<R>,
+        app_handle: tauri::AppHandle<Runtime>,
         container: tauri::State<'_, AppStateContainer>,
-        window: tauri::Window<R>,
+        window: tauri::Window<Runtime>,
     ) -> Result<(), String> {
-        identity_wallet::command::handle_action(action, _app_handle, container, window).await
+        identity_wallet::command::handle_action(action, app_handle, container, window).await
     }
 }
 

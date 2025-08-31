@@ -3,14 +3,14 @@ resolver = "2"
 members = ["identity-wallet", "unime/src-tauri"]
 
 [workspace.dependencies]
-tauri = { version = "2.2.5", features = ["protocol-asset", "rustls-tls"] }
-tauri-build = "2.0.5"
+tauri = { version = "2.8.2", features = ["protocol-asset", "rustls-tls"] }
+tauri-build = "2.4.0"
 
-did_manager = { git = "https://git@github.com/impierce/did-manager", tag = "v1.0.0-beta.5" }
+did_manager = { git = "https://github.com/impierce/did-manager", tag = "v1.0.0-beta.5" }
 jsonwebtoken = "9.3"
 log = "^0.4"
 oauth_tsl = { git = "https://github.com/impierce/oauth-token-status-list", rev = "be9f1a3" }
-oid4vc = { git = "https://git@github.com/impierce/openid4vc", rev = "cdc02ba" }
+oid4vc = { git = "https://github.com/impierce/openid4vc", rev = "8b024cb" }
 rand = "0.8"
 rustls = { version = "0.23", features = ["aws-lc-rs"] }
 rustls-platform-verifier = { version = "0.6" }
@@ -34,9 +34,22 @@ move-vm-config = { git = "https://github.com/impierce/iota", package = "move-vm-
 iota-adapter-latest = { git = "https://github.com/impierce/iota", package = "iota-adapter-latest", branch = "temp/fix" }
 iota-execution = { git = "https://github.com/impierce/iota", package = "iota-execution", branch = "temp/fix" }
 
+# TODO: **WARNING**: These are temporary patches that allow us to create and validate both `dc+sd-jwt`s and
+# `vc+sd-jwt`s, but this is a very hacky workaround. We need to come up with a better long-term solution.
+# To see the actual changes, see: https://github.com/iotaledger/identity/compare/v1.6.0-beta.2...impierce:identity.rs:tmp/disable-typ-check?expand=1
+[patch.'https://github.com/iotaledger/identity']
+identity_credential = { git = "https://github.com/impierce/identity.rs", branch = "tmp/disable-typ-check" }
+identity_iota_core = { git = "https://github.com/impierce/identity.rs", branch = "tmp/disable-typ-check" }
+identity_storage = { git = "https://github.com/impierce/identity.rs", branch = "tmp/disable-typ-check" }
+identity_resolver = { git = "https://github.com/impierce/identity.rs", branch = "tmp/disable-typ-check" }
+identity_jose = { git = "https://github.com/impierce/identity.rs", branch = "tmp/disable-typ-check" }
+identity_document = { git = "https://github.com/impierce/identity.rs", branch = "tmp/disable-typ-check" }
+identity_verification = { git = "https://github.com/impierce/identity.rs", branch = "tmp/disable-typ-check" }
+identity_iota = { git = "https://github.com/impierce/identity.rs", branch = "tmp/disable-typ-check" }
+
 [workspace.package]
 name = "unime"
-version = "0.6.12"
+version = "0.10.0"
 description = "Identity Wallet for people to manage Decentralized Identities and Verifiable Credentials"
 homepage = "https://www.impierce.com/"
 authors = ["Impierce Technologies"]

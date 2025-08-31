@@ -7,12 +7,13 @@
   import LL, { setLocale } from '$i18n/i18n-svelte';
   import { loadAllLocales } from '$i18n/i18n-util.sync';
   import type { SVGAttributes } from 'svelte/elements';
-  import { writable } from 'svelte/store';
+  import { get, writable } from 'svelte/store';
   import { fly } from 'svelte/transition';
 
   import type { AppState } from '@bindings/AppState';
   import type { ProfileSteps } from '@bindings/dev/ProfileSteps';
   import { listen, type UnlistenFn } from '@tauri-apps/api/event';
+  import { getCurrent, onOpenUrl } from '@tauri-apps/plugin-deep-link';
   import { attachConsole, error, info } from '@tauri-apps/plugin-log';
 
   import { DeprecatedSwitch, Toast } from '$lib/components';
@@ -34,6 +35,41 @@
   let detachConsole: UnlistenFn;
   let unlistenError: UnlistenFn;
   let unlistenStateChanged: UnlistenFn;
+  let unlistenDeepLink: UnlistenFn;
+
+  const pendingDeepLinkUrl = writable<URL | undefined>();
+
+  async function processDeepLink(url: URL) {
+    info(`App is ready, processing pending deep link: ${url}`);
+
+    // Clear the URL from the store immediately to prevent it from being processed again.
+    pendingDeepLinkUrl.set(undefined);
+
+    switch (url.protocol) {
+      // TODO: support App/Universal Links
+      case 'unime:': {
+        const code = url.searchParams.get('code') ?? '';
+        const state = url.searchParams.get('state') ?? '';
+        await dispatch({
+          type: '[Credential Offer] Code received',
+          payload: { code, is_pre_authorized: false, state },
+        });
+        break;
+      }
+      case 'openid-credential-offer:':
+      case 'openid:': {
+        await dispatch({
+          type: '[QR Code] Scanned',
+          payload: { form_urlencoded: url.toString() },
+        });
+        break;
+      }
+      default: {
+        error(`Received deep link with unhandled protocol: ${url.protocol}`);
+        break;
+      }
+    }
+  }
 
   onMount(async () => {
     detachConsole = await attachConsole();
@@ -51,6 +87,12 @@
 
       // Update locale based on the frontend state.
       setLocale($appState.profile_settings.locale);
+
+      // Process a deep link (only if the app is already unlocked).
+      const url = get(pendingDeepLinkUrl);
+      if ($appState?.is_unlocked && url) {
+        processDeepLink(url);
+      }
 
       let redirectPath: string | undefined;
 
@@ -79,10 +121,29 @@
     });
 
     dispatch({ type: '[App] Get state' });
+
+    // If the app is launched with a deep link, it is stored for later processing via the `state-changed` listener.
+    const invocationUrls = await getCurrent();
+    if (invocationUrls) {
+      info(`App launched with deep links: ${invocationUrls}`);
+      pendingDeepLinkUrl.set(new URL(invocationUrls[0]));
+    }
+
+    // If a deep link is received with the app already open, try processing it immediately.
+    unlistenDeepLink = await onOpenUrl((urls) => {
+      info(`Received deep link while running, storing for processing: ${urls[0]}`);
+      const invocationUrl = new URL(urls[0]);
+      pendingDeepLinkUrl.set(invocationUrl);
+
+      if ($appState?.is_unlocked) {
+        processDeepLink(invocationUrl);
+      }
+    });
   });
 
   onDestroy(() => {
     // Destroy in reverse order.
+    unlistenDeepLink();
     unlistenStateChanged();
     unlistenError();
     detachConsole();
