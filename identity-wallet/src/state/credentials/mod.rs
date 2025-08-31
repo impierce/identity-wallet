@@ -58,8 +58,10 @@ pub struct DisplayCredential {
 #[derivative(PartialEq)]
 #[ts(export, export_to = "bindings/credentials/CredentialStatusData.ts")]
 pub struct CredentialStatusData {
-    #[ts(type = "number")]
+    #[ts(type = "string")]
     pub status: StatusType,
+    pub status_list_uri: String,
+    pub status_list_index: usize,
     #[derivative(PartialEq = "ignore")]
     pub last_checked: String,
 }
@@ -96,9 +98,10 @@ impl VerifiableCredentialRecord {
     ) -> Result<Self, AppError> {
         let display_credential = {
             // Try to parse the Verifiable Credential as an SD-JWT credential.
-            let (id, format, data, issuance_date, display_claims) = if let Some(sd_jwt_vc) = verifiable_credential
-                .as_str()
-                .and_then(|verifiable_credential| verifiable_credential.parse::<SdJwtVc>().ok())
+            let (id, format, data, issuance_date, display_claims, credential_status) = if let Some(sd_jwt_vc) =
+                verifiable_credential
+                    .as_str()
+                    .and_then(|verifiable_credential| verifiable_credential.parse::<SdJwtVc>().ok())
             {
                 info!("Verifiable Credential parsed as a SD-JWT VC");
 
@@ -164,8 +167,27 @@ impl VerifiableCredentialRecord {
 
                 });
 
-                (id, format, data, issuance_date, display_claims)
+                let credential_status = CredentialStatusData::default();
+
+                (id, format, data, issuance_date, display_claims, credential_status)
             } else {
+                let credential_status =
+                    get_unverified_jwt_claims(&verifiable_credential)?["status"]["status_list"].clone();
+
+                println!("Credential Status: {credential_status}");
+
+                let credential_status = CredentialStatusData {
+                    status: StatusType::VALID,
+                    status_list_uri: credential_status["uri"].as_str().unwrap_or_default().to_string(),
+                    status_list_index: credential_status["idx"].as_u64().unwrap_or_default() as usize,
+                    last_checked: DateUtils::new_date_string(),
+                };
+
+                println!(
+                    "Credential Status: {}",
+                    serde_json::to_string_pretty(&credential_status).unwrap()
+                );
+
                 let credential_display = get_unverified_jwt_claims(&verifiable_credential)?["vc"].clone();
 
                 // TODO: We are using this hash as Credential ID so that we can prevent credential duplication in
@@ -209,7 +231,7 @@ impl VerifiableCredentialRecord {
 
                 let data = credential_display;
 
-                (id, format, data, issuance_date, display_claims)
+                (id, format, data, issuance_date, display_claims, credential_status)
             };
 
             DisplayCredential {
@@ -227,8 +249,7 @@ impl VerifiableCredentialRecord {
                 issuer_name: String::new(),
                 connection_id: None,
                 display_name: String::new(),
-                // FIXME
-                credential_status: None,
+                credential_status: Some(credential_status),
             }
         };
 
