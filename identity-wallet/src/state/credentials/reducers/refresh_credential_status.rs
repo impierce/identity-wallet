@@ -4,9 +4,7 @@ use crate::{
         actions::{listen, Action},
         common::actions::unlock_storage::UnlockStorage,
         core_utils::{DateUtils, IdentityManager},
-        credentials::{
-            actions::refresh_credential_status::RefreshCredentialStatus, CredentialStatusData, DisplayCredential,
-        },
+        credentials::{actions::refresh_credential_status::RefreshCredentialStatus, CredentialStatusData},
         AppState,
     },
 };
@@ -19,26 +17,28 @@ use oauth_tsl::{
 };
 use reqwest::{header, redirect::Policy, Client};
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
 use std::sync::Arc;
 use url::Url;
 
+/// Refreshes the credential status for all credentials in the state.
 pub async fn refresh_all_credential_statuses(state: AppState, action: Action) -> Result<AppState, AppError> {
-    if let Some(_passwrod) = listen::<UnlockStorage>(action) {
+    if let Some(_password) = listen::<UnlockStorage>(action) {
         let mut state = state;
-        let credentials = state.credentials.clone();
 
-        for DisplayCredential { id, .. } in &credentials {
+        // Collect all credential IDs.
+        let credential_ids = state
+            .credentials
+            .iter()
+            .map(|credential| credential.id.clone())
+            .collect::<Vec<_>>();
+
+        // Refresh each credential status one by one.
+        for credential_id in credential_ids {
             let action = Arc::new(RefreshCredentialStatus {
-                credential_id: Some(id.clone()),
+                credential_id: Some(credential_id),
             });
 
-            state = refresh_credential_status(state.clone(), action).await?;
-            // We update the state for each credential to ensure that if one fails, we still attempt to update the others.
-            // This is a trade-off between performance and reliability.
-            // If we wanted to optimize for performance, we could collect all the futures and run them concurrently,
-            // but then a failure in one would prevent others from being updated.
-            // Given that status updates are not critical operations, we prioritize reliability here.
+            state = refresh_credential_status(state, action).await?;
         }
 
         return Ok(state);
