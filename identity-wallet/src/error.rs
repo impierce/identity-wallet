@@ -44,7 +44,7 @@ pub enum AppError {
     InvalidAuthorizationRequest(Box<AuthorizationRequest<Object>>),
     #[error("Invalid credential offer")]
     InvalidCredentialOffer(#[source] serde_json::Error),
-    #[error("Could not find a matching credential for input descriptor")]
+    #[error("No credential in the wallet matched the DCQL query")]
     NoMatchingCredentialError,
     #[error("Failed to generate authorization response")]
     GenerateAuthorizationResponseError(#[source] anyhow::Error),

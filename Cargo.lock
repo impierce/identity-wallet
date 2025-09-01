@@ -8918,7 +8918,7 @@ version = "0.7.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "77e878c846a8abae00dd069496dbe8751b16ac1c3d6bd2a7283a938e8228f90d"
 dependencies = [
- "proc-macro-crate 3.3.0",
+ "proc-macro-crate 2.0.0",
  "proc-macro2",
  "quote",
  "syn 2.0.106",
@@ -9246,7 +9246,7 @@ dependencies = [
 [[package]]
 name = "oid4vc"
 version = "0.1.0"
-source = "git+https://github.com/impierce/openid4vc?rev=a6a5de3#a6a5de34cec81b70f4cfd7e4c8775741c91a4cc6"
+source = "git+https://github.com/impierce/openid4vc?rev=8b024cb#8b024cb07ee39fd697d7acb275b61e41c114815b"
 dependencies = [
  "oid4vc-core",
  "oid4vc-manager",
@@ -9258,7 +9258,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-core"
 version = "0.1.0"
-source = "git+https://github.com/impierce/openid4vc?rev=a6a5de3#a6a5de34cec81b70f4cfd7e4c8775741c91a4cc6"
+source = "git+https://github.com/impierce/openid4vc?rev=8b024cb#8b024cb07ee39fd697d7acb275b61e41c114815b"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -9283,7 +9283,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-manager"
 version = "0.1.0"
-source = "git+https://github.com/impierce/openid4vc?rev=a6a5de3#a6a5de34cec81b70f4cfd7e4c8775741c91a4cc6"
+source = "git+https://github.com/impierce/openid4vc?rev=8b024cb#8b024cb07ee39fd697d7acb275b61e41c114815b"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -9317,7 +9317,7 @@ dependencies = [
 [[package]]
 name = "oid4vci"
 version = "0.1.0"
-source = "git+https://github.com/impierce/openid4vc?rev=a6a5de3#a6a5de34cec81b70f4cfd7e4c8775741c91a4cc6"
+source = "git+https://github.com/impierce/openid4vc?rev=8b024cb#8b024cb07ee39fd697d7acb275b61e41c114815b"
 dependencies = [
  "anyhow",
  "chrono",
@@ -9345,7 +9345,7 @@ dependencies = [
 [[package]]
 name = "oid4vp"
 version = "0.1.0"
-source = "git+https://github.com/impierce/openid4vc?rev=a6a5de3#a6a5de34cec81b70f4cfd7e4c8775741c91a4cc6"
+source = "git+https://github.com/impierce/openid4vc?rev=8b024cb#8b024cb07ee39fd697d7acb275b61e41c114815b"
 dependencies = [
  "anyhow",
  "chrono",
@@ -12357,7 +12357,7 @@ dependencies = [
 [[package]]
 name = "siopv2"
 version = "0.1.0"
-source = "git+https://github.com/impierce/openid4vc?rev=a6a5de3#a6a5de34cec81b70f4cfd7e4c8775741c91a4cc6"
+source = "git+https://github.com/impierce/openid4vc?rev=8b024cb#8b024cb07ee39fd697d7acb275b61e41c114815b"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -13491,7 +13491,8 @@ dependencies = [
 [[package]]
 name = "tauri-plugin-opener"
 version = "2.5.0"
-source = "git+https://github.com/tauri-apps/plugins-workspace?branch=v2#8cf8eeab02efddd4e44e3bba92b33902a8c00956"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "786156aa8e89e03d271fbd3fe642207da8e65f3c961baa9e2930f332bf80a1f5"
 dependencies = [
  "dunce",
  "glob",
