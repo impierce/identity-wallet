@@ -27,7 +27,6 @@ pub fn run() {
 
     builder
         .invoke_handler(tauri::generate_handler![tauri_command::handle_action])
-        .plugin(tauri_plugin_deep_link::init())
         .setup(move |app| {
             info!("setting up tauri app");
             initialize_storage(app.handle()).ok();
@@ -63,7 +62,6 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_shell::init())
-        .plugin(tauri_plugin_opener::init())
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
