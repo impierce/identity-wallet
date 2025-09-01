@@ -24,21 +24,15 @@ use std::sync::Arc;
 use url::Url;
 
 pub async fn refresh_all_credential_statuses(state: AppState, action: Action) -> Result<AppState, AppError> {
-    println!("{}:{}", file!(), line!());
     if let Some(_passwrod) = listen::<UnlockStorage>(action) {
-        println!("{}:{}", file!(), line!());
         let mut state = state;
-        println!("{}:{}", file!(), line!());
         let credentials = state.credentials.clone();
 
-        println!("{}:{}", file!(), line!());
         for DisplayCredential { id, .. } in &credentials {
-            println!("{}:{}", file!(), line!());
             let action = Arc::new(RefreshCredentialStatus {
                 credential_id: Some(id.clone()),
             });
 
-            println!("{}:{}", file!(), line!());
             state = refresh_credential_status(state.clone(), action).await?;
             // We update the state for each credential to ensure that if one fails, we still attempt to update the others.
             // This is a trade-off between performance and reliability.
@@ -47,37 +41,25 @@ pub async fn refresh_all_credential_statuses(state: AppState, action: Action) ->
             // Given that status updates are not critical operations, we prioritize reliability here.
         }
 
-        println!("{}:{}", file!(), line!());
         return Ok(state);
     }
-    println!("{}:{}", file!(), line!());
     Ok(state)
 }
 
 pub async fn refresh_credential_status(state: AppState, action: Action) -> Result<AppState, AppError> {
-    println!("{}:{}", file!(), line!());
     if let Some(refresh_credential_status) = listen::<RefreshCredentialStatus>(action) {
-        println!("{}:{}", file!(), line!());
         let mut credentials = state.credentials.clone();
         if let Some(credential_id) = refresh_credential_status.credential_id {
-            println!("{}:{}", file!(), line!());
             let state_guard = state.core_utils.managers.lock().await;
-            println!("{}:{}", file!(), line!());
 
-            println!("{}:{}", file!(), line!());
             if let Some(credential) = credentials.iter_mut().find(|c| c.id == credential_id) {
-                println!("{}:{}", file!(), line!());
                 if let Some(credential_status_data) = credential.credential_status.as_ref() {
                     // We ok_or() with an error here because when the if let Some() statement above is true, we must have a credentialStatus.
-                    println!("{}:{}", file!(), line!());
-
-                    println!("{}:{}", file!(), line!());
 
                     let new_status =
                         get_credential_status(credential_status_data, state_guard.identity_manager.as_ref().unwrap())
                             .await?;
 
-                    println!("{}:{}", file!(), line!());
                     if credential_status_data.status != new_status {
                         info!(
                             "Credential {} changed credential status from {:?} to {:?}",
@@ -85,7 +67,6 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
                         );
                     }
 
-                    println!("{}:{}", file!(), line!());
                     credential.credential_status = Some(CredentialStatusData {
                         status: new_status,
                         last_checked: DateUtils::new_date_string(),
@@ -127,13 +108,12 @@ pub async fn get_credential_status(
     credential_status_data: &CredentialStatusData,
     identity_manager: &IdentityManager,
 ) -> Result<StatusType, AppError> {
-    let status_list_gzip = fetch_status_list(
+    let status_list_jwt = fetch_status_list(
         credential_status_data.status_list_uri.as_str(),
         // FIXME
         StatusListTokenResponseType::Jwt,
     )
     .await?;
-    let status_list_jwt = decompress_gzip(&status_list_gzip).map_err(|_| AppError::GetCredentialStatusError)?;
 
     let jwt_header = decode_header(&status_list_jwt).map_err(|_| AppError::GetCredentialStatusError)?;
     let key_id = jwt_header.kid.ok_or(AppError::GetCredentialStatusError)?;
@@ -168,8 +148,10 @@ pub async fn get_credential_status(
     Ok(status)
 }
 
-/// Sends a status list request to the provided URI and returns the GZIP compressed JWT string as a Vec<u8>.
-pub async fn fetch_status_list(uri: &str, accept_header: StatusListTokenResponseType) -> Result<Vec<u8>, AppError> {
+/// Sends a status list request to the provided URI and returns the response body as a String.
+/// The `accept_header` parameter determines the expected response format (e.g., JWT, compressed JWT).
+/// If the response is gzip encoded, it will be decompressed before being returned.
+pub async fn fetch_status_list(uri: &str, accept_header: StatusListTokenResponseType) -> Result<String, AppError> {
     // 3xx redirects should be followed, but infinite loops are caught after 5 redirects.
     let client = Client::builder().redirect(Policy::limited(5)).build()?;
 
@@ -183,8 +165,19 @@ pub async fn fetch_status_list(uri: &str, accept_header: StatusListTokenResponse
         return Err(AppError::GetCredentialStatusError);
     }
 
-    let jwt_bytes = res.bytes().await?;
-    let jwt_vec_u8 = jwt_bytes.to_vec();
+    match res.headers().get(header::CONTENT_ENCODING) {
+        Some(encoding) if encoding == "gzip" => {
+            // If gzip encoding, decompress the body.
+            let bytes = res.bytes().await?;
+            let decompressed = decompress_gzip(&bytes).map_err(|_| AppError::GetCredentialStatusError)?;
+            Ok(decompressed)
+        }
+        _ => {
+            // If no gzip encoding, return the body as is.
+            let jwt_bytes = res.bytes().await?;
+            let jwt_vec_u8 = jwt_bytes.to_vec();
 
-    Ok(jwt_vec_u8)
+            Ok(String::from_utf8(jwt_vec_u8).map_err(|_| AppError::GetCredentialStatusError)?)
+        }
+    }
 }

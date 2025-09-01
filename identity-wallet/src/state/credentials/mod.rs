@@ -174,19 +174,12 @@ impl VerifiableCredentialRecord {
                 let credential_status =
                     get_unverified_jwt_claims(&verifiable_credential)?["status"]["status_list"].clone();
 
-                println!("Credential Status: {credential_status}");
-
                 let credential_status = CredentialStatusData {
                     status: StatusType::VALID,
                     status_list_uri: credential_status["uri"].as_str().unwrap_or_default().to_string(),
                     status_list_index: credential_status["idx"].as_u64().unwrap_or_default() as usize,
                     last_checked: DateUtils::new_date_string(),
                 };
-
-                println!(
-                    "Credential Status: {}",
-                    serde_json::to_string_pretty(&credential_status).unwrap()
-                );
 
                 let credential_display = get_unverified_jwt_claims(&verifiable_credential)?["vc"].clone();
 
