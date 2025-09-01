@@ -8999,7 +8999,7 @@ dependencies = [
 [[package]]
 name = "oauth_tsl"
 version = "0.1.0"
-source = "git+https://github.com/impierce/oauth-token-status-list?rev=be9f1a3#be9f1a3e110fc29c9388cb176e6fd03e8cb5c8ce"
+source = "git+https://github.com/impierce/oauth-token-status-list?rev=2412324#241232492671d9c46327a6988dfc9c14c2f78718"
 dependencies = [
  "base64 0.22.1",
  "chrono",
@@ -14362,6 +14362,7 @@ dependencies = [
  "chrono",
  "thiserror 1.0.69",
  "ts-rs-macros",
+ "url",
 ]
 
 [[package]]

@@ -109,7 +109,7 @@ pub async fn get_credential_status(
     identity_manager: &IdentityManager,
 ) -> Result<StatusType, AppError> {
     let status_list_jwt = fetch_status_list(
-        credential_status_data.status_list_uri.as_str(),
+        credential_status_data.uri.as_str(),
         // FIXME
         StatusListTokenResponseType::Jwt,
     )
@@ -140,7 +140,7 @@ pub async fn get_credential_status(
 
     let status = StatusType::try_from(
         status_list
-            .get_index(credential_status_data.status_list_index)
+            .get_status(credential_status_data.idx as usize)
             .map_err(|_| AppError::GetCredentialStatusError)?,
     )
     .map_err(|_| AppError::GetCredentialStatusError)?;

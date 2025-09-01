@@ -57,7 +57,7 @@ stronghold_ext = { git = "https://github.com/impierce/stronghold_ext", features 
 strum = { version = "0.25", features = ["derive"] }
 thiserror = "1.0"
 tokio.workspace = true
-ts-rs = { version = "7.0", features = ["chrono-impl"] }
+ts-rs = { version = "7.0", features = ["chrono-impl", "url-impl"] }
 typetag = "0.2"
 unicode-normalization = "0.1"
 url = "2.5"
