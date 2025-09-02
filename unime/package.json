@@ -34,7 +34,7 @@
     "@tauri-apps/api": "^2.2.0",
     "@tauri-apps/cli": "^2.2.7",
     "@tauri-apps/plugin-barcode-scanner": "^2.2.0",
-    "@tauri-apps/plugin-biometric": "^2.2.0",
+    "@tauri-apps/plugin-biometric": "^2.3.0",
     "@tauri-apps/plugin-deep-link": "^2.4.1",
     "@tauri-apps/plugin-fs": "^2.2.0",
     "@tauri-apps/plugin-log": "^2.2.1",
