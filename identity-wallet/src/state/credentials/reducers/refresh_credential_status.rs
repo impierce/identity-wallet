@@ -1,3 +1,5 @@
+#[cfg(not(feature = "test_utils"))]
+use crate::state::credentials::VerifiableCredentialRecord;
 use crate::{
     error::AppError,
     state::{
@@ -20,6 +22,7 @@ use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use url::Url;
 
+// TODO: test for possible poor latency/performance due to many stronghold interactions when many credentials need to be refreshed.
 /// Refreshes the credential status for all credentials in the state.
 pub async fn refresh_all_credential_statuses(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(_password) = listen::<UnlockStorage>(action) {
@@ -48,17 +51,30 @@ pub async fn refresh_all_credential_statuses(state: AppState, action: Action) ->
 
 pub async fn refresh_credential_status(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(refresh_credential_status) = listen::<RefreshCredentialStatus>(action) {
+        let state_guard = state.core_utils.managers.lock().await;
+        #[cfg(not(feature = "test_utils"))]
+        let stronghold_manager = state_guard
+            .stronghold_manager
+            .as_ref()
+            .ok_or(AppError::MissingManagerError("stronghold"))?;
         let mut credentials = state.credentials.clone();
         if let Some(credential_id) = refresh_credential_status.credential_id {
-            let state_guard = state.core_utils.managers.lock().await;
-
             if let Some(credential) = credentials.iter_mut().find(|c| c.id == credential_id) {
                 if let Some(credential_status_data) = credential.credential_status.as_ref() {
                     // We ok_or() with an error here because when the if let Some() statement above is true, we must have a credentialStatus.
 
-                    let new_status =
+                    let new_status = if let Ok(new_status) =
                         get_credential_status(credential_status_data, state_guard.identity_manager.as_ref().unwrap())
-                            .await?;
+                            .await
+                    {
+                        new_status
+                    } else {
+                        // TODO: implement more specific error handling in `get_credential_status`. One error that can
+                        // occur in `get_credential_status` is that the status list URI is unreachable. In that case,
+                        // we might want to keep the old status instead of failing the whole refresh operation.
+                        drop(state_guard);
+                        return Ok(AppState { ..state });
+                    };
 
                     if credential_status_data.status != new_status {
                         info!(
@@ -73,6 +89,29 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
                         ..credential_status_data.clone()
                     });
 
+                    #[cfg(not(feature = "test_utils"))]
+                    {
+                        let key: uuid::Uuid = credential.id.parse().map_err(AppError::InvalidUuidError)?;
+
+                        let mut verifiable_credential_record = stronghold_manager
+                            .remove(key)
+                            .map_err(AppError::StrongholdDeletionError)?
+                            .and_then(|data| serde_json::from_slice::<VerifiableCredentialRecord>(data.as_slice()).ok())
+                            .ok_or(AppError::StrongholdMissingCredentialError(key))?;
+
+                        verifiable_credential_record.display_credential = credential.clone();
+
+                        stronghold_manager
+                            .insert(
+                                key,
+                                serde_json::json!(verifiable_credential_record)
+                                    .to_string()
+                                    .as_bytes()
+                                    .to_vec(),
+                            )
+                            .map_err(AppError::StrongholdInsertionError)?;
+                    }
+
                     info!("Successfully refreshed credential with id: `{credential_id}`");
                 } else {
                     info!("No credentialStatus found for credential with id: `{credential_id}`");
@@ -85,6 +124,7 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
         // If no credential ID is provided, the action is to refresh all credentials
         else {
         }
+        drop(state_guard);
         return Ok(AppState { credentials, ..state });
     }
     Ok(state)
