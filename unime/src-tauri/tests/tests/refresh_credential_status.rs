@@ -17,8 +17,8 @@ async fn test_refresh_credential_status() {
         .and(path("/ietf-oauth-token-status-list/0"))
         .respond_with(
             ResponseTemplate::new(200)
-                .insert_header("CONTENT_ENCODING", "gzip")
-                .set_body_raw(response_bytes, "application/json"),
+                .insert_header("Content-Encoding", "gzip")
+                .set_body_raw(response_bytes, "application/statuslist+jwt"),
         )
         .expect(1)
         .mount(&mock_server)
@@ -31,7 +31,14 @@ async fn test_refresh_credential_status() {
     state.core_utils.managers = managers;
 
     // Update the credential status URI to point to the mock server.
-    state.credentials.get_mut(0).unwrap().data["credentialStatus"]["uri"] =
+    state
+        .credentials
+        .get_mut(0)
+        .unwrap()
+        .credential_status
+        .as_mut()
+        .unwrap()
+        .uri =
         serde_json::from_value(json!(mock_server.uri().to_string() + "/ietf-oauth-token-status-list/0")).unwrap();
 
     let action = json_example::<Action>("tests/fixtures/actions/refresh_credential_status.json");
@@ -40,7 +47,7 @@ async fn test_refresh_credential_status() {
 
     let result = state
         .credentials
-        .get(0)
+        .first()
         .unwrap()
         .credential_status
         .as_ref()

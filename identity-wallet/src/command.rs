@@ -8,6 +8,13 @@ use log::{debug, error, info};
 use std::time::Duration;
 use tauri::Emitter;
 
+// TODO: remove this once we refactor our tests in `/unime/src-tauri/tests`
+/// Define the runtime based on whether we are in test mode or not.
+#[cfg(feature = "test_utils")]
+pub type Runtime = tauri::test::MockRuntime;
+#[cfg(not(feature = "test_utils"))]
+pub type Runtime = tauri::Wry;
+
 // The command.rs holds the functions through which the front and backend communicate using actions and reducers.
 
 /// This function represents the root reducer of the application. It will delegate the state update to the reducers that
@@ -42,18 +49,18 @@ async fn await_timeout() {
 
 /// This command handler is the single point of entry to the business logic in the backend. It will delegate the
 /// command it receives to the designated functions that modify the state (see: "reducers" in the Redux pattern).
-pub async fn main_exec<R: tauri::Runtime>(
+pub async fn main_exec(
     action: Action,
-    _app_handle: tauri::AppHandle<R>,
+    app_handle: tauri::AppHandle<Runtime>,
     container: tauri::State<'_, AppStateContainer>,
-    window: tauri::Window<R>,
+    window: tauri::Window<Runtime>,
 ) -> Result<(), String> {
     info!("received action: `{action:?}`");
 
     let mut guard = container.0.lock().await;
 
-    // Initialize the resolver if it hasn't been initialized yet.
     guard.core_utils.resolver().await;
+    guard.core_utils.app_handle = Some(app_handle);
 
     // Get a copy of the current state and pass it to the root reducer.
     match reduce(guard.clone(), action).await {
@@ -84,11 +91,11 @@ pub async fn main_exec<R: tauri::Runtime>(
     Result::Ok(())
 }
 
-pub async fn handle_action<R: tauri::Runtime>(
+pub async fn handle_action(
     action: Action,
-    app_handle: tauri::AppHandle<R>,
+    app_handle: tauri::AppHandle<Runtime>,
     container: tauri::State<'_, AppStateContainer>,
-    window: tauri::Window<R>,
+    window: tauri::Window<Runtime>,
 ) -> Result<(), String> {
     tokio::select! {
         res = main_exec(action, app_handle, container, window.clone()) => {
@@ -104,7 +111,7 @@ pub async fn handle_action<R: tauri::Runtime>(
 }
 
 /// This function emits an event to the frontend with the updated state.
-pub fn emit_event<R: tauri::Runtime>(window: &tauri::Window<R>, app_state: &AppState) -> anyhow::Result<()> {
+pub fn emit_event(window: &tauri::Window<Runtime>, app_state: &AppState) -> anyhow::Result<()> {
     const STATE_CHANGED_EVENT: &str = "state-changed";
     window.emit(STATE_CHANGED_EVENT, app_state)?;
 
@@ -136,7 +143,7 @@ pub fn emit_event<R: tauri::Runtime>(window: &tauri::Window<R>, app_state: &AppS
 }
 
 /// This function emits an error to the frontend.
-pub fn emit_error<R: tauri::Runtime>(window: &tauri::Window<R>, error: String) -> anyhow::Result<()> {
+pub fn emit_error(window: &tauri::Window<Runtime>, error: String) -> anyhow::Result<()> {
     const ERROR_EVENT: &str = "error";
     window.emit(ERROR_EVENT, &error)?;
 

@@ -28,8 +28,9 @@ use std::{fs::File, io::Write, sync::Arc};
 
 lazy_static! {
     pub static ref PERSONAL_INFORMATION: VerifiableCredentialRecord = {
-        let mut record = VerifiableCredentialRecord::try_from(
+        let mut record = VerifiableCredentialRecord::try_new(
             json!("eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDprZXk6ejZNa2toUDQzTENTWGFqM1NRQm92eTF1RTJuWHZTQm5SUFdaMndoUExxblo4UGdEI3o2TWtraFA0M0xDU1hhajNTUUJvdnkxdUUyblh2U0JuUlBXWjJ3aFBMcW5aOFBnRCJ9.eyJpc3MiOiJodHRwOi8vMTkyLjE2OC4xLjEyNzo5MDkwLyIsInN1YiI6ImRpZDprZXk6ejZNa2cxWFhHVXFma2hBS1Uxa1ZkMVBtdzZVRWoxdnhpTGoxeGM5MU1CejVvd05ZIiwiZXhwIjo5OTk5OTk5OTk5LCJpYXQiOjAsInZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIiwiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvZXhhbXBsZXMvdjEiXSwidHlwZSI6WyJWZXJpZmlhYmxlQ3JlZGVudGlhbCIsIlBlcnNvbmFsSW5mb3JtYXRpb24iXSwiaXNzdWFuY2VEYXRlIjoiMjAyMi0wMS0wMVQwMDowMDowMFoiLCJpc3N1ZXIiOiJodHRwOi8vMTkyLjE2OC4xLjEyNzo5MDkwLyIsImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkIjoiZGlkOmtleTp6Nk1rZzFYWEdVcWZraEFLVTFrVmQxUG13NlVFajF2eGlMajF4YzkxTUJ6NW93TlkiLCJnaXZlbk5hbWUiOiJGZXJyaXMiLCJmYW1pbHlOYW1lIjoiQ3JhYm1hbiIsImVtYWlsIjoiZmVycmlzLmNyYWJtYW5AY3JhYm1haWwuY29tIiwiYmlydGhkYXRlIjoiMTk4NS0wNS0yMSJ9fX0.Yl841U5BwWgctX5vF5Zi8SYCEQpxFqEs8_J8KrX9D_mOwL-IRmP64BeQZvnKeAdcOoYGn6CyciV51_amdPNQBw"),
+            vec![]
         ).unwrap();
         record.display_credential.metadata.is_favorite = true;
         record.display_credential.display_name = "PersonalInformation".to_string();
@@ -37,23 +38,26 @@ lazy_static! {
     };
     pub static ref DRIVERS_LICENSE_CREDENTIAL_PAYLOAD: String = URL_SAFE_NO_PAD.encode(include_bytes!("../../../../resources/ferris-drivers-license-payload.json"));
     pub static ref DRIVERS_LICENSE_CREDENTIAL: VerifiableCredentialRecord = {
-        let mut record = VerifiableCredentialRecord::try_from(
+        let mut record = VerifiableCredentialRecord::try_new(
             json!(format!("eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDprZXk6ejZNa2toUDQzTENTWGFqM1NRQm92eTF1RTJuWHZTQm5SUFdaMndoUExxblo4UGdEI3o2TWtraFA0M0xDU1hhajNTUUJvdnkxdUUyblh2U0JuUlBXWjJ3aFBMcW5aOFBnRCJ9.{}.OZCcZt5JTJcBhoLPIyrQuvZuc2dnVN65f8GvKQ3earAzJEgGMA9ZjKRNHEjI73wLwvG5MJBN7Zs_rWiNLEZ5Dg", DRIVERS_LICENSE_CREDENTIAL_PAYLOAD.clone())),
+            vec![]
         ).unwrap();
         record.display_credential.display_name = "DriverLicenseCredential".to_string();
         record
     };
     pub static ref OPEN_BADGE: VerifiableCredentialRecord = {
-        let mut record = VerifiableCredentialRecord::try_from(
+        let mut record = VerifiableCredentialRecord::try_new(
             json!("eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDprZXk6ejZNa2toUDQzTENTWGFqM1NRQm92eTF1RTJuWHZTQm5SUFdaMndoUExxblo4UGdEI3o2TWtraFA0M0xDU1hhajNTUUJvdnkxdUUyblh2U0JuUlBXWjJ3aFBMcW5aOFBnRCJ9.eyJpc3MiOiJodHRwOi8vMTkyLjE2OC4xLjEyNzo5MDkwLyIsInN1YiI6ImRpZDprZXk6ejZNa2cxWFhHVXFma2hBS1Uxa1ZkMVBtdzZVRWoxdnhpTGoxeGM5MU1CejVvd05ZIiwiZXhwIjo5OTk5OTk5OTk5LCJpYXQiOjAsInZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIiwiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvZXhhbXBsZXMvdjEiLCJodHRwczovL3B1cmwuaW1zZ2xvYmFsLm9yZy9zcGVjL29iL3YzcDAvY29udGV4dC0zLjAuMi5qc29uIl0sImlkIjoiaHR0cDovL2V4YW1wbGUuZWR1L2NyZWRlbnRpYWxzLzM3MzIiLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIiwiT3BlbkJhZGdlQ3JlZGVudGlhbCJdLCJpc3N1ZXIiOnsiaWQiOiJodHRwczovL2V4YW1wbGUuZWR1L2lzc3VlcnMvNTY1MDQ5IiwidHlwZSI6WyJJc3N1ZXJQcm9maWxlIl0sIm5hbWUiOiJJbXBpZXJjZSBEZW1vIFBvcnRhbCJ9LCJpc3N1YW5jZURhdGUiOiIyMDEwLTAxLTAxVDAwOjAwOjAwWiIsIm5hbWUiOiJUZWFtd29yayBCYWRnZSIsImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkIjoiZGlkOmV4YW1wbGU6ZWJmZWIxZjcxMmViYzZmMWMyNzZlMTJlYzIxIiwidHlwZSI6WyJBY2hpZXZlbWVudFN1YmplY3QiXSwiYWNoaWV2ZW1lbnQiOnsiaWQiOiJodHRwczovL2V4YW1wbGUuY29tL2FjaGlldmVtZW50cy8yMXN0LWNlbnR1cnktc2tpbGxzL3RlYW13b3JrIiwidHlwZSI6WyJBY2hpZXZlbWVudCJdLCJjcml0ZXJpYSI6eyJuYXJyYXRpdmUiOiJUZWFtIG1lbWJlcnMgYXJlIG5vbWluYXRlZCBmb3IgdGhpcyBiYWRnZSBieSB0aGVpciBwZWVycyBhbmQgcmVjb2duaXplZCB1cG9uIHJldmlldyBieSBFeGFtcGxlIENvcnAgbWFuYWdlbWVudC4ifSwiZGVzY3JpcHRpb24iOiJUaGlzIGJhZGdlIHJlY29nbml6ZXMgdGhlIGRldmVsb3BtZW50IG9mIHRoZSBjYXBhY2l0eSB0byBjb2xsYWJvcmF0ZSB3aXRoaW4gYSBncm91cCBlbnZpcm9ubWVudC4iLCJuYW1lIjoiVGVhbXdvcmsifX19fQ.OZCcZt5JTJcBhoLPIyrQuvZuc2dnVN65f8GvKQ3earAzJEgGMA9ZjKRNHEjI73wLwvG5MJBN7Zs_rWiNLEZ5Dg"),
+            vec![]
         ).unwrap();
         record.display_credential.connection_id = Some("424313e61e35ca4eeca44aac85dc4764c32d7cf9def83ba15f428c308bf1d181".to_string());
         record.display_credential.display_name = "Teamwork".to_string();
         record
     };
     pub static ref EDU_BADGE: VerifiableCredentialRecord = {
-        let mut record = VerifiableCredentialRecord::try_from(
+        let mut record = VerifiableCredentialRecord::try_new(
             json!("eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDprZXk6ejZNa3F5WmpEZmhzeVo1YzZOdUpoYm9zV2tTajg2Mmp5V2lDQ0tIRHpOTkttOGtoI3o2TWtxeVpqRGZoc3laNWM2TnVKaGJvc1drU2o4NjJqeVdpQ0NLSER6Tk5LbThraCJ9.eyJpc3MiOiJkaWQ6a2V5Ono2TWtxeVpqRGZoc3laNWM2TnVKaGJvc1drU2o4NjJqeVdpQ0NLSER6Tk5LbThraCIsInN1YiI6ImRpZDprZXk6ejZNa3VpUktxMWZLcnpBWGVTTmlHd3JwSlBQdWdZOEF4SllBNWNwQ3ZaQ1lCRDdCIiwiZXhwIjo5OTk5OTk5OTk5LCJpYXQiOjAsInZjIjp7ImlkIjoiaHR0cDovL2V4YW1wbGUuY29tL2NyZWRlbnRpYWxzLzM1MjciLCJuYW1lIjoiVGVhbXdvcmsgQmFkZ2UiLCJ0eXBlIjpbIlZlcmlmaWFibGVDcmVkZW50aWFsIiwiT3BlbkJhZGdlQ3JlZGVudGlhbCJdLCJpc3N1ZXIiOiJkaWQ6a2V5Ono2TWtxeVpqRGZoc3laNWM2TnVKaGJvc1drU2o4NjJqeVdpQ0NLSER6Tk5LbThraCIsIkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIiwiaHR0cHM6Ly9wdXJsLmltc2dsb2JhbC5vcmcvc3BlYy9vYi92M3AwL2NvbnRleHQtMy4wLjIuanNvbiJdLCJpc3N1YW5jZURhdGUiOiIyMDEwLTAxLTAxVDAwOjAwOjAwWiIsImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkIjoiZGlkOmtleTp6Nk1rdWlSS3ExZktyekFYZVNOaUd3cnBKUFB1Z1k4QXhKWUE1Y3BDdlpDWUJEN0IiLCJ0eXBlIjpbIkFjaGlldmVtZW50U3ViamVjdCJdLCJhY2hpZXZlbWVudCI6eyJpZCI6Imh0dHBzOi8vZGVtby5lZHViYWRnZXMubmwvcHVibGljL2Fzc2VydGlvbnMvNnBFQi0tbi1Td2laUHRXWE1DQjJqUSIsIm5hbWUiOiJFZHViYWRnZSBhY2NvdW50IGNvbXBsZXRlIiwidHlwZSI6WyJBY2hpZXZlbWVudCJdLCJpbWFnZSI6eyJpZCI6Imh0dHBzOi8vYXBpLWRlbW8uZWR1YmFkZ2VzLm5sL21lZGlhL3VwbG9hZHMvYmFkZ2VzL2lzc3Vlcl9iYWRnZWNsYXNzXzU0ODUxN2FhLWNiYWItNGE3Yi1hOTcxLTU1Y2RjY2UwZTJhNS5wbmcifSwiY3JpdGVyaWEiOnsibmFycmF0aXZlIjoiVG8gcXVhbGlmeSBmb3IgdGhpcyBlZHViYWRnZTpcclxuXHJcbiogIHlvdSBzdWNjZXNzZnVsbHkgY3JlYXRlZCBhbiBlZHVJRCxcclxuKiB5b3Ugc3VjY2Vzc2Z1bGx5IGxpbmtlZCB5b3VyIGluc3RpdHV0aW9uIHRvIHlvdXIgZWR1SUQsXHJcbiogIHlvdSBjYW4gc3RvcmUgYW5kIG1hbmFnZSB0aGVtIHNhZmVseSBpbiB5b3VyIGJhY2twYWNrLiJ9LCJkZXNjcmlwdGlvbiI6IiMjIyBXZWxjb21lIHRvIGVkdWJhZGdlcy4gTGV0IHlvdXIgbGlmZSBsb25nIGxlYXJuaW5nIGJlZ2luISAjIyNcclxuXHJcbllvdSBhcmUgbm93IHJlYWR5IHRvIGNvbGxlY3QgYWxsIHlvdXIgZWR1YmFkZ2VzIGluIHlvdXIgYmFja3BhY2suIEluIHlvdXIgYmFja3BhY2sgeW91IGNhbiBzdG9yZSBhbmQgbWFuYWdlIHRoZW0gc2FmZWx5LlxyXG5cclxuU2hhcmUgdGhlbSBhbnl0aW1lIHlvdSBsaWtlIGFuZCB3aXRoIHdob20geW91IGxpa2UuXHJcblxyXG5FZHViYWRnZXMgYXJlIHZpc3VhbCByZXByZXNlbnRhdGlvbnMgb2YgeW91ciBrbm93bGVkZ2UsIHNraWxscyBhbmQgY29tcGV0ZW5jZXMuIn19fX0.z2rEuafNmbmY9sf5t4alnkZJeuNrNZrXXGovCc0J8NWdLyFU48mZfBffy6qltvtUOODOHSJnow1lAAFQ16W9Bw"),
+            vec![]
         ).unwrap();
         // Connection does not exist (simulate deletion)
         record.display_credential.connection_id = Some("c5be6c4b46535a28cfc7edcccc79f9b041d0fedbbee4c1c3aeb234af750c7980".to_string());
@@ -96,6 +100,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         provider_manager,
         wallet,
     };
+    state.is_unlocked = true;
 
     state
         .core_utils

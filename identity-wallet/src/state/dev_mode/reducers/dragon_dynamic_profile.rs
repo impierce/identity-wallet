@@ -35,6 +35,7 @@ pub async fn load_dragon_profile(mut state: AppState, dev_profile: DevProfile) -
     }
 
     state = create_new_profile(state).await?;
+    state.is_unlocked = true;
 
     if ProfileSteps::AddCredentials <= steps {
         debug!("Add credentials step executed");
@@ -140,6 +141,7 @@ async fn accept_credential(state: AppState) -> Result<AppState, AppError> {
             "Higher Education Information Literacy Level 1".to_string(),
             "Business Innovation & Interdisciplinair Samenwerken".to_string(),
         ],
+        tx_code: None,
     };
 
     command::reduce(state, Arc::new(cr_selected)).await
@@ -264,6 +266,7 @@ async fn add_future_engineer(state: AppState) -> Result<AppState, AppError> {
 async fn accept_future_engineer(state: AppState) -> Result<AppState, AppError> {
     let cr_selected = CredentialOffersSelected {
         credential_configuration_ids: vec!["Future Engineer Certificate".to_string()],
+        tx_code: None,
     };
 
     command::reduce(state, Arc::new(cr_selected)).await

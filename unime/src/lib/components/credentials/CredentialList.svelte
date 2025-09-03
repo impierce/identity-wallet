@@ -34,11 +34,11 @@
         description={credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
         type={credential.data.type.includes('OpenBadgeCredential') ? 'badge' : 'data'}
         icon={credential.metadata.icon}
-        isInvalid={credential.credential_status?.status === 1}
+        isInvalid={credential.credential_status?.status === 'INVALID'}
         on:click={() => goto(`/credentials/${credential.id}`)}
       >
         <div slot="right">
-          {#if credential.credential_status?.status === 1}
+          {#if credential.credential_status?.status === 'INVALID'}
             <SealWarningRegularIcon class="mr-3 size-6 text-red-700 dark:text-red-500" />
           {/if}
         </div>

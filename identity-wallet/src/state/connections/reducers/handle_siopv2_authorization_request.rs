@@ -44,6 +44,7 @@ pub async fn handle_siopv2_authorization_request(state: AppState, _action: Actio
         .map_err(GenerateAuthorizationResponseError)?;
     info!("response generated: {response:?}");
 
+    #[cfg(not(feature = "test_utils"))]
     if provider_manager.send_response(&response).await.is_err() {
         info!("failed to send response");
         return Err(SendAuthorizationResponseError);
@@ -98,7 +99,7 @@ pub fn get_siopv2_client_name_and_logo_uri(
 ) -> (String, Option<String>, String, String) {
     // Get the connection url from the redirect url host (or use the redirect url if it does not
     // contain a host).
-    let redirect_uri = siopv2_authorization_request.body.redirect_uri.clone();
+    let redirect_uri = siopv2_authorization_request.body.uri.uri().clone();
     let connection_url = redirect_uri.host_str().unwrap_or(redirect_uri.as_str());
 
     let client_id = siopv2_authorization_request.body.client_id.clone();
