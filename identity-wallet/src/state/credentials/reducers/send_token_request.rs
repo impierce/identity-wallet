@@ -65,6 +65,8 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
 
         info!("current_user_prompt: {:?}", current_user_prompt);
 
+        // info!("credential issuer metadata: {credential_issuer_metadata:?}");
+
         let credential_offer = state
             .core_utils
             .active_credential_offer
@@ -79,9 +81,88 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
 
         info!("credential issuer url: {:?}", credential_issuer_url);
 
+        // Get the credential issuer metadata.
+        let credential_issuer_metadata = wallet
+            .get_credential_issuer_metadata(credential_issuer_url.clone())
+            .await
+            .map_err(GetCredentialIssuerMetadataError)?;
+
+        if is_pre_authorized {
+            if let Some(grants) = &credential_offer.grants {
+                if let Some(pre_auth_code) = &grants.pre_authorized_code {
+                    if let Some(specified_auth_server) = &pre_auth_code.authorization_server {
+                        if !credential_issuer_metadata.authorization_servers.is_empty()
+                            && !credential_issuer_metadata
+                                .authorization_servers
+                                .contains(specified_auth_server)
+                        {
+                            return Err(AppError::Error(format!(
+                        "The specified authorization server {specified_auth_server} is not listed in the credential issuer metadata."
+                    )));
+                        }
+                    }
+                }
+            }
+        } else {
+            if let Some(grants) = &credential_offer.grants {
+                if let Some(auth_code) = &grants.authorization_code {
+                    if let Some(specified_auth_server) = &auth_code.authorization_server {
+                        if !credential_issuer_metadata.authorization_servers.is_empty()
+                            && !credential_issuer_metadata
+                                .authorization_servers
+                                .contains(specified_auth_server)
+                        {
+                            return Err(AppError::Error(format!(
+                                "The specified authorization server {specified_auth_server} is not listed in the credential issuer metadata."
+                            )));
+                        }
+                    }
+                }
+            }
+        }
+
+        // Extract the authorization server selection from the authorization_server parameter in the grant types.
+        // If the `authorization_servers` array is empty, fall back to the credential issuer url.
+        let authorization_server_url = if is_pre_authorized {
+            credential_offer
+                .grants
+                .as_ref()
+                .and_then(|grants| grants.pre_authorized_code.as_ref())
+                .and_then(|pre_authorized_code| pre_authorized_code.authorization_server.as_ref())
+                .cloned()
+                .or_else(|| {
+                    // If no authorization server is specified, fall back to the authorization_servers in the credential issuer metadata.
+
+                    if !credential_issuer_metadata.authorization_servers.is_empty() {
+                        // Select the first listed authorization server.
+                        Some(credential_issuer_metadata.authorization_servers[0].clone())
+                    } else {
+                        None
+                    }
+                })
+                // Fall back to credential issuer url if no authorization server is specified.
+                .unwrap_or_else(|| credential_issuer_url.clone())
+        } else {
+            credential_offer
+                .grants
+                .as_ref()
+                .and_then(|grants| grants.authorization_code.as_ref())
+                .and_then(|auth_code| auth_code.authorization_server.as_ref())
+                .cloned()
+                .or_else(|| {
+                    if !credential_issuer_metadata.authorization_servers.is_empty() {
+                        Some(credential_issuer_metadata.authorization_servers[0].clone())
+                    } else {
+                        None
+                    }
+                })
+                // Fall back to credential issuer url if no authorization server is specified.
+                .unwrap_or_else(|| credential_issuer_url.clone())
+        };
+
         // Get the authorization server metadata.
         let authorization_server_metadata = wallet
-            .get_authorization_server_metadata(credential_issuer_url.clone())
+            .get_authorization_server_metadata(authorization_server_url.clone())
             .await
             .map_err(GetAuthorizationServerMetadataError)?;
 
@@ -124,14 +205,6 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             .map_err(GetAccessTokenError)?;
 
         info!("token_response: {token_response:?}");
-
-        // Get the credential issuer metadata.
-        let credential_issuer_metadata = wallet
-            .get_credential_issuer_metadata(credential_issuer_url.clone())
-            .await
-            .map_err(GetCredentialIssuerMetadataError)?;
-
-        info!("credential issuer metadata: {credential_issuer_metadata:?}");
 
         // Get the credential issuer display.
         let display = credential_issuer_metadata
