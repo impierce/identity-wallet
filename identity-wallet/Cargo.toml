@@ -1,12 +1,13 @@
 [package]
 name = "identity-wallet"
-version = "0.6.12"
+version = "0.10.0"
 edition = "2021"
 rust-version.workspace = true
 
 [dependencies]
 tauri.workspace = true
 tauri-plugin-fs = { version = "2" }
+tauri-plugin-opener = { version = "2" }
 
 anyhow = "1.0"
 async-trait = "0.1"
@@ -18,7 +19,8 @@ downcast-rs = "1.2"
 dyn-clone = "1.0"
 futures = "0.3"
 icu = "1.4.0"
-identity_credential = { git = "https://github.com/iotaledger/identity", tag = "v1.6.0-beta.2", default-features = false, features = [
+# TODO: See ../Cargo.toml
+identity_credential = { git = "https://github.com/impierce/identity.rs", branch = "tmp/disable-typ-check", default-features = false, features = [
     "credential",
     "domain-linkage",
     "presentation",
@@ -45,15 +47,17 @@ reqwest = { version = "0.11", default-features = false, features = [
 rustls.workspace = true
 rustls-platform-verifier.workspace = true
 serde = { version = "1.0", features = ["derive"] }
-serde_with = "3.8"
 serde_json.workspace = true
+serde_with = "3.8"
 sha256 = "1.4"
 stronghold_engine = { version = "2.0.1" }
-stronghold_ext = { git = "https://github.com/impierce/stronghold_ext", features = ["crypto"] }
+stronghold_ext = { git = "https://github.com/impierce/stronghold_ext", features = [
+    "crypto",
+] }
 strum = { version = "0.25", features = ["derive"] }
 thiserror = "1.0"
 tokio.workspace = true
-ts-rs = { version = "7.0", features = ["chrono-impl"] }
+ts-rs = { version = "7.0", features = ["chrono-impl", "url-impl"] }
 typetag = "0.2"
 unicode-normalization = "0.1"
 url = "2.5"
@@ -68,4 +72,4 @@ wiremock.workspace = true
 dotenvy = "0.15"
 
 [features]
-test_utils = []
+test_utils = ["tauri/test"]

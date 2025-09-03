@@ -34,6 +34,14 @@ use trust_list::TrustLists;
 use ts_rs::TS;
 use verified_data::VerifiedData;
 
+// TODO: usually in traditional OAuth2/OIDC apps the client_id is provided by the authorization server
+// when registering the app. For now we are hardcoding it here, but in the future we should provide a way to configure it.
+// See: https://github.com/openid/OpenID4VCI/issues/94
+pub const UNIME_CLIENT_ID: &str = "unime";
+
+// This is the custom URI scheme that the app will use to receive the authorization code from the authorization server.
+pub const UNIME_REDIRECT_URI: &str = "unime://callback";
+
 // The AppState is the main state of the application shared between the backend and the frontend.
 // We have structured the state and its operations following the redux pattern.
 // To safeguard this pattern we have introduced the FeatTrait, ActionTrait and a macro_rule for the Reducers.
@@ -112,6 +120,7 @@ pub struct AppState {
     #[ts(skip)]
     pub extensions: std::collections::HashMap<String, Box<dyn FeatTrait>>,
     pub show_dev_mode_setting: bool,
+    pub is_unlocked: bool,
     pub dev_mode: DevMode,
 }
 

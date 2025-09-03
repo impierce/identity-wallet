@@ -70,9 +70,10 @@ mod bindings {
             cancel_user_flow::CancelUserFlow, check_password::CheckPassword, unlock_storage::UnlockStorage,
         },
         credentials::actions::{
-            credential_offers_selected::CredentialOffersSelected, credentials_selected::CredentialsSelected,
-            delete_credential::DeleteCredential, refresh_credential_status::RefreshCredentialStatus,
-            self_issue_credential::SelfIssueCredential, update_credential_metadata::UpdateCredentialMetadata,
+            authorization_code_received::CodeReceived, credential_offers_selected::CredentialOffersSelected,
+            credentials_selected::CredentialsSelected, delete_credential::DeleteCredential,
+            refresh_credential_status::RefreshCredentialStatus, self_issue_credential::SelfIssueCredential,
+            update_credential_metadata::UpdateCredentialMetadata,
         },
         dev_mode::actions::{dev_profile::DevProfile, show_setting::ShowDevModeSetting},
         did::actions::{set_preferred_keytype::SetPreferredKeyType, set_preferred_method::SetPreferredDidMethod},
@@ -127,6 +128,8 @@ mod bindings {
         CredentialsSelected { payload: CredentialsSelected },
         #[serde(rename = "[Credential Offer] Selected")]
         CredentialOffersSelected { payload: CredentialOffersSelected },
+        #[serde(rename = "[Credential Offer] Code received")]
+        CodeReceived { payload: CodeReceived },
         #[serde(rename = "[Credential Metadata] Update")]
         UpdateCredentialMetadata { payload: UpdateCredentialMetadata },
         #[serde(rename = "[Credential] Delete")]
