@@ -87,6 +87,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             .await
             .map_err(GetCredentialIssuerMetadataError)?;
 
+        // Check that the specified authorization servers are listed in the credential issuer metadata's `authorization_servers` array.
         if is_pre_authorized {
             if let Some(grants) = &credential_offer.grants {
                 if let Some(pre_auth_code) = &grants.pre_authorized_code {
@@ -122,7 +123,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
         }
 
         // Extract the authorization server selection from the authorization_server parameter in the grant types.
-        // If the `authorization_servers` array is empty, fall back to the credential issuer url.
+        // If no authorization server is specified, fall back to the credential issuer url.
         let authorization_server_url = if is_pre_authorized {
             credential_offer
                 .grants
@@ -132,9 +133,8 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                 .cloned()
                 .or_else(|| {
                     // If no authorization server is specified, fall back to the authorization_servers in the credential issuer metadata.
-
                     if !credential_issuer_metadata.authorization_servers.is_empty() {
-                        // Select the first listed authorization server.
+                        // Select the first authorization server in the array.
                         Some(credential_issuer_metadata.authorization_servers[0].clone())
                     } else {
                         None
