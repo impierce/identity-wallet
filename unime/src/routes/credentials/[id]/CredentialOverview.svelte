@@ -7,6 +7,7 @@
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 
   import { Avatar } from '$lib/components';
+  import { dispatch } from '$lib/dispatcher';
   import { BankLightIcon, SealCheckRegularIcon, SealQuestionRegularIcon, SealWarningRegularIcon } from '$lib/icons';
   import { state as appState } from '$lib/stores';
   import { calculateInitials, formatDate, getImageAsset } from '$lib/utils';
@@ -40,6 +41,7 @@
   }
 
   onMount(async () => {
+    await dispatch({ type: '[Credential] Refresh Status', payload: { credential_id: credential.id } });
     if (credential.connection_id) {
       issuerLogoUrl = await getImageAsset(credential.connection_id);
     }
