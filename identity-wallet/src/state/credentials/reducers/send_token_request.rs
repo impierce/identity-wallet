@@ -104,19 +104,17 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                     }
                 }
             }
-        } else {
-            if let Some(grants) = &credential_offer.grants {
-                if let Some(auth_code) = &grants.authorization_code {
-                    if let Some(specified_auth_server) = &auth_code.authorization_server {
-                        if !credential_issuer_metadata.authorization_servers.is_empty()
-                            && !credential_issuer_metadata
-                                .authorization_servers
-                                .contains(specified_auth_server)
-                        {
-                            return Err(AppError::Error(format!(
+        } else if let Some(grants) = &credential_offer.grants {
+            if let Some(auth_code) = &grants.authorization_code {
+                if let Some(specified_auth_server) = &auth_code.authorization_server {
+                    if !credential_issuer_metadata.authorization_servers.is_empty()
+                        && !credential_issuer_metadata
+                            .authorization_servers
+                            .contains(specified_auth_server)
+                    {
+                        return Err(AppError::Error(format!(
                                 "The specified authorization server {specified_auth_server} is not listed in the credential issuer metadata."
                             )));
-                        }
                     }
                 }
             }

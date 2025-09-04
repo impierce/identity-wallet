@@ -147,15 +147,14 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                 } else if let Some(authorization_code) = authorization_code {
                     // Check that the specified authorization servers are listed in the credential issuer metadata's `authorization_servers` array.
                     if let Some(specified_authorization_server) = authorization_code.authorization_server.as_ref() {
-                        if !credential_issuer_metadata.authorization_servers.is_empty() {
-                            if !credential_issuer_metadata
+                        if !credential_issuer_metadata.authorization_servers.is_empty()
+                            && !credential_issuer_metadata
                                 .authorization_servers
                                 .contains(specified_authorization_server)
-                            {
-                                return Err(AppError::Error(format!(
+                        {
+                            return Err(AppError::Error(format!(
                                 "The specified authorization server `{specified_authorization_server}` is not an accepted authorization server."
                             )));
-                            }
                         }
                     }
                     // Extract the authorization server selection from the authorization_server parameter in the grant.
