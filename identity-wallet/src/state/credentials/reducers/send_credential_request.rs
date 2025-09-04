@@ -145,7 +145,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                 // continue when UniMe receives the authorization code via during redirection back to the app from the
                 // browser. The frontend will then dispatch the `CodeReceived` action which will continue the flow.
                 } else if let Some(authorization_code) = authorization_code {
-                    // Check that the specified authorization servers are listed in the credential issuer metadata's `authorization_servers` array.
+                    // Check that the specified authorization servers exist in the Credential Issuer Metadata's `authorization_servers` parameter.
                     if let Some(specified_authorization_server) = authorization_code.authorization_server.as_ref() {
                         if !credential_issuer_metadata.authorization_servers.is_empty()
                             && !credential_issuer_metadata
