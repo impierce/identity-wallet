@@ -7,13 +7,12 @@
   import Icon from '@iconify/svelte';
 
   import { naturalPerson as schema } from '$lib/schemas/pid';
-  import { state as appState } from '$lib/stores';
-  import { formatDate } from '$lib/utils';
 
   import TextFieldRenderer from './TextFieldRenderer.svelte';
 
   let { credential }: { credential: DisplayCredential } = $props();
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const residence = schema(get(LL));
 
   const subject = credential.data.credentialSubject as z.infer<typeof residence>;
