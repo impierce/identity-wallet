@@ -21,7 +21,7 @@
   const residence = schema(get(LL));
 
   // Initialize the form
-  const init: z.infer<typeof residence> = {};
+  const init: z.infer<typeof residence> = { resident_country: '' };
 
   const { form, enhance, allErrors } = superForm(init, {
     validators: zod(residence),
