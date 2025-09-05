@@ -70,7 +70,7 @@
     "typesafe-i18n": "^5.26.2",
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.29.1",
-    "unplugin-icons": "^22.0.0",
+    "unplugin-icons": "^22.2.0",
     "vite": "^7.1.1",
     "vitest": "^3.2.4",
     "zod": "^3.25.23"
