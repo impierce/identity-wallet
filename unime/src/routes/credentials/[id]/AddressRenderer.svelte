@@ -10,6 +10,7 @@
 
   let { credential }: { credential: DisplayCredential } = $props();
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const residence = schema(get(LL));
 
   const subject = credential.data.credentialSubject as z.infer<typeof residence>;
