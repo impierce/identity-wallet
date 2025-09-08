@@ -11,6 +11,8 @@ use ts_rs::TS;
 #[ts(export, export_to = "bindings/actions/CredentialOffersSelected.ts")]
 pub struct CredentialOffersSelected {
     pub credential_configuration_ids: Vec<String>,
+    #[ts(optional)]
+    pub tx_code: Option<String>,
 }
 
 #[typetag::serde(name = "[Credential Offer] Selected")]
