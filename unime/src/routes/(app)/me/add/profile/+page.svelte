@@ -10,7 +10,7 @@
 
   import { info } from '@tauri-apps/plugin-log';
 
-  import { Button, DateField, Switch, TextInput, TopNavBar } from '$lib/components';
+  import { Button, Switch, TextInput, TopNavBar } from '$lib/components';
   import SelectCountry from '$lib/components/forms/SelectCountry.svelte';
   import { dispatch } from '$lib/dispatcher';
   import { HeartFillIcon, IdentificationBadgeRegularIcon } from '$lib/icons';
