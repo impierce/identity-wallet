@@ -2106,7 +2106,7 @@ checksum = "7c74b8349d32d297c9134b8c88677813a227df8f779daa29bfc29c183fe3dca6"
 [[package]]
 name = "consumer"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
+source = "git+https://github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
 dependencies = [
  "did_iota",
  "did_jwk",
@@ -2853,7 +2853,7 @@ dependencies = [
 [[package]]
 name = "did_iota"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
+source = "git+https://github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
 dependencies = [
  "anyhow",
  "identity_iota",
@@ -2868,7 +2868,7 @@ dependencies = [
 [[package]]
 name = "did_jwk"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
+source = "git+https://github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
 dependencies = [
  "did-jwk",
  "identity_iota",
@@ -2885,7 +2885,7 @@ dependencies = [
 [[package]]
 name = "did_key"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
+source = "git+https://github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
 dependencies = [
  "did-method-key",
  "identity_iota",
@@ -2903,7 +2903,7 @@ dependencies = [
 [[package]]
 name = "did_manager"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
+source = "git+https://github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
 dependencies = [
  "consumer",
  "producer",
@@ -2941,7 +2941,7 @@ dependencies = [
 [[package]]
 name = "did_web"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
+source = "git+https://github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
 dependencies = [
  "did-web",
  "identity_iota",
@@ -5605,6 +5605,7 @@ dependencies = [
  "strum 0.25.0",
  "tauri",
  "tauri-plugin-fs",
+ "tauri-plugin-opener",
  "tempfile",
  "thiserror 1.0.69",
  "tokio",
@@ -5840,7 +5841,7 @@ dependencies = [
 [[package]]
 name = "identity_stronghold_ext"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
+source = "git+https://github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
 dependencies = [
  "async-trait",
  "elliptic-curve 0.13.8",
@@ -9245,7 +9246,7 @@ dependencies = [
 [[package]]
 name = "oid4vc"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc?rev=b4582de#b4582debc609c19063d3a73b8ec1e82858bca33c"
+source = "git+https://github.com/impierce/openid4vc?rev=8b024cb#8b024cb07ee39fd697d7acb275b61e41c114815b"
 dependencies = [
  "oid4vc-core",
  "oid4vc-manager",
@@ -9257,7 +9258,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-core"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc?rev=b4582de#b4582debc609c19063d3a73b8ec1e82858bca33c"
+source = "git+https://github.com/impierce/openid4vc?rev=8b024cb#8b024cb07ee39fd697d7acb275b61e41c114815b"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -9282,7 +9283,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-manager"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc?rev=b4582de#b4582debc609c19063d3a73b8ec1e82858bca33c"
+source = "git+https://github.com/impierce/openid4vc?rev=8b024cb#8b024cb07ee39fd697d7acb275b61e41c114815b"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -9316,16 +9317,19 @@ dependencies = [
 [[package]]
 name = "oid4vci"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc?rev=b4582de#b4582debc609c19063d3a73b8ec1e82858bca33c"
+source = "git+https://github.com/impierce/openid4vc?rev=8b024cb#8b024cb07ee39fd697d7acb275b61e41c114815b"
 dependencies = [
  "anyhow",
+ "chrono",
  "derivative",
  "getset",
  "http 1.3.1",
  "jsonwebtoken",
  "lazy_static",
+ "nutype",
  "oid4vc-core",
  "paste",
+ "pkce",
  "reqwest 0.11.27",
  "reqwest-middleware",
  "reqwest-retry",
@@ -9335,12 +9339,13 @@ dependencies = [
  "serde_with 3.14.0",
  "thiserror 1.0.69",
  "tokio",
+ "url",
 ]
 
 [[package]]
 name = "oid4vp"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc?rev=b4582de#b4582debc609c19063d3a73b8ec1e82858bca33c"
+source = "git+https://github.com/impierce/openid4vc?rev=8b024cb#8b024cb07ee39fd697d7acb275b61e41c114815b"
 dependencies = [
  "anyhow",
  "chrono",
@@ -10066,6 +10071,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "pkce"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e228dbe2aebd82de09c914fe28d36d3170ed5192e8d52b9c070ee0794519c2d3"
+dependencies = [
+ "base64 0.21.7",
+ "rand 0.8.5",
+ "sha2 0.10.9",
+]
+
+[[package]]
 name = "pkcs1"
 version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -10367,7 +10383,7 @@ dependencies = [
 [[package]]
 name = "producer"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
+source = "git+https://github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
 dependencies = [
  "did_iota",
  "did_jwk",
@@ -12197,7 +12213,7 @@ dependencies = [
 [[package]]
 name = "shared"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
+source = "git+https://github.com/impierce/did-manager?tag=v1.0.0-beta.5#518e3d38131c0fdba47b77ca624d0ae900f44b07"
 dependencies = [
  "identity_iota",
  "identity_storage",
@@ -12341,7 +12357,7 @@ dependencies = [
 [[package]]
 name = "siopv2"
 version = "0.1.0"
-source = "git+https://git@github.com/impierce/openid4vc?rev=b4582de#b4582debc609c19063d3a73b8ec1e82858bca33c"
+source = "git+https://github.com/impierce/openid4vc?rev=8b024cb#8b024cb07ee39fd697d7acb275b61e41c114815b"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -13473,6 +13489,28 @@ dependencies = [
 ]
 
 [[package]]
+name = "tauri-plugin-opener"
+version = "2.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "786156aa8e89e03d271fbd3fe642207da8e65f3c961baa9e2930f332bf80a1f5"
+dependencies = [
+ "dunce",
+ "glob",
+ "objc2-app-kit",
+ "objc2-foundation 0.3.1",
+ "open",
+ "schemars 0.8.22",
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-plugin",
+ "thiserror 2.0.16",
+ "url",
+ "windows 0.61.3",
+ "zbus",
+]
+
+[[package]]
 name = "tauri-plugin-os"
 version = "2.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -14564,12 +14602,14 @@ dependencies = [
  "tauri-plugin-fs",
  "tauri-plugin-keystore",
  "tauri-plugin-log",
+ "tauri-plugin-opener",
  "tauri-plugin-os",
  "tauri-plugin-shell",
  "tauri-plugin-single-instance",
  "tempfile",
  "tokio",
  "typetag",
+ "unime",
  "url",
  "wiremock",
 ]
@@ -15119,7 +15159,7 @@ version = "0.1.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0978bf7171b3d90bac376700cb56d606feb40f251a475a5d6634613564460b22"
 dependencies = [
- "windows-sys 0.60.2",
+ "windows-sys 0.48.0",
 ]
 
 [[package]]

@@ -84,6 +84,12 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
             })
             .flatten();
 
+        let tx_code = credential_offer
+            .grants
+            .as_ref()
+            .and_then(|grants| grants.pre_authorized_code.clone())
+            .and_then(|pre_authorized_code| pre_authorized_code.tx_code);
+
         // Get the credential issuer name and logo uri or use the credential issuer url.
         let (issuer_name, logo_uri) = display
             .map(|display| {
@@ -125,6 +131,7 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
                 issuer_name,
                 logo_uri,
                 credential_configurations,
+                tx_code,
             }),
             core_utils: CoreUtils {
                 active_credential_offer: Some(credential_offer),
@@ -145,7 +152,7 @@ async fn download_credential_logos(
         let credential_logo_uri = credential_configuration
             .display
             .first()
-            .and_then(|value| value["logo"]["uri"].as_str());
+            .and_then(|value| value.logo.as_ref().map(|logo| logo.uri.to_string()));
 
         info!("credential_logo_uri: {credential_logo_uri:?}");
 

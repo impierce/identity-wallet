@@ -44,7 +44,7 @@ pub enum AppError {
     InvalidAuthorizationRequest(Box<AuthorizationRequest<Object>>),
     #[error("Invalid credential offer")]
     InvalidCredentialOffer(#[source] serde_json::Error),
-    #[error("Could not find a matching credential for input descriptor")]
+    #[error("No credential in the wallet matched the DCQL query")]
     NoMatchingCredentialError,
     #[error("Failed to generate authorization response")]
     GenerateAuthorizationResponseError(#[source] anyhow::Error),
@@ -66,9 +66,9 @@ pub enum AppError {
     GetAuthorizationServerMetadataError(#[source] anyhow::Error),
     #[error("Failed to retrieve the credential issuer's metadata")]
     GetCredentialIssuerMetadataError(#[source] anyhow::Error),
-    #[error("Failed to retrieve an access token from the credential issuer")]
+    #[error("Failed to retrieve an access token from the credential issuer: {0}")]
     GetAccessTokenError(#[source] anyhow::Error),
-    #[error("Failed to retrieve credential from the credential issuer")]
+    #[error("Failed to retrieve credential from the credential issuer: {0}")]
     GetCredentialError(#[source] anyhow::Error),
     #[error("Failed to retrieve batch credentials from the credential issuer")]
     GetBatchCredentialError(#[source] anyhow::Error),

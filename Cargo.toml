@@ -6,10 +6,10 @@ members = ["identity-wallet", "unime/src-tauri"]
 tauri = { version = "2.8.2", features = ["protocol-asset", "rustls-tls"] }
 tauri-build = "2.4.0"
 
-did_manager = { git = "https://git@github.com/impierce/did-manager", tag = "v1.0.0-beta.5" }
+did_manager = { git = "https://github.com/impierce/did-manager", tag = "v1.0.0-beta.5" }
 jsonwebtoken = "9.3"
 log = "^0.4"
-oid4vc = { git = "https://git@github.com/impierce/openid4vc", rev = "b4582de" }
+oid4vc = { git = "https://github.com/impierce/openid4vc", rev = "8b024cb" }
 rand = "0.8"
 rustls = { version = "0.23", features = ["aws-lc-rs"] }
 rustls-platform-verifier = { version = "0.6" }

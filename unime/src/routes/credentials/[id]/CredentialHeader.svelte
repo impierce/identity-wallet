@@ -7,6 +7,7 @@
   import { dispatch } from '$lib/dispatcher';
   import { CertificateLightIcon, HeartStraightFillIcon, HeartStraightRegularIcon, UserLightIcon } from '$lib/icons';
   import { getImageAsset } from '$lib/utils';
+  import { ensureLightIcon } from '$lib/utils/image';
 
   import CredentialHeaderMenu from './CredentialHeaderMenu.svelte';
 
@@ -36,7 +37,7 @@
       {#if credential.metadata.icon}
         <Image
           id={`${credential.metadata.icon}Light`}
-          iconFallback={`${credential.metadata.icon}Light`}
+          iconFallback={ensureLightIcon(credential.metadata.icon)}
           iconClass="size-10 dark:text-text-alt"
         />
       {:else if credential.data.type.includes('OpenBadgeCredential')}

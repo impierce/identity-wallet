@@ -357,7 +357,7 @@ pub fn get_oid4vp_client_name_and_logo_uri(
 ) -> OID4VPClientMetadata {
     // Get the connection url from the redirect url host (or use the redirect url if it does not
     // contain a host).
-    let redirect_uri = oid4vp_authorization_request.body.redirect_uri.clone();
+    let redirect_uri = oid4vp_authorization_request.body.uri.uri().clone();
     let connection_url = redirect_uri.host_str().unwrap_or(redirect_uri.as_str());
 
     let client_id = oid4vp_authorization_request.body.client_id.clone();
