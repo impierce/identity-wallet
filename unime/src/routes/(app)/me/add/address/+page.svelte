@@ -21,9 +21,13 @@
   const residence = schema(get(LL));
 
   // Initialize the form
-  const init: z.infer<typeof residence> = {};
+  const init: z.infer<typeof residence> = { resident_country: '' };
 
-  const { form, enhance, allErrors } = superForm(init, { validators: zod(residence) });
+  const { form, enhance, allErrors } = superForm(init, {
+    validators: zod(residence),
+    validationMethod: 'oninput',
+    SPA: true,
+  });
 
   // Bottom action: Add to favourites, Add address
   let checked = $state(true);
@@ -166,7 +170,7 @@
       </form>
       <!-- DEBUG -->
       <!-- <pre class="text-xs">{JSON.stringify($form, null, 2)}</pre> -->
-      <!-- <div class="break-all text-xs text-rose-700">errors: {JSON.stringify($errors, null, 2)}</div> -->
+      <!-- <div class="break-all text-xs text-rose-700">errors: {JSON.stringify($allErrors, null, 2)}</div> -->
       <!-- <div class="break-all text-xs">constraints: {JSON.stringify($constraints)}</div> -->
       <!-- <div class="text-xs">tainted: {JSON.stringify($tainted, null, 2)}</div> -->
     </div>
