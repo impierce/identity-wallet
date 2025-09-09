@@ -52,14 +52,15 @@ pub struct DisplayCredential {
     pub connection_id: Option<String>,
     // TODO: should this be moved to `metadata`?
     pub display_name: String,
-    pub credential_status: Option<CredentialStatusData>,
+    #[ts(optional)]
+    pub status: Option<CredentialStatus>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, Derivative, TS)]
 #[derivative(PartialEq)]
-#[ts(export, export_to = "bindings/credentials/CredentialStatusData.ts")]
-pub struct CredentialStatusData {
-    #[ts(type = "string")]
+#[ts(export, export_to = "bindings/credentials/CredentialStatus.ts")]
+pub struct CredentialStatus {
+    #[ts(type = "'VALID' | 'INVALID' | 'SUSPENDED' | 'UNDEFINED'")]
     pub status: StatusType,
     pub idx: u64,
     pub uri: Url,
@@ -102,7 +103,7 @@ impl VerifiableCredentialRecord {
             let credential_status = serde_json::from_value::<StatusClaim>(
                 get_unverified_jwt_claims(&verifiable_credential)?["status"].clone(),
             )
-            .map(|status| CredentialStatusData {
+            .map(|status| CredentialStatus {
                 status: StatusType::VALID,
                 idx: status.referenced_status_list.idx,
                 uri: status.referenced_status_list.uri,
@@ -243,7 +244,7 @@ impl VerifiableCredentialRecord {
                 issuer_name: String::new(),
                 connection_id: None,
                 display_name: String::new(),
-                credential_status,
+                status: credential_status,
             }
         };
 

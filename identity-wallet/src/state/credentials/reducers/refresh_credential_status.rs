@@ -6,7 +6,7 @@ use crate::{
         actions::{listen, Action},
         common::actions::unlock_storage::UnlockStorage,
         core_utils::{DateUtils, IdentityManager},
-        credentials::{actions::refresh_credential_status::RefreshCredentialStatus, CredentialStatusData},
+        credentials::{actions::refresh_credential_status::RefreshCredentialStatus, CredentialStatus},
         AppState,
     },
 };
@@ -60,7 +60,7 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
         let mut credentials = state.credentials.clone();
         if let Some(credential_id) = refresh_credential_status.id {
             if let Some(credential) = credentials.iter_mut().find(|c| c.id == credential_id) {
-                if let Some(credential_status_data) = credential.credential_status.as_ref() {
+                if let Some(credential_status_data) = credential.status.as_ref() {
                     // We ok_or() with an error here because when the if let Some() statement above is true, we must have a credentialStatus.
 
                     let new_status = if let Ok(new_status) =
@@ -83,7 +83,7 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
                         );
                     }
 
-                    credential.credential_status = Some(CredentialStatusData {
+                    credential.status = Some(CredentialStatus {
                         status: new_status,
                         last_checked: DateUtils::new_date_string(),
                         ..credential_status_data.clone()
@@ -145,7 +145,7 @@ pub struct TSLCredentialStatus {
 /// Fetches the Status List Token from the Status Provider URI provided in the credentialStatus, and checks the given index, returning the Status.
 /// There are multiple decoding and decompressing steps involved, please refer to the OAuth Token Status List specification for more details.
 pub async fn get_credential_status(
-    credential_status_data: &CredentialStatusData,
+    credential_status_data: &CredentialStatus,
     identity_manager: &IdentityManager,
 ) -> Result<StatusType, AppError> {
     let status_list_jwt = fetch_status_list(

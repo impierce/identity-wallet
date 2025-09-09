@@ -41,7 +41,7 @@
   }
 
   onMount(async () => {
-    await dispatch({ type: '[Credential] Refresh Status', payload: { credential_id: credential.id } });
+    await dispatch({ type: '[Credential] Refresh Status', payload: { id: credential.id } });
     if (credential.connection_id) {
       issuerLogoUrl = await getImageAsset(credential.connection_id);
     }
@@ -53,7 +53,7 @@
 
 <div class="grid grid-cols-2 gap-4 bg-background-alt text-xs font-medium">
   <div class="flex flex-col items-center gap-1">
-    {#if credential.credential_status?.status === 'INVALID'}
+    {#if credential.status?.status === 'INVALID'}
       <p class="text-red-700 dark:text-red-500">Invalid</p>
       <div
         class="grid h-20 place-items-center self-stretch rounded-xl bg-red-50 py-5 text-red-700 dark:bg-background dark:text-red-500"

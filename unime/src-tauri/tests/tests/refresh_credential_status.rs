@@ -31,28 +31,14 @@ async fn test_refresh_credential_status() {
     state.core_utils.managers = managers;
 
     // Update the credential status URI to point to the mock server.
-    state
-        .credentials
-        .get_mut(0)
-        .unwrap()
-        .credential_status
-        .as_mut()
-        .unwrap()
-        .uri =
+    state.credentials.get_mut(0).unwrap().status.as_mut().unwrap().uri =
         serde_json::from_value(json!(mock_server.uri().to_string() + "/ietf-oauth-token-status-list/0")).unwrap();
 
     let action = json_example::<Action>("tests/fixtures/actions/refresh_credential_status.json");
 
     let state = refresh_credential_status(state, action).await.unwrap();
 
-    let result = state
-        .credentials
-        .first()
-        .unwrap()
-        .credential_status
-        .as_ref()
-        .unwrap()
-        .status;
+    let result = state.credentials.first().unwrap().status.as_ref().unwrap().status;
 
     assert_eq!(result, StatusType::INVALID);
 }
