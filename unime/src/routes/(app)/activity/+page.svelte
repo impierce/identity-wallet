@@ -3,6 +3,7 @@
   import { page } from '$app/state';
   import LL from '$i18n/i18n-svelte';
   import { writable, type Writable } from 'svelte/store';
+  import { fly } from 'svelte/transition';
 
   import { History, Tabs } from '$lib/components';
 
@@ -20,7 +21,7 @@
   });
 </script>
 
-<div class="content-height flex flex-col bg-silver dark:bg-navy">
+<div class="content-height flex flex-col bg-silver dark:bg-navy" in:fly={{ y: 18, duration: 200, opacity: 1 }}>
   <div
     class="relative flex h-[50px] min-h-[50px] w-full items-center justify-center bg-silver text-[13px]/[24px] font-medium text-neutral-900 dark:bg-navy dark:text-white"
   >

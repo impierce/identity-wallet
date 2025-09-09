@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onDestroy, onMount, type Component } from 'svelte';
 
-  import { goto } from '$app/navigation';
+  import { beforeNavigate, goto } from '$app/navigation';
   import { page } from '$app/state';
   import {
     PUBLIC_DEV_MODE_MENU_EXPANDED,
@@ -30,7 +30,7 @@
     TrashRegularIcon,
     XRegularIcon,
   } from '$lib/icons';
-  import { state as appState, error as errorState } from '$lib/stores';
+  import { state as appState, error as errorState, navigationDirection } from '$lib/stores';
 
   import '../app.css';
 
@@ -326,6 +326,30 @@
 
     if (resizeObserverInsetBottom) {
       resizeObserverInsetBottom.disconnect();
+    }
+  });
+
+  beforeNavigate(({ type, from, to }) => {
+    if (!from || !to) return;
+
+    if (type === 'popstate') {
+      $navigationDirection = null;
+      if (PUBLIC_DEV_SHOW_CURRENT_ROUTE === 'true') {
+        info(`$navigationDirection: ${$navigationDirection}`);
+      }
+      return;
+    }
+
+    if (to.url.pathname.startsWith(from.url.pathname) || from.url.pathname.startsWith(to.url.pathname)) {
+      if (to.url.pathname.length > from.url.pathname.length) {
+        $navigationDirection = 'down';
+      } else {
+        $navigationDirection = 'up';
+      }
+    }
+
+    if (PUBLIC_DEV_SHOW_CURRENT_ROUTE === 'true') {
+      info(`$navigationDirection: ${$navigationDirection}`);
     }
   });
 </script>

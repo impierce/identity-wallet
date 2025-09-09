@@ -76,3 +76,8 @@ export const onboarding_state = writable<OnboardingState>({});
  * This store is used to get the page title into a layout.
  */
 export const pageTitleStore = writable<string>();
+
+/**
+ * Stores the direction of the last navigation. Used for page transition animations that create the sense of moving up and down a hierarchy.
+ */
+export const navigationDirection = writable<'up' | 'down' | null>(null);
