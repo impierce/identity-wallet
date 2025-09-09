@@ -132,7 +132,7 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
 
 /// Represents the credential status as defined in the OAuth Token Status List specification and the DIIP profile.
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct TSLCredentialStatus {
+pub struct TslCredentialStatus {
     pub id: Url,
     #[serde(rename = "type")]
     pub type_: StatusListTyp,
