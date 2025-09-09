@@ -26,6 +26,10 @@
 
   beforeNavigate(async ({ type, cancel }) => {
     replaceState('', { tab: $activeTab });
+    // Reset to first tab when navigating back again
+    if (page.url.pathname === '/me') {
+      activeTab.set(triggers[0]);
+    }
     if (type === 'popstate') {
       cancel();
     }
