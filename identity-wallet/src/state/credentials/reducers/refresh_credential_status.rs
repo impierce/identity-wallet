@@ -38,7 +38,7 @@ pub async fn refresh_all_credential_statuses(state: AppState, action: Action) ->
         // Refresh each credential status one by one.
         for credential_id in credential_ids {
             let action = Arc::new(RefreshCredentialStatus {
-                credential_id: Some(credential_id),
+                id: Some(credential_id),
             });
 
             state = refresh_credential_status(state, action).await?;
@@ -58,7 +58,7 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
             .as_ref()
             .ok_or(AppError::MissingManagerError("stronghold"))?;
         let mut credentials = state.credentials.clone();
-        if let Some(credential_id) = refresh_credential_status.credential_id {
+        if let Some(credential_id) = refresh_credential_status.id {
             if let Some(credential) = credentials.iter_mut().find(|c| c.id == credential_id) {
                 if let Some(credential_status_data) = credential.credential_status.as_ref() {
                     // We ok_or() with an error here because when the if let Some() statement above is true, we must have a credentialStatus.

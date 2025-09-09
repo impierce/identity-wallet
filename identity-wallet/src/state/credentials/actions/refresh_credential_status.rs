@@ -8,7 +8,8 @@ use ts_rs::TS;
 #[derive(Serialize, Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/RefreshCredentialStatus.ts")]
 pub struct RefreshCredentialStatus {
-    pub credential_id: Option<String>,
+    #[ts(optional)]
+    pub id: Option<String>,
 }
 
 #[typetag::serde(name = "[Credential] Refresh Status")]
