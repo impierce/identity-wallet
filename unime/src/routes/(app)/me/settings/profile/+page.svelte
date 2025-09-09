@@ -41,7 +41,7 @@
       class="flex items-center space-x-4 rounded-xl bg-white p-4 dark:bg-dark"
       use:melt={trigger}
     >
-      <svelte:component this={TrashFillIcon} class="h-5 w-5 text-rose-400" />
+      <TrashFillIcon class="h-5 w-5 text-rose-400" />
       <p class="grow text-left text-sm font-medium text-slate-800 dark:text-white">
         {$LL.SETTINGS.PROFILE.DELETE_PROFILE.TITLE()}
       </p>
