@@ -29,8 +29,6 @@ rustls.workspace = true
 rustls-platform-verifier.workspace = true
 serde_json.workspace = true
 tauri-plugin-barcode-scanner = { version = "2" }
-[target.'cfg(any(target_os = "android", target_os = "ios"))'.dependencies]
-tauri-plugin-biometric = { version = "2" }
 tauri-plugin-deep-link = { version = "2" }
 tauri-plugin-fs = { version = "2" }
 tauri-plugin-keystore = { version = "2.1.0-alpha.1" }
@@ -38,8 +36,6 @@ tauri-plugin-log = { version = "2", features = ["colored"] }
 tauri-plugin-opener = { version = "2" }
 tauri-plugin-os = { version = "2" }
 tauri-plugin-shell = { version = "2" }
-[target.'cfg(any(target_os = "macos", windows, target_os = "linux"))'.dependencies]
-tauri-plugin-single-instance = { version = "2", features = ["deep-link"] }
 
 [dev-dependencies]
 tauri = { workspace = true, features = ["test"] }
@@ -63,3 +59,9 @@ wiremock.workspace = true
 # DO NOT REMOVE!!
 custom-protocol = ["tauri/custom-protocol"]
 test_utils = []
+
+[target.'cfg(any(target_os = "android", target_os = "ios"))'.dependencies]
+tauri-plugin-biometric = { version = "2" }
+
+[target.'cfg(any(target_os = "macos", windows, target_os = "linux"))'.dependencies]
+tauri-plugin-single-instance = { version = "2", features = ["deep-link"] }
