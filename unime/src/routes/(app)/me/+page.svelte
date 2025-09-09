@@ -1,6 +1,6 @@
 <script lang="ts">
   import { beforeNavigate, goto, replaceState } from '$app/navigation';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { fly } from 'svelte/transition';
 
   import { ActionSheet, Avatar } from '$lib/components';
@@ -22,10 +22,13 @@
   let initials: string | undefined;
 
   let triggers = [$LL.ME.CREDENTIAL_TABS.ALL(), $LL.ME.CREDENTIAL_TABS.DATA(), $LL.ME.CREDENTIAL_TABS.BADGES()];
-  let activeTab: Writable<string> = writable($page.state.tab || triggers[0]);
+  let activeTab: Writable<string> = writable(page.state.tab || triggers[0]);
 
-  beforeNavigate(async () => {
+  beforeNavigate(async ({ type, cancel }) => {
     replaceState('', { tab: $activeTab });
+    if (type === 'popstate') {
+      cancel();
+    }
   });
 
   $: {

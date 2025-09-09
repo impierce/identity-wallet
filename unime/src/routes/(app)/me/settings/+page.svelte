@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { beforeNavigate, goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
   import { fly } from 'svelte/transition';
 
@@ -8,9 +9,18 @@
   import { state } from '$lib/stores';
 
   import EmojiAvatarSelect from './EmojiAvatarSelect.svelte';
+
+  const parentRoute = '/me';
+
+  beforeNavigate(({ type, cancel }) => {
+    if (type === 'popstate') {
+      cancel();
+      goto(parentRoute);
+    }
+  });
 </script>
 
-<TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.NAVBAR_TITLE()} class="sticky top-0 z-10" />
+<TopNavBar on:back={() => goto(parentRoute)} title={$LL.SETTINGS.NAVBAR_TITLE()} class="sticky top-0 z-10" />
 
 <div class="flex flex-col space-y-[15px] bg-background px-4 py-5" in:fly={{ x: 32, opacity: 1 }}>
   <!-- Avatar -->

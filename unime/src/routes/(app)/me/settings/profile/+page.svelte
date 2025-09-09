@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { beforeNavigate, goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
 
   import { melt } from '@melt-ui/svelte';
@@ -6,9 +7,18 @@
   import { ActionSheet, Button, SettingsCaretLink, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { KeyboardFillIcon, TrashFillIcon } from '$lib/icons';
+
+  const parentRoute = '/me/settings/profile';
+
+  beforeNavigate(({ type, cancel }) => {
+    if (type === 'popstate') {
+      cancel();
+      goto(parentRoute);
+    }
+  });
 </script>
 
-<TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.PROFILE.TITLE()} class="sticky top-0 z-10" />
+<TopNavBar on:back={() => goto(parentRoute)} title={$LL.SETTINGS.PROFILE.TITLE()} class="sticky top-0 z-10" />
 
 <div class="flex flex-col gap-3 bg-background px-4 py-5">
   <SettingsCaretLink href="/me/settings/profile/name">

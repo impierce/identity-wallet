@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { beforeNavigate, replaceState } from '$app/navigation';
-  import { page } from '$app/stores';
+  import { beforeNavigate, goto, replaceState } from '$app/navigation';
+  import { page } from '$app/state';
   import LL from '$i18n/i18n-svelte';
   import { writable, type Writable } from 'svelte/store';
 
@@ -9,10 +9,14 @@
   import ConnectionsList from './ConnectionsList.svelte';
 
   let triggers = [$LL.ACTIVITY.TABS.CONNECTIONS(), $LL.ACTIVITY.TABS.HISTORY()];
-  let activeTab: Writable<string> = writable($page.state.tab || triggers[0]);
+  let activeTab: Writable<string> = writable(page.state.tab || triggers[0]);
 
-  beforeNavigate(async () => {
+  beforeNavigate(async ({ type, cancel }) => {
     replaceState('', { tab: $activeTab });
+    if (type === 'popstate') {
+      cancel();
+      goto('/me');
+    }
   });
 </script>
 
