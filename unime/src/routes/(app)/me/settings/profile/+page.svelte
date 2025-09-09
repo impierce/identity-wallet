@@ -8,7 +8,7 @@
   import { dispatch } from '$lib/dispatcher';
   import { KeyboardFillIcon, TrashFillIcon } from '$lib/icons';
 
-  const parentRoute = '/me/settings/profile';
+  const parentRoute = '/me/settings';
 
   beforeNavigate(({ type, cancel }) => {
     if (type === 'popstate') {
