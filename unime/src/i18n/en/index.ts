@@ -40,7 +40,7 @@ const en = {
         DIALOG_TITLE: 'UniMe Terms of Use',
         LAST_UPDATED: 'Last Updated: September 10, 2025',
         TL_DR:
-          'Like any app provider, we’re legally required to give you some important terms and conditions. We’ve done our best to keep things clear and to the point. Here’s the short version: UniMe puts you in control. It doesn’t collect your data, respects your privacy, and lets you decide what information to store and share. Your identity and data stay with you, and so does the responsibility for managing them. We don store nor can access your data, so any data loss caused by losing your device or access to the app is also your responsibility. With great power comes great responsibility. Here’s everything you should know:',
+          'Like any app provider, we’re legally required to give you some important terms and conditions. We’ve done our best to keep things clear and to the point. Here’s the short version: UniMe puts you in control. It doesn’t collect your data, respects your privacy, and lets you decide what information to store and share. Your identity and data stay with you, and so does the responsibility for managing them. We don’t store nor can access your data, so any data loss caused by losing your device or access to the app is also your responsibility. With great power comes great responsibility. Here’s everything you should know:',
         FULL: `Acceptance of Terms
 Thank you for choosing UniMe, an EU Digital Identity Wallet (mobile application) developed and maintained by Impierce Technologies B.V. ("we," "us," or "our").
 These Terms of Use ("Terms") govern your access to and use of the UniMe mobile application (the "Service"), whether downloaded from the Apple App Store, Google Play Store, or any other platform.
@@ -131,7 +131,7 @@ Contact Us
 Got feedback or a question? We're always looking to improve. 
 If anything’s unclear or could be said better, feel free to reach out:
 
-Email: contact@impierce.
+Email: contact@impierce.com
 
 By using UniMe, you confirm that you’ve read, understood, and agree to these Terms of Use.
 We remain committed to delivering secure, privacy-centric digital tools that empower you.
