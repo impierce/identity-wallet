@@ -117,7 +117,7 @@ impl VerifiableCredentialRecord {
                     .map(|claim_description| {
                         let key = claim_description
                             .display
-                            .get(0)
+                            .first()
                             .map(|display| display.name.clone())
                             // TODO: Come up with a proper fallback strategy here.
                             .unwrap_or_default();
