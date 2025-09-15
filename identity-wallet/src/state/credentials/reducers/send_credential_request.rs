@@ -25,6 +25,7 @@ use uuid::Uuid;
 // confusing git diffs.
 pub async fn send_credential_request(state: AppState, action: Action) -> Result<AppState, AppError> {
     info!("send_credential_request");
+
     if let Some(selected_offer) = listen::<CredentialOffersSelected>(action.clone()) {
         let credential_configuration_ids = selected_offer.credential_configuration_ids;
 
