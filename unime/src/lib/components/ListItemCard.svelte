@@ -2,6 +2,7 @@
   import { createEventDispatcher } from 'svelte';
 
   import { Image } from '$lib/components';
+  import { ensureLightIcon } from '$lib/utils/image';
 
   const dispatch = createEventDispatcher();
 
@@ -14,16 +15,6 @@
   export let isInvalid = false;
 
   let useFallback = false;
-
-  // Converts the passed icon to the light version, if applicable.
-  const ensureLightIcon = (icon: string | undefined): string | undefined => {
-    if (!icon) return undefined;
-    if (icon.endsWith('Light')) {
-      return icon; // Already a light icon
-    } else {
-      return `${icon}Light`; // Convert to light icon
-    }
-  };
 </script>
 
 <!--

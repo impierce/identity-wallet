@@ -9,7 +9,7 @@
   import { Button, Checkbox, Image, ListItemCard, PaddedIcon, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { DownloadSimpleFillIcon } from '$lib/icons';
-  import { error, state } from '$lib/stores';
+  import { state as appState, error } from '$lib/stores';
   import { hash } from '$lib/utils';
 
   // TypeScript does not know that the `current_user_prompt` is of type `credential-offer`.
@@ -18,22 +18,22 @@
   type CredentialOfferPrompt = IsCredentialOfferPrompt<CurrentUserPrompt>;
 
   const { credential_configurations, issuer_name, logo_uri, tx_code } =
-    $state.current_user_prompt as CredentialOfferPrompt;
+    $appState.current_user_prompt as CredentialOfferPrompt;
 
   // let credential_configurations: Record<string, CredentialConfiguration> =
   //   $state.current_user_prompt?.credential_configurations;
 
   let all_credential_configuration_ids: string[] = Object.keys(credential_configurations);
 
-  let loading = false;
+  let loading = $state(false);
 
-  $: complete = false;
+  let complete = $state(false);
 
   const imageId = logo_uri ? hash(logo_uri) : '_';
 
   const pinInput = new PinInput({
     type: tx_code?.input_mode ?? 'numeric',
-    maxLength: tx_code?.length ?? 4,
+    maxLength: tx_code?.length ?? 6,
     placeholder: '',
     allowPaste: false,
     onValueChange() {
@@ -110,15 +110,28 @@
           A PIN code is required to claim the credentials.
         </p>
 
-        <!-- PIN input -->
-        <div {...pinInput.root} class="mt-6 flex items-center justify-center gap-2 font-mono">
-          {#each pinInput.inputs as input}
-            <input
-              {...input}
-              class="size-12 rounded-xl border border-slate-300 bg-background-alt text-center text-2xl font-semibold text-text-alt outline-none focus:border-primary disabled:cursor-not-allowed dark:border-slate-500"
-            />
-          {/each}
-        </div>
+        {#if tx_code.length && tx_code.length <= 6}
+          <!-- PIN input -->
+          <div {...pinInput.root} class="mt-6 flex items-center justify-center gap-2 font-mono">
+            {#each pinInput.inputs as input}
+              <input
+                {...input}
+                class="size-12 rounded-xl border border-slate-300 bg-background-alt text-center text-2xl font-semibold text-text-alt outline-none focus:border-primary disabled:cursor-not-allowed dark:border-slate-500"
+              />
+            {/each}
+          </div>
+        {:else}
+          <!-- If length is not provided or longer than 6, fall back to a simple text input field. -->
+          <input
+            class="mt-6 w-full rounded-xl border border-slate-300 bg-background-alt px-3 py-3 text-[14px]/[22px] font-medium text-slate-800 dark:border-slate-600 dark:text-grey"
+            placeholder={'Enter PIN code'}
+            bind:value={pinInput.value}
+            oninput={() => {
+              // Marks the input as complete if it holds any value.
+              complete = pinInput.value.length > 0;
+            }}
+          />
+        {/if}
       </div>
     {/if}
   </div>
@@ -134,7 +147,7 @@
           type: '[Credential Offer] Selected',
           payload: {
             credential_configuration_ids: all_credential_configuration_ids,
-            tx_code: tx_code ? pinInput.value : null,
+            tx_code: tx_code ? pinInput.value : undefined,
           },
         });
       }}

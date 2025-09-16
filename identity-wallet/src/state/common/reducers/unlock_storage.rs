@@ -2,7 +2,6 @@ use crate::error::AppError::{self, *};
 use crate::state::actions::{listen, Action};
 use crate::state::common::actions::unlock_storage::UnlockStorage;
 use crate::state::core_utils::IdentityManager;
-use crate::state::credentials::DisplayCredential;
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS};
 use crate::stronghold::StrongholdManager;
@@ -36,7 +35,7 @@ pub async fn unlock_storage(state: AppState, action: Action) -> Result<AppState,
         .map_err(OID4VCWalletError)?;
 
         info!("loading credentials from stronghold");
-        let credentials: Vec<DisplayCredential> = stronghold_manager
+        let credentials = stronghold_manager
             .values()
             .map_err(StrongholdValuesError)?
             .unwrap()
