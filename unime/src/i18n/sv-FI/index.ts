@@ -42,65 +42,87 @@ const sv_FI = {
         TL_DR:
           'Liksom alla appleverantörer är vi enligt lag skyldiga att informera dig om vissa viktiga villkor. Vi har gjort vårt bästa för att formulera dem på ett tydligt och koncist sätt. Här är en kort sammanfattning: UniMe ger dig kontrollen. Appen samlar inte in dina data, respekterar din integritet och låter dig bestämma vilken information som ska lagras och delas. Din identitet och dina data förblir dina, liksom ansvaret för att hantera dem. Vi lagrar inte och har inte tillgång till dina data, så eventuella dataförluster till följd av att du tappar bort din enhet eller förlorar tillgången till appen är också ditt ansvar. Med stor makt följer stort ansvar. Här är allt du behöver veta:',
         // Note: this translation had not been verified by a legal expert.
-        FULL: `Godkännande av villkoren
-Tack för att du har valt UniMe, en digital identitetsplånbok (mobilapp) för EU som utvecklats och underhålls av Impierce Technologies B.V. (”vi”, ”oss” eller ”vår”).
-Dessa användarvillkor (”villkoren”) reglerar din åtkomst till och användning av mobilappen UniMe (”tjänsten”), oavsett om den laddats ned från Apple App Store, Google Play Store eller någon annan plattform.
-Genom att installera, komma åt eller använda Tjänsten bekräftar du att du har läst, förstått och samtyckt till att vara bunden av dessa Villkor och vår integritetspolicy. Om du inte samtycker till någon del av dessa Villkor, vänligen använd inte Tjänsten.
-Om du använder Tjänsten på uppdrag av en organisation, intygar och garanterar du att du är behörig att acceptera dessa Villkor på organisationens vägnar.
-
-Definitioner
-Termen Tjänst avser mobilapplikationen UniMe Identity Wallet och inkluderar alla funktioner, innehåll eller tjänster som tillhandahålls inom den. Användardata avser alla data, inloggningsuppgifter eller information som du lagrar eller delar med hjälp av Tjänsten. Termen Enhet avser den mobiltelefon eller hårdvara på vilken UniMe-appen är installerad och används.
-
-Användarens ansvar
-Du är ansvarig för att upprätthålla sekretessen och säkerheten för din enhet och alla inloggningsuppgifter som lagras i Tjänsten, samt för att säkerställa att all information som du lagrar eller delar med hjälp av Tjänsten är korrekt och uppdaterad. Du samtycker till att använda Tjänsten i enlighet med alla tillämpliga lagar och förordningar. Impierce Technologies B.V. ansvarar inte för dataförlust på grund av förlust av enhet eller obehörig åtkomst.
-
-Dataägande och integritet
-UniMe bygger på grundprinciperna om användarkontroll och dataintegritet. Vår arkitektur är utformad så att vi inte kan komma åt, samla in, lagra eller behandla de användardata som du hanterar i appen. Alla dina användardata lagras lokalt och säkert på din enhet.
-Vi använder robusta säkerhetsåtgärder inom applikationen för att skydda dina data. Det ultimata skyddet av dina data beror dock också på att du upprätthåller den övergripande säkerheten för din personliga enhet, till exempel genom att använda ett starkt lösenord och inte installera programvara från opålitliga källor.
-För att upprätthålla integriteten hos dina inloggningsuppgifter kan UniMe regelbundet kontrollera deras giltighet. Detta görs genom att kontakta utfärdaren av inloggningsuppgifterna direkt från din enhet för att bekräfta om en inloggningsuppgift har återkallats av utfärdaren. Denna process sker automatiskt på din enhet och involverar inte Impierce Technologies B.V. När det är möjligt prioriterar UniMe att använda decentraliserade metoder för dessa kontroller. 
-
-Datavisning efter appplattformar
-När du laddar ner eller använder UniMe via en officiell appbutik, såsom Apple App Store eller Google Play, kan plattformen samla in begränsad teknisk information och användningsdata. Detta kan inkludera uppgifter som din enhetstyp, appinstallationer eller krascher samt region- eller språkinställningar för din enhet. Denna information samlas in enligt appbutikens egna policyer. Impierce samlar inte in någon ytterligare användningsdata från själva enheten.
-
-Immateriella rättigheter
-Alla immateriella rättigheter till UniMe och relaterat material ägs av Impierce Technologies B.V. eller våra licensgivare. UniMe tillhandahålls under Apache 2.0-licensen, vilket innebär att du kan använda, modifiera och distribuera programvaran så länge du följer villkoren i den licensen.  För mer information, se den fullständiga Apache 2.0-licensen.
-
-Förbjudna aktiviteter
-Du samtycker till att inte försöka få obehörig åtkomst till Tjänsten eller några relaterade system, störa eller påverka Tjänstens prestanda eller säkerhet, eller använda Tjänsten för olagliga, skadliga eller bedrägliga ändamål.
-
-Tredjepartstjänster
-Vår tjänst kan länka till eller integreras med tredjepartsplattformar. Dessa plattformar kontrolleras eller drivs inte av oss, och vi stöder inte eller tar ansvar för deras innehåll, åtgärder eller datapraxis. Alla tjänster eller interaktioner som du väljer att delta i med tredjepartsleverantörer sker på egen risk och omfattas av deras egna villkor och policyer. Vi rekommenderar att du läser igenom dessa noggrant innan du fortsätter.
-Tjänsten tillhandahålls ”i befintligt skick” och ”i mån av tillgänglighet” utan några garantier av något slag. Vi garanterar inte oavbruten, felfri användning av Tjänsten.
-
-Ansvarsbegränsning
-I den utsträckning som lagen tillåter är Impierce Technologies B.V. inte ansvarigt för några indirekta, tillfälliga, särskilda eller följdskador. Detta inkluderar, men är inte begränsat till, förlust av data, vinster, affärsmöjligheter eller goodwill till följd av din användning av eller oförmåga att använda Tjänsten; beteende, innehåll eller fel från tredje part; tjänster, innehåll eller åtgärder från tredjepartsplattformar som nås via Tjänsten; eller innehåll som erhållits från eller via Tjänsten.
-
-Skadeersättning
-Du samtycker till att ersätta och hålla Impierce Technologies B.V. och dess dotterbolag skadeslösa från alla anspråk, förluster eller utgifter som uppstår till följd av din användning av Tjänsten, ditt brott mot dessa Användarvillkor eller ditt brott mot någon annan persons eller enhets rättigheter.
-
-Ändringar av användarvillkoren
-Vi kan uppdatera dessa användarvillkor från tid till annan. Datumet för ”Senast uppdaterad” ovan avser den senaste versionen. Väsentliga ändringar kommer att meddelas via appen eller vår webbplats. Fortsatt användning av tjänsten innebär att du accepterar de reviderade användarvillkoren.
-
-Tillämplig och jurisdiktion
-Dessa användarvillkor regleras av nederländsk lag. 
-Eventuella tvister ska lösas i nederländsk domstol.
-
-Avskiljbarhet
-Om någon del av dessa användarvillkor befinns ogiltig, förblir resten i full kraft.
-
-Språk
-Dessa användarvillkor finns tillgängliga på flera språk för din bekvämlighet. 
-Vid eventuella konflikter gäller den engelska versionen.
-
-Hela avtalet
-Dessa användarvillkor utgör tillsammans med vår integritetspolicy det fullständiga avtalet mellan dig och Impierce Technologies B.V. avseende användningen av UniMe.
-
-Kontakta oss
-Har du synpunkter eller frågor? Vi strävar alltid efter att förbättra oss. 
-Om något är oklart eller kan formuleras bättre är du välkommen att kontakta oss:
-E-post: contact@impierce.com
-Genom att använda UniMe bekräftar du att du har läst, förstått och godkänner dessa användarvillkor.
-Vi fortsätter att sträva efter att leverera säkra, integritetsfokuserade digitala verktyg som ger dig möjlighet att ta kontroll.`,
+        FULL: {
+          AGREEMENT: {
+            TITLE: 'Godkännande av villkoren',
+            DESCRIPTION:
+              'Tack för att du har valt UniMe, en digital identitetsplånbok (mobilapp) för EU som utvecklats och underhålls av Impierce Technologies B.V. (”vi”, ”oss” eller ”vår”). Dessa användarvillkor (”villkoren”) reglerar din åtkomst till och användning av mobilappen UniMe (”tjänsten”), oavsett om den laddats ned från Apple App Store, Google Play Store eller någon annan plattform. Genom att installera, komma åt eller använda Tjänsten bekräftar du att du har läst, förstått och samtyckt till att vara bunden av dessa Villkor och vår integritetspolicy. Om du inte samtycker till någon del av dessa Villkor, vänligen använd inte Tjänsten. Om du använder Tjänsten på uppdrag av en organisation, intygar och garanterar du att du är behörig att acceptera dessa Villkor på organisationens vägnar.',
+          },
+          DEFINITIONS: {
+            TITLE: 'Definitioner',
+            DESCRIPTION:
+              'Termen Tjänst avser mobilapplikationen UniMe Identity Wallet och inkluderar alla funktioner, innehåll eller tjänster som tillhandahålls inom den. Användardata avser alla data, inloggningsuppgifter eller information som du lagrar eller delar med hjälp av Tjänsten. Termen Enhet avser den mobiltelefon eller hårdvara på vilken UniMe-appen är installerad och används.',
+          },
+          USER_RESPONSIBILITIES: {
+            TITLE: 'Användarens ansvar',
+            DESCRIPTION:
+              'Du är ansvarig för att upprätthålla sekretessen och säkerheten för din enhet och alla inloggningsuppgifter som lagras i Tjänsten, samt för att säkerställa att all information som du lagrar eller delar med hjälp av Tjänsten är korrekt och uppdaterad. Du samtycker till att använda Tjänsten i enlighet med alla tillämpliga lagar och förordningar. Impierce Technologies B.V. ansvarar inte för dataförlust på grund av förlust av enhet eller obehörig åtkomst.',
+          },
+          DATA_OWNERSHIP: {
+            TITLE: 'Dataägande och integritet',
+            DESCRIPTION:
+              'UniMe bygger på grundprinciperna om användarkontroll och dataintegritet. Vår arkitektur är utformad så att vi inte kan komma åt, samla in, lagra eller behandla de användardata som du hanterar i appen. Alla dina användardata lagras lokalt och säkert på din enhet. Vi använder robusta säkerhetsåtgärder inom applikationen för att skydda dina data. Det ultimata skyddet av dina data beror dock också på att du upprätthåller den övergripande säkerheten för din personliga enhet, till exempel genom att använda ett starkt lösenord och inte installera programvara från opålitliga källor. För att upprätthålla integriteten hos dina inloggningsuppgifter kan UniMe regelbundet kontrollera deras giltighet. Detta görs genom att kontakta utfärdaren av inloggningsuppgifterna direkt från din enhet för att bekräfta om en inloggningsuppgift har återkallats av utfärdaren. Denna process sker automatiskt på din enhet och involverar inte Impierce Technologies B.V. När det är möjligt prioriterar UniMe att använda decentraliserade metoder för dessa kontroller.',
+          },
+          DATA_VISIBILITY: {
+            TITLE: 'Datavisning efter appplattformar',
+            DESCRIPTION:
+              'När du laddar ner eller använder UniMe via en officiell appbutik, såsom Apple App Store eller Google Play, kan plattformen samla in begränsad teknisk information och användningsdata. Detta kan inkludera uppgifter som din enhetstyp, appinstallationer eller krascher samt region- eller språkinställningar för din enhet. Denna information samlas in enligt appbutikens egna policyer. Impierce samlar inte in någon ytterligare användningsdata från själva enheten.',
+          },
+          INTELLECTUAL_PROPERTY_RIGHTS: {
+            TITLE: 'Immateriella rättigheter',
+            DESCRIPTION:
+              'Alla immateriella rättigheter till UniMe och relaterat material ägs av Impierce Technologies B.V. eller våra licensgivare. UniMe tillhandahålls under Apache 2.0-licensen, vilket innebär att du kan använda, modifiera och distribuera programvaran så länge du följer villkoren i den licensen.  För mer information, se den fullständiga Apache 2.0-licensen.',
+          },
+          PROHIBITED_ACTIVITIES: {
+            TITLE: 'Förbjudna aktiviteter',
+            DESCRIPTION:
+              'Du samtycker till att inte försöka få obehörig åtkomst till Tjänsten eller några relaterade system, störa eller påverka Tjänstens prestanda eller säkerhet, eller använda Tjänsten för olagliga, skadliga eller bedrägliga ändamål.',
+          },
+          THIRD_PARTY_SERVICES: {
+            TITLE: 'Tredjepartstjänster',
+            DESCRIPTION:
+              'Vår tjänst kan länka till eller integreras med tredjepartsplattformar. Dessa plattformar kontrolleras eller drivs inte av oss, och vi stöder inte eller tar ansvar för deras innehåll, åtgärder eller datapraxis. Alla tjänster eller interaktioner som du väljer att delta i med tredjepartsleverantörer sker på egen risk och omfattas av deras egna villkor och policyer. Vi rekommenderar att du läser igenom dessa noggrant innan du fortsätter. Tjänsten tillhandahålls ”i befintligt skick” och ”i mån av tillgänglighet” utan några garantier av något slag. Vi garanterar inte oavbruten, felfri användning av Tjänsten.',
+          },
+          LIABILITY: {
+            TITLE: 'Ansvarsbegränsning',
+            DESCRIPTION:
+              'I den utsträckning som lagen tillåter är Impierce Technologies B.V. inte ansvarigt för några indirekta, tillfälliga, särskilda eller följdskador. Detta inkluderar, men är inte begränsat till, förlust av data, vinster, affärsmöjligheter eller goodwill till följd av din användning av eller oförmåga att använda Tjänsten; beteende, innehåll eller fel från tredje part; tjänster, innehåll eller åtgärder från tredjepartsplattformar som nås via Tjänsten; eller innehåll som erhållits från eller via Tjänsten.',
+          },
+          INDEMNIFICATION: {
+            TITLE: 'Skadeersättning',
+            DESCRIPTION:
+              'Du samtycker till att ersätta och hålla Impierce Technologies B.V. och dess dotterbolag skadeslösa från alla anspråk, förluster eller utgifter som uppstår till följd av din användning av Tjänsten, ditt brott mot dessa Användarvillkor eller ditt brott mot någon annan persons eller enhets rättigheter.',
+          },
+          MODIFICATIONS: {
+            TITLE: 'Ändringar av användarvillkoren',
+            DESCRIPTION:
+              'Vi kan uppdatera dessa användarvillkor från tid till annan. Datumet för ”Senast uppdaterad” ovan avser den senaste versionen. Väsentliga ändringar kommer att meddelas via appen eller vår webbplats. Fortsatt användning av tjänsten innebär att du accepterar de reviderade användarvillkoren.',
+          },
+          LAW_AND_JURISDIFICATION: {
+            TITLE: 'Tillämplig och jurisdiktion',
+            DESCRIPTION:
+              'Dessa användarvillkor regleras av nederländsk lag. Eventuella tvister ska lösas i nederländsk domstol.',
+          },
+          SEVERABILITY: {
+            TITLE: 'Avskiljbarhet',
+            DESCRIPTION: 'Om någon del av dessa användarvillkor befinns ogiltig, förblir resten i full kraft.',
+          },
+          LANGUAGE: {
+            TITLE: 'Språk',
+            DESCRIPTION:
+              'Dessa användarvillkor finns tillgängliga på flera språk för din bekvämlighet. Vid eventuella konflikter gäller den engelska versionen.',
+          },
+          ENTIRE_AGREEMENT: {
+            TITLE: 'Hela avtalet',
+            DESCRIPTION:
+              'Dessa användarvillkor utgör tillsammans med vår integritetspolicy det fullständiga avtalet mellan dig och Impierce Technologies B.V. avseende användningen av UniMe.',
+          },
+          CONTACT: {
+            TITLE: 'Kontakta oss',
+            DESCRIPTION:
+              'Har du synpunkter eller frågor? Vi strävar alltid efter att förbättra oss. Om något är oklart eller kan formuleras bättre är du välkommen att kontakta oss: E-post: contact@impierce.com. Genom att använda UniMe bekräftar du att du har läst, förstått och godkänner dessa användarvillkor. Vi fortsätter att sträva efter att leverera säkra, integritetsfokuserade digitala verktyg som ger dig möjlighet att ta kontroll.',
+          },
+        },
       },
       OWNERSHIP: {
         TITLE: 'Dataägande',

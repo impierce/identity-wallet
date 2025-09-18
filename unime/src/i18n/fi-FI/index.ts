@@ -42,65 +42,88 @@ const fi_FI = {
         TL_DR:
           'Kuten kaikki sovellusten tarjoajat, meidän on lain mukaan annettava sinulle tärkeitä ehtoja ja sääntöjä. Olemme tehneet parhaamme pitääksesi asiat selkeinä ja ytimekkäinä. Tässä lyhyt versio: UniMe antaa sinulle vallan. Se ei kerää tietojasi, kunnioittaa yksityisyyttäsi ja antaa sinun päättää, mitä tietoja tallennat ja jaat. Identiteettisi ja tietosi pysyvät sinulla, samoin vastuu niiden hallinnasta. Emme tallenna tietojasi emmekä pääse niihin käsiksi, joten kaikki tietojen menetys, joka johtuu laitteen tai sovelluksen käytön menettämisestä, on myös sinun vastuullasi. Suurella vallalla tulee suuri vastuu. Tässä kaikki, mitä sinun tulee tietää:',
         // Note: this translation had not been verified by a legal expert.
-        FULL: `Ehtojen hyväksyminen
-Kiitos, että valitsit UniMen, EU:n digitaalisen henkilöllisyyslompakon (mobiilisovellus), jonka on kehittänyt ja ylläpitää Impierce Technologies B.V. ("me", "meitä" tai "meidän").
-Nämä käyttöehdot ("Ehdot") säätelevät pääsyäsi UniMe-mobiilisovellukseen (”Palvelu”) ja sen käyttöä, olipa sovellus ladattu Apple App Storesta, Google Play Storesta tai muualta.
-Asentamalla, käyttämällä tai pääsemällä Palveluun hyväksyt lukeneesi, ymmärtäneesi ja sitoutuneesi näihin Ehtoihin ja tietosuojakäytäntöömme. Jos et hyväksy mitään näistä ehdoista, älä käytä Palvelua.
-Jos käytät Palvelua organisaation puolesta, vakuutat ja takaat, että sinulla on valtuudet hyväksyä nämä Ehdot kyseisen organisaation puolesta.
-
-Määritelmät
-Palvelu tarkoittaa UniMe Identity Wallet -mobiilisovellusta ja sisältää kaikki sen tarjoamat toiminnot, sisällöt tai palvelut. Käyttäjätiedot tarkoittavat kaikkia tietoja, tunnuksia tai tietoja, jotka tallennat tai jaat Palvelua käyttäessäsi. Laite tarkoittaa mobiililaitetta tai laitteistoa, johon UniMe-sovellus on asennettu ja jota käytät.
-
-Käyttäjän vastuut
-Olet vastuussa laitteen ja Palveluun tallennettujen tunnusten luottamuksellisuudesta ja turvallisuudesta sekä siitä, että kaikki Palveluun tallentamasi tai jakamasi tiedot ovat tarkkoja ja ajantasaisia. Hyväksyt käyttää Palvelua kaikkien sovellettavien lakien ja säädösten mukaisesti. Impierce Technologies B.V. ei ole vastuussa tietojen menetyksestä, joka johtuu laitteen katoamisesta tai luvattomasta käytöstä.
-
-Tietojen omistajuus ja yksityisyys
-UniMe perustuu käyttäjän hallinnan ja tietosuojaamisen periaatteisiin. Arkkitehtuurimme on suunniteltu siten, ettemme pääse käsiksi käyttäjän tietoihin, kerää niitä, tallenna tai käsittele niitä sovelluksessa. Kaikki käyttäjätietosi tallennetaan paikallisesti ja turvallisesti laitteellesi.
-Käytämme sovelluksessa vahvoja turvatoimia tietojesi suojaamiseksi. Lopullinen suojaus riippuu kuitenkin myös sinusta, esimerkiksi käyttämällä vahvaa salasanaa ja välttämällä epäluotettavien lähteiden ohjelmien asentamista.
-Varmistaaksemme tunnistustietojesi eheyden, UniMe voi ajoittain tarkistaa niiden voimassaolon. Tämä tapahtuu ottamalla suoraan yhteyttä tunnistuksen myöntäjään laitteestasi varmistaaksesi, onko tunnistus peruutettu. Tämä prosessi tapahtuu automaattisesti laitteellasi eikä siihen osallistu Impierce Technologies B.V. Kun mahdollista, UniMe käyttää näissä tarkistuksissa hajautettuja menetelmiä.
-
-Sovellusalustojen tietojen näkyvyys
-Kun lataat tai käytät UniMea virallisen sovelluskaupan, kuten Apple App Storen tai Google Playn kautta, alusta voi kerätä rajoitettuja teknisiä ja käyttöön liittyviä tietoja. Näitä voivat olla esimerkiksi laitteesi tyyppi, sovelluksen asennus- tai kaatumistapahtumat sekä laitteesi alue- ja kieliasetukset. Tiedot kerätään kyseisen sovelluskaupan omien käytäntöjen mukaisesti. Impierce ei kerää lisätietoja suoraan laitteestasi.
-
-Immateriaalioikeudet
-Kaikki UniMen ja siihen liittyvien materiaalien immateriaalioikeudet kuuluvat Impierce Technologies B.V:lle tai sen lisenssinantajille. UniMea tarjotaan Apache 2.0 -lisenssin alaisena, mikä tarkoittaa, että voit käyttää, muokata ja jakaa ohjelmistoa lisenssin ehtojen mukaisesti. Lisätietoja löytyy täydellisestä Apache 2.0 -lisenssistä.
-
-Kielletyt toiminnot
-Hyväksyt, ettet yritä saada luvattoman pääsyn Palveluun tai siihen liittyviin järjestelmiin, häiritä Palvelun toimintaa tai turvallisuutta etkä käyttää Palvelua laittomiin, vahingollisiin tai petollisiin tarkoituksiin.
-
-Kolmansien osapuolten palvelut
-Palvelumme voi sisältää linkkejä tai integraatioita kolmansien osapuolien alustoihin. Emme hallinnoi näitä alustoja emmekä vastaa niiden sisällöstä, toiminnasta tai tietokäytännöistä. Kaikki palvelut tai toiminnot, joihin sitoudut kolmansien osapuolien kanssa, tapahtuvat omalla vastuullasi ja noudattavat heidän omia ehtojaan ja käytäntöjään. Suosittelemme, että tutustut niihin huolellisesti ennen jatkamista.
-Palvelu tarjotaan ”sellaisena kuin se on” ja ”saatavuuden mukaan” ilman minkäänlaisia takuita. Emme takaa keskeytyksetöntä tai virheetöntä käyttöä.
-
-Vastuunrajoitus
-Täysin lain sallimassa laajuudessa Impierce Technologies B.V. ei ole vastuussa välillisistä, satunnaisista, erityisistä tai seurannaisvahingoista. Tämä sisältää mm. tietojen menetyksen, voittojen menetyksen, liiketoimintamahdollisuuksien tai maineen menetyksen, joka johtuu Palvelun käytöstä tai sen käyttämättömyydestä; kolmansien osapuolten sisällöstä tai virheistä; kolmansien osapuolien palveluista, sisällöstä tai toiminnoista, jotka saat Palvelun kautta; tai Palvelusta tai sen kautta saaduista sisällöistä.
-
-Vahingonkorvaus
-Hyväksyt korvaavasi ja suojaavasi Impierce Technologies B.V:tä ja sen tytäryhtiöitä kaikilta vaatimuksilta, menetyksiltä tai kuluista, jotka johtuvat Palvelun käytöstäsi, näiden ehtojen rikkomisesta tai muiden henkilöiden tai tahojen oikeuksien loukkaamisesta.
-
-Käyttöehtojen muutokset
-Voimme päivittää näitä Käyttöehtoja ajoittain. Yllä oleva ”Viimeksi päivitetty” -päivämäärä kertoo viimeisimmän version. Merkittävät muutokset ilmoitetaan sovelluksen kautta tai verkkosivustollamme. Palvelun jatkokäyttö tarkoittaa, että hyväksyt päivitetyt Käyttöehdot.
-
-Sovellettava laki ja toimivalta
-Näihin Käyttöehtoihin sovelletaan Alankomaiden lakia.
-Kaikki riidat ratkaistaan Alankomaiden tuomioistuimissa.
-
-Erottettavuus
-Jos jokin osa näistä Käyttöehdoista todetaan pätemättömäksi, muu osa pysyy täydessä voimassa.
-
-Kieli
-Nämä Käyttöehdot ovat saatavilla useilla kielillä.
-Mahdollisessa ristiriitatilanteessa englanninkielinen versio on ratkaiseva.
-
-Koko sopimus
-Nämä Käyttöehdot yhdessä Tietosuojakäytäntömme kanssa muodostavat täydellisen sopimuksen sinun ja Impierce Technologies B.V:n välillä UniMen käytöstä.
-
-Ota yhteyttä
-Onko sinulla palautetta tai kysymyksiä? Haluamme aina kehittyä.
-Jos jokin ei ole selvää tai voisi ilmaista paremmin, ota rohkeasti yhteyttä:
-Sähköposti: contact@impierce.com
-Käyttämällä UniMea vahvistat, että olet lukenut, ymmärtänyt ja hyväksynyt nämä Käyttöehdot.
-Sitoudumme edelleen tarjoamaan turvallisia, yksityisyyskeskeisiä digitaalisia työkaluja, jotka antavat sinulle vallan.`,
+        FULL: {
+          AGREEMENT: {
+            TITLE: 'Ehtojen hyväksyminen',
+            DESCRIPTION:
+              'Kiitos, että valitsit UniMen, EU:n digitaalisen henkilöllisyyslompakon (mobiilisovellus), jonka on kehittänyt ja ylläpitää Impierce Technologies B.V. ("me", "meitä" tai "meidän"). Nämä käyttöehdot ("Ehdot") säätelevät pääsyäsi UniMe-mobiilisovellukseen (”Palvelu”) ja sen käyttöä, olipa sovellus ladattu Apple App Storesta, Google Play Storesta tai muualta. Asentamalla, käyttämällä tai pääsemällä Palveluun hyväksyt lukeneesi, ymmärtäneesi ja sitoutuneesi näihin Ehtoihin ja tietosuojakäytäntöömme. Jos et hyväksy mitään näistä ehdoista, älä käytä Palvelua. Jos käytät Palvelua organisaation puolesta, vakuutat ja takaat, että sinulla on valtuudet hyväksyä nämä Ehdot kyseisen organisaation puolesta.',
+          },
+          DEFINITIONS: {
+            TITLE: 'Määritelmät',
+            DESCRIPTION:
+              'Palvelu tarkoittaa UniMe Identity Wallet -mobiilisovellusta ja sisältää kaikki sen tarjoamat toiminnot, sisällöt tai palvelut. Käyttäjätiedot tarkoittavat kaikkia tietoja, tunnuksia tai tietoja, jotka tallennat tai jaat Palvelua käyttäessäsi. Laite tarkoittaa mobiililaitetta tai laitteistoa, johon UniMe-sovellus on asennettu ja jota käytät.',
+          },
+          USER_RESPONSIBILITIES: {
+            TITLE: 'Käyttäjän vastuut',
+            DESCRIPTION:
+              'Olet vastuussa laitteen ja Palveluun tallennettujen tunnusten luottamuksellisuudesta ja turvallisuudesta sekä siitä, että kaikki Palveluun tallentamasi tai jakamasi tiedot ovat tarkkoja ja ajantasaisia. Hyväksyt käyttää Palvelua kaikkien sovellettavien lakien ja säädösten mukaisesti. Impierce Technologies B.V. ei ole vastuussa tietojen menetyksestä, joka johtuu laitteen katoamisesta tai luvattomasta käytöstä.',
+          },
+          DATA_OWNERSHIP: {
+            TITLE: 'Tietojen omistajuus ja yksityisyys',
+            DESCRIPTION:
+              'UniMe perustuu käyttäjän hallinnan ja tietosuojaamisen periaatteisiin. Arkkitehtuurimme on suunniteltu siten, ettemme pääse käsiksi käyttäjän tietoihin, kerää niitä, tallenna tai käsittele niitä sovelluksessa. Kaikki käyttäjätietosi tallennetaan paikallisesti ja turvallisesti laitteellesi. Käytämme sovelluksessa vahvoja turvatoimia tietojesi suojaamiseksi. Lopullinen suojaus riippuu kuitenkin myös sinusta, esimerkiksi käyttämällä vahvaa salasanaa ja välttämällä epäluotettavien lähteiden ohjelmien asentamista. Varmistaaksemme tunnistustietojesi eheyden, UniMe voi ajoittain tarkistaa niiden voimassaolon. Tämä tapahtuu ottamalla suoraan yhteyttä tunnistuksen myöntäjään laitteestasi varmistaaksesi, onko tunnistus peruutettu. Tämä prosessi tapahtuu automaattisesti laitteellasi eikä siihen osallistu Impierce Technologies B.V. Kun mahdollista, UniMe käyttää näissä tarkistuksissa hajautettuja menetelmiä.',
+          },
+          DATA_VISIBILITY: {
+            TITLE: 'Sovellusalustojen tietojen näkyvyys',
+            DESCRIPTION:
+              'Kun lataat tai käytät UniMea virallisen sovelluskaupan, kuten Apple App Storen tai Google Playn kautta, alusta voi kerätä rajoitettuja teknisiä ja käyttöön liittyviä tietoja. Näitä voivat olla esimerkiksi laitteesi tyyppi, sovelluksen asennus- tai kaatumistapahtumat sekä laitteesi alue- ja kieliasetukset. Tiedot kerätään kyseisen sovelluskaupan omien käytäntöjen mukaisesti. Impierce ei kerää lisätietoja suoraan laitteestasi.',
+          },
+          INTELLECTUAL_PROPERTY_RIGHTS: {
+            TITLE: 'Immateriaalioikeudet',
+            DESCRIPTION:
+              'Kaikki UniMen ja siihen liittyvien materiaalien immateriaalioikeudet kuuluvat Impierce Technologies B.V:lle tai sen lisenssinantajille. UniMea tarjotaan Apache 2.0 -lisenssin alaisena, mikä tarkoittaa, että voit käyttää, muokata ja jakaa ohjelmistoa lisenssin ehtojen mukaisesti. Lisätietoja löytyy täydellisestä Apache 2.0 -lisenssistä.',
+          },
+          PROHIBITED_ACTIVITIES: {
+            TITLE: 'Kielletyt toiminnot',
+            DESCRIPTION:
+              'Hyväksyt, ettet yritä saada luvattoman pääsyn Palveluun tai siihen liittyviin järjestelmiin, häiritä Palvelun toimintaa tai turvallisuutta etkä käyttää Palvelua laittomiin, vahingollisiin tai petollisiin tarkoituksiin.',
+          },
+          THIRD_PARTY_SERVICES: {
+            TITLE: 'Kolmansien osapuolten palvelut',
+            DESCRIPTION:
+              'Palvelumme voi sisältää linkkejä tai integraatioita kolmansien osapuolien alustoihin. Emme hallinnoi näitä alustoja emmekä vastaa niiden sisällöstä, toiminnasta tai tietokäytännöistä. Kaikki palvelut tai toiminnot, joihin sitoudut kolmansien osapuolien kanssa, tapahtuvat omalla vastuullasi ja noudattavat heidän omia ehtojaan ja käytäntöjään. Suosittelemme, että tutustut niihin huolellisesti ennen jatkamista. Palvelu tarjotaan ”sellaisena kuin se on” ja ”saatavuuden mukaan” ilman minkäänlaisia takuita. Emme takaa keskeytyksetöntä tai virheetöntä käyttöä.',
+          },
+          LIABILITY: {
+            TITLE: 'Vastuunrajoitus',
+            DESCRIPTION:
+              'Täysin lain sallimassa laajuudessa Impierce Technologies B.V. ei ole vastuussa välillisistä, satunnaisista, erityisistä tai seurannaisvahingoista. Tämä sisältää mm. tietojen menetyksen, voittojen menetyksen, liiketoimintamahdollisuuksien tai maineen menetyksen, joka johtuu Palvelun käytöstä tai sen käyttämättömyydestä; kolmansien osapuolten sisällöstä tai virheistä; kolmansien osapuolien palveluista, sisällöstä tai toiminnoista, jotka saat Palvelun kautta; tai Palvelusta tai sen kautta saaduista sisällöistä.',
+          },
+          INDEMNIFICATION: {
+            TITLE: 'Vahingonkorvaus',
+            DESCRIPTION:
+              'Hyväksyt korvaavasi ja suojaavasi Impierce Technologies B.V:tä ja sen tytäryhtiöitä kaikilta vaatimuksilta, menetyksiltä tai kuluista, jotka johtuvat Palvelun käytöstäsi, näiden ehtojen rikkomisesta tai muiden henkilöiden tai tahojen oikeuksien loukkaamisesta.',
+          },
+          MODIFICATIONS: {
+            TITLE: 'Käyttöehtojen muutokset',
+            DESCRIPTION:
+              'Voimme päivittää näitä Käyttöehtoja ajoittain. Yllä oleva ”Viimeksi päivitetty” -päivämäärä kertoo viimeisimmän version. Merkittävät muutokset ilmoitetaan sovelluksen kautta tai verkkosivustollamme. Palvelun jatkokäyttö tarkoittaa, että hyväksyt päivitetyt Käyttöehdot.',
+          },
+          LAW_AND_JURISDIFICATION: {
+            TITLE: 'Sovellettava laki ja toimivalta',
+            DESCRIPTION:
+              'Näihin Käyttöehtoihin sovelletaan Alankomaiden lakia. Kaikki riidat ratkaistaan Alankomaiden tuomioistuimissa.',
+          },
+          SEVERABILITY: {
+            TITLE: 'Erottettavuus',
+            DESCRIPTION:
+              'Jos jokin osa näistä Käyttöehdoista todetaan pätemättömäksi, muu osa pysyy täydessä voimassa.',
+          },
+          LANGUAGE: {
+            TITLE: 'Kieli',
+            DESCRIPTION:
+              'Nämä Käyttöehdot ovat saatavilla useilla kielillä. Mahdollisessa ristiriitatilanteessa englanninkielinen versio on ratkaiseva.',
+          },
+          ENTIRE_AGREEMENT: {
+            TITLE: 'Koko sopimus',
+            DESCRIPTION:
+              'Nämä Käyttöehdot yhdessä Tietosuojakäytäntömme kanssa muodostavat täydellisen sopimuksen sinun ja Impierce Technologies B.V:n välillä UniMen käytöstä.',
+          },
+          CONTACT: {
+            TITLE: 'Ota yhteyttä',
+            DESCRIPTION:
+              'Onko sinulla palautetta tai kysymyksiä? Haluamme aina kehittyä. Jos jokin ei ole selvää tai voisi ilmaista paremmin, ota rohkeasti yhteyttä: Sähköposti: contact@impierce.com. Käyttämällä UniMea vahvistat, että olet lukenut, ymmärtänyt ja hyväksynyt nämä Käyttöehdot. Sitoudumme edelleen tarjoamaan turvallisia, yksityisyyskeskeisiä digitaalisia työkaluja, jotka antavat sinulle vallan.',
+          },
+        },
       },
       OWNERSHIP: {
         TITLE: 'Tietojen omistajuus',

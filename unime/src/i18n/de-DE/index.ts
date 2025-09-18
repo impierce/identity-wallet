@@ -42,82 +42,87 @@ const de_DE = {
         LAST_UPDATED: 'Zuletzt aktualisiert: 10. September 2025',
         TL_DR:
           'Wie jeder App-Anbieter sind wir gesetzlich verpflichtet, dir einige wichtige Geschäftsbedingungen mitzuteilen. Wir haben unser Bestes getan, um alles klar und auf den Punkt zu bringen. Hier ist die Kurzfassung: UniMe gibt dir die Kontrolle. UniMe sammelt deine Daten nicht, respektiert deine Privatsphäre und lässt dich entscheiden, welche Informationen du speichern und teilen möchtest. Deine Identität und Daten bleiben bei dir – und ebenso die Verantwortung, sie zu verwalten. Wir speichern deine Daten nicht und können auch nicht darauf zugreifen. Ein Datenverlust, z. B. durch den Verlust deines Geräts oder den Zugriff auf die App, liegt ebenfalls in deiner Verantwortung. Große Macht bringt große Verantwortung. Hier ist alles, was du wissen solltest:',
-        FULL: `Akzeptanz der Bedingungen
-Danke, dass du dich für UniMe entschieden hast, eine EU-Digital Identity Wallet (mobile Anwendung), entwickelt und betrieben von Impierce Technologies B.V. („wir“, „uns“ oder „unser“).
-Diese Nutzungsbedingungen („Bedingungen“) regeln deinen Zugriff auf und die Nutzung der UniMe Mobile App (der „Dienst“), egal ob du sie aus dem Apple App Store, Google Play Store oder einer anderen Plattform heruntergeladen hast.
-Durch die Installation, den Zugriff oder die Nutzung des Dienstes bestätigst du, dass du diese Bedingungen sowie unsere Datenschutzrichtlinie gelesen, verstanden und akzeptiert hast. Wenn du mit einem Teil dieser Bedingungen nicht einverstanden bist, nutze den Dienst bitte nicht. Wenn du den Dienst im Namen einer Organisation nutzt, bestätigst und gewährleistest du, dass du berechtigt bist, diese Bedingungen im Namen dieser Organisation anzunehmen.
-
-
-Definitionen
-Der Begriff Dienst bezeichnet die UniMe Identity Wallet Mobile App und umfasst alle darin enthaltenen Funktionen, Inhalte oder Services. Benutzerdaten sind alle Daten, Zugangsdaten oder Informationen, die du über den Dienst speicherst oder teilst. Der Begriff Gerät bezeichnet das Mobiltelefon oder die Hardware, auf dem/der die UniMe App installiert und genutzt wird.
-
-
-Verantwortlichkeiten des Nutzers
-Du bist dafür verantwortlich, die Vertraulichkeit und Sicherheit deines Geräts sowie aller im Dienst gespeicherten Zugangsdaten zu wahren und sicherzustellen, dass alle Informationen, die du über den Dienst speicherst oder teilst, korrekt und aktuell sind. Du verpflichtest dich, den Dienst in Übereinstimmung mit allen geltenden Gesetzen und Vorschriften zu nutzen. Impierce Technologies B.V. haftet nicht für Datenverluste durch Geräteverlust oder unbefugten Zugriff.
-
-
-Dateneigentum und Datenschutz
-UniMe basiert auf den Kernprinzipien der Benutzerkontrolle und Datensicherheit. Unsere Architektur ist so gestaltet, dass wir nicht auf die Benutzerdaten zugreifen, sie sammeln, speichern oder verarbeiten können. Alle deine Benutzerdaten werden lokal und sicher auf deinem Gerät gespeichert.
-Wir setzen robuste Sicherheitsmaßnahmen innerhalb der App ein, um deine Daten zu schützen. Der endgültige Schutz deiner Daten hängt jedoch auch von dir ab, z.B. durch die Verwendung eines starken Codes und das Vermeiden der Installation von Software aus nicht vertrauenswürdigen Quellen.
-Um die Integrität deiner Daten zu gewährleisten, kann UniMe deren Gültigkeit regelmäßig überprüfen. Dies geschieht, indem dein Gerät direkt den Aussteller der Daten kontaktiert, um zu überprüfen, ob die Daten widerrufen wurden. Dieser Vorgang erfolgt automatisch auf deinem Gerät und ohne Beteiligung von Impierce Technologies B.V. Wo verfügbar, verwendet UniMe für diese Prüfungen dezentrale Methoden.
-
-
-Datensichtbarkeit durch App-Plattformen
-Wenn du UniMe über einen offiziellen App Store wie Apple App Store oder Google Play herunterlädst oder nutzt, kann die Plattform eingeschränkt technische Nutzungsdaten sammeln. Dazu gehören z.B. Gerätetyp, App-Installationen oder Absturzmeldungen, sowie Region oder Spracheinstellungen deines Geräts. Diese Informationen werden nach den Richtlinien des jeweiligen App Stores gesammelt. Impierce sammelt keine zusätzlichen Nutzungsdaten von deinem Gerät.
-
-
-Rechte an geistigem Eigentum
-Alle geistigen Eigentumsrechte an UniMe und zugehörigen Materialien liegen bei Impierce Technologies B.V. oder unseren Lizenzgebern. UniMe wird unter der Apache-2.0-Lizenz bereitgestellt, was bedeutet, dass du die Software nutzen, modifizieren und weitergeben darfst, solange du die Bedingungen dieser Lizenz einhältst. Weitere Informationen findest du in der vollständigen Apache-2.0-Lizenz.
-
-
-Verbotene Aktivitäten
-Du erklärst dich damit einverstanden, nicht zu versuchen, unbefugten Zugriff auf den Dienst oder verwandte Systeme zu erlangen, die Leistung oder Sicherheit des Dienstes zu stören oder den Dienst für illegale, schädliche oder betrügerische Zwecke zu nutzen.
-
-
-Dienste von Drittanbietern
-Unser Dienst kann Links oder Integrationen mit Plattformen Dritter enthalten. Diese Plattformen werden nicht von uns kontrolliert oder betrieben, und wir übernehmen keine Verantwortung für deren Inhalte, Aktionen oder Datenpraktiken. Alle Dienste oder Interaktionen, die du mit Drittanbietern eingehst, erfolgen auf dein eigenes Risiko und unterliegen deren Bedingungen und Richtlinien. Wir empfehlen, diese sorgfältig zu prüfen, bevor du fortfährst.
-Der Dienst wird „wie gesehen“ und „wie verfügbar“ bereitgestellt, ohne jegliche Garantie. Wir gewährleisten keine unterbrechungsfreie oder fehlerfreie Nutzung.
-
-
-Haftungsbeschränkung
-Soweit gesetzlich zulässig, haftet Impierce Technologies B.V. nicht für indirekte, zufällige, besondere oder Folgeschäden. Dazu gehören unter anderem Datenverlust, entgangene Gewinne, Geschäftsmöglichkeiten oder Goodwill, die sich aus der Nutzung oder Nichtnutzung des Dienstes ergeben; das Verhalten, Inhalte oder Fehler Dritter; Dienste, Inhalte oder Handlungen Dritter, die über den Dienst genutzt werden; oder Inhalte, die über den Dienst erhalten werden.
-
-
-Entschädigung
-Du erklärst dich damit einverstanden, Impierce Technologies B.V. und deren Tochtergesellschaften von allen Ansprüchen, Verlusten oder Kosten freizustellen, die sich aus deiner Nutzung des Dienstes, deiner Verletzung dieser Nutzungsbedingungen oder der Rechte anderer Personen oder Organisationen ergeben.
-
-
-Änderungen der Nutzungsbedingungen
-Wir können diese Nutzungsbedingungen von Zeit zu Zeit aktualisieren. Das Datum „Zuletzt aktualisiert“ oben zeigt die aktuelle Version an. Wesentliche Änderungen werden über die App oder unsere Website kommuniziert. Die fortgesetzte Nutzung des Dienstes bedeutet, dass du die überarbeiteten Bedingungen akzeptierst.
-
-
-Anwendbares Recht und Gerichtsstand
-Diese Nutzungsbedingungen unterliegen niederländischem Recht.
-Alle Streitigkeiten werden vor den Gerichten der Niederlande entschieden.
-
-
-Salvatorische Klausel
-Sollte ein Teil dieser Bedingungen unwirksam sein, bleibt der Rest in vollem Umfang wirksam.
-
-
-Sprache
-Diese Nutzungsbedingungen sind in mehreren Sprachen verfügbar.
-Im Falle eines Konflikts gilt die englische Version.
-
-
-Gesamte Vereinbarung
-Diese Nutzungsbedingungen bilden zusammen mit unserer Datenschutzrichtlinie die vollständige Vereinbarung zwischen dir und Impierce Technologies B.V. über die Nutzung von UniMe.
-
-
-Kontaktinformationen
-Hast du Feedback oder Fragen? Wir wollen uns stetig verbessern.
-Wenn etwas unklar ist oder besser formuliert werden könnte, melde dich gerne:
-
-E-Mail: contact@impierce.com
-
-Durch die Nutzung von UniMe bestätigst du, dass du diese Nutzungsbedingungen gelesen, verstanden und akzeptiert hast.
-Wir verpflichten uns, sichere, datenschutzfreundliche digitale Tools bereitzustellen, die dir immer die volle Kontrolle geben.
-`,
+        FULL: {
+          AGREEMENT: {
+            TITLE: 'Annahme der Bedingungen',
+            DESCRIPTION:
+              'Danke, dass du dich für UniMe entschieden hast, eine EU-Digital Identity Wallet (mobile Anwendung), entwickelt und betrieben von Impierce Technologies B.V. („wir“, „uns“ oder „unser“). Diese Nutzungsbedingungen („Bedingungen“) regeln deinen Zugriff auf und die Nutzung der UniMe Mobile App (der „Dienst“), egal ob du sie aus dem Apple App Store, Google Play Store oder einer anderen Plattform heruntergeladen hast. Durch die Installation, den Zugriff oder die Nutzung des Dienstes bestätigst du, dass du diese Bedingungen sowie unsere Datenschutzrichtlinie gelesen, verstanden und akzeptiert hast. Wenn du mit einem Teil dieser Bedingungen nicht einverstanden bist, nutze den Dienst bitte nicht. Wenn du den Dienst im Namen einer Organisation nutzt, bestätigst und gewährleistest du, dass du berechtigt bist, diese Bedingungen im Namen dieser Organisation anzunehmen.',
+          },
+          DEFINITIONS: {
+            TITLE: 'Definitionen',
+            DESCRIPTION:
+              'Der Begriff Dienst bezeichnet die UniMe Identity Wallet Mobile App und umfasst alle darin enthaltenen Funktionen, Inhalte oder Services. Benutzerdaten sind alle Daten, Zugangsdaten oder Informationen, die du über den Dienst speicherst oder teilst. Der Begriff Gerät bezeichnet das Mobiltelefon oder die Hardware, auf dem/der die UniMe App installiert und genutzt wird.',
+          },
+          USER_RESPONSIBILITIES: {
+            TITLE: 'Verantwortlichkeiten des Nutzers',
+            DESCRIPTION:
+              'Du bist dafür verantwortlich, die Vertraulichkeit und Sicherheit deines Geräts sowie aller im Dienst gespeicherten Zugangsdaten zu wahren und sicherzustellen, dass alle Informationen, die du über den Dienst speicherst oder teilst, korrekt und aktuell sind. Du verpflichtest dich, den Dienst in Übereinstimmung mit allen geltenden Gesetzen und Vorschriften zu nutzen. Impierce Technologies B.V. haftet nicht für Datenverluste durch Geräteverlust oder unbefugten Zugriff.',
+          },
+          DATA_OWNERSHIP: {
+            TITLE: 'Dateneigentum und Datenschutz',
+            DESCRIPTION:
+              'UniMe basiert auf den Kernprinzipien der Benutzerkontrolle und Datensicherheit. Unsere Architektur ist so gestaltet, dass wir nicht auf die Benutzerdaten zugreifen, sie sammeln, speichern oder verarbeiten können. Alle deine Benutzerdaten werden lokal und sicher auf deinem Gerät gespeichert. Wir setzen robuste Sicherheitsmaßnahmen innerhalb der App ein, um deine Daten zu schützen. Der endgültige Schutz deiner Daten hängt jedoch auch von dir ab, z.B. durch die Verwendung eines starken Codes und das Vermeiden der Installation von Software aus nicht vertrauenswürdigen Quellen. Um die Integrität deiner Daten zu gewährleisten, kann UniMe deren Gültigkeit regelmäßig überprüfen. Dies geschieht, indem dein Gerät direkt den Aussteller der Daten kontaktiert, um zu überprüfen, ob die Daten widerrufen wurden. Dieser Vorgang erfolgt automatisch auf deinem Gerät und ohne Beteiligung von Impierce Technologies B.V. Wo verfügbar, verwendet UniMe für diese Prüfungen dezentrale Methoden.',
+          },
+          DATA_VISIBILITY: {
+            TITLE: 'Datensichtbarkeit durch App-Plattformen',
+            DESCRIPTION:
+              'Wenn du UniMe über einen offiziellen App Store wie Apple App Store oder Google Play herunterlädst oder nutzt, kann die Plattform eingeschränkt technische Nutzungsdaten sammeln. Dazu gehören z.B. Gerätetyp, App-Installationen oder Absturzmeldungen, sowie Region oder Spracheinstellungen deines Geräts. Diese Informationen werden nach den Richtlinien des jeweiligen App Stores gesammelt. Impierce sammelt keine zusätzlichen Nutzungsdaten von deinem Gerät.',
+          },
+          INTELLECTUAL_PROPERTY_RIGHTS: {
+            TITLE: 'Rechte an geistigem Eigentum',
+            DESCRIPTION:
+              'Alle geistigen Eigentumsrechte an UniMe und zugehörigen Materialien liegen bei Impierce Technologies B.V. oder unseren Lizenzgebern. UniMe wird unter der Apache-2.0-Lizenz bereitgestellt, was bedeutet, dass du die Software nutzen, modifizieren und weitergeben darfst, solange du die Bedingungen dieser Lizenz einhältst. Weitere Informationen findest du in der vollständigen Apache-2.0-Lizenz.',
+          },
+          PROHIBITED_ACTIVITIES: {
+            TITLE: 'Verbotene Aktivitäten',
+            DESCRIPTION:
+              'Du erklärst dich damit einverstanden, nicht zu versuchen, unbefugten Zugriff auf den Dienst oder verwandte Systeme zu erlangen, die Leistung oder Sicherheit des Dienstes zu stören oder den Dienst für illegale, schädliche oder betrügerische Zwecke zu nutzen.',
+          },
+          THIRD_PARTY_SERVICES: {
+            TITLE: 'Dienste von Drittanbietern',
+            DESCRIPTION:
+              'Unser Dienst kann Links oder Integrationen mit Plattformen Dritter enthalten. Diese Plattformen werden nicht von uns kontrolliert oder betrieben, und wir übernehmen keine Verantwortung für deren Inhalte, Aktionen oder Datenpraktiken. Alle Dienste oder Interaktionen, bei denen du dich mit Drittanbietern einlässt, erfolgen auf dein eigenes Risiko und unterliegen deren Bedingungen und Richtlinien. Wir empfehlen, diese sorgfältig zu prüfen, bevor du fortfährst. Der Dienst wird „wie gesehen“ und „wie verfügbar“ bereitgestellt, ohne jegliche Garantie. Wir gewährleisten keine unterbrechungsfreie oder fehlerfreie Nutzung.',
+          },
+          LIABILITY: {
+            TITLE: 'Haftungsbeschränkung',
+            DESCRIPTION:
+              'Soweit gesetzlich zulässig, haftet Impierce Technologies B.V. nicht für indirekte, zufällige, besondere oder Folgeschäden. Dazu gehören unter anderem Datenverlust, entgangene Gewinne, Geschäftsmöglichkeiten oder Goodwill, die sich aus der Nutzung oder Nichtnutzung des Dienstes ergeben; das Verhalten, Inhalte oder Fehler Dritter; Dienste, Inhalte oder Handlungen Dritter, die über den Dienst genutzt werden; oder Inhalte, die über den Dienst erhalten werden.',
+          },
+          INDEMNIFICATION: {
+            TITLE: 'Entschädigung',
+            DESCRIPTION:
+              'Du erklärst dich damit einverstanden, Impierce Technologies B.V. und deren Tochtergesellschaften von allen Ansprüchen, Verlusten oder Kosten freizustellen, die sich aus deiner Nutzung des Dienstes, deiner Verletzung dieser Nutzungsbedingungen oder der Rechte anderer Personen oder Organisationen ergeben.',
+          },
+          MODIFICATIONS: {
+            TITLE: 'Änderungen der Nutzungsbedingungen',
+            DESCRIPTION:
+              'Wir können diese Nutzungsbedingungen von Zeit zu Zeit aktualisieren. Das Datum „Zuletzt aktualisiert“ oben zeigt die aktuelle Version an. Wesentliche Änderungen werden über die App oder unsere Website kommuniziert. Die fortgesetzte Nutzung des Dienstes bedeutet, dass du die überarbeiteten Bedingungen akzeptierst.',
+          },
+          LAW_AND_JURISDIFICATION: {
+            TITLE: 'Anwendbares Recht und Gerichtsstand',
+            DESCRIPTION:
+              'Diese Nutzungsbedingungen unterliegen niederländischem Recht. Alle Streitigkeiten werden vor den Gerichten der Niederlande entschieden.',
+          },
+          SEVERABILITY: {
+            TITLE: 'Salvatorische Klausel',
+            DESCRIPTION: 'Sollte ein Teil dieser Bedingungen unwirksam sein, bleibt der Rest in vollem Umfang wirksam.',
+          },
+          LANGUAGE: {
+            TITLE: 'Sprache',
+            DESCRIPTION:
+              'Diese Nutzungsbedingungen sind in mehreren Sprachen verfügbar. Im Falle eines Konflikts gilt die englische Version.',
+          },
+          ENTIRE_AGREEMENT: {
+            TITLE: 'Gesamte Vereinbarung',
+            DESCRIPTION:
+              'Diese Nutzungsbedingungen bilden zusammen mit unserer Datenschutzrichtlinie die vollständige Vereinbarung zwischen dir und Impierce Technologies B.V. über die Nutzung von UniMe.',
+          },
+          CONTACT: {
+            TITLE: 'Kontaktinformationen',
+            DESCRIPTION:
+              'Hast du Feedback oder Fragen? Wir wollen uns stetig verbessern. Wenn etwas unklar ist oder besser formuliert werden könnte, melde dich gerne: E-Mail: contact@impierce.com. Durch die Nutzung von UniMe bestätigst du, dass du diese Nutzungsbedingungen gelesen, verstanden und akzeptiert hast. Wir verpflichten uns, sichere, datenschutzfreundliche digitale Tools bereitzustellen, die dir immer die volle Kontrolle geben.',
+          },
+        },
       },
       OWNERSHIP: {
         TITLE: 'Verantwortung',

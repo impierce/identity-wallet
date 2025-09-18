@@ -41,63 +41,88 @@ const nl_NL = {
         LAST_UPDATED: 'Laatst bijgewerkt: 10 september 2025',
         TL_DR:
           'Zoals elke app-aanbieder zijn wij wettelijk verplicht om je enkele belangrijke voorwaarden mee te geven. We hebben ons best gedaan om dit zo duidelijk en beknopt mogelijk te houden. Hier is de korte versie: UniMe geeft jou de controle. Het verzamelt je gegevens niet, respecteert je privacy en laat jou beslissen welke informatie je opslaat en deelt. Je identiteit en gegevens blijven van jou, en daarmee ook de verantwoordelijkheid om ze te beheren. Wij slaan je gegevens niet op en hebben er geen toegang toe. Gegevensverlies door verlies van je apparaat of toegang tot de app is daarom ook jouw verantwoordelijkheid. Met grote macht komt grote verantwoordelijkheid. Hier is alles wat je moet weten:',
-        FULL: `Aanvaarding van de voorwaarden
-Door onze Dienst te downloaden, te openen of te gebruiken, bevestigt je dat je deze Voorwaarden en ons Privacybeleid hebt gelezen, begrepen en ermee akkoord gaat. Als je de service namens een organisatie gebruikt, verklaart je dat je de bevoegdheid hebt om die organisatie aan deze voorwaarden te binden.
-
-Definities
-De term Service verwijst naar de mobiele applicatie UniMe Identity Wallet en omvat alle functies, inhoud of diensten die daarin worden aangeboden. Gebruikersgegevens betekent alle gegevens, inloggegevens of informatie die je opslaat of deelt met behulp van de Service. De term Apparaat verwijst naar de mobiele telefoon of hardware waarop de UniMe-app is geïnstalleerd en wordt gebruikt.
-
-Verantwoordelijkheden van de gebruiker
-Je bent verantwoordelijk voor het vertrouwelijk en veilig houden van je Apparaat en alle inloggegevens die binnen de Service zijn opgeslagen, en ervoor te zorgen dat de informatie die je opslaat of deelt via de Service correct en actueel is.
-Je stemt ermee in de Service te gebruiken in overeenstemming met alle toepasselijke wetten en regelgeving. Impierce Technologies B.V. is niet aansprakelijk voor gegevensverlies door verlies van je Apparaat of ongeautoriseerde toegang.
-
-Eigendom van gegevens en privacy
-UniMe is gebouwd op de kernprincipes van gebruikerscontrole en gegevensprivacy. Onze architectuur is zo ontworpen dat wij geen toegang hebben tot de Gebruikersgegevens die je in de app beheert, noch deze kunnen verzamelen, opslaan of verwerken. Al je Gebruikersgegevens worden lokaal en veilig op je Apparaat opgeslagen.
-Wij maken gebruik van sterke beveiligingsmaatregelen binnen de applicatie om je gegevens te beschermen. De uiteindelijke bescherming van je gegevens hangt echter ook af van jou, bijvoorbeeld door een sterk wachtwoord te gebruiken en geen software van onbetrouwbare bronnen te installeren.
-Om de integriteit van je inloggegevens te behouden, kan UniMe periodiek hun geldigheid controleren. Dit gebeurt door rechtstreeks vanaf je Apparaat contact op te nemen met de uitgever van de inloggegevens om te bevestigen of een inloggegeven is ingetrokken. Dit proces gebeurt automatisch op je Apparaat en omvat geen tussenkomst van Impierce Technologies B.V. Waar mogelijk gebruikt UniMe gedecentraliseerde methoden voor deze controles.
-
-Gegevensinzage door app-platforms
-Wanneer je UniMe downloadt of gebruikt via een officiële App Store, zoals de Apple App Store of Google Play, kan het platform beperkte technische en gebruiksgegevens verzamelen. Dit kan details omvatten zoals je apparaattype, app-installatie of crashmeldingen, en de regio- of taalinstellingen van je apparaat. Deze informatie wordt verzameld onder de eigen voorwaarden van de App Store. Impierce verzamelt geen aanvullende gebruiksgegevens van je Apparaat.
-
-Intellectuele eigendomsrechten
-Alle intellectuele eigendomsrechten van UniMe en gerelateerde materialen zijn eigendom van Impierce Technologies B.V. of onze licentiegevers. UniMe wordt aangeboden onder de Apache 2.0-licentie, wat betekent dat je de software mag gebruiken, aanpassen en verspreiden zolang je je houdt aan de voorwaarden van die licentie. Voor meer informatie verwijzen we naar de volledige Apache 2.0-licentie.
-
-Verboden activiteiten
-Je stemt ermee in geen pogingen te doen om ongeautoriseerde toegang te verkrijgen tot de Serviceof gerelateerde systemen, de prestaties of beveiliging van de Service te verstoren of te hinderen, of de Service te gebruiken voor onwettige, schadelijke of frauduleuze doeleinden.
-
-Diensten van derden
-Onze Service kan koppelingen bevatten naar of integreren met platforms van derden. Deze platforms worden niet door ons beheerd of geëxploiteerd, en wij onderschrijven of aanvaarden geen verantwoordelijkheid voor hun inhoud, acties of gegevenspraktijken. Diensten of interacties die je kiest aan te gaan met derde partijen zijn op eigen risico en onderhevig aan hun eigen voorwaarden en beleid. We raden je aan deze zorgvuldig door te lezen voordat je verdergaat.
-De Service wordt geleverd "zoals hij is" en "zoals beschikbaar" zonder enige vorm van garanties. We garanderen geen ononderbroken of foutloos gebruik van de Service.
-
-Beperking van aansprakelijkheid
-Voor zover wettelijk toegestaan is Impierce Technologies B.V. niet aansprakelijk voor indirecte, incidentele, bijzondere of gevolgschade. Dit omvat, maar is niet beperkt tot, verlies van gegevens, winst, zakelijke kansen of goodwill voortvloeiend uit je gebruik of onvermogen tot gebruik van de Service gedragingen, inhoud of fouten van derden; diensten, inhoud of acties van platforms van derden die via de Service toegankelijk zijn; of enige inhoud verkregen van of via de Service.
-
-Schadeloosstelling
-Je stemt ermee in Impierce Technologies B.V. en haar gelieerde ondernemingen te vrijwaren van claims, verliezen of kosten die voortvloeien uit je gebruik van de Service, je schending van deze Gebruiksvoorwaarden of je schending van de rechten van een andere persoon of entiteit.
-
-Wijzigingen in de gebruiksvoorwaarden
-We kunnen deze Gebruiksvoorwaarden van tijd tot tijd bijwerken. De datum "Laatst bijgewerkt" hierboven geeft de meest recente versie weer. Belangrijke wijzigingen worden gecommuniceerd via de app of onze website. Voortgezet gebruik van de Service betekent dat je de herziene Gebruiksvoorwaarden accepteert.
-
-Toepasselijk recht en jurisdictie
-Deze Gebruiksvoorwaarden vallen onder Nederlands recht.
-Eventuele geschillen worden beslecht door de rechtbanken van Nederland.
-
-Scheidbaarheid
-Als een deel van deze Gebruiksvoorwaarden ongeldig wordt verklaard, blijft de rest volledig van kracht.
-
-Taal
-Deze Gebruiksvoorwaarden zijn beschikbaar in meerdere talen voor je gemak.
-Bij een conflict prevaleert de Engelse versie.
-
-Volledige Overeenkomst
-Deze Gebruiksvoorwaarden vormen samen met ons Privacybeleid de volledige overeenkomst tussen jou en Impierce Technologies B.V. met betrekking tot het gebruik van UniMe.
-
-Contactgegevens
-Heb je feedback of een vraag? We streven er altijd naar om te verbeteren.
-Als iets onduidelijk is of beter geformuleerd kan worden, neem gerust contact met ons op:
-Email: contact@impierce.com
-Door UniMe te gebruiken, bevestig je dat je deze Gebruiksvoorwaarden hebt gelezen, begrepen en ermee instemt.
-Wij blijven ons inzetten voor het leveren van veilige, privacygerichte digitale tools die jou sterker maken.`,
+        FULL: {
+          AGREEMENT: {
+            TITLE: 'Aanvaarding van de voorwaarden',
+            DESCRIPTION:
+              'Door onze Dienst te downloaden, te openen of te gebruiken, bevestigt je dat je deze Voorwaarden en ons Privacybeleid hebt gelezen, begrepen en ermee akkoord gaat. Als je de service namens een organisatie gebruikt, verklaart je dat je de bevoegdheid hebt om die organisatie aan deze voorwaarden te binden.',
+          },
+          DEFINITIONS: {
+            TITLE: 'Definities',
+            DESCRIPTION:
+              'De term Service verwijst naar de mobiele applicatie UniMe Identity Wallet en omvat alle functies, inhoud of diensten die daarin worden aangeboden. Gebruikersgegevens betekent alle gegevens, inloggegevens of informatie die je opslaat of deelt met behulp van de Service. De term Apparaat verwijst naar de mobiele telefoon of hardware waarop de UniMe-app is geïnstalleerd en wordt gebruikt.',
+          },
+          USER_RESPONSIBILITIES: {
+            TITLE: 'Verantwoordelijkheden van de gebruiker',
+            DESCRIPTION:
+              'Je bent verantwoordelijk voor het vertrouwelijk en veilig houden van je Apparaat en alle inloggegevens die binnen de Service zijn opgeslagen, en ervoor te zorgen dat de informatie die je opslaat of deelt via de Service correct en actueel is. Je stemt ermee in de Service te gebruiken in overeenstemming met alle toepasselijke wetten en regelgeving. Impierce Technologies B.V. is niet aansprakelijk voor gegevensverlies door verlies van je Apparaat of ongeautoriseerde toegang.',
+          },
+          DATA_OWNERSHIP: {
+            TITLE: 'Eigendom van gegevens en privacy',
+            DESCRIPTION:
+              'UniMe is gebouwd op de kernprincipes van gebruikerscontrole en gegevensprivacy. Onze architectuur is zo ontworpen dat wij geen toegang hebben tot de Gebruikersgegevens die je in de app beheert, noch deze kunnen verzamelen, opslaan of verwerken. Al je Gebruikersgegevens worden lokaal en veilig op je Apparaat opgeslagen. Wij maken gebruik van sterke beveiligingsmaatregelen binnen de applicatie om je gegevens te beschermen. De uiteindelijke bescherming van je gegevens hangt echter ook af van jou, bijvoorbeeld door een sterk wachtwoord te gebruiken en geen software van onbetrouwbare bronnen te installeren. Om de integriteit van je inloggegevens te behouden, kan UniMe periodiek hun geldigheid controleren. Dit gebeurt door rechtstreeks vanaf je Apparaat contact op te nemen met de uitgever van de inloggegevens om te bevestigen of een inloggegeven is ingetrokken. Dit proces gebeurt automatisch op je Apparaat en omvat geen tussenkomst van Impierce Technologies B.V. Waar mogelijk gebruikt UniMe gedecentraliseerde methoden voor deze controles.',
+          },
+          DATA_VISIBILITY: {
+            TITLE: 'Gegevensinzage door app-platforms',
+            DESCRIPTION:
+              'Wanneer je UniMe downloadt of gebruikt via een officiële App Store, zoals de Apple App Store of Google Play, kan het platform beperkte technische en gebruiksgegevens verzamelen. Dit kan details omvatten zoals je apparaattype, app-installatie of crashmeldingen, en de regio- of taalinstellingen van je apparaat. Deze informatie wordt verzameld onder de eigen voorwaarden van de App Store. Impierce verzamelt geen aanvullende gebruiksgegevens van je Apparaat.',
+          },
+          INTELLECTUAL_PROPERTY_RIGHTS: {
+            TITLE: 'Intellectuele eigendomsrechten',
+            DESCRIPTION:
+              'Alle intellectuele eigendomsrechten van UniMe en gerelateerde materialen zijn eigendom van Impierce Technologies B.V. of onze licentiegevers. UniMe wordt aangeboden onder de Apache 2.0-licentie, wat betekent dat je de software mag gebruiken, aanpassen en verspreiden zolang je je houdt aan de voorwaarden van die licentie. Voor meer informatie verwijzen we naar de volledige Apache 2.0-licentie.',
+          },
+          PROHIBITED_ACTIVITIES: {
+            TITLE: 'Verboden activiteiten',
+            DESCRIPTION:
+              'Je stemt ermee in geen pogingen te doen om ongeautoriseerde toegang te verkrijgen tot de Serviceof gerelateerde systemen, de prestaties of beveiliging van de Service te verstoren of te hinderen, of de Service te gebruiken voor onwettige, schadelijke of frauduleuze doeleinden.',
+          },
+          THIRD_PARTY_SERVICES: {
+            TITLE: 'Diensten van derden',
+            DESCRIPTION:
+              'Onze Service kan koppelingen bevatten naar of integreren met platforms van derden. Deze platforms worden niet door ons beheerd of geëxploiteerd, en wij onderschrijven of aanvaarden geen verantwoordelijkheid voor hun inhoud, acties of gegevenspraktijken. Diensten of interacties die je kiest aan te gaan met derde partijen zijn op eigen risico en onderhevig aan hun eigen voorwaarden en beleid. We raden je aan deze zorgvuldig door te lezen voordat je verdergaat. De Service wordt geleverd "zoals hij is" en "zoals beschikbaar" zonder enige vorm van garanties. We garanderen geen ononderbroken of foutloos gebruik van de Service.',
+          },
+          LIABILITY: {
+            TITLE: 'Beperking van aansprakelijkheid',
+            DESCRIPTION:
+              'Voor zover wettelijk toegestaan is Impierce Technologies B.V. niet aansprakelijk voor indirecte, incidentele, bijzondere of gevolgschade. Dit omvat, maar is niet beperkt tot, verlies van gegevens, winst, zakelijke kansen of goodwill voortvloeiend uit je gebruik of onvermogen tot gebruik van de Service gedragingen, inhoud of fouten van derden; diensten, inhoud of acties van platforms van derden die via de Service toegankelijk zijn; of enige inhoud verkregen van of via de Service.',
+          },
+          INDEMNIFICATION: {
+            TITLE: 'Schadeloosstelling',
+            DESCRIPTION:
+              'Je stemt ermee in Impierce Technologies B.V. en haar gelieerde ondernemingen te vrijwaren van claims, verliezen of kosten die voortvloeien uit je gebruik van de Service, je schending van deze Gebruiksvoorwaarden of je schending van de rechten van een andere persoon of entiteit.',
+          },
+          MODIFICATIONS: {
+            TITLE: 'Wijzigingen in de gebruiksvoorwaarden',
+            DESCRIPTION:
+              'We kunnen deze Gebruiksvoorwaarden van tijd tot tijd bijwerken. De datum "Laatst bijgewerkt" hierboven geeft de meest recente versie weer. Belangrijke wijzigingen worden gecommuniceerd via de app of onze website. Voortgezet gebruik van de Service betekent dat je de herziene Gebruiksvoorwaarden accepteert.',
+          },
+          LAW_AND_JURISDIFICATION: {
+            TITLE: 'Toepasselijk recht en jurisdictie',
+            DESCRIPTION:
+              'Deze Gebruiksvoorwaarden vallen onder Nederlands recht. Eventuele geschillen worden beslecht door de rechtbanken van Nederland.',
+          },
+          SEVERABILITY: {
+            TITLE: 'Scheidbaarheid',
+            DESCRIPTION:
+              'Als een deel van deze Gebruiksvoorwaarden ongeldig wordt verklaard, blijft de rest volledig van kracht.',
+          },
+          LANGUAGE: {
+            TITLE: 'Taal',
+            DESCRIPTION:
+              'Deze Gebruiksvoorwaarden zijn beschikbaar in meerdere talen voor je gemak. Bij een conflict prevaleert de Engelse versie.',
+          },
+          ENTIRE_AGREEMENT: {
+            TITLE: 'Volledige Overeenkomst',
+            DESCRIPTION:
+              'Deze Gebruiksvoorwaarden vormen samen met ons Privacybeleid de volledige overeenkomst tussen jou en Impierce Technologies B.V. met betrekking tot het gebruik van UniMe.',
+          },
+          CONTACT: {
+            TITLE: 'Contactgegevens',
+            DESCRIPTION:
+              'Heb je feedback of een vraag? We streven er altijd naar om te verbeteren. Als iets onduidelijk is of beter geformuleerd kan worden, neem gerust contact met ons op: Email: contact@impierce.com. Door UniMe te gebruiken, bevestig je dat je deze Gebruiksvoorwaarden hebt gelezen, begrepen en ermee instemt. Wij blijven ons inzetten voor het leveren van veilige, privacygerichte digitale tools die jou sterker maken.',
+          },
+        },
       },
       OWNERSHIP: {
         TITLE: 'Eigendom',
