@@ -440,6 +440,7 @@ By using our Service, you acknowledge that you have read, understood, and agree 
       TITLE: 'Address',
       DESCRIPTION: 'Add your home or work address',
       INFO: {
+        NAVBAR_TITLE: 'Verified address',
         TITLE: 'Verified address',
         DESCRIPTION: 'Before you start',
         ITEM_0: {

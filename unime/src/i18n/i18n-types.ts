@@ -1058,6 +1058,10 @@ type RootTranslation = {
 				/**
 				 * V​e​r​i​f​i​e​d​ ​a​d​d​r​e​s​s
 				 */
+				NAVBAR_TITLE: string
+				/**
+				 * V​e​r​i​f​i​e​d​ ​a​d​d​r​e​s​s
+				 */
 				TITLE: string
 				/**
 				 * B​e​f​o​r​e​ ​y​o​u​ ​s​t​a​r​t
@@ -2508,6 +2512,10 @@ export type TranslationFunctions = {
 			 */
 			DESCRIPTION: () => LocalizedString
 			INFO: {
+				/**
+				 * Verified address
+				 */
+				NAVBAR_TITLE: () => LocalizedString
 				/**
 				 * Verified address
 				 */
