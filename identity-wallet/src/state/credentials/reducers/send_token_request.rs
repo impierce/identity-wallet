@@ -252,6 +252,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                 credential_configuration_id,
                 credential,
                 credential_configuration.display.clone(),
+                credential_configuration.claims.clone(),
             ));
         }
 
@@ -264,8 +265,8 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
 
         let mut history_credentials = vec![];
 
-        for (credential_configuration_id, credential, display) in credentials.into_iter() {
-            let mut verifiable_credential_record = VerifiableCredentialRecord::try_from(credential)?;
+        for (credential_configuration_id, credential, display, claims) in credentials.into_iter() {
+            let mut verifiable_credential_record = VerifiableCredentialRecord::try_new(credential, claims)?;
             // Validate the credential against its corresponding credential JSON Schema.
             validate_credential_types(&verifiable_credential_record.verifiable_credential)?;
 

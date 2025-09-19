@@ -19,7 +19,8 @@ downcast-rs = "1.2"
 dyn-clone = "1.0"
 futures = "0.3"
 icu = "1.4.0"
-identity_credential = { git = "https://github.com/iotaledger/identity", tag = "v1.6.0-beta.2", default-features = false, features = [
+# TODO: See ../Cargo.toml
+identity_credential = { git = "https://github.com/impierce/identity.rs", rev = "82f41a29", default-features = false, features = [
     "credential",
     "domain-linkage",
     "presentation",
