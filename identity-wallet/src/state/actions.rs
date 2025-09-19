@@ -60,7 +60,7 @@ pub fn listen<T: ActionTrait + Clone>(action: Action) -> Option<T> {
 /// ```
 
 // TODO: remove this once we have a better way to export the TS types.
-mod bindings {
+pub mod bindings {
 
     use serde::{Deserialize, Serialize};
     use ts_rs::TS;
