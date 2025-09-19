@@ -423,6 +423,26 @@ Door onze Service te gebruiken, erken je dat je deze Voorwaarden heeft gelezen, 
     ADDRESS: {
       TITLE: 'Adres',
       DESCRIPTION: 'Voeg je woon- of werkadres toe',
+      INFO: {
+        NAVBAR_TITLE: 'Geverifieerd adres',
+        TITLE: 'Geverifieerd adres',
+        DESCRIPTION: 'Voordat je start',
+        ITEM_0: {
+          TITLE: 'Al je adressen op één plek',
+          DESCRIPTION:
+            'Bewaar je thuisadres, werkadres of andere locaties veilig in je wallet, klaar om direct te gebruiken op ondersteunde online platforms.',
+        },
+        ITEM_1: {
+          TITLE: 'Tik, bevestig en klaar',
+          DESCRIPTION:
+            'Wanneer een dienst om een adres vraagt, scan je hun code of tik je op ‘Verbinden’. Kies het adres dat je wilt delen en bevestig. Binnen een oogwenk geregeld.',
+        },
+        ITEM_2: {
+          TITLE: 'Afgeschermd en veilig',
+          DESCRIPTION:
+            'Je adressen blijven alleen voor jouw ogen zichtbaar totdat je besluit ze te delen. Elk gedeeld gegeven is versleuteld, vastgelegd en vereist jouw toestemming, zodat je altijd volledig overzicht houdt over wie je gegevens heeft.',
+        },
+      },
       ADD: {
         NAVBAR_TITLE: 'Adres toevoegen',
         LABEL: 'Hoe wil je dit adres noemen?',
@@ -447,19 +467,19 @@ Door onze Service te gebruiken, erken je dat je deze Voorwaarden heeft gelezen, 
         TITLE: 'Verifieer e-mailadres',
         DESCRIPTION: 'Voordat je begint',
         ITEM_0: {
-          TITLE: 'Waarom je e-mail verifiëren in UniMe?',
+          TITLE: 'Bewijs dat jij het echt bent',
           DESCRIPTION:
-            'Door je e-mailadres te verifiëren bewijs je dat het echt van jou is. Zo krijg je eenvoudig en vlot toegang tot diensten, zonder gebruikersnaam of wachtwoord. Je kunt het bijvoorbeeld gebruiken om toegang te krijgen tot online diensten en apps, of om het te delen met andere mensen die willen verifiëren dat jij het bent.',
+            'Een geverifieerd e-mailadres werkt als je digitale handdruk. Het geeft vrienden, collega’s en diensten het vertrouwen dat jij het werkelijk bent, waardoor je online interacties betrouwbaarder worden.',
         },
         ITEM_1: {
-          TITLE: 'Hoe werkt het?',
+          TITLE: 'Jij houdt altijd de controle',
           DESCRIPTION:
-            'We sturen een eenmalige code naar je e-mailadres. Voer de code in om te bevestigen dat het jouw e-mailadres is. Zodra bevestigd, kun je je e-mailadres gebruiken bij ondersteunde diensten.',
+            'Jij bepaalt precies wanneer en waar je je geverifieerde e-mail gebruikt. Elk gedeeld gegeven is versleuteld en vastgelegd in je activiteitenoverzicht.',
         },
         ITEM_2: {
-          TITLE: 'Is mijn informatie veilig?',
+          TITLE: 'Standaard veilig en privé',
           DESCRIPTION:
-            'Ja. We gebruiken je e-mailadres alleen om je de verificatiecode te sturen. Het wordt niet gedeeld en nergens anders voor gebruikt.',
+            'We sturen een eenmalige code naar je e-mail. Jij voert deze in, en de veilige credential blijft vergrendeld op je telefoon en wordt nooit gedeeld zonder jouw directe toestemming.',
         },
       },
       ADD: {
@@ -479,23 +499,23 @@ Door onze Service te gebruiken, erken je dat je deze Voorwaarden heeft gelezen, 
       TITLE: 'Profiel',
       DESCRIPTION: 'Voeg informatie over jezelf toe',
       INFO: {
-        NAVBAR_TITLE: 'Your profile',
+        NAVBAR_TITLE: 'Jouw profiel',
         TITLE: 'UniMe Profiel',
         DESCRIPTION: 'Voordat je begint',
         ITEM_0: {
-          TITLE: 'Waarom je gegevens toevoegen in UniMe?',
+          TITLE: 'Sla saaie formulieren over',
           DESCRIPTION:
-            'Voeg je persoonlijke gegevens één keer toe en gebruik ze overal opnieuw. Sla lange formulieren over, meld je sneller aan en kies zelf wat je deelt op jouw voorwaarden.',
+            'Je UniMe-profiel werkt als een digitale ID. Gebruik het om gegevens direct automatisch in te vullen op ondersteunde sites en houd je online leven overzichtelijk.',
         },
         ITEM_1: {
-          TITLE: 'Hoe werkt het?',
+          TITLE: 'Direct delen',
           DESCRIPTION:
-            'Wanneer een dienst om je gegevens vraagt, zoals je naam of adres om een aanmelding of bezorging af te ronden, scan je eenvoudig een QR-code, controleer je welke informatie wordt gevraagd en kies je welke gegevens je wilt delen om formulieren met één klik in te vullen.',
+            'Wanneer je gegevens worden gevraagd, scan je simpelweg een QR-code of tik je op ‘Verbinden’. Controleer precies welke informatie wordt gevraagd en keur deze goed. Klaar binnen enkele seconden.',
         },
         ITEM_2: {
-          TITLE: 'Zijn mijn gegevens veilig?',
+          TITLE: 'Ontworpen voor privacy',
           DESCRIPTION:
-            'Ja. Je gegevens blijven veilig op je telefoon, beschermd door je wachtwoord, gezichtsherkenning of vingerafdruk. Als je persoonlijke gegevens deelt, zoals je naam of adres,  worden ze versleuteld en zijn ze alleen zichtbaar voor de dienst die om je gegevens vraagt. Jij bepaalt wat je deelt, en met wie.',
+            'Je informatie blijft vergrendeld op je apparaat en wordt nooit in de cloud opgeslagen. Alle gedeelde gegevens zijn end-to-end versleuteld. Je data blijft altijd van jou.',
         },
       },
       ADD: {

@@ -410,6 +410,26 @@ Genom att använda Tjänsten bekräftar du att du har läst, förstått och acce
     ADDRESS: {
       TITLE: 'Adress',
       DESCRIPTION: 'Lägg till en arbets- eller privatadress',
+      INFO: {
+        NAVBAR_TITLE: 'Verifierad adress',
+        TITLE: 'Verifierad adress',
+        DESCRIPTION: 'Innan du börjar',
+        ITEM_0: {
+          TITLE: 'Alla dina adresser på ett ställe',
+          DESCRIPTION:
+            'Förvara ditt hem, kontor eller andra adresser säkert i din plånbok, redo att användas direkt på stödda onlineplattformar.',
+        },
+        ITEM_1: {
+          TITLE: 'Tryck, bekräfta och klart',
+          DESCRIPTION:
+            'När en tjänst ber om en adress, skanna deras kod eller tryck på ”Anslut”, välj vilken adress du vill dela och bekräfta. Klart på ett ögonblick.',
+        },
+        ITEM_2: {
+          TITLE: 'Låst och säkert',
+          DESCRIPTION:
+            'Dina adresser är bara för dina ögon tills du väljer att dela dem. Varje delning är krypterad, loggad och kräver ditt godkännande, vilket ger dig full överblick över vem som har dina uppgifter.',
+        },
+      },
       ADD: {
         NAVBAR_TITLE: 'Lägg till adress',
         LABEL: 'Vad vill du kalla den här adressen?',
@@ -434,19 +454,19 @@ Genom att använda Tjänsten bekräftar du att du har läst, förstått och acce
         TITLE: 'Verifierad e-post',
         DESCRIPTION: 'Innan du börjar',
         ITEM_0: {
-          TITLE: 'Varför verifiera e-post i UniMe?',
+          TITLE: 'Bevisa att det verkligen är du',
           DESCRIPTION:
-            'Verifiering visar att adressen verkligen är din och möjliggör säkra, lösenordsfria inloggningar.',
+            'En verifierad e-postadress fungerar som ditt digitala handslag. Det ger vänner, kollegor och tjänster förtroendet att det verkligen är du, vilket stärker tilliten i dina onlineinteraktioner.',
         },
         ITEM_1: {
-          TITLE: 'Hur fungerar det?',
+          TITLE: 'Du har alltid kontrollen',
           DESCRIPTION:
-            'När du startar skickar UniMe adressen till vårt system. Du får en engångskod i inkorgen. Ange koden i UniMe för att bevisa åtkomst.',
+            'Du bestämmer själv exakt när och var du använder din verifierade e-post. Varje delning är krypterad och loggas i din aktivitets­historik.',
         },
         ITEM_2: {
-          TITLE: 'Är min information säker?',
+          TITLE: 'Säker och privat som standard',
           DESCRIPTION:
-            'Ja. All kommunikation är starkt krypterad och information lagras säkert. Vi delar inget utan ditt samtycke.',
+            'Vi skickar en engångskod till din e-post. Du anger den, och den säkra autentiseringen förblir låst på din telefon och delas aldrig utan ditt uttryckliga godkännande.',
         },
       },
       ADD: {
@@ -470,19 +490,19 @@ Genom att använda Tjänsten bekräftar du att du har läst, förstått och acce
         TITLE: 'UniMe-profil',
         DESCRIPTION: 'Innan du börjar',
         ITEM_0: {
-          TITLE: 'Varför ska jag skapa en profil?',
+          TITLE: 'Hoppa över tråkiga formulär',
           DESCRIPTION:
-            'Spara dina uppgifter en gång och använd dem överallt. Slipp långa formulär, snabba på inloggningar och bevisa att du är du - allt på dina villkor.',
+            'Din UniMe-profil fungerar som ett digitalt ID. Använd den för att automatiskt fylla i uppgifter direkt på stödda webbplatser och slipp onödigt krångel i ditt onlineliv.',
         },
         ITEM_1: {
-          TITLE: 'Hur fungerar det?',
+          TITLE: 'Omedelbar delning',
           DESCRIPTION:
-            'Dina uppgifter skyddas på din enhet i ett säkert valv som bara du kan öppna. Skanna en QR-kod för att upprätta en säker anslutning. Kontrollera förfrågan och välj vad du vill dela.',
+            'När dina uppgifter efterfrågas, skanna helt enkelt en QR-kod eller tryck på ”Anslut”, kontrollera exakt vilken information som begärs och godkänn. Klart på några sekunder.',
         },
         ITEM_2: {
-          TITLE: 'Är mina data säkra?',
+          TITLE: 'ntegritet från början',
           DESCRIPTION:
-            'Ja. Dina data skyddas med din enhets säkerhetsfunktioner, t.ex. fingeravtryck eller ansiktsigenkänning. Vi samlar inte in dina data och har inte tillgång till dem. Källkoden är öppen, så du kan själv kontrollera detta.',
+            'Din information förblir låst på din enhet och lagras aldrig i molnet. Varje delning är end-to-end-krypterad. Dina data är alltid dina egna.',
         },
       },
       ADD: {

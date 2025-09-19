@@ -439,6 +439,26 @@ Al utilizar nuestro Servicio, usted reconoce que ha leído, entendido y aceptado
     ADDRESS: {
       TITLE: 'Dirección',
       DESCRIPTION: 'Añade tu dirección de casa o trabajo',
+      INFO: {
+        NAVBAR_TITLE: 'Dirección verificada',
+        TITLE: 'Dirección verificada',
+        DESCRIPTION: 'Antes de empezar',
+        ITEM_0: {
+          TITLE: 'Todas tus direcciones en un solo lugar',
+          DESCRIPTION:
+            'Guarda tu casa, oficina o cualquier otra dirección de forma segura en tu billetera, lista para usarse al instante en las plataformas en línea compatibles.',
+        },
+        ITEM_1: {
+          TITLE: 'Toca, confirma y listo',
+          DESCRIPTION:
+            'Cuando un servicio solicite una dirección, simplemente escanea su código o toca “Conectar”, elige la dirección que quieres compartir y confirma. Hecho en un abrir y cerrar de ojos.',
+        },
+        ITEM_2: {
+          TITLE: 'Bloqueado y seguro',
+          DESCRIPTION:
+            'Tus direcciones son solo para tus ojos hasta que decidas compartirlas. Cada intercambio está cifrado, registrado y requiere tu aprobación, dándote una visión completa de quién tiene tus datos.',
+        },
+      },
       ADD: {
         NAVBAR_TITLE: 'Añadir dirección',
         LABEL: '¿Cómo quieres llamar a esta dirección?',
@@ -463,19 +483,19 @@ Al utilizar nuestro Servicio, usted reconoce que ha leído, entendido y aceptado
         TITLE: 'Correo verificado',
         DESCRIPTION: 'Antes de empezar',
         ITEM_0: {
-          TITLE: '¿Por qué verificar tu correo en UniMe?',
+          TITLE: 'Demuestra que realmente eres tú',
           DESCRIPTION:
-            'Demuestra que el correo es tuyo, así puedes iniciar sesión más rápido sin usuario ni contraseña. También podrás usarlo con apps, sitios web e incluso otras personas que quieran confirmar que eres tú.',
+            'Un correo electrónico verificado funciona como tu apretón de manos digital. Da a tus amigos, colegas y servicios la confianza de que eres genuinamente tú, aumentando la confianza en tus interacciones en línea.',
         },
         ITEM_1: {
-          TITLE: '¿Cómo funciona?',
+          TITLE: 'Siempre tienes el control',
           DESCRIPTION:
-            'Te enviamos un código de un solo uso a tu correo. Solo tienes que introducirlo para confirmar que es tuyo. Una vez verificado, podrás usar tu correo con servicios compatibles.',
+            'Tú decides exactamente cuándo y dónde usar tu correo electrónico verificado. Cada intercambio está cifrado y registrado en tu historial de actividad.',
         },
         ITEM_2: {
-          TITLE: '¿Está segura mi información?',
+          TITLE: 'Seguro y privado por defecto',
           DESCRIPTION:
-            'Sí. Solo usamos tu correo para enviarte el código de verificación. Nunca lo compartimos ni lo usamos para nada más.',
+            'Te enviamos un código de un solo uso a tu correo electrónico. Lo introduces, y la credencial segura permanece bloqueada en tu teléfono, sin compartirse nunca sin tu aprobación directa.',
         },
       },
       ADD: {
@@ -499,19 +519,19 @@ Al utilizar nuestro Servicio, usted reconoce que ha leído, entendido y aceptado
         TITLE: 'Perfil UniMe',
         DESCRIPTION: 'Antes de empezar',
         ITEM_0: {
-          TITLE: '¿Por qué añadir tu información en UniMe?',
+          TITLE: 'Omite los formularios tediosos',
           DESCRIPTION:
-            'Añade tus datos personales una vez y reutilízalos donde quieras. Olvídate de rellenar formularios largos, regístrate más rápido y elige qué compartes, a tu manera.',
+            'Tu perfil de UniMe funciona como una identificación digital. Úsalo para completar automáticamente tus datos al instante en los sitios compatibles y elimina el desorden de tu vida en línea.',
         },
         ITEM_1: {
-          TITLE: '¿Cómo funciona?',
+          TITLE: 'Compartir al instante',
           DESCRIPTION:
-            'Tu información se guarda de forma segura en tu teléfono, en una bóveda privada que solo tú puedes desbloquear. Cuando te pidan tus datos, como tu nombre o dirección, simplemente escanea un código QR, revisa lo que se solicita y si todo está bien haz clic en "conectar".',
+            'Cuando se soliciten tus datos, simplemente escanea un código QR o toca “Conectar”, revisa exactamente qué información se está solicitando y apruébala. Todo listo en segundos.',
         },
         ITEM_2: {
-          TITLE: '¿Está segura mi información?',
+          TITLE: 'Privado desde el diseño',
           DESCRIPTION:
-            'Sí. Tus datos se guardan de forma segura en tu teléfono, protegidos por tu contraseña o desbloqueo facial/huella. Cuando decides compartir datos personales, como tu nombre o dirección, se encriptan y solo los ve el servicio con el que interactúas. Tus datos siguen siendo tuyos.',
+            'Tu información permanece bloqueada en tu dispositivo y nunca se almacena en la nube. Cada intercambio está cifrado de extremo a extremo. Tus datos siempre son tuyos.',
         },
       },
       ADD: {
