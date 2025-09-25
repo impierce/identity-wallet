@@ -60,7 +60,7 @@ pub fn listen<T: ActionTrait + Clone>(action: Action) -> Option<T> {
 /// ```
 
 // TODO: remove this once we have a better way to export the TS types.
-pub mod bindings {
+mod bindings {
 
     use serde::{Deserialize, Serialize};
     use ts_rs::TS;
@@ -92,10 +92,11 @@ pub mod bindings {
         verified_data::actions::{RedeemCode, SendVerificationEmail, ServiceHealthCheck},
     };
 
+    #[allow(dead_code)]
     #[derive(Serialize, Deserialize, TS)]
     #[serde(tag = "type")]
     #[ts(export, export_to = "bindings/actions/Action.ts")]
-    pub enum Action {
+    enum Action {
         #[serde(rename = "[App] Get state")]
         GetState,
         #[serde(rename = "[Storage] Unlock")]
