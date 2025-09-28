@@ -1,5 +1,6 @@
 pub mod delete_credential;
 pub mod handle_oid4vp_authorization_request;
+pub mod refresh_all_credential_statuses;
 pub mod refresh_credential_status;
 pub mod self_issue_credential;
 pub mod send_credential_request;

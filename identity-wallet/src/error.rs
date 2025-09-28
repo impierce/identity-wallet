@@ -70,8 +70,10 @@ pub enum AppError {
     GetAuthorizationServerMetadataError(#[source] anyhow::Error),
     #[error("Failed to retrieve the credential issuer's metadata")]
     GetCredentialIssuerMetadataError(#[source] anyhow::Error),
-    #[error("Failed to retrieve credential status from the status list provider")]
+    #[error("Failed to get the credential status from the provided status list")]
     GetCredentialStatusError,
+    #[error("Failed to fetch credential list: {0}")]
+    FetchCredentialListError(reqwest::Error),
     #[error("Failed to retrieve an access token from the credential issuer: {0}")]
     GetAccessTokenError(#[source] anyhow::Error),
     #[error("Failed to retrieve credential from the credential issuer: {0}")]

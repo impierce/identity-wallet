@@ -1,17 +1,16 @@
-#[cfg(not(feature = "test_utils"))]
-use crate::state::credentials::VerifiableCredentialRecord;
 use crate::{
     error::AppError,
     state::{
         actions::{listen, Action},
-        common::actions::unlock_storage::UnlockStorage,
         core_utils::{DateUtils, IdentityManager},
-        credentials::{actions::refresh_credential_status::RefreshCredentialStatus, CredentialStatus},
+        credentials::{
+            actions::refresh_credential_status::RefreshCredentialStatus, CredentialStatus, VerifiableCredentialRecord,
+        },
         AppState,
     },
 };
 use jsonwebtoken::{decode_header, Algorithm, DecodingKey};
-use log::info;
+use log::{info, warn};
 use oauth_tsl::{
     relying_party::{decompress_gzip, decrypt_status_list_token, StatusListTokenResponseType},
     status_list::{StatusList, StatusType},
@@ -19,114 +18,91 @@ use oauth_tsl::{
 };
 use reqwest::{header, redirect::Policy, Client};
 use serde::{Deserialize, Serialize};
-use std::sync::Arc;
 use url::Url;
-
-// TODO: test for possible poor latency/performance due to many stronghold interactions when many credentials need to be refreshed.
-/// Refreshes the credential status for all credentials in the state.
-pub async fn refresh_all_credential_statuses(state: AppState, action: Action) -> Result<AppState, AppError> {
-    if let Some(_password) = listen::<UnlockStorage>(action) {
-        let mut state = state;
-
-        // Collect all credential IDs.
-        let credential_ids = state
-            .credentials
-            .iter()
-            .map(|credential| credential.id.clone())
-            .collect::<Vec<_>>();
-
-        // Refresh each credential status one by one.
-        for credential_id in credential_ids {
-            let action = Arc::new(RefreshCredentialStatus {
-                id: Some(credential_id),
-            });
-
-            state = refresh_credential_status(state, action).await?;
-        }
-
-        return Ok(state);
-    }
-    Ok(state)
-}
 
 pub async fn refresh_credential_status(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(refresh_credential_status) = listen::<RefreshCredentialStatus>(action) {
         let state_guard = state.core_utils.managers.lock().await;
-        #[cfg(not(feature = "test_utils"))]
+        let mut credentials = state.credentials.clone();
+        let credential_id = refresh_credential_status.id;
+
+        if let Some(credential) = credentials.iter_mut().find(|c| c.id == credential_id) {
+            if let Some(credential_status_data) = credential.status.as_mut() {
+                credential_status_data.status = match fetch_credential_status(
+                    credential_status_data,
+                    state_guard.identity_manager.as_ref().unwrap(),
+                )
+                .await
+                {
+                    Ok(status) => {
+                        info!("Successfully fetched new credential status {status:?} for credential with id: `{credential_id}`. The old_status was: {:?}", credential_status_data.status);
+                        credential_status_data.last_checked = DateUtils::new_date_string();
+                        status
+                    }
+                    Err(e) => {
+                        // This error handling means we don't panic when the refresh_credential_status function fails.
+                        // Instead we don't bother the user with any of the errors and keep the old status and simply don't update it.
+                        // However, this is also not ideal. TODO: how to handle a status that consistently fails to refresh?
+                        warn!("Failed to refresh credential status for credential with id: `{credential_id}`. The old status remains unchanged: {:?}", credential_status_data.status);
+
+                        return Err(e);
+                    }
+                };
+            } else {
+                // The frontend should already be displaying the fact that there is no credentialStatus for this credential, so only a log message is enough here.
+                info!("No credentialStatus found for credential with id: `{credential_id}`");
+
+                return Err(AppError::GetCredentialStatusError);
+            }
+        } else {
+            // This should never happen, as the credential ID send by the frontend is supposed to be valid.
+            warn!("No credential found with id: `{credential_id}`");
+
+            return Err(AppError::GetCredentialStatusError);
+        }
+
+        // Update the credential in StrongHold
+        // #[cfg(not(feature = "test_utils"))]
+        // {
         let stronghold_manager = state_guard
             .stronghold_manager
             .as_ref()
             .ok_or(AppError::MissingManagerError("stronghold"))?;
-        let mut credentials = state.credentials.clone();
-        if let Some(credential_id) = refresh_credential_status.id {
-            if let Some(credential) = credentials.iter_mut().find(|c| c.id == credential_id) {
-                if let Some(credential_status_data) = credential.status.as_ref() {
-                    // We ok_or() with an error here because when the if let Some() statement above is true, we must have a credentialStatus.
 
-                    let new_status = if let Ok(new_status) =
-                        get_credential_status(credential_status_data, state_guard.identity_manager.as_ref().unwrap())
-                            .await
-                    {
-                        new_status
-                    } else {
-                        // TODO: implement more specific error handling in `get_credential_status`. One error that can
-                        // occur in `get_credential_status` is that the status list URI is unreachable. In that case,
-                        // we might want to keep the old status instead of failing the whole refresh operation.
-                        drop(state_guard);
-                        return Ok(AppState { ..state });
-                    };
+        let key: uuid::Uuid = credential_id.parse().map_err(AppError::InvalidUuidError)?;
 
-                    if credential_status_data.status != new_status {
-                        info!(
-                            "Credential {} changed credential status from {:?} to {:?}",
-                            credential.id, credential_status_data.status, new_status
-                        );
-                    }
+        let updated_credential = credentials
+            .iter()
+            .find(|c| c.id == credential_id)
+            .ok_or(AppError::GetCredentialStatusError)?;
 
-                    credential.status = Some(CredentialStatus {
-                        status: new_status,
-                        last_checked: DateUtils::new_date_string(),
-                        ..credential_status_data.clone()
-                    });
+        let mut verifiable_credential_record = stronghold_manager
+            .remove(key)
+            .map_err(AppError::StrongholdDeletionError)?
+            .and_then(|data| serde_json::from_slice::<VerifiableCredentialRecord>(data.as_slice()).ok())
+            .ok_or(AppError::StrongholdMissingCredentialError(key))?;
 
-                    #[cfg(not(feature = "test_utils"))]
-                    {
-                        let key: uuid::Uuid = credential.id.parse().map_err(AppError::InvalidUuidError)?;
+        verifiable_credential_record.display_credential = updated_credential.clone();
 
-                        let mut verifiable_credential_record = stronghold_manager
-                            .remove(key)
-                            .map_err(AppError::StrongholdDeletionError)?
-                            .and_then(|data| serde_json::from_slice::<VerifiableCredentialRecord>(data.as_slice()).ok())
-                            .ok_or(AppError::StrongholdMissingCredentialError(key))?;
+        stronghold_manager
+            .insert(
+                key,
+                serde_json::json!(verifiable_credential_record)
+                    .to_string()
+                    .as_bytes()
+                    .to_vec(),
+            )
+            .map_err(AppError::StrongholdInsertionError)?;
+        // }
 
-                        verifiable_credential_record.display_credential = credential.clone();
-
-                        stronghold_manager
-                            .insert(
-                                key,
-                                serde_json::json!(verifiable_credential_record)
-                                    .to_string()
-                                    .as_bytes()
-                                    .to_vec(),
-                            )
-                            .map_err(AppError::StrongholdInsertionError)?;
-                    }
-
-                    info!("Successfully refreshed credential with id: `{credential_id}`");
-                } else {
-                    info!("No credentialStatus found for credential with id: `{credential_id}`");
-                    // TODO: should this return an error or not?
-                }
-            } else {
-                info!("No credential found with id: `{credential_id}`");
-            }
-        }
-        // If no credential ID is provided, the action is to refresh all credentials
-        else {
-        }
         drop(state_guard);
-        return Ok(AppState { credentials, ..state });
+
+        return Ok(AppState {
+            credentials,
+            ..state.to_owned()
+        });
     }
+
     Ok(state)
 }
 
@@ -144,13 +120,13 @@ pub struct TslCredentialStatus {
 
 /// Fetches the Status List Token from the Status Provider URI provided in the credentialStatus, and checks the given index, returning the Status.
 /// There are multiple decoding and decompressing steps involved, please refer to the OAuth Token Status List specification for more details.
-pub async fn get_credential_status(
+pub async fn fetch_credential_status(
     credential_status_data: &CredentialStatus,
     identity_manager: &IdentityManager,
 ) -> Result<StatusType, AppError> {
     let status_list_jwt = fetch_status_list(
         credential_status_data.uri.as_str(),
-        // FIXME
+        // TODO: the response type is hardcoded to be JWT, since we can't handle CWT yet. However when we implement CWT we then need some way to discover what encoding the Status List Provider is using.
         StatusListTokenResponseType::Jwt,
     )
     .await?;
@@ -167,6 +143,7 @@ pub async fn get_credential_status(
         Algorithm::EdDSA => DecodingKey::from_ed_der(&public_key),
         Algorithm::ES256 => DecodingKey::from_ec_der(&public_key),
         _ => {
+            // This panic should never happen since we initialize our public keys and identity_manager ourselves.
             panic!("Unsupported algorithm: {:?}", jwt_header.alg);
         }
     };
@@ -193,28 +170,32 @@ pub async fn get_credential_status(
 /// If the response is gzip encoded, it will be decompressed before being returned.
 pub async fn fetch_status_list(uri: &str, accept_header: StatusListTokenResponseType) -> Result<String, AppError> {
     // 3xx redirects should be followed, but infinite loops are caught after 5 redirects.
-    let client = Client::builder().redirect(Policy::limited(5)).build()?;
+    let client = Client::builder()
+        .redirect(Policy::limited(5))
+        .build()
+        .map_err(AppError::FetchCredentialListError)?;
 
     let res = client
         .get(uri)
         .header(header::ACCEPT, accept_header.to_string())
         .send()
-        .await?;
+        .await
+        .map_err(AppError::FetchCredentialListError)?;
 
     if !res.status().is_success() {
-        return Err(AppError::GetCredentialStatusError);
+        return Err(AppError::FetchCredentialListError(res.error_for_status().unwrap_err()));
     }
 
     match res.headers().get(header::CONTENT_ENCODING) {
         Some(encoding) if encoding == "gzip" => {
             // If gzip encoding, decompress the body.
-            let bytes = res.bytes().await?;
+            let bytes = res.bytes().await.map_err(AppError::FetchCredentialListError)?;
             let decompressed = decompress_gzip(&bytes).map_err(|_| AppError::GetCredentialStatusError)?;
             Ok(decompressed)
         }
         _ => {
             // If no gzip encoding, return the body as is.
-            let jwt_bytes = res.bytes().await?;
+            let jwt_bytes = res.bytes().await.map_err(AppError::FetchCredentialListError)?;
             let jwt_vec_u8 = jwt_bytes.to_vec();
 
             Ok(String::from_utf8(jwt_vec_u8).map_err(|_| AppError::GetCredentialStatusError)?)
