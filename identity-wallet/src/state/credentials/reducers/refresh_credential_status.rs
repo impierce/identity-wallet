@@ -28,22 +28,54 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
 
         if let Some(credential) = credentials.iter_mut().find(|c| c.id == credential_id) {
             if let Some(credential_status_data) = credential.status.as_mut() {
-                credential_status_data.status = match fetch_credential_status(
-                    credential_status_data,
-                    state_guard.identity_manager.as_ref().unwrap(),
-                )
-                .await
+                match fetch_credential_status(credential_status_data, state_guard.identity_manager.as_ref().unwrap())
+                    .await
                 {
                     Ok(status) => {
                         info!("Successfully fetched new credential status {status:?} for credential with id: `{credential_id}`. The old_status was: {:?}", credential_status_data.status);
                         credential_status_data.last_checked = DateUtils::new_date_string();
-                        status
+                        credential_status_data.status = status;
+
+                        // Update the credential in StrongHold
+                        {
+                            let stronghold_manager = state_guard
+                                .stronghold_manager
+                                .as_ref()
+                                .ok_or(AppError::MissingManagerError("stronghold"))?;
+
+                            let key: uuid::Uuid = credential_id.parse().map_err(AppError::InvalidUuidError)?;
+
+                            let updated_credential = credentials
+                                .iter()
+                                .find(|c| c.id == credential_id)
+                                .ok_or(AppError::GetCredentialStatusError)?;
+
+                            let mut verifiable_credential_record = stronghold_manager
+                                .remove(key)
+                                .map_err(AppError::StrongholdDeletionError)?
+                                .and_then(|data| {
+                                    serde_json::from_slice::<VerifiableCredentialRecord>(data.as_slice()).ok()
+                                })
+                                .ok_or(AppError::StrongholdMissingCredentialError(key))?;
+
+                            verifiable_credential_record.display_credential = updated_credential.clone();
+
+                            stronghold_manager
+                                .insert(
+                                    key,
+                                    serde_json::json!(verifiable_credential_record)
+                                        .to_string()
+                                        .as_bytes()
+                                        .to_vec(),
+                                )
+                                .map_err(AppError::StrongholdInsertionError)?;
+                        }
                     }
                     Err(e) => {
                         // This error handling means we don't panic when the refresh_credential_status function fails.
                         // Instead we don't bother the user with any of the errors and keep the old status and simply don't update it.
                         // However, this is also not ideal. TODO: how to handle a status that consistently fails to refresh?
-                        warn!("Failed to refresh credential status for credential with id: `{credential_id}`. The old status remains unchanged: {:?}", credential_status_data.status);
+                        warn!("Failed to refresh credential status for credential with id: `{credential_id}`.\nThe old status remains unchanged: {:?}\nError: {e}", credential_status_data.status);
 
                         return Err(e);
                     }
@@ -60,40 +92,6 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
 
             return Err(AppError::GetCredentialStatusError);
         }
-
-        // Update the credential in StrongHold
-        // #[cfg(not(feature = "test_utils"))]
-        // {
-        let stronghold_manager = state_guard
-            .stronghold_manager
-            .as_ref()
-            .ok_or(AppError::MissingManagerError("stronghold"))?;
-
-        let key: uuid::Uuid = credential_id.parse().map_err(AppError::InvalidUuidError)?;
-
-        let updated_credential = credentials
-            .iter()
-            .find(|c| c.id == credential_id)
-            .ok_or(AppError::GetCredentialStatusError)?;
-
-        let mut verifiable_credential_record = stronghold_manager
-            .remove(key)
-            .map_err(AppError::StrongholdDeletionError)?
-            .and_then(|data| serde_json::from_slice::<VerifiableCredentialRecord>(data.as_slice()).ok())
-            .ok_or(AppError::StrongholdMissingCredentialError(key))?;
-
-        verifiable_credential_record.display_credential = updated_credential.clone();
-
-        stronghold_manager
-            .insert(
-                key,
-                serde_json::json!(verifiable_credential_record)
-                    .to_string()
-                    .as_bytes()
-                    .to_vec(),
-            )
-            .map_err(AppError::StrongholdInsertionError)?;
-        // }
 
         drop(state_guard);
 
