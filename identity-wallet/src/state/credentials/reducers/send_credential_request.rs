@@ -165,13 +165,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                         .and_then(|grants| grants.authorization_code.as_ref())
                         .and_then(|auth_code| auth_code.authorization_server.as_ref())
                         .cloned()
-                        .or_else(|| {
-                            if !credential_issuer_metadata.authorization_servers.is_empty() {
-                                Some(credential_issuer_metadata.authorization_servers[0].clone())
-                            } else {
-                                None
-                            }
-                        })
+                        .or_else(|| credential_issuer_metadata.authorization_servers.first().cloned())
                         // Fall back to credential issuer url if no authorization server is specified.
                         .unwrap_or_else(|| credential_issuer_url.clone());
 
