@@ -53,7 +53,7 @@ pub struct DisplayCredential {
     // TODO: should this be moved to `metadata`?
     pub display_name: String,
     #[ts(optional)]
-    pub status: Option<CredentialStatus>,
+    pub credential_status: Option<CredentialStatus>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, Derivative, TS)]
@@ -243,7 +243,7 @@ impl VerifiableCredentialRecord {
                 issuer_name: String::new(),
                 connection_id: None,
                 display_name: String::new(),
-                status: credential_status,
+                credential_status,
             }
         };
 

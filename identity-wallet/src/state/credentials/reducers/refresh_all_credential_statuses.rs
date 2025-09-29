@@ -23,7 +23,7 @@ pub async fn refresh_all_credential_statuses(state: AppState, _action: Action) -
 
     for credential in credentials.iter_mut() {
         let credential_id = &credential.id;
-        if let Some(credential_status_data) = credential.status.as_mut() {
+        if let Some(credential_status_data) = credential.credential_status.as_mut() {
             match fetch_credential_status(credential_status_data, state_guard.identity_manager.as_ref().unwrap()).await
             {
                 Ok(status) => {

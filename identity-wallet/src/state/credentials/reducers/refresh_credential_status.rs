@@ -14,20 +14,17 @@ use log::{info, warn};
 use oauth_tsl::{
     relying_party::{decompress_gzip, decrypt_status_list_token, StatusListTokenResponseType},
     status_list::{StatusList, StatusType},
-    tokens::status_list_token::StatusListTyp,
 };
 use reqwest::{header, redirect::Policy, Client};
-use serde::{Deserialize, Serialize};
-use url::Url;
 
 pub async fn refresh_credential_status(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(refresh_credential_status) = listen::<RefreshCredentialStatus>(action) {
         let state_guard = state.core_utils.managers.lock().await;
         let mut credentials = state.credentials.clone();
-        let credential_id = refresh_credential_status.id;
+        let credential_id = refresh_credential_status.credential_id;
 
         if let Some(credential) = credentials.iter_mut().find(|c| c.id == credential_id) {
-            if let Some(credential_status_data) = credential.status.as_mut() {
+            if let Some(credential_status_data) = credential.credential_status.as_mut() {
                 match fetch_credential_status(credential_status_data, state_guard.identity_manager.as_ref().unwrap())
                     .await
                 {
@@ -102,16 +99,6 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
     }
 
     Ok(state)
-}
-
-/// Represents the credential status as defined in the OAuth Token Status List specification and the DIIP profile.
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct TslCredentialStatus {
-    pub id: Url,
-    #[serde(rename = "type")]
-    pub type_: StatusListTyp,
-    pub uri: Url,
-    pub idx: usize,
 }
 
 // Helpers

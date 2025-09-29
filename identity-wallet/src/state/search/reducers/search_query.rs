@@ -120,7 +120,7 @@ mod tests {
                     },
                     connection_id: None,
                     display_name: "John".to_string(),
-                    status: None,
+                    credential_status: None,
                 },
                 DisplayCredential {
                     id: "2".to_string(),
@@ -135,7 +135,7 @@ mod tests {
                     },
                     connection_id: None,
                     display_name: "Jane".to_string(),
-                    status: None,
+                    credential_status: None,
                 },
                 DisplayCredential {
                     id: "3".to_string(),
@@ -150,7 +150,7 @@ mod tests {
                     },
                     connection_id: None,
                     display_name: "Jeff".to_string(),
-                    status: None,
+                    credential_status: None,
                 },
             ],
             ..Default::default()

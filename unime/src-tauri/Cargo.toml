@@ -53,6 +53,7 @@ tempfile.workspace = true
 tokio.workspace = true
 typetag = "0.2"
 url = "2.4"
+uuid = "1.4"
 wiremock.workspace = true
 
 [features]
