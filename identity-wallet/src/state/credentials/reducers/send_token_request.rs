@@ -121,7 +121,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             })
             .cloned()
             // Fall back to credential issuer url if no authorization server is specified.
-            .unwrap_or_else(|| credential_issuer_url.clone());
+            .unwrap_or(credential_issuer_url.clone());
 
         // Get the authorization server metadata.
         let authorization_server_metadata = wallet
