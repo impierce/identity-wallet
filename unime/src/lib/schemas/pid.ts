@@ -9,24 +9,13 @@ const countryCode = z.string().length(2);
 export const residence = (LL: TranslationFunctions) =>
   z.object({
     resident_address: z.string().optional(),
-    resident_country: countryCode.optional(),
+    resident_country: countryCode.min(1, LL.ADD_CREDENTIALS.VALUE_REQUIRED()),
     resident_state: z.string().optional(),
     resident_city: z.string().optional(),
     resident_postal_code: z.string().optional(),
     resident_street: z.string().optional(),
     resident_house_number: z.string().optional(),
   });
-
-const sex = {
-  0: 'not known',
-  1: 'male',
-  2: 'female',
-  3: 'other',
-  4: 'inter',
-  5: 'diverse',
-  6: 'open',
-  9: 'not applicable',
-};
 
 export const naturalPerson = (LL: TranslationFunctions) =>
   z.object({
@@ -40,6 +29,16 @@ export const naturalPerson = (LL: TranslationFunctions) =>
 
     // optional
     family_name_birth: z.string().optional(),
+    // const sex = {
+    //   0: 'not known',
+    //   1: 'male',
+    //   2: 'female',
+    //   3: 'other',
+    //   4: 'inter',
+    //   5: 'diverse',
+    //   6: 'open',
+    //   9: 'not applicable',
+    // };
     sex: z
       .number()
       .refine((val) => [0, 1, 2, 3, 4, 5, 6, 9].includes(val))

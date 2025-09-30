@@ -70,6 +70,7 @@ export const calculateInitials = (name: string): string => {
   }
 };
 
+// TODO: refactor: move format* functions to utils/date.ts
 export function formatDate(isoDate: string, locale: Locale, test = false) {
   return new Intl.DateTimeFormat(locale, {
     dateStyle: 'medium',

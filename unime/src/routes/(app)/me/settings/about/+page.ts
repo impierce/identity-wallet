@@ -14,14 +14,14 @@ export const load = (async () => {
     {
       id: 'OID4VCI',
       description: 'OpenID for Verifiable Credential Issuance',
-      version: 'Working Group Draft 13 (published: 8 February 2024)',
+      version: 'Working Group Draft 15 (published: 19 December 2024)',
       url: 'https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0-13.html',
     },
     {
       id: 'OID4VP',
       description: 'OpenID for Verifiable Presentations',
-      version: 'Working Group Draft 20 (published: 29 November 2023)',
-      url: 'https://openid.net/specs/openid-4-verifiable-presentations-1_0-20.html',
+      version: 'Working Group Draft 28 (published: 24 April 2025)',
+      url: 'https://openid.net/specs/openid-4-verifiable-presentations-1_0-28.html',
     },
     {
       id: 'SIOPv2',
