@@ -29,8 +29,6 @@
 
   let complete = $state(false);
 
-  $: complete = false;
-
   const imageId = logo_uri ? hash(logo_uri) : '_';
 
   const pinInput = new PinInput({
