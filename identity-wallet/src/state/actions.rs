@@ -92,10 +92,11 @@ mod bindings {
         verified_data::actions::{RedeemCode, SendVerificationEmail, ServiceHealthCheck},
     };
 
+    #[allow(dead_code)]
     #[derive(Serialize, Deserialize, TS)]
     #[serde(tag = "type")]
     #[ts(export, export_to = "bindings/actions/Action.ts")]
-    pub enum Action {
+    enum Action {
         #[serde(rename = "[App] Get state")]
         GetState,
         #[serde(rename = "[Storage] Unlock")]
