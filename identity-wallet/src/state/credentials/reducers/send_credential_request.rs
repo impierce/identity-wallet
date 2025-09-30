@@ -163,7 +163,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                         .or_else(|| credential_issuer_metadata.authorization_servers.first())
                         .cloned()
                         // Fall back to credential issuer url if no authorization server is specified.
-                        .unwrap_or_else(|| credential_issuer_url);
+                        .unwrap_or(credential_issuer_url);
 
                     // Generate a random 128-byte code verifier (must be between 43 and 128 bytes)
                     let code_verifier = pkce::code_verifier(128);
