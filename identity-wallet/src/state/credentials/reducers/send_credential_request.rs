@@ -145,8 +145,9 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                 // continue when UniMe receives the authorization code via during redirection back to the app from the
                 // browser. The frontend will then dispatch the `CodeReceived` action which will continue the flow.
                 } else if let Some(authorization_code) = authorization_code {
+                    let specified_authorization_server = authorization_code.authorization_server.as_ref();
                     // Check that the specified authorization servers exist in the Credential Issuer Metadata's `authorization_servers` parameter.
-                    if let Some(specified_authorization_server) = authorization_code.authorization_server.as_ref() {
+                    if let Some(specified_authorization_server) = specified_authorization_server {
                         if !credential_issuer_metadata.authorization_servers.is_empty()
                             && !credential_issuer_metadata
                                 .authorization_servers
@@ -157,17 +158,12 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                             )));
                         }
                     }
-                    // Extract the authorization server selection from the authorization_server parameter in the grant.
-                    // If the `authorization_servers` array is empty, fall back to the credential issuer url.
-                    let authorization_server_url = credential_offer
-                        .grants
-                        .as_ref()
-                        .and_then(|grants| grants.authorization_code.as_ref())
-                        .and_then(|auth_code| auth_code.authorization_server.as_ref())
+
+                    let authorization_server_url = specified_authorization_server
+                        .or_else(|| credential_issuer_metadata.authorization_servers.first())
                         .cloned()
-                        .or_else(|| credential_issuer_metadata.authorization_servers.first().cloned())
                         // Fall back to credential issuer url if no authorization server is specified.
-                        .unwrap_or_else(|| credential_issuer_url.clone());
+                        .unwrap_or_else(|| credential_issuer_url);
 
                     // Generate a random 128-byte code verifier (must be between 43 and 128 bytes)
                     let code_verifier = pkce::code_verifier(128);

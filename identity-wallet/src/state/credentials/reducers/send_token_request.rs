@@ -86,8 +86,8 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             .map_err(GetCredentialIssuerMetadataError)?;
 
         // Check that the specified authorization servers are listed in the Credential Issuer Metadata's `authorization_servers` parameter.
-        if let Some(grants) = &credential_offer.grants {
-            let specified_auth_server = if is_pre_authorized {
+        let specified_authorization_server = &credential_offer.grants.as_ref().and_then(|grants| {
+            if is_pre_authorized {
                 grants
                     .pre_authorized_code
                     .as_ref()
@@ -97,44 +97,29 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                     .authorization_code
                     .as_ref()
                     .and_then(|auth_code| auth_code.authorization_server.as_ref())
-            };
+            }
+        });
 
-            if let Some(specified_auth_server) = specified_auth_server {
-                if !credential_issuer_metadata.authorization_servers.is_empty()
-                    && !credential_issuer_metadata
-                        .authorization_servers
-                        .contains(specified_auth_server)
-                {
-                    return Err(AppError::Error(format!(
-                "The specified authorization server {specified_auth_server} is not listed in the credential issuer metadata."
-            )));
-                }
+        if let Some(specified_authorization_server) = specified_authorization_server {
+            if !credential_issuer_metadata.authorization_servers.is_empty()
+                && !credential_issuer_metadata
+                    .authorization_servers
+                    .contains(specified_authorization_server)
+            {
+                return Err(AppError::Error(format!(
+                        "The specified authorization server {specified_authorization_server} is not listed in the credential issuer metadata."
+                    )));
             }
         }
 
         // Extract the authorization server selection from the authorization_server parameter in the grant types.
-        let authorization_server_url = credential_offer
-            .grants
-            .as_ref()
-            .and_then(|grants| {
-                if is_pre_authorized {
-                    grants
-                        .pre_authorized_code
-                        .as_ref()
-                        .and_then(|pre_authorized_code| pre_authorized_code.authorization_server.as_ref())
-                } else {
-                    grants
-                        .authorization_code
-                        .as_ref()
-                        .and_then(|auth_code| auth_code.authorization_server.as_ref())
-                }
-            })
-            .cloned()
+        let authorization_server_url = specified_authorization_server
             .or_else(|| {
                 // If no authorization server is specified, fall back to the authorization_servers in the credential issuer metadata.
                 // TODO: Users should be able to select their preferred authorization server.
-                credential_issuer_metadata.authorization_servers.first().cloned()
+                credential_issuer_metadata.authorization_servers.first()
             })
+            .cloned()
             // Fall back to credential issuer url if no authorization server is specified.
             .unwrap_or_else(|| credential_issuer_url.clone());
 
