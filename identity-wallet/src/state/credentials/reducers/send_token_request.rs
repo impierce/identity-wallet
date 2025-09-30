@@ -65,8 +65,6 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
 
         info!("current_user_prompt: {:?}", current_user_prompt);
 
-        // info!("credential issuer metadata: {credential_issuer_metadata:?}");
-
         let credential_offer = state
             .core_utils
             .active_credential_offer
