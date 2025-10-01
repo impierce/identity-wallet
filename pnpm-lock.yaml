@@ -69,8 +69,8 @@ importers:
         specifier: ^0.5.16
         version: 0.5.16(tailwindcss@3.4.14)
       '@tauri-apps/api':
-        specifier: ^2.2.0
-        version: 2.3.0
+        specifier: ^2.8.0
+        version: 2.8.0
       '@tauri-apps/cli':
         specifier: ^2.2.7
         version: 2.3.1
@@ -843,9 +843,6 @@ packages:
     resolution: {integrity: sha512-0wDLwCVF5V3x3b1SGXPCDcdsbDHMBe+lkFzBRaHeLvNi+nrrnZ1lA18u+OTWO8iSWU2GxUOCvlXtDuqftc1oiA==}
     peerDependencies:
       tailwindcss: '>=3.0.0 || insiders || >=4.0.0-alpha.20 || >=4.0.0-beta.1'
-
-  '@tauri-apps/api@2.3.0':
-    resolution: {integrity: sha512-33Z+0lX2wgZbx1SPFfqvzI6su63hCBkbzv+5NexeYjIx7WA9htdOKoRR7Dh3dJyltqS5/J8vQFyybiRoaL0hlA==}
 
   '@tauri-apps/api@2.8.0':
     resolution: {integrity: sha512-ga7zdhbS2GXOMTIZRT0mYjKJtR9fivsXzsyq5U3vjDL0s6DTMwYRm0UHNjzTY5dh4+LSC68Sm/7WEiimbQNYlw==}
@@ -3463,7 +3460,7 @@ snapshots:
 
   '@impierce/tauri-plugin-keystore@2.1.0-alpha.1':
     dependencies:
-      '@tauri-apps/api': 2.3.0
+      '@tauri-apps/api': 2.8.0
 
   '@internationalized/date@3.8.2':
     dependencies:
@@ -3737,8 +3734,6 @@ snapshots:
       postcss-selector-parser: 6.0.10
       tailwindcss: 3.4.14
 
-  '@tauri-apps/api@2.3.0': {}
-
   '@tauri-apps/api@2.8.0': {}
 
   '@tauri-apps/cli-darwin-arm64@2.3.1':
@@ -3786,7 +3781,7 @@ snapshots:
 
   '@tauri-apps/plugin-barcode-scanner@2.2.0':
     dependencies:
-      '@tauri-apps/api': 2.3.0
+      '@tauri-apps/api': 2.8.0
 
   '@tauri-apps/plugin-biometric@2.3.0':
     dependencies:
@@ -3802,7 +3797,7 @@ snapshots:
 
   '@tauri-apps/plugin-log@2.2.3':
     dependencies:
-      '@tauri-apps/api': 2.3.0
+      '@tauri-apps/api': 2.8.0
 
   '@tauri-apps/plugin-opener@2.5.0':
     dependencies:
@@ -3814,7 +3809,7 @@ snapshots:
 
   '@tauri-apps/plugin-shell@2.2.0':
     dependencies:
-      '@tauri-apps/api': 2.3.0
+      '@tauri-apps/api': 2.8.0
 
   '@testing-library/dom@9.3.4':
     dependencies:
