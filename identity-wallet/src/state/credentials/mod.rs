@@ -232,8 +232,8 @@ impl VerifiableCredentialRecord {
                 issuer_name: String::new(),
                 connection_id: None,
                 display_name: String::new(),
-                // The credential status will be set right after this function.
-                // It is separated since it requires async fetching.
+                // The credential status is None here but it will be set right after this function.
+                // This initialization is separated since it requires async fetching.
                 credential_status: None,
             }
         };

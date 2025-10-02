@@ -308,14 +308,29 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             let mut verifiable_credential_record = VerifiableCredentialRecord::try_new(credential, claims)?;
             // Validate the credential against its corresponding credential JSON Schema.
             validate_credential_types(&verifiable_credential_record.verifiable_credential)?;
-            set_credential_status(
+            // The credential status is set only when the credential status claim/property can be found and is in OAuth TSL format.
+            // If setting the credential status fails we currently catch the error and simply set the credential status field to None.
+            // TODO: we might want to inform the user of this before accepting the credential already
+            match set_credential_status(
                 &mut verifiable_credential_record,
                 state_guard
                     .identity_manager
                     .as_ref()
                     .ok_or(MissingManagerError("identity"))?,
             )
-            .await?;
+            .await
+            {
+                Ok(_) => {
+                    info!(
+                        "Successfully set credential status for credential with id: `{}`",
+                        verifiable_credential_record.display_credential.id
+                    );
+                }
+                Err(err) => {
+                    warn!("Failed to set credential status: {err}");
+                    verifiable_credential_record.display_credential.credential_status = None;
+                }
+            }
 
             // Set the issuer name of the credential.
             verifiable_credential_record
@@ -443,6 +458,18 @@ fn get_credential_display_name(
         .unwrap_or("Credential".to_string())
 }
 
+/// Helper function to fetch the credential status of a newly received credential and set the fields the `credential_status` field of the DisplayCredential.
+/// Currently supports only the OAuth Token Status List mechanism.
+/// The function looks for the credential status info in 2 places:
+/// 1. In the JWT root for the key `status` as specified in the IETF OAuth Token Status List specification.
+/// 2. In the `credentialStatus` property of the credential, as specified in the W3C Verifiable Credential Data Model specification (1.1 and 2.0).
+///     * How to fill in the `credentialStatus` property is not specified in the W3C VC Data Model specifications for the OAuth Token Status List mechanism.
+///       We decided the most logical way is to assume this should be exactly the same as the `status` claim in the JWT root.
+///       There is a discussion ongoing in the DIIP profile community about this, see: https://github.com/FIDEScommunity/DIIP/issues/60
+///
+/// An error is returned when:
+/// 1. The credential does not contain a status claim in the JWT root or a credentialStatus property in the VC.
+/// 2. The status claim/property does not use the OAuth Token Status List mechanism.
 async fn set_credential_status(
     verifiable_credential_record: &mut VerifiableCredentialRecord,
     identity_manager: &IdentityManager,

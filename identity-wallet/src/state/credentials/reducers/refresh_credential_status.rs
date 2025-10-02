@@ -147,6 +147,11 @@ pub async fn fetch_credential_status(
     )
     .map_err(|_| AppError::GetCredentialStatusError)?;
 
+    info!(
+        "Successfully fetched status list from `{}`.\nThe status is: {:?}",
+        credential_status_data.uri, credential_status_data.status
+    );
+
     Ok(status)
 }
 
