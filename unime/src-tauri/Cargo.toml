@@ -22,7 +22,7 @@ tauri.workspace = true
 
 dotenvy = { version = "0.15" }
 identity-wallet = { path = "../../identity-wallet" }
-iota-sdk = { git = "https://github.com/impierce/iota", package = "iota-sdk", branch = "temp/fix" }
+iota-sdk = { git = "https://github.com/iotaledger/iota", package = "iota-sdk", tag = "v1.6.1" }
 jni = "0.21"
 log.workspace = true
 oauth_tsl.workspace = true
