@@ -42,8 +42,6 @@ pub enum AppError {
     OID4VCSubjectIdentifierError(#[source] anyhow::Error),
     #[error("Invalid authorization request: {0}")]
     InvalidAuthorizationRequest(Box<AuthorizationRequest<Object>>),
-    #[error("Credential status is invalid/revoked")]
-    InvalidCredentialStatus,
     #[error("Invalid credential offer")]
     InvalidCredentialOffer(#[source] serde_json::Error),
     #[error("No credential in the wallet matched the DCQL query")]

@@ -72,6 +72,7 @@ mod bindings {
         credentials::actions::{
             authorization_code_received::CodeReceived, credential_offers_selected::CredentialOffersSelected,
             credentials_selected::CredentialsSelected, delete_credential::DeleteCredential,
+            refresh_all_credential_statuses::RefreshAllCredentialStatuses,
             refresh_credential_status::RefreshCredentialStatus, self_issue_credential::SelfIssueCredential,
             update_credential_metadata::UpdateCredentialMetadata,
         },
@@ -137,6 +138,8 @@ mod bindings {
         DeleteCredential { payload: DeleteCredential },
         #[serde(rename = "[Credential] Refresh Status")]
         RefreshCredentialStatus { payload: RefreshCredentialStatus },
+        #[serde(rename = "[Credential] Refresh All Statuses")]
+        RefreshAllCredentialStatuses { payload: RefreshAllCredentialStatuses },
         #[serde(rename = "[User Journey] Cancel")]
         CancelUserJourney,
         #[serde(rename = "[Settings] Update sorting preference")]
