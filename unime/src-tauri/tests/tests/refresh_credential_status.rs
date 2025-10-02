@@ -65,7 +65,7 @@ async fn test_refresh_credential_status() {
     let key: uuid::Uuid = state.credentials.first().unwrap().id.parse().unwrap();
     let verifiable_credential_record = VerifiableCredentialRecord {
         display_credential: state.credentials.first().unwrap().clone(),
-        verifiable_credential: serde_json::to_value(&state.credentials.first().unwrap()).unwrap(),
+        verifiable_credential: serde_json::to_value(state.credentials.first().unwrap()).unwrap(),
     };
     stronghold_manager
         .insert(
@@ -129,14 +129,13 @@ async fn test_refresh_all_credential_statuses() {
 
     let mut last_checked: Vec<String> = vec!["placeholder".to_string(); 3];
     // Modify the credentials to use the mock server URL
-    for i in 0..3 {
-        let status = state
-            .credentials
-            .get_mut(i)
-            .unwrap()
-            .credential_status
-            .as_mut()
-            .unwrap();
+    for (i, status) in state
+        .credentials
+        .iter_mut()
+        .take(3)
+        .map(|cred| cred.credential_status.as_mut().unwrap())
+        .enumerate()
+    {
         status.uri =
             serde_json::from_value(json!(mock_server.uri().to_string() + "/ietf-oauth-token-status-list/0")).unwrap();
 
@@ -157,11 +156,11 @@ async fn test_refresh_all_credential_statuses() {
         .clone();
 
     // Insert the modified credentials into stronghold
-    for i in 0..3 {
-        let key: uuid::Uuid = state.credentials.get(i).unwrap().id.parse().unwrap();
+    for credential in state.credentials.iter_mut().take(3) {
+        let key: uuid::Uuid = credential.id.parse().unwrap();
         let verifiable_credential_record = VerifiableCredentialRecord {
-            display_credential: state.credentials.get(i).unwrap().clone(),
-            verifiable_credential: serde_json::to_value(state.credentials.get(i).unwrap()).unwrap(),
+            display_credential: credential.clone(),
+            verifiable_credential: serde_json::to_value(credential).unwrap(),
         };
         stronghold_manager
             .insert(
@@ -181,7 +180,7 @@ async fn test_refresh_all_credential_statuses() {
     let results: Vec<StatusType> = state
         .credentials
         .iter()
-        .map(|cred| cred.credential_status.as_ref().unwrap().status.clone())
+        .map(|cred| cred.credential_status.as_ref().unwrap().status)
         .collect();
     let updated_last_checked: Vec<String> = state
         .credentials
