@@ -6,7 +6,7 @@ use crate::{error::AppError, state::core_utils::DateUtils};
 use derivative::Derivative;
 use identity_credential::{sd_jwt_v2::Sha256Hasher, sd_jwt_vc::SdJwtVc};
 use log::info;
-use oauth_tsl::{status_list::StatusType, tokens::referenced_token::StatusClaim};
+use oauth_tsl::status_list::StatusType;
 use oid4vc::{
     oid4vc_core::claim_path_pointer::ClaimPathPointer,
     oid4vci::{
@@ -99,18 +99,6 @@ impl VerifiableCredentialRecord {
         claim_descriptions: Vec<ClaimDescription>,
     ) -> Result<Self, AppError> {
         let display_credential = {
-            // Try to parse the `status` field from the Verifiable Credential if it exists.
-            let credential_status = serde_json::from_value::<StatusClaim>(
-                get_unverified_jwt_claims(&verifiable_credential)?["status"].clone(),
-            )
-            .map(|status| CredentialStatus {
-                status: StatusType::VALID,
-                idx: status.referenced_status_list.idx,
-                uri: status.referenced_status_list.uri,
-                last_checked: DateUtils::new_date_string(),
-            })
-            .ok();
-
             // Try to parse the Verifiable Credential as an SD-JWT credential.
             let (id, format, data, issuance_date, display_claims) = if let Some(sd_jwt_vc) = verifiable_credential
                 .as_str()
@@ -173,11 +161,12 @@ impl VerifiableCredentialRecord {
 
                 // TODO: Remove this workaround that is basically a way of disguising the SD JWT VC as a VC so that
                 // it can be displayed in the Frontend.
+                // TODO: moreover, this workaround is incomplete, since a few fields at the root level are still missing.
+                // Most importantly, we're missing the credentialStatus property.
                 let data = json!({
                     "type": ["VerifiableCredential"],
                     "issuer": sd_jwt_vc.claims().iss,
                     "credentialSubject": credential_subject
-
                 });
 
                 (id, format, data, issuance_date, display_claims)
@@ -243,7 +232,9 @@ impl VerifiableCredentialRecord {
                 issuer_name: String::new(),
                 connection_id: None,
                 display_name: String::new(),
-                credential_status,
+                // The credential status will be set right after this function.
+                // It is separated since it requires async fetching.
+                credential_status: None,
             }
         };
 
