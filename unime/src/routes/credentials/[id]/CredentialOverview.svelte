@@ -41,7 +41,7 @@
   }
 
   onMount(async () => {
-    await dispatch({ type: '[Credential] Refresh Status', payload: { credential_id: credential.id } });
+    await dispatch({ type: '[Credential] Refresh status', payload: { credential_id: credential.id } });
     if (credential.connection_id) {
       issuerLogoUrl = await getImageAsset(credential.connection_id);
     }
