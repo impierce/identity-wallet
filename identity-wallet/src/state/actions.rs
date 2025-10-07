@@ -136,9 +136,9 @@ mod bindings {
         UpdateCredentialMetadata { payload: UpdateCredentialMetadata },
         #[serde(rename = "[Credential] Delete")]
         DeleteCredential { payload: DeleteCredential },
-        #[serde(rename = "[Credential] Refresh Status")]
+        #[serde(rename = "[Credential] Refresh status")]
         RefreshCredentialStatus { payload: RefreshCredentialStatus },
-        #[serde(rename = "[Credential] Refresh All Statuses")]
+        #[serde(rename = "[Credential] Refresh all statuses")]
         RefreshAllCredentialStatuses { payload: RefreshAllCredentialStatuses },
         #[serde(rename = "[User Journey] Cancel")]
         CancelUserJourney,

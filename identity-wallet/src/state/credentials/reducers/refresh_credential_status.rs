@@ -25,9 +25,12 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
 
         if let Some(credential) = credentials.iter_mut().find(|c| c.id == credential_id) {
             if let Some(credential_status_data) = credential.credential_status.as_mut() {
-                match fetch_credential_status(credential_status_data, state_guard.identity_manager.as_ref().unwrap())
-                    .await
-                {
+                let identity_manager = state_guard
+                    .identity_manager
+                    .as_ref()
+                    .ok_or(AppError::MissingManagerError("identity"))?;
+
+                match fetch_credential_status(credential_status_data, identity_manager).await {
                     Ok(status) => {
                         info!("Successfully fetched new credential status {status:?} for credential with id: `{credential_id}`. The old_status was: {:?}", credential_status_data.status);
                         credential_status_data.last_checked = DateUtils::new_date_string();
@@ -128,8 +131,8 @@ pub async fn fetch_credential_status(
         Algorithm::EdDSA => DecodingKey::from_ed_der(&public_key),
         Algorithm::ES256 => DecodingKey::from_ec_der(&public_key),
         _ => {
-            // This panic should never happen since we initialize our public keys and identity_manager ourselves.
-            panic!("Unsupported algorithm: {:?}", jwt_header.alg);
+            warn!("Unsupported algorithm: {:?}", jwt_header.alg);
+            return Err(AppError::GetCredentialStatusError);
         }
     };
     let status_list_token =

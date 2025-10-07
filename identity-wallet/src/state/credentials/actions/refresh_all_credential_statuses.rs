@@ -9,7 +9,7 @@ use ts_rs::TS;
 #[ts(export, export_to = "bindings/actions/RefreshAllCredentialStatuses.ts")]
 pub struct RefreshAllCredentialStatuses {}
 
-#[typetag::serde(name = "[Credential] Refresh All Statuses")]
+#[typetag::serde(name = "[Credential] Refresh all statuses")]
 impl ActionTrait for RefreshAllCredentialStatuses {
     fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
         vec![reducer!(refresh_all_credential_statuses)]

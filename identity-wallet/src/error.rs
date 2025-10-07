@@ -106,8 +106,6 @@ pub enum AppError {
     TrustListNotFoundError(String),
     #[error("Failed to migrate AppState version `{0}` to version `{1}`: {2}")]
     AppStateMigrationError(u32, u32, String),
-    #[error("Provided code is invalid")]
-    InvalidTransactionCode(#[source] anyhow::Error),
 }
 
 impl std::fmt::Debug for AppError {

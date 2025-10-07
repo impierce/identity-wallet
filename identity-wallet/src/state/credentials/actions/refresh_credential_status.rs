@@ -11,7 +11,7 @@ pub struct RefreshCredentialStatus {
     pub credential_id: String,
 }
 
-#[typetag::serde(name = "[Credential] Refresh Status")]
+#[typetag::serde(name = "[Credential] Refresh status")]
 impl ActionTrait for RefreshCredentialStatus {
     fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
         vec![reducer!(refresh_credential_status)]

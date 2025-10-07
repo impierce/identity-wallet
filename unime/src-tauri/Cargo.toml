@@ -25,7 +25,6 @@ identity-wallet = { path = "../../identity-wallet" }
 iota-sdk = { git = "https://github.com/iotaledger/iota", package = "iota-sdk", tag = "v1.6.1" }
 jni = "0.21"
 log.workspace = true
-oauth_tsl.workspace = true
 rustls.workspace = true
 rustls-platform-verifier.workspace = true
 serde_json.workspace = true
@@ -45,6 +44,7 @@ unime = { path = ".", features = ["test_utils"] }
 did_manager.workspace = true
 identity-wallet = { path = "../../identity-wallet", features = ["test_utils"] }
 jsonwebtoken.workspace = true
+oauth_tsl.workspace = true
 oid4vc.workspace = true
 rand.workspace = true
 serde = { version = "1.0", features = ["derive"] }
