@@ -55,11 +55,11 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             .as_ref()
             .ok_or(MissingManagerError("stronghold"))?;
 
-        let wallet = &state_guard
+        let identity_manager = state_guard
             .identity_manager
             .as_ref()
-            .ok_or(MissingManagerError("identity"))?
-            .wallet;
+            .ok_or(MissingManagerError("identity"))?;
+        let wallet = &identity_manager.wallet;
 
         let current_user_prompt = state
             .current_user_prompt
@@ -308,29 +308,24 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             let mut verifiable_credential_record = VerifiableCredentialRecord::try_new(credential, claims)?;
             // Validate the credential against its corresponding credential JSON Schema.
             validate_credential_types(&verifiable_credential_record.verifiable_credential)?;
+
             // The credential status is set only when the credential status claim/property can be found and is in OAuth TSL format.
             // If setting the credential status fails we currently catch the error and simply set the credential status field to None.
             // TODO: we might want to inform the user of this before accepting the credential already
-            match set_credential_status(
-                &mut verifiable_credential_record,
-                state_guard
-                    .identity_manager
-                    .as_ref()
-                    .ok_or(MissingManagerError("identity"))?,
-            )
-            .await
-            {
-                Ok(_) => {
-                    info!(
-                        "Successfully set credential status for credential with id: `{}`",
-                        verifiable_credential_record.display_credential.id
-                    );
-                }
-                Err(err) => {
-                    warn!("Failed to set credential status: {err}");
-                    verifiable_credential_record.display_credential.credential_status = None;
-                }
-            }
+            verifiable_credential_record.display_credential.credential_status =
+                match get_credential_status(&verifiable_credential_record, identity_manager).await {
+                    Ok(credential_status) => {
+                        info!(
+                            "Successfully set credential status for credential with id: `{}`",
+                            verifiable_credential_record.display_credential.id
+                        );
+                        Some(credential_status)
+                    }
+                    Err(err) => {
+                        warn!("Failed to get credential status: {err}");
+                        None
+                    }
+                };
 
             // Set the issuer name of the credential.
             verifiable_credential_record
@@ -470,57 +465,37 @@ fn get_credential_display_name(
 /// An error is returned when:
 /// 1. The credential does not contain a status claim in the JWT root or a credentialStatus property in the VC.
 /// 2. The status claim/property does not use the OAuth Token Status List mechanism.
-async fn set_credential_status(
-    verifiable_credential_record: &mut VerifiableCredentialRecord,
+async fn get_credential_status(
+    verifiable_credential_record: &VerifiableCredentialRecord,
     identity_manager: &IdentityManager,
-) -> Result<(), AppError> {
-    if let Some(status_jwt_claim_value) =
-        get_unverified_jwt_claims(&verifiable_credential_record.verifiable_credential)?.get("status")
-    {
-        if let Ok(credential_status_claim) = serde_json::from_value::<StatusClaim>(status_jwt_claim_value.clone()) {
-            // Here we initialize the credential status with UNDEFINED status and an empty last_checked field, these fields will be filled after fetching the status.
-            let mut credential_status_data = CredentialStatus {
-                status: StatusType::UNDEFINED,
-                idx: credential_status_claim.referenced_status_list.idx,
-                uri: credential_status_claim.referenced_status_list.uri,
-                last_checked: String::new(),
-            };
+) -> Result<CredentialStatus, AppError> {
+    let status_value = get_unverified_jwt_claims(&verifiable_credential_record.verifiable_credential)?
+        .get("status")
+        .or_else(|| {
+            verifiable_credential_record
+                .display_credential
+                .data
+                .get("credentialStatus")
+        })
+        .ok_or(AppError::InvalidCredentialStatusFormatError)?
+        .clone();
 
-            let status = fetch_credential_status(&credential_status_data, identity_manager).await?;
-            credential_status_data.status = status;
-            credential_status_data.last_checked = DateUtils::new_date_string();
+    let credential_status_claim = serde_json::from_value::<StatusClaim>(status_value.clone())
+        .map_err(|_| AppError::InvalidCredentialStatusFormatError)?;
 
-            verifiable_credential_record.display_credential.credential_status = Some(credential_status_data);
-        } else {
-            warn!("Failed to parse status jwt claim from credential.");
-            return Err(AppError::InvalidCredentialStatusFormatError);
-        }
-    } else if let Some(credential_status_property) = verifiable_credential_record
-        .display_credential
-        .data
-        .get("credentialStatus")
-    {
-        let credential_status_claim = serde_json::from_value::<StatusClaim>(credential_status_property.clone())
-            .map_err(|_| AppError::InvalidCredentialStatusFormatError)?;
+    // Here we initialize the credential status with UNDEFINED status and an empty last_checked field, these fields will be filled after fetching the status.
+    let mut credential_status_data = CredentialStatus {
+        status: StatusType::UNDEFINED,
+        idx: credential_status_claim.referenced_status_list.idx,
+        uri: credential_status_claim.referenced_status_list.uri,
+        last_checked: String::new(),
+    };
 
-        let mut credential_status_data = CredentialStatus {
-            status: StatusType::UNDEFINED,
-            idx: credential_status_claim.referenced_status_list.idx,
-            uri: credential_status_claim.referenced_status_list.uri,
-            last_checked: String::new(),
-        };
+    let status = fetch_credential_status(&credential_status_data, identity_manager).await?;
+    credential_status_data.status = status;
+    credential_status_data.last_checked = DateUtils::new_date_string();
 
-        let status = fetch_credential_status(&credential_status_data, identity_manager).await?;
-        credential_status_data.status = status;
-        credential_status_data.last_checked = DateUtils::new_date_string();
-
-        verifiable_credential_record.display_credential.credential_status = Some(credential_status_data);
-    } else {
-        warn!("The credential does not contain a status property.");
-        return Err(AppError::InvalidCredentialStatusFormatError);
-    }
-
-    Ok(())
+    Ok(credential_status_data)
 }
 
 #[cfg(test)]

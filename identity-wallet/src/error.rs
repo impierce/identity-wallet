@@ -58,7 +58,7 @@ pub enum AppError {
     DidParseError,
     #[error("Invalid credential format")]
     InvalidCredentialFormatError,
-    #[error("Invalid or unable to parse credential status format")]
+    #[error("Missing, invalid or unable to parse credential status format")]
     InvalidCredentialStatusFormatError,
     #[error("Failed to build verifiable presentation")]
     PresentationBuilderError(#[source] identity_credential::error::Error),
