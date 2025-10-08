@@ -26,15 +26,20 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
         let credential = credentials.iter_mut().find(|c| c.id == credential_id).ok_or_else(|| {
             // This should never happen, as the credential ID send by the frontend is supposed to be valid.
             warn!("No credential found with id: `{credential_id}`");
-            AppError::GetCredentialStatusError
+            AppError::NoCredentialWithIdError(credential_id.clone())
         })?;
 
-        let credential_status_data = credential.credential_status.as_mut().ok_or_else(|| {
-            // The frontend should already be displaying the fact that there is no credentialStatus for this credential, so only a log message is enough here.
-            info!("No credentialStatus found for credential with id: `{credential_id}`");
+        let credential_status_data = match credential.credential_status.as_mut() {
+            Some(data) => data,
+            None => {
+                // The frontend should already be displaying the fact that there is no credentialStatus for this credential, so only a log message is enough here.
+                warn!("No credentialStatus found for credential with id: `{credential_id}`");
 
-            AppError::GetCredentialStatusError
-        })?;
+                // Abort the function without any changes to the state.
+                // No error needed here since the credential_status is optional.
+                return Ok(state.clone());
+            }
+        };
 
         let identity_manager = state_guard
             .identity_manager
@@ -59,7 +64,7 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
                     let updated_credential = credentials
                         .iter()
                         .find(|c| c.id == credential_id)
-                        .ok_or(AppError::GetCredentialStatusError)?;
+                        .ok_or(AppError::NoCredentialWithIdError(credential_id))?;
 
                     let mut verifiable_credential_record = stronghold_manager
                         .remove(key)

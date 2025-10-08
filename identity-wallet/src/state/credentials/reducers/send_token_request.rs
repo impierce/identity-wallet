@@ -313,19 +313,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             // If setting the credential status fails we currently catch the error and simply set the credential status field to None.
             // TODO: we might want to inform the user of this before accepting the credential already
             verifiable_credential_record.display_credential.credential_status =
-                match get_credential_status(&verifiable_credential_record, identity_manager).await {
-                    Ok(credential_status) => {
-                        info!(
-                            "Successfully set credential status for credential with id: `{}`",
-                            verifiable_credential_record.display_credential.id
-                        );
-                        Some(credential_status)
-                    }
-                    Err(err) => {
-                        warn!("Failed to get credential status: {err}");
-                        None
-                    }
-                };
+                get_credential_status(&verifiable_credential_record, identity_manager).await;
 
             // Set the issuer name of the credential.
             verifiable_credential_record
@@ -468,20 +456,34 @@ fn get_credential_display_name(
 async fn get_credential_status(
     verifiable_credential_record: &VerifiableCredentialRecord,
     identity_manager: &IdentityManager,
-) -> Result<CredentialStatus, AppError> {
-    let status_value = get_unverified_jwt_claims(&verifiable_credential_record.verifiable_credential)?
-        .get("status")
-        .or_else(|| {
-            verifiable_credential_record
-                .display_credential
-                .data
-                .get("credentialStatus")
-        })
-        .ok_or(AppError::InvalidCredentialStatusFormatError)?
-        .clone();
+) -> Option<CredentialStatus> {
+    let status_value = get_unverified_jwt_claims(&verifiable_credential_record.verifiable_credential)
+        .ok() // convert Result → Option
+        .and_then(|claims| {
+            claims.get("status").cloned().or_else(|| {
+                verifiable_credential_record
+                    .display_credential
+                    .data
+                    .get("credentialStatus")
+                    .cloned()
+            })
+        });
 
-    let credential_status_claim = serde_json::from_value::<StatusClaim>(status_value.clone())
-        .map_err(|_| AppError::InvalidCredentialStatusFormatError)?;
+    let status_value = match status_value {
+        Some(value) => value,
+        None => {
+            warn!("The credential does not contain a status claim/property");
+            return None;
+        }
+    };
+
+    let credential_status_claim = match serde_json::from_value::<StatusClaim>(status_value.clone()) {
+        Ok(claim) => claim,
+        Err(_) => {
+            warn!("The credential status claim/property is not in the OAuth Token Status List format: {status_value}");
+            return None;
+        }
+    };
 
     // Here we initialize the credential status with UNDEFINED status and an empty last_checked field, these fields will be filled after fetching the status.
     let mut credential_status_data = CredentialStatus {
@@ -491,11 +493,22 @@ async fn get_credential_status(
         last_checked: String::new(),
     };
 
-    let status = fetch_credential_status(&credential_status_data, identity_manager).await?;
+    let status = match fetch_credential_status(&credential_status_data, identity_manager).await {
+        Ok(status) => status,
+        Err(_) => {
+            warn!("Failed to fetch credential status");
+            return None;
+        }
+    };
     credential_status_data.status = status;
     credential_status_data.last_checked = DateUtils::new_date_string();
 
-    Ok(credential_status_data)
+    info!(
+        "Successfully set credential status for credential with id: `{}`",
+        verifiable_credential_record.display_credential.id
+    );
+
+    Some(credential_status_data)
 }
 
 #[cfg(test)]

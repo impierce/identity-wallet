@@ -15,6 +15,8 @@ pub enum AppError {
     Error(String),
     #[error("Invalid action found: `{action:?}`")]
     InvalidActionError { action: Action },
+    #[error("No credential found with id: `{0}`")]
+    NoCredentialWithIdError(String),
     #[error("Unable to parse QR code with content: `{0}`")]
     InvalidQRCodeError(String),
     #[error("No `{0}` manager found in the state")]
