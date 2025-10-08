@@ -37,7 +37,10 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
 
                 // Abort the function without any changes to the state.
                 // No error needed here since the credential_status is optional.
-                return Ok(state.clone());
+                return Ok(AppState {
+                    current_user_prompt: None,
+                    ..state.clone()
+                });
             }
         };
 
@@ -98,6 +101,7 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
         drop(state_guard);
 
         return Ok(AppState {
+            current_user_prompt: None,
             credentials,
             ..state.to_owned()
         });

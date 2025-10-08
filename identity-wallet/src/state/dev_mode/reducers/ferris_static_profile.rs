@@ -21,7 +21,7 @@ use crate::{
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use jsonwebtoken::Algorithm;
 use lazy_static::lazy_static;
-use log::info;
+use log::{info, warn};
 use oid4vc::{oid4vc_core::Subject, oid4vc_manager::ProviderManager, oid4vci::Wallet};
 use serde_json::json;
 use std::{fs::File, io::Write, sync::Arc};
@@ -306,6 +306,8 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
 
     state.show_dev_mode_setting = true;
     state.dev_mode = DevMode::OnWithAutologin;
+
+    warn!("{state:#?}");
 
     Ok(state)
 }

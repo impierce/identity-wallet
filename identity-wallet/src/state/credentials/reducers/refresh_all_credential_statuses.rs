@@ -30,5 +30,8 @@ pub async fn refresh_all_credential_statuses(state: AppState, _action: Action) -
         state = refresh_credential_status(state, Arc::new(RefreshCredentialStatus { credential_id })).await?;
     }
 
-    Ok(AppState { ..state })
+    Ok(AppState {
+        current_user_prompt: None,
+        ..state
+    })
 }
