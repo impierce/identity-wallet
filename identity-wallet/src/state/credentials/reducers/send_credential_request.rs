@@ -207,7 +207,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                             authorization_server_metadata
                                 .pushed_authorization_request_endpoint
                                 .ok_or(AppError::Error(
-                                    "Authorization Server does not have a pushed authorirzation request endpoint"
+                                    "Authorization Server does not have a pushed authorization request endpoint"
                                         .to_string(),
                                 ))?
                                 .clone(),

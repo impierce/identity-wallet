@@ -87,12 +87,11 @@
     <div
       class="mt-3 w-full rounded-[20px] border border-slate-200 bg-white p-[10px] dark:border-slate-600 dark:bg-dark"
     >
-      {#each Object.values(credential_configurations) as credential_configuration}
+      {#each Object.entries(credential_configurations) as [credential_configuration_id, credential_configuration]}
         <!-- TODO: bug: long list is not correctly displayed -->
         <ListItemCard
           id={hash(credential_configuration.display?.at(0)?.logo?.uri ?? '')}
-          title={credential_configuration.display?.at(0)?.name ??
-            credential_configuration.credential_definition.type.at(-1)}
+          title={credential_configuration.display?.at(0)?.name ?? credential_configuration_id}
           isTempAsset={true}
         >
           <div slot="right" class="mr-2">
