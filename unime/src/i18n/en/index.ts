@@ -119,7 +119,7 @@ const en = {
           CONTACT: {
             TITLE: 'Contact Us',
             DESCRIPTION:
-              'Got feedback or a question? We’re always looking to improve. If anything’s unclear or could be said better, feel free to reach out: Email: contact@impierce.com By using UniMe, you confirm that you’ve read, understood, and agree to these Terms of Use. We remain committed to delivering secure, privacy-centric digital tools that empower you.',
+              'Got feedback or a question? We’re always looking to improve. If anything’s unclear or could be said better, feel free to reach out to contact@impierce.com. By using UniMe, you confirm that you’ve read, understood, and agree to these Terms of Use. We remain committed to delivering secure, privacy-centric digital tools that empower you.',
           },
         },
       },

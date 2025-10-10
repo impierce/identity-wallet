@@ -121,7 +121,7 @@ const fi_FI = {
           CONTACT: {
             TITLE: 'Ota yhteyttä',
             DESCRIPTION:
-              'Onko sinulla palautetta tai kysymyksiä? Haluamme aina kehittyä. Jos jokin ei ole selvää tai voisi ilmaista paremmin, ota rohkeasti yhteyttä: Sähköposti: contact@impierce.com. Käyttämällä UniMea vahvistat, että olet lukenut, ymmärtänyt ja hyväksynyt nämä Käyttöehdot. Sitoudumme edelleen tarjoamaan turvallisia, yksityisyyskeskeisiä digitaalisia työkaluja, jotka antavat sinulle vallan.',
+              'Onko sinulla palautetta tai kysymyksiä? Haluamme aina kehittyä. Jos jokin on epäselvää tai voisi ilmaista paremmin, ota rohkeasti yhteyttä osoitteeseen contact@impierce.com. Käyttämällä UniMea vahvistat, että olet lukenut, ymmärtänyt ja hyväksynyt nämä Käyttöehdot. Sitoudumme edelleen tarjoamaan turvallisia, yksityisyyskeskeisiä digitaalisia työkaluja, jotka antavat sinulle vallan.',
           },
         },
       },

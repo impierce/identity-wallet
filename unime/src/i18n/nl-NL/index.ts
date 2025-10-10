@@ -120,7 +120,7 @@ const nl_NL = {
           CONTACT: {
             TITLE: 'Contactgegevens',
             DESCRIPTION:
-              'Heb je feedback of een vraag? We streven er altijd naar om te verbeteren. Als iets onduidelijk is of beter geformuleerd kan worden, neem gerust contact met ons op: Email: contact@impierce.com. Door UniMe te gebruiken, bevestig je dat je deze Gebruiksvoorwaarden hebt gelezen, begrepen en ermee instemt. Wij blijven ons inzetten voor het leveren van veilige, privacygerichte digitale tools die jou sterker maken.',
+              'Heb je feedback of een vraag? We streven er altijd naar om te verbeteren. Als iets onduidelijk is of beter geformuleerd kan worden, neem gerust contact met ons via contact@impierce.com. Door UniMe te gebruiken, bevestig je dat je deze Gebruiksvoorwaarden hebt gelezen, begrepen en ermee instemt. Wij blijven ons inzetten voor het leveren van veilige, privacygerichte digitale tools die jou sterker maken.',
           },
         },
       },

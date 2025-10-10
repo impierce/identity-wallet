@@ -121,7 +121,7 @@ const es_ES = {
           CONTACT: {
             TITLE: 'Contáctanos',
             DESCRIPTION:
-              '¿Tienes comentarios o preguntas? Siempre buscamos mejorar. Si algo no está claro o podría expresarse mejor, no dudes en comunicarte: Correo electrónico: contact@impierce.com. Al usar UniMe, confirmas que has leído, comprendido y aceptado estos Términos de Uso. Seguimos comprometidos a ofrecer herramientas digitales seguras y centradas en la privacidad que te empoderen.',
+              '¿Tienes comentarios o preguntas? Siempre buscamos mejorar. Si algo no está claro o podría expresarse mejor, no dudes en comunicarte a contact@impierce.com. Al usar UniMe, confirmas que has leído, comprendido y aceptado estos Términos de Uso. Seguimos comprometidos a ofrecer herramientas digitales seguras y centradas en la privacidad que te empoderen.',
           },
         },
       },

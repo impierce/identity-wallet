@@ -120,7 +120,7 @@ const de_DE = {
           CONTACT: {
             TITLE: 'Kontaktinformationen',
             DESCRIPTION:
-              'Hast du Feedback oder Fragen? Wir wollen uns stetig verbessern. Wenn etwas unklar ist oder besser formuliert werden könnte, melde dich gerne: E-Mail: contact@impierce.com. Durch die Nutzung von UniMe bestätigst du, dass du diese Nutzungsbedingungen gelesen, verstanden und akzeptiert hast. Wir verpflichten uns, sichere, datenschutzfreundliche digitale Tools bereitzustellen, die dir immer die volle Kontrolle geben.',
+              'Hast du Feedback oder Fragen? Wir wollen uns stetig verbessern. Wenn etwas unklar ist oder besser formuliert werden könnte, melde dich gern unter contact@impierce.com. Durch die Nutzung von UniMe bestätigst du, dass du diese Nutzungsbedingungen gelesen, verstanden und akzeptiert hast. Wir verpflichten uns, sichere, datenschutzfreundliche digitale Tools bereitzustellen, die dir immer die volle Kontrolle geben.',
           },
         },
       },

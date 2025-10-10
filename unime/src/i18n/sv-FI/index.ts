@@ -120,7 +120,7 @@ const sv_FI = {
           CONTACT: {
             TITLE: 'Kontakta oss',
             DESCRIPTION:
-              'Har du synpunkter eller frågor? Vi strävar alltid efter att förbättra oss. Om något är oklart eller kan formuleras bättre är du välkommen att kontakta oss: E-post: contact@impierce.com. Genom att använda UniMe bekräftar du att du har läst, förstått och godkänner dessa användarvillkor. Vi fortsätter att sträva efter att leverera säkra, integritetsfokuserade digitala verktyg som ger dig möjlighet att ta kontroll.',
+              'Har du feedback eller frågor? Vi strävar alltid efter att förbättra oss. Om något är oklart eller skulle kunna sägas bättre, tveka inte att kontakta oss på contact@impierce.com. Genom att använda UniMe bekräftar du att du har läst, förstått och godkänner dessa användarvillkor. Vi fortsätter att sträva efter att leverera säkra, integritetsfokuserade digitala verktyg som ger dig möjlighet att ta kontroll.',
           },
         },
       },
