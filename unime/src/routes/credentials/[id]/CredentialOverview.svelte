@@ -8,7 +8,7 @@
 
   import { Avatar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
-  import { BankLightIcon, SealCheckRegularIcon, SealQuestionRegularIcon, SealWarningRegularIcon } from '$lib/icons';
+  import { BankLightIcon, SealCheckRegularIcon, SealQuestionRegularIcon, SealWarningDuotoneIcon } from '$lib/icons';
   import { state as appState } from '$lib/stores';
   import { calculateInitials, formatDate, getImageAsset } from '$lib/utils';
 
@@ -58,7 +58,7 @@
       <div
         class="grid h-20 place-items-center self-stretch rounded-xl bg-red-50 py-5 text-red-700 dark:bg-background dark:text-red-500"
       >
-        <SealWarningRegularIcon class="size-7" />
+        <SealWarningDuotoneIcon class="size-7" />
       </div>
     {:else}
       {isSelfIssued() ? $LL.CREDENTIAL.DETAILS.UNVERIFIED() : $LL.CREDENTIAL.DETAILS.VALID()}

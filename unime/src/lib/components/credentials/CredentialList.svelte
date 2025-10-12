@@ -5,7 +5,7 @@
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 
   import { IconMessage, ListItemCard } from '$lib/components';
-  import { GhostFillIcon, SealWarningRegularIcon } from '$lib/icons';
+  import { GhostFillIcon, SealWarningDuotoneIcon } from '$lib/icons';
   import { state } from '$lib/stores';
 
   export let credentialType: 'all' | 'data' | 'badges' = 'all';
@@ -39,7 +39,7 @@
       >
         <div slot="right">
           {#if credential.credential_status?.status === 'INVALID'}
-            <SealWarningRegularIcon class="mr-3 size-6 text-red-700 dark:text-red-500" />
+            <SealWarningDuotoneIcon class="mr-3 size-6 text-red-700 dark:text-red-500" />
           {/if}
         </div>
       </ListItemCard>
