@@ -62,7 +62,9 @@ pub struct DisplayCredential {
 pub struct CredentialStatus {
     #[ts(type = "'VALID' | 'INVALID' | 'SUSPENDED' | 'UNDEFINED'")]
     pub status: StatusType,
+    #[ts(skip)]
     pub idx: u64,
+    #[ts(skip)]
     pub uri: Url,
     #[derivative(PartialEq = "ignore")]
     pub last_checked: String,
