@@ -3,11 +3,9 @@ use crate::state::credentials::reducers::refresh_all_credential_statuses::refres
 use crate::state::{actions::ActionTrait, Reducer};
 
 use serde::{Deserialize, Serialize};
-use ts_rs::TS;
 
-#[derive(Serialize, Deserialize, Debug, TS, Clone)]
-#[ts(export, export_to = "bindings/actions/RefreshAllCredentialStatuses.ts")]
-pub struct RefreshAllCredentialStatuses {}
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct RefreshAllCredentialStatuses;
 
 #[typetag::serde(name = "[Credential] Refresh all statuses")]
 impl ActionTrait for RefreshAllCredentialStatuses {
