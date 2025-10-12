@@ -33,7 +33,7 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
             Some(data) => data,
             None => {
                 // The frontend should already be displaying the fact that there is no credentialStatus for this credential, so only a log message is enough here.
-                warn!("No credentialStatus found for credential with id: `{credential_id}`");
+                warn!("No credential status found for credential with id: `{credential_id}`");
 
                 // Abort the function without any changes to the state.
                 // No error needed here since the credential_status is optional.
@@ -51,7 +51,7 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
 
         match fetch_credential_status(credential_status_data, identity_manager).await {
             Ok(status) => {
-                info!("Successfully fetched new credential status {status:?} for credential with id: `{credential_id}`. The old_status was: {:?}", credential_status_data.status);
+                info!("Successfully fetched credential status for credential with id: `{credential_id}`: `{status:?}` (previous status: `{:?}`)", credential_status_data.status);
                 credential_status_data.last_checked = DateUtils::new_date_string();
                 credential_status_data.status = status;
 
@@ -92,7 +92,7 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
                 // This error handling means we don't panic when the refresh_credential_status function fails.
                 // Instead we don't bother the user with any of the errors and keep the old status and simply don't update it.
                 // However, this is also not ideal. TODO: how to handle a status that consistently fails to refresh?
-                warn!("Failed to refresh credential status for credential with id: `{credential_id}`.\nThe old status remains unchanged: {:?}\nError: {e}", credential_status_data.status);
+                warn!("Failed to refresh credential status for credential with id: `{credential_id}`. The current status remains unchanged: `{:?}`. Error: {e}", credential_status_data.status);
 
                 return Err(e);
             }
@@ -157,7 +157,7 @@ pub async fn fetch_credential_status(
     .map_err(|_| AppError::GetCredentialStatusError)?;
 
     info!(
-        "Successfully fetched status list from `{}`.\nThe status is: {:?}",
+        "Successfully fetched status list from `{}` with status: `{:?}`",
         credential_status_data.uri, credential_status_data.status
     );
 
