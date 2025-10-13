@@ -373,6 +373,7 @@ Durch die Nutzung unseres Dienstes bestätigen Sie, dass Sie diese Allgemeinen G
     NAVBAR_TITLE: 'Credential Informationen',
     DETAILS: {
       VALID: 'Gültig',
+      INVALID: 'Ungültig',
       UNVERIFIED: 'Unbestätigt',
       ISSUED_BY: 'Ausgestellt durch',
       SELF_SIGNED: 'dich selbst',

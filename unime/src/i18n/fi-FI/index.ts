@@ -371,6 +371,7 @@ Käyttämällä Palvelua vahvistat, että olet lukenut, ymmärtänyt ja hyväksy
     NAVBAR_TITLE: 'Valtuuden tiedot',
     DETAILS: {
       VALID: 'Voimassa',
+      INVALID: 'Pätemätön',
       UNVERIFIED: 'Vahvistamaton',
       ISSUED_BY: 'Myöntäjä',
       SELF_SIGNED: 'sinä itse',

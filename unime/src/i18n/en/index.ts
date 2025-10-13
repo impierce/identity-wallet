@@ -400,6 +400,7 @@ By using our Service, you acknowledge that you have read, understood, and agree 
     NAVBAR_TITLE: 'Credential Information',
     DETAILS: {
       VALID: 'Valid',
+      INVALID: 'Invalid',
       UNVERIFIED: 'Unverified',
       ISSUED_BY: 'Issued by',
       SELF_SIGNED: 'yourself',

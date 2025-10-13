@@ -947,6 +947,10 @@ type RootTranslation = {
 			 */
 			VALID: string
 			/**
+			 * I​n​v​a​l​i​d
+			 */
+			INVALID: string
+			/**
 			 * U​n​v​e​r​i​f​i​e​d
 			 */
 			UNVERIFIED: string
@@ -2359,6 +2363,10 @@ export type TranslationFunctions = {
 			 * Valid
 			 */
 			VALID: () => LocalizedString
+			/**
+			 * Invalid
+			 */
+			INVALID: () => LocalizedString
 			/**
 			 * Unverified
 			 */

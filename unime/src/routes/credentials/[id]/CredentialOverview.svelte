@@ -7,7 +7,8 @@
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 
   import { Avatar } from '$lib/components';
-  import { BankLightIcon, SealCheckRegularIcon, SealQuestionRegularIcon } from '$lib/icons';
+  import { dispatch } from '$lib/dispatcher';
+  import { BankLightIcon, SealCheckRegularIcon, SealQuestionRegularIcon, SealWarningDuotoneIcon } from '$lib/icons';
   import { state as appState } from '$lib/stores';
   import { calculateInitials, formatDate, getImageAsset } from '$lib/utils';
 
@@ -40,6 +41,7 @@
   }
 
   onMount(async () => {
+    await dispatch({ type: '[Credential] Refresh status', payload: { credential_id: credential.id } });
     if (credential.connection_id) {
       issuerLogoUrl = await getImageAsset(credential.connection_id);
     }
@@ -51,18 +53,27 @@
 
 <div class="grid grid-cols-2 gap-4 bg-background-alt text-xs font-medium">
   <div class="flex flex-col items-center gap-1">
-    {isSelfIssued() ? $LL.CREDENTIAL.DETAILS.UNVERIFIED() : $LL.CREDENTIAL.DETAILS.VALID()}
-    <div class="grid h-20 place-items-center self-stretch rounded-xl bg-background py-5 text-text-alt">
-      {#if isSelfIssued()}
-        <SealQuestionRegularIcon class="size-7" />
-      {:else}
-        <SealCheckRegularIcon class="size-7" />
-      {/if}
-    </div>
-    {#if credential.data.issuanceDate}
-      <div>
-        {formatDate(credential.data.issuanceDate, $appState.profile_settings.locale)}
+    {#if credential.credential_status?.status === 'INVALID'}
+      <p class="text-red-700 dark:text-red-500">{$LL.CREDENTIAL.DETAILS.INVALID()}</p>
+      <div
+        class="grid h-20 place-items-center self-stretch rounded-xl bg-red-50 py-5 text-red-700 dark:bg-background dark:text-red-500"
+      >
+        <SealWarningDuotoneIcon class="size-7" />
       </div>
+    {:else}
+      {isSelfIssued() ? $LL.CREDENTIAL.DETAILS.UNVERIFIED() : $LL.CREDENTIAL.DETAILS.VALID()}
+      <div class="grid h-20 place-items-center self-stretch rounded-xl bg-background py-5 text-text-alt">
+        {#if isSelfIssued()}
+          <SealQuestionRegularIcon class="size-7" />
+        {:else}
+          <SealCheckRegularIcon class="size-7" />
+        {/if}
+      </div>
+      {#if credential.data.issuanceDate}
+        <div>
+          {formatDate(credential.data.issuanceDate, $appState.profile_settings.locale)}
+        </div>
+      {/if}
     {/if}
   </div>
   <div class="flex flex-col items-center gap-1">

@@ -383,6 +383,7 @@ Door onze Service te gebruiken, erken je dat je deze Voorwaarden heeft gelezen, 
     NAVBAR_TITLE: 'Credential Informatie',
     DETAILS: {
       VALID: 'Geldig',
+      INVALID: 'Ongeldig',
       UNVERIFIED: 'Niet geverifieerd',
       ISSUED_BY: 'Uitgegeven door',
       SELF_SIGNED: 'jezelf',
