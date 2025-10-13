@@ -32,9 +32,10 @@ pub async fn refresh_all_credential_statuses(state: AppState, action: Action) ->
         state = refresh_credential_status(state, Arc::new(RefreshCredentialStatus { credential_id })).await?;
     }
 
-    // This line is needed to pass the correct `current_user_prompt` to the new state.
-    // The `current_user_prompt` differs depending on where this reducer will be used (currently only in UnlockStorage).
-    // So UnlockStorage needs the redirect prompt, most likely future use of this reducer in other locations won't.
+    // TODO: This is a temporary solution to pass the correct `current_user_prompt` to the new state.
+    // The UnlockStorage action needs to end with a redirect prompt to "me", but other actions should end with the current user prompt set to None.
+    // RefreshCredentialStatus therefore sets the current user prompt to None, but if this reducer is called by RefreshAllCredentialStatuses as part of an UnlockStorage action,
+    // then UnlockStorage needs the redirect prompt. In the future this should be handled when `main_exec` is called.
     let redirect_prompt = listen::<UnlockStorage>(action).map(|_unlock_storage| CurrentUserPrompt::Redirect {
         target: "me".to_string(),
     });
