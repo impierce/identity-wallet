@@ -371,6 +371,7 @@ Genom att använda Tjänsten bekräftar du att du har läst, förstått och acce
     NAVBAR_TITLE: 'Legitimationsinformation',
     DETAILS: {
       VALID: 'Giltig',
+      INVALID: 'Ogiltig',
       UNVERIFIED: 'Overifierad',
       ISSUED_BY: 'Utfärdad av',
       SELF_SIGNED: 'dig själv',

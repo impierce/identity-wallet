@@ -400,6 +400,7 @@ Al utilizar nuestro Servicio, usted reconoce que ha leído, entendido y aceptado
     NAVBAR_TITLE: 'Información de las credenciales',
     DETAILS: {
       VALID: 'Válidas',
+      INVALID: 'Inválidas',
       UNVERIFIED: 'No verificadas',
       ISSUED_BY: 'Emitidas por',
       SELF_SIGNED: 'Autofirmadas',
