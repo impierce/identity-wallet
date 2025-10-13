@@ -94,7 +94,10 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
                 // However, this is also not ideal. TODO: how to handle a status that consistently fails to refresh?
                 warn!("Failed to refresh credential status for credential with id: `{credential_id}`. The current status remains unchanged: `{:?}`. Error: {e}", credential_status_data.status);
 
-                return Err(e);
+                return Ok(AppState {
+                    current_user_prompt: None,
+                    ..state.clone()
+                });
             }
         };
 
