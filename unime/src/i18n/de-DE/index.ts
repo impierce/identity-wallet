@@ -41,7 +41,7 @@ const de_DE = {
         DIALOG_TITLE: 'UniMe Nutzungsbedingungen',
         LAST_UPDATED: 'Zuletzt aktualisiert: 10. September 2025',
         TL_DR:
-          'Wie jeder App-Anbieter sind wir gesetzlich verpflichtet, dir einige wichtige Geschäftsbedingungen mitzuteilen. Wir haben unser Bestes getan, um alles klar und auf den Punkt zu bringen. Hier ist die Kurzfassung: UniMe gibt dir die Kontrolle. UniMe sammelt deine Daten nicht, respektiert deine Privatsphäre und lässt dich entscheiden, welche Informationen du speichern und teilen möchtest. Deine Identität und Daten bleiben bei dir – und ebenso die Verantwortung, sie zu verwalten. Wir speichern deine Daten nicht und können auch nicht darauf zugreifen. Ein Datenverlust, z. B. durch den Verlust deines Geräts oder den Zugriff auf die App, liegt ebenfalls in deiner Verantwortung. Große Macht bringt große Verantwortung. Hier ist alles, was du wissen solltest:',
+          'Wie jeder App-Anbieter sind wir gesetzlich verpflichtet, dir einige wichtige Geschäftsbedingungen mitzuteilen. Wir haben unser Bestes getan, um alles klar auf den Punkt zu bringen. Hier ist die Kurzfassung: UniMe gibt dir die Kontrolle. UniMe sammelt deine Daten nicht, respektiert deine Privatsphäre und lässt dich entscheiden, welche Informationen du speichern und teilen möchtest. Deine Identität und Daten bleiben bei dir - und ebenso die Verantwortung, sie zu verwalten. Wir speichern deine Daten nicht und können auch nicht darauf zugreifen. Ein Datenverlust, z.B. durch den Verlust deines Geräts oder den Zugriff auf die App, liegt ebenfalls in deiner Verantwortung. Große Macht bringt große Verantwortung. Hier ist alles, was du wissen solltest:',
         FULL: {
           AGREEMENT: {
             TITLE: 'Annahme der Bedingungen',
@@ -51,7 +51,7 @@ const de_DE = {
           DEFINITIONS: {
             TITLE: 'Definitionen',
             DESCRIPTION:
-              'Der Begriff Dienst bezeichnet die UniMe Identity Wallet Mobile App und umfasst alle darin enthaltenen Funktionen, Inhalte oder Services. Benutzerdaten sind alle Daten, Zugangsdaten oder Informationen, die du über den Dienst speicherst oder teilst. Der Begriff Gerät bezeichnet das Mobiltelefon oder die Hardware, auf dem/der die UniMe App installiert und genutzt wird.',
+              'Der Begriff „Dienst“ bezeichnet die UniMe Identity Wallet Mobile App und umfasst alle darin enthaltenen Funktionen, Inhalte oder Services. Benutzerdaten sind alle Daten, Zugangsdaten oder Informationen, die du über den Dienst speicherst oder teilst. Der Begriff „Gerät“ bezeichnet das Mobiltelefon oder die Hardware, auf dem/der die UniMe App installiert und genutzt wird.',
           },
           USER_RESPONSIBILITIES: {
             TITLE: 'Verantwortlichkeiten des Nutzers',
@@ -61,12 +61,12 @@ const de_DE = {
           DATA_OWNERSHIP: {
             TITLE: 'Dateneigentum und Datenschutz',
             DESCRIPTION:
-              'UniMe basiert auf den Kernprinzipien der Benutzerkontrolle und Datensicherheit. Unsere Architektur ist so gestaltet, dass wir nicht auf die Benutzerdaten zugreifen, sie sammeln, speichern oder verarbeiten können. Alle deine Benutzerdaten werden lokal und sicher auf deinem Gerät gespeichert. Wir setzen robuste Sicherheitsmaßnahmen innerhalb der App ein, um deine Daten zu schützen. Der endgültige Schutz deiner Daten hängt jedoch auch von dir ab, z.B. durch die Verwendung eines starken Codes und das Vermeiden der Installation von Software aus nicht vertrauenswürdigen Quellen. Um die Integrität deiner Daten zu gewährleisten, kann UniMe deren Gültigkeit regelmäßig überprüfen. Dies geschieht, indem dein Gerät direkt den Aussteller der Daten kontaktiert, um zu überprüfen, ob die Daten widerrufen wurden. Dieser Vorgang erfolgt automatisch auf deinem Gerät und ohne Beteiligung von Impierce Technologies B.V. Wo verfügbar, verwendet UniMe für diese Prüfungen dezentrale Methoden.',
+              'UniMe basiert auf den Kernprinzipien der Benutzerkontrolle und Datensicherheit. Unsere Architektur ist so gestaltet, dass wir nicht auf die Benutzerdaten zugreifen, sie sammeln, speichern oder verarbeiten können. Alle deine Benutzerdaten werden lokal und sicher auf deinem Gerät gespeichert. Wir setzen robuste Sicherheitsmaßnahmen innerhalb der App ein, um deine Daten zu schützen. Der endgültige Schutz deiner Daten hängt jedoch auch von dir ab, z.B. durch die Verwendung eines starken Codes und das Vermeiden der Installation von Software aus nicht vertrauenswürdigen Quellen. Um die Integrität deiner Daten zu gewährleisten, kann UniMe deren Gültigkeit regelmäßig überprüfen. Dies geschieht, indem dein Gerät direkt den Aussteller der Daten kontaktiert, um zu überprüfen, ob die Daten widerrufen wurden. Dieser Vorgang erfolgt automatisch auf deinem Gerät und ohne Beteiligung von Impierce Technologies B.V. Wenn verfügbar, verwendet UniMe für diese Prüfungen dezentrale Methoden.',
           },
           DATA_VISIBILITY: {
             TITLE: 'Datensichtbarkeit durch App-Plattformen',
             DESCRIPTION:
-              'Wenn du UniMe über einen offiziellen App Store wie Apple App Store oder Google Play herunterlädst oder nutzt, kann die Plattform eingeschränkt technische Nutzungsdaten sammeln. Dazu gehören z.B. Gerätetyp, App-Installationen oder Absturzmeldungen, sowie Region oder Spracheinstellungen deines Geräts. Diese Informationen werden nach den Richtlinien des jeweiligen App Stores gesammelt. Impierce sammelt keine zusätzlichen Nutzungsdaten von deinem Gerät.',
+              'Wenn du UniMe über einen offiziellen App Store wie Apple App Store oder Google Play herunterlädst oder nutzt, kann die Plattform eingeschränkt technische Nutzungsdaten sammeln. Dazu gehören z.B. Gerätetyp, App-Installationen oder Absturzmeldungen, sowie Region oder Spracheinstellungen deines Geräts. Diese Informationen werden nach den Richtlinien des jeweiligen App Stores gesammelt. Impierce Technologies B.V. sammelt keine zusätzlichen Nutzungsdaten von deinem Gerät.',
           },
           INTELLECTUAL_PROPERTY_RIGHTS: {
             TITLE: 'Rechte an geistigem Eigentum',
