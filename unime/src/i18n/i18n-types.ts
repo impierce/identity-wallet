@@ -286,7 +286,7 @@ type RootTranslation = {
 						 */
 						TITLE: string
 						/**
-						 * G​o​t​ ​f​e​e​d​b​a​c​k​ ​o​r​ ​a​ ​q​u​e​s​t​i​o​n​?​ ​W​e​’​r​e​ ​a​l​w​a​y​s​ ​l​o​o​k​i​n​g​ ​t​o​ ​i​m​p​r​o​v​e​.​ ​I​f​ ​a​n​y​t​h​i​n​g​’​s​ ​u​n​c​l​e​a​r​ ​o​r​ ​c​o​u​l​d​ ​b​e​ ​s​a​i​d​ ​b​e​t​t​e​r​,​ ​f​e​e​l​ ​f​r​e​e​ ​t​o​ ​r​e​a​c​h​ ​o​u​t​:​ ​E​m​a​i​l​:​ ​c​o​n​t​a​c​t​@​i​m​p​i​e​r​c​e​.​c​o​m​ ​B​y​ ​u​s​i​n​g​ ​U​n​i​M​e​,​ ​y​o​u​ ​c​o​n​f​i​r​m​ ​t​h​a​t​ ​y​o​u​’​v​e​ ​r​e​a​d​,​ ​u​n​d​e​r​s​t​o​o​d​,​ ​a​n​d​ ​a​g​r​e​e​ ​t​o​ ​t​h​e​s​e​ ​T​e​r​m​s​ ​o​f​ ​U​s​e​.​ ​W​e​ ​r​e​m​a​i​n​ ​c​o​m​m​i​t​t​e​d​ ​t​o​ ​d​e​l​i​v​e​r​i​n​g​ ​s​e​c​u​r​e​,​ ​p​r​i​v​a​c​y​-​c​e​n​t​r​i​c​ ​d​i​g​i​t​a​l​ ​t​o​o​l​s​ ​t​h​a​t​ ​e​m​p​o​w​e​r​ ​y​o​u​.
+						 * G​o​t​ ​f​e​e​d​b​a​c​k​ ​o​r​ ​a​ ​q​u​e​s​t​i​o​n​?​ ​W​e​’​r​e​ ​a​l​w​a​y​s​ ​l​o​o​k​i​n​g​ ​t​o​ ​i​m​p​r​o​v​e​.​ ​I​f​ ​a​n​y​t​h​i​n​g​’​s​ ​u​n​c​l​e​a​r​ ​o​r​ ​c​o​u​l​d​ ​b​e​ ​s​a​i​d​ ​b​e​t​t​e​r​,​ ​f​e​e​l​ ​f​r​e​e​ ​t​o​ ​r​e​a​c​h​ ​o​u​t​ ​t​o​ ​c​o​n​t​a​c​t​@​i​m​p​i​e​r​c​e​.​c​o​m​.​ ​B​y​ ​u​s​i​n​g​ ​U​n​i​M​e​,​ ​y​o​u​ ​c​o​n​f​i​r​m​ ​t​h​a​t​ ​y​o​u​’​v​e​ ​r​e​a​d​,​ ​u​n​d​e​r​s​t​o​o​d​,​ ​a​n​d​ ​a​g​r​e​e​ ​t​o​ ​t​h​e​s​e​ ​T​e​r​m​s​ ​o​f​ ​U​s​e​.​ ​W​e​ ​r​e​m​a​i​n​ ​c​o​m​m​i​t​t​e​d​ ​t​o​ ​d​e​l​i​v​e​r​i​n​g​ ​s​e​c​u​r​e​,​ ​p​r​i​v​a​c​y​-​c​e​n​t​r​i​c​ ​d​i​g​i​t​a​l​ ​t​o​o​l​s​ ​t​h​a​t​ ​e​m​p​o​w​e​r​ ​y​o​u​.
 						 */
 						DESCRIPTION: string
 					}
@@ -1769,7 +1769,7 @@ export type TranslationFunctions = {
 						 */
 						TITLE: () => LocalizedString
 						/**
-						 * Got feedback or a question? We’re always looking to improve. If anything’s unclear or could be said better, feel free to reach out: Email: contact@impierce.com By using UniMe, you confirm that you’ve read, understood, and agree to these Terms of Use. We remain committed to delivering secure, privacy-centric digital tools that empower you.
+						 * Got feedback or a question? We’re always looking to improve. If anything’s unclear or could be said better, feel free to reach out to contact@impierce.com. By using UniMe, you confirm that you’ve read, understood, and agree to these Terms of Use. We remain committed to delivering secure, privacy-centric digital tools that empower you.
 						 */
 						DESCRIPTION: () => LocalizedString
 					}
