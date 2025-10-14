@@ -5,7 +5,7 @@
   import LL from '$i18n/i18n-svelte';
   import { get } from 'svelte/store';
   import { superForm } from 'sveltekit-superforms';
-  import { zod } from 'sveltekit-superforms/adapters';
+  import { zod4 } from 'sveltekit-superforms/adapters';
   import { z } from 'zod';
 
   import { info } from '@tauri-apps/plugin-log';
@@ -24,7 +24,7 @@
   const init: z.infer<typeof residence> = { resident_country: '' };
 
   const { form, enhance, allErrors } = superForm(init, {
-    validators: zod(residence),
+    validators: zod4(residence),
     validationMethod: 'oninput',
     SPA: true,
   });

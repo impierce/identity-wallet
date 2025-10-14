@@ -77,7 +77,7 @@
     if (result.success) {
       emailSchemaError = undefined;
     } else {
-      emailSchemaError = result.error.errors[0].message;
+      emailSchemaError = result.error.message;
     }
   }
 
