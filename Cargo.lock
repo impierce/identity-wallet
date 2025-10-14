@@ -3821,6 +3821,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4a3d7db9596fecd151c5f638c0ee5d5bd487b6e0ea232e5dc96d5250f6f94b1d"
 dependencies = [
  "crc32fast",
+ "libz-sys",
  "miniz_oxide",
 ]
 
@@ -5562,6 +5563,7 @@ dependencies = [
  "jsonwebtoken",
  "lazy_static",
  "log",
+ "oauth_tsl",
  "oid4vc",
  "p256 0.13.2",
  "reqwest 0.11.27",
@@ -7869,6 +7871,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "libz-sys"
+version = "1.1.22"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8b70e7a7df205e92a1a4cd9aaae7898dac0aa555503cc0a649494d0d60e7651d"
+dependencies = [
+ "cc",
+ "pkg-config",
+ "vcpkg",
+]
+
+[[package]]
 name = "linked-hash-map"
 version = "0.5.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -8963,6 +8976,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "oauth_tsl"
+version = "0.1.0"
+source = "git+https://github.com/impierce/oauth-token-status-list?rev=133d224#133d22419f0d57d970a909c7e515e5a7d0ea8bd3"
+dependencies = [
+ "base64 0.22.1",
+ "chrono",
+ "flate2",
+ "jsonwebtoken",
+ "serde",
+ "thiserror 1.0.69",
+ "url",
+]
+
+[[package]]
 name = "objc-sys"
 version = "0.3.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -9251,7 +9278,7 @@ dependencies = [
 [[package]]
 name = "oid4vc"
 version = "0.1.0"
-source = "git+https://github.com/impierce/openid4vc?rev=99fc7be#99fc7be1b86aec38c2d7fbe4ba64d17d9800c050"
+source = "git+https://github.com/impierce/openid4vc?rev=4cbf854#4cbf854a51a2b3b1e7441804addae9785091990c"
 dependencies = [
  "oid4vc-core",
  "oid4vc-manager",
@@ -9263,7 +9290,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-core"
 version = "0.1.0"
-source = "git+https://github.com/impierce/openid4vc?rev=99fc7be#99fc7be1b86aec38c2d7fbe4ba64d17d9800c050"
+source = "git+https://github.com/impierce/openid4vc?rev=4cbf854#4cbf854a51a2b3b1e7441804addae9785091990c"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -9288,7 +9315,7 @@ dependencies = [
 [[package]]
 name = "oid4vc-manager"
 version = "0.1.0"
-source = "git+https://github.com/impierce/openid4vc?rev=99fc7be#99fc7be1b86aec38c2d7fbe4ba64d17d9800c050"
+source = "git+https://github.com/impierce/openid4vc?rev=4cbf854#4cbf854a51a2b3b1e7441804addae9785091990c"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -9321,7 +9348,7 @@ dependencies = [
 [[package]]
 name = "oid4vci"
 version = "0.1.0"
-source = "git+https://github.com/impierce/openid4vc?rev=99fc7be#99fc7be1b86aec38c2d7fbe4ba64d17d9800c050"
+source = "git+https://github.com/impierce/openid4vc?rev=4cbf854#4cbf854a51a2b3b1e7441804addae9785091990c"
 dependencies = [
  "anyhow",
  "chrono",
@@ -9349,7 +9376,7 @@ dependencies = [
 [[package]]
 name = "oid4vp"
 version = "0.1.0"
-source = "git+https://github.com/impierce/openid4vc?rev=99fc7be#99fc7be1b86aec38c2d7fbe4ba64d17d9800c050"
+source = "git+https://github.com/impierce/openid4vc?rev=4cbf854#4cbf854a51a2b3b1e7441804addae9785091990c"
 dependencies = [
  "anyhow",
  "chrono",
@@ -12381,7 +12408,7 @@ dependencies = [
 [[package]]
 name = "siopv2"
 version = "0.1.0"
-source = "git+https://github.com/impierce/openid4vc?rev=99fc7be#99fc7be1b86aec38c2d7fbe4ba64d17d9800c050"
+source = "git+https://github.com/impierce/openid4vc?rev=4cbf854#4cbf854a51a2b3b1e7441804addae9785091990c"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -14351,6 +14378,7 @@ dependencies = [
  "chrono",
  "thiserror 1.0.69",
  "ts-rs-macros",
+ "url",
 ]
 
 [[package]]
@@ -14602,6 +14630,7 @@ dependencies = [
  "jni",
  "jsonwebtoken",
  "log",
+ "oauth_tsl",
  "oid4vc",
  "rand 0.8.5",
  "rustls 0.23.31",
@@ -14626,6 +14655,7 @@ dependencies = [
  "typetag",
  "unime",
  "url",
+ "uuid",
  "wiremock",
 ]
 

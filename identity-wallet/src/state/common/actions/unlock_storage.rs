@@ -2,6 +2,7 @@ use crate::{
     reducer,
     state::{
         actions::ActionTrait, common::reducers::unlock_storage::unlock_storage,
+        credentials::reducers::refresh_all_credential_statuses::refresh_all_credential_statuses,
         profile_settings::reducers::update_sorting_preference::sort_credentials, Reducer,
     },
 };
@@ -26,6 +27,10 @@ impl std::fmt::Debug for UnlockStorage {
 #[typetag::serde(name = "[Storage] Unlock")]
 impl ActionTrait for UnlockStorage {
     fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
-        vec![reducer!(unlock_storage), reducer!(sort_credentials)]
+        vec![
+            reducer!(unlock_storage),
+            reducer!(sort_credentials),
+            reducer!(refresh_all_credential_statuses),
+        ]
     }
 }

@@ -37,107 +37,93 @@ const es_ES = {
       T_AND_C: {
         TITLE: 'Términos y condiciones',
         DESCRIPTION: 'He leído y estoy de acuerdo con los términos y condiciones.',
-        DIALOG_TITLE: 'Términos y condiciones para Impierce Technologies B.V',
-        LAST_UPDATED: 'Última actualización: 31 de octubre de 2024',
+        DIALOG_TITLE: 'Términos de uso de UniMe',
+        LAST_UPDATED: 'Última actualización: 10 de septiembre de 2025',
         TL_DR:
-          'Como con cualquier aplicación, nosotros, Impierce Technologies, estamos obligados a informarte sobre una serie de términos legales. Intentamos mantenerlo simple y directo, pero estamos limitados por lo que debe decirse para protegernos. La versión corta es que nos enfocamos en proporcionar una aplicación que respeta tu privacidad, no recopila datos y te da control total sobre tu información. Como eres tú quien decide qué datos recopilas y con quién los compartes, eres completamente responsable de estas decisiones. Además, dado que no recopilamos tu información, cualquier pérdida de datos debido a la pérdida de tu dispositivo o del acceso a la aplicación también es tu responsabilidad. Con un gran poder viene una gran responsabilidad. Ahora, la versión aburrida:',
-        FULL: `Bienvenido a Impierce Technologies B.V. (“nosotros”, “nos” o “nuestro”). Estos Términos y Condiciones (“Términos”) regulan tu acceso a la aplicación UniMe - Identity Wallet (“Servicio”). Al acceder o usar nuestro Servicio, aceptas cumplir con estos Términos. Si no estás de acuerdo con alguna parte de estos Términos, por favor no utilices nuestro Servicio.
-
-Aceptación de los Términos
-Al descargar, acceder o utilizar nuestro Servicio, confirmas que has leído, comprendido y aceptas estos Términos y nuestra Política de Privacidad. Si utilizas el Servicio en nombre de una organización, declaras que tienes la autoridad para vincular a dicha organización a estos Términos.
-
-
-Responsabilidades del usuario
-Seguridad de los datos: Usted es responsable de mantener la confidencialidad y seguridad de sus dispositivos y cualquier credencial utilizada para acceder a nuestro Servicio. Impierce Technologies B.V. no se hace responsable de ninguna pérdida o compromiso de sus datos debido a que usted no haya protegido su dispositivo.
-Cumplimiento de la legislación: Usted se compromete a utilizar nuestro Servicio de conformidad con todas las leyes y reglamentos aplicables.
-Información precisa: Usted es responsable de garantizar que cualquier información que almacene o comparta utilizando nuestro Servicio sea precisa y esté actualizada.
-
-
-
-Propiedad y privacidad de los datos
-No se recogen datos: No recopilamos, almacenamos ni procesamos ninguna información personal a través de la aplicación UniMe. Todos los datos de identidad permanecen únicamente en tu dispositivo o en la opción de almacenamiento que elijas.
-Uso compartido controlado por el usuario: Cualquier intercambio de datos es iniciado y gestionado exclusivamente por usted y se produce directamente entre usted y la parte designada. Nosotros no accedemos, rastreamos ni tenemos conocimiento de su identidad o actividad.
-Recogida de datos por terceros: Tenga en cuenta que las plataformas de terceros como Apple App Store o Google Play Store pueden recopilar datos relacionados con el rendimiento de la aplicación, el uso y la información del dispositivo independientemente de Impierce Technologies B.V.
-
-
-
-
-Derechos de propiedad intelectual
-Propiedad y licencias: Todos los derechos de propiedad intelectual de UniMe y los materiales relacionados son propiedad de Impierce Technologies B.V. o de sus licenciantes. No obstante, UniMe se proporciona como producto de código abierto bajo licencia Apache 2.0, lo que permite a los usuarios utilizar, modificar y distribuir el software de acuerdo con los términos de dicha licencia.
-Concesión de licencia: Al descargar o utilizar UniMe, acepta cumplir los términos de la licencia Apache 2.0, que concede una licencia mundial libre de derechos de autor para utilizar, reproducir y distribuir el software con la atribución adecuada.
-
-Para más detalles, consulta el texto completo de la Licencia Apache 2.0.
-
-
-
-Actividades prohibidas
-Usted se compromete a no realizar ninguna de las siguientes actividades:
-Acceso no autorizado: Intentar obtener acceso no autorizado a nuestro Servicio o sistemas.
-Interferencia: Interrumpir o interferir en la seguridad o el funcionamiento del Servicio.
-Uso indebido: Utilizar el Servicio con fines ilícitos, perjudiciales, fraudulentos, infractores u otros fines malintencionados.
-
-
-
-Servicios de terceros
-Nuestro Servicio puede incluir enlaces o integraciones con Servicios de terceros. No controlamos estos Servicios de terceros y no somos responsables de su contenido o políticas. El uso que usted haga de los Servicios de terceros corre por su cuenta y riesgo y está sujeto a sus términos y condiciones.
-
-
-
-Descargo de responsabilidad
-Tal cual: Nuestro Servicio se proporciona tal cual y según disponibilidad, sin garantías de ningún tipo, ni expresas ni implícitas.
-Sin garantía: No garantizamos que el Servicio sea ininterrumpido, esté libre de errores, sea seguro o esté libre de virus u otros componentes dañinos.
-
-
-
-Limitación de responsabilidad
-En la máxima medida permitida por la ley, Impierce Technologies B.V. no será responsable de ningún daño indirecto, incidental, especial, consecuente o punitivo, incluyendo pero no limitado a la pérdida de beneficios, datos, uso, fondo de comercio u otras pérdidas intangibles resultantes de:
-Su acceso o uso o incapacidad de acceder o utilizar el Servicio;
-Cualquier conducta o contenido de terceros en el Servicio;
-Cualquier contenido obtenido del Servicio.
-
-
-
-Indemnización
-Usted se compromete a indemnizar, defender y mantener indemne a Impierce Technologies B.V., sus filiales, y sus respectivos directores, funcionarios, empleados y agentes de y contra cualquier reclamación, responsabilidad, daños, pérdidas y gastos derivados de o relacionados de alguna manera con:
-Su acceso o uso del Servicio;
-Su violación de estas Condiciones;
-Su violación de los derechos de terceros.
-
-
-
-Modificaciones de las Condiciones
-Podemos actualizar o modificar estas Condiciones de vez en cuando. La fecha de «Última actualización» en la parte superior indica cuándo se realizaron los últimos cambios. Le notificaremos los cambios significativos publicando las nuevas Condiciones en nuestro sitio web o a través del Servicio. Su uso continuado del Servicio después de cualquier cambio constituye su aceptación de las nuevas Condiciones.
-
-
-
-Ley aplicable y jurisdicción
-Las presentes Condiciones se regirán e interpretarán de conformidad con la legislación de los Países Bajos. Cualquier disputa que surja en relación con estas Condiciones estará sujeta a la jurisdicción exclusiva de los tribunales de los Países Bajos.
-
-
-
-Divisibilidad
-Si alguna disposición de estas Condiciones se considera inválida o inaplicable, las disposiciones restantes permanecerán en pleno vigor y efecto.
-
-
-
-Acuerdo completo
-Estas Condiciones, junto con nuestra Política de privacidad, constituyen el acuerdo completo entre usted e Impierce Technologies B.V. en relación con el uso del Servicio.
-
-
-
-Información de contacto
-Para cualquier pregunta, duda o comentario sobre estas Condiciones, póngase en contacto con nosotros en:
-Impierce Technologies B.V.
-Karekietweide 6, 3993 CD, Houten, the Netherlands
-Email: contact@impierce.com
-
-
-
-Idioma
-Estas Condiciones pueden haber sido traducidas a otros idiomas para su comodidad. En caso de conflicto entre la versión inglesa y una versión traducida, prevalecerá la versión inglesa.
-
-Al utilizar nuestro Servicio, usted reconoce que ha leído, entendido y aceptado estos Términos y Condiciones. Impierce Technologies B.V. mantiene su compromiso de proporcionarle soluciones seguras y centradas en la privacidad, respetando al mismo tiempo sus derechos y libertades.
-`,
+          'Como cualquier proveedor de aplicaciones, estamos legalmente obligados a ofrecerte algunos términos y condiciones importantes. Hemos hecho nuestro mejor esfuerzo para mantener todo claro y directo. Aquí está la versión corta: UniMe te da el control. No recopila tus datos, respeta tu privacidad y te permite decidir qué información almacenar y compartir. Tu identidad y tus datos permanecen contigo, al igual que la responsabilidad de gestionarlos. No almacenamos tus datos ni podemos acceder a ellos, por lo que cualquier pérdida de datos causada por la pérdida de tu dispositivo o el acceso a la app también es tu responsabilidad. A gran poder, gran responsabilidad. Aquí está todo lo que debes saber:',
+        // Note: this translation had not been verified by a legal expert.
+        FULL: {
+          AGREEMENT: {
+            TITLE: 'Aceptación de los Términos',
+            DESCRIPTION:
+              'Gracias por elegir UniMe, una Billetera de Identidad Digital de la UE (aplicación móvil) desarrollada y mantenida por Impierce Technologies B.V. ("nosotros"). Estos Términos de Uso ("Términos") regulan tu acceso y uso de la aplicación móvil UniMe (el "Servicio"), ya sea descargada desde el Apple App Store, Google Play Store u otra plataforma. Al instalar, acceder o usar el Servicio, reconoces que has leído, entendido y aceptado quedar vinculado por estos Términos y nuestra Política de Privacidad. Si no estás de acuerdo con alguna parte de estos Términos, por favor no uses el Servicio. Si usas el Servicio en nombre de una organización, declaras y garantizas que estás autorizado a aceptar estos Términos en nombre de dicha organización.',
+          },
+          DEFINITIONS: {
+            TITLE: 'Definiciones',
+            DESCRIPTION:
+              'El término Servicio se refiere a la aplicación móvil UniMe Identity Wallet e incluye todas las funciones, contenidos o servicios proporcionados dentro de ella. Datos del Usuario significa cualquier dato, credencial o información que almacenes o compartas usando el Servicio. El término Dispositivo se refiere al teléfono móvil o hardware en el que la app UniMe está instalada y se utiliza.',
+          },
+          USER_RESPONSIBILITIES: {
+            TITLE: 'Responsabilidades del Usuario',
+            DESCRIPTION:
+              'Eres responsable de mantener la confidencialidad y seguridad de tu dispositivo y de cualquier credencial almacenada dentro del Servicio, así como de asegurar que cualquier información que almacenes o compartas usando el Servicio sea precisa y esté actualizada. Aceptas usar el Servicio cumpliendo con todas las leyes y regulaciones aplicables. Impierce Technologies B.V. no es responsable por la pérdida de datos debido a la pérdida de tu dispositivo o acceso no autorizado.',
+          },
+          DATA_OWNERSHIP: {
+            TITLE: 'Propiedad de los Datos y Privacidad',
+            DESCRIPTION:
+              ' UniMe se basa en los principios fundamentales de control del usuario y privacidad de datos. Nuestra arquitectura está diseñada para que no podamos acceder, recopilar, almacenar o procesar los Datos del Usuario que gestionas dentro de la app. Todos tus Datos del Usuario se almacenan local y de manera segura en tu Dispositivo. Empleamos medidas de seguridad robustas dentro de la aplicación para proteger tus datos. Sin embargo, la protección final de tus datos también depende de ti, manteniendo la seguridad general de tu Dispositivo personal, por ejemplo, usando un código fuerte y evitando instalar software de fuentes no confiables. Para mantener la integridad de tus credenciales, UniMe puede verificar periódicamente su validez. Esto se realiza contactando directamente al emisor de la credencial desde tu Dispositivo para confirmar si la credencial ha sido revocada. Este proceso ocurre automáticamente en tu Dispositivo y no involucra a Impierce Technologies B.V. Cuando es posible, UniMe prioriza métodos descentralizados para estas verificaciones.',
+          },
+          DATA_VISIBILITY: {
+            TITLE: 'Visibilidad de Datos por Plataformas de Apps',
+            DESCRIPTION:
+              'Cuando descargas o usas UniMe a través de un App Store oficial, como Apple App Store o Google Play, la plataforma puede recopilar datos técnicos y de uso limitados. Esto puede incluir detalles como el tipo de dispositivo, eventos de instalación o fallos de la app, y la configuración de región o idioma de tu dispositivo. Esta información se recopila según las políticas del App Store correspondiente. Impierce no recopila datos adicionales de uso directamente desde tu dispositivo.',
+          },
+          INTELLECTUAL_PROPERTY_RIGHTS: {
+            TITLE: 'Derechos de Propiedad Intelectual',
+            DESCRIPTION:
+              'Todos los derechos de propiedad intelectual de UniMe y materiales relacionados pertenecen a Impierce Technologies B.V. o a nuestros licenciantes. UniMe se proporciona bajo la licencia Apache 2.0, lo que significa que puedes usar, modificar y distribuir el software siempre que cumplas con los términos de esa licencia. Para más información, consulta la licencia completa Apache 2.0.',
+          },
+          PROHIBITED_ACTIVITIES: {
+            TITLE: 'Actividades Prohibidas',
+            DESCRIPTION:
+              'Aceptas no intentar obtener acceso no autorizado al Servicio o a sistemas relacionados, no interrumpir ni interferir con el rendimiento o seguridad del Servicio, ni usar el Servicio para fines ilegales, dañinos o fraudulentos.',
+          },
+          THIRD_PARTY_SERVICES: {
+            TITLE: 'Servicios de Terceros',
+            DESCRIPTION:
+              'Nuestro Servicio puede vincularse o integrarse con plataformas de terceros. Estas plataformas no están controladas ni operadas por nosotros, y no respaldamos ni asumimos responsabilidad por su contenido, acciones o prácticas de datos. Cualquier servicio o interacción que decidas realizar con proveedores externos es bajo tu propio riesgo y está sujeto a sus propios términos y políticas. Te recomendamos revisarlas cuidadosamente antes de continuar. El Servicio se proporciona “tal como está” y “según disponibilidad” sin ningún tipo de garantía. No garantizamos un uso ininterrumpido o libre de errores del Servicio.',
+          },
+          LIABILITY: {
+            TITLE: 'Limitación de Responsabilidad',
+            DESCRIPTION:
+              'En la máxima medida permitida por la ley, Impierce Technologies B.V. no es responsable de daños indirectos, incidentales, especiales o consecuentes. Esto incluye, entre otros, pérdida de datos, ganancias, oportunidades de negocio o reputación derivados de tu uso o incapacidad de usar el Servicio; conducta, contenido o errores de terceros; servicios, contenidos o acciones de plataformas de terceros accedidas a través del Servicio; o cualquier contenido obtenido de o mediante el Servicio.',
+          },
+          INDEMNIFICATION: {
+            TITLE: 'Indemnización',
+            DESCRIPTION:
+              'Aceptas indemnizar y mantener indemne a Impierce Technologies B.V. y sus afiliados frente a cualquier reclamo, pérdida o gasto resultante de tu uso del Servicio, tu violación de estos Términos de Uso o la violación de cualquier derecho de otra persona o entidad.',
+          },
+          MODIFICATIONS: {
+            TITLE: 'Modificaciones a los Términos de Uso',
+            DESCRIPTION:
+              'Podemos actualizar estos Términos de Uso periódicamente. La fecha “Última actualización” arriba refleja la versión más reciente. Los cambios significativos se comunicarán a través de la app o nuestro sitio web. El uso continuado del Servicio significa que aceptas los Términos de Uso revisados.',
+          },
+          LAW_AND_JURISDIFICATION: {
+            TITLE: 'Ley Aplicable y Jurisdicción',
+            DESCRIPTION:
+              'Estos Términos de Uso se rigen por la ley neerlandesa. Cualquier disputa se resolverá en los tribunales de los Países Bajos.',
+          },
+          SEVERABILITY: {
+            TITLE: 'Divisibilidad',
+            DESCRIPTION:
+              'Si alguna parte de estos Términos de Uso se considera inválida, el resto seguirá en pleno vigor.',
+          },
+          LANGUAGE: {
+            TITLE: 'Idioma',
+            DESCRIPTION:
+              'Estos Términos de Uso están disponibles en varios idiomas para conveniencia. En caso de conflicto, prevalece la versión en inglés.',
+          },
+          ENTIRE_AGREEMENT: {
+            TITLE: 'Acuerdo Completo',
+            DESCRIPTION:
+              'Estos Términos de Uso, junto con nuestra Política de Privacidad, constituyen el acuerdo completo entre tú e Impierce Technologies B.V. con respecto al uso de UniMe.',
+          },
+          CONTACT: {
+            TITLE: 'Contáctanos',
+            DESCRIPTION:
+              '¿Tienes comentarios o preguntas? Siempre buscamos mejorar. Si algo no está claro o podría expresarse mejor, no dudes en comunicarte a contact@impierce.com. Al usar UniMe, confirmas que has leído, comprendido y aceptado estos Términos de Uso. Seguimos comprometidos a ofrecer herramientas digitales seguras y centradas en la privacidad que te empoderen.',
+          },
+        },
       },
       OWNERSHIP: {
         TITLE: 'Propiedad de los datos',
@@ -400,6 +386,7 @@ Al utilizar nuestro Servicio, usted reconoce que ha leído, entendido y aceptado
     NAVBAR_TITLE: 'Información de las credenciales',
     DETAILS: {
       VALID: 'Válidas',
+      INVALID: 'Inválidas',
       UNVERIFIED: 'No verificadas',
       ISSUED_BY: 'Emitidas por',
       SELF_SIGNED: 'Autofirmadas',

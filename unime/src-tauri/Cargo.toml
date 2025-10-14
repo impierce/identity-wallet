@@ -44,6 +44,7 @@ unime = { path = ".", features = ["test_utils"] }
 did_manager.workspace = true
 identity-wallet = { path = "../../identity-wallet", features = ["test_utils"] }
 jsonwebtoken.workspace = true
+oauth_tsl.workspace = true
 oid4vc.workspace = true
 rand.workspace = true
 serde = { version = "1.0", features = ["derive"] }
@@ -52,6 +53,7 @@ tempfile.workspace = true
 tokio.workspace = true
 typetag = "0.2"
 url = "2.4"
+uuid = "1.4"
 wiremock.workspace = true
 
 [features]
