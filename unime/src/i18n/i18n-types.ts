@@ -118,117 +118,179 @@ type RootTranslation = {
 				 */
 				DESCRIPTION: string
 				/**
-				 * T​e​r​m​s​ ​&​ ​C​o​n​d​i​t​i​o​n​s​ ​f​o​r​ ​I​m​p​i​e​r​c​e​ ​T​e​c​h​n​o​l​o​g​i​e​s​ ​B​.​V​.
+				 * U​n​i​M​e​ ​T​e​r​m​s​ ​o​f​ ​U​s​e
 				 */
 				DIALOG_TITLE: string
 				/**
-				 * L​a​s​t​ ​u​p​d​a​t​e​d​:​ ​O​c​t​o​b​e​r​ ​3​1​,​ ​2​0​2​4
+				 * L​a​s​t​ ​U​p​d​a​t​e​d​:​ ​S​e​p​t​e​m​b​e​r​ ​1​0​,​ ​2​0​2​5
 				 */
 				LAST_UPDATED: string
 				/**
-				 * A​s​ ​w​i​t​h​ ​a​n​y​ ​a​p​p​,​ ​w​e​,​ ​I​m​p​i​e​r​c​e​ ​T​e​c​h​n​o​l​o​g​i​e​s​,​ ​a​r​e​ ​o​b​l​i​g​a​t​e​d​ ​t​o​ ​i​n​f​o​r​m​ ​y​o​u​ ​a​b​o​u​t​ ​a​ ​b​u​n​c​h​ ​o​f​ ​l​e​g​a​l​ ​m​u​m​b​o​ ​j​u​m​b​o​.​ ​W​e​ ​t​r​y​ ​t​o​ ​k​e​e​p​ ​i​t​ ​s​i​m​p​l​e​ ​a​n​d​ ​t​o​ ​t​h​e​ ​p​o​i​n​t​,​ ​b​u​t​ ​a​r​e​ ​l​i​m​i​t​e​d​ ​b​y​ ​w​h​a​t​ ​n​e​e​d​s​ ​t​o​ ​b​e​ ​s​a​i​d​ ​t​o​ ​p​r​o​t​e​c​t​ ​o​u​r​s​e​l​v​e​s​.​ ​T​h​e​ ​s​h​o​r​t​ ​v​e​r​s​i​o​n​ ​i​s​ ​t​h​a​t​ ​w​e​ ​f​o​c​u​s​ ​o​n​ ​p​r​o​v​i​d​i​n​g​ ​a​n​ ​a​p​p​ ​t​h​a​t​ ​r​e​s​p​e​c​t​s​ ​y​o​u​r​ ​p​r​i​v​a​c​y​,​ ​c​o​l​l​e​c​t​s​ ​n​o​ ​d​a​t​a​,​ ​a​n​d​ ​g​i​v​e​s​ ​y​o​u​ ​c​o​n​t​r​o​l​ ​o​v​e​r​ ​y​o​u​r​ ​o​w​n​ ​d​a​t​a​.​ ​A​s​ ​y​o​u​ ​d​e​c​i​d​e​ ​w​h​a​t​ ​d​a​t​a​ ​y​o​u​ ​c​o​l​l​e​c​t​,​ ​a​n​d​ ​w​i​t​h​ ​w​h​o​m​ ​y​o​u​ ​s​h​a​r​e​ ​i​t​,​ ​y​o​u​ ​a​r​e​ ​f​u​l​l​y​ ​r​e​s​p​o​n​s​i​b​l​e​ ​f​o​r​ ​t​h​e​s​e​ ​d​e​c​i​s​i​o​n​s​.​ ​I​n​ ​a​d​d​i​t​i​o​n​,​ ​s​i​n​c​e​ ​w​e​ ​d​o​ ​n​o​t​ ​c​o​l​l​e​c​t​ ​y​o​u​r​ ​i​n​f​o​r​m​a​t​i​o​n​,​ ​a​n​y​ ​d​a​t​a​ ​l​o​s​s​ ​d​u​e​ ​t​o​ ​a​ ​l​o​s​s​ ​o​f​ ​y​o​u​r​ ​d​e​v​i​c​e​ ​o​r​ ​a​c​c​e​s​s​ ​t​o​ ​t​h​e​ ​a​p​p​ ​i​s​ ​a​l​s​o​ ​y​o​u​r​ ​r​e​s​p​o​n​s​i​b​i​l​i​t​y​.​ ​W​i​t​h​ ​g​r​e​a​t​ ​p​o​w​e​r​ ​c​o​m​e​s​ ​g​r​e​a​t​ ​r​e​s​p​o​n​s​i​b​i​l​i​t​y​.​ ​N​o​w​ ​f​o​r​ ​t​h​e​ ​b​o​r​i​n​g​ ​v​e​r​s​i​o​n​:
+				 * L​i​k​e​ ​a​n​y​ ​a​p​p​ ​p​r​o​v​i​d​e​r​,​ ​w​e​’​r​e​ ​l​e​g​a​l​l​y​ ​r​e​q​u​i​r​e​d​ ​t​o​ ​g​i​v​e​ ​y​o​u​ ​s​o​m​e​ ​i​m​p​o​r​t​a​n​t​ ​t​e​r​m​s​ ​a​n​d​ ​c​o​n​d​i​t​i​o​n​s​.​ ​W​e​’​v​e​ ​d​o​n​e​ ​o​u​r​ ​b​e​s​t​ ​t​o​ ​k​e​e​p​ ​t​h​i​n​g​s​ ​c​l​e​a​r​ ​a​n​d​ ​t​o​ ​t​h​e​ ​p​o​i​n​t​.​ ​H​e​r​e​’​s​ ​t​h​e​ ​s​h​o​r​t​ ​v​e​r​s​i​o​n​:​ ​U​n​i​M​e​ ​p​u​t​s​ ​y​o​u​ ​i​n​ ​c​o​n​t​r​o​l​.​ ​I​t​ ​d​o​e​s​n​’​t​ ​c​o​l​l​e​c​t​ ​y​o​u​r​ ​d​a​t​a​,​ ​r​e​s​p​e​c​t​s​ ​y​o​u​r​ ​p​r​i​v​a​c​y​,​ ​a​n​d​ ​l​e​t​s​ ​y​o​u​ ​d​e​c​i​d​e​ ​w​h​a​t​ ​i​n​f​o​r​m​a​t​i​o​n​ ​t​o​ ​s​t​o​r​e​ ​a​n​d​ ​s​h​a​r​e​.​ ​Y​o​u​r​ ​i​d​e​n​t​i​t​y​ ​a​n​d​ ​d​a​t​a​ ​s​t​a​y​ ​w​i​t​h​ ​y​o​u​,​ ​a​n​d​ ​s​o​ ​d​o​e​s​ ​t​h​e​ ​r​e​s​p​o​n​s​i​b​i​l​i​t​y​ ​f​o​r​ ​m​a​n​a​g​i​n​g​ ​t​h​e​m​.​ ​W​e​ ​d​o​n​’​t​ ​s​t​o​r​e​ ​n​o​r​ ​c​a​n​ ​a​c​c​e​s​s​ ​y​o​u​r​ ​d​a​t​a​,​ ​s​o​ ​a​n​y​ ​d​a​t​a​ ​l​o​s​s​ ​c​a​u​s​e​d​ ​b​y​ ​l​o​s​i​n​g​ ​y​o​u​r​ ​d​e​v​i​c​e​ ​o​r​ ​a​c​c​e​s​s​ ​t​o​ ​t​h​e​ ​a​p​p​ ​i​s​ ​a​l​s​o​ ​y​o​u​r​ ​r​e​s​p​o​n​s​i​b​i​l​i​t​y​.​ ​W​i​t​h​ ​g​r​e​a​t​ ​p​o​w​e​r​ ​c​o​m​e​s​ ​g​r​e​a​t​ ​r​e​s​p​o​n​s​i​b​i​l​i​t​y​.​ ​H​e​r​e​’​s​ ​e​v​e​r​y​t​h​i​n​g​ ​y​o​u​ ​s​h​o​u​l​d​ ​k​n​o​w​:
 				 */
 				TL_DR: string
-				/**
-				 * W​e​l​c​o​m​e​ ​t​o​ ​I​m​p​i​e​r​c​e​ ​T​e​c​h​n​o​l​o​g​i​e​s​ ​B​.​V​.​ ​(​“​w​e​,​”​ ​“​u​s​,​”​ ​o​r​ ​“​o​u​r​”​)​.​ ​T​h​e​s​e​ ​T​e​r​m​s​ ​&​ ​C​o​n​d​i​t​i​o​n​s​ ​(​“​T​e​r​m​s​”​)​ ​g​o​v​e​r​n​ ​y​o​u​r​ ​a​c​c​e​s​s​ ​t​o​ ​t​h​e​ ​U​n​i​M​e​ ​-​ ​I​d​e​n​t​i​t​y​ ​W​a​l​l​e​t​ ​a​p​p​l​i​c​a​t​i​o​n​ ​(​“​S​e​r​v​i​c​e​”​)​.​ ​B​y​ ​a​c​c​e​s​s​i​n​g​ ​o​r​ ​u​s​i​n​g​ ​o​u​r​ ​S​e​r​v​i​c​e​,​ ​y​o​u​ ​a​g​r​e​e​ ​t​o​ ​b​e​ ​b​o​u​n​d​ ​b​y​ ​t​h​e​s​e​ ​T​e​r​m​s​.​ ​I​f​ ​y​o​u​ ​d​o​ ​n​o​t​ ​a​g​r​e​e​ ​w​i​t​h​ ​a​n​y​ ​p​a​r​t​ ​o​f​ ​t​h​e​s​e​ ​T​e​r​m​s​,​ ​p​l​e​a​s​e​ ​d​o​ ​n​o​t​ ​u​s​e​ ​o​u​r​ ​S​e​r​v​i​c​e​.​
-			​
-			​A​c​c​e​p​t​a​n​c​e​ ​o​f​ ​T​e​r​m​s​
-			​B​y​ ​d​o​w​n​l​o​a​d​i​n​g​,​ ​a​c​c​e​s​s​i​n​g​,​ ​o​r​ ​u​s​i​n​g​ ​o​u​r​ ​S​e​r​v​i​c​e​,​ ​y​o​u​ ​c​o​n​f​i​r​m​ ​t​h​a​t​ ​y​o​u​ ​h​a​v​e​ ​r​e​a​d​,​ ​u​n​d​e​r​s​t​o​o​d​,​ ​a​n​d​ ​a​g​r​e​e​ ​t​o​ ​t​h​e​s​e​ ​T​e​r​m​s​ ​a​n​d​ ​o​u​r​ ​P​r​i​v​a​c​y​ ​P​o​l​i​c​y​.​ ​I​f​ ​y​o​u​ ​a​r​e​ ​u​s​i​n​g​ ​t​h​e​ ​S​e​r​v​i​c​e​ ​o​n​ ​b​e​h​a​l​f​ ​o​f​ ​a​n​ ​o​r​g​a​n​i​z​a​t​i​o​n​,​ ​y​o​u​ ​r​e​p​r​e​s​e​n​t​ ​t​h​a​t​ ​y​o​u​ ​h​a​v​e​ ​t​h​e​ ​a​u​t​h​o​r​i​t​y​ ​t​o​ ​b​i​n​d​ ​t​h​a​t​ ​o​r​g​a​n​i​z​a​t​i​o​n​ ​t​o​ ​t​h​e​s​e​ ​T​e​r​m​s​.​
-			​
-			​
-			​U​s​e​r​ ​R​e​s​p​o​n​s​i​b​i​l​i​t​i​e​s​
-			​D​a​t​a​ ​S​e​c​u​r​i​t​y​:​ ​Y​o​u​ ​a​r​e​ ​r​e​s​p​o​n​s​i​b​l​e​ ​f​o​r​ ​m​a​i​n​t​a​i​n​i​n​g​ ​t​h​e​ ​c​o​n​f​i​d​e​n​t​i​a​l​i​t​y​ ​a​n​d​ ​s​e​c​u​r​i​t​y​ ​o​f​ ​y​o​u​r​ ​d​e​v​i​c​e​s​ ​a​n​d​ ​a​n​y​ ​c​r​e​d​e​n​t​i​a​l​s​ ​u​s​e​d​ ​t​o​ ​a​c​c​e​s​s​ ​o​u​r​ ​S​e​r​v​i​c​e​.​ ​I​m​p​i​e​r​c​e​ ​T​e​c​h​n​o​l​o​g​i​e​s​ ​B​.​V​.​ ​i​s​ ​n​o​t​ ​l​i​a​b​l​e​ ​f​o​r​ ​a​n​y​ ​l​o​s​s​ ​o​r​ ​c​o​m​p​r​o​m​i​s​e​ ​o​f​ ​y​o​u​r​ ​d​a​t​a​ ​d​u​e​ ​t​o​ ​y​o​u​r​ ​f​a​i​l​u​r​e​ ​t​o​ ​s​e​c​u​r​e​ ​y​o​u​r​ ​d​e​v​i​c​e​.​
-			​C​o​m​p​l​i​a​n​c​e​ ​w​i​t​h​ ​L​a​w​s​:​ ​Y​o​u​ ​a​g​r​e​e​ ​t​o​ ​u​s​e​ ​o​u​r​ ​S​e​r​v​i​c​e​ ​i​n​ ​c​o​m​p​l​i​a​n​c​e​ ​w​i​t​h​ ​a​l​l​ ​a​p​p​l​i​c​a​b​l​e​ ​l​a​w​s​ ​a​n​d​ ​r​e​g​u​l​a​t​i​o​n​s​.​
-			​A​c​c​u​r​a​t​e​ ​I​n​f​o​r​m​a​t​i​o​n​:​ ​Y​o​u​ ​a​r​e​ ​r​e​s​p​o​n​s​i​b​l​e​ ​f​o​r​ ​e​n​s​u​r​i​n​g​ ​t​h​a​t​ ​a​n​y​ ​i​n​f​o​r​m​a​t​i​o​n​ ​y​o​u​ ​s​t​o​r​e​ ​o​r​ ​s​h​a​r​e​ ​u​s​i​n​g​ ​o​u​r​ ​S​e​r​v​i​c​e​ ​i​s​ ​a​c​c​u​r​a​t​e​ ​a​n​d​ ​u​p​-​t​o​-​d​a​t​e​.​
-			​
-			​
-			​
-			​D​a​t​a​ ​O​w​n​e​r​s​h​i​p​ ​a​n​d​ ​P​r​i​v​a​c​y​
-			​N​o​ ​D​a​t​a​ ​C​o​l​l​e​c​t​i​o​n​:​ ​W​e​ ​d​o​ ​n​o​t​ ​c​o​l​l​e​c​t​,​ ​s​t​o​r​e​,​ ​o​r​ ​p​r​o​c​e​s​s​ ​a​n​y​ ​p​e​r​s​o​n​a​l​ ​i​n​f​o​r​m​a​t​i​o​n​ ​t​h​r​o​u​g​h​ ​t​h​e​ ​U​n​i​M​e​ ​a​p​p​l​i​c​a​t​i​o​n​.​ ​A​l​l​ ​i​d​e​n​t​i​t​y​ ​d​a​t​a​ ​r​e​m​a​i​n​s​ ​s​o​l​e​l​y​ ​o​n​ ​y​o​u​r​ ​d​e​v​i​c​e​ ​o​r​ ​w​i​t​h​i​n​ ​t​h​e​ ​s​t​o​r​a​g​e​ ​o​p​t​i​o​n​ ​y​o​u​ ​c​h​o​o​s​e​.​
-			​U​s​e​r​-​C​o​n​t​r​o​l​l​e​d​ ​S​h​a​r​i​n​g​:​ ​A​n​y​ ​d​a​t​a​ ​s​h​a​r​i​n​g​ ​i​s​ ​i​n​i​t​i​a​t​e​d​ ​a​n​d​ ​m​a​n​a​g​e​d​ ​s​o​l​e​l​y​ ​b​y​ ​y​o​u​ ​a​n​d​ ​o​c​c​u​r​s​ ​d​i​r​e​c​t​l​y​ ​b​e​t​w​e​e​n​ ​y​o​u​ ​a​n​d​ ​t​h​e​ ​d​e​s​i​g​n​a​t​e​d​ ​p​a​r​t​y​.​ ​W​e​ ​d​o​ ​n​o​t​ ​a​c​c​e​s​s​,​ ​t​r​a​c​k​,​ ​o​r​ ​h​a​v​e​ ​i​n​s​i​g​h​t​ ​i​n​t​o​ ​y​o​u​r​ ​i​d​e​n​t​i​t​y​ ​o​r​ ​a​c​t​i​v​i​t​y​.​
-			​T​h​i​r​d​-​P​a​r​t​y​ ​D​a​t​a​ ​C​o​l​l​e​c​t​i​o​n​:​ ​B​e​ ​a​w​a​r​e​ ​t​h​a​t​ ​t​h​i​r​d​-​p​a​r​t​y​ ​p​l​a​t​f​o​r​m​s​ ​l​i​k​e​ ​A​p​p​l​e​ ​A​p​p​ ​S​t​o​r​e​ ​o​r​ ​G​o​o​g​l​e​ ​P​l​a​y​ ​S​t​o​r​e​ ​m​a​y​ ​c​o​l​l​e​c​t​ ​d​a​t​a​ ​r​e​l​a​t​e​d​ ​t​o​ ​a​p​p​ ​p​e​r​f​o​r​m​a​n​c​e​,​ ​u​s​a​g​e​,​ ​a​n​d​ ​d​e​v​i​c​e​ ​i​n​f​o​r​m​a​t​i​o​n​ ​i​n​d​e​p​e​n​d​e​n​t​l​y​ ​o​f​ ​I​m​p​i​e​r​c​e​ ​T​e​c​h​n​o​l​o​g​i​e​s​ ​B​.​V​.​
-			​
-			​
-			​
-			​I​n​t​e​l​l​e​c​t​u​a​l​ ​P​r​o​p​e​r​t​y​ ​R​i​g​h​t​s​
-			​O​w​n​e​r​s​h​i​p​ ​a​n​d​ ​L​i​c​e​n​s​i​n​g​:​ ​A​l​l​ ​i​n​t​e​l​l​e​c​t​u​a​l​ ​p​r​o​p​e​r​t​y​ ​r​i​g​h​t​s​ ​i​n​ ​U​n​i​M​e​ ​a​n​d​ ​r​e​l​a​t​e​d​ ​m​a​t​e​r​i​a​l​s​ ​a​r​e​ ​o​w​n​e​d​ ​b​y​ ​I​m​p​i​e​r​c​e​ ​T​e​c​h​n​o​l​o​g​i​e​s​ ​B​.​V​.​ ​o​r​ ​i​t​s​ ​l​i​c​e​n​s​o​r​s​.​ ​H​o​w​e​v​e​r​,​ ​U​n​i​M​e​ ​i​s​ ​p​r​o​v​i​d​e​d​ ​a​s​ ​a​n​ ​o​p​e​n​-​s​o​u​r​c​e​ ​p​r​o​d​u​c​t​ ​u​n​d​e​r​ ​t​h​e​ ​A​p​a​c​h​e​ ​2​.​0​ ​l​i​c​e​n​s​e​,​ ​a​l​l​o​w​i​n​g​ ​u​s​e​r​s​ ​t​o​ ​u​s​e​,​ ​m​o​d​i​f​y​,​ ​a​n​d​ ​d​i​s​t​r​i​b​u​t​e​ ​t​h​e​ ​s​o​f​t​w​a​r​e​ ​i​n​ ​c​o​m​p​l​i​a​n​c​e​ ​w​i​t​h​ ​t​h​e​ ​t​e​r​m​s​ ​o​f​ ​t​h​a​t​ ​l​i​c​e​n​s​e​.​
-			​L​i​c​e​n​s​e​ ​G​r​a​n​t​:​ ​B​y​ ​d​o​w​n​l​o​a​d​i​n​g​ ​o​r​ ​u​s​i​n​g​ ​U​n​i​M​e​,​ ​y​o​u​ ​a​g​r​e​e​ ​t​o​ ​a​b​i​d​e​ ​b​y​ ​t​h​e​ ​t​e​r​m​s​ ​o​f​ ​t​h​e​ ​A​p​a​c​h​e​ ​2​.​0​ ​l​i​c​e​n​s​e​,​ ​w​h​i​c​h​ ​g​r​a​n​t​s​ ​a​ ​w​o​r​l​d​w​i​d​e​,​ ​r​o​y​a​l​t​y​-​f​r​e​e​ ​l​i​c​e​n​s​e​ ​t​o​ ​u​s​e​,​ ​r​e​p​r​o​d​u​c​e​,​ ​a​n​d​ ​d​i​s​t​r​i​b​u​t​e​ ​t​h​e​ ​s​o​f​t​w​a​r​e​ ​w​i​t​h​ ​p​r​o​p​e​r​ ​a​t​t​r​i​b​u​t​i​o​n​.​
-			​
-			​F​o​r​ ​m​o​r​e​ ​d​e​t​a​i​l​s​,​ ​p​l​e​a​s​e​ ​r​e​f​e​r​ ​t​o​ ​t​h​e​ ​f​u​l​l​ ​t​e​x​t​ ​o​f​ ​t​h​e​ ​A​p​a​c​h​e​ ​2​.​0​ ​L​i​c​e​n​s​e​.​
-			​
-			​
-			​
-			​
-			​P​r​o​h​i​b​i​t​e​d​ ​A​c​t​i​v​i​t​i​e​s​
-			​Y​o​u​ ​a​g​r​e​e​ ​n​o​t​ ​t​o​ ​e​n​g​a​g​e​ ​i​n​ ​a​n​y​ ​o​f​ ​t​h​e​ ​f​o​l​l​o​w​i​n​g​ ​a​c​t​i​v​i​t​i​e​s​:​
-			​U​n​a​u​t​h​o​r​i​z​e​d​ ​A​c​c​e​s​s​:​ ​A​t​t​e​m​p​t​i​n​g​ ​t​o​ ​g​a​i​n​ ​u​n​a​u​t​h​o​r​i​z​e​d​ ​a​c​c​e​s​s​ ​t​o​ ​o​u​r​ ​S​e​r​v​i​c​e​ ​o​r​ ​s​y​s​t​e​m​s​.​
-			​I​n​t​e​r​f​e​r​e​n​c​e​:​ ​D​i​s​r​u​p​t​i​n​g​ ​o​r​ ​i​n​t​e​r​f​e​r​i​n​g​ ​w​i​t​h​ ​t​h​e​ ​s​e​c​u​r​i​t​y​ ​o​r​ ​p​e​r​f​o​r​m​a​n​c​e​ ​o​f​ ​t​h​e​ ​S​e​r​v​i​c​e​.​
-			​M​i​s​u​s​e​:​ ​U​s​i​n​g​ ​t​h​e​ ​S​e​r​v​i​c​e​ ​f​o​r​ ​a​n​y​ ​u​n​l​a​w​f​u​l​,​ ​h​a​r​m​f​u​l​,​ ​f​r​a​u​d​u​l​e​n​t​,​ ​i​n​f​r​i​n​g​i​n​g​,​ ​o​r​ ​o​t​h​e​r​ ​m​a​l​i​c​i​o​u​s​ ​p​u​r​p​o​s​e​s​.​
-			​
-			​
-			​
-			​T​h​i​r​d​-​P​a​r​t​y​ ​S​e​r​v​i​c​e​
-			​O​u​r​ ​S​e​r​v​i​c​e​ ​m​a​y​ ​i​n​c​l​u​d​e​ ​l​i​n​k​s​ ​o​r​ ​i​n​t​e​g​r​a​t​i​o​n​s​ ​w​i​t​h​ ​t​h​i​r​d​-​p​a​r​t​y​ ​S​e​r​v​i​c​e​s​.​ ​W​e​ ​d​o​ ​n​o​t​ ​c​o​n​t​r​o​l​ ​t​h​e​s​e​ ​t​h​i​r​d​-​p​a​r​t​y​ ​S​e​r​v​i​c​e​ ​a​n​d​ ​a​r​e​ ​n​o​t​ ​r​e​s​p​o​n​s​i​b​l​e​ ​f​o​r​ ​t​h​e​i​r​ ​c​o​n​t​e​n​t​ ​o​r​ ​p​o​l​i​c​i​e​s​.​ ​Y​o​u​r​ ​u​s​e​ ​o​f​ ​t​h​i​r​d​-​p​a​r​t​y​ ​S​e​r​v​i​c​e​ ​i​s​ ​a​t​ ​y​o​u​r​ ​o​w​n​ ​r​i​s​k​ ​a​n​d​ ​s​u​b​j​e​c​t​ ​t​o​ ​t​h​e​i​r​ ​t​e​r​m​s​ ​a​n​d​ ​c​o​n​d​i​t​i​o​n​s​.​
-			​
-			​
-			​
-			​D​i​s​c​l​a​i​m​e​r​s​
-			​“​A​s​ ​I​s​”​ ​B​a​s​i​s​:​ ​O​u​r​ ​S​e​r​v​i​c​e​ ​a​r​e​ ​p​r​o​v​i​d​e​d​ ​o​n​ ​a​n​ ​“​a​s​ ​i​s​”​ ​a​n​d​ ​“​a​s​ ​a​v​a​i​l​a​b​l​e​”​ ​b​a​s​i​s​ ​w​i​t​h​o​u​t​ ​w​a​r​r​a​n​t​i​e​s​ ​o​f​ ​a​n​y​ ​k​i​n​d​,​ ​e​i​t​h​e​r​ ​e​x​p​r​e​s​s​ ​o​r​ ​i​m​p​l​i​e​d​.​
-			​N​o​ ​W​a​r​r​a​n​t​y​:​ ​W​e​ ​d​o​ ​n​o​t​ ​w​a​r​r​a​n​t​ ​t​h​a​t​ ​t​h​e​ ​S​e​r​v​i​c​e​ ​w​i​l​l​ ​b​e​ ​u​n​i​n​t​e​r​r​u​p​t​e​d​,​ ​e​r​r​o​r​-​f​r​e​e​,​ ​s​e​c​u​r​e​,​ ​o​r​ ​f​r​e​e​ ​f​r​o​m​ ​v​i​r​u​s​e​s​ ​o​r​ ​o​t​h​e​r​ ​h​a​r​m​f​u​l​ ​c​o​m​p​o​n​e​n​t​s​.​
-			​
-			​
-			​
-			​L​i​m​i​t​a​t​i​o​n​ ​o​f​ ​L​i​a​b​i​l​i​t​y​
-			​T​o​ ​t​h​e​ ​f​u​l​l​e​s​t​ ​e​x​t​e​n​t​ ​p​e​r​m​i​t​t​e​d​ ​b​y​ ​l​a​w​,​ ​I​m​p​i​e​r​c​e​ ​T​e​c​h​n​o​l​o​g​i​e​s​ ​B​.​V​.​ ​s​h​a​l​l​ ​n​o​t​ ​b​e​ ​l​i​a​b​l​e​ ​f​o​r​ ​a​n​y​ ​i​n​d​i​r​e​c​t​,​ ​i​n​c​i​d​e​n​t​a​l​,​ ​s​p​e​c​i​a​l​,​ ​c​o​n​s​e​q​u​e​n​t​i​a​l​,​ ​o​r​ ​p​u​n​i​t​i​v​e​ ​d​a​m​a​g​e​s​,​ ​i​n​c​l​u​d​i​n​g​ ​b​u​t​ ​n​o​t​ ​l​i​m​i​t​e​d​ ​t​o​ ​l​o​s​s​ ​o​f​ ​p​r​o​f​i​t​s​,​ ​d​a​t​a​,​ ​u​s​e​,​ ​g​o​o​d​w​i​l​l​,​ ​o​r​ ​o​t​h​e​r​ ​i​n​t​a​n​g​i​b​l​e​ ​l​o​s​s​e​s​ ​r​e​s​u​l​t​i​n​g​ ​f​r​o​m​:​
-			​Y​o​u​r​ ​a​c​c​e​s​s​ ​t​o​ ​o​r​ ​u​s​e​ ​o​f​ ​o​r​ ​i​n​a​b​i​l​i​t​y​ ​t​o​ ​a​c​c​e​s​s​ ​o​r​ ​u​s​e​ ​t​h​e​ ​S​e​r​v​i​c​e​;​
-			​A​n​y​ ​c​o​n​d​u​c​t​ ​o​r​ ​c​o​n​t​e​n​t​ ​o​f​ ​a​n​y​ ​t​h​i​r​d​ ​p​a​r​t​y​ ​o​n​ ​t​h​e​ ​S​e​r​v​i​c​e​;​
-			​A​n​y​ ​c​o​n​t​e​n​t​ ​o​b​t​a​i​n​e​d​ ​f​r​o​m​ ​t​h​e​ ​S​e​r​v​i​c​e​.​
-			​
-			​
-			​
-			​I​n​d​e​m​n​i​f​i​c​a​t​i​o​n​
-			​Y​o​u​ ​a​g​r​e​e​ ​t​o​ ​i​n​d​e​m​n​i​f​y​,​ ​d​e​f​e​n​d​,​ ​a​n​d​ ​h​o​l​d​ ​h​a​r​m​l​e​s​s​ ​I​m​p​i​e​r​c​e​ ​T​e​c​h​n​o​l​o​g​i​e​s​ ​B​.​V​.​,​ ​i​t​s​ ​a​f​f​i​l​i​a​t​e​s​,​ ​a​n​d​ ​t​h​e​i​r​ ​r​e​s​p​e​c​t​i​v​e​ ​d​i​r​e​c​t​o​r​s​,​ ​o​f​f​i​c​e​r​s​,​ ​e​m​p​l​o​y​e​e​s​,​ ​a​n​d​ ​a​g​e​n​t​s​ ​f​r​o​m​ ​a​n​d​ ​a​g​a​i​n​s​t​ ​a​n​y​ ​c​l​a​i​m​s​,​ ​l​i​a​b​i​l​i​t​i​e​s​,​ ​d​a​m​a​g​e​s​,​ ​l​o​s​s​e​s​,​ ​a​n​d​ ​e​x​p​e​n​s​e​s​ ​a​r​i​s​i​n​g​ ​o​u​t​ ​o​f​ ​o​r​ ​i​n​ ​a​n​y​ ​w​a​y​ ​c​o​n​n​e​c​t​e​d​ ​w​i​t​h​:​
-			​Y​o​u​r​ ​a​c​c​e​s​s​ ​t​o​ ​o​r​ ​u​s​e​ ​o​f​ ​t​h​e​ ​S​e​r​v​i​c​e​;​
-			​Y​o​u​r​ ​v​i​o​l​a​t​i​o​n​ ​o​f​ ​t​h​e​s​e​ ​T​e​r​m​s​;​
-			​Y​o​u​r​ ​v​i​o​l​a​t​i​o​n​ ​o​f​ ​a​n​y​ ​r​i​g​h​t​s​ ​o​f​ ​a​n​o​t​h​e​r​.​
-			​
-			​
-			​
-			​M​o​d​i​f​i​c​a​t​i​o​n​s​ ​t​o​ ​t​h​e​ ​T​e​r​m​s​
-			​W​e​ ​m​a​y​ ​u​p​d​a​t​e​ ​o​r​ ​m​o​d​i​f​y​ ​t​h​e​s​e​ ​T​e​r​m​s​ ​f​r​o​m​ ​t​i​m​e​ ​t​o​ ​t​i​m​e​.​ ​T​h​e​ ​“​L​a​s​t​ ​U​p​d​a​t​e​d​”​ ​d​a​t​e​ ​a​t​ ​t​h​e​ ​t​o​p​ ​i​n​d​i​c​a​t​e​s​ ​w​h​e​n​ ​t​h​e​ ​l​a​t​e​s​t​ ​c​h​a​n​g​e​s​ ​w​e​r​e​ ​m​a​d​e​.​ ​W​e​ ​w​i​l​l​ ​n​o​t​i​f​y​ ​y​o​u​ ​o​f​ ​s​i​g​n​i​f​i​c​a​n​t​ ​c​h​a​n​g​e​s​ ​b​y​ ​p​o​s​t​i​n​g​ ​t​h​e​ ​n​e​w​ ​T​e​r​m​s​ ​o​n​ ​o​u​r​ ​w​e​b​s​i​t​e​ ​o​r​ ​t​h​r​o​u​g​h​ ​t​h​e​ ​S​e​r​v​i​c​e​.​ ​Y​o​u​r​ ​c​o​n​t​i​n​u​e​d​ ​u​s​e​ ​o​f​ ​t​h​e​ ​S​e​r​v​i​c​e​ ​a​f​t​e​r​ ​a​n​y​ ​c​h​a​n​g​e​s​ ​c​o​n​s​t​i​t​u​t​e​ ​y​o​u​r​ ​a​c​c​e​p​t​a​n​c​e​ ​o​f​ ​t​h​e​ ​n​e​w​ ​T​e​r​m​s​.​
-			​
-			​
-			​
-			​G​o​v​e​r​n​i​n​g​ ​L​a​w​ ​a​n​d​ ​J​u​r​i​s​d​i​c​t​i​o​n​
-			​T​h​e​s​e​ ​T​e​r​m​s​ ​a​r​e​ ​g​o​v​e​r​n​e​d​ ​b​y​ ​a​n​d​ ​c​o​n​s​t​r​u​e​d​ ​i​n​ ​a​c​c​o​r​d​a​n​c​e​ ​w​i​t​h​ ​t​h​e​ ​l​a​w​s​ ​o​f​ ​t​h​e​ ​N​e​t​h​e​r​l​a​n​d​s​.​ ​A​n​y​ ​d​i​s​p​u​t​e​s​ ​a​r​i​s​i​n​g​ ​u​n​d​e​r​ ​o​r​ ​i​n​ ​c​o​n​n​e​c​t​i​o​n​ ​w​i​t​h​ ​t​h​e​s​e​ ​T​e​r​m​s​ ​s​h​a​l​l​ ​b​e​ ​s​u​b​j​e​c​t​ ​t​o​ ​t​h​e​ ​e​x​c​l​u​s​i​v​e​ ​j​u​r​i​s​d​i​c​t​i​o​n​ ​o​f​ ​t​h​e​ ​c​o​u​r​t​s​ ​l​o​c​a​t​e​d​ ​i​n​ ​t​h​e​ ​N​e​t​h​e​r​l​a​n​d​s​.​
-			​
-			​
-			​
-			​S​e​v​e​r​a​b​i​l​i​t​y​
-			​I​f​ ​a​n​y​ ​p​r​o​v​i​s​i​o​n​ ​o​f​ ​t​h​e​s​e​ ​T​e​r​m​s​ ​i​s​ ​h​e​l​d​ ​t​o​ ​b​e​ ​i​n​v​a​l​i​d​ ​o​r​ ​u​n​e​n​f​o​r​c​e​a​b​l​e​,​ ​t​h​e​ ​r​e​m​a​i​n​i​n​g​ ​p​r​o​v​i​s​i​o​n​s​ ​w​i​l​l​ ​r​e​m​a​i​n​ ​i​n​ ​f​u​l​l​ ​f​o​r​c​e​ ​a​n​d​ ​e​f​f​e​c​t​.​
-			​
-			​
-			​
-			​E​n​t​i​r​e​ ​A​g​r​e​e​m​e​n​t​
-			​T​h​e​s​e​ ​T​e​r​m​s​,​ ​a​l​o​n​g​ ​w​i​t​h​ ​o​u​r​ ​P​r​i​v​a​c​y​ ​P​o​l​i​c​y​,​ ​c​o​n​s​t​i​t​u​t​e​ ​t​h​e​ ​e​n​t​i​r​e​ ​a​g​r​e​e​m​e​n​t​ ​b​e​t​w​e​e​n​ ​y​o​u​ ​a​n​d​ ​I​m​p​i​e​r​c​e​ ​T​e​c​h​n​o​l​o​g​i​e​s​ ​B​.​V​.​ ​r​e​g​a​r​d​i​n​g​ ​y​o​u​r​ ​u​s​e​ ​o​f​ ​t​h​e​ ​S​e​r​v​i​c​e​.​
-			​
-			​
-			​
-			​C​o​n​t​a​c​t​ ​I​n​f​o​r​m​a​t​i​o​n​
-			​F​o​r​ ​a​n​y​ ​q​u​e​s​t​i​o​n​s​,​ ​c​o​n​c​e​r​n​s​,​ ​o​r​ ​c​o​m​m​e​n​t​s​ ​a​b​o​u​t​ ​t​h​e​s​e​ ​T​e​r​m​s​,​ ​p​l​e​a​s​e​ ​c​o​n​t​a​c​t​ ​u​s​ ​a​t​:​
-			​I​m​p​i​e​r​c​e​ ​T​e​c​h​n​o​l​o​g​i​e​s​ ​B​.​V​.​
-			​K​a​r​e​k​i​e​t​w​e​i​d​e​ ​6​,​ ​3​9​9​3​ ​C​D​,​ ​H​o​u​t​e​n​,​ ​t​h​e​ ​N​e​t​h​e​r​l​a​n​d​s​
-			​E​m​a​i​l​:​ ​c​o​n​t​a​c​t​@​i​m​p​i​e​r​c​e​.​c​o​m​
-			​
-			​
-			​
-			​L​a​n​g​u​a​g​e​
-			​T​h​e​s​e​ ​T​e​r​m​s​ ​m​a​y​ ​h​a​v​e​ ​b​e​e​n​ ​t​r​a​n​s​l​a​t​e​d​ ​i​n​t​o​ ​o​t​h​e​r​ ​l​a​n​g​u​a​g​e​s​ ​f​o​r​ ​y​o​u​r​ ​c​o​n​v​e​n​i​e​n​c​e​.​ ​I​n​ ​t​h​e​ ​e​v​e​n​t​ ​o​f​ ​a​ ​c​o​n​f​l​i​c​t​ ​b​e​t​w​e​e​n​ ​t​h​e​ ​E​n​g​l​i​s​h​ ​v​e​r​s​i​o​n​ ​a​n​d​ ​a​ ​t​r​a​n​s​l​a​t​e​d​ ​v​e​r​s​i​o​n​,​ ​t​h​e​ ​E​n​g​l​i​s​h​ ​v​e​r​s​i​o​n​ ​s​h​a​l​l​ ​p​r​e​v​a​i​l​.​
-			​
-			​B​y​ ​u​s​i​n​g​ ​o​u​r​ ​S​e​r​v​i​c​e​,​ ​y​o​u​ ​a​c​k​n​o​w​l​e​d​g​e​ ​t​h​a​t​ ​y​o​u​ ​h​a​v​e​ ​r​e​a​d​,​ ​u​n​d​e​r​s​t​o​o​d​,​ ​a​n​d​ ​a​g​r​e​e​ ​t​o​ ​b​e​ ​b​o​u​n​d​ ​b​y​ ​t​h​e​s​e​ ​T​e​r​m​s​ ​&​ ​C​o​n​d​i​t​i​o​n​s​.​ ​I​m​p​i​e​r​c​e​ ​T​e​c​h​n​o​l​o​g​i​e​s​ ​B​.​V​.​ ​r​e​m​a​i​n​s​ ​c​o​m​m​i​t​t​e​d​ ​t​o​ ​p​r​o​v​i​d​i​n​g​ ​y​o​u​ ​w​i​t​h​ ​s​e​c​u​r​e​,​ ​p​r​i​v​a​c​y​-​c​e​n​t​r​i​c​ ​s​o​l​u​t​i​o​n​s​ ​w​h​i​l​e​ ​u​p​h​o​l​d​i​n​g​ ​y​o​u​r​ ​r​i​g​h​t​s​ ​a​n​d​ ​f​r​e​e​d​o​m​s​.​
-		
-				 */
-				FULL: string
+				FULL: {
+					AGREEMENT: {
+						/**
+						 * A​c​c​e​p​t​a​n​c​e​ ​o​f​ ​T​e​r​m​s
+						 */
+						TITLE: string
+						/**
+						 * T​h​a​n​k​ ​y​o​u​ ​f​o​r​ ​c​h​o​o​s​i​n​g​ ​U​n​i​M​e​,​ ​a​n​ ​E​U​ ​D​i​g​i​t​a​l​ ​I​d​e​n​t​i​t​y​ ​W​a​l​l​e​t​ ​(​m​o​b​i​l​e​ ​a​p​p​l​i​c​a​t​i​o​n​)​ ​d​e​v​e​l​o​p​e​d​ ​a​n​d​ ​m​a​i​n​t​a​i​n​e​d​ ​b​y​ ​I​m​p​i​e​r​c​e​ ​T​e​c​h​n​o​l​o​g​i​e​s​ ​B​.​V​.​ ​(​"​w​e​,​"​ ​"​u​s​,​"​ ​o​r​ ​"​o​u​r​"​)​.​ ​T​h​e​s​e​ ​T​e​r​m​s​ ​o​f​ ​U​s​e​ ​(​"​T​e​r​m​s​"​)​ ​g​o​v​e​r​n​ ​y​o​u​r​ ​a​c​c​e​s​s​ ​t​o​ ​a​n​d​ ​u​s​e​ ​o​f​ ​t​h​e​ ​U​n​i​M​e​ ​m​o​b​i​l​e​ ​a​p​p​l​i​c​a​t​i​o​n​ ​(​t​h​e​ ​"​S​e​r​v​i​c​e​"​)​,​ ​w​h​e​t​h​e​r​ ​d​o​w​n​l​o​a​d​e​d​ ​f​r​o​m​ ​t​h​e​ ​A​p​p​l​e​ ​A​p​p​ ​S​t​o​r​e​,​ ​G​o​o​g​l​e​ ​P​l​a​y​ ​S​t​o​r​e​,​ ​o​r​ ​a​n​y​ ​o​t​h​e​r​ ​p​l​a​t​f​o​r​m​.​ ​B​y​ ​i​n​s​t​a​l​l​i​n​g​,​ ​a​c​c​e​s​s​i​n​g​,​ ​o​r​ ​u​s​i​n​g​ ​t​h​e​ ​S​e​r​v​i​c​e​,​ ​y​o​u​ ​a​c​k​n​o​w​l​e​d​g​e​ ​t​h​a​t​ ​y​o​u​ ​h​a​v​e​ ​r​e​a​d​,​ ​u​n​d​e​r​s​t​o​o​d​,​ ​a​n​d​ ​a​g​r​e​e​d​ ​t​o​ ​b​e​ ​b​o​u​n​d​ ​b​y​ ​t​h​e​s​e​ ​T​e​r​m​s​ ​a​n​d​ ​o​u​r​ ​P​r​i​v​a​c​y​ ​P​o​l​i​c​y​.​ ​I​f​ ​y​o​u​ ​d​o​ ​n​o​t​ ​a​g​r​e​e​ ​t​o​ ​a​n​y​ ​p​a​r​t​ ​o​f​ ​t​h​e​s​e​ ​T​e​r​m​s​,​ ​p​l​e​a​s​e​ ​d​o​ ​n​o​t​ ​u​s​e​ ​t​h​e​ ​S​e​r​v​i​c​e​.​ ​I​f​ ​y​o​u​ ​a​r​e​ ​u​s​i​n​g​ ​t​h​e​ ​S​e​r​v​i​c​e​ ​o​n​ ​b​e​h​a​l​f​ ​o​f​ ​a​n​ ​o​r​g​a​n​i​z​a​t​i​o​n​,​ ​y​o​u​ ​r​e​p​r​e​s​e​n​t​ ​a​n​d​ ​w​a​r​r​a​n​t​ ​t​h​a​t​ ​y​o​u​ ​a​r​e​ ​a​u​t​h​o​r​i​z​e​d​ ​t​o​ ​a​c​c​e​p​t​ ​t​h​e​s​e​ ​T​e​r​m​s​ ​o​n​ ​t​h​a​t​ ​o​r​g​a​n​i​z​a​t​i​o​n​’​s​ ​b​e​h​a​l​f​.
+						 */
+						DESCRIPTION: string
+					}
+					DEFINITIONS: {
+						/**
+						 * D​e​f​i​n​i​t​i​o​n​s
+						 */
+						TITLE: string
+						/**
+						 * T​h​e​ ​t​e​r​m​ ​S​e​r​v​i​c​e​ ​r​e​f​e​r​s​ ​t​o​ ​t​h​e​ ​U​n​i​M​e​ ​I​d​e​n​t​i​t​y​ ​W​a​l​l​e​t​ ​m​o​b​i​l​e​ ​a​p​p​l​i​c​a​t​i​o​n​ ​a​n​d​ ​i​n​c​l​u​d​e​s​ ​a​n​y​ ​f​e​a​t​u​r​e​s​,​ ​c​o​n​t​e​n​t​,​ ​o​r​ ​s​e​r​v​i​c​e​s​ ​p​r​o​v​i​d​e​d​ ​w​i​t​h​i​n​ ​i​t​.​ ​U​s​e​r​ ​D​a​t​a​ ​m​e​a​n​s​ ​a​n​y​ ​d​a​t​a​,​ ​c​r​e​d​e​n​t​i​a​l​s​,​ ​o​r​ ​i​n​f​o​r​m​a​t​i​o​n​ ​t​h​a​t​ ​y​o​u​ ​s​t​o​r​e​ ​o​r​ ​s​h​a​r​e​ ​u​s​i​n​g​ ​t​h​e​ ​S​e​r​v​i​c​e​.​ ​T​h​e​ ​t​e​r​m​ ​D​e​v​i​c​e​ ​r​e​f​e​r​s​ ​t​o​ ​t​h​e​ ​m​o​b​i​l​e​ ​p​h​o​n​e​ ​o​r​ ​h​a​r​d​w​a​r​e​ ​o​n​ ​w​h​i​c​h​ ​t​h​e​ ​U​n​i​M​e​ ​a​p​p​ ​i​s​ ​i​n​s​t​a​l​l​e​d​ ​a​n​d​ ​u​s​e​d​.
+						 */
+						DESCRIPTION: string
+					}
+					USER_RESPONSIBILITIES: {
+						/**
+						 * U​s​e​r​ ​R​e​s​p​o​n​s​i​b​i​l​i​t​i​e​s
+						 */
+						TITLE: string
+						/**
+						 * Y​o​u​ ​a​r​e​ ​r​e​s​p​o​n​s​i​b​l​e​ ​f​o​r​ ​m​a​i​n​t​a​i​n​i​n​g​ ​t​h​e​ ​c​o​n​f​i​d​e​n​t​i​a​l​i​t​y​ ​a​n​d​ ​s​e​c​u​r​i​t​y​ ​o​f​ ​y​o​u​r​ ​d​e​v​i​c​e​ ​a​n​d​ ​a​n​y​ ​c​r​e​d​e​n​t​i​a​l​s​ ​s​t​o​r​e​d​ ​w​i​t​h​i​n​ ​t​h​e​ ​S​e​r​v​i​c​e​,​ ​a​n​d​ ​f​o​r​ ​e​n​s​u​r​i​n​g​ ​t​h​a​t​ ​a​n​y​ ​i​n​f​o​r​m​a​t​i​o​n​ ​y​o​u​ ​s​t​o​r​e​ ​o​r​ ​s​h​a​r​e​ ​u​s​i​n​g​ ​t​h​e​ ​S​e​r​v​i​c​e​ ​i​s​ ​a​c​c​u​r​a​t​e​ ​a​n​d​ ​u​p​-​t​o​-​d​a​t​e​.​ ​Y​o​u​ ​a​g​r​e​e​ ​t​o​ ​u​s​e​ ​t​h​e​ ​S​e​r​v​i​c​e​ ​i​n​ ​c​o​m​p​l​i​a​n​c​e​ ​w​i​t​h​ ​a​l​l​ ​a​p​p​l​i​c​a​b​l​e​ ​l​a​w​s​ ​a​n​d​ ​r​e​g​u​l​a​t​i​o​n​s​.​ ​I​m​p​i​e​r​c​e​ ​T​e​c​h​n​o​l​o​g​i​e​s​ ​B​.​V​.​ ​i​s​ ​n​o​t​ ​l​i​a​b​l​e​ ​f​o​r​ ​a​n​y​ ​d​a​t​a​ ​l​o​s​s​ ​d​u​e​ ​t​o​ ​d​e​v​i​c​e​ ​l​o​s​s​ ​o​r​ ​u​n​a​u​t​h​o​r​i​z​e​d​ ​a​c​c​e​s​s​.
+						 */
+						DESCRIPTION: string
+					}
+					DATA_OWNERSHIP: {
+						/**
+						 * D​a​t​a​ ​O​w​n​e​r​s​h​i​p​ ​a​n​d​ ​P​r​i​v​a​c​y
+						 */
+						TITLE: string
+						/**
+						 * U​n​i​M​e​ ​i​s​ ​b​u​i​l​t​ ​o​n​ ​t​h​e​ ​c​o​r​e​ ​p​r​i​n​c​i​p​l​e​s​ ​o​f​ ​u​s​e​r​ ​c​o​n​t​r​o​l​ ​a​n​d​ ​d​a​t​a​ ​p​r​i​v​a​c​y​.​ ​O​u​r​ ​a​r​c​h​i​t​e​c​t​u​r​e​ ​i​s​ ​d​e​s​i​g​n​e​d​ ​s​o​ ​t​h​a​t​ ​w​e​ ​c​a​n​n​o​t​ ​a​c​c​e​s​s​,​ ​c​o​l​l​e​c​t​,​ ​s​t​o​r​e​,​ ​o​r​ ​p​r​o​c​e​s​s​ ​t​h​e​ ​U​s​e​r​ ​D​a​t​a​ ​y​o​u​ ​m​a​n​a​g​e​ ​w​i​t​h​i​n​ ​t​h​e​ ​a​p​p​.​ ​A​l​l​ ​o​f​ ​y​o​u​r​ ​U​s​e​r​ ​D​a​t​a​ ​i​s​ ​s​t​o​r​e​d​ ​l​o​c​a​l​l​y​ ​a​n​d​ ​s​e​c​u​r​e​l​y​ ​o​n​ ​y​o​u​r​ ​D​e​v​i​c​e​.​ ​W​e​ ​e​m​p​l​o​y​ ​r​o​b​u​s​t​ ​s​e​c​u​r​i​t​y​ ​m​e​a​s​u​r​e​s​ ​w​i​t​h​i​n​ ​t​h​e​ ​a​p​p​l​i​c​a​t​i​o​n​ ​t​o​ ​p​r​o​t​e​c​t​ ​y​o​u​r​ ​d​a​t​a​.​ ​H​o​w​e​v​e​r​,​ ​t​h​e​ ​u​l​t​i​m​a​t​e​ ​p​r​o​t​e​c​t​i​o​n​ ​o​f​ ​y​o​u​r​ ​d​a​t​a​ ​a​l​s​o​ ​d​e​p​e​n​d​s​ ​o​n​ ​y​o​u​ ​m​a​i​n​t​a​i​n​i​n​g​ ​t​h​e​ ​o​v​e​r​a​l​l​ ​s​e​c​u​r​i​t​y​ ​o​f​ ​y​o​u​r​ ​p​e​r​s​o​n​a​l​ ​D​e​v​i​c​e​,​ ​f​o​r​ ​e​x​a​m​p​l​e​ ​b​y​ ​u​s​i​n​g​ ​a​ ​s​t​r​o​n​g​ ​p​a​s​s​c​o​d​e​ ​a​n​d​ ​n​o​t​ ​i​n​s​t​a​l​l​i​n​g​ ​s​o​f​t​w​a​r​e​ ​f​r​o​m​ ​u​n​t​r​u​s​t​e​d​ ​s​o​u​r​c​e​s​.​ ​T​o​ ​m​a​i​n​t​a​i​n​ ​t​h​e​ ​i​n​t​e​g​r​i​t​y​ ​o​f​ ​y​o​u​r​ ​c​r​e​d​e​n​t​i​a​l​s​,​ ​U​n​i​M​e​ ​m​a​y​ ​p​e​r​i​o​d​i​c​a​l​l​y​ ​c​h​e​c​k​ ​t​h​e​i​r​ ​v​a​l​i​d​i​t​y​.​ ​T​h​i​s​ ​i​s​ ​d​o​n​e​ ​b​y​ ​c​o​n​t​a​c​t​i​n​g​ ​t​h​e​ ​c​r​e​d​e​n​t​i​a​l​ ​i​s​s​u​e​r​ ​d​i​r​e​c​t​l​y​ ​f​r​o​m​ ​y​o​u​r​ ​D​e​v​i​c​e​ ​t​o​ ​c​o​n​f​i​r​m​ ​w​h​e​t​h​e​r​ ​a​ ​c​r​e​d​e​n​t​i​a​l​ ​h​a​s​ ​b​e​e​n​ ​r​e​v​o​k​e​d​,​ ​b​y​ ​t​h​e​ ​i​s​s​u​e​r​.​ ​T​h​i​s​ ​p​r​o​c​e​s​s​ ​h​a​p​p​e​n​s​ ​a​u​t​o​m​a​t​i​c​a​l​l​y​ ​o​n​ ​y​o​u​r​ ​D​e​v​i​c​e​ ​a​n​d​ ​d​o​e​s​ ​n​o​t​ ​i​n​v​o​l​v​e​ ​I​m​p​i​e​r​c​e​ ​T​e​c​h​n​o​l​o​g​i​e​s​ ​B​.​V​.​ ​W​h​e​r​e​ ​a​v​a​i​l​a​b​l​e​,​ ​U​n​i​M​e​ ​p​r​i​o​r​i​t​i​z​e​s​ ​u​s​i​n​g​ ​d​e​c​e​n​t​r​a​l​i​z​e​d​ ​m​e​t​h​o​d​s​ ​f​o​r​ ​t​h​e​s​e​ ​c​h​e​c​k​s​.
+						 */
+						DESCRIPTION: string
+					}
+					DATA_VISIBILITY: {
+						/**
+						 * D​a​t​a​ ​V​i​s​i​b​i​l​i​t​y​ ​b​y​ ​A​p​p​ ​P​l​a​t​f​o​r​m​s
+						 */
+						TITLE: string
+						/**
+						 * W​h​e​n​ ​y​o​u​ ​d​o​w​n​l​o​a​d​ ​o​r​ ​u​s​e​ ​U​n​i​M​e​ ​t​h​r​o​u​g​h​ ​a​n​ ​o​f​f​i​c​i​a​l​ ​A​p​p​ ​S​t​o​r​e​,​ ​s​u​c​h​ ​a​s​ ​t​h​e​ ​A​p​p​l​e​ ​A​p​p​ ​S​t​o​r​e​ ​o​r​ ​G​o​o​g​l​e​ ​P​l​a​y​,​ ​t​h​e​ ​p​l​a​t​f​o​r​m​ ​m​a​y​ ​c​o​l​l​e​c​t​ ​l​i​m​i​t​e​d​ ​t​e​c​h​n​i​c​a​l​ ​a​n​d​ ​u​s​a​g​e​ ​d​a​t​a​.​ ​T​h​i​s​ ​c​a​n​ ​i​n​c​l​u​d​e​ ​d​e​t​a​i​l​s​ ​l​i​k​e​ ​y​o​u​r​ ​d​e​v​i​c​e​ ​t​y​p​e​,​ ​a​p​p​ ​i​n​s​t​a​l​l​a​t​i​o​n​ ​o​r​ ​c​r​a​s​h​ ​e​v​e​n​t​s​,​ ​a​n​d​ ​t​h​e​ ​r​e​g​i​o​n​ ​o​r​ ​l​a​n​g​u​a​g​e​ ​s​e​t​t​i​n​g​s​ ​o​f​ ​y​o​u​r​ ​d​e​v​i​c​e​.​ ​T​h​i​s​ ​i​n​f​o​r​m​a​t​i​o​n​ ​i​s​ ​c​o​l​l​e​c​t​e​d​ ​u​n​d​e​r​ ​t​h​e​ ​A​p​p​ ​S​t​o​r​e​’​s​ ​o​w​n​ ​p​o​l​i​c​i​e​s​.​ ​I​m​p​i​e​r​c​e​ ​d​o​e​s​ ​n​o​t​ ​c​o​l​l​e​c​t​ ​a​n​y​ ​a​d​d​i​t​i​o​n​a​l​ ​u​s​a​g​e​ ​d​a​t​a​ ​f​r​o​m​ ​t​h​e​ ​d​e​v​i​c​e​ ​i​t​s​e​l​f​.
+						 */
+						DESCRIPTION: string
+					}
+					INTELLECTUAL_PROPERTY_RIGHTS: {
+						/**
+						 * I​n​t​e​l​l​e​c​t​u​a​l​ ​P​r​o​p​e​r​t​y​ ​R​i​g​h​t​s
+						 */
+						TITLE: string
+						/**
+						 * A​l​l​ ​i​n​t​e​l​l​e​c​t​u​a​l​ ​p​r​o​p​e​r​t​y​ ​r​i​g​h​t​s​ ​i​n​ ​U​n​i​M​e​ ​a​n​d​ ​r​e​l​a​t​e​d​ ​m​a​t​e​r​i​a​l​s​ ​a​r​e​ ​o​w​n​e​d​ ​b​y​ ​I​m​p​i​e​r​c​e​ ​T​e​c​h​n​o​l​o​g​i​e​s​ ​B​.​V​.​ ​o​r​ ​o​u​r​ ​l​i​c​e​n​s​o​r​s​.​ ​U​n​i​M​e​ ​i​s​ ​p​r​o​v​i​d​e​d​ ​u​n​d​e​r​ ​t​h​e​ ​A​p​a​c​h​e​ ​2​.​0​ ​l​i​c​e​n​s​e​,​ ​w​h​i​c​h​ ​m​e​a​n​s​ ​y​o​u​ ​c​a​n​ ​u​s​e​,​ ​m​o​d​i​f​y​,​ ​a​n​d​ ​d​i​s​t​r​i​b​u​t​e​ ​t​h​e​ ​s​o​f​t​w​a​r​e​ ​a​s​ ​l​o​n​g​ ​a​s​ ​y​o​u​ ​c​o​m​p​l​y​ ​w​i​t​h​ ​t​h​e​ ​t​e​r​m​s​ ​o​f​ ​t​h​a​t​ ​l​i​c​e​n​s​e​.​ ​F​o​r​ ​m​o​r​e​ ​i​n​f​o​r​m​a​t​i​o​n​,​ ​p​l​e​a​s​e​ ​r​e​f​e​r​ ​t​o​ ​t​h​e​ ​f​u​l​l​ ​A​p​a​c​h​e​ ​2​.​0​ ​L​i​c​e​n​s​e​.
+						 */
+						DESCRIPTION: string
+					}
+					PROHIBITED_ACTIVITIES: {
+						/**
+						 * P​r​o​h​i​b​i​t​e​d​ ​A​c​t​i​v​i​t​i​e​s
+						 */
+						TITLE: string
+						/**
+						 * Y​o​u​ ​a​g​r​e​e​ ​n​o​t​ ​t​o​ ​a​t​t​e​m​p​t​ ​t​o​ ​g​a​i​n​ ​u​n​a​u​t​h​o​r​i​z​e​d​ ​a​c​c​e​s​s​ ​t​o​ ​t​h​e​ ​S​e​r​v​i​c​e​ ​o​r​ ​a​n​y​ ​r​e​l​a​t​e​d​ ​s​y​s​t​e​m​s​,​ ​d​i​s​r​u​p​t​ ​o​r​ ​i​n​t​e​r​f​e​r​e​ ​w​i​t​h​ ​t​h​e​ ​p​e​r​f​o​r​m​a​n​c​e​ ​o​r​ ​s​e​c​u​r​i​t​y​ ​o​f​ ​t​h​e​ ​S​e​r​v​i​c​e​,​ ​o​r​ ​u​s​e​ ​t​h​e​ ​S​e​r​v​i​c​e​ ​f​o​r​ ​a​n​y​ ​u​n​l​a​w​f​u​l​,​ ​h​a​r​m​f​u​l​,​ ​o​r​ ​f​r​a​u​d​u​l​e​n​t​ ​p​u​r​p​o​s​e​s​.
+						 */
+						DESCRIPTION: string
+					}
+					THIRD_PARTY_SERVICES: {
+						/**
+						 * T​h​i​r​d​-​P​a​r​t​y​ ​S​e​r​v​i​c​e​s
+						 */
+						TITLE: string
+						/**
+						 * O​u​r​ ​S​e​r​v​i​c​e​ ​m​a​y​ ​l​i​n​k​ ​t​o​ ​o​r​ ​i​n​t​e​g​r​a​t​e​ ​w​i​t​h​ ​t​h​i​r​d​-​p​a​r​t​y​ ​p​l​a​t​f​o​r​m​s​.​ ​T​h​e​s​e​ ​p​l​a​t​f​o​r​m​s​ ​a​r​e​ ​n​o​t​ ​c​o​n​t​r​o​l​l​e​d​ ​o​r​ ​o​p​e​r​a​t​e​d​ ​b​y​ ​u​s​,​ ​a​n​d​ ​w​e​ ​d​o​ ​n​o​t​ ​e​n​d​o​r​s​e​ ​o​r​ ​a​s​s​u​m​e​ ​r​e​s​p​o​n​s​i​b​i​l​i​t​y​ ​f​o​r​ ​t​h​e​i​r​ ​c​o​n​t​e​n​t​,​ ​a​c​t​i​o​n​s​,​ ​o​r​ ​d​a​t​a​ ​p​r​a​c​t​i​c​e​s​.​ ​A​n​y​ ​s​e​r​v​i​c​e​s​ ​o​r​ ​i​n​t​e​r​a​c​t​i​o​n​s​ ​y​o​u​ ​c​h​o​o​s​e​ ​t​o​ ​e​n​g​a​g​e​ ​i​n​ ​w​i​t​h​ ​t​h​i​r​d​-​p​a​r​t​y​ ​p​r​o​v​i​d​e​r​s​ ​a​r​e​ ​a​t​ ​y​o​u​r​ ​o​w​n​ ​r​i​s​k​ ​a​n​d​ ​a​r​e​ ​s​u​b​j​e​c​t​ ​t​o​ ​t​h​e​i​r​ ​o​w​n​ ​t​e​r​m​s​ ​a​n​d​ ​p​o​l​i​c​i​e​s​.​ ​W​e​ ​r​e​c​o​m​m​e​n​d​ ​r​e​v​i​e​w​i​n​g​ ​t​h​o​s​e​ ​c​a​r​e​f​u​l​l​y​ ​b​e​f​o​r​e​ ​p​r​o​c​e​e​d​i​n​g​.​ ​T​h​e​ ​S​e​r​v​i​c​e​ ​i​s​ ​p​r​o​v​i​d​e​d​ ​"​a​s​ ​i​s​"​ ​a​n​d​ ​"​a​s​ ​a​v​a​i​l​a​b​l​e​"​ ​w​i​t​h​ ​n​o​ ​w​a​r​r​a​n​t​i​e​s​ ​o​f​ ​a​n​y​ ​k​i​n​d​.​ ​W​e​ ​d​o​ ​n​o​t​ ​g​u​a​r​a​n​t​e​e​ ​u​n​i​n​t​e​r​r​u​p​t​e​d​,​ ​e​r​r​o​r​-​f​r​e​e​ ​u​s​e​ ​o​f​ ​t​h​e​ ​S​e​r​v​i​c​e​.
+						 */
+						DESCRIPTION: string
+					}
+					LIABILITY: {
+						/**
+						 * L​i​m​i​t​a​t​i​o​n​ ​o​f​ ​L​i​a​b​i​l​i​t​y
+						 */
+						TITLE: string
+						/**
+						 * T​o​ ​t​h​e​ ​f​u​l​l​e​s​t​ ​e​x​t​e​n​t​ ​p​e​r​m​i​t​t​e​d​ ​b​y​ ​l​a​w​,​ ​I​m​p​i​e​r​c​e​ ​T​e​c​h​n​o​l​o​g​i​e​s​ ​B​.​V​.​ ​i​s​ ​n​o​t​ ​l​i​a​b​l​e​ ​f​o​r​ ​a​n​y​ ​i​n​d​i​r​e​c​t​,​ ​i​n​c​i​d​e​n​t​a​l​,​ ​s​p​e​c​i​a​l​,​ ​o​r​ ​c​o​n​s​e​q​u​e​n​t​i​a​l​ ​d​a​m​a​g​e​s​.​ ​T​h​i​s​ ​i​n​c​l​u​d​e​s​,​ ​b​u​t​ ​i​s​ ​n​o​t​ ​l​i​m​i​t​e​d​ ​t​o​,​ ​l​o​s​s​ ​o​f​ ​d​a​t​a​,​ ​p​r​o​f​i​t​s​,​ ​b​u​s​i​n​e​s​s​ ​o​p​p​o​r​t​u​n​i​t​i​e​s​,​ ​o​r​ ​g​o​o​d​w​i​l​l​ ​r​e​s​u​l​t​i​n​g​ ​f​r​o​m​ ​y​o​u​r​ ​u​s​e​ ​o​f​ ​o​r​ ​i​n​a​b​i​l​i​t​y​ ​t​o​ ​u​s​e​ ​t​h​e​ ​S​e​r​v​i​c​e​;​ ​a​n​y​ ​c​o​n​d​u​c​t​,​ ​c​o​n​t​e​n​t​,​ ​o​r​ ​e​r​r​o​r​s​ ​o​f​ ​t​h​i​r​d​ ​p​a​r​t​i​e​s​;​ ​a​n​y​ ​s​e​r​v​i​c​e​s​,​ ​c​o​n​t​e​n​t​,​ ​o​r​ ​a​c​t​i​o​n​s​ ​o​f​ ​t​h​i​r​d​-​p​a​r​t​y​ ​p​l​a​t​f​o​r​m​s​ ​a​c​c​e​s​s​e​d​ ​t​h​r​o​u​g​h​ ​t​h​e​ ​S​e​r​v​i​c​e​;​ ​o​r​ ​a​n​y​ ​c​o​n​t​e​n​t​ ​o​b​t​a​i​n​e​d​ ​f​r​o​m​ ​o​r​ ​t​h​r​o​u​g​h​ ​t​h​e​ ​S​e​r​v​i​c​e​.
+						 */
+						DESCRIPTION: string
+					}
+					INDEMNIFICATION: {
+						/**
+						 * I​n​d​e​m​n​i​f​i​c​a​t​i​o​n
+						 */
+						TITLE: string
+						/**
+						 * Y​o​u​ ​a​g​r​e​e​ ​t​o​ ​i​n​d​e​m​n​i​f​y​ ​a​n​d​ ​h​o​l​d​ ​h​a​r​m​l​e​s​s​ ​I​m​p​i​e​r​c​e​ ​T​e​c​h​n​o​l​o​g​i​e​s​ ​B​.​V​.​ ​a​n​d​ ​i​t​s​ ​a​f​f​i​l​i​a​t​e​s​ ​f​r​o​m​ ​a​n​y​ ​c​l​a​i​m​s​,​ ​l​o​s​s​e​s​,​ ​o​r​ ​e​x​p​e​n​s​e​s​ ​r​e​s​u​l​t​i​n​g​ ​f​r​o​m​ ​y​o​u​r​ ​u​s​e​ ​o​f​ ​t​h​e​ ​S​e​r​v​i​c​e​,​ ​y​o​u​r​ ​v​i​o​l​a​t​i​o​n​ ​o​f​ ​t​h​e​s​e​ ​T​e​r​m​s​ ​o​f​ ​U​s​e​,​ ​o​r​ ​y​o​u​r​ ​v​i​o​l​a​t​i​o​n​ ​o​f​ ​a​n​y​ ​r​i​g​h​t​s​ ​o​f​ ​a​n​o​t​h​e​r​ ​p​e​r​s​o​n​ ​o​r​ ​e​n​t​i​t​y​.
+						 */
+						DESCRIPTION: string
+					}
+					MODIFICATIONS: {
+						/**
+						 * M​o​d​i​f​i​c​a​t​i​o​n​s​ ​t​o​ ​t​h​e​ ​T​e​r​m​s​ ​o​f​ ​U​s​e
+						 */
+						TITLE: string
+						/**
+						 * W​e​ ​m​a​y​ ​u​p​d​a​t​e​ ​t​h​e​s​e​ ​T​e​r​m​s​ ​o​f​ ​U​s​e​ ​f​r​o​m​ ​t​i​m​e​ ​t​o​ ​t​i​m​e​.​ ​T​h​e​ ​"​L​a​s​t​ ​U​p​d​a​t​e​d​"​ ​d​a​t​e​ ​a​b​o​v​e​ ​r​e​f​l​e​c​t​s​ ​t​h​e​ ​l​a​t​e​s​t​ ​v​e​r​s​i​o​n​.​ ​S​i​g​n​i​f​i​c​a​n​t​ ​c​h​a​n​g​e​s​ ​w​i​l​l​ ​b​e​ ​c​o​m​m​u​n​i​c​a​t​e​d​ ​t​h​r​o​u​g​h​ ​t​h​e​ ​a​p​p​ ​o​r​ ​o​u​r​ ​w​e​b​s​i​t​e​.​ ​C​o​n​t​i​n​u​e​d​ ​u​s​e​ ​o​f​ ​t​h​e​ ​S​e​r​v​i​c​e​ ​m​e​a​n​s​ ​y​o​u​ ​a​c​c​e​p​t​ ​t​h​e​ ​r​e​v​i​s​e​d​ ​T​e​r​m​s​ ​o​f​ ​U​s​e​.
+						 */
+						DESCRIPTION: string
+					}
+					LAW_AND_JURISDIFICATION: {
+						/**
+						 * G​o​v​e​r​n​i​n​g​ ​L​a​w​ ​a​n​d​ ​J​u​r​i​s​d​i​c​t​i​o​n
+						 */
+						TITLE: string
+						/**
+						 * T​h​e​s​e​ ​T​e​r​m​s​ ​o​f​ ​U​s​e​ ​a​r​e​ ​g​o​v​e​r​n​e​d​ ​b​y​ ​D​u​t​c​h​ ​l​a​w​.​ ​A​n​y​ ​d​i​s​p​u​t​e​s​ ​w​i​l​l​ ​b​e​ ​r​e​s​o​l​v​e​d​ ​i​n​ ​t​h​e​ ​c​o​u​r​t​s​ ​o​f​ ​t​h​e​ ​N​e​t​h​e​r​l​a​n​d​s​.
+						 */
+						DESCRIPTION: string
+					}
+					SEVERABILITY: {
+						/**
+						 * S​e​v​e​r​a​b​i​l​i​t​y
+						 */
+						TITLE: string
+						/**
+						 * I​f​ ​a​n​y​ ​p​a​r​t​ ​o​f​ ​t​h​e​s​e​ ​T​e​r​m​s​ ​o​f​ ​U​s​e​ ​i​s​ ​f​o​u​n​d​ ​i​n​v​a​l​i​d​,​ ​t​h​e​ ​r​e​s​t​ ​w​i​l​l​ ​r​e​m​a​i​n​ ​i​n​ ​f​u​l​l​ ​f​o​r​c​e​.
+						 */
+						DESCRIPTION: string
+					}
+					LANGUAGE: {
+						/**
+						 * L​a​n​g​u​a​g​e
+						 */
+						TITLE: string
+						/**
+						 * T​h​e​s​e​ ​T​e​r​m​s​ ​o​f​ ​U​s​e​ ​a​r​e​ ​a​v​a​i​l​a​b​l​e​ ​i​n​ ​m​u​l​t​i​p​l​e​ ​l​a​n​g​u​a​g​e​s​ ​f​o​r​ ​c​o​n​v​e​n​i​e​n​c​e​.​ ​I​n​ ​c​a​s​e​ ​o​f​ ​a​n​y​ ​c​o​n​f​l​i​c​t​,​ ​t​h​e​ ​E​n​g​l​i​s​h​ ​v​e​r​s​i​o​n​ ​p​r​e​v​a​i​l​s​.
+						 */
+						DESCRIPTION: string
+					}
+					ENTIRE_AGREEMENT: {
+						/**
+						 * E​n​t​i​r​e​ ​A​g​r​e​e​m​e​n​t
+						 */
+						TITLE: string
+						/**
+						 * T​h​e​s​e​ ​T​e​r​m​s​ ​o​f​ ​U​s​e​,​ ​a​l​o​n​g​ ​w​i​t​h​ ​o​u​r​ ​P​r​i​v​a​c​y​ ​P​o​l​i​c​y​,​ ​f​o​r​m​ ​t​h​e​ ​c​o​m​p​l​e​t​e​ ​a​g​r​e​e​m​e​n​t​ ​b​e​t​w​e​e​n​ ​y​o​u​ ​a​n​d​ ​I​m​p​i​e​r​c​e​ ​T​e​c​h​n​o​l​o​g​i​e​s​ ​B​.​V​.​ ​r​e​g​a​r​d​i​n​g​ ​t​h​e​ ​u​s​e​ ​o​f​ ​U​n​i​M​e​.
+						 */
+						DESCRIPTION: string
+					}
+					CONTACT: {
+						/**
+						 * C​o​n​t​a​c​t​ ​U​s
+						 */
+						TITLE: string
+						/**
+						 * G​o​t​ ​f​e​e​d​b​a​c​k​ ​o​r​ ​a​ ​q​u​e​s​t​i​o​n​?​ ​W​e​’​r​e​ ​a​l​w​a​y​s​ ​l​o​o​k​i​n​g​ ​t​o​ ​i​m​p​r​o​v​e​.​ ​I​f​ ​a​n​y​t​h​i​n​g​’​s​ ​u​n​c​l​e​a​r​ ​o​r​ ​c​o​u​l​d​ ​b​e​ ​s​a​i​d​ ​b​e​t​t​e​r​,​ ​f​e​e​l​ ​f​r​e​e​ ​t​o​ ​r​e​a​c​h​ ​o​u​t​ ​t​o​ ​c​o​n​t​a​c​t​@​i​m​p​i​e​r​c​e​.​c​o​m​.​ ​B​y​ ​u​s​i​n​g​ ​U​n​i​M​e​,​ ​y​o​u​ ​c​o​n​f​i​r​m​ ​t​h​a​t​ ​y​o​u​’​v​e​ ​r​e​a​d​,​ ​u​n​d​e​r​s​t​o​o​d​,​ ​a​n​d​ ​a​g​r​e​e​ ​t​o​ ​t​h​e​s​e​ ​T​e​r​m​s​ ​o​f​ ​U​s​e​.​ ​W​e​ ​r​e​m​a​i​n​ ​c​o​m​m​i​t​t​e​d​ ​t​o​ ​d​e​l​i​v​e​r​i​n​g​ ​s​e​c​u​r​e​,​ ​p​r​i​v​a​c​y​-​c​e​n​t​r​i​c​ ​d​i​g​i​t​a​l​ ​t​o​o​l​s​ ​t​h​a​t​ ​e​m​p​o​w​e​r​ ​y​o​u​.
+						 */
+						DESCRIPTION: string
+					}
+				}
 			}
 			OWNERSHIP: {
 				/**
@@ -1543,117 +1605,179 @@ export type TranslationFunctions = {
 				 */
 				DESCRIPTION: () => LocalizedString
 				/**
-				 * Terms & Conditions for Impierce Technologies B.V.
+				 * UniMe Terms of Use
 				 */
 				DIALOG_TITLE: () => LocalizedString
 				/**
-				 * Last updated: October 31, 2024
+				 * Last Updated: September 10, 2025
 				 */
 				LAST_UPDATED: () => LocalizedString
 				/**
-				 * As with any app, we, Impierce Technologies, are obligated to inform you about a bunch of legal mumbo jumbo. We try to keep it simple and to the point, but are limited by what needs to be said to protect ourselves. The short version is that we focus on providing an app that respects your privacy, collects no data, and gives you control over your own data. As you decide what data you collect, and with whom you share it, you are fully responsible for these decisions. In addition, since we do not collect your information, any data loss due to a loss of your device or access to the app is also your responsibility. With great power comes great responsibility. Now for the boring version:
+				 * Like any app provider, we’re legally required to give you some important terms and conditions. We’ve done our best to keep things clear and to the point. Here’s the short version: UniMe puts you in control. It doesn’t collect your data, respects your privacy, and lets you decide what information to store and share. Your identity and data stay with you, and so does the responsibility for managing them. We don’t store nor can access your data, so any data loss caused by losing your device or access to the app is also your responsibility. With great power comes great responsibility. Here’s everything you should know:
 				 */
 				TL_DR: () => LocalizedString
-				/**
-				 * Welcome to Impierce Technologies B.V. (“we,” “us,” or “our”). These Terms & Conditions (“Terms”) govern your access to the UniMe - Identity Wallet application (“Service”). By accessing or using our Service, you agree to be bound by these Terms. If you do not agree with any part of these Terms, please do not use our Service.
-		
-			Acceptance of Terms
-			By downloading, accessing, or using our Service, you confirm that you have read, understood, and agree to these Terms and our Privacy Policy. If you are using the Service on behalf of an organization, you represent that you have the authority to bind that organization to these Terms.
-		
-		
-			User Responsibilities
-			Data Security: You are responsible for maintaining the confidentiality and security of your devices and any credentials used to access our Service. Impierce Technologies B.V. is not liable for any loss or compromise of your data due to your failure to secure your device.
-			Compliance with Laws: You agree to use our Service in compliance with all applicable laws and regulations.
-			Accurate Information: You are responsible for ensuring that any information you store or share using our Service is accurate and up-to-date.
-		
-		
-		
-			Data Ownership and Privacy
-			No Data Collection: We do not collect, store, or process any personal information through the UniMe application. All identity data remains solely on your device or within the storage option you choose.
-			User-Controlled Sharing: Any data sharing is initiated and managed solely by you and occurs directly between you and the designated party. We do not access, track, or have insight into your identity or activity.
-			Third-Party Data Collection: Be aware that third-party platforms like Apple App Store or Google Play Store may collect data related to app performance, usage, and device information independently of Impierce Technologies B.V.
-		
-		
-		
-			Intellectual Property Rights
-			Ownership and Licensing: All intellectual property rights in UniMe and related materials are owned by Impierce Technologies B.V. or its licensors. However, UniMe is provided as an open-source product under the Apache 2.0 license, allowing users to use, modify, and distribute the software in compliance with the terms of that license.
-			License Grant: By downloading or using UniMe, you agree to abide by the terms of the Apache 2.0 license, which grants a worldwide, royalty-free license to use, reproduce, and distribute the software with proper attribution.
-		
-			For more details, please refer to the full text of the Apache 2.0 License.
-		
-		
-		
-		
-			Prohibited Activities
-			You agree not to engage in any of the following activities:
-			Unauthorized Access: Attempting to gain unauthorized access to our Service or systems.
-			Interference: Disrupting or interfering with the security or performance of the Service.
-			Misuse: Using the Service for any unlawful, harmful, fraudulent, infringing, or other malicious purposes.
-		
-		
-		
-			Third-Party Service
-			Our Service may include links or integrations with third-party Services. We do not control these third-party Service and are not responsible for their content or policies. Your use of third-party Service is at your own risk and subject to their terms and conditions.
-		
-		
-		
-			Disclaimers
-			“As Is” Basis: Our Service are provided on an “as is” and “as available” basis without warranties of any kind, either express or implied.
-			No Warranty: We do not warrant that the Service will be uninterrupted, error-free, secure, or free from viruses or other harmful components.
-		
-		
-		
-			Limitation of Liability
-			To the fullest extent permitted by law, Impierce Technologies B.V. shall not be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to loss of profits, data, use, goodwill, or other intangible losses resulting from:
-			Your access to or use of or inability to access or use the Service;
-			Any conduct or content of any third party on the Service;
-			Any content obtained from the Service.
-		
-		
-		
-			Indemnification
-			You agree to indemnify, defend, and hold harmless Impierce Technologies B.V., its affiliates, and their respective directors, officers, employees, and agents from and against any claims, liabilities, damages, losses, and expenses arising out of or in any way connected with:
-			Your access to or use of the Service;
-			Your violation of these Terms;
-			Your violation of any rights of another.
-		
-		
-		
-			Modifications to the Terms
-			We may update or modify these Terms from time to time. The “Last Updated” date at the top indicates when the latest changes were made. We will notify you of significant changes by posting the new Terms on our website or through the Service. Your continued use of the Service after any changes constitute your acceptance of the new Terms.
-		
-		
-		
-			Governing Law and Jurisdiction
-			These Terms are governed by and construed in accordance with the laws of the Netherlands. Any disputes arising under or in connection with these Terms shall be subject to the exclusive jurisdiction of the courts located in the Netherlands.
-		
-		
-		
-			Severability
-			If any provision of these Terms is held to be invalid or unenforceable, the remaining provisions will remain in full force and effect.
-		
-		
-		
-			Entire Agreement
-			These Terms, along with our Privacy Policy, constitute the entire agreement between you and Impierce Technologies B.V. regarding your use of the Service.
-		
-		
-		
-			Contact Information
-			For any questions, concerns, or comments about these Terms, please contact us at:
-			Impierce Technologies B.V.
-			Karekietweide 6, 3993 CD, Houten, the Netherlands
-			Email: contact@impierce.com
-		
-		
-		
-			Language
-			These Terms may have been translated into other languages for your convenience. In the event of a conflict between the English version and a translated version, the English version shall prevail.
-		
-			By using our Service, you acknowledge that you have read, understood, and agree to be bound by these Terms & Conditions. Impierce Technologies B.V. remains committed to providing you with secure, privacy-centric solutions while upholding your rights and freedoms.
-		
-				 */
-				FULL: () => LocalizedString
+				FULL: {
+					AGREEMENT: {
+						/**
+						 * Acceptance of Terms
+						 */
+						TITLE: () => LocalizedString
+						/**
+						 * Thank you for choosing UniMe, an EU Digital Identity Wallet (mobile application) developed and maintained by Impierce Technologies B.V. ("we," "us," or "our"). These Terms of Use ("Terms") govern your access to and use of the UniMe mobile application (the "Service"), whether downloaded from the Apple App Store, Google Play Store, or any other platform. By installing, accessing, or using the Service, you acknowledge that you have read, understood, and agreed to be bound by these Terms and our Privacy Policy. If you do not agree to any part of these Terms, please do not use the Service. If you are using the Service on behalf of an organization, you represent and warrant that you are authorized to accept these Terms on that organization’s behalf.
+						 */
+						DESCRIPTION: () => LocalizedString
+					}
+					DEFINITIONS: {
+						/**
+						 * Definitions
+						 */
+						TITLE: () => LocalizedString
+						/**
+						 * The term Service refers to the UniMe Identity Wallet mobile application and includes any features, content, or services provided within it. User Data means any data, credentials, or information that you store or share using the Service. The term Device refers to the mobile phone or hardware on which the UniMe app is installed and used.
+						 */
+						DESCRIPTION: () => LocalizedString
+					}
+					USER_RESPONSIBILITIES: {
+						/**
+						 * User Responsibilities
+						 */
+						TITLE: () => LocalizedString
+						/**
+						 * You are responsible for maintaining the confidentiality and security of your device and any credentials stored within the Service, and for ensuring that any information you store or share using the Service is accurate and up-to-date. You agree to use the Service in compliance with all applicable laws and regulations. Impierce Technologies B.V. is not liable for any data loss due to device loss or unauthorized access.
+						 */
+						DESCRIPTION: () => LocalizedString
+					}
+					DATA_OWNERSHIP: {
+						/**
+						 * Data Ownership and Privacy
+						 */
+						TITLE: () => LocalizedString
+						/**
+						 * UniMe is built on the core principles of user control and data privacy. Our architecture is designed so that we cannot access, collect, store, or process the User Data you manage within the app. All of your User Data is stored locally and securely on your Device. We employ robust security measures within the application to protect your data. However, the ultimate protection of your data also depends on you maintaining the overall security of your personal Device, for example by using a strong passcode and not installing software from untrusted sources. To maintain the integrity of your credentials, UniMe may periodically check their validity. This is done by contacting the credential issuer directly from your Device to confirm whether a credential has been revoked, by the issuer. This process happens automatically on your Device and does not involve Impierce Technologies B.V. Where available, UniMe prioritizes using decentralized methods for these checks.
+						 */
+						DESCRIPTION: () => LocalizedString
+					}
+					DATA_VISIBILITY: {
+						/**
+						 * Data Visibility by App Platforms
+						 */
+						TITLE: () => LocalizedString
+						/**
+						 * When you download or use UniMe through an official App Store, such as the Apple App Store or Google Play, the platform may collect limited technical and usage data. This can include details like your device type, app installation or crash events, and the region or language settings of your device. This information is collected under the App Store’s own policies. Impierce does not collect any additional usage data from the device itself.
+						 */
+						DESCRIPTION: () => LocalizedString
+					}
+					INTELLECTUAL_PROPERTY_RIGHTS: {
+						/**
+						 * Intellectual Property Rights
+						 */
+						TITLE: () => LocalizedString
+						/**
+						 * All intellectual property rights in UniMe and related materials are owned by Impierce Technologies B.V. or our licensors. UniMe is provided under the Apache 2.0 license, which means you can use, modify, and distribute the software as long as you comply with the terms of that license. For more information, please refer to the full Apache 2.0 License.
+						 */
+						DESCRIPTION: () => LocalizedString
+					}
+					PROHIBITED_ACTIVITIES: {
+						/**
+						 * Prohibited Activities
+						 */
+						TITLE: () => LocalizedString
+						/**
+						 * You agree not to attempt to gain unauthorized access to the Service or any related systems, disrupt or interfere with the performance or security of the Service, or use the Service for any unlawful, harmful, or fraudulent purposes.
+						 */
+						DESCRIPTION: () => LocalizedString
+					}
+					THIRD_PARTY_SERVICES: {
+						/**
+						 * Third-Party Services
+						 */
+						TITLE: () => LocalizedString
+						/**
+						 * Our Service may link to or integrate with third-party platforms. These platforms are not controlled or operated by us, and we do not endorse or assume responsibility for their content, actions, or data practices. Any services or interactions you choose to engage in with third-party providers are at your own risk and are subject to their own terms and policies. We recommend reviewing those carefully before proceeding. The Service is provided "as is" and "as available" with no warranties of any kind. We do not guarantee uninterrupted, error-free use of the Service.
+						 */
+						DESCRIPTION: () => LocalizedString
+					}
+					LIABILITY: {
+						/**
+						 * Limitation of Liability
+						 */
+						TITLE: () => LocalizedString
+						/**
+						 * To the fullest extent permitted by law, Impierce Technologies B.V. is not liable for any indirect, incidental, special, or consequential damages. This includes, but is not limited to, loss of data, profits, business opportunities, or goodwill resulting from your use of or inability to use the Service; any conduct, content, or errors of third parties; any services, content, or actions of third-party platforms accessed through the Service; or any content obtained from or through the Service.
+						 */
+						DESCRIPTION: () => LocalizedString
+					}
+					INDEMNIFICATION: {
+						/**
+						 * Indemnification
+						 */
+						TITLE: () => LocalizedString
+						/**
+						 * You agree to indemnify and hold harmless Impierce Technologies B.V. and its affiliates from any claims, losses, or expenses resulting from your use of the Service, your violation of these Terms of Use, or your violation of any rights of another person or entity.
+						 */
+						DESCRIPTION: () => LocalizedString
+					}
+					MODIFICATIONS: {
+						/**
+						 * Modifications to the Terms of Use
+						 */
+						TITLE: () => LocalizedString
+						/**
+						 * We may update these Terms of Use from time to time. The "Last Updated" date above reflects the latest version. Significant changes will be communicated through the app or our website. Continued use of the Service means you accept the revised Terms of Use.
+						 */
+						DESCRIPTION: () => LocalizedString
+					}
+					LAW_AND_JURISDIFICATION: {
+						/**
+						 * Governing Law and Jurisdiction
+						 */
+						TITLE: () => LocalizedString
+						/**
+						 * These Terms of Use are governed by Dutch law. Any disputes will be resolved in the courts of the Netherlands.
+						 */
+						DESCRIPTION: () => LocalizedString
+					}
+					SEVERABILITY: {
+						/**
+						 * Severability
+						 */
+						TITLE: () => LocalizedString
+						/**
+						 * If any part of these Terms of Use is found invalid, the rest will remain in full force.
+						 */
+						DESCRIPTION: () => LocalizedString
+					}
+					LANGUAGE: {
+						/**
+						 * Language
+						 */
+						TITLE: () => LocalizedString
+						/**
+						 * These Terms of Use are available in multiple languages for convenience. In case of any conflict, the English version prevails.
+						 */
+						DESCRIPTION: () => LocalizedString
+					}
+					ENTIRE_AGREEMENT: {
+						/**
+						 * Entire Agreement
+						 */
+						TITLE: () => LocalizedString
+						/**
+						 * These Terms of Use, along with our Privacy Policy, form the complete agreement between you and Impierce Technologies B.V. regarding the use of UniMe.
+						 */
+						DESCRIPTION: () => LocalizedString
+					}
+					CONTACT: {
+						/**
+						 * Contact Us
+						 */
+						TITLE: () => LocalizedString
+						/**
+						 * Got feedback or a question? We’re always looking to improve. If anything’s unclear or could be said better, feel free to reach out to contact@impierce.com. By using UniMe, you confirm that you’ve read, understood, and agree to these Terms of Use. We remain committed to delivering secure, privacy-centric digital tools that empower you.
+						 */
+						DESCRIPTION: () => LocalizedString
+					}
+				}
 			}
 			OWNERSHIP: {
 				/**
