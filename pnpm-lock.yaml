@@ -141,8 +141,8 @@ importers:
         specifier: ^14.1.0
         version: 14.1.0
       melt:
-        specifier: ^0.34.0
-        version: 0.34.0(@floating-ui/dom@1.7.4)(svelte@5.39.12)
+        specifier: ^0.41.0
+        version: 0.41.0(@floating-ui/dom@1.7.4)(svelte@5.39.12)
       postcss:
         specifier: ^8.5.6
         version: 8.5.6
@@ -2174,8 +2174,8 @@ packages:
   mdurl@2.0.0:
     resolution: {integrity: sha512-Lf+9+2r+Tdp5wXDXC4PcIBjTDtq4UKjCPMQhKIuzpJNW0b96kVqSwW0bT7FhRSfmAiFYgP+SCRvdrDozfh0U5w==}
 
-  melt@0.34.0:
-    resolution: {integrity: sha512-hJ6jqjH1YnedBcJTe2+HttEP4SYiccaewViUTok0SCrApcNwuzBk1TFGj+uOIUfe4pqzl+PdW2aQg3cBZk/Ppw==}
+  melt@0.41.0:
+    resolution: {integrity: sha512-WRnW09FVudTF53yvUKLxmjev03uvC1jf0PBNZVQn1GDMhSNVh4aG69S0pAXvOl0kNtMks1OqVinQY4hP/68ZVQ==}
     peerDependencies:
       '@floating-ui/dom': ^1.6.0
       svelte: ^5.30.1
@@ -5113,12 +5113,12 @@ snapshots:
 
   mdurl@2.0.0: {}
 
-  melt@0.34.0(@floating-ui/dom@1.7.4)(svelte@5.39.12):
+  melt@0.41.0(@floating-ui/dom@1.7.4)(svelte@5.39.12):
     dependencies:
       '@floating-ui/dom': 1.7.4
       dequal: 2.0.3
+      focus-trap: 7.6.5
       jest-axe: 9.0.0
-      nanoid: 5.1.6
       runed: 0.23.4(svelte@5.39.12)
       svelte: 5.39.12
 
