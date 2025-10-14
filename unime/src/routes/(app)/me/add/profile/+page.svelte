@@ -126,7 +126,7 @@
         <IdentificationBadgeRegularIcon class="size-7 text-slate-800 dark:text-grey" />
       </div>
       <div
-        class="w-full text-center text-[22px]/[30px] font-semibold tracking-tight text-slate-700 outline-none dark:text-grey"
+        class="w-full text-center text-[22px]/[30px] font-semibold tracking-tight text-slate-700 outline-hidden dark:text-grey"
       >
         {profileName}
       </div>
@@ -184,7 +184,7 @@
           <!-- TODO: allow multiple nationalities -->
           <!-- <button
             onclick={() => (show_secondary_nationality = true)}
-            class="w-fit rounded px-3 py-2 text-sm font-medium text-primary hover:bg-slate-100"
+            class="w-fit rounded-sm px-3 py-2 text-sm font-medium text-primary hover:bg-slate-100"
           >
             Add another nationality
           </button> -->
@@ -197,7 +197,7 @@
 </div>
 
 <div
-  class="fixed bottom-[var(--safe-area-inset-bottom)] left-0 z-10 flex h-36 w-full flex-col gap-5 rounded-t-3xl bg-background-alt p-6 shadow"
+  class="fixed bottom-(--safe-area-inset-bottom) left-0 z-10 flex h-36 w-full flex-col gap-5 rounded-t-3xl bg-background-alt p-6 shadow-sm"
 >
   <Switch {checked} onCheckedChange={({ next }) => (checked = next)}>
     <div class="flex items-center gap-4 px-4">

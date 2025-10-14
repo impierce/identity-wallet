@@ -24,7 +24,7 @@
     <h2 class="font-medium text-text-alt">{$LL.CREDENTIAL.RENDERER.PID.NATIONALITY()}</h2>
     <div class="flex grow items-center gap-2">
       {#each subject.nationality as nationality}
-        <span class="overflow-hidden rounded">
+        <span class="overflow-hidden rounded-sm">
           <Icon class="size-5" icon={`circle-flags:${nationality.toLowerCase()}`} />
         </span>
       {/each}

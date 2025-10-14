@@ -115,7 +115,7 @@
             {#each pinInput.inputs as input}
               <input
                 {...input}
-                class="size-12 rounded-xl border border-slate-300 bg-background-alt text-center text-2xl font-semibold text-text-alt outline-none focus:border-primary disabled:cursor-not-allowed dark:border-slate-500"
+                class="size-12 rounded-xl border border-slate-300 bg-background-alt text-center text-2xl font-semibold text-text-alt outline-hidden focus:border-primary disabled:cursor-not-allowed dark:border-slate-500"
               />
             {/each}
           </div>
