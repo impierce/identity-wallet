@@ -1120,6 +1120,50 @@ type RootTranslation = {
 			 * A​d​d​ ​y​o​u​r​ ​h​o​m​e​ ​o​r​ ​w​o​r​k​ ​a​d​d​r​e​s​s
 			 */
 			DESCRIPTION: string
+			INFO: {
+				/**
+				 * A​d​d​ ​A​d​d​r​e​s​s
+				 */
+				NAVBAR_TITLE: string
+				/**
+				 * A​d​d​r​e​s​s
+				 */
+				TITLE: string
+				/**
+				 * B​e​f​o​r​e​ ​y​o​u​ ​s​t​a​r​t
+				 */
+				DESCRIPTION: string
+				ITEM_0: {
+					/**
+					 * A​l​l​ ​y​o​u​r​ ​a​d​d​r​e​s​s​e​s​ ​i​n​ ​o​n​e​ ​p​l​a​c​e
+					 */
+					TITLE: string
+					/**
+					 * K​e​e​p​ ​y​o​u​r​ ​h​o​m​e​,​ ​o​f​f​i​c​e​,​ ​o​r​ ​a​n​y​ ​o​t​h​e​r​ ​a​d​d​r​e​s​s​ ​s​e​c​u​r​e​l​y​ ​i​n​ ​y​o​u​r​ ​w​a​l​l​e​t​,​ ​r​e​a​d​y​ ​t​o​ ​u​s​e​ ​i​n​s​t​a​n​t​l​y​ ​o​n​ ​s​u​p​p​o​r​t​i​n​g​ ​o​n​l​i​n​e​ ​p​l​a​t​f​o​r​m​s​.
+					 */
+					DESCRIPTION: string
+				}
+				ITEM_1: {
+					/**
+					 * T​a​p​,​ ​c​o​n​f​i​r​m​,​ ​a​n​d​ ​y​o​u​’​r​e​ ​d​o​n​e
+					 */
+					TITLE: string
+					/**
+					 * W​h​e​n​ ​a​ ​s​e​r​v​i​c​e​ ​a​s​k​s​ ​f​o​r​ ​a​n​ ​a​d​d​r​e​s​s​,​ ​j​u​s​t​ ​s​c​a​n​ ​t​h​e​i​r​ ​c​o​d​e​ ​o​r​ ​t​a​p​ ​’​C​o​n​n​e​c​t​’​,​ ​c​h​o​o​s​e​ ​w​h​i​c​h​ ​a​d​d​r​e​s​s​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​s​h​a​r​e​,​ ​a​n​d​ ​c​o​n​f​i​r​m​.​ ​I​t​’​s​ ​d​o​n​e​ ​i​n​ ​a​ ​h​e​a​r​t​b​e​a​t​.
+					 */
+					DESCRIPTION: string
+				}
+				ITEM_2: {
+					/**
+					 * L​o​c​k​e​d​ ​d​o​w​n​ ​a​n​d​ ​s​e​c​u​r​e
+					 */
+					TITLE: string
+					/**
+					 * Y​o​u​r​ ​a​d​d​r​e​s​s​e​s​ ​a​r​e​ ​f​o​r​ ​y​o​u​r​ ​e​y​e​s​ ​o​n​l​y​ ​u​n​t​i​l​ ​y​o​u​ ​d​e​c​i​d​e​ ​t​o​ ​s​h​a​r​e​ ​t​h​e​m​.​ ​E​v​e​r​y​ ​s​h​a​r​e​ ​i​s​ ​e​n​c​r​y​p​t​e​d​,​ ​l​o​g​g​e​d​,​ ​a​n​d​ ​r​e​q​u​i​r​e​s​ ​y​o​u​r​ ​a​p​p​r​o​v​a​l​,​ ​g​i​v​i​n​g​ ​y​o​u​ ​a​ ​f​u​l​l​ ​o​v​e​r​v​i​e​w​ ​o​f​ ​w​h​o​ ​h​a​s​ ​y​o​u​r​ ​d​e​t​a​i​l​s​.
+					 */
+					DESCRIPTION: string
+				}
+			}
 			ADD: {
 				/**
 				 * A​d​d​ ​a​d​d​r​e​s​s
@@ -1199,31 +1243,31 @@ type RootTranslation = {
 				DESCRIPTION: string
 				ITEM_0: {
 					/**
-					 * W​h​y​ ​v​e​r​i​f​y​ ​y​o​u​r​ ​e​m​a​i​l​ ​i​n​ ​U​n​i​M​e​?
+					 * P​r​o​v​e​ ​i​t​’​s​ ​r​e​a​l​l​y​ ​y​o​u
 					 */
 					TITLE: string
 					/**
-					 * I​t​ ​p​r​o​v​e​s​ ​t​h​e​ ​e​m​a​i​l​ ​i​s​ ​y​o​u​r​s​,​ ​s​o​ ​y​o​u​ ​c​a​n​ ​l​o​g​ ​i​n​ ​f​a​s​t​e​r​ ​w​i​t​h​o​u​t​ ​a​ ​u​s​e​r​n​a​m​e​ ​o​r​ ​p​a​s​s​w​o​r​d​.​ ​Y​o​u​'​l​l​ ​a​l​s​o​ ​b​e​ ​a​b​l​e​ ​t​o​ ​u​s​e​ ​i​t​ ​w​i​t​h​ ​a​p​p​s​,​ ​w​e​b​s​i​t​e​s​ ​a​n​d​ ​e​v​e​n​ ​o​t​h​e​r​ ​p​e​o​p​l​e​ ​w​h​o​ ​w​a​n​t​ ​t​o​ ​c​o​n​f​i​r​m​ ​i​t​'​s​ ​r​e​a​l​l​y​ ​y​o​u​.
+					 * A​ ​v​e​r​i​f​i​e​d​ ​e​m​a​i​l​ ​a​c​t​s​ ​a​s​ ​y​o​u​r​ ​d​i​g​i​t​a​l​ ​h​a​n​d​s​h​a​k​e​.​ ​I​t​ ​g​i​v​e​s​ ​f​r​i​e​n​d​s​,​ ​c​o​l​l​e​a​g​u​e​s​,​ ​a​n​d​ ​s​e​r​v​i​c​e​s​ ​c​o​n​f​i​d​e​n​c​e​ ​t​h​a​t​ ​i​t​’​s​ ​g​e​n​u​i​n​e​l​y​ ​y​o​u​,​ ​b​o​o​s​t​i​n​g​ ​t​r​u​s​t​ ​i​n​ ​y​o​u​r​ ​o​n​l​i​n​e​ ​i​n​t​e​r​a​c​t​i​o​n​s​.
 					 */
 					DESCRIPTION: string
 				}
 				ITEM_1: {
 					/**
-					 * H​o​w​ ​d​o​e​s​ ​i​t​ ​w​o​r​k​?
+					 * Y​o​u​’​r​e​ ​a​l​w​a​y​s​ ​i​n​ ​c​o​n​t​r​o​l
 					 */
 					TITLE: string
 					/**
-					 * W​e​ ​s​e​n​d​ ​a​ ​o​n​e​-​t​i​m​e​ ​c​o​d​e​ ​t​o​ ​y​o​u​r​ ​e​m​a​i​l​.​ ​J​u​s​t​ ​e​n​t​e​r​ ​i​t​ ​t​o​ ​c​o​n​f​i​r​m​ ​i​t​'​s​ ​y​o​u​r​s​.​ ​O​n​c​e​ ​v​e​r​i​f​i​e​d​,​ ​y​o​u​ ​c​a​n​ ​u​s​e​ ​y​o​u​r​ ​e​m​a​i​l​ ​w​i​t​h​ ​s​u​p​p​o​r​t​e​d​ ​s​e​r​v​i​c​e​s​.
+					 * Y​o​u​ ​d​e​c​i​d​e​ ​e​x​a​c​t​l​y​ ​w​h​e​n​ ​a​n​d​ ​w​h​e​r​e​ ​t​o​ ​u​s​e​ ​y​o​u​r​ ​v​e​r​i​f​i​e​d​ ​e​m​a​i​l​.​ ​E​a​c​h​ ​s​h​a​r​e​ ​i​s​ ​e​n​c​r​y​p​t​e​d​ ​a​n​d​ ​l​o​g​g​e​d​ ​i​n​ ​y​o​u​r​ ​a​c​t​i​v​i​t​y​ ​h​i​s​t​o​r​y​.
 					 */
 					DESCRIPTION: string
 				}
 				ITEM_2: {
 					/**
-					 * I​s​ ​m​y​ ​i​n​f​o​r​m​a​t​i​o​n​ ​s​a​f​e​?
+					 * S​e​c​u​r​e​ ​a​n​d​ ​p​r​i​v​a​t​e​,​ ​b​y​ ​d​e​f​a​u​l​t
 					 */
 					TITLE: string
 					/**
-					 * Y​e​s​.​ ​W​e​ ​o​n​l​y​ ​u​s​e​ ​y​o​u​r​ ​e​m​a​i​l​ ​t​o​ ​s​e​n​d​ ​t​h​e​ ​v​e​r​i​f​i​c​a​t​i​o​n​ ​c​o​d​e​.​ ​W​e​ ​n​e​v​e​r​ ​s​h​a​r​e​ ​o​r​ ​u​s​e​ ​i​t​ ​f​o​r​ ​a​n​y​t​h​i​n​g​ ​e​l​s​e​.
+					 * W​e​ ​s​e​n​d​ ​a​ ​o​n​e​-​t​i​m​e​ ​c​o​d​e​ ​t​o​ ​y​o​u​r​ ​e​m​a​i​l​.​ ​Y​o​u​ ​e​n​t​e​r​ ​i​t​,​ ​a​n​d​ ​t​h​e​ ​s​e​c​u​r​e​ ​c​r​e​d​e​n​t​i​a​l​ ​s​t​a​y​s​ ​l​o​c​k​e​d​ ​o​n​ ​y​o​u​r​ ​p​h​o​n​e​,​ ​n​e​v​e​r​ ​s​h​a​r​e​d​ ​w​i​t​h​o​u​t​ ​y​o​u​r​ ​d​i​r​e​c​t​ ​a​p​p​r​o​v​a​l​.
 					 */
 					DESCRIPTION: string
 				}
@@ -1295,31 +1339,31 @@ type RootTranslation = {
 				DESCRIPTION: string
 				ITEM_0: {
 					/**
-					 * W​h​y​ ​a​d​d​ ​y​o​u​r​ ​i​n​f​o​r​m​a​t​i​o​n​ ​i​n​ ​U​n​i​M​e​?
+					 * S​k​i​p​ ​t​e​d​i​o​u​s​ ​f​o​r​m​s
 					 */
 					TITLE: string
 					/**
-					 * A​d​d​ ​y​o​u​r​ ​p​e​r​s​o​n​a​l​ ​d​e​t​a​i​l​s​ ​o​n​c​e​ ​a​n​d​ ​r​e​u​s​e​ ​t​h​e​m​ ​a​n​y​w​h​e​r​e​.​ ​S​k​i​p​ ​l​o​n​g​ ​f​o​r​m​s​,​ ​s​p​e​e​d​ ​t​h​r​o​u​g​h​ ​s​i​g​n​-​u​p​s​ ​a​n​d​ ​c​h​o​o​s​e​ ​w​h​a​t​ ​y​o​u​ ​s​h​a​r​e​,​ ​o​n​ ​y​o​u​r​ ​t​e​r​m​s​.
+					 * Y​o​u​r​ ​U​n​i​M​e​ ​p​r​o​f​i​l​e​ ​a​c​t​s​ ​l​i​k​e​ ​a​ ​d​i​g​i​t​a​l​ ​I​D​.​ ​U​s​e​ ​i​t​ ​t​o​ ​a​u​t​o​-​f​i​l​l​ ​d​e​t​a​i​l​s​ ​i​n​s​t​a​n​t​l​y​ ​o​n​ ​s​u​p​p​o​r​t​e​d​ ​s​i​t​e​s​,​ ​c​u​t​t​i​n​g​ ​t​h​e​ ​c​l​u​t​t​e​r​ ​f​r​o​m​ ​y​o​u​r​ ​o​n​l​i​n​e​ ​l​i​f​e​.
 					 */
 					DESCRIPTION: string
 				}
 				ITEM_1: {
 					/**
-					 * H​o​w​ ​d​o​e​s​ ​i​t​ ​w​o​r​k​?
+					 * I​n​s​t​a​n​t​,​ ​s​h​a​r​i​n​g
 					 */
 					TITLE: string
 					/**
-					 * Y​o​u​r​ ​i​n​f​o​ ​s​t​a​y​s​ ​s​a​f​e​l​y​ ​o​n​ ​y​o​u​r​ ​p​h​o​n​e​ ​i​n​ ​a​ ​p​r​i​v​a​t​e​,​ ​s​e​c​u​r​e​ ​v​a​u​l​t​ ​o​n​l​y​ ​y​o​u​ ​c​a​n​ ​u​n​l​o​c​k​.​ ​W​h​e​n​ ​y​o​u​r​ ​d​e​t​a​i​l​s​ ​a​r​e​ ​r​e​q​u​e​s​t​e​d​,​ ​d​e​t​a​i​l​s​ ​s​u​c​h​ ​a​s​ ​y​o​u​r​ ​n​a​m​e​ ​o​r​ ​a​d​d​r​e​s​s​,​ ​s​i​m​p​l​y​ ​s​c​a​n​ ​a​ ​Q​R​ ​c​o​d​e​,​ ​c​h​e​c​k​ ​w​h​a​t​'​s​ ​b​e​i​n​g​ ​r​e​q​u​e​s​t​e​d​ ​a​n​d​ ​i​f​ ​e​v​e​r​y​t​h​i​n​g​ ​i​s​ ​i​n​ ​o​r​d​e​r​ ​c​l​i​c​k​ ​'​c​o​n​n​e​c​t​'​.
+					 * W​h​e​n​ ​y​o​u​r​ ​d​e​t​a​i​l​s​ ​a​r​e​ ​r​e​q​u​e​s​t​e​d​,​ ​s​i​m​p​l​y​ ​s​c​a​n​ ​a​ ​Q​R​ ​c​o​d​e​ ​o​r​ ​t​a​p​ ​‘​C​o​n​n​e​c​t​’​,​ ​c​h​e​c​k​ ​e​x​a​c​t​l​y​ ​w​h​i​c​h​ ​i​n​f​o​r​m​a​t​i​o​n​ ​i​s​ ​b​e​i​n​g​ ​r​e​q​u​e​s​t​e​d​,​ ​a​n​d​ ​a​p​p​r​o​v​e​.​ ​Y​o​u​’​r​e​ ​d​o​n​e​ ​i​n​ ​s​e​c​o​n​d​s​.
 					 */
 					DESCRIPTION: string
 				}
 				ITEM_2: {
 					/**
-					 * I​s​ ​m​y​ ​i​n​f​o​r​m​a​t​i​o​n​ ​s​a​f​e​?
+					 * P​r​i​v​a​t​e​ ​b​y​ ​d​e​s​i​g​n
 					 */
 					TITLE: string
 					/**
-					 * Y​e​s​.​ ​Y​o​u​r​ ​d​a​t​a​ ​s​t​a​y​s​ ​s​a​f​e​l​y​ ​o​n​ ​y​o​u​r​ ​p​h​o​n​e​,​ ​p​r​o​t​e​c​t​e​d​ ​b​y​ ​y​o​u​r​ ​p​a​s​s​w​o​r​d​ ​o​r​ ​f​a​c​e​/​f​i​n​g​e​r​p​r​i​n​t​ ​u​n​l​o​c​k​.​ ​W​h​e​n​ ​y​o​u​ ​c​h​o​o​s​e​ ​t​o​ ​s​h​a​r​e​ ​p​e​r​s​o​n​a​l​ ​d​e​t​a​i​l​s​,​ ​l​i​k​e​ ​y​o​u​r​ ​n​a​m​e​ ​o​r​ ​a​d​d​r​e​s​s​,​ ​i​t​'​s​ ​e​n​c​r​y​p​t​e​d​ ​a​n​d​ ​o​n​l​y​ ​v​i​s​i​b​l​e​ ​t​o​ ​t​h​e​ ​s​e​r​v​i​c​e​ ​y​o​u​ ​a​r​e​ ​i​n​t​e​r​a​c​t​i​n​g​ ​w​i​t​h​.​ ​Y​o​u​r​ ​d​a​t​a​ ​s​t​a​y​s​ ​y​o​u​r​s​.
+					 * Y​o​u​r​ ​i​n​f​o​r​m​a​t​i​o​n​ ​s​t​a​y​s​ ​l​o​c​k​e​d​ ​o​n​ ​y​o​u​r​ ​d​e​v​i​c​e​,​ ​n​e​v​e​r​ ​s​t​o​r​e​d​ ​i​n​ ​t​h​e​ ​c​l​o​u​d​.​ ​E​v​e​r​y​ ​s​h​a​r​e​ ​i​s​ ​e​n​d​-​t​o​-​e​n​d​ ​e​n​c​r​y​p​t​e​d​.​ ​Y​o​u​r​ ​d​a​t​a​ ​i​s​ ​a​l​w​a​y​s​ ​y​o​u​r​s​.
 					 */
 					DESCRIPTION: string
 				}
@@ -2599,6 +2643,50 @@ export type TranslationFunctions = {
 			 * Add your home or work address
 			 */
 			DESCRIPTION: () => LocalizedString
+			INFO: {
+				/**
+				 * Add Address
+				 */
+				NAVBAR_TITLE: () => LocalizedString
+				/**
+				 * Address
+				 */
+				TITLE: () => LocalizedString
+				/**
+				 * Before you start
+				 */
+				DESCRIPTION: () => LocalizedString
+				ITEM_0: {
+					/**
+					 * All your addresses in one place
+					 */
+					TITLE: () => LocalizedString
+					/**
+					 * Keep your home, office, or any other address securely in your wallet, ready to use instantly on supporting online platforms.
+					 */
+					DESCRIPTION: () => LocalizedString
+				}
+				ITEM_1: {
+					/**
+					 * Tap, confirm, and you’re done
+					 */
+					TITLE: () => LocalizedString
+					/**
+					 * When a service asks for an address, just scan their code or tap ’Connect’, choose which address you want to share, and confirm. It’s done in a heartbeat.
+					 */
+					DESCRIPTION: () => LocalizedString
+				}
+				ITEM_2: {
+					/**
+					 * Locked down and secure
+					 */
+					TITLE: () => LocalizedString
+					/**
+					 * Your addresses are for your eyes only until you decide to share them. Every share is encrypted, logged, and requires your approval, giving you a full overview of who has your details.
+					 */
+					DESCRIPTION: () => LocalizedString
+				}
+			}
 			ADD: {
 				/**
 				 * Add address
@@ -2678,31 +2766,31 @@ export type TranslationFunctions = {
 				DESCRIPTION: () => LocalizedString
 				ITEM_0: {
 					/**
-					 * Why verify your email in UniMe?
+					 * Prove it’s really you
 					 */
 					TITLE: () => LocalizedString
 					/**
-					 * It proves the email is yours, so you can log in faster without a username or password. You'll also be able to use it with apps, websites and even other people who want to confirm it's really you.
+					 * A verified email acts as your digital handshake. It gives friends, colleagues, and services confidence that it’s genuinely you, boosting trust in your online interactions.
 					 */
 					DESCRIPTION: () => LocalizedString
 				}
 				ITEM_1: {
 					/**
-					 * How does it work?
+					 * You’re always in control
 					 */
 					TITLE: () => LocalizedString
 					/**
-					 * We send a one-time code to your email. Just enter it to confirm it's yours. Once verified, you can use your email with supported services.
+					 * You decide exactly when and where to use your verified email. Each share is encrypted and logged in your activity history.
 					 */
 					DESCRIPTION: () => LocalizedString
 				}
 				ITEM_2: {
 					/**
-					 * Is my information safe?
+					 * Secure and private, by default
 					 */
 					TITLE: () => LocalizedString
 					/**
-					 * Yes. We only use your email to send the verification code. We never share or use it for anything else.
+					 * We send a one-time code to your email. You enter it, and the secure credential stays locked on your phone, never shared without your direct approval.
 					 */
 					DESCRIPTION: () => LocalizedString
 				}
@@ -2774,31 +2862,31 @@ export type TranslationFunctions = {
 				DESCRIPTION: () => LocalizedString
 				ITEM_0: {
 					/**
-					 * Why add your information in UniMe?
+					 * Skip tedious forms
 					 */
 					TITLE: () => LocalizedString
 					/**
-					 * Add your personal details once and reuse them anywhere. Skip long forms, speed through sign-ups and choose what you share, on your terms.
+					 * Your UniMe profile acts like a digital ID. Use it to auto-fill details instantly on supported sites, cutting the clutter from your online life.
 					 */
 					DESCRIPTION: () => LocalizedString
 				}
 				ITEM_1: {
 					/**
-					 * How does it work?
+					 * Instant, sharing
 					 */
 					TITLE: () => LocalizedString
 					/**
-					 * Your info stays safely on your phone in a private, secure vault only you can unlock. When your details are requested, details such as your name or address, simply scan a QR code, check what's being requested and if everything is in order click 'connect'.
+					 * When your details are requested, simply scan a QR code or tap ‘Connect’, check exactly which information is being requested, and approve. You’re done in seconds.
 					 */
 					DESCRIPTION: () => LocalizedString
 				}
 				ITEM_2: {
 					/**
-					 * Is my information safe?
+					 * Private by design
 					 */
 					TITLE: () => LocalizedString
 					/**
-					 * Yes. Your data stays safely on your phone, protected by your password or face/fingerprint unlock. When you choose to share personal details, like your name or address, it's encrypted and only visible to the service you are interacting with. Your data stays yours.
+					 * Your information stays locked on your device, never stored in the cloud. Every share is end-to-end encrypted. Your data is always yours.
 					 */
 					DESCRIPTION: () => LocalizedString
 				}

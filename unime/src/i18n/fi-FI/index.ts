@@ -426,6 +426,26 @@ const fi_FI = {
     ADDRESS: {
       TITLE: 'Osoite',
       DESCRIPTION: 'Lisää työ- tai kotiosoite',
+      INFO: {
+        NAVBAR_TITLE: 'Lisää osoite',
+        TITLE: 'Osoite',
+        DESCRIPTION: 'Ennen kuin aloitat',
+        ITEM_0: {
+          TITLE: 'Kaikki osoitteesi yhdessä paikassa',
+          DESCRIPTION:
+            'Säilytä kotisi, toimistosi tai mikä tahansa muu osoite turvallisesti lompakossasi, valmiina käytettäväksi välittömästi tuetuilla alustoilla.',
+        },
+        ITEM_1: {
+          TITLE: 'Napauta, vahvista ja valmista',
+          DESCRIPTION:
+            'Kun palvelu pyytää osoitetta, skannaa heidän koodinsa tai napauta ”Yhdistä”, valitse jaettava osoite ja vahvista. Valmista hetkessä.',
+        },
+        ITEM_2: {
+          TITLE: 'Lukittu ja turvattu',
+          DESCRIPTION:
+            'Osoitteesi ovat vain sinun nähtävissäsi, kunnes päätät jakaa ne. Jokainen jako on salattu, kirjattu ja vaatii hyväksyntäsi, antaen sinulle täyden yleiskuvan siitä, kenellä tietosi ovat.',
+        },
+      },
       ADD: {
         NAVBAR_TITLE: 'Lisää osoite',
         LABEL: 'Miksi haluat nimetä tämän osoitteen?',
@@ -450,19 +470,18 @@ const fi_FI = {
         TITLE: 'Varmennettu sähköposti',
         DESCRIPTION: 'Ennen kuin aloitat',
         ITEM_0: {
-          TITLE: 'Miksi varmentaa sähköposti UniMessa?',
+          TITLE: 'Todista, että olet todella sinä',
           DESCRIPTION:
-            'Varmennus osoittaa että osoite on todella sinun, mahdollistaen salasanattoman käytön ja henkilöllisyyden todentamisen.',
+            'Vahvistettu sähköpostiosoite toimii digitaalisena kättelynänsi. Se antaa ystäville, kollegoille ja palveluille varmuuden, että olet aidosti sinä, lisäten luottamusta verkko­vuorovaikutuksiisi.',
         },
         ITEM_1: {
-          TITLE: 'Miten se toimii?',
-          DESCRIPTION:
-            'Kun aloitat, UniMe lähettää osoitteesi palvelimelle. Saat kertakäyttökoodin sähköpostiisi. Syötä koodi UniMeen osoittaaksesi pääsyn.',
+          TITLE: 'Sinä olet aina ohjaksissa',
+          DESCRIPTION: 'tua sähköpostiasi. Jokainen jako on salattu ja kirjataan toimintohistoriaasi.',
         },
         ITEM_2: {
-          TITLE: 'Onko tietoni turvassa?',
+          TITLE: 'Turvallinen ja yksityinen oletuksena',
           DESCRIPTION:
-            'Kyllä. Yhteydet ovat vahvasti salattuja ja tietosi säilytetään turvallisesti. Emme jaa tietoja ilman suostumustasi.',
+            'Lähetämme kertakäyttökoodin sähköpostiisi. Syötät sen, ja turvallinen tunniste pysyy lukittuna puhelimeesi eikä sitä koskaan jaeta ilman suoraa hyväksyntääsi.',
         },
       },
       ADD: {
@@ -486,19 +505,19 @@ const fi_FI = {
         TITLE: 'UniMe-profiili',
         DESCRIPTION: 'Ennen kuin aloitat',
         ITEM_0: {
-          TITLE: 'Miksi minun pitäisi luoda profiili?',
+          TITLE: 'Ohita tylsät lomakkeet',
           DESCRIPTION:
-            'Tallenna tietosi kerran ja käytä niitä kaikkialla. Ohita pitkät lomakkeet, nopeuta kirjautumista ja todista henkilöllisyytesi - kaikki omilla ehdoillasi.',
+            'UniMe-profiilisi toimii kuin digitaalinen henkilöllisyystodistus. Käytä sitä täyttämään tietosi automaattisesti tuetuilla sivustoilla ja karsi turha sekavuus verkkoelämästäsi.',
         },
         ITEM_1: {
-          TITLE: 'Miten se toimii?',
+          TITLE: 'Välitön jakaminen',
           DESCRIPTION:
-            'Tietosi ovat suojattuina laitteellasi turvallisessa kassakaapissa, jonka vain sinä voit avata. Skannaa QR-koodi luodaksesi suojatun yhteyden. Tarkista pyyntö ja valitse, mitä haluat jakaa.',
+            ' Kun tietojasi pyydetään, skannaa vain QR-koodi tai napauta ”Yhdistä”, tarkista tarkalleen mitä tietoja pyydetään ja hyväksy. Valmista sekunneissa.',
         },
         ITEM_2: {
-          TITLE: 'Ovatko tietoni turvassa?',
+          TITLE: 'Yksityisyys sisäänrakennettuna',
           DESCRIPTION:
-            'Kyllä. Tietosi suojataan laitteesi turvaominaisuuksilla, kuten sormenjälkitunnistuksella tai kasvojentunnistuksella. Emme kerää tietojasi emmekä pääse niihin käsiksi. Lähdekoodi on avoin, joten voit tarkistaa sen itse.',
+            ' Tietosi pysyvät lukittuna laitteellasi, eivätkä koskaan tallennu pilveen. Jokainen jako on päästä päähän salattu. Tietosi kuuluvat aina sinulle.',
         },
       },
       ADD: {
