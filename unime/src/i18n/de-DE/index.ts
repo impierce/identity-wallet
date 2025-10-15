@@ -427,8 +427,8 @@ const de_DE = {
       TITLE: 'Adresse',
       DESCRIPTION: 'Füge eine Arbeits- oder Privatadresse hinzu',
       INFO: {
-        NAVBAR_TITLE: 'Verifizierte Adresse',
-        TITLE: 'Verifizierte Adresse',
+        NAVBAR_TITLE: 'Adresse hinzufügen',
+        TITLE: 'Adresse',
         DESCRIPTION: 'Bevor du beginnst',
         ITEM_0: {
           TITLE: 'Alle deine Adressen an einem Ort',
@@ -438,7 +438,7 @@ const de_DE = {
         ITEM_1: {
           TITLE: 'Tippen, bestätigen, fertig',
           DESCRIPTION:
-            'Wenn ein Dienst nach einer Adresse fragt, scanne einfach deren Code oder tippe auf „Verbinden“, wähle die Adresse, die du teilen möchtest, und bestätige. Fertig in Sekundenschnelle.',
+            'Wenn ein Dienst nach einer Adresse fragt, scanne einfach den angezeigten QR-Code oder tippe auf „Verbinden“. Wähle die Adresse aus, die du teilen möchtest, und bestätige. Fertig in Sekundenschnelle.',
         },
         ITEM_2: {
           TITLE: 'Gesperrt und sicher',
@@ -470,9 +470,9 @@ const de_DE = {
         TITLE: 'Verifizierte E-Mail',
         DESCRIPTION: 'Bevor du beginnst',
         ITEM_0: {
-          TITLE: 'Beweise, dass du es wirklich bist',
+          TITLE: 'Beweise, dass es wirklich du bist',
           DESCRIPTION:
-            'Eine verifizierte E-Mail fungiert als dein digitaler Handschlag. Sie gibt Freunden, Kollegen und Diensten die Gewissheit, dass du es tatsächlich bist, und stärkt das Vertrauen in deine Online-Interaktionen.',
+            'Eine verifizierte E-Mail fungiert als dein digitaler Handschlag. Sie gibt Freunden, Kollegen und Diensten die Gewissheit, dass es tatsächlich du bist, und stärkt das Vertrauen in deine Online-Interaktionen.',
         },
         ITEM_1: {
           TITLE: 'Du behältst die Kontrolle',
@@ -482,7 +482,7 @@ const de_DE = {
         ITEM_2: {
           TITLE: 'Sicher und privat, standardmäßig',
           DESCRIPTION:
-            'Wir senden einen Einmal-Code an deine E-Mail. Du gibst ihn ein, und die sichere Berechtigung bleibt auf deinem Telefon gesperrt, wird niemals ohne deine direkte Zustimmung geteilt.',
+            'Wir senden einen Einmal-Code an deine E-Mail. Du gibst ihn ein, und die sichere Berechtigung bleibt auf deinem Telefon gesperrt und wird niemals ohne deine direkte Zustimmung geteilt.',
         },
       },
       ADD: {
