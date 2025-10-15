@@ -427,8 +427,8 @@ const fi_FI = {
       TITLE: 'Osoite',
       DESCRIPTION: 'Lisää työ- tai kotiosoite',
       INFO: {
-        NAVBAR_TITLE: 'Vahvistettu osoite',
-        TITLE: 'Vahvistettu osoite',
+        NAVBAR_TITLE: 'Lisää osoite',
+        TITLE: 'Osoite',
         DESCRIPTION: 'Ennen kuin aloitat',
         ITEM_0: {
           TITLE: 'Kaikki osoitteesi yhdessä paikassa',

@@ -427,8 +427,8 @@ const nl_NL = {
       TITLE: 'Adres',
       DESCRIPTION: 'Voeg je woon- of werkadres toe',
       INFO: {
-        NAVBAR_TITLE: 'Geverifieerd adres',
-        TITLE: 'Geverifieerd adres',
+        NAVBAR_TITLE: 'Adres toevoegen',
+        TITLE: 'Adres',
         DESCRIPTION: 'Voordat je start',
         ITEM_0: {
           TITLE: 'Al je adressen op één plek',

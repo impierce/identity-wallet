@@ -425,8 +425,8 @@ const en = {
       TITLE: 'Address',
       DESCRIPTION: 'Add your home or work address',
       INFO: {
-        NAVBAR_TITLE: 'Verified address',
-        TITLE: 'Verified address',
+        NAVBAR_TITLE: 'Add Address',
+        TITLE: 'Address',
         DESCRIPTION: 'Before you start',
         ITEM_0: {
           TITLE: 'All your addresses in one place',

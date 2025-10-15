@@ -427,8 +427,8 @@ const es_ES = {
       TITLE: 'Dirección',
       DESCRIPTION: 'Añade tu dirección de casa o trabajo',
       INFO: {
-        NAVBAR_TITLE: 'Dirección verificada',
-        TITLE: 'Dirección verificada',
+        NAVBAR_TITLE: 'Añadir dirección',
+        TITLE: 'Dirección',
         DESCRIPTION: 'Antes de empezar',
         ITEM_0: {
           TITLE: 'Todas tus direcciones en un solo lugar',

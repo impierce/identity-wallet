@@ -426,8 +426,8 @@ const sv_FI = {
       TITLE: 'Adress',
       DESCRIPTION: 'Lägg till en arbets- eller privatadress',
       INFO: {
-        NAVBAR_TITLE: 'Verifierad adress',
-        TITLE: 'Verifierad adress',
+        NAVBAR_TITLE: 'Lägg till adress',
+        TITLE: 'Adress',
         DESCRIPTION: 'Innan du börjar',
         ITEM_0: {
           TITLE: 'Alla dina adresser på ett ställe',

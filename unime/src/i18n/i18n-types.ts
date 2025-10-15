@@ -1122,11 +1122,11 @@ type RootTranslation = {
 			DESCRIPTION: string
 			INFO: {
 				/**
-				 * V​e​r​i​f​i​e​d​ ​a​d​d​r​e​s​s
+				 * A​d​d​ ​A​d​d​r​e​s​s
 				 */
 				NAVBAR_TITLE: string
 				/**
-				 * V​e​r​i​f​i​e​d​ ​a​d​d​r​e​s​s
+				 * A​d​d​r​e​s​s
 				 */
 				TITLE: string
 				/**
@@ -2645,11 +2645,11 @@ export type TranslationFunctions = {
 			DESCRIPTION: () => LocalizedString
 			INFO: {
 				/**
-				 * Verified address
+				 * Add Address
 				 */
 				NAVBAR_TITLE: () => LocalizedString
 				/**
-				 * Verified address
+				 * Address
 				 */
 				TITLE: () => LocalizedString
 				/**
