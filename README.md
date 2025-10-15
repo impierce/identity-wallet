@@ -111,6 +111,13 @@ cargo test
 
 In order to regenerate the TypeScript bindings in `identity-wallet/bindings` after making changes to actions or reducers, you can simply execute all Rust tests by running `cargo test` from within the `/identity-wallet` folder.
 
+### Updating translations
+
+1. Edit the base language file (English) at `unime/src/i18n/en/index.ts`.
+2. Inside the `unime` folder, run `pnpm typesafe-i18n` to update the types.
+3. Adjust all other language files in `unime/src/i18n/` accordingly until all types are satisfied.
+4. Running `pnpm check` shouldn't produce any errors related to `i18n`.
+
 ### VS Code support
 
 Recommended extensions are listed in `.vscode/extensions.json`.

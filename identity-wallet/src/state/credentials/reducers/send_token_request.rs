@@ -4,19 +4,22 @@ use crate::{
     state::{
         actions::{listen, Action},
         core_utils::{
-            helpers::{validate_credential_types, validate_jwt_vc_json},
+            helpers::{get_unverified_jwt_claims, validate_credential_types, validate_jwt_vc_json},
             history_event::{EventType, HistoryCredential, HistoryEvent},
-            CoreUtils,
+            CoreUtils, DateUtils, IdentityManager,
         },
         credentials::{
-            actions::authorization_code_received::CodeReceived, DisplayCredential, VerifiableCredentialRecord,
+            actions::authorization_code_received::CodeReceived,
+            reducers::refresh_credential_status::fetch_credential_status, CredentialStatus, DisplayCredential,
+            VerifiableCredentialRecord,
         },
         user_prompt::CurrentUserPrompt,
         AppState, UNIME_CLIENT_ID, UNIME_REDIRECT_URI,
     },
 };
 use identity_iota::credential::Jwt;
-use log::info;
+use log::{info, warn};
+use oauth_tsl::{status_list::StatusType, tokens::referenced_token::StatusClaim};
 use oid4vc::oid4vci::{
     credential_format_profiles::CredentialFormats,
     credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject,
@@ -52,11 +55,11 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             .as_ref()
             .ok_or(MissingManagerError("stronghold"))?;
 
-        let wallet = &state_guard
+        let identity_manager = state_guard
             .identity_manager
             .as_ref()
-            .ok_or(MissingManagerError("identity"))?
-            .wallet;
+            .ok_or(MissingManagerError("identity"))?;
+        let wallet = &identity_manager.wallet;
 
         let current_user_prompt = state
             .current_user_prompt
@@ -79,9 +82,53 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
 
         info!("credential issuer url: {:?}", credential_issuer_url);
 
+        // Get the credential issuer metadata.
+        let credential_issuer_metadata = wallet
+            .get_credential_issuer_metadata(credential_issuer_url.clone())
+            .await
+            .map_err(GetCredentialIssuerMetadataError)?;
+
+        // Check that the specified authorization servers are listed in the Credential Issuer Metadata's `authorization_servers` parameter.
+        let specified_authorization_server = &credential_offer.grants.as_ref().and_then(|grants| {
+            if is_pre_authorized {
+                grants
+                    .pre_authorized_code
+                    .as_ref()
+                    .and_then(|pre_auth| pre_auth.authorization_server.as_ref())
+            } else {
+                grants
+                    .authorization_code
+                    .as_ref()
+                    .and_then(|auth_code| auth_code.authorization_server.as_ref())
+            }
+        });
+
+        if let Some(specified_authorization_server) = specified_authorization_server {
+            if !credential_issuer_metadata.authorization_servers.is_empty()
+                && !credential_issuer_metadata
+                    .authorization_servers
+                    .contains(specified_authorization_server)
+            {
+                return Err(AppError::Error(format!(
+                        "The specified authorization server {specified_authorization_server} is not listed in the credential issuer metadata."
+                    )));
+            }
+        }
+
+        // Extract the authorization server selection from the authorization_server parameter in the grant types.
+        let authorization_server_url = specified_authorization_server
+            .or_else(|| {
+                // If no authorization server is specified, fall back to the authorization_servers in the credential issuer metadata.
+                // TODO: Users should be able to select their preferred authorization server.
+                credential_issuer_metadata.authorization_servers.first()
+            })
+            .cloned()
+            // Fall back to credential issuer url if no authorization server is specified.
+            .unwrap_or(credential_issuer_url.clone());
+
         // Get the authorization server metadata.
         let authorization_server_metadata = wallet
-            .get_authorization_server_metadata(credential_issuer_url.clone())
+            .get_authorization_server_metadata(authorization_server_url.clone())
             .await
             .map_err(GetAuthorizationServerMetadataError)?;
 
@@ -124,14 +171,6 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             .map_err(GetAccessTokenError)?;
 
         info!("token_response: {token_response:?}");
-
-        // Get the credential issuer metadata.
-        let credential_issuer_metadata = wallet
-            .get_credential_issuer_metadata(credential_issuer_url.clone())
-            .await
-            .map_err(GetCredentialIssuerMetadataError)?;
-
-        info!("credential issuer metadata: {credential_issuer_metadata:?}");
 
         // Get the credential issuer display.
         let display = credential_issuer_metadata
@@ -252,6 +291,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                 credential_configuration_id,
                 credential,
                 credential_configuration.display.clone(),
+                credential_configuration.claims.clone(),
             ));
         }
 
@@ -264,10 +304,16 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
 
         let mut history_credentials = vec![];
 
-        for (credential_configuration_id, credential, display) in credentials.into_iter() {
-            let mut verifiable_credential_record = VerifiableCredentialRecord::try_from(credential)?;
+        for (credential_configuration_id, credential, display, claims) in credentials.into_iter() {
+            let mut verifiable_credential_record = VerifiableCredentialRecord::try_new(credential, claims)?;
             // Validate the credential against its corresponding credential JSON Schema.
             validate_credential_types(&verifiable_credential_record.verifiable_credential)?;
+
+            // The credential status is set only when the credential status claim/property can be found and is in OAuth TSL format.
+            // If setting the credential status fails we currently catch the error and simply set the credential status field to None.
+            // TODO: we might want to inform the user of this before accepting the credential already
+            verifiable_credential_record.display_credential.credential_status =
+                get_credential_status(&verifiable_credential_record, identity_manager).await;
 
             // Set the issuer name of the credential.
             verifiable_credential_record
@@ -365,6 +411,8 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
     Ok(state)
 }
 
+// Helpers
+
 /// Helper function to get the display name of a credential.
 fn get_credential_display_name(
     credential_configurations_supported: &HashMap<String, CredentialConfigurationsSupportedObject>,
@@ -391,6 +439,76 @@ fn get_credential_display_name(
         })
         // Fallback to `Credential` if the credential is not a valid W3C Verifiable Credential.
         .unwrap_or("Credential".to_string())
+}
+
+/// Helper function to fetch the credential status of a newly received credential and set the fields the `credential_status` field of the DisplayCredential.
+/// Currently supports only the OAuth Token Status List mechanism.
+/// The function looks for the credential status info in 2 places:
+/// 1. In the JWT root for the key `status` as specified in the IETF OAuth Token Status List specification.
+/// 2. In the `credentialStatus` property of the credential, as specified in the W3C Verifiable Credential Data Model specification (1.1 and 2.0).
+///     * How to fill in the `credentialStatus` property is not specified in the W3C VC Data Model specifications for the OAuth Token Status List mechanism.
+///       We decided the most logical way is to assume this should be exactly the same as the `status` claim in the JWT root.
+///       There is a discussion ongoing in the DIIP profile community about this, see: https://github.com/FIDEScommunity/DIIP/issues/60
+///
+/// An error is returned when:
+/// 1. The credential does not contain a status claim in the JWT root or a credentialStatus property in the VC.
+/// 2. The status claim/property does not use the OAuth Token Status List mechanism.
+async fn get_credential_status(
+    verifiable_credential_record: &VerifiableCredentialRecord,
+    identity_manager: &IdentityManager,
+) -> Option<CredentialStatus> {
+    let status_value = get_unverified_jwt_claims(&verifiable_credential_record.verifiable_credential)
+        .ok() // convert Result → Option
+        .and_then(|claims| {
+            claims.get("status").cloned().or_else(|| {
+                verifiable_credential_record
+                    .display_credential
+                    .data
+                    .get("credentialStatus")
+                    .cloned()
+            })
+        });
+
+    let status_value = match status_value {
+        Some(value) => value,
+        None => {
+            warn!("The credential does not contain a status claim/property");
+            return None;
+        }
+    };
+
+    let credential_status_claim = match serde_json::from_value::<StatusClaim>(status_value.clone()) {
+        Ok(claim) => claim,
+        Err(_) => {
+            warn!("The credential status claim/property is not in the OAuth Token Status List format: {status_value}");
+            return None;
+        }
+    };
+
+    // Here we initialize the credential status with UNDEFINED status and an empty last_checked field, these fields will be filled after fetching the status.
+    let mut credential_status_data = CredentialStatus {
+        status: StatusType::UNDEFINED,
+        idx: credential_status_claim.referenced_status_list.idx,
+        uri: credential_status_claim.referenced_status_list.uri,
+        last_checked: String::new(),
+    };
+
+    let status = match fetch_credential_status(&credential_status_data, identity_manager).await {
+        Ok(status) => status,
+        Err(_) => {
+            warn!("Failed to fetch credential status");
+            return None;
+        }
+    };
+    credential_status_data.status = status;
+    credential_status_data.last_checked = DateUtils::new_date_string();
+
+    info!(
+        "Successfully set credential status for credential with id: `{}`",
+        verifiable_credential_record.display_credential.id
+    );
+
+    Some(credential_status_data)
 }
 
 #[cfg(test)]

@@ -72,7 +72,8 @@ mod bindings {
         credentials::actions::{
             authorization_code_received::CodeReceived, credential_offers_selected::CredentialOffersSelected,
             credentials_selected::CredentialsSelected, delete_credential::DeleteCredential,
-            self_issue_credential::SelfIssueCredential, update_credential_metadata::UpdateCredentialMetadata,
+            refresh_credential_status::RefreshCredentialStatus, self_issue_credential::SelfIssueCredential,
+            update_credential_metadata::UpdateCredentialMetadata,
         },
         dev_mode::actions::{dev_profile::DevProfile, show_setting::ShowDevModeSetting},
         did::actions::{set_preferred_keytype::SetPreferredKeyType, set_preferred_method::SetPreferredDidMethod},
@@ -92,10 +93,11 @@ mod bindings {
         verified_data::actions::{RedeemCode, SendVerificationEmail, ServiceHealthCheck},
     };
 
+    #[allow(dead_code)]
     #[derive(Serialize, Deserialize, TS)]
     #[serde(tag = "type")]
     #[ts(export, export_to = "bindings/actions/Action.ts")]
-    pub enum Action {
+    enum Action {
         #[serde(rename = "[App] Get state")]
         GetState,
         #[serde(rename = "[Storage] Unlock")]
@@ -133,6 +135,10 @@ mod bindings {
         UpdateCredentialMetadata { payload: UpdateCredentialMetadata },
         #[serde(rename = "[Credential] Delete")]
         DeleteCredential { payload: DeleteCredential },
+        #[serde(rename = "[Credential] Refresh status")]
+        RefreshCredentialStatus { payload: RefreshCredentialStatus },
+        #[serde(rename = "[Credential] Refresh all statuses")]
+        RefreshAllCredentialStatuses,
         #[serde(rename = "[User Journey] Cancel")]
         CancelUserJourney,
         #[serde(rename = "[Settings] Update sorting preference")]

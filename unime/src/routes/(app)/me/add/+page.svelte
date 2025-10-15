@@ -35,7 +35,7 @@
       title: $LL.ADD_CREDENTIALS.ADDRESS.TITLE(),
       description: $LL.ADD_CREDENTIALS.ADDRESS.DESCRIPTION(),
       icon: HouseFillIcon,
-      link: '/me/add/address',
+      link: '/me/add/address/info',
     },
   ];
 </script>

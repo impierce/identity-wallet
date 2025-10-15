@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use async_trait::async_trait;
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
+use identity_credential::sd_jwt_vc::SD_JWT_DC_TYP;
 use identity_credential::{
     sd_jwt_v2::{JsonObject, JwsSigner},
     sd_jwt_vc::SdJwtVcBuilder,
@@ -113,7 +114,10 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
 
         let sd_jwt_credential = SdJwtVcBuilder::new(credential_data)
             .map_err(|_| AppError::Error("Failed to create a SdJwtVcBuilder".to_string()))?
-            .header(std::iter::once(("kid".to_string(), serde_json::Value::String(kid.clone()))).collect())
+            .header(JsonObject::from_iter(vec![
+                ("typ".to_string(), serde_json::Value::String(SD_JWT_DC_TYP.to_string())),
+                ("kid".to_string(), serde_json::Value::String(kid.clone())),
+            ]))
             .vct(
                 "https://www.ietf.org/archive/id/draft-terbu-oauth-sd-jwt-vc-00.html"
                     .parse::<Url>()
@@ -132,7 +136,7 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
         let signed_credential = json!(sd_jwt_credential.to_string());
 
         // Create and populate the VerifiableCredentialRecord
-        let mut vcr = VerifiableCredentialRecord::try_from(signed_credential).map_err(|_| {
+        let mut vcr = VerifiableCredentialRecord::try_new(signed_credential, vec![]).map_err(|_| {
             AppError::Error("Failed to create a VerifiableCredentialRecord from self_issue_credential".to_string())
         })?;
 
@@ -163,8 +167,6 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
             .ok_or(MissingManagerError("stronghold"))?;
 
         let key: Uuid = vcr.display_credential.id.parse().expect("invalid uuid");
-
-        // TODO: add schema VC 2 validation
 
         // Remove the old credential from the stronghold if it exists.
         stronghold_manager.remove(key).map_err(StrongholdDeletionError)?;

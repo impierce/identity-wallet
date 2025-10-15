@@ -51,6 +51,8 @@ jobs:
 
       - name: Use Rust stable
         uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
 
       - name: Install dependencies
         working-directory: ./unime/src-tauri
@@ -92,6 +94,8 @@ jobs:
 
       - name: Use Rust stable
         uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
 
       - name: Install dependencies
         working-directory: ./identity-wallet

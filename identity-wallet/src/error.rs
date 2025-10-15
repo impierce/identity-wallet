@@ -15,6 +15,8 @@ pub enum AppError {
     Error(String),
     #[error("Invalid action found: `{action:?}`")]
     InvalidActionError { action: Action },
+    #[error("No credential found with id: `{0}`")]
+    NoCredentialWithIdError(String),
     #[error("Unable to parse QR code with content: `{0}`")]
     InvalidQRCodeError(String),
     #[error("No `{0}` manager found in the state")]
@@ -58,6 +60,8 @@ pub enum AppError {
     DidParseError,
     #[error("Invalid credential format")]
     InvalidCredentialFormatError,
+    #[error("Missing, invalid or unable to parse credential status format")]
+    InvalidCredentialStatusFormatError,
     #[error("Failed to build verifiable presentation")]
     PresentationBuilderError(#[source] identity_credential::error::Error),
     #[error("Failed to retrieve credential offer from the credential issuer")]
@@ -66,6 +70,10 @@ pub enum AppError {
     GetAuthorizationServerMetadataError(#[source] anyhow::Error),
     #[error("Failed to retrieve the credential issuer's metadata")]
     GetCredentialIssuerMetadataError(#[source] anyhow::Error),
+    #[error("Failed to get the credential status from the provided status list")]
+    GetCredentialStatusError,
+    #[error("Failed to fetch credential list: {0}")]
+    FetchCredentialListError(reqwest::Error),
     #[error("Failed to retrieve an access token from the credential issuer: {0}")]
     GetAccessTokenError(#[source] anyhow::Error),
     #[error("Failed to retrieve credential from the credential issuer: {0}")]

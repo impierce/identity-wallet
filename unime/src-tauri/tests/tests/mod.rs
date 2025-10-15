@@ -4,6 +4,7 @@ mod extensions;
 mod get_state;
 mod load_dev_profile;
 mod qr_code_scanned;
+mod refresh_credential_status;
 mod search_query;
 mod self_issue_credential;
 mod sorting;

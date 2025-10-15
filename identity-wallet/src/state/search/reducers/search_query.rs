@@ -112,6 +112,7 @@ mod tests {
                     format: CredentialFormats::default(),
                     issuer_name: "Example Organization".to_string(),
                     data: serde_json::json!({"last_name": "Ferris"}),
+                    display_claims: vec![],
                     metadata: CredentialMetadata {
                         date_issued: "2021-01-01".to_string(),
                         date_added: "2021-01-01".to_string(),
@@ -119,12 +120,14 @@ mod tests {
                     },
                     connection_id: None,
                     display_name: "John".to_string(),
+                    credential_status: None,
                 },
                 DisplayCredential {
                     id: "2".to_string(),
                     format: CredentialFormats::default(),
                     issuer_name: "Example Organization".to_string(),
                     data: serde_json::json!({"last_name": "John"}),
+                    display_claims: vec![],
                     metadata: CredentialMetadata {
                         date_issued: "2021-01-02".to_string(),
                         date_added: "2021-02-01".to_string(),
@@ -132,12 +135,14 @@ mod tests {
                     },
                     connection_id: None,
                     display_name: "Jane".to_string(),
+                    credential_status: None,
                 },
                 DisplayCredential {
                     id: "3".to_string(),
                     format: CredentialFormats::default(),
                     issuer_name: "John Organization".to_string(),
                     data: serde_json::json!({"last_name": "Ferris"}),
+                    display_claims: vec![],
                     metadata: CredentialMetadata {
                         date_issued: "2021-01-03".to_string(),
                         date_added: "2021-03-01".to_string(),
@@ -145,6 +150,7 @@ mod tests {
                     },
                     connection_id: None,
                     display_name: "Jeff".to_string(),
+                    credential_status: None,
                 },
             ],
             ..Default::default()

@@ -12,6 +12,7 @@
   export let type: 'data' | 'badge' = 'data';
   export let isTempAsset = false;
   export let icon: string | undefined = undefined;
+  export let isInvalid = false;
 
   let useFallback = false;
 </script>
@@ -39,7 +40,7 @@ Can be used for credentials, connections, etc.
 ```
 -->
 <button
-  class="flex h-16 w-full items-center justify-start rounded-xl bg-white p-2 dark:bg-dark"
+  class={`flex h-16 w-full items-center justify-start rounded-xl bg-white p-2 dark:bg-dark ${isInvalid ? 'opacity-60' : ''}`}
   on:click={() => dispatch('click')}
 >
   <!-- min-h-[64px] needed? -->
