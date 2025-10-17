@@ -41,7 +41,6 @@
     }
   });
 
-  // Modal logic here
   const {
     elements: { trigger, overlay, content, description, close, portalled },
     states: { open },
@@ -77,7 +76,7 @@
         </dl>
       </section>
     {/if}
-    <section class=" flex flex-col items-center">
+    <section class="flex flex-col items-center">
       <h2 class="font-bold">{$LL.SETTINGS.SUPPORT.ABOUT.VERSION()}</h2>
       <div class="mb-3">0.10.0</div>
       <div class="flex items-center">
@@ -86,33 +85,27 @@
       </div>
     </section>
 
-    <!-- Terms and Conditions button -->
     <section class="flex flex-col items-center">
-      <button data-component="Terms & Conditions" use:melt={$trigger}>
-        <div class=" text-slate-500 dark:text-slate-300">
-          <h2 class="font-bold underline">
-            {$LL.ONBOARDING.TERMS.T_AND_C.TITLE()}
-          </h2>
-        </div>
+      <button
+        data-component="Terms & Conditions"
+        use:melt={$trigger}
+        class="font-bold text-slate-500 underline dark:text-slate-300"
+      >
+        {$LL.ONBOARDING.TERMS.T_AND_C.TITLE()}
       </button>
     </section>
-    <!-- License -->
-    <div>
-      <section class="mb-4 flex flex-col items-center">
-        <h2 class="font-bold">{$LL.SETTINGS.SUPPORT.ABOUT.LICENSE()}</h2>
-        <div class="mb-3">Apache License 2.0</div>
-        <div>{`${new Date().getFullYear()} Impierce Technologies B.V.`}</div>
-      </section>
-    </div>
+
+    <section class="mb-4 flex flex-col items-center">
+      <h2 class="font-bold">{$LL.SETTINGS.SUPPORT.ABOUT.LICENSE()}</h2>
+      <div class="mb-3">Apache License 2.0</div>
+      <div>{`${new Date().getFullYear()} Impierce Technologies B.V.`}</div>
+    </section>
   </div>
 </div>
 
-<!-- The modal -->
 {#if $open}
   <div use:melt={$portalled}>
-    <!-- Dimmed background -->
     <div use:melt={$overlay} class="fixed inset-0 z-50 bg-black/50" transition:fade={{ duration: 150 }}></div>
-    <!-- Modal container -->
     <div
       data-component="Modal"
       use:melt={$content}
@@ -121,10 +114,6 @@
             bg-background p-6 shadow-lg"
       transition:scale={{ duration: 150, start: 0.96 }}
     >
-      <!-- Modal content -->
-      <!-- <h2 use:melt={$title} class="mb-4 text-lg font-bold">
-        {$LL.ONBOARDING.TERMS.T_AND_C.DIALOG_TITLE()}
-      </h2>-->
       <h2 class="mb-4 text-lg font-bold">
         {$LL.ONBOARDING.TERMS.T_AND_C.DIALOG_TITLE()}
       </h2>
@@ -137,6 +126,8 @@
       </p>
       <!-- acts as <hr> -->
       <div class="my-2 h-px w-full bg-brand"></div>
+
+      <!-- The modal content-->
       <h3 class="my-1 text-xs font-bold">
         {$LL.ONBOARDING.TERMS.T_AND_C.FULL.AGREEMENT.TITLE()}
       </h3>
@@ -233,11 +224,10 @@
       <p class="mb-3 text-xs font-light">
         {$LL.ONBOARDING.TERMS.T_AND_C.FULL.CONTACT.DESCRIPTION()}
       </p>
-      <!-- Other button -->
+
       <div class="mt-6 flex justify-end gap-4">
         <Button variant="secondary" trigger={$close} label={$LL.CLOSE()} />
       </div>
-      <!-- Close button -->
       <button
         use:melt={$close}
         aria-label="close"
