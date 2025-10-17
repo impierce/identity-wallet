@@ -4,7 +4,7 @@
 
   import { createDialog, melt } from '@melt-ui/svelte';
 
-  import { Toast, TopNavBar } from '$lib/components';
+  import { Button, Toast, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { HeartFillIcon, XBoldIcon } from '$lib/icons';
   import UniMeLogo from '$lib/static/svg/logo/UniMeLogo.svelte';
@@ -87,17 +87,12 @@
     </section>
 
     <!-- Terms and Conditions button -->
-    <section class=" flex flex-col items-center">
-      <button
-        data-component="Terms & Conditions"
-        use:melt={$trigger}
-        class="flex justify-between rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-600 dark:bg-dark"
-      >
-        <div class="grow text-left">
-          <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
+    <section class="flex flex-col items-center">
+      <button data-component="Terms & Conditions" use:melt={$trigger}>
+        <div class=" text-slate-500 dark:text-slate-300">
+          <h2 class="font-bold underline">
             {$LL.ONBOARDING.TERMS.T_AND_C.TITLE()}
-          </p>
-          <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">Read Terms and Conditions.</p>
+          </h2>
         </div>
       </button>
     </section>
@@ -238,6 +233,10 @@
       <p class="mb-3 text-xs font-light">
         {$LL.ONBOARDING.TERMS.T_AND_C.FULL.CONTACT.DESCRIPTION()}
       </p>
+      <!-- Other button -->
+      <div class="mt-6 flex justify-end gap-4">
+        <Button variant="secondary" trigger={$close} label={$LL.CLOSE()} />
+      </div>
       <!-- Close button -->
       <button
         use:melt={$close}
