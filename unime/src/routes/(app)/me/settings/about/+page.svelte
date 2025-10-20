@@ -5,10 +5,11 @@
   import { createDialog, melt } from '@melt-ui/svelte';
 
   import { Button, Toast, TopNavBar } from '$lib/components';
+  import TermsAndConditions from '$lib/components/TermsAndConditions.svelte';
   import { dispatch } from '$lib/dispatcher';
   import { HeartFillIcon, XBoldIcon } from '$lib/icons';
   import UniMeLogo from '$lib/static/svg/logo/UniMeLogo.svelte';
-  import { state as appState } from '$lib/stores';
+  import { state as appState } from '$lib/stores'; // Add this import with your other component imports
 
   import type { PageProps } from './$types';
 
@@ -103,6 +104,7 @@
   </div>
 </div>
 
+<!-- Terms of Use (modal) -->
 {#if $open}
   <div use:melt={$portalled}>
     <div use:melt={$overlay} class="fixed inset-0 z-50 bg-black/50" transition:fade={{ duration: 150 }}></div>
@@ -128,102 +130,7 @@
       <div class="my-2 h-px w-full bg-brand"></div>
 
       <!-- The modal content-->
-      <h3 class="my-1 text-xs font-bold">
-        {$LL.ONBOARDING.TERMS.T_AND_C.FULL.AGREEMENT.TITLE()}
-      </h3>
-      <p class="mb-3 text-xs font-light">
-        {$LL.ONBOARDING.TERMS.T_AND_C.FULL.AGREEMENT.DESCRIPTION()}
-      </p>
-      <h3 class="my-1 text-xs font-bold">
-        {$LL.ONBOARDING.TERMS.T_AND_C.FULL.DEFINITIONS.TITLE()}
-      </h3>
-      <p class="mb-3 text-xs font-light">
-        {$LL.ONBOARDING.TERMS.T_AND_C.FULL.DEFINITIONS.DESCRIPTION()}
-      </p>
-      <h3 class="my-1 text-xs font-bold">
-        {$LL.ONBOARDING.TERMS.T_AND_C.FULL.USER_RESPONSIBILITIES.TITLE()}
-      </h3>
-      <p class="mb-3 text-xs font-light">
-        {$LL.ONBOARDING.TERMS.T_AND_C.FULL.USER_RESPONSIBILITIES.DESCRIPTION()}
-      </p>
-      <h3 class="my-1 text-xs font-bold">
-        {$LL.ONBOARDING.TERMS.T_AND_C.FULL.DATA_OWNERSHIP.TITLE()}
-      </h3>
-      <p class="mb-3 text-xs font-light">
-        {$LL.ONBOARDING.TERMS.T_AND_C.FULL.DATA_OWNERSHIP.DESCRIPTION()}
-      </p>
-      <h3 class="my-1 text-xs font-bold">
-        {$LL.ONBOARDING.TERMS.T_AND_C.FULL.DATA_VISIBILITY.TITLE()}
-      </h3>
-      <p class="mb-3 text-xs font-light">
-        {$LL.ONBOARDING.TERMS.T_AND_C.FULL.DATA_VISIBILITY.DESCRIPTION()}
-      </p>
-      <h3 class="my-1 text-xs font-bold">
-        {$LL.ONBOARDING.TERMS.T_AND_C.FULL.INTELLECTUAL_PROPERTY_RIGHTS.TITLE()}
-      </h3>
-      <p class="mb-3 text-xs font-light">
-        {$LL.ONBOARDING.TERMS.T_AND_C.FULL.INTELLECTUAL_PROPERTY_RIGHTS.DESCRIPTION()}
-      </p>
-      <h3 class="my-1 text-xs font-bold">
-        {$LL.ONBOARDING.TERMS.T_AND_C.FULL.PROHIBITED_ACTIVITIES.TITLE()}
-      </h3>
-      <p class="mb-3 text-xs font-light">
-        {$LL.ONBOARDING.TERMS.T_AND_C.FULL.PROHIBITED_ACTIVITIES.DESCRIPTION()}
-      </p>
-      <h3 class="my-1 text-xs font-bold">
-        {$LL.ONBOARDING.TERMS.T_AND_C.FULL.THIRD_PARTY_SERVICES.TITLE()}
-      </h3>
-      <p class="mb-3 text-xs font-light">
-        {$LL.ONBOARDING.TERMS.T_AND_C.FULL.THIRD_PARTY_SERVICES.DESCRIPTION()}
-      </p>
-      <h3 class="my-1 text-xs font-bold">
-        {$LL.ONBOARDING.TERMS.T_AND_C.FULL.LIABILITY.TITLE()}
-      </h3>
-      <p class="mb-3 text-xs font-light">
-        {$LL.ONBOARDING.TERMS.T_AND_C.FULL.LIABILITY.DESCRIPTION()}
-      </p>
-      <h3 class="my-1 text-xs font-bold">
-        {$LL.ONBOARDING.TERMS.T_AND_C.FULL.INDEMNIFICATION.TITLE()}
-      </h3>
-      <p class="mb-3 text-xs font-light">
-        {$LL.ONBOARDING.TERMS.T_AND_C.FULL.INDEMNIFICATION.DESCRIPTION()}
-      </p>
-      <h3 class="my-1 text-xs font-bold">
-        {$LL.ONBOARDING.TERMS.T_AND_C.FULL.MODIFICATIONS.TITLE()}
-      </h3>
-      <p class="mb-3 text-xs font-light">
-        {$LL.ONBOARDING.TERMS.T_AND_C.FULL.MODIFICATIONS.DESCRIPTION()}
-      </p>
-      <h3 class="my-1 text-xs font-bold">
-        {$LL.ONBOARDING.TERMS.T_AND_C.FULL.LAW_AND_JURISDIFICATION.TITLE()}
-      </h3>
-      <p class="mb-3 text-xs font-light">
-        {$LL.ONBOARDING.TERMS.T_AND_C.FULL.LAW_AND_JURISDIFICATION.DESCRIPTION()}
-      </p>
-      <h3 class="my-1 text-xs font-bold">
-        {$LL.ONBOARDING.TERMS.T_AND_C.FULL.SEVERABILITY.TITLE()}
-      </h3>
-      <p class="mb-3 text-xs font-light">
-        {$LL.ONBOARDING.TERMS.T_AND_C.FULL.SEVERABILITY.DESCRIPTION()}
-      </p>
-      <h3 class="my-1 text-xs font-bold">
-        {$LL.ONBOARDING.TERMS.T_AND_C.FULL.LANGUAGE.TITLE()}
-      </h3>
-      <p class="mb-3 text-xs font-light">
-        {$LL.ONBOARDING.TERMS.T_AND_C.FULL.LANGUAGE.DESCRIPTION()}
-      </p>
-      <h3 class="my-1 text-xs font-bold">
-        {$LL.ONBOARDING.TERMS.T_AND_C.FULL.ENTIRE_AGREEMENT.TITLE()}
-      </h3>
-      <p class="mb-3 text-xs font-light">
-        {$LL.ONBOARDING.TERMS.T_AND_C.FULL.ENTIRE_AGREEMENT.DESCRIPTION()}
-      </p>
-      <h3 class="my-1 text-xs font-bold">
-        {$LL.ONBOARDING.TERMS.T_AND_C.FULL.CONTACT.TITLE()}
-      </h3>
-      <p class="mb-3 text-xs font-light">
-        {$LL.ONBOARDING.TERMS.T_AND_C.FULL.CONTACT.DESCRIPTION()}
-      </p>
+      <TermsAndConditions />
 
       <div class="mt-6 flex justify-end gap-4">
         <Button variant="secondary" trigger={$close} label={$LL.CLOSE()} />
