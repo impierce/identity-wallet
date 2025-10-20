@@ -1,6 +1,6 @@
 <script lang="ts">
   import { beforeNavigate, goto, replaceState } from '$app/navigation';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { fly } from 'svelte/transition';
 
   import { ActionSheet, Avatar } from '$lib/components';
@@ -22,10 +22,17 @@
   let initials: string | undefined;
 
   let triggers = [$LL.ME.CREDENTIAL_TABS.ALL(), $LL.ME.CREDENTIAL_TABS.DATA(), $LL.ME.CREDENTIAL_TABS.BADGES()];
-  let activeTab: Writable<string> = writable($page.state.tab || triggers[0]);
+  let activeTab: Writable<string> = writable(page.state.tab || triggers[0]);
 
-  beforeNavigate(async () => {
+  beforeNavigate(async ({ type, cancel }) => {
     replaceState('', { tab: $activeTab });
+    // Reset to first tab when navigating back again
+    if (page.url.pathname === '/me') {
+      activeTab.set(triggers[0]);
+    }
+    if (type === 'popstate') {
+      cancel();
+    }
   });
 
   $: {
@@ -68,7 +75,7 @@
 
   <!-- should have min height: full screen - smallest possible welcome header - bottom nav - safe areas (top, bottom) -->
   <div
-    in:fly={{ y: 24, duration: 200, opacity: 1 }}
+    in:fly={{ y: 18, duration: 200, opacity: 1 }}
     class="flex grow flex-col items-stretch justify-start rounded-t-[20px] bg-silver p-[18px] dark:bg-navy"
   >
     {#if $state?.credentials && $state?.credentials.length > 0}
@@ -158,7 +165,7 @@
 <!-- "Add" button -->
 <!-- <div in:fly={{ y: 12, delay: 0, opacity: 1, duration: 200 }} class="absolute bottom-5 right-4"> -->
 <div
-  in:fly={{ y: 12, opacity: 1, duration: 200 }}
+  in:fly={{ y: 8, opacity: 1, duration: 200 }}
   class="fixed bottom-[calc(64px_+_16px_+_var(--safe-area-inset-bottom))] right-4"
 >
   <button

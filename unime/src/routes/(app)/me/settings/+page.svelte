@@ -1,18 +1,31 @@
 <script lang="ts">
+  import { beforeNavigate, goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
   import { fly } from 'svelte/transition';
 
   import { SettingsCaretLink, TopNavBar } from '$lib/components';
+  import { ANIMATION_DURATION as duration } from '$lib/constants';
   import { dispatch } from '$lib/dispatcher';
   import { GearFillIcon, InfoFillIcon, UserCircleFillIcon } from '$lib/icons';
-  import { state } from '$lib/stores';
+  import { navigationDirection, state } from '$lib/stores';
 
   import EmojiAvatarSelect from './EmojiAvatarSelect.svelte';
+
+  const parentRoute = '/me';
+
+  beforeNavigate(({ type, cancel }) => {
+    if (type === 'popstate') {
+      cancel();
+      goto(parentRoute);
+    }
+  });
+
+  const x = $derived($navigationDirection === 'down' ? 32 : -32);
 </script>
 
-<TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.NAVBAR_TITLE()} class="sticky top-0 z-10" />
+<TopNavBar on:back={() => goto(parentRoute)} title={$LL.SETTINGS.NAVBAR_TITLE()} class="sticky top-0 z-10" />
 
-<div class="flex flex-col space-y-[15px] bg-background px-4 py-5" in:fly={{ x: 32, opacity: 1 }}>
+<div class="flex flex-col space-y-[15px] bg-background px-4 py-5" in:fly={{ x, duration, opacity: 1 }}>
   <!-- Avatar -->
   <div class="flex justify-center">
     <EmojiAvatarSelect
