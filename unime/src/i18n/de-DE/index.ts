@@ -41,7 +41,7 @@ const de_DE = {
         DIALOG_TITLE: 'UniMe Nutzungsbedingungen',
         LAST_UPDATED: 'Zuletzt aktualisiert: 10. September 2025',
         TL_DR:
-          'Wie jeder App-Anbieter sind wir gesetzlich verpflichtet, dir einige wichtige Geschäftsbedingungen mitzuteilen. Wir haben unser Bestes getan, um alles klar und auf den Punkt zu bringen. Hier ist die Kurzfassung: UniMe gibt dir die Kontrolle. UniMe sammelt deine Daten nicht, respektiert deine Privatsphäre und lässt dich entscheiden, welche Informationen du speichern und teilen möchtest. Deine Identität und Daten bleiben bei dir – und ebenso die Verantwortung, sie zu verwalten. Wir speichern deine Daten nicht und können auch nicht darauf zugreifen. Ein Datenverlust, z. B. durch den Verlust deines Geräts oder den Zugriff auf die App, liegt ebenfalls in deiner Verantwortung. Große Macht bringt große Verantwortung. Hier ist alles, was du wissen solltest:',
+          'Wie jeder App-Anbieter sind wir gesetzlich verpflichtet, dir einige wichtige Geschäftsbedingungen mitzuteilen. Wir haben unser Bestes getan, um alles klar auf den Punkt zu bringen. Hier ist die Kurzfassung: UniMe gibt dir die Kontrolle. UniMe sammelt deine Daten nicht, respektiert deine Privatsphäre und lässt dich entscheiden, welche Informationen du speichern und teilen möchtest. Deine Identität und Daten bleiben bei dir - und ebenso die Verantwortung, sie zu verwalten. Wir speichern deine Daten nicht und können auch nicht darauf zugreifen. Ein Datenverlust, z.B. durch den Verlust deines Geräts oder den Zugriff auf die App, liegt ebenfalls in deiner Verantwortung. Große Macht bringt große Verantwortung. Hier ist alles, was du wissen solltest:',
         FULL: {
           AGREEMENT: {
             TITLE: 'Annahme der Bedingungen',
@@ -51,7 +51,7 @@ const de_DE = {
           DEFINITIONS: {
             TITLE: 'Definitionen',
             DESCRIPTION:
-              'Der Begriff Dienst bezeichnet die UniMe Identity Wallet Mobile App und umfasst alle darin enthaltenen Funktionen, Inhalte oder Services. Benutzerdaten sind alle Daten, Zugangsdaten oder Informationen, die du über den Dienst speicherst oder teilst. Der Begriff Gerät bezeichnet das Mobiltelefon oder die Hardware, auf dem/der die UniMe App installiert und genutzt wird.',
+              'Der Begriff „Dienst“ bezeichnet die UniMe Identity Wallet Mobile App und umfasst alle darin enthaltenen Funktionen, Inhalte oder Services. Benutzerdaten sind alle Daten, Zugangsdaten oder Informationen, die du über den Dienst speicherst oder teilst. Der Begriff „Gerät“ bezeichnet das Mobiltelefon oder die Hardware, auf dem/der die UniMe App installiert und genutzt wird.',
           },
           USER_RESPONSIBILITIES: {
             TITLE: 'Verantwortlichkeiten des Nutzers',
@@ -61,12 +61,12 @@ const de_DE = {
           DATA_OWNERSHIP: {
             TITLE: 'Dateneigentum und Datenschutz',
             DESCRIPTION:
-              'UniMe basiert auf den Kernprinzipien der Benutzerkontrolle und Datensicherheit. Unsere Architektur ist so gestaltet, dass wir nicht auf die Benutzerdaten zugreifen, sie sammeln, speichern oder verarbeiten können. Alle deine Benutzerdaten werden lokal und sicher auf deinem Gerät gespeichert. Wir setzen robuste Sicherheitsmaßnahmen innerhalb der App ein, um deine Daten zu schützen. Der endgültige Schutz deiner Daten hängt jedoch auch von dir ab, z.B. durch die Verwendung eines starken Codes und das Vermeiden der Installation von Software aus nicht vertrauenswürdigen Quellen. Um die Integrität deiner Daten zu gewährleisten, kann UniMe deren Gültigkeit regelmäßig überprüfen. Dies geschieht, indem dein Gerät direkt den Aussteller der Daten kontaktiert, um zu überprüfen, ob die Daten widerrufen wurden. Dieser Vorgang erfolgt automatisch auf deinem Gerät und ohne Beteiligung von Impierce Technologies B.V. Wo verfügbar, verwendet UniMe für diese Prüfungen dezentrale Methoden.',
+              'UniMe basiert auf den Kernprinzipien der Benutzerkontrolle und Datensicherheit. Unsere Architektur ist so gestaltet, dass wir nicht auf die Benutzerdaten zugreifen, sie sammeln, speichern oder verarbeiten können. Alle deine Benutzerdaten werden lokal und sicher auf deinem Gerät gespeichert. Wir setzen robuste Sicherheitsmaßnahmen innerhalb der App ein, um deine Daten zu schützen. Der endgültige Schutz deiner Daten hängt jedoch auch von dir ab, z.B. durch die Verwendung eines starken Codes und das Vermeiden der Installation von Software aus nicht vertrauenswürdigen Quellen. Um die Integrität deiner Daten zu gewährleisten, kann UniMe deren Gültigkeit regelmäßig überprüfen. Dies geschieht, indem dein Gerät direkt den Aussteller der Daten kontaktiert, um zu überprüfen, ob die Daten widerrufen wurden. Dieser Vorgang erfolgt automatisch auf deinem Gerät und ohne Beteiligung von Impierce Technologies B.V. Wenn verfügbar, verwendet UniMe für diese Prüfungen dezentrale Methoden.',
           },
           DATA_VISIBILITY: {
             TITLE: 'Datensichtbarkeit durch App-Plattformen',
             DESCRIPTION:
-              'Wenn du UniMe über einen offiziellen App Store wie Apple App Store oder Google Play herunterlädst oder nutzt, kann die Plattform eingeschränkt technische Nutzungsdaten sammeln. Dazu gehören z.B. Gerätetyp, App-Installationen oder Absturzmeldungen, sowie Region oder Spracheinstellungen deines Geräts. Diese Informationen werden nach den Richtlinien des jeweiligen App Stores gesammelt. Impierce sammelt keine zusätzlichen Nutzungsdaten von deinem Gerät.',
+              'Wenn du UniMe über einen offiziellen App Store wie Apple App Store oder Google Play herunterlädst oder nutzt, kann die Plattform eingeschränkt technische Nutzungsdaten sammeln. Dazu gehören z.B. Gerätetyp, App-Installationen oder Absturzmeldungen, sowie Region oder Spracheinstellungen deines Geräts. Diese Informationen werden nach den Richtlinien des jeweiligen App Stores gesammelt. Impierce Technologies B.V. sammelt keine zusätzlichen Nutzungsdaten von deinem Gerät.',
           },
           INTELLECTUAL_PROPERTY_RIGHTS: {
             TITLE: 'Rechte an geistigem Eigentum',
@@ -385,6 +385,7 @@ const de_DE = {
     NAVBAR_TITLE: 'Credential Informationen',
     DETAILS: {
       VALID: 'Gültig',
+      INVALID: 'Ungültig',
       UNVERIFIED: 'Unbestätigt',
       ISSUED_BY: 'Ausgestellt durch',
       SELF_SIGNED: 'dich selbst',
@@ -425,6 +426,26 @@ const de_DE = {
     ADDRESS: {
       TITLE: 'Adresse',
       DESCRIPTION: 'Füge eine Arbeits- oder Privatadresse hinzu',
+      INFO: {
+        NAVBAR_TITLE: 'Adresse hinzufügen',
+        TITLE: 'Adresse',
+        DESCRIPTION: 'Bevor du beginnst',
+        ITEM_0: {
+          TITLE: 'Alle deine Adressen an einem Ort',
+          DESCRIPTION:
+            'Bewahre deine Wohn-, Büro- oder andere Adressen sicher in deiner Wallet auf, bereit zur sofortigen Nutzung auf unterstützten Online-Plattformen.',
+        },
+        ITEM_1: {
+          TITLE: 'Tippen, bestätigen, fertig',
+          DESCRIPTION:
+            'Wenn ein Dienst nach einer Adresse fragt, scanne einfach den angezeigten QR-Code oder tippe auf „Verbinden“. Wähle die Adresse aus, die du teilen möchtest, und bestätige. Fertig in Sekundenschnelle.',
+        },
+        ITEM_2: {
+          TITLE: 'Gesperrt und sicher',
+          DESCRIPTION:
+            'Deine Adressen sind nur für deine Augen sichtbar, bis du entscheidest, sie zu teilen. Jede Freigabe ist verschlüsselt, protokolliert und erfordert deine Zustimmung, sodass du jederzeit den Überblick behältst, wer deine Daten hat.',
+        },
+      },
       ADD: {
         NAVBAR_TITLE: 'Addresse hinzufügen',
         LABEL: 'Wie möchtest du diese Adresse nennen?',
@@ -449,19 +470,19 @@ const de_DE = {
         TITLE: 'Verifizierte E-Mail',
         DESCRIPTION: 'Bevor du beginnst',
         ITEM_0: {
-          TITLE: 'Warum sollte ich meine E-Mail in UniMe verifizieren?',
+          TITLE: 'Beweise, dass es wirklich du bist',
           DESCRIPTION:
-            'Mit einer verifizierten E-Mail zeigst du, dass sie wirklich dir gehört. So kannst du sicher und ohne Passwort verschiedene Dienste nutzen. Außerdem hilft sie dir, deine Identität gegenüber Shops, Websites und sogar anderen Personen nachzuweisen.',
+            'Eine verifizierte E-Mail fungiert als dein digitaler Handschlag. Sie gibt Freunden, Kollegen und Diensten die Gewissheit, dass es tatsächlich du bist, und stärkt das Vertrauen in deine Online-Interaktionen.',
         },
         ITEM_1: {
-          TITLE: 'Wie funktioniert das?',
+          TITLE: 'Du behältst die Kontrolle',
           DESCRIPTION:
-            'UniMe sendet deine angegebene E-Mail-Adresse an eines unserer Verifizierungssysteme. Du erhälst dann einen Einmalcode in deinen Posteingang. Gib diesen Code in UniMe ein, um zu bestätigen, dass du auf die E-Mail zugreifen konntest. Dann bestätigt UniMe die Verifizierung deiner E-Mail-Adresse und du kannst sie nun überall dort verwenden, wo sie akzeptiert wird.',
+            'Du entscheidest genau, wann und wo du deine verifizierte E-Mail verwendest. Jede Freigabe wird verschlüsselt und in deiner Aktivitätshistorie protokolliert.',
         },
         ITEM_2: {
-          TITLE: 'Sind meine Daten sicher?',
+          TITLE: 'Sicher und privat, standardmäßig',
           DESCRIPTION:
-            'Ja. Wir nehmen deine Privatsphäre sehr ernst. Alle Nachrichten zwischen UniMe und unseren Verifizierungsservern sind durch starke Verschlüsselung geschützt und deine Daten werden sicher gespeichert. Wir verwenden deine E-Mail-Adresse nur, um den Verifizierungscode zu senden - sie wird niemals weitergegeben oder für andere Zwecke verwendet.',
+            'Wir senden einen Einmal-Code an deine E-Mail. Du gibst ihn ein, und die sichere Berechtigung bleibt auf deinem Telefon gesperrt und wird niemals ohne deine direkte Zustimmung geteilt.',
         },
       },
       ADD: {
@@ -485,19 +506,19 @@ const de_DE = {
         TITLE: 'UniMe Profil',
         DESCRIPTION: 'Bevor du beginnst',
         ITEM_0: {
-          TITLE: 'Warum sollte ich ein Profil erstellen?',
+          TITLE: 'Überspringe lästige Formulare',
           DESCRIPTION:
-            'Speichere deine Daten einmalig und nutze sie überall. Überspringe lange Eingabeformulare, beschleunige Anmeldungen und beweise dass du du bist - alles zu deinen Bedingungen.',
+            'Dein UniMe-Profil funktioniert wie ein digitaler Ausweis. Verwende es, um Details auf unterstützten Websites sofort automatisch auszufüllen und so Unordnung in deinem Online-Leben zu vermeiden.',
         },
         ITEM_1: {
-          TITLE: 'Wie funktioniert das?',
+          TITLE: 'Sofortiges Teilen',
           DESCRIPTION:
-            'Deine Daten sind auf deinem Gerät in einem sicheren Tresor geschützt, den nur du öffnen kannst. Scanne einen QR-Code, um eine gesicherte Verbindung herzustellen. Überprüfe die Anfrage und wähle aus, was du teilen möchtest.',
+            'Wenn deine Daten angefordert werden, scanne einfach einen QR-Code oder tippe auf „Verbinden“, prüfe genau, welche Informationen angefordert werden, und genehmige. Fertig in Sekunden.',
         },
         ITEM_2: {
-          TITLE: 'Sind meine Daten sicher?',
+          TITLE: 'Datenschutz von Anfang an',
           DESCRIPTION:
-            'Ja. Deine Daten werden mit der Sicherheit deines Geräts geschützt, z.B. mit einem Fingerabdruck oder Gesichtserkennung. Wir sammeln deine Daten nicht und haben keinen Zugriff darauf. Der Quellcode ist offen, so kannst du das sogar selbst überprüfen.',
+            'Deine Informationen bleiben auf deinem Gerät gesperrt und werden niemals in der Cloud gespeichert. Jede Freigabe ist Ende-zu-Ende verschlüsselt. Deine Daten gehören immer dir.',
         },
       },
       ADD: {

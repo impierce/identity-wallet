@@ -6,6 +6,7 @@ use crate::{error::AppError, state::core_utils::DateUtils};
 use derivative::Derivative;
 use identity_credential::{sd_jwt_v2::Sha256Hasher, sd_jwt_vc::SdJwtVc};
 use log::info;
+use oauth_tsl::status_list::StatusType;
 use oid4vc::{
     oid4vc_core::claim_path_pointer::ClaimPathPointer,
     oid4vci::{
@@ -16,6 +17,7 @@ use oid4vc::{
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use ts_rs::TS;
+use url::Url;
 use uuid::Uuid;
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, TS)]
@@ -50,6 +52,22 @@ pub struct DisplayCredential {
     pub connection_id: Option<String>,
     // TODO: should this be moved to `metadata`?
     pub display_name: String,
+    #[ts(optional)]
+    pub credential_status: Option<CredentialStatus>,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, Derivative, TS)]
+#[derivative(PartialEq)]
+#[ts(export, export_to = "bindings/credentials/CredentialStatus.ts")]
+pub struct CredentialStatus {
+    #[ts(type = "'VALID' | 'INVALID' | 'SUSPENDED' | 'UNDEFINED'")]
+    pub status: StatusType,
+    #[ts(skip)]
+    pub idx: u64,
+    #[ts(skip)]
+    pub uri: Url,
+    #[derivative(PartialEq = "ignore")]
+    pub last_checked: String,
 }
 
 #[typetag::serde(name = "display_credential")]
@@ -145,11 +163,12 @@ impl VerifiableCredentialRecord {
 
                 // TODO: Remove this workaround that is basically a way of disguising the SD JWT VC as a VC so that
                 // it can be displayed in the Frontend.
+                // TODO: moreover, this workaround is incomplete, since a few fields at the root level are still missing.
+                // Most importantly, we're missing the credentialStatus property.
                 let data = json!({
                     "type": ["VerifiableCredential"],
                     "issuer": sd_jwt_vc.claims().iss,
                     "credentialSubject": credential_subject
-
                 });
 
                 (id, format, data, issuance_date, display_claims)
@@ -215,6 +234,9 @@ impl VerifiableCredentialRecord {
                 issuer_name: String::new(),
                 connection_id: None,
                 display_name: String::new(),
+                // The credential status is None here but it will be set right after this function.
+                // This initialization is separated since it requires async fetching.
+                credential_status: None,
             }
         };
 

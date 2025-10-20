@@ -384,6 +384,7 @@ const en = {
     NAVBAR_TITLE: 'Credential Information',
     DETAILS: {
       VALID: 'Valid',
+      INVALID: 'Invalid',
       UNVERIFIED: 'Unverified',
       ISSUED_BY: 'Issued by',
       SELF_SIGNED: 'yourself',
@@ -423,6 +424,26 @@ const en = {
     ADDRESS: {
       TITLE: 'Address',
       DESCRIPTION: 'Add your home or work address',
+      INFO: {
+        NAVBAR_TITLE: 'Add Address',
+        TITLE: 'Address',
+        DESCRIPTION: 'Before you start',
+        ITEM_0: {
+          TITLE: 'All your addresses in one place',
+          DESCRIPTION:
+            'Keep your home, office, or any other address securely in your wallet, ready to use instantly on supporting online platforms.',
+        },
+        ITEM_1: {
+          TITLE: 'Tap, confirm, and you’re done',
+          DESCRIPTION:
+            'When a service asks for an address, just scan their code or tap ’Connect’, choose which address you want to share, and confirm. It’s done in a heartbeat.',
+        },
+        ITEM_2: {
+          TITLE: 'Locked down and secure',
+          DESCRIPTION:
+            'Your addresses are for your eyes only until you decide to share them. Every share is encrypted, logged, and requires your approval, giving you a full overview of who has your details.',
+        },
+      },
       ADD: {
         NAVBAR_TITLE: 'Add address',
         LABEL: 'How do you want to call this address?',
@@ -447,19 +468,19 @@ const en = {
         TITLE: 'Verified email',
         DESCRIPTION: 'Before you start',
         ITEM_0: {
-          TITLE: 'Why verify your email in UniMe?',
+          TITLE: 'Prove it’s really you',
           DESCRIPTION:
-            "It proves the email is yours, so you can log in faster without a username or password. You'll also be able to use it with apps, websites and even other people who want to confirm it's really you.",
+            'A verified email acts as your digital handshake. It gives friends, colleagues, and services confidence that it’s genuinely you, boosting trust in your online interactions.',
         },
         ITEM_1: {
-          TITLE: 'How does it work?',
+          TITLE: 'You’re always in control',
           DESCRIPTION:
-            "We send a one-time code to your email. Just enter it to confirm it's yours. Once verified, you can use your email with supported services.",
+            'You decide exactly when and where to use your verified email. Each share is encrypted and logged in your activity history.',
         },
         ITEM_2: {
-          TITLE: 'Is my information safe?',
+          TITLE: 'Secure and private, by default',
           DESCRIPTION:
-            'Yes. We only use your email to send the verification code. We never share or use it for anything else.',
+            'We send a one-time code to your email. You enter it, and the secure credential stays locked on your phone, never shared without your direct approval.',
         },
       },
       ADD: {
@@ -483,19 +504,19 @@ const en = {
         TITLE: 'UniMe Profile',
         DESCRIPTION: 'Before you start',
         ITEM_0: {
-          TITLE: 'Why add your information in UniMe?',
+          TITLE: 'Skip tedious forms',
           DESCRIPTION:
-            'Add your personal details once and reuse them anywhere. Skip long forms, speed through sign-ups and choose what you share, on your terms.',
+            'Your UniMe profile acts like a digital ID. Use it to auto-fill details instantly on supported sites, cutting the clutter from your online life.',
         },
         ITEM_1: {
-          TITLE: 'How does it work?',
+          TITLE: 'Instant, sharing',
           DESCRIPTION:
-            "Your info stays safely on your phone in a private, secure vault only you can unlock. When your details are requested, details such as your name or address, simply scan a QR code, check what's being requested and if everything is in order click 'connect'.",
+            'When your details are requested, simply scan a QR code or tap ‘Connect’, check exactly which information is being requested, and approve. You’re done in seconds.',
         },
         ITEM_2: {
-          TITLE: 'Is my information safe?',
+          TITLE: 'Private by design',
           DESCRIPTION:
-            "Yes. Your data stays safely on your phone, protected by your password or face/fingerprint unlock. When you choose to share personal details, like your name or address, it's encrypted and only visible to the service you are interacting with. Your data stays yours.",
+            'Your information stays locked on your device, never stored in the cloud. Every share is end-to-end encrypted. Your data is always yours.',
         },
       },
       ADD: {

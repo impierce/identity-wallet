@@ -168,8 +168,6 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
 
         let key: Uuid = vcr.display_credential.id.parse().expect("invalid uuid");
 
-        // TODO: add schema VC 2 validation
-
         // Remove the old credential from the stronghold if it exists.
         stronghold_manager.remove(key).map_err(StrongholdDeletionError)?;
 

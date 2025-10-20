@@ -1,23 +1,27 @@
 <script lang="ts">
   import LL from '$i18n/i18n-svelte';
+  import { fly } from 'svelte/transition';
 
   import { TopNavBar } from '$lib/components';
+  import { ANIMATION_DURATION as duration } from '$lib/constants';
   import { dispatch } from '$lib/dispatcher';
   import { CheckBoldIcon } from '$lib/icons';
   import { disabledLocales, locales } from '$lib/locales';
-  import { state } from '$lib/stores';
+  import { navigationDirection, state } from '$lib/stores';
 
-  $: selected = locales.find((l) => l.locale === $state?.profile_settings.locale);
+  let selected = $derived(locales.find((l) => l.locale === $state?.profile_settings.locale));
+
+  const x = $derived($navigationDirection === 'down' ? 32 : -32);
 </script>
 
 <TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.APP.LANGUAGE.NAVBAR_TITLE()} class="sticky top-0 z-10" />
 
-<div class="flex flex-col space-y-[10px] bg-silver px-4 py-5 dark:bg-navy">
+<div class="flex flex-col space-y-[10px] bg-silver px-4 py-5 dark:bg-navy" in:fly={{ x, duration, opacity: 1 }}>
   {#each locales as l}
     <button
       class="flex h-14 items-center space-x-4 rounded-xl bg-white p-4 dark:bg-dark
           {disabledLocales.includes(l.locale) ? 'opacity-30 grayscale' : ''}"
-      on:click={() => dispatch({ type: '[Settings] Set locale', payload: { locale: l.locale } })}
+      onclick={() => dispatch({ type: '[Settings] Set locale', payload: { locale: l.locale } })}
       disabled={disabledLocales.includes(l.locale)}
     >
       <p class="grow text-left text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">

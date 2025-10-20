@@ -54,14 +54,6 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
 
         info!("credential issuer url: {credential_issuer_url:?}");
 
-        // Get the authorization server metadata.
-        let authorization_server_metadata = wallet
-            .get_authorization_server_metadata(credential_issuer_url.clone())
-            .await
-            .map_err(GetAuthorizationServerMetadataError)?;
-
-        info!("authorization server metadata: {authorization_server_metadata:?}");
-
         // Get the credential issuer metadata.
         let credential_issuer_metadata = wallet
             .get_credential_issuer_metadata(credential_issuer_url.clone())
@@ -153,6 +145,26 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                 // continue when UniMe receives the authorization code via during redirection back to the app from the
                 // browser. The frontend will then dispatch the `CodeReceived` action which will continue the flow.
                 } else if let Some(authorization_code) = authorization_code {
+                    let specified_authorization_server = authorization_code.authorization_server.as_ref();
+                    // Check that the specified authorization servers exist in the Credential Issuer Metadata's `authorization_servers` parameter.
+                    if let Some(specified_authorization_server) = specified_authorization_server {
+                        if !credential_issuer_metadata.authorization_servers.is_empty()
+                            && !credential_issuer_metadata
+                                .authorization_servers
+                                .contains(specified_authorization_server)
+                        {
+                            return Err(AppError::Error(format!(
+                                "The specified authorization server `{specified_authorization_server}` is not an accepted authorization server."
+                            )));
+                        }
+                    }
+
+                    let authorization_server_url = specified_authorization_server
+                        .or_else(|| credential_issuer_metadata.authorization_servers.first())
+                        .cloned()
+                        // Fall back to credential issuer url if no authorization server is specified.
+                        .unwrap_or(credential_issuer_url);
+
                     // Generate a random 128-byte code verifier (must be between 43 and 128 bytes)
                     let code_verifier = pkce::code_verifier(128);
                     // Generate an encrypted code challenge accordingly
@@ -182,12 +194,20 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
 
                     let wallet_state = Uuid::new_v4().to_string();
 
+                    // Get the authorization server metadata.
+                    let authorization_server_metadata = wallet
+                        .get_authorization_server_metadata(authorization_server_url.clone())
+                        .await
+                        .map_err(GetAuthorizationServerMetadataError)?;
+
+                    info!("authorization server metadata: {authorization_server_metadata:?}");
+
                     let par_response = wallet
                         .get_pushed_authorization_response(
                             authorization_server_metadata
                                 .pushed_authorization_request_endpoint
                                 .ok_or(AppError::Error(
-                                    "Authorization Server does not have a pushed authorirzation request endpoint"
+                                    "Authorization Server does not have a pushed authorization request endpoint"
                                         .to_string(),
                                 ))?
                                 .clone(),
