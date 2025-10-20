@@ -1,7 +1,7 @@
 {
   "name": "unime",
   "private": true,
-  "version": "0.10.0",
+  "version": "0.11.3",
   "type": "module",
   "scripts": {
     "dev": "vite dev",
