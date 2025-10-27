@@ -5587,6 +5587,7 @@ dependencies = [
  "typetag",
  "unicode-normalization",
  "url",
+ "urlencoding",
  "uuid",
  "wiremock",
 ]

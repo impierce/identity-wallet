@@ -8,8 +8,8 @@ use ts_rs::TS;
 #[derive(Serialize, Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/ShareToLinkedIn.ts")]
 pub struct ShareToLinkedIn {
-    // #[ts(type = "string")]
-    // pub id: String,
+    #[ts(type = "string")]
+    pub id: String,
 }
 
 #[typetag::serde(name = "[Credential] Share to LinkedIn")]
