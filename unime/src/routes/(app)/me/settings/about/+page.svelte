@@ -9,7 +9,7 @@
   import { dispatch } from '$lib/dispatcher';
   import { HeartFillIcon, XBoldIcon } from '$lib/icons';
   import UniMeLogo from '$lib/static/svg/logo/UniMeLogo.svelte';
-  import { state as appState } from '$lib/stores'; // Add this import with your other component imports
+  import { state as appState } from '$lib/stores';
 
   import type { PageProps } from './$types';
 
