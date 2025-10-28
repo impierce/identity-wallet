@@ -64,6 +64,10 @@ jobs:
       - name: install Android targets
         run: rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
 
+      # required to build `aws-lc-sys`
+      - name: install bindgen-cli
+        run: cargo install --force --locked bindgen-cli
+
       - name: Install pnpm
         uses: pnpm/action-setup@v3
         with:
