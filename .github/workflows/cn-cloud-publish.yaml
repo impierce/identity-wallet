@@ -120,6 +120,10 @@ jobs:
       - name: install iOS target
         run: rustup target add aarch64-apple-ios
 
+      # required to build `aws-lc-sys`
+      - name: install bindgen-cli
+        run: cargo install --force --locked bindgen-cli
+
       - name: setup xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
