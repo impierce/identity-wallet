@@ -2,12 +2,15 @@ use crate::{
     error::AppError,
     state::{
         actions::{listen, Action},
-        credentials::actions::share_to_linkedin::ShareToLinkedIn,
+        credentials::{actions::share_to_linkedin::ShareToLinkedIn, DisplayCredential},
         AppState,
     },
 };
 
 use chrono::{DateTime, Datelike};
+use log::info;
+use tauri_plugin_opener::OpenerExt;
+use url::Url;
 use urlencoding::encode;
 
 pub async fn share_to_linkedin(state: AppState, action: Action) -> Result<AppState, AppError> {
@@ -18,6 +21,7 @@ pub async fn share_to_linkedin(state: AppState, action: Action) -> Result<AppSta
             .find(|cred| cred.id == share_to_linkedin.id)
             .ok_or(AppError::NoCredentialWithIdError(share_to_linkedin.id))?;
 
+        // Build LinkedIn URL, all parameters must be URL percent-encoded
         let mut linkedin_url = encode("https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME").into_owned();
         linkedin_url.push_str(format!("&name={}", encode(&credential.display_name)).as_str());
         linkedin_url.push_str(format!("&organizationName={}", encode(&credential.issuer_name)).as_str());
@@ -34,10 +38,26 @@ pub async fn share_to_linkedin(state: AppState, action: Action) -> Result<AppSta
             linkedin_url.push_str(format!("&expirationMonth={}", expiration_date.month()).as_str());
         }
 
-        // &certUrl=https%3A%2F%2Fdocs.microsoft.com%2Fen-us%2Flearn%2Fcertifications%2Fd365-functional-consultant-sales
-        // &certId=1234
+        // Get or create public link
+        let public_link = if let Some(existing_link) = credential.public_link.clone() {
+            existing_link.clone()
+        } else {
+            create_public_link(credential).await?.to_string()
+        };
+        linkedin_url.push_str(format!("&certUrl={}", encode(&public_link)).as_str());
 
-        // Change credential metadata to include public link info.
+        linkedin_url.push_str(format!("&certId={}", encode(&credential.id)).as_str());
+
+        info!("Opening LinkedIn AddToProfile URL in browser: `{linkedin_url}`");
+        let app_handle = state
+            .core_utils
+            .app_handle
+            .clone()
+            .ok_or(AppError::Error("Tauri app handle is not available".to_string()))?;
+        app_handle
+            .opener()
+            .open_url(linkedin_url, None::<&str>)
+            .map_err(|err| AppError::Error(format!("Failed to open URL in browser: {err}")))?;
 
         // return Ok(AppState {
         //     credentials,
@@ -47,6 +67,11 @@ pub async fn share_to_linkedin(state: AppState, action: Action) -> Result<AppSta
     }
 
     Ok(state)
+}
+
+pub async fn create_public_link(credential: &DisplayCredential) -> Result<Url, AppError> {
+    // placeholder return
+    Ok(Url::parse("https://example.com").unwrap())
 }
 
 #[cfg(test)]

@@ -55,6 +55,7 @@ pub struct DisplayCredential {
     pub display_name: String,
     #[ts(optional)]
     pub credential_status: Option<CredentialStatus>,
+    pub public_link: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, Derivative, TS)]
@@ -288,6 +289,7 @@ impl VerifiableCredentialRecord {
                 // The credential status is None here but it will be set right after this function.
                 // This initialization is separated since it requires async fetching.
                 credential_status: None,
+                public_link: None,
             }
         };
 
