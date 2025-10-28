@@ -27,7 +27,8 @@ jobs:
   build_android:
     needs: draft
 
-    runs-on: ubuntu-latest
+    # ubuntu-latest: x64_2-core-7gb
+    runs-on: linux-x64_16-core-64gb
 
     environment: production
 
@@ -100,7 +101,9 @@ jobs:
   build_ios:
     needs: draft
 
-    runs-on: macos-latest
+    # macos-latest: M1 (3 cores), 7 GB, arm64
+    # macos-latest-xlarge: M2 (5 cores), 14 GB, arm64
+    runs-on: macos-latest-xlarge
 
     environment: production
 
