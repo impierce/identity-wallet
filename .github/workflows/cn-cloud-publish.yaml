@@ -107,7 +107,7 @@ jobs:
 
     # macos-latest: M1 (3 cores), 7 GB, arm64
     # macos-latest-xlarge: M2 (5 cores), 14 GB, arm64
-    runs-on: macos-latest-xlarge
+    runs-on: macos-26-xlarge
 
     environment: production
 
