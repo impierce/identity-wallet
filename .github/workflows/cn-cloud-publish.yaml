@@ -88,7 +88,7 @@ jobs:
           PUBLIC_DEV_MODE_MENU_EXPANDED: false
           PUBLIC_DEV_SHOW_CURRENT_ROUTE: false
           PUBLIC_STYLE_SAFE_AREA_INSETS: false
-        run: pnpm tauri android build
+        run: pnpm tauri android build --aab true
 
       - name: upload assets
         uses: crabnebula-dev/cloud-release@v0
