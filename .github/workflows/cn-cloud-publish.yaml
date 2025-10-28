@@ -128,7 +128,7 @@ jobs:
       - name: setup Apple API key
         run: |
           APPLE_API_KEY_PATH="$RUNNER_TEMP/AuthKey_${{ secrets.APPLE_API_KEY_ID }}.p8"
-          echo "${{ secrets.APPLE_API_KEY }}" > $APPLE_API_KEY_PATH
+          base64 -d <<< "${{ secrets.APPLE_API_KEY_BASE64 }}" > $APPLE_API_KEY_PATH
           echo "APPLE_API_KEY_PATH=$APPLE_API_KEY_PATH" >> $GITHUB_ENV
           echo "API_PRIVATE_KEYS_DIR=$RUNNER_TEMP" >> $GITHUB_ENV
 
