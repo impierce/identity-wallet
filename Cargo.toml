@@ -3,8 +3,8 @@ resolver = "2"
 members = ["identity-wallet", "unime/src-tauri"]
 
 [workspace.dependencies]
-tauri = { version = "2.8.2", features = ["protocol-asset", "rustls-tls"] }
-tauri-build = "2.4.0"
+tauri = { version = "2.9.1", features = ["protocol-asset", "rustls-tls"] }
+tauri-build = "2.5.1"
 
 did_manager = { git = "https://github.com/impierce/did-manager", tag = "v1.0.0-beta.6" }
 jsonwebtoken = "9.3"
