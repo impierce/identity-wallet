@@ -8,7 +8,7 @@
 
   import { ActionSheet, Button } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
-  import { DotsThreeVerticalBoldIcon, PencilFillIcon, TrashFillIcon } from '$lib/icons';
+  import { DotsThreeVerticalBoldIcon, LinkedinIcon, PencilFillIcon, TrashFillIcon } from '$lib/icons';
 
   const dispatchEvent = createEventDispatcher();
 
@@ -36,6 +36,12 @@
   use:melt={$menu}
   transition:fly={{ duration: 150, y: -10 }}
 >
+  <!-- Share to LinkedIn -->
+  <button class="flex items-center space-x-2 rounded-lg py-2 pl-3 pr-4 hover:bg-background dark:text-grey">
+    <LinkedinIcon class="size-5" />
+    <p class="grow text-left text-[13px]/[24px] font-medium">Share to LinkedIn</p>
+  </button>
+
   <!-- Edit title -->
   <button
     on:click={() => {
