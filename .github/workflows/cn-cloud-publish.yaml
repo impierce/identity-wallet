@@ -70,7 +70,9 @@ jobs:
 
       - name: initialize Android target
         working-directory: unime
-        run: pnpm tauri android init
+        run: |
+          pnpm install
+          pnpm tauri android init
 
       - name: setup Android signing
         working-directory: unime/src-tauri/gen/android
@@ -83,9 +85,7 @@ jobs:
       - name: build Tauri app for Android
         env:
           NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
-        run: |
-          pnpm install
-          pnpm tauri android build
+        run: pnpm tauri android build
 
       - name: upload assets
         uses: crabnebula-dev/cloud-release@v0
@@ -136,16 +136,16 @@ jobs:
 
       - name: initialize iOS target
         working-directory: unime
-        run: pnpm tauri ios init
+        run: |
+          pnpm install
+          pnpm tauri ios init
 
       - name: build Tauri app for iOS
         env:
           APPLE_API_KEY: ${{ secrets.APPLE_API_KEY_ID }}
           APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
           APPLE_DEVELOPMENT_TEAM: "Impierce Technologies B.V."
-        run: |
-          pnpm install
-          pnpm tauri ios build --export-method app-store-connect
+        run: pnpm tauri ios build --export-method app-store-connect
 
       - name: upload assets
         uses: crabnebula-dev/cloud-release@v0
