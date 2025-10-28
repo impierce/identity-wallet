@@ -1,4 +1,4 @@
-#[allow(unused_imports, unused_mut)]
+#[allow(unused_imports)]
 #[cfg(target_os = "android")]
 use iota_sdk::IotaClientBuilder;
 #[cfg(target_os = "android")]
@@ -7,6 +7,7 @@ use jni::{
     JNIEnv,
 };
 
+#[allow(unused_mut)]
 #[cfg(not(feature = "test_utils"))]
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
