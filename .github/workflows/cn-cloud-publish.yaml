@@ -29,6 +29,8 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    environment: production
+
     steps:
       - uses: actions/checkout@v4
 
@@ -93,6 +95,8 @@ jobs:
 
     runs-on: macos-latest
 
+    environment: production
+
     steps:
       - uses: actions/checkout@v4
 
@@ -147,6 +151,8 @@ jobs:
   #   needs: [build_android, build_ios]
 
   #   runs-on: ubuntu-latest
+
+  #   environment: production
 
   #   steps:
   #     - uses: actions/checkout@v4
