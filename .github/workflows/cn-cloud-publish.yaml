@@ -63,18 +63,22 @@ jobs:
       - name: install Android targets
         run: rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
+
+      - name: initialize Android target
+        working-directory: unime
+        run: pnpm tauri android init
+
       - name: setup Android signing
-        working-directory: src-tauri/gen/android
+        working-directory: unime/src-tauri/gen/android
         run: |
           echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" > keystore.properties
           echo "password=${{ secrets.ANDROID_KEY_PASSWORD }}" >> keystore.properties
           base64 -d <<< "${{ secrets.ANDROID_KEY_BASE64 }}" > $RUNNER_TEMP/keystore.jks
           echo "storeFile=$RUNNER_TEMP/keystore.jks" >> keystore.properties
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v3
-        with:
-          version: 9
 
       - name: build Tauri app for Android
         env:
@@ -129,6 +133,10 @@ jobs:
         uses: pnpm/action-setup@v3
         with:
           version: 9
+
+      - name: initialize iOS target
+        working-directory: unime
+        run: pnpm tauri ios init
 
       - name: build Tauri app for iOS
         env:
