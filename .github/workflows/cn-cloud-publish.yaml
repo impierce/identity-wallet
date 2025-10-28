@@ -85,6 +85,9 @@ jobs:
       - name: build Tauri app for Android
         env:
           NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+          PUBLIC_DEV_MODE_MENU_EXPANDED: false
+          PUBLIC_DEV_SHOW_CURRENT_ROUTE: false
+          PUBLIC_STYLE_SAFE_AREA_INSETS: false
         run: pnpm tauri android build
 
       - name: upload assets
@@ -145,6 +148,9 @@ jobs:
           APPLE_API_KEY: ${{ secrets.APPLE_API_KEY_ID }}
           APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
           APPLE_DEVELOPMENT_TEAM: "Impierce Technologies B.V."
+          PUBLIC_DEV_MODE_MENU_EXPANDED: false
+          PUBLIC_DEV_SHOW_CURRENT_ROUTE: false
+          PUBLIC_STYLE_SAFE_AREA_INSETS: false
         run: pnpm tauri ios build --export-method app-store-connect
 
       - name: upload assets
