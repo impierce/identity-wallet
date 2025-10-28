@@ -1,3 +1,4 @@
+#[allow(unused_imports, unused_mut)]
 #[cfg(target_os = "android")]
 use iota_sdk::IotaClientBuilder;
 #[cfg(target_os = "android")]
