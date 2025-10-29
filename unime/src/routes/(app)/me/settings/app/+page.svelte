@@ -1,8 +1,10 @@
 <script lang="ts">
+  import { beforeNavigate, goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
-  import { fade } from 'svelte/transition';
+  import { fade, fly } from 'svelte/transition';
 
   import { SettingsCaretLink, SettingsSwitch, SettingsValueLink, TopNavBar } from '$lib/components';
+  import { ANIMATION_DURATION as duration } from '$lib/constants';
   import { dispatch } from '$lib/dispatcher';
   import {
     CodeBoldIcon,
@@ -14,12 +16,21 @@
     TranslateFillIcon,
   } from '$lib/icons';
   import { locales } from '$lib/locales';
-  import { error, state } from '$lib/stores';
+  import { error, navigationDirection, state } from '$lib/stores';
+
+  beforeNavigate(({ type, cancel }) => {
+    if (type === 'popstate') {
+      cancel();
+      goto('/me/settings');
+    }
+  });
+
+  const x = $derived($navigationDirection === 'down' ? 32 : -32);
 </script>
 
 <TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.APP.NAVBAR_TITLE()} class="sticky top-0 z-10" />
 
-<div class="flex flex-col bg-silver dark:bg-navy">
+<div class="flex flex-col bg-silver dark:bg-navy" in:fly={{ x, duration, opacity: 1 }}>
   <div class="flex flex-col gap-3 px-4 py-5">
     <SettingsValueLink
       href="/me/settings/app/language"

@@ -2,8 +2,9 @@
   import { onMount } from 'svelte';
 
   import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import LL from '$i18n/i18n-svelte';
+  import { fly } from 'svelte/transition';
 
   import { IconMessage, ListItemCard } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
@@ -13,7 +14,7 @@
   import RecentSearches from './RecentSearches.svelte';
   import Search from './Search.svelte';
 
-  let searchTerm: string | null = $page.url.searchParams.get('query');
+  let searchTerm: string | null = page.url.searchParams.get('query');
 
   $: currentSearchResults = $state.search_results.current.map((id) => $state.credentials.find((c) => c.id === id)!);
   $: recentSearches = $state.search_results.recent_credentials.map(
@@ -28,13 +29,13 @@
 
   function onSearchTermChanged(value: string) {
     searchTerm = value;
-    $page.url.searchParams.set('query', value);
-    history.replaceState(history.state, '', $page.url);
+    page.url.searchParams.set('query', value);
+    history.replaceState(history.state, '', page.url);
     dispatch({ type: '[Search] Query', payload: { search_term: value } });
   }
 </script>
 
-<div class="content-height bg-silver dark:bg-navy">
+<div class="content-height bg-silver dark:bg-navy" in:fly={{ y: -18, duration: 200, opacity: 1 }}>
   <div class="p-4">
     <Search bind:ref={searchInput} value={searchTerm ?? ''} on:value={(e) => onSearchTermChanged(e.detail)}></Search>
   </div>

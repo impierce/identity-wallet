@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte';
 
-  import { goto } from '$app/navigation';
+  import { beforeNavigate, goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
 
   import {
@@ -91,6 +91,13 @@
   onMount(async () => {
     // TODO find a good way to test if not dev_mode. This will have to be checked after $state is loaded.
     startScan();
+  });
+
+  beforeNavigate(async ({ type, cancel }) => {
+    if (type === 'popstate') {
+      cancel();
+      goto('/me');
+    }
   });
 </script>
 

@@ -9,6 +9,7 @@ on:
 env:
   PUBLIC_DEV_MODE_MENU_EXPANDED: false
   PUBLIC_STYLE_SAFE_AREA_INSETS: false
+  PUBLIC_DEV_SHOW_CURRENT_ROUTE: false
 
 jobs:
   unime_frontend:

@@ -1,18 +1,22 @@
 <script lang="ts">
   import LL from '$i18n/i18n-svelte';
+  import { fly } from 'svelte/transition';
 
   import { TopNavBar } from '$lib/components';
+  import { ANIMATION_DURATION as duration } from '$lib/constants';
   import { dispatch } from '$lib/dispatcher';
-  import { state } from '$lib/stores';
+  import { navigationDirection, state } from '$lib/stores';
 
   import ThemeSelect from './ThemeSelect.svelte';
 
   let currentValue = $state.profile_settings.profile?.theme ?? 'system';
+
+  const x = $derived($navigationDirection === 'down' ? 32 : -32);
 </script>
 
 <TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.APP.THEME.NAVBAR_TITLE()} class="sticky top-0 z-10" />
 
-<div class="bg-silver p-4 dark:bg-navy">
+<div class="bg-silver p-4 dark:bg-navy" in:fly={{ x, duration, opacity: 1 }}>
   <div class="px-2 pb-8 pt-4">
     <p class="pb-4 text-3xl font-semibold text-slate-700 dark:text-grey">
       {$LL.SETTINGS.APP.THEME.TITLE_1()}

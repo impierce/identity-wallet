@@ -3,15 +3,17 @@
 
   import LL from '$i18n/i18n-svelte';
   import { writable } from 'svelte/store';
+  import { fly } from 'svelte/transition';
 
   import { remove as remove_inner, store as store_inner } from '@impierce/tauri-plugin-keystore';
   import { authenticate, BiometryType, checkStatus, type Status } from '@tauri-apps/plugin-biometric';
   import { warn } from '@tauri-apps/plugin-log';
 
   import { ActionSheet, Button, SettingsSwitch, TopNavBar } from '$lib/components';
+  import { ANIMATION_DURATION as duration } from '$lib/constants';
   import { dispatch } from '$lib/dispatcher';
   import { EyeClosedRegularIcon, EyeRegularIcon, FingerprintFillIcon, ScanSmileyFillIcon } from '$lib/icons';
-  import { state as appState, error as errorState } from '$lib/stores';
+  import { state as appState, error as errorState, navigationDirection } from '$lib/stores';
   import { localizedBiometricsTypeString } from '$lib/utils';
 
   const SERVICE = 'com.impierce.identity-wallet';
@@ -112,11 +114,13 @@
     // Determine human-readable name for biometrics type (with respect to the device platform)
     biometryTypeString = localizedBiometricsTypeString(biometricsStatus.biometryType);
   });
+
+  const x = $derived($navigationDirection === 'down' ? 32 : -32);
 </script>
 
 <TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.APP.SECURITY.NAVBAR_TITLE()} class="sticky top-0 z-10" />
 
-<div class="flex flex-col bg-silver dark:bg-navy">
+<div class="flex flex-col bg-silver dark:bg-navy" in:fly={{ x, duration, opacity: 1 }}>
   <div class="flex flex-col space-y-[10px] px-4 py-5">
     {#if biometricsStatus}
       <SettingsSwitch

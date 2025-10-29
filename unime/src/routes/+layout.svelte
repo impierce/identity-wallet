@@ -1,9 +1,13 @@
 <script lang="ts">
   import { onDestroy, onMount, type Component } from 'svelte';
 
-  import { goto } from '$app/navigation';
-  import { page } from '$app/stores';
-  import { PUBLIC_DEV_MODE_MENU_EXPANDED, PUBLIC_STYLE_SAFE_AREA_INSETS } from '$env/static/public';
+  import { beforeNavigate, goto } from '$app/navigation';
+  import { page } from '$app/state';
+  import {
+    PUBLIC_DEV_MODE_MENU_EXPANDED,
+    PUBLIC_DEV_SHOW_CURRENT_ROUTE,
+    PUBLIC_STYLE_SAFE_AREA_INSETS,
+  } from '$env/static/public';
   import LL, { setLocale } from '$i18n/i18n-svelte';
   import { loadAllLocales } from '$i18n/i18n-util.sync';
   import type { SVGAttributes } from 'svelte/elements';
@@ -26,7 +30,7 @@
     TrashRegularIcon,
     XRegularIcon,
   } from '$lib/icons';
-  import { state as appState, error as errorState } from '$lib/stores';
+  import { state as appState, error as errorState, navigationDirection } from '$lib/stores';
 
   import '../app.css';
 
@@ -324,6 +328,30 @@
       resizeObserverInsetBottom.disconnect();
     }
   });
+
+  beforeNavigate(({ type, from, to }) => {
+    if (!from || !to) return;
+
+    if (type === 'popstate') {
+      $navigationDirection = null;
+      if (PUBLIC_DEV_SHOW_CURRENT_ROUTE === 'true') {
+        info(`$navigationDirection: ${$navigationDirection}`);
+      }
+      return;
+    }
+
+    if (to.url.pathname.startsWith(from.url.pathname) || from.url.pathname.startsWith(to.url.pathname)) {
+      if (to.url.pathname.length > from.url.pathname.length) {
+        $navigationDirection = 'down';
+      } else {
+        $navigationDirection = 'up';
+      }
+    }
+
+    if (PUBLIC_DEV_SHOW_CURRENT_ROUTE === 'true') {
+      info(`$navigationDirection: ${$navigationDirection}`);
+    }
+  });
 </script>
 
 <!--
@@ -337,11 +365,11 @@ Stacking context: We have to deviate from the DOM-sequence.
 
 <!-- Set default background and text color. -->
 <!-- A page can request a transparent background by setting `$page.data.transparent` (required by scan route). -->
-<div class="overflow-hidden text-text {$page.data.transparent ? 'bg-transparent' : 'bg-background'}" class:dark>
+<div class="overflow-hidden text-text {page.data.transparent ? 'bg-transparent' : 'bg-background'}" class:dark>
   <!-- Default background for `safe-area-inset-top` is `bg-background`. Make it `bg-background-alt` when flag is set.  -->
   <div
     bind:this={safeAreaInsetTop}
-    class="safe-area-inset-top fixed top-0 z-30 w-full {$page.data.bgAltTop ? 'bg-background-alt' : 'bg-background'}"
+    class="safe-area-inset-top fixed top-0 z-30 w-full {page.data.bgAltTop ? 'bg-background-alt' : 'bg-background'}"
   >
     {#if $appState.dev_mode !== 'Off'}
       <!-- Apply border conditionally when the top inset is not 0. -->
@@ -357,7 +385,7 @@ Stacking context: We have to deviate from the DOM-sequence.
   <!-- safe-area-inset-bottom: highlight area when in dev mode. -->
   <div
     bind:this={safeAreaInsetBottom}
-    class="safe-area-inset-bottom fixed bottom-0 z-50 w-full {$page.data.bgAltBottom
+    class="safe-area-inset-bottom fixed bottom-0 z-50 w-full {page.data.bgAltBottom
       ? 'bg-background-alt'
       : 'bg-background'}"
   >
@@ -453,6 +481,12 @@ Stacking context: We have to deviate from the DOM-sequence.
             </button>
           {/each}
         </div>
+      </div>
+    {/if}
+
+    {#if $appState?.dev_mode !== 'Off' && PUBLIC_DEV_SHOW_CURRENT_ROUTE === 'true'}
+      <div class="absolute bottom-4 left-4 z-50 rounded bg-orange-100 px-3 py-2 text-xs font-medium text-orange-700">
+        {page.route.id}
       </div>
     {/if}
 
