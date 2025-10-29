@@ -71,9 +71,11 @@ pub async fn share_to_linkedin(state: AppState, action: Action) -> Result<AppSta
 // Helpers
 
 pub async fn create_public_link(credential: &DisplayCredential) -> Result<Url, AppError> {
-    // TODO: Find Issuer public credential endpoint through DID linkedServices
+    
+    // TODO: Create Public Credential Token through helper function
 
-    // TODO: Create Public Credential Token through helper function\
+    // TODO: Find Issuer public credential endpoint through DID linkedServices, get the DID from the `aud` claim of the token.
+    
     // TODO: Compile step 1 and 2 into public link.
 
     // placeholder return
