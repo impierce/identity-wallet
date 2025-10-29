@@ -1,6 +1,5 @@
 use crate::reducer;
-// use crate::state::credentials::reducers::delete_credential::delete_credential;
-use crate::state::credentials::reducers::share_to_linkedin::share_to_linkedin;
+use crate::state::credentials::reducers::delete_credential::delete_credential;
 use crate::state::{actions::ActionTrait, Reducer};
 
 use serde::{Deserialize, Serialize};
@@ -13,10 +12,9 @@ pub struct DeleteCredential {
     pub id: String,
 }
 
-// tmp test
 #[typetag::serde(name = "[Credential] Delete")]
 impl ActionTrait for DeleteCredential {
     fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
-        vec![reducer!(share_to_linkedin)]
+        vec![reducer!(delete_credential)]
     }
 }

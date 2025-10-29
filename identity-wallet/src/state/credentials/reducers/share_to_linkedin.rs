@@ -16,13 +16,13 @@ use urlencoding::encode;
 pub async fn share_to_linkedin(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(share_to_linkedin) = listen::<ShareToLinkedIn>(action) {
         let mut credentials = state.credentials.clone();
-        let mut credential = credentials
+        let credential = credentials
             .iter_mut()
             .find(|cred| cred.id == share_to_linkedin.id)
             .ok_or(AppError::NoCredentialWithIdError(share_to_linkedin.id))?;
 
         // Build LinkedIn URL, all parameters must be URL percent-encoded
-        let mut linkedin_url = encode("https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME").into_owned();
+        let mut linkedin_url = "https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME".to_string();
         linkedin_url.push_str(format!("&name={}", encode(&credential.display_name)).as_str());
         linkedin_url.push_str(format!("&organizationName={}", encode(&credential.issuer_name)).as_str());
 
@@ -38,7 +38,7 @@ pub async fn share_to_linkedin(state: AppState, action: Action) -> Result<AppSta
             linkedin_url.push_str(format!("&expirationMonth={}", expiration_date.month()).as_str());
         }
 
-        // Get or create public link
+        // Get or create public link to the credential
         let public_link = if let Some(existing_link) = credential.public_link.clone() {
             existing_link.clone()
         } else {
@@ -59,17 +59,18 @@ pub async fn share_to_linkedin(state: AppState, action: Action) -> Result<AppSta
             .open_url(linkedin_url, None::<&str>)
             .map_err(|err| AppError::Error(format!("Failed to open URL in browser: {err}")))?;
 
-        // return Ok(AppState {
-        //     credentials,
-        //     current_user_prompt: redirect_prompt,
-        //     ..state
-        // });
+        credential.public_link = Some(public_link);
+        return Ok(AppState { credentials, ..state });
     }
 
     Ok(state)
 }
 
-pub async fn create_public_link(credential: &DisplayCredential) -> Result<Url, AppError> {
+pub async fn create_public_link(_credential: &DisplayCredential) -> Result<Url, AppError> {
+    // TODO: Find Issuer public credential endpoint through DID linkedServices
+    // TODO: Create Public Credential Token through helper function\
+    // TODO: Compile step 1 and 2 into public link.
+
     // placeholder return
     Ok(Url::parse("https://example.com").unwrap())
 }
