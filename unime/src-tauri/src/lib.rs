@@ -1,13 +1,9 @@
-#[allow(unused_imports)]
-#[cfg(target_os = "android")]
-use iota_sdk::IotaClientBuilder;
 #[cfg(target_os = "android")]
 use jni::{
     objects::{JClass, JObject},
     JNIEnv,
 };
 
-#[allow(unused_mut)]
 #[cfg(not(feature = "test_utils"))]
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -18,14 +14,13 @@ pub fn run() {
     use log::{info, LevelFilter};
     use tauri_plugin_log::{fern::colors::Color, fern::colors::ColoredLevelConfig, Target, TargetKind};
 
-    let mut builder = tauri::Builder::default();
+    #[cfg(not(desktop))]
+    let builder = tauri::Builder::default();
 
     #[cfg(desktop)]
-    {
-        builder = builder.plugin(tauri_plugin_single_instance::init(|_app, argv, _cwd| {
-            info!("New app instance opened via deep link: {argv:?}");
-        }));
-    }
+    let builder = tauri::Builder::default().plugin(tauri_plugin_single_instance::init(|_app, argv, _cwd| {
+        info!("New app instance opened via deep link: {argv:?}");
+    }));
 
     builder
         .invoke_handler(tauri::generate_handler![tauri_command::handle_action])
