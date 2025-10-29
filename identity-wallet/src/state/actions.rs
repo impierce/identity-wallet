@@ -73,7 +73,7 @@ mod bindings {
             authorization_code_received::CodeReceived, credential_offers_selected::CredentialOffersSelected,
             credentials_selected::CredentialsSelected, delete_credential::DeleteCredential,
             refresh_credential_status::RefreshCredentialStatus, self_issue_credential::SelfIssueCredential,
-            update_credential_metadata::UpdateCredentialMetadata,
+            share_to_linkedin::ShareToLinkedIn, update_credential_metadata::UpdateCredentialMetadata,
         },
         dev_mode::actions::{dev_profile::DevProfile, show_setting::ShowDevModeSetting},
         did::actions::{set_preferred_keytype::SetPreferredKeyType, set_preferred_method::SetPreferredDidMethod},
@@ -181,5 +181,7 @@ mod bindings {
         ResetEmailVerification,
         #[serde(rename = "[Credential] Self Issue")]
         SelfIssueCredential { payload: SelfIssueCredential },
+        #[serde(rename = "[Credential] Share to LinkedIn")]
+        ShareToLinkedIn { payload: ShareToLinkedIn },
     }
 }
