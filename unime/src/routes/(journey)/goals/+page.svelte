@@ -138,7 +138,7 @@
       on:click={() => goto('/goals/0/faqs')}>Continue</button
     > -->
   </div>
-  <div class="sticky bottom-[var(--safe-area-inset-bottom)] left-0 p-6">
+  <div class="sticky bottom-(--safe-area-inset-bottom) left-0 p-6">
     <Button label={$LL.CONTINUE()} on:click={() => goto('/goals/0/faqs')} />
   </div>
 </div>

@@ -5,7 +5,6 @@ export { default as BottomNavBar } from './navigation/BottomNavBar.svelte';
 export { default as Button } from './Button.svelte';
 export { default as Checkbox } from './Checkbox.svelte';
 export { default as CredentialList } from './credentials/CredentialList.svelte';
-export { default as DateField } from './forms/DateField.svelte';
 export { default as DeprecatedSwitch } from './DeprecatedSwitch.svelte';
 export { default as Favorites } from './credentials/Favorites.svelte';
 export { default as History } from './history/History.svelte';

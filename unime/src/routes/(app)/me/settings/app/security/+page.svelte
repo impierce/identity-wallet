@@ -164,7 +164,7 @@
             error = null;
             passwordValue = e.currentTarget.value;
           }}
-          class={`h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300 ${error ? 'border-rose-500 ring ring-rose-100' : ''}`}
+          class={`h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300 ${error ? 'border-rose-500 ring-3 ring-rose-100' : ''}`}
         />
         <div class="absolute right-3 top-0 flex h-full items-center">
           <button
