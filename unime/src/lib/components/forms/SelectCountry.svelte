@@ -49,7 +49,7 @@
           />
         {:else}
           <!-- Margins are fine-tuned to align the icon shape with the circle-flags -->
-          <GlobeRegularIcon class="-ml-[2px] -mt-[1px] size-6 text-slate-500 dark:text-slate-300" />
+          <GlobeRegularIcon class="-ml-[2px] -mt-px size-6 text-slate-500 dark:text-slate-300" />
         {/if}
       </div>
       <input

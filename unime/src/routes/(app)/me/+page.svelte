@@ -102,7 +102,7 @@
           </Tabs>
         </div>
 
-        <div class="absolute right-0 top-0">
+        <div class="absolute top-0 right-0">
           <SortingSheet />
         </div>
       </div>
@@ -117,7 +117,7 @@
           </div>
 
           <!-- Confetti -->
-          <div class="absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2">
+          <div class="absolute top-1/2 left-1/2 z-0 -translate-x-1/2 -translate-y-1/2">
             <lottie-player
               src="/lottiefiles/bubble-burst-confetti-ajgRKUnNJ7.json"
               autoplay
@@ -166,7 +166,7 @@
 <!-- <div in:fly={{ y: 12, delay: 0, opacity: 1, duration: 200 }} class="absolute bottom-5 right-4"> -->
 <div
   in:fly={{ y: 8, opacity: 1, duration: 200 }}
-  class="fixed bottom-[calc(64px_+_16px_+_var(--safe-area-inset-bottom))] right-4"
+  class="fixed right-4 bottom-[calc(64px+16px+var(--safe-area-inset-bottom))]"
 >
   <button
     class="flex w-fit justify-center rounded-full bg-primary px-4 py-3 text-white dark:text-dark"

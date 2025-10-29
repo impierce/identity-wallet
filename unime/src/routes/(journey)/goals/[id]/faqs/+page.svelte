@@ -31,14 +31,14 @@
         use:melt={$item(faq.id.toString())}
         class="overflow-hidden rounded-xl border
              border-slate-200 transition-colors focus-within:relative
-            focus-within:z-10 focus-within:ring focus-within:ring-primary dark:border-slate-600"
+            focus-within:z-10 focus-within:ring-3 focus-within:ring-primary dark:border-slate-600"
       >
         <h2 class="flex">
           <button
             use:melt={$trigger(faq.id.toString())}
             class="flex h-12 flex-1 cursor-pointer items-center justify-between
                  bg-white px-5 text-base font-medium leading-none
-                 text-slate-800 transition-colors hover:bg-opacity-95 focus:!ring-0 dark:bg-dark dark:text-grey"
+                 text-slate-800 transition-colors hover:bg-opacity-95 focus:ring-0! dark:bg-dark dark:text-grey"
           >
             <div class="flex w-full items-center justify-between">
               <p class="text-[13px]/[24px] font-medium">{faq.title}</p>
