@@ -147,7 +147,7 @@
 {/if}
 
 {#if showMessage()}
-  <div class="absolute bottom-[calc(64px_+_16px_+_var(--safe-area-inset-bottom))] left-4 w-[calc(100%_-_32px)]">
+  <div class="absolute bottom-[calc(64px+16px+var(--safe-area-inset-bottom))] left-4 w-[calc(100%-32px)]">
     <Toast variant="info" {title} {detail} dismissible={false} />
   </div>
 {/if}

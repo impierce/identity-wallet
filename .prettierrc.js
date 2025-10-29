@@ -24,5 +24,5 @@ export default {
   // https://github.com/tailwindlabs/prettier-plugin-tailwindcss?tab=readme-ov-file#compatibility-with-other-prettier-plugins
   plugins: ['prettier-plugin-svelte', '@ianvs/prettier-plugin-sort-imports', 'prettier-plugin-tailwindcss'],
   // Link to config so Tailwind can sort custom classes like `bg-primary` correctly.
-  tailwindConfig: './unime/tailwind.config.js',
+  tailwindStylesheet: './unime/src/app.css',
 };

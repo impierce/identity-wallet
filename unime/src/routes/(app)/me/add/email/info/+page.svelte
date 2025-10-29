@@ -45,7 +45,7 @@
   class="sticky top-0 z-10"
 />
 
-<div class="relative flex h-[calc(100%_-_50px)] flex-col">
+<div class="relative flex h-[calc(100%-50px)] flex-col">
   <div class="grow space-y-4 p-4">
     <div class="pt-8">
       <IconMessage icon={EnvelopeOpenFillIcon} title={$LL.ADD_CREDENTIALS.EMAIL.INFO.TITLE()} />
