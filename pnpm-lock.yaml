@@ -81,8 +81,8 @@ importers:
         specifier: ^2.3.2
         version: 2.3.2
       '@tauri-apps/plugin-deep-link':
-        specifier: ^2.4.1
-        version: 2.4.2
+        specifier: ^2.4.5
+        version: 2.4.5
       '@tauri-apps/plugin-fs':
         specifier: ^2.4.2
         version: 2.4.2
@@ -1020,8 +1020,8 @@ packages:
   '@tauri-apps/plugin-biometric@2.3.2':
     resolution: {integrity: sha512-RFydYGKEJ6m4UWdcPsO+vJQUb3JyyfFeNoZSPDs0uWjvwHBs03xey5wWO+uowmFFy03JAff1l2idQAwuycO8Uw==}
 
-  '@tauri-apps/plugin-deep-link@2.4.2':
-    resolution: {integrity: sha512-og3F/wNrTKh1vdgnGr5fG/vJYHvok114PIZy2zjx753GKqHAaZpngaNc6aP3pKnSqvUp3sjgBbPn/DeJ+CXwrA==}
+  '@tauri-apps/plugin-deep-link@2.4.5':
+    resolution: {integrity: sha512-Zf2RTj1D9IQQ45/jqW8XTKvql24HqlPjcpv0mV/O2jHQkNe11HOTZBVj6IK37qs+MWV7xZzcmazx/QVZnhAwaQ==}
 
   '@tauri-apps/plugin-fs@2.4.2':
     resolution: {integrity: sha512-YGhmYuTgXGsi6AjoV+5mh2NvicgWBfVJHHheuck6oHD+HC9bVWPaHvCP0/Aw4pHDejwrvT8hE3+zZAaWf+hrig==}
@@ -3466,7 +3466,7 @@ snapshots:
     dependencies:
       '@tauri-apps/api': 2.9.0
 
-  '@tauri-apps/plugin-deep-link@2.4.2':
+  '@tauri-apps/plugin-deep-link@2.4.5':
     dependencies:
       '@tauri-apps/api': 2.9.0
 
