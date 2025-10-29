@@ -11,6 +11,7 @@ env:
 
 jobs:
   draft:
+    name: Draft Release
     runs-on: ubuntu-latest
 
     environment: production
@@ -25,6 +26,7 @@ jobs:
           api-key: ${{ secrets.CN_API_KEY }}
 
   build_android:
+    name: Build Android App Bundle
     needs: draft
 
     # ubuntu-latest: x64_2-core-7gb
@@ -104,6 +106,7 @@ jobs:
           path: ./src-tauri
 
   build_ios:
+    name: Build iOS App
     needs: draft
 
     # macos-latest: M1 (3 cores), 7 GB, arm64
