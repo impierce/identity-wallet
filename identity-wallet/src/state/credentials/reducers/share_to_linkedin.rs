@@ -42,6 +42,8 @@ pub async fn share_to_linkedin(state: AppState, action: Action) -> Result<AppSta
         let public_link = if let Some(existing_link) = credential.public_link.clone() {
             existing_link.clone()
         } else {
+            // Get verifiable credential record for the JWT info of the credential and pass this to the helper create_public_link fn
+            // state.core_utils.managers.lock()
             create_public_link(credential).await?.to_string()
         };
         linkedin_url.push_str(format!("&certUrl={}", encode(&public_link)).as_str());
@@ -66,8 +68,11 @@ pub async fn share_to_linkedin(state: AppState, action: Action) -> Result<AppSta
     Ok(state)
 }
 
-pub async fn create_public_link(_credential: &DisplayCredential) -> Result<Url, AppError> {
+// Helpers
+
+pub async fn create_public_link(credential: &DisplayCredential) -> Result<Url, AppError> {
     // TODO: Find Issuer public credential endpoint through DID linkedServices
+
     // TODO: Create Public Credential Token through helper function\
     // TODO: Compile step 1 and 2 into public link.
 
