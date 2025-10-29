@@ -88,7 +88,7 @@ pub async fn create_public_link_token(state: &AppState, vcr: &VerifiableCredenti
         iat: now.timestamp(),
         nbf: now.timestamp(),
         exp: exp.timestamp(),
-        jti: jti,
+        jti,
         status: "active",
     };
 
