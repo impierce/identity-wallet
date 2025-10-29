@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "@aws-crypto/sha256-js": "^5.2.0",
-    "@eslint/compat": "^1.4.0",
+    "@eslint/compat": "^1.4.1",
     "@eslint/js": "^9.38.0",
     "@iconify-json/circle-flags": "^1.2.10",
     "@iconify-json/ph": "^1.2.2",
