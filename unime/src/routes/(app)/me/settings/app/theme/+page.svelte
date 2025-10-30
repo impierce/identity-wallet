@@ -17,7 +17,7 @@
 <TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.APP.THEME.NAVBAR_TITLE()} class="sticky top-0 z-10" />
 
 <div class="bg-silver p-4 dark:bg-navy" in:fly={{ x, duration, opacity: 1 }}>
-  <div class="px-2 pb-8 pt-4">
+  <div class="px-2 pt-4 pb-8">
     <p class="pb-4 text-3xl font-semibold text-slate-700 dark:text-grey">
       {$LL.SETTINGS.APP.THEME.TITLE_1()}
       <span class="text-primary">{$LL.SETTINGS.APP.THEME.TITLE_2()}</span>

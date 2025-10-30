@@ -58,14 +58,14 @@
     <UniMeLogo class="text-blue dark:text-silver" />
 
     <!-- Manual password entry -->
-    <div class="relative mb-4 mt-8 w-[240px]">
+    <div class="relative mt-8 mb-4 w-[240px]">
       <input
         type={showPassword ? 'text' : 'password'}
         class="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300"
         placeholder={$LL.LOCK_SCREEN.PASSWORD_INPUT_PLACEHOLDER()}
         on:input={(e: Event) => (password = (e.target as HTMLInputElement).value)}
       />
-      <div class="absolute right-3 top-0 flex h-full items-center">
+      <div class="absolute top-0 right-3 flex h-full items-center">
         <button class="rounded-full p-2" on:click={() => (showPassword = !showPassword)}>
           {#if showPassword}
             <EyeRegularIcon class="text-slate-700 dark:text-grey" />
@@ -93,7 +93,7 @@
         >
 
         <!-- TODO: bug: after resetting (closing the drawer, main UI is not clickable anymore) -->
-        <div slot="content" class="w-full pb-[10px] pt-[20px]">
+        <div slot="content" class="w-full pt-[20px] pb-[10px]">
           <button
             class="h-[48px] w-full rounded-xl bg-rose-100 px-4 py-2 text-[14px]/[24px] font-medium text-rose-500"
             on:click={() => dispatch({ type: '[App] Reset' })}>{$LL.SETTINGS.RESET_APP.CONFIRM()}</button

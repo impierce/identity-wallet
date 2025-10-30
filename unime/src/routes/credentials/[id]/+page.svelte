@@ -41,7 +41,7 @@
   // The credential's metadata, e.g., the favorite status, may change.
   // ESLint does not understand the reactive statement.
   // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-  $: $appState, (credential = loadCredential());
+  $: ($appState, (credential = loadCredential()));
 
   $: {
     // Use `pageTitleStore` to get page title into layout.
@@ -89,7 +89,7 @@
             {displayNameUpdated.length}/{maxLength}
           </div>
           <!-- Inline pencil icon -->
-          <div class="absolute right-6 top-1/2 -translate-y-1/2">
+          <div class="absolute top-1/2 right-6 -translate-y-1/2">
             <PencilFillIcon class="size-5 text-slate-500 dark:text-slate-300" />
           </div>
         {/if}

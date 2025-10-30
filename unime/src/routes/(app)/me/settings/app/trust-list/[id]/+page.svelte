@@ -40,7 +40,7 @@
       use:melt={trigger}
       class="-mr-2 p-2 text-left text-[13px]/[24px] font-medium text-primary">Delete</button
     >
-    <div slot="content" class="w-full pb-[10px] pt-[20px]">
+    <div slot="content" class="w-full pt-[20px] pb-[10px]">
       <Button
         label="Yes, delete it."
         on:click={() => {

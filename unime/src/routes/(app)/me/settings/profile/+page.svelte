@@ -47,7 +47,7 @@
       </p>
     </button>
 
-    <div slot="content" class="w-full pb-[10px] pt-[20px]">
+    <div slot="content" class="w-full pt-[20px] pb-[10px]">
       <button
         class="h-[48px] w-full rounded-xl bg-rose-100 px-4 py-2 text-[14px]/[24px] font-medium text-rose-500"
         onclick={() => dispatch({ type: '[App] Reset' })}

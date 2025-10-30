@@ -232,7 +232,7 @@
 <div class="relative flex h-[calc(100%-50px)] flex-col">
   <div class="flex grow flex-col items-center p-4">
     {#if !hideForm}
-      <div class="mb-8 mt-4 flex w-full flex-col gap-1">
+      <div class="mt-4 mb-8 flex w-full flex-col gap-1">
         <div class="flex items-center justify-between">
           <label for="label" class="text-[14px]/[22px] font-medium text-slate-800 dark:text-grey">
             {$LL.ADD_CREDENTIALS.EMAIL.ADD.LABEL()}
