@@ -83,7 +83,7 @@
   </button>
   <div
     slot="content"
-    class="hide-scrollbar flex snap-x snap-mandatory flex-row items-start space-x-4 overflow-x-scroll"
+    class="flex hide-scrollbar snap-x snap-mandatory flex-row items-start space-x-4 overflow-x-scroll"
   >
     {#each predefinedEmojis as page}
       <div
