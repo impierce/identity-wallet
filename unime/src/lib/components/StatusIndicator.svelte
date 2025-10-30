@@ -23,10 +23,10 @@
 <!-- This would require an #if statement in combination with duplicating the outer `div` (without use:melt). -->
 <div
   use:melt={$trigger}
-  class="dark:bg-dark flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-4 dark:border-slate-600"
+  class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-4 dark:border-slate-600 dark:bg-dark"
 >
   <div class="flex grow flex-col">
-    <p class="dark:text-grey text-[13px]/[24px] font-medium text-slate-800">
+    <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
       {title}
     </p>
     {#if description}
@@ -52,9 +52,9 @@
   <div
     use:melt={$content}
     transition:fade={{ duration: 200 }}
-    class="bg-blue z-10 w-1/2 rounded-2xl p-[20px] text-white shadow-md dark:border dark:border-slate-500"
+    class="z-10 w-1/2 rounded-2xl bg-blue p-[20px] text-white shadow-md dark:border dark:border-slate-500"
   >
-    <div use:melt={$arrow} class="dark:border-l dark:border-t dark:border-slate-500"></div>
+    <div use:melt={$arrow} class="dark:border-t dark:border-l dark:border-slate-500"></div>
     <slot name="popover" />
   </div>
 {/if}

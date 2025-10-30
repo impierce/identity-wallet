@@ -61,7 +61,7 @@
   <button
     slot="trigger"
     class="relative flex h-24 w-24 items-center justify-center rounded-full
-      {selected ? 'bg-primary' : 'dark:bg-dark border border-slate-200 bg-white dark:border-slate-600'}
+      {selected ? 'bg-primary' : 'border border-slate-200 bg-white dark:border-slate-600 dark:bg-dark'}
       {showEditButton ? 'mb-[34px]' : ''}"
     use:melt={trigger}
     let:trigger
@@ -78,16 +78,16 @@
         </div>
       {/if}
     {:else}
-      <PlusBoldIcon class="dark:text-grey h-6 w-6 text-slate-700" />
+      <PlusBoldIcon class="h-6 w-6 text-slate-700 dark:text-grey" />
     {/if}
   </button>
   <div
     slot="content"
-    class="hide-scrollbar flex snap-x snap-mandatory flex-row items-start space-x-4 overflow-x-scroll"
+    class="flex hide-scrollbar snap-x snap-mandatory flex-row items-start space-x-4 overflow-x-scroll"
   >
     {#each predefinedEmojis as page}
       <div
-        class="bg-silver dark:bg-navy grid min-w-fit snap-center grid-cols-3 place-items-center gap-2 rounded-3xl p-2"
+        class="grid min-w-fit snap-center grid-cols-3 place-items-center gap-2 rounded-3xl bg-silver p-2 dark:bg-navy"
       >
         {#each page as emoji}
           <button

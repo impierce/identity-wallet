@@ -44,7 +44,7 @@
   </div>
 
   <!-- TODO: REFACTOR! -->
-  <div class="bg-background-alt absolute bottom-0 left-0 z-10 w-full rounded-t-3xl p-6">
+  <div class="absolute bottom-0 left-0 z-10 w-full rounded-t-3xl bg-background-alt p-6">
     <Button label={$LL.CONTINUE()} on:click={() => goto('/me/add/profile')} />
   </div>
 </div>

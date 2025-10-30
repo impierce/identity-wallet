@@ -11,7 +11,7 @@
 {#if $state?.user_journey}
   <div class="flex items-center justify-between">
     <div class="grow">
-      <div class="dark:text-grey flex justify-between text-[13px]/[24px] font-medium text-slate-800">
+      <div class="flex justify-between text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
         <p>{$state.user_journey.description_short}</p>
         <!-- <p>? / {$state.user_journey.goals.length}</p> -->
       </div>
@@ -21,7 +21,7 @@
           <ProgressBar value={(2 / 3) * 100} />
         </div>
         <button class="ml-[15px]" on:click={() => goto('/goals')}>
-          <CaretRightBoldIcon class="text-primary h-6 w-6" />
+          <CaretRightBoldIcon class="h-6 w-6 text-primary" />
         </button>
       </div>
       <!-- <ProgressBar value={40} /> -->

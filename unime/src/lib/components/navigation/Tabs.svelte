@@ -38,7 +38,7 @@ A tab component.
 <div use:melt={$root} class="isolate flex flex-col">
   <div
     use:melt={$list}
-    class={twMerge('dark:bg-dark flex h-[39px] shrink-0 overflow-x-auto rounded-xl bg-white', $$props.class)}
+    class={twMerge('flex h-[39px] shrink-0 overflow-x-auto rounded-xl bg-white dark:bg-dark', $$props.class)}
   >
     {#each triggers as triggerItem, i}
       <button
@@ -52,14 +52,14 @@ A tab component.
           <div
             in:receive={{ key: 'trigger' }}
             out:send={{ key: 'trigger' }}
-            class="bg-primary absolute left-0 top-0 h-full w-full rounded-lg"
+            class="absolute top-0 left-0 h-full w-full rounded-lg bg-primary"
           ></div>
         {/if}
 
         <!-- Separator between inactive tabs -->
         {#if $value !== triggerItem && $value !== triggers[i + 1]}
           <div
-            class="separator absolute -right-1 top-1/2 h-3 w-px -translate-y-1/2 transform bg-slate-300 dark:bg-slate-500"
+            class="separator absolute top-1/2 -right-1 h-3 w-px -translate-y-1/2 transform bg-slate-300 dark:bg-slate-500"
             out:fade={{ duration: 100 }}
           ></div>
         {/if}

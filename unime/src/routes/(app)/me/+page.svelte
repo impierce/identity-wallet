@@ -48,8 +48,8 @@
 </script>
 
 <!-- Isolate stacking context to avoid z-index conflicts. -->
-<div class="dark:bg-dark relative isolate flex flex-col bg-white">
-  <div class="dark:bg-dark sticky top-0 z-10 w-full bg-white px-[20px] py-4">
+<div class="relative isolate flex flex-col bg-white dark:bg-dark">
+  <div class="sticky top-0 z-10 w-full bg-white px-[20px] py-4 dark:bg-dark">
     <!-- Top Bar -->
     <div class="flex items-center justify-between">
       <button onclick={() => goto('/me/settings')}>
@@ -76,7 +76,7 @@
   <!-- should have min height: full screen - smallest possible welcome header - bottom nav - safe areas (top, bottom) -->
   <div
     in:fly={{ y: 18, duration: 200, opacity: 1 }}
-    class="bg-silver dark:bg-navy flex grow flex-col items-stretch justify-start rounded-t-[20px] p-[18px]"
+    class="flex grow flex-col items-stretch justify-start rounded-t-[20px] bg-silver p-[18px] dark:bg-navy"
   >
     {#if $state?.credentials && $state?.credentials.length > 0}
       <div class="relative">
@@ -102,7 +102,7 @@
           </Tabs>
         </div>
 
-        <div class="absolute right-0 top-0">
+        <div class="absolute top-0 right-0">
           <SortingSheet />
         </div>
       </div>
@@ -117,7 +117,7 @@
           </div>
 
           <!-- Confetti -->
-          <div class="absolute left-1/2 top-1/2 z-0 -translate-x-1/2 -translate-y-1/2">
+          <div class="absolute top-1/2 left-1/2 z-0 -translate-x-1/2 -translate-y-1/2">
             <lottie-player
               src="/lottiefiles/bubble-burst-confetti-ajgRKUnNJ7.json"
               autoplay
@@ -130,7 +130,7 @@
         </div>
 
         <div class="pt-[15px]">
-          <p class="dark:text-grey pb-[15px] text-[22px]/[30px] font-semibold tracking-tight text-slate-800">
+          <p class="pb-[15px] text-[22px]/[30px] font-semibold tracking-tight text-slate-800 dark:text-grey">
             Shall we get started?
           </p>
           <p class="w-[240px] text-[13px]/[24px] font-normal text-slate-500 dark:text-slate-300">
@@ -166,10 +166,10 @@
 <!-- <div in:fly={{ y: 12, delay: 0, opacity: 1, duration: 200 }} class="absolute bottom-5 right-4"> -->
 <div
   in:fly={{ y: 8, opacity: 1, duration: 200 }}
-  class="fixed bottom-[calc(64px+16px+var(--safe-area-inset-bottom))] right-4"
+  class="fixed right-4 bottom-[calc(64px+16px+var(--safe-area-inset-bottom))]"
 >
   <button
-    class="bg-primary dark:text-dark flex w-fit justify-center rounded-full px-4 py-3 text-white"
+    class="flex w-fit justify-center rounded-full bg-primary px-4 py-3 text-white dark:text-dark"
     onclick={() => goto('/me/add')}
   >
     <PlusCircleIcon class="mr-2 size-6" />

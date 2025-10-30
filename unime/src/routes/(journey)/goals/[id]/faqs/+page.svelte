@@ -21,24 +21,24 @@
   let goal: Goal = $state?.user_journey?.goals.find((g: Goal) => g.id === parseInt($page.params.id || '-1'));
 </script>
 
-<div class="bg-silver dark:bg-navy flex h-full flex-col items-center justify-evenly space-y-8 p-6">
-  <p class="dark:text-grey text-center text-2xl font-semibold text-slate-700">{goal?.label}</p>
+<div class="flex h-full flex-col items-center justify-evenly space-y-8 bg-silver p-6 dark:bg-navy">
+  <p class="text-center text-2xl font-semibold text-slate-700 dark:text-grey">{goal?.label}</p>
 
   <div class="mx-auto flex w-full grow flex-col space-y-4" {...$root}>
     <!-- {#each items as { id, title, description }, i} -->
     {#each goal?.faqs as faq}
       <div
         use:melt={$item(faq.id.toString())}
-        class="focus-within:ring-3 focus-within:ring-primary overflow-hidden
-             rounded-xl border border-slate-200
-            transition-colors focus-within:relative focus-within:z-10 dark:border-slate-600"
+        class="overflow-hidden rounded-xl border
+             border-slate-200 transition-colors focus-within:relative
+            focus-within:z-10 focus-within:ring-3 focus-within:ring-primary dark:border-slate-600"
       >
         <h2 class="flex">
           <button
             use:melt={$trigger(faq.id.toString())}
-            class="focus:ring-0! dark:bg-dark dark:text-grey flex h-12 flex-1
-                 cursor-pointer items-center justify-between bg-white px-5
-                 text-base font-medium leading-none text-slate-800 transition-colors hover:bg-opacity-95"
+            class="hover:bg-opacity-95 flex h-12 flex-1 cursor-pointer items-center
+                 justify-between bg-white px-5 text-base leading-none
+                 font-medium text-slate-800 transition-colors focus:ring-0! dark:bg-dark dark:text-grey"
           >
             <div class="flex w-full items-center justify-between">
               <p class="text-[13px]/[24px] font-medium">{faq.title}</p>
@@ -48,7 +48,7 @@
         </h2>
         {#if $isSelected(faq.id.toString())}
           <div
-            class="dark:bg-dark overflow-hidden bg-white text-[12px]/[14px] font-medium text-slate-500 dark:text-slate-300"
+            class="overflow-hidden bg-white text-[12px]/[14px] font-medium text-slate-500 dark:bg-dark dark:text-slate-300"
             use:melt={$content(faq.id.toString())}
             transition:slide
           >

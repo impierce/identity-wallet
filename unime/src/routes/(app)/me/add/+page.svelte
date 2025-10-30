@@ -45,14 +45,14 @@
 <div class="flex flex-col space-y-4 px-4 py-8">
   {#each data as { title, description, icon, link, disabled } (title)}
     <button
-      class="bg-background-alt flex w-full items-center justify-between rounded-xl p-4 disabled:opacity-50"
+      class="flex w-full items-center justify-between rounded-xl bg-background-alt p-4 disabled:opacity-50"
       onclick={() => goto(link)}
       {disabled}
     >
       <div class="flex items-center space-x-4">
-        <svelte:component this={icon} class="text-primary size-6" />
+        <svelte:component this={icon} class="size-6 text-primary" />
         <div class="flex flex-col text-left">
-          <p class="dark:text-grey text-[14px]/[22px] font-medium text-slate-800">{title}</p>
+          <p class="text-[14px]/[22px] font-medium text-slate-800 dark:text-grey">{title}</p>
           <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">{description}</p>
         </div>
       </div>

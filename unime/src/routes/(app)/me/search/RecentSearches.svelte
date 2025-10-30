@@ -34,12 +34,12 @@
         >
           <button
             slot="right"
-            class="hover:bg-silver dark:hover:bg-navy mr-1 rounded-full p-3"
+            class="mr-1 rounded-full p-3 hover:bg-silver dark:hover:bg-navy"
             on:click|stopPropagation={() => {
               dispatch({ type: '[Search] Delete recent', payload: { id: recentSearch.id } });
             }}
           >
-            <XBoldIcon class="dark:text-grey h-4 w-4 text-slate-800" />
+            <XBoldIcon class="h-4 w-4 text-slate-800 dark:text-grey" />
           </button>
         </ListItemCard>
       {/each}

@@ -15,17 +15,17 @@
 <a
   data-component="SettingsValueLink"
   {href}
-  class="bg-background-alt flex h-14 w-full items-center gap-4 rounded-xl p-4 {disabled
+  class="flex h-14 w-full items-center gap-4 rounded-xl bg-background-alt p-4 {disabled
     ? 'pointer-events-none opacity-50'
     : ''}"
 >
   <div class="flex items-center justify-center">
     {@render icon()}
   </div>
-  <div class="text-text grow text-sm font-medium">
+  <div class="grow text-sm font-medium text-text">
     {@render children()}
   </div>
-  <div class="text-primary text-sm font-medium">
+  <div class="text-sm font-medium text-primary">
     {value}
   </div>
 </a>

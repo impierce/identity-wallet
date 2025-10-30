@@ -4,9 +4,9 @@
 
 <!-- TODO: remove unused classes -->
 
-<div class="bg-grey dark:bg-blue flex h-[10px] overflow-hidden rounded-sm">
+<div class="flex h-[10px] overflow-hidden rounded-sm bg-grey dark:bg-blue">
   <div
     style="width:{value}%"
-    class="bg-primary flex flex-col justify-center whitespace-nowrap rounded-lg text-center text-white shadow-none"
+    class="flex flex-col justify-center rounded-lg bg-primary text-center whitespace-nowrap text-white shadow-none"
   ></div>
 </div>

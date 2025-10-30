@@ -232,16 +232,16 @@
 <div class="relative flex h-[calc(100%-50px)] flex-col">
   <div class="flex grow flex-col items-center p-4">
     {#if !hideForm}
-      <div class="mb-8 mt-4 flex w-full flex-col gap-1">
+      <div class="mt-4 mb-8 flex w-full flex-col gap-1">
         <div class="flex items-center justify-between">
-          <label for="label" class="dark:text-grey text-[14px]/[22px] font-medium text-slate-800">
+          <label for="label" class="text-[14px]/[22px] font-medium text-slate-800 dark:text-grey">
             {$LL.ADD_CREDENTIALS.EMAIL.ADD.LABEL()}
           </label>
         </div>
         <input
           name="label"
           type="text"
-          class="dark:bg-dark w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] font-normal text-slate-800 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:text-slate-300 dark:caret-slate-300"
+          class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] font-normal text-slate-800 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-dark dark:text-slate-300 dark:caret-slate-300"
           placeholder={$LL.ADD_CREDENTIALS.EMAIL.ADD.LABEL_PLACEHOLDER()}
           bind:value={label}
           bind:this={labelInput}
@@ -250,20 +250,20 @@
           }}
           disabled={pending}
         />
-        <div class="text-primary pt-1 text-[12px]/[14px] font-medium">
+        <div class="pt-1 text-[12px]/[14px] font-medium text-primary">
           {$LL.ADD_CREDENTIALS.LABEL_DISCLAIMER()}
         </div>
 
         <!-- Divider -->
         <div class="my-4 h-px bg-slate-300"></div>
 
-        <label for="email" class="dark:text-grey text-[14px]/[22px] font-medium text-slate-800">
+        <label for="email" class="text-[14px]/[22px] font-medium text-slate-800 dark:text-grey">
           {$LL.ADD_CREDENTIALS.EMAIL.ADD.VALUE_LABEL()}
         </label>
         <input
           name="email"
           type="email"
-          class="bg-background-alt w-full rounded-xl border border-slate-300 px-4 py-3 text-[13px]/[24px] font-normal text-slate-800 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:text-slate-300 dark:caret-slate-300"
+          class="w-full rounded-xl border border-slate-300 bg-background-alt px-4 py-3 text-[13px]/[24px] font-normal text-slate-800 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:text-slate-300 dark:caret-slate-300"
           placeholder={$LL.ADD_CREDENTIALS.EMAIL.ADD.VALUE_PLACEHOLDER()}
           bind:value={email}
           oninput={() => {
@@ -283,7 +283,7 @@
         {/if}
       </div>
     {:else}
-      <div class="dark:text-grey p-8 pt-0 text-[14px]/[22px] font-medium text-slate-500">
+      <div class="p-8 pt-0 text-[14px]/[22px] font-medium text-slate-500 dark:text-grey">
         {$LL.ADD_CREDENTIALS.EMAIL.ADD.CHECK_EMAIL()}
       </div>
     {/if}
@@ -291,7 +291,7 @@
     {#if pending || expired}
       {#key progressValue.current}
         <CircularProgressBar
-          class="dark:stroke-background-alt stroke-slate-200"
+          class="stroke-slate-200 dark:stroke-background-alt"
           max={$appState.verified_data.email_verification?.validation_expiration_in_secs ?? 0}
           min={0}
           value={progressValue.current}
@@ -304,7 +304,7 @@
         {#each pinInput.inputs as input}
           <input
             {...input}
-            class="bg-background-alt text-text-alt outline-hidden focus:border-primary size-12 rounded-xl border border-slate-300 text-center text-2xl font-semibold disabled:cursor-not-allowed dark:border-slate-500"
+            class="size-12 rounded-xl border border-slate-300 bg-background-alt text-center text-2xl font-semibold text-text-alt outline-hidden focus:border-primary disabled:cursor-not-allowed dark:border-slate-500"
             disabled={!pending}
           />
         {/each}
@@ -334,7 +334,7 @@
   </div>
 
   <!-- TODO: REFACTOR! -->
-  <div class="bg-background-alt absolute bottom-0 left-0 z-10 flex w-full flex-col gap-3 rounded-t-3xl p-6">
+  <div class="absolute bottom-0 left-0 z-10 flex w-full flex-col gap-3 rounded-t-3xl bg-background-alt p-6">
     {#if expired || $appState.dev_mode !== 'Off'}
       <Button label={$LL.DISCARD()} variant="secondary" on:click={reset} />
     {/if}

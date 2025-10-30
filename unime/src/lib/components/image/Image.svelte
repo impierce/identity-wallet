@@ -81,7 +81,7 @@ Displays an image (loaded from disk) or a fallback component.
   <slot name="fallback">
     <svelte:component
       this={icons[iconFallback]}
-      class={twMerge('dark:text-grey size-[18px] text-slate-800', $$props.iconClass)}
+      class={twMerge('size-[18px] text-slate-800 dark:text-grey', $$props.iconClass)}
       data-testid="icon"
     />
   </slot>

@@ -21,10 +21,10 @@
     use:melt={trigger}
     let:trigger
     on:click={() => ($open = true)}
-    class="border-grey bg-silver dark:border-blue dark:bg-navy flex w-fit items-center justify-center rounded-lg border px-[15px] py-3"
+    class="flex w-fit items-center justify-center rounded-lg border border-grey bg-silver px-[15px] py-3 dark:border-blue dark:bg-navy"
   >
-    <TranslateRegularIcon class="text-primary mr-3 size-6" />
-    <div class="dark:text-grey text-[13px]/[24px] font-medium text-slate-800">{selected.displayName}</div>
+    <TranslateRegularIcon class="mr-3 size-6 text-primary" />
+    <div class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">{selected.displayName}</div>
   </button>
 
   <div slot="content" class="flex w-full flex-col space-y-[5px]">
@@ -39,14 +39,14 @@
           {disabledLocales.includes(l.locale) ? 'opacity-30 grayscale' : ''}"
         disabled={disabledLocales.includes(l.locale)}
       >
-        <div class="dark:text-grey grow text-left text-[13px]/[24px] font-medium text-slate-800">{l.displayName}</div>
+        <div class="grow text-left text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">{l.displayName}</div>
         {#if disabledLocales.includes(l.locale)}
-          <div class="dark:text-grey ml-auto text-[13px]/[24px] font-medium text-slate-800">
+          <div class="ml-auto text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
             {$LL.SETTINGS.APP.LANGUAGE.COMING_SOON()}
           </div>
         {/if}
         {#if selected && l.locale === selected.locale}
-          <CheckBoldIcon class="text-primary size-5" />
+          <CheckBoldIcon class="size-5 text-primary" />
         {/if}
       </button>
     {/each}

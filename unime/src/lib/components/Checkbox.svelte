@@ -33,9 +33,9 @@
 {#if !readonly}
   <button
     use:melt={$root}
-    class="data-disabled:opacity-50 dark:text-dark flex h-6 w-6 appearance-none items-center justify-center
-            rounded-md border-[1.5px] border-slate-300 p-[6px] text-white
-            {$isChecked ? 'bg-primary border-none' : 'bg-transparent'}"
+    class="flex h-6 w-6 appearance-none items-center justify-center rounded-md border-[1.5px]
+            border-slate-300 p-[6px] text-white data-disabled:opacity-50 dark:text-dark
+            {$isChecked ? 'border-none bg-primary' : 'bg-transparent'}"
   >
     {#if $isChecked}
       <CheckBoldIcon class="h-3 w-3" />
@@ -44,9 +44,9 @@
   </button>
 {:else}
   <button
-    class="data-disabled:opacity-50 dark:text-dark flex h-6 w-6 appearance-none items-center justify-center
-        rounded-md border-[1.5px] border-slate-300 p-[6px] text-white
-        {$isChecked ? 'bg-primary border-none' : 'bg-transparent'}"
+    class="flex h-6 w-6 appearance-none items-center justify-center rounded-md border-[1.5px]
+        border-slate-300 p-[6px] text-white data-disabled:opacity-50 dark:text-dark
+        {$isChecked ? 'border-none bg-primary' : 'bg-transparent'}"
   >
     {#if $isChecked}
       <CheckBoldIcon class="h-3 w-3" />

@@ -34,8 +34,8 @@
 
 <TopNavBar title={$LL.ONBOARDING.PLEDGE.NAVBAR_TITLE()} on:back={() => history.back()} />
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
-  <div class="px-2 pb-8 pt-4">
-    <p class="dark:text-grey pb-4 text-3xl font-semibold text-slate-700">
+  <div class="px-2 pt-4 pb-8">
+    <p class="pb-4 text-3xl font-semibold text-slate-700 dark:text-grey">
       {$LL.ONBOARDING.PLEDGE.TITLE_1()} <span class="text-primary">{$LL.ONBOARDING.PLEDGE.TITLE_2()}</span>
     </p>
     <p class="text-[14px]/[22px] font-medium text-slate-500 dark:text-slate-300">{$LL.ONBOARDING.PLEDGE.SUBTITLE()}</p>
@@ -45,16 +45,16 @@
     {#each items as { id, title, description }}
       <div
         use:melt={$item(id)}
-        class="focus-within:ring-3 focus-within:ring-primary overflow-hidden
-             rounded-xl border border-slate-200
-            transition-colors focus-within:relative focus-within:z-10 dark:border-slate-600"
+        class="overflow-hidden rounded-xl border
+             border-slate-200 transition-colors focus-within:relative
+            focus-within:z-10 focus-within:ring-3 focus-within:ring-primary dark:border-slate-600"
       >
         <h2 class="flex">
           <button
             use:melt={$trigger(id)}
-            class="focus:ring-0! dark:bg-dark dark:text-grey flex h-12 flex-1
-                 cursor-pointer items-center justify-between bg-white px-5
-                 text-base font-medium leading-none text-slate-800 transition-colors hover:bg-opacity-95"
+            class="hover:bg-opacity-95 flex h-12 flex-1 cursor-pointer items-center
+                 justify-between bg-white px-5 text-base leading-none
+                 font-medium text-slate-800 transition-colors focus:ring-0! dark:bg-dark dark:text-grey"
           >
             <div class="flex w-full items-center justify-between">
               <p class="text-[13px]/[24px] font-medium">{title}</p>
@@ -64,7 +64,7 @@
         </h2>
         {#if $isSelected(id)}
           <div
-            class="dark:bg-dark overflow-hidden bg-white text-[12px]/[14px] font-medium text-slate-500 dark:text-slate-300"
+            class="overflow-hidden bg-white text-[12px]/[14px] font-medium text-slate-500 dark:bg-dark dark:text-slate-300"
             use:melt={$content(id)}
             transition:slide
           >
@@ -78,6 +78,6 @@
   </div>
 </div>
 
-<div class="dark:bg-dark rounded-t-3xl bg-white p-6" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
+<div class="rounded-t-3xl bg-white p-6 dark:bg-dark" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <Button label={$LL.CONTINUE()} on:click={() => goto('/welcome/terms')} />
 </div>

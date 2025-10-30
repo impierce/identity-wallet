@@ -21,9 +21,9 @@
   });
 </script>
 
-<div class="content-height bg-silver dark:bg-navy flex flex-col" in:fly={{ y: 18, duration: 200, opacity: 1 }}>
+<div class="content-height flex flex-col bg-silver dark:bg-navy" in:fly={{ y: 18, duration: 200, opacity: 1 }}>
   <div
-    class="bg-silver dark:bg-navy relative flex h-[50px] min-h-[50px] w-full items-center justify-center text-[13px]/[24px] font-medium text-neutral-900 dark:text-white"
+    class="relative flex h-[50px] min-h-[50px] w-full items-center justify-center bg-silver text-[13px]/[24px] font-medium text-neutral-900 dark:bg-navy dark:text-white"
   >
     <p>{$LL.ACTIVITY.NAVBAR_TITLE()}</p>
   </div>

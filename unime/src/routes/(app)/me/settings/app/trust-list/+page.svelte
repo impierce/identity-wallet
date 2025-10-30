@@ -32,14 +32,14 @@
 
 <TopNavBar on:back={() => history.back()} title={'Trusted issuers'} class="sticky top-0 z-10" />
 
-<div class="bg-silver dark:bg-navy flex flex-col space-y-[15px] px-4 py-5">
+<div class="flex flex-col space-y-[15px] bg-silver px-4 py-5 dark:bg-navy">
   <!-- Developer info -->
-  <div class="dark:bg-dark flex w-full items-center rounded-lg bg-white px-4 py-4">
+  <div class="flex w-full items-center rounded-lg bg-white px-4 py-4 dark:bg-dark">
     <span class="mr-4 h-6 w-6">
-      <InfoRegularIcon class="text-primary h-6 w-6" />
+      <InfoRegularIcon class="h-6 w-6 text-primary" />
     </span>
     <div class="flex flex-col">
-      <p class="dark:text-grey text-[13px]/[24px] font-medium text-slate-800">Developer info</p>
+      <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">Developer info</p>
       <ul class="ml-3 list-disc text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
         <li>Verifiable Presentations are trusted based on domains found in trust lists.</li>
         <li>You can add, remove and update custom entries.</li>
@@ -58,7 +58,7 @@
     {/if}
     {#each trustLists as trustList}
       <button
-        class="dark:bg-dark flex h-14 w-full items-center space-x-4 rounded-xl bg-white p-4"
+        class="flex h-14 w-full items-center space-x-4 rounded-xl bg-white p-4 dark:bg-dark"
         on:click={() => goto(`/me/settings/app/trust-list/${trustList.id}`)}
       >
         <div class="flex grow flex-row items-center space-x-2">
@@ -66,7 +66,7 @@
             {trustList.display_name}
           </p>
           {#if trustList.custom}
-            <svelte:component this={StarFillIcon} class="text-primary h-5 w-5" />
+            <svelte:component this={StarFillIcon} class="h-5 w-5 text-primary" />
           {/if}
         </div>
         <p class="text-[13px]/[24px] font-medium text-slate-400 dark:text-slate-300">

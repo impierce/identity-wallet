@@ -47,7 +47,7 @@
   });
 </script>
 
-<div class="safe-area-height hide-scrollbar bg-silver dark:bg-navy flex flex-col items-stretch overflow-y-auto">
+<div class="safe-area-height flex hide-scrollbar flex-col items-stretch overflow-y-auto bg-silver dark:bg-navy">
   <TopNavBar
     title={$LL.SCAN.CONNECTION_REQUEST.NAVBAR_TITLE()}
     on:back={() => history.back()}
@@ -58,7 +58,7 @@
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
     {#if logo_uri}
       <div
-        class="dark:bg-silver flex h-[75px] w-[75px] items-center justify-center overflow-hidden rounded-3xl bg-white p-2"
+        class="flex h-[75px] w-[75px] items-center justify-center overflow-hidden rounded-3xl bg-white p-2 dark:bg-silver"
       >
         <Image id={imageId} iconFallback="BankLight" isTempAsset={true} />
       </div>
@@ -66,7 +66,7 @@
       <PaddedIcon icon={PlugsConnectedFillIcon} />
     {/if}
     <div class="text-center">
-      <p class="dark:text-grey text-[22px]/[30px] font-semibold text-slate-700">
+      <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
         {client_name}
       </p>
       <p class="pt-[10px] text-sm font-medium text-slate-500">
@@ -76,15 +76,15 @@
     </div>
 
     <!-- Details -->
-    <div class="dark:bg-dark w-full space-y-3 rounded-3xl bg-white p-3">
+    <div class="w-full space-y-3 rounded-3xl bg-white p-3 dark:bg-dark">
       <!-- Warning -->
       {#if !previously_connected}
-        <div class="bg-silver dark:bg-navy flex w-full items-center rounded-xl p-4">
+        <div class="flex w-full items-center rounded-xl bg-silver p-4 dark:bg-navy">
           <span class="mr-4 h-6 w-6">
             <WarningCircleFillIcon class="h-6 w-6 text-amber-500" />
           </span>
           <div class="flex flex-col">
-            <p class="dark:text-grey text-[13px]/[24px] font-medium text-slate-800">
+            <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
               {$LL.SCAN.CONNECTION_REQUEST.TITLE()}
             </p>
             <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
@@ -102,7 +102,7 @@
 
       <!-- Domain validation -->
       <StatusIndicator status={domain_validation.status} title={$LL.DOMAIN_LINKAGE.TITLE()}>
-        <div class="break-words text-[12px]/[20px]" slot="popover">
+        <div class="text-[12px]/[20px] break-words" slot="popover">
           {#if domain_validation.status === 'Success'}
             <!-- TODO: add a better description of _what_ was validated -->
             <p>{$LL.DOMAIN_LINKAGE.SUCCESS()}</p>
@@ -142,7 +142,7 @@
   </div>
 
   <!-- `sticky` is relative to the nearest scrolling ancestor, which is the enclosing `div` above and not the viewport. -->
-  <div class="dark:bg-dark sticky bottom-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6">
+  <div class="sticky bottom-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 dark:bg-dark">
     <Button
       label={$LL.SCAN.CONNECTION_REQUEST.ACCEPT()}
       on:click={() => {

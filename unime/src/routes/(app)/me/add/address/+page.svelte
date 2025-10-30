@@ -99,11 +99,11 @@
   <div class="flex grow flex-col items-center p-4 pt-0">
     <div class="my-5 flex h-[121px] flex-col items-center space-y-4">
       <!-- PaddedIcon -->
-      <div class="bg-background-alt flex h-[75px] w-[75px] items-center justify-center rounded-3xl">
-        <HouseRegularIcon class="dark:text-grey size-7 text-slate-800" />
+      <div class="flex h-[75px] w-[75px] items-center justify-center rounded-3xl bg-background-alt">
+        <HouseRegularIcon class="size-7 text-slate-800 dark:text-grey" />
       </div>
       <div
-        class="outline-hidden dark:text-grey w-full text-center text-[22px]/[30px] font-semibold tracking-tight text-slate-700"
+        class="w-full text-center text-[22px]/[30px] font-semibold tracking-tight text-slate-700 outline-hidden dark:text-grey"
       >
         {addressName}
       </div>
@@ -117,7 +117,7 @@
           bind:value={addressName}
           bind:ref={labelInput}
         />
-        <div class="text-primary pt-1 text-[12px]/[14px] font-medium">
+        <div class="pt-1 text-[12px]/[14px] font-medium text-primary">
           {$LL.ADD_CREDENTIALS.LABEL_DISCLAIMER()}
         </div>
         <!-- Divider -->
@@ -178,12 +178,12 @@
 </div>
 
 <div
-  class="bottom-(--safe-area-inset-bottom) bg-background-alt fixed left-0 z-10 flex h-36 w-full flex-col gap-5 rounded-t-3xl p-6 shadow-sm"
+  class="fixed bottom-(--safe-area-inset-bottom) left-0 z-10 flex h-36 w-full flex-col gap-5 rounded-t-3xl bg-background-alt p-6 shadow-sm"
 >
   <Switch {checked} onCheckedChange={({ next }) => (checked = next)}>
     <div class="flex items-center gap-4 px-4">
-      <HeartFillIcon class="text-primary size-5" />
-      <span class="dark:text-grey text-[13px]/[24px] font-medium text-slate-800"
+      <HeartFillIcon class="size-5 text-primary" />
+      <span class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey"
         >{$LL.ADD_CREDENTIALS.FAVORITES_TOGGLE_LABEL()}</span
       >
     </div>

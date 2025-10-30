@@ -33,12 +33,12 @@
 
 <div class="flex">
   <div class="group relative flex grow items-center">
-    <MagnifyingGlassBoldIcon class="dark:text-grey absolute left-4 h-4 w-4 text-slate-800" />
+    <MagnifyingGlassBoldIcon class="absolute left-4 h-4 w-4 text-slate-800 dark:text-grey" />
 
     <!-- TODO: apply "appearance-none" and style everything manually? -->
     <input
       type="text"
-      class="dark:bg-dark h-11 w-full rounded-full bg-white pl-12 text-sm font-medium text-slate-500 placeholder-slate-500 placeholder-opacity-50 dark:text-slate-300"
+      class="placeholder-opacity-50 h-11 w-full rounded-full bg-white pl-12 text-sm font-medium text-slate-500 placeholder-slate-500 dark:bg-dark dark:text-slate-300"
       {placeholder}
       id="input"
       bind:value
@@ -50,7 +50,7 @@
         class="absolute right-2 inline-flex h-4 w-4 items-center justify-center rounded-full p-4"
         on:click={clear}
       >
-        <XBoldIcon class="dark:text-grey absolute h-4 w-4 text-slate-800" />
+        <XBoldIcon class="absolute h-4 w-4 text-slate-800 dark:text-grey" />
       </button>
     {/if}
   </div>

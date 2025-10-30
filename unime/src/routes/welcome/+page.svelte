@@ -15,13 +15,13 @@
   <div class="grow">
     <div class="mt-[calc(100vh/8)] px-4 py-6">
       <div class="pb-9">
-        <p class=" text-blue dark:text-silver pb-[10px] text-[36px]/[44px] font-bold">
+        <p class=" pb-[10px] text-[36px]/[44px] font-bold text-blue dark:text-silver">
           {$LL.ONBOARDING.WELCOME.GREETING()}
         </p>
         <UniMeText class="text-blue dark:text-silver" />
       </div>
 
-      <p class="text-ex-grey-2 dark:text-grey text-[14px]/[22px] font-medium">
+      <p class="text-[14px]/[22px] font-medium text-ex-grey-2 dark:text-grey">
         {$LL.ONBOARDING.WELCOME.WHAT_IS_UNIME_1()}
         <br /><br />
         {$LL.ONBOARDING.WELCOME.WHAT_IS_UNIME_2()}
@@ -38,7 +38,7 @@
   </div>
 
   <!-- Actions -->
-  <div class="dark:bg-dark z-10 rounded-t-3xl bg-white p-6">
+  <div class="z-10 rounded-t-3xl bg-white p-6 dark:bg-dark">
     <Button
       label={$LL.ONBOARDING.WELCOME.CREATE_NEW_PROFILE()}
       on:click={() => {

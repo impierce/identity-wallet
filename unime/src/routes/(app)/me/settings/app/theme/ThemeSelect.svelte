@@ -21,7 +21,7 @@
   // Dispatch custom event whenever that value changes.
   // ESLint does not understand the reactive statement.
   // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-  $: $value, dispatch('change', { value: $value });
+  $: ($value, dispatch('change', { value: $value }));
 </script>
 
 <div use:melt={$root} class="flex flex-col gap-4">
@@ -29,7 +29,7 @@
   <div
     use:melt={$item('system')}
     class="relative flex items-center justify-between rounded-xl border bg-slate-50 p-4
-        {$isChecked('system') ? 'border-primary ring-primary ring-1' : 'border-slate-200 dark:border-slate-600'}"
+        {$isChecked('system') ? 'border-primary ring-1 ring-primary' : 'border-slate-200 dark:border-slate-600'}"
   >
     <div class="h-12 grow">
       <p class="text-[13px]/[24px] font-medium text-slate-800">{$LL.SETTINGS.THEME.SYSTEM()}</p>
@@ -39,7 +39,7 @@
       <p class="p-2 text-sm font-medium text-slate-800">Aa</p>
     </div>
     <!-- Dark -->
-    <div class="bg-blue absolute bottom-0 left-1/2 h-14 w-1/4 rounded-t-xl border-b-0 border-slate-200">
+    <div class="absolute bottom-0 left-1/2 h-14 w-1/4 rounded-t-xl border-b-0 border-slate-200 bg-blue">
       <p class="p-2 text-sm font-medium text-white">Aa</p>
     </div>
   </div>
@@ -48,7 +48,7 @@
   <div
     use:melt={$item('light')}
     class="relative flex items-center justify-between rounded-xl border bg-white p-4
-        {$isChecked('light') ? 'border-primary ring-primary ring-1' : 'border-slate-200 dark:border-slate-600'}"
+        {$isChecked('light') ? 'border-primary ring-1 ring-primary' : 'border-slate-200 dark:border-slate-600'}"
   >
     <div class="h-12 grow">
       <p class="text-[13px]/[24px] font-medium text-slate-800">{$LL.SETTINGS.THEME.LIGHT()}</p>
@@ -61,8 +61,8 @@
   <!-- Dark theme radio button -->
   <div
     use:melt={$item('dark')}
-    class="bg-blue relative flex items-center justify-between rounded-xl border p-4
-        {$isChecked('dark') ? 'border-primary ring-primary ring-1' : 'border-slate-200 dark:border-slate-600'}"
+    class="relative flex items-center justify-between rounded-xl border bg-blue p-4
+        {$isChecked('dark') ? 'border-primary ring-1 ring-primary' : 'border-slate-200 dark:border-slate-600'}"
   >
     <div class="h-12 grow">
       <p class="text-[13px]/[24px] font-medium text-white">{$LL.SETTINGS.THEME.DARK()}</p>

@@ -51,18 +51,18 @@
   });
 </script>
 
-<div class="bg-background-alt grid grid-cols-2 gap-4 text-xs font-medium">
+<div class="grid grid-cols-2 gap-4 bg-background-alt text-xs font-medium">
   <div class="flex flex-col items-center gap-1">
     {#if credential.credential_status?.status === 'INVALID'}
       <p class="text-red-700 dark:text-red-500">{$LL.CREDENTIAL.DETAILS.INVALID()}</p>
       <div
-        class="dark:bg-background grid h-20 place-items-center self-stretch rounded-xl bg-red-50 py-5 text-red-700 dark:text-red-500"
+        class="grid h-20 place-items-center self-stretch rounded-xl bg-red-50 py-5 text-red-700 dark:bg-background dark:text-red-500"
       >
         <SealWarningDuotoneIcon class="size-7" />
       </div>
     {:else}
       {isSelfIssued() ? $LL.CREDENTIAL.DETAILS.UNVERIFIED() : $LL.CREDENTIAL.DETAILS.VALID()}
-      <div class="bg-background text-text-alt grid h-20 place-items-center self-stretch rounded-xl py-5">
+      <div class="grid h-20 place-items-center self-stretch rounded-xl bg-background py-5 text-text-alt">
         {#if isSelfIssued()}
           <SealQuestionRegularIcon class="size-7" />
         {:else}
@@ -82,7 +82,7 @@
       this={credential.connection_id ? 'button' : 'div'}
       on:click={credential.connection_id ? () => goto(`/activity/connection/${credential.connection_id}`) : undefined}
       role={credential.connection_id ? 'button' : undefined}
-      class="bg-background text-text-alt grid h-20 place-items-center self-stretch rounded-xl"
+      class="grid h-20 place-items-center self-stretch rounded-xl bg-background text-text-alt"
     >
       {#if issuerLogoUrl}
         <!-- Background is always white since most logos are designed for light backgrounds -->

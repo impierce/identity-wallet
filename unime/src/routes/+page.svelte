@@ -2,7 +2,7 @@
   import UniMeLogo from '$lib/static/svg/logo/UniMeLogo.svelte';
 </script>
 
-<div class="content-height bg-silver dark:bg-navy flex items-center justify-center">
+<div class="content-height flex items-center justify-center bg-silver dark:bg-navy">
   <UniMeLogo class="text-blue dark:text-silver" />
 </div>
 

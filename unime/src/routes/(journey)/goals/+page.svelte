@@ -39,7 +39,7 @@
       slot="trigger"
       let:trigger
       use:melt={trigger}
-      class="text-primary -mr-2 p-2 text-left text-[13px]/[24px] font-medium">{$LL.SKIP()}</button
+      class="-mr-2 p-2 text-left text-[13px]/[24px] font-medium text-primary">{$LL.SKIP()}</button
     >
     <!-- <button
       slot="trigger"
@@ -61,7 +61,7 @@
       class="mt-2 w-full rounded-lg border bg-white px-4 py-2 text-neutral-700"
       >No, let's continue</button
     > -->
-    <div slot="content" class="w-full pb-[10px] pt-[20px]">
+    <div slot="content" class="w-full pt-[20px] pb-[10px]">
       <Button label="Yes" on:click={() => dispatch({ type: '[User Journey] Cancel' })} />
     </div>
     <Button variant="secondary" slot="close" let:close trigger={close} label="No, let's continue" />
@@ -69,8 +69,8 @@
 </TopNavBar>
 
 <!-- Content -->
-<div class="bg-silver dark:bg-navy flex h-full flex-col">
-  <div class="bg-silver dark:bg-navy flex h-[54px] items-center px-[18px] py-[15px]">
+<div class="flex h-full flex-col bg-silver dark:bg-navy">
+  <div class="flex h-[54px] items-center bg-silver px-[18px] py-[15px] dark:bg-navy">
     <span class="grow pr-[15px]">
       <ProgressBar value={completedPercentage} />
     </span>
@@ -80,7 +80,7 @@
   </div>
 
   <div
-    class="hide-scrollbar flex h-full flex-col items-center justify-between overflow-y-scroll p-6"
+    class="flex hide-scrollbar h-full flex-col items-center justify-between overflow-y-scroll p-6"
     in:fly={{ x: 32, opacity: 1 }}
   >
     <div class="flex flex-col items-center">
@@ -103,12 +103,12 @@
 
             <svelte:fragment slot="icon">
               <div class="mb-[15px] flex h-[75px] w-[75px] items-center justify-center rounded-3xl bg-slate-100">
-                <svelte:component this={icons[goal.icon ?? 'Trophy']} class="text-primary h-7 w-7" />
+                <svelte:component this={icons[goal.icon ?? 'Trophy']} class="h-7 w-7 text-primary" />
               </div>
             </svelte:fragment>
 
             <svelte:fragment slot="content">
-              <div class="w-full pb-[10px] pt-8">
+              <div class="w-full pt-8 pb-[10px]">
                 <!-- <button
                 class="w-full rounded-lg bg-primary px-4 py-2 text-white"
                 on:click={() => goto(`/goals/${goal.id}/faqs`)}>Start</button
@@ -138,7 +138,7 @@
       on:click={() => goto('/goals/0/faqs')}>Continue</button
     > -->
   </div>
-  <div class="bottom-(--safe-area-inset-bottom) sticky left-0 p-6">
+  <div class="sticky bottom-(--safe-area-inset-bottom) left-0 p-6">
     <Button label={$LL.CONTINUE()} on:click={() => goto('/goals/0/faqs')} />
   </div>
 </div>

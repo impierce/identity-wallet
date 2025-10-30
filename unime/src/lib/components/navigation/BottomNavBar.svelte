@@ -14,7 +14,7 @@
   export let active: 'me' | 'scan' | 'activity' = 'me';
 </script>
 
-<div class="dark:bg-dark flex h-[64px] justify-evenly bg-white py-0 sm:justify-center sm:space-x-24">
+<div class="flex h-[64px] justify-evenly bg-white py-0 sm:justify-center sm:space-x-24 dark:bg-dark">
   <!-- 1: Me -->
   <BottomNavItem label={$LL.ME.BOTTOM_NAVIGATION_TITLE()} active={active == 'me'} on:click={() => dispatch('me')}>
     <!-- Icons bring their own dimensions (height and width).  -->

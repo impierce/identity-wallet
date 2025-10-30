@@ -24,7 +24,7 @@
 </script>
 
 <!-- Stretch over parent horizontal padding with negative margins. -->
-<div class="bg-background relative -mx-4 flex flex-col items-center gap-4 py-5">
+<div class="relative -mx-4 flex flex-col items-center gap-4 bg-background py-5">
   <!-- Background is always white since most logos are designed for light backgrounds -->
   {#if credentialLogoUrl}
     <div class="grid size-40 place-items-center rounded-xl bg-white">
@@ -33,7 +33,7 @@
     </div>
   {:else}
     <!-- When there's no logo, we adjust the background to the theme -->
-    <div class="bg-background-alt grid size-40 place-items-center rounded-xl">
+    <div class="grid size-40 place-items-center rounded-xl bg-background-alt">
       {#if credential.metadata.icon}
         <Image
           id={`${credential.metadata.icon}Light`}
@@ -41,9 +41,9 @@
           iconClass="size-10 dark:text-text-alt"
         />
       {:else if credential.data.type.includes('OpenBadgeCredential')}
-        <CertificateLightIcon class="text-text-alt size-10" />
+        <CertificateLightIcon class="size-10 text-text-alt" />
       {:else}
-        <UserLightIcon class="text-text-alt size-10" />
+        <UserLightIcon class="size-10 text-text-alt" />
       {/if}
     </div>
   {/if}
@@ -51,7 +51,7 @@
   <slot />
 
   <button
-    class="absolute left-0 top-0 ml-2 mt-4 p-1.5"
+    class="absolute top-0 left-0 mt-4 ml-2 p-1.5"
     on:click={() =>
       dispatch({
         type: '[Credential Metadata] Update',
@@ -68,7 +68,7 @@
     {/if}
   </button>
 
-  <div class="absolute right-0 top-0 mr-2 mt-4">
+  <div class="absolute top-0 right-0 mt-4 mr-2">
     <CredentialHeaderMenu id={credential.id} on:edit={() => dispatchEvent('edit')} />
   </div>
 </div>

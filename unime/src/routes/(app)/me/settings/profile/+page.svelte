@@ -25,10 +25,10 @@
 
 <TopNavBar on:back={() => goto(parentRoute)} title={$LL.SETTINGS.PROFILE.TITLE()} class="sticky top-0 z-10" />
 
-<div class="bg-background flex flex-col gap-3 px-4 py-5" in:fly={{ x, duration, opacity: 1 }}>
+<div class="flex flex-col gap-3 bg-background px-4 py-5" in:fly={{ x, duration, opacity: 1 }}>
   <SettingsCaretLink href="/me/settings/profile/name">
     {#snippet icon()}
-      <KeyboardFillIcon class="text-primary h-5 w-5"></KeyboardFillIcon>
+      <KeyboardFillIcon class="h-5 w-5 text-primary"></KeyboardFillIcon>
     {/snippet}
     {$LL.SETTINGS.PROFILE.PROFILE_NAME.TITLE()}
   </SettingsCaretLink>
@@ -38,7 +38,7 @@
     <button
       slot="trigger"
       let:trigger
-      class="dark:bg-dark flex items-center space-x-4 rounded-xl bg-white p-4"
+      class="flex items-center space-x-4 rounded-xl bg-white p-4 dark:bg-dark"
       use:melt={trigger}
     >
       <TrashFillIcon class="h-5 w-5 text-rose-400" />
@@ -47,7 +47,7 @@
       </p>
     </button>
 
-    <div slot="content" class="w-full pb-[10px] pt-[20px]">
+    <div slot="content" class="w-full pt-[20px] pb-[10px]">
       <button
         class="h-[48px] w-full rounded-xl bg-rose-100 px-4 py-2 text-[14px]/[24px] font-medium text-rose-500"
         onclick={() => dispatch({ type: '[App] Reset' })}

@@ -32,13 +32,13 @@
 <!-- TODO: Problem when using $open: when the dropdown menu is closed, it closes the contained ActionSheet as well. -->
 <!-- {#if $open} -->
 <div
-  class="bg-background-alt flex min-w-[160px] flex-col rounded-xl border border-slate-300 p-1 shadow-md dark:border-slate-600"
+  class="flex min-w-[160px] flex-col rounded-xl border border-slate-300 bg-background-alt p-1 shadow-md dark:border-slate-600"
   use:melt={$menu}
   transition:fly={{ duration: 150, y: -10 }}
 >
   <!-- Share to LinkedIn -->
   <button
-    class="hover:bg-background dark:text-grey flex items-center space-x-2 rounded-lg py-2 pl-3 pr-4"
+    class="flex items-center space-x-2 rounded-lg py-2 pr-4 pl-3 hover:bg-background dark:text-grey"
     on:click={() => {
       dispatch({ type: '[Credential] Share to LinkedIn', payload: { id } });
       $open = false;
@@ -54,7 +54,7 @@
       dispatchEvent('edit');
       $open = false;
     }}
-    class="hover:bg-background dark:text-grey flex items-center space-x-2 rounded-lg py-2 pl-3 pr-4"
+    class="flex items-center space-x-2 rounded-lg py-2 pr-4 pl-3 hover:bg-background dark:text-grey"
   >
     <PencilFillIcon class="size-5" />
     <p class="grow text-left text-[13px]/[24px] font-medium">
@@ -70,18 +70,18 @@
     <button
       slot="trigger"
       let:trigger
-      class="hover:bg-background flex items-center space-x-2 rounded-lg py-2 pl-3 pr-4"
+      class="flex items-center space-x-2 rounded-lg py-2 pr-4 pl-3 hover:bg-background"
       use:melt={$item}
       use:melt={trigger}
     >
       <svelte:component this={TrashFillIcon} class="h-5 w-5 text-rose-500" />
-      <p class="dark:text-grey grow text-left text-[13px]/[24px] font-medium">
+      <p class="grow text-left text-[13px]/[24px] font-medium dark:text-grey">
         {$LL.CREDENTIAL.ACTIONS.DELETE.MENU_BUTTON()}
       </p>
     </button>
 
     <!-- Yes, delete the credential -->
-    <div slot="content" class="w-full pb-[10px] pt-[20px]">
+    <div slot="content" class="w-full pt-[20px] pb-[10px]">
       <button
         class="h-[48px] w-full rounded-xl bg-rose-100 px-4 py-2 text-[14px]/[24px] font-medium text-rose-500"
         on:click={() => dispatch({ type: '[Credential] Delete', payload: { id } })}
@@ -95,6 +95,6 @@
   </ActionSheet>
 
   <!-- Little arrow that visually links the menu box to the trigger button -->
-  <div use:melt={$arrow} class="border border-b-0 border-r-0 border-slate-300 dark:border-slate-600"></div>
+  <div use:melt={$arrow} class="border border-r-0 border-b-0 border-slate-300 dark:border-slate-600"></div>
 </div>
 <!-- {/if} -->

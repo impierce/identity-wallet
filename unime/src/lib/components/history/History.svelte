@@ -78,16 +78,16 @@
         <div class="flex flex-row">
           <div class="mt-2 flex flex-col items-center">
             <div
-              class="bg-grey ring-grey dark:bg-blue dark:text-grey dark:ring-blue z-10 flex items-center justify-center rounded-full text-slate-800 ring-8"
+              class="z-10 flex items-center justify-center rounded-full bg-grey text-slate-800 ring-8 ring-grey dark:bg-blue dark:text-grey dark:ring-blue"
             >
               <svelte:component this={event.icon} class="h-4 w-4 " />
             </div>
             {#if hasNextElement(i)}
               <!-- Vertical line on the left -->
-              <div class="bg-grey dark:bg-blue mb-2 mt-4 h-full w-[2px]"></div>
+              <div class="mt-4 mb-2 h-full w-[2px] bg-grey dark:bg-blue"></div>
             {/if}
           </div>
-          <div class="ml-6 mt-[-5px] flex grow justify-between pb-10">
+          <div class="mt-[-5px] ml-6 flex grow justify-between pb-10">
             <div class="grow">
               <HistoryEntry {...event} />
             </div>

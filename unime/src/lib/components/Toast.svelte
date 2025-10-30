@@ -33,9 +33,9 @@
   {#if variant === 'error'}
     <WarningRegularIcon class="h-6 w-6 min-w-6 text-rose-400" />
   {:else}
-    <InfoRegularIcon class="text-primary size-6 min-w-6" />
+    <InfoRegularIcon class="size-6 min-w-6 text-primary" />
   {/if}
-  <div class="ml-4 mr-2 flex w-full flex-col overflow-hidden text-ellipsis break-words">
+  <div class="mr-2 ml-4 flex w-full flex-col overflow-hidden break-words text-ellipsis">
     <p class="truncate text-[12px]/[20px] font-bold text-slate-800">
       {title}
     </p>

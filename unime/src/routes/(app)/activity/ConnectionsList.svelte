@@ -35,16 +35,16 @@
           >
             <div
               slot="image"
-              class="ml-2 mr-4 flex h-9 w-9 overflow-hidden rounded-full border-none border-slate-300 dark:border-slate-600"
+              class="mr-4 ml-2 flex h-9 w-9 overflow-hidden rounded-full border-none border-slate-300 dark:border-slate-600"
             >
               <Image id={connection.id} imgClass="p-1">
                 <div
                   slot="fallback"
-                  class="dark:bg-dark h-full w-full rounded-full ring-1 ring-inset ring-slate-200 dark:ring-slate-600"
+                  class="h-full w-full rounded-full ring-1 ring-slate-200 ring-inset dark:bg-dark dark:ring-slate-600"
                 ></div>
               </Image>
             </div>
-            <div slot="right" class="h-full pr-2 pt-1 text-[12px]/[20px] font-medium text-slate-400">
+            <div slot="right" class="h-full pt-1 pr-2 text-[12px]/[20px] font-medium text-slate-400">
               {formatDate(connection.last_interacted, $state.profile_settings.locale)}
             </div>
           </ListItemCard>

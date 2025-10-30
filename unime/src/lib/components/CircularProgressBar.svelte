@@ -81,7 +81,7 @@
   </svg>
   <span
     data-current-value={currentPercent}
-    class="animate-in fade-in delay-(--delay) duration-(--transition-length) absolute inset-0 m-auto size-fit ease-linear"
+    class="animate-in fade-in absolute inset-0 m-auto size-fit delay-(--delay) duration-(--transition-length) ease-linear"
   >
     <!-- {currentPercent.toFixed(0)} -->
     <div class="text-center">

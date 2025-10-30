@@ -30,7 +30,7 @@
 
 {#if favorite_credentials.length > 0}
   <div class="flex items-center pb-2">
-    <HeartStraightFillIcon class="text-primary mr-2" />
+    <HeartStraightFillIcon class="mr-2 text-primary" />
     <p class="text-[13px]/[24px] font-medium text-slate-500 dark:text-white">{$LL.ME.FAVORITES()}</p>
   </div>
   <div class="flex flex-col space-y-2">
@@ -47,5 +47,5 @@
   </div>
   <!-- TODO: make conditional? only show when there are also some non-favorite credentials -->
   <!-- Horizontal line -->
-  <div class="bg-grey dark:bg-blue my-5 h-0.5"></div>
+  <div class="my-5 h-0.5 bg-grey dark:bg-blue"></div>
 {/if}

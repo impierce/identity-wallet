@@ -37,11 +37,11 @@
 
 <div class="w-full">
   <div class="relative text-left transition">
-    <label for={combobox.ids.input} class="dark:text-grey text-[14px]/[22px] font-medium text-slate-800">
+    <label for={combobox.ids.input} class="text-[14px]/[22px] font-medium text-slate-800 dark:text-grey">
       {label || $LL.ADD_CREDENTIALS.ADDRESS.ADD.RESIDENT_COUNTRY_LABEL()}
     </label>
     <div class="relative">
-      <div class="absolute left-3 top-1/2 -translate-y-1/2">
+      <div class="absolute top-1/2 left-3 -translate-y-1/2">
         {#if combobox.value}
           <Icon
             class="size-5"
@@ -49,37 +49,37 @@
           />
         {:else}
           <!-- Margins are fine-tuned to align the icon shape with the circle-flags -->
-          <GlobeRegularIcon class="-ml-[2px] -mt-px size-6 text-slate-500 dark:text-slate-300" />
+          <GlobeRegularIcon class="-mt-px -ml-[2px] size-6 text-slate-500 dark:text-slate-300" />
         {/if}
       </div>
       <input
         {...combobox.input}
-        class="bg-background-alt dark:text-grey w-full rounded-xl border border-slate-300 px-10 py-3 text-[14px]/[22px] font-medium text-slate-800 dark:border-slate-600"
+        class="w-full rounded-xl border border-slate-300 bg-background-alt px-10 py-3 text-[14px]/[22px] font-medium text-slate-800 dark:border-slate-600 dark:text-grey"
         placeholder={placeholder || $LL.ADD_CREDENTIALS.ADDRESS.ADD.RESIDENT_COUNTRY_PLACEHOLDER()}
         value={combobox.value}
       />
       <button
         {...combobox.trigger}
-        class="absolute right-1 top-1/2 grid size-10 -translate-y-1/2 place-items-center rounded-lg"
+        class="absolute top-1/2 right-1 grid size-10 -translate-y-1/2 place-items-center rounded-lg"
       >
-        <CaretDownBoldIcon class="text-primary size-5" />
+        <CaretDownBoldIcon class="size-5 text-primary" />
       </button>
     </div>
   </div>
 
   <div
     {...combobox.content}
-    class="hide-scrollbar bg-background-alt m-0 max-h-[232px] rounded-xl border border-slate-300 p-2 dark:border-slate-600"
+    class="m-0 hide-scrollbar max-h-[232px] rounded-xl border border-slate-300 bg-background-alt p-2 dark:border-slate-600"
   >
     {#each filtered as option (option)}
-      <div {...combobox.getOption(option)} class="hover:bg-background flex items-center rounded-lg p-2">
+      <div {...combobox.getOption(option)} class="flex items-center rounded-lg p-2 hover:bg-background">
         <Icon
           class="mr-2 size-5"
           icon={`circle-flags:${countries.find((c) => c.name === option)?.code.toLowerCase()}`}
         />
-        <div class="dark:text-grey grow text-left text-[13px]/[24px] font-medium text-slate-800">{option}</div>
+        <div class="grow text-left text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">{option}</div>
         {#if combobox.isSelected(option)}
-          <CheckBoldIcon class="text-primary size-5" />
+          <CheckBoldIcon class="size-5 text-primary" />
         {/if}
       </div>
     {:else}

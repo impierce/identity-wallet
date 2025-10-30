@@ -16,7 +16,7 @@
 
 <div
   data-component="SettingsSwitch"
-  class="bg-background-alt flex h-14 w-full items-center gap-4 rounded-xl p-4 {disabled
+  class="flex h-14 w-full items-center gap-4 rounded-xl bg-background-alt p-4 {disabled
     ? 'pointer-events-none opacity-50'
     : ''}"
 >
@@ -27,7 +27,7 @@
   {/if}
   <div class="grow">
     <Switch {checked} {onCheckedChange}>
-      <span class="text-text text-sm font-medium">
+      <span class="text-sm font-medium text-text">
         {@render children()}
       </span>
     </Switch>

@@ -107,7 +107,7 @@
       {#if !scanning && !loading}
         <!-- This part is only visible when no scanning or loading is happening.
           Only visible when user has not granted permissions to the camera. -->
-        <div class="bg-silver dark:bg-navy relative flex h-full flex-col items-center justify-center space-y-4 p-8">
+        <div class="relative flex h-full flex-col items-center justify-center space-y-4 bg-silver p-8 dark:bg-navy">
           <!-- Ask for permissions (only if not given) -->
           {#if permissions_nullable && permissions_nullable !== 'granted'}
             <div class="flex w-3/4 flex-col space-y-4">
@@ -125,7 +125,7 @@
               <div class="flex flex-col space-y-2 rounded-[20px] border border-slate-200 p-2 dark:border-slate-600">
                 <input
                   bind:value={mockQrCodeValue}
-                  class="text-secondary dark:bg-dark h-12 w-full rounded-xl border border-slate-200 px-3 text-[13px]/[24px] dark:border-slate-600"
+                  class="h-12 w-full rounded-xl border border-slate-200 px-3 text-[13px]/[24px] text-secondary dark:border-slate-600 dark:bg-dark"
                   placeholder="Paste QR code value"
                 />
                 <Button
@@ -142,8 +142,8 @@
       {:else}
         <!-- Scanning or loading/processing -->
         <div class="flex grow flex-col">
-          <div class="dark:bg-dark bg-white p-5">
-            <p class="dark:text-grey text-3xl font-semibold text-slate-700">
+          <div class="bg-white p-5 dark:bg-dark">
+            <p class="text-3xl font-semibold text-slate-700 dark:text-grey">
               {$LL.SCAN.TITLE_1()} <span class="text-primary">{$LL.SCAN.TITLE_2()}</span>
             </p>
             <p class="mt-4 text-sm font-medium text-slate-500 dark:text-slate-300">
@@ -152,7 +152,7 @@
           </div>
           <div class="my-container relative grow">
             {#if loading}
-              <div class="bg-silver dark:bg-navy absolute z-10 h-full w-full"></div>
+              <div class="absolute z-10 h-full w-full bg-silver dark:bg-navy"></div>
             {/if}
             <div class="barcode-scanner--area--container">
               <div class="square surround-cover">
@@ -182,9 +182,9 @@
   <div class="z-10 shrink-0">
     {#if loading}
       <!-- Disable the BottomNavBar by overlaying a transparent element -->
-      <div class="dark:bg-dark absolute z-10 h-full w-full bg-white opacity-60"></div>
+      <div class="absolute z-10 h-full w-full bg-white opacity-60 dark:bg-dark"></div>
     {/if}
-    <div class="bottom-(--safe-area-inset-bottom) fixed w-full shadow-[0_-4px_20px_0px_rgba(0,0,0,0.03)]">
+    <div class="fixed bottom-(--safe-area-inset-bottom) w-full shadow-[0_-4px_20px_0px_rgba(0,0,0,0.03)]">
       <BottomNavBar
         active={'scan'}
         on:me={() => goto('/me')}
