@@ -37,7 +37,13 @@
   transition:fly={{ duration: 150, y: -10 }}
 >
   <!-- Share to LinkedIn -->
-  <button class="flex items-center space-x-2 rounded-lg py-2 pl-3 pr-4 hover:bg-background dark:text-grey">
+  <button
+    class="flex items-center space-x-2 rounded-lg py-2 pl-3 pr-4 hover:bg-background dark:text-grey"
+    on:click={() => {
+      dispatch({ type: '[Credential] Share to LinkedIn', payload: { id } });
+      $open = false;
+    }}
+  >
     <LinkedinIcon class="size-5" />
     <p class="grow text-left text-[13px]/[24px] font-medium">Share to LinkedIn</p>
   </button>
