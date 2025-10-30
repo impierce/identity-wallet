@@ -3,6 +3,7 @@ pub mod reducers;
 
 use super::{core_utils::helpers::get_unverified_jwt_claims, FeatTrait};
 use crate::{error::AppError, state::core_utils::DateUtils};
+use chrono::{TimeZone, Utc};
 use derivative::Derivative;
 use identity_credential::{sd_jwt_v2::Sha256Hasher, sd_jwt_vc::SdJwtVc};
 use log::info;
@@ -54,6 +55,7 @@ pub struct DisplayCredential {
     pub display_name: String,
     #[ts(optional)]
     pub credential_status: Option<CredentialStatus>,
+    pub public_link: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, Derivative, TS)]
@@ -85,6 +87,8 @@ pub struct CredentialMetadata {
     pub date_added: String,
     #[derivative(PartialEq = "ignore")]
     pub date_issued: String,
+    #[derivative(PartialEq = "ignore")]
+    pub expiration_date: Option<String>,
     #[ts(optional)]
     pub icon: Option<String>,
 }
@@ -102,9 +106,10 @@ impl VerifiableCredentialRecord {
     ) -> Result<Self, AppError> {
         let display_credential = {
             // Try to parse the Verifiable Credential as an SD-JWT credential.
-            let (id, format, data, issuance_date, display_claims) = if let Some(sd_jwt_vc) = verifiable_credential
-                .as_str()
-                .and_then(|verifiable_credential| verifiable_credential.parse::<SdJwtVc>().ok())
+            let (id, format, data, issuance_date, expiration_date, display_claims) = if let Some(sd_jwt_vc) =
+                verifiable_credential
+                    .as_str()
+                    .and_then(|verifiable_credential| verifiable_credential.parse::<SdJwtVc>().ok())
             {
                 info!("Verifiable Credential parsed as a SD-JWT VC");
 
@@ -112,6 +117,7 @@ impl VerifiableCredentialRecord {
 
                 let id = Uuid::new_v4().to_string();
                 let issuance_date = sd_jwt_vc.claims().iat.map(|iat| iat.to_rfc3339()).unwrap_or_default();
+                let expiration_date = sd_jwt_vc.claims().exp.map(|exp| exp.to_rfc3339());
 
                 let mut credential_subject = serde_json::json!(sd_jwt_vc
                     .clone()
@@ -171,9 +177,13 @@ impl VerifiableCredentialRecord {
                     "credentialSubject": credential_subject
                 });
 
-                (id, format, data, issuance_date, display_claims)
+                (id, format, data, issuance_date, expiration_date, display_claims)
             } else {
-                let credential_display = get_unverified_jwt_claims(&verifiable_credential)?["vc"].clone();
+                let jwt_claims = get_unverified_jwt_claims(&verifiable_credential)?;
+                let credential_display = jwt_claims
+                    .get("vc")
+                    .ok_or(AppError::InvalidCredentialFormatError)?
+                    .clone();
 
                 // TODO: We are using this hash as Credential ID so that we can prevent credential duplication in
                 // demo situations. Now we can actually delete Credentials in UniMe we don't need to use the hash of the
@@ -201,10 +211,51 @@ impl VerifiableCredentialRecord {
                     )
                 };
 
-                let issuance_date = credential_display["issuanceDate"]
-                    .as_str()
-                    .map(ToString::to_string)
-                    .unwrap_or_default();
+                // Try to get issuanceDate from multiple possible fields, in a JwtVcJson, the JWT claim takes precedence.
+                let issuance_date = verifiable_credential
+                    // first, from the jwt 'iat' claim
+                    .get("iat")
+                    .and_then(|v| v.as_i64())
+                    .and_then(|timestamp| Utc.timestamp_opt(timestamp, 0).single())
+                    .map(|utc| utc.to_rfc3339())
+                    // secondly, from 'issuanceDate' field in the VC DM 1.1
+                    .or_else(|| {
+                        credential_display
+                            .get("issuanceDate")
+                            .and_then(|v| v.as_str())
+                            .map(ToString::to_string)
+                    })
+                    // thirdly, from 'validFrom' field in the VC DM 2.0
+                    .or_else(|| {
+                        credential_display
+                            .get("validFrom")
+                            .and_then(|v| v.as_str())
+                            .map(ToString::to_string)
+                    })
+                    .unwrap_or_default(); // If all attempts fail, return an empty string
+
+                // Try to get expirationDate from multiple possible fields, in a JwtVcJson, the JWT claim takes precedence.
+                let expiration_date = verifiable_credential
+                    // first, from the jwt 'exp' claim
+                    .get("exp")
+                    .and_then(|v| v.as_i64())
+                    .and_then(|timestamp| Utc.timestamp_opt(timestamp, 0).single())
+                    .map(|utc| utc.to_rfc3339())
+                    // secondly, from 'expirationDate' field in the VC DM 1.1
+                    .or_else(|| {
+                        credential_display
+                            .get("expirationDate")
+                            .and_then(|v| v.as_str())
+                            .map(ToString::to_string)
+                    })
+                    // thirdly, from 'validUntil' field in the VC DM 2.0
+                    .or_else(|| {
+                        credential_display
+                            .get("validUntil")
+                            .and_then(|v| v.as_str())
+                            .map(ToString::to_string)
+                    });
+
                 let id = Uuid::from_slice(&hash.as_bytes()[..16])?.to_string();
                 let format = CredentialFormats::JwtVcJson(());
 
@@ -216,7 +267,7 @@ impl VerifiableCredentialRecord {
 
                 let data = credential_display;
 
-                (id, format, data, issuance_date, display_claims)
+                (id, format, data, issuance_date, expiration_date, display_claims)
             };
 
             DisplayCredential {
@@ -228,6 +279,7 @@ impl VerifiableCredentialRecord {
                     is_favorite: false,
                     date_added: DateUtils::new_date_string(),
                     date_issued: issuance_date,
+                    expiration_date,
                     icon: None,
                 },
                 // The other fields will be filled in at a later stage.
@@ -237,6 +289,7 @@ impl VerifiableCredentialRecord {
                 // The credential status is None here but it will be set right after this function.
                 // This initialization is separated since it requires async fetching.
                 credential_status: None,
+                public_link: None,
             }
         };
 
