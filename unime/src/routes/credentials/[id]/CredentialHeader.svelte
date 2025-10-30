@@ -51,7 +51,7 @@
   <slot />
 
   <button
-    class="absolute left-0 top-0 ml-2 mt-4 p-1.5"
+    class="absolute top-0 left-0 mt-4 ml-2 p-1.5"
     on:click={() =>
       dispatch({
         type: '[Credential Metadata] Update',
@@ -68,7 +68,7 @@
     {/if}
   </button>
 
-  <div class="absolute right-0 top-0 mr-2 mt-4">
+  <div class="absolute top-0 right-0 mt-4 mr-2">
     <CredentialHeaderMenu id={credential.id} on:edit={() => dispatchEvent('edit')} />
   </div>
 </div>

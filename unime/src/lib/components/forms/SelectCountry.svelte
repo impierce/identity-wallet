@@ -41,7 +41,7 @@
       {label || $LL.ADD_CREDENTIALS.ADDRESS.ADD.RESIDENT_COUNTRY_LABEL()}
     </label>
     <div class="relative">
-      <div class="absolute left-3 top-1/2 -translate-y-1/2">
+      <div class="absolute top-1/2 left-3 -translate-y-1/2">
         {#if combobox.value}
           <Icon
             class="size-5"
@@ -49,7 +49,7 @@
           />
         {:else}
           <!-- Margins are fine-tuned to align the icon shape with the circle-flags -->
-          <GlobeRegularIcon class="-ml-[2px] -mt-[1px] size-6 text-slate-500 dark:text-slate-300" />
+          <GlobeRegularIcon class="-mt-px -ml-[2px] size-6 text-slate-500 dark:text-slate-300" />
         {/if}
       </div>
       <input
@@ -60,7 +60,7 @@
       />
       <button
         {...combobox.trigger}
-        class="absolute right-1 top-1/2 grid size-10 -translate-y-1/2 place-items-center rounded-lg"
+        class="absolute top-1/2 right-1 grid size-10 -translate-y-1/2 place-items-center rounded-lg"
       >
         <CaretDownBoldIcon class="size-5 text-primary" />
       </button>
@@ -69,7 +69,7 @@
 
   <div
     {...combobox.content}
-    class="hide-scrollbar m-0 max-h-[232px] rounded-xl border border-slate-300 bg-background-alt p-2 dark:border-slate-600"
+    class="m-0 hide-scrollbar max-h-[232px] rounded-xl border border-slate-300 bg-background-alt p-2 dark:border-slate-600"
   >
     {#each filtered as option (option)}
       <div {...combobox.getOption(option)} class="flex items-center rounded-lg p-2 hover:bg-background">

@@ -1,5 +1,5 @@
 import type { TranslationFunctions } from '$i18n/i18n-types';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 // reference: https://eur-lex.europa.eu/eli/reg_impl/2024/2977/oj
 

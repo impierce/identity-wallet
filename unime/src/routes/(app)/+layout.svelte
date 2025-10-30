@@ -12,10 +12,10 @@
   <!-- Fixed height is required to trigger scrolling.
        `pb-[64px]` reflects the height of the sticky`BottomNavBar`.
        `h-full` ensures that sticky `BottomNavBar` does not cover any content when scrolling is active. -->
-  <div class="hide-scrollbar relative h-full overflow-y-auto pb-[64px]">
+  <div class="relative hide-scrollbar h-full overflow-y-auto pb-[64px]">
     <slot />
   </div>
-  <div class="sticky bottom-[var(--safe-area-inset-bottom)] w-full shadow-[0_-4px_20px_0px_rgba(0,0,0,0.03)]">
+  <div class="sticky bottom-(--safe-area-inset-bottom) w-full shadow-[0_-4px_20px_0px_rgba(0,0,0,0.03)]">
     <BottomNavBar
       {active}
       on:me={() => goto('/me')}

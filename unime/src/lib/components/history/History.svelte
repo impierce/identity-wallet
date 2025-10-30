@@ -84,10 +84,10 @@
             </div>
             {#if hasNextElement(i)}
               <!-- Vertical line on the left -->
-              <div class="mb-2 mt-4 h-full w-[2px] bg-grey dark:bg-blue"></div>
+              <div class="mt-4 mb-2 h-full w-[2px] bg-grey dark:bg-blue"></div>
             {/if}
           </div>
-          <div class="ml-6 mt-[-5px] flex grow justify-between pb-10">
+          <div class="mt-[-5px] ml-6 flex grow justify-between pb-10">
             <div class="grow">
               <HistoryEntry {...event} />
             </div>

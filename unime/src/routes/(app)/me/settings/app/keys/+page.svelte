@@ -59,7 +59,7 @@
         </div>
         {#if key.key_id}
           <div class="flex items-center justify-between space-x-4 pt-4">
-            <p class="break-all text-left font-mono text-[11px]/[14px] font-medium text-slate-500 dark:text-slate-300">
+            <p class="text-left font-mono text-[11px]/[14px] font-medium break-all text-slate-500 dark:text-slate-300">
               {key.key_id}
             </p>
           </div>

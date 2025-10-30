@@ -77,7 +77,7 @@
     if (result.success) {
       emailSchemaError = undefined;
     } else {
-      emailSchemaError = result.error.errors[0].message;
+      emailSchemaError = result.error.message;
     }
   }
 
@@ -229,10 +229,10 @@
 />
 
 <!-- The 50px height of the TopNavBar are manually subtracted -->
-<div class="relative flex h-[calc(100%_-_50px)] flex-col">
+<div class="relative flex h-[calc(100%-50px)] flex-col">
   <div class="flex grow flex-col items-center p-4">
     {#if !hideForm}
-      <div class="mb-8 mt-4 flex w-full flex-col gap-1">
+      <div class="mt-4 mb-8 flex w-full flex-col gap-1">
         <div class="flex items-center justify-between">
           <label for="label" class="text-[14px]/[22px] font-medium text-slate-800 dark:text-grey">
             {$LL.ADD_CREDENTIALS.EMAIL.ADD.LABEL()}
@@ -304,7 +304,7 @@
         {#each pinInput.inputs as input}
           <input
             {...input}
-            class="size-12 rounded-xl border border-slate-300 bg-background-alt text-center text-2xl font-semibold text-text-alt outline-none focus:border-primary disabled:cursor-not-allowed dark:border-slate-500"
+            class="size-12 rounded-xl border border-slate-300 bg-background-alt text-center text-2xl font-semibold text-text-alt outline-hidden focus:border-primary disabled:cursor-not-allowed dark:border-slate-500"
             disabled={!pending}
           />
         {/each}

@@ -41,7 +41,7 @@
   // The credential's metadata, e.g., the favorite status, may change.
   // ESLint does not understand the reactive statement.
   // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-  $: $appState, (credential = loadCredential());
+  $: ($appState, (credential = loadCredential()));
 
   $: {
     // Use `pageTitleStore` to get page title into layout.
@@ -77,7 +77,7 @@
           maxlength={maxLength}
           bind:value={displayNameUpdated}
           bind:this={labelInput}
-          class="-my-2 h-[40px] w-full truncate rounded-lg border border-slate-300 bg-background-alt text-center font-semibold text-slate-700 focus:outline-none disabled:border-none disabled:bg-background disabled:text-slate-700 dark:border-slate-600 dark:text-grey dark:disabled:text-grey"
+          class="-my-2 h-[40px] w-full truncate rounded-lg border border-slate-300 bg-background-alt text-center font-semibold text-slate-700 focus:outline-hidden disabled:border-none disabled:bg-background disabled:text-slate-700 dark:border-slate-600 dark:text-grey dark:disabled:text-grey"
           placeholder="Some title"
           disabled={!openEditMode}
         />
@@ -89,7 +89,7 @@
             {displayNameUpdated.length}/{maxLength}
           </div>
           <!-- Inline pencil icon -->
-          <div class="absolute right-6 top-1/2 -translate-y-1/2">
+          <div class="absolute top-1/2 right-6 -translate-y-1/2">
             <PencilFillIcon class="size-5 text-slate-500 dark:text-slate-300" />
           </div>
         {/if}
@@ -98,7 +98,7 @@
     {#if openEditMode}
       <!-- Similar to ActionSheet, but without backdrop -->
       <div
-        class="fixed bottom-[var(--safe-area-inset-bottom)] left-0 flex w-screen flex-col space-y-[10px] rounded-t-[20px] bg-background-alt p-6"
+        class="fixed bottom-(--safe-area-inset-bottom) left-0 flex w-screen flex-col space-y-[10px] rounded-t-[20px] bg-background-alt p-6"
         transition:fly={{
           y: 350,
           duration: 300,
