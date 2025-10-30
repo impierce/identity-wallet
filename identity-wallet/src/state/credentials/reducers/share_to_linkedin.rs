@@ -46,20 +46,23 @@ pub async fn share_to_linkedin(state: AppState, action: Action) -> Result<AppSta
             // state.core_utils.managers.lock()
             create_public_link(credential).await?.to_string()
         };
-        linkedin_url.push_str(format!("&certUrl={}", encode(&public_link)).as_str());
 
+        linkedin_url.push_str(format!("&certUrl={}", encode(&public_link)).as_str());
         linkedin_url.push_str(format!("&certId={}", encode(&credential.id)).as_str());
 
         info!("Opening LinkedIn AddToProfile URL in browser: `{linkedin_url}`");
-        let app_handle = state
-            .core_utils
-            .app_handle
-            .clone()
-            .ok_or(AppError::Error("Tauri app handle is not available".to_string()))?;
-        app_handle
-            .opener()
-            .open_url(linkedin_url, None::<&str>)
-            .map_err(|err| AppError::Error(format!("Failed to open URL in browser: {err}")))?;
+        #[cfg(not(feature = "test_utils"))]
+        {
+            let app_handle = state
+                .core_utils
+                .app_handle
+                .clone()
+                .ok_or(AppError::Error("Tauri app handle is not available".to_string()))?;
+            app_handle
+                .opener()
+                .open_url(linkedin_url, None::<&str>)
+                .map_err(|err| AppError::Error(format!("Failed to open URL in browser: {err}")))?;
+        }
 
         credential.public_link = Some(public_link);
         return Ok(AppState { credentials, ..state });
@@ -71,19 +74,12 @@ pub async fn share_to_linkedin(state: AppState, action: Action) -> Result<AppSta
 // Helpers
 
 pub async fn create_public_link(credential: &DisplayCredential) -> Result<Url, AppError> {
-    
     // TODO: Create Public Credential Token through helper function
 
     // TODO: Find Issuer public credential endpoint through DID linkedServices, get the DID from the `aud` claim of the token.
-    
+
     // TODO: Compile step 1 and 2 into public link.
 
     // placeholder return
     Ok(Url::parse("https://example.com").unwrap())
-}
-
-#[cfg(test)]
-mod tests {
-    #[tokio::test]
-    async fn test_share_to_linkedin() {}
 }
