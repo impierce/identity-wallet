@@ -184,7 +184,7 @@
       <!-- Disable the BottomNavBar by overlaying a transparent element -->
       <div class="absolute z-10 h-full w-full bg-white opacity-60 dark:bg-dark"></div>
     {/if}
-    <div class="fixed bottom-[var(--safe-area-inset-bottom)] w-full shadow-[0_-4px_20px_0px_rgba(0,0,0,0.03)]">
+    <div class="fixed bottom-(--safe-area-inset-bottom) w-full shadow-[0_-4px_20px_0px_rgba(0,0,0,0.03)]">
       <BottomNavBar
         active={'scan'}
         on:me={() => goto('/me')}

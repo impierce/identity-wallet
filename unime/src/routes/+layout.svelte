@@ -408,13 +408,13 @@ Stacking context: We have to deviate from the DOM-sequence.
     {#if $appState?.dev_mode !== 'Off'}
       {#if expandedDevMenu}
         <div
-          class="hide-scrollbar fixed z-10 flex w-full space-x-4 overflow-x-auto bg-gradient-to-r from-red-200 to-red-300 p-4 shadow-md"
+          class="hide-scrollbar fixed z-10 flex w-full space-x-4 overflow-x-auto bg-linear-to-r from-red-200 to-red-300 p-4 shadow-md"
           in:fly={{ y: -64, opacity: 1 }}
           out:fly={{ y: -64, opacity: 1 }}
         >
           {#each devButtons as button}
             <button
-              class="rounded-full bg-red-300 px-4 py-1 text-sm font-medium text-red-700 hover:outline-none hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
+              class="rounded-full bg-red-300 px-4 py-1 text-sm font-medium text-red-700 hover:outline-hidden hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
               on:click={button.onClick}
             >
               {#if typeof button.icon === 'string'}
@@ -428,7 +428,7 @@ Stacking context: We have to deviate from the DOM-sequence.
       {/if}
 
       <button
-        class="fixed left-[calc(50%_-_12px)] top-[var(--safe-area-inset-top)] z-20 h-6 w-6 rounded-b-md bg-red-200 p-[2px]"
+        class="fixed left-[calc(50%-12px)] top-(--safe-area-inset-top) z-20 h-6 w-6 rounded-b-md bg-red-200 p-[2px]"
         on:click={() => (expandedDevMenu = !expandedDevMenu)}
       >
         {#if expandedDevMenu}
@@ -453,7 +453,7 @@ Stacking context: We have to deviate from the DOM-sequence.
         <hr class="mx-8 mb-2 h-[2px] bg-orange-800" />
 
         {#each $appState.debug_messages as message}
-          <div class="mx-2 mb-2 rounded bg-orange-200 p-2">
+          <div class="mx-2 mb-2 rounded-sm bg-orange-200 p-2">
             <div class="break-all font-mono text-xs text-orange-700">{message}</div>
           </div>
         {/each}
@@ -462,7 +462,7 @@ Stacking context: We have to deviate from the DOM-sequence.
 
     {#if showDragonProfileSteps}
       <div class="fixed z-10 flex h-screen w-screen justify-center bg-black/50 pt-24">
-        <div class="ml-10 mr-10 mt-10 flex h-fit w-full flex-col rounded bg-white pb-4 pl-4 pr-4">
+        <div class="ml-10 mr-10 mt-10 flex h-fit w-full flex-col rounded-sm bg-white pb-4 pl-4 pr-4">
           <p class="pb-2 pt-2 text-center text-orange-800">Profile steps</p>
 
           <div class="flex items-center justify-end pb-2">
@@ -476,7 +476,7 @@ Stacking context: We have to deviate from the DOM-sequence.
           </div>
 
           {#each profileSteps as steps, i}
-            <button class="mx-auto mb-2 w-full rounded bg-orange-200 p-2" on:click={() => loadDragonProfile(steps)}>
+            <button class="mx-auto mb-2 w-full rounded-sm bg-orange-200 p-2" on:click={() => loadDragonProfile(steps)}>
               <div class="break-all font-mono text-xs text-orange-700">{i + 1}: {steps}</div>
             </button>
           {/each}
@@ -494,7 +494,7 @@ Stacking context: We have to deviate from the DOM-sequence.
 
     <!-- Show actual (non-localized) error message in dev mode, default (localized) message otherwise.  -->
     {#if $errorState}
-      <div class="absolute bottom-[calc(16px_+_var(--safe-area-inset-bottom))] right-4 w-[calc(100%_-_32px)]">
+      <div class="absolute bottom-[calc(16px+var(--safe-area-inset-bottom))] right-4 w-[calc(100%-32px)]">
         <Toast
           variant="error"
           title={$appState?.dev_mode !== 'Off' ? 'Error' : $LL.ERROR.TITLE()}
