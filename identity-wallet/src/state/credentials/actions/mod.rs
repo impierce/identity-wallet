@@ -5,4 +5,5 @@ pub mod delete_credential;
 pub mod refresh_all_credential_statuses;
 pub mod refresh_credential_status;
 pub mod self_issue_credential;
+pub mod share_to_linkedin;
 pub mod update_credential_metadata;

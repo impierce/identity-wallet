@@ -1,4 +1,5 @@
 // Phosphor icons: https://icon-sets.iconify.design/ph/
+export { default as LinkedinIcon } from '~icons/ph/linkedin-logo-fill';
 export { default as ArrowCounterClockwiseBoldIcon } from '~icons/ph/arrow-counter-clockwise-bold';
 export { default as ArrowLeftRegularIcon } from '~icons/ph/arrow-left';
 export { default as ArrowSquareOutBoldIcon } from '~icons/ph/arrow-square-out-bold';
