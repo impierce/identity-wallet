@@ -1,12 +1,33 @@
 use crate::error::AppError::{self, *};
+use crate::state::core_utils::helpers::get_unverified_jwt_claims;
 use crate::state::credentials::VerifiableCredentialRecord;
 use crate::state::AppState;
 use chrono::{Duration, Utc};
 use jsonwebtoken::Header;
 use oid4vc::oid4vc_core::jwt::encode;
 use serde::Serialize;
+use uuid::Uuid;
 
-pub async fn create_public_link_token(state: &AppState, vcr: &VerifiableCredentialRecord) -> Result<String, AppError> {
+pub async fn create_public_link_token(state: &AppState, id: Uuid) -> Result<String, AppError> {
+    // Get the VerifiableCredentialRecord belonging to the Id from Stronghold
+    let stronghold_manager = state
+        .core_utils
+        .managers
+        .lock()
+        .await
+        .stronghold_manager
+        .as_ref()
+        .ok_or(MissingManagerError("stronghold"))?
+        .clone();
+    let vcr_bytes = stronghold_manager
+        .get(id)
+        .map_err(|e| AppError::Error(e.to_string()))?
+        .ok_or(AppError::Error(
+            "Failed to get VerifiableCredentialRecord bytes from Stronghold".to_string(),
+        ))?;
+    let vcr: VerifiableCredentialRecord =
+        serde_json::from_slice(&vcr_bytes).map_err(|e| AppError::Error(e.to_string()))?;
+
     // Get the UniMe did
     let did_method = state
         .profile_settings
@@ -54,14 +75,15 @@ pub async fn create_public_link_token(state: &AppState, vcr: &VerifiableCredenti
     };
 
     // Get the credential's issuer DID from the credential data
-    let data = &mut vcr.verifiable_credential.clone();
-    let credential_issuer_did = data
+    let jwt = &mut vcr.verifiable_credential.clone();
+    let jwt_data = get_unverified_jwt_claims(jwt)?;
+    let credential_issuer_did = jwt_data
         .get("iss")
         .and_then(|v| v.as_str())
         .ok_or(AppError::Error("Issuer (iss) not found".to_string()))?;
 
     // Get the JTI claim from the credential data
-    let jti = data
+    let jti = jwt_data
         .get("jti")
         .and_then(|v| v.as_str())
         .ok_or(AppError::Error("JTI not found".to_string()))?;

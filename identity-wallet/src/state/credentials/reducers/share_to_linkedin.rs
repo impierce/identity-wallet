@@ -1,17 +1,21 @@
+use std::str::FromStr;
+
 use crate::{
     error::AppError,
     state::{
         actions::{listen, Action},
-        credentials::{actions::share_to_linkedin::ShareToLinkedIn, DisplayCredential},
+        credentials::{
+            actions::share_to_linkedin::ShareToLinkedIn, create_public_link_token::create_public_link_token,
+        },
         AppState,
     },
 };
 
 use chrono::{DateTime, Datelike};
 use log::info;
-use tauri_plugin_opener::OpenerExt;
 use url::Url;
 use urlencoding::encode;
+use uuid::Uuid;
 
 pub async fn share_to_linkedin(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(share_to_linkedin) = listen::<ShareToLinkedIn>(action) {
@@ -42,17 +46,19 @@ pub async fn share_to_linkedin(state: AppState, action: Action) -> Result<AppSta
         let public_link = if let Some(existing_link) = credential.public_link.clone() {
             existing_link.clone()
         } else {
-            // Get verifiable credential record for the JWT info of the credential and pass this to the helper create_public_link fn
-            // state.core_utils.managers.lock()
-            create_public_link(credential).await?.to_string()
+            create_public_link(&state, &credential.id).await?.to_string()
         };
 
         linkedin_url.push_str(format!("&certUrl={}", encode(&public_link)).as_str());
         linkedin_url.push_str(format!("&certId={}", encode(&credential.id)).as_str());
 
         info!("Opening LinkedIn AddToProfile URL in browser: `{linkedin_url}`");
+
+        // When testing Tauri is often not initialized and the link doesn't actually need to be opened anyway.
         #[cfg(not(feature = "test_utils"))]
         {
+            use tauri_plugin_opener::OpenerExt;
+
             let app_handle = state
                 .core_utils
                 .app_handle
@@ -73,13 +79,15 @@ pub async fn share_to_linkedin(state: AppState, action: Action) -> Result<AppSta
 
 // Helpers
 
-pub async fn create_public_link(credential: &DisplayCredential) -> Result<Url, AppError> {
-    // TODO: Create Public Credential Token through helper function
+pub async fn create_public_link(state: &AppState, credential_id: &str) -> Result<Url, AppError> {
+    let uuid = Uuid::from_str(credential_id).map_err(|e| AppError::Error(e.to_string()))?;
+    let public_link_token = create_public_link_token(state, uuid).await?;
 
     // TODO: Find Issuer public credential endpoint through DID linkedServices, get the DID from the `aud` claim of the token.
 
-    // TODO: Compile step 1 and 2 into public link.
+    // Compile the Issuer public credential endpoint and the public link token into the public link.
+    let public_link = format!("{}/{}", "https://example.org", public_link_token);
 
     // placeholder return
-    Ok(Url::parse("https://example.com").unwrap())
+    Ok(Url::parse(&public_link).unwrap())
 }
