@@ -25,7 +25,7 @@
     <CaretLeftBoldIcon class="h-5 w-5" />
   </button>
   {#if title}
-    <p class="custom absolute left-0 top-0 z-10 flex h-[50px] w-full items-center justify-center font-medium">
+    <p class="custom absolute top-0 left-0 z-10 flex h-[50px] w-full items-center justify-center font-medium">
       {title}
     </p>
   {/if}

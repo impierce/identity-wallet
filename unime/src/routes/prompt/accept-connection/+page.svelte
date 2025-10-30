@@ -47,7 +47,7 @@
   });
 </script>
 
-<div class="safe-area-height hide-scrollbar flex flex-col items-stretch overflow-y-auto bg-silver dark:bg-navy">
+<div class="safe-area-height flex hide-scrollbar flex-col items-stretch overflow-y-auto bg-silver dark:bg-navy">
   <TopNavBar
     title={$LL.SCAN.CONNECTION_REQUEST.NAVBAR_TITLE()}
     on:back={() => history.back()}
@@ -102,7 +102,7 @@
 
       <!-- Domain validation -->
       <StatusIndicator status={domain_validation.status} title={$LL.DOMAIN_LINKAGE.TITLE()}>
-        <div class="break-words text-[12px]/[20px]" slot="popover">
+        <div class="text-[12px]/[20px] break-words" slot="popover">
           {#if domain_validation.status === 'Success'}
             <!-- TODO: add a better description of _what_ was validated -->
             <p>{$LL.DOMAIN_LINKAGE.SUCCESS()}</p>

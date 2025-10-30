@@ -61,7 +61,7 @@
     {#each Object.entries(summary) as entry}
       <div class="flex flex-col items-start px-4 py-[10px]">
         <p class="text-[13px]/[24px] font-medium text-slate-400">{entry[0]}</p>
-        <p class="break-all text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
+        <p class="text-[13px]/[24px] font-medium break-all text-slate-800 dark:text-grey">
           {entry[1]}
         </p>
       </div>
@@ -70,7 +70,7 @@
     {#if $state.dev_mode !== 'Off'}
       <div class="flex flex-col items-start px-4 py-[10px]">
         <p class="text-[13px]/[24px] font-medium text-slate-400">DID</p>
-        <p class="select-text break-all font-mono text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
+        <p class="font-mono text-[13px]/[24px] font-medium break-all text-slate-800 select-text dark:text-grey">
           {connection.did ?? '-'}
         </p>
         {#if explorerLink}

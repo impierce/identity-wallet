@@ -34,7 +34,7 @@
 
 <TopNavBar title={$LL.ONBOARDING.PLEDGE.NAVBAR_TITLE()} on:back={() => history.back()} />
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
-  <div class="px-2 pb-8 pt-4">
+  <div class="px-2 pt-4 pb-8">
     <p class="pb-4 text-3xl font-semibold text-slate-700 dark:text-grey">
       {$LL.ONBOARDING.PLEDGE.TITLE_1()} <span class="text-primary">{$LL.ONBOARDING.PLEDGE.TITLE_2()}</span>
     </p>
@@ -52,9 +52,9 @@
         <h2 class="flex">
           <button
             use:melt={$trigger(id)}
-            class="flex h-12 flex-1 cursor-pointer items-center justify-between
-                 bg-white px-5 text-base font-medium leading-none
-                 text-slate-800 transition-colors hover:bg-opacity-95 focus:ring-0! dark:bg-dark dark:text-grey"
+            class="hover:bg-opacity-95 flex h-12 flex-1 cursor-pointer items-center
+                 justify-between bg-white px-5 text-base leading-none
+                 font-medium text-slate-800 transition-colors focus:ring-0! dark:bg-dark dark:text-grey"
           >
             <div class="flex w-full items-center justify-between">
               <p class="text-[13px]/[24px] font-medium">{title}</p>

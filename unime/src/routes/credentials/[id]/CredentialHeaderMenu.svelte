@@ -42,7 +42,7 @@
       dispatchEvent('edit');
       $open = false;
     }}
-    class="flex items-center space-x-2 rounded-lg py-2 pl-3 pr-4 hover:bg-background dark:text-grey"
+    class="flex items-center space-x-2 rounded-lg py-2 pr-4 pl-3 hover:bg-background dark:text-grey"
   >
     <PencilFillIcon class="size-5" />
     <p class="grow text-left text-[13px]/[24px] font-medium">
@@ -58,7 +58,7 @@
     <button
       slot="trigger"
       let:trigger
-      class="flex items-center space-x-2 rounded-lg py-2 pl-3 pr-4 hover:bg-background"
+      class="flex items-center space-x-2 rounded-lg py-2 pr-4 pl-3 hover:bg-background"
       use:melt={$item}
       use:melt={trigger}
     >
@@ -69,7 +69,7 @@
     </button>
 
     <!-- Yes, delete the credential -->
-    <div slot="content" class="w-full pb-[10px] pt-[20px]">
+    <div slot="content" class="w-full pt-[20px] pb-[10px]">
       <button
         class="h-[48px] w-full rounded-xl bg-rose-100 px-4 py-2 text-[14px]/[24px] font-medium text-rose-500"
         on:click={() => dispatch({ type: '[Credential] Delete', payload: { id } })}
@@ -83,6 +83,6 @@
   </ActionSheet>
 
   <!-- Little arrow that visually links the menu box to the trigger button -->
-  <div use:melt={$arrow} class="border border-b-0 border-r-0 border-slate-300 dark:border-slate-600"></div>
+  <div use:melt={$arrow} class="border border-r-0 border-b-0 border-slate-300 dark:border-slate-600"></div>
 </div>
 <!-- {/if} -->

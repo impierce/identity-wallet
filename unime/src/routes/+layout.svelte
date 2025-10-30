@@ -187,7 +187,7 @@
 
   // ESLint does not understand the reactive statement.
   // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-  $: $appState, $prefersColorSchemeDarkStore, (dark = addDarkClass());
+  $: ($appState, $prefersColorSchemeDarkStore, (dark = addDarkClass()));
 
   $: {
     // User prompt
@@ -408,13 +408,13 @@ Stacking context: We have to deviate from the DOM-sequence.
     {#if $appState?.dev_mode !== 'Off'}
       {#if expandedDevMenu}
         <div
-          class="hide-scrollbar fixed z-10 flex w-full space-x-4 overflow-x-auto bg-linear-to-r from-red-200 to-red-300 p-4 shadow-md"
+          class="fixed z-10 flex hide-scrollbar w-full space-x-4 overflow-x-auto bg-linear-to-r from-red-200 to-red-300 p-4 shadow-md"
           in:fly={{ y: -64, opacity: 1 }}
           out:fly={{ y: -64, opacity: 1 }}
         >
           {#each devButtons as button}
             <button
-              class="rounded-full bg-red-300 px-4 py-1 text-sm font-medium text-red-700 hover:outline-hidden hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
+              class="hover:ring-opacity-60 rounded-full bg-red-300 px-4 py-1 text-sm font-medium text-red-700 hover:ring-2 hover:ring-red-700 hover:outline-hidden"
               on:click={button.onClick}
             >
               {#if typeof button.icon === 'string'}
@@ -428,7 +428,7 @@ Stacking context: We have to deviate from the DOM-sequence.
       {/if}
 
       <button
-        class="fixed left-[calc(50%-12px)] top-(--safe-area-inset-top) z-20 h-6 w-6 rounded-b-md bg-red-200 p-[2px]"
+        class="fixed top-(--safe-area-inset-top) left-[calc(50%-12px)] z-20 h-6 w-6 rounded-b-md bg-red-200 p-[2px]"
         on:click={() => (expandedDevMenu = !expandedDevMenu)}
       >
         {#if expandedDevMenu}
@@ -443,18 +443,18 @@ Stacking context: We have to deviate from the DOM-sequence.
     {#if showDebugMessages}
       <div class="relative z-10 min-h-full w-screen bg-orange-100 pt-8">
         <button
-          class="absolute right-1 top-1 rounded-full p-2 text-orange-800"
+          class="absolute top-1 right-1 rounded-full p-2 text-orange-800"
           on:click={() => (showDebugMessages = false)}
         >
           <XRegularIcon />
         </button>
-        <p class="pb-2 pt-2 text-center text-xs font-semibold uppercase text-orange-800">debug messages</p>
+        <p class="pt-2 pb-2 text-center text-xs font-semibold text-orange-800 uppercase">debug messages</p>
 
         <hr class="mx-8 mb-2 h-[2px] bg-orange-800" />
 
         {#each $appState.debug_messages as message}
           <div class="mx-2 mb-2 rounded-sm bg-orange-200 p-2">
-            <div class="break-all font-mono text-xs text-orange-700">{message}</div>
+            <div class="font-mono text-xs break-all text-orange-700">{message}</div>
           </div>
         {/each}
       </div>
@@ -462,8 +462,8 @@ Stacking context: We have to deviate from the DOM-sequence.
 
     {#if showDragonProfileSteps}
       <div class="fixed z-10 flex h-screen w-screen justify-center bg-black/50 pt-24">
-        <div class="ml-10 mr-10 mt-10 flex h-fit w-full flex-col rounded-sm bg-white pb-4 pl-4 pr-4">
-          <p class="pb-2 pt-2 text-center text-orange-800">Profile steps</p>
+        <div class="mt-10 mr-10 ml-10 flex h-fit w-full flex-col rounded-sm bg-white pr-4 pb-4 pl-4">
+          <p class="pt-2 pb-2 text-center text-orange-800">Profile steps</p>
 
           <div class="flex items-center justify-end pb-2">
             <div class="mr-2 text-xs text-orange-800">Reset profile?</div>
@@ -477,7 +477,7 @@ Stacking context: We have to deviate from the DOM-sequence.
 
           {#each profileSteps as steps, i}
             <button class="mx-auto mb-2 w-full rounded-sm bg-orange-200 p-2" on:click={() => loadDragonProfile(steps)}>
-              <div class="break-all font-mono text-xs text-orange-700">{i + 1}: {steps}</div>
+              <div class="font-mono text-xs break-all text-orange-700">{i + 1}: {steps}</div>
             </button>
           {/each}
         </div>
@@ -494,7 +494,7 @@ Stacking context: We have to deviate from the DOM-sequence.
 
     <!-- Show actual (non-localized) error message in dev mode, default (localized) message otherwise.  -->
     {#if $errorState}
-      <div class="absolute bottom-[calc(16px+var(--safe-area-inset-bottom))] right-4 w-[calc(100%-32px)]">
+      <div class="absolute right-4 bottom-[calc(16px+var(--safe-area-inset-bottom))] w-[calc(100%-32px)]">
         <Toast
           variant="error"
           title={$appState?.dev_mode !== 'Off' ? 'Error' : $LL.ERROR.TITLE()}
