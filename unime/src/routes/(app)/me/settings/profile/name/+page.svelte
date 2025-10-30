@@ -29,14 +29,14 @@
 />
 
 <div class="content-height relative flex flex-col" in:fly={{ x, duration, opacity: 1 }}>
-  <div class="flex grow flex-col items-center bg-silver p-8 dark:bg-navy">
+  <div class="bg-silver dark:bg-navy flex grow flex-col items-center p-8">
     <input
-      class="w-[280px] rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] font-normal text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300"
+      class="dark:bg-dark w-[280px] rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] font-normal text-slate-500 dark:border-slate-600 dark:text-slate-300"
       placeholder={$LL.SETTINGS.PROFILE.PROFILE_NAME.INPUT_PLACEHOLDER()}
       bind:value={name}
     />
   </div>
-  <div class="absolute bottom-0 z-10 w-full rounded-t-3xl bg-white p-6 dark:bg-dark">
+  <div class="dark:bg-dark absolute bottom-0 z-10 w-full rounded-t-3xl bg-white p-6">
     <Button
       label={$LL.SETTINGS.PROFILE.PROFILE_NAME.CONFIRM()}
       on:click={async () => {

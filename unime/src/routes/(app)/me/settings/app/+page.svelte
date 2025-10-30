@@ -30,7 +30,7 @@
 
 <TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.APP.NAVBAR_TITLE()} class="sticky top-0 z-10" />
 
-<div class="flex flex-col bg-silver dark:bg-navy" in:fly={{ x, duration, opacity: 1 }}>
+<div class="bg-silver dark:bg-navy flex flex-col" in:fly={{ x, duration, opacity: 1 }}>
   <div class="flex flex-col gap-3 px-4 py-5">
     <SettingsValueLink
       href="/me/settings/app/language"
@@ -38,21 +38,21 @@
         $state.profile_settings.locale}
     >
       {#snippet icon()}
-        <TranslateFillIcon class="h-5 w-5 text-primary"></TranslateFillIcon>
+        <TranslateFillIcon class="text-primary h-5 w-5"></TranslateFillIcon>
       {/snippet}
       {$LL.SETTINGS.APP.LANGUAGE.TITLE()}
     </SettingsValueLink>
 
     <SettingsCaretLink href="/me/settings/app/theme">
       {#snippet icon()}
-        <SunFillIcon class="h-5 w-5 text-primary"></SunFillIcon>
+        <SunFillIcon class="text-primary h-5 w-5"></SunFillIcon>
       {/snippet}
       {$LL.SETTINGS.APP.THEME.LABEL()}
     </SettingsCaretLink>
 
     <SettingsCaretLink href="/me/settings/app/security">
       {#snippet icon()}
-        <ShieldCheckFillIcon class="h-5 w-5 text-primary"></ShieldCheckFillIcon>
+        <ShieldCheckFillIcon class="text-primary h-5 w-5"></ShieldCheckFillIcon>
       {/snippet}
       {$LL.SETTINGS.APP.SECURITY.LABEL()}
     </SettingsCaretLink>
@@ -96,7 +96,7 @@
         }}
       >
         {#snippet icon()}
-          <CodeBoldIcon class="h-5 w-5 text-primary"></CodeBoldIcon>
+          <CodeBoldIcon class="text-primary h-5 w-5"></CodeBoldIcon>
         {/snippet}
         {$LL.SETTINGS.APP.DEVELOPER_MODE.TITLE()}
       </SettingsSwitch>
@@ -106,7 +106,7 @@
       <div in:fade={{ duration: 200 }} out:fade={{ duration: 200 }}>
         <SettingsCaretLink href="/me/settings/app/did">
           {#snippet icon()}
-            <FilesFillIcon class="h-5 w-5 text-primary"></FilesFillIcon>
+            <FilesFillIcon class="text-primary h-5 w-5"></FilesFillIcon>
           {/snippet}
           DID management
         </SettingsCaretLink>
@@ -115,7 +115,7 @@
       <div in:fade={{ duration: 200, delay: 50 }} out:fade={{ duration: 200 }}>
         <SettingsCaretLink href="/me/settings/app/keys">
           {#snippet icon()}
-            <KeyFillIcon class="h-5 w-5 text-primary"></KeyFillIcon>
+            <KeyFillIcon class="text-primary h-5 w-5"></KeyFillIcon>
           {/snippet}
           Key management
         </SettingsCaretLink>
@@ -124,7 +124,7 @@
       <div in:fade={{ duration: 200, delay: 100 }} out:fade={{ duration: 200 }}>
         <SettingsCaretLink href="/me/settings/app/trust-list">
           {#snippet icon()}
-            <ListStarFillIcon class="h-5 w-5 text-primary"></ListStarFillIcon>
+            <ListStarFillIcon class="text-primary h-5 w-5"></ListStarFillIcon>
           {/snippet}
           Trusted issuers
         </SettingsCaretLink>

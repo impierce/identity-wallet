@@ -21,12 +21,12 @@
 </script>
 
 <div class="flex flex-col">
-  <p class="text-[14px]/[22px] font-medium text-slate-800 dark:text-grey">{title}</p>
+  <p class="dark:text-grey text-[14px]/[22px] font-medium text-slate-800">{title}</p>
   <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
     {formatRelativeDateTime(date, $state.profile_settings.locale)}
   </p>
   {#if credentials.length > 0}
-    <div class="mt-[12px] rounded-xl border border-slate-200 bg-white p-[3px] dark:border-slate-600 dark:bg-dark">
+    <div class="dark:bg-dark mt-[12px] rounded-xl border border-slate-200 bg-white p-[3px] dark:border-slate-600">
       {#each credentials as credential}
         <ListItemCard
           id={credential.id}

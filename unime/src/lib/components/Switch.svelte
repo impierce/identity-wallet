@@ -45,10 +45,10 @@
   <button
     use:melt={$root}
     aria-labelledby={id}
-    class="group relative h-7 w-11 rounded-full bg-text/25 transition-colors data-[state=checked]:bg-primary"
+    class="bg-text/25 data-[state=checked]:bg-primary group relative h-7 w-11 rounded-full transition-colors"
   >
     <span
-      class="m-0.5 block h-5 w-5 translate-x-0.5 rounded-full bg-background-alt transition group-data-[state=checked]:translate-x-[18px]"
+      class="bg-background-alt m-0.5 block h-5 w-5 translate-x-0.5 rounded-full transition group-data-[state=checked]:translate-x-[18px]"
     ></span>
   </button>
 </div>

@@ -14,7 +14,7 @@
 <!-- Render `credentialSubject.achievement`. -->
 <div class="flex flex-col gap-4">
   {#if credential.data.credentialSubject?.achievement?.description}
-    <div class="prose prose-sm rounded-xl bg-background p-4 dark:prose-invert">
+    <div class="prose prose-sm bg-background dark:prose-invert rounded-xl p-4">
       <h2>{$LL.CREDENTIAL.DETAILS.DESCRIPTION()}</h2>
       <!-- TODO Review marked vs. markdown-it and security risks. -->
       <!-- eslint-disable-next-line svelte/no-at-html-tags -->
@@ -23,7 +23,7 @@
   {/if}
 
   {#if credential.data.credentialSubject?.achievement?.criteria?.narrative}
-    <div class="prose prose-sm rounded-xl bg-background p-4 dark:prose-invert">
+    <div class="prose prose-sm bg-background dark:prose-invert rounded-xl p-4">
       <h2>{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.CRITERIA()}</h2>
       <!-- TODO Review marked vs. markdown-it and security risks. -->
       <!-- eslint-disable-next-line svelte/no-at-html-tags -->
@@ -39,7 +39,7 @@
   {/if}
 
   {#if credential.data.credentialSubject?.achievement?.alignment?.length > 0}
-    <div class="prose prose-sm rounded-xl bg-background p-4 dark:prose-invert">
+    <div class="prose prose-sm bg-background dark:prose-invert rounded-xl p-4">
       <h2>{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.ALIGNMENT()}</h2>
       {#each credential.data.credentialSubject.achievement.alignment as alignmentItem}
         <h4>{alignmentItem.targetName}</h4>

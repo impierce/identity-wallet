@@ -32,13 +32,13 @@
 <!-- TODO: Problem when using $open: when the dropdown menu is closed, it closes the contained ActionSheet as well. -->
 <!-- {#if $open} -->
 <div
-  class="flex min-w-[160px] flex-col rounded-xl border border-slate-300 bg-background-alt p-1 shadow-md dark:border-slate-600"
+  class="bg-background-alt flex min-w-[160px] flex-col rounded-xl border border-slate-300 p-1 shadow-md dark:border-slate-600"
   use:melt={$menu}
   transition:fly={{ duration: 150, y: -10 }}
 >
   <!-- Share to LinkedIn -->
   <button
-    class="flex items-center space-x-2 rounded-lg py-2 pl-3 pr-4 hover:bg-background dark:text-grey"
+    class="hover:bg-background dark:text-grey flex items-center space-x-2 rounded-lg py-2 pl-3 pr-4"
     on:click={() => {
       dispatch({ type: '[Credential] Share to LinkedIn', payload: { id } });
       $open = false;
@@ -54,7 +54,7 @@
       dispatchEvent('edit');
       $open = false;
     }}
-    class="flex items-center space-x-2 rounded-lg py-2 pl-3 pr-4 hover:bg-background dark:text-grey"
+    class="hover:bg-background dark:text-grey flex items-center space-x-2 rounded-lg py-2 pl-3 pr-4"
   >
     <PencilFillIcon class="size-5" />
     <p class="grow text-left text-[13px]/[24px] font-medium">
@@ -70,12 +70,12 @@
     <button
       slot="trigger"
       let:trigger
-      class="flex items-center space-x-2 rounded-lg py-2 pl-3 pr-4 hover:bg-background"
+      class="hover:bg-background flex items-center space-x-2 rounded-lg py-2 pl-3 pr-4"
       use:melt={$item}
       use:melt={trigger}
     >
       <svelte:component this={TrashFillIcon} class="h-5 w-5 text-rose-500" />
-      <p class="grow text-left text-[13px]/[24px] font-medium dark:text-grey">
+      <p class="dark:text-grey grow text-left text-[13px]/[24px] font-medium">
         {$LL.CREDENTIAL.ACTIONS.DELETE.MENU_BUTTON()}
       </p>
     </button>

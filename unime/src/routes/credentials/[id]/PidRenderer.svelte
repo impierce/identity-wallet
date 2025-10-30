@@ -20,8 +20,8 @@
 
 <div class="grid w-full grid-cols-2 gap-4">
   <TextFieldRenderer key={$LL.CREDENTIAL.RENDERER.PID.NAME()} value={`${subject.given_name} ${subject.family_name}`} />
-  <div class="flex flex-col rounded-xl bg-background px-4 py-3 text-[13px]/[24px]">
-    <h2 class="font-medium text-text-alt">{$LL.CREDENTIAL.RENDERER.PID.NATIONALITY()}</h2>
+  <div class="bg-background flex flex-col rounded-xl px-4 py-3 text-[13px]/[24px]">
+    <h2 class="text-text-alt font-medium">{$LL.CREDENTIAL.RENDERER.PID.NATIONALITY()}</h2>
     <div class="flex grow items-center gap-2">
       {#each subject.nationality as nationality}
         <span class="overflow-hidden rounded-sm">

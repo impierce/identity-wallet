@@ -29,8 +29,8 @@
         {#if isDataUrl(displayClaim.value)}
           <DataUrlImageRenderer key={displayClaim.key} dataUrl={displayClaim.value} />
         {:else}
-          <div class="rounded-xl bg-background px-4 py-3 text-[13px]/[24px]">
-            <h2 class="font-medium text-text-alt">{displayClaim.key}</h2>
+          <div class="bg-background rounded-xl px-4 py-3 text-[13px]/[24px]">
+            <h2 class="text-text-alt font-medium">{displayClaim.key}</h2>
             <p class="overflow-x-auto">{displayClaim.value}</p>
           </div>
         {/if}
@@ -43,8 +43,8 @@
       {#if isDataUrl(credential.data.credentialSubject[field])}
         <DataUrlImageRenderer key={field} dataUrl={credential.data.credentialSubject[field]} />
       {:else}
-        <div class="rounded-xl bg-background px-4 py-3 text-[13px]/[24px]">
-          <h2 class="font-medium text-text-alt">{field}</h2>
+        <div class="bg-background rounded-xl px-4 py-3 text-[13px]/[24px]">
+          <h2 class="text-text-alt font-medium">{field}</h2>
           <p class="overflow-x-auto">{credential.data.credentialSubject[field]}</p>
         </div>
       {/if}

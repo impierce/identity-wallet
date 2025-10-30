@@ -24,7 +24,7 @@
 
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <div class="px-2 pb-8 pt-4">
-    <p class="pb-4 text-3xl font-semibold text-slate-700 dark:text-grey">
+    <p class="dark:text-grey pb-4 text-3xl font-semibold text-slate-700">
       {$LL.ONBOARDING.TERMS.TITLE_1()} <span class="text-primary">{$LL.ONBOARDING.TERMS.TITLE_2()}</span>
     </p>
     <p class="text-[15px]/[24px] font-medium text-slate-500 dark:text-slate-300">
@@ -38,9 +38,9 @@
         <div
           data-component="Modal"
           use:melt={$content}
-          class="fixed left-1/2 top-1/2 z-50 max-h-[85vh] w-[90vw]
-            -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-xl
-            bg-background p-6 shadow-lg"
+          class="bg-background fixed left-1/2 top-1/2 z-50 max-h-[85vh]
+            w-[90vw] -translate-x-1/2 -translate-y-1/2 overflow-y-auto
+            rounded-xl p-6 shadow-lg"
           transition:scale={{
             duration: 150,
             start: 0.96,
@@ -57,7 +57,7 @@
           </p>
 
           <!-- acts as <hr> -->
-          <div class="my-2 h-px w-full bg-brand"></div>
+          <div class="bg-brand my-2 h-px w-full"></div>
           <!-- Terms of Use -->
           <h3 class="my-1 text-xs font-bold">
             {$LL.ONBOARDING.TERMS.T_AND_C.FULL.AGREEMENT.TITLE()}
@@ -160,7 +160,7 @@
           <button
             use:melt={$close}
             aria-label="close"
-            class="absolute right-2 top-2 flex size-7 items-center justify-center rounded-full border border-slate-200 bg-white p-1 dark:border-slate-600 dark:bg-dark"
+            class="dark:bg-dark absolute right-2 top-2 flex size-7 items-center justify-center rounded-full border border-slate-200 bg-white p-1 dark:border-slate-600"
           >
             <XBoldIcon class="size-5" />
           </button>
@@ -182,10 +182,10 @@
     <button
       data-component="Terms & Conditions"
       use:melt={$trigger}
-      class="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-600 dark:bg-dark"
+      class="dark:bg-dark flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-600"
     >
       <div class="grow text-left">
-        <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
+        <p class="dark:text-grey text-[13px]/[24px] font-medium text-slate-800">
           {$LL.ONBOARDING.TERMS.T_AND_C.TITLE()}
         </p>
         <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
@@ -204,10 +204,10 @@
       on:click={() => {
         checked_ownership = !checked_ownership;
       }}
-      class="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-600 dark:bg-dark"
+      class="dark:bg-dark flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-600"
     >
       <div class="grow text-left">
-        <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
+        <p class="dark:text-grey text-[13px]/[24px] font-medium text-slate-800">
           {$LL.ONBOARDING.TERMS.OWNERSHIP.TITLE()}
         </p>
         <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
@@ -222,7 +222,7 @@
   </div>
 </div>
 
-<div class="rounded-t-3xl bg-white p-6 dark:bg-dark" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
+<div class="dark:bg-dark rounded-t-3xl bg-white p-6" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <Button
     label={$LL.CONTINUE()}
     on:click={() => goto('/welcome/customize/name')}

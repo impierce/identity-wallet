@@ -15,7 +15,7 @@
   <div class="hide-scrollbar relative h-full overflow-y-auto pb-[64px]">
     <slot />
   </div>
-  <div class="sticky bottom-(--safe-area-inset-bottom) w-full shadow-[0_-4px_20px_0px_rgba(0,0,0,0.03)]">
+  <div class="bottom-(--safe-area-inset-bottom) sticky w-full shadow-[0_-4px_20px_0px_rgba(0,0,0,0.03)]">
     <BottomNavBar
       {active}
       on:me={() => goto('/me')}

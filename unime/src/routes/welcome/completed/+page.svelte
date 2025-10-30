@@ -19,18 +19,18 @@
 <!-- Content -->
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }}>
   <div class="pb-8 pt-4">
-    <p class="pb-8 text-3xl font-semibold text-slate-700 dark:text-grey">
+    <p class="dark:text-grey pb-8 text-3xl font-semibold text-slate-700">
       {$LL.ONBOARDING.PASSWORD.COMPLETED.TITLE_1()}
       <span class="text-primary">{$LL.ONBOARDING.PASSWORD.COMPLETED.TITLE_2()}</span>
     </p>
   </div>
-  <div class="flex flex-col items-center justify-center space-y-6 rounded-3xl bg-white p-5 dark:bg-dark">
-    <p class="text-[22px]/[30px] font-semibold text-primary">{$LL.ONBOARDING.PASSWORD.COMPLETED.MESSAGE_1()}</p>
+  <div class="dark:bg-dark flex flex-col items-center justify-center space-y-6 rounded-3xl bg-white p-5">
+    <p class="text-primary text-[22px]/[30px] font-semibold">{$LL.ONBOARDING.PASSWORD.COMPLETED.MESSAGE_1()}</p>
     <div class="relative">
       <div class="relative z-10">
         <div class="text-[100px]/[100px]"><ShieldFillIcon class="text-primary" /></div>
         <span class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[36px]/[36px]">
-          <p class="font-semibold tracking-tight text-white dark:text-dark">
+          <p class="dark:text-dark font-semibold tracking-tight text-white">
             {calculateInitials($onboarding_state.name ?? '')}
           </p>
         </span>
@@ -46,7 +46,7 @@
         ></lottie-player>
       </div>
     </div>
-    <p class="text-[22px]/[30px] font-semibold text-primary">
+    <p class="text-primary text-[22px]/[30px] font-semibold">
       {$LL.ONBOARDING.PASSWORD.COMPLETED.MESSAGE_2()}, {$onboarding_state.name}!
     </p>
     <!-- Hint: backup -->
@@ -56,7 +56,7 @@
   </div>
 </div>
 
-<div class="rounded-t-3xl bg-white p-6 dark:bg-dark" in:fade={{ delay: 200 }}>
+<div class="dark:bg-dark rounded-t-3xl bg-white p-6" in:fade={{ delay: 200 }}>
   <Button
     label={$LL.CONTINUE()}
     on:click={() => {

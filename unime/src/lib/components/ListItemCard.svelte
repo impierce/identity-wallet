@@ -40,7 +40,7 @@ Can be used for credentials, connections, etc.
 ```
 -->
 <button
-  class={`flex h-16 w-full items-center justify-start rounded-xl bg-white p-2 dark:bg-dark ${isInvalid ? 'opacity-60' : ''}`}
+  class={`dark:bg-dark flex h-16 w-full items-center justify-start rounded-xl bg-white p-2 ${isInvalid ? 'opacity-60' : ''}`}
   on:click={() => dispatch('click')}
 >
   <!-- min-h-[64px] needed? -->
@@ -60,7 +60,7 @@ Can be used for credentials, connections, etc.
   </slot>
   <!-- Text -->
   <div class="flex grow flex-col items-start overflow-x-auto text-left">
-    <p class="line-clamp-2 w-full pr-4 text-[13px]/[18px] font-medium text-slate-800 dark:text-grey">
+    <p class="dark:text-grey line-clamp-2 w-full pr-4 text-[13px]/[18px] font-medium text-slate-800">
       {title}
     </p>
     {#if description}

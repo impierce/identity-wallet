@@ -55,7 +55,7 @@
   });
 </script>
 
-<div class="safe-area-height flex flex-col items-stretch overflow-y-auto bg-silver dark:bg-navy">
+<div class="safe-area-height bg-silver dark:bg-navy flex flex-col items-stretch overflow-y-auto">
   <TopNavBar
     title={$LL.SCAN.CREDENTIAL_OFFER.NAVBAR_TITLE()}
     on:back={() => history.back()}
@@ -76,7 +76,7 @@
     {:else}
       <PaddedIcon icon={DownloadSimpleFillIcon} />
     {/if}
-    <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
+    <p class="dark:text-grey text-[22px]/[30px] font-semibold text-slate-700">
       {issuer_name}
     </p>
 
@@ -85,7 +85,7 @@
     </p>
 
     <div
-      class="mt-3 w-full rounded-[20px] border border-slate-200 bg-white p-[10px] dark:border-slate-600 dark:bg-dark"
+      class="dark:bg-dark mt-3 w-full rounded-[20px] border border-slate-200 bg-white p-[10px] dark:border-slate-600"
     >
       {#each Object.entries(credential_configurations) as [credential_configuration_id, credential_configuration]}
         <!-- TODO: bug: long list is not correctly displayed -->
@@ -115,14 +115,14 @@
             {#each pinInput.inputs as input}
               <input
                 {...input}
-                class="size-12 rounded-xl border border-slate-300 bg-background-alt text-center text-2xl font-semibold text-text-alt outline-hidden focus:border-primary disabled:cursor-not-allowed dark:border-slate-500"
+                class="bg-background-alt text-text-alt outline-hidden focus:border-primary size-12 rounded-xl border border-slate-300 text-center text-2xl font-semibold disabled:cursor-not-allowed dark:border-slate-500"
               />
             {/each}
           </div>
         {:else}
           <!-- If length is not provided or longer than 6, fall back to a simple text input field. -->
           <input
-            class="mt-6 w-full rounded-xl border border-slate-300 bg-background-alt px-3 py-3 text-[14px]/[22px] font-medium text-slate-800 dark:border-slate-600 dark:text-grey"
+            class="bg-background-alt dark:text-grey mt-6 w-full rounded-xl border border-slate-300 px-3 py-3 text-[14px]/[22px] font-medium text-slate-800 dark:border-slate-600"
             placeholder={'Enter PIN code'}
             bind:value={pinInput.value}
             oninput={() => {
@@ -136,7 +136,7 @@
   </div>
 
   <!-- `sticky` is relative to the nearest scrolling ancestor, which is the enclosing `div` above and not the viewport. -->
-  <div class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 dark:bg-dark">
+  <div class="dark:bg-dark sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6">
     <Button
       label={$LL.SCAN.CREDENTIAL_OFFER.ACCEPT()}
       disabled={tx_code && !complete}

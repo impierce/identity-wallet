@@ -25,7 +25,7 @@
 
 <TopNavBar on:back={() => goto(parentRoute)} title={$LL.SETTINGS.NAVBAR_TITLE()} class="sticky top-0 z-10" />
 
-<div class="flex flex-col space-y-[15px] bg-background px-4 py-5" in:fly={{ x, duration, opacity: 1 }}>
+<div class="bg-background flex flex-col space-y-[15px] px-4 py-5" in:fly={{ x, duration, opacity: 1 }}>
   <!-- Avatar -->
   <div class="flex justify-center">
     <EmojiAvatarSelect
@@ -40,14 +40,14 @@
 
     <SettingsCaretLink href="/me/settings/profile">
       {#snippet icon()}
-        <UserCircleFillIcon class="h-5 w-5 text-primary"></UserCircleFillIcon>
+        <UserCircleFillIcon class="text-primary h-5 w-5"></UserCircleFillIcon>
       {/snippet}
       {$LL.SETTINGS.PROFILE.TITLE()}
     </SettingsCaretLink>
 
     <SettingsCaretLink href="/me/settings/app">
       {#snippet icon()}
-        <GearFillIcon class="h-5 w-5 text-primary"></GearFillIcon>
+        <GearFillIcon class="text-primary h-5 w-5"></GearFillIcon>
       {/snippet}
       {$LL.SETTINGS.APP.TITLE()}
     </SettingsCaretLink>
@@ -68,7 +68,7 @@
 
     <SettingsCaretLink href="/me/settings/about">
       {#snippet icon()}
-        <InfoFillIcon class="h-5 w-5 text-primary"></InfoFillIcon>
+        <InfoFillIcon class="text-primary h-5 w-5"></InfoFillIcon>
       {/snippet}
       {$LL.SETTINGS.SUPPORT.ABOUT.TITLE()}
     </SettingsCaretLink>

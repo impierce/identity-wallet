@@ -24,7 +24,7 @@
 </script>
 
 <!-- Stretch over parent horizontal padding with negative margins. -->
-<div class="relative -mx-4 flex flex-col items-center gap-4 bg-background py-5">
+<div class="bg-background relative -mx-4 flex flex-col items-center gap-4 py-5">
   <!-- Background is always white since most logos are designed for light backgrounds -->
   {#if credentialLogoUrl}
     <div class="grid size-40 place-items-center rounded-xl bg-white">
@@ -33,7 +33,7 @@
     </div>
   {:else}
     <!-- When there's no logo, we adjust the background to the theme -->
-    <div class="grid size-40 place-items-center rounded-xl bg-background-alt">
+    <div class="bg-background-alt grid size-40 place-items-center rounded-xl">
       {#if credential.metadata.icon}
         <Image
           id={`${credential.metadata.icon}Light`}
@@ -41,9 +41,9 @@
           iconClass="size-10 dark:text-text-alt"
         />
       {:else if credential.data.type.includes('OpenBadgeCredential')}
-        <CertificateLightIcon class="size-10 text-text-alt" />
+        <CertificateLightIcon class="text-text-alt size-10" />
       {:else}
-        <UserLightIcon class="size-10 text-text-alt" />
+        <UserLightIcon class="text-text-alt size-10" />
       {/if}
     </div>
   {/if}

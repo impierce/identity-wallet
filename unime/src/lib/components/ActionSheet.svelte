@@ -44,14 +44,14 @@
     <!-- Overlay -->
     <div
       use:melt={$overlay}
-      class="fixed inset-0 z-40 bg-black/50 backdrop-blur-xs"
+      class="backdrop-blur-xs fixed inset-0 z-40 bg-black/50"
       transition:fade={{ duration: 150 }}
     ></div>
 
     <!-- TODO: should we respect the bottom safe area as well? -> pb-[calc(25px+var(--safe-area-inset-bottom))] -->
     <div
       use:melt={$content}
-      class="fixed bottom-0 left-0 z-40 flex w-screen flex-col items-center rounded-t-[20px] bg-white p-6 pb-[calc(25px+var(--safe-area-inset-bottom))] focus:outline-hidden dark:bg-dark"
+      class="focus:outline-hidden dark:bg-dark fixed bottom-0 left-0 z-40 flex w-screen flex-col items-center rounded-t-[20px] bg-white p-6 pb-[calc(25px+var(--safe-area-inset-bottom))]"
       transition:fly={{
         y: 350,
         duration: 300,

@@ -38,7 +38,7 @@
       slot="trigger"
       let:trigger
       use:melt={trigger}
-      class="-mr-2 p-2 text-left text-[13px]/[24px] font-medium text-primary">Delete</button
+      class="text-primary -mr-2 p-2 text-left text-[13px]/[24px] font-medium">Delete</button
     >
     <div slot="content" class="w-full pb-[10px] pt-[20px]">
       <Button
@@ -52,7 +52,7 @@
     <Button variant="secondary" slot="close" let:close trigger={close} label="No, keep the list." />
   </ActionSheet>
 </TopNavBar>
-<div class="content-height flex flex-col bg-silver dark:bg-navy">
+<div class="content-height bg-silver dark:bg-navy flex flex-col">
   <div class="space-y-[15px] px-4 py-5">
     <div class="flex flex-col space-y-[10px]">
       {#if trustList?.custom}
@@ -60,7 +60,7 @@
         <div class="flex space-x-[10px]">
           <input
             type="text"
-            class="h-12 grow rounded-xl border border-slate-200 px-3 text-[13px]/[24px] text-secondary disabled:text-slate-400 disabled:opacity-60 dark:border-slate-600 dark:bg-dark"
+            class="text-secondary dark:bg-dark h-12 grow rounded-xl border border-slate-200 px-3 text-[13px]/[24px] disabled:text-slate-400 disabled:opacity-60 dark:border-slate-600"
             value={trustList?.display_name}
             on:input={(e: Event) => (updatedListName = (e.target as HTMLInputElement).value)}
           />
@@ -89,7 +89,7 @@
         <div class="flex flex-row items-center space-x-2">
           <input
             type="text"
-            class="h-12 grow rounded-xl border border-slate-200 px-3 text-[13px]/[24px] text-secondary disabled:text-slate-400 disabled:opacity-60 dark:border-slate-600 dark:bg-dark"
+            class="text-secondary dark:bg-dark h-12 grow rounded-xl border border-slate-200 px-3 text-[13px]/[24px] disabled:text-slate-400 disabled:opacity-60 dark:border-slate-600"
             value={domains[i]}
             on:input={(e: Event) => (domains[i] = (e.target as HTMLInputElement).value)}
             disabled={!active}
@@ -104,7 +104,7 @@
                     payload: { trust_list_id, old_domain: domain, new_domain: domains[i] },
                   })}
               >
-                <CheckBoldIcon class="h-5 w-5 text-primary" />
+                <CheckBoldIcon class="text-primary h-5 w-5" />
               </button>
               <button class="rounded-full p-2 active:bg-slate-100" on:click={() => (domains[i] = domain)}>
                 <ArrowCounterClockwiseBoldIcon class="h-5 w-5 text-slate-400" />
@@ -133,7 +133,7 @@
         <div class="flex flex-row items-center space-x-2">
           <input
             type="text"
-            class="h-12 grow rounded-xl border border-slate-200 px-3 text-[13px]/[24px] text-secondary dark:border-slate-600 dark:bg-dark"
+            class="text-secondary dark:bg-dark h-12 grow rounded-xl border border-slate-200 px-3 text-[13px]/[24px] dark:border-slate-600"
             placeholder="example.org"
             bind:value={newEntryValue}
             use:init
@@ -157,7 +157,7 @@
     {:else}
       <!-- Imported list -->
       {#each Object.entries(entries) as [domain, active] (domain)}
-        <div class="flex h-14 w-full items-center space-x-4 rounded-xl bg-white p-4 dark:bg-dark">
+        <div class="dark:bg-dark flex h-14 w-full items-center space-x-4 rounded-xl bg-white p-4">
           <p
             class={`grow text-left text-[13px]/[24px] font-medium text-slate-800 dark:text-white ${active ? '' : 'opacity-50'}`}
           >

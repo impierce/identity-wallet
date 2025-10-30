@@ -29,8 +29,8 @@
 
 <button
   on:click={() => dispatch('click')}
-  class={`my-1 flex w-full gap-2 border p-[10px] text-slate-800 dark:text-grey ${
-    active ? 'rounded-lg border-grey bg-silver dark:border-slate-600 dark:bg-navy' : 'border-transparent'
+  class={`dark:text-grey my-1 flex w-full gap-2 border p-[10px] text-slate-800 ${
+    active ? 'border-grey bg-silver dark:bg-navy rounded-lg dark:border-slate-600' : 'border-transparent'
   }`}
 >
   <svelte:component this={icon} />
@@ -38,7 +38,7 @@
   {#if active}
     <div class="absolute right-2">
       {#if sortOrder !== ''}
-        <p class="text-sm font-medium text-primary">{sortOrder}</p>
+        <p class="text-primary text-sm font-medium">{sortOrder}</p>
       {/if}
     </div>
   {/if}

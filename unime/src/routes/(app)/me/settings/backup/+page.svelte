@@ -4,7 +4,7 @@
 
 <TopNavBar on:back={() => history.back()} title="Backup and recovery" />
 
-<div class="content-height flex flex-col bg-silver dark:bg-navy">
+<div class="content-height bg-silver dark:bg-navy flex flex-col">
   <div class="flex flex-col space-y-[10px] px-4 py-5">
     <!-- TODO Button with `KeyboardFillIcon` and `Your DID`. -->
   </div>

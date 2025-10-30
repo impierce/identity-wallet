@@ -17,7 +17,7 @@
 <!-- Create a new stacking context with `isolate` to prevent z-index leakage. -->
 <div
   class={twMerge(
-    'relative isolate flex h-[50px] items-center justify-between self-stretch bg-silver px-6 py-[13px] text-slate-800 dark:bg-navy dark:text-grey',
+    'bg-silver dark:bg-navy dark:text-grey relative isolate flex h-[50px] items-center justify-between self-stretch px-6 py-[13px] text-slate-800',
     className,
   )}
 >

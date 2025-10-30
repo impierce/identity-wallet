@@ -76,7 +76,7 @@
 
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   <div class="pb-8 pt-4">
-    <p class="pb-8 text-3xl font-semibold text-slate-700 dark:text-grey">
+    <p class="dark:text-grey pb-8 text-3xl font-semibold text-slate-700">
       {$LL.ONBOARDING.PASSWORD.CONFIRM.TITLE_1()}
       <span class="text-primary">{$LL.ONBOARDING.PASSWORD.CONFIRM.TITLE_2()}</span>
     </p>
@@ -115,7 +115,7 @@
           }
         }
       }}
-      class="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300"
+      class="dark:bg-dark h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] text-slate-500 dark:border-slate-600 dark:text-slate-300"
     />
     <div class="absolute right-3 top-0 flex h-full items-center">
       <button
@@ -127,9 +127,9 @@
         }}
       >
         {#if showPassword}
-          <EyeRegularIcon class="text-slate-700 dark:text-grey" />
+          <EyeRegularIcon class="dark:text-grey text-slate-700" />
         {:else}
-          <EyeClosedRegularIcon class="text-slate-700 dark:text-grey" />
+          <EyeClosedRegularIcon class="dark:text-grey text-slate-700" />
         {/if}
       </button>
     </div>
@@ -137,8 +137,8 @@
   {#if passwordsMatch !== undefined}
     <div class="mt-8 flex items-center justify-center">
       {#if passwordsMatch}
-        <SmileyRegularIcon class="mr-[10px] h-5 w-5 text-primary" />
-        <p class="text-[13px]/[24px] font-medium text-primary">{$LL.ONBOARDING.PASSWORD.CONFIRM.MATCH()}</p>
+        <SmileyRegularIcon class="text-primary mr-[10px] h-5 w-5" />
+        <p class="text-primary text-[13px]/[24px] font-medium">{$LL.ONBOARDING.PASSWORD.CONFIRM.MATCH()}</p>
       {:else}
         <SmileySadRegularIcon class="mr-[10px] h-5 w-5 text-rose-500" />
         <p class="text-[13px]/[24px] font-medium text-rose-500">{$LL.ONBOARDING.PASSWORD.CONFIRM.NO_MATCH()}</p>
@@ -147,7 +147,7 @@
   {/if}
 </div>
 
-<div class="rounded-t-3xl bg-white p-6 dark:bg-dark" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
+<div class="dark:bg-dark rounded-t-3xl bg-white p-6" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
   {#if biometricsStatus?.isAvailable}
     <ActionSheet
       titleText={capitalize($LL.ONBOARDING.PASSWORD.BIOMETRICS.TITLE({ type: biometricsName }))}
@@ -156,9 +156,9 @@
       <Button slot="trigger" let:trigger {trigger} label={$LL.CONTINUE()} disabled={!passwordsMatch} />
       <div slot="icon" class="mb-2">
         {#if biometricsStatus.biometryType === BiometryType.FaceID || biometricsStatus.biometryType === BiometryType.Iris}
-          <ScanSmileyLightIcon class="size-14 text-primary" />
+          <ScanSmileyLightIcon class="text-primary size-14" />
         {:else}
-          <FingerprintLightIcon class="size-12 text-primary" />
+          <FingerprintLightIcon class="text-primary size-12" />
         {/if}
       </div>
       <div slot="content" class="flex w-full flex-col space-y-[10px] pt-[20px]">

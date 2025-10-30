@@ -17,8 +17,8 @@
 </script>
 
 <div class="flex flex-col gap-4">
-  <div class="flex flex-col rounded-xl bg-background px-4 py-3 text-[13px]/[24px]">
-    <h2 class="font-medium text-text-alt">{$LL.ADD_CREDENTIALS.ADDRESS.ADD.RESIDENT_ADDRESS_LABEL()}</h2>
+  <div class="bg-background flex flex-col rounded-xl px-4 py-3 text-[13px]/[24px]">
+    <h2 class="text-text-alt font-medium">{$LL.ADD_CREDENTIALS.ADDRESS.ADD.RESIDENT_ADDRESS_LABEL()}</h2>
     <div class="flex items-center">
       <div>
         <p class="overflow-x-auto">{subject.resident_street} {subject.resident_house_number}</p>

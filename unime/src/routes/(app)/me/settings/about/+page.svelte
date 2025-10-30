@@ -41,7 +41,7 @@
 
 <TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.SUPPORT.ABOUT.NAVBAR_TITLE()} class="sticky top-0 z-10" />
 
-<div class="flex flex-col bg-silver dark:bg-navy">
+<div class="bg-silver dark:bg-navy flex flex-col">
   <h1 class="sr-only">{$LL.SETTINGS.SUPPORT.ABOUT.TITLE()}</h1>
   <div class="flex w-full scale-75 justify-center">
     <button onclick={handleClick}>

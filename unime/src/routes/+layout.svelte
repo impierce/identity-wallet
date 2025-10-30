@@ -365,7 +365,7 @@ Stacking context: We have to deviate from the DOM-sequence.
 
 <!-- Set default background and text color. -->
 <!-- A page can request a transparent background by setting `$page.data.transparent` (required by scan route). -->
-<div class="overflow-hidden text-text {page.data.transparent ? 'bg-transparent' : 'bg-background'}" class:dark>
+<div class="text-text overflow-hidden {page.data.transparent ? 'bg-transparent' : 'bg-background'}" class:dark>
   <!-- Default background for `safe-area-inset-top` is `bg-background`. Make it `bg-background-alt` when flag is set.  -->
   <div
     bind:this={safeAreaInsetTop}
@@ -408,13 +408,13 @@ Stacking context: We have to deviate from the DOM-sequence.
     {#if $appState?.dev_mode !== 'Off'}
       {#if expandedDevMenu}
         <div
-          class="hide-scrollbar fixed z-10 flex w-full space-x-4 overflow-x-auto bg-linear-to-r from-red-200 to-red-300 p-4 shadow-md"
+          class="hide-scrollbar bg-linear-to-r fixed z-10 flex w-full space-x-4 overflow-x-auto from-red-200 to-red-300 p-4 shadow-md"
           in:fly={{ y: -64, opacity: 1 }}
           out:fly={{ y: -64, opacity: 1 }}
         >
           {#each devButtons as button}
             <button
-              class="rounded-full bg-red-300 px-4 py-1 text-sm font-medium text-red-700 hover:outline-hidden hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
+              class="hover:outline-hidden rounded-full bg-red-300 px-4 py-1 text-sm font-medium text-red-700 hover:ring-2 hover:ring-red-700 hover:ring-opacity-60"
               on:click={button.onClick}
             >
               {#if typeof button.icon === 'string'}
@@ -428,7 +428,7 @@ Stacking context: We have to deviate from the DOM-sequence.
       {/if}
 
       <button
-        class="fixed left-[calc(50%-12px)] top-(--safe-area-inset-top) z-20 h-6 w-6 rounded-b-md bg-red-200 p-[2px]"
+        class="top-(--safe-area-inset-top) fixed left-[calc(50%-12px)] z-20 h-6 w-6 rounded-b-md bg-red-200 p-[2px]"
         on:click={() => (expandedDevMenu = !expandedDevMenu)}
       >
         {#if expandedDevMenu}

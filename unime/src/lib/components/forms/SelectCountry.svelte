@@ -37,7 +37,7 @@
 
 <div class="w-full">
   <div class="relative text-left transition">
-    <label for={combobox.ids.input} class="text-[14px]/[22px] font-medium text-slate-800 dark:text-grey">
+    <label for={combobox.ids.input} class="dark:text-grey text-[14px]/[22px] font-medium text-slate-800">
       {label || $LL.ADD_CREDENTIALS.ADDRESS.ADD.RESIDENT_COUNTRY_LABEL()}
     </label>
     <div class="relative">
@@ -54,7 +54,7 @@
       </div>
       <input
         {...combobox.input}
-        class="w-full rounded-xl border border-slate-300 bg-background-alt px-10 py-3 text-[14px]/[22px] font-medium text-slate-800 dark:border-slate-600 dark:text-grey"
+        class="bg-background-alt dark:text-grey w-full rounded-xl border border-slate-300 px-10 py-3 text-[14px]/[22px] font-medium text-slate-800 dark:border-slate-600"
         placeholder={placeholder || $LL.ADD_CREDENTIALS.ADDRESS.ADD.RESIDENT_COUNTRY_PLACEHOLDER()}
         value={combobox.value}
       />
@@ -62,24 +62,24 @@
         {...combobox.trigger}
         class="absolute right-1 top-1/2 grid size-10 -translate-y-1/2 place-items-center rounded-lg"
       >
-        <CaretDownBoldIcon class="size-5 text-primary" />
+        <CaretDownBoldIcon class="text-primary size-5" />
       </button>
     </div>
   </div>
 
   <div
     {...combobox.content}
-    class="hide-scrollbar m-0 max-h-[232px] rounded-xl border border-slate-300 bg-background-alt p-2 dark:border-slate-600"
+    class="hide-scrollbar bg-background-alt m-0 max-h-[232px] rounded-xl border border-slate-300 p-2 dark:border-slate-600"
   >
     {#each filtered as option (option)}
-      <div {...combobox.getOption(option)} class="flex items-center rounded-lg p-2 hover:bg-background">
+      <div {...combobox.getOption(option)} class="hover:bg-background flex items-center rounded-lg p-2">
         <Icon
           class="mr-2 size-5"
           icon={`circle-flags:${countries.find((c) => c.name === option)?.code.toLowerCase()}`}
         />
-        <div class="grow text-left text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">{option}</div>
+        <div class="dark:text-grey grow text-left text-[13px]/[24px] font-medium text-slate-800">{option}</div>
         {#if combobox.isSelected(option)}
-          <CheckBoldIcon class="size-5 text-primary" />
+          <CheckBoldIcon class="text-primary size-5" />
         {/if}
       </div>
     {:else}

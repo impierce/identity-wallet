@@ -12,7 +12,7 @@
   ]);
 </script>
 
-<p class="text-3xl font-semibold tracking-tight text-slate-700 dark:text-grey">
+<p class="dark:text-grey text-3xl font-semibold tracking-tight text-slate-700">
   {greetings.at(Math.floor(Math.random() * greetings.length))},
   <span class="text-primary">{$state?.profile_settings.profile?.name}</span>.
 </p>

@@ -39,7 +39,7 @@
       slot="trigger"
       let:trigger
       use:melt={trigger}
-      class="-mr-2 p-2 text-left text-[13px]/[24px] font-medium text-primary">{$LL.SKIP()}</button
+      class="text-primary -mr-2 p-2 text-left text-[13px]/[24px] font-medium">{$LL.SKIP()}</button
     >
     <!-- <button
       slot="trigger"
@@ -69,8 +69,8 @@
 </TopNavBar>
 
 <!-- Content -->
-<div class="flex h-full flex-col bg-silver dark:bg-navy">
-  <div class="flex h-[54px] items-center bg-silver px-[18px] py-[15px] dark:bg-navy">
+<div class="bg-silver dark:bg-navy flex h-full flex-col">
+  <div class="bg-silver dark:bg-navy flex h-[54px] items-center px-[18px] py-[15px]">
     <span class="grow pr-[15px]">
       <ProgressBar value={completedPercentage} />
     </span>
@@ -103,7 +103,7 @@
 
             <svelte:fragment slot="icon">
               <div class="mb-[15px] flex h-[75px] w-[75px] items-center justify-center rounded-3xl bg-slate-100">
-                <svelte:component this={icons[goal.icon ?? 'Trophy']} class="h-7 w-7 text-primary" />
+                <svelte:component this={icons[goal.icon ?? 'Trophy']} class="text-primary h-7 w-7" />
               </div>
             </svelte:fragment>
 
@@ -138,7 +138,7 @@
       on:click={() => goto('/goals/0/faqs')}>Continue</button
     > -->
   </div>
-  <div class="sticky bottom-(--safe-area-inset-bottom) left-0 p-6">
+  <div class="bottom-(--safe-area-inset-bottom) sticky left-0 p-6">
     <Button label={$LL.CONTINUE()} on:click={() => goto('/goals/0/faqs')} />
   </div>
 </div>

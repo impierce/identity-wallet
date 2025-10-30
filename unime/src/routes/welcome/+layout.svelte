@@ -5,7 +5,7 @@
 </script>
 
 {#key data.pathname}
-  <div class="content-height flex flex-col bg-silver dark:bg-navy">
+  <div class="content-height bg-silver dark:bg-navy flex flex-col">
     <slot />
   </div>
 {/key}

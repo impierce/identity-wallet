@@ -30,18 +30,18 @@
 <div class="content-height flex flex-col">
   <TopNavBar on:back={() => history.back()} title={connection.name} class="bg-silver dark:bg-navy" />
   <div
-    class="flex grow flex-col overflow-y-auto bg-silver px-4 py-5 dark:bg-navy"
+    class="bg-silver dark:bg-navy flex grow flex-col overflow-y-auto px-4 py-5"
     in:fly={{ y: 18, duration: 200, opacity: 1 }}
   >
     <Tabs value={activeTab} {triggers}>
       <div slot="0" class="h-full pt-5">
         <ConnectionSummary {connection} />
       </div>
-      <div slot="1" class="h-full bg-silver py-5 dark:bg-navy">
+      <div slot="1" class="bg-silver dark:bg-navy h-full py-5">
         <ConnectionData id={connection.id} />
       </div>
 
-      <div slot="2" class="bg-silver pt-5 dark:bg-navy">
+      <div slot="2" class="bg-silver dark:bg-navy pt-5">
         <!-- TODO: If this turns out to be a costly operation (filtering in backend), consider lazy loading the component -->
         <History connectionId={connection.id} />
       </div>

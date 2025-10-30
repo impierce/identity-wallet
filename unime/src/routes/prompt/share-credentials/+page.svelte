@@ -40,7 +40,7 @@
   });
 </script>
 
-<div class="safe-area-height flex flex-col items-stretch overflow-y-auto bg-silver dark:bg-navy">
+<div class="safe-area-height bg-silver dark:bg-navy flex flex-col items-stretch overflow-y-auto">
   <TopNavBar
     title={$LL.SCAN.SHARE_CREDENTIALS.NAVBAR_TITLE()}
     on:back={() => history.back()}
@@ -51,14 +51,14 @@
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
     <!-- Header -->
     {#if logo_uri}
-      <div class="flex h-[75px] w-[75px] overflow-hidden rounded-3xl bg-white p-2 dark:bg-silver">
+      <div class="dark:bg-silver flex h-[75px] w-[75px] overflow-hidden rounded-3xl bg-white p-2">
         <Image id={imageId} isTempAsset={true} />
       </div>
     {:else}
       <PaddedIcon icon={PlugsConnectedFillIcon} />
     {/if}
     <div class="text-center">
-      <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
+      <p class="dark:text-grey text-[22px]/[30px] font-semibold text-slate-700">
         {client_name}
       </p>
       <!-- <p class="pt-[10px] text-sm font-medium text-slate-500">
@@ -72,7 +72,7 @@
 
     <div class="w-full">
       <div class="flex items-center">
-        <SealCheckFillIcon class="mr-2 text-primary" />
+        <SealCheckFillIcon class="text-primary mr-2" />
         <p class="text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">
           {$LL.SCAN.SHARE_CREDENTIALS.REQUESTED()}
         </p>
@@ -81,7 +81,7 @@
       <!-- Credentials selection -->
       <!-- <div class="w-full space-y-2 rounded-2xl bg-white p-3"></div> -->
       <div
-        class="mt-3 w-full rounded-[20px] border border-slate-200 bg-white p-[10px] dark:border-slate-600 dark:bg-dark"
+        class="dark:bg-dark mt-3 w-full rounded-[20px] border border-slate-200 bg-white p-[10px] dark:border-slate-600"
       >
         <div class="flex w-full flex-col space-y-2">
           {#each selected_credentials as credential}
@@ -97,7 +97,7 @@
   </div>
 
   <!-- Controls -->
-  <div class="sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 dark:bg-dark">
+  <div class="dark:bg-dark sticky bottom-0 left-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6">
     <Button
       label={$LL.SCAN.SHARE_CREDENTIALS.APPROVE()}
       on:click={() => {

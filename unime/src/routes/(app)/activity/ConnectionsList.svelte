@@ -40,7 +40,7 @@
               <Image id={connection.id} imgClass="p-1">
                 <div
                   slot="fallback"
-                  class="h-full w-full rounded-full ring-1 ring-inset ring-slate-200 dark:bg-dark dark:ring-slate-600"
+                  class="dark:bg-dark h-full w-full rounded-full ring-1 ring-inset ring-slate-200 dark:ring-slate-600"
                 ></div>
               </Image>
             </div>

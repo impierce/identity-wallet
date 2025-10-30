@@ -62,7 +62,7 @@
 </script>
 
 {#if credential}
-  <div class="flex min-h-full flex-col gap-7 bg-background-alt px-4 pb-7">
+  <div class="bg-background-alt flex min-h-full flex-col gap-7 px-4 pb-7">
     <CredentialHeader
       {credential}
       on:edit={() => {
@@ -77,7 +77,7 @@
           maxlength={maxLength}
           bind:value={displayNameUpdated}
           bind:this={labelInput}
-          class="-my-2 h-[40px] w-full truncate rounded-lg border border-slate-300 bg-background-alt text-center font-semibold text-slate-700 focus:outline-hidden disabled:border-none disabled:bg-background disabled:text-slate-700 dark:border-slate-600 dark:text-grey dark:disabled:text-grey"
+          class="bg-background-alt focus:outline-hidden disabled:bg-background dark:text-grey dark:disabled:text-grey -my-2 h-[40px] w-full truncate rounded-lg border border-slate-300 text-center font-semibold text-slate-700 disabled:border-none disabled:text-slate-700 dark:border-slate-600"
           placeholder="Some title"
           disabled={!openEditMode}
         />
@@ -98,7 +98,7 @@
     {#if openEditMode}
       <!-- Similar to ActionSheet, but without backdrop -->
       <div
-        class="fixed bottom-(--safe-area-inset-bottom) left-0 flex w-screen flex-col space-y-[10px] rounded-t-[20px] bg-background-alt p-6"
+        class="bottom-(--safe-area-inset-bottom) bg-background-alt fixed left-0 flex w-screen flex-col space-y-[10px] rounded-t-[20px] p-6"
         transition:fly={{
           y: 350,
           duration: 300,
