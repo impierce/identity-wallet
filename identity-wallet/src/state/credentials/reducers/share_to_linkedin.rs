@@ -71,37 +71,6 @@ pub async fn share_to_linkedin(state: AppState, action: Action) -> Result<AppSta
     Ok(state)
 }
 
-// Helpers
-pub async fn get_credential_record_from_stronghold(
-    state: &AppState,
-    credential_id: &str,
-) -> Result<VerifiableCredentialRecord, AppError> {
-    let key: Uuid = credential_id
-        .parse()
-        .map_err(|_| AppError::Error("Invalid credential ID format".to_string()))?;
-
-    let managers = state.core_utils.managers.lock().await;
-    let stronghold_manager = managers
-        .stronghold_manager
-        .as_ref()
-        .ok_or_else(|| AppError::Error("Failed to retrieve stronghold manager".to_string()))?;
-
-    let credential_opt = stronghold_manager
-        .get(key)
-        .map_err(|_| AppError::Error("Failed to retrieve credential from stronghold".to_string()))?;
-
-    let credential_bytes =
-        credential_opt.ok_or_else(|| AppError::Error("Credential not found in stronghold".to_string()))?;
-
-    let credential_json = String::from_utf8(credential_bytes)
-        .map_err(|_| AppError::Error("Failed to parse credential data".to_string()))?;
-
-    let vcr: VerifiableCredentialRecord = serde_json::from_str(&credential_json)
-        .map_err(|_| AppError::Error("Failed to deserialize credential record".to_string()))?;
-
-    Ok(vcr)
-}
-
 pub async fn resolve_issuer_did_endpoint(_state: &AppState, issuer_did: &str) -> Result<String, AppError> {
     let resolver = Resolver::new().await;
 
@@ -137,8 +106,29 @@ pub async fn resolve_issuer_did_endpoint(_state: &AppState, issuer_did: &str) ->
 }
 
 pub async fn create_public_link(state: &AppState, credential_id: &str) -> Result<Url, AppError> {
-    // Get the VerifiableCredentialRecord from the stronghold
-    let vcr = get_credential_record_from_stronghold(state, credential_id).await?;
+    let key: Uuid = credential_id
+        .parse()
+        .map_err(|_| AppError::Error("Invalid credential ID format".to_string()))?;
+
+    let managers = state.core_utils.managers.lock().await;
+    let stronghold_manager = managers
+        .stronghold_manager
+        .as_ref()
+        .ok_or_else(|| AppError::Error("Failed to retrieve stronghold manager".to_string()))?;
+
+    let credential_opt = stronghold_manager
+        .get(key)
+        .map_err(|_| AppError::Error("Failed to retrieve credential from stronghold".to_string()))?;
+
+    let credential_bytes =
+        credential_opt.ok_or_else(|| AppError::Error("Credential not found in stronghold".to_string()))?;
+
+    let credential_json = String::from_utf8(credential_bytes)
+        .map_err(|_| AppError::Error("Failed to parse credential data".to_string()))?;
+
+    let vcr: VerifiableCredentialRecord = serde_json::from_str(&credential_json)
+        .map_err(|_| AppError::Error("Failed to deserialize credential record".to_string()))?;
+
     // Generate the public link token from the credential
     let public_link_token = create_public_link_token(state, &vcr).await?;
 
