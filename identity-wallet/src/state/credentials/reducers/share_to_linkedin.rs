@@ -106,6 +106,7 @@ pub async fn resolve_issuer_did_endpoint(_state: &AppState, issuer_did: &str) ->
 }
 
 pub async fn create_public_link(state: &AppState, credential_id: &str) -> Result<Url, AppError> {
+    // Retrieve the credential record from stronghold using the credential ID
     let key: Uuid = credential_id
         .parse()
         .map_err(|_| AppError::Error("Invalid credential ID format".to_string()))?;
