@@ -46,7 +46,7 @@
     "@types/eslint": "^9.6.1",
     "@types/markdown-it": "^14.1.2",
     "@types/qrcode": "^1.5.6",
-    "@vitest/coverage-v8": "^4.0.4",
+    "@vitest/coverage-v8": "^4.0.6",
     "clsx": "^2.1.1",
     "eslint": "^9.38.0",
     "eslint-config-prettier": "^10.1.8",

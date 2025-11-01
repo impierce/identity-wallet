@@ -114,8 +114,8 @@ importers:
         specifier: ^1.5.6
         version: 1.5.6
       '@vitest/coverage-v8':
-        specifier: ^4.0.4
-        version: 4.0.4(vitest@4.0.4(@types/node@24.9.2)(jiti@2.6.1)(jsdom@27.0.1(postcss@8.5.6))(lightningcss@1.30.2)(yaml@2.5.0))
+        specifier: ^4.0.6
+        version: 4.0.6(vitest@4.0.4(@types/node@24.9.2)(jiti@2.6.1)(jsdom@27.0.1(postcss@8.5.6))(lightningcss@1.30.2)(yaml@2.5.0))
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -1187,11 +1187,11 @@ packages:
     resolution: {integrity: sha512-ZtvYkYpZOYdvbws3uaOAvTFuvFXoQGAtmzeiXu+XSMGxi5GVsODpoI9Xu9TplEMuD/5fmAtBbKb9cQHkWkLXDQ==}
     engines: {node: '>=18.16.0'}
 
-  '@vitest/coverage-v8@4.0.4':
-    resolution: {integrity: sha512-YM7gDj2TX2AXyGLz0p/B7hvTsTfaQc+kSV/LU0nEnKlep/ZfbdCDppPND4YQiQC43OXyrhkG3y8ZSTqYb2CKqQ==}
+  '@vitest/coverage-v8@4.0.6':
+    resolution: {integrity: sha512-cv6pFXj9/Otk7q1Ocoj8k3BUVVwnFr3jqcqpwYrU5LkKClU9DpaMEdX+zptx/RyIJS+/VpoxMWmfISXchmVDPQ==}
     peerDependencies:
-      '@vitest/browser': 4.0.4
-      vitest: 4.0.4
+      '@vitest/browser': 4.0.6
+      vitest: 4.0.6
     peerDependenciesMeta:
       '@vitest/browser':
         optional: true
@@ -1213,6 +1213,9 @@ packages:
   '@vitest/pretty-format@4.0.4':
     resolution: {integrity: sha512-lHI2rbyrLVSd1TiHGJYyEtbOBo2SDndIsN3qY4o4xe2pBxoJLD6IICghNCvD7P+BFin6jeyHXiUICXqgl6vEaQ==}
 
+  '@vitest/pretty-format@4.0.6':
+    resolution: {integrity: sha512-4vptgNkLIA1W1Nn5X4x8rLJBzPiJwnPc+awKtfBE5hNMVsoAl/JCCPPzNrbf+L4NKgklsis5Yp2gYa+XAS442g==}
+
   '@vitest/runner@4.0.4':
     resolution: {integrity: sha512-99EDqiCkncCmvIZj3qJXBZbyoQ35ghOwVWNnQ5nj0Hnsv4Qm40HmrMJrceewjLVvsxV/JSU4qyx2CGcfMBmXJw==}
 
@@ -1224,6 +1227,9 @@ packages:
 
   '@vitest/utils@4.0.4':
     resolution: {integrity: sha512-4bJLmSvZLyVbNsYFRpPYdJViG9jZyRvMZ35IF4ymXbRZoS+ycYghmwTGiscTXduUg2lgKK7POWIyXJNute1hjw==}
+
+  '@vitest/utils@4.0.6':
+    resolution: {integrity: sha512-bG43VS3iYKrMIZXBo+y8Pti0O7uNju3KvNn6DrQWhQQKcLavMB+0NZfO1/QBAEbq0MaQ3QjNsnnXlGQvsh0Z6A==}
 
   acorn-jsx@5.3.2:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
@@ -3684,10 +3690,10 @@ snapshots:
       validator: 13.15.20
     optional: true
 
-  '@vitest/coverage-v8@4.0.4(vitest@4.0.4(@types/node@24.9.2)(jiti@2.6.1)(jsdom@27.0.1(postcss@8.5.6))(lightningcss@1.30.2)(yaml@2.5.0))':
+  '@vitest/coverage-v8@4.0.6(vitest@4.0.4(@types/node@24.9.2)(jiti@2.6.1)(jsdom@27.0.1(postcss@8.5.6))(lightningcss@1.30.2)(yaml@2.5.0))':
     dependencies:
       '@bcoe/v8-coverage': 1.0.2
-      '@vitest/utils': 4.0.4
+      '@vitest/utils': 4.0.6
       ast-v8-to-istanbul: 0.3.8
       debug: 4.4.3
       istanbul-lib-coverage: 3.2.2
@@ -3722,6 +3728,10 @@ snapshots:
     dependencies:
       tinyrainbow: 3.0.3
 
+  '@vitest/pretty-format@4.0.6':
+    dependencies:
+      tinyrainbow: 3.0.3
+
   '@vitest/runner@4.0.4':
     dependencies:
       '@vitest/utils': 4.0.4
@@ -3738,6 +3748,11 @@ snapshots:
   '@vitest/utils@4.0.4':
     dependencies:
       '@vitest/pretty-format': 4.0.4
+      tinyrainbow: 3.0.3
+
+  '@vitest/utils@4.0.6':
+    dependencies:
+      '@vitest/pretty-format': 4.0.6
       tinyrainbow: 3.0.3
 
   acorn-jsx@5.3.2(acorn@8.15.0):
