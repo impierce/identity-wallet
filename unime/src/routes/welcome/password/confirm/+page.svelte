@@ -75,7 +75,7 @@
 <TopNavBar on:back={() => history.back()} title={$LL.ONBOARDING.PASSWORD.CONFIRM.NAVBAR_TITLE()} />
 
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
-  <div class="pb-8 pt-4">
+  <div class="pt-4 pb-8">
     <p class="pb-8 text-3xl font-semibold text-slate-700 dark:text-grey">
       {$LL.ONBOARDING.PASSWORD.CONFIRM.TITLE_1()}
       <span class="text-primary">{$LL.ONBOARDING.PASSWORD.CONFIRM.TITLE_2()}</span>
@@ -117,7 +117,7 @@
       }}
       class="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300"
     />
-    <div class="absolute right-3 top-0 flex h-full items-center">
+    <div class="absolute top-0 right-3 flex h-full items-center">
       <button
         class="rounded-full p-2"
         on:click={() => {
