@@ -25,4 +25,5 @@ export default {
   plugins: ['prettier-plugin-svelte', '@ianvs/prettier-plugin-sort-imports', 'prettier-plugin-tailwindcss'],
   // Link to config so Tailwind can sort custom classes like `bg-primary` correctly.
   tailwindStylesheet: './unime/src/app.css',
+  tailwindFunctions: ['cn', 'twMerge'],
 };
