@@ -1030,6 +1030,10 @@ type RootTranslation = {
 			DESCRIPTION: string
 			OPEN_BADGES: {
 				/**
+				 * R​e​s​u​l​t
+				 */
+				RESULT: string
+				/**
 				 * A​l​i​g​n​m​e​n​t
 				 */
 				ALIGNMENT: string
@@ -2552,6 +2556,10 @@ export type TranslationFunctions = {
 			 */
 			DESCRIPTION: () => LocalizedString
 			OPEN_BADGES: {
+				/**
+				 * Result
+				 */
+				RESULT: () => LocalizedString
 				/**
 				 * Alignment
 				 */
