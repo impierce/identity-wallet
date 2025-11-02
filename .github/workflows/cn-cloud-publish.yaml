@@ -92,6 +92,10 @@ jobs:
           base64 -d <<< "${{ secrets.ANDROID_KEY_BASE64 }}" > $RUNNER_TEMP/keystore.jks
           echo "storeFile=$RUNNER_TEMP/keystore.jks" >> keystore.properties
 
+      - name: echo clang versions
+        run: |
+          ls $NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin
+
       - name: build Tauri app for Android
         env:
           NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
