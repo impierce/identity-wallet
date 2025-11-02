@@ -38,6 +38,26 @@
     />
   {/if}
 
+  {#if credential.data.credentialSubject?.achievement?.result?.length > 0}
+    <div class="prose prose-sm rounded-xl bg-background p-4 dark:prose-invert">
+      <h2>{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.RESULT()}</h2>
+      {#each credential.data.credentialSubject.achievement.result as resultItem}
+        <h4>{resultItem.alignment?.targetName}</h4>
+        {#if resultItem.alignment?.targetDescription}
+          <!-- TODO Review marked vs. markdown-it and security risks. -->
+          <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+          {@html md.render(resultItem.alignment?.targetDescription)}
+        {/if}
+        {#if resultItem.resultDescription}
+          {@html md.render(resultItem.resultDescription)}
+        {/if}
+        {#if resultItem.value}
+          {@html md.render(resultItem.value)}
+        {/if}
+      {/each}
+    </div>
+  {/if}
+
   {#if credential.data.credentialSubject?.achievement?.alignment?.length > 0}
     <div class="prose prose-sm rounded-xl bg-background p-4 dark:prose-invert">
       <h2>{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.ALIGNMENT()}</h2>

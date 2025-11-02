@@ -391,6 +391,7 @@ const nl_NL = {
       SELF_SIGNED: 'jezelf',
       DESCRIPTION: 'Beschrijving',
       OPEN_BADGES: {
+        RESULT: 'Resultaat',
         ALIGNMENT: 'Afstemming',
         CRITERIA: 'Criteria',
       },

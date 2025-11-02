@@ -391,6 +391,7 @@ const sv_FI = {
       SELF_SIGNED: 'dig själv',
       DESCRIPTION: 'Beskrivning',
       OPEN_BADGES: {
+        RESULT: 'Resultat',
         ALIGNMENT: 'Justering',
         CRITERIA: 'Kriterier',
       },

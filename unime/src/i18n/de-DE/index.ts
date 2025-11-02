@@ -391,6 +391,7 @@ const de_DE = {
       SELF_SIGNED: 'dich selbst',
       DESCRIPTION: 'Beschreibung',
       OPEN_BADGES: {
+        RESULT: 'Ergebnis',
         ALIGNMENT: 'Ausrichtung',
         CRITERIA: 'Kriterien',
       },
