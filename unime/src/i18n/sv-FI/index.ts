@@ -394,6 +394,7 @@ const sv_FI = {
         RESULT: 'Resultat',
         ALIGNMENT: 'Justering',
         CRITERIA: 'Kriterier',
+        VALUE: 'Betyg',
       },
     },
     RENDERER: {

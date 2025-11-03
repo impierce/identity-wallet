@@ -395,6 +395,7 @@ const es_ES = {
         RESULT: 'Resultado',
         ALIGNMENT: 'Alineación',
         CRITERIA: 'Criterio',
+        VALUE: 'Nota',
       },
     },
     RENDERER: {

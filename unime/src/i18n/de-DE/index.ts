@@ -394,6 +394,7 @@ const de_DE = {
         RESULT: 'Ergebnis',
         ALIGNMENT: 'Ausrichtung',
         CRITERIA: 'Kriterien',
+        VALUE: 'Note',
       },
     },
     RENDERER: {

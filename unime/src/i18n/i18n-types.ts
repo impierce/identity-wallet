@@ -1041,6 +1041,10 @@ type RootTranslation = {
 				 * C​r​i​t​e​r​i​a
 				 */
 				CRITERIA: string
+				/**
+				 * G​r​a​d​e
+				 */
+				VALUE: string
 			}
 		}
 		RENDERER: {
@@ -2568,6 +2572,10 @@ export type TranslationFunctions = {
 				 * Criteria
 				 */
 				CRITERIA: () => LocalizedString
+				/**
+				 * Grade
+				 */
+				VALUE: () => LocalizedString
 			}
 		}
 		RENDERER: {

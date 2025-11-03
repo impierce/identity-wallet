@@ -395,6 +395,7 @@ const fi_FI = {
         RESULT: 'Tulos',
         ALIGNMENT: 'Tasaus',
         CRITERIA: 'Kriteerit',
+        VALUE: 'Arvosana',
       },
     },
     RENDERER: {

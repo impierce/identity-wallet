@@ -394,6 +394,7 @@ const nl_NL = {
         RESULT: 'Resultaat',
         ALIGNMENT: 'Afstemming',
         CRITERIA: 'Criteria',
+        VALUE: 'Cijfer',
       },
     },
     RENDERER: {

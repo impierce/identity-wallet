@@ -393,6 +393,7 @@ const en = {
         RESULT: 'Result',
         ALIGNMENT: 'Alignment',
         CRITERIA: 'Criteria',
+        VALUE: 'Grade',
       },
     },
     RENDERER: {

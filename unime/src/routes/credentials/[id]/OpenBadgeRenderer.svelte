@@ -38,21 +38,30 @@
     />
   {/if}
 
-  {#if credential.data.credentialSubject?.achievement?.result?.length > 0}
+  {#if credential.data.credentialSubject?.result?.length > 0}
     <div class="prose prose-sm rounded-xl bg-background p-4 dark:prose-invert">
       <h2>{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.RESULT()}</h2>
-      {#each credential.data.credentialSubject.achievement.result as resultItem}
-        <h4>{resultItem.alignment?.targetName}</h4>
-        {#if resultItem.alignment?.targetDescription}
-          <!-- TODO Review marked vs. markdown-it and security risks. -->
-          <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-          {@html md.render(resultItem.alignment?.targetDescription)}
+
+      {#each credential.data.credentialSubject.result as resultItem, i}
+        {#if resultItem.alignment?.length > 0}
+          {#each resultItem.alignment as resultAlignment}
+            <h4>{resultAlignment.targetName}</h4>
+            {#if resultAlignment.targetDescription}
+              {@html md.render(resultAlignment.targetDescription)}
+            {/if}
+          {/each}
+        {/if}
+
+        {#if resultItem.value}
+          <h4>{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.VALUE()}</h4>
+          {@html md.render(resultItem.value)}
         {/if}
         {#if resultItem.resultDescription}
           {@html md.render(resultItem.resultDescription)}
         {/if}
-        {#if resultItem.value}
-          {@html md.render(resultItem.value)}
+
+        {#if i < credential.data.credentialSubject.result.length - 1}
+          <hr class="not-prose my-4 border border-gray-300 dark:border-gray-600" />
         {/if}
       {/each}
     </div>
