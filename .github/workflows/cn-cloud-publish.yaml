@@ -108,6 +108,7 @@ jobs:
           PUBLIC_STYLE_SAFE_AREA_INSETS: false
         run: |
           ls $NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin
+          echo "Using CC=$CC"
           pnpm tauri android build --aab true
 
       - name: upload assets
