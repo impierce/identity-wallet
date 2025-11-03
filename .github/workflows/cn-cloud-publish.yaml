@@ -63,12 +63,6 @@ jobs:
           ndk-version: r26d
           link-to-sdk: true
 
-      - name: echo clang versions
-        env:
-          NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
-        run: |
-          ls $NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin
-
       - name: install Android targets
         run: rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
 
@@ -101,14 +95,11 @@ jobs:
       - name: build Tauri app for Android
         env:
           NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
-          BINDGEN_EXTRA_CLANG_ARGS: "--sysroot=$NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
-          CC: "$NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi21-clang"
           PUBLIC_DEV_MODE_MENU_EXPANDED: false
           PUBLIC_DEV_SHOW_CURRENT_ROUTE: false
           PUBLIC_STYLE_SAFE_AREA_INSETS: false
         run: |
-          ls $NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin
-          echo "Using CC=$CC"
+          export BINDGEN_EXTRA_CLANG_ARGS="--sysroot=$NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
           pnpm tauri android build --aab true
 
       - name: upload assets
