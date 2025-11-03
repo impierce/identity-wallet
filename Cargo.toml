@@ -11,7 +11,7 @@ aws-lc-sys = { version = "0.30", features = ["bindgen"] }
 did_manager = { git = "https://github.com/impierce/did-manager", tag = "v1.0.0-beta.6" }
 jsonwebtoken = "9.3"
 log = "^0.4"
-oauth_tsl = { git = "https://github.com/impierce/oauth-token-status-list", rev = "133d224" }
+oauth_tsl = { git = "https://github.com/impierce/oauth-token-status-list", rev = "d4e2408" }
 oid4vc = { git = "https://github.com/impierce/openid4vc", rev = "4cbf854" }
 rand = "0.8"
 rustls = { version = "0.23", features = ["aws-lc-rs"] }
