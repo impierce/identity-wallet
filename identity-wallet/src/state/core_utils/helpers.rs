@@ -65,8 +65,8 @@ pub async fn validate_jwt_vc_json(
         .ok_or(AppError::Error("Failed to resolve issuer DID".to_string()))?;
 
     validator
-        .validate::<_, Value>(&credential_jwt, &issuer_document, &options, FailFast::FirstError)
-        .map_err(|_| AppError::Error("Invalid jwt_vc_json".to_string()))
+        .validate::<_, Value>(&credential_jwt, &issuer_document, &options, FailFast::AllErrors)
+        .map_err(|e| AppError::Error(format!("Invalid jwt_vc_json: {e}")))
 }
 
 /// Validate supported credential types against their corresponding JSON Schema.
