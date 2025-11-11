@@ -136,9 +136,9 @@ pub async fn get_issuer_public_verification_endpoint(_state: &AppState, issuer_d
     let public_credential_endpoint = issuer_document.service().iter().find_map(|service| {
         service
             .type_()
-            .contains("PublicEndpointStuff")
+            .contains("PublicCredentialEndpoint")
             .then(|| {
-                info!("Found PublicEndpointPH: {service:#?}");
+                info!("Found Public Credential Endpoint: {service:#?}");
                 service.service_endpoint()
             })
             .and_then(|service_endpoint| service_endpoint.to_json_value().ok())
@@ -155,6 +155,7 @@ pub async fn get_issuer_public_verification_endpoint(_state: &AppState, issuer_d
                 }
             })
     });
+
     public_credential_endpoint
         .ok_or_else(|| AppError::Error("No public credential endpoint found in issuer DID document".to_string()))
 }
