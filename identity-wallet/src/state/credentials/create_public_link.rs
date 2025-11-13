@@ -3,6 +3,7 @@ use std::str::FromStr;
 use crate::error::AppError::{self, *};
 use crate::state::core_utils::helpers::get_unverified_jwt_claims;
 use crate::state::credentials::VerifiableCredentialRecord;
+use crate::state::did::validate_linked_verifiable_presentations::validate_linked_verifiable_presentations;
 use crate::state::AppState;
 use chrono::{Duration, Utc};
 use did_manager::Resolver;
@@ -11,7 +12,7 @@ use jsonwebtoken::Header;
 use log::{info, warn};
 use oid4vc::oid4vc_core::jwt::encode;
 use serde::Serialize;
-use serde_json::Value;
+use serde_json::{json, Value};
 use url::Url;
 use uuid::Uuid;
 
@@ -115,30 +116,64 @@ pub async fn create_public_link(state: &AppState, credential_id: &str) -> Result
         .map_err(|e| AppError::Error(e.to_string()))?;
 
     // Extract the Issuer DID from the `aud` claim of the token
-    let public_credential_endpoint_url = get_issuer_public_verification_endpoint(state, issuer_did).await?;
+    let public_verifier_endpoint_url =
+        get_trusted_verifier_public_verification_endpoint(state, credential_issuer_did).await?;
 
-    let public_link = format!("{}/{}", public_credential_endpoint_url, public_link_jwt);
+    let public_link = format!(
+        "{}?public-credential-token={}",
+        public_verifier_endpoint_url, public_link_jwt
+    );
 
     let public_link_url =
         Url::parse(&public_link).map_err(|e| AppError::Error(format!("Invalid public link URL: {}", e)))?;
 
+    info!("Succesfully generated public link URL: {}", public_link_url);
+
     Ok(public_link_url)
 }
 
-// TODO: integrate this with UniCore after updating the UniCore DID and endpoint
-pub async fn get_issuer_public_verification_endpoint(_state: &AppState, issuer_did: &str) -> Result<String, AppError> {
+// Through the issuer DID Document find the ecosystem leader and its public verification endpoint, who will be the trusted verifier.
+// Step 1: get the issuer DID Document
+// Step 2: find the Linked VP service
+// Step 3: get the issuer DID Document of the Linked VP credential
+// Step 4: find the Public Verification Endpoint service
+pub async fn get_trusted_verifier_public_verification_endpoint(
+    _state: &AppState,
+    issuer_did: &str,
+) -> Result<String, AppError> {
     let resolver = Resolver::new().await;
-    let issuer_document = resolver
-        .resolve(issuer_did)
-        .await
-        .map_err(|_| AppError::Error("Failed to resolve issuer did".to_string()))?;
 
-    let public_credential_endpoint = issuer_document.service().iter().find_map(|service| {
+    // TODO: hardcoded logic that only selects the first Linked VP
+    let linked_vp = validate_linked_verifiable_presentations(&resolver, issuer_did)
+        .await
+        .iter()
+        .flatten()
+        .next()
+        .ok_or(AppError::Error(
+            "No Linked VP found for issuer of credential requested for public sharing".to_string(),
+        ))?
+        .clone();
+
+    info!("Linked VP: {linked_vp:#?}");
+
+    let linked_vp_claims = get_unverified_jwt_claims(&json!(&linked_vp.data))?;
+    let linked_vp_issuer_did = linked_vp_claims
+        .get("iss")
+        .and_then(|v| v.as_str())
+        .ok_or(AppError::Error("Issuer (iss) not found in Linked VP".to_string()))?;
+    let linked_vp_issuer_document = resolver
+        .resolve(linked_vp_issuer_did)
+        .await
+        .map_err(|_| AppError::Error("Failed to resolve linked VP issuer did".to_string()))?;
+
+    info!("Linked VP Issuer DID Document: {linked_vp_issuer_document:#?}");
+
+    let public_verification_endpoint = linked_vp_issuer_document.service().iter().find_map(|service| {
         service
             .type_()
-            .contains("PublicCredentialEndpoint")
+            .contains("PublicVerificationEndpoint")
             .then(|| {
-                info!("Found Public Credential Endpoint: {service:#?}");
+                info!("Found Public Verification Endpoint: {service:#?}");
                 service.service_endpoint()
             })
             .and_then(|service_endpoint| service_endpoint.to_json_value().ok())
@@ -156,8 +191,8 @@ pub async fn get_issuer_public_verification_endpoint(_state: &AppState, issuer_d
             })
     });
 
-    public_credential_endpoint
-        .ok_or_else(|| AppError::Error("No public credential endpoint found in issuer DID document".to_string()))
+    public_verification_endpoint
+        .ok_or_else(|| AppError::Error("No public verification endpoint found in issuer DID document".to_string()))
 }
 #[derive(Serialize, Debug)]
 struct PublicLinkTokenClaims {
