@@ -1,16 +1,14 @@
+use crate::state::credentials::create_public_link::create_public_link;
 use crate::{
     error::AppError,
     state::{
         actions::{listen, Action},
-        credentials::{actions::share_to_linkedin::ShareToLinkedIn, DisplayCredential},
+        credentials::actions::share_to_linkedin::ShareToLinkedIn,
         AppState,
     },
 };
-
 use chrono::{DateTime, Datelike};
 use log::info;
-use tauri_plugin_opener::OpenerExt;
-use url::Url;
 use urlencoding::encode;
 
 pub async fn share_to_linkedin(state: AppState, action: Action) -> Result<AppState, AppError> {
@@ -42,41 +40,33 @@ pub async fn share_to_linkedin(state: AppState, action: Action) -> Result<AppSta
         let public_link = if let Some(existing_link) = credential.public_link.clone() {
             existing_link.clone()
         } else {
-            create_public_link(credential).await?.to_string()
+            create_public_link(&state, &credential.id).await?.to_string()
         };
-        linkedin_url.push_str(format!("&certUrl={}", encode(&public_link)).as_str());
 
+        linkedin_url.push_str(format!("&certUrl={}", encode(&public_link)).as_str());
         linkedin_url.push_str(format!("&certId={}", encode(&credential.id)).as_str());
 
         info!("Opening LinkedIn AddToProfile URL in browser: `{linkedin_url}`");
-        let app_handle = state
-            .core_utils
-            .app_handle
-            .clone()
-            .ok_or(AppError::Error("Tauri app handle is not available".to_string()))?;
-        app_handle
-            .opener()
-            .open_url(linkedin_url, None::<&str>)
-            .map_err(|err| AppError::Error(format!("Failed to open URL in browser: {err}")))?;
+
+        // When testing Tauri is often not initialized and the link doesn't actually need to be opened anyway.
+        #[cfg(not(feature = "test_utils"))]
+        {
+            use tauri_plugin_opener::OpenerExt;
+
+            let app_handle = state
+                .core_utils
+                .app_handle
+                .clone()
+                .ok_or(AppError::Error("Tauri app handle is not available".to_string()))?;
+            app_handle
+                .opener()
+                .open_url(linkedin_url, None::<&str>)
+                .map_err(|err| AppError::Error(format!("Failed to open URL in browser: {err}")))?;
+        }
 
         credential.public_link = Some(public_link);
         return Ok(AppState { credentials, ..state });
     }
 
     Ok(state)
-}
-
-pub async fn create_public_link(_credential: &DisplayCredential) -> Result<Url, AppError> {
-    // TODO: Find Issuer public credential endpoint through DID linkedServices
-    // TODO: Create Public Credential Token through helper function\
-    // TODO: Compile step 1 and 2 into public link.
-
-    // placeholder return
-    Ok(Url::parse("https://example.com").unwrap())
-}
-
-#[cfg(test)]
-mod tests {
-    #[tokio::test]
-    async fn test_share_to_linkedin() {}
 }

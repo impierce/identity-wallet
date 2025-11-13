@@ -1,5 +1,5 @@
 pub mod actions;
-pub mod create_public_link_token;
+pub mod create_public_link;
 pub mod reducers;
 use super::{core_utils::helpers::get_unverified_jwt_claims, FeatTrait};
 use crate::{error::AppError, state::core_utils::DateUtils};
