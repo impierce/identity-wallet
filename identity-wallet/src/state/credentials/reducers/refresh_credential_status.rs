@@ -53,7 +53,7 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
             Ok(status) => {
                 info!("Successfully fetched credential status for credential with id: `{credential_id}`: `{status:?}` (previous status: `{:?}`)", credential_status_data.status);
                 credential_status_data.last_checked = DateUtils::new_date_string();
-                // TODO: Hardcoded to Valid for demo purpose until bug is fixed
+                // TODO: Hardcoded to Valid for demo purpose until we can host status list on IOTA
                 credential_status_data.status = StatusType::VALID;
 
                 // Update the credential in Stronghold
