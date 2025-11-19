@@ -60,7 +60,6 @@
           <!-- acts as <hr> -->
           <div class="my-2 h-px w-full bg-brand"></div>
 
-          <!-- The modal content-->
           <TermsAndConditions />
 
           <!-- First focusable element gets the focus (close button). This forces user to scroll through terms. -->
