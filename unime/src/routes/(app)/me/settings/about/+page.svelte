@@ -129,7 +129,6 @@
       <!-- acts as <hr> -->
       <div class="my-2 h-px w-full bg-brand"></div>
 
-      <!-- The modal content-->
       <TermsAndConditions />
 
       <div class="mt-6 flex justify-end gap-4">
