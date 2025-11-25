@@ -58,7 +58,7 @@
       <h2>{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.RESULT()}</h2>
 
       <div class="flex flex-col divide-y divide-slate-300">
-        {#each credential.data.credentialSubject.result as resultItem, i}
+        {#each credential.data.credentialSubject.result as resultItem}
           <div class="py-4 first:pt-0 last:pb-0">
             {#if resultItem.alignment?.length > 0}
               {#each resultItem.alignment as resultAlignment}
