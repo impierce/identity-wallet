@@ -392,8 +392,10 @@ const fi_FI = {
       SELF_SIGNED: 'sinä itse',
       DESCRIPTION: 'Kuvaus',
       OPEN_BADGES: {
+        RESULT: 'Tulos',
         ALIGNMENT: 'Tasaus',
         CRITERIA: 'Kriteerit',
+        VALUE: 'Arvosana',
       },
     },
     RENDERER: {

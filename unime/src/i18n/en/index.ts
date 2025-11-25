@@ -390,8 +390,10 @@ const en = {
       SELF_SIGNED: 'yourself',
       DESCRIPTION: 'Description',
       OPEN_BADGES: {
+        RESULT: 'Result',
         ALIGNMENT: 'Alignment',
         CRITERIA: 'Criteria',
+        VALUE: 'Grade',
       },
     },
     RENDERER: {

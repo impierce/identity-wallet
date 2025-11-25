@@ -11,12 +11,12 @@
   const md = markdownit();
 </script>
 
-<!-- Render `credentialSubject.achievement`. -->
 <div class="flex flex-col gap-4">
+  <!-- Achievement -->
   {#if credential.data.credentialSubject?.achievement?.description}
     <div class="prose prose-sm rounded-xl bg-background p-4 dark:prose-invert">
       <h2>{$LL.CREDENTIAL.DETAILS.DESCRIPTION()}</h2>
-      <!-- TODO Review marked vs. markdown-it and security risks. -->
+      <!-- TODO: Review marked vs. markdown-it and security risks. -->
       <!-- eslint-disable-next-line svelte/no-at-html-tags -->
       {@html md.render(credential.data.credentialSubject.achievement.description)}
     </div>
@@ -25,7 +25,7 @@
   {#if credential.data.credentialSubject?.achievement?.criteria?.narrative}
     <div class="prose prose-sm rounded-xl bg-background p-4 dark:prose-invert">
       <h2>{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.CRITERIA()}</h2>
-      <!-- TODO Review marked vs. markdown-it and security risks. -->
+      <!-- TODO: Review marked vs. markdown-it and security risks. -->
       <!-- eslint-disable-next-line svelte/no-at-html-tags -->
       {@html md.render(credential.data.credentialSubject.achievement.criteria.narrative)}
     </div>
@@ -49,6 +49,49 @@
           {@html md.render(alignmentItem.targetDescription)}
         {/if}
       {/each}
+    </div>
+  {/if}
+
+  <!-- Result -->
+  {#if credential.data.credentialSubject?.result?.length > 0}
+    <div class="prose prose-sm rounded-xl bg-background p-4 dark:prose-invert">
+      <h2>{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.RESULT()}</h2>
+
+      <div class="flex flex-col divide-y divide-slate-300">
+        {#each credential.data.credentialSubject.result as resultItem}
+          <div class="py-4 first:pt-0 last:pb-0">
+            {#if resultItem.alignment?.length > 0}
+              {#each resultItem.alignment as resultAlignment}
+                <h4>{resultAlignment.targetName}</h4>
+                {#if resultAlignment.targetDescription}
+                  <!-- TODO: Review marked vs. markdown-it and security risks. -->
+                  <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+                  {@html md.render(resultAlignment.targetDescription)}
+                {/if}
+              {/each}
+            {/if}
+
+            {#if resultItem.value}
+              <div class="flex h-16 items-center justify-between">
+                <h4 class="mt-2">{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.VALUE()}</h4>
+                <div class="text-2xl font-bold">
+                  <!-- TODO: Review marked vs. markdown-it and security risks. -->
+                  <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+                  {@html md.render(resultItem.value)}
+                </div>
+              </div>
+            {/if}
+
+            {#if resultItem.resultDescription}
+              <div class="text-[12px]/[14px] text-text-alt">
+                <!-- TODO: Review marked vs. markdown-it and security risks. -->
+                <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+                {@html md.render(resultItem.resultDescription)}
+              </div>
+            {/if}
+          </div>
+        {/each}
+      </div>
     </div>
   {/if}
 
