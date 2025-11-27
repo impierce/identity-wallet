@@ -3821,7 +3821,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4a3d7db9596fecd151c5f638c0ee5d5bd487b6e0ea232e5dc96d5250f6f94b1d"
 dependencies = [
  "crc32fast",
- "libz-sys",
  "miniz_oxide",
 ]
 
@@ -7871,17 +7870,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "libz-sys"
-version = "1.1.22"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8b70e7a7df205e92a1a4cd9aaae7898dac0aa555503cc0a649494d0d60e7651d"
-dependencies = [
- "cc",
- "pkg-config",
- "vcpkg",
-]
-
-[[package]]
 name = "linked-hash-map"
 version = "0.5.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -8978,7 +8966,7 @@ dependencies = [
 [[package]]
 name = "oauth_tsl"
 version = "0.1.0"
-source = "git+https://github.com/impierce/oauth-token-status-list?rev=133d224#133d22419f0d57d970a909c7e515e5a7d0ea8bd3"
+source = "git+https://github.com/impierce/oauth-token-status-list?rev=df371b9#df371b9530b0b762da3ef9c5519c1c35f62209b8"
 dependencies = [
  "base64 0.22.1",
  "chrono",

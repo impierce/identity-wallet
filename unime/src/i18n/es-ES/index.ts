@@ -392,8 +392,10 @@ const es_ES = {
       SELF_SIGNED: 'Autofirmadas',
       DESCRIPTION: 'Descripción',
       OPEN_BADGES: {
+        RESULT: 'Resultado',
         ALIGNMENT: 'Alineación',
         CRITERIA: 'Criterio',
+        VALUE: 'Nota',
       },
     },
     RENDERER: {
