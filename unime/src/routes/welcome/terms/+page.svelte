@@ -6,7 +6,7 @@
   import { createDialog, melt } from '@melt-ui/svelte';
 
   import { Button, Checkbox, TopNavBar } from '$lib/components';
-  import TermsAndConditions from '$lib/components/TermsAndConditions.svelte';
+  import TermsAndConditionsContent from '$lib/components/TermsAndConditionsContent.svelte';
   import { XBoldIcon } from '$lib/icons';
 
   const {
@@ -60,7 +60,7 @@
           <!-- acts as <hr> -->
           <div class="my-2 h-px w-full bg-brand"></div>
 
-          <TermsAndConditions />
+          <TermsAndConditionsContent />
 
           <!-- First focusable element gets the focus (close button). This forces user to scroll through terms. -->
           <button
