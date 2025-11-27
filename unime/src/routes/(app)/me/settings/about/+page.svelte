@@ -5,7 +5,7 @@
   import { createDialog, melt } from '@melt-ui/svelte';
 
   import { Button, Toast, TopNavBar } from '$lib/components';
-  import TermsAndConditions from '$lib/components/TermsAndConditions.svelte';
+  import TermsAndConditionsContent from '$lib/components/TermsAndConditionsContent.svelte';
   import { dispatch } from '$lib/dispatcher';
   import { HeartFillIcon, XBoldIcon } from '$lib/icons';
   import UniMeLogo from '$lib/static/svg/logo/UniMeLogo.svelte';
@@ -88,7 +88,7 @@
 
     <section class="flex flex-col items-center">
       <button
-        data-component="Terms & Conditions"
+        data-component="Terms-Conditions"
         use:melt={$trigger}
         class="font-bold text-slate-500 underline dark:text-slate-300"
       >
@@ -129,7 +129,7 @@
       <!-- acts as <hr> -->
       <div class="my-2 h-px w-full bg-brand"></div>
 
-      <TermsAndConditions />
+      <TermsAndConditionsContent />
 
       <div class="mt-6 flex justify-end gap-4">
         <Button variant="secondary" trigger={$close} label={$LL.CLOSE()} />

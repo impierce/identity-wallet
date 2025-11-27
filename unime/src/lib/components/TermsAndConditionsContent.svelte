@@ -1,7 +1,7 @@
 <script lang="ts">
   import LL from '$i18n/i18n-svelte';
 
-  const termsContent = [
+  const sections = [
     {
       title: $LL.ONBOARDING.TERMS.T_AND_C.FULL.AGREEMENT.TITLE(),
       description: $LL.ONBOARDING.TERMS.T_AND_C.FULL.AGREEMENT.DESCRIPTION(),
@@ -70,7 +70,7 @@
   ];
 </script>
 
-{#each termsContent as section}
+{#each sections as section}
   <h3 class="my-1 text-xs font-bold">{section.title}</h3>
   <p class="mb-3 text-xs font-light">{section.description}</p>
 {/each}
