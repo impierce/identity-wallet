@@ -40,13 +40,20 @@
           </div>
         </button>
       </h2>
+      {#if !$isSelected(id)}
+        <div class="text-sm text-slate-500 dark:text-slate-300">
+          <p class="line-clamp-1">
+            {description}
+          </p>
+        </div>
+      {/if}
       {#if $isSelected(id)}
         <div
-          class="overflow-hidden bg-white text-[12px]/[14px] font-medium text-slate-500 dark:bg-background dark:text-slate-300"
+          class="overflow-hidden bg-white text-sm text-slate-500 dark:bg-background dark:text-slate-300"
           use:melt={$content(id)}
           transition:slide
         >
-          <div class="font-md pb-4">
+          <div class="pb-4">
             {description}
           </div>
         </div>
