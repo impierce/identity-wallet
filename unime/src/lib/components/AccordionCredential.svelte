@@ -36,7 +36,10 @@
         >
           <div class="flex w-full items-center justify-between py-2">
             <p class="text-left text-lg font-bold">{title}</p>
-            <CaretDownBoldIcon class="size-4" />
+            <CaretDownBoldIcon
+              class="ransition-transform size-4"
+              style={`transform: ${$isSelected(id) ? 'rotate(180deg)' : 'rotate(0deg)'};`}
+            />
           </div>
         </button>
       </h2>
