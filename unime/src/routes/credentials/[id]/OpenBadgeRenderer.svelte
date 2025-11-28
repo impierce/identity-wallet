@@ -4,11 +4,21 @@
 
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 
+  import AccordionCredential from '$lib/components/AccordionCredential.svelte';
+
   import TextFieldRenderer from './TextFieldRenderer.svelte';
 
   export let credential: DisplayCredential;
 
   const md = markdownit();
+  const items = [
+    {
+      id: '0',
+      title: 'Collapsible Field Example',
+      description:
+        'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Voluptatum est quas amet nemo consequatur, dicta.',
+    },
+  ];
 </script>
 
 <div class="flex flex-col gap-4">
@@ -28,6 +38,10 @@
       <!-- TODO: Review marked vs. markdown-it and security risks. -->
       <!-- eslint-disable-next-line svelte/no-at-html-tags -->
       {@html md.render(credential.data.credentialSubject.achievement.criteria.narrative)}
+    </div>
+    <!-- Example of a collapsible field -->
+    <div class="rounded-xl bg-background px-4 py-3">
+      <AccordionCredential {items} />
     </div>
   {/if}
 
