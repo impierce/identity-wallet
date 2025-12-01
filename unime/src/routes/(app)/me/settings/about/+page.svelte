@@ -1,9 +1,13 @@
 <script lang="ts">
   import LL from '$i18n/i18n-svelte';
+  import { fade, scale } from 'svelte/transition';
 
-  import { Toast, TopNavBar } from '$lib/components';
+  import { createDialog, melt } from '@melt-ui/svelte';
+
+  import { Button, Toast, TopNavBar } from '$lib/components';
+  import TermsAndConditionsContent from '$lib/components/TermsAndConditionsContent.svelte';
   import { dispatch } from '$lib/dispatcher';
-  import { HeartFillIcon } from '$lib/icons';
+  import { HeartFillIcon, XBoldIcon } from '$lib/icons';
   import UniMeLogo from '$lib/static/svg/logo/UniMeLogo.svelte';
   import { state as appState } from '$lib/stores';
 
@@ -37,6 +41,14 @@
       return false;
     }
   });
+
+  const {
+    elements: { trigger, overlay, content, description, close, portalled },
+    states: { open },
+  } = createDialog({
+    // Portal to root layout inside the `div` that sets the `dark` class. This ensures that dark mode works.
+    portal: '#portal',
+  });
 </script>
 
 <TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.SUPPORT.ABOUT.NAVBAR_TITLE()} class="sticky top-0 z-10" />
@@ -65,7 +77,7 @@
         </dl>
       </section>
     {/if}
-    <section class="mb-4 flex flex-col items-center">
+    <section class="flex flex-col items-center">
       <h2 class="font-bold">{$LL.SETTINGS.SUPPORT.ABOUT.VERSION()}</h2>
       <div class="mb-3">0.10.0</div>
       <div class="flex items-center">
@@ -73,6 +85,17 @@
         <HeartFillIcon class="pl-1" />
       </div>
     </section>
+
+    <section class="flex flex-col items-center">
+      <button
+        data-component="Terms-Conditions"
+        use:melt={$trigger}
+        class="font-bold text-slate-500 underline dark:text-slate-300"
+      >
+        {$LL.ONBOARDING.TERMS.T_AND_C.TITLE()}
+      </button>
+    </section>
+
     <section class="mb-4 flex flex-col items-center">
       <h2 class="font-bold">{$LL.SETTINGS.SUPPORT.ABOUT.LICENSE()}</h2>
       <div class="mb-3">Apache License 2.0</div>
@@ -80,6 +103,47 @@
     </section>
   </div>
 </div>
+
+<!-- Terms of Use (modal) -->
+{#if $open}
+  <div use:melt={$portalled}>
+    <div use:melt={$overlay} class="fixed inset-0 z-50 bg-black/50" transition:fade={{ duration: 150 }}></div>
+    <div
+      data-component="Modal"
+      use:melt={$content}
+      class="fixed top-1/2 left-1/2 z-50 max-h-[85vh] w-[90vw]
+            -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-xl
+            bg-background p-6 shadow-lg"
+      transition:scale={{ duration: 150, start: 0.96 }}
+    >
+      <h2 class="mb-4 text-lg font-bold">
+        {$LL.ONBOARDING.TERMS.T_AND_C.DIALOG_TITLE()}
+      </h2>
+
+      <p class="mb-2 text-xs font-medium text-slate-500 dark:text-slate-300">
+        {$LL.ONBOARDING.TERMS.T_AND_C.LAST_UPDATED()}
+      </p>
+      <p use:melt={$description} class="rounded-lg text-xs font-medium">
+        {$LL.ONBOARDING.TERMS.T_AND_C.TL_DR()}
+      </p>
+      <!-- acts as <hr> -->
+      <div class="my-2 h-px w-full bg-brand"></div>
+
+      <TermsAndConditionsContent />
+
+      <div class="mt-6 flex justify-end gap-4">
+        <Button variant="secondary" trigger={$close} label={$LL.CLOSE()} />
+      </div>
+      <button
+        use:melt={$close}
+        aria-label="close"
+        class="absolute top-2 right-2 flex size-7 items-center justify-center rounded-full border border-slate-200 bg-white p-1 dark:border-slate-600 dark:bg-dark"
+      >
+        <XBoldIcon class="size-5" />
+      </button>
+    </div>
+  </div>
+{/if}
 
 {#if showMessage()}
   <div class="absolute bottom-[calc(64px+16px+var(--safe-area-inset-bottom))] left-4 w-[calc(100%-32px)]">

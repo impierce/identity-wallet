@@ -6,6 +6,7 @@
   import { createDialog, melt } from '@melt-ui/svelte';
 
   import { Button, Checkbox, TopNavBar } from '$lib/components';
+  import TermsAndConditionsContent from '$lib/components/TermsAndConditionsContent.svelte';
   import { XBoldIcon } from '$lib/icons';
 
   const {
@@ -58,103 +59,8 @@
 
           <!-- acts as <hr> -->
           <div class="my-2 h-px w-full bg-brand"></div>
-          <!-- Terms of Use -->
-          <h3 class="my-1 text-xs font-bold">
-            {$LL.ONBOARDING.TERMS.T_AND_C.FULL.AGREEMENT.TITLE()}
-          </h3>
-          <p class="mb-3 text-xs font-light">
-            {$LL.ONBOARDING.TERMS.T_AND_C.FULL.AGREEMENT.DESCRIPTION()}
-          </p>
-          <h3 class="my-1 text-xs font-bold">
-            {$LL.ONBOARDING.TERMS.T_AND_C.FULL.DEFINITIONS.TITLE()}
-          </h3>
-          <p class="mb-3 text-xs font-light">
-            {$LL.ONBOARDING.TERMS.T_AND_C.FULL.DEFINITIONS.DESCRIPTION()}
-          </p>
-          <h3 class="my-1 text-xs font-bold">
-            {$LL.ONBOARDING.TERMS.T_AND_C.FULL.USER_RESPONSIBILITIES.TITLE()}
-          </h3>
-          <p class="mb-3 text-xs font-light">
-            {$LL.ONBOARDING.TERMS.T_AND_C.FULL.USER_RESPONSIBILITIES.DESCRIPTION()}
-          </p>
-          <h3 class="my-1 text-xs font-bold">
-            {$LL.ONBOARDING.TERMS.T_AND_C.FULL.DATA_OWNERSHIP.TITLE()}
-          </h3>
-          <p class="mb-3 text-xs font-light">
-            {$LL.ONBOARDING.TERMS.T_AND_C.FULL.DATA_OWNERSHIP.DESCRIPTION()}
-          </p>
-          <h3 class="my-1 text-xs font-bold">
-            {$LL.ONBOARDING.TERMS.T_AND_C.FULL.DATA_VISIBILITY.TITLE()}
-          </h3>
-          <p class="mb-3 text-xs font-light">
-            {$LL.ONBOARDING.TERMS.T_AND_C.FULL.DATA_VISIBILITY.DESCRIPTION()}
-          </p>
-          <h3 class="my-1 text-xs font-bold">
-            {$LL.ONBOARDING.TERMS.T_AND_C.FULL.INTELLECTUAL_PROPERTY_RIGHTS.TITLE()}
-          </h3>
-          <p class="mb-3 text-xs font-light">
-            {$LL.ONBOARDING.TERMS.T_AND_C.FULL.INTELLECTUAL_PROPERTY_RIGHTS.DESCRIPTION()}
-          </p>
-          <h3 class="my-1 text-xs font-bold">
-            {$LL.ONBOARDING.TERMS.T_AND_C.FULL.PROHIBITED_ACTIVITIES.TITLE()}
-          </h3>
-          <p class="mb-3 text-xs font-light">
-            {$LL.ONBOARDING.TERMS.T_AND_C.FULL.PROHIBITED_ACTIVITIES.DESCRIPTION()}
-          </p>
-          <h3 class="my-1 text-xs font-bold">
-            {$LL.ONBOARDING.TERMS.T_AND_C.FULL.THIRD_PARTY_SERVICES.TITLE()}
-          </h3>
-          <p class="mb-3 text-xs font-light">
-            {$LL.ONBOARDING.TERMS.T_AND_C.FULL.THIRD_PARTY_SERVICES.DESCRIPTION()}
-          </p>
-          <h3 class="my-1 text-xs font-bold">
-            {$LL.ONBOARDING.TERMS.T_AND_C.FULL.LIABILITY.TITLE()}
-          </h3>
-          <p class="mb-3 text-xs font-light">
-            {$LL.ONBOARDING.TERMS.T_AND_C.FULL.LIABILITY.DESCRIPTION()}
-          </p>
-          <h3 class="my-1 text-xs font-bold">
-            {$LL.ONBOARDING.TERMS.T_AND_C.FULL.INDEMNIFICATION.TITLE()}
-          </h3>
-          <p class="mb-3 text-xs font-light">
-            {$LL.ONBOARDING.TERMS.T_AND_C.FULL.INDEMNIFICATION.DESCRIPTION()}
-          </p>
-          <h3 class="my-1 text-xs font-bold">
-            {$LL.ONBOARDING.TERMS.T_AND_C.FULL.MODIFICATIONS.TITLE()}
-          </h3>
-          <p class="mb-3 text-xs font-light">
-            {$LL.ONBOARDING.TERMS.T_AND_C.FULL.MODIFICATIONS.DESCRIPTION()}
-          </p>
-          <h3 class="my-1 text-xs font-bold">
-            {$LL.ONBOARDING.TERMS.T_AND_C.FULL.LAW_AND_JURISDIFICATION.TITLE()}
-          </h3>
-          <p class="mb-3 text-xs font-light">
-            {$LL.ONBOARDING.TERMS.T_AND_C.FULL.LAW_AND_JURISDIFICATION.DESCRIPTION()}
-          </p>
-          <h3 class="my-1 text-xs font-bold">
-            {$LL.ONBOARDING.TERMS.T_AND_C.FULL.SEVERABILITY.TITLE()}
-          </h3>
-          <p class="mb-3 text-xs font-light">
-            {$LL.ONBOARDING.TERMS.T_AND_C.FULL.SEVERABILITY.DESCRIPTION()}
-          </p>
-          <h3 class="my-1 text-xs font-bold">
-            {$LL.ONBOARDING.TERMS.T_AND_C.FULL.LANGUAGE.TITLE()}
-          </h3>
-          <p class="mb-3 text-xs font-light">
-            {$LL.ONBOARDING.TERMS.T_AND_C.FULL.LANGUAGE.DESCRIPTION()}
-          </p>
-          <h3 class="my-1 text-xs font-bold">
-            {$LL.ONBOARDING.TERMS.T_AND_C.FULL.ENTIRE_AGREEMENT.TITLE()}
-          </h3>
-          <p class="mb-3 text-xs font-light">
-            {$LL.ONBOARDING.TERMS.T_AND_C.FULL.ENTIRE_AGREEMENT.DESCRIPTION()}
-          </p>
-          <h3 class="my-1 text-xs font-bold">
-            {$LL.ONBOARDING.TERMS.T_AND_C.FULL.CONTACT.TITLE()}
-          </h3>
-          <p class="mb-3 text-xs font-light">
-            {$LL.ONBOARDING.TERMS.T_AND_C.FULL.CONTACT.DESCRIPTION()}
-          </p>
+
+          <TermsAndConditionsContent />
 
           <!-- First focusable element gets the focus (close button). This forces user to scroll through terms. -->
           <button
