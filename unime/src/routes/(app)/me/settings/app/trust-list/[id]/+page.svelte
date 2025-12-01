@@ -4,7 +4,7 @@
   import { melt } from '@melt-ui/svelte';
   import { redirect } from '@sveltejs/kit';
 
-  import { ActionSheet, Button, DeprecatedSwitch, TopNavBar } from '$lib/components';
+  import { ActionSheet, Button, DeprecatedSwitch, Switch, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { ArrowCounterClockwiseBoldIcon, CheckBoldIcon, TrashRegularIcon } from '$lib/icons';
   import { error, state } from '$lib/stores';
@@ -119,13 +119,15 @@
             </button>
           {/if}
           <div class="flex items-center">
-            <!-- `active` prop in Switch is not reactive, so triggering a rerender manually using `#key` -->
-            <DeprecatedSwitch
-              {active}
-              on:change={() => {
-                // dispatch({ type: '[Trust List] Toggle entry', payload: { trust_list_id: $page.params.id, domain } });
+            <Switch
+              checked={active}
+              onCheckedChange={({ next }) => {
+                dispatch({ type: '[Trust List] Toggle entry', payload: { trust_list_id: $page.params.id, domain } });
+                return next;
               }}
-            />
+            >
+              <div></div>
+            </Switch>
           </div>
         </div>
       {/each}
