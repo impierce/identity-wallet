@@ -63,7 +63,7 @@
     "svelte-sequential-preprocessor": "^2.0.2",
     "sveltekit-superforms": "^2.28.0",
     "tailwind-merge": "^3.3.1",
-    "tailwindcss": "^4.1.16",
+    "tailwindcss": "^4.1.17",
     "tslib": "^2.8.1",
     "typesafe-i18n": "^5.26.2",
     "typescript": "^5.9.3",
