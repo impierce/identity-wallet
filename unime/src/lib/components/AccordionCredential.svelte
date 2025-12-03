@@ -37,23 +37,28 @@
           <div class="flex w-full items-center justify-between py-2">
             <p class="text-left text-lg font-bold">{title}</p>
             <CaretDownBoldIcon
-              class="ransition-transform size-4"
+              class="size-4 transition-transform"
               style={`transform: ${$isSelected(id) ? 'rotate(180deg)' : 'rotate(0deg)'};`}
             />
           </div>
         </button>
       </h2>
+
+      <!-- Preview content -->
       {#if !$isSelected(id)}
         <div class="text-sm text-slate-500 dark:text-slate-300">
-          <!-- Show a preview/summary of the description  <p class="line-clamp-1">
+          <!-- Show a preview/summary of the description 
+          <p class="line-clamp-2">
             {description}
           </p> -->
         </div>
       {/if}
+
+      <!-- Full content -->
       {#if $isSelected(id)}
         <div
-          class="overflow-hidden bg-white text-sm text-slate-500 dark:bg-background dark:text-slate-300"
           use:melt={$content(id)}
+          class="overflow-hidden bg-white text-sm text-slate-500 dark:bg-background dark:text-slate-300"
           transition:slide
         >
           <div class="pb-4">

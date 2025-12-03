@@ -24,25 +24,39 @@
 <div class="flex flex-col gap-4">
   <!-- Achievement -->
   {#if credential.data.credentialSubject?.achievement?.description}
-    <div class="prose prose-sm rounded-xl bg-background p-4 dark:prose-invert">
-      <h2>{$LL.CREDENTIAL.DETAILS.DESCRIPTION()}</h2>
-      <!-- TODO: Review marked vs. markdown-it and security risks. -->
-      <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-      {@html md.render(credential.data.credentialSubject.achievement.description)}
+    <div class=" rounded-xl bg-background p-4">
+      <AccordionCredential
+        items={[
+          {
+            id: 'description',
+            title: $LL.CREDENTIAL.DETAILS.DESCRIPTION(),
+            description: credential.data.credentialSubject.achievement.description,
+          },
+        ]}
+      />
     </div>
+    <!-- TODO: Review marked vs. markdown-it and security risks. -->
+    <!-- eslint-disable-next-line svelte/no-at-html-tags -->
   {/if}
 
   {#if credential.data.credentialSubject?.achievement?.criteria?.narrative}
-    <div class="prose prose-sm rounded-xl bg-background p-4 dark:prose-invert">
-      <h2>{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.CRITERIA()}</h2>
+    <div class="rounded-xl bg-background p-4">
+      <AccordionCredential
+        items={[
+          {
+            id: 'description',
+            title: $LL.CREDENTIAL.DETAILS.OPEN_BADGES.CRITERIA(),
+            description: credential.data.credentialSubject.achievement.criteria.narrative,
+          },
+        ]}
+      />
       <!-- TODO: Review marked vs. markdown-it and security risks. -->
       <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-      {@html md.render(credential.data.credentialSubject.achievement.criteria.narrative)}
     </div>
-    <!-- Example of a collapsible field -->
+    <!-- Example of a collapsible field 
     <div class="rounded-xl bg-background px-4 py-3">
       <AccordionCredential {items} />
-    </div>
+    </div> -->
   {/if}
 
   {#if credential.data.credentialSubject?.achievement?.achievementType}
