@@ -11,14 +11,14 @@
   export let credential: DisplayCredential;
 
   const md = markdownit();
-  const items = [
-    {
-      id: '0',
-      title: 'Collapsible Field Example',
-      description:
-        'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Voluptatum est quas amet nemo consequatur, dicta.',
-    },
-  ];
+  //const items = [
+  // {
+  //   id: '0',
+  //   title: 'Collapsible Field Example',
+  //  description:
+  //    'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Voluptatum est quas amet nemo consequatur, dicta.',
+  // },
+  //];
 </script>
 
 <div class="flex flex-col gap-4">
