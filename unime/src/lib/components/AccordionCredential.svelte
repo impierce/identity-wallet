@@ -45,9 +45,9 @@
       </h2>
       {#if !$isSelected(id)}
         <div class="text-sm text-slate-500 dark:text-slate-300">
-          <p class="line-clamp-1">
+          <!-- Show a preview/summary of the description  <p class="line-clamp-1">
             {description}
-          </p>
+          </p> -->
         </div>
       {/if}
       {#if $isSelected(id)}
