@@ -46,12 +46,10 @@
       {#if $isSelected(id)}
         <div
           use:melt={$content(id)}
-          class="overflow-hidden bg-white text-sm text-slate-500 dark:bg-background dark:text-slate-300"
+          class="overflow-hidden bg-white pb-4 text-sm text-slate-500 dark:bg-background dark:text-slate-300"
           transition:slide
         >
-          <div class="pb-4">
-            {@html md.render(description)}
-          </div>
+          {@html md.render(description)}
         </div>
       {/if}
     </div>

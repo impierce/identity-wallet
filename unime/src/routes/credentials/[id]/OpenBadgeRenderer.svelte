@@ -11,20 +11,12 @@
   export let credential: DisplayCredential;
 
   const md = markdownit();
-  //const items = [
-  // {
-  //   id: '0',
-  //   title: 'Collapsible Field Example',
-  //  description:
-  //    'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Voluptatum est quas amet nemo consequatur, dicta.',
-  // },
-  //];
 </script>
 
 <div class="flex flex-col gap-4">
   <!-- Achievement -->
   {#if credential.data.credentialSubject?.achievement?.description}
-    <div class=" rounded-xl bg-background p-4">
+    <div class="rounded-xl bg-background p-4">
       <CollapsibleRenderer
         items={[
           {
@@ -53,10 +45,6 @@
       <!-- TODO: Review marked vs. markdown-it and security risks. -->
       <!-- eslint-disable-next-line svelte/no-at-html-tags -->
     </div>
-    <!-- Example of a collapsible field 
-    <div class="rounded-xl bg-background px-4 py-3">
-      <AccordionCredential {items} />
-    </div> -->
   {/if}
 
   {#if credential.data.credentialSubject?.achievement?.achievementType}
