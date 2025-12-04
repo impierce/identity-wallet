@@ -4,7 +4,7 @@
 
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 
-  import AccordionCredential from '$lib/components/AccordionCredential.svelte';
+  import CollapsibleRenderer from '$lib/components/CollapsibleRenderer.svelte';
 
   import TextFieldRenderer from './TextFieldRenderer.svelte';
 
@@ -25,7 +25,7 @@
   <!-- Achievement -->
   {#if credential.data.credentialSubject?.achievement?.description}
     <div class=" rounded-xl bg-background p-4">
-      <AccordionCredential
+      <CollapsibleRenderer
         items={[
           {
             id: 'description',
@@ -41,7 +41,7 @@
 
   {#if credential.data.credentialSubject?.achievement?.criteria?.narrative}
     <div class="rounded-xl bg-background p-4">
-      <AccordionCredential
+      <CollapsibleRenderer
         items={[
           {
             id: 'description',
