@@ -31,7 +31,7 @@
       <h2 class="flex">
         <button
           use:melt={$trigger(id)}
-          class="hover:bg-opacity-95 flex min-h-12 flex-1 cursor-pointer items-center justify-between bg-white text-base leading-none font-medium text-slate-800 transition-colors focus:ring-0! dark:bg-background dark:text-grey"
+          class="hover:bg-opacity-95 flex min-h-12 flex-1 cursor-pointer items-center justify-between text-base leading-none font-medium text-slate-800 transition-colors focus:ring-0! dark:bg-background dark:text-grey"
         >
           <div class="flex w-full items-center justify-between py-2">
             <p class="text-left text-lg font-bold">{title}</p>
@@ -46,7 +46,7 @@
       {#if $isSelected(id)}
         <div
           use:melt={$content(id)}
-          class="overflow-hidden bg-white pb-4 text-sm text-slate-500 dark:bg-background dark:text-slate-300"
+          class="overflow-hidden text-sm text-slate-500 dark:bg-background dark:text-slate-300"
           transition:slide
         >
           {@html md.render(description)}
