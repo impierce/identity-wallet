@@ -49,7 +49,9 @@
           class="overflow-hidden text-sm text-slate-500 dark:bg-background dark:text-slate-300"
           transition:slide
         >
-          {@html md.render(description)}
+          <div class="x-5 prose prose-sm max-w-none pb-4 dark:prose-invert">
+            {@html md.render(description)}
+          </div>
         </div>
       {/if}
     </div>
