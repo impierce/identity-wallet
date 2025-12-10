@@ -16,7 +16,7 @@
 <div class="flex flex-col gap-4">
   <!-- Achievement -->
   {#if credential.data.credentialSubject?.achievement?.description}
-    <div class="rounded-xl bg-background p-4">
+    <div class="rounded-xl bg-background p-3">
       <CollapsibleRenderer
         items={[
           {
@@ -32,11 +32,11 @@
   {/if}
 
   {#if credential.data.credentialSubject?.achievement?.criteria?.narrative}
-    <div class="rounded-xl bg-background p-4">
+    <div class="rounded-xl bg-background p-3">
       <CollapsibleRenderer
         items={[
           {
-            id: 'description',
+            id: 'criteria',
             title: $LL.CREDENTIAL.DETAILS.OPEN_BADGES.CRITERIA(),
             description: credential.data.credentialSubject.achievement.criteria.narrative,
           },

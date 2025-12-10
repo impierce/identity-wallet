@@ -11,7 +11,7 @@
   const {
     elements: { content, item, trigger, root },
     helpers: { isSelected },
-  } = createAccordion({});
+  } = createAccordion({ defaultValue: 'description' });
 
   type Item = {
     id: string;
