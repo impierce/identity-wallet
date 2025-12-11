@@ -34,7 +34,7 @@
           class="hover:bg-opacity-95 flex min-h-12 flex-1 cursor-pointer items-center justify-between text-base leading-none font-medium text-slate-800 transition-colors focus:ring-0! dark:bg-background dark:text-grey"
         >
           <div class="flex w-full items-center justify-between py-2">
-            <p class="text-left text-lg font-bold">{title}</p>
+            <p class="text-left text-xl font-bold">{title}</p>
             <CaretDownBoldIcon
               class="size-4 transition-transform"
               style={`transform: ${$isSelected(id) ? 'rotate(180deg)' : 'rotate(0deg)'};`}
@@ -49,7 +49,7 @@
           class="overflow-hidden text-sm text-slate-500 dark:bg-background dark:text-slate-300"
           transition:slide
         >
-          <div class="x-5 prose prose-sm max-w-none pb-4 dark:prose-invert">
+          <div class="x-5 prose prose-sm max-w-none dark:prose-invert">
             {@html md.render(description)}
           </div>
         </div>
