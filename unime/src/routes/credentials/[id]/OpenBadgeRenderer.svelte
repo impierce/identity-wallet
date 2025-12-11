@@ -55,16 +55,14 @@
   {/if}
 
   {#if credential.data.credentialSubject?.achievement?.alignment?.length > 0}
-    <div class="prose prose-sm rounded-xl bg-background p-4 dark:prose-invert">
-      <h2>{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.ALIGNMENT()}</h2>
-      {#each credential.data.credentialSubject.achievement.alignment as alignmentItem}
-        <h4>{alignmentItem.targetName}</h4>
-        {#if alignmentItem.targetDescription}
-          <!-- TODO Review marked vs. markdown-it and security risks. -->
-          <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-          {@html md.render(alignmentItem.targetDescription)}
-        {/if}
-      {/each}
+    <div class="rounded-xl bg-background p-3">
+      <CollapsibleRenderer
+        items={credential.data.credentialSubject.achievement.alignment.map((item, index) => ({
+          id: `alignment-${index}`,
+          title: $LL.CREDENTIAL.DETAILS.OPEN_BADGES.ALIGNMENT(),
+          description: `#### ${item.targetName}\n\n${item.targetDescription ?? ''}`,
+        }))}
+      />
     </div>
   {/if}
 
