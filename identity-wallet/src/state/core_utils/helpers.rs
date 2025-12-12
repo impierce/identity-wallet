@@ -1,3 +1,4 @@
+use crate::persistence::{download_asset, hash};
 use crate::{error::AppError, state::did::validate_domain_linkage::Verifier};
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use did_manager::Resolver;
@@ -13,6 +14,33 @@ use jsonschema::ValidationError;
 use log::{debug, info, warn};
 use serde_json::Value;
 use std::fs::File;
+
+/// Downloads the logo from the given logo URI, if it exists, and stores it in the assets folder, returns None if it errors.
+pub async fn download_logo(logo_uri: &Option<String>) -> Option<String> {
+    if let Some(ref logo_uri_str) = logo_uri {
+        info!("Logo URI: {logo_uri_str:?}");
+
+        // Parse the logo URI
+        match logo_uri_str.parse() {
+            Ok(parsed_url) => {
+                // Download the asset if parsing succeeded
+                if download_asset(parsed_url, &hash(logo_uri_str)).await.is_err() {
+                    warn!("Failed to download logo URI");
+                    return None;
+                }
+                logo_uri.clone()
+            }
+            Err(parse_err) => {
+                // Log parse error if the URI is invalid
+                warn!("Failed to parse logo URI: {logo_uri_str:#?}, {parse_err}");
+                None
+            }
+        }
+    } else {
+        warn!("No logo URI found");
+        None
+    }
+}
 
 /// Get the claims from a JWT without performing validation.
 pub fn get_unverified_jwt_claims(jwt: &serde_json::Value) -> Result<serde_json::Value, AppError> {
