@@ -1,6 +1,7 @@
 <script lang="ts">
   import LL from '$i18n/i18n-svelte';
-  import markdownit from 'markdown-it';
+
+  //import markdownit from 'markdown-it';
 
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 
@@ -10,7 +11,7 @@
 
   export let credential: DisplayCredential;
 
-  const md = markdownit();
+  //const md = markdownit();
 </script>
 
 <div class="flex flex-col gap-4">
