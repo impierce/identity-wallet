@@ -1,7 +1,6 @@
 <script lang="ts">
   import LL from '$i18n/i18n-svelte';
-
-  //import markdownit from 'markdown-it';
+  import markdownit from 'markdown-it';
 
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 
@@ -11,7 +10,7 @@
 
   export let credential: DisplayCredential;
 
-  //const md = markdownit();
+  const md = markdownit();
 </script>
 
 <div class="flex flex-col gap-4">
@@ -54,22 +53,25 @@
       value={credential.data.credentialSubject?.achievement?.achievementType}
     />
   {/if}
-
-  <!-- {#if credential.data.credentialSubject?.achievement?.alignment?.length > 0}
+  console.log('alignment 0'); info(`Validation result: ${JSON.stringify(credential.data.credentialSubject)}`);
+  {#if credential.data.credentialSubject?.achievement?.alignment?.length > 0}
+    console.log('alignment 1');
     <div class="prose prose-sm rounded-xl bg-background p-4 dark:prose-invert">
       <h2>{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.ALIGNMENT()}</h2>
       {#each credential.data.credentialSubject.achievement.alignment as alignmentItem}
+        console.log('alignment 2');
         <h4>{alignmentItem.targetName}</h4>
-        {#if alignmentItem.targetDescription} -->
-  <!-- TODO Review marked vs. markdown-it and security risks. -->
-  <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-  <!--   {@html md.render(alignmentItem.targetDescription)}
+        {#if alignmentItem.targetDescription}
+          console.log('alignment 3');
+          <!-- TODO Review marked vs. markdown-it and security risks. -->
+          <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+          {@html md.render(alignmentItem.targetDescription)}
         {/if}
       {/each}
     </div>
-  {/if} -->
-
-  {#if credential.data.credentialSubject?.achievement?.alignment?.length > 0}
+  {/if}
+  console.log('alignment 4');
+  <!--  {#if credential.data.credentialSubject?.achievement?.alignment?.length > 0}
     <div class="rounded-xl bg-background p-3">
       <CollapsibleRenderer
         items={credential.data.credentialSubject.achievement.alignment.map((item, index) => ({
@@ -79,9 +81,9 @@
         }))}
       />
     </div>
-  {/if}
+  {/if} -->
 
-  <!-- Result -->
+  <!-- Result 
   {#if credential.data.credentialSubject?.result?.length > 0}
     <div class="rounded-xl bg-background p-3">
       <CollapsibleRenderer
@@ -110,9 +112,9 @@
         })}
       />
     </div>
-  {/if}
+  {/if} -->
 
-  <!-- Result 
+  <!-- Result -->
   {#if credential.data.credentialSubject?.result?.length > 0}
     <div class="prose prose-sm rounded-xl bg-background p-4 dark:prose-invert">
       <h2>{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.RESULT()}</h2>
@@ -123,10 +125,10 @@
             {#if resultItem.alignment?.length > 0}
               {#each resultItem.alignment as resultAlignment}
                 <h4>{resultAlignment.targetName}</h4>
-                {#if resultAlignment.targetDescription} -->
-  <!-- TODO: Review marked vs. markdown-it and security risks. -->
-  <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-  <!--          {@html md.render(resultAlignment.targetDescription)}
+                {#if resultAlignment.targetDescription}
+                  <!-- TODO: Review marked vs. markdown-it and security risks. -->
+                  <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+                  {@html md.render(resultAlignment.targetDescription)}
                 {/if}
               {/each}
             {/if}
@@ -134,26 +136,27 @@
             {#if resultItem.value}
               <div class="flex h-16 items-center justify-between">
                 <h4 class="mt-2">{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.VALUE()}</h4>
-                <div class="text-2xl font-bold">  -->
-  <!-- TODO: Review marked vs. markdown-it and security risks. -->
-  <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-  <!--     {@html md.render(resultItem.value)}
+                <div class="text-2xl font-bold">
+                  <!-- TODO: Review marked vs. markdown-it and security risks. -->
+                  <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+                  {@html md.render(resultItem.value)}
                 </div>
               </div>
             {/if}
 
             {#if resultItem.resultDescription}
-              <div class="text-[12px]/[14px] text-text-alt"> -->
-  <!-- TODO: Review marked vs. markdown-it and security risks. -->
-  <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-  <!--    {@html md.render(resultItem.resultDescription)}
+              <div class="text-[12px]/[14px] text-text-alt">
+                <!-- TODO: Review marked vs. markdown-it and security risks. -->
+                <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+                {@html md.render(resultItem.resultDescription)}
               </div>
             {/if}
-          </div> -
+          </div>
+          -
         {/each}
-      </div> 
+      </div>
     </div>
-  {/if} -->
+  {/if}
 
   <!-- "validFrom" is defined as REQUIRED in JSON Schema: https://purl.imsglobal.org/spec/ob/v3p0/schema/json/ob_v3p0_achievementcredential_schema.json -->
   {#if credential.data.validFrom}
