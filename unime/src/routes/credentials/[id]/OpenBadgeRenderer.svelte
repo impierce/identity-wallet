@@ -4,9 +4,8 @@
 
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 
-  import CollapsibleRenderer from '$lib/components/CollapsibleRenderer.svelte';
-
-  import TextFieldRenderer from './TextFieldRenderer.svelte';
+  import CollapsibleFieldRenderer from './(renderers)/CollapsibleFieldRenderer.svelte';
+  import TextFieldRenderer from './(renderers)/TextFieldRenderer.svelte';
 
   export let credential: DisplayCredential;
 
@@ -17,7 +16,7 @@
   <!-- Achievement -->
   {#if credential.data.credentialSubject?.achievement?.description}
     <div class="rounded-xl bg-background p-3">
-      <CollapsibleRenderer
+      <CollapsibleFieldRenderer
         items={[
           {
             id: 'description',
@@ -33,7 +32,7 @@
 
   {#if credential.data.credentialSubject?.achievement?.criteria?.narrative}
     <div class="rounded-xl bg-background p-3">
-      <CollapsibleRenderer
+      <CollapsibleFieldRenderer
         items={[
           {
             id: 'criteria',
@@ -68,9 +67,9 @@
     </div>
   {/if}
 
-  <!--  {#if credential.data.credentialSubject?.achievement?.alignment?.length > 0}
+  {#if credential.data.credentialSubject?.achievement?.alignment?.length > 0}
     <div class="rounded-xl bg-background p-3">
-      <CollapsibleRenderer
+      <CollapsibleFieldRenderer
         items={credential.data.credentialSubject.achievement.alignment.map((item, index) => ({
           id: `alignment-${index}`,
           title: $LL.CREDENTIAL.DETAILS.OPEN_BADGES.ALIGNMENT(),
@@ -78,7 +77,7 @@
         }))}
       />
     </div>
-  {/if} -->
+  {/if}
 
   <!-- Result 
   {#if credential.data.credentialSubject?.result?.length > 0}

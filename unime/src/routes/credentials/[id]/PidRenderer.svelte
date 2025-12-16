@@ -8,7 +8,7 @@
 
   import { naturalPerson as schema } from '$lib/schemas/pid';
 
-  import TextFieldRenderer from './TextFieldRenderer.svelte';
+  import TextFieldRenderer from './(renderers)/TextFieldRenderer.svelte';
 
   let { credential }: { credential: DisplayCredential } = $props();
 
