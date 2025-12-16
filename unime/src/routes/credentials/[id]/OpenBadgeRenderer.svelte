@@ -53,16 +53,13 @@
       value={credential.data.credentialSubject?.achievement?.achievementType}
     />
   {/if}
-  console.log('alignment 0'); info(`Validation result: ${JSON.stringify(credential.data.credentialSubject)}`);
+
   {#if credential.data.credentialSubject?.achievement?.alignment?.length > 0}
-    console.log('alignment 1');
     <div class="prose prose-sm rounded-xl bg-background p-4 dark:prose-invert">
       <h2>{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.ALIGNMENT()}</h2>
       {#each credential.data.credentialSubject.achievement.alignment as alignmentItem}
-        console.log('alignment 2');
         <h4>{alignmentItem.targetName}</h4>
         {#if alignmentItem.targetDescription}
-          console.log('alignment 3');
           <!-- TODO Review marked vs. markdown-it and security risks. -->
           <!-- eslint-disable-next-line svelte/no-at-html-tags -->
           {@html md.render(alignmentItem.targetDescription)}
@@ -70,7 +67,7 @@
       {/each}
     </div>
   {/if}
-  console.log('alignment 4');
+
   <!--  {#if credential.data.credentialSubject?.achievement?.alignment?.length > 0}
     <div class="rounded-xl bg-background p-3">
       <CollapsibleRenderer
