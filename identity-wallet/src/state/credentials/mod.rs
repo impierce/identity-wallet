@@ -172,9 +172,9 @@ impl VerifiableCredentialRecord {
                 });
 
                 (id, format, data, issuance_date, display_claims)
-            } else {
-                let credential_display = get_unverified_jwt_claims(&verifiable_credential)?["vc"].clone();
-
+            } else if let Some(credential_display) =
+                get_unverified_jwt_claims(&verifiable_credential)?.get("vc").cloned()
+            {
                 // TODO: We are using this hash as Credential ID so that we can prevent credential duplication in
                 // demo situations. Now we can actually delete Credentials in UniMe we don't need to use the hash of the
                 // credential as the ID anymore. We should simply generate a random UUID.
@@ -217,6 +217,11 @@ impl VerifiableCredentialRecord {
                 let data = credential_display;
 
                 (id, format, data, issuance_date, display_claims)
+            } else {
+                return Err(AppError::Error(
+                    "Neither a valid SD-JWT nor JWT VC JSON, verifiable credentialformat invalid or unsupported"
+                        .to_string(),
+                ));
             };
 
             DisplayCredential {
