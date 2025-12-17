@@ -219,7 +219,7 @@ impl VerifiableCredentialRecord {
                 (id, format, data, issuance_date, display_claims)
             } else {
                 return Err(AppError::Error(
-                    "Neither a valid SD-JWT nor JWT VC JSON, verifiable credentialformat invalid or unsupported"
+                    "Failed to create a VerifiableCredentialRecord: Neither a valid SD-JWT nor JWT VC JSON, verifiable credential format invalid or unsupported"
                         .to_string(),
                 ));
             };
