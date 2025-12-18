@@ -15,13 +15,12 @@ use log::{debug, info, warn};
 use serde_json::Value;
 use std::fs::File;
 
-/// Downloads the logo from the given logo URI, if it exists, and stores it in the assets folder, returns None if it errors.
+/// Downloads the logo from the given logo URI and stores it in the assets folder, returns None if it errors.
 pub async fn download_logo(logo_uri_str: &str) -> Option<String> {
     info!("Logo URI: {logo_uri_str:?}");
 
     match logo_uri_str.parse() {
         Ok(parsed_url) => {
-            // Download the asset if parsing succeeded
             if download_asset(parsed_url, &hash(logo_uri_str)).await.is_err() {
                 warn!("Failed to download logo URI");
                 return None;
@@ -29,7 +28,6 @@ pub async fn download_logo(logo_uri_str: &str) -> Option<String> {
             Some(logo_uri_str.to_string())
         }
         Err(parse_err) => {
-            // Log parse error if the URI is invalid
             warn!("Failed to parse logo URI: {logo_uri_str:#?}, {parse_err}");
             None
         }
