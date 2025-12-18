@@ -148,6 +148,7 @@ enum CredentialType {
     VerifiableCredential,
     #[serde(alias = "AchievementCredential")]
     OpenBadgeCredential,
+    ElmEdc,
     #[serde(other)]
     Unknown,
 }
@@ -156,6 +157,7 @@ enum CredentialType {
 enum CredentialTypeVersion {
     VerifiableCredentialV1_1,
     VerifiableCredentialV2,
+    ElmEdcV3_3,
     OpenBadgeCredentialV3,
     #[serde(other)]
     Unknown,
@@ -192,6 +194,12 @@ impl CredentialType {
                     "https://www.w3.org/ns/credentials/v2" => Ok(CredentialTypeVersion::VerifiableCredentialV2),
                     _ => Err(AppError::InvalidCredentialFormatError),
                 }
+            }
+            CredentialType::ElmEdc => {
+                // The current provided ELM EDC schema contains no specific context value, only the context value of the VC DM 1.1 it builds upon.
+                // Therefore, there is no way to determine the version except for the description.
+                // For now we will shortcut this as ELM schemas are still in development and only time wil tell the best way to determine versions once multiple schemas are published.
+                Ok(CredentialTypeVersion::ElmEdcV3_3)
             }
             CredentialType::Unknown => {
                 warn!("No version found for credential type: {self:?}");
