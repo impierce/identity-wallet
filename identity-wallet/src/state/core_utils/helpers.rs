@@ -17,14 +17,13 @@ use std::fs::File;
 
 /// Downloads the logo from the given logo URI and stores it in the assets folder, returns None if it errors.
 pub async fn download_logo(logo_uri_str: &str) -> Option<String> {
-    info!("Logo URI: {logo_uri_str:?}");
-
     match logo_uri_str.parse() {
         Ok(parsed_url) => {
             if download_asset(parsed_url, &hash(logo_uri_str)).await.is_err() {
-                warn!("Failed to download logo URI");
+                warn!("Failed to download logo from URI: {logo_uri_str:?}");
                 return None;
             }
+            info!("Successfully downloaded logo from URI: {logo_uri_str:?}");
             Some(logo_uri_str.to_string())
         }
         Err(parse_err) => {
