@@ -404,7 +404,12 @@ async fn get_logo_uri(
         }
     }
 
-    download_logo(&logo_uri).await
+    if let Some(logo_uri_str) = logo_uri {
+        download_logo(&logo_uri_str).await
+    } else {
+        warn!("No logo URI found");
+        None
+    }
 }
 
 fn extract_logo_uri_from_display(display: &[Value]) -> Option<String> {
