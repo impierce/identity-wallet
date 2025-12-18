@@ -356,7 +356,7 @@ async fn get_logo_uri(
     linked_verifiable_credential: &DecodedJwtCredential<Value>,
     validated_linked_domains: &[Url],
 ) -> Option<String> {
-    info!("Trying to fetch image from credential subject");
+    info!("Trying to fetch image uri from credential subject");
     let mut logo_uri = credential_subject
         .properties
         .get("image")
@@ -365,10 +365,10 @@ async fn get_logo_uri(
 
     // Check if logo URI was retrieved, if not then attempt to retrieve from a well-known endpoint
     if logo_uri.is_none() {
-        info!("Failed to fetch image from credential subject");
+        info!("Failed to fetch image uri from credential subject");
         for domain in validated_linked_domains.iter() {
             let well_known_endpoint = format!("{domain}.well-known/openid-credential-issuer");
-            info!("Trying to fetch image from {well_known_endpoint} endpoint");
+            info!("Trying to fetch image uri from {well_known_endpoint} endpoint");
             if let Ok(response) = reqwest::Client::new().get(&well_known_endpoint).send().await {
                 if let Ok(metadata) = response.json::<CredentialIssuerMetadata>().await {
                     logo_uri = metadata.display.as_deref().and_then(extract_logo_uri_from_display);
@@ -383,11 +383,11 @@ async fn get_logo_uri(
             // For now we assume it's the same domain as the linked domain.
             // But this is no guarantee and the code below is one such workaround.
             let well_known_endpoint = format!("{domain}oid4vci/.well-known/openid-credential-issuer");
-            info!("Trying to fetch image from {well_known_endpoint} endpoint");
+            info!("Trying to fetch image uri from {well_known_endpoint} endpoint");
             if let Ok(response) = reqwest::Client::new().get(&well_known_endpoint).send().await {
                 if let Ok(metadata) = response.json::<CredentialIssuerMetadata>().await {
                     logo_uri = linked_verifiable_credential.credential.types.iter().find_map(|type_| {
-                        info!("Trying to fetch from Credential Configuration Supported: {type_}");
+                        info!("Trying to fetch image uri from Credential Configuration Supported: {type_}");
                         metadata
                             .credential_configurations_supported
                             .get(type_)
