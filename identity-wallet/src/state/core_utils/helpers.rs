@@ -10,10 +10,11 @@ use identity_iota::{
     verification::jws::Decoder,
 };
 use identity_jose::jwt::JwtClaims;
-use jsonschema::ValidationError;
+use jsonschema::{Retrieve, Uri, ValidationError};
 use log::{debug, info, warn};
 use serde_json::Value;
-use std::fs::File;
+use std::fs::{self, File};
+use std::path::PathBuf;
 
 /// Downloads the logo from the given logo URI and stores it in the assets folder, returns None if it errors.
 pub async fn download_logo(logo_uri_str: &str) -> Option<String> {
@@ -119,30 +120,37 @@ pub fn validate_credential_against_schema(json_schema_path: String, data: &Value
     let json_schema: Value = serde_json::from_reader(json_schema_file)
         .map_err(|_| AppError::Error("Failed to convert JSON Schema &str to serde_json::Value".to_string()))?;
 
-    // Select correct draft version for JSON Schema Validator
+    // Define the relative path to our jsonschema folder needed for the LocalRetriever
+    let jsonschema_dir = std::env::current_dir().unwrap().join("resources/jsonschemas");
+
+    // Select correct draft version for JSON Schema Validator and construct schema with LocalRetriever
     let schema = match json_schema
         .get("$schema")
         .and_then(|value| value.as_str().map(ToString::to_string))
         .ok_or(AppError::Error("Invalid or missing \"$schema\" field".to_string()))?
         .as_str()
     {
-        "https://json-schema.org/draft/2019-09/schema#" => {
-            jsonschema::draft201909::new(&json_schema).map_err(|_| {
+        "https://json-schema.org/draft/2019-09/schema#" => jsonschema::draft201909::options()
+            .with_retriever(LocalRetriever {
+                base_path: jsonschema_dir.clone(),
+            })
+            .build(&json_schema)
+            .map_err(|_| {
                 AppError::Error(format!(
                     "Failed to compile JSON Schema from serde_json::Value: {json_schema}"
                 ))
-            })?
-        }
-        "https://json-schema.org/draft/2020-12/schema" => jsonschema::draft202012::new(&json_schema).map_err(|_| {
-            AppError::Error(format!(
-                "Failed to compile JSON Schema from serde_json::Value: {json_schema}"
-            ))
-        })?,
-        _ => jsonschema::draft202012::new(&json_schema).map_err(|_| {
-            AppError::Error(format!(
-                "Failed to compile JSON Schema from serde_json::Value: {json_schema}"
-            ))
-        })?,
+            })?,
+        // Default to draft 2020-12
+        _ => jsonschema::draft202012::options()
+            .with_retriever(LocalRetriever {
+                base_path: jsonschema_dir.clone(),
+            })
+            .build(&json_schema)
+            .map_err(|_| {
+                AppError::Error(format!(
+                    "Failed to compile JSON Schema from serde_json::Value: {json_schema}"
+                ))
+            })?,
     };
 
     let errors: Vec<ValidationError> = schema.iter_errors(data).collect();
@@ -243,6 +251,23 @@ impl CredentialType {
                 Ok(())
             }
         }
+    }
+}
+
+/// This struct is solely used to implement the `Retrieve` trait from the `jsonschema` crate,
+/// allowing us to load local JSON Schema files referenced via $ref in our JSON Schemas
+struct LocalRetriever {
+    base_path: PathBuf,
+}
+
+/// Implementation of the `Retrieve` trait for loading local JSON Schema files
+impl Retrieve for LocalRetriever {
+    fn retrieve(&self, uri: &Uri<String>) -> Result<Value, Box<dyn std::error::Error + Send + Sync>> {
+        // Convert the URI/filename to a path in the resources folder
+        let file_path = self.base_path.join(uri.path().to_string().trim_start_matches('/'));
+        let content = fs::read_to_string(file_path)?;
+        let json = serde_json::from_str(&content)?;
+        Ok(json)
     }
 }
 
