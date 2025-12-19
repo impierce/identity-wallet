@@ -100,6 +100,13 @@ pub fn validate_credential_against_schema(json_schema_path: String, data: &Value
     let json_schema: Value = serde_json::from_reader(json_schema_file)
         .map_err(|_| AppError::Error("Failed to convert JSON Schema &str to serde_json::Value".to_string()))?;
 
+    println!(
+        "current working directory: {}",
+        std::env::current_dir().unwrap().display()
+    );
+    println!("json_schema_path: {}", json_schema_path);
+    println!("3");
+
     // Select correct draft version for JSON Schema Validator
     let schema = match json_schema
         .get("$schema")
@@ -126,6 +133,7 @@ pub fn validate_credential_against_schema(json_schema_path: String, data: &Value
         })?,
     };
 
+    println!("4");
     let errors: Vec<ValidationError> = schema.iter_errors(data).collect();
     if !errors.is_empty() {
         Err(AppError::Error(format!(
@@ -148,7 +156,7 @@ enum CredentialType {
     VerifiableCredential,
     #[serde(alias = "AchievementCredential")]
     OpenBadgeCredential,
-    ElmEdc,
+    EuropeanDigitalCredential,
     #[serde(other)]
     Unknown,
 }
@@ -157,7 +165,7 @@ enum CredentialType {
 enum CredentialTypeVersion {
     VerifiableCredentialV1_1,
     VerifiableCredentialV2,
-    ElmEdcV3_3,
+    EuropeanDigitalCredentialV3_3,
     OpenBadgeCredentialV3,
     #[serde(other)]
     Unknown,
@@ -195,11 +203,11 @@ impl CredentialType {
                     _ => Err(AppError::InvalidCredentialFormatError),
                 }
             }
-            CredentialType::ElmEdc => {
+            CredentialType::EuropeanDigitalCredential => {
                 // The current provided ELM EDC schema contains no specific context value, only the context value of the VC DM 1.1 it builds upon.
                 // Therefore, there is no way to determine the version except for the description.
                 // For now we will shortcut this as ELM schemas are still in development and only time wil tell the best way to determine versions once multiple schemas are published.
-                Ok(CredentialTypeVersion::ElmEdcV3_3)
+                Ok(CredentialTypeVersion::EuropeanDigitalCredentialV3_3)
             }
             CredentialType::Unknown => {
                 warn!("No version found for credential type: {self:?}");
@@ -211,14 +219,16 @@ impl CredentialType {
     fn validate(&self, data: &Value) -> Result<(), AppError> {
         let version = self.get_version(data)?;
 
+        println!("Validating credential type: {version:?}");
         match version {
             CredentialTypeVersion::Unknown => {
                 warn!("Credential Type unknown, skipping validation.");
+                println!("1");
                 Ok(())
             }
             _ => {
                 let json_schema_path = format!("resources/jsonschemas/{version}.json");
-
+                println!("2");
                 validate_credential_against_schema(json_schema_path, data)?;
                 debug!("Credential type: {self:?} successfully validated against corresponding JSON Schema");
 
@@ -311,26 +321,65 @@ mod tests {
                 "https://elm.edc.nl/credentials/v3.3/context.json"
             ],
             "id": "http://example.com/credentials/elm-edc-001",
-            "type": ["VerifiableCredential", "EuropeanDigitalCredential"],
+            "type": [
+                "VerifiableCredential",
+                "EuropeanDigitalCredential"
+            ],
+            "name": "ELM EDC Example Credential",
             "issuer": {
                 "id": "https://example.com/issuers/123456",
-                "type": ["Profile"],
-                "name": "ELM Example Issuer"
+                "type": "Organisation",
+                "legalName": { "en": "ELM Example University" },
+                "location": {
+                "type": "Location",
+                "address": {
+                    "type": "Address",
+                    "countryCode": { "id": "http://publications.europa.eu/resource/authority/country/NLD" }
+                }
+                }
             },
             "issuanceDate": "2023-01-01T00:00:00Z",
-            "name": "ELM EDC Example Credential",
+            "issued": "2023-01-01T00:00:00Z",
+            "validFrom": "2023-01-01T00:00:00Z",
+            "credentialProfiles": [
+                { "id": "http://data.europa.eu/snb/model/elm/2.0" }
+            ],
+            "displayParameter": {
+                "type": "DisplayParameter",
+                "title": { "en": "Example Credential" },
+                "description": { "en": "A demo credential" },
+                "language": [ { "id": "http://publications.europa.eu/resource/authority/language/ENG" } ],
+                "primaryLanguage": { "id": "http://publications.europa.eu/resource/authority/language/ENG" },
+                "individualDisplay": [
+                {
+                    "type": "IndividualDisplay",
+                    "language": {
+                        "id": "http://publications.europa.eu/resource/authority/language/ENG",
+                        "type": "Concept"
+                    },
+                    "displayDetail": [
+                    {
+                        "type": "DisplayDetail",
+                        "image": {
+                            "type": "MediaObject",
+                            "contentType": { "id": "http://publications.europa.eu/resource/authority/file-type/PNG" },
+                            "contentEncoding": { "id": "http://publications.europa.eu/resource/authority/encoding/BASE64" },
+                            "content": "iVBOR..."
+                        },
+                        "page": 1
+                    }
+                    ]
+                }
+                ]
+            },
+            "credentialSchema": [{
+                "id": "https://elm.edc.nl/credentials/v3.3/schema.json",
+                "type": "JsonSchema"
+            }],
             "credentialSubject": {
                 "id": "did:example:abcdef1234567890",
-                "type": ["ElmEdcSubject"],
-                "edc": {
-                    "id": "urn:uuid:edc-1234-5678-9012",
-                    "type": ["EDC"],
-                    "description": "Example ELM EDC credential for demonstration purposes.",
-                    "name": "Example EDC",
-                    "criteria": {
-                        "narrative": "Completed the ELM EDC demonstration."
-                    }
-                }
+                "type": "Person",
+                "fullName": { "en": "John Doe" }
             }
         });
     }
@@ -338,6 +387,7 @@ mod tests {
     #[test]
     fn credential_schema_validation_elm_edc_ok() {
         let result = validate_credential_types(&EXAMPLE_BASIC_ELM_EDC);
+        println!("Result: {:?}", result);
         assert!(result.is_ok());
     }
 
