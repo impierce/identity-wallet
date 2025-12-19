@@ -64,6 +64,7 @@ pub async fn validate_linked_verifiable_presentations(
 
     info!("Holder document: {holder_document:#?}");
 
+    println!("2");
     iter(
         // Get all linked verifiable presentation URLs from the holder document
         holder_document
@@ -217,9 +218,11 @@ async fn get_validated_linked_credential_data(
                 ) {
                     info!("Validated linked verifiable credential JWT: {linked_verifiable_credential:#?}");
 
+                    println!("3");
                     // Validate the linked verifiable credential against its corresponding JSON Schema
                     validate_credential_types(&linked_verifiable_credential.credential.to_json_value().ok()?).ok()?;
 
+                    println!("4");
                     let credential_subject = match &linked_verifiable_credential.credential.credential_subject {
                         OneOrMany::One(subject) => Some(subject),
                         // TODO: how to handle multiple credential subjects?
@@ -629,6 +632,7 @@ mod tests {
 
             let credential: Credential = CredentialBuilder::default()
                 .issuer(issuer)
+                .issuance_date(identity_iota::core::Timestamp::now_utc())
                 .subject(subject)
                 .build()
                 .unwrap();
@@ -753,6 +757,7 @@ mod tests {
 
         let resolver = Resolver::new().await;
 
+        println!("1");
         assert_eq!(
             validate_linked_verifiable_presentations(&resolver, holder.did_document.id().to_string().as_ref()).await,
             vec![
