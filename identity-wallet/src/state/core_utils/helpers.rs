@@ -305,16 +305,50 @@ mod tests {
                     }
             }
         });
+        static ref EXAMPLE_BASIC_ELM_EDC: Value = json!({
+            "@context": [
+                "https://www.w3.org/2018/credentials/v1",
+                "https://elm.edc.nl/credentials/v3.3/context.json"
+            ],
+            "id": "http://example.com/credentials/elm-edc-001",
+            "type": ["VerifiableCredential", "EuropeanDigitalCredential"],
+            "issuer": {
+                "id": "https://example.com/issuers/123456",
+                "type": ["Profile"],
+                "name": "ELM Example Issuer"
+            },
+            "issuanceDate": "2023-01-01T00:00:00Z",
+            "name": "ELM EDC Example Credential",
+            "credentialSubject": {
+                "id": "did:example:abcdef1234567890",
+                "type": ["ElmEdcSubject"],
+                "edc": {
+                    "id": "urn:uuid:edc-1234-5678-9012",
+                    "type": ["EDC"],
+                    "description": "Example ELM EDC credential for demonstration purposes.",
+                    "name": "Example EDC",
+                    "criteria": {
+                        "narrative": "Completed the ELM EDC demonstration."
+                    }
+                }
+            }
+        });
     }
 
     #[test]
-    fn credential_schema_validation_ok() {
+    fn credential_schema_validation_elm_edc_ok() {
+        let result = validate_credential_types(&EXAMPLE_BASIC_ELM_EDC);
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn credential_schema_validation_obv3_ok() {
         let result = validate_credential_types(&EXAMPLE_BASIC_OB3);
         assert!(result.is_ok());
     }
 
     #[test]
-    fn credential_schema_validation_err() {
+    fn credential_schema_validation_obv3_err() {
         let mut invalid_ob3 = EXAMPLE_BASIC_OB3.clone();
 
         *invalid_ob3.get_mut("id").unwrap() = json!(["InvalidId"]);
