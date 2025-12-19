@@ -100,13 +100,6 @@ pub fn validate_credential_against_schema(json_schema_path: String, data: &Value
     let json_schema: Value = serde_json::from_reader(json_schema_file)
         .map_err(|_| AppError::Error("Failed to convert JSON Schema &str to serde_json::Value".to_string()))?;
 
-    println!(
-        "current working directory: {}",
-        std::env::current_dir().unwrap().display()
-    );
-    println!("json_schema_path: {}", json_schema_path);
-    println!("3");
-
     // Select correct draft version for JSON Schema Validator
     let schema = match json_schema
         .get("$schema")
@@ -133,7 +126,6 @@ pub fn validate_credential_against_schema(json_schema_path: String, data: &Value
         })?,
     };
 
-    println!("4");
     let errors: Vec<ValidationError> = schema.iter_errors(data).collect();
     if !errors.is_empty() {
         Err(AppError::Error(format!(
@@ -219,16 +211,13 @@ impl CredentialType {
     fn validate(&self, data: &Value) -> Result<(), AppError> {
         let version = self.get_version(data)?;
 
-        println!("Validating credential type: {version:?}");
         match version {
             CredentialTypeVersion::Unknown => {
                 warn!("Credential Type unknown, skipping validation.");
-                println!("1");
                 Ok(())
             }
             _ => {
                 let json_schema_path = format!("resources/jsonschemas/{version}.json");
-                println!("2");
                 validate_credential_against_schema(json_schema_path, data)?;
                 debug!("Credential type: {self:?} successfully validated against corresponding JSON Schema");
 
@@ -387,7 +376,6 @@ mod tests {
     #[test]
     fn credential_schema_validation_elm_edc_ok() {
         let result = validate_credential_types(&EXAMPLE_BASIC_ELM_EDC);
-        println!("Result: {:?}", result);
         assert!(result.is_ok());
     }
 
