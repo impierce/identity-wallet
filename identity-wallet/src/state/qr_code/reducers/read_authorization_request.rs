@@ -1,10 +1,12 @@
 use crate::{
     error::AppError::{self, *},
-    persistence::{download_asset, hash},
     state::{
         actions::{listen, Action},
         connections::reducers::handle_siopv2_authorization_request::get_siopv2_client_name_and_logo_uri,
-        core_utils::{helpers::get_unverified_jwt_claims, ConnectionRequest, CoreUtils},
+        core_utils::{
+            helpers::{download_logo, get_unverified_jwt_claims},
+            ConnectionRequest, CoreUtils,
+        },
         credentials::reducers::handle_oid4vp_authorization_request::{
             get_oid4vp_client_name_and_logo_uri, OID4VPClientMetadata,
         },
@@ -17,7 +19,7 @@ use crate::{
 use serde_json::Value;
 
 use identity_credential::{sd_jwt_v2::Sha256Hasher, sd_jwt_vc::SdJwtVc};
-use log::{debug, info};
+use log::{debug, info, warn};
 use oid4vc::oid4vp::oid4vp::OID4VP;
 use oid4vc::siopv2::siopv2::SIOPv2;
 use oid4vc::{
@@ -61,14 +63,10 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
             info!("client_name in Authorization Request Display parameter: {client_name:?}");
             info!("logo_uri in Authorization Request Display parameter: {logo_uri:?}");
 
-            if logo_uri.is_some() {
-                debug!(
-                    "Downloading client logo from url: {}",
-                    logo_uri.as_ref().unwrap().as_str()
-                );
-                if let Some(logo_uri) = logo_uri.as_ref().and_then(|s| s.parse::<reqwest::Url>().ok()) {
-                    let _ = download_asset(logo_uri.clone(), &hash(logo_uri.as_str())).await;
-                }
+            if let Some(logo_uri_str) = logo_uri.clone() {
+                download_logo(&logo_uri_str).await;
+            } else {
+                warn!("No logo URI found");
             }
 
             let previously_connected = state.connections.contains(&connection_url, &client_name);
@@ -212,14 +210,10 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
             info!("client_name in credential_offer: {client_name:?}");
             info!("logo_uri in read_authorization_request: {logo_uri:?}");
 
-            if logo_uri.is_some() {
-                debug!(
-                    "Downloading client logo from url: {}",
-                    logo_uri.as_ref().unwrap().as_str()
-                );
-                if let Some(logo_uri) = logo_uri.as_ref().and_then(|s| s.parse::<reqwest::Url>().ok()) {
-                    let _ = download_asset(logo_uri.clone(), &hash(logo_uri.as_str())).await;
-                }
+            if let Some(logo_uri_str) = logo_uri.clone() {
+                download_logo(&logo_uri_str).await;
+            } else {
+                warn!("No logo URI found");
             }
 
             // TODO: communicate when no credentials are available.
