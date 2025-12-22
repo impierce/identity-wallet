@@ -226,7 +226,7 @@ impl CredentialType {
             CredentialType::EuropeanDigitalCredential => {
                 // The current provided ELM EDC schema contains no specific context value, only the context value of the VC DM 1.1 it builds upon.
                 // Therefore, there is no way to determine the version except for the description.
-                // For now we will shortcut this as ELM schemas are still in development and only time wil tell the best way to determine versions once multiple schemas are published.
+                // For now we will shortcut this as ELM schemas are still in development and only time will tell the best way to determine versions once multiple schemas are published.
                 Ok(CredentialTypeVersion::EuropeanDigitalCredentialV3_3)
             }
             CredentialType::Unknown => {
