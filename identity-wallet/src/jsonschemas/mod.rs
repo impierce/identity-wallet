@@ -2,7 +2,7 @@
 // Furthermore, it contains the items and functions needed for JSON Schema validation of credentials.
 use jsonschema::{Retrieve, Uri, ValidationError, Validator};
 use lazy_static::lazy_static;
-use log::{debug, error, info, warn};
+use log::{debug, info, warn};
 use serde_json::Value;
 use std::fs::{self};
 use std::path::PathBuf;
