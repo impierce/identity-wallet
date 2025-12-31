@@ -1,5 +1,6 @@
 pub mod command;
 pub mod error;
+pub mod jsonschemas;
 pub mod migrations;
 pub mod persistence;
 pub mod state;

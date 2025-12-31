@@ -1,10 +1,11 @@
 use crate::{
     error::AppError::{self, *},
+    jsonschemas::validate_credential_types,
     persistence::{hash, persist_asset},
     state::{
         actions::{listen, Action},
         core_utils::{
-            helpers::{get_unverified_jwt_claims, validate_credential_types, validate_jwt_vc_json},
+            helpers::{get_unverified_jwt_claims, validate_jwt_vc_json},
             history_event::{EventType, HistoryCredential, HistoryEvent},
             CoreUtils, DateUtils, IdentityManager,
         },
@@ -307,7 +308,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
         for (credential_configuration_id, credential, display, claims) in credentials.into_iter() {
             let mut verifiable_credential_record = VerifiableCredentialRecord::try_new(credential, claims)?;
             // Validate the credential against its corresponding credential JSON Schema.
-            validate_credential_types(&verifiable_credential_record.verifiable_credential)?;
+            validate_credential_types(&verifiable_credential_record.display_credential.data)?;
 
             // The credential status is set only when the credential status claim/property can be found and is in OAuth TSL format.
             // If setting the credential status fails we currently catch the error and simply set the credential status field to None.
