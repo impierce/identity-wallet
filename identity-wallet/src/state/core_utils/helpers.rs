@@ -83,7 +83,7 @@ pub async fn validate_jwt_vc_json(
 
     validator
         .validate::<_, Value>(&credential_jwt, &issuer_document, &options, FailFast::FirstError)
-        .map_err(|_| AppError::Error("Invalid jwt_vc_json".to_string()))
+        .map_err(|e| AppError::Error(format!("Invalid jwt_vc_json: {e:#?}")))
 }
 
 pub struct DateUtils;

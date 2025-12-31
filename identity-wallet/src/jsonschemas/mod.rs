@@ -4,7 +4,7 @@ use jsonschema::{Retrieve, Uri, ValidationError, Validator};
 use lazy_static::lazy_static;
 use log::{debug, error, info, warn};
 use serde_json::Value;
-use std::fs::{self, File};
+use std::fs::{self};
 use std::path::PathBuf;
 
 use crate::error::AppError;
@@ -12,25 +12,23 @@ use crate::error::AppError;
 const JSONSCHEMAS_DIR: &str = "src/jsonschemas";
 
 lazy_static! {
-    pub static ref VerifiableCredentialV1_1_Validator: Validator =
-        compile_validator("src/jsonschemas/VerifiableCredentialV1_1.json")
-            .expect("Failed to compile JSON Schema validator for VerifiableCredentialV1_1");
-    pub static ref VerifiableCredentialV2_0_Validator: Validator =
-        compile_validator("src/jsonschemas/VerifiableCredentialV2.json")
-            .expect("Failed to compile JSON Schema validator for VerifiableCredentialV2_0");
-    pub static ref EuropeanDigitalCredentialV3_3_Validator: Validator =
-        compile_validator("src/jsonschemas/EuropeanDigitalCredentialV3_3.json")
-            .expect("Failed to compile JSON Schema validator for EuropeanDigitalCredentialV3_3");
-    pub static ref OpenBadgeCredentialV3_Validator: Validator =
-        compile_validator("src/jsonschemas/OpenBadgeCredentialV3.json")
-            .expect("Failed to compile JSON Schema validator for OpenBadgeCredentialV3");
+    pub static ref VERIFIABLE_CREDENTIAL_V1_1_VALIDATOR: Validator =
+        compile_validator(include_str!("VerifiableCredentialV1_1.json"))
+            .expect("Failed to compile VerifiableCredentialV1_1 JSON Schema");
+    pub static ref VERIFIABLE_CREDENTIAL_V2_VALIDATOR: Validator =
+        compile_validator(include_str!("VerifiableCredentialV2.json"))
+            .expect("Failed to compile VerifiableCredentialV2 JSON Schema");
+    pub static ref EUROPEAN_DIGITAL_CREDENTIAL_V3_3_VALIDATOR: Validator =
+        compile_validator(include_str!("EuropeanDigitalCredentialV3_3.json"))
+            .expect("Failed to compile EuropeanDigitalCredentialV3_3 JSON Schema");
+    pub static ref OPEN_BADGE_CREDENTIAL_V3_VALIDATOR: Validator =
+        compile_validator(include_str!("OpenBadgeCredentialV3.json"))
+            .expect("Failed to compile OpenBadgeCredentialV3 JSON Schema");
 }
 
 /// Helper function to create the static ref Validators from JSON Schema files.
-fn compile_validator(json_schema_path: &str) -> Result<Validator, AppError> {
-    let json_schema_file = File::open(json_schema_path)
-        .map_err(|_| AppError::Error("Failed to find or read from JSON Schema file".to_string()))?;
-    let json_schema: Value = serde_json::from_reader(json_schema_file)
+fn compile_validator(json_schema_str: &str) -> Result<Validator, AppError> {
+    let json_schema: Value = serde_json::from_str(json_schema_str)
         .map_err(|_| AppError::Error("Failed to convert JSON Schema &str to serde_json::Value".to_string()))?;
 
     // Define the relative path to our jsonschema folder needed for the LocalRetriever
@@ -143,10 +141,10 @@ pub enum CredentialTypeVersion {
 impl CredentialTypeVersion {
     pub fn get_validator(&self) -> Result<&'static Validator, AppError> {
         match self {
-            CredentialTypeVersion::VerifiableCredentialV1_1 => Ok(&VerifiableCredentialV1_1_Validator),
-            CredentialTypeVersion::VerifiableCredentialV2 => Ok(&VerifiableCredentialV2_0_Validator),
-            CredentialTypeVersion::EuropeanDigitalCredentialV3_3 => Ok(&EuropeanDigitalCredentialV3_3_Validator),
-            CredentialTypeVersion::OpenBadgeCredentialV3 => Ok(&OpenBadgeCredentialV3_Validator),
+            CredentialTypeVersion::VerifiableCredentialV1_1 => Ok(&VERIFIABLE_CREDENTIAL_V1_1_VALIDATOR),
+            CredentialTypeVersion::VerifiableCredentialV2 => Ok(&VERIFIABLE_CREDENTIAL_V2_VALIDATOR),
+            CredentialTypeVersion::EuropeanDigitalCredentialV3_3 => Ok(&EUROPEAN_DIGITAL_CREDENTIAL_V3_3_VALIDATOR),
+            CredentialTypeVersion::OpenBadgeCredentialV3 => Ok(&OPEN_BADGE_CREDENTIAL_V3_VALIDATOR),
             CredentialTypeVersion::Unknown => Err(AppError::InvalidCredentialFormatError),
         }
     }
@@ -208,7 +206,6 @@ impl CredentialType {
             _ => {
                 let errors: Vec<ValidationError> = version.get_validator()?.iter_errors(data).collect();
                 if !errors.is_empty() {
-                    error!("Validation errors: {errors:#?}");
                     Err(AppError::Error(format!(
                         "The data is invalid according to the given JSON Schema: {errors:?}"
                     )))
