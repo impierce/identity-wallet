@@ -18,7 +18,6 @@ use crate::{
         AppState, UNIME_CLIENT_ID, UNIME_REDIRECT_URI,
     },
 };
-use identity_iota::credential::Jwt;
 use log::{info, warn};
 use oauth_tsl::{status_list::StatusType, tokens::referenced_token::StatusClaim};
 use oid4vc::oid4vci::{
@@ -50,7 +49,6 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
         }
 
         let state_guard = state.core_utils.managers.lock().await;
-        let resolver = state.core_utils.resolver().await;
         let stronghold_manager = state_guard
             .stronghold_manager
             .as_ref()
@@ -279,13 +277,10 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             // TODO: add validation for other credential formats.
             if credential_configuration.credential_format.format() == CredentialFormats::JwtVcJson(()) {
                 // Convert the received credential (as a string) into a Jwt instance for validation.
-                let credential_jwt = Jwt::new(
-                    credential
-                        .as_str()
-                        .ok_or(AppError::Error("Invalid JWT string.".to_string()))?
-                        .to_string(),
-                );
-                validate_jwt_vc_json(&resolver, credential_jwt).await?;
+                let credential_jwt = credential
+                    .as_str()
+                    .ok_or(AppError::Error("Invalid JWT string.".to_string()))?;
+                validate_jwt_vc_json(credential_jwt, identity_manager).await?;
             }
 
             credentials.push((
