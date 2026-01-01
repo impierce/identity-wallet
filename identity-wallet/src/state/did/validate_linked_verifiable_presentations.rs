@@ -204,6 +204,7 @@ async fn get_validated_linked_credential_data(
             }
 
             if !validated_linked_domains.is_empty() {
+                // Todo: replace IOTA validator
                 let validator = JwtCredentialValidator::with_signature_verifier(Verifier);
 
                 // `SkipUnsupported` allows for custom credential types, such as the StatusList2021Entry (https://www.w3.org/TR/2023/WD-vc-status-list-20230427/#statuslist2021entry)
