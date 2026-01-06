@@ -4,8 +4,9 @@
 
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 
-  import CollapsibleFieldRenderer from './(renderers)/CollapsibleFieldRenderer.svelte';
+  //import CollapsibleFieldRenderer from './(renderers)/CollapsibleFieldRenderer.svelte';
   import TextFieldRenderer from './(renderers)/TextFieldRenderer.svelte';
+  import CollapsibleWrapper from './/CollapsibleWrapper.svelte';
 
   export let credential: DisplayCredential;
 
@@ -15,35 +16,17 @@
 <div class="flex flex-col gap-4">
   <!-- Achievement -->
   {#if credential.data.credentialSubject?.achievement?.description}
-    <div class="rounded-xl bg-background p-3">
-      <CollapsibleFieldRenderer
-        items={[
-          {
-            id: 'description',
-            title: $LL.CREDENTIAL.DETAILS.DESCRIPTION(),
-            description: credential.data.credentialSubject.achievement.description,
-          },
-        ]}
-      />
-    </div>
-    <!-- TODO: Review marked vs. markdown-it and security risks. -->
-    <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+    <CollapsibleWrapper defaultOpen={true}>
+      <h2 class="text-lg font-bold" slot="title">{$LL.CREDENTIAL.DETAILS.DESCRIPTION()}</h2>
+      {@html md.render(credential.data.credentialSubject.achievement.description)}
+    </CollapsibleWrapper>
   {/if}
 
   {#if credential.data.credentialSubject?.achievement?.criteria?.narrative}
-    <div class="rounded-xl bg-background p-3">
-      <CollapsibleFieldRenderer
-        items={[
-          {
-            id: 'criteria',
-            title: $LL.CREDENTIAL.DETAILS.OPEN_BADGES.CRITERIA(),
-            description: credential.data.credentialSubject.achievement.criteria.narrative,
-          },
-        ]}
-      />
-      <!-- TODO: Review marked vs. markdown-it and security risks. -->
-      <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-    </div>
+    <CollapsibleWrapper defaultOpen={false}>
+      <h2 class="text-lg font-bold" slot="title">{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.CRITERIA()}</h2>
+      {@html md.render(credential.data.credentialSubject.achievement.criteria.narrative)}
+    </CollapsibleWrapper>
   {/if}
 
   {#if credential.data.credentialSubject?.achievement?.achievementType}
@@ -55,48 +38,60 @@
 
   <!-- Alignment -->
   {#if credential.data.credentialSubject?.achievement?.alignment?.length > 0}
-    <div class="rounded-xl bg-background p-3">
-      <CollapsibleFieldRenderer
-        items={credential.data.credentialSubject.achievement.alignment.map((item, index) => ({
-          id: `alignment-${index}`,
-          title: $LL.CREDENTIAL.DETAILS.OPEN_BADGES.ALIGNMENT(),
-          description: `#### ${item.targetName}\n\n${item.targetDescription ?? ''}`,
-        }))}
-      />
-    </div>
+    <CollapsibleWrapper defaultOpen={false}>
+      <h2 class="text-lg font-bold" slot="title">{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.ALIGNMENT()}</h2>
+      {#each credential.data.credentialSubject.achievement.alignment as alignmentItem}
+        <h4>{alignmentItem.targetName}</h4>
+        {#if alignmentItem.targetDescription}
+          {@html md.render(alignmentItem.targetDescription)}
+        {/if}
+      {/each}
+    </CollapsibleWrapper>
   {/if}
 
   <!-- Result -->
   {#if credential.data.credentialSubject?.result?.length > 0}
-    <div class="rounded-xl bg-background p-3">
-      <CollapsibleFieldRenderer
-        items={credential.data.credentialSubject.result.map((resultItem, index) => {
-          let description = '';
+    <CollapsibleWrapper defaultOpen={false}>
+      <h2 class="text-lg font-bold" slot="title">
+        {$LL.CREDENTIAL.DETAILS.OPEN_BADGES.RESULT()}
+      </h2>
+      <div class="flex flex-col divide-y divide-slate-300">
+        {#each credential.data.credentialSubject.result as resultItem}
+          <div class="py-4 first:pt-0 last:pb-0">
+            {#if resultItem.alignment?.length > 0}
+              {#each resultItem.alignment as resultAlignment}
+                <h4>{resultAlignment.targetName}</h4>
+                {#if resultAlignment.targetDescription}
+                  <!-- TODO: Review marked vs. markdown-it and security risks. -->
+                  <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+                  {@html md.render(resultAlignment.targetDescription)}
+                {/if}
+              {/each}
+            {/if}
 
-          if (resultItem.alignment?.length) {
-            description += resultItem.alignment
-              .map((a) => `#### ${a.targetName}\n\n${a.targetDescription ?? ''}`)
-              .join('\n\n');
-          }
+            {#if resultItem.value}
+              <div class="flex h-16 items-center justify-between">
+                <h4 class="mt-2">{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.VALUE()}</h4>
+                <div class="text-2xl font-bold">
+                  <!-- TODO: Review marked vs. markdown-it and security risks. -->
+                  <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+                  {@html md.render(resultItem.value)}
+                </div>
+              </div>
+            {/if}
 
-          if (resultItem.value) {
-            description += `\n\n#### ${$LL.CREDENTIAL.DETAILS.OPEN_BADGES.VALUE()}\n\n${resultItem.value}`;
-          }
-
-          if (resultItem.resultDescription) {
-            description += `\n\n${resultItem.resultDescription}`;
-          }
-
-          return {
-            id: `result-${index}`,
-            title: $LL.CREDENTIAL.DETAILS.OPEN_BADGES.RESULT(),
-            description,
-          };
-        })}
-      />
-    </div>
+            {#if resultItem.resultDescription}
+              <div class="text-[12px]/[14px] text-text-alt">
+                <!-- TODO: Review marked vs. markdown-it and security risks. -->
+                <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+                {@html md.render(resultItem.resultDescription)}
+              </div>
+            {/if}
+          </div>
+        {/each}
+      </div>
+    </CollapsibleWrapper>
   {/if}
-
   <!-- "validFrom" is defined as REQUIRED in JSON Schema: https://purl.imsglobal.org/spec/ob/v3p0/schema/json/ob_v3p0_achievementcredential_schema.json -->
   {#if credential.data.validFrom}
     <TextFieldRenderer key={'validFrom'} value={credential.data.validFrom} />
