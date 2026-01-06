@@ -4,9 +4,8 @@
 
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 
-  //import CollapsibleFieldRenderer from './(renderers)/CollapsibleFieldRenderer.svelte';
   import TextFieldRenderer from './(renderers)/TextFieldRenderer.svelte';
-  import CollapsibleWrapper from './/CollapsibleWrapper.svelte';
+  import CollapsibleWrapper from './CollapsibleWrapper.svelte';
 
   export let credential: DisplayCredential;
 
