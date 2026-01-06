@@ -15,30 +15,21 @@ use log::{debug, info, warn};
 use serde_json::Value;
 use std::fs::File;
 
-/// Downloads the logo from the given logo URI, if it exists, and stores it in the assets folder, returns None if it errors.
-pub async fn download_logo(logo_uri: &Option<String>) -> Option<String> {
-    if let Some(ref logo_uri_str) = logo_uri {
-        info!("Logo URI: {logo_uri_str:?}");
-
-        // Parse the logo URI
-        match logo_uri_str.parse() {
-            Ok(parsed_url) => {
-                // Download the asset if parsing succeeded
-                if download_asset(parsed_url, &hash(logo_uri_str)).await.is_err() {
-                    warn!("Failed to download logo URI");
-                    return None;
-                }
-                logo_uri.clone()
+/// Downloads the logo from the given logo URI and stores it in the assets folder, returns None if it errors.
+pub async fn download_logo(logo_uri_str: &str) -> Option<String> {
+    match logo_uri_str.parse() {
+        Ok(parsed_url) => {
+            if download_asset(parsed_url, &hash(logo_uri_str)).await.is_err() {
+                warn!("Failed to download logo from URI: {logo_uri_str:?}");
+                return None;
             }
-            Err(parse_err) => {
-                // Log parse error if the URI is invalid
-                warn!("Failed to parse logo URI: {logo_uri_str:#?}, {parse_err}");
-                None
-            }
+            info!("Successfully downloaded logo from URI: {logo_uri_str:?}");
+            Some(logo_uri_str.to_string())
         }
-    } else {
-        warn!("No logo URI found");
-        None
+        Err(parse_err) => {
+            warn!("Failed to parse logo URI: {logo_uri_str:#?}, {parse_err}");
+            None
+        }
     }
 }
 

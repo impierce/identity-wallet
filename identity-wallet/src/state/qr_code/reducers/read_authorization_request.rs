@@ -19,7 +19,7 @@ use crate::{
 use serde_json::Value;
 
 use identity_credential::{sd_jwt_v2::Sha256Hasher, sd_jwt_vc::SdJwtVc};
-use log::{debug, info};
+use log::{debug, info, warn};
 use oid4vc::oid4vp::oid4vp::OID4VP;
 use oid4vc::siopv2::siopv2::SIOPv2;
 use oid4vc::{
@@ -63,7 +63,11 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
             info!("client_name in Authorization Request Display parameter: {client_name:?}");
             info!("logo_uri in Authorization Request Display parameter: {logo_uri:?}");
 
-            download_logo(&logo_uri).await;
+            if let Some(logo_uri_str) = logo_uri.clone() {
+                download_logo(&logo_uri_str).await;
+            } else {
+                warn!("No logo URI found");
+            }
 
             let previously_connected = state.connections.contains(&connection_url, &client_name);
 
@@ -206,7 +210,11 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
             info!("client_name in credential_offer: {client_name:?}");
             info!("logo_uri in read_authorization_request: {logo_uri:?}");
 
-            download_logo(&logo_uri).await;
+            if let Some(logo_uri_str) = logo_uri.clone() {
+                download_logo(&logo_uri_str).await;
+            } else {
+                warn!("No logo URI found");
+            }
 
             // TODO: communicate when no credentials are available.
             if !uuids.is_empty() {

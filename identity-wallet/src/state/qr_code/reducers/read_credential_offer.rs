@@ -11,7 +11,7 @@ use crate::{
     },
 };
 
-use log::info;
+use log::{info, warn};
 use oid4vc::oid4vci::{
     credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject,
     credential_offer::{CredentialOffer, CredentialOfferParameters},
@@ -114,7 +114,11 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
 
         download_credential_logos(&credential_configurations).await;
 
-        download_logo(&logo_uri).await;
+        if let Some(logo_uri_str) = logo_uri.clone() {
+            download_logo(&logo_uri_str).await;
+        } else {
+            warn!("No logo URI found");
+        }
 
         drop(state_guard);
         return Ok(AppState {
@@ -147,6 +151,10 @@ async fn download_credential_logos(
 
         info!("credential_logo_uri: {credential_logo_uri:?}");
 
-        download_logo(&credential_logo_uri.map(|url| url.to_string())).await;
+        if let Some(logo_uri_str) = credential_logo_uri {
+            download_logo(logo_uri_str.as_ref()).await;
+        } else {
+            warn!("No logo URI found");
+        }
     }
 }
