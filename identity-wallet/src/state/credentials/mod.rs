@@ -2,7 +2,10 @@ pub mod actions;
 pub mod reducers;
 
 use super::{core_utils::helpers::get_unverified_jwt_claims, FeatTrait};
-use crate::{error::AppError, state::core_utils::DateUtils};
+use crate::{
+    error::AppError,
+    state::core_utils::{helpers::ValueToString, DateUtils},
+};
 use derivative::Derivative;
 use identity_credential::{sd_jwt_v2::Sha256Hasher, sd_jwt_vc::SdJwtVc};
 use log::info;
@@ -201,10 +204,7 @@ impl VerifiableCredentialRecord {
                     )
                 };
 
-                let issuance_date = credential_display["issuanceDate"]
-                    .as_str()
-                    .map(ToString::to_string)
-                    .unwrap_or_default();
+                let issuance_date = credential_display["issuanceDate"].to_clean_string().unwrap_or_default();
                 let id = Uuid::from_slice(&hash.as_bytes()[..16])?.to_string();
                 let format = CredentialFormats::JwtVcJson(());
 

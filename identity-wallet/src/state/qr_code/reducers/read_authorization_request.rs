@@ -41,13 +41,13 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
             .stronghold_manager
             .as_ref()
             .ok_or(MissingManagerError("stronghold"))?;
-        let provider_manager = &state_guard
+        let identity_manager = &state_guard
             .identity_manager
             .as_ref()
-            .ok_or(MissingManagerError("identity"))?
-            .provider_manager;
+            .ok_or(MissingManagerError("identity"))?;
 
-        let generic_authorization_request = provider_manager
+        let generic_authorization_request = identity_manager
+            .provider_manager
             .validate_request(qr_code_scanned.clone())
             .await
             .map_err(|_| InvalidQRCodeError(qr_code_scanned))?;
@@ -113,18 +113,19 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
 
             let resolver = state.core_utils.resolver().await;
 
-            let linked_verifiable_presentations = validate_linked_verifiable_presentations(&resolver, did)
-                .await
-                .into_iter()
-                .flatten()
-                .filter(|linked_verifiable_credential| {
-                    linked_verifiable_credential.issuer_linked_domains.iter().any(|domain| {
-                        info!("domain: `{domain}`");
+            let linked_verifiable_presentations =
+                validate_linked_verifiable_presentations(&resolver, did, identity_manager)
+                    .await
+                    .into_iter()
+                    .flatten()
+                    .filter(|linked_verifiable_credential| {
+                        linked_verifiable_credential.issuer_linked_domains.iter().any(|domain| {
+                            info!("domain: `{domain}`");
 
-                        trusted_domains.contains(domain)
+                            trusted_domains.contains(domain)
+                        })
                     })
-                })
-                .collect();
+                    .collect();
 
             info!("linked_verifiable_presentations: {linked_verifiable_presentations:?}");
 

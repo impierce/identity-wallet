@@ -1,4 +1,4 @@
-// This folder is contains the lazy static ref Validators compiled from the JSON Schemas as to ensure easy compilation into the executable binary without the hassle of carrying over the JSON Schemafiles.
+// This folder is contains the lazy static ref Validators compiled from the JSON Schemas as to ensure easy compilation into the executable binary without the hassle of carrying over the JSON Schema files.
 // Furthermore, it contains the items and functions needed for JSON Schema validation of credentials.
 use jsonschema::{Retrieve, Uri, ValidationError, Validator};
 use lazy_static::lazy_static;
@@ -8,6 +8,7 @@ use std::fs::{self};
 use std::path::PathBuf;
 
 use crate::error::AppError;
+use crate::state::core_utils::helpers::ValueToString;
 
 const JSONSCHEMAS_DIR: &str = "src/jsonschemas";
 
@@ -37,7 +38,7 @@ fn compile_validator(json_schema_str: &str) -> Result<Validator, AppError> {
     // Select correct draft version for JSON Schema Validator and construct schema with LocalRetriever
     let schema = match json_schema
         .get("$schema")
-        .and_then(|value| value.as_str().map(ToString::to_string))
+        .and_then(|value| value.to_clean_string())
         .ok_or(AppError::Error("Invalid or missing \"$schema\" field".to_string()))?
         .as_str()
     {
@@ -206,6 +207,7 @@ impl CredentialType {
             _ => {
                 let errors: Vec<ValidationError> = version.get_validator()?.iter_errors(data).collect();
                 if !errors.is_empty() {
+                    println!("validation errors: {errors:#?}");
                     Err(AppError::Error(format!(
                         "The data is invalid according to the given JSON Schema: {errors:?}"
                     )))

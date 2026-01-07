@@ -1,4 +1,5 @@
 use crate::oid4vci::authorization_request::CodeChallengeMethod;
+use crate::state::core_utils::helpers::ValueToString;
 use crate::state::credentials::reducers::send_token_request::send_token_request;
 use crate::state::{UNIME_CLIENT_ID, UNIME_REDIRECT_URI};
 use crate::{
@@ -81,13 +82,11 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
         // Get the credential issuer name or use the credential issuer url.
         let issuer_name = display
             .map(|display| {
-                let issuer_name = display["name"]
-                    .as_str()
-                    .map(ToString::to_string)
+                display["name"]
+                    .to_clean_string()
                     // TODO(ngdil): Remove this fallback.
-                    .or_else(|| display["client_name"].as_str().map(ToString::to_string))
-                    .unwrap_or(connection_url.to_string());
-                issuer_name
+                    .or_else(|| display["client_name"].to_clean_string())
+                    .unwrap_or(connection_url.to_string())
             })
             .unwrap_or(connection_url.to_string());
 

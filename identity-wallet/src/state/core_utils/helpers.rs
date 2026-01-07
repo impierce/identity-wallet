@@ -91,7 +91,27 @@ pub async fn validate_jwt_vc_json(credential_jwt: &str, identity_manager: &Ident
     let token_data = decode::<Value>(credential_jwt, &decoding_key, &validation)
         .map_err(|_| AppError::InvalidCredentialFormatError)?;
 
-    Ok(token_data.claims)
+    token_data
+        .claims
+        .get("vc")
+        .ok_or(AppError::InvalidCredentialFormatError)
+        .cloned()
+}
+
+/// This trait is solely to add a method to serde_json::Value for converting Values to Strings cleanly
+pub trait ValueToString {
+    fn to_clean_string(&self) -> Option<String>;
+}
+
+impl ValueToString for serde_json::Value {
+    /// A simple helper function to convert a `serde_json::Value` to an `Option<String>`.
+    /// The original as_str or to_string methods work terribly due to including quotes characters.
+    /// The original as_str/to_string methods output the following: "/".../"" or Some("/".../"").
+    /// This function cleanly outputs Some("...").
+    /// Renaming this clarifies our code instead of having as_str and to_string calls everywhere.
+    fn to_clean_string(&self) -> Option<String> {
+        self.as_str().map(ToString::to_string)
+    }
 }
 
 pub struct DateUtils;

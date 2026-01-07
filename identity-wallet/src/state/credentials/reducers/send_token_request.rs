@@ -5,7 +5,7 @@ use crate::{
     state::{
         actions::{listen, Action},
         core_utils::{
-            helpers::{get_unverified_jwt_claims, validate_jwt_vc_json},
+            helpers::{get_unverified_jwt_claims, validate_jwt_vc_json, ValueToString},
             history_event::{EventType, HistoryCredential, HistoryEvent},
             CoreUtils, DateUtils, IdentityManager,
         },
@@ -186,13 +186,11 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
         // Get the credential issuer name or use the credential issuer url.
         let issuer_name = display
             .map(|display| {
-                let issuer_name = display["name"]
-                    .as_str()
-                    .map(ToString::to_string)
+                display["name"]
+                    .to_clean_string()
                     // TODO(ngdil): Remove this fallback.
-                    .or_else(|| display["client_name"].as_str().map(ToString::to_string))
-                    .unwrap_or(connection_url.to_string());
-                issuer_name
+                    .or_else(|| display["client_name"].to_clean_string())
+                    .unwrap_or(connection_url.to_string())
             })
             .unwrap_or(connection_url.to_string());
 

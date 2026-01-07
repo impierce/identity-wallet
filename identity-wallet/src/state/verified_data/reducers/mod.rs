@@ -7,6 +7,7 @@ use crate::{
     error::AppError,
     state::{
         actions::{listen, Action},
+        core_utils::helpers::ValueToString,
         qr_code::{actions::qrcode_scanned::QrCodeScanned, reducers::read_credential_offer::read_credential_offer},
         verified_data::{
             actions::{RedeemCode, ResetEmailVerification, SendVerificationEmail, ServiceHealthCheck},
@@ -143,10 +144,7 @@ pub async fn redeem_code(state: AppState, action: Action) -> Result<AppState, Ap
                 return Ok(AppState {
                     verified_data: VerifiedData {
                         email_verification: Some(EmailVerification {
-                            error: error
-                                .get("error")
-                                .and_then(serde_json::Value::as_str)
-                                .map(ToString::to_string),
+                            error: error.get("error").and_then(|value| value.to_clean_string()),
                             ..state
                                 .verified_data
                                 .email_verification

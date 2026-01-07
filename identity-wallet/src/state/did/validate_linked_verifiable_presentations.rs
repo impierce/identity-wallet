@@ -1,6 +1,8 @@
 use crate::jsonschemas::validate_credential_types;
+use crate::state::core_utils::helpers::ValueToString;
+use crate::state::core_utils::IdentityManager;
 use crate::state::{
-    core_utils::helpers::{download_logo, get_issuer_document},
+    core_utils::helpers::{download_logo, get_issuer_document, validate_jwt_vc_json},
     did::validate_domain_linkage::{ValidationStatus, Verifier},
 };
 use did_manager::Resolver;
@@ -10,11 +12,8 @@ use futures::{
     StreamExt,
 };
 use identity_iota::{
-    core::{OneOrMany, ToJson},
-    credential::{
-        DecodedJwtCredential, DecodedJwtPresentation, FailFast, Jwt, JwtCredentialValidationOptions,
-        JwtCredentialValidator, JwtPresentationValidator, StatusCheck, Subject,
-    },
+    core::ToJson,
+    credential::{DecodedJwtPresentation, Jwt, JwtPresentationValidator},
     document::{CoreDocument, Service},
 };
 use log::{info, warn};
@@ -52,6 +51,7 @@ impl PartialEq for LinkedVerifiableCredentialData {
 pub async fn validate_linked_verifiable_presentations(
     resolver: &Resolver,
     holder_did: &str,
+    identity_manager: &IdentityManager,
 ) -> Vec<Vec<LinkedVerifiableCredentialData>> {
     info!("Validating linked verifiable presentations for holder DID: {holder_did}");
 
@@ -75,7 +75,12 @@ pub async fn validate_linked_verifiable_presentations(
     )
     .filter_map(|linked_verifiable_presentation_url| {
         // Validate the linked verifiable presentation and get the linked verifiable credential data
-        get_validated_linked_presentation_data(resolver, &holder_document, linked_verifiable_presentation_url)
+        get_validated_linked_presentation_data(
+            resolver,
+            &holder_document,
+            linked_verifiable_presentation_url,
+            identity_manager,
+        )
     })
     .collect::<Vec<_>>()
     .await
@@ -126,12 +131,13 @@ async fn get_validated_linked_presentation_data(
     resolver: &Resolver,
     holder_document: &CoreDocument,
     linked_verifiable_presentation_url: Url,
+    identity_manager: &IdentityManager,
 ) -> Option<Vec<LinkedVerifiableCredentialData>> {
     OptionFuture::from(
         validate_linked_verifiable_presentation(holder_document, linked_verifiable_presentation_url)
             .await
             .map(|linked_verifiable_presentation| {
-                get_validated_linked_credential_data(resolver, linked_verifiable_presentation)
+                get_validated_linked_credential_data(resolver, linked_verifiable_presentation, identity_manager)
             }),
     )
     .await
@@ -178,6 +184,7 @@ async fn validate_linked_verifiable_presentation(
 async fn get_validated_linked_credential_data(
     resolver: &Resolver,
     linked_verifiable_presentation: DecodedJwtPresentation<Jwt>,
+    identity_manager: &IdentityManager,
 ) -> Vec<LinkedVerifiableCredentialData> {
     iter(linked_verifiable_presentation.presentation.verifiable_credential)
         .filter_map(|linked_verifiable_credential| async move {
@@ -204,47 +211,45 @@ async fn get_validated_linked_credential_data(
             }
 
             if !validated_linked_domains.is_empty() {
-                // Todo: replace IOTA validator
-                let validator = JwtCredentialValidator::with_signature_verifier(Verifier);
-
-                // `SkipUnsupported` allows for custom credential types, such as the StatusList2021Entry (https://www.w3.org/TR/2023/WD-vc-status-list-20230427/#statuslist2021entry)
-                let options = JwtCredentialValidationOptions::new().status_check(StatusCheck::SkipUnsupported);
-
                 // Decode the linked verifiable credential and validate the jwt_vc_json, checks the JWT and the Issuer DID
-                if let Ok(linked_verifiable_credential) = validator.validate::<_, Value>(
-                    &linked_verifiable_credential,
-                    &issuer_document,
-                    &options,
-                    FailFast::FirstError,
-                ) {
+                if let Ok(linked_verifiable_credential) = validate_jwt_vc_json(linked_verifiable_credential.as_str(), identity_manager).await
+                {
                     info!("Validated linked verifiable credential JWT: {linked_verifiable_credential:#?}");
 
+                    println!("validated jwt vc json");
+
                     // Validate the linked verifiable credential against its corresponding JSON Schema
-                    validate_credential_types(&linked_verifiable_credential.credential.to_json_value().ok()?).ok()?;
+                    validate_credential_types(&linked_verifiable_credential).ok()?;
 
-                    let credential_subject = match &linked_verifiable_credential.credential.credential_subject {
-                        OneOrMany::One(subject) => Some(subject),
+                    println!("validated credential types");
+
+                    let credential_subject = match &linked_verifiable_credential.get("credentialSubject") {
+                        Some(Value::Object(subject)) => subject,
                         // TODO: how to handle multiple credential subjects?
-                        OneOrMany::Many(subjects) => subjects.first(),
+                        Some(Value::Array(subjects)) => subjects.first().and_then(Value::as_object)?,
+                        _ => {
+                            warn!("Failed to get credential_subject from linked_verifiable_credential: {linked_verifiable_credential:#?}");
+                            return None;
+                        }
                     };
+                    // Convert the Value::Object which is typed as &Map<String, Value> back to Value to stay consistent with the rest of the codebase
+                    let credential_subject = credential_subject.clone().into();
 
-                    if let Some(credential_subject) = credential_subject {
-                        let name = get_name(credential_subject);
-                        let logo_uri = get_logo_uri(credential_subject, &linked_verifiable_credential, &validated_linked_domains).await;
-                        let issuance_date = linked_verifiable_credential.credential.issuance_date.to_rfc3339();
+                    let name = get_name(&credential_subject);
+                    let logo_uri = get_logo_uri(&credential_subject, &linked_verifiable_credential, &validated_linked_domains).await;
 
-                        info!("LinkedVerifiableCredentialData: name: {name:?}, logo_uri: {logo_uri:?}, issuance_date: {issuance_date}");
-                        Some(LinkedVerifiableCredentialData {
-                            name,
-                            logo_uri,
-                            issuance_date,
-                            issuer_linked_domains: validated_linked_domains,
-                        })
-                    }
-                    else {
-                        warn!("Failed to get credential_subject from linked_verifiable_credential: {linked_verifiable_credential:#?}");
-                        None
-                    }
+                    let issuance_date_str = linked_verifiable_credential.get("issuanceDate").and_then(|f| f.to_clean_string())?;
+                    let issuance_date = chrono::DateTime::parse_from_rfc3339(&issuance_date_str)
+                        .map(|dt| dt.to_rfc3339())
+                        .unwrap_or_default();
+
+                    info!("LinkedVerifiableCredentialData: name: {name:?}, logo_uri: {logo_uri:?}, issuance_date: {issuance_date}");
+                    Some(LinkedVerifiableCredentialData {
+                        name,
+                        logo_uri,
+                        issuance_date,
+                        issuer_linked_domains: validated_linked_domains,
+                    })
                 } else {
                     warn!("Failed to validate linked verifiable credential: {linked_verifiable_credential:#?}");
                     // TODO: Should we add more fine-grained error handling? `None` here means that the linked verifiable credential is invalid.
@@ -334,16 +339,14 @@ async fn get_issuer_linked_domains(issuer_document: &CoreDocument) -> Vec<Url> {
         .collect()
 }
 
-fn get_name(credential_subject: &Subject) -> Option<String> {
+fn get_name(credential_subject: &Value) -> Option<String> {
     credential_subject
-        .properties
         .get("name")
-        .or_else(|| credential_subject.properties.get("naam")) // TODO: "naam" is expected to be used in Dutch credentials
-        .or_else(|| credential_subject.properties.get("legal_person_name")) // This is another valid property name according to the following spec:
+        .or_else(|| credential_subject.get("naam")) // TODO: "naam" is expected to be used in Dutch credentials
+        .or_else(|| credential_subject.get("legal_person_name")) // This is another valid property name according to the following spec:
         // EWC RFC005: Issue Legal Person Identification Data (LPID) - v1.0
         // https://github.com/EWC-consortium/eudi-wallet-rfcs/blob/49faa8b0ba5e5e79836e247fd07cc0447c1ae98b/ewc-rfc005-issue-legal-person-identification-data.md#51031-lpid-attributes-specification
-        .and_then(Value::as_str)
-        .map(ToString::to_string)
+        .and_then(|value| value.to_clean_string())
 }
 
 /// First, try to get the logo URI from the credential subject.
@@ -354,16 +357,14 @@ fn get_name(credential_subject: &Subject) -> Option<String> {
 /// At first success the loop breaks and we download the image.
 /// Otherwise, we use a fallback icon.
 async fn get_logo_uri(
-    credential_subject: &Subject,
-    linked_verifiable_credential: &DecodedJwtCredential<Value>,
+    credential_subject: &Value,
+    linked_verifiable_credential: &Value,
     validated_linked_domains: &[Url],
 ) -> Option<String> {
     info!("Trying to fetch image uri from credential subject");
     let mut logo_uri = credential_subject
-        .properties
         .get("image")
-        .and_then(Value::as_str)
-        .map(ToString::to_string);
+        .and_then(|value| value.to_clean_string());
 
     // Check if logo URI was retrieved, if not then attempt to retrieve from a well-known endpoint
     if logo_uri.is_none() {
@@ -388,15 +389,21 @@ async fn get_logo_uri(
             info!("Trying to fetch image uri from {well_known_endpoint} endpoint");
             if let Ok(response) = reqwest::Client::new().get(&well_known_endpoint).send().await {
                 if let Ok(metadata) = response.json::<CredentialIssuerMetadata>().await {
-                    logo_uri = linked_verifiable_credential.credential.types.iter().find_map(|type_| {
-                        info!("Trying to fetch image uri from Credential Configuration Supported: {type_}");
-                        metadata
-                            .credential_configurations_supported
-                            .get(type_)
-                            .and_then(|credential_configuration| credential_configuration.display.first())
-                            .and_then(|display| display.logo.clone())
-                            .map(|logo| logo.uri.to_string())
-                    });
+                    logo_uri = linked_verifiable_credential
+                        .get("type")
+                        .and_then(|value| value.as_array())
+                        .into_iter()
+                        .flatten()
+                        .find_map(|type_| {
+                            let type_ = type_.to_clean_string()?;
+                            info!("Trying to fetch image uri from Credential Configuration Supported: {type_}");
+                            metadata
+                                .credential_configurations_supported
+                                .get(&type_)
+                                .and_then(|credential_configuration| credential_configuration.display.first())
+                                .and_then(|display| display.logo.clone())
+                                .map(|logo| logo.uri.to_string())
+                        });
 
                     if logo_uri.is_some() {
                         break;
@@ -441,6 +448,13 @@ fn extract_url_from_did_web(did_web: &str) -> Option<Url> {
 #[cfg(not(feature = "test_utils"))]
 #[cfg(test)]
 mod tests {
+    use crate::{
+        persistence::STRONGHOLD,
+        state::{SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS},
+        stronghold::StrongholdManager,
+        subject::subject,
+    };
+
     use super::*;
     use base64::engine::general_purpose::URL_SAFE_NO_PAD;
     use base64::Engine;
@@ -453,9 +467,10 @@ mod tests {
         verification::jws::JwsAlgorithm,
     };
     use jsonwebtoken::{Algorithm, Header};
+    use oid4vc::{oid4vc_manager::ProviderManager, oid4vci::Wallet};
     use serde_json::json;
-    use std::sync::Arc;
-    use tempfile::TempDir;
+    use std::{collections::BTreeMap, sync::Arc};
+    use tempfile::{NamedTempFile, TempDir};
     use tokio::sync::Mutex;
     use wiremock::{
         matchers::{method, path},
@@ -468,12 +483,15 @@ mod tests {
         pub domain: url::Url,
         pub did_document: CoreDocument,
         pub secret_manager: Arc<Mutex<SecretManager>>,
+        pub identity_manager: IdentityManager,
     }
 
     impl TestEntity {
         // Create a new 'Entity' with a DID Document, mock server, a domain, and a secret manager.
         async fn new() -> Self {
             engine::snapshot::try_set_encrypt_work_factor(0).unwrap();
+
+            let password = "sup3rSecr3t";
 
             let mock_server = MockServer::start().await;
 
@@ -487,7 +505,7 @@ mod tests {
 
             let mut secret_manager = SecretManager::builder()
                 .snapshot_path(snapshot_path)
-                .password("sup3rSecr3t")
+                .password(password)
                 .build()
                 .await
                 .unwrap();
@@ -503,11 +521,44 @@ mod tests {
                 .await
                 .unwrap();
 
+            let path = NamedTempFile::new().unwrap().into_temp_path();
+            *STRONGHOLD.lock().unwrap() = path.as_os_str().into();
+
+            let stronghold_manager = Arc::new(StrongholdManager::create(&password).unwrap());
+
+            let subject = subject(
+                stronghold_manager,
+                password.to_string(),
+                Arc::new(Resolver::new().await),
+            )
+            .await;
+
+            let provider_manager = ProviderManager::new(
+                subject.clone(),
+                Vec::from(SUPPORTED_DID_METHODS),
+                Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
+            )
+            .unwrap();
+
+            let wallet: Wallet = Wallet::new(
+                subject.clone(),
+                Vec::from(SUPPORTED_DID_METHODS),
+                Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
+            )
+            .unwrap();
+
+            let identity_manager = IdentityManager {
+                subject: subject.clone(),
+                provider_manager,
+                wallet,
+            };
+
             TestEntity {
                 mock_server,
                 domain,
                 did_document,
                 secret_manager: Arc::new(Mutex::new(secret_manager)),
+                identity_manager,
             }
         }
 
@@ -636,8 +687,32 @@ mod tests {
                 .build()
                 .unwrap();
 
-            self.generate_jwt(credential.serialize_jwt(Default::default()).unwrap())
-                .await
+            println!("issued credential: {credential:#?}");
+            let other: BTreeMap<String, Value> = BTreeMap::from([
+                ("issuer".to_string(), Value::String(self.did_document.id().to_string())),
+                (
+                    "issuanceDate".to_string(),
+                    Value::String(identity_iota::core::Timestamp::now_utc().to_string()),
+                ),
+            ]);
+
+            let mut serialized_credential = credential.serialize_jwt(Some(other)).unwrap();
+            println!("serialized credential: {}", serialized_credential);
+
+            serialized_credential = serialized_credential.replace(
+                "\"vc\":{",
+                &format!(
+                    "\"vc\":{{\"issuer\":\"{}\",\"issuanceDate\":\"{}\",",
+                    self.did_document.id().to_string(),
+                    identity_iota::core::Timestamp::now_utc().to_string()
+                ),
+            );
+
+            let jwt = self.generate_jwt(serialized_credential).await;
+
+            println!("issued credential jwt: {jwt:#?}");
+
+            jwt
         }
 
         // Generates a JWT with the given payload.
@@ -757,7 +832,12 @@ mod tests {
         let resolver = Resolver::new().await;
 
         assert_eq!(
-            validate_linked_verifiable_presentations(&resolver, holder.did_document.id().to_string().as_ref()).await,
+            validate_linked_verifiable_presentations(
+                &resolver,
+                holder.did_document.id().to_string().as_ref(),
+                &holder.identity_manager
+            )
+            .await,
             vec![
                 vec![LinkedVerifiableCredentialData {
                     name: Some("Webshop".to_string()),
@@ -817,7 +897,12 @@ mod tests {
         let resolver = Resolver::new().await;
 
         assert_eq!(
-            validate_linked_verifiable_presentations(&resolver, holder.did_document.id().to_string().as_ref()).await,
+            validate_linked_verifiable_presentations(
+                &resolver,
+                holder.did_document.id().to_string().as_ref(),
+                &holder.identity_manager
+            )
+            .await,
             // The domain linkage validation of the issuer failed, so the linked verifiable credential is not considered.
             vec![vec![]]
         );
@@ -906,9 +991,13 @@ mod tests {
                 .parse()
                 .unwrap();
 
-        let validated_linked_presentation_data =
-            get_validated_linked_presentation_data(&resolver, &holder.did_document, linked_verifiable_presentation_url)
-                .await;
+        let validated_linked_presentation_data = get_validated_linked_presentation_data(
+            &resolver,
+            &holder.did_document,
+            linked_verifiable_presentation_url,
+            &holder.identity_manager,
+        )
+        .await;
 
         assert_eq!(
             validated_linked_presentation_data,
