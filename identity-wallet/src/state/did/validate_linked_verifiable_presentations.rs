@@ -166,6 +166,7 @@ async fn validate_linked_verifiable_presentation(
         .ok()
         .and_then(|presentation_jwt| {
             status.is_success().then(|| {
+                // TODO: refactor entire IOTA code out
                 let validator = JwtPresentationValidator::with_signature_verifier(Verifier);
                 validator
                     .validate(&presentation_jwt.into(), &holder_document, &Default::default())
