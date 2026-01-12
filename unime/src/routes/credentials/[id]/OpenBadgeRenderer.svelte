@@ -1,10 +1,27 @@
 <script lang="ts">
   import LL from '$i18n/i18n-svelte';
   import markdownit from 'markdown-it';
+  import { fade } from 'svelte/transition';
 
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
+  import { createTooltip, melt } from '@melt-ui/svelte';
+
+  import InfoFillIcon from '~icons/ph/info-fill';
 
   import TextFieldRenderer from './TextFieldRenderer.svelte';
+
+  const {
+    elements: { trigger, content, arrow },
+    states: { open },
+  } = createTooltip({
+    positioning: {
+      placement: 'top',
+    },
+    openDelay: 0,
+    closeDelay: 0,
+    closeOnPointerDown: false,
+    forceVisible: true,
+  });
 
   export let credential: DisplayCredential;
 
@@ -14,11 +31,26 @@
 <div class="flex flex-col gap-4">
   <!-- Achievement -->
   {#if credential.data.credentialSubject?.achievement?.description}
-    <div class="prose prose-sm rounded-xl bg-background p-4 dark:prose-invert">
-      <h2>{$LL.CREDENTIAL.DETAILS.DESCRIPTION()}</h2>
+    <div class="rounded-xl bg-background p-4 dark:prose-invert">
+      <!-- Title & Info Icon -->
+      <div class="flex flex-row items-baseline justify-between gap-4">
+        <h2 class="m-0 text-xl font-bold text-slate-900 dark:text-slate-100">{$LL.CREDENTIAL.DETAILS.DESCRIPTION()}</h2>
+        <button type="button" class="flex items-center justify-center" use:melt={$trigger} aria-label="Add">
+          <InfoFillIcon class="size-5" aria-label="plus" />
+        </button>
+
+        {#if $open}
+          <div use:melt={$content} transition:fade={{ duration: 100 }} class="z-10 rounded-lg bg-white shadow">
+            <div use:melt={$arrow} />
+            <p class="px-4 py-1 text-sm">Describes a possible achievement result.</p>
+          </div>
+        {/if}
+      </div>
       <!-- TODO: Review marked vs. markdown-it and security risks. -->
       <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-      {@html md.render(credential.data.credentialSubject.achievement.description)}
+      <div class="prose prose-sm mt-4 max-w-none dark:prose-invert">
+        {@html md.render(credential.data.credentialSubject.achievement.description)}
+      </div>
     </div>
   {/if}
 
