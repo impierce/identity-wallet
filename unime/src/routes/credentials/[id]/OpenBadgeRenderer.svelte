@@ -17,6 +17,8 @@
   {#if credential.data.credentialSubject?.achievement?.description}
     <CollapsibleWrapper defaultOpen={true}>
       <h2 class="text-lg font-bold" slot="title">{$LL.CREDENTIAL.DETAILS.DESCRIPTION()}</h2>
+      <!-- TODO: Review marked vs. markdown-it and security risks. -->
+      <!-- eslint-disable-next-line svelte/no-at-html-tags -->
       {@html md.render(credential.data.credentialSubject.achievement.description)}
     </CollapsibleWrapper>
   {/if}
@@ -24,6 +26,8 @@
   {#if credential.data.credentialSubject?.achievement?.criteria?.narrative}
     <CollapsibleWrapper defaultOpen={false}>
       <h2 class="text-lg font-bold" slot="title">{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.CRITERIA()}</h2>
+      <!-- TODO: Review marked vs. markdown-it and security risks. -->
+      <!-- eslint-disable-next-line svelte/no-at-html-tags -->
       {@html md.render(credential.data.credentialSubject.achievement.criteria.narrative)}
     </CollapsibleWrapper>
   {/if}
@@ -42,6 +46,8 @@
       {#each credential.data.credentialSubject.achievement.alignment as alignmentItem}
         <h4>{alignmentItem.targetName}</h4>
         {#if alignmentItem.targetDescription}
+          <!-- TODO: Review marked vs. markdown-it and security risks. -->
+          <!-- eslint-disable-next-line svelte/no-at-html-tags -->
           {@html md.render(alignmentItem.targetDescription)}
         {/if}
       {/each}
