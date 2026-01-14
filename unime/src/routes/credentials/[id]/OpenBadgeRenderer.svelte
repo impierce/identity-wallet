@@ -1,12 +1,8 @@
 <script lang="ts">
   import LL from '$i18n/i18n-svelte';
   import markdownit from 'markdown-it';
-  import { fade } from 'svelte/transition';
 
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
-  import { createTooltip, melt } from '@melt-ui/svelte';
-
-  import InfoFillIcon from '~icons/ph/info-fill';
 
   import InfoTooltip from './InfoTooltip.svelte';
   import TextFieldRenderer from './TextFieldRenderer.svelte';
@@ -20,7 +16,6 @@
   <!-- Achievement -->
   {#if credential.data.credentialSubject?.achievement?.description}
     <div class="rounded-xl bg-background p-4 dark:prose-invert">
-      <!-- Title & Info Icon -->
       <div class="flex items-center justify-between">
         <h2 class="m-0 text-xl font-bold">{$LL.CREDENTIAL.DETAILS.DESCRIPTION()}</h2>
 

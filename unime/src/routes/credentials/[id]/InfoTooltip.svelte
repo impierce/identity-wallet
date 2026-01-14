@@ -5,7 +5,6 @@
 
   import InfoFillIcon from '~icons/ph/info-fill';
 
-  // This "prop" lets you pass in different text for every icon
   export let description: string;
 
   const {
