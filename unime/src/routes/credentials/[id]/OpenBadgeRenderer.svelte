@@ -39,7 +39,6 @@
     />
   {/if}
 
-  <!-- Alignment -->
   {#if credential.data.credentialSubject?.achievement?.alignment?.length > 0}
     <CollapsibleWrapper defaultOpen={false}>
       <h2 class="text-lg font-bold" slot="title">{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.ALIGNMENT()}</h2>
