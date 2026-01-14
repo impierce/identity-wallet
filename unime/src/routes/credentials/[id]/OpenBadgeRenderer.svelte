@@ -8,20 +8,8 @@
 
   import InfoFillIcon from '~icons/ph/info-fill';
 
+  import InfoTooltip from './InfoTooltip.svelte';
   import TextFieldRenderer from './TextFieldRenderer.svelte';
-
-  const {
-    elements: { trigger, content, arrow },
-    states: { open },
-  } = createTooltip({
-    positioning: {
-      placement: 'top',
-    },
-    openDelay: 0,
-    closeDelay: 0,
-    closeOnPointerDown: false,
-    forceVisible: true,
-  });
 
   export let credential: DisplayCredential;
 
@@ -33,33 +21,32 @@
   {#if credential.data.credentialSubject?.achievement?.description}
     <div class="rounded-xl bg-background p-4 dark:prose-invert">
       <!-- Title & Info Icon -->
-      <div class="flex flex-row items-baseline justify-between gap-4">
-        <h2 class="m-0 text-xl font-bold text-slate-900 dark:text-slate-100">{$LL.CREDENTIAL.DETAILS.DESCRIPTION()}</h2>
-        <button type="button" class="flex items-center justify-center" use:melt={$trigger} aria-label="Add">
-          <InfoFillIcon class="size-5" aria-label="plus" />
-        </button>
+      <div class="flex items-center justify-between">
+        <h2 class="m-0 text-xl font-bold">{$LL.CREDENTIAL.DETAILS.DESCRIPTION()}</h2>
 
-        {#if $open}
-          <div use:melt={$content} transition:fade={{ duration: 100 }} class="z-10 rounded-lg bg-white shadow">
-            <div use:melt={$arrow} />
-            <p class="px-4 py-1 text-sm">Describes a possible achievement result.</p>
-          </div>
-        {/if}
+        <InfoTooltip description="Describes a possible achievement result." />
       </div>
-      <!-- TODO: Review marked vs. markdown-it and security risks. -->
-      <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+
       <div class="prose prose-sm mt-4 max-w-none dark:prose-invert">
+        <!-- TODO: Review marked vs. markdown-it and security risks. -->
+        <!-- eslint-disable-next-line svelte/no-at-html-tags -->
         {@html md.render(credential.data.credentialSubject.achievement.description)}
       </div>
     </div>
   {/if}
 
   {#if credential.data.credentialSubject?.achievement?.criteria?.narrative}
-    <div class="prose prose-sm rounded-xl bg-background p-4 dark:prose-invert">
-      <h2>{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.CRITERIA()}</h2>
-      <!-- TODO: Review marked vs. markdown-it and security risks. -->
-      <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-      {@html md.render(credential.data.credentialSubject.achievement.criteria.narrative)}
+    <div class="rounded-xl bg-background p-4 dark:prose-invert">
+      <div class="flex items-center justify-between">
+        <h2 class="m-0 text-xl font-bold">{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.CRITERIA()}</h2>
+        <InfoTooltip description="Criteria describing how to earn the achievement." />
+      </div>
+
+      <div class="prose prose-sm mt-4 max-w-none dark:prose-invert">
+        <!-- TODO: Review marked vs. markdown-it and security risks. -->
+        <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+        {@html md.render(credential.data.credentialSubject.achievement.criteria.narrative)}
+      </div>
     </div>
   {/if}
 
@@ -71,30 +58,40 @@
   {/if}
 
   {#if credential.data.credentialSubject?.achievement?.alignment?.length > 0}
-    <div class="prose prose-sm rounded-xl bg-background p-4 dark:prose-invert">
-      <h2>{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.ALIGNMENT()}</h2>
-      {#each credential.data.credentialSubject.achievement.alignment as alignmentItem}
-        <h4>{alignmentItem.targetName}</h4>
-        {#if alignmentItem.targetDescription}
-          <!-- TODO Review marked vs. markdown-it and security risks. -->
-          <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-          {@html md.render(alignmentItem.targetDescription)}
-        {/if}
-      {/each}
+    <div class="rounded-xl bg-background p-4 dark:prose-invert">
+      <div class="flex items-center justify-between">
+        <h2 class="m-0 text-xl font-bold">{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.ALIGNMENT()}</h2>
+        <InfoTooltip
+          description="An object describing which objectives or educational standards this achievement aligns to, if any."
+        />
+      </div>
+
+      <div class="prose prose-sm max-w-none dark:prose-invert">
+        {#each credential.data.credentialSubject.achievement.alignment as alignmentItem}
+          <h4 class="mt-5">{alignmentItem.targetName}</h4>
+          {#if alignmentItem.targetDescription}
+            <!-- TODO Review marked vs. markdown-it and security risks. -->
+            <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+            {@html md.render(alignmentItem.targetDescription)}
+          {/if}
+        {/each}
+      </div>
     </div>
   {/if}
 
   <!-- Result -->
   {#if credential.data.credentialSubject?.result?.length > 0}
-    <div class="prose prose-sm rounded-xl bg-background p-4 dark:prose-invert">
-      <h2>{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.RESULT()}</h2>
-
+    <div class="rounded-xl bg-background p-4 dark:prose-invert">
+      <div class="flex items-center justify-between">
+        <h2 class="m-0 text-xl font-bold">{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.RESULT()}</h2>
+        <InfoTooltip description="Describes a result that was achieved." />
+      </div>
       <div class="flex flex-col divide-y divide-slate-300">
         {#each credential.data.credentialSubject.result as resultItem}
           <div class="py-4 first:pt-0 last:pb-0">
             {#if resultItem.alignment?.length > 0}
               {#each resultItem.alignment as resultAlignment}
-                <h4>{resultAlignment.targetName}</h4>
+                <h4 class="font-bold">{resultAlignment.targetName}</h4>
                 {#if resultAlignment.targetDescription}
                   <!-- TODO: Review marked vs. markdown-it and security risks. -->
                   <!-- eslint-disable-next-line svelte/no-at-html-tags -->
@@ -105,7 +102,7 @@
 
             {#if resultItem.value}
               <div class="flex h-16 items-center justify-between">
-                <h4 class="mt-2">{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.VALUE()}</h4>
+                <h4 class="text-sm font-bold">{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.VALUE()}</h4>
                 <div class="text-2xl font-bold">
                   <!-- TODO: Review marked vs. markdown-it and security risks. -->
                   <!-- eslint-disable-next-line svelte/no-at-html-tags -->
