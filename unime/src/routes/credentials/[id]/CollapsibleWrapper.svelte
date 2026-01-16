@@ -25,7 +25,7 @@
 
   {#if $open}
     <div use:melt={$content} transition:slide={{ duration: 300 }}>
-      <div class="prose-xs prose py-2 text-xs dark:prose-invert">
+      <div class="prose-xs prose py-2 text-[13px]/[24px] dark:prose-invert">
         <slot />
       </div>
     </div>
