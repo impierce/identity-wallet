@@ -85,7 +85,7 @@
             {/if}
 
             {#if resultItem.resultDescription}
-              <div class="h-8 text-[12px]/[14px] text-text-alt">
+              <div class="text-[12px]/[14px] text-text-alt">
                 <!-- TODO: Review marked vs. markdown-it and security risks. -->
                 <!-- eslint-disable-next-line svelte/no-at-html-tags -->
                 {@html md.render(resultItem.resultDescription)}
