@@ -74,9 +74,9 @@
             {/if}
 
             {#if resultItem.value}
-              <div class="flex h-16 items-center justify-between">
-                <h4 class="mt-2">{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.VALUE()}</h4>
-                <div class="text-2xl font-bold">
+              <div class="flex h-4 items-center justify-between">
+                <h4>{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.VALUE()}</h4>
+                <div class="mr-1 text-base font-bold">
                   <!-- TODO: Review marked vs. markdown-it and security risks. -->
                   <!-- eslint-disable-next-line svelte/no-at-html-tags -->
                   {@html md.render(resultItem.value)}
