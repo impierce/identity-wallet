@@ -145,9 +145,9 @@ const sv_FI = {
     },
     PASSWORD: {
       NAVBAR_TITLE: 'Lösenord',
-      TITLE_1: 'Ställ in ditt nya',
+      TITLE_1: 'Skapa ditt nya',
       TITLE_2: 'lösenord',
-      SUBTITLE: 'Välj ett starkt lösenord för att kryptera dina data.',
+      SUBTITLE: 'Skapa ett starkt lösenord för att kryptera dina data.',
       INPUT_PLACEHOLDER: 'Ange ett lösenord',
       CONFIRM: {
         NAVBAR_TITLE: 'Bekräfta lösenord',
@@ -155,8 +155,8 @@ const sv_FI = {
         TITLE_2: 'lösenord',
         SUBTITLE: 'Säkerställ att du skrev rätt.',
         INPUT_PLACEHOLDER: 'Skriv lösenordet igen',
-        MATCH: 'Lösenorden stämmer',
-        NO_MATCH: 'Lösenorden stämmer inte',
+        MATCH: 'Lösenordet stämmer',
+        NO_MATCH: 'Lösenordet stämmer inte',
       },
       BIOMETRICS: {
         TITLE: 'Aktivera {type}',
@@ -165,7 +165,7 @@ const sv_FI = {
         DECIDE_LATER: 'Bestäm senare',
       },
       COMPLETED: {
-        NAVBAR_TITLE: 'Lösenord satt',
+        NAVBAR_TITLE: 'Lösenord skapat',
         TITLE_1: 'Din UniMe-profil är nu',
         TITLE_2: 'skyddad',
         MESSAGE_1: 'Säker & trygg.',
@@ -260,8 +260,8 @@ const sv_FI = {
     PASSWORD: {
       POLICY: {
         TITLE: 'Ditt lösenord måste innehålla',
-        UPPERCASE_LETTER: 'versal',
-        LOWERCASE_LETTER: 'gemen',
+        UPPERCASE_LETTER: 'stor bokstav',
+        LOWERCASE_LETTER: 'liten bokstav',
         NUMBER: 'siffra',
         CHARACTERS: 'tecken',
       },
@@ -305,7 +305,7 @@ const sv_FI = {
     CREDENTIAL_TABS: {
       ALL: 'Alla',
       DATA: 'Data',
-      BADGES: 'Brickor',
+      BADGES: 'Förtroendemärken',
     },
     EMPTY_CREDENTIALS: {
       TITLE: 'Lite tomt här',
@@ -325,13 +325,13 @@ const sv_FI = {
     BOTTOM_NAVIGATION_TITLE: 'Skanna',
     TITLE_1: 'Skanna en',
     TITLE_2: 'QR-kod',
-    SUBTITLE: 'För in en QR-kod i bild för att starta en interaktion.',
+    SUBTITLE: 'För in en QR-kod i bilden för att starta en interaktion.',
     PERMISSION_DENIED: 'Ingen behörighet till kameran',
     OPEN_SETTINGS: 'Öppna inställningar',
     CREDENTIAL_OFFER: {
-      NAVBAR_TITLE: 'Legitimationserbjudande',
-      DESCRIPTION: 'erbjuder dig följande legitimationer',
-      ACCEPT: 'Acceptera legitimationer',
+      NAVBAR_TITLE: 'Intygsserbjudande',
+      DESCRIPTION: 'erbjuder dig följande intyg',
+      ACCEPT: 'Acceptera intyg',
     },
     CONNECTION_REQUEST: {
       NAVBAR_TITLE: 'Anslutningsförfrågan',
@@ -342,7 +342,7 @@ const sv_FI = {
     },
     SHARE_CREDENTIALS: {
       NAVBAR_TITLE: 'Dela data',
-      DESCRIPTION: 'begär följande legitimationer',
+      DESCRIPTION: 'begär följande intyg',
       REQUESTED: 'Begärt',
       APPROVE: 'Godkänn förfrågan',
     },
@@ -373,7 +373,7 @@ const sv_FI = {
     INPUT_PLACEHOLDER: 'Sök efter något',
     NO_QUERY: {
       TITLE: 'Vad ska vi söka efter?',
-      DESCRIPTION: 'Sök efter alla dina legitimationer och brickor här.',
+      DESCRIPTION: 'Sök efter alla dina intyg och förtroendemärken här.',
     },
     NO_RESULTS: {
       TITLE: 'Inga resultat',
@@ -382,7 +382,7 @@ const sv_FI = {
     RECENT_SEARCHES: 'Senaste sökningar',
   },
   CREDENTIAL: {
-    NAVBAR_TITLE: 'Legitimationsinformation',
+    NAVBAR_TITLE: 'Intygsinformation',
     DETAILS: {
       VALID: 'Giltig',
       INVALID: 'Ogiltig',
@@ -411,16 +411,16 @@ const sv_FI = {
         CONFIRM_BUTTON: 'Uppdatera visningsnamn',
       },
       DELETE: {
-        MENU_BUTTON: 'Ta bort legitimation',
-        TITLE: 'Ta bort legitimation',
-        DESCRIPTION: 'Är du säker på att du vill ta bort denna legitimation från din plånbok? Detta kan inte ångras.',
+        MENU_BUTTON: 'Ta bort intyg',
+        TITLE: 'Ta bort intyg',
+        DESCRIPTION: 'Är du säker på att du vill ta bort detta intyg från din plånbok? Detta kan inte ångras.',
         CONFIRM_BUTTON: 'Ta bort',
       },
     },
   },
   ADD_CREDENTIALS: {
     BUTTON: 'Lägg till',
-    NAVBAR_TITLE: 'Lägg till data',
+    NAVBAR_TITLE: 'Lägg till intyg',
     VALUE_REQUIRED: 'Obligatoriskt',
     LABEL_DISCLAIMER: 'Syns bara för dig',
     FAVORITES_TOGGLE_LABEL: 'Lägg till i favoriter',
