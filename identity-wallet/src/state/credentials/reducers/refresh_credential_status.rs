@@ -29,6 +29,8 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
             AppError::NoCredentialWithIdError(credential_id.clone())
         })?;
 
+        let display_name = credential.display_name.clone();
+
         let credential_status_data = match credential.credential_status.as_mut() {
             Some(data) => data,
             None => {
@@ -48,6 +50,8 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
             .identity_manager
             .as_ref()
             .ok_or(AppError::MissingManagerError("identity"))?;
+
+        let debug_timestamp_before = chrono::Local::now();
 
         match fetch_credential_status(credential_status_data, identity_manager).await {
             Ok(status) => {
@@ -94,16 +98,40 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
                 // However, this is also not ideal. TODO: how to handle a status that consistently fails to refresh?
                 warn!("Failed to refresh credential status for credential with id: `{credential_id}`. The current status remains unchanged: `{:?}`. Error: {e}", credential_status_data.status);
 
+                let debug_timestamp_after = chrono::Local::now();
+                let debug_duration = debug_timestamp_after - debug_timestamp_before;
+
                 return Ok(AppState {
+                    debug_messages: {
+                        let mut debug_messages = state.debug_messages.clone();
+                        debug_messages.push_back(format!(
+                            "Refreshing credential status for `{}` took {:?}ms (failed)",
+                            display_name,
+                            debug_duration.num_milliseconds()
+                        ));
+                        debug_messages
+                    },
                     current_user_prompt: None,
                     ..state.clone()
                 });
             }
         };
 
+        let debug_timestamp_after = chrono::Local::now();
+        let debug_duration = debug_timestamp_after - debug_timestamp_before;
+
         drop(state_guard);
 
         return Ok(AppState {
+            debug_messages: {
+                let mut debug_messages = state.debug_messages.clone();
+                debug_messages.push_back(format!(
+                    "Refreshing credential status for `{}` took {:?}ms (success)",
+                    display_name,
+                    debug_duration.num_milliseconds()
+                ));
+                debug_messages
+            },
             current_user_prompt: None,
             credentials,
             ..state.to_owned()
