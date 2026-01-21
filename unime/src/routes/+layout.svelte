@@ -443,6 +443,12 @@ Stacking context: We have to deviate from the DOM-sequence.
     {#if showDebugMessages}
       <div class="relative z-10 min-h-full w-screen bg-orange-100 pt-8">
         <button
+          class="absolute top-1 left-1 rounded-full p-2 text-orange-800"
+          on:click={() => dispatch({ type: '[DEV] Clear debug log' })}
+        >
+          <TrashRegularIcon />
+        </button>
+        <button
           class="absolute top-1 right-1 rounded-full p-2 text-orange-800"
           on:click={() => (showDebugMessages = false)}
         >
