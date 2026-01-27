@@ -7,10 +7,13 @@
 
   import '@lottiefiles/lottie-player';
 
+  import { onMount } from 'svelte';
+
   import LL from '$i18n/i18n-svelte';
   import { writable, type Writable } from 'svelte/store';
 
   import { Button, CredentialList, Favorites, IconMessage, PaddedIcon, Tabs } from '$lib/components';
+  import { dispatch } from '$lib/dispatcher';
   import { GhostFillIcon, MagnifyingGlassIcon, PlusCircleIcon, RocketLaunchFillIcon } from '$lib/icons';
   import { onboarding_state, state } from '$lib/stores';
   import { calculateInitials } from '$lib/utils';
@@ -33,6 +36,10 @@
     if (type === 'popstate') {
       cancel();
     }
+  });
+
+  onMount(() => {
+    dispatch({ type: '[Credential] Refresh all statuses' });
   });
 
   $: {

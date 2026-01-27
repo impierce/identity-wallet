@@ -4,8 +4,9 @@
 
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 
+  import TextFieldRenderer from './(renderers)/TextFieldRenderer.svelte';
+  import CollapsibleWrapper from './CollapsibleWrapper.svelte';
   import InfoTooltip from './InfoTooltip.svelte';
-  import TextFieldRenderer from './TextFieldRenderer.svelte';
 
   export let credential: DisplayCredential;
 
@@ -15,34 +16,23 @@
 <div class="flex flex-col gap-4">
   <!-- Achievement -->
   {#if credential.data.credentialSubject?.achievement?.description}
-    <div class="rounded-xl bg-background p-4 dark:prose-invert">
-      <div class="flex items-center justify-between">
-        <h2 class="m-0 text-xl font-bold">{$LL.CREDENTIAL.DETAILS.DESCRIPTION()}</h2>
-
-        <InfoTooltip description="Describes a possible achievement result." />
-      </div>
-
-      <div class="prose prose-sm mt-4 max-w-none dark:prose-invert">
-        <!-- TODO: Review marked vs. markdown-it and security risks. -->
-        <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-        {@html md.render(credential.data.credentialSubject.achievement.description)}
-      </div>
-    </div>
+    <CollapsibleWrapper defaultOpen={true}>
+      <h2 class="text-lg font-bold" slot="title">{$LL.CREDENTIAL.DETAILS.DESCRIPTION()}</h2>
+      <InfoTooltip description="Describes a possible achievement result." />
+      <!-- TODO: Review marked vs. markdown-it and security risks. -->
+      <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+      {@html md.render(credential.data.credentialSubject.achievement.description)}
+    </CollapsibleWrapper>
   {/if}
 
   {#if credential.data.credentialSubject?.achievement?.criteria?.narrative}
-    <div class="rounded-xl bg-background p-4 dark:prose-invert">
-      <div class="flex items-center justify-between">
-        <h2 class="m-0 text-xl font-bold">{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.CRITERIA()}</h2>
-        <InfoTooltip description="Criteria describing how to earn the achievement." />
-      </div>
-
-      <div class="prose prose-sm mt-4 max-w-none dark:prose-invert">
-        <!-- TODO: Review marked vs. markdown-it and security risks. -->
-        <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-        {@html md.render(credential.data.credentialSubject.achievement.criteria.narrative)}
-      </div>
-    </div>
+    <CollapsibleWrapper defaultOpen={false}>
+      <h2 class="text-lg font-bold" slot="title">{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.CRITERIA()}</h2>
+      <InfoTooltip description="Criteria describing how to earn the achievement." />
+      <!-- TODO: Review marked vs. markdown-it and security risks. -->
+      <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+      {@html md.render(credential.data.credentialSubject.achievement.criteria.narrative)}
+    </CollapsibleWrapper>
   {/if}
 
   {#if credential.data.credentialSubject?.achievement?.achievementType}
@@ -53,34 +43,29 @@
   {/if}
 
   {#if credential.data.credentialSubject?.achievement?.alignment?.length > 0}
-    <div class="rounded-xl bg-background p-4 dark:prose-invert">
-      <div class="flex items-center justify-between">
-        <h2 class="m-0 text-xl font-bold">{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.ALIGNMENT()}</h2>
-        <InfoTooltip
-          description="An object describing which objectives or educational standards this achievement aligns to, if any."
-        />
-      </div>
-
-      <div class="prose prose-sm max-w-none dark:prose-invert">
-        {#each credential.data.credentialSubject.achievement.alignment as alignmentItem}
-          <h4 class="mt-5">{alignmentItem.targetName}</h4>
-          {#if alignmentItem.targetDescription}
-            <!-- TODO Review marked vs. markdown-it and security risks. -->
-            <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-            {@html md.render(alignmentItem.targetDescription)}
-          {/if}
-        {/each}
-      </div>
-    </div>
+    <CollapsibleWrapper defaultOpen={false}>
+      <h2 class="text-lg font-bold" slot="title">{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.ALIGNMENT()}</h2>
+      <InfoTooltip
+        description="An object describing which objectives or educational standards this achievement aligns to, if any."
+      />
+      {#each credential.data.credentialSubject.achievement.alignment as alignmentItem}
+        <h4>{alignmentItem.targetName}</h4>
+        {#if alignmentItem.targetDescription}
+          <!-- TODO: Review marked vs. markdown-it and security risks. -->
+          <!-- eslint-disable-next-line svelte/no-at-html-tags -->
+          {@html md.render(alignmentItem.targetDescription)}
+        {/if}
+      {/each}
+    </CollapsibleWrapper>
   {/if}
 
   <!-- Result -->
   {#if credential.data.credentialSubject?.result?.length > 0}
-    <div class="rounded-xl bg-background p-4 dark:prose-invert">
-      <div class="flex items-center justify-between">
-        <h2 class="m-0 text-xl font-bold">{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.RESULT()}</h2>
-        <InfoTooltip description="Describes a result that was achieved." />
-      </div>
+    <CollapsibleWrapper defaultOpen={false}>
+      <h2 class="text-lg font-bold" slot="title">
+        {$LL.CREDENTIAL.DETAILS.OPEN_BADGES.RESULT()}
+      </h2>
+      <InfoTooltip description="Describes a result that was achieved." />
       <div class="flex flex-col divide-y divide-slate-300">
         {#each credential.data.credentialSubject.result as resultItem}
           <div class="py-4 first:pt-0 last:pb-0">
@@ -96,9 +81,9 @@
             {/if}
 
             {#if resultItem.value}
-              <div class="flex h-16 items-center justify-between">
-                <h4 class="text-sm font-bold">{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.VALUE()}</h4>
-                <div class="text-2xl font-bold">
+              <div class="flex h-4 items-center justify-between">
+                <h4>{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.VALUE()}</h4>
+                <div class="mr-1 text-base font-bold">
                   <!-- TODO: Review marked vs. markdown-it and security risks. -->
                   <!-- eslint-disable-next-line svelte/no-at-html-tags -->
                   {@html md.render(resultItem.value)}
@@ -116,7 +101,7 @@
           </div>
         {/each}
       </div>
-    </div>
+    </CollapsibleWrapper>
   {/if}
 
   <!-- "validFrom" is defined as REQUIRED in JSON Schema: https://purl.imsglobal.org/spec/ob/v3p0/schema/json/ob_v3p0_achievementcredential_schema.json -->
