@@ -19,18 +19,17 @@ downcast-rs = "1.2"
 dyn-clone = "1.0"
 futures = "0.3"
 icu = "1.4.0"
-# TODO: For all `identity_*` dependencies, switch to latest `beta` tag once https://github.com/iotaledger/identity/pull/1770 is merged.
-identity_credential = { git = "https://github.com/iotaledger/identity", rev = "e68d4f5", default-features = false, features = [
+identity_credential = { git = "https://github.com/iotaledger/identity", tag = "v1.9.1-beta.1", default-features = false, features = [
     "credential",
     "domain-linkage",
     "presentation",
     "validator",
     "sd-jwt-vc",
 ] }
-identity_core = { git = "https://github.com/iotaledger/identity", rev = "e68d4f5" }
-identity_eddsa_verifier = { git = "https://github.com/iotaledger/identity", rev = "e68d4f5" }
-identity_iota = { git = "https://github.com/iotaledger/identity", rev = "e68d4f5" }
-identity_jose = { git = "https://github.com/iotaledger/identity", rev = "e68d4f5" }
+identity_core = { git = "https://github.com/iotaledger/identity", tag = "v1.9.1-beta.1" }
+identity_eddsa_verifier = { git = "https://github.com/iotaledger/identity", tag = "v1.9.1-beta.1" }
+identity_iota = { git = "https://github.com/iotaledger/identity", tag = "v1.9.1-beta.1" }
+identity_jose = { git = "https://github.com/iotaledger/identity", tag = "v1.9.1-beta.1" }
 iota_stronghold = { version = "2.1" }
 itertools = "0.10"
 jsonschema = "0.29"
