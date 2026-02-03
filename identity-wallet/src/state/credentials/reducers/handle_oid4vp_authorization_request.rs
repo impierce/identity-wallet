@@ -1,5 +1,6 @@
 use crate::state::core_utils::helpers::get_unverified_jwt_claims;
 use crate::state::credentials::reducers::self_issue_credential::SubjectWrapper;
+use crate::state::credentials::Sha256Hasher;
 use crate::{
     error::AppError::{self, *},
     persistence::{hash, persist_asset},
@@ -16,7 +17,6 @@ use crate::{
 };
 use chrono::{Duration, Utc};
 use identity_core::common::Object as IotaObject;
-use identity_credential::sd_jwt_v2::{KeyBindingJwtBuilder, Sha256Hasher};
 use identity_credential::sd_jwt_vc::SdJwtVc;
 use identity_iota::did::CoreDID;
 use log::info;
@@ -40,6 +40,7 @@ use identity_credential::{credential::Jwt, presentation::Presentation};
 use identity_iota::core::Url;
 use jsonwebtoken::Algorithm;
 use jsonwebtoken::Header;
+use sd_jwt::KeyBindingJwtBuilder;
 use serde_json::Value;
 use std::sync::Arc;
 
@@ -140,13 +141,13 @@ pub async fn get_vp_token(
                     .await
                     .map_err(|e| AppError::Error(format!("Failed to build KeyBindingJwt: {e}")))?;
 
-                let (sd_jwt_vc, _) = sd_jwt_vc
+                let (mut sd_jwt_vc, _) = sd_jwt_vc
                     .into_presentation(&Sha256Hasher::new())
                     .map_err(|err| AppError::Error(format!("Failed to create SD-JWT presentation: {err}")))?
                     // TODO: Conceal claims
-                    .attach_key_binding_jwt(key_binding_jwt)
-                    .finish()
-                    .map_err(|err| AppError::Error(format!("Failed to finalize SD-JWT presentation: {err}")))?;
+                    .finish();
+
+                sd_jwt_vc.attach_key_binding_jwt(key_binding_jwt);
 
                 PresentationFormat::DcSdJwt(sd_jwt_vc.to_string())
             }

@@ -2,15 +2,12 @@ use std::sync::Arc;
 
 use async_trait::async_trait;
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine};
-use identity_credential::sd_jwt_vc::SD_JWT_DC_TYP;
-use identity_credential::{
-    sd_jwt_v2::{JsonObject, JwsSigner},
-    sd_jwt_vc::SdJwtVcBuilder,
-};
+use identity_credential::sd_jwt_vc::{SdJwtVcBuilder, SD_JWT_VC_TYP};
 use identity_iota::core::{Timestamp, Url};
 use itertools::Itertools;
 use jsonwebtoken::Algorithm;
 use oid4vc::oid4vc_core::Sign;
+use sd_jwt::{JsonObject, JwsSigner, RequiredKeyBinding};
 use serde_json::json;
 use uuid::Uuid;
 
@@ -114,8 +111,8 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
 
         let sd_jwt_credential = SdJwtVcBuilder::new(credential_data)
             .map_err(|_| AppError::Error("Failed to create a SdJwtVcBuilder".to_string()))?
-            .header(JsonObject::from_iter(vec![
-                ("typ".to_string(), serde_json::Value::String(SD_JWT_DC_TYP.to_string())),
+            .headers(JsonObject::from_iter(vec![
+                ("typ".to_string(), serde_json::Value::String(SD_JWT_VC_TYP.to_string())),
                 ("kid".to_string(), serde_json::Value::String(kid.clone())),
             ]))
             .vct(
@@ -125,7 +122,7 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
             ) // TODO: make this specific to the credential type chosen and coherent with the JsonSchema used.
             .iat(now)
             .iss(issuer_did)
-            .require_key_binding(identity_credential::sd_jwt_v2::RequiredKeyBinding::Kid(kid))
+            .require_key_binding(RequiredKeyBinding::Kid(kid))
             // TODO: how to implement the fn make_concealable(), also when fields should only be known from the JsonSchema?
             .finish::<SubjectWrapper>(&subject_wrapper, key_type)
             .await
