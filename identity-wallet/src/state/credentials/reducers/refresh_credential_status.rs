@@ -29,8 +29,6 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
             AppError::NoCredentialWithIdError(credential_id.clone())
         })?;
 
-        let display_name = credential.display_name.clone();
-
         let credential_status_data = match credential.credential_status.as_mut() {
             Some(data) => data,
             None => {
@@ -52,6 +50,8 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
             .ok_or(AppError::MissingManagerError("identity"))?;
 
         let debug_timestamp_before = chrono::Local::now();
+
+        let display_name = credential.display_name.clone();
 
         match fetch_credential_status(credential_status_data, identity_manager).await {
             Ok(status) => {
@@ -93,6 +93,7 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
                 }
             }
             Err(e) => {
+                // TODO: check if this arm is reached when flickering happens in credential status
                 // This error handling means we don't panic when the refresh_credential_status function fails.
                 // Instead we don't bother the user with any of the errors and keep the old status and simply don't update it.
                 // However, this is also not ideal. TODO: how to handle a status that consistently fails to refresh?
@@ -154,7 +155,7 @@ pub async fn fetch_credential_status(
         // TODO: the response type is hardcoded to be JWT, since we can't handle CWT yet. However when we implement CWT we then need some way to discover what encoding the Status List Provider is using.
         StatusListTokenResponseType::Jwt,
     )
-    .await?;
+    .await?; // TODO: this error is caught in the caller function and shouldn't flip a status to Invalid already, so the problem is still UniCore's for flickering, let's test this anyway
 
     let jwt_header = decode_header(&status_list_jwt).map_err(|_| AppError::GetCredentialStatusError)?;
     let key_id = jwt_header.kid.ok_or(AppError::GetCredentialStatusError)?;
