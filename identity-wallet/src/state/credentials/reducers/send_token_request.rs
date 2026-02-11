@@ -138,6 +138,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             TokenRequest::PreAuthorizedCode {
                 pre_authorized_code: code,
                 tx_code,
+                authorization_details: None,
             }
         } else {
             let code_verifier = state
@@ -151,6 +152,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                 code,
                 code_verifier: Some(code_verifier),
                 redirect_uri: Some(UNIME_REDIRECT_URI.parse().unwrap()),
+                authorization_details: None,
             }
         };
 
@@ -290,8 +292,20 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             credentials.push((
                 credential_configuration_id,
                 credential,
-                credential_configuration.display.clone(),
-                credential_configuration.claims.clone(),
+                credential_configuration
+                    .credential_metadata
+                    .clone()
+                    .unwrap()
+                    .display
+                    .clone()
+                    .unwrap(),
+                credential_configuration
+                    .credential_metadata
+                    .clone()
+                    .unwrap()
+                    .claims
+                    .clone()
+                    .unwrap(),
             ));
         }
 
@@ -421,7 +435,14 @@ fn get_credential_display_name(
 ) -> String {
     credential_configurations_supported
         .get(credential_configuration_id)
-        .and_then(|credential_configuration| credential_configuration.display.first())
+        .and_then(|credential_configuration| {
+            credential_configuration
+                .credential_metadata
+                .as_ref()
+                .and_then(|credential_metadata| {
+                    credential_metadata.display.as_ref().and_then(|display| display.first())
+                })
+        })
         // Get the name of the credential from the display property if it exists.
         .map(|display| display.name.clone())
         .or_else(|| {
@@ -514,7 +535,9 @@ async fn get_credential_status(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use oid4vc::oid4vci::credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedDisplay;
+    use oid4vc::oid4vci::credential_issuer::credential_configurations_supported::{
+        CredentialConfigurationsSupportedDisplay, CredentialMetadata,
+    };
 
     #[test]
     fn display_name_is_successfully_read_from_credential_configuration() {
@@ -524,15 +547,18 @@ mod tests {
         let credential_configurations_supported = HashMap::from_iter(vec![(
             credential_configuration_id.to_string(),
             CredentialConfigurationsSupportedObject {
-                display: vec![CredentialConfigurationsSupportedDisplay {
-                    name: "Credential Name".to_string(),
-                    locale: None,
-                    logo: None,
-                    description: None,
-                    background_image: None,
-                    background_color: None,
-                    text_color: None,
-                }],
+                credential_metadata: Some(CredentialMetadata {
+                    display: Some(vec![CredentialConfigurationsSupportedDisplay {
+                        name: "Credential Name".to_string(),
+                        locale: None,
+                        logo: None,
+                        description: None,
+                        background_image: None,
+                        background_color: None,
+                        text_color: None,
+                    }]),
+                    claims: Some(vec![]),
+                }),
                 ..Default::default()
             },
         )]);
@@ -567,10 +593,7 @@ mod tests {
         // Credential configuration without a display name. The `type` property should be used to get the display name.
         let credential_configurations_supported = HashMap::from_iter(vec![(
             credential_configuration_id.to_string(),
-            CredentialConfigurationsSupportedObject {
-                display: vec![],
-                ..Default::default()
-            },
+            CredentialConfigurationsSupportedObject::default(),
         )]);
 
         // Credential with a `type` property. The `type` property is a string and it should be used as the display name.
@@ -602,10 +625,7 @@ mod tests {
         // Credential configuration without a display name. The `type` property should be used to get the display name.
         let credential_configurations_supported = HashMap::from_iter(vec![(
             credential_configuration_id.to_string(),
-            CredentialConfigurationsSupportedObject {
-                display: vec![],
-                ..Default::default()
-            },
+            CredentialConfigurationsSupportedObject::default(),
         )]);
 
         // Credential with a `type` property. The `type` property is an array and the last element should be used as the
