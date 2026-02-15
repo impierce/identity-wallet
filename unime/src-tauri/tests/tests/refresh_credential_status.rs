@@ -191,3 +191,97 @@ async fn test_refresh_all_credential_statuses() {
     assert_eq!(results, vec![StatusType::INVALID; 3]);
     assert_ne!(last_checked, updated_last_checked);
 }
+
+#[tokio::test]
+#[serial_test::serial]
+async fn test_unreachable_credential_status() {
+    // Spin up wiremock for the Status Provider
+    let mock_server = MockServer::start().await;
+    Mock::given(method("GET"))
+        .and(path("/ietf-oauth-token-status-list/0"))
+        .respond_with(ResponseTemplate::new(503))
+        .expect(1)
+        .mount(&mock_server)
+        .await;
+
+    // Set up the state and managers for the test.
+    setup_state_file();
+    let mut state = json_example::<AppState>("tests/fixtures/states/credential_with_status.json");
+    let managers = test_managers(vec![]).await;
+    state.core_utils.managers = managers;
+
+    // Modify the credential to use the mock server URL
+    let status = state
+        .credentials
+        .get_mut(0)
+        .unwrap()
+        .credential_status
+        .as_mut()
+        .unwrap();
+    status.uri =
+        serde_json::from_value(json!(mock_server.uri().to_string() + "/ietf-oauth-token-status-list/0")).unwrap();
+
+    // Save the last_checked field to check if it's updated later
+    let last_checked = status.last_checked.clone();
+
+    // Set up stronghold and insert the modified credential
+    setup_stronghold();
+    let stronghold_manager = state
+        .core_utils
+        .managers
+        .lock()
+        .await
+        .stronghold_manager
+        .as_ref()
+        .unwrap()
+        .clone();
+    let key: uuid::Uuid = state.credentials.first().unwrap().id.parse().unwrap();
+    let verifiable_credential_record = VerifiableCredentialRecord {
+        display_credential: state.credentials.first().unwrap().clone(),
+        verifiable_credential: serde_json::to_value(state.credentials.first().unwrap()).unwrap(),
+    };
+    stronghold_manager
+        .insert(
+            key,
+            serde_json::json!(verifiable_credential_record)
+                .to_string()
+                .as_bytes()
+                .to_vec(),
+        )
+        .unwrap();
+
+    let action = json_example::<Action>("tests/fixtures/actions/refresh_credential_status.json");
+    let state = refresh_credential_status(state, action).await.unwrap();
+
+    let result = state
+        .credentials
+        .first()
+        .unwrap()
+        .credential_status
+        .as_ref()
+        .unwrap()
+        .status;
+
+    assert_eq!(result, StatusType::VALID);
+    assert!(
+        !state
+            .credentials
+            .first()
+            .unwrap()
+            .credential_status
+            .as_ref()
+            .unwrap()
+            .reachable
+    );
+    assert_eq!(
+        last_checked,
+        state
+            .credentials
+            .first()
+            .unwrap()
+            .credential_status
+            .as_ref()
+            .unwrap()
+            .last_checked
+    );
+}

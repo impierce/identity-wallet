@@ -96,12 +96,45 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
                 }
             }
             Err(e) => {
-                // TODO: check if this arm is reached when flickering happens in credential status
                 // This error handling means we don't panic when the refresh_credential_status function fails.
-                // Instead we don't bother the user with any of the errors and keep the old status and simply don't update it.
+                // We log the error, keep the status and the last_checked field the same and only update the reachability status.
+                // We don't make any assumptions on the credential status since the error has to do with the reachability of the status list, not the status itself.
                 // However, this is also not ideal. TODO: how to handle a status that consistently fails to refresh?
                 warn!("Failed to refresh credential status for credential with id: `{credential_id}`. The current status remains unchanged: `{:?}`. Error: {e}", credential_status_data.status);
                 credential_status_data.reachable = false;
+
+                // Update the credential in Stronghold
+                {
+                    let stronghold_manager = state_guard
+                        .stronghold_manager
+                        .as_ref()
+                        .ok_or(AppError::MissingManagerError("stronghold"))?;
+
+                    let key: uuid::Uuid = credential_id.parse().map_err(AppError::InvalidUuidError)?;
+
+                    let updated_credential = credentials
+                        .iter()
+                        .find(|c| c.id == credential_id)
+                        .ok_or(AppError::NoCredentialWithIdError(credential_id))?;
+
+                    let mut verifiable_credential_record = stronghold_manager
+                        .remove(key)
+                        .map_err(AppError::StrongholdDeletionError)?
+                        .and_then(|data| serde_json::from_slice::<VerifiableCredentialRecord>(data.as_slice()).ok())
+                        .ok_or(AppError::StrongholdMissingCredentialError(key))?;
+
+                    verifiable_credential_record.display_credential = updated_credential.clone();
+
+                    stronghold_manager
+                        .insert(
+                            key,
+                            serde_json::json!(verifiable_credential_record)
+                                .to_string()
+                                .as_bytes()
+                                .to_vec(),
+                        )
+                        .map_err(AppError::StrongholdInsertionError)?;
+                }
 
                 let debug_timestamp_after = chrono::Local::now();
                 let debug_duration = debug_timestamp_after - debug_timestamp_before;
@@ -117,6 +150,7 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
                         debug_messages
                     },
                     current_user_prompt: None,
+                    credentials,
                     ..state.clone()
                 });
             }
