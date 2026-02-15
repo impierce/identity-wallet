@@ -68,6 +68,7 @@ pub struct CredentialStatus {
     pub uri: Url,
     #[derivative(PartialEq = "ignore")]
     pub last_checked: String,
+    pub reachable: bool,
 }
 
 #[typetag::serde(name = "display_credential")]

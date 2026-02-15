@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use crate::{
     error::AppError,
     state::{
@@ -58,6 +60,7 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
                 info!("Successfully fetched credential status for credential with id: `{credential_id}`: `{status:?}` (previous status: `{:?}`)", credential_status_data.status);
                 credential_status_data.last_checked = DateUtils::new_date_string();
                 credential_status_data.status = status;
+                credential_status_data.reachable = true;
 
                 // Update the credential in Stronghold
                 {
@@ -98,6 +101,7 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
                 // Instead we don't bother the user with any of the errors and keep the old status and simply don't update it.
                 // However, this is also not ideal. TODO: how to handle a status that consistently fails to refresh?
                 warn!("Failed to refresh credential status for credential with id: `{credential_id}`. The current status remains unchanged: `{:?}`. Error: {e}", credential_status_data.status);
+                credential_status_data.reachable = false;
 
                 let debug_timestamp_after = chrono::Local::now();
                 let debug_duration = debug_timestamp_after - debug_timestamp_before;
@@ -203,6 +207,7 @@ pub async fn fetch_status_list(uri: &str, accept_header: StatusListTokenResponse
     // 3xx redirects should be followed, but infinite loops are caught after 5 redirects.
     let client = Client::builder()
         .redirect(Policy::limited(5))
+        .timeout(Duration::from_secs(30))
         .build()
         .map_err(AppError::FetchCredentialListError)?;
 
