@@ -16,10 +16,9 @@ use crate::{
         AppState,
     },
 };
-use sd_jwt::Sha256Hasher;
 use serde_json::Value;
 
-use identity_credential::sd_jwt_vc::SdJwtVc;
+use identity_credential::{sd_jwt_v2::Sha256Hasher, sd_jwt_vc::SdJwtVc};
 use log::{debug, info, warn};
 use oid4vc::oid4vp::oid4vp::OID4VP;
 use oid4vc::siopv2::siopv2::SIOPv2;
