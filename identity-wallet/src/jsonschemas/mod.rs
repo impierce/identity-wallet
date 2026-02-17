@@ -46,6 +46,7 @@ fn compile_validator(json_schema_str: &str) -> Result<Validator, AppError> {
             .with_retriever(LocalRetriever {
                 base_path: jsonschema_dir.clone(),
             })
+            .should_validate_formats(true)
             .build(&json_schema)
             .map_err(|_| {
                 AppError::Error(format!(
@@ -57,6 +58,7 @@ fn compile_validator(json_schema_str: &str) -> Result<Validator, AppError> {
             .with_retriever(LocalRetriever {
                 base_path: jsonschema_dir.clone(),
             })
+            .should_validate_formats(true)
             .build(&json_schema)
             .map_err(|_| {
                 AppError::Error(format!(
