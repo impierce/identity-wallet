@@ -491,7 +491,6 @@ async fn get_credential_status(
         idx: credential_status_claim.referenced_status_list.idx,
         uri: credential_status_claim.referenced_status_list.uri,
         last_checked: String::new(),
-        reachable: false,
     };
 
     let status = match fetch_credential_status(&credential_status_data, identity_manager).await {
@@ -503,7 +502,6 @@ async fn get_credential_status(
     };
     credential_status_data.status = status;
     credential_status_data.last_checked = DateUtils::new_date_string();
-    credential_status_data.reachable = true;
 
     info!(
         "Successfully set credential status for credential with id: `{}`",

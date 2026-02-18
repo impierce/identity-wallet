@@ -60,7 +60,6 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
                 info!("Successfully fetched credential status for credential with id: `{credential_id}`: `{status:?}` (previous status: `{:?}`)", credential_status_data.status);
                 credential_status_data.last_checked = DateUtils::new_date_string();
                 credential_status_data.status = status;
-                credential_status_data.reachable = true;
 
                 // Update the credential in Stronghold
                 {
@@ -97,44 +96,11 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
             }
             Err(e) => {
                 // This error handling means we don't panic when the refresh_credential_status function fails.
-                // We log the error, keep the status and the last_checked field the same and only update the reachability status.
+                // We log the error, keep the status and the last_checked field the same.
                 // We don't make any assumptions on the credential status since the error has to do with the reachability of the status list, not the status itself.
-                // However, this is also not ideal. TODO: how to handle a status that consistently fails to refresh?
+                // However, this is also not ideal, as it is up to the verifier how to handle a status that is unreachable.
+                // This means a seemingly valid credential could be rejected when a user shares it.
                 warn!("Failed to refresh credential status for credential with id: `{credential_id}`. The current status remains unchanged: `{:?}`. Error: {e}", credential_status_data.status);
-                credential_status_data.reachable = false;
-
-                // Update the credential in Stronghold
-                {
-                    let stronghold_manager = state_guard
-                        .stronghold_manager
-                        .as_ref()
-                        .ok_or(AppError::MissingManagerError("stronghold"))?;
-
-                    let key: uuid::Uuid = credential_id.parse().map_err(AppError::InvalidUuidError)?;
-
-                    let updated_credential = credentials
-                        .iter()
-                        .find(|c| c.id == credential_id)
-                        .ok_or(AppError::NoCredentialWithIdError(credential_id))?;
-
-                    let mut verifiable_credential_record = stronghold_manager
-                        .remove(key)
-                        .map_err(AppError::StrongholdDeletionError)?
-                        .and_then(|data| serde_json::from_slice::<VerifiableCredentialRecord>(data.as_slice()).ok())
-                        .ok_or(AppError::StrongholdMissingCredentialError(key))?;
-
-                    verifiable_credential_record.display_credential = updated_credential.clone();
-
-                    stronghold_manager
-                        .insert(
-                            key,
-                            serde_json::json!(verifiable_credential_record)
-                                .to_string()
-                                .as_bytes()
-                                .to_vec(),
-                        )
-                        .map_err(AppError::StrongholdInsertionError)?;
-                }
 
                 let debug_timestamp_after = chrono::Local::now();
                 let debug_duration = debug_timestamp_after - debug_timestamp_before;
@@ -150,7 +116,6 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
                         debug_messages
                     },
                     current_user_prompt: None,
-                    credentials,
                     ..state.clone()
                 });
             }
@@ -193,7 +158,7 @@ pub async fn fetch_credential_status(
         // TODO: the response type is hardcoded to be JWT, since we can't handle CWT yet. However when we implement CWT we then need some way to discover what encoding the Status List Provider is using.
         StatusListTokenResponseType::Jwt,
     )
-    .await?; // TODO: this error is caught in the caller function and shouldn't flip a status to Invalid already, so the problem is still UniCore's for flickering, let's test this anyway
+    .await?;
 
     let jwt_header = decode_header(&status_list_jwt).map_err(|_| AppError::GetCredentialStatusError)?;
     let key_id = jwt_header.kid.ok_or(AppError::GetCredentialStatusError)?;

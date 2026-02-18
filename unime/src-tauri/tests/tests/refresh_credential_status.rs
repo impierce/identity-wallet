@@ -263,16 +263,6 @@ async fn test_unreachable_credential_status() {
         .status;
 
     assert_eq!(result, StatusType::VALID);
-    assert!(
-        !state
-            .credentials
-            .first()
-            .unwrap()
-            .credential_status
-            .as_ref()
-            .unwrap()
-            .reachable
-    );
     assert_eq!(
         last_checked,
         state
