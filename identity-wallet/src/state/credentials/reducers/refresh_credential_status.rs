@@ -204,9 +204,10 @@ pub async fn fetch_credential_status(
 /// If the response is gzip encoded, it will be decompressed before being returned.
 pub async fn fetch_status_list(uri: &str, accept_header: StatusListTokenResponseType) -> Result<String, AppError> {
     // 3xx redirects should be followed, but infinite loops are caught after 5 redirects.
+    // The timeout of 10 seconds is an estimated guess of how long a status list request should take at maximum.
     let client = Client::builder()
         .redirect(Policy::limited(5))
-        .timeout(Duration::from_secs(30))
+        .timeout(Duration::from_secs(10))
         .build()
         .map_err(AppError::FetchCredentialListError)?;
 
