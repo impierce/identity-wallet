@@ -98,7 +98,7 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
                 // This error handling means we don't panic when the refresh_credential_status function fails.
                 // We log the error, keep the status and the last_checked field the same.
                 // We don't make any assumptions on the credential status since the error has to do with the reachability of the status list, not the status itself.
-                // However, this is also not ideal, as it is up to the verifier how to handle a status that is unreachable.
+                // However, it is up to the verifier how to handle a status that is unreachable.
                 // This means a seemingly valid credential could be rejected when a user shares it.
                 warn!("Failed to refresh credential status for credential with id: `{credential_id}`. The current status remains unchanged: `{:?}`. Error: {e}", credential_status_data.status);
 
