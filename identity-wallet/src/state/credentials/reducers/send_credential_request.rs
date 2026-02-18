@@ -178,17 +178,11 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                                 locations: None,
                                 credential_configuration_id: credential_configuration_id.clone(),
                                 credential_identifiers: None,
-                                claims: Some(
-                                    credential_configuration
-                                        .credential_metadata
-                                        .clone()
-                                        .unwrap()
-                                        .claims
-                                        .unwrap()
-                                        .iter()
-                                        .map(|claims| claims.clone().into())
-                                        .collect(),
-                                ),
+                                claims: credential_configuration
+                                    .credential_metadata
+                                    .as_ref()
+                                    .and_then(|metadata| metadata.claims.as_ref())
+                                    .map(|claims| claims.iter().map(|claim| claim.clone().into()).collect()),
                             },
                         )
                         .collect();
