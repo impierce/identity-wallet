@@ -297,14 +297,14 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                     .credential_metadata
                     .as_ref()
                     .and_then(|credential_metadata| credential_metadata.display.as_ref())
-                    .map(|display| display.clone())
+                    .cloned()
                     .unwrap_or_default(),
                 // Collect the claims to be displayed for the credential from the credential configuration metadata if it exists, otherwise default to an empty vector.
                 credential_configuration
                     .credential_metadata
                     .as_ref()
                     .and_then(|credential_metadata| credential_metadata.claims.as_ref())
-                    .map(|claims| claims.iter().map(|claim| claim.clone().into()).collect())
+                    .map(|claims| claims.to_vec())
                     .unwrap_or_default(),
             ));
         }
