@@ -44,127 +44,6 @@ use sd_jwt::KeyBindingJwtBuilder;
 use serde_json::Value;
 use std::sync::Arc;
 
-pub async fn get_vp_token(
-    selected_verifiable_credentials: Vec<(CredentialQuery, Value)>,
-    did_method: &str,
-    subject_manager: &Arc<dyn Subject>,
-    oid4vp_authorization_request: &AuthorizationRequest<Object<OID4VP>>,
-    signing_algorithm: Algorithm,
-) -> Result<VpToken, AppError> {
-    let verifier_audience = oid4vp_authorization_request.body.client_id.to_string();
-    let required_nonce = oid4vp_authorization_request.body.extension.nonce.clone();
-
-    let dcql_query = &oid4vp_authorization_request.body.extension.dcql_query;
-    let mut builder = VpTokenBuilder::builder_dcql_query(dcql_query.clone());
-
-    let key_id = subject_manager
-        .key_id(did_method, signing_algorithm)
-        .await
-        .ok_or_else(|| AppError::Error(format!("Failed to get signing method ID for DID method {did_method}")))?;
-
-    for (credential_query_from_dcql, vc_value) in selected_verifiable_credentials {
-        let credential_query_id = credential_query_from_dcql.id.clone();
-        let format_from_query = credential_query_from_dcql.format;
-
-        let presentation_format_item = match format_from_query {
-            Format::JwtVcJson => {
-                let raw_vc_jwt_string = vc_value
-                    .as_str()
-                    .ok_or(AppError::InvalidCredentialFormatError)?
-                    .to_string();
-
-                let vc_jwt: Jwt = raw_vc_jwt_string.into();
-
-                let full_did = subject_manager
-                    .identifier(did_method, signing_algorithm)
-                    .await
-                    .map_err(|e| AppError::Error(format!("Failed to get DID identifier: {e}")))?;
-
-                let full_did_string = full_did.to_string();
-
-                let holder_url: Url = Url::parse(&full_did_string)
-                    .map_err(|e| AppError::Error(format!("Failed to parse DID as URL: {e}")))?;
-
-                let presentation = Presentation::builder(holder_url, IotaObject::default())
-                    .credential(vc_jwt)
-                    .build()
-                    .map_err(AppError::PresentationBuilderError)?;
-
-                let verifiable_presentation_jwt = VerifiablePresentationJwt::builder()
-                    .iss(full_did_string.clone())
-                    .sub(full_did_string.clone())
-                    .aud(verifier_audience.to_string())
-                    .nonce(required_nonce.to_string())
-                    .iat(Utc::now().timestamp())
-                    .exp((Utc::now() + Duration::minutes(10)).timestamp())
-                    .verifiable_presentation(presentation)
-                    .build()
-                    .map_err(|e| AppError::Error(format!("Failed to build VerifiablePresentationJwt: {e}")))?;
-
-                let jwt_header = Header {
-                    alg: signing_algorithm,
-                    kid: Some(key_id.to_string()),
-                    typ: Some("JWT".to_string()),
-                    ..Default::default()
-                };
-
-                let signed_vc_presentation_jwt_string = jwt::encode(
-                    subject_manager.clone(),
-                    jwt_header,
-                    &verifiable_presentation_jwt,
-                    did_method,
-                )
-                .await
-                .map_err(|e| AppError::Error(format!("Failed to sign VP JWT: {e}")))?;
-
-                PresentationFormat::JwtVcJson(signed_vc_presentation_jwt_string)
-            }
-            // TODO: Support `vc+sd-jwt` format
-            Format::DcSdJwt => {
-                let sd_jwt_vc = vc_value
-                    .as_str()
-                    .ok_or(AppError::InvalidCredentialFormatError)?
-                    .to_string()
-                    .parse::<SdJwtVc>()
-                    .map_err(|err| AppError::Error(format!("Failed to parse SD-JWT VC: {err}")))?;
-
-                let subject_wrapper = SubjectWrapper {
-                    subject: subject_manager.clone(),
-                    preferred_did_method: did_method.to_string(),
-                };
-
-                let key_binding_jwt = KeyBindingJwtBuilder::new()
-                    .iat(Utc::now().timestamp())
-                    .aud(verifier_audience.to_string())
-                    .nonce(required_nonce.to_string())
-                    .finish(&sd_jwt_vc, &Sha256Hasher::new(), "RS256", &subject_wrapper)
-                    .await
-                    .map_err(|e| AppError::Error(format!("Failed to build KeyBindingJwt: {e}")))?;
-
-                let (mut sd_jwt_vc, _) = sd_jwt_vc
-                    .into_presentation(&Sha256Hasher::new())
-                    .map_err(|err| AppError::Error(format!("Failed to create SD-JWT presentation: {err}")))?
-                    // TODO: Conceal claims
-                    .finish();
-
-                sd_jwt_vc.attach_key_binding_jwt(key_binding_jwt);
-
-                PresentationFormat::DcSdJwt(sd_jwt_vc.to_string())
-            }
-            _ => {
-                return Err(AppError::InvalidCredentialFormatError);
-            }
-        };
-
-        builder = builder.add_presentation(credential_query_id, presentation_format_item);
-    }
-
-    // Build and validate the VP token
-    builder
-        .build()
-        .map_err(|e| AppError::Error(format!("Failed to build VpToken: {e:?}",)))
-}
-
 // Sends the authorization response including the verifiable credentials.
 pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action) -> Result<AppState, AppError> {
     info!("handle_presentation_request");
@@ -414,4 +293,123 @@ pub fn get_oid4vp_client_name_and_logo_uri(
         connection_url: connection_url.to_string(),
         client_id,
     })
+}
+
+async fn get_vp_token(
+    selected_verifiable_credentials: Vec<(CredentialQuery, Value)>,
+    did_method: &str,
+    subject_manager: &Arc<dyn Subject>,
+    oid4vp_authorization_request: &AuthorizationRequest<Object<OID4VP>>,
+    signing_algorithm: Algorithm,
+) -> Result<VpToken, AppError> {
+    let verifier_audience = oid4vp_authorization_request.body.client_id.to_string();
+    let required_nonce = oid4vp_authorization_request.body.extension.nonce.clone();
+
+    let dcql_query = &oid4vp_authorization_request.body.extension.dcql_query;
+    let mut builder = VpTokenBuilder::builder_dcql_query(dcql_query.clone());
+
+    let key_id = subject_manager
+        .key_id(did_method, signing_algorithm)
+        .await
+        .ok_or_else(|| AppError::Error(format!("Failed to get signing method ID for DID method {did_method}")))?;
+
+    for (credential_query_from_dcql, vc_value) in selected_verifiable_credentials {
+        let credential_query_id = credential_query_from_dcql.id.clone();
+        let format_from_query = credential_query_from_dcql.format;
+
+        let presentation_format_item = match format_from_query {
+            Format::JwtVcJson => {
+                let raw_vc_jwt_string = vc_value
+                    .as_str()
+                    .ok_or(AppError::InvalidCredentialFormatError)?
+                    .to_string();
+
+                let vc_jwt: Jwt = raw_vc_jwt_string.into();
+
+                let full_did = subject_manager
+                    .identifier(did_method, signing_algorithm)
+                    .await
+                    .map_err(|e| AppError::Error(format!("Failed to get DID identifier: {e}")))?;
+
+                let holder_url: Url =
+                    Url::parse(&full_did).map_err(|e| AppError::Error(format!("Failed to parse DID as URL: {e}")))?;
+
+                let presentation = Presentation::builder(holder_url, IotaObject::default())
+                    .credential(vc_jwt)
+                    .build()
+                    .map_err(AppError::PresentationBuilderError)?;
+
+                let verifiable_presentation_jwt = VerifiablePresentationJwt::builder()
+                    .iss(full_did.clone())
+                    .sub(full_did)
+                    .aud(verifier_audience.to_string())
+                    .nonce(required_nonce.to_string())
+                    .iat(Utc::now().timestamp())
+                    .exp((Utc::now() + Duration::minutes(10)).timestamp())
+                    .verifiable_presentation(presentation)
+                    .build()
+                    .map_err(|e| AppError::Error(format!("Failed to build VerifiablePresentationJwt: {e}")))?;
+
+                let jwt_header = Header {
+                    alg: signing_algorithm,
+                    kid: Some(key_id.to_string()),
+                    typ: Some("JWT".to_string()),
+                    ..Default::default()
+                };
+
+                let signed_vc_presentation_jwt_string = jwt::encode(
+                    subject_manager.clone(),
+                    jwt_header,
+                    &verifiable_presentation_jwt,
+                    did_method,
+                )
+                .await
+                .map_err(|e| AppError::Error(format!("Failed to sign VP JWT: {e}")))?;
+
+                PresentationFormat::JwtVcJson(signed_vc_presentation_jwt_string)
+            }
+            // TODO: Support `vc+sd-jwt` format
+            Format::DcSdJwt => {
+                let sd_jwt_vc = vc_value
+                    .as_str()
+                    .ok_or(AppError::InvalidCredentialFormatError)?
+                    .to_string()
+                    .parse::<SdJwtVc>()
+                    .map_err(|err| AppError::Error(format!("Failed to parse SD-JWT VC: {err}")))?;
+
+                let subject_wrapper = SubjectWrapper {
+                    subject: subject_manager.clone(),
+                    preferred_did_method: did_method.to_string(),
+                };
+
+                let key_binding_jwt = KeyBindingJwtBuilder::new()
+                    .iat(Utc::now().timestamp())
+                    .aud(verifier_audience.to_string())
+                    .nonce(required_nonce.to_string())
+                    .finish(&sd_jwt_vc, &Sha256Hasher::new(), "RS256", &subject_wrapper)
+                    .await
+                    .map_err(|e| AppError::Error(format!("Failed to build KeyBindingJwt: {e}")))?;
+
+                let (mut sd_jwt_vc, _) = sd_jwt_vc
+                    .into_presentation(&Sha256Hasher::new())
+                    .map_err(|err| AppError::Error(format!("Failed to create SD-JWT presentation: {err}")))?
+                    // TODO: Conceal claims
+                    .finish();
+
+                sd_jwt_vc.attach_key_binding_jwt(key_binding_jwt);
+
+                PresentationFormat::DcSdJwt(sd_jwt_vc.to_string())
+            }
+            _ => {
+                return Err(AppError::InvalidCredentialFormatError);
+            }
+        };
+
+        builder = builder.add_presentation(credential_query_id, presentation_format_item);
+    }
+
+    // Build and validate the VP token
+    builder
+        .build()
+        .map_err(|e| AppError::Error(format!("Failed to build VpToken: {e:?}",)))
 }
