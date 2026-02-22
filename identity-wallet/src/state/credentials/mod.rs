@@ -259,6 +259,7 @@ fn get_display_claims(claim_descriptions: Vec<ClaimDescription>, data: &serde_js
         .map(|claim_description| {
             let key = claim_description
                 .display
+                // TODO: Support multiple locales here. For now we just take the first one if it exists.
                 .first()
                 .map(|display| display.name.clone())
                 // TODO: Come up with a proper fallback strategy here.
