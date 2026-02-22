@@ -1,7 +1,10 @@
 use crate::persistence::{download_asset, hash};
 use crate::{error::AppError, state::did::validate_domain_linkage::Verifier};
+use async_trait::async_trait;
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use did_manager::Resolver;
+use identity_credential::sd_jwt_vc::{self, SdJwtVc, SdJwtVcClaims};
+use identity_iota::credential::{CredentialV2, SdJwtCredentialValidator};
 use identity_iota::{
     credential::{
         DecodedJwtCredential, FailFast, Jwt, JwtCredentialValidationOptions, JwtCredentialValidator, StatusCheck,
@@ -12,6 +15,7 @@ use identity_iota::{
 use identity_jose::jwt::JwtClaims;
 use jsonschema::ValidationError;
 use log::{debug, info, warn};
+use sd_jwt::{SdJwt, Sha256Hasher};
 use serde_json::Value;
 use std::fs::File;
 
@@ -47,12 +51,17 @@ pub fn get_unverified_jwt_claims(jwt: &serde_json::Value) -> Result<serde_json::
 }
 
 /// This function uses the credential in jwt format from the jwt_vc_json to resolve the issuer document.
-pub async fn get_issuer_document(resolver: &Resolver, credential_jwt: &Jwt) -> Option<CoreDocument> {
+pub async fn get_issuer_document(resolver: &Resolver, credential_jwt: &str) -> Option<CoreDocument> {
     let decoder = Decoder::new();
+
+    let credential_jwt = credential_jwt
+        .split_once('~')
+        .map(|(jwt, _)| jwt)
+        .unwrap_or(credential_jwt);
 
     // Decode the linked verifiable credential.
     let decoded_credential_jwt = decoder
-        .decode_compact_serialization(credential_jwt.as_str().as_bytes(), None)
+        .decode_compact_serialization(credential_jwt.as_bytes(), None)
         .inspect_err(|err| warn!("Failed to decode credential jwt: {err:#?}"))
         .ok()?;
 
@@ -79,12 +88,28 @@ pub async fn validate_jwt_vc_json(
     let validator = JwtCredentialValidator::with_signature_verifier(Verifier);
     let options = JwtCredentialValidationOptions::new().status_check(StatusCheck::SkipUnsupported);
 
-    let issuer_document = get_issuer_document(resolver, &credential_jwt)
+    let issuer_document = get_issuer_document(resolver, credential_jwt.as_str())
         .await
         .ok_or(AppError::Error("Failed to resolve issuer DID".to_string()))?;
 
     validator
         .validate::<_, Value>(&credential_jwt, &issuer_document, &options, FailFast::FirstError)
+        .map_err(|_| AppError::Error("Invalid jwt_vc_json".to_string()))
+}
+
+/// Validate a vc+sd_jwt, checks the JWT and the Issuer DID.
+pub async fn validate_vc_sd_jwt(resolver: &Resolver, credential_jwt: SdJwt) -> Result<CredentialV2<Value>, AppError> {
+    // `SkipUnsupported` allows for custom credential types, such as the StatusList2021Entry (https://www.w3.org/TR/2023/WD-vc-status-list-20230427/#statuslist2021entry)
+    let validator = SdJwtCredentialValidator::new(Verifier, Sha256Hasher::new());
+    // let validator = JwtCredentialValidator::with_signature_verifier(Verifier);
+    let options = JwtCredentialValidationOptions::new().status_check(StatusCheck::SkipUnsupported);
+
+    let issuer_document = get_issuer_document(resolver, credential_jwt.to_string().as_str())
+        .await
+        .ok_or(AppError::Error("Failed to resolve issuer DID".to_string()))?;
+
+    validator
+        .validate_credential_v2::<_, Value>(&credential_jwt, &[issuer_document], &options)
         .map_err(|_| AppError::Error("Invalid jwt_vc_json".to_string()))
 }
 

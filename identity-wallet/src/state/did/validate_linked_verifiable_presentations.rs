@@ -181,7 +181,7 @@ async fn get_validated_linked_credential_data(
     iter(linked_verifiable_presentation.presentation.verifiable_credential)
         .filter_map(|linked_verifiable_credential| async move {
             // Resolve the issuer document and issuer DID
-            let issuer_document = get_issuer_document(resolver, &linked_verifiable_credential).await?;
+            let issuer_document = get_issuer_document(resolver, linked_verifiable_credential.as_str()).await?;
             let issuer_did = issuer_document.id().to_string();
 
             info!("Issuer document: {issuer_document:#?}");

@@ -136,7 +136,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         info!("inserting credential into stronghold");
         stronghold_manager
             .insert(
-                verifiable_credential_record.display_credential.id.parse().unwrap(),
+                verifiable_credential_record.display_credential.id,
                 json!(verifiable_credential_record).to_string().as_bytes().to_vec(),
             )
             .unwrap();
@@ -290,8 +290,8 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
     ];
 
     state.search_results.recent_credentials = vec![
-        DRIVERS_LICENSE_CREDENTIAL.display_credential.id.clone(),
-        OPEN_BADGE.display_credential.id.clone(),
+        DRIVERS_LICENSE_CREDENTIAL.display_credential.id.to_string(),
+        OPEN_BADGE.display_credential.id.to_string(),
     ];
 
     // Import trusted domains

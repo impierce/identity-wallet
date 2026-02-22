@@ -43,6 +43,7 @@ use jsonwebtoken::Header;
 use sd_jwt::KeyBindingJwtBuilder;
 use serde_json::Value;
 use std::sync::Arc;
+use uuid::Uuid;
 
 pub async fn get_vp_token(
     selected_verifiable_credentials: Vec<(CredentialQuery, Value)>,
@@ -192,59 +193,20 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
 
         let mut history_credentials = vec![];
         let dcql_query = &oid4vp_authorization_request.body.extension.dcql_query;
-        let available_credentials_map: std::collections::HashMap<String, _> = stronghold_manager
+        let available_credentials_map: std::collections::HashMap<Uuid, _> = stronghold_manager
             .values()
             .map_err(StrongholdValuesError)?
             .unwrap()
             .into_iter()
-            .map(|record| (record.display_credential.id.clone(), record))
+            .map(|record| (record.display_credential.id, record))
             .collect();
 
         // TODO: Optimize credential selection so that evaluate_credential_query does not need to be called twice.
         let mut selected_verifiable_credentials: Vec<(CredentialQuery, serde_json::Value)> = Vec::new();
         for requested_credential_query in &dcql_query.credentials {
             for user_selected_uuid in &credential_uuids {
-                let user_selected_uuid_str = user_selected_uuid.to_string();
-                if let Some(verifiable_credential_record) = available_credentials_map.get(&user_selected_uuid_str) {
-                    let credential_data = if verifiable_credential_record.display_credential.format
-                        == CredentialFormats::DcSdJwt(())
-                    {
-                        // Handle SD-JWTs to get disclosed claims
-                        let sd_jwt_vc_string = verifiable_credential_record
-                            .verifiable_credential
-                            .as_str()
-                            .ok_or(AppError::InvalidCredentialFormatError)?
-                            .to_string();
-
-                        let sd_jwt_vc = sd_jwt_vc_string
-                            .parse::<identity_credential::sd_jwt_vc::SdJwtVc>()
-                            .map_err(|e| AppError::Error(format!("Failed to parse stored SD-JWT VC: {e}")))?;
-
-                        let disclosed_object = sd_jwt_vc.into_disclosed_object(&Sha256Hasher::new()).map_err(|e| {
-                            AppError::Error(format!("Failed to get disclosed object from SD-JWT VC: {e}"))
-                        })?;
-                        serde_json::json!(disclosed_object)
-                    } else if verifiable_credential_record.display_credential.format == CredentialFormats::JwtVcJson(())
-                    {
-                        get_unverified_jwt_claims(&verifiable_credential_record.verifiable_credential)
-                            .unwrap_or_default()
-                            .get("vc")
-                            .cloned()
-                            .unwrap_or_else(|| {
-                                log::debug!(
-                                    "JWT-VC-JSON missing 'vc' claim or it's not a valid JSON value: {:?}",
-                                    verifiable_credential_record.verifiable_credential
-                                );
-                                serde_json::json!({})
-                            })
-                    } else {
-                        log::warn!(
-                            "Unsupported format {:?} for evaluation. Attempting to get unverified JWT claims.",
-                            verifiable_credential_record.display_credential.format
-                        );
-                        get_unverified_jwt_claims(&verifiable_credential_record.verifiable_credential)
-                            .unwrap_or_default()
-                    };
+                if let Some(verifiable_credential_record) = available_credentials_map.get(&user_selected_uuid) {
+                    let credential_data = verifiable_credential_record.display_credential.data.clone();
 
                     let credential_query_satisfied = oid4vc::oid4vp::dcql_evaluation::evaluate_credential_query(
                         requested_credential_query,

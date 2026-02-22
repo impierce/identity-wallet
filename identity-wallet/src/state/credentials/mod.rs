@@ -1,21 +1,38 @@
 pub mod actions;
 pub mod reducers;
 
+use std::collections::HashMap;
+
 use super::{core_utils::helpers::get_unverified_jwt_claims, FeatTrait};
-use crate::{error::AppError, state::core_utils::DateUtils};
+use crate::{
+    error::AppError,
+    persistence::{hash, persist_asset},
+    state::{
+        core_utils::{
+            helpers::{validate_credential_types, validate_jwt_vc_json, validate_vc_sd_jwt},
+            DateUtils, IdentityManager,
+        },
+        credentials::reducers::refresh_credential_status::fetch_credential_status,
+        profile_settings::Locale,
+    },
+};
+use base64::display;
 use derivative::Derivative;
+use did_manager::Resolver;
 use identity_credential::sd_jwt_vc::SdJwtVc;
 use identity_iota::{
     core::{FromJson as _, Object},
-    credential::CredentialV2,
+    credential::{self, CredentialV2, Jwt},
 };
-use log::info;
-use oauth_tsl::status_list::StatusType;
+use log::{info, warn};
+use oauth_tsl::{status_list::StatusType, tokens::referenced_token::StatusClaim};
 use oid4vc::{
     oid4vc_core::claim_path_pointer::ClaimPathPointer,
     oid4vci::{
         credential_format_profiles::CredentialFormats,
-        credential_issuer::credential_configurations_supported::ClaimDescription,
+        credential_issuer::credential_configurations_supported::{
+            ClaimDescription, CredentialConfigurationsSupportedObject,
+        },
     },
 };
 use sd_jwt::{SdJwt, Sha256Hasher};
@@ -33,6 +50,16 @@ pub struct DisplayClaim {
     pub key: String,
     #[ts(type = "any")]
     pub value: serde_json::Value,
+    pub is_selective_disclosable: bool,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq, TS, Default)]
+#[ts(export, export_to = "bindings/credentials/CredentialType.ts")]
+pub enum CredentialType {
+    #[default]
+    Plain,
+    OpenBadgeCredential,
+    PID,
 }
 
 /// A credential displayable by the frontend.
@@ -41,9 +68,8 @@ pub struct DisplayClaim {
 #[ts(export, export_to = "bindings/credentials/DisplayCredential.ts")]
 pub struct DisplayCredential {
     #[derivative(PartialEq = "ignore")]
-    pub id: String,
-    #[ts(type = "{ format: string }")]
-    pub format: CredentialFormats,
+    pub id: Uuid,
+    pub credential_type: CredentialType,
     pub issuer_name: String,
     // TODO: Remove this field once we fully implemented `display_claims` for all credential formats.
     #[ts(type = "any")]
@@ -86,6 +112,7 @@ impl FeatTrait for DisplayCredential {}
 #[ts(export, export_to = "bindings/credentials/CredentialMetadata.ts")]
 pub struct CredentialMetadata {
     pub is_favorite: bool,
+    pub is_self_issued: bool,
     #[derivative(PartialEq = "ignore")]
     pub date_added: String,
     #[derivative(PartialEq = "ignore")]
@@ -96,157 +123,163 @@ pub struct CredentialMetadata {
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, PartialEq)]
 pub struct VerifiableCredentialRecord {
+    pub id: Uuid,
     pub verifiable_credential: serde_json::Value,
     pub display_credential: DisplayCredential,
 }
 
 impl VerifiableCredentialRecord {
-    pub fn try_new(
+    pub async fn try_new(
+        identity_manager: &IdentityManager,
+        resolver: &Resolver,
         verifiable_credential: serde_json::Value,
-        claim_descriptions: Vec<ClaimDescription>,
+        credential_configuration: &CredentialConfigurationsSupportedObject,
+        issuer_name: &String,
+        connection_id: Option<String>,
     ) -> Result<Self, AppError> {
-        let display_credential = {
-            // Try to parse the Verifiable Credential as an SD-JWT credential.
-            let (id, format, data, issuance_date, display_claims) = if let Some(sd_jwt_vc) = verifiable_credential
-                .as_str()
-                .and_then(|verifiable_credential| verifiable_credential.parse::<SdJwtVc>().ok())
-            {
+        let id = Uuid::new_v4();
+
+        // Collect the display information for the credential from the credential configuration metadata if it exists.
+        let (display, claims) = credential_configuration
+            .credential_metadata
+            .as_ref()
+            .map(|metadata| {
+                (
+                    metadata.display.clone().unwrap_or_default(),
+                    metadata.claims.clone().unwrap_or_default(),
+                )
+            })
+            .unwrap_or_default();
+
+        let (data, credential_status_value, issuance_date) = match credential_configuration.credential_format {
+            CredentialFormats::JwtVcJson(_) => {
+                // Convert the received credential (as a string) into a Jwt instance for validation.
+                let jwt_vc_json_credential = Jwt::new(
+                    verifiable_credential
+                        .as_str()
+                        .ok_or(AppError::Error("Invalid JWT string.".to_string()))?
+                        .to_string(),
+                );
+
+                let data = json!(
+                    validate_jwt_vc_json(&resolver, jwt_vc_json_credential)
+                        .await?
+                        .credential
+                );
+
+                let credential_status_value = data.get("credentialStatus").cloned();
+
+                let issuance_date = data["issuanceDate"]
+                    .as_str()
+                    .map(ToString::to_string)
+                    .unwrap_or_default();
+
+                (data, credential_status_value, issuance_date)
+            }
+            CredentialFormats::DcSdJwt(_) => {
+                let dc_sd_jwt_credential = verifiable_credential
+                    .as_str()
+                    .and_then(|verifiable_credential| verifiable_credential.parse::<SdJwtVc>().ok())
+                    .unwrap();
+
                 info!("Verifiable Credential parsed as a SD-JWT VC");
 
-                let id = Uuid::new_v4().to_string();
-                let issuance_date = sd_jwt_vc.claims().iat.map(|iat| iat.to_rfc3339()).unwrap_or_default();
+                let issuance_date = dc_sd_jwt_credential
+                    .claims()
+                    .iat
+                    .map(|iat| iat.to_rfc3339())
+                    .unwrap_or_default();
 
-                let credential_subject = serde_json::json!(sd_jwt_vc
+                let data = serde_json::json!(dc_sd_jwt_credential
                     .clone()
                     .into_disclosed_object(&Sha256Hasher::new())
                     .map_err(|_| AppError::Error("Failed to convert SD JWT VC to Disclosed Object".to_string()))?);
 
-                let display_claims: Vec<DisplayClaim> =
-                    get_display_claims(claim_descriptions, &json!(credential_subject));
+                (data, None, issuance_date)
+            }
+            CredentialFormats::VcSdJwt(_) => {
+                let vc_sd_jwt_credential = verifiable_credential
+                    .as_str()
+                    .and_then(|verifiable_credential| verifiable_credential.parse::<SdJwt>().ok())
+                    .unwrap();
 
-                let format = CredentialFormats::DcSdJwt(());
-
-                // TODO: Remove this workaround that is basically a way of disguising the SD JWT VC as a VC so that
-                // it can be displayed in the Frontend.
-                // TODO: moreover, this workaround is incomplete, since a few fields at the root level are still missing.
-                // Most importantly, we're missing the credentialStatus property.
-                let data = json!({
-                    "type": ["VerifiableCredential"],
-                    "issuer": sd_jwt_vc.claims().iss,
-                    "credentialSubject": credential_subject
-                });
-
-                (id, format, data, issuance_date, display_claims)
-                // Else
-            } else if let Some(sd_jwt) = verifiable_credential
-                .as_str()
-                .and_then(|verifiable_credential| verifiable_credential.parse::<SdJwt>().ok())
-            {
-                let id = Uuid::new_v4().to_string();
-                let issuance_date = sd_jwt
-                    .claims()
-                    .get("validFrom")
-                    .and_then(|valid_from| valid_from.as_str())
-                    .unwrap_or_default()
-                    .to_string();
-
-                if sd_jwt.headers().get("typ").and_then(|typ| typ.as_str()) != Some("vc+sd-jwt") {
+                if vc_sd_jwt_credential.headers().get("typ").and_then(|typ| typ.as_str()) != Some("vc+sd-jwt") {
                     return Err(AppError::Error(
                         "Failed to create a VerifiableCredentialRecord: SD-JWT 'typ' header is not 'vc+sd-jwt'"
                             .to_string(),
                     ));
                 }
 
-                let disclosed_claims = sd_jwt.clone().into_disclosed_object(&Sha256Hasher::new()).unwrap();
-                let credential =
-                    CredentialV2::<Object>::from_json_value(serde_json::Value::Object(disclosed_claims)).unwrap();
-                let type_ = credential.types.clone();
-                let credential_subject = credential.credential_subject.first().unwrap().clone();
+                let data = json!(validate_vc_sd_jwt(resolver, vc_sd_jwt_credential.clone()).await?);
 
-                let display_claims: Vec<DisplayClaim> = get_display_claims(claim_descriptions, &json!(credential));
+                let issuance_date = vc_sd_jwt_credential
+                    .claims()
+                    .get("validFrom")
+                    .and_then(|valid_from| valid_from.as_str())
+                    .unwrap_or_default()
+                    .to_string();
 
-                let format = CredentialFormats::VcSdJwt(());
-
-                let data = json!({
-                    "type": type_,
-                    "credentialSubject": credential_subject
-                });
-
-                (id, format, data, issuance_date, display_claims)
-            } else if let Some(credential_display) =
-                get_unverified_jwt_claims(&verifiable_credential)?.get("vc").cloned()
-            {
-                // TODO: We are using this hash as Credential ID so that we can prevent credential duplication in
-                // demo situations. Now we can actually delete Credentials in UniMe we don't need to use the hash of the
-                // credential as the ID anymore. We should simply generate a random UUID.
-                // Derive the hash from the credential display.
-                let hash = {
-                    let type_value = credential_display["type"].clone();
-
-                    let mut credential_subject_value = credential_display["credentialSubject"].clone();
-
-                    // TODO(ngdil): Remove this hard-coded logic.
-                    // Remove the `Passport Number` and `Staff Number` from the credential subject if they exists.
-                    credential_subject_value["Passport Number"].take();
-                    credential_subject_value["Staff Number"].take();
-                    credential_subject_value["achievement"]["id"].take();
-
-                    sha256::digest(
-                        json!(
-                            {
-                                "type": type_value,
-                                "credentialSubject": credential_subject_value,
-                            }
-                        )
-                        .to_string(),
-                    )
-                };
-
-                let issuance_date = credential_display["issuanceDate"]
-                    .as_str()
-                    .map(ToString::to_string)
-                    .unwrap_or_default();
-                let id = Uuid::from_slice(&hash.as_bytes()[..16])?.to_string();
-                let format = CredentialFormats::JwtVcJson(());
-
-                // TODO: Use the claims to rename the keys in the Credential according to the display hints provided by
-                // the Issuer. Before we do this we need to make sure that UniCore supports Claims Description for
-                // Issuer Metadata (see: https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0-15.html#claims-description-issuer-metadata).
-                // For now we just display the raw credential as is.
-                let display_claims = vec![];
-
-                let data = credential_display;
-
-                (id, format, data, issuance_date, display_claims)
-            } else {
+                (data, None, issuance_date)
+            }
+            _ => {
                 return Err(AppError::Error(
                     "Failed to create a VerifiableCredentialRecord: verifiable credential format either an invalid SD-JWT or JWT VC JSON, or an unsupported format"
                         .to_string(),
                 ));
-            };
-
-            DisplayCredential {
-                id,
-                format,
-                data,
-                display_claims,
-                metadata: CredentialMetadata {
-                    is_favorite: false,
-                    date_added: DateUtils::new_date_string(),
-                    date_issued: issuance_date,
-                    icon: None,
-                },
-                // The other fields will be filled in at a later stage.
-                issuer_name: String::new(),
-                connection_id: None,
-                display_name: String::new(),
-                // The credential status is None here but it will be set right after this function.
-                // This initialization is separated since it requires async fetching.
-                credential_status: None,
             }
         };
 
+        let credential_status_value = verifiable_credential.get("status").cloned().or(credential_status_value);
+
+        let credential_status = if let Some(credential_status_value) = &credential_status_value {
+            if let Some(credential_status_claim) =
+                serde_json::from_value::<StatusClaim>(credential_status_value.clone()).ok()
+            {
+                get_credential_status(credential_status_claim, identity_manager)
+                    .await
+                    .inspect(|_| info!("Successfully fetched credential status for credential with id: `{id}`"))
+            } else {
+                warn!("The credential status claim/property is not in the OAuth Token Status List format: {credential_status_value}");
+                None
+            }
+        } else {
+            warn!("The credential does not contain a status claim/property");
+
+            None
+        };
+
+        // Validate the credential against its corresponding credential JSON Schema.
+        validate_credential_types(&data)?;
+
+        let display_claims: Vec<DisplayClaim> = get_display_claims(claims, &data);
+
+        let display_credential = DisplayCredential {
+            id: id.clone(),
+            credential_type: CredentialType::Plain,
+            data,
+            display_claims,
+            metadata: CredentialMetadata {
+                is_self_issued: false,
+                is_favorite: false,
+                date_added: DateUtils::new_date_string(),
+                date_issued: issuance_date,
+                icon: None,
+            },
+            issuer_name: issuer_name.clone(),
+            connection_id: connection_id.clone(),
+            display_name: String::new(),
+            credential_status,
+        };
+
+        // Persist the Credential logo if it exists.
+        display
+            .first()
+            .and_then(|display| display.logo.clone())
+            .map(|logo| logo.uri.clone())
+            .and_then(|uri| persist_asset(&hash(uri.as_str()), id.to_string().as_str()).ok());
+
         Ok(Self {
+            id,
             verifiable_credential,
             display_credential,
         })
@@ -275,9 +308,47 @@ fn get_display_claims(claim_descriptions: Vec<ClaimDescription>, data: &serde_js
                 path: claim_description.path,
                 key,
                 value,
+                is_selective_disclosable: false,
             }
         })
         .collect()
+}
+
+/// Helper function to fetch the credential status of a newly received credential and set the fields the `credential_status` field of the DisplayCredential.
+/// Currently supports only the OAuth Token Status List mechanism.
+/// The function looks for the credential status info in 2 places:
+/// 1. In the JWT root for the key `status` as specified in the IETF OAuth Token Status List specification.
+/// 2. In the `credentialStatus` property of the credential, as specified in the W3C Verifiable Credential Data Model specification (1.1 and 2.0).
+///     * How to fill in the `credentialStatus` property is not specified in the W3C VC Data Model specifications for the OAuth Token Status List mechanism.
+///       We decided the most logical way is to assume this should be exactly the same as the `status` claim in the JWT root.
+///       There is a discussion ongoing in the DIIP profile community about this, see: https://github.com/FIDEScommunity/DIIP/issues/60
+///
+/// An error is returned when:
+/// 1. The credential does not contain a status claim in the JWT root or a credentialStatus property in the VC.
+/// 2. The status claim/property does not use the OAuth Token Status List mechanism.
+async fn get_credential_status(
+    credential_status_claim: StatusClaim,
+    identity_manager: &IdentityManager,
+) -> Option<CredentialStatus> {
+    // Here we initialize the credential status with UNDEFINED status and an empty last_checked field, these fields will be filled after fetching the status.
+    let mut credential_status_data = CredentialStatus {
+        status: StatusType::UNDEFINED,
+        idx: credential_status_claim.referenced_status_list.idx,
+        uri: credential_status_claim.referenced_status_list.uri,
+        last_checked: String::new(),
+    };
+
+    let status = match fetch_credential_status(&credential_status_data, identity_manager).await {
+        Ok(status) => status,
+        Err(_) => {
+            warn!("Failed to fetch credential status");
+            return None;
+        }
+    };
+    credential_status_data.status = status;
+    credential_status_data.last_checked = DateUtils::new_date_string();
+
+    Some(credential_status_data)
 }
 
 #[cfg(test)]
@@ -294,10 +365,10 @@ mod tests {
 
         let verifiable_credential_record = VerifiableCredentialRecord::try_new(jwt_vc_json, vec![]).unwrap();
 
-        assert_eq!(
-            verifiable_credential_record.display_credential.format,
-            CredentialFormats::JwtVcJson(())
-        );
+        // assert_eq!(
+        //     verifiable_credential_record.display_credential.format,
+        //     CredentialFormats::JwtVcJson(())
+        // );
 
         assert_eq!(
             verifiable_credential_record.display_credential.data,
@@ -344,17 +415,22 @@ mod tests {
         )
         .unwrap();
 
-        assert_eq!(
-            verifiable_credential_record.display_credential.format,
-            CredentialFormats::DcSdJwt(())
-        );
+        // assert_eq!(
+        //     verifiable_credential_record.display_credential.format,
+        //     CredentialFormats::DcSdJwt(())
+        // );
 
         assert_eq!(
             verifiable_credential_record.display_credential.display_claims,
             vec![DisplayClaim {
-                path: ClaimPathPointer::try_new(vec![ClaimPathElement::String("first_name".to_string())]).unwrap(),
-                key: "First Name".to_string(),
+                path: ClaimPathPointer::try_new(vec![
+                    ClaimPathElement::String("credentialSubject".to_string()),
+                    ClaimPathElement::String("given_name".to_string())
+                ])
+                .unwrap(),
+                key: "Given Name".to_string(),
                 value: json!("Ferris"),
+                is_selective_disclosable: false,
             }]
         );
         assert_eq!(
@@ -385,11 +461,6 @@ mod tests {
         .unwrap();
 
         assert_eq!(
-            verifiable_credential_record.display_credential.format,
-            CredentialFormats::VcSdJwt(())
-        );
-
-        assert_eq!(
             verifiable_credential_record.display_credential.display_claims,
             vec![DisplayClaim {
                 path: ClaimPathPointer::try_new(vec![
@@ -399,6 +470,7 @@ mod tests {
                 .unwrap(),
                 key: "First Name".to_string(),
                 value: json!("Ferris"),
+                is_selective_disclosable: false,
             }]
         );
         assert_eq!(

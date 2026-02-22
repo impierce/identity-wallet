@@ -158,43 +158,12 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                 .iter()
                 .filter_map(|credential_query_from_request| {
                     verifiable_credentials.iter().find_map(|verifiable_credential_record| {
-                        let credential_data: Value = if verifiable_credential_record.display_credential.format
-                            == CredentialFormats::DcSdJwt(())
-                            || verifiable_credential_record.display_credential.format == CredentialFormats::VcSdJwt(())
-                        {
-                            serde_json::json!(verifiable_credential_record
-                                .verifiable_credential
-                                .as_str()?
-                                .parse::<SdJwtVc>()
-                                .ok()?
-                                .into_disclosed_object(&Sha256Hasher::new())
-                                .ok()?)
-                        } else if verifiable_credential_record.display_credential.format
-                            == CredentialFormats::JwtVcJson(())
-                        {
-                            let full_jwt_payload =
-                                get_unverified_jwt_claims(&verifiable_credential_record.verifiable_credential)
-                                    .unwrap_or_default();
-                            // JWT_VC_JSON must be accessed from the vc values.
-                            full_jwt_payload.get("vc").cloned().unwrap_or_else(|| {
-                                debug!(
-                                    "JWT-VC-JSON is missing `vc` claims or is not a valid JSON value: {:?}",
-                                    full_jwt_payload
-                                );
-                                serde_json::json!({})
-                            })
-                        } else {
-                            debug!(
-                                "Unhandled credential format: {:?}",
-                                verifiable_credential_record.display_credential.format
-                            );
-                            get_unverified_jwt_claims(&verifiable_credential_record.verifiable_credential)
-                                .unwrap_or_default()
-                        };
+                        let credential_data = verifiable_credential_record.display_credential.data.clone();
 
                         let credential_query_satisfied =
                             evaluate_credential_query(credential_query_from_request, &credential_data);
-                        credential_query_satisfied.then_some(verifiable_credential_record.display_credential.id.clone())
+                        credential_query_satisfied
+                            .then_some(verifiable_credential_record.display_credential.id.to_string())
                     })
                 })
                 .collect();

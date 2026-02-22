@@ -43,7 +43,7 @@ pub async fn delete_credential(state: AppState, action: Action) -> Result<AppSta
         }
 
         // Remove DisplayCredential from AppState
-        credentials.retain(|credential| credential.id != delete_credential.id);
+        credentials.retain(|credential| credential.id.to_string() != delete_credential.id);
 
         info!("Successfully deleted credential with id: `{}`", delete_credential.id);
 
@@ -82,7 +82,7 @@ mod tests {
         let uuid = Uuid::new_v4();
 
         let credential = DisplayCredential {
-            id: uuid.to_string(),
+            id: uuid,
             ..Default::default()
         };
 
@@ -122,7 +122,7 @@ mod tests {
         assert!(file_path.exists());
 
         let action = Arc::new(DeleteCredential {
-            id: state.credentials[0].id.clone(),
+            id: state.credentials[0].id.to_string(),
         });
 
         let result = delete_credential(state, action).await.unwrap();

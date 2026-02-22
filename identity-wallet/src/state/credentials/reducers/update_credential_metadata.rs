@@ -28,7 +28,7 @@ pub async fn update_credential_metadata(state: AppState, action: Action) -> Resu
             .map_err(StrongholdValuesError)?
             .unwrap()
             .into_iter()
-            .find(|record| record.display_credential.id == credential_id.to_string())
+            .find(|record| record.display_credential.id == credential_id)
             .ok_or(StrongholdMissingCredentialError(credential_id))?;
 
         let display_credential = &mut verifiable_credential_record.display_credential;

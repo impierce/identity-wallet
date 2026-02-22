@@ -23,11 +23,14 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
         let mut credentials = state.credentials.clone();
         let credential_id = refresh_credential_status.credential_id;
 
-        let credential = credentials.iter_mut().find(|c| c.id == credential_id).ok_or_else(|| {
-            // This should never happen, as the credential ID send by the frontend is supposed to be valid.
-            warn!("No credential found with id: `{credential_id}`");
-            AppError::NoCredentialWithIdError(credential_id.clone())
-        })?;
+        let credential = credentials
+            .iter_mut()
+            .find(|c| c.id.to_string() == credential_id)
+            .ok_or_else(|| {
+                // This should never happen, as the credential ID send by the frontend is supposed to be valid.
+                warn!("No credential found with id: `{credential_id}`");
+                AppError::NoCredentialWithIdError(credential_id.clone())
+            })?;
 
         let display_name = credential.display_name.clone();
 
@@ -70,7 +73,7 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
 
                     let updated_credential = credentials
                         .iter()
-                        .find(|c| c.id == credential_id)
+                        .find(|c| c.id == key)
                         .ok_or(AppError::NoCredentialWithIdError(credential_id))?;
 
                     let mut verifiable_credential_record = stronghold_manager

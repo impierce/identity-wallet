@@ -6,7 +6,13 @@ use identity_credential::sd_jwt_vc::{SdJwtVcBuilder, SD_JWT_VC_TYP};
 use identity_iota::core::{Timestamp, Url};
 use itertools::Itertools;
 use jsonwebtoken::Algorithm;
-use oid4vc::oid4vc_core::Sign;
+use oid4vc::{
+    oid4vc_core::Sign,
+    oid4vci::{
+        credential_format_profiles::{ietf_sd_jwt_vc::dc_sd_jwt::DcSdJwtParameters, CredentialFormats, WithParameters},
+        credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject,
+    },
+};
 use sd_jwt::{JsonObject, JwsSigner, RequiredKeyBinding};
 use serde_json::json;
 use uuid::Uuid;
@@ -82,14 +88,16 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
             .parse()
             .map_err(|_| AppError::Error("Failed to parse the did into a <Url>".to_string()))?;
 
-        // Get kid
         let managers = state.core_utils.managers.lock().await;
-        let subject = managers
+
+        let resolver = state.core_utils.resolver().await;
+        let identity_manager = managers
             .identity_manager
             .as_ref()
-            .ok_or(MissingManagerError("identity"))?
-            .subject
-            .clone();
+            .ok_or(MissingManagerError("identity"))?;
+
+        // Get kid
+        let subject = identity_manager.subject.clone();
 
         let kid = subject.key_id(did_method, algorithm).await.ok_or(AppError::Error(
             "Failed to create a key id necessary to self-issue the credential".to_string(),
@@ -132,11 +140,26 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
 
         let signed_credential = json!(sd_jwt_credential.to_string());
 
-        // Create and populate the VerifiableCredentialRecord
-        let mut vcr = VerifiableCredentialRecord::try_new(signed_credential, vec![]).map_err(|_| {
-            AppError::Error("Failed to create a VerifiableCredentialRecord from self_issue_credential".to_string())
-        })?;
+        // let credential_configuration = CredentialConfigurationsSupportedObject {
+        //     credential_format: CredentialFormats::DcSdJwt(DcSdJwtParameters {
+        //         vct: "https://www.ietf.org/archive/id/draft-terbu-oauth-sd-jwt-vc-00.html"
+        //             .parse::<Url>()
+        //             .map_err(|_| {
+        //                 AppError::Error("Failed to parse the vct into a <Url> for the DcSdJwtParameters".to_string())
+        //             })?,
+        //     }),
 
+        //     ..Default::default()
+        // };
+
+        // Create and populate the VerifiableCredentialRecord
+        let mut vcr = VerifiableCredentialRecord::try_new(signed_credential, vec![])
+            .await
+            .map_err(|_| {
+                AppError::Error("Failed to create a VerifiableCredentialRecord from self_issue_credential".to_string())
+            })?;
+
+        vcr.display_credential.metadata.is_self_issued = true;
         vcr.display_credential.data = data.clone();
         vcr.display_credential.issuer_name = state
             .profile_settings
@@ -163,7 +186,7 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
             .as_ref()
             .ok_or(MissingManagerError("stronghold"))?;
 
-        let key: Uuid = vcr.display_credential.id.parse().expect("invalid uuid");
+        let key: Uuid = vcr.display_credential.id;
 
         // Remove the old credential from the stronghold if it exists.
         stronghold_manager.remove(key).map_err(StrongholdDeletionError)?;

@@ -4,24 +4,18 @@ use crate::{
     state::{
         actions::{listen, Action},
         core_utils::{
-            helpers::{get_unverified_jwt_claims, validate_credential_types, validate_jwt_vc_json},
             history_event::{EventType, HistoryCredential, HistoryEvent},
-            CoreUtils, DateUtils, IdentityManager,
+            CoreUtils,
         },
         credentials::{
-            actions::authorization_code_received::CodeReceived,
-            reducers::refresh_credential_status::fetch_credential_status, CredentialStatus, DisplayCredential,
-            VerifiableCredentialRecord,
+            actions::authorization_code_received::CodeReceived, DisplayCredential, VerifiableCredentialRecord,
         },
         user_prompt::CurrentUserPrompt,
         AppState, UNIME_CLIENT_ID, UNIME_REDIRECT_URI,
     },
 };
-use identity_iota::credential::Jwt;
-use log::{info, warn};
-use oauth_tsl::{status_list::StatusType, tokens::referenced_token::StatusClaim};
+use log::info;
 use oid4vc::oid4vci::{
-    credential_format_profiles::CredentialFormats,
     credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject,
     credential_response::CredentialResponseType, token_request::TokenRequest,
 };
@@ -212,7 +206,13 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             credential_configuration_ids.contains(credential_configuration_id)
         });
 
-        let mut credentials = vec![];
+        // Create or update the connection.
+        let previously_connected = state.connections.contains(connection_url, &issuer_name);
+        let mut connections = state.connections;
+        let connection = connections.update_or_insert(connection_url, &issuer_name, None);
+
+        let mut history_credentials = vec![];
+
         for credential_configuration_id in credential_configuration_ids {
             let credential_configuration = credential_configurations_supported
                 .get(&credential_configuration_id)
@@ -277,88 +277,17 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                 }
             };
 
-            // TODO: add validation for other credential formats.
-            if credential_configuration.credential_format.format() == CredentialFormats::JwtVcJson(()) {
-                // Convert the received credential (as a string) into a Jwt instance for validation.
-                let credential_jwt = Jwt::new(
-                    credential
-                        .as_str()
-                        .ok_or(AppError::Error("Invalid JWT string.".to_string()))?
-                        .to_string(),
-                );
-                validate_jwt_vc_json(&resolver, credential_jwt).await?;
-            }
-
-            credentials.push((
-                credential_configuration_id,
+            let verifiable_credential_record = VerifiableCredentialRecord::try_new(
+                identity_manager,
+                &resolver,
                 credential,
-                // Collect the display information for the credential from the credential configuration metadata if it exists, otherwise default to an empty vector.
-                credential_configuration
-                    .credential_metadata
-                    .as_ref()
-                    .and_then(|credential_metadata| credential_metadata.display.as_ref())
-                    .map(|display| display.clone())
-                    .unwrap_or_default(),
-                // Collect the claims to be displayed for the credential from the credential configuration metadata if it exists, otherwise default to an empty vector.
-                credential_configuration
-                    .credential_metadata
-                    .as_ref()
-                    .and_then(|credential_metadata| credential_metadata.claims.as_ref())
-                    .map(|claims| claims.iter().map(|claim| claim.clone().into()).collect())
-                    .unwrap_or_default(),
-            ));
-        }
+                &credential_configuration,
+                &issuer_name,
+                Some(connection.id.clone()),
+            )
+            .await?;
 
-        info!("credentials: {credentials:?}");
-
-        // Create or update the connection.
-        let previously_connected = state.connections.contains(connection_url, &issuer_name);
-        let mut connections = state.connections;
-        let connection = connections.update_or_insert(connection_url, &issuer_name, None);
-
-        let mut history_credentials = vec![];
-
-        for (credential_configuration_id, credential, display, claims) in credentials.into_iter() {
-            let mut verifiable_credential_record = VerifiableCredentialRecord::try_new(credential, claims)?;
-            // Validate the credential against its corresponding credential JSON Schema.
-            validate_credential_types(&verifiable_credential_record.verifiable_credential)?;
-
-            // The credential status is set only when the credential status claim/property can be found and is in OAuth TSL format.
-            // If setting the credential status fails we currently catch the error and simply set the credential status field to None.
-            // TODO: we might want to inform the user of this before accepting the credential already
-            verifiable_credential_record.display_credential.credential_status =
-                get_credential_status(&verifiable_credential_record, identity_manager).await;
-
-            // Set the issuer name of the credential.
-            verifiable_credential_record
-                .display_credential
-                .issuer_name
-                .clone_from(&issuer_name);
-
-            // Set the connection ID of the credential.
-            verifiable_credential_record.display_credential.connection_id = Some(connection.id.clone());
-
-            // Set the display name of the credential.
-            verifiable_credential_record.display_credential.display_name = get_credential_display_name(
-                &credential_configurations_supported,
-                &credential_configuration_id,
-                &verifiable_credential_record,
-            );
-
-            let key: Uuid = verifiable_credential_record
-                .display_credential
-                .id
-                .parse()
-                .map_err(|err| AppError::Error(format!("Failed to parse credential id as UUID: {err}")))?;
-
-            display
-                .first()
-                .and_then(|display| display.logo.clone())
-                .map(|logo| logo.uri.clone())
-                .and_then(|uri| persist_asset(&hash(uri.as_str()), key.to_string().as_str()).ok());
-
-            // Remove the old credential from the stronghold if it exists.
-            stronghold_manager.remove(key).map_err(StrongholdDeletionError)?;
+            let key: Uuid = verifiable_credential_record.id;
 
             stronghold_manager
                 .insert(key, json!(verifiable_credential_record).to_string().as_bytes().to_vec())
@@ -462,76 +391,6 @@ fn get_credential_display_name(
         .unwrap_or("Credential".to_string())
 }
 
-/// Helper function to fetch the credential status of a newly received credential and set the fields the `credential_status` field of the DisplayCredential.
-/// Currently supports only the OAuth Token Status List mechanism.
-/// The function looks for the credential status info in 2 places:
-/// 1. In the JWT root for the key `status` as specified in the IETF OAuth Token Status List specification.
-/// 2. In the `credentialStatus` property of the credential, as specified in the W3C Verifiable Credential Data Model specification (1.1 and 2.0).
-///     * How to fill in the `credentialStatus` property is not specified in the W3C VC Data Model specifications for the OAuth Token Status List mechanism.
-///       We decided the most logical way is to assume this should be exactly the same as the `status` claim in the JWT root.
-///       There is a discussion ongoing in the DIIP profile community about this, see: https://github.com/FIDEScommunity/DIIP/issues/60
-///
-/// An error is returned when:
-/// 1. The credential does not contain a status claim in the JWT root or a credentialStatus property in the VC.
-/// 2. The status claim/property does not use the OAuth Token Status List mechanism.
-async fn get_credential_status(
-    verifiable_credential_record: &VerifiableCredentialRecord,
-    identity_manager: &IdentityManager,
-) -> Option<CredentialStatus> {
-    let status_value = get_unverified_jwt_claims(&verifiable_credential_record.verifiable_credential)
-        .ok() // convert Result → Option
-        .and_then(|claims| {
-            claims.get("status").cloned().or_else(|| {
-                verifiable_credential_record
-                    .display_credential
-                    .data
-                    .get("credentialStatus")
-                    .cloned()
-            })
-        });
-
-    let status_value = match status_value {
-        Some(value) => value,
-        None => {
-            warn!("The credential does not contain a status claim/property");
-            return None;
-        }
-    };
-
-    let credential_status_claim = match serde_json::from_value::<StatusClaim>(status_value.clone()) {
-        Ok(claim) => claim,
-        Err(_) => {
-            warn!("The credential status claim/property is not in the OAuth Token Status List format: {status_value}");
-            return None;
-        }
-    };
-
-    // Here we initialize the credential status with UNDEFINED status and an empty last_checked field, these fields will be filled after fetching the status.
-    let mut credential_status_data = CredentialStatus {
-        status: StatusType::UNDEFINED,
-        idx: credential_status_claim.referenced_status_list.idx,
-        uri: credential_status_claim.referenced_status_list.uri,
-        last_checked: String::new(),
-    };
-
-    let status = match fetch_credential_status(&credential_status_data, identity_manager).await {
-        Ok(status) => status,
-        Err(_) => {
-            warn!("Failed to fetch credential status");
-            return None;
-        }
-    };
-    credential_status_data.status = status;
-    credential_status_data.last_checked = DateUtils::new_date_string();
-
-    info!(
-        "Successfully set credential status for credential with id: `{}`",
-        verifiable_credential_record.display_credential.id
-    );
-
-    Some(credential_status_data)
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -566,6 +425,7 @@ mod tests {
         // Credential with a `type` property. The `type` property is a string and it should be ignored in favor of the
         // display name from the credential configuration.
         let verifiable_credential_record = VerifiableCredentialRecord {
+            id: Uuid::new_v4(),
             verifiable_credential: Default::default(),
             display_credential: DisplayCredential {
                 data: json!({
@@ -598,6 +458,7 @@ mod tests {
 
         // Credential with a `type` property. The `type` property is a string and it should be used as the display name.
         let verifiable_credential_record = VerifiableCredentialRecord {
+            id: Uuid::new_v4(),
             verifiable_credential: Default::default(),
             display_credential: DisplayCredential {
                 data: json!({
@@ -631,6 +492,7 @@ mod tests {
         // Credential with a `type` property. The `type` property is an array and the last element should be used as the
         // display name.
         let verifiable_credential_record = VerifiableCredentialRecord {
+            id: Uuid::new_v4(),
             verifiable_credential: Default::default(),
             display_credential: DisplayCredential {
                 data: json!({

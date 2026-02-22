@@ -1,5 +1,6 @@
 use log::info;
 use std::sync::Arc;
+use uuid::Uuid;
 
 use crate::{
     error::AppError,
@@ -21,7 +22,7 @@ pub async fn refresh_all_credential_statuses(state: AppState, action: Action) ->
     let credential_ids: Vec<String> = state
         .credentials
         .iter()
-        .map(|credential| credential.id.clone())
+        .map(|credential| credential.id.to_string())
         .collect();
 
     let mut state = state;

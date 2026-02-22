@@ -31,7 +31,7 @@ pub async fn credential_search(state: AppState, action: Action) -> Result<AppSta
 
             concat(vec![filtered_creds_name, filtered_creds_issuer, filtered_creds_content])
                 .iter()
-                .map(|credential| credential.id.clone())
+                .map(|credential| credential.id.to_string())
                 .collect()
         };
 
@@ -58,10 +58,12 @@ fn contains_search_term(string: Option<&str>, search_term: &str) -> bool {
 
 #[cfg(test)]
 mod tests {
+    use uuid::Uuid;
+
     use super::*;
     use crate::state::credentials::CredentialMetadata;
+    use crate::state::credentials::CredentialType;
     use crate::state::credentials::DisplayCredential;
-    use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
 
     use std::{sync::Arc, vec};
 
@@ -108,11 +110,11 @@ mod tests {
         AppState {
             credentials: vec![
                 DisplayCredential {
-                    id: "1".to_string(),
-                    format: CredentialFormats::default(),
+                    id: Uuid::from_u128(1),
+                    credential_type: CredentialType::default(),
                     issuer_name: "Example Organization".to_string(),
                     data: serde_json::json!({"last_name": "Ferris"}),
-                    display_claims: vec![],
+                    display_claims: Default::default(),
                     metadata: CredentialMetadata {
                         date_issued: "2021-01-01".to_string(),
                         date_added: "2021-01-01".to_string(),
@@ -123,11 +125,11 @@ mod tests {
                     credential_status: None,
                 },
                 DisplayCredential {
-                    id: "2".to_string(),
-                    format: CredentialFormats::default(),
+                    id: Uuid::from_u128(2),
+                    credential_type: CredentialType::default(),
                     issuer_name: "Example Organization".to_string(),
                     data: serde_json::json!({"last_name": "John"}),
-                    display_claims: vec![],
+                    display_claims: Default::default(),
                     metadata: CredentialMetadata {
                         date_issued: "2021-01-02".to_string(),
                         date_added: "2021-02-01".to_string(),
@@ -138,11 +140,11 @@ mod tests {
                     credential_status: None,
                 },
                 DisplayCredential {
-                    id: "3".to_string(),
-                    format: CredentialFormats::default(),
+                    id: Uuid::from_u128(3),
+                    credential_type: CredentialType::default(),
                     issuer_name: "John Organization".to_string(),
                     data: serde_json::json!({"last_name": "Ferris"}),
-                    display_claims: vec![],
+                    display_claims: Default::default(),
                     metadata: CredentialMetadata {
                         date_issued: "2021-01-03".to_string(),
                         date_added: "2021-03-01".to_string(),
