@@ -267,7 +267,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
                 HistoryCredential {
                     title: "PersonalInformation".to_string(),
                     issuer_name: "Impierce Demo Portal".to_string(),
-                    id: "39373933-3863-3339-3864-646234373631".to_string(),
+                    id: "62326539-3634-6536-6131-323731373463".to_string(),
                 },
                 HistoryCredential {
                     title: "Teamwork".to_string(),

@@ -116,6 +116,13 @@ impl VerifiableCredentialRecord {
                 let id = Uuid::new_v4().to_string();
                 let issuance_date = sd_jwt_vc.claims().iat.map(|iat| iat.to_rfc3339()).unwrap_or_default();
 
+                if sd_jwt_vc.headers().get("typ").and_then(|typ| typ.as_str()) != Some("dc+sd-jwt") {
+                    return Err(AppError::Error(
+                        "Failed to create a VerifiableCredentialRecord: SD-JWT 'typ' header is not 'dc+sd-jwt'"
+                            .to_string(),
+                    ));
+                }
+
                 let credential_subject = serde_json::json!(sd_jwt_vc
                     .clone()
                     .into_disclosed_object(&Sha256Hasher::new())
@@ -137,7 +144,6 @@ impl VerifiableCredentialRecord {
                 });
 
                 (id, format, data, issuance_date, display_claims)
-                // Else
             } else if let Some(sd_jwt) = verifiable_credential
                 .as_str()
                 .and_then(|verifiable_credential| verifiable_credential.parse::<SdJwt>().ok())
@@ -160,52 +166,26 @@ impl VerifiableCredentialRecord {
                 let disclosed_claims = sd_jwt.clone().into_disclosed_object(&Sha256Hasher::new()).unwrap();
                 let credential =
                     CredentialV2::<Object>::from_json_value(serde_json::Value::Object(disclosed_claims)).unwrap();
-                let type_ = credential.types.clone();
-                let credential_subject = credential.credential_subject.first().unwrap().clone();
 
                 let display_claims: Vec<DisplayClaim> = get_display_claims(claim_descriptions, &json!(credential));
 
                 let format = CredentialFormats::VcSdJwt(());
 
-                let data = json!({
-                    "type": type_,
-                    "credentialSubject": credential_subject
-                });
+                let data = json!(credential);
 
                 (id, format, data, issuance_date, display_claims)
             } else if let Some(credential_display) =
                 get_unverified_jwt_claims(&verifiable_credential)?.get("vc").cloned()
             {
-                // TODO: We are using this hash as Credential ID so that we can prevent credential duplication in
-                // demo situations. Now we can actually delete Credentials in UniMe we don't need to use the hash of the
-                // credential as the ID anymore. We should simply generate a random UUID.
-                // Derive the hash from the credential display.
-                let hash = {
-                    let type_value = credential_display["type"].clone();
-
-                    let mut credential_subject_value = credential_display["credentialSubject"].clone();
-
-                    // TODO(ngdil): Remove this hard-coded logic.
-                    // Remove the `Passport Number` and `Staff Number` from the credential subject if they exists.
-                    credential_subject_value["Passport Number"].take();
-                    credential_subject_value["Staff Number"].take();
-                    credential_subject_value["achievement"]["id"].take();
-
-                    sha256::digest(
-                        json!(
-                            {
-                                "type": type_value,
-                                "credentialSubject": credential_subject_value,
-                            }
-                        )
-                        .to_string(),
-                    )
-                };
+                // TODO: do not use a hash to generate the credential ID. Currently we still do this so that our tests in `unime/src-tauri/tests` don't break.
+                let hash = { sha256::digest(json!(credential_display).to_string()) };
 
                 let issuance_date = credential_display["issuanceDate"]
                     .as_str()
                     .map(ToString::to_string)
-                    .unwrap_or_default();
+                    .ok_or(AppError::Error(
+                        "Failed to create a VerifiableCredentialRecord: 'issuanceDate' is missing".to_string(),
+                    ))?;
                 let id = Uuid::from_slice(&hash.as_bytes()[..16])?.to_string();
                 let format = CredentialFormats::JwtVcJson(());
 
