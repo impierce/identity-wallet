@@ -4,70 +4,41 @@ use jsonschema::{Retrieve, Uri, ValidationError, Validator};
 use lazy_static::lazy_static;
 use log::{debug, info, warn};
 use serde_json::Value;
-use std::fs::{self};
-use std::path::PathBuf;
+use std::collections::HashMap;
 
 use crate::error::AppError;
 use crate::state::core_utils::helpers::ValueToString;
 
-const JSONSCHEMAS_DIR: &str = "src/jsonschemas";
-
 lazy_static! {
-    pub static ref VERIFIABLE_CREDENTIAL_V1_1_VALIDATOR: Validator =
-        compile_validator(include_str!("VerifiableCredentialV1_1.json"))
-            .expect("Failed to compile VerifiableCredentialV1_1 JSON Schema");
-    pub static ref VERIFIABLE_CREDENTIAL_V2_VALIDATOR: Validator =
-        compile_validator(include_str!("VerifiableCredentialV2.json"))
-            .expect("Failed to compile VerifiableCredentialV2 JSON Schema");
-    pub static ref EUROPEAN_DIGITAL_CREDENTIAL_V3_3_VALIDATOR: Validator =
-        compile_validator(include_str!("EuropeanDigitalCredentialV3_3.json"))
-            .expect("Failed to compile EuropeanDigitalCredentialV3_3 JSON Schema");
-    pub static ref OPEN_BADGE_CREDENTIAL_V3_VALIDATOR: Validator =
-        compile_validator(include_str!("OpenBadgeCredentialV3.json"))
-            .expect("Failed to compile OpenBadgeCredentialV3 JSON Schema");
-}
+    static ref SCHEMA_REGISTRY: HashMap<&'static str, Value> = {
+        let mut json_schemas = HashMap::new();
+            json_schemas.insert("VerifiableCredentialV1_1.json",
+                serde_json::from_str(include_str!("VerifiableCredentialV1_1.json")).unwrap());
+            json_schemas.insert("VerifiableCredentialV2.json",
+                serde_json::from_str(include_str!("VerifiableCredentialV2.json")).unwrap());
+            json_schemas.insert("OpenBadgeCredentialV3.json",
+                serde_json::from_str(include_str!("OpenBadgeCredentialV3.json")).unwrap());
+            json_schemas.insert("EDC_VerifiableCredentialV1_1.json",
+                serde_json::from_str(include_str!("EDC_VerifiableCredentialV1_1.json")).unwrap());
+            json_schemas.insert("EuropeanDigitalCredentialV3_3.json",
+                serde_json::from_str(include_str!("EuropeanDigitalCredentialV3_3.json")).unwrap());
+            json_schemas
+        };
 
-/// Helper function to create the static ref Validators from JSON Schema files.
-fn compile_validator(json_schema_str: &str) -> Result<Validator, AppError> {
-    let json_schema: Value = serde_json::from_str(json_schema_str)
-        .map_err(|_| AppError::Error("Failed to convert JSON Schema &str to serde_json::Value".to_string()))?;
-
-    // Define the relative path to our jsonschema folder needed for the LocalRetriever
-    let jsonschema_dir = std::env::current_dir().unwrap().join(JSONSCHEMAS_DIR);
-
-    // Select correct draft version for JSON Schema Validator and construct schema with LocalRetriever
-    let schema = match json_schema
-        .get("$schema")
-        .and_then(|value| value.to_clean_string())
-        .ok_or(AppError::Error("Invalid or missing \"$schema\" field".to_string()))?
-        .as_str()
-    {
-        "https://json-schema.org/draft/2019-09/schema#" => jsonschema::draft201909::options()
-            .with_retriever(LocalRetriever {
-                base_path: jsonschema_dir.clone(),
-            })
-            .should_validate_formats(true)
-            .build(&json_schema)
-            .map_err(|_| {
-                AppError::Error(format!(
-                    "Failed to compile JSON Schema from serde_json::Value: {json_schema}"
-                ))
-            })?,
-        // Default to draft 2020-12
-        _ => jsonschema::draft202012::options()
-            .with_retriever(LocalRetriever {
-                base_path: jsonschema_dir.clone(),
-            })
-            .should_validate_formats(true)
-            .build(&json_schema)
-            .map_err(|_| {
-                AppError::Error(format!(
-                    "Failed to compile JSON Schema from serde_json::Value: {json_schema}"
-                ))
-            })?,
+    // We can also compile the validators on the demand which would absolve the need for this static ref,
+    // but since it is static data anyway we can reduce process time everytime validation is needed by only compiling it once.
+    static ref VALIDATOR_REGISTRY: HashMap<&'static str, Validator> = {
+        let mut validators = HashMap::new();
+        validators.insert("VerifiableCredentialV1_1.json",
+            compile_validator("VerifiableCredentialV1_1.json").expect("Failed to compile VerifiableCredentialV1_1"));
+        validators.insert("VerifiableCredentialV2.json",
+            compile_validator("VerifiableCredentialV2.json").expect("Failed to compile VerifiableCredentialV2"));
+        validators.insert("EuropeanDigitalCredentialV3_3.json",
+            compile_validator("EuropeanDigitalCredentialV3_3.json").expect("Failed to compile EuropeanDigitalCredentialV3_3"));
+        validators.insert("OpenBadgeCredentialV3.json",
+            compile_validator("OpenBadgeCredentialV3.json").expect("Failed to compile OpenBadgeCredentialV3"));
+        validators
     };
-
-    Ok(schema)
 }
 
 /// Validate supported credential types against their corresponding JSON Schema.
@@ -144,10 +115,18 @@ pub enum CredentialTypeVersion {
 impl CredentialTypeVersion {
     pub fn get_validator(&self) -> Result<&'static Validator, AppError> {
         match self {
-            CredentialTypeVersion::VerifiableCredentialV1_1 => Ok(&VERIFIABLE_CREDENTIAL_V1_1_VALIDATOR),
-            CredentialTypeVersion::VerifiableCredentialV2 => Ok(&VERIFIABLE_CREDENTIAL_V2_VALIDATOR),
-            CredentialTypeVersion::EuropeanDigitalCredentialV3_3 => Ok(&EUROPEAN_DIGITAL_CREDENTIAL_V3_3_VALIDATOR),
-            CredentialTypeVersion::OpenBadgeCredentialV3 => Ok(&OPEN_BADGE_CREDENTIAL_V3_VALIDATOR),
+            CredentialTypeVersion::VerifiableCredentialV1_1 => VALIDATOR_REGISTRY
+                .get("VerifiableCredentialV1_1.json")
+                .ok_or(AppError::InvalidCredentialFormatError),
+            CredentialTypeVersion::VerifiableCredentialV2 => VALIDATOR_REGISTRY
+                .get("VerifiableCredentialV2.json")
+                .ok_or(AppError::InvalidCredentialFormatError),
+            CredentialTypeVersion::EuropeanDigitalCredentialV3_3 => VALIDATOR_REGISTRY
+                .get("EuropeanDigitalCredentialV3_3.json")
+                .ok_or(AppError::InvalidCredentialFormatError),
+            CredentialTypeVersion::OpenBadgeCredentialV3 => VALIDATOR_REGISTRY
+                .get("OpenBadgeCredentialV3.json")
+                .ok_or(AppError::InvalidCredentialFormatError),
             CredentialTypeVersion::Unknown => Err(AppError::InvalidCredentialFormatError),
         }
     }
@@ -198,6 +177,7 @@ impl CredentialType {
         }
     }
 
+    // TODO: BUG: if it fails to compile the json_schema then the app hangs
     fn validate(&self, data: &Value) -> Result<(), AppError> {
         let version = self.get_version(data)?;
 
@@ -209,7 +189,6 @@ impl CredentialType {
             _ => {
                 let errors: Vec<ValidationError> = version.get_validator()?.iter_errors(data).collect();
                 if !errors.is_empty() {
-                    println!("validation errors: {errors:#?}");
                     Err(AppError::Error(format!(
                         "The data is invalid according to the given JSON Schema: {errors:?}"
                     )))
@@ -223,20 +202,57 @@ impl CredentialType {
 }
 
 /// This struct is solely used to implement the `Retrieve` trait from the `jsonschema` crate,
-/// allowing us to load local JSON Schema files referenced via $ref in our JSON Schemas
-struct LocalRetriever {
-    base_path: PathBuf,
-}
+/// allowing us to load external JSON Schema files referenced via $ref in any JSON Schema.
+struct LocalRetriever {}
 
 /// Implementation of the `Retrieve` trait for loading local JSON Schema files
 impl Retrieve for LocalRetriever {
-    fn retrieve(&self, uri: &Uri<String>) -> Result<Value, Box<dyn std::error::Error + Send + Sync>> {
-        // Convert the URI/filename to a path in the resources folder
-        let file_path = self.base_path.join(uri.path().to_string().trim_start_matches('/'));
-        let content = fs::read_to_string(file_path)?;
-        let json = serde_json::from_str(&content)?;
-        Ok(json)
+    fn retrieve(&self, key: &Uri<String>) -> Result<Value, Box<dyn std::error::Error + Send + Sync>> {
+        let path = key.path();
+        let registry_key = path.split('/').last().unwrap_or(path).as_str();
+
+        SCHEMA_REGISTRY
+            .get(registry_key)
+            .cloned()
+            .ok_or_else(|| format!("JSON Schema not found for key: {}", key).into())
     }
+}
+
+/// Helper function to create the static ref Validators from JSON Schema files.
+fn compile_validator(json_schema_key: &str) -> Result<Validator, AppError> {
+    let json_schema = SCHEMA_REGISTRY
+        .get(json_schema_key)
+        .ok_or_else(|| AppError::Error("Main schema not found".to_string()))?;
+
+    // Select correct draft version for JSON Schema Validator and construct schema with LocalRetriever
+    let schema = match json_schema
+        .get("$schema")
+        .and_then(|value| value.to_clean_string())
+        .ok_or(AppError::Error("Invalid or missing \"$schema\" field".to_string()))?
+        .as_str()
+    {
+        "https://json-schema.org/draft/2019-09/schema#" => jsonschema::draft201909::options()
+            .with_retriever(LocalRetriever {})
+            .should_validate_formats(true)
+            .build(&json_schema)
+            .map_err(|_| {
+                AppError::Error(format!(
+                    "Failed to compile JSON Schema from serde_json::Value: {json_schema}"
+                ))
+            })?,
+        // Default to draft 2020-12
+        _ => jsonschema::draft202012::options()
+            .with_retriever(LocalRetriever {})
+            .should_validate_formats(true)
+            .build(&json_schema)
+            .map_err(|_| {
+                AppError::Error(format!(
+                    "Failed to compile JSON Schema from serde_json::Value: {json_schema}"
+                ))
+            })?,
+    };
+
+    Ok(schema)
 }
 
 #[cfg(test)]
