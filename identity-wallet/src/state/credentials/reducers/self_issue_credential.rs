@@ -6,7 +6,7 @@ use identity_credential::sd_jwt_vc::{SdJwtVcBuilder, SD_JWT_VC_TYP};
 use identity_iota::core::{Timestamp, Url};
 use itertools::Itertools;
 use jsonwebtoken::Algorithm;
-use oid4vc::oid4vc_core::Sign;
+use oid4vc::{oid4vc_core::Sign, oid4vci::credential_format_profiles::CredentialFormats};
 use sd_jwt::{JsonObject, JwsSigner, RequiredKeyBinding};
 use serde_json::json;
 use uuid::Uuid;
@@ -133,9 +133,10 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
         let signed_credential = json!(sd_jwt_credential.to_string());
 
         // Create and populate the VerifiableCredentialRecord
-        let mut vcr = VerifiableCredentialRecord::try_new(signed_credential, vec![]).map_err(|_| {
-            AppError::Error("Failed to create a VerifiableCredentialRecord from self_issue_credential".to_string())
-        })?;
+        let mut vcr = VerifiableCredentialRecord::try_new(CredentialFormats::DcSdJwt(()), signed_credential, vec![])
+            .map_err(|_| {
+                AppError::Error("Failed to create a VerifiableCredentialRecord from self_issue_credential".to_string())
+            })?;
 
         vcr.display_credential.data = data.clone();
         vcr.display_credential.issuer_name = state

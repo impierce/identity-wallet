@@ -102,107 +102,123 @@ pub struct VerifiableCredentialRecord {
 
 impl VerifiableCredentialRecord {
     pub fn try_new(
+        format: CredentialFormats,
         verifiable_credential: serde_json::Value,
         claim_descriptions: Vec<ClaimDescription>,
     ) -> Result<Self, AppError> {
         let display_credential = {
-            // Try to parse the Verifiable Credential as an SD-JWT credential.
-            let (id, format, data, issuance_date, display_claims) = if let Some(sd_jwt_vc) = verifiable_credential
-                .as_str()
-                .and_then(|verifiable_credential| verifiable_credential.parse::<SdJwtVc>().ok())
-            {
-                info!("Verifiable Credential parsed as a SD-JWT VC");
+            let (id, data, issuance_date, display_claims) = match format {
+                CredentialFormats::DcSdJwt(()) => {
+                    let sd_jwt_vc = verifiable_credential
+                        .as_str()
+                        .and_then(|verifiable_credential| verifiable_credential.parse::<SdJwtVc>().ok())
+                        .ok_or(AppError::Error(
+                            "Failed to create a VerifiableCredentialRecord: provided verifiable credential is not a valid SD-JWT VC"
+                                .to_string(),
+                        ))?;
 
-                let id = Uuid::new_v4().to_string();
-                let issuance_date = sd_jwt_vc.claims().iat.map(|iat| iat.to_rfc3339()).unwrap_or_default();
+                    let id = Uuid::new_v4().to_string();
+                    let issuance_date = sd_jwt_vc.claims().iat.map(|iat| iat.to_rfc3339()).unwrap_or_default();
 
-                if sd_jwt_vc.headers().get("typ").and_then(|typ| typ.as_str()) != Some("dc+sd-jwt") {
-                    return Err(AppError::Error(
-                        "Failed to create a VerifiableCredentialRecord: SD-JWT 'typ' header is not 'dc+sd-jwt'"
-                            .to_string(),
-                    ));
+                    if sd_jwt_vc.headers().get("typ").and_then(|typ| typ.as_str()) != Some("dc+sd-jwt") {
+                        return Err(AppError::Error(
+                            "Failed to create a VerifiableCredentialRecord: SD-JWT 'typ' header is not 'dc+sd-jwt'"
+                                .to_string(),
+                        ));
+                    }
+
+                    let credential_subject = serde_json::json!(sd_jwt_vc
+                        .clone()
+                        .into_disclosed_object(&Sha256Hasher::new())
+                        .map_err(|_| AppError::Error("Failed to convert SD JWT VC to Disclosed Object".to_string()))?);
+
+                    let display_claims: Vec<DisplayClaim> =
+                        get_display_claims(claim_descriptions, &json!(credential_subject));
+
+                    // TODO: Remove this workaround that is basically a way of disguising the SD JWT VC as a VC so that
+                    // it can be displayed in the Frontend.
+                    // TODO: moreover, this workaround is incomplete, since a few fields at the root level are still missing.
+                    // Most importantly, we're missing the credentialStatus property.
+                    let data = json!({
+                        "type": ["VerifiableCredential"],
+                        "issuer": sd_jwt_vc.claims().iss,
+                        "credentialSubject": credential_subject
+                    });
+
+                    (id, data, issuance_date, display_claims)
                 }
+                CredentialFormats::VcSdJwt(()) => {
+                    let vcdm2_sd_jwt = verifiable_credential
+                        .as_str()
+                        .and_then(|verifiable_credential| verifiable_credential.parse::<SdJwt>().ok())
+                        .ok_or(AppError::Error(
+                            "Failed to create a VerifiableCredentialRecord: provided verifiable credential is not a valid SD-JWT".to_string(),
+                        ))?;
 
-                let credential_subject = serde_json::json!(sd_jwt_vc
-                    .clone()
-                    .into_disclosed_object(&Sha256Hasher::new())
-                    .map_err(|_| AppError::Error("Failed to convert SD JWT VC to Disclosed Object".to_string()))?);
+                    let id = Uuid::new_v4().to_string();
+                    let issuance_date = vcdm2_sd_jwt
+                        .claims()
+                        .get("validFrom")
+                        .and_then(|valid_from| valid_from.as_str())
+                        .unwrap_or_default()
+                        .to_string();
 
-                let display_claims: Vec<DisplayClaim> =
-                    get_display_claims(claim_descriptions, &json!(credential_subject));
+                    if vcdm2_sd_jwt.headers().get("typ").and_then(|typ| typ.as_str()) != Some("vc+sd-jwt") {
+                        return Err(AppError::Error(
+                            "Failed to create a VerifiableCredentialRecord: SD-JWT 'typ' header is not 'vc+sd-jwt'"
+                                .to_string(),
+                        ));
+                    }
 
-                let format = CredentialFormats::DcSdJwt(());
+                    let disclosed_claims = vcdm2_sd_jwt
+                        .clone()
+                        .into_disclosed_object(&Sha256Hasher::new())
+                        .unwrap();
+                    let credential =
+                        CredentialV2::<Object>::from_json_value(serde_json::Value::Object(disclosed_claims)).unwrap();
 
-                // TODO: Remove this workaround that is basically a way of disguising the SD JWT VC as a VC so that
-                // it can be displayed in the Frontend.
-                // TODO: moreover, this workaround is incomplete, since a few fields at the root level are still missing.
-                // Most importantly, we're missing the credentialStatus property.
-                let data = json!({
-                    "type": ["VerifiableCredential"],
-                    "issuer": sd_jwt_vc.claims().iss,
-                    "credentialSubject": credential_subject
-                });
+                    let display_claims: Vec<DisplayClaim> = get_display_claims(claim_descriptions, &json!(credential));
 
-                (id, format, data, issuance_date, display_claims)
-            } else if let Some(sd_jwt) = verifiable_credential
-                .as_str()
-                .and_then(|verifiable_credential| verifiable_credential.parse::<SdJwt>().ok())
-            {
-                let id = Uuid::new_v4().to_string();
-                let issuance_date = sd_jwt
-                    .claims()
-                    .get("validFrom")
-                    .and_then(|valid_from| valid_from.as_str())
-                    .unwrap_or_default()
-                    .to_string();
+                    let data = json!(credential);
 
-                if sd_jwt.headers().get("typ").and_then(|typ| typ.as_str()) != Some("vc+sd-jwt") {
-                    return Err(AppError::Error(
-                        "Failed to create a VerifiableCredentialRecord: SD-JWT 'typ' header is not 'vc+sd-jwt'"
-                            .to_string(),
-                    ));
+                    (id, data, issuance_date, display_claims)
                 }
+                CredentialFormats::JwtVcJson(()) => {
+                    let credential_display = get_unverified_jwt_claims(&verifiable_credential)?
+                        .get("vc")
+                        .cloned()
+                        .ok_or(AppError::Error(
+                            "Failed to create a VerifiableCredentialRecord: 'vc' claim is missing in the JWT VC"
+                                .to_string(),
+                        ))?;
 
-                let disclosed_claims = sd_jwt.clone().into_disclosed_object(&Sha256Hasher::new()).unwrap();
-                let credential =
-                    CredentialV2::<Object>::from_json_value(serde_json::Value::Object(disclosed_claims)).unwrap();
+                    // TODO: do not use a hash to generate the credential ID. Currently we still do this so that our tests in `unime/src-tauri/tests` don't break.
+                    let hash = { sha256::digest(json!(credential_display).to_string()) };
 
-                let display_claims: Vec<DisplayClaim> = get_display_claims(claim_descriptions, &json!(credential));
+                    let issuance_date = credential_display["issuanceDate"]
+                        .as_str()
+                        .map(ToString::to_string)
+                        .ok_or(AppError::Error(
+                            "Failed to create a VerifiableCredentialRecord: 'issuanceDate' is missing".to_string(),
+                        ))?;
+                    let id = Uuid::from_slice(&hash.as_bytes()[..16])?.to_string();
 
-                let format = CredentialFormats::VcSdJwt(());
+                    // TODO: Use the claims to rename the keys in the Credential according to the display hints provided by
+                    // the Issuer. Before we do this we need to make sure that UniCore supports Claims Description for
+                    // Issuer Metadata (see: https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0-15.html#claims-description-issuer-metadata).
+                    // For now we just display the raw credential as is.
+                    let display_claims = vec![];
 
-                let data = json!(credential);
+                    let data = credential_display;
 
-                (id, format, data, issuance_date, display_claims)
-            } else if let Some(credential_display) =
-                get_unverified_jwt_claims(&verifiable_credential)?.get("vc").cloned()
-            {
-                // TODO: do not use a hash to generate the credential ID. Currently we still do this so that our tests in `unime/src-tauri/tests` don't break.
-                let hash = { sha256::digest(json!(credential_display).to_string()) };
-
-                let issuance_date = credential_display["issuanceDate"]
-                    .as_str()
-                    .map(ToString::to_string)
-                    .ok_or(AppError::Error(
-                        "Failed to create a VerifiableCredentialRecord: 'issuanceDate' is missing".to_string(),
-                    ))?;
-                let id = Uuid::from_slice(&hash.as_bytes()[..16])?.to_string();
-                let format = CredentialFormats::JwtVcJson(());
-
-                // TODO: Use the claims to rename the keys in the Credential according to the display hints provided by
-                // the Issuer. Before we do this we need to make sure that UniCore supports Claims Description for
-                // Issuer Metadata (see: https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0-15.html#claims-description-issuer-metadata).
-                // For now we just display the raw credential as is.
-                let display_claims = vec![];
-
-                let data = credential_display;
-
-                (id, format, data, issuance_date, display_claims)
-            } else {
-                return Err(AppError::Error(
-                    "Failed to create a VerifiableCredentialRecord: verifiable credential format either an invalid SD-JWT or JWT VC JSON, or an unsupported format"
+                    (id, data, issuance_date, display_claims)
+                }
+                _ => {
+                    return Err(AppError::Error(
+                    "Failed to create a VerifiableCredentialRecord: provided verifiable credential format is not supported"
                         .to_string(),
                 ));
+                }
             };
 
             DisplayCredential {
@@ -232,6 +248,9 @@ impl VerifiableCredentialRecord {
         })
     }
 }
+
+// 2026-02-25T21:22:44Z
+// 2026-02-25T21:24:44Z
 
 fn get_display_claims(claim_descriptions: Vec<ClaimDescription>, data: &serde_json::Value) -> Vec<DisplayClaim> {
     claim_descriptions
@@ -273,7 +292,8 @@ mod tests {
     fn test_verifiable_credential_record_try_from_jwt_vc_json() {
         let jwt_vc_json = json!("eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDprZXk6ejZNa2toUDQzTENTWGFqM1NRQm92eTF1RTJuWHZTQm5SUFdaMndoUExxblo4UGdEI3o2TWtraFA0M0xDU1hhajNTUUJvdnkxdUUyblh2U0JuUlBXWjJ3aFBMcW5aOFBnRCJ9.eyJpc3MiOiJodHRwOi8vMTkyLjE2OC4xLjEyNzo5MDkwLyIsInN1YiI6ImRpZDprZXk6ejZNa2cxWFhHVXFma2hBS1Uxa1ZkMVBtdzZVRWoxdnhpTGoxeGM5MU1CejVvd05ZIiwiZXhwIjo5OTk5OTk5OTk5LCJpYXQiOjAsInZjIjp7IkBjb250ZXh0IjpbImh0dHBzOi8vd3d3LnczLm9yZy8yMDE4L2NyZWRlbnRpYWxzL3YxIiwiaHR0cHM6Ly93d3cudzMub3JnLzIwMTgvY3JlZGVudGlhbHMvZXhhbXBsZXMvdjEiXSwidHlwZSI6WyJWZXJpZmlhYmxlQ3JlZGVudGlhbCIsIlBlcnNvbmFsSW5mb3JtYXRpb24iXSwiaXNzdWFuY2VEYXRlIjoiMjAyMi0wMS0wMVQwMDowMDowMFoiLCJpc3N1ZXIiOiJodHRwOi8vMTkyLjE2OC4xLjEyNzo5MDkwLyIsImNyZWRlbnRpYWxTdWJqZWN0Ijp7ImlkIjoiZGlkOmtleTp6Nk1rZzFYWEdVcWZraEFLVTFrVmQxUG13NlVFajF2eGlMajF4YzkxTUJ6NW93TlkiLCJnaXZlbk5hbWUiOiJGZXJyaXMiLCJmYW1pbHlOYW1lIjoiQ3JhYm1hbiIsImVtYWlsIjoiZmVycmlzLmNyYWJtYW5AY3JhYm1haWwuY29tIiwiYmlydGhkYXRlIjoiMTk4NS0wNS0yMSJ9fX0.Yl841U5BwWgctX5vF5Zi8SYCEQpxFqEs8_J8KrX9D_mOwL-IRmP64BeQZvnKeAdcOoYGn6CyciV51_amdPNQBw");
 
-        let verifiable_credential_record = VerifiableCredentialRecord::try_new(jwt_vc_json, vec![]).unwrap();
+        let verifiable_credential_record =
+            VerifiableCredentialRecord::try_new(CredentialFormats::JwtVcJson(()), jwt_vc_json, vec![]).unwrap();
 
         assert_eq!(
             verifiable_credential_record.display_credential.format,
@@ -313,6 +333,7 @@ mod tests {
         let sd_jwt_vc = json!("eyJ0eXAiOiJkYytzZC1qd3QiLCJraWQiOiJkaWQ6d2ViOmxvY2FsaG9zdCUzQTMwMzMjQXM1cjRVeG9fWjREV19XLW9BUVNURTRLT1hhMnVWeUJRYUNna3VTUkhwWSIsImFsZyI6IkVTMjU2In0.eyJ2Y3QiOiJodHRwOi8vbG9jYWxob3N0OjMwMzMvdmN0L1UwUXRTbGRVLzAiLCJfc2QiOlsiNzZ0bGNVNi1kMlNaQUhHV3ZrVk5aV2hweS11QUFzczBuemdCdmx0X19QRSIsIlZsSVdHMVJNai1vckpSeTZIWUJqaXRLaDVUOGxLTUU5UkVlbmFUN2htRzgiLCJta19kazVuc0pXQ2hZYWpocW4yT2N2cXNYazlRdTdNcHdXeEpnTlBQQVp3Il0sImlzcyI6ImRpZDp3ZWI6bG9jYWxob3N0JTNBMzAzMyIsIm5iZiI6MTc3MDE0OTU2NSwiaWF0IjoxNzcwMTQ5NTY1LCJzdGF0dXMiOnsic3RhdHVzX2xpc3QiOnsidXJpIjoiaHR0cDovL2xvY2FsaG9zdDozMDMzL2lldGYtb2F1dGgtdG9rZW4tc3RhdHVzLWxpc3QvMSIsImlkeCI6ODEyNH19LCJfc2RfYWxnIjoic2hhLTI1NiIsImNuZiI6eyJraWQiOiJkaWQ6andrOmV5SmhiR2NpT2lKRlV6STFOaUlzSW1OeWRpSTZJbEF0TWpVMklpd2lhMmxrSWpvaVdHMUpPRmc1ZVhCU05WVTJlRE5ZTm5ab1NuUk9hM1ZwVkVWTk4zRklkbk5wVjBoa04zSkdSbTFxVVNJc0ltdDBlU0k2SWtWRElpd2llQ0k2SW1aME4yUnZja1JLZDFwTE5GaG5hVGRsVDFJNGNXRkZMWE4yTUhoQ01qaFJOWFZLYTNJdFEzZEJNalFpTENKNUlqb2lSWFI0T1RWM1IxcFZZekE1VjJzMVJXTnZNR1JHZVhreGVXVkVlbUl6TFdsS1VuRTNOMDF4T1U5YVl5SjkjMCJ9fQ.8ZY3p-eeEtlFQjfEYBcRGjxHeq2DpqIHNgD4WKPLcF8qmK8bWOJxYKaw1cfrptx6WsNs5cqhZgtlztBV9HckMw~WyJaam1obE9QQzhpZWREOHJxTXItckxvVzFvRXFDSUR4SHFoQmJkRlpKIiwiZmlyc3RfbmFtZSIsIkZlcnJpcyJd~WyIyUkhteHh0cXpHNHRCeU1DdG9LWXhTRXdEaE92MTd0Z1FaR2hNVEUwIiwibGFzdF9uYW1lIiwiQ3JhYm1hbiJd~WyJQSlBPbjZaSG95Z0FlUHltWU5iRVYtVDJ0N3lwU2E0eE5uOVlDQ1ZBIiwiZG9iIiwiMTk4Mi0wMS0wMSJd~");
 
         let verifiable_credential_record = VerifiableCredentialRecord::try_new(
+            CredentialFormats::DcSdJwt(()),
             sd_jwt_vc,
             vec![ClaimDescription {
                 path: ClaimPathPointer::try_new(vec![ClaimPathElement::String("first_name".to_string())]).unwrap(),
@@ -346,10 +367,11 @@ mod tests {
 
     #[test]
     fn test_verifiable_credential_record_try_from_vcdm2_sd_jwt() {
-        let sd_jwt_vc = json!("eyJ0eXAiOiJ2YytzZC1qd3QiLCJraWQiOiJkaWQ6d2ViOmxvY2FsaG9zdCUzQTMwMzMjQXM1cjRVeG9fWjREV19XLW9BUVNURTRLT1hhMnVWeUJRYUNna3VTUkhwWSIsImFsZyI6IkVTMjU2In0.eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvbnMvY3JlZGVudGlhbHMvdjIiXSwidHlwZSI6WyJWZXJpZmlhYmxlQ3JlZGVudGlhbCJdLCJjcmVkZW50aWFsU3ViamVjdCI6eyJfc2QiOlsiLU04ZmdVWlVuSkllWUpCcU45d2NjZVlwMzBMS21pZlZrR1Z1OFNacWFoQSIsIlZ5dW1yWUxPblJXaUxJMDZzTk1XY1J2MkswWGFoYWZnWjM0ekZMcDlDREEiLCJ2cnFyWW1yelRCTmtkSGlXLWllMnpURG1BamhjQkFURU5sZVNkaUI5VDN3Il19LCJpc3N1ZXIiOnsiaWQiOiJodHRwOi8vbG9jYWxob3N0OjMwMzMvIiwibmFtZSI6IlVuaUNvcmUifSwidmFsaWRGcm9tIjoiMjAyNi0wMi0wM1QyMDoxMToxOFoiLCJjcmVkZW50aWFsU3RhdHVzIjp7ImlkIjoiaHR0cDovL2xvY2FsaG9zdDozMDMzL2lldGYtb2F1dGgtdG9rZW4tc3RhdHVzLWxpc3QvMCIsInR5cGUiOiJzdGF0dXNsaXN0K2p3dCIsImlkeCI6MTExNCwidXJpIjoiaHR0cDovL2xvY2FsaG9zdDozMDMzL2lldGYtb2F1dGgtdG9rZW4tc3RhdHVzLWxpc3QvMCJ9LCJzdGF0dXMiOnsic3RhdHVzX2xpc3QiOnsidXJpIjoiaHR0cDovL2xvY2FsaG9zdDozMDMzL2lldGYtb2F1dGgtdG9rZW4tc3RhdHVzLWxpc3QvMCIsImlkeCI6MTExNH19LCJfc2RfYWxnIjoic2hhLTI1NiIsImNuZiI6eyJraWQiOiJkaWQ6andrOmV5SmhiR2NpT2lKRlV6STFOaUlzSW1OeWRpSTZJbEF0TWpVMklpd2lhMmxrSWpvaVdHMUpPRmc1ZVhCU05WVTJlRE5ZTm5ab1NuUk9hM1ZwVkVWTk4zRklkbk5wVjBoa04zSkdSbTFxVVNJc0ltdDBlU0k2SWtWRElpd2llQ0k2SW1aME4yUnZja1JLZDFwTE5GaG5hVGRsVDFJNGNXRkZMWE4yTUhoQ01qaFJOWFZLYTNJdFEzZEJNalFpTENKNUlqb2lSWFI0T1RWM1IxcFZZekE1VjJzMVJXTnZNR1JHZVhreGVXVkVlbUl6TFdsS1VuRTNOMDF4T1U5YVl5SjkjMCJ9fQ.ZxWYelfw39UScERquLEshscRMOBt0lyDrOaD9WzZgJ81j42wTVOYvqL1Ok_C3UcGgs-6-szu4o2V8uRksQc9jw~WyJZN1pKZGlqMnZPSDBWSnJmaEswY29zQVlPRGtibjlmcHNPMFNqTFduIiwiZG9iIiwiMTk4Mi0wMS0wMSJd~WyJoU1hxZEZWYzlYRnBoLWFWaUtQZUoxVVNBU3Z2c3RCOVBuaVdNSGFFIiwiZmlyc3RfbmFtZSIsIkZlcnJpcyJd~WyJjZFZ4cXJucWE2WF93SUhyOGN0QnlnZXdFU0dTSHNZNDJsSVg5MzZOIiwibGFzdF9uYW1lIiwiQ3JhYm1hbiJd~");
+        let vcdm2_sd_jwt = json!("eyJ0eXAiOiJ2YytzZC1qd3QiLCJraWQiOiJkaWQ6d2ViOmxvY2FsaG9zdCUzQTMwMzMjQXM1cjRVeG9fWjREV19XLW9BUVNURTRLT1hhMnVWeUJRYUNna3VTUkhwWSIsImFsZyI6IkVTMjU2In0.eyJAY29udGV4dCI6WyJodHRwczovL3d3dy53My5vcmcvbnMvY3JlZGVudGlhbHMvdjIiXSwidHlwZSI6WyJWZXJpZmlhYmxlQ3JlZGVudGlhbCJdLCJjcmVkZW50aWFsU3ViamVjdCI6eyJfc2QiOlsiLU04ZmdVWlVuSkllWUpCcU45d2NjZVlwMzBMS21pZlZrR1Z1OFNacWFoQSIsIlZ5dW1yWUxPblJXaUxJMDZzTk1XY1J2MkswWGFoYWZnWjM0ekZMcDlDREEiLCJ2cnFyWW1yelRCTmtkSGlXLWllMnpURG1BamhjQkFURU5sZVNkaUI5VDN3Il19LCJpc3N1ZXIiOnsiaWQiOiJodHRwOi8vbG9jYWxob3N0OjMwMzMvIiwibmFtZSI6IlVuaUNvcmUifSwidmFsaWRGcm9tIjoiMjAyNi0wMi0wM1QyMDoxMToxOFoiLCJjcmVkZW50aWFsU3RhdHVzIjp7ImlkIjoiaHR0cDovL2xvY2FsaG9zdDozMDMzL2lldGYtb2F1dGgtdG9rZW4tc3RhdHVzLWxpc3QvMCIsInR5cGUiOiJzdGF0dXNsaXN0K2p3dCIsImlkeCI6MTExNCwidXJpIjoiaHR0cDovL2xvY2FsaG9zdDozMDMzL2lldGYtb2F1dGgtdG9rZW4tc3RhdHVzLWxpc3QvMCJ9LCJzdGF0dXMiOnsic3RhdHVzX2xpc3QiOnsidXJpIjoiaHR0cDovL2xvY2FsaG9zdDozMDMzL2lldGYtb2F1dGgtdG9rZW4tc3RhdHVzLWxpc3QvMCIsImlkeCI6MTExNH19LCJfc2RfYWxnIjoic2hhLTI1NiIsImNuZiI6eyJraWQiOiJkaWQ6andrOmV5SmhiR2NpT2lKRlV6STFOaUlzSW1OeWRpSTZJbEF0TWpVMklpd2lhMmxrSWpvaVdHMUpPRmc1ZVhCU05WVTJlRE5ZTm5ab1NuUk9hM1ZwVkVWTk4zRklkbk5wVjBoa04zSkdSbTFxVVNJc0ltdDBlU0k2SWtWRElpd2llQ0k2SW1aME4yUnZja1JLZDFwTE5GaG5hVGRsVDFJNGNXRkZMWE4yTUhoQ01qaFJOWFZLYTNJdFEzZEJNalFpTENKNUlqb2lSWFI0T1RWM1IxcFZZekE1VjJzMVJXTnZNR1JHZVhreGVXVkVlbUl6TFdsS1VuRTNOMDF4T1U5YVl5SjkjMCJ9fQ.ZxWYelfw39UScERquLEshscRMOBt0lyDrOaD9WzZgJ81j42wTVOYvqL1Ok_C3UcGgs-6-szu4o2V8uRksQc9jw~WyJZN1pKZGlqMnZPSDBWSnJmaEswY29zQVlPRGtibjlmcHNPMFNqTFduIiwiZG9iIiwiMTk4Mi0wMS0wMSJd~WyJoU1hxZEZWYzlYRnBoLWFWaUtQZUoxVVNBU3Z2c3RCOVBuaVdNSGFFIiwiZmlyc3RfbmFtZSIsIkZlcnJpcyJd~WyJjZFZ4cXJucWE2WF93SUhyOGN0QnlnZXdFU0dTSHNZNDJsSVg5MzZOIiwibGFzdF9uYW1lIiwiQ3JhYm1hbiJd~");
 
         let verifiable_credential_record = VerifiableCredentialRecord::try_new(
-            sd_jwt_vc,
+            CredentialFormats::VcSdJwt(()),
+            vcdm2_sd_jwt,
             vec![ClaimDescription {
                 path: ClaimPathPointer::try_new(vec![
                     ClaimPathElement::String("credentialSubject".to_string()),
