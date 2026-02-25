@@ -6,13 +6,11 @@ members = ["identity-wallet", "unime/src-tauri"]
 tauri = { version = "2.9.2", features = ["protocol-asset", "rustls-tls"] }
 tauri-build = "2.5.1"
 
-# TODO: Use latest `beta` branch once https://github.com/impierce/did-manager/pull/43 is merged.
-did_manager = { git = "https://github.com/impierce/did-manager", rev = "049fa77" }
+did_manager = { git = "https://github.com/impierce/did-manager", rev = "a2863a3" }
 jsonwebtoken = "9.3"
 log = "^0.4"
 oauth_tsl = { git = "https://github.com/impierce/oauth-token-status-list", rev = "df371b9" }
-#  TODO: For all `openid4vc` dependencies, switch to latest `dev` revision once https://github.com/impierce/openid4vc/pull/118 is merged.
-oid4vc = { git = "https://github.com/impierce/openid4vc", rev = "0dc679a" }
+oid4vc = { git = "https://github.com/impierce/openid4vc", rev = "dc2c388" }
 rand = "0.8"
 rustls = { version = "0.23", features = ["aws-lc-rs"] }
 rustls-platform-verifier = { version = "0.6" }
