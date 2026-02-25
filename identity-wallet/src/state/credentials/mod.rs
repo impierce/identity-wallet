@@ -249,9 +249,6 @@ impl VerifiableCredentialRecord {
     }
 }
 
-// 2026-02-25T21:22:44Z
-// 2026-02-25T21:24:44Z
-
 fn get_display_claims(claim_descriptions: Vec<ClaimDescription>, data: &serde_json::Value) -> Vec<DisplayClaim> {
     claim_descriptions
         .into_iter()
