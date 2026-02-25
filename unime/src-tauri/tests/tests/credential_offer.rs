@@ -57,7 +57,6 @@ async fn download_credential_logo() {
                                     "VerifiableCredential".to_string(),
                                     "UniversityDegreeCredential".to_string(),
                                 ],
-                                credential_subject: Default::default(),
                             })
                             .into(),
                         }),
@@ -155,7 +154,6 @@ async fn download_issuer_logo() {
                                     "VerifiableCredential".to_string(),
                                     "UniversityDegreeCredential".to_string(),
                                 ],
-                                credential_subject: Default::default(),
                             })
                             .into(),
                         }),
@@ -239,7 +237,6 @@ async fn no_download_when_no_logo_in_metadata() {
                                     "VerifiableCredential".to_string(),
                                     "UniversityDegreeCredential".to_string(),
                                 ],
-                                credential_subject: Default::default(),
                             })
                             .into(),
                         }),
