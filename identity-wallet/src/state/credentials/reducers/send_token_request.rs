@@ -249,7 +249,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                 .await
                 .map_err(|err| {
                     AppError::Error(format!(
-                        "Failed to get credential for configuration id {credential_configuration_id}: {err}"
+                        "Failed to get credential for configuration id \"{credential_configuration_id}\": {err}"
                     ))
                 })?;
 

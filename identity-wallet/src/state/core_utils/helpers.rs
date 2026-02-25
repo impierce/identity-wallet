@@ -89,12 +89,14 @@ pub async fn validate_jwt_vc_json(credential_jwt: &str, identity_manager: &Ident
     validation.validate_aud = false;
 
     let token_data = decode::<Value>(credential_jwt, &decoding_key, &validation)
-        .map_err(|_| AppError::InvalidCredentialFormatError)?;
+        .map_err(|e| AppError::InvalidCredentialFormatError(e.to_string()))?;
 
     token_data
         .claims
         .get("vc")
-        .ok_or(AppError::InvalidCredentialFormatError)
+        .ok_or(AppError::InvalidCredentialFormatError(
+            "JwtVcJson is missing the 'vc' claim".to_string(),
+        ))
         .cloned()
 }
 

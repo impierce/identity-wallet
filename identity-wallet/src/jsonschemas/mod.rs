@@ -51,15 +51,20 @@ pub fn validate_credential_types(data: &Value) -> Result<(), AppError> {
     // Therefore, we try to "unwrap" the String type here once before also failing on that type.
     let data = match data {
         Value::String(str) => {
-            let parsed_data = serde_json::from_str::<Value>(str).map_err(|_| AppError::InvalidCredentialFormatError)?;
+            let parsed_data = serde_json::from_str::<Value>(str)
+                .map_err(|e| AppError::InvalidCredentialFormatError(e.to_string()))?;
             if !parsed_data.is_object() {
-                return Err(AppError::InvalidCredentialFormatError);
+                return Err(AppError::InvalidCredentialFormatError(
+                    "Parsed data is not an object".to_string(),
+                ));
             }
             parsed_data
         }
         Value::Object(_) => data.clone(),
         _ => {
-            return Err(AppError::InvalidCredentialFormatError);
+            return Err(AppError::InvalidCredentialFormatError(
+                "Data is not a valid JSON object".to_string(),
+            ));
         }
     };
 
@@ -68,7 +73,7 @@ pub fn validate_credential_types(data: &Value) -> Result<(), AppError> {
     match type_field {
         Some(_type) if !_type.is_null() => {
             match serde_json::from_value::<StringOrArray>(_type.clone())
-                .map_err(|_| AppError::InvalidCredentialFormatError)?
+                .map_err(|e| AppError::InvalidCredentialFormatError(e.to_string()))?
             {
                 StringOrArray::String(credential_type) => Ok(credential_type.validate(&data)?),
                 StringOrArray::Array(credential_type_array) => credential_type_array
@@ -117,17 +122,29 @@ impl CredentialTypeVersion {
         match self {
             CredentialTypeVersion::VerifiableCredentialV1_1 => VALIDATOR_REGISTRY
                 .get("VerifiableCredentialV1_1.json")
-                .ok_or(AppError::InvalidCredentialFormatError),
+                .ok_or(AppError::InvalidCredentialFormatError(
+                    "Validator not found for VerifiableCredentialV1_1".to_string(),
+                )),
             CredentialTypeVersion::VerifiableCredentialV2 => VALIDATOR_REGISTRY
                 .get("VerifiableCredentialV2.json")
-                .ok_or(AppError::InvalidCredentialFormatError),
+                .ok_or(AppError::InvalidCredentialFormatError(
+                    "Validator not found for VerifiableCredentialV2".to_string(),
+                )),
             CredentialTypeVersion::EuropeanDigitalCredentialV3_3 => VALIDATOR_REGISTRY
                 .get("EuropeanDigitalCredentialV3_3.json")
-                .ok_or(AppError::InvalidCredentialFormatError),
-            CredentialTypeVersion::OpenBadgeCredentialV3 => VALIDATOR_REGISTRY
-                .get("OpenBadgeCredentialV3.json")
-                .ok_or(AppError::InvalidCredentialFormatError),
-            CredentialTypeVersion::Unknown => Err(AppError::InvalidCredentialFormatError),
+                .ok_or(AppError::InvalidCredentialFormatError(
+                    "Validator not found for EuropeanDigitalCredentialV3_3".to_string(),
+                )),
+            CredentialTypeVersion::OpenBadgeCredentialV3 => {
+                VALIDATOR_REGISTRY
+                    .get("OpenBadgeCredentialV3.json")
+                    .ok_or(AppError::InvalidCredentialFormatError(
+                        "Validator not found for OpenBadgeCredentialV3".to_string(),
+                    ))
+            }
+            CredentialTypeVersion::Unknown => Err(AppError::InvalidCredentialFormatError(
+                "Unknown credential type version".to_string(),
+            )),
         }
     }
 }
@@ -135,13 +152,15 @@ impl CredentialTypeVersion {
 impl CredentialType {
     fn get_version(&self, data: &Value) -> Result<CredentialTypeVersion, AppError> {
         let context_array = serde_json::from_value::<Vec<String>>(data["@context"].clone())
-            .map_err(|_| AppError::InvalidCredentialFormatError)?;
+            .map_err(|e| AppError::InvalidCredentialFormatError(e.to_string()))?;
 
         match self {
             CredentialType::OpenBadgeCredential => {
                 match context_array
                     .get(1)
-                    .ok_or(AppError::InvalidCredentialFormatError)?
+                    .ok_or(AppError::InvalidCredentialFormatError(
+                        "Missing context value".to_string(),
+                    ))?
                     .as_str()
                 {
                     context
@@ -150,18 +169,24 @@ impl CredentialType {
                     {
                         Ok(CredentialTypeVersion::OpenBadgeCredentialV3)
                     }
-                    _ => Err(AppError::InvalidCredentialFormatError),
+                    _ => Err(AppError::InvalidCredentialFormatError(
+                        "Invalid context value".to_string(),
+                    )),
                 }
             }
             CredentialType::VerifiableCredential => {
                 match context_array
                     .first()
-                    .ok_or(AppError::InvalidCredentialFormatError)?
+                    .ok_or(AppError::InvalidCredentialFormatError(
+                        "Missing context value".to_string(),
+                    ))?
                     .as_str()
                 {
                     "https://www.w3.org/2018/credentials/v1" => Ok(CredentialTypeVersion::VerifiableCredentialV1_1),
                     "https://www.w3.org/ns/credentials/v2" => Ok(CredentialTypeVersion::VerifiableCredentialV2),
-                    _ => Err(AppError::InvalidCredentialFormatError),
+                    _ => Err(AppError::InvalidCredentialFormatError(
+                        "Invalid context value".to_string(),
+                    )),
                 }
             }
             CredentialType::EuropeanDigitalCredential => {
@@ -209,7 +234,7 @@ struct LocalRetriever {}
 impl Retrieve for LocalRetriever {
     fn retrieve(&self, key: &Uri<String>) -> Result<Value, Box<dyn std::error::Error + Send + Sync>> {
         let path = key.path();
-        let registry_key = path.split('/').last().unwrap_or(path).as_str();
+        let registry_key = path.split('/').next_back().unwrap_or(path).as_str();
 
         SCHEMA_REGISTRY
             .get(registry_key)
@@ -234,7 +259,7 @@ fn compile_validator(json_schema_key: &str) -> Result<Validator, AppError> {
         "https://json-schema.org/draft/2019-09/schema#" => jsonschema::draft201909::options()
             .with_retriever(LocalRetriever {})
             .should_validate_formats(true)
-            .build(&json_schema)
+            .build(json_schema)
             .map_err(|_| {
                 AppError::Error(format!(
                     "Failed to compile JSON Schema from serde_json::Value: {json_schema}"
@@ -244,7 +269,7 @@ fn compile_validator(json_schema_key: &str) -> Result<Validator, AppError> {
         _ => jsonschema::draft202012::options()
             .with_retriever(LocalRetriever {})
             .should_validate_formats(true)
-            .build(&json_schema)
+            .build(json_schema)
             .map_err(|_| {
                 AppError::Error(format!(
                     "Failed to compile JSON Schema from serde_json::Value: {json_schema}"
