@@ -72,9 +72,8 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
     let password = "sup3rSecr3t".to_string();
 
     let stronghold_manager = Arc::new(StrongholdManager::create(&password).map_err(StrongholdCreationError)?);
-    let resolver = state.core_utils.resolver().await;
 
-    let subject = subject(stronghold_manager.clone(), password, resolver).await;
+    let subject = subject(stronghold_manager.clone(), password).await;
 
     let profile = Profile {
         name: "Ferris".to_string(),
