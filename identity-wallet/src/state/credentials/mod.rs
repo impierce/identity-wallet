@@ -116,6 +116,7 @@ impl VerifiableCredentialRecord {
                 let id = Uuid::new_v4().to_string();
                 let issuance_date = sd_jwt_vc.claims().iat.map(|iat| iat.to_rfc3339()).unwrap_or_default();
 
+                // TODO: Only getting the credentialSubject means losing a lot of data in the root (especially for ELM)
                 let mut credential_subject = serde_json::json!(sd_jwt_vc
                     .clone()
                     .into_disclosed_object(&Sha256Hasher::new())

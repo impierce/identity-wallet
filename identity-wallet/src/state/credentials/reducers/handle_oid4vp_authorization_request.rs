@@ -156,7 +156,7 @@ pub async fn get_vp_token(
             }
             _ => {
                 return Err(AppError::InvalidCredentialFormatError(
-                    "Unsupported credential format".to_string(),
+                    format!("Unsupported verifiable credential format: {format_from_query:?}").to_string(),
                 ));
             }
         };

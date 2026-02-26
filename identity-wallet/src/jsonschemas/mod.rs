@@ -51,8 +51,11 @@ pub fn validate_credential_types(data: &Value) -> Result<(), AppError> {
     // Therefore, we try to "unwrap" the String type here once before also failing on that type.
     let data = match data {
         Value::String(str) => {
-            let parsed_data = serde_json::from_str::<Value>(str)
-                .map_err(|e| AppError::InvalidCredentialFormatError(e.to_string()))?;
+            let parsed_data = serde_json::from_str::<Value>(str).map_err(|e| {
+                AppError::InvalidCredentialFormatError(format!(
+                    "Failed to parse credential data into serde_json::Value: {e}"
+                ))
+            })?;
             if !parsed_data.is_object() {
                 return Err(AppError::InvalidCredentialFormatError(
                     "Parsed data is not an object".to_string(),
@@ -73,7 +76,7 @@ pub fn validate_credential_types(data: &Value) -> Result<(), AppError> {
     match type_field {
         Some(_type) if !_type.is_null() => {
             match serde_json::from_value::<StringOrArray>(_type.clone())
-                .map_err(|e| AppError::InvalidCredentialFormatError(e.to_string()))?
+                .map_err(|e| AppError::InvalidCredentialFormatError(format!("Invalid credential `type` field: {e}")))?
             {
                 StringOrArray::String(credential_type) => Ok(credential_type.validate(&data)?),
                 StringOrArray::Array(credential_type_array) => credential_type_array
@@ -152,7 +155,7 @@ impl CredentialTypeVersion {
 impl CredentialType {
     fn get_version(&self, data: &Value) -> Result<CredentialTypeVersion, AppError> {
         let context_array = serde_json::from_value::<Vec<String>>(data["@context"].clone())
-            .map_err(|e| AppError::InvalidCredentialFormatError(e.to_string()))?;
+            .map_err(|e| AppError::InvalidCredentialFormatError(format!("Invalid credential `@context` field: {e}")))?;
 
         match self {
             CredentialType::OpenBadgeCredential => {

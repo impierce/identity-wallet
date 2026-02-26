@@ -300,6 +300,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
 
         for (credential_configuration_id, credential, display, claims) in credentials.into_iter() {
             let mut verifiable_credential_record = VerifiableCredentialRecord::try_new(credential, claims)?;
+
             // Validate the credential against its corresponding credential JSON Schema.
             validate_credential_types(&verifiable_credential_record.display_credential.data)?;
 

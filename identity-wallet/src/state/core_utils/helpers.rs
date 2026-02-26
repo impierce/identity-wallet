@@ -89,7 +89,7 @@ pub async fn validate_jwt_vc_json(credential_jwt: &str, identity_manager: &Ident
     validation.validate_aud = false;
 
     let token_data = decode::<Value>(credential_jwt, &decoding_key, &validation)
-        .map_err(|e| AppError::InvalidCredentialFormatError(e.to_string()))?;
+        .map_err(|e| AppError::InvalidCredentialFormatError(format!("Failed to decode credential JWT: {e}")))?;
 
     token_data
         .claims
