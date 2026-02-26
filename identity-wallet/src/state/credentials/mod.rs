@@ -9,7 +9,6 @@ use identity_iota::{
     core::{FromJson as _, Object},
     credential::CredentialV2,
 };
-use log::info;
 use oauth_tsl::status_list::StatusType;
 use oid4vc::{
     oid4vc_core::claim_path_pointer::ClaimPathPointer,

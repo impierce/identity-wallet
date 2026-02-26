@@ -288,7 +288,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                     .as_str()
                     .ok_or(AppError::Error("Invalid JWT string.".to_string()))?;
 
-                validate_jwt_vc_json(credential_jwt, &identity_manager).await?;
+                validate_jwt_vc_json(credential_jwt, identity_manager).await?;
             }
 
             let display = credential_configuration
