@@ -17,7 +17,6 @@ use crate::{
         AppState, UNIME_CLIENT_ID, UNIME_REDIRECT_URI,
     },
 };
-use identity_iota::credential::Jwt;
 use log::{info, warn};
 use oauth_tsl::{status_list::StatusType, tokens::referenced_token::StatusClaim};
 use oid4vc::oid4vci::{
@@ -49,7 +48,6 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
         }
 
         let state_guard = state.core_utils.managers.lock().await;
-        let resolver = state.core_utils.resolver().await;
         let stronghold_manager = state_guard
             .stronghold_manager
             .as_ref()
@@ -283,22 +281,15 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                 }
             };
 
-            // TODO: implement signature verification for all credential formats. The below code is commented out
-            // because the `JwtCredentialValidator` expects that if the `issuer` claim is an object, the `iss` claim must be an object
-            // as well. However, as defined in RFC7519, the "iss" value is a case-sensitive string containing a StringOrURIvalue.
-            // See https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.1
-            // The identity.rs library
             // TODO: add validation for other credential formats.
-            // if credential_configuration.credential_format.format() == CredentialFormats::JwtVcJson(()) {
-            //     // Convert the received credential (as a string) into a Jwt instance for validation.
-            //     let credential_jwt = Jwt::new(
-            //         credential
-            //             .as_str()
-            //             .ok_or(AppError::Error("Invalid JWT string.".to_string()))?
-            //             .to_string(),
-            //     );
-            //     validate_jwt_vc_json(&resolver, credential_jwt).await?;
-            // }
+            if credential_configuration.credential_format.format() == CredentialFormats::JwtVcJson(()) {
+                // Convert the received credential (as a string) into a Jwt instance for validation.
+                let credential_jwt = credential
+                    .as_str()
+                    .ok_or(AppError::Error("Invalid JWT string.".to_string()))?;
+
+                validate_jwt_vc_json(credential_jwt, &identity_manager).await?;
+            }
 
             let display = credential_configuration
                 .credential_metadata

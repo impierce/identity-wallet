@@ -1,16 +1,12 @@
+use crate::error::AppError;
 use crate::persistence::{download_asset, hash};
-use crate::{error::AppError, state::did::validate_domain_linkage::Verifier};
+use crate::state::core_utils::IdentityManager;
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use did_manager::Resolver;
-use identity_iota::{
-    credential::{
-        DecodedJwtCredential, FailFast, Jwt, JwtCredentialValidationOptions, JwtCredentialValidator, StatusCheck,
-    },
-    document::CoreDocument,
-    verification::jws::Decoder,
-};
+use identity_iota::{credential::Jwt, document::CoreDocument, verification::jws::Decoder};
 use identity_jose::jwt::JwtClaims;
 use jsonschema::ValidationError;
+use jsonwebtoken::{decode, decode_header, Algorithm, DecodingKey, Validation};
 use log::{debug, info, warn};
 use serde_json::Value;
 use std::fs::File;
@@ -70,22 +66,40 @@ pub async fn get_issuer_document(resolver: &Resolver, credential_jwt: &Jwt) -> O
         .ok()
 }
 
+// TODO: Implement one single verifier that can be used for all our JWT validation purposes. See `struct Verifier`
 /// Validate a jwt_vc_json, checks the JWT and the Issuer DID.
-pub async fn validate_jwt_vc_json(
-    resolver: &Resolver,
-    credential_jwt: Jwt,
-) -> Result<DecodedJwtCredential<Value>, AppError> {
-    // `SkipUnsupported` allows for custom credential types, such as the StatusList2021Entry (https://www.w3.org/TR/2023/WD-vc-status-list-20230427/#statuslist2021entry)
-    let validator = JwtCredentialValidator::with_signature_verifier(Verifier);
-    let options = JwtCredentialValidationOptions::new().status_check(StatusCheck::SkipUnsupported);
+pub async fn validate_jwt_vc_json(credential_jwt: &str, identity_manager: &IdentityManager) -> Result<Value, AppError> {
+    let jwt_header = decode_header(credential_jwt).map_err(|_| AppError::GetCredentialStatusError)?;
+    let key_id = jwt_header.kid.ok_or(AppError::GetCredentialStatusError)?;
 
-    let issuer_document = get_issuer_document(resolver, &credential_jwt)
+    let public_key = identity_manager
+        .subject
+        .public_key(&key_id)
         .await
-        .ok_or(AppError::Error("Failed to resolve issuer DID".to_string()))?;
+        .map_err(|_| AppError::GetCredentialStatusError)?;
 
-    validator
-        .validate::<_, Value>(&credential_jwt, &issuer_document, &options, FailFast::FirstError)
-        .map_err(|_| AppError::Error("Invalid jwt_vc_json".to_string()))
+    let decoding_key = match jwt_header.alg {
+        Algorithm::EdDSA => DecodingKey::from_ed_der(&public_key),
+        Algorithm::ES256 => DecodingKey::from_ec_der(&public_key),
+        _ => {
+            warn!("Unsupported algorithm: {:?}", jwt_header.alg);
+            return Err(AppError::GetCredentialStatusError);
+        }
+    };
+
+    // Set up validation rules for the JWT.
+    let mut validation = Validation::new(jwt_header.alg);
+    validation.validate_aud = false;
+    validation.required_spec_claims.clear();
+
+    let token_data = decode::<Value>(credential_jwt, &decoding_key, &validation)
+        .map_err(|_| AppError::InvalidCredentialFormatError)?;
+
+    token_data
+        .claims
+        .get("vc")
+        .ok_or(AppError::InvalidCredentialFormatError)
+        .cloned()
 }
 
 /// Validate supported credential types against their corresponding JSON Schema.

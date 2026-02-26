@@ -173,9 +173,13 @@ impl VerifiableCredentialRecord {
                     let disclosed_claims = vcdm2_sd_jwt
                         .clone()
                         .into_disclosed_object(&Sha256Hasher::new())
-                        .unwrap();
+                        .map_err(|err| {
+                            AppError::Error(format!("Failed to convert SD JWT VC to Disclosed Object: {err}"))
+                        })?;
                     let credential =
-                        CredentialV2::<Object>::from_json_value(serde_json::Value::Object(disclosed_claims)).unwrap();
+                        CredentialV2::<Object>::from_json_value(serde_json::Value::Object(disclosed_claims)).map_err(
+                            |err| AppError::Error(format!("Failed to convert Disclosed Object to Credential: {err}")),
+                        )?;
 
                     let display_claims: Vec<DisplayClaim> = get_display_claims(claim_descriptions, &json!(credential));
 
