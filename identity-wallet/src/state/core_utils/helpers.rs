@@ -66,7 +66,8 @@ pub async fn get_issuer_document(resolver: &Resolver, credential_jwt: &Jwt) -> O
         .ok()
 }
 
-// TODO: Implement one single verifier that can be used for all our JWT validation purposes. See `struct Verifier`
+// TODO: Implement one single verifier that can be used for all our JWT validation purposes. See `struct Verifier`. Also consider
+// the JWT encoding rules defined here: https://www.w3.org/TR/vc-data-model-1.1/#jwt-encoding
 /// Validate a jwt_vc_json, checks the JWT and the Issuer DID.
 pub async fn validate_jwt_vc_json(credential_jwt: &str, identity_manager: &IdentityManager) -> Result<Value, AppError> {
     let jwt_header = decode_header(credential_jwt).map_err(|_| AppError::GetCredentialStatusError)?;
