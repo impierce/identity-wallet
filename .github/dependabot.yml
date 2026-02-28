@@ -4,6 +4,8 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly"
+    ignore:
+      - dependency-name: "@tauri-apps/*"
     rebase-strategy: "disabled"
     open-pull-requests-limit: 10
   - package-ecosystem: "github-actions"
