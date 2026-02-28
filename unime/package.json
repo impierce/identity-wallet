@@ -51,7 +51,7 @@
     "eslint": "^9.39.3",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-svelte": "^2.46.1",
-    "globals": "^16.5.0",
+    "globals": "^17.3.0",
     "jsdom": "^27.4.0",
     "just-extend": "^6.2.0",
     "markdown-it": "^14.1.1",
