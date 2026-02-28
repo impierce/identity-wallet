@@ -1,10 +1,11 @@
 use crate::{
     error::AppError::{self, *},
+    jsonschemas::validate_credential_types,
     persistence::{hash, persist_asset},
     state::{
         actions::{listen, Action},
         core_utils::{
-            helpers::{get_unverified_jwt_claims, validate_credential_types, validate_jwt_vc_json},
+            helpers::{get_unverified_jwt_claims, validate_jwt_vc_json, ValueToString},
             history_event::{EventType, HistoryCredential, HistoryEvent},
             CoreUtils, DateUtils, IdentityManager,
         },
@@ -17,7 +18,6 @@ use crate::{
         AppState, UNIME_CLIENT_ID, UNIME_REDIRECT_URI,
     },
 };
-use identity_iota::credential::Jwt;
 use log::{info, warn};
 use oauth_tsl::{status_list::StatusType, tokens::referenced_token::StatusClaim};
 use oid4vc::oid4vci::{
@@ -49,7 +49,6 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
         }
 
         let state_guard = state.core_utils.managers.lock().await;
-        let resolver = state.core_utils.resolver().await;
         let stronghold_manager = state_guard
             .stronghold_manager
             .as_ref()
@@ -187,13 +186,11 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
         // Get the credential issuer name or use the credential issuer url.
         let issuer_name = display
             .map(|display| {
-                let issuer_name = display["name"]
-                    .as_str()
-                    .map(ToString::to_string)
+                display["name"]
+                    .to_clean_string()
                     // TODO(ngdil): Remove this fallback.
-                    .or_else(|| display["client_name"].as_str().map(ToString::to_string))
-                    .unwrap_or(connection_url.to_string());
-                issuer_name
+                    .or_else(|| display["client_name"].to_clean_string())
+                    .unwrap_or(connection_url.to_string())
             })
             .unwrap_or(connection_url.to_string());
 
@@ -252,7 +249,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                 .await
                 .map_err(|err| {
                     AppError::Error(format!(
-                        "Failed to get credential for configuration id {credential_configuration_id}: {err}"
+                        "Failed to get credential for configuration id \"{credential_configuration_id}\": {err}"
                     ))
                 })?;
 
@@ -278,13 +275,10 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             // TODO: add validation for other credential formats.
             if credential_configuration.credential_format.format() == CredentialFormats::JwtVcJson(()) {
                 // Convert the received credential (as a string) into a Jwt instance for validation.
-                let credential_jwt = Jwt::new(
-                    credential
-                        .as_str()
-                        .ok_or(AppError::Error("Invalid JWT string.".to_string()))?
-                        .to_string(),
-                );
-                validate_jwt_vc_json(&resolver, credential_jwt).await?;
+                let credential_jwt = credential
+                    .as_str()
+                    .ok_or(AppError::Error("Invalid JWT string.".to_string()))?;
+                validate_jwt_vc_json(credential_jwt, identity_manager).await?;
             }
 
             credentials.push((
@@ -306,8 +300,9 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
 
         for (credential_configuration_id, credential, display, claims) in credentials.into_iter() {
             let mut verifiable_credential_record = VerifiableCredentialRecord::try_new(credential, claims)?;
+
             // Validate the credential against its corresponding credential JSON Schema.
-            validate_credential_types(&verifiable_credential_record.verifiable_credential)?;
+            validate_credential_types(&verifiable_credential_record.display_credential.data)?;
 
             // The credential status is set only when the credential status claim/property can be found and is in OAuth TSL format.
             // If setting the credential status fails we currently catch the error and simply set the credential status field to None.

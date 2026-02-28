@@ -107,6 +107,7 @@ pub async fn validate_domain_linkage(resolver: &Resolver, url: url::Url, did: &s
 
     let url = identity_iota::core::Url::from(url);
 
+    // TODO: refactor entire IOTA code out
     let res = validator.validate_linkage(
         &document,
         &domain_linkage_configuration,

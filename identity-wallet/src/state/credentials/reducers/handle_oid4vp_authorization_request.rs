@@ -69,7 +69,9 @@ pub async fn get_vp_token(
             Format::JwtVcJson => {
                 let raw_vc_jwt_string = vc_value
                     .as_str()
-                    .ok_or(AppError::InvalidCredentialFormatError)?
+                    .ok_or(AppError::InvalidCredentialFormatError(
+                        "The JwtVcJson JWT could not be parsed as a valid string".to_string(),
+                    ))?
                     .to_string();
 
                 let vc_jwt: Jwt = raw_vc_jwt_string.into();
@@ -122,7 +124,9 @@ pub async fn get_vp_token(
             Format::DcSdJwt => {
                 let sd_jwt_vc = vc_value
                     .as_str()
-                    .ok_or(AppError::InvalidCredentialFormatError)?
+                    .ok_or(AppError::InvalidCredentialFormatError(
+                        "The DcSdJwt JWT could not be parsed as a valid string".to_string(),
+                    ))?
                     .to_string()
                     .parse::<SdJwtVc>()
                     .map_err(|err| AppError::Error(format!("Failed to parse SD-JWT VC: {err}")))?;
@@ -151,7 +155,9 @@ pub async fn get_vp_token(
                 PresentationFormat::DcSdJwt(sd_jwt_vc.to_string())
             }
             _ => {
-                return Err(AppError::InvalidCredentialFormatError);
+                return Err(AppError::InvalidCredentialFormatError(
+                    format!("Unsupported verifiable credential format: {format_from_query:?}").to_string(),
+                ));
             }
         };
 
@@ -212,7 +218,9 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
                         let sd_jwt_vc_string = verifiable_credential_record
                             .verifiable_credential
                             .as_str()
-                            .ok_or(AppError::InvalidCredentialFormatError)?
+                            .ok_or(AppError::InvalidCredentialFormatError(
+                                "The DcSdJwt JWT could not be parsed as a valid string".to_string(),
+                            ))?
                             .to_string();
 
                         let sd_jwt_vc = sd_jwt_vc_string
