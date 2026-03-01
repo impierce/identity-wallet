@@ -13,8 +13,8 @@
 
   let { checked = false, onCheckedChange, children }: Props = $props();
 
-  // Provide own store to `createSwitch` and set initial value.
-  const checkedStore = writable(checked);
+  // Provide own store to `createSwitch`; keep in sync via $effect below.
+  const checkedStore = writable(false);
 
   const {
     elements: { root },
@@ -48,7 +48,7 @@
     class="group relative h-7 w-11 rounded-full bg-text/25 transition-colors data-[state=checked]:bg-primary"
   >
     <span
-      class="m-0.5 block h-5 w-5 translate-x-0.5 rounded-full bg-background-alt transition group-data-[state=checked]:translate-x-[18px]"
+      class="m-0.5 block h-5 w-5 translate-x-0.5 rounded-full bg-background-alt transition group-data-[state=checked]:translate-x-4.5"
     ></span>
   </button>
 </div>
