@@ -17,6 +17,7 @@ use oauth_tsl::{
     relying_party::{decompress_gzip, decrypt_status_list_token, StatusListTokenResponseType},
     status_list::{StatusList, StatusType},
 };
+use oid4vc::oid4vc_core::Verify;
 use reqwest::{header, redirect::Policy, Client};
 
 pub async fn refresh_credential_status(state: AppState, action: Action) -> Result<AppState, AppError> {

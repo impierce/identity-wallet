@@ -1,5 +1,6 @@
 use crate::state::core_utils::helpers::get_unverified_jwt_claims;
 use crate::state::credentials::reducers::self_issue_credential::SubjectWrapper;
+use crate::subject::Subject;
 use crate::{
     error::AppError::{self, *},
     persistence::{hash, persist_asset},
@@ -24,7 +25,7 @@ use oid4vc::oid4vc_core::{
     authorization_request::{AuthorizationRequest, Object},
     client_metadata::ClientMetadataResource,
 };
-use oid4vc::oid4vc_core::{jwt, Subject};
+use oid4vc::oid4vc_core::{jwt, Sign, Subject as _};
 use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
 use oid4vc::oid4vp::{
     dcql::dcql_query::{CredentialQuery, Format},
@@ -46,7 +47,7 @@ use std::sync::Arc;
 pub async fn get_vp_token(
     selected_verifiable_credentials: Vec<(CredentialQuery, Value)>,
     did_method: &str,
-    subject_manager: &Arc<dyn Subject>,
+    subject_manager: &Arc<Subject>,
     oid4vp_authorization_request: &AuthorizationRequest<Object<OID4VP>>,
     signing_algorithm: Algorithm,
 ) -> Result<VpToken, AppError> {

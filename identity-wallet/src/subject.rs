@@ -37,7 +37,7 @@ impl Subject {
         #[cfg(not(target_os = "android"))]
         let resolver = Resolver::new().await;
 
-        info!("Initializing resolver for CoreUtils");
+        info!("Initializing resolver for Subject");
 
         #[cfg(target_os = "android")]
         let resolver = Resolver::new_with_tls_config(tls_config().await.unwrap()).await;
