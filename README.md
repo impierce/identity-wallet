@@ -118,6 +118,15 @@ In order to regenerate the TypeScript bindings in `identity-wallet/bindings` aft
 3. Adjust all other language files in `unime/src/i18n/` accordingly until all types are satisfied.
 4. Running `pnpm check` shouldn't produce any errors related to `i18n`.
 
+### Updating dependencies
+
+> [!NOTE]
+> Dependencies are automatically updated by Dependabot on GitHub.
+> It shouldn't be necessary to run `pnpm update` or `cargo update` manually.
+
+Since Tauri dependencies always have both an npm package as well as a Rust crate,
+they **should always be updated together** to avoid compatibility issues.
+
 ### VS Code support
 
 Recommended extensions are listed in `.vscode/extensions.json`.
