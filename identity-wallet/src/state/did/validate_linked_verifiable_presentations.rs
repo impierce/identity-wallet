@@ -391,7 +391,14 @@ async fn get_logo_uri(
                         metadata
                             .credential_configurations_supported
                             .get(type_)
-                            .and_then(|credential_configuration| credential_configuration.display.first())
+                            .and_then(|credential_configuration| {
+                                credential_configuration
+                                    .credential_metadata
+                                    .as_ref()?
+                                    .display
+                                    .as_ref()?
+                                    .first()
+                            })
                             .and_then(|display| display.logo.clone())
                             .map(|logo| logo.uri.to_string())
                     });
