@@ -13,7 +13,7 @@
 
   let { checked = false, onCheckedChange, children }: Props = $props();
 
-  // TODO: rewrite the logic around "internal visual state" and "external controlled state".
+  // TODO: rewrite the logic around "internal visual state" and "externally controlled state".
   // The switch should be able to be controlled from the outside through a `checked` prop,
   // but when the Switch is pressed, it should "optimistically" update its visual state and "flip back" if the backend fails.
 
