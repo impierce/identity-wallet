@@ -26,8 +26,8 @@
     if (!credential) {
       warn(`No credential found with id: \`${$page.params.id}\``);
       goto('/me');
-      throw new Error(`No credential found with id: \`${$page.params.id}\``);
     }
+    // @ts-expect-error If no credential is found, `goto` will redirect to the main screen.
     return credential;
   }
 
