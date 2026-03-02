@@ -17,11 +17,13 @@
   let newEntryValue = '';
   $: updatedListName = trustList?.display_name;
 
-  const trust_list_id = $page.params.id;
+  let trust_list_id: string;
 
-  if (!trust_list_id) {
-    $error = `No trust list found with id ${trust_list_id}.`;
+  if (!$page.params.id) {
+    $error = `No trust list id provided.`;
     goto('/me/settings/app/trust-list');
+  } else {
+    trust_list_id = $page.params.id;
   }
 
   function init(el: HTMLInputElement) {
