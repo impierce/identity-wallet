@@ -136,7 +136,7 @@ impl CoreUtils {
     /// The private async function that contains the actual initialization logic.
     async fn initialize_resolver() -> Arc<Resolver> {
         #[cfg(not(target_os = "android"))]
-        let resolver = Resolver::new().await;
+        let resolver = Resolver::new();
 
         info!("Initializing resolver for CoreUtils");
 
