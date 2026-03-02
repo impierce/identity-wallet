@@ -26,7 +26,7 @@
     if (!credential) {
       warn(`No credential found with id: \`${$page.params.id}\``);
       goto('/me');
-      throw new Error(`No credential found for id: \`${$page.params.id}\``);
+      throw new Error(`No credential found with id: \`${$page.params.id}\``);
     }
     return credential;
   }
