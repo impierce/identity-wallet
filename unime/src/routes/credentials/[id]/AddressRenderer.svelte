@@ -13,7 +13,7 @@
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const residence = schema(get(LL));
 
-  let subject = $derived(credential.data.credentialSubject as z.infer<typeof residence>);
+  const subject = credential.data.credentialSubject as z.infer<typeof residence>;
 </script>
 
 <div class="flex flex-col gap-4">
