@@ -1,8 +1,8 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import { page } from '$app/stores';
 
   import { melt } from '@melt-ui/svelte';
-  import { redirect } from '@sveltejs/kit';
 
   import { ActionSheet, Button, DeprecatedSwitch, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
@@ -17,11 +17,13 @@
   let newEntryValue = '';
   $: updatedListName = trustList?.display_name;
 
-  const trust_list_id = $page.params.id;
+  let trust_list_id: string;
 
-  if (!trust_list_id) {
-    $error = `No trust list found with id ${trust_list_id}.`;
-    redirect(303, '/me/settings/app/trust-list');
+  if (!$page.params.id) {
+    $error = `No trust list id provided.`;
+    goto('/me/settings/app/trust-list');
+  } else {
+    trust_list_id = $page.params.id;
   }
 
   function init(el: HTMLInputElement) {
