@@ -2,6 +2,7 @@ use std::str::FromStr;
 
 use jsonwebtoken::Algorithm;
 use log::debug;
+use oid4vc::oid4vc_core::Subject;
 
 use crate::{
     error::AppError,

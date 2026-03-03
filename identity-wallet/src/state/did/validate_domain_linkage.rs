@@ -375,9 +375,7 @@ mod tests {
 
         let stronghold_manager = Arc::new(StrongholdManager::create(&password).unwrap());
 
-        let resolver = Resolver::new();
-
-        let subject = subject(stronghold_manager.clone(), password, Arc::new(resolver)).await;
+        let subject = subject(stronghold_manager.clone(), password).await;
 
         let identifier = subject.identifier("did:key", Algorithm::ES256).await.unwrap();
         let fragment = identifier.split(':').next_back().unwrap();
@@ -418,9 +416,7 @@ mod tests {
 
         let stronghold_manager = Arc::new(StrongholdManager::create(&password).unwrap());
 
-        let resolver = Resolver::new();
-
-        let subject = subject(stronghold_manager.clone(), password, Arc::new(resolver)).await;
+        let subject = subject(stronghold_manager.clone(), password).await;
 
         let identifier = subject.identifier("did:key", Algorithm::EdDSA).await.unwrap();
         let fragment = identifier.split(':').next_back().unwrap();

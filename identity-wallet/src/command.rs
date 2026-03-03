@@ -59,7 +59,6 @@ pub async fn main_exec(
 
     let mut guard = container.0.lock().await;
 
-    guard.core_utils.resolver().await;
     guard.core_utils.app_handle = Some(app_handle);
 
     // Get a copy of the current state and pass it to the root reducer.
