@@ -1,9 +1,11 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import LL from '$i18n/i18n-svelte';
   import { fly } from 'svelte/transition';
 
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
+  import { warn } from '@tauri-apps/plugin-log';
 
   import { Button } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
@@ -22,8 +24,10 @@
   function loadCredential(): DisplayCredential {
     const credential = $appState.credentials.find((c) => $page.params.id === c.id);
     if (!credential) {
-      throw new Error('No credential not found for id: ' + $page.params.id);
+      warn(`No credential found with id: \`${$page.params.id}\``);
+      goto('/me');
     }
+    // @ts-expect-error If no credential is found, `goto` will redirect to the main screen.
     return credential;
   }
 
