@@ -758,7 +758,7 @@ mod tests {
 
         holder.add_well_known_did_json().await;
 
-        let resolver = Resolver::new().await;
+        let resolver = Resolver::new();
 
         assert_eq!(
             validate_linked_verifiable_presentations(&resolver, holder.did_document.id().to_string().as_ref()).await,
@@ -818,7 +818,7 @@ mod tests {
 
         holder.add_well_known_did_json().await;
 
-        let resolver = Resolver::new().await;
+        let resolver = Resolver::new();
 
         assert_eq!(
             validate_linked_verifiable_presentations(&resolver, holder.did_document.id().to_string().as_ref()).await,
@@ -903,7 +903,7 @@ mod tests {
             )
             .await;
 
-        let resolver = Resolver::new().await;
+        let resolver = Resolver::new();
 
         let linked_verifiable_presentation_url: url::Url =
             format!("{}{linked_verifiable_presentation_endpoint}", holder.domain)
@@ -935,7 +935,7 @@ mod tests {
             .await;
         issuer1.add_well_known_did_json().await;
 
-        let resolver = Resolver::new().await;
+        let resolver = Resolver::new();
 
         // Successfully validate the linked domain.
         assert_eq!(

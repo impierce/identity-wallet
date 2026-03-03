@@ -53,7 +53,7 @@ pub async fn test_managers(
 
     let stronghold_snapshot_path = STRONGHOLD.lock().unwrap().to_string_lossy().to_string();
 
-    let resolver = Resolver::new().await;
+    let resolver = Resolver::new();
 
     let subject: Arc<Subject> = Arc::new(Subject {
         stronghold_manager: stronghold_manager.clone(),
