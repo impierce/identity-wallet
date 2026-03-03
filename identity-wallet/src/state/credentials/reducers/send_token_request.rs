@@ -17,7 +17,6 @@ use crate::{
         AppState, UNIME_CLIENT_ID, UNIME_REDIRECT_URI,
     },
 };
-use identity_iota::credential::Jwt;
 use log::{info, warn};
 use oauth_tsl::{status_list::StatusType, tokens::referenced_token::StatusClaim};
 use oid4vc::oid4vci::{
@@ -49,13 +48,6 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
         }
 
         let state_guard = state.core_utils.managers.lock().await;
-        let resolver = &state_guard
-            .identity_manager
-            .as_ref()
-            .ok_or(MissingManagerError("identity"))?
-            .subject
-            .resolver()
-            .await;
         let stronghold_manager = state_guard
             .stronghold_manager
             .as_ref()
@@ -218,7 +210,13 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             credential_configuration_ids.contains(credential_configuration_id)
         });
 
-        let mut credentials = vec![];
+        // Create or update the connection.
+        let previously_connected = state.connections.contains(connection_url, &issuer_name);
+        let mut connections = state.connections;
+        let connection = connections.update_or_insert(connection_url, &issuer_name, None);
+
+        let mut history_credentials = vec![];
+
         for credential_configuration_id in credential_configuration_ids {
             let credential_configuration = credential_configurations_supported
                 .get(&credential_configuration_id)
@@ -286,46 +284,32 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             // TODO: add validation for other credential formats.
             if credential_configuration.credential_format.format() == CredentialFormats::JwtVcJson(()) {
                 // Convert the received credential (as a string) into a Jwt instance for validation.
-                let credential_jwt = Jwt::new(
-                    credential
-                        .as_str()
-                        .ok_or(AppError::Error("Invalid JWT string.".to_string()))?
-                        .to_string(),
-                );
-                validate_jwt_vc_json(resolver, credential_jwt).await?;
+                let credential_jwt = credential
+                    .as_str()
+                    .ok_or(AppError::Error("Invalid JWT string.".to_string()))?;
+
+                validate_jwt_vc_json(credential_jwt, identity_manager).await?;
             }
 
-            credentials.push((
-                credential_configuration_id,
+            let display = credential_configuration
+                .credential_metadata
+                .as_ref()
+                .and_then(|credential_metadata| credential_metadata.display.as_ref())
+                .cloned()
+                .unwrap_or_default();
+
+            let claims = credential_configuration
+                .credential_metadata
+                .as_ref()
+                .and_then(|credential_metadata| credential_metadata.claims.as_ref())
+                .map(|claims| claims.to_vec())
+                .unwrap_or_default();
+
+            let mut verifiable_credential_record = VerifiableCredentialRecord::try_new(
+                credential_configuration.credential_format.format(),
                 credential,
-                // Collect the display information for the credential from the credential configuration metadata if it exists, otherwise default to an empty vector.
-                credential_configuration
-                    .credential_metadata
-                    .as_ref()
-                    .and_then(|credential_metadata| credential_metadata.display.as_ref())
-                    .cloned()
-                    .unwrap_or_default(),
-                // Collect the claims to be displayed for the credential from the credential configuration metadata if it exists, otherwise default to an empty vector.
-                credential_configuration
-                    .credential_metadata
-                    .as_ref()
-                    .and_then(|credential_metadata| credential_metadata.claims.as_ref())
-                    .map(|claims| claims.to_vec())
-                    .unwrap_or_default(),
-            ));
-        }
-
-        info!("credentials: {credentials:?}");
-
-        // Create or update the connection.
-        let previously_connected = state.connections.contains(connection_url, &issuer_name);
-        let mut connections = state.connections;
-        let connection = connections.update_or_insert(connection_url, &issuer_name, None);
-
-        let mut history_credentials = vec![];
-
-        for (credential_configuration_id, credential, display, claims) in credentials.into_iter() {
-            let mut verifiable_credential_record = VerifiableCredentialRecord::try_new(credential, claims)?;
+                claims,
+            )?;
             // Validate the credential against its corresponding credential JSON Schema.
             validate_credential_types(&verifiable_credential_record.verifiable_credential)?;
 
