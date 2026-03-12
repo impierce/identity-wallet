@@ -216,7 +216,19 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                         };
 
                         let credential_object = credential_data.as_object()?.clone();
-                        let decoded_presentations = DecodedPresentations::try_new(vec![credential_object]).ok()?;
+                        let decoded_presentations =
+                            match DecodedPresentations::try_new(vec![credential_object]) {
+                                Ok(decoded) => decoded,
+                                Err(e) => {
+                                    debug!(
+                                        "Failed to decode credential into DecodedPresentations; id: {:?}, format: {:?}, error: {:?}",
+                                        verifiable_credential_record.display_credential.id,
+                                        verifiable_credential_record.display_credential.format,
+                                        e
+                                    );
+                                    return None;
+                                }
+                            };
 
                         let credential_query_satisfied =
                             evaluate_credential_query(credential_query_from_request, &decoded_presentations);

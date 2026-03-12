@@ -144,12 +144,16 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
                             .unwrap_or_default()
                     };
 
-                    let decoded_presentations =
-                        if let Ok(presentations) = DecodedPresentations::try_new(vec![credential_data]) {
-                            presentations
-                        } else {
+                    let decoded_presentations = match DecodedPresentations::try_new(vec![credential_data]) {
+                        Ok(presentations) => presentations,
+                        Err(err) => {
+                            log::warn!(
+                                "Failed to decode presentations for credential UUID {}: {err}",
+                                user_selected_uuid_str
+                            );
                             continue;
-                        };
+                        }
+                    };
 
                     let credential_query_satisfied = oid4vc::oid4vp::dcql_evaluation::evaluate_credential_query(
                         requested_credential_query,
