@@ -10,8 +10,7 @@ did_manager = { git = "https://github.com/impierce/did-manager", tag = "v1.0.0-b
 jsonwebtoken = "9.3"
 log = "^0.4"
 oauth_tsl = { git = "https://github.com/impierce/oauth-token-status-list", rev = "df371b9" }
-# DO NOT MERGE: Update `rev` once https://github.com/impierce/openid4vc/pull/121 is merged.
-oid4vc = { git = "https://github.com/impierce/openid4vc", rev = "2b50847" }
+oid4vc = { git = "https://github.com/impierce/openid4vc", rev = "2f27e41" }
 rand = "0.8"
 rustls = { version = "0.23", features = ["aws-lc-rs"] }
 rustls-platform-verifier = { version = "0.6" }
