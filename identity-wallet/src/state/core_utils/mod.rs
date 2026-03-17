@@ -2,6 +2,8 @@ pub mod helpers;
 pub mod history_event;
 
 #[cfg(target_os = "android")]
+use log::info;
+#[cfg(target_os = "android")]
 use rustls::{client::danger::ServerCertVerifier, ClientConfig};
 #[cfg(target_os = "android")]
 use rustls::{
