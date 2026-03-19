@@ -1,3 +1,5 @@
+#[cfg(target_os = "android")]
+use crate::state::core_utils::tls_config;
 use crate::stronghold::StrongholdManager;
 
 use async_trait::async_trait;
@@ -40,7 +42,7 @@ impl Subject {
         info!("Initializing resolver for Subject");
 
         #[cfg(target_os = "android")]
-        let resolver = Resolver::new_with_tls_config(tls_config().await.unwrap()).await;
+        let resolver = Resolver::new_with_options(Some(tls_config().await.unwrap()), None, None);
 
         info!("Resolver initialized");
 
