@@ -91,6 +91,7 @@
 
     {@render TextField('Learning Outcome', hasClaim?.specifiedBy?.learningOutcomeSummary?.noteLiteral?.en)}
 
+    <!-- This block can't be looped as it's currently hardcoded we expect the 'Classification' claim to be in provenBy[1] as seen below (line 100) -->
     {@render TextField(
       hasClaim?.provenBy[0]?.specifiedBy?.gradingScheme?.title?.en,
       hasClaim?.provenBy[0]?.specifiedBy?.gradingScheme?.description?.en,
@@ -110,8 +111,8 @@
   <!-- Collapsible Further information section -->
   <CollapsibleWrapper defaultOpen={false}>
     <h2 class="text-lg font-bold" slot="title">Further information</h2>
-    {@render TextField(hasClaim?.supplementaryDocument[0]?.title?.en, hasClaim?.supplementaryDocument[0]?.contentURL)}
-
-    {@render TextField(hasClaim?.supplementaryDocument[1]?.title?.en, hasClaim?.supplementaryDocument[1]?.contentURL)}
+    {#each hasClaim?.supplementaryDocument ?? [] as doc}
+      {@render TextField(doc?.title?.en, doc?.contentURL)}
+    {/each}
   </CollapsibleWrapper>
 </div>
