@@ -1,0 +1,40 @@
+name: Audit dependencies
+
+on:
+  schedule:
+    - cron: "0 3 * * *" # run at 3 AM every day
+  workflow_dispatch:
+  push:
+    branches: ["dev"]
+
+jobs:
+  cargo-audit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: dtolnay/rust-toolchain@stable
+
+      - uses: Swatinem/rust-cache@v2
+
+      - run: cargo install cargo-audit
+
+      - run: cargo audit
+
+  npm-audit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 'lts/*'
+          cache: 'pnpm'
+
+      - run: pnpm audit

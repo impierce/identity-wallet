@@ -1,6 +1,6 @@
 [package]
 name = "unime"
-version = "0.11.7"
+version = "0.12.0"
 description = "Identity Wallet for people to manage Decentralized Identities and Verifiable Credentials"
 homepage = "https://www.impierce.com/"
 authors = ["Impierce Technologies"]
@@ -22,7 +22,7 @@ tauri.workspace = true
 
 dotenvy = { version = "0.15" }
 identity-wallet = { path = "../../identity-wallet" }
-iota-sdk = { git = "https://github.com/iotaledger/iota", package = "iota-sdk", tag = "v1.6.1" }
+iota-sdk = { git = "https://github.com/iotaledger/iota", package = "iota-sdk", tag = "v1.13.1" }
 jni = "0.21"
 log.workspace = true
 rustls.workspace = true

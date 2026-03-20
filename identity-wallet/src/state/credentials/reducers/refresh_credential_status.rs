@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use crate::{
     error::AppError,
     state::{
@@ -15,6 +17,7 @@ use oauth_tsl::{
     relying_party::{decompress_gzip, decrypt_status_list_token, StatusListTokenResponseType},
     status_list::{StatusList, StatusType},
 };
+use oid4vc::oid4vc_core::Verify;
 use reqwest::{header, redirect::Policy, Client};
 
 pub async fn refresh_credential_status(state: AppState, action: Action) -> Result<AppState, AppError> {
@@ -28,8 +31,6 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
             warn!("No credential found with id: `{credential_id}`");
             AppError::NoCredentialWithIdError(credential_id.clone())
         })?;
-
-        let display_name = credential.display_name.clone();
 
         let credential_status_data = match credential.credential_status.as_mut() {
             Some(data) => data,
@@ -52,6 +53,8 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
             .ok_or(AppError::MissingManagerError("identity"))?;
 
         let debug_timestamp_before = chrono::Local::now();
+
+        let display_name = credential.display_name.clone();
 
         match fetch_credential_status(credential_status_data, identity_manager).await {
             Ok(status) => {
@@ -94,8 +97,10 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
             }
             Err(e) => {
                 // This error handling means we don't panic when the refresh_credential_status function fails.
-                // Instead we don't bother the user with any of the errors and keep the old status and simply don't update it.
-                // However, this is also not ideal. TODO: how to handle a status that consistently fails to refresh?
+                // We log the error, keep the status and the last_checked field the same.
+                // We don't make any assumptions on the credential status since the error has to do with the reachability of the status list, not the status itself.
+                // However, it is up to the verifier how to handle a status that is unreachable.
+                // This means a seemingly valid credential could be rejected when a user shares it.
                 warn!("Failed to refresh credential status for credential with id: `{credential_id}`. The current status remains unchanged: `{:?}`. Error: {e}", credential_status_data.status);
 
                 let debug_timestamp_after = chrono::Local::now();
@@ -200,8 +205,10 @@ pub async fn fetch_credential_status(
 /// If the response is gzip encoded, it will be decompressed before being returned.
 pub async fn fetch_status_list(uri: &str, accept_header: StatusListTokenResponseType) -> Result<String, AppError> {
     // 3xx redirects should be followed, but infinite loops are caught after 5 redirects.
+    // The timeout of 10 seconds is an estimated guess of how long a status list request should take at maximum.
     let client = Client::builder()
         .redirect(Policy::limited(5))
+        .timeout(Duration::from_secs(10))
         .build()
         .map_err(AppError::FetchCredentialListError)?;
 

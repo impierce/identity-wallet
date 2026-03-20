@@ -391,7 +391,14 @@ async fn get_logo_uri(
                         metadata
                             .credential_configurations_supported
                             .get(type_)
-                            .and_then(|credential_configuration| credential_configuration.display.first())
+                            .and_then(|credential_configuration| {
+                                credential_configuration
+                                    .credential_metadata
+                                    .as_ref()?
+                                    .display
+                                    .as_ref()?
+                                    .first()
+                            })
                             .and_then(|display| display.logo.clone())
                             .map(|logo| logo.uri.to_string())
                     });
@@ -751,7 +758,7 @@ mod tests {
 
         holder.add_well_known_did_json().await;
 
-        let resolver = Resolver::new().await;
+        let resolver = Resolver::new();
 
         assert_eq!(
             validate_linked_verifiable_presentations(&resolver, holder.did_document.id().to_string().as_ref()).await,
@@ -811,7 +818,7 @@ mod tests {
 
         holder.add_well_known_did_json().await;
 
-        let resolver = Resolver::new().await;
+        let resolver = Resolver::new();
 
         assert_eq!(
             validate_linked_verifiable_presentations(&resolver, holder.did_document.id().to_string().as_ref()).await,
@@ -896,7 +903,7 @@ mod tests {
             )
             .await;
 
-        let resolver = Resolver::new().await;
+        let resolver = Resolver::new();
 
         let linked_verifiable_presentation_url: url::Url =
             format!("{}{linked_verifiable_presentation_endpoint}", holder.domain)
@@ -928,7 +935,7 @@ mod tests {
             .await;
         issuer1.add_well_known_did_json().await;
 
-        let resolver = Resolver::new().await;
+        let resolver = Resolver::new();
 
         // Successfully validate the linked domain.
         assert_eq!(

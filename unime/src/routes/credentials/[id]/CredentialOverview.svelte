@@ -69,9 +69,9 @@
           <SealCheckRegularIcon class="size-7" />
         {/if}
       </div>
-      {#if credential.data.issuanceDate}
+      {#if credential.metadata.date_issued}
         <div>
-          {formatDate(credential.data.issuanceDate, $appState.profile_settings.locale)}
+          {formatDate(credential.metadata.date_issued, $appState.profile_settings.locale)}
         </div>
       {/if}
     {/if}

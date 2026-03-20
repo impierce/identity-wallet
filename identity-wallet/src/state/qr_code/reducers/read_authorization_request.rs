@@ -16,9 +16,10 @@ use crate::{
         AppState,
     },
 };
+use sd_jwt::Sha256Hasher;
 use serde_json::Value;
 
-use identity_credential::{sd_jwt_v2::Sha256Hasher, sd_jwt_vc::SdJwtVc};
+use identity_credential::sd_jwt_vc::SdJwtVc;
 use log::{debug, info, warn};
 use oid4vc::oid4vp::oid4vp::OID4VP;
 use oid4vc::siopv2::siopv2::SIOPv2;
@@ -85,7 +86,13 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                         ))
                     })?;
 
-                    let resolver = &state.core_utils.resolver().await;
+                    let resolver = &state_guard
+                        .identity_manager
+                        .as_ref()
+                        .ok_or(MissingManagerError("identity"))?
+                        .subject
+                        .resolver()
+                        .await;
 
                     Box::new(validate_domain_linkage(resolver, url, did).await)
                 }
@@ -111,7 +118,13 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
 
             info!("Trusted Domains: {trusted_domains:?}");
 
-            let resolver = state.core_utils.resolver().await;
+            let resolver = state_guard
+                .identity_manager
+                .as_ref()
+                .ok_or(MissingManagerError("identity"))?
+                .subject
+                .resolver()
+                .await;
 
             let linked_verifiable_presentations = validate_linked_verifiable_presentations(&resolver, did)
                 .await

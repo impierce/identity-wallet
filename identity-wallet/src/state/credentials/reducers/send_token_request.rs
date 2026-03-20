@@ -17,7 +17,6 @@ use crate::{
         AppState, UNIME_CLIENT_ID, UNIME_REDIRECT_URI,
     },
 };
-use identity_iota::credential::Jwt;
 use log::{info, warn};
 use oauth_tsl::{status_list::StatusType, tokens::referenced_token::StatusClaim};
 use oid4vc::oid4vci::{
@@ -49,7 +48,6 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
         }
 
         let state_guard = state.core_utils.managers.lock().await;
-        let resolver = state.core_utils.resolver().await;
         let stronghold_manager = state_guard
             .stronghold_manager
             .as_ref()
@@ -138,6 +136,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             TokenRequest::PreAuthorizedCode {
                 pre_authorized_code: code,
                 tx_code,
+                authorization_details: None,
             }
         } else {
             let code_verifier = state
@@ -151,6 +150,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                 code,
                 code_verifier: Some(code_verifier),
                 redirect_uri: Some(UNIME_REDIRECT_URI.parse().unwrap()),
+                authorization_details: None,
             }
         };
 
@@ -210,7 +210,13 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             credential_configuration_ids.contains(credential_configuration_id)
         });
 
-        let mut credentials = vec![];
+        // Create or update the connection.
+        let previously_connected = state.connections.contains(connection_url, &issuer_name);
+        let mut connections = state.connections;
+        let connection = connections.update_or_insert(connection_url, &issuer_name, None);
+
+        let mut history_credentials = vec![];
+
         for credential_configuration_id in credential_configuration_ids {
             let credential_configuration = credential_configurations_supported
                 .get(&credential_configuration_id)
@@ -278,34 +284,32 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             // TODO: add validation for other credential formats.
             if credential_configuration.credential_format.format() == CredentialFormats::JwtVcJson(()) {
                 // Convert the received credential (as a string) into a Jwt instance for validation.
-                let credential_jwt = Jwt::new(
-                    credential
-                        .as_str()
-                        .ok_or(AppError::Error("Invalid JWT string.".to_string()))?
-                        .to_string(),
-                );
-                validate_jwt_vc_json(&resolver, credential_jwt).await?;
+                let credential_jwt = credential
+                    .as_str()
+                    .ok_or(AppError::Error("Invalid JWT string.".to_string()))?;
+
+                validate_jwt_vc_json(credential_jwt, identity_manager).await?;
             }
 
-            credentials.push((
-                credential_configuration_id,
+            let display = credential_configuration
+                .credential_metadata
+                .as_ref()
+                .and_then(|credential_metadata| credential_metadata.display.as_ref())
+                .cloned()
+                .unwrap_or_default();
+
+            let claims = credential_configuration
+                .credential_metadata
+                .as_ref()
+                .and_then(|credential_metadata| credential_metadata.claims.as_ref())
+                .map(|claims| claims.to_vec())
+                .unwrap_or_default();
+
+            let mut verifiable_credential_record = VerifiableCredentialRecord::try_new(
+                credential_configuration.credential_format.format(),
                 credential,
-                credential_configuration.display.clone(),
-                credential_configuration.claims.clone(),
-            ));
-        }
-
-        info!("credentials: {credentials:?}");
-
-        // Create or update the connection.
-        let previously_connected = state.connections.contains(connection_url, &issuer_name);
-        let mut connections = state.connections;
-        let connection = connections.update_or_insert(connection_url, &issuer_name, None);
-
-        let mut history_credentials = vec![];
-
-        for (credential_configuration_id, credential, display, claims) in credentials.into_iter() {
-            let mut verifiable_credential_record = VerifiableCredentialRecord::try_new(credential, claims)?;
+                claims,
+            )?;
             // Validate the credential against its corresponding credential JSON Schema.
             validate_credential_types(&verifiable_credential_record.verifiable_credential)?;
 
@@ -421,7 +425,14 @@ fn get_credential_display_name(
 ) -> String {
     credential_configurations_supported
         .get(credential_configuration_id)
-        .and_then(|credential_configuration| credential_configuration.display.first())
+        .and_then(|credential_configuration| {
+            credential_configuration
+                .credential_metadata
+                .as_ref()
+                .and_then(|credential_metadata| {
+                    credential_metadata.display.as_ref().and_then(|display| display.first())
+                })
+        })
         // Get the name of the credential from the display property if it exists.
         .map(|display| display.name.clone())
         .or_else(|| {
@@ -514,7 +525,9 @@ async fn get_credential_status(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use oid4vc::oid4vci::credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedDisplay;
+    use oid4vc::oid4vci::credential_issuer::credential_configurations_supported::{
+        CredentialConfigurationsSupportedDisplay, CredentialMetadata,
+    };
 
     #[test]
     fn display_name_is_successfully_read_from_credential_configuration() {
@@ -524,15 +537,18 @@ mod tests {
         let credential_configurations_supported = HashMap::from_iter(vec![(
             credential_configuration_id.to_string(),
             CredentialConfigurationsSupportedObject {
-                display: vec![CredentialConfigurationsSupportedDisplay {
-                    name: "Credential Name".to_string(),
-                    locale: None,
-                    logo: None,
-                    description: None,
-                    background_image: None,
-                    background_color: None,
-                    text_color: None,
-                }],
+                credential_metadata: Some(CredentialMetadata {
+                    display: Some(vec![CredentialConfigurationsSupportedDisplay {
+                        name: "Credential Name".to_string(),
+                        locale: None,
+                        logo: None,
+                        description: None,
+                        background_image: None,
+                        background_color: None,
+                        text_color: None,
+                    }]),
+                    claims: Some(vec![]),
+                }),
                 ..Default::default()
             },
         )]);
@@ -567,10 +583,7 @@ mod tests {
         // Credential configuration without a display name. The `type` property should be used to get the display name.
         let credential_configurations_supported = HashMap::from_iter(vec![(
             credential_configuration_id.to_string(),
-            CredentialConfigurationsSupportedObject {
-                display: vec![],
-                ..Default::default()
-            },
+            CredentialConfigurationsSupportedObject::default(),
         )]);
 
         // Credential with a `type` property. The `type` property is a string and it should be used as the display name.
@@ -602,10 +615,7 @@ mod tests {
         // Credential configuration without a display name. The `type` property should be used to get the display name.
         let credential_configurations_supported = HashMap::from_iter(vec![(
             credential_configuration_id.to_string(),
-            CredentialConfigurationsSupportedObject {
-                display: vec![],
-                ..Default::default()
-            },
+            CredentialConfigurationsSupportedObject::default(),
         )]);
 
         // Credential with a `type` property. The `type` property is an array and the last element should be used as the
