@@ -16,6 +16,7 @@
   import CredentialHeader from './CredentialHeader.svelte';
   import CredentialOverview from './CredentialOverview.svelte';
   import DefaultRenderer from './DefaultRenderer.svelte';
+  import ELMRenderer from './ELMRenderer.svelte';
   import OpenBadgeRenderer from './OpenBadgeRenderer.svelte';
   import PidRenderer from './PidRenderer.svelte';
 
@@ -120,6 +121,8 @@
     <CredentialOverview {credential} />
     {#if credentialTypes?.includes('OpenBadgeCredential') || credentialTypes?.includes('AchievementCredential')}
       <OpenBadgeRenderer {credential} />
+    {:else if credentialTypes?.includes('EuropeanDigitalCredential')}
+      <ELMRenderer {credential} />
       <!-- TODO: the renderer should be determined by a `metadata` field -->
     {:else if credentialTypes?.includes('ResidenceCredential')}
       <AddressRenderer {credential} />
