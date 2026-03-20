@@ -19,11 +19,7 @@
 </script>
 
 <div class="relative">
-  <button
-    type="button"
-    use:melt={$trigger}
-    class="flex size-8 items-center justify-center rounded-full transition-colors hover:bg-slate-100 dark:hover:bg-slate-800"
-  >
+  <button type="button" use:melt={$trigger} class="flex size-8 items-center justify-center rounded-full">
     <InfoFillIcon class="size-5 text-slate-500" />
   </button>
 
@@ -33,7 +29,7 @@
       transition:fade={{ duration: 100 }}
       class="z-50 rounded-lg border border-slate-200 bg-white p-2 shadow-lg"
     >
-      <div use:melt={$arrow} />
+      <div use:melt={$arrow}></div>
       <p class="m-0 text-xs font-normal text-slate-600">
         {description}
       </p>
