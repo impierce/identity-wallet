@@ -2,6 +2,8 @@ pub mod helpers;
 pub mod history_event;
 
 #[cfg(target_os = "android")]
+use log::info;
+#[cfg(target_os = "android")]
 use rustls::{client::danger::ServerCertVerifier, ClientConfig};
 #[cfg(target_os = "android")]
 use rustls::{
@@ -14,16 +16,11 @@ use rustls_platform_verifier::BuilderVerifierExt;
 
 use crate::command::Runtime;
 use crate::stronghold::StrongholdManager;
-use did_manager::Resolver;
+use crate::subject::Subject;
 pub use helpers::DateUtils;
-use log::info;
-use tokio::sync::OnceCell;
 
 use oid4vc::{
-    oid4vc_core::{
-        authorization_request::{AuthorizationRequest, Object},
-        Subject,
-    },
+    oid4vc_core::authorization_request::{AuthorizationRequest, Object},
     oid4vc_manager::ProviderManager,
     oid4vci::{credential_offer::CredentialOfferParameters, Wallet},
     oid4vp::oid4vp::OID4VP,
@@ -114,7 +111,6 @@ pub async fn tls_config() -> anyhow::Result<rustls::ClientConfig> {
 pub struct CoreUtils {
     pub app_handle: Option<tauri::AppHandle<Runtime>>,
     pub managers: Arc<tauri::async_runtime::Mutex<Managers>>,
-    pub resolver: OnceCell<Arc<Resolver>>,
 
     // TODO: These 'active_' fields should either be part of `oid4vc-manager`, or the `IdentityManager` struct.
     pub active_connection_request: Option<ConnectionRequest>,
@@ -122,31 +118,6 @@ pub struct CoreUtils {
     pub active_credential_offer: Option<CredentialOfferParameters>,
     pub active_code_verifier: Option<Vec<u8>>,
     pub active_wallet_state: Option<String>,
-}
-
-impl CoreUtils {
-    /// Asynchronously gets a reference to the initialized resolver.
-    ///
-    /// The first time this is called, it will perform the async initialization.
-    /// Subsequent calls will return the already-initialized instance instantly.
-    pub async fn resolver(&self) -> Arc<Resolver> {
-        self.resolver.get_or_init(Self::initialize_resolver).await.clone()
-    }
-
-    /// The private async function that contains the actual initialization logic.
-    async fn initialize_resolver() -> Arc<Resolver> {
-        #[cfg(not(target_os = "android"))]
-        let resolver = Resolver::new().await;
-
-        info!("Initializing resolver for CoreUtils");
-
-        #[cfg(target_os = "android")]
-        let resolver = Resolver::new_with_tls_config(tls_config().await.unwrap()).await;
-
-        info!("Resolver initialized");
-
-        Arc::new(resolver)
-    }
 }
 
 /// Managers contains both the stronghold manager and the identity manager needed to perform operations on connections & credentials.
@@ -159,7 +130,7 @@ pub struct Managers {
 /// IdentityManager contains the subject, provider_manager and wallet needed to perform operations within the oid4vc library.
 #[derive(Debug)]
 pub struct IdentityManager {
-    pub subject: Arc<dyn Subject>,
+    pub subject: Arc<Subject>,
     pub provider_manager: ProviderManager,
     pub wallet: Wallet,
 }

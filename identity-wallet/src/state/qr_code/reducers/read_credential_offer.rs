@@ -2,17 +2,16 @@ use std::collections::HashMap;
 
 use crate::{
     error::AppError::{self, *},
-    persistence::{download_asset, hash},
     state::{
         actions::{listen, Action},
-        core_utils::CoreUtils,
+        core_utils::{helpers::download_logo, CoreUtils},
         qr_code::actions::qrcode_scanned::QrCodeScanned,
         user_prompt::CurrentUserPrompt,
         AppState,
     },
 };
 
-use log::{debug, info};
+use log::{info, warn};
 use oid4vc::oid4vci::{
     credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject,
     credential_offer::{CredentialOffer, CredentialOfferParameters},
@@ -115,14 +114,10 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
 
         download_credential_logos(&credential_configurations).await;
 
-        if logo_uri.is_some() {
-            debug!(
-                "Downloading client logo from url: {}",
-                logo_uri.as_ref().unwrap().as_str()
-            );
-            if let Some(logo_uri) = logo_uri.as_ref().and_then(|s| s.parse::<reqwest::Url>().ok()) {
-                let _ = download_asset(logo_uri.clone(), &hash(logo_uri.as_str())).await;
-            }
+        if let Some(logo_uri_str) = logo_uri.clone() {
+            download_logo(&logo_uri_str).await;
+        } else {
+            warn!("No logo URI found");
         }
 
         drop(state_guard);
@@ -150,16 +145,18 @@ async fn download_credential_logos(
 ) {
     for credential_configuration in credential_configurations.values() {
         let credential_logo_uri = credential_configuration
-            .display
-            .first()
+            .credential_metadata
+            .as_ref()
+            .and_then(|credential_metadata| credential_metadata.display.as_ref())
+            .and_then(|display| display.first())
             .and_then(|value| value.logo.as_ref().map(|logo| logo.uri.clone()));
 
         info!("credential_logo_uri: {credential_logo_uri:?}");
 
-        if let Some(credential_logo_uri) = credential_logo_uri {
-            debug!("Downloading credential logo from URI: {credential_logo_uri}");
-
-            let _ = download_asset(credential_logo_uri.clone(), &hash(credential_logo_uri.as_str())).await;
+        if let Some(logo_uri_str) = credential_logo_uri {
+            download_logo(logo_uri_str.as_ref()).await;
+        } else {
+            warn!("No logo URI found");
         }
     }
 }

@@ -125,6 +125,8 @@ mod bindings {
         LoadDevProfile { payload: DevProfile },
         #[serde(rename = "[DEV] Toggle DEV mode")]
         ToggleDevMode,
+        #[serde(rename = "[DEV] Clear debug log")]
+        ClearDebugLog,
         #[serde(rename = "[Authenticate] Credentials selected")]
         CredentialsSelected { payload: CredentialsSelected },
         #[serde(rename = "[Credential Offer] Selected")]

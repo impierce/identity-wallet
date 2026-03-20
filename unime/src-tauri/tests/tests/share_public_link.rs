@@ -5,6 +5,7 @@ use identity_wallet::state::{
     profile_settings::{Profile, ProfileSettings},
     AppState, AppStateContainer,
 };
+use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
 use tokio::sync::Mutex;
 use uuid::Uuid;
 
@@ -55,7 +56,9 @@ async fn test_share_public_link() {
 
     // Create the VerifiableCredentialRecord from the JWT
     let credential_jwt_value = serde_json::to_value(CREDENTIAL_JWT).unwrap();
-    let mut vrc = VerifiableCredentialRecord::try_new(credential_jwt_value, Vec::new()).unwrap();
+    let mut vrc =
+        VerifiableCredentialRecord::try_new(CredentialFormats::JwtVcJson(()), credential_jwt_value, Vec::new())
+            .unwrap();
 
     // Replace the key/id with the test Uuid key from the action fixture
     let key = Uuid::parse_str("f47ac10b-58cc-4372-a567-0e02b2c3d479").unwrap();
@@ -76,21 +79,21 @@ async fn test_share_public_link() {
 
     // TODO!!
 
-    // let expected_state = json_example::<AppState>("tests/fixtures/states/share_to_linkedin.json");
+    let expected_state = json_example::<AppState>("tests/fixtures/states/share_to_linkedin.json");
 
-    // assert_state_update(
-    //     AppStateContainer(Mutex::new(app_state)),
-    //     vec![action],
-    //     vec![Some(expected_state.clone())],
-    // )
-    // .await;
+    assert_state_update(
+        AppStateContainer(Mutex::new(app_state)),
+        vec![action],
+        vec![Some(expected_state.clone())],
+    )
+    .await;
 
-    // // Assert Stronghold
-    // let managers = result.core_utils.managers.lock().await;
-    // let stronghold_manager = managers.stronghold_manager.as_ref().unwrap();
+    // Assert Stronghold
+    let managers = result.core_utils.managers.lock().await;
+    let stronghold_manager = managers.stronghold_manager.as_ref().unwrap();
 
-    // let stronghold_values = stronghold_manager.values().unwrap().unwrap();
-    // let stronghold_value = stronghold_values.first().unwrap().clone();
+    let stronghold_values = stronghold_manager.values().unwrap().unwrap();
+    let stronghold_value = stronghold_values.first().unwrap().clone();
 
-    // assert_eq!(stronghold_value.display_credential, result.credentials[0]);
+    assert_eq!(stronghold_value.display_credential, result.credentials[0]);
 }

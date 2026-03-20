@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 
-  import DataUrlImageRenderer from './DataUrlImageRenderer.svelte';
+  import DataUrlImageRenderer from './(renderers)/DataUrlImageRenderer.svelte';
 
   export let credential: DisplayCredential;
 

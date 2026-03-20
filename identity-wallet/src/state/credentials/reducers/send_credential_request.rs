@@ -14,7 +14,7 @@ use crate::{
 };
 use log::info;
 use oid4vc::oid4vci::{
-    authorization_details::{AuthorizationDetailsObject, CredentialConfigurationOrFormat, OpenidCredential},
+    authorization_details::{AuthorizationDetailsObject, OpenidCredential},
     credential_offer::Grants,
     pkce,
 };
@@ -176,18 +176,13 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                             |(credential_configuration_id, credential_configuration)| AuthorizationDetailsObject {
                                 r#type: OpenidCredential::Type,
                                 locations: None,
-                                credential_configuration_or_format:
-                                    CredentialConfigurationOrFormat::CredentialConfigurationId {
-                                        credential_configuration_id: credential_configuration_id.clone(),
-                                        parameters: None,
-                                    },
-                                claims: Some(
-                                    credential_configuration
-                                        .claims
-                                        .iter()
-                                        .map(|claims| claims.clone().into())
-                                        .collect(),
-                                ),
+                                credential_configuration_id: credential_configuration_id.clone(),
+                                credential_identifiers: None,
+                                claims: credential_configuration
+                                    .credential_metadata
+                                    .as_ref()
+                                    .and_then(|metadata| metadata.claims.as_ref())
+                                    .map(|claims| claims.iter().map(|claim| claim.clone().into()).collect()),
                             },
                         )
                         .collect();

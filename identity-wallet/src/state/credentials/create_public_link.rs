@@ -1,5 +1,3 @@
-use std::str::FromStr;
-
 use crate::error::AppError::{self, *};
 use crate::state::core_utils::helpers::get_unverified_jwt_claims;
 use crate::state::credentials::VerifiableCredentialRecord;
@@ -10,9 +8,10 @@ use did_manager::Resolver;
 use identity_iota::core::ToJson;
 use jsonwebtoken::Header;
 use log::{info, warn};
-use oid4vc::oid4vc_core::jwt::encode;
+use oid4vc::oid4vc_core::{jwt::encode, Sign};
 use serde::Serialize;
 use serde_json::{json, Value};
+use std::str::FromStr;
 use url::Url;
 use uuid::Uuid;
 
@@ -141,7 +140,7 @@ pub async fn get_trusted_verifier_public_verification_endpoint(
     _state: &AppState,
     issuer_did: &str,
 ) -> Result<String, AppError> {
-    let resolver = Resolver::new().await;
+    let resolver = Resolver::new();
 
     // TODO: hardcoded logic that only selects the first Linked VP
     let linked_vp = validate_linked_verifiable_presentations(&resolver, issuer_did)

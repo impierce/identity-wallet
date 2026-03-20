@@ -218,7 +218,7 @@ mod tests {
     async fn when_no_well_known_then_return_validation_status_unknown() {
         let mock_server = MockServer::start().await;
 
-        let resolver = Resolver::new().await;
+        let resolver = Resolver::new();
 
         let result =
             validate_domain_linkage(&resolver, url::Url::parse(&mock_server.uri()).unwrap(), "did:foo:bar").await;
@@ -245,7 +245,7 @@ mod tests {
             .mount(&mock_server)
             .await;
 
-        let resolver = Resolver::new().await;
+        let resolver = Resolver::new();
 
         let result =
             validate_domain_linkage(&resolver, url::Url::parse(&mock_server.uri()).unwrap(), "did:foo:bar").await;
@@ -308,7 +308,7 @@ mod tests {
             .mount(&mock_server)
             .await;
 
-        let resolver = Resolver::new().await;
+        let resolver = Resolver::new();
 
         let result = validate_domain_linkage(
             &resolver,
@@ -349,7 +349,7 @@ mod tests {
         url.set_fragment(Some("foobar"));
         url.set_query(Some("page=1"));
 
-        let resolver = Resolver::new().await;
+        let resolver = Resolver::new();
 
         let result = validate_domain_linkage(
             &resolver,
@@ -378,9 +378,7 @@ mod tests {
 
         let stronghold_manager = Arc::new(StrongholdManager::create(&password).unwrap());
 
-        let resolver = Resolver::new().await;
-
-        let subject = subject(stronghold_manager.clone(), password, Arc::new(resolver)).await;
+        let subject = subject(stronghold_manager.clone(), password).await;
 
         let identifier = subject.identifier("did:key", Algorithm::ES256).await.unwrap();
         let fragment = identifier.split(':').next_back().unwrap();
@@ -421,9 +419,7 @@ mod tests {
 
         let stronghold_manager = Arc::new(StrongholdManager::create(&password).unwrap());
 
-        let resolver = Resolver::new().await;
-
-        let subject = subject(stronghold_manager.clone(), password, Arc::new(resolver)).await;
+        let subject = subject(stronghold_manager.clone(), password).await;
 
         let identifier = subject.identifier("did:key", Algorithm::EdDSA).await.unwrap();
         let fragment = identifier.split(':').next_back().unwrap();

@@ -1030,6 +1030,10 @@ type RootTranslation = {
 			DESCRIPTION: string
 			OPEN_BADGES: {
 				/**
+				 * R​e​s​u​l​t
+				 */
+				RESULT: string
+				/**
 				 * A​l​i​g​n​m​e​n​t
 				 */
 				ALIGNMENT: string
@@ -1037,6 +1041,10 @@ type RootTranslation = {
 				 * C​r​i​t​e​r​i​a
 				 */
 				CRITERIA: string
+				/**
+				 * G​r​a​d​e
+				 */
+				VALUE: string
 			}
 		}
 		RENDERER: {
@@ -2553,6 +2561,10 @@ export type TranslationFunctions = {
 			DESCRIPTION: () => LocalizedString
 			OPEN_BADGES: {
 				/**
+				 * Result
+				 */
+				RESULT: () => LocalizedString
+				/**
 				 * Alignment
 				 */
 				ALIGNMENT: () => LocalizedString
@@ -2560,6 +2572,10 @@ export type TranslationFunctions = {
 				 * Criteria
 				 */
 				CRITERIA: () => LocalizedString
+				/**
+				 * Grade
+				 */
+				VALUE: () => LocalizedString
 			}
 		}
 		RENDERER: {

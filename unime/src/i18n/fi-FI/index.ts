@@ -17,7 +17,7 @@ const fi_FI = {
       ITEM_1: {
         TITLE: 'Emme jaa tietojasi',
         DESCRIPTION:
-          'Tietosi kuuluvat sinulle ja vain sinä päätät kenelle jaat ne. Piste. Itse asiassa tietosi eivät koskaan koske järjestelmiämme ellei sinä erikseen valitse pilvitallennusvaihtoehtoa.',
+          'Tietosi kuuluvat sinulle ja vain sinä päätät kenelle jaat ne. Piste. Itse asiassa tietosi eivät koskaan koske järjestelmiämme ellet sinä erikseen valitse pilvitallennusvaihtoehtoa.',
       },
       ITEM_2: {
         TITLE: 'Emme lisää seurantaa',
@@ -31,8 +31,8 @@ const fi_FI = {
     },
     TERMS: {
       NAVBAR_TITLE: 'Käyttöehdot',
-      TITLE_1: 'Tässä hieman vähemmän',
-      TITLE_2: 'kiinnostavaa',
+      TITLE_1: 'Tässä vähemmän mielenkiintoiset',
+      TITLE_2: 'jutut',
       SUBTITLE: 'Suosittelemme silti lukemaan tiedot huolellisesti.',
       T_AND_C: {
         TITLE: 'Käyttöehdot',
@@ -154,14 +154,14 @@ const fi_FI = {
         NAVBAR_TITLE: 'Vahvista salasana',
         TITLE_1: 'Vahvista uusi',
         TITLE_2: 'salasana',
-        SUBTITLE: 'Varmistetaan että kirjoitit sen oikein.',
+        SUBTITLE: 'Varmista että kirjoitit sen oikein.',
         INPUT_PLACEHOLDER: 'Kirjoita salasana uudelleen',
         MATCH: 'Salasanat täsmäävät',
         NO_MATCH: 'Salasanat eivät täsmää',
       },
       BIOMETRICS: {
-        TITLE: 'Ota käyttöön {type}',
-        DESCRIPTION: 'Haluatko käyttää {type} sovelluksen avaamiseen?',
+        TITLE: 'Ota käyttöön: {type}',
+        DESCRIPTION: 'Haluatko käyttää ominaisuuden {type} sovelluksen avaamista varten?',
         CONFIRM: 'Kyllä, käytä {type}',
         DECIDE_LATER: 'Päätä myöhemmin',
       },
@@ -309,8 +309,8 @@ const fi_FI = {
       BADGES: 'Merkit',
     },
     EMPTY_CREDENTIALS: {
-      TITLE: 'Täällä on aika hiljaista',
-      SUBTITLE: 'Hanki joitakin tietojasi varmennettuna aloittaaksesi matkasi.',
+      TITLE: 'Täällä on vielä hiljaista',
+      SUBTITLE: 'Vahvista tietosi, niin pääset aloittamaan matkasi.',
     },
     FAVORITES: 'Suosikkini',
   },
@@ -392,8 +392,10 @@ const fi_FI = {
       SELF_SIGNED: 'sinä itse',
       DESCRIPTION: 'Kuvaus',
       OPEN_BADGES: {
+        RESULT: 'Tulos',
         ALIGNMENT: 'Tasaus',
         CRITERIA: 'Kriteerit',
+        VALUE: 'Arvosana',
       },
     },
     RENDERER: {
@@ -406,8 +408,8 @@ const fi_FI = {
     },
     ACTIONS: {
       EDIT: {
-        MENU_BUTTON: 'Päivitä näyttönimi',
-        CONFIRM_BUTTON: 'Päivitä näyttönimi',
+        MENU_BUTTON: 'Päivitä tunnisteen nimi',
+        CONFIRM_BUTTON: 'Päivitä tunnisteen nimi',
       },
       DELETE: {
         MENU_BUTTON: 'Poista valtuus',
@@ -454,7 +456,7 @@ const fi_FI = {
         RESIDENT_COUNTRY_LABEL: 'Maa',
         RESIDENT_COUNTRY_PLACEHOLDER: 'Valitse maa',
         RESIDENT_COUNTRY_NO_MATCH: 'Maita ei löytynyt',
-        RESIDENT_STATE_LABEL: 'Osavaltio',
+        RESIDENT_STATE_LABEL: 'Maakunta',
         RESIDENT_STREET_LABEL: 'Katu',
         RESIDENT_HOUSE_NUMBER_LABEL: 'Talon numero',
         RESIDENT_POSTAL_CODE_LABEL: 'Postinumero',

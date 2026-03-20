@@ -1,3 +1,5 @@
+#[cfg(target_os = "android")]
+use crate::state::core_utils::tls_config;
 use crate::stronghold::StrongholdManager;
 
 use async_trait::async_trait;
@@ -9,9 +11,10 @@ use identity_iota::{
     verification::{jwk::JwkParams, jws::JwsAlgorithm},
 };
 use jsonwebtoken::Algorithm;
+use log::info;
 use oid4vc::oid4vc_core::{authentication::sign::ExternalSign, Sign, Verify};
 use std::sync::Arc;
-use tokio::sync::Mutex;
+use tokio::sync::{Mutex, OnceCell};
 
 /// A `Subject` implements functions required for signatures and verification.
 /// In UniMe, it serves as the "binding link" between the protocol libraries (OID4VC) and the secret management (DID Manager).
@@ -19,7 +22,32 @@ use tokio::sync::Mutex;
 pub struct Subject {
     pub stronghold_manager: Arc<StrongholdManager>,
     pub secret_manager: Arc<Mutex<SecretManager>>,
-    pub resolver: Arc<Resolver>,
+    pub resolver: OnceCell<Arc<Resolver>>,
+}
+
+impl Subject {
+    /// Asynchronously gets a reference to the initialized resolver.
+    ///
+    /// The first time this is called, it will perform the async initialization.
+    /// Subsequent calls will return the already-initialized instance instantly.
+    pub async fn resolver(&self) -> Arc<Resolver> {
+        self.resolver.get_or_init(Self::initialize_resolver).await.clone()
+    }
+
+    /// The private async function that contains the actual initialization logic.
+    async fn initialize_resolver() -> Arc<Resolver> {
+        #[cfg(not(target_os = "android"))]
+        let resolver = Resolver::new();
+
+        info!("Initializing resolver for Subject");
+
+        #[cfg(target_os = "android")]
+        let resolver = Resolver::new_with_options(Some(tls_config().await.unwrap()), None, None);
+
+        info!("Resolver initialized");
+
+        Arc::new(resolver)
+    }
 }
 
 #[async_trait]
@@ -68,7 +96,7 @@ impl Verify for Subject {
     async fn public_key(&self, did_url: &str) -> anyhow::Result<Vec<u8>> {
         let did_url = identity_iota::did::DIDUrl::parse(did_url).unwrap();
 
-        let document = self.resolver.resolve(did_url.did().as_str()).await.unwrap();
+        let document = self.resolver().await.resolve(did_url.did().as_str()).await.unwrap();
 
         let verification_method = document
             .resolve_method(
@@ -107,11 +135,7 @@ impl Verify for Subject {
 }
 
 // Helper function: load a `Subject`
-pub async fn subject(
-    stronghold_manager: Arc<StrongholdManager>,
-    password: String,
-    resolver: Arc<Resolver>,
-) -> Arc<Subject> {
+pub async fn subject(stronghold_manager: Arc<StrongholdManager>, password: String) -> Arc<Subject> {
     let client_path = crate::persistence::STRONGHOLD
         .lock()
         .unwrap()
@@ -131,7 +155,7 @@ pub async fn subject(
                 .await
                 .unwrap(),
         )),
-        resolver,
+        resolver: OnceCell::new(),
     })
 }
 
