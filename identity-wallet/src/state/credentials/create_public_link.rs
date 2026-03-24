@@ -142,6 +142,7 @@ pub async fn get_trusted_verifier_public_verification_endpoint(
 ) -> Result<String, AppError> {
     let resolver = Resolver::new();
 
+    // TODO: stop depending on VP to get the Verifiers public verification endpoint. There is no Verifier info in the PCT, but the sender of the request should actually be enough since that will always be the Verifier? what about proxies?
     // TODO: hardcoded logic that only selects the first Linked VP
     let linked_vp = validate_linked_verifiable_presentations(&resolver, issuer_did)
         .await
