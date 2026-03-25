@@ -93,20 +93,20 @@
 
     <!-- This block can't be looped as it's currently hardcoded we expect the 'Classification' claim to be in provenBy[1] as seen below (line 100) -->
     {@render TextField(
-      hasClaim?.provenBy[0]?.specifiedBy?.gradingScheme?.title?.en,
-      hasClaim?.provenBy[0]?.specifiedBy?.gradingScheme?.description?.en,
+      hasClaim?.provenBy?.[0]?.specifiedBy?.gradingScheme?.title?.en,
+      hasClaim?.provenBy?.[0]?.specifiedBy?.gradingScheme?.description?.en,
     )}
 
-    {@render TextField('Classification', hasClaim?.provenBy[1]?.grade?.noteLiteral?.en)}
+    {@render TextField('Classification', hasClaim?.provenBy?.[1]?.grade?.noteLiteral?.en)}
   </CollapsibleWrapper>
 
   <!-- Collapsible Qualification Function section -->
   <CollapsibleWrapper defaultOpen={false}>
     <h2 class="text-lg font-bold" slot="title">Qualification Function</h2>
     <!-- These hard indexing cases can't be refactored yet either as the titles are hardcoded -->
-    {@render TextField('Access to further study', hasClaim?.entitlesTo[0]?.description?.en)}
+    {@render TextField('Access to further study', hasClaim?.entitlesTo?.[0]?.description?.en)}
 
-    {@render TextField('Access to regulated profession', hasClaim?.entitlesTo[1]?.description?.en)}
+    {@render TextField('Access to regulated profession', hasClaim?.entitlesTo?.[1]?.description?.en)}
   </CollapsibleWrapper>
 
   <!-- Collapsible Further information section -->
