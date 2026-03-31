@@ -38,8 +38,8 @@ async fn test_share_public_link() {
     };
 
     app_state.dids.insert(
-        "did:jwk".to_string(),
-        "did:example:ebfeb1f712ebc6f1c276e12ec21".to_string(),
+        "did:key".to_string(),
+        "did:key:z6MkiieyoLMSVsJAZv7Jje5wWSkDEymUgkyF8kbcrjZpX3qd".to_string(),
     );
 
     // Set up stronghold
