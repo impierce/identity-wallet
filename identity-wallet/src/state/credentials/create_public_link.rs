@@ -1,33 +1,36 @@
 use crate::error::AppError::{self, *};
 use crate::state::core_utils::helpers::get_unverified_jwt_claims;
 use crate::state::credentials::VerifiableCredentialRecord;
-use crate::state::did::validate_linked_verifiable_presentations::validate_linked_verifiable_presentations;
 use crate::state::AppState;
+use base64::Engine;
 use chrono::{Duration, Utc};
-use did_manager::Resolver;
-use identity_iota::core::ToJson;
-use jsonwebtoken::Header;
-use log::{info, warn};
-use oid4vc::oid4vc_core::{jwt::encode, Sign};
+use jsonwebtoken::{decode_header, Header};
+use log::info;
+use oid4vc::oid4vc_core::jwt::encode;
 use serde::Serialize;
-use serde_json::{json, Value};
+use serde_json::json;
 use std::str::FromStr;
 use url::Url;
 use uuid::Uuid;
 
 // TODO: this should actually be the reducer and the sharing to LinkedIn or whatever platform should be the helper, since that part doesnt update the AppState.
 pub async fn create_public_link(state: &AppState, credential_id: &str) -> Result<Url, AppError> {
-    // Get the VerifiableCredentialRecord belonging to the Id from Stronghold
+    // TODO: perhaps add JWT claims to the DisplayCredential as well to avoid stronghold operations here?
     let id = Uuid::from_str(credential_id).map_err(|e| AppError::Error(e.to_string()))?;
-    let stronghold_manager = state
-        .core_utils
-        .managers
-        .lock()
-        .await
+    let managers = state.core_utils.managers.lock().await;
+    let subject = managers
+        .identity_manager
+        .as_ref()
+        .ok_or(MissingManagerError("identity"))?
+        .subject
+        .clone();
+    let stronghold_manager = managers
         .stronghold_manager
         .as_ref()
         .ok_or(MissingManagerError("stronghold"))?
         .clone();
+
+    // Get the VerifiableCredentialRecord belonging to the ID from Stronghold since the entire JWT, and its JWT claims, live there instead of just the VC part.
     let vcr_bytes = stronghold_manager
         .get(id)
         .map_err(|e| AppError::Error(e.to_string()))?
@@ -36,81 +39,88 @@ pub async fn create_public_link(state: &AppState, credential_id: &str) -> Result
         ))?;
     let vcr: VerifiableCredentialRecord =
         serde_json::from_slice(&vcr_bytes).map_err(|e| AppError::Error(e.to_string()))?;
-
-    // Get the UniMe did
-    let did_method = state
-        .profile_settings
-        .preferred_did_methods
-        .first()
-        .ok_or(AppError::Error("Failed to get a preferred did method".to_string()))?;
-
-    let issuer_did = state.dids.get(did_method).ok_or(AppError::Error(
-        "Failed to get the did for the preferred did method".to_string(),
+    let jwt = &mut vcr.verifiable_credential.clone();
+    let jwt_data = get_unverified_jwt_claims(jwt)?;
+    let jwt_str = jwt.as_str().map(ToString::to_string).ok_or(AppError::Error(
+        "Failed to convert the Public Link credential JWT to a string".to_string(),
     ))?;
 
-    // Get preferred key type and convert it to jsonwebtoken::Algorithm
-    let key_type = state
-        .profile_settings
-        .preferred_key_types
-        .first()
-        .ok_or(AppError::Error("Failed to get a preferred key type".to_string()))?
-        .as_str();
-    let algorithm = match key_type {
-        "EdDSA" => jsonwebtoken::Algorithm::EdDSA,
-        "ES256" => jsonwebtoken::Algorithm::ES256,
-        _ => return Err(AppError::Error("Unsupported key type".to_string())),
-    };
+    let jwt_header = decode_header(&jwt_str).map_err(|e| {
+        AppError::Error(format!(
+            "Failed to decode JWT header of the Public Link credential: {e}"
+        ))
+    })?;
 
-    // Get kid
-    let managers = state.core_utils.managers.lock().await;
-    let subject = managers
-        .identity_manager
-        .as_ref()
-        .ok_or(MissingManagerError("identity"))?
-        .subject
-        .clone();
+    let kid = jwt_header.kid.ok_or(AppError::Error(
+        "Public Link credential JWT header is missing `kid` field".to_string(),
+    ))?;
+    let credential_issuer_did = kid.split('#').next().unwrap_or(&kid); // A did:web needs a # key fragment, a did:key doesn't
 
-    let kid = subject
-        .key_id(did_method, algorithm)
-        .await
-        .ok_or(AppError::Error("Failed to create a key id".to_string()))?;
+    // TODO: implement the iss claim as fall back? Getting it from the KID is always safer since that is also checked during signature validation
+    // // Get the credential's issuer DID from the credential data
+    // let credential_issuer_did = jwt_data
+    //     .get("iss")
+    //     .and_then(|v| v.as_str())
+    //     .ok_or(AppError::Error("Issuer (iss) not found".to_string()))?;
+
+    // Get the credential's subject ID. This means anonymous credentials (without a credentialSubject.id) cannot be shared publicly.
+    let credential_subject_id = jwt_data
+        .get("vc")
+        .and_then(|v| v.get("credentialSubject"))
+        .and_then(|v| v.get("id"))
+        .and_then(|v| v.as_str())
+        .ok_or(AppError::Error(
+            "Credential Subject ID not found in Public Link Credential".to_string(),
+        ))?;
+
+    // TODO: morgen uitvogelen waarom de credential wordt geaccepteerd met een did die helemaal niet in de state.dids bestaat
+    info!("Credential subject ID: {credential_subject_id}");
+    info!("Credential issuer DID (from KID): {credential_issuer_did}");
+    info!("state DIDs: {:?}", state.dids);
+    // The DID we issue the DACT with must equal the credentialSubject.id of the credential which is given access to. How to handle key rotation in the future here?
+    if !state.dids.values().any(|v| v == credential_subject_id) {
+        return Err(AppError::Error(
+            "The credential subject ID of the credential to be shared does not match any of the DIDs of the wallet"
+                .to_string(),
+        ));
+    }
+
+    let did_method = credential_subject_id.split(':').take(2).collect::<Vec<_>>().join(":");
+
+    let algorithm = algorithm_from_did(credential_subject_id)?;
 
     // Compose the JWT header
     let header = Header {
         alg: algorithm,
         typ: Some("JWT".to_string()),
-        kid: Some(kid.clone()),
+        kid: Some(credential_subject_id.to_string()),
         ..Default::default()
     };
-
-    // Get the credential's issuer DID from the credential data
-    let jwt = &mut vcr.verifiable_credential.clone();
-    let jwt_data = get_unverified_jwt_claims(jwt)?;
-    let credential_issuer_did = jwt_data
-        .get("iss")
-        .and_then(|v| v.as_str())
-        .ok_or(AppError::Error("Issuer (iss) not found".to_string()))?;
 
     // Get the JTI claim from the credential data
     let jti = jwt_data
         .get("jti")
         .and_then(|v| v.as_str())
         .ok_or(AppError::Error("JTI not found".to_string()))?;
-
+    let token_jti = Uuid::new_v4().to_string();
     let now = Utc::now();
+    // TODO: this is a hardcoded expiration date of 1 year after issuance.
     let exp = now + Duration::days(365);
 
     let claims = PublicLinkTokenClaims {
-        iss: issuer_did.to_string(),
+        iss: credential_subject_id.to_string(),
         sub: jti.to_string(),
         aud: credential_issuer_did.to_string(),
         iat: now.timestamp(),
         nbf: now.timestamp(),
         exp: exp.timestamp(),
+        jti: token_jti.clone(),
         status: "active".to_string(), // TODO: implement TSL revocation
     };
 
-    let public_link_jwt = encode(subject, header, claims, did_method)
+    // TODO: still not 100% sure UniMe uses the same did as the one in the credentialSubject.id field.
+    // encode() uses key_id() which then uses produce_document() which checks if it has a DID stored for the info provided, otherwise it produces a new one but there is no way if knowing if it produced a new one or not, except breaking the function chain up to put a check somewhere in the middle.
+    let data_access_consent_token_jwt = encode(subject, header, claims, &did_method)
         .await
         .map_err(|e| AppError::Error(e.to_string()))?;
 
@@ -118,82 +128,66 @@ pub async fn create_public_link(state: &AppState, credential_id: &str) -> Result
     let public_verifier_endpoint_url =
         get_trusted_verifier_public_verification_endpoint(state, credential_issuer_did).await?;
 
-    let public_link = format!(
-        "{}?public-credential-token={}",
-        public_verifier_endpoint_url, public_link_jwt
-    );
+    // TODO: this could suffice for now but this implicitly states that the store_dact endpoint must always have the same base URL as the public verification endpoint.
+    // Our public verification endpoint is {BASE_URL}/verify meaning the map_or "or" should never happen.
+    let public_verifier_dact_endpoint_url = {
+        let base = public_verifier_endpoint_url
+            .rfind('/')
+            .map_or(public_verifier_endpoint_url.as_str(), |i| {
+                &public_verifier_endpoint_url[..i]
+            });
+        format!("{}/store-data-access-consent-token", base)
+    };
 
-    let public_link_url =
-        Url::parse(&public_link).map_err(|e| AppError::Error(format!("Invalid public link URL: {}", e)))?;
+    info!("Public verifier endpoint URL: {public_verifier_endpoint_url}");
+    info!("Public verifier DACT storage endpoint URL: {public_verifier_dact_endpoint_url}");
+
+    // Before the public link is returned, the DACT needs to be stored by the verifier
+    let client = reqwest::Client::new();
+    let response = client
+        .post(&public_verifier_dact_endpoint_url)
+        .header("Content-Type", "application/json")
+        .body(json!({ "token_id": token_jti, "jwt": data_access_consent_token_jwt }).to_string())
+        .send()
+        .await
+        .map_err(|e| {
+            AppError::Error(format!(
+                "Failed to store Data Access Consent Token at the Verifier: {e}"
+            ))
+        })?;
+
+    if !response.status().is_success() {
+        let status = response.status();
+        let body = response.text().await.unwrap_or_default();
+        return Err(AppError::Error(format!(
+            "Verifier rejected the Data Access Consent Token (HTTP {status}): {body}"
+        )));
+    }
+
+    let public_link = format!("{}/{}", public_verifier_endpoint_url, token_jti);
+
+    let public_link_url = Url::parse(&public_link)
+        .map_err(|e| AppError::Error(format!("Failed to create valid Public Link URL: {}", e)))?;
 
     info!("Succesfully generated public link URL: {}", public_link_url);
 
     Ok(public_link_url)
 }
 
-// Through the issuer DID Document find the ecosystem leader and its public verification endpoint, who will be the trusted verifier.
-// Step 1: get the issuer DID Document
-// Step 2: find the Linked VP service
-// Step 3: get the issuer DID Document of the Linked VP credential
-// Step 4: find the Public Verification Endpoint service
+/// TODO: integrate OpenID Fed here once that mvp is done
+/// Resolve the Issuer's Trust Chain to find the Ecosystem Leader (Trust Anchor) and its public verification endpoint, who will be the trusted verifier.
+/// Step 1: Resolve the Issuer's trust chain
+/// Step 2: get the Trust Anchor's DID Document
+/// Step 3: find the Public Verification Endpoint service
 pub async fn get_trusted_verifier_public_verification_endpoint(
     _state: &AppState,
-    issuer_did: &str,
+    _issuer_did: &str,
 ) -> Result<String, AppError> {
-    let resolver = Resolver::new();
+    // TODO hardcode endpoint for testing
 
-    // TODO: stop depending on VP to get the Verifiers public verification endpoint. There is no Verifier info in the PCT, but the sender of the request should actually be enough since that will always be the Verifier? what about proxies?
-    // TODO: hardcoded logic that only selects the first Linked VP
-    let linked_vp = validate_linked_verifiable_presentations(&resolver, issuer_did)
-        .await
-        .iter()
-        .flatten()
-        .next()
-        .ok_or(AppError::Error(
-            "No Linked VP found for issuer of credential requested for public sharing".to_string(),
-        ))?
-        .clone();
-
-    info!("Linked VP: {linked_vp:#?}");
-
-    let linked_vp_claims = get_unverified_jwt_claims(&json!(&linked_vp.data))?;
-    let linked_vp_issuer_did = linked_vp_claims
-        .get("iss")
-        .and_then(|v| v.as_str())
-        .ok_or(AppError::Error("Issuer (iss) not found in Linked VP".to_string()))?;
-    let linked_vp_issuer_document = resolver
-        .resolve(linked_vp_issuer_did)
-        .await
-        .map_err(|_| AppError::Error("Failed to resolve linked VP issuer did".to_string()))?;
-
-    info!("Linked VP Issuer DID Document: {linked_vp_issuer_document:#?}");
-
-    let public_verification_endpoint = linked_vp_issuer_document.service().iter().find_map(|service| {
-        service
-            .type_()
-            .contains("PublicVerificationEndpoint")
-            .then(|| {
-                info!("Found Public Verification Endpoint: {service:#?}");
-                service.service_endpoint()
-            })
-            .and_then(|service_endpoint| service_endpoint.to_json_value().ok())
-            .and_then(|endpoint_value| match endpoint_value {
-                Value::String(url) => Some(url),
-                Value::Object(obj) => obj
-                    .get("url")
-                    .or_else(|| obj.get("uri"))
-                    .and_then(|v| v.as_str())
-                    .map(|s| s.to_string()),
-                _ => {
-                    warn!("Unexpected service endpoint format: {endpoint_value:#?}");
-                    None
-                }
-            })
-    });
-
-    public_verification_endpoint
-        .ok_or_else(|| AppError::Error("No public verification endpoint found in issuer DID document".to_string()))
+    Ok("http://localhost:3033/v0/verify".to_string())
 }
+
 #[derive(Serialize, Debug)]
 struct PublicLinkTokenClaims {
     iss: String,
@@ -202,5 +196,40 @@ struct PublicLinkTokenClaims {
     iat: i64,
     nbf: i64,
     exp: i64,
+    jti: String,
     status: String, // TODO: impl TSL revocation
+}
+
+/// Derive the signing algorithm from a DID.
+fn algorithm_from_did(did: &str) -> Result<jsonwebtoken::Algorithm, AppError> {
+    if let Some(multibase) = did.strip_prefix("did:key:z") {
+        let bytes = bs58::decode(multibase)
+            .into_vec()
+            .map_err(|e| AppError::Error(format!("base58 decode error: {e}")))?;
+        match (bytes.first(), bytes.get(1)) {
+            (Some(0xed), Some(0x01)) => Ok(jsonwebtoken::Algorithm::EdDSA), // Ed25519
+            (Some(0x12), Some(0x00)) => Ok(jsonwebtoken::Algorithm::ES256), // P-256
+            _ => Err(AppError::Error(format!(
+                "Unsupported did:key multicodec: 0x{:02x}{:02x}",
+                bytes.first().unwrap_or(&0),
+                bytes.get(1).unwrap_or(&0)
+            ))),
+        }
+    } else if did.starts_with("did:jwk:") {
+        // did:jwk:<base64url(JWK)>
+        let jwk_b64 = did.strip_prefix("did:jwk:").unwrap();
+        let jwk_bytes = base64::engine::general_purpose::URL_SAFE_NO_PAD
+            .decode(jwk_b64)
+            .map_err(|e| AppError::Error(format!("did:jwk base64 decode error: {e}")))?;
+        let jwk: serde_json::Value =
+            serde_json::from_slice(&jwk_bytes).map_err(|e| AppError::Error(format!("did:jwk JSON error: {e}")))?;
+        match jwk.get("crv").and_then(|v| v.as_str()) {
+            Some("Ed25519") => Ok(jsonwebtoken::Algorithm::EdDSA),
+            Some("P-256") => Ok(jsonwebtoken::Algorithm::ES256),
+            Some(crv) => Err(AppError::Error(format!("Unsupported did:jwk curve: {crv}"))),
+            None => Err(AppError::Error("did:jwk missing 'crv' field".to_string())),
+        }
+    } else {
+        Err(AppError::Error(format!("Cannot derive algorithm from DID: {did}")))
+    }
 }
