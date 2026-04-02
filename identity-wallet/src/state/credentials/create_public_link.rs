@@ -6,7 +6,7 @@ use base64::Engine;
 use chrono::{Duration, Utc};
 use jsonwebtoken::{decode_header, Header};
 use log::info;
-use oid4vc::oid4vc_core::jwt::encode;
+use oid4vc::oid4vc_core::{jwt::encode, Subject};
 use serde::Serialize;
 use serde_json::json;
 use std::str::FromStr;
@@ -73,21 +73,21 @@ pub async fn create_public_link(state: &AppState, credential_id: &str) -> Result
             "Credential Subject ID not found in Public Link Credential".to_string(),
         ))?;
 
-    // TODO: morgen uitvogelen waarom de credential wordt geaccepteerd met een did die helemaal niet in de state.dids bestaat
-    info!("Credential subject ID: {credential_subject_id}");
-    info!("Credential issuer DID (from KID): {credential_issuer_did}");
-    info!("state DIDs: {:?}", state.dids);
     // The DID we issue the DACT with must equal the credentialSubject.id of the credential which is given access to. How to handle key rotation in the future here?
-    if !state.dids.values().any(|v| v == credential_subject_id) {
+    let did_method = credential_subject_id.split(':').take(2).collect::<Vec<_>>().join(":");
+    let algorithm = algorithm_from_did(credential_subject_id)?;
+    let own_did = subject.identifier(&did_method, algorithm).await.map_err(|e| {
+        AppError::Error(format!(
+            "Failed to get own DID for key type `{algorithm:?}` and did method `{did_method}`: {}",
+            e
+        ))
+    })?;
+    if own_did != credential_subject_id {
         return Err(AppError::Error(
             "The credential subject ID of the credential to be shared does not match any of the DIDs of the wallet"
                 .to_string(),
         ));
     }
-
-    let did_method = credential_subject_id.split(':').take(2).collect::<Vec<_>>().join(":");
-
-    let algorithm = algorithm_from_did(credential_subject_id)?;
 
     // Compose the JWT header
     let header = Header {
@@ -108,7 +108,7 @@ pub async fn create_public_link(state: &AppState, credential_id: &str) -> Result
     let exp = now + Duration::days(365);
 
     let claims = PublicLinkTokenClaims {
-        iss: credential_subject_id.to_string(),
+        iss: credential_subject_id.to_string(), // This is the same as setting it to own_did, since the check above validates whether our own did which we will use for signing this DACT is the same as the credentialSubject.id.
         sub: jti.to_string(),
         aud: credential_issuer_did.to_string(),
         iat: now.timestamp(),
@@ -124,18 +124,18 @@ pub async fn create_public_link(state: &AppState, credential_id: &str) -> Result
         .await
         .map_err(|e| AppError::Error(e.to_string()))?;
 
+    info!("Generated Data Access Consent Token JWT for Public Link: {data_access_consent_token_jwt}");
+
     // Extract the Issuer DID from the `aud` claim of the token
     let public_verifier_endpoint_url =
         get_trusted_verifier_public_verification_endpoint(state, credential_issuer_did).await?;
 
-    // TODO: this could suffice for now but this implicitly states that the store_dact endpoint must always have the same base URL as the public verification endpoint.
-    // Our public verification endpoint is {BASE_URL}/verify meaning the map_or "or" should never happen.
+    // TODO: this hardcoded endpoint "discovery" could suffice for now but this implicitly states that the store_dact endpoint must always be on the same host path as the public verification endpoint.
+    // Our public verification endpoint is {HOST}/verify, so we remove the /verify suffix and append /store-data-access-consent-token.
     let public_verifier_dact_endpoint_url = {
         let base = public_verifier_endpoint_url
-            .rfind('/')
-            .map_or(public_verifier_endpoint_url.as_str(), |i| {
-                &public_verifier_endpoint_url[..i]
-            });
+            .strip_suffix("/verify") // TODO: import this as a const from SSI-agent to avoid mismatch?
+            .unwrap_or(public_verifier_endpoint_url.as_str()); // This unwrap_or should never happen but if somehow the /verify endpoint doesnt have /verify as suffix we default to the unmodified url.
         format!("{}/store-data-access-consent-token", base)
     };
 
@@ -200,7 +200,7 @@ struct PublicLinkTokenClaims {
     status: String, // TODO: impl TSL revocation
 }
 
-/// Derive the signing algorithm from a DID.
+/// Derive the signing algorithm from either a did:key or did:jwk.
 fn algorithm_from_did(did: &str) -> Result<jsonwebtoken::Algorithm, AppError> {
     if let Some(multibase) = did.strip_prefix("did:key:z") {
         let bytes = bs58::decode(multibase)
