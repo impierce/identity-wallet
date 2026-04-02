@@ -118,13 +118,11 @@ pub async fn create_public_link(state: &AppState, credential_id: &str) -> Result
         status: "active".to_string(), // TODO: implement TSL revocation
     };
 
-    // TODO: still not 100% sure UniMe uses the same did as the one in the credentialSubject.id field.
-    // encode() uses key_id() which then uses produce_document() which checks if it has a DID stored for the info provided, otherwise it produces a new one but there is no way if knowing if it produced a new one or not, except breaking the function chain up to put a check somewhere in the middle.
     let data_access_consent_token_jwt = encode(subject, header, claims, &did_method)
         .await
         .map_err(|e| AppError::Error(e.to_string()))?;
 
-    info!("Generated Data Access Consent Token JWT for Public Link: {data_access_consent_token_jwt}");
+    info!("Generated Data Access Consent Token JWT: {data_access_consent_token_jwt}");
 
     // Extract the Issuer DID from the `aud` claim of the token
     let public_verifier_endpoint_url =
