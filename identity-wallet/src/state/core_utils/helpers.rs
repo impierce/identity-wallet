@@ -43,6 +43,25 @@ pub fn get_unverified_jwt_claims(jwt: &serde_json::Value) -> Result<serde_json::
         .ok_or(AppError::Error("Failed to decode JWT claims".to_string()))
 }
 
+/// This function resolves the key ID from the JWT header, and makes it absolute if it's a relative reference (starts with '#') by prepending the 'iss' claim from the JWT payload.
+pub fn resolve_key_id(jwt: &str) -> Result<String, AppError> {
+    let jwt_header = decode_header(jwt).map_err(|_| AppError::GetCredentialStatusError)?;
+    let mut key_id = jwt_header.kid.ok_or(AppError::GetCredentialStatusError)?;
+
+    if key_id.starts_with('#') {
+        let claims = get_unverified_jwt_claims(&serde_json::json!(jwt))?;
+        let iss = claims
+            .get("iss")
+            .ok_or(AppError::Error("Missing 'iss' claim".to_string()))?
+            .as_str()
+            .ok_or(AppError::Error("'iss' claim is not a string".to_string()))?;
+
+        key_id = format!("{iss}{key_id}");
+    }
+
+    Ok(key_id)
+}
+
 /// This function uses the credential in jwt format from the jwt_vc_json to resolve the issuer document.
 pub async fn get_issuer_document(resolver: &Resolver, credential_jwt: &Jwt) -> Option<CoreDocument> {
     let decoder = Decoder::new();
@@ -72,7 +91,7 @@ pub async fn get_issuer_document(resolver: &Resolver, credential_jwt: &Jwt) -> O
 /// Validate a jwt_vc_json, checks the JWT and the Issuer DID.
 pub async fn validate_jwt_vc_json(credential_jwt: &str, identity_manager: &IdentityManager) -> Result<Value, AppError> {
     let jwt_header = decode_header(credential_jwt).map_err(|_| AppError::GetCredentialStatusError)?;
-    let key_id = jwt_header.kid.ok_or(AppError::GetCredentialStatusError)?;
+    let key_id = resolve_key_id(credential_jwt)?;
 
     let public_key = identity_manager
         .subject
@@ -358,5 +377,48 @@ mod tests {
 
         let result = validate_credential_types(&invalid_ob3);
         assert!(result.is_ok());
+    }
+
+    #[test]
+    fn resolve_key_id_with_relative_reference() {
+        // JWT with relative key_id (starts with '#')
+        let jwt =
+            "eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6IiNteWtleSJ9.eyJpc3MiOiJkaWQ6ZXhhbXBsZTppc3N1ZXIifQ.signature";
+        let result = resolve_key_id(jwt);
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap(), "did:example:issuer#mykey");
+    }
+
+    #[test]
+    fn resolve_key_id_with_absolute_reference() {
+        // JWT with absolute key_id (doesn't start with '#')
+        let jwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpleGFtcGxlOmlzc3VlciNteWtleSJ9.eyJpc3MiOiJkaWQ6ZXhhbXBsZTppc3N1ZXIifQ.signature";
+        let result = resolve_key_id(jwt);
+        assert!(result.is_ok());
+        assert_eq!(result.unwrap(), "did:example:issuer#mykey");
+    }
+
+    #[test]
+    fn resolve_key_id_missing_kid() {
+        // JWT without kid in header
+        let jwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSJ9.eyJpc3MiOiJkaWQ6ZXhhbXBsZTppc3N1ZXIifQ.signature";
+        let result = resolve_key_id(jwt);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn resolve_key_id_missing_iss_claim() {
+        // JWT with relative key_id but missing 'iss' claim
+        let jwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6IiNteWtleSJ9.e30.signature";
+        let result = resolve_key_id(jwt);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn resolve_key_id_iss_not_string() {
+        // JWT with relative key_id but 'iss' claim is not a string
+        let jwt = "eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6IiNteWtleSJ9.eyJpc3MiOjEyMzQ1fQ.signature";
+        let result = resolve_key_id(jwt);
+        assert!(result.is_err());
     }
 }

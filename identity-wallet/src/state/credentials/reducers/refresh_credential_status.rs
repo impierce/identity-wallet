@@ -4,7 +4,7 @@ use crate::{
     error::AppError,
     state::{
         actions::{listen, Action},
-        core_utils::{DateUtils, IdentityManager},
+        core_utils::{helpers::resolve_key_id, DateUtils, IdentityManager},
         credentials::{
             actions::refresh_credential_status::RefreshCredentialStatus, CredentialStatus, VerifiableCredentialRecord,
         },
@@ -162,7 +162,7 @@ pub async fn fetch_credential_status(
     .await?;
 
     let jwt_header = decode_header(&status_list_jwt).map_err(|_| AppError::GetCredentialStatusError)?;
-    let key_id = jwt_header.kid.ok_or(AppError::GetCredentialStatusError)?;
+    let key_id = resolve_key_id(&status_list_jwt)?;
 
     let public_key = identity_manager
         .subject
