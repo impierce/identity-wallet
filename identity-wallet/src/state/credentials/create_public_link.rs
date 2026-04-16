@@ -183,7 +183,7 @@ pub async fn get_trusted_verifier_public_verification_endpoint(
 ) -> Result<String, AppError> {
     // TODO hardcode endpoint for testing
 
-    Ok("http://localhost:3033/verify".to_string())
+    Ok("https://cuddly-curufin.dev2.impierce.com/verify".to_string())
 }
 
 #[derive(Serialize, Debug)]
