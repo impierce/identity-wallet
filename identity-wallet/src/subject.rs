@@ -94,16 +94,18 @@ impl oid4vc::oid4vc_core::Subject for Subject {
 #[async_trait]
 impl Verify for Subject {
     async fn public_key(&self, did_url: &str) -> anyhow::Result<Vec<u8>> {
-        let did_url = identity_iota::did::DIDUrl::parse(did_url).unwrap();
+        let did_url = identity_iota::did::DIDUrl::parse(did_url)?;
 
-        let document = self.resolver().await.resolve(did_url.did().as_str()).await.unwrap();
+        let document = self.resolver().await.resolve(did_url.did().as_str()).await?;
 
         let verification_method = document
             .resolve_method(
                 DIDUrlQuery::from(&did_url),
                 Some(identity_iota::verification::MethodScope::VerificationMethod),
             )
-            .unwrap();
+            .ok_or(anyhow::anyhow!(
+                "Failed to resolve verification method for DID URL: {did_url}"
+            ))?;
 
         // Try decode from `MethodData` directly, else use public JWK params.
         verification_method.data().try_decode().or_else(|_| {
@@ -129,7 +131,7 @@ impl Verify for Subject {
                     }
                     _ => None,
                 })
-                .ok_or(anyhow::anyhow!("Failed to decode public key for DID URL: {}", did_url))
+                .ok_or(anyhow::anyhow!("Failed to decode public key for DID URL: {did_url}"))
         })
     }
 }
