@@ -60,10 +60,11 @@
       "mobile": [
         { "scheme": [ "unime" ] },
         { "scheme": [ "openid" ] },
+        { "scheme": [ "openid4vp" ] },
         { "scheme": [ "openid-credential-offer" ] }
       ],
       "desktop": {
-        "schemes": ["unime", "openid", "openid-credential-offer"]
+        "schemes": ["unime", "openid", "openid4vp", "openid-credential-offer"]
       }
     }
   }
