@@ -1,10 +1,11 @@
 #[cfg(target_os = "android")]
 use crate::state::core_utils::tls_config;
 use crate::stronghold::StrongholdManager;
-
+use anyhow::anyhow;
 use async_trait::async_trait;
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use did_manager::{DidMethod, Resolver, SecretManager};
+use identity_iota::verification::jwk::Jwk;
 use identity_iota::{
     did::DID,
     document::DIDUrlQuery,
@@ -47,6 +48,34 @@ impl Subject {
         info!("Resolver initialized");
 
         Arc::new(resolver)
+    }
+
+    // TODO(ssi-agent): Duplicate of ssi-agent `Subject::resolve_public_key`.
+    // Replace this local implementation with the original implementation from `ssi-agent`:
+    // https://github.com/impierce/ssi-agent/blob/beta/agent_secret_manager/src/subject.rs
+    /// Resolves the public key for a given DID URL.
+    pub async fn resolve_public_key(&self, did_url: &str) -> anyhow::Result<Jwk> {
+        let did_url =
+            identity_iota::did::DIDUrl::parse(did_url).map_err(|err| anyhow!("Failed to parse DID URL: {err}"))?;
+
+        let document = self
+            .resolver()
+            .await
+            .resolve(did_url.did().as_str())
+            .await
+            .map_err(|err| anyhow!("Failed to resolve DID Document for DID: `{did_url}`, error: {err}"))?;
+
+        let verification_method = document
+            .resolve_method(DIDUrlQuery::from(&did_url), None)
+            .ok_or(anyhow!(
+                "Failed to resolve verification method for DID URL: `{did_url}`"
+            ))?;
+
+        verification_method
+            .data()
+            .public_key_jwk()
+            .ok_or_else(|| anyhow!("Failed to resolve public key for DID URL: `{did_url}`"))
+            .cloned()
     }
 }
 

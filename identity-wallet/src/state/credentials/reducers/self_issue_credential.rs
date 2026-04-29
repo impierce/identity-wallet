@@ -32,14 +32,21 @@ impl JwsSigner for SubjectWrapper {
 
     // FIX THIS: jwt::encode?
     async fn sign(&self, header: &JsonObject, payload: &JsonObject) -> Result<Vec<u8>, Self::Error> {
+        let algorithm = header
+            .get("alg")
+            .and_then(|alg| alg.as_str())
+            .ok_or(AppError::Error("Missing `alg` in JWT header".to_string()))?
+            .parse::<Algorithm>()
+            .map_err(|_| AppError::Error("Unsupported algorithm in JWT header".to_string()))?;
+
         let encoded_header = URL_SAFE_NO_PAD.encode(serde_json::to_vec(header).unwrap());
         let encoded_payload = URL_SAFE_NO_PAD.encode(serde_json::to_vec(payload).unwrap());
 
         let message = format!("{}.{}", encoded_header, encoded_payload);
 
-        let proof_value = Sign::sign(&*self.subject, &message, &self.preferred_did_method, Algorithm::EdDSA)
+        let proof_value = Sign::sign(&*self.subject, &message, &self.preferred_did_method, algorithm)
             .await
-            .map_err(|e| AppError::Error(format!("Failed to sign JWT for self-issued sd-jwt: {}", e)))?;
+            .map_err(|e| AppError::Error(format!("Failed to sign JWT for sd-jwt: {}", e)))?;
 
         let signature = URL_SAFE_NO_PAD.encode(proof_value.as_slice());
         let message = [message, signature].join(".");

@@ -41,7 +41,7 @@ use identity_credential::{credential::Jwt, presentation::Presentation};
 use identity_iota::core::Url;
 use jsonwebtoken::Algorithm;
 use jsonwebtoken::Header;
-use sd_jwt::KeyBindingJwtBuilder;
+use sd_jwt::{KeyBindingJwtBuilder, RequiredKeyBinding};
 use serde_json::Value;
 use std::sync::Arc;
 
@@ -383,11 +383,24 @@ async fn get_vp_token(
                     preferred_did_method: did_method.to_string(),
                 };
 
+                let Some(RequiredKeyBinding::Kid(cnf_kid)) = sd_jwt_vc.claims().cnf.as_ref() else {
+                    return Err(AppError::Error("Unsupported `cnf` claim in SD-JWT VC".to_string()));
+                };
+
+                let cnf_jwk = subject_manager
+                    .resolve_public_key(cnf_kid)
+                    .await
+                    .map_err(|e| AppError::Error(format!("Failed to resolve `cnf` key from DID URL: {e}")))?;
+
+                let algorithm = cnf_jwk
+                    .alg()
+                    .ok_or_else(|| AppError::Error("JWK missing `alg` parameter".to_string()))?;
+
                 let key_binding_jwt = KeyBindingJwtBuilder::new()
                     .iat(Utc::now().timestamp())
                     .aud(verifier_audience.to_string())
                     .nonce(required_nonce.to_string())
-                    .finish(&sd_jwt_vc, &Sha256Hasher::new(), "RS256", &subject_wrapper)
+                    .finish(&sd_jwt_vc, &Sha256Hasher::new(), algorithm, &subject_wrapper)
                     .await
                     .map_err(|e| AppError::Error(format!("Failed to build KeyBindingJwt: {e}")))?;
 
