@@ -6,11 +6,13 @@ members = ["identity-wallet", "unime/src-tauri"]
 tauri = { version = "2.9.2", features = ["protocol-asset", "rustls-tls"] }
 tauri-build = "2.5.1"
 
-did_manager = { git = "https://github.com/impierce/did-manager", tag = "v1.0.0-beta.8" }
+# DO NOT MERGE: update rev once https://github.com/impierce/did-manager/pull/46 is merged.
+did_manager = { git = "https://github.com/impierce/did-manager", rev = "be1f419" }
 jsonwebtoken = "9.3"
 log = "^0.4"
 oauth_tsl = { git = "https://github.com/impierce/oauth-token-status-list", rev = "df371b9" }
-oid4vc = { git = "https://github.com/impierce/openid4vc", rev = "dc2c388" }
+# DO NOT MERGE: update rev once https://github.com/impierce/openid4vc/pull/125 is merged.
+oid4vc = { git = "https://github.com/impierce/openid4vc", rev = "e0d7f48" }
 rand = "0.8"
 rustls = { version = "0.23", features = ["aws-lc-rs"] }
 rustls-platform-verifier = { version = "0.6" }
