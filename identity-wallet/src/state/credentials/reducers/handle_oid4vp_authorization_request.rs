@@ -20,7 +20,7 @@ use chrono::{Duration, Utc};
 use identity_core::common::Object as IotaObject;
 use identity_credential::sd_jwt_vc::SdJwtVc;
 use identity_iota::did::CoreDID;
-use log::info;
+use log::{info, warn};
 use oid4vc::oid4vc_core::types::string_or_object::StringOrObject;
 use oid4vc::oid4vc_core::{
     authorization_request::{AuthorizationRequest, Object},
@@ -128,9 +128,11 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
                     };
 
                     let Some(object) = credential_data.as_object() else {
+                        warn!("Credential data is not a JSON object: {credential_data}");
                         continue;
                     };
                     let Ok(presentations) = DecodedPresentations::try_new(vec![object.clone()]) else {
+                        warn!("Failed to create DecodedPresentations for credential data: {credential_data}");
                         continue;
                     };
                     let credential_query_satisfied = oid4vc::oid4vp::dcql_evaluation::evaluate_credential_query(
