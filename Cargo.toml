@@ -39,7 +39,7 @@ sd-jwt = { git = "https://github.com/impierce/sd-jwt-payload", rev = "f28789a", 
 
 [workspace.package]
 name = "unime"
-version = "0.13.0"
+version = "0.13.2"
 description = "Identity Wallet for people to manage Decentralized Identities and Verifiable Credentials"
 homepage = "https://www.impierce.com/"
 authors = ["Impierce Technologies"]

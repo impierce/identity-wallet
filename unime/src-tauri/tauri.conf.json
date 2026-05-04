@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "UniMe",
-  "version": "0.13.0",
+  "version": "0.13.2",
   "identifier": "com.impierce.identity-wallet",
   "app": {
     "security": {
@@ -60,10 +60,11 @@
       "mobile": [
         { "scheme": [ "unime" ] },
         { "scheme": [ "openid" ] },
+        { "scheme": [ "openid4vp" ] },
         { "scheme": [ "openid-credential-offer" ] }
       ],
       "desktop": {
-        "schemes": ["unime", "openid", "openid-credential-offer"]
+        "schemes": ["unime", "openid", "openid4vp", "openid-credential-offer"]
       }
     }
   }
