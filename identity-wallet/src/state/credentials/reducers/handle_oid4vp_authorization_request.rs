@@ -20,20 +20,21 @@ use chrono::{Duration, Utc};
 use identity_core::common::Object as IotaObject;
 use identity_credential::sd_jwt_vc::SdJwtVc;
 use identity_iota::did::CoreDID;
-use log::info;
+use log::{info, warn};
+use oid4vc::oid4vc_core::types::string_or_object::StringOrObject;
 use oid4vc::oid4vc_core::{
     authorization_request::{AuthorizationRequest, Object},
     client_metadata::ClientMetadataResource,
 };
 use oid4vc::oid4vc_core::{jwt, Sign, Subject as _};
 use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
+use oid4vc::oid4vp::token::vp_token::Presentations;
+use oid4vc::oid4vp::token::vp_token_validator::DecodedPresentations;
 use oid4vc::oid4vp::{
     dcql::dcql_query::{CredentialQuery, Format},
     oid4vp::OID4VP,
     token::{
-        verifiable_presentation_jwt::VerifiablePresentationJwt,
-        vp_token::{PresentationFormat, VpToken},
-        vp_token_builder::VpTokenBuilder,
+        verifiable_presentation_jwt::VerifiablePresentationJwt, vp_token::VpToken, vp_token_builder::VpTokenBuilder,
     },
 };
 
@@ -126,9 +127,17 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
                             .unwrap_or_default()
                     };
 
+                    let Some(object) = credential_data.as_object() else {
+                        warn!("Credential data is not a JSON object: {credential_data}");
+                        continue;
+                    };
+                    let Ok(presentations) = DecodedPresentations::try_new(vec![object.clone()]) else {
+                        warn!("Failed to create DecodedPresentations for credential data: {credential_data}");
+                        continue;
+                    };
                     let credential_query_satisfied = oid4vc::oid4vp::dcql_evaluation::evaluate_credential_query(
                         requested_credential_query,
-                        &credential_data,
+                        &presentations,
                     );
 
                     if credential_query_satisfied {
@@ -367,7 +376,7 @@ async fn get_vp_token(
                 .await
                 .map_err(|e| AppError::Error(format!("Failed to sign VP JWT: {e}")))?;
 
-                PresentationFormat::JwtVcJson(signed_vc_presentation_jwt_string)
+                StringOrObject::from(signed_vc_presentation_jwt_string)
             }
             // TODO: Support `vc+sd-jwt` format
             Format::DcSdJwt => {
@@ -412,14 +421,17 @@ async fn get_vp_token(
 
                 sd_jwt_vc.attach_key_binding_jwt(key_binding_jwt);
 
-                PresentationFormat::DcSdJwt(sd_jwt_vc.to_string())
+                StringOrObject::from(sd_jwt_vc.to_string())
             }
             _ => {
                 return Err(AppError::InvalidCredentialFormatError);
             }
         };
 
-        builder = builder.add_presentation(credential_query_id, presentation_format_item);
+        let presentations = Presentations::try_new(vec![presentation_format_item])
+            .map_err(|e| AppError::Error(format!("Failed to create presentations: {e}")))?;
+
+        builder = builder.add_presentations(credential_query_id, presentations);
     }
 
     // Build and validate the VP token
