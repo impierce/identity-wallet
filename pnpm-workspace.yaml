@@ -1,2 +1,4 @@
 packages:
   - 'unime'
+allowBuilds:
+  esbuild: true
