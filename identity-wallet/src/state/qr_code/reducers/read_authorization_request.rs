@@ -21,7 +21,7 @@ use serde_json::Value;
 
 use identity_credential::sd_jwt_vc::SdJwtVc;
 use log::{debug, info, warn};
-use oid4vc::oid4vp::oid4vp::OID4VP;
+use oid4vc::oid4vp::{oid4vp::OID4VP, token::vp_token_validator::DecodedPresentations};
 use oid4vc::siopv2::siopv2::SIOPv2;
 use oid4vc::{
     oid4vc_core::authorization_request::{AuthorizationRequest, Object},
@@ -204,8 +204,10 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                                 .unwrap_or_default()
                         };
 
-                        let credential_query_satisfied =
-                            evaluate_credential_query(credential_query_from_request, &credential_data);
+                        let credential_query_satisfied = evaluate_credential_query(
+                            credential_query_from_request,
+                            &DecodedPresentations::try_new(vec![credential_data.as_object()?.clone()]).ok()?,
+                        );
                         credential_query_satisfied.then_some(verifiable_credential_record.display_credential.id.clone())
                     })
                 })

@@ -171,20 +171,23 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                     let code_challenge = pkce::code_challenge(&code_verifier);
 
                     let authorization_details: Vec<AuthorizationDetailsObject> = credential_configurations_supported
-                        .iter()
-                        .map(
-                            |(credential_configuration_id, credential_configuration)| AuthorizationDetailsObject {
-                                r#type: OpenidCredential::Type,
-                                locations: None,
-                                credential_configuration_id: credential_configuration_id.clone(),
-                                credential_identifiers: None,
-                                claims: credential_configuration
-                                    .credential_metadata
-                                    .as_ref()
-                                    .and_then(|metadata| metadata.claims.as_ref())
-                                    .map(|claims| claims.iter().map(|claim| claim.clone().into()).collect()),
-                            },
-                        )
+                        .keys()
+                        .map(|credential_configuration_id| AuthorizationDetailsObject {
+                            r#type: OpenidCredential::Type,
+                            locations: None,
+                            credential_configuration_id: credential_configuration_id.clone(),
+                            credential_identifiers: None,
+                            // Note: Technically, the Wallet can make use of the `claims` parameter to communicate
+                            // to the Authorization Server that it requires certain claims to be included in the to
+                            // be issued credential (see https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html#appendix-B.1-3.2).
+                            // However, in practice at this point, it is unlikely that there are any Authorization
+                            // Servers that support this. Since larger PAR requests (that inlcude the `claims`
+                            // property) may trigger undefined server-side behaviour we choose to omit the `claims`
+                            // property for now until there is a clear use case and support for it.
+                            // In general, the actual use case of the `mandatory` property in the VCI metadata is
+                            // questioned as can be observed in this (inactive) issue: https://github.com/openid/OpenID4VCI/issues/433
+                            claims: None,
+                        })
                         .collect();
 
                     let wallet_state = Uuid::new_v4().to_string();
