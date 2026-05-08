@@ -21,7 +21,7 @@ use identity_core::common::Object as IotaObject;
 use identity_credential::sd_jwt_vc::SdJwtVc;
 use identity_iota::credential::{EnvelopedVc, VcDataUrl};
 use identity_iota::did::CoreDID;
-use log::info;
+use log::{info, warn};
 use oid4vc::oid4vc_core::types::string_or_object::StringOrObject;
 use oid4vc::oid4vc_core::{
     authorization_request::{AuthorizationRequest, Object},
@@ -398,8 +398,7 @@ async fn get_vp_token(
                 .await
                 .map_err(|e| AppError::Error(format!("Failed to sign VP JWT: {e}")))?;
 
-                Presentations::try_new(vec![StringOrObject::from(signed_vc_presentation_jwt_string)])
-                    .map_err(|e| AppError::Error(format!("Failed to create Presentations: {e}")))?
+                StringOrObject::from(signed_vc_presentation_jwt_string)
             }
             Format::DcSdJwt => {
                 let sd_jwt_vc = vc_value
@@ -443,8 +442,7 @@ async fn get_vp_token(
 
                 sd_jwt_vc.attach_key_binding_jwt(key_binding_jwt);
 
-                Presentations::try_new(vec![StringOrObject::from(sd_jwt_vc.to_string())])
-                    .map_err(|e| AppError::Error(format!("Failed to create Presentations: {e}")))?
+                StringOrObject::from(sd_jwt_vc.to_string())
             }
             Format::VcSdJwt => {
                 let vcdm2_sd_jwt = vc_value
@@ -502,15 +500,17 @@ async fn get_vp_token(
                         .await
                         .map_err(|e| AppError::Error(format!("Failed to sign VP JWT: {e}")))?;
 
-                Presentations::try_new(vec![StringOrObject::from(signed_vcdm2_sd_jwt_presentation_jwt_string)])
-                    .map_err(|e| AppError::Error(format!("Failed to create Presentations: {e}")))?
+                StringOrObject::from(signed_vcdm2_sd_jwt_presentation_jwt_string)
             }
             _ => {
                 return Err(AppError::InvalidCredentialFormatError);
             }
         };
 
-        builder = builder.add_presentations(credential_query_id, presentation_format_item);
+        let presentations = Presentations::try_new(vec![presentation_format_item])
+            .map_err(|e| AppError::Error(format!("Failed to create presentations: {e}")))?;
+
+        builder = builder.add_presentations(credential_query_id, presentations);
     }
 
     // Build and validate the VP token
