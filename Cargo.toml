@@ -20,19 +20,6 @@ tempfile = "3.5.0"
 tokio = { version = "1.46", features = ["macros"] }
 wiremock = "0.5"
 
-# TODO: remove these patches once these changes are merged: https://github.com/iotaledger/identity/compare/v1.9.1-beta.1...impierce:identity.rs:fix/issues?expand=1
-[patch.'https://github.com/iotaledger/identity']
-identity_core = { git = "https://github.com/impierce/identity.rs", rev = "0422797b" }
-identity_credential = { git = "https://github.com/impierce/identity.rs", rev = "0422797b" }
-identity_did = { git = "https://github.com/impierce/identity.rs", rev = "0422797b" }
-identity_document = { git = "https://github.com/impierce/identity.rs", rev = "0422797b" }
-identity_iota = { git = "https://github.com/impierce/identity.rs", rev = "0422797b" }
-identity_jose = { git = "https://github.com/impierce/identity.rs", rev = "0422797b" }
-identity_storage = { git = "https://github.com/impierce/identity.rs", rev = "0422797b" }
-identity_verification = { git = "https://github.com/impierce/identity.rs", rev = "0422797b" }
-identity_ecdsa_verifier = { git = "https://github.com/impierce/identity.rs", rev = "0422797b" }
-identity_eddsa_verifier = { git = "https://github.com/impierce/identity.rs", rev = "0422797b" }
-
 [patch.crates-io]
 # We need this patch because it makes the `Hasher` trait `Send` and `Sync`. See: https://github.com/iotaledger/sd-jwt-payload/compare/main...impierce:sd-jwt-payload:fix/hasher-send-sync
 sd-jwt = { git = "https://github.com/impierce/sd-jwt-payload", rev = "f28789a", package = "sd-jwt-payload" }

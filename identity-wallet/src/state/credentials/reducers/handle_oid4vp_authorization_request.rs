@@ -21,7 +21,7 @@ use identity_core::common::Object as IotaObject;
 use identity_credential::sd_jwt_vc::SdJwtVc;
 use identity_iota::credential::{EnvelopedVc, VcDataUrl};
 use identity_iota::did::CoreDID;
-use log::{info, warn};
+use log::info;
 use oid4vc::oid4vc_core::types::string_or_object::StringOrObject;
 use oid4vc::oid4vc_core::{
     authorization_request::{AuthorizationRequest, Object},
