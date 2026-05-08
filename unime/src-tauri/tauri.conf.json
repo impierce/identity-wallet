@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "UniMe",
-  "version": "0.13.2",
+  "version": "0.13.3",
   "identifier": "com.impierce.identity-wallet",
   "app": {
     "security": {
