@@ -200,6 +200,15 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
 
                     info!("authorization server metadata: {authorization_server_metadata:?}");
 
+                    // TODO: here we need to add `interaction_types_supported`
+                    let interaction_types_supported = if let Some(_) = authorization_server_metadata.interactive_authorization_endpoint {
+                        Some(vec!["urn:openid:dcp:iae:openid4vp_presentation".to_string()])
+                    }
+                    else {
+                        None
+                    };
+
+                    // TODO
                     let par_response = wallet
                         .get_pushed_authorization_response(
                             authorization_server_metadata
@@ -221,6 +230,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                                 .clone(),
                             Some(code_challenge),
                             Some(CodeChallengeMethod::S256),
+                            interaction_types_supported
                         )
                         .await
                         .map_err(|err| {
@@ -229,6 +239,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
 
                     info!("par_response: {:?}", par_response);
 
+                    // Todo: enter hardcoded PAR response here for testing
                     let mut authorization_endpoint = authorization_server_metadata
                         .authorization_endpoint
                         .ok_or(AppError::Error(

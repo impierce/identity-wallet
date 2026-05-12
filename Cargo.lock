@@ -9242,7 +9242,6 @@ dependencies = [
 [[package]]
 name = "oid4vc"
 version = "0.1.0"
-source = "git+https://github.com/impierce/openid4vc?rev=a9dd71a#a9dd71ab8baa5fff5368c04384a75fc48c1678b4"
 dependencies = [
  "oid4vc-core",
  "oid4vc-manager",
@@ -9254,7 +9253,6 @@ dependencies = [
 [[package]]
 name = "oid4vc-core"
 version = "0.1.0"
-source = "git+https://github.com/impierce/openid4vc?rev=a9dd71a#a9dd71ab8baa5fff5368c04384a75fc48c1678b4"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -9286,7 +9284,6 @@ dependencies = [
 [[package]]
 name = "oid4vc-manager"
 version = "0.1.0"
-source = "git+https://github.com/impierce/openid4vc?rev=a9dd71a#a9dd71ab8baa5fff5368c04384a75fc48c1678b4"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -9319,7 +9316,6 @@ dependencies = [
 [[package]]
 name = "oid4vci"
 version = "0.1.0"
-source = "git+https://github.com/impierce/openid4vc?rev=a9dd71a#a9dd71ab8baa5fff5368c04384a75fc48c1678b4"
 dependencies = [
  "anyhow",
  "chrono",
@@ -9347,7 +9343,6 @@ dependencies = [
 [[package]]
 name = "oid4vp"
 version = "0.1.0"
-source = "git+https://github.com/impierce/openid4vc?rev=a9dd71a#a9dd71ab8baa5fff5368c04384a75fc48c1678b4"
 dependencies = [
  "anyhow",
  "chrono",
@@ -12403,7 +12398,6 @@ dependencies = [
 [[package]]
 name = "siopv2"
 version = "0.1.0"
-source = "git+https://github.com/impierce/openid4vc?rev=a9dd71a#a9dd71ab8baa5fff5368c04384a75fc48c1678b4"
 dependencies = [
  "anyhow",
  "async-trait",

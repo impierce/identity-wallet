@@ -130,6 +130,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             .await
             .map_err(GetAuthorizationServerMetadataError)?;
 
+        // TODO: After receiving this metadata is it then clear when we need to initiate the IAE?
         info!("authorization server metadata: {:?}", authorization_server_metadata);
 
         let token_request = if is_pre_authorized {

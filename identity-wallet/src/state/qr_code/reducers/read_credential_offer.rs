@@ -17,6 +17,7 @@ use oid4vc::oid4vci::{
     credential_offer::{CredentialOffer, CredentialOfferParameters},
 };
 
+// TODO: would the credential offer already be different or does the divergence only happen when clicking accept in UniMe?
 pub async fn read_credential_offer(state: AppState, action: Action) -> Result<AppState, AppError> {
     info!("read_credential_offer");
 
