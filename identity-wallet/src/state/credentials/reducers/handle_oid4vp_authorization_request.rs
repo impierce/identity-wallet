@@ -94,7 +94,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
                         let sd_jwt_vc_string = verifiable_credential_record
                             .verifiable_credential
                             .as_str()
-                            .ok_or(AppError::InvalidCredentialFormatError)?
+                            .ok_or(AppError::InvalidCredentialFormatError("Failed to get SD-JWT VC as string from Verifiable Credential Record".to_string()))?
                             .to_string();
 
                         let sd_jwt_vc = sd_jwt_vc_string
@@ -331,7 +331,7 @@ async fn get_vp_token(
             Format::JwtVcJson => {
                 let raw_vc_jwt_string = vc_value
                     .as_str()
-                    .ok_or(AppError::InvalidCredentialFormatError)?
+                    .ok_or(AppError::InvalidCredentialFormatError("Failed to get VC JWT as string from Verifiable Credential Record".to_string()))?
                     .to_string();
 
                 let vc_jwt: Jwt = raw_vc_jwt_string.into();
@@ -382,7 +382,7 @@ async fn get_vp_token(
             Format::DcSdJwt => {
                 let sd_jwt_vc = vc_value
                     .as_str()
-                    .ok_or(AppError::InvalidCredentialFormatError)?
+                    .ok_or(AppError::InvalidCredentialFormatError("Failed to get SD-JWT VC as string from Verifiable Credential Record".to_string()))?
                     .to_string()
                     .parse::<SdJwtVc>()
                     .map_err(|err| AppError::Error(format!("Failed to parse SD-JWT VC: {err}")))?;
@@ -424,7 +424,7 @@ async fn get_vp_token(
                 StringOrObject::from(sd_jwt_vc.to_string())
             }
             _ => {
-                return Err(AppError::InvalidCredentialFormatError);
+                return Err(AppError::InvalidCredentialFormatError("Unsupported credential format".to_string()));
             }
         };
 

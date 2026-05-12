@@ -114,13 +114,13 @@ pub async fn validate_jwt_vc_json(credential_jwt: &str, identity_manager: &Ident
     validation.required_spec_claims.clear();
 
     let token_data = decode::<Value>(credential_jwt, &decoding_key, &validation)
-        .map_err(|_| AppError::InvalidCredentialFormatError)?;
+        .map_err(|err| AppError::InvalidCredentialFormatError(format!("Failed to decode JWT: {}", err)))?;
 
-    token_data
+    Ok(token_data
         .claims
         .get("vc")
-        .ok_or(AppError::InvalidCredentialFormatError)
-        .cloned()
+        .ok_or(AppError::InvalidCredentialFormatError("Missing 'vc' claim in JWT".to_string()))?
+        .clone())
 }
 
 /// Validate supported credential types against their corresponding JSON Schema.
@@ -132,7 +132,7 @@ pub fn validate_credential_types(data: &Value) -> Result<(), AppError> {
     match type_field {
         Some(_type) if !_type.is_null() => {
             match serde_json::from_value::<StringOrArray>(_type.clone())
-                .map_err(|_| AppError::InvalidCredentialFormatError)?
+                .map_err(|err| AppError::InvalidCredentialFormatError(format!("Failed to parse 'type' field: {}", err)))?
             {
                 StringOrArray::String(credential_type) => Ok(credential_type.validate(data)?),
                 StringOrArray::Array(credential_type_array) => credential_type_array
@@ -142,6 +142,7 @@ pub fn validate_credential_types(data: &Value) -> Result<(), AppError> {
         }
         _ => {
             debug!("No credential type found, skipping validation");
+            // TODO something going wrong for the following offer: openid-credential-offer://?credential_offer_uri=https%3A%2F%2Frug.dev2.impierce.com%2Fopenid4vci%2Fcredential-offer%2F1
             Ok(())
         }
     }
@@ -218,13 +219,13 @@ enum CredentialTypeVersion {
 impl CredentialType {
     fn get_version(&self, data: &Value) -> Result<CredentialTypeVersion, AppError> {
         let context_array = serde_json::from_value::<Vec<String>>(data["@context"].clone())
-            .map_err(|_| AppError::InvalidCredentialFormatError)?;
+            .map_err(|err| AppError::InvalidCredentialFormatError(format!("Failed to parse '@context' field: {}", err)))?;
 
         match self {
             CredentialType::OpenBadgeCredential => {
                 match context_array
                     .get(1)
-                    .ok_or(AppError::InvalidCredentialFormatError)?
+                    .ok_or(AppError::InvalidCredentialFormatError("Missing mandatory '@context' element containing the OpenBadge v3 context".to_string()))?
                     .as_str()
                 {
                     context
@@ -233,18 +234,18 @@ impl CredentialType {
                     {
                         Ok(CredentialTypeVersion::OpenBadgeCredentialV3)
                     }
-                    _ => Err(AppError::InvalidCredentialFormatError),
+                    _ => Err(AppError::InvalidCredentialFormatError("Invalid '@context' element for OpenBadge v3 credential".to_string())),
                 }
             }
             CredentialType::VerifiableCredential => {
                 match context_array
                     .first()
-                    .ok_or(AppError::InvalidCredentialFormatError)?
+                    .ok_or(AppError::InvalidCredentialFormatError("Missing mandatory '@context' element for Verifiable Credential".to_string()))?
                     .as_str()
                 {
                     "https://www.w3.org/2018/credentials/v1" => Ok(CredentialTypeVersion::VerifiableCredentialV1_1),
                     "https://www.w3.org/ns/credentials/v2" => Ok(CredentialTypeVersion::VerifiableCredentialV2),
-                    _ => Err(AppError::InvalidCredentialFormatError),
+                    _ => Err(AppError::InvalidCredentialFormatError("Invalid '@context' element for Verifiable Credential".to_string())),
                 }
             }
             CredentialType::Unknown => {

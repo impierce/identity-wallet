@@ -217,12 +217,16 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
 
         let mut history_credentials = vec![];
 
+        info!("credential configuration ids: {credential_configuration_ids:?}");
         for credential_configuration_id in credential_configuration_ids {
             let credential_configuration = credential_configurations_supported
                 .get(&credential_configuration_id)
                 .ok_or(UnknownCredentialConfigurationIdError(
                     credential_configuration_id.clone(),
                 ))?;
+
+            info!("credential configuration id: {credential_configuration_id}");
+            info!("credential configuration: {credential_configuration:?}");
 
             // Get a nonce if the credential issuer metadata contains a nonce endpoint.
             let nonce = if let Some(nonce_endpoint) = &credential_issuer_metadata.nonce_endpoint {
@@ -262,6 +266,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                     ))
                 })?;
 
+            info!("credential_response: {credential_response:?}");
             let credential = match credential_response.credential {
                 CredentialResponseType::Immediate { credentials, .. } => {
                     serde_json::json!(
@@ -280,6 +285,8 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                     ))
                 }
             };
+
+            info!("credential: {credential:?}");
 
             // TODO: add validation for other credential formats.
             if credential_configuration.credential_format.format() == CredentialFormats::JwtVcJson(()) {
@@ -305,6 +312,8 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                 .map(|claims| claims.to_vec())
                 .unwrap_or_default();
 
+            // TODO: probably fails here
+            info!("Creating VerifiableCredentialRecord for credential with configuration id {credential_configuration_id} and credential format {:?}", credential_configuration.credential_format.format());
             let mut verifiable_credential_record = VerifiableCredentialRecord::try_new(
                 credential_configuration.credential_format.format(),
                 credential,

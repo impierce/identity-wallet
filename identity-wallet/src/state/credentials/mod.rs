@@ -112,10 +112,9 @@ impl VerifiableCredentialRecord {
                         .as_str()
                         .and_then(|verifiable_credential| verifiable_credential.parse::<SdJwtVc>().ok())
                         .ok_or(AppError::Error(
-                            "Failed to create a VerifiableCredentialRecord: provided verifiable credential is not a valid SD-JWT VC"
-                                .to_string(),
+                            format!("Failed to create a VerifiableCredentialRecord: provided verifiable credential is not a valid SD-JWT VC from: {}", verifiable_credential)
                         ))?;
-
+                    // hiero 
                     let id = Uuid::new_v4().to_string();
                     let issuance_date = sd_jwt_vc.claims().iat.map(|iat| iat.to_rfc3339()).unwrap_or_default();
 
@@ -151,7 +150,7 @@ impl VerifiableCredentialRecord {
                         .as_str()
                         .and_then(|verifiable_credential| verifiable_credential.parse::<SdJwt>().ok())
                         .ok_or(AppError::Error(
-                            "Failed to create a VerifiableCredentialRecord: provided verifiable credential is not a valid SD-JWT".to_string(),
+                            format!("Failed to create a VerifiableCredentialRecord: provided verifiable credential is not a valid SD-JWT from: {}", verifiable_credential)
                         ))?;
 
                     let id = Uuid::new_v4().to_string();

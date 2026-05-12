@@ -58,8 +58,8 @@ pub enum AppError {
     PresentationSubmissionError(#[source] anyhow::Error),
     #[error("Failed to parse DID")]
     DidParseError,
-    #[error("Invalid credential format")]
-    InvalidCredentialFormatError,
+    #[error("Invalid credential format: {0}")]
+    InvalidCredentialFormatError(String), // TODO: error too generic!
     #[error("Missing, invalid or unable to parse credential status format")]
     InvalidCredentialStatusFormatError,
     #[error("Failed to build verifiable presentation")]
