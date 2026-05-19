@@ -15,6 +15,13 @@
   {/if}
 {/snippet}
 
+{#snippet URLField(title: string, value: string | undefined)}
+  {#if value}
+    <h4 class="text-text-alt">{title}</h4>
+    <a href={value} class="overflow-x-auto">{value}</a>
+  {/if}
+{/snippet}
+
 <div class="flex flex-col gap-4">
   <!-- Collapsible Profile section -->
   {#if credentialSubject.familyName || credentialSubject.givenName || credentialSubject.dateOfBirth || credentialSubject.identifier}
@@ -113,7 +120,7 @@
   <CollapsibleWrapper defaultOpen={false}>
     <h2 class="text-lg font-bold" slot="title">Further information</h2>
     {#each hasClaim?.supplementaryDocument ?? [] as doc}
-      {@render TextField(doc?.title?.en, doc?.contentURL)}
+      {@render URLField(doc?.title?.en, doc?.contentURL)}
     {/each}
   </CollapsibleWrapper>
 </div>
