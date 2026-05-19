@@ -354,7 +354,10 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                 .insert(key, json!(verifiable_credential_record).to_string().as_bytes().to_vec())
                 .map_err(StrongholdInsertionError)?;
 
-            info!("Successfully received credential: `{:#?}`", verifiable_credential_record);
+            info!(
+                "Successfully received credential: `{:#?}`",
+                verifiable_credential_record
+            );
 
             // Add history event
             history_credentials.push(HistoryCredential::from_credential(&verifiable_credential_record));
@@ -395,7 +398,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                 credentials: history_credentials,
             });
         }
-        
+
         drop(state_guard);
         return Ok(AppState {
             connections,
