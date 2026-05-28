@@ -212,7 +212,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                             UNIME_CLIENT_ID,
                             UNIME_REDIRECT_URI.parse().unwrap(),
                             wallet_state.clone(),
-                            authorization_details,
+                            Some(authorization_details),
                             authorization_code
                                 .issuer_state
                                 .ok_or(AppError::Error(
