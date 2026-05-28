@@ -3,10 +3,7 @@ use crate::{
     state::{
         actions::{listen, Action},
         connections::reducers::handle_siopv2_authorization_request::get_siopv2_client_name_and_logo_uri,
-        core_utils::{
-            helpers::{download_logo, get_unverified_jwt_claims},
-            ConnectionRequest, CoreUtils,
-        },
+        core_utils::{helpers::download_logo, ConnectionRequest, CoreUtils},
         credentials::reducers::handle_oid4vp_authorization_request::{
             get_oid4vp_client_name_and_logo_uri, OID4VPClientMetadata,
         },
@@ -21,12 +18,15 @@ use serde_json::Value;
 
 use identity_credential::sd_jwt_vc::SdJwtVc;
 use log::{debug, info, warn};
-use oid4vc::oid4vp::{oid4vp::OID4VP, token::vp_token_validator::DecodedPresentations};
 use oid4vc::siopv2::siopv2::SIOPv2;
 use oid4vc::{
     oid4vc_core::authorization_request::{AuthorizationRequest, Object},
     oid4vci::credential_format_profiles::CredentialFormats,
     oid4vp::dcql_evaluation::evaluate_credential_query,
+};
+use oid4vc::{
+    oid4vc_core::utils::did::get_unverified_jwt_claims,
+    oid4vp::{oid4vp::OID4VP, token::vp_token_validator::DecodedPresentations},
 };
 
 // Reads the request url from the payload and validates it.
@@ -243,6 +243,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                         client_name,
                         logo_uri,
                         options: uuids,
+                        is_interactive: false,
                     }),
                     ..state
                 });

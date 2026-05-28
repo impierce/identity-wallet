@@ -226,6 +226,7 @@ async fn share_credentials(state: AppState) -> Result<AppState, AppError> {
         client_name: _,
         logo_uri: _,
         options,
+        is_interactive: _,
     }) = &state.current_user_prompt
     {
         let credential_uuids: Vec<Uuid> = options
@@ -233,7 +234,10 @@ async fn share_credentials(state: AppState) -> Result<AppState, AppError> {
             .map(|uuid_str| Uuid::parse_str(uuid_str).unwrap())
             .collect();
 
-        let cr_selected = CredentialsSelected { credential_uuids };
+        let cr_selected = CredentialsSelected {
+            credential_uuids,
+            is_interactive: false,
+        };
 
         command::reduce(state, Arc::new(cr_selected)).await
     } else {

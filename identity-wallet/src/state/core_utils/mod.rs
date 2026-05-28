@@ -13,6 +13,7 @@ use rustls::{
 };
 #[cfg(target_os = "android")]
 use rustls_platform_verifier::BuilderVerifierExt;
+use url::Url;
 
 use crate::command::Runtime;
 use crate::stronghold::StrongholdManager;
@@ -106,6 +107,12 @@ pub async fn tls_config() -> anyhow::Result<rustls::ClientConfig> {
     Ok(config)
 }
 
+#[derive(Clone, Debug)]
+pub struct ActiveCredentialOffer {
+    pub credential_offer: CredentialOfferParameters,
+    pub logo_uri: Option<String>,
+}
+
 /// CoreUtils is a struct that contains all the utils that only the rustside needs to perform its tasks.
 #[derive(Clone, Default, Debug)]
 pub struct CoreUtils {
@@ -115,9 +122,11 @@ pub struct CoreUtils {
     // TODO: These 'active_' fields should either be part of `oid4vc-manager`, or the `IdentityManager` struct.
     pub active_connection_request: Option<ConnectionRequest>,
     pub active_credential_configuration_ids: Option<Vec<String>>,
-    pub active_credential_offer: Option<CredentialOfferParameters>,
+    pub active_credential_offer: Option<ActiveCredentialOffer>,
     pub active_code_verifier: Option<Vec<u8>>,
     pub active_wallet_state: Option<String>,
+    pub active_auth_session: Option<String>,
+    pub active_interactive_authorization_endpoint: Option<Url>,
 }
 
 /// Managers contains both the stronghold manager and the identity manager needed to perform operations on connections & credentials.

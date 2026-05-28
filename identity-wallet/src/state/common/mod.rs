@@ -22,6 +22,7 @@ mod tests {
             client_name: "Impierce Technologies".to_string(),
             logo_uri: Some("logo.png".to_string()),
             options: vec![],
+            is_interactive: false,
         });
 
         let mut app_state = AppState {

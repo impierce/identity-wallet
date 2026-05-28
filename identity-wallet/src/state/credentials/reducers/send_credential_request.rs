@@ -1,5 +1,11 @@
 use crate::oid4vci::authorization_request::CodeChallengeMethod;
+use crate::state::core_utils::helpers::download_logo;
+use crate::state::core_utils::{ActiveCredentialOffer, ConnectionRequest};
+use crate::state::credentials::reducers::handle_oid4vp_authorization_request::{
+    get_oid4vp_client_name_and_logo_uri, OID4VPClientMetadata,
+};
 use crate::state::credentials::reducers::send_token_request::send_token_request;
+use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{UNIME_CLIENT_ID, UNIME_REDIRECT_URI};
 use crate::{
     error::AppError::{self, *},
@@ -12,12 +18,21 @@ use crate::{
         AppState,
     },
 };
-use log::info;
+use identity_credential::sd_jwt_vc::SdJwtVc;
+use log::{debug, info, warn};
+use oid4vc::oid4vc_core::authorization_request::{AuthorizationRequest, Object};
+use oid4vc::oid4vc_core::utils::did::get_unverified_jwt_claims;
+use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
+use oid4vc::oid4vci::InteractionType;
 use oid4vc::oid4vci::{
     authorization_details::{AuthorizationDetailsObject, OpenidCredential},
     credential_offer::Grants,
     pkce,
 };
+use oid4vc::oid4vp::dcql_evaluation::evaluate_credential_query;
+use oid4vc::oid4vp::oid4vp::OID4VP;
+use oid4vc::oid4vp::token::vp_token_validator::DecodedPresentations;
+use sd_jwt::Sha256Hasher;
 use tauri_plugin_opener::OpenerExt;
 use uuid::Uuid;
 
@@ -30,6 +45,10 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
         let credential_configuration_ids = selected_offer.credential_configuration_ids;
 
         let state_guard = state.core_utils.managers.lock().await;
+        let stronghold_manager = state_guard
+            .stronghold_manager
+            .as_ref()
+            .ok_or(MissingManagerError("stronghold"))?;
 
         let wallet = &state_guard
             .identity_manager
@@ -44,7 +63,10 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
 
         info!("current_user_prompt: {current_user_prompt:?}");
 
-        let credential_offer = state
+        let ActiveCredentialOffer {
+            credential_offer,
+            logo_uri,
+        } = state
             .core_utils
             .active_credential_offer
             .ok_or(AppError::Error("Missing active credential offer".to_string()))?;
@@ -121,6 +143,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                     let action = CodeReceived {
                         code: pre_authorized_code.pre_authorized_code.clone(),
                         is_pre_authorized: true,
+                        is_interactive: false,
                         state: None,
                         tx_code,
                     };
@@ -129,7 +152,10 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                     return send_token_request(
                         AppState {
                             core_utils: CoreUtils {
-                                active_credential_offer: Some(credential_offer),
+                                active_credential_offer: Some(ActiveCredentialOffer {
+                                    credential_offer,
+                                    logo_uri,
+                                }),
                                 active_credential_configuration_ids: Some(credential_configuration_ids),
                                 ..state.core_utils
                             },
@@ -198,71 +224,220 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                         .await
                         .map_err(GetAuthorizationServerMetadataError)?;
 
-                    info!("authorization server metadata: {authorization_server_metadata:?}");
+                    if let Some(interactive_authorization_endpoint) =
+                        &authorization_server_metadata.interactive_authorization_endpoint
+                    {
+                        let iae_response = wallet
+                            .send_interactive_authorization_request(
+                                interactive_authorization_endpoint.clone(),
+                                UNIME_CLIENT_ID,
+                                Some(UNIME_REDIRECT_URI.parse().unwrap()),
+                                Some(wallet_state.clone()),
+                                (!authorization_details.is_empty()).then_some(authorization_details),
+                                Some(
+                                    authorization_code
+                                        .issuer_state
+                                        .ok_or(AppError::Error(
+                                            "Authorization Code Grant must contain an issuer state".to_string(),
+                                        ))?
+                                        .clone(),
+                                ),
+                                vec![InteractionType::OpenId4VpPresentation],
+                                Some(code_challenge),
+                                Some(CodeChallengeMethod::S256),
+                            )
+                            .await
+                            .map_err(|err| {
+                                AppError::Error(format!("Failed to get interactive authorization response: {}", err))
+                            })?;
 
-                    let par_response = wallet
-                        .get_pushed_authorization_response(
-                            authorization_server_metadata
-                                .pushed_authorization_request_endpoint
-                                .ok_or(AppError::Error(
-                                    "Authorization Server does not have a pushed authorization request endpoint"
-                                        .to_string(),
-                                ))?
-                                .clone(),
-                            UNIME_CLIENT_ID,
-                            UNIME_REDIRECT_URI.parse().unwrap(),
-                            wallet_state.clone(),
-                            authorization_details,
-                            authorization_code
-                                .issuer_state
-                                .ok_or(AppError::Error(
-                                    "Authorization Code Grant must contain an issuer state".to_string(),
-                                ))?
-                                .clone(),
-                            Some(code_challenge),
-                            Some(CodeChallengeMethod::S256),
-                        )
-                        .await
-                        .map_err(|err| {
-                            AppError::Error(format!("Failed to get pushed authorization response: {}", err))
-                        })?;
+                        info!("iae_response: {}", serde_json::to_string_pretty(&iae_response).unwrap());
 
-                    info!("par_response: {:?}", par_response);
+                        let oid4vp_authorization_request: AuthorizationRequest<Object<OID4VP>> =
+                            serde_json::from_value(iae_response.openid4vp_request.as_ref().unwrap().clone()).unwrap();
 
-                    let mut authorization_endpoint = authorization_server_metadata
-                        .authorization_endpoint
-                        .ok_or(AppError::Error(
-                            "Authorization Server does not have an authorization endpoint".to_string(),
-                        ))?
-                        .clone();
+                        let auth_session = iae_response.auth_session.clone();
 
-                    authorization_endpoint
-                        .query_pairs_mut()
-                        .append_pair("client_id", UNIME_CLIENT_ID)
-                        .append_pair("request_uri", &par_response.request_uri.to_string());
+                        let verifiable_credentials =
+                            stronghold_manager.values().map_err(StrongholdValuesError)?.unwrap();
+                        info!("verifiable credentials: {verifiable_credentials:?}");
 
-                    info!("Opening URL in browser: `{authorization_endpoint}`");
-                    let app_handle = state
-                        .core_utils
-                        .app_handle
-                        .clone()
-                        .ok_or(AppError::Error("Tauri app handle is not available".to_string()))?;
-                    app_handle
-                        .opener()
-                        .open_url(authorization_endpoint, None::<&str>)
-                        .map_err(|err| AppError::Error(format!("Failed to open URL in browser: {err}")))?;
+                        let dcql_query = &oid4vp_authorization_request.body.extension.dcql_query;
 
-                    drop(state_guard);
-                    return Ok(AppState {
-                        core_utils: CoreUtils {
-                            active_credential_offer: Some(credential_offer),
-                            active_credential_configuration_ids: Some(credential_configuration_ids),
-                            active_code_verifier: Some(code_verifier),
-                            active_wallet_state: Some(wallet_state),
-                            ..state.core_utils
-                        },
-                        ..state
-                    });
+                        let uuids: Vec<String> = dcql_query
+                            .credentials
+                            .iter()
+                            .filter_map(|credential_query_from_request| {
+                                verifiable_credentials.iter().find_map(|verifiable_credential_record| {
+                                    let credential_data: serde_json::Value = if verifiable_credential_record
+                                        .display_credential
+                                        .format
+                                        == CredentialFormats::DcSdJwt(())
+                                        || verifiable_credential_record.display_credential.format
+                                            == CredentialFormats::VcSdJwt(())
+                                    {
+                                        serde_json::json!(verifiable_credential_record
+                                            .verifiable_credential
+                                            .as_str()?
+                                            .parse::<SdJwtVc>()
+                                            .ok()?
+                                            .into_disclosed_object(&Sha256Hasher::new())
+                                            .ok()?)
+                                    } else if verifiable_credential_record.display_credential.format
+                                        == CredentialFormats::JwtVcJson(())
+                                    {
+                                        let full_jwt_payload = get_unverified_jwt_claims(
+                                            &verifiable_credential_record.verifiable_credential,
+                                        )
+                                        .unwrap_or_default();
+                                        // JWT_VC_JSON must be accessed from the vc values.
+                                        full_jwt_payload.get("vc").cloned().unwrap_or_else(|| {
+                                            debug!(
+                                                "JWT-VC-JSON is missing `vc` claims or is not a valid JSON value: {:?}",
+                                                full_jwt_payload
+                                            );
+                                            serde_json::json!({})
+                                        })
+                                    } else {
+                                        debug!(
+                                            "Unhandled credential format: {:?}",
+                                            verifiable_credential_record.display_credential.format
+                                        );
+                                        get_unverified_jwt_claims(&verifiable_credential_record.verifiable_credential)
+                                            .unwrap_or_default()
+                                    };
+
+                                    let credential_query_satisfied = evaluate_credential_query(
+                                        credential_query_from_request,
+                                        &DecodedPresentations::try_new(vec![credential_data.as_object()?.clone()])
+                                            .ok()?,
+                                    );
+                                    credential_query_satisfied
+                                        .then_some(verifiable_credential_record.display_credential.id.clone())
+                                })
+                            })
+                            .collect();
+
+                        info!("uuids of VCs that can fulfill the request: {uuids:?}");
+
+                        let OID4VPClientMetadata {
+                            client_name,
+                            logo_uri,
+                            connection_url: _,
+                            client_id: _,
+                        } = get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request);
+
+                        info!("client_name in credential_offer: {client_name:?}");
+                        info!("logo_uri in read_authorization_request: {logo_uri:?}");
+
+                        if let Some(logo_uri_str) = logo_uri.clone() {
+                            download_logo(&logo_uri_str).await;
+                        } else {
+                            warn!("No logo URI found");
+                        }
+
+                        // TODO: communicate when no credentials are available.
+                        if !uuids.is_empty() {
+                            drop(state_guard);
+
+                            return Ok(AppState {
+                                core_utils: CoreUtils {
+                                    active_credential_offer: Some(ActiveCredentialOffer {
+                                        credential_offer,
+                                        logo_uri: logo_uri.clone(),
+                                    }),
+                                    active_credential_configuration_ids: Some(credential_configuration_ids),
+                                    active_code_verifier: Some(code_verifier),
+                                    active_wallet_state: Some(wallet_state),
+                                    active_connection_request: Some(ConnectionRequest::OID4VP(
+                                        oid4vp_authorization_request.into(),
+                                    )),
+                                    active_auth_session: auth_session,
+                                    active_interactive_authorization_endpoint: Some(
+                                        interactive_authorization_endpoint.clone(),
+                                    ),
+
+                                    ..state.core_utils
+                                },
+                                current_user_prompt: Some(CurrentUserPrompt::ShareCredentials {
+                                    client_name,
+                                    logo_uri,
+                                    options: uuids,
+                                    is_interactive: true,
+                                }),
+                                ..state
+                            });
+                        } else {
+                            return Err(NoMatchingCredentialError);
+                        }
+                    } else {
+                        let par_response = wallet
+                            .get_pushed_authorization_response(
+                                authorization_server_metadata
+                                    .pushed_authorization_request_endpoint
+                                    .ok_or(AppError::Error(
+                                        "Authorization Server does not have a pushed authorization request endpoint"
+                                            .to_string(),
+                                    ))?
+                                    .clone(),
+                                UNIME_CLIENT_ID,
+                                UNIME_REDIRECT_URI.parse().unwrap(),
+                                wallet_state.clone(),
+                                (!authorization_details.is_empty()).then_some(authorization_details),
+                                authorization_code
+                                    .issuer_state
+                                    .ok_or(AppError::Error(
+                                        "Authorization Code Grant must contain an issuer state".to_string(),
+                                    ))?
+                                    .clone(),
+                                Some(code_challenge),
+                                Some(CodeChallengeMethod::S256),
+                            )
+                            .await
+                            .map_err(|err| {
+                                AppError::Error(format!("Failed to get pushed authorization response: {}", err))
+                            })?;
+
+                        info!("par_response: {:?}", par_response);
+
+                        let mut authorization_endpoint = authorization_server_metadata
+                            .authorization_endpoint
+                            .ok_or(AppError::Error(
+                                "Authorization Server does not have an authorization endpoint".to_string(),
+                            ))?
+                            .clone();
+
+                        authorization_endpoint
+                            .query_pairs_mut()
+                            .append_pair("client_id", UNIME_CLIENT_ID)
+                            .append_pair("request_uri", &par_response.request_uri.to_string());
+
+                        info!("Opening URL in browser: `{authorization_endpoint}`");
+                        let app_handle = state
+                            .core_utils
+                            .app_handle
+                            .clone()
+                            .ok_or(AppError::Error("Tauri app handle is not available".to_string()))?;
+                        app_handle
+                            .opener()
+                            .open_url(authorization_endpoint, None::<&str>)
+                            .map_err(|err| AppError::Error(format!("Failed to open URL in browser: {err}")))?;
+
+                        drop(state_guard);
+                        return Ok(AppState {
+                            core_utils: CoreUtils {
+                                active_credential_offer: Some(ActiveCredentialOffer {
+                                    credential_offer,
+                                    logo_uri,
+                                }),
+                                active_credential_configuration_ids: Some(credential_configuration_ids),
+                                active_code_verifier: Some(code_verifier),
+                                active_wallet_state: Some(wallet_state),
+                                ..state.core_utils
+                            },
+                            ..state
+                        });
+                    }
                 } else {
                     return Err(AppError::Error(
                         "Credential offer does not contain a supported grant".to_string(),

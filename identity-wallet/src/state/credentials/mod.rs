@@ -1,7 +1,7 @@
 pub mod actions;
 pub mod reducers;
 
-use super::{core_utils::helpers::get_unverified_jwt_claims, FeatTrait};
+use super::FeatTrait;
 use crate::{error::AppError, state::core_utils::DateUtils};
 use derivative::Derivative;
 use identity_credential::sd_jwt_vc::SdJwtVc;
@@ -11,7 +11,7 @@ use identity_iota::{
 };
 use oauth_tsl::status_list::StatusType;
 use oid4vc::{
-    oid4vc_core::claim_path_pointer::ClaimPathPointer,
+    oid4vc_core::{claim_path_pointer::ClaimPathPointer, utils::did::get_unverified_jwt_claims},
     oid4vci::{
         credential_format_profiles::CredentialFormats,
         credential_issuer::credential_configurations_supported::ClaimDescription,
@@ -187,7 +187,8 @@ impl VerifiableCredentialRecord {
                     (id, data, issuance_date, display_claims)
                 }
                 CredentialFormats::JwtVcJson(()) => {
-                    let credential_display = get_unverified_jwt_claims(&verifiable_credential)?
+                    let credential_display = get_unverified_jwt_claims(&verifiable_credential)
+                        .map_err(|e| AppError::Error(e.to_string()))?
                         .get("vc")
                         .cloned()
                         .ok_or(AppError::Error(
