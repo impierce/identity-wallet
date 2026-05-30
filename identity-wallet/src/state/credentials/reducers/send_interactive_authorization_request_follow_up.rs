@@ -127,6 +127,7 @@ pub async fn send_interactive_authorization_request_follow_up(
         let action = Arc::new(CodeReceived {
             code: code.to_string(),
             is_pre_authorized: false,
+            is_interactive: true,
             state: None,
             tx_code: None,
         });
