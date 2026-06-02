@@ -3,7 +3,7 @@ use crate::{
     state::{
         actions::{listen, Action},
         connections::reducers::handle_siopv2_authorization_request::get_siopv2_client_name_and_logo_uri,
-        core_utils::{helpers::download_logo, ConnectionRequest, CoreUtils},
+        core_utils::{helpers::download_logo, ActiveFlow, CoreUtils},
         credentials::reducers::handle_oid4vp_authorization_request::{
             get_oid4vp_client_name_and_logo_uri, OID4VPClientMetadata,
         },
@@ -145,7 +145,9 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
 
             return Ok(AppState {
                 core_utils: CoreUtils {
-                    active_connection_request: Some(ConnectionRequest::SIOPv2(siopv2_authorization_request.into())),
+                    active_flow: Some(ActiveFlow::Siopv2 {
+                        authorization_request: siopv2_authorization_request.clone().into(),
+                    }),
                     ..state.core_utils
                 },
                 current_user_prompt: Some(CurrentUserPrompt::AcceptConnection {
@@ -236,7 +238,10 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                 drop(state_guard);
                 return Ok(AppState {
                     core_utils: CoreUtils {
-                        active_connection_request: Some(ConnectionRequest::OID4VP(oid4vp_authorization_request.into())),
+                        active_flow: Some(ActiveFlow::Oid4vp {
+                            authorization_request: oid4vp_authorization_request.clone().into(),
+                            is_interactive: false,
+                        }),
                         ..state.core_utils
                     },
                     current_user_prompt: Some(CurrentUserPrompt::ShareCredentials {

@@ -4,7 +4,7 @@ use crate::{
     error::AppError::{self, *},
     state::{
         actions::{listen, Action},
-        core_utils::{helpers::download_logo, ActiveCredentialOffer, CoreUtils},
+        core_utils::{helpers::download_logo, ActiveFlow, CoreUtils, Oid4vciStage},
         qr_code::actions::qrcode_scanned::QrCodeScanned,
         user_prompt::CurrentUserPrompt,
         AppState,
@@ -129,7 +129,8 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
                 tx_code,
             }),
             core_utils: CoreUtils {
-                active_credential_offer: Some(ActiveCredentialOffer {
+                active_flow: Some(ActiveFlow::Oid4vciOffer {
+                    stage: Oid4vciStage::OfferReceived,
                     credential_offer,
                     logo_uri,
                 }),

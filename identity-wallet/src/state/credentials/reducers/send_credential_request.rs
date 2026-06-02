@@ -1,6 +1,6 @@
 use crate::oid4vci::authorization_request::CodeChallengeMethod;
 use crate::state::core_utils::helpers::download_logo;
-use crate::state::core_utils::{ActiveCredentialOffer, ConnectionRequest};
+use crate::state::core_utils::{ActiveFlow, Oid4vciStage};
 use crate::state::credentials::reducers::handle_oid4vp_authorization_request::{
     get_oid4vp_client_name_and_logo_uri, OID4VPClientMetadata,
 };
@@ -63,13 +63,16 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
 
         info!("current_user_prompt: {current_user_prompt:?}");
 
-        let ActiveCredentialOffer {
-            credential_offer,
-            logo_uri,
-        } = state
-            .core_utils
-            .active_credential_offer
-            .ok_or(AppError::Error("Missing active credential offer".to_string()))?;
+        let (credential_offer, logo_uri) = match state.core_utils.active_flow.clone() {
+            Some(ActiveFlow::Oid4vciOffer {
+                credential_offer,
+                logo_uri,
+                ..
+            }) => (credential_offer, logo_uri),
+            _ => {
+                return Err(AppError::Error("Missing active OID4VCI flow context".to_string()));
+            }
+        };
 
         // The credential offer contains a credential issuer url.
         let credential_issuer_url = credential_offer.credential_issuer.clone();
@@ -152,11 +155,11 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                     return send_token_request(
                         AppState {
                             core_utils: CoreUtils {
-                                active_credential_offer: Some(ActiveCredentialOffer {
+                                active_flow: Some(ActiveFlow::Oid4vciOffer {
+                                    stage: Oid4vciStage::PreAuthorized,
                                     credential_offer,
                                     logo_uri,
                                 }),
-                                active_credential_configuration_ids: Some(credential_configuration_ids),
                                 ..state.core_utils
                             },
                             ..state
@@ -342,21 +345,18 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
 
                             return Ok(AppState {
                                 core_utils: CoreUtils {
-                                    active_credential_offer: Some(ActiveCredentialOffer {
+                                    active_flow: Some(ActiveFlow::Oid4vciOffer {
+                                        stage: Oid4vciStage::InteractiveAuthorization {
+                                            code_verifier: code_verifier.clone(),
+                                            wallet_state: wallet_state.clone(),
+                                            authorization_request: oid4vp_authorization_request.clone().into(),
+                                            auth_session: auth_session.clone(),
+                                            interactive_authorization_endpoint: interactive_authorization_endpoint
+                                                .clone(),
+                                        },
                                         credential_offer,
                                         logo_uri: logo_uri.clone(),
                                     }),
-                                    active_credential_configuration_ids: Some(credential_configuration_ids),
-                                    active_code_verifier: Some(code_verifier),
-                                    active_wallet_state: Some(wallet_state),
-                                    active_connection_request: Some(ConnectionRequest::OID4VP(
-                                        oid4vp_authorization_request.into(),
-                                    )),
-                                    active_auth_session: auth_session,
-                                    active_interactive_authorization_endpoint: Some(
-                                        interactive_authorization_endpoint.clone(),
-                                    ),
-
                                     ..state.core_utils
                                 },
                                 current_user_prompt: Some(CurrentUserPrompt::ShareCredentials {
@@ -426,13 +426,14 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                         drop(state_guard);
                         return Ok(AppState {
                             core_utils: CoreUtils {
-                                active_credential_offer: Some(ActiveCredentialOffer {
+                                active_flow: Some(ActiveFlow::Oid4vciOffer {
+                                    stage: Oid4vciStage::AuthorizationCode {
+                                        code_verifier: code_verifier.clone(),
+                                        wallet_state: wallet_state.clone(),
+                                    },
                                     credential_offer,
                                     logo_uri,
                                 }),
-                                active_credential_configuration_ids: Some(credential_configuration_ids),
-                                active_code_verifier: Some(code_verifier),
-                                active_wallet_state: Some(wallet_state),
                                 ..state.core_utils
                             },
                             ..state

@@ -27,7 +27,7 @@ use oid4vc::{
     oid4vp::oid4vp::OID4VP,
     siopv2::siopv2::SIOPv2,
 };
-
+#[cfg(target_os = "android")]
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 
@@ -107,10 +107,39 @@ pub async fn tls_config() -> anyhow::Result<rustls::ClientConfig> {
     Ok(config)
 }
 
+/// `Oid4vciStage` represents the different stages of the OID4VCI flow that can be active within the application.
 #[derive(Clone, Debug)]
-pub struct ActiveCredentialOffer {
-    pub credential_offer: CredentialOfferParameters,
-    pub logo_uri: Option<String>,
+pub enum Oid4vciStage {
+    OfferReceived,
+    PreAuthorized,
+    AuthorizationCode {
+        code_verifier: Vec<u8>,
+        wallet_state: String,
+    },
+    InteractiveAuthorization {
+        code_verifier: Vec<u8>,
+        wallet_state: String,
+        authorization_request: Box<AuthorizationRequest<Object<OID4VP>>>,
+        auth_session: Option<String>,
+        interactive_authorization_endpoint: Url,
+    },
+}
+
+/// `ActiveFlow` represents the different types of flows that can be active within the application.
+#[derive(Clone, Debug)]
+pub enum ActiveFlow {
+    Siopv2 {
+        authorization_request: Box<AuthorizationRequest<Object<SIOPv2>>>,
+    },
+    Oid4vp {
+        authorization_request: Box<AuthorizationRequest<Object<OID4VP>>>,
+        is_interactive: bool,
+    },
+    Oid4vciOffer {
+        stage: Oid4vciStage,
+        credential_offer: CredentialOfferParameters,
+        logo_uri: Option<String>,
+    },
 }
 
 /// CoreUtils is a struct that contains all the utils that only the rustside needs to perform its tasks.
@@ -118,15 +147,7 @@ pub struct ActiveCredentialOffer {
 pub struct CoreUtils {
     pub app_handle: Option<tauri::AppHandle<Runtime>>,
     pub managers: Arc<tauri::async_runtime::Mutex<Managers>>,
-
-    // TODO: These 'active_' fields should either be part of `oid4vc-manager`, or the `IdentityManager` struct.
-    pub active_connection_request: Option<ConnectionRequest>,
-    pub active_credential_configuration_ids: Option<Vec<String>>,
-    pub active_credential_offer: Option<ActiveCredentialOffer>,
-    pub active_code_verifier: Option<Vec<u8>>,
-    pub active_wallet_state: Option<String>,
-    pub active_auth_session: Option<String>,
-    pub active_interactive_authorization_endpoint: Option<Url>,
+    pub active_flow: Option<ActiveFlow>,
 }
 
 /// Managers contains both the stronghold manager and the identity manager needed to perform operations on connections & credentials.
@@ -142,10 +163,4 @@ pub struct IdentityManager {
     pub subject: Arc<Subject>,
     pub provider_manager: ProviderManager,
     pub wallet: Wallet,
-}
-
-#[derive(Serialize, Deserialize, Clone, Debug)]
-pub enum ConnectionRequest {
-    SIOPv2(Box<AuthorizationRequest<Object<SIOPv2>>>),
-    OID4VP(Box<AuthorizationRequest<Object<OID4VP>>>),
 }

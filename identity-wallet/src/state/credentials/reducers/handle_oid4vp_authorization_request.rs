@@ -11,7 +11,7 @@ use crate::{
         actions::{listen, Action},
         core_utils::{
             history_event::{EventType, HistoryCredential, HistoryEvent},
-            ConnectionRequest,
+            ActiveFlow, Oid4vciStage,
         },
         credentials::actions::credentials_selected::CredentialsSelected,
         user_prompt::CurrentUserPrompt,
@@ -69,12 +69,13 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             .ok_or(MissingManagerError("identity"))?;
         let provider_manager = &identity_manager.provider_manager;
 
-        let oid4vp_authorization_request = if let ConnectionRequest::OID4VP(oid4vp_authorization_request) =
-            serde_json::from_value(serde_json::json!(state.core_utils.active_connection_request)).unwrap()
-        {
-            oid4vp_authorization_request
-        } else {
-            return Err(AppError::Error("Expected OID4VP Authorization Request".to_string()));
+        let oid4vp_authorization_request = match state.core_utils.active_flow.clone() {
+            Some(ActiveFlow::Oid4vp {
+                authorization_request, ..
+            }) => authorization_request,
+            _ => {
+                return Err(AppError::Error("Expected OID4VP Authorization Request".to_string()));
+            }
         };
 
         let (vp_token_payload, history_credentials) = build_oid4vp_vp_token_and_history_credentials(
@@ -178,12 +179,19 @@ pub async fn build_oid4vp_vp_token_and_history_credentials(
     identity_manager: &IdentityManager,
     credential_uuids: Vec<Uuid>,
 ) -> Result<(VpToken, Vec<HistoryCredential>), AppError> {
-    let oid4vp_authorization_request = if let ConnectionRequest::OID4VP(oid4vp_authorization_request) =
-        serde_json::from_value(serde_json::json!(state.core_utils.active_connection_request)).unwrap()
-    {
-        oid4vp_authorization_request
-    } else {
-        return Err(AppError::Error("Expected OID4VP Authorization Request".to_string()));
+    let oid4vp_authorization_request = match state.core_utils.active_flow.clone() {
+        Some(ActiveFlow::Oid4vp {
+            authorization_request, ..
+        }) => authorization_request,
+        Some(ActiveFlow::Oid4vciOffer {
+            stage: Oid4vciStage::InteractiveAuthorization {
+                authorization_request, ..
+            },
+            ..
+        }) => authorization_request,
+        _ => {
+            return Err(AppError::Error("Expected OID4VP Authorization Request".to_string()));
+        }
     };
 
     let mut history_credentials = vec![];

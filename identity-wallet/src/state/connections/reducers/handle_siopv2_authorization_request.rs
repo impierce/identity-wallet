@@ -5,7 +5,7 @@ use crate::{
         actions::Action,
         core_utils::{
             history_event::{EventType, HistoryEvent},
-            ConnectionRequest,
+            ActiveFlow,
         },
         user_prompt::CurrentUserPrompt,
         AppState,
@@ -30,11 +30,10 @@ pub async fn handle_siopv2_authorization_request(state: AppState, _action: Actio
         .ok_or(MissingManagerError("identity"))?
         .provider_manager;
 
-    let siopv2_authorization_request =
-        match serde_json::from_value(serde_json::json!(state.core_utils.active_connection_request)).unwrap() {
-            Some(ConnectionRequest::SIOPv2(siopv2_authorization_request)) => siopv2_authorization_request,
-            _ => unreachable!(),
-        };
+    let siopv2_authorization_request = match state.core_utils.active_flow.clone() {
+        Some(ActiveFlow::Siopv2 { authorization_request }) => authorization_request,
+        _ => return Err(AppError::Error("Expected SIOPv2 authorization request".to_string())),
+    };
 
     info!("generating response");
 

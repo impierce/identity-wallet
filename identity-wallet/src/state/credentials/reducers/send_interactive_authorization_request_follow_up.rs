@@ -2,7 +2,7 @@ use crate::{
     error::AppError::{self, *},
     state::{
         actions::{listen, Action},
-        core_utils::{ConnectionRequest, CoreUtils},
+        core_utils::{ActiveFlow, CoreUtils, Oid4vciStage},
         credentials::{
             actions::{authorization_code_received::CodeReceived, credentials_selected::CredentialsSelected},
             reducers::{
@@ -40,13 +40,43 @@ pub async fn send_interactive_authorization_request_follow_up(
             .ok_or(MissingManagerError("identity"))?;
         let provider_manager = &identity_manager.provider_manager;
 
-        let oid4vp_authorization_request = if let ConnectionRequest::OID4VP(oid4vp_authorization_request) =
-            serde_json::from_value(serde_json::json!(state.core_utils.active_connection_request)).unwrap()
-        {
-            oid4vp_authorization_request
-        } else {
-            return Err(AppError::Error("Expected OID4VP Authorization Request".to_string()));
+        let (
+            oid4vp_authorization_request,
+            auth_session,
+            interactive_authorization_endpoint,
+            code_verifier,
+            wallet_state,
+            credential_offer,
+            logo_uri,
+        ) = match state.core_utils.active_flow.clone() {
+            Some(ActiveFlow::Oid4vciOffer {
+                stage:
+                    Oid4vciStage::InteractiveAuthorization {
+                        code_verifier,
+                        wallet_state,
+                        authorization_request,
+                        auth_session,
+                        interactive_authorization_endpoint,
+                    },
+                credential_offer,
+                logo_uri,
+            }) => (
+                authorization_request,
+                auth_session,
+                interactive_authorization_endpoint,
+                code_verifier,
+                wallet_state,
+                credential_offer,
+                logo_uri,
+            ),
+            _ => {
+                return Err(AppError::Error("Expected interactive OID4VCI flow context".to_string()));
+            }
         };
+
+        let auth_session = auth_session.ok_or(AppError::Error("Active auth session is missing".to_string()))?;
+
+        let interactive_authorization_endpoint = interactive_authorization_endpoint;
 
         let (vp_token_payload, history_credentials) = build_oid4vp_vp_token_and_history_credentials(
             &state,
@@ -61,20 +91,6 @@ pub async fn send_interactive_authorization_request_follow_up(
             .await
             .map_err(GenerateAuthorizationResponseError)?;
         info!("response generated: {openid4vp_response:?}");
-
-        let auth_session = state
-            .core_utils
-            .active_auth_session
-            .clone()
-            .ok_or(AppError::Error("Active auth session is missing".to_string()))?;
-
-        let interactive_authorization_endpoint = state
-            .core_utils
-            .active_interactive_authorization_endpoint
-            .clone()
-            .ok_or(AppError::Error(
-                "Active interactive authorization endpoint is missing".to_string(),
-            ))?;
 
         let follow_up = InteractiveAuthorizationFollowUpRequest {
             auth_session,
@@ -115,8 +131,14 @@ pub async fn send_interactive_authorization_request_follow_up(
         drop(state_guard);
         let state = AppState {
             core_utils: CoreUtils {
-                active_auth_session: None,
-                active_interactive_authorization_endpoint: None,
+                active_flow: Some(ActiveFlow::Oid4vciOffer {
+                    stage: Oid4vciStage::AuthorizationCode {
+                        code_verifier,
+                        wallet_state,
+                    },
+                    credential_offer,
+                    logo_uri,
+                }),
                 ..state.core_utils
             },
             connections,
