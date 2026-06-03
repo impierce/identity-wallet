@@ -254,16 +254,29 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                                 AppError::Error(format!("Failed to get interactive authorization response: {}", err))
                             })?;
 
-                        info!("iae_response: {}", serde_json::to_string_pretty(&iae_response).unwrap());
+                        debug!(
+                             "interactive authorization response received (auth_session_present={}, openid4vp_request_present={})",
+                             iae_response.auth_session.is_some(),
+                             iae_response.openid4vp_request.is_some()
+                         );
+
+                        let openid4vp_request_value = iae_response.openid4vp_request.clone().ok_or(AppError::Error(
+                            "Interactive authorization response is missing `openid4vp_request`".to_string(),
+                        ))?;
 
                         let oid4vp_authorization_request: AuthorizationRequest<Object<OID4VP>> =
-                            serde_json::from_value(iae_response.openid4vp_request.as_ref().unwrap().clone()).unwrap();
+                            serde_json::from_value(openid4vp_request_value)
+                                .map_err(|e| AppError::Error(format!("Failed to parse openid4vp_request: {e}")))?;
 
                         let auth_session = iae_response.auth_session.clone();
 
                         let verifiable_credentials =
                             stronghold_manager.values().map_err(StrongholdValuesError)?.unwrap();
-                        info!("verifiable credentials: {verifiable_credentials:?}");
+
+                        debug!(
+                            "loaded {} verifiable credentials from stronghold",
+                            verifiable_credentials.len()
+                        );
 
                         let dcql_query = &oid4vp_authorization_request.body.extension.dcql_query;
 

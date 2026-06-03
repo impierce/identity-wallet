@@ -15,7 +15,7 @@ use crate::{
         AppState,
     },
 };
-use log::info;
+use log::{debug, info};
 use oid4vc::oid4vci::InteractiveAuthorizationFollowUpRequest;
 use std::sync::Arc;
 
@@ -88,7 +88,7 @@ pub async fn send_interactive_authorization_request_follow_up(
             .generate_response(&oid4vp_authorization_request, vp_token_payload)
             .await
             .map_err(GenerateAuthorizationResponseError)?;
-        info!("response generated: {openid4vp_response:?}");
+        debug!("openid4vp response generated");
 
         let follow_up = InteractiveAuthorizationFollowUpRequest {
             auth_session,

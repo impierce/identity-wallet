@@ -49,7 +49,7 @@ pub enum CurrentUserPrompt {
         #[ts(optional)]
         logo_uri: Option<String>,
         options: Vec<String>,
-        // If this is set to `true`, then this means that that the credentials being requested are required during an
+        // If this is set to `true`, then this means that the credentials being requested are required during an
         // OID4VCI Interactive Authorization flow.
         #[serde(default)]
         is_interactive: bool,
