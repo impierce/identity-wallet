@@ -2,11 +2,19 @@ use crate::{
     error::AppError::{self, *},
     persistence::{hash, persist_asset},
     state::{
-        AppState, UNIME_CLIENT_ID, UNIME_REDIRECT_URI, actions::{Action, listen}, core_utils::{
-            ActiveFlow, CoreUtils, DateUtils, IdentityManager, Oid4vciStage, helpers::{validate_credential_types, validate_jwt_vc_json}, history_event::{EventType, HistoryCredential, HistoryEvent}
-        }, credentials::{
-            CredentialStatus, DisplayCredential, VerifiableCredentialRecord, actions::authorization_code_received::CodeReceived, reducers::refresh_credential_status::fetch_credential_status
-        }, user_prompt::CurrentUserPrompt
+        actions::{listen, Action},
+        core_utils::{
+            helpers::{validate_credential_types, validate_jwt_vc_json},
+            history_event::{EventType, HistoryCredential, HistoryEvent},
+            ActiveFlow, CoreUtils, DateUtils, IdentityManager, Oid4vciStage,
+        },
+        credentials::{
+            actions::authorization_code_received::CodeReceived,
+            reducers::refresh_credential_status::fetch_credential_status, CredentialStatus, DisplayCredential,
+            VerifiableCredentialRecord,
+        },
+        user_prompt::CurrentUserPrompt,
+        AppState, UNIME_CLIENT_ID, UNIME_REDIRECT_URI,
     },
 };
 use log::{info, warn};
