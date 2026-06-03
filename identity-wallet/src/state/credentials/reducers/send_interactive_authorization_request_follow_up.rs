@@ -76,8 +76,6 @@ pub async fn send_interactive_authorization_request_follow_up(
 
         let auth_session = auth_session.ok_or(AppError::Error("Active auth session is missing".to_string()))?;
 
-        let interactive_authorization_endpoint = interactive_authorization_endpoint;
-
         let (vp_token_payload, history_credentials) = build_oid4vp_vp_token_and_history_credentials(
             &state,
             stronghold_manager,

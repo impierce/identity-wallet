@@ -68,7 +68,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                 credential_offer,
                 logo_uri,
                 ..
-            }) => (credential_offer, logo_uri),
+            }) => (*credential_offer, logo_uri),
             _ => {
                 return Err(AppError::Error("Missing active OID4VCI flow context".to_string()));
             }
@@ -157,7 +157,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                             core_utils: CoreUtils {
                                 active_flow: Some(ActiveFlow::Oid4vciOffer {
                                     stage: Oid4vciStage::PreAuthorized,
-                                    credential_offer,
+                                    credential_offer: Box::new(credential_offer),
                                     logo_uri,
                                 }),
                                 ..state.core_utils
@@ -354,7 +354,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                                             interactive_authorization_endpoint: interactive_authorization_endpoint
                                                 .clone(),
                                         },
-                                        credential_offer,
+                                        credential_offer: Box::new(credential_offer),
                                         logo_uri: logo_uri.clone(),
                                     }),
                                     ..state.core_utils
@@ -431,7 +431,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                                         code_verifier: code_verifier.clone(),
                                         wallet_state: wallet_state.clone(),
                                     },
-                                    credential_offer,
+                                    credential_offer: Box::new(credential_offer),
                                     logo_uri,
                                 }),
                                 ..state.core_utils

@@ -137,7 +137,7 @@ pub enum ActiveFlow {
     },
     Oid4vciOffer {
         stage: Oid4vciStage,
-        credential_offer: CredentialOfferParameters,
+        credential_offer: Box<CredentialOfferParameters>,
         logo_uri: Option<String>,
     },
 }

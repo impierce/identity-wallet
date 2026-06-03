@@ -131,7 +131,7 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
             core_utils: CoreUtils {
                 active_flow: Some(ActiveFlow::Oid4vciOffer {
                     stage: Oid4vciStage::OfferReceived,
-                    credential_offer,
+                    credential_offer: Box::new(credential_offer),
                     logo_uri,
                 }),
                 ..state.core_utils

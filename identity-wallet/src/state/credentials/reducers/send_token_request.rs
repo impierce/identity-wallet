@@ -50,7 +50,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                 stage,
                 credential_offer,
                 logo_uri,
-            }) => (stage, credential_offer, logo_uri),
+            }) => (stage, *credential_offer, logo_uri),
             _ => {
                 return Err(AppError::Error("Missing active OID4VCI flow context".to_string()));
             }
