@@ -20,7 +20,7 @@ use crate::{
 use log::{info, warn};
 use oauth_tsl::{status_list::StatusType, tokens::referenced_token::StatusClaim};
 use oid4vc::{
-    oid4vc_core::utils::did::get_unverified_jwt_claims,
+    oid4vc_core::utils::jwt::get_unverified_jwt_claims,
     oid4vci::{
         credential_format_profiles::CredentialFormats,
         credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject,

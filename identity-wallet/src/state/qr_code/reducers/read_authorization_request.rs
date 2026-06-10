@@ -25,7 +25,7 @@ use oid4vc::{
     oid4vp::dcql_evaluation::evaluate_credential_query,
 };
 use oid4vc::{
-    oid4vc_core::utils::did::get_unverified_jwt_claims,
+    oid4vc_core::utils::jwt::get_unverified_jwt_claims,
     oid4vp::{oid4vp::OID4VP, token::vp_token_validator::DecodedPresentations},
 };
 

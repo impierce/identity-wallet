@@ -7,7 +7,7 @@ use identity_jose::jwt::JwtClaims;
 use jsonschema::ValidationError;
 use jsonwebtoken::{decode, decode_header, Algorithm, DecodingKey, Validation};
 use log::{debug, info, warn};
-use oid4vc::oid4vc_core::utils::did::resolve_key_id;
+use oid4vc::oid4vc_core::utils::did::extract_normalized_did_kid_from_jwt;
 use oid4vc::oid4vc_core::Verify;
 use serde_json::Value;
 use std::fs::File;
@@ -59,7 +59,7 @@ pub async fn get_issuer_document(resolver: &Resolver, credential_jwt: &Jwt) -> O
 /// Validate a jwt_vc_json, checks the JWT and the Issuer DID.
 pub async fn validate_jwt_vc_json(credential_jwt: &str, identity_manager: &IdentityManager) -> Result<Value, AppError> {
     let jwt_header = decode_header(credential_jwt).map_err(|_| AppError::GetCredentialStatusError)?;
-    let key_id = resolve_key_id(credential_jwt).map_err(|_| AppError::GetCredentialStatusError)?;
+    let key_id = extract_normalized_did_kid_from_jwt(credential_jwt).map_err(|_| AppError::GetCredentialStatusError)?;
 
     let public_key = identity_manager
         .subject

@@ -24,7 +24,7 @@ use identity_credential::sd_jwt_vc::SdJwtVc;
 use identity_iota::did::CoreDID;
 use log::{info, warn};
 use oid4vc::oid4vc_core::types::string_or_object::StringOrObject;
-use oid4vc::oid4vc_core::utils::did::get_unverified_jwt_claims;
+use oid4vc::oid4vc_core::utils::jwt::get_unverified_jwt_claims;
 use oid4vc::oid4vc_core::{
     authorization_request::{AuthorizationRequest, Object},
     client_metadata::ClientMetadataResource,

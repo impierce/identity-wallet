@@ -21,7 +21,7 @@ use crate::{
 use identity_credential::sd_jwt_vc::SdJwtVc;
 use log::{debug, info, warn};
 use oid4vc::oid4vc_core::authorization_request::{AuthorizationRequest, Object};
-use oid4vc::oid4vc_core::utils::did::get_unverified_jwt_claims;
+use oid4vc::oid4vc_core::utils::jwt::get_unverified_jwt_claims;
 use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
 use oid4vc::oid4vci::InteractionType;
 use oid4vc::oid4vci::{

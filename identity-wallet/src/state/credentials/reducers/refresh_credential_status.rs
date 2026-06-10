@@ -17,7 +17,7 @@ use oauth_tsl::{
     relying_party::{decompress_gzip, decrypt_status_list_token, StatusListTokenResponseType},
     status_list::{StatusList, StatusType},
 };
-use oid4vc::oid4vc_core::{utils::did::resolve_key_id, Verify};
+use oid4vc::oid4vc_core::{utils::did::extract_normalized_did_kid_from_jwt, Verify};
 use reqwest::{header, redirect::Policy, Client};
 
 pub async fn refresh_credential_status(state: AppState, action: Action) -> Result<AppState, AppError> {
@@ -162,7 +162,8 @@ pub async fn fetch_credential_status(
     .await?;
 
     let jwt_header = decode_header(&status_list_jwt).map_err(|_| AppError::GetCredentialStatusError)?;
-    let key_id = resolve_key_id(&status_list_jwt).map_err(|_| AppError::GetCredentialStatusError)?;
+    let key_id =
+        extract_normalized_did_kid_from_jwt(&status_list_jwt).map_err(|_| AppError::GetCredentialStatusError)?;
 
     let public_key = identity_manager
         .subject
