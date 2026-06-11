@@ -19,6 +19,7 @@ use log::{debug, info};
 use oid4vc::oid4vci::InteractiveAuthorizationFollowUpRequest;
 use std::sync::Arc;
 
+/// NOTE: the happy path of this reducer is directly chained to the `send_token_request` reducer via the return
 pub async fn send_interactive_authorization_request_follow_up(
     state: AppState,
     action: Action,
@@ -70,7 +71,9 @@ pub async fn send_interactive_authorization_request_follow_up(
                 logo_uri,
             ),
             _ => {
-                return Err(AppError::Error("Expected interactive OID4VCI flow context".to_string()));
+                return Err(AppError::Error(
+                    "Cannot find active interactive OID4VCI flow context in the backend state".to_string(),
+                ));
             }
         };
 
@@ -152,6 +155,9 @@ pub async fn send_interactive_authorization_request_follow_up(
             tx_code: None,
         });
 
+        // This return chains the current reducer to the next reducer `send_token_request`, normally this is done via
+        // the `ActionTrait`, but in this case that requires complicating the state as well as the reducer quite a bit,
+        // this simplifies the flow significantly.
         return send_token_request(state, action).await;
     }
 

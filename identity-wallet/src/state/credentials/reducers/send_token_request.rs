@@ -52,7 +52,9 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                 logo_uri,
             }) => (stage, *credential_offer, logo_uri),
             _ => {
-                return Err(AppError::Error("Missing active OID4VCI flow context".to_string()));
+                return Err(AppError::Error(
+                    "Cannot find Credential Offer in the backend state".to_string(),
+                ));
             }
         };
 
