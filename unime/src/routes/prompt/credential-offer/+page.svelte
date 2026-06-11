@@ -50,8 +50,8 @@
   });
 
   onDestroy(async () => {
-    // TODO: is onDestroy also called when user accepts since the component itself is destroyed?
-    // Why is the flow cancelled here?
+    // We skip clearing the temp assets folder here so that assets are not cleared prematurely during the interactive
+    // authorization flow.
     // dispatch({ type: '[User Flow] Cancel', payload: {} });
   });
 </script>
