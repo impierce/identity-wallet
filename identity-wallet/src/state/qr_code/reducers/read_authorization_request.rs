@@ -18,16 +18,13 @@ use serde_json::Value;
 
 use identity_credential::sd_jwt_vc::SdJwtVc;
 use log::{debug, info, warn};
+use oid4vc::oid4vc_core::utils::jwt::get_unverified_jwt_claims;
 use oid4vc::oid4vp::{dcql::dcql_query::Format, oid4vp::OID4VP, token::vp_token_validator::DecodedPresentations};
 use oid4vc::siopv2::siopv2::SIOPv2;
 use oid4vc::{
     oid4vc_core::authorization_request::{AuthorizationRequest, Object},
     oid4vci::credential_format_profiles::CredentialFormats,
     oid4vp::dcql_evaluation::evaluate_credential_query,
-};
-use oid4vc::{
-    oid4vc_core::utils::jwt::get_unverified_jwt_claims,
-    oid4vp::{oid4vp::OID4VP, token::vp_token_validator::DecodedPresentations},
 };
 
 // Reads the request url from the payload and validates it.
