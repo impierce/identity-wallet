@@ -56,7 +56,7 @@
         const state = url.searchParams.get('state') ?? '';
         await dispatch({
           type: '[Credential Offer] Code received',
-          payload: { code, is_pre_authorized: false, state },
+          payload: { code, is_pre_authorized: false, is_interactive: false, state },
         });
         break;
       }

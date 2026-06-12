@@ -1075,15 +1075,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "72b3254f16251a8381aa12e40e3c4d2f0199f8c6508fbecb9d91f575e0fbb8c6"
 
 [[package]]
-name = "base64-url"
-version = "2.0.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fb9fb9fb058cc3063b5fc88d9a21eefa2735871498a04e1650da76ed511c8569"
-dependencies = [
- "base64 0.21.7",
-]
-
-[[package]]
 name = "base64ct"
 version = "1.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -9258,7 +9249,7 @@ source = "git+https://github.com/impierce/openid4vc?rev=e860178#e860178d46ff18cf
 dependencies = [
  "anyhow",
  "async-trait",
- "base64-url",
+ "base64 0.22.1",
  "derivative",
  "derive_more 0.99.20",
  "did-key",
@@ -12407,7 +12398,6 @@ source = "git+https://github.com/impierce/openid4vc?rev=e860178#e860178d46ff18cf
 dependencies = [
  "anyhow",
  "async-trait",
- "base64-url",
  "chrono",
  "derive_more 0.99.20",
  "did_url",

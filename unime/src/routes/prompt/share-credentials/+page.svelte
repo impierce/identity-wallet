@@ -18,7 +18,7 @@
   type ShareCredentialsPrompt = IsShareCredentialsPrompt<CurrentUserPrompt>;
 
   // TODO: client_name should fallback to hostname if no display name is provided
-  const { client_name, logo_uri, options } = $state.current_user_prompt as ShareCredentialsPrompt;
+  const { client_name, logo_uri, options, is_interactive } = $state.current_user_prompt as ShareCredentialsPrompt;
 
   let selected_credentials = $state.credentials?.filter((c) => options.indexOf(c.id) > -1);
 
@@ -106,6 +106,7 @@
           type: '[Authenticate] Credentials selected',
           payload: {
             credential_uuids: selected_credentials.map((c) => c.id),
+            is_interactive,
           },
         });
       }}
