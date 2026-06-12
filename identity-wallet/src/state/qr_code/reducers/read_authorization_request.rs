@@ -13,20 +13,18 @@ use crate::{
         AppState,
     },
 };
-use sd_jwt::Sha256Hasher;
+use sd_jwt::{SdJwt, Sha256Hasher};
 use serde_json::Value;
 
 use identity_credential::sd_jwt_vc::SdJwtVc;
 use log::{debug, info, warn};
+use oid4vc::oid4vc_core::utils::jwt::get_unverified_jwt_claims;
+use oid4vc::oid4vp::{dcql::dcql_query::Format, oid4vp::OID4VP, token::vp_token_validator::DecodedPresentations};
 use oid4vc::siopv2::siopv2::SIOPv2;
 use oid4vc::{
     oid4vc_core::authorization_request::{AuthorizationRequest, Object},
     oid4vci::credential_format_profiles::CredentialFormats,
     oid4vp::dcql_evaluation::evaluate_credential_query,
-};
-use oid4vc::{
-    oid4vc_core::utils::jwt::get_unverified_jwt_claims,
-    oid4vp::{oid4vp::OID4VP, token::vp_token_validator::DecodedPresentations},
 };
 
 // Reads the request url from the payload and validates it.
@@ -166,15 +164,15 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
             let verifiable_credentials = stronghold_manager.values().map_err(StrongholdValuesError)?.unwrap();
             info!("verifiable credentials: {verifiable_credentials:?}");
 
+            // TODO: Move most of this logic to `openid4vc` crates.
             let dcql_query = &oid4vp_authorization_request.body.extension.dcql_query;
             let uuids: Vec<String> = dcql_query
                 .credentials
                 .iter()
                 .filter_map(|credential_query_from_request| {
                     verifiable_credentials.iter().find_map(|verifiable_credential_record| {
-                        let credential_data: Value = if verifiable_credential_record.display_credential.format
-                            == CredentialFormats::DcSdJwt(())
-                            || verifiable_credential_record.display_credential.format == CredentialFormats::VcSdJwt(())
+                        let credential_data: Value = if credential_query_from_request.format == Format::DcSdJwt
+                            && verifiable_credential_record.display_credential.format == CredentialFormats::DcSdJwt(())
                         {
                             serde_json::json!(verifiable_credential_record
                                 .verifiable_credential
@@ -183,8 +181,19 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                                 .ok()?
                                 .into_disclosed_object(&Sha256Hasher::new())
                                 .ok()?)
-                        } else if verifiable_credential_record.display_credential.format
-                            == CredentialFormats::JwtVcJson(())
+                        } else if credential_query_from_request.format == Format::VcSdJwt
+                            && verifiable_credential_record.display_credential.format == CredentialFormats::VcSdJwt(())
+                        {
+                            serde_json::json!(verifiable_credential_record
+                                .verifiable_credential
+                                .as_str()?
+                                .parse::<SdJwt>()
+                                .ok()?
+                                .into_disclosed_object(&Sha256Hasher::new())
+                                .ok()?)
+                        } else if credential_query_from_request.format == Format::JwtVcJson
+                            && verifiable_credential_record.display_credential.format
+                                == CredentialFormats::JwtVcJson(())
                         {
                             let full_jwt_payload =
                                 get_unverified_jwt_claims(&verifiable_credential_record.verifiable_credential)
@@ -206,10 +215,23 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                                 .unwrap_or_default()
                         };
 
-                        let credential_query_satisfied = evaluate_credential_query(
-                            credential_query_from_request,
-                            &DecodedPresentations::try_new(vec![credential_data.as_object()?.clone()]).ok()?,
-                        );
+                        let credential_object = credential_data.as_object()?.clone();
+                        let decoded_presentations =
+                            match DecodedPresentations::try_new(vec![credential_object]) {
+                                Ok(decoded) => decoded,
+                                Err(e) => {
+                                    debug!(
+                                        "Failed to decode credential into DecodedPresentations; id: {:?}, format: {:?}, error: {:?}",
+                                        verifiable_credential_record.display_credential.id,
+                                        verifiable_credential_record.display_credential.format,
+                                        e
+                                    );
+                                    return None;
+                                }
+                            };
+
+                        let credential_query_satisfied =
+                            evaluate_credential_query(credential_query_from_request, &decoded_presentations);
                         credential_query_satisfied.then_some(verifiable_credential_record.display_credential.id.clone())
                     })
                 })
