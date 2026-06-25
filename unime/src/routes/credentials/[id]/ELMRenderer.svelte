@@ -6,6 +6,14 @@
   export let credential: DisplayCredential;
   const credentialSubject = credential.data.credentialSubject;
   const hasClaim = credentialSubject.hasClaim;
+
+  function isAllowedUrl(text: string): boolean {
+    return /^(?:https?:\/\/|www\.)[^\s]+$/.test(text);
+  }
+
+  function toHref(text: string): string {
+    return text.startsWith('www.') ? `https://${text}` : text;
+  }
 </script>
 
 {#snippet TextField(title: string, value: string | undefined)}
@@ -18,7 +26,13 @@
 {#snippet URLField(title: string, value: string | undefined)}
   {#if value}
     <h4 class="text-text-alt">{title}</h4>
-    <a href={value} class="overflow-x-auto">{value}</a>
+    {#if isAllowedUrl(value)}
+      <a href={toHref(value)} target="_blank" rel="noopener noreferrer" class="overflow-x-auto break-all underline"
+        >{value}</a
+      >
+    {:else}
+      <p class="overflow-x-auto">{value}</p>
+    {/if}
   {/if}
 {/snippet}
 
