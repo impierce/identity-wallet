@@ -47,9 +47,7 @@
       <p class="overflow-x-auto wrap-break-word">
         {#each textParts as part}
           {#if isUrl(part)}
-            <a href={toHref(part)} target="_blank" rel="noopener noreferrer" class="break-all underline"
-              >{part}</a
-            >
+            <a href={toHref(part)} target="_blank" rel="noopener noreferrer" class="break-all underline">{part}</a>
           {:else}
             {part}
           {/if}
