@@ -1,7 +1,8 @@
 <script lang="ts">
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 
-  import { isUrl } from '../../../lib/utils/url';
+  import { isUrl } from '$lib/utils/url';
+
   import CollapsibleWrapper from './CollapsibleWrapper.svelte';
 
   export let credential: DisplayCredential;
@@ -16,7 +17,7 @@
   {/if}
 {/snippet}
 
-{#snippet URLField(title: string, value: string | undefined)}
+{#snippet UrlField(title: string, value: string | undefined)}
   {#if value}
     <h4 class="text-text-alt">{title}</h4>
     {#if isUrl(value)}
@@ -125,7 +126,7 @@
   <CollapsibleWrapper defaultOpen={false}>
     <h2 class="text-lg font-bold" slot="title">Further information</h2>
     {#each hasClaim?.supplementaryDocument ?? [] as doc}
-      {@render URLField(doc?.title?.en, doc?.contentURL)}
+      {@render UrlField(doc?.title?.en, doc?.contentURL)}
     {/each}
   </CollapsibleWrapper>
 </div>
