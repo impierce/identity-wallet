@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { HTTPS_URL_PART_REGEX, isUrl } from '../../../../lib/utils/url';
+  import { HTTPS_URL_PART_REGEX, isUrl } from '$lib/utils/url';
+
   import CollapsibleWrapper from '../CollapsibleWrapper.svelte';
 
   export let key: string;
