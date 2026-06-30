@@ -2,6 +2,7 @@
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 
   import DataUrlImageRenderer from './(renderers)/DataUrlImageRenderer.svelte';
+  import TextFieldRenderer from './(renderers)/TextFieldRenderer.svelte';
 
   export let credential: DisplayCredential;
 
@@ -29,10 +30,7 @@
         {#if isDataUrl(displayClaim.value)}
           <DataUrlImageRenderer key={displayClaim.key} dataUrl={displayClaim.value} />
         {:else}
-          <div class="rounded-xl bg-background px-4 py-3 text-[13px]/[24px]">
-            <h2 class="font-medium text-text-alt">{displayClaim.key}</h2>
-            <p class="overflow-x-auto">{displayClaim.value}</p>
-          </div>
+          <TextFieldRenderer key={displayClaim.key} value={String(displayClaim.value ?? '')} />
         {/if}
       {/each}
     </div>
@@ -43,18 +41,8 @@
       {#if isDataUrl(credential.data.credentialSubject[field])}
         <DataUrlImageRenderer key={field} dataUrl={credential.data.credentialSubject[field]} />
       {:else}
-        <div class="rounded-xl bg-background px-4 py-3 text-[13px]/[24px]">
-          <h2 class="font-medium text-text-alt">{field}</h2>
-          <p class="overflow-x-auto">{credential.data.credentialSubject[field]}</p>
-        </div>
+        <TextFieldRenderer key={field} value={String(credential.data.credentialSubject[field] ?? '')} />
       {/if}
     {/each}
   </div>
 {/if}
-
-<style>
-  /* Hide scrollbar. */
-  p::-webkit-scrollbar {
-    display: none;
-  }
-</style>
