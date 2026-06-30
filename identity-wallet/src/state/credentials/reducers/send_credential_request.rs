@@ -56,13 +56,6 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
             .ok_or(MissingManagerError("identity"))?
             .wallet;
 
-        let current_user_prompt = state
-            .current_user_prompt
-            .clone()
-            .ok_or(MissingStateParameterError("current user prompt"))?;
-
-        info!("current_user_prompt: {current_user_prompt:?}");
-
         let (credential_offer, logo_uri) = match state.core_utils.active_flow.clone() {
             Some(ActiveFlow::Oid4vciOffer {
                 credential_offer,
