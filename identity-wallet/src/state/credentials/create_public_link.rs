@@ -1,12 +1,14 @@
 use crate::error::AppError::{self, *};
 use crate::state::core_utils::helpers::get_unverified_jwt_claims;
 use crate::state::credentials::VerifiableCredentialRecord;
+use crate::state::did::validate_linked_verifiable_presentations::extract_url_from_did_web;
 use crate::state::AppState;
 use base64::Engine;
 use chrono::{Duration, Utc};
 use jsonwebtoken::{decode_header, Header};
 use log::info;
 use oid4vc::oid4vc_core::{jwt::encode, Subject};
+use openid_federation::FederationClient;
 use serde::Serialize;
 use serde_json::json;
 use std::str::FromStr;
@@ -178,12 +180,42 @@ pub async fn create_public_link(state: &AppState, credential_id: &str) -> Result
 /// Step 2: get the Trust Anchor's DID Document
 /// Step 3: find the Public Verification Endpoint service
 pub async fn get_trusted_verifier_public_verification_endpoint(
-    _state: &AppState,
-    _issuer_did: &str,
+    state: &AppState,
+    issuer_did: &str,
 ) -> Result<String, AppError> {
-    // TODO hardcode endpoint for testing
+    let federation_client = FederationClient::new();
 
-    Ok("https://cuddly-curufin.dev2.impierce.com/verify".to_string())
+    let issuer_url = extract_url_from_did_web(issuer_did).ok_or(AppError::Error(format!(
+        "Failed to extract URL from issuer DID: {issuer_did}"
+    )))?;
+
+    let trust_list_urls: Vec<Url> = state
+        .trust_lists
+        .0
+        .iter()
+        .flat_map(|trust_list| trust_list.entries.keys().cloned())
+        .collect();
+
+    info!("Trust list URLs: {trust_list_urls:?}");
+
+    let trust_chain = federation_client
+        .discover_trust_chain(&issuer_url, Some(&trust_list_urls))
+        .await
+        .map_err(|e| {
+            AppError::Error(format!(
+                "Failed to discover a trusted trust_anchor for Issuer of credential to be shared: {e}"
+            ))
+        })?;
+
+    let (trust_anchor_url, _) = trust_chain
+        .trust_anchor_entity_id_and_configuration()
+        .map_err(|e| AppError::Error(format!("Failed to get trust_anchor entity_id: {e}")))?;
+
+    let trust_anchor_public_verification_endpoint = trust_anchor_url
+        .join("/verify")
+        .map_err(|e| AppError::Error(format!("Failed to construct public verification endpoint URL: {e}")))?;
+
+    Ok(trust_anchor_public_verification_endpoint.to_string())
 }
 
 #[derive(Serialize, Debug)]

@@ -437,7 +437,7 @@ fn extract_logo_uri_from_display(display: &[Value]) -> Option<String> {
         .map(ToString::to_string)
 }
 
-fn extract_url_from_did_web(did_web: &str) -> Option<Url> {
+pub fn extract_url_from_did_web(did_web: &str) -> Option<Url> {
     if let Some(did) = did_web.strip_prefix("did:web:") {
         let url_str = if let Some(index_colon) = did.find(':') {
             &did[..index_colon]
