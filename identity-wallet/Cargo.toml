@@ -38,10 +38,11 @@ lazy_static = "1.4"
 log.workspace = true
 oauth_tsl.workspace = true
 oid4vc.workspace = true
+openid-federation = { git = "https://github.com/impierce/openid-federation", rev = "0791186"}
 p256 = { version = "0.13", features = ["jwk"] }
-reqwest = { version = "0.11", default-features = false, features = [
+reqwest = { version = "0.13", default-features = false, features = [
     "json",
-    "rustls-tls",
+    "rustls",
 ] }
 rustls.workspace = true
 rustls-platform-verifier.workspace = true
