@@ -3,10 +3,7 @@ use crate::{
     state::{
         actions::{listen, Action},
         connections::reducers::handle_siopv2_authorization_request::get_siopv2_client_name_and_logo_uri,
-        core_utils::{
-            helpers::{download_logo, get_unverified_jwt_claims},
-            ConnectionRequest, CoreUtils,
-        },
+        core_utils::{helpers::download_logo, ActiveFlow, CoreUtils},
         credentials::reducers::handle_oid4vp_authorization_request::{
             get_oid4vp_client_name_and_logo_uri, OID4VPClientMetadata,
         },
@@ -16,12 +13,13 @@ use crate::{
         AppState,
     },
 };
-use sd_jwt::Sha256Hasher;
+use sd_jwt::{SdJwt, Sha256Hasher};
 use serde_json::Value;
 
 use identity_credential::sd_jwt_vc::SdJwtVc;
 use log::{debug, info, warn};
-use oid4vc::oid4vp::oid4vp::OID4VP;
+use oid4vc::oid4vc_core::utils::jwt::get_unverified_jwt_claims;
+use oid4vc::oid4vp::{dcql::dcql_query::Format, oid4vp::OID4VP, token::vp_token_validator::DecodedPresentations};
 use oid4vc::siopv2::siopv2::SIOPv2;
 use oid4vc::{
     oid4vc_core::authorization_request::{AuthorizationRequest, Object},
@@ -145,7 +143,9 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
 
             return Ok(AppState {
                 core_utils: CoreUtils {
-                    active_connection_request: Some(ConnectionRequest::SIOPv2(siopv2_authorization_request.into())),
+                    active_flow: Some(ActiveFlow::Siopv2 {
+                        authorization_request: siopv2_authorization_request.clone().into(),
+                    }),
                     ..state.core_utils
                 },
                 current_user_prompt: Some(CurrentUserPrompt::AcceptConnection {
@@ -164,15 +164,15 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
             let verifiable_credentials = stronghold_manager.values().map_err(StrongholdValuesError)?.unwrap();
             info!("verifiable credentials: {verifiable_credentials:?}");
 
+            // TODO: Move most of this logic to `openid4vc` crates.
             let dcql_query = &oid4vp_authorization_request.body.extension.dcql_query;
             let uuids: Vec<String> = dcql_query
                 .credentials
                 .iter()
                 .filter_map(|credential_query_from_request| {
                     verifiable_credentials.iter().find_map(|verifiable_credential_record| {
-                        let credential_data: Value = if verifiable_credential_record.display_credential.format
-                            == CredentialFormats::DcSdJwt(())
-                            || verifiable_credential_record.display_credential.format == CredentialFormats::VcSdJwt(())
+                        let credential_data: Value = if credential_query_from_request.format == Format::DcSdJwt
+                            && verifiable_credential_record.display_credential.format == CredentialFormats::DcSdJwt(())
                         {
                             serde_json::json!(verifiable_credential_record
                                 .verifiable_credential
@@ -181,8 +181,19 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                                 .ok()?
                                 .into_disclosed_object(&Sha256Hasher::new())
                                 .ok()?)
-                        } else if verifiable_credential_record.display_credential.format
-                            == CredentialFormats::JwtVcJson(())
+                        } else if credential_query_from_request.format == Format::VcSdJwt
+                            && verifiable_credential_record.display_credential.format == CredentialFormats::VcSdJwt(())
+                        {
+                            serde_json::json!(verifiable_credential_record
+                                .verifiable_credential
+                                .as_str()?
+                                .parse::<SdJwt>()
+                                .ok()?
+                                .into_disclosed_object(&Sha256Hasher::new())
+                                .ok()?)
+                        } else if credential_query_from_request.format == Format::JwtVcJson
+                            && verifiable_credential_record.display_credential.format
+                                == CredentialFormats::JwtVcJson(())
                         {
                             let full_jwt_payload =
                                 get_unverified_jwt_claims(&verifiable_credential_record.verifiable_credential)
@@ -204,8 +215,23 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                                 .unwrap_or_default()
                         };
 
+                        let credential_object = credential_data.as_object()?.clone();
+                        let decoded_presentations =
+                            match DecodedPresentations::try_new(vec![credential_object]) {
+                                Ok(decoded) => decoded,
+                                Err(e) => {
+                                    debug!(
+                                        "Failed to decode credential into DecodedPresentations; id: {:?}, format: {:?}, error: {:?}",
+                                        verifiable_credential_record.display_credential.id,
+                                        verifiable_credential_record.display_credential.format,
+                                        e
+                                    );
+                                    return None;
+                                }
+                            };
+
                         let credential_query_satisfied =
-                            evaluate_credential_query(credential_query_from_request, &credential_data);
+                            evaluate_credential_query(credential_query_from_request, &decoded_presentations);
                         credential_query_satisfied.then_some(verifiable_credential_record.display_credential.id.clone())
                     })
                 })
@@ -234,13 +260,17 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                 drop(state_guard);
                 return Ok(AppState {
                     core_utils: CoreUtils {
-                        active_connection_request: Some(ConnectionRequest::OID4VP(oid4vp_authorization_request.into())),
+                        active_flow: Some(ActiveFlow::Oid4vp {
+                            authorization_request: oid4vp_authorization_request.clone().into(),
+                            is_interactive: false,
+                        }),
                         ..state.core_utils
                     },
                     current_user_prompt: Some(CurrentUserPrompt::ShareCredentials {
                         client_name,
                         logo_uri,
                         options: uuids,
+                        is_interactive: false,
                     }),
                     ..state
                 });

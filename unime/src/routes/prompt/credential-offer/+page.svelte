@@ -50,8 +50,9 @@
   });
 
   onDestroy(async () => {
-    // TODO: is onDestroy also called when user accepts since the component itself is destroyed?
-    dispatch({ type: '[User Flow] Cancel', payload: {} });
+    // We skip clearing the temp assets folder here so that assets are not cleared prematurely during the interactive
+    // authorization flow.
+    // dispatch({ type: '[User Flow] Cancel', payload: {} });
   });
 </script>
 
@@ -90,8 +91,8 @@
       {#each Object.entries(credential_configurations) as [credential_configuration_id, credential_configuration]}
         <!-- TODO: bug: long list is not correctly displayed -->
         <ListItemCard
-          id={hash(credential_configuration.credential_metadata.display?.at(0)?.logo?.uri ?? '')}
-          title={credential_configuration.credential_metadata.display?.at(0)?.name ?? credential_configuration_id}
+          id={hash(credential_configuration.credential_metadata?.display?.at(0)?.logo?.uri ?? '')}
+          title={credential_configuration.credential_metadata?.display?.at(0)?.name ?? credential_configuration_id}
           isTempAsset={true}
         >
           <div slot="right" class="mr-2">

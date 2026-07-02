@@ -4,9 +4,9 @@ use crate::{
     state::{
         actions::{listen, Action},
         core_utils::{
-            helpers::{get_unverified_jwt_claims, validate_credential_types, validate_jwt_vc_json},
+            helpers::{validate_credential_types, validate_jwt_vc_json},
             history_event::{EventType, HistoryCredential, HistoryEvent},
-            CoreUtils, DateUtils, IdentityManager,
+            ActiveFlow, CoreUtils, DateUtils, IdentityManager, Oid4vciStage,
         },
         credentials::{
             actions::authorization_code_received::CodeReceived,
@@ -19,10 +19,13 @@ use crate::{
 };
 use log::{info, warn};
 use oauth_tsl::{status_list::StatusType, tokens::referenced_token::StatusClaim};
-use oid4vc::oid4vci::{
-    credential_format_profiles::CredentialFormats,
-    credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject,
-    credential_response::CredentialResponseType, token_request::TokenRequest,
+use oid4vc::{
+    oid4vc_core::utils::jwt::get_unverified_jwt_claims,
+    oid4vci::{
+        credential_format_profiles::CredentialFormats,
+        credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject,
+        credential_response::CredentialResponseType, token_request::TokenRequest,
+    },
 };
 use serde_json::json;
 use std::collections::HashMap;
@@ -31,17 +34,43 @@ use uuid::Uuid;
 pub async fn send_token_request(state: AppState, action: Action) -> Result<AppState, AppError> {
     info!("send_token_request");
 
-    if let Some((code, is_pre_authorized, wallet_state, tx_code)) = listen::<CodeReceived>(action)
-        .map(|payload| (payload.code, payload.is_pre_authorized, payload.state, payload.tx_code))
+    if let Some((code, is_pre_authorized, is_interactive, wallet_state, tx_code)) =
+        listen::<CodeReceived>(action).map(|payload| {
+            (
+                payload.code,
+                payload.is_pre_authorized,
+                payload.is_interactive,
+                payload.state,
+                payload.tx_code,
+            )
+        })
     {
-        if !is_pre_authorized && wallet_state.is_some() {
-            if wallet_state != state.core_utils.active_wallet_state {
+        let active_oid4vci_flow = match state.core_utils.active_flow.clone() {
+            Some(ActiveFlow::Oid4vciOffer {
+                stage,
+                credential_offer,
+                logo_uri,
+            }) => (stage, *credential_offer, logo_uri),
+            _ => {
+                return Err(AppError::Error(
+                    "Cannot find Credential Offer in the backend state".to_string(),
+                ));
+            }
+        };
+
+        if !is_interactive && !is_pre_authorized && wallet_state.is_some() {
+            let expected_wallet_state = match &active_oid4vci_flow.0 {
+                Oid4vciStage::AuthorizationCode { wallet_state, .. } => Some(wallet_state.clone()),
+                _ => None,
+            };
+
+            if wallet_state != expected_wallet_state {
                 return Err(AppError::Error(
                     "The state parameter in the authorization response does not match the active wallet state."
                         .to_string(),
                 ));
             }
-        } else if !is_pre_authorized && wallet_state.is_none() {
+        } else if !is_interactive && !is_pre_authorized && wallet_state.is_none() {
             return Err(AppError::Error(
                 "The state parameter is missing in the authorization response.".to_string(),
             ));
@@ -59,21 +88,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             .ok_or(MissingManagerError("identity"))?;
         let wallet = &identity_manager.wallet;
 
-        let current_user_prompt = state
-            .current_user_prompt
-            .clone()
-            .ok_or(MissingStateParameterError("current user prompt"))?;
-
-        info!("current_user_prompt: {:?}", current_user_prompt);
-
-        let credential_offer = state
-            .core_utils
-            .active_credential_offer
-            .ok_or(AppError::Error("Missing active credential offer".to_string()))?;
-        let logo_uri = match current_user_prompt {
-            CurrentUserPrompt::CredentialOffer { logo_uri, .. } => logo_uri,
-            _ => unreachable!(),
-        };
+        let (stage, credential_offer, logo_uri) = active_oid4vci_flow;
 
         // The credential offer contains a credential issuer url.
         let credential_issuer_url = credential_offer.credential_issuer.clone();
@@ -139,11 +154,14 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                 authorization_details: None,
             }
         } else {
-            let code_verifier = state
-                .core_utils
-                .active_code_verifier
-                .and_then(|code_verifier| String::from_utf8(code_verifier).ok())
-                .ok_or(AppError::Error("Missing code verifier".to_string()))?;
+            let code_verifier = match stage {
+                Oid4vciStage::AuthorizationCode { code_verifier, .. }
+                | Oid4vciStage::InteractiveAuthorization { code_verifier, .. } => String::from_utf8(code_verifier)
+                    .map_err(|_| AppError::Error("Missing code verifier".to_string()))?,
+                _ => {
+                    return Err(AppError::Error("Missing code verifier".to_string()));
+                }
+            };
 
             TokenRequest::AuthorizationCode {
                 client_id: UNIME_CLIENT_ID.to_string(),
@@ -200,11 +218,8 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
         let mut credential_configurations_supported =
             credential_issuer_metadata.credential_configurations_supported.clone();
 
-        let credential_configuration_ids = state
-            .core_utils
-            .active_credential_configuration_ids
-            .ok_or_else(|| AppError::Error("Missing active credential configuration ids".to_string()))?
-            .clone();
+        let credential_configuration_ids: Vec<String> =
+            credential_offer.credential_configuration_ids.iter().cloned().collect();
 
         credential_configurations_supported.retain(|credential_configuration_id, _| {
             credential_configuration_ids.contains(credential_configuration_id)
@@ -405,9 +420,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             }),
             history,
             core_utils: CoreUtils {
-                active_credential_offer: None,
-                active_credential_configuration_ids: None,
-                active_code_verifier: None,
+                active_flow: None,
                 ..state.core_utils
             },
             ..state
