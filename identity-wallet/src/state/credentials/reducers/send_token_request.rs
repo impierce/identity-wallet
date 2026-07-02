@@ -307,7 +307,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
 
             let mut verifiable_credential_record = VerifiableCredentialRecord::try_new(
                 credential_configuration.credential_format.format(),
-                credential,
+                credential.clone(),
                 claims,
             )?;
             // Validate the credential against its corresponding credential JSON Schema.
@@ -356,6 +356,8 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
 
             // Add history event
             history_credentials.push(HistoryCredential::from_credential(&verifiable_credential_record));
+
+            info!("Successfully sent token request and received credential: {credential:?}");
         }
 
         let credentials: Vec<DisplayCredential> = stronghold_manager
