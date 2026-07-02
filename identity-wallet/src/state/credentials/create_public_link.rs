@@ -1,5 +1,4 @@
 use crate::error::AppError::{self, *};
-use crate::state::core_utils::helpers::get_unverified_jwt_claims;
 use crate::state::credentials::VerifiableCredentialRecord;
 use crate::state::did::validate_linked_verifiable_presentations::extract_url_from_did_web;
 use crate::state::AppState;
@@ -7,6 +6,7 @@ use base64::Engine;
 use chrono::{Duration, Utc};
 use jsonwebtoken::{decode_header, Header};
 use log::info;
+use oid4vc::oid4vc_core::utils::jwt::get_unverified_jwt_claims;
 use oid4vc::oid4vc_core::{jwt::encode, Subject};
 use openid_federation::FederationClient;
 use serde::Serialize;
@@ -42,7 +42,7 @@ pub async fn create_public_link(state: &AppState, credential_id: &str) -> Result
     let vcr: VerifiableCredentialRecord =
         serde_json::from_slice(&vcr_bytes).map_err(|e| AppError::Error(e.to_string()))?;
     let jwt = &mut vcr.verifiable_credential.clone();
-    let jwt_data = get_unverified_jwt_claims(jwt)?;
+    let jwt_data = get_unverified_jwt_claims(jwt).map_err(|e| AppError::Error(e.to_string()))?;
     let jwt_str = jwt.as_str().map(ToString::to_string).ok_or(AppError::Error(
         "Failed to convert the Public Link credential JWT to a string".to_string(),
     ))?;

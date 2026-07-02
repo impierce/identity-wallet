@@ -335,10 +335,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                 get_credential_status(&verifiable_credential_record, identity_manager).await;
 
             // Set the issuer name of the credential.
-            verifiable_credential_record
-                .display_credential
-                .issuer_name
-                .clone_from(&issuer_name);
+            verifiable_credential_record.display_credential.issuer_name = issuer_name.clone();
 
             // Set the connection ID of the credential.
             verifiable_credential_record.display_credential.connection_id = Some(connection.id.clone());
