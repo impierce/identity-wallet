@@ -5,4 +5,4 @@ Icon=unime
 Name=UniMe
 Terminal=false
 Type=Application
-MimeType=x-scheme-handler/openid;x-scheme-handler/openid-credential-offer
+MimeType=x-scheme-handler/openid;x-scheme-handler/openid4vp;x-scheme-handler/openid-credential-offer

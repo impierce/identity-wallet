@@ -56,12 +56,17 @@
         const state = url.searchParams.get('state') ?? '';
         await dispatch({
           type: '[Credential Offer] Code received',
-          payload: { code, is_pre_authorized: false, state },
+          payload: { code, is_pre_authorized: false, is_interactive: false, state },
         });
         break;
       }
       case 'openid-credential-offer:':
-      case 'openid:': {
+      // TODO: OpenID4VP versions prior to 1.0 referred to `openid://` as the deep link scheme instead of
+      // `openid4vp://`. For now we support both for better compatibility, but we can remove support for `openid://`
+      // in a future update.
+      // eslint-disable-next-line no-fallthrough
+      case 'openid:':
+      case 'openid4vp:': {
         await dispatch({
           type: '[QR Code] Scanned',
           payload: { form_urlencoded: url.toString() },
