@@ -38,7 +38,7 @@ lazy_static = "1.4"
 log.workspace = true
 oauth_tsl.workspace = true
 oid4vc.workspace = true
-openid-federation = { git = "https://github.com/impierce/openid-federation", rev = "705664f"}
+openid-federation = { git = "https://github.com/impierce/openid-federation", rev = "4c60e2e"}
 p256 = { version = "0.13", features = ["jwk"] }
 reqwest = { version = "0.13", default-features = false, features = [
     "json",

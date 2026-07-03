@@ -147,7 +147,7 @@ pub async fn create_public_link(state: &AppState, credential_id: &str) -> Result
     let response = client
         .post(&public_verifier_dact_endpoint_url)
         .header("Content-Type", "application/json")
-        .body(json!({ "dact_id": token_jti, "jwt": data_access_consent_token_jwt }).to_string()) // TODO import this response type from ssi-agent
+        .body(json!({ "dactId": token_jti, "jwt": data_access_consent_token_jwt }).to_string()) // TODO import this response type from ssi-agent
         .send()
         .await
         .map_err(|e| {
@@ -212,7 +212,7 @@ pub async fn get_trusted_verifier_public_verification_endpoint(
         .map_err(|e| AppError::Error(format!("Failed to get trust_anchor entity_id: {e}")))?;
 
     let trust_anchor_public_verification_endpoint = trust_anchor_url
-        .join("/verify")
+        .join("/public/verify") // TODO: fix this hardcode via entity config metadata
         .map_err(|e| AppError::Error(format!("Failed to construct public verification endpoint URL: {e}")))?;
 
     Ok(trust_anchor_public_verification_endpoint.to_string())
