@@ -191,7 +191,7 @@ pub async fn download_asset(url: reqwest::Url, id: &str) -> Result<(), AppError>
         .get("content-type")
         .map(|header_value| match header_value.to_str().unwrap() {
             "image/png" => Ok("png"),
-            "image/jpeg" => Ok("jpg"),
+            "image/jpeg" | "image/jpg" => Ok("jpg"),
             "image/svg+xml" => Ok("svg"),
             _ => {
                 warn!("content_type is not supported: {header_value:?}");
