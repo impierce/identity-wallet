@@ -61,7 +61,7 @@ async fn when_content_type_is_supported_then_download_should_start() {
 
     Mock::given(method("GET"))
         .and(path("/image"))
-        .respond_with(ResponseTemplate::new(200).set_body_raw(vec![], "image/svg+xml"))
+        .respond_with(ResponseTemplate::new(200).set_body_raw(vec![], "image/jpeg"))
         .expect(1)
         .mount(&mock_server)
         .await;
@@ -82,7 +82,7 @@ async fn when_content_type_is_not_supported_then_download_should_fail() {
 
     Mock::given(method("GET"))
         .and(path("/image.png")) // file extension is ignored (even if it's supported), only content-type is checked
-        .respond_with(ResponseTemplate::new(200).set_body_raw(vec![], "image/jpeg"))
+        .respond_with(ResponseTemplate::new(200).set_body_raw(vec![], "image/webp"))
         .expect(1)
         .mount(&mock_server)
         .await;
