@@ -168,7 +168,7 @@ impl VerifiableCredentialRecord {
                     let expiration_date = vcdm2_sd_jwt
                         .claims()
                         .get("validUntil")
-                        .and_then(|valid_until| valid_until.as_str().map(ToString::to_string)); // TODO: import this from UniCore
+                        .and_then(|valid_until| valid_until.as_str().map(ToString::to_string)); // TODO: import this as fn to_unescaped_string from UniCore, once we implement UniCore in UniMe.
 
                     if vcdm2_sd_jwt.headers().get("typ").and_then(|typ| typ.as_str()) != Some("vc+sd-jwt") {
                         return Err(AppError::Error(
@@ -208,14 +208,17 @@ impl VerifiableCredentialRecord {
                     let hash = { sha256::digest(json!(credential_display).to_string()) };
 
                     let id = Uuid::from_slice(&hash.as_bytes()[..16])?.to_string();
-                    let issuance_date = credential_display["issuanceDate"] // TODO: direct indexing, unsafe
-                        .as_str()
-                        .map(ToString::to_string)
+                    let issuance_date = credential_display
+                        .get("issuanceDate")
+                        .or_else(|| credential_display.get("validFrom"))
+                        .and_then(|value| value.as_str().map(ToString::to_string))
                         .ok_or(AppError::Error(
-                            "Failed to create a VerifiableCredentialRecord: 'issuanceDate' is missing".to_string(),
+                            "Failed to create a VerifiableCredentialRecord: 'issuanceDate' or 'validFrom' is missing"
+                                .to_string(),
                         ))?;
                     let expiration_date = credential_display
-                        .get("expirationDate") // TODO: this is Data model specific, ensure catching all cases
+                        .get("expirationDate")
+                        .or_else(|| credential_display.get("validUntil"))
                         .and_then(|valid_until| valid_until.as_str().map(ToString::to_string)); // TODO: import this from UniCore
 
                     // TODO: Use the claims to rename the keys in the Credential according to the display hints provided by
