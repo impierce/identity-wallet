@@ -57,7 +57,7 @@ pub async fn share_to_linkedin(state: AppState, action: Action) -> Result<AppSta
 
         info!("Opening LinkedIn AddToProfile URL in browser: `{linkedin_url}`");
 
-        // When testing Tauri is often not initialized and the link doesn't actually need to be opened anyway.
+        // When testing, Tauri is often not initialized and the link doesn't actually need to be opened anyway.
         #[cfg(not(feature = "test_utils"))]
         {
             use tauri_plugin_opener::OpenerExt;
