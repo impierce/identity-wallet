@@ -174,11 +174,10 @@ pub async fn create_public_link(state: &AppState, credential_id: &str) -> Result
     Ok(public_link_url)
 }
 
-/// TODO: integrate OpenID Fed here once that mvp is done
 /// Resolve the Issuer's Trust Chain to find the Ecosystem Leader (Trust Anchor) and its public verification endpoint, who will be the trusted verifier.
 /// Step 1: Resolve the Issuer's trust chain
-/// Step 2: get the Trust Anchor's DID Document
-/// Step 3: find the Public Verification Endpoint service
+/// Step 2: get the Trust Anchor's URL
+/// Step 3: Add the hardcoded /public/verify endpoint to the Trust Anchor's URL. TODO: in the future this should be either in DID services or Openid Fed metadata.
 pub async fn get_trusted_verifier_public_verification_endpoint(
     state: &AppState,
     issuer_did: &str,
@@ -189,6 +188,7 @@ pub async fn get_trusted_verifier_public_verification_endpoint(
         "Failed to extract URL from issuer DID: {issuer_did}"
     )))?;
 
+    // TODO: this doesnt make sense from a UX perspective, the user doesnt know the trust anchor, only the issuer.
     let trust_list_urls: Vec<Url> = state
         .trust_lists
         .0
@@ -218,6 +218,7 @@ pub async fn get_trusted_verifier_public_verification_endpoint(
     Ok(trust_anchor_public_verification_endpoint.to_string())
 }
 
+/// Our own struct for standard JWT claims, mostly to make the claims we need non-optional form the start.
 #[derive(Serialize, Debug)]
 struct PublicLinkTokenClaims {
     iss: String,
