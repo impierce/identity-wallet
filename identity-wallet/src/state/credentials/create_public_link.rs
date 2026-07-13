@@ -1,6 +1,6 @@
 use crate::error::AppError::{self, *};
 use crate::state::credentials::VerifiableCredentialRecord;
-use crate::state::did::validate_linked_verifiable_presentations::extract_url_from_did_web;
+use crate::state::did::extract_url_from_did_web;
 use crate::state::AppState;
 use base64::Engine;
 use chrono::{Duration, Utc};
