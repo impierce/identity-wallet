@@ -4,8 +4,9 @@ use crate::state::did::extract_url_from_did_web;
 use crate::state::AppState;
 use base64::Engine;
 use chrono::{Duration, Utc};
-use jsonwebtoken::{decode_header, Header};
+use jsonwebtoken::Header;
 use log::info;
+use oid4vc::oid4vc_core::utils::did::extract_normalized_did_kid_from_jwt;
 use oid4vc::oid4vc_core::utils::jwt::get_unverified_jwt_claims;
 use oid4vc::oid4vc_core::{jwt::encode, Subject};
 use openid_federation::FederationClient;
@@ -47,15 +48,9 @@ pub async fn create_public_link(state: &AppState, credential_id: &str) -> Result
         "Failed to convert the Public Link credential JWT to a string".to_string(),
     ))?;
 
-    let jwt_header = decode_header(&jwt_str).map_err(|e| {
-        AppError::Error(format!(
-            "Failed to decode JWT header of the Public Link credential: {e}"
-        ))
-    })?;
+    let kid = extract_normalized_did_kid_from_jwt(&jwt_str)
+        .map_err(|e| AppError::Error(format!("Failed to extract kid from jwt: {e}")))?;
 
-    let kid = jwt_header.kid.ok_or(AppError::Error(
-        "Public Link credential JWT header is missing `kid` field".to_string(),
-    ))?;
     let credential_issuer_did = kid.split('#').next().unwrap_or(&kid); // A did:web needs a # key fragment, a did:key doesn't
 
     // TODO: implement the iss claim as fall back? Getting it from the KID is always safer since that is also checked during signature validation
