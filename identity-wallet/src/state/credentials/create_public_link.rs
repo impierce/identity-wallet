@@ -122,8 +122,7 @@ pub async fn create_public_link(state: &AppState, credential_id: &str) -> Result
     info!("Generated Data Access Consent Token JWT: {data_access_consent_token_jwt}");
 
     // Extract the Issuer DID from the `aud` claim of the token
-    let public_verifier_endpoint_url =
-        get_trusted_verifier_public_verification_endpoint(state, credential_issuer_did).await?;
+    let public_verifier_endpoint_url = get_trusted_verifier_public_verification_endpoint(credential_issuer_did).await?;
 
     // TODO: this hardcoded endpoint "discovery" could suffice for now but this implicitly states that the store_dact endpoint must always be on the same host path as the public verification endpoint.
     // Our public verification endpoint is {HOST}/verify, so we remove the /verify suffix and append /store-data-access-consent-token.
@@ -173,28 +172,15 @@ pub async fn create_public_link(state: &AppState, credential_id: &str) -> Result
 /// Step 1: Resolve the Issuer's trust chain
 /// Step 2: get the Trust Anchor's URL
 /// Step 3: Add the hardcoded /public/verify endpoint to the Trust Anchor's URL. TODO: in the future this should be either in DID services or Openid Fed metadata.
-pub async fn get_trusted_verifier_public_verification_endpoint(
-    state: &AppState,
-    issuer_did: &str,
-) -> Result<String, AppError> {
+pub async fn get_trusted_verifier_public_verification_endpoint(issuer_did: &str) -> Result<String, AppError> {
     let federation_client = FederationClient::new();
 
     let issuer_url = extract_url_from_did_web(issuer_did).ok_or(AppError::Error(format!(
         "Failed to extract URL from issuer DID: {issuer_did}"
     )))?;
 
-    // TODO: this doesnt make sense from a UX perspective, the user doesnt know the trust anchor, only the issuer.
-    let trust_list_urls: Vec<Url> = state
-        .trust_lists
-        .0
-        .iter()
-        .flat_map(|trust_list| trust_list.entries.keys().cloned())
-        .collect();
-
-    info!("Trust list URLs: {trust_list_urls:?}");
-
-    let trust_chain = federation_client
-        .discover_trust_chain(&issuer_url, Some(&trust_list_urls))
+    let trust_chains = federation_client
+        .discover_all_trust_chains(&issuer_url)
         .await
         .map_err(|e| {
             AppError::Error(format!(
@@ -202,7 +188,11 @@ pub async fn get_trusted_verifier_public_verification_endpoint(
             ))
         })?;
 
-    let (trust_anchor_url, _) = trust_chain
+    // TODO: improve trust chain selection logic, ultimately with policy and metadata checking, and iterating until a valid trust_anchor is found.
+    let first_trust_chain = trust_chains.first().ok_or(AppError::Error(format!(
+        "No trust_anchor/trust_chain found for Issuer of credential to be shared: {issuer_did}"
+    )))?;
+    let (trust_anchor_url, _) = first_trust_chain
         .trust_anchor_entity_id_and_configuration()
         .map_err(|e| AppError::Error(format!("Failed to get trust_anchor entity_id: {e}")))?;
 
