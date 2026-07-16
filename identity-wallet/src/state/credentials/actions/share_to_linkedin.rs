@@ -8,7 +8,6 @@ use ts_rs::TS;
 #[derive(Serialize, Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/ShareToLinkedIn.ts")]
 pub struct ShareToLinkedIn {
-    #[ts(type = "string")]
     pub id: String,
 }
 

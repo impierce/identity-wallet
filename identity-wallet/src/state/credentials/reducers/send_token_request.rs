@@ -17,7 +17,7 @@ use crate::{
         AppState, UNIME_CLIENT_ID, UNIME_REDIRECT_URI,
     },
 };
-use log::{info, warn};
+use log::{debug, info, warn};
 use oauth_tsl::{status_list::StatusType, tokens::referenced_token::StatusClaim};
 use oid4vc::{
     oid4vc_core::utils::jwt::get_unverified_jwt_claims,
@@ -369,7 +369,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             // Add history event
             history_credentials.push(HistoryCredential::from_credential(&verifiable_credential_record));
 
-            info!("Successfully sent token request and received credential: {credential:?}");
+            debug!("Successfully sent token request and received credential: {credential:?}");
         }
 
         let credentials: Vec<DisplayCredential> = stronghold_manager
