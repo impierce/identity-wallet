@@ -12,6 +12,7 @@ tauri-plugin-opener = { version = "2" }
 anyhow = "1.0"
 async-trait = "0.1"
 base64 = "0.22"
+bs58 = "0.5.1"
 chrono = "0.4"
 derivative = "2.2"
 did_manager.workspace = true
@@ -38,10 +39,11 @@ lazy_static = "1.4"
 log.workspace = true
 oauth_tsl.workspace = true
 oid4vc.workspace = true
+openid-federation = { git = "https://github.com/impierce/openid-federation", rev = "a76b12f"}
 p256 = { version = "0.13", features = ["jwk"] }
-reqwest = { version = "0.11", default-features = false, features = [
+reqwest = { version = "0.13", default-features = false, features = [
     "json",
-    "rustls-tls",
+    "rustls",
 ] }
 rustls.workspace = true
 rustls-platform-verifier.workspace = true
@@ -63,6 +65,7 @@ ts-rs = { version = "7.0", features = ["chrono-impl", "url-impl"] }
 typetag = "0.2"
 unicode-normalization = "0.1"
 url = "2.5"
+urlencoding = "2.1.3"
 uuid = { version = "1.4", features = ["v4", "fast-rng", "serde"] }
 
 [dev-dependencies]

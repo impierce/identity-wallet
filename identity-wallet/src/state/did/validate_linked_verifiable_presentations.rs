@@ -1,6 +1,9 @@
 use crate::state::{
     core_utils::helpers::{download_logo, get_issuer_document, validate_credential_types},
-    did::validate_domain_linkage::{ValidationStatus, Verifier},
+    did::{
+        extract_url_from_did_web,
+        validate_domain_linkage::{ValidationStatus, Verifier},
+    },
 };
 use did_manager::Resolver;
 use futures::{
@@ -73,6 +76,7 @@ pub async fn validate_linked_verifiable_presentations(
             .flatten(),
     )
     .filter_map(|linked_verifiable_presentation_url| {
+        info!("Processing linked verifiable presentation URL: {linked_verifiable_presentation_url}");
         // Validate the linked verifiable presentation and get the linked verifiable credential data
         get_validated_linked_presentation_data(resolver, &holder_document, linked_verifiable_presentation_url)
     })
@@ -159,6 +163,8 @@ async fn validate_linked_verifiable_presentation(
         .ok()
         .and_then(|presentation_jwt| {
             status.is_success().then(|| {
+                info!("Validating linked verifiable presentation JWT: {presentation_jwt}");
+
                 let validator = JwtPresentationValidator::with_signature_verifier(Verifier);
                 validator
                     .validate(&presentation_jwt.into(), &holder_document, &Default::default())
@@ -179,9 +185,9 @@ async fn get_validated_linked_credential_data(
     linked_verifiable_presentation: DecodedJwtPresentation<Jwt>,
 ) -> Vec<LinkedVerifiableCredentialData> {
     iter(linked_verifiable_presentation.presentation.verifiable_credential)
-        .filter_map(|linked_verifiable_credential| async move {
+        .filter_map(|linked_verifiable_credential_jwt| async move {
             // Resolve the issuer document and issuer DID
-            let issuer_document = get_issuer_document(resolver, &linked_verifiable_credential).await?;
+            let issuer_document = get_issuer_document(resolver, &linked_verifiable_credential_jwt).await?;
             let issuer_did = issuer_document.id().to_string();
 
             info!("Issuer document: {issuer_document:#?}");
@@ -197,6 +203,7 @@ async fn get_validated_linked_credential_data(
 
             // TODO: This is a fallback to get the url from a did:web to validate domain linkage. This is useful for companies who haven't implemented domain linkage yet.
             if validated_linked_domains.is_empty() {
+                info!("No validated linked domains found, attempting to extract URL from DID Web: {issuer_did}");
                 if let Some(did_web_url) = extract_url_from_did_web(&issuer_did) {
                     validated_linked_domains.insert(0, did_web_url);
                 }
@@ -210,7 +217,7 @@ async fn get_validated_linked_credential_data(
 
                 // Decode the linked verifiable credential and validate the jwt_vc_json, checks the JWT and the Issuer DID
                 if let Ok(linked_verifiable_credential) = validator.validate::<_, Value>(
-                    &linked_verifiable_credential,
+                    &linked_verifiable_credential_jwt,
                     &issuer_document,
                     &options,
                     FailFast::FirstError,
@@ -231,7 +238,8 @@ async fn get_validated_linked_credential_data(
                         let logo_uri = get_logo_uri(credential_subject, &linked_verifiable_credential, &validated_linked_domains).await;
                         let issuance_date = linked_verifiable_credential.credential.issuance_date.to_rfc3339();
 
-                        info!("LinkedVerifiableCredentialData: name: {name:?}, logo_uri: {logo_uri:?}, issuance_date: {issuance_date}");
+                        info!("LinkedVerifiableCredentialData: name: {name:?}, logo_uri: {logo_uri:?}, issuance_date: {issuance_date}, validated_linked_domains: {validated_linked_domains:#?}");
+
                         Some(LinkedVerifiableCredentialData {
                             name,
                             logo_uri,
@@ -244,7 +252,7 @@ async fn get_validated_linked_credential_data(
                         None
                     }
                 } else {
-                    warn!("Failed to validate linked verifiable credential: {linked_verifiable_credential:#?}");
+                    warn!("Failed to validate linked verifiable credential: {linked_verifiable_credential_jwt:#?}");
                     // TODO: Should we add more fine-grained error handling? `None` here means that the linked verifiable credential is invalid.
                     None
                 }
@@ -426,21 +434,6 @@ fn extract_logo_uri_from_display(display: &[Value]) -> Option<String> {
         .and_then(|logo| logo.get("uri").or(logo.get("url")))
         .and_then(|url| url.as_str())
         .map(ToString::to_string)
-}
-
-fn extract_url_from_did_web(did_web: &str) -> Option<Url> {
-    if let Some(did) = did_web.strip_prefix("did:web:") {
-        let url_str = if let Some(index_colon) = did.find(':') {
-            &did[..index_colon]
-        } else {
-            did
-        };
-
-        if let Ok(url) = Url::parse(&format!("https://{url_str}")) {
-            return Some(url);
-        }
-    }
-    None
 }
 
 #[cfg(not(feature = "test_utils"))]

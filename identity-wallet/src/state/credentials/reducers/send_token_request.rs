@@ -17,7 +17,7 @@ use crate::{
         AppState, UNIME_CLIENT_ID, UNIME_REDIRECT_URI,
     },
 };
-use log::{info, warn};
+use log::{debug, info, warn};
 use oauth_tsl::{status_list::StatusType, tokens::referenced_token::StatusClaim};
 use oid4vc::{
     oid4vc_core::utils::jwt::get_unverified_jwt_claims,
@@ -322,7 +322,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
 
             let mut verifiable_credential_record = VerifiableCredentialRecord::try_new(
                 credential_configuration.credential_format.format(),
-                credential,
+                credential.clone(),
                 claims,
             )?;
             // Validate the credential against its corresponding credential JSON Schema.
@@ -335,10 +335,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                 get_credential_status(&verifiable_credential_record, identity_manager).await;
 
             // Set the issuer name of the credential.
-            verifiable_credential_record
-                .display_credential
-                .issuer_name
-                .clone_from(&issuer_name);
+            verifiable_credential_record.display_credential.issuer_name = issuer_name.clone();
 
             // Set the connection ID of the credential.
             verifiable_credential_record.display_credential.connection_id = Some(connection.id.clone());
@@ -371,6 +368,8 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
 
             // Add history event
             history_credentials.push(HistoryCredential::from_credential(&verifiable_credential_record));
+
+            debug!("Successfully sent token request and received credential: {credential:?}");
         }
 
         let credentials: Vec<DisplayCredential> = stronghold_manager

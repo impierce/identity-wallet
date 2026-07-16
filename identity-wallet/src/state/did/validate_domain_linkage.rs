@@ -43,7 +43,7 @@ impl JwsVerifier for Verifier {
     fn verify(&self, input: VerificationInput, public_key: &IotaIdentityJwk) -> Result<(), SignatureVerificationError> {
         use SignatureVerificationErrorKind::*;
 
-        info!("Verifying input");
+        info!("Verifying input signature with alg: {}", input.alg);
 
         let algorithm =
             Algorithm::from_str(&input.alg.to_string()).map_err(|_| SignatureVerificationError::new(UnsupportedAlg))?;
@@ -66,7 +66,10 @@ impl JwsVerifier for Verifier {
             &decoding_key,
             algorithm,
         ) {
-            Ok(true) => Ok(()),
+            Ok(true) => {
+                info!("Signature successfully verified");
+                Ok(())
+            }
             Err(_) | Ok(false) => Err(SignatureVerificationError::new(
                 // TODO: more fine-grained error handling?
                 InvalidSignature,

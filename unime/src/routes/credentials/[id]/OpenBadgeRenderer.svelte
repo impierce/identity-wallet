@@ -35,7 +35,9 @@
   {#if credential.data.credentialSubject?.achievement?.achievementType}
     <TextFieldRenderer
       key={'Achievement type'}
-      value={credential.data.credentialSubject?.achievement?.achievementType}
+      value={credential.data.credentialSubject?.achievement?.achievementType
+        .replaceAll('ext:', '')
+        .replaceAll('_', ' ')}
     />
   {/if}
 

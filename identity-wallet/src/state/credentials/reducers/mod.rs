@@ -6,4 +6,5 @@ pub mod self_issue_credential;
 pub mod send_credential_request;
 pub mod send_interactive_authorization_request_follow_up;
 pub mod send_token_request;
+pub mod share_to_linkedin;
 pub mod update_credential_metadata;

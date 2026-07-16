@@ -1,6 +1,5 @@
 pub mod actions;
 pub mod reducers;
-
 use super::FeatTrait;
 use crate::{error::AppError, state::core_utils::DateUtils};
 use derivative::Derivative;
@@ -58,6 +57,8 @@ pub struct DisplayCredential {
     pub display_name: String,
     #[ts(optional)]
     pub credential_status: Option<CredentialStatus>,
+    #[ts(optional)]
+    pub public_link: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Eq, Derivative, TS)]
@@ -89,6 +90,10 @@ pub struct CredentialMetadata {
     pub date_added: String,
     #[derivative(PartialEq = "ignore")]
     pub date_issued: String,
+    // TODO: use this expiration date in the frontend to display
+    #[ts(optional)]
+    #[derivative(PartialEq = "ignore")]
+    pub expiration_date: Option<String>,
     #[ts(optional)]
     pub icon: Option<String>,
 }
@@ -106,7 +111,7 @@ impl VerifiableCredentialRecord {
         claim_descriptions: Vec<ClaimDescription>,
     ) -> Result<Self, AppError> {
         let display_credential = {
-            let (id, data, issuance_date, display_claims) = match format {
+            let (id, data, issuance_date, expiration_date, display_claims) = match format {
                 CredentialFormats::DcSdJwt(()) => {
                     let sd_jwt_vc = verifiable_credential
                         .as_str()
@@ -118,6 +123,7 @@ impl VerifiableCredentialRecord {
 
                     let id = Uuid::new_v4().to_string();
                     let issuance_date = sd_jwt_vc.claims().iat.map(|iat| iat.to_rfc3339()).unwrap_or_default();
+                    let expiration_date = sd_jwt_vc.claims().exp.map(|exp| exp.to_rfc3339());
 
                     if sd_jwt_vc.headers().get("typ").and_then(|typ| typ.as_str()) != Some("dc+sd-jwt") {
                         return Err(AppError::Error(
@@ -144,7 +150,7 @@ impl VerifiableCredentialRecord {
                         "credentialSubject": credential_subject
                     });
 
-                    (id, data, issuance_date, display_claims)
+                    (id, data, issuance_date, expiration_date, display_claims)
                 }
                 CredentialFormats::VcSdJwt(()) => {
                     let vcdm2_sd_jwt = verifiable_credential
@@ -161,6 +167,10 @@ impl VerifiableCredentialRecord {
                         .and_then(|valid_from| valid_from.as_str())
                         .unwrap_or_default()
                         .to_string();
+                    let expiration_date = vcdm2_sd_jwt
+                        .claims()
+                        .get("validUntil")
+                        .and_then(|valid_until| valid_until.as_str().map(ToString::to_string)); // TODO: import this as fn to_unescaped_string from UniCore, once we implement UniCore in UniMe.
 
                     if vcdm2_sd_jwt.headers().get("typ").and_then(|typ| typ.as_str()) != Some("vc+sd-jwt") {
                         return Err(AppError::Error(
@@ -184,7 +194,7 @@ impl VerifiableCredentialRecord {
 
                     let data = json!(credential);
 
-                    (id, data, issuance_date, display_claims)
+                    (id, data, issuance_date, expiration_date, display_claims)
                 }
                 CredentialFormats::JwtVcJson(()) => {
                     let credential_display = get_unverified_jwt_claims(&verifiable_credential)
@@ -199,13 +209,19 @@ impl VerifiableCredentialRecord {
                     // TODO: do not use a hash to generate the credential ID. Currently we still do this so that our tests in `unime/src-tauri/tests` don't break.
                     let hash = { sha256::digest(json!(credential_display).to_string()) };
 
-                    let issuance_date = credential_display["issuanceDate"]
-                        .as_str()
-                        .map(ToString::to_string)
-                        .ok_or(AppError::Error(
-                            "Failed to create a VerifiableCredentialRecord: 'issuanceDate' is missing".to_string(),
-                        ))?;
                     let id = Uuid::from_slice(&hash.as_bytes()[..16])?.to_string();
+                    let issuance_date = credential_display
+                        .get("issuanceDate")
+                        .or_else(|| credential_display.get("validFrom"))
+                        .and_then(|value| value.as_str().map(ToString::to_string))
+                        .ok_or(AppError::Error(
+                            "Failed to create a VerifiableCredentialRecord: 'issuanceDate' or 'validFrom' is missing"
+                                .to_string(),
+                        ))?;
+                    let expiration_date = credential_display
+                        .get("expirationDate")
+                        .or_else(|| credential_display.get("validUntil"))
+                        .and_then(|valid_until| valid_until.as_str().map(ToString::to_string)); // TODO: import this from UniCore
 
                     // TODO: Use the claims to rename the keys in the Credential according to the display hints provided by
                     // the Issuer. Before we do this we need to make sure that UniCore supports Claims Description for
@@ -215,7 +231,7 @@ impl VerifiableCredentialRecord {
 
                     let data = credential_display;
 
-                    (id, data, issuance_date, display_claims)
+                    (id, data, issuance_date, expiration_date, display_claims)
                 }
                 _ => {
                     return Err(AppError::Error(
@@ -234,6 +250,7 @@ impl VerifiableCredentialRecord {
                     is_favorite: false,
                     date_added: DateUtils::new_date_string(),
                     date_issued: issuance_date,
+                    expiration_date,
                     icon: None,
                 },
                 // The other fields will be filled in at a later stage.
@@ -243,6 +260,7 @@ impl VerifiableCredentialRecord {
                 // The credential status is None here but it will be set right after this function.
                 // This initialization is separated since it requires async fetching.
                 credential_status: None,
+                public_link: None,
             }
         };
 

@@ -98,6 +98,7 @@ pub const APP_STATE_VERSION: u32 = 1;
 #[serde(default)]
 pub struct AppState {
     pub version: u32,
+    // TODO: improve this field to include all active dids, right now it has to be derived from the preferred key type which did is actually stored here for did:key and did:jwk. An improvement could look like: #[ts(type = "Map<[string, string], string>")] \n pub dids: HashMap<(String, Algorithm), String>.
     pub dids: HashMap<String, String>,
     pub connections: Connections,
     pub credentials: Vec<DisplayCredential>,
