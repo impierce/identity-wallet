@@ -58,6 +58,7 @@ pub struct DisplayCredential {
     pub display_name: String,
     #[ts(optional)]
     pub credential_status: Option<CredentialStatus>,
+    #[ts(optional)]
     pub public_link: Option<String>,
 }
 
@@ -90,6 +91,8 @@ pub struct CredentialMetadata {
     pub date_added: String,
     #[derivative(PartialEq = "ignore")]
     pub date_issued: String,
+    // TODO: use this expiration date in the frontend to display
+    #[ts(optional)]
     #[derivative(PartialEq = "ignore")]
     pub expiration_date: Option<String>,
     #[ts(optional)]

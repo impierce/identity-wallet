@@ -15,7 +15,8 @@ pub fn extract_url_from_did_web(did_web: &str) -> Option<Url> {
             did
         };
 
-        // TODO: quick hack to solve the percent-encoding issue in did:web:localhost%3A3033 (localhost:3033)
+        // When present in the URL, colons need to be percent-encoded, e.g., did:web:localhost%3A3033 (localhost:3033)
+        // https://w3c-ccg.github.io/did-method-web/#method-specific-identifier
         let url_decoded = url_str.replace("%3A", ":");
 
         if let Ok(url) = Url::parse(&format!("http://{url_decoded}")) {
