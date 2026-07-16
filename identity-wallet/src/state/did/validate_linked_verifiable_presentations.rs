@@ -35,8 +35,6 @@ pub struct LinkedVerifiableCredentialData {
     pub issuance_date: String,
     #[ts(skip)]
     pub issuer_linked_domains: Vec<Url>,
-    #[ts(skip)]
-    pub data: String,
 }
 
 // Skip the partial equality check for `issuance_date` during testing.
@@ -240,15 +238,13 @@ async fn get_validated_linked_credential_data(
                         let logo_uri = get_logo_uri(credential_subject, &linked_verifiable_credential, &validated_linked_domains).await;
                         let issuance_date = linked_verifiable_credential.credential.issuance_date.to_rfc3339();
 
-                        let data = linked_verifiable_credential_jwt.as_str().to_string();
-                        info!("LinkedVerifiableCredentialData: name: {name:?}, logo_uri: {logo_uri:?}, issuance_date: {issuance_date}, validated_linked_domains: {validated_linked_domains:#?}, data: {data}");
+                        info!("LinkedVerifiableCredentialData: name: {name:?}, logo_uri: {logo_uri:?}, issuance_date: {issuance_date}, validated_linked_domains: {validated_linked_domains:#?}");
 
                         Some(LinkedVerifiableCredentialData {
                             name,
                             logo_uri,
                             issuance_date,
                             issuer_linked_domains: validated_linked_domains,
-                            data
                         })
                     }
                     else {
