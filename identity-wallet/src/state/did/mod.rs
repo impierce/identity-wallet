@@ -17,11 +17,13 @@ pub fn extract_url_from_did_web(did_web: &str) -> Option<Url> {
 
         // When present in the URL, colons need to be percent-encoded, e.g., did:web:localhost%3A3033 (localhost:3033)
         // https://w3c-ccg.github.io/did-method-web/#method-specific-identifier
-        let url_decoded = url_str.replace("%3A", ":");
+        let url_decoded = urlencoding::decode(url_str);
 
-        if let Ok(url) = Url::parse(&format!("http://{url_decoded}")) {
-            // TODO: the http:// hardcoded scheme is a hack to test with localhost
-            return Some(url);
+        if let Ok(url_decoded) = url_decoded {
+            if let Ok(url) = Url::parse(&format!("http://{url_decoded}")) {
+                // TODO: the http:// hardcoded scheme is a hack to test with localhost
+                return Some(url);
+            }
         }
     }
     None

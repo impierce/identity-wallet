@@ -1,5 +1,4 @@
 pub mod actions;
-pub mod create_public_link;
 pub mod reducers;
 use super::FeatTrait;
 use crate::{error::AppError, state::core_utils::DateUtils};

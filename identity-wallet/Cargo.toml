@@ -65,8 +65,8 @@ ts-rs = { version = "7.0", features = ["chrono-impl", "url-impl"] }
 typetag = "0.2"
 unicode-normalization = "0.1"
 url = "2.5"
-uuid = { version = "1.4", features = ["v4", "fast-rng", "serde"] }
 urlencoding = "2.1.3"
+uuid = { version = "1.4", features = ["v4", "fast-rng", "serde"] }
 
 [dev-dependencies]
 serial_test.workspace = true
