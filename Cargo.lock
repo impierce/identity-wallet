@@ -9393,7 +9393,7 @@ dependencies = [
 [[package]]
 name = "openid-federation"
 version = "0.1.0"
-source = "git+https://github.com/impierce/openid-federation?rev=e6dcd45#e6dcd45ef587fed42181ec4bebf38540bef41897"
+source = "git+https://github.com/impierce/openid-federation?rev=a76b12f#a76b12fc2ce4b6c51d6e209b7783d254beabf16e"
 dependencies = [
  "async-trait",
  "base64 0.21.7",
