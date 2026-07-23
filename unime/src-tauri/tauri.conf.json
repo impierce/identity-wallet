@@ -61,7 +61,17 @@
         { "scheme": [ "unime" ] },
         { "scheme": [ "openid" ] },
         { "scheme": [ "openid4vp" ] },
-        { "scheme": [ "openid-credential-offer" ] }
+        { "scheme": [ "openid-credential-offer" ] },
+        {
+          "host": "www.impierce.com",
+          "pathPrefix": [ "/open" ],
+          "scheme": [ "https" ]
+        },
+        {
+          "host": "impierce.com",
+          "pathPrefix": [ "/open" ],
+          "scheme": [ "https" ]
+        }
       ],
       "desktop": {
         "schemes": ["unime", "openid", "openid4vp", "openid-credential-offer"]
