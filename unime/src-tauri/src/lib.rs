@@ -1,6 +1,4 @@
 #[cfg(target_os = "android")]
-use iota_sdk::IotaClientBuilder;
-#[cfg(target_os = "android")]
 use jni::{
     objects::{JClass, JObject},
     JNIEnv,
