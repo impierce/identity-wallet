@@ -4,10 +4,16 @@ use serde::Deserialize;
 use serde_json::json;
 
 use crate::{
-    error::AppError, http_client::get_http_client, state::{
-        AppState, VerifiedData, actions::{Action, listen}, qr_code::{actions::qrcode_scanned::QrCodeScanned, reducers::read_credential_offer::read_credential_offer}, verified_data::{
-            EmailVerification, actions::{RedeemCode, ResetEmailVerification, SendVerificationEmail, ServiceHealthCheck},
+    error::AppError,
+    http_client::get_http_client,
+    state::{
+        actions::{listen, Action},
+        qr_code::{actions::qrcode_scanned::QrCodeScanned, reducers::read_credential_offer::read_credential_offer},
+        verified_data::{
+            actions::{RedeemCode, ResetEmailVerification, SendVerificationEmail, ServiceHealthCheck},
+            EmailVerification,
         },
+        AppState, VerifiedData,
     },
 };
 

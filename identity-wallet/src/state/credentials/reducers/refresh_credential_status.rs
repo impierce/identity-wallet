@@ -1,10 +1,15 @@
 use std::time::Duration;
 
 use crate::{
-    error::AppError, http_client::get_http_client_builder, state::{
-        AppState, actions::{Action, listen}, core_utils::{DateUtils, IdentityManager}, credentials::{
-            CredentialStatus, VerifiableCredentialRecord, actions::refresh_credential_status::RefreshCredentialStatus,
+    error::AppError,
+    http_client::get_http_client_builder,
+    state::{
+        actions::{listen, Action},
+        core_utils::{DateUtils, IdentityManager},
+        credentials::{
+            actions::refresh_credential_status::RefreshCredentialStatus, CredentialStatus, VerifiableCredentialRecord,
         },
+        AppState,
     },
 };
 use jsonwebtoken::{decode_header, Algorithm, DecodingKey};

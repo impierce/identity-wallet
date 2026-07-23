@@ -1,8 +1,8 @@
 pub mod helpers;
 pub mod history_event;
 
-use std::sync::Arc;
 use rustls::RootCertStore;
+use std::sync::Arc;
 use url::Url;
 
 use crate::command::Runtime;
