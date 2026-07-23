@@ -1,8 +1,11 @@
-use crate::state::{
-    core_utils::helpers::{download_logo, get_issuer_document, validate_credential_types},
-    did::{
-        extract_url_from_did_web,
-        validate_domain_linkage::{ValidationStatus, Verifier},
+use crate::{
+    http_client::get_http_client,
+    state::{
+        core_utils::helpers::{download_logo, get_issuer_document, validate_credential_types},
+        did::{
+            extract_url_from_did_web,
+            validate_domain_linkage::{ValidationStatus, Verifier},
+        },
     },
 };
 use did_manager::Resolver;
@@ -146,7 +149,10 @@ async fn validate_linked_verifiable_presentation(
     holder_document: &CoreDocument,
     linked_verifiable_presentation_url: Url,
 ) -> Option<DecodedJwtPresentation<Jwt>> {
-    let response = reqwest::get(linked_verifiable_presentation_url)
+    let response = get_http_client()
+        .await
+        .get(linked_verifiable_presentation_url)
+        .send()
         .await
         .inspect_err(|err| {
             warn!("Failed to retrieve linked verifiable presentation: {err}");
@@ -377,7 +383,7 @@ async fn get_logo_uri(
         for domain in validated_linked_domains.iter() {
             let well_known_endpoint = format!("{domain}.well-known/openid-credential-issuer");
             info!("Trying to fetch image uri from {well_known_endpoint} endpoint");
-            if let Ok(response) = reqwest::Client::new().get(&well_known_endpoint).send().await {
+            if let Ok(response) = get_http_client().await.get(&well_known_endpoint).send().await {
                 if let Ok(metadata) = response.json::<CredentialIssuerMetadata>().await {
                     logo_uri = metadata.display.as_deref().and_then(extract_logo_uri_from_display);
 
@@ -392,7 +398,7 @@ async fn get_logo_uri(
             // But this is no guarantee and the code below is one such workaround.
             let well_known_endpoint = format!("{domain}oid4vci/.well-known/openid-credential-issuer");
             info!("Trying to fetch image uri from {well_known_endpoint} endpoint");
-            if let Ok(response) = reqwest::Client::new().get(&well_known_endpoint).send().await {
+            if let Ok(response) = get_http_client().await.get(&well_known_endpoint).send().await {
                 if let Ok(metadata) = response.json::<CredentialIssuerMetadata>().await {
                     logo_uri = linked_verifiable_credential.credential.types.iter().find_map(|type_| {
                         info!("Trying to fetch image uri from Credential Configuration Supported: {type_}");

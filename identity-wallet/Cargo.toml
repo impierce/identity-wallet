@@ -46,7 +46,7 @@ reqwest = { version = "0.13", default-features = false, features = [
     "rustls",
 ] }
 rustls.workspace = true
-rustls-platform-verifier.workspace = true
+webpki-roots.workspace = true
 sd-jwt = { package = "sd-jwt-payload", version = "0.5.1", default-features = false, features = [
     "sha",
 ] }

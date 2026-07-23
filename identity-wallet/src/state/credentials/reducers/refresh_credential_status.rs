@@ -1,14 +1,10 @@
 use std::time::Duration;
 
 use crate::{
-    error::AppError,
-    state::{
-        actions::{listen, Action},
-        core_utils::{DateUtils, IdentityManager},
-        credentials::{
-            actions::refresh_credential_status::RefreshCredentialStatus, CredentialStatus, VerifiableCredentialRecord,
+    error::AppError, http_client::get_http_client_builder, state::{
+        AppState, actions::{Action, listen}, core_utils::{DateUtils, IdentityManager}, credentials::{
+            CredentialStatus, VerifiableCredentialRecord, actions::refresh_credential_status::RefreshCredentialStatus,
         },
-        AppState,
     },
 };
 use jsonwebtoken::{decode_header, Algorithm, DecodingKey};
@@ -18,7 +14,7 @@ use oauth_tsl::{
     status_list::{StatusList, StatusType},
 };
 use oid4vc::oid4vc_core::{utils::did::extract_normalized_did_kid_from_jwt, Verify};
-use reqwest::{header, redirect::Policy, Client};
+use reqwest::{header, redirect::Policy};
 
 pub async fn refresh_credential_status(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(refresh_credential_status) = listen::<RefreshCredentialStatus>(action) {
@@ -207,7 +203,7 @@ pub async fn fetch_credential_status(
 pub async fn fetch_status_list(uri: &str, accept_header: StatusListTokenResponseType) -> Result<String, AppError> {
     // 3xx redirects should be followed, but infinite loops are caught after 5 redirects.
     // The timeout of 10 seconds is an estimated guess of how long a status list request should take at maximum.
-    let client = Client::builder()
+    let client = get_http_client_builder()
         .redirect(Policy::limited(5))
         .timeout(Duration::from_secs(10))
         .build()

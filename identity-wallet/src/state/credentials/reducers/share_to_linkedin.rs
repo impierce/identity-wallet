@@ -1,4 +1,5 @@
 use crate::error::AppError::{self, *};
+use crate::http_client::get_http_client;
 use crate::state::{
     actions::{listen, Action},
     credentials::actions::share_to_linkedin::ShareToLinkedIn,
@@ -205,7 +206,7 @@ async fn create_public_link(state: &AppState, credential_id: &str) -> Result<Url
     info!("Public verifier DACT storage endpoint URL: {public_verifier_dact_endpoint_url}");
 
     // Before the public link is returned, the DACT needs to be stored by the verifier
-    let client = reqwest::Client::new();
+    let client = get_http_client().await;
     let response = client
         .post(&public_verifier_dact_endpoint_url)
         .header("Content-Type", "application/json")
