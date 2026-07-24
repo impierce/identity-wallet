@@ -114,8 +114,8 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
 
         download_credential_logos(&credential_configurations).await;
 
-        if let Some(logo_uri_str) = logo_uri.clone() {
-            download_logo(&logo_uri_str).await;
+        if let Some(logo_uri_str) = &logo_uri {
+            download_logo(logo_uri_str).await;
         } else {
             warn!("No logo URI found");
         }

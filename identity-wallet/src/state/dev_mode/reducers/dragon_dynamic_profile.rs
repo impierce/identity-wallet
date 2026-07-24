@@ -1,6 +1,7 @@
 use crate::{
     command,
     error::AppError,
+    http_client::get_http_client,
     state::{
         common::actions::reset::Reset,
         connections::actions::connection_accepted::ConnectionAccepted,
@@ -115,7 +116,8 @@ async fn add_credential(state: AppState) -> Result<AppState, AppError> {
         ]
     });
 
-    let response: CredentialResponse = reqwest::Client::new()
+    let response: CredentialResponse = get_http_client()
+        .await
         .post(url)
         .json(&payload)
         .send()
@@ -166,7 +168,8 @@ async fn add_connection(state: AppState) -> Result<AppState, AppError> {
         }
     });
 
-    let response: ConnectionResponse = reqwest::Client::new()
+    let response: ConnectionResponse = get_http_client()
+        .await
         .post(url)
         .json(&payload)
         .send()
@@ -204,7 +207,8 @@ async fn add_presentation_request(state: AppState) -> Result<AppState, AppError>
         "clientMetadata":{"logoUri":"https://staging.client.ngdil.com/imgs/kw1c-white.png","clientName":"Koning Willem I College"}
     });
 
-    let response: PresentationResponse = reqwest::Client::new()
+    let response: PresentationResponse = get_http_client()
+        .await
         .post(url)
         .json(&payload)
         .send()
@@ -250,7 +254,8 @@ async fn add_future_engineer(state: AppState) -> Result<AppState, AppError> {
 
     let payload = json!({"credential":"Future Engineer","issuer":"kw1c"});
 
-    let response: CredentialResponse = reqwest::Client::new()
+    let response: CredentialResponse = get_http_client()
+        .await
         .post(url)
         .json(&payload)
         .send()
