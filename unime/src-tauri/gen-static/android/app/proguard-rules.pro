@@ -24,4 +24,8 @@
     void evalScript(int, java.lang.String);
 }
 
+-keep class com.impierce.identity_wallet.MainActivity {
+    public void openCustomTab(java.lang.String);
+}
+
 -keep, includedescriptorclasses class org.rustls.platformverifier.** { *; }

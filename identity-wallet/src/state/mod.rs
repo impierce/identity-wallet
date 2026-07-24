@@ -40,7 +40,7 @@ use verified_data::VerifiedData;
 pub const UNIME_CLIENT_ID: &str = "unime";
 
 // This is the redirect URI that the wallet will use to receive the authorization code from the authorization server.
-pub const UNIME_REDIRECT_URI: &str = "https://www.impierce.com/open/callback";
+pub const UNIME_REDIRECT_URI: &str = "unime://callback";
 
 // The AppState is the main state of the application shared between the backend and the frontend.
 // We have structured the state and its operations following the redux pattern.

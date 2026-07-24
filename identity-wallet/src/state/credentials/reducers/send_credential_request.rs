@@ -33,7 +33,6 @@ use oid4vc::oid4vp::dcql_evaluation::evaluate_credential_query;
 use oid4vc::oid4vp::oid4vp::OID4VP;
 use oid4vc::oid4vp::token::vp_token_validator::DecodedPresentations;
 use sd_jwt::Sha256Hasher;
-use tauri_plugin_opener::OpenerExt;
 use uuid::Uuid;
 
 // TODO: rename this reducer to `handle_credential_offer` or similar. This should be done in an isolated PR in order to prevent
@@ -424,10 +423,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                             .app_handle
                             .clone()
                             .ok_or(AppError::Error("Tauri app handle is not available".to_string()))?;
-                        app_handle
-                            .opener()
-                            .open_url(authorization_endpoint, None::<&str>)
-                            .map_err(|err| AppError::Error(format!("Failed to open URL in browser: {err}")))?;
+                        crate::open_url_in_browser(&app_handle, authorization_endpoint.as_str())?;
 
                         drop(state_guard);
                         return Ok(AppState {

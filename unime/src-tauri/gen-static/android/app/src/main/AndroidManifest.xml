@@ -46,8 +46,8 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="www.impierce.com" />
-                <data android:scheme="https" android:host="impierce.com" />
+                <data android:scheme="https" android:host="www.impierce.com" android:pathPrefix="/open/callback" />
+                <data android:scheme="https" android:host="impierce.com" android:pathPrefix="/open/callback" />
             </intent-filter>
         </activity>
         <provider

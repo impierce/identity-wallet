@@ -72,17 +72,12 @@ pub async fn share_to_linkedin(state: AppState, action: Action) -> Result<AppSta
         // When testing, Tauri is often not initialized and the link doesn't actually need to be opened anyway.
         #[cfg(not(feature = "test_utils"))]
         {
-            use tauri_plugin_opener::OpenerExt;
-
             let app_handle = state
                 .core_utils
                 .app_handle
                 .clone()
                 .ok_or(AppError::Error("Tauri app handle is not available".to_string()))?;
-            app_handle
-                .opener()
-                .open_url(linkedin_url, None::<&str>)
-                .map_err(|err| AppError::Error(format!("Failed to open URL in browser: {err}")))?;
+            crate::open_url_in_browser(&app_handle, &linkedin_url)?;
         }
 
         credential.public_link = Some(public_link);

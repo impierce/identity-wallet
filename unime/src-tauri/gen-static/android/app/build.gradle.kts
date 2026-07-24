@@ -117,6 +117,7 @@ dependencies {
     implementation("androidx.webkit:webkit:1.6.1")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.8.0")
+    implementation("androidx.browser:browser:1.8.0")
     testImplementation("junit:junit:4.13.2")
     implementation(libs.rustls.platform.verifier)
     androidTestImplementation("androidx.test.ext:junit:1.1.4")

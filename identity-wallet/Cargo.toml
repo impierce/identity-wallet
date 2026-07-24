@@ -68,6 +68,10 @@ url = "2.5"
 urlencoding = "2.1.3"
 uuid = { version = "1.4", features = ["v4", "fast-rng", "serde"] }
 
+[target.'cfg(target_os = "android")'.dependencies]
+jni = "0.21"
+ndk-context = "0.1"
+
 [dev-dependencies]
 serial_test.workspace = true
 tempfile.workspace = true
