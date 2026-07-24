@@ -20,7 +20,7 @@ pub fn extract_url_from_did_web(did_web: &str) -> Option<Url> {
         let url_decoded = urlencoding::decode(url_str);
 
         if let Ok(url_decoded) = url_decoded {
-            if let Ok(url) = Url::parse(&format!("https://{url_decoded}")) {
+            if let Ok(url) = Url::parse(&format!("http://{url_decoded}")) {
                 return Some(url);
             }
         }

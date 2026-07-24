@@ -10,11 +10,7 @@ use base64::Engine;
 use chrono::{DateTime, Datelike, Duration, Utc};
 use jsonwebtoken::Header;
 use log::info;
-use oid4vc::oid4vc_core::{
-    jwt::encode,
-    utils::{did::extract_normalized_did_kid_from_jwt, jwt::get_unverified_jwt_claims},
-    Subject,
-};
+use oid4vc::oid4vc_core::{jwt::encode, utils::did::extract_normalized_did_kid_from_jwt, Subject};
 use openid_federation::FederationClient;
 use serde::Serialize;
 use serde_json::json;
@@ -118,7 +114,7 @@ async fn create_public_link(state: &AppState, credential_id: &str) -> Result<Url
     let vcr: VerifiableCredentialRecord =
         serde_json::from_slice(&vcr_bytes).map_err(|e| AppError::Error(e.to_string()))?;
     let jwt = &mut vcr.verifiable_credential.clone();
-    let jwt_data = get_unverified_jwt_claims(jwt).map_err(|e| AppError::Error(e.to_string()))?;
+
     let jwt_str = jwt.as_str().map(ToString::to_string).ok_or(AppError::Error(
         "Failed to convert the Public Link credential JWT to a string".to_string(),
     ))?;
@@ -129,9 +125,10 @@ async fn create_public_link(state: &AppState, credential_id: &str) -> Result<Url
     let credential_issuer_did = kid.split('#').next().unwrap_or(&kid); // A did:web needs a # key fragment, a did:key doesn't
 
     // Get the credential's subject ID. This means anonymous credentials (without a credentialSubject.id) cannot be shared publicly.
-    let credential_subject_id = jwt_data
-        .get("vc")
-        .and_then(|v| v.get("credentialSubject"))
+    let credential_subject_id = vcr
+        .display_credential
+        .data
+        .get("credentialSubject")
         .and_then(|v| v.get("id"))
         .and_then(|v| v.as_str())
         .ok_or(AppError::Error(
@@ -163,10 +160,13 @@ async fn create_public_link(state: &AppState, credential_id: &str) -> Result<Url
     };
 
     // Get the JTI claim from the credential data
-    let jti = jwt_data
-        .get("jti")
+    let credential_id = vcr
+        .display_credential
+        .data
+        .get("id")
         .and_then(|v| v.as_str())
         .ok_or(AppError::Error("JTI not found".to_string()))?;
+
     let token_jti = Uuid::new_v4().to_string();
     let now = Utc::now();
     // TODO: this is a hardcoded expiration date of 1 year after issuance.
@@ -174,7 +174,7 @@ async fn create_public_link(state: &AppState, credential_id: &str) -> Result<Url
 
     let claims = PublicLinkTokenClaims {
         iss: credential_subject_id.to_string(), // This is the same as setting it to own_did, since the check above validates whether our own did which we will use for signing this DACT is the same as the credentialSubject.id.
-        sub: jti.to_string(),
+        sub: credential_id.to_string(),
         aud: credential_issuer_did.to_string(),
         iat: now.timestamp(),
         nbf: now.timestamp(),
@@ -252,7 +252,7 @@ pub async fn get_trusted_verifier_public_verification_endpoint(issuer_did: &str)
         .await
         .map_err(|e| {
             AppError::Error(format!(
-                "Failed to discover a trusted trust_anchor for Issuer of credential to be shared: {e}"
+                "Failed to discover a trusted trust_anchor for Issuer {issuer_url} of credential to be shared: {e}"
             ))
         })?;
 
