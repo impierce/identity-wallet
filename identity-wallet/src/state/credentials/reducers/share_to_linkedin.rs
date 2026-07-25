@@ -242,6 +242,11 @@ async fn create_public_link(state: &AppState, credential_id: &str) -> Result<Url
 /// Step 2: get the Trust Anchor's URL
 /// Step 3: Add the hardcoded /public/verify endpoint to the Trust Anchor's URL. TODO: in the future this should be either in DID services or Openid Fed metadata.
 pub async fn get_trusted_verifier_public_verification_endpoint(issuer_did: &str) -> Result<String, AppError> {
+    #[cfg(test)]
+    if let Ok(endpoint) = std::env::var("UNIME_TEST_PUBLIC_VERIFIER_ENDPOINT") {
+        return Ok(endpoint);
+    }
+
     let federation_client = FederationClient::new();
 
     let issuer_url = extract_url_from_did_web(issuer_did).ok_or(AppError::Error(format!(
@@ -316,5 +321,186 @@ fn algorithm_from_did(did: &str) -> Result<jsonwebtoken::Algorithm, AppError> {
         }
     } else {
         Err(AppError::Error(format!("Cannot derive algorithm from DID: {did}")))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::persistence::STRONGHOLD;
+    use crate::state::core_utils::{IdentityManager, Managers};
+    use crate::state::{SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS};
+    use crate::stronghold::StrongholdManager;
+    use crate::subject::subject;
+    use base64::engine::general_purpose::URL_SAFE_NO_PAD;
+    use jsonwebtoken::Algorithm;
+    use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
+    use oid4vc::{oid4vc_manager::ProviderManager, oid4vci::Wallet};
+    use serial_test::serial;
+    use std::sync::Arc;
+    use tempfile::NamedTempFile;
+    use wiremock::{
+        matchers::{method, path},
+        Mock, MockServer, ResponseTemplate,
+    };
+
+    fn build_jwt_with_kid(kid: &str) -> String {
+        let header =
+            URL_SAFE_NO_PAD.encode(serde_json::to_vec(&json!({ "alg": "EdDSA", "typ": "JWT", "kid": kid })).unwrap());
+        let payload = URL_SAFE_NO_PAD.encode(serde_json::to_vec(&json!({ "sub": "test" })).unwrap());
+        format!("{header}.{payload}.signature")
+    }
+
+    async fn setup_state_with_identity() -> Result<(AppState, String), AppError> {
+        let path = NamedTempFile::new()
+            .map_err(|e| AppError::Error(e.to_string()))?
+            .into_temp_path();
+        *STRONGHOLD.lock().unwrap() = path.as_os_str().into();
+
+        let password = "sup3rSecr3t".to_string();
+        let stronghold_manager = Arc::new(StrongholdManager::create(&password).map_err(StrongholdCreationError)?);
+        let subject = subject(stronghold_manager.clone(), password).await;
+
+        let provider_manager = ProviderManager::new(
+            subject.clone(),
+            Vec::from(SUPPORTED_DID_METHODS),
+            Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
+        )
+        .map_err(OID4VCProviderManagerError)?;
+        let wallet: Wallet = Wallet::new(
+            subject.clone(),
+            Vec::from(SUPPORTED_DID_METHODS),
+            Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
+        )
+        .map_err(OID4VCWalletError)?;
+
+        let own_did = subject
+            .identifier("did:key", Algorithm::EdDSA)
+            .await
+            .map_err(|e| AppError::Error(e.to_string()))?;
+
+        let state = AppState {
+            core_utils: crate::state::core_utils::CoreUtils {
+                app_handle: None,
+                managers: Arc::new(tauri::async_runtime::Mutex::new(Managers {
+                    stronghold_manager: Some(stronghold_manager),
+                    identity_manager: Some(IdentityManager {
+                        subject,
+                        provider_manager,
+                        wallet,
+                    }),
+                })),
+                active_flow: None,
+            },
+            ..Default::default()
+        };
+
+        Ok((state, own_did))
+    }
+
+    async fn assert_public_link_creation_for_format(format: CredentialFormats) {
+        let mock_server = MockServer::start().await;
+
+        Mock::given(method("POST"))
+            .and(path("/store-data-access-consent-token"))
+            .respond_with(ResponseTemplate::new(200))
+            .expect(1)
+            .mount(&mock_server)
+            .await;
+
+        std::env::set_var(
+            "UNIME_TEST_PUBLIC_VERIFIER_ENDPOINT",
+            format!("{}/verify", mock_server.uri()),
+        );
+
+        let result = async {
+            let (state, own_did) = setup_state_with_identity().await.unwrap();
+
+            let credential_key = Uuid::new_v4();
+            let kid = "did:web:issuer.example#key-1";
+            let jwt = build_jwt_with_kid(kid);
+
+            let vcr = VerifiableCredentialRecord {
+                verifiable_credential: json!(jwt),
+                display_credential: crate::state::credentials::DisplayCredential {
+                    id: credential_key.to_string(),
+                    format,
+                    data: json!({
+                        "id": format!("urn:uuid:{credential_key}"),
+                        "credentialSubject": {
+                            "id": own_did
+                        }
+                    }),
+                    issuer_name: "Issuer".to_string(),
+                    display_name: "Credential".to_string(),
+                    ..Default::default()
+                },
+            };
+
+            let managers = state.core_utils.managers.lock().await;
+            let stronghold_manager = managers.stronghold_manager.as_ref().unwrap();
+            stronghold_manager
+                .insert(credential_key, serde_json::to_vec(&vcr).unwrap())
+                .unwrap();
+            drop(managers);
+
+            let public_link = create_public_link(&state, &credential_key.to_string()).await.unwrap();
+            assert!(public_link
+                .as_str()
+                .starts_with(&format!("{}/verify/", mock_server.uri())));
+        }
+        .await;
+
+        std::env::remove_var("UNIME_TEST_PUBLIC_VERIFIER_ENDPOINT");
+        result
+    }
+
+    #[tokio::test]
+    #[serial]
+    async fn create_public_link_from_jwt_vc_json() {
+        assert_public_link_creation_for_format(CredentialFormats::JwtVcJson(())).await;
+    }
+
+    #[tokio::test]
+    #[serial]
+    async fn create_public_link_from_dc_sd_jwt() {
+        assert_public_link_creation_for_format(CredentialFormats::DcSdJwt(())).await;
+    }
+
+    #[tokio::test]
+    #[serial]
+    async fn create_public_link_from_vc_sd_jwt() {
+        assert_public_link_creation_for_format(CredentialFormats::VcSdJwt(())).await;
+    }
+
+    #[cfg(feature = "test_utils")]
+    #[tokio::test]
+    async fn share_to_linkedin_reducer_finishes_successfully() {
+        let credential_id = Uuid::new_v4().to_string();
+        let existing_public_link = "https://example.com/verify/existing".to_string();
+
+        let state = AppState {
+            credentials: vec![crate::state::credentials::DisplayCredential {
+                id: credential_id.clone(),
+                issuer_name: "Issuer".to_string(),
+                display_name: "Credential".to_string(),
+                metadata: crate::state::credentials::CredentialMetadata {
+                    date_issued: "2026-01-01T00:00:00Z".to_string(),
+                    ..Default::default()
+                },
+                public_link: Some(existing_public_link.clone()),
+                ..Default::default()
+            }],
+            ..Default::default()
+        };
+
+        let action: Action = Arc::new(ShareToLinkedIn { id: credential_id });
+        let updated_state = share_to_linkedin(state, action).await.unwrap();
+
+        assert_eq!(updated_state.credentials.len(), 1);
+        assert_eq!(
+            updated_state.credentials[0].public_link.as_deref(),
+            Some(existing_public_link.as_str())
+        );
     }
 }
