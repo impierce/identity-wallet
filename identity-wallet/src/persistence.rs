@@ -1,3 +1,4 @@
+use crate::http_client::get_http_client;
 use crate::migrations::apply_state_migrations;
 use crate::state::APP_STATE_VERSION;
 use crate::{error::AppError, state::AppState};
@@ -184,7 +185,7 @@ pub async fn download_asset(url: reqwest::Url, id: &str) -> Result<(), AppError>
         std::fs::create_dir(&tmp_dir)?;
     }
 
-    let response = reqwest::get(url.clone()).await?;
+    let response = get_http_client().await.get(url.clone()).send().await?;
 
     let file_extension = response
         .headers()

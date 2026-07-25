@@ -1,4 +1,3 @@
-#[cfg(target_os = "android")]
 use crate::state::core_utils::tls_config;
 use crate::stronghold::StrongholdManager;
 use anyhow::anyhow;
@@ -37,16 +36,9 @@ impl Subject {
 
     /// The private async function that contains the actual initialization logic.
     async fn initialize_resolver() -> Arc<Resolver> {
-        #[cfg(not(target_os = "android"))]
-        let resolver = Resolver::new();
-
         info!("Initializing resolver for Subject");
-
-        #[cfg(target_os = "android")]
-        let resolver = Resolver::new_with_options(Some(tls_config().await.unwrap()), None, None);
-
+        let resolver = Resolver::new_with_options(Some(tls_config()), None, None);
         info!("Resolver initialized");
-
         Arc::new(resolver)
     }
 

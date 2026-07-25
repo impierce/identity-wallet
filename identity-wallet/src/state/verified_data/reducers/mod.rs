@@ -5,6 +5,7 @@ use serde_json::json;
 
 use crate::{
     error::AppError,
+    http_client::get_http_client,
     state::{
         actions::{listen, Action},
         qr_code::{actions::qrcode_scanned::QrCodeScanned, reducers::read_credential_offer::read_credential_offer},
@@ -22,7 +23,8 @@ const EMAIL_VERIFICATION_SERVICE_API_KEY: &str = env!("EMAIL_VERIFICATION_SERVIC
 pub async fn check_service_health(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(action) = listen::<ServiceHealthCheck>(action) {
         info!("[>>>] {}", action.service);
-        let response = reqwest::Client::new()
+        let response = get_http_client()
+            .await
             .get(format!("{EMAIL_VERIFICATION_SERVICE_HOST}/healthz"))
             .header("X-API-KEY", EMAIL_VERIFICATION_SERVICE_API_KEY)
             .send()
@@ -67,7 +69,8 @@ pub async fn send_verification_email(state: AppState, action: Action) -> Result<
         let url = format!("{EMAIL_VERIFICATION_SERVICE_HOST}/api/verify");
         let body = json!({ "email": action.email });
         info!("[>>>] {url} {body}");
-        let response = reqwest::Client::new()
+        let response = crate::http_client::get_http_client()
+            .await
             .post(url)
             .header("X-API-KEY", EMAIL_VERIFICATION_SERVICE_API_KEY)
             .json(&body)
@@ -110,7 +113,8 @@ pub async fn redeem_code(state: AppState, action: Action) -> Result<AppState, Ap
         let url = format!("{EMAIL_VERIFICATION_SERVICE_HOST}/api/verify/{session_id}");
         let body = json!({ "code": action.code });
         info!("[>>>] {url} {body}");
-        let response = reqwest::Client::new()
+        let response = crate::http_client::get_http_client()
+            .await
             .post(url)
             .header("X-API-KEY", EMAIL_VERIFICATION_SERVICE_API_KEY)
             .json(&body)

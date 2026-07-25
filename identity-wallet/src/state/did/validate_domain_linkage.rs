@@ -16,6 +16,8 @@ use serde_with::skip_serializing_none;
 use std::str::FromStr;
 use ts_rs::TS;
 
+use crate::http_client::get_http_client;
+
 #[skip_serializing_none]
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, TS, Default)]
 #[ts(export, export_to = "bindings/user_prompt/ValidationResult.ts")]
@@ -144,7 +146,10 @@ async fn fetch_configuration(mut url: url::Url) -> Result<DomainLinkageConfigura
     info!("Fetching DID configuration from: {url}");
 
     // 2. Fetch the resource
-    let response = reqwest::get(url.clone())
+    let response = get_http_client()
+        .await
+        .get(url.clone())
+        .send()
         .await
         .map_err(|_| format!("failed to get response from resource url: {url}"))?;
 

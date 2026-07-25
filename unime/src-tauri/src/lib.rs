@@ -1,6 +1,4 @@
 #[cfg(target_os = "android")]
-use iota_sdk::IotaClientBuilder;
-#[cfg(target_os = "android")]
 use jni::{
     objects::{JClass, JObject},
     JNIEnv,
@@ -83,6 +81,12 @@ pub mod tauri_command {
     }
 }
 
+/// Called by `MainActivity.kt` during Android startup to initialize the Android
+/// platform certificate verifier environment.
+///
+/// Note: While the wallet application uses `webpki-roots` for its HTTP clients,
+/// transitive dependencies (such as `jsonrpsee` via `iota-sdk`) require this
+/// initialization when running on Android.
 #[cfg(target_os = "android")]
 #[no_mangle]
 pub extern "C" fn Java_com_impierce_identity_1wallet_MainActivity_java_1init(
