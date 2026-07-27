@@ -243,8 +243,9 @@ async fn create_public_link(state: &AppState, credential_id: &str) -> Result<Url
 /// Step 3: Add the hardcoded /public/verify endpoint to the Trust Anchor's URL. TODO: in the future this should be either in DID services or Openid Fed metadata.
 pub async fn get_trusted_verifier_public_verification_endpoint(issuer_did: &str) -> Result<String, AppError> {
     // This test feature is added to avoid the need to set up an entire trust ecosystem to create a unit test for this file.
+    // This .env variable is managed programmatically by the unit test in this file, and is only used for testing purposes. It is not used in production.
     #[cfg(test)]
-    if let Ok(endpoint) = std::env::var("UNIME_TEST_PUBLIC_VERIFIER_ENDPOINT") {
+    if let Ok(endpoint) = std::env::var("TEST_PUBLIC_VERIFIER_ENDPOINT") {
         return Ok(endpoint);
     }
 
