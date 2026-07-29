@@ -26,7 +26,7 @@ wiremock = "0.5"
 sd-jwt = { git = "https://github.com/impierce/sd-jwt-payload", rev = "f28789a", package = "sd-jwt-payload" }
 
 [workspace.package]
-version = "0.13.6"
+version = "0.14.0"
 description = "Identity Wallet for people to manage Decentralized Identities and Verifiable Credentials"
 homepage = "https://www.impierce.com/"
 authors = ["Impierce Technologies"]
