@@ -39,8 +39,8 @@ use verified_data::VerifiedData;
 // See: https://github.com/openid/OpenID4VCI/issues/94
 pub const UNIME_CLIENT_ID: &str = "unime";
 
-// This is the custom URI scheme that the app will use to receive the authorization code from the authorization server.
-pub const UNIME_REDIRECT_URI: &str = "unime://callback";
+// This is the redirect URI that the wallet will use to receive the authorization code from the authorization server.
+pub const UNIME_REDIRECT_URI: &str = "https://www.impierce.com/open/callback";
 
 // The AppState is the main state of the application shared between the backend and the frontend.
 // We have structured the state and its operations following the redux pattern.

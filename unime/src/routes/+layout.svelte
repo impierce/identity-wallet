@@ -50,7 +50,7 @@
     pendingDeepLinkUrl.set(undefined);
 
     switch (url.protocol) {
-      // TODO: support App/Universal Links
+      case 'https:':
       case 'unime:': {
         const code = url.searchParams.get('code') ?? '';
         const state = url.searchParams.get('state') ?? '';
