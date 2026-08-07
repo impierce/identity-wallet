@@ -6,6 +6,7 @@
 
   import TextFieldRenderer from './(renderers)/TextFieldRenderer.svelte';
   import CollapsibleWrapper from './CollapsibleWrapper.svelte';
+  import InfoTooltip from './InfoTooltip.svelte';
 
   export let credential: DisplayCredential;
 
@@ -17,6 +18,7 @@
   {#if credential.data.credentialSubject?.achievement?.description}
     <CollapsibleWrapper defaultOpen={true}>
       <h2 class="text-lg font-bold" slot="title">{$LL.CREDENTIAL.DETAILS.DESCRIPTION()}</h2>
+      <InfoTooltip description="Describes a possible achievement result." />
       <!-- TODO: Review marked vs. markdown-it and security risks. -->
       <!-- eslint-disable-next-line svelte/no-at-html-tags -->
       {@html md.render(credential.data.credentialSubject.achievement.description)}
@@ -26,6 +28,7 @@
   {#if credential.data.credentialSubject?.achievement?.criteria?.narrative}
     <CollapsibleWrapper defaultOpen={false}>
       <h2 class="text-lg font-bold" slot="title">{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.CRITERIA()}</h2>
+      <InfoTooltip description="Criteria describing how to earn the achievement." />
       <!-- TODO: Review marked vs. markdown-it and security risks. -->
       <!-- eslint-disable-next-line svelte/no-at-html-tags -->
       {@html md.render(credential.data.credentialSubject.achievement.criteria.narrative)}
@@ -44,6 +47,9 @@
   {#if credential.data.credentialSubject?.achievement?.alignment?.length > 0}
     <CollapsibleWrapper defaultOpen={false}>
       <h2 class="text-lg font-bold" slot="title">{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.ALIGNMENT()}</h2>
+      <InfoTooltip
+        description="An object describing which objectives or educational standards this achievement aligns to, if any."
+      />
       {#each credential.data.credentialSubject.achievement.alignment as alignmentItem}
         <h4>{alignmentItem.targetName}</h4>
         {#if alignmentItem.targetDescription}
@@ -61,12 +67,13 @@
       <h2 class="text-lg font-bold" slot="title">
         {$LL.CREDENTIAL.DETAILS.OPEN_BADGES.RESULT()}
       </h2>
+      <InfoTooltip description="Describes a result that was achieved." />
       <div class="flex flex-col divide-y divide-slate-300">
         {#each credential.data.credentialSubject.result as resultItem}
           <div class="py-4 first:pt-0 last:pb-0">
             {#if resultItem.alignment?.length > 0}
               {#each resultItem.alignment as resultAlignment}
-                <h4>{resultAlignment.targetName}</h4>
+                <h4 class="font-bold">{resultAlignment.targetName}</h4>
                 {#if resultAlignment.targetDescription}
                   <!-- TODO: Review marked vs. markdown-it and security risks. -->
                   <!-- eslint-disable-next-line svelte/no-at-html-tags -->
