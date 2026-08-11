@@ -332,6 +332,20 @@ const sv_FI = {
       NAVBAR_TITLE: 'Intygsserbjudande',
       DESCRIPTION: 'erbjuder dig följande intyg',
       ACCEPT: 'Acceptera intyg',
+      TRUST: {
+        TRUSTED_BY: 'Verifierad av {network}',
+        PREVIOUSLY_TRUSTED: 'Du har litat på detta nätverk tidigare',
+        UNKNOWN: 'Denna organisation kunde inte verifieras',
+        INVALID: 'Denna anslutning kunde inte verifieras',
+        CAUTION: 'Fortsätt med försiktighet!',
+        EXPLAINER: {
+          TITLE: 'Vad betyder detta?',
+          VERIFIED:
+            'UniMe har spårat denna utfärdare till ett förtroendenätverk med granskade medlemmar. Identiteten och den digitala signaturen har bekräftats.',
+          UNVERIFIED:
+            'UniMe kunde inte spåra denna utfärdare till något känt förtroendenätverk. Identiteten eller den digitala signaturen kunde inte bekräftas.',
+        },
+      },
     },
     CONNECTION_REQUEST: {
       NAVBAR_TITLE: 'Anslutningsförfrågan',

@@ -331,6 +331,20 @@ const en = {
       NAVBAR_TITLE: 'Credential Offer',
       DESCRIPTION: 'is offering you the following credentials',
       ACCEPT: 'Accept credentials',
+      TRUST: {
+        TRUSTED_BY: 'Trusted by {network:string}',
+        PREVIOUSLY_TRUSTED: 'You have trusted this network before',
+        UNKNOWN: 'This organization could not be verified',
+        INVALID: 'This connection failed verification',
+        CAUTION: 'Proceed with caution!',
+        EXPLAINER: {
+          TITLE: 'What does this mean?',
+          VERIFIED:
+            'UniMe traced this issuer back to a trust network whose members are vetted. Their identity and digital signature were checked and confirmed.',
+          UNVERIFIED:
+            'UniMe could not trace this issuer to a known trust network. Their identity or digital signature could not be confirmed.',
+        },
+      },
     },
     CONNECTION_REQUEST: {
       NAVBAR_TITLE: 'Connection Request',

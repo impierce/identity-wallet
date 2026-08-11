@@ -333,6 +333,20 @@ const fi_FI = {
       NAVBAR_TITLE: 'Valtuustarjous',
       DESCRIPTION: 'tarjoaa sinulle seuraavat valtuudet',
       ACCEPT: 'Hyväksy valtuudet',
+      TRUST: {
+        TRUSTED_BY: 'Vahvistanut {network}',
+        PREVIOUSLY_TRUSTED: 'Olet luottanut tähän verkostoon aiemmin',
+        UNKNOWN: 'Tätä organisaatiota ei voitu vahvistaa',
+        INVALID: 'Tämän yhteyden vahvistus epäonnistui',
+        CAUTION: 'Jatka varoen!',
+        EXPLAINER: {
+          TITLE: 'Mitä tämä tarkoittaa?',
+          VERIFIED:
+            'UniMe jäljitti tämän myöntäjän luottamusverkostoon, jonka jäsenet on tarkastettu. Sen henkilöllisyys ja digitaalinen allekirjoitus on vahvistettu.',
+          UNVERIFIED:
+            'UniMe ei voinut jäljittää tätä myöntäjää tunnettuun luottamusverkostoon. Sen henkilöllisyyttä tai digitaalista allekirjoitusta ei voitu vahvistaa.',
+        },
+      },
     },
     CONNECTION_REQUEST: {
       NAVBAR_TITLE: 'Yhteyspyyntö',

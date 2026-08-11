@@ -6,10 +6,11 @@
 
   import type { CurrentUserPrompt } from '@bindings/user_prompt/CurrentUserPrompt';
 
-  import { Button, Checkbox, Image, ListItemCard, PaddedIcon, TopNavBar } from '$lib/components';
+  import { Button, Checkbox, Image, ListItemCard, TopNavBar, TrustSeal } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
-  import { DownloadSimpleFillIcon } from '$lib/icons';
+  import { CheckCircleFillIcon, DownloadSimpleFillIcon, WarningCircleFillIcon } from '$lib/icons';
   import { state as appState, error } from '$lib/stores';
+  import type { TrustVerification } from '$lib/types/trust';
   import { hash } from '$lib/utils';
 
   // TypeScript does not know that the `current_user_prompt` is of type `credential-offer`.
@@ -17,8 +18,29 @@
   type IsCredentialOfferPrompt<T> = T extends { type: 'credential-offer' } ? T : never;
   type CredentialOfferPrompt = IsCredentialOfferPrompt<CurrentUserPrompt>;
 
-  const { credential_configurations, issuer_name, logo_uri, tx_code } =
-    $appState.current_user_prompt as CredentialOfferPrompt;
+  // TEMP: mock trust data until the backend adds `trust_verification`
+  const trust_verification: TrustVerification = {
+    status: 'Verified',
+    ecosystem_name: 'Findynet Network',
+    ecosystem_id: 'https://trust-anchor.findynet.fi',
+    ecosystem_logo_uri: null,
+    previously_trusted: false,
+  };
+
+  const MOCK_PROMPT = {
+    type: 'credential-offer',
+    issuer_name: 'Example University',
+    logo_uri: null,
+    credential_configurations: {
+      UniversityDegree: { credential_metadata: { display: [{ name: 'University Degree' }] } },
+    },
+    tx_code: null,
+  } as unknown as CredentialOfferPrompt;
+
+  const prompt = $appState.current_user_prompt;
+  const { credential_configurations, issuer_name, logo_uri, tx_code } = (
+    prompt?.type === 'credential-offer' ? prompt : MOCK_PROMPT
+  ) as CredentialOfferPrompt;
 
   // let credential_configurations: Record<string, CredentialConfiguration> =
   //   $state.current_user_prompt?.credential_configurations;
@@ -64,42 +86,72 @@
     class="sticky top-0 z-10"
   />
 
-  <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
-    {#if logo_uri}
-      <div class="flex h-[75px] w-[75px] overflow-hidden rounded-3xl">
-        <Image
-          id={imageId}
-          isTempAsset={true}
-          iconClass="dark:text-slate-800"
-          imgClass="flex w-full items-center justify-center overflow-hidden rounded-3xl p-2"
-        />
-      </div>
-    {:else}
-      <PaddedIcon icon={DownloadSimpleFillIcon} />
-    {/if}
-    <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
-      {issuer_name}
-    </p>
-
-    <p class="w-full text-center text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">
-      {$LL.SCAN.CREDENTIAL_OFFER.DESCRIPTION()}
-    </p>
-
-    <div
-      class="mt-3 w-full rounded-[20px] border border-slate-200 bg-white p-[10px] dark:border-slate-600 dark:bg-dark"
-    >
-      {#each Object.entries(credential_configurations) as [credential_configuration_id, credential_configuration]}
-        <!-- TODO: bug: long list is not correctly displayed -->
-        <ListItemCard
-          id={hash(credential_configuration.credential_metadata?.display?.at(0)?.logo?.uri ?? '')}
-          title={credential_configuration.credential_metadata?.display?.at(0)?.name ?? credential_configuration_id}
-          isTempAsset={true}
+  <div class="flex grow flex-col items-center justify-center gap-10 px-4 py-6">
+    <div class="flex flex-col items-center gap-4">
+      <TrustSeal trust={trust_verification}>
+        <div
+          class="flex h-[112px] w-[112px] items-center justify-center overflow-hidden rounded-[28px] {logo_uri
+            ? ''
+            : 'bg-primary'}"
         >
-          <div slot="right" class="mr-2">
-            <Checkbox checked={true} disabled={true} />
-          </div>
-        </ListItemCard>
-      {/each}
+          {#if logo_uri}
+            <Image
+              id={imageId}
+              isTempAsset={true}
+              iconClass="dark:text-slate-800"
+              imgClass="flex w-full items-center justify-center overflow-hidden rounded-[28px] p-2"
+            />
+          {:else}
+            <DownloadSimpleFillIcon class="h-10 w-10 text-background-alt" />
+          {/if}
+        </div>
+      </TrustSeal>
+
+      <div class="flex flex-col items-center gap-1.5">
+        <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
+          {issuer_name}
+        </p>
+
+        {#if trust_verification.status === 'Verified'}
+          {#if trust_verification.previously_trusted}
+            <p class="text-[12px]/[16px] font-medium text-slate-500 dark:text-slate-400">
+              {$LL.SCAN.CREDENTIAL_OFFER.TRUST.PREVIOUSLY_TRUSTED()}
+            </p>
+          {:else if trust_verification.ecosystem_name}
+            <p class="flex items-center gap-1.5 text-[12px]/[16px] font-medium text-slate-500 dark:text-slate-400">
+              <CheckCircleFillIcon class="h-3.5 w-3.5 shrink-0 text-emerald-500" />
+              {$LL.SCAN.CREDENTIAL_OFFER.TRUST.TRUSTED_BY({ network: trust_verification.ecosystem_name })}
+            </p>
+          {/if}
+        {:else}
+          <p class="flex items-center gap-1.5 text-[12px]/[16px] font-semibold text-rose-600 dark:text-rose-400">
+            <WarningCircleFillIcon class="h-3.5 w-3.5 shrink-0" />
+            {trust_verification.status === 'Invalid'
+              ? $LL.SCAN.CREDENTIAL_OFFER.TRUST.INVALID()
+              : $LL.SCAN.CREDENTIAL_OFFER.TRUST.UNKNOWN()}
+          </p>
+        {/if}
+      </div>
+    </div>
+    <div class="flex w-full flex-col items-center gap-2">
+      <p class="w-full text-center text-[13px]/[24px] font-medium text-slate-500 dark:text-slate-300">
+        {$LL.SCAN.CREDENTIAL_OFFER.DESCRIPTION()}
+      </p>
+
+      <div class="w-full rounded-[20px] border border-slate-200 bg-white p-[10px] dark:border-slate-600 dark:bg-dark">
+        {#each Object.entries(credential_configurations) as [credential_configuration_id, credential_configuration]}
+          <!-- TODO: bug: long list is not correctly displayed -->
+          <ListItemCard
+            id={hash(credential_configuration.credential_metadata?.display?.at(0)?.logo?.uri ?? '')}
+            title={credential_configuration.credential_metadata?.display?.at(0)?.name ?? credential_configuration_id}
+            isTempAsset={true}
+          >
+            <div slot="right" class="mr-2">
+              <Checkbox checked={true} readonly={true} />
+            </div>
+          </ListItemCard>
+        {/each}
+      </div>
     </div>
 
     <!-- PIN Code -->

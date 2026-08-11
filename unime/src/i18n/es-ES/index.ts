@@ -333,6 +333,20 @@ const es_ES = {
       NAVBAR_TITLE: 'Oferta de credenciales',
       DESCRIPTION: 'te ofrece las siguientes credenciales',
       ACCEPT: 'Acepta las credenciales',
+      TRUST: {
+        TRUSTED_BY: 'Con la confianza de {network}',
+        PREVIOUSLY_TRUSTED: 'Ya has confiado en esta red anteriormente',
+        UNKNOWN: 'No se ha podido verificar esta organización',
+        INVALID: 'Esta conexión no ha superado la verificación',
+        CAUTION: '¡Procede con precaución!',
+        EXPLAINER: {
+          TITLE: '¿Qué significa esto?',
+          VERIFIED:
+            'UniMe ha vinculado a este emisor con una red de confianza cuyos miembros están verificados. Se han confirmado su identidad y su firma digital.',
+          UNVERIFIED:
+            'UniMe no ha podido vincular a este emisor con ninguna red de confianza conocida. No se ha podido confirmar su identidad ni su firma digital.',
+        },
+      },
     },
     CONNECTION_REQUEST: {
       NAVBAR_TITLE: 'Solicitud de conexión',

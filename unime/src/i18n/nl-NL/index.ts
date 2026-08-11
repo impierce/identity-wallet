@@ -332,6 +332,20 @@ const nl_NL = {
       NAVBAR_TITLE: 'Credential Aanbod',
       DESCRIPTION: 'biedt u de volgende credentials aan',
       ACCEPT: 'Accepteer credentials',
+      TRUST: {
+        TRUSTED_BY: 'Geverifieerd door {network}',
+        PREVIOUSLY_TRUSTED: 'U heeft dit netwerk eerder vertrouwd',
+        UNKNOWN: 'Deze organisatie kon niet worden geverifieerd',
+        INVALID: 'Deze verbinding is niet geverifieerd',
+        CAUTION: 'Wees voorzichtig!',
+        EXPLAINER: {
+          TITLE: 'Wat betekent dit?',
+          VERIFIED:
+            'UniMe heeft deze uitgever herleid tot een vertrouwensnetwerk met gecontroleerde leden. De identiteit en digitale handtekening zijn bevestigd.',
+          UNVERIFIED:
+            'UniMe kon deze uitgever niet herleiden tot een bekend vertrouwensnetwerk. De identiteit of digitale handtekening kon niet worden bevestigd.',
+        },
+      },
     },
     CONNECTION_REQUEST: {
       NAVBAR_TITLE: 'Credential Aanvraag',

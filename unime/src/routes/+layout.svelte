@@ -116,8 +116,10 @@
         }
       }
 
-      // DEV: uncommenting this helps local development by always redirecting to the page you're working on
-      // redirectPath = '/me/settings/about';
+      // DEV: uncommenting this helps local development by always redirecting to the page you're working on.
+      if ($appState.is_unlocked) {
+        redirectPath = '/prompt/credential-offer';
+      }
 
       if (redirectPath) {
         info(`Redirecting to: ${redirectPath}.`);

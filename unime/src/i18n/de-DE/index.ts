@@ -332,6 +332,20 @@ const de_DE = {
       NAVBAR_TITLE: 'Credential-Angebot',
       DESCRIPTION: 'bietet dir die folgenden Credentials an',
       ACCEPT: 'Credentials annehmen',
+      TRUST: {
+        TRUSTED_BY: 'Verifiziert durch {network}',
+        PREVIOUSLY_TRUSTED: 'Diesem Netzwerk vertraust du bereits',
+        UNKNOWN: 'Diese Organisation konnte nicht verifiziert werden',
+        INVALID: 'Verifizierung Fehlgeschlagen',
+        CAUTION: 'Mit Vorsicht fortfahren!',
+        EXPLAINER: {
+          TITLE: 'Was bedeutet das?',
+          VERIFIED:
+            'UniMe konnte diesen Aussteller einem Vertrauensnetzwerk mit geprüften Mitgliedern zuordnen. Identität und digitale Signatur wurden bestätigt.',
+          UNVERIFIED:
+            'UniMe konnte diesen Aussteller keinem bekannten Vertrauensnetzwerk zuordnen. Identität oder digitale Signatur konnten nicht bestätigt werden.',
+        },
+      },
     },
     CONNECTION_REQUEST: {
       NAVBAR_TITLE: 'Verbindungsanfrage',

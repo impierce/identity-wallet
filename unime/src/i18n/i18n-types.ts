@@ -868,6 +868,43 @@ type RootTranslation = {
 			 * A​c​c​e​p​t​ ​c​r​e​d​e​n​t​i​a​l​s
 			 */
 			ACCEPT: string
+			TRUST: {
+				/**
+				 * T​r​u​s​t​e​d​ ​b​y​ ​{​n​e​t​w​o​r​k​}
+				 * @param {string} network
+				 */
+				TRUSTED_BY: RequiredParams<'network'>
+				/**
+				 * Y​o​u​ ​h​a​v​e​ ​t​r​u​s​t​e​d​ ​t​h​i​s​ ​n​e​t​w​o​r​k​ ​b​e​f​o​r​e
+				 */
+				PREVIOUSLY_TRUSTED: string
+				/**
+				 * T​h​i​s​ ​o​r​g​a​n​i​z​a​t​i​o​n​ ​c​o​u​l​d​ ​n​o​t​ ​b​e​ ​v​e​r​i​f​i​e​d
+				 */
+				UNKNOWN: string
+				/**
+				 * T​h​i​s​ ​c​o​n​n​e​c​t​i​o​n​ ​f​a​i​l​e​d​ ​v​e​r​i​f​i​c​a​t​i​o​n
+				 */
+				INVALID: string
+				/**
+				 * P​r​o​c​e​e​d​ ​w​i​t​h​ ​c​a​u​t​i​o​n​!
+				 */
+				CAUTION: string
+				EXPLAINER: {
+					/**
+					 * W​h​a​t​ ​d​o​e​s​ ​t​h​i​s​ ​m​e​a​n​?
+					 */
+					TITLE: string
+					/**
+					 * U​n​i​M​e​ ​t​r​a​c​e​d​ ​t​h​i​s​ ​i​s​s​u​e​r​ ​b​a​c​k​ ​t​o​ ​a​ ​t​r​u​s​t​ ​n​e​t​w​o​r​k​ ​w​h​o​s​e​ ​m​e​m​b​e​r​s​ ​a​r​e​ ​v​e​t​t​e​d​.​ ​T​h​e​i​r​ ​i​d​e​n​t​i​t​y​ ​a​n​d​ ​d​i​g​i​t​a​l​ ​s​i​g​n​a​t​u​r​e​ ​w​e​r​e​ ​c​h​e​c​k​e​d​ ​a​n​d​ ​c​o​n​f​i​r​m​e​d​.
+					 */
+					VERIFIED: string
+					/**
+					 * U​n​i​M​e​ ​c​o​u​l​d​ ​n​o​t​ ​t​r​a​c​e​ ​t​h​i​s​ ​i​s​s​u​e​r​ ​t​o​ ​a​ ​k​n​o​w​n​ ​t​r​u​s​t​ ​n​e​t​w​o​r​k​.​ ​T​h​e​i​r​ ​i​d​e​n​t​i​t​y​ ​o​r​ ​d​i​g​i​t​a​l​ ​s​i​g​n​a​t​u​r​e​ ​c​o​u​l​d​ ​n​o​t​ ​b​e​ ​c​o​n​f​i​r​m​e​d​.
+					 */
+					UNVERIFIED: string
+				}
+			}
 		}
 		CONNECTION_REQUEST: {
 			/**
@@ -2399,6 +2436,42 @@ export type TranslationFunctions = {
 			 * Accept credentials
 			 */
 			ACCEPT: () => LocalizedString
+			TRUST: {
+				/**
+				 * Trusted by {network}
+				 */
+				TRUSTED_BY: (arg: { network: string }) => LocalizedString
+				/**
+				 * You have trusted this network before
+				 */
+				PREVIOUSLY_TRUSTED: () => LocalizedString
+				/**
+				 * This organization could not be verified
+				 */
+				UNKNOWN: () => LocalizedString
+				/**
+				 * This connection failed verification
+				 */
+				INVALID: () => LocalizedString
+				/**
+				 * Proceed with caution!
+				 */
+				CAUTION: () => LocalizedString
+				EXPLAINER: {
+					/**
+					 * What does this mean?
+					 */
+					TITLE: () => LocalizedString
+					/**
+					 * UniMe traced this issuer back to a trust network whose members are vetted. Their identity and digital signature were checked and confirmed.
+					 */
+					VERIFIED: () => LocalizedString
+					/**
+					 * UniMe could not trace this issuer to a known trust network. Their identity or digital signature could not be confirmed.
+					 */
+					UNVERIFIED: () => LocalizedString
+				}
+			}
 		}
 		CONNECTION_REQUEST: {
 			/**
