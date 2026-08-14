@@ -2,7 +2,7 @@
   import LL from '$i18n/i18n-svelte';
 
   import { CheckBoldIcon, CheckCircleFillIcon, WarningCircleFillIcon, WarningRegularIcon } from '$lib/icons';
-  // TEMP: swap to `@bindings/user_prompt/TrustVerification` once the backend struct lands.
+  // TEMP: swap to `@bindings/user_prompt/TrustVerification` once the backend is ready.
   import type { TrustVerification } from '$lib/types/trust';
 
   export let trust: TrustVerification;
@@ -29,15 +29,11 @@
 
 <!--
 @component
-Overlays a trust seal on the issuer's mark. The seal is the affordance, not the message: the
-ecosystem name and cache status are shown inline on the page. Tapping the seal opens a short
+Overlays a trust seal on the issuer's mark. Tapping the seal opens a short
 explainer of what "verified" actually means.
 
 ### Props
 - trust: `TrustVerification`
-
-### Slots
-- default: the issuer's mark (logo or fallback) the seal is pinned to.
 -->
 <div class="relative inline-flex" bind:this={root}>
   <slot />

@@ -6,7 +6,7 @@
 
   import type { CurrentUserPrompt } from '@bindings/user_prompt/CurrentUserPrompt';
 
-  import { Button, Checkbox, Image, ListItemCard, TopNavBar, TrustSeal } from '$lib/components';
+  import { Button, Checkbox, Image, ListItemCard, TopNavBar, TrustShield } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { CheckCircleFillIcon, DownloadSimpleFillIcon, WarningCircleFillIcon } from '$lib/icons';
   import { state as appState, error } from '$lib/stores';
@@ -23,14 +23,14 @@
     status: 'Verified',
     ecosystem_name: 'Findynet Network',
     ecosystem_id: 'https://trust-anchor.findynet.fi',
-    ecosystem_logo_uri: null,
-    previously_trusted: false,
+    ecosystem_logo_uri: 'https://storage.googleapis.com/public-logo-assets-f9d25b6/impierce.png',
+    previously_trusted: true,
   };
 
   const MOCK_PROMPT = {
     type: 'credential-offer',
     issuer_name: 'Example University',
-    logo_uri: null,
+    logo_uri: 'https://storage.googleapis.com/public-logo-assets-f9d25b6/impierce.png',
     credential_configurations: {
       UniversityDegree: { credential_metadata: { display: [{ name: 'University Degree' }] } },
     },
@@ -88,7 +88,7 @@
 
   <div class="flex grow flex-col items-center justify-center gap-10 px-4 py-6">
     <div class="flex flex-col items-center gap-4">
-      <TrustSeal trust={trust_verification}>
+      <TrustShield trust={trust_verification}>
         <div
           class="flex h-[112px] w-[112px] items-center justify-center overflow-hidden rounded-[28px] {logo_uri
             ? ''
@@ -105,7 +105,7 @@
             <DownloadSimpleFillIcon class="h-10 w-10 text-background-alt" />
           {/if}
         </div>
-      </TrustSeal>
+      </TrustShield>
 
       <div class="flex flex-col items-center gap-1.5">
         <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">

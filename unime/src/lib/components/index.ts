@@ -24,4 +24,4 @@ export { default as Tabs } from './navigation/Tabs.svelte';
 export { default as TextInput } from './forms/TextInput.svelte';
 export { default as Toast } from './Toast.svelte';
 export { default as TopNavBar } from './navigation/TopNavBar.svelte';
-export { default as TrustSeal } from './TrustSeal.svelte';
+export { default as TrustShield } from './TrustShield.svelte';
