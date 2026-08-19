@@ -302,16 +302,12 @@ const nl_NL = {
       GREETING_3: 'Hoi',
       GREETING_4: 'Dag',
     },
-    CREDENTIAL_TABS: {
-      ALL: 'Alle',
-      DATA: 'Data',
-      BADGES: 'Badges',
-    },
     EMPTY_CREDENTIALS: {
       TITLE: 'Momenteel is het hier wat rustig',
       SUBTITLE: 'Wat denk je ervan om nieuwe credentials toe te voegen om je digitale "me" te starten?',
     },
     FAVORITES: 'Mijn favorieten',
+    MY_DATA: 'Mijn gegevens',
   },
   ACTIVITY: {
     BOTTOM_NAVIGATION_TITLE: 'Activiteiten',

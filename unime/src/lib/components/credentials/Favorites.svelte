@@ -33,7 +33,7 @@
     <HeartStraightFillIcon class="mr-2 text-primary" />
     <p class="text-[13px]/[24px] font-medium text-slate-500 dark:text-white">{$LL.ME.FAVORITES()}</p>
   </div>
-  <div class="flex flex-col space-y-2">
+  <div class="flex flex-col space-y-2 pb-5">
     {#each favorite_credentials as credential (credential.id)}
       <ListItemCard
         id={credential.id}
@@ -45,7 +45,4 @@
       />
     {/each}
   </div>
-  <!-- TODO: make conditional? only show when there are also some non-favorite credentials -->
-  <!-- Horizontal line -->
-  <div class="my-5 h-0.5 bg-grey dark:bg-blue"></div>
 {/if}
