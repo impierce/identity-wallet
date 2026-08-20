@@ -337,7 +337,9 @@ const de_DE = {
       NAVBAR_TITLE: 'Verbindungsanfrage',
       TITLE: 'Neue Verbindung',
       DESCRIPTION: 'Akzeptiere nur Verbindungen, die du erwartest und denen du vertraust.',
-      CONNECTED_PREVIOUSLY: 'Zuvor verbunden',
+      CONNECTED: 'Verbunden',
+      FIRST_INTERACTION: 'Erste Interaktion: {duration}',
+      LAST_INTERACTION: 'Letzte Interaktion: {date}',
       ACCEPT: 'Verbindung akzeptieren',
     },
     SHARE_CREDENTIALS: {
@@ -559,11 +561,9 @@ const de_DE = {
     },
   },
   DOMAIN_LINKAGE: {
-    TITLE: 'Verifizierte Website',
-    SUCCESS: 'UniMe konnte die Identität erfolgreich verifizieren, um dir einen sicheren Login zu ermöglichen.',
-    FAILURE: 'UniMe konnte die Verknüpfung der Identität mit der Domain nicht überprüfen.',
-    UNKNOWN: 'UniMe konnte keinen Nachweis über die verbundene Identität der Domain finden.',
-    CAUTION: 'Mit Vorsicht fortfahren!',
+    PILL_VERIFIED: 'Verifizierte Domain',
+    PILL_UNTRUSTED: 'Nicht vertrauenswürdige Domain',
+    PILL_UNVERIFIED: 'Nicht verifizierte Domain',
   },
   ERROR: {
     TITLE: 'Hoppla!',

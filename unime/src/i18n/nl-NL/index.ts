@@ -337,7 +337,9 @@ const nl_NL = {
       NAVBAR_TITLE: 'Credential Aanvraag',
       TITLE: 'Nieuwe connectie',
       DESCRIPTION: 'Accepteer alleen nieuwe connecties die je herkent en vertrouwt',
-      CONNECTED_PREVIOUSLY: 'Eerder verbonden',
+      CONNECTED: 'Verbonden',
+      FIRST_INTERACTION: 'Eerste interactie: {duration}',
+      LAST_INTERACTION: 'Laatste interactie: {date}',
       ACCEPT: 'Accepteer connectie',
     },
     SHARE_CREDENTIALS: {
@@ -559,11 +561,9 @@ const nl_NL = {
     },
   },
   DOMAIN_LINKAGE: {
-    TITLE: 'Geverifieerde website',
-    SUCCESS: 'UniMe heeft de identiteit met succes geverifieerd om u een veilige login te geven.',
-    FAILURE: 'UniMe kon de koppeling van de identiteit aan het domein niet verifiëren.',
-    UNKNOWN: 'UniMe kon geen bewijs vinden van de bijbehorende identiteit van het domein.',
-    CAUTION: 'Ga voorzichtig te werk!',
+    PILL_VERIFIED: 'Geverifieerd domein',
+    PILL_UNTRUSTED: 'Niet-vertrouwd domein',
+    PILL_UNVERIFIED: 'Niet-geverifieerd domein',
   },
   ERROR: {
     TITLE: 'Oeps!',

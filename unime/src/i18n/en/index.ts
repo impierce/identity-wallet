@@ -336,7 +336,9 @@ const en = {
       NAVBAR_TITLE: 'Connection Request',
       TITLE: 'New connection',
       DESCRIPTION: 'Only accept new connections that you recognize and trust',
-      CONNECTED_PREVIOUSLY: 'Connected previously',
+      CONNECTED: 'Connected',
+      FIRST_INTERACTION: 'First interaction: {duration:string}',
+      LAST_INTERACTION: 'Last interaction: {date:string}',
       ACCEPT: 'Accept connection',
     },
     SHARE_CREDENTIALS: {
@@ -557,11 +559,9 @@ const en = {
     },
   },
   DOMAIN_LINKAGE: {
-    TITLE: 'Verified website',
-    SUCCESS: 'UniMe successfully verified the identity to provide you with a secure login.',
-    FAILURE: 'UniMe could not verify the linkage of the identity to the domain.',
-    UNKNOWN: "UniMe could not find any proof of the domain's associated identity.",
-    CAUTION: 'Proceed with caution!',
+    PILL_VERIFIED: 'Verified Domain',
+    PILL_UNTRUSTED: 'Untrusted Domain',
+    PILL_UNVERIFIED: 'Unverified Domain',
   },
   ERROR: {
     TITLE: 'Oops!',

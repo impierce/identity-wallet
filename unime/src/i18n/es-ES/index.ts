@@ -338,7 +338,9 @@ const es_ES = {
       NAVBAR_TITLE: 'Solicitud de conexión',
       TITLE: 'Nueva conexión',
       DESCRIPTION: 'Acepta únicamente las nuevas conexiones que reconozcas y en las que confíes',
-      CONNECTED_PREVIOUSLY: 'Conectado previamente',
+      CONNECTED: 'Conectado',
+      FIRST_INTERACTION: 'Primera interacción: {duration}',
+      LAST_INTERACTION: 'Última interacción: {date}',
       ACCEPT: 'Acepta la conexión',
     },
     SHARE_CREDENTIALS: {
@@ -559,11 +561,9 @@ const es_ES = {
     },
   },
   DOMAIN_LINKAGE: {
-    TITLE: 'Página web verificada',
-    SUCCESS: 'UniMe ha verificado correctamente la identidad para darte un inicio de sesión seguro.',
-    FAILURE: 'UniMe no pudo verificar la vinculación de la identidad al dominio.',
-    UNKNOWN: 'UniMe no puedo encontrar ninguna prueba de la identidad asociada al dominio.',
-    CAUTION: '¡Proceder con precaución!',
+    PILL_VERIFIED: 'Dominio verificado',
+    PILL_UNTRUSTED: 'Dominio no confiable',
+    PILL_UNVERIFIED: 'Dominio sin verificar',
   },
   ERROR: {
     TITLE: '¡Vaya!',

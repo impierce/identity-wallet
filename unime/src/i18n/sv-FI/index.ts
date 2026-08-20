@@ -337,7 +337,9 @@ const sv_FI = {
       NAVBAR_TITLE: 'Anslutningsförfrågan',
       TITLE: 'Ny anslutning',
       DESCRIPTION: 'Acceptera bara anslutningar du känner igen och litar på',
-      CONNECTED_PREVIOUSLY: 'Tidigare ansluten',
+      CONNECTED: 'Ansluten',
+      FIRST_INTERACTION: 'Första interaktionen: {duration}',
+      LAST_INTERACTION: 'Senaste interaktionen: {date}',
       ACCEPT: 'Acceptera anslutning',
     },
     SHARE_CREDENTIALS: {
@@ -558,11 +560,9 @@ const sv_FI = {
     },
   },
   DOMAIN_LINKAGE: {
-    TITLE: 'Verifierad webbplats',
-    SUCCESS: 'UniMe verifierade identiteten för säker inloggning.',
-    FAILURE: 'UniMe kunde inte verifiera kopplingen mellan identitet och domän.',
-    UNKNOWN: 'UniMe hittade inget bevis på domänens identitet.',
-    CAUTION: 'Var försiktig!',
+    PILL_VERIFIED: 'Verifierad domän',
+    PILL_UNTRUSTED: 'Ej betrodd domän',
+    PILL_UNVERIFIED: 'Overifierad domän',
   },
   ERROR: {
     TITLE: 'Hoppsan!',

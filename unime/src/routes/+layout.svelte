@@ -117,7 +117,7 @@
       }
 
       // DEV: uncommenting this helps local development by always redirecting to the page you're working on
-      // redirectPath = '/me/settings/about';
+  redirectPath = '/prompt/accept-connection?mock=new';
 
       if (redirectPath) {
         info(`Redirecting to: ${redirectPath}.`);

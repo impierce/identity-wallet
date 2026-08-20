@@ -1,49 +1,61 @@
 <script lang="ts">
-  import { onDestroy } from 'svelte';
+  import { onDestroy, onMount } from 'svelte';
 
   import { goto } from '$app/navigation';
+  import { page } from '$app/state';
   import LL from '$i18n/i18n-svelte';
 
-  import type { CurrentUserPrompt } from '@bindings/user_prompt/CurrentUserPrompt';
+  import { debug } from '@tauri-apps/plugin-log';
 
   import { Button, Image, PaddedIcon, StatusIndicator, TopNavBar } from '$lib/components';
+  import { resolveAcceptConnectionPrompt } from '$lib/dev/mocks/resolve';
   import { dispatch } from '$lib/dispatcher';
-  import { PlugsConnectedFillIcon, WarningCircleFillIcon } from '$lib/icons';
-  import { error, state } from '$lib/stores';
-  import { formatDate, hash } from '$lib/utils';
+  import { PlugsConnectedFillIcon, ShieldCheckRegularIcon, WarningCircleFillIcon } from '$lib/icons';
+  import { state as appState, error } from '$lib/stores';
+  import { formatDate, formatRelativeDateTime, hash } from '$lib/utils';
 
-  const profile_settings = $state.profile_settings;
+  import DomainPill from './DomainPill.svelte';
 
   let loading = false;
 
-  // TypeScript does not know that the `current_user_prompt` is of type `accept-connection`.
-  // Extract the type from `CurrentUserPrompt`.
-  type IsAcceptConnectionPrompt<T> = T extends { type: 'accept-connection' } ? T : never;
-  type AcceptConnectionPrompt = IsAcceptConnectionPrompt<CurrentUserPrompt>;
+  // Latch the prompt. After the user accepts, the backend clears `current_user_prompt`
+  // and pushes new state; without this, the destructure below would run against `null`
+  // before we have navigated away. The page is only ever reached with an active
+  // prompt, so the initial value is non-null.
+  let prompt = resolveAcceptConnectionPrompt(page.url, $appState)!;
+  $: {
+    const next = resolveAcceptConnectionPrompt(page.url, $appState);
+    if (next) prompt = next;
+  }
 
-  const {
-    client_name,
-    domain_validation,
-    logo_uri,
-    previously_connected,
-    redirect_uri,
-    linked_verifiable_presentations,
-  } = $state.current_user_prompt as AcceptConnectionPrompt;
+  $: ({ client_name, logo_uri, redirect_uri, connection_data, domain_validation, linked_verifiable_presentations } =
+    prompt);
 
-  $: ({ hostname } = new URL(redirect_uri));
+  $: profile_settings = $appState.profile_settings;
+  $: hostname = new URL(redirect_uri).hostname;
   $: imageId = logo_uri ? hash(logo_uri) : '_';
 
-  // When an error is received, cancel the flow and redirect to the "me" page
-  error.subscribe((err) => {
-    if (err) {
-      loading = false;
-      dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });
+  // For DEV previews only: `?mock=` renders a fixture instead of a real prompt.
+  $: isMock = $appState.dev_mode !== 'Off' && page.url.searchParams.has('mock');
+
+  onMount(() => {
+    if ($appState.dev_mode !== 'Off' && domain_validation.message) {
+      debug(`Domain validation (${domain_validation.status}): ${domain_validation.message}`);
     }
   });
 
-  onDestroy(async () => {
+  // When an error is received, cancel the flow and redirect to the "me" page
+  const unsubscribe = error.subscribe((err) => {
+    if (err) {
+      loading = false;
+      if (!isMock) dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });
+    }
+  });
+
+  onDestroy(() => {
+    unsubscribe();
     // TODO: is onDestroy also called when user accepts since the component itself is destroyed?
-    dispatch({ type: '[User Flow] Cancel', payload: {} });
+    if (!isMock) dispatch({ type: '[User Flow] Cancel', payload: {} });
   });
 </script>
 
@@ -55,7 +67,7 @@
     class="sticky top-0 z-10"
   />
 
-  <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
+  <div class="flex grow flex-col items-center space-y-6 p-4">
     {#if logo_uri}
       <div
         class="flex h-[75px] w-[75px] items-center justify-center overflow-hidden rounded-3xl bg-white p-2 dark:bg-silver"
@@ -69,17 +81,21 @@
       <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
         {client_name}
       </p>
-      <p class="pt-[10px] text-sm font-medium text-slate-500">
-        <!-- TODO: make the apex domain bold for extra highlight, subdomain(s) slightly greyed out -->
-        {hostname}
-      </p>
+      <div class="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 pt-[10px]">
+        <p class="text-[13px]/[20px] font-normal text-slate-500">
+          <!-- TODO: make the apex domain bold for extra highlight, subdomain(s) slightly greyed out -->
+          {hostname}
+        </p>
+        <span class="text-slate-300 dark:text-slate-600" aria-hidden="true">·</span>
+        <DomainPill status={domain_validation.status} />
+      </div>
     </div>
 
-    <!-- Details -->
-    <div class="w-full space-y-3 rounded-3xl bg-white p-3 dark:bg-dark">
-      <!-- Warning -->
-      {#if !previously_connected}
-        <div class="flex w-full items-center rounded-xl bg-silver p-4 dark:bg-navy">
+    <div class="w-full space-y-3">
+      {#if !connection_data}
+        <div
+          class="flex w-full items-center rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-600 dark:bg-dark"
+        >
           <span class="mr-4 h-6 w-6">
             <WarningCircleFillIcon class="h-6 w-6 text-amber-500" />
           </span>
@@ -94,34 +110,31 @@
         </div>
       {/if}
 
-      <!-- Connected previously -->
-      <StatusIndicator
-        status={previously_connected ? 'Success' : 'Failure'}
-        title={$LL.SCAN.CONNECTION_REQUEST.CONNECTED_PREVIOUSLY()}
-      />
-
-      <!-- Domain validation -->
-      <StatusIndicator status={domain_validation.status} title={$LL.DOMAIN_LINKAGE.TITLE()}>
-        <div class="text-[12px]/[20px] break-words" slot="popover">
-          {#if domain_validation.status === 'Success'}
-            <!-- TODO: add a better description of _what_ was validated -->
-            <p>{$LL.DOMAIN_LINKAGE.SUCCESS()}</p>
-          {:else if domain_validation.status === 'Failure'}
-            <p>{$LL.DOMAIN_LINKAGE.FAILURE()}</p>
-            <!-- TODO: pick a different color (bad contrast) -->
-            <p class="font-semibold text-rose-500">{$LL.DOMAIN_LINKAGE.CAUTION()}</p>
-          {:else}
-            <p>{$LL.DOMAIN_LINKAGE.UNKNOWN()}</p>
-            <!-- TODO: pick a different color (bad contrast) -->
-            <p class="font-semibold text-rose-500">{$LL.DOMAIN_LINKAGE.CAUTION()}</p>
-          {/if}
-          <!-- Dev Mode: Show additional message -->
-          {#if $state.dev_mode !== 'Off' && domain_validation.message}
-            <!-- TODO: dev_mode only: pick a different color (bad contrast) -->
-            <p class="text-rose-500">{domain_validation.message}</p>
-          {/if}
+      <!-- Connected previously: how long we have known this party, when was the last interaction -->
+      {#if connection_data}
+        <div
+          class="flex w-full items-center rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-600 dark:bg-dark"
+        >
+          <span class="mr-4 h-6 w-6 shrink-0">
+            <ShieldCheckRegularIcon class="h-6 w-6 text-green-500" />
+          </span>
+          <div class="flex flex-col">
+            <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
+              {$LL.SCAN.CONNECTION_REQUEST.CONNECTED()}
+            </p>
+            <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
+              {$LL.SCAN.CONNECTION_REQUEST.FIRST_INTERACTION({
+                duration: formatRelativeDateTime(connection_data.first_interacted_at, profile_settings.locale),
+              })}
+            </p>
+            <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
+              {$LL.SCAN.CONNECTION_REQUEST.LAST_INTERACTION({
+                date: formatDate(connection_data.last_interacted_at, profile_settings.locale),
+              })}
+            </p>
+          </div>
         </div>
-      </StatusIndicator>
+      {/if}
 
       <!-- Linked Verifiable Presentations -->
       {#each linked_verifiable_presentations as presentation}
@@ -147,9 +160,11 @@
       label={$LL.SCAN.CONNECTION_REQUEST.ACCEPT()}
       on:click={() => {
         loading = true;
-        dispatch({
-          type: '[Authenticate] Connection accepted',
-        });
+        if (!isMock) {
+          dispatch({
+            type: '[Authenticate] Connection accepted',
+          });
+        }
       }}
       {loading}
     />
@@ -157,7 +172,7 @@
       label={$LL.REJECT()}
       variant="secondary"
       on:click={() => {
-        dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });
+        if (!isMock) dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });
         goto('/me');
       }}
       disabled={loading}

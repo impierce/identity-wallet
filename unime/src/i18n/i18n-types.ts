@@ -883,9 +883,19 @@ type RootTranslation = {
 			 */
 			DESCRIPTION: string
 			/**
-			 * C​o​n​n​e​c​t​e​d​ ​p​r​e​v​i​o​u​s​l​y
+			 * C​o​n​n​e​c​t​e​d
 			 */
-			CONNECTED_PREVIOUSLY: string
+			CONNECTED: string
+			/**
+			 * F​i​r​s​t​ ​i​n​t​e​r​a​c​t​i​o​n​:​ ​{​d​u​r​a​t​i​o​n​}
+			 * @param {string} duration
+			 */
+			FIRST_INTERACTION: RequiredParams<'duration'>
+			/**
+			 * L​a​s​t​ ​i​n​t​e​r​a​c​t​i​o​n​:​ ​{​d​a​t​e​}
+			 * @param {string} date
+			 */
+			LAST_INTERACTION: RequiredParams<'date'>
 			/**
 			 * A​c​c​e​p​t​ ​c​o​n​n​e​c​t​i​o​n
 			 */
@@ -1488,25 +1498,17 @@ type RootTranslation = {
 	}
 	DOMAIN_LINKAGE: {
 		/**
-		 * V​e​r​i​f​i​e​d​ ​w​e​b​s​i​t​e
+		 * V​e​r​i​f​i​e​d​ ​D​o​m​a​i​n
 		 */
-		TITLE: string
+		PILL_VERIFIED: string
 		/**
-		 * U​n​i​M​e​ ​s​u​c​c​e​s​s​f​u​l​l​y​ ​v​e​r​i​f​i​e​d​ ​t​h​e​ ​i​d​e​n​t​i​t​y​ ​t​o​ ​p​r​o​v​i​d​e​ ​y​o​u​ ​w​i​t​h​ ​a​ ​s​e​c​u​r​e​ ​l​o​g​i​n​.
+		 * U​n​t​r​u​s​t​e​d​ ​D​o​m​a​i​n
 		 */
-		SUCCESS: string
+		PILL_UNTRUSTED: string
 		/**
-		 * U​n​i​M​e​ ​c​o​u​l​d​ ​n​o​t​ ​v​e​r​i​f​y​ ​t​h​e​ ​l​i​n​k​a​g​e​ ​o​f​ ​t​h​e​ ​i​d​e​n​t​i​t​y​ ​t​o​ ​t​h​e​ ​d​o​m​a​i​n​.
+		 * U​n​v​e​r​i​f​i​e​d​ ​D​o​m​a​i​n
 		 */
-		FAILURE: string
-		/**
-		 * U​n​i​M​e​ ​c​o​u​l​d​ ​n​o​t​ ​f​i​n​d​ ​a​n​y​ ​p​r​o​o​f​ ​o​f​ ​t​h​e​ ​d​o​m​a​i​n​'​s​ ​a​s​s​o​c​i​a​t​e​d​ ​i​d​e​n​t​i​t​y​.
-		 */
-		UNKNOWN: string
-		/**
-		 * P​r​o​c​e​e​d​ ​w​i​t​h​ ​c​a​u​t​i​o​n​!
-		 */
-		CAUTION: string
+		PILL_UNVERIFIED: string
 	}
 	ERROR: {
 		/**
@@ -2414,9 +2416,17 @@ export type TranslationFunctions = {
 			 */
 			DESCRIPTION: () => LocalizedString
 			/**
-			 * Connected previously
+			 * Connected
 			 */
-			CONNECTED_PREVIOUSLY: () => LocalizedString
+			CONNECTED: () => LocalizedString
+			/**
+			 * First interaction: {duration}
+			 */
+			FIRST_INTERACTION: (arg: { duration: string }) => LocalizedString
+			/**
+			 * Last interaction: {date}
+			 */
+			LAST_INTERACTION: (arg: { date: string }) => LocalizedString
 			/**
 			 * Accept connection
 			 */
@@ -3019,25 +3029,17 @@ export type TranslationFunctions = {
 	}
 	DOMAIN_LINKAGE: {
 		/**
-		 * Verified website
+		 * Verified Domain
 		 */
-		TITLE: () => LocalizedString
+		PILL_VERIFIED: () => LocalizedString
 		/**
-		 * UniMe successfully verified the identity to provide you with a secure login.
+		 * Untrusted Domain
 		 */
-		SUCCESS: () => LocalizedString
+		PILL_UNTRUSTED: () => LocalizedString
 		/**
-		 * UniMe could not verify the linkage of the identity to the domain.
+		 * Unverified Domain
 		 */
-		FAILURE: () => LocalizedString
-		/**
-		 * UniMe could not find any proof of the domain's associated identity.
-		 */
-		UNKNOWN: () => LocalizedString
-		/**
-		 * Proceed with caution!
-		 */
-		CAUTION: () => LocalizedString
+		PILL_UNVERIFIED: () => LocalizedString
 	}
 	ERROR: {
 		/**

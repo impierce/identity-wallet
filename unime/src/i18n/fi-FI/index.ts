@@ -338,7 +338,9 @@ const fi_FI = {
       NAVBAR_TITLE: 'Yhteyspyyntö',
       TITLE: 'Uusi yhteys',
       DESCRIPTION: 'Hyväksy vain yhteydet jotka tunnistat ja joihin luotat',
-      CONNECTED_PREVIOUSLY: 'Yhdistetty aiemmin',
+      CONNECTED: 'Yhdistetty',
+      FIRST_INTERACTION: 'Ensimmäinen vuorovaikutus: {duration}',
+      LAST_INTERACTION: 'Viimeisin vuorovaikutus: {date}',
       ACCEPT: 'Hyväksy yhteys',
     },
     SHARE_CREDENTIALS: {
@@ -558,11 +560,9 @@ const fi_FI = {
     },
   },
   DOMAIN_LINKAGE: {
-    TITLE: 'Varmennettu sivusto',
-    SUCCESS: 'UniMe varmisti identiteetin turvallista kirjautumista varten.',
-    FAILURE: 'UniMe ei voinut varmentaa identiteetin ja domainin yhteyttä.',
-    UNKNOWN: 'UniMe ei löytänyt näyttöä domainin identiteetistä.',
-    CAUTION: 'Toimi varoen!',
+    PILL_VERIFIED: 'Varmennettu verkkotunnus',
+    PILL_UNTRUSTED: 'Ei-luotettu verkkotunnus',
+    PILL_UNVERIFIED: 'Varmentamaton verkkotunnus',
   },
   ERROR: {
     TITLE: 'Hups!',
