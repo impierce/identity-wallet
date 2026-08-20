@@ -69,6 +69,10 @@
   </button>
 
   <div class="absolute top-0 right-0 mt-4 mr-2">
-    <CredentialHeaderMenu id={credential.id} on:edit={() => dispatchEvent('edit')} />
+    <CredentialHeaderMenu
+      id={credential.id}
+      on:edit={() => dispatchEvent('edit')}
+      on:showRawData={() => dispatchEvent('showRawData')}
+    />
   </div>
 </div>
