@@ -23,7 +23,7 @@ use identity_core::common::Object as IotaObject;
 use identity_credential::sd_jwt_vc::SdJwtVc;
 use identity_iota::credential::{EnvelopedVc, VcDataUrl};
 use identity_iota::did::CoreDID;
-use log::{info, warn};
+use log::{debug, info, warn};
 use oid4vc::oid4vc_core::types::string_or_object::StringOrObject;
 use oid4vc::oid4vc_core::utils::jwt::get_unverified_jwt_claims;
 use oid4vc::oid4vc_core::{
@@ -53,12 +53,16 @@ use std::sync::Arc;
 use uuid::Uuid;
 
 // Sends the authorization response including the verifiable credentials.
+#[tracing::instrument(skip_all, err)]
 pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action) -> Result<AppState, AppError> {
-    info!("handle_presentation_request");
-
     if let Some(credential_uuids) = listen::<CredentialsSelected>(action)
         .and_then(|payload| (!payload.is_interactive).then_some(payload.credential_uuids))
     {
+        info!(
+            "Responding to OID4VP authorization request with {} credential(s)",
+            credential_uuids.len()
+        );
+
         let state_guard = state.core_utils.managers.lock().await;
 
         let stronghold_manager = state_guard
@@ -92,14 +96,14 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             .generate_response(&oid4vp_authorization_request, vp_token_payload)
             .await
             .map_err(GenerateAuthorizationResponseError)?;
-        info!("response generated: {response:?}");
+        debug!("Generated OID4VP authorization response: {response:?}");
 
         #[cfg(not(feature = "test_utils"))]
         if provider_manager.send_response(&response).await.is_err() {
-            info!("failed to send response");
+            warn!("Failed to send OID4VP authorization response to verifier");
             return Err(SendAuthorizationResponseError);
         }
-        info!("response successfully sent");
+        info!("OID4VP presentation response successfully sent to verifier");
 
         let mut connections = state.connections;
         let mut history = state.history;
@@ -175,6 +179,7 @@ pub fn get_oid4vp_client_name_and_logo_uri(
     })
 }
 
+#[tracing::instrument(skip_all, err)]
 pub async fn build_oid4vp_vp_token_and_history_credentials(
     state: &AppState,
     stronghold_manager: &StrongholdManager,
@@ -237,25 +242,32 @@ pub async fn build_oid4vp_vp_token_and_history_credentials(
                         .cloned()
                         .unwrap_or_else(|| {
                             log::debug!(
-                                "JWT-VC-JSON missing 'vc' claim or it's not a valid JSON value: {:?}",
-                                verifiable_credential_record.verifiable_credential
+                                "JWT-VC-JSON missing 'vc' claim or it's not a valid JSON value for credential ID: {}",
+                                verifiable_credential_record.display_credential.id
                             );
                             serde_json::json!({})
                         })
                 } else {
                     log::warn!(
-                        "Unsupported format {:?} for evaluation. Attempting to get unverified JWT claims.",
-                        verifiable_credential_record.display_credential.format
+                        "Unsupported format {:?} for evaluation. Attempting to get unverified JWT claims for credential ID: {}",
+                        verifiable_credential_record.display_credential.format,
+                        verifiable_credential_record.display_credential.id
                     );
                     get_unverified_jwt_claims(&verifiable_credential_record.verifiable_credential).unwrap_or_default()
                 };
 
                 let Some(object) = credential_data.as_object() else {
-                    warn!("Credential data is not a JSON object: {credential_data}");
+                    warn!(
+                        "Credential data is not a JSON object for credential ID: {}",
+                        verifiable_credential_record.display_credential.id
+                    );
                     continue;
                 };
                 let Ok(presentations) = DecodedPresentations::try_new(vec![object.clone()]) else {
-                    warn!("Failed to create DecodedPresentations for credential data: {credential_data}");
+                    warn!(
+                        "Failed to create DecodedPresentations for credential ID: {}",
+                        verifiable_credential_record.display_credential.id
+                    );
                     continue;
                 };
                 let credential_query_satisfied = oid4vc::oid4vp::dcql_evaluation::evaluate_credential_query(
@@ -314,6 +326,7 @@ pub async fn build_oid4vp_vp_token_and_history_credentials(
     Ok((vp_token_payload, history_credentials))
 }
 
+#[tracing::instrument(skip_all)]
 pub async fn update_history_and_connections(
     oid4vp_authorization_request: &AuthorizationRequest<Object<OID4VP>>,
     history_credentials: Vec<HistoryCredential>,

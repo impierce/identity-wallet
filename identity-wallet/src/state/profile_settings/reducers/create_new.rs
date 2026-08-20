@@ -13,13 +13,14 @@ use crate::{
 };
 
 use jsonwebtoken::Algorithm;
-use log::info;
+use log::{debug, info};
 use oid4vc::oid4vc_core::Subject as _;
 use oid4vc::oid4vc_manager::ProviderManager;
 use oid4vc::oid4vci::Wallet;
 use std::sync::Arc;
 
 /// Creates a new profile, produces (deterministic) DIDs and redirects to the main page.
+#[tracing::instrument(skip_all, err)]
 pub async fn create_identity(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(CreateNew {
         name,
@@ -29,7 +30,7 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
         biometrics_enabled,
     }) = listen::<CreateNew>(action)
     {
-        info!("Creating new identity ...");
+        info!("Creating new identity profile `{name}`");
         let mut state_guard = state.core_utils.managers.lock().await;
         let stronghold_manager = state_guard
             .stronghold_manager
@@ -58,6 +59,7 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
             .identifier("did:jwk", Algorithm::EdDSA)
             .await
             .map_err(|e| Error(e.to_string()))?;
+        debug!("Generated identifier did:jwk: {did_jwk}");
         dids.insert("did:jwk".to_string(), did_jwk);
 
         let did_key = subject
@@ -65,6 +67,7 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
             .identifier("did:key", Algorithm::EdDSA)
             .await
             .map_err(|e| Error(e.to_string()))?;
+        debug!("Generated identifier did:key: {did_key}");
         dids.insert("did:key".to_string(), did_key);
 
         let profile_settings = ProfileSettings {
@@ -90,6 +93,7 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
         let trust_lists = TrustLists(vec![default_trust_list]);
 
         drop(state_guard);
+        info!("Identity created successfully");
         return Ok(AppState {
             dids,
             profile_settings,
@@ -104,6 +108,7 @@ pub async fn create_identity(state: AppState, action: Action) -> Result<AppState
     Ok(state)
 }
 
+#[tracing::instrument(skip_all, err)]
 pub async fn initialize_stronghold(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(password) = listen::<CreateNew>(action).map(|payload| payload.password) {
         state
@@ -116,7 +121,7 @@ pub async fn initialize_stronghold(state: AppState, action: Action) -> Result<Ap
                 StrongholdManager::create(&password).map_err(StrongholdCreationError)?,
             ));
 
-        info!("stronghold initialized");
+        info!("Stronghold vault initialized successfully");
         return Ok(state);
     }
 

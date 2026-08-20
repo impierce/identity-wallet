@@ -11,15 +11,14 @@ use crate::{
     },
 };
 
-use log::{info, warn};
+use log::{debug, info, warn};
 use oid4vc::oid4vci::{
     credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject,
     credential_offer::{CredentialOffer, CredentialOfferParameters},
 };
 
+#[tracing::instrument(skip_all, err)]
 pub async fn read_credential_offer(state: AppState, action: Action) -> Result<AppState, AppError> {
-    info!("read_credential_offer");
-
     // Sometimes reducers are connected to actions that they shouldn't execute
     // Therefore its also checked if it can parse to credential offer query
     // TODO find a better way to connect to the right reducer
@@ -41,19 +40,16 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
                 .map_err(GetCredentialOfferError)?,
         };
 
-        info!("credential offer: {credential_offer:?}");
-
         // The credential offer contains a credential issuer url.
         let credential_issuer_url = credential_offer.credential_issuer.clone();
-
-        info!("credential issuer url: {credential_issuer_url:?}");
+        debug!("Parsed credential offer parameters: {credential_offer:?}");
 
         let credential_issuer_metadata = wallet
             .get_credential_issuer_metadata(credential_issuer_url.clone())
             .await
             .ok();
 
-        info!("credential issuer metadata: {credential_issuer_metadata:?}");
+        debug!("Fetched credential issuer metadata: {credential_issuer_metadata:?}");
 
         let credential_configurations: HashMap<String, CredentialConfigurationsSupportedObject> = credential_offer
             .credential_configuration_ids
@@ -109,8 +105,11 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
             })
             .unwrap_or((credential_issuer_url.to_string(), None));
 
-        info!("issuer_name in credential_offer: {issuer_name:?}");
-        info!("logo_uri in credential_offer: {logo_uri:?}");
+        info!(
+            "Processed credential offer for `{issuer_name}` ({credential_issuer_url}) with {} configurations (has_tx_code: {})",
+            credential_configurations.len(),
+            tx_code.is_some()
+        );
 
         download_credential_logos(&credential_configurations).await;
 
@@ -155,7 +154,7 @@ async fn download_credential_logos(
             .and_then(|display| display.first())
             .and_then(|value| value.logo.as_ref().map(|logo| logo.uri.clone()));
 
-        info!("credential_logo_uri: {credential_logo_uri:?}");
+        debug!("Credential logo URI: {credential_logo_uri:?}");
 
         if let Some(logo_uri_str) = credential_logo_uri {
             download_logo(logo_uri_str.as_ref()).await;

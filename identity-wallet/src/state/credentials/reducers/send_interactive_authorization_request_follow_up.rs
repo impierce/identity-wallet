@@ -20,15 +20,19 @@ use oid4vc::oid4vci::InteractiveAuthorizationFollowUpRequest;
 use std::sync::Arc;
 
 /// NOTE: the happy path of this reducer is directly chained to the `send_token_request` reducer via the return
+#[tracing::instrument(skip_all, err)]
 pub async fn send_interactive_authorization_request_follow_up(
     state: AppState,
     action: Action,
 ) -> Result<AppState, AppError> {
-    info!("send_interactive_authorization_request_follow_up");
-
     if let Some(credential_uuids) = listen::<CredentialsSelected>(action)
         .and_then(|payload| payload.is_interactive.then_some(payload.credential_uuids))
     {
+        info!(
+            "Sending interactive authorization follow-up with {} credential(s)",
+            credential_uuids.len()
+        );
+
         let state_guard = state.core_utils.managers.lock().await;
 
         let stronghold_manager = state_guard

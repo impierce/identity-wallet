@@ -11,7 +11,7 @@ use identity_iota::{
     verification::{jwk::JwkParams, jws::JwsAlgorithm},
 };
 use jsonwebtoken::Algorithm;
-use log::info;
+use log::debug;
 use oid4vc::oid4vc_core::{authentication::sign::ExternalSign, Sign, Verify};
 use std::sync::Arc;
 use tokio::sync::{Mutex, OnceCell};
@@ -36,9 +36,9 @@ impl Subject {
 
     /// The private async function that contains the actual initialization logic.
     async fn initialize_resolver() -> Arc<Resolver> {
-        info!("Initializing resolver for Subject");
+        debug!("Initializing resolver for Subject");
         let resolver = Resolver::new_with_options(Some(tls_config()), None, None);
-        info!("Resolver initialized");
+        debug!("Resolver initialized");
         Arc::new(resolver)
     }
 

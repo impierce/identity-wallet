@@ -6,6 +6,7 @@ use identity_credential::sd_jwt_vc::{SdJwtVcBuilder, SD_JWT_VC_TYP};
 use identity_iota::core::{Timestamp, Url};
 use itertools::Itertools;
 use jsonwebtoken::Algorithm;
+use log::{debug, info};
 use oid4vc::{oid4vc_core::Sign, oid4vci::credential_format_profiles::CredentialFormats};
 use sd_jwt::{JsonObject, JwsSigner, RequiredKeyBinding};
 use serde_json::json;
@@ -55,6 +56,7 @@ impl JwsSigner for SubjectWrapper {
     }
 }
 
+#[tracing::instrument(skip_all, err)]
 pub async fn self_issue_credential(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(self_issue_credential) = listen::<SelfIssueCredential>(action) {
         // TODO: autofill credentialSubject and a few other fields.
@@ -101,6 +103,8 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
         let kid = subject.key_id(did_method, algorithm).await.ok_or(AppError::Error(
             "Failed to create a key id necessary to self-issue the credential".to_string(),
         ))?;
+
+        debug!("Self-issuing SD-JWT VC: issuer_did={issuer_did}, kid={kid}, alg={algorithm:?}");
 
         // Wrap subject with the SubjectWrapper to get the JwsSigner implementation
         let subject_wrapper = SubjectWrapper {
@@ -181,6 +185,10 @@ pub async fn self_issue_credential(state: AppState, action: Action) -> Result<Ap
             .map_err(StrongholdInsertionError)?;
 
         drop(state_guard);
+        info!(
+            "Self-issued credential `{}` ({key}) successfully saved to Stronghold",
+            vcr.display_credential.display_name
+        );
 
         let mut credentials = state.credentials.clone();
         if credentials

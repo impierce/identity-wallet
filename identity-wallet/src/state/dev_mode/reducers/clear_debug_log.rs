@@ -5,6 +5,7 @@ use crate::{
     state::{actions::Action, AppState},
 };
 
+#[tracing::instrument(skip_all, err)]
 pub async fn clear_debug_log(state: AppState, _action: Action) -> Result<AppState, AppError> {
     Ok(AppState {
         debug_messages: VecDeque::new(),

@@ -22,7 +22,7 @@ use identity_iota::{
     },
     document::{CoreDocument, Service},
 };
-use log::{info, warn};
+use log::{debug, info, warn};
 use oid4vc::oid4vci::credential_issuer::credential_issuer_metadata::CredentialIssuerMetadata;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -68,7 +68,7 @@ pub async fn validate_linked_verifiable_presentations(
         }
     };
 
-    info!("Holder document: {holder_document:#?}");
+    debug!("Holder document: {holder_document:#?}");
 
     iter(
         // Get all linked verifiable presentation URLs from the holder document
@@ -79,7 +79,7 @@ pub async fn validate_linked_verifiable_presentations(
             .flatten(),
     )
     .filter_map(|linked_verifiable_presentation_url| {
-        info!("Processing linked verifiable presentation URL: {linked_verifiable_presentation_url}");
+        debug!("Processing linked verifiable presentation URL: {linked_verifiable_presentation_url}");
         // Validate the linked verifiable presentation and get the linked verifiable credential data
         get_validated_linked_presentation_data(resolver, &holder_document, linked_verifiable_presentation_url)
     })
@@ -94,7 +94,7 @@ fn get_linked_verifiable_presentation_urls(service: &Service) -> Option<Vec<Url>
         .type_()
         .contains("LinkedVerifiablePresentation")
         .then(|| {
-            info!("Found LinkedVerifiablePresentation service: {service:#?}");
+            debug!("Found LinkedVerifiablePresentation service: {service:#?}");
             service.service_endpoint()
         })
         .and_then(|service_endpoint| service_endpoint.to_json_value().ok())
@@ -169,7 +169,7 @@ async fn validate_linked_verifiable_presentation(
         .ok()
         .and_then(|presentation_jwt| {
             status.is_success().then(|| {
-                info!("Validating linked verifiable presentation JWT: {presentation_jwt}");
+                debug!("Validating linked verifiable presentation JWT: {presentation_jwt}");
 
                 let validator = JwtPresentationValidator::with_signature_verifier(Verifier);
                 validator
@@ -196,12 +196,12 @@ async fn get_validated_linked_credential_data(
             let issuer_document = get_issuer_document(resolver, &linked_verifiable_credential_jwt).await?;
             let issuer_did = issuer_document.id().to_string();
 
-            info!("Issuer document: {issuer_document:#?}");
+            debug!("Issuer document: {issuer_document:#?}");
 
             // Resolve the issuer linked domains from the issuer document
             let issuer_linked_domains = get_issuer_linked_domains(&issuer_document).await;
 
-            info!("Issuer linked domains: {issuer_linked_domains:#?}");
+            debug!("Issuer linked domains: {issuer_linked_domains:#?}");
 
             // Only linked verifiable credentials with at least one successful domain linkage validation are considered
             let mut validated_linked_domains = get_validated_linked_domains(resolver, &issuer_linked_domains, &issuer_did).await;
@@ -209,7 +209,7 @@ async fn get_validated_linked_credential_data(
 
             // TODO: This is a fallback to get the url from a did:web to validate domain linkage. This is useful for companies who haven't implemented domain linkage yet.
             if validated_linked_domains.is_empty() {
-                info!("No validated linked domains found, attempting to extract URL from DID Web: {issuer_did}");
+                debug!("No validated linked domains found, attempting to extract URL from DID Web: {issuer_did}");
                 if let Some(did_web_url) = extract_url_from_did_web(&issuer_did) {
                     validated_linked_domains.insert(0, did_web_url);
                 }
@@ -228,7 +228,7 @@ async fn get_validated_linked_credential_data(
                     &options,
                     FailFast::FirstError,
                 ) {
-                    info!("Validated linked verifiable credential JWT: {linked_verifiable_credential:#?}");
+                    debug!("Validated linked verifiable credential JWT: {linked_verifiable_credential:#?}");
 
                     // Validate the linked verifiable credential against its corresponding JSON Schema
                     validate_credential_types(&linked_verifiable_credential.credential.to_json_value().ok()?).ok()?;
@@ -244,7 +244,7 @@ async fn get_validated_linked_credential_data(
                         let logo_uri = get_logo_uri(credential_subject, &linked_verifiable_credential, &validated_linked_domains).await;
                         let issuance_date = linked_verifiable_credential.credential.issuance_date.to_rfc3339();
 
-                        info!("LinkedVerifiableCredentialData: name: {name:?}, logo_uri: {logo_uri:?}, issuance_date: {issuance_date}, validated_linked_domains: {validated_linked_domains:#?}");
+                        debug!("LinkedVerifiableCredentialData: name: {name:?}, logo_uri: {logo_uri:?}, issuance_date: {issuance_date}, validated_linked_domains: {validated_linked_domains:#?}");
 
                         Some(LinkedVerifiableCredentialData {
                             name,
@@ -370,7 +370,7 @@ async fn get_logo_uri(
     linked_verifiable_credential: &DecodedJwtCredential<Value>,
     validated_linked_domains: &[Url],
 ) -> Option<String> {
-    info!("Trying to fetch image uri from credential subject");
+    debug!("Trying to fetch image uri from credential subject");
     let mut logo_uri = credential_subject
         .properties
         .get("image")
@@ -379,10 +379,10 @@ async fn get_logo_uri(
 
     // Check if logo URI was retrieved, if not then attempt to retrieve from a well-known endpoint
     if logo_uri.is_none() {
-        info!("Failed to fetch image uri from credential subject");
+        debug!("Failed to fetch image uri from credential subject");
         for domain in validated_linked_domains.iter() {
             let well_known_endpoint = format!("{domain}.well-known/openid-credential-issuer");
-            info!("Trying to fetch image uri from {well_known_endpoint} endpoint");
+            debug!("Trying to fetch image uri from {well_known_endpoint} endpoint");
             if let Ok(response) = get_http_client().await.get(&well_known_endpoint).send().await {
                 if let Ok(metadata) = response.json::<CredentialIssuerMetadata>().await {
                     logo_uri = metadata.display.as_deref().and_then(extract_logo_uri_from_display);
@@ -397,11 +397,11 @@ async fn get_logo_uri(
             // For now we assume it's the same domain as the linked domain.
             // But this is no guarantee and the code below is one such workaround.
             let well_known_endpoint = format!("{domain}oid4vci/.well-known/openid-credential-issuer");
-            info!("Trying to fetch image uri from {well_known_endpoint} endpoint");
+            debug!("Trying to fetch image uri from {well_known_endpoint} endpoint");
             if let Ok(response) = get_http_client().await.get(&well_known_endpoint).send().await {
                 if let Ok(metadata) = response.json::<CredentialIssuerMetadata>().await {
                     logo_uri = linked_verifiable_credential.credential.types.iter().find_map(|type_| {
-                        info!("Trying to fetch image uri from Credential Configuration Supported: {type_}");
+                        debug!("Trying to fetch image uri from Credential Configuration Supported: {type_}");
                         metadata
                             .credential_configurations_supported
                             .get(type_)

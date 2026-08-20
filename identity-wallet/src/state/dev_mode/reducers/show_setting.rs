@@ -10,6 +10,7 @@ use crate::{
 
 use log::debug;
 
+#[tracing::instrument(skip_all, err)]
 pub async fn show_setting(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(show) = listen::<ShowDevModeSetting>(action).map(|payload| payload.show) {
         debug!("Show dev mode setting: {show}");

@@ -19,7 +19,7 @@ use crate::{
     },
 };
 use identity_credential::sd_jwt_vc::SdJwtVc;
-use log::{debug, info, warn};
+use log::{debug, info};
 use oid4vc::oid4vc_core::authorization_request::{AuthorizationRequest, Object};
 use oid4vc::oid4vc_core::utils::jwt::get_unverified_jwt_claims;
 use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
@@ -38,11 +38,16 @@ use uuid::Uuid;
 
 // TODO: rename this reducer to `handle_credential_offer` or similar. This should be done in an isolated PR in order to prevent
 // confusing git diffs.
+#[tracing::instrument(skip_all, err)]
 pub async fn send_credential_request(state: AppState, action: Action) -> Result<AppState, AppError> {
-    info!("send_credential_request");
-
     if let Some(selected_offer) = listen::<CredentialOffersSelected>(action.clone()) {
         let credential_configuration_ids = selected_offer.credential_configuration_ids;
+
+        info!(
+            "Handling credential offer for {} credential configuration(s): {:?}",
+            credential_configuration_ids.len(),
+            credential_configuration_ids
+        );
 
         let state_guard = state.core_utils.managers.lock().await;
         let stronghold_manager = state_guard
@@ -69,8 +74,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
 
         // The credential offer contains a credential issuer url.
         let credential_issuer_url = credential_offer.credential_issuer.clone();
-
-        info!("credential issuer url: {credential_issuer_url:?}");
+        debug!("Credential issuer URL: {credential_issuer_url}");
 
         // Get the credential issuer metadata.
         let credential_issuer_metadata = wallet
@@ -78,7 +82,7 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
             .await
             .map_err(GetCredentialIssuerMetadataError)?;
 
-        info!("credential issuer metadata: {credential_issuer_metadata:?}");
+        debug!("Credential issuer metadata: {credential_issuer_metadata:?}");
 
         // Get the credential issuer display.
         let display = credential_issuer_metadata
@@ -86,15 +90,13 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
             .as_ref()
             .and_then(|display| display.first().cloned());
 
-        info!("credential issuer display: {:?}", display);
+        debug!("Credential issuer display: {:?}", display);
 
         // Get the connection url from the credential issuer url host (or use the credential issuer url if it does not
         // contain a host).
         let connection_url = credential_issuer_url
             .host_str()
             .unwrap_or(credential_issuer_url.as_str());
-
-        info!("connection url: {:?}", connection_url);
 
         // Get the credential issuer name or use the credential issuer url.
         let issuer_name = display
@@ -109,8 +111,8 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
             })
             .unwrap_or(connection_url.to_string());
 
-        info!("issuer name: {:?}", issuer_name);
-        info!("credential configuration ids: {:?}", credential_configuration_ids);
+        info!("Processing credential offer for issuer: {issuer_name} ({connection_url})");
+        debug!("Credential configuration IDs: {:?}", credential_configuration_ids);
 
         let mut credential_configurations_supported =
             credential_issuer_metadata.credential_configurations_supported.clone();
@@ -327,7 +329,8 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                             })
                             .collect();
 
-                        info!("uuids of VCs that can fulfill the request: {uuids:?}");
+                        info!("Evaluated {} VCs matching interactive OID4VP request", uuids.len());
+                        debug!("Matched VC UUIDs for interactive authorization: {uuids:?}");
 
                         let OID4VPClientMetadata {
                             client_name,
@@ -336,13 +339,12 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                             client_id: _,
                         } = get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request);
 
-                        info!("client_name in credential_offer: {client_name:?}");
-                        info!("logo_uri in read_authorization_request: {logo_uri:?}");
+                        info!("Interactive OID4VP client metadata: client_name={client_name:?}, logo_uri={logo_uri:?}");
 
                         if let Some(logo_uri_str) = logo_uri.clone() {
                             download_logo(&logo_uri_str).await;
                         } else {
-                            warn!("No logo URI found");
+                            debug!("No logo URI found for interactive OID4VP client");
                         }
 
                         // TODO: communicate when no credentials are available.

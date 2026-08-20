@@ -18,6 +18,7 @@ use unicode_normalization::UnicodeNormalization;
 
 // Reverse setting of non-selected sorting options are not persisted and use the default (false) when selected.
 
+#[tracing::instrument(skip_all, err)]
 pub async fn update_sorting_preference(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(update_sorting) = listen::<UpdateSortingPreference>(action) {
         let mut sorting_preferences = state.profile_settings.sorting_preferences.clone();
@@ -53,6 +54,7 @@ pub async fn update_sorting_preference(state: AppState, action: Action) -> Resul
     Ok(state)
 }
 
+#[tracing::instrument(skip_all, err)]
 pub async fn sort_credentials(state: AppState, _action: Action) -> Result<AppState, AppError> {
     let mut credentials: Vec<DisplayCredential> = state.credentials.clone();
     let preferences: Preferences<CredentialSortMethod> = state.profile_settings.sorting_preferences.credentials.clone();
@@ -106,6 +108,7 @@ pub async fn sort_credentials(state: AppState, _action: Action) -> Result<AppSta
     Ok(AppState { credentials, ..state })
 }
 
+#[tracing::instrument(skip_all, err)]
 pub async fn sort_connections(state: AppState, _action: Action) -> Result<AppState, AppError> {
     let mut connections: Vec<Connection> = state.connections.0.clone();
     let preferences: Preferences<ConnectionSortMethod> = state.profile_settings.sorting_preferences.connections.clone();
