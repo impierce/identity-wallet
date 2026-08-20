@@ -4,6 +4,9 @@
 
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 
+  import { toAlignments } from '$lib/utils/alignment';
+
+  import AlignmentRenderer from './(renderers)/AlignmentRenderer.svelte';
   import ClaimRenderer from './(renderers)/ClaimRenderer.svelte';
   import InlineClaimRenderer from './(renderers)/InlineClaimRenderer.svelte';
   import TextFieldRenderer from './(renderers)/TextFieldRenderer.svelte';
@@ -24,6 +27,8 @@
 
   // The remaining `AchievementSubject` fields, e.g. `activityStartDate` or `creditsEarned`.
   const fields = Object.keys(subject).filter((field) => !renderedFields.includes(field));
+
+  const alignments = toAlignments(subject.achievement?.alignment);
 </script>
 
 <div class="flex flex-col gap-4">
@@ -58,17 +63,14 @@
     </CollapsibleWrapper>
   {/if}
 
-  {#if credential.data.credentialSubject?.achievement?.alignment?.length > 0}
+  {#if alignments.length > 0}
     <CollapsibleWrapper defaultOpen={false}>
       <h2 class="text-lg font-bold" slot="title">{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.ALIGNMENT()}</h2>
-      {#each credential.data.credentialSubject.achievement.alignment as alignmentItem}
-        <h4>{alignmentItem.targetName}</h4>
-        {#if alignmentItem.targetDescription}
-          <!-- TODO: Review marked vs. markdown-it and security risks. -->
-          <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-          {@html md.render(alignmentItem.targetDescription)}
-        {/if}
-      {/each}
+      <div class="flex flex-col gap-3">
+        {#each alignments as alignment}
+          <AlignmentRenderer {alignment} />
+        {/each}
+      </div>
     </CollapsibleWrapper>
   {/if}
 
@@ -81,16 +83,11 @@
       <div class="flex flex-col divide-y divide-slate-300">
         {#each credential.data.credentialSubject.result as resultItem}
           <div class="py-4 first:pt-0 last:pb-0">
-            {#if resultItem.alignment?.length > 0}
-              {#each resultItem.alignment as resultAlignment}
-                <h4>{resultAlignment.targetName}</h4>
-                {#if resultAlignment.targetDescription}
-                  <!-- TODO: Review marked vs. markdown-it and security risks. -->
-                  <!-- eslint-disable-next-line svelte/no-at-html-tags -->
-                  {@html md.render(resultAlignment.targetDescription)}
-                {/if}
+            <div class="flex flex-col gap-3">
+              {#each toAlignments(resultItem.alignment) as resultAlignment}
+                <AlignmentRenderer alignment={resultAlignment} />
               {/each}
-            {/if}
+            </div>
 
             {#if resultItem.value}
               <div class="flex h-4 items-center justify-between">
