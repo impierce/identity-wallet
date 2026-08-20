@@ -388,6 +388,7 @@ const fi_FI = {
       SELF_SIGNED: 'sinä itse',
       DESCRIPTION: 'Kuvaus',
       OPEN_BADGES: {
+        RECIPIENT: 'Vastaanottaja',
         RESULT: 'Tulos',
         ALIGNMENT: 'Tasaus',
         CRITERIA: 'Kriteerit',

@@ -388,6 +388,7 @@ const es_ES = {
       SELF_SIGNED: 'Autofirmadas',
       DESCRIPTION: 'Descripción',
       OPEN_BADGES: {
+        RECIPIENT: 'Destinatario',
         RESULT: 'Resultado',
         ALIGNMENT: 'Alineación',
         CRITERIA: 'Criterio',
