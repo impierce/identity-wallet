@@ -302,16 +302,12 @@ const sv_FI = {
       GREETING_3: 'Välkommen tillbaka',
       GREETING_4: 'Hallå',
     },
-    CREDENTIAL_TABS: {
-      ALL: 'Alla',
-      DATA: 'Data',
-      BADGES: 'Förtroendemärken',
-    },
     EMPTY_CREDENTIALS: {
       TITLE: 'Lite tomt här',
       SUBTITLE: 'Varför inte få viss data verifierad för att komma igång?',
     },
     FAVORITES: 'Mina favoriter',
+    MY_DATA: 'Mina uppgifter',
   },
   ACTIVITY: {
     BOTTOM_NAVIGATION_TITLE: 'Aktivitet',

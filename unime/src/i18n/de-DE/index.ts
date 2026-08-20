@@ -302,16 +302,12 @@ const de_DE = {
       GREETING_3: 'Hallo',
       GREETING_4: 'Hi',
     },
-    CREDENTIAL_TABS: {
-      ALL: 'Alle',
-      DATA: 'Daten',
-      BADGES: 'Badges',
-    },
     EMPTY_CREDENTIALS: {
       TITLE: 'Hier ist es noch etwas leer',
       SUBTITLE: 'Warum fügst du nicht ein paar Daten zu deiner neuen digitalen Identität hinzu?',
     },
     FAVORITES: 'Meine Favoriten',
+    MY_DATA: 'Meine Daten',
   },
   ACTIVITY: {
     BOTTOM_NAVIGATION_TITLE: 'Aktivität',

@@ -781,20 +781,6 @@ type RootTranslation = {
 			 */
 			GREETING_4: string
 		}
-		CREDENTIAL_TABS: {
-			/**
-			 * A​l​l
-			 */
-			ALL: string
-			/**
-			 * D​a​t​a
-			 */
-			DATA: string
-			/**
-			 * B​a​d​g​e​s
-			 */
-			BADGES: string
-		}
 		EMPTY_CREDENTIALS: {
 			/**
 			 * I​t​'​s​ ​a​ ​b​i​t​ ​q​u​i​e​t​ ​i​n​ ​h​e​r​e
@@ -809,6 +795,10 @@ type RootTranslation = {
 		 * M​y​ ​f​a​v​o​r​i​t​e​s
 		 */
 		FAVORITES: string
+		/**
+		 * M​y​ ​d​a​t​a
+		 */
+		MY_DATA: string
 	}
 	ACTIVITY: {
 		/**
@@ -2312,20 +2302,6 @@ export type TranslationFunctions = {
 			 */
 			GREETING_4: () => LocalizedString
 		}
-		CREDENTIAL_TABS: {
-			/**
-			 * All
-			 */
-			ALL: () => LocalizedString
-			/**
-			 * Data
-			 */
-			DATA: () => LocalizedString
-			/**
-			 * Badges
-			 */
-			BADGES: () => LocalizedString
-		}
 		EMPTY_CREDENTIALS: {
 			/**
 			 * It's a bit quiet in here
@@ -2340,6 +2316,10 @@ export type TranslationFunctions = {
 		 * My favorites
 		 */
 		FAVORITES: () => LocalizedString
+		/**
+		 * My data
+		 */
+		MY_DATA: () => LocalizedString
 	}
 	ACTIVITY: {
 		/**
