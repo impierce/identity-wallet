@@ -1032,6 +1032,18 @@ type RootTranslation = {
 				 */
 				ALIGNMENT: string
 				/**
+				 * S​k​i​l​l
+				 */
+				SKILL: string
+				/**
+				 * O​c​c​u​p​a​t​i​o​n
+				 */
+				OCCUPATION: string
+				/**
+				 * V​i​e​w​ ​d​e​f​i​n​i​t​i​o​n
+				 */
+				FRAMEWORK_LINK: string
+				/**
 				 * C​r​i​t​e​r​i​a
 				 */
 				CRITERIA: string
@@ -2556,6 +2568,18 @@ export type TranslationFunctions = {
 				 * Alignment
 				 */
 				ALIGNMENT: () => LocalizedString
+				/**
+				 * Skill
+				 */
+				SKILL: () => LocalizedString
+				/**
+				 * Occupation
+				 */
+				OCCUPATION: () => LocalizedString
+				/**
+				 * View definition
+				 */
+				FRAMEWORK_LINK: () => LocalizedString
 				/**
 				 * Criteria
 				 */
