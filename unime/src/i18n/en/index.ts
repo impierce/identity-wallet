@@ -386,6 +386,7 @@ const en = {
       SELF_SIGNED: 'yourself',
       DESCRIPTION: 'Description',
       OPEN_BADGES: {
+        RECIPIENT: 'Recipient',
         RESULT: 'Result',
         ALIGNMENT: 'Alignment',
         CRITERIA: 'Criteria',

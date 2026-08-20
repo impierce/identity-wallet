@@ -4,12 +4,26 @@
 
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 
+  import ClaimRenderer from './(renderers)/ClaimRenderer.svelte';
+  import InlineClaimRenderer from './(renderers)/InlineClaimRenderer.svelte';
   import TextFieldRenderer from './(renderers)/TextFieldRenderer.svelte';
   import CollapsibleWrapper from './CollapsibleWrapper.svelte';
 
   export let credential: DisplayCredential;
 
   const md = markdownit();
+
+  const subject = credential.data.credentialSubject ?? {};
+
+  // The recipient's profile is an optional extension of the `AchievementSubject` (which allows additional properties).
+  const profile: Record<string, unknown> | undefined = subject.profile;
+
+  // `AchievementSubject` fields that have a section of their own, or that hold structured data instead of a value
+  // that can be displayed as is.
+  const renderedFields: string[] = ['id', 'type', 'profile', 'achievement', 'result', 'identifier', 'image', 'source'];
+
+  // The remaining `AchievementSubject` fields, e.g. `activityStartDate` or `creditsEarned`.
+  const fields = Object.keys(subject).filter((field) => !renderedFields.includes(field));
 </script>
 
 <div class="flex flex-col gap-4">
@@ -32,13 +46,16 @@
     </CollapsibleWrapper>
   {/if}
 
-  {#if credential.data.credentialSubject?.achievement?.achievementType}
-    <TextFieldRenderer
-      key={'Achievement type'}
-      value={credential.data.credentialSubject?.achievement?.achievementType
-        .replaceAll('ext:', '')
-        .replaceAll('_', ' ')}
-    />
+  <!-- Recipient -->
+  {#if profile}
+    <CollapsibleWrapper defaultOpen={false}>
+      <h2 class="text-lg font-bold" slot="title">{$LL.CREDENTIAL.DETAILS.OPEN_BADGES.RECIPIENT()}</h2>
+      <div class="flex flex-col gap-2">
+        {#each Object.entries(profile) as [key, value]}
+          <InlineClaimRenderer {key} {value} />
+        {/each}
+      </div>
+    </CollapsibleWrapper>
   {/if}
 
   {#if credential.data.credentialSubject?.achievement?.alignment?.length > 0}
@@ -99,9 +116,32 @@
     </CollapsibleWrapper>
   {/if}
 
+  <!-- Fields that are rendered as plain values follow below the collapsible sections. -->
+  {#if credential.data.credentialSubject?.achievement?.achievementType}
+    <TextFieldRenderer
+      key={'Achievement type'}
+      value={credential.data.credentialSubject?.achievement?.achievementType
+        .replaceAll('ext:', '')
+        .replaceAll('_', ' ')}
+    />
+  {/if}
+
+  {#if credential.data.credentialSubject?.achievement?.fieldOfStudy}
+    <ClaimRenderer key={'fieldOfStudy'} value={credential.data.credentialSubject.achievement.fieldOfStudy} />
+  {/if}
+
+  {#if credential.data.credentialSubject?.achievement?.specialization}
+    <ClaimRenderer key={'specialization'} value={credential.data.credentialSubject.achievement.specialization} />
+  {/if}
+
+  <!-- Remaining `AchievementSubject` fields, e.g. `activityStartDate`, `creditsEarned` or `role`. -->
+  {#each fields as field}
+    <ClaimRenderer key={field} value={subject[field]} />
+  {/each}
+
   <!-- "validFrom" is defined as REQUIRED in JSON Schema: https://purl.imsglobal.org/spec/ob/v3p0/schema/json/ob_v3p0_achievementcredential_schema.json -->
   {#if credential.data.validFrom}
-    <TextFieldRenderer key={'validFrom'} value={credential.data.validFrom} />
+    <ClaimRenderer key={'validFrom'} value={credential.data.validFrom} />
   {/if}
 
   <!-- TODO: Where should the linked image be rendered? Overlap the one during issuance?  -->

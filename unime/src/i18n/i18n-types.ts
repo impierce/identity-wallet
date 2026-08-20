@@ -1020,6 +1020,10 @@ type RootTranslation = {
 			DESCRIPTION: string
 			OPEN_BADGES: {
 				/**
+				 * R​e​c​i​p​i​e​n​t
+				 */
+				RECIPIENT: string
+				/**
 				 * R​e​s​u​l​t
 				 */
 				RESULT: string
@@ -2540,6 +2544,10 @@ export type TranslationFunctions = {
 			 */
 			DESCRIPTION: () => LocalizedString
 			OPEN_BADGES: {
+				/**
+				 * Recipient
+				 */
+				RECIPIENT: () => LocalizedString
 				/**
 				 * Result
 				 */
