@@ -890,6 +890,14 @@ type RootTranslation = {
 			 * A​c​c​e​p​t​ ​c​o​n​n​e​c​t​i​o​n
 			 */
 			ACCEPT: string
+			/**
+			 * C​e​r​t​i​f​i​c​a​t​i​o​n​s
+			 */
+			CERTIFICATIONS: string
+			/**
+			 * S​h​o​w​ ​m​o​r​e
+			 */
+			SHOW_MORE: string
 		}
 		SHARE_CREDENTIALS: {
 			/**
@@ -2427,6 +2435,14 @@ export type TranslationFunctions = {
 			 * Accept connection
 			 */
 			ACCEPT: () => LocalizedString
+			/**
+			 * Certifications
+			 */
+			CERTIFICATIONS: () => LocalizedString
+			/**
+			 * Show more
+			 */
+			SHOW_MORE: () => LocalizedString
 		}
 		SHARE_CREDENTIALS: {
 			/**

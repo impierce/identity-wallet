@@ -336,6 +336,8 @@ const en = {
       FIRST_INTERACTION: 'First interaction: {duration:string}',
       LAST_INTERACTION: 'Last interaction: {date:string}',
       ACCEPT: 'Accept connection',
+      CERTIFICATIONS: 'Certifications',
+      SHOW_MORE: 'Show more',
     },
     SHARE_CREDENTIALS: {
       NAVBAR_TITLE: 'Share Data',

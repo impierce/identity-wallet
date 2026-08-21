@@ -7,14 +7,19 @@
 
   import { debug } from '@tauri-apps/plugin-log';
 
-  import { Button, Image, PaddedIcon, StatusIndicator, TopNavBar } from '$lib/components';
+  import { Button, Image, PaddedIcon, TopNavBar } from '$lib/components';
   import { resolveAcceptConnectionPrompt } from '$lib/dev/mocks/resolve';
   import { dispatch } from '$lib/dispatcher';
   import { PlugsConnectedFillIcon, ShieldCheckRegularIcon, WarningCircleFillIcon } from '$lib/icons';
   import { state as appState, error } from '$lib/stores';
   import { formatDate, formatRelativeDateTime, hash } from '$lib/utils';
 
+  import CertificationCard from './CertificationCard.svelte';
   import DomainPill from './DomainPill.svelte';
+  import SectionHeader from './SectionHeader.svelte';
+
+  // How many certifications to show before linking to the full list.
+  const PREVIEW_COUNT = 3;
 
   let loading = false;
 
@@ -28,8 +33,14 @@
     if (next) prompt = next;
   }
 
-  $: ({ client_name, logo_uri, redirect_uri, connection_data, domain_validation, linked_verifiable_presentations } =
-    prompt);
+  $: ({
+    client_name,
+    logo_uri,
+    redirect_uri,
+    connection_data,
+    domain_validation,
+    linked_verifiable_presentations: certifications,
+  } = prompt);
 
   $: profile_settings = $appState.profile_settings;
   $: hostname = new URL(redirect_uri).hostname;
@@ -44,19 +55,12 @@
     }
   });
 
-  // When an error is received, cancel the flow and redirect to the "me" page
+  // Release the buttons on error. Cancelling the flow is the layout's job.
   const unsubscribe = error.subscribe((err) => {
-    if (err) {
-      loading = false;
-      if (!isMock) dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });
-    }
+    if (err) loading = false;
   });
 
-  onDestroy(() => {
-    unsubscribe();
-    // TODO: is onDestroy also called when user accepts since the component itself is destroyed?
-    if (!isMock) dispatch({ type: '[User Flow] Cancel', payload: {} });
-  });
+  onDestroy(unsubscribe);
 </script>
 
 <div class="safe-area-height flex hide-scrollbar flex-col items-stretch overflow-y-auto bg-silver dark:bg-navy">
@@ -135,23 +139,24 @@
           </div>
         </div>
       {/if}
-
-      <!-- Linked Verifiable Presentations -->
-      {#each linked_verifiable_presentations as presentation}
-        {#if presentation.name}
-          {@const issuanceDate =
-            presentation.issuance_date && profile_settings.locale
-              ? formatDate(presentation.issuance_date, profile_settings.locale)
-              : undefined}
-          <StatusIndicator
-            status="Success"
-            title={presentation.name}
-            description={`${$LL.SORT.PREFERENCES.DATE_ISSUED()}: ${issuanceDate}`}
-            logoUrl={presentation.logo_uri}
-          />
-        {/if}
-      {/each}
     </div>
+
+    <!-- Certifications, sourced from the linked verifiable presentations. -->
+    {#if certifications.length > 0}
+      <section class="w-full">
+        <SectionHeader
+          title={$LL.SCAN.CONNECTION_REQUEST.CERTIFICATIONS()}
+          href={certifications.length > PREVIEW_COUNT
+            ? `/prompt/accept-connection/certifications${page.url.search}`
+            : undefined}
+        />
+        <div class="space-y-2">
+          {#each certifications.slice(0, PREVIEW_COUNT) as certification}
+            <CertificationCard {certification} />
+          {/each}
+        </div>
+      </section>
+    {/if}
   </div>
 
   <!-- `sticky` is relative to the nearest scrolling ancestor, which is the enclosing `div` above and not the viewport. -->

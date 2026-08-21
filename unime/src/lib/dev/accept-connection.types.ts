@@ -1,8 +1,6 @@
-// TEMPORARY. Delete once identity-wallet/bindings is regenerated with the new
-// AcceptConnection variant.
+// TEMPORARY. remove once `identity-wallet/bindings` has been regenerated.
 // CC-REMOVE!
 import type { HistoryEvent } from '@bindings/history/HistoryEvent';
-import type { LinkedVerifiableCredentialData } from '@bindings/user_prompt/LinkedVerifiableCredentialData';
 import type { ValidationResult } from '@bindings/user_prompt/ValidationResult';
 
 export interface Member {
@@ -21,6 +19,17 @@ export interface EcosystemProfile {
   members: Member[];
 }
 
+// `issuer_linked_domains` drops its `#[ts(skip)]` on the Rust side; `url-impl` is
+// already enabled, so `Vec<Url>` exports as `Array<string>`.
+export interface Certification {
+  name: string | null;
+  logo_uri: string | null;
+  issuance_date: string;
+  // The issuer's name is read from `.name` here; `.status` drives the domain row's icon.
+  issuer_domain_validation: ValidationResult;
+  issuer_linked_domains: string[];
+}
+
 export interface ConnectionData {
   first_interacted_at: string;
   last_interacted_at: string;
@@ -34,6 +43,6 @@ export interface AcceptConnectionPrompt {
   redirect_uri: string;
   connection_data: ConnectionData | null;
   domain_validation: ValidationResult;
-  linked_verifiable_presentations: LinkedVerifiableCredentialData[];
+  linked_verifiable_presentations: Certification[];
   ecosystems: EcosystemProfile[];
 }

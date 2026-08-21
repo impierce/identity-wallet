@@ -337,6 +337,8 @@ const nl_NL = {
       FIRST_INTERACTION: 'Eerste interactie: {duration}',
       LAST_INTERACTION: 'Laatste interactie: {date}',
       ACCEPT: 'Accepteer connectie',
+      CERTIFICATIONS: 'Certificeringen',
+      SHOW_MORE: 'Meer tonen',
     },
     SHARE_CREDENTIALS: {
       NAVBAR_TITLE: 'Gegevens Delen',

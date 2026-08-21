@@ -338,6 +338,8 @@ const es_ES = {
       FIRST_INTERACTION: 'Primera interacción: {duration}',
       LAST_INTERACTION: 'Última interacción: {date}',
       ACCEPT: 'Acepta la conexión',
+      CERTIFICATIONS: 'Certificaciones',
+      SHOW_MORE: 'Ver más',
     },
     SHARE_CREDENTIALS: {
       NAVBAR_TITLE: 'Comparte datos',

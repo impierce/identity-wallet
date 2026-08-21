@@ -337,6 +337,8 @@ const sv_FI = {
       FIRST_INTERACTION: 'Första interaktionen: {duration}',
       LAST_INTERACTION: 'Senaste interaktionen: {date}',
       ACCEPT: 'Acceptera anslutning',
+      CERTIFICATIONS: 'Certifieringar',
+      SHOW_MORE: 'Visa mer',
     },
     SHARE_CREDENTIALS: {
       NAVBAR_TITLE: 'Dela data',

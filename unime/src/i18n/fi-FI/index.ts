@@ -338,6 +338,8 @@ const fi_FI = {
       FIRST_INTERACTION: 'Ensimmäinen vuorovaikutus: {duration}',
       LAST_INTERACTION: 'Viimeisin vuorovaikutus: {date}',
       ACCEPT: 'Hyväksy yhteys',
+      CERTIFICATIONS: 'Sertifioinnit',
+      SHOW_MORE: 'Näytä lisää',
     },
     SHARE_CREDENTIALS: {
       NAVBAR_TITLE: 'Jaa dataa',

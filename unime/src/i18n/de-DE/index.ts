@@ -337,6 +337,8 @@ const de_DE = {
       FIRST_INTERACTION: 'Erste Interaktion: {duration}',
       LAST_INTERACTION: 'Letzte Interaktion: {date}',
       ACCEPT: 'Verbindung akzeptieren',
+      CERTIFICATIONS: 'Zertifizierungen',
+      SHOW_MORE: 'Mehr anzeigen',
     },
     SHARE_CREDENTIALS: {
       NAVBAR_TITLE: 'Daten teilen',
