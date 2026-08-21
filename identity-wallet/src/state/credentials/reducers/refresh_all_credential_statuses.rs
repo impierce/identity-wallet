@@ -17,6 +17,7 @@ use crate::{
 
 // TODO: test for possible poor latency/performance due to many stronghold interactions when many credentials need to be refreshed.
 /// Refreshes the credential status for all credentials in the state.
+#[tracing::instrument(skip_all, err)]
 pub async fn refresh_all_credential_statuses(state: AppState, action: Action) -> Result<AppState, AppError> {
     let credential_ids: Vec<String> = state
         .credentials

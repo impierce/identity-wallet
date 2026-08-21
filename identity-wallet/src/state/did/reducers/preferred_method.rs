@@ -13,6 +13,7 @@ use crate::{
     },
 };
 
+#[tracing::instrument(skip_all, err)]
 pub async fn set_preferred_did_method(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(method) = listen::<SetPreferredDidMethod>(action).map(|payload| payload.method) {
         let mut preferred_did_methods = state.profile_settings.preferred_did_methods;

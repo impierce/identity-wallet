@@ -303,16 +303,12 @@ const es_ES = {
       GREETING_3: 'Bienvenido de nuevo',
       GREETING_4: 'Hola',
     },
-    CREDENTIAL_TABS: {
-      ALL: 'Todo',
-      DATA: 'Datos',
-      BADGES: 'Insignias',
-    },
     EMPTY_CREDENTIALS: {
       TITLE: 'Esto está un poco tranquilo',
       SUBTITLE: '¿Qué tal si añades algunas credenciales para empezar tu nuevo yo digital?',
     },
     FAVORITES: 'Mis favoritos',
+    MY_DATA: 'Mis datos',
   },
   ACTIVITY: {
     BOTTOM_NAVIGATION_TITLE: 'Actividad',
@@ -394,8 +390,12 @@ const es_ES = {
       SELF_SIGNED: 'Autofirmadas',
       DESCRIPTION: 'Descripción',
       OPEN_BADGES: {
+        RECIPIENT: 'Destinatario',
         RESULT: 'Resultado',
         ALIGNMENT: 'Alineación',
+        SKILL: 'Habilidad',
+        OCCUPATION: 'Ocupación',
+        FRAMEWORK_LINK: 'Ver definición',
         CRITERIA: 'Criterio',
         VALUE: 'Nota',
       },

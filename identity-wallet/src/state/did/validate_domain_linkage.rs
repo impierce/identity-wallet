@@ -10,7 +10,7 @@ use identity_iota::{
     },
 };
 use jsonwebtoken::{crypto::verify, jwk::Jwk as JsonWebTokenJwk, Algorithm, DecodingKey, Validation};
-use log::info;
+use log::debug;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
 use std::str::FromStr;
@@ -45,7 +45,7 @@ impl JwsVerifier for Verifier {
     fn verify(&self, input: VerificationInput, public_key: &IotaIdentityJwk) -> Result<(), SignatureVerificationError> {
         use SignatureVerificationErrorKind::*;
 
-        info!("Verifying input signature with alg: {}", input.alg);
+        debug!("Verifying input signature with alg: {}", input.alg);
 
         let algorithm =
             Algorithm::from_str(&input.alg.to_string()).map_err(|_| SignatureVerificationError::new(UnsupportedAlg))?;
@@ -69,7 +69,7 @@ impl JwsVerifier for Verifier {
             algorithm,
         ) {
             Ok(true) => {
-                info!("Signature successfully verified");
+                debug!("Signature successfully verified");
                 Ok(())
             }
             Err(_) | Ok(false) => Err(SignatureVerificationError::new(
@@ -108,7 +108,7 @@ pub async fn validate_domain_linkage(resolver: &Resolver, url: url::Url, did: &s
         }
     };
 
-    info!("Resolved document: {document:?}");
+    debug!("Resolved document: {document:?}");
 
     let url = identity_iota::core::Url::from(url);
 
@@ -143,7 +143,7 @@ async fn fetch_configuration(mut url: url::Url) -> Result<DomainLinkageConfigura
     url.set_query(None);
     url.set_path(".well-known/did-configuration.json");
 
-    info!("Fetching DID configuration from: {url}");
+    debug!("Fetching DID configuration from: {url}");
 
     // 2. Fetch the resource
     let response = get_http_client()
@@ -163,7 +163,7 @@ async fn fetch_configuration(mut url: url::Url) -> Result<DomainLinkageConfigura
     if let serde_json::Value::Object(ref mut root) = json {
         if let Some(serde_json::Value::Array(ref mut linked_dids)) = root.get_mut("linked_dids") {
             linked_dids.retain(|did| matches!(did, serde_json::Value::String(_)));
-            info!("Removed non-string values from `linked_dids`");
+            debug!("Removed non-string values from `linked_dids`");
         }
     }
 

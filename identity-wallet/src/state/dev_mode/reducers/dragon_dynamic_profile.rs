@@ -26,6 +26,7 @@ use uuid::Uuid;
 
 pub(super) const PASSWORD: &str = "sup3rSecr3t";
 
+#[tracing::instrument(skip_all, err)]
 pub async fn load_dragon_profile(mut state: AppState, dev_profile: DevProfile) -> Result<AppState, AppError> {
     let steps = dev_profile.execute_step.expect("For dragon profile steps are expected");
 

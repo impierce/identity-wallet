@@ -8,6 +8,7 @@ use crate::{
 };
 use log::debug;
 
+#[tracing::instrument(skip_all, err)]
 pub async fn enable_biometrics(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(enable) = listen::<EnableBiometrics>(action).map(|payload| payload.enable) {
         debug!("biometrics enabled: `{enable:?}`");

@@ -5,6 +5,7 @@ use crate::{
 
 use log::info;
 
+#[tracing::instrument(skip_all, err)]
 pub async fn toggle_dev_mode(state: AppState, _action: Action) -> Result<AppState, AppError> {
     info!("Toggle dev mode");
 

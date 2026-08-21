@@ -8,7 +8,8 @@
 
   import { ActionSheet, Button } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
-  import { DotsThreeVerticalBoldIcon, LinkedinIcon, PencilFillIcon, TrashFillIcon } from '$lib/icons';
+  import { CodeRegularIcon, DotsThreeVerticalBoldIcon, LinkedinIcon, PencilFillIcon, TrashFillIcon } from '$lib/icons';
+  import { state as appState } from '$lib/stores';
 
   const dispatchEvent = createEventDispatcher();
 
@@ -61,6 +62,20 @@
       {$LL.CREDENTIAL.ACTIONS.EDIT.MENU_BUTTON()}
     </p>
   </button>
+
+  <!-- Dev Mode: Show raw data -->
+  {#if $appState.dev_mode !== 'Off'}
+    <button
+      on:click={() => {
+        dispatchEvent('showRawData');
+        $open = false;
+      }}
+      class="flex items-center space-x-2 rounded-lg py-2 pr-4 pl-3 hover:bg-background dark:text-grey"
+    >
+      <CodeRegularIcon class="size-5" />
+      <p class="grow text-left text-[13px]/[24px] font-medium">Show raw data</p>
+    </button>
+  {/if}
 
   <!-- Delete credential -->
   <ActionSheet

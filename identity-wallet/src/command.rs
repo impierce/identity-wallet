@@ -55,7 +55,8 @@ pub async fn main_exec(
     container: tauri::State<'_, AppStateContainer>,
     window: tauri::Window<Runtime>,
 ) -> Result<(), String> {
-    info!("received action: `{action:?}`");
+    let start = std::time::Instant::now();
+    info!("Dispatching action: `{action:?}`");
 
     let mut guard = container.0.lock().await;
 
@@ -64,7 +65,10 @@ pub async fn main_exec(
     // Get a copy of the current state and pass it to the root reducer.
     match reduce(guard.clone(), action).await {
         // If the state update succeeds, we replace the old state with the new one.
-        Ok(app_state) => *guard = app_state,
+        Ok(app_state) => {
+            debug!("State reduce succeeded in {:?}", start.elapsed());
+            *guard = app_state;
+        }
         // If the state update fails, we log the error and keep the old state.
         Err(error) => {
             {
@@ -79,7 +83,7 @@ pub async fn main_exec(
                 ));
                 let _ = emit_error(&window, error.to_string());
             }
-            error!("state update failed: {error}");
+            error!("State update failed after {:?}: {error}", start.elapsed());
         }
     };
 
@@ -98,11 +102,11 @@ pub async fn handle_action(
 ) -> Result<(), String> {
     tokio::select! {
         res = main_exec(action, app_handle, container, window.clone()) => {
-            debug!("Finish invoke");
+            debug!("Finished command invoke");
             res
         }
         _ = await_timeout() => {
-            error!("Operation timed out");
+            error!("Operation timed out after {TIMEOUT_SECS} seconds");
             emit_error(&window, "Operation timed out".to_string()).ok();
             Err("Operation timed out".to_string())
         }

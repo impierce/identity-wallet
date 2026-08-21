@@ -28,9 +28,8 @@ use oid4vc::{
 };
 
 // Reads the request url from the payload and validates it.
+#[tracing::instrument(skip_all, err)]
 pub async fn read_authorization_request(state: AppState, action: Action) -> Result<AppState, AppError> {
-    info!("read_authorization_request");
-
     if let Some(qr_code_scanned) = listen::<QrCodeScanned>(action)
         .map(|payload| payload.form_urlencoded)
         .filter(|s| !s.starts_with("openid-credential-offer"))
@@ -59,8 +58,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
             let (client_name, logo_uri, connection_url, _) =
                 get_siopv2_client_name_and_logo_uri(&siopv2_authorization_request);
 
-            info!("client_name in Authorization Request Display parameter: {client_name:?}");
-            info!("logo_uri in Authorization Request Display parameter: {logo_uri:?}");
+            info!("SIOPv2 authorization request display metadata: client_name={client_name:?}, logo_uri={logo_uri:?}");
 
             if let Some(logo_uri_str) = logo_uri.clone() {
                 download_logo(&logo_uri_str).await;
@@ -114,7 +112,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                 })
                 .collect();
 
-            info!("Trusted Domains: {trusted_domains:?}");
+            debug!("Resolved trusted domains for SIOPv2 request: {trusted_domains:?}");
 
             let resolver = state_guard
                 .identity_manager
@@ -124,20 +122,22 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                 .resolver()
                 .await;
 
-            let linked_verifiable_presentations = validate_linked_verifiable_presentations(&resolver, did)
+            let linked_verifiable_presentations: Vec<_> = validate_linked_verifiable_presentations(&resolver, did)
                 .await
                 .into_iter()
                 .flatten()
                 .filter(|linked_verifiable_credential| {
-                    linked_verifiable_credential.issuer_linked_domains.iter().any(|domain| {
-                        info!("domain: `{domain}`");
-
-                        trusted_domains.contains(domain)
-                    })
+                    linked_verifiable_credential
+                        .issuer_linked_domains
+                        .iter()
+                        .any(|domain| trusted_domains.contains(domain))
                 })
                 .collect();
 
-            info!("linked_verifiable_presentations: {linked_verifiable_presentations:?}");
+            debug!(
+                "Validated {} linked verifiable presentations",
+                linked_verifiable_presentations.len()
+            );
 
             drop(state_guard);
 
@@ -162,7 +162,10 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
             AuthorizationRequest::<Object<OID4VP>>::from_generic(&generic_authorization_request)
         {
             let verifiable_credentials = stronghold_manager.values().map_err(StrongholdValuesError)?.unwrap();
-            info!("verifiable credentials: {verifiable_credentials:?}");
+            debug!(
+                "Retrieved {} credentials from stronghold for OID4VP query",
+                verifiable_credentials.len()
+            );
 
             // TODO: Move most of this logic to `openid4vc` crates.
             let dcql_query = &oid4vp_authorization_request.body.extension.dcql_query;
@@ -237,7 +240,8 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                 })
                 .collect();
 
-            info!("uuids of VCs that can fulfill the request: {uuids:?}");
+            info!("Evaluated {} VCs matching OID4VP request", uuids.len());
+            debug!("Matched VC UUIDs: {uuids:?}");
 
             let OID4VPClientMetadata {
                 client_name,
@@ -246,8 +250,7 @@ pub async fn read_authorization_request(state: AppState, action: Action) -> Resu
                 client_id: _,
             } = get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request);
 
-            info!("client_name in credential_offer: {client_name:?}");
-            info!("logo_uri in read_authorization_request: {logo_uri:?}");
+            info!("OID4VP client metadata parsed: client_name={client_name:?}, logo_uri={logo_uri:?}");
 
             if let Some(logo_uri_str) = logo_uri.clone() {
                 download_logo(&logo_uri_str).await;

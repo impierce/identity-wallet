@@ -4,7 +4,7 @@ use iota_stronghold::{
     procedures::{GenerateKey, KeyType, StrongholdProcedure},
     Client, KeyProvider, Location, SnapshotPath, Stronghold,
 };
-use log::info;
+use log::{debug, info};
 use stronghold_ext::{
     execute_procedure_ext,
     procs::{self, es256::Es256Procs},
@@ -50,7 +50,7 @@ impl StrongholdManager {
                 "ed25519-0".to_string().as_bytes().to_vec(),
             );
 
-            info!("ed25519_output_location: {ed25519_output_location:?}");
+            debug!("ed25519_output_location: {ed25519_output_location:?}");
 
             client
                 .execute_procedure(StrongholdProcedure::GenerateKey(GenerateKey {
@@ -69,7 +69,7 @@ impl StrongholdManager {
                 "es256-0".to_string().as_bytes().to_vec(),
             );
 
-            info!("es256_output_location: {es256_output_location:?}");
+            debug!("es256_output_location: {es256_output_location:?}");
 
             execute_procedure_ext(
                 &client,
@@ -105,7 +105,7 @@ impl StrongholdManager {
         let key_provider =
             KeyProvider::with_passphrase_hashed_blake2b(password.as_bytes().to_vec()).expect("failed to load key");
 
-        info!("Loading snapshot");
+        debug!("Loading stronghold snapshot");
 
         let client = stronghold.load_client_from_snapshot(STRONGHOLD_CLIENT_PATH, &key_provider, &snapshot_path)?;
 

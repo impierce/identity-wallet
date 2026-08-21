@@ -21,6 +21,7 @@ use oauth_tsl::{
 use oid4vc::oid4vc_core::{utils::did::extract_normalized_did_kid_from_jwt, Verify};
 use reqwest::{header, redirect::Policy};
 
+#[tracing::instrument(skip_all, err)]
 pub async fn refresh_credential_status(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(refresh_credential_status) = listen::<RefreshCredentialStatus>(action) {
         let state_guard = state.core_utils.managers.lock().await;
@@ -151,6 +152,7 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
 
 /// Fetches the Status List Token from the Status Provider URI provided in the credentialStatus, and checks the given index, returning the Status.
 /// There are multiple decoding and decompressing steps involved, please refer to the OAuth Token Status List specification for more details.
+#[tracing::instrument(skip_all, err)]
 pub async fn fetch_credential_status(
     credential_status_data: &CredentialStatus,
     identity_manager: &IdentityManager,
@@ -205,6 +207,7 @@ pub async fn fetch_credential_status(
 /// Sends a status list request to the provided URI and returns the response body as a String.
 /// The `accept_header` parameter determines the expected response format (e.g., JWT, compressed JWT).
 /// If the response is gzip encoded, it will be decompressed before being returned.
+#[tracing::instrument(skip_all, err)]
 pub async fn fetch_status_list(uri: &str, accept_header: StatusListTokenResponseType) -> Result<String, AppError> {
     // 3xx redirects should be followed, but infinite loops are caught after 5 redirects.
     // The timeout of 10 seconds is an estimated guess of how long a status list request should take at maximum.

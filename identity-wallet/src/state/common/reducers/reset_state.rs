@@ -6,7 +6,9 @@ use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::AppState;
 
 /// Completely resets the state to its default values.
+#[tracing::instrument(skip_all, err)]
 pub async fn reset_state(state: AppState, _action: Action) -> Result<AppState, AppError> {
+    log::info!("Resetting application state to defaults");
     delete_state_file().await.ok();
     delete_stronghold().await.ok();
     clear_all_assets().ok();
