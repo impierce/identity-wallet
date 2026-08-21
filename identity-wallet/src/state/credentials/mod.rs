@@ -10,7 +10,10 @@ use identity_iota::{
 };
 use oauth_tsl::status_list::StatusType;
 use oid4vc::{
-    oid4vc_core::{claim_path_pointer::ClaimPathPointer, utils::jwt::get_unverified_jwt_claims},
+    oid4vc_core::{
+        claim_path_pointer::{ClaimPathElement, ClaimPathPointer},
+        utils::jwt::get_unverified_jwt_claims,
+    },
     oid4vci::{
         credential_format_profiles::CredentialFormats,
         credential_issuer::credential_configurations_supported::ClaimDescription,
@@ -280,8 +283,19 @@ fn get_display_claims(claim_descriptions: Vec<ClaimDescription>, data: &serde_js
                 // TODO: Support multiple locales here. For now we just take the first one if it exists.
                 .first()
                 .map(|display| display.name.clone())
-                // TODO: Come up with a proper fallback strategy here.
-                .unwrap_or_default();
+                .filter(|name| !name.trim().is_empty())
+                .unwrap_or_else(|| {
+                    claim_description
+                        .path
+                        .as_ref()
+                        .iter()
+                        .rev()
+                        .find_map(|element| match element {
+                            ClaimPathElement::String(key) if !key.trim().is_empty() => Some(key.clone()),
+                            _ => None,
+                        })
+                        .unwrap_or_default()
+                });
             let value = claim_description
                 .path
                 .get_values_from_json(data)
@@ -302,10 +316,38 @@ fn get_display_claims(claim_descriptions: Vec<ClaimDescription>, data: &serde_js
 #[cfg(test)]
 mod tests {
     use super::*;
-    use oid4vc::{
-        oid4vc_core::claim_path_pointer::ClaimPathElement,
-        oid4vci::credential_issuer::credential_configurations_supported::ClaimDescriptionDisplay,
-    };
+    use oid4vc::oid4vci::credential_issuer::credential_configurations_supported::ClaimDescriptionDisplay;
+
+    #[test]
+    fn test_get_display_claims_uses_claim_path_as_key_when_display_name_is_missing() {
+        let path = ClaimPathPointer::try_new(vec![
+            ClaimPathElement::String("credentialSubject".to_string()),
+            ClaimPathElement::String("email".to_string()),
+        ])
+        .unwrap();
+
+        let display_claims = get_display_claims(
+            vec![ClaimDescription {
+                path: path.clone(),
+                mandatory: true,
+                display: vec![],
+            }],
+            &json!({
+                "credentialSubject": {
+                    "email": "ferris@example.com"
+                }
+            }),
+        );
+
+        assert_eq!(
+            display_claims,
+            vec![DisplayClaim {
+                path,
+                key: "email".to_string(),
+                value: json!("ferris@example.com"),
+            }]
+        );
+    }
 
     #[test]
     fn test_verifiable_credential_record_try_from_jwt_vc_json() {

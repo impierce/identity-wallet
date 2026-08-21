@@ -781,20 +781,6 @@ type RootTranslation = {
 			 */
 			GREETING_4: string
 		}
-		CREDENTIAL_TABS: {
-			/**
-			 * A​l​l
-			 */
-			ALL: string
-			/**
-			 * D​a​t​a
-			 */
-			DATA: string
-			/**
-			 * B​a​d​g​e​s
-			 */
-			BADGES: string
-		}
 		EMPTY_CREDENTIALS: {
 			/**
 			 * I​t​'​s​ ​a​ ​b​i​t​ ​q​u​i​e​t​ ​i​n​ ​h​e​r​e
@@ -809,6 +795,10 @@ type RootTranslation = {
 		 * M​y​ ​f​a​v​o​r​i​t​e​s
 		 */
 		FAVORITES: string
+		/**
+		 * M​y​ ​d​a​t​a
+		 */
+		MY_DATA: string
 	}
 	ACTIVITY: {
 		/**
@@ -1030,6 +1020,10 @@ type RootTranslation = {
 			DESCRIPTION: string
 			OPEN_BADGES: {
 				/**
+				 * R​e​c​i​p​i​e​n​t
+				 */
+				RECIPIENT: string
+				/**
 				 * R​e​s​u​l​t
 				 */
 				RESULT: string
@@ -1037,6 +1031,18 @@ type RootTranslation = {
 				 * A​l​i​g​n​m​e​n​t
 				 */
 				ALIGNMENT: string
+				/**
+				 * S​k​i​l​l
+				 */
+				SKILL: string
+				/**
+				 * O​c​c​u​p​a​t​i​o​n
+				 */
+				OCCUPATION: string
+				/**
+				 * V​i​e​w​ ​d​e​f​i​n​i​t​i​o​n
+				 */
+				FRAMEWORK_LINK: string
 				/**
 				 * C​r​i​t​e​r​i​a
 				 */
@@ -2312,20 +2318,6 @@ export type TranslationFunctions = {
 			 */
 			GREETING_4: () => LocalizedString
 		}
-		CREDENTIAL_TABS: {
-			/**
-			 * All
-			 */
-			ALL: () => LocalizedString
-			/**
-			 * Data
-			 */
-			DATA: () => LocalizedString
-			/**
-			 * Badges
-			 */
-			BADGES: () => LocalizedString
-		}
 		EMPTY_CREDENTIALS: {
 			/**
 			 * It's a bit quiet in here
@@ -2340,6 +2332,10 @@ export type TranslationFunctions = {
 		 * My favorites
 		 */
 		FAVORITES: () => LocalizedString
+		/**
+		 * My data
+		 */
+		MY_DATA: () => LocalizedString
 	}
 	ACTIVITY: {
 		/**
@@ -2561,6 +2557,10 @@ export type TranslationFunctions = {
 			DESCRIPTION: () => LocalizedString
 			OPEN_BADGES: {
 				/**
+				 * Recipient
+				 */
+				RECIPIENT: () => LocalizedString
+				/**
 				 * Result
 				 */
 				RESULT: () => LocalizedString
@@ -2568,6 +2568,18 @@ export type TranslationFunctions = {
 				 * Alignment
 				 */
 				ALIGNMENT: () => LocalizedString
+				/**
+				 * Skill
+				 */
+				SKILL: () => LocalizedString
+				/**
+				 * Occupation
+				 */
+				OCCUPATION: () => LocalizedString
+				/**
+				 * View definition
+				 */
+				FRAMEWORK_LINK: () => LocalizedString
 				/**
 				 * Criteria
 				 */

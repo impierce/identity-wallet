@@ -27,6 +27,7 @@
     BugRegularIcon,
     CaretDownBoldIcon,
     CaretUpBoldIcon,
+    MagnifyingGlassIcon,
     TrashRegularIcon,
     XRegularIcon,
   } from '$lib/icons';
@@ -239,6 +240,70 @@
 
   const devButtons = createDevButtons();
 
+  // The messages the backend collected, oldest first.
+  $: debugMessages = $appState.debug_messages;
+
+  // Debug messages are prefixed with `[YYYY-MM-DD][HH:MM:SS]` by the backend (but not all of them are).
+  const debugMessageTimestamp = /^\[(\d{4}-\d{2}-\d{2})\]\[(\d{2}:\d{2}:\d{2})\]\s*/;
+
+  function splitDebugMessage(message: string): { timestamp: string | null; text: string } {
+    const match = message.match(debugMessageTimestamp);
+    return match
+      ? { timestamp: `${match[1]} ${match[2]}`, text: message.slice(match[0].length) }
+      : { timestamp: null, text: message };
+  }
+
+  // The backend does not attach a log level to debug messages, so it has to be guessed from the text.
+  // Known producers today:
+  // - `command.rs` pushes a timestamped `{error:?}` whenever a state update fails (always an error).
+  // - `refresh_credential_status.rs` ends its message with `(failed)` or `(success)`.
+  // - `check_password.rs` pushes `Wrong Stronghold password` or `Stronghold password OK`.
+  // The keyword match also covers messages added later, at the price of the occasional false positive.
+  const debugMessageErrorPatterns = [debugMessageTimestamp, /\b(error|failed|failure|wrong|invalid)\b/i];
+
+  function isDebugMessageError(message: string): boolean {
+    return debugMessageErrorPatterns.some((pattern) => pattern.test(message));
+  }
+
+  type DebugMessageFilter = 'all' | 'errors' | 'success';
+
+  const debugMessageFilters: { value: DebugMessageFilter; label: string }[] = [
+    { value: 'all', label: 'All' },
+    { value: 'errors', label: 'Errors' },
+    { value: 'success', label: 'Success' },
+  ];
+
+  let debugMessageFilter: DebugMessageFilter = 'all';
+  let debugMessageSearch = '';
+  // Newest first is the more useful default when debugging: the backend appends new messages at the end.
+  let debugMessagesNewestFirst = true;
+
+  function filterDebugMessages(
+    messages: string[],
+    filter: DebugMessageFilter,
+    search: string,
+    newestFirst: boolean,
+  ): string[] {
+    const term = search.trim().toLowerCase();
+
+    const filtered = messages.filter((message) => {
+      const isError = isDebugMessageError(message);
+      if (filter === 'errors' && !isError) return false;
+      if (filter === 'success' && isError) return false;
+      return term === '' || message.toLowerCase().includes(term);
+    });
+
+    // `filter` already returned a new array, so reversing in place is safe.
+    return newestFirst ? filtered.reverse() : filtered;
+  }
+
+  $: visibleDebugMessages = filterDebugMessages(
+    debugMessages,
+    debugMessageFilter,
+    debugMessageSearch,
+    debugMessagesNewestFirst,
+  );
+
   // Order needs to match the rust side: 'ProfileSteps' enum, it needs to be the same order because every step is based upon the previous.
   // 'AddCredentials' is ran after 'CreateProfile' and 'AcceptCredentials' after 'AddCredentials', etc.
   const profileSteps: ProfileSteps[] = [
@@ -444,37 +509,138 @@ Stacking context: We have to deviate from the DOM-sequence.
       </button>
     {/if}
 
-    <!-- TODO: Debug messages is broken. -->
+    <!-- Dev Mode: Debug messages -->
     {#if showDebugMessages}
-      <div class="relative z-10 min-h-full w-screen bg-orange-100 pt-8">
-        <button
-          class="absolute top-1 left-1 rounded-full p-2 text-orange-800"
-          on:click={() => dispatch({ type: '[DEV] Clear debug log' })}
+      <div
+        class="fixed inset-0 z-40 flex flex-col bg-background pt-(--safe-area-inset-top) pb-(--safe-area-inset-bottom)"
+      >
+        <!-- Header: the two actions sit in opposite corners so they cannot be misclicked. -->
+        <div
+          class="grid shrink-0 grid-cols-[auto_1fr_auto] items-center gap-1 border-b border-slate-300 p-2 dark:border-slate-600"
         >
-          <TrashRegularIcon />
-        </button>
-        <button
-          class="absolute top-1 right-1 rounded-full p-2 text-orange-800"
-          on:click={() => (showDebugMessages = false)}
-        >
-          <XRegularIcon />
-        </button>
-        <p class="pt-2 pb-2 text-center text-xs font-semibold text-orange-800 uppercase">debug messages</p>
+          <button
+            class="rounded-full p-2 text-text-alt hover:bg-background-alt"
+            aria-label="Clear debug messages"
+            on:click={() => dispatch({ type: '[DEV] Clear debug log' })}
+          >
+            <TrashRegularIcon class="size-5" />
+          </button>
+          <p class="truncate text-center text-[13px]/[24px] font-semibold text-text">
+            Debug messages
+            <span class="font-mono font-normal text-text-alt">
+              ({visibleDebugMessages.length === debugMessages.length
+                ? debugMessages.length
+                : `${visibleDebugMessages.length}/${debugMessages.length}`})
+            </span>
+          </p>
+          <button
+            class="rounded-full p-2 text-text-alt hover:bg-background-alt"
+            aria-label="Close debug messages"
+            on:click={() => (showDebugMessages = false)}
+          >
+            <XRegularIcon class="size-5" />
+          </button>
+        </div>
 
-        <hr class="mx-8 mb-2 h-[2px] bg-orange-800" />
-
-        {#each $appState.debug_messages as message}
-          <div class="mx-2 mb-2 rounded-sm bg-orange-200 p-2">
-            <div class="font-mono text-xs break-all text-orange-700">{message}</div>
+        <!-- Toolbar: search, level filter and sort order. Wraps onto a second line when it runs out of width. -->
+        <div class="flex shrink-0 flex-wrap items-center gap-2 border-b border-slate-300 p-2 dark:border-slate-600">
+          <!-- Search -->
+          <div
+            class="flex min-w-[120px] grow items-center gap-1 rounded-lg border border-slate-300 bg-background-alt px-2 dark:border-slate-600"
+          >
+            <MagnifyingGlassIcon class="size-4 shrink-0 text-text-alt" />
+            <input
+              type="text"
+              bind:value={debugMessageSearch}
+              placeholder="Search"
+              aria-label="Search debug messages"
+              class="h-7 w-full min-w-0 bg-transparent text-[12px] text-text placeholder:text-text-alt focus:outline-hidden"
+            />
+            <!-- Only takes up space while there is something to clear. -->
+            {#if debugMessageSearch !== ''}
+              <button
+                class="shrink-0 rounded-full p-0.5 text-text-alt"
+                aria-label="Clear search"
+                on:click={() => (debugMessageSearch = '')}
+              >
+                <XRegularIcon class="size-3.5" />
+              </button>
+            {/if}
           </div>
-        {/each}
+
+          <!-- Level filter -->
+          <div
+            class="flex shrink-0 items-center gap-0.5 rounded-lg border border-slate-300 p-0.5 dark:border-slate-600"
+          >
+            {#each debugMessageFilters as { value, label }}
+              <button
+                class="rounded-md px-2 py-1 text-[11px]/[16px] font-medium {debugMessageFilter === value
+                  ? 'bg-background-alt text-text'
+                  : 'text-text-alt'}"
+                on:click={() => (debugMessageFilter = value)}
+              >
+                {label}
+              </button>
+            {/each}
+          </div>
+
+          <!-- Sort order: one button that cycles, showing the order that is currently applied. -->
+          <button
+            class="flex shrink-0 items-center gap-1 rounded-lg border border-slate-300 px-2 py-1 text-[11px]/[16px] font-medium text-text-alt dark:border-slate-600"
+            on:click={() => (debugMessagesNewestFirst = !debugMessagesNewestFirst)}
+          >
+            {#if debugMessagesNewestFirst}
+              <CaretDownBoldIcon class="size-3" />
+              Newest first
+            {:else}
+              <CaretUpBoldIcon class="size-3" />
+              Oldest first
+            {/if}
+          </button>
+        </div>
+
+        <!-- The messages themselves: the only part that scrolls. -->
+        <div class="grow overflow-y-auto p-3">
+          {#if debugMessages.length === 0}
+            <p class="pt-8 text-center text-[13px]/[24px] font-medium text-text-alt">No debug messages</p>
+          {:else if visibleDebugMessages.length === 0}
+            <p class="pt-8 text-center text-[13px]/[24px] font-medium text-text-alt">No messages match the filter</p>
+          {:else}
+            <div class="flex flex-col gap-2">
+              {#each visibleDebugMessages as message}
+                {@const { timestamp, text } = splitDebugMessage(message)}
+                <div
+                  class="rounded-lg border p-2 {isDebugMessageError(message)
+                    ? 'border-rose-400 bg-rose-50 dark:border-rose-500/60 dark:bg-rose-500/10'
+                    : 'border-slate-300 bg-background-alt dark:border-slate-600'}"
+                >
+                  {#if timestamp}
+                    <p class="pb-1 font-mono text-[10px]/[14px] text-text-alt">{timestamp}</p>
+                  {/if}
+                  <p class="font-mono text-[11px]/[16px] break-all whitespace-pre-wrap text-text select-text">{text}</p>
+                </div>
+              {/each}
+            </div>
+          {/if}
+        </div>
       </div>
     {/if}
 
     {#if showDragonProfileSteps}
       <div class="fixed z-10 flex h-screen w-screen justify-center bg-black/50 pt-24">
         <div class="mt-10 mr-10 ml-10 flex h-fit w-full flex-col rounded-sm bg-white pr-4 pb-4 pl-4">
-          <p class="pt-2 pb-2 text-center text-orange-800">Profile steps</p>
+          <!-- Headline, with a close button so the popup can be dismissed without picking a step. -->
+          <div class="grid grid-cols-[auto_1fr_auto] items-center pt-2 pb-2">
+            <div class="size-8"></div>
+            <p class="text-center text-orange-800">Profile steps</p>
+            <button
+              class="rounded-full p-2 text-orange-800"
+              aria-label="Close profile steps"
+              on:click={() => (showDragonProfileSteps = false)}
+            >
+              <XRegularIcon class="size-4" />
+            </button>
+          </div>
 
           <div class="flex items-center justify-end pb-2">
             <div class="mr-2 text-xs text-orange-800">Reset profile?</div>

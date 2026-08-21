@@ -2,6 +2,7 @@
   import { goto } from '$app/navigation';
   import { page } from '$app/stores';
   import LL from '$i18n/i18n-svelte';
+  import { writable } from 'svelte/store';
   import { fly } from 'svelte/transition';
 
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
@@ -19,6 +20,7 @@
   import ELMRenderer from './ELMRenderer.svelte';
   import OpenBadgeRenderer from './OpenBadgeRenderer.svelte';
   import PidRenderer from './PidRenderer.svelte';
+  import RawCredentialModal from './RawCredentialModal.svelte';
 
   // Credential cannot be loaded via load function since it's stored in the application state.
   // TODO Credential should be loaded from backend via load function to handle invalid IDs properly.
@@ -38,6 +40,9 @@
   let displayNameUpdated = displayName;
 
   let openEditMode = false;
+
+  // Dev Mode: controls the modal showing the credential's raw data.
+  const openRawData = writable(false);
 
   const maxLength = 32;
 
@@ -74,6 +79,7 @@
         openEditMode = true;
         labelInput.focus();
       }}
+      on:showRawData={() => ($openRawData = true)}
     >
       <!-- Editable title -->
       <div class="relative w-full px-4">
@@ -132,4 +138,9 @@
       <DefaultRenderer {credential} />
     {/if}
   </div>
+
+  <!-- Dev Mode: raw credential data -->
+  {#if $appState.dev_mode !== 'Off'}
+    <RawCredentialModal {credential} open={openRawData} />
+  {/if}
 {/if}

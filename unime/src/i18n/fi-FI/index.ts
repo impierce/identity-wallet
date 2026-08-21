@@ -303,16 +303,12 @@ const fi_FI = {
       GREETING_3: 'Tervetuloa takaisin',
       GREETING_4: 'Moi',
     },
-    CREDENTIAL_TABS: {
-      ALL: 'Kaikki',
-      DATA: 'Data',
-      BADGES: 'Merkit',
-    },
     EMPTY_CREDENTIALS: {
       TITLE: 'Täällä on vielä hiljaista',
       SUBTITLE: 'Vahvista tietosi, niin pääset aloittamaan matkasi.',
     },
     FAVORITES: 'Suosikkini',
+    MY_DATA: 'Omat tietoni',
   },
   ACTIVITY: {
     BOTTOM_NAVIGATION_TITLE: 'Aktiviteetti',
@@ -392,8 +388,12 @@ const fi_FI = {
       SELF_SIGNED: 'sinä itse',
       DESCRIPTION: 'Kuvaus',
       OPEN_BADGES: {
+        RECIPIENT: 'Vastaanottaja',
         RESULT: 'Tulos',
         ALIGNMENT: 'Tasaus',
+        SKILL: 'Taito',
+        OCCUPATION: 'Ammatti',
+        FRAMEWORK_LINK: 'Näytä määritelmä',
         CRITERIA: 'Kriteerit',
         VALUE: 'Arvosana',
       },

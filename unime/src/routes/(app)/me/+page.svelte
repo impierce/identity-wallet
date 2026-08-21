@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { beforeNavigate, goto, replaceState } from '$app/navigation';
-  import { page } from '$app/state';
+  import { beforeNavigate, goto } from '$app/navigation';
   import { fly } from 'svelte/transition';
 
   import { ActionSheet, Avatar } from '$lib/components';
@@ -10,9 +9,8 @@
   import { onMount } from 'svelte';
 
   import LL from '$i18n/i18n-svelte';
-  import { writable, type Writable } from 'svelte/store';
 
-  import { Button, CredentialList, Favorites, IconMessage, PaddedIcon, Tabs } from '$lib/components';
+  import { Button, CredentialList, Favorites, IconMessage, PaddedIcon } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { GhostFillIcon, MagnifyingGlassIcon, PlusCircleIcon, RocketLaunchFillIcon } from '$lib/icons';
   import { onboarding_state, state } from '$lib/stores';
@@ -24,15 +22,7 @@
 
   let initials: string | undefined;
 
-  let triggers = [$LL.ME.CREDENTIAL_TABS.ALL(), $LL.ME.CREDENTIAL_TABS.DATA(), $LL.ME.CREDENTIAL_TABS.BADGES()];
-  let activeTab: Writable<string> = writable(page.state.tab || triggers[0]);
-
-  beforeNavigate(async ({ type, cancel }) => {
-    replaceState('', { tab: $activeTab });
-    // Reset to first tab when navigating back again
-    if (page.url.pathname === '/me') {
-      activeTab.set(triggers[0]);
-    }
+  beforeNavigate(({ type, cancel }) => {
     if (type === 'popstate') {
       cancel();
     }
@@ -62,12 +52,17 @@
       <button onclick={() => goto('/me/settings')}>
         <Avatar {initials} picture={$state.profile_settings.profile?.picture} />
       </button>
-      <button
-        onclick={() => goto('/me/search')}
-        class="-mr-3 flex h-11 w-11 items-center justify-center rounded-2xl text-black dark:text-white"
-      >
-        <MagnifyingGlassIcon class="h-6 w-6" />
-      </button>
+      <div class="-mr-3 flex items-center">
+        {#if $state?.credentials && $state?.credentials.length > 0}
+          <SortingSheet />
+        {/if}
+        <button
+          onclick={() => goto('/me/search')}
+          class="flex h-11 w-11 items-center justify-center rounded-2xl text-black dark:text-white"
+        >
+          <MagnifyingGlassIcon class="h-6 w-6" />
+        </button>
+      </div>
     </div>
   </div>
 
@@ -86,32 +81,10 @@
     class="flex grow flex-col items-stretch justify-start rounded-t-[20px] bg-silver p-[18px] dark:bg-navy"
   >
     {#if $state?.credentials && $state?.credentials.length > 0}
-      <div class="relative">
-        <div>
-          <Tabs class="mr-[50px]" value={activeTab} {triggers}>
-            <!-- All -->
-            <div slot="0" class="h-full pt-5">
-              <Favorites />
-              <CredentialList />
-            </div>
-
-            <!-- Data -->
-            <div slot="1" class="h-full pt-5">
-              <Favorites credentialType="data" />
-              <CredentialList credentialType="data" />
-            </div>
-
-            <!-- Badges -->
-            <div slot="2" class="h-full pt-5">
-              <Favorites credentialType="badges" />
-              <CredentialList credentialType="badges" />
-            </div>
-          </Tabs>
-        </div>
-
-        <div class="absolute top-0 right-0">
-          <SortingSheet />
-        </div>
+      <div>
+        <!-- All Credentials & Badges -->
+        <Favorites />
+        <CredentialList />
       </div>
     {:else if $state?.user_journey}
       <!-- With active onboarding journey -->

@@ -301,16 +301,12 @@ const en = {
       GREETING_3: 'Welcome back',
       GREETING_4: 'Hello',
     },
-    CREDENTIAL_TABS: {
-      ALL: 'All',
-      DATA: 'Data',
-      BADGES: 'Badges',
-    },
     EMPTY_CREDENTIALS: {
       TITLE: "It's a bit quiet in here",
       SUBTITLE: 'Why not get some of your data verified to start your journey?',
     },
     FAVORITES: 'My favorites',
+    MY_DATA: 'My data',
   },
   ACTIVITY: {
     BOTTOM_NAVIGATION_TITLE: 'Activity',
@@ -390,8 +386,12 @@ const en = {
       SELF_SIGNED: 'yourself',
       DESCRIPTION: 'Description',
       OPEN_BADGES: {
+        RECIPIENT: 'Recipient',
         RESULT: 'Result',
         ALIGNMENT: 'Alignment',
+        SKILL: 'Skill',
+        OCCUPATION: 'Occupation',
+        FRAMEWORK_LINK: 'View definition',
         CRITERIA: 'Criteria',
         VALUE: 'Grade',
       },

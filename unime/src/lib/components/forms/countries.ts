@@ -2,7 +2,7 @@ import iso3166 from './iso-3166-1_alpha-2.json';
 
 // source: https://github.com/lukes/ISO-3166-Countries-with-Regional-Codes/blob/v10.0/slim-2/slim-2.json
 
-type Country = {
+export type Country = {
   code: string;
   name: string;
 };

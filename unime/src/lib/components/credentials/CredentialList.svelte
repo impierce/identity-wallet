@@ -5,7 +5,7 @@
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 
   import { IconMessage, ListItemCard } from '$lib/components';
-  import { GhostFillIcon, SealWarningDuotoneIcon } from '$lib/icons';
+  import { GhostFillIcon, SealCheckFillIcon, SealWarningDuotoneIcon } from '$lib/icons';
   import { state } from '$lib/stores';
 
   export let credentialType: 'all' | 'data' | 'badges' = 'all';
@@ -25,6 +25,10 @@
 </script>
 
 {#if credentials?.length > 0}
+  <div class="flex items-center pb-2">
+    <SealCheckFillIcon class="mr-2 text-primary" />
+    <p class="text-[13px]/[24px] font-medium text-slate-500 dark:text-white">{$LL.ME.MY_DATA()}</p>
+  </div>
   <div class="flex flex-col space-y-2">
     <!-- Add credential.id as key to help Svelte update the list correctly. -->
     {#each credentials as credential (credential.id)}
