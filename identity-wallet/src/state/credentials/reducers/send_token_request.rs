@@ -31,9 +31,8 @@ use serde_json::json;
 use std::collections::HashMap;
 use uuid::Uuid;
 
+#[tracing::instrument(skip_all, err)]
 pub async fn send_token_request(state: AppState, action: Action) -> Result<AppState, AppError> {
-    info!("send_token_request");
-
     if let Some((code, is_pre_authorized, is_interactive, wallet_state, tx_code)) =
         listen::<CodeReceived>(action).map(|payload| {
             (
@@ -45,6 +44,11 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             )
         })
     {
+        info!(
+            "Sending OID4VCI token request (pre_authorized={is_pre_authorized}, interactive={is_interactive}, has_tx_code={})",
+            tx_code.is_some()
+        );
+
         let active_oid4vci_flow = match state.core_utils.active_flow.clone() {
             Some(ActiveFlow::Oid4vciOffer {
                 stage,
@@ -92,8 +96,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
 
         // The credential offer contains a credential issuer url.
         let credential_issuer_url = credential_offer.credential_issuer.clone();
-
-        info!("credential issuer url: {:?}", credential_issuer_url);
+        debug!("Credential issuer URL: {credential_issuer_url}");
 
         // Get the credential issuer metadata.
         let credential_issuer_metadata = wallet
@@ -145,7 +148,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             .await
             .map_err(GetAuthorizationServerMetadataError)?;
 
-        info!("authorization server metadata: {:?}", authorization_server_metadata);
+        debug!("Authorization server metadata: {:?}", authorization_server_metadata);
 
         let token_request = if is_pre_authorized {
             TokenRequest::PreAuthorizedCode {
@@ -172,7 +175,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             }
         };
 
-        info!("token_request: {token_request:?}");
+        debug!("Token request: {token_request:?}");
 
         // Get an access token.
         let token_response = wallet
@@ -188,7 +191,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             .await
             .map_err(GetAccessTokenError)?;
 
-        info!("token_response: {token_response:?}");
+        debug!("Token response: {token_response:?}");
 
         // Get the credential issuer display.
         let display = credential_issuer_metadata
@@ -250,7 +253,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                 None
             };
 
-            info!("nonce: {nonce:?}");
+            debug!("Using proof nonce: {nonce:?}");
 
             // Determine if the token request was pre-authorized and if anonymous access is supported.
             // See: https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0-15.html#section-8.2.1.1-2.2.2.2

@@ -75,6 +75,7 @@ lazy_static! {
     };
 }
 
+#[tracing::instrument(skip_all, err)]
 pub async fn load_ferris_profile() -> Result<AppState, AppError> {
     let mut state = AppState::default();
 

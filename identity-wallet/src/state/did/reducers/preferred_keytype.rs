@@ -14,6 +14,7 @@ use crate::{
     },
 };
 
+#[tracing::instrument(skip_all, err)]
 pub async fn set_preferred_key_type(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(key_type) = listen::<SetPreferredKeyType>(action).map(|payload| payload.key_type) {
         let mut managers = state.core_utils.managers.lock().await;

@@ -8,6 +8,7 @@ use crate::state::{
 
 use itertools::concat;
 
+#[tracing::instrument(skip_all, err)]
 pub async fn credential_search(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(query) = listen::<SearchQuery>(action).filter(|query| !query.search_term.is_empty()) {
         let search_results_current: Vec<String> = {
@@ -39,6 +40,15 @@ pub async fn credential_search(state: AppState, action: Action) -> Result<AppSta
             current: search_results_current,
             ..state.search_results
         };
+
+        let match_count = search_results.current.len();
+        let total_count = state.credentials.len();
+        log::debug!(
+            "Credential search for `{}`: {} match(es) out of {} credentials",
+            query.search_term,
+            match_count,
+            total_count
+        );
 
         return Ok(AppState {
             search_results,

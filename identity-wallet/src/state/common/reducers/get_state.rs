@@ -7,6 +7,7 @@ use crate::state::AppState;
 
 use log::debug;
 
+#[tracing::instrument(skip_all, err)]
 pub async fn get_state(_state: AppState, _action: Action) -> Result<AppState, AppError> {
     debug!("get_state reducer called");
     let mut state = load_state().await.unwrap_or_default();

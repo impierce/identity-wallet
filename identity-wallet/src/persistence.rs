@@ -3,7 +3,6 @@ use crate::migrations::apply_state_migrations;
 use crate::state::APP_STATE_VERSION;
 use crate::{error::AppError, state::AppState};
 use lazy_static::lazy_static;
-use log::info;
 use log::{debug, warn};
 use std::io::{copy, Cursor};
 use std::{fs, sync::Mutex};
@@ -49,12 +48,12 @@ pub fn initialize_storage(app_handle: &tauri::AppHandle) -> Result<(), AppError>
             .join("com.impierce.identity-wallet")
             .join("assets");
     }
-    info!("STATE_FILE: {}", STATE_FILE.lock().unwrap().display());
-    info!("STRONGHOLD: {}", STRONGHOLD.lock().unwrap().display());
+    debug!("STATE_FILE: {}", STATE_FILE.lock().unwrap().display());
+    debug!("STRONGHOLD: {}", STRONGHOLD.lock().unwrap().display());
 
     match fs::create_dir_all(ASSETS_DIR.lock().unwrap().as_path()) {
-        Ok(_) => info!("ASSETS_DIR: created"),
-        Err(e) => info!("ASSETS_DIR: {e}"),
+        Ok(_) => debug!("ASSETS_DIR: created"),
+        Err(e) => debug!("ASSETS_DIR: {e}"),
     };
 
     Ok(())

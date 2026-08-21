@@ -1,5 +1,5 @@
 use chrono::{DateTime, Utc};
-use log::{info, warn};
+use log::{debug, info, warn};
 use serde::Deserialize;
 use serde_json::json;
 
@@ -20,9 +20,10 @@ use crate::{
 const EMAIL_VERIFICATION_SERVICE_HOST: &str = env!("EMAIL_VERIFICATION_SERVICE_HOST");
 const EMAIL_VERIFICATION_SERVICE_API_KEY: &str = env!("EMAIL_VERIFICATION_SERVICE_API_KEY");
 
+#[tracing::instrument(skip_all, err)]
 pub async fn check_service_health(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(action) = listen::<ServiceHealthCheck>(action) {
-        info!("[>>>] {}", action.service);
+        debug!("Checking service health for `{}`", action.service);
         let response = get_http_client()
             .await
             .get(format!("{EMAIL_VERIFICATION_SERVICE_HOST}/healthz"))
@@ -33,9 +34,9 @@ pub async fn check_service_health(state: AppState, action: Action) -> Result<App
         match response {
             Ok(resp) => {
                 if resp.status() == reqwest::StatusCode::OK {
-                    info!("[<<<] Service is healthy: {}", resp.status());
+                    debug!("Email verification service is healthy (HTTP 200)");
                 } else {
-                    warn!("[<<<] Service returned non-OK status: {}", resp.status());
+                    warn!("Email verification service returned non-OK status: {}", resp.status());
                     return Err(AppError::Error(format!(
                         "email-verification-service responded with {}",
                         resp.status()
@@ -64,11 +65,13 @@ struct VerificationResponse {
     validation_expiration_in_secs: i32,
 }
 
+#[tracing::instrument(skip_all, err)]
 pub async fn send_verification_email(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(action) = listen::<SendVerificationEmail>(action) {
         let url = format!("{EMAIL_VERIFICATION_SERVICE_HOST}/api/verify");
         let body = json!({ "email": action.email });
-        info!("[>>>] {url} {body}");
+        info!("Sending email verification request for `{}`", action.email);
+        debug!("Verification request POST to {url}");
         let response = crate::http_client::get_http_client()
             .await
             .post(url)
@@ -81,7 +84,7 @@ pub async fn send_verification_email(state: AppState, action: Action) -> Result<
             })
             .map_err(|err| AppError::Error(err.to_string()))?;
         let response: VerificationResponse = response.json().await.map_err(|err| AppError::Error(err.to_string()))?;
-        info!("[<<<] {response:?}");
+        info!("Successfully initiated email verification: id={}", response.id);
         return Ok(AppState {
             verified_data: VerifiedData {
                 email_verification: Some(EmailVerification {
@@ -100,6 +103,7 @@ pub async fn send_verification_email(state: AppState, action: Action) -> Result<
     Ok(state)
 }
 
+#[tracing::instrument(skip_all, err)]
 pub async fn redeem_code(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(action) = listen::<RedeemCode>(action) {
         let session_id = state
@@ -112,7 +116,7 @@ pub async fn redeem_code(state: AppState, action: Action) -> Result<AppState, Ap
             ))?;
         let url = format!("{EMAIL_VERIFICATION_SERVICE_HOST}/api/verify/{session_id}");
         let body = json!({ "code": action.code });
-        info!("[>>>] {url} {body}");
+        info!("Redeeming email verification code for session `{session_id}`");
         let response = crate::http_client::get_http_client()
             .await
             .post(url)
@@ -122,11 +126,12 @@ pub async fn redeem_code(state: AppState, action: Action) -> Result<AppState, Ap
             .await
             .map_err(|err| AppError::Error(format!("Failed to send verification code: {err}")))?;
 
-        info!("[<<<] {response:?}");
+        debug!("Received redeem response status: {}", response.status());
 
         match response.status().as_u16() {
             200 => {
                 let credential_offer_value: String = response.text().await?;
+                info!("Email verification code successfully redeemed; processing credential offer");
                 let action = QrCodeScanned {
                     form_urlencoded: credential_offer_value,
                 };
@@ -165,6 +170,7 @@ pub async fn redeem_code(state: AppState, action: Action) -> Result<AppState, Ap
     Ok(state)
 }
 
+#[tracing::instrument(skip_all, err)]
 pub async fn reset_email_verification(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(_action) = listen::<ResetEmailVerification>(action) {
         return Ok(AppState {

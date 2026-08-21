@@ -7,6 +7,7 @@ use crate::state::{
     AppState,
 };
 
+#[tracing::instrument(skip_all, err)]
 pub async fn toggle_trust_list_entry(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(action) = listen::<ToggleTrustListEntry>(action) {
         let mut trust_lists = state.trust_lists;

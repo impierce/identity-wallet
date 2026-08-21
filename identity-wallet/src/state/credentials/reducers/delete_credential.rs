@@ -14,6 +14,7 @@ use crate::{
     },
 };
 
+#[tracing::instrument(skip_all, err)]
 pub async fn delete_credential(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(delete_credential) = listen::<DeleteCredential>(action) {
         let mut credentials = state.credentials.clone();

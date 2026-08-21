@@ -4,12 +4,14 @@ use crate::state::common::actions::check_password::CheckPassword;
 use crate::state::AppState;
 use crate::stronghold::StrongholdManager;
 
+#[tracing::instrument(skip_all, err)]
 pub async fn check_password(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(password) = listen::<CheckPassword>(action).map(|payload| payload.password) {
         // TODO(refactor): In the current design of UniMe, there is no way to tell the frontend that the password is correct, except through a state update.
         //   We therefore push a debug message and return the state as is.
         //   TODO: possible solution: introduce unique "action id" to identify which command triggered with action (similar to tracing id)
         if StrongholdManager::load(&password).is_ok() {
+            log::debug!("Stronghold password verification succeeded");
             return Ok(AppState {
                 debug_messages: {
                     let mut debug_messages = state.debug_messages.clone();
@@ -20,6 +22,7 @@ pub async fn check_password(state: AppState, action: Action) -> Result<AppState,
                 ..state
             });
         } else {
+            log::warn!("Stronghold password verification failed");
             return Ok(AppState {
                 debug_messages: {
                     let mut debug_messages = state.debug_messages.clone();

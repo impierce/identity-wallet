@@ -45,6 +45,12 @@ pub fn run() {
                 .level(LevelFilter::Info)
                 .level_for("unime", LevelFilter::Debug)
                 .level_for("identity_wallet", LevelFilter::Debug)
+                .level_for("oid4vc", LevelFilter::Debug)
+                .level_for("oid4vc_core", LevelFilter::Debug)
+                .level_for("oid4vci", LevelFilter::Debug)
+                .level_for("oid4vp", LevelFilter::Debug)
+                .level_for("siopv2", LevelFilter::Debug)
+                .level_for("oid4vc_manager", LevelFilter::Debug)
                 .with_colors(
                     ColoredLevelConfig::new()
                         .trace(Color::White)
