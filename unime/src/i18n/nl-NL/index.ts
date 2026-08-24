@@ -338,6 +338,7 @@ const nl_NL = {
       LAST_INTERACTION: 'Laatste interactie: {date}',
       ACCEPT: 'Accepteer connectie',
       CERTIFICATIONS: 'Certificeringen',
+      CERTIFICATION: 'Certificering',
       SHOW_MORE: 'Meer tonen',
     },
     SHARE_CREDENTIALS: {

@@ -338,6 +338,7 @@ const sv_FI = {
       LAST_INTERACTION: 'Senaste interaktionen: {date}',
       ACCEPT: 'Acceptera anslutning',
       CERTIFICATIONS: 'Certifieringar',
+      CERTIFICATION: 'Certifiering',
       SHOW_MORE: 'Visa mer',
     },
     SHARE_CREDENTIALS: {

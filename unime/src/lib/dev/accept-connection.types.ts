@@ -1,5 +1,6 @@
 // TEMPORARY. remove once `identity-wallet/bindings` has been regenerated.
 // CC-REMOVE!
+import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 import type { HistoryEvent } from '@bindings/history/HistoryEvent';
 import type { ValidationResult } from '@bindings/user_prompt/ValidationResult';
 
@@ -22,9 +23,10 @@ export interface EcosystemProfile {
 // `issuer_linked_domains` drops its `#[ts(skip)]` on the Rust side; `url-impl` is
 // already enabled, so `Vec<Url>` exports as `Array<string>`.
 export interface Certification {
-  name: string | null;
+  credential: DisplayCredential;
+  // `DisplayCredential` has no logo field of its own — it resolves images from disk by
+  // credential id, which only works for credentials the wallet has actually stored.
   logo_uri: string | null;
-  issuance_date: string;
   // The issuer's name is read from `.name` here; `.status` drives the domain row's icon.
   issuer_domain_validation: ValidationResult;
   issuer_linked_domains: string[];

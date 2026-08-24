@@ -337,6 +337,7 @@ const en = {
       LAST_INTERACTION: 'Last interaction: {date:string}',
       ACCEPT: 'Accept connection',
       CERTIFICATIONS: 'Certifications',
+      CERTIFICATION: 'Certification',
       SHOW_MORE: 'Show more',
     },
     SHARE_CREDENTIALS: {

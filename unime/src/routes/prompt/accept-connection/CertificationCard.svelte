@@ -1,10 +1,15 @@
 <script lang="ts">
+  import { page } from '$app/state';
+
   import { Image } from '$lib/components';
   import type { Certification } from '$lib/dev/accept-connection.types';
   import { ShieldCheckFillIcon, ShieldCheckRegularIcon, WarningRegularIcon } from '$lib/icons';
   import { hash } from '$lib/utils';
 
   export let certification: Certification;
+
+  // Carry `?mock=` across so DEV previews survive the navigation.
+  $: href = `/prompt/accept-connection/certifications/${certification.credential.id}${page.url.search}`;
 
   // `logo_uri` is a remote URL, but <Image> looks the asset up on disk by its hash.
   $: imageId = certification.logo_uri ? hash(certification.logo_uri) : undefined;
@@ -29,12 +34,13 @@
 <!--
 @component
 A single certification from the prompt's linked verifiable presentations: what it is,
-who issued it, and whether that issuer's domain checked out.
+who issued it, and whether that issuer's domain checked out. Links to the detail page.
 
 ### Props
 - certification
 -->
-<div
+<a
+  {href}
   class="flex w-full items-center rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-600 dark:bg-dark"
 >
   <div
@@ -53,7 +59,7 @@ who issued it, and whether that issuer's domain checked out.
 
   <div class="flex min-w-0 grow flex-col">
     <p class="truncate text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
-      {certification.name}
+      {certification.credential.display_name}
     </p>
     {#if issuer}
       <p class="truncate text-[12px]/[20px] font-normal text-slate-500 dark:text-slate-300">
@@ -71,4 +77,4 @@ who issued it, and whether that issuer's domain checked out.
       </div>
     {/if}
   </div>
-</div>
+</a>

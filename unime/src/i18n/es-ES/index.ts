@@ -339,6 +339,7 @@ const es_ES = {
       LAST_INTERACTION: 'Última interacción: {date}',
       ACCEPT: 'Acepta la conexión',
       CERTIFICATIONS: 'Certificaciones',
+      CERTIFICATION: 'Certificación',
       SHOW_MORE: 'Ver más',
     },
     SHARE_CREDENTIALS: {

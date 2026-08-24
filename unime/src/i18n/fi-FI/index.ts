@@ -339,6 +339,7 @@ const fi_FI = {
       LAST_INTERACTION: 'Viimeisin vuorovaikutus: {date}',
       ACCEPT: 'Hyväksy yhteys',
       CERTIFICATIONS: 'Sertifioinnit',
+      CERTIFICATION: 'Sertifiointi',
       SHOW_MORE: 'Näytä lisää',
     },
     SHARE_CREDENTIALS: {

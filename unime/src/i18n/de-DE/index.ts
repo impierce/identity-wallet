@@ -338,6 +338,7 @@ const de_DE = {
       LAST_INTERACTION: 'Letzte Interaktion: {date}',
       ACCEPT: 'Verbindung akzeptieren',
       CERTIFICATIONS: 'Zertifizierungen',
+      CERTIFICATION: 'Zertifizierung',
       SHOW_MORE: 'Mehr anzeigen',
     },
     SHARE_CREDENTIALS: {

@@ -895,6 +895,10 @@ type RootTranslation = {
 			 */
 			CERTIFICATIONS: string
 			/**
+			 * C​e​r​t​i​f​i​c​a​t​i​o​n
+			 */
+			CERTIFICATION: string
+			/**
 			 * S​h​o​w​ ​m​o​r​e
 			 */
 			SHOW_MORE: string
@@ -2439,6 +2443,10 @@ export type TranslationFunctions = {
 			 * Certifications
 			 */
 			CERTIFICATIONS: () => LocalizedString
+			/**
+			 * Certification
+			 */
+			CERTIFICATION: () => LocalizedString
 			/**
 			 * Show more
 			 */

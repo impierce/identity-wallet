@@ -90,7 +90,7 @@
           <!-- TODO: make the apex domain bold for extra highlight, subdomain(s) slightly greyed out -->
           {hostname}
         </p>
-        <span class="text-slate-300 dark:text-slate-600" aria-hidden="true">·</span>
+        <span class="text-[13px]/[20px] text-slate-300 dark:text-slate-600" aria-hidden="true">·</span>
         <DomainPill status={domain_validation.status} />
       </div>
     </div>
@@ -159,7 +159,6 @@
     {/if}
   </div>
 
-  <!-- `sticky` is relative to the nearest scrolling ancestor, which is the enclosing `div` above and not the viewport. -->
   <div class="sticky bottom-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 dark:bg-dark">
     <Button
       label={$LL.SCAN.CONNECTION_REQUEST.ACCEPT()}
