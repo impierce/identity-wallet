@@ -887,6 +887,18 @@ type RootTranslation = {
 			 */
 			LAST_INTERACTION: RequiredParams<'date'>
 			/**
+			 * I​n​t​e​r​a​c​t​i​o​n​s
+			 */
+			INTERACTIONS: string
+			/**
+			 * S​h​a​r​e​d​ ​D​a​t​a
+			 */
+			SHARED_DATA: string
+			/**
+			 * R​e​c​e​i​v​e​d​ ​D​a​t​a
+			 */
+			RECEIVED_DATA: string
+			/**
 			 * A​c​c​e​p​t​ ​c​o​n​n​e​c​t​i​o​n
 			 */
 			ACCEPT: string
@@ -899,9 +911,18 @@ type RootTranslation = {
 			 */
 			CERTIFICATION: string
 			/**
+			 * {​c​o​u​n​t​}​ ​{​{​C​e​r​t​i​f​i​c​a​t​i​o​n​|​C​e​r​t​i​f​i​c​a​t​i​o​n​s​}​}
+			 * @param {number} count
+			 */
+			CERTIFICATION_COUNT: RequiredParams<'count'>
+			/**
 			 * S​h​o​w​ ​m​o​r​e
 			 */
 			SHOW_MORE: string
+			/**
+			 * S​h​o​w​ ​l​e​s​s
+			 */
+			SHOW_LESS: string
 		}
 		SHARE_CREDENTIALS: {
 			/**
@@ -2436,6 +2457,18 @@ export type TranslationFunctions = {
 			 */
 			LAST_INTERACTION: (arg: { date: string }) => LocalizedString
 			/**
+			 * Interactions
+			 */
+			INTERACTIONS: () => LocalizedString
+			/**
+			 * Shared Data
+			 */
+			SHARED_DATA: () => LocalizedString
+			/**
+			 * Received Data
+			 */
+			RECEIVED_DATA: () => LocalizedString
+			/**
 			 * Accept connection
 			 */
 			ACCEPT: () => LocalizedString
@@ -2448,9 +2481,17 @@ export type TranslationFunctions = {
 			 */
 			CERTIFICATION: () => LocalizedString
 			/**
+			 * {count} {{Certification|Certifications}}
+			 */
+			CERTIFICATION_COUNT: (arg: { count: number }) => LocalizedString
+			/**
 			 * Show more
 			 */
 			SHOW_MORE: () => LocalizedString
+			/**
+			 * Show less
+			 */
+			SHOW_LESS: () => LocalizedString
 		}
 		SHARE_CREDENTIALS: {
 			/**

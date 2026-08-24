@@ -15,13 +15,20 @@
   import { formatDate, formatRelativeDateTime, hash } from '$lib/utils';
 
   import CertificationCard from './CertificationCard.svelte';
+  import CertificationsSummary from './CertificationsSummary.svelte';
   import DomainPill from './DomainPill.svelte';
+  import InteractionTiles from './InteractionTiles.svelte';
   import SectionHeader from './SectionHeader.svelte';
 
   // How many certifications to show before linking to the full list.
   const PREVIEW_COUNT = 3;
 
   let loading = false;
+
+  // A known connection already shows the "Connected" panel and the interaction tiles, which
+  // push Accept below the fold. Fold the certification cards away behind a count until asked;
+  // a new connection has the room, so it shows them outright.
+  let certificationsExpanded = false;
 
   // Latch the prompt. After the user accepts, the backend clears `current_user_prompt`
   // and pushes new state; without this, the destructure below would run against `null`
@@ -41,6 +48,8 @@
     domain_validation,
     linked_verifiable_presentations: certifications,
   } = prompt);
+
+  $: collapsible = !!connection_data;
 
   $: profile_settings = $appState.profile_settings;
   $: hostname = new URL(redirect_uri).hostname;
@@ -138,23 +147,43 @@
             </p>
           </div>
         </div>
+
+        <InteractionTiles interactions={connection_data.interactions} />
       {/if}
     </div>
 
     <!-- Certifications, sourced from the linked verifiable presentations. -->
     {#if certifications.length > 0}
       <section class="w-full">
-        <SectionHeader
-          title={$LL.SCAN.CONNECTION_REQUEST.CERTIFICATIONS()}
-          href={certifications.length > PREVIEW_COUNT
-            ? `/prompt/accept-connection/certifications${page.url.search}`
-            : undefined}
-        />
-        <div class="space-y-2">
-          {#each certifications.slice(0, PREVIEW_COUNT) as certification}
-            <CertificationCard {certification} />
-          {/each}
-        </div>
+        {#if collapsible}
+          <!-- Collapsible: the header text toggles between the count and the cards. -->
+          <SectionHeader
+            title={$LL.SCAN.CONNECTION_REQUEST.CERTIFICATIONS()}
+            action={certificationsExpanded
+              ? $LL.SCAN.CONNECTION_REQUEST.SHOW_LESS()
+              : $LL.SCAN.CONNECTION_REQUEST.SHOW_MORE()}
+            on:action={() => (certificationsExpanded = !certificationsExpanded)}
+          />
+        {:else}
+          <SectionHeader
+            title={$LL.SCAN.CONNECTION_REQUEST.CERTIFICATIONS()}
+            href={certifications.length > PREVIEW_COUNT
+              ? `/prompt/accept-connection/certifications${page.url.search}`
+              : undefined}
+          />
+        {/if}
+
+        {#if collapsible && !certificationsExpanded}
+          <CertificationsSummary count={certifications.length} />
+        {:else}
+          <div class="space-y-2">
+            <!-- Expanding shows every certification: with "Show less" occupying the header,
+                 there is no link left to reach the full list with. -->
+            {#each collapsible ? certifications : certifications.slice(0, PREVIEW_COUNT) as certification}
+              <CertificationCard {certification} />
+            {/each}
+          </div>
+        {/if}
       </section>
     {/if}
   </div>

@@ -1,3 +1,6 @@
+import type { EventType } from '@bindings/history/EventType';
+import type { HistoryCredential } from '@bindings/history/HistoryCredential';
+import type { HistoryEvent } from '@bindings/history/HistoryEvent';
 import type { ValidationStatus } from '@bindings/user_prompt/ValidationStatus';
 
 import type { AcceptConnectionPrompt, Certification } from '$lib/dev/accept-connection.types';
@@ -56,10 +59,39 @@ const certification = (
   issuer_domain_validations: domain ? [{ status, url: `https://${domain}/`, ...(issuer ? { name: issuer } : {}) }] : [],
 });
 
+const historyCredential = (title: string): HistoryCredential => ({
+  title,
+  issuer_name: 'BestDex',
+  id: slug(title),
+});
+
+const interaction = (event_type: EventType, date: string, credentials: HistoryCredential[] = []): HistoryEvent => ({
+  connection_id: 'did:web:bestdex.com',
+  connection_name: 'BestDex',
+  event_type,
+  date,
+  credentials,
+});
+
+/**
+ * A connection we established, then received one credential from and shared data with twice.
+ * Four interactions, of which `ConnectionAdded` counts towards neither direction tile.
+ */
+const interactions: HistoryEvent[] = [
+  interaction('ConnectionAdded', '2023-04-28T10:12:00Z'),
+  interaction('CredentialsAdded', '2023-05-02T14:05:00Z', [historyCredential('Loyalty Card')]),
+  interaction('CredentialsShared', '2023-06-14T11:48:00Z', [historyCredential('National ID')]),
+  // One exchange carrying several credentials: still a single interaction.
+  interaction('CredentialsShared', '2023-07-28T09:30:00Z', [
+    historyCredential('National ID'),
+    historyCredential('Proof of Address'),
+  ]),
+];
+
 const connected = {
   first_interacted_at: '2023-04-28T10:12:00Z',
   last_interacted_at: '2023-07-28T09:30:00Z',
-  interactions: [],
+  interactions,
 };
 
 const certifications: Certification[] = [
@@ -79,6 +111,8 @@ export const mocks = {
   // M1
   new: base,
   known: { ...base, connection_data: connected },
+  // Connected, but no data has moved either way: both direction tiles read zero.
+  'known-no-data': { ...base, connection_data: { ...connected, interactions: interactions.slice(0, 1) } },
   untrusted: {
     ...base,
     domain_validation: {
@@ -97,6 +131,19 @@ export const mocks = {
   'certs-preview': { ...base, linked_verifiable_presentations: certifications.slice(0, 3) },
   // Over PREVIEW_COUNT: the "Show more" link appears and the sub-route lists all ten.
   'certs-many': { ...base, linked_verifiable_presentations: certifications },
+  // Known connection with certifications: the section starts collapsed behind a count,
+  // and "Show More" expands it into the section the other `certs-*` fixtures show.
+  'known-certs': {
+    ...base,
+    connection_data: connected,
+    linked_verifiable_presentations: certifications.slice(0, 3),
+  },
+  // Collapsed label in the singular.
+  'known-certs-one': {
+    ...base,
+    connection_data: connected,
+    linked_verifiable_presentations: certifications.slice(0, 1),
+  },
   // Issuer name and domain both missing: the card must degrade to just the title.
   'certs-bare': {
     ...base,
