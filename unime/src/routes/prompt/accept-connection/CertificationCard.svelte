@@ -4,6 +4,7 @@
   import { Image } from '$lib/components';
   import type { Certification } from '$lib/dev/accept-connection.types';
   import { ShieldCheckFillIcon, ShieldCheckRegularIcon, WarningRegularIcon } from '$lib/icons';
+  import { hostname } from '$lib/utils/url';
 
   import { certificationLogoId } from './logo.js';
 
@@ -14,13 +15,16 @@
 
   $: imageId = certificationLogoId(certification);
 
+  // The design shows a single domain; an issuer may link several, each with its own result.
+  // Showing the first is deliberate.
+  $: validation = certification.issuer_domain_validations.at(0);
+
   // The issuing body, e.g. "Intl. Organization for Standardization".
-  $: issuer = certification.issuer_domain_validation.name;
+  $: issuer = validation?.name;
 
-  // The design shows a single domain; an issuer may link several.
-  $: domain = certification.issuer_linked_domains.at(0);
+  $: domain = validation ? hostname(validation.url) : undefined;
 
-  $: verified = certification.issuer_domain_validation.status === 'Success';
+  $: verified = validation?.status === 'Success';
 
   // <Image> reports whether it fell back to an icon, so the tile can switch between a
   // tinted badge and a plain backdrop for a real logo.

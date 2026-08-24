@@ -2,6 +2,7 @@
   import { onDestroy } from 'svelte';
 
   import { page } from '$app/state';
+  import { get } from 'svelte/store';
 
   import { dispatch } from '$lib/dispatcher';
   import { state as appState, error } from '$lib/stores';
@@ -18,8 +19,10 @@
 
   onDestroy(() => {
     unsubscribe();
-    // TODO: is onDestroy also called when user accepts since the component itself is destroyed?
-    if (!isMock) dispatch({ type: '[User Flow] Cancel', payload: {} });
+    if (isMock) return;
+    if (get(appState).current_user_prompt?.type === 'accept-connection') {
+      dispatch({ type: '[User Flow] Cancel', payload: {} });
+    }
   });
 </script>
 

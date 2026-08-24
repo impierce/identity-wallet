@@ -8,7 +8,7 @@ const base: AcceptConnectionPrompt = {
   logo_uri: 'https://bestdex.com/logo.png',
   redirect_uri: 'https://www.bestdex.com/callback',
   connection_data: null,
-  domain_validation: { status: 'Success' },
+  domain_validation: { status: 'Success', url: 'https://www.bestdex.com/' },
   linked_verifiable_presentations: [],
   ecosystems: [],
 };
@@ -53,8 +53,7 @@ const certification = (
     metadata: { is_favorite: false, date_added: '', date_issued: '2025-03-12T00:00:00Z' },
     display_name: name,
   },
-  issuer_domain_validation: issuer ? { status, name: issuer } : { status },
-  issuer_linked_domains: domain ? [domain] : [],
+  issuer_domain_validations: domain ? [{ status, url: `https://${domain}/`, ...(issuer ? { name: issuer } : {}) }] : [],
 });
 
 const connected = {
@@ -82,9 +81,13 @@ export const mocks = {
   known: { ...base, connection_data: connected },
   untrusted: {
     ...base,
-    domain_validation: { status: 'Failure', message: 'No did-configuration.json found' },
+    domain_validation: {
+      status: 'Failure',
+      url: 'https://www.bestdex.com/',
+      message: 'No did-configuration.json found',
+    },
   },
-  'unknown-domain': { ...base, domain_validation: { status: 'Unknown' } },
+  'unknown-domain': { ...base, domain_validation: { status: 'Unknown', url: 'https://www.bestdex.com/' } },
   'long-name': { ...base, client_name: 'Stichting Nederlandse Organisatie voor Wetenschappelijk Onderzoek' },
   'no-logo': { ...base, logo_uri: undefined },
 

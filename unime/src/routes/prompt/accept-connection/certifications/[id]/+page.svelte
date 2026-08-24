@@ -10,6 +10,7 @@
   import { resolveAcceptConnectionPrompt } from '$lib/dev/mocks/resolve';
   import { ShieldCheckFillIcon } from '$lib/icons';
   import { state as appState } from '$lib/stores';
+  import { hostname } from '$lib/utils/url';
 
   import DefaultRenderer from '../../../../credentials/[id]/DefaultRenderer.svelte';
   import DomainPill from '../../DomainPill.svelte';
@@ -22,8 +23,10 @@
     (c) => c.credential.id === page.params.id,
   );
 
-  $: issuer = certification?.issuer_domain_validation.name;
-  $: domain = certification?.issuer_linked_domains.at(0);
+  // See `CertificationCard`: the first result stands in for all linked domains.
+  $: validation = certification?.issuer_domain_validations.at(0);
+  $: issuer = validation?.name;
+  $: domain = validation ? hostname(validation.url) : undefined;
   $: imageId = certification ? certificationLogoId(certification) : undefined;
 
   // A tinted badge when there is no logo (or it
@@ -79,11 +82,11 @@
             {issuer}
           </p>
         {/if}
-        {#if domain}
+        {#if validation && domain}
           <div class="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 pt-[10px]">
             <p class="text-[13px]/[20px] font-normal text-slate-500">{domain}</p>
             <span class="text-[13px]/[20px] text-slate-300 dark:text-slate-600" aria-hidden="true">·</span>
-            <DomainPill status={certification.issuer_domain_validation.status} />
+            <DomainPill status={validation.status} />
           </div>
         {/if}
       </div>

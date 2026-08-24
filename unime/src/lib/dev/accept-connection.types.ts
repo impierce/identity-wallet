@@ -2,7 +2,16 @@
 // CC-REMOVE!
 import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 import type { HistoryEvent } from '@bindings/history/HistoryEvent';
-import type { ValidationResult } from '@bindings/user_prompt/ValidationResult';
+import type { ValidationStatus } from '@bindings/user_prompt/ValidationStatus';
+
+export interface ValidationResult {
+  status: ValidationStatus;
+  url: string;
+  name?: string;
+  logo_uri?: string;
+  issuance_date?: string;
+  message?: string;
+}
 
 export interface Member {
   logo_uri: string | null;
@@ -23,8 +32,7 @@ export interface EcosystemProfile {
 // Mirrors `LinkedVerifiableCredentialData`.
 export interface Certification {
   credential: DisplayCredential;
-  issuer_domain_validation: ValidationResult;
-  issuer_linked_domains: string[];
+  issuer_domain_validations: ValidationResult[];
 }
 
 export interface ConnectionData {
