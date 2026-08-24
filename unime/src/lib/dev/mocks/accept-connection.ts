@@ -53,7 +53,6 @@ const certification = (
     metadata: { is_favorite: false, date_added: '', date_issued: '2025-03-12T00:00:00Z' },
     display_name: name,
   },
-  logo_uri: null,
   issuer_domain_validation: issuer ? { status, name: issuer } : { status },
   issuer_linked_domains: domain ? [domain] : [],
 });
@@ -140,6 +139,18 @@ export const mocks = {
     ...base,
     linked_verifiable_presentations: [
       certification('Malformed Certification', 'Some Authority', 'authority.example', 'Success', null),
+    ],
+  },
+  // The logo URL lives in the subject's `image` claim. This still renders the badge in DEV:
+  // `<Image>` looks for `assets/tmp/<hash(url)>`, which only exists once the backend has
+  // downloaded the file. Kept so the shape is represented and `certificationLogoId` is exercised.
+  'cert-logo': {
+    ...base,
+    linked_verifiable_presentations: [
+      certification('ISO 27001 Certified', 'Intl. Organization for Standardization', 'iso.org', 'Success', {
+        ...defaultClaims('ISO 27001 Certified', 'Intl. Organization for Standardization'),
+        image: 'https://iso.org/badge.png',
+      }),
     ],
   },
 } satisfies Record<string, AcceptConnectionPrompt>;

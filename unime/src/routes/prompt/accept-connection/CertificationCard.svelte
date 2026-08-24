@@ -4,15 +4,15 @@
   import { Image } from '$lib/components';
   import type { Certification } from '$lib/dev/accept-connection.types';
   import { ShieldCheckFillIcon, ShieldCheckRegularIcon, WarningRegularIcon } from '$lib/icons';
-  import { hash } from '$lib/utils';
+
+  import { certificationLogoId } from './logo.js';
 
   export let certification: Certification;
 
   // Carry `?mock=` across so DEV previews survive the navigation.
   $: href = `/prompt/accept-connection/certifications/${certification.credential.id}${page.url.search}`;
 
-  // `logo_uri` is a remote URL, but <Image> looks the asset up on disk by its hash.
-  $: imageId = certification.logo_uri ? hash(certification.logo_uri) : undefined;
+  $: imageId = certificationLogoId(certification);
 
   // The issuing body, e.g. "Intl. Organization for Standardization".
   $: issuer = certification.issuer_domain_validation.name;

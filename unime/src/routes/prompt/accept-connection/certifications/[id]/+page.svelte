@@ -10,10 +10,10 @@
   import { resolveAcceptConnectionPrompt } from '$lib/dev/mocks/resolve';
   import { ShieldCheckFillIcon } from '$lib/icons';
   import { state as appState } from '$lib/stores';
-  import { hash } from '$lib/utils';
 
   import DefaultRenderer from '../../../../credentials/[id]/DefaultRenderer.svelte';
   import DomainPill from '../../DomainPill.svelte';
+  import { certificationLogoId } from '../../logo.js';
 
   // Read from the store rather than taking props, as the sibling list page does.
   // No latch needed — this page cannot accept the prompt, so it never sees the backend
@@ -24,7 +24,7 @@
 
   $: issuer = certification?.issuer_domain_validation.name;
   $: domain = certification?.issuer_linked_domains.at(0);
-  $: imageId = certification?.logo_uri ? hash(certification.logo_uri) : undefined;
+  $: imageId = certification ? certificationLogoId(certification) : undefined;
 
   // A tinted badge when there is no logo (or it
   // fails to load), a plain backdrop for a real one.

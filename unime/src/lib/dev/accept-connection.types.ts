@@ -20,14 +20,9 @@ export interface EcosystemProfile {
   members: Member[];
 }
 
-// `issuer_linked_domains` drops its `#[ts(skip)]` on the Rust side; `url-impl` is
-// already enabled, so `Vec<Url>` exports as `Array<string>`.
+// Mirrors `LinkedVerifiableCredentialData`.
 export interface Certification {
   credential: DisplayCredential;
-  // `DisplayCredential` has no logo field of its own — it resolves images from disk by
-  // credential id, which only works for credentials the wallet has actually stored.
-  logo_uri: string | null;
-  // The issuer's name is read from `.name` here; `.status` drives the domain row's icon.
   issuer_domain_validation: ValidationResult;
   issuer_linked_domains: string[];
 }
