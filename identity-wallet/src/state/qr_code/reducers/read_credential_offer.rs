@@ -110,6 +110,10 @@ pub async fn get_oid4vci_client_metadata(
 
     // The credential offer contains a credential issuer url.
     let credential_issuer_url = credential_offer.credential_issuer.clone();
+    let connection_url = credential_issuer_url
+        .host_str()
+        .unwrap_or(credential_issuer_url.as_str())
+        .to_string();
 
     info!("credential issuer url: {credential_issuer_url:?}");
 
@@ -170,8 +174,8 @@ pub async fn get_oid4vci_client_metadata(
 
     Ok(ClientMetadata {
         client_name: issuer_name,
-        connection_url: credential_issuer_url.to_string(),
         redirect_uri: Some(credential_issuer_url.to_string()),
+        connection_url,
         logo_uri,
         client_id,
     })

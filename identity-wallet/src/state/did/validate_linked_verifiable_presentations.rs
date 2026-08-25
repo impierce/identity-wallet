@@ -45,7 +45,7 @@ pub struct LinkedVerifiableCredentialData {
 // Skip the partial equality check for `issuance_date` during testing.
 #[cfg(test)]
 impl PartialEq for LinkedVerifiableCredentialData {
-    fn eq(&self, other: &Self) -> bool {
+    fn eq(&self, _other: &Self) -> bool {
         // self.name == other.name
         //     && self.logo_uri == other.logo_uri
         //     && self.issuer_linked_domains == other.issuer_linked_domains

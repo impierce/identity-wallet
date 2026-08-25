@@ -175,7 +175,7 @@ pub async fn get_oid4vp_client_metadata(
                 logo_uri,
                 connection_url: connection_url.to_string(),
                 client_id: client_id.clone(),
-                redirect_uri: None,
+                redirect_uri: Some(redirect_uri.to_string()),
             })
         }
         // TODO: support `client_metadata_uri`
