@@ -19,6 +19,7 @@ use oid4vc::oid4vci::{
 };
 use serde_json::Value;
 
+// TODO: improving naming & docs
 pub async fn read_credential_offer(state: AppState, _action: Action) -> Result<AppState, AppError> {
     info!("read_credential_offer");
 
