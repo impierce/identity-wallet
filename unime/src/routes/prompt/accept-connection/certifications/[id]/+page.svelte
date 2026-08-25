@@ -20,7 +20,9 @@
   // Read from the store rather than taking props, as the sibling list page does.
   // No latch needed — this page cannot accept the prompt, so it never sees the backend
   // clear it out from under itself.
-  $: certification = resolveAcceptConnectionPrompt(page.url, $appState)?.linked_verifiable_presentations.find(
+  // `?? []` as well as `?.`: the optional chain covers a missing prompt, not a prompt that
+  // arrives without the field while the data model is still in flight.
+  $: certification = (resolveAcceptConnectionPrompt(page.url, $appState)?.linked_verifiable_presentations ?? []).find(
     (c) => c.credential.id === page.params.id,
   );
 

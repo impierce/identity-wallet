@@ -48,6 +48,7 @@ export interface AcceptConnectionPrompt {
   redirect_uri: string;
   connection_data: ConnectionData | null;
   domain_validation: ValidationResult;
-  linked_verifiable_presentations: Certification[];
-  ecosystems: EcosystemProfile[];
+  // Optional while the backend data model is otw. 
+  linked_verifiable_presentations?: Certification[];
+  ecosystems?: EcosystemProfile[];
 }

@@ -40,14 +40,9 @@
     if (next) prompt = next;
   }
 
-  $: ({
-    client_name,
-    logo_uri,
-    redirect_uri,
-    connection_data,
-    domain_validation,
-    linked_verifiable_presentations: certifications,
-  } = prompt);
+  $: ({ client_name, logo_uri, redirect_uri, connection_data, domain_validation } = prompt);
+
+  $: certifications = prompt.linked_verifiable_presentations ?? [];
 
   $: collapsible = !!connection_data;
 
