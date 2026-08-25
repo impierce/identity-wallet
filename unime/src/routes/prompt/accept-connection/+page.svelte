@@ -94,10 +94,10 @@
       </p>
       <div class="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 pt-[10px]">
         {#if domain}
-          <p class="text-[13px]/[20px] font-normal text-slate-500">
+          <p class="text-[13px]/[20px] font-normal text-text-alt">
             {domain}
           </p>
-          <span class="text-[13px]/[20px] text-slate-300 dark:text-slate-600" aria-hidden="true">·</span>
+          <span class="text-[13px]/[20px] text-slate-300 dark:text-slate-500" aria-hidden="true">·</span>
         {/if}
         <DomainPill status={domain_validation.status} />
       </div>
