@@ -28,7 +28,7 @@ pub enum CurrentUserPrompt {
         client_name: String,
         #[ts(optional)]
         logo_uri: Option<String>,
-        redirect_uri: String,
+        redirect_uri: Option<String>,
         previously_connected: bool,
         domain_validation: Box<ValidationResult>,
         linked_verifiable_presentations: Vec<LinkedVerifiableCredentialData>,
@@ -78,7 +78,7 @@ mod tests {
         let prompt = CurrentUserPrompt::AcceptConnection {
             client_name: "Test Client".to_string(),
             logo_uri: None,
-            redirect_uri: "https://example.com".to_string(),
+            redirect_uri: Some("https://example.com".to_string()),
             previously_connected: false,
             domain_validation: Default::default(),
             linked_verifiable_presentations: Default::default(),

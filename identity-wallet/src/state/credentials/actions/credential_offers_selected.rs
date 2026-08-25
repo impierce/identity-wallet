@@ -21,7 +21,7 @@ impl ActionTrait for CredentialOffersSelected {
         vec![
             reducer!(send_credential_request),
             reducer!(sort_credentials),
-            reducer!(sort_connections),
+            reducer!(sort_connections), // TODO: remove this sort_connections, only after trust_connection
         ]
     }
 }

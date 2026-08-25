@@ -127,7 +127,7 @@ pub async fn send_interactive_authorization_request_follow_up(
             &mut connections,
             &mut history,
         )
-        .await;
+        .await?;
 
         drop(state_guard);
         let state = AppState {

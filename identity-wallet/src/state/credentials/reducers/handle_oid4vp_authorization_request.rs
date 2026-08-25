@@ -1,4 +1,5 @@
 use crate::state::connections::Connections;
+use crate::state::core_utils::helpers::download_logo;
 use crate::state::core_utils::IdentityManager;
 use crate::state::credentials::reducers::self_issue_credential::SubjectWrapper;
 use crate::state::credentials::Sha256Hasher;
@@ -110,7 +111,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             &mut connections,
             &mut history,
         )
-        .await;
+        .await?;
 
         drop(state_guard);
         return Ok(AppState {
@@ -126,18 +127,22 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
     Ok(state)
 }
 
-pub struct OID4VPClientMetadata {
+// TODO: move this struct as it is now generic
+#[derive(Debug, Clone)]
+pub struct ClientMetadata {
     pub client_name: String,
     pub logo_uri: Option<String>,
     pub connection_url: String,
+    pub redirect_uri: Option<String>,
     pub client_id: String,
 }
 
 // TODO: move this functionality to the oid4vc-manager crate.
+// TODO: this fn is nearly an exact copy of the fn `get_siopv2_client_name_and_logo_uri`, is there a simple way to put this into one generic helper?
 /// Returns (client_name, logo_uri, connection_url, client_id)
-pub fn get_oid4vp_client_name_and_logo_uri(
+pub async fn get_oid4vp_client_metadata(
     oid4vp_authorization_request: &AuthorizationRequest<Object<OID4VP>>,
-) -> OID4VPClientMetadata {
+) -> Result<ClientMetadata, AppError> {
     // Get the connection url from the redirect url host (or use the redirect url if it does not
     // contain a host).
     let redirect_uri = oid4vp_authorization_request.body.uri.uri().clone();
@@ -146,33 +151,40 @@ pub fn get_oid4vp_client_name_and_logo_uri(
     let client_id = oid4vp_authorization_request.body.client_id.clone();
 
     // Get the client_name and logo_uri from the client_metadata if it exists.
-    match &oid4vp_authorization_request.body.extension.client_metadata {
+    Ok(match &oid4vp_authorization_request.body.extension.client_metadata {
         ClientMetadataResource::ClientMetadata {
-            client_name,
-            logo_uri,
-            extension: _,
-            other: _,
+            client_name, logo_uri, ..
         } => {
             let client_name = client_name.as_ref().cloned().unwrap_or(connection_url.to_string());
             let logo_uri = logo_uri.as_ref().map(|logo_uri| logo_uri.to_string());
 
-            Some(OID4VPClientMetadata {
+            if let Some(logo_uri_str) = logo_uri.clone() {
+                download_logo(&logo_uri_str)
+                    .await
+                    .ok_or(Error("Failed to download logo".to_string()))?; // should this throw an error?
+            } else {
+                warn!("No logo URI found");
+            }
+
+            Ok(ClientMetadata {
                 client_name,
                 logo_uri,
                 connection_url: connection_url.to_string(),
                 client_id: client_id.clone(),
+                redirect_uri: None,
             })
         }
         // TODO: support `client_metadata_uri`
-        ClientMetadataResource::ClientMetadataUri(_) => None,
+        ClientMetadataResource::ClientMetadataUri(_) => Err(Error("Client metadata URI not supported".to_string())),
     }
     // Otherwise use the connection_url as the client_name.
-    .unwrap_or(OID4VPClientMetadata {
+    .unwrap_or_else(|_| ClientMetadata {
         client_name: connection_url.to_string(),
         logo_uri: None,
         connection_url: connection_url.to_string(),
         client_id,
-    })
+        redirect_uri: None,
+    }))
 }
 
 pub async fn build_oid4vp_vp_token_and_history_credentials(
@@ -319,13 +331,14 @@ pub async fn update_history_and_connections(
     history_credentials: Vec<HistoryCredential>,
     connections: &mut Connections,
     history: &mut Vec<HistoryEvent>,
-) {
-    let OID4VPClientMetadata {
+) -> Result<(), AppError> {
+    let ClientMetadata {
         client_name,
         logo_uri,
         connection_url,
         client_id,
-    } = get_oid4vp_client_name_and_logo_uri(oid4vp_authorization_request);
+        ..
+    } = get_oid4vp_client_metadata(oid4vp_authorization_request).await?;
 
     let did = CoreDID::parse(client_id).ok();
 
@@ -356,6 +369,8 @@ pub async fn update_history_and_connections(
         date: connection.last_interacted.clone(),
         credentials: history_credentials,
     });
+
+    Ok(())
 }
 
 async fn get_vp_token(
