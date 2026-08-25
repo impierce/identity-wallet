@@ -12,7 +12,7 @@
   import { dispatch } from '$lib/dispatcher';
   import { PlugsConnectedFillIcon, ShieldCheckRegularIcon, WarningCircleFillIcon } from '$lib/icons';
   import { state as appState, error } from '$lib/stores';
-  import { formatDate, formatRelativeDateTime, hash } from '$lib/utils';
+  import { formatRelativeDateTime, hash } from '$lib/utils';
   import { hostname } from '$lib/utils/url';
 
   import CertificationCard from './CertificationCard.svelte';
@@ -141,7 +141,7 @@
             </p>
             <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
               {$LL.SCAN.CONNECTION_REQUEST.LAST_INTERACTION({
-                date: formatDate(connection_data.last_interacted_at, profile_settings.locale),
+                date: formatRelativeDateTime(connection_data.last_interacted_at, profile_settings.locale),
               })}
             </p>
           </div>
