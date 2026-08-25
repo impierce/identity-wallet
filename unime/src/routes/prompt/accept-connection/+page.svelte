@@ -13,6 +13,7 @@
   import { PlugsConnectedFillIcon, ShieldCheckRegularIcon, WarningCircleFillIcon } from '$lib/icons';
   import { state as appState, error } from '$lib/stores';
   import { formatDate, formatRelativeDateTime, hash } from '$lib/utils';
+  import { hostname } from '$lib/utils/url';
 
   import CertificationCard from './CertificationCard.svelte';
   import CertificationsSummary from './CertificationsSummary.svelte';
@@ -47,7 +48,9 @@
   $: collapsible = !!connection_data;
 
   $: profile_settings = $appState.profile_settings;
-  $: hostname = new URL(redirect_uri).hostname;
+  // `redirect_uri` is optional on the prompt, and the helper swallows a malformed one. A raw
+  // `new URL()` here would throw and take the whole page down.
+  $: domain = redirect_uri ? hostname(redirect_uri) : undefined;
   $: imageId = logo_uri ? hash(logo_uri) : '_';
 
   // For DEV previews only: `?mock=` renders a fixture instead of a real prompt.
@@ -90,11 +93,12 @@
         {client_name}
       </p>
       <div class="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 pt-[10px]">
-        <p class="text-[13px]/[20px] font-normal text-slate-500">
-          <!-- TODO: make the apex domain bold for extra highlight, subdomain(s) slightly greyed out -->
-          {hostname}
-        </p>
-        <span class="text-[13px]/[20px] text-slate-300 dark:text-slate-600" aria-hidden="true">·</span>
+        {#if domain}
+          <p class="text-[13px]/[20px] font-normal text-slate-500">
+            {domain}
+          </p>
+          <span class="text-[13px]/[20px] text-slate-300 dark:text-slate-600" aria-hidden="true">·</span>
+        {/if}
         <DomainPill status={domain_validation.status} />
       </div>
     </div>

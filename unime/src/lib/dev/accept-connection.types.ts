@@ -45,10 +45,10 @@ export interface AcceptConnectionPrompt {
   type: 'accept-connection';
   client_name: string;
   logo_uri?: string;
-  redirect_uri: string;
+  redirect_uri?: string;
   connection_data: ConnectionData | null;
   domain_validation: ValidationResult;
-  // Optional while the backend data model is otw. 
+  // Optional while the backend data model is otw.
   linked_verifiable_presentations?: Certification[];
   ecosystems?: EcosystemProfile[];
 }

@@ -127,6 +127,8 @@ export const mocks = {
   'unknown-domain': { ...base, domain_validation: { status: 'Unknown', url: 'https://www.bestdex.com/' } },
   'long-name': { ...base, client_name: 'Stichting Nederlandse Organisatie voor Wetenschappelijk Onderzoek' },
   'no-logo': { ...base, logo_uri: undefined },
+  // No `redirect_uri`: the domain line disappears and the validation pill stands alone.
+  'no-redirect': { ...base, redirect_uri: undefined },
 
   // M2 — certifications
   'certs-one': { ...base, linked_verifiable_presentations: certifications.slice(0, 1) },
