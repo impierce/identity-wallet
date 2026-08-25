@@ -336,7 +336,7 @@ const es_ES = {
       DESCRIPTION: 'Acepta únicamente las nuevas conexiones que reconozcas y en las que confíes',
       KNOWN_CONNECTION: 'Conexión conocida',
       FIRST_INTERACTION: 'Primera interacción: {duration}',
-      LAST_INTERACTION: 'Última interacción: {date}',
+      LAST_INTERACTION: 'Última interacción: {duration}',
       INTERACTIONS: 'Interacciones',
       SHARED_DATA: 'Datos compartidos',
       RECEIVED_DATA: 'Datos recibidos',

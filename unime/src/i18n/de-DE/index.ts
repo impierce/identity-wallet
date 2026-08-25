@@ -335,7 +335,7 @@ const de_DE = {
       DESCRIPTION: 'Akzeptiere nur Verbindungen, die du erwartest und denen du vertraust.',
       KNOWN_CONNECTION: 'Bekannte Verbindung',
       FIRST_INTERACTION: 'Erste Interaktion: {duration}',
-      LAST_INTERACTION: 'Letzte Interaktion: {date}',
+      LAST_INTERACTION: 'Letzte Interaktion: {duration}',
       INTERACTIONS: 'Interaktionen',
       SHARED_DATA: 'Geteilte Daten',
       RECEIVED_DATA: 'Erhaltene Daten',

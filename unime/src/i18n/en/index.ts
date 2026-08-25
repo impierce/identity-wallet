@@ -334,7 +334,7 @@ const en = {
       DESCRIPTION: 'Only accept new connections that you recognize and trust',
       KNOWN_CONNECTION: 'Known connection',
       FIRST_INTERACTION: 'First interaction: {duration:string}',
-      LAST_INTERACTION: 'Last interaction: {date:string}',
+      LAST_INTERACTION: 'Last interaction: {duration:string}',
       INTERACTIONS: 'Interactions',
       SHARED_DATA: 'Shared Data',
       RECEIVED_DATA: 'Received Data',

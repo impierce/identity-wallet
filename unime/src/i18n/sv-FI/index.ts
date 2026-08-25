@@ -335,7 +335,7 @@ const sv_FI = {
       DESCRIPTION: 'Acceptera bara anslutningar du känner igen och litar på',
       KNOWN_CONNECTION: 'Känd anslutning',
       FIRST_INTERACTION: 'Första interaktionen: {duration}',
-      LAST_INTERACTION: 'Senaste interaktionen: {date}',
+      LAST_INTERACTION: 'Senaste interaktionen: {duration}',
       INTERACTIONS: 'Interaktioner',
       SHARED_DATA: 'Delade data',
       RECEIVED_DATA: 'Mottagna data',

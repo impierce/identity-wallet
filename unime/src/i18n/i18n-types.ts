@@ -882,10 +882,10 @@ type RootTranslation = {
 			 */
 			FIRST_INTERACTION: RequiredParams<'duration'>
 			/**
-			 * L​a​s​t​ ​i​n​t​e​r​a​c​t​i​o​n​:​ ​{​d​a​t​e​}
-			 * @param {string} date
+			 * L​a​s​t​ ​i​n​t​e​r​a​c​t​i​o​n​:​ ​{​d​u​r​a​t​i​o​n​}
+			 * @param {string} duration
 			 */
-			LAST_INTERACTION: RequiredParams<'date'>
+			LAST_INTERACTION: RequiredParams<'duration'>
 			/**
 			 * I​n​t​e​r​a​c​t​i​o​n​s
 			 */
@@ -2453,9 +2453,9 @@ export type TranslationFunctions = {
 			 */
 			FIRST_INTERACTION: (arg: { duration: string }) => LocalizedString
 			/**
-			 * Last interaction: {date}
+			 * Last interaction: {duration}
 			 */
-			LAST_INTERACTION: (arg: { date: string }) => LocalizedString
+			LAST_INTERACTION: (arg: { duration: string }) => LocalizedString
 			/**
 			 * Interactions
 			 */

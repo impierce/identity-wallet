@@ -136,12 +136,16 @@
             </p>
             <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
               {$LL.SCAN.CONNECTION_REQUEST.FIRST_INTERACTION({
-                duration: formatRelativeDateTime(connection_data.first_interacted_at, profile_settings.locale),
+                duration: formatRelativeDateTime(connection_data.first_interacted_at, profile_settings.locale, {
+                  capitalize: false,
+                }),
               })}
             </p>
             <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
               {$LL.SCAN.CONNECTION_REQUEST.LAST_INTERACTION({
-                date: formatRelativeDateTime(connection_data.last_interacted_at, profile_settings.locale),
+                duration: formatRelativeDateTime(connection_data.last_interacted_at, profile_settings.locale, {
+                  capitalize: false,
+                }),
               })}
             </p>
           </div>

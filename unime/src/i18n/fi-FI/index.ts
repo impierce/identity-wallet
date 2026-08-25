@@ -336,7 +336,7 @@ const fi_FI = {
       DESCRIPTION: 'Hyväksy vain yhteydet jotka tunnistat ja joihin luotat',
       KNOWN_CONNECTION: 'Tunnettu yhteys',
       FIRST_INTERACTION: 'Ensimmäinen vuorovaikutus: {duration}',
-      LAST_INTERACTION: 'Viimeisin vuorovaikutus: {date}',
+      LAST_INTERACTION: 'Viimeisin vuorovaikutus: {duration}',
       INTERACTIONS: 'Vuorovaikutukset',
       SHARED_DATA: 'Jaetut tiedot',
       RECEIVED_DATA: 'Vastaanotetut tiedot',

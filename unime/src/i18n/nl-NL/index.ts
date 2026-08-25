@@ -335,7 +335,7 @@ const nl_NL = {
       DESCRIPTION: 'Accepteer alleen nieuwe connecties die je herkent en vertrouwt',
       KNOWN_CONNECTION: 'Bekende connectie',
       FIRST_INTERACTION: 'Eerste interactie: {duration}',
-      LAST_INTERACTION: 'Laatste interactie: {date}',
+      LAST_INTERACTION: 'Laatste interactie: {duration}',
       INTERACTIONS: 'Interacties',
       SHARED_DATA: 'Gedeelde gegevens',
       RECEIVED_DATA: 'Ontvangen gegevens',
