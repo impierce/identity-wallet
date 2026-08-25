@@ -22,6 +22,7 @@ use oid4vc::{
     oid4vci::credential_offer::CredentialOffer,
 };
 use oid4vc::{oid4vci::credential_offer::CredentialOfferParameters, oid4vp::oid4vp::OID4VP};
+use url::Url;
 
 /// The kind of request encoded in a scanned QR-code.
 ///
@@ -45,13 +46,24 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
         let (client_metadata, active_flow) =
             get_client_metadata_init_active_flow(&state, parsed_qr_code.clone()).await?;
         info!("Retrieved client metadata: {client_metadata:?}");
-        info!("Initialized active flow: {active_flow:?}");
+        info!("Initializing active flow: {active_flow:?}");
+
+        let parsed_connection_url = Url::parse(&client_metadata.connection_url).map_err(|_| {
+            Error(format!(
+                "`connection_url` could not be parsed to url::Url: `{:?}`",
+                client_metadata.connection_url.clone()
+            ))
+        })?;
+
+        let host = parsed_connection_url
+            .host_str()
+            .unwrap_or(parsed_connection_url.as_str());
 
         let connection_data = state
             .connections
             .0
             .iter()
-            .find(|conn| conn.url == client_metadata.connection_url && conn.name == client_metadata.client_name)
+            .find(|conn| conn.url == host && conn.name == client_metadata.client_name)
             .map(|connection| {
                 let interactions = state
                     .history
@@ -125,7 +137,7 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
             _ => None,
         };
 
-        info!("linked_verifiable_presentations: {linked_verifiable_presentations:?}");
+        info!("Linked verifiable presentations: {linked_verifiable_presentations:?}");
 
         drop(state_guard);
 
