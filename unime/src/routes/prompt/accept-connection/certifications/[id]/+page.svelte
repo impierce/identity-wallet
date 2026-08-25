@@ -15,6 +15,7 @@
   import DefaultRenderer from '../../../../credentials/[id]/DefaultRenderer.svelte';
   import DomainPill from '../../DomainPill.svelte';
   import { certificationLogoId } from '../../logo.js';
+  import CertificationOverview from './CertificationOverview.svelte';
 
   // Read from the store rather than taking props, as the sibling list page does.
   // No latch needed — this page cannot accept the prompt, so it never sees the backend
@@ -56,48 +57,52 @@
   />
 
   {#if certification}
-    <!-- Stretches full-width like `CredentialHeader`, giving the icon/title area the same silver backdrop as the credential page. -->
-    <div class="flex flex-col items-center gap-4 bg-background px-4 py-5">
-      <div
-        class="flex h-[75px] w-[75px] items-center justify-center overflow-hidden rounded-3xl {showBadge
-          ? 'bg-primary'
-          : 'bg-white p-2 dark:bg-silver'}"
-      >
-        {#if imageId}
-          <Image id={imageId} isTempAsset={true} bind:useFallback imgClass="size-full object-contain">
-            <ShieldCheckFillIcon slot="fallback" class="size-7 text-background-alt" />
-          </Image>
-        {:else}
-          <ShieldCheckFillIcon class="size-7 text-background-alt" />
-        {/if}
-      </div>
+    <div class="flex min-h-full flex-col bg-background-alt px-4 pb-7">
+      <div class="-mx-4 flex flex-col items-center gap-4 bg-background py-5">
+        <div
+          class="flex h-[75px] w-[75px] items-center justify-center overflow-hidden rounded-3xl {showBadge
+            ? 'bg-primary'
+            : 'bg-white p-2 dark:bg-silver'}"
+        >
+          {#if imageId}
+            <Image id={imageId} isTempAsset={true} bind:useFallback imgClass="size-full object-contain">
+              <ShieldCheckFillIcon slot="fallback" class="size-7 text-background-alt" />
+            </Image>
+          {:else}
+            <ShieldCheckFillIcon class="size-7 text-background-alt" />
+          {/if}
+        </div>
 
-      <div class="text-center">
-        <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
-          {certification.credential.display_name}
-        </p>
-        {#if issuer}
-          <p class="pt-[10px] text-[13px]/[20px] font-normal text-slate-500">
-            {$LL.CREDENTIAL.DETAILS.ISSUED_BY()}
-            {issuer}
+        <div class="text-center">
+          <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
+            {certification.credential.display_name}
           </p>
-        {/if}
-        {#if validation && domain}
-          <div class="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 pt-[10px]">
-            <p class="text-[13px]/[20px] font-normal text-slate-500">{domain}</p>
-            <span class="text-[13px]/[20px] text-slate-300 dark:text-slate-600" aria-hidden="true">·</span>
-            <DomainPill status={validation.status} />
-          </div>
-        {/if}
+          {#if issuer}
+            <p class="pt-[10px] text-[13px]/[20px] font-normal text-slate-500">
+              {$LL.CREDENTIAL.DETAILS.ISSUED_BY()}
+              {issuer}
+            </p>
+          {/if}
+          {#if validation && domain}
+            <div class="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 pt-[10px]">
+              <p class="text-[13px]/[20px] font-normal text-slate-500">{domain}</p>
+              <span class="text-[13px]/[20px] text-slate-300 dark:text-slate-600" aria-hidden="true">·</span>
+              <DomainPill status={validation.status} />
+            </div>
+          {/if}
+        </div>
       </div>
-    </div>
 
-    <!-- Page background is `background-alt` (white), so the claim cards' own `bg-background` reads, as on the credential page. -->
-    {#if hasClaims}
-      <div class="flex grow flex-col p-4">
-        <DefaultRenderer credential={certification.credential} />
+      <div class="mt-4">
+        <CertificationOverview credential={certification.credential} logoId={imageId} />
       </div>
-    {/if}
+
+      {#if hasClaims}
+        <div class="mt-4">
+          <DefaultRenderer credential={certification.credential} />
+        </div>
+      {/if}
+    </div>
   {/if}
 </div>
 

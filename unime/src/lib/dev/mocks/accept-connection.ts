@@ -1,3 +1,4 @@
+import type { CredentialStatus } from '@bindings/credentials/CredentialStatus';
 import type { EventType } from '@bindings/history/EventType';
 import type { HistoryCredential } from '@bindings/history/HistoryCredential';
 import type { HistoryEvent } from '@bindings/history/HistoryEvent';
@@ -39,11 +40,13 @@ const certification = (
   // `unknown` rather than a claims type: `data` is `any` on the wire, and some fixtures
   // deliberately pass a malformed subject.
   credentialSubject: unknown = undefined,
+  credential_status: CredentialStatus | undefined = undefined,
 ): Certification => ({
   credential: {
     id: slug(name),
     format: { format: 'jwt_vc_json' },
     issuer_name: issuer ?? '',
+    ...(credential_status ? { credential_status } : {}),
     data: {
       type: ['VerifiableCredential'],
       issuer: 'did:web:iso.org',
@@ -131,6 +134,16 @@ export const mocks = {
   'certs-preview': { ...base, linked_verifiable_presentations: certifications.slice(0, 3) },
   // Over PREVIEW_COUNT: the "Show more" link appears and the sub-route lists all ten.
   'certs-many': { ...base, linked_verifiable_presentations: certifications },
+  // Revoked certification: the detail page's status tile turns red.
+  'certs-revoked': {
+    ...base,
+    linked_verifiable_presentations: [
+      certification('ISO 27001 Certified', 'Intl. Organization for Standardization', 'iso.org', 'Success', undefined, {
+        status: 'INVALID',
+        last_checked: '2026-08-24T09:30:00Z',
+      }),
+    ],
+  },
   // Known connection with certifications: the section starts collapsed behind a count,
   // and "Show More" expands it into the section the other `certs-*` fixtures show.
   'known-certs': {
