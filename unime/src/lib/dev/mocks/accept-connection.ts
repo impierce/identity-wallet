@@ -11,8 +11,9 @@ const base: AcceptConnectionPrompt = {
   client_name: 'BestDex',
   logo_uri: 'https://bestdex.com/logo.png',
   redirect_uri: 'https://www.bestdex.com/callback',
-  connection_data: null,
-  domain_validation: { status: 'Success', url: 'https://www.bestdex.com/' },
+  // `connection_data` omitted: absent means we have never interacted with this party.
+  // `domain_validation` carries no `url` — the header renders its domain from `redirect_uri`.
+  domain_validation: { status: 'Success' },
   linked_verifiable_presentations: [],
   ecosystems: [],
 };
@@ -120,11 +121,10 @@ export const mocks = {
     ...base,
     domain_validation: {
       status: 'Failure',
-      url: 'https://www.bestdex.com/',
       message: 'No did-configuration.json found',
     },
   },
-  'unknown-domain': { ...base, domain_validation: { status: 'Unknown', url: 'https://www.bestdex.com/' } },
+  'unknown-domain': { ...base, domain_validation: { status: 'Unknown' } },
   'long-name': { ...base, client_name: 'Stichting Nederlandse Organisatie voor Wetenschappelijk Onderzoek' },
   'no-logo': { ...base, logo_uri: undefined },
   // No `redirect_uri`: the domain line disappears and the validation pill stands alone.

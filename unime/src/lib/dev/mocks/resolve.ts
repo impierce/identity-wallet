@@ -20,7 +20,10 @@ export function resolveAcceptConnectionPrompt(url: URL, appState: AppState): Acc
       return mocks[name as keyof typeof mocks];
     }
   }
-  // The cast is needed until the backend ships the new `AcceptConnection` variant;
-  // the generated bindings still describe the old shape.
-  return (appState.current_user_prompt as unknown as AcceptConnectionPrompt | null) ?? null;
+  const prompt = appState.current_user_prompt;
+  if (prompt?.type !== 'accept-connection') {
+    return null;
+  }
+// placehodler for now 
+  return { ...prompt, linked_verifiable_presentations: undefined };
 }

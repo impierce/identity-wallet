@@ -68,6 +68,7 @@ pub enum CurrentUserPrompt {
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, TS)]
+#[ts(export, export_to = "bindings/user_prompt/ConnectionData.ts")]
 pub struct ConnectionData {
     pub first_interacted_at: String,
     pub last_interacted_at: String,
@@ -75,6 +76,7 @@ pub struct ConnectionData {
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, TS)]
+#[ts(export, export_to = "bindings/user_prompt/EcosystemProfile.ts")]
 pub struct EcosystemProfile {
     pub logo_uri: Option<String>,
     pub name: String,
@@ -85,6 +87,7 @@ pub struct EcosystemProfile {
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, TS)]
+#[ts(export, export_to = "bindings/user_prompt/Member.ts")]
 pub struct Member {
     pub logo_uri: Option<String>,
     pub name: String,
