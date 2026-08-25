@@ -5,11 +5,13 @@ use crate::{
         connections::reducers::handle_siopv2_authorization_request::get_siopv2_client_metadata,
         core_utils::{ActiveFlow, CoreUtils, Oid4vciStage},
         credentials::reducers::handle_oid4vp_authorization_request::{get_oid4vp_client_metadata, ClientMetadata},
-        did::validate_linked_verifiable_presentations::validate_linked_verifiable_presentations,
+        did::validate_linked_verifiable_presentations::{
+            validate_linked_verifiable_presentations, LinkedVerifiableCredentialData,
+        },
         qr_code::{
             actions::qrcode_scanned::QrCodeScanned, reducers::read_credential_offer::get_oid4vci_client_metadata,
         },
-        user_prompt::CurrentUserPrompt,
+        user_prompt::{ConnectionData, CurrentUserPrompt},
         AppState,
     },
 };
@@ -45,9 +47,24 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
         info!("Retrieved client metadata: {client_metadata:?}");
         info!("Initialized active flow: {active_flow:?}");
 
-        let previously_connected = state
+        let connection_data = state
             .connections
-            .contains(&client_metadata.connection_url, &client_metadata.client_name);
+            .0
+            .iter()
+            .find(|conn| conn.url == client_metadata.connection_url && conn.name == client_metadata.client_name)
+            .map(|connection| {
+                let interactions = state
+                    .history
+                    .iter()
+                    .filter(|event| event.connection_id == connection.id)
+                    .cloned()
+                    .collect();
+                ConnectionData {
+                    first_interacted_at: connection.first_interacted.clone(),
+                    last_interacted_at: connection.last_interacted.clone(),
+                    interactions,
+                }
+            });
 
         let did = client_metadata.client_id.as_str();
 
@@ -98,11 +115,15 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
             .resolver()
             .await;
 
-        let linked_verifiable_presentations = validate_linked_verifiable_presentations(&resolver, did)
+        let linked_verifiable_presentations = match validate_linked_verifiable_presentations(&resolver, did)
             .await
             .into_iter()
             .flatten()
-            .collect();
+            .collect::<Vec<LinkedVerifiableCredentialData>>()
+        {
+            vec if !vec.is_empty() => Some(vec),
+            _ => None,
+        };
 
         info!("linked_verifiable_presentations: {linked_verifiable_presentations:?}");
 
@@ -112,9 +133,10 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
             client_name: client_metadata.client_name,
             logo_uri: client_metadata.logo_uri,
             redirect_uri: client_metadata.redirect_uri,
-            previously_connected,
+            connection_data,
             domain_validation,
             linked_verifiable_presentations,
+            ecosystems: None, // TODO: impl this
         });
 
         info!("Setting current user prompt to: {current_user_prompt:?}");

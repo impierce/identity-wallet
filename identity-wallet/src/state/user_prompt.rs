@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use ts_rs::TS;
 
-use crate::state::did::validate_domain_linkage::ValidationResult;
+use crate::state::{core_utils::history_event::HistoryEvent, did::validate_domain_linkage::ValidationResult};
 
 use super::did::validate_linked_verifiable_presentations::LinkedVerifiableCredentialData;
 
@@ -27,11 +27,22 @@ pub enum CurrentUserPrompt {
     AcceptConnection {
         client_name: String,
         #[ts(optional)]
+        #[serde(skip_serializing_if = "Option::is_none")]
         logo_uri: Option<String>,
+        #[ts(optional)]
+        #[serde(skip_serializing_if = "Option::is_none")]
         redirect_uri: Option<String>,
-        previously_connected: bool,
+        // The connection_data field is optional, None means that the user has never interacted with this connection before.
+        #[ts(optional)]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        connection_data: Option<ConnectionData>,
         domain_validation: Box<ValidationResult>,
-        linked_verifiable_presentations: Vec<LinkedVerifiableCredentialData>,
+        #[ts(optional)]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        linked_verifiable_presentations: Option<Vec<LinkedVerifiableCredentialData>>,
+        #[ts(optional)]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        ecosystems: Option<Vec<EcosystemProfile>>,
     },
     #[serde(rename = "credential-offer")]
     CredentialOffer {
@@ -54,6 +65,31 @@ pub enum CurrentUserPrompt {
         #[serde(default)]
         is_interactive: bool,
     },
+}
+
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq, TS)]
+pub struct ConnectionData {
+    pub first_interacted_at: String,
+    pub last_interacted_at: String,
+    pub interactions: Vec<HistoryEvent>,
+}
+
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq, TS)]
+pub struct EcosystemProfile {
+    pub logo_uri: Option<String>,
+    pub name: String,
+    pub description: Option<String>,
+    pub ecosystem_leader: Member,
+    pub member_count: usize,
+    pub members: Vec<Member>,
+}
+
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq, TS)]
+pub struct Member {
+    pub logo_uri: Option<String>,
+    pub name: String,
+    pub description: Option<String>,
+    pub domain: String,
 }
 
 #[cfg(test)]
@@ -79,13 +115,14 @@ mod tests {
             client_name: "Test Client".to_string(),
             logo_uri: None,
             redirect_uri: Some("https://example.com".to_string()),
-            previously_connected: false,
+            connection_data: None,
             domain_validation: Default::default(),
             linked_verifiable_presentations: Default::default(),
+            ecosystems: None,
         };
         assert_eq!(
             serde_json::to_string(&prompt).unwrap(),
-            r#"{"type":"accept-connection","client_name":"Test Client","logo_uri":null,"redirect_uri":"https://example.com","previously_connected":false,"domain_validation":{"status":"Unknown"},"linked_verifiable_presentations":[]}"#
+            r#"{"type":"accept-connection","client_name":"Test Client","redirect_uri":"https://example.com","domain_validation":{"status":"Unknown"}}"#
         );
     }
 }

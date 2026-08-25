@@ -11,11 +11,11 @@
     "client_name": "example.com",
     "logo_uri": null,
     "redirect_uri": "https://example.com/",
-    "previously_connected": false,
+    "connection_data": null,
     "domain_validation": {
       "status": "Unknown",
       "message": null
     },
-    "linked_verifiable_presentations": []
+    "linked_verifiable_presentations": null
   }
 }
