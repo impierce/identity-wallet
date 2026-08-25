@@ -43,6 +43,8 @@ pub struct DisplayCredential {
     #[ts(type = "{ format: string }")]
     pub format: CredentialFormats,
     pub issuer_name: String,
+    #[serde(default)]
+    pub issuer_logo_uri: Option<String>,
     // TODO: Remove this field once we fully implemented `display_claims` for all credential formats.
     #[ts(type = "any")]
     pub data: serde_json::Value,
@@ -255,6 +257,7 @@ impl VerifiableCredentialRecord {
                 },
                 // The other fields will be filled in at a later stage.
                 issuer_name: String::new(),
+                issuer_logo_uri: None,
                 connection_id: None,
                 display_name: String::new(),
                 // The credential status is None here but it will be set right after this function.

@@ -19,10 +19,11 @@ use ts_rs::TS;
 use crate::http_client::get_http_client;
 
 #[skip_serializing_none]
-#[derive(Clone, Serialize, Deserialize, Debug, PartialEq, TS, Default)]
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq, TS)]
 #[ts(export, export_to = "bindings/user_prompt/ValidationResult.ts")]
 pub struct ValidationResult {
     pub(crate) status: ValidationStatus,
+    pub(crate) url: url::Url,
     pub(crate) name: Option<String>,
     #[ts(type = "string", optional)]
     pub(crate) logo_uri: Option<url::Url>,
@@ -89,8 +90,11 @@ pub async fn validate_domain_linkage(resolver: &Resolver, url: url::Url, did: &s
         Err(err) => {
             return ValidationResult {
                 status: ValidationStatus::Unknown,
+                url,
+                name: None,
+                logo_uri: None,
+                issuance_date: None,
                 message: Some(format!("Error while fetching configuration: {err}")),
-                ..Default::default()
             };
         }
     };
@@ -102,33 +106,41 @@ pub async fn validate_domain_linkage(resolver: &Resolver, url: url::Url, did: &s
         Err(e) => {
             return ValidationResult {
                 status: ValidationStatus::Unknown,
+                url,
+                name: None,
+                logo_uri: None,
+                issuance_date: None,
                 message: Some(e.to_string()),
-                ..Default::default()
             };
         }
     };
 
     info!("Resolved document: {document:?}");
 
-    let url = identity_iota::core::Url::from(url);
-
     let res = validator.validate_linkage(
         &document,
         &domain_linkage_configuration,
-        &url,
+        &identity_iota::core::Url::from(url.clone()),
         &JwtCredentialValidationOptions::default(),
     );
 
     if res.is_ok() {
         ValidationResult {
             status: ValidationStatus::Success,
-            ..Default::default()
+            url,
+            name: None,
+            logo_uri: None,
+            issuance_date: None,
+            message: None,
         }
     } else {
         ValidationResult {
             status: ValidationStatus::Failure,
+            url,
+            name: None,
+            logo_uri: None,
+            issuance_date: None,
             message: res.err().map(|e| e.to_string()),
-            ..Default::default()
         }
     }
 }
@@ -252,18 +264,22 @@ mod tests {
 
         let resolver = Resolver::new();
 
-        let result =
-            validate_domain_linkage(&resolver, url::Url::parse(&mock_server.uri()).unwrap(), "did:foo:bar").await;
+        let url = url::Url::parse(&mock_server.uri()).unwrap();
+
+        let result = validate_domain_linkage(&resolver, url.clone(), "did:foo:bar").await;
 
         assert_eq!(
             result,
             ValidationResult {
                 status: ValidationStatus::Unknown,
+                url,
+                name: None,
+                logo_uri: None,
+                issuance_date: None,
                 message: Some(
                     "Error while fetching configuration: failed to deserialize DomainLinkageConfiguration from JSON"
                         .to_string()
                 ),
-                ..Default::default()
             }
         );
     }
@@ -315,9 +331,11 @@ mod tests {
 
         let resolver = Resolver::new();
 
+        let url = url::Url::parse(&mock_server.uri()).unwrap();
+
         let result = validate_domain_linkage(
             &resolver,
-            url::Url::parse(&mock_server.uri()).unwrap(),
+            url.clone(),
             "did:key:z6MkiTBz1ymuepAQ4HEHYSF1H8quG5GLVVQR3djdX3mDooWp",
         )
         .await;
@@ -326,8 +344,11 @@ mod tests {
             result,
             ValidationResult {
                 status: ValidationStatus::Failure,
+                url,
+                name: None,
+                logo_uri: None,
+                issuance_date: None,
                 message: Some("invalid semantic structure of the domain linkage configuration".to_string()),
-                ..Default::default()
             }
         );
     }
@@ -358,7 +379,7 @@ mod tests {
 
         let result = validate_domain_linkage(
             &resolver,
-            url,
+            url.clone(),
             "did:key:z6MkiTBz1ymuepAQ4HEHYSF1H8quG5GLVVQR3djdX3mDooWp",
         )
         .await;
@@ -367,8 +388,11 @@ mod tests {
             result,
             ValidationResult {
                 status: ValidationStatus::Failure,
+                url,
+                name: None,
+                logo_uri: None,
+                issuance_date: None,
                 message: Some("invalid semantic structure of the domain linkage configuration".to_string()),
-                ..Default::default()
             }
         );
     }

@@ -125,7 +125,19 @@
 
       <!-- Linked Verifiable Presentations -->
       {#each linked_verifiable_presentations as presentation}
-        {#if presentation.name}
+        {#if presentation.credential}
+          {@const issuanceDate =
+            presentation?.credential?.metadata?.date_issued && profile_settings.locale
+              ? formatDate(presentation.credential.metadata.date_issued, profile_settings.locale)
+              : undefined}
+          <StatusIndicator
+            status="Success"
+            title={presentation?.credential?.issuer_name}
+            description={`${$LL.SORT.PREFERENCES.DATE_ISSUED()}: ${issuanceDate}`}
+            logoUrl={presentation?.credential?.issuer_logo_uri}
+          />
+        {/if}
+        <!-- {#if presentation.name}
           {@const issuanceDate =
             presentation.issuance_date && profile_settings.locale
               ? formatDate(presentation.issuance_date, profile_settings.locale)
@@ -136,7 +148,7 @@
             description={`${$LL.SORT.PREFERENCES.DATE_ISSUED()}: ${issuanceDate}`}
             logoUrl={presentation.logo_uri}
           />
-        {/if}
+        {/if} -->
       {/each}
     </div>
   </div>

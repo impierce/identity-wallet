@@ -6,7 +6,7 @@ use crate::{
         core_utils::{
             helpers::{validate_credential_types, validate_jwt_vc_json},
             history_event::{EventType, HistoryCredential, HistoryEvent},
-            ActiveFlow, CoreUtils, DateUtils, IdentityManager, Oid4vciStage,
+            ActiveFlow, CoreUtils, DateUtils, Oid4vciStage,
         },
         credentials::{
             actions::authorization_code_received::CodeReceived,
@@ -16,6 +16,7 @@ use crate::{
         user_prompt::CurrentUserPrompt,
         AppState, UNIME_CLIENT_ID, UNIME_REDIRECT_URI,
     },
+    subject::Subject,
 };
 use log::{debug, info, warn};
 use oauth_tsl::{status_list::StatusType, tokens::referenced_token::StatusClaim};
@@ -332,7 +333,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             // If setting the credential status fails we currently catch the error and simply set the credential status field to None.
             // TODO: we might want to inform the user of this before accepting the credential already
             verifiable_credential_record.display_credential.credential_status =
-                get_credential_status(&verifiable_credential_record, identity_manager).await;
+                get_credential_status(&verifiable_credential_record, &identity_manager.subject).await;
 
             // Set the issuer name of the credential.
             verifiable_credential_record.display_credential.issuer_name = issuer_name.clone();
@@ -476,9 +477,9 @@ fn get_credential_display_name(
 /// An error is returned when:
 /// 1. The credential does not contain a status claim in the JWT root or a credentialStatus property in the VC.
 /// 2. The status claim/property does not use the OAuth Token Status List mechanism.
-async fn get_credential_status(
+pub async fn get_credential_status(
     verifiable_credential_record: &VerifiableCredentialRecord,
-    identity_manager: &IdentityManager,
+    subject: &Subject,
 ) -> Option<CredentialStatus> {
     let status_value = get_unverified_jwt_claims(&verifiable_credential_record.verifiable_credential)
         .ok() // convert Result → Option
@@ -516,7 +517,7 @@ async fn get_credential_status(
         last_checked: String::new(),
     };
 
-    let status = match fetch_credential_status(&credential_status_data, identity_manager).await {
+    let status = match fetch_credential_status(&credential_status_data, subject).await {
         Ok(status) => status,
         Err(_) => {
             warn!("Failed to fetch credential status");

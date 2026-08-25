@@ -70,52 +70,54 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
 
         let state_guard = state.core_utils.managers.lock().await;
 
+        let url_str = if let Some(redirect_uri) = &client_metadata.redirect_uri {
+            redirect_uri.clone()
+        } else {
+            client_metadata.connection_url.clone()
+        };
+
+        let url = url::Url::parse(&url_str).map_err(|_| {
+            Error(format!(
+                "`redirect_uri` could not be parsed to url::Url: `{:?}`", // TODO: improve error message
+                url_str.clone()
+            ))
+        })?;
+
+        let subject = state_guard
+            .identity_manager
+            .as_ref()
+            .ok_or(AppError::MissingManagerError("identity"))?
+            .subject
+            .clone();
+
         let domain_validation = {
             #[cfg(not(feature = "test_utils"))]
             {
                 use crate::state::did::validate_domain_linkage::validate_domain_linkage;
 
-                let url_str = if let Some(redirect_uri) = &client_metadata.redirect_uri {
-                    redirect_uri.clone()
-                } else {
-                    client_metadata.connection_url.clone()
-                };
+                let resolver = subject.resolver().await;
 
-                let url = url::Url::parse(&url_str).map_err(|_| {
-                    Error(format!(
-                        "`redirect_uri` could not be parsed to url::Url: `{:?}`", // TODO: improve error message
-                        url_str.clone()
-                    ))
-                })?;
-
-                let resolver = &state_guard
-                    .identity_manager
-                    .as_ref()
-                    .ok_or(MissingManagerError("identity"))?
-                    .subject
-                    .resolver()
-                    .await;
-
-                Box::new(validate_domain_linkage(resolver, url, did).await)
+                Box::new(validate_domain_linkage(resolver.as_ref(), url, did).await)
             }
             #[cfg(feature = "test_utils")]
             {
                 // Skip validation during tests
-                Default::default()
+
+                use crate::state::did::validate_domain_linkage::{ValidationResult, ValidationStatus};
+                Box::new(ValidationResult {
+                    status: ValidationStatus::default(),
+                    url,
+                    name: None,
+                    logo_uri: None,
+                    issuance_date: None,
+                    message: None,
+                })
             }
         };
 
         info!("Domain validation result: {domain_validation:?}");
 
-        let resolver = state_guard
-            .identity_manager
-            .as_ref()
-            .ok_or(MissingManagerError("identity"))?
-            .subject
-            .resolver()
-            .await;
-
-        let linked_verifiable_presentations = match validate_linked_verifiable_presentations(&resolver, did)
+        let linked_verifiable_presentations = match validate_linked_verifiable_presentations(&subject, did)
             .await
             .into_iter()
             .flatten()

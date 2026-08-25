@@ -111,6 +111,7 @@ mod tests {
                     id: "1".to_string(),
                     format: CredentialFormats::default(),
                     issuer_name: "Example Organization".to_string(),
+                    issuer_logo_uri: None,
                     data: serde_json::json!({"last_name": "Ferris"}),
                     display_claims: vec![],
                     metadata: CredentialMetadata {
@@ -127,6 +128,7 @@ mod tests {
                     id: "2".to_string(),
                     format: CredentialFormats::default(),
                     issuer_name: "Example Organization".to_string(),
+                    issuer_logo_uri: None,
                     data: serde_json::json!({"last_name": "John"}),
                     display_claims: vec![],
                     metadata: CredentialMetadata {
@@ -143,6 +145,7 @@ mod tests {
                     id: "3".to_string(),
                     format: CredentialFormats::default(),
                     issuer_name: "John Organization".to_string(),
+                    issuer_logo_uri: None,
                     data: serde_json::json!({"last_name": "Ferris"}),
                     display_claims: vec![],
                     metadata: CredentialMetadata {
