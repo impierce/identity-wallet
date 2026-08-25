@@ -5,12 +5,13 @@ use crate::{
     http_client::get_http_client_builder,
     state::{
         actions::{listen, Action},
-        core_utils::{DateUtils, IdentityManager},
+        core_utils::DateUtils,
         credentials::{
             actions::refresh_credential_status::RefreshCredentialStatus, CredentialStatus, VerifiableCredentialRecord,
         },
         AppState,
     },
+    subject::Subject,
 };
 use jsonwebtoken::{decode_header, Algorithm, DecodingKey};
 use log::{info, warn};
@@ -49,16 +50,18 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
             }
         };
 
-        let identity_manager = state_guard
+        let subject = state_guard
             .identity_manager
             .as_ref()
-            .ok_or(AppError::MissingManagerError("identity"))?;
+            .ok_or(AppError::MissingManagerError("identity"))?
+            .subject
+            .clone();
 
         let debug_timestamp_before = chrono::Local::now();
 
         let display_name = credential.display_name.clone();
 
-        match fetch_credential_status(credential_status_data, identity_manager).await {
+        match fetch_credential_status(credential_status_data, &subject).await {
             Ok(status) => {
                 info!("Successfully fetched credential status for credential with id: `{credential_id}`: `{status:?}` (previous status: `{:?}`)", credential_status_data.status);
                 credential_status_data.last_checked = DateUtils::new_date_string();
@@ -155,7 +158,7 @@ pub async fn refresh_credential_status(state: AppState, action: Action) -> Resul
 #[tracing::instrument(skip_all, err)]
 pub async fn fetch_credential_status(
     credential_status_data: &CredentialStatus,
-    identity_manager: &IdentityManager,
+    subject: &Subject,
 ) -> Result<StatusType, AppError> {
     let status_list_jwt = fetch_status_list(
         credential_status_data.uri.as_str(),
@@ -168,11 +171,11 @@ pub async fn fetch_credential_status(
     let key_id =
         extract_normalized_did_kid_from_jwt(&status_list_jwt).map_err(|_| AppError::GetCredentialStatusError)?;
 
-    let public_key = identity_manager
-        .subject
+    let public_key = subject
         .public_key(&key_id)
         .await
         .map_err(|_| AppError::GetCredentialStatusError)?;
+
     let decoding_key = match jwt_header.alg {
         Algorithm::EdDSA => DecodingKey::from_ed_der(&public_key),
         Algorithm::ES256 => DecodingKey::from_ec_der(&public_key),

@@ -98,6 +98,7 @@ pub struct Member {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::state::did::validate_domain_linkage::ValidationStatus;
 
     #[test]
     fn test_serialize_current_user_prompt() {
@@ -119,13 +120,20 @@ mod tests {
             logo_uri: None,
             redirect_uri: Some("https://example.com".to_string()),
             connection_data: None,
-            domain_validation: Default::default(),
+            domain_validation: Box::new(ValidationResult {
+                status: ValidationStatus::default(),
+                url: "https://example.com".parse().unwrap(),
+                name: None,
+                logo_uri: None,
+                issuance_date: None,
+                message: None,
+            }),
             linked_verifiable_presentations: Default::default(),
             ecosystems: None,
         };
         assert_eq!(
             serde_json::to_string(&prompt).unwrap(),
-            r#"{"type":"accept-connection","client_name":"Test Client","redirect_uri":"https://example.com","domain_validation":{"status":"Unknown"}}"#
+            r#"{"type":"accept-connection","client_name":"Test Client","logo_uri":null,"redirect_uri":"https://example.com","previously_connected":false,"domain_validation":{"status":"Unknown","url":"https://example.com/"},"linked_verifiable_presentations":[]}"#
         );
     }
 }
