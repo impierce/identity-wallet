@@ -1,8 +1,9 @@
 import type { AppState } from '@bindings/AppState';
-
-import type { AcceptConnectionPrompt } from '$lib/dev/accept-connection.types';
+import type { CurrentUserPrompt } from '@bindings/user_prompt/CurrentUserPrompt';
 
 import { mocks } from './accept-connection';
+
+export type AcceptConnectionPrompt = Extract<CurrentUserPrompt, { type: 'accept-connection' }>;
 
 /**
  * Returns the mock prompt named by `?mock=` when dev mode is on.
@@ -21,9 +22,5 @@ export function resolveAcceptConnectionPrompt(url: URL, appState: AppState): Acc
     }
   }
   const prompt = appState.current_user_prompt;
-  if (prompt?.type !== 'accept-connection') {
-    return null;
-  }
-// placehodler for now 
-  return { ...prompt, linked_verifiable_presentations: undefined };
+  return prompt?.type === 'accept-connection' ? prompt : null;
 }

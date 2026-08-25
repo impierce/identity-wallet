@@ -7,13 +7,9 @@
 
   import { BankLightIcon, SealCheckRegularIcon, SealWarningDuotoneIcon } from '$lib/icons';
   import { state as appState } from '$lib/stores';
-  import { formatDate, getImageAsset } from '$lib/utils';
+  import { formatDate, getImageAsset, hash } from '$lib/utils';
 
   export let credential: DisplayCredential;
-
-  // The certification's own logo, downloaded to `assets/tmp` by the backend. A wallet
-  // credential resolves its issuer logo from the connection instead.
-  export let logoId: string | undefined = undefined;
 
   // Url to cached issuer logo (if available).
   let issuerLogoUrl: string | null = null;
@@ -27,8 +23,8 @@
   }
 
   onMount(async () => {
-    if (logoId) {
-      issuerLogoUrl = await getImageAsset(logoId, true);
+    if (credential.issuer_logo_uri) {
+      issuerLogoUrl = await getImageAsset(hash(credential.issuer_logo_uri), true);
     }
   });
 </script>
@@ -44,10 +40,11 @@ prompt. Three deliberate differences, all forced by the context:
 - No self-issued branch. A certification is always issued by a third party, so the avatar and
   "Unverified" paths are unreachable here.
 - The issuer tile does not navigate. Leaving the prompt subtree cancels the connection request.
+- The issuer logo comes from `issuer_logo_uri` in `assets/tmp`, not from the connection asset:
+  a certification arrives on the prompt, before any connection exists.
 
 ### Props
 - credential
-- logoId (optional)
 -->
 <div class="grid grid-cols-2 gap-4 bg-background-alt text-xs font-medium">
   <div class="flex flex-col items-center gap-1">

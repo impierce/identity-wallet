@@ -10,11 +10,11 @@
   import { resolveAcceptConnectionPrompt } from '$lib/dev/mocks/resolve';
   import { ShieldCheckFillIcon } from '$lib/icons';
   import { state as appState } from '$lib/stores';
+  import { hash } from '$lib/utils';
   import { hostname } from '$lib/utils/url';
 
   import DefaultRenderer from '../../../../credentials/[id]/DefaultRenderer.svelte';
   import DomainPill from '../../DomainPill.svelte';
-  import { certificationLogoId } from '../../logo.js';
   import CertificationOverview from './CertificationOverview.svelte';
 
   // Read from the store rather than taking props, as the sibling list page does.
@@ -30,7 +30,9 @@
   $: validation = certification?.issuer_domain_validations.at(0);
   $: issuer = validation?.name;
   $: domain = validation ? hostname(validation.url) : undefined;
-  $: imageId = certification ? certificationLogoId(certification) : undefined;
+  // See `CertificationCard`: re-hash the issuer logo URL to find what the backend downloaded.
+  $: logoUri = certification?.credential.issuer_logo_uri;
+  $: imageId = logoUri ? hash(logoUri) : undefined;
 
   // A tinted badge when there is no logo (or it
   // fails to load), a plain backdrop for a real one.
@@ -96,7 +98,7 @@
       </div>
 
       <div class="mt-4">
-        <CertificationOverview credential={certification.credential} logoId={imageId} />
+        <CertificationOverview credential={certification.credential} />
       </div>
 
       {#if hasClaims}

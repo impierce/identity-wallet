@@ -1,19 +1,19 @@
 <script lang="ts">
   import { page } from '$app/state';
 
+  import type { LinkedVerifiableCredentialData } from '@bindings/user_prompt/LinkedVerifiableCredentialData';
+
   import { Image } from '$lib/components';
-  import type { Certification } from '$lib/dev/accept-connection.types';
   import { ShieldCheckFillIcon, ShieldCheckRegularIcon, WarningRegularIcon } from '$lib/icons';
+  import { hash } from '$lib/utils';
   import { hostname } from '$lib/utils/url';
 
-  import { certificationLogoId } from './logo.js';
-
-  export let certification: Certification;
+  export let certification: LinkedVerifiableCredentialData;
 
   // Carry `?mock=` across so DEV previews survive the navigation.
   $: href = `/prompt/accept-connection/certifications/${certification.credential.id}${page.url.search}`;
 
-  $: imageId = certificationLogoId(certification);
+  $: imageId = certification.credential.issuer_logo_uri ? hash(certification.credential.issuer_logo_uri) : undefined;
 
   // The design shows a single domain; an issuer may link several, each with its own result.
   // Showing the first is deliberate.

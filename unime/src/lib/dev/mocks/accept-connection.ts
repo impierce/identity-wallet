@@ -2,18 +2,17 @@ import type { CredentialStatus } from '@bindings/credentials/CredentialStatus';
 import type { EventType } from '@bindings/history/EventType';
 import type { HistoryCredential } from '@bindings/history/HistoryCredential';
 import type { HistoryEvent } from '@bindings/history/HistoryEvent';
+import type { LinkedVerifiableCredentialData } from '@bindings/user_prompt/LinkedVerifiableCredentialData';
 import type { ValidationStatus } from '@bindings/user_prompt/ValidationStatus';
 
-import type { AcceptConnectionPrompt, Certification } from '$lib/dev/accept-connection.types';
+import type { AcceptConnectionPrompt } from './resolve';
 
 const base: AcceptConnectionPrompt = {
   type: 'accept-connection',
   client_name: 'BestDex',
   logo_uri: 'https://bestdex.com/logo.png',
   redirect_uri: 'https://www.bestdex.com/callback',
-  // `connection_data` omitted: absent means we have never interacted with this party.
-  // `domain_validation` carries no `url` — the header renders its domain from `redirect_uri`.
-  domain_validation: { status: 'Success' },
+  domain_validation: { status: 'Success', url: 'https://www.bestdex.com/' },
   linked_verifiable_presentations: [],
   ecosystems: [],
 };
@@ -42,11 +41,12 @@ const certification = (
   // deliberately pass a malformed subject.
   credentialSubject: unknown = undefined,
   credential_status: CredentialStatus | undefined = undefined,
-): Certification => ({
+): LinkedVerifiableCredentialData => ({
   credential: {
     id: slug(name),
     format: { format: 'jwt_vc_json' },
     issuer_name: issuer ?? '',
+    issuer_logo_uri: null,
     ...(credential_status ? { credential_status } : {}),
     data: {
       type: ['VerifiableCredential'],
@@ -61,6 +61,15 @@ const certification = (
     display_name: name,
   },
   issuer_domain_validations: domain ? [{ status, url: `https://${domain}/`, ...(issuer ? { name: issuer } : {}) }] : [],
+});
+
+/** Marks a certification as having an issuer logo the backend downloaded. */
+const withIssuerLogo = (
+  certification: LinkedVerifiableCredentialData,
+  url: string,
+): LinkedVerifiableCredentialData => ({
+  ...certification,
+  credential: { ...certification.credential, issuer_logo_uri: url },
 });
 
 const historyCredential = (title: string): HistoryCredential => ({
@@ -98,7 +107,7 @@ const connected = {
   interactions,
 };
 
-const certifications: Certification[] = [
+const certifications: LinkedVerifiableCredentialData[] = [
   certification('ISO 27001 Certified', 'Intl. Organization for Standardization', 'iso.org', 'Failure'),
   certification('SOC 2 Type II', 'AICPA', 'aicpa.com'),
   certification('eIDAS Qualified Trust Service Provider', 'European Commission', 'ec.europa.eu'),
@@ -121,10 +130,11 @@ export const mocks = {
     ...base,
     domain_validation: {
       status: 'Failure',
+      url: 'https://www.bestdex.com/',
       message: 'No did-configuration.json found',
     },
   },
-  'unknown-domain': { ...base, domain_validation: { status: 'Unknown' } },
+  'unknown-domain': { ...base, domain_validation: { status: 'Unknown', url: 'https://www.bestdex.com/' } },
   'long-name': { ...base, client_name: 'Stichting Nederlandse Organisatie voor Wetenschappelijk Onderzoek' },
   'no-logo': { ...base, logo_uri: undefined },
   // No `redirect_uri`: the domain line disappears and the validation pill stands alone.
@@ -206,16 +216,16 @@ export const mocks = {
       certification('Malformed Certification', 'Some Authority', 'authority.example', 'Success', null),
     ],
   },
-  // The logo URL lives in the subject's `image` claim. This still renders the badge in DEV:
-  // `<Image>` looks for `assets/tmp/<hash(url)>`, which only exists once the backend has
-  // downloaded the file. Kept so the shape is represented and `certificationLogoId` is exercised.
+  // An issuer logo the backend has resolved and downloaded. This still renders the fallback
+  // badge in DEV: `<Image>` looks for `assets/tmp/<hash(url)>`, which only exists once the
+  // backend has written the file. Kept so the shape is represented.
   'cert-logo': {
     ...base,
     linked_verifiable_presentations: [
-      certification('ISO 27001 Certified', 'Intl. Organization for Standardization', 'iso.org', 'Success', {
-        ...defaultClaims('ISO 27001 Certified', 'Intl. Organization for Standardization'),
-        image: 'https://iso.org/badge.png',
-      }),
+      withIssuerLogo(
+        certification('ISO 27001 Certified', 'Intl. Organization for Standardization', 'iso.org'),
+        'https://iso.org/badge.png',
+      ),
     ],
   },
 } satisfies Record<string, AcceptConnectionPrompt>;
