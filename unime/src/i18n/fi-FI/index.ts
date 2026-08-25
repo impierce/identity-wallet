@@ -334,7 +334,7 @@ const fi_FI = {
       NAVBAR_TITLE: 'Yhteyspyyntö',
       TITLE: 'Uusi yhteys',
       DESCRIPTION: 'Hyväksy vain yhteydet jotka tunnistat ja joihin luotat',
-      CONNECTED: 'Yhdistetty',
+      KNOWN_CONNECTION: 'Tunnettu yhteys',
       FIRST_INTERACTION: 'Ensimmäinen vuorovaikutus: {duration}',
       LAST_INTERACTION: 'Viimeisin vuorovaikutus: {date}',
       INTERACTIONS: 'Vuorovaikutukset',

@@ -132,7 +132,7 @@
           </span>
           <div class="flex flex-col">
             <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
-              {$LL.SCAN.CONNECTION_REQUEST.CONNECTED()}
+              {$LL.SCAN.CONNECTION_REQUEST.KNOWN_CONNECTION()}
             </p>
             <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
               {$LL.SCAN.CONNECTION_REQUEST.FIRST_INTERACTION({

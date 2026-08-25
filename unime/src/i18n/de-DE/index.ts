@@ -333,7 +333,7 @@ const de_DE = {
       NAVBAR_TITLE: 'Verbindungsanfrage',
       TITLE: 'Neue Verbindung',
       DESCRIPTION: 'Akzeptiere nur Verbindungen, die du erwartest und denen du vertraust.',
-      CONNECTED: 'Verbunden',
+      KNOWN_CONNECTION: 'Bekannte Verbindung',
       FIRST_INTERACTION: 'Erste Interaktion: {duration}',
       LAST_INTERACTION: 'Letzte Interaktion: {date}',
       INTERACTIONS: 'Interaktionen',

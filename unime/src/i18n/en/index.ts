@@ -332,7 +332,7 @@ const en = {
       NAVBAR_TITLE: 'Connection Request',
       TITLE: 'New connection',
       DESCRIPTION: 'Only accept new connections that you recognize and trust',
-      CONNECTED: 'Connected',
+      KNOWN_CONNECTION: 'Known connection',
       FIRST_INTERACTION: 'First interaction: {duration:string}',
       LAST_INTERACTION: 'Last interaction: {date:string}',
       INTERACTIONS: 'Interactions',

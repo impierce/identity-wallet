@@ -334,7 +334,7 @@ const es_ES = {
       NAVBAR_TITLE: 'Solicitud de conexión',
       TITLE: 'Nueva conexión',
       DESCRIPTION: 'Acepta únicamente las nuevas conexiones que reconozcas y en las que confíes',
-      CONNECTED: 'Conectado',
+      KNOWN_CONNECTION: 'Conexión conocida',
       FIRST_INTERACTION: 'Primera interacción: {duration}',
       LAST_INTERACTION: 'Última interacción: {date}',
       INTERACTIONS: 'Interacciones',

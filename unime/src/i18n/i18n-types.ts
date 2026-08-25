@@ -873,9 +873,9 @@ type RootTranslation = {
 			 */
 			DESCRIPTION: string
 			/**
-			 * C​o​n​n​e​c​t​e​d
+			 * K​n​o​w​n​ ​c​o​n​n​e​c​t​i​o​n
 			 */
-			CONNECTED: string
+			KNOWN_CONNECTION: string
 			/**
 			 * F​i​r​s​t​ ​i​n​t​e​r​a​c​t​i​o​n​:​ ​{​d​u​r​a​t​i​o​n​}
 			 * @param {string} duration
@@ -2445,9 +2445,9 @@ export type TranslationFunctions = {
 			 */
 			DESCRIPTION: () => LocalizedString
 			/**
-			 * Connected
+			 * Known connection
 			 */
-			CONNECTED: () => LocalizedString
+			KNOWN_CONNECTION: () => LocalizedString
 			/**
 			 * First interaction: {duration}
 			 */

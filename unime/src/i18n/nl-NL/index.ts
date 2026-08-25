@@ -333,7 +333,7 @@ const nl_NL = {
       NAVBAR_TITLE: 'Credential Aanvraag',
       TITLE: 'Nieuwe connectie',
       DESCRIPTION: 'Accepteer alleen nieuwe connecties die je herkent en vertrouwt',
-      CONNECTED: 'Verbonden',
+      KNOWN_CONNECTION: 'Bekende connectie',
       FIRST_INTERACTION: 'Eerste interactie: {duration}',
       LAST_INTERACTION: 'Laatste interactie: {date}',
       INTERACTIONS: 'Interacties',

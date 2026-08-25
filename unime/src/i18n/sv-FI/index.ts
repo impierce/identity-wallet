@@ -333,7 +333,7 @@ const sv_FI = {
       NAVBAR_TITLE: 'Anslutningsförfrågan',
       TITLE: 'Ny anslutning',
       DESCRIPTION: 'Acceptera bara anslutningar du känner igen och litar på',
-      CONNECTED: 'Ansluten',
+      KNOWN_CONNECTION: 'Känd anslutning',
       FIRST_INTERACTION: 'Första interaktionen: {duration}',
       LAST_INTERACTION: 'Senaste interaktionen: {date}',
       INTERACTIONS: 'Interaktioner',
