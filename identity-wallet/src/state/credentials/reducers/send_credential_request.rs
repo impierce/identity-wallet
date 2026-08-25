@@ -2,7 +2,7 @@ use crate::oid4vci::authorization_request::CodeChallengeMethod;
 use crate::state::core_utils::helpers::download_logo;
 use crate::state::core_utils::{ActiveFlow, Oid4vciStage};
 use crate::state::credentials::reducers::handle_oid4vp_authorization_request::{
-    get_oid4vp_client_name_and_logo_uri, OID4VPClientMetadata,
+    get_oid4vp_client_metadata, ClientMetadata,
 };
 use crate::state::credentials::reducers::send_token_request::send_token_request;
 use crate::state::user_prompt::CurrentUserPrompt;
@@ -332,12 +332,9 @@ pub async fn send_credential_request(state: AppState, action: Action) -> Result<
                         info!("Evaluated {} VCs matching interactive OID4VP request", uuids.len());
                         debug!("Matched VC UUIDs for interactive authorization: {uuids:?}");
 
-                        let OID4VPClientMetadata {
-                            client_name,
-                            logo_uri,
-                            connection_url: _,
-                            client_id: _,
-                        } = get_oid4vp_client_name_and_logo_uri(&oid4vp_authorization_request);
+                        let ClientMetadata {
+                            client_name, logo_uri, ..
+                        } = get_oid4vp_client_metadata(&oid4vp_authorization_request).await?;
 
                         info!("Interactive OID4VP client metadata: client_name={client_name:?}, logo_uri={logo_uri:?}");
 

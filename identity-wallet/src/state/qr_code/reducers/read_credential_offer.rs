@@ -2,10 +2,11 @@ use std::collections::HashMap;
 
 use crate::{
     error::AppError::{self, *},
+    http_client::get_http_client,
     state::{
-        actions::{listen, Action},
-        core_utils::{helpers::download_logo, ActiveFlow, CoreUtils, Oid4vciStage},
-        qr_code::actions::qrcode_scanned::QrCodeScanned,
+        actions::Action,
+        core_utils::{helpers::download_logo, ActiveFlow},
+        credentials::reducers::handle_oid4vp_authorization_request::ClientMetadata,
         user_prompt::CurrentUserPrompt,
         AppState,
     },
@@ -14,132 +15,165 @@ use crate::{
 use log::{debug, info, warn};
 use oid4vc::oid4vci::{
     credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject,
-    credential_offer::{CredentialOffer, CredentialOfferParameters},
+    credential_offer::CredentialOfferParameters,
 };
+use serde_json::Value;
 
-#[tracing::instrument(skip_all, err)]
-pub async fn read_credential_offer(state: AppState, action: Action) -> Result<AppState, AppError> {
+pub async fn read_credential_offer(state: AppState, _action: Action) -> Result<AppState, AppError> {
+    info!("read_credential_offer");
+
     // Sometimes reducers are connected to actions that they shouldn't execute
     // Therefore its also checked if it can parse to credential offer query
     // TODO find a better way to connect to the right reducer
-    if let Some(credential_offer_uri) =
-        listen::<QrCodeScanned>(action).and_then(|payload| payload.form_urlencoded.parse::<CredentialOffer>().ok())
+    let credential_offer = match state.core_utils.active_flow.clone() {
+        Some(ActiveFlow::Oid4vciOffer { credential_offer, .. }) => credential_offer,
+        // Not a OID4VCI flow, let other reducers handle this action.
+        _ => return Ok(state),
+    };
+
+    let state_guard = state.core_utils.managers.lock().await;
+    let wallet = &state_guard
+        .identity_manager
+        .as_ref()
+        .ok_or(MissingManagerError("identity"))?
+        .wallet;
+
+    // The credential offer contains a credential issuer url.
+    let credential_issuer_url = credential_offer.credential_issuer.clone();
+
+    info!("credential issuer url: {credential_issuer_url:?}");
+
+    let credential_issuer_metadata = wallet
+        .get_credential_issuer_metadata(credential_issuer_url.clone())
+        .await
+        .ok();
+
+    info!("credential issuer metadata: {credential_issuer_metadata:?}");
+
+    let credential_configurations: HashMap<String, CredentialConfigurationsSupportedObject> = credential_offer
+        .credential_configuration_ids
+        .iter()
+        .filter_map(|credential_configuration_id| {
+            credential_issuer_metadata
+                .as_ref()
+                .and_then(|credential_issuer_metadata| {
+                    credential_issuer_metadata
+                        .credential_configurations_supported
+                        .get(credential_configuration_id)
+                        .map(|credential_configuration| {
+                            (credential_configuration_id.clone(), credential_configuration.clone())
+                        })
+                })
+        })
+        .collect();
+
+    let tx_code = credential_offer
+        .grants
+        .as_ref()
+        .and_then(|grants| grants.pre_authorized_code.clone())
+        .and_then(|pre_authorized_code| pre_authorized_code.tx_code);
+
+    download_credential_logos(&credential_configurations).await;
+
+    drop(state_guard);
+
+    if let Some(CurrentUserPrompt::AcceptConnection {
+        client_name, logo_uri, ..
+    }) = &state.current_user_prompt
     {
-        let state_guard = state.core_utils.managers.lock().await;
-        let wallet = &state_guard
-            .identity_manager
-            .as_ref()
-            .ok_or(MissingManagerError("identity"))?
-            .wallet;
-
-        let credential_offer: CredentialOfferParameters = match credential_offer_uri {
-            CredentialOffer::CredentialOffer(credential_offer) => *credential_offer,
-            CredentialOffer::CredentialOfferUri(credential_offer_uri) => wallet
-                .get_credential_offer(credential_offer_uri)
-                .await
-                .map_err(GetCredentialOfferError)?,
-        };
-
-        // The credential offer contains a credential issuer url.
-        let credential_issuer_url = credential_offer.credential_issuer.clone();
-        debug!("Parsed credential offer parameters: {credential_offer:?}");
-
-        let credential_issuer_metadata = wallet
-            .get_credential_issuer_metadata(credential_issuer_url.clone())
-            .await
-            .ok();
-
-        debug!("Fetched credential issuer metadata: {credential_issuer_metadata:?}");
-
-        let credential_configurations: HashMap<String, CredentialConfigurationsSupportedObject> = credential_offer
-            .credential_configuration_ids
-            .iter()
-            .filter_map(|credential_configuration_id| {
-                credential_issuer_metadata
-                    .as_ref()
-                    .and_then(|credential_issuer_metadata| {
-                        credential_issuer_metadata
-                            .credential_configurations_supported
-                            .get(credential_configuration_id)
-                            .map(|credential_configuration| {
-                                (credential_configuration_id.clone(), credential_configuration.clone())
-                            })
-                    })
-            })
-            .collect();
-
-        // Get the credential issuer display if present.
-        let display = credential_issuer_metadata
-            .as_ref()
-            .and_then(|credential_issuer_metadata| {
-                credential_issuer_metadata
-                    .display
-                    .as_ref()
-                    .map(|display| display.first().cloned())
-            })
-            .flatten();
-
-        let tx_code = credential_offer
-            .grants
-            .as_ref()
-            .and_then(|grants| grants.pre_authorized_code.clone())
-            .and_then(|pre_authorized_code| pre_authorized_code.tx_code);
-
-        // Get the credential issuer name and logo uri or use the credential issuer url.
-        let (issuer_name, logo_uri) = display
-            .map(|display| {
-                let issuer_name = display["name"]
-                    .as_str()
-                    // TODO(NGDIL): remove this NGDIL specific logic once: https://staging.api.ngdil.com/.well-known/openid-credential-issuer is fixed.
-                    .or_else(|| display["client_name"].as_str())
-                    .map(ToString::to_string)
-                    .unwrap_or(credential_issuer_url.to_string());
-
-                let logo_uri = display["logo"]["uri"]
-                    .as_str()
-                    // TODO(NGDIL): remove this NGDIL specific logic once: https://staging.api.ngdil.com/.well-known/openid-credential-issuer is fixed.
-                    .or_else(|| display["logo_uri"].as_str())
-                    .map(ToString::to_string);
-
-                (issuer_name, logo_uri)
-            })
-            .unwrap_or((credential_issuer_url.to_string(), None));
-
-        info!(
-            "Processed credential offer for `{issuer_name}` ({credential_issuer_url}) with {} configurations (has_tx_code: {})",
-            credential_configurations.len(),
-            tx_code.is_some()
-        );
-
-        download_credential_logos(&credential_configurations).await;
-
-        if let Some(logo_uri_str) = &logo_uri {
-            download_logo(logo_uri_str).await;
-        } else {
-            warn!("No logo URI found");
-        }
-
-        drop(state_guard);
-        return Ok(AppState {
+        Ok(AppState {
             current_user_prompt: Some(CurrentUserPrompt::CredentialOffer {
-                issuer_name,
+                issuer_name: client_name.clone(),
                 logo_uri: logo_uri.clone(),
                 credential_configurations,
                 tx_code,
             }),
-            core_utils: CoreUtils {
-                active_flow: Some(ActiveFlow::Oid4vciOffer {
-                    stage: Oid4vciStage::OfferReceived,
-                    credential_offer: Box::new(credential_offer),
-                    logo_uri,
-                }),
-                ..state.core_utils
-            },
             ..state
-        });
+        })
+    } else {
+        warn!("Unexpected state: No current user prompt found when reading authorization request");
+        Ok(state)
     }
+}
 
-    Ok(state)
+pub async fn get_oid4vci_client_metadata(
+    state: &AppState,
+    credential_offer: &CredentialOfferParameters,
+) -> Result<ClientMetadata, AppError> {
+    let state_guard = state.core_utils.managers.lock().await;
+    let wallet = &state_guard
+        .identity_manager
+        .as_ref()
+        .ok_or(MissingManagerError("identity"))?
+        .wallet;
+
+    // The credential offer contains a credential issuer url.
+    let credential_issuer_url = credential_offer.credential_issuer.clone();
+
+    info!("credential issuer url: {credential_issuer_url:?}");
+
+    let credential_issuer_metadata = wallet
+        .get_credential_issuer_metadata(credential_issuer_url.clone())
+        .await
+        .ok();
+
+    let display = credential_issuer_metadata
+        .as_ref()
+        .and_then(|credential_issuer_metadata| {
+            credential_issuer_metadata
+                .display
+                .as_ref()
+                .map(|display| display.first().cloned())
+        })
+        .flatten();
+
+    // TODO: remove the below hard indexing
+    let (issuer_name, logo_uri) = match display {
+        Some(display) => {
+            let issuer_name = display["name"]
+                .as_str()
+                .map(ToString::to_string)
+                .unwrap_or(credential_issuer_url.to_string());
+
+            let mut logo_uri = display["logo"]["uri"].as_str().map(ToString::to_string);
+
+            if let Some(logo_uri_str) = &logo_uri {
+                if download_logo(logo_uri_str).await.is_none() {
+                    logo_uri = None;
+                }
+            } else {
+                warn!("No logo URI found");
+            }
+
+            (issuer_name, logo_uri)
+        }
+        None => (credential_issuer_url.to_string(), None),
+    };
+
+    let did_doc = get_http_client()
+        .await
+        .get(format!(
+            "{}/.well-known/did.json",
+            credential_issuer_url.to_string().trim_end_matches('/')
+        ))
+        .send()
+        .await?
+        .json::<Value>()
+        .await?;
+
+    let client_id = did_doc
+        .get("id")
+        .and_then(|id| id.as_str())
+        .ok_or(AppError::DidParseError)?
+        .to_string();
+
+    Ok(ClientMetadata {
+        client_name: issuer_name,
+        connection_url: credential_issuer_url.to_string(),
+        redirect_uri: Some(credential_issuer_url.to_string()),
+        logo_uri,
+        client_id,
+    })
 }
 
 /// Downloads all the Credential logos.
