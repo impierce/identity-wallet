@@ -36,6 +36,7 @@ use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
 use oid4vc::oid4vp::token::vp_token::Presentations;
 use oid4vc::oid4vp::token::vp_token_validator::DecodedPresentations;
 use oid4vc::oid4vp::{
+    authorization_request::ClientId,
     dcql::dcql_query::{CredentialQuery, Format},
     oid4vp::OID4VP,
     token::{
@@ -141,18 +142,29 @@ pub struct ClientMetadata {
     pub client_id: String,
 }
 
+/// Strips the OID4VP Client Identifier Prefix (e.g. `decentralized_identifier:`) to get the bare identifier.
+pub fn strip_client_id_prefix(client_id: &str) -> String {
+    ClientId::from_str(client_id)
+        .map(|client_id| client_id.identifier().to_string())
+        .unwrap_or_else(|_| client_id.to_string())
+}
+
 // TODO: move this functionality to the oid4vc-manager crate.
 // TODO: this fn is nearly an exact copy of the fn `get_siopv2_client_name_and_logo_uri`, is there a simple way to put this into one generic helper?
 /// Returns (client_name, logo_uri, connection_url, client_id)
 pub async fn get_oid4vp_client_metadata(
     oid4vp_authorization_request: &AuthorizationRequest<Object<OID4VP>>,
 ) -> Result<ClientMetadata, AppError> {
-    // Get the connection url from the redirect url host (or use the redirect url if it does not
-    // contain a host).
     let redirect_uri = oid4vp_authorization_request.body.uri.uri().clone();
-    let connection_url = redirect_uri.host_str().unwrap_or(redirect_uri.as_str());
+    // Inner workings of `origin()` and `ascii_serialization()` are slightly unusual and basically return a "null" string when the operation failed.
+    let origin = redirect_uri.origin().ascii_serialization();
+    let connection_url = if origin == "null" {
+        redirect_uri.as_str()
+    } else {
+        origin.as_str()
+    };
 
-    let client_id = oid4vp_authorization_request.body.client_id.clone();
+    let client_id = strip_client_id_prefix(&oid4vp_authorization_request.body.client_id);
 
     // Get the client_name and logo_uri from the client_metadata if it exists.
     Ok(match &oid4vp_authorization_request.body.extension.client_metadata {
