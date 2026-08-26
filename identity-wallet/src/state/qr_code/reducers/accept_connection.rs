@@ -70,16 +70,15 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
 
         let state_guard = state.core_utils.managers.lock().await;
 
-        let url_str = if let Some(redirect_uri) = &client_metadata.redirect_uri {
-            redirect_uri.clone()
-        } else {
-            client_metadata.connection_url.clone()
-        };
+        info!(
+            "Checking domain linkage for DID: {did} and URL: {}",
+            client_metadata.connection_url
+        );
 
-        let url = url::Url::parse(&url_str).map_err(|_| {
+        let url = url::Url::parse(&client_metadata.connection_url).map_err(|_| {
             Error(format!(
-                "`redirect_uri` could not be parsed to url::Url: `{:?}`", // TODO: improve error message
-                url_str.clone()
+                "`connection_url` could not be parsed to URL: `{:?}`",
+                client_metadata.connection_url.clone()
             ))
         })?;
 

@@ -110,10 +110,13 @@ pub async fn get_oid4vci_client_metadata(
 
     // The credential offer contains a credential issuer url.
     let credential_issuer_url = credential_offer.credential_issuer.clone();
-    let connection_url = credential_issuer_url
-        .host_str()
-        .unwrap_or(credential_issuer_url.as_str())
-        .to_string();
+    // Inner workings of `origin()` and `ascii_serialization()` are slightly unusual and basically return a "null" string when the operation failed.
+    let origin = credential_issuer_url.origin().ascii_serialization();
+    let connection_url = if origin == "null" {
+        credential_issuer_url.to_string()
+    } else {
+        origin
+    };
 
     info!("credential issuer url: {credential_issuer_url:?}");
 
@@ -144,6 +147,7 @@ pub async fn get_oid4vci_client_metadata(
 
             if let Some(logo_uri_str) = &logo_uri {
                 if download_logo(logo_uri_str).await.is_none() {
+                    // If the logo download fails, we don't throw an error.
                     logo_uri = None;
                 }
             } else {

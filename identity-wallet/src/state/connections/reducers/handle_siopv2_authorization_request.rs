@@ -8,7 +8,7 @@ use crate::{
             history_event::{EventType, HistoryEvent},
             ActiveFlow,
         },
-        credentials::reducers::handle_oid4vp_authorization_request::ClientMetadata,
+        credentials::reducers::handle_oid4vp_authorization_request::{strip_client_id_prefix, ClientMetadata},
         user_prompt::CurrentUserPrompt,
         AppState,
     },
@@ -106,12 +106,16 @@ pub async fn handle_siopv2_authorization_request(state: AppState, _action: Actio
 pub async fn get_siopv2_client_metadata(
     siopv2_authorization_request: &AuthorizationRequest<Object<SIOPv2>>,
 ) -> Result<ClientMetadata, AppError> {
-    // Get the connection url from the redirect url host (or use the redirect url if it does not
-    // contain a host).
     let redirect_uri = siopv2_authorization_request.body.uri.uri().clone();
-    let connection_url = redirect_uri.host_str().unwrap_or(redirect_uri.as_str());
+    // Inner workings of `origin()` and `ascii_serialization()` are slightly unusual and basically return a "null" string when the operation failed.
+    let origin = redirect_uri.origin().ascii_serialization();
+    let connection_url = if origin == "null" {
+        redirect_uri.as_str()
+    } else {
+        origin.as_str()
+    };
 
-    let client_id = siopv2_authorization_request.body.client_id.clone();
+    let client_id = strip_client_id_prefix(&siopv2_authorization_request.body.client_id);
 
     // Get the client_name and logo_uri from the client_metadata if it exists.
     Ok(match &siopv2_authorization_request.body.extension.client_metadata {
@@ -119,12 +123,13 @@ pub async fn get_siopv2_client_metadata(
             client_name, logo_uri, ..
         } => {
             let client_name = client_name.as_ref().cloned().unwrap_or(connection_url.to_string());
-            let logo_uri = logo_uri.as_ref().map(|logo_uri| logo_uri.to_string());
+            let mut logo_uri = logo_uri.as_ref().map(|logo_uri| logo_uri.to_string());
 
             if let Some(logo_uri_str) = logo_uri.clone() {
-                download_logo(&logo_uri_str)
-                    .await
-                    .ok_or(Error("Failed to download logo".to_string()))?; // should this throw an error?
+                if download_logo(&logo_uri_str).await.is_none() {
+                    // If the logo download fails, we don't throw an error.
+                    logo_uri = None;
+                }
             } else {
                 warn!("No logo URI found");
             }

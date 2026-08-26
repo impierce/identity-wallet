@@ -133,7 +133,7 @@ mod tests {
         };
         assert_eq!(
             serde_json::to_string(&prompt).unwrap(),
-            r#"{"type":"accept-connection","client_name":"Test Client","logo_uri":null,"redirect_uri":"https://example.com","previously_connected":false,"domain_validation":{"status":"Unknown","url":"https://example.com/"},"linked_verifiable_presentations":[]}"#
+            r#"{"type":"accept-connection","client_name":"Test Client","redirect_uri":"https://example.com","domain_validation":{"status":"Unknown","url":"https://example.com/"}}"#
         );
     }
 }
