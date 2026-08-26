@@ -20,9 +20,7 @@
 
 <div class="grid w-full grid-cols-3 gap-2">
   {#each tiles as tile}
-    <div
-      class="flex flex-col items-center justify-center rounded-xl bg-white px-2 py-4 dark:bg-dark"
-    >
+    <div class="flex flex-col items-center justify-center rounded-xl bg-white px-2 py-4 dark:bg-dark">
       <p class="text-center text-[13px]/[20px] font-medium text-slate-500 dark:text-slate-300">
         {tile.label}
       </p>

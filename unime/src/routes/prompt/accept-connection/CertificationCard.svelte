@@ -16,7 +16,7 @@
   $: imageId = certification.credential.issuer_logo_uri ? hash(certification.credential.issuer_logo_uri) : undefined;
 
   // The design shows a single domain; an issuer may link several, each with its own result.
-  // Showing the first. 
+  // Showing the first.
   $: validation = certification.issuer_domain_validations.at(0);
 
   // The issuing body, e.g. "Intl. Organization for Standardization".
@@ -30,8 +30,6 @@
   // tinted badge and a plain backdrop for a real logo.
   let useFallback = false;
 
-  // Without a logo there is nothing on disk to find, so skip <Image> entirely rather
-  // than have it probe for a missing asset on every card.
   $: showBadge = !imageId || useFallback;
 </script>
 
