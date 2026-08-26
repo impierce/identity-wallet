@@ -144,6 +144,7 @@ pub async fn get_oid4vci_client_metadata(
 
             if let Some(logo_uri_str) = &logo_uri {
                 if download_logo(logo_uri_str).await.is_none() {
+                    // If the logo download fails, we don't throw an error.
                     logo_uri = None;
                 }
             } else {

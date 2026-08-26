@@ -160,12 +160,13 @@ pub async fn get_oid4vp_client_metadata(
             client_name, logo_uri, ..
         } => {
             let client_name = client_name.as_ref().cloned().unwrap_or(connection_url.to_string());
-            let logo_uri = logo_uri.as_ref().map(|logo_uri| logo_uri.to_string());
+            let mut logo_uri = logo_uri.as_ref().map(|logo_uri| logo_uri.to_string());
 
             if let Some(logo_uri_str) = logo_uri.clone() {
-                download_logo(&logo_uri_str)
-                    .await
-                    .ok_or(Error("Failed to download logo".to_string()))?; // should this throw an error?
+                if download_logo(&logo_uri_str).await.is_none() {
+                    // If the logo download fails, we don't throw an error.
+                    logo_uri = None;
+                }
             } else {
                 warn!("No logo URI found");
             }

@@ -76,6 +76,8 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
             client_metadata.connection_url.clone()
         };
 
+        info!("Checking domain linkage for DID: {did} and URL: {url_str}");
+
         let url = url::Url::parse(&url_str).map_err(|_| {
             Error(format!(
                 "`redirect_uri` could not be parsed to url::Url: `{:?}`", // TODO: improve error message
