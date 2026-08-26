@@ -30,8 +30,6 @@
   // tinted badge and a plain backdrop for a real logo.
   let useFallback = false;
 
-  // Without a logo there is nothing on disk to find, so skip <Image> entirely rather
-  // than have it probe for a missing asset on every card.
   $: showBadge = !imageId || useFallback;
 </script>
 
