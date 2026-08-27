@@ -381,7 +381,7 @@ pub async fn update_history_and_connections(
         ..
     } = get_oid4vp_client_metadata(oid4vp_authorization_request).await?;
 
-    let did = CoreDID::parse(client_id).ok();
+    let did = CoreDID::parse(client_id).map_err(|e| AppError::Error(format!("Failed to parse DID: {e}")))?;
 
     let previously_connected = connections.contains(connection_url.as_str(), &client_name);
     let connection = connections.update_or_insert(&connection_url, &client_name, did);

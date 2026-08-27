@@ -51,7 +51,8 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
             .connections
             .0
             .iter()
-            .find(|conn| conn.url == client_metadata.connection_url && conn.name == client_metadata.client_name)
+            // TODO: currently we only match against the DID, but if any display info changes with what we stored we plan to notify the user of the diffs.
+            .find(|conn| conn.did == client_metadata.client_id)
             .map(|connection| {
                 let interactions = state
                     .history

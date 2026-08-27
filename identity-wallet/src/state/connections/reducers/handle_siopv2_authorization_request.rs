@@ -66,7 +66,7 @@ pub async fn handle_siopv2_authorization_request(state: AppState, _action: Actio
         warn!("Skipping download of client logo as it should have already been downloaded in `read_authorization_request()` and be present in /assets/tmp folder");
     }
 
-    let did = CoreDID::parse(client_id).ok();
+    let did = CoreDID::parse(client_id).map_err(|e| AppError::Error(format!("Failed to parse DID: {e}")))?;
 
     let mut connections = state.connections;
     let connection = connections.update_or_insert(&connection_url, &client_name, did);
