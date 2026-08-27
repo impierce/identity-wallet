@@ -30,8 +30,8 @@
   $: validation = certification?.issuer_domain_validations.at(0);
   $: issuer = validation?.name;
   $: domain = validation ? hostname(validation.url) : undefined;
-  // See `CertificationCard`: re-hash the issuer logo URL to find what the backend downloaded.
-  $: logoUri = certification?.credential.issuer_logo_uri;
+  // See `CertificationCard`: re-hash the certification logo URL to find what the backend downloaded.
+  $: logoUri = certification?.credential.metadata.icon ?? certification?.credential.issuer_logo_uri;
   $: imageId = logoUri ? hash(logoUri) : undefined;
 
   // A tinted badge when there is no logo (or it
