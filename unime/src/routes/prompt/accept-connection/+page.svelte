@@ -198,12 +198,13 @@
     <Button
       label={$LL.SCAN.CONNECTION_REQUEST.ACCEPT()}
       on:click={() => {
+        // In a mock preview there is no backend to answer, so leaving `loading` set would
+        // spin forever. Only latch it when a real dispatch is on its way.
+        if (isMock) return;
         loading = true;
-        if (!isMock) {
-          dispatch({
-            type: '[Authenticate] Connection accepted',
-          });
-        }
+        dispatch({
+          type: '[Authenticate] Connection accepted',
+        });
       }}
       {loading}
     />
