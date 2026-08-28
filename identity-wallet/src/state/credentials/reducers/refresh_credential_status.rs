@@ -175,7 +175,6 @@ pub async fn fetch_credential_status(
         .public_key(&key_id)
         .await
         .map_err(|_| AppError::GetCredentialStatusError)?;
-
     let decoding_key = match jwt_header.alg {
         Algorithm::EdDSA => DecodingKey::from_ed_der(&public_key),
         Algorithm::ES256 => DecodingKey::from_ec_der(&public_key),

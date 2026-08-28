@@ -231,6 +231,7 @@ impl CredentialType {
                 Ok(())
             }
             _ => {
+                // TODO: make use of `app_handle.path().data_dir()` to make this work on mobile.
                 let json_schema_path = format!("resources/jsonschemas/{version}.json");
 
                 validate_credential_against_schema(json_schema_path, data)?;
