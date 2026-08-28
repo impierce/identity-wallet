@@ -1,7 +1,7 @@
 use crate::{
     http_client::get_http_client,
     state::{
-        core_utils::helpers::{download_logo, get_issuer_document, validate_credential_types},
+        core_utils::helpers::{download_logo, get_issuer_document},
         credentials::{
             reducers::send_token_request::get_credential_status, DisplayCredential, VerifiableCredentialRecord,
         },
@@ -33,23 +33,11 @@ use serde_json::Value;
 use ts_rs::TS;
 use url::Url;
 
-#[cfg_attr(not(test), derive(PartialEq))]
-#[derive(Clone, Serialize, Deserialize, Debug, TS, Default)]
+#[derive(Clone, Serialize, Deserialize, Debug, TS, Default, PartialEq)]
 #[ts(export, export_to = "bindings/user_prompt/LinkedVerifiableCredentialData.ts")]
 pub struct LinkedVerifiableCredentialData {
     pub credential: DisplayCredential,
     pub issuer_domain_validations: Vec<ValidationResult>,
-}
-
-// Skip the partial equality check for `issuance_date` during testing.
-#[cfg(test)]
-impl PartialEq for LinkedVerifiableCredentialData {
-    fn eq(&self, _other: &Self) -> bool {
-        // self.name == other.name
-        //     && self.logo_uri == other.logo_uri
-        //     && self.issuer_linked_domains == other.issuer_linked_domains
-        todo!()
-    }
 }
 
 /// Validate the linked verifiable presentations for the given holder DID. Returns a list of linked verifiable
@@ -642,19 +630,25 @@ mod tests {
         }
 
         // 'Issues' a Credential Jwt to a subject.
-        async fn issue_credential(&mut self, subject_id: &str, subject_name: &str, subject_image: Url) -> Jwt {
+        async fn issue_credential(&mut self, subject_id: &str, credential_name: &str, credential_logo: Url) -> Jwt {
             let subject = identity_credential::credential::Subject::from_json_value(json!({
                 "id": subject_id,
-                "name": subject_name,
-                "image": subject_image
             }))
             .unwrap();
 
             let issuer = identity_iota::credential::Issuer::Url(self.did_document.id().to_string().parse().unwrap());
 
+            let issuance_date = Timestamp::parse("2020-01-01T00:00:00Z").unwrap();
+
+            let mut properties = identity_iota::core::Object::new();
+            properties.insert("name".to_string(), json!(credential_name));
+            properties.insert("logo".to_string(), json!(credential_logo));
+
             let credential: Credential = CredentialBuilder::default()
                 .issuer(issuer)
                 .subject(subject)
+                .issuance_date(issuance_date)
+                .properties(properties)
                 .build()
                 .unwrap();
 
@@ -776,24 +770,21 @@ mod tests {
 
         holder.add_well_known_did_json().await;
 
-        assert_eq!(
-            validate_linked_verifiable_presentations(&holder.subject, holder.did_document.id().to_string().as_ref(),)
-                .await,
-            vec![
-                vec![LinkedVerifiableCredentialData {
-                    // name: Some("Webshop".to_string()),
-                    // logo_uri: Some(logo_uri_a),
-                    // issuer_linked_domains: vec![issuer_a.domain.clone()],
-                    ..Default::default()
-                }],
-                vec![LinkedVerifiableCredentialData {
-                    // name: Some("Webshop".to_string()),
-                    // logo_uri: Some(logo_uri_b),
-                    // issuer_linked_domains: vec![issuer_b.domain.clone()],
-                    ..Default::default()
-                }]
-            ]
-        );
+        let validated =
+            validate_linked_verifiable_presentations(&holder.subject, holder.did_document.id().to_string().as_ref())
+                .await;
+
+        assert_eq!(validated.len(), 2);
+        assert_eq!(validated[0].len(), 1);
+        assert_eq!(validated[1].len(), 1);
+        assert_eq!(validated[0][0].credential.display_name, "Webshop");
+        assert_eq!(validated[0][0].credential.metadata.icon, Some(logo_uri_a));
+        assert_eq!(validated[0][0].issuer_domain_validations.len(), 1);
+        assert_eq!(validated[0][0].issuer_domain_validations[0].url, issuer_a.domain);
+        assert_eq!(validated[1][0].credential.display_name, "Webshop");
+        assert_eq!(validated[1][0].credential.metadata.icon, Some(logo_uri_b));
+        assert_eq!(validated[1][0].issuer_domain_validations.len(), 1);
+        assert_eq!(validated[1][0].issuer_domain_validations[0].url, issuer_b.domain);
     }
 
     #[tokio::test]
@@ -929,92 +920,95 @@ mod tests {
             &holder.did_document,
             linked_verifiable_presentation_url,
         )
-        .await;
+        .await
+        .unwrap();
 
-        assert_eq!(
-            validated_linked_presentation_data,
-            Some(vec![LinkedVerifiableCredentialData {
-                // name: Some("Webshop".to_string()),
-                // logo_uri: Some(issuer_logo),
-                // issuer_linked_domains: vec![issuer.domain.clone()],
-                ..Default::default()
-            }])
-        );
+        assert_eq!(validated_linked_presentation_data.len(), 1);
+        let item = &validated_linked_presentation_data[0];
+        assert_eq!(item.credential.display_name, "Webshop");
+        assert_eq!(item.credential.metadata.icon, Some(issuer_logo));
+        assert_eq!(item.issuer_domain_validations.len(), 1);
+        assert_eq!(item.issuer_domain_validations[0].url, issuer.domain);
     }
 
-    // #[tokio::test]
-    // async fn get_validated_linked_domains_returns_only_successfully_validated_linked_domains() {
-    //     let mut issuer1 = TestEntity::new().await;
+    #[tokio::test]
+    async fn get_validated_linked_domains_returns_only_successfully_validated_linked_domains() {
+        let mut issuer1 = TestEntity::new().await;
 
-    //     // Add the `/did_configuration.json` and `/did.json` endpoints to the issuer mock server.
-    //     issuer1
-    //         .add_well_known_did_configuration_json("linked-domain", &[issuer1.domain.clone().into()])
-    //         .await;
-    //     issuer1.add_well_known_did_json().await;
+        // Add the `/did_configuration.json` and `/did.json` endpoints to the issuer mock server.
+        issuer1
+            .add_well_known_did_configuration_json("linked-domain", &[issuer1.domain.clone().into()])
+            .await;
+        issuer1.add_well_known_did_json().await;
 
-    //     let resolver = Resolver::new();
+        let resolver = Resolver::new();
 
-    //     // Successfully validate the linked domain.
-    //     assert_eq!(
-    //         get_validated_linked_domains(
-    //             &resolver,
-    //             &[issuer1.domain.clone()],
-    //             issuer1.did_document.id().to_string().as_ref()
-    //         )
-    //         .await,
-    //         vec![issuer1.domain.clone()]
-    //     );
+        // Successfully validate the linked domain.
+        let results = get_validated_linked_domains(
+            &resolver,
+            &[issuer1.domain.clone()],
+            issuer1.did_document.id().to_string().as_ref(),
+        )
+        .await;
+        assert_eq!(
+            results.into_iter().map(|r| r.url).collect::<Vec<url::Url>>(),
+            vec![issuer1.domain.clone()]
+        );
 
-    //     // Assert that only one domain was validated.
-    //     assert_eq!(
-    //         get_validated_linked_domains(
-    //             &resolver,
-    //             &[issuer1.domain.clone(), "http://invalid-domain.org".parse().unwrap()],
-    //             issuer1.did_document.id().to_string().as_ref()
-    //         )
-    //         .await,
-    //         vec![issuer1.domain.clone()]
-    //     );
+        // Assert that only one domain was validated.
+        let results = get_validated_linked_domains(
+            &resolver,
+            &[issuer1.domain.clone(), "http://invalid-domain.org".parse().unwrap()],
+            issuer1.did_document.id().to_string().as_ref(),
+        )
+        .await;
+        assert_eq!(
+            results.into_iter().map(|r| r.url).collect::<Vec<url::Url>>(),
+            vec![issuer1.domain.clone()]
+        );
 
-    //     let mut issuer2 = TestEntity::new().await;
+        let mut issuer2 = TestEntity::new().await;
 
-    //     // Add the `/did_configuration.json` and `/did.json` endpoints to the issuer mock server.
-    //     issuer2
-    //         .add_well_known_did_configuration_json("linked-domain-2", &[issuer2.domain.clone().into()])
-    //         .await;
-    //     issuer2.add_well_known_did_json().await;
+        // Add the `/did_configuration.json` and `/did.json` endpoints to the issuer mock server.
+        issuer2
+            .add_well_known_did_configuration_json("linked-domain-2", &[issuer2.domain.clone().into()])
+            .await;
+        issuer2.add_well_known_did_json().await;
 
-    //     // Assert that only one domain was validated. The second domain cannot be validated because the issuer DID is different.
-    //     assert_eq!(
-    //         get_validated_linked_domains(
-    //             &resolver,
-    //             &[issuer1.domain.clone(), issuer2.domain.clone()],
-    //             issuer1.did_document.id().to_string().as_ref()
-    //         )
-    //         .await,
-    //         vec![issuer1.domain.clone()]
-    //     );
+        // Assert that only one domain was validated. The second domain cannot be validated because the issuer DID is different.
+        let results = get_validated_linked_domains(
+            &resolver,
+            &[issuer1.domain.clone(), issuer2.domain.clone()],
+            issuer1.did_document.id().to_string().as_ref(),
+        )
+        .await;
+        assert_eq!(
+            results.into_iter().map(|r| r.url).collect::<Vec<url::Url>>(),
+            vec![issuer1.domain.clone()]
+        );
 
-    //     // Add the `/did_configuration.json` and `/did.json` endpoints to the issuer mock server. Use the same issuer DID as
-    //     // issuer1, but a different domain.
-    //     let mut issuer2 = TestEntity::new().await;
-    //     issuer2.did_document = issuer1.did_document.clone();
-    //     issuer2.secret_manager = issuer1.secret_manager.clone();
+        // Add the `/did_configuration.json` and `/did.json` endpoints to the issuer mock server. Use the same issuer DID as
+        // issuer1, but a different domain.
+        let mut issuer2 = TestEntity::new().await;
+        issuer2.did_document = issuer1.did_document.clone();
+        issuer2.secret_manager = issuer1.secret_manager.clone();
 
-    //     // Add the `/did_configuration.json` and `/did.json` endpoints to the issuer mock server.
-    //     issuer2
-    //         .add_well_known_did_configuration_json("linked-domain-2", &[issuer2.domain.clone().into()])
-    //         .await;
-    //     issuer2.add_well_known_did_json().await;
+        // Add the `/did_configuration.json` and `/did.json` endpoints to the issuer mock server.
+        issuer2
+            .add_well_known_did_configuration_json("linked-domain-2", &[issuer2.domain.clone().into()])
+            .await;
+        issuer2.add_well_known_did_json().await;
 
-    //     // Assert that both domains were validated (regardless of the order).
-    //     assert!(get_validated_linked_domains(
-    //         &resolver,
-    //         &[issuer1.domain.clone(), issuer2.domain.clone()],
-    //         issuer1.did_document.id().to_string().as_ref()
-    //     )
-    //     .await
-    //     .iter()
-    //     .all(|item| [issuer1.domain.clone(), issuer2.domain.clone()].contains(item)));
-    // }
+        // Assert that both domains were validated (regardless of the order).
+        let results = get_validated_linked_domains(
+            &resolver,
+            &[issuer1.domain.clone(), issuer2.domain.clone()],
+            issuer1.did_document.id().to_string().as_ref(),
+        )
+        .await;
+        assert_eq!(results.len(), 2);
+        assert!(results
+            .iter()
+            .all(|item| [issuer1.domain.clone(), issuer2.domain.clone()].contains(&item.url)));
+    }
 }
