@@ -159,6 +159,7 @@ pub async fn get_oid4vci_client_metadata(
         None => (credential_issuer_url.to_string(), None),
     };
 
+    // TODO: this means it only works with did:web, although non did:webs can be published on that endpoint instead of a did:web as well.
     let did_doc = get_http_client()
         .await
         .get(format!(
