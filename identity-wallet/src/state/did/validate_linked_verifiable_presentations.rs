@@ -19,7 +19,7 @@ use identity_iota::{
     core::{OneOrMany, ToJson},
     credential::{
         DecodedJwtCredential, DecodedJwtPresentation, FailFast, Jwt, JwtCredentialValidationOptions,
-        JwtCredentialValidator, JwtPresentationValidator, StatusCheck, Subject as CredentialSubject,
+        JwtCredentialValidator, JwtPresentationValidator, StatusCheck,
     },
     document::{CoreDocument, Service},
 };
@@ -33,24 +33,11 @@ use serde_json::Value;
 use ts_rs::TS;
 use url::Url;
 
-#[cfg_attr(not(test), derive(PartialEq))]
-#[derive(Clone, Serialize, Deserialize, Debug, TS, Default)]
+#[derive(Clone, Serialize, Deserialize, Debug, TS, Default, PartialEq)]
 #[ts(export, export_to = "bindings/user_prompt/LinkedVerifiableCredentialData.ts")]
 pub struct LinkedVerifiableCredentialData {
     pub credential: DisplayCredential,
     pub issuer_domain_validations: Vec<ValidationResult>,
-    // pub issuer_linked_domains: Vec<Url>,
-}
-
-// Skip the partial equality check for `issuance_date` during testing.
-#[cfg(test)]
-impl PartialEq for LinkedVerifiableCredentialData {
-    fn eq(&self, _other: &Self) -> bool {
-        // self.name == other.name
-        //     && self.logo_uri == other.logo_uri
-        //     && self.issuer_linked_domains == other.issuer_linked_domains
-        todo!()
-    }
 }
 
 /// Validate the linked verifiable presentations for the given holder DID. Returns a list of linked verifiable
@@ -195,78 +182,85 @@ async fn get_validated_linked_credential_data(
     subject: &Subject,
     linked_verifiable_presentation: DecodedJwtPresentation<Jwt>,
 ) -> Vec<LinkedVerifiableCredentialData> {
-    let resolver = subject.resolver().await;
+    let resolver = &subject.resolver().await;
     iter(linked_verifiable_presentation.presentation.verifiable_credential)
-        .filter_map(|linked_verifiable_credential_jwt| {
-            let resolver = resolver.clone();
-            async move {
-                // Resolve the issuer document and issuer DID
-                let issuer_document = get_issuer_document(&resolver, &linked_verifiable_credential_jwt).await?;
-                let issuer_did = issuer_document.id().to_string();
+        .filter_map(|linked_verifiable_credential_jwt| async move {
+            // Resolve the issuer document and issuer DID
+            let issuer_document = get_issuer_document(resolver, &linked_verifiable_credential_jwt).await?;
+            let issuer_did = issuer_document.id().to_string();
 
-                info!("Issuer document: {issuer_document:#?}");
+            debug!("Issuer document: {issuer_document:#?}");
 
-                // Resolve the issuer linked domains from the issuer document
-                let issuer_linked_domains = get_issuer_linked_domains(&issuer_document).await;
+            // Resolve the issuer linked domains from the issuer document
+            let issuer_linked_domains = get_issuer_linked_domains(&issuer_document).await;
 
-                info!("Issuer linked domains: {issuer_linked_domains:#?}");
+            debug!("Issuer linked domains: {issuer_linked_domains:#?}");
 
-                // Only linked verifiable credentials with at least one successful domain linkage validation are considered
-                let validated_linked_domains = get_validated_linked_domains(&resolver, &issuer_linked_domains, &issuer_did).await;
+            // Only linked verifiable credentials with at least one successful domain linkage validation are considered
+            let validated_linked_domains = get_validated_linked_domains(resolver, &issuer_linked_domains, &issuer_did).await;
 
-                if !validated_linked_domains.is_empty() {
-                    let validator = JwtCredentialValidator::with_signature_verifier(Verifier);
+            if !validated_linked_domains.is_empty() {
+                let validator = JwtCredentialValidator::with_signature_verifier(Verifier);
 
-                    // `SkipUnsupported` allows for custom credential types, such as the StatusList2021Entry (https://www.w3.org/TR/2023/WD-vc-status-list-20230427/#statuslist2021entry)
-                    let options = JwtCredentialValidationOptions::new().status_check(StatusCheck::SkipUnsupported);
+                // `SkipUnsupported` allows for custom credential types, such as the StatusList2021Entry (https://www.w3.org/TR/2023/WD-vc-status-list-20230427/#statuslist2021entry)
+                let options = JwtCredentialValidationOptions::new().status_check(StatusCheck::SkipUnsupported);
 
-                    // Decode the linked verifiable credential and validate the jwt_vc_json, checks the JWT and the Issuer DID
-                    if let Ok(linked_verifiable_credential) = validator.validate::<_, Value>(
-                        &linked_verifiable_credential_jwt,
-                        &issuer_document,
-                        &options,
-                        FailFast::FirstError,
-                    ) {
-                        info!("Validated linked verifiable credential JWT: {linked_verifiable_credential:#?}");
+                // Decode the linked verifiable credential and validate the jwt_vc_json, checks the JWT and the Issuer DID
+                if let Ok(linked_verifiable_credential) = validator.validate::<_, Value>(
+                    &linked_verifiable_credential_jwt,
+                    &issuer_document,
+                    &options,
+                    FailFast::FirstError,
+                ) {
+                    debug!("Validated linked verifiable credential JWT: {linked_verifiable_credential:#?}");
 
-                        let credential_subject = match &linked_verifiable_credential.credential.credential_subject {
-                            OneOrMany::One(subject) => Some(subject),
-                            // TODO: how to handle multiple credential subjects?
-                            OneOrMany::Many(subjects) => subjects.first(),
-                        };
+                    // TODO: Uncomment this once json schema validation works on mobile.
+                    // Validate the linked verifiable credential against its corresponding JSON Schema
+                    // validate_credential_types(&linked_verifiable_credential.credential.to_json_value().ok()?).ok()?;
 
-                        if let Some(credential_subject) = credential_subject {
-                            let name = get_name(credential_subject);
+                    let credential_subject = match &linked_verifiable_credential.credential.credential_subject {
+                        OneOrMany::One(subject) => Some(subject),
+                        // TODO: how to handle multiple credential subjects?
+                        OneOrMany::Many(subjects) => subjects.first(),
+                    };
 
-                            let linked_domains = validated_linked_domains.iter().map(|result| result.url.clone()).collect::<Vec<url::Url>>();
-                            let logo_uri = get_logo_uri(credential_subject, &linked_verifiable_credential, &linked_domains).await;
-                            let issuance_date = linked_verifiable_credential.credential.issuance_date.to_rfc3339();
+                    if credential_subject.is_some() {
+                        let credential_name = get_credential_name(&linked_verifiable_credential);
+                        let credential_logo_uri = get_credential_logo_uri(&linked_verifiable_credential).await;
 
-                            debug!("LinkedVerifiableCredentialData: name: {name:?}, logo_uri: {logo_uri:?}, issuance_date: {issuance_date}, validated_linked_domains: {linked_domains:#?}");
+                        let linked_domains = validated_linked_domains.iter().map(|result| result.url.clone()).collect::<Vec<url::Url>>();
+                        let (issuer_name, issuer_logo_uri) = get_issuer_info(&linked_domains).await;
+                        let issuance_date = linked_verifiable_credential.credential.issuance_date.to_rfc3339();
 
-                            let mut verifiable_credential_record = VerifiableCredentialRecord::try_new(CredentialFormats::JwtVcJson(()), serde_json::json!(linked_verifiable_credential_jwt), vec![]).unwrap();
+                        debug!("LinkedVerifiableCredentialData: name: {credential_name:?}, credential_logo_uri: {credential_logo_uri:?}, issuer_name: {issuer_name:?}, issuer_logo_uri: {issuer_logo_uri:?}, issuance_date: {issuance_date}, validated_linked_domains: {linked_domains:#?}");
 
-                            verifiable_credential_record.display_credential.credential_status = get_credential_status(&verifiable_credential_record, subject).await;
-                            verifiable_credential_record.display_credential.issuer_name = name.unwrap_or_default();
-                            verifiable_credential_record.display_credential.issuer_logo_uri = logo_uri;
+                        let mut verifiable_credential_record = VerifiableCredentialRecord::try_new(CredentialFormats::JwtVcJson(()), serde_json::json!(linked_verifiable_credential_jwt), vec![]).unwrap();
 
-                            Some(LinkedVerifiableCredentialData {
-                                credential: verifiable_credential_record.display_credential,
-                                issuer_domain_validations: validated_linked_domains,
-                            })
-                        }
-                        else {
-                            warn!("Failed to get credential_subject from linked_verifiable_credential: {linked_verifiable_credential:#?}");
-                            None
-                        }
-                    } else {
-                        warn!("Failed to validate linked verifiable credential: {linked_verifiable_credential_jwt:#?}");
+                        verifiable_credential_record.display_credential.credential_status = get_credential_status(&verifiable_credential_record, subject).await;
+                        verifiable_credential_record.display_credential.display_name = credential_name.unwrap_or_default();
+                        verifiable_credential_record.display_credential.metadata.icon = credential_logo_uri;
+                        verifiable_credential_record.display_credential.issuer_name = issuer_name.unwrap_or_default();
+                        verifiable_credential_record.display_credential.issuer_logo_uri = issuer_logo_uri;
+
+                        Some(LinkedVerifiableCredentialData {
+                            credential: verifiable_credential_record.display_credential,
+                            issuer_domain_validations: validated_linked_domains,
+                        })
+                    }
+                    else {
+                        warn!("Failed to get credential_subject from linked_verifiable_credential: {linked_verifiable_credential:#?}");
                         None
                     }
                 } else {
-                    warn!("No validated linked domains for issuer DID: {issuer_did}");
+                    warn!("Failed to validate linked verifiable credential: {linked_verifiable_credential_jwt:#?}");
+                    // TODO: Should we add more fine-grained error handling? `None` here means that the linked verifiable credential is invalid.
                     None
                 }
+            } else {
+                warn!("No validated linked domains for issuer DID: {issuer_did}");
+                // TODO: Should we add more fine-grained error handling? `None` here means that the domain linkage
+                // validation failed or is unknown.
+                None
             }
         })
         .collect::<Vec<_>>()
@@ -351,103 +345,97 @@ async fn get_issuer_linked_domains(issuer_document: &CoreDocument) -> Vec<Url> {
         .collect()
 }
 
-fn get_name(credential_subject: &CredentialSubject) -> Option<String> {
-    credential_subject
+fn get_credential_name(linked_verifiable_credential: &DecodedJwtCredential<Value>) -> Option<String> {
+    linked_verifiable_credential
+        .credential
         .properties
         .get("name")
-        .or_else(|| credential_subject.properties.get("naam")) // TODO: "naam" is expected to be used in Dutch credentials
-        .or_else(|| credential_subject.properties.get("legal_person_name")) // This is another valid property name according to the following spec:
-        // EWC RFC005: Issue Legal Person Identification Data (LPID) - v1.0
-        // https://github.com/EWC-consortium/eudi-wallet-rfcs/blob/49faa8b0ba5e5e79836e247fd07cc0447c1ae98b/ewc-rfc005-issue-legal-person-identification-data.md#51031-lpid-attributes-specification
         .and_then(Value::as_str)
         .map(ToString::to_string)
 }
 
-/// First, try to get the logo URI from the credential subject.
-/// If this doesn't succeed, iterate through the validated linked domains and try to fetch it from the well-known/openid-credential-issuer endpoint.
-/// In this endpoint, first we look inside the Display field, at the root.
-/// If we can't find a logo there, we look inside the Credential Configurations Supported field at the root.
-/// We try to match keys inside the Credential Configurations Supported object against the credential `type` array of the linked verifiable credential, in reverse order.
-/// At first success the loop breaks and we download the image.
-/// Otherwise, we use a fallback icon.
-async fn get_logo_uri(
-    credential_subject: &CredentialSubject,
-    linked_verifiable_credential: &DecodedJwtCredential<Value>,
-    validated_linked_domains: &[Url],
-) -> Option<String> {
-    debug!("Trying to fetch image uri from credential subject");
-    let mut logo_uri = credential_subject
+/// Try to get the credential's own logo URI from the `logo` property in the root of the credential.
+async fn get_credential_logo_uri(linked_verifiable_credential: &DecodedJwtCredential<Value>) -> Option<String> {
+    debug!("Trying to fetch credential logo uri from credential root");
+    let logo_uri = linked_verifiable_credential
+        .credential
         .properties
-        .get("image")
-        .and_then(Value::as_str)
-        .map(ToString::to_string);
+        .get("logo")
+        .and_then(|logo| {
+            if let Some(uri) = logo.get("uri").and_then(Value::as_str) {
+                Some(uri.to_string())
+            } else {
+                logo.as_str().map(ToString::to_string)
+            }
+        });
 
-    // Check if logo URI was retrieved, if not then attempt to retrieve from a well-known endpoint
-    if logo_uri.is_none() {
-        debug!("Failed to fetch image uri from credential subject");
-        for domain in validated_linked_domains.iter() {
-            let well_known_endpoint = format!("{domain}.well-known/openid-credential-issuer");
-            debug!("Trying to fetch image uri from {well_known_endpoint} endpoint");
+    if let Some(ref logo_uri_str) = logo_uri {
+        download_logo(logo_uri_str).await
+    } else {
+        None
+    }
+}
+
+/// Retrieve the issuer's name and issuer logo URI from .well-known/openid-credential-issuer metadata.
+async fn get_issuer_info(validated_linked_domains: &[Url]) -> (Option<String>, Option<String>) {
+    let mut issuer_name = None;
+    let mut issuer_logo_uri = None;
+
+    for domain in validated_linked_domains.iter() {
+        let well_known_endpoints = [
+            format!("{domain}.well-known/openid-credential-issuer"),
+            format!("{domain}oid4vci/.well-known/openid-credential-issuer"),
+        ];
+
+        for well_known_endpoint in well_known_endpoints {
+            debug!("Trying to fetch issuer info from {well_known_endpoint} endpoint");
             if let Ok(response) = get_http_client().await.get(&well_known_endpoint).send().await {
                 debug!("Response from {well_known_endpoint}: {response:#?}");
                 if let Ok(metadata) = response.json::<CredentialIssuerMetadata>().await {
                     debug!("Metadata from {well_known_endpoint}: {metadata:#?}");
-                    logo_uri = metadata.display.as_deref().and_then(extract_logo_uri_from_display);
-
-                    debug!("Logo uri from {well_known_endpoint}: {logo_uri:?}");
-                    if logo_uri.is_some() {
-                        break;
+                    if let Some(display) = metadata.display.as_deref().and_then(|d| d.first()) {
+                        if issuer_name.is_none() {
+                            issuer_name = display.get("name").and_then(Value::as_str).map(ToString::to_string);
+                        }
+                        if issuer_logo_uri.is_none() {
+                            if let Some(logo_uri_str) = extract_logo_uri_from_display(std::slice::from_ref(display)) {
+                                issuer_logo_uri = download_logo(&logo_uri_str).await;
+                            }
+                        }
                     }
-                }
-            }
-            // TODO: Due to mixing 2 specs here, the oid4vci and linked verifiable presentation spec, we lose the Credential Issuer Identifier (CII) during the linked vp flow.
-            // The CII tells us where exactly we can add "/.well-known/openid-credential-issuer" to fetch the Credential Issuer Metadata, in which we might find the logo.
-            // For now we assume it's the same domain as the linked domain.
-            // But this is no guarantee and the code below is one such workaround.
-            let well_known_endpoint = format!("{domain}oid4vci/.well-known/openid-credential-issuer");
-            debug!("Trying to fetch image uri from {well_known_endpoint} endpoint");
-            if let Ok(response) = get_http_client().await.get(&well_known_endpoint).send().await {
-                if let Ok(metadata) = response.json::<CredentialIssuerMetadata>().await {
-                    logo_uri = linked_verifiable_credential.credential.types.iter().find_map(|type_| {
-                        debug!("Trying to fetch image uri from Credential Configuration Supported: {type_}");
-                        metadata
-                            .credential_configurations_supported
-                            .get(type_)
-                            .and_then(|credential_configuration| {
-                                credential_configuration
-                                    .credential_metadata
-                                    .as_ref()?
-                                    .display
-                                    .as_ref()?
-                                    .first()
-                            })
-                            .and_then(|display| display.logo.clone())
-                            .map(|logo| logo.uri.to_string())
-                    });
-
-                    if logo_uri.is_some() {
+                    if issuer_name.is_some() && issuer_logo_uri.is_some() {
                         break;
                     }
                 }
             }
         }
+        if issuer_name.is_some() && issuer_logo_uri.is_some() {
+            break;
+        }
     }
 
-    if let Some(logo_uri_str) = logo_uri {
-        download_logo(&logo_uri_str).await
-    } else {
-        warn!("No logo URI found");
-        None
+    if issuer_name.is_none() {
+        if let Some(domain) = validated_linked_domains.first() {
+            if let Some(host) = domain.host_str() {
+                issuer_name = Some(host.to_string());
+            }
+        }
     }
+
+    (issuer_name, issuer_logo_uri)
 }
 
 fn extract_logo_uri_from_display(display: &[Value]) -> Option<String> {
     display
         .first()
         .and_then(|display| display.get("logo"))
-        .and_then(|logo| logo.get("uri").or(logo.get("url")))
-        .and_then(|url| url.as_str())
-        .map(ToString::to_string)
+        .and_then(|logo| {
+            if let Some(uri) = logo.get("uri").or_else(|| logo.get("url")).and_then(|url| url.as_str()) {
+                Some(uri.to_string())
+            } else {
+                logo.as_str().map(ToString::to_string)
+            }
+        })
 }
 
 #[cfg(not(feature = "test_utils"))]
@@ -642,19 +630,25 @@ mod tests {
         }
 
         // 'Issues' a Credential Jwt to a subject.
-        async fn issue_credential(&mut self, subject_id: &str, subject_name: &str, subject_image: Url) -> Jwt {
+        async fn issue_credential(&mut self, subject_id: &str, credential_name: &str, credential_logo: Url) -> Jwt {
             let subject = identity_credential::credential::Subject::from_json_value(json!({
                 "id": subject_id,
-                "name": subject_name,
-                "image": subject_image
             }))
             .unwrap();
 
             let issuer = identity_iota::credential::Issuer::Url(self.did_document.id().to_string().parse().unwrap());
 
+            let issuance_date = Timestamp::parse("2020-01-01T00:00:00Z").unwrap();
+
+            let mut properties = identity_iota::core::Object::new();
+            properties.insert("name".to_string(), json!(credential_name));
+            properties.insert("logo".to_string(), json!(credential_logo));
+
             let credential: Credential = CredentialBuilder::default()
                 .issuer(issuer)
                 .subject(subject)
+                .issuance_date(issuance_date)
+                .properties(properties)
                 .build()
                 .unwrap();
 
@@ -776,24 +770,21 @@ mod tests {
 
         holder.add_well_known_did_json().await;
 
-        assert_eq!(
-            validate_linked_verifiable_presentations(&holder.subject, holder.did_document.id().to_string().as_ref(),)
-                .await,
-            vec![
-                vec![LinkedVerifiableCredentialData {
-                    // name: Some("Webshop".to_string()),
-                    // logo_uri: Some(logo_uri_a),
-                    // issuer_linked_domains: vec![issuer_a.domain.clone()],
-                    ..Default::default()
-                }],
-                vec![LinkedVerifiableCredentialData {
-                    // name: Some("Webshop".to_string()),
-                    // logo_uri: Some(logo_uri_b),
-                    // issuer_linked_domains: vec![issuer_b.domain.clone()],
-                    ..Default::default()
-                }]
-            ]
-        );
+        let validated =
+            validate_linked_verifiable_presentations(&holder.subject, holder.did_document.id().to_string().as_ref())
+                .await;
+
+        assert_eq!(validated.len(), 2);
+        assert_eq!(validated[0].len(), 1);
+        assert_eq!(validated[1].len(), 1);
+        assert_eq!(validated[0][0].credential.display_name, "Webshop");
+        assert_eq!(validated[0][0].credential.metadata.icon, Some(logo_uri_a));
+        assert_eq!(validated[0][0].issuer_domain_validations.len(), 1);
+        assert_eq!(validated[0][0].issuer_domain_validations[0].url, issuer_a.domain);
+        assert_eq!(validated[1][0].credential.display_name, "Webshop");
+        assert_eq!(validated[1][0].credential.metadata.icon, Some(logo_uri_b));
+        assert_eq!(validated[1][0].issuer_domain_validations.len(), 1);
+        assert_eq!(validated[1][0].issuer_domain_validations[0].url, issuer_b.domain);
     }
 
     #[tokio::test]
@@ -929,92 +920,95 @@ mod tests {
             &holder.did_document,
             linked_verifiable_presentation_url,
         )
-        .await;
+        .await
+        .unwrap();
 
-        assert_eq!(
-            validated_linked_presentation_data,
-            Some(vec![LinkedVerifiableCredentialData {
-                // name: Some("Webshop".to_string()),
-                // logo_uri: Some(issuer_logo),
-                // issuer_linked_domains: vec![issuer.domain.clone()],
-                ..Default::default()
-            }])
-        );
+        assert_eq!(validated_linked_presentation_data.len(), 1);
+        let item = &validated_linked_presentation_data[0];
+        assert_eq!(item.credential.display_name, "Webshop");
+        assert_eq!(item.credential.metadata.icon, Some(issuer_logo));
+        assert_eq!(item.issuer_domain_validations.len(), 1);
+        assert_eq!(item.issuer_domain_validations[0].url, issuer.domain);
     }
 
-    // #[tokio::test]
-    // async fn get_validated_linked_domains_returns_only_successfully_validated_linked_domains() {
-    //     let mut issuer1 = TestEntity::new().await;
+    #[tokio::test]
+    async fn get_validated_linked_domains_returns_only_successfully_validated_linked_domains() {
+        let mut issuer1 = TestEntity::new().await;
 
-    //     // Add the `/did_configuration.json` and `/did.json` endpoints to the issuer mock server.
-    //     issuer1
-    //         .add_well_known_did_configuration_json("linked-domain", &[issuer1.domain.clone().into()])
-    //         .await;
-    //     issuer1.add_well_known_did_json().await;
+        // Add the `/did_configuration.json` and `/did.json` endpoints to the issuer mock server.
+        issuer1
+            .add_well_known_did_configuration_json("linked-domain", &[issuer1.domain.clone().into()])
+            .await;
+        issuer1.add_well_known_did_json().await;
 
-    //     let resolver = Resolver::new();
+        let resolver = Resolver::new();
 
-    //     // Successfully validate the linked domain.
-    //     assert_eq!(
-    //         get_validated_linked_domains(
-    //             &resolver,
-    //             &[issuer1.domain.clone()],
-    //             issuer1.did_document.id().to_string().as_ref()
-    //         )
-    //         .await,
-    //         vec![issuer1.domain.clone()]
-    //     );
+        // Successfully validate the linked domain.
+        let results = get_validated_linked_domains(
+            &resolver,
+            &[issuer1.domain.clone()],
+            issuer1.did_document.id().to_string().as_ref(),
+        )
+        .await;
+        assert_eq!(
+            results.into_iter().map(|r| r.url).collect::<Vec<url::Url>>(),
+            vec![issuer1.domain.clone()]
+        );
 
-    //     // Assert that only one domain was validated.
-    //     assert_eq!(
-    //         get_validated_linked_domains(
-    //             &resolver,
-    //             &[issuer1.domain.clone(), "http://invalid-domain.org".parse().unwrap()],
-    //             issuer1.did_document.id().to_string().as_ref()
-    //         )
-    //         .await,
-    //         vec![issuer1.domain.clone()]
-    //     );
+        // Assert that only one domain was validated.
+        let results = get_validated_linked_domains(
+            &resolver,
+            &[issuer1.domain.clone(), "http://invalid-domain.org".parse().unwrap()],
+            issuer1.did_document.id().to_string().as_ref(),
+        )
+        .await;
+        assert_eq!(
+            results.into_iter().map(|r| r.url).collect::<Vec<url::Url>>(),
+            vec![issuer1.domain.clone()]
+        );
 
-    //     let mut issuer2 = TestEntity::new().await;
+        let mut issuer2 = TestEntity::new().await;
 
-    //     // Add the `/did_configuration.json` and `/did.json` endpoints to the issuer mock server.
-    //     issuer2
-    //         .add_well_known_did_configuration_json("linked-domain-2", &[issuer2.domain.clone().into()])
-    //         .await;
-    //     issuer2.add_well_known_did_json().await;
+        // Add the `/did_configuration.json` and `/did.json` endpoints to the issuer mock server.
+        issuer2
+            .add_well_known_did_configuration_json("linked-domain-2", &[issuer2.domain.clone().into()])
+            .await;
+        issuer2.add_well_known_did_json().await;
 
-    //     // Assert that only one domain was validated. The second domain cannot be validated because the issuer DID is different.
-    //     assert_eq!(
-    //         get_validated_linked_domains(
-    //             &resolver,
-    //             &[issuer1.domain.clone(), issuer2.domain.clone()],
-    //             issuer1.did_document.id().to_string().as_ref()
-    //         )
-    //         .await,
-    //         vec![issuer1.domain.clone()]
-    //     );
+        // Assert that only one domain was validated. The second domain cannot be validated because the issuer DID is different.
+        let results = get_validated_linked_domains(
+            &resolver,
+            &[issuer1.domain.clone(), issuer2.domain.clone()],
+            issuer1.did_document.id().to_string().as_ref(),
+        )
+        .await;
+        assert_eq!(
+            results.into_iter().map(|r| r.url).collect::<Vec<url::Url>>(),
+            vec![issuer1.domain.clone()]
+        );
 
-    //     // Add the `/did_configuration.json` and `/did.json` endpoints to the issuer mock server. Use the same issuer DID as
-    //     // issuer1, but a different domain.
-    //     let mut issuer2 = TestEntity::new().await;
-    //     issuer2.did_document = issuer1.did_document.clone();
-    //     issuer2.secret_manager = issuer1.secret_manager.clone();
+        // Add the `/did_configuration.json` and `/did.json` endpoints to the issuer mock server. Use the same issuer DID as
+        // issuer1, but a different domain.
+        let mut issuer2 = TestEntity::new().await;
+        issuer2.did_document = issuer1.did_document.clone();
+        issuer2.secret_manager = issuer1.secret_manager.clone();
 
-    //     // Add the `/did_configuration.json` and `/did.json` endpoints to the issuer mock server.
-    //     issuer2
-    //         .add_well_known_did_configuration_json("linked-domain-2", &[issuer2.domain.clone().into()])
-    //         .await;
-    //     issuer2.add_well_known_did_json().await;
+        // Add the `/did_configuration.json` and `/did.json` endpoints to the issuer mock server.
+        issuer2
+            .add_well_known_did_configuration_json("linked-domain-2", &[issuer2.domain.clone().into()])
+            .await;
+        issuer2.add_well_known_did_json().await;
 
-    //     // Assert that both domains were validated (regardless of the order).
-    //     assert!(get_validated_linked_domains(
-    //         &resolver,
-    //         &[issuer1.domain.clone(), issuer2.domain.clone()],
-    //         issuer1.did_document.id().to_string().as_ref()
-    //     )
-    //     .await
-    //     .iter()
-    //     .all(|item| [issuer1.domain.clone(), issuer2.domain.clone()].contains(item)));
-    // }
+        // Assert that both domains were validated (regardless of the order).
+        let results = get_validated_linked_domains(
+            &resolver,
+            &[issuer1.domain.clone(), issuer2.domain.clone()],
+            issuer1.did_document.id().to_string().as_ref(),
+        )
+        .await;
+        assert_eq!(results.len(), 2);
+        assert!(results
+            .iter()
+            .all(|item| [issuer1.domain.clone(), issuer2.domain.clone()].contains(&item.url)));
+    }
 }

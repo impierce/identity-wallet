@@ -13,7 +13,8 @@
   // Carry `?mock=` across so DEV previews survive the navigation.
   $: href = `/prompt/accept-connection/certifications/${certification.credential.id}${page.url.search}`;
 
-  $: imageId = certification.credential.issuer_logo_uri ? hash(certification.credential.issuer_logo_uri) : undefined;
+  $: logoUri = certification.credential.metadata.icon ?? certification.credential.issuer_logo_uri;
+  $: imageId = logoUri ? hash(logoUri) : undefined;
 
   // Showing the first domain.
   $: validation = certification.issuer_domain_validations.at(0);
