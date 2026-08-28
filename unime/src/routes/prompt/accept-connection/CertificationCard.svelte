@@ -15,8 +15,7 @@
 
   $: imageId = certification.credential.issuer_logo_uri ? hash(certification.credential.issuer_logo_uri) : undefined;
 
-  // The design shows a single domain; an issuer may link several, each with its own result.
-  // Showing the first.
+  // Showing the first domain.
   $: validation = certification.issuer_domain_validations.at(0);
 
   // The issuing body, e.g. "Intl. Organization for Standardization".
