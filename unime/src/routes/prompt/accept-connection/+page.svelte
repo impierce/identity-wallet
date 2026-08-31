@@ -8,7 +8,7 @@
   import { debug } from '@tauri-apps/plugin-log';
 
   import { Button, Image, PaddedIcon, TopNavBar } from '$lib/components';
-  import { resolveAcceptConnectionPrompt } from '$lib/dev/mocks/resolve';
+  import { isMockPrompt, resolveAcceptConnectionPrompt } from '$lib/dev/mocks/resolve';
   import { dispatch } from '$lib/dispatcher';
   import { PlugsConnectedFillIcon, ShieldCheckRegularIcon, WarningCircleFillIcon } from '$lib/icons';
   import { state as appState, error } from '$lib/stores';
@@ -54,7 +54,7 @@
   $: imageId = logo_uri ? hash(logo_uri) : '_';
 
   // For DEV previews only: `?mock=` renders a fixture instead of a real prompt.
-  $: isMock = $appState.dev_mode !== 'Off' && page.url.searchParams.has('mock');
+  $: isMock = isMockPrompt(page.url, $appState);
 
   onMount(() => {
     if ($appState.dev_mode !== 'Off' && domain_validation.message) {

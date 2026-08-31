@@ -202,14 +202,12 @@ impl VerifiableCredentialRecord {
                     (id, data, issuance_date, expiration_date, display_claims)
                 }
                 CredentialFormats::JwtVcJson(()) => {
-                    let credential_display = get_unverified_jwt_claims(&verifiable_credential)
-                        .map_err(|e| AppError::Error(e.to_string()))?
-                        .get("vc")
-                        .cloned()
-                        .ok_or(AppError::Error(
-                            "Failed to create a VerifiableCredentialRecord: 'vc' claim is missing in the JWT VC"
-                                .to_string(),
-                        ))?;
+                    let claims = get_unverified_jwt_claims(&verifiable_credential)
+                        .map_err(|e| AppError::Error(e.to_string()))?;
+                    let credential_display = claims.get("vc").cloned().ok_or(AppError::Error(
+                        "Failed to create a VerifiableCredentialRecord: 'vc' claim is missing in the JWT VC"
+                            .to_string(),
+                    ))?;
 
                     // TODO: do not use a hash to generate the credential ID. Currently we still do this so that our tests in `unime/src-tauri/tests` don't break.
                     let hash = { sha256::digest(json!(credential_display).to_string()) };
@@ -219,6 +217,17 @@ impl VerifiableCredentialRecord {
                         .get("issuanceDate")
                         .or_else(|| credential_display.get("validFrom"))
                         .and_then(|value| value.as_str().map(ToString::to_string))
+                        .or_else(|| {
+                            claims.get("nbf").or_else(|| claims.get("iat")).and_then(|v| {
+                                if let Some(secs) = v.as_i64() {
+                                    chrono::DateTime::from_timestamp(secs, 0).map(|dt| dt.to_rfc3339())
+                                } else if let Some(s) = v.as_str() {
+                                    Some(s.to_string())
+                                } else {
+                                    None
+                                }
+                            })
+                        })
                         .ok_or(AppError::Error(
                             "Failed to create a VerifiableCredentialRecord: 'issuanceDate' or 'validFrom' is missing"
                                 .to_string(),
@@ -226,7 +235,18 @@ impl VerifiableCredentialRecord {
                     let expiration_date = credential_display
                         .get("expirationDate")
                         .or_else(|| credential_display.get("validUntil"))
-                        .and_then(|valid_until| valid_until.as_str().map(ToString::to_string)); // TODO: import this from UniCore
+                        .and_then(|valid_until| valid_until.as_str().map(ToString::to_string))
+                        .or_else(|| {
+                            claims.get("exp").and_then(|v| {
+                                if let Some(secs) = v.as_i64() {
+                                    chrono::DateTime::from_timestamp(secs, 0).map(|dt| dt.to_rfc3339())
+                                } else if let Some(s) = v.as_str() {
+                                    Some(s.to_string())
+                                } else {
+                                    None
+                                }
+                            })
+                        });
 
                     // TODO: Use the claims to rename the keys in the Credential according to the display hints provided by
                     // the Issuer. Before we do this we need to make sure that UniCore supports Claims Description for
