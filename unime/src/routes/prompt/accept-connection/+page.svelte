@@ -13,23 +13,18 @@
   import { PlugsConnectedFillIcon, ShieldCheckRegularIcon, WarningCircleFillIcon } from '$lib/icons';
   import { state as appState, error } from '$lib/stores';
   import { formatRelativeDateTime, hash } from '$lib/utils';
+  import { countInteractions } from '$lib/utils/history';
   import { hostname } from '$lib/utils/url';
 
   import CertificationCard from './CertificationCard.svelte';
   import CertificationsSummary from './CertificationsSummary.svelte';
   import DomainPill from './DomainPill.svelte';
-  import InteractionTiles from './InteractionTiles.svelte';
   import SectionHeader from './SectionHeader.svelte';
 
   // How many certifications to show before linking to the full list.
   const PREVIEW_COUNT = 3;
 
   let loading = false;
-
-  // A known connection already shows the "Connected" panel and the interaction tiles, which
-  // push Accept below the fold. Fold the certification cards away behind a count until asked;
-  // a new connection has the room, so it shows them outright.
-  let certificationsExpanded = false;
 
   // Latch the prompt. After the user accepts, the backend clears `current_user_prompt`
   // and pushes new state; without this, the destructure below would run against `null`
@@ -44,8 +39,6 @@
   $: ({ client_name, logo_uri, redirect_uri, connection_data, domain_validation } = prompt);
 
   $: certifications = prompt.linked_verifiable_presentations ?? [];
-
-  $: collapsible = !!connection_data;
 
   $: profile_settings = $appState.profile_settings;
   // `redirect_uri` is optional on the prompt, and the helper swallows a malformed one. A raw
@@ -95,12 +88,11 @@
       <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
         {client_name}
       </p>
-      <div class="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 pt-[10px]">
+      <div class="flex flex-col items-center gap-y-2 pt-[10px]">
         {#if domain}
-          <p class="text-[13px]/[20px] font-normal text-text-alt">
+          <p class="max-w-full truncate text-[13px]/[20px] font-normal text-text-alt">
             {domain}
           </p>
-          <span class="text-[13px]/[20px] text-slate-300 dark:text-slate-500" aria-hidden="true">·</span>
         {/if}
         <DomainPill status={domain_validation.status} />
       </div>
@@ -125,7 +117,7 @@
         </div>
       {/if}
 
-      <!-- Connected previously: how long we have known this party, when was the last interaction -->
+      <!-- Connected previously, interactions counter -->
       {#if connection_data}
         <div
           class="flex w-full items-center rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-600 dark:bg-dark"
@@ -133,7 +125,7 @@
           <span class="mr-4 h-6 w-6 shrink-0">
             <ShieldCheckRegularIcon class="h-6 w-6 text-green-500" />
           </span>
-          <div class="flex flex-col">
+          <div class="flex min-w-0 grow flex-col">
             <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
               {$LL.SCAN.CONNECTION_REQUEST.KNOWN_CONNECTION()}
             </p>
@@ -152,24 +144,23 @@
               })}
             </p>
           </div>
+          <div class="ml-4 flex shrink-0 flex-col items-center">
+            <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
+              {$LL.SCAN.CONNECTION_REQUEST.INTERACTIONS()}
+            </p>
+            <p class="text-[22px]/[30px] font-semibold text-slate-800 dark:text-grey">
+              {countInteractions(connection_data.interactions).total}
+            </p>
+          </div>
         </div>
-
-        <InteractionTiles interactions={connection_data.interactions} />
       {/if}
     </div>
 
     <!-- Certifications, sourced from the linked verifiable presentations. -->
     {#if certifications.length > 0}
       <section class="w-full">
-        {#if collapsible}
-          <!-- Collapsible: the header text toggles between the count and the cards. -->
-          <SectionHeader
-            title={$LL.SCAN.CONNECTION_REQUEST.CERTIFICATIONS()}
-            action={certificationsExpanded
-              ? $LL.SCAN.CONNECTION_REQUEST.SHOW_LESS()
-              : $LL.SCAN.CONNECTION_REQUEST.SHOW_MORE()}
-            on:action={() => (certificationsExpanded = !certificationsExpanded)}
-          />
+        {#if connection_data}
+          <CertificationsSummary {certifications} />
         {:else}
           <SectionHeader
             title={$LL.SCAN.CONNECTION_REQUEST.CERTIFICATIONS()}
@@ -177,15 +168,8 @@
               ? `/prompt/accept-connection/certifications${page.url.search}`
               : undefined}
           />
-        {/if}
-
-        {#if collapsible && !certificationsExpanded}
-          <CertificationsSummary count={certifications.length} />
-        {:else}
           <div class="space-y-2">
-            <!-- Expanding shows every certification: with "Show less" occupying the header,
-                 there is no link left to reach the full list with. -->
-            {#each collapsible ? certifications : certifications.slice(0, PREVIEW_COUNT) as certification}
+            {#each certifications.slice(0, PREVIEW_COUNT) as certification}
               <CertificationCard {certification} />
             {/each}
           </div>

@@ -124,7 +124,7 @@ export const mocks = {
   // M1
   new: base,
   known: { ...base, connection_data: connected },
-  // Connected, but no data has moved either way: both direction tiles read zero.
+  // Connected, but nothing has happened since: the interaction count reads one.
   'known-no-data': { ...base, connection_data: { ...connected, interactions: interactions.slice(0, 1) } },
   untrusted: {
     ...base,
@@ -156,14 +156,14 @@ export const mocks = {
       }),
     ],
   },
-  // Known connection with certifications: the section starts collapsed behind a count,
-  // and "Show More" expands it into the section the other `certs-*` fixtures show.
+  // Known connection with certifications: the section collapses into the summary card,
+  // whose logo stack is full at three and whose "See all" links to the list sub-route.
   'known-certs': {
     ...base,
     connection_data: connected,
     linked_verifiable_presentations: certifications.slice(0, 3),
   },
-  // Collapsed label in the singular.
+  // A single badge in the stack, and the count label in the singular.
   'known-certs-one': {
     ...base,
     connection_data: connected,

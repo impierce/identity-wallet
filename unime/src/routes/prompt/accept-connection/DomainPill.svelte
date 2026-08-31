@@ -32,8 +32,8 @@
 
 <!--
 @component
-A badge showing the result of the domain linkage check, intended to sit next to
-the hostname.
+A badge showing the result of the domain linkage check, intended to sit centred
+under the hostname.
 
 ### Props
 - status
