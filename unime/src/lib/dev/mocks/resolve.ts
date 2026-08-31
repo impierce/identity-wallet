@@ -25,7 +25,7 @@ function selectMock(url: URL, appState: AppState): AcceptConnectionPrompt | null
  * True when the page is rendering a fixture rather than a real prompt.
  *
  * Gates the backend dispatches: a mocked page has no prompt for the backend to act on,
- * so accepting or cancelling one must stay client-side. 
+ * so accepting or cancelling one must stay client-side.
  */
 export function isMockPrompt(url: URL, appState: AppState): boolean {
   return selectMock(url, appState) !== null;
