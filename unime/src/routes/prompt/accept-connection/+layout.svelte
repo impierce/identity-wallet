@@ -4,12 +4,13 @@
   import { page } from '$app/state';
   import { get } from 'svelte/store';
 
+  import { isMockPrompt } from '$lib/dev/mocks/resolve';
   import { dispatch } from '$lib/dispatcher';
   import { state as appState, error } from '$lib/stores';
 
   // This lives in the layout so that  navigating to a child route
   // does not cancel the flow.
-  $: isMock = $appState.dev_mode !== 'Off' && page.url.searchParams.has('mock');
+  $: isMock = isMockPrompt(page.url, $appState);
 
   const unsubscribe = error.subscribe((err) => {
     if (err && !isMock) {
