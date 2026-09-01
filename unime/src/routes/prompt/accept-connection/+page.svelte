@@ -19,9 +19,11 @@
   import CertificationCard from './CertificationCard.svelte';
   import CertificationsSummary from './CertificationsSummary.svelte';
   import DomainPill from './DomainPill.svelte';
+  import EcosystemCard from './EcosystemCard.svelte';
+  import EcosystemsSummary from './EcosystemsSummary.svelte';
   import SectionHeader from './SectionHeader.svelte';
 
-  // How many certifications to show before linking to the full list.
+  // How many certifications or ecosystems to show before linking to the full list.
   const PREVIEW_COUNT = 3;
 
   let loading = false;
@@ -39,6 +41,8 @@
   $: ({ client_name, logo_uri, redirect_uri, connection_data, domain_validation } = prompt);
 
   $: certifications = prompt.linked_verifiable_presentations ?? [];
+
+  $: ecosystems = prompt.ecosystems ?? [];
 
   $: profile_settings = $appState.profile_settings;
   // `redirect_uri` is optional on the prompt, and the helper swallows a malformed one. A raw
@@ -171,6 +175,27 @@
           <div class="space-y-2">
             {#each certifications.slice(0, PREVIEW_COUNT) as certification}
               <CertificationCard {certification} />
+            {/each}
+          </div>
+        {/if}
+      </section>
+    {/if}
+
+    <!-- Mirrors the certifications section: collapsed on a known connection, listed on a new one. -->
+    {#if ecosystems.length > 0}
+      <section class="w-full">
+        {#if connection_data}
+          <EcosystemsSummary {ecosystems} />
+        {:else}
+          <SectionHeader
+            title={$LL.SCAN.CONNECTION_REQUEST.ECOSYSTEMS()}
+            href={ecosystems.length > PREVIEW_COUNT
+              ? `/prompt/accept-connection/ecosystems${page.url.search}`
+              : undefined}
+          />
+          <div class="space-y-2">
+            {#each ecosystems.slice(0, PREVIEW_COUNT) as ecosystem, index (index)}
+              <EcosystemCard {ecosystem} {index} />
             {/each}
           </div>
         {/if}

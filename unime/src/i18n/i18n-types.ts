@@ -907,7 +907,7 @@ type RootTranslation = {
 			 * @param {number} count
 			 * @param {string} names
 			 */
-			CERTIFICATION_AND_MORE: RequiredParams<'count' | 'names'>
+			AND_MORE: RequiredParams<'count' | 'names'>
 			/**
 			 * S​h​o​w​ ​m​o​r​e
 			 */
@@ -916,6 +916,32 @@ type RootTranslation = {
 			 * S​e​e​ ​a​l​l
 			 */
 			SEE_ALL: string
+			/**
+			 * E​c​o​s​y​s​t​e​m​s
+			 */
+			ECOSYSTEMS: string
+			/**
+			 * {​c​o​u​n​t​}​ ​{​{​M​e​m​b​e​r​|​M​e​m​b​e​r​s​}​}
+			 * @param {number} count
+			 */
+			ECOSYSTEM_MEMBERS: RequiredParams<'count'>
+			/**
+			 * M​e​m​b​e​r​s
+			 */
+			ECOSYSTEM_MEMBERS_HEADING: string
+			/**
+			 * A​b​o​u​t
+			 */
+			ECOSYSTEM_ABOUT: string
+			/**
+			 * E​c​o​s​y​s​t​e​m​ ​O​w​n​e​r
+			 */
+			ECOSYSTEM_OWNER: string
+			/**
+			 * {​c​o​u​n​t​}​ ​{​{​e​c​o​s​y​s​t​e​m​|​e​c​o​s​y​s​t​e​m​s​}​}
+			 * @param {number} count
+			 */
+			ECOSYSTEM_COUNT: RequiredParams<'count'>
 		}
 		SHARE_CREDENTIALS: {
 			/**
@@ -2468,7 +2494,7 @@ export type TranslationFunctions = {
 			/**
 			 * {names}, and {count} more
 			 */
-			CERTIFICATION_AND_MORE: (arg: { count: number, names: string }) => LocalizedString
+			AND_MORE: (arg: { count: number, names: string }) => LocalizedString
 			/**
 			 * Show more
 			 */
@@ -2477,6 +2503,30 @@ export type TranslationFunctions = {
 			 * See all
 			 */
 			SEE_ALL: () => LocalizedString
+			/**
+			 * Ecosystems
+			 */
+			ECOSYSTEMS: () => LocalizedString
+			/**
+			 * {count} {{Member|Members}}
+			 */
+			ECOSYSTEM_MEMBERS: (arg: { count: number }) => LocalizedString
+			/**
+			 * Members
+			 */
+			ECOSYSTEM_MEMBERS_HEADING: () => LocalizedString
+			/**
+			 * About
+			 */
+			ECOSYSTEM_ABOUT: () => LocalizedString
+			/**
+			 * Ecosystem Owner
+			 */
+			ECOSYSTEM_OWNER: () => LocalizedString
+			/**
+			 * {count} {{ecosystem|ecosystems}}
+			 */
+			ECOSYSTEM_COUNT: (arg: { count: number }) => LocalizedString
 		}
 		SHARE_CREDENTIALS: {
 			/**

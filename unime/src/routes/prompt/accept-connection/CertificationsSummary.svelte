@@ -63,7 +63,7 @@ issuer logos and the count, linking to the full list. The whole card is the tap 
     </div>
 
     <p class="line-clamp-2 text-[13px]/[20px] font-medium text-slate-500 dark:text-slate-300">
-      {remaining > 0 ? $LL.SCAN.CONNECTION_REQUEST.CERTIFICATION_AND_MORE({ names, count: remaining }) : names}
+      {remaining > 0 ? $LL.SCAN.CONNECTION_REQUEST.AND_MORE({ names, count: remaining }) : names}
     </p>
   </div>
 </a>

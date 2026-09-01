@@ -2,7 +2,9 @@ import type { CredentialStatus } from '@bindings/credentials/CredentialStatus';
 import type { EventType } from '@bindings/history/EventType';
 import type { HistoryCredential } from '@bindings/history/HistoryCredential';
 import type { HistoryEvent } from '@bindings/history/HistoryEvent';
+import type { EcosystemProfile } from '@bindings/user_prompt/EcosystemProfile';
 import type { LinkedVerifiableCredentialData } from '@bindings/user_prompt/LinkedVerifiableCredentialData';
+import type { Member } from '@bindings/user_prompt/Member';
 import type { ValidationStatus } from '@bindings/user_prompt/ValidationStatus';
 
 import type { AcceptConnectionPrompt } from './resolve';
@@ -120,6 +122,74 @@ const certifications: LinkedVerifiableCredentialData[] = [
   certification('ETSI EN 319 401', 'European Telecommunications Standards Institute', 'etsi.org'),
 ];
 
+const member = (name: string, description: string | null, domain: string): Member => ({
+  logo_uri: null,
+  name,
+  description,
+  domain,
+});
+
+// `member_count` (what the ecosystem has) and `members` (what the payload carries) are separate
+// fields and need not match. Defaulted to keep them in step; override to model the mismatch.
+const ecosystem = (
+  name: string,
+  description: string | null,
+  members: Member[],
+  member_count: number = members.length,
+): EcosystemProfile => ({
+  logo_uri: null,
+  name,
+  description,
+  ecosystem_leader: members[0],
+  member_count,
+  members,
+});
+
+const universities = ecosystem('Dutch Organization for Universities', 'Education & research network', [
+  member('University of Harderwijk', 'Leading research institution', 'university.harderwijk.com'),
+  member('Finara NL', 'Financial compliance partners', 'finara.nl'),
+  member('Optimizor', 'Data-driven insight tooling', 'optimizor.io'),
+  member('TU Delft', 'Technical university', 'tudelft.nl'),
+  member('Radboud Universiteit', 'Research university', 'ru.nl'),
+  member('Hogeschool Utrecht', 'University of applied sciences', 'hu.nl'),
+]);
+
+const ecosystems: EcosystemProfile[] = [
+  universities,
+  ecosystem('Global FinTech Alliance', 'Financial innovation & compliance', [
+    member('Finara NL', 'Financial compliance partners', 'finara.nl'),
+    member('PayStream', 'Cross-border payments', 'paystream.com'),
+    member('Northgate Capital', 'Institutional asset management', 'northgate.capital'),
+    member('Vault22', 'Custody and settlement', 'vault22.io'),
+    member('ClearBank NV', 'Clearing and reconciliation', 'clearbank.nl'),
+  ]),
+  ecosystem('EU Digital Identity Network', 'Standardizing digital IDs in Europe', [
+    member('European Commission', 'Policy and standards body', 'ec.europa.eu'),
+    member('SignaTrust', 'Qualified trust service provider', 'signatrust.eu'),
+    member('IDunion', 'Decentralised identity network', 'idunion.org'),
+    member('Bundesdruckerei', 'National document authority', 'bundesdruckerei.de'),
+    member('eIDAS Node NL', 'Cross-border eID gateway', 'eidas.nl'),
+  ]),
+  ecosystem('Open Banking Consortium', 'API governance for banking', [
+    member('Bank of Harderwijk', 'Regional retail bank', 'bankofharderwijk.nl'),
+    member('LedgerWorks', 'Open banking infrastructure', 'ledgerworks.dev'),
+    member('Tulip Pay', 'Payment initiation services', 'tulippay.nl'),
+    member('Meridian Bank', 'Commercial banking', 'meridianbank.eu'),
+  ]),
+  ecosystem('Nordic Trust Framework', 'Cross-border security framework', [
+    member('Nordic Digital Authority', 'Government trust anchor', 'nordicdigital.no'),
+    member('Svensk Identitet', 'National identity provider', 'svenskidentitet.se'),
+    member('Suomi.fi', 'Finnish public service gateway', 'suomi.fi'),
+  ]),
+  ecosystem('Healthcare Data Alliance', 'Patient data interoperability', [
+    member('Harderwijk Medical Centre', 'Teaching hospital', 'hmc.nl'),
+    member('CareSync', 'Health record exchange', 'caresync.health'),
+    member('Nictiz', 'Standards for healthcare IT', 'nictiz.nl'),
+    member('LabNet', 'Diagnostic laboratory network', 'labnet.nl'),
+    member('Zorgdomein', 'Referral and results platform', 'zorgdomein.nl'),
+  ]),
+];
+
 export const mocks = {
   // M1
   new: base,
@@ -227,6 +297,58 @@ export const mocks = {
         'https://iso.org/badge.png',
       ),
     ],
+  },
+
+  // No "Show more" link below the preview count.
+  'eco-one': { ...base, ecosystems: ecosystems.slice(0, 1) },
+  'eco-preview': { ...base, ecosystems: ecosystems.slice(0, 3) },
+  // Past the preview count: truncates and links to the full list.
+  'eco-many': { ...base, ecosystems },
+  // Known connection: both sections collapse to summary cards.
+  'known-eco': { ...base, connection_data: connected, ecosystems },
+  // Summary names the single ecosystem outright instead of "and N more".
+  'known-eco-one': { ...base, connection_data: connected, ecosystems: ecosystems.slice(0, 1) },
+  'certs-and-eco': { ...base, linked_verifiable_presentations: certifications.slice(0, 2), ecosystems },
+  // Every optional field absent. Nothing should render an empty block.
+  'eco-bare': {
+    ...base,
+    ecosystems: [ecosystem('Bare Ecosystem', null, [member('Sole Member', null, 'sole.example')])],
+  },
+  // Singular "1 Member" pill, with the descriptions `eco-bare` omits.
+  'eco-one-member': {
+    ...base,
+    ecosystems: [
+      ecosystem('Solo Consortium', 'Exactly one member', [member('Only Org', 'The sole participant', 'only.example')]),
+    ],
+  },
+  // Claims 147 members but carries 6: pill shows the total, list shows what arrived.
+  'eco-count-exceeds-list': {
+    ...base,
+    ecosystems: [{ ...universities, member_count: 147 }],
+  },
+  // Long enough to wrap in the card, the nav bar and the banner.
+  'eco-long-name': {
+    ...base,
+    ecosystems: [
+      ecosystem(
+        'Stichting Nederlandse Organisatie voor Wetenschappelijk Onderzoek en Innovatie',
+        'A description long enough to run past the two lines the card allows, so the clamp has something to bite on.',
+        [
+          member(
+            'Koninklijke Nederlandse Akademie van Wetenschappen',
+            'A member name long enough to need truncating in the row',
+            'knaw.nl',
+          ),
+          member('TU Delft', 'Technical university', 'tudelft.nl'),
+        ],
+      ),
+    ],
+  },
+  // Still renders the fallback monogram in DEV — `assets/tmp/<hash(url)>` only exists once the
+  // backend has written it. Kept so the shape is represented. Mirrors `cert-logo`.
+  'eco-logo': {
+    ...base,
+    ecosystems: [{ ...universities, logo_uri: 'https://university.harderwijk.com/logo.png' }],
   },
 } satisfies Record<string, AcceptConnectionPrompt>;
 

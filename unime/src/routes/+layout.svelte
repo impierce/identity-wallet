@@ -118,7 +118,9 @@
       }
 
       // DEV: uncommenting this helps local development by always redirecting to the page you're working on
-      // redirectPath = '/me/settings/about';
+      if (!page.url.pathname.startsWith('/prompt/accept-connection')) {
+        redirectPath = '/prompt/accept-connection?mock=eco-many';
+      }
 
       if (redirectPath) {
         info(`Redirecting to: ${redirectPath}.`);
