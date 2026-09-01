@@ -930,7 +930,7 @@ type RootTranslation = {
 			 */
 			ECOSYSTEM_MEMBERS_HEADING: string
 			/**
-			 * A​b​o​u​t
+			 * A​b​o​u​t​ ​t​h​i​s​ ​E​c​o​s​y​s​t​e​m
 			 */
 			ECOSYSTEM_ABOUT: string
 			/**
@@ -2516,7 +2516,7 @@ export type TranslationFunctions = {
 			 */
 			ECOSYSTEM_MEMBERS_HEADING: () => LocalizedString
 			/**
-			 * About
+			 * About this Ecosystem
 			 */
 			ECOSYSTEM_ABOUT: () => LocalizedString
 			/**
