@@ -117,10 +117,9 @@
         }
       }
 
+   
       // DEV: uncommenting this helps local development by always redirecting to the page you're working on
-      if (!page.url.pathname.startsWith('/prompt/accept-connection')) {
-        redirectPath = '/prompt/accept-connection?mock=eco-many';
-      }
+      // redirectPath = '/me/settings/about';
 
       if (redirectPath) {
         info(`Redirecting to: ${redirectPath}.`);
