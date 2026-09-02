@@ -64,7 +64,6 @@ pub enum CurrentUserPrompt {
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, TS)]
 #[ts(export, export_to = "bindings/user_prompt/ClientMetadata.ts")]
-
 pub struct ClientMetadata {
     pub client_name: String,
     pub logo_uri: Option<String>,

@@ -3,7 +3,7 @@ pub mod reducers;
 
 use super::{core_utils::DateUtils, FeatTrait};
 
-use identity_iota::did::CoreDID;
+use identity_iota::did::{CoreDID, DID};
 use log::info;
 use serde::{Deserialize, Serialize};
 use std::ops::Not;
@@ -43,9 +43,9 @@ impl Connections {
     /// Inserts a new connection into the list of connections if it does not already exist. If it does exist, updates
     /// the last interaction time and returns a reference to the connection.
     pub fn update_or_insert(&mut self, url: &str, name: &str, did: CoreDID) -> &Connection {
-        if self.contains(&did.to_string()) {
+        if self.contains(did.as_str()) {
             info!("Updating existing connection: {name} {url}");
-            self.get_mut(&did.to_string()).map(|connection| {
+            self.get_mut(did.as_str()).map(|connection| {
                 connection.did = did.to_string();
                 connection.update_last_interaction_time();
                 &*connection
