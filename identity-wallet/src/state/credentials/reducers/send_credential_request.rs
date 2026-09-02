@@ -1,11 +1,9 @@
 use crate::oid4vci::authorization_request::CodeChallengeMethod;
 use crate::state::core_utils::helpers::download_logo;
 use crate::state::core_utils::{ActiveFlow, Oid4vciStage};
-use crate::state::credentials::reducers::handle_oid4vp_authorization_request::{
-    get_oid4vp_client_metadata, ClientMetadata,
-};
 use crate::state::credentials::reducers::send_token_request::send_token_request;
-use crate::state::user_prompt::CurrentUserPrompt;
+use crate::state::qr_code::reducers::accept_connection::get_oid4vp_client_metadata;
+use crate::state::user_prompt::{ClientMetadata, CurrentUserPrompt};
 use crate::state::{UNIME_CLIENT_ID, UNIME_REDIRECT_URI};
 use crate::{
     error::AppError::{self, *},
@@ -36,10 +34,16 @@ use sd_jwt::Sha256Hasher;
 use tauri_plugin_opener::OpenerExt;
 use uuid::Uuid;
 
-// TODO: rename this reducer to `handle_credential_offer` or similar. This should be done in an isolated PR in order to prevent
-// confusing git diffs.
+/// Handles the `CredentialOffersSelected` action, which is triggered by accepting the `CredentialOffer` prompt set by `read_credential_offer`.
+/// Sends the credential request to the credential issuer in 3 possible flows:
+/// 1. Pre-authorized code flow: this also handles the response immediately by chaining the `send_token_request` reducer in the return.
+/// 2. Authorization code flow with interactive_authorization_endpoint: this requires the user to complete an interactive authorization request. This is an intermediary OID4VP flow
+///    prompting the user to share the requested credentials necessary to authenticate/authorize the user to receive the credentials in the `CredentialOffer`.
+///    The OID4VP flow will obtain an authorization code, which is then exchanged for the credential(s).
+/// 3. Authorization code flow with pushed_authorization_request_endpoint: this sends the user to an external authorization server to complete the authorization request,
+///    which should send the user back to UniMe after authenticating there with the right authorization code to retrieve the credentials.
 #[tracing::instrument(skip_all, err)]
-pub async fn send_credential_request(state: AppState, action: Action) -> Result<AppState, AppError> {
+pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(selected_offer) = listen::<CredentialOffersSelected>(action.clone()) {
         let credential_configuration_ids = selected_offer.credential_configuration_ids;
 

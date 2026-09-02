@@ -4,31 +4,32 @@ use crate::{
     state::{
         actions::Action,
         core_utils::{
-            helpers::download_logo,
             history_event::{EventType, HistoryEvent},
             ActiveFlow,
         },
-        credentials::reducers::handle_oid4vp_authorization_request::{strip_client_id_prefix, ClientMetadata},
         user_prompt::CurrentUserPrompt,
         AppState,
     },
 };
 
-use identity_iota::did::CoreDID;
-use log::{debug, info, warn};
-use oid4vc::oid4vc_core::{
-    authorization_request::{AuthorizationRequest, Object},
-    client_metadata::ClientMetadataResource,
-};
-use oid4vc::siopv2::siopv2::SIOPv2;
+use log::{debug, info};
 
-// Sends the authorization response.
+/// Handles the `ConnectionAccepted` action for the SIOPv2 active flow, triggered by accepting `AcceptConnection` prompt and persists the connection.
+/// Sends the SIOPv2 authorization response.
 #[tracing::instrument(skip_all, err)]
 pub async fn handle_siopv2_authorization_request(state: AppState, _action: Action) -> Result<AppState, AppError> {
     let siopv2_authorization_request = match state.core_utils.active_flow.clone() {
         Some(ActiveFlow::Siopv2 { authorization_request }) => authorization_request,
         // Not a SIOPv2 flow, let other reducers handle this action.
         _ => return Ok(state),
+    };
+
+    let client_metadata = match &state.current_user_prompt {
+        Some(CurrentUserPrompt::AcceptConnection { client_metadata, .. }) => client_metadata.clone(),
+        _ => return Err(Error(
+            "Unexpected state: No CurrentUserPrompt::AcceptConnection found when reading SIOPv2 authorization request"
+                .to_string(),
+        )),
     };
 
     let state_guard = state.core_utils.managers.lock().await;
@@ -54,28 +55,16 @@ pub async fn handle_siopv2_authorization_request(state: AppState, _action: Actio
     }
     info!("SIOPv2 response successfully sent");
 
-    let ClientMetadata {
-        client_name,
-        logo_uri,
-        connection_url,
-        client_id,
-        ..
-    } = get_siopv2_client_metadata(&siopv2_authorization_request).await?;
-
-    if logo_uri.is_some() {
-        warn!("Skipping download of client logo as it should have already been downloaded in `read_authorization_request()` and be present in /assets/tmp folder");
-    }
-
-    let did = CoreDID::parse(client_id).map_err(|e| AppError::Error(format!("Failed to parse DID: {e}")))?;
-
     let mut connections = state.connections;
-    let connection = connections.update_or_insert(&connection_url, &client_name, did);
+    let connection = connections.update_or_insert(
+        &client_metadata.connection_url,
+        &client_metadata.client_name,
+        client_metadata.client_id,
+    );
 
-    let file_name = match logo_uri {
-        Some(logo_uri) => hash(logo_uri.as_str()),
-        None => "_".to_string(),
-    };
-    persist_asset(&file_name, &connection.id).ok();
+    if let Some(logo_uri) = client_metadata.logo_uri {
+        persist_asset(&hash(logo_uri.as_str()), &connection.id).ok();
+    }
 
     // History
     let mut history = state.history;
@@ -96,61 +85,4 @@ pub async fn handle_siopv2_authorization_request(state: AppState, _action: Actio
         history,
         ..state
     })
-}
-
-// Helper
-
-// TODO: move this functionality to the oid4vc-manager crate.
-// TODO: this fn is nearly an exact copy of the fn `get_oid4vp_client_name_and_logo_uri`, find a simple way to put this into one generic helper.
-
-pub async fn get_siopv2_client_metadata(
-    siopv2_authorization_request: &AuthorizationRequest<Object<SIOPv2>>,
-) -> Result<ClientMetadata, AppError> {
-    let redirect_uri = siopv2_authorization_request.body.uri.uri().clone();
-    // Inner workings of `origin()` and `ascii_serialization()` are slightly unusual and basically return a "null" string when the operation failed.
-    let origin = redirect_uri.origin().ascii_serialization();
-    let connection_url = if origin == "null" {
-        redirect_uri.as_str()
-    } else {
-        origin.as_str()
-    };
-
-    let client_id = strip_client_id_prefix(&siopv2_authorization_request.body.client_id);
-
-    // Get the client_name and logo_uri from the client_metadata if it exists.
-    Ok(match &siopv2_authorization_request.body.extension.client_metadata {
-        ClientMetadataResource::ClientMetadata {
-            client_name, logo_uri, ..
-        } => {
-            let client_name = client_name.as_ref().cloned().unwrap_or(connection_url.to_string());
-            let mut logo_uri = logo_uri.as_ref().map(|logo_uri| logo_uri.to_string());
-
-            if let Some(logo_uri_str) = logo_uri.clone() {
-                if download_logo(&logo_uri_str).await.is_none() {
-                    // If the logo download fails, we don't throw an error.
-                    logo_uri = None;
-                }
-            } else {
-                warn!("No logo URI found");
-            }
-
-            Ok(ClientMetadata {
-                client_name,
-                logo_uri,
-                connection_url: connection_url.to_string(),
-                client_id: client_id.clone(),
-                redirect_uri: Some(redirect_uri.to_string()),
-            })
-        }
-        // TODO: support `client_metadata_uri`
-        ClientMetadataResource::ClientMetadataUri(_) => Err(Error("Client metadata URI not supported".to_string())),
-    }
-    // Otherwise use the connection_url as the client_name.
-    .unwrap_or_else(|_| ClientMetadata {
-        client_name: connection_url.to_string(),
-        logo_uri: None,
-        connection_url: connection_url.to_string(),
-        client_id,
-        redirect_uri: Some(redirect_uri.to_string()),
-    }))
 }

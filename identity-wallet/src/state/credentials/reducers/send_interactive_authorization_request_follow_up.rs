@@ -19,7 +19,8 @@ use log::{debug, info};
 use oid4vc::oid4vci::InteractiveAuthorizationFollowUpRequest;
 use std::sync::Arc;
 
-/// NOTE: the happy path of this reducer is directly chained to the `send_token_request` reducer via the return
+/// Handles the interactive `CredentialsSelected` action, which is triggered after accepting the `ShareCredentials` prompt set by `handle_credential_offer`.
+/// This reducer is directly chained to the `send_token_request` reducer via the return, retrieving the credentials.
 #[tracing::instrument(skip_all, err)]
 pub async fn send_interactive_authorization_request_follow_up(
     state: AppState,

@@ -18,9 +18,10 @@ use oid4vc::{
     oid4vci::credential_format_profiles::CredentialFormats, oid4vp::dcql_evaluation::evaluate_credential_query,
 };
 
-// Reads the request url from the payload and validates it.
-// TODO: improve naming & docs, this fn currently only reads OID4VP authorization requests, but the name is more generic.
-pub async fn read_authorization_request(state: AppState, _action: Action) -> Result<AppState, AppError> {
+/// Reads the active OID4VP request from the active flow after the `AcceptConnection` prompt is accepted and the `ConnectionAccepted` action is send back from the Frontend.
+/// This function validates the request, and sets the next CurrentUserPrompt to non-interactive `ShareCredentials`.
+/// Non-interactive `CredentialsSelected` is handled by `handle_oid4vp_authorization_request`.
+pub async fn read_oid4vp_authorization_request(state: AppState, _action: Action) -> Result<AppState, AppError> {
     info!("read_authorization_request");
 
     let oid4vp_authorization_request = match state.core_utils.active_flow.clone() {
@@ -117,10 +118,7 @@ pub async fn read_authorization_request(state: AppState, _action: Action) -> Res
 
     drop(state_guard);
 
-    if let Some(CurrentUserPrompt::AcceptConnection {
-        client_name, logo_uri, ..
-    }) = &state.current_user_prompt
-    {
+    if let Some(CurrentUserPrompt::AcceptConnection { client_metadata, .. }) = &state.current_user_prompt {
         // TODO: communicate when no credentials are available.
         if !uuids.is_empty() {
             Ok(AppState {
@@ -132,8 +130,8 @@ pub async fn read_authorization_request(state: AppState, _action: Action) -> Res
                     ..state.core_utils
                 },
                 current_user_prompt: Some(CurrentUserPrompt::ShareCredentials {
-                    client_name: client_name.clone(),
-                    logo_uri: logo_uri.clone(),
+                    client_name: client_metadata.client_name.clone(),
+                    logo_uri: client_metadata.logo_uri.clone(),
                     options: uuids,
                     is_interactive: false,
                 }),
@@ -143,7 +141,7 @@ pub async fn read_authorization_request(state: AppState, _action: Action) -> Res
             Err(NoMatchingCredentialError)
         }
     } else {
-        warn!("Unexpected state: No current user prompt found when reading authorization request");
+        warn!("Unexpected state: No CurrentUserPrompt::AcceptConnection found when reading authorization request");
         Ok(state)
     }
 }

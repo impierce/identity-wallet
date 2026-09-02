@@ -234,7 +234,14 @@ async fn get_validated_linked_credential_data(
 
                         debug!("LinkedVerifiableCredentialData: name: {credential_name:?}, credential_logo_uri: {credential_logo_uri:?}, issuer_name: {issuer_name:?}, issuer_logo_uri: {issuer_logo_uri:?}, issuance_date: {issuance_date}, validated_linked_domains: {linked_domains:#?}");
 
-                        let mut verifiable_credential_record = VerifiableCredentialRecord::try_new(CredentialFormats::JwtVcJson(()), serde_json::json!(linked_verifiable_credential_jwt), vec![]).unwrap();
+                        let Ok(mut verifiable_credential_record) = VerifiableCredentialRecord::try_new(
+                            CredentialFormats::JwtVcJson(()),
+                            serde_json::json!(linked_verifiable_credential_jwt),
+                            vec![],
+                        ) else {
+                            warn!("Failed to create `verifiable_credential_record` for linked verifiable credential");
+                            return None;
+                        };
 
                         verifiable_credential_record.display_credential.credential_status = get_credential_status(&verifiable_credential_record, subject).await;
                         verifiable_credential_record.display_credential.display_name = credential_name.unwrap_or_default();
@@ -299,13 +306,8 @@ async fn get_validated_linked_domains(
             }
         };
 
-        if validation_result.status == ValidationStatus::Success {
-            info!("Successfully validated domain linkage for issuer linked domain: {issuer_linked_domain}");
-            Some(validation_result)
-        } else {
-            warn!("Failed to validate domain linkage for issuer linked domain: {issuer_linked_domain}");
-            None
-        }
+        info!("Validation of domain linkage for issuer linked domain '{issuer_linked_domain}' resulted in: {validation_result:?}");
+        Some(validation_result)
     }))
     .filter_map(|result| async move { result })
     .collect()

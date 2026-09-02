@@ -19,7 +19,7 @@ use crate::{
     },
     subject::Subject,
 };
-use identity_iota::did::CoreDID;
+use identity_iota::did::{CoreDID, DID};
 use log::{debug, info, warn};
 use oauth_tsl::{status_list::StatusType, tokens::referenced_token::StatusClaim};
 use oid4vc::{
@@ -231,6 +231,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             credential_configuration_ids.contains(credential_configuration_id)
         });
 
+        // TODO: currently this is somewhat duplicate since the full ClientMetadata is not stored in the new CurrentUserPrompt::CredentialOffer state, but we should consider storing it there to avoid this duplication.
         let did_doc = get_http_client()
             .await
             .get(format!(
@@ -258,7 +259,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
         };
 
         // Create or update the connection.
-        let previously_connected = state.connections.contains(&connection_url, &issuer_name);
+        let previously_connected = state.connections.contains(did.as_str());
         let mut connections = state.connections;
         let connection = connections.update_or_insert(&connection_url, &issuer_name, did);
 
@@ -412,11 +413,9 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             .map(|verifiable_credential_record| verifiable_credential_record.display_credential)
             .collect();
 
-        let file_name = match logo_uri {
-            Some(logo_uri) => hash(logo_uri.as_str()),
-            None => "_".to_string(),
-        };
-        persist_asset(&file_name, &connection.id).ok();
+        if let Some(logo_uri) = logo_uri {
+            persist_asset(&hash(logo_uri.as_str()), &connection.id).ok();
+        }
 
         // History
         let mut history = state.history;
