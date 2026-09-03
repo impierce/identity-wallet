@@ -12,7 +12,7 @@ use crate::{
     },
 };
 
-use log::{debug, info};
+use log::{debug, info, warn};
 
 /// Handles the `ConnectionAccepted` action for the SIOPv2 active flow, triggered by accepting `AcceptConnection` prompt and persists the connection.
 /// Sends the SIOPv2 authorization response.

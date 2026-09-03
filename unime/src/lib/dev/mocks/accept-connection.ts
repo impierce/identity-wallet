@@ -2,6 +2,7 @@ import type { CredentialStatus } from '@bindings/credentials/CredentialStatus';
 import type { EventType } from '@bindings/history/EventType';
 import type { HistoryCredential } from '@bindings/history/HistoryCredential';
 import type { HistoryEvent } from '@bindings/history/HistoryEvent';
+import type { ClientMetadata } from '@bindings/user_prompt/ClientMetadata';
 import type { LinkedVerifiableCredentialData } from '@bindings/user_prompt/LinkedVerifiableCredentialData';
 import type { ValidationStatus } from '@bindings/user_prompt/ValidationStatus';
 
@@ -9,13 +10,24 @@ import type { AcceptConnectionPrompt } from './resolve';
 
 const base: AcceptConnectionPrompt = {
   type: 'accept-connection',
-  client_name: 'BestDex',
-  logo_uri: 'https://bestdex.com/logo.png',
-  redirect_uri: 'https://www.bestdex.com/callback',
+  client_metadata: {
+    client_name: 'BestDex',
+    logo_uri: 'https://bestdex.com/logo.png',
+    connection_url: 'https://www.bestdex.com',
+    redirect_uri: 'https://www.bestdex.com/callback',
+    // Always a DID: the backend rejects a client_id it cannot parse as one.
+    client_id: 'did:web:bestdex.com',
+  },
   domain_validation: { status: 'Success', url: 'https://www.bestdex.com/' },
   linked_verifiable_presentations: [],
   ecosystems: [],
 };
+
+/** Overrides a single `client_metadata` field without flattening the rest of the prompt. */
+const withClientMetadata = (overrides: Partial<ClientMetadata>): AcceptConnectionPrompt => ({
+  ...base,
+  client_metadata: { ...base.client_metadata, ...overrides },
+});
 
 /** Readable, stable ids: they end up in the detail route's URL. */
 const slug = (name: string) =>
@@ -135,10 +147,11 @@ export const mocks = {
     },
   },
   'unknown-domain': { ...base, domain_validation: { status: 'Unknown', url: 'https://www.bestdex.com/' } },
-  'long-name': { ...base, client_name: 'Stichting Nederlandse Organisatie voor Wetenschappelijk Onderzoek' },
-  'no-logo': { ...base, logo_uri: undefined },
-  // No `redirect_uri`: the domain line disappears and the validation pill stands alone.
-  'no-redirect': { ...base, redirect_uri: undefined },
+  'long-name': withClientMetadata({
+    client_name: 'Stichting Nederlandse Organisatie voor Wetenschappelijk Onderzoek',
+  }),
+  'no-logo': withClientMetadata({ logo_uri: null }),
+  'no-domain': withClientMetadata({ connection_url: 'not a url' }),
 
   // M2 — certifications
   'certs-one': { ...base, linked_verifiable_presentations: certifications.slice(0, 1) },
