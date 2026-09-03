@@ -12,7 +12,7 @@ use crate::{
     },
 };
 
-use log::{debug, info, warn};
+use log::{debug, info};
 
 /// Handles the `ConnectionAccepted` action for the SIOPv2 active flow, triggered by accepting `AcceptConnection` prompt and persists the connection.
 /// Sends the SIOPv2 authorization response.
@@ -50,7 +50,7 @@ pub async fn handle_siopv2_authorization_request(state: AppState, _action: Actio
 
     #[cfg(not(feature = "test_utils"))]
     if provider_manager.send_response(&response).await.is_err() {
-        warn!("Failed to send SIOPv2 authorization response to redirect_uri");
+        log::warn!("Failed to send SIOPv2 authorization response to redirect_uri");
         return Err(SendAuthorizationResponseError);
     }
     info!("SIOPv2 response successfully sent");

@@ -2,6 +2,7 @@ use crate::state::connections::Connections;
 use crate::state::core_utils::IdentityManager;
 use crate::state::credentials::reducers::self_issue_credential::SubjectWrapper;
 use crate::state::credentials::Sha256Hasher;
+use crate::state::qr_code::reducers::accept_connection::get_oid4vp_client_metadata;
 use crate::state::user_prompt::ClientMetadata;
 use crate::stronghold::StrongholdManager;
 use crate::subject::Subject;
@@ -106,15 +107,9 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
 
         let mut connections = state.connections;
         let mut history = state.history;
-        let client_metadata = match &state.current_user_prompt {
-            Some(CurrentUserPrompt::AcceptConnection { client_metadata, .. }) => client_metadata.clone(),
-            _ => {
-                return Err(Error(
-                    "Unexpected state: No CurrentUserPrompt::AcceptConnection found when reading OID4VP authorization request"
-                        .to_string(),
-                ))
-            }
-        };
+
+        // TODO: this is kinda duplicate, we should probably refactor to pass on the ClientMetadata retrieved in fn `accept_connection` to avoid re-fetching it here, but for now this works.
+        let client_metadata = get_oid4vp_client_metadata(&oid4vp_authorization_request).await?;
 
         update_history_and_connections(history_credentials, &client_metadata, &mut connections, &mut history).await?;
 
