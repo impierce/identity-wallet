@@ -3,7 +3,10 @@ use crate::{
     http_client::get_http_client,
     state::{
         actions::{listen, Action},
-        core_utils::{helpers::download_logo, ActiveFlow, CoreUtils, Oid4vciStage},
+        core_utils::{
+            helpers::{download_logo, normalize_connection_url},
+            ActiveFlow, CoreUtils, Oid4vciStage,
+        },
         did::validate_linked_verifiable_presentations::{
             validate_linked_verifiable_presentations, LinkedVerifiableCredentialData,
         },
@@ -243,15 +246,8 @@ async fn get_siopv2_client_metadata(
     siopv2_authorization_request: &AuthorizationRequest<Object<SIOPv2>>,
 ) -> Result<ClientMetadata, AppError> {
     let redirect_uri = siopv2_authorization_request.body.uri.uri().clone();
-    let origin = redirect_uri.origin().ascii_serialization();
-    let connection_url = if origin == "null" {
-        redirect_uri.to_string()
-    } else {
-        origin
-    };
+    let connection_url = normalize_connection_url(&redirect_uri);
 
-    // This means we only accept DID's as client IDs
-    // TODO put this in a ADR along with the logging sensitive info decision
     let client_id = strip_client_id_prefix(&siopv2_authorization_request.body.client_id);
     let client_id =
         CoreDID::parse(&client_id).map_err(|e| AppError::Error(format!("Failed to parse client_id as DID: {e}")))?;
@@ -298,12 +294,7 @@ pub(crate) async fn get_oid4vp_client_metadata(
     oid4vp_authorization_request: &AuthorizationRequest<Object<OID4VP>>,
 ) -> Result<ClientMetadata, AppError> {
     let redirect_uri = oid4vp_authorization_request.body.uri.uri().clone();
-    let origin = redirect_uri.origin().ascii_serialization();
-    let connection_url = if origin == "null" {
-        redirect_uri.to_string()
-    } else {
-        origin
-    };
+    let connection_url = normalize_connection_url(&redirect_uri);
     let client_id = CoreDID::parse(strip_client_id_prefix(&oid4vp_authorization_request.body.client_id))
         .map_err(|error| AppError::Error(format!("Failed to parse client_id as DID: {error}")))?;
 
@@ -348,14 +339,10 @@ async fn get_oid4vci_client_metadata(
         .wallet;
 
     let credential_issuer_url = credential_offer.credential_issuer.clone();
-    let origin = credential_issuer_url.origin().ascii_serialization();
-    let connection_url = if origin == "null" {
-        credential_issuer_url.to_string()
-    } else {
-        origin
-    };
+    let connection_url = normalize_connection_url(&credential_issuer_url);
 
     info!("credential issuer url: {credential_issuer_url:?}");
+    info!("connection url: {connection_url:?}");
 
     let credential_issuer_metadata = wallet
         .get_credential_issuer_metadata(credential_issuer_url.clone())
@@ -371,7 +358,7 @@ async fn get_oid4vci_client_metadata(
             let issuer_name = display["name"]
                 .as_str()
                 .map(ToString::to_string)
-                .unwrap_or_else(|| credential_issuer_url.to_string());
+                .unwrap_or_else(|| connection_url.clone());
             let mut logo_uri = display["logo"]["uri"].as_str().map(ToString::to_string);
 
             if let Some(logo_uri_str) = &logo_uri {
@@ -384,9 +371,11 @@ async fn get_oid4vci_client_metadata(
 
             (issuer_name, logo_uri)
         }
-        None => (credential_issuer_url.to_string(), None),
+        None => (connection_url.clone(), None),
     };
 
+    // This fetching of the DID document means that our OID4VCI implementation only accepts did:web's as client IDs.
+    // Read more about this design decision in ADR 0001.
     let did_doc = get_http_client()
         .await
         .get(format!(
@@ -398,8 +387,6 @@ async fn get_oid4vci_client_metadata(
         .json::<Value>()
         .await?;
 
-    // This means we only accept DID's as client IDs
-    // TODO put this in a ADR along with the logging sensitive info decision
     let client_id = did_doc
         .get("id")
         .and_then(Value::as_str)

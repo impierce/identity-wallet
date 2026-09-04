@@ -5,7 +5,7 @@ use crate::{
     state::{
         actions::{listen, Action},
         core_utils::{
-            helpers::{validate_credential_types, validate_jwt_vc_json},
+            helpers::{normalize_connection_url, validate_credential_types, validate_jwt_vc_json},
             history_event::{EventType, HistoryCredential, HistoryEvent},
             ActiveFlow, CoreUtils, DateUtils, Oid4vciStage,
         },
@@ -202,24 +202,19 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             .as_ref()
             .and_then(|display| display.first().cloned());
 
-        // Get the connection url from the credential issuer url host (or use the credential issuer url if it does not
-        // contain a host). // TODO
-        let issuer_url_host = credential_issuer_url
-            .host_str()
-            .unwrap_or(credential_issuer_url.as_str());
+        let connection_url = normalize_connection_url(&credential_issuer_url);
 
-        // Get the credential issuer name or use the credential issuer url.
+        // Get the credential issuer name or use the normalized credential issuer url.
         let issuer_name = display
             .map(|display| {
-                let issuer_name = display["name"]
+                display["name"]
                     .as_str()
                     .map(ToString::to_string)
                     // TODO(ngdil): Remove this fallback.
                     .or_else(|| display["client_name"].as_str().map(ToString::to_string))
-                    .unwrap_or(issuer_url_host.to_string());
-                issuer_name
+                    .unwrap_or(connection_url.clone())
             })
-            .unwrap_or(issuer_url_host.to_string());
+            .unwrap_or(connection_url.clone());
 
         let mut credential_configurations_supported =
             credential_issuer_metadata.credential_configurations_supported.clone();
@@ -232,6 +227,8 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
         });
 
         // TODO: currently this is somewhat duplicate since the full ClientMetadata is not stored in the new CurrentUserPrompt::CredentialOffer state, but we should consider storing it there to avoid this duplication.
+        // This fetching of the DID document means that our OID4VCI implementation only accepts did:web's as client IDs.
+        // Read more about this design decision in ADR 0001.
         let did_doc = get_http_client()
             .await
             .get(format!(
@@ -250,13 +247,6 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             .to_string();
 
         let did = CoreDID::parse(did_str).map_err(|e| AppError::Error(format!("Failed to parse DID: {e}")))?;
-
-        let origin = credential_issuer_url.origin().ascii_serialization();
-        let connection_url = if origin == "null" {
-            credential_issuer_url.to_string()
-        } else {
-            origin
-        };
 
         // Create or update the connection.
         let previously_connected = state.connections.contains(did.as_str());

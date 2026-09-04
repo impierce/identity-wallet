@@ -44,14 +44,14 @@ impl Connections {
     /// the last interaction time and returns a reference to the connection.
     pub fn update_or_insert(&mut self, url: &str, name: &str, did: CoreDID) -> &Connection {
         if self.contains(did.as_str()) {
-            info!("Updating existing connection: {name} {url}");
+            info!("Updating existing connection: {name}, {url}, {did}");
             self.get_mut(did.as_str()).map(|connection| {
-                connection.did = did.to_string();
+                // TODO: what to do here when any information besides the DID has changed?
                 connection.update_last_interaction_time();
                 &*connection
             })
         } else {
-            info!("Inserting new connection: {name} {url}");
+            info!("Inserting new connection: {name}, {url}, {did}");
             self.insert(Connection::new(name.to_string(), url.to_string(), did.to_string()))
         }
         .expect("Failed to update or insert connection")
@@ -139,7 +139,7 @@ mod tests {
     }
 
     #[test]
-    fn test_update_or_insert_with_duplicate_names() {
+    fn test_update_or_insert_distinguishes_connections_by_did() {
         let mut connections = Connections::new();
         let did = CoreDID::from_str("did:example:123").unwrap();
         let url = "https://example.com";
@@ -151,36 +151,15 @@ mod tests {
         assert_eq!(connections.0.len(), 1);
         assert!(connections.contains(did.as_str()));
 
-        // A different server with the same name is treated as a different connection.
-        let url = "https://example2.com";
-        let connection = connections.update_or_insert(url, name, did.clone());
-        assert_eq!(connection.url, url);
+        // A different DID is a different connection, even when the display name is identical.
+        let other_did = CoreDID::from_str("did:example:456").unwrap();
+        let other_url = "https://example2.com";
+        let connection = connections.update_or_insert(other_url, name, other_did.clone());
+        assert_eq!(connection.url, other_url);
         assert_eq!(connection.name, name);
         assert_eq!(connection.first_interacted, connection.last_interacted);
         assert_eq!(connections.0.len(), 2);
         assert!(connections.contains(did.as_str()));
-    }
-
-    #[test]
-    fn test_update_or_insert_with_duplicate_urls() {
-        let mut connections = Connections::new();
-        let did = CoreDID::from_str("did:example:123").unwrap();
-        let url = "https://example.com";
-        let name = "Example";
-        let connection = connections.update_or_insert(url, name, did.clone());
-        assert_eq!(connection.url, url);
-        assert_eq!(connection.name, name);
-        assert_eq!(connection.first_interacted, connection.last_interacted);
-        assert_eq!(connections.0.len(), 1);
-        assert!(connections.contains(did.as_str()));
-
-        // The same server is used with a different name.
-        let name = "Example2";
-        let connection = connections.update_or_insert(url, name, did.clone());
-        assert_eq!(connection.url, url);
-        assert_eq!(connection.name, name);
-        assert_eq!(connection.first_interacted, connection.last_interacted);
-        assert_eq!(connections.0.len(), 2);
-        assert!(connections.contains(did.as_str()));
+        assert!(connections.contains(other_did.as_str()));
     }
 }

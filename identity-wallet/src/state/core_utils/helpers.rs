@@ -12,6 +12,18 @@ use oid4vc::oid4vc_core::Verify;
 use serde_json::Value;
 use std::fs::File;
 
+/// Authorization requests and redirect_uris can reach UniMe as complex URL's with many query parameters or paths.
+/// This function normalizes a party's URL to its origin, the single format used to store and display connection URLs.
+/// Opaque origins serialize to `"null"`, in which case the full URL is kept.
+pub fn normalize_connection_url(url: &url::Url) -> String {
+    let origin = url.origin().ascii_serialization();
+    if origin == "null" {
+        url.to_string()
+    } else {
+        origin
+    }
+}
+
 /// Downloads the logo from the given logo URI and stores it in the assets folder, returns None if it errors.
 pub async fn download_logo(logo_uri_str: &str) -> Option<String> {
     match logo_uri_str.parse() {
