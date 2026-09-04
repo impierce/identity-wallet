@@ -1,5 +1,6 @@
 use crate::{
     error::AppError::{self, *},
+    http_client::get_http_client,
     persistence::{hash, persist_asset},
     state::{
         actions::{listen, Action},
@@ -18,6 +19,7 @@ use crate::{
     },
     subject::Subject,
 };
+use identity_iota::did::{CoreDID, DID};
 use log::{debug, info, warn};
 use oauth_tsl::{status_list::StatusType, tokens::referenced_token::StatusClaim};
 use oid4vc::{
@@ -28,7 +30,7 @@ use oid4vc::{
         credential_response::CredentialResponseType, token_request::TokenRequest,
     },
 };
-use serde_json::json;
+use serde_json::{json, Value};
 use std::collections::HashMap;
 use uuid::Uuid;
 
@@ -201,8 +203,8 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             .and_then(|display| display.first().cloned());
 
         // Get the connection url from the credential issuer url host (or use the credential issuer url if it does not
-        // contain a host).
-        let connection_url = credential_issuer_url
+        // contain a host). // TODO
+        let issuer_url_host = credential_issuer_url
             .host_str()
             .unwrap_or(credential_issuer_url.as_str());
 
@@ -214,10 +216,10 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                     .map(ToString::to_string)
                     // TODO(ngdil): Remove this fallback.
                     .or_else(|| display["client_name"].as_str().map(ToString::to_string))
-                    .unwrap_or(connection_url.to_string());
+                    .unwrap_or(issuer_url_host.to_string());
                 issuer_name
             })
-            .unwrap_or(connection_url.to_string());
+            .unwrap_or(issuer_url_host.to_string());
 
         let mut credential_configurations_supported =
             credential_issuer_metadata.credential_configurations_supported.clone();
@@ -229,10 +231,37 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             credential_configuration_ids.contains(credential_configuration_id)
         });
 
+        // TODO: currently this is somewhat duplicate since the full ClientMetadata is not stored in the new CurrentUserPrompt::CredentialOffer state, but we should consider storing it there to avoid this duplication.
+        let did_doc = get_http_client()
+            .await
+            .get(format!(
+                "{}/.well-known/did.json",
+                credential_issuer_url.to_string().trim_end_matches('/')
+            ))
+            .send()
+            .await?
+            .json::<Value>()
+            .await?;
+
+        let did_str = did_doc
+            .get("id")
+            .and_then(|id| id.as_str())
+            .ok_or(AppError::DidParseError)?
+            .to_string();
+
+        let did = CoreDID::parse(did_str).map_err(|e| AppError::Error(format!("Failed to parse DID: {e}")))?;
+
+        let origin = credential_issuer_url.origin().ascii_serialization();
+        let connection_url = if origin == "null" {
+            credential_issuer_url.to_string()
+        } else {
+            origin
+        };
+
         // Create or update the connection.
-        let previously_connected = state.connections.contains(connection_url, &issuer_name);
+        let previously_connected = state.connections.contains(did.as_str());
         let mut connections = state.connections;
-        let connection = connections.update_or_insert(connection_url, &issuer_name, None);
+        let connection = connections.update_or_insert(&connection_url, &issuer_name, did);
 
         let mut history_credentials = vec![];
 
@@ -384,11 +413,9 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             .map(|verifiable_credential_record| verifiable_credential_record.display_credential)
             .collect();
 
-        let file_name = match logo_uri {
-            Some(logo_uri) => hash(logo_uri.as_str()),
-            None => "_".to_string(),
-        };
-        persist_asset(&file_name, &connection.id).ok();
+        if let Some(logo_uri) = logo_uri {
+            persist_asset(&hash(logo_uri.as_str()), &connection.id).ok();
+        }
 
         // History
         let mut history = state.history;

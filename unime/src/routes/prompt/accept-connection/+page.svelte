@@ -41,16 +41,15 @@
     if (next) prompt = next;
   }
 
-  $: ({ client_name, logo_uri, redirect_uri, connection_data, domain_validation } = prompt);
+  $: ({ client_metadata, connection_data, domain_validation } = prompt);
+  $: ({ client_name, logo_uri, connection_url } = client_metadata);
 
   $: certifications = prompt.linked_verifiable_presentations ?? [];
 
   $: collapsible = !!connection_data;
 
   $: profile_settings = $appState.profile_settings;
-  // `redirect_uri` is optional on the prompt, and the helper swallows a malformed one. A raw
-  // `new URL()` here would throw and take the whole page down.
-  $: domain = redirect_uri ? hostname(redirect_uri) : undefined;
+  $: domain = hostname(connection_url);
   $: imageId = logo_uri ? hash(logo_uri) : '_';
 
   // For DEV previews only: `?mock=` renders a fixture instead of a real prompt.
@@ -95,13 +94,12 @@
       <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
         {client_name}
       </p>
-      <div class="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 pt-[10px]">
-        {#if domain}
-          <p class="text-[13px]/[20px] font-normal text-text-alt">
-            {domain}
-          </p>
-          <span class="text-[13px]/[20px] text-slate-300 dark:text-slate-500" aria-hidden="true">·</span>
-        {/if}
+      {#if domain}
+        <p class="pt-[10px] text-[13px]/[20px] font-normal text-text-alt">
+          {domain}
+        </p>
+      {/if}
+      <div class="flex justify-center pt-[6px]">
         <DomainPill status={domain_validation.status} />
       </div>
     </div>
@@ -198,12 +196,13 @@
     <Button
       label={$LL.SCAN.CONNECTION_REQUEST.ACCEPT()}
       on:click={() => {
+        // In a mock preview there is no backend to answer, so leaving `loading` set would
+        // spin forever. Only latch it when a real dispatch is on its way.
+        if (isMock) return;
         loading = true;
-        if (!isMock) {
-          dispatch({
-            type: '[Authenticate] Connection accepted',
-          });
-        }
+        dispatch({
+          type: '[Authenticate] Connection accepted',
+        });
       }}
       {loading}
     />

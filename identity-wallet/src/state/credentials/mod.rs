@@ -221,10 +221,8 @@ impl VerifiableCredentialRecord {
                             claims.get("nbf").or_else(|| claims.get("iat")).and_then(|v| {
                                 if let Some(secs) = v.as_i64() {
                                     chrono::DateTime::from_timestamp(secs, 0).map(|dt| dt.to_rfc3339())
-                                } else if let Some(s) = v.as_str() {
-                                    Some(s.to_string())
                                 } else {
-                                    None
+                                    v.as_str().map(|s| s.to_string())
                                 }
                             })
                         })
@@ -240,10 +238,8 @@ impl VerifiableCredentialRecord {
                             claims.get("exp").and_then(|v| {
                                 if let Some(secs) = v.as_i64() {
                                     chrono::DateTime::from_timestamp(secs, 0).map(|dt| dt.to_rfc3339())
-                                } else if let Some(s) = v.as_str() {
-                                    Some(s.to_string())
                                 } else {
-                                    None
+                                    v.as_str().map(|s| s.to_string())
                                 }
                             })
                         });

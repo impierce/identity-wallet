@@ -1,5 +1,5 @@
 use crate::reducer;
-use crate::state::credentials::reducers::send_credential_request::send_credential_request;
+use crate::state::credentials::reducers::send_credential_request::handle_credential_offer;
 use crate::state::profile_settings::reducers::update_sorting_preference::{sort_connections, sort_credentials};
 use crate::state::{actions::ActionTrait, Reducer};
 
@@ -19,7 +19,7 @@ pub struct CredentialOffersSelected {
 impl ActionTrait for CredentialOffersSelected {
     fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
         vec![
-            reducer!(send_credential_request),
+            reducer!(handle_credential_offer),
             reducer!(sort_credentials),
             reducer!(sort_connections), // TODO: remove this sort_connections, only after trust_connection
         ]
