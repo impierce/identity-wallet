@@ -1,50 +1,72 @@
 <script lang="ts">
-  import { onDestroy } from 'svelte';
+  import { onDestroy, onMount } from 'svelte';
 
   import { goto } from '$app/navigation';
+  import { page } from '$app/state';
   import LL from '$i18n/i18n-svelte';
 
-  import type { CurrentUserPrompt } from '@bindings/user_prompt/CurrentUserPrompt';
+  import { debug } from '@tauri-apps/plugin-log';
 
-  import { Button, Image, PaddedIcon, StatusIndicator, TopNavBar } from '$lib/components';
+  import { Button, Image, PaddedIcon, TopNavBar } from '$lib/components';
+  import { isMockPrompt, resolveAcceptConnectionPrompt } from '$lib/dev/mocks/resolve';
   import { dispatch } from '$lib/dispatcher';
-  import { PlugsConnectedFillIcon, WarningCircleFillIcon } from '$lib/icons';
-  import { error, state } from '$lib/stores';
-  import { formatDate, hash } from '$lib/utils';
+  import { PlugsConnectedFillIcon, ShieldCheckRegularIcon, WarningCircleFillIcon } from '$lib/icons';
+  import { state as appState, error } from '$lib/stores';
+  import { formatRelativeDateTime, hash } from '$lib/utils';
+  import { hostname } from '$lib/utils/url';
 
-  const profile_settings = $state.profile_settings;
+  import CertificationCard from './CertificationCard.svelte';
+  import CertificationsSummary from './CertificationsSummary.svelte';
+  import DomainPill from './DomainPill.svelte';
+  import InteractionTiles from './InteractionTiles.svelte';
+  import SectionHeader from './SectionHeader.svelte';
+
+  // How many certifications to show before linking to the full list.
+  const PREVIEW_COUNT = 3;
 
   let loading = false;
 
-  // TypeScript does not know that the `current_user_prompt` is of type `accept-connection`.
-  // Extract the type from `CurrentUserPrompt`.
-  type IsAcceptConnectionPrompt<T> = T extends { type: 'accept-connection' } ? T : never;
-  type AcceptConnectionPrompt = IsAcceptConnectionPrompt<CurrentUserPrompt>;
+  // A known connection already shows the "Connected" panel and the interaction tiles, which
+  // push Accept below the fold. Fold the certification cards away behind a count until asked;
+  // a new connection has the room, so it shows them outright.
+  let certificationsExpanded = false;
 
-  const {
-    client_name,
-    domain_validation,
-    logo_uri,
-    previously_connected,
-    redirect_uri,
-    linked_verifiable_presentations,
-  } = $state.current_user_prompt as AcceptConnectionPrompt;
+  // Latch the prompt. After the user accepts, the backend clears `current_user_prompt`
+  // and pushes new state; without this, the destructure below would run against `null`
+  // before we have navigated away. The page is only ever reached with an active
+  // prompt, so the initial value is non-null.
+  let prompt = resolveAcceptConnectionPrompt(page.url, $appState)!;
+  $: {
+    const next = resolveAcceptConnectionPrompt(page.url, $appState);
+    if (next) prompt = next;
+  }
 
-  $: ({ hostname } = new URL(redirect_uri));
+  $: ({ client_metadata, connection_data, domain_validation } = prompt);
+  $: ({ client_name, logo_uri, connection_url } = client_metadata);
+
+  $: certifications = prompt.linked_verifiable_presentations ?? [];
+
+  $: collapsible = !!connection_data;
+
+  $: profile_settings = $appState.profile_settings;
+  $: domain = hostname(connection_url);
   $: imageId = logo_uri ? hash(logo_uri) : '_';
 
-  // When an error is received, cancel the flow and redirect to the "me" page
-  error.subscribe((err) => {
-    if (err) {
-      loading = false;
-      dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });
+  // For DEV previews only: `?mock=` renders a fixture instead of a real prompt.
+  $: isMock = isMockPrompt(page.url, $appState);
+
+  onMount(() => {
+    if ($appState.dev_mode !== 'Off' && domain_validation.message) {
+      debug(`Domain validation (${domain_validation.status}): ${domain_validation.message}`);
     }
   });
 
-  onDestroy(async () => {
-    // TODO: is onDestroy also called when user accepts since the component itself is destroyed?
-    dispatch({ type: '[User Flow] Cancel', payload: {} });
+  // Release the buttons on error. Cancelling the flow is the layout's job.
+  const unsubscribe = error.subscribe((err) => {
+    if (err) loading = false;
   });
+
+  onDestroy(unsubscribe);
 </script>
 
 <div class="safe-area-height flex hide-scrollbar flex-col items-stretch overflow-y-auto bg-silver dark:bg-navy">
@@ -55,12 +77,15 @@
     class="sticky top-0 z-10"
   />
 
-  <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
+  <div class="flex grow flex-col items-center space-y-6 p-4">
     {#if logo_uri}
-      <div
-        class="flex h-[75px] w-[75px] items-center justify-center overflow-hidden rounded-3xl bg-white p-2 dark:bg-silver"
-      >
-        <Image id={imageId} iconFallback="BankLight" isTempAsset={true} />
+      <div class="flex h-[75px] w-[75px] items-center justify-center">
+        <Image
+          id={imageId}
+          iconFallback="BankLight"
+          isTempAsset={true}
+          imgClass="size-full rounded-3xl bg-transparent object-contain"
+        />
       </div>
     {:else}
       <PaddedIcon icon={PlugsConnectedFillIcon} />
@@ -69,17 +94,21 @@
       <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
         {client_name}
       </p>
-      <p class="pt-[10px] text-sm font-medium text-slate-500">
-        <!-- TODO: make the apex domain bold for extra highlight, subdomain(s) slightly greyed out -->
-        {hostname}
-      </p>
+      {#if domain}
+        <p class="pt-[10px] text-[13px]/[20px] font-normal text-text-alt">
+          {domain}
+        </p>
+      {/if}
+      <div class="flex justify-center pt-[6px]">
+        <DomainPill status={domain_validation.status} />
+      </div>
     </div>
 
-    <!-- Details -->
-    <div class="w-full space-y-3 rounded-3xl bg-white p-3 dark:bg-dark">
-      <!-- Warning -->
-      {#if !previously_connected}
-        <div class="flex w-full items-center rounded-xl bg-silver p-4 dark:bg-navy">
+    <div class="w-full space-y-3">
+      {#if !connection_data}
+        <div
+          class="flex w-full items-center rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-600 dark:bg-dark"
+        >
           <span class="mr-4 h-6 w-6">
             <WarningCircleFillIcon class="h-6 w-6 text-amber-500" />
           </span>
@@ -94,58 +123,82 @@
         </div>
       {/if}
 
-      <!-- Connected previously -->
-      <StatusIndicator
-        status={previously_connected ? 'Success' : 'Failure'}
-        title={$LL.SCAN.CONNECTION_REQUEST.CONNECTED_PREVIOUSLY()}
-      />
-
-      <!-- Domain validation -->
-      <StatusIndicator status={domain_validation.status} title={$LL.DOMAIN_LINKAGE.TITLE()}>
-        <div class="text-[12px]/[20px] break-words" slot="popover">
-          {#if domain_validation.status === 'Success'}
-            <!-- TODO: add a better description of _what_ was validated -->
-            <p>{$LL.DOMAIN_LINKAGE.SUCCESS()}</p>
-          {:else if domain_validation.status === 'Failure'}
-            <p>{$LL.DOMAIN_LINKAGE.FAILURE()}</p>
-            <!-- TODO: pick a different color (bad contrast) -->
-            <p class="font-semibold text-rose-500">{$LL.DOMAIN_LINKAGE.CAUTION()}</p>
-          {:else}
-            <p>{$LL.DOMAIN_LINKAGE.UNKNOWN()}</p>
-            <!-- TODO: pick a different color (bad contrast) -->
-            <p class="font-semibold text-rose-500">{$LL.DOMAIN_LINKAGE.CAUTION()}</p>
-          {/if}
-          <!-- Dev Mode: Show additional message -->
-          {#if $state.dev_mode !== 'Off' && domain_validation.message}
-            <!-- TODO: dev_mode only: pick a different color (bad contrast) -->
-            <p class="text-rose-500">{domain_validation.message}</p>
-          {/if}
+      <!-- Connected previously: how long we have known this party, when was the last interaction -->
+      {#if connection_data}
+        <div
+          class="flex w-full items-center rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-600 dark:bg-dark"
+        >
+          <span class="mr-4 h-6 w-6 shrink-0">
+            <ShieldCheckRegularIcon class="h-6 w-6 text-green-500" />
+          </span>
+          <div class="flex flex-col">
+            <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
+              {$LL.SCAN.CONNECTION_REQUEST.KNOWN_CONNECTION()}
+            </p>
+            <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
+              {$LL.SCAN.CONNECTION_REQUEST.FIRST_INTERACTION({
+                duration: formatRelativeDateTime(connection_data.first_interacted_at, profile_settings.locale, {
+                  capitalize: false,
+                }),
+              })}
+            </p>
+            <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
+              {$LL.SCAN.CONNECTION_REQUEST.LAST_INTERACTION({
+                duration: formatRelativeDateTime(connection_data.last_interacted_at, profile_settings.locale, {
+                  capitalize: false,
+                }),
+              })}
+            </p>
+          </div>
         </div>
-      </StatusIndicator>
 
-      <!-- Linked Verifiable Presentations -->
-      {#each linked_verifiable_presentations as presentation}
-        {#if presentation.name}
-          {@const issuanceDate =
-            presentation.issuance_date && profile_settings.locale
-              ? formatDate(presentation.issuance_date, profile_settings.locale)
+        <InteractionTiles interactions={connection_data.interactions} />
+      {/if}
+    </div>
+
+    <!-- Certifications, sourced from the linked verifiable presentations. -->
+    {#if certifications.length > 0}
+      <section class="w-full">
+        {#if collapsible}
+          <!-- Collapsible: the header text toggles between the count and the cards. -->
+          <SectionHeader
+            title={$LL.SCAN.CONNECTION_REQUEST.CERTIFICATIONS()}
+            action={certificationsExpanded
+              ? $LL.SCAN.CONNECTION_REQUEST.SHOW_LESS()
+              : $LL.SCAN.CONNECTION_REQUEST.SHOW_MORE()}
+            on:action={() => (certificationsExpanded = !certificationsExpanded)}
+          />
+        {:else}
+          <SectionHeader
+            title={$LL.SCAN.CONNECTION_REQUEST.CERTIFICATIONS()}
+            href={certifications.length > PREVIEW_COUNT
+              ? `/prompt/accept-connection/certifications${page.url.search}`
               : undefined}
-          <StatusIndicator
-            status="Success"
-            title={presentation.name}
-            description={`${$LL.SORT.PREFERENCES.DATE_ISSUED()}: ${issuanceDate}`}
-            logoUrl={presentation.logo_uri}
           />
         {/if}
-      {/each}
-    </div>
+
+        {#if collapsible && !certificationsExpanded}
+          <CertificationsSummary count={certifications.length} />
+        {:else}
+          <div class="space-y-2">
+            <!-- Expanding shows every certification: with "Show less" occupying the header,
+                 there is no link left to reach the full list with. -->
+            {#each collapsible ? certifications : certifications.slice(0, PREVIEW_COUNT) as certification}
+              <CertificationCard {certification} />
+            {/each}
+          </div>
+        {/if}
+      </section>
+    {/if}
   </div>
 
-  <!-- `sticky` is relative to the nearest scrolling ancestor, which is the enclosing `div` above and not the viewport. -->
   <div class="sticky bottom-0 flex flex-col space-y-[10px] rounded-t-2xl bg-white p-6 dark:bg-dark">
     <Button
       label={$LL.SCAN.CONNECTION_REQUEST.ACCEPT()}
       on:click={() => {
+        // In a mock preview there is no backend to answer, so leaving `loading` set would
+        // spin forever. Only latch it when a real dispatch is on its way.
+        if (isMock) return;
         loading = true;
         dispatch({
           type: '[Authenticate] Connection accepted',
@@ -157,7 +210,7 @@
       label={$LL.REJECT()}
       variant="secondary"
       on:click={() => {
-        dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });
+        if (!isMock) dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });
         goto('/me');
       }}
       disabled={loading}

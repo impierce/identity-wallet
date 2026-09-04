@@ -2,6 +2,8 @@ use crate::state::connections::Connections;
 use crate::state::core_utils::IdentityManager;
 use crate::state::credentials::reducers::self_issue_credential::SubjectWrapper;
 use crate::state::credentials::Sha256Hasher;
+use crate::state::qr_code::reducers::accept_connection::get_oid4vp_client_metadata;
+use crate::state::user_prompt::ClientMetadata;
 use crate::stronghold::StrongholdManager;
 use crate::subject::Subject;
 use crate::{
@@ -22,14 +24,11 @@ use chrono::{Duration, Utc};
 use identity_core::common::Object as IotaObject;
 use identity_credential::sd_jwt_vc::SdJwtVc;
 use identity_iota::credential::{EnvelopedVc, VcDataUrl};
-use identity_iota::did::CoreDID;
+use identity_iota::did::DID;
 use log::{debug, info, warn};
+use oid4vc::oid4vc_core::authorization_request::{AuthorizationRequest, Object};
 use oid4vc::oid4vc_core::types::string_or_object::StringOrObject;
 use oid4vc::oid4vc_core::utils::jwt::get_unverified_jwt_claims;
-use oid4vc::oid4vc_core::{
-    authorization_request::{AuthorizationRequest, Object},
-    client_metadata::ClientMetadataResource,
-};
 use oid4vc::oid4vc_core::{jwt, Sign, Subject as _};
 use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
 use oid4vc::oid4vp::token::vp_token::Presentations;
@@ -52,7 +51,8 @@ use std::str::FromStr as _;
 use std::sync::Arc;
 use uuid::Uuid;
 
-// Sends the authorization response including the verifiable credentials.
+/// Handles the non-interactive `CredentialsSelected` action, which is triggered by accepting the `ShareCredentials` prompt set by `read_oid4vp_authorization_request`.
+/// Sends the authorization response including the verifiable credentials.
 #[tracing::instrument(skip_all, err)]
 pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(credential_uuids) = listen::<CredentialsSelected>(action)
@@ -108,13 +108,10 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
         let mut connections = state.connections;
         let mut history = state.history;
 
-        update_history_and_connections(
-            &oid4vp_authorization_request,
-            history_credentials,
-            &mut connections,
-            &mut history,
-        )
-        .await;
+        // TODO: this is kinda duplicate, we should probably refactor to pass on the ClientMetadata retrieved in fn `accept_connection` to avoid re-fetching it here, but for now this works.
+        let client_metadata = get_oid4vp_client_metadata(&oid4vp_authorization_request).await?;
+
+        update_history_and_connections(history_credentials, &client_metadata, &mut connections, &mut history).await?;
 
         drop(state_guard);
         return Ok(AppState {
@@ -128,55 +125,6 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
     }
 
     Ok(state)
-}
-
-pub struct OID4VPClientMetadata {
-    pub client_name: String,
-    pub logo_uri: Option<String>,
-    pub connection_url: String,
-    pub client_id: String,
-}
-
-// TODO: move this functionality to the oid4vc-manager crate.
-/// Returns (client_name, logo_uri, connection_url, client_id)
-pub fn get_oid4vp_client_name_and_logo_uri(
-    oid4vp_authorization_request: &AuthorizationRequest<Object<OID4VP>>,
-) -> OID4VPClientMetadata {
-    // Get the connection url from the redirect url host (or use the redirect url if it does not
-    // contain a host).
-    let redirect_uri = oid4vp_authorization_request.body.uri.uri().clone();
-    let connection_url = redirect_uri.host_str().unwrap_or(redirect_uri.as_str());
-
-    let client_id = oid4vp_authorization_request.body.client_id.clone();
-
-    // Get the client_name and logo_uri from the client_metadata if it exists.
-    match &oid4vp_authorization_request.body.extension.client_metadata {
-        ClientMetadataResource::ClientMetadata {
-            client_name,
-            logo_uri,
-            extension: _,
-            other: _,
-        } => {
-            let client_name = client_name.as_ref().cloned().unwrap_or(connection_url.to_string());
-            let logo_uri = logo_uri.as_ref().map(|logo_uri| logo_uri.to_string());
-
-            Some(OID4VPClientMetadata {
-                client_name,
-                logo_uri,
-                connection_url: connection_url.to_string(),
-                client_id: client_id.clone(),
-            })
-        }
-        // TODO: support `client_metadata_uri`
-        ClientMetadataResource::ClientMetadataUri(_) => None,
-    }
-    // Otherwise use the connection_url as the client_name.
-    .unwrap_or(OID4VPClientMetadata {
-        client_name: connection_url.to_string(),
-        logo_uri: None,
-        connection_url: connection_url.to_string(),
-        client_id,
-    })
 }
 
 #[tracing::instrument(skip_all, err)]
@@ -343,28 +291,21 @@ pub async fn build_oid4vp_vp_token_and_history_credentials(
 
 #[tracing::instrument(skip_all)]
 pub async fn update_history_and_connections(
-    oid4vp_authorization_request: &AuthorizationRequest<Object<OID4VP>>,
     history_credentials: Vec<HistoryCredential>,
+    client_metadata: &ClientMetadata,
     connections: &mut Connections,
     history: &mut Vec<HistoryEvent>,
-) {
-    let OID4VPClientMetadata {
-        client_name,
-        logo_uri,
-        connection_url,
-        client_id,
-    } = get_oid4vp_client_name_and_logo_uri(oid4vp_authorization_request);
+) -> Result<(), AppError> {
+    let previously_connected = connections.contains(client_metadata.client_id.as_str());
+    let connection = connections.update_or_insert(
+        &client_metadata.connection_url,
+        &client_metadata.client_name,
+        client_metadata.client_id.clone(),
+    );
 
-    let did = CoreDID::parse(client_id).ok();
-
-    let previously_connected = connections.contains(connection_url.as_str(), &client_name);
-    let connection = connections.update_or_insert(&connection_url, &client_name, did);
-
-    let file_name = match logo_uri {
-        Some(logo_uri) => hash(logo_uri.as_str()),
-        None => "_".to_string(),
-    };
-    persist_asset(&file_name, &connection.id).ok();
+    if let Some(logo_uri) = client_metadata.logo_uri.clone() {
+        persist_asset(&hash(logo_uri.as_str()), &connection.id).ok();
+    }
 
     // History
     if !previously_connected {
@@ -384,6 +325,8 @@ pub async fn update_history_and_connections(
         date: connection.last_interacted.clone(),
         credentials: history_credentials,
     });
+
+    Ok(())
 }
 
 async fn get_vp_token(

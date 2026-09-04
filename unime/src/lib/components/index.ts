@@ -18,7 +18,6 @@ export { default as SelectCountry } from './forms/SelectCountry.svelte';
 export { default as SettingsCaretLink } from './SettingsCaretLink.svelte';
 export { default as SettingsSwitch } from './SettingsSwitch.svelte';
 export { default as SettingsValueLink } from './SettingsValueLink.svelte';
-export { default as StatusIndicator } from './StatusIndicator.svelte';
 export { default as Switch } from './Switch.svelte';
 export { default as Tabs } from './navigation/Tabs.svelte';
 export { default as TextInput } from './forms/TextInput.svelte';

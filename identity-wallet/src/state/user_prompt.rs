@@ -1,10 +1,11 @@
+use identity_iota::did::CoreDID;
 use oid4vc::oid4vci::credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject;
 use oid4vc::oid4vci::credential_offer::TxCodeConstraints;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use ts_rs::TS;
 
-use crate::state::did::validate_domain_linkage::ValidationResult;
+use crate::state::{core_utils::history_event::HistoryEvent, did::validate_domain_linkage::ValidationResult};
 
 use super::did::validate_linked_verifiable_presentations::LinkedVerifiableCredentialData;
 
@@ -25,13 +26,18 @@ pub enum CurrentUserPrompt {
     PasswordRequired,
     #[serde(rename = "accept-connection")]
     AcceptConnection {
-        client_name: String,
+        client_metadata: ClientMetadata,
+        // The connection_data field is optional, None means that the user has never interacted with this connection before.
         #[ts(optional)]
-        logo_uri: Option<String>,
-        redirect_uri: String,
-        previously_connected: bool,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        connection_data: Option<ConnectionData>,
         domain_validation: Box<ValidationResult>,
-        linked_verifiable_presentations: Vec<LinkedVerifiableCredentialData>,
+        #[ts(optional)]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        linked_verifiable_presentations: Option<Vec<LinkedVerifiableCredentialData>>,
+        #[ts(optional)]
+        #[serde(skip_serializing_if = "Option::is_none")]
+        ecosystems: Option<Vec<EcosystemProfile>>,
     },
     #[serde(rename = "credential-offer")]
     CredentialOffer {
@@ -56,9 +62,49 @@ pub enum CurrentUserPrompt {
     },
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, TS)]
+#[ts(export, export_to = "bindings/user_prompt/ClientMetadata.ts")]
+pub struct ClientMetadata {
+    pub client_name: String,
+    pub logo_uri: Option<String>,
+    pub connection_url: String,
+    pub redirect_uri: Option<String>,
+    #[ts(type = "string")]
+    pub client_id: CoreDID,
+}
+
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq, TS)]
+#[ts(export, export_to = "bindings/user_prompt/ConnectionData.ts")]
+pub struct ConnectionData {
+    pub first_interacted_at: String,
+    pub last_interacted_at: String,
+    pub interactions: Vec<HistoryEvent>,
+}
+
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq, TS)]
+#[ts(export, export_to = "bindings/user_prompt/EcosystemProfile.ts")]
+pub struct EcosystemProfile {
+    pub logo_uri: Option<String>,
+    pub name: String,
+    pub description: Option<String>,
+    pub ecosystem_leader: Member,
+    pub member_count: usize,
+    pub members: Vec<Member>,
+}
+
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq, TS)]
+#[ts(export, export_to = "bindings/user_prompt/Member.ts")]
+pub struct Member {
+    pub logo_uri: Option<String>,
+    pub name: String,
+    pub description: Option<String>,
+    pub domain: String,
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::state::did::validate_domain_linkage::ValidationStatus;
 
     #[test]
     fn test_serialize_current_user_prompt() {
@@ -76,16 +122,28 @@ mod tests {
         );
 
         let prompt = CurrentUserPrompt::AcceptConnection {
-            client_name: "Test Client".to_string(),
-            logo_uri: None,
-            redirect_uri: "https://example.com".to_string(),
-            previously_connected: false,
-            domain_validation: Default::default(),
+            client_metadata: ClientMetadata {
+                client_name: "Test Client".to_string(),
+                logo_uri: None,
+                connection_url: "https://example.com".to_string(),
+                redirect_uri: Some("https://example.com".to_string()),
+                client_id: "did:example:123".parse().unwrap(),
+            },
+            connection_data: None,
+            domain_validation: Box::new(ValidationResult {
+                status: ValidationStatus::default(),
+                url: "https://example.com".parse().unwrap(),
+                name: None,
+                logo_uri: None,
+                issuance_date: None,
+                message: None,
+            }),
             linked_verifiable_presentations: Default::default(),
+            ecosystems: None,
         };
         assert_eq!(
             serde_json::to_string(&prompt).unwrap(),
-            r#"{"type":"accept-connection","client_name":"Test Client","logo_uri":null,"redirect_uri":"https://example.com","previously_connected":false,"domain_validation":{"status":"Unknown"},"linked_verifiable_presentations":[]}"#
+            r#"{"type":"accept-connection","client_metadata":{"client_name":"Test Client","logo_uri":null,"connection_url":"https://example.com","redirect_uri":"https://example.com","client_id":"did:example:123"},"domain_validation":{"status":"Unknown","url":"https://example.com/"}}"#
         );
     }
 }

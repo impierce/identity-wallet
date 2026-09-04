@@ -112,7 +112,7 @@
           redirectPath = `/${$appState.current_user_prompt.target}`;
         }
         // Prompt redirect.
-        else {
+        else if (!page.url.pathname.startsWith(`/prompt/${$appState.current_user_prompt.type}`)) {
           redirectPath = `/prompt/${$appState.current_user_prompt.type}`;
         }
       }
@@ -199,7 +199,9 @@
     // User prompt
     let type = $appState?.current_user_prompt?.type;
 
-    if (type && type !== 'redirect') {
+    // This runs on every state push, so skip it when already inside the prompt's
+    // subtree — otherwise sub-routes get bounced back to the prompt's root page.
+    if (type && type !== 'redirect' && !page.url.pathname.startsWith(`/prompt/${type}`)) {
       goto(`/prompt/${type}`);
     }
   }

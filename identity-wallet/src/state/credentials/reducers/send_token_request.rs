@@ -1,12 +1,13 @@
 use crate::{
     error::AppError::{self, *},
+    http_client::get_http_client,
     persistence::{hash, persist_asset},
     state::{
         actions::{listen, Action},
         core_utils::{
-            helpers::{validate_credential_types, validate_jwt_vc_json},
+            helpers::{normalize_connection_url, validate_credential_types, validate_jwt_vc_json},
             history_event::{EventType, HistoryCredential, HistoryEvent},
-            ActiveFlow, CoreUtils, DateUtils, IdentityManager, Oid4vciStage,
+            ActiveFlow, CoreUtils, DateUtils, Oid4vciStage,
         },
         credentials::{
             actions::authorization_code_received::CodeReceived,
@@ -16,7 +17,9 @@ use crate::{
         user_prompt::CurrentUserPrompt,
         AppState, UNIME_CLIENT_ID, UNIME_REDIRECT_URI,
     },
+    subject::Subject,
 };
+use identity_iota::did::{CoreDID, DID};
 use log::{debug, info, warn};
 use oauth_tsl::{status_list::StatusType, tokens::referenced_token::StatusClaim};
 use oid4vc::{
@@ -27,7 +30,7 @@ use oid4vc::{
         credential_response::CredentialResponseType, token_request::TokenRequest,
     },
 };
-use serde_json::json;
+use serde_json::{json, Value};
 use std::collections::HashMap;
 use uuid::Uuid;
 
@@ -199,24 +202,19 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             .as_ref()
             .and_then(|display| display.first().cloned());
 
-        // Get the connection url from the credential issuer url host (or use the credential issuer url if it does not
-        // contain a host).
-        let connection_url = credential_issuer_url
-            .host_str()
-            .unwrap_or(credential_issuer_url.as_str());
+        let connection_url = normalize_connection_url(&credential_issuer_url);
 
-        // Get the credential issuer name or use the credential issuer url.
+        // Get the credential issuer name or use the normalized credential issuer url.
         let issuer_name = display
             .map(|display| {
-                let issuer_name = display["name"]
+                display["name"]
                     .as_str()
                     .map(ToString::to_string)
                     // TODO(ngdil): Remove this fallback.
                     .or_else(|| display["client_name"].as_str().map(ToString::to_string))
-                    .unwrap_or(connection_url.to_string());
-                issuer_name
+                    .unwrap_or(connection_url.clone())
             })
-            .unwrap_or(connection_url.to_string());
+            .unwrap_or(connection_url.clone());
 
         let mut credential_configurations_supported =
             credential_issuer_metadata.credential_configurations_supported.clone();
@@ -228,10 +226,32 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             credential_configuration_ids.contains(credential_configuration_id)
         });
 
+        // TODO: currently this is somewhat duplicate since the full ClientMetadata is not stored in the new CurrentUserPrompt::CredentialOffer state, but we should consider storing it there to avoid this duplication.
+        // This fetching of the DID document means that our OID4VCI implementation only accepts did:web's as client IDs.
+        // Read more about this design decision in ADR 0001.
+        let did_doc = get_http_client()
+            .await
+            .get(format!(
+                "{}/.well-known/did.json",
+                credential_issuer_url.to_string().trim_end_matches('/')
+            ))
+            .send()
+            .await?
+            .json::<Value>()
+            .await?;
+
+        let did_str = did_doc
+            .get("id")
+            .and_then(|id| id.as_str())
+            .ok_or(AppError::DidParseError)?
+            .to_string();
+
+        let did = CoreDID::parse(did_str).map_err(|e| AppError::Error(format!("Failed to parse DID: {e}")))?;
+
         // Create or update the connection.
-        let previously_connected = state.connections.contains(connection_url, &issuer_name);
+        let previously_connected = state.connections.contains(did.as_str());
         let mut connections = state.connections;
-        let connection = connections.update_or_insert(connection_url, &issuer_name, None);
+        let connection = connections.update_or_insert(&connection_url, &issuer_name, did);
 
         let mut history_credentials = vec![];
 
@@ -335,7 +355,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             // If setting the credential status fails we currently catch the error and simply set the credential status field to None.
             // TODO: we might want to inform the user of this before accepting the credential already
             verifiable_credential_record.display_credential.credential_status =
-                get_credential_status(&verifiable_credential_record, identity_manager).await;
+                get_credential_status(&verifiable_credential_record, &identity_manager.subject).await;
 
             // Set the issuer name of the credential.
             verifiable_credential_record.display_credential.issuer_name = issuer_name.clone();
@@ -383,11 +403,9 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             .map(|verifiable_credential_record| verifiable_credential_record.display_credential)
             .collect();
 
-        let file_name = match logo_uri {
-            Some(logo_uri) => hash(logo_uri.as_str()),
-            None => "_".to_string(),
-        };
-        persist_asset(&file_name, &connection.id).ok();
+        if let Some(logo_uri) = logo_uri {
+            persist_asset(&hash(logo_uri.as_str()), &connection.id).ok();
+        }
 
         // History
         let mut history = state.history;
@@ -479,9 +497,9 @@ fn get_credential_display_name(
 /// An error is returned when:
 /// 1. The credential does not contain a status claim in the JWT root or a credentialStatus property in the VC.
 /// 2. The status claim/property does not use the OAuth Token Status List mechanism.
-async fn get_credential_status(
+pub async fn get_credential_status(
     verifiable_credential_record: &VerifiableCredentialRecord,
-    identity_manager: &IdentityManager,
+    subject: &Subject,
 ) -> Option<CredentialStatus> {
     let status_value = get_unverified_jwt_claims(&verifiable_credential_record.verifiable_credential)
         .ok() // convert Result → Option
@@ -519,7 +537,7 @@ async fn get_credential_status(
         last_checked: String::new(),
     };
 
-    let status = match fetch_credential_status(&credential_status_data, identity_manager).await {
+    let status = match fetch_credential_status(&credential_status_data, subject).await {
         Ok(status) => status,
         Err(_) => {
             warn!("Failed to fetch credential status");

@@ -3,143 +3,90 @@ use std::collections::HashMap;
 use crate::{
     error::AppError::{self, *},
     state::{
-        actions::{listen, Action},
-        core_utils::{helpers::download_logo, ActiveFlow, CoreUtils, Oid4vciStage},
-        qr_code::actions::qrcode_scanned::QrCodeScanned,
+        actions::Action,
+        core_utils::{helpers::download_logo, ActiveFlow},
         user_prompt::CurrentUserPrompt,
         AppState,
     },
 };
 
 use log::{debug, info, warn};
-use oid4vc::oid4vci::{
-    credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject,
-    credential_offer::{CredentialOffer, CredentialOfferParameters},
-};
+use oid4vc::oid4vci::credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject;
 
-#[tracing::instrument(skip_all, err)]
-pub async fn read_credential_offer(state: AppState, action: Action) -> Result<AppState, AppError> {
+/// Sets the `CredentialOffer` prompt after the `AcceptConnetion` prompt was accepted, triggering the `ConnectionAccepted` action.
+/// Accepting the prompt set in this reducer would result in the `CredentialOffersSelected` action, which is handled by `handle_credential_offer`.
+pub async fn read_credential_offer(state: AppState, _action: Action) -> Result<AppState, AppError> {
+    info!("read_credential_offer");
+
     // Sometimes reducers are connected to actions that they shouldn't execute
     // Therefore its also checked if it can parse to credential offer query
     // TODO find a better way to connect to the right reducer
-    if let Some(credential_offer_uri) =
-        listen::<QrCodeScanned>(action).and_then(|payload| payload.form_urlencoded.parse::<CredentialOffer>().ok())
-    {
-        let state_guard = state.core_utils.managers.lock().await;
-        let wallet = &state_guard
-            .identity_manager
-            .as_ref()
-            .ok_or(MissingManagerError("identity"))?
-            .wallet;
+    let credential_offer = match state.core_utils.active_flow.clone() {
+        Some(ActiveFlow::Oid4vciOffer { credential_offer, .. }) => credential_offer,
+        // Not a OID4VCI flow, let other reducers handle this action.
+        _ => return Ok(state),
+    };
 
-        let credential_offer: CredentialOfferParameters = match credential_offer_uri {
-            CredentialOffer::CredentialOffer(credential_offer) => *credential_offer,
-            CredentialOffer::CredentialOfferUri(credential_offer_uri) => wallet
-                .get_credential_offer(credential_offer_uri)
-                .await
-                .map_err(GetCredentialOfferError)?,
-        };
+    let state_guard = state.core_utils.managers.lock().await;
+    let wallet = &state_guard
+        .identity_manager
+        .as_ref()
+        .ok_or(MissingManagerError("identity"))?
+        .wallet;
 
-        // The credential offer contains a credential issuer url.
-        let credential_issuer_url = credential_offer.credential_issuer.clone();
-        debug!("Parsed credential offer parameters: {credential_offer:?}");
+    // The credential offer contains a credential issuer url.
+    let credential_issuer_url = credential_offer.credential_issuer.clone();
 
-        let credential_issuer_metadata = wallet
-            .get_credential_issuer_metadata(credential_issuer_url.clone())
-            .await
-            .ok();
+    info!("credential issuer url: {credential_issuer_url:?}");
 
-        debug!("Fetched credential issuer metadata: {credential_issuer_metadata:?}");
+    let credential_issuer_metadata = wallet
+        .get_credential_issuer_metadata(credential_issuer_url.clone())
+        .await
+        .ok();
 
-        let credential_configurations: HashMap<String, CredentialConfigurationsSupportedObject> = credential_offer
-            .credential_configuration_ids
-            .iter()
-            .filter_map(|credential_configuration_id| {
-                credential_issuer_metadata
-                    .as_ref()
-                    .and_then(|credential_issuer_metadata| {
-                        credential_issuer_metadata
-                            .credential_configurations_supported
-                            .get(credential_configuration_id)
-                            .map(|credential_configuration| {
-                                (credential_configuration_id.clone(), credential_configuration.clone())
-                            })
-                    })
-            })
-            .collect();
+    info!("credential issuer metadata: {credential_issuer_metadata:?}");
 
-        // Get the credential issuer display if present.
-        let display = credential_issuer_metadata
-            .as_ref()
-            .and_then(|credential_issuer_metadata| {
-                credential_issuer_metadata
-                    .display
-                    .as_ref()
-                    .map(|display| display.first().cloned())
-            })
-            .flatten();
+    let credential_configurations: HashMap<String, CredentialConfigurationsSupportedObject> = credential_offer
+        .credential_configuration_ids
+        .iter()
+        .filter_map(|credential_configuration_id| {
+            credential_issuer_metadata
+                .as_ref()
+                .and_then(|credential_issuer_metadata| {
+                    credential_issuer_metadata
+                        .credential_configurations_supported
+                        .get(credential_configuration_id)
+                        .map(|credential_configuration| {
+                            (credential_configuration_id.clone(), credential_configuration.clone())
+                        })
+                })
+        })
+        .collect();
 
-        let tx_code = credential_offer
-            .grants
-            .as_ref()
-            .and_then(|grants| grants.pre_authorized_code.clone())
-            .and_then(|pre_authorized_code| pre_authorized_code.tx_code);
+    let tx_code = credential_offer
+        .grants
+        .as_ref()
+        .and_then(|grants| grants.pre_authorized_code.clone())
+        .and_then(|pre_authorized_code| pre_authorized_code.tx_code);
 
-        // Get the credential issuer name and logo uri or use the credential issuer url.
-        let (issuer_name, logo_uri) = display
-            .map(|display| {
-                let issuer_name = display["name"]
-                    .as_str()
-                    // TODO(NGDIL): remove this NGDIL specific logic once: https://staging.api.ngdil.com/.well-known/openid-credential-issuer is fixed.
-                    .or_else(|| display["client_name"].as_str())
-                    .map(ToString::to_string)
-                    .unwrap_or(credential_issuer_url.to_string());
+    download_credential_logos(&credential_configurations).await;
 
-                let logo_uri = display["logo"]["uri"]
-                    .as_str()
-                    // TODO(NGDIL): remove this NGDIL specific logic once: https://staging.api.ngdil.com/.well-known/openid-credential-issuer is fixed.
-                    .or_else(|| display["logo_uri"].as_str())
-                    .map(ToString::to_string);
+    drop(state_guard);
 
-                (issuer_name, logo_uri)
-            })
-            .unwrap_or((credential_issuer_url.to_string(), None));
-
-        info!(
-            "Processed credential offer for `{issuer_name}` ({credential_issuer_url}) with {} configurations (has_tx_code: {})",
-            credential_configurations.len(),
-            tx_code.is_some()
-        );
-
-        download_credential_logos(&credential_configurations).await;
-
-        if let Some(logo_uri_str) = &logo_uri {
-            download_logo(logo_uri_str).await;
-        } else {
-            warn!("No logo URI found");
-        }
-
-        drop(state_guard);
-        return Ok(AppState {
+    if let Some(CurrentUserPrompt::AcceptConnection { client_metadata, .. }) = &state.current_user_prompt {
+        Ok(AppState {
             current_user_prompt: Some(CurrentUserPrompt::CredentialOffer {
-                issuer_name,
-                logo_uri: logo_uri.clone(),
+                issuer_name: client_metadata.client_name.clone(),
+                logo_uri: client_metadata.logo_uri.clone(),
                 credential_configurations,
                 tx_code,
             }),
-            core_utils: CoreUtils {
-                active_flow: Some(ActiveFlow::Oid4vciOffer {
-                    stage: Oid4vciStage::OfferReceived,
-                    credential_offer: Box::new(credential_offer),
-                    logo_uri,
-                }),
-                ..state.core_utils
-            },
             ..state
-        });
+        })
+    } else {
+        warn!("Unexpected state: No current user prompt found when reading credential offer");
+        Ok(state)
     }
-
-    Ok(state)
 }
 
 /// Downloads all the Credential logos.
