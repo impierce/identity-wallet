@@ -545,6 +545,11 @@ async fn get_vp_token(
                     .parse::<SdJwt>()
                     .map_err(|err| AppError::Error(format!("Failed to parse VCDM 2.0 SD-JWT: {err}")))?;
 
+                // TODO: unify holder DID/key selection into a single helper.
+                // "Which DID/key do we sign with?" is answered differently at every call site: the `cnf`
+                // claim here, from `credentialSubject.id` when signing a DACT, and from the preferred
+                // DID method elsewhere. Each answer has to match the DID the credential was issued to, so they
+                // all need to behave identically. This should be unified into a single helper. 
                 let Some(RequiredKeyBinding::Kid(cnf_kid)) = vcdm2_sd_jwt.claims().cnf.as_ref() else {
                     return Err(AppError::Error(
                         "Unsupported `cnf` claim in VCDM 2.0 SD-JWT".to_string(),
