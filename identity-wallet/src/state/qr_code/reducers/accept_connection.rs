@@ -403,3 +403,328 @@ async fn get_oid4vci_client_metadata(
         client_id,
     })
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::persistence::{hash, ASSETS_DIR, STRONGHOLD};
+    use crate::state::core_utils::{IdentityManager, Managers};
+    use crate::state::{SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS};
+    use crate::stronghold::StrongholdManager;
+    use crate::subject::subject;
+
+    use oid4vc::oid4vc_manager::ProviderManager;
+    use oid4vc::oid4vci::credential_issuer::credential_issuer_metadata::CredentialIssuerMetadata;
+    use oid4vc::oid4vci::credential_offer::CredentialConfigurationIds;
+    use oid4vc::oid4vci::Wallet;
+
+    use serde_json::json;
+    use std::sync::Arc;
+    use tempfile::{NamedTempFile, TempDir};
+    use wiremock::matchers::{method, path};
+    use wiremock::{Mock, MockServer, ResponseTemplate};
+
+    const ISSUER_NAME: &str = "University";
+    const ISSUER_DID: &str = "did:web:example.com";
+    const CLIENT_DID: &str = "did:key:z6Mkm9yeuZK7inXBNjnNH3vAs9uUjqfy3mfNoKBKsKBrv8Tb";
+    const CLIENT_NAME: &str = "Example Relying Party";
+
+    async fn test_state() -> AppState {
+        let stronghold_path = NamedTempFile::new().unwrap().into_temp_path();
+        *STRONGHOLD.lock().unwrap() = stronghold_path.as_os_str().into();
+
+        let password = "sup3rSecr3t".to_string();
+        let stronghold_manager = Arc::new(StrongholdManager::create(&password).unwrap());
+        let subject = subject(stronghold_manager.clone(), password).await;
+
+        let provider_manager = ProviderManager::new(
+            subject.clone(),
+            Vec::from(SUPPORTED_DID_METHODS),
+            Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
+        )
+        .unwrap();
+        let wallet = Wallet::new(
+            subject.clone(),
+            Vec::from(SUPPORTED_DID_METHODS),
+            Vec::from(SUPPORTED_SIGNING_ALGORITHMS),
+        )
+        .unwrap();
+
+        AppState {
+            core_utils: CoreUtils {
+                managers: Arc::new(tauri::async_runtime::Mutex::new(Managers {
+                    stronghold_manager: Some(stronghold_manager),
+                    identity_manager: Some(IdentityManager {
+                        subject,
+                        provider_manager,
+                        wallet,
+                    }),
+                })),
+                ..Default::default()
+            },
+            ..Default::default()
+        }
+    }
+
+    fn credential_offer(credential_issuer: &str) -> CredentialOfferParameters {
+        CredentialOfferParameters {
+            credential_issuer: credential_issuer.parse().unwrap(),
+            credential_configuration_ids: CredentialConfigurationIds::try_new(vec![
+                "UniversityDegreeCredential".to_string()
+            ])
+            .unwrap(),
+            grants: None,
+        }
+    }
+
+    async fn mount_did_document(mock_server: &MockServer) {
+        Mock::given(method("GET"))
+            .and(path("/.well-known/did.json"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({ "id": ISSUER_DID })))
+            .expect(1)
+            .mount(mock_server)
+            .await;
+    }
+
+    async fn mount_issuer_metadata(mock_server: &MockServer, display: Option<Vec<serde_json::Value>>) {
+        Mock::given(method("GET"))
+            .and(path("/.well-known/openid-credential-issuer"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(CredentialIssuerMetadata {
+                credential_issuer: mock_server.uri().parse().unwrap(),
+                credential_endpoint: format!("{}/credential", mock_server.uri()).parse().unwrap(),
+                display,
+                ..Default::default()
+            }))
+            .expect(1)
+            .mount(mock_server)
+            .await;
+    }
+
+    async fn mount_logo(mock_server: &MockServer) -> String {
+        Mock::given(method("GET"))
+            .and(path("/logo/client.png"))
+            .respond_with(ResponseTemplate::new(200).set_body_raw(vec![0x89, 0x50, 0x4E, 0x47], "image/png"))
+            .expect(1)
+            .mount(mock_server)
+            .await;
+        format!("{}/logo/client.png", mock_server.uri())
+    }
+
+    fn siopv2_request(client_metadata: serde_json::Value) -> String {
+        let query = url::form_urlencoded::Serializer::new(String::new())
+            .append_pair("client_id", CLIENT_DID)
+            .append_pair("client_metadata", &client_metadata.to_string())
+            .append_pair("nonce", "nonce")
+            .append_pair("redirect_uri", "https://example.com/")
+            .append_pair("response_type", "id_token")
+            .append_pair("scope", "openid")
+            .finish();
+        format!("openid://?{query}")
+    }
+
+    fn oid4vp_request(client_metadata: serde_json::Value) -> String {
+        let dcql_query = json!({
+            "credentials": [{
+                "id": "CredentialQuery",
+                "format": "jwt_vc_json",
+                "meta": { "type_values": [["VerifiableCredential"], ["PersonalInformation"]] },
+                "claims": [{ "path": ["credentialSubject", "givenName"] }],
+            }],
+        });
+        let query = url::form_urlencoded::Serializer::new(String::new())
+            .append_pair("client_id", CLIENT_DID)
+            .append_pair("client_metadata", &client_metadata.to_string())
+            .append_pair("dcql_query", &dcql_query.to_string())
+            .append_pair("nonce", "nonce")
+            .append_pair("redirect_uri", "https://example.com/")
+            .append_pair("response_mode", "direct_post")
+            .append_pair("response_type", "vp_token")
+            .finish();
+        format!("openid://?{query}")
+    }
+
+    #[tokio::test]
+    #[serial_test::serial]
+    async fn issuer_logo_is_downloaded_and_client_metadata_is_built_from_the_issuer_display() {
+        *ASSETS_DIR.lock().unwrap() = TempDir::new().unwrap().keep();
+
+        let mock_server = MockServer::start().await;
+        let issuer_logo_uri = format!("{}/logo/issuer.png", mock_server.uri());
+
+        mount_issuer_metadata(
+            &mock_server,
+            Some(vec![json!({
+                "name": ISSUER_NAME,
+                "logo": { "uri": issuer_logo_uri },
+            })]),
+        )
+        .await;
+        mount_did_document(&mock_server).await;
+
+        Mock::given(method("GET"))
+            .and(path("/logo/issuer.png"))
+            .respond_with(ResponseTemplate::new(200).set_body_raw(vec![0x89, 0x50, 0x4E, 0x47], "image/png"))
+            .expect(1)
+            .mount(&mock_server)
+            .await;
+
+        let state = test_state().await;
+        let client_metadata = get_oid4vci_client_metadata(&state, &credential_offer(&mock_server.uri()))
+            .await
+            .unwrap();
+
+        assert_eq!(client_metadata.client_name, ISSUER_NAME);
+        assert_eq!(client_metadata.logo_uri.as_deref(), Some(issuer_logo_uri.as_str()));
+        assert_eq!(client_metadata.connection_url, mock_server.uri());
+        assert_eq!(client_metadata.client_id.to_string(), ISSUER_DID);
+
+        // Logos are downloaded into `assets/tmp` under the hash of their URI.
+        let downloaded_logo = ASSETS_DIR
+            .lock()
+            .unwrap()
+            .join("tmp")
+            .join(format!("{}.png", hash(&issuer_logo_uri)));
+        assert!(downloaded_logo.exists());
+    }
+
+    #[tokio::test]
+    #[serial_test::serial]
+    async fn scanning_an_unparsable_qr_code_is_rejected() {
+        let state = test_state().await;
+
+        let result = accept_connection(
+            state,
+            Arc::new(QrCodeScanned {
+                form_urlencoded: "invalid payload".to_string(),
+            }),
+        )
+        .await;
+
+        assert!(matches!(result, Err(InvalidQRCodeError(payload)) if payload == "invalid payload"));
+    }
+
+    #[tokio::test]
+    #[serial_test::serial]
+    async fn the_issuer_url_is_used_as_name_when_the_metadata_has_no_display() {
+        *ASSETS_DIR.lock().unwrap() = TempDir::new().unwrap().keep();
+
+        let mock_server = MockServer::start().await;
+        mount_issuer_metadata(&mock_server, None).await;
+        mount_did_document(&mock_server).await;
+
+        let state = test_state().await;
+        let client_metadata = get_oid4vci_client_metadata(&state, &credential_offer(&mock_server.uri()))
+            .await
+            .unwrap();
+
+        assert_eq!(client_metadata.client_name, mock_server.uri());
+        assert_eq!(client_metadata.logo_uri, None);
+
+        // The `assets/tmp` folder is only created by a download, so its absence proves none was attempted.
+        assert!(!ASSETS_DIR.lock().unwrap().join("tmp").exists());
+    }
+
+    #[tokio::test]
+    #[serial_test::serial]
+    async fn siopv2_request_initializes_the_siopv2_flow_and_downloads_the_client_logo() {
+        *ASSETS_DIR.lock().unwrap() = TempDir::new().unwrap().keep();
+
+        let mock_server = MockServer::start().await;
+        let logo_uri = mount_logo(&mock_server).await;
+
+        let state = test_state().await;
+        let parsed = parse_qr_code(
+            &state,
+            siopv2_request(json!({
+                "client_name": CLIENT_NAME,
+                "logo_uri": logo_uri,
+                "id_token_signed_response_alg": "EdDSA",
+                "subject_syntax_types_supported": ["did:key"],
+            })),
+        )
+        .await
+        .unwrap();
+        assert!(matches!(parsed, ParsedQrCode::Siopv2(_)));
+
+        let (client_metadata, active_flow) = get_client_metadata_init_active_flow(&state, parsed).await.unwrap();
+
+        assert_eq!(client_metadata.client_name, CLIENT_NAME);
+        assert_eq!(client_metadata.logo_uri.as_deref(), Some(logo_uri.as_str()));
+        assert_eq!(client_metadata.connection_url, "https://example.com");
+        assert_eq!(client_metadata.redirect_uri.as_deref(), Some("https://example.com/"));
+        assert_eq!(client_metadata.client_id.to_string(), CLIENT_DID);
+        assert!(matches!(active_flow, ActiveFlow::Siopv2 { .. }));
+
+        let downloaded_logo = ASSETS_DIR
+            .lock()
+            .unwrap()
+            .join("tmp")
+            .join(format!("{}.png", hash(&logo_uri)));
+        assert!(downloaded_logo.exists());
+    }
+
+    #[tokio::test]
+    #[serial_test::serial]
+    async fn siopv2_request_without_client_name_falls_back_to_the_connection_url() {
+        let state = test_state().await;
+        let parsed = parse_qr_code(
+            &state,
+            siopv2_request(json!({
+                "id_token_signed_response_alg": "EdDSA",
+                "subject_syntax_types_supported": ["did:key"],
+            })),
+        )
+        .await
+        .unwrap();
+
+        let (client_metadata, _) = get_client_metadata_init_active_flow(&state, parsed).await.unwrap();
+
+        assert_eq!(client_metadata.client_name, "https://example.com");
+        assert_eq!(client_metadata.logo_uri, None);
+    }
+
+    #[tokio::test]
+    #[serial_test::serial]
+    async fn oid4vp_request_initializes_the_oid4vp_flow_and_downloads_the_client_logo() {
+        *ASSETS_DIR.lock().unwrap() = TempDir::new().unwrap().keep();
+
+        let mock_server = MockServer::start().await;
+        let logo_uri = mount_logo(&mock_server).await;
+
+        let state = test_state().await;
+        let parsed = parse_qr_code(
+            &state,
+            oid4vp_request(json!({
+                "client_name": CLIENT_NAME,
+                "logo_uri": logo_uri,
+                "vp_formats_supported": { "jwt_vc_json": { "alg_values": ["EdDSA"] } },
+                "subject_syntax_types_supported": ["did:key"],
+            })),
+        )
+        .await
+        .unwrap();
+        assert!(matches!(parsed, ParsedQrCode::Oid4vp(_)));
+
+        let (client_metadata, active_flow) = get_client_metadata_init_active_flow(&state, parsed).await.unwrap();
+
+        assert_eq!(client_metadata.client_name, CLIENT_NAME);
+        assert_eq!(client_metadata.logo_uri.as_deref(), Some(logo_uri.as_str()));
+        assert_eq!(client_metadata.connection_url, "https://example.com");
+        assert_eq!(client_metadata.client_id.to_string(), CLIENT_DID);
+        // OID4VP flows started from a QR-code are never part of an interactive OID4VCI authorization.
+        assert!(matches!(
+            active_flow,
+            ActiveFlow::Oid4vp {
+                is_interactive: false,
+                ..
+            }
+        ));
+
+        let downloaded_logo = ASSETS_DIR
+            .lock()
+            .unwrap()
+            .join("tmp")
+            .join(format!("{}.png", hash(&logo_uri)));
+        assert!(downloaded_logo.exists());
+    }
+}

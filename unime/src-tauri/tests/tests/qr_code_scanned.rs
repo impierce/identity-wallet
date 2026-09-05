@@ -18,7 +18,6 @@ use tokio::sync::Mutex;
 
 #[tokio::test]
 #[serial_test::serial]
-#[ignore = "TODO: fix this test"]
 async fn test_qr_code_scanned_handle_siopv2_authorization_request() {
     setup_state_file();
 
@@ -60,7 +59,6 @@ async fn test_qr_code_scanned_handle_siopv2_authorization_request() {
 
 #[tokio::test]
 #[serial_test::serial]
-#[ignore = "TODO: fix this test"]
 async fn test_qr_code_scanned_handle_oid4vp_authorization_request() {
     setup_state_file();
 
@@ -81,10 +79,12 @@ async fn test_qr_code_scanned_handle_oid4vp_authorization_request() {
     });
 
     // Deserializing the Appstates and Actions from the accompanying json files.
-    let state1 = json_example::<AppState>("tests/fixtures/states/credential_share_credential.json");
-    let state2 = json_example::<AppState>("tests/fixtures/states/credential_redirect_me.json");
+    let state1 = json_example::<AppState>("tests/fixtures/states/credential_accept_connection.json");
+    let state2 = json_example::<AppState>("tests/fixtures/states/credential_share_credential.json");
+    let state3 = json_example::<AppState>("tests/fixtures/states/credential_redirect_me.json");
     let action1 = json_example::<Action>("tests/fixtures/actions/qr_scanned_vp_token.json");
-    let action2 = json_example::<Action>("tests/fixtures/actions/authenticate_cred_selected.json");
+    let action2 = json_example::<Action>("tests/fixtures/actions/authenticate_connect_accept.json");
+    let action3 = json_example::<Action>("tests/fixtures/actions/authenticate_cred_selected.json");
 
     let container = AppStateContainer(Mutex::new(AppState {
         core_utils: CoreUtils {
@@ -103,9 +103,9 @@ async fn test_qr_code_scanned_handle_oid4vp_authorization_request() {
         // Initial state.
         container,
         // A QR code was scanned containing a OID4VP authorization request.
-        vec![action1, action2],
+        vec![action1, action2, action3],
         // The state is updated with a new user prompt containing the uuid's of the candidate verifiable credentials.
-        vec![Some(state1), Some(state2)],
+        vec![Some(state1), Some(state2), Some(state3)],
     )
     .await;
 }
