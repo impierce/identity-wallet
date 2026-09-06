@@ -281,15 +281,6 @@ async fn get_siopv2_client_metadata(
     })
 }
 
-pub(crate) fn strip_client_id_prefix(client_id: &str) -> String {
-    use oid4vc::oid4vp::authorization_request::ClientId;
-    use std::str::FromStr as _;
-
-    ClientId::from_str(client_id)
-        .map(|client_id| client_id.identifier().to_string())
-        .unwrap_or_else(|_| client_id.to_string())
-}
-
 pub(crate) async fn get_oid4vp_client_metadata(
     oid4vp_authorization_request: &AuthorizationRequest<Object<OID4VP>>,
 ) -> Result<ClientMetadata, AppError> {
@@ -402,6 +393,15 @@ async fn get_oid4vci_client_metadata(
         logo_uri,
         client_id,
     })
+}
+
+fn strip_client_id_prefix(client_id: &str) -> String {
+    use oid4vc::oid4vp::authorization_request::ClientId;
+    use std::str::FromStr as _;
+
+    ClientId::from_str(client_id)
+        .map(|client_id| client_id.identifier().to_string())
+        .unwrap_or_else(|_| client_id.to_string())
 }
 
 #[cfg(test)]
