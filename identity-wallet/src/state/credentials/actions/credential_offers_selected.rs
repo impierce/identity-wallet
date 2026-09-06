@@ -20,8 +20,11 @@ impl ActionTrait for CredentialOffersSelected {
     fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
         vec![
             reducer!(handle_credential_offer),
+            // Both the reducers below are actually only necessary when the OID4VCI flow is pre-authorized.
+            // The interactive flow has the `CredentialsSelected` action after this, the authorization code flow has the `CodeReceived` action.
+            // Only then are credentials and connections updated and only then are these reducers necessary in those flows..
             reducer!(sort_credentials),
-            reducer!(sort_connections), // TODO: remove this sort_connections, only after trust_connection
+            reducer!(sort_connections),
         ]
     }
 }
