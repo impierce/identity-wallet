@@ -243,6 +243,8 @@ async fn get_validated_linked_credential_data(
                             return None;
                         };
 
+                        // The .unwrap_or_default() calls here default to an empty string, we don't want to throw a full error here.
+                        // It's simply the issuer's responsibility to have it's display data in order, this shouldnt break the flow.
                         verifiable_credential_record.display_credential.credential_status = get_credential_status(&verifiable_credential_record, subject).await;
                         verifiable_credential_record.display_credential.display_name = credential_name.unwrap_or_default();
                         verifiable_credential_record.display_credential.metadata.icon = credential_logo_uri;
