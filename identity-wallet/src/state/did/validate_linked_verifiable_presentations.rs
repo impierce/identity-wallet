@@ -5,7 +5,7 @@ use crate::{
         credentials::{
             reducers::send_token_request::get_credential_status, DisplayCredential, VerifiableCredentialRecord,
         },
-        did::validate_domain_linkage::{ValidationResult, ValidationStatus, Verifier},
+        did::validate_domain_linkage::{ValidationResult, Verifier},
     },
     subject::Subject,
 };
@@ -292,6 +292,8 @@ async fn get_validated_linked_domains(
             }
             #[cfg(feature = "test_utils")]
             {
+                use crate::state::did::validate_domain_linkage::ValidationStatus;
+                
                 // Silence unused variable warning
                 let _issuer_did = issuer_did;
                 // Skip validation during tests

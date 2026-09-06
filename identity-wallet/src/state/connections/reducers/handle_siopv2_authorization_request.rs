@@ -56,7 +56,7 @@ pub async fn handle_siopv2_authorization_request(state: AppState, _action: Actio
     info!("SIOPv2 response successfully sent");
 
     let mut connections = state.connections;
-    let connection = connections.update_or_insert(
+    let connection = connections.update_last_interaction_or_insert_new(
         &client_metadata.connection_url,
         &client_metadata.client_name,
         client_metadata.client_id,

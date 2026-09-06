@@ -251,7 +251,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
         // Create or update the connection.
         let previously_connected = state.connections.contains(did.as_str());
         let mut connections = state.connections;
-        let connection = connections.update_or_insert(&connection_url, &issuer_name, did);
+        let connection = connections.update_last_interaction_or_insert_new(&connection_url, &issuer_name, did);
 
         let mut history_credentials = vec![];
 
