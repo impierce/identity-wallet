@@ -5,7 +5,7 @@ use crate::{
         credentials::{
             reducers::send_token_request::get_credential_status, DisplayCredential, VerifiableCredentialRecord,
         },
-        did::validate_domain_linkage::{ValidationResult, ValidationStatus, Verifier},
+        did::validate_domain_linkage::{ValidationResult, Verifier},
     },
     subject::Subject,
 };
@@ -243,6 +243,8 @@ async fn get_validated_linked_credential_data(
                             return None;
                         };
 
+                        // The .unwrap_or_default() calls here default to an empty string, we don't want to throw a full error here.
+                        // It's simply the issuer's responsibility to have it's display data in order, this shouldnt break the flow.
                         verifiable_credential_record.display_credential.credential_status = get_credential_status(&verifiable_credential_record, subject).await;
                         verifiable_credential_record.display_credential.display_name = credential_name.unwrap_or_default();
                         verifiable_credential_record.display_credential.metadata.icon = credential_logo_uri;
@@ -292,6 +294,8 @@ async fn get_validated_linked_domains(
             }
             #[cfg(feature = "test_utils")]
             {
+                use crate::state::did::validate_domain_linkage::ValidationStatus;
+
                 // Silence unused variable warning
                 let _issuer_did = issuer_did;
                 // Skip validation during tests

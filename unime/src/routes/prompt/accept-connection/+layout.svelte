@@ -8,7 +8,7 @@
   import { dispatch } from '$lib/dispatcher';
   import { state as appState, error } from '$lib/stores';
 
-  // This lives in the layout so that  navigating to a child route
+  // This lives in the layout so that navigating to a child route
   // does not cancel the flow.
   $: isMock = isMockPrompt(page.url, $appState);
 

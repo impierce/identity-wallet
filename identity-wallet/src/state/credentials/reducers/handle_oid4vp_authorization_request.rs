@@ -298,7 +298,7 @@ pub async fn update_history_and_connections(
     history: &mut Vec<HistoryEvent>,
 ) -> Result<(), AppError> {
     let previously_connected = connections.contains(client_metadata.client_id.as_str());
-    let connection = connections.update_or_insert(
+    let connection = connections.update_last_interaction_or_insert_new(
         &client_metadata.connection_url,
         &client_metadata.client_name,
         client_metadata.client_id.clone(),
