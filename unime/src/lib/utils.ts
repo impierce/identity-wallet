@@ -110,8 +110,7 @@ export function formatRelativeDateTime(isoDate: string, locale: Locale, { capita
   // Use Math.round for more accurate relative time.
   const relativeDateTime = relativeFormatter.format(Math.round(diffInSeconds / divisor), units[index]);
 
-  // Capitalize the first character. Never lower-case: languages that capitalize the word
-  // themselves (German nouns, for one) would come out wrong.
+  // Capitalize the first character.
   return capitalize ? relativeDateTime.charAt(0).toUpperCase() + relativeDateTime.slice(1) : relativeDateTime;
 }
 
