@@ -117,7 +117,6 @@ describe('formatRelativeDateTime function', () => {
     expect(formatRelativeDateTime(twoDaysAgo.toISOString(), 'de-DE')).toEqual('Vorgestern');
   });
 
-  // This fixture has to be a result that starts with a letter, not a digit.
   test('1 day ago en-GB, uncapitalized', () => {
     const now = new Date();
     const oneDayAgo = new Date(now.setDate(now.getDate() - 1));
