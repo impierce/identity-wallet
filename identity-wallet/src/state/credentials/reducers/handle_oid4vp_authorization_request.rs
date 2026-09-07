@@ -235,6 +235,21 @@ pub async fn build_oid4vp_vp_token_and_history_credentials(
                         .into_disclosed_object(&Sha256Hasher::new())
                         .map_err(|e| AppError::Error(format!("Failed to get disclosed object from SD-JWT VC: {e}")))?;
                     serde_json::json!(disclosed_object)
+                } else if verifiable_credential_record.display_credential.format == CredentialFormats::VcSdJwt(()) {
+                    let sd_jwt_string = verifiable_credential_record
+                        .verifiable_credential
+                        .as_str()
+                        .ok_or(AppError::InvalidCredentialFormatError)?
+                        .to_string();
+
+                    let sd_jwt = sd_jwt_string
+                        .parse::<SdJwt>()
+                        .map_err(|e| AppError::Error(format!("Failed to parse stored SD-JWT: {e}")))?;
+
+                    let disclosed_object = sd_jwt
+                        .into_disclosed_object(&Sha256Hasher::new())
+                        .map_err(|e| AppError::Error(format!("Failed to get disclosed object from SD-JWT: {e}")))?;
+                    serde_json::json!(disclosed_object)
                 } else if verifiable_credential_record.display_credential.format == CredentialFormats::JwtVcJson(()) {
                     get_unverified_jwt_claims(&verifiable_credential_record.verifiable_credential)
                         .unwrap_or_default()
