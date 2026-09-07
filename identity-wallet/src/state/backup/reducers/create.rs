@@ -5,13 +5,14 @@ use log::info;
 
 use crate::{
     error::AppError,
-    persistence::{save_state, ASSETS_DIR, BACKUPS_DIR, STATE_FILE, STRONGHOLD},
+    persistence::{save_state, ASSETS_DIR, STRONGHOLD},
     state::{
         actions::{listen, Action},
         backup::{
             actions::create::CreateBackup,
             archive::{self, Asset, Payload},
-            store::{BackupStore, LocalBackupStore},
+            backup_store, list_backups,
+            store::BackupStore,
         },
         AppState,
     },
@@ -21,19 +22,21 @@ use crate::{
 #[tracing::instrument(skip_all, err)]
 pub async fn create_backup(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(CreateBackup { password }) = listen::<CreateBackup>(action) {
-        // Flush the running state first, otherwise the archive captures whatever
-        // was last written rather than what the user is looking at.
+        // Keep the on-disk state current, but archive the in-memory state rather
+        // than reading it back: `save_state` writes through a buffered tokio
+        // `File` with no explicit flush, so a synchronous read straight after can
+        // observe an empty file.
         save_state(&state).await?;
 
-        let payload = collect_payload()?;
+        let payload = collect_payload(&state)?;
         let bytes = archive::seal(&password, &payload)?;
 
-        let store = LocalBackupStore::new(BACKUPS_DIR.lock().unwrap().clone());
-        let file = store.create(&backup_name(), &bytes)?;
+        let file = backup_store().create(&backup_name(), &bytes)?;
 
         info!("created backup `{}` ({} bytes, id `{}`)", file.name, file.size, file.id);
 
         return Ok(AppState {
+            backups: list_backups()?,
             current_user_prompt: None,
             ..state
         });
@@ -42,14 +45,14 @@ pub async fn create_backup(state: AppState, action: Action) -> Result<AppState, 
 }
 
 /// Gathers everything a restore needs to rebuild the profile.
-fn collect_payload() -> Result<Payload, AppError> {
-    let state = fs::read(STATE_FILE.lock().unwrap().as_path())?;
-    let stronghold = fs::read(STRONGHOLD.lock().unwrap().as_path())?;
-
+///
+/// The state section is serialized from `state` directly, so the archive holds
+/// exactly what the user is looking at and never depends on write timing.
+fn collect_payload(state: &AppState) -> Result<Payload, AppError> {
     Ok(Payload {
         app_version: env!("CARGO_PKG_VERSION").to_string(),
-        state,
-        stronghold,
+        state: serde_json::to_vec(state)?,
+        stronghold: fs::read(STRONGHOLD.lock().unwrap().as_path())?,
         assets: collect_assets()?,
     })
 }

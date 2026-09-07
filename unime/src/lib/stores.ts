@@ -14,6 +14,7 @@ const empty_state: AppState = {
   dids: {},
   connections: [],
   credentials: [],
+  backups: [],
   search_results: {
     current: [],
     recent_credentials: [],

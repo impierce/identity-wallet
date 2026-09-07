@@ -26,12 +26,16 @@ use std::{
 };
 
 use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 use uuid::Uuid;
 
 use crate::error::AppError;
 
 /// Metadata for one stored backup. Mirrors the plugin's `CloudFile`.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "bindings/backup/BackupFile.ts")]
+#[serde(rename_all = "camelCase")]
 pub struct BackupFile {
     /// Opaque identifier. Not a path, and not derived from the name.
     pub id: String,

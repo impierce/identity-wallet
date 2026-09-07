@@ -66,7 +66,7 @@ mod bindings {
     use ts_rs::TS;
 
     use crate::state::{
-        backup::actions::{create::CreateBackup, restore::RestoreBackup},
+        backup::actions::{create::CreateBackup, delete::DeleteBackup, restore::RestoreBackup},
         common::actions::{
             cancel_user_flow::CancelUserFlow, check_password::CheckPassword, unlock_storage::UnlockStorage,
         },
@@ -190,5 +190,9 @@ mod bindings {
         CreateBackup { payload: CreateBackup },
         #[serde(rename = "[Backup] Restore")]
         RestoreBackup { payload: RestoreBackup },
+        #[serde(rename = "[Backup] List")]
+        ListBackups,
+        #[serde(rename = "[Backup] Delete")]
+        DeleteBackup { payload: DeleteBackup },
     }
 }

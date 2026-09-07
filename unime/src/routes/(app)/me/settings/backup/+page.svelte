@@ -3,119 +3,33 @@
 
   import LL from '$i18n/i18n-svelte';
 
-  import { melt } from '@melt-ui/svelte';
-  import * as path from '@tauri-apps/api/path';
-  import { BaseDirectory, exists, readDir, remove, stat, type FileInfo } from '@tauri-apps/plugin-fs';
-  import { info, warn } from '@tauri-apps/plugin-log';
-
-  import { ActionSheet, Button, SettingsSwitch, Switch, TopNavBar } from '$lib/components';
+  import { ActionSheet, Button, SettingsSwitch, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
-  import { CloudArrowUpFillIcon, CloudFillIcon, InfoRegularIcon } from '$lib/icons';
+  import { CloudArrowUpFillIcon, InfoRegularIcon } from '$lib/icons';
   import { state } from '$lib/stores';
   import { formatDateTime } from '$lib/utils';
 
-  let enabled: boolean = false; // TODO: persist in app state user settings
-
-  let fileInfo: FileInfo | undefined = undefined;
-
   let openConfirmAction = false;
 
-  let dirPath: string | null;
-  let fileName: string = 'backup.dat';
-
-  // Backups are kept in the app's local data directory for now. The cloud
-  // provider plugin is mobile-only and has no implementation yet; a wallet-side
-  // backup store will choose between local and cloud once it exists.
-  async function backupDirectory(): Promise<string | null> {
-    return path
-      .appLocalDataDir()
-      .then((dir) => {
-        info(`Backup directory: ${dir}`);
-        return dir;
-      })
-      .catch((error) => {
-        warn(`Error getting local app data directory: ${error}`);
-        return null;
-      });
-  }
-
-  async function getFileInfo() {
-    if (!dirPath) {
-      return;
-    }
-    let filePath = await path.join(dirPath, fileName);
-    fileInfo = await stat(filePath)
-      .then((fileInfo) => {
-        info(`location: ${filePath}, attributes: ${JSON.stringify(fileInfo)}`);
-        enabled = true;
-        return fileInfo;
-        // return {
-        //   provider: 'Local filesystem',
-        //   size: fileInfo.size,
-        //   modificationDate: fileInfo.mtime?.toISOString() ?? '',
-        // };
-      })
-      .catch((error) => {
-        warn(`Error checking cloud backup exists: ${error}`);
-        warn(`${JSON.stringify(error)}`);
-        return undefined;
-      });
-  }
+  // The backend owns where backups live and hands back opaque ids, so this screen
+  // reads the listing out of app state rather than touching the filesystem.
+  $: backups = $state.backups ?? [];
+  $: latest = backups[0]; // the backend returns them newest first
+  $: enabled = backups.length > 0;
 
   async function createBackup() {
-    if (!dirPath) {
-      Promise.reject('No directory path');
-    }
+    // TODO: prompt for a password instead of the development default.
     await dispatch({ type: '[Backup] Create', payload: { password: 'sup3rSecr3t' } });
-    await getFileInfo();
   }
 
-  async function enable() {
-    await createBackup();
-  }
-
-  async function disable() {
-    if (!dirPath) {
-      return;
+  async function removeAllBackups() {
+    for (const backup of backups) {
+      await dispatch({ type: '[Backup] Delete', payload: { id: backup.id } });
     }
-
-    let filePath = await path.join(dirPath, fileName);
-
-    await remove(filePath)
-      .then(() => {
-        info(`Successfully deleted backup: ${fileName}`);
-        enabled = false;
-      })
-      .catch((error) => {
-        warn(`Error deleting backup: ${error}`);
-      });
   }
 
   onMount(async () => {
-    dirPath = await backupDirectory();
-
-    if (!dirPath) {
-      return;
-    }
-
-    const files = await readDir(dirPath);
-
-    files.map((file) => {
-      info(`${file.name}`);
-    });
-
-    // info(`Files in app data directory: ${JSON.stringify(files)}`);
-
-    const folderExists = await exists('backup.txt', { baseDir: BaseDirectory.AppLocalData });
-    info(`Backup file exists: ${folderExists}`);
-
-    await getFileInfo();
-
-    // await exists('backup.txt', { baseDir: BaseDirectory.AppLocalData }).then(async (res) => {
-    //   if (res) {
-    //     getFileInfo();
-    //   }
-    // });
+    await dispatch({ type: '[Backup] List' });
   });
 </script>
 
@@ -147,7 +61,7 @@
       if (enabled) {
         openConfirmAction = true;
       } else {
-        await enable();
+        await createBackup();
       }
     }}>
       {#snippet icon()}
@@ -158,18 +72,19 @@
 
     {#if enabled}
       <div class="rounded-xl bg-background-alt p-4">
-        <div class="mb-2 text-sm font-semibold text-slate-500">{'n/a'}</div>
-        {#if fileInfo?.mtime}
+        <div class="mb-2 text-sm font-semibold text-slate-500">
+          {backups.length}
+          {backups.length === 1 ? 'backup' : 'backups'}
+        </div>
+        {#if latest}
           <div class="text-xs font-medium text-slate-400">
-            Latest backup on {formatDateTime(fileInfo?.mtime.toISOString(), $state.profile_settings.locale)}
+            Latest backup on {formatDateTime(latest.modifiedAt, $state.profile_settings.locale)}
           </div>
         {/if}
-        {#if $state.dev_mode !== 'Off'}
+        {#if $state.dev_mode !== 'Off' && latest}
           <div class="mt-2 space-y-2">
-            <div class="text-xs font-medium text-slate-400">Location: {dirPath}/{fileName}</div>
-            <div class="text-xs font-medium text-slate-400">
-              {fileInfo ? Math.round(fileInfo.size / 1_000) : '?'} kB
-            </div>
+            <div class="text-xs font-medium text-slate-400">Name: {latest.name}</div>
+            <div class="text-xs font-medium text-slate-400">{Math.round(Number(latest.size) / 1_000)} kB</div>
           </div>
         {/if}
       </div>
@@ -197,7 +112,7 @@
         <button
           class="h-[48px] w-full rounded-xl bg-rose-100 px-4 py-2 text-[14px]/[24px] font-medium text-rose-500"
           on:click={() => {
-            disable();
+            removeAllBackups();
             openConfirmAction = false;
           }}>{$LL.SETTINGS.BACKUP_RECOVERY.CONFIRM_DISABLE.CONFIRM()}</button
         >

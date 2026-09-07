@@ -4,14 +4,10 @@ use log::info;
 
 use crate::{
     error::AppError,
-    persistence::{load_state, ASSETS_DIR, BACKUPS_DIR, STATE_FILE, STRONGHOLD},
+    persistence::{load_state, ASSETS_DIR, STATE_FILE, STRONGHOLD},
     state::{
         actions::{listen, Action},
-        backup::{
-            actions::restore::RestoreBackup,
-            archive,
-            store::{BackupStore, LocalBackupStore},
-        },
+        backup::{actions::restore::RestoreBackup, archive, backup_store, list_backups, store::BackupStore},
         AppState,
     },
 };
@@ -24,8 +20,7 @@ use crate::{
 #[tracing::instrument(skip_all, err)]
 pub async fn restore_backup(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(RestoreBackup { id, password }) = listen::<RestoreBackup>(action) {
-        let store = LocalBackupStore::new(BACKUPS_DIR.lock().unwrap().clone());
-        let bytes = store.read(&id)?;
+        let bytes = backup_store().read(&id)?;
 
         // Fails with `ArchiveError::Authentication` for both a wrong password and
         // a modified file, so nothing is written unless the archive is intact.
@@ -44,6 +39,7 @@ pub async fn restore_backup(state: AppState, action: Action) -> Result<AppState,
         info!("restored profile from backup `{id}`");
 
         return Ok(AppState {
+            backups: list_backups()?,
             current_user_prompt: None,
             ..restored
         });
@@ -78,9 +74,12 @@ mod tests {
     use serial_test::serial;
 
     use super::*;
-    use crate::state::{
-        backup::{actions::create::CreateBackup, reducers::create::create_backup},
-        APP_STATE_VERSION,
+    use crate::{
+        persistence::BACKUPS_DIR,
+        state::{
+            backup::{actions::create::CreateBackup, list_backups, reducers::create::create_backup},
+            APP_STATE_VERSION,
+        },
     };
 
     /// The storage paths are process-global, so these tests are serialised and
@@ -108,9 +107,8 @@ mod tests {
         fs::remove_dir_all(root.join("assets")).unwrap();
     }
 
-    fn stored_backup_id(root: &Path) -> String {
-        let store = LocalBackupStore::new(root.join("backups"));
-        let listed = store.list().unwrap();
+    fn stored_backup_id(_root: &Path) -> String {
+        let listed = list_backups().unwrap();
         assert_eq!(listed.len(), 1, "expected exactly one stored backup");
         listed[0].id.clone()
     }
@@ -241,6 +239,56 @@ mod tests {
             fs::read(tmp.path().join("stronghold.bin")).unwrap(),
             b"current stronghold"
         );
+    }
+
+    #[tokio::test]
+    #[serial]
+    async fn creating_and_deleting_keep_the_listing_current() {
+        use crate::state::backup::{actions::delete::DeleteBackup, reducers::delete::delete_backup};
+
+        let tmp = tempfile::tempdir().unwrap();
+        point_storage_at(tmp.path());
+        seed_profile(tmp.path());
+
+        let state = AppState {
+            version: APP_STATE_VERSION,
+            ..Default::default()
+        };
+        assert!(state.backups.is_empty());
+
+        let after_create = create_backup(
+            state,
+            Arc::new(CreateBackup {
+                password: "pw".to_string(),
+            }),
+        )
+        .await
+        .unwrap();
+        assert_eq!(after_create.backups.len(), 1);
+
+        let id = after_create.backups[0].id.clone();
+        let after_delete = delete_backup(after_create, Arc::new(DeleteBackup { id }))
+            .await
+            .unwrap();
+        assert!(after_delete.backups.is_empty());
+    }
+
+    #[tokio::test]
+    #[serial]
+    async fn the_listing_is_newest_first() {
+        let tmp = tempfile::tempdir().unwrap();
+        point_storage_at(tmp.path());
+
+        let store = crate::state::backup::backup_store();
+        store.create("older.unime", b"a").unwrap();
+        // Filesystem timestamps are coarse; make the ordering unambiguous.
+        std::thread::sleep(std::time::Duration::from_millis(1100));
+        store.create("newer.unime", b"b").unwrap();
+
+        let listed = list_backups().unwrap();
+        assert_eq!(listed.len(), 2);
+        assert_eq!(listed[0].name, "newer.unime");
+        assert_eq!(listed[1].name, "older.unime");
     }
 
     #[tokio::test]

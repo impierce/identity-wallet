@@ -14,6 +14,7 @@ pub mod user_journey;
 pub mod user_prompt;
 pub mod verified_data;
 
+use self::backup::store::BackupFile;
 use self::search::SearchResults;
 use self::{
     actions::Action, core_utils::CoreUtils, dev_mode::DevMode, profile_settings::ProfileSettings,
@@ -105,6 +106,9 @@ pub struct AppState {
     pub credentials: Vec<DisplayCredential>,
     pub trust_lists: TrustLists,
     pub search_results: SearchResults,
+    /// Backups currently in the backup store, newest first. Derived from the
+    /// store rather than user data, and refreshed by the `[Backup] *` actions.
+    pub backups: Vec<BackupFile>,
     /// This field contains utils needed for the backend to perform its tasks.
     #[serde(skip)]
     pub core_utils: CoreUtils,
