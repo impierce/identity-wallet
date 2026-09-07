@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte';
 
-  import { goto } from '$app/navigation';
+  import { beforeNavigate, goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
 
   import {
@@ -92,6 +92,13 @@
     // TODO find a good way to test if not dev_mode. This will have to be checked after $state is loaded.
     startScan();
   });
+
+  beforeNavigate(async ({ type, cancel }) => {
+    if (type === 'popstate') {
+      cancel();
+      goto('/me');
+    }
+  });
 </script>
 
 <div class="content-height isolate flex flex-col items-stretch">
@@ -118,7 +125,7 @@
               <div class="flex flex-col space-y-2 rounded-[20px] border border-slate-200 p-2 dark:border-slate-600">
                 <input
                   bind:value={mockQrCodeValue}
-                  class="h-12 w-full rounded-xl border border-slate-200 px-3 text-[13px]/[24px] text-teal dark:border-slate-600 dark:bg-dark"
+                  class="h-12 w-full rounded-xl border border-slate-200 px-3 text-[13px]/[24px] text-secondary dark:border-slate-600 dark:bg-dark"
                   placeholder="Paste QR code value"
                 />
                 <Button
@@ -177,7 +184,7 @@
       <!-- Disable the BottomNavBar by overlaying a transparent element -->
       <div class="absolute z-10 h-full w-full bg-white opacity-60 dark:bg-dark"></div>
     {/if}
-    <div class="fixed bottom-[var(--safe-area-inset-bottom)] w-full shadow-[0_-4px_20px_0px_rgba(0,0,0,0.03)]">
+    <div class="fixed bottom-(--safe-area-inset-bottom) w-full shadow-[0_-4px_20px_0px_rgba(0,0,0,0.03)]">
       <BottomNavBar
         active={'scan'}
         on:me={() => goto('/me')}

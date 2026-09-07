@@ -55,8 +55,10 @@ const viteConfig = defineConfig({
   },
 });
 
-// TODO: Refactored by AI to fix TS errors (Claude 3.5 Sonnet).
 const vitestConfig = defineVitestConfig({
+  // Svelte components are mounted in the browser environment provided by `jsdom`, not rendered on the server.
+  // Only applied while running the tests, so that it cannot affect the app itself.
+  resolve: process.env.VITEST ? { conditions: ['browser'] } : undefined,
   test: {
     include: ['src/**/*.{test,spec}.{js,ts}'],
     globals: true,

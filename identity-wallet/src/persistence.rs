@@ -1,6 +1,8 @@
+use crate::http_client::get_http_client;
+use crate::migrations::apply_state_migrations;
+use crate::state::APP_STATE_VERSION;
 use crate::{error::AppError, state::AppState};
 use lazy_static::lazy_static;
-use log::info;
 use log::{debug, warn};
 use std::io::{copy, Cursor};
 use std::{fs, sync::Mutex};
@@ -23,7 +25,7 @@ lazy_static! {
 pub const SUPPORTED_IMAGE_ASSET_EXTENSIONS: [&str; 2] = ["svg", "png"];
 
 /// Initialize the storage file paths.
-pub fn initialize_storage(app_handle: &tauri::AppHandle) -> anyhow::Result<()> {
+pub fn initialize_storage(app_handle: &tauri::AppHandle) -> Result<(), AppError> {
     // TODO: create folder if not exists (not automatically created on macOS)
     if cfg!(target_os = "android") {
         *STATE_FILE.lock().unwrap() = app_handle.path().data_dir()?.join("state.json");
@@ -46,12 +48,12 @@ pub fn initialize_storage(app_handle: &tauri::AppHandle) -> anyhow::Result<()> {
             .join("com.impierce.identity-wallet")
             .join("assets");
     }
-    info!("STATE_FILE: {}", STATE_FILE.lock().unwrap().display());
-    info!("STRONGHOLD: {}", STRONGHOLD.lock().unwrap().display());
+    debug!("STATE_FILE: {}", STATE_FILE.lock().unwrap().display());
+    debug!("STRONGHOLD: {}", STRONGHOLD.lock().unwrap().display());
 
     match fs::create_dir_all(ASSETS_DIR.lock().unwrap().as_path()) {
-        Ok(_) => info!("ASSETS_DIR: created"),
-        Err(e) => info!("ASSETS_DIR: {}", e),
+        Ok(_) => debug!("ASSETS_DIR: created"),
+        Err(e) => debug!("ASSETS_DIR: {e}"),
     };
 
     Ok(())
@@ -61,17 +63,52 @@ pub fn initialize_storage(app_handle: &tauri::AppHandle) -> anyhow::Result<()> {
 
 /// Loads an [AppState] from the app's data directory.
 /// If it does not exist or it cannot be parsed, it will fallback to default values.
-pub async fn load_state() -> anyhow::Result<AppState> {
+pub async fn load_state() -> Result<AppState, AppError> {
     let state_file = STATE_FILE.lock().unwrap().clone();
     let bytes = read(state_file).await?;
-    let content = String::from_utf8(bytes)?;
-    let app_state: AppState = serde_json::from_str(&content)?;
+    let content = String::from_utf8(bytes.clone()).map_err(|e| AppError::Error(e.utf8_error().to_string()))?;
+
+    // Load state into a `serde_json::Object` first to run data model migrations before deserialization into `AppState`.
+    let app_state_object: serde_json::Map<String, serde_json::Value> = serde_json::from_str(&content)?;
     debug!("state loaded from disk");
+
+    // Get the version from the state file, if no version field is found, default to 0.
+    let version = app_state_object
+        .get("version")
+        .unwrap_or(&serde_json::Value::from(0))
+        .as_u64()
+        .map(|v| v as u32)
+        .ok_or_else(|| {
+            AppError::AppStateMigrationError(
+                0,
+                APP_STATE_VERSION,
+                "Failed to get valid current version from AppState loaded from disk".to_string(),
+            )
+        })?;
+
+    let app_state: AppState = match version {
+        APP_STATE_VERSION => {
+            let app_state = serde_json::from_str(&content)?;
+            debug!("App state is already at version {APP_STATE_VERSION} (latest)");
+            app_state
+        }
+        _ => {
+            let app_state = apply_state_migrations(app_state_object, version)?;
+            debug!("App state is now at version {APP_STATE_VERSION} (latest)");
+
+            save_state(&app_state)
+                .await
+                .map_err(|_| AppError::Error("Failed to save state after applying migrations".to_string()))?;
+
+            app_state
+        }
+    };
+
     Ok(app_state)
 }
 
 /// Persists a [AppState] to the app's data directory.
-pub async fn save_state(app_state: &AppState) -> anyhow::Result<()> {
+pub async fn save_state(app_state: &AppState) -> Result<(), AppError> {
     let state_file = STATE_FILE.lock().unwrap().clone();
     let mut file = File::create(state_file).await?;
 
@@ -86,7 +123,7 @@ pub async fn save_state(app_state: &AppState) -> anyhow::Result<()> {
 }
 
 /// Removes the state file from the app's data directory.
-pub async fn delete_state_file() -> anyhow::Result<()> {
+pub async fn delete_state_file() -> Result<(), AppError> {
     let state_file = STATE_FILE.lock().unwrap().clone();
     remove_file(state_file).await?;
     debug!("state deleted from disk");
@@ -94,7 +131,7 @@ pub async fn delete_state_file() -> anyhow::Result<()> {
 }
 
 /// Removes the stronghold file from the app's data directory.
-pub async fn delete_stronghold() -> anyhow::Result<()> {
+pub async fn delete_stronghold() -> Result<(), AppError> {
     let stronghold_file = STRONGHOLD.lock().unwrap().clone();
     remove_file(&stronghold_file).await?;
     remove_file(stronghold_file.join(".snapshot")).await?;
@@ -147,16 +184,17 @@ pub async fn download_asset(url: reqwest::Url, id: &str) -> Result<(), AppError>
         std::fs::create_dir(&tmp_dir)?;
     }
 
-    let response = reqwest::get(url.clone()).await?;
+    let response = get_http_client().await.get(url.clone()).send().await?;
 
     let file_extension = response
         .headers()
         .get("content-type")
         .map(|header_value| match header_value.to_str().unwrap() {
             "image/png" => Ok("png"),
+            "image/jpeg" | "image/jpg" => Ok("jpg"),
             "image/svg+xml" => Ok("svg"),
             _ => {
-                warn!("content_type is not supported: {:?}", header_value);
+                warn!("content_type is not supported: {header_value:?}");
                 Err(AppError::DownloadAborted("content-type is not supported"))
             }
         })
@@ -169,7 +207,7 @@ pub async fn download_asset(url: reqwest::Url, id: &str) -> Result<(), AppError>
         return Err(AppError::DownloadAborted("File size is bigger than 2 MB"));
     }
 
-    let mut file = std::fs::File::create(tmp_dir.join(format!("{}.{}", id, file_extension)))?;
+    let mut file = std::fs::File::create(tmp_dir.join(format!("{id}.{file_extension}")))?;
 
     copy(&mut content, &mut file)?;
 
@@ -183,16 +221,16 @@ pub fn persist_asset(file_name: &str, id: &str) -> Result<(), AppError> {
 
     if let Some(extension) = SUPPORTED_IMAGE_ASSET_EXTENSIONS
         .iter()
-        .find(|&e| tmp_dir.join(format!("{}.{}", file_name, e)).exists())
+        .find(|&e| tmp_dir.join(format!("{file_name}.{e}")).exists())
     {
-        let new_file_name = format!("{}.{}", id, extension);
+        let new_file_name = format!("{id}.{extension}");
         std::fs::rename(
-            tmp_dir.join(format!("{}.{}", file_name, extension)),
+            tmp_dir.join(format!("{file_name}.{extension}")),
             assets_dir.join(&new_file_name),
         )?;
-        debug!("Successfully persisted asset `{}` --> `{}`.", file_name, new_file_name);
+        debug!("Successfully persisted asset `{file_name}` --> `{new_file_name}`.");
     } else {
-        warn!("No asset found for file_name: `{}`", file_name)
+        warn!("No asset found for file_name: `{file_name}`")
     };
 
     Ok(())

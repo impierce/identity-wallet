@@ -1,6 +1,6 @@
 import type { Translation } from '../i18n-types';
 
-const nl = {
+const nl_NL = {
   ONBOARDING: {
     WELCOME: {
       GREETING: 'Welkom bij',
@@ -37,90 +37,92 @@ const nl = {
       T_AND_C: {
         TITLE: 'Algemene voorwaarden',
         DESCRIPTION: 'Ik ga akkoord met de algemene voorwaarden',
-        DIALOG_TITLE: 'Algemene voorwaarden voor Impierce Technologies B.V.',
-        LAST_UPDATED: 'Laatst bijgewerkt: 31 oktober 2024',
+        DIALOG_TITLE: 'UniMe Gebruiksvoorwaarden',
+        LAST_UPDATED: 'Laatst bijgewerkt: 10 september 2025',
         TL_DR:
-          'Zoals bij elke app zijn wij, Impierce Technologies, verplicht om jou te informeren over een heleboel juridische mumbo jumbo. We proberen het eenvoudig en to the point te houden, maar zijn beperkt door wat er gezegd moet worden om onszelf te beschermen. De korte versie is dat we ons richten op het leveren van een app die je privacy respecteert, geen gegevens verzamelt en je controle geeft over je eigen gegevens. Aangezien jij beslist welke gegevens je verzamelt en met wie je deze deelt, ben je volledig verantwoordelijk voor deze beslissingen. Aangezien wij jouw gegevens niet verzamelen, is elk gegevensverlies door verlies van je apparaat of toegang tot de app ook jouw verantwoordelijkheid. Met grote macht komt grote verantwoordelijkheid. Nu de saaie versie:',
-        FULL: `Welkom bij Impierce Technologies B.V. (“wij”, “ons” of “onze”). Deze Algemene voorwaarden (“Voorwaarden”) regelen uw toegang tot de UniMe - Identity Wallet applicatie (“Dienst”). Door onze Service te openen of te gebruiken, gaat je ermee akkoord gebonden te zijn aan deze Voorwaarden. Als je niet akkoord gaat met enig deel van deze Voorwaarden, verzoeken wij je geen gebruik te maken van onze Service.
-Aanvaarding van voorwaarden
-Door onze Dienst te downloaden, te openen of te gebruiken, bevestigt je dat je deze Voorwaarden en ons Privacybeleid hebt gelezen, begrepen en ermee akkoord gaat. Als je de service namens een organisatie gebruikt, verklaart je dat je de bevoegdheid hebt om die organisatie aan deze voorwaarden te binden.
-
-Verantwoordelijkheden van gebruikers
-Beveiliging van gegevens: Je bent verantwoordelijk voor het handhaven van de vertrouwelijkheid en beveiliging van uw apparaten en eventuele referenties die worden gebruikt om toegang te krijgen tot onze service. Impierce Technologies B.V. is niet aansprakelijk voor enig verlies of compromittering van uw gegevens als gevolg van het niet beveiligen van uw apparaat.
-Naleving van wetten: Je stemt ermee in onze service te gebruiken in overeenstemming met alle toepasselijke wet- en regelgeving.
-Accurate informatie: Je bent er verantwoordelijk voor dat alle informatie die je opslaat of deelt via onze Service accuraat en up-to-date is.
-
-Gegevenseigendom en privacy
-Geen gegevensverzameling: Wij verzamelen, bewaren of verwerken geen persoonlijke gegevens via de UniMe applicatie. Alle identiteitsgegevens blijven uitsluitend op uw apparaat of binnen de opslagoptie die jij kiest.
-Delen onder controle van de gebruiker: Het delen van gegevens wordt uitsluitend door jou geïnitieerd en beheerd en vindt rechtstreeks plaats tussen jou en de aangewezen partij. Wij hebben geen toegang tot of inzicht in uw identiteit of activiteiten.
-Gegevensverzameling door derden: Houd er rekening mee dat platforms van derden, zoals Apple App Store of Google Play Store, onafhankelijk van Impierce Technologies B.V. gegevens kunnen verzamelen met betrekking tot app-prestaties, gebruik en apparaatinformatie.
-
-Intellectuele eigendomsrechten
-Eigendom en licenties: Alle intellectuele eigendomsrechten in UniMe en verwante materialen zijn eigendom van Impierce Technologies B.V. of haar licentiegevers. UniMe wordt echter geleverd als een open-sourceproduct onder de Apache 2.0-licentie, zodat gebruikers de software kunnen gebruiken, wijzigen en distribueren in overeenstemming met de voorwaarden van die licentie.
-Licentieverlening: Door UniMe te downloaden of te gebruiken, ga je akkoord met de voorwaarden van de Apache 2.0-licentie, die een wereldwijde, royaltyvrije licentie verleent om de software te gebruiken, te reproduceren en te distribueren met de juiste toeschrijving.
-Raadpleeg voor meer informatie de volledige tekst van de Apache 2.0-licentie.
-
-Verboden activiteiten
-Je stemt ermee in geen van de volgende activiteiten uit te voeren:
-Ongeautoriseerde toegang: Pogingen om ongeautoriseerde toegang te krijgen tot onze service of systemen.
-Storingen: Verstoren of hinderen van de veiligheid of prestaties van de Service.
-Misbruik: De service gebruiken voor onwettige, schadelijke, frauduleuze, inbreukmakende of andere kwaadwillende doeleinden.
-
-
-Diensten van derden
-Onze Service kan koppelingen of integraties met Services van derden bevatten. Wij hebben geen controle over deze Diensten van derden en zijn niet verantwoordelijk voor hun inhoud of beleid. Uw gebruik van Diensten van derden is op eigen risico en onderworpen aan hun voorwaarden en bepalingen.
-
-Disclaimers
-“As Is”-basis: Onze Service wordt geleverd op een “as is”- en “as available”-basis zonder enige garanties, expliciet of impliciet.
-Geen Garantie: Wij garanderen niet dat de Service ononderbroken, foutloos, veilig of vrij van virussen of andere schadelijke componenten zal zijn.
-
-
-
-Beperking van Aansprakelijkheid
-Voor zover toegestaan door de wet, is Impierce Technologies B.V. niet aansprakelijk voor enige indirecte, incidentele, speciale, gevolg- of strafschade, waaronder maar niet beperkt tot verlies van winst, gegevens, gebruik, goodwill, of andere immateriële verliezen die voortvloeien uit:
-Uw toegang tot of gebruik van, of onvermogen om toegang te krijgen tot of gebruik te maken van de Service;
-Het gedrag of de inhoud van een derde partij op de Service;
-Inhoud die is verkregen via de Service.
-
-Schadeloosstelling
-Je stemt ermee in om Impierce Technologies B.V., haar dochterondernemingen en hun respectievelijke directeuren, functionarissen, werknemers en agenten te vrijwaren, verdedigen en schadeloos te stellen van en tegen alle claims, aansprakelijkheden, schade, verliezen en kosten die voortvloeien uit of op enige wijze verband houden met:
-Uw toegang tot of gebruik van de Service;
-Uw schending van deze Voorwaarden;
-Uw schending van de rechten van een ander.
-
-
-Wijzigingen in de Voorwaarden
-Wij kunnen deze Voorwaarden van tijd tot tijd bijwerken of wijzigen. De datum “Laatst Bijgewerkt” bovenaan geeft aan wanneer de laatste wijzigingen zijn aangebracht. We zullen u op de hoogte stellen van belangrijke wijzigingen door de nieuwe Voorwaarden op onze website of via de Service te plaatsen. Uw voortgezet gebruik van de Service na enige wijzigingen impliceert uw aanvaarding van de nieuwe Voorwaarden.
-
-
-
-Toepasselijk Recht en Jurisdictie
-Deze Voorwaarden worden beheerst door en geïnterpreteerd in overeenstemming met de wetten van Nederland. Eventuele geschillen die voortvloeien uit of in verband met deze Voorwaarden zijn onderworpen aan de exclusieve jurisdictie van de rechtbanken in Nederland.
-
-
-
-Scheidbaarheid
-Indien een bepaling van deze Voorwaarden ongeldig of niet-afdwingbaar wordt bevonden, blijven de overige bepalingen volledig van kracht.
-
-
-
-Volledige Overeenkomst
-Deze Voorwaarden, samen met ons Privacybeleid, vormen de volledige overeenkomst tussen jij en Impierce Technologies B.V. met betrekking tot uw gebruik van de Service.
-
-
-
-Contactgegevens
-Voor vragen, opmerkingen of zorgen over deze Voorwaarden kun je contact met ons opnemen:
-Impierce Technologies B.V.
-Karekietweide 6, 3993 CD, Houten, Nederland
-Email: contact@impierce.com
-
-
-
-Taal
-Deze Voorwaarden kunnen naar andere talen zijn vertaald voor uw gemak. In het geval van een conflict tussen de Engelse versie en een vertaalde versie, prevaleert de Engelse versie.
-Door onze Service te gebruiken, erken je dat je deze Voorwaarden heeft gelezen, begrepen en ermee akkoord gaat gebonden te zijn aan deze Voorwaarden. Impierce Technologies B.V. blijft zich inzetten voor het leveren van veilige, privacygerichte oplossingen, met inachtneming van uw rechten en vrijheden.
-`,
+          'Zoals elke app-aanbieder zijn wij wettelijk verplicht om je enkele belangrijke voorwaarden mee te geven. We hebben ons best gedaan om dit zo duidelijk en beknopt mogelijk te houden. Hier is de korte versie: UniMe geeft jou de controle. Het verzamelt je gegevens niet, respecteert je privacy en laat jou beslissen welke informatie je opslaat en deelt. Je identiteit en gegevens blijven van jou, en daarmee ook de verantwoordelijkheid om ze te beheren. Wij slaan je gegevens niet op en hebben er geen toegang toe. Gegevensverlies door verlies van je apparaat of toegang tot de app is daarom ook jouw verantwoordelijkheid. Met grote macht komt grote verantwoordelijkheid. Hier is alles wat je moet weten:',
+        FULL: {
+          AGREEMENT: {
+            TITLE: 'Aanvaarding van de voorwaarden',
+            DESCRIPTION:
+              'Door onze Dienst te downloaden, te openen of te gebruiken, bevestigt je dat je deze Voorwaarden en ons Privacybeleid hebt gelezen, begrepen en ermee akkoord gaat. Als je de service namens een organisatie gebruikt, verklaart je dat je de bevoegdheid hebt om die organisatie aan deze voorwaarden te binden.',
+          },
+          DEFINITIONS: {
+            TITLE: 'Definities',
+            DESCRIPTION:
+              'De term Service verwijst naar de mobiele applicatie UniMe Identity Wallet en omvat alle functies, inhoud of diensten die daarin worden aangeboden. Gebruikersgegevens betekent alle gegevens, inloggegevens of informatie die je opslaat of deelt met behulp van de Service. De term Apparaat verwijst naar de mobiele telefoon of hardware waarop de UniMe-app is geïnstalleerd en wordt gebruikt.',
+          },
+          USER_RESPONSIBILITIES: {
+            TITLE: 'Verantwoordelijkheden van de gebruiker',
+            DESCRIPTION:
+              'Je bent verantwoordelijk voor het vertrouwelijk en veilig houden van je Apparaat en alle inloggegevens die binnen de Service zijn opgeslagen, en ervoor te zorgen dat de informatie die je opslaat of deelt via de Service correct en actueel is. Je stemt ermee in de Service te gebruiken in overeenstemming met alle toepasselijke wetten en regelgeving. Impierce Technologies B.V. is niet aansprakelijk voor gegevensverlies door verlies van je Apparaat of ongeautoriseerde toegang.',
+          },
+          DATA_OWNERSHIP: {
+            TITLE: 'Eigendom van gegevens en privacy',
+            DESCRIPTION:
+              'UniMe is gebouwd op de kernprincipes van gebruikerscontrole en gegevensprivacy. Onze architectuur is zo ontworpen dat wij geen toegang hebben tot de Gebruikersgegevens die je in de app beheert, noch deze kunnen verzamelen, opslaan of verwerken. Al je Gebruikersgegevens worden lokaal en veilig op je Apparaat opgeslagen. Wij maken gebruik van sterke beveiligingsmaatregelen binnen de applicatie om je gegevens te beschermen. De uiteindelijke bescherming van je gegevens hangt echter ook af van jou, bijvoorbeeld door een sterk wachtwoord te gebruiken en geen software van onbetrouwbare bronnen te installeren. Om de integriteit van je inloggegevens te behouden, kan UniMe periodiek hun geldigheid controleren. Dit gebeurt door rechtstreeks vanaf je Apparaat contact op te nemen met de uitgever van de inloggegevens om te bevestigen of een inloggegeven is ingetrokken. Dit proces gebeurt automatisch op je Apparaat en omvat geen tussenkomst van Impierce Technologies B.V. Waar mogelijk gebruikt UniMe gedecentraliseerde methoden voor deze controles.',
+          },
+          DATA_VISIBILITY: {
+            TITLE: 'Gegevensinzage door app-platforms',
+            DESCRIPTION:
+              'Wanneer je UniMe downloadt of gebruikt via een officiële App Store, zoals de Apple App Store of Google Play, kan het platform beperkte technische en gebruiksgegevens verzamelen. Dit kan details omvatten zoals je apparaattype, app-installatie of crashmeldingen, en de regio- of taalinstellingen van je apparaat. Deze informatie wordt verzameld onder de eigen voorwaarden van de App Store. Impierce verzamelt geen aanvullende gebruiksgegevens van je Apparaat.',
+          },
+          INTELLECTUAL_PROPERTY_RIGHTS: {
+            TITLE: 'Intellectuele eigendomsrechten',
+            DESCRIPTION:
+              'Alle intellectuele eigendomsrechten van UniMe en gerelateerde materialen zijn eigendom van Impierce Technologies B.V. of onze licentiegevers. UniMe wordt aangeboden onder de Apache 2.0-licentie, wat betekent dat je de software mag gebruiken, aanpassen en verspreiden zolang je je houdt aan de voorwaarden van die licentie. Voor meer informatie verwijzen we naar de volledige Apache 2.0-licentie.',
+          },
+          PROHIBITED_ACTIVITIES: {
+            TITLE: 'Verboden activiteiten',
+            DESCRIPTION:
+              'Je stemt ermee in geen pogingen te doen om ongeautoriseerde toegang te verkrijgen tot de Serviceof gerelateerde systemen, de prestaties of beveiliging van de Service te verstoren of te hinderen, of de Service te gebruiken voor onwettige, schadelijke of frauduleuze doeleinden.',
+          },
+          THIRD_PARTY_SERVICES: {
+            TITLE: 'Diensten van derden',
+            DESCRIPTION:
+              'Onze Service kan koppelingen bevatten naar of integreren met platforms van derden. Deze platforms worden niet door ons beheerd of geëxploiteerd, en wij onderschrijven of aanvaarden geen verantwoordelijkheid voor hun inhoud, acties of gegevenspraktijken. Diensten of interacties die je kiest aan te gaan met derde partijen zijn op eigen risico en onderhevig aan hun eigen voorwaarden en beleid. We raden je aan deze zorgvuldig door te lezen voordat je verdergaat. De Service wordt geleverd "zoals hij is" en "zoals beschikbaar" zonder enige vorm van garanties. We garanderen geen ononderbroken of foutloos gebruik van de Service.',
+          },
+          LIABILITY: {
+            TITLE: 'Beperking van aansprakelijkheid',
+            DESCRIPTION:
+              'Voor zover wettelijk toegestaan is Impierce Technologies B.V. niet aansprakelijk voor indirecte, incidentele, bijzondere of gevolgschade. Dit omvat, maar is niet beperkt tot, verlies van gegevens, winst, zakelijke kansen of goodwill voortvloeiend uit je gebruik of onvermogen tot gebruik van de Service gedragingen, inhoud of fouten van derden; diensten, inhoud of acties van platforms van derden die via de Service toegankelijk zijn; of enige inhoud verkregen van of via de Service.',
+          },
+          INDEMNIFICATION: {
+            TITLE: 'Schadeloosstelling',
+            DESCRIPTION:
+              'Je stemt ermee in Impierce Technologies B.V. en haar gelieerde ondernemingen te vrijwaren van claims, verliezen of kosten die voortvloeien uit je gebruik van de Service, je schending van deze Gebruiksvoorwaarden of je schending van de rechten van een andere persoon of entiteit.',
+          },
+          MODIFICATIONS: {
+            TITLE: 'Wijzigingen in de gebruiksvoorwaarden',
+            DESCRIPTION:
+              'We kunnen deze Gebruiksvoorwaarden van tijd tot tijd bijwerken. De datum "Laatst bijgewerkt" hierboven geeft de meest recente versie weer. Belangrijke wijzigingen worden gecommuniceerd via de app of onze website. Voortgezet gebruik van de Service betekent dat je de herziene Gebruiksvoorwaarden accepteert.',
+          },
+          LAW_AND_JURISDIFICATION: {
+            TITLE: 'Toepasselijk recht en jurisdictie',
+            DESCRIPTION:
+              'Deze Gebruiksvoorwaarden vallen onder Nederlands recht. Eventuele geschillen worden beslecht door de rechtbanken van Nederland.',
+          },
+          SEVERABILITY: {
+            TITLE: 'Scheidbaarheid',
+            DESCRIPTION:
+              'Als een deel van deze Gebruiksvoorwaarden ongeldig wordt verklaard, blijft de rest volledig van kracht.',
+          },
+          LANGUAGE: {
+            TITLE: 'Taal',
+            DESCRIPTION:
+              'Deze Gebruiksvoorwaarden zijn beschikbaar in meerdere talen voor je gemak. Bij een conflict prevaleert de Engelse versie.',
+          },
+          ENTIRE_AGREEMENT: {
+            TITLE: 'Volledige Overeenkomst',
+            DESCRIPTION:
+              'Deze Gebruiksvoorwaarden vormen samen met ons Privacybeleid de volledige overeenkomst tussen jou en Impierce Technologies B.V. met betrekking tot het gebruik van UniMe.',
+          },
+          CONTACT: {
+            TITLE: 'Contactgegevens',
+            DESCRIPTION:
+              'Heb je feedback of een vraag? We streven er altijd naar om te verbeteren. Als iets onduidelijk is of beter geformuleerd kan worden, neem gerust contact met ons via contact@impierce.com. Door UniMe te gebruiken, bevestig je dat je deze Gebruiksvoorwaarden hebt gelezen, begrepen en ermee instemt. Wij blijven ons inzetten voor het leveren van veilige, privacygerichte digitale tools die jou sterker maken.',
+          },
+        },
       },
       OWNERSHIP: {
         TITLE: 'Eigendom',
@@ -155,6 +157,12 @@ Door onze Service te gebruiken, erken je dat je deze Voorwaarden heeft gelezen, 
         INPUT_PLACEHOLDER: 'Typ je wachtwoord opnieuw in',
         MATCH: 'Wachtwoorden komen overeen',
         NO_MATCH: 'Wachtwoorden komen niet overeen',
+      },
+      BIOMETRICS: {
+        TITLE: '{type} inschakelen',
+        DESCRIPTION: 'Wil je {type} instellen om de app te ontgrendelen?',
+        CONFIRM: 'Ja, gebruik {type}',
+        DECIDE_LATER: 'Beslis later',
       },
       COMPLETED: {
         NAVBAR_TITLE: 'Wachtwoord Instellen',
@@ -198,6 +206,30 @@ Door onze Service te gebruiken, erken je dat je deze Voorwaarden heeft gelezen, 
         TITLE_1: 'Kies het uiterlijk',
         TITLE_2: 'van je app',
         SUBTITLE: 'Ben jij meer een nachtuil?',
+      },
+      SECURITY: {
+        LABEL: 'Beveiliging',
+        NAVBAR_TITLE: 'Beveiliging',
+        SWITCH_LABEL: 'Ontgrendelen met {type}',
+        BIOMETRIC_TYPE: {
+          ANDROID: {
+            FACE_ID: 'gezichtsherkenning',
+            TOUCH_ID: 'vingerafdruk',
+          },
+          IOS: {
+            FACE_ID: 'Face ID',
+            TOUCH_ID: 'Touch ID',
+          },
+          GENERIC: 'biometrie',
+        },
+        ENABLE: {
+          DIALOG_TITLE: '{type} inschakelen',
+          DIALOG_CONTENT: 'Voer je wachtwoord in om {type} in te schakelen',
+        },
+        DISABLE: {
+          DIALOG_TITLE: '{type} uitschakelen',
+          DIALOG_CONTENT: 'Voer je wachtwoord in om {type} uit te schakelen',
+        },
       },
       PASSWORD: {
         TITLE: 'Wachtwoord',
@@ -270,17 +302,12 @@ Door onze Service te gebruiken, erken je dat je deze Voorwaarden heeft gelezen, 
       GREETING_3: 'Hoi',
       GREETING_4: 'Dag',
     },
-    DEMO: 'Bezoek een van de volgende websites op een desktopcomputer om te beginnen.',
-    CREDENTIAL_TABS: {
-      ALL: 'Alle',
-      DATA: 'Data',
-      BADGES: 'Badges',
-    },
     EMPTY_CREDENTIALS: {
       TITLE: 'Momenteel is het hier wat rustig',
       SUBTITLE: 'Wat denk je ervan om nieuwe credentials toe te voegen om je digitale "me" te starten?',
     },
     FAVORITES: 'Mijn favorieten',
+    MY_DATA: 'Mijn gegevens',
   },
   ACTIVITY: {
     BOTTOM_NAVIGATION_TITLE: 'Activiteiten',
@@ -354,16 +381,37 @@ Door onze Service te gebruiken, erken je dat je deze Voorwaarden heeft gelezen, 
     NAVBAR_TITLE: 'Credential Informatie',
     DETAILS: {
       VALID: 'Geldig',
+      INVALID: 'Ongeldig',
+      UNVERIFIED: 'Niet geverifieerd',
       ISSUED_BY: 'Uitgegeven door',
+      SELF_SIGNED: 'jezelf',
       DESCRIPTION: 'Beschrijving',
       OPEN_BADGES: {
+        RECIPIENT: 'Ontvanger',
+        RESULT: 'Resultaat',
         ALIGNMENT: 'Afstemming',
+        SKILL: 'Vaardigheid',
+        OCCUPATION: 'Beroep',
+        FRAMEWORK_LINK: 'Definitie bekijken',
         CRITERIA: 'Criteria',
+        VALUE: 'Cijfer',
+      },
+    },
+    RENDERER: {
+      PID: {
+        NAME: 'Naam',
+        NATIONALITY: 'Nationaliteit',
+        BIRTH_DATE: 'Geboortedatum',
+        BIRTH_PLACE: 'Geboorteplaats',
       },
     },
     ACTIONS: {
+      EDIT: {
+        MENU_BUTTON: 'Weergavenaam bijwerken',
+        CONFIRM_BUTTON: 'Weergavenaam bijwerken',
+      },
       DELETE: {
-        BUTTON_LABEL: 'Credential verwijderen',
+        MENU_BUTTON: 'Credential verwijderen',
         TITLE: 'Credential verwijderen',
         DESCRIPTION:
           'Weet je zeker dat je deze credential uit je wallet wilt verwijderen? Deze aktie kan niet meer worden teruggedraaid.',
@@ -371,14 +419,137 @@ Door onze Service te gebruiken, erken je dat je deze Voorwaarden heeft gelezen, 
       },
     },
   },
+  ADD_CREDENTIALS: {
+    BUTTON: 'Toevoegen',
+    NAVBAR_TITLE: 'Voeg credentials toe',
+    VALUE_REQUIRED: 'Verplicht',
+    LABEL_DISCLAIMER: 'Alleen zichtbaar voor jou',
+    FAVORITES_TOGGLE_LABEL: 'Aan favorieten toevoegen',
+    ADDRESS: {
+      TITLE: 'Adres',
+      DESCRIPTION: 'Voeg je woon- of werkadres toe',
+      INFO: {
+        NAVBAR_TITLE: 'Adres toevoegen',
+        TITLE: 'Adres',
+        DESCRIPTION: 'Voordat je start',
+        ITEM_0: {
+          TITLE: 'Al je adressen op één plek',
+          DESCRIPTION:
+            'Bewaar je thuisadres, werkadres of andere locaties veilig in je wallet, klaar om direct te gebruiken op ondersteunde online platforms.',
+        },
+        ITEM_1: {
+          TITLE: 'Tik, bevestig en klaar',
+          DESCRIPTION:
+            'Wanneer een dienst om een adres vraagt, scan je hun code of tik je op ‘Verbinden’. Kies het adres dat je wilt delen en bevestig. Binnen een oogwenk geregeld.',
+        },
+        ITEM_2: {
+          TITLE: 'Afgeschermd en veilig',
+          DESCRIPTION:
+            'Je adressen blijven alleen voor jouw ogen zichtbaar totdat je besluit ze te delen. Elk gedeeld gegeven is versleuteld, vastgelegd en vereist jouw toestemming, zodat je altijd volledig overzicht houdt over wie je gegevens heeft.',
+        },
+      },
+      ADD: {
+        NAVBAR_TITLE: 'Adres toevoegen',
+        LABEL: 'Hoe wil je dit adres noemen?',
+        LABEL_PLACEHOLDER: 'Woonadres',
+        RESIDENT_ADDRESS_LABEL: 'Adres',
+        RESIDENT_COUNTRY_LABEL: 'Land',
+        RESIDENT_COUNTRY_PLACEHOLDER: 'Kies een land',
+        RESIDENT_COUNTRY_NO_MATCH: 'Geen landen gevonden',
+        RESIDENT_STATE_LABEL: 'Provincie',
+        RESIDENT_STREET_LABEL: 'Straat',
+        RESIDENT_HOUSE_NUMBER_LABEL: 'Huisnummer',
+        RESIDENT_POSTAL_CODE_LABEL: 'Postcode',
+        RESIDENT_CITY_LABEL: 'Plaats',
+        CREATE_BUTTON: 'Adres toevoegen',
+      },
+    },
+    EMAIL: {
+      TITLE: 'E-mail',
+      DESCRIPTION: 'Verifieer je e-mailadres',
+      INFO: {
+        NAVBAR_TITLE: 'Verifieer e-mailadres',
+        TITLE: 'Verifieer e-mailadres',
+        DESCRIPTION: 'Voordat je begint',
+        ITEM_0: {
+          TITLE: 'Bewijs dat jij het echt bent',
+          DESCRIPTION:
+            'Een geverifieerd e-mailadres werkt als je digitale handdruk. Het geeft vrienden, collega’s en diensten het vertrouwen dat jij het werkelijk bent, waardoor je online interacties betrouwbaarder worden.',
+        },
+        ITEM_1: {
+          TITLE: 'Jij houdt altijd de controle',
+          DESCRIPTION:
+            'Jij bepaalt precies wanneer en waar je je geverifieerde e-mail gebruikt. Elk gedeeld gegeven is versleuteld en vastgelegd in je activiteitenoverzicht.',
+        },
+        ITEM_2: {
+          TITLE: 'Standaard veilig en privé',
+          DESCRIPTION:
+            'We sturen een eenmalige code naar je e-mail. Jij voert deze in, en de veilige credential blijft vergrendeld op je telefoon en wordt nooit gedeeld zonder jouw directe toestemming.',
+        },
+      },
+      ADD: {
+        NAVBAR_TITLE: 'E-mail toevoegen',
+        LABEL: 'Hoe wil je dit emailadres noemen?',
+        LABEL_PLACEHOLDER: 'Persoonlijk email',
+        VALUE_LABEL: 'Email',
+        VALUE_PLACEHOLDER: 'voornaam.achternaam@example.com',
+        VALUE_PATTERN_ERROR: 'Voer een geldig emailadres in',
+        BUTTON_SEND: 'Verificatie email versturen',
+        BUTTON_SEND_AGAIN: 'Verificatie-e-mail opnieuw versturen',
+        CHECK_EMAIL: 'Controleer je inbox en vul hieronder de code in.',
+        EXPIRED_ERROR: 'Verificatiecode is verlopen',
+      },
+    },
+    PROFILE: {
+      TITLE: 'Profiel',
+      DESCRIPTION: 'Voeg informatie over jezelf toe',
+      INFO: {
+        NAVBAR_TITLE: 'Jouw profiel',
+        TITLE: 'UniMe Profiel',
+        DESCRIPTION: 'Voordat je begint',
+        ITEM_0: {
+          TITLE: 'Sla saaie formulieren over',
+          DESCRIPTION:
+            'Je UniMe-profiel werkt als een digitale ID. Gebruik het om gegevens direct automatisch in te vullen op ondersteunde sites en houd je online leven overzichtelijk.',
+        },
+        ITEM_1: {
+          TITLE: 'Direct delen',
+          DESCRIPTION:
+            'Wanneer je gegevens worden gevraagd, scan je simpelweg een QR-code of tik je op ‘Verbinden’. Controleer precies welke informatie wordt gevraagd en keur deze goed. Klaar binnen enkele seconden.',
+        },
+        ITEM_2: {
+          TITLE: 'Ontworpen voor privacy',
+          DESCRIPTION:
+            'Je informatie blijft vergrendeld op je apparaat en wordt nooit in de cloud opgeslagen. Alle gedeelde gegevens zijn end-to-end versleuteld. Je data blijft altijd van jou.',
+        },
+      },
+      ADD: {
+        NAVBAR_TITLE: 'Jouw profiel',
+        LABEL: 'Hoe wil je dit profiel noemen?',
+        LABEL_PLACEHOLDER: 'Persoonlijk profiel',
+        FIRST_NAME_LABEL: 'Voornaam',
+        FIRST_NAME_PLACEHOLDER: 'Je voornaam',
+        MIDDLE_NAME_LABEL: 'Middennaam',
+        MIDDLE_NAME_PLACEHOLDER: 'Je middennaam',
+        LAST_NAME_LABEL: 'Achternaam',
+        LAST_NAME_PLACEHOLDER: 'Je achternaam',
+        BIRTH_DATE_LABEL: 'Geboortedatum',
+        BIRTH_DATE_PLACEHOLDER: 'Selecteer je geboortedatum',
+        BIRTH_PLACE_LABEL: 'Geboorteplaats',
+        BIRTH_PLACE_PLACEHOLDER: 'Je geboorteplaats',
+        NATIONALITY_LABEL: 'Nationaliteit',
+        CREATE_BUTTON: 'Profiel aanmaken',
+      },
+    },
+  },
   SORT: {
-    TITLE: 'Sorteer',
+    TITLE: 'Sorteren',
     PREFERENCES: {
       LIST_VIEW: 'Lijstweergave',
       GRID_VIEW: 'Rasterweergave',
       ALPHABETICAL: 'Alfabetische Volgorde',
-      DATE_ISSUED: 'Datum Uitgegeven',
-      DATE_ADDED: 'Datum Toegevoegd',
+      DATE_ISSUED: 'Datum uitgegeven',
+      DATE_ADDED: 'Datum toegevoegd',
     },
     ORDER: {
       A_Z: 'A tot Z',
@@ -400,6 +571,7 @@ Door onze Service te gebruiken, erken je dat je deze Voorwaarden heeft gelezen, 
   },
   CANCEL: 'Annuleren',
   CLOSE: 'Sluiten',
+  DISCARD: 'Verwijderen',
   CONTINUE: 'Doorgaan',
   SKIP: 'Overslaan',
   ACCEPT: 'Accepteren',
@@ -411,4 +583,4 @@ Door onze Service te gebruiken, erken je dat je deze Voorwaarden heeft gelezen, 
   },
 } satisfies Translation;
 
-export default nl;
+export default nl_NL;

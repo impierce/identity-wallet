@@ -2,25 +2,23 @@ use std::collections::HashMap;
 
 use crate::{
     error::AppError::{self, *},
-    persistence::{download_asset, hash},
     state::{
         actions::{listen, Action},
-        core_utils::CoreUtils,
+        core_utils::{helpers::download_logo, ActiveFlow, CoreUtils, Oid4vciStage},
         qr_code::actions::qrcode_scanned::QrCodeScanned,
         user_prompt::CurrentUserPrompt,
         AppState,
     },
 };
 
-use log::{debug, info};
+use log::{debug, info, warn};
 use oid4vc::oid4vci::{
     credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject,
     credential_offer::{CredentialOffer, CredentialOfferParameters},
 };
 
+#[tracing::instrument(skip_all, err)]
 pub async fn read_credential_offer(state: AppState, action: Action) -> Result<AppState, AppError> {
-    info!("read_credential_offer");
-
     // Sometimes reducers are connected to actions that they shouldn't execute
     // Therefore its also checked if it can parse to credential offer query
     // TODO find a better way to connect to the right reducer
@@ -42,19 +40,16 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
                 .map_err(GetCredentialOfferError)?,
         };
 
-        info!("credential offer: {:?}", credential_offer);
-
         // The credential offer contains a credential issuer url.
         let credential_issuer_url = credential_offer.credential_issuer.clone();
-
-        info!("credential issuer url: {:?}", credential_issuer_url);
+        debug!("Parsed credential offer parameters: {credential_offer:?}");
 
         let credential_issuer_metadata = wallet
             .get_credential_issuer_metadata(credential_issuer_url.clone())
             .await
             .ok();
 
-        info!("credential issuer metadata: {:?}", credential_issuer_metadata);
+        debug!("Fetched credential issuer metadata: {credential_issuer_metadata:?}");
 
         let credential_configurations: HashMap<String, CredentialConfigurationsSupportedObject> = credential_offer
             .credential_configuration_ids
@@ -84,6 +79,12 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
             })
             .flatten();
 
+        let tx_code = credential_offer
+            .grants
+            .as_ref()
+            .and_then(|grants| grants.pre_authorized_code.clone())
+            .and_then(|pre_authorized_code| pre_authorized_code.tx_code);
+
         // Get the credential issuer name and logo uri or use the credential issuer url.
         let (issuer_name, logo_uri) = display
             .map(|display| {
@@ -104,33 +105,34 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
             })
             .unwrap_or((credential_issuer_url.to_string(), None));
 
-        info!("issuer_name in credential_offer: {:?}", issuer_name);
-        info!("logo_uri in credential_offer: {:?}", logo_uri);
+        info!(
+            "Processed credential offer for `{issuer_name}` ({credential_issuer_url}) with {} configurations (has_tx_code: {})",
+            credential_configurations.len(),
+            tx_code.is_some()
+        );
 
         download_credential_logos(&credential_configurations).await;
 
-        if logo_uri.is_some() {
-            debug!(
-                "{}",
-                format!(
-                    "Downloading client logo from url: {}",
-                    logo_uri.as_ref().unwrap().as_str()
-                )
-            );
-            if let Some(logo_uri) = logo_uri.as_ref().and_then(|s| s.parse::<reqwest::Url>().ok()) {
-                let _ = download_asset(logo_uri.clone(), &hash(logo_uri.as_str())).await;
-            }
+        if let Some(logo_uri_str) = &logo_uri {
+            download_logo(logo_uri_str).await;
+        } else {
+            warn!("No logo URI found");
         }
 
         drop(state_guard);
         return Ok(AppState {
             current_user_prompt: Some(CurrentUserPrompt::CredentialOffer {
                 issuer_name,
-                logo_uri,
+                logo_uri: logo_uri.clone(),
                 credential_configurations,
+                tx_code,
             }),
             core_utils: CoreUtils {
-                active_credential_offer: Some(credential_offer),
+                active_flow: Some(ActiveFlow::Oid4vciOffer {
+                    stage: Oid4vciStage::OfferReceived,
+                    credential_offer: Box::new(credential_offer),
+                    logo_uri,
+                }),
                 ..state.core_utils
             },
             ..state
@@ -146,22 +148,18 @@ async fn download_credential_logos(
 ) {
     for credential_configuration in credential_configurations.values() {
         let credential_logo_uri = credential_configuration
-            .display
-            .first()
-            .and_then(|value| value["logo"]["uri"].as_str());
+            .credential_metadata
+            .as_ref()
+            .and_then(|credential_metadata| credential_metadata.display.as_ref())
+            .and_then(|display| display.first())
+            .and_then(|value| value.logo.as_ref().map(|logo| logo.uri.clone()));
 
-        info!("credential_logo_uri: {:?}", credential_logo_uri);
+        debug!("Credential logo URI: {credential_logo_uri:?}");
 
-        if let Some(credential_logo_uri) = credential_logo_uri {
-            debug!(
-                "{}",
-                format!("Downloading credential logo from URI: {}", credential_logo_uri)
-            );
-            if let Ok(credential_logo_uri) = credential_logo_uri.parse::<reqwest::Url>() {
-                let _ = download_asset(credential_logo_uri.clone(), &hash(credential_logo_uri.as_str())).await;
-            } else {
-                debug!("Failed to parse credential logo URI: {}", credential_logo_uri);
-            }
+        if let Some(logo_uri_str) = credential_logo_uri {
+            download_logo(logo_uri_str.as_ref()).await;
+        } else {
+            warn!("No logo URI found");
         }
     }
 }

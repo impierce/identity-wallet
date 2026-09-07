@@ -7,8 +7,10 @@ use crate::state::{
 
 const MAX_RECENT_SEARCHES: usize = 3;
 
+#[tracing::instrument(skip_all, err)]
 pub async fn add_recent_search(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(recent_search) = listen::<AddRecentSearch>(action) {
+        log::debug!("Adding recent search credential id: `{}`", recent_search.id);
         let mut search_results = state.search_results;
 
         search_results

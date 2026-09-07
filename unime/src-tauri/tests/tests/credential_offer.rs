@@ -12,8 +12,11 @@ use identity_wallet::{
     state::qr_code::actions::qrcode_scanned::QrCodeScanned,
 };
 
-use oid4vc::oid4vci::credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject;
-use oid4vc::oid4vci::credential_offer::CredentialOfferParameters;
+use oid4vc::oid4vci::credential_issuer::credential_configurations_supported::{
+    AlgIdentifier, CredentialConfigurationsSupportedDisplay, CredentialConfigurationsSupportedObject,
+    CredentialMetadata, Logo,
+};
+use oid4vc::oid4vci::credential_offer::{CredentialConfigurationIds, CredentialOfferParameters};
 use serde_json::json;
 use std::sync::Arc;
 use tempfile::TempDir;
@@ -24,14 +27,15 @@ use wiremock::{Mock, MockServer, ResponseTemplate};
 #[tokio::test]
 #[serial_test::serial]
 async fn download_credential_logo() {
-    *ASSETS_DIR.lock().unwrap() = TempDir::new().unwrap().into_path();
+    *ASSETS_DIR.lock().unwrap() = TempDir::new().unwrap().keep();
 
     let mock_server = MockServer::start().await;
     Mock::given(method("GET"))
         .and(path("/offer/1"))
         .respond_with(ResponseTemplate::new(200).set_body_json(CredentialOfferParameters {
             credential_issuer: mock_server.uri().parse().unwrap(),
-            credential_configuration_ids: vec!["UniversityDegreeCredential".to_string()],
+            credential_configuration_ids:
+                CredentialConfigurationIds::try_new(vec!["UniversityDegreeCredential".to_string()]).unwrap(),
             grants: None,
         }))
         .expect(1)
@@ -48,32 +52,34 @@ async fn download_credential_logo() {
                     "UniversityDegreeCredential".to_string(),
                     CredentialConfigurationsSupportedObject {
                         credential_format: CredentialFormats::<WithParameters>::JwtVcJson(Parameters {
-                            parameters: (
-                                jwt_vc_json::CredentialDefinition {
-                                    type_: vec![
-                                        "VerifiableCredential".to_string(),
-                                        "UniversityDegreeCredential".to_string(),
-                                    ],
-                                    credential_subject: Default::default(),
-                                },
-                                None,
-                            )
-                                .into(),
+                            parameters: (jwt_vc_json::CredentialDefinition {
+                                type_: vec![
+                                    "VerifiableCredential".to_string(),
+                                    "UniversityDegreeCredential".to_string(),
+                                ],
+                            })
+                            .into(),
                         }),
                         scope: Some("UniversityDegreeCredential".to_string()),
                         cryptographic_binding_methods_supported: vec!["did".to_string()],
-                        credential_signing_alg_values_supported: vec!["ES256K".to_string()],
+                        credential_signing_alg_values_supported: vec![AlgIdentifier::String("ES256K".to_string())],
                         proof_types_supported: Default::default(),
-                        display: vec![json!({
-                            "name": "University Credential",
-                            "locale": "en-US",
-                            "logo": {
-                                "uri": format!("{}/logo/credential.svg", &mock_server.uri()),
-                                "alternative_text": "a square logo of a university"
-                            },
-                            "background_color": "#12107c",
-                            "text_color": "#FFFFFF"
-                        })],
+
+                        credential_metadata: Some(CredentialMetadata {
+                            display: Some(vec![CredentialConfigurationsSupportedDisplay {
+                                name: "University Credential".to_string(),
+                                locale: Some("en-US".to_string()),
+                                logo: Some(Logo {
+                                    uri: format!("{}/logo/credential.svg", &mock_server.uri()).parse().unwrap(),
+                                    alt_text: Some("a square logo of a university".to_string()),
+                                }),
+                                description: None,
+                                background_image: None,
+                                background_color: Some("#12107c".to_string()),
+                                text_color: Some("#FFFFFF".to_string()),
+                            }]),
+                            claims: Default::default(),
+                        }),
                     },
                 )]
                 .into_iter()
@@ -118,14 +124,15 @@ async fn download_credential_logo() {
 #[tokio::test]
 #[serial_test::serial]
 async fn download_issuer_logo() {
-    *ASSETS_DIR.lock().unwrap() = TempDir::new().unwrap().into_path();
+    *ASSETS_DIR.lock().unwrap() = TempDir::new().unwrap().keep();
 
     let mock_server = MockServer::start().await;
     Mock::given(method("GET"))
         .and(path("/offer/1"))
         .respond_with(ResponseTemplate::new(200).set_body_json(CredentialOfferParameters {
             credential_issuer: mock_server.uri().parse().unwrap(),
-            credential_configuration_ids: vec!["UniversityDegreeCredential".to_string()],
+            credential_configuration_ids:
+                CredentialConfigurationIds::try_new(vec!["UniversityDegreeCredential".to_string()]).unwrap(),
             grants: None,
         }))
         .expect(1)
@@ -142,21 +149,17 @@ async fn download_issuer_logo() {
                     "UniversityDegreeCredential".to_string(),
                     CredentialConfigurationsSupportedObject {
                         credential_format: CredentialFormats::<WithParameters>::JwtVcJson(Parameters {
-                            parameters: (
-                                jwt_vc_json::CredentialDefinition {
-                                    type_: vec![
-                                        "VerifiableCredential".to_string(),
-                                        "UniversityDegreeCredential".to_string(),
-                                    ],
-                                    credential_subject: Default::default(),
-                                },
-                                None,
-                            )
-                                .into(),
+                            parameters: (jwt_vc_json::CredentialDefinition {
+                                type_: vec![
+                                    "VerifiableCredential".to_string(),
+                                    "UniversityDegreeCredential".to_string(),
+                                ],
+                            })
+                            .into(),
                         }),
                         scope: Some("UniversityDegreeCredential".to_string()),
                         cryptographic_binding_methods_supported: vec!["did".to_string()],
-                        credential_signing_alg_values_supported: vec!["ES256K".to_string()],
+                        credential_signing_alg_values_supported: vec![AlgIdentifier::String("ES256K".to_string())],
                         ..Default::default()
                     },
                 )]
@@ -204,14 +207,15 @@ async fn download_issuer_logo() {
 #[tokio::test]
 #[serial_test::serial]
 async fn no_download_when_no_logo_in_metadata() {
-    *ASSETS_DIR.lock().unwrap() = TempDir::new().unwrap().into_path();
+    *ASSETS_DIR.lock().unwrap() = TempDir::new().unwrap().keep();
 
     let mock_server = MockServer::start().await;
     Mock::given(method("GET"))
         .and(path("/offer/1"))
         .respond_with(ResponseTemplate::new(200).set_body_json(CredentialOfferParameters {
             credential_issuer: mock_server.uri().parse().unwrap(),
-            credential_configuration_ids: vec!["UniversityDegreeCredential".to_string()],
+            credential_configuration_ids:
+                CredentialConfigurationIds::try_new(vec!["UniversityDegreeCredential".to_string()]).unwrap(),
             grants: None,
         }))
         .expect(1)
@@ -228,21 +232,17 @@ async fn no_download_when_no_logo_in_metadata() {
                     "UniversityDegreeCredential".to_string(),
                     CredentialConfigurationsSupportedObject {
                         credential_format: CredentialFormats::<WithParameters>::JwtVcJson(Parameters {
-                            parameters: (
-                                jwt_vc_json::CredentialDefinition {
-                                    type_: vec![
-                                        "VerifiableCredential".to_string(),
-                                        "UniversityDegreeCredential".to_string(),
-                                    ],
-                                    credential_subject: Default::default(),
-                                },
-                                None,
-                            )
-                                .into(),
+                            parameters: (jwt_vc_json::CredentialDefinition {
+                                type_: vec![
+                                    "VerifiableCredential".to_string(),
+                                    "UniversityDegreeCredential".to_string(),
+                                ],
+                            })
+                            .into(),
                         }),
                         scope: Some("UniversityDegreeCredential".to_string()),
                         cryptographic_binding_methods_supported: vec!["did".to_string()],
-                        credential_signing_alg_values_supported: vec!["ES256K".to_string()],
+                        credential_signing_alg_values_supported: vec![AlgIdentifier::String("ES256K".to_string())],
                         ..Default::default()
                     },
                 )]

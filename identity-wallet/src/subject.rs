@@ -1,17 +1,20 @@
+use crate::state::core_utils::tls_config;
 use crate::stronghold::StrongholdManager;
-
+use anyhow::anyhow;
 use async_trait::async_trait;
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use did_manager::{DidMethod, Resolver, SecretManager};
+use identity_iota::verification::jwk::Jwk;
 use identity_iota::{
     did::DID,
     document::DIDUrlQuery,
     verification::{jwk::JwkParams, jws::JwsAlgorithm},
 };
 use jsonwebtoken::Algorithm;
+use log::debug;
 use oid4vc::oid4vc_core::{authentication::sign::ExternalSign, Sign, Verify};
 use std::sync::Arc;
-use tokio::sync::Mutex;
+use tokio::sync::{Mutex, OnceCell};
 
 /// A `Subject` implements functions required for signatures and verification.
 /// In UniMe, it serves as the "binding link" between the protocol libraries (OID4VC) and the secret management (DID Manager).
@@ -19,6 +22,53 @@ use tokio::sync::Mutex;
 pub struct Subject {
     pub stronghold_manager: Arc<StrongholdManager>,
     pub secret_manager: Arc<Mutex<SecretManager>>,
+    pub resolver: OnceCell<Arc<Resolver>>,
+}
+
+impl Subject {
+    /// Asynchronously gets a reference to the initialized resolver.
+    ///
+    /// The first time this is called, it will perform the async initialization.
+    /// Subsequent calls will return the already-initialized instance instantly.
+    pub async fn resolver(&self) -> Arc<Resolver> {
+        self.resolver.get_or_init(Self::initialize_resolver).await.clone()
+    }
+
+    /// The private async function that contains the actual initialization logic.
+    async fn initialize_resolver() -> Arc<Resolver> {
+        debug!("Initializing resolver for Subject");
+        let resolver = Resolver::new_with_options(Some(tls_config()), None, None);
+        debug!("Resolver initialized");
+        Arc::new(resolver)
+    }
+
+    // TODO(ssi-agent): Duplicate of ssi-agent `Subject::resolve_public_key`.
+    // Replace this local implementation with the original implementation from `ssi-agent`:
+    // https://github.com/impierce/ssi-agent/blob/beta/agent_secret_manager/src/subject.rs
+    /// Resolves the public key for a given DID URL.
+    pub async fn resolve_public_key(&self, did_url: &str) -> anyhow::Result<Jwk> {
+        let did_url =
+            identity_iota::did::DIDUrl::parse(did_url).map_err(|err| anyhow!("Failed to parse DID URL: {err}"))?;
+
+        let document = self
+            .resolver()
+            .await
+            .resolve(did_url.did().as_str())
+            .await
+            .map_err(|err| anyhow!("Failed to resolve DID Document for DID: `{did_url}`, error: {err}"))?;
+
+        let verification_method = document
+            .resolve_method(DIDUrlQuery::from(&did_url), None)
+            .ok_or(anyhow!(
+                "Failed to resolve verification method for DID URL: `{did_url}`"
+            ))?;
+
+        verification_method
+            .data()
+            .public_key_jwk()
+            .ok_or_else(|| anyhow!("Failed to resolve public key for DID URL: `{did_url}`"))
+            .cloned()
+    }
 }
 
 #[async_trait]
@@ -65,18 +115,18 @@ impl oid4vc::oid4vc_core::Subject for Subject {
 #[async_trait]
 impl Verify for Subject {
     async fn public_key(&self, did_url: &str) -> anyhow::Result<Vec<u8>> {
-        let did_url = identity_iota::did::DIDUrl::parse(did_url).unwrap();
+        let did_url = identity_iota::did::DIDUrl::parse(did_url)?;
 
-        let resolver = Resolver::new().await;
-
-        let document = resolver.resolve(did_url.did().as_str()).await.unwrap();
+        let document = self.resolver().await.resolve(did_url.did().as_str()).await?;
 
         let verification_method = document
             .resolve_method(
                 DIDUrlQuery::from(&did_url),
                 Some(identity_iota::verification::MethodScope::VerificationMethod),
             )
-            .unwrap();
+            .ok_or(anyhow::anyhow!(
+                "Failed to resolve verification method for DID URL: {did_url}"
+            ))?;
 
         // Try decode from `MethodData` directly, else use public JWK params.
         verification_method.data().try_decode().or_else(|_| {
@@ -102,7 +152,7 @@ impl Verify for Subject {
                     }
                     _ => None,
                 })
-                .ok_or(anyhow::anyhow!("Failed to decode public key for DID URL: {}", did_url))
+                .ok_or(anyhow::anyhow!("Failed to decode public key for DID URL: {did_url}"))
         })
     }
 }
@@ -128,6 +178,7 @@ pub async fn subject(stronghold_manager: Arc<StrongholdManager>, password: Strin
                 .await
                 .unwrap(),
         )),
+        resolver: OnceCell::new(),
     })
 }
 

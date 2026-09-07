@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "UniMe",
-  "version": "0.6.12",
+  "version": "0.15.1",
   "identifier": "com.impierce.identity-wallet",
   "app": {
     "security": {
@@ -46,8 +46,26 @@
     "iOS": {
       "developmentTeam": "\"Impierce Technologies B.V.\""
     },
+    "linux": {
+      "deb": {
+        "desktopTemplate": "../UniMe.desktop"
+      }
+    },
     "resources": [
       "resources/*"
     ]
+  },
+  "plugins": {
+    "deep-link": {
+      "mobile": [
+        { "scheme": [ "unime" ] },
+        { "scheme": [ "openid" ] },
+        { "scheme": [ "openid4vp" ] },
+        { "scheme": [ "openid-credential-offer" ] }
+      ],
+      "desktop": {
+        "schemes": ["unime", "openid", "openid4vp", "openid-credential-offer"]
+      }
+    }
   }
 }

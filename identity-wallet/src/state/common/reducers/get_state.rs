@@ -7,12 +7,14 @@ use crate::state::AppState;
 
 use log::debug;
 
+#[tracing::instrument(skip_all, err)]
 pub async fn get_state(_state: AppState, _action: Action) -> Result<AppState, AppError> {
     debug!("get_state reducer called");
     let mut state = load_state().await.unwrap_or_default();
 
     if state.profile_settings.profile.is_some() {
         state.current_user_prompt = Some(CurrentUserPrompt::PasswordRequired);
+        state.is_unlocked = false;
     } else {
         // TODO: bug: if state is present, but empty, user will never be redirected to neither welcome or profile page
         state.current_user_prompt = Some(CurrentUserPrompt::Redirect {

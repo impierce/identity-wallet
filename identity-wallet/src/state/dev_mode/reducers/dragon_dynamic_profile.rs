@@ -1,6 +1,7 @@
 use crate::{
     command,
     error::AppError,
+    http_client::get_http_client,
     state::{
         common::actions::reset::Reset,
         connections::actions::connection_accepted::ConnectionAccepted,
@@ -25,16 +26,18 @@ use uuid::Uuid;
 
 pub(super) const PASSWORD: &str = "sup3rSecr3t";
 
+#[tracing::instrument(skip_all, err)]
 pub async fn load_dragon_profile(mut state: AppState, dev_profile: DevProfile) -> Result<AppState, AppError> {
     let steps = dev_profile.execute_step.expect("For dragon profile steps are expected");
 
-    info!("Profile steps executed: {:?}", steps);
+    info!("Profile steps executed: {steps:?}");
 
     if dev_profile.reset_profile {
         state = reset_settings(state).await?;
     }
 
     state = create_new_profile(state).await?;
+    state.is_unlocked = true;
 
     if ProfileSteps::AddCredentials <= steps {
         debug!("Add credentials step executed");
@@ -87,6 +90,7 @@ async fn create_new_profile(state: AppState) -> Result<AppState, AppError> {
         picture: "&#x1F432".to_string(),
         theme: AppTheme::Dark,
         password: PASSWORD.to_string(),
+        biometrics_enabled: false,
     };
 
     command::reduce(state, Arc::new(create_new)).await
@@ -113,7 +117,8 @@ async fn add_credential(state: AppState) -> Result<AppState, AppError> {
         ]
     });
 
-    let response: CredentialResponse = reqwest::Client::new()
+    let response: CredentialResponse = get_http_client()
+        .await
         .post(url)
         .json(&payload)
         .send()
@@ -139,6 +144,7 @@ async fn accept_credential(state: AppState) -> Result<AppState, AppError> {
             "Higher Education Information Literacy Level 1".to_string(),
             "Business Innovation & Interdisciplinair Samenwerken".to_string(),
         ],
+        tx_code: None,
     };
 
     command::reduce(state, Arc::new(cr_selected)).await
@@ -163,7 +169,8 @@ async fn add_connection(state: AppState) -> Result<AppState, AppError> {
         }
     });
 
-    let response: ConnectionResponse = reqwest::Client::new()
+    let response: ConnectionResponse = get_http_client()
+        .await
         .post(url)
         .json(&payload)
         .send()
@@ -201,7 +208,8 @@ async fn add_presentation_request(state: AppState) -> Result<AppState, AppError>
         "clientMetadata":{"logoUri":"https://staging.client.ngdil.com/imgs/kw1c-white.png","clientName":"Koning Willem I College"}
     });
 
-    let response: PresentationResponse = reqwest::Client::new()
+    let response: PresentationResponse = get_http_client()
+        .await
         .post(url)
         .json(&payload)
         .send()
@@ -223,6 +231,7 @@ async fn share_credentials(state: AppState) -> Result<AppState, AppError> {
         client_name: _,
         logo_uri: _,
         options,
+        is_interactive: _,
     }) = &state.current_user_prompt
     {
         let credential_uuids: Vec<Uuid> = options
@@ -230,7 +239,10 @@ async fn share_credentials(state: AppState) -> Result<AppState, AppError> {
             .map(|uuid_str| Uuid::parse_str(uuid_str).unwrap())
             .collect();
 
-        let cr_selected = CredentialsSelected { credential_uuids };
+        let cr_selected = CredentialsSelected {
+            credential_uuids,
+            is_interactive: false,
+        };
 
         command::reduce(state, Arc::new(cr_selected)).await
     } else {
@@ -243,7 +255,8 @@ async fn add_future_engineer(state: AppState) -> Result<AppState, AppError> {
 
     let payload = json!({"credential":"Future Engineer","issuer":"kw1c"});
 
-    let response: CredentialResponse = reqwest::Client::new()
+    let response: CredentialResponse = get_http_client()
+        .await
         .post(url)
         .json(&payload)
         .send()
@@ -263,6 +276,7 @@ async fn add_future_engineer(state: AppState) -> Result<AppState, AppError> {
 async fn accept_future_engineer(state: AppState) -> Result<AppState, AppError> {
     let cr_selected = CredentialOffersSelected {
         credential_configuration_ids: vec!["Future Engineer Certificate".to_string()],
+        tx_code: None,
     };
 
     command::reduce(state, Arc::new(cr_selected)).await

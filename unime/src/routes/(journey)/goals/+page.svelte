@@ -61,7 +61,7 @@
       class="mt-2 w-full rounded-lg border bg-white px-4 py-2 text-neutral-700"
       >No, let's continue</button
     > -->
-    <div slot="content" class="w-full pb-[10px] pt-[20px]">
+    <div slot="content" class="w-full pt-[20px] pb-[10px]">
       <Button label="Yes" on:click={() => dispatch({ type: '[User Journey] Cancel' })} />
     </div>
     <Button variant="secondary" slot="close" let:close trigger={close} label="No, let's continue" />
@@ -80,7 +80,7 @@
   </div>
 
   <div
-    class="hide-scrollbar flex h-full flex-col items-center justify-between overflow-y-scroll p-6"
+    class="flex hide-scrollbar h-full flex-col items-center justify-between overflow-y-scroll p-6"
     in:fly={{ x: 32, opacity: 1 }}
   >
     <div class="flex flex-col items-center">
@@ -108,7 +108,7 @@
             </svelte:fragment>
 
             <svelte:fragment slot="content">
-              <div class="w-full pb-[10px] pt-8">
+              <div class="w-full pt-8 pb-[10px]">
                 <!-- <button
                 class="w-full rounded-lg bg-primary px-4 py-2 text-white"
                 on:click={() => goto(`/goals/${goal.id}/faqs`)}>Start</button
@@ -138,7 +138,7 @@
       on:click={() => goto('/goals/0/faqs')}>Continue</button
     > -->
   </div>
-  <div class="sticky bottom-[var(--safe-area-inset-bottom)] left-0 p-6">
+  <div class="sticky bottom-(--safe-area-inset-bottom) left-0 p-6">
     <Button label={$LL.CONTINUE()} on:click={() => goto('/goals/0/faqs')} />
   </div>
 </div>

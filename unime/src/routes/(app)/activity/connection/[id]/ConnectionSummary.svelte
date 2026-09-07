@@ -41,12 +41,12 @@
 
 <div class="flex flex-col items-center justify-center space-y-4">
   <div class="flex w-full flex-col items-center justify-center space-y-4 py-6">
-    <div class="flex h-[75px] w-[75px] items-center justify-center overflow-hidden rounded-3xl bg-white p-2">
+    <div class="flex size-[75px] items-center justify-center overflow-hidden rounded-3xl bg-white p-2">
       <Image
         id={connection.id}
         imgClass="h-full w-full rounded-2xl"
-        iconFallback="Bank"
-        iconClass="h-6 w-6 dark:text-slate-800"
+        iconFallback="BankLight"
+        iconClass="size-6 dark:text-slate-800"
       />
     </div>
     <div class="text-center text-2xl font-semibold text-slate-700 dark:text-grey">
@@ -61,7 +61,7 @@
     {#each Object.entries(summary) as entry}
       <div class="flex flex-col items-start px-4 py-[10px]">
         <p class="text-[13px]/[24px] font-medium text-slate-400">{entry[0]}</p>
-        <p class="break-all text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
+        <p class="text-[13px]/[24px] font-medium break-all text-slate-800 dark:text-grey">
           {entry[1]}
         </p>
       </div>
@@ -70,7 +70,7 @@
     {#if $state.dev_mode !== 'Off'}
       <div class="flex flex-col items-start px-4 py-[10px]">
         <p class="text-[13px]/[24px] font-medium text-slate-400">DID</p>
-        <p class="select-text break-all font-mono text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
+        <p class="font-mono text-[13px]/[24px] font-medium break-all text-slate-800 select-text dark:text-grey">
           {connection.did ?? '-'}
         </p>
         {#if explorerLink}

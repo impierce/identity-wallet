@@ -1,30 +1,36 @@
 <script lang="ts">
+  import { beforeNavigate, goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
-  import { fade } from 'svelte/transition';
+  import { fade, fly } from 'svelte/transition';
 
   import { SettingsCaretLink, SettingsSwitch, SettingsValueLink, TopNavBar } from '$lib/components';
+  import { ANIMATION_DURATION as duration } from '$lib/constants';
   import { dispatch } from '$lib/dispatcher';
   import {
     CodeBoldIcon,
     FilesFillIcon,
     KeyFillIcon,
     ListStarFillIcon,
+    ShieldCheckFillIcon,
     SunFillIcon,
     TranslateFillIcon,
   } from '$lib/icons';
   import { locales } from '$lib/locales';
-  import { state } from '$lib/stores';
+  import { error, navigationDirection, state } from '$lib/stores';
 
-  async function toggleDevSettings() {
-    await dispatch({
-      type: '[DEV] Toggle DEV mode',
-    });
-  }
+  beforeNavigate(({ type, cancel }) => {
+    if (type === 'popstate') {
+      cancel();
+      goto('/me/settings');
+    }
+  });
+
+  const x = $derived($navigationDirection === 'down' ? 32 : -32);
 </script>
 
 <TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.APP.NAVBAR_TITLE()} class="sticky top-0 z-10" />
 
-<div class="flex flex-col bg-silver dark:bg-navy">
+<div class="flex flex-col bg-silver dark:bg-navy" in:fly={{ x, duration, opacity: 1 }}>
   <div class="flex flex-col gap-3 px-4 py-5">
     <SettingsValueLink
       href="/me/settings/app/language"
@@ -42,6 +48,13 @@
         <SunFillIcon class="h-5 w-5 text-primary"></SunFillIcon>
       {/snippet}
       {$LL.SETTINGS.APP.THEME.LABEL()}
+    </SettingsCaretLink>
+
+    <SettingsCaretLink href="/me/settings/app/security">
+      {#snippet icon()}
+        <ShieldCheckFillIcon class="h-5 w-5 text-primary"></ShieldCheckFillIcon>
+      {/snippet}
+      {$LL.SETTINGS.APP.SECURITY.LABEL()}
     </SettingsCaretLink>
 
     <!-- <SettingsCaretLink href="#" disabled>
@@ -65,12 +78,29 @@
       {$LL.SETTINGS.APP.HINTS_AND_TIPS.TITLE()}
     </SettingsValueLink> -->
 
-    <SettingsSwitch initialChecked={$state?.dev_mode !== 'Off'} onchange={toggleDevSettings}>
-      {#snippet icon()}
-        <CodeBoldIcon class="h-5 w-5 text-primary"></CodeBoldIcon>
-      {/snippet}
-      {$LL.SETTINGS.APP.DEVELOPER_MODE.TITLE()}
-    </SettingsSwitch>
+    {#if $state.show_dev_mode_setting}
+      <SettingsSwitch
+        checked={$state?.dev_mode !== 'Off'}
+        onCheckedChange={({ curr, next }) => {
+          try {
+            dispatch({
+              type: '[DEV] Toggle DEV mode',
+            });
+            return next;
+          } catch (e) {
+            if (e instanceof Error) {
+              $error = e.message;
+            }
+            return curr;
+          }
+        }}
+      >
+        {#snippet icon()}
+          <CodeBoldIcon class="h-5 w-5 text-primary"></CodeBoldIcon>
+        {/snippet}
+        {$LL.SETTINGS.APP.DEVELOPER_MODE.TITLE()}
+      </SettingsSwitch>
+    {/if}
 
     {#if $state.dev_mode !== 'Off'}
       <div in:fade={{ duration: 200 }} out:fade={{ duration: 200 }}>

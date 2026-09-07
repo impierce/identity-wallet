@@ -12,7 +12,7 @@ use identity_wallet::{
     state::core_utils::{IdentityManager, Managers},
     stronghold::StrongholdManager,
 };
-use tokio::sync::Mutex;
+use tokio::sync::{Mutex, OnceCell};
 
 use self::assert_state_update::setup_stronghold;
 use serde::de::DeserializeOwned;
@@ -64,6 +64,7 @@ pub async fn test_managers(
                 .await
                 .unwrap(),
         )),
+        resolver: OnceCell::new(),
     });
 
     let provider_manager = ProviderManager::new(

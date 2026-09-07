@@ -8,6 +8,13 @@ use log::{debug, error, info};
 use std::time::Duration;
 use tauri::Emitter;
 
+// TODO: remove this once we refactor our tests in `/unime/src-tauri/tests`
+/// Define the runtime based on whether we are in test mode or not.
+#[cfg(feature = "test_utils")]
+pub type Runtime = tauri::test::MockRuntime;
+#[cfg(not(feature = "test_utils"))]
+pub type Runtime = tauri::Wry;
+
 // The command.rs holds the functions through which the front and backend communicate using actions and reducers.
 
 /// This function represents the root reducer of the application. It will delegate the state update to the reducers that
@@ -42,20 +49,26 @@ async fn await_timeout() {
 
 /// This command handler is the single point of entry to the business logic in the backend. It will delegate the
 /// command it receives to the designated functions that modify the state (see: "reducers" in the Redux pattern).
-pub async fn main_exec<R: tauri::Runtime>(
+pub async fn main_exec(
     action: Action,
-    _app_handle: tauri::AppHandle<R>,
+    app_handle: tauri::AppHandle<Runtime>,
     container: tauri::State<'_, AppStateContainer>,
-    window: tauri::Window<R>,
+    window: tauri::Window<Runtime>,
 ) -> Result<(), String> {
-    info!("received action: `{action:?}`");
+    let start = std::time::Instant::now();
+    info!("Dispatching action: `{action:?}`");
 
     let mut guard = container.0.lock().await;
+
+    guard.core_utils.app_handle = Some(app_handle);
 
     // Get a copy of the current state and pass it to the root reducer.
     match reduce(guard.clone(), action).await {
         // If the state update succeeds, we replace the old state with the new one.
-        Ok(app_state) => *guard = app_state,
+        Ok(app_state) => {
+            debug!("State reduce succeeded in {:?}", start.elapsed());
+            *guard = app_state;
+        }
         // If the state update fails, we log the error and keep the old state.
         Err(error) => {
             {
@@ -70,7 +83,7 @@ pub async fn main_exec<R: tauri::Runtime>(
                 ));
                 let _ = emit_error(&window, error.to_string());
             }
-            error!("state update failed: {}", error);
+            error!("State update failed after {:?}: {error}", start.elapsed());
         }
     };
 
@@ -81,19 +94,19 @@ pub async fn main_exec<R: tauri::Runtime>(
     Result::Ok(())
 }
 
-pub async fn handle_action<R: tauri::Runtime>(
+pub async fn handle_action(
     action: Action,
-    app_handle: tauri::AppHandle<R>,
+    app_handle: tauri::AppHandle<Runtime>,
     container: tauri::State<'_, AppStateContainer>,
-    window: tauri::Window<R>,
+    window: tauri::Window<Runtime>,
 ) -> Result<(), String> {
     tokio::select! {
         res = main_exec(action, app_handle, container, window.clone()) => {
-            debug!("Finish invoke");
+            debug!("Finished command invoke");
             res
         }
         _ = await_timeout() => {
-            error!("Operation timed out");
+            error!("Operation timed out after {TIMEOUT_SECS} seconds");
             emit_error(&window, "Operation timed out".to_string()).ok();
             Err("Operation timed out".to_string())
         }
@@ -101,24 +114,42 @@ pub async fn handle_action<R: tauri::Runtime>(
 }
 
 /// This function emits an event to the frontend with the updated state.
-pub fn emit_event<R: tauri::Runtime>(window: &tauri::Window<R>, app_state: &AppState) -> anyhow::Result<()> {
+pub fn emit_event(window: &tauri::Window<Runtime>, app_state: &AppState) -> anyhow::Result<()> {
     const STATE_CHANGED_EVENT: &str = "state-changed";
     window.emit(STATE_CHANGED_EVENT, app_state)?;
 
-    let app_state_json_str = serde_json::to_string(app_state).unwrap();
+    // Print to console or write to file (default)
+    if std::env::var("LOG_STATE_UPDATES_TO_CONSOLE")
+        .unwrap_or("false".to_string())
+        .parse()
+        .unwrap_or(false)
+    {
+        debug!(
+            "emitted event `{}` with payload:\n{}",
+            STATE_CHANGED_EVENT,
+            serde_json::to_string(app_state).unwrap()
+        );
+    } else if cfg!(debug_assertions) {
+        if std::fs::create_dir_all("../../debug").is_err() {
+            debug!("Failed to create debug directory");
+        } else {
+            std::fs::write(
+                "../../debug/state.json",
+                serde_json::to_string_pretty(app_state).unwrap(),
+            )
+            .unwrap_or_else(|_| debug!("Failed to write debug state file"));
+        }
+    };
 
-    debug!(
-        "emitted event `{}` with payload:\n{}",
-        STATE_CHANGED_EVENT, app_state_json_str
-    );
+    debug!("emitted event `{STATE_CHANGED_EVENT}`");
     Ok(())
 }
 
 /// This function emits an error to the frontend.
-pub fn emit_error<R: tauri::Runtime>(window: &tauri::Window<R>, error: String) -> anyhow::Result<()> {
+pub fn emit_error(window: &tauri::Window<Runtime>, error: String) -> anyhow::Result<()> {
     const ERROR_EVENT: &str = "error";
     window.emit(ERROR_EVENT, &error)?;
 
-    debug!("emitted error event `{}` with payload:\n{}", ERROR_EVENT, error);
+    debug!("emitted error event `{ERROR_EVENT}` with payload:\n{error}");
     Ok(())
 }

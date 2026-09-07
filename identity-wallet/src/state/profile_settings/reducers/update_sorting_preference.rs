@@ -18,31 +18,26 @@ use unicode_normalization::UnicodeNormalization;
 
 // Reverse setting of non-selected sorting options are not persisted and use the default (false) when selected.
 
+#[tracing::instrument(skip_all, err)]
 pub async fn update_sorting_preference(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(update_sorting) = listen::<UpdateSortingPreference>(action) {
         let mut sorting_preferences = state.profile_settings.sorting_preferences.clone();
 
         if let Some(credential_sorting) = update_sorting.credential_sorting {
-            debug!(
-                "Update credential sorting preference set to: `{:?}`",
-                credential_sorting
-            );
+            debug!("Update credential sorting preference set to: `{credential_sorting:?}`");
             sorting_preferences.credentials.sort_method = credential_sorting;
             // With this nested if let statement the user (should) automatically select the sort method when toggling the reverse icon on that sort method.
             // If not nested (and therefore not repeated but just checking once in a separate if let statement), the user would be able to toggle the reverse option on a sort method without selecting it.
             // Check the UX designs if the meaning of this comment not clear.
             if let Some(reverse) = update_sorting.reverse {
-                debug!("Update credential sorting preference set to: `{:?}`", reverse);
+                debug!("Update credential sorting preference set to: `{reverse:?}`");
                 sorting_preferences.credentials.reverse = reverse;
             }
         } else if let Some(connection_sorting) = update_sorting.connection_sorting {
-            debug!(
-                "Update connection sorting preference set to: `{:?}`",
-                connection_sorting
-            );
+            debug!("Update connection sorting preference set to: `{connection_sorting:?}`");
             sorting_preferences.connections.sort_method = connection_sorting;
             if let Some(reverse) = update_sorting.reverse {
-                debug!("Update connection sorting preference set to: `{:?}`", reverse);
+                debug!("Update connection sorting preference set to: `{reverse:?}`");
                 sorting_preferences.connections.reverse = reverse;
             }
         }
@@ -59,6 +54,7 @@ pub async fn update_sorting_preference(state: AppState, action: Action) -> Resul
     Ok(state)
 }
 
+#[tracing::instrument(skip_all, err)]
 pub async fn sort_credentials(state: AppState, _action: Action) -> Result<AppState, AppError> {
     let mut credentials: Vec<DisplayCredential> = state.credentials.clone();
     let preferences: Preferences<CredentialSortMethod> = state.profile_settings.sorting_preferences.credentials.clone();
@@ -112,6 +108,7 @@ pub async fn sort_credentials(state: AppState, _action: Action) -> Result<AppSta
     Ok(AppState { credentials, ..state })
 }
 
+#[tracing::instrument(skip_all, err)]
 pub async fn sort_connections(state: AppState, _action: Action) -> Result<AppState, AppError> {
     let mut connections: Vec<Connection> = state.connections.0.clone();
     let preferences: Preferences<ConnectionSortMethod> = state.profile_settings.sorting_preferences.connections.clone();

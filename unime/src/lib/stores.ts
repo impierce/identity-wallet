@@ -6,9 +6,11 @@ import type { AppState } from '@bindings/AppState';
 interface OnboardingState {
   name?: string;
   password?: string; // TODO: security: is it okay to keep the password temporarily in the object?
+  biometrics_enabled?: boolean;
 }
 
 const empty_state: AppState = {
+  version: 0,
   dids: {},
   connections: [],
   credentials: [],
@@ -31,12 +33,18 @@ const empty_state: AppState = {
         reverse: false,
       },
     },
+    biometrics_enabled: false,
   },
   current_user_prompt: null,
   user_journey: null,
   debug_messages: [],
   history: [],
   trust_lists: [],
+  verified_data: {
+    email_verification: null,
+  },
+  show_dev_mode_setting: false,
+  is_unlocked: false,
   dev_mode: 'Off',
 };
 
@@ -68,3 +76,8 @@ export const onboarding_state = writable<OnboardingState>({});
  * This store is used to get the page title into a layout.
  */
 export const pageTitleStore = writable<string>();
+
+/**
+ * Stores the direction of the last navigation. Used for page transition animations that create the sense of moving up and down a hierarchy.
+ */
+export const navigationDirection = writable<'up' | 'down' | null>(null);

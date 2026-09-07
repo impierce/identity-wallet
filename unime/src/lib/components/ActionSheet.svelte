@@ -1,23 +1,18 @@
 <script lang="ts">
+  import { writable, type Writable } from 'svelte/store';
   import { fade, fly } from 'svelte/transition';
 
   import { createDialog, melt } from '@melt-ui/svelte';
+
+  export let titleText = '';
+  export let descriptionText = '';
+  export let open: Writable<boolean> = writable(false);
 
   // Instead of default portal in `<body>`, we create the portal at ID `#portal` in root layout.
   // This way the ActionSheet opens within the safe area.
   const {
     elements: { trigger, overlay, content, title, description, close, portalled },
-    states: { open },
-  } = createDialog({ portal: '#portal' });
-
-  export let titleText = '';
-  export let descriptionText = '';
-
-  // Reactive open state passed in from the outside
-  export let isOpen = false;
-  $: {
-    open.set(isOpen);
-  }
+  } = createDialog({ open, portal: '#portal' });
 </script>
 
 <!--
@@ -25,6 +20,7 @@
 
   @prop titleText - The title of the dialog.
   @prop descriptionText - The description of the dialog.
+  @prop open - An optional writable store to control the component from outside.
 
   @slot trigger - The trigger element that opens the dialog.
   @slot content - The content of the dialog.
@@ -48,14 +44,14 @@
     <!-- Overlay -->
     <div
       use:melt={$overlay}
-      class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
+      class="fixed inset-0 z-40 bg-black/50 backdrop-blur-xs"
       transition:fade={{ duration: 150 }}
     ></div>
 
-    <!-- TODO: should we respect the bottom safe area as well? -> pb-[calc(25px_+_var(--safe-area-inset-bottom))] -->
+    <!-- TODO: should we respect the bottom safe area as well? -> pb-[calc(25px+var(--safe-area-inset-bottom))] -->
     <div
       use:melt={$content}
-      class="fixed bottom-0 left-0 z-40 flex w-screen flex-col items-center rounded-t-[20px] bg-white p-6 pb-[calc(25px_+_var(--safe-area-inset-bottom))] focus:outline-none dark:bg-dark"
+      class="fixed bottom-0 left-0 z-40 flex w-screen flex-col items-center rounded-t-[20px] bg-white p-6 pb-[calc(25px+var(--safe-area-inset-bottom))] focus:outline-hidden dark:bg-dark"
       transition:fly={{
         y: 350,
         duration: 300,
@@ -67,7 +63,7 @@
           aria-label="Close"
           class="text-magnum-800 hover:bg-magnum-100 focus:shadow-magnum-400 focus:ring-magnum-400 absolute right-[10px]
                     top-[10px] inline-flex h-6 w-6 appearance-none
-                    items-center justify-center rounded-full focus:outline-none
+                    items-center justify-center rounded-full focus:outline-hidden
                     focus:ring-2"
         >
           <X class="square-4" />
@@ -86,7 +82,7 @@
       <!-- <section class="w-full"> -->
       <!-- A slot for a component (usually text) -->
       <slot name="content" />
-      <!-- <div class="rounded-md bg-gray-100/80 p-4 text-zinc-800 shadow">
+      <!-- <div class="rounded-md bg-gray-100/80 p-4 text-zinc-800 shadow-sm">
             <h3 class="mb-3 text-base font-semibold">New invitation</h3>
             <p class="text-sm">
               You have been invited to join the <strong>Designers</strong> team.
@@ -95,7 +91,7 @@
               <button
                 class="focus:ring-magnum-400 inline-flex h-8 items-center
                                 justify-center rounded-[4px] bg-zinc-100 px-4 font-medium
-                                leading-none text-zinc-600 focus:outline-none
+                                leading-none text-zinc-600 focus:outline-hidden
                                 focus:ring-2"
               >
                 Reject
@@ -103,7 +99,7 @@
               <button
                 class="bg-magnum-100 text-magnum-900 focus:ring-magnum-400 inline-flex
                                 h-8 items-center justify-center rounded-[4px] px-4
-                                font-medium leading-none focus:outline-none
+                                font-medium leading-none focus:outline-hidden
                                 focus:ring-2"
               >
                 Accept

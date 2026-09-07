@@ -5,7 +5,7 @@ use crate::{
         actions::Action,
         core_utils::{
             history_event::{EventType, HistoryEvent},
-            ConnectionRequest,
+            ActiveFlow,
         },
         user_prompt::CurrentUserPrompt,
         AppState,
@@ -13,7 +13,7 @@ use crate::{
 };
 
 use identity_iota::did::CoreDID;
-use log::{info, warn};
+use log::{debug, info, warn};
 use oid4vc::oid4vc_core::{
     authorization_request::{AuthorizationRequest, Object},
     client_metadata::ClientMetadataResource,
@@ -21,6 +21,7 @@ use oid4vc::oid4vc_core::{
 use oid4vc::siopv2::siopv2::SIOPv2;
 
 // Sends the authorization response.
+#[tracing::instrument(skip_all, err)]
 pub async fn handle_siopv2_authorization_request(state: AppState, _action: Action) -> Result<AppState, AppError> {
     let state_guard = state.core_utils.managers.lock().await;
 
@@ -30,25 +31,28 @@ pub async fn handle_siopv2_authorization_request(state: AppState, _action: Actio
         .ok_or(MissingManagerError("identity"))?
         .provider_manager;
 
-    let siopv2_authorization_request =
-        match serde_json::from_value(serde_json::json!(state.core_utils.active_connection_request)).unwrap() {
-            Some(ConnectionRequest::SIOPv2(siopv2_authorization_request)) => siopv2_authorization_request,
-            _ => unreachable!(),
-        };
+    let siopv2_authorization_request = match state.core_utils.active_flow.clone() {
+        Some(ActiveFlow::Siopv2 { authorization_request }) => authorization_request,
+        _ => return Err(AppError::Error("Expected SIOPv2 authorization request".to_string())),
+    };
 
-    info!("generating response");
+    info!(
+        "Generating SIOPv2 authorization response for client: {}",
+        siopv2_authorization_request.body.client_id
+    );
 
     let response = provider_manager
         .generate_response(&*siopv2_authorization_request, Default::default())
         .await
         .map_err(GenerateAuthorizationResponseError)?;
-    info!("response generated: {:?}", response);
+    debug!("Generated SIOPv2 authorization response: {response:?}");
 
+    #[cfg(not(feature = "test_utils"))]
     if provider_manager.send_response(&response).await.is_err() {
-        info!("failed to send response");
+        warn!("Failed to send SIOPv2 authorization response to redirect_uri");
         return Err(SendAuthorizationResponseError);
     }
-    info!("response successfully sent");
+    info!("SIOPv2 response successfully sent");
 
     let (client_name, logo_uri, connection_url, client_id) =
         get_siopv2_client_name_and_logo_uri(&siopv2_authorization_request);
@@ -98,7 +102,7 @@ pub fn get_siopv2_client_name_and_logo_uri(
 ) -> (String, Option<String>, String, String) {
     // Get the connection url from the redirect url host (or use the redirect url if it does not
     // contain a host).
-    let redirect_uri = siopv2_authorization_request.body.redirect_uri.clone();
+    let redirect_uri = siopv2_authorization_request.body.uri.uri().clone();
     let connection_url = redirect_uri.host_str().unwrap_or(redirect_uri.as_str());
 
     let client_id = siopv2_authorization_request.body.client_id.clone();

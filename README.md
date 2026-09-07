@@ -10,6 +10,8 @@ Identity Wallet for people to manage Decentralized Identities and Verifiable Cre
 
 This app is built with [Tauri 2.0](https://v2.tauri.app/). It uses [Rust](https://www.rust-lang.org/) in the backend and [SvelteKit](https://kit.svelte.dev/), [Tailwind CSS](https://tailwindcss.com/), and [Melt UI](https://melt-ui.com/) in the frontend.
 
+Checkout the [Prerequisites](https://v2.tauri.app/start/prerequisites/) for running Tauri apps on your system to get started.
+
 ## Develop
 
 This repository uses [pnpm workspaces](https://pnpm.io/workspaces):
@@ -57,6 +59,21 @@ pnpm tauri ios init
 pnpm tauri ios dev
 ```
 
+<!-- The environment variables below are required by `aws-lc-sys` via `rustls-platform-verifier -->
+
+> [!NOTE]
+> For Android builds, make sure the `ANDROID_NDK_ROOT` and `ANDROID_NDK` environment variables are set to the correct NDK path, e.g.:
+>
+> ```sh
+> export ANDROID_NDK_ROOT=$NDK_HOME
+> export ANDROID_NDK=$NDK_HOME
+> export CC="$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin/armv7a-linux-androideabi21-clang"
+> export BINDGEN_EXTRA_CLANG_ARGS="--sysroot=$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/sysroot"
+> ```
+>
+> If you're on macOS, you do not need to set `CC` explicitly. Make sure to use `darwin-x86_64` (also for Apple Silicon).
+> Also make sure to have `bindgen` installed (via cargo).
+
 ## Contributing
 
 > [!NOTE]
@@ -90,6 +107,26 @@ cargo clippy
 cargo test
 ```
 
+### Generate TypeScript bindings
+
+In order to regenerate the TypeScript bindings in `identity-wallet/bindings` after making changes to actions or reducers, you can simply execute all Rust tests by running `cargo test` from within the `/identity-wallet` folder.
+
+### Updating translations
+
+1. Edit the base language file (English) at `unime/src/i18n/en/index.ts`.
+2. Inside the `unime` folder, run `pnpm typesafe-i18n` to update the types.
+3. Adjust all other language files in `unime/src/i18n/` accordingly until all types are satisfied.
+4. Running `pnpm check` shouldn't produce any errors related to `i18n`.
+
+### Updating dependencies
+
+> [!NOTE]
+> Dependencies are automatically updated by Dependabot on GitHub.
+> It shouldn't be necessary to run `pnpm update` or `cargo update` manually.
+
+Since Tauri dependencies always have both an npm package as well as a Rust crate,
+they **should always be updated together** to avoid compatibility issues.
+
 ### VS Code support
 
 Recommended extensions are listed in `.vscode/extensions.json`.
@@ -116,4 +153,7 @@ You can simulate safe area insets during development by overriding CSS variables
    Be **cautious** not to replace versions of any other dependencies (in `Cargo.toml`, `Cargo.lock`, `package.json`, `package-lock.json`).
 2. Run the script in `unime/src-tauri/gen-static/apply.sh` which copies over the changed files into the (untracked) generated folders for Android and iOS.
 3. Inside `unime/src-tauri` run `cargo tauri icon`.
-4. Run `npm run tauri ios build` and `npm run tauri android build` to build the apps. The iOS build (`.ipa`) will be in `unime/src-tauri/gen/apple/build/arm64` and the Android builds (`.apk` and `.aab`) will be in `unime/src-tauri/gen/android/app/build/outputs/`.
+4. To create a release build, there is a special tweak for the respective platform:
+   - For **iOS**, open Xcode and open the root file `unime.xcodeproj`. Go to `Signing & Capabilities`, disable `Automatically manage signing` and select the `Provisioning Profile` manually.
+   - For **Android**, create a `keystore.properties` file in `unime/src-tauri/gen/android` which contains the secrets required in `build.gradle.kts` (such as `keyAlias`, etc.).
+5. Run `pnpm tauri ios build` and `pnpm tauri android build` to build the apps. The iOS build (`.ipa`) will be in `unime/src-tauri/gen/apple/build/arm64` and the Android builds (`.apk` and `.aab`) will be in `unime/src-tauri/gen/android/app/build/outputs/`.

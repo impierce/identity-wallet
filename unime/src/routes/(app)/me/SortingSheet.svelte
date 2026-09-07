@@ -33,8 +33,8 @@
     slot="trigger"
     let:trigger
     use:melt={trigger}
-    class="flex h-10 w-10 items-center justify-center rounded-xl bg-white dark:bg-dark dark:text-grey"
-    ><SlidersHorizontalRegularIcon /></button
+    class="flex h-11 w-11 items-center justify-center rounded-2xl text-black dark:text-white"
+    ><SlidersHorizontalRegularIcon class="h-6 w-6" /></button
   >
   <!-- bottom drawer and list items with preferred view and sorting preferences-->
   <div slot="content" class="w-full">

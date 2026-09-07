@@ -21,7 +21,7 @@
   // Dispatch custom event whenever that value changes.
   // ESLint does not understand the reactive statement.
   // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-  $: $value, dispatch('change', { value: $value });
+  $: ($value, dispatch('change', { value: $value }));
 </script>
 
 <div use:melt={$root} class="flex flex-col gap-4">

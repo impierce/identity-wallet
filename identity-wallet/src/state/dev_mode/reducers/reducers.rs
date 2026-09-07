@@ -1,3 +1,5 @@
+// TODO: this file is not included in the module tree, can we remove it?
+
 use super::dragon_dynamic_profile::*;
 use crate::{
     command,
@@ -13,6 +15,7 @@ use crate::{
 use log::info;
 use std::sync::Arc;
 
+#[tracing::instrument(skip_all, err)]
 pub async fn unlock_storage(state: AppState) -> Result<AppState, AppError> {
     command::reduce(
         state,

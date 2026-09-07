@@ -38,7 +38,7 @@
     <!-- TODO: apply "appearance-none" and style everything manually? -->
     <input
       type="text"
-      class="h-11 w-full rounded-full bg-white pl-12 text-sm font-medium text-slate-500 placeholder-slate-500 placeholder-opacity-50 dark:bg-dark dark:text-slate-300"
+      class="placeholder-opacity-50 h-11 w-full rounded-full bg-white pl-12 text-sm font-medium text-slate-500 placeholder-slate-500 dark:bg-dark dark:text-slate-300"
       {placeholder}
       id="input"
       bind:value

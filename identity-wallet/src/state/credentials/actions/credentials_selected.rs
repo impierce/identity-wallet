@@ -1,5 +1,6 @@
 use crate::reducer;
 use crate::state::credentials::reducers::handle_oid4vp_authorization_request::handle_oid4vp_authorization_request;
+use crate::state::credentials::reducers::send_interactive_authorization_request_follow_up::send_interactive_authorization_request_follow_up;
 use crate::state::{actions::ActionTrait, Reducer};
 
 use serde::{Deserialize, Serialize};
@@ -11,11 +12,16 @@ use ts_rs::TS;
 pub struct CredentialsSelected {
     #[ts(type = "Array<string>")]
     pub credential_uuids: Vec<uuid::Uuid>,
+    #[serde(default)]
+    pub is_interactive: bool,
 }
 
 #[typetag::serde(name = "[Authenticate] Credentials selected")]
 impl ActionTrait for CredentialsSelected {
     fn reducers<'a>(&self) -> Vec<Reducer<'a>> {
-        vec![reducer!(handle_oid4vp_authorization_request)]
+        vec![
+            reducer!(handle_oid4vp_authorization_request),
+            reducer!(send_interactive_authorization_request_follow_up),
+        ]
     }
 }

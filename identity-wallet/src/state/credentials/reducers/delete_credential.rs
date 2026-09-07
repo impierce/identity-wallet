@@ -14,6 +14,7 @@ use crate::{
     },
 };
 
+#[tracing::instrument(skip_all, err)]
 pub async fn delete_credential(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(delete_credential) = listen::<DeleteCredential>(action) {
         let mut credentials = state.credentials.clone();
@@ -25,8 +26,8 @@ pub async fn delete_credential(state: AppState, action: Action) -> Result<AppSta
 
             if file_path.exists() {
                 match fs::remove_file(&file_path) {
-                    Ok(_) => info!("Successfully deleted image file: `{:?}`", file_path),
-                    Err(e) => warn!("Failed to delete image file: `{:?}`, reason: `{:?}`", file_path, e),
+                    Ok(_) => info!("Successfully deleted image file: `{file_path:?}`"),
+                    Err(e) => warn!("Failed to delete image file: `{file_path:?}`, reason: `{e:?}`"),
                 }
             }
         }
@@ -77,6 +78,7 @@ mod tests {
     use crate::stronghold::StrongholdManager;
 
     #[tokio::test]
+    #[serial_test::serial]
     async fn test_credential_is_removed_from_appstate_and_from_stronghold_and_image_is_deleted() {
         let uuid = Uuid::new_v4();
 
@@ -113,7 +115,7 @@ mod tests {
         drop(managers);
 
         // Set up image asset
-        let tmp_dir = TempDir::new().unwrap().into_path();
+        let tmp_dir = TempDir::new().unwrap().keep();
         *ASSETS_DIR.lock().unwrap() = tmp_dir.clone();
         let file_path = tmp_dir.join(format!("{}.{}", uuid, SUPPORTED_IMAGE_ASSET_EXTENSIONS[0]));
         let mut file = File::create(file_path.clone()).unwrap();

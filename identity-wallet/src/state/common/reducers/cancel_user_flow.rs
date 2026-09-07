@@ -5,7 +5,9 @@ use crate::state::common::actions::cancel_user_flow::CancelUserFlow;
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::AppState;
 
+#[tracing::instrument(skip_all, err)]
 pub async fn cancel_user_flow(state: AppState, action: Action) -> Result<AppState, AppError> {
+    log::debug!("Cancelling active user flow");
     if let Some(cancel_user_flow) = listen::<CancelUserFlow>(action) {
         clear_assets_tmp_folder().ok();
         return Ok(AppState {

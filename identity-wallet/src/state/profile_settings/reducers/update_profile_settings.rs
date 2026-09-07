@@ -7,7 +7,9 @@ use crate::{
     },
 };
 
+#[tracing::instrument(skip_all, err)]
 pub async fn update_profile_settings(state: AppState, action: Action) -> Result<AppState, AppError> {
+    log::debug!("Updating profile settings");
     if let Some(UpdateProfileSettings { theme, name, picture }) = listen::<UpdateProfileSettings>(action) {
         if let Some(profile) = state.profile_settings.profile.clone() {
             return Ok(AppState {

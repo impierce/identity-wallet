@@ -15,6 +15,8 @@ pub enum AppError {
     Error(String),
     #[error("Invalid action found: `{action:?}`")]
     InvalidActionError { action: Action },
+    #[error("No credential found with id: `{0}`")]
+    NoCredentialWithIdError(String),
     #[error("Unable to parse QR code with content: `{0}`")]
     InvalidQRCodeError(String),
     #[error("No `{0}` manager found in the state")]
@@ -24,6 +26,8 @@ pub enum AppError {
         extension: &'static str,
         source: serde_json::Error,
     },
+    #[error("Failed to create a data directory via Tauri handle")]
+    DataDirCreationError(#[from] tauri::Error),
     #[error("Failed to download the file: {0}")]
     DownloadFailed(#[from] reqwest::Error),
     #[error("Failed to download the file: {0}")]
@@ -42,20 +46,22 @@ pub enum AppError {
     InvalidAuthorizationRequest(Box<AuthorizationRequest<Object>>),
     #[error("Invalid credential offer")]
     InvalidCredentialOffer(#[source] serde_json::Error),
-    #[error("Could not find a matching credential for input descriptor")]
+    #[error("No credential in the wallet matched the DCQL query")]
     NoMatchingCredentialError,
     #[error("Failed to generate authorization response")]
     GenerateAuthorizationResponseError(#[source] anyhow::Error),
     #[error("Failed to send authorization response")]
     SendAuthorizationResponseError,
-    #[error("Failed to parse json")]
-    InvalidUuidError(#[source] uuid::Error),
+    #[error("Failed to generate UUID: {0}")]
+    InvalidUuidError(#[from] uuid::Error),
     #[error("Failed to create presentation submission")]
     PresentationSubmissionError(#[source] anyhow::Error),
     #[error("Failed to parse DID")]
     DidParseError,
     #[error("Invalid credential format")]
     InvalidCredentialFormatError,
+    #[error("Missing, invalid or unable to parse credential status format")]
+    InvalidCredentialStatusFormatError,
     #[error("Failed to build verifiable presentation")]
     PresentationBuilderError(#[source] identity_credential::error::Error),
     #[error("Failed to retrieve credential offer from the credential issuer")]
@@ -64,9 +70,13 @@ pub enum AppError {
     GetAuthorizationServerMetadataError(#[source] anyhow::Error),
     #[error("Failed to retrieve the credential issuer's metadata")]
     GetCredentialIssuerMetadataError(#[source] anyhow::Error),
-    #[error("Failed to retrieve an access token from the credential issuer")]
+    #[error("Failed to get the credential status from the provided status list")]
+    GetCredentialStatusError,
+    #[error("Failed to fetch credential list: {0}")]
+    FetchCredentialListError(reqwest::Error),
+    #[error("Failed to retrieve an access token from the credential issuer: {0}")]
     GetAccessTokenError(#[source] anyhow::Error),
-    #[error("Failed to retrieve credential from the credential issuer")]
+    #[error("Failed to retrieve credential from the credential issuer: {0}")]
     GetCredentialError(#[source] anyhow::Error),
     #[error("Failed to retrieve batch credentials from the credential issuer")]
     GetBatchCredentialError(#[source] anyhow::Error),
@@ -96,13 +106,15 @@ pub enum AppError {
     StateFileDeletionError(#[source] anyhow::Error),
     #[error("Failed to find TrustList with ID `{0}`")]
     TrustListNotFoundError(String),
+    #[error("Failed to migrate AppState version `{0}` to version `{1}`: {2}")]
+    AppStateMigrationError(u32, u32, String),
 }
 
 impl std::fmt::Debug for AppError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        writeln!(f, "{}", self)?;
+        writeln!(f, "{self}")?;
         if let Some(source) = self.source() {
-            writeln!(f, "Caused by:\n\t{}", source)?;
+            writeln!(f, "Caused by:\n\t{source}")?;
         }
         Ok(())
     }

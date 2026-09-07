@@ -7,6 +7,7 @@ use crate::state::{
     AppState,
 };
 
+#[tracing::instrument(skip_all, err)]
 pub async fn trust_list_delete(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(action) = listen::<DeleteTrustList>(action) {
         let mut trust_lists = state.trust_lists;

@@ -1,0 +1,3 @@
+[libraries]
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.6.3" }
+rustls-platform-verifier = { group = "rustls", name = "rustls-platform-verifier", version = "latest.release" }

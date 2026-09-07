@@ -2,6 +2,7 @@ use std::str::FromStr;
 
 use jsonwebtoken::Algorithm;
 use log::debug;
+use oid4vc::oid4vc_core::Subject;
 
 use crate::{
     error::AppError,
@@ -13,13 +14,14 @@ use crate::{
     },
 };
 
+#[tracing::instrument(skip_all, err)]
 pub async fn set_preferred_key_type(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(key_type) = listen::<SetPreferredKeyType>(action).map(|payload| payload.key_type) {
         let mut managers = state.core_utils.managers.lock().await;
 
         let mut preferred_key_types = state.profile_settings.preferred_key_types;
 
-        debug!("Order of preferred key types (current): {:?}", preferred_key_types);
+        debug!("Order of preferred key types (current): {preferred_key_types:?}");
 
         let current_position = preferred_key_types
             .iter()
@@ -30,7 +32,7 @@ pub async fn set_preferred_key_type(state: AppState, action: Action) -> Result<A
 
         preferred_key_types.insert(0, element);
 
-        debug!("Order of preferred key types (updated): {:?}", preferred_key_types);
+        debug!("Order of preferred key types (updated): {preferred_key_types:?}");
 
         let identity_manager = managers
             .identity_manager

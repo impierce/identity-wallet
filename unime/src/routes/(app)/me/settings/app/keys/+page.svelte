@@ -53,13 +53,13 @@
           </div>
           {#if key.type === preferred_key_type}
             <div class="flex items-center space-x-1 rounded-full bg-ex-blue-2 px-2 py-1 dark:bg-primary">
-              <p class="text-[12px]/[20px] font-medium text-teal dark:text-dark">preferred</p>
+              <p class="text-[12px]/[20px] font-medium text-secondary dark:text-dark">preferred</p>
             </div>
           {/if}
         </div>
         {#if key.key_id}
           <div class="flex items-center justify-between space-x-4 pt-4">
-            <p class="break-all text-left font-mono text-[11px]/[14px] font-medium text-slate-500 dark:text-slate-300">
+            <p class="text-left font-mono text-[11px]/[14px] font-medium break-all text-slate-500 dark:text-slate-300">
               {key.key_id}
             </p>
           </div>

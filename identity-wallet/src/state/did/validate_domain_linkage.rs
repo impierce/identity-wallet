@@ -1,5 +1,3 @@
-use std::str::FromStr;
-
 use base64::{engine::general_purpose::URL_SAFE_NO_PAD, Engine as _};
 use did_manager::Resolver;
 use identity_credential::domain_linkage::{DomainLinkageConfiguration, JwtDomainLinkageValidator};
@@ -12,10 +10,13 @@ use identity_iota::{
     },
 };
 use jsonwebtoken::{crypto::verify, jwk::Jwk as JsonWebTokenJwk, Algorithm, DecodingKey, Validation};
-use log::info;
+use log::debug;
 use serde::{Deserialize, Serialize};
 use serde_with::skip_serializing_none;
+use std::str::FromStr;
 use ts_rs::TS;
+
+use crate::http_client::get_http_client;
 
 #[skip_serializing_none]
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, TS, Default)]
@@ -44,7 +45,7 @@ impl JwsVerifier for Verifier {
     fn verify(&self, input: VerificationInput, public_key: &IotaIdentityJwk) -> Result<(), SignatureVerificationError> {
         use SignatureVerificationErrorKind::*;
 
-        info!("Verifying input");
+        debug!("Verifying input signature with alg: {}", input.alg);
 
         let algorithm =
             Algorithm::from_str(&input.alg.to_string()).map_err(|_| SignatureVerificationError::new(UnsupportedAlg))?;
@@ -67,7 +68,10 @@ impl JwsVerifier for Verifier {
             &decoding_key,
             algorithm,
         ) {
-            Ok(true) => Ok(()),
+            Ok(true) => {
+                debug!("Signature successfully verified");
+                Ok(())
+            }
             Err(_) | Ok(false) => Err(SignatureVerificationError::new(
                 // TODO: more fine-grained error handling?
                 InvalidSignature,
@@ -77,23 +81,21 @@ impl JwsVerifier for Verifier {
 }
 
 /// https://wiki.iota.org/identity.rs/how-tos/domain-linkage/create-and-verify/#verifying-a-did-and-domain-linkage
-pub async fn validate_domain_linkage(url: url::Url, did: &str) -> ValidationResult {
+pub async fn validate_domain_linkage(resolver: &Resolver, url: url::Url, did: &str) -> ValidationResult {
     let did_configuration_result = fetch_configuration(url.clone()).await;
 
     let domain_linkage_configuration = match did_configuration_result {
         Ok(did_config) => did_config,
-        Err(e) => {
+        Err(err) => {
             return ValidationResult {
                 status: ValidationStatus::Unknown,
-                message: Some(format!("Error while fetching configuration: {}", e)),
+                message: Some(format!("Error while fetching configuration: {err}")),
                 ..Default::default()
             };
         }
     };
 
     let validator = JwtDomainLinkageValidator::with_signature_verifier(Verifier);
-
-    let resolver = Resolver::new().await;
 
     let document = match resolver.resolve(did).await {
         Ok(document) => document,
@@ -106,7 +108,7 @@ pub async fn validate_domain_linkage(url: url::Url, did: &str) -> ValidationResu
         }
     };
 
-    info!("Resolved document: {:?}", document);
+    debug!("Resolved document: {document:?}");
 
     let url = identity_iota::core::Url::from(url);
 
@@ -141,12 +143,15 @@ async fn fetch_configuration(mut url: url::Url) -> Result<DomainLinkageConfigura
     url.set_query(None);
     url.set_path(".well-known/did-configuration.json");
 
-    info!("Fetching DID configuration from: {}", url);
+    debug!("Fetching DID configuration from: {url}");
 
     // 2. Fetch the resource
-    let response = reqwest::get(url.clone())
+    let response = get_http_client()
         .await
-        .map_err(|_| format!("failed to get response from resource url: {}", url))?;
+        .get(url.clone())
+        .send()
+        .await
+        .map_err(|_| format!("failed to get response from resource url: {url}"))?;
 
     // 3. Parse to JSON value (mutable)
     let mut json = response
@@ -158,7 +163,7 @@ async fn fetch_configuration(mut url: url::Url) -> Result<DomainLinkageConfigura
     if let serde_json::Value::Object(ref mut root) = json {
         if let Some(serde_json::Value::Array(ref mut linked_dids)) = root.get_mut("linked_dids") {
             linked_dids.retain(|did| matches!(did, serde_json::Value::String(_)));
-            info!("Removed non-string values from `linked_dids`");
+            debug!("Removed non-string values from `linked_dids`");
         }
     }
 
@@ -218,7 +223,10 @@ mod tests {
     async fn when_no_well_known_then_return_validation_status_unknown() {
         let mock_server = MockServer::start().await;
 
-        let result = validate_domain_linkage(url::Url::parse(&mock_server.uri()).unwrap(), "did:foo:bar").await;
+        let resolver = Resolver::new();
+
+        let result =
+            validate_domain_linkage(&resolver, url::Url::parse(&mock_server.uri()).unwrap(), "did:foo:bar").await;
 
         assert_eq!(result.status, ValidationStatus::Unknown);
         assert!(result.message.is_some());
@@ -242,7 +250,10 @@ mod tests {
             .mount(&mock_server)
             .await;
 
-        let result = validate_domain_linkage(url::Url::parse(&mock_server.uri()).unwrap(), "did:foo:bar").await;
+        let resolver = Resolver::new();
+
+        let result =
+            validate_domain_linkage(&resolver, url::Url::parse(&mock_server.uri()).unwrap(), "did:foo:bar").await;
 
         assert_eq!(
             result,
@@ -302,7 +313,10 @@ mod tests {
             .mount(&mock_server)
             .await;
 
+        let resolver = Resolver::new();
+
         let result = validate_domain_linkage(
+            &resolver,
             url::Url::parse(&mock_server.uri()).unwrap(),
             "did:key:z6MkiTBz1ymuepAQ4HEHYSF1H8quG5GLVVQR3djdX3mDooWp",
         )
@@ -312,7 +326,7 @@ mod tests {
             result,
             ValidationResult {
                 status: ValidationStatus::Failure,
-                message: Some("invalid issuer DID".to_string()),
+                message: Some("invalid semantic structure of the domain linkage configuration".to_string()),
                 ..Default::default()
             }
         );
@@ -340,13 +354,20 @@ mod tests {
         url.set_fragment(Some("foobar"));
         url.set_query(Some("page=1"));
 
-        let result = validate_domain_linkage(url, "did:key:z6MkiTBz1ymuepAQ4HEHYSF1H8quG5GLVVQR3djdX3mDooWp").await;
+        let resolver = Resolver::new();
+
+        let result = validate_domain_linkage(
+            &resolver,
+            url,
+            "did:key:z6MkiTBz1ymuepAQ4HEHYSF1H8quG5GLVVQR3djdX3mDooWp",
+        )
+        .await;
 
         assert_eq!(
             result,
             ValidationResult {
                 status: ValidationStatus::Failure,
-                message: Some("invalid issuer DID".to_string()),
+                message: Some("invalid semantic structure of the domain linkage configuration".to_string()),
                 ..Default::default()
             }
         );
@@ -365,7 +386,7 @@ mod tests {
         let subject = subject(stronghold_manager.clone(), password).await;
 
         let identifier = subject.identifier("did:key", Algorithm::ES256).await.unwrap();
-        let fragment = identifier.split(':').last().unwrap();
+        let fragment = identifier.split(':').next_back().unwrap();
         let public_key = subject.public_key(&format!("{identifier}#{fragment}")).await.unwrap();
 
         // x and y are each 32 bytes, they represent the public key
@@ -406,7 +427,7 @@ mod tests {
         let subject = subject(stronghold_manager.clone(), password).await;
 
         let identifier = subject.identifier("did:key", Algorithm::EdDSA).await.unwrap();
-        let fragment = identifier.split(':').last().unwrap();
+        let fragment = identifier.split(':').next_back().unwrap();
         let public_key = subject.public_key(&format!("{identifier}#{fragment}")).await.unwrap();
 
         // x represents the public key

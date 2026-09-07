@@ -7,9 +7,10 @@ use crate::{
     },
 };
 
-use log::info;
+use log::{debug, info};
 use serde_json::json;
 
+#[tracing::instrument(skip_all, err)]
 pub async fn update_credential_metadata(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(UpdateCredentialMetadata {
         id: credential_id,
@@ -33,7 +34,7 @@ pub async fn update_credential_metadata(state: AppState, action: Action) -> Resu
 
         let display_credential = &mut verifiable_credential_record.display_credential;
 
-        info!(
+        debug!(
             "verifiable_credential_record (before): {:?}",
             display_credential.metadata
         );
@@ -48,7 +49,7 @@ pub async fn update_credential_metadata(state: AppState, action: Action) -> Resu
             verifiable_credential_record.display_credential.metadata.is_favorite = is_favorite;
         }
 
-        info!(
+        debug!(
             "verifiable_credential_record (after): {:?}",
             verifiable_credential_record.display_credential.metadata
         );
@@ -59,7 +60,7 @@ pub async fn update_credential_metadata(state: AppState, action: Action) -> Resu
                 json!(verifiable_credential_record).to_string().as_bytes().to_vec(),
             )
             .map_err(StrongholdInsertionError)?;
-        info!("credential metadata updated");
+        info!("Updated metadata for credential `{credential_id}`");
 
         let credentials = stronghold_manager
             .values()

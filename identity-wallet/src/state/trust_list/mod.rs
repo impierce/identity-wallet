@@ -111,10 +111,6 @@ impl TrustList {
         self.entries.remove(domain)
     }
 
-    pub fn contains(&self, domain: &Url) -> bool {
-        self.entries.contains_key(domain)
-    }
-
     pub fn get(&self, domain: &Url) -> Option<&bool> {
         self.entries.get(domain)
     }
@@ -123,7 +119,7 @@ impl TrustList {
         self.entries.get_mut(domain)
     }
 
-    pub fn iter(&self) -> std::collections::hash_map::Iter<Url, bool> {
+    pub fn iter(&self) -> std::collections::hash_map::Iter<'_, Url, bool> {
         self.entries.iter()
     }
 }

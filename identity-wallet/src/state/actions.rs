@@ -67,16 +67,20 @@ mod bindings {
 
     use crate::state::{
         backup::actions::create::CreateBackup,
-        common::actions::{cancel_user_flow::CancelUserFlow, unlock_storage::UnlockStorage},
-        credentials::actions::{
-            credential_offers_selected::CredentialOffersSelected, credentials_selected::CredentialsSelected,
-            delete_credential::DeleteCredential, update_credential_metadata::UpdateCredentialMetadata,
+        common::actions::{
+            cancel_user_flow::CancelUserFlow, check_password::CheckPassword, unlock_storage::UnlockStorage,
         },
-        dev_mode::actions::dev_profile::DevProfile,
+        credentials::actions::{
+            authorization_code_received::CodeReceived, credential_offers_selected::CredentialOffersSelected,
+            credentials_selected::CredentialsSelected, delete_credential::DeleteCredential,
+            refresh_credential_status::RefreshCredentialStatus, self_issue_credential::SelfIssueCredential,
+            share_to_linkedin::ShareToLinkedIn, update_credential_metadata::UpdateCredentialMetadata,
+        },
+        dev_mode::actions::{dev_profile::DevProfile, show_setting::ShowDevModeSetting},
         did::actions::{set_preferred_keytype::SetPreferredKeyType, set_preferred_method::SetPreferredDidMethod},
         profile_settings::actions::{
-            create_new::CreateNew, set_locale::SetLocale, update_profile_settings::UpdateProfileSettings,
-            update_sorting_preference::UpdateSortingPreference,
+            create_new::CreateNew, enable_biometrics::EnableBiometrics, set_locale::SetLocale,
+            update_profile_settings::UpdateProfileSettings, update_sorting_preference::UpdateSortingPreference,
         },
         qr_code::actions::qrcode_scanned::QrCodeScanned,
         search::actions::{
@@ -87,12 +91,14 @@ mod bindings {
             delete_trust_list_entry::DeleteTrustListEntry, edit_trust_list::EditTrustList,
             edit_trust_list_entry::EditTrustListEntry, toggle_trust_list_entry::ToggleTrustListEntry,
         },
+        verified_data::actions::{RedeemCode, SendVerificationEmail, ServiceHealthCheck},
     };
 
+    #[allow(dead_code)]
     #[derive(Serialize, Deserialize, TS)]
     #[serde(tag = "type")]
     #[ts(export, export_to = "bindings/actions/Action.ts")]
-    pub enum Action {
+    enum Action {
         #[serde(rename = "[App] Get state")]
         GetState,
         #[serde(rename = "[Storage] Unlock")]
@@ -114,18 +120,28 @@ mod bindings {
             #[ts(optional)]
             payload: Option<CancelUserFlow>,
         },
+        #[serde(rename = "[DEV] Show DEV mode setting")]
+        ShowDevModeSetting { payload: ShowDevModeSetting },
         #[serde(rename = "[DEV] Load DEV profile")]
         LoadDevProfile { payload: DevProfile },
         #[serde(rename = "[DEV] Toggle DEV mode")]
         ToggleDevMode,
+        #[serde(rename = "[DEV] Clear debug log")]
+        ClearDebugLog,
         #[serde(rename = "[Authenticate] Credentials selected")]
         CredentialsSelected { payload: CredentialsSelected },
         #[serde(rename = "[Credential Offer] Selected")]
         CredentialOffersSelected { payload: CredentialOffersSelected },
+        #[serde(rename = "[Credential Offer] Code received")]
+        CodeReceived { payload: CodeReceived },
         #[serde(rename = "[Credential Metadata] Update")]
         UpdateCredentialMetadata { payload: UpdateCredentialMetadata },
         #[serde(rename = "[Credential] Delete")]
         DeleteCredential { payload: DeleteCredential },
+        #[serde(rename = "[Credential] Refresh status")]
+        RefreshCredentialStatus { payload: RefreshCredentialStatus },
+        #[serde(rename = "[Credential] Refresh all statuses")]
+        RefreshAllCredentialStatuses,
         #[serde(rename = "[User Journey] Cancel")]
         CancelUserJourney,
         #[serde(rename = "[Settings] Update sorting preference")]
@@ -154,6 +170,22 @@ mod bindings {
         TrustListsEdit { payload: EditTrustList },
         #[serde(rename = "[Trust Lists] Delete")]
         TrustListsDelete { payload: DeleteTrustList },
+        #[serde(rename = "[Biometrics] Enable")]
+        EnableBiometrics { payload: EnableBiometrics },
+        #[serde(rename = "[Storage] Check password")]
+        CheckPassword { payload: CheckPassword },
+        #[serde(rename = "[Verified Data] Check service health")]
+        ServiceHealthCheck { payload: ServiceHealthCheck },
+        #[serde(rename = "[Verified Data] Send verification email")]
+        SendVerificationEmail { payload: SendVerificationEmail },
+        #[serde(rename = "[Verified Data] Redeem code")]
+        RedeemCode { payload: RedeemCode },
+        #[serde(rename = "[Verified Data] Reset email verification")]
+        ResetEmailVerification,
+        #[serde(rename = "[Credential] Self Issue")]
+        SelfIssueCredential { payload: SelfIssueCredential },
+        #[serde(rename = "[Credential] Share to LinkedIn")]
+        ShareToLinkedIn { payload: ShareToLinkedIn },
         #[serde(rename = "[Backup] Create")]
         CreateBackup { payload: CreateBackup },
     }

@@ -35,7 +35,7 @@
   </div>
 
   {#if logoUrl}
-    <Image id={hash(logoUrl)} iconFallback="Certificate" isTempAsset={true} imgClass="h-10 w-10" />
+    <Image id={hash(logoUrl)} iconFallback="CertificateLight" isTempAsset={true} imgClass="h-10 w-10" />
   {/if}
 
   {#if status === 'Success'}
@@ -54,7 +54,7 @@
     transition:fade={{ duration: 200 }}
     class="z-10 w-1/2 rounded-2xl bg-blue p-[20px] text-white shadow-md dark:border dark:border-slate-500"
   >
-    <div use:melt={$arrow} class="dark:border-l dark:border-t dark:border-slate-500"></div>
+    <div use:melt={$arrow} class="dark:border-t dark:border-l dark:border-slate-500"></div>
     <slot name="popover" />
   </div>
 {/if}

@@ -10,7 +10,10 @@ const localeTranslationLoaders = {
 	en: () => import('./en'),
 	'en-GB': () => import('./en-GB'),
 	'en-US': () => import('./en-US'),
+	'es-ES': () => import('./es-ES'),
+	'fi-FI': () => import('./fi-FI'),
 	'nl-NL': () => import('./nl-NL'),
+	'sv-FI': () => import('./sv-FI'),
 }
 
 const updateDictionary = (locale: Locales, dictionary: Partial<Translations>): Translations =>

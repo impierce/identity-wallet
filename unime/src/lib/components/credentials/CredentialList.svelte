@@ -5,7 +5,7 @@
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 
   import { IconMessage, ListItemCard } from '$lib/components';
-  import { GhostFillIcon } from '$lib/icons';
+  import { GhostFillIcon, SealCheckFillIcon, SealWarningDuotoneIcon } from '$lib/icons';
   import { state } from '$lib/stores';
 
   export let credentialType: 'all' | 'data' | 'badges' = 'all';
@@ -25,6 +25,10 @@
 </script>
 
 {#if credentials?.length > 0}
+  <div class="flex items-center pb-2">
+    <SealCheckFillIcon class="mr-2 text-primary" />
+    <p class="text-[13px]/[24px] font-medium text-slate-500 dark:text-white">{$LL.ME.MY_DATA()}</p>
+  </div>
   <div class="flex flex-col space-y-2">
     <!-- Add credential.id as key to help Svelte update the list correctly. -->
     {#each credentials as credential (credential.id)}
@@ -33,8 +37,16 @@
         title={credential.display_name}
         description={credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
         type={credential.data.type.includes('OpenBadgeCredential') ? 'badge' : 'data'}
+        icon={credential.metadata.icon}
+        isInvalid={credential.credential_status?.status === 'INVALID'}
         on:click={() => goto(`/credentials/${credential.id}`)}
-      ></ListItemCard>
+      >
+        <div slot="right">
+          {#if credential.credential_status?.status === 'INVALID'}
+            <SealWarningDuotoneIcon class="mr-3 size-6 text-red-700 dark:text-red-500" />
+          {/if}
+        </div>
+      </ListItemCard>
     {/each}
   </div>
 {:else if $state?.credentials?.length === 0}
@@ -42,11 +54,7 @@
   <div class="flex grow flex-col items-center justify-center">
     <IconMessage icon={GhostFillIcon} title={$LL.ME.EMPTY_CREDENTIALS.TITLE()} />
     <div class="w-[280px] pt-[15px] text-center text-[13px]/[24px] font-normal text-slate-500 dark:text-slate-300">
-      {$LL.ME.DEMO()}
-      <div class="flex flex-col">
-        <!-- <p class="font-semibold text-primary">https://selv.iota.org</p> -->
-        <p class="font-semibold text-primary">https://demo.ngdil.com</p>
-      </div>
+      {$LL.ME.EMPTY_CREDENTIALS.SUBTITLE()}
     </div>
   </div>
 {/if}

@@ -14,5 +14,5 @@
 
 <p class="text-3xl font-semibold tracking-tight text-slate-700 dark:text-grey">
   {greetings.at(Math.floor(Math.random() * greetings.length))},
-  <span class="text-primary">{$state?.profile_settings.profile?.name}.</span>
+  <span class="text-primary">{$state?.profile_settings.profile?.name}</span>.
 </p>

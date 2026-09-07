@@ -12,6 +12,7 @@ pub mod search;
 pub mod trust_list;
 pub mod user_journey;
 pub mod user_prompt;
+pub mod verified_data;
 
 use self::search::SearchResults;
 use self::{
@@ -32,6 +33,15 @@ use std::collections::HashMap;
 use std::{collections::VecDeque, pin::Pin};
 use trust_list::TrustLists;
 use ts_rs::TS;
+use verified_data::VerifiedData;
+
+// TODO: usually in traditional OAuth2/OIDC apps the client_id is provided by the authorization server
+// when registering the app. For now we are hardcoding it here, but in the future we should provide a way to configure it.
+// See: https://github.com/openid/OpenID4VCI/issues/94
+pub const UNIME_CLIENT_ID: &str = "unime";
+
+// This is the custom URI scheme that the app will use to receive the authorization code from the authorization server.
+pub const UNIME_REDIRECT_URI: &str = "unime://callback";
 
 // The AppState is the main state of the application shared between the backend and the frontend.
 // We have structured the state and its operations following the redux pattern.
@@ -79,14 +89,17 @@ impl AppStateContainer {
 
 pub const SUPPORTED_SIGNING_ALGORITHMS: &[Algorithm] = &[Algorithm::EdDSA, Algorithm::ES256];
 pub const SUPPORTED_DID_METHODS: &[&str] = &["did:jwk", "did:key"];
+pub const APP_STATE_VERSION: u32 = 1;
 
 /// The inner state of the application managed by Tauri. When the state is serialized in order to be sent to the
-/// frontend, the `managers` and `active_connection_request` fields are skipped.
+/// frontend, the `core_utils` field (including managers and active flow context) is skipped.
 #[derive(Default, Serialize, Deserialize, Derivative, TS, Clone)]
 #[derivative(Debug)]
 #[ts(export)]
 #[serde(default)]
 pub struct AppState {
+    pub version: u32,
+    // TODO: improve this field to include all active dids, right now it has to be derived from the preferred key type which did is actually stored here for did:key and did:jwk. An improvement could look like: #[ts(type = "Map<[string, string], string>")] \n pub dids: HashMap<(String, Algorithm), String>.
     pub dids: HashMap<String, String>,
     pub connections: Connections,
     pub credentials: Vec<DisplayCredential>,
@@ -94,7 +107,6 @@ pub struct AppState {
     pub search_results: SearchResults,
     /// This field contains utils needed for the backend to perform its tasks.
     #[serde(skip)]
-    #[derivative(Debug = "ignore")]
     pub core_utils: CoreUtils,
     pub profile_settings: ProfileSettings,
     /// User prompts are a way for the backend to communicate a desired/required user interaction to the frontend.
@@ -105,9 +117,12 @@ pub struct AppState {
     #[ts(type = "Array<string>")]
     pub debug_messages: VecDeque<String>,
     pub history: Vec<HistoryEvent>,
+    pub verified_data: VerifiedData,
     /// Extensions will bring along their own redux compliant code, in the unime folder.
     #[ts(skip)]
     pub extensions: std::collections::HashMap<String, Box<dyn FeatTrait>>,
+    pub show_dev_mode_setting: bool,
+    pub is_unlocked: bool,
     pub dev_mode: DevMode,
 }
 

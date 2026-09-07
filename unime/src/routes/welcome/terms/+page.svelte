@@ -6,6 +6,7 @@
   import { createDialog, melt } from '@melt-ui/svelte';
 
   import { Button, Checkbox, TopNavBar } from '$lib/components';
+  import TermsAndConditionsContent from '$lib/components/TermsAndConditionsContent.svelte';
   import { XBoldIcon } from '$lib/icons';
 
   const {
@@ -23,7 +24,7 @@
 <TopNavBar title={$LL.ONBOARDING.TERMS.NAVBAR_TITLE()} on:back={() => history.back()} />
 
 <div class="mt-8 grow p-4" in:fade={{ delay: 200 }} out:fade={{ duration: 200 }}>
-  <div class="px-2 pb-8 pt-4">
+  <div class="px-2 pt-4 pb-8">
     <p class="pb-4 text-3xl font-semibold text-slate-700 dark:text-grey">
       {$LL.ONBOARDING.TERMS.TITLE_1()} <span class="text-primary">{$LL.ONBOARDING.TERMS.TITLE_2()}</span>
     </p>
@@ -38,7 +39,7 @@
         <div
           data-component="Modal"
           use:melt={$content}
-          class="fixed left-1/2 top-1/2 z-50 max-h-[85vh] w-[90vw]
+          class="fixed top-1/2 left-1/2 z-50 max-h-[85vh] w-[90vw]
             -translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-xl
             bg-background p-6 shadow-lg"
           transition:scale={{
@@ -55,15 +56,17 @@
           <p use:melt={$description} class="rounded-lg text-xs font-medium">
             {$LL.ONBOARDING.TERMS.T_AND_C.TL_DR()}
           </p>
+
           <!-- acts as <hr> -->
           <div class="my-2 h-px w-full bg-brand"></div>
-          <p class="text-xs font-light">{$LL.ONBOARDING.TERMS.T_AND_C.FULL()}</p>
+
+          <TermsAndConditionsContent />
 
           <!-- First focusable element gets the focus (close button). This forces user to scroll through terms. -->
           <button
             use:melt={$close}
             aria-label="close"
-            class="absolute right-2 top-2 flex size-7 items-center justify-center rounded-full border border-slate-200 bg-white p-1 dark:border-slate-600 dark:bg-dark"
+            class="absolute top-2 right-2 flex size-7 items-center justify-center rounded-full border border-slate-200 bg-white p-1 dark:border-slate-600 dark:bg-dark"
           >
             <XBoldIcon class="size-5" />
           </button>

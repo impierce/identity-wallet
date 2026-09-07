@@ -8,6 +8,7 @@ use crate::state::{
     AppState,
 };
 
+#[tracing::instrument(skip_all, err)]
 pub async fn trust_list_add(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(action) = listen::<AddTrustList>(action) {
         let mut trust_lists = state.trust_lists;
