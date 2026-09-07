@@ -44,7 +44,7 @@ impl Connections {
     /// the last interaction time and returns a reference to the connection.
     pub fn update_last_interaction_or_insert_new(&mut self, url: &str, name: &str, did: CoreDID) -> &Connection {
         if self.contains(did.as_str()) {
-            info!("Updating last interaction time forexisting connection: {did}");
+            info!("Updating last interaction time for existing connection: {did}");
             self.get_mut(did.as_str()).map(|connection| {
                 // TODO: what to do here when any information has changed except for the DID since we only match against that as the true identifier for a connection?
                 connection.update_last_interaction_time();
