@@ -20,6 +20,8 @@ lazy_static! {
     pub static ref STATE_FILE: Mutex<std::path::PathBuf> = Mutex::new(std::path::PathBuf::new());
     pub static ref STRONGHOLD: Mutex<std::path::PathBuf> = Mutex::new(std::path::PathBuf::new());
     pub static ref ASSETS_DIR: Mutex<std::path::PathBuf> = Mutex::new(std::path::PathBuf::new());
+    /// Where [`crate::state::backup::store::LocalBackupStore`] keeps archives.
+    pub static ref BACKUPS_DIR: Mutex<std::path::PathBuf> = Mutex::new(std::path::PathBuf::new());
 }
 
 pub const SUPPORTED_IMAGE_ASSET_EXTENSIONS: [&str; 2] = ["svg", "png"];
@@ -31,6 +33,7 @@ pub fn initialize_storage(app_handle: &tauri::AppHandle) -> Result<(), AppError>
         *STATE_FILE.lock().unwrap() = app_handle.path().data_dir()?.join("state.json");
         *STRONGHOLD.lock().unwrap() = app_handle.path().data_dir()?.join("stronghold.bin");
         *ASSETS_DIR.lock().unwrap() = app_handle.path().data_dir()?.join("assets");
+        *BACKUPS_DIR.lock().unwrap() = app_handle.path().data_dir()?.join("backups");
     } else {
         *STATE_FILE.lock().unwrap() = app_handle
             .path()
@@ -47,6 +50,11 @@ pub fn initialize_storage(app_handle: &tauri::AppHandle) -> Result<(), AppError>
             .data_dir()?
             .join("com.impierce.identity-wallet")
             .join("assets");
+        *BACKUPS_DIR.lock().unwrap() = app_handle
+            .path()
+            .data_dir()?
+            .join("com.impierce.identity-wallet")
+            .join("backups");
     }
     debug!("STATE_FILE: {}", STATE_FILE.lock().unwrap().display());
     debug!("STRONGHOLD: {}", STRONGHOLD.lock().unwrap().display());
@@ -54,6 +62,11 @@ pub fn initialize_storage(app_handle: &tauri::AppHandle) -> Result<(), AppError>
     match fs::create_dir_all(ASSETS_DIR.lock().unwrap().as_path()) {
         Ok(_) => debug!("ASSETS_DIR: created"),
         Err(e) => debug!("ASSETS_DIR: {e}"),
+    };
+
+    match fs::create_dir_all(BACKUPS_DIR.lock().unwrap().as_path()) {
+        Ok(_) => debug!("BACKUPS_DIR: created"),
+        Err(e) => debug!("BACKUPS_DIR: {e}"),
     };
 
     Ok(())

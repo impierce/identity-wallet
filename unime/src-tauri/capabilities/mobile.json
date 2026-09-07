@@ -3,5 +3,19 @@
   "identifier": "mobile-capability",
   "windows": ["main"],
   "platforms": ["iOS", "android"],
-  "permissions": ["barcode-scanner:default", "biometric:default", "keystore:default", "opener:allow-default-urls"]
+  "permissions": [
+    "barcode-scanner:default",
+    "biometric:default",
+    "keystore:default",
+    "opener:allow-default-urls",
+    "cloud-storage:allow-get-status",
+    "cloud-storage:allow-connect",
+    "cloud-storage:allow-disconnect",
+    "cloud-storage:allow-list-files",
+    "cloud-storage:allow-create-file",
+    "cloud-storage:allow-read-file",
+    "cloud-storage:allow-update-file",
+    "cloud-storage:allow-delete-file",
+    "cloud-storage:allow-wait-for-upload"
+  ]
 }

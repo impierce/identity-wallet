@@ -4,7 +4,6 @@
   import { goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
 
-  import { getDir } from '@impierce/tauri-plugin-cloud-storage';
   import * as path from '@tauri-apps/api/path';
   import { readDir, stat, type FileInfo } from '@tauri-apps/plugin-fs';
   import { info, warn } from '@tauri-apps/plugin-log';
@@ -28,30 +27,27 @@
     lastModified: Date | null;
   }
 
+  // Backups are kept in the app's local data directory for now. The cloud
+  // provider plugin is mobile-only and has no implementation yet; a wallet-side
+  // backup store will choose between local and cloud once it exists.
+  async function backupDirectory(): Promise<string | null> {
+    return path
+      .appLocalDataDir()
+      .then((dir) => {
+        info(`Backup directory: ${dir}`);
+        return dir;
+      })
+      .catch((error) => {
+        warn(`Error getting local app data directory: ${error}`);
+        return null;
+      });
+  }
+
   let backups: BackupFile[] = [];
 
   onMount(async () => {
     let dirPath;
-    dirPath = await getDir()
-      .then((dir) => {
-        info(`Cloud storage directory: ${dir}`);
-        return dir;
-      })
-      .catch(async (error) => {
-        warn(`Error getting cloud storage directory: ${error}`);
-        // TODO: is a fallback to dir AppLocalData a good idea?
-        return path
-          .appLocalDataDir()
-          .then((dir) => {
-            info(`Fallback to local app data directory: ${dir}`);
-            return dir;
-          })
-          .catch((error) => {
-            warn(`Error getting local app data directory: ${error}`);
-            return null;
-          });
-        // return BaseDirectory.AppLocalData;
-      });
+    dirPath = await backupDirectory();
 
     if (!dirPath) {
       return;

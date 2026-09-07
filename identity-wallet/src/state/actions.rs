@@ -66,7 +66,7 @@ mod bindings {
     use ts_rs::TS;
 
     use crate::state::{
-        backup::actions::create::CreateBackup,
+        backup::actions::{create::CreateBackup, restore::RestoreBackup},
         common::actions::{
             cancel_user_flow::CancelUserFlow, check_password::CheckPassword, unlock_storage::UnlockStorage,
         },
@@ -188,5 +188,7 @@ mod bindings {
         ShareToLinkedIn { payload: ShareToLinkedIn },
         #[serde(rename = "[Backup] Create")]
         CreateBackup { payload: CreateBackup },
+        #[serde(rename = "[Backup] Restore")]
+        RestoreBackup { payload: RestoreBackup },
     }
 }

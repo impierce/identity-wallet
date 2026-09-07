@@ -3,7 +3,6 @@
 
   import LL from '$i18n/i18n-svelte';
 
-  import { checkPermissions, getDir, type PermissionState } from '@impierce/tauri-plugin-cloud-storage';
   import { melt } from '@melt-ui/svelte';
   import * as path from '@tauri-apps/api/path';
   import { BaseDirectory, exists, readDir, remove, stat, type FileInfo } from '@tauri-apps/plugin-fs';
@@ -17,13 +16,28 @@
 
   let enabled: boolean = false; // TODO: persist in app state user settings
 
-  let permissions: PermissionState | null; // TODO: handle "denied" and "prompt" states accordingly
   let fileInfo: FileInfo | undefined = undefined;
 
   let openConfirmAction = false;
 
   let dirPath: string | null;
   let fileName: string = 'backup.dat';
+
+  // Backups are kept in the app's local data directory for now. The cloud
+  // provider plugin is mobile-only and has no implementation yet; a wallet-side
+  // backup store will choose between local and cloud once it exists.
+  async function backupDirectory(): Promise<string | null> {
+    return path
+      .appLocalDataDir()
+      .then((dir) => {
+        info(`Backup directory: ${dir}`);
+        return dir;
+      })
+      .catch((error) => {
+        warn(`Error getting local app data directory: ${error}`);
+        return null;
+      });
+  }
 
   async function getFileInfo() {
     if (!dirPath) {
@@ -52,7 +66,7 @@
     if (!dirPath) {
       Promise.reject('No directory path');
     }
-    await dispatch({ type: '[Backup] Create', payload: { path: `${dirPath}/${fileName}`, password: 'sup3rSecr3t' } });
+    await dispatch({ type: '[Backup] Create', payload: { password: 'sup3rSecr3t' } });
     await getFileInfo();
   }
 
@@ -78,26 +92,7 @@
   }
 
   onMount(async () => {
-    dirPath = await getDir()
-      .then((dir) => {
-        info(`Cloud storage directory: ${dir}`);
-        return dir;
-      })
-      .catch(async (error) => {
-        warn(`Error getting cloud storage directory: ${error}`);
-        // TODO: is a fallback to dir AppLocalData a good idea?
-        return path
-          .appLocalDataDir()
-          .then((dir) => {
-            info(`Fallback to local app data directory: ${dir}`);
-            return dir;
-          })
-          .catch((error) => {
-            warn(`Error getting local app data directory: ${error}`);
-            return null;
-          });
-        // return BaseDirectory.AppLocalData;
-      });
+    dirPath = await backupDirectory();
 
     if (!dirPath) {
       return;
@@ -113,16 +108,6 @@
 
     const folderExists = await exists('backup.txt', { baseDir: BaseDirectory.AppLocalData });
     info(`Backup file exists: ${folderExists}`);
-
-    permissions = await checkPermissions()
-      .then((permissions) => {
-        info(`Permissions to use cloud storage: ${permissions}`);
-        return permissions;
-      })
-      .catch((error) => {
-        warn(`Error checking for permissions to use cloud storage: ${error}`);
-        return null;
-      });
 
     await getFileInfo();
 
@@ -190,7 +175,6 @@
       </div>
       <Button label={$LL.SETTINGS.BACKUP_RECOVERY.BACKUP_NOW()} on:click={async () => await createBackup()} />
     {/if}
-    <pre class="text-xs text-amber-500">permissions: {permissions}</pre>
   </div>
 
   <!-- Confirm disable backups -->
