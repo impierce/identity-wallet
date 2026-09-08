@@ -110,6 +110,8 @@ pub enum AppError {
     AppStateMigrationError(u32, u32, String),
     #[error("{0}")]
     BackupArchiveError(#[from] crate::state::backup::archive::ArchiveError),
+    #[error("The password does not match this profile's password")]
+    BackupPasswordMismatch,
 }
 
 impl std::fmt::Debug for AppError {

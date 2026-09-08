@@ -1,15 +1,19 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { writable } from 'svelte/store';
+
+  import { goto } from '$app/navigation';
 
   import LL from '$i18n/i18n-svelte';
 
   import { ActionSheet, Button, SettingsSwitch, TopNavBar } from '$lib/components';
-  import { dispatch } from '$lib/dispatcher';
-  import { CloudArrowUpFillIcon, InfoRegularIcon } from '$lib/icons';
+  import { dispatch, tryDispatch } from '$lib/dispatcher';
+  import { CloudArrowUpFillIcon, EyeClosedRegularIcon, EyeRegularIcon, InfoRegularIcon } from '$lib/icons';
   import { state } from '$lib/stores';
   import { formatDateTime } from '$lib/utils';
 
-  let openConfirmAction = false;
+  const openConfirmAction = writable(false);
+  const openPasswordPrompt = writable(false);
 
   // The backend owns where backups live and hands back opaque ids, so this screen
   // reads the listing out of app state rather than touching the filesystem.
@@ -17,9 +21,32 @@
   $: latest = backups[0]; // the backend returns them newest first
   $: enabled = backups.length > 0;
 
+  let password = '';
+  let showPassword = false;
+  let creating = false;
+  let failed = false;
+
+  function askForPassword() {
+    password = '';
+    failed = false;
+    openPasswordPrompt.set(true);
+  }
+
+  // Backups are sealed with the profile password. The backend verifies it against
+  // the Stronghold snapshot before sealing, so a typo is refused here rather than
+  // producing an archive that cannot be opened later.
   async function createBackup() {
-    // TODO: prompt for a password instead of the development default.
-    await dispatch({ type: '[Backup] Create', payload: { password: 'sup3rSecr3t' } });
+    creating = true;
+    failed = false;
+    try {
+      await tryDispatch({ type: '[Backup] Create', payload: { password } });
+      password = '';
+      openPasswordPrompt.set(false);
+    } catch {
+      failed = true;
+    } finally {
+      creating = false;
+    }
   }
 
   async function removeAllBackups() {
@@ -57,17 +84,23 @@
       to your backups.
     </div> -->
 
-    <SettingsSwitch initialChecked={enabled} onchange={async () => {
-      if (enabled) {
-        openConfirmAction = true;
-      } else {
-        await createBackup();
-      }
-    }}>
+    <SettingsSwitch
+      checked={enabled}
+      onCheckedChange={({ next }) => {
+        if (next) {
+          askForPassword();
+          return false;
+        }
+        // Turning backups off deletes them, so hold the switch on until the
+        // user confirms in the action sheet.
+        openConfirmAction.set(true);
+        return true;
+      }}
+    >
       {#snippet icon()}
         <CloudArrowUpFillIcon class="h-5 w-5 text-primary"></CloudArrowUpFillIcon>
       {/snippet}
-      {$LL.SETTINGS.APP.DEVELOPER_MODE.TITLE()}
+      {$LL.SETTINGS.BACKUP_RECOVERY.SETTINGS_ENTRY()}
     </SettingsSwitch>
 
     {#if enabled}
@@ -88,16 +121,73 @@
           </div>
         {/if}
       </div>
-      <Button label={$LL.SETTINGS.BACKUP_RECOVERY.BACKUP_NOW()} on:click={async () => await createBackup()} />
+      <Button label={$LL.SETTINGS.BACKUP_RECOVERY.BACKUP_NOW()} on:click={askForPassword} />
+    {/if}
+
+    {#if backups.length > 0}
+      <Button
+        label={'Restore from a backup'}
+        variant="secondary"
+        on:click={() => goto('/welcome/recover')}
+      />
     {/if}
   </div>
+
+  <!-- Ask for the profile password before sealing a backup -->
+  <ActionSheet
+    titleText={'Confirm your password'}
+    descriptionText={'Backups are encrypted with your profile password. You will need it to restore.'}
+    open={openPasswordPrompt}
+  >
+    <div slot="content" class="w-full space-y-3 pb-[10px] pt-[20px]">
+      <div class="relative flex w-full">
+        <input
+          type={showPassword ? 'text' : 'password'}
+          class="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-[13px]/[24px] text-slate-500 dark:border-slate-600 dark:bg-dark dark:text-slate-300"
+          placeholder={'Enter your password'}
+          bind:value={password}
+          on:keydown={(e) => {
+            if (e.key === 'Enter' && password && !creating) createBackup();
+          }}
+        />
+        <div class="absolute right-3 top-0 flex h-full items-center">
+          <button
+            type="button"
+            class="rounded-full p-2"
+            on:click={() => (showPassword = !showPassword)}
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+          >
+            {#if showPassword}
+              <EyeRegularIcon class="text-slate-700 dark:text-grey" />
+            {:else}
+              <EyeClosedRegularIcon class="text-slate-700 dark:text-grey" />
+            {/if}
+          </button>
+        </div>
+      </div>
+
+      {#if failed}
+        <p class="text-center text-[13px]/[20px] font-medium text-rose-500" role="alert">
+          {"That password doesn't match your profile password."}
+        </p>
+      {/if}
+
+      <Button
+        label={creating ? 'Creating backup…' : 'Create backup'}
+        disabled={!password || creating}
+        on:click={createBackup}
+      />
+    </div>
+
+    <Button variant="secondary" slot="close" let:close trigger={close} label={'Cancel'} />
+  </ActionSheet>
 
   <!-- Confirm disable backups -->
   <div class="mt-8">
     <ActionSheet
       titleText={$LL.SETTINGS.BACKUP_RECOVERY.CONFIRM_DISABLE.TITLE()}
       descriptionText={$LL.SETTINGS.BACKUP_RECOVERY.CONFIRM_DISABLE.DESCRIPTION()}
-      isOpen={openConfirmAction}
+      open={openConfirmAction}
     >
       <!-- <button
         slot="trigger"
@@ -113,7 +203,7 @@
           class="h-[48px] w-full rounded-xl bg-rose-100 px-4 py-2 text-[14px]/[24px] font-medium text-rose-500"
           on:click={() => {
             removeAllBackups();
-            openConfirmAction = false;
+            openConfirmAction.set(false);
           }}>{$LL.SETTINGS.BACKUP_RECOVERY.CONFIRM_DISABLE.CONFIRM()}</button
         >
       </div>

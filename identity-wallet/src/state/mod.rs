@@ -14,6 +14,7 @@ pub mod user_journey;
 pub mod user_prompt;
 pub mod verified_data;
 
+use self::backup::preview::BackupPreview;
 use self::backup::store::BackupFile;
 use self::search::SearchResults;
 use self::{
@@ -109,6 +110,9 @@ pub struct AppState {
     /// Backups currently in the backup store, newest first. Derived from the
     /// store rather than user data, and refreshed by the `[Backup] *` actions.
     pub backups: Vec<BackupFile>,
+    /// Summary of the backup the user is considering restoring, if any.
+    /// Cleared once a restore completes.
+    pub backup_preview: Option<BackupPreview>,
     /// This field contains utils needed for the backend to perform its tasks.
     #[serde(skip)]
     pub core_utils: CoreUtils,

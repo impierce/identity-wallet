@@ -16,12 +16,21 @@ use crate::{
         },
         AppState,
     },
+    stronghold::StrongholdManager,
 };
 
 /// Seals the current profile into an archive and hands it to the backup store.
 #[tracing::instrument(skip_all, err)]
 pub async fn create_backup(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(CreateBackup { password }) = listen::<CreateBackup>(action) {
+        // Backups are sealed with the profile password, and restoring one needs
+        // that same password to open the Stronghold snapshot inside it. Verify it
+        // here rather than trusting the caller: a typo would otherwise produce an
+        // archive nobody can ever open.
+        if StrongholdManager::load(&password).is_err() {
+            return Err(AppError::BackupPasswordMismatch);
+        }
+
         // Keep the on-disk state current, but archive the in-memory state rather
         // than reading it back: `save_state` writes through a buffered tokio
         // `File` with no explicit flush, so a synchronous read straight after can

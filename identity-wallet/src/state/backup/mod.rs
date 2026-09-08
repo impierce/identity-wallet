@@ -1,5 +1,6 @@
 pub mod actions;
 pub mod archive;
+pub mod preview;
 pub mod reducers;
 pub mod store;
 

@@ -15,3 +15,19 @@ export const dispatch = async (action: Action) => {
     error(err);
   });
 };
+
+/**
+ * Like {@link dispatch}, but rejects instead of swallowing the backend error.
+ *
+ * Use it where the outcome changes what the user sees — an incorrect backup
+ * password, for example, is not something to log and carry on from.
+ */
+export const tryDispatch = async (action: Action) => {
+  info(`Dispatching action: ${sanitizeStringify(action)}`);
+  try {
+    await invoke('handle_action', { action });
+  } catch (err) {
+    error(String(err));
+    throw err;
+  }
+};
