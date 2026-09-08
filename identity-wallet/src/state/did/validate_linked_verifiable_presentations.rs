@@ -300,7 +300,7 @@ async fn get_validated_linked_domains(
                 let _issuer_did = issuer_did;
                 // Skip validation during tests
                 ValidationResult {
-                    status: ValidationStatus::default(),
+                    status: ValidationStatus::Success,
                     url: issuer_linked_domain.clone(),
                     name: None,
                     logo_uri: None,
@@ -311,7 +311,8 @@ async fn get_validated_linked_domains(
         };
 
         info!("Validation of domain linkage for issuer linked domain '{issuer_linked_domain}' resulted in: {validation_result:?}");
-        Some(validation_result)
+        (validation_result.status == crate::state::did::validate_domain_linkage::ValidationStatus::Success)
+            .then_some(validation_result)
     }))
     .filter_map(|result| async move { result })
     .collect()
@@ -360,22 +361,16 @@ fn get_credential_name(linked_verifiable_credential: &DecodedJwtCredential<Value
         .map(ToString::to_string)
 }
 
-/// Try to get the credential's own logo URI from the `logo` property in the root of the credential.
+/// Try to get the credential's own logo URI from the `logo_uri` property in the root of the credential.
 async fn get_credential_logo_uri(linked_verifiable_credential: &DecodedJwtCredential<Value>) -> Option<String> {
     debug!("Trying to fetch credential logo uri from credential root");
     let logo_uri = linked_verifiable_credential
         .credential
         .properties
-        .get("logo")
-        .and_then(|logo| {
-            if let Some(uri) = logo.get("uri").and_then(Value::as_str) {
-                Some(uri.to_string())
-            } else {
-                logo.as_str().map(ToString::to_string)
-            }
-        });
+        .get("logo_uri")
+        .and_then(Value::as_str);
 
-    if let Some(ref logo_uri_str) = logo_uri {
+    if let Some(logo_uri_str) = logo_uri {
         download_logo(logo_uri_str).await
     } else {
         None
@@ -648,7 +643,7 @@ mod tests {
 
             let mut properties = identity_iota::core::Object::new();
             properties.insert("name".to_string(), json!(credential_name));
-            properties.insert("logo".to_string(), json!(credential_logo));
+            properties.insert("logo_uri".to_string(), json!(credential_logo));
 
             let credential: Credential = CredentialBuilder::default()
                 .issuer(issuer)
