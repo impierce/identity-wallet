@@ -41,7 +41,17 @@ pub async fn assert_state_update(
                 cmd: "handle_action".into(),
                 callback: tauri::ipc::CallbackFn(0),
                 error: tauri::ipc::CallbackFn(1),
-                url: url::Url::parse("http://localhost").unwrap(),
+                // Tauri resolves capabilities against the request origin, and since
+                // 2.10 that origin is platform-dependent: `tauri://localhost`
+                // everywhere except Windows and Android. A mismatch is rejected
+                // with "not allowed. Plugin not found".
+                url: if cfg!(any(windows, target_os = "android")) {
+                    "http://tauri.localhost"
+                } else {
+                    "tauri://localhost"
+                }
+                .parse()
+                .unwrap(),
                 body: json!({ "action": action }).into(),
                 headers: Default::default(),
                 invoke_key: tauri::test::INVOKE_KEY.to_string(),

@@ -10,14 +10,11 @@
   import { warn } from '@tauri-apps/plugin-log';
 
   import { ActionSheet, Button, SettingsSwitch, TopNavBar } from '$lib/components';
-  import { ANIMATION_DURATION as duration } from '$lib/constants';
+  import { ANIMATION_DURATION as duration, KEYSTORE_KEY } from '$lib/constants';
   import { dispatch } from '$lib/dispatcher';
   import { EyeClosedRegularIcon, EyeRegularIcon, FingerprintFillIcon, ScanSmileyFillIcon } from '$lib/icons';
   import { state as appState, error as errorState, navigationDirection } from '$lib/stores';
   import { localizedBiometricsTypeString } from '$lib/utils';
-
-  const SERVICE = 'com.impierce.identity-wallet';
-  const USER = 'unime'; // TODO: rename to "ACCOUNT" to reflect Keychain Access item?
 
   let biometricsStatus: Status | undefined = $state();
   let biometryTypeString: string = $state('');
@@ -77,7 +74,7 @@
    * Updates the app state when the value could be removed successfully.
    */
   const remove = async () => {
-    await remove_inner(SERVICE, USER)
+    await remove_inner(KEYSTORE_KEY)
       .then(async () => {
         await dispatch({ type: '[Biometrics] Enable', payload: { enable: false } });
       })
@@ -92,7 +89,7 @@
    * @param value
    */
   const store = async (value: string) => {
-    await store_inner(value)
+    await store_inner(KEYSTORE_KEY, value)
       .then(async () => {
         await dispatch({ type: '[Biometrics] Enable', payload: { enable: true } });
       })
