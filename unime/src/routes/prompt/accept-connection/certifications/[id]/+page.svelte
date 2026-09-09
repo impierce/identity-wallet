@@ -88,9 +88,8 @@
             </p>
           {/if}
           {#if validation && domain}
-            <div class="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 pt-[10px]">
+            <div class="flex flex-col items-center gap-1.5 pt-[10px]">
               <p class="text-[13px]/[20px] font-normal text-text-alt">{domain}</p>
-              <span class="text-[13px]/[20px] text-slate-300 dark:text-slate-500" aria-hidden="true">·</span>
               <DomainPill status={validation.status} />
             </div>
           {/if}

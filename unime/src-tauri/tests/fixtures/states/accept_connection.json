@@ -9,7 +9,7 @@
   "current_user_prompt": {
     "type": "accept-connection",
     "client_metadata": {
-      "client_name": "https://example.com",
+      "client_name": "example123",
       "logo_uri": null,
       "connection_url": "https://example.com",
       "redirect_uri": "https://example.com/",
