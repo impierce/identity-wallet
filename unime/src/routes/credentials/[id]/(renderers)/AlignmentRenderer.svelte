@@ -1,8 +1,9 @@
 <script lang="ts">
   import LL from '$i18n/i18n-svelte';
-  import { openUrl } from '@tauri-apps/plugin-opener';
-  import { error as logError } from '@tauri-apps/plugin-log';
   import markdownit from 'markdown-it';
+
+  import { error as logError } from '@tauri-apps/plugin-log';
+  import { openUrl } from '@tauri-apps/plugin-opener';
 
   import { ArrowSquareOutBoldIcon, SealCheckFillIcon } from '$lib/icons';
   import { findOfficialSkill, type Alignment } from '$lib/utils/alignment';
