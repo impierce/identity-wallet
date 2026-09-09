@@ -1,5 +1,7 @@
 ![banner.svg](https://github.com/impierce/identity-wallet/raw/HEAD/.github/banner.svg)
 
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/impierce/identity-wallet/badge)](https://scorecard.dev/viewer/?uri=github.com/impierce/identity-wallet)
+
 ---
 
 # UniMe - Identity Wallet
