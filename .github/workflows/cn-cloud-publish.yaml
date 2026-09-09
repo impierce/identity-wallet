@@ -51,7 +51,7 @@ jobs:
           distribution: "temurin"
 
       - name: setup Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
 
       - name: setup Android NDK
         uses: nttld/setup-ndk@v1
