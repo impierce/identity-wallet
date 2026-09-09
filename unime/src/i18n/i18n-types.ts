@@ -31,13 +31,17 @@ type RootTranslation = {
 			 */
 			WHAT_IS_UNIME_1: string
 			/**
-			 * C​r​e​a​t​e​ ​a​ ​b​r​a​n​d​ ​n​e​w​ ​i​d​e​n​t​i​t​y​ ​p​r​o​f​i​l​e​ ​t​o​ ​g​e​t​ ​s​t​a​r​t​e​d​.
+			 * C​r​e​a​t​e​ ​a​ ​b​r​a​n​d​ ​n​e​w​ ​i​d​e​n​t​i​t​y​ ​p​r​o​f​i​l​e​ ​o​r​ ​r​e​c​o​v​e​r​ ​a​n​ ​e​x​i​s​t​i​n​g​ ​o​n​e​ ​t​o​ ​g​e​t​ ​s​t​a​r​t​e​d​.
 			 */
 			WHAT_IS_UNIME_2: string
 			/**
 			 * C​r​e​a​t​e​ ​n​e​w​ ​p​r​o​f​i​l​e
 			 */
 			CREATE_NEW_PROFILE: string
+			/**
+			 * R​e​c​o​v​e​r​ ​e​x​i​s​t​i​n​g​ ​p​r​o​f​i​l​e
+			 */
+			RECOVER_PROFILE: string
 			/**
 			 * S​e​l​e​c​t​ ​l​a​n​g​u​a​g​e
 			 */
@@ -634,6 +638,54 @@ type RootTranslation = {
 			 * B​a​c​k​u​p​ ​a​n​d​ ​r​e​c​o​v​e​r​y
 			 */
 			TITLE: string
+			/**
+			 * B​a​c​k​ ​u​p​ ​a​u​t​o​m​a​t​i​c​a​l​l​y
+			 */
+			SETTINGS_ENTRY: string
+			/**
+			 * U​n​i​M​e​ ​b​a​c​k​s​ ​u​p​ ​w​h​e​n​ ​y​o​u​ ​o​p​e​n​ ​i​t​,​ ​a​t​ ​m​o​s​t​ ​o​n​c​e​ ​a​ ​d​a​y​.​ ​B​a​c​k​u​p​s​ ​a​r​e​ ​e​n​c​r​y​p​t​e​d​ ​w​i​t​h​ ​y​o​u​r​ ​p​r​o​f​i​l​e​ ​p​a​s​s​w​o​r​d​,​ ​s​o​ ​y​o​u​ ​w​i​l​l​ ​n​e​e​d​ ​i​t​ ​t​o​ ​r​e​s​t​o​r​e​ ​o​n​e​.
+			 */
+			AUTOMATIC_EXPLANATION: string
+			/**
+			 * T​h​r​e​e​ ​b​a​c​k​u​p​s​ ​a​r​e​ ​k​e​p​t​:​ ​t​h​e​ ​m​o​s​t​ ​r​e​c​e​n​t​ ​o​n​e​,​ ​o​n​e​ ​f​r​o​m​ ​a​r​o​u​n​d​ ​a​ ​w​e​e​k​ ​a​g​o​,​ ​a​n​d​ ​o​n​e​ ​f​r​o​m​ ​a​r​o​u​n​d​ ​t​w​o​ ​w​e​e​k​s​ ​a​g​o​.​ ​O​l​d​e​r​ ​b​a​c​k​u​p​s​ ​a​r​e​ ​r​e​m​o​v​e​d​ ​a​u​t​o​m​a​t​i​c​a​l​l​y​.
+			 */
+			RETENTION_EXPLANATION: string
+			/**
+			 * B​a​c​k​ ​u​p​ ​n​o​w
+			 */
+			BACKUP_NOW: string
+			ANDROID_NOTICE: {
+				/**
+				 * G​o​o​g​l​e​ ​D​r​i​v​e​ ​b​a​c​k​u​p​ ​i​s​ ​c​o​m​i​n​g​ ​s​o​o​n
+				 */
+				TITLE: string
+				/**
+				 * U​n​t​i​l​ ​t​h​e​n​,​ ​i​f​ ​d​e​v​i​c​e​ ​b​a​c​k​u​p​ ​i​s​ ​t​u​r​n​e​d​ ​o​n​,​ ​A​n​d​r​o​i​d​ ​b​a​c​k​s​ ​u​p​ ​U​n​i​M​e​ ​o​n​ ​i​t​s​ ​o​w​n​ ​a​n​d​ ​c​a​n​ ​r​e​s​t​o​r​e​ ​i​t​ ​o​n​t​o​ ​a​ ​n​e​w​ ​d​e​v​i​c​e​.​ ​A​n​d​r​o​i​d​ ​o​n​l​y​ ​e​v​e​r​ ​k​e​e​p​s​ ​t​h​e​ ​m​o​s​t​ ​r​e​c​e​n​t​ ​c​o​p​y​,​ ​s​o​ ​y​o​u​ ​c​a​n​n​o​t​ ​p​i​c​k​ ​a​n​ ​e​a​r​l​i​e​r​ ​v​e​r​s​i​o​n​ ​t​o​ ​r​e​s​t​o​r​e​.
+				 */
+				DESCRIPTION: string
+			}
+			/**
+			 * D​e​l​e​t​e​ ​a​l​l​ ​b​a​c​k​u​p​s
+			 */
+			DELETE_ALL: string
+			CONFIRM_DELETE: {
+				/**
+				 * D​e​l​e​t​e​ ​a​l​l​ ​b​a​c​k​u​p​s
+				 */
+				TITLE: string
+				/**
+				 * T​h​i​s​ ​p​e​r​m​a​n​e​n​t​l​y​ ​r​e​m​o​v​e​s​ ​e​v​e​r​y​ ​b​a​c​k​u​p​ ​y​o​u​ ​h​a​v​e​ ​s​t​o​r​e​d​.​ ​Y​o​u​ ​w​i​l​l​ ​n​o​t​ ​b​e​ ​a​b​l​e​ ​t​o​ ​r​e​s​t​o​r​e​ ​y​o​u​r​ ​p​r​o​f​i​l​e​ ​f​r​o​m​ ​t​h​e​m​.
+				 */
+				DESCRIPTION: string
+				/**
+				 * Y​e​s​,​ ​d​e​l​e​t​e​ ​a​l​l​ ​b​a​c​k​u​p​s
+				 */
+				CONFIRM: string
+				/**
+				 * N​o​,​ ​k​e​e​p​ ​m​y​ ​b​a​c​k​u​p​s
+				 */
+				CANCEL: string
+			}
 		}
 		LOG_OUT: {
 			/**
@@ -1576,13 +1628,17 @@ export type TranslationFunctions = {
 			 */
 			WHAT_IS_UNIME_1: () => LocalizedString
 			/**
-			 * Create a brand new identity profile to get started.
+			 * Create a brand new identity profile or recover an existing one to get started.
 			 */
 			WHAT_IS_UNIME_2: () => LocalizedString
 			/**
 			 * Create new profile
 			 */
 			CREATE_NEW_PROFILE: () => LocalizedString
+			/**
+			 * Recover existing profile
+			 */
+			RECOVER_PROFILE: () => LocalizedString
 			/**
 			 * Select language
 			 */
@@ -2171,6 +2227,54 @@ export type TranslationFunctions = {
 			 * Backup and recovery
 			 */
 			TITLE: () => LocalizedString
+			/**
+			 * Back up automatically
+			 */
+			SETTINGS_ENTRY: () => LocalizedString
+			/**
+			 * UniMe backs up when you open it, at most once a day. Backups are encrypted with your profile password, so you will need it to restore one.
+			 */
+			AUTOMATIC_EXPLANATION: () => LocalizedString
+			/**
+			 * Three backups are kept: the most recent one, one from around a week ago, and one from around two weeks ago. Older backups are removed automatically.
+			 */
+			RETENTION_EXPLANATION: () => LocalizedString
+			/**
+			 * Back up now
+			 */
+			BACKUP_NOW: () => LocalizedString
+			ANDROID_NOTICE: {
+				/**
+				 * Google Drive backup is coming soon
+				 */
+				TITLE: () => LocalizedString
+				/**
+				 * Until then, if device backup is turned on, Android backs up UniMe on its own and can restore it onto a new device. Android only ever keeps the most recent copy, so you cannot pick an earlier version to restore.
+				 */
+				DESCRIPTION: () => LocalizedString
+			}
+			/**
+			 * Delete all backups
+			 */
+			DELETE_ALL: () => LocalizedString
+			CONFIRM_DELETE: {
+				/**
+				 * Delete all backups
+				 */
+				TITLE: () => LocalizedString
+				/**
+				 * This permanently removes every backup you have stored. You will not be able to restore your profile from them.
+				 */
+				DESCRIPTION: () => LocalizedString
+				/**
+				 * Yes, delete all backups
+				 */
+				CONFIRM: () => LocalizedString
+				/**
+				 * No, keep my backups
+				 */
+				CANCEL: () => LocalizedString
+			}
 		}
 		LOG_OUT: {
 			/**

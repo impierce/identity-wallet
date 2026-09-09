@@ -17,6 +17,20 @@
 
   let password: string;
 
+  /**
+   * Unlocks the profile, then gives the backend a chance to take an automatic
+   * backup.
+   *
+   * Unlocking is the only moment the profile password is in memory, so it is the
+   * only moment a backup can be sealed without asking for it again. Whether one
+   * is actually due — and whether the user wants them at all — is decided by the
+   * backend, so this fires unconditionally.
+   */
+  const unlock = async (password: string) => {
+    await dispatch({ type: '[Storage] Unlock', payload: { password } });
+    await dispatch({ type: '[Backup] Create automatic' });
+  };
+
   const SERVICE = 'com.impierce.identity-wallet';
   const USER = 'unime'; // TODO: rename to "ACCOUNT" to reflect Keychain Access item?
 
@@ -26,7 +40,7 @@
         // TODO: do we need this check or can we change the return type to "Promise<string>"?
         if (password) {
           setTimeout(() => {
-            dispatch({ type: '[Storage] Unlock', payload: { password } });
+            unlock(password);
           }, 500);
         }
       })
@@ -41,7 +55,7 @@
     if ($state?.dev_mode === 'OnWithAutologin') {
       warn('Developer mode - Injecting password automatically ...');
       setTimeout(() => {
-        dispatch({ type: '[Storage] Unlock', payload: { password: 'sup3rSecr3t' } });
+        unlock('sup3rSecr3t');
       }, 500);
     }
     // When biometrics are enabled, try to retrieve the password and inject it.
@@ -75,11 +89,7 @@
         </button>
       </div>
     </div>
-    <Button
-      label={$LL.LOCK_SCREEN.BUTTON_TEXT()}
-      on:click={() => dispatch({ type: '[Storage] Unlock', payload: { password } })}
-      disabled={!password}
-    />
+    <Button label={$LL.LOCK_SCREEN.BUTTON_TEXT()} on:click={() => unlock(password)} disabled={!password} />
 
     <!-- Forgot password? Reset app -->
     <div class="mt-8">

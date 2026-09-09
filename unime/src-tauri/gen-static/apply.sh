@@ -8,3 +8,4 @@ cp -v ./android/app/src/main/AndroidManifest.xml ../gen/android/app/src/main/And
 cp -v ./android/gradle/libs.versions.toml ../gen/android/gradle/libs.versions.toml
 cp -v ./apple/ExportOptions.plist ../gen/apple/ExportOptions.plist
 cp -v ./apple/unime_iOS/Info.plist ../gen/apple/unime_iOS/Info.plist
+cp -v ./apple/unime_iOS/unime_iOS.entitlements ../gen/apple/unime_iOS/unime_iOS.entitlements

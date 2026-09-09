@@ -33,6 +33,7 @@ pub fn run() {
             #[cfg(mobile)]
             {
                 app.handle().plugin(tauri_plugin_barcode_scanner::init())?;
+                app.handle().plugin(tauri_plugin_cloud_storage::init())?;
                 app.handle().plugin(tauri_plugin_biometric::init())?;
                 app.handle().plugin(tauri_plugin_keystore::init())?;
             }

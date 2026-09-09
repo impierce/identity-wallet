@@ -6,7 +6,7 @@
   import { SettingsCaretLink, TopNavBar } from '$lib/components';
   import { ANIMATION_DURATION as duration } from '$lib/constants';
   import { dispatch } from '$lib/dispatcher';
-  import { GearFillIcon, InfoFillIcon, UserCircleFillIcon } from '$lib/icons';
+  import { GearFillIcon, InfoFillIcon, UserCircleFillIcon, VaultFillIcon } from '$lib/icons';
   import { navigationDirection, state } from '$lib/stores';
 
   import EmojiAvatarSelect from './EmojiAvatarSelect.svelte';
@@ -52,12 +52,12 @@
       {$LL.SETTINGS.APP.TITLE()}
     </SettingsCaretLink>
 
-    <!-- <SettingsCaretLink href="/me/settings/backup">
+    <SettingsCaretLink href="/me/settings/backup">
       {#snippet icon()}
         <VaultFillIcon class="h-5 w-5 text-primary"></VaultFillIcon>
       {/snippet}
       {$LL.SETTINGS.BACKUP_RECOVERY.TITLE()}
-    </SettingsCaretLink> -->
+    </SettingsCaretLink>
 
     <!-- TODO Logout button with `SignOutFillIcon` and `LL.SETTINGS.LOG_OUT.TITLE()`.  -->
   </div>

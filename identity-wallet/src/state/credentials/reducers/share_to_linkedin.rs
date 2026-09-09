@@ -395,6 +395,7 @@ mod tests {
                         provider_manager,
                         wallet,
                     }),
+                    backup_password: None,
                 })),
                 active_flow: None,
             },

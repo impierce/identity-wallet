@@ -108,6 +108,10 @@ pub enum AppError {
     TrustListNotFoundError(String),
     #[error("Failed to migrate AppState version `{0}` to version `{1}`: {2}")]
     AppStateMigrationError(u32, u32, String),
+    #[error("{0}")]
+    BackupArchiveError(#[from] crate::state::backup::archive::ArchiveError),
+    #[error("The password does not match this profile's password")]
+    BackupPasswordMismatch,
 }
 
 impl std::fmt::Debug for AppError {

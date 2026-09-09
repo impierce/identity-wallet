@@ -1,7 +1,7 @@
 use crate::error::AppError::{self, *};
 use crate::state::actions::{listen, Action};
 use crate::state::common::actions::unlock_storage::UnlockStorage;
-use crate::state::core_utils::IdentityManager;
+use crate::state::core_utils::{IdentityManager, SessionPassword};
 use crate::state::user_prompt::CurrentUserPrompt;
 use crate::state::{AppState, SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS};
 use crate::stronghold::StrongholdManager;
@@ -18,6 +18,12 @@ pub async fn unlock_storage(state: AppState, action: Action) -> Result<AppState,
         let mut state_guard = state.core_utils.managers.lock().await;
 
         let stronghold_manager = Arc::new(StrongholdManager::load(&password).map_err(StrongholdLoadingError)?);
+
+        // Automatic backups re-seal with this same password, so hold on to it for
+        // the session before `subject` takes ownership. It stays inside
+        // `core_utils`, which is never serialized, and goes away when the app
+        // relocks and `get_state` rebuilds the state from disk.
+        state_guard.backup_password = Some(SessionPassword::new(password.clone()));
 
         let subject = subject(stronghold_manager.clone(), password).await;
 

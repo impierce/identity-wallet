@@ -6,10 +6,13 @@ rust-version.workspace = true
 
 [dependencies]
 tauri.workspace = true
+tauri-plugin-cloud-storage = { version = "2.1.0-alpha.1" }
 tauri-plugin-fs = { version = "2" }
 tauri-plugin-opener = { version = "2" }
 
+aes-gcm = "0.10.3"
 anyhow = "1.0"
+argon2 = "0.5.3"
 async-trait = "0.1"
 base64 = "0.22"
 bs58 = "0.5.1"
@@ -53,12 +56,14 @@ sd-jwt = { package = "sd-jwt-payload", version = "0.5.1", default-features = fal
 serde = { version = "1.0", features = ["derive"] }
 serde_json.workspace = true
 serde_with = "3.8"
+sha2 = "0.10.8"
 sha256 = "1.4"
 stronghold_engine = { version = "2.0.1" }
 stronghold_ext = { git = "https://github.com/impierce/stronghold_ext", features = [
     "crypto",
 ] }
 strum = { version = "0.25", features = ["derive"] }
+zeroize = "1.8"
 thiserror = "1.0"
 tokio.workspace = true
 tracing = "0.1"

@@ -14,6 +14,8 @@ const empty_state: AppState = {
   dids: {},
   connections: [],
   credentials: [],
+  backups: [],
+  backup_preview: null,
   search_results: {
     current: [],
     recent_credentials: [],
@@ -34,6 +36,7 @@ const empty_state: AppState = {
       },
     },
     biometrics_enabled: false,
+    backup_enabled: false,
   },
   current_user_prompt: null,
   user_journey: null,

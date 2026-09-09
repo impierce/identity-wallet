@@ -58,7 +58,10 @@ mod tests {
         );
     }
 
+    // `reset_state` deletes whatever the global storage paths point at, so it
+    // must not run alongside tests that set those paths to their own fixtures.
     #[tokio::test]
+    #[serial_test::serial]
     async fn test_reset_state() {
         let mut app_state = AppState {
             profile_settings: ProfileSettings {

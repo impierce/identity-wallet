@@ -20,6 +20,11 @@ pub struct ProfileSettings {
     pub preferred_key_types: Vec<String>,
     pub sorting_preferences: SortingPreferences,
     pub biometrics_enabled: bool,
+    /// Whether the profile is re-sealed into a new backup when it is unlocked.
+    ///
+    /// A real preference rather than "a backup exists": turning it off stops new
+    /// backups being made and deliberately leaves the existing ones alone.
+    pub backup_enabled: bool,
 }
 
 #[typetag::serde(name = "profile_settings")]
@@ -46,6 +51,7 @@ impl Default for ProfileSettings {
                 },
             },
             biometrics_enabled: false,
+            backup_enabled: false,
         }
     }
 }
