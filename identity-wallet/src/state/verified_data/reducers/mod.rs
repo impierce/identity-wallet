@@ -8,7 +8,7 @@ use crate::{
     http_client::get_http_client,
     state::{
         actions::{listen, Action},
-        qr_code::{actions::qrcode_scanned::QrCodeScanned, reducers::read_credential_offer::read_credential_offer},
+        qr_code::{actions::qrcode_scanned::QrCodeScanned, reducers::accept_connection::accept_connection},
         verified_data::{
             actions::{RedeemCode, ResetEmailVerification, SendVerificationEmail, ServiceHealthCheck},
             EmailVerification,
@@ -135,7 +135,7 @@ pub async fn redeem_code(state: AppState, action: Action) -> Result<AppState, Ap
                 let action = QrCodeScanned {
                     form_urlencoded: credential_offer_value,
                 };
-                return read_credential_offer(
+                return accept_connection(
                     AppState {
                         verified_data: VerifiedData {
                             email_verification: None,

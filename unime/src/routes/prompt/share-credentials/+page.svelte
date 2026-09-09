@@ -51,8 +51,8 @@
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
     <!-- Header -->
     {#if logo_uri}
-      <div class="flex h-[75px] w-[75px] overflow-hidden rounded-3xl bg-white p-2 dark:bg-silver">
-        <Image id={imageId} isTempAsset={true} />
+      <div class="flex h-[75px] w-[75px] items-center justify-center">
+        <Image id={imageId} isTempAsset={true} imgClass="size-full rounded-3xl bg-transparent object-contain" />
       </div>
     {:else}
       <PaddedIcon icon={PlugsConnectedFillIcon} />

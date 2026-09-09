@@ -88,7 +88,7 @@ export function formatDateTime(isoDate: string, locale: Locale, test = false) {
   }).format(new Date(isoDate));
 }
 
-export function formatRelativeDateTime(isoDate: string, locale: Locale) {
+export function formatRelativeDateTime(isoDate: string, locale: Locale, { capitalize = true } = {}) {
   const date = new Date(isoDate);
   const now = new Date();
 
@@ -110,8 +110,7 @@ export function formatRelativeDateTime(isoDate: string, locale: Locale) {
   // Use Math.round for more accurate relative time.
   const relativeDateTime = relativeFormatter.format(Math.round(diffInSeconds / divisor), units[index]);
 
-  // Capitalize the first character.
-  return relativeDateTime.charAt(0).toUpperCase() + relativeDateTime.slice(1);
+  return capitalize ? relativeDateTime.charAt(0).toUpperCase() + relativeDateTime.slice(1) : relativeDateTime;
 }
 
 /**

@@ -66,13 +66,8 @@
 
   <div class="flex grow flex-col items-center justify-center space-y-6 p-4">
     {#if logo_uri}
-      <div class="flex h-[75px] w-[75px] overflow-hidden rounded-3xl">
-        <Image
-          id={imageId}
-          isTempAsset={true}
-          iconClass="dark:text-slate-800"
-          imgClass="flex w-full items-center justify-center overflow-hidden rounded-3xl p-2"
-        />
+      <div class="flex h-[75px] w-[75px] items-center justify-center">
+        <Image id={imageId} isTempAsset={true} imgClass="size-full rounded-3xl bg-transparent object-contain" />
       </div>
     {:else}
       <PaddedIcon icon={DownloadSimpleFillIcon} />

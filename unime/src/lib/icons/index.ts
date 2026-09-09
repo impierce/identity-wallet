@@ -68,6 +68,7 @@ export { default as SealCheckFillIcon } from '~icons/ph/seal-check-fill';
 export { default as SealQuestionRegularIcon } from '~icons/ph/seal-question';
 export { default as SealWarningDuotoneIcon } from '~icons/ph/seal-warning-duotone';
 export { default as ShareFatFillIcon } from '~icons/ph/share-fat-fill';
+export { default as ShieldCheckRegularIcon } from '~icons/ph/shield-check';
 export { default as ShieldCheckFillIcon } from '~icons/ph/shield-check-fill';
 export { default as ShieldFillIcon } from '~icons/ph/shield-fill';
 export { default as SignOutFillIcon } from '~icons/ph/sign-out-fill';

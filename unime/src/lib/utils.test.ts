@@ -117,6 +117,12 @@ describe('formatRelativeDateTime function', () => {
     expect(formatRelativeDateTime(twoDaysAgo.toISOString(), 'de-DE')).toEqual('Vorgestern');
   });
 
+  test('1 day ago en-GB, uncapitalized', () => {
+    const now = new Date();
+    const oneDayAgo = new Date(now.setDate(now.getDate() - 1));
+    expect(formatRelativeDateTime(oneDayAgo.toISOString(), 'en-GB', { capitalize: false })).toEqual('yesterday');
+  });
+
   test('3 days ago de-DE', () => {
     const now = new Date();
     const threeDaysAgo = new Date(now.setDate(now.getDate() - 3));

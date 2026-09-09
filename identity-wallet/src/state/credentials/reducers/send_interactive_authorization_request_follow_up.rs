@@ -12,6 +12,7 @@ use crate::{
                 send_token_request::send_token_request,
             },
         },
+        qr_code::reducers::accept_connection::get_oid4vp_client_metadata,
         AppState,
     },
 };
@@ -19,7 +20,8 @@ use log::{debug, info};
 use oid4vc::oid4vci::InteractiveAuthorizationFollowUpRequest;
 use std::sync::Arc;
 
-/// NOTE: the happy path of this reducer is directly chained to the `send_token_request` reducer via the return
+/// Handles the interactive `CredentialsSelected` action, which is triggered after accepting the `ShareCredentials` prompt set by `handle_credential_offer`.
+/// This reducer is directly chained to the `send_token_request` reducer via the return, retrieving the credentials.
 #[tracing::instrument(skip_all, err)]
 pub async fn send_interactive_authorization_request_follow_up(
     state: AppState,
@@ -122,16 +124,12 @@ pub async fn send_interactive_authorization_request_follow_up(
             "Authorization code is missing in the response".to_string(),
         ))?;
 
+        // TODO: this is kinda duplicate, we should probably refactor to pass on the ClientMetadata retrieved in fn `accept_connection` to avoid re-fetching it here, but for now this works.
+        let client_metadata = get_oid4vp_client_metadata(&oid4vp_authorization_request).await?;
         let mut connections = state.connections;
         let mut history = state.history;
 
-        update_history_and_connections(
-            &oid4vp_authorization_request,
-            history_credentials,
-            &mut connections,
-            &mut history,
-        )
-        .await;
+        update_history_and_connections(history_credentials, &client_metadata, &mut connections, &mut history).await?;
 
         drop(state_guard);
         let state = AppState {
