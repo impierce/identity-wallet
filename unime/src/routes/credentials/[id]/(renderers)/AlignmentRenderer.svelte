@@ -2,6 +2,9 @@
   import LL from '$i18n/i18n-svelte';
   import markdownit from 'markdown-it';
 
+  import { error as logError } from '@tauri-apps/plugin-log';
+  import { openUrl } from '@tauri-apps/plugin-opener';
+
   import { ArrowSquareOutBoldIcon, SealCheckFillIcon } from '$lib/icons';
   import { findOfficialSkill, type Alignment } from '$lib/utils/alignment';
 
@@ -16,6 +19,15 @@
       : skill?.kind === 'occupation'
         ? $LL.CREDENTIAL.DETAILS.OPEN_BADGES.OCCUPATION()
         : null;
+
+  async function openLink(url?: string | null) {
+    if (!url) return;
+    try {
+      await openUrl(url);
+    } catch (e) {
+      logError(`Failed to open URL ${url}: ${e}`);
+    }
+  }
 </script>
 
 <!--
@@ -56,6 +68,7 @@ these, so it is rendered as its name and description alone.
             href={skill.url}
             target="_blank"
             rel="noopener noreferrer"
+            on:click|preventDefault={() => openLink(skill.url)}
             class="ml-auto flex shrink-0 items-center gap-1 text-[11px]/[20px] font-medium underline"
           >
             {$LL.CREDENTIAL.DETAILS.OPEN_BADGES.FRAMEWORK_LINK()}
