@@ -75,7 +75,7 @@ who issued it, and whether that issuer's domain checked out. Links to the detail
         {:else}
           <WarningRegularIcon class="size-4 shrink-0 text-amber-500" />
         {/if}
-        <p class="truncate text-[12px]/[20px] font-normal text-primary">{domain}</p>
+        <p class="truncate text-[12px]/[20px] font-normal text-secondary">{domain}</p>
       </div>
     {/if}
   </div>

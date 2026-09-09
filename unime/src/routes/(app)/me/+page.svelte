@@ -45,7 +45,7 @@
 </script>
 
 <!-- Isolate stacking context to avoid z-index conflicts. -->
-<div class="relative isolate flex flex-col bg-white dark:bg-dark">
+<div class="relative isolate flex min-h-full flex-col bg-white dark:bg-dark">
   <div class="sticky top-0 z-10 w-full bg-white px-[20px] py-4 dark:bg-dark">
     <!-- Top Bar -->
     <div class="flex items-center justify-between">
