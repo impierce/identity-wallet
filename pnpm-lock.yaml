@@ -42,8 +42,8 @@ importers:
         specifier: ^5.2.1
         version: 5.2.1(svelte@5.53.6)
       '@impierce/tauri-plugin-cloud-storage':
-        specifier: file:../../tauri-plugin-cloud-storage
-        version: file:../tauri-plugin-cloud-storage
+        specifier: 2.1.0-alpha.1
+        version: 2.1.0-alpha.1
       '@impierce/tauri-plugin-keystore':
         specifier: 2.1.0-alpha.1
         version: 2.1.0-alpha.1
@@ -593,8 +593,8 @@ packages:
   '@iconify/utils@3.1.0':
     resolution: {integrity: sha512-Zlzem1ZXhI1iHeeERabLNzBHdOa4VhQbqAcOQaMKuTuyZCpwKbC2R4Dd0Zo3g9EAc+Y4fiarO8HIHRAth7+skw==}
 
-  '@impierce/tauri-plugin-cloud-storage@file:../tauri-plugin-cloud-storage':
-    resolution: {directory: ../tauri-plugin-cloud-storage, type: directory}
+  '@impierce/tauri-plugin-cloud-storage@2.1.0-alpha.1':
+    resolution: {integrity: sha512-/RFgGxLQbAj6bQ09LDVU+5CVII0IOTcPUW/9cT6KymaSMDf9ye/xXKfN/VjE9Wge0SmOEIE42Wd32O/apn+zcw==}
 
   '@impierce/tauri-plugin-keystore@2.1.0-alpha.1':
     resolution: {integrity: sha512-oIfGz3XcghyX9sTanF+R8fGqSUp15S7jhTOf62OiWidX3F2yZa2byq6X64GjAnz/wLD8mPVhRTjnjIk4zEmZ/g==}
@@ -3012,7 +3012,7 @@ snapshots:
       '@iconify/types': 2.0.0
       mlly: 1.8.0
 
-  '@impierce/tauri-plugin-cloud-storage@file:../tauri-plugin-cloud-storage':
+  '@impierce/tauri-plugin-cloud-storage@2.1.0-alpha.1':
     dependencies:
       '@tauri-apps/api': 2.9.0
 

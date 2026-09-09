@@ -248,12 +248,32 @@ const en = {
     },
     BACKUP_RECOVERY: {
       TITLE: 'Backup and recovery',
-      SETTINGS_ENTRY: 'Automatic cloud backups',
+      SETTINGS_ENTRY: 'Back up automatically',
+      // Deliberately concrete about when it happens. "Automatic" on its own reads
+      // as "continuously", which is not what unlock-triggered backups do.
+      AUTOMATIC_EXPLANATION:
+        'UniMe backs up when you open it, at most once a day. Backups are encrypted with your profile password, so you will need it to restore one.',
+      // Says how many survive, because the count on this screen stops going up
+      // once the policy kicks in and that would otherwise look like a bug.
+      RETENTION_EXPLANATION:
+        'Three backups are kept: the most recent one, one from around a week ago, and one from around two weeks ago. Older backups are removed automatically.',
       BACKUP_NOW: 'Back up now',
-      CONFIRM_DISABLE: {
-        TITLE: 'Disable automatic backups',
-        DESCRIPTION: 'Are you sure you want to disable automatic backups to the cloud?',
-        CONFIRM: 'Yes, remove all backups',
+      // Shown on Android until the Google Drive provider ships. Android's own
+      // backup is a genuine safety net, but it is not a substitute: it keeps a
+      // single current copy rather than versions the user can choose between.
+      ANDROID_NOTICE: {
+        TITLE: 'Google Drive backup is coming soon',
+        DESCRIPTION:
+          'Until then, if device backup is turned on, Android backs up UniMe on its own and can restore it onto a new device. Android only ever keeps the most recent copy, so you cannot pick an earlier version to restore.',
+      },
+      // Deleting is now separate from switching backups off: turning the switch
+      // off stops new backups, and only this removes the ones already stored.
+      DELETE_ALL: 'Delete all backups',
+      CONFIRM_DELETE: {
+        TITLE: 'Delete all backups',
+        DESCRIPTION:
+          'This permanently removes every backup you have stored. You will not be able to restore your profile from them.',
+        CONFIRM: 'Yes, delete all backups',
         CANCEL: 'No, keep my backups',
       },
     },

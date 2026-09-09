@@ -87,5 +87,6 @@ pub async fn test_managers(
             provider_manager,
             wallet,
         }),
+        backup_password: None,
     }))
 }

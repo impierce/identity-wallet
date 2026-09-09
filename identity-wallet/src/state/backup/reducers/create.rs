@@ -11,8 +11,8 @@ use crate::{
         backup::{
             actions::create::CreateBackup,
             archive::{self, Asset, Payload},
-            backup_store, list_backups,
-            store::BackupStore,
+            backup_store, list_backups, retention,
+            store::{BackupFile, BackupStore},
         },
         AppState,
     },
@@ -37,12 +37,13 @@ pub async fn create_backup(state: AppState, action: Action) -> Result<AppState, 
         // observe an empty file.
         save_state(&state).await?;
 
-        let payload = collect_payload(&state)?;
-        let bytes = archive::seal(&password, &payload)?;
-
-        let file = backup_store().create(&backup_name(), &bytes)?;
+        let file = seal_and_store(&state, &password)?;
 
         info!("created backup `{}` ({} bytes, id `{}`)", file.name, file.size, file.id);
+
+        // The store only ever grows here, so this is where the retention policy
+        // gets a chance to apply.
+        retention::prune()?;
 
         return Ok(AppState {
             backups: list_backups()?,
@@ -51,6 +52,17 @@ pub async fn create_backup(state: AppState, action: Action) -> Result<AppState, 
         });
     }
     Ok(state)
+}
+
+/// Seals `state` under `password` and hands the archive to the backup store.
+///
+/// Shared by the manual "Back up now" action and the automatic backup taken at
+/// unlock, so both produce byte-identical archive formats and the same naming.
+/// The caller is responsible for having verified the password.
+pub(crate) fn seal_and_store(state: &AppState, password: &str) -> Result<BackupFile, AppError> {
+    let payload = collect_payload(state)?;
+    let bytes = archive::seal(password, &payload)?;
+    Ok(backup_store().create(&backup_name(), &bytes)?)
 }
 
 /// Gathers everything a restore needs to rebuild the profile.

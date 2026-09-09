@@ -2,6 +2,7 @@ pub mod actions;
 pub mod archive;
 pub mod preview;
 pub mod reducers;
+pub mod retention;
 pub mod store;
 
 use crate::persistence::BACKUPS_DIR;

@@ -101,6 +101,7 @@ mod tests {
         state.core_utils.managers = Arc::new(tauri::async_runtime::Mutex::new(Managers {
             stronghold_manager: Some(Arc::new(stronghold_manager)),
             identity_manager: None,
+            backup_password: None,
         }));
 
         let managers = state.core_utils.managers.lock().await;

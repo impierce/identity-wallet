@@ -36,6 +36,7 @@ const empty_state: AppState = {
       },
     },
     biometrics_enabled: false,
+    backup_enabled: false,
   },
   current_user_prompt: null,
   user_journey: null,

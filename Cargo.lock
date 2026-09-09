@@ -13531,7 +13531,9 @@ dependencies = [
 
 [[package]]
 name = "tauri-plugin-cloud-storage"
-version = "0.1.0"
+version = "2.1.0-alpha.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cfdaf2ae92992d54fc7927ce4a76f613fa91d5dc97f5e45914f359aa03521b5e"
 dependencies = [
  "serde",
  "tauri",

@@ -1,25 +1,41 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { writable } from 'svelte/store';
 
   import { goto } from '$app/navigation';
-
   import LL from '$i18n/i18n-svelte';
+  import { writable } from 'svelte/store';
+
+  import { platform } from '@tauri-apps/plugin-os';
 
   import { ActionSheet, Button, SettingsSwitch, TopNavBar } from '$lib/components';
   import { dispatch, tryDispatch } from '$lib/dispatcher';
-  import { CloudArrowUpFillIcon, EyeClosedRegularIcon, EyeRegularIcon, InfoRegularIcon } from '$lib/icons';
+  import {
+    CloudArrowUpFillIcon,
+    EyeClosedRegularIcon,
+    EyeRegularIcon,
+    HourglassRegularIcon,
+    InfoRegularIcon,
+  } from '$lib/icons';
   import { state } from '$lib/stores';
   import { formatDateTime } from '$lib/utils';
 
-  const openConfirmAction = writable(false);
+  const openConfirmDelete = writable(false);
   const openPasswordPrompt = writable(false);
 
   // The backend owns where backups live and hands back opaque ids, so this screen
   // reads the listing out of app state rather than touching the filesystem.
   $: backups = $state.backups ?? [];
   $: latest = backups[0]; // the backend returns them newest first
-  $: enabled = backups.length > 0;
+  // A stored preference, not "a backup happens to exist". The two came apart once
+  // backups became automatic: switching off has to stop future backups without
+  // touching the ones already made.
+  $: enabled = $state.profile_settings.backup_enabled;
+
+  // The Google Drive provider is not implemented yet, so the plugin rejects every
+  // operation on Android. Checked here rather than through `getStatus()` because
+  // the plugin is only registered on mobile and this screen is opened on desktop
+  // during development. Swap this for the plugin's own status once Drive lands.
+  const cloudUnavailable = platform() === 'android';
 
   let password = '';
   let showPassword = false;
@@ -49,7 +65,14 @@
     }
   }
 
-  async function removeAllBackups() {
+  // Enabling seals the first backup straight away, using the password the user
+  // typed to unlock the profile, so the switch never leaves them with backups
+  // "on" and nothing to restore.
+  async function setEnabled(enable: boolean) {
+    await dispatch({ type: '[Backup] Enable', payload: { enable } });
+  }
+
+  async function deleteAllBackups() {
     for (const backup of backups) {
       await dispatch({ type: '[Backup] Delete', payload: { id: backup.id } });
     }
@@ -86,15 +109,10 @@
 
     <SettingsSwitch
       checked={enabled}
+      disabled={cloudUnavailable}
       onCheckedChange={({ next }) => {
-        if (next) {
-          askForPassword();
-          return false;
-        }
-        // Turning backups off deletes them, so hold the switch on until the
-        // user confirms in the action sheet.
-        openConfirmAction.set(true);
-        return true;
+        setEnabled(next);
+        return next;
       }}
     >
       {#snippet icon()}
@@ -103,7 +121,32 @@
       {$LL.SETTINGS.BACKUP_RECOVERY.SETTINGS_ENTRY()}
     </SettingsSwitch>
 
-    {#if enabled}
+    <p class="px-1 text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
+      {$LL.SETTINGS.BACKUP_RECOVERY.AUTOMATIC_EXPLANATION()}
+    </p>
+    <p class="px-1 text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
+      {$LL.SETTINGS.BACKUP_RECOVERY.RETENTION_EXPLANATION()}
+    </p>
+
+    {#if cloudUnavailable}
+      <div class="flex w-full items-start rounded-lg bg-white px-4 py-4 dark:bg-dark">
+        <span class="mr-4 h-6 w-6 shrink-0">
+          <HourglassRegularIcon class="h-6 w-6 text-primary" />
+        </span>
+        <div class="flex flex-col space-y-1">
+          <p class="text-[13px]/[20px] font-semibold text-slate-800 dark:text-grey">
+            {$LL.SETTINGS.BACKUP_RECOVERY.ANDROID_NOTICE.TITLE()}
+          </p>
+          <p class="text-[12px]/[20px] font-medium text-slate-500 dark:text-slate-300">
+            {$LL.SETTINGS.BACKUP_RECOVERY.ANDROID_NOTICE.DESCRIPTION()}
+          </p>
+        </div>
+      </div>
+    {/if}
+
+    <!-- Independent of the switch: the stored backups are the same ones whether
+         or not new backups are being taken automatically. -->
+    {#if backups.length > 0}
       <div class="rounded-xl bg-background-alt p-4">
         <div class="mb-2 text-sm font-semibold text-slate-500">
           {backups.length}
@@ -121,14 +164,16 @@
           </div>
         {/if}
       </div>
-      <Button label={$LL.SETTINGS.BACKUP_RECOVERY.BACKUP_NOW()} on:click={askForPassword} />
     {/if}
 
+    <Button label={$LL.SETTINGS.BACKUP_RECOVERY.BACKUP_NOW()} on:click={askForPassword} />
+
     {#if backups.length > 0}
+      <Button label={'Restore from a backup'} variant="secondary" on:click={() => goto('/welcome/recover')} />
       <Button
-        label={'Restore from a backup'}
+        label={$LL.SETTINGS.BACKUP_RECOVERY.DELETE_ALL()}
         variant="secondary"
-        on:click={() => goto('/welcome/recover')}
+        on:click={() => openConfirmDelete.set(true)}
       />
     {/if}
   </div>
@@ -139,7 +184,7 @@
     descriptionText={'Backups are encrypted with your profile password. You will need it to restore.'}
     open={openPasswordPrompt}
   >
-    <div slot="content" class="w-full space-y-3 pb-[10px] pt-[20px]">
+    <div slot="content" class="w-full space-y-3 pt-[20px] pb-[10px]">
       <div class="relative flex w-full">
         <input
           type={showPassword ? 'text' : 'password'}
@@ -150,7 +195,7 @@
             if (e.key === 'Enter' && password && !creating) createBackup();
           }}
         />
-        <div class="absolute right-3 top-0 flex h-full items-center">
+        <div class="absolute top-0 right-3 flex h-full items-center">
           <button
             type="button"
             class="rounded-full p-2"
@@ -185,9 +230,9 @@
   <!-- Confirm disable backups -->
   <div class="mt-8">
     <ActionSheet
-      titleText={$LL.SETTINGS.BACKUP_RECOVERY.CONFIRM_DISABLE.TITLE()}
-      descriptionText={$LL.SETTINGS.BACKUP_RECOVERY.CONFIRM_DISABLE.DESCRIPTION()}
-      open={openConfirmAction}
+      titleText={$LL.SETTINGS.BACKUP_RECOVERY.CONFIRM_DELETE.TITLE()}
+      descriptionText={$LL.SETTINGS.BACKUP_RECOVERY.CONFIRM_DELETE.DESCRIPTION()}
+      open={openConfirmDelete}
     >
       <!-- <button
         slot="trigger"
@@ -198,13 +243,13 @@
       > -->
 
       <!-- TODO: bug: after resetting (closing the drawer, main UI is not clickable anymore) -->
-      <div slot="content" class="w-full pb-[10px] pt-[20px]">
+      <div slot="content" class="w-full pt-[20px] pb-[10px]">
         <button
           class="h-[48px] w-full rounded-xl bg-rose-100 px-4 py-2 text-[14px]/[24px] font-medium text-rose-500"
           on:click={() => {
-            removeAllBackups();
-            openConfirmAction.set(false);
-          }}>{$LL.SETTINGS.BACKUP_RECOVERY.CONFIRM_DISABLE.CONFIRM()}</button
+            deleteAllBackups();
+            openConfirmDelete.set(false);
+          }}>{$LL.SETTINGS.BACKUP_RECOVERY.CONFIRM_DELETE.CONFIRM()}</button
         >
       </div>
 
@@ -213,7 +258,7 @@
         slot="close"
         let:close
         trigger={close}
-        label={$LL.SETTINGS.BACKUP_RECOVERY.CONFIRM_DISABLE.CANCEL()}
+        label={$LL.SETTINGS.BACKUP_RECOVERY.CONFIRM_DELETE.CANCEL()}
       />
     </ActionSheet>
     <!-- TODO Button with `KeyboardFillIcon` and `Your DID`. -->

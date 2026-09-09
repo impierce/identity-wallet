@@ -4,6 +4,7 @@ pub mod history_event;
 use rustls::RootCertStore;
 use std::sync::Arc;
 use url::Url;
+use zeroize::Zeroizing;
 
 use crate::command::Runtime;
 use crate::stronghold::StrongholdManager;
@@ -74,11 +75,49 @@ pub struct CoreUtils {
     pub active_flow: Option<ActiveFlow>,
 }
 
+/// The profile password, held for as long as the profile stays unlocked.
+///
+/// Automatic backups re-seal an archive with the same password the user typed to
+/// unlock Stronghold, and every archive draws a fresh Argon2 salt, so a cached
+/// derived key would not help — the password itself has to outlive the unlock
+/// reducer.
+///
+/// It lives in [`CoreUtils`], which is `#[serde(skip)]`: it is never written to
+/// disk alongside the state and never crosses the IPC boundary to the frontend.
+/// Relocking runs `get_state`, which builds a fresh [`AppState`](crate::state::AppState)
+/// and drops this along with the rest of `core_utils`.
+///
+/// `Debug` is written by hand on purpose. `AppState` derives `Debug` all the way
+/// down to here, and a derived impl would print the password into the logs.
+pub struct SessionPassword(Zeroizing<String>);
+
+impl SessionPassword {
+    pub fn new(password: impl Into<String>) -> Self {
+        Self(Zeroizing::new(password.into()))
+    }
+
+    /// Named to make call sites read as a deliberate handling of a secret.
+    pub fn expose(&self) -> &str {
+        &self.0
+    }
+}
+
+impl std::fmt::Debug for SessionPassword {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str("SessionPassword(*****)")
+    }
+}
+
 /// Managers contains both the stronghold manager and the identity manager needed to perform operations on connections & credentials.
 #[derive(Default, Debug)]
 pub struct Managers {
     pub stronghold_manager: Option<Arc<StrongholdManager>>,
     pub identity_manager: Option<IdentityManager>,
+    /// Set while the profile is unlocked, so an automatic backup can seal without
+    /// prompting for the password a second time. `None` for profiles that were
+    /// never unlocked through [`unlock_storage`](crate::state::common::reducers::unlock_storage),
+    /// such as the dev-mode profiles.
+    pub backup_password: Option<SessionPassword>,
 }
 
 /// IdentityManager contains the subject, provider_manager and wallet needed to perform operations within the oid4vc library.

@@ -6,7 +6,7 @@ rust-version.workspace = true
 
 [dependencies]
 tauri.workspace = true
-tauri-plugin-cloud-storage = { path = "../../tauri-plugin-cloud-storage" }
+tauri-plugin-cloud-storage = { version = "2.1.0-alpha.1" }
 tauri-plugin-fs = { version = "2" }
 tauri-plugin-opener = { version = "2" }
 

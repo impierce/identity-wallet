@@ -11,7 +11,7 @@ use crate::{
     state::{
         actions::{listen, Action},
         backup::{actions::restore::RestoreBackup, archive, backup_store, list_backups, store::BackupStore},
-        core_utils::IdentityManager,
+        core_utils::{IdentityManager, SessionPassword},
         user_prompt::CurrentUserPrompt,
         AppState, SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS,
     },
@@ -110,6 +110,10 @@ async fn unlock_restored_profile(
         wallet,
     });
     managers.stronghold_manager.replace(stronghold_manager);
+    // Mirroring `unlock_storage` includes the session password: without it a
+    // restored profile would silently stop taking automatic backups until the
+    // next time the user unlocked by hand.
+    managers.backup_password.replace(SessionPassword::new(password));
 
     Ok(credentials)
 }

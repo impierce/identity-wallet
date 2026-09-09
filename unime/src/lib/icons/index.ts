@@ -41,6 +41,7 @@ export { default as GlobeRegularIcon } from '~icons/ph/globe';
 export { default as HeartFillIcon } from '~icons/ph/heart-fill';
 export { default as HeartStraightRegularIcon } from '~icons/ph/heart-straight';
 export { default as HeartStraightFillIcon } from '~icons/ph/heart-straight-fill';
+export { default as HourglassRegularIcon } from '~icons/ph/hourglass';
 export { default as HouseFillIcon } from '~icons/ph/house-fill';
 export { default as HouseLightIcon } from '~icons/ph/house-light';
 export { default as HouseRegularIcon } from '~icons/ph/house';
