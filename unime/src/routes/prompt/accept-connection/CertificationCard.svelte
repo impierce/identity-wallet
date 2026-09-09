@@ -71,7 +71,7 @@ who issued it, and whether that issuer's domain checked out. Links to the detail
     {#if domain}
       <div class="flex items-center gap-1">
         {#if verified}
-          <ShieldCheckRegularIcon class="size-4 shrink-0 text-green-500" />
+          <ShieldCheckRegularIcon class="size-4 shrink-0 text-secondary" />
         {:else}
           <WarningRegularIcon class="size-4 shrink-0 text-amber-500" />
         {/if}

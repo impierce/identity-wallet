@@ -13,17 +13,17 @@
     Success: {
       icon: SealCheckFillIcon,
       label: $LL.DOMAIN_LINKAGE.PILL_VERIFIED(),
-      style: 'bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300',
+      style: 'text-secondary',
     },
     Failure: {
       icon: WarningCircleFillIcon,
       label: $LL.DOMAIN_LINKAGE.PILL_UNTRUSTED(),
-      style: 'bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-300',
+      style: 'text-rose-700 dark:bg-rose-950 dark:text-rose-300',
     },
     Unknown: {
       icon: WarningCircleFillIcon,
       label: $LL.DOMAIN_LINKAGE.PILL_UNVERIFIED(),
-      style: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
+      style: 'text-amber-700 dark:bg-amber-950 dark:text-amber-300',
     },
   } satisfies Record<ValidationStatus, unknown>;
 
