@@ -9,6 +9,7 @@
   import { authenticate, BiometryType, checkStatus, type Status } from '@tauri-apps/plugin-biometric';
 
   import { ActionSheet, Button, TopNavBar } from '$lib/components';
+  import { KEYSTORE_KEY } from '$lib/constants';
   import {
     EyeClosedRegularIcon,
     EyeRegularIcon,
@@ -47,7 +48,7 @@
     if (password) {
       // TODO: authenticate first, before storing the password => duplicate check?
       await authenticate('Enable biometrics').then(async () => {
-        await store(password).then(() => {
+        await store(KEYSTORE_KEY, password).then(() => {
           goto('/welcome/completed');
         });
       });

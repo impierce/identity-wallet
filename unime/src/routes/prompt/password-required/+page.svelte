@@ -8,6 +8,7 @@
   import { warn } from '@tauri-apps/plugin-log';
 
   import { ActionSheet, Button } from '$lib/components';
+  import { KEYSTORE_KEY } from '$lib/constants';
   import { dispatch } from '$lib/dispatcher';
   import { EyeClosedRegularIcon, EyeRegularIcon } from '$lib/icons';
   import UniMeLogo from '$lib/static/svg/logo/UniMeLogo.svelte';
@@ -17,11 +18,8 @@
 
   let password: string;
 
-  const SERVICE = 'com.impierce.identity-wallet';
-  const USER = 'unime'; // TODO: rename to "ACCOUNT" to reflect Keychain Access item?
-
   const unlockWithBiometrics = async () => {
-    await retrieve(SERVICE, USER)
+    await retrieve(KEYSTORE_KEY)
       .then((password) => {
         // TODO: do we need this check or can we change the return type to "Promise<string>"?
         if (password) {
