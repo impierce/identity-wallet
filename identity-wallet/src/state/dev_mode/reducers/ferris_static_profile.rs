@@ -276,12 +276,12 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
                 HistoryCredential {
                     title: "PersonalInformation".to_string(),
                     issuer_name: "Impierce Demo Portal".to_string(),
-                    id: "62326539-3634-6536-6131-323731373463".to_string(),
+                    id: PERSONAL_INFORMATION.display_credential.id.clone(),
                 },
                 HistoryCredential {
                     title: "Teamwork".to_string(),
                     issuer_name: "Impierce Demo Portal".to_string(),
-                    id: "65323136-6535-3737-6463-386531323361".to_string(),
+                    id: OPEN_BADGE.display_credential.id.clone(),
                 },
             ],
         },
@@ -293,7 +293,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             credentials: vec![HistoryCredential {
                 title: "Teamwork".to_string(),
                 issuer_name: "Impierce Demo Portal".to_string(),
-                id: "65323136-6535-3737-6463-386531323361".to_string(),
+                id: OPEN_BADGE.display_credential.id.clone(),
             }],
         },
     ];
