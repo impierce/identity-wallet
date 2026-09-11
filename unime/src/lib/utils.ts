@@ -58,6 +58,17 @@ export const hash = (data: string): string => {
     .join('');
 };
 
+/**
+ * Stable index in `[0, length)` for `name`. Used to pick a badge colour.
+ */
+export const hashIndex = (name: string, length: number): number =>
+  [...name].reduce((sum, character) => sum + character.charCodeAt(0), 0) % length;
+
+/**
+ * Initials for a *person's* name: "Ferris Rustacean" -> "FR", "Ferris" -> "FE".
+ *
+ * For organisations use `calculateOrgInitials` in `accept-connection/ecosystem.ts`
+ */
 export const calculateInitials = (name: string): string => {
   const parts = name.split(' ').filter((n) => n.length > 0);
   if (parts.length === 1) {

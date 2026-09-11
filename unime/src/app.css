@@ -59,6 +59,20 @@
   --color-ex-grey-2: #323b40;
   --color-ex-grey-3: #171d23;
 
+  /* Ecosystem tints. See `ecosystem.ts`. */
+  --color-eco-terracotta-base: oklch(52% 0.115 25);
+  --color-eco-terracotta-soft: oklch(58% 0.115 25);
+  --color-eco-ochre-base: oklch(52% 0.115 70);
+  --color-eco-ochre-soft: oklch(58% 0.115 70);
+  --color-eco-green-base: oklch(52% 0.115 145);
+  --color-eco-green-soft: oklch(58% 0.115 145);
+  --color-eco-blue-base: oklch(52% 0.115 230);
+  --color-eco-blue-soft: oklch(58% 0.115 230);
+  --color-eco-indigo-base: oklch(52% 0.115 285);
+  --color-eco-indigo-soft: oklch(58% 0.115 285);
+  --color-eco-plum-base: oklch(52% 0.115 330);
+  --color-eco-plum-soft: oklch(58% 0.115 330);
+
   --color-credentials-0: #d7e0cc; /* green */
   --color-credentials-1: #e3d1b6; /* gold */
   --color-credentials-2: #afcbdd; /* blue */

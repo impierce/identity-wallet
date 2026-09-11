@@ -11,7 +11,7 @@ use crate::{
             validate_linked_verifiable_presentations, LinkedVerifiableCredentialData,
         },
         qr_code::actions::qrcode_scanned::QrCodeScanned,
-        user_prompt::{ClientMetadata, ConnectionData, CurrentUserPrompt},
+        user_prompt::{ClientMetadata, ConnectionData, CurrentUserPrompt, EcosystemProfile},
         AppState,
     },
 };
@@ -26,6 +26,7 @@ use oid4vc::{
     oid4vci::credential_offer::CredentialOffer,
 };
 use oid4vc::{oid4vci::credential_offer::CredentialOfferParameters, oid4vp::oid4vp::OID4VP};
+use openid_federation::{FederationClient, ReqwestHttpClient};
 use serde_json::Value;
 
 /// The kind of request encoded in a scanned QR-code.
@@ -101,7 +102,7 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
 
                 let resolver = subject.resolver().await;
 
-                Box::new(validate_domain_linkage(resolver.as_ref(), url, &did).await)
+                Box::new(validate_domain_linkage(resolver.as_ref(), url.clone(), &did).await)
             }
             #[cfg(feature = "test_utils")]
             {
@@ -110,7 +111,7 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
                 use crate::state::did::validate_domain_linkage::{ValidationResult, ValidationStatus};
                 Box::new(ValidationResult {
                     status: ValidationStatus::default(),
-                    url,
+                    url: url.clone(),
                     name: None,
                     logo_uri: None,
                     issuance_date: None,
@@ -135,12 +136,14 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
 
         drop(state_guard);
 
+        let ecosystems = fetch_ecosystems(&url).await;
+
         let current_user_prompt = Some(CurrentUserPrompt::AcceptConnection {
             client_metadata,
             connection_data,
             domain_validation,
             linked_verifiable_presentations,
-            ecosystems: None, // TODO: impl this
+            ecosystems,
         });
 
         info!("Setting current user prompt to: {current_user_prompt:?}");
@@ -404,6 +407,97 @@ fn strip_client_id_prefix(client_id: &str) -> String {
         .unwrap_or_else(|_| client_id.to_string())
 }
 
+/// Discovers every OpenID Federation trust chain reachable from `entity_id` which is equal to the `client_metadata.connection_url`.
+/// Then it fetches the ecosystem profile hosted by each chain's trust anchor. Returns `None` if no trust chains are found
+/// or none of their trust anchors expose an ecosystem profile.
+async fn fetch_ecosystems(entity_id: &url::Url) -> Option<Vec<EcosystemProfile>> {
+    // In the future this must be more flexible to support other types of clients.
+    let federation_client = FederationClient::with_http_client(ReqwestHttpClient::with_client(get_http_client().await));
+
+    let trust_chains = match federation_client.discover_all_trust_chains(entity_id).await {
+        Ok(trust_chains) => trust_chains,
+        Err(e) => {
+            warn!("Failed to discover trust chains for entity ID {entity_id}: {e}");
+            return None;
+        }
+    };
+
+    let mut ecosystems = Vec::new();
+    for trust_chain in &trust_chains {
+        let Ok((trust_anchor_id, _)) = trust_chain.trust_anchor_entity_id_and_configuration() else {
+            warn!(
+                "Failed to get trust anchor entity ID from trust chain, which should not be possible: {trust_chain:?}"
+            );
+            continue;
+        };
+
+        if let Some(ecosystem_profile) = fetch_ecosystem_profile(&trust_anchor_id).await {
+            ecosystems.push(ecosystem_profile);
+        }
+    }
+
+    info!("Fetched ecosystems for entity ID {entity_id}: {ecosystems:?}");
+
+    match ecosystems {
+        vec if !vec.is_empty() => Some(vec),
+        _ => None,
+    }
+}
+
+/// Fetches the ecosystem profile hosted by a trust anchor at its `/public/ecosystem-profile` endpoint.
+async fn fetch_ecosystem_profile(trust_anchor_entity_id: &url::Url) -> Option<EcosystemProfile> {
+    let ecosystem_profile_url = match trust_anchor_entity_id.join("/public/ecosystem-profile") {
+        Ok(url) => url,
+        Err(e) => {
+            warn!("Failed to build ecosystem profile URL for trust anchor {trust_anchor_entity_id}: {e}");
+            return None;
+        }
+    };
+
+    let response = match get_http_client().await.get(ecosystem_profile_url.clone()).send().await {
+        Ok(response) => response,
+        Err(e) => {
+            warn!("Failed to fetch ecosystem profile from {ecosystem_profile_url}: {e}");
+            return None;
+        }
+    };
+
+    if !response.status().is_success() {
+        warn!(
+            "Trust anchor {trust_anchor_entity_id} responded with status {} for ecosystem profile",
+            response.status()
+        );
+        return None;
+    }
+
+    match response.json::<EcosystemProfile>().await {
+        Ok(ecosystem_profile) => {
+            // Download ecosystem logo if present.
+            if let Some(logo_uri) = &ecosystem_profile.logo_uri {
+                download_logo(logo_uri.as_str()).await;
+            }
+
+            // Download trust anchor logo if present.
+            if let Some(logo_uri) = &ecosystem_profile.ecosystem_leader.logo_uri {
+                download_logo(logo_uri.as_str()).await;
+            }
+
+            // Download member logos if present.
+            for member in &ecosystem_profile.members {
+                if let Some(logo_uri) = &member.logo_uri {
+                    download_logo(logo_uri.as_str()).await;
+                }
+            }
+
+            Some(ecosystem_profile)
+        }
+        Err(e) => {
+            warn!("Failed to parse ecosystem profile from {ecosystem_profile_url}: {e}");
+            None
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -413,10 +507,14 @@ mod tests {
     use crate::stronghold::StrongholdManager;
     use crate::subject::subject;
 
+    use jsonwebtoken::{encode, Algorithm, EncodingKey, Header};
     use oid4vc::oid4vc_manager::ProviderManager;
     use oid4vc::oid4vci::credential_issuer::credential_issuer_metadata::CredentialIssuerMetadata;
     use oid4vc::oid4vci::credential_offer::CredentialConfigurationIds;
     use oid4vc::oid4vci::Wallet;
+    use openid_federation::{
+        expires_in, EntityConfiguration, EntityMetadata, FederationEntityMetadata, Jwk, JwkSet, SubordinateStatement,
+    };
 
     use serde_json::json;
     use std::sync::Arc;
@@ -726,5 +824,214 @@ mod tests {
             .join("tmp")
             .join(format!("{}.png", hash(&logo_uri)));
         assert!(downloaded_logo.exists());
+    }
+
+    // A single symmetric key shared by every entity in these tests; only used to make the JWTs verifiable, not to assert on trust.
+    fn federation_test_key() -> Jwk {
+        Jwk {
+            kty: "oct".to_string(),
+            use_: Some("sig".to_string()),
+            key_ops: None,
+            alg: Some("HS256".to_string()),
+            kid: Some("test-key-1".to_string()),
+            x5u: None,
+            x5c: None,
+            x5t: None,
+            x5t_s256: None,
+            n: None,
+            e: None,
+            d: None,
+            p: None,
+            q: None,
+            dp: None,
+            dq: None,
+            qi: None,
+            crv: None,
+            x: None,
+            y: None,
+            k: Some("dGVzdF9zZWNyZXRfa2V5".to_string()), // base64 encoded "test_secret_key"
+        }
+    }
+
+    fn encode_entity_statement<T: serde::Serialize>(claims: &T) -> String {
+        let mut header = Header::new(Algorithm::HS256);
+        header.typ = Some("entity-statement+jwt".to_string());
+        header.kid = Some("test-key-1".to_string());
+        encode(&header, claims, &EncodingKey::from_secret(b"test_secret_key")).unwrap()
+    }
+
+    /// Mounts a self-signed OpenID Federation Entity Configuration for `entity_id` on its own mock server.
+    /// An empty `authority_hints` marks the entity as a trust anchor (the chain's terminal node).
+    async fn mount_entity_configuration(
+        mock_server: &MockServer,
+        entity_id: &url::Url,
+        organization_name: &str,
+        authority_hints: Vec<url::Url>,
+    ) {
+        let mut jwks = JwkSet::new();
+        jwks.add_key(federation_test_key());
+
+        let mut metadata = EntityMetadata::new();
+        metadata.federation_entity = Some(FederationEntityMetadata {
+            organization_name: Some(organization_name.to_string()),
+            homepage_uri: None,
+            policy_uri: None,
+            logo_uri: None,
+            contacts: None,
+            federation_fetch_endpoint: Some(entity_id.join("/federation-fetch").unwrap()),
+            federation_list_endpoint: None,
+            federation_resolve_endpoint: None,
+            federation_trust_mark_status_endpoint: None,
+            federation_historical_keys_endpoint: None,
+        });
+
+        let mut config = EntityConfiguration::new(
+            entity_id.clone(),
+            jwks,
+            expires_in(chrono::Duration::hours(1)),
+            chrono::Utc::now().timestamp(),
+        )
+        .with_metadata(metadata);
+        if !authority_hints.is_empty() {
+            config = config.with_authority_hints(authority_hints);
+        }
+
+        Mock::given(method("GET"))
+            .and(path("/.well-known/openid-federation"))
+            .respond_with(
+                ResponseTemplate::new(200)
+                    .set_body_string(encode_entity_statement(&config))
+                    .insert_header("content-type", "application/entity-statement+jwt"),
+            )
+            .mount(mock_server)
+            .await;
+    }
+
+    /// Mounts the Subordinate Statement a trust anchor issues about `subject_entity_id` on its `/federation-fetch` endpoint.
+    async fn mount_subordinate_statement(
+        trust_anchor_server: &MockServer,
+        trust_anchor_id: &url::Url,
+        subject_entity_id: &url::Url,
+    ) {
+        let mut jwks = JwkSet::new();
+        jwks.add_key(federation_test_key());
+
+        let statement = SubordinateStatement::new(
+            trust_anchor_id.clone(),
+            subject_entity_id.clone(),
+            expires_in(chrono::Duration::hours(1)),
+            chrono::Utc::now().timestamp(),
+            jwks,
+        );
+
+        Mock::given(method("GET"))
+            .and(path("/federation-fetch"))
+            .respond_with(
+                ResponseTemplate::new(200)
+                    .set_body_string(encode_entity_statement(&statement))
+                    .insert_header("content-type", "application/entity-statement+jwt"),
+            )
+            .mount(trust_anchor_server)
+            .await;
+    }
+
+    /// Mounts the `/public/ecosystem-profile` endpoint hosted by a trust anchor.
+    async fn mount_ecosystem_profile(trust_anchor_server: &MockServer, name: &str) {
+        Mock::given(method("GET"))
+            .and(path("/public/ecosystem-profile"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+                "logoUri": format!("{}/logo.png", trust_anchor_server.uri()),
+                "name": name,
+                "description": null,
+                "ecosystemLeader": {
+                    "logoUri": format!("{}/logo.png", trust_anchor_server.uri()),
+                    "name": name,
+                    "description": null,
+                    "domain": trust_anchor_server.uri(),
+                },
+                "memberCount": 1,
+                "members": [{
+                    "logoUri": format!("{}/logo.png", trust_anchor_server.uri()),
+                    "name": name,
+                    "description": null,
+                    "domain": trust_anchor_server.uri(),
+                }],
+            })))
+            .mount(trust_anchor_server)
+            .await;
+    }
+
+    #[tokio::test]
+    async fn fetch_ecosystems_returns_none_when_the_entity_is_not_part_of_any_federation() {
+        let mock_server = MockServer::start().await;
+        let entity_id: url::Url = mock_server.uri().parse().unwrap();
+
+        // No `.well-known/openid-federation` is mounted, so the entity configuration fetch fails.
+        let ecosystems = fetch_ecosystems(&entity_id).await;
+
+        assert_eq!(ecosystems, None);
+    }
+
+    #[tokio::test]
+    async fn fetch_ecosystems_returns_a_single_ecosystem_profile_for_one_trust_anchor() {
+        let leaf_server = MockServer::start().await;
+        let trust_anchor_server = MockServer::start().await;
+
+        let leaf_id: url::Url = leaf_server.uri().parse().unwrap();
+        let trust_anchor_id: url::Url = trust_anchor_server.uri().parse().unwrap();
+
+        mount_entity_configuration(&leaf_server, &leaf_id, "Leaf", vec![trust_anchor_id.clone()]).await;
+        mount_entity_configuration(&trust_anchor_server, &trust_anchor_id, "Trust Anchor", vec![]).await;
+        mount_subordinate_statement(&trust_anchor_server, &trust_anchor_id, &leaf_id).await;
+        mount_ecosystem_profile(&trust_anchor_server, "Ecosystem One").await;
+
+        let ecosystems = fetch_ecosystems(&leaf_id).await.unwrap();
+
+        assert_eq!(ecosystems.len(), 1);
+        assert_eq!(ecosystems[0].name, "Ecosystem One");
+    }
+
+    #[tokio::test]
+    async fn fetch_ecosystems_returns_an_ecosystem_profile_per_trust_anchor() {
+        let leaf_server = MockServer::start().await;
+        let trust_anchor_one_server = MockServer::start().await;
+        let trust_anchor_two_server = MockServer::start().await;
+
+        let leaf_id: url::Url = leaf_server.uri().parse().unwrap();
+        let trust_anchor_one_id: url::Url = trust_anchor_one_server.uri().parse().unwrap();
+        let trust_anchor_two_id: url::Url = trust_anchor_two_server.uri().parse().unwrap();
+
+        mount_entity_configuration(
+            &leaf_server,
+            &leaf_id,
+            "Leaf",
+            vec![trust_anchor_one_id.clone(), trust_anchor_two_id.clone()],
+        )
+        .await;
+        mount_entity_configuration(
+            &trust_anchor_one_server,
+            &trust_anchor_one_id,
+            "Trust Anchor One",
+            vec![],
+        )
+        .await;
+        mount_entity_configuration(
+            &trust_anchor_two_server,
+            &trust_anchor_two_id,
+            "Trust Anchor Two",
+            vec![],
+        )
+        .await;
+        mount_subordinate_statement(&trust_anchor_one_server, &trust_anchor_one_id, &leaf_id).await;
+        mount_subordinate_statement(&trust_anchor_two_server, &trust_anchor_two_id, &leaf_id).await;
+        mount_ecosystem_profile(&trust_anchor_one_server, "Ecosystem One").await;
+        mount_ecosystem_profile(&trust_anchor_two_server, "Ecosystem Two").await;
+
+        let ecosystems = fetch_ecosystems(&leaf_id).await.unwrap();
+
+        assert_eq!(ecosystems.len(), 2);
+        let names: std::collections::HashSet<_> = ecosystems.iter().map(|profile| profile.name.as_str()).collect();
+        assert!(names.contains("Ecosystem One"));
+        assert!(names.contains("Ecosystem Two"));
     }
 }
