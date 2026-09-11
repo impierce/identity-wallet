@@ -1,5 +1,4 @@
 use crate::state::connections::Connections;
-use crate::state::core_utils::helpers::download_logo;
 use crate::state::core_utils::IdentityManager;
 use crate::state::credentials::reducers::self_issue_credential::SubjectWrapper;
 use crate::state::credentials::Sha256Hasher;
@@ -35,7 +34,6 @@ use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
 use oid4vc::oid4vp::token::vp_token::Presentations;
 use oid4vc::oid4vp::token::vp_token_validator::DecodedPresentations;
 use oid4vc::oid4vp::{
-    authorization_request::ClientId,
     dcql::dcql_query::{CredentialQuery, Format},
     oid4vp::OID4VP,
     token::{
