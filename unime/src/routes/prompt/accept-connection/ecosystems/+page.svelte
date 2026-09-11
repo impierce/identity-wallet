@@ -15,7 +15,7 @@
 
   $: ecosystems = prompt?.ecosystems ?? [];
 
-  $: domain = prompt?.redirect_uri ? hostname(prompt.redirect_uri) : undefined;
+  $: domain = prompt ? hostname(prompt.client_metadata.connection_url) : undefined;
 
   // Joined here so the separator only appears with a domain, and so the spacing does not
   // depend on how the formatter wraps an inline `{#if}`.

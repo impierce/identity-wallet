@@ -2,11 +2,11 @@ import type { CredentialStatus } from '@bindings/credentials/CredentialStatus';
 import type { EventType } from '@bindings/history/EventType';
 import type { HistoryCredential } from '@bindings/history/HistoryCredential';
 import type { HistoryEvent } from '@bindings/history/HistoryEvent';
-import type { EcosystemProfile } from '@bindings/user_prompt/EcosystemProfile';
 import type { ClientMetadata } from '@bindings/user_prompt/ClientMetadata';
+import type { EcosystemProfile } from '@bindings/user_prompt/EcosystemProfile';
 import type { LinkedVerifiableCredentialData } from '@bindings/user_prompt/LinkedVerifiableCredentialData';
-import type { ValidationStatus } from '@bindings/user_prompt/ValidationStatus';
 import type { Member } from '@bindings/user_prompt/Member';
+import type { ValidationStatus } from '@bindings/user_prompt/ValidationStatus';
 
 import type { AcceptConnectionPrompt } from './resolve';
 
@@ -217,10 +217,11 @@ export const mocks = {
     },
   },
   'unknown-domain': { ...base, domain_validation: { status: 'Unknown', url: 'https://www.bestdex.com/' } },
-  'long-name': { ...base, client_name: 'Stichting Nederlandse Organisatie voor Wetenschappelijk Onderzoek' },
-  'no-logo': { ...base, logo_uri: undefined },
-  // No `redirect_uri`: the domain line disappears and the validation pill stands alone.
-  'no-redirect': { ...base, redirect_uri: undefined },
+  'long-name': withClientMetadata({ client_name: 'Stichting Nederlandse Organisatie voor Wetenschappelijk Onderzoek' }),
+  'no-logo': withClientMetadata({ logo_uri: null }),
+  // A `connection_url` that does not parse: `hostname` gives up, so the domain line
+  // disappears and the validation pill stands alone.
+  'bad-connection-url': withClientMetadata({ connection_url: 'bestdex' }),
 
   // M2 — certifications
   'certs-one': { ...base, linked_verifiable_presentations: certifications.slice(0, 1) },
