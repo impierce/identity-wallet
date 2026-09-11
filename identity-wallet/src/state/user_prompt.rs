@@ -81,20 +81,27 @@ pub struct ConnectionData {
     pub interactions: Vec<HistoryEvent>,
 }
 
+/// The `ssi-agent` `/public/ecosystem-profile` endpoint returns this struct's fields in camelCase; the aliases let us
+/// deserialize that response while still serializing snake_case to the frontend.
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, TS)]
 #[ts(export, export_to = "bindings/user_prompt/EcosystemProfile.ts")]
 pub struct EcosystemProfile {
+    #[serde(alias = "logoUri")]
     pub logo_uri: Option<String>,
     pub name: String,
     pub description: Option<String>,
+    #[serde(alias = "ecosystemLeader")]
     pub ecosystem_leader: Member,
+    #[serde(alias = "memberCount")]
     pub member_count: usize,
     pub members: Vec<Member>,
 }
 
+/// Same camelCase-deserialize/snake_case-serialize split as `EcosystemProfile`, to match `ssi-agent`'s `Member` struct.
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, TS)]
 #[ts(export, export_to = "bindings/user_prompt/Member.ts")]
 pub struct Member {
+    #[serde(alias = "logoUri")]
     pub logo_uri: Option<String>,
     pub name: String,
     pub description: Option<String>,
