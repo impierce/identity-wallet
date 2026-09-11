@@ -5,7 +5,7 @@ use crate::{
         credentials::{
             reducers::send_token_request::get_credential_status, DisplayCredential, VerifiableCredentialRecord,
         },
-        did::validate_domain_linkage::{ValidationResult, ValidationStatus, Verifier},
+        did::validate_domain_linkage::{ValidationResult, Verifier},
     },
     subject::Subject,
 };
@@ -234,8 +234,17 @@ async fn get_validated_linked_credential_data(
 
                         debug!("LinkedVerifiableCredentialData: name: {credential_name:?}, credential_logo_uri: {credential_logo_uri:?}, issuer_name: {issuer_name:?}, issuer_logo_uri: {issuer_logo_uri:?}, issuance_date: {issuance_date}, validated_linked_domains: {linked_domains:#?}");
 
-                        let mut verifiable_credential_record = VerifiableCredentialRecord::try_new(CredentialFormats::JwtVcJson(()), serde_json::json!(linked_verifiable_credential_jwt), vec![]).unwrap();
+                        let Ok(mut verifiable_credential_record) = VerifiableCredentialRecord::try_new(
+                            CredentialFormats::JwtVcJson(()),
+                            serde_json::json!(linked_verifiable_credential_jwt),
+                            vec![],
+                        ) else {
+                            warn!("Failed to create `verifiable_credential_record` for linked verifiable credential");
+                            return None;
+                        };
 
+                        // The .unwrap_or_default() calls here default to an empty string, we don't want to throw a full error here.
+                        // It's simply the issuer's responsibility to have it's display data in order, this shouldnt break the flow.
                         verifiable_credential_record.display_credential.credential_status = get_credential_status(&verifiable_credential_record, subject).await;
                         verifiable_credential_record.display_credential.display_name = credential_name.unwrap_or_default();
                         verifiable_credential_record.display_credential.metadata.icon = credential_logo_uri;
@@ -285,11 +294,13 @@ async fn get_validated_linked_domains(
             }
             #[cfg(feature = "test_utils")]
             {
+                use crate::state::did::validate_domain_linkage::ValidationStatus;
+
                 // Silence unused variable warning
                 let _issuer_did = issuer_did;
                 // Skip validation during tests
                 ValidationResult {
-                    status: ValidationStatus::default(),
+                    status: ValidationStatus::Success,
                     url: issuer_linked_domain.clone(),
                     name: None,
                     logo_uri: None,
@@ -299,13 +310,9 @@ async fn get_validated_linked_domains(
             }
         };
 
-        if validation_result.status == ValidationStatus::Success {
-            info!("Successfully validated domain linkage for issuer linked domain: {issuer_linked_domain}");
-            Some(validation_result)
-        } else {
-            warn!("Failed to validate domain linkage for issuer linked domain: {issuer_linked_domain}");
-            None
-        }
+        info!("Validation of domain linkage for issuer linked domain '{issuer_linked_domain}' resulted in: {validation_result:?}");
+        (validation_result.status == crate::state::did::validate_domain_linkage::ValidationStatus::Success)
+            .then_some(validation_result)
     }))
     .filter_map(|result| async move { result })
     .collect()
@@ -354,22 +361,16 @@ fn get_credential_name(linked_verifiable_credential: &DecodedJwtCredential<Value
         .map(ToString::to_string)
 }
 
-/// Try to get the credential's own logo URI from the `logo` property in the root of the credential.
+/// Try to get the credential's own logo URI from the `logo_uri` property in the root of the credential.
 async fn get_credential_logo_uri(linked_verifiable_credential: &DecodedJwtCredential<Value>) -> Option<String> {
     debug!("Trying to fetch credential logo uri from credential root");
     let logo_uri = linked_verifiable_credential
         .credential
         .properties
-        .get("logo")
-        .and_then(|logo| {
-            if let Some(uri) = logo.get("uri").and_then(Value::as_str) {
-                Some(uri.to_string())
-            } else {
-                logo.as_str().map(ToString::to_string)
-            }
-        });
+        .get("logo_uri")
+        .and_then(Value::as_str);
 
-    if let Some(ref logo_uri_str) = logo_uri {
+    if let Some(logo_uri_str) = logo_uri {
         download_logo(logo_uri_str).await
     } else {
         None
@@ -642,7 +643,7 @@ mod tests {
 
             let mut properties = identity_iota::core::Object::new();
             properties.insert("name".to_string(), json!(credential_name));
-            properties.insert("logo".to_string(), json!(credential_logo));
+            properties.insert("logo_uri".to_string(), json!(credential_logo));
 
             let credential: Credential = CredentialBuilder::default()
                 .issuer(issuer)

@@ -1,9 +1,10 @@
 {
   "connections": [
     {
-      "id": "c0f1be09f33c331ee001a09e1515ba70022a102b30ebad7f15f8e6a9017e177c",
-      "name": "example.com",
-      "url": "example.com",
+      "id": "525095ddd93734e88b02a33f378575a030c9ed7ab543eb612b07145bc182625e",
+      "name": "example123",
+      "url": "https://example.com",
+      "did": "did:key:z6Mkm9yeuZK7inXBNjnNH3vAs9uUjqfy3mfNoKBKsKBrv8Tb",
       "verified": false,
       "first_interacted": "2024-03-15T01:16:28.712260354+00:00",
       "last_interacted": "2024-03-15T01:16:28.712260354+00:00"
@@ -22,8 +23,8 @@
   },
   "history": [
     {
-      "connection_id": "c0f1be09f33c331ee001a09e1515ba70022a102b30ebad7f15f8e6a9017e177c",
-      "connection_name": "example.com",
+      "connection_id": "525095ddd93734e88b02a33f378575a030c9ed7ab543eb612b07145bc182625e",
+      "connection_name": "example123",
       "event_type": "ConnectionAdded",
       "date": "2024-03-15T01:17:34.692691163+00:00",
       "credentials": []

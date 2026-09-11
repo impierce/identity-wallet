@@ -3,21 +3,33 @@ import type { EventType } from '@bindings/history/EventType';
 import type { HistoryCredential } from '@bindings/history/HistoryCredential';
 import type { HistoryEvent } from '@bindings/history/HistoryEvent';
 import type { EcosystemProfile } from '@bindings/user_prompt/EcosystemProfile';
+import type { ClientMetadata } from '@bindings/user_prompt/ClientMetadata';
 import type { LinkedVerifiableCredentialData } from '@bindings/user_prompt/LinkedVerifiableCredentialData';
-import type { Member } from '@bindings/user_prompt/Member';
 import type { ValidationStatus } from '@bindings/user_prompt/ValidationStatus';
+import type { Member } from '@bindings/user_prompt/Member';
 
 import type { AcceptConnectionPrompt } from './resolve';
 
 const base: AcceptConnectionPrompt = {
   type: 'accept-connection',
-  client_name: 'BestDex',
-  logo_uri: 'https://bestdex.com/logo.png',
-  redirect_uri: 'https://www.bestdex.com/callback',
+  client_metadata: {
+    client_name: 'BestDex',
+    logo_uri: 'https://bestdex.com/logo.png',
+    connection_url: 'https://www.bestdex.com',
+    redirect_uri: 'https://www.bestdex.com/callback',
+    // Always a DID: the backend rejects a client_id it cannot parse as one.
+    client_id: 'did:web:bestdex.com',
+  },
   domain_validation: { status: 'Success', url: 'https://www.bestdex.com/' },
   linked_verifiable_presentations: [],
   ecosystems: [],
 };
+
+/** Overrides a single `client_metadata` field without flattening the rest of the prompt. */
+const withClientMetadata = (overrides: Partial<ClientMetadata>): AcceptConnectionPrompt => ({
+  ...base,
+  client_metadata: { ...base.client_metadata, ...overrides },
+});
 
 /** Readable, stable ids: they end up in the detail route's URL. */
 const slug = (name: string) =>

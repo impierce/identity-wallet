@@ -1,3 +1,4 @@
+use identity_iota::did::CoreDID;
 use oid4vc::oid4vci::credential_issuer::credential_configurations_supported::CredentialConfigurationsSupportedObject;
 use oid4vc::oid4vci::credential_offer::TxCodeConstraints;
 use serde::{Deserialize, Serialize};
@@ -25,13 +26,7 @@ pub enum CurrentUserPrompt {
     PasswordRequired,
     #[serde(rename = "accept-connection")]
     AcceptConnection {
-        client_name: String,
-        #[ts(optional)]
-        #[serde(skip_serializing_if = "Option::is_none")]
-        logo_uri: Option<String>,
-        #[ts(optional)]
-        #[serde(skip_serializing_if = "Option::is_none")]
-        redirect_uri: Option<String>,
+        client_metadata: ClientMetadata,
         // The connection_data field is optional, None means that the user has never interacted with this connection before.
         #[ts(optional)]
         #[serde(skip_serializing_if = "Option::is_none")]
@@ -65,6 +60,17 @@ pub enum CurrentUserPrompt {
         #[serde(default)]
         is_interactive: bool,
     },
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, TS)]
+#[ts(export, export_to = "bindings/user_prompt/ClientMetadata.ts")]
+pub struct ClientMetadata {
+    pub client_name: String,
+    pub logo_uri: Option<String>,
+    pub connection_url: String,
+    pub redirect_uri: Option<String>,
+    #[ts(type = "string")]
+    pub client_id: CoreDID,
 }
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, TS)]
@@ -116,9 +122,13 @@ mod tests {
         );
 
         let prompt = CurrentUserPrompt::AcceptConnection {
-            client_name: "Test Client".to_string(),
-            logo_uri: None,
-            redirect_uri: Some("https://example.com".to_string()),
+            client_metadata: ClientMetadata {
+                client_name: "Test Client".to_string(),
+                logo_uri: None,
+                connection_url: "https://example.com".to_string(),
+                redirect_uri: Some("https://example.com".to_string()),
+                client_id: "did:example:123".parse().unwrap(),
+            },
             connection_data: None,
             domain_validation: Box::new(ValidationResult {
                 status: ValidationStatus::default(),
@@ -133,7 +143,7 @@ mod tests {
         };
         assert_eq!(
             serde_json::to_string(&prompt).unwrap(),
-            r#"{"type":"accept-connection","client_name":"Test Client","redirect_uri":"https://example.com","domain_validation":{"status":"Unknown","url":"https://example.com/"}}"#
+            r#"{"type":"accept-connection","client_metadata":{"client_name":"Test Client","logo_uri":null,"connection_url":"https://example.com","redirect_uri":"https://example.com","client_id":"did:example:123"},"domain_validation":{"status":"Unknown","url":"https://example.com/"}}"#
         );
     }
 }

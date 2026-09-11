@@ -8,15 +8,23 @@
   },
   "current_user_prompt": {
     "type": "accept-connection",
-    "client_name": "example.com",
-    "logo_uri": null,
-    "redirect_uri": "https://example.com/",
+    "client_metadata": {
+      "client_name": "example123",
+      "logo_uri": null,
+      "connection_url": "https://example.com",
+      "redirect_uri": "https://example.com/",
+      "client_id": "did:key:z6Mkm9yeuZK7inXBNjnNH3vAs9uUjqfy3mfNoKBKsKBrv8Tb"
+    },
     "connection_data": null,
     "domain_validation": {
       "status": "Unknown",
       "url": "https://example.com/",
+      "name": null,
+      "logo_uri": null,
+      "issuance_date": null,
       "message": null
     },
-    "linked_verifiable_presentations": null
+    "linked_verifiable_presentations": null,
+    "ecosystems": null
   }
 }

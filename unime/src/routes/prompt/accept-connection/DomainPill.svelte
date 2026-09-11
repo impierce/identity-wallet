@@ -13,17 +13,17 @@
     Success: {
       icon: SealCheckFillIcon,
       label: $LL.DOMAIN_LINKAGE.PILL_VERIFIED(),
-      style: 'bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300',
+      style: 'text-secondary',
     },
     Failure: {
       icon: WarningCircleFillIcon,
       label: $LL.DOMAIN_LINKAGE.PILL_UNTRUSTED(),
-      style: 'bg-rose-50 text-rose-700 dark:bg-rose-950 dark:text-rose-300',
+      style: 'text-rose-700 dark:text-rose-300',
     },
     Unknown: {
       icon: WarningCircleFillIcon,
       label: $LL.DOMAIN_LINKAGE.PILL_UNVERIFIED(),
-      style: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300',
+      style: 'text-amber-700 dark:text-amber-300',
     },
   } satisfies Record<ValidationStatus, unknown>;
 
@@ -32,8 +32,8 @@
 
 <!--
 @component
-A badge showing the result of the domain linkage check, intended to sit centred
-under the hostname.
+An icon and label showing the result of the domain linkage check, intended to sit
+below the hostname.
 
 ### Props
 - status
@@ -43,7 +43,7 @@ under the hostname.
 <DomainPill status={domain_validation.status} />
 ```
 -->
-<span class="flex items-center gap-1 rounded-full px-2 py-[2px] text-[12px]/[20px] font-normal {pill.style}">
+<span class="flex items-center gap-1 text-[12px]/[20px] font-normal {pill.style}">
   <svelte:component this={pill.icon} class="size-4" />
   {pill.label}
 </span>

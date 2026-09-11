@@ -3,5 +3,11 @@
   "identifier": "mobile-capability",
   "windows": ["main"],
   "platforms": ["iOS", "android"],
-  "permissions": ["barcode-scanner:default", "biometric:default", "keystore:default", "opener:allow-default-urls"]
+  "permissions": [
+    "barcode-scanner:default",
+    "biometric:default",
+    "keystore:default",
+    "opener:allow-open-url",
+    "opener:allow-default-urls"
+  ]
 }

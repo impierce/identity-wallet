@@ -28,10 +28,6 @@
 
   let loading = false;
 
-  // Latch the prompt. After the user accepts, the backend clears `current_user_prompt`
-  // and pushes new state; without this, the destructure below would run against `null`
-  // before we have navigated away. The page is only ever reached with an active
-  // prompt, so the initial value is non-null.
   let prompt = resolveAcceptConnectionPrompt(page.url, $appState)!;
   $: {
     const next = resolveAcceptConnectionPrompt(page.url, $appState);
@@ -92,12 +88,12 @@
       <p class="text-[22px]/[30px] font-semibold text-slate-700 dark:text-grey">
         {client_name}
       </p>
-      <div class="flex flex-col items-center gap-y-2 pt-[10px]">
-        {#if domain}
-          <p class="max-w-full truncate text-[13px]/[20px] font-normal text-text-alt">
-            {domain}
-          </p>
-        {/if}
+      {#if domain}
+        <p class="pt-[10px] text-[13px]/[20px] font-normal text-text-alt">
+          {domain}
+        </p>
+      {/if}
+      <div class="flex justify-center pt-[6px]">
         <DomainPill status={domain_validation.status} />
       </div>
     </div>
@@ -207,6 +203,9 @@
     <Button
       label={$LL.SCAN.CONNECTION_REQUEST.ACCEPT()}
       on:click={() => {
+        // In a mock preview there is no backend to answer, so leaving `loading` set would
+        // spin forever. Only latch it when a real dispatch is on its way.
+        if (isMock) return;
         loading = true;
         if (!isMock) {
           dispatch({
