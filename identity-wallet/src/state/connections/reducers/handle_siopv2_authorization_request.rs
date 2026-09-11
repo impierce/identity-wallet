@@ -5,11 +5,9 @@ use crate::{
         actions::{listen, Action},
         connections::actions::connection_accepted::ConnectionAccepted,
         core_utils::{
-            helpers::download_logo,
             history_event::{EventType, HistoryEvent},
             ActiveFlow,
         },
-        credentials::reducers::handle_oid4vp_authorization_request::{strip_client_id_prefix, ClientMetadata},
         user_prompt::CurrentUserPrompt,
         AppState,
     },
