@@ -3,13 +3,18 @@
 import { hashIndex } from '$lib/utils';
 
 // Whole class strings: Tailwind only emits classes it finds literally in the source.
+//
+// The `eco-*` colours are ours, defined in `app.css`, not Tailwind's ramps. Tailwind's ramps vary
+// wildly in chroma between hues -- `fuchsia-600` carries 0.293 against `emerald-500`'s 0.170 -- so
+// a palette built from them has one or two tints that shout while the rest sit quietly, and which
+// ecosystem shouts is down to a hash. Ours hold lightness and chroma fixed and vary only hue.
 const TINTS = [
-  { badge: 'bg-violet-600', banner: 'from-violet-600 to-violet-500' },
-  { badge: 'bg-blue-600', banner: 'from-blue-600 to-blue-500' },
-  { badge: 'bg-amber-500', banner: 'from-amber-500 to-amber-400' },
-  { badge: 'bg-emerald-500', banner: 'from-emerald-500 to-emerald-400' },
-  { badge: 'bg-red-500', banner: 'from-red-500 to-red-400' },
-  { badge: 'bg-fuchsia-600', banner: 'from-fuchsia-600 to-fuchsia-500' },
+  { badge: 'bg-eco-indigo-base', banner: 'from-eco-indigo-base to-eco-indigo-soft' },
+  { badge: 'bg-eco-blue-base', banner: 'from-eco-blue-base to-eco-blue-soft' },
+  { badge: 'bg-eco-ochre-base', banner: 'from-eco-ochre-base to-eco-ochre-soft' },
+  { badge: 'bg-eco-green-base', banner: 'from-eco-green-base to-eco-green-soft' },
+  { badge: 'bg-eco-terracotta-base', banner: 'from-eco-terracotta-base to-eco-terracotta-soft' },
+  { badge: 'bg-eco-plum-base', banner: 'from-eco-plum-base to-eco-plum-soft' },
 ] as const;
 
 type Tint = (typeof TINTS)[number];

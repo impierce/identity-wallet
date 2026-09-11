@@ -51,7 +51,7 @@ describe('tintFor', () => {
     // The detail banner fades between two stops of the tint the list badge uses. If these
     // drifted apart, an ecosystem would change colour when opened.
     const { badge, banner } = tintFor('Dutch Organization for Universities');
-    const hue = badge.replace('bg-', '').replace(/-\d+$/, '');
+    const hue = badge.replace('bg-', '').replace(/-base$/, '');
     expect(banner).toContain(`from-${hue}-`);
     expect(banner).toContain(`to-${hue}-`);
   });
