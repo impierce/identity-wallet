@@ -4,8 +4,8 @@ use crate::{
         actions::ActionTrait,
         connections::reducers::handle_siopv2_authorization_request::handle_siopv2_authorization_request,
         profile_settings::reducers::update_sorting_preference::sort_connections,
-        qr_code::reducers::read_authorization_request::read_oid4vp_authorization_request,
-        qr_code::reducers::read_credential_offer::read_credential_offer, Reducer,
+        qr_code::reducers::read_credential_offer::read_credential_offer,
+        qr_code::reducers::read_oid4vp_authorization_request::read_oid4vp_authorization_request, Reducer,
     },
 };
 

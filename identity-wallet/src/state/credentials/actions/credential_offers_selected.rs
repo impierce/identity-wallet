@@ -1,5 +1,5 @@
 use crate::reducer;
-use crate::state::credentials::reducers::send_credential_request::handle_credential_offer;
+use crate::state::credentials::reducers::handle_credential_offer::handle_credential_offer;
 use crate::state::profile_settings::reducers::update_sorting_preference::{sort_connections, sort_credentials};
 use crate::state::{actions::ActionTrait, Reducer};
 
