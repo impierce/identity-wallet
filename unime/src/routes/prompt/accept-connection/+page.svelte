@@ -34,16 +34,18 @@
     if (next) prompt = next;
   }
 
-  $: ({ client_name, logo_uri, redirect_uri, connection_data, domain_validation } = prompt);
+  $: ({ client_metadata, connection_data, domain_validation } = prompt);
+  $: ({ client_name, logo_uri, connection_url } = client_metadata);
 
   $: certifications = prompt.linked_verifiable_presentations ?? [];
 
   $: ecosystems = prompt.ecosystems ?? [];
 
   $: profile_settings = $appState.profile_settings;
-  // `redirect_uri` is optional on the prompt, and the helper swallows a malformed one. A raw
-  // `new URL()` here would throw and take the whole page down.
-  $: domain = redirect_uri ? hostname(redirect_uri) : undefined;
+  // The party being connected to, which is what belongs beside the validation pill — not
+  // `redirect_uri`, which is only where the response is sent afterwards. `hostname` returns
+  // `undefined` on a URL it cannot parse, where a raw `new URL()` would take the page down.
+  $: domain = hostname(connection_url);
   $: imageId = logo_uri ? hash(logo_uri) : '_';
 
   // For DEV previews only: `?mock=` renders a fixture instead of a real prompt.
