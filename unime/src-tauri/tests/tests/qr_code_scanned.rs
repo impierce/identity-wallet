@@ -18,7 +18,6 @@ use tokio::sync::Mutex;
 
 #[tokio::test]
 #[serial_test::serial]
-#[ignore = "TODO: fix this test"]
 async fn test_qr_code_scanned_handle_siopv2_authorization_request() {
     setup_state_file();
 
@@ -60,7 +59,6 @@ async fn test_qr_code_scanned_handle_siopv2_authorization_request() {
 
 #[tokio::test]
 #[serial_test::serial]
-#[ignore = "TODO: fix this test"]
 async fn test_qr_code_scanned_handle_oid4vp_authorization_request() {
     setup_state_file();
 
