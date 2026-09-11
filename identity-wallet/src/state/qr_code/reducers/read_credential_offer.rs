@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use crate::{
     error::AppError::{self, *},
+    http_client::get_http_client,
     state::{
         actions::{listen, Action},
         connections::actions::connection_accepted::ConnectionAccepted,

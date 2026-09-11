@@ -24,7 +24,7 @@ impl ActionTrait for CredentialOffersSelected {
             // The interactive flow has the `CredentialsSelected` action after this, the authorization code flow has the `CodeReceived` action.
             // Only then are credentials and connections updated and only then are these reducers necessary in those flows..
             reducer!(sort_credentials),
-            reducer!(sort_connections),
+            reducer!(sort_connections), // TODO: remove this sort_connections, only after trust_connection
         ]
     }
 }

@@ -891,14 +891,6 @@ type RootTranslation = {
 			 */
 			INTERACTIONS: string
 			/**
-			 * S​h​a​r​e​d​ ​D​a​t​a
-			 */
-			SHARED_DATA: string
-			/**
-			 * R​e​c​e​i​v​e​d​ ​D​a​t​a
-			 */
-			RECEIVED_DATA: string
-			/**
 			 * A​c​c​e​p​t​ ​c​o​n​n​e​c​t​i​o​n
 			 */
 			ACCEPT: string
@@ -911,18 +903,45 @@ type RootTranslation = {
 			 */
 			CERTIFICATION: string
 			/**
-			 * {​c​o​u​n​t​}​ ​{​{​C​e​r​t​i​f​i​c​a​t​i​o​n​|​C​e​r​t​i​f​i​c​a​t​i​o​n​s​}​}
+			 * {​n​a​m​e​s​}​,​ ​a​n​d​ ​{​c​o​u​n​t​}​ ​m​o​r​e
 			 * @param {number} count
+			 * @param {string} names
 			 */
-			CERTIFICATION_COUNT: RequiredParams<'count'>
+			AND_MORE: RequiredParams<'count' | 'names'>
 			/**
 			 * S​h​o​w​ ​m​o​r​e
 			 */
 			SHOW_MORE: string
 			/**
-			 * S​h​o​w​ ​l​e​s​s
+			 * S​e​e​ ​a​l​l
 			 */
-			SHOW_LESS: string
+			SEE_ALL: string
+			/**
+			 * E​c​o​s​y​s​t​e​m​s
+			 */
+			ECOSYSTEMS: string
+			/**
+			 * {​c​o​u​n​t​}​ ​{​{​M​e​m​b​e​r​|​M​e​m​b​e​r​s​}​}
+			 * @param {number} count
+			 */
+			ECOSYSTEM_MEMBERS: RequiredParams<'count'>
+			/**
+			 * M​e​m​b​e​r​s
+			 */
+			ECOSYSTEM_MEMBERS_HEADING: string
+			/**
+			 * A​b​o​u​t​ ​t​h​i​s​ ​E​c​o​s​y​s​t​e​m
+			 */
+			ECOSYSTEM_ABOUT: string
+			/**
+			 * E​c​o​s​y​s​t​e​m​ ​O​w​n​e​r
+			 */
+			ECOSYSTEM_OWNER: string
+			/**
+			 * {​c​o​u​n​t​}​ ​{​{​e​c​o​s​y​s​t​e​m​|​e​c​o​s​y​s​t​e​m​s​}​}
+			 * @param {number} count
+			 */
+			ECOSYSTEM_COUNT: RequiredParams<'count'>
 		}
 		SHARE_CREDENTIALS: {
 			/**
@@ -2461,14 +2480,6 @@ export type TranslationFunctions = {
 			 */
 			INTERACTIONS: () => LocalizedString
 			/**
-			 * Shared Data
-			 */
-			SHARED_DATA: () => LocalizedString
-			/**
-			 * Received Data
-			 */
-			RECEIVED_DATA: () => LocalizedString
-			/**
 			 * Accept connection
 			 */
 			ACCEPT: () => LocalizedString
@@ -2481,17 +2492,41 @@ export type TranslationFunctions = {
 			 */
 			CERTIFICATION: () => LocalizedString
 			/**
-			 * {count} {{Certification|Certifications}}
+			 * {names}, and {count} more
 			 */
-			CERTIFICATION_COUNT: (arg: { count: number }) => LocalizedString
+			AND_MORE: (arg: { count: number, names: string }) => LocalizedString
 			/**
 			 * Show more
 			 */
 			SHOW_MORE: () => LocalizedString
 			/**
-			 * Show less
+			 * See all
 			 */
-			SHOW_LESS: () => LocalizedString
+			SEE_ALL: () => LocalizedString
+			/**
+			 * Ecosystems
+			 */
+			ECOSYSTEMS: () => LocalizedString
+			/**
+			 * {count} {{Member|Members}}
+			 */
+			ECOSYSTEM_MEMBERS: (arg: { count: number }) => LocalizedString
+			/**
+			 * Members
+			 */
+			ECOSYSTEM_MEMBERS_HEADING: () => LocalizedString
+			/**
+			 * About this Ecosystem
+			 */
+			ECOSYSTEM_ABOUT: () => LocalizedString
+			/**
+			 * Ecosystem Owner
+			 */
+			ECOSYSTEM_OWNER: () => LocalizedString
+			/**
+			 * {count} {{ecosystem|ecosystems}}
+			 */
+			ECOSYSTEM_COUNT: (arg: { count: number }) => LocalizedString
 		}
 		SHARE_CREDENTIALS: {
 			/**
