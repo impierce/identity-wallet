@@ -317,11 +317,20 @@ export const mocks = {
   'eco-preview': { ...base, ecosystems: ecosystems.slice(0, 3) },
   // Past the preview count: truncates and links to the full list.
   'eco-many': { ...base, ecosystems },
-  // Known connection: both sections collapse to summary cards.
+  // Known connection: the ecosystems section collapses to a summary card.
   'known-eco': { ...base, connection_data: connected, ecosystems },
   // Summary names the single ecosystem outright instead of "and N more".
   'known-eco-one': { ...base, connection_data: connected, ecosystems: ecosystems.slice(0, 1) },
+  // New connection: both sections render expanded, as cards.
   'certs-and-eco': { ...base, linked_verifiable_presentations: certifications.slice(0, 2), ecosystems },
+  // Known connection carrying both: the two summary cards stack, which is the densest the
+  // screen gets. The certification stack names issuers, the ecosystem stack names ecosystems.
+  'known-certs-and-eco': {
+    ...base,
+    connection_data: connected,
+    linked_verifiable_presentations: certifications,
+    ecosystems,
+  },
   // Every optional field absent. Nothing should render an empty block.
   'eco-bare': {
     ...base,
