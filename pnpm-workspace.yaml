@@ -2,10 +2,10 @@ packages:
   - 'unime'
 allowBuilds:
   esbuild: true
-# Transitive packages whose direct dependant still resolves a vulnerable version. Drop an entry once
-# the dependant ships a release that resolves the patched version by itself.
+# Transitive packages whose direct dependant still resolves a vulnerable version. Each override stays
+# inside the major its dependant expects. Drop an entry once the dependant resolves a patched version
+# by itself.
 overrides:
-  # vite resolves yaml 2.5.0 — GHSA-48c2-rrv3-qjmp, stack overflow on deeply nested collections.
-  yaml@2: '>=2.8.3'
   # @sveltejs/kit resolves cookie 0.6.0 — GHSA-pxg6-pf52-xh8x, out-of-bounds characters accepted.
-  cookie@<0.7.0: '>=0.7.0'
+  # Held at 0.7.x: cookie 1.x and later changed the API @sveltejs/kit imports.
+  cookie@<0.7.0: '^0.7.0'
