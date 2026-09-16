@@ -158,5 +158,5 @@ You can simulate safe area insets during development by overriding CSS variables
 4. To create a release build, there is a special tweak for the respective platform:
    - For **iOS**, open Xcode and open the root file `unime.xcodeproj`. Go to `Signing & Capabilities`, disable `Automatically manage signing` and select the `Provisioning Profile` manually.
    - For **Android**, create a `keystore.properties` file in `unime/src-tauri/gen/android` which contains the secrets required in `build.gradle.kts` (such as `keyAlias`, etc.).
-5. Run `pnpm tauri ios build` and `pnpm tauri android build` to build the apps. The iOS build (`.ipa`) will be in `unime/src-tauri/gen/apple/build/arm64` and the Android builds (`.apk` and `.aab`) will be in `unime/src-tauri/gen/android/app/build/outputs/`.
+5. Run `scripts/build-mobile-releases.sh` to build both apps, which wraps `pnpm tauri android build` and `pnpm tauri ios build`. The iOS build (`.ipa`) will be in `unime/src-tauri/gen/apple/build/arm64` and the Android builds (`.apk` and `.aab`) will be in `unime/src-tauri/gen/android/app/build/outputs/`.
 6. Run `scripts/copy-release-artifacts.sh` to collect the `.aab` and `.ipa` into the git-ignored `out/` folder at the repository root, ready to be uploaded to the app stores.

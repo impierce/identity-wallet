@@ -201,8 +201,9 @@ For a release:
 4. Build and sign both apps locally. Android requires the local signing values in
    `unime/src-tauri/gen/android/keystore.properties`; iOS requires the appropriate signing certificate and manually
    selected provisioning profile in Xcode. Signing credentials are local secrets and must never be committed.
-5. Produce the store artifacts with `pnpm tauri android build` and `pnpm tauri ios build`. The Android outputs are
-   under `unime/src-tauri/gen/android/app/build/outputs/`, and the iOS `.ipa` is under
+5. Produce both store artifacts with `scripts/build-mobile-releases.sh`, which runs `pnpm tauri android build` and
+   `pnpm tauri ios build`. The Android outputs are under
+   `unime/src-tauri/gen/android/app/build/outputs/`, and the iOS `.ipa` is under
    `unime/src-tauri/gen/apple/build/arm64/`. `scripts/copy-release-artifacts.sh` collects the `.aab` and `.ipa` into
    the git-ignored `out/` directory at the repository root for upload.
 6. Upload the signed artifacts to their respective app stores and manually make the new builds available to the team
