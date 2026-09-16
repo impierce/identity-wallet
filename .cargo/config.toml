@@ -1,0 +1,7 @@
+[env]
+# The test suites set the process-global `STRONGHOLD` and `ASSETS_DIR` paths in `persistence.rs` and
+# then read them back while building their managers, so two tests running at once can swap the path
+# out from under each other — `StrongholdManager::create` writes its keys to one snapshot while the
+# `SecretManager` opens another, which surfaces as `KeyStorageError(KeyNotFound)`. Run them one at a
+# time until that shared state is gone; the suites are only seconds long.
+RUST_TEST_THREADS = "1"
