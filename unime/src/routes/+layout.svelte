@@ -117,11 +117,6 @@
         }
       }
 
-   
-if (!page.url.pathname.startsWith('/prompt/accept-connection')) {
-        redirectPath = '/prompt/accept-connection?mock=eco-many';
-      }
-
       if (redirectPath) {
         info(`Redirecting to: ${redirectPath}.`);
         try {
