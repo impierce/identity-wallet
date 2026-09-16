@@ -59,6 +59,7 @@
   --color-ex-grey-2: #323b40;
   --color-ex-grey-3: #171d23;
 
+  /* Also the ecosystem tints. See `ecosystem.ts`. */
   --color-credentials-0: #d7e0cc; /* green */
   --color-credentials-1: #e3d1b6; /* gold */
   --color-credentials-2: #afcbdd; /* blue */
