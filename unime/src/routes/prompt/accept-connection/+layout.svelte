@@ -10,7 +10,7 @@
 
   // This lives in the layout so that navigating to a child route
   // does not cancel the flow.
-  $: isMock = isMockPrompt(page.url, $appState);
+  $: isMock = isMockPrompt(page.url);
 
   const unsubscribe = error.subscribe((err) => {
     if (err && !isMock) {

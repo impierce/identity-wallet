@@ -48,8 +48,8 @@
   $: domain = hostname(connection_url);
   $: imageId = logo_uri ? hash(logo_uri) : '_';
 
-  // For DEV previews only: `?mock=` renders a fixture instead of a real prompt.
-  $: isMock = isMockPrompt(page.url, $appState);
+  // Previews only: `?mock=` renders a fixture instead of a real prompt.
+  $: isMock = isMockPrompt(page.url);
 
   onMount(() => {
     if ($appState.dev_mode !== 'Off' && domain_validation.message) {
@@ -209,11 +209,7 @@
         // spin forever. Only latch it when a real dispatch is on its way.
         if (isMock) return;
         loading = true;
-        if (!isMock) {
-          dispatch({
-            type: '[Authenticate] Connection accepted',
-          });
-        }
+        dispatch({ type: '[Authenticate] Connection accepted' });
       }}
       {loading}
     />
