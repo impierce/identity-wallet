@@ -980,15 +980,37 @@ mod tests {
                     "logoUri": format!("{}/logo.png", trust_anchor_server.uri()),
                     "name": name,
                     "description": null,
-                    "domain": trust_anchor_server.uri(),
+                    "identifier": trust_anchor_server.uri(),
                 },
                 "memberCount": 1,
                 "members": [{
                     "logoUri": format!("{}/logo.png", trust_anchor_server.uri()),
                     "name": name,
                     "description": null,
-                    "domain": trust_anchor_server.uri(),
+                    "identifier": trust_anchor_server.uri(),
                 }],
+            })))
+            .mount(trust_anchor_server)
+            .await;
+    }
+
+    /// Mounts the shape `ssi-agent` served before it gained `members` and renamed `domain` to
+    /// `identifier`. Trust anchors on older deployments still send this, and it has to keep
+    /// parsing. `memberCount` is the ecosystem's total either way.
+    async fn mount_legacy_ecosystem_profile(trust_anchor_server: &MockServer, name: &str) {
+        Mock::given(method("GET"))
+            .and(path("/public/ecosystem-profile"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+                "logoUri": format!("{}/logo.png", trust_anchor_server.uri()),
+                "name": name,
+                "description": null,
+                "ecosystemLeader": {
+                    "logoUri": format!("{}/logo.png", trust_anchor_server.uri()),
+                    "name": name,
+                    "description": null,
+                    "domain": trust_anchor_server.uri(),
+                },
+                "memberCount": 2,
             })))
             .mount(trust_anchor_server)
             .await;
@@ -1106,5 +1128,31 @@ mod tests {
 
         assert_eq!(ecosystems.len(), 1);
         assert_eq!(ecosystems[0].name, "Ecosystem One");
+    }
+
+    #[tokio::test]
+    async fn fetch_ecosystems_keeps_a_profile_in_the_legacy_shape() {
+        let leaf_server = MockServer::start().await;
+        let trust_anchor_server = MockServer::start().await;
+
+        let leaf_id: url::Url = leaf_server.uri().parse().unwrap();
+        let trust_anchor_id: url::Url = trust_anchor_server.uri().parse().unwrap();
+
+        mount_entity_configuration(&leaf_server, &leaf_id, "Leaf", vec![trust_anchor_id.clone()]).await;
+        mount_entity_configuration(&trust_anchor_server, &trust_anchor_id, "Trust Anchor", vec![]).await;
+        mount_subordinate_statement(&trust_anchor_server, &trust_anchor_id, &leaf_id).await;
+        mount_legacy_ecosystem_profile(&trust_anchor_server, "Ecosystem One").await;
+
+        let ecosystems = fetch_ecosystems(&leaf_id).await.unwrap();
+
+        assert_eq!(ecosystems.len(), 1);
+        assert_eq!(ecosystems[0].name, "Ecosystem One");
+        assert_eq!(ecosystems[0].member_count, 2);
+        assert!(ecosystems[0].members.is_empty());
+        // `domain` read through the alias onto `identifier`.
+        assert_eq!(
+            ecosystems[0].ecosystem_leader.identifier.as_deref(),
+            Some(trust_anchor_server.uri().as_str())
+        );
     }
 }

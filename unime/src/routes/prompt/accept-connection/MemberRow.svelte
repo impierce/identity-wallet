@@ -5,8 +5,9 @@
 
   export let member: Member;
 
-  // `domain` is a bare host, not a URL, so no `hostname()` here. It carries no validation
-  // result either, hence no shield.
+  // Shown as sent: `identifier` is a full URL from `ssi-agent`, but bare hosts reach this field
+  // too, so `hostname()` would drop the ones it cannot parse. It carries no validation result
+  // either, hence no shield, and it is null when `ssi-agent` could not resolve one.
 </script>
 
 <!--
@@ -33,8 +34,10 @@ One organisation inside an ecosystem. Not a link — members have no page of the
         {member.description}
       </p>
     {/if}
-    <p class="truncate text-[12px]/[20px] font-normal text-primary">
-      {member.domain}
-    </p>
+    {#if member.identifier}
+      <p class="truncate text-[12px]/[20px] font-normal text-primary">
+        {member.identifier}
+      </p>
+    {/if}
   </div>
 </div>

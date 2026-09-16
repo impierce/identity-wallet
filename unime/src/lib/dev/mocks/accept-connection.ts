@@ -134,11 +134,11 @@ const certifications: LinkedVerifiableCredentialData[] = [
   certification('ETSI EN 319 401', 'European Telecommunications Standards Institute', 'etsi.org'),
 ];
 
-const member = (name: string, description: string | null, domain: string): Member => ({
+const member = (name: string, description: string | null, identifier: string | null): Member => ({
   logo_uri: null,
   name,
   description,
-  domain,
+  identifier,
 });
 
 // `member_count` (what the ecosystem has) and `members` (what the payload carries) are separate
@@ -164,6 +164,8 @@ const universities = ecosystem('Dutch Organization for Universities', 'Education
   member('TU Delft', 'Technical university', 'tudelft.nl'),
   member('Radboud Universiteit', 'Research university', 'ru.nl'),
   member('Hogeschool Utrecht', 'University of applied sciences', 'hu.nl'),
+  // `identifier` is nullable: the row degrades to name and description.
+  member('Stichting Onderwijsdata', 'Sector data foundation', null),
 ]);
 
 const ecosystems: EcosystemProfile[] = [
