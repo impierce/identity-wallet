@@ -62,8 +62,8 @@ pnpm --filter unime coverage
 
 Mobile commands are `pnpm tauri android init|dev|build` and `pnpm tauri ios init|dev|build`. Do not initialize or
 regenerate a mobile project unless the task calls for it. Tracked platform customizations live under
-`unime/src-tauri/gen-static/`; `unime/src-tauri/gen-static/apply.sh` copies them into Tauri's generated, ignored
-platform directories.
+`unime/src-tauri/gen-static/`; `scripts/override-generated-mobile-files.sh` overwrites the matching files in Tauri's
+generated, ignored platform directories with them.
 
 Rust validation can be run per package, matching CI:
 
@@ -195,15 +195,16 @@ For a release:
    unrelated dependency versions or lockfile values; allow Cargo and pnpm to update their own lockfile metadata when
    the relevant commands run.
 2. Commit the version bump as a dedicated, reviewable change.
-3. Run `unime/src-tauri/gen-static/apply.sh` to copy tracked mobile customizations into Tauri's ignored generated
-   projects, then regenerate icons with `cargo tauri icon` from `unime/src-tauri` when the icon source changed.
+3. Run `scripts/override-generated-mobile-files.sh` to overwrite Tauri's ignored generated mobile projects with the
+   tracked customizations, then regenerate icons with `cargo tauri icon` from `unime/src-tauri` when the icon source
+   changed.
 4. Build and sign both apps locally. Android requires the local signing values in
    `unime/src-tauri/gen/android/keystore.properties`; iOS requires the appropriate signing certificate and manually
    selected provisioning profile in Xcode. Signing credentials are local secrets and must never be committed.
 5. Produce the store artifacts with `pnpm tauri android build` and `pnpm tauri ios build`. The Android outputs are
    under `unime/src-tauri/gen/android/app/build/outputs/`, and the iOS `.ipa` is under
-   `unime/src-tauri/gen/apple/build/arm64/`. `scripts/copy-release-artifacts.sh` can copy the `.aab` and `.ipa` into
-   `unime/src-tauri/gen/` for upload.
+   `unime/src-tauri/gen/apple/build/arm64/`. `scripts/copy-release-artifacts.sh` collects the `.aab` and `.ipa` into
+   the git-ignored `out/` directory at the repository root for upload.
 6. Upload the signed artifacts to their respective app stores and manually make the new builds available to the team
    through the stores' internal-testing channels.
 7. After the team has tested and approved both builds, manually submit them for store review and public release.
@@ -228,7 +229,7 @@ revisiting that decision.
 
 In debug builds, state updates are written to `debug/state.json` by default. Set
 `LOG_STATE_UPDATES_TO_CONSOLE=true` in `unime/.env` to print them instead. The `debug/`, `.env`, build output,
-coverage, `node_modules/`, and `target/` paths are local artifacts and must not be committed.
+coverage, `out/`, `node_modules/`, and `target/` paths are local artifacts and must not be committed.
 
 ## Before handing off a change
 
