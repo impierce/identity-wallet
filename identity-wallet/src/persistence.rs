@@ -222,7 +222,7 @@ const MAX_ASSET_REDIRECTS: usize = 5;
 /// [`assert_public_destination`] first. `reqwest`'s own redirect handling cannot do that, as the
 /// policy it takes is synchronous and resolving a host is not.
 async fn fetch_asset(mut url: reqwest::Url) -> Result<reqwest::Response, AppError> {
-    let client = get_asset_http_client().await;
+    let client = get_asset_http_client().await?;
 
     for _ in 0..=MAX_ASSET_REDIRECTS {
         assert_public_destination(&url).await?;

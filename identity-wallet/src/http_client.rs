@@ -19,10 +19,13 @@ pub fn get_http_client_builder() -> reqwest::ClientBuilder {
 pub async fn get_http_client() -> Client {
     HTTP_CLIENT
         .get_or_init(|| async {
-            get_http_client_builder().build().unwrap_or_else(|err| {
-                log::error!("Failed to build reqwest client: {err}");
-                Client::new()
-            })
+            // Deliberately no `Client::new()` fallback: it would quietly drop the pinned
+            // `webpki-roots` trust anchors that `tls_config()` installs and leave the wallet
+            // trusting whatever the platform happens to, which is the thing #746 set out to stop.
+            // `Client::new()` panics on the same TLS-initialisation failures anyway.
+            get_http_client_builder()
+                .build()
+                .expect("HTTP client with pinned roots could not be built")
         })
         .await
         .clone()
@@ -31,19 +34,23 @@ pub async fn get_http_client() -> Client {
 /// Returns a globally shared `reqwest::Client` for downloading assets from URLs supplied by a
 /// remote party. It never follows redirects on its own: every hop has to pass
 /// [`assert_public_destination`] first, which the caller does while following them by hand.
-pub async fn get_asset_http_client() -> Client {
+///
+/// Failing here is not the same as falling back to a default client: a default client follows up
+/// to ten redirects by itself, which would carry every hop after the first past
+/// [`assert_public_destination`] and hand a remote party the SSRF this policy exists to prevent.
+pub async fn get_asset_http_client() -> Result<Client, AppError> {
     ASSET_HTTP_CLIENT
-        .get_or_init(|| async {
+        .get_or_try_init(|| async {
             get_http_client_builder()
                 .redirect(reqwest::redirect::Policy::none())
                 .build()
-                .unwrap_or_else(|err| {
+                .map_err(|err| {
                     log::error!("Failed to build reqwest client for assets: {err}");
-                    Client::new()
+                    AppError::DownloadAborted("asset HTTP client could not be built")
                 })
         })
         .await
-        .clone()
+        .cloned()
 }
 
 /// Whether requests to loopback, private and link-local addresses are allowed.

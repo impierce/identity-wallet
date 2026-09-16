@@ -5,7 +5,8 @@
 # (`iotaledger/iota`, `iotaledger/identity`, `impierce/openid4vc`) or through `tauri`. Anything that
 # a `cargo update` can fix is fixed there instead of being listed here.
 #
-# Each entry records why the vulnerable code is not reachable from UniMe, which is a mobile wallet:
+# Each entry records why the vulnerable code is not reachable from UniMe, or why its impact is
+# acceptable there. UniMe is a mobile wallet:
 # it makes outbound HTTPS requests, holds keys in Stronghold and renders the result. It runs no
 # server, no QUIC endpoint and no IOTA node, even though the IOTA node crates are linked in.
 #
@@ -26,10 +27,16 @@ ignore = [
     "RUSTSEC-2022-0093",
 
     # h2 0.3.27 — unbounded queueing of empty DATA frames.
-    # Reached through `hyper 0.14 <- reqwest 0.11 <- oid4vc*`. The wallet is an HTTP client there and
-    # drains the response body of every short-lived, user-initiated request, so a peer cannot grow
-    # the queue unattended. Upstream rates it low severity and ships no 0.3.x patch — the fix is
-    # `reqwest 0.13` in `impierce/openid4vc` (the wallet's own client is already on it).
+    # Reached through `hyper 0.14 <- reqwest 0.11 <- oid4vc*`, where the wallet is an HTTP client.
+    # The responses on that path are not all drained: `Wallet::get_authorization_server_metadata`
+    # drops a non-success response without reading its body before falling back to the OpenID
+    # configuration endpoint, and `Wallet::new` builds a plain `reqwest::Client` with no timeout
+    # behind retry middleware, so a hostile issuer can reach that condition more than once.
+    # It stays on this list because nothing in this repository can fix it: upstream rates it low
+    # severity and ships no 0.3.x patch, and the real fix is `reqwest 0.13` in
+    # `impierce/openid4vc` (the wallet's own client is already on it). What bounds the impact is the
+    # shape of the app rather than the code path — one-shot requests the user starts, to an issuer
+    # the user chose, in a foreground process whose worst case is being killed and restarted.
     "RUSTSEC-2026-0258",
 
     # quick-xml — quadratic attribute-name checking and unbounded namespace allocation, both
