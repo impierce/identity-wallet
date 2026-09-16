@@ -6,7 +6,8 @@
 
   export let logoUri: string | null | undefined = undefined;
   export let initials: string;
-  // A whole `bg-*` class string.
+  // A whole `bg-*` class string. May carry a `text-*` with it, which the monogram inherits: a pale
+  // tint needs dark initials. Defaults to white below, which suits the dark tints.
   export let tint: string;
 
   let className = '';
@@ -36,13 +37,17 @@ the monogram says and which tint it takes.
 - textClass (_default_: `'text-[18px]/[24px]'`)
 -->
 <div
-  class={twMerge('flex shrink-0 items-center justify-center overflow-hidden', showBadge ? tint : 'bg-white', className)}
+  class={twMerge(
+    'flex shrink-0 items-center justify-center overflow-hidden text-white',
+    showBadge ? tint : 'bg-white',
+    className,
+  )}
 >
   {#if imageId}
     <Image id={imageId} isTempAsset={true} bind:useFallback imgClass="size-full object-contain">
-      <span slot="fallback" class={twMerge('font-semibold text-white', textClass)}>{initials}</span>
+      <span slot="fallback" class={twMerge('font-semibold', textClass)}>{initials}</span>
     </Image>
   {:else}
-    <span class={twMerge('font-semibold text-white', textClass)}>{initials}</span>
+    <span class={twMerge('font-semibold', textClass)}>{initials}</span>
   {/if}
 </div>

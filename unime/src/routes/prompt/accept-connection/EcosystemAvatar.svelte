@@ -12,7 +12,7 @@
   export let textClass = 'text-[18px]/[24px]';
 
   $: initials = calculateOrgInitials(name);
-  $: tint = tintFor(name).badge;
+  $: tint = tintFor(name);
 </script>
 
 <!--

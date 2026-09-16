@@ -47,13 +47,8 @@ describe('tintFor', () => {
     expect(tintFor('Global FinTech Alliance')).toBe(tintFor('Global FinTech Alliance'));
   });
 
-  test('pairs each badge colour with a banner gradient of the same hue', () => {
-    // The detail banner fades between two stops of the tint the list badge uses. If these
-    // drifted apart, an ecosystem would change colour when opened.
-    const { badge, banner } = tintFor('Dutch Organization for Universities');
-    const hue = badge.replace('bg-', '').replace(/-base$/, '');
-    expect(banner).toContain(`from-${hue}-`);
-    expect(banner).toContain(`to-${hue}-`);
+  test('pairs the pale background with dark ink, so the initials stay legible on it', () => {
+    expect(tintFor('Dutch Organization for Universities')).toMatch(/^bg-credentials-[0-7] text-slate-800$/);
   });
 
   test('spreads a handful of names across more than one tint', () => {
@@ -65,11 +60,11 @@ describe('tintFor', () => {
       'Nordic Trust Framework',
       'Healthcare Data Alliance',
     ];
-    const distinct = new Set(names.map((name) => tintFor(name).badge));
+    const distinct = new Set(names.map(tintFor));
     expect(distinct.size).toBeGreaterThan(1);
   });
 
   test('does not fall over on an empty name', () => {
-    expect(tintFor('').badge).toBeTruthy();
+    expect(tintFor('')).toBeTruthy();
   });
 });

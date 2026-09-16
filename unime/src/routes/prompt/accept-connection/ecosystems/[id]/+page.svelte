@@ -41,19 +41,17 @@
 
   {#if ecosystem}
     <div class="flex min-h-full flex-col px-4 pb-7">
-      <div
-        class="flex flex-col items-center gap-3 rounded-2xl bg-linear-to-b {tintFor(ecosystem.name).banner} px-4 py-6"
-      >
+      <div class="flex flex-col items-center gap-3 rounded-2xl {tintFor(ecosystem.name)} px-4 py-6">
         <EcosystemAvatar
           name={ecosystem.name}
           logoUri={ecosystem.logo_uri}
-          class="size-[75px] rounded-2xl bg-white/25"
+          class="size-[75px] rounded-2xl bg-white/50"
           textClass="text-[22px]/[30px]"
         />
-        <p class="text-center text-[20px]/[28px] font-semibold text-white">
+        <p class="text-center text-[20px]/[28px] font-semibold">
           {ecosystem.name}
         </p>
-        <span class="rounded-md bg-white/25 px-2 py-1 text-[12px]/[18px] font-medium text-white">
+        <span class="rounded-md bg-white/50 px-2 py-1 text-[12px]/[18px] font-medium">
           {$LL.SCAN.CONNECTION_REQUEST.ECOSYSTEM_MEMBERS({ count: ecosystem.member_count })}
         </span>
       </div>

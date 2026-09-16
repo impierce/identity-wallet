@@ -3,27 +3,27 @@
 import { hashIndex } from '$lib/utils';
 
 // Whole class strings: Tailwind only emits classes it finds literally in the source.
-//
-// The `eco-*` colours are ours, defined in `app.css`, not Tailwind's ramps. Tailwind's ramps vary
-// wildly in chroma between hues -- `fuchsia-600` carries 0.293 against `emerald-500`'s 0.170 -- so
-// a palette built from them has one or two tints that shout while the rest sit quietly, and which
-// ecosystem shouts is down to a hash. Ours hold lightness and chroma fixed and vary only hue.
 const TINTS = [
-  { badge: 'bg-eco-indigo-base', banner: 'from-eco-indigo-base to-eco-indigo-soft' },
-  { badge: 'bg-eco-blue-base', banner: 'from-eco-blue-base to-eco-blue-soft' },
-  { badge: 'bg-eco-ochre-base', banner: 'from-eco-ochre-base to-eco-ochre-soft' },
-  { badge: 'bg-eco-green-base', banner: 'from-eco-green-base to-eco-green-soft' },
-  { badge: 'bg-eco-terracotta-base', banner: 'from-eco-terracotta-base to-eco-terracotta-soft' },
-  { badge: 'bg-eco-plum-base', banner: 'from-eco-plum-base to-eco-plum-soft' },
-] as const;
+  'bg-credentials-0',
+  'bg-credentials-1',
+  'bg-credentials-2',
+  'bg-credentials-3',
+  'bg-credentials-4',
+  'bg-credentials-5',
+  'bg-credentials-6',
+  'bg-credentials-7',
+];
 
-type Tint = (typeof TINTS)[number];
+// Every tint is pale, so what sits on one needs dark initials. Shipped with the tint because
+// `color` inherits: tinting an element inks its children too. No `dark:` -- the tint does not
+// change with the theme, so the ink must not either.
+const INK = 'text-slate-800';
 
 // Keyed on the name, not list position. The designs cycle by position, but `ecosystems` is
 // per-connection, so the same ecosystem sits at a different index under each verifier and would
 // change colour between connections. Repeats within one list are the accepted cost.
-export function tintFor(name: string): Tint {
-  return TINTS[hashIndex(name, TINTS.length)];
+export function tintFor(name: string): string {
+  return `${TINTS[hashIndex(name, TINTS.length)]} ${INK}`;
 }
 
 // "Dutch Organization for Universities" is DOU, not DOFU. Not localised: names come from the
