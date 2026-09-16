@@ -471,7 +471,26 @@ async fn fetch_ecosystem_profile(trust_anchor_entity_id: &url::Url) -> Option<Ec
     }
 
     match response.json::<EcosystemProfile>().await {
-        Ok(ecosystem_profile) => Some(ecosystem_profile),
+        Ok(ecosystem_profile) => {
+            // Download ecosystem logo if present.
+            if let Some(logo_uri) = &ecosystem_profile.logo_uri {
+                download_logo(logo_uri.as_str()).await;
+            }
+
+            // Download trust anchor logo if present.
+            if let Some(logo_uri) = &ecosystem_profile.ecosystem_leader.logo_uri {
+                download_logo(logo_uri.as_str()).await;
+            }
+
+            // Download member logos if present.
+            for member in &ecosystem_profile.members {
+                if let Some(logo_uri) = &member.logo_uri {
+                    download_logo(logo_uri.as_str()).await;
+                }
+            }
+
+            Some(ecosystem_profile)
+        }
         Err(e) => {
             warn!("Failed to parse ecosystem profile from {ecosystem_profile_url}: {e}");
             None
