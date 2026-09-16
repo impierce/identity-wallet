@@ -14,7 +14,16 @@ const versionTargets = [
   { path: 'unime/src-tauri/gen-static/android/app/tauri.properties', occurrences: 1 },
   { path: 'unime/src-tauri/gen-static/apple/unime_iOS/Info.plist', occurrences: 2 },
   { path: 'unime/src/routes/(app)/me/settings/about/+page.svelte', occurrences: 1 },
+  { path: 'Cargo.lock', packages: ['identity-wallet', 'unime'] },
 ];
+
+/** Total version occurrences the targets above account for. */
+const locationCount = versionTargets.reduce(
+  (total, target) => total + (target.packages?.length ?? target.occurrences),
+  0,
+);
+
+const escapeForRegExp = (value) => value.replaceAll(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 const usage = `Usage: pnpm version:bump <new-version> [--dry-run]
 
@@ -66,18 +75,44 @@ if (currentVersion === newVersion) {
 
 const updates = [];
 
+const abort = (message) => {
+  console.error(message);
+  console.error('No files were changed. Update the target list or version locations before retrying.');
+  process.exit(1);
+};
+
 // Validate every target before writing any file, avoiding a partial version bump.
 for (const target of versionTargets) {
   const absolutePath = resolve(repositoryRoot, target.path);
   const contents = await readFile(absolutePath, 'utf8');
+
+  if (target.packages) {
+    let updated = contents;
+
+    for (const packageName of target.packages) {
+      // Anchored on the `name`/`version` pair so only the workspace member's own entry moves.
+      const entry = new RegExp(
+        `(^name = "${escapeForRegExp(packageName)}"\nversion = ")${escapeForRegExp(currentVersion)}(")$`,
+        'm',
+      );
+
+      if (!entry.test(updated)) {
+        abort(`${target.path}: no \`${packageName}\` package entry at version ${currentVersion}.`);
+      }
+
+      updated = updated.replace(entry, `$1${newVersion}$2`);
+    }
+
+    updates.push({ absolutePath, contents: updated, path: target.path });
+    continue;
+  }
+
   const actualOccurrences = contents.split(currentVersion).length - 1;
 
   if (actualOccurrences !== target.occurrences) {
-    console.error(
+    abort(
       `${target.path}: expected ${target.occurrences} occurrence(s) of ${currentVersion}, found ${actualOccurrences}.`,
     );
-    console.error('No files were changed. Update the target list or version locations before retrying.');
-    process.exit(1);
   }
 
   updates.push({
@@ -88,13 +123,13 @@ for (const target of versionTargets) {
 }
 
 if (dryRun) {
-  console.log(`Dry run: would replace ${currentVersion} with ${newVersion} in nine locations:`);
+  console.log(`Dry run: would replace ${currentVersion} with ${newVersion} in ${locationCount} locations:`);
 } else {
   for (const update of updates) {
     await writeFile(update.absolutePath, update.contents);
   }
 
-  console.log(`Replaced ${currentVersion} with ${newVersion} in nine locations:`);
+  console.log(`Replaced ${currentVersion} with ${newVersion} in ${locationCount} locations:`);
 }
 
 for (const update of updates) {
@@ -103,6 +138,6 @@ for (const update of updates) {
 
 if (!dryRun) {
   console.log(
-    '\nReview the diff, then run the relevant Cargo and pnpm checks so lockfile metadata is updated normally.',
+    '\nReview the diff. `Cargo.lock` is bumped here too, so the commit is complete without a Cargo run first.',
   );
 }

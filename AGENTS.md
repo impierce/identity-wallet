@@ -175,8 +175,8 @@ UniMe does not strictly follow semantic versioning or use an automated semantic-
 one current version live in each app store, so releases use a manually selected version number and a controlled,
 manual promotion process.
 
-The current version string occurs in nine authoritative places across eight files (the Apple plist contains it
-twice):
+The current version string occurs in eleven authoritative places across nine files (the Apple plist contains it
+twice, and `Cargo.lock` carries an entry per workspace member):
 
 1. `Cargo.toml` (`workspace.package.version`)
 2. `identity-wallet/Cargo.toml`
@@ -186,14 +186,16 @@ twice):
 6. `unime/src-tauri/gen-static/android/app/tauri.properties`
 7. `unime/src-tauri/gen-static/apple/unime_iOS/Info.plist` (`CFBundleShortVersionString` and `CFBundleVersion`)
 8. `unime/src/routes/(app)/me/settings/about/+page.svelte`
+9. `Cargo.lock` (the `identity-wallet` and `unime` package entries)
 
 For a release:
 
 1. Choose the next version and run `pnpm version:bump <new-version>`. Use `--dry-run` to verify the targets without
-   changing them. The script infers the current version and replaces it only after finding all nine expected
-   occurrences; alternatively, update the same locations by hand. Review the resulting diff. Do not globally replace
-   unrelated dependency versions or lockfile values; allow Cargo and pnpm to update their own lockfile metadata when
-   the relevant commands run.
+   changing them. The script infers the current version and replaces it only after finding all eleven expected
+   occurrences; alternatively, update the same locations by hand. In `Cargo.lock` it rewrites only the two workspace
+   package entries, so the bump needs no Cargo run to be complete. Review the resulting diff. Do not globally replace
+   unrelated dependency versions or other lockfile values; allow Cargo and pnpm to update the rest of their lockfile
+   metadata when the relevant commands run.
 2. Commit the version bump as a dedicated, reviewable change.
 3. Run `scripts/override-generated-mobile-files.sh` to overwrite Tauri's ignored generated mobile projects with the
    tracked customizations, then regenerate icons with `cargo tauri icon` from `unime/src-tauri` when the icon source

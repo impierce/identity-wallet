@@ -149,8 +149,8 @@ You can simulate safe area insets during development by overriding CSS variables
 
 ## Release a new version
 
-1. Run `pnpm version:bump <new-version>` to replace the current application version in all nine authoritative
-   locations. Add `--dry-run` to verify the replacements without changing files. The same locations can be updated by
+1. Run `pnpm version:bump <new-version>` to replace the current application version in all eleven authoritative
+   locations, `Cargo.lock`'s two workspace entries included. Add `--dry-run` to verify the replacements without changing files. The same locations can be updated by
    hand if necessary. Review the diff and be **cautious** not to replace versions of unrelated dependencies or edit
    lockfile values directly.
 2. Run `scripts/override-generated-mobile-files.sh` which overwrites the changed files in the (untracked) generated folders for Android and iOS.
