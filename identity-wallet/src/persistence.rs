@@ -1,4 +1,4 @@
-use crate::http_client::get_http_client;
+use crate::http_client::{assert_public_destination, get_asset_http_client};
 use crate::migrations::apply_state_migrations;
 use crate::state::APP_STATE_VERSION;
 use crate::{error::AppError, state::AppState};
@@ -175,6 +175,7 @@ pub fn clear_all_assets() -> Result<(), AppError> {
 /// Restrictions:
 /// - max. file size: 2 MB
 /// - supported file types: `.png`, `.svg`
+/// - the URL, and every redirect it takes, has to point at a public host
 pub async fn download_asset(url: reqwest::Url, id: &str) -> Result<(), AppError> {
     let assets_dir = ASSETS_DIR.lock().unwrap().as_path().to_owned();
     let tmp_dir = assets_dir.join("tmp");
@@ -184,7 +185,7 @@ pub async fn download_asset(url: reqwest::Url, id: &str) -> Result<(), AppError>
         std::fs::create_dir(&tmp_dir)?;
     }
 
-    let response = get_http_client().await.get(url.clone()).send().await?;
+    let response = fetch_asset(url).await?;
 
     let file_extension = response
         .headers()
@@ -212,6 +213,37 @@ pub async fn download_asset(url: reqwest::Url, id: &str) -> Result<(), AppError>
     copy(&mut content, &mut file)?;
 
     Ok(())
+}
+
+/// How many redirects an asset download may follow before it is given up on.
+const MAX_ASSET_REDIRECTS: usize = 5;
+
+/// Requests `url`, following redirects by hand so that each hop is checked against
+/// [`assert_public_destination`] first. `reqwest`'s own redirect handling cannot do that, as the
+/// policy it takes is synchronous and resolving a host is not.
+async fn fetch_asset(mut url: reqwest::Url) -> Result<reqwest::Response, AppError> {
+    let client = get_asset_http_client().await?;
+
+    for _ in 0..=MAX_ASSET_REDIRECTS {
+        assert_public_destination(&url).await?;
+
+        let response = client.get(url.clone()).send().await?;
+        if !response.status().is_redirection() {
+            return Ok(response);
+        }
+
+        let location = response
+            .headers()
+            .get(reqwest::header::LOCATION)
+            .and_then(|location| location.to_str().ok())
+            .ok_or(AppError::DownloadAborted("redirect without a usable location"))?;
+
+        url = url
+            .join(location)
+            .map_err(|_| AppError::DownloadAborted("redirect to an unparseable location"))?;
+    }
+
+    Err(AppError::DownloadAborted("too many redirects"))
 }
 
 /// Persists an asset from the `/assets/tmp` folder to the `/assets` folder inside the system-specific data directory.

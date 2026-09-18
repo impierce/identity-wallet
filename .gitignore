@@ -35,3 +35,6 @@ lerna-debug.log*
 
 # Debug
 debug/
+
+# Release artifacts staged for upload by scripts/copy-release-artifacts.sh
+out/

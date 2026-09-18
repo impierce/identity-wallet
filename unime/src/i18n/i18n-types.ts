@@ -915,7 +915,11 @@ type RootTranslation = {
 			/**
 			 * S​e​e​ ​a​l​l
 			 */
-			SEE_ALL: string
+			SEE_ALL_CERTIFICATIONS: string
+			/**
+			 * S​e​e​ ​a​l​l
+			 */
+			SEE_ALL_ECOSYSTEMS: string
 			/**
 			 * E​c​o​s​y​s​t​e​m​s
 			 */
@@ -2502,7 +2506,11 @@ export type TranslationFunctions = {
 			/**
 			 * See all
 			 */
-			SEE_ALL: () => LocalizedString
+			SEE_ALL_CERTIFICATIONS: () => LocalizedString
+			/**
+			 * See all
+			 */
+			SEE_ALL_ECOSYSTEMS: () => LocalizedString
 			/**
 			 * Ecosystems
 			 */

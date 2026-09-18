@@ -44,14 +44,15 @@ tap target — "See all" is a label, not a separate link.
       {$LL.SCAN.CONNECTION_REQUEST.ECOSYSTEMS()}
     </p>
     <span class="text-[13px]/[24px] font-normal text-primary">
-      {$LL.SCAN.CONNECTION_REQUEST.SEE_ALL()}
+      {$LL.SCAN.CONNECTION_REQUEST.SEE_ALL_ECOSYSTEMS()}
     </span>
   </div>
 
   <div class="flex items-center gap-3 pt-3">
     <div class="flex shrink-0 items-center -space-x-2">
-      <!-- Keyed by name: no id, and the badge derives from the name anyway. -->
-      {#each stack as ecosystem (ecosystem.name)}
+      <!-- Keyed by index: `EcosystemProfile` has no id and names are not guaranteed unique, which
+           a keyed block would reject at runtime. The stack is fixed within one prompt. -->
+      {#each stack as ecosystem, index (index)}
         <EcosystemAvatar
           name={ecosystem.name}
           logoUri={ecosystem.logo_uri}
