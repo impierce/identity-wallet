@@ -5,6 +5,7 @@
   import { page } from '$app/state';
   import {
     PUBLIC_DEV_MODE_MENU_EXPANDED,
+    PUBLIC_DEV_REDIRECT,
     PUBLIC_DEV_SHOW_CURRENT_ROUTE,
     PUBLIC_STYLE_SAFE_AREA_INSETS,
   } from '$env/static/public';
@@ -43,6 +44,10 @@
   let unlistenDeepLink: UnlistenFn;
 
   const pendingDeepLinkUrl = writable<URL | undefined>();
+
+  // Only the pathname, because `PUBLIC_DEV_REDIRECT` may carry a query string — as it does
+  // for `?mock=` previews — which must not affect the comparison below. `undefined` when unset.
+  const devRedirectPath = PUBLIC_DEV_REDIRECT ? new URL(PUBLIC_DEV_REDIRECT, 'http://localhost').pathname : undefined;
 
   async function processDeepLink(url: URL) {
     info(`App is ready, processing pending deep link: ${url}`);
@@ -117,9 +122,11 @@
         }
       }
 
-   
-if (!page.url.pathname.startsWith('/prompt/accept-connection')) {
-        redirectPath = '/prompt/accept-connection?mock=eco-many';
+      // DEV: `PUBLIC_DEV_REDIRECT=<path>` in `.env` boots the app into whatever page you
+      // are working on. Skipped once we are already inside that path, so this block —
+      // which re-runs on every state push — does not bounce sub-routes back to it.
+      if (devRedirectPath && !page.url.pathname.startsWith(devRedirectPath)) {
+        redirectPath = PUBLIC_DEV_REDIRECT;
       }
 
       if (redirectPath) {

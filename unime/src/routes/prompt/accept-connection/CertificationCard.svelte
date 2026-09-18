@@ -10,7 +10,7 @@
 
   export let certification: LinkedVerifiableCredentialData;
 
-  // Carry `?mock=` across so DEV previews survive the navigation.
+  // Carry `?mock=` across so fixture previews survive the navigation.
   $: href = `/prompt/accept-connection/certifications/${certification.credential.id}${page.url.search}`;
 
   $: logoUri = certification.credential.metadata.icon ?? certification.credential.issuer_logo_uri;
