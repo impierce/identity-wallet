@@ -22,7 +22,7 @@ async fn when_size_is_less_than_2_mb_then_download_should_start() {
         .await;
 
     assert!(
-        download_asset(format!("{}/image.png", &mock_server.uri()).parse().unwrap(), "image")
+        download_asset(format!("{}/image.png", mock_server.uri()).parse().unwrap(), "image")
             .await
             .is_ok()
     );
@@ -46,7 +46,7 @@ async fn when_size_is_bigger_than_2_mb_then_download_should_fail() {
         .await;
 
     assert!(
-        download_asset(format!("{}/image.png", &mock_server.uri()).parse().unwrap(), "image")
+        download_asset(format!("{}/image.png", mock_server.uri()).parse().unwrap(), "image")
             .await
             .is_err()
     );
@@ -67,7 +67,7 @@ async fn when_content_type_is_supported_then_download_should_start() {
         .await;
 
     assert!(
-        download_asset(format!("{}/image", &mock_server.uri()).parse().unwrap(), "image")
+        download_asset(format!("{}/image", mock_server.uri()).parse().unwrap(), "image")
             .await
             .is_ok()
     );
@@ -88,7 +88,7 @@ async fn when_content_type_is_not_supported_then_download_should_fail() {
         .await;
 
     assert!(matches!(
-        download_asset(format!("{}/image.png", &mock_server.uri()).parse().unwrap(), "image").await,
+        download_asset(format!("{}/image.png", mock_server.uri()).parse().unwrap(), "image").await,
         Err(AppError::DownloadAborted("content-type is not supported"))
     ));
 }

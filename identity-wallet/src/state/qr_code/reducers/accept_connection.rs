@@ -407,9 +407,14 @@ fn strip_client_id_prefix(client_id: &str) -> String {
         .unwrap_or_else(|_| client_id.to_string())
 }
 
+/// The prompt waits on these requests, so a long tail of slow trust anchors cannot stall it.
+const MAX_TRUST_ANCHORS: usize = 10;
+
 /// Discovers every OpenID Federation trust chain reachable from `entity_id` which is equal to the `client_metadata.connection_url`.
 /// Then it fetches the ecosystem profile hosted by each chain's trust anchor. Returns `None` if no trust chains are found
 /// or none of their trust anchors expose an ecosystem profile.
+///
+/// Anchors are deduplicated first: the prompt shows one card per ecosystem, not one per path to it.
 async fn fetch_ecosystems(entity_id: &url::Url) -> Option<Vec<EcosystemProfile>> {
     // In the future this must be more flexible to support other types of clients.
     let federation_client = FederationClient::with_http_client(ReqwestHttpClient::with_client(get_http_client().await));
@@ -422,7 +427,8 @@ async fn fetch_ecosystems(entity_id: &url::Url) -> Option<Vec<EcosystemProfile>>
         }
     };
 
-    let mut ecosystems = Vec::new();
+    // Discovery order is kept so the prompt lists the shortest chains' anchors first.
+    let mut trust_anchor_ids: Vec<url::Url> = Vec::new();
     for trust_chain in &trust_chains {
         let Ok((trust_anchor_id, _)) = trust_chain.trust_anchor_entity_id_and_configuration() else {
             warn!(
@@ -431,16 +437,51 @@ async fn fetch_ecosystems(entity_id: &url::Url) -> Option<Vec<EcosystemProfile>>
             continue;
         };
 
-        if let Some(ecosystem_profile) = fetch_ecosystem_profile(&trust_anchor_id).await {
-            ecosystems.push(ecosystem_profile);
+        if trust_anchor_ids.contains(&trust_anchor_id) {
+            continue;
         }
+
+        if trust_anchor_ids.len() == MAX_TRUST_ANCHORS {
+            warn!("More than {MAX_TRUST_ANCHORS} trust anchors for entity ID {entity_id}, ignoring the rest");
+            break;
+        }
+
+        trust_anchor_ids.push(trust_anchor_id);
     }
+
+    let ecosystems: Vec<EcosystemProfile> =
+        futures::future::join_all(trust_anchor_ids.iter().map(fetch_ecosystem_profile))
+            .await
+            .into_iter()
+            .flatten()
+            .collect();
 
     info!("Fetched ecosystems for entity ID {entity_id}: {ecosystems:?}");
 
     match ecosystems {
         vec if !vec.is_empty() => Some(vec),
         _ => None,
+    }
+}
+
+/// The member list has no length limit, so logo downloads are throttled rather than fired off at
+/// once. Avatars fall back to initials for whatever has not arrived.
+const CONCURRENT_LOGO_DOWNLOADS: usize = 8;
+
+async fn download_profile_logos(ecosystem_profile: &EcosystemProfile) {
+    let logo_uris = ecosystem_profile
+        .logo_uri
+        .iter()
+        .chain(ecosystem_profile.ecosystem_leader.logo_uri.iter())
+        .chain(
+            ecosystem_profile
+                .members
+                .iter()
+                .filter_map(|member| member.logo_uri.as_ref()),
+        );
+
+    for chunk in logo_uris.collect::<Vec<_>>().chunks(CONCURRENT_LOGO_DOWNLOADS) {
+        futures::future::join_all(chunk.iter().map(|logo_uri| download_logo(logo_uri.as_str()))).await;
     }
 }
 
@@ -472,23 +513,7 @@ async fn fetch_ecosystem_profile(trust_anchor_entity_id: &url::Url) -> Option<Ec
 
     match response.json::<EcosystemProfile>().await {
         Ok(ecosystem_profile) => {
-            // Download ecosystem logo if present.
-            if let Some(logo_uri) = &ecosystem_profile.logo_uri {
-                download_logo(logo_uri.as_str()).await;
-            }
-
-            // Download trust anchor logo if present.
-            if let Some(logo_uri) = &ecosystem_profile.ecosystem_leader.logo_uri {
-                download_logo(logo_uri.as_str()).await;
-            }
-
-            // Download member logos if present.
-            for member in &ecosystem_profile.members {
-                if let Some(logo_uri) = &member.logo_uri {
-                    download_logo(logo_uri.as_str()).await;
-                }
-            }
-
+            download_profile_logos(&ecosystem_profile).await;
             Some(ecosystem_profile)
         }
         Err(e) => {
@@ -519,7 +544,7 @@ mod tests {
     use serde_json::json;
     use std::sync::Arc;
     use tempfile::{NamedTempFile, TempDir};
-    use wiremock::matchers::{method, path};
+    use wiremock::matchers::{method, path, query_param};
     use wiremock::{Mock, MockServer, ResponseTemplate};
 
     const ISSUER_NAME: &str = "University";
@@ -907,7 +932,8 @@ mod tests {
             .await;
     }
 
-    /// Mounts the Subordinate Statement a trust anchor issues about `subject_entity_id` on its `/federation-fetch` endpoint.
+    /// Mounts the Subordinate Statement a superior issues about `subject_entity_id`. Matched on
+    /// `sub`, so one server can issue statements about several subordinates.
     async fn mount_subordinate_statement(
         trust_anchor_server: &MockServer,
         trust_anchor_id: &url::Url,
@@ -926,6 +952,7 @@ mod tests {
 
         Mock::given(method("GET"))
             .and(path("/federation-fetch"))
+            .and(query_param("sub", subject_entity_id.as_str()))
             .respond_with(
                 ResponseTemplate::new(200)
                     .set_body_string(encode_entity_statement(&statement))
@@ -947,15 +974,35 @@ mod tests {
                     "logoUri": format!("{}/logo.png", trust_anchor_server.uri()),
                     "name": name,
                     "description": null,
-                    "domain": trust_anchor_server.uri(),
+                    "identifier": trust_anchor_server.uri(),
                 },
                 "memberCount": 1,
                 "members": [{
                     "logoUri": format!("{}/logo.png", trust_anchor_server.uri()),
                     "name": name,
                     "description": null,
-                    "domain": trust_anchor_server.uri(),
+                    "identifier": trust_anchor_server.uri(),
                 }],
+            })))
+            .mount(trust_anchor_server)
+            .await;
+    }
+
+    /// The shape `ssi-agent` served before it gained `members` and renamed `domain` to `identifier`.
+    async fn mount_legacy_ecosystem_profile(trust_anchor_server: &MockServer, name: &str) {
+        Mock::given(method("GET"))
+            .and(path("/public/ecosystem-profile"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(json!({
+                "logoUri": format!("{}/logo.png", trust_anchor_server.uri()),
+                "name": name,
+                "description": null,
+                "ecosystemLeader": {
+                    "logoUri": format!("{}/logo.png", trust_anchor_server.uri()),
+                    "name": name,
+                    "description": null,
+                    "domain": trust_anchor_server.uri(),
+                },
+                "memberCount": 2,
             })))
             .mount(trust_anchor_server)
             .await;
@@ -1033,5 +1080,69 @@ mod tests {
         let names: std::collections::HashSet<_> = ecosystems.iter().map(|profile| profile.name.as_str()).collect();
         assert!(names.contains("Ecosystem One"));
         assert!(names.contains("Ecosystem Two"));
+    }
+
+    #[tokio::test]
+    async fn fetch_ecosystems_returns_one_profile_when_several_chains_share_a_trust_anchor() {
+        let leaf_server = MockServer::start().await;
+        let intermediate_server = MockServer::start().await;
+        let trust_anchor_server = MockServer::start().await;
+
+        let leaf_id: url::Url = leaf_server.uri().parse().unwrap();
+        let intermediate_id: url::Url = intermediate_server.uri().parse().unwrap();
+        let trust_anchor_id: url::Url = trust_anchor_server.uri().parse().unwrap();
+
+        // Subordinate to both, so discovery finds `leaf -> intermediate -> anchor` and
+        // `leaf -> anchor`, ending at the same anchor.
+        mount_entity_configuration(
+            &leaf_server,
+            &leaf_id,
+            "Leaf",
+            vec![intermediate_id.clone(), trust_anchor_id.clone()],
+        )
+        .await;
+        mount_entity_configuration(
+            &intermediate_server,
+            &intermediate_id,
+            "Intermediate",
+            vec![trust_anchor_id.clone()],
+        )
+        .await;
+        mount_entity_configuration(&trust_anchor_server, &trust_anchor_id, "Trust Anchor", vec![]).await;
+
+        mount_subordinate_statement(&intermediate_server, &intermediate_id, &leaf_id).await;
+        mount_subordinate_statement(&trust_anchor_server, &trust_anchor_id, &intermediate_id).await;
+        mount_subordinate_statement(&trust_anchor_server, &trust_anchor_id, &leaf_id).await;
+        mount_ecosystem_profile(&trust_anchor_server, "Ecosystem One").await;
+
+        let ecosystems = fetch_ecosystems(&leaf_id).await.unwrap();
+
+        assert_eq!(ecosystems.len(), 1);
+        assert_eq!(ecosystems[0].name, "Ecosystem One");
+    }
+
+    #[tokio::test]
+    async fn fetch_ecosystems_keeps_a_profile_in_the_legacy_shape() {
+        let leaf_server = MockServer::start().await;
+        let trust_anchor_server = MockServer::start().await;
+
+        let leaf_id: url::Url = leaf_server.uri().parse().unwrap();
+        let trust_anchor_id: url::Url = trust_anchor_server.uri().parse().unwrap();
+
+        mount_entity_configuration(&leaf_server, &leaf_id, "Leaf", vec![trust_anchor_id.clone()]).await;
+        mount_entity_configuration(&trust_anchor_server, &trust_anchor_id, "Trust Anchor", vec![]).await;
+        mount_subordinate_statement(&trust_anchor_server, &trust_anchor_id, &leaf_id).await;
+        mount_legacy_ecosystem_profile(&trust_anchor_server, "Ecosystem One").await;
+
+        let ecosystems = fetch_ecosystems(&leaf_id).await.unwrap();
+
+        assert_eq!(ecosystems.len(), 1);
+        assert_eq!(ecosystems[0].name, "Ecosystem One");
+        assert_eq!(ecosystems[0].member_count, 2);
+        assert!(ecosystems[0].members.is_empty());
+        assert_eq!(
+            ecosystems[0].ecosystem_leader.identifier.as_deref(),
+            Some(trust_anchor_server.uri().as_str())
+        );
     }
 }

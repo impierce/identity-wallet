@@ -1,0 +1,48 @@
+# Configuration for `cargo audit`, run by `.github/workflows/audit.yaml`.
+#
+# Every entry below needs a semver-incompatible upgrade of a crate reached only transitively,
+# through a git-pinned dependency (`iotaledger/iota`, `iotaledger/identity`, `impierce/openid4vc`)
+# or through `tauri`. Anything `cargo update` can fix is fixed there instead. Each entry records why
+# the vulnerable code is unreachable from a wallet that makes outbound HTTPS requests, holds keys in
+# Stronghold, and runs no server, QUIC endpoint or IOTA node.
+#
+# Revisit whenever the pinned revisions move.
+
+[advisories]
+ignore = [
+    # curve25519-dalek 3.2.0 — timing variability in `Scalar29::sub`/`Scalar52::sub`.
+    # Through `did-key <- oid4vc-core`, used only for `did_key::resolve()`. No secret scalar: the
+    # wallet signs through Stronghold. Fix belongs upstream in `impierce/openid4vc`.
+    "RUSTSEC-2024-0344",
+
+    # ed25519-dalek 1.0.1 — double public key signing oracle. Same `did-key` path, which never
+    # signs.
+    "RUSTSEC-2022-0093",
+
+    # h2 0.3.27 — unbounded queueing of empty DATA frames. Client-side through
+    # `reqwest 0.11 <- oid4vc*`, which does not drain every response. Upstream rates it low and
+    # ships no 0.3.x patch; the fix is `reqwest 0.13` in `impierce/openid4vc`. Bounded by the shape
+    # of the app: one-shot requests the user starts, to an issuer the user chose.
+    "RUSTSEC-2026-0258",
+
+    # quick-xml — denial-of-service on untrusted XML. Neither path parses any: `plist <- tauri`
+    # reads the app's own bundled property lists, `object_store <- iota-config` serves an object
+    # store the wallet never configures.
+    "RUSTSEC-2026-0194",
+    "RUSTSEC-2026-0195",
+
+    # rkyv 0.7.46 — out-of-bounds reads. A `Cargo.lock` entry only: it hangs off a `rust_decimal`
+    # feature nothing enables, so `cargo tree -i rkyv` is empty on every target.
+    "RUSTSEC-2026-0235",
+
+    # rsa 0.8.2 — Marvin attack. Needs observable RSA private-key operations; the wallet performs
+    # none. No fixed version upstream.
+    "RUSTSEC-2023-0071",
+
+    # rustls-webpki 0.101.7 — CRL parsing panic and two permissive name-constraint checks. Through
+    # `rustls 0.21 <- reqwest 0.11`, configured without CRLs; the name constraints need CA
+    # misissuance. The wallet's own client is on the patched 0.103.
+    "RUSTSEC-2026-0104",
+    "RUSTSEC-2026-0098",
+    "RUSTSEC-2026-0099",
+]

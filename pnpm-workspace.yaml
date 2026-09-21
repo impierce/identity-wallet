@@ -2,3 +2,10 @@ packages:
   - 'unime'
 allowBuilds:
   esbuild: true
+# Transitive packages whose direct dependant still resolves a vulnerable version. Each override stays
+# inside the major its dependant expects. Drop an entry once the dependant resolves a patched version
+# by itself.
+overrides:
+  # @sveltejs/kit resolves cookie 0.6.0 — GHSA-pxg6-pf52-xh8x, out-of-bounds characters accepted.
+  # Held at 0.7.x: cookie 1.x and later changed the API @sveltejs/kit imports.
+  cookie@<0.7.0: '^0.7.0'

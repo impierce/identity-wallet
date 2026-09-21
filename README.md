@@ -149,11 +149,14 @@ You can simulate safe area insets during development by overriding CSS variables
 
 ## Release a new version
 
-1. Search the entire project for the current version string (such as `0.6.2`) and replace them with the new version string.
-   Be **cautious** not to replace versions of any other dependencies (in `Cargo.toml`, `Cargo.lock`, `package.json`, `package-lock.json`).
-2. Run the script in `unime/src-tauri/gen-static/apply.sh` which copies over the changed files into the (untracked) generated folders for Android and iOS.
+1. Run `pnpm version:bump <new-version>` to replace the current application version in all eleven authoritative
+   locations, `Cargo.lock`'s two workspace entries included. Add `--dry-run` to verify the replacements without changing files. The same locations can be updated by
+   hand if necessary. Review the diff and be **cautious** not to replace versions of unrelated dependencies or edit
+   lockfile values directly.
+2. Run `scripts/override-generated-mobile-files.sh` which overwrites the changed files in the (untracked) generated folders for Android and iOS.
 3. Inside `unime/src-tauri` run `cargo tauri icon`.
 4. To create a release build, there is a special tweak for the respective platform:
    - For **iOS**, open Xcode and open the root file `unime.xcodeproj`. Go to `Signing & Capabilities`, disable `Automatically manage signing` and select the `Provisioning Profile` manually.
    - For **Android**, create a `keystore.properties` file in `unime/src-tauri/gen/android` which contains the secrets required in `build.gradle.kts` (such as `keyAlias`, etc.).
-5. Run `pnpm tauri ios build` and `pnpm tauri android build` to build the apps. The iOS build (`.ipa`) will be in `unime/src-tauri/gen/apple/build/arm64` and the Android builds (`.apk` and `.aab`) will be in `unime/src-tauri/gen/android/app/build/outputs/`.
+5. Run `scripts/build-mobile-releases.sh` to build both apps, which wraps `pnpm tauri android build` and `pnpm tauri ios build`. The iOS build (`.ipa`) will be in `unime/src-tauri/gen/apple/build/arm64` and the Android builds (`.apk` and `.aab`) will be in `unime/src-tauri/gen/android/app/build/outputs/`.
+6. Run `scripts/copy-release-artifacts.sh` to collect the `.aab` and `.ipa` into the git-ignored `out/` folder at the repository root, ready to be uploaded to the app stores.

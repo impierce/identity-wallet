@@ -49,7 +49,7 @@ the tap target — "See all" is a label, not a separate link.
       {$LL.SCAN.CONNECTION_REQUEST.CERTIFICATIONS()}
     </p>
     <span class="text-[13px]/[24px] font-normal text-primary">
-      {$LL.SCAN.CONNECTION_REQUEST.SEE_ALL()}
+      {$LL.SCAN.CONNECTION_REQUEST.SEE_ALL_CERTIFICATIONS()}
     </span>
   </div>
 

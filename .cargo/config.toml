@@ -1,0 +1,5 @@
+[env]
+# The suites set the process-global `STRONGHOLD` and `ASSETS_DIR` paths in `persistence.rs` and read
+# them back, so concurrent tests swap the path out from under each other and fail with
+# `KeyStorageError(KeyNotFound)`. Serial until that shared state is gone; the suites take seconds.
+RUST_TEST_THREADS = "1"

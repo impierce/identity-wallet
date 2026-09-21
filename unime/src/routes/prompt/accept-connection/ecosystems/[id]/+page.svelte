@@ -27,13 +27,17 @@
   // `member_count` is the ecosystem's total and can exceed what was sent.
   $: members = ecosystem?.members ?? [];
 
+  // Reactive, not `onMount`: SvelteKit reuses this component when only `[id]` changes.
+  let mounted = false;
   onMount(() => {
-    if (!ecosystem) {
-      warn(`No ecosystem found at index: \`${page.params.id}\``);
-      // Stay inside the prompt subtree: leaving it cancels the flow. See ../../+layout.svelte.
-      history.back();
-    }
+    mounted = true;
   });
+
+  $: if (mounted && !ecosystem) {
+    warn(`No ecosystem found at index: \`${page.params.id}\``);
+    // Stay inside the prompt subtree: leaving it cancels the flow. See ../../+layout.svelte.
+    history.back();
+  }
 </script>
 
 <div class="safe-area-height flex hide-scrollbar flex-col items-stretch overflow-y-auto bg-background-alt">
@@ -91,9 +95,8 @@
               {ecosystem.member_count}
             </span>
           </div>
-          <!-- Keyed by domain: `Member` has no id and it is the closest thing to one. -->
           <div class="divide-y divide-slate-200 dark:divide-slate-600">
-            {#each members as member (member.domain)}
+            {#each members as member}
               <MemberRow {member} />
             {/each}
           </div>

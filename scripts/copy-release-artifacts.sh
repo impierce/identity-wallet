@@ -1,4 +1,14 @@
-# Copies the release artifacts (iOS, Android) from the generated resources to the /gen root folder to be uploaded to the app stores.
+#!/usr/bin/env bash
+# Collects the signed `.aab` and `.ipa` into the git-ignored /out, created here if missing. It sits
+# outside unime/src-tauri/gen so `tauri android init` / `tauri ios init` cannot wipe them.
 
-cp -v ../unime/src-tauri/gen/android/app/build/outputs/bundle/universalRelease/app-universal-release.aab ../unime/src-tauri/gen/
-cp -v ../unime/src-tauri/gen/apple/build/arm64/UniMe.ipa ../unime/src-tauri/gen/
+set -euo pipefail
+
+repository_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+generated_dir="${repository_root}/unime/src-tauri/gen"
+output_dir="${repository_root}/out"
+
+mkdir -p "${output_dir}"
+
+cp -v "${generated_dir}/android/app/build/outputs/bundle/universalRelease/app-universal-release.aab" "${output_dir}/"
+cp -v "${generated_dir}/apple/build/arm64/UniMe.ipa" "${output_dir}/"
