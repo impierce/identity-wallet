@@ -407,18 +407,14 @@ fn strip_client_id_prefix(client_id: &str) -> String {
         .unwrap_or_else(|_| client_id.to_string())
 }
 
-/// Upper bound on the trust anchors a single connection can make the wallet fetch a profile from.
-/// The accept-connection prompt is not shown until these requests settle, so a federation exposing
-/// a long tail of slow trust anchors must not be able to stall it indefinitely.
+/// The prompt waits on these requests, so a long tail of slow trust anchors cannot stall it.
 const MAX_TRUST_ANCHORS: usize = 10;
 
 /// Discovers every OpenID Federation trust chain reachable from `entity_id` which is equal to the `client_metadata.connection_url`.
 /// Then it fetches the ecosystem profile hosted by each chain's trust anchor. Returns `None` if no trust chains are found
 /// or none of their trust anchors expose an ecosystem profile.
 ///
-/// Several chains can end at the same trust anchor, so anchors are deduplicated before they are
-/// fetched: the prompt shows one card per ecosystem, not one per path to it. The remaining requests
-/// run concurrently, bounded by [`MAX_TRUST_ANCHORS`].
+/// Anchors are deduplicated first: the prompt shows one card per ecosystem, not one per path to it.
 async fn fetch_ecosystems(entity_id: &url::Url) -> Option<Vec<EcosystemProfile>> {
     // In the future this must be more flexible to support other types of clients.
     let federation_client = FederationClient::with_http_client(ReqwestHttpClient::with_client(get_http_client().await));
@@ -468,12 +464,10 @@ async fn fetch_ecosystems(entity_id: &url::Url) -> Option<Vec<EcosystemProfile>>
     }
 }
 
-/// How many logos of one ecosystem profile are downloaded at the same time. The member list comes
-/// from the trust anchor and has no length limit, so the downloads are throttled rather than fired
-/// off all at once. Avatars fall back to initials for whatever has not arrived yet.
+/// The member list has no length limit, so logo downloads are throttled rather than fired off at
+/// once. Avatars fall back to initials for whatever has not arrived.
 const CONCURRENT_LOGO_DOWNLOADS: usize = 8;
 
-/// Downloads the logos of an ecosystem, its leader and its members, a few at a time.
 async fn download_profile_logos(ecosystem_profile: &EcosystemProfile) {
     let logo_uris = ecosystem_profile
         .logo_uri
@@ -938,8 +932,8 @@ mod tests {
             .await;
     }
 
-    /// Mounts the Subordinate Statement a superior issues about `subject_entity_id` on its `/federation-fetch` endpoint.
-    /// Matched on `sub`, so one server can issue statements about several subordinates.
+    /// Mounts the Subordinate Statement a superior issues about `subject_entity_id`. Matched on
+    /// `sub`, so one server can issue statements about several subordinates.
     async fn mount_subordinate_statement(
         trust_anchor_server: &MockServer,
         trust_anchor_id: &url::Url,
@@ -994,9 +988,7 @@ mod tests {
             .await;
     }
 
-    /// Mounts the shape `ssi-agent` served before it gained `members` and renamed `domain` to
-    /// `identifier`. Trust anchors on older deployments still send this, and it has to keep
-    /// parsing. `memberCount` is the ecosystem's total either way.
+    /// The shape `ssi-agent` served before it gained `members` and renamed `domain` to `identifier`.
     async fn mount_legacy_ecosystem_profile(trust_anchor_server: &MockServer, name: &str) {
         Mock::given(method("GET"))
             .and(path("/public/ecosystem-profile"))
@@ -1100,9 +1092,8 @@ mod tests {
         let intermediate_id: url::Url = intermediate_server.uri().parse().unwrap();
         let trust_anchor_id: url::Url = trust_anchor_server.uri().parse().unwrap();
 
-        // The leaf is subordinate to both the intermediate and the trust anchor itself, so discovery
-        // finds two chains — `leaf -> intermediate -> anchor` and `leaf -> anchor` — ending at the
-        // same anchor.
+        // Subordinate to both, so discovery finds `leaf -> intermediate -> anchor` and
+        // `leaf -> anchor`, ending at the same anchor.
         mount_entity_configuration(
             &leaf_server,
             &leaf_id,
@@ -1149,7 +1140,6 @@ mod tests {
         assert_eq!(ecosystems[0].name, "Ecosystem One");
         assert_eq!(ecosystems[0].member_count, 2);
         assert!(ecosystems[0].members.is_empty());
-        // `domain` read through the alias onto `identifier`.
         assert_eq!(
             ecosystems[0].ecosystem_leader.identifier.as_deref(),
             Some(trust_anchor_server.uri().as_str())

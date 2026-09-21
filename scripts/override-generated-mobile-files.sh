@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
-# Overrides files in Tauri's generated, git-ignored mobile projects (unime/src-tauri/gen) with the
-# tracked customizations kept in unime/src-tauri/gen-static.
-#
-# Every file listed below is overwritten in place, so any manual edit made directly in /gen is lost.
-# Run this after `tauri android init` / `tauri ios init` regenerated those projects, and before
-# building a release. Paths resolve from this script's location, so it can be run from anywhere.
+# Overwrites Tauri's generated, git-ignored mobile projects (unime/src-tauri/gen) with the tracked
+# customizations in unime/src-tauri/gen-static. Any manual edit made directly in /gen is lost.
 
 set -euo pipefail
 

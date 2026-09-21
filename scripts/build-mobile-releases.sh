@@ -1,16 +1,9 @@
 #!/usr/bin/env bash
-# Builds the signed Android (`.aab`) and iOS (`.ipa`) release bundles by running `pnpm tauri
-# android build` and `pnpm tauri ios build` from the repository root. Both are always built, so a
-# release is never assembled from artifacts of two different runs.
+# Builds both signed release bundles, never one, so a release cannot be assembled from two runs.
 #
-# Prerequisites, all of them local and none of them created here:
-#   - `scripts/override-generated-mobile-files.sh` has been run over the generated projects.
-#   - Android: `unime/src-tauri/gen/android/keystore.properties` holds the signing values.
-#   - iOS: the signing certificate is installed and the provisioning profile is selected manually in
-#     Xcode (`Signing & Capabilities`, with `Automatically manage signing` disabled).
-#
-# Building does not publish anything. Collect the results with `scripts/copy-release-artifacts.sh`.
-# Paths resolve from this script's location, so it can be run from anywhere.
+# Expects `override-generated-mobile-files.sh` to have run, Android signing values in
+# `unime/src-tauri/gen/android/keystore.properties`, and an iOS certificate with a manually selected
+# provisioning profile in Xcode.
 
 set -euo pipefail
 

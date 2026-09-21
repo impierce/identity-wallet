@@ -19,10 +19,7 @@ pub fn get_http_client_builder() -> reqwest::ClientBuilder {
 pub async fn get_http_client() -> Client {
     HTTP_CLIENT
         .get_or_init(|| async {
-            // Deliberately no `Client::new()` fallback: it would quietly drop the pinned
-            // `webpki-roots` trust anchors that `tls_config()` installs and leave the wallet
-            // trusting whatever the platform happens to, which is the thing #746 set out to stop.
-            // `Client::new()` panics on the same TLS-initialisation failures anyway.
+            // No `Client::new()` fallback: it drops the pinned `webpki-roots` anchors (#746).
             get_http_client_builder()
                 .build()
                 .expect("HTTP client with pinned roots could not be built")
@@ -31,13 +28,10 @@ pub async fn get_http_client() -> Client {
         .clone()
 }
 
-/// Returns a globally shared `reqwest::Client` for downloading assets from URLs supplied by a
-/// remote party. It never follows redirects on its own: every hop has to pass
-/// [`assert_public_destination`] first, which the caller does while following them by hand.
+/// Returns a globally shared `reqwest::Client` for assets fetched from remote-supplied URLs.
 ///
-/// Failing here is not the same as falling back to a default client: a default client follows up
-/// to ten redirects by itself, which would carry every hop after the first past
-/// [`assert_public_destination`] and hand a remote party the SSRF this policy exists to prevent.
+/// Follows no redirects: the caller follows them by hand so every hop passes
+/// [`assert_public_destination`]. A default client would follow ten of them unchecked.
 pub async fn get_asset_http_client() -> Result<Client, AppError> {
     ASSET_HTTP_CLIENT
         .get_or_try_init(|| async {
@@ -53,22 +47,16 @@ pub async fn get_asset_http_client() -> Result<Client, AppError> {
         .cloned()
 }
 
-/// Whether requests to loopback, private and link-local addresses are allowed.
-///
-/// Debug builds allow them so that the app, its unit tests and its integration tests can talk to a
-/// local issuer or a `wiremock` server. Release builds do not: a `logo_uri` is attacker-controlled
-/// and would otherwise let a connection make the wallet probe the device's own network (CWE-918).
+/// Allowed in debug builds so the app and its tests can reach a local issuer or `wiremock`.
 fn private_destinations_allowed() -> bool {
     cfg!(debug_assertions)
 }
 
-/// Rejects URLs that a remote party should not be able to make the wallet request: anything that is
-/// not `http(s)`, and anything resolving to a loopback, private, link-local or otherwise
-/// non-routable address.
+/// Rejects URLs a remote party should not be able to make the wallet request: anything not
+/// `http(s)`, and anything resolving to a non-routable address (CWE-918).
 ///
-/// This resolves the host itself rather than letting the connection do it, so it cannot prove the
-/// address the socket ends up on (a DNS entry can change in between). It does remove the trivial
-/// cases, which is what a supplied URL can realistically abuse.
+/// Resolving here cannot bind the address the socket ends up on, so this removes the trivial cases
+/// rather than closing the race.
 pub async fn assert_public_destination(url: &Url) -> Result<(), AppError> {
     if !matches!(url.scheme(), "http" | "https") {
         return Err(AppError::DownloadAborted("URL scheme is not http(s)"));
@@ -103,8 +91,7 @@ pub async fn assert_public_destination(url: &Url) -> Result<(), AppError> {
     Ok(())
 }
 
-/// Whether an address is publicly routable. The `std` equivalents (`IpAddr::is_global`) are still
-/// unstable, so the ranges are spelled out here.
+/// Whether an address is publicly routable. Spelled out because `IpAddr::is_global` is unstable.
 fn is_public(ip: &IpAddr) -> bool {
     match ip {
         IpAddr::V4(address) => {

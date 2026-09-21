@@ -215,12 +215,10 @@ pub async fn download_asset(url: reqwest::Url, id: &str) -> Result<(), AppError>
     Ok(())
 }
 
-/// How many redirects an asset download may follow before it is given up on.
 const MAX_ASSET_REDIRECTS: usize = 5;
 
-/// Requests `url`, following redirects by hand so that each hop is checked against
-/// [`assert_public_destination`] first. `reqwest`'s own redirect handling cannot do that, as the
-/// policy it takes is synchronous and resolving a host is not.
+/// Requests `url`, following redirects by hand so each hop passes [`assert_public_destination`]
+/// first. `reqwest`'s redirect policy is synchronous and cannot resolve a host.
 async fn fetch_asset(mut url: reqwest::Url) -> Result<reqwest::Response, AppError> {
     let client = get_asset_http_client().await?;
 

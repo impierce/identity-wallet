@@ -94,9 +94,7 @@ pub struct EcosystemProfile {
     pub ecosystem_leader: Member,
     #[serde(alias = "memberCount")]
     pub member_count: usize,
-    /// Defaulted: `ssi-agent` omits the key entirely when it sends no members, and `member_count`
-    /// is the ecosystem's total regardless. Without this, a profile without members fails to
-    /// deserialize and the ecosystem is dropped from the prompt altogether.
+    /// Omitted entirely by `ssi-agent` when it sends no members; `member_count` is the total.
     #[serde(default)]
     pub members: Vec<Member>,
 }
@@ -109,10 +107,8 @@ pub struct Member {
     pub logo_uri: Option<String>,
     pub name: String,
     pub description: Option<String>,
-    /// The member's own URL. `ssi-agent` renamed this from `domain` and made it nullable, so the
-    /// alias keeps profiles served by deployments predating that rename parseable, and `Option`
-    /// covers a member it cannot resolve an identifier for. Kept as a `String` rather than a `Url`:
-    /// this is display-only, and a value that does not parse should not cost the whole profile.
+    /// The member's own URL, named `domain` before `ssi-agent` renamed it. A `String`, not a
+    /// `Url`: display-only, and a value that does not parse should not cost the whole profile.
     #[serde(alias = "domain")]
     pub identifier: Option<String>,
 }
@@ -164,8 +160,7 @@ mod tests {
     }
 
     /// The shape `ssi-agent` served before it gained `members` and renamed `domain` to
-    /// `identifier`, reproduced from a live `/public/ecosystem-profile` response. Neither omission
-    /// may fail the profile, which would drop the ecosystem from the prompt entirely.
+    /// `identifier`. Neither omission may fail the profile.
     #[test]
     fn deserialize_legacy_ecosystem_profile() {
         let response = serde_json::json!({
@@ -185,15 +180,13 @@ mod tests {
         assert_eq!(profile.name, "Mira's Ecosystem");
         assert_eq!(profile.member_count, 2);
         assert!(profile.members.is_empty());
-        // Read through the `domain` alias.
         assert_eq!(
             profile.ecosystem_leader.identifier.as_deref(),
             Some("https://mira.example.com/")
         );
     }
 
-    /// The current shape: `members` present, `identifier` in place of `domain`, and an identifier
-    /// `ssi-agent` could not resolve sent as `null`.
+    /// The current shape, including an identifier `ssi-agent` could not resolve.
     #[test]
     fn deserialize_ecosystem_profile_with_members_and_identifiers() {
         let response = serde_json::json!({

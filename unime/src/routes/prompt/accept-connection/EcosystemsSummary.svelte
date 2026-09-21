@@ -50,9 +50,7 @@ tap target — "See all" is a label, not a separate link.
 
   <div class="flex items-center gap-3 pt-3">
     <div class="flex shrink-0 items-center -space-x-2">
-      <!-- Keyed by index: `EcosystemProfile` has no id and names are not guaranteed unique, which
-           a keyed block would reject at runtime. The stack is fixed within one prompt. -->
-      {#each stack as ecosystem, index (index)}
+      {#each stack as ecosystem}
         <EcosystemAvatar
           name={ecosystem.name}
           logoUri={ecosystem.logo_uri}

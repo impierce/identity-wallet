@@ -27,8 +27,7 @@
   // `member_count` is the ecosystem's total and can exceed what was sent.
   $: members = ecosystem?.members ?? [];
 
-  // SvelteKit reuses this component when only `[id]` changes, so the guard has to be reactive:
-  // in `onMount` it would run once and let a later invalid index render an empty page.
+  // Reactive, not `onMount`: SvelteKit reuses this component when only `[id]` changes.
   let mounted = false;
   onMount(() => {
     mounted = true;
@@ -96,10 +95,8 @@
               {ecosystem.member_count}
             </span>
           </div>
-          <!-- Keyed by index: `Member` has no id, and a profile repeating a domain would make a
-               domain key duplicate, which a keyed block rejects at runtime. -->
           <div class="divide-y divide-slate-200 dark:divide-slate-600">
-            {#each members as member, memberIndex (memberIndex)}
+            {#each members as member}
               <MemberRow {member} />
             {/each}
           </div>

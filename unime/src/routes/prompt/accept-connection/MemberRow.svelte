@@ -5,9 +5,8 @@
 
   export let member: Member;
 
-  // Shown as sent: `identifier` is a full URL from `ssi-agent`, but bare hosts reach this field
-  // too, so `hostname()` would drop the ones it cannot parse. It carries no validation result
-  // either, hence no shield, and it is null when `ssi-agent` could not resolve one.
+  // Shown as sent: bare hosts reach this field too, so `hostname()` would drop what it cannot
+  // parse. It carries no validation result, hence no shield.
 </script>
 
 <!--

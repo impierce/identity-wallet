@@ -51,7 +51,7 @@ if (arguments_.length !== 1) {
 
 const [newVersion] = arguments_;
 
-// Both app stores expect a period-separated release version consisting of numeric components.
+// Both app stores expect a numeric X.Y.Z release version.
 if (!/^\d+\.\d+\.\d+$/.test(newVersion)) {
   console.error(`Invalid version "${newVersion}". Expected a version in the form X.Y.Z.`);
   process.exit(1);
@@ -81,7 +81,7 @@ const abort = (message) => {
   process.exit(1);
 };
 
-// Validate every target before writing any file, avoiding a partial version bump.
+// Validate every target before writing any file.
 for (const target of versionTargets) {
   const absolutePath = resolve(repositoryRoot, target.path);
   const contents = await readFile(absolutePath, 'utf8');
