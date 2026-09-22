@@ -71,7 +71,7 @@ pub enum ActiveFlow {
 }
 
 /// `PendingConnectionData` contains the connection data collected to populate the AcceptConnection prompt.
-/// However this data remains pending until the flow is completed succesfully. Only then is the connection considered fully established,
+/// However this data remains pending until the flow is completed successfully. Only then is the connection considered fully established,
 /// and then it will be added to the state. This means the data has to remain pending throughout the entire active flow of whatever type.
 /// This is actually useful since some info is at times needed elsewhere during the active flow as well.
 #[derive(Clone, Debug)]

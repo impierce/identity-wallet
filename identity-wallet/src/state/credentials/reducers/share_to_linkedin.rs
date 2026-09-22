@@ -235,7 +235,7 @@ async fn create_public_link(state: &AppState, credential_id: &str) -> Result<Url
     let public_link_url = Url::parse(&public_link)
         .map_err(|e| AppError::Error(format!("Failed to create valid Public Link URL: {}", e)))?;
 
-    info!("Succesfully generated public link URL: {}", public_link_url);
+    info!("Successfully generated public link URL: {}", public_link_url);
 
     Ok(public_link_url)
 }
