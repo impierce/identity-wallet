@@ -229,6 +229,9 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             verified: false,
             first_interacted: "2023-09-11T19:53:53.937981+00:00".to_string(),
             last_interacted: "2023-09-11T19:53:53.937981+00:00".to_string(),
+            linked_verifiable_presentations: None,
+            ecosystems: None,
+            domain_validation: None,
         },
         Connection {
             id: "424313e61e35ca4eeca44aac85dc4764c32d7cf9def83ba15f428c308bf1d181".to_string(),
@@ -238,6 +241,9 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             verified: true,
             first_interacted: "2024-01-09T07:36:41.382948+00:00".to_string(),
             last_interacted: "2024-01-09T07:36:41.382948+00:00".to_string(),
+            linked_verifiable_presentations: None,
+            ecosystems: None,
+            domain_validation: None,
         },
         Connection {
             id: "e36236d8d7117ed6c6a5d4e99167a2ee1ccb455e75d5b71cee50b08adcf11ba1".to_string(),
@@ -247,6 +253,9 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             verified: false,
             first_interacted: "2022-02-03T12:33:54.191824+00:00".to_string(),
             last_interacted: "2023-11-13T19:26:40.049239+00:00".to_string(),
+            linked_verifiable_presentations: None,
+            ecosystems: None,
+            domain_validation: None,
         },
         Connection {
             id: "a81a51b8ad26bdd333abd791a112bf0e0823d559cadc580218a240238a86c292".to_string(),
@@ -256,6 +265,9 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             verified: true,
             first_interacted: "2024-01-09T08:45:44.217Z".to_string(),
             last_interacted: "2024-01-09T08:45:44.217Z".to_string(),
+            linked_verifiable_presentations: None,
+            ecosystems: None,
+            domain_validation: None,
         },
     ]);
 

@@ -397,6 +397,7 @@ mod tests {
                     }),
                 })),
                 active_flow: None,
+                pending_connection_data: None,
             },
             ..Default::default()
         };
