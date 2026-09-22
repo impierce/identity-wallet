@@ -83,7 +83,7 @@ pub struct Connection {
     pub name: String,
     pub url: String,
     pub did: String,
-    // TODO: AI is telling me this is never used except for dev-profiles?
+    // TODO: is this needed?
     pub verified: bool,
     pub first_interacted: String,
     pub last_interacted: String,
