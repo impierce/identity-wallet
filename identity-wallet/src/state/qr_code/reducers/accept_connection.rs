@@ -137,6 +137,9 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
         drop(state_guard);
 
         let ecosystems = fetch_ecosystems(&url).await;
+
+        // The pending connection data remains pending until the active flow is completed successfully.
+        // Then, it is persisted to the state connections.
         let pending_connection_data = PendingConnectionData {
             client_metadata: client_metadata.clone(),
             domain_validation: Some((domain_validation.status.clone(), DateUtils::new_date_string())),
