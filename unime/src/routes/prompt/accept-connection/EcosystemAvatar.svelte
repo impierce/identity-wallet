@@ -6,6 +6,7 @@
   // component marks ecosystems, leaders and members alike.
   export let name: string;
   export let logoUri: string | null = null;
+  export let isTempAsset = true;
 
   let className = '';
   export { className as class };
@@ -25,4 +26,4 @@ The mark of an ecosystem or one of its members.
 - class (_sizing and rounding_)
 - textClass (_default_: `'text-[18px]/[24px]'`)
 -->
-<LogoBadge {logoUri} {initials} {tint} class={className} {textClass} />
+<LogoBadge {logoUri} {initials} {tint} class={className} {textClass} {isTempAsset} />

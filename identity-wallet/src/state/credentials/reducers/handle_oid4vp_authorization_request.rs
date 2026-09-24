@@ -2,8 +2,6 @@ use crate::state::connections::Connections;
 use crate::state::core_utils::IdentityManager;
 use crate::state::credentials::reducers::self_issue_credential::SubjectWrapper;
 use crate::state::credentials::Sha256Hasher;
-use crate::state::qr_code::reducers::accept_connection::get_oid4vp_client_metadata;
-use crate::state::user_prompt::ClientMetadata;
 use crate::stronghold::StrongholdManager;
 use crate::subject::Subject;
 use crate::{
@@ -13,7 +11,7 @@ use crate::{
         actions::{listen, Action},
         core_utils::{
             history_event::{EventType, HistoryCredential, HistoryEvent},
-            ActiveFlow, Oid4vciStage,
+            ActiveFlow, CoreUtils, Oid4vciStage, PendingConnectionData,
         },
         credentials::actions::credentials_selected::CredentialsSelected,
         user_prompt::CurrentUserPrompt,
@@ -54,6 +52,7 @@ use uuid::Uuid;
 
 /// Handles the non-interactive `CredentialsSelected` action, which is triggered by accepting the `ShareCredentials` prompt set by `read_oid4vp_authorization_request`.
 /// Sends the authorization response including the verifiable credentials.
+/// This fn completes the OID4VP authorization flow, therefore the active flow and pending connection data are cleared at the end and the user is redirected to the "me" page.
 #[tracing::instrument(skip_all, err)]
 pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(credential_uuids) = listen::<CredentialsSelected>(action)
@@ -108,15 +107,26 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
 
         let mut connections = state.connections;
         let mut history = state.history;
+        let pending_connection_data = state.core_utils.pending_connection_data.clone().ok_or_else(|| {
+            AppError::Error("Expected pending connection data for OID4VP authorization request".to_string())
+        })?;
 
-        // TODO: this is kinda duplicate, we should probably refactor to pass on the ClientMetadata retrieved in fn `accept_connection` to avoid re-fetching it here, but for now this works.
-        let client_metadata = get_oid4vp_client_metadata(&oid4vp_authorization_request).await?;
-
-        update_history_and_connections(history_credentials, &client_metadata, &mut connections, &mut history).await?;
+        update_history_and_connections(
+            history_credentials,
+            &pending_connection_data,
+            &mut connections,
+            &mut history,
+        )
+        .await?;
 
         drop(state_guard);
         return Ok(AppState {
             connections,
+            core_utils: CoreUtils {
+                active_flow: None,
+                pending_connection_data: None,
+                ..state.core_utils
+            },
             current_user_prompt: Some(CurrentUserPrompt::Redirect {
                 target: "me".to_string(),
             }),
@@ -293,16 +303,13 @@ pub async fn build_oid4vp_vp_token_and_history_credentials(
 #[tracing::instrument(skip_all)]
 pub async fn update_history_and_connections(
     history_credentials: Vec<HistoryCredential>,
-    client_metadata: &ClientMetadata,
+    pending_connection_data: &PendingConnectionData,
     connections: &mut Connections,
     history: &mut Vec<HistoryEvent>,
 ) -> Result<(), AppError> {
+    let client_metadata = &pending_connection_data.client_metadata;
     let previously_connected = connections.contains(client_metadata.client_id.as_str());
-    let connection = connections.update_last_interaction_or_insert_new(
-        &client_metadata.connection_url,
-        &client_metadata.client_name,
-        client_metadata.client_id.clone(),
-    );
+    let connection = connections.update_last_interaction_or_insert_new(pending_connection_data);
 
     if let Some(logo_uri) = client_metadata.logo_uri.clone() {
         persist_asset(&hash(logo_uri.as_str()), &connection.id).ok();

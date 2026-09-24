@@ -7,6 +7,8 @@
   import EcosystemAvatar from './EcosystemAvatar.svelte';
 
   export let ecosystems: EcosystemProfile[];
+  export let href: string | undefined = undefined;
+  export let isTempAsset = true;
 
   // Past three the overlap stops reading as distinct marks. Matches `CertificationsSummary`.
   const STACK_COUNT = 3;
@@ -24,7 +26,7 @@
   $: remaining = ecosystems.length - Math.min(ecosystems.length, NAME_COUNT);
 
   // Carry `?mock=` across so DEV previews survive the navigation.
-  $: href = `/prompt/accept-connection/ecosystems${page.url.search}`;
+  $: destination = href ?? `/prompt/accept-connection/ecosystems${page.url.search}`;
 </script>
 
 <!--
@@ -36,7 +38,7 @@ tap target — "See all" is a label, not a separate link.
 - ecosystems
 -->
 <a
-  {href}
+  href={destination}
   class="flex w-full flex-col rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-600 dark:bg-dark"
 >
   <div class="flex items-center justify-between">
@@ -56,6 +58,7 @@ tap target — "See all" is a label, not a separate link.
           logoUri={ecosystem.logo_uri}
           class="size-8 rounded-full ring-2 ring-white dark:ring-dark"
           textClass="text-[11px]/[16px]"
+          {isTempAsset}
         />
       {/each}
     </div>

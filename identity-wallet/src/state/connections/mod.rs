@@ -1,12 +1,21 @@
 pub mod actions;
 pub mod reducers;
 
-use super::{core_utils::DateUtils, FeatTrait};
+use crate::state::{
+    did::{
+        validate_domain_linkage::ValidationStatus,
+        validate_linked_verifiable_presentations::LinkedVerifiableCredentialData,
+    },
+    user_prompt::EcosystemProfile,
+};
 
-use identity_iota::did::{CoreDID, DID};
+use super::{
+    core_utils::{DateUtils, PendingConnectionData},
+    FeatTrait,
+};
+
 use log::info;
 use serde::{Deserialize, Serialize};
-use std::ops::Not;
 use ts_rs::TS;
 
 #[derive(Default, Serialize, Deserialize, Clone, Debug, TS, PartialEq)]
@@ -22,39 +31,38 @@ impl Connections {
         self.0.iter().any(|connection| connection.did == did)
     }
 
-    /// Inserts a new connection into the list of connections.
-    /// Modelled after the `std::collections::HashMap::insert` method.
-    fn insert(&mut self, connection: Connection) -> Option<&Connection> {
-        self.contains(&connection.did)
-            .not()
-            .then(|| {
-                self.0.push(connection);
-                self.0.last()
-            })
-            .flatten()
-    }
-
-    /// Returns a mutable reference to the connection with the given `url` and `name`.
-    /// Modelled after the `std::collections::HashMap::get_mut` method.
-    fn get_mut(&mut self, did: &str) -> Option<&mut Connection> {
-        self.0.iter_mut().find(|connection| connection.did == did)
-    }
-
     /// Inserts a new connection into the list of connections if it does not already exist. If it does exist, updates
     /// the last interaction time and returns a reference to the connection.
-    pub fn update_last_interaction_or_insert_new(&mut self, url: &str, name: &str, did: CoreDID) -> &Connection {
-        if self.contains(did.as_str()) {
+    pub fn update_last_interaction_or_insert_new(
+        &mut self,
+        pending_connection_data: &PendingConnectionData,
+    ) -> &Connection {
+        let client_metadata = &pending_connection_data.client_metadata;
+        let url = &client_metadata.connection_url;
+        let name = &client_metadata.client_name;
+        let did = client_metadata.client_id.clone();
+        let did_string = did.to_string();
+
+        // We use indexing here to avoid ending up with the Option return of get/get_mut even though push never fails, in turn avoiding error handling on something that actually cannot fail.
+        let connection_index = if let Some(index) = self.0.iter().position(|connection| connection.did == did_string) {
             info!("Updating last interaction time for existing connection: {did}");
-            self.get_mut(did.as_str()).map(|connection| {
-                // TODO: what to do here when any information has changed except for the DID since we only match against that as the true identifier for a connection?
-                connection.update_last_interaction_time();
-                &*connection
-            })
+            // TODO: what to do here when any information has changed except for the DID since we only match against that as the true identifier for a connection?
+            self.0[index].update_last_interaction_time();
+            index
         } else {
             info!("Inserting new connection: {name}, {url}, {did}");
-            self.insert(Connection::new(name.to_string(), url.to_string(), did.to_string()))
-        }
-        .expect("Failed to update or insert connection")
+            self.0.push(Connection::new(
+                name.to_string(),
+                url.to_string(),
+                did_string,
+                pending_connection_data.domain_validation.clone(),
+                pending_connection_data.linked_verifiable_presentations.clone(),
+                pending_connection_data.ecosystems.clone(),
+            ));
+            self.0.len() - 1
+        };
+
+        &self.0[connection_index]
     }
 }
 
@@ -75,13 +83,30 @@ pub struct Connection {
     pub name: String,
     pub url: String,
     pub did: String,
+    // TODO: is this needed?
     pub verified: bool,
     pub first_interacted: String,
     pub last_interacted: String,
+    #[ts(optional)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub linked_verifiable_presentations: Option<Vec<LinkedVerifiableCredentialData>>,
+    #[ts(optional)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub ecosystems: Option<Vec<EcosystemProfile>>,
+    #[ts(optional)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub domain_validation: Option<(ValidationStatus, String)>, // The String represents the last_validated timestamp
 }
 
 impl Connection {
-    pub fn new(name: String, url: String, did: String) -> Self {
+    pub fn new(
+        name: String,
+        url: String,
+        did: String,
+        domain_validation: Option<(ValidationStatus, String)>,
+        linked_verifiable_presentations: Option<Vec<LinkedVerifiableCredentialData>>,
+        ecosystems: Option<Vec<EcosystemProfile>>,
+    ) -> Self {
         // TODO(ngdil): Temporary solution to support NGDIL demo, replace with different unique identifier to distinguish connection
         let id = sha256::digest([name.as_bytes(), url.as_bytes()].concat()).to_string();
         let current_datetime = DateUtils::new_date_string();
@@ -93,6 +118,9 @@ impl Connection {
             verified: false,
             first_interacted: current_datetime.clone(),
             last_interacted: current_datetime,
+            linked_verifiable_presentations,
+            ecosystems,
+            domain_validation,
         }
     }
 
@@ -113,9 +141,26 @@ impl PartialEq for Connection {
 mod tests {
     use std::str::FromStr;
 
-    use identity_iota::did::DID;
+    use crate::state::core_utils::PendingConnectionData;
+    use crate::state::user_prompt::ClientMetadata;
+    use identity_iota::did::{CoreDID, DID};
 
     use super::*;
+
+    fn pending_connection_data(url: &str, name: &str, did: CoreDID) -> PendingConnectionData {
+        PendingConnectionData {
+            client_metadata: ClientMetadata {
+                client_name: name.to_string(),
+                logo_uri: None,
+                connection_url: url.to_string(),
+                redirect_uri: None,
+                client_id: did,
+            },
+            domain_validation: None,
+            linked_verifiable_presentations: None,
+            ecosystems: None,
+        }
+    }
 
     #[test]
     fn test_update_or_insert() {
@@ -123,14 +168,16 @@ mod tests {
         let url = "https://example.com";
         let name = "Example";
         let did = CoreDID::from_str("did:example:123").unwrap();
-        let connection = connections.update_last_interaction_or_insert_new(url, name, did.clone());
+        let connection =
+            connections.update_last_interaction_or_insert_new(&pending_connection_data(url, name, did.clone()));
         assert_eq!(connection.url, url);
         assert_eq!(connection.name, name);
         assert_eq!(connection.first_interacted, connection.last_interacted);
         assert_eq!(connections.0.len(), 1);
         assert!(connections.contains(did.as_str()));
 
-        let connection = connections.update_last_interaction_or_insert_new(url, name, did.clone());
+        let connection =
+            connections.update_last_interaction_or_insert_new(&pending_connection_data(url, name, did.clone()));
         assert_eq!(connection.url, url);
         assert_eq!(connection.name, name);
         // The last interaction time should have been updated.
@@ -144,7 +191,8 @@ mod tests {
         let did = CoreDID::from_str("did:example:123").unwrap();
         let url = "https://example.com";
         let name = "Example";
-        let connection = connections.update_last_interaction_or_insert_new(url, name, did.clone());
+        let connection =
+            connections.update_last_interaction_or_insert_new(&pending_connection_data(url, name, did.clone()));
         assert_eq!(connection.url, url);
         assert_eq!(connection.name, name);
         assert_eq!(connection.first_interacted, connection.last_interacted);
@@ -153,7 +201,8 @@ mod tests {
 
         // A different DID is a different connection, even when the display name and url is identical.
         let other_did = CoreDID::from_str("did:example:456").unwrap();
-        let connection = connections.update_last_interaction_or_insert_new(url, name, other_did.clone());
+        let connection =
+            connections.update_last_interaction_or_insert_new(&pending_connection_data(url, name, other_did.clone()));
         assert_eq!(connection.url, url);
         assert_eq!(connection.name, name);
         assert_eq!(connection.first_interacted, connection.last_interacted);

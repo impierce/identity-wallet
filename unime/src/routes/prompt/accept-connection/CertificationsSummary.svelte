@@ -7,6 +7,8 @@
   import CertificationAvatar from './CertificationAvatar.svelte';
 
   export let certifications: LinkedVerifiableCredentialData[];
+  export let href: string | undefined = undefined;
+  export let isTempAsset = true;
 
   // Past three the overlap stops reading as distinct marks. Matches `EcosystemsSummary`.
   const STACK_COUNT = 3;
@@ -29,7 +31,7 @@
   $: remaining = certifications.length - Math.min(certifications.length, NAME_COUNT);
 
   // Carry `?mock=` across so DEV previews survive the navigation.
-  $: href = `/prompt/accept-connection/certifications${page.url.search}`;
+  $: destination = href ?? `/prompt/accept-connection/certifications${page.url.search}`;
 </script>
 
 <!--
@@ -41,7 +43,7 @@ the tap target — "See all" is a label, not a separate link.
 - certifications
 -->
 <a
-  {href}
+  href={destination}
   class="flex w-full flex-col rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-600 dark:bg-dark"
 >
   <div class="flex items-center justify-between">
@@ -61,6 +63,7 @@ the tap target — "See all" is a label, not a separate link.
           {certification}
           class="size-8 rounded-full ring-2 ring-white dark:ring-dark"
           textClass="text-[11px]/[16px]"
+          {isTempAsset}
         />
       {/each}
     </div>

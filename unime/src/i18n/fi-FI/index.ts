@@ -370,9 +370,21 @@ const fi_FI = {
       TITLE: 'Yhdistetty kohteeseen',
       FIRST_CONNECTED: 'Ensimmäinen yhdistys',
       LAST_CONNECTED: 'Viimeksi yhdistetty',
+      FIRST_CONNECTED_TIME: 'Yhdistetty ensimmäisen kerran: {duration}',
+      LAST_CONNECTED_TIME: 'Yhdistetty viimeksi: {duration}',
     },
     DATA: {
       EMPTY: 'Ei vielä dataa.',
+    },
+    ACTIONS: {
+      MENU_LABEL: 'Avaa yhteysvalikko',
+      SHOW_DETAILS: 'Näytä tiedot',
+      DISCONNECT: 'Katkaise yhteys',
+    },
+    DETAILS: {
+      TITLE: 'Yhteyden tiedot',
+      DID: 'DID',
+      VIEW_ON_EXPLORER: 'Näytä lohkoketjuselaimessa',
     },
   },
   HISTORY: {

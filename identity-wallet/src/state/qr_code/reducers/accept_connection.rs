@@ -5,7 +5,7 @@ use crate::{
         actions::{listen, Action},
         core_utils::{
             helpers::{download_logo, normalize_connection_url},
-            ActiveFlow, CoreUtils, Oid4vciStage,
+            ActiveFlow, CoreUtils, DateUtils, Oid4vciStage, PendingConnectionData,
         },
         did::validate_linked_verifiable_presentations::{
             validate_linked_verifiable_presentations, LinkedVerifiableCredentialData,
@@ -138,6 +138,15 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
 
         let ecosystems = fetch_ecosystems(&url).await;
 
+        // The pending connection data remains pending until the active flow is completed successfully.
+        // Then, it is persisted to the state connections.
+        let pending_connection_data = PendingConnectionData {
+            client_metadata: client_metadata.clone(),
+            domain_validation: Some((domain_validation.status.clone(), DateUtils::new_date_string())),
+            linked_verifiable_presentations: linked_verifiable_presentations.clone(),
+            ecosystems: ecosystems.clone(),
+        };
+
         let current_user_prompt = Some(CurrentUserPrompt::AcceptConnection {
             client_metadata,
             connection_data,
@@ -152,6 +161,7 @@ pub async fn accept_connection(state: AppState, action: Action) -> Result<AppSta
             current_user_prompt,
             core_utils: CoreUtils {
                 active_flow: Some(active_flow),
+                pending_connection_data: Some(pending_connection_data),
                 ..state.core_utils
             },
             ..state

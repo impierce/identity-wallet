@@ -6,6 +6,10 @@ use std::sync::Arc;
 use url::Url;
 
 use crate::command::Runtime;
+use crate::state::did::{
+    validate_domain_linkage::ValidationStatus, validate_linked_verifiable_presentations::LinkedVerifiableCredentialData,
+};
+use crate::state::user_prompt::{ClientMetadata, EcosystemProfile};
 use crate::stronghold::StrongholdManager;
 use crate::subject::Subject;
 pub use helpers::DateUtils;
@@ -66,12 +70,25 @@ pub enum ActiveFlow {
     },
 }
 
+/// `PendingConnectionData` contains the connection data collected to populate the AcceptConnection prompt.
+/// However this data remains pending until the flow is completed successfully. Only then is the connection considered fully established,
+/// and then it will be added to the state. This means the data has to remain pending throughout the entire active flow of whatever type.
+/// This is actually useful since some info is at times needed elsewhere during the active flow as well.
+#[derive(Clone, Debug)]
+pub struct PendingConnectionData {
+    pub client_metadata: ClientMetadata,
+    pub domain_validation: Option<(ValidationStatus, String)>,
+    pub linked_verifiable_presentations: Option<Vec<LinkedVerifiableCredentialData>>,
+    pub ecosystems: Option<Vec<EcosystemProfile>>,
+}
+
 /// CoreUtils is a struct that contains all the utils that only the rustside needs to perform its tasks.
 #[derive(Clone, Default, Debug)]
 pub struct CoreUtils {
     pub app_handle: Option<tauri::AppHandle<Runtime>>,
     pub managers: Arc<tauri::async_runtime::Mutex<Managers>>,
     pub active_flow: Option<ActiveFlow>,
+    pub pending_connection_data: Option<PendingConnectionData>,
 }
 
 /// Managers contains both the stronghold manager and the identity manager needed to perform operations on connections & credentials.

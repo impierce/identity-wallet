@@ -75,7 +75,8 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
 
         drop(state_guard);
 
-        if let Some(CurrentUserPrompt::AcceptConnection { client_metadata, .. }) = &state.current_user_prompt {
+        if let Some(pending_connection_data) = &state.core_utils.pending_connection_data {
+            let client_metadata = &pending_connection_data.client_metadata;
             Ok(AppState {
                 current_user_prompt: Some(CurrentUserPrompt::CredentialOffer {
                     issuer_name: client_metadata.client_name.clone(),
@@ -86,7 +87,7 @@ pub async fn read_credential_offer(state: AppState, action: Action) -> Result<Ap
                 ..state
             })
         } else {
-            warn!("Unexpected state: No current user prompt found when reading credential offer");
+            warn!("Unexpected state: No pending connection data found when reading credential offer");
             Ok(state)
         }
     } else {
@@ -121,7 +122,7 @@ mod tests {
     use super::*;
     use crate::persistence::{hash, ASSETS_DIR, STRONGHOLD};
     use crate::state::connections::actions::connection_accepted::ConnectionAccepted;
-    use crate::state::core_utils::{CoreUtils, IdentityManager, Managers, Oid4vciStage};
+    use crate::state::core_utils::{CoreUtils, IdentityManager, Managers, Oid4vciStage, PendingConnectionData};
     use crate::state::did::validate_domain_linkage::{ValidationResult, ValidationStatus};
     use crate::state::user_prompt::ClientMetadata;
     use crate::state::{SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS};
@@ -287,6 +288,16 @@ mod tests {
         current_user_prompt: Option<CurrentUserPrompt>,
         grants: Option<Grants>,
     ) -> AppState {
+        let pending_connection_data = match &current_user_prompt {
+            Some(CurrentUserPrompt::AcceptConnection { client_metadata, .. }) => Some(PendingConnectionData {
+                client_metadata: client_metadata.clone(),
+                domain_validation: None,
+                linked_verifiable_presentations: None,
+                ecosystems: None,
+            }),
+            _ => None,
+        };
+
         AppState {
             core_utils: CoreUtils {
                 managers,
@@ -302,6 +313,7 @@ mod tests {
                     }),
                     logo_uri: None,
                 }),
+                pending_connection_data,
                 ..Default::default()
             },
             current_user_prompt,
