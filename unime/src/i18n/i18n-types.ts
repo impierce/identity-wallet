@@ -998,12 +998,50 @@ type RootTranslation = {
 			 * L​a​s​t​ ​c​o​n​n​e​c​t​e​d
 			 */
 			LAST_CONNECTED: string
+			/**
+			 * F​i​r​s​t​ ​c​o​n​n​e​c​t​e​d​:​ ​{​d​u​r​a​t​i​o​n​}
+			 * @param {string} duration
+			 */
+			FIRST_CONNECTED_TIME: RequiredParams<'duration'>
+			/**
+			 * L​a​s​t​ ​c​o​n​n​e​c​t​e​d​:​ ​{​d​u​r​a​t​i​o​n​}
+			 * @param {string} duration
+			 */
+			LAST_CONNECTED_TIME: RequiredParams<'duration'>
 		}
 		DATA: {
 			/**
 			 * N​o​ ​d​a​t​a​ ​y​e​t​.
 			 */
 			EMPTY: string
+		}
+		ACTIONS: {
+			/**
+			 * O​p​e​n​ ​c​o​n​n​e​c​t​i​o​n​ ​m​e​n​u
+			 */
+			MENU_LABEL: string
+			/**
+			 * S​h​o​w​ ​d​e​t​a​i​l​s
+			 */
+			SHOW_DETAILS: string
+			/**
+			 * D​i​s​c​o​n​n​e​c​t
+			 */
+			DISCONNECT: string
+		}
+		DETAILS: {
+			/**
+			 * C​o​n​n​e​c​t​i​o​n​ ​d​e​t​a​i​l​s
+			 */
+			TITLE: string
+			/**
+			 * D​I​D
+			 */
+			DID: string
+			/**
+			 * V​i​e​w​ ​o​n​ ​e​x​p​l​o​r​e​r
+			 */
+			VIEW_ON_EXPLORER: string
 		}
 	}
 	HISTORY: {
@@ -2587,12 +2625,48 @@ export type TranslationFunctions = {
 			 * Last connected
 			 */
 			LAST_CONNECTED: () => LocalizedString
+			/**
+			 * First connected: {duration}
+			 */
+			FIRST_CONNECTED_TIME: (arg: { duration: string }) => LocalizedString
+			/**
+			 * Last connected: {duration}
+			 */
+			LAST_CONNECTED_TIME: (arg: { duration: string }) => LocalizedString
 		}
 		DATA: {
 			/**
 			 * No data yet.
 			 */
 			EMPTY: () => LocalizedString
+		}
+		ACTIONS: {
+			/**
+			 * Open connection menu
+			 */
+			MENU_LABEL: () => LocalizedString
+			/**
+			 * Show details
+			 */
+			SHOW_DETAILS: () => LocalizedString
+			/**
+			 * Disconnect
+			 */
+			DISCONNECT: () => LocalizedString
+		}
+		DETAILS: {
+			/**
+			 * Connection details
+			 */
+			TITLE: () => LocalizedString
+			/**
+			 * DID
+			 */
+			DID: () => LocalizedString
+			/**
+			 * View on explorer
+			 */
+			VIEW_ON_EXPLORER: () => LocalizedString
 		}
 	}
 	HISTORY: {

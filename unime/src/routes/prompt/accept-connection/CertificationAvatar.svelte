@@ -6,6 +6,7 @@
   import LogoBadge from './LogoBadge.svelte';
 
   export let certification: LinkedVerifiableCredentialData;
+  export let isTempAsset = true;
 
   let className = '';
   export { className as class };
@@ -34,4 +35,4 @@ The mark of a single certification.
 - class (_sizing and rounding_)
 - textClass (_default_: `'text-[18px]/[24px]'`)
 -->
-<LogoBadge {logoUri} {initials} {tint} class={className} {textClass} />
+<LogoBadge {logoUri} {initials} {tint} class={className} {textClass} {isTempAsset} />

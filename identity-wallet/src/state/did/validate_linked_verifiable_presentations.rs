@@ -691,7 +691,7 @@ mod tests {
             Mock::given(method("GET"))
                 .and(path("logo.png"))
                 .respond_with(ResponseTemplate::new(200).set_body_raw(
-                    include_bytes!("../../../resources/images/impierce_white.png"),
+                    include_bytes!("../../../resources/images/impierce.png"),
                     "image/png",
                 ))
                 .mount(&self.mock_server)

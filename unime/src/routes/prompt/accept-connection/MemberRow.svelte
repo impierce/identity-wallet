@@ -4,6 +4,7 @@
   import EcosystemAvatar from './EcosystemAvatar.svelte';
 
   export let member: Member;
+  export let isTempAsset = true;
 
   // Shown as sent: bare hosts reach this field too, so `hostname()` would drop what it cannot
   // parse. It carries no validation result, hence no shield.
@@ -22,6 +23,7 @@ One organisation inside an ecosystem. Not a link — members have no page of the
     logoUri={member.logo_uri}
     class="mr-4 size-10 rounded-full"
     textClass="text-[13px]/[18px]"
+    {isTempAsset}
   />
 
   <div class="flex min-w-0 grow flex-col">

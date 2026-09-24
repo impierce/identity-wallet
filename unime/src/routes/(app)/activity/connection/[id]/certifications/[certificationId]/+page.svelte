@@ -1,59 +1,46 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
+  import { goto } from '$app/navigation';
   import { page } from '$app/state';
   import LL from '$i18n/i18n-svelte';
 
   import { warn } from '@tauri-apps/plugin-log';
 
   import { Image, TopNavBar } from '$lib/components';
-  import { resolveAcceptConnectionPrompt } from '$lib/dev/mocks/resolve';
   import { ShieldCheckFillIcon } from '$lib/icons';
   import { state as appState } from '$lib/stores';
   import { hash } from '$lib/utils';
   import { hostname } from '$lib/utils/url';
 
-  import CredentialClaimsRenderer from '../../../../credentials/[id]/CredentialClaimsRenderer.svelte';
-  import DomainPill from '../../DomainPill.svelte';
-  import CertificationOverview from './CertificationOverview.svelte';
+  import CredentialClaimsRenderer from '../../../../../../credentials/[id]/CredentialClaimsRenderer.svelte';
+  import CertificationOverview from '../../../../../../prompt/accept-connection/certifications/[id]/CertificationOverview.svelte';
+  import DomainPill from '../../../../../../prompt/accept-connection/DomainPill.svelte';
 
-  // Read from the store rather than taking props, as the sibling list page does.
-  // No latch needed — this page cannot accept the prompt, so it never sees the backend
-  // clear it out from under itself.
-  // `?? []` as well as `?.`: the optional chain covers a missing prompt, not a prompt that
-  // arrives without the field while the data model is still in flight.
-  $: certification = (resolveAcceptConnectionPrompt(page.url, $appState)?.linked_verifiable_presentations ?? []).find(
-    (c) => c.credential.id === page.params.id,
+  $: connection = $appState.connections.find((item) => item.id === page.params.id);
+  $: certification = (connection?.linked_verifiable_presentations ?? []).find(
+    (item) => item.credential.id === page.params.certificationId,
   );
-
-  // See `CertificationCard`: the first result stands in for all linked domains.
   $: validation = certification?.issuer_domain_validations.at(0);
   $: issuer = validation?.name;
   $: domain = validation ? hostname(validation.url) : undefined;
-  // See `CertificationCard`: re-hash the certification logo URL to find what the backend downloaded.
   $: logoUri = certification?.credential.metadata.icon ?? certification?.credential.issuer_logo_uri;
   $: imageId = logoUri ? hash(logoUri) : undefined;
-
-  // A tinted badge when there is no logo (or it
-  // fails to load), a plain backdrop for a real one.
-  let useFallback = false;
-  $: showBadge = !imageId || useFallback;
-
-  // `DefaultRenderer` dereferences `data.credentialSubject` unguarded, so a certification
-  // that arrives without one would take the whole prompt screen down with it.
   $: subject = certification?.credential.data?.credentialSubject;
   $: hasClaims = !!subject && typeof subject === 'object';
 
+  let useFallback = false;
+  $: showBadge = !imageId || useFallback;
+
   onMount(() => {
-    if (!certification) {
-      warn(`No certification found with id: \`${page.params.id}\``);
-      // Stay inside the prompt subtree: leaving it cancels the flow. See ../../+layout.svelte.
-      history.back();
+    if (!connection || !certification) {
+      warn(`No certification found with id: \`${page.params.certificationId}\``);
+      goto(connection ? `/activity/connection/${connection.id}/certifications` : '/activity');
     }
   });
 </script>
 
-<div class="safe-area-height flex hide-scrollbar flex-col items-stretch overflow-y-auto bg-background-alt">
+<div class="content-height flex hide-scrollbar flex-col items-stretch overflow-y-auto bg-background-alt">
   <TopNavBar
     title={$LL.SCAN.CONNECTION_REQUEST.CERTIFICATION()}
     on:back={() => history.back()}
@@ -64,12 +51,12 @@
     <div class="flex min-h-full flex-col bg-background-alt px-4 pb-7">
       <div class="-mx-4 flex flex-col items-center gap-4 bg-background py-5">
         <div
-          class="flex h-[75px] w-[75px] items-center justify-center overflow-hidden rounded-3xl {showBadge
+          class="flex size-[75px] items-center justify-center overflow-hidden rounded-3xl {showBadge
             ? 'bg-primary'
             : 'bg-white p-2 dark:bg-silver'}"
         >
           {#if imageId}
-            <Image id={imageId} isTempAsset={true} bind:useFallback imgClass="size-full object-contain">
+            <Image id={imageId} isTempAsset={false} bind:useFallback imgClass="size-full object-contain">
               <ShieldCheckFillIcon slot="fallback" class="size-7 text-background-alt" />
             </Image>
           {:else}
@@ -97,7 +84,7 @@
       </div>
 
       <div class="mt-4">
-        <CertificationOverview credential={certification.credential} />
+        <CertificationOverview credential={certification.credential} isTempAsset={false} />
       </div>
 
       {#if hasClaims}
@@ -110,7 +97,7 @@
 </div>
 
 <style>
-  .safe-area-height {
+  .content-height {
     height: calc(100vh - var(--safe-area-inset-top) - var(--safe-area-inset-bottom));
   }
 </style>

@@ -368,10 +368,22 @@ const de_DE = {
       TITLE: 'Verbunden mit',
       FIRST_CONNECTED: 'Erstmalig verbunden',
       LAST_CONNECTED: 'Zuletzt verbunden',
+      FIRST_CONNECTED_TIME: 'Erstmalig verbunden: {duration}',
+      LAST_CONNECTED_TIME: 'Zuletzt verbunden: {duration}',
       EMPTY: 'Noch keine Verbindungen.',
     },
     DATA: {
       EMPTY: 'Noch keine Daten.',
+    },
+    ACTIONS: {
+      MENU_LABEL: 'Verbindungsmenü öffnen',
+      SHOW_DETAILS: 'Details anzeigen',
+      DISCONNECT: 'Verbindung trennen',
+    },
+    DETAILS: {
+      TITLE: 'Verbindungsdetails',
+      DID: 'DID',
+      VIEW_ON_EXPLORER: 'Im Explorer anzeigen',
     },
   },
   HISTORY: {

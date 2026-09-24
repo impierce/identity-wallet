@@ -22,3 +22,30 @@ export function hostname(text: string): string | undefined {
     return undefined;
   }
 }
+
+/**
+ * User-facing hostname for a connection. Older stored connections can lack a URL scheme,
+ * and the infrastructure-specific `identity.` prefix is not useful in the UI.
+ */
+export function connectionHostname(text: string): string {
+  const parsedHostname = hostname(text) ?? hostname(`https://${text}`);
+  return (parsedHostname ?? text).replace(/^identity\./i, '');
+}
+
+/** A browser-safe HTTP(S) URL for a stored connection URL, including legacy values without a scheme. */
+export function connectionBrowserUrl(text: string): string | undefined {
+  if (/^[a-z][a-z\d+.-]*:/i.test(text) && !/^https?:/i.test(text)) return undefined;
+
+  const candidates = [text, `https://${text}`];
+
+  for (const candidate of candidates) {
+    try {
+      const url = new URL(candidate);
+      if (url.protocol === 'http:' || url.protocol === 'https:') return url.toString();
+    } catch {
+      // Try the next representation.
+    }
+  }
+
+  return undefined;
+}
