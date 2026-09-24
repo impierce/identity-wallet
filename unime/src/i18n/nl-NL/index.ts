@@ -379,6 +379,10 @@ const nl_NL = {
       MENU_LABEL: 'Verbindingsmenu openen',
       SHOW_DETAILS: 'Details weergeven',
       DISCONNECT: 'Verbinding verbreken',
+      DISCONNECT_TITLE: 'Verbinding verbreken',
+      DISCONNECT_DESCRIPTION:
+        'Weet je zeker dat je deze verbinding wilt verbreken? De interactiegeschiedenis blijft behouden.',
+      DISCONNECT_CONFIRM_BUTTON: 'Verbinding verbreken',
     },
     DETAILS: {
       TITLE: 'Verbindingsdetails',

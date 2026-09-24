@@ -1028,6 +1028,18 @@ type RootTranslation = {
 			 * D​i​s​c​o​n​n​e​c​t
 			 */
 			DISCONNECT: string
+			/**
+			 * D​i​s​c​o​n​n​e​c​t​ ​c​o​n​n​e​c​t​i​o​n
+			 */
+			DISCONNECT_TITLE: string
+			/**
+			 * A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​d​i​s​c​o​n​n​e​c​t​ ​f​r​o​m​ ​t​h​i​s​ ​c​o​n​n​e​c​t​i​o​n​?​ ​T​h​e​ ​i​n​t​e​r​a​c​t​i​o​n​ ​h​i​s​t​o​r​y​ ​w​i​l​l​ ​b​e​ ​r​e​t​a​i​n​e​d​.
+			 */
+			DISCONNECT_DESCRIPTION: string
+			/**
+			 * D​i​s​c​o​n​n​e​c​t
+			 */
+			DISCONNECT_CONFIRM_BUTTON: string
 		}
 		DETAILS: {
 			/**
@@ -2653,6 +2665,18 @@ export type TranslationFunctions = {
 			 * Disconnect
 			 */
 			DISCONNECT: () => LocalizedString
+			/**
+			 * Disconnect connection
+			 */
+			DISCONNECT_TITLE: () => LocalizedString
+			/**
+			 * Are you sure you want to disconnect from this connection? The interaction history will be retained.
+			 */
+			DISCONNECT_DESCRIPTION: () => LocalizedString
+			/**
+			 * Disconnect
+			 */
+			DISCONNECT_CONFIRM_BUTTON: () => LocalizedString
 		}
 		DETAILS: {
 			/**

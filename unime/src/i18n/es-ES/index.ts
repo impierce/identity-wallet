@@ -380,6 +380,10 @@ const es_ES = {
       MENU_LABEL: 'Abrir menú de conexión',
       SHOW_DETAILS: 'Mostrar detalles',
       DISCONNECT: 'Desconectar',
+      DISCONNECT_TITLE: 'Desconectar conexión',
+      DISCONNECT_DESCRIPTION:
+        '¿Seguro que quieres desconectarte de esta conexión? El historial de interacciones se conservará.',
+      DISCONNECT_CONFIRM_BUTTON: 'Desconectar',
     },
     DETAILS: {
       TITLE: 'Detalles de conexión',

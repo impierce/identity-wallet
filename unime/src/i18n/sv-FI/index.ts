@@ -379,6 +379,10 @@ const sv_FI = {
       MENU_LABEL: 'Öppna anslutningsmenyn',
       SHOW_DETAILS: 'Visa detaljer',
       DISCONNECT: 'Koppla från',
+      DISCONNECT_TITLE: 'Koppla från anslutning',
+      DISCONNECT_DESCRIPTION:
+        'Är du säker på att du vill koppla från den här anslutningen? Interaktionshistoriken kommer att bevaras.',
+      DISCONNECT_CONFIRM_BUTTON: 'Koppla från',
     },
     DETAILS: {
       TITLE: 'Anslutningsdetaljer',
