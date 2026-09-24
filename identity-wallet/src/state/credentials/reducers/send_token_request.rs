@@ -1,6 +1,5 @@
 use crate::{
     error::AppError::{self, *},
-    http_client::get_http_client,
     persistence::{hash, persist_asset},
     state::{
         actions::{listen, Action},
@@ -19,7 +18,7 @@ use crate::{
     },
     subject::Subject,
 };
-use identity_iota::did::{CoreDID, DID};
+use identity_iota::did::DID;
 use log::{debug, info, warn};
 use oauth_tsl::{status_list::StatusType, tokens::referenced_token::StatusClaim};
 use oid4vc::{
@@ -30,7 +29,7 @@ use oid4vc::{
         credential_response::CredentialResponseType, token_request::TokenRequest,
     },
 };
-use serde_json::{json, Value};
+use serde_json::json;
 use std::collections::HashMap;
 use uuid::Uuid;
 
@@ -227,31 +226,16 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
         });
 
         // TODO: currently this is somewhat duplicate since the full ClientMetadata is not stored in the new CurrentUserPrompt::CredentialOffer state, but we should consider storing it there to avoid this duplication.
-        // This fetching of the DID document means that our OID4VCI implementation only accepts did:web's as client IDs.
-        // Read more about this design decision in ADR 0001.
-        let did_doc = get_http_client()
-            .await
-            .get(format!(
-                "{}/.well-known/did.json",
-                credential_issuer_url.to_string().trim_end_matches('/')
-            ))
-            .send()
-            .await?
-            .json::<Value>()
-            .await?;
-
-        let did_str = did_doc
-            .get("id")
-            .and_then(|id| id.as_str())
-            .ok_or(AppError::DidParseError)?
-            .to_string();
-
-        let did = CoreDID::parse(did_str).map_err(|e| AppError::Error(format!("Failed to parse DID: {e}")))?;
-
         // Create or update the connection.
-        let previously_connected = state.connections.contains(did.as_str());
+        let pending_connection_data =
+            state.core_utils.pending_connection_data.clone().ok_or_else(|| {
+                AppError::Error("Expected pending connection data for OID4VCI token request".to_string())
+            })?;
+        let previously_connected = state
+            .connections
+            .contains(pending_connection_data.client_metadata.client_id.as_str());
         let mut connections = state.connections;
-        let connection = connections.update_last_interaction_or_insert_new(&connection_url, &issuer_name, did);
+        let connection = connections.update_last_interaction_or_insert_new(&pending_connection_data);
 
         let mut history_credentials = vec![];
 
@@ -439,6 +423,7 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
             history,
             core_utils: CoreUtils {
                 active_flow: None,
+                pending_connection_data: None,
                 ..state.core_utils
             },
             ..state

@@ -11,12 +11,16 @@
   import { state } from '$lib/stores';
 
   import ConnectionData from './ConnectionData.svelte';
+  import ConnectionDetailsModal from './ConnectionDetailsModal.svelte';
+  import ConnectionHeaderMenu from './ConnectionHeaderMenu.svelte';
   import ConnectionSummary from './ConnectionSummary.svelte';
 
   let connection: Connection = $state.connections.find((c) => c.id === page.params.id)!;
+  $: connection = $state.connections.find((c) => c.id === page.params.id)!;
 
   let triggers = [$LL.CONNECTION.TABS.SUMMARY(), $LL.CONNECTION.TABS.DATA(), $LL.CONNECTION.TABS.ACTIVITY()];
   let activeTab: Writable<string> = writable(page.state.tab || triggers[0]);
+  const detailsOpen = writable(false);
 
   beforeNavigate(async ({ type, cancel }) => {
     replaceState('', { tab: $activeTab });
@@ -28,13 +32,15 @@
 </script>
 
 <div class="content-height flex flex-col">
-  <TopNavBar on:back={() => history.back()} title={connection.name} class="bg-silver dark:bg-navy" />
+  <TopNavBar on:back={() => history.back()} title={connection.name} class="bg-silver dark:bg-navy">
+    <ConnectionHeaderMenu on:showDetails={() => ($detailsOpen = true)} />
+  </TopNavBar>
   <div
     class="flex grow flex-col overflow-y-auto bg-silver px-4 py-5 dark:bg-navy"
     in:fly={{ y: 18, duration: 200, opacity: 1 }}
   >
     <Tabs value={activeTab} {triggers}>
-      <div slot="0" class="h-full pt-5">
+      <div slot="0" class="h-full py-5">
         <ConnectionSummary {connection} />
       </div>
       <div slot="1" class="h-full bg-silver py-5 dark:bg-navy">
@@ -48,6 +54,8 @@
     </Tabs>
   </div>
 </div>
+
+<ConnectionDetailsModal {connection} open={detailsOpen} />
 
 <!--
   TODO: remove bottom bar. General rule: only show it in the top level, when navigation one level down, do not show bottom nav anymore

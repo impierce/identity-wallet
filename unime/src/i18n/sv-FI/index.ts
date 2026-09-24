@@ -369,9 +369,21 @@ const sv_FI = {
       TITLE: 'Ansluten till',
       FIRST_CONNECTED: 'Först ansluten',
       LAST_CONNECTED: 'Senast ansluten',
+      FIRST_CONNECTED_TIME: 'Först ansluten: {duration}',
+      LAST_CONNECTED_TIME: 'Senast ansluten: {duration}',
     },
     DATA: {
       EMPTY: 'Ingen data ännu.',
+    },
+    ACTIONS: {
+      MENU_LABEL: 'Öppna anslutningsmenyn',
+      SHOW_DETAILS: 'Visa detaljer',
+      DISCONNECT: 'Koppla från',
+    },
+    DETAILS: {
+      TITLE: 'Anslutningsdetaljer',
+      DID: 'DID',
+      VIEW_ON_EXPLORER: 'Visa i utforskaren',
     },
   },
   HISTORY: {

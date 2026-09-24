@@ -10,6 +10,7 @@
   import { formatDate, getImageAsset, hash } from '$lib/utils';
 
   export let credential: DisplayCredential;
+  export let isTempAsset = true;
 
   // Url to cached issuer logo (if available).
   let issuerLogoUrl: string | null = null;
@@ -24,7 +25,7 @@
 
   onMount(async () => {
     if (credential.issuer_logo_uri) {
-      issuerLogoUrl = await getImageAsset(hash(credential.issuer_logo_uri), true);
+      issuerLogoUrl = await getImageAsset(hash(credential.issuer_logo_uri), isTempAsset);
     }
   });
 </script>

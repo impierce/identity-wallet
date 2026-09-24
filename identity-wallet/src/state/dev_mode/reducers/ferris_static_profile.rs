@@ -7,11 +7,15 @@ use crate::{
             history_event::{EventType, HistoryCredential, HistoryEvent},
             IdentityManager,
         },
-        credentials::VerifiableCredentialRecord,
+        credentials::{CredentialMetadata, DisplayCredential, VerifiableCredentialRecord},
         dev_mode::DevMode,
+        did::{
+            validate_domain_linkage::{ValidationResult, ValidationStatus},
+            validate_linked_verifiable_presentations::LinkedVerifiableCredentialData,
+        },
         profile_settings::{AppTheme, Profile},
         trust_list::TrustList,
-        user_prompt::CurrentUserPrompt,
+        user_prompt::{CurrentUserPrompt, EcosystemProfile, Member},
         AppState, SUPPORTED_DID_METHODS, SUPPORTED_SIGNING_ALGORITHMS,
     },
     stronghold::StrongholdManager,
@@ -220,6 +224,159 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
         state.user_journey = Some(onboarding_journey);
     }
 
+    let now = chrono::Utc::now();
+    let impierce_first_interaction = (now - chrono::Duration::try_days(2).unwrap()).to_rfc3339();
+    let impierce_last_interaction = (now - chrono::Duration::try_minutes(5).unwrap()).to_rfc3339();
+    let impierce_domain_validation = (
+        ValidationStatus::Success,
+        (now - chrono::Duration::try_hours(3).unwrap()).to_rfc3339(),
+    );
+
+    let iso_27001_certification = DisplayCredential {
+        id: "73fcaed2-d5d7-4f92-a71c-4ef7a09e1327".to_string(),
+        format: CredentialFormats::JwtVcJson(()),
+        issuer_name: "North Sea Certification B.V.".to_string(),
+        issuer_logo_uri: None,
+        data: json!({
+            "@context": ["https://www.w3.org/ns/credentials/v2"],
+            "type": ["VerifiableCredential", "OrganizationCertificationCredential"],
+            "issuer": "did:web:north-sea-certification.example",
+            "validFrom": "2025-01-15T00:00:00Z",
+            "validUntil": "2028-01-14T23:59:59Z",
+            "credentialSubject": {
+                "organization": "Impierce Technologies B.V.",
+                "standard": "ISO/IEC 27001:2022",
+                "certificateNumber": "NSC-ISMS-2025-0042",
+                "scope": "Development and operation of digital identity wallet infrastructure",
+                "validFrom": "2025-01-15",
+                "validUntil": "2028-01-14",
+                "country": "NL"
+            }
+        }),
+        display_claims: vec![],
+        metadata: CredentialMetadata {
+            is_favorite: false,
+            date_added: "2025-01-15T00:00:00Z".to_string(),
+            date_issued: "2025-01-15T00:00:00Z".to_string(),
+            expiration_date: Some("2028-01-14T23:59:59Z".to_string()),
+            icon: None,
+        },
+        connection_id: None,
+        display_name: "ISO/IEC 27001:2022 Certificate".to_string(),
+        credential_status: None,
+        public_link: None,
+    };
+
+    let iso_27701_certification = DisplayCredential {
+        id: "62318817-b2bc-4491-a6e1-796e40a5b3ed".to_string(),
+        format: CredentialFormats::JwtVcJson(()),
+        issuer_name: "North Sea Certification B.V.".to_string(),
+        issuer_logo_uri: None,
+        data: json!({
+            "@context": ["https://www.w3.org/ns/credentials/v2"],
+            "type": ["VerifiableCredential", "OrganizationCertificationCredential"],
+            "issuer": "did:web:north-sea-certification.example",
+            "validFrom": "2025-04-22T00:00:00Z",
+            "validUntil": "2028-04-21T23:59:59Z",
+            "credentialSubject": {
+                "organization": "Impierce Technologies B.V.",
+                "standard": "ISO/IEC 27701:2019",
+                "certificateNumber": "NSC-PIMS-2025-0018",
+                "scope": "Privacy information management for digital identity products and services",
+                "validFrom": "2025-04-22",
+                "validUntil": "2028-04-21",
+                "country": "NL"
+            }
+        }),
+        display_claims: vec![],
+        metadata: CredentialMetadata {
+            is_favorite: false,
+            date_added: "2025-04-22T00:00:00Z".to_string(),
+            date_issued: "2025-04-22T00:00:00Z".to_string(),
+            expiration_date: Some("2028-04-21T23:59:59Z".to_string()),
+            icon: None,
+        },
+        connection_id: None,
+        display_name: "ISO/IEC 27701:2019 Certificate".to_string(),
+        credential_status: None,
+        public_link: None,
+    };
+
+    let impierce_certifications = vec![
+        LinkedVerifiableCredentialData {
+            credential: iso_27001_certification,
+            issuer_domain_validations: vec![ValidationResult {
+                status: ValidationStatus::Success,
+                url: "https://north-sea-certification.example".parse().unwrap(),
+                name: Some("North Sea Certification B.V.".to_string()),
+                logo_uri: None,
+                issuance_date: Some("2025-01-15T00:00:00Z".to_string()),
+                message: None,
+            }],
+        },
+        LinkedVerifiableCredentialData {
+            credential: iso_27701_certification,
+            issuer_domain_validations: vec![ValidationResult {
+                status: ValidationStatus::Success,
+                url: "https://north-sea-certification.example".parse().unwrap(),
+                name: Some("North Sea Certification B.V.".to_string()),
+                logo_uri: None,
+                issuance_date: Some("2025-04-22T00:00:00Z".to_string()),
+                message: None,
+            }],
+        },
+    ];
+
+    let impierce_ecosystems = vec![
+        EcosystemProfile {
+            logo_uri: None,
+            name: "European Digital Identity Network".to_string(),
+            description: Some(
+                "A network of organisations building interoperable and trustworthy digital identity services."
+                    .to_string(),
+            ),
+            ecosystem_leader: Member {
+                logo_uri: None,
+                name: "European Digital Trust Foundation".to_string(),
+                description: Some("Ecosystem coordinator".to_string()),
+                identifier: Some("https://digital-trust.example".to_string()),
+            },
+            member_count: 3,
+            members: vec![
+                Member {
+                    logo_uri: None,
+                    name: "Impierce Technologies".to_string(),
+                    description: Some("Wallet and identity infrastructure".to_string()),
+                    identifier: Some("https://impierce.com".to_string()),
+                },
+                Member {
+                    logo_uri: None,
+                    name: "Tangle Labs".to_string(),
+                    description: Some("Decentralized identity infrastructure".to_string()),
+                    identifier: Some("https://tanglelabs.io".to_string()),
+                },
+            ],
+        },
+        EcosystemProfile {
+            logo_uri: None,
+            name: "Open Skills Alliance".to_string(),
+            description: Some("Partners making skills and achievements portable across Europe.".to_string()),
+            ecosystem_leader: Member {
+                logo_uri: None,
+                name: "Skills Europe".to_string(),
+                description: Some("Alliance owner".to_string()),
+                identifier: Some("https://skills.example".to_string()),
+            },
+            member_count: 2,
+            members: vec![Member {
+                logo_uri: None,
+                name: "Impierce Academy".to_string(),
+                description: Some("Digital skills issuer".to_string()),
+                identifier: Some("https://academy.impierce.com".to_string()),
+            }],
+        },
+    ];
+
     state.connections = Connections(vec![
         Connection {
             id: "352eaaf022a32cc315b4ac46bfa14bcad91e901bdf3aff3925d3a5a4c13bd611".to_string(),
@@ -229,6 +386,9 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             verified: false,
             first_interacted: "2023-09-11T19:53:53.937981+00:00".to_string(),
             last_interacted: "2023-09-11T19:53:53.937981+00:00".to_string(),
+            linked_verifiable_presentations: None,
+            ecosystems: None,
+            domain_validation: None,
         },
         Connection {
             id: "424313e61e35ca4eeca44aac85dc4764c32d7cf9def83ba15f428c308bf1d181".to_string(),
@@ -236,8 +396,11 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             url: "https://demo.impierce.com".to_string(),
             did: "did:iota:rms:0x42ad588322e58b3c07aa39e4948d021ee17ecb5747915e9e1f35f028d7ecaf90".to_string(),
             verified: true,
-            first_interacted: "2024-01-09T07:36:41.382948+00:00".to_string(),
-            last_interacted: "2024-01-09T07:36:41.382948+00:00".to_string(),
+            first_interacted: impierce_first_interaction,
+            last_interacted: impierce_last_interaction,
+            linked_verifiable_presentations: Some(impierce_certifications),
+            ecosystems: Some(impierce_ecosystems),
+            domain_validation: Some(impierce_domain_validation),
         },
         Connection {
             id: "e36236d8d7117ed6c6a5d4e99167a2ee1ccb455e75d5b71cee50b08adcf11ba1".to_string(),
@@ -247,6 +410,9 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             verified: false,
             first_interacted: "2022-02-03T12:33:54.191824+00:00".to_string(),
             last_interacted: "2023-11-13T19:26:40.049239+00:00".to_string(),
+            linked_verifiable_presentations: None,
+            ecosystems: None,
+            domain_validation: None,
         },
         Connection {
             id: "a81a51b8ad26bdd333abd791a112bf0e0823d559cadc580218a240238a86c292".to_string(),
@@ -256,6 +422,9 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             verified: true,
             first_interacted: "2024-01-09T08:45:44.217Z".to_string(),
             last_interacted: "2024-01-09T08:45:44.217Z".to_string(),
+            linked_verifiable_presentations: None,
+            ecosystems: None,
+            domain_validation: None,
         },
     ]);
 
@@ -328,7 +497,7 @@ async fn load_predefined_images() -> Result<(), AppError> {
 
     // Connections
     write_bytes_to_file(
-        include_bytes!("../../../../resources/images/impierce_white.png"),
+        include_bytes!("../../../../resources/images/impierce.png"),
         "424313e61e35ca4eeca44aac85dc4764c32d7cf9def83ba15f428c308bf1d181.png",
     )?;
     write_bytes_to_file(

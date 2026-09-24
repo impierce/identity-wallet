@@ -9,9 +9,11 @@
   import { hostname } from '$lib/utils/url';
 
   export let certification: LinkedVerifiableCredentialData;
+  export let href: string | undefined = undefined;
+  export let isTempAsset = true;
 
   // Carry `?mock=` across so DEV previews survive the navigation.
-  $: href = `/prompt/accept-connection/certifications/${certification.credential.id}${page.url.search}`;
+  $: destination = href ?? `/prompt/accept-connection/certifications/${certification.credential.id}${page.url.search}`;
 
   $: logoUri = certification.credential.metadata.icon ?? certification.credential.issuer_logo_uri;
   $: imageId = logoUri ? hash(logoUri) : undefined;
@@ -42,7 +44,7 @@ who issued it, and whether that issuer's domain checked out. Links to the detail
 - certification
 -->
 <a
-  {href}
+  href={destination}
   class="flex w-full items-center rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-600 dark:bg-dark"
 >
   <div
@@ -51,7 +53,7 @@ who issued it, and whether that issuer's domain checked out. Links to the detail
       : 'bg-white'}"
   >
     {#if imageId}
-      <Image id={imageId} isTempAsset={true} bind:useFallback imgClass="size-full object-contain">
+      <Image id={imageId} {isTempAsset} bind:useFallback imgClass="size-full object-contain">
         <ShieldCheckFillIcon slot="fallback" class="size-6 text-white" />
       </Image>
     {:else}

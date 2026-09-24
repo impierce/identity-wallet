@@ -13,13 +13,9 @@
   import { PencilFillIcon } from '$lib/icons';
   import { state as appState, pageTitleStore } from '$lib/stores';
 
-  import AddressRenderer from './AddressRenderer.svelte';
+  import CredentialClaimsRenderer from './CredentialClaimsRenderer.svelte';
   import CredentialHeader from './CredentialHeader.svelte';
   import CredentialOverview from './CredentialOverview.svelte';
-  import DefaultRenderer from './DefaultRenderer.svelte';
-  import ELMRenderer from './ELMRenderer.svelte';
-  import OpenBadgeRenderer from './OpenBadgeRenderer.svelte';
-  import PidRenderer from './PidRenderer.svelte';
   import RawCredentialModal from './RawCredentialModal.svelte';
 
   // Credential cannot be loaded via load function since it's stored in the application state.
@@ -57,8 +53,6 @@
     // Use `pageTitleStore` to get page title into layout.
     pageTitleStore.set($LL.CREDENTIAL.NAVBAR_TITLE());
   }
-
-  const credentialTypes = credential.data?.type as string[] | undefined;
 
   function discard() {
     displayNameUpdated = displayName;
@@ -125,18 +119,7 @@
       </div>
     {/if}
     <CredentialOverview {credential} />
-    {#if credentialTypes?.includes('OpenBadgeCredential') || credentialTypes?.includes('AchievementCredential')}
-      <OpenBadgeRenderer {credential} />
-    {:else if credentialTypes?.includes('EuropeanDigitalCredential')}
-      <ELMRenderer {credential} />
-      <!-- TODO: the renderer should be determined by a `metadata` field -->
-    {:else if credentialTypes?.includes('ResidenceCredential')}
-      <AddressRenderer {credential} />
-    {:else if credentialTypes?.includes('NaturalPersonCredential')}
-      <PidRenderer {credential} />
-    {:else}
-      <DefaultRenderer {credential} />
-    {/if}
+    <CredentialClaimsRenderer {credential} />
   </div>
 
   <!-- Dev Mode: raw credential data -->

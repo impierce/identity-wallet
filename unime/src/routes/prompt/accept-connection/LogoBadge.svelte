@@ -9,6 +9,7 @@
   // A whole `bg-*` class string. May carry a `text-*` with it, which the monogram inherits: a pale
   // tint needs dark initials. Defaults to white below, which suits the dark tints.
   export let tint: string;
+  export let isTempAsset = true;
 
   let className = '';
   export { className as class };
@@ -44,7 +45,7 @@ the monogram says and which tint it takes.
   )}
 >
   {#if imageId}
-    <Image id={imageId} isTempAsset={true} bind:useFallback imgClass="size-full object-contain">
+    <Image id={imageId} {isTempAsset} bind:useFallback imgClass="size-full object-contain">
       <span slot="fallback" class={twMerge('font-semibold', textClass)}>{initials}</span>
     </Image>
   {:else}

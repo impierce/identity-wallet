@@ -119,8 +119,10 @@ pub async fn read_oid4vp_authorization_request(state: AppState, action: Action) 
         info!("uuids of VCs that can fulfill the request: {uuids:?}");
 
         drop(state_guard);
+        let pending_connection_data = state.core_utils.pending_connection_data.clone();
 
-        if let Some(CurrentUserPrompt::AcceptConnection { client_metadata, .. }) = &state.current_user_prompt {
+        if let Some(pending_connection_data) = &pending_connection_data {
+            let client_metadata = pending_connection_data.client_metadata.clone();
             // TODO: communicate when no credentials are available.
             if !uuids.is_empty() {
                 Ok(AppState {
@@ -132,8 +134,8 @@ pub async fn read_oid4vp_authorization_request(state: AppState, action: Action) 
                         ..state.core_utils
                     },
                     current_user_prompt: Some(CurrentUserPrompt::ShareCredentials {
-                        client_name: client_metadata.client_name.clone(),
-                        logo_uri: client_metadata.logo_uri.clone(),
+                        client_name: client_metadata.client_name,
+                        logo_uri: client_metadata.logo_uri,
                         options: uuids,
                         is_interactive: false,
                     }),
@@ -143,7 +145,7 @@ pub async fn read_oid4vp_authorization_request(state: AppState, action: Action) 
                 Err(NoMatchingCredentialError)
             }
         } else {
-            warn!("Unexpected state: No CurrentUserPrompt::AcceptConnection found when reading authorization request");
+            warn!("Unexpected state: No pending connection data found when reading authorization request");
             Ok(state)
         }
     } else {

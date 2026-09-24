@@ -370,9 +370,21 @@ const es_ES = {
       TITLE: 'Conectado a',
       FIRST_CONNECTED: 'Primer conectado',
       LAST_CONNECTED: 'Último conectado',
+      FIRST_CONNECTED_TIME: 'Primera conexión: {duration}',
+      LAST_CONNECTED_TIME: 'Última conexión: {duration}',
     },
     DATA: {
       EMPTY: 'Todavía sin datos.',
+    },
+    ACTIONS: {
+      MENU_LABEL: 'Abrir menú de conexión',
+      SHOW_DETAILS: 'Mostrar detalles',
+      DISCONNECT: 'Desconectar',
+    },
+    DETAILS: {
+      TITLE: 'Detalles de conexión',
+      DID: 'DID',
+      VIEW_ON_EXPLORER: 'Ver en el explorador',
     },
   },
   HISTORY: {

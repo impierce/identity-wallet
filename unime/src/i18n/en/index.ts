@@ -368,9 +368,21 @@ const en = {
       TITLE: 'Connected to',
       FIRST_CONNECTED: 'First connected',
       LAST_CONNECTED: 'Last connected',
+      FIRST_CONNECTED_TIME: 'First connected: {duration:string}',
+      LAST_CONNECTED_TIME: 'Last connected: {duration:string}',
     },
     DATA: {
       EMPTY: 'No data yet.',
+    },
+    ACTIONS: {
+      MENU_LABEL: 'Open connection menu',
+      SHOW_DETAILS: 'Show details',
+      DISCONNECT: 'Disconnect',
+    },
+    DETAILS: {
+      TITLE: 'Connection details',
+      DID: 'DID',
+      VIEW_ON_EXPLORER: 'View on explorer',
     },
   },
   HISTORY: {

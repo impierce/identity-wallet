@@ -369,9 +369,21 @@ const nl_NL = {
       TITLE: 'Verbonden met',
       FIRST_CONNECTED: 'Eerst gebruikt',
       LAST_CONNECTED: 'Laatst gebruikt',
+      FIRST_CONNECTED_TIME: 'Eerste verbinding: {duration}',
+      LAST_CONNECTED_TIME: 'Laatste verbinding: {duration}',
     },
     DATA: {
       EMPTY: 'Nog geen data.',
+    },
+    ACTIONS: {
+      MENU_LABEL: 'Verbindingsmenu openen',
+      SHOW_DETAILS: 'Details weergeven',
+      DISCONNECT: 'Verbinding verbreken',
+    },
+    DETAILS: {
+      TITLE: 'Verbindingsdetails',
+      DID: 'DID',
+      VIEW_ON_EXPLORER: 'Bekijk in explorer',
     },
   },
   HISTORY: {

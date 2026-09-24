@@ -11,9 +11,11 @@
   // has no id, unlike a certification's `credential.id`. Safe because the array is fixed for
   // the life of a prompt and the route is not deep-linkable.
   export let index: number;
+  export let href: string | undefined = undefined;
+  export let isTempAsset = true;
 
   // Carry `?mock=` across so DEV previews survive the navigation.
-  $: href = `/prompt/accept-connection/ecosystems/${index}${page.url.search}`;
+  $: destination = href ?? `/prompt/accept-connection/ecosystems/${index}${page.url.search}`;
 </script>
 
 <!--
@@ -25,10 +27,10 @@ A single ecosystem the connection belongs to. Links to the detail page.
 - index
 -->
 <a
-  {href}
+  href={destination}
   class="flex w-full items-center rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-600 dark:bg-dark"
 >
-  <EcosystemAvatar name={ecosystem.name} logoUri={ecosystem.logo_uri} class="mr-4 size-12 rounded-lg" />
+  <EcosystemAvatar name={ecosystem.name} logoUri={ecosystem.logo_uri} class="mr-4 size-12 rounded-lg" {isTempAsset} />
 
   <div class="flex min-w-0 grow flex-col">
     <p class="text-[13px]/[24px] font-medium text-slate-800 dark:text-grey">
