@@ -12,6 +12,7 @@ use crate::{
     },
 };
 
+/// Deletes the connection and the images associated with it's connection ID from the assets folder.
 #[tracing::instrument(skip_all, err)]
 pub async fn delete_connection(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some(delete_connection) = listen::<DeleteConnection>(action) {
