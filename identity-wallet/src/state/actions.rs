@@ -69,6 +69,7 @@ mod bindings {
         common::actions::{
             cancel_user_flow::CancelUserFlow, check_password::CheckPassword, unlock_storage::UnlockStorage,
         },
+        connections::actions::delete_connection::DeleteConnection,
         credentials::actions::{
             authorization_code_received::CodeReceived, credential_offers_selected::CredentialOffersSelected,
             credentials_selected::CredentialsSelected, delete_credential::DeleteCredential,
@@ -114,6 +115,8 @@ mod bindings {
         QrCodeScanned { payload: QrCodeScanned },
         #[serde(rename = "[Authenticate] Connection accepted")]
         ConnectionAccepted,
+        #[serde(rename = "[Connection] Delete")]
+        DeleteConnection { payload: DeleteConnection },
         #[serde(rename = "[User Flow] Cancel")]
         CancelUserFlow {
             #[ts(optional)]
