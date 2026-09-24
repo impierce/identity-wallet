@@ -378,6 +378,10 @@ const en = {
       MENU_LABEL: 'Open connection menu',
       SHOW_DETAILS: 'Show details',
       DISCONNECT: 'Disconnect',
+      DISCONNECT_TITLE: 'Disconnect connection',
+      DISCONNECT_DESCRIPTION:
+        'Are you sure you want to disconnect from this connection? The interaction history will be retained.',
+      DISCONNECT_CONFIRM_BUTTON: 'Disconnect',
     },
     DETAILS: {
       TITLE: 'Connection details',

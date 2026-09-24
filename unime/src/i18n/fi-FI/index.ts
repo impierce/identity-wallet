@@ -380,6 +380,9 @@ const fi_FI = {
       MENU_LABEL: 'Avaa yhteysvalikko',
       SHOW_DETAILS: 'Näytä tiedot',
       DISCONNECT: 'Katkaise yhteys',
+      DISCONNECT_TITLE: 'Katkaise yhteys',
+      DISCONNECT_DESCRIPTION: 'Haluatko varmasti katkaista tämän yhteyden? Vuorovaikutushistoria säilytetään.',
+      DISCONNECT_CONFIRM_BUTTON: 'Katkaise yhteys',
     },
     DETAILS: {
       TITLE: 'Yhteyden tiedot',

@@ -379,6 +379,9 @@ const de_DE = {
       MENU_LABEL: 'Verbindungsmenü öffnen',
       SHOW_DETAILS: 'Details anzeigen',
       DISCONNECT: 'Verbindung trennen',
+      DISCONNECT_TITLE: 'Verbindung trennen',
+      DISCONNECT_DESCRIPTION: 'Möchtest du diese Verbindung wirklich trennen? Der Interaktionsverlauf bleibt erhalten.',
+      DISCONNECT_CONFIRM_BUTTON: 'Verbindung trennen',
     },
     DETAILS: {
       TITLE: 'Verbindungsdetails',

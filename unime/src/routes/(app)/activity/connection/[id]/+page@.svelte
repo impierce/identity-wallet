@@ -33,7 +33,7 @@
 
 <div class="content-height flex flex-col">
   <TopNavBar on:back={() => history.back()} title={connection.name} class="bg-silver dark:bg-navy">
-    <ConnectionHeaderMenu on:showDetails={() => ($detailsOpen = true)} />
+    <ConnectionHeaderMenu id={connection.id} on:showDetails={() => ($detailsOpen = true)} />
   </TopNavBar>
   <div
     class="flex grow flex-col overflow-y-auto bg-silver px-4 py-5 dark:bg-navy"
