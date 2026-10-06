@@ -11,16 +11,10 @@ const ESCO_SKILL = {
 };
 
 describe('findOfficialSkill', () => {
-  test('leaves out a code that identifies an entry opaquely', () => {
-    // ESCO identifies its concepts by a UUID, which says nothing to the holder of the credential.
-    expect(findOfficialSkill({ ...ESCO_SKILL, targetCode: '4cca4ccf-b956-4561-af8e-151b66af9631' })?.code).toBeNull();
-  });
-
   test('resolves an alignment that references an entry of a skills framework', () => {
     expect(findOfficialSkill(ESCO_SKILL)).toEqual({
       name: 'work in teams',
       framework: 'ESCO',
-      code: 'S1.4.1',
       kind: 'skill',
       url: ESCO_SKILL.targetUrl,
       description: ESCO_SKILL.targetDescription,

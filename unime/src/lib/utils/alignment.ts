@@ -21,19 +21,10 @@ export type SkillKind = 'skill' | 'occupation';
 export interface OfficialSkill {
   name: string;
   framework: string;
-  /** The code of the entry within its framework, unless the framework identifies its entries by an opaque code. */
-  code: string | null;
   kind: SkillKind | null;
   url: string | null;
   description: string | null;
 }
-
-/**
- * Frameworks are free to pick the codes of their entries. ESCO uses a readable notation for the levels of its
- * hierarchy (e.g. `S1.4.1`), but a UUID for the concepts themselves. A UUID tells the holder of the credential
- * nothing, so it is not shown alongside the skill.
- */
-const OPAQUE_CODE_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
  * `Alignment TargetType` (OBv3 B.1.29) is an extensible enumeration whose members are bound to a framework, e.g.
@@ -78,7 +69,6 @@ export function findOfficialSkill(alignment: Alignment | null | undefined): Offi
   return {
     name,
     framework,
-    code: OPAQUE_CODE_REGEX.test(code) ? null : code,
     kind: findSkillKind(alignment.targetType),
     url: trimmed(alignment.targetUrl),
     description: trimmed(alignment.targetDescription),

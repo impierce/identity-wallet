@@ -35,8 +35,8 @@
 Renders a single `Alignment` of an achievement or of a result.
 
 An alignment that references an entry of a skills framework (e.g. a skill or an occupation picked from ESCO) is
-rendered as an official skill: the framework it was taken from, the code that identifies it there and a link to its
-definition are shown alongside its name. An alignment that is written by hand during template creation has none of
+rendered as an official skill: the framework it was taken from and a link to its definition are shown alongside its
+name. The code that identifies it within the framework is not shown, as it is meaningless to the holder. An alignment that is written by hand during template creation has none of
 these, so it is rendered as its name and description alone.
 -->
 {#if skill}
@@ -56,26 +56,17 @@ these, so it is rendered as its name and description alone.
       <p class="text-[13px]/[20px] text-text-alt">{skill.description}</p>
     {/if}
 
-    {#if skill.code || skill.url}
-      <div class="flex items-center gap-3">
-        {#if skill.code}
-          <span class="truncate rounded-md bg-background-alt px-2 py-0.5 font-mono text-[11px]/[20px] text-text-alt">
-            {skill.code}
-          </span>
-        {/if}
-        {#if skill.url}
-          <a
-            href={skill.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            on:click|preventDefault={() => openLink(skill.url)}
-            class="ml-auto flex shrink-0 items-center gap-1 text-[11px]/[20px] font-medium underline"
-          >
-            {$LL.CREDENTIAL.DETAILS.OPEN_BADGES.FRAMEWORK_LINK()}
-            <ArrowSquareOutBoldIcon class="size-3" />
-          </a>
-        {/if}
-      </div>
+    {#if skill.url}
+      <a
+        href={skill.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        on:click|preventDefault={() => openLink(skill.url)}
+        class="flex items-center gap-1 self-end text-[11px]/[20px] font-medium underline"
+      >
+        {$LL.CREDENTIAL.DETAILS.OPEN_BADGES.FRAMEWORK_LINK()}
+        <ArrowSquareOutBoldIcon class="size-3" />
+      </a>
     {/if}
   </div>
 {:else if alignment.targetName}
