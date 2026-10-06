@@ -21,6 +21,13 @@ describe('findOfficialSkill', () => {
     });
   });
 
+  test('spells known frameworks their own way, regardless of how the issuer cased them', () => {
+    expect(findOfficialSkill({ ...ESCO_SKILL, targetFramework: 'esco' })?.framework).toBe('ESCO');
+    expect(findOfficialSkill({ ...ESCO_SKILL, targetFramework: 'COMPETENTNL' })?.framework).toBe('CompetentNL');
+    expect(findOfficialSkill({ ...ESCO_SKILL, targetFramework: 'CompetentNL' })?.framework).toBe('CompetentNL');
+    expect(findOfficialSkill({ ...ESCO_SKILL, targetFramework: 'O*NET' })?.framework).toBe('O*NET');
+  });
+
   test('resolves the kind of entry an alignment references', () => {
     expect(findOfficialSkill({ ...ESCO_SKILL, targetType: 'ext:EscoOccupation' })?.kind).toBe('occupation');
     expect(findOfficialSkill({ ...ESCO_SKILL, targetType: 'ceasn:Competency' })?.kind).toBe('skill');

@@ -46,6 +46,19 @@ function findSkillKind(targetType: Alignment['targetType']): SkillKind | null {
   return null;
 }
 
+/**
+ * Issuers name the same framework with different casing (e.g. `esco`, `COMPETENTNL`). Known frameworks are shown by
+ * their own spelling, looked up case-insensitively; any other framework is shown as the issuer named it.
+ */
+const FRAMEWORK_DISPLAY_NAMES: Record<string, string> = {
+  esco: 'ESCO',
+  competentnl: 'CompetentNL',
+};
+
+function displayFramework(framework: string): string {
+  return FRAMEWORK_DISPLAY_NAMES[framework.toLowerCase()] ?? framework;
+}
+
 function trimmed(value: unknown): string | null {
   return typeof value === 'string' && value.trim().length > 0 ? value.trim() : null;
 }
@@ -68,7 +81,7 @@ export function findOfficialSkill(alignment: Alignment | null | undefined): Offi
 
   return {
     name,
-    framework,
+    framework: displayFramework(framework),
     kind: findSkillKind(alignment.targetType),
     url: trimmed(alignment.targetUrl),
     description: trimmed(alignment.targetDescription),

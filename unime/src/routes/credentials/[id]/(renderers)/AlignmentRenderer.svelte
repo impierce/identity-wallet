@@ -41,12 +41,12 @@ these, so it is rendered as its name and description alone.
 -->
 {#if skill}
   <div class="not-prose flex flex-col gap-2 rounded-xl border border-brand/40 bg-brand/5 px-4 py-3">
-    <div class="flex items-center gap-1.5 text-[11px]/[16px] font-semibold tracking-wide text-text-alt uppercase">
+    <div class="flex items-center gap-1.5 text-[11px]/[16px] font-semibold tracking-wide text-text-alt">
       <SealCheckFillIcon class="size-4 shrink-0 text-brand" />
       <span class="truncate">{skill.framework}</span>
       {#if kind}
         <span aria-hidden="true">&middot;</span>
-        <span class="truncate">{kind}</span>
+        <span class="truncate uppercase">{kind}</span>
       {/if}
     </div>
 
