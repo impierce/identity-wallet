@@ -28,7 +28,7 @@ describe('AlignmentRenderer', () => {
     expect(screen.getByText('work in teams')).toBeInTheDocument();
     expect(screen.getByText('ESCO')).toBeInTheDocument();
     expect(screen.getByText('Skill')).toBeInTheDocument();
-    expect(screen.getByText('S1.4.1')).toBeInTheDocument();
+    expect(screen.queryByText('S1.4.1')).not.toBeInTheDocument();
     expect(screen.getByRole('link')).toHaveAttribute(
       'href',
       'https://esco.ec.europa.eu/en/classification/skill?uri=http://data.europa.eu/esco/skill/S1.4.1',
