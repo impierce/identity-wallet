@@ -77,6 +77,7 @@ export function findOfficialSkill(alignment: Alignment | null | undefined): Offi
   const framework = trimmed(alignment.targetFramework);
   const code = trimmed(alignment.targetCode);
 
+  // `targetCode` is no longer displayed, but only alignments picked from a framework have one.
   if (!name || !framework || !code) return null;
 
   return {

@@ -34,10 +34,8 @@
 @component
 Renders a single `Alignment` of an achievement or of a result.
 
-An alignment that references an entry of a skills framework (e.g. a skill or an occupation picked from ESCO) is
-rendered as an official skill: the framework it was taken from and a link to its definition are shown alongside its
-name. The code that identifies it within the framework is not shown, as it is meaningless to the holder. An alignment that is written by hand during template creation has none of
-these, so it is rendered as its name and description alone.
+An alignment picked from a skills framework (e.g. ESCO) is rendered as an official skill, with its framework and a
+link to its definition. A hand-written alignment is rendered as its name and description alone.
 -->
 {#if skill}
   <div class="not-prose flex flex-col gap-2 rounded-xl border border-brand/40 bg-brand/5 px-4 py-3">
