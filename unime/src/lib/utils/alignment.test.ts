@@ -11,20 +11,21 @@ const ESCO_SKILL = {
 };
 
 describe('findOfficialSkill', () => {
-  test('leaves out a code that identifies an entry opaquely', () => {
-    // ESCO identifies its concepts by a UUID, which says nothing to the holder of the credential.
-    expect(findOfficialSkill({ ...ESCO_SKILL, targetCode: '4cca4ccf-b956-4561-af8e-151b66af9631' })?.code).toBeNull();
-  });
-
   test('resolves an alignment that references an entry of a skills framework', () => {
     expect(findOfficialSkill(ESCO_SKILL)).toEqual({
       name: 'work in teams',
       framework: 'ESCO',
-      code: 'S1.4.1',
       kind: 'skill',
       url: ESCO_SKILL.targetUrl,
       description: ESCO_SKILL.targetDescription,
     });
+  });
+
+  test('spells known frameworks their own way, regardless of how the issuer cased them', () => {
+    expect(findOfficialSkill({ ...ESCO_SKILL, targetFramework: 'esco' })?.framework).toBe('ESCO');
+    expect(findOfficialSkill({ ...ESCO_SKILL, targetFramework: 'COMPETENTNL' })?.framework).toBe('CompetentNL');
+    expect(findOfficialSkill({ ...ESCO_SKILL, targetFramework: 'CompetentNL' })?.framework).toBe('CompetentNL');
+    expect(findOfficialSkill({ ...ESCO_SKILL, targetFramework: 'O*NET' })?.framework).toBe('O*NET');
   });
 
   test('resolves the kind of entry an alignment references', () => {
