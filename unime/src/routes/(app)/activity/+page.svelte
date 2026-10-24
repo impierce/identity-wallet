@@ -13,11 +13,13 @@
   let activeTab: Writable<string> = writable(page.state.tab || triggers[0]);
 
   beforeNavigate(async ({ type, cancel }) => {
-    replaceState('', { tab: $activeTab });
     if (type === 'popstate') {
+      // See `activity/connection/[id]`: leave the entry we pop to untouched and wait for the history to be restored.
       cancel();
-      goto('/me');
+      addEventListener('popstate', () => goto('/me'), { once: true });
+      return;
     }
+    replaceState('', { tab: $activeTab });
   });
 </script>
 

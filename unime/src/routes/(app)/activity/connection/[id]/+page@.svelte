@@ -22,17 +22,22 @@
   let activeTab: Writable<string> = writable(page.state.tab || triggers[0]);
   const detailsOpen = writable(false);
 
+  const parentRoute = '/activity';
+
   beforeNavigate(async ({ type, cancel }) => {
-    replaceState('', { tab: $activeTab });
     if (type === 'popstate') {
+      // On popstate the browser already points at the previous entry, so `replaceState` would overwrite that entry
+      // (making the next back press a no-op). Cancel and navigate to the parent once the history is restored.
       cancel();
-      goto('/activity');
+      addEventListener('popstate', () => goto(parentRoute), { once: true });
+      return;
     }
+    replaceState('', { tab: $activeTab });
   });
 </script>
 
 <div class="content-height flex flex-col">
-  <TopNavBar on:back={() => history.back()} title={connection.name} class="bg-silver dark:bg-navy">
+  <TopNavBar on:back={() => goto(parentRoute)} title={connection.name} class="bg-silver dark:bg-navy">
     <ConnectionHeaderMenu id={connection.id} on:showDetails={() => ($detailsOpen = true)} />
   </TopNavBar>
   <div
