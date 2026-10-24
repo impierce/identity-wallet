@@ -1,32 +1,21 @@
 <script lang="ts">
-  import { beforeNavigate, goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
   import { fly } from 'svelte/transition';
 
   import { Button, TopNavBar } from '$lib/components';
   import { ANIMATION_DURATION as duration } from '$lib/constants';
   import { dispatch } from '$lib/dispatcher';
+  import { useParentRoute } from '$lib/navigation';
   import { state as appState, navigationDirection } from '$lib/stores';
 
   let name = $state($appState.profile_settings.profile?.name);
 
-  const parentRoute = '/me/settings/profile';
-
-  beforeNavigate(({ type, cancel }) => {
-    if (type === 'popstate') {
-      cancel();
-      goto(parentRoute);
-    }
-  });
+  const navigateUp = useParentRoute('/me/settings/profile');
 
   const x = $derived($navigationDirection === 'down' ? 32 : -32);
 </script>
 
-<TopNavBar
-  on:back={() => goto(parentRoute)}
-  title={$LL.SETTINGS.PROFILE.PROFILE_NAME.NAVBAR_TITLE()}
-  class="sticky top-0 z-10"
-/>
+<TopNavBar on:back={navigateUp} title={$LL.SETTINGS.PROFILE.PROFILE_NAME.NAVBAR_TITLE()} class="sticky top-0 z-10" />
 
 <div class="content-height relative flex flex-col" in:fly={{ x, duration, opacity: 1 }}>
   <div class="flex grow flex-col items-center bg-silver p-8 dark:bg-navy">
@@ -41,7 +30,7 @@
       label={$LL.SETTINGS.PROFILE.PROFILE_NAME.CONFIRM()}
       on:click={async () => {
         await dispatch({ type: '[Settings] Update profile', payload: { name } });
-        goto(parentRoute);
+        navigateUp();
       }}
       disabled={!name}
     />

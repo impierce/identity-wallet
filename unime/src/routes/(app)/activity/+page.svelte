@@ -1,25 +1,23 @@
 <script lang="ts">
-  import { beforeNavigate, goto, replaceState } from '$app/navigation';
+  import { beforeNavigate, replaceState } from '$app/navigation';
   import { page } from '$app/state';
   import LL from '$i18n/i18n-svelte';
   import { writable, type Writable } from 'svelte/store';
   import { fly } from 'svelte/transition';
 
   import { History, Tabs } from '$lib/components';
+  import { useParentRoute } from '$lib/navigation';
 
   import ConnectionsList from './ConnectionsList.svelte';
 
   let triggers = [$LL.ACTIVITY.TABS.CONNECTIONS(), $LL.ACTIVITY.TABS.HISTORY()];
   let activeTab: Writable<string> = writable(page.state.tab || triggers[0]);
 
-  beforeNavigate(async ({ type, cancel }) => {
-    if (type === 'popstate') {
-      // See `activity/connection/[id]`: leave the entry we pop to untouched and wait for the history to be restored.
-      cancel();
-      addEventListener('popstate', () => goto('/me'), { once: true });
-      return;
-    }
-    replaceState('', { tab: $activeTab });
+  useParentRoute('/me');
+
+  beforeNavigate(({ type }) => {
+    // On popstate the browser already points at the previous entry, which we must not overwrite.
+    if (type !== 'popstate') replaceState('', { tab: $activeTab });
   });
 </script>
 
