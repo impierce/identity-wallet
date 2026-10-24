@@ -11,6 +11,7 @@
   import { isMockPrompt, resolveAcceptConnectionPrompt } from '$lib/dev/mocks/resolve';
   import { dispatch } from '$lib/dispatcher';
   import { PlugsConnectedFillIcon, ShieldCheckRegularIcon, WarningCircleFillIcon } from '$lib/icons';
+  import { cancelUserFlow, useBackNavigation } from '$lib/navigation';
   import { state as appState, error } from '$lib/stores';
   import { formatRelativeDateTime, hash } from '$lib/utils';
   import { countInteractions } from '$lib/utils/history';
@@ -57,6 +58,13 @@
     }
   });
 
+  // Going back rejects the connection request, just like the "Reject" button (which is disabled while loading).
+  const reject = useBackNavigation(() => {
+    if (loading) return;
+    if (isMock) goto('/me', { replaceState: true });
+    else cancelUserFlow();
+  });
+
   // Release the buttons on error. Cancelling the flow is the layout's job.
   const unsubscribe = error.subscribe((err) => {
     if (err) loading = false;
@@ -68,7 +76,7 @@
 <div class="safe-area-height flex hide-scrollbar flex-col items-stretch overflow-y-auto bg-silver dark:bg-navy">
   <TopNavBar
     title={$LL.SCAN.CONNECTION_REQUEST.NAVBAR_TITLE()}
-    on:back={() => history.back()}
+    on:back={reject}
     disabled={loading}
     class="sticky top-0 z-10"
   />
@@ -217,15 +225,7 @@
       }}
       {loading}
     />
-    <Button
-      label={$LL.REJECT()}
-      variant="secondary"
-      on:click={() => {
-        if (!isMock) dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });
-        goto('/me');
-      }}
-      disabled={loading}
-    />
+    <Button label={$LL.REJECT()} variant="secondary" on:click={reject} disabled={loading} />
   </div>
 </div>
 
