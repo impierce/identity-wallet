@@ -23,6 +23,16 @@ pub fn run() {
         }));
     }
 
+    // Lets the Tauri MCP server drive the UI in dev builds; localhost only.
+    #[cfg(all(desktop, debug_assertions))]
+    {
+        builder = builder.plugin(
+            tauri_plugin_mcp_bridge::Builder::new()
+                .bind_address("127.0.0.1")
+                .build(),
+        );
+    }
+
     builder
         .invoke_handler(tauri::generate_handler![tauri_command::handle_action])
         .setup(move |app| {
