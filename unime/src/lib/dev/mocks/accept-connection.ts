@@ -86,6 +86,15 @@ const withIssuerLogo = (
   credential: { ...certification.credential, issuer_logo_uri: url },
 });
 
+/** Overrides a certification's validity dates. */
+const withMetadata = (
+  certification: LinkedVerifiableCredentialData,
+  metadata: Partial<LinkedVerifiableCredentialData['credential']['metadata']>,
+): LinkedVerifiableCredentialData => ({
+  ...certification,
+  credential: { ...certification.credential, metadata: { ...certification.credential.metadata, ...metadata } },
+});
+
 const historyCredential = (title: string): HistoryCredential => ({
   title,
   issuer_name: 'BestDex',
@@ -238,6 +247,33 @@ export const mocks = {
       certification('ISO 27001 Certified', 'Intl. Organization for Standardization', 'iso.org', 'Success', undefined, {
         status: 'INVALID',
         last_checked: '2026-08-24T09:30:00Z',
+      }),
+    ],
+  },
+  // Expired certification: the detail page's status tile turns orange.
+  'certs-expired': {
+    ...base,
+    linked_verifiable_presentations: [
+      withMetadata(certification('ISO 27001 Certified', 'Intl. Organization for Standardization', 'iso.org'), {
+        expiration_date: '2025-03-12T00:00:00Z',
+      }),
+    ],
+  },
+  // Not yet valid certification: the detail page's status tile shows the start date.
+  'certs-not-yet-valid': {
+    ...base,
+    linked_verifiable_presentations: [
+      withMetadata(certification('ISO 27001 Certified', 'Intl. Organization for Standardization', 'iso.org'), {
+        date_issued: '2099-01-01T00:00:00Z',
+      }),
+    ],
+  },
+  // Certification with an expiry date: the valid tile shows it instead of "Never expires".
+  'certs-valid-until': {
+    ...base,
+    linked_verifiable_presentations: [
+      withMetadata(certification('ISO 27001 Certified', 'Intl. Organization for Standardization', 'iso.org'), {
+        expiration_date: '2099-03-12T00:00:00Z',
       }),
     ],
   },

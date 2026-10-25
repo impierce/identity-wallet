@@ -5,9 +5,15 @@
 
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 
-  import { BankLightIcon, SealCheckRegularIcon, XCircleFillIcon } from '$lib/icons';
+  import {
+    BankLightIcon,
+    CalendarPlusFillIcon,
+    SealCheckFillIcon,
+    WarningCircleFillIcon,
+    XCircleFillIcon,
+  } from '$lib/icons';
   import { state as appState } from '$lib/stores';
-  import { formatDate, getImageAsset, hash } from '$lib/utils';
+  import { formatDateWithWrittenMonth, getImageAsset, hash } from '$lib/utils';
   import { getCredentialValidity } from '$lib/utils/credentialValidity';
 
   export let credential: DisplayCredential;
@@ -17,6 +23,10 @@
   let issuerLogoUrl: string | null = null;
 
   $: validity = getCredentialValidity(credential);
+
+  function formatValidityDate(isoDate: string) {
+    return formatDateWithWrittenMonth(isoDate, $appState.profile_settings.locale);
+  }
 
   function determineIssuerName() {
     if (credential.issuer_name) {
@@ -58,16 +68,34 @@ prompt. Three deliberate differences, all forced by the context:
         <XCircleFillIcon class="size-7" />
       </div>
       <div class="text-red-700 dark:text-red-500">{$LL.CREDENTIAL.DETAILS.BY_THE_ISSUER()}</div>
-    {:else}
-      {$LL.CREDENTIAL.DETAILS.VALID()}
-      <div class="grid h-20 place-items-center self-stretch rounded-xl bg-background py-5 text-text-alt">
-        <SealCheckRegularIcon class="size-7" />
+    {:else if validity.state === 'expired'}
+      <div>{$LL.CREDENTIAL.DETAILS.EXPIRED()}</div>
+      <div class="grid h-20 place-items-center self-stretch rounded-xl bg-orange-50 text-orange-600 dark:bg-background">
+        <WarningCircleFillIcon class="size-7" />
       </div>
-      {#if credential.metadata.date_issued}
-        <div>
-          {formatDate(credential.metadata.date_issued, $appState.profile_settings.locale)}
-        </div>
-      {/if}
+      <div class="text-orange-700 dark:text-orange-500">
+        {$LL.CREDENTIAL.DETAILS.EXPIRED_SINCE({ date: formatValidityDate(validity.validUntil) })}
+      </div>
+    {:else if validity.state === 'not_yet_valid'}
+      <div>{$LL.CREDENTIAL.DETAILS.NOT_VALID_YET()}</div>
+      <div
+        class="grid h-20 place-items-center self-stretch rounded-xl bg-grey text-ex-grey-1 dark:bg-background dark:text-text-alt"
+      >
+        <CalendarPlusFillIcon class="size-7" />
+      </div>
+      <div class="text-ex-grey-2 dark:text-text-alt">
+        {$LL.CREDENTIAL.DETAILS.VALID_FROM({ date: formatValidityDate(validity.validFrom) })}
+      </div>
+    {:else}
+      <div>{$LL.CREDENTIAL.DETAILS.VALID()}</div>
+      <div class="grid h-20 place-items-center self-stretch rounded-xl bg-green-50 text-green-600 dark:bg-background">
+        <SealCheckFillIcon class="size-7" />
+      </div>
+      <div>
+        {validity.validUntil
+          ? $LL.CREDENTIAL.DETAILS.VALID_UNTIL({ date: formatValidityDate(validity.validUntil) })
+          : $LL.CREDENTIAL.DETAILS.NEVER_EXPIRES()}
+      </div>
     {/if}
   </div>
   <div class="flex flex-col items-center gap-1">
