@@ -9,6 +9,7 @@
   import { Image, TopNavBar } from '$lib/components';
   import { resolveAcceptConnectionPrompt } from '$lib/dev/mocks/resolve';
   import { ShieldCheckFillIcon } from '$lib/icons';
+  import { useParentRoute } from '$lib/navigation';
   import { state as appState } from '$lib/stores';
   import { hash } from '$lib/utils';
   import { hostname } from '$lib/utils/url';
@@ -16,6 +17,8 @@
   import CredentialClaimsRenderer from '../../../../credentials/[id]/CredentialClaimsRenderer.svelte';
   import DomainPill from '../../DomainPill.svelte';
   import CertificationOverview from './CertificationOverview.svelte';
+
+  const navigateUp = useParentRoute(() => `/prompt/accept-connection/certifications${page.url.search}`);
 
   // Read from the store rather than taking props, as the sibling list page does.
   // No latch needed — this page cannot accept the prompt, so it never sees the backend
@@ -48,17 +51,13 @@
     if (!certification) {
       warn(`No certification found with id: \`${page.params.id}\``);
       // Stay inside the prompt subtree: leaving it cancels the flow. See ../../+layout.svelte.
-      history.back();
+      navigateUp();
     }
   });
 </script>
 
 <div class="safe-area-height flex hide-scrollbar flex-col items-stretch overflow-y-auto bg-background-alt">
-  <TopNavBar
-    title={$LL.SCAN.CONNECTION_REQUEST.CERTIFICATION()}
-    on:back={() => history.back()}
-    class="sticky top-0 z-10"
-  />
+  <TopNavBar title={$LL.SCAN.CONNECTION_REQUEST.CERTIFICATION()} on:back={navigateUp} class="sticky top-0 z-10" />
 
   {#if certification}
     <div class="flex min-h-full flex-col bg-background-alt px-4 pb-7">

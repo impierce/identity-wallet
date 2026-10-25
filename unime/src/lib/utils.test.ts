@@ -8,6 +8,7 @@ import {
   calculateInitials,
   formatDate,
   formatDateTime,
+  formatDateWithWrittenMonth,
   formatRelativeDateTime,
   hash,
   localizedBiometricsTypeString,
@@ -51,6 +52,22 @@ describe('formatDate function', () => {
 
   test('format with es-ES locale', () => {
     expect(formatDate(isoDate, 'es-ES', true)).toEqual('22 jul 2024');
+  });
+});
+
+describe('formatDateWithWrittenMonth function', () => {
+  const isoDate = '2040-11-03T00:00:00Z';
+
+  test('format with en-GB locale', () => {
+    expect(formatDateWithWrittenMonth(isoDate, 'en-GB', true)).toEqual('3 Nov 2040');
+  });
+
+  test('format with en-US locale', () => {
+    expect(formatDateWithWrittenMonth(isoDate, 'en-US', true)).toEqual('Nov 3, 2040');
+  });
+
+  test('format with de-DE locale', () => {
+    expect(formatDateWithWrittenMonth(isoDate, 'de-DE', true)).toEqual('3. Nov. 2040');
   });
 });
 

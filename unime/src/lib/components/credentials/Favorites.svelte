@@ -7,6 +7,9 @@
   import { ListItemCard } from '$lib/components';
   import { HeartStraightFillIcon } from '$lib/icons';
   import { state } from '$lib/stores';
+  import { getCredentialValidity } from '$lib/utils/credentialValidity';
+
+  import CredentialValidityIcon from './CredentialValidityIcon.svelte';
 
   export let credentialType: 'all' | 'data' | 'badges' = 'all';
 
@@ -35,14 +38,20 @@
   </div>
   <div class="flex flex-col space-y-2">
     {#each favorite_credentials as credential (credential.id)}
+      {@const validity = getCredentialValidity(credential)}
       <ListItemCard
         id={credential.id}
         title={credential.display_name}
         description={credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
         type={credential.data.type.includes('OpenBadgeCredential') ? 'badge' : 'data'}
         icon={credential.metadata.icon}
+        isInvalid={validity.state !== 'valid'}
         on:click={() => goto(`/credentials/${credential.id}`)}
-      />
+      >
+        <div slot="right">
+          <CredentialValidityIcon {validity} />
+        </div>
+      </ListItemCard>
     {/each}
   </div>
   <!-- TODO: make conditional? only show when there are also some non-favorite credentials -->

@@ -9,6 +9,7 @@
 
   import { Image, TopNavBar } from '$lib/components';
   import { ShieldCheckFillIcon } from '$lib/icons';
+  import { useParentRoute } from '$lib/navigation';
   import { state as appState } from '$lib/stores';
   import { hash } from '$lib/utils';
   import { hostname } from '$lib/utils/url';
@@ -16,6 +17,8 @@
   import CredentialClaimsRenderer from '../../../../../../credentials/[id]/CredentialClaimsRenderer.svelte';
   import CertificationOverview from '../../../../../../prompt/accept-connection/certifications/[id]/CertificationOverview.svelte';
   import DomainPill from '../../../../../../prompt/accept-connection/DomainPill.svelte';
+
+  const navigateUp = useParentRoute(() => `/activity/connection/${page.params.id}/certifications`);
 
   $: connection = $appState.connections.find((item) => item.id === page.params.id);
   $: certification = (connection?.linked_verifiable_presentations ?? []).find(
@@ -41,11 +44,7 @@
 </script>
 
 <div class="content-height flex hide-scrollbar flex-col items-stretch overflow-y-auto bg-background-alt">
-  <TopNavBar
-    title={$LL.SCAN.CONNECTION_REQUEST.CERTIFICATION()}
-    on:back={() => history.back()}
-    class="sticky top-0 z-10"
-  />
+  <TopNavBar title={$LL.SCAN.CONNECTION_REQUEST.CERTIFICATION()} on:back={navigateUp} class="sticky top-0 z-10" />
 
   {#if certification}
     <div class="flex min-h-full flex-col bg-background-alt px-4 pb-7">

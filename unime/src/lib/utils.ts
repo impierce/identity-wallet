@@ -90,6 +90,16 @@ export function formatDate(isoDate: string, locale: Locale, test = false) {
   }).format(new Date(isoDate));
 }
 
+export function formatDateWithWrittenMonth(isoDate: string, locale: Locale, test = false) {
+  return new Intl.DateTimeFormat(locale, {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    // Timezone in CI is UTC, which would fail tests.
+    timeZone: test ? 'Europe/Amsterdam' : undefined,
+  }).format(new Date(isoDate));
+}
+
 export function formatDateTime(isoDate: string, locale: Locale, test = false) {
   return new Intl.DateTimeFormat(locale, {
     dateStyle: 'medium',

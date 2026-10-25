@@ -8,10 +8,13 @@
   import TermsAndConditionsContent from '$lib/components/TermsAndConditionsContent.svelte';
   import { dispatch } from '$lib/dispatcher';
   import { HeartFillIcon, XBoldIcon } from '$lib/icons';
+  import { useParentRoute } from '$lib/navigation';
   import UniMeLogo from '$lib/static/svg/logo/UniMeLogo.svelte';
   import { state as appState } from '$lib/stores';
 
   import type { PageProps } from './$types';
+
+  const navigateUp = useParentRoute('/me/settings');
 
   let { data }: PageProps = $props();
 
@@ -51,7 +54,7 @@
   });
 </script>
 
-<TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.SUPPORT.ABOUT.NAVBAR_TITLE()} class="sticky top-0 z-10" />
+<TopNavBar on:back={navigateUp} title={$LL.SETTINGS.SUPPORT.ABOUT.NAVBAR_TITLE()} class="sticky top-0 z-10" />
 
 <div class="flex flex-col bg-silver dark:bg-navy">
   <h1 class="sr-only">{$LL.SETTINGS.SUPPORT.ABOUT.TITLE()}</h1>

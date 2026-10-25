@@ -8,11 +8,14 @@
 
   import { TopNavBar } from '$lib/components';
   import { resolveAcceptConnectionPrompt } from '$lib/dev/mocks/resolve';
+  import { useParentRoute } from '$lib/navigation';
   import { state as appState } from '$lib/stores';
 
   import { tintFor } from '../../ecosystem';
   import EcosystemAvatar from '../../EcosystemAvatar.svelte';
   import MemberRow from '../../MemberRow.svelte';
+
+  const navigateUp = useParentRoute(() => `/prompt/accept-connection/ecosystems${page.url.search}`);
 
   // From the store, not props, as the sibling list page does.
   $: ecosystems = resolveAcceptConnectionPrompt(page.url, $appState)?.ecosystems ?? [];
@@ -36,12 +39,12 @@
   $: if (mounted && !ecosystem) {
     warn(`No ecosystem found at index: \`${page.params.id}\``);
     // Stay inside the prompt subtree: leaving it cancels the flow. See ../../+layout.svelte.
-    history.back();
+    navigateUp();
   }
 </script>
 
 <div class="safe-area-height flex hide-scrollbar flex-col items-stretch overflow-y-auto bg-background-alt">
-  <TopNavBar title={ecosystem?.name ?? ''} on:back={() => history.back()} class="sticky top-0 z-10" />
+  <TopNavBar title={ecosystem?.name ?? ''} on:back={navigateUp} class="sticky top-0 z-10" />
 
   {#if ecosystem}
     <div class="flex min-h-full flex-col px-4 pb-7">
