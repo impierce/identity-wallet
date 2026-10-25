@@ -1123,6 +1123,45 @@ type RootTranslation = {
 			 */
 			UNVERIFIED: string
 			/**
+			 * E​x​p​i​r​e​d
+			 */
+			EXPIRED: string
+			/**
+			 * R​e​v​o​k​e​d
+			 */
+			REVOKED: string
+			/**
+			 * S​u​s​p​e​n​d​e​d
+			 */
+			SUSPENDED: string
+			/**
+			 * N​o​t​ ​v​a​l​i​d​ ​y​e​t
+			 */
+			NOT_VALID_YET: string
+			/**
+			 * U​n​t​i​l​ ​{​d​a​t​e​}
+			 * @param {string} date
+			 */
+			VALID_UNTIL: RequiredParams<'date'>
+			/**
+			 * N​e​v​e​r​ ​e​x​p​i​r​e​s
+			 */
+			NEVER_EXPIRES: string
+			/**
+			 * S​i​n​c​e​ ​{​d​a​t​e​}
+			 * @param {string} date
+			 */
+			EXPIRED_SINCE: RequiredParams<'date'>
+			/**
+			 * B​y​ ​t​h​e​ ​i​s​s​u​e​r
+			 */
+			BY_THE_ISSUER: string
+			/**
+			 * F​r​o​m​ ​{​d​a​t​e​}
+			 * @param {string} date
+			 */
+			VALID_FROM: RequiredParams<'date'>
+			/**
 			 * I​s​s​u​e​d​ ​b​y
 			 */
 			ISSUED_BY: string
@@ -2759,6 +2798,42 @@ export type TranslationFunctions = {
 			 * Unverified
 			 */
 			UNVERIFIED: () => LocalizedString
+			/**
+			 * Expired
+			 */
+			EXPIRED: () => LocalizedString
+			/**
+			 * Revoked
+			 */
+			REVOKED: () => LocalizedString
+			/**
+			 * Suspended
+			 */
+			SUSPENDED: () => LocalizedString
+			/**
+			 * Not valid yet
+			 */
+			NOT_VALID_YET: () => LocalizedString
+			/**
+			 * Until {date}
+			 */
+			VALID_UNTIL: (arg: { date: string }) => LocalizedString
+			/**
+			 * Never expires
+			 */
+			NEVER_EXPIRES: () => LocalizedString
+			/**
+			 * Since {date}
+			 */
+			EXPIRED_SINCE: (arg: { date: string }) => LocalizedString
+			/**
+			 * By the issuer
+			 */
+			BY_THE_ISSUER: () => LocalizedString
+			/**
+			 * From {date}
+			 */
+			VALID_FROM: (arg: { date: string }) => LocalizedString
 			/**
 			 * Issued by
 			 */
