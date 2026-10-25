@@ -52,7 +52,8 @@ impl Connections {
             connection.name = name.to_string();
             connection.url = url.to_string();
             connection.domain_validation = pending_connection_data.domain_validation.clone();
-            connection.linked_verifiable_presentations = pending_connection_data.linked_verifiable_presentations.clone();
+            connection.linked_verifiable_presentations =
+                pending_connection_data.linked_verifiable_presentations.clone();
             connection.ecosystems = pending_connection_data.ecosystems.clone();
             connection.update_last_interaction_time();
             index
@@ -197,7 +198,11 @@ mod tests {
         let mut connections = Connections::new();
         let did = CoreDID::from_str("did:example:123").unwrap();
         let connection = connections
-            .update_last_interaction_or_insert_new(&pending_connection_data("https://example.com", "Old name", did.clone()))
+            .update_last_interaction_or_insert_new(&pending_connection_data(
+                "https://example.com",
+                "Old name",
+                did.clone(),
+            ))
             .clone();
 
         let mut refreshed = pending_connection_data("https://new.example.com", "New name", did.clone());
@@ -208,7 +213,10 @@ mod tests {
         assert_eq!(updated.first_interacted, connection.first_interacted);
         assert_eq!(updated.name, "New name");
         assert_eq!(updated.url, "https://new.example.com");
-        assert!(matches!(updated.domain_validation, Some((ValidationStatus::Success, _))));
+        assert!(matches!(
+            updated.domain_validation,
+            Some((ValidationStatus::Success, _))
+        ));
         assert_eq!(connections.0.len(), 1);
     }
 
