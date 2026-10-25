@@ -412,7 +412,6 @@ const sv_FI = {
     NAVBAR_TITLE: 'Intygsinformation',
     DETAILS: {
       VALID: 'Giltig',
-      INVALID: 'Ogiltig',
       UNVERIFIED: 'Overifierad',
       EXPIRED: 'Utgången',
       REVOKED: 'Återkallad',

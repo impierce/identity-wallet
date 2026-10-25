@@ -8,12 +8,15 @@
   import { BankLightIcon, SealCheckRegularIcon, XCircleFillIcon } from '$lib/icons';
   import { state as appState } from '$lib/stores';
   import { formatDate, getImageAsset, hash } from '$lib/utils';
+  import { getCredentialValidity } from '$lib/utils/credentialValidity';
 
   export let credential: DisplayCredential;
   export let isTempAsset = true;
 
   // Url to cached issuer logo (if available).
   let issuerLogoUrl: string | null = null;
+
+  $: validity = getCredentialValidity(credential);
 
   function determineIssuerName() {
     if (credential.issuer_name) {
@@ -49,13 +52,12 @@ prompt. Three deliberate differences, all forced by the context:
 -->
 <div class="grid grid-cols-2 gap-4 bg-background-alt text-xs font-medium">
   <div class="flex flex-col items-center gap-1">
-    {#if credential.credential_status?.status === 'INVALID'}
-      <p class="text-red-700 dark:text-red-500">{$LL.CREDENTIAL.DETAILS.INVALID()}</p>
-      <div
-        class="grid h-20 place-items-center self-stretch rounded-xl bg-red-50 py-5 text-red-600 dark:bg-background dark:text-red-500"
-      >
+    {#if validity.state === 'revoked' || validity.state === 'suspended'}
+      <div>{validity.state === 'revoked' ? $LL.CREDENTIAL.DETAILS.REVOKED() : $LL.CREDENTIAL.DETAILS.SUSPENDED()}</div>
+      <div class="grid h-20 place-items-center self-stretch rounded-xl bg-red-50 text-red-600 dark:bg-background">
         <XCircleFillIcon class="size-7" />
       </div>
+      <div class="text-red-700 dark:text-red-500">{$LL.CREDENTIAL.DETAILS.BY_THE_ISSUER()}</div>
     {:else}
       {$LL.CREDENTIAL.DETAILS.VALID()}
       <div class="grid h-20 place-items-center self-stretch rounded-xl bg-background py-5 text-text-alt">

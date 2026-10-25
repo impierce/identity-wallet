@@ -412,7 +412,6 @@ const nl_NL = {
     NAVBAR_TITLE: 'Credential Informatie',
     DETAILS: {
       VALID: 'Geldig',
-      INVALID: 'Ongeldig',
       UNVERIFIED: 'Niet geverifieerd',
       EXPIRED: 'Verlopen',
       REVOKED: 'Ingetrokken',

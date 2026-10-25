@@ -412,7 +412,6 @@ const fi_FI = {
     NAVBAR_TITLE: 'Valtuuden tiedot',
     DETAILS: {
       VALID: 'Voimassa',
-      INVALID: 'Pätemätön',
       UNVERIFIED: 'Vahvistamaton',
       EXPIRED: 'Vanhentunut',
       REVOKED: 'Peruttu',

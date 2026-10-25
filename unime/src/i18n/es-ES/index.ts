@@ -413,7 +413,6 @@ const es_ES = {
     NAVBAR_TITLE: 'Información de las credenciales',
     DETAILS: {
       VALID: 'Válidas',
-      INVALID: 'Inválidas',
       UNVERIFIED: 'No verificadas',
       EXPIRED: 'Caducada',
       REVOKED: 'Revocada',

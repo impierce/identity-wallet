@@ -411,7 +411,6 @@ const de_DE = {
     NAVBAR_TITLE: 'Credential Informationen',
     DETAILS: {
       VALID: 'Gültig',
-      INVALID: 'Ungültig',
       UNVERIFIED: 'Unbestätigt',
       EXPIRED: 'Abgelaufen',
       REVOKED: 'Widerrufen',
