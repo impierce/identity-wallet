@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { beforeNavigate, goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
   import { fly } from 'svelte/transition';
 
@@ -9,21 +8,15 @@
   import { ANIMATION_DURATION as duration } from '$lib/constants';
   import { dispatch } from '$lib/dispatcher';
   import { KeyboardFillIcon, TrashFillIcon } from '$lib/icons';
+  import { useParentRoute } from '$lib/navigation';
   import { navigationDirection } from '$lib/stores';
 
-  const parentRoute = '/me/settings';
-
-  beforeNavigate(({ type, cancel }) => {
-    if (type === 'popstate') {
-      cancel();
-      goto(parentRoute);
-    }
-  });
+  const navigateUp = useParentRoute('/me/settings');
 
   const x = $derived($navigationDirection === 'down' ? 32 : -32);
 </script>
 
-<TopNavBar on:back={() => goto(parentRoute)} title={$LL.SETTINGS.PROFILE.TITLE()} class="sticky top-0 z-10" />
+<TopNavBar on:back={navigateUp} title={$LL.SETTINGS.PROFILE.TITLE()} class="sticky top-0 z-10" />
 
 <div class="flex flex-col gap-3 bg-background px-4 py-5" in:fly={{ x, duration, opacity: 1 }}>
   <SettingsCaretLink href="/me/settings/profile/name">

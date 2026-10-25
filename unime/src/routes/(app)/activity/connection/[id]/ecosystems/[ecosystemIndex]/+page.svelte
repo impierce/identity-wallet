@@ -8,11 +8,14 @@
   import { warn } from '@tauri-apps/plugin-log';
 
   import { TopNavBar } from '$lib/components';
+  import { useParentRoute } from '$lib/navigation';
   import { state as appState } from '$lib/stores';
 
   import { tintFor } from '../../../../../../prompt/accept-connection/ecosystem';
   import EcosystemAvatar from '../../../../../../prompt/accept-connection/EcosystemAvatar.svelte';
   import MemberRow from '../../../../../../prompt/accept-connection/MemberRow.svelte';
+
+  const navigateUp = useParentRoute(() => `/activity/connection/${page.params.id}/ecosystems`);
 
   $: connection = $appState.connections.find((item) => item.id === page.params.id);
   $: index = Number(page.params.ecosystemIndex);
@@ -28,7 +31,7 @@
 </script>
 
 <div class="content-height flex hide-scrollbar flex-col items-stretch overflow-y-auto bg-background-alt">
-  <TopNavBar title={ecosystem?.name ?? ''} on:back={() => history.back()} class="sticky top-0 z-10" />
+  <TopNavBar title={ecosystem?.name ?? ''} on:back={navigateUp} class="sticky top-0 z-10" />
 
   {#if ecosystem}
     <div class="flex min-h-full flex-col px-4 pb-7">

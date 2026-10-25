@@ -42,6 +42,12 @@ The root `package.json` proxies frontend and Tauri commands into the `unime` wor
 # Run the desktop application (Vite plus Tauri)
 pnpm tauri dev
 
+# Same, with the window exposed to the Tauri MCP server (@hypothesi/tauri-mcp-server@0.13.0)
+# for UI automation by AI agents. The bridge only runs in debug desktop builds, on 127.0.0.1, port 9223 or the
+# next free port up to 9322. The chosen port is logged as `[MCP][WS_SERVER] WebSocket server listening on: ...`; the
+# MCP server scans that range to find the app, or pass the port to its `driver_session` tool.
+pnpm tauri:mcp
+
 # Frontend-only development server at http://localhost:4173
 pnpm --filter unime dev
 
