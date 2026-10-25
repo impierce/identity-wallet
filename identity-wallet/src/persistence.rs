@@ -253,6 +253,14 @@ pub fn persist_asset(file_name: &str, id: &str) -> Result<(), AppError> {
         .iter()
         .find(|&e| tmp_dir.join(format!("{file_name}.{e}")).exists())
     {
+        // The frontend picks the first extension it finds, so a stale asset with another extension would shadow this one.
+        for stale_extension in SUPPORTED_IMAGE_ASSET_EXTENSIONS.iter().filter(|&e| e != extension) {
+            let stale_file = assets_dir.join(format!("{id}.{stale_extension}"));
+            if stale_file.exists() {
+                std::fs::remove_file(stale_file)?;
+            }
+        }
+
         let new_file_name = format!("{id}.{extension}");
         std::fs::rename(
             tmp_dir.join(format!("{file_name}.{extension}")),
