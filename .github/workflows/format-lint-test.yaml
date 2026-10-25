@@ -5,6 +5,14 @@ on:
     branches: ["dev"]
   pull_request:
     branches: ["dev"]
+    # `ready_for_review` starts a run when a draft PR is marked as ready.
+    types: [opened, synchronize, reopened, ready_for_review]
+
+# A new commit on a PR cancels the still-running checks of the previous commit.
+# Pushes to `dev` get a unique group per run, so they are never cancelled.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   PUBLIC_DEV_MODE_MENU_EXPANDED: false
@@ -13,6 +21,8 @@ env:
 
 jobs:
   unime_frontend:
+    # Skip draft PRs; pushes to `dev` always run.
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-latest
 
     steps:
@@ -44,6 +54,8 @@ jobs:
         run: pnpm check
 
   unime_core:
+    # Skip draft PRs; pushes to `dev` always run.
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-latest
 
     steps:
@@ -87,6 +99,8 @@ jobs:
         run: cargo test
 
   identity_wallet:
+    # Skip draft PRs; pushes to `dev` always run.
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
     runs-on: ubuntu-latest
 
     steps:
