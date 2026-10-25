@@ -7,6 +7,7 @@
     "deep-link:default",
     "fs:default",
     "log:default",
+    "mcp-bridge:default",
     "opener:allow-open-url",
     "opener:allow-default-urls",
     "shell:allow-open",
