@@ -42,7 +42,9 @@
               <Image
                 id={connection.id}
                 bind:isSquare={squareLogos[connection.id]}
-                imgClass={squareLogos[connection.id] ? 'size-full' : 'p-1'}
+                imgClass={squareLogos[connection.id]
+                  ? 'size-full bg-transparent bg-[radial-gradient(circle_closest-side,white_calc(100%-1px),transparent)]'
+                  : 'p-1'}
               >
                 <div
                   slot="fallback"
