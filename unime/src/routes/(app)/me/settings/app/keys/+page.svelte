@@ -2,7 +2,10 @@
   import { TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { InfoRegularIcon } from '$lib/icons';
+  import { useParentRoute } from '$lib/navigation';
   import { state } from '$lib/stores';
+
+  const navigateUp = useParentRoute('/me/settings/app');
 
   $: preferred_key_type = $state.profile_settings.preferred_key_types.at(0);
 
@@ -36,7 +39,7 @@
   ];
 </script>
 
-<TopNavBar on:back={() => history.back()} title={'Manage keys'} class="sticky top-0 z-10" />
+<TopNavBar on:back={navigateUp} title={'Manage keys'} class="sticky top-0 z-10" />
 
 <div class="flex flex-col space-y-[15px] bg-silver px-4 py-5 dark:bg-navy">
   <div class="flex flex-col space-y-[10px]">

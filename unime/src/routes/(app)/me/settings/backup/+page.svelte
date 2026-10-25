@@ -1,8 +1,11 @@
 <script lang="ts">
   import { TopNavBar } from '$lib/components';
+  import { useParentRoute } from '$lib/navigation';
+
+  const navigateUp = useParentRoute('/me/settings');
 </script>
 
-<TopNavBar on:back={() => history.back()} title="Backup and recovery" />
+<TopNavBar on:back={navigateUp} title="Backup and recovery" />
 
 <div class="content-height flex flex-col bg-silver dark:bg-navy">
   <div class="flex flex-col space-y-[10px] px-4 py-5">

@@ -6,7 +6,10 @@
   import { Button, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { CaretRightBoldIcon, InfoRegularIcon, StarFillIcon } from '$lib/icons';
+  import { useParentRoute } from '$lib/navigation';
   import { state } from '$lib/stores';
+
+  const navigateUp = useParentRoute('/me/settings/app');
 
   $: trustLists = $state.trust_lists || {};
 
@@ -30,7 +33,7 @@
   };
 </script>
 
-<TopNavBar on:back={() => history.back()} title={'Trusted issuers'} class="sticky top-0 z-10" />
+<TopNavBar on:back={navigateUp} title={'Trusted issuers'} class="sticky top-0 z-10" />
 
 <div class="flex flex-col space-y-[15px] bg-silver px-4 py-5 dark:bg-navy">
   <!-- Developer info -->
