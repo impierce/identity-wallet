@@ -5,8 +5,11 @@
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 
   import { IconMessage, ListItemCard } from '$lib/components';
-  import { GhostFillIcon, SealCheckFillIcon, SealWarningDuotoneIcon } from '$lib/icons';
+  import { GhostFillIcon, SealCheckFillIcon } from '$lib/icons';
   import { state } from '$lib/stores';
+  import { getCredentialValidity } from '$lib/utils/credentialValidity';
+
+  import CredentialValidityIcon from './CredentialValidityIcon.svelte';
 
   export let credentialType: 'all' | 'data' | 'badges' = 'all';
 
@@ -32,19 +35,18 @@
   <div class="flex flex-col space-y-2">
     <!-- Add credential.id as key to help Svelte update the list correctly. -->
     {#each credentials as credential (credential.id)}
+      {@const validity = getCredentialValidity(credential)}
       <ListItemCard
         id={credential.id}
         title={credential.display_name}
         description={credential.issuer_name ?? credential.data.issuer?.name ?? credential.data.issuer}
         type={credential.data.type.includes('OpenBadgeCredential') ? 'badge' : 'data'}
         icon={credential.metadata.icon}
-        isInvalid={credential.credential_status?.status === 'INVALID'}
+        isInvalid={validity.state !== 'valid'}
         on:click={() => goto(`/credentials/${credential.id}`)}
       >
         <div slot="right">
-          {#if credential.credential_status?.status === 'INVALID'}
-            <SealWarningDuotoneIcon class="mr-3 size-6 text-red-700 dark:text-red-500" />
-          {/if}
+          <CredentialValidityIcon {validity} />
         </div>
       </ListItemCard>
     {/each}

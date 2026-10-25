@@ -18,8 +18,7 @@
   } from '$lib/icons';
   import { state as appState } from '$lib/stores';
   import { calculateInitials, formatDateWithWrittenMonth, getImageAsset } from '$lib/utils';
-
-  import { getCredentialValidity } from './credentialValidity';
+  import { getCredentialValidity } from '$lib/utils/credentialValidity';
 
   export let credential: DisplayCredential;
 
