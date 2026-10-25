@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { CalendarPlusFillIcon, SealWarningDuotoneIcon, WarningCircleFillIcon } from '$lib/icons';
+  import { CalendarPlusFillIcon, WarningCircleFillIcon, XCircleFillIcon } from '$lib/icons';
   import type { CredentialValidity } from '$lib/utils/credentialValidity';
 
   export let validity: CredentialValidity;
@@ -13,7 +13,7 @@ The icon on a credential list entry for a credential that cannot be used right n
 - validity
 -->
 {#if validity.state === 'revoked' || validity.state === 'suspended'}
-  <SealWarningDuotoneIcon class="mr-3 size-6 text-red-700 dark:text-red-500" />
+  <XCircleFillIcon class="mr-3 size-6 text-red-600 dark:text-red-500" />
 {:else if validity.state === 'expired'}
   <WarningCircleFillIcon class="mr-3 size-6 text-orange-600 dark:text-orange-500" />
 {:else if validity.state === 'not_yet_valid'}
