@@ -1,7 +1,6 @@
 [workspace]
 resolver = "2"
 members = ["identity-wallet", "unime/src-tauri"]
-exclude = ["vendor/tauri-plugin-mcp-bridge"]
 
 [workspace.dependencies]
 tauri = { version = "2.9.2", features = ["protocol-asset", "rustls-tls"] }
@@ -25,8 +24,6 @@ wiremock = "0.5"
 [patch.crates-io]
 # We need this patch because it makes the `Hasher` trait `Send` and `Sync`. See: https://github.com/iotaledger/sd-jwt-payload/compare/main...impierce:sd-jwt-payload:fix/hasher-send-sync
 sd-jwt = { git = "https://github.com/impierce/sd-jwt-payload", rev = "f28789a", package = "sd-jwt-payload" }
-# Rejects browser-originated WebSocket connections to the debug-only MCP bridge. See: vendor/tauri-plugin-mcp-bridge/PATCHES.md
-tauri-plugin-mcp-bridge = { path = "vendor/tauri-plugin-mcp-bridge" }
 
 [workspace.package]
 version = "0.18.0"
