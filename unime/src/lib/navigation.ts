@@ -25,8 +25,9 @@ export function useParentRoute(parentRoute: string | (() => string)): () => Prom
  * Must be called during component initialization. Returns `onBack`, to be used by the back button in the top bar.
  */
 export function useBackNavigation<T>(onBack: () => T): () => T {
-  beforeNavigate(({ type, cancel }) => {
-    if (type !== 'popstate') return;
+  beforeNavigate(({ type, delta, cancel }) => {
+    // Only backward traversal is "back": forward navigation (`delta > 0`) goes to its history entry as usual.
+    if (type !== 'popstate' || !delta || delta > 0) return;
     // On popstate the browser already points at the previous entry. Cancelling makes SvelteKit restore the current
     // entry with `history.go()`, which is asynchronous: navigating before it lands would race with it (losing the
     // first back press), so we wait for the restoring popstate first.
