@@ -21,3 +21,4 @@ unime/src-tauri/*
 !unime/src-tauri/resources
 !unime/src-tauri/capabilities
 unime/static/
+vendor/
