@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte';
 
-  import { beforeNavigate, goto } from '$app/navigation';
+  import { goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
 
   import {
@@ -19,6 +19,7 @@
   import { BottomNavBar, Button, LoadingSpinner } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { CameraSlashRegularIcon } from '$lib/icons';
+  import { useParentRoute } from '$lib/navigation';
   import { state } from '$lib/stores';
 
   let scanning = false;
@@ -93,12 +94,7 @@
     startScan();
   });
 
-  beforeNavigate(async ({ type, cancel }) => {
-    if (type === 'popstate') {
-      cancel();
-      goto('/me');
-    }
-  });
+  useParentRoute('/me');
 </script>
 
 <div class="content-height isolate flex flex-col items-stretch">

@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onDestroy } from 'svelte';
 
-  import { goto } from '$app/navigation';
   import LL from '$i18n/i18n-svelte';
 
   import type { CurrentUserPrompt } from '@bindings/user_prompt/CurrentUserPrompt';
@@ -9,6 +8,7 @@
   import { Button, Checkbox, Image, ListItemCard, PaddedIcon, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { PlugsConnectedFillIcon, SealCheckFillIcon } from '$lib/icons';
+  import { cancelUserFlow, useBackNavigation } from '$lib/navigation';
   import { error, state } from '$lib/stores';
   import { hash } from '$lib/utils';
 
@@ -26,8 +26,13 @@
 
   $: imageId = logo_uri ? hash(logo_uri) : '_';
 
+  // Going back cancels sharing, just like the "Cancel" button (which is disabled while loading).
+  const cancel = useBackNavigation(() => {
+    if (!loading) cancelUserFlow();
+  });
+
   // When an error is received, cancel the flow and redirect to the "me" page
-  error.subscribe((err) => {
+  const unsubscribe = error.subscribe((err) => {
     if (err) {
       loading = false;
       dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });
@@ -35,6 +40,7 @@
   });
 
   onDestroy(async () => {
+    unsubscribe();
     // TODO: is onDestroy also called when user accepts since the component itself is destroyed?
     dispatch({ type: '[User Flow] Cancel', payload: {} });
   });
@@ -43,7 +49,7 @@
 <div class="safe-area-height flex flex-col items-stretch overflow-y-auto bg-silver dark:bg-navy">
   <TopNavBar
     title={$LL.SCAN.SHARE_CREDENTIALS.NAVBAR_TITLE()}
-    on:back={() => history.back()}
+    on:back={cancel}
     disabled={loading}
     class="sticky top-0 z-10"
   />
@@ -112,15 +118,7 @@
       }}
       {loading}
     />
-    <Button
-      label={$LL.CANCEL()}
-      variant="secondary"
-      on:click={() => {
-        dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });
-        goto('/me');
-      }}
-      disabled={loading}
-    />
+    <Button label={$LL.CANCEL()} variant="secondary" on:click={cancel} disabled={loading} />
   </div>
 </div>
 

@@ -7,14 +7,17 @@
   import { dispatch } from '$lib/dispatcher';
   import { CheckBoldIcon } from '$lib/icons';
   import { disabledLocales, locales } from '$lib/locales';
+  import { useParentRoute } from '$lib/navigation';
   import { navigationDirection, state } from '$lib/stores';
+
+  const navigateUp = useParentRoute('/me/settings/app');
 
   let selected = $derived(locales.find((l) => l.locale === $state?.profile_settings.locale));
 
   const x = $derived($navigationDirection === 'down' ? 32 : -32);
 </script>
 
-<TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.APP.LANGUAGE.NAVBAR_TITLE()} class="sticky top-0 z-10" />
+<TopNavBar on:back={navigateUp} title={$LL.SETTINGS.APP.LANGUAGE.NAVBAR_TITLE()} class="sticky top-0 z-10" />
 
 <div class="flex flex-col space-y-[10px] bg-silver px-4 py-5 dark:bg-navy" in:fly={{ x, duration, opacity: 1 }}>
   {#each locales as l}

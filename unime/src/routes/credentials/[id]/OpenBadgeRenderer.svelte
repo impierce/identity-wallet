@@ -136,11 +136,6 @@
     <ClaimRenderer key={field} value={subject[field]} />
   {/each}
 
-  <!-- "validFrom" is defined as REQUIRED in JSON Schema: https://purl.imsglobal.org/spec/ob/v3p0/schema/json/ob_v3p0_achievementcredential_schema.json -->
-  {#if credential.data.validFrom}
-    <ClaimRenderer key={'validFrom'} value={credential.data.validFrom} />
-  {/if}
-
   <!-- TODO: Where should the linked image be rendered? Overlap the one during issuance?  -->
   <!-- <img src={credential.data.credentialSubject?.achievement?.image?.id} alt="achievement" /> -->
 </div>

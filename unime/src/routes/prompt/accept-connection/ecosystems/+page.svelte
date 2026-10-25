@@ -4,10 +4,13 @@
 
   import { TopNavBar } from '$lib/components';
   import { resolveAcceptConnectionPrompt } from '$lib/dev/mocks/resolve';
+  import { useParentRoute } from '$lib/navigation';
   import { state as appState } from '$lib/stores';
   import { hostname } from '$lib/utils/url';
 
   import EcosystemCard from '../EcosystemCard.svelte';
+
+  const navigateUp = useParentRoute(() => `/prompt/accept-connection${page.url.search}`);
 
   // From the store, not props: the parent page is destroyed when this route mounts.
   // See ../+layout.svelte. No latch needed — this page cannot accept the prompt.
@@ -25,11 +28,7 @@
 </script>
 
 <div class="safe-area-height flex hide-scrollbar flex-col items-stretch overflow-y-auto bg-silver dark:bg-navy">
-  <TopNavBar
-    title={$LL.SCAN.CONNECTION_REQUEST.ECOSYSTEMS()}
-    on:back={() => history.back()}
-    class="sticky top-0 z-10"
-  />
+  <TopNavBar title={$LL.SCAN.CONNECTION_REQUEST.ECOSYSTEMS()} on:back={navigateUp} class="sticky top-0 z-10" />
 
   <div class="p-4">
     <p class="px-1 pb-3 text-[13px]/[20px] font-normal text-text-alt">
