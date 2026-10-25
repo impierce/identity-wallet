@@ -13,8 +13,11 @@
   import { ANIMATION_DURATION as duration } from '$lib/constants';
   import { dispatch } from '$lib/dispatcher';
   import { EyeClosedRegularIcon, EyeRegularIcon, FingerprintFillIcon, ScanSmileyFillIcon } from '$lib/icons';
+  import { useParentRoute } from '$lib/navigation';
   import { state as appState, error as errorState, navigationDirection } from '$lib/stores';
   import { localizedBiometricsTypeString } from '$lib/utils';
+
+  const navigateUp = useParentRoute('/me/settings/app');
 
   const SERVICE = 'com.impierce.identity-wallet';
   const USER = 'unime'; // TODO: rename to "ACCOUNT" to reflect Keychain Access item?
@@ -118,7 +121,7 @@
   const x = $derived($navigationDirection === 'down' ? 32 : -32);
 </script>
 
-<TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.APP.SECURITY.NAVBAR_TITLE()} class="sticky top-0 z-10" />
+<TopNavBar on:back={navigateUp} title={$LL.SETTINGS.APP.SECURITY.NAVBAR_TITLE()} class="sticky top-0 z-10" />
 
 <div class="flex flex-col bg-silver dark:bg-navy" in:fly={{ x, duration, opacity: 1 }}>
   <div class="flex flex-col space-y-[10px] px-4 py-5">

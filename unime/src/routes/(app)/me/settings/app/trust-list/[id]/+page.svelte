@@ -7,7 +7,10 @@
   import { ActionSheet, Button, DeprecatedSwitch, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { ArrowCounterClockwiseBoldIcon, CheckBoldIcon, TrashRegularIcon } from '$lib/icons';
+  import { useParentRoute } from '$lib/navigation';
   import { error, state } from '$lib/stores';
+
+  const navigateUp = useParentRoute('/me/settings/app/trust-list');
 
   $: trustList = $state.trust_lists.find((tl) => tl.id === $page.params.id);
   $: entries = trustList?.entries || {};
@@ -31,7 +34,7 @@
   }
 </script>
 
-<TopNavBar on:back={() => history.back()} title={trustList?.display_name ?? ''}>
+<TopNavBar on:back={navigateUp} title={trustList?.display_name ?? ''}>
   <ActionSheet
     titleText={'Delete trust list'}
     descriptionText={'Are you sure you want to delete this list of trusted issuers?'}
@@ -47,7 +50,7 @@
         label="Yes, delete it."
         on:click={() => {
           dispatch({ type: '[Trust Lists] Delete', payload: { trust_list_id } });
-          history.back();
+          navigateUp();
         }}
       />
     </div>

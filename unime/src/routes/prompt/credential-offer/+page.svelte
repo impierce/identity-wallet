@@ -9,6 +9,7 @@
   import { Button, Checkbox, Image, ListItemCard, PaddedIcon, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import { DownloadSimpleFillIcon } from '$lib/icons';
+  import { cancelUserFlow, useBackNavigation } from '$lib/navigation';
   import { state as appState, error } from '$lib/stores';
   import { hash } from '$lib/utils';
 
@@ -41,15 +42,21 @@
     },
   });
 
+  // Going back rejects the offer, just like the "Reject" button (which is disabled while loading).
+  const reject = useBackNavigation(() => {
+    if (!loading) cancelUserFlow();
+  });
+
   // When an error is received, cancel the flow and redirect to the "me" page
-  error.subscribe((err) => {
+  const unsubscribe = error.subscribe((err) => {
     if (err) {
       loading = false;
       dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });
     }
   });
 
-  onDestroy(async () => {
+  onDestroy(() => {
+    unsubscribe();
     // We skip clearing the temp assets folder here so that assets are not cleared prematurely during the interactive
     // authorization flow.
     // dispatch({ type: '[User Flow] Cancel', payload: {} });
@@ -59,7 +66,7 @@
 <div class="safe-area-height flex flex-col items-stretch overflow-y-auto bg-silver dark:bg-navy">
   <TopNavBar
     title={$LL.SCAN.CREDENTIAL_OFFER.NAVBAR_TITLE()}
-    on:back={() => history.back()}
+    on:back={reject}
     disabled={loading}
     class="sticky top-0 z-10"
   />
@@ -148,14 +155,7 @@
       }}
       {loading}
     />
-    <Button
-      label={$LL.REJECT()}
-      variant="secondary"
-      on:click={() => {
-        dispatch({ type: '[User Flow] Cancel', payload: { redirect: 'me' } });
-      }}
-      disabled={loading}
-    />
+    <Button label={$LL.REJECT()} variant="secondary" on:click={reject} disabled={loading} />
   </div>
 </div>
 

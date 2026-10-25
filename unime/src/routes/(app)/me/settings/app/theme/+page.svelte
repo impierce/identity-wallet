@@ -5,16 +5,19 @@
   import { TopNavBar } from '$lib/components';
   import { ANIMATION_DURATION as duration } from '$lib/constants';
   import { dispatch } from '$lib/dispatcher';
+  import { useParentRoute } from '$lib/navigation';
   import { navigationDirection, state } from '$lib/stores';
 
   import ThemeSelect from './ThemeSelect.svelte';
+
+  const navigateUp = useParentRoute('/me/settings/app');
 
   let currentValue = $state.profile_settings.profile?.theme ?? 'system';
 
   const x = $derived($navigationDirection === 'down' ? 32 : -32);
 </script>
 
-<TopNavBar on:back={() => history.back()} title={$LL.SETTINGS.APP.THEME.NAVBAR_TITLE()} class="sticky top-0 z-10" />
+<TopNavBar on:back={navigateUp} title={$LL.SETTINGS.APP.THEME.NAVBAR_TITLE()} class="sticky top-0 z-10" />
 
 <div class="bg-silver p-4 dark:bg-navy" in:fly={{ x, duration, opacity: 1 }}>
   <div class="px-2 pt-4 pb-8">

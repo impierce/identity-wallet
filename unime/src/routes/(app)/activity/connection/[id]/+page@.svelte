@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { beforeNavigate, goto, replaceState } from '$app/navigation';
+  import { beforeNavigate, replaceState } from '$app/navigation';
   import { page } from '$app/state';
   import LL from '$i18n/i18n-svelte';
   import { writable, type Writable } from 'svelte/store';
@@ -8,6 +8,7 @@
   import type { Connection } from '@bindings/connections/Connection';
 
   import { History, Tabs, TopNavBar } from '$lib/components';
+  import { useParentRoute } from '$lib/navigation';
   import { state } from '$lib/stores';
 
   import ConnectionData from './ConnectionData.svelte';
@@ -22,17 +23,16 @@
   let activeTab: Writable<string> = writable(page.state.tab || triggers[0]);
   const detailsOpen = writable(false);
 
-  beforeNavigate(async ({ type, cancel }) => {
-    replaceState('', { tab: $activeTab });
-    if (type === 'popstate') {
-      cancel();
-      goto('/activity');
-    }
+  const navigateUp = useParentRoute('/activity');
+
+  beforeNavigate(({ type }) => {
+    // On popstate the browser already points at the previous entry, which we must not overwrite.
+    if (type !== 'popstate') replaceState('', { tab: $activeTab });
   });
 </script>
 
 <div class="content-height flex flex-col">
-  <TopNavBar on:back={() => history.back()} title={connection.name} class="bg-silver dark:bg-navy">
+  <TopNavBar on:back={navigateUp} title={connection.name} class="bg-silver dark:bg-navy">
     <ConnectionHeaderMenu id={connection.id} on:showDetails={() => ($detailsOpen = true)} />
   </TopNavBar>
   <div

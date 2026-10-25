@@ -8,10 +8,13 @@
   import { warn } from '@tauri-apps/plugin-log';
 
   import { TopNavBar } from '$lib/components';
+  import { useParentRoute } from '$lib/navigation';
   import { state as appState } from '$lib/stores';
   import { hostname } from '$lib/utils/url';
 
   import CertificationCard from '../../../../../prompt/accept-connection/CertificationCard.svelte';
+
+  const navigateUp = useParentRoute(() => `/activity/connection/${page.params.id}`);
 
   $: connection = $appState.connections.find((item) => item.id === page.params.id);
   $: certifications = connection?.linked_verifiable_presentations ?? [];
@@ -26,11 +29,7 @@
 </script>
 
 <div class="content-height flex hide-scrollbar flex-col items-stretch overflow-y-auto bg-silver dark:bg-navy">
-  <TopNavBar
-    title={$LL.SCAN.CONNECTION_REQUEST.CERTIFICATIONS()}
-    on:back={() => history.back()}
-    class="sticky top-0 z-10"
-  />
+  <TopNavBar title={$LL.SCAN.CONNECTION_REQUEST.CERTIFICATIONS()} on:back={navigateUp} class="sticky top-0 z-10" />
 
   {#if connection}
     <div class="p-4">

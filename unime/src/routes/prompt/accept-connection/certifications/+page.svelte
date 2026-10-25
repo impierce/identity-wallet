@@ -4,9 +4,12 @@
 
   import { TopNavBar } from '$lib/components';
   import { resolveAcceptConnectionPrompt } from '$lib/dev/mocks/resolve';
+  import { useParentRoute } from '$lib/navigation';
   import { state as appState } from '$lib/stores';
 
   import CertificationCard from '../CertificationCard.svelte';
+
+  const navigateUp = useParentRoute(() => `/prompt/accept-connection${page.url.search}`);
 
   // Read from the store rather than taking props: the parent page is destroyed when
   // this route mounts, so there is nothing to pass down. See ../+layout.svelte.
@@ -16,11 +19,7 @@
 </script>
 
 <div class="safe-area-height flex hide-scrollbar flex-col items-stretch overflow-y-auto bg-silver dark:bg-navy">
-  <TopNavBar
-    title={$LL.SCAN.CONNECTION_REQUEST.CERTIFICATIONS()}
-    on:back={() => history.back()}
-    class="sticky top-0 z-10"
-  />
+  <TopNavBar title={$LL.SCAN.CONNECTION_REQUEST.CERTIFICATIONS()} on:back={navigateUp} class="sticky top-0 z-10" />
 
   <div class="space-y-2 p-4">
     {#each certifications as certification}
