@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from '$app/state';
   import LL from '$i18n/i18n-svelte';
 
   import type { Connection } from '@bindings/connections/Connection';
@@ -86,7 +87,7 @@
     <section class="w-full">
       <CertificationsSummary
         {certifications}
-        href={`/activity/connection/${connection.id}/certifications`}
+        href={`/activity/connection/${connection.id}/certifications${page.url.search}`}
         isTempAsset={false}
       />
     </section>
@@ -94,7 +95,11 @@
 
   {#if ecosystems.length > 0}
     <section class="w-full">
-      <EcosystemsSummary {ecosystems} href={`/activity/connection/${connection.id}/ecosystems`} isTempAsset={false} />
+      <EcosystemsSummary
+        {ecosystems}
+        href={`/activity/connection/${connection.id}/ecosystems${page.url.search}`}
+        isTempAsset={false}
+      />
     </section>
   {/if}
 </div>
