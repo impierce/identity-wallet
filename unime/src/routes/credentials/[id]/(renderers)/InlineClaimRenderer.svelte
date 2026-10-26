@@ -1,9 +1,11 @@
 <script lang="ts">
   import Icon from '@iconify/svelte';
 
+  import ExternalLink from '$lib/components/ExternalLink.svelte';
   import { state as appState } from '$lib/stores';
   import { findCountry } from '$lib/utils/country';
   import { formatIso8601 } from '$lib/utils/date';
+  import { linkifyClaim } from '$lib/utils/url';
 
   export let key: string;
   export let value: unknown;
@@ -14,6 +16,7 @@
     : typeof value === 'string'
       ? formatIso8601(value, $appState.profile_settings.locale)
       : String(value ?? '');
+  $: textParts = country ? [{ text }] : linkifyClaim(key, text);
 </script>
 
 <!--
@@ -33,6 +36,14 @@ other. Spacing between claims is left to the parent.
         <Icon class="size-5" icon={`circle-flags:${country.code.toLowerCase()}`} />
       </span>
     {/if}
-    <p class="text-right wrap-break-word">{text}</p>
+    <p class="text-right wrap-break-word">
+      {#each textParts as part}
+        {#if part.url}
+          <ExternalLink href={part.url} class="break-all underline">{part.text}</ExternalLink>
+        {:else}
+          {part.text}
+        {/if}
+      {/each}
+    </p>
   </div>
 </div>

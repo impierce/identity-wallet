@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { DisplayCredential } from '@bindings/credentials/DisplayCredential';
 
+  import ExternalLink from '$lib/components/ExternalLink.svelte';
   import { isUrl } from '$lib/utils/url';
 
   import CollapsibleWrapper from './CollapsibleWrapper.svelte';
@@ -21,7 +22,7 @@
   {#if value}
     <h4 class="text-text-alt">{title}</h4>
     {#if isUrl(value)}
-      <a href={value} target="_blank" rel="noopener noreferrer" class="overflow-x-auto break-all underline">{value}</a>
+      <ExternalLink href={value} class="overflow-x-auto break-all underline">{value}</ExternalLink>
     {:else}
       <p class="overflow-x-auto">{value}</p>
     {/if}

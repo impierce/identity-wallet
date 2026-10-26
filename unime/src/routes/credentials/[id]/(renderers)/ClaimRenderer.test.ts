@@ -24,4 +24,14 @@ describe('ClaimRenderer', () => {
     render(ClaimRenderer, { key: 'givenName', value: 'Ferris' });
     expect(screen.getByText('Ferris')).toBeInTheDocument();
   });
+
+  test('renders the domain of a website claim as a link to its HTTPS URL', () => {
+    render(ClaimRenderer, { key: 'website', value: 'impierce.com' });
+    expect(screen.getByRole('link', { name: 'impierce.com' })).toHaveAttribute('href', 'https://impierce.com/');
+  });
+
+  test('does not render a domain-like name as a link', () => {
+    render(ClaimRenderer, { key: 'givenName', value: 'Ferris.Crab' });
+    expect(screen.queryByRole('link')).not.toBeInTheDocument();
+  });
 });

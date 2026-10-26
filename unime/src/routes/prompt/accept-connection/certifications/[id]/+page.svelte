@@ -15,6 +15,7 @@
   import { hostname } from '$lib/utils/url';
 
   import CredentialClaimsRenderer from '../../../../credentials/[id]/CredentialClaimsRenderer.svelte';
+  import DomainName from '../../DomainName.svelte';
   import DomainPill from '../../DomainPill.svelte';
   import CertificationOverview from './CertificationOverview.svelte';
 
@@ -88,7 +89,7 @@
           {/if}
           {#if validation && domain}
             <div class="flex flex-col items-center gap-1.5 pt-[10px]">
-              <p class="text-[13px]/[20px] font-normal text-text-alt">{domain}</p>
+              <DomainName {domain} status={validation.status} />
               <DomainPill status={validation.status} />
             </div>
           {/if}
