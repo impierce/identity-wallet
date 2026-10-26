@@ -36,5 +36,8 @@ lerna-debug.log*
 # Debug
 debug/
 
+# Per-checkout Tauri config written by scripts/dev-instance.mjs
+unime/src-tauri/tauri.instance.conf.json
+
 # Release artifacts staged for upload by scripts/copy-release-artifacts.sh
 out/

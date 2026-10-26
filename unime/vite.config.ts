@@ -5,6 +5,7 @@ import { defineConfig as defineVitestConfig } from 'vitest/config';
 import { sveltekit } from '@sveltejs/kit/vite';
 
 const host = process.env.TAURI_DEV_HOST;
+const port = Number(process.env.UNIME_DEV_PORT) || 4173;
 
 // https://vitejs.dev/config/
 const viteConfig = defineConfig({
@@ -12,7 +13,7 @@ const viteConfig = defineConfig({
   clearScreen: false,
   server: {
     host: host || false,
-    port: 4173,
+    port,
     strictPort: true,
     hmr: host
       ? {
