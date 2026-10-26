@@ -3,13 +3,13 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:label="${appLabel}"
         android:theme="@style/Theme.unime"
         android:usesCleartextTraffic="${usesCleartextTraffic}">
         <activity
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
             android:launchMode="singleTask"
-            android:label="@string/main_activity_title"
+            android:label="${appLabel}"
             android:name=".MainActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize"
