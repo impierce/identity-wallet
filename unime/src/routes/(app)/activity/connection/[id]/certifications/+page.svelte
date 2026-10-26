@@ -14,7 +14,7 @@
 
   import CertificationCard from '../../../../../prompt/accept-connection/CertificationCard.svelte';
 
-  const navigateUp = useParentRoute(() => `/activity/connection/${page.params.id}`);
+  const navigateUp = useParentRoute(() => `/activity/connection/${page.params.id}${page.url.search}`);
 
   $: connection = $appState.connections.find((item) => item.id === page.params.id);
   $: certifications = connection?.linked_verifiable_presentations ?? [];
@@ -40,7 +40,7 @@
         {#each certifications as certification (certification.credential.id)}
           <CertificationCard
             {certification}
-            href={`/activity/connection/${connection.id}/certifications/${certification.credential.id}`}
+            href={`/activity/connection/${connection.id}/certifications/${certification.credential.id}${page.url.search}`}
             isTempAsset={false}
           />
         {/each}
