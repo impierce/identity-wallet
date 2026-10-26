@@ -38,6 +38,14 @@
   export let useFallback: boolean = false;
   $: useFallback = assetUrl === null;
 
+  export let isSquare: boolean = false;
+
+  function onLoad(event: Event) {
+    const { naturalWidth, naturalHeight } = event.currentTarget as HTMLImageElement;
+    isSquare = naturalHeight > 0 && Math.abs(naturalWidth / naturalHeight - 1) < 0.1;
+    debug(`Image successfully loaded: ${assetUrl}`);
+  }
+
   async function loadImage() {
     getImageAsset(id, isTempAsset).then((url) => {
       assetUrl = url;
@@ -57,6 +65,7 @@ Displays an image (loaded from disk) or a fallback component.
 - id
 - iconFallback (_default_: `'UserLight'`)
 - isTempAsset (_default_: `false`)
+- isSquare (_bindable_, `true` once a loaded image has a square aspect ratio)
 - imgClass (_overwrite Tailwind classes, default size_: `100%`)
 - iconClass (_overwrite Tailwind classes, default size_: `18px`)
 
@@ -74,7 +83,7 @@ Displays an image (loaded from disk) or a fallback component.
     alt="img_{id}"
     class={twMerge('max-h-full w-full overflow-hidden bg-white object-contain', $$props.imgClass)}
     on:error={() => warn(`Could not load image: ${id}`)}
-    on:load={() => debug(`Image successfully loaded: ${assetUrl}`)}
+    on:load={onLoad}
     data-testid="image"
   />
 {:else}
