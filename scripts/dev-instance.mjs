@@ -72,13 +72,34 @@ writeFileSync(instanceConfigFile, `${JSON.stringify(instanceConfig, null, 2)}\n`
 console.log(`UniMe instance "${name || 'default'}"
   identifier: ${identifier}
   dev server: http://localhost:${devPort}
-  MCP bridge: 127.0.0.1:${mcpPort}
+  MCP bridge: 127.0.0.1:${mcpPort} or the next free port; the bound port is reported once the app is up
 `);
 
 const child = spawn('pnpm --filter unime tauri dev --config src-tauri/tauri.instance.conf.json', {
   cwd: root,
-  stdio: 'inherit',
+  stdio: ['inherit', 'pipe', 'pipe'],
   shell: true,
-  env: { ...process.env, UNIME_DEV_PORT: String(devPort), UNIME_MCP_PORT: String(mcpPort) },
+  env: {
+    ...process.env,
+    UNIME_DEV_PORT: String(devPort),
+    UNIME_MCP_PORT: String(mcpPort),
+    CARGO_TERM_COLOR: 'always',
+    FORCE_COLOR: '1',
+  },
 });
+
+const forwardAndWatch = (input, output) => {
+  let pending = '';
+  input.on('data', (chunk) => {
+    output.write(chunk);
+    const lines = (pending + chunk.toString()).split('\n');
+    pending = lines.pop();
+    for (const line of lines) {
+      const bound = line.match(/WebSocket server listening on: (\S+)/);
+      if (bound) console.log(`\nUniMe instance "${name || 'default'}" MCP bridge bound to ${bound[1]}\n`);
+    }
+  });
+};
+forwardAndWatch(child.stdout, process.stdout);
+forwardAndWatch(child.stderr, process.stderr);
 child.on('exit', (code) => process.exit(code ?? 1));
