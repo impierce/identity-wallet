@@ -7,6 +7,9 @@ on:
   push:
     branches: ["dev"]
 
+permissions:
+  contents: read
+
 jobs:
   cargo-audit:
     runs-on: ubuntu-latest
