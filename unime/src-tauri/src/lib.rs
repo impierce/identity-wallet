@@ -29,6 +29,12 @@ pub fn run() {
         builder = builder.plugin(
             tauri_plugin_mcp_bridge::Builder::new()
                 .bind_address("127.0.0.1")
+                .base_port(
+                    std::env::var("UNIME_MCP_PORT")
+                        .ok()
+                        .and_then(|port| port.parse().ok())
+                        .unwrap_or(9223),
+                )
                 .build(),
         );
     }

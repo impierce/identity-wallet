@@ -32,21 +32,10 @@ pub fn initialize_storage(app_handle: &tauri::AppHandle) -> Result<(), AppError>
         *STRONGHOLD.lock().unwrap() = app_handle.path().data_dir()?.join("stronghold.bin");
         *ASSETS_DIR.lock().unwrap() = app_handle.path().data_dir()?.join("assets");
     } else {
-        *STATE_FILE.lock().unwrap() = app_handle
-            .path()
-            .data_dir()?
-            .join("com.impierce.identity-wallet")
-            .join("state.json");
-        *STRONGHOLD.lock().unwrap() = app_handle
-            .path()
-            .data_dir()?
-            .join("com.impierce.identity-wallet")
-            .join("stronghold.bin");
-        *ASSETS_DIR.lock().unwrap() = app_handle
-            .path()
-            .data_dir()?
-            .join("com.impierce.identity-wallet")
-            .join("assets");
+        let app_data_dir = app_handle.path().app_data_dir()?;
+        *STATE_FILE.lock().unwrap() = app_data_dir.join("state.json");
+        *STRONGHOLD.lock().unwrap() = app_data_dir.join("stronghold.bin");
+        *ASSETS_DIR.lock().unwrap() = app_data_dir.join("assets");
     }
     debug!("STATE_FILE: {}", STATE_FILE.lock().unwrap().display());
     debug!("STRONGHOLD: {}", STRONGHOLD.lock().unwrap().display());

@@ -66,6 +66,30 @@ pnpm --filter unime exec vitest run
 pnpm --filter unime coverage
 ```
 
+### One checkout per branch, several instances side by side
+
+Each branch can live in its own checkout (a git worktree next to this repository), and the desktop apps of several
+checkouts can run at the same time.
+
+```sh
+# Create ../identity-wallet-<branch> for an existing or new branch (new branches start from origin/dev, or --from).
+# Copies unime/.env and identity-wallet/.env from this checkout, runs pnpm install and generates the icons.
+pnpm checkout:branch feat/my-feature
+
+# In that checkout: run the desktop app as its own instance, with the MCP bridge enabled
+pnpm dev:instance
+```
+
+`pnpm dev:instance` picks the first free Vite port from 4173 and the first free MCP bridge port from 9223, and gives
+the app the identifier `com.impierce.identity-wallet.<name>`. The identifier also separates the wallet data directory
+(`%APPDATA%\com.impierce.identity-wallet.<name>` on Windows), the WebView data and the single-instance lock, so
+instances neither share a wallet nor close each other. The name defaults to the folder name without the
+`identity-wallet-` prefix and is shown in the window title; the main `identity-wallet` checkout keeps the default
+identifier and wallet. Override with `--name`, `--port` and `--mcp-port`. The script prints the chosen ports; pass the
+MCP port to the Tauri MCP server's `driver_session` tool to drive that instance. Plain `pnpm tauri dev` and
+`pnpm tauri:mcp` are unchanged, and also honour `UNIME_DEV_PORT` (Vite) and `UNIME_MCP_PORT` (bridge base port) when
+set by hand. Every checkout has its own `target/` directory, so the first build in a new checkout takes a while.
+
 Mobile commands are `pnpm tauri android init|dev|build` and `pnpm tauri ios init|dev|build`. Do not initialize or
 regenerate a mobile project unless the task calls for it. Tracked platform customizations live under
 `unime/src-tauri/gen-static/`; `scripts/override-generated-mobile-files.sh` overwrites the matching files in Tauri's
