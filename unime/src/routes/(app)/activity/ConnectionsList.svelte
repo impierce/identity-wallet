@@ -13,6 +13,8 @@
 
   let connections: Map<string, Connection[]> = groupConnectionsAlphabetically($state.connections);
   info(`Connections: ${JSON.stringify(Array.from(connections.entries()))}`);
+
+  let squareLogos: Record<string, boolean> = {};
 </script>
 
 <div class="flex h-full flex-col">
@@ -35,9 +37,15 @@
           >
             <div
               slot="image"
-              class="mr-4 ml-2 flex h-9 w-9 overflow-hidden rounded-full border-none border-slate-300 dark:border-slate-600"
+              class="relative mr-4 ml-2 flex h-9 w-9 overflow-hidden rounded-full after:pointer-events-none after:absolute after:inset-0 after:rounded-full after:ring-1 after:ring-black/10 after:ring-inset dark:after:ring-white/20"
             >
-              <Image id={connection.id} imgClass="p-1">
+              <Image
+                id={connection.id}
+                bind:isSquare={squareLogos[connection.id]}
+                imgClass={squareLogos[connection.id]
+                  ? 'size-full bg-transparent bg-[radial-gradient(circle_closest-side,white_calc(100%-1px),transparent)]'
+                  : 'p-1'}
+              >
                 <div
                   slot="fallback"
                   class="h-full w-full rounded-full ring-1 ring-slate-200 ring-inset dark:bg-dark dark:ring-slate-600"
