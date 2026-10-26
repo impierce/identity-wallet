@@ -3,6 +3,8 @@
   "scripts": {
     "build": "pnpm --filter=unime build",
     "check": "pnpm --filter=unime check",
+    "checkout:branch": "node scripts/new-checkout.mjs",
+    "dev:instance": "node scripts/dev-instance.mjs",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
     "lint": "pnpm --filter=unime lint",
