@@ -40,6 +40,16 @@ pub fn run() {
         );
     }
 
+    // Registered on the builder: from `setup`, `AppHandle::plugin` holds the plugin lock while the Android
+    // plugin waits for the main thread, which can be blocked on that lock in the WebView's navigation hook.
+    #[cfg(mobile)]
+    {
+        builder = builder
+            .plugin(tauri_plugin_barcode_scanner::init())
+            .plugin(tauri_plugin_biometric::init())
+            .plugin(tauri_plugin_keystore::init());
+    }
+
     builder
         .invoke_handler(tauri::generate_handler![tauri_command::handle_action])
         .setup(move |app| {
@@ -54,12 +64,6 @@ pub fn run() {
                 app.asset_protocol_scope().allow_directory(&assets_dir, true)?;
             }
             dotenvy::dotenv().ok();
-            #[cfg(mobile)]
-            {
-                app.handle().plugin(tauri_plugin_barcode_scanner::init())?;
-                app.handle().plugin(tauri_plugin_biometric::init())?;
-                app.handle().plugin(tauri_plugin_keystore::init())?;
-            }
             Ok(())
         })
         .manage(AppStateContainer(Default::default()))
