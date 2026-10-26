@@ -39,7 +39,7 @@ other. Spacing between claims is left to the parent.
     <p class="text-right wrap-break-word">
       {#each textParts as part}
         {#if part.url}
-          <ExternalLink href={part.url} class="break-all underline">{part.text}</ExternalLink>
+          <ExternalLink href={part.url} class="break-all text-secondary underline">{part.text}</ExternalLink>
         {:else}
           {part.text}
         {/if}

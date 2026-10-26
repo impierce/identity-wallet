@@ -22,7 +22,7 @@
   {#if value}
     <h4 class="text-text-alt">{title}</h4>
     {#if isUrl(value)}
-      <ExternalLink href={value} class="overflow-x-auto break-all underline">{value}</ExternalLink>
+      <ExternalLink href={value} class="overflow-x-auto break-all text-secondary underline">{value}</ExternalLink>
     {:else}
       <p class="overflow-x-auto">{value}</p>
     {/if}
