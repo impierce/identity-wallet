@@ -4,7 +4,9 @@
 !Cargo.lock
 .snapshot
 
-gen/
+# Commit the Android project (Tauri recommends it), so build customizations such as the debug app id persist.
+gen/*
+!gen/android/
 
 # All icons can be easily generated through `cargo tauri icon`
 icons/
