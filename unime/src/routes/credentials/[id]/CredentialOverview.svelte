@@ -16,6 +16,7 @@
     WarningCircleFillIcon,
     XCircleFillIcon,
   } from '$lib/icons';
+  import { linkWithReturn } from '$lib/navigation';
   import { state as appState } from '$lib/stores';
   import { calculateInitials, formatDateWithWrittenMonth, getImageAsset } from '$lib/utils';
   import { getCredentialValidity } from '$lib/utils/credentialValidity';
@@ -114,7 +115,9 @@
     <div>{$LL.CREDENTIAL.DETAILS.ISSUED_BY()}</div>
     <svelte:element
       this={credential.connection_id ? 'button' : 'div'}
-      on:click={credential.connection_id ? () => goto(`/activity/connection/${credential.connection_id}`) : undefined}
+      on:click={credential.connection_id
+        ? () => goto(linkWithReturn(`/activity/connection/${credential.connection_id}`))
+        : undefined}
       role={credential.connection_id ? 'button' : undefined}
       class="grid h-20 place-items-center self-stretch rounded-xl bg-background text-text-alt"
     >
