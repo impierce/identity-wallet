@@ -969,15 +969,119 @@ type RootTranslation = {
 			 * @param {number} count
 			 */
 			SELECTED_COUNT: RequiredParams<'count'>
+			/**
+			 * {​c​o​u​n​t​}​ ​O​p​t​i​o​n​s​ ​A​v​a​i​l​a​b​l​e
+			 * @param {number} count
+			 */
+			OPTIONS_AVAILABLE: RequiredParams<'count'>
+			/**
+			 * C​h​a​n​g​e
+			 */
+			CHANGE: string
+			/**
+			 * I​s​s​u​e​d​ ​{​d​a​t​e​}
+			 * @param {string} date
+			 */
+			ISSUED: RequiredParams<'date'>
 			PICKER: {
 				/**
-				 * S​e​l​e​c​t​ ​c​r​e​d​e​n​t​i​a​l
+				 * C​h​o​o​s​e​ ​c​r​e​d​e​n​t​i​a​l
 				 */
 				NAVBAR_TITLE: string
 				/**
-				 * S​a​v​e
+				 * C​h​o​o​s​e​ ​c​r​e​d​e​n​t​i​a​l​s
 				 */
-				SAVE: string
+				NAVBAR_TITLE_MULTIPLE: string
+				/**
+				 * C​h​o​o​s​e​ ​1
+				 */
+				CHOOSE_ONE: string
+				/**
+				 * C​h​o​o​s​e​ ​m​u​l​t​i​p​l​e
+				 */
+				CHOOSE_MULTIPLE: string
+				/**
+				 * S​e​a​r​c​h​ ​{​c​o​u​n​t​}​ ​c​r​e​d​e​n​t​i​a​l​s
+				 * @param {number} count
+				 */
+				SEARCH: RequiredParams<'count'>
+				/**
+				 * S​e​l​e​c​t​ ​a​l​l
+				 */
+				SELECT_ALL: string
+				/**
+				 * S​h​a​r​e​d​ ​w​i​t​h​ ​{​n​a​m​e​}​ ​l​a​s​t​ ​t​i​m​e
+				 * @param {string} name
+				 */
+				LAST_SHARED: RequiredParams<'name'>
+				/**
+				 * V​i​e​w​ ​d​e​t​a​i​l​s
+				 */
+				VIEW_DETAILS: string
+				/**
+				 * U​s​e​ ​t​h​i​s​ ​c​r​e​d​e​n​t​i​a​l
+				 */
+				USE_ONE: string
+				/**
+				 * U​s​e​ ​{​s​e​l​e​c​t​e​d​}​ ​o​f​ ​{​t​o​t​a​l​}​ ​c​r​e​d​e​n​t​i​a​l​s
+				 * @param {number} selected
+				 * @param {number} total
+				 */
+				USE_MULTIPLE: RequiredParams<'selected' | 'total'>
+				/**
+				 * C​h​o​o​s​e​ ​t​h​i​s​ ​c​r​e​d​e​n​t​i​a​l
+				 */
+				CHOOSE_THIS: string
+			}
+			VALIDITY: {
+				/**
+				 * V​a​l​i​d​ ​u​n​t​i​l​ ​{​d​a​t​e​}
+				 * @param {string} date
+				 */
+				VALID_UNTIL: RequiredParams<'date'>
+				/**
+				 * N​e​v​e​r​ ​e​x​p​i​r​e​s
+				 */
+				NEVER_EXPIRES: string
+				/**
+				 * E​x​p​i​r​e​d​ ​o​n​ ​{​d​a​t​e​}
+				 * @param {string} date
+				 */
+				EXPIRED_ON: RequiredParams<'date'>
+				/**
+				 * R​e​v​o​k​e​d​ ​b​y​ ​t​h​e​ ​i​s​s​u​e​r
+				 */
+				REVOKED: string
+				/**
+				 * S​u​s​p​e​n​d​e​d​ ​b​y​ ​t​h​e​ ​i​s​s​u​e​r
+				 */
+				SUSPENDED: string
+				/**
+				 * V​a​l​i​d​ ​f​r​o​m​ ​{​d​a​t​e​}
+				 * @param {string} date
+				 */
+				VALID_FROM: RequiredParams<'date'>
+			}
+			EXPIRED_WARNING: {
+				/**
+				 * Y​o​u​ ​a​r​e​ ​s​h​a​r​i​n​g​ ​a​n​ ​e​x​p​i​r​e​d​ ​c​r​e​d​e​n​t​i​a​l
+				 */
+				TITLE: string
+				/**
+				 * {​n​a​m​e​}​ ​e​x​p​i​r​e​d​ ​o​n​ ​{​d​a​t​e​}​.​ ​{​v​e​r​i​f​i​e​r​}​ ​m​a​y​ ​n​o​t​ ​a​c​c​e​p​t​ ​i​t​.​ ​A​r​e​ ​y​o​u​ ​s​u​r​e​ ​y​o​u​ ​w​a​n​t​ ​t​o​ ​s​h​a​r​e​ ​i​t​?
+				 * @param {string} date
+				 * @param {string} name
+				 * @param {string} verifier
+				 */
+				DESCRIPTION: RequiredParams<'date' | 'name' | 'verifier'>
+				/**
+				 * S​h​a​r​e​ ​a​n​y​w​a​y
+				 */
+				CONFIRM: string
+				/**
+				 * C​h​o​o​s​e​ ​a​n​o​t​h​e​r
+				 */
+				CANCEL: string
 			}
 		}
 	}
@@ -2657,15 +2761,107 @@ export type TranslationFunctions = {
 			 * {count} selected
 			 */
 			SELECTED_COUNT: (arg: { count: number }) => LocalizedString
+			/**
+			 * {count} Options Available
+			 */
+			OPTIONS_AVAILABLE: (arg: { count: number }) => LocalizedString
+			/**
+			 * Change
+			 */
+			CHANGE: () => LocalizedString
+			/**
+			 * Issued {date}
+			 */
+			ISSUED: (arg: { date: string }) => LocalizedString
 			PICKER: {
 				/**
-				 * Select credential
+				 * Choose credential
 				 */
 				NAVBAR_TITLE: () => LocalizedString
 				/**
-				 * Save
+				 * Choose credentials
 				 */
-				SAVE: () => LocalizedString
+				NAVBAR_TITLE_MULTIPLE: () => LocalizedString
+				/**
+				 * Choose 1
+				 */
+				CHOOSE_ONE: () => LocalizedString
+				/**
+				 * Choose multiple
+				 */
+				CHOOSE_MULTIPLE: () => LocalizedString
+				/**
+				 * Search {count} credentials
+				 */
+				SEARCH: (arg: { count: number }) => LocalizedString
+				/**
+				 * Select all
+				 */
+				SELECT_ALL: () => LocalizedString
+				/**
+				 * Shared with {name} last time
+				 */
+				LAST_SHARED: (arg: { name: string }) => LocalizedString
+				/**
+				 * View details
+				 */
+				VIEW_DETAILS: () => LocalizedString
+				/**
+				 * Use this credential
+				 */
+				USE_ONE: () => LocalizedString
+				/**
+				 * Use {selected} of {total} credentials
+				 */
+				USE_MULTIPLE: (arg: { selected: number, total: number }) => LocalizedString
+				/**
+				 * Choose this credential
+				 */
+				CHOOSE_THIS: () => LocalizedString
+			}
+			VALIDITY: {
+				/**
+				 * Valid until {date}
+				 */
+				VALID_UNTIL: (arg: { date: string }) => LocalizedString
+				/**
+				 * Never expires
+				 */
+				NEVER_EXPIRES: () => LocalizedString
+				/**
+				 * Expired on {date}
+				 */
+				EXPIRED_ON: (arg: { date: string }) => LocalizedString
+				/**
+				 * Revoked by the issuer
+				 */
+				REVOKED: () => LocalizedString
+				/**
+				 * Suspended by the issuer
+				 */
+				SUSPENDED: () => LocalizedString
+				/**
+				 * Valid from {date}
+				 */
+				VALID_FROM: (arg: { date: string }) => LocalizedString
+			}
+			EXPIRED_WARNING: {
+				/**
+				 * You are sharing an expired credential
+				 */
+				TITLE: () => LocalizedString
+				/**
+				 * {name} expired on {date}. {verifier} may not accept it. Are you sure you want to share it?
+				 */
+				DESCRIPTION: (arg: { date: string, name: string, verifier: string }) => LocalizedString
+				/**
+				 * Share anyway
+				 */
+				CONFIRM: () => LocalizedString
+				/**
+				 * Choose another
+				 */
+				CANCEL: () => LocalizedString
 			}
 		}
 	}

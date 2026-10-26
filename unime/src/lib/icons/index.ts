@@ -22,6 +22,7 @@ export { default as CheckCircleRegularIcon } from '~icons/ph/check-circle';
 export { default as CheckCircleFillIcon } from '~icons/ph/check-circle-fill';
 export { default as CircleRegularIcon } from '~icons/ph/circle';
 export { default as CodeBoldIcon } from '~icons/ph/code-bold';
+export { default as ClockCounterClockwiseIcon } from '~icons/ph/clock-counter-clockwise';
 export { default as CodeRegularIcon } from '~icons/ph/code';
 export { default as ConfettiFillIcon } from '~icons/ph/confetti-fill';
 export { default as DotsThreeVerticalBoldIcon } from '~icons/ph/dots-three-vertical-bold';
