@@ -357,6 +357,11 @@ const es_ES = {
       DESCRIPTION: 'solicita las siguientes credenciales',
       REQUESTED: 'Solicitadas',
       APPROVE: 'Aprueba la petición',
+      SELECTED_COUNT: '{count} seleccionadas',
+      PICKER: {
+        NAVBAR_TITLE: 'Selecciona una credencial',
+        SAVE: 'Guardar',
+      },
     },
   },
   CONNECTION: {

@@ -1,6 +1,11 @@
 {
   "type": "[Authenticate] Credentials selected",
   "payload": {
-    "credential_uuids": ["62326539-3634-6536-6131-323731373463"]
+    "selections": [
+      {
+        "query_id": "CredentialQuery",
+        "credential_uuids": ["62326539-3634-6536-6131-323731373463"]
+      }
+    ]
   }
 }

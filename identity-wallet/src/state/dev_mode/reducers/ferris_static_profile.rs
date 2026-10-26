@@ -32,7 +32,7 @@ use oid4vc::{
     oid4vci::{credential_format_profiles::CredentialFormats, Wallet},
 };
 use serde_json::json;
-use std::{fs::File, io::Write, sync::Arc};
+use std::{collections::HashMap, fs::File, io::Write, sync::Arc};
 
 lazy_static! {
     pub static ref PERSONAL_INFORMATION: VerifiableCredentialRecord = {
@@ -389,6 +389,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             linked_verifiable_presentations: None,
             ecosystems: None,
             domain_validation: None,
+            last_shared_credentials: HashMap::new(),
         },
         Connection {
             id: "424313e61e35ca4eeca44aac85dc4764c32d7cf9def83ba15f428c308bf1d181".to_string(),
@@ -401,6 +402,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             linked_verifiable_presentations: Some(impierce_certifications),
             ecosystems: Some(impierce_ecosystems),
             domain_validation: Some(impierce_domain_validation),
+            last_shared_credentials: HashMap::new(),
         },
         Connection {
             id: "e36236d8d7117ed6c6a5d4e99167a2ee1ccb455e75d5b71cee50b08adcf11ba1".to_string(),
@@ -413,6 +415,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             linked_verifiable_presentations: None,
             ecosystems: None,
             domain_validation: None,
+            last_shared_credentials: HashMap::new(),
         },
         Connection {
             id: "a81a51b8ad26bdd333abd791a112bf0e0823d559cadc580218a240238a86c292".to_string(),
@@ -425,6 +428,7 @@ pub async fn load_ferris_profile() -> Result<AppState, AppError> {
             linked_verifiable_presentations: None,
             ecosystems: None,
             domain_validation: None,
+            last_shared_credentials: HashMap::new(),
         },
     ]);
 

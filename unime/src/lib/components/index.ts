@@ -14,6 +14,7 @@ export { default as ListItemCard } from './ListItemCard.svelte';
 export { default as LoadingSpinner } from './LoadingSpinner.svelte';
 export { default as PaddedIcon } from './PaddedIcon.svelte';
 export { default as ProgressBar } from './ProgressBar.svelte';
+export { default as Radio } from './Radio.svelte';
 export { default as SelectCountry } from './forms/SelectCountry.svelte';
 export { default as SettingsCaretLink } from './SettingsCaretLink.svelte';
 export { default as SettingsSwitch } from './SettingsSwitch.svelte';

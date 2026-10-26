@@ -10,10 +10,18 @@ use ts_rs::TS;
 #[derive(Serialize, Deserialize, Debug, TS, Clone)]
 #[ts(export, export_to = "bindings/actions/CredentialsSelected.ts")]
 pub struct CredentialsSelected {
-    #[ts(type = "Array<string>")]
-    pub credential_uuids: Vec<uuid::Uuid>,
+    pub selections: Vec<CredentialSelection>,
     #[serde(default)]
     pub is_interactive: bool,
+}
+
+/// The credentials the user picked for one credential query of the request.
+#[derive(Serialize, Deserialize, Debug, TS, Clone, PartialEq)]
+#[ts(export, export_to = "bindings/actions/CredentialSelection.ts")]
+pub struct CredentialSelection {
+    pub query_id: String,
+    #[ts(type = "Array<string>")]
+    pub credential_uuids: Vec<uuid::Uuid>,
 }
 
 #[typetag::serde(name = "[Authenticate] Credentials selected")]

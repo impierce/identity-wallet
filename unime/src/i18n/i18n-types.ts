@@ -964,6 +964,21 @@ type RootTranslation = {
 			 * A​p​p​r​o​v​e​ ​r​e​q​u​e​s​t
 			 */
 			APPROVE: string
+			/**
+			 * {​c​o​u​n​t​}​ ​s​e​l​e​c​t​e​d
+			 * @param {number} count
+			 */
+			SELECTED_COUNT: RequiredParams<'count'>
+			PICKER: {
+				/**
+				 * S​e​l​e​c​t​ ​c​r​e​d​e​n​t​i​a​l
+				 */
+				NAVBAR_TITLE: string
+				/**
+				 * S​a​v​e
+				 */
+				SAVE: string
+			}
 		}
 	}
 	CONNECTION: {
@@ -2638,6 +2653,20 @@ export type TranslationFunctions = {
 			 * Approve request
 			 */
 			APPROVE: () => LocalizedString
+			/**
+			 * {count} selected
+			 */
+			SELECTED_COUNT: (arg: { count: number }) => LocalizedString
+			PICKER: {
+				/**
+				 * Select credential
+				 */
+				NAVBAR_TITLE: () => LocalizedString
+				/**
+				 * Save
+				 */
+				SAVE: () => LocalizedString
+			}
 		}
 	}
 	CONNECTION: {

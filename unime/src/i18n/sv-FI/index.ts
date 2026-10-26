@@ -356,6 +356,11 @@ const sv_FI = {
       DESCRIPTION: 'begär följande intyg',
       REQUESTED: 'Begärt',
       APPROVE: 'Godkänn förfrågan',
+      SELECTED_COUNT: '{count} valda',
+      PICKER: {
+        NAVBAR_TITLE: 'Välj intyg',
+        SAVE: 'Spara',
+      },
     },
   },
   CONNECTION: {

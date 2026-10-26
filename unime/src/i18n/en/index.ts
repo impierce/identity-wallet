@@ -355,6 +355,11 @@ const en = {
       DESCRIPTION: 'requests the following credentials',
       REQUESTED: 'Requested',
       APPROVE: 'Approve request',
+      SELECTED_COUNT: '{count:number} selected',
+      PICKER: {
+        NAVBAR_TITLE: 'Select credential',
+        SAVE: 'Save',
+      },
     },
   },
   CONNECTION: {

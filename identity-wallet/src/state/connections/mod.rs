@@ -16,6 +16,7 @@ use super::{
 
 use log::info;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use ts_rs::TS;
 
 #[derive(Default, Serialize, Deserialize, Clone, Debug, TS, PartialEq)]
@@ -104,6 +105,10 @@ pub struct Connection {
     #[ts(optional)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub domain_validation: Option<(ValidationStatus, String)>, // The String represents the last_validated timestamp
+    /// The ids of the credentials last shared with this connection, keyed by the requested credential types.
+    #[ts(skip)]
+    #[serde(skip_serializing_if = "HashMap::is_empty")]
+    pub last_shared_credentials: HashMap<String, Vec<String>>,
 }
 
 impl Connection {
@@ -129,6 +134,7 @@ impl Connection {
             linked_verifiable_presentations,
             ecosystems,
             domain_validation,
+            last_shared_credentials: HashMap::new(),
         }
     }
 

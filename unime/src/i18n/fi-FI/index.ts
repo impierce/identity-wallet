@@ -357,6 +357,11 @@ const fi_FI = {
       DESCRIPTION: 'pyytää seuraavia valtuuksia',
       REQUESTED: 'Pyydetty',
       APPROVE: 'Hyväksy pyyntö',
+      SELECTED_COUNT: '{count} valittu',
+      PICKER: {
+        NAVBAR_TITLE: 'Valitse valtuus',
+        SAVE: 'Tallenna',
+      },
     },
   },
   CONNECTION: {

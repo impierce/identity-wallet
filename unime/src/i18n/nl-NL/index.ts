@@ -356,6 +356,11 @@ const nl_NL = {
       DESCRIPTION: 'vraagt de volgende credentials op',
       REQUESTED: 'Aangevraagd',
       APPROVE: 'Accepteer verzoek',
+      SELECTED_COUNT: '{count} geselecteerd',
+      PICKER: {
+        NAVBAR_TITLE: 'Kies credential',
+        SAVE: 'Opslaan',
+      },
     },
   },
   CONNECTION: {

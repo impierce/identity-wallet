@@ -356,6 +356,11 @@ const de_DE = {
       DESCRIPTION: 'fragt nach den folgenden Daten',
       REQUESTED: 'Angefragt',
       APPROVE: 'Anfrage genehmigen',
+      SELECTED_COUNT: '{count} ausgewählt',
+      PICKER: {
+        NAVBAR_TITLE: 'Nachweis auswählen',
+        SAVE: 'Speichern',
+      },
     },
   },
   CONNECTION: {

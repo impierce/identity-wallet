@@ -14,6 +14,7 @@ export { default as CaretDownBoldIcon } from '~icons/ph/caret-down-bold';
 export { default as CaretLeftBoldIcon } from '~icons/ph/caret-left-bold';
 export { default as CaretRightBoldIcon } from '~icons/ph/caret-right-bold';
 export { default as CaretUpBoldIcon } from '~icons/ph/caret-up-bold';
+export { default as CaretUpDownBoldIcon } from '~icons/ph/caret-up-down-bold';
 export { default as CertificateLightIcon } from '~icons/ph/certificate-light';
 export { default as ChatCircleTextFillIcon } from '~icons/ph/chat-circle-text-fill';
 export { default as CheckBoldIcon } from '~icons/ph/check-bold';

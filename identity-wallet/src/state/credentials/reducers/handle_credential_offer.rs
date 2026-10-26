@@ -1,6 +1,7 @@
 use crate::oid4vci::authorization_request::CodeChallengeMethod;
 use crate::state::core_utils::helpers::download_logo;
 use crate::state::core_utils::{ActiveFlow, Oid4vciStage};
+use crate::state::credentials::credential_query_matching::match_credential_queries;
 use crate::state::credentials::reducers::send_token_request::send_token_request;
 use crate::state::qr_code::reducers::accept_connection::get_oid4vp_client_metadata;
 use crate::state::user_prompt::{ClientMetadata, CurrentUserPrompt};
@@ -16,21 +17,15 @@ use crate::{
         AppState,
     },
 };
-use identity_credential::sd_jwt_vc::SdJwtVc;
 use log::{debug, info};
 use oid4vc::oid4vc_core::authorization_request::{AuthorizationRequest, Object};
-use oid4vc::oid4vc_core::utils::jwt::get_unverified_jwt_claims;
-use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
 use oid4vc::oid4vci::InteractionType;
 use oid4vc::oid4vci::{
     authorization_details::{AuthorizationDetailsObject, OpenidCredential},
     credential_offer::Grants,
     pkce,
 };
-use oid4vc::oid4vp::dcql_evaluation::evaluate_credential_query;
 use oid4vc::oid4vp::oid4vp::OID4VP;
-use oid4vc::oid4vp::token::vp_token_validator::DecodedPresentations;
-use sd_jwt::Sha256Hasher;
 use tauri_plugin_opener::OpenerExt;
 use uuid::Uuid;
 
@@ -279,62 +274,9 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
 
                         let dcql_query = &oid4vp_authorization_request.body.extension.dcql_query;
 
-                        let uuids: Vec<String> = dcql_query
-                            .credentials
-                            .iter()
-                            .filter_map(|credential_query_from_request| {
-                                verifiable_credentials.iter().find_map(|verifiable_credential_record| {
-                                    let credential_data: serde_json::Value = if verifiable_credential_record
-                                        .display_credential
-                                        .format
-                                        == CredentialFormats::DcSdJwt(())
-                                        || verifiable_credential_record.display_credential.format
-                                            == CredentialFormats::VcSdJwt(())
-                                    {
-                                        serde_json::json!(verifiable_credential_record
-                                            .verifiable_credential
-                                            .as_str()?
-                                            .parse::<SdJwtVc>()
-                                            .ok()?
-                                            .into_disclosed_object(&Sha256Hasher::new())
-                                            .ok()?)
-                                    } else if verifiable_credential_record.display_credential.format
-                                        == CredentialFormats::JwtVcJson(())
-                                    {
-                                        let full_jwt_payload = get_unverified_jwt_claims(
-                                            &verifiable_credential_record.verifiable_credential,
-                                        )
-                                        .unwrap_or_default();
-                                        // JWT_VC_JSON must be accessed from the vc values.
-                                        full_jwt_payload.get("vc").cloned().unwrap_or_else(|| {
-                                            debug!(
-                                                "JWT-VC-JSON is missing `vc` claims or is not a valid JSON value: {:?}",
-                                                full_jwt_payload
-                                            );
-                                            serde_json::json!({})
-                                        })
-                                    } else {
-                                        debug!(
-                                            "Unhandled credential format: {:?}",
-                                            verifiable_credential_record.display_credential.format
-                                        );
-                                        get_unverified_jwt_claims(&verifiable_credential_record.verifiable_credential)
-                                            .unwrap_or_default()
-                                    };
+                        let requested_credentials = match_credential_queries(dcql_query, &verifiable_credentials);
 
-                                    let credential_query_satisfied = evaluate_credential_query(
-                                        credential_query_from_request,
-                                        &DecodedPresentations::try_new(vec![credential_data.as_object()?.clone()])
-                                            .ok()?,
-                                    );
-                                    credential_query_satisfied
-                                        .then_some(verifiable_credential_record.display_credential.id.clone())
-                                })
-                            })
-                            .collect();
-
-                        info!("Evaluated {} VCs matching interactive OID4VP request", uuids.len());
-                        debug!("Matched VC UUIDs for interactive authorization: {uuids:?}");
+                        debug!("Credentials matching interactive OID4VP request: {requested_credentials:?}");
 
                         // TODO: this is kinda duplicate, we should probably refactor to pass on the ClientMetadata retrieved in fn `accept_connection` to avoid re-fetching it here, but for now this works.
                         let ClientMetadata {
@@ -350,7 +292,10 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
                         }
 
                         // TODO: communicate when no credentials are available.
-                        if !uuids.is_empty() {
+                        if requested_credentials
+                            .iter()
+                            .any(|requested| !requested.options.is_empty())
+                        {
                             drop(state_guard);
 
                             return Ok(AppState {
@@ -372,7 +317,7 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
                                 current_user_prompt: Some(CurrentUserPrompt::ShareCredentials {
                                     client_name,
                                     logo_uri,
-                                    options: uuids,
+                                    requested_credentials,
                                     is_interactive: true,
                                 }),
                                 ..state
