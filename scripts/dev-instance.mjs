@@ -102,4 +102,6 @@ const forwardAndWatch = (input, output) => {
 };
 forwardAndWatch(child.stdout, process.stdout);
 forwardAndWatch(child.stderr, process.stderr);
-child.on('exit', (code) => process.exit(code ?? 1));
+child.on('close', (code) => {
+  process.exitCode = code ?? 1;
+});
