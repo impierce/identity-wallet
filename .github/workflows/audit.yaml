@@ -16,9 +16,9 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@stable
 
-      - uses: Swatinem/rust-cache@v2
-
-      - run: cargo install cargo-audit
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-audit
 
       - run: cargo audit
 
