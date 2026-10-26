@@ -101,7 +101,10 @@ pub async fn send_authorization_response<E: Extension>(
         }
     };
 
-    let response = reqwest::Client::new()
+    // The shared client pins `webpki-roots`; `Client::new()` uses the platform verifier, which on Android
+    // rejects certificates without an OCSP responder (such as Let's Encrypt's) as revoked.
+    let response = crate::http_client::get_http_client()
+        .await
         .post(&authorization_response.redirect_uri)
         .header("Content-Type", "application/x-www-form-urlencoded")
         .body(encoded)
