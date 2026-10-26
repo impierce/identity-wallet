@@ -5,7 +5,7 @@
 //
 // An existing local or remote branch is checked out as is; otherwise a new branch is created from `--from`
 // (default: origin/dev). The default directory is `../identity-wallet-<branch>` with `/` replaced by `-`.
-import { execFileSync } from 'node:child_process';
+import { execFileSync, execSync } from 'node:child_process';
 import { copyFileSync, existsSync } from 'node:fs';
 import { basename, dirname, join, resolve } from 'node:path';
 import { parseArgs } from 'node:util';
@@ -24,8 +24,8 @@ if (!branch) {
   process.exit(1);
 }
 
-const isWindows = process.platform === 'win32';
-const run = (cmd, args, cwd) => execFileSync(cmd, args, { cwd, stdio: 'inherit', shell: isWindows && cmd === 'pnpm' });
+const run = (cmd, args, cwd) => execFileSync(cmd, args, { cwd, stdio: 'inherit' });
+const pnpm = (args, cwd) => execSync(`pnpm ${args.join(' ')}`, { cwd, stdio: 'inherit' });
 const git = (args, cwd = root) => execFileSync('git', args, { cwd, encoding: 'utf8' }).trim();
 const gitSucceeds = (args) => {
   try {
@@ -37,7 +37,10 @@ const gitSucceeds = (args) => {
 };
 
 const root = execFileSync('git', ['rev-parse', '--show-toplevel'], { encoding: 'utf8' }).trim();
-const dir = resolve(values.dir ?? join(dirname(root), `${basename(root)}-${branch.replaceAll('/', '-')}`));
+const mainCheckout = dirname(resolve(root, git(['rev-parse', '--git-common-dir'])));
+const dir = resolve(
+  values.dir ?? join(dirname(mainCheckout), `${basename(mainCheckout)}-${branch.replaceAll('/', '-')}`),
+);
 if (existsSync(dir)) {
   console.error(`${dir} already exists.`);
   process.exit(1);
@@ -57,8 +60,8 @@ for (const envFile of ['unime/.env', 'identity-wallet/.env']) {
   copyFileSync(source, join(dir, envFile));
 }
 
-run('pnpm', ['install'], dir);
-run('pnpm', ['--filter', 'unime', 'tauri', 'icon', 'src-tauri/app-icon.png'], dir);
+pnpm(['install'], dir);
+pnpm(['--filter', 'unime', 'tauri', 'icon', 'src-tauri/app-icon.png'], dir);
 run('git', ['checkout', '--', 'unime/src-tauri/icons'], dir);
 
 console.log(`\nCheckout ready: ${dir}\nStart it with: cd "${dir}" && pnpm dev:instance`);

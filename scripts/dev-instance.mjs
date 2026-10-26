@@ -75,10 +75,10 @@ console.log(`UniMe instance "${name || 'default'}"
   MCP bridge: 127.0.0.1:${mcpPort}
 `);
 
-const child = spawn('pnpm', ['--filter', 'unime', 'tauri', 'dev', '--config', 'src-tauri/tauri.instance.conf.json'], {
+const child = spawn('pnpm --filter unime tauri dev --config src-tauri/tauri.instance.conf.json', {
   cwd: root,
   stdio: 'inherit',
-  shell: process.platform === 'win32',
+  shell: true,
   env: { ...process.env, UNIME_DEV_PORT: String(devPort), UNIME_MCP_PORT: String(mcpPort) },
 });
 child.on('exit', (code) => process.exit(code ?? 1));
