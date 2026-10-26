@@ -37,7 +37,7 @@
           >
             <div
               slot="image"
-              class="mr-4 ml-2 flex h-9 w-9 overflow-hidden rounded-full border-none border-slate-300 dark:border-slate-600"
+              class="relative mr-4 ml-2 flex h-9 w-9 overflow-hidden rounded-full after:pointer-events-none after:absolute after:inset-0 after:rounded-full after:ring-1 after:ring-black/10 after:ring-inset dark:after:ring-white/20"
             >
               <Image
                 id={connection.id}
