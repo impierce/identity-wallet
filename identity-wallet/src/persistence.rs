@@ -93,7 +93,11 @@ pub async fn load_state() -> Result<AppState, AppError> {
         }
     };
 
-    Ok(app_state)
+    // A result pop-up belongs to the session it happened in.
+    Ok(AppState {
+        interaction_result: None,
+        ..app_state
+    })
 }
 
 /// Persists a [AppState] to the app's data directory.

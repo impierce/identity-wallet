@@ -125,9 +125,8 @@ pub struct AppState {
     pub show_dev_mode_setting: bool,
     pub is_unlocked: bool,
     pub dev_mode: DevMode,
-    /// The outcome of the last issuance or presentation, shown in the result pop-up until dismissed. Not restored
-    /// from disk.
-    #[serde(skip_deserializing)]
+    /// The outcome of the last issuance or presentation, shown in the result pop-up until dismissed. Cleared when the
+    /// state is loaded from disk.
     pub interaction_result: Option<InteractionResult>,
 }
 
