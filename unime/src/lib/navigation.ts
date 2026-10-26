@@ -72,7 +72,10 @@ export function linkWithReturn(href: string): string {
  */
 export function returnRoute(fallback: string): string {
   const from = page.url.searchParams.get(RETURN_PARAM);
-  return from?.startsWith('/') && !from.startsWith('//') ? from : fallback;
+  if (!from?.startsWith('/') || from.startsWith('//')) return fallback;
+  // Browsers also read e.g. `/\host` as a link to another host.
+  const url = new URL(from, location.href);
+  return url.origin === location.origin ? url.pathname + url.search : fallback;
 }
 
 /**
