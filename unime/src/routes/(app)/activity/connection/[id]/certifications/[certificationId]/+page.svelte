@@ -18,7 +18,7 @@
   import CertificationOverview from '../../../../../../prompt/accept-connection/certifications/[id]/CertificationOverview.svelte';
   import DomainPill from '../../../../../../prompt/accept-connection/DomainPill.svelte';
 
-  const navigateUp = useParentRoute(() => `/activity/connection/${page.params.id}/certifications`);
+  const navigateUp = useParentRoute(() => `/activity/connection/${page.params.id}/certifications${page.url.search}`);
 
   $: connection = $appState.connections.find((item) => item.id === page.params.id);
   $: certification = (connection?.linked_verifiable_presentations ?? []).find(

@@ -15,7 +15,7 @@
   import EcosystemAvatar from '../../../../../../prompt/accept-connection/EcosystemAvatar.svelte';
   import MemberRow from '../../../../../../prompt/accept-connection/MemberRow.svelte';
 
-  const navigateUp = useParentRoute(() => `/activity/connection/${page.params.id}/ecosystems`);
+  const navigateUp = useParentRoute(() => `/activity/connection/${page.params.id}/ecosystems${page.url.search}`);
 
   $: connection = $appState.connections.find((item) => item.id === page.params.id);
   $: index = Number(page.params.ecosystemIndex);
