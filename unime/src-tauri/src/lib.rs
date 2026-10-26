@@ -8,10 +8,11 @@ use jni::{
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     use identity_wallet::{
-        persistence::{clear_assets_tmp_folder, initialize_storage},
+        persistence::{clear_assets_tmp_folder, initialize_storage, ASSETS_DIR},
         state::AppStateContainer,
     };
     use log::{info, LevelFilter};
+    use tauri::Manager;
     use tauri_plugin_log::{fern::colors::Color, fern::colors::ColoredLevelConfig, Target, TargetKind};
 
     let mut builder = tauri::Builder::default();
@@ -45,6 +46,10 @@ pub fn run() {
             info!("setting up tauri app");
             initialize_storage(app.handle()).ok();
             clear_assets_tmp_folder().ok();
+            // The asset protocol scope from the config does not match an assets folder that did not exist yet at
+            // startup (e.g. on first launch), so allow the folder again now that it exists.
+            let assets_dir = ASSETS_DIR.lock().unwrap().clone();
+            app.asset_protocol_scope().allow_directory(&assets_dir, true)?;
             dotenvy::dotenv().ok();
             #[cfg(mobile)]
             {
