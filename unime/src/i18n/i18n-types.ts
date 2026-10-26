@@ -1657,6 +1657,174 @@ type RootTranslation = {
 		 */
 		PILL_UNVERIFIED: string
 	}
+	INTERACTION_RESULT: {
+		PRESENTATION: {
+			/**
+			 * S​e​n​d​i​n​g​ ​t​o​ ​{​n​a​m​e​}​…
+			 * @param {string} name
+			 */
+			SENDING_TITLE: RequiredParams<'name'>
+			/**
+			 * S​e​n​t​ ​t​o​ ​{​n​a​m​e​}
+			 * @param {string} name
+			 */
+			STEP_SEND: RequiredParams<'name'>
+			/**
+			 * S​e​n​d​i​n​g​ ​t​o​ ​{​n​a​m​e​}
+			 * @param {string} name
+			 */
+			STEP_SENDING: RequiredParams<'name'>
+			/**
+			 * C​o​u​l​d​n​'​t​ ​s​e​n​d​ ​t​o​ ​{​n​a​m​e​}
+			 * @param {string} name
+			 */
+			STEP_SEND_FAILED: RequiredParams<'name'>
+			/**
+			 * A​p​p​r​o​v​e​d​ ​b​y​ ​{​n​a​m​e​}
+			 * @param {string} name
+			 */
+			STEP_APPROVE: RequiredParams<'name'>
+			/**
+			 * R​e​j​e​c​t​e​d​ ​b​y​ ​{​n​a​m​e​}
+			 * @param {string} name
+			 */
+			STEP_REJECTED: RequiredParams<'name'>
+			/**
+			 * {​n​a​m​e​}​ ​a​c​c​e​p​t​e​d​ ​y​o​u​r​ ​d​a​t​a​.
+			 * @param {string} name
+			 */
+			APPROVED_BODY: RequiredParams<'name'>
+			/**
+			 * {​n​a​m​e​}​ ​d​i​d​n​'​t​ ​a​c​c​e​p​t​ ​t​h​i​s
+			 * @param {string} name
+			 */
+			REJECTED_TITLE: RequiredParams<'name'>
+			/**
+			 * C​h​e​c​k​ ​y​o​u​r​ ​i​n​t​e​r​n​e​t​ ​c​o​n​n​e​c​t​i​o​n​ ​a​n​d​ ​t​r​y​ ​a​g​a​i​n​.​ ​N​o​t​h​i​n​g​ ​w​a​s​ ​s​h​a​r​e​d​.
+			 */
+			NOT_SENT_BODY: string
+		}
+		ISSUANCE: {
+			/**
+			 * R​e​q​u​e​s​t​i​n​g​ ​f​r​o​m​ ​{​n​a​m​e​}​…
+			 * @param {string} name
+			 */
+			SENDING_TITLE: RequiredParams<'name'>
+			/**
+			 * R​e​q​u​e​s​t​ ​s​e​n​t​ ​t​o​ ​{​n​a​m​e​}
+			 * @param {string} name
+			 */
+			STEP_SEND: RequiredParams<'name'>
+			/**
+			 * S​e​n​d​i​n​g​ ​r​e​q​u​e​s​t​ ​t​o​ ​{​n​a​m​e​}
+			 * @param {string} name
+			 */
+			STEP_SENDING: RequiredParams<'name'>
+			/**
+			 * C​o​u​l​d​n​'​t​ ​s​e​n​d​ ​r​e​q​u​e​s​t​ ​t​o​ ​{​n​a​m​e​}
+			 * @param {string} name
+			 */
+			STEP_SEND_FAILED: RequiredParams<'name'>
+			/**
+			 * I​s​s​u​e​d​ ​b​y​ ​{​n​a​m​e​}
+			 * @param {string} name
+			 */
+			STEP_APPROVE: RequiredParams<'name'>
+			/**
+			 * R​e​f​u​s​e​d​ ​b​y​ ​{​n​a​m​e​}
+			 * @param {string} name
+			 */
+			STEP_REJECTED: RequiredParams<'name'>
+			/**
+			 * Y​o​u​r​ ​n​e​w​ ​c​r​e​d​e​n​t​i​a​l​ ​f​r​o​m​ ​{​n​a​m​e​}​ ​i​s​ ​i​n​ ​y​o​u​r​ ​w​a​l​l​e​t​.
+			 * @param {string} name
+			 */
+			APPROVED_BODY: RequiredParams<'name'>
+			/**
+			 * {​n​a​m​e​}​ ​d​i​d​n​'​t​ ​i​s​s​u​e​ ​t​h​i​s
+			 * @param {string} name
+			 */
+			REJECTED_TITLE: RequiredParams<'name'>
+			/**
+			 * C​h​e​c​k​ ​y​o​u​r​ ​i​n​t​e​r​n​e​t​ ​c​o​n​n​e​c​t​i​o​n​ ​a​n​d​ ​t​r​y​ ​a​g​a​i​n​.​ ​N​o​t​h​i​n​g​ ​w​a​s​ ​r​e​c​e​i​v​e​d​.
+			 */
+			NOT_SENT_BODY: string
+		}
+		/**
+		 * T​h​i​s​ ​u​s​u​a​l​l​y​ ​t​a​k​e​s​ ​a​ ​f​e​w​ ​s​e​c​o​n​d​s​.​ ​Y​o​u​ ​c​a​n​ ​c​l​o​s​e​ ​t​h​i​s​,​ ​w​e​'​l​l​ ​k​e​e​p​ ​g​o​i​n​g​ ​i​n​ ​t​h​e​ ​b​a​c​k​g​r​o​u​n​d​.
+		 */
+		SENDING_BODY: string
+		/**
+		 * A​l​l​ ​d​o​n​e​!
+		 */
+		APPROVED_TITLE: string
+		/**
+		 * C​o​u​l​d​n​'​t​ ​r​e​a​c​h​ ​{​n​a​m​e​}
+		 * @param {string} name
+		 */
+		NOT_SENT_TITLE: RequiredParams<'name'>
+		/**
+		 * T​h​e​ ​r​e​q​u​e​s​t​ ​w​a​s​ ​r​e​f​u​s​e​d​.
+		 */
+		REJECTED_BODY: string
+		/**
+		 * E​r​r​o​r​ ​c​o​d​e
+		 */
+		ERROR_CODE: string
+		/**
+		 * H​T​T​P​ ​{​s​t​a​t​u​s​}
+		 * @param {number} status
+		 */
+		HTTP_STATUS: RequiredParams<'status'>
+		/**
+		 * N​o​ ​r​e​s​p​o​n​s​e
+		 */
+		NO_RESPONSE: string
+		/**
+		 * u​n​k​n​o​w​n​_​e​r​r​o​r
+		 */
+		UNKNOWN_ERROR: string
+		/**
+		 * C​l​o​s​i​n​g​ ​a​u​t​o​m​a​t​i​c​a​l​l​y​ ​i​n​ ​{​s​e​c​o​n​d​s​}​ ​s
+		 * @param {number} seconds
+		 */
+		AUTO_CLOSE: RequiredParams<'seconds'>
+		/**
+		 * D​o​n​e
+		 */
+		DONE: string
+		/**
+		 * T​r​y​ ​a​g​a​i​n
+		 */
+		TRY_AGAIN: string
+		/**
+		 * C​o​p​y​ ​e​r​r​o​r​ ​d​e​t​a​i​l​s
+		 */
+		COPY_DETAILS: string
+		/**
+		 * C​o​p​i​e​d
+		 */
+		COPIED: string
+		/**
+		 * S​t​i​l​l​ ​w​a​i​t​i​n​g​ ​f​o​r​ ​{​n​a​m​e​}
+		 * @param {string} name
+		 */
+		STILL_WAITING_TITLE: RequiredParams<'name'>
+		/**
+		 * W​e​'​l​l​ ​l​e​t​ ​y​o​u​ ​k​n​o​w​ ​w​h​e​n​ ​t​h​e​y​ ​r​e​s​p​o​n​d​.
+		 */
+		STILL_WAITING_DETAIL: string
+		/**
+		 * {​n​a​m​e​}​ ​a​c​c​e​p​t​e​d
+		 * @param {string} name
+		 */
+		LATER_APPROVED_TITLE: RequiredParams<'name'>
+		/**
+		 * {​n​a​m​e​}​ ​d​i​d​n​'​t​ ​a​c​c​e​p​t
+		 * @param {string} name
+		 */
+		LATER_FAILED_TITLE: RequiredParams<'name'>
+	}
 	ERROR: {
 		/**
 		 * O​o​p​s​!
@@ -3325,6 +3493,152 @@ export type TranslationFunctions = {
 		 * Unverified Domain
 		 */
 		PILL_UNVERIFIED: () => LocalizedString
+	}
+	INTERACTION_RESULT: {
+		PRESENTATION: {
+			/**
+			 * Sending to {name}…
+			 */
+			SENDING_TITLE: (arg: { name: string }) => LocalizedString
+			/**
+			 * Sent to {name}
+			 */
+			STEP_SEND: (arg: { name: string }) => LocalizedString
+			/**
+			 * Sending to {name}
+			 */
+			STEP_SENDING: (arg: { name: string }) => LocalizedString
+			/**
+			 * Couldn't send to {name}
+			 */
+			STEP_SEND_FAILED: (arg: { name: string }) => LocalizedString
+			/**
+			 * Approved by {name}
+			 */
+			STEP_APPROVE: (arg: { name: string }) => LocalizedString
+			/**
+			 * Rejected by {name}
+			 */
+			STEP_REJECTED: (arg: { name: string }) => LocalizedString
+			/**
+			 * {name} accepted your data.
+			 */
+			APPROVED_BODY: (arg: { name: string }) => LocalizedString
+			/**
+			 * {name} didn't accept this
+			 */
+			REJECTED_TITLE: (arg: { name: string }) => LocalizedString
+			/**
+			 * Check your internet connection and try again. Nothing was shared.
+			 */
+			NOT_SENT_BODY: () => LocalizedString
+		}
+		ISSUANCE: {
+			/**
+			 * Requesting from {name}…
+			 */
+			SENDING_TITLE: (arg: { name: string }) => LocalizedString
+			/**
+			 * Request sent to {name}
+			 */
+			STEP_SEND: (arg: { name: string }) => LocalizedString
+			/**
+			 * Sending request to {name}
+			 */
+			STEP_SENDING: (arg: { name: string }) => LocalizedString
+			/**
+			 * Couldn't send request to {name}
+			 */
+			STEP_SEND_FAILED: (arg: { name: string }) => LocalizedString
+			/**
+			 * Issued by {name}
+			 */
+			STEP_APPROVE: (arg: { name: string }) => LocalizedString
+			/**
+			 * Refused by {name}
+			 */
+			STEP_REJECTED: (arg: { name: string }) => LocalizedString
+			/**
+			 * Your new credential from {name} is in your wallet.
+			 */
+			APPROVED_BODY: (arg: { name: string }) => LocalizedString
+			/**
+			 * {name} didn't issue this
+			 */
+			REJECTED_TITLE: (arg: { name: string }) => LocalizedString
+			/**
+			 * Check your internet connection and try again. Nothing was received.
+			 */
+			NOT_SENT_BODY: () => LocalizedString
+		}
+		/**
+		 * This usually takes a few seconds. You can close this, we'll keep going in the background.
+		 */
+		SENDING_BODY: () => LocalizedString
+		/**
+		 * All done!
+		 */
+		APPROVED_TITLE: () => LocalizedString
+		/**
+		 * Couldn't reach {name}
+		 */
+		NOT_SENT_TITLE: (arg: { name: string }) => LocalizedString
+		/**
+		 * The request was refused.
+		 */
+		REJECTED_BODY: () => LocalizedString
+		/**
+		 * Error code
+		 */
+		ERROR_CODE: () => LocalizedString
+		/**
+		 * HTTP {status}
+		 */
+		HTTP_STATUS: (arg: { status: number }) => LocalizedString
+		/**
+		 * No response
+		 */
+		NO_RESPONSE: () => LocalizedString
+		/**
+		 * unknown_error
+		 */
+		UNKNOWN_ERROR: () => LocalizedString
+		/**
+		 * Closing automatically in {seconds} s
+		 */
+		AUTO_CLOSE: (arg: { seconds: number }) => LocalizedString
+		/**
+		 * Done
+		 */
+		DONE: () => LocalizedString
+		/**
+		 * Try again
+		 */
+		TRY_AGAIN: () => LocalizedString
+		/**
+		 * Copy error details
+		 */
+		COPY_DETAILS: () => LocalizedString
+		/**
+		 * Copied
+		 */
+		COPIED: () => LocalizedString
+		/**
+		 * Still waiting for {name}
+		 */
+		STILL_WAITING_TITLE: (arg: { name: string }) => LocalizedString
+		/**
+		 * We'll let you know when they respond.
+		 */
+		STILL_WAITING_DETAIL: () => LocalizedString
+		/**
+		 * {name} accepted
+		 */
+		LATER_APPROVED_TITLE: (arg: { name: string }) => LocalizedString
+		/**
+		 * {name} didn't accept
+		 */
+		LATER_FAILED_TITLE: (arg: { name: string }) => LocalizedString
 	}
 	ERROR: {
 		/**

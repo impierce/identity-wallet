@@ -9,7 +9,7 @@
   import { dispatch } from '$lib/dispatcher';
   import { PlugsConnectedFillIcon, SealCheckFillIcon } from '$lib/icons';
   import { cancelUserFlow, useBackNavigation } from '$lib/navigation';
-  import { error, state } from '$lib/stores';
+  import { error, pendingInteraction, state } from '$lib/stores';
   import { hash } from '$lib/utils';
 
   // TypeScript does not know that the `current_user_prompt` is of type `share-credentials`.
@@ -108,13 +108,16 @@
       label={$LL.SCAN.SHARE_CREDENTIALS.APPROVE()}
       on:click={() => {
         loading = true;
-        dispatch({
+        const action = {
           type: '[Authenticate] Credentials selected',
           payload: {
             credential_uuids: selected_credentials.map((c) => c.id),
             is_interactive,
           },
-        });
+        } as const;
+        // Interactive requests continue with another prompt instead of a result.
+        if (!is_interactive) pendingInteraction.set({ kind: 'presentation', counterparty: client_name, retry: action });
+        dispatch(action);
       }}
       {loading}
     />

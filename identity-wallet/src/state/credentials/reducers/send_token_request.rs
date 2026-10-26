@@ -13,6 +13,7 @@ use crate::{
             reducers::refresh_credential_status::fetch_credential_status, CredentialStatus, DisplayCredential,
             VerifiableCredentialRecord,
         },
+        interaction_result::{InteractionKind, InteractionOutcome, InteractionResult},
         user_prompt::CurrentUserPrompt,
         AppState, UNIME_CLIENT_ID, UNIME_REDIRECT_URI,
     },
@@ -33,8 +34,61 @@ use serde_json::json;
 use std::collections::HashMap;
 use uuid::Uuid;
 
+/// Redeems the code for credentials and reports the outcome in the result pop-up. Errors from the issuer's token and
+/// credential endpoints end the flow with an [`InteractionResult`] instead of a generic error.
 #[tracing::instrument(skip_all, err)]
 pub async fn send_token_request(state: AppState, action: Action) -> Result<AppState, AppError> {
+    if listen::<CodeReceived>(action.clone()).is_none() {
+        return Ok(state);
+    }
+
+    let issuer_name = match &state.current_user_prompt {
+        Some(CurrentUserPrompt::CredentialOffer { issuer_name, .. }) => Some(issuer_name.clone()),
+        _ => None,
+    }
+    .or_else(|| {
+        state
+            .core_utils
+            .pending_connection_data
+            .as_ref()
+            .map(|pending_connection_data| pending_connection_data.client_metadata.client_name.clone())
+    })
+    .unwrap_or_default();
+    let interaction_result = |outcome| {
+        Some(InteractionResult {
+            kind: InteractionKind::Issuance,
+            counterparty: issuer_name.clone(),
+            outcome,
+        })
+    };
+
+    let previous_state = state.clone();
+    match redeem_code_for_credentials(state, action).await {
+        Ok(state) => Ok(AppState {
+            interaction_result: interaction_result(InteractionOutcome::Approved),
+            ..state
+        }),
+        Err(GetAccessTokenError(error) | GetCredentialError(error)) => {
+            let outcome = InteractionOutcome::from_wallet_error(&error);
+            warn!("Credential issuance failed: {outcome:?}");
+            Ok(AppState {
+                core_utils: CoreUtils {
+                    active_flow: None,
+                    pending_connection_data: None,
+                    ..previous_state.core_utils
+                },
+                current_user_prompt: Some(CurrentUserPrompt::Redirect {
+                    target: "me".to_string(),
+                }),
+                interaction_result: interaction_result(outcome),
+                ..previous_state
+            })
+        }
+        Err(error) => Err(error),
+    }
+}
+
+async fn redeem_code_for_credentials(state: AppState, action: Action) -> Result<AppState, AppError> {
     if let Some((code, is_pre_authorized, is_interactive, wallet_state, tx_code)) =
         listen::<CodeReceived>(action).map(|payload| {
             (
@@ -279,9 +333,9 @@ pub async fn send_token_request(state: AppState, action: Action) -> Result<AppSt
                 )
                 .await
                 .map_err(|err| {
-                    AppError::Error(format!(
-                        "Failed to get credential for configuration id {credential_configuration_id}: {err}"
-                    ))
+                    GetCredentialError(err.context(format!(
+                        "Failed to get credential for configuration id {credential_configuration_id}"
+                    )))
                 })?;
 
             let credential = match credential_response.credential {
