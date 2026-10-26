@@ -247,6 +247,15 @@ pub fn persist_asset(file_name: &str, id: &str) -> Result<(), AppError> {
             tmp_dir.join(format!("{file_name}.{extension}")),
             assets_dir.join(&new_file_name),
         )?;
+
+        // The frontend picks the first extension it finds, so a stale asset with another extension would shadow this one.
+        for stale_extension in SUPPORTED_IMAGE_ASSET_EXTENSIONS.iter().filter(|&e| e != extension) {
+            let stale_file = assets_dir.join(format!("{id}.{stale_extension}"));
+            if stale_file.exists() {
+                std::fs::remove_file(stale_file)?;
+            }
+        }
+
         debug!("Successfully persisted asset `{file_name}` --> `{new_file_name}`.");
     } else {
         warn!("No asset found for file_name: `{file_name}`")
@@ -259,4 +268,41 @@ pub fn persist_asset(file_name: &str, id: &str) -> Result<(), AppError> {
 /// Used for temporary asset file names in `/assets/tmp` to prevent unintended frontend image caching.
 pub fn hash(url: &str) -> String {
     sha256::digest(url).to_string()
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use tempfile::TempDir;
+
+    #[test]
+    #[serial_test::serial]
+    fn persist_asset_replaces_asset_with_other_extension() {
+        let assets_dir = TempDir::new().unwrap().keep();
+        *ASSETS_DIR.lock().unwrap() = assets_dir.clone();
+        fs::create_dir_all(assets_dir.join("tmp")).unwrap();
+        fs::write(assets_dir.join("conn-123.svg"), b"old-logo").unwrap();
+        fs::write(assets_dir.join("tmp").join("logo-hash.png"), b"new-logo").unwrap();
+
+        persist_asset("logo-hash", "conn-123").unwrap();
+
+        assert!(!assets_dir.join("conn-123.svg").exists());
+        assert_eq!(fs::read(assets_dir.join("conn-123.png")).unwrap(), b"new-logo");
+    }
+
+    #[test]
+    #[serial_test::serial]
+    fn persist_asset_keeps_existing_asset_when_rename_fails() {
+        let assets_dir = TempDir::new().unwrap().keep();
+        *ASSETS_DIR.lock().unwrap() = assets_dir.clone();
+        fs::create_dir_all(assets_dir.join("tmp")).unwrap();
+        fs::write(assets_dir.join("conn-123.svg"), b"old-logo").unwrap();
+        fs::write(assets_dir.join("tmp").join("logo-hash.png"), b"new-logo").unwrap();
+        // A non-empty directory at the destination makes the rename fail on every platform.
+        fs::create_dir_all(assets_dir.join("conn-123.png").join("blocker")).unwrap();
+
+        assert!(persist_asset("logo-hash", "conn-123").is_err());
+
+        assert_eq!(fs::read(assets_dir.join("conn-123.svg")).unwrap(), b"old-logo");
+    }
 }
