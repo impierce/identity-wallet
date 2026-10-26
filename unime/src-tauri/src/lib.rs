@@ -44,12 +44,15 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![tauri_command::handle_action])
         .setup(move |app| {
             info!("setting up tauri app");
-            initialize_storage(app.handle()).ok();
+            let storage_initialized = initialize_storage(app.handle()).is_ok();
             clear_assets_tmp_folder().ok();
             // The asset protocol scope from the config does not match an assets folder that did not exist yet at
-            // startup (e.g. on first launch), so allow the folder again now that it exists.
-            let assets_dir = ASSETS_DIR.lock().unwrap().clone();
-            app.asset_protocol_scope().allow_directory(&assets_dir, true)?;
+            // startup (e.g. on first launch), so allow the folder again now that it exists. Without initialized
+            // storage, `ASSETS_DIR` is empty and would allow every path.
+            if storage_initialized {
+                let assets_dir = ASSETS_DIR.lock().unwrap().clone();
+                app.asset_protocol_scope().allow_directory(&assets_dir, true)?;
+            }
             dotenvy::dotenv().ok();
             #[cfg(mobile)]
             {
