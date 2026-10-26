@@ -2,6 +2,7 @@ mod assets_download;
 mod extensions;
 mod get_state;
 mod load_dev_profile;
+mod profile_fixture;
 mod qr_code_scanned;
 mod refresh_credential_status;
 mod search_query;
