@@ -43,9 +43,6 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "android": {
-      "minSdkVersion": 28
-    },
     "iOS": {
       "developmentTeam": "Impierce Technologies B.V."
     },
