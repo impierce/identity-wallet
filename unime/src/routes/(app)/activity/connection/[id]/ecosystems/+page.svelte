@@ -14,7 +14,7 @@
 
   import EcosystemCard from '../../../../../prompt/accept-connection/EcosystemCard.svelte';
 
-  const navigateUp = useParentRoute(() => `/activity/connection/${page.params.id}`);
+  const navigateUp = useParentRoute(() => `/activity/connection/${page.params.id}${page.url.search}`);
 
   $: connection = $appState.connections.find((item) => item.id === page.params.id);
   $: ecosystems = connection?.ecosystems ?? [];
@@ -42,7 +42,7 @@
           <EcosystemCard
             {ecosystem}
             {index}
-            href={`/activity/connection/${connection.id}/ecosystems/${index}`}
+            href={`/activity/connection/${connection.id}/ecosystems/${index}${page.url.search}`}
             isTempAsset={false}
           />
         {/each}

@@ -8,7 +8,7 @@
   import type { Connection } from '@bindings/connections/Connection';
 
   import { History, Tabs, TopNavBar } from '$lib/components';
-  import { useParentRoute } from '$lib/navigation';
+  import { returnRoute, useParentRoute } from '$lib/navigation';
   import { state } from '$lib/stores';
 
   import ConnectionData from './ConnectionData.svelte';
@@ -23,7 +23,7 @@
   let activeTab: Writable<string> = writable(page.state.tab || triggers[0]);
   const detailsOpen = writable(false);
 
-  const navigateUp = useParentRoute('/activity');
+  const navigateUp = useParentRoute(() => returnRoute('/activity'));
 
   beforeNavigate(({ type }) => {
     // On popstate the browser already points at the previous entry, which we must not overwrite.
