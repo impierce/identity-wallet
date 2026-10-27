@@ -1,7 +1,6 @@
 pub mod actions;
 mod reducers;
 
-use anyhow::Context;
 use oid4vc::oid4vc_core::{
     authorization_response::AuthorizationResponse, openid4vc_extension::Extension,
     utils::form_urlencoded::to_form_urlencoded_string,
@@ -42,7 +41,11 @@ pub enum InteractionOutcome {
         http_status: Option<u16>,
     },
     /// The request did not get an answer (network error, timeout).
-    NotSent { reason: String },
+    NotSent {
+        reason: String,
+        /// The counterparty did not answer in time. It may still have handled the request.
+        timed_out: bool,
+    },
 }
 
 impl InteractionOutcome {
@@ -70,6 +73,11 @@ impl InteractionOutcome {
     /// Classifies an error from the OpenID4VCI wallet client. The client reports HTTP errors as
     /// "... (HTTP 400 Bad Request): <body>"; anything else means the request got no answer.
     pub fn from_wallet_error(error: &anyhow::Error) -> Self {
+        let timed_out = error.chain().any(|cause| {
+            cause
+                .downcast_ref::<reqwest::Error>()
+                .is_some_and(reqwest::Error::is_timeout)
+        });
         let message = format!("{error:#}");
 
         let http_error = message.split_once("(HTTP ").and_then(|(_, rest)| {
@@ -81,7 +89,10 @@ impl InteractionOutcome {
 
         match http_error {
             Some((status, body)) => Self::rejected(status, body),
-            None => InteractionOutcome::NotSent { reason: message },
+            None => InteractionOutcome::NotSent {
+                reason: message,
+                timed_out,
+            },
         }
     }
 }
@@ -97,6 +108,7 @@ pub async fn send_authorization_response<E: Extension>(
         Err(error) => {
             return InteractionOutcome::NotSent {
                 reason: error.to_string(),
+                timed_out: false,
             }
         }
     };
@@ -109,15 +121,17 @@ pub async fn send_authorization_response<E: Extension>(
         .header("Content-Type", "application/x-www-form-urlencoded")
         .body(encoded)
         .send()
-        .await
-        .context("Failed to send the authorization response");
+        .await;
 
     let response = match response {
         Ok(response) => response,
         Err(error) => {
+            let timed_out = error.is_timeout();
+            let error = anyhow::Error::from(error).context("Failed to send the authorization response");
             return InteractionOutcome::NotSent {
                 reason: format!("{error:#}"),
-            }
+                timed_out,
+            };
         }
     };
 
@@ -191,7 +205,7 @@ mod tests {
         let not_sent = anyhow::anyhow!("error sending request for url (https://example.com/auth/token)");
         assert!(matches!(
             InteractionOutcome::from_wallet_error(&not_sent),
-            InteractionOutcome::NotSent { .. }
+            InteractionOutcome::NotSent { timed_out: false, .. }
         ));
     }
 }

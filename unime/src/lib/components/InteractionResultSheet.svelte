@@ -14,6 +14,8 @@
   import Toast from './Toast.svelte';
 
   const AUTO_CLOSE_SECONDS = 3;
+  // How the backend's error starts when it cancels an action that took too long (`command::handle_action`).
+  const ACTION_TIMEOUT_PREFIX = 'Timed out after';
 
   type Phase = 'waiting' | InteractionOutcome['status'];
   type StepState = 'pending' | 'loading' | 'done' | 'failed';
@@ -39,7 +41,10 @@
   const kind = $derived(result?.kind ?? $pendingInteraction?.kind ?? 'presentation');
   const name = $derived(result?.counterparty || $pendingInteraction?.counterparty || '');
   const outcome = $derived<InteractionOutcome | undefined>(
-    result?.outcome ?? (unexpectedError !== undefined ? { status: 'not_sent', reason: unexpectedError } : undefined),
+    result?.outcome ??
+      (unexpectedError !== undefined
+        ? { status: 'not_sent', reason: unexpectedError, timed_out: unexpectedError.startsWith(ACTION_TIMEOUT_PREFIX) }
+        : undefined),
   );
   const phase = $derived<Phase>(outcome?.status ?? 'waiting');
   const texts = $derived(kind === 'issuance' ? $LL.INTERACTION_RESULT.ISSUANCE : $LL.INTERACTION_RESULT.PRESENTATION);
@@ -78,28 +83,35 @@
       case 'rejected':
         return texts.REJECTED_TITLE({ name });
       case 'not_sent':
-        return $LL.INTERACTION_RESULT.NOT_SENT_TITLE({ name });
+        return outcome?.status === 'not_sent' && outcome.timed_out
+          ? $LL.INTERACTION_RESULT.TIMEOUT_TITLE({ name })
+          : $LL.INTERACTION_RESULT.NOT_SENT_TITLE({ name });
     }
   });
 
   const body = $derived.by(() => {
     if (outcome?.status === 'approved') return texts.APPROVED_BODY({ name });
     if (outcome?.status === 'rejected') return outcome.error_description ?? $LL.INTERACTION_RESULT.REJECTED_BODY();
-    if (outcome?.status === 'not_sent') return texts.NOT_SENT_BODY();
+    if (outcome?.status === 'not_sent') return outcome.timed_out ? texts.TIMEOUT_BODY({ name }) : texts.NOT_SENT_BODY();
     return $LL.INTERACTION_RESULT.SENDING_BODY();
   });
 
   const errorCode = $derived.by(() => {
     if (outcome?.status === 'rejected') return outcome.error_code ?? $LL.INTERACTION_RESULT.UNKNOWN_ERROR();
-    if (outcome?.status === 'not_sent') return unexpectedError !== undefined ? 'unexpected_error' : 'network_error';
+    if (outcome?.status === 'not_sent') {
+      if (outcome.timed_out) return 'timeout';
+      return unexpectedError !== undefined ? 'unexpected_error' : 'network_error';
+    }
     return undefined;
   });
 
-  const errorMeta = $derived(
-    outcome?.status === 'rejected' && outcome.http_status
-      ? $LL.INTERACTION_RESULT.HTTP_STATUS({ status: outcome.http_status })
-      : $LL.INTERACTION_RESULT.NO_RESPONSE(),
-  );
+  // What went wrong, in the backend's words when there was no response to show.
+  const errorMeta = $derived.by(() => {
+    if (outcome?.status === 'rejected' && outcome.http_status)
+      return $LL.INTERACTION_RESULT.HTTP_STATUS({ status: outcome.http_status });
+    if (outcome?.status === 'not_sent' && outcome.reason) return outcome.reason;
+    return $LL.INTERACTION_RESULT.NO_RESPONSE();
+  });
 
   // Only a presentation that could not be sent keeps its flow, so only that one can be retried.
   const canRetry = $derived(
@@ -343,7 +355,12 @@
             {errorCode}
           </p>
         </div>
-        <p class="text-[12px]/[16px] text-rose-900/70 dark:text-rose-200/70">{errorMeta}</p>
+        <p
+          class="line-clamp-4 text-[12px]/[16px] break-words text-rose-900/70 dark:text-rose-200/70"
+          data-testid="error-meta"
+        >
+          {errorMeta}
+        </p>
       </div>
     {/if}
 
@@ -379,6 +396,9 @@
           <Button label={$LL.INTERACTION_RESULT.TRY_AGAIN()} on:click={retry} />
         {/if}
         <Button label={$LL.CLOSE()} variant={canRetry ? 'secondary' : 'primary'} on:click={close} />
+        <button class="h-10 text-[13px]/[24px] font-medium text-slate-800 dark:text-grey" onclick={copyDetails}>
+          {copied ? $LL.INTERACTION_RESULT.COPIED() : $LL.INTERACTION_RESULT.COPY_DETAILS()}
+        </button>
       {:else}
         <Button label={$LL.CLOSE()} variant="secondary" on:click={close} />
       {/if}

@@ -612,6 +612,8 @@ const de_DE = {
       APPROVED_BODY: '{name} hat deine Daten akzeptiert.',
       REJECTED_TITLE: '{name} hat das nicht akzeptiert',
       NOT_SENT_BODY: 'Prüfe deine Internetverbindung und versuche es erneut. Es wurde nichts geteilt.',
+      TIMEOUT_BODY:
+        '{name} hat deine Daten möglicherweise trotzdem erhalten. Frag dort nach, bevor du es erneut versuchst.',
     },
     ISSUANCE: {
       SENDING_TITLE: 'Anfrage an {name}…',
@@ -623,10 +625,13 @@ const de_DE = {
       APPROVED_BODY: 'Dein neuer Nachweis von {name} ist in deiner Wallet.',
       REJECTED_TITLE: '{name} hat das nicht ausgestellt',
       NOT_SENT_BODY: 'Prüfe deine Internetverbindung und versuche es erneut. Es wurde nichts empfangen.',
+      TIMEOUT_BODY:
+        '{name} hat den Nachweis möglicherweise trotzdem ausgestellt. Versuche es erneut, um ihn zu empfangen.',
     },
     SENDING_BODY: 'Das dauert meist nur ein paar Sekunden. Du kannst dies schließen, wir machen im Hintergrund weiter.',
     APPROVED_TITLE: 'Erledigt!',
     NOT_SENT_TITLE: '{name} nicht erreichbar',
+    TIMEOUT_TITLE: '{name} hat nicht rechtzeitig geantwortet',
     REJECTED_BODY: 'Die Anfrage wurde abgelehnt.',
     ERROR_CODE: 'Fehlercode',
     HTTP_STATUS: 'HTTP {status}',

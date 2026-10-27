@@ -100,15 +100,17 @@ pub async fn handle_action(
     container: tauri::State<'_, AppStateContainer>,
     window: tauri::Window<Runtime>,
 ) -> Result<(), String> {
+    let action_name = action.typetag_name();
     tokio::select! {
         res = main_exec(action, app_handle, container, window.clone()) => {
             debug!("Finished command invoke");
             res
         }
         _ = await_timeout() => {
-            error!("Operation timed out after {TIMEOUT_SECS} seconds");
-            emit_error(&window, "Operation timed out".to_string()).ok();
-            Err("Operation timed out".to_string())
+            let message = format!("Timed out after {TIMEOUT_SECS} seconds while handling `{action_name}`");
+            error!("{message}");
+            emit_error(&window, message.clone()).ok();
+            Err(message)
         }
     }
 }

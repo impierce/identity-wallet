@@ -1703,6 +1703,11 @@ type RootTranslation = {
 			 * C​h​e​c​k​ ​y​o​u​r​ ​i​n​t​e​r​n​e​t​ ​c​o​n​n​e​c​t​i​o​n​ ​a​n​d​ ​t​r​y​ ​a​g​a​i​n​.​ ​N​o​t​h​i​n​g​ ​w​a​s​ ​s​h​a​r​e​d​.
 			 */
 			NOT_SENT_BODY: string
+			/**
+			 * {​n​a​m​e​}​ ​m​a​y​ ​s​t​i​l​l​ ​h​a​v​e​ ​r​e​c​e​i​v​e​d​ ​y​o​u​r​ ​d​a​t​a​.​ ​C​h​e​c​k​ ​w​i​t​h​ ​t​h​e​m​ ​b​e​f​o​r​e​ ​y​o​u​ ​t​r​y​ ​a​g​a​i​n​.
+			 * @param {string} name
+			 */
+			TIMEOUT_BODY: RequiredParams<'name'>
 		}
 		ISSUANCE: {
 			/**
@@ -1749,6 +1754,11 @@ type RootTranslation = {
 			 * C​h​e​c​k​ ​y​o​u​r​ ​i​n​t​e​r​n​e​t​ ​c​o​n​n​e​c​t​i​o​n​ ​a​n​d​ ​t​r​y​ ​a​g​a​i​n​.​ ​N​o​t​h​i​n​g​ ​w​a​s​ ​r​e​c​e​i​v​e​d​.
 			 */
 			NOT_SENT_BODY: string
+			/**
+			 * {​n​a​m​e​}​ ​m​a​y​ ​s​t​i​l​l​ ​h​a​v​e​ ​i​s​s​u​e​d​ ​t​h​e​ ​c​r​e​d​e​n​t​i​a​l​.​ ​T​r​y​ ​a​g​a​i​n​ ​t​o​ ​r​e​c​e​i​v​e​ ​i​t​.
+			 * @param {string} name
+			 */
+			TIMEOUT_BODY: RequiredParams<'name'>
 		}
 		/**
 		 * T​h​i​s​ ​u​s​u​a​l​l​y​ ​t​a​k​e​s​ ​a​ ​f​e​w​ ​s​e​c​o​n​d​s​.​ ​Y​o​u​ ​c​a​n​ ​c​l​o​s​e​ ​t​h​i​s​,​ ​w​e​'​l​l​ ​k​e​e​p​ ​g​o​i​n​g​ ​i​n​ ​t​h​e​ ​b​a​c​k​g​r​o​u​n​d​.
@@ -1763,6 +1773,11 @@ type RootTranslation = {
 		 * @param {string} name
 		 */
 		NOT_SENT_TITLE: RequiredParams<'name'>
+		/**
+		 * {​n​a​m​e​}​ ​t​o​o​k​ ​t​o​o​ ​l​o​n​g​ ​t​o​ ​a​n​s​w​e​r
+		 * @param {string} name
+		 */
+		TIMEOUT_TITLE: RequiredParams<'name'>
 		/**
 		 * T​h​e​ ​r​e​q​u​e​s​t​ ​w​a​s​ ​r​e​f​u​s​e​d​.
 		 */
@@ -3532,6 +3547,10 @@ export type TranslationFunctions = {
 			 * Check your internet connection and try again. Nothing was shared.
 			 */
 			NOT_SENT_BODY: () => LocalizedString
+			/**
+			 * {name} may still have received your data. Check with them before you try again.
+			 */
+			TIMEOUT_BODY: (arg: { name: string }) => LocalizedString
 		}
 		ISSUANCE: {
 			/**
@@ -3570,6 +3589,10 @@ export type TranslationFunctions = {
 			 * Check your internet connection and try again. Nothing was received.
 			 */
 			NOT_SENT_BODY: () => LocalizedString
+			/**
+			 * {name} may still have issued the credential. Try again to receive it.
+			 */
+			TIMEOUT_BODY: (arg: { name: string }) => LocalizedString
 		}
 		/**
 		 * This usually takes a few seconds. You can close this, we'll keep going in the background.
@@ -3583,6 +3606,10 @@ export type TranslationFunctions = {
 		 * Couldn't reach {name}
 		 */
 		NOT_SENT_TITLE: (arg: { name: string }) => LocalizedString
+		/**
+		 * {name} took too long to answer
+		 */
+		TIMEOUT_TITLE: (arg: { name: string }) => LocalizedString
 		/**
 		 * The request was refused.
 		 */
