@@ -634,6 +634,10 @@ const fi_FI = {
   ERROR: {
     TITLE: 'Hups!',
     DEFAULT_MESSAGE: 'Jotain meni pieleen. Yritä uudelleen.',
+    MISSING_REQUIRED_CREDENTIAL: {
+      TITLE: 'Valtuuksia puuttuu',
+      DESCRIPTION: 'Tämä pyyntö tarvitsee valtuuksia, joita lompakossasi ei ole: {types}. Virhekoodi: {code}',
+    },
   },
   CANCEL: 'Peruuta',
   CLOSE: 'Sulje',

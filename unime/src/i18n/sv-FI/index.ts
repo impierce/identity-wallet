@@ -635,6 +635,10 @@ const sv_FI = {
   ERROR: {
     TITLE: 'Hoppsan!',
     DEFAULT_MESSAGE: 'Något gick fel. Försök igen.',
+    MISSING_REQUIRED_CREDENTIAL: {
+      TITLE: 'Intyg saknas',
+      DESCRIPTION: 'Den här förfrågan kräver intyg som inte finns i din plånbok: {types}. Felkod: {code}',
+    },
   },
   CANCEL: 'Avbryt',
   CLOSE: 'Stäng',

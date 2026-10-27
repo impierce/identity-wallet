@@ -1,7 +1,7 @@
 use crate::oid4vci::authorization_request::CodeChallengeMethod;
 use crate::state::core_utils::helpers::download_logo;
 use crate::state::core_utils::{ActiveFlow, Oid4vciStage};
-use crate::state::credentials::credential_query_matching::match_credential_queries;
+use crate::state::credentials::credential_query_matching::{ensure_shareable, match_credential_queries};
 use crate::state::credentials::reducers::send_token_request::send_token_request;
 use crate::state::qr_code::reducers::accept_connection::get_oid4vp_client_metadata;
 use crate::state::user_prompt::{ClientMetadata, CurrentUserPrompt};
@@ -291,40 +291,32 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
                             debug!("No logo URI found for interactive OID4VP client");
                         }
 
-                        // TODO: communicate when no credentials are available.
-                        if requested_credentials
-                            .iter()
-                            .any(|requested| !requested.options.is_empty())
-                        {
-                            drop(state_guard);
+                        ensure_shareable(&requested_credentials, &verifiable_credentials)?;
+                        drop(state_guard);
 
-                            return Ok(AppState {
-                                core_utils: CoreUtils {
-                                    active_flow: Some(ActiveFlow::Oid4vciOffer {
-                                        stage: Oid4vciStage::InteractiveAuthorization {
-                                            code_verifier: code_verifier.clone(),
-                                            wallet_state: wallet_state.clone(),
-                                            authorization_request: oid4vp_authorization_request.clone().into(),
-                                            auth_session: auth_session.clone(),
-                                            interactive_authorization_endpoint: interactive_authorization_endpoint
-                                                .clone(),
-                                        },
-                                        credential_offer: Box::new(credential_offer),
-                                        logo_uri: logo_uri.clone(),
-                                    }),
-                                    ..state.core_utils
-                                },
-                                current_user_prompt: Some(CurrentUserPrompt::ShareCredentials {
-                                    client_name,
-                                    logo_uri,
-                                    requested_credentials,
-                                    is_interactive: true,
+                        return Ok(AppState {
+                            core_utils: CoreUtils {
+                                active_flow: Some(ActiveFlow::Oid4vciOffer {
+                                    stage: Oid4vciStage::InteractiveAuthorization {
+                                        code_verifier: code_verifier.clone(),
+                                        wallet_state: wallet_state.clone(),
+                                        authorization_request: oid4vp_authorization_request.clone().into(),
+                                        auth_session: auth_session.clone(),
+                                        interactive_authorization_endpoint: interactive_authorization_endpoint.clone(),
+                                    },
+                                    credential_offer: Box::new(credential_offer),
+                                    logo_uri: logo_uri.clone(),
                                 }),
-                                ..state
-                            });
-                        } else {
-                            return Err(NoMatchingCredentialError);
-                        }
+                                ..state.core_utils
+                            },
+                            current_user_prompt: Some(CurrentUserPrompt::ShareCredentials {
+                                client_name,
+                                logo_uri,
+                                requested_credentials,
+                                is_interactive: true,
+                            }),
+                            ..state
+                        });
                     } else {
                         let par_response = wallet
                             .get_pushed_authorization_response(

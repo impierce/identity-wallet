@@ -4,7 +4,7 @@ use crate::{
         actions::{listen, Action},
         connections::actions::connection_accepted::ConnectionAccepted,
         core_utils::{ActiveFlow, CoreUtils},
-        credentials::credential_query_matching::{match_credential_queries, with_last_shared},
+        credentials::credential_query_matching::{ensure_shareable, match_credential_queries, with_last_shared},
         user_prompt::CurrentUserPrompt,
         AppState,
     },
@@ -51,30 +51,23 @@ pub async fn read_oid4vp_authorization_request(state: AppState, action: Action) 
                 .iter()
                 .find(|connection| connection.did == client_id);
             let requested_credentials = with_last_shared(requested_credentials, connection);
-            // TODO: communicate when no credentials are available.
-            if requested_credentials
-                .iter()
-                .any(|requested| !requested.options.is_empty())
-            {
-                Ok(AppState {
-                    core_utils: CoreUtils {
-                        active_flow: Some(ActiveFlow::Oid4vp {
-                            authorization_request: oid4vp_authorization_request.clone(),
-                            is_interactive: false,
-                        }),
-                        ..state.core_utils
-                    },
-                    current_user_prompt: Some(CurrentUserPrompt::ShareCredentials {
-                        client_name: client_metadata.client_name,
-                        logo_uri: client_metadata.logo_uri,
-                        requested_credentials,
+            ensure_shareable(&requested_credentials, &verifiable_credentials)?;
+            Ok(AppState {
+                core_utils: CoreUtils {
+                    active_flow: Some(ActiveFlow::Oid4vp {
+                        authorization_request: oid4vp_authorization_request.clone(),
                         is_interactive: false,
                     }),
-                    ..state
-                })
-            } else {
-                Err(NoMatchingCredentialError)
-            }
+                    ..state.core_utils
+                },
+                current_user_prompt: Some(CurrentUserPrompt::ShareCredentials {
+                    client_name: client_metadata.client_name,
+                    logo_uri: client_metadata.logo_uri,
+                    requested_credentials,
+                    is_interactive: false,
+                }),
+                ..state
+            })
         } else {
             warn!("Unexpected state: No pending connection data found when reading authorization request");
             Ok(state)

@@ -1,6 +1,9 @@
+use crate::error::AppError;
 use crate::state::{connections::Connection, credentials::VerifiableCredentialRecord};
+use chrono::{DateTime, Utc};
 use identity_credential::sd_jwt_vc::SdJwtVc;
 use log::debug;
+use oauth_tsl::status_list::StatusType;
 use oid4vc::oid4vc_core::utils::jwt::get_unverified_jwt_claims;
 use oid4vc::oid4vci::credential_format_profiles::CredentialFormats;
 use oid4vc::oid4vp::{
@@ -54,6 +57,43 @@ pub fn match_credential_queries(
         .collect()
 }
 
+/// Fails when a required credential query has no shareable option, or when no query has one at all.
+pub fn ensure_shareable(
+    requested_credentials: &[RequestedCredential],
+    verifiable_credentials: &[VerifiableCredentialRecord],
+) -> Result<(), AppError> {
+    let has_shareable_option = |requested: &RequestedCredential| {
+        verifiable_credentials
+            .iter()
+            .any(|record| requested.options.contains(&record.display_credential.id) && is_shareable(record))
+    };
+
+    let missing: Vec<String> = requested_credentials
+        .iter()
+        .filter(|requested| requested.required && !has_shareable_option(requested))
+        .map(RequestedCredential::type_label)
+        .collect();
+    if !missing.is_empty() {
+        return Err(AppError::MissingRequiredCredentialError(missing.join(", ")));
+    }
+    if !requested_credentials.iter().any(has_shareable_option) {
+        return Err(AppError::NoMatchingCredentialError);
+    }
+    Ok(())
+}
+
+/// Revoked, suspended and not yet valid credentials cannot be shared. Expired ones can, after a warning.
+fn is_shareable(record: &VerifiableCredentialRecord) -> bool {
+    let display_credential = &record.display_credential;
+    let revoked_or_suspended = display_credential
+        .credential_status
+        .as_ref()
+        .is_some_and(|status| matches!(status.status, StatusType::INVALID | StatusType::SUSPENDED));
+    let not_yet_valid = DateTime::parse_from_rfc3339(&display_credential.metadata.date_issued)
+        .is_ok_and(|valid_from| valid_from > Utc::now());
+    !revoked_or_suspended && !not_yet_valid
+}
+
 /// Fills in `last_shared` from the credentials previously shared with this connection.
 pub fn with_last_shared(
     mut requested_credentials: Vec<RequestedCredential>,
@@ -76,6 +116,30 @@ pub fn with_last_shared(
 impl RequestedCredential {
     pub fn types_key(&self) -> String {
         types_key(&self.types)
+    }
+
+    /// A readable name for the requested type, e.g. "Open Badge Credential" for `OpenBadgeCredential`.
+    pub fn type_label(&self) -> String {
+        let credential_type = self
+            .types
+            .iter()
+            .find(|t| t.as_str() != "VerifiableCredential")
+            .or(self.types.first())
+            .unwrap_or(&self.query_id);
+        let name = credential_type
+            .rsplit(['/', '#', ':'])
+            .next()
+            .unwrap_or(credential_type);
+        let mut label = String::new();
+        let mut previous_lowercase = false;
+        for c in name.chars() {
+            if c.is_uppercase() && previous_lowercase {
+                label.push(' ');
+            }
+            previous_lowercase = c.is_lowercase();
+            label.push(if c == '_' || c == '-' { ' ' } else { c });
+        }
+        label
     }
 }
 
