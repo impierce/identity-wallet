@@ -357,7 +357,7 @@ const sv_FI = {
       REQUESTED: 'Begärt',
       APPROVE: 'Godkänn förfrågan',
       SELECTED_COUNT: '{count} valda',
-      OPTIONS_AVAILABLE: '{count} alternativ tillgängliga',
+      OPTIONS_AVAILABLE: '{count} {{alternativ tillgängligt|alternativ tillgängliga}}',
       CHANGE: 'Ändra',
       ISSUED: 'Utfärdat {date}',
       PICKER: {

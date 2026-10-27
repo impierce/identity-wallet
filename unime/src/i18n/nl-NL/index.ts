@@ -357,7 +357,7 @@ const nl_NL = {
       REQUESTED: 'Aangevraagd',
       APPROVE: 'Accepteer verzoek',
       SELECTED_COUNT: '{count} geselecteerd',
-      OPTIONS_AVAILABLE: '{count} opties beschikbaar',
+      OPTIONS_AVAILABLE: '{count} {{optie|opties}} beschikbaar',
       CHANGE: 'Wijzigen',
       ISSUED: 'Uitgegeven op {date}',
       PICKER: {

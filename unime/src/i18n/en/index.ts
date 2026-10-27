@@ -356,7 +356,7 @@ const en = {
       REQUESTED: 'Requested',
       APPROVE: 'Approve request',
       SELECTED_COUNT: '{count:number} selected',
-      OPTIONS_AVAILABLE: '{count:number} Options Available',
+      OPTIONS_AVAILABLE: '{count:number} {{Option|Options}} Available',
       CHANGE: 'Change',
       ISSUED: 'Issued {date:string}',
       PICKER: {

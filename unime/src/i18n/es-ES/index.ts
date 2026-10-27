@@ -358,7 +358,7 @@ const es_ES = {
       REQUESTED: 'Solicitadas',
       APPROVE: 'Aprueba la petición',
       SELECTED_COUNT: '{count} seleccionadas',
-      OPTIONS_AVAILABLE: '{count} opciones disponibles',
+      OPTIONS_AVAILABLE: '{count} {{opción disponible|opciones disponibles}}',
       CHANGE: 'Cambiar',
       ISSUED: 'Emitida el {date}',
       PICKER: {

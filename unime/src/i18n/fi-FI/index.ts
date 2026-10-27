@@ -358,7 +358,7 @@ const fi_FI = {
       REQUESTED: 'Pyydetty',
       APPROVE: 'Hyväksy pyyntö',
       SELECTED_COUNT: '{count} valittu',
-      OPTIONS_AVAILABLE: '{count} vaihtoehtoa saatavilla',
+      OPTIONS_AVAILABLE: '{count} {{vaihtoehto|vaihtoehtoa}} saatavilla',
       CHANGE: 'Vaihda',
       ISSUED: 'Myönnetty {date}',
       PICKER: {

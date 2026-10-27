@@ -357,7 +357,7 @@ const de_DE = {
       REQUESTED: 'Angefragt',
       APPROVE: 'Anfrage genehmigen',
       SELECTED_COUNT: '{count} ausgewählt',
-      OPTIONS_AVAILABLE: '{count} Optionen verfügbar',
+      OPTIONS_AVAILABLE: '{count} {{Option|Optionen}} verfügbar',
       CHANGE: 'Ändern',
       ISSUED: 'Ausgestellt am {date}',
       PICKER: {

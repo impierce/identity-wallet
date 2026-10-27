@@ -970,7 +970,7 @@ type RootTranslation = {
 			 */
 			SELECTED_COUNT: RequiredParams<'count'>
 			/**
-			 * {​c​o​u​n​t​}​ ​O​p​t​i​o​n​s​ ​A​v​a​i​l​a​b​l​e
+			 * {​c​o​u​n​t​}​ ​{​{​O​p​t​i​o​n​|​O​p​t​i​o​n​s​}​}​ ​A​v​a​i​l​a​b​l​e
 			 * @param {number} count
 			 */
 			OPTIONS_AVAILABLE: RequiredParams<'count'>
@@ -2762,7 +2762,7 @@ export type TranslationFunctions = {
 			 */
 			SELECTED_COUNT: (arg: { count: number }) => LocalizedString
 			/**
-			 * {count} Options Available
+			 * {count} {{Option|Options}} Available
 			 */
 			OPTIONS_AVAILABLE: (arg: { count: number }) => LocalizedString
 			/**
