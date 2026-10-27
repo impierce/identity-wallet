@@ -376,7 +376,6 @@ const fi_FI = {
       },
       VALIDITY: {
         VALID_UNTIL: 'Voimassa {date} asti',
-        NEVER_EXPIRES: 'Ei vanhene',
         EXPIRED_ON: 'Vanheni {date}',
         REVOKED: 'Myöntäjä on peruuttanut',
         SUSPENDED: 'Myöntäjä on keskeyttänyt',

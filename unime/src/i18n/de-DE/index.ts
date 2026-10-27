@@ -375,7 +375,6 @@ const de_DE = {
       },
       VALIDITY: {
         VALID_UNTIL: 'Gültig bis {date}',
-        NEVER_EXPIRES: 'Läuft nie ab',
         EXPIRED_ON: 'Abgelaufen am {date}',
         REVOKED: 'Vom Aussteller widerrufen',
         SUSPENDED: 'Vom Aussteller ausgesetzt',

@@ -375,7 +375,6 @@ const sv_FI = {
       },
       VALIDITY: {
         VALID_UNTIL: 'Giltigt till {date}',
-        NEVER_EXPIRES: 'Upphör aldrig',
         EXPIRED_ON: 'Upphörde {date}',
         REVOKED: 'Återkallat av utfärdaren',
         SUSPENDED: 'Tillfälligt spärrat av utfärdaren',

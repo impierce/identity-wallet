@@ -1040,10 +1040,6 @@ type RootTranslation = {
 				 */
 				VALID_UNTIL: RequiredParams<'date'>
 				/**
-				 * N​e​v​e​r​ ​e​x​p​i​r​e​s
-				 */
-				NEVER_EXPIRES: string
-				/**
 				 * E​x​p​i​r​e​d​ ​o​n​ ​{​d​a​t​e​}
 				 * @param {string} date
 				 */
@@ -2824,10 +2820,6 @@ export type TranslationFunctions = {
 				 * Valid until {date}
 				 */
 				VALID_UNTIL: (arg: { date: string }) => LocalizedString
-				/**
-				 * Never expires
-				 */
-				NEVER_EXPIRES: () => LocalizedString
 				/**
 				 * Expired on {date}
 				 */

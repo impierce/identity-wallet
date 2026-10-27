@@ -376,7 +376,6 @@ const es_ES = {
       },
       VALIDITY: {
         VALID_UNTIL: 'Válida hasta el {date}',
-        NEVER_EXPIRES: 'No caduca',
         EXPIRED_ON: 'Caducó el {date}',
         REVOKED: 'Revocada por el emisor',
         SUSPENDED: 'Suspendida por el emisor',

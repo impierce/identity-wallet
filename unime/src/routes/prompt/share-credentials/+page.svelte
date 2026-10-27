@@ -8,7 +8,17 @@
   import type { CurrentUserPrompt } from '@bindings/user_prompt/CurrentUserPrompt';
   import type { RequestedCredential } from '@bindings/user_prompt/RequestedCredential';
 
-  import { ActionSheet, Button, Image, PaddedIcon, SelectionIndicator, Switch, TopNavBar } from '$lib/components';
+  import {
+    ActionSheet,
+    Button,
+    CredentialValidityLine,
+    Image,
+    ListItemImage,
+    PaddedIcon,
+    SelectionIndicator,
+    Switch,
+    TopNavBar,
+  } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import {
     CaretRightBoldIcon,
@@ -27,8 +37,6 @@
   import CredentialClaimsRenderer from '../../credentials/[id]/CredentialClaimsRenderer.svelte';
   import CredentialHeader from '../../credentials/[id]/CredentialHeader.svelte';
   import CredentialOverview from '../../credentials/[id]/CredentialOverview.svelte';
-  import CredentialLogo from './CredentialLogo.svelte';
-  import CredentialValidityLine from './CredentialValidityLine.svelte';
 
   // TypeScript does not know that the `current_user_prompt` is of type `share-credentials`.
   // Extract the type from `CurrentUserPrompt`.
@@ -310,7 +318,11 @@
               <SelectionIndicator {checked} {multiple} />
             </div>
             <div class={selectable ? '' : 'opacity-50'}>
-              <CredentialLogo {credential} fallbackId={credential.id} />
+              <ListItemImage
+                id={credential.id}
+                type={credential.data?.type?.includes('OpenBadgeCredential') ? 'badge' : 'data'}
+                icon={credential.metadata.icon}
+              />
             </div>
             <div class="flex min-w-0 grow flex-col gap-0.5">
               <p
@@ -408,7 +420,11 @@
               {@const detail = first && selected.length === 1 ? distinguishingClaim(first, requested) : undefined}
               <div class="flex flex-col rounded-xl border border-grey bg-white dark:border-slate-600 dark:bg-dark">
                 <div class="flex items-center gap-3 p-3 {included[requested.query_id] ? '' : 'opacity-60'}">
-                  <CredentialLogo credential={first} fallbackId={requested.query_id} />
+                  <ListItemImage
+                    id={first?.id ?? requested.query_id}
+                    type={first?.data?.type?.includes('OpenBadgeCredential') ? 'badge' : 'data'}
+                    icon={first?.metadata.icon}
+                  />
                   <div class="flex min-w-0 grow flex-col gap-0.5">
                     <p class="truncate text-[13px]/[24px] font-semibold text-slate-800 dark:text-grey">
                       {first?.display_name ?? typeLabel(requested)}

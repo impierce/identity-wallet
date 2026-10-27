@@ -375,7 +375,6 @@ const nl_NL = {
       },
       VALIDITY: {
         VALID_UNTIL: 'Geldig tot {date}',
-        NEVER_EXPIRES: 'Verloopt nooit',
         EXPIRED_ON: 'Verlopen op {date}',
         REVOKED: 'Ingetrokken door de uitgever',
         SUSPENDED: 'Opgeschort door de uitgever',

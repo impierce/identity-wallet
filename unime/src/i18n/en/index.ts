@@ -374,7 +374,6 @@ const en = {
       },
       VALIDITY: {
         VALID_UNTIL: 'Valid until {date:string}',
-        NEVER_EXPIRES: 'Never expires',
         EXPIRED_ON: 'Expired on {date:string}',
         REVOKED: 'Revoked by the issuer',
         SUSPENDED: 'Suspended by the issuer',
