@@ -26,7 +26,7 @@ use identity_core::common::Object as IotaObject;
 use identity_credential::sd_jwt_vc::SdJwtVc;
 use identity_iota::credential::{EnvelopedVc, VcDataUrl};
 use identity_iota::did::DID;
-use log::{debug, info, warn};
+use log::{debug, info};
 use oid4vc::oid4vc_core::authorization_request::{AuthorizationRequest, Object};
 use oid4vc::oid4vc_core::types::string_or_object::StringOrObject;
 use oid4vc::oid4vc_core::{jwt, Sign, Subject as _};
@@ -116,7 +116,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
 
         #[cfg(not(feature = "test_utils"))]
         if provider_manager.send_response(&response).await.is_err() {
-            warn!("Failed to send OID4VP authorization response to verifier");
+            log::warn!("Failed to send OID4VP authorization response to verifier");
             return Err(SendAuthorizationResponseError);
         }
         info!("OID4VP presentation response successfully sent to verifier");
