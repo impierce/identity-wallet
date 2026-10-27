@@ -16,6 +16,7 @@
 
   import CredentialClaimsRenderer from '../../../../../../credentials/[id]/CredentialClaimsRenderer.svelte';
   import CertificationOverview from '../../../../../../prompt/accept-connection/certifications/[id]/CertificationOverview.svelte';
+  import DomainName from '../../../../../../prompt/accept-connection/DomainName.svelte';
   import DomainPill from '../../../../../../prompt/accept-connection/DomainPill.svelte';
 
   const navigateUp = useParentRoute(() => `/activity/connection/${page.params.id}/certifications${page.url.search}`);
@@ -75,7 +76,7 @@
           {/if}
           {#if validation && domain}
             <div class="flex flex-col items-center gap-1.5 pt-[10px]">
-              <p class="text-[13px]/[20px] font-normal text-text-alt">{domain}</p>
+              <DomainName {domain} status={validation.status} />
               <DomainPill status={validation.status} />
             </div>
           {/if}

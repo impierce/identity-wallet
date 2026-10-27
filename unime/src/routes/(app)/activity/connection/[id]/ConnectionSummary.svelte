@@ -3,31 +3,26 @@
   import LL from '$i18n/i18n-svelte';
 
   import type { Connection } from '@bindings/connections/Connection';
-  import { open as openExternal } from '@tauri-apps/plugin-shell';
 
   import { Image } from '$lib/components';
-  import { ArrowSquareOutBoldIcon, ShieldCheckRegularIcon } from '$lib/icons';
+  import { ShieldCheckRegularIcon } from '$lib/icons';
   import { state } from '$lib/stores';
   import { formatRelativeDateTime } from '$lib/utils';
   import { countInteractions } from '$lib/utils/history';
-  import { connectionBrowserUrl, connectionHostname } from '$lib/utils/url';
+  import { connectionHostname } from '$lib/utils/url';
 
   import CertificationsSummary from '../../../../prompt/accept-connection/CertificationsSummary.svelte';
+  import DomainName from '../../../../prompt/accept-connection/DomainName.svelte';
   import DomainPill from '../../../../prompt/accept-connection/DomainPill.svelte';
   import EcosystemsSummary from '../../../../prompt/accept-connection/EcosystemsSummary.svelte';
 
   export let connection: Connection;
 
   $: domain = connectionHostname(connection.url);
-  $: browserUrl = connectionBrowserUrl(connection.url);
   $: certifications = connection.linked_verifiable_presentations ?? [];
   $: ecosystems = connection.ecosystems ?? [];
   $: interactions = $state.history.filter((event) => event.connection_id === connection.id);
   $: interactionCount = countInteractions(interactions).total;
-
-  async function openConnectionUrl() {
-    if (browserUrl) await openExternal(browserUrl);
-  }
 </script>
 
 <div class="flex flex-col items-center space-y-6">
@@ -44,20 +39,7 @@
       {connection.name}
     </p>
     {#if domain}
-      {#if browserUrl}
-        <button
-          type="button"
-          class="flex items-center gap-1 pt-[10px] text-center text-[13px]/[20px] font-normal break-all text-secondary"
-          on:click={openConnectionUrl}
-        >
-          {domain}
-          <ArrowSquareOutBoldIcon class="size-4 shrink-0" />
-        </button>
-      {:else}
-        <p class="pt-[10px] text-center text-[13px]/[20px] font-normal break-all text-text-alt">
-          {domain}
-        </p>
-      {/if}
+      <DomainName {domain} status={connection.domain_validation?.[0]} class="pt-[10px] text-center" />
     {/if}
     {#if connection.domain_validation}
       <div class="flex justify-center pt-[6px]">

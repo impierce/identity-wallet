@@ -1,4 +1,4 @@
-export const HTTPS_URL_PART_REGEX = /(https:\/\/\S+)/g;
+export const HTTPS_URL_PART_REGEX = /(https:\/\/\S+)/gi;
 
 export function isUrl(text: string): boolean {
   try {
@@ -32,20 +32,53 @@ export function connectionHostname(text: string): string {
   return (parsedHostname ?? text).replace(/^identity\./i, '');
 }
 
-/** A browser-safe HTTP(S) URL for a stored connection URL, including legacy values without a scheme. */
-export function connectionBrowserUrl(text: string): string | undefined {
-  if (/^[a-z][a-z\d+.-]*:/i.test(text) && !/^https?:/i.test(text)) return undefined;
+const DOMAIN_REGEX = /^(?=.{1,253}$)(?:[a-z\d](?:[a-z\d-]{0,61}[a-z\d])?\.)+[a-z]{2,63}$/i;
 
-  const candidates = [text, `https://${text}`];
+// Claim names that suggest a bare domain value is meant as a website.
+const WEBSITE_KEY_REGEX = /web|url|domain|homepage|link|site/i;
 
-  for (const candidate of candidates) {
-    try {
-      const url = new URL(candidate);
-      if (url.protocol === 'http:' || url.protocol === 'https:') return url.toString();
-    } catch {
-      // Try the next representation.
-    }
+// Punctuation that ends a sentence rather than the URL it follows.
+const TRAILING_PUNCTUATION_REGEX = /[.,;:!?)\]'"]+$/;
+
+/** An `https://` URL for a bare hostname (e.g. `iso.org`), or `undefined` when `domain` is not one. */
+export function domainUrl(domain: string): string | undefined {
+  return DOMAIN_REGEX.test(domain) ? new URL(`https://${domain}`).toString() : undefined;
+}
+
+/** Whether `url` can be handed to the system browser. */
+export function isBrowserUrl(url: string): boolean {
+  try {
+    const { protocol } = new URL(url);
+    return protocol === 'http:' || protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+export interface TextPart {
+  text: string;
+  url?: string;
+}
+
+/**
+ * Splits a claim value into text and the links in it. HTTPS URLs are links wherever they appear. A bare domain
+ * is only a link when it is the whole value and either starts with `www.` or the claim is named like a website.
+ */
+export function linkifyClaim(key: string, value: string): TextPart[] {
+  const trimmed = value.trim();
+  const url = domainUrl(trimmed);
+  if (url && (/^www\./i.test(trimmed) || WEBSITE_KEY_REGEX.test(key))) {
+    return [{ text: value, url }];
   }
 
-  return undefined;
+  return value
+    .split(HTTPS_URL_PART_REGEX)
+    .filter((part) => part.length > 0)
+    .flatMap((part) => {
+      if (!isUrl(part)) return [{ text: part }];
+      const punctuation = part.match(TRAILING_PUNCTUATION_REGEX)?.[0] ?? '';
+      const link = part.slice(0, part.length - punctuation.length);
+      if (!isUrl(link)) return [{ text: part }];
+      return punctuation ? [{ text: link, url: link }, { text: punctuation }] : [{ text: link, url: link }];
+    });
 }
