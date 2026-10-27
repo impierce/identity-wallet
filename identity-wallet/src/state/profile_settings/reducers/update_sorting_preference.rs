@@ -247,6 +247,39 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn test_credentials_sorting_default_added_newest_first() {
+        let state = init_credential_added_dates(
+            "2020-00-00T00:00:00Z".to_string(),
+            "2022-00-00T00:00:00Z".to_string(),
+            "2019-00-00T00:00:00Z".to_string(),
+        );
+        let action = Arc::new(UpdateSortingPreference { ..Default::default() });
+
+        let result = update_sorting_preference(state, action.clone()).await.unwrap();
+        let result = sort_credentials(result, action).await.unwrap();
+
+        assert_eq!(
+            result.profile_settings.sorting_preferences.credentials,
+            Preferences {
+                sort_method: CredentialSortMethod::AddedDateNewOld,
+                reverse: false,
+            }
+        );
+        assert_eq!(
+            result
+                .credentials
+                .iter()
+                .map(|x| x.metadata.date_added.clone())
+                .collect::<Vec<String>>(),
+            vec![
+                "2022-00-00T00:00:00Z".to_string(),
+                "2020-00-00T00:00:00Z".to_string(),
+                "2019-00-00T00:00:00Z".to_string()
+            ]
+        );
+    }
+
+    #[tokio::test]
     async fn test_credentials_sorting_issue_reverse() {
         let state = init_credential_issuance_dates(
             "2022-00-00T00:00:00Z".to_string(),
@@ -411,6 +444,22 @@ mod tests {
                     ..Default::default()
                 },
             ],
+            ..Default::default()
+        }
+    }
+
+    fn init_credential_added_dates(test_1: String, test_2: String, test_3: String) -> AppState {
+        AppState {
+            credentials: [test_1, test_2, test_3]
+                .into_iter()
+                .map(|date_added| DisplayCredential {
+                    metadata: CredentialMetadata {
+                        date_added,
+                        ..Default::default()
+                    },
+                    ..Default::default()
+                })
+                .collect(),
             ..Default::default()
         }
     }
