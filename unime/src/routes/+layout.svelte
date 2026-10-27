@@ -81,7 +81,7 @@
     }
   }
 
-  // Errors with a code are explained to the user, also outside dev mode.
+  // Errors with a code get their own message outside dev mode.
   const MISSING_REQUIRED_CREDENTIAL = 'MISSING_REQUIRED_CREDENTIAL';
   $: missingCredentials = $errorState?.startsWith(`${MISSING_REQUIRED_CREDENTIAL}: `)
     ? $errorState.slice(MISSING_REQUIRED_CREDENTIAL.length + 2)
@@ -686,18 +686,15 @@ Stacking context: We have to deviate from the DOM-sequence.
       <div class="absolute right-4 bottom-[calc(16px+var(--safe-area-inset-bottom))] w-[calc(100%-32px)]">
         <Toast
           variant="error"
-          title={missingCredentials !== undefined
-            ? $LL.ERROR.MISSING_REQUIRED_CREDENTIAL.TITLE()
-            : $appState?.dev_mode !== 'Off'
-              ? 'Error'
+          title={$appState?.dev_mode !== 'Off'
+            ? 'Error'
+            : missingCredentials !== undefined
+              ? $LL.ERROR.MISSING_REQUIRED_CREDENTIAL.TITLE()
               : $LL.ERROR.TITLE()}
-          detail={missingCredentials !== undefined
-            ? $LL.ERROR.MISSING_REQUIRED_CREDENTIAL.DESCRIPTION({
-                types: missingCredentials,
-                code: MISSING_REQUIRED_CREDENTIAL,
-              })
-            : $appState?.dev_mode !== 'Off'
-              ? $errorState
+          detail={$appState?.dev_mode !== 'Off'
+            ? $errorState
+            : missingCredentials !== undefined
+              ? $LL.ERROR.MISSING_REQUIRED_CREDENTIAL.DESCRIPTION({ types: missingCredentials })
               : $LL.ERROR.DEFAULT_MESSAGE()}
           ondismissed={() => {
             // After the toast fires the "dismissed" event, we reset $errorStore.

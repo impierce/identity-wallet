@@ -1791,11 +1791,10 @@ type RootTranslation = {
 			 */
 			TITLE: string
 			/**
-			 * T​h​i​s​ ​r​e​q​u​e​s​t​ ​n​e​e​d​s​ ​c​r​e​d​e​n​t​i​a​l​s​ ​t​h​a​t​ ​a​r​e​ ​n​o​t​ ​i​n​ ​y​o​u​r​ ​w​a​l​l​e​t​:​ ​{​t​y​p​e​s​}​.​ ​E​r​r​o​r​ ​c​o​d​e​:​ ​{​c​o​d​e​}
-			 * @param {string} code
+			 * T​h​i​s​ ​r​e​q​u​e​s​t​ ​n​e​e​d​s​ ​c​r​e​d​e​n​t​i​a​l​s​ ​t​h​a​t​ ​a​r​e​ ​n​o​t​ ​i​n​ ​y​o​u​r​ ​w​a​l​l​e​t​:​ ​{​t​y​p​e​s​}​.
 			 * @param {string} types
 			 */
-			DESCRIPTION: RequiredParams<'code' | 'types'>
+			DESCRIPTION: RequiredParams<'types'>
 		}
 	}
 	/**
@@ -3578,9 +3577,9 @@ export type TranslationFunctions = {
 			 */
 			TITLE: () => LocalizedString
 			/**
-			 * This request needs credentials that are not in your wallet: {types}. Error code: {code}
+			 * This request needs credentials that are not in your wallet: {types}.
 			 */
-			DESCRIPTION: (arg: { code: string, types: string }) => LocalizedString
+			DESCRIPTION: (arg: { types: string }) => LocalizedString
 		}
 	}
 	/**

@@ -637,8 +637,7 @@ const en = {
     DEFAULT_MESSAGE: 'Something went wrong. Please try again.',
     MISSING_REQUIRED_CREDENTIAL: {
       TITLE: 'Missing credentials',
-      DESCRIPTION:
-        'This request needs credentials that are not in your wallet: {types:string}. Error code: {code:string}',
+      DESCRIPTION: 'This request needs credentials that are not in your wallet: {types:string}.',
     },
   },
   CANCEL: 'Cancel',
