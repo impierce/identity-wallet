@@ -635,10 +635,6 @@ const en = {
   ERROR: {
     TITLE: 'Oops!',
     DEFAULT_MESSAGE: 'Something went wrong. Please try again.',
-    MISSING_REQUIRED_CREDENTIAL: {
-      TITLE: 'Missing credentials',
-      DESCRIPTION: 'This request needs credentials that are not in your wallet: {types:string}.',
-    },
   },
   CANCEL: 'Cancel',
   CLOSE: 'Close',

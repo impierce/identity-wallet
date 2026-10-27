@@ -636,10 +636,6 @@ const de_DE = {
   ERROR: {
     TITLE: 'Hoppla!',
     DEFAULT_MESSAGE: 'Es ist ein Fehler aufgetreten. Bitte versuche es noch einmal.',
-    MISSING_REQUIRED_CREDENTIAL: {
-      TITLE: 'Nachweise fehlen',
-      DESCRIPTION: 'Diese Anfrage benötigt Nachweise, die nicht in deinem Wallet sind: {types}.',
-    },
   },
   CANCEL: 'Abbrechen',
   CLOSE: 'Schließen',

@@ -637,10 +637,6 @@ const es_ES = {
   ERROR: {
     TITLE: '¡Vaya!',
     DEFAULT_MESSAGE: 'Algo salió mal. Vuelve a intentarlo.',
-    MISSING_REQUIRED_CREDENTIAL: {
-      TITLE: 'Faltan credenciales',
-      DESCRIPTION: 'Esta solicitud necesita credenciales que no están en tu monedero: {types}.',
-    },
   },
   CANCEL: 'Cancela',
   CLOSE: 'Cierra',

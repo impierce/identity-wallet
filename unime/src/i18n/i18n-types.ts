@@ -1785,17 +1785,6 @@ type RootTranslation = {
 		 * S​o​m​e​t​h​i​n​g​ ​w​e​n​t​ ​w​r​o​n​g​.​ ​P​l​e​a​s​e​ ​t​r​y​ ​a​g​a​i​n​.
 		 */
 		DEFAULT_MESSAGE: string
-		MISSING_REQUIRED_CREDENTIAL: {
-			/**
-			 * M​i​s​s​i​n​g​ ​c​r​e​d​e​n​t​i​a​l​s
-			 */
-			TITLE: string
-			/**
-			 * T​h​i​s​ ​r​e​q​u​e​s​t​ ​n​e​e​d​s​ ​c​r​e​d​e​n​t​i​a​l​s​ ​t​h​a​t​ ​a​r​e​ ​n​o​t​ ​i​n​ ​y​o​u​r​ ​w​a​l​l​e​t​:​ ​{​t​y​p​e​s​}​.
-			 * @param {string} types
-			 */
-			DESCRIPTION: RequiredParams<'types'>
-		}
 	}
 	/**
 	 * C​a​n​c​e​l
@@ -3571,16 +3560,6 @@ export type TranslationFunctions = {
 		 * Something went wrong. Please try again.
 		 */
 		DEFAULT_MESSAGE: () => LocalizedString
-		MISSING_REQUIRED_CREDENTIAL: {
-			/**
-			 * Missing credentials
-			 */
-			TITLE: () => LocalizedString
-			/**
-			 * This request needs credentials that are not in your wallet: {types}.
-			 */
-			DESCRIPTION: (arg: { types: string }) => LocalizedString
-		}
 	}
 	/**
 	 * Cancel

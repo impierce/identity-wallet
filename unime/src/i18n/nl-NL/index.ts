@@ -637,10 +637,6 @@ const nl_NL = {
   ERROR: {
     TITLE: 'Oeps!',
     DEFAULT_MESSAGE: 'Er is iets misgegaan. Probeer het later opnieuw.',
-    MISSING_REQUIRED_CREDENTIAL: {
-      TITLE: 'Credentials ontbreken',
-      DESCRIPTION: 'Dit verzoek vraagt om credentials die niet in je wallet staan: {types}.',
-    },
   },
   CANCEL: 'Annuleren',
   CLOSE: 'Sluiten',
