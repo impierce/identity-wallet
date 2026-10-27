@@ -470,6 +470,29 @@ fn get_credential_display_name(
         .unwrap_or("Credential".to_string())
 }
 
+/// The credential's status claim/property, read from the places [`get_credential_status`] looks in.
+fn credential_status_value(verifiable_credential_record: &VerifiableCredentialRecord) -> Option<serde_json::Value> {
+    get_unverified_jwt_claims(&verifiable_credential_record.verifiable_credential)
+        .ok() // convert Result → Option
+        .and_then(|claims| {
+            claims.get("status").cloned().or_else(|| {
+                verifiable_credential_record
+                    .display_credential
+                    .data
+                    .get("credentialStatus")
+                    .cloned()
+            })
+        })
+}
+
+/// Whether the credential has a status claim/property that uses the OAuth Token Status List mechanism, i.e. one with a
+/// `status_list` member, even a malformed one. When it does, a `None` from [`get_credential_status`] means that the
+/// status could not be checked.
+pub fn has_token_status_list_claim(verifiable_credential_record: &VerifiableCredentialRecord) -> bool {
+    credential_status_value(verifiable_credential_record)
+        .is_some_and(|status_value| status_value.get("status_list").is_some())
+}
+
 /// Helper function to fetch the credential status of a newly received credential and set the fields the `credential_status` field of the DisplayCredential.
 /// Currently supports only the OAuth Token Status List mechanism.
 /// The function looks for the credential status info in 2 places:
@@ -486,19 +509,7 @@ pub async fn get_credential_status(
     verifiable_credential_record: &VerifiableCredentialRecord,
     subject: &Subject,
 ) -> Option<CredentialStatus> {
-    let status_value = get_unverified_jwt_claims(&verifiable_credential_record.verifiable_credential)
-        .ok() // convert Result → Option
-        .and_then(|claims| {
-            claims.get("status").cloned().or_else(|| {
-                verifiable_credential_record
-                    .display_credential
-                    .data
-                    .get("credentialStatus")
-                    .cloned()
-            })
-        });
-
-    let status_value = match status_value {
+    let status_value = match credential_status_value(verifiable_credential_record) {
         Some(value) => value,
         None => {
             warn!("The credential does not contain a status claim/property");
