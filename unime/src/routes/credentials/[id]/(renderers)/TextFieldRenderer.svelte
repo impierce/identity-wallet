@@ -1,13 +1,14 @@
 <script lang="ts">
-  import { HTTPS_URL_PART_REGEX, isUrl } from '$lib/utils/url';
+  import ExternalLink from '$lib/components/ExternalLink.svelte';
+  import { linkifyClaim, type TextPart } from '$lib/utils/url';
 
   import CollapsibleWrapper from '../CollapsibleWrapper.svelte';
 
   export let key: string;
   export let value: string;
 
-  let textParts: string[] = [];
-  $: textParts = value.split(HTTPS_URL_PART_REGEX).filter((part) => part.length > 0);
+  let textParts: TextPart[] = [];
+  $: textParts = linkifyClaim(key, value);
 </script>
 
 {#if value.trim().length > 100}
@@ -15,10 +16,10 @@
     <h2 slot="title" class="font-medium text-text-alt">{key}</h2>
     <p class="overflow-x-auto wrap-break-word">
       {#each textParts as part}
-        {#if isUrl(part)}
-          <a href={part} target="_blank" rel="noopener noreferrer" class="break-all underline">{part}</a>
+        {#if part.url}
+          <ExternalLink href={part.url} class="break-all text-secondary underline">{part.text}</ExternalLink>
         {:else}
-          {part}
+          {part.text}
         {/if}
       {/each}
     </p>
@@ -28,10 +29,10 @@
     <h2 class="font-medium text-text-alt">{key}</h2>
     <p class="overflow-x-auto wrap-break-word">
       {#each textParts as part}
-        {#if isUrl(part)}
-          <a href={part} target="_blank" rel="noopener noreferrer" class="break-all underline">{part}</a>
+        {#if part.url}
+          <ExternalLink href={part.url} class="break-all text-secondary underline">{part.text}</ExternalLink>
         {:else}
-          {part}
+          {part.text}
         {/if}
       {/each}
     </p>
