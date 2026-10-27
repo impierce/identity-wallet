@@ -1,5 +1,5 @@
 use crate::error::AppError::{self, *};
-use crate::http_client::get_http_client;
+use crate::http_client::{get_http_client, PublicDestinationHttpClient};
 use crate::state::{
     actions::{listen, Action},
     credentials::actions::share_to_linkedin::ShareToLinkedIn,
@@ -12,7 +12,7 @@ use chrono::{DateTime, Datelike, Duration, Utc};
 use jsonwebtoken::Header;
 use log::info;
 use oid4vc::oid4vc_core::{jwt::encode, utils::did::extract_normalized_did_kid_from_jwt, Subject};
-use openid_federation::{EntityId, FederationClient, ReqwestHttpClient};
+use openid_federation::{EntityId, FederationClient};
 use serde::Serialize;
 use serde_json::json;
 use std::str::FromStr;
@@ -253,7 +253,9 @@ pub async fn get_trusted_verifier_public_verification_endpoint(issuer_did: &str)
         return Ok(endpoint);
     }
 
-    let federation_client = FederationClient::with_http_client(ReqwestHttpClient::with_client(get_http_client().await));
+    // The issuer's authority hints and federation endpoints are named by remote parties, see
+    // `PublicDestinationHttpClient`.
+    let federation_client = FederationClient::with_http_client(PublicDestinationHttpClient);
 
     let issuer_url = extract_url_from_did_web(issuer_did).ok_or(AppError::Error(format!(
         "Failed to extract URL from issuer DID: {issuer_did}"

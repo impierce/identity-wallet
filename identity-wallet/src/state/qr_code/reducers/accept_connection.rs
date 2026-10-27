@@ -618,8 +618,10 @@ fn federation_entity_metadata(configuration: &EntityConfiguration) -> Option<&Fe
 /// Names an entity by its organization, falling back to its display name and finally its host, since a
 /// `federation_entity` may omit every informational parameter.
 fn federation_member(entity_id: &EntityId, federation_entity: Option<&FederationEntityMetadata>) -> Member {
+    // The parameters are optional, and an empty one names nothing.
+    let non_empty = |name: &Option<String>| name.clone().filter(|name| !name.trim().is_empty());
     let name = federation_entity
-        .and_then(|metadata| metadata.organization_name.clone().or(metadata.display_name.clone()))
+        .and_then(|metadata| non_empty(&metadata.organization_name).or_else(|| non_empty(&metadata.display_name)))
         .or(entity_id.as_url().host_str().map(str::to_string))
         .unwrap_or_else(|| entity_id.to_string());
 
@@ -1304,6 +1306,22 @@ mod tests {
                 ("Leaf", Some(leaf_id.as_str())),
                 ("127.0.0.1", Some(unreachable_member_id.as_str()))
             ]
+        );
+    }
+
+    #[test]
+    fn federation_member_skips_empty_names() {
+        let entity_id = EntityId::from(url::Url::parse("https://member.example.com").unwrap());
+
+        let metadata: FederationEntityMetadata =
+            serde_json::from_value(json!({ "organization_name": " ", "display_name": "Member" })).unwrap();
+        assert_eq!(federation_member(&entity_id, Some(&metadata)).name, "Member");
+
+        let metadata: FederationEntityMetadata =
+            serde_json::from_value(json!({ "organization_name": "", "display_name": "" })).unwrap();
+        assert_eq!(
+            federation_member(&entity_id, Some(&metadata)).name,
+            "member.example.com"
         );
     }
 }
