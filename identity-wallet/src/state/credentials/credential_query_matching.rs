@@ -25,16 +25,31 @@ pub struct RequestedCredential {
     pub multiple: bool,
     /// The credential types the verifier asks for (`vct_values`, the most specific `type_values` or the `doctype_value`).
     pub types: Vec<String>,
-    /// Whether the verifier rejects a response without this credential. Only queries that sit exclusively in optional
-    /// credential sets are not required.
-    pub required: bool,
-    /// Ids of the stored credentials that satisfy this query.
-    pub options: Vec<String>,
+    /// The stored credentials that satisfy this query.
+    pub options: Vec<CredentialOption>,
     /// The options that were last shared with this verifier for the same credential types.
     pub last_shared: Vec<String>,
 }
 
-/// Returns, for every credential query in the DCQL query, the ids of the stored credentials that satisfy it.
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq, TS)]
+#[ts(export, export_to = "bindings/user_prompt/CredentialOption.ts")]
+pub struct CredentialOption {
+    pub id: String,
+    pub state: OptionState,
+}
+
+/// Whether a stored credential can be shared: valid ones are preselected, expired ones can be chosen after a warning,
+/// revoked, suspended and not yet valid ones cannot be chosen.
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq, TS)]
+#[serde(rename_all = "snake_case")]
+#[ts(export, export_to = "bindings/user_prompt/OptionState.ts")]
+pub enum OptionState {
+    Valid,
+    Expired,
+    Unavailable,
+}
+
+/// Returns, for every credential query in the DCQL query, the stored credentials that satisfy it.
 pub fn match_credential_queries(
     dcql_query: &DcqlQuery,
     verifiable_credentials: &[VerifiableCredentialRecord],
@@ -46,52 +61,61 @@ pub fn match_credential_queries(
             query_id: credential_query.id.to_string(),
             multiple: credential_query.multiple.unwrap_or(false),
             types: requested_types(credential_query),
-            required: is_required(dcql_query, credential_query),
             options: verifiable_credentials
                 .iter()
                 .filter(|record| satisfies_credential_query(credential_query, record))
-                .map(|record| record.display_credential.id.clone())
+                .map(|record| CredentialOption {
+                    id: record.display_credential.id.clone(),
+                    state: option_state(record),
+                })
                 .collect(),
             last_shared: vec![],
         })
         .collect()
 }
 
-/// Fails when a required credential query has no shareable option, or when no query has one at all.
-pub fn ensure_shareable(
-    requested_credentials: &[RequestedCredential],
-    verifiable_credentials: &[VerifiableCredentialRecord],
-) -> Result<(), AppError> {
-    let has_shareable_option = |requested: &RequestedCredential| {
-        verifiable_credentials
-            .iter()
-            .any(|record| requested.options.contains(&record.display_credential.id) && is_shareable(record))
-    };
-
+/// Fails when a credential query has no option that can be shared, since the verifier requires all of them.
+pub fn ensure_shareable(requested_credentials: &[RequestedCredential]) -> Result<(), AppError> {
     let missing: Vec<String> = requested_credentials
         .iter()
-        .filter(|requested| requested.required && !has_shareable_option(requested))
-        .map(RequestedCredential::type_label)
+        .filter(|requested| {
+            requested
+                .options
+                .iter()
+                .all(|option| option.state == OptionState::Unavailable)
+        })
+        .map(|requested| requested.types.join(", "))
         .collect();
-    if !missing.is_empty() {
-        return Err(AppError::MissingRequiredCredentialError(missing.join(", ")));
+    if missing.is_empty() {
+        Ok(())
+    } else {
+        Err(AppError::MissingRequiredCredentialError(missing.join("; ")))
     }
-    if !requested_credentials.iter().any(has_shareable_option) {
-        return Err(AppError::NoMatchingCredentialError);
-    }
-    Ok(())
 }
 
-/// Revoked, suspended and not yet valid credentials cannot be shared. Expired ones can, after a warning.
-fn is_shareable(record: &VerifiableCredentialRecord) -> bool {
+fn option_state(record: &VerifiableCredentialRecord) -> OptionState {
     let display_credential = &record.display_credential;
+    let now = Utc::now();
     let revoked_or_suspended = display_credential
         .credential_status
         .as_ref()
         .is_some_and(|status| matches!(status.status, StatusType::INVALID | StatusType::SUSPENDED));
-    let not_yet_valid = DateTime::parse_from_rfc3339(&display_credential.metadata.date_issued)
-        .is_ok_and(|valid_from| valid_from > Utc::now());
-    !revoked_or_suspended && !not_yet_valid
+    let not_yet_valid =
+        DateTime::parse_from_rfc3339(&display_credential.metadata.date_issued).is_ok_and(|valid_from| valid_from > now);
+    let expired = display_credential
+        .metadata
+        .expiration_date
+        .as_deref()
+        .and_then(|valid_until| DateTime::parse_from_rfc3339(valid_until).ok())
+        .is_some_and(|valid_until| valid_until <= now);
+
+    if revoked_or_suspended || not_yet_valid {
+        OptionState::Unavailable
+    } else if expired {
+        OptionState::Expired
+    } else {
+        OptionState::Valid
+    }
 }
 
 /// Fills in `last_shared` from the credentials previously shared with this connection.
@@ -101,10 +125,10 @@ pub fn with_last_shared(
 ) -> Vec<RequestedCredential> {
     if let Some(connection) = connection {
         for requested in &mut requested_credentials {
-            if let Some(last_shared) = connection.last_shared_credentials.get(&requested.types_key()) {
+            if let Some(last_shared) = connection.last_shared_credentials.get(&types_key(&requested.types)) {
                 requested.last_shared = last_shared
                     .iter()
-                    .filter(|id| requested.options.contains(id))
+                    .filter(|id| requested.options.iter().any(|option| &option.id == *id))
                     .cloned()
                     .collect();
             }
@@ -113,36 +137,7 @@ pub fn with_last_shared(
     requested_credentials
 }
 
-impl RequestedCredential {
-    pub fn types_key(&self) -> String {
-        types_key(&self.types)
-    }
-
-    /// A readable name for the requested type, e.g. "Open Badge Credential" for `OpenBadgeCredential`.
-    pub fn type_label(&self) -> String {
-        let credential_type = self
-            .types
-            .iter()
-            .find(|t| t.as_str() != "VerifiableCredential")
-            .or(self.types.first())
-            .unwrap_or(&self.query_id);
-        let name = credential_type
-            .rsplit(['/', '#', ':'])
-            .next()
-            .unwrap_or(credential_type);
-        let mut label = String::new();
-        let mut previous_lowercase = false;
-        for c in name.chars() {
-            if c.is_uppercase() && previous_lowercase {
-                label.push(' ');
-            }
-            previous_lowercase = c.is_lowercase();
-            label.push(if c == '_' || c == '-' { ' ' } else { c });
-        }
-        label
-    }
-}
-
+/// The key under which the credentials shared for a credential query are remembered per connection.
 pub fn credential_query_types_key(credential_query: &CredentialQuery) -> String {
     types_key(&requested_types(credential_query))
 }
@@ -151,19 +146,6 @@ fn types_key(types: &[String]) -> String {
     let mut types = types.to_vec();
     types.sort();
     types.join(" ")
-}
-
-fn is_required(dcql_query: &DcqlQuery, credential_query: &CredentialQuery) -> bool {
-    match &dcql_query.credential_sets {
-        None => true,
-        Some(credential_sets) => credential_sets.iter().any(|credential_set| {
-            credential_set.required.unwrap_or(true)
-                && credential_set
-                    .options
-                    .iter()
-                    .all(|option| option.contains(&credential_query.id))
-        }),
-    }
 }
 
 pub fn satisfies_credential_query(
@@ -218,11 +200,8 @@ fn credential_data(
                 serde_json::json!({})
             }))
         }
-        (Format::DcSdJwt | Format::VcSdJwt | Format::JwtVcJson, _) => None,
-        _ => {
-            debug!("Unhandled credential format: {format:?}");
-            get_unverified_jwt_claims(verifiable_credential).ok()
-        }
+        // Other formats cannot be presented (yet), so they never match.
+        _ => None,
     }
 }
 

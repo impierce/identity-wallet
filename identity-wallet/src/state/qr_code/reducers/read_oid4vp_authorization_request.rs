@@ -51,7 +51,7 @@ pub async fn read_oid4vp_authorization_request(state: AppState, action: Action) 
                 .iter()
                 .find(|connection| connection.did == client_id);
             let requested_credentials = with_last_shared(requested_credentials, connection);
-            ensure_shareable(&requested_credentials, &verifiable_credentials)?;
+            ensure_shareable(&requested_credentials)?;
             Ok(AppState {
                 core_utils: CoreUtils {
                     active_flow: Some(ActiveFlow::Oid4vp {

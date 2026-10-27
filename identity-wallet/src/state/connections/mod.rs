@@ -38,7 +38,7 @@ impl Connections {
     pub fn update_last_interaction_or_insert_new(
         &mut self,
         pending_connection_data: &PendingConnectionData,
-    ) -> &Connection {
+    ) -> &mut Connection {
         let client_metadata = &pending_connection_data.client_metadata;
         let url = &client_metadata.connection_url;
         let name = &client_metadata.client_name;
@@ -71,7 +71,7 @@ impl Connections {
             self.0.len() - 1
         };
 
-        &self.0[connection_index]
+        &mut self.0[connection_index]
     }
 }
 

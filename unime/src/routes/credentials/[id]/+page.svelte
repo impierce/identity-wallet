@@ -13,9 +13,7 @@
   import { PencilFillIcon } from '$lib/icons';
   import { state as appState, pageTitleStore } from '$lib/stores';
 
-  import CredentialClaimsRenderer from './CredentialClaimsRenderer.svelte';
-  import CredentialHeader from './CredentialHeader.svelte';
-  import CredentialOverview from './CredentialOverview.svelte';
+  import CredentialDetails from './CredentialDetails.svelte';
   import RawCredentialModal from './RawCredentialModal.svelte';
 
   // Credential cannot be loaded via load function since it's stored in the application state.
@@ -66,61 +64,59 @@
 </script>
 
 {#if credential}
-  <div class="flex min-h-full flex-col gap-7 bg-background-alt px-4 pb-7">
-    <CredentialHeader
-      {credential}
-      on:edit={() => {
-        openEditMode = true;
-        labelInput.focus();
-      }}
-      on:showRawData={() => ($openRawData = true)}
-    >
-      <!-- Editable title -->
-      <div class="relative w-full px-4">
-        <input
-          type="text"
-          maxlength={maxLength}
-          bind:value={displayNameUpdated}
-          bind:this={labelInput}
-          class="-my-2 h-[40px] w-full truncate rounded-lg border border-slate-300 bg-background-alt text-center font-semibold text-slate-700 focus:outline-hidden disabled:border-none disabled:bg-background disabled:text-slate-700 dark:border-slate-600 dark:text-grey dark:disabled:text-grey"
-          placeholder="Some title"
-          disabled={!openEditMode}
-        />
-        {#if openEditMode}
-          <!-- Character count -->
-          <div
-            class="absolute -top-7 right-5 font-mono text-xs font-medium tracking-tight text-slate-500 dark:text-slate-300"
-          >
-            {displayNameUpdated.length}/{maxLength}
-          </div>
-          <!-- Inline pencil icon -->
-          <div class="absolute top-1/2 right-6 -translate-y-1/2">
-            <PencilFillIcon class="size-5 text-slate-500 dark:text-slate-300" />
-          </div>
-        {/if}
-      </div>
-    </CredentialHeader>
-    {#if openEditMode}
-      <!-- Similar to ActionSheet, but without backdrop -->
-      <div
-        class="fixed bottom-(--safe-area-inset-bottom) left-0 flex w-screen flex-col space-y-[10px] rounded-t-[20px] bg-background-alt p-6"
-        transition:fly={{
-          y: 350,
-          duration: 300,
-          opacity: 1,
-        }}
-      >
-        <Button label={$LL.DISCARD()} variant="secondary" on:click={discard} />
-        <Button
-          label={$LL.CREDENTIAL.ACTIONS.EDIT.CONFIRM_BUTTON()}
-          disabled={displayNameUpdated.length === 0 || displayNameUpdated === displayName}
-          on:click={update}
-        />
-      </div>
-    {/if}
-    <CredentialOverview {credential} />
-    <CredentialClaimsRenderer {credential} />
-  </div>
+  <CredentialDetails
+    {credential}
+    on:edit={() => {
+      openEditMode = true;
+      labelInput.focus();
+    }}
+    on:showRawData={() => ($openRawData = true)}
+  >
+    <!-- Editable title -->
+    <div class="relative w-full px-4">
+      <input
+        type="text"
+        maxlength={maxLength}
+        bind:value={displayNameUpdated}
+        bind:this={labelInput}
+        class="-my-2 h-[40px] w-full truncate rounded-lg border border-slate-300 bg-background-alt text-center font-semibold text-slate-700 focus:outline-hidden disabled:border-none disabled:bg-background disabled:text-slate-700 dark:border-slate-600 dark:text-grey dark:disabled:text-grey"
+        placeholder="Some title"
+        disabled={!openEditMode}
+      />
+      {#if openEditMode}
+        <!-- Character count -->
+        <div
+          class="absolute -top-7 right-5 font-mono text-xs font-medium tracking-tight text-slate-500 dark:text-slate-300"
+        >
+          {displayNameUpdated.length}/{maxLength}
+        </div>
+        <!-- Inline pencil icon -->
+        <div class="absolute top-1/2 right-6 -translate-y-1/2">
+          <PencilFillIcon class="size-5 text-slate-500 dark:text-slate-300" />
+        </div>
+      {/if}
+    </div>
+    <svelte:fragment slot="header-actions">
+      {#if openEditMode}
+        <!-- Similar to ActionSheet, but without backdrop -->
+        <div
+          class="fixed bottom-(--safe-area-inset-bottom) left-0 flex w-screen flex-col space-y-[10px] rounded-t-[20px] bg-background-alt p-6"
+          transition:fly={{
+            y: 350,
+            duration: 300,
+            opacity: 1,
+          }}
+        >
+          <Button label={$LL.DISCARD()} variant="secondary" on:click={discard} />
+          <Button
+            label={$LL.CREDENTIAL.ACTIONS.EDIT.CONFIRM_BUTTON()}
+            disabled={displayNameUpdated.length === 0 || displayNameUpdated === displayName}
+            on:click={update}
+          />
+        </div>
+      {/if}
+    </svelte:fragment>
+  </CredentialDetails>
 
   <!-- Dev Mode: raw credential data -->
   {#if $appState.dev_mode !== 'Off'}

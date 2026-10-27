@@ -238,7 +238,7 @@ async fn share_credentials(state: AppState) -> Result<AppState, AppError> {
         let selections = requested_credentials
             .iter()
             .filter_map(|requested| {
-                let uuid_str = requested.options.first()?;
+                let uuid_str = &requested.options.first()?.id;
                 Some(CredentialSelection {
                     query_id: requested.query_id.clone(),
                     credential_uuids: vec![Uuid::parse_str(uuid_str).unwrap()],

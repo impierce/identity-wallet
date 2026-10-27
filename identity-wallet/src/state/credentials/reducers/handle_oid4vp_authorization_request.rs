@@ -87,24 +87,7 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
             }
         };
 
-        let shared_credentials: Vec<(String, Vec<String>)> = selections
-            .iter()
-            .filter_map(|selection| {
-                let credential_query = oid4vp_authorization_request
-                    .body
-                    .extension
-                    .dcql_query
-                    .credentials
-                    .iter()
-                    .find(|credential_query| credential_query.id.as_ref() == selection.query_id)?;
-                Some((
-                    credential_query_types_key(credential_query),
-                    selection.credential_uuids.iter().map(Uuid::to_string).collect(),
-                ))
-            })
-            .collect();
-
-        let (vp_token_payload, history_credentials) =
+        let (vp_token_payload, history_credentials, last_shared) =
             build_oid4vp_vp_token_and_history_credentials(&state, stronghold_manager, identity_manager, selections)
                 .await?;
 
@@ -129,16 +112,12 @@ pub async fn handle_oid4vp_authorization_request(state: AppState, action: Action
 
         update_history_and_connections(
             history_credentials,
+            last_shared,
             &pending_connection_data,
             &mut connections,
             &mut history,
         )
         .await?;
-
-        let client_id = pending_connection_data.client_metadata.client_id.to_string();
-        if let Some(connection) = connections.0.iter_mut().find(|connection| connection.did == client_id) {
-            connection.last_shared_credentials.extend(shared_credentials);
-        }
 
         drop(state_guard);
         return Ok(AppState {
@@ -165,7 +144,7 @@ pub async fn build_oid4vp_vp_token_and_history_credentials(
     stronghold_manager: &StrongholdManager,
     identity_manager: &IdentityManager,
     selections: Vec<CredentialSelection>,
-) -> Result<(VpToken, Vec<HistoryCredential>), AppError> {
+) -> Result<(VpToken, Vec<HistoryCredential>, Vec<(String, Vec<String>)>), AppError> {
     let oid4vp_authorization_request = match state.core_utils.active_flow.clone() {
         Some(ActiveFlow::Oid4vp {
             authorization_request, ..
@@ -182,6 +161,7 @@ pub async fn build_oid4vp_vp_token_and_history_credentials(
     };
 
     let mut history_credentials = vec![];
+    let mut last_shared = vec![];
     let dcql_query = &oid4vp_authorization_request.body.extension.dcql_query;
     let available_credentials_map: std::collections::HashMap<String, _> = stronghold_manager
         .values()
@@ -200,7 +180,7 @@ pub async fn build_oid4vp_vp_token_and_history_credentials(
             .ok_or_else(|| AppError::Error(format!("Unknown credential query: {}", selection.query_id)))?;
 
         let mut verifiable_credentials = Vec::new();
-        for user_selected_uuid in selection.credential_uuids {
+        for user_selected_uuid in &selection.credential_uuids {
             let verifiable_credential_record = available_credentials_map
                 .get(&user_selected_uuid.to_string())
                 .ok_or_else(|| AppError::Error(format!("Selected credential not found: {user_selected_uuid}")))?;
@@ -217,6 +197,10 @@ pub async fn build_oid4vp_vp_token_and_history_credentials(
         }
 
         if !verifiable_credentials.is_empty() {
+            last_shared.push((
+                credential_query_types_key(requested_credential_query),
+                selection.credential_uuids.iter().map(Uuid::to_string).collect(),
+            ));
             selected_verifiable_credentials.push((requested_credential_query.clone(), verifiable_credentials));
         }
     }
@@ -257,12 +241,13 @@ pub async fn build_oid4vp_vp_token_and_history_credentials(
     )
     .await?;
 
-    Ok((vp_token_payload, history_credentials))
+    Ok((vp_token_payload, history_credentials, last_shared))
 }
 
 #[tracing::instrument(skip_all)]
 pub async fn update_history_and_connections(
     history_credentials: Vec<HistoryCredential>,
+    last_shared: Vec<(String, Vec<String>)>,
     pending_connection_data: &PendingConnectionData,
     connections: &mut Connections,
     history: &mut Vec<HistoryEvent>,
@@ -270,6 +255,7 @@ pub async fn update_history_and_connections(
     let client_metadata = &pending_connection_data.client_metadata;
     let previously_connected = connections.contains(client_metadata.client_id.as_str());
     let connection = connections.update_last_interaction_or_insert_new(pending_connection_data);
+    connection.last_shared_credentials.extend(last_shared);
 
     if let Some(logo_uri) = client_metadata.logo_uri.clone() {
         persist_asset(&hash(logo_uri.as_str()), &connection.id).ok();

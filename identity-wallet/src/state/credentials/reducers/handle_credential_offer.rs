@@ -1,7 +1,9 @@
 use crate::oid4vci::authorization_request::CodeChallengeMethod;
 use crate::state::core_utils::helpers::download_logo;
 use crate::state::core_utils::{ActiveFlow, Oid4vciStage};
-use crate::state::credentials::credential_query_matching::{ensure_shareable, match_credential_queries};
+use crate::state::credentials::credential_query_matching::{
+    ensure_shareable, match_credential_queries, with_last_shared,
+};
 use crate::state::credentials::reducers::send_token_request::send_token_request;
 use crate::state::qr_code::reducers::accept_connection::get_oid4vp_client_metadata;
 use crate::state::user_prompt::{ClientMetadata, CurrentUserPrompt};
@@ -274,7 +276,18 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
 
                         let dcql_query = &oid4vp_authorization_request.body.extension.dcql_query;
 
-                        let requested_credentials = match_credential_queries(dcql_query, &verifiable_credentials);
+                        let connection = state.core_utils.pending_connection_data.as_ref().and_then(|pending| {
+                            let client_id = pending.client_metadata.client_id.to_string();
+                            state
+                                .connections
+                                .0
+                                .iter()
+                                .find(|connection| connection.did == client_id)
+                        });
+                        let requested_credentials = with_last_shared(
+                            match_credential_queries(dcql_query, &verifiable_credentials),
+                            connection,
+                        );
 
                         debug!("Credentials matching interactive OID4VP request: {requested_credentials:?}");
 
@@ -291,7 +304,7 @@ pub async fn handle_credential_offer(state: AppState, action: Action) -> Result<
                             debug!("No logo URI found for interactive OID4VP client");
                         }
 
-                        ensure_shareable(&requested_credentials, &verifiable_credentials)?;
+                        ensure_shareable(&requested_credentials)?;
                         drop(state_guard);
 
                         return Ok(AppState {
