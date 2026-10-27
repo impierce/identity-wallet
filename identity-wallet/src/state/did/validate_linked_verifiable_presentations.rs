@@ -3,8 +3,8 @@ use crate::{
     state::{
         core_utils::helpers::{download_logo, get_issuer_document},
         credentials::{
-            reducers::send_token_request::get_credential_status, CredentialStatus, DisplayCredential,
-            VerifiableCredentialRecord,
+            reducers::send_token_request::{get_credential_status, has_token_status_list_claim},
+            CredentialStatus, DisplayCredential, VerifiableCredentialRecord,
         },
         did::validate_domain_linkage::{ValidationResult, Verifier},
     },
@@ -177,7 +177,8 @@ async fn validate_linked_verifiable_presentation(
 }
 
 /// Validate the linked verifiable credentials in the linked verifiable presentation. Skips invalid credentials (including
-/// revoked or suspended ones, or ones whose status cannot be checked) or credentials with invalid domain linkage.
+/// revoked or suspended ones, or ones whose OAuth Token Status List status cannot be fetched) or credentials with
+/// invalid domain linkage.
 /// Since anyone can host a linked verifiable presentation, it is important to validate the linked verifiable
 /// credentials. The `issuer` field in the linked verifiable credential is used to resolve the issuer document and which
 /// is then used to retrieve the linked domains. The linked domains then are used to validate the domain linkage.
@@ -250,11 +251,13 @@ async fn get_validated_linked_credential_data(
                         // It's simply the issuer's responsibility to have it's display data in order, this shouldnt break the flow.
                         let credential_status = get_credential_status(&verifiable_credential_record, subject).await;
 
-                        // Expired credentials are already rejected by the validator above. A credential without a status
-                        // cannot be revoked, but one with a status is only shown when that status is checked and valid.
+                        // Expired credentials are already rejected by the validator above. A credential with an
+                        // OAuth Token Status List status is only shown when that status is fetched and valid.
+                        // UniMe cannot check other status mechanisms, so such a credential is shown like one
+                        // without a status, as the validator above does with `StatusCheck::SkipUnsupported`.
                         match &credential_status {
                             Some(CredentialStatus { status: StatusType::VALID, .. }) => {}
-                            None if linked_verifiable_credential.credential.credential_status.is_none() => {}
+                            None if !has_token_status_list_claim(&verifiable_credential_record) => {}
                             _ => {
                                 warn!("Skipping linked verifiable credential that is not valid: {credential_status:?}");
                                 return None;
@@ -652,6 +655,18 @@ mod tests {
 
         // 'Issues' a Credential Jwt to a subject.
         async fn issue_credential(&mut self, subject_id: &str, credential_name: &str, credential_logo: Url) -> Jwt {
+            self.issue_credential_with(subject_id, credential_name, credential_logo, |_| {})
+                .await
+        }
+
+        /// Like `issue_credential`, with `edit_payload` applied to the JWT payload before it is signed.
+        async fn issue_credential_with(
+            &mut self,
+            subject_id: &str,
+            credential_name: &str,
+            credential_logo: Url,
+            edit_payload: impl FnOnce(&mut Value),
+        ) -> Jwt {
             let subject = identity_credential::credential::Subject::from_json_value(json!({
                 "id": subject_id,
             }))
@@ -673,8 +688,11 @@ mod tests {
                 .build()
                 .unwrap();
 
-            self.generate_jwt(credential.serialize_jwt(Default::default()).unwrap())
-                .await
+            let mut payload: Value =
+                serde_json::from_str(&credential.serialize_jwt(Default::default()).unwrap()).unwrap();
+            edit_payload(&mut payload);
+
+            self.generate_jwt(payload.to_string()).await
         }
 
         // Generates a JWT with the given payload.
@@ -979,6 +997,86 @@ mod tests {
         assert_eq!(item.credential.metadata.icon, Some(issuer_logo));
         assert_eq!(item.issuer_domain_validations.len(), 1);
         assert_eq!(item.issuer_domain_validations[0].url, issuer.domain);
+    }
+
+    /// Validates a linked verifiable presentation holding one credential of an issuer with a valid domain linkage.
+    /// `edit_payload` is applied to the credential's JWT payload, with the issuer's domain, which serves no status list.
+    async fn validated_linked_credential_data(
+        edit_payload: impl FnOnce(&mut Value, &url::Url),
+    ) -> Vec<LinkedVerifiableCredentialData> {
+        let mut issuer = TestEntity::new().await;
+        issuer
+            .add_well_known_did_configuration_json("linked-domain", &[issuer.domain.clone().into()])
+            .await;
+        issuer.add_well_known_did_json().await;
+
+        let mut holder = TestEntity::new().await;
+
+        let issuer_domain = issuer.domain.clone();
+        let verifiable_credential_jwt = issuer
+            .issue_credential_with(
+                holder.did_document.id().to_string().as_str(),
+                "Webshop",
+                format!("{issuer_domain}logo.png").parse().unwrap(),
+                |payload| edit_payload(payload, &issuer_domain),
+            )
+            .await;
+
+        let linked_verifiable_presentation_endpoint = "linked-verifiable-presentation.jwt";
+        holder
+            .add_linked_verifiable_presentation(
+                "linked-verifiable-presentation",
+                vec![(
+                    linked_verifiable_presentation_endpoint.to_string(),
+                    vec![verifiable_credential_jwt],
+                )],
+            )
+            .await;
+
+        get_validated_linked_presentation_data(
+            &holder.subject,
+            &holder.did_document,
+            holder.domain.join(linked_verifiable_presentation_endpoint).unwrap(),
+        )
+        .await
+        .unwrap()
+    }
+
+    #[tokio::test]
+    async fn get_validated_linked_credential_data_skips_credentials_whose_status_claim_cannot_be_checked() {
+        let validated_linked_credential_data = validated_linked_credential_data(|payload, issuer_domain| {
+            payload["status"] = json!({
+                "status_list": { "idx": 0, "uri": issuer_domain.join("status-lists/1").unwrap() }
+            });
+        })
+        .await;
+
+        assert!(validated_linked_credential_data.is_empty());
+    }
+
+    #[tokio::test]
+    async fn get_validated_linked_credential_data_keeps_credentials_with_an_unsupported_status_mechanism() {
+        let validated_linked_credential_data = validated_linked_credential_data(|payload, issuer_domain| {
+            payload["vc"]["credentialStatus"] = json!({
+                "id": issuer_domain.join("status-lists/1#0").unwrap(),
+                "type": "BitstringStatusListEntry",
+                "statusPurpose": "revocation",
+                "statusListIndex": "0",
+                "statusListCredential": issuer_domain.join("status-lists/1").unwrap(),
+            });
+        })
+        .await;
+
+        assert_eq!(validated_linked_credential_data.len(), 1);
+        assert_eq!(validated_linked_credential_data[0].credential.credential_status, None);
+    }
+
+    #[tokio::test]
+    async fn get_validated_linked_credential_data_keeps_credentials_without_a_status() {
+        let validated_linked_credential_data = validated_linked_credential_data(|_, _| {}).await;
+
+        assert_eq!(validated_linked_credential_data.len(), 1);
+        assert_eq!(validated_linked_credential_data[0].credential.display_name, "Webshop");
     }
 
     #[tokio::test]
