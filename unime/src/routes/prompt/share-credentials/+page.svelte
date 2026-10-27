@@ -8,7 +8,7 @@
   import type { CurrentUserPrompt } from '@bindings/user_prompt/CurrentUserPrompt';
   import type { RequestedCredential } from '@bindings/user_prompt/RequestedCredential';
 
-  import { ActionSheet, Button, Checkbox, Image, PaddedIcon, Radio, Switch, TopNavBar } from '$lib/components';
+  import { ActionSheet, Button, Image, PaddedIcon, SelectionIndicator, Switch, TopNavBar } from '$lib/components';
   import { dispatch } from '$lib/dispatcher';
   import {
     CaretRightBoldIcon,
@@ -284,9 +284,7 @@
           </label>
           {#if multiple}
             <button class="flex shrink-0 items-center gap-2 pr-1" on:click={toggleSelectAll}>
-              <div class="pointer-events-none">
-                <Checkbox checked={allValidSelected} readonly />
-              </div>
+              <SelectionIndicator checked={allValidSelected} multiple />
               <span class="text-[13px]/[24px] font-semibold text-slate-800 dark:text-grey">
                 {$LL.SCAN.SHARE_CREDENTIALS.PICKER.SELECT_ALL()}
               </span>
@@ -309,13 +307,7 @@
             on:click={() => toggle(credential)}
           >
             <div class="pt-3 {selectable ? '' : 'opacity-40'}">
-              {#if multiple}
-                <div class="pointer-events-none">
-                  <Checkbox {checked} readonly />
-                </div>
-              {:else}
-                <Radio {checked} />
-              {/if}
+              <SelectionIndicator {checked} {multiple} />
             </div>
             <div class={selectable ? '' : 'opacity-50'}>
               <CredentialLogo {credential} fallbackId={credential.id} />
