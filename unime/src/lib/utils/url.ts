@@ -1,4 +1,4 @@
-export const HTTPS_URL_PART_REGEX = /(https:\/\/\S+)/g;
+export const HTTPS_URL_PART_REGEX = /(https:\/\/\S+)/gi;
 
 export function isUrl(text: string): boolean {
   try {

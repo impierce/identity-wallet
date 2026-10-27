@@ -39,6 +39,14 @@ describe('linkifyClaim', () => {
     ]);
   });
 
+  test('links HTTPS URLs with an uppercase scheme inside text', () => {
+    expect(linkifyClaim('description', 'See HTTPS://impierce.com/about for more')).toEqual([
+      { text: 'See ' },
+      { text: 'HTTPS://impierce.com/about', url: 'HTTPS://impierce.com/about' },
+      { text: ' for more' },
+    ]);
+  });
+
   test('leaves trailing punctuation out of a link', () => {
     expect(linkifyClaim('description', 'Visit https://impierce.com.')).toEqual([
       { text: 'Visit ' },
