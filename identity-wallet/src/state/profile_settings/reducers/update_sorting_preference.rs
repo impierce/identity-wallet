@@ -206,7 +206,10 @@ mod tests {
     #[tokio::test]
     async fn test_credentials_sorting_name_az() {
         let state = init_credential_names("C".to_string(), "A".to_string(), "B".to_string());
-        let action = Arc::new(UpdateSortingPreference { ..Default::default() });
+        let action = Arc::new(UpdateSortingPreference {
+            credential_sorting: Some(CredentialSortMethod::NameAZ),
+            ..Default::default()
+        });
 
         let result = update_sorting_preference(state, action.clone()).await.unwrap();
         let result = sort_credentials(result, action).await.unwrap();
