@@ -1,6 +1,6 @@
 use crate::{
     error::AppError::{self, *},
-    http_client::get_http_client,
+    http_client::{fetch_public_destination, get_http_client, PublicDestinationHttpClient},
     state::{
         actions::{listen, Action},
         core_utils::{
@@ -26,7 +26,7 @@ use oid4vc::{
     oid4vci::credential_offer::CredentialOffer,
 };
 use oid4vc::{oid4vci::credential_offer::CredentialOfferParameters, oid4vp::oid4vp::OID4VP};
-use openid_federation::{EntityConfiguration, EntityId, FederationClient, FederationEntityMetadata, ReqwestHttpClient};
+use openid_federation::{EntityConfiguration, EntityId, FederationClient, FederationEntityMetadata};
 use serde_json::Value;
 
 /// The kind of request encoded in a scanned QR-code.
@@ -426,8 +426,9 @@ const MAX_TRUST_ANCHORS: usize = 10;
 ///
 /// Anchors are deduplicated first: the prompt shows one card per ecosystem, not one per path to it.
 async fn fetch_ecosystems(entity_id: &url::Url) -> Option<Vec<EcosystemProfile>> {
-    // In the future this must be more flexible to support other types of clients.
-    let federation_client = FederationClient::with_http_client(ReqwestHttpClient::with_client(get_http_client().await));
+    // Every entity configuration and federation endpoint on the way is named by a remote party, see
+    // `PublicDestinationHttpClient`.
+    let federation_client = FederationClient::with_http_client(PublicDestinationHttpClient);
 
     let trust_chains = match federation_client.discover_all_trust_chains(entity_id).await {
         Ok(trust_chains) => trust_chains,
@@ -522,7 +523,7 @@ async fn fetch_ecosystem_profile(trust_anchor_entity_id: &url::Url) -> Option<Ec
         }
     };
 
-    let response = match get_http_client().await.get(ecosystem_profile_url.clone()).send().await {
+    let response = match fetch_public_destination(ecosystem_profile_url.clone()).await {
         Ok(response) => response,
         Err(e) => {
             warn!("Failed to fetch ecosystem profile from {ecosystem_profile_url}: {e}");
