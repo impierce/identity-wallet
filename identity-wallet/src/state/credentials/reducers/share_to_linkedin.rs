@@ -12,7 +12,7 @@ use chrono::{DateTime, Datelike, Duration, Utc};
 use jsonwebtoken::Header;
 use log::info;
 use oid4vc::oid4vc_core::{jwt::encode, utils::did::extract_normalized_did_kid_from_jwt, Subject};
-use openid_federation::{FederationClient, ReqwestHttpClient};
+use openid_federation::{EntityId, FederationClient, ReqwestHttpClient};
 use serde::Serialize;
 use serde_json::json;
 use std::str::FromStr;
@@ -260,7 +260,7 @@ pub async fn get_trusted_verifier_public_verification_endpoint(issuer_did: &str)
     )))?;
 
     let trust_chains = federation_client
-        .discover_all_trust_chains(&issuer_url)
+        .discover_all_trust_chains(&EntityId::from(issuer_url.clone()))
         .await
         .map_err(|e| {
             AppError::Error(format!(
@@ -269,14 +269,24 @@ pub async fn get_trusted_verifier_public_verification_endpoint(issuer_did: &str)
         })?;
 
     // TODO: improve trust chain selection logic, ultimately with policy and metadata checking, and iterating until a valid trust_anchor is found.
-    let first_trust_chain = trust_chains.first().ok_or(AppError::Error(format!(
-        "No trust_anchor/trust_chain found for Issuer of credential to be shared: {issuer_did}"
-    )))?;
+    // Discovery also ends chains at superiors that have superiors of their own; the public verifier is hosted by the
+    // trust anchor at the top of the hierarchy.
+    let first_trust_chain = trust_chains
+        .iter()
+        .find(|trust_chain| {
+            trust_chain
+                .trust_anchor_entity_id_and_configuration()
+                .is_ok_and(|(_, configuration)| configuration.authority_hints.map_or(true, |hints| hints.is_empty()))
+        })
+        .ok_or(AppError::Error(format!(
+            "No trust_anchor/trust_chain found for Issuer of credential to be shared: {issuer_did}"
+        )))?;
     let (trust_anchor_url, _) = first_trust_chain
         .trust_anchor_entity_id_and_configuration()
         .map_err(|e| AppError::Error(format!("Failed to get trust_anchor entity_id: {e}")))?;
 
     let trust_anchor_public_verification_endpoint = trust_anchor_url
+        .as_url()
         .join("/public/verify") // TODO: fix this hardcode via entity config metadata
         .map_err(|e| AppError::Error(format!("Failed to construct public verification endpoint URL: {e}")))?;
 

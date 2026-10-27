@@ -9355,9 +9355,9 @@ dependencies = [
 
 [[package]]
 name = "openid-federation"
-version = "0.2.0"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e7153b22cdbefeeda79328965c822d5c1f6c2eb4cbb4e77f0cf4750a12845e04"
+checksum = "f6694be64b67a14614a9046125b96859f6154c9ffee822914aa219dacfbfdf25"
 dependencies = [
  "async-trait",
  "base64 0.23.1",

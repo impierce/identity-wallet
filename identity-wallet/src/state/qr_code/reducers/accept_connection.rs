@@ -430,7 +430,10 @@ async fn fetch_ecosystems(entity_id: &url::Url) -> Option<Vec<EcosystemProfile>>
     // `PublicDestinationHttpClient`.
     let federation_client = FederationClient::with_http_client(PublicDestinationHttpClient);
 
-    let trust_chains = match federation_client.discover_all_trust_chains(entity_id).await {
+    let trust_chains = match federation_client
+        .discover_all_trust_chains(&EntityId::from(entity_id.clone()))
+        .await
+    {
         Ok(trust_chains) => trust_chains,
         Err(e) => {
             warn!("Failed to discover trust chains for entity ID {entity_id}: {e}");
@@ -483,7 +486,7 @@ async fn resolve_ecosystem_profile(
     trust_anchor_id: &EntityId,
     trust_anchor_configuration: &EntityConfiguration,
 ) -> EcosystemProfile {
-    let ecosystem_profile = match fetch_ecosystem_profile(trust_anchor_id).await {
+    let ecosystem_profile = match fetch_ecosystem_profile(trust_anchor_id.as_url()).await {
         Some(ecosystem_profile) => ecosystem_profile,
         None => federation_ecosystem_profile(federation_client, trust_anchor_id, trust_anchor_configuration).await,
     };
@@ -617,7 +620,7 @@ fn federation_entity_metadata(configuration: &EntityConfiguration) -> Option<&Fe
 fn federation_member(entity_id: &EntityId, federation_entity: Option<&FederationEntityMetadata>) -> Member {
     let name = federation_entity
         .and_then(|metadata| metadata.organization_name.clone().or(metadata.display_name.clone()))
-        .or(entity_id.host_str().map(str::to_string))
+        .or(entity_id.as_url().host_str().map(str::to_string))
         .unwrap_or_else(|| entity_id.to_string());
 
     Member {
@@ -1020,14 +1023,14 @@ mod tests {
         });
 
         let mut config = EntityConfiguration::new(
-            entity_id.clone(),
+            EntityId::from(entity_id.clone()),
             jwks,
             expires_in(chrono::Duration::hours(1)),
             chrono::Utc::now().timestamp(),
         )
         .with_metadata(metadata);
         if !authority_hints.is_empty() {
-            config = config.with_authority_hints(authority_hints);
+            config = config.with_authority_hints(authority_hints.into_iter().map(EntityId::from).collect());
         }
 
         Mock::given(method("GET"))
@@ -1052,8 +1055,8 @@ mod tests {
         jwks.add_key(federation_test_key());
 
         let statement = SubordinateStatement::new(
-            trust_anchor_id.clone(),
-            subject_entity_id.clone(),
+            EntityId::from(trust_anchor_id.clone()),
+            EntityId::from(subject_entity_id.clone()),
             expires_in(chrono::Duration::hours(1)),
             chrono::Utc::now().timestamp(),
             jwks,
@@ -1211,7 +1214,8 @@ mod tests {
         let trust_anchor_id: url::Url = trust_anchor_server.uri().parse().unwrap();
 
         // Subordinate to both, so discovery finds `leaf -> intermediate -> anchor` and
-        // `leaf -> anchor`, ending at the same anchor.
+        // `leaf -> anchor`, ending at the same anchor. `leaf -> intermediate` ends a chain too,
+        // since a superior with superiors of its own may still be a trust anchor.
         mount_entity_configuration(
             &leaf_server,
             &leaf_id,
@@ -1235,8 +1239,8 @@ mod tests {
 
         let ecosystems = fetch_ecosystems(&leaf_id).await.unwrap();
 
-        assert_eq!(ecosystems.len(), 1);
-        assert_eq!(ecosystems[0].name, "Ecosystem One");
+        let names: Vec<_> = ecosystems.iter().map(|profile| profile.name.as_str()).collect();
+        assert_eq!(names, vec!["Intermediate", "Ecosystem One"]);
     }
 
     #[tokio::test]
