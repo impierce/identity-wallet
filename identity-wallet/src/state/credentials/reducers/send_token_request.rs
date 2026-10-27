@@ -485,12 +485,12 @@ fn credential_status_value(verifiable_credential_record: &VerifiableCredentialRe
         })
 }
 
-/// Whether the credential has a status that [`get_credential_status`] checks, i.e. a status claim/property that uses
-/// the OAuth Token Status List mechanism. When it does, a `None` from [`get_credential_status`] means that the status
-/// could not be fetched.
+/// Whether the credential has a status claim/property that uses the OAuth Token Status List mechanism, i.e. one with a
+/// `status_list` member, even a malformed one. When it does, a `None` from [`get_credential_status`] means that the
+/// status could not be checked.
 pub fn has_token_status_list_claim(verifiable_credential_record: &VerifiableCredentialRecord) -> bool {
     credential_status_value(verifiable_credential_record)
-        .is_some_and(|status_value| serde_json::from_value::<StatusClaim>(status_value).is_ok())
+        .is_some_and(|status_value| status_value.get("status_list").is_some())
 }
 
 /// Helper function to fetch the credential status of a newly received credential and set the fields the `credential_status` field of the DisplayCredential.

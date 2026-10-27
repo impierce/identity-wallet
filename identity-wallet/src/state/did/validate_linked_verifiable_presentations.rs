@@ -1055,6 +1055,18 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn get_validated_linked_credential_data_skips_credentials_with_a_malformed_status_claim() {
+        let validated_linked_credential_data = validated_linked_credential_data(|payload, issuer_domain| {
+            payload["status"] = json!({
+                "status_list": { "idx": "0", "uri": issuer_domain.join("status-lists/1").unwrap() }
+            });
+        })
+        .await;
+
+        assert!(validated_linked_credential_data.is_empty());
+    }
+
+    #[tokio::test]
     async fn get_validated_linked_credential_data_keeps_credentials_with_an_unsupported_status_mechanism() {
         let validated_linked_credential_data = validated_linked_credential_data(|payload, issuer_domain| {
             payload["vc"]["credentialStatus"] = json!({
