@@ -13,7 +13,7 @@
 
   import ClaimRow from './ClaimRow.svelte';
   import { claimRows, claimText, satisfiesRequest } from './disclosure';
-  import { isBadge, typeLabel } from './utils';
+  import { distinguishingClaim, isBadge, typeLabel } from './utils';
 
   export let requested: RequestedCredential;
   // All options of the request, in the order they are shown in the picker.
@@ -25,24 +25,9 @@
 
   const dispatch = createEventDispatcher<{ change: void; disclose: number[] }>();
 
-  const plainText = (value: unknown) => (typeof value === 'string' || typeof value === 'number' ? String(value) : '');
-
-  // The first claim whose value differs between the options, which tells otherwise identical credentials apart.
-  function distinguishingClaim(credential: DisplayCredential): string | undefined {
-    const others = candidates.filter((c) => c.id !== credential.id);
-    if (others.length === 0) return undefined;
-    const claim = credential.display_claims.find((claim) => {
-      const value = plainText(claim.value);
-      const samePath = (c: DisplayCredential) =>
-        c.display_claims.find((other) => other.path.join('/') === claim.path.join('/'));
-      return value && value !== credential.display_name && others.some((c) => plainText(samePath(c)?.value) !== value);
-    });
-    return claim ? plainText(claim.value) : undefined;
-  }
-
   $: first = selected[0];
   $: option = first && requested.options.find((option) => option.id === first.id);
-  $: detail = first && selected.length === 1 ? distinguishingClaim(first) : undefined;
+  $: detail = first && selected.length === 1 ? distinguishingClaim(first, candidates) : undefined;
   $: expired = option?.state === 'expired';
 
   $: locale = $state.profile_settings.locale;
@@ -113,7 +98,7 @@ collapse into a summary, and a "Change" button when there are more options.
         <p class="truncate text-[12px]/[20px] font-medium text-slate-700 dark:text-slate-300">{detail}</p>
       {/if}
       {#if first}
-        <p class="truncate text-[12px]/[20px] font-medium text-slate-400">
+        <p class="text-[12px]/[20px] font-medium break-words text-slate-400">
           {first.issuer_name}{first.metadata.date_issued && selected.length === 1
             ? ` · ${$LL.SCAN.SHARE_CREDENTIALS.ISSUED({
                 date: formatDateWithWrittenMonth(first.metadata.date_issued, locale),

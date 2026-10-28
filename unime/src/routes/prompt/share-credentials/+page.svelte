@@ -20,7 +20,7 @@
   import { claimRows, claimText, defaultDisclosure, satisfiesRequest } from './disclosure';
   import RequestCard from './RequestCard.svelte';
   import ReviewShare from './ReviewShare.svelte';
-  import { isSelectable } from './utils';
+  import { distinguishingClaim, isSelectable } from './utils';
   import VerifierHeader from './VerifierHeader.svelte';
 
   // TypeScript does not know that the `current_user_prompt` is of type `share-credentials`.
@@ -138,7 +138,10 @@
       ),
       ...candidates[r.query_id]
         .filter((c) => !selection[r.query_id].includes(c.id) && isSelectable(optionStates.get(c.id)))
-        .map((c) => ({ label: c.display_name, detail: $LL.SCAN.SHARE_CREDENTIALS.REVIEW.NOT_CHOSEN() })),
+        .map((c) => ({
+          label: distinguishingClaim(c, candidates[r.query_id]) ?? c.display_name,
+          detail: $LL.SCAN.SHARE_CREDENTIALS.REVIEW.NOT_CHOSEN(),
+        })),
     ]);
     return { shared, notShared };
   })();
